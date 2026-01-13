@@ -15,7 +15,6 @@
  */
 
 import React, { memo, useCallback } from "react";
-import type { MultiDateInputClassNames } from "../../types/ClassNameOverrides.js";
 import {
   formatDateForDisplay,
   formatDateForInput,
@@ -25,7 +24,8 @@ import {
 interface MultiDateInputProps {
   selectedDates: Date[];
   onChange: (dates: Date[]) => void;
-  classNames?: MultiDateInputClassNames;
+  className?: string;
+  style?: React.CSSProperties;
   minDate?: Date;
   maxDate?: Date;
   showClearAll?: boolean;
@@ -34,7 +34,8 @@ interface MultiDateInputProps {
 function MultiDateInputInner({
   selectedDates,
   onChange,
-  classNames,
+  className,
+  style,
   minDate,
   maxDate,
   showClearAll = true,
@@ -77,19 +78,23 @@ function MultiDateInputInner({
     [addDate],
   );
 
+  const rootClassName = className
+    ? `filter-input--multi-date ${className}`
+    : "filter-input--multi-date";
+
   return (
-    <div className={classNames?.root}>
+    <div className={rootClassName} style={style}>
       {selectedDates.length > 0 && (
-        <div className={classNames?.selectedDatesContainer}>
+        <div className="filter-input__selected-dates">
           {selectedDates.map((date) => (
             <span
               key={date.toISOString()}
-              className={classNames?.selectedDateTag}
+              className="filter-input__date-tag"
             >
               {formatDateForDisplay(date)}
               <button
                 type="button"
-                className={classNames?.selectedDateRemoveButton}
+                className="filter-input__tag-remove"
                 onClick={() => removeDate(date)}
                 aria-label={`Remove ${formatDateForDisplay(date)}`}
               >
@@ -100,7 +105,7 @@ function MultiDateInputInner({
           {showClearAll && selectedDates.length > 1 && (
             <button
               type="button"
-              className={classNames?.clearAllButton}
+              className="filter-input__clear-all"
               onClick={clearAll}
               aria-label="Clear all dates"
             >
@@ -110,9 +115,10 @@ function MultiDateInputInner({
         </div>
       )}
 
-      <div className={classNames?.calendarContainer}>
+      <div className="filter-input__calendar-container">
         <input
           type="date"
+          className="filter-input__input"
           onChange={handleDateChange}
           min={minDate ? formatDateForInput(minDate) : undefined}
           max={maxDate ? formatDateForInput(maxDate) : undefined}

@@ -15,10 +15,9 @@
  */
 
 import type { ObjectSet, ObjectTypeDefinition } from "@osdk/api";
-import React from "react";
+import React, { useCallback } from "react";
 import type { FilterDefinitionUnion } from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
-import type { FilterListClassNames } from "../types/ClassNameOverrides.js";
 import { getFilterKey } from "../utils/getFilterKey.js";
 import { FilterListItem } from "./FilterListItem.js";
 
@@ -28,8 +27,8 @@ interface FilterListContentProps<Q extends ObjectTypeDefinition> {
   filterDefinitions?: Array<FilterDefinitionUnion<Q>>;
   filterStates: Map<string, FilterState>;
   onFilterStateChanged: (key: string, state: FilterState) => void;
-  onResetFilterState: (key: string) => void;
-  classNames?: FilterListClassNames;
+  className?: string;
+  style?: React.CSSProperties;
 }
 
 export function FilterListContent<Q extends ObjectTypeDefinition>({
@@ -38,13 +37,24 @@ export function FilterListContent<Q extends ObjectTypeDefinition>({
   filterDefinitions,
   filterStates,
   onFilterStateChanged,
-  onResetFilterState,
-  classNames,
+  className,
+  style,
 }: FilterListContentProps<Q>): React.ReactElement {
+  const handleFilterStateChanged = useCallback(
+    (instanceKey: string, newState: FilterState) => {
+      onFilterStateChanged(instanceKey, newState);
+    },
+    [onFilterStateChanged],
+  );
   if (!filterDefinitions || filterDefinitions.length === 0) {
+    const emptyClassName = className
+      ? `filter-list__content filter-list__content--empty ${className}`
+      : "filter-list__content filter-list__content--empty";
+
     return (
       <div
-        className={classNames?.contentEmpty}
+        className={emptyClassName}
+        style={style}
         data-empty="true"
       >
         <p>No filters configured</p>
@@ -52,8 +62,12 @@ export function FilterListContent<Q extends ObjectTypeDefinition>({
     );
   }
 
+  const contentClassName = className
+    ? `filter-list__content ${className}`
+    : "filter-list__content";
+
   return (
-    <div className={classNames?.content}>
+    <div className={contentClassName} style={style}>
       {filterDefinitions.map((definition, index) => {
         const filterKey = getFilterKey(definition);
         const instanceKey = `${filterKey}:${index}`;
@@ -62,23 +76,12 @@ export function FilterListContent<Q extends ObjectTypeDefinition>({
         return (
           <FilterListItem
             key={instanceKey}
+            instanceKey={instanceKey}
             objectType={objectType}
             objectSet={objectSet}
             definition={definition}
             filterState={state}
-            onFilterStateChanged={(newState) =>
-              onFilterStateChanged(instanceKey, newState)}
-            onResetFilterState={() => onResetFilterState(instanceKey)}
-            classNames={classNames?.item}
-            inputClassNames={{
-              checkboxList: classNames?.checkboxListInput,
-              containsText: classNames?.containsTextInput,
-              containsTextRenderProps: classNames?.containsTextInputRenderProps,
-              toggle: classNames?.toggleInput,
-              numberRange: classNames?.numberRangeInput,
-              dateRange: classNames?.dateRangeInput,
-              nullValueWrapper: classNames?.nullValueWrapper,
-            }}
+            onFilterStateChanged={handleFilterStateChanged}
           />
         );
       })}

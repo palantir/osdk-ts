@@ -15,13 +15,12 @@
  */
 
 import type {
+  ObjectSet,
   ObjectTypeDefinition,
   PropertyKeys,
-  WhereClause,
 } from "@osdk/api";
 import React, { memo, useCallback } from "react";
 import { usePropertyAggregation } from "../../hooks/usePropertyAggregation.js";
-import type { SingleSelectInputClassNames } from "../../types/ClassNameOverrides.js";
 
 interface SingleSelectInputProps<
   Q extends ObjectTypeDefinition,
@@ -31,8 +30,9 @@ interface SingleSelectInputProps<
   propertyKey: K;
   selectedValue: string | undefined;
   onChange: (value: string | undefined) => void;
-  whereClause?: WhereClause<Q>;
-  classNames?: SingleSelectInputClassNames;
+  objectSet?: ObjectSet<Q>;
+  className?: string;
+  style?: React.CSSProperties;
   placeholder?: string;
   showClearButton?: boolean;
   showCounts?: boolean;
@@ -46,8 +46,9 @@ function SingleSelectInputInner<
   propertyKey,
   selectedValue,
   onChange,
-  whereClause,
-  classNames,
+  objectSet,
+  className,
+  style,
   placeholder = "Select a value...",
   showClearButton = true,
   showCounts = false,
@@ -55,7 +56,7 @@ function SingleSelectInputInner<
   const { data: values, isLoading, error } = usePropertyAggregation(
     objectType,
     propertyKey,
-    { whereClause },
+    { objectSet },
   );
 
   const handleChange = useCallback(
@@ -70,30 +71,34 @@ function SingleSelectInputInner<
     onChange(undefined);
   }, [onChange]);
 
+  const rootClassName = className
+    ? `filter-input--single-select ${className}`
+    : "filter-input--single-select";
+
   return (
-    <div className={classNames?.root} data-loading={isLoading}>
+    <div className={rootClassName} style={style} data-loading={isLoading}>
       {isLoading && (
-        <div className={classNames?.loadingMessage}>
+        <div className="filter-input__loading-message">
           Loading options...
         </div>
       )}
 
       {error && (
-        <div className={classNames?.errorMessage}>
+        <div className="filter-input__error-message">
           Error loading options: {error.message}
         </div>
       )}
 
       {!isLoading && !error && values.length === 0 && (
-        <div className={classNames?.emptyMessage}>
+        <div className="filter-input__empty-message">
           No options available
         </div>
       )}
 
       {values.length > 0 && (
-        <div className={classNames?.selectContainer}>
+        <div className="filter-input__select-container">
           <select
-            className={classNames?.select}
+            className="filter-input__select"
             value={selectedValue ?? ""}
             onChange={handleChange}
             aria-label={`Select ${propertyKey}`}
@@ -108,7 +113,7 @@ function SingleSelectInputInner<
           {showClearButton && selectedValue !== undefined && (
             <button
               type="button"
-              className={classNames?.clearButton}
+              className="filter-input__clear"
               onClick={handleClear}
               aria-label="Clear selection"
             >

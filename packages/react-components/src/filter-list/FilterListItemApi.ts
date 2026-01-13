@@ -16,70 +16,16 @@
 
 import type {
   CompileTimeMetadata,
-  ObjectSet,
   ObjectTypeDefinition,
   PropertyKeys,
   WirePropertyTypes,
 } from "@osdk/api";
-import type { ReactNode } from "react";
 import type { CustomFilterState } from "./types/CustomRendererTypes.js";
-import type {
-  FilterDataIndicator,
-  FilterInteractionMode,
-  FilterItemColor,
-} from "./types/FilterDisplayTypes.js";
 import type { KeywordSearchFilterState } from "./types/KeywordSearchTypes.js";
 import type {
   HasLinkFilterState,
   LinkedPropertyFilterState,
 } from "./types/LinkedFilterTypes.js";
-
-/**
- * Props passed to the overflow menu render function.
- * Use this to create custom menu implementations.
- *
- * The render function should return both the trigger button AND the popover/menu.
- * This allows proper popover positioning (e.g., wrapping the button with Popover).
- */
-export interface OverflowMenuRenderProps {
-  /** Whether the menu is currently open */
-  isOpen: boolean;
-  /** Call to close the menu */
-  onClose: () => void;
-  /** Call to open the menu */
-  onOpen: () => void;
-  /** Call to toggle the menu (use this on the button click) */
-  onToggle: (e: React.MouseEvent) => void;
-  /** Ref to assign to the trigger button element */
-  triggerRef: React.RefObject<HTMLButtonElement | null>;
-  /** CSS class name for the trigger button */
-  triggerClassName?: string;
-  /** Call when "Reset filter" is clicked */
-  onResetFilter?: () => void;
-  /** Call when "Remove filter" is clicked */
-  onRemoveFilter?: () => void;
-}
-
-/**
- * Props for a single filter list item component
- */
-export interface FilterListItemProps<
-  Q extends ObjectTypeDefinition,
-  K extends PropertyKeys<Q> = PropertyKeys<Q>,
-  C extends ValidComponentsForPropertyType<
-    PropertyTypeFromKey<Q, K>
-  > = ValidComponentsForPropertyType<PropertyTypeFromKey<Q, K>>,
-> extends PropertyFilterDefinition<Q, K, C> {
-  objectSet: ObjectSet<Q>;
-
-  /**
-   * Called when the state of the filter changes.
-   * Required in controlled mode.
-   */
-  onFilterStateChanged: (state: FilterStateByComponentType[C]) => void;
-
-  onFilterRemoved?: (key: PropertyKeys<Q>) => void;
-}
 
 /**
  * Helper type to extract the property type from an ObjectTypeDefinition given a property key
@@ -332,125 +278,9 @@ export interface PropertyFilterDefinition<
   filterState: FilterStateByComponentType[C];
 
   /**
-   * Default state for the filter when reset
+   * Controls whether this filter is rendered.
+   * When false, the filter is hidden but its state is preserved.
+   * @default true
    */
-  defaultFilterState?: FilterStateByComponentType[C];
-
-  /**
-   * Interaction mode for the filter
-   * - "checkbox": Multi-select with checkboxes
-   * - "category": Single-click toggle
-   */
-  interactionMode?: FilterInteractionMode;
-
-  /**
-   * Show "Select All" checkbox when using checkbox interaction mode
-   */
-  showSelectAll?: boolean;
-
-  /**
-   * Visual data indicator type
-   * - "histogram": Show distribution histogram bars
-   * - "count": Show count number only
-   * - "none": No data indicator
-   */
-  dataIndicator?: FilterDataIndicator;
-
-  /**
-   * Allow user to toggle between include/exclude mode
-   */
-  allowToggleExcludeMode?: boolean;
-
-  /**
-   * Called when exclude mode changes
-   */
-  onExcludeModeChange?: (isExcluding: boolean) => void;
-
-  /**
-   * Color formatting for the filter item
-   */
-  color?: FilterItemColor;
-
-  /**
-   * Color formatting for specific values within the filter
-   */
-  valueColors?: Record<string, FilterItemColor>;
-
-  /**
-   * Icon to display next to the filter label
-   */
-  icon?: ReactNode;
-
-  /**
-   * Controlled collapsed state for this filter item
-   */
-  itemCollapsed?: boolean;
-
-  /**
-   * Default collapsed state for this filter item (uncontrolled)
-   */
-  defaultItemCollapsed?: boolean;
-
-  /**
-   * Called when the filter item collapsed state changes
-   */
-  onItemCollapsedChange?: (collapsed: boolean) => void;
-
-  /**
-   * Show overflow menu (...) with standard actions
-   */
-  showOverflowMenu?: boolean;
-
-  /**
-   * Render prop for custom overflow menu content.
-   * If provided, this will be called to render the menu.
-   * If not provided, the default menu with reset/remove actions will be shown.
-   */
-  renderOverflowMenu?: (props: OverflowMenuRenderProps) => React.ReactNode;
-
-  /**
-   * Called when the "Reset filter" menu action is triggered
-   */
-  onResetFilter?: () => void;
-
-  /**
-   * Called when the "Remove filter" menu action is triggered
-   */
-  onRemoveFilter?: () => void;
-
-  /**
-   * Show search input for filtering values within this filter
-   */
-  showFilterSearch?: boolean;
-
-  /**
-   * Placeholder text for the filter search input
-   */
-  filterSearchPlaceholder?: string;
-
-  /**
-   * Controlled value for the filter search input
-   */
-  filterSearchValue?: string;
-
-  /**
-   * Called when the filter search value changes
-   */
-  onFilterSearchChange?: (value: string) => void;
-
-  /**
-   * Maximum number of values to display before truncation
-   * If not specified, all values are shown
-   */
-  maxVisibleItems?: number;
-
-  /**
-   * Show "View all (X)" link when values are truncated
-   */
-  showViewAllLink?: boolean;
-
-  /**
-   * Called when the "View all" link is clicked
-   */
-  onViewAllClick?: () => void;
+  isVisible?: boolean;
 }

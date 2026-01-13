@@ -22,7 +22,6 @@ import type {
 } from "@osdk/api";
 import { useOsdkAggregation } from "@osdk/react/experimental";
 import React, { memo, useCallback, useMemo } from "react";
-import type { NullValueWrapperClassNames } from "../../types/ClassNameOverrides.js";
 
 interface NullValueWrapperProps<
   Q extends ObjectTypeDefinition,
@@ -32,14 +31,10 @@ interface NullValueWrapperProps<
   propertyKey: K;
   includeNull?: boolean;
   onIncludeNullChange: (include: boolean) => void;
-  /**
-   * WhereClause from other filters to chain aggregation queries.
-   * When provided, the aggregation will respect other active filters.
-   */
-  whereClause?: WhereClause<Q>;
   showNullCount?: boolean;
   children: React.ReactNode;
-  classNames?: NullValueWrapperClassNames;
+  className?: string;
+  style?: React.CSSProperties;
 }
 
 function NullValueWrapperInner<
@@ -50,25 +45,25 @@ function NullValueWrapperInner<
   propertyKey,
   includeNull = false,
   onIncludeNullChange,
-  whereClause,
   showNullCount = true,
   children,
-  classNames,
+  className,
+  style,
 }: NullValueWrapperProps<Q, K>): React.ReactElement {
-  // Aggregate to count null values
   const nullCountAggregateOptions = useMemo(
     () =>
       ({
         $select: { $count: "unordered" as const },
-        $where: {
-          [propertyKey as string]: { $isNull: true },
-        },
       }) as AggregateOpts<Q>,
-    [propertyKey],
+    [],
   );
 
+  const nullWhereClause = useMemo(() => {
+    return { [propertyKey as string]: { $isNull: true } } as WhereClause<Q>;
+  }, [propertyKey]);
+
   const { data: nullCountData, isLoading } = useOsdkAggregation(objectType, {
-    where: whereClause,
+    where: nullWhereClause,
     aggregate: nullCountAggregateOptions,
   });
 
@@ -85,26 +80,30 @@ function NullValueWrapperInner<
     onIncludeNullChange(!includeNull);
   }, [includeNull, onIncludeNullChange]);
 
+  const rootClassName = className
+    ? `filter-input__null-wrapper ${className}`
+    : "filter-input__null-wrapper";
+
   return (
-    <div className={classNames?.root}>
+    <div className={rootClassName} style={style}>
       {children}
 
       <div
-        className={classNames?.nullValueRow}
+        className="filter-input__null-value-row"
         data-checked={includeNull}
         data-loading={isLoading}
       >
-        <label className={classNames?.checkbox}>
+        <label className="bp6-control bp6-checkbox">
           <input
             type="checkbox"
             checked={includeNull}
             onChange={handleToggle}
           />
-          <span className={classNames?.checkboxIndicator} />
-          <span className={classNames?.label}>No value</span>
+          <span className="bp6-control-indicator" />
+          <span className="filter-input__null-label">No value</span>
         </label>
         {showNullCount && nullCount > 0 && (
-          <span className={classNames?.count}>
+          <span className="filter-input__count">
             {nullCount.toLocaleString()}
           </span>
         )}

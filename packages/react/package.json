@@ -1,6 +1,6 @@
 {
   "name": "@osdk/react",
-  "version": "0.9.0-beta.3",
+  "version": "0.9.0-beta.4",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -60,6 +60,7 @@
     "@osdk/api": "workspace:*",
     "@osdk/client": "workspace:*",
     "@osdk/client.test.ontology": "workspace:*",
+    "@osdk/foundry": "latest",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@testing-library/react": "^16.3.0",

@@ -15,12 +15,11 @@
  */
 
 import type {
+  ObjectSet,
   ObjectTypeDefinition,
   PropertyKeys,
-  WhereClause,
 } from "@osdk/api";
 import React, { memo } from "react";
-import type { NumberRangeInputClassNames } from "../../types/ClassNameOverrides.js";
 import { RangeInput, type RangeInputConfig } from "./RangeInput.js";
 
 function formatNumber(value: number | undefined): string {
@@ -56,9 +55,10 @@ interface NumberRangeInputProps<
   minValue: number | undefined;
   maxValue: number | undefined;
   onChange: (min: number | undefined, max: number | undefined) => void;
-  whereClause?: WhereClause<Q>;
+  objectSet?: ObjectSet<Q>;
   showHistogram?: boolean;
-  classNames?: NumberRangeInputClassNames;
+  className?: string;
+  style?: React.CSSProperties;
 }
 
 function NumberRangeInputInner<

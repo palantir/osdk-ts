@@ -15,51 +15,19 @@
  */
 
 import type { ObjectTypeDefinition } from "@osdk/api";
-import React, { useCallback, useEffect } from "react";
-import type { FilterListProps } from "../FilterListApi.js";
+import React, { useCallback, useEffect, useMemo } from "react";
+import type { FilterDefinitionUnion, FilterListProps } from "../FilterListApi.js";
 import { useFilterListState } from "../hooks/useFilterListState.js";
 import type { FilterListClassNames } from "../types/ClassNameOverrides.js";
 import { mergeClassNames } from "../types/ClassNameOverrides.js";
-import type { FilterListTheme } from "../types/FilterThemeTypes.js";
 import { FilterListContent } from "./FilterListContent.js";
 import { FilterListHeader } from "./FilterListHeader.js";
 
 export interface FilterListComponentProps<Q extends ObjectTypeDefinition>
-  extends FilterListProps<Q>
-{
+  extends FilterListProps<Q> {
   classNames?: FilterListClassNames;
   renderAddFilterButton?: () => React.ReactNode;
-}
-
-function themeToStyle(
-  theme: FilterListTheme | undefined,
-): React.CSSProperties | undefined {
-  if (!theme) return undefined;
-
-  const style: React.CSSProperties & Record<`--${string}`, string> = {};
-
-  if (theme.panelBgColor) style["--filter-panel-bg-color"] = theme.panelBgColor;
-  if (theme.itemBgColor) style["--filter-item-bg-color"] = theme.itemBgColor;
-  if (theme.itemHoverBgColor) {
-    style["--filter-item-hover-bg-color"] = theme.itemHoverBgColor;
-  }
-  if (theme.itemActiveBgColor) {
-    style["--filter-item-active-bg-color"] = theme.itemActiveBgColor;
-  }
-  if (theme.panelBorderColor) {
-    style["--filter-panel-border-color"] = theme.panelBorderColor;
-  }
-  if (theme.histogramColor) {
-    style["--filter-histogram-color"] = theme.histogramColor;
-  }
-  if (theme.countTextColor) {
-    style["--filter-count-text-color"] = theme.countTextColor;
-  }
-  if (theme.headerBgColor) {
-    style["--filter-header-bg-color"] = theme.headerBgColor;
-  }
-
-  return Object.keys(style).length > 0 ? style : undefined;
+  style?: React.CSSProperties;
 }
 
 export function FilterList<Q extends ObjectTypeDefinition>(
@@ -76,22 +44,17 @@ export function FilterList<Q extends ObjectTypeDefinition>(
     showAddFilterButton = false,
     addFilterPosition = "fixed",
     showActiveFilterCount = false,
-    layoutMode = "vertical",
-    theme,
     className,
     classNames,
     renderAddFilterButton,
+    style,
   } = props;
 
-  // Extract objectType from objectSet for internal use
   const objectType = objectSet.$objectSetInternals.def;
 
   const {
-    collapsed,
-    setCollapsed,
     filterStates,
     setFilterState,
-    resetFilterState,
     whereClause,
     activeFilterCount,
     reset,
@@ -106,56 +69,60 @@ export function FilterList<Q extends ObjectTypeDefinition>(
     onReset?.();
   }, [reset, onReset]);
 
+  const visibleFilterDefinitions = useMemo(() => {
+    if (!filterDefinitions) return undefined;
+    return filterDefinitions.filter(
+      (def: FilterDefinitionUnion<Q>) => def.isVisible !== false,
+    );
+  }, [filterDefinitions]);
+
   const rootClassName = mergeClassNames(
+    "filter-list",
     classNames?.root,
     className,
   );
 
+  const showHeader = title || titleIcon || showResetButton || showActiveFilterCount;
+
   return (
     <div
       className={rootClassName}
-      style={themeToStyle(theme)}
-      data-collapsed={collapsed}
+      style={style}
       data-active-count={activeFilterCount}
-      data-layout-mode={layoutMode}
     >
-      <FilterListHeader
-        title={title}
-        titleIcon={titleIcon}
-        collapsed={collapsed}
-        onCollapsedChange={setCollapsed}
-        showResetButton={showResetButton}
-        onReset={handleReset}
-        showActiveFilterCount={showActiveFilterCount}
-        activeFilterCount={activeFilterCount}
-        classNames={classNames}
-      />
-
-      {!collapsed && (
-        <>
-          <FilterListContent
-            objectType={objectType}
-            objectSet={objectSet}
-            filterDefinitions={filterDefinitions}
-            filterStates={filterStates}
-            onFilterStateChanged={setFilterState}
-            onResetFilterState={resetFilterState}
-            classNames={classNames}
-          />
-
-          {showAddFilterButton && addFilterPosition === "inline"
-            && renderAddFilterButton && (
-            <div
-              className={classNames?.addButtonContainer}
-              data-position="inline"
-            >
-              {renderAddFilterButton()}
-            </div>
-          )}
-        </>
+      {showHeader && (
+        <FilterListHeader
+          title={title}
+          titleIcon={titleIcon}
+          collapsed={false}
+          onCollapsedChange={() => {}}
+          showResetButton={showResetButton}
+          onReset={handleReset}
+          showActiveFilterCount={showActiveFilterCount}
+          activeFilterCount={activeFilterCount}
+          classNames={classNames}
+        />
       )}
 
-      {showAddFilterButton && addFilterPosition === "fixed" && !collapsed
+      <FilterListContent
+        objectType={objectType}
+        objectSet={objectSet}
+        filterDefinitions={visibleFilterDefinitions}
+        filterStates={filterStates}
+        onFilterStateChanged={setFilterState}
+      />
+
+      {showAddFilterButton && addFilterPosition === "inline"
+        && renderAddFilterButton && (
+        <div
+          className={classNames?.addButtonContainer}
+          data-position="inline"
+        >
+          {renderAddFilterButton()}
+        </div>
+      )}
+
+      {showAddFilterButton && addFilterPosition === "fixed"
         && renderAddFilterButton && (
         <div className={classNames?.addButtonContainer} data-position="fixed">
           {renderAddFilterButton()}

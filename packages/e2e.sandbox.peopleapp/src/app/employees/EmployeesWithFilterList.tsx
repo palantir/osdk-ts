@@ -15,127 +15,21 @@
  */
 
 import { Icon } from "@blueprintjs/core";
-import type { IconName } from "@blueprintjs/icons";
 import "@blueprintjs/core/lib/css/blueprint.css";
 import "@blueprintjs/icons/lib/css/blueprint-icons.css";
 import type { WhereClause } from "@osdk/api";
 import {
   FilterList,
-  type FilterTemplate,
-  type PropertyFilterDefinition,
+  type FilterDefinitionUnion,
 } from "@osdk/react-components/experimental";
 import { useOsdkObjects } from "@osdk/react/experimental";
 import "@osdk/react-components/styles/FilterListBundle.css";
-import { useCallback, useState } from "react";
+import { useState } from "react";
 
 import { List } from "../../components/List.js";
 import { ListItem } from "../../components/ListItem.js";
 import { $ } from "../../foundryClient.js";
 import { Employee } from "../../generatedNoCheck2/index.js";
-
-type FilterablePropertyKeys =
-  | "department"
-  | "businessTitle"
-  | "workerType"
-  | "locationCity"
-  | "team"
-  | "locationCountry"
-  | "jobTitle"
-  | "businessArea";
-
-interface ActiveFilterInstance
-  extends PropertyFilterDefinition<Employee, FilterablePropertyKeys>
-{
-  instanceId: string;
-}
-
-const FILTER_TEMPLATES: FilterTemplate[] = [
-  {
-    id: "department",
-    label: "Department",
-    key: "department",
-    filterComponent: "CHECKBOX_LIST",
-    icon: "office",
-    dataIndicator: "histogram",
-    showSelectAll: true,
-    allowMultiple: true,
-    category: "SINGLE_PROPERTY",
-  },
-  {
-    id: "businessTitle",
-    label: "Business Title",
-    key: "businessTitle",
-    filterComponent: "CONTAINS_TEXT",
-    icon: "id-number",
-    allowMultiple: true,
-    category: "SINGLE_PROPERTY",
-  },
-  {
-    id: "workerType",
-    label: "Worker Type",
-    key: "workerType",
-    filterComponent: "CHECKBOX_LIST",
-    icon: "people",
-    dataIndicator: "histogram",
-    showSelectAll: true,
-    allowMultiple: true,
-    category: "SINGLE_PROPERTY",
-  },
-  {
-    id: "locationCity",
-    label: "City",
-    key: "locationCity",
-    filterComponent: "CHECKBOX_LIST",
-    icon: "map-marker",
-    dataIndicator: "histogram",
-    showSelectAll: true,
-    maxVisibleItems: 5,
-    allowMultiple: true,
-    category: "SINGLE_PROPERTY",
-  },
-  {
-    id: "team",
-    label: "Team",
-    key: "team",
-    filterComponent: "CHECKBOX_LIST",
-    icon: "people",
-    dataIndicator: "histogram",
-    showSelectAll: true,
-    allowMultiple: true,
-    category: "SINGLE_PROPERTY",
-  },
-  {
-    id: "locationCountry",
-    label: "Country",
-    key: "locationCountry",
-    filterComponent: "CHECKBOX_LIST",
-    icon: "globe",
-    dataIndicator: "count",
-    showSelectAll: true,
-    allowMultiple: true,
-    category: "SINGLE_PROPERTY",
-  },
-  {
-    id: "jobTitle",
-    label: "Job Title",
-    key: "jobTitle",
-    filterComponent: "CONTAINS_TEXT",
-    icon: "briefcase",
-    allowMultiple: true,
-    category: "SINGLE_PROPERTY",
-  },
-  {
-    id: "businessArea",
-    label: "Business Area",
-    key: "businessArea",
-    filterComponent: "CHECKBOX_LIST",
-    icon: "diagram-tree",
-    dataIndicator: "none",
-    showSelectAll: true,
-    allowMultiple: true,
-    category: "SINGLE_PROPERTY",
-  },
-];
 
 interface EmployeeListItemProps {
   item: Employee.OsdkInstance;
@@ -171,118 +65,55 @@ interface EmployeesWithFilterListProps {
   onSelect: (employee: Employee.OsdkInstance) => void;
 }
 
-function getInitialFilterState(component: string) {
-  switch (component) {
-    case "CHECKBOX_LIST":
-      return { type: "CHECKBOX_LIST" as const, selectedValues: [] };
-    case "CONTAINS_TEXT":
-      return { type: "CONTAINS_TEXT" as const, value: undefined };
-    default:
-      return { type: "CHECKBOX_LIST" as const, selectedValues: [] };
-  }
-}
-
-function createFilterInstance(
-  template: FilterTemplate,
-  instanceNum?: number,
-  handlers?: {
-    onResetFilter: (instanceId: string) => void;
-    onRemoveFilter: (instanceId: string) => void;
-  },
-): ActiveFilterInstance {
-  const instanceId = `${template.key}-${Date.now()}-${Math.random()}`;
-  const label = instanceNum
-    ? `${template.label} (${instanceNum})`
-    : template.label;
-
-  return {
+const FILTER_DEFINITIONS: FilterDefinitionUnion<Employee>[] = [
+  {
     type: "property",
-    key: template.key as FilterablePropertyKeys,
-    label,
-    filterComponent: template.filterComponent as PropertyFilterDefinition<
-      Employee,
-      FilterablePropertyKeys
-    >["filterComponent"],
-    filterState: getInitialFilterState(template.filterComponent),
-    icon: typeof template.icon === "string"
-      ? <Icon icon={template.icon as IconName} />
-      : template.icon,
-    dataIndicator: template.dataIndicator,
-    showSelectAll: template.showSelectAll,
-    maxVisibleItems: template.maxVisibleItems,
+    id: "department",
+    key: "department",
+    label: "Department",
+    filterComponent: "CHECKBOX_LIST",
+    filterState: { type: "CHECKBOX_LIST", selectedValues: [] },
+    icon: <Icon icon="office" />,
+    dataIndicator: "histogram",
+    showSelectAll: true,
     showOverflowMenu: true,
-    onResetFilter: handlers
-      ? () => handlers.onResetFilter(instanceId)
-      : undefined,
-    onRemoveFilter: handlers
-      ? () => handlers.onRemoveFilter(instanceId)
-      : undefined,
-    instanceId,
-  };
-}
+  } as FilterDefinitionUnion<Employee>,
+  {
+    type: "property",
+    id: "businessTitle",
+    key: "businessTitle",
+    label: "Business Title",
+    filterComponent: "CONTAINS_TEXT",
+    filterState: { type: "CONTAINS_TEXT", value: undefined },
+    icon: <Icon icon="id-number" />,
+    showOverflowMenu: true,
+  } as FilterDefinitionUnion<Employee>,
+  {
+    type: "property",
+    id: "locationCity",
+    key: "locationCity",
+    label: "City",
+    filterComponent: "CHECKBOX_LIST",
+    filterState: { type: "CHECKBOX_LIST", selectedValues: [] },
+    icon: <Icon icon="map-marker" />,
+    dataIndicator: "histogram",
+    showSelectAll: true,
+    maxVisibleItems: 5,
+    showOverflowMenu: true,
+  } as FilterDefinitionUnion<Employee>,
+  {
+    type: "linkedProperty",
+    id: "office-name",
+    linkName: "primaryOffice",
+    linkedPropertyKey: "name",
+    linkedFilterComponent: "CHECKBOX_LIST",
+    linkedFilterState: { type: "CHECKBOX_LIST", selectedValues: [], isExcluding: false },
+    label: "Office Name",
+  } as FilterDefinitionUnion<Employee>,
+];
 
 export function EmployeesWithFilterList(props: EmployeesWithFilterListProps) {
   const [whereClause, setWhereClause] = useState<WhereClause<Employee>>({});
-
-  const [activeFilters, setActiveFilters] = useState<ActiveFilterInstance[]>(
-    () => {
-      const handlers = {
-        onResetFilter: (instanceId: string) => {
-          setActiveFilters((prev) =>
-            prev.map((filter) =>
-              filter.instanceId === instanceId
-                ? {
-                  ...filter,
-                  filterState: getInitialFilterState(filter.filterComponent),
-                }
-                : filter
-            )
-          );
-        },
-        onRemoveFilter: (instanceId: string) => {
-          setActiveFilters((prev) =>
-            prev.filter((f) => f.instanceId !== instanceId)
-          );
-        },
-      };
-
-      return [
-        createFilterInstance(FILTER_TEMPLATES[0], undefined, handlers),
-        createFilterInstance(FILTER_TEMPLATES[1], undefined, handlers),
-      ];
-    },
-  );
-
-  const handleAddFilter = useCallback(
-    (template: FilterTemplate) => {
-      const handlers = {
-        onResetFilter: (instanceId: string) => {
-          setActiveFilters((prev) =>
-            prev.map((filter) =>
-              filter.instanceId === instanceId
-                ? {
-                  ...filter,
-                  filterState: getInitialFilterState(filter.filterComponent),
-                }
-                : filter
-            )
-          );
-        },
-        onRemoveFilter: (instanceId: string) => {
-          setActiveFilters((prev) =>
-            prev.filter((f) => f.instanceId !== instanceId)
-          );
-        },
-      };
-
-      const currentCount =
-        activeFilters.filter((f) => f.key === template.key).length;
-      const instanceNum = currentCount > 0 ? currentCount + 1 : undefined;
-      const newFilter = createFilterInstance(template, instanceNum, handlers);
-      setActiveFilters((prev) => [...prev, newFilter]);
-    },
-    [activeFilters],
-  );
 
   const employees = useOsdkObjects(Employee, {
     where: whereClause,
@@ -295,15 +126,8 @@ export function EmployeesWithFilterList(props: EmployeesWithFilterListProps) {
       <div style={{ display: "flex", gap: "16px", height: "100%" }}>
         <FilterList
           objectSet={$(Employee)}
-          filterDefinitions={activeFilters}
+          filterDefinitions={FILTER_DEFINITIONS}
           onFilterClauseChanged={setWhereClause}
-          title="Employee Filters"
-          showResetButton
-          showActiveFilterCount
-          showAddFilterButton
-          filterTemplates={FILTER_TEMPLATES}
-          onFilterTemplateSelected={handleAddFilter}
-          persistenceKey="employee-filters-demo"
         />
 
         <div style={{ flex: 1, overflow: "auto" }}>

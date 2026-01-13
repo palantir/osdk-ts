@@ -15,24 +15,29 @@
  */
 
 import React, { memo } from "react";
-import type { ToggleInputClassNames } from "../../types/ClassNameOverrides.js";
 
 interface ToggleInputProps {
   enabled: boolean;
   onChange: (enabled: boolean) => void;
   label?: string;
-  classNames?: ToggleInputClassNames;
+  className?: string;
+  style?: React.CSSProperties;
 }
 
 function ToggleInputInner({
   enabled,
   onChange,
   label,
-  classNames,
+  className,
+  style,
 }: ToggleInputProps): React.ReactElement {
+  const rootClassName = className
+    ? `filter-input--toggle ${className}`
+    : "filter-input--toggle";
+
   return (
-    <div className={classNames?.root} data-enabled={enabled}>
-      <label className={classNames?.switch}>
+    <div className={rootClassName} style={style} data-enabled={enabled}>
+      <label className="bp6-control bp6-switch">
         <input
           type="checkbox"
           role="switch"
@@ -40,8 +45,8 @@ function ToggleInputInner({
           checked={enabled}
           onChange={(e) => onChange(e.target.checked)}
         />
-        <span className={classNames?.switchIndicator} />
-        <span className={classNames?.label}>{label}</span>
+        <span className="bp6-control-indicator" />
+        {label}
       </label>
     </div>
   );

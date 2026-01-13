@@ -62,6 +62,11 @@ export interface CustomFilterDefinition<
 > {
   type: "custom";
   /**
+   * Optional unique identifier for stable keying across filter reorders.
+   * If provided, takes precedence over `key` for state keying.
+   */
+  id?: string;
+  /**
    * Unique key for this custom filter
    */
   key: string;
@@ -88,4 +93,10 @@ export interface CustomFilterDefinition<
    * Required for the filter to affect the object set
    */
   toWhereClause: (state: State) => WhereClause<Q> | undefined;
+  /**
+   * Controls whether this filter is rendered.
+   * When false, the filter is hidden but its state is preserved.
+   * @default true
+   */
+  isVisible?: boolean;
 }

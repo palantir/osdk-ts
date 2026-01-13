@@ -17,11 +17,9 @@
 import type {
   ObjectTypeDefinition,
   PropertyKeys,
-  WhereClause,
 } from "@osdk/api";
 import React, { memo, useCallback, useMemo, useState } from "react";
 import { usePropertyAggregation } from "../../hooks/usePropertyAggregation.js";
-import type { ListogramInputClassNames } from "../../types/ClassNameOverrides.js";
 
 interface ListogramInputProps<
   Q extends ObjectTypeDefinition,
@@ -31,8 +29,8 @@ interface ListogramInputProps<
   propertyKey: K;
   selectedValues: string[];
   onChange: (values: string[]) => void;
-  whereClause?: WhereClause<Q>;
-  classNames?: ListogramInputClassNames;
+  className?: string;
+  style?: React.CSSProperties;
   maxVisibleItems?: number;
   barColor?: string;
   selectedBarColor?: string;
@@ -46,8 +44,8 @@ function ListogramInputInner<
   propertyKey,
   selectedValues,
   onChange,
-  whereClause,
-  classNames,
+  className,
+  style,
   maxVisibleItems,
   barColor,
   selectedBarColor,
@@ -57,7 +55,7 @@ function ListogramInputInner<
   const { data: values, maxCount, isLoading, error } = usePropertyAggregation(
     objectType,
     propertyKey,
-    { whereClause },
+    {},
   );
 
   const toggleValue = useCallback(
@@ -78,28 +76,32 @@ function ListogramInputInner<
 
   const hasMore = maxVisibleItems != null && values.length > maxVisibleItems;
 
+  const rootClassName = className
+    ? `filter-input--listogram ${className}`
+    : "filter-input--listogram";
+
   return (
-    <div className={classNames?.root} data-loading={isLoading}>
+    <div className={rootClassName} style={style} data-loading={isLoading}>
       {isLoading && (
-        <div className={classNames?.loadingMessage}>
+        <div className="filter-input__loading-message">
           Loading values...
         </div>
       )}
 
       {error && (
-        <div className={classNames?.errorMessage}>
+        <div className="filter-input__error-message">
           Error loading values: {error.message}
         </div>
       )}
 
       {!isLoading && !error && values.length === 0 && (
-        <div className={classNames?.emptyMessage}>
+        <div className="filter-input__empty-message">
           No values available
         </div>
       )}
 
       {values.length > 0 && (
-        <div className={classNames?.barContainer}>
+        <div className="filter-input__listogram-container">
           {displayValues.map(({ value, count }) => {
             const isSelected = selectedValues.includes(value);
             const percentage = maxCount > 0 ? (count / maxCount) * 100 : 0;
@@ -111,8 +113,8 @@ function ListogramInputInner<
               <button
                 key={value}
                 type="button"
-                className={`${classNames?.barRow ?? ""} ${
-                  isSelected ? classNames?.barRowSelected ?? "" : ""
+                className={`filter-input__listogram-row ${
+                  isSelected ? "filter-input__listogram-row--selected" : ""
                 }`}
                 onClick={() => toggleValue(value)}
                 aria-pressed={isSelected}
@@ -122,14 +124,14 @@ function ListogramInputInner<
                   } as React.CSSProperties
                 }
               >
-                <span className={classNames?.barLabel}>{value}</span>
-                <span className={classNames?.bar}>
+                <span className="filter-input__listogram-label">{value}</span>
+                <span className="filter-input__listogram-bar">
                   <span
-                    className={classNames?.barFill}
+                    className="filter-input__listogram-bar-fill"
                     style={{ width: `${percentage}%` }}
                   />
                 </span>
-                <span className={classNames?.barCount}>
+                <span className="filter-input__count">
                   {count.toLocaleString()}
                 </span>
               </button>
@@ -139,7 +141,7 @@ function ListogramInputInner<
           {hasMore && !isExpanded && (
             <button
               type="button"
-              className={classNames?.barRow}
+              className="filter-input__listogram-row"
               onClick={() => setIsExpanded(true)}
             >
               View all ({values.length})

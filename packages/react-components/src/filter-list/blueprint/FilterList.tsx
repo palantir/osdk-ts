@@ -14,56 +14,15 @@
  * limitations under the License.
  */
 
-import { Button, Menu, MenuItem, Popover } from "@blueprintjs/core";
+import { Button, Popover } from "@blueprintjs/core";
 import type { ObjectTypeDefinition } from "@osdk/api";
 import React, { useCallback, useMemo, useState } from "react";
 import { FilterList as BaseFilterList } from "../base/FilterList.js";
-import type {
-  FilterDefinitionUnion,
-  FilterListProps,
-} from "../FilterListApi.js";
-import type { OverflowMenuRenderProps } from "../FilterListItemApi.js";
+import type { FilterListProps } from "../FilterListApi.js";
 import type { FilterTemplate } from "../types/AddFilterMenuTypes.js";
 import { mergeClassNames } from "../types/ClassNameOverrides.js";
 import { AddFilterMenu } from "./AddFilterMenu.js";
 import { filterListClassNames } from "./classNames.js";
-
-function OverflowMenu({
-  renderProps,
-}: {
-  renderProps: OverflowMenuRenderProps;
-}): React.ReactElement {
-  return (
-    <Popover
-      content={
-        <Menu>
-          <MenuItem
-            icon="reset"
-            text="Reset filter"
-            onClick={() => renderProps.onResetFilter?.()}
-          />
-          <MenuItem
-            icon="cross"
-            text="Remove filter"
-            intent="danger"
-            onClick={() => renderProps.onRemoveFilter?.()}
-          />
-        </Menu>
-      }
-      placement="bottom-end"
-      isOpen={renderProps.isOpen}
-      onClose={renderProps.onClose}
-    >
-      <Button
-        icon="more"
-        variant="minimal"
-        size="small"
-        aria-label="More options"
-        onClick={renderProps.onToggle}
-      />
-    </Popover>
-  );
-}
 
 export function FilterList<Q extends ObjectTypeDefinition>(
   props: FilterListProps<Q>,
@@ -91,31 +50,6 @@ export function FilterList<Q extends ObjectTypeDefinition>(
       }
       return acc;
     }, {});
-  }, [filterDefinitions]);
-
-  // Wrap filter definitions to inject default overflow menu renderer
-  const wrappedFilterDefinitions = useMemo(():
-    | Array<FilterDefinitionUnion<Q>>
-    | undefined =>
-  {
-    if (!filterDefinitions) return undefined;
-
-    return filterDefinitions.map((def) => {
-      // Only inject for property filters that want overflow menu but don't have custom renderer
-      if (
-        def.type === "property"
-        && def.showOverflowMenu
-        && !def.renderOverflowMenu
-      ) {
-        return {
-          ...def,
-          renderOverflowMenu: (renderProps: OverflowMenuRenderProps) => (
-            <OverflowMenu renderProps={renderProps} />
-          ),
-        };
-      }
-      return def;
-    });
   }, [filterDefinitions]);
 
   const handleSelectFilter = useCallback(
@@ -159,12 +93,12 @@ export function FilterList<Q extends ObjectTypeDefinition>(
   return (
     <BaseFilterList
       {...restProps}
-      filterDefinitions={wrappedFilterDefinitions}
+      filterDefinitions={filterDefinitions}
       showAddFilterButton={showAddFilterButton}
       classNames={mergedClassNames}
-      renderAddFilterButton={showAddFilterButton && filterTemplates
-        ? renderAddFilterButton
-        : undefined}
+      renderAddFilterButton={
+        showAddFilterButton && filterTemplates ? renderAddFilterButton : undefined
+      }
     />
   );
 }

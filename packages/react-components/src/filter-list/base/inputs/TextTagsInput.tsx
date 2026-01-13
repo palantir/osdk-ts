@@ -17,11 +17,9 @@
 import type {
   ObjectTypeDefinition,
   PropertyKeys,
-  WhereClause,
 } from "@osdk/api";
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { usePropertyAggregation } from "../../hooks/usePropertyAggregation.js";
-import type { TextTagsInputClassNames } from "../../types/ClassNameOverrides.js";
 
 interface TextTagsInputProps<
   Q extends ObjectTypeDefinition,
@@ -31,8 +29,8 @@ interface TextTagsInputProps<
   propertyKey: K;
   tags: string[];
   onChange: (tags: string[]) => void;
-  whereClause?: WhereClause<Q>;
-  classNames?: TextTagsInputClassNames;
+  className?: string;
+  style?: React.CSSProperties;
   placeholder?: string;
   allowCustomTags?: boolean;
   suggestFromData?: boolean;
@@ -46,8 +44,8 @@ function TextTagsInputInner<
   propertyKey,
   tags,
   onChange,
-  whereClause,
-  classNames,
+  className,
+  style,
   placeholder = "Add a tag...",
   allowCustomTags = true,
   suggestFromData = true,
@@ -65,7 +63,7 @@ function TextTagsInputInner<
   const { data: suggestions, isLoading, error } = usePropertyAggregation(
     objectType,
     propertyKey,
-    { whereClause, limit: suggestFromData ? 50 : 0 },
+    { limit: suggestFromData ? 50 : 0 },
   );
 
   const filteredSuggestions = useMemo(() => {
@@ -131,21 +129,25 @@ function TextTagsInputInner<
     [tags, onChange],
   );
 
+  const rootClassName = className
+    ? `filter-input--text-tags ${className}`
+    : "filter-input--text-tags";
+
   return (
-    <div className={classNames?.root} data-loading={isLoading}>
+    <div className={rootClassName} style={style} data-loading={isLoading}>
       {error && (
-        <div className={classNames?.errorMessage}>
+        <div className="filter-input__error-message">
           Error loading suggestions: {error.message}
         </div>
       )}
 
-      <div className={classNames?.tagContainer}>
+      <div className="filter-input__tag-container">
         {tags.map((tag) => (
-          <span key={tag} className={classNames?.tag}>
+          <span key={tag} className="filter-input__tag">
             {tag}
             <button
               type="button"
-              className={classNames?.tagRemoveButton}
+              className="filter-input__tag-remove"
               onClick={() => removeTag(tag)}
               aria-label={`Remove ${tag}`}
             >
@@ -155,10 +157,10 @@ function TextTagsInputInner<
         ))}
       </div>
 
-      <div className={classNames?.inputContainer}>
+      <div className="filter-input__input-container">
         <input
           type="text"
-          className={classNames?.input}
+          className="filter-input__input"
           placeholder={tags.length > 0 ? "" : placeholder}
           value={inputValue}
           onChange={(e) => {
@@ -169,7 +171,6 @@ function TextTagsInputInner<
           onPaste={handlePaste}
           onFocus={() => setShowSuggestions(true)}
           onBlur={() => {
-            // Delay to allow click on suggestion
             setTimeout(() => {
               if (isMountedRef.current) {
                 setShowSuggestions(false);
@@ -180,12 +181,12 @@ function TextTagsInputInner<
         />
 
         {showSuggestions && filteredSuggestions.length > 0 && (
-          <ul className={classNames?.suggestionList}>
+          <ul className="filter-input__suggestion-list">
             {filteredSuggestions.map(({ value, count }) => (
               <li key={value}>
                 <button
                   type="button"
-                  className={classNames?.suggestionItem}
+                  className="filter-input__suggestion-item"
                   onMouseDown={() => addTag(value)}
                 >
                   {value} ({count.toLocaleString()})
@@ -197,7 +198,7 @@ function TextTagsInputInner<
       </div>
 
       {isLoading && suggestFromData && (
-        <div className={classNames?.loadingMessage}>
+        <div className="filter-input__loading-message">
           Loading suggestions...
         </div>
       )}

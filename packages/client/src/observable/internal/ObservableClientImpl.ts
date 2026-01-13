@@ -40,10 +40,11 @@ import type {
   ObservableClient,
   ObserveAggregationArgs,
   ObserveAggregationOptions,
+  ObserveAggregationOptionsWithObjectSet,
   ObserveListOptions,
-  ObserveObjectArgs,
+  ObserveObjectCallbackArgs,
   ObserveObjectOptions,
-  ObserveObjectsArgs,
+  ObserveObjectsCallbackArgs,
   ObserveObjectSetArgs,
   Unsubscribable,
 } from "../ObservableClient.js";
@@ -77,7 +78,7 @@ export class ObservableClientImpl implements ObservableClient {
     apiName: T["apiName"] | T,
     pk: PrimaryKeyType<T>,
     options: Omit<ObserveObjectOptions<T>, "apiName" | "pk">,
-    subFn: Observer<ObserveObjectArgs<T>>,
+    subFn: Observer<ObserveObjectCallbackArgs<T>>,
   ) => Unsubscribable = (apiName, pk, options, subFn) => {
     return this.__experimentalStore.objects.observe(
       {
@@ -95,7 +96,7 @@ export class ObservableClientImpl implements ObservableClient {
     RDPs extends Record<string, SimplePropertyDef> = {},
   >(
     options: ObserveListOptions<T, RDPs>,
-    subFn: Observer<ObserveObjectsArgs<T>>,
+    subFn: Observer<ObserveObjectsCallbackArgs<T, RDPs>>,
   ) => Unsubscribable = (options, subFn) => {
     return this.__experimentalStore.lists.observe(
       options,
@@ -104,26 +105,43 @@ export class ObservableClientImpl implements ObservableClient {
     );
   };
 
-  public observeAggregation: <
+  public observeAggregation<
     T extends ObjectOrInterfaceDefinition,
     A extends AggregateOpts<T>,
     RDPs extends Record<string, SimplePropertyDef> = {},
   >(
     options: ObserveAggregationOptions<T, A, RDPs>,
     subFn: Observer<ObserveAggregationArgs<T, A>>,
-  ) => Unsubscribable = <
+  ): Unsubscribable;
+  public observeAggregation<
     T extends ObjectOrInterfaceDefinition,
     A extends AggregateOpts<T>,
     RDPs extends Record<string, SimplePropertyDef> = {},
   >(
-    options: ObserveAggregationOptions<T, A, RDPs>,
+    options: ObserveAggregationOptionsWithObjectSet<T, A, RDPs>,
     subFn: Observer<ObserveAggregationArgs<T, A>>,
-  ) => {
+  ): Promise<Unsubscribable>;
+  public observeAggregation<
+    T extends ObjectOrInterfaceDefinition,
+    A extends AggregateOpts<T>,
+    RDPs extends Record<string, SimplePropertyDef> = {},
+  >(
+    options:
+      | ObserveAggregationOptions<T, A, RDPs>
+      | ObserveAggregationOptionsWithObjectSet<T, A, RDPs>,
+    subFn: Observer<ObserveAggregationArgs<T, A>>,
+  ): Unsubscribable | Promise<Unsubscribable> {
+    if (options.objectSet) {
+      return this.__experimentalStore.aggregations.observeAsync(
+        options as ObserveAggregationOptionsWithObjectSet<T, A, RDPs>,
+        subFn as Observer<AggregationPayloadBase>,
+      );
+    }
     return this.__experimentalStore.aggregations.observe(
-      options,
+      options as ObserveAggregationOptions<T, A, RDPs>,
       subFn as Observer<AggregationPayloadBase>,
     );
-  };
+  }
 
   public observeLinks: <
     T extends ObjectTypeDefinition | InterfaceDefinition,

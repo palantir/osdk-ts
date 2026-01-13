@@ -16,9 +16,9 @@
 
 import type {
   AggregateOpts,
+  ObjectSet,
   ObjectTypeDefinition,
   PropertyKeys,
-  WhereClause,
 } from "@osdk/api";
 import { useOsdkAggregation } from "@osdk/react/experimental";
 import { useMemo } from "react";
@@ -36,7 +36,7 @@ export interface UsePropertyAggregationResult {
 }
 
 export interface UsePropertyAggregationOptions<Q extends ObjectTypeDefinition> {
-  whereClause?: WhereClause<Q>;
+  objectSet?: ObjectSet<Q>;
   limit?: number;
 }
 
@@ -60,8 +60,8 @@ export function usePropertyAggregation<
   );
 
   const { data: countData, isLoading, error } = useOsdkAggregation(objectType, {
-    where: options?.whereClause,
     aggregate: aggregateOptions,
+    ...(options?.objectSet && { objectSet: options.objectSet }),
   });
 
   const result = useMemo((): { data: PropertyAggregationValue[]; maxCount: number } => {

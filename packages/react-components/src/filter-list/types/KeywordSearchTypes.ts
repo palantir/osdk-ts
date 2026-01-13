@@ -50,6 +50,10 @@ export interface KeywordSearchFilterDefinition<
 > {
   type: "keywordSearch";
   /**
+   * Optional unique identifier for stable keying across filter reorders.
+   */
+  id?: string;
+  /**
    * Properties to search within
    * - "all": Search all string properties
    * - K[]: Search specific string properties
@@ -67,4 +71,10 @@ export interface KeywordSearchFilterDefinition<
    * Used when filterState is not provided.
    */
   defaultFilterState?: KeywordSearchFilterState;
+  /**
+   * Controls whether this filter is rendered.
+   * When false, the filter is hidden but its state is preserved.
+   * @default true
+   */
+  isVisible?: boolean;
 }

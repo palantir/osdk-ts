@@ -16,6 +16,7 @@
 
 export { CheckboxListInput } from "./CheckboxListInput.js";
 export { ContainsTextInput } from "./ContainsTextInput.js";
+export { LinkedPropertyInput } from "./LinkedPropertyInput.js";
 export { DateRangeInput } from "./DateRangeInput.js";
 export { formatDateForDisplay, formatDateForInput, parseDateFromInput } from "./dateUtils.js";
 export { ListogramInput } from "./ListogramInput.js";

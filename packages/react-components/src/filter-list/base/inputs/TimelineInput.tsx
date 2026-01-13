@@ -15,7 +15,6 @@
  */
 
 import React, { memo, useCallback } from "react";
-import type { TimelineInputClassNames } from "../../types/ClassNameOverrides.js";
 import {
   formatDateForDisplay,
   formatDateForInput,
@@ -26,7 +25,8 @@ interface TimelineInputProps {
   startDate: Date | undefined;
   endDate: Date | undefined;
   onChange: (startDate: Date | undefined, endDate: Date | undefined) => void;
-  classNames?: TimelineInputClassNames;
+  className?: string;
+  style?: React.CSSProperties;
   minDate?: Date;
   maxDate?: Date;
 }
@@ -35,7 +35,8 @@ function TimelineInputInner({
   startDate,
   endDate,
   onChange,
-  classNames,
+  className,
+  style,
   minDate,
   maxDate,
 }: TimelineInputProps): React.ReactElement {
@@ -59,9 +60,13 @@ function TimelineInputInner({
     onChange(undefined, undefined);
   }, [onChange]);
 
+  const rootClassName = className
+    ? `filter-input--timeline ${className}`
+    : "filter-input--timeline";
+
   return (
-    <div className={classNames?.root}>
-      <div className={classNames?.rangeLabels}>
+    <div className={rootClassName} style={style}>
+      <div className="filter-input__timeline-labels">
         <span>{formatDateForDisplay(startDate, "—")}</span>
         <span>to</span>
         <span>{formatDateForDisplay(endDate, "—")}</span>
@@ -72,9 +77,10 @@ function TimelineInputInner({
         )}
       </div>
 
-      <div className={classNames?.brushContainer}>
+      <div className="filter-input__timeline-brush">
         <input
           type="date"
+          className="filter-input__input"
           value={formatDateForInput(startDate)}
           onChange={handleStartChange}
           min={minDate ? formatDateForInput(minDate) : undefined}
@@ -88,6 +94,7 @@ function TimelineInputInner({
         <span>—</span>
         <input
           type="date"
+          className="filter-input__input"
           value={formatDateForInput(endDate)}
           onChange={handleEndChange}
           min={startDate

@@ -15,13 +15,13 @@
  */
 
 import React, { memo, useCallback } from "react";
-import type { SingleDateInputClassNames } from "../../types/ClassNameOverrides.js";
 import { formatDateForInput, parseDateFromInput } from "./dateUtils.js";
 
 interface SingleDateInputProps {
   selectedDate: Date | undefined;
   onChange: (date: Date | undefined) => void;
-  classNames?: SingleDateInputClassNames;
+  className?: string;
+  style?: React.CSSProperties;
   minDate?: Date;
   maxDate?: Date;
   placeholder?: string;
@@ -31,7 +31,8 @@ interface SingleDateInputProps {
 function SingleDateInputInner({
   selectedDate,
   onChange,
-  classNames,
+  className,
+  style,
   minDate,
   maxDate,
   placeholder = "Select a date...",
@@ -49,12 +50,16 @@ function SingleDateInputInner({
     onChange(undefined);
   }, [onChange]);
 
+  const rootClassName = className
+    ? `filter-input--single-date ${className}`
+    : "filter-input--single-date";
+
   return (
-    <div className={classNames?.root}>
-      <div className={classNames?.inputContainer}>
+    <div className={rootClassName} style={style}>
+      <div className="filter-input__date-container">
         <input
           type="date"
-          className={classNames?.input}
+          className="filter-input__input"
           value={formatDateForInput(selectedDate)}
           onChange={handleChange}
           min={minDate ? formatDateForInput(minDate) : undefined}
@@ -65,7 +70,7 @@ function SingleDateInputInner({
         {showClearButton && selectedDate !== undefined && (
           <button
             type="button"
-            className={classNames?.clearButton}
+            className="filter-input__clear"
             onClick={handleClear}
             aria-label="Clear date"
           >

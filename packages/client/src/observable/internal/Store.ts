@@ -23,7 +23,6 @@ import type {
   Osdk,
   PrimaryKeyType,
 } from "@osdk/api";
-import invariant from "tiny-invariant";
 import type { ActionSignatureFromDef } from "../../actions/applyAction.js";
 import { additionalContext, type Client } from "../../Client.js";
 import { DEBUG_REFCOUNTS } from "../DebugFlags.js";
@@ -134,6 +133,7 @@ export class Store {
       this.cacheKeys,
       this.whereCanonicalizer,
       this.rdpCanonicalizer,
+      this.intersectCanonicalizer,
     );
     this.lists = new ListsHelper(
       this,

@@ -1,6 +1,6 @@
 {
   "name": "@osdk/react-components",
-  "version": "0.1.0-beta.0",
+  "version": "0.1.0-beta.1",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -72,10 +72,18 @@
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@osdk/react": "workspace:*",
+    "@tanstack/react-table": "^8.21.3",
+    "@tanstack/react-virtual": "^3.13.13",
+    "@testing-library/react": "^16.3.0",
     "@types/react": "^18.3.24",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "happy-dom": "^16.8.1",
+    "p-defer": "^4.0.1",
     "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "sass": "^1.83.0",
-    "typescript": "~5.5.4"
+    "typescript": "~5.5.4",
+    "vitest": "^3.2.4"
   },
   "peerDependenciesMeta": {
     "sass": {

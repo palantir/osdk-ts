@@ -23,6 +23,9 @@ export namespace BooleanFilter {
   export interface $eq extends Just<"$eq", BooleanFilterOptions> {}
   export interface $ne extends Just<"$ne", BooleanFilterOptions> {}
   export interface $isNull extends Just<"$isNull", BooleanFilterOptions> {}
+  /**
+   * Matches any of the provided values. If an empty array is provided, the filter will match all objects.
+   */
   export interface $in extends Just<"$in", BooleanFilterOptions> {}
 }
 export type BooleanFilter =

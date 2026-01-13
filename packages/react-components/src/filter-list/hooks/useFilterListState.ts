@@ -15,25 +15,21 @@
  */
 
 import type { ObjectTypeDefinition, WhereClause } from "@osdk/api";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import type {
-  FilterDefinitionUnion,
   FilterKey,
   FilterListProps,
 } from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
-import type { FilterListPersistedState } from "../types/FilterPanelTypes.js";
 import type { LinkedPropertyFilterState } from "../types/LinkedFilterTypes.js";
 import { assertUnreachable } from "../utils/assertUnreachable.js";
 import { buildWhereClause } from "../utils/filterStateToWhereClause.js";
+import { filterHasActiveState } from "../utils/filterValues.js";
 import { getFilterKey } from "../utils/getFilterKey.js";
 
 export interface UseFilterListStateResult<Q extends ObjectTypeDefinition> {
-  collapsed: boolean;
-  setCollapsed: (collapsed: boolean) => void;
   filterStates: Map<string, FilterState>;
   setFilterState: (key: string, state: FilterState) => void;
-  resetFilterState: (key: string) => void;
   whereClause: WhereClause<Q>;
   activeFilterCount: number;
   reset: () => void;
@@ -41,7 +37,6 @@ export interface UseFilterListStateResult<Q extends ObjectTypeDefinition> {
 
 /**
  * Build initial states from filter definitions.
- * Only uses defaultFilterState for initialization.
  */
 function buildInitialStates<Q extends ObjectTypeDefinition>(
   definitions: FilterListProps<Q>["filterDefinitions"],
@@ -58,7 +53,13 @@ function buildInitialStates<Q extends ObjectTypeDefinition>(
     const instanceKey = `${filterKey}:${i}`;
 
     switch (definition.type) {
-      case "property":
+      case "property": {
+        const state = definition.filterState;
+        if (state) {
+          states.set(instanceKey, state);
+        }
+        break;
+      }
       case "hasLink":
       case "keywordSearch":
       case "custom": {
@@ -79,98 +80,12 @@ function buildInitialStates<Q extends ObjectTypeDefinition>(
         }
         break;
       }
+      default:
+        assertUnreachable(definition);
     }
   }
 
   return states;
-}
-
-function countActiveFilters(filterStates: Map<string, FilterState>): number {
-  let count = 0;
-
-  for (const state of filterStates.values()) {
-    if (isFilterActive(state)) {
-      count++;
-    }
-  }
-
-  return count;
-}
-
-function isFilterActive(state: FilterState): boolean {
-  switch (state.type) {
-    case "CHECKBOX_LIST":
-      return state.selectedValues.length > 0;
-    case "CONTAINS_TEXT":
-      return !!state.value;
-    case "TOGGLE":
-      return state.enabled;
-    case "DATE_RANGE":
-      return state.minValue !== undefined || state.maxValue !== undefined;
-    case "NUMBER_RANGE":
-      return state.minValue !== undefined || state.maxValue !== undefined;
-    case "EXACT_MATCH":
-      return state.values.length > 0;
-    case "SINGLE_SELECT":
-      return state.selectedValue !== undefined;
-    case "MULTI_SELECT":
-      return state.selectedValues.length > 0;
-    case "SINGLE_DATE":
-      return state.selectedDate !== undefined;
-    case "MULTI_DATE":
-      return state.selectedDates.length > 0;
-    case "TIMELINE":
-      return state.startDate !== undefined || state.endDate !== undefined;
-    case "HAS_LINK":
-      return state.hasLink;
-    case "LINKED_PROPERTY":
-      return state.linkedFilterState !== undefined;
-    case "KEYWORD_SEARCH":
-      return !!state.searchTerm;
-    case "CUSTOM":
-      return state.customState !== undefined;
-    default:
-      return assertUnreachable(state);
-  }
-}
-
-function isValidPersistedState(value: unknown): boolean {
-  if (typeof value !== "object" || value == null) return false;
-  const obj = value as Record<string, unknown>;
-  return (
-    typeof obj.collapsed === "boolean"
-    && typeof obj.filterStatesByKey === "object"
-    && obj.filterStatesByKey != null
-  );
-}
-
-function loadFromStorage<Q extends ObjectTypeDefinition>(
-  key: string,
-): FilterListPersistedState<Q> | undefined {
-  try {
-    const stored = sessionStorage.getItem(key);
-    if (stored) {
-      const parsed: unknown = JSON.parse(stored);
-      // Runtime validation ensures structure matches FilterListPersistedState
-      if (isValidPersistedState(parsed)) {
-        return parsed as FilterListPersistedState<Q>;
-      }
-    }
-  } catch {
-    // Silently ignore storage errors
-  }
-  return undefined;
-}
-
-function saveToStorage<Q extends ObjectTypeDefinition>(
-  key: string,
-  state: FilterListPersistedState<Q>,
-): void {
-  try {
-    sessionStorage.setItem(key, JSON.stringify(state));
-  } catch {
-    // Silently ignore storage errors
-  }
 }
 
 export function useFilterListState<Q extends ObjectTypeDefinition>(
@@ -180,63 +95,13 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
     objectSet,
     filterDefinitions,
     filterOperator = "and",
-    collapsed: controlledCollapsed,
-    defaultCollapsed = false,
-    onCollapsedChange,
     onFilterStateChanged,
-    persistenceKey,
-    onPersistState,
-    initialPersistedState,
   } = props;
 
   const objectType = objectSet.$objectSetInternals.def;
 
-  // Load persisted state only once on mount - intentionally ignoring prop changes
-  // to avoid overwriting user's in-session filter state
-  const persistedState = useMemo(() => {
-    if (initialPersistedState) {
-      return initialPersistedState;
-    }
-    if (persistenceKey) {
-      return loadFromStorage<Q>(persistenceKey);
-    }
-    return undefined;
-  }, []);
-
-  const [internalCollapsed, setInternalCollapsed] = useState(
-    persistedState?.collapsed ?? defaultCollapsed,
-  );
-  const isCollapsedControlled = controlledCollapsed !== undefined;
-  const collapsed = isCollapsedControlled
-    ? controlledCollapsed
-    : internalCollapsed;
-
-  const setCollapsed = useCallback(
-    (newCollapsed: boolean) => {
-      if (!isCollapsedControlled) {
-        setInternalCollapsed(newCollapsed);
-      }
-      onCollapsedChange?.(newCollapsed);
-    },
-    [isCollapsedControlled, onCollapsedChange],
-  );
-
-  // Internal state for filters
   const [internalFilterStates, setInternalFilterStates] = useState<Map<string, FilterState>>(
-    () => {
-      const initialStates = buildInitialStates(filterDefinitions);
-
-      // Merge in persisted states if available
-      if (persistedState?.filterStatesByKey) {
-        for (const [key, state] of Object.entries(
-          persistedState.filterStatesByKey,
-        )) {
-          initialStates.set(key, state);
-        }
-      }
-
-      return initialStates;
-    },
+    () => buildInitialStates(filterDefinitions),
   );
 
   const filterStates = internalFilterStates;
@@ -259,59 +124,23 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
     [filterDefinitions, filterStates, filterOperator, objectType],
   );
 
-  const activeFilterCount = useMemo(
-    () => countActiveFilters(filterStates),
-    [filterStates],
-  );
+  const activeFilterCount = useMemo(() => {
+    let count = 0;
+    for (const state of filterStates.values()) {
+      if (filterHasActiveState(state)) {
+        count++;
+      }
+    }
+    return count;
+  }, [filterStates]);
 
   const reset = useCallback(() => {
     setInternalFilterStates(buildInitialStates(filterDefinitions));
   }, [filterDefinitions]);
 
-  const resetFilterState = useCallback((key: string) => {
-    setInternalFilterStates((prev) => {
-      const next = new Map(prev);
-      next.delete(key);
-      return next;
-    });
-  }, []);
-
-  useEffect(() => {
-    if (!persistenceKey && !onPersistState) {
-      return;
-    }
-
-    // Convert Map to plain object for serialization
-    const filterStatesByKey: Record<string, FilterState> = {};
-    for (const [key, state] of filterStates) {
-      filterStatesByKey[key] = state;
-    }
-
-    const stateToSave: FilterListPersistedState<Q> = {
-      collapsed,
-      filterStatesByKey,
-      filterClause: whereClause,
-    };
-
-    if (persistenceKey) {
-      saveToStorage(persistenceKey, stateToSave);
-    }
-
-    onPersistState?.(stateToSave);
-  }, [
-    collapsed,
-    filterStates,
-    whereClause,
-    persistenceKey,
-    onPersistState,
-  ]);
-
   return {
-    collapsed,
-    setCollapsed,
     filterStates,
     setFilterState,
-    resetFilterState,
     whereClause,
     activeFilterCount,
     reset,

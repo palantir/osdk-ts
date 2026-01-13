@@ -16,9 +16,9 @@
 
 import type {
   AggregateOpts,
+  ObjectSet,
   ObjectTypeDefinition,
   PropertyKeys,
-  WhereClause,
 } from "@osdk/api";
 import { useOsdkAggregation } from "@osdk/react/experimental";
 import React, {
@@ -27,14 +27,7 @@ import React, {
   useEffect,
   useMemo,
   useRef,
-  useState,
 } from "react";
-import type { CheckboxListInputClassNames } from "../../types/ClassNameOverrides.js";
-import type {
-  FilterDataIndicator,
-  FilterInteractionMode,
-  FilterItemColor,
-} from "../../types/FilterDisplayTypes.js";
 
 interface CheckboxListInputProps<
   Q extends ObjectTypeDefinition,
@@ -44,22 +37,9 @@ interface CheckboxListInputProps<
   propertyKey: K;
   selectedValues: string[];
   onChange: (selectedValues: string[]) => void;
-  /**
-   * WhereClause from other filters to chain aggregation queries.
-   * When provided, the aggregation will respect other active filters.
-   */
-  whereClause?: WhereClause<Q>;
-  showSelectAll?: boolean;
-  showSearch?: boolean;
-  searchPlaceholder?: string;
-  showSelectionCount?: boolean;
-  showClearAll?: boolean;
-  maxVisibleItems?: number;
-  dataIndicator?: FilterDataIndicator;
-  interactionMode?: FilterInteractionMode;
-  color?: FilterItemColor;
-  valueColors?: Record<string, FilterItemColor>;
-  classNames?: CheckboxListInputClassNames;
+  objectSet?: ObjectSet<Q>;
+  className?: string;
+  style?: React.CSSProperties;
 }
 
 function CheckboxListInputInner<
@@ -70,24 +50,10 @@ function CheckboxListInputInner<
   propertyKey,
   selectedValues,
   onChange,
-  whereClause,
-  showSelectAll = true,
-  showSearch = false,
-  searchPlaceholder,
-  showSelectionCount = false,
-  showClearAll = false,
-  maxVisibleItems,
-  dataIndicator = "none",
-  interactionMode = "checkbox",
-  color,
-  valueColors,
-  classNames,
+  objectSet,
+  className,
+  style,
 }: CheckboxListInputProps<Q, K>): React.ReactElement {
-  const showCounts = dataIndicator === "histogram" || dataIndicator === "count";
-  const isCategoryMode = interactionMode === "category";
-
-  // AggregateOpts requires specific property keys from Q, but we're dynamically
-  // using propertyKey. The cast is unavoidable for this dynamic filter pattern.
   const aggregateOptions = useMemo(
     () =>
       ({
@@ -97,26 +63,17 @@ function CheckboxListInputInner<
     [propertyKey],
   );
 
-  const { data: countData, isLoading, error } = useOsdkAggregation(objectType, {
-    where: whereClause,
+  const aggOptions = {
     aggregate: aggregateOptions,
-  });
+    ...(objectSet && { objectSet }),
+  };
+  const { data: countData, isLoading, error } = useOsdkAggregation(objectType, aggOptions);
 
-  // Extract values and counts from aggregation results
-  const { values, valueCounts, maxCount } = useMemo(() => {
+  const values = useMemo(() => {
     if (!countData) {
-      return {
-        values: [] as string[],
-        valueCounts: new Map<string, number>(),
-        maxCount: 0,
-      };
+      return [] as string[];
     }
-    const counts = new Map<string, number>();
     const extractedValues: string[] = [];
-    let max = 0;
-    // The aggregation result type varies by query structure. Since we're building
-    // the query dynamically based on propertyKey, we cast to a known shape that
-    // matches the $groupBy + $count aggregation pattern.
     const dataArray = countData as Iterable<{
       $group: Record<string, unknown>;
       $count?: number;
@@ -124,37 +81,23 @@ function CheckboxListInputInner<
     for (const item of dataArray) {
       const rawValue = item.$group[propertyKey as string];
       const value = rawValue != null ? String(rawValue) : "";
-      const count = item.$count ?? 0;
       if (value) {
         extractedValues.push(value);
-        counts.set(value, count);
-        max = Math.max(max, count);
       }
     }
     extractedValues.sort((a, b) => a.localeCompare(b));
-    return { values: extractedValues, valueCounts: counts, maxCount: max };
+    return extractedValues;
   }, [countData, propertyKey]);
 
   const toggleValue = useCallback(
     (value: string) => {
-      if (isCategoryMode) {
-        // In category mode, clicking selects only that value (deselects others)
-        // Clicking the same value again deselects it
-        if (selectedValues.length === 1 && selectedValues[0] === value) {
-          onChange([]);
-        } else {
-          onChange([value]);
-        }
+      if (selectedValues.includes(value)) {
+        onChange(selectedValues.filter((v) => v !== value));
       } else {
-        // In checkbox mode, toggle the value
-        if (selectedValues.includes(value)) {
-          onChange(selectedValues.filter((v) => v !== value));
-        } else {
-          onChange([...selectedValues, value]);
-        }
+        onChange([...selectedValues, value]);
       }
     },
-    [selectedValues, onChange, isCategoryMode],
+    [selectedValues, onChange],
   );
 
   const toggleAll = useCallback(() => {
@@ -165,24 +108,6 @@ function CheckboxListInputInner<
     }
   }, [selectedValues, values, onChange]);
 
-  const clearAll = useCallback(() => {
-    onChange([]);
-  }, [onChange]);
-
-  const [isExpanded, setIsExpanded] = useState(false);
-  const [searchValue, setSearchValue] = useState("");
-
-  const filteredValues = useMemo(() => {
-    if (!searchValue.trim()) return values;
-    const lowerSearch = searchValue.toLowerCase();
-    return values.filter((v) => v.toLowerCase().includes(lowerSearch));
-  }, [values, searchValue]);
-
-  const hasMore = maxVisibleItems != null
-    && filteredValues.length > maxVisibleItems;
-  const displayValues = isExpanded || !maxVisibleItems
-    ? filteredValues
-    : filteredValues.slice(0, maxVisibleItems);
   const allSelected = values.length > 0
     && selectedValues.length === values.length;
   const someSelected = selectedValues.length > 0
@@ -195,73 +120,35 @@ function CheckboxListInputInner<
     }
   }, [someSelected]);
 
+  const rootClassName = className
+    ? `filter-input--checkbox-list ${className}`
+    : "filter-input--checkbox-list";
+
   return (
-    <div className={classNames?.root} data-loading={isLoading}>
+    <div className={rootClassName} style={style} data-loading={isLoading}>
       {isLoading && (
-        <div className={classNames?.loadingMessage}>
+        <div className="filter-input__loading-message">
           Loading values...
         </div>
       )}
 
       {error && (
-        <div className={classNames?.errorMessage}>
+        <div className="filter-input__error-message">
           Error loading values: {error.message}
         </div>
       )}
 
       {!isLoading && !error && values.length === 0 && (
-        <div className={classNames?.emptyMessage}>
+        <div className="filter-input__empty-message">
           No values available
         </div>
       )}
 
       {values.length > 0 && (
         <>
-          {showSearch && (
-            <div className={classNames?.searchContainer}>
-              <input
-                type="text"
-                className={classNames?.searchInput}
-                placeholder={searchPlaceholder ?? "Search..."}
-                value={searchValue}
-                onChange={(e) => setSearchValue(e.target.value)}
-                aria-label={`Search ${propertyKey} values`}
-              />
-              {searchValue && (
-                <button
-                  type="button"
-                  className={classNames?.searchClearButton}
-                  onClick={() => setSearchValue("")}
-                  aria-label="Clear search"
-                >
-                  ×
-                </button>
-              )}
-            </div>
-          )}
-
-          {(showSelectionCount || showClearAll) && (
-            <div className={classNames?.selectionInfo}>
-              {showSelectionCount && (
-                <span className={classNames?.selectionCount}>
-                  Keeping {selectedValues.length} of {values.length} values
-                </span>
-              )}
-              {showClearAll && selectedValues.length > 0 && (
-                <button
-                  type="button"
-                  className={classNames?.clearAllButton}
-                  onClick={clearAll}
-                >
-                  Clear all
-                </button>
-              )}
-            </div>
-          )}
-
-          {showSelectAll && values.length > 1 && !isCategoryMode && (
-            <div className={classNames?.selectAllContainer}>
-              <label className={classNames?.selectAllCheckbox}>
+          {values.length > 1 && (
+            <div className="filter-input--checkbox-list-select-all">
+              <label className="bp6-control bp6-checkbox">
                 <input
                   type="checkbox"
                   checked={allSelected}
@@ -269,85 +156,35 @@ function CheckboxListInputInner<
                   onChange={toggleAll}
                   aria-label={`Select all ${propertyKey} values`}
                 />
-                <span className={classNames?.checkboxIndicator} />
-                <span className={classNames?.selectAllLabel}>
-                  Select All
-                </span>
+                <span className="bp6-control-indicator" />
+                Select All
               </label>
             </div>
           )}
 
-          {displayValues.map((value) => {
-            const count = valueCounts.get(value) ?? 0;
-            const percentage = maxCount > 0 ? (count / maxCount) * 100 : 0;
-            const itemColor = valueColors?.[value] ?? color;
+          {values.map((value) => {
             const isSelected = selectedValues.includes(value);
 
             return (
               <div
                 key={value}
-                className={classNames?.checkboxRow}
+                className="filter-input__checkbox-row"
                 data-selected={isSelected}
-                data-interaction-mode={interactionMode}
-                style={itemColor
-                  ? ({
-                    "--item-bg": itemColor.background,
-                    "--item-text": itemColor.text,
-                    "--item-border": itemColor.border,
-                    "--item-histogram": itemColor.histogramBar,
-                  } as React.CSSProperties)
-                  : undefined}
               >
-                {isCategoryMode ? (
-                  <button
-                    type="button"
-                    className={classNames?.checkbox}
-                    onClick={() => toggleValue(value)}
-                    aria-pressed={isSelected}
-                  >
-                    <span className={classNames?.valueText}>
-                      {value}
-                    </span>
-                  </button>
-                ) : (
-                  <label className={classNames?.checkbox}>
-                    <input
-                      type="checkbox"
-                      checked={isSelected}
-                      onChange={() => toggleValue(value)}
-                    />
-                    <span
-                      className={classNames?.checkboxIndicator}
-                    />
-                    <span className={classNames?.valueText}>
-                      {value}
-                    </span>
-                  </label>
-                )}
-                {showCounts && (
-                  <span className={classNames?.count}>
-                    {count.toLocaleString()}
-                  </span>
-                )}
-                {dataIndicator === "histogram" && (
-                  <span
-                    className={classNames?.histogramBar}
-                    style={{ width: `${percentage}%` }}
+                <label className="bp6-control bp6-checkbox">
+                  <input
+                    type="checkbox"
+                    checked={isSelected}
+                    onChange={() => toggleValue(value)}
                   />
-                )}
+                  <span className="bp6-control-indicator" />
+                  <span className="filter-input__value-text">
+                    {value}
+                  </span>
+                </label>
               </div>
             );
           })}
-
-          {hasMore && !isExpanded && (
-            <button
-              type="button"
-              className={classNames?.moreIndicator}
-              onClick={() => setIsExpanded(true)}
-            >
-              View all ({filteredValues.length})
-            </button>
-          )}
         </>
       )}
     </div>

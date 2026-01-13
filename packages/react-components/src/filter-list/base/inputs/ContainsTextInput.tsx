@@ -16,14 +16,14 @@
 
 import React, { memo, useCallback } from "react";
 import { useDebouncedValue } from "../../hooks/useDebouncedValue.js";
-import type { ContainsTextInputClassNames } from "../../types/ClassNameOverrides.js";
 
 interface ContainsTextInputProps {
   value: string | undefined;
   onChange: (value: string | undefined) => void;
   placeholder?: string;
   debounceMs?: number;
-  classNames?: ContainsTextInputClassNames;
+  className?: string;
+  style?: React.CSSProperties;
   renderSearchIcon?: () => React.ReactNode;
   renderClearIcon?: () => React.ReactNode;
 }
@@ -33,7 +33,8 @@ function ContainsTextInputInner({
   onChange,
   placeholder = "Search...",
   debounceMs = 300,
-  classNames,
+  className,
+  style,
   renderSearchIcon,
   renderClearIcon,
 }: ContainsTextInputProps): React.ReactElement {
@@ -62,18 +63,23 @@ function ContainsTextInputInner({
     onChange(undefined);
   }, [setLocalValue, onChange]);
 
+  const rootClassName = className
+    ? `filter-input--text ${className}`
+    : "filter-input--text";
+
   return (
     <div
-      className={classNames?.root}
+      className={rootClassName}
+      style={style}
       data-has-value={!!localValue}
     >
-      <div className={classNames?.inputGroup}>
+      <div className="bp6-input-group">
         {renderSearchIcon
           ? renderSearchIcon()
-          : <span className={classNames?.searchIcon} />}
+          : <span className="bp6-icon bp6-icon-search" />}
         <input
           type="text"
-          className={classNames?.input}
+          className="bp6-input"
           value={localValue}
           onChange={handleInputChange}
           placeholder={placeholder}
@@ -82,13 +88,13 @@ function ContainsTextInputInner({
         {localValue && (
           <button
             type="button"
-            className={classNames?.clearButton}
+            className="bp6-button bp6-minimal bp6-small filter-input__clear"
             onClick={handleClear}
             aria-label="Clear search"
           >
             {renderClearIcon
               ? renderClearIcon()
-              : <span className={classNames?.clearIcon} />}
+              : <span className="bp6-icon bp6-icon-cross" />}
           </button>
         )}
       </div>

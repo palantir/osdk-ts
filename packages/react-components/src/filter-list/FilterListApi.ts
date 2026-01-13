@@ -27,14 +27,9 @@ import type {
 } from "./FilterListItemApi.js";
 import type { FilterTemplate } from "./types/AddFilterMenuTypes.js";
 import type { CustomFilterDefinition } from "./types/CustomRendererTypes.js";
-import type { FilterListLayoutMode } from "./types/FilterDisplayTypes.js";
-import type { FilterListPersistedState } from "./types/FilterPanelTypes.js";
-import type { FilterListTheme } from "./types/FilterThemeTypes.js";
 import type { KeywordSearchFilterDefinition } from "./types/KeywordSearchTypes.js";
 import type {
   HasLinkFilterDefinition,
-  LinkedFilterDisplayMode,
-  LinkedFilterGroupConfig,
   LinkedPropertyFilterDefinition,
 } from "./types/LinkedFilterTypes.js";
 
@@ -122,91 +117,6 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
   ) => void;
 
   /**
-   * Called when a filter is added
-   * If provided, user will be allowed to add filters
-   *
-   * @param filterKey The key of the added filter
-   * @param newDefinitions The filter list with the new filter added
-   */
-  onFilterAdded?: (
-    filterKey: FilterKey<Q>,
-    newDefinitions: Array<FilterDefinitionUnion<Q>>,
-  ) => void;
-
-  /**
-   * Called when a filter is removed
-   * If provided, user will be allowed to remove filters
-   *
-   * @param filterKey The key of the removed filter
-   * @param newDefinitions The updated filter list with the filter removed
-   */
-  onFilterRemoved?: (
-    filterKey: FilterKey<Q>,
-    newDefinitions: Array<FilterDefinitionUnion<Q>>,
-  ) => void;
-
-  /**
-   * Called when filters are reordered
-   * If provided, the filter list becomes sortable
-   *
-   * @param newOrder The updated filter definitions in new order
-   */
-  onFiltersReordered?: (
-    newOrder: ReadonlyArray<FilterDefinitionUnion<Q>>,
-  ) => void;
-
-  /**
-   * Layout mode for the filter list
-   * - "vertical": Standard vertical list (default)
-   * - "pills": Compact pill/chip layout
-   * - "horizontal": Horizontal scrolling layout
-   */
-  layoutMode?: FilterListLayoutMode;
-
-  /**
-   * Show global keyword search at the top of the filter list
-   */
-  showGlobalSearch?: boolean;
-
-  /**
-   * Show drag handles for sortable filters
-   */
-  showDragHandles?: boolean;
-
-  /**
-   * Custom drag handle renderer
-   */
-  renderDragHandle?: () => ReactNode;
-
-  /**
-   * Display mode for linked filters
-   * - "inline": Show alongside non-linked filters
-   * - "grouped": Group by link type with collapsible sections
-   */
-  linkedFilterDisplay?: LinkedFilterDisplayMode;
-
-  /**
-   * Configuration for linked filter groups
-   * Only applicable when linkedFilterDisplay is "grouped"
-   */
-  linkedFilterGroups?: Array<LinkedFilterGroupConfig<Q>>;
-
-  /**
-   * Controlled collapsed state
-   */
-  collapsed?: boolean;
-
-  /**
-   * Default collapsed state (uncontrolled)
-   */
-  defaultCollapsed?: boolean;
-
-  /**
-   * Called when collapsed state changes
-   */
-  onCollapsedChange?: (collapsed: boolean) => void;
-
-  /**
    * Show reset filters button in header
    */
   showResetButton?: boolean;
@@ -246,41 +156,6 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
    * Show count of active filters in header
    */
   showActiveFilterCount?: boolean;
-
-  /**
-   * Apply filters immediately on change
-   * If false, an "Apply" button is shown
-   * @default true
-   */
-  applyOnChange?: boolean;
-
-  /**
-   * When true, an empty selection means "include all"
-   * When false, an empty selection means "exclude all"
-   * @default true
-   */
-  emptySelectionMeansAll?: boolean;
-
-  /**
-   * Key for session persistence
-   * If provided, filter state will be persisted to session storage
-   */
-  persistenceKey?: string;
-
-  /**
-   * Called when filter state should be persisted
-   */
-  onPersistState?: (state: FilterListPersistedState<Q>) => void;
-
-  /**
-   * Initial persisted state to restore
-   */
-  initialPersistedState?: FilterListPersistedState<Q>;
-
-  /**
-   * Theme configuration for CSS custom properties
-   */
-  theme?: FilterListTheme;
 
   /**
    * Additional CSS class name

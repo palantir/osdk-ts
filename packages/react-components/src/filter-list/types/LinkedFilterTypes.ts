@@ -56,10 +56,20 @@ export interface HasLinkFilterDefinition<
   L extends LinkNames<Q> = LinkNames<Q>,
 > {
   type: "hasLink";
+  /**
+   * Optional unique identifier for stable keying across filter reorders.
+   */
+  id?: string;
   linkName: L;
   label?: string;
   filterState: HasLinkFilterState;
   defaultFilterState?: HasLinkFilterState;
+  /**
+   * Controls whether this filter is rendered.
+   * When false, the filter is hidden but its state is preserved.
+   * @default true
+   */
+  isVisible?: boolean;
 }
 
 /**
@@ -75,12 +85,22 @@ export interface LinkedPropertyFilterDefinition<
   > = ValidComponentsForPropertyType<PropertyTypeFromKey<LinkedQ, LinkedK>>,
 > {
   type: "linkedProperty";
+  /**
+   * Optional unique identifier for stable keying across filter reorders.
+   */
+  id?: string;
   linkName: L;
   linkedPropertyKey: LinkedK;
   linkedFilterComponent: LinkedC;
   linkedFilterState: FilterStateByComponentType[LinkedC];
   defaultLinkedFilterState?: FilterStateByComponentType[LinkedC];
   label?: string;
+  /**
+   * Controls whether this filter is rendered.
+   * When false, the filter is hidden but its state is preserved.
+   * @default true
+   */
+  isVisible?: boolean;
 }
 
 /**

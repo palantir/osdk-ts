@@ -15,13 +15,13 @@
  */
 
 import type {
+  ObjectSet,
   ObjectTypeDefinition,
   PropertyKeys,
-  WhereClause,
 } from "@osdk/api";
-import React, { memo, useCallback, useMemo, useState } from "react";
+import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { usePropertyAggregation } from "../../hooks/usePropertyAggregation.js";
-import type { MultiSelectInputClassNames } from "../../types/ClassNameOverrides.js";
+import { filterValuesBySearch } from "../../utils/filterValues.js";
 
 interface MultiSelectInputProps<
   Q extends ObjectTypeDefinition,
@@ -31,8 +31,9 @@ interface MultiSelectInputProps<
   propertyKey: K;
   selectedValues: string[];
   onChange: (values: string[]) => void;
-  whereClause?: WhereClause<Q>;
-  classNames?: MultiSelectInputClassNames;
+  objectSet?: ObjectSet<Q>;
+  className?: string;
+  style?: React.CSSProperties;
   placeholder?: string;
   maxDisplayedTags?: number;
   showSelectAll?: boolean;
@@ -47,8 +48,9 @@ function MultiSelectInputInner<
   propertyKey,
   selectedValues,
   onChange,
-  whereClause,
-  classNames,
+  objectSet,
+  className,
+  style,
   placeholder = "Select values...",
   maxDisplayedTags = 3,
   showSelectAll = true,
@@ -56,18 +58,24 @@ function MultiSelectInputInner<
 }: MultiSelectInputProps<Q, K>): React.ReactElement {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
+  const isMountedRef = useRef(true);
+
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   const { data: values, isLoading, error } = usePropertyAggregation(
     objectType,
     propertyKey,
-    { whereClause },
+    { objectSet },
   );
 
-  const filteredValues = useMemo(() => {
-    if (!searchValue.trim()) return values;
-    const lowerSearch = searchValue.toLowerCase();
-    return values.filter((v) => v.value.toLowerCase().includes(lowerSearch));
-  }, [values, searchValue]);
+  const filteredValues = useMemo(
+    () => filterValuesBySearch(values, searchValue, (v) => v.value),
+    [values, searchValue],
+  );
 
   const toggleValue = useCallback(
     (value: string) => {
@@ -98,35 +106,39 @@ function MultiSelectInputInner<
   const displayedTags = selectedValues.slice(0, maxDisplayedTags);
   const remainingCount = selectedValues.length - maxDisplayedTags;
 
+  const rootClassName = className
+    ? `filter-input--multi-select ${className}`
+    : "filter-input--multi-select";
+
   return (
-    <div className={classNames?.root} data-loading={isLoading}>
+    <div className={rootClassName} style={style} data-loading={isLoading}>
       {isLoading && (
-        <div className={classNames?.loadingMessage}>
+        <div className="filter-input__loading-message">
           Loading options...
         </div>
       )}
 
       {error && (
-        <div className={classNames?.errorMessage}>
+        <div className="filter-input__error-message">
           Error loading options: {error.message}
         </div>
       )}
 
       {!isLoading && !error && values.length === 0 && (
-        <div className={classNames?.emptyMessage}>
+        <div className="filter-input__empty-message">
           No options available
         </div>
       )}
 
       {values.length > 0 && (
         <>
-          <div className={classNames?.tagContainer}>
+          <div className="filter-input__tag-container">
             {displayedTags.map((value) => (
-              <span key={value} className={classNames?.tag}>
+              <span key={value} className="filter-input__tag">
                 {value}
                 <button
                   type="button"
-                  className={classNames?.tagRemoveButton}
+                  className="filter-input__tag-remove"
                   onClick={() => removeValue(value)}
                   aria-label={`Remove ${value}`}
                 >
@@ -135,16 +147,16 @@ function MultiSelectInputInner<
               </span>
             ))}
             {remainingCount > 0 && (
-              <span className={classNames?.tag}>
+              <span className="filter-input__tag">
                 +{remainingCount} more
               </span>
             )}
           </div>
 
-          <div className={classNames?.inputContainer}>
+          <div className="filter-input__input-container">
             <input
               type="text"
-              className={classNames?.input}
+              className="filter-input__input"
               placeholder={
                 selectedValues.length > 0
                   ? `${selectedValues.length} selected`
@@ -154,8 +166,11 @@ function MultiSelectInputInner<
               onChange={(e) => setSearchValue(e.target.value)}
               onFocus={() => setIsDropdownOpen(true)}
               onBlur={() => {
-                // Delay to allow click on dropdown item
-                setTimeout(() => setIsDropdownOpen(false), 150);
+                setTimeout(() => {
+                  if (isMountedRef.current) {
+                    setIsDropdownOpen(false);
+                  }
+                }, 150);
               }}
               onKeyDown={(e) => {
                 if (e.key === "Escape") {
@@ -167,7 +182,7 @@ function MultiSelectInputInner<
             {showClearAll && selectedValues.length > 0 && (
               <button
                 type="button"
-                className={classNames?.clearAllButton}
+                className="filter-input__clear-all"
                 onClick={clearAll}
                 aria-label="Clear all selections"
               >
@@ -177,11 +192,11 @@ function MultiSelectInputInner<
           </div>
 
           {isDropdownOpen && (
-            <div className={classNames?.dropdown}>
+            <div className="filter-input__dropdown">
               {showSelectAll && (
                 <button
                   type="button"
-                  className={classNames?.dropdownItem}
+                  className="filter-input__dropdown-item"
                   onClick={selectAll}
                 >
                   Select all ({values.length})
@@ -193,8 +208,8 @@ function MultiSelectInputInner<
                   <button
                     key={value}
                     type="button"
-                    className={`${classNames?.dropdownItem ?? ""} ${
-                      isSelected ? classNames?.dropdownItemSelected ?? "" : ""
+                    className={`filter-input__dropdown-item ${
+                      isSelected ? "filter-input__dropdown-item--selected" : ""
                     }`}
                     onClick={() => toggleValue(value)}
                   >

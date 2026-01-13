@@ -16,9 +16,9 @@
 
 import type {
   AggregateOpts,
+  ObjectSet,
   ObjectTypeDefinition,
   PropertyKeys,
-  WhereClause,
 } from "@osdk/api";
 import { useOsdkAggregation } from "@osdk/react/experimental";
 import React, {
@@ -30,7 +30,6 @@ import React, {
   useRef,
   useState,
 } from "react";
-import type { RangeInputClassNames } from "../../types/ClassNameOverrides.js";
 import {
   createHistogramBuckets,
   getMaxBucketCount,
@@ -62,9 +61,10 @@ export interface RangeInputProps<
   minValue: T | undefined;
   maxValue: T | undefined;
   onChange: (min: T | undefined, max: T | undefined) => void;
-  whereClause?: WhereClause<Q>;
+  objectSet?: ObjectSet<Q>;
   showHistogram?: boolean;
-  classNames?: RangeInputClassNames;
+  className?: string;
+  style?: React.CSSProperties;
   config: RangeInputConfig<T>;
 }
 
@@ -78,9 +78,10 @@ function RangeInputInner<
   minValue,
   maxValue,
   onChange,
-  whereClause,
+  objectSet,
   showHistogram = true,
-  classNames,
+  className,
+  style,
   config,
 }: RangeInputProps<Q, K, T>): React.ReactElement {
   const minInputId = useId();
@@ -134,8 +135,8 @@ function RangeInputInner<
   );
 
   const { data: aggregateData, isLoading } = useOsdkAggregation(objectType, {
-    where: whereClause,
     aggregate: aggregateOptions,
+    ...(objectSet && { objectSet }),
   });
 
   const valueCountPairs = useMemo<Array<{ value: T; count: number }>>(() => {
@@ -229,10 +230,14 @@ function RangeInputInner<
     [minValue, config],
   );
 
+  const rootClassName = className
+    ? `filter-input--range ${className}`
+    : "filter-input--range";
+
   return (
-    <div className={classNames?.root} data-loading={isLoading}>
+    <div className={rootClassName} style={style} data-loading={isLoading}>
       {showHistogram && buckets.length > 0 && (
-        <div className={classNames?.histogramContainer}>
+        <div className="filter-input__histogram-container">
           {buckets.map((bucket, index) => {
             const height = (bucket.count / maxBucketCount) * 100;
             const isInRange = (minValue === undefined
@@ -243,7 +248,7 @@ function RangeInputInner<
             return (
               <div
                 key={index}
-                className={classNames?.histogramBar}
+                className="filter-input__histogram-bar-vertical"
                 data-in-range={isInRange}
                 style={{ height: `${Math.max(height, 2)}%` }}
                 title={config.formatTooltip(bucket.min, bucket.max, bucket.count)}
@@ -253,15 +258,15 @@ function RangeInputInner<
         </div>
       )}
 
-      <div className={classNames?.inputsContainer}>
-        <div className={classNames?.inputWrapper}>
-          <label htmlFor={minInputId} className={classNames?.inputLabel}>
+      <div className="filter-input__range-inputs">
+        <div className="filter-input__range-input-wrapper">
+          <label htmlFor={minInputId} className="filter-input__range-label bp6-text-muted bp6-text-small">
             {config.minLabel}
           </label>
           <input
             id={minInputId}
             type={config.inputType}
-            className={classNames?.input}
+            className="bp6-input bp6-small"
             value={localMin}
             onChange={handleMinChange}
             placeholder={dataRange.dataMin !== undefined && config.formatPlaceholder
@@ -271,18 +276,18 @@ function RangeInputInner<
           />
         </div>
 
-        <span className={classNames?.separator} aria-hidden="true">
+        <span className="filter-input__range-separator" aria-hidden="true">
           –
         </span>
 
-        <div className={classNames?.inputWrapper}>
-          <label htmlFor={maxInputId} className={classNames?.inputLabel}>
+        <div className="filter-input__range-input-wrapper">
+          <label htmlFor={maxInputId} className="filter-input__range-label bp6-text-muted bp6-text-small">
             {config.maxLabel}
           </label>
           <input
             id={maxInputId}
             type={config.inputType}
-            className={classNames?.input}
+            className="bp6-input bp6-small"
             value={localMax}
             onChange={handleMaxChange}
             placeholder={dataRange.dataMax !== undefined && config.formatPlaceholder
@@ -294,7 +299,7 @@ function RangeInputInner<
       </div>
 
       {isLoading && (
-        <div className={classNames?.loadingMessage}>
+        <div className="filter-input__loading-message">
           Loading...
         </div>
       )}

@@ -50,6 +50,7 @@ osdk
 OsdkLegacyObjectFromNoSearchArounds
 OsdkLegacyOntologyObjectNoSearchArounds
 oslw
+overscan
 Pageable
 platformapi
 Rangeable

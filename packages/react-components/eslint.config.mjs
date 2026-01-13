@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-/**
- * Theme configuration for the filter list
- * Values map to CSS custom properties for styling
- */
-export interface FilterListTheme {
-  panelBgColor?: string;
-  itemBgColor?: string;
-  itemHoverBgColor?: string;
-  itemActiveBgColor?: string;
-  panelBorderColor?: string;
-  histogramColor?: string;
-  countTextColor?: string;
-  headerBgColor?: string;
-}
+import reactHooks from "eslint-plugin-react-hooks";
+import rootConfig from "../../eslint.config.mjs";
+
+export default [
+  ...rootConfig,
+  {
+    plugins: {
+      "react-hooks": reactHooks,
+    },
+    rules: {
+      "react-hooks/exhaustive-deps": "warn",
+    },
+  },
+];

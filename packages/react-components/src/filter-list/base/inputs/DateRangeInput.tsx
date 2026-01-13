@@ -15,12 +15,11 @@
  */
 
 import type {
+  ObjectSet,
   ObjectTypeDefinition,
   PropertyKeys,
-  WhereClause,
 } from "@osdk/api";
 import React, { memo } from "react";
-import type { DateRangeInputClassNames } from "../../types/ClassNameOverrides.js";
 import { formatDateForInput, parseDateFromInput } from "./dateUtils.js";
 import { RangeInput, type RangeInputConfig } from "./RangeInput.js";
 
@@ -45,9 +44,10 @@ interface DateRangeInputProps<
   minValue: Date | undefined;
   maxValue: Date | undefined;
   onChange: (min: Date | undefined, max: Date | undefined) => void;
-  whereClause?: WhereClause<Q>;
+  objectSet?: ObjectSet<Q>;
   showHistogram?: boolean;
-  classNames?: DateRangeInputClassNames;
+  className?: string;
+  style?: React.CSSProperties;
 }
 
 function DateRangeInputInner<

@@ -17,13 +17,8 @@
 import type { ObjectTypeDefinition, WhereClause } from "@osdk/api";
 import type { FilterDefinitionUnion } from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
-import type { CustomFilterState } from "../types/CustomRendererTypes.js";
-import type { KeywordSearchFilterState } from "../types/KeywordSearchTypes.js";
-import type {
-  HasLinkFilterState,
-  LinkedPropertyFilterState,
-} from "../types/LinkedFilterTypes.js";
 import { assertUnreachable } from "./assertUnreachable.js";
+import { getFilterKey } from "./getFilterKey.js";
 
 type PropertyFilter = Record<string, unknown> | boolean | string | number;
 
@@ -216,35 +211,9 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
 
   for (let i = 0; i < definitions.length; i++) {
     const definition = definitions[i];
-    let filterKey: string;
-    let state: FilterState | undefined;
-
-    switch (definition.type) {
-      case "property":
-        filterKey = definition.key;
-        state = filterStates.get(`${filterKey}:${i}`);
-        break;
-      case "hasLink":
-        filterKey = `hasLink:${definition.linkName}`;
-        state = filterStates.get(`${filterKey}:${i}`);
-        break;
-      case "linkedProperty":
-        filterKey = `linkedProperty:${definition.linkName}:${definition.linkedPropertyKey}`;
-        state = filterStates.get(`${filterKey}:${i}`);
-        break;
-      case "keywordSearch":
-        filterKey = `keywordSearch-${
-          Array.isArray(definition.properties)
-            ? definition.properties.join("-")
-            : "all"
-        }`;
-        state = filterStates.get(`${filterKey}:${i}`);
-        break;
-      case "custom":
-        filterKey = definition.key;
-        state = filterStates.get(`${filterKey}:${i}`);
-        break;
-    }
+    const filterKey = getFilterKey(definition);
+    const instanceKey = `${filterKey}:${i}`;
+    const state = filterStates.get(instanceKey);
 
     if (!state) {
       continue;
@@ -260,100 +229,89 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
       }
 
       case "hasLink": {
-        const hasLinkState = state as HasLinkFilterState;
-        if (hasLinkState.type === "HAS_LINK") {
-          // Filter objects based on whether they have linked objects
-          // The clause structure depends on how links are queried in OSDK
-          if (hasLinkState.hasLink) {
-            // Has at least one linked object
-            clauses.push({ [definition.linkName]: { $isNotNull: true } });
-          } else {
-            // Has no linked objects
-            clauses.push({ [definition.linkName]: { $isNull: true } });
-          }
+        if (state.type !== "HAS_LINK") {
+          break;
+        }
+        // TypeScript narrows state to HasLinkFilterState
+        if (state.hasLink) {
+          clauses.push({ [definition.linkName]: { $isNotNull: true } });
+        } else {
+          clauses.push({ [definition.linkName]: { $isNull: true } });
         }
         break;
       }
 
       case "linkedProperty": {
-        const linkedState = state as LinkedPropertyFilterState;
-        if (
-          linkedState.type === "LINKED_PROPERTY"
-          && linkedState.linkedFilterState
-        ) {
-          // Build the filter for the linked property
-          const linkedFilter = filterStateToPropertyFilter(
-            linkedState.linkedFilterState,
-          );
-          if (linkedFilter !== undefined) {
-            // Nested filter on linked object's property
-            clauses.push({
-              [definition.linkName]: {
-                [definition.linkedPropertyKey]: linkedFilter,
-              },
-            });
-          }
-        }
+        // OSDK WhereClause does not support filtering through links.
+        // Link-based filtering requires ObjectSet operations (pivotTo/intersect).
+        // LinkedProperty filters render UI for selection but cannot be included
+        // in the where clause. Consumers needing linked property filtering must
+        // implement it using ObjectSet.pivotTo() and intersect().
         break;
       }
 
       case "keywordSearch": {
-        const searchState = state as KeywordSearchFilterState;
-        if (searchState.type === "KEYWORD_SEARCH" && searchState.searchTerm) {
-          const searchTerm = searchState.searchTerm.trim();
-          if (searchTerm) {
-            const properties = definition.properties;
+        if (state.type !== "KEYWORD_SEARCH" || !state.searchTerm) {
+          break;
+        }
+        // TypeScript narrows state to KeywordSearchFilterState
+        const searchTerm = state.searchTerm.trim();
+        if (!searchTerm) {
+          break;
+        }
 
-            let propertiesToSearch: string[];
-            if (properties === "all") {
-              if (objectType?.__DefinitionMetadata?.properties) {
-                propertiesToSearch = Object.entries(
-                  objectType.__DefinitionMetadata.properties,
-                )
-                  .filter(([, prop]) => prop.type === "string" && !prop.multiplicity)
-                  .map(([key]) => key);
-              } else {
-                if (process.env.NODE_ENV !== "production") {
-                  console.warn(
-                    "[FilterList] Keyword search with properties: 'all' requires object type metadata. Filter will be skipped.",
-                  );
-                }
-                break;
-              }
-            } else {
-              propertiesToSearch = properties;
+        const properties = definition.properties;
+        let propertiesToSearch: string[];
+
+        if (properties === "all") {
+          if (objectType?.__DefinitionMetadata?.properties) {
+            propertiesToSearch = Object.entries(
+              objectType.__DefinitionMetadata.properties,
+            )
+              .filter(([, prop]) => prop.type === "string" && !prop.multiplicity)
+              .map(([key]) => key);
+          } else {
+            if (process.env.NODE_ENV !== "production") {
+              console.warn(
+                "[FilterList] Keyword search with properties: 'all' requires object type metadata. Filter will be skipped.",
+              );
             }
-
-            if (propertiesToSearch.length === 0) {
-              break;
-            }
-
-            // Build $or clause for all properties using $containsAnyTerm
-            const propertySearches = propertiesToSearch.map((prop) => ({
-              [prop]: { $containsAnyTerm: searchTerm },
-            }));
-
-            if (propertySearches.length === 1) {
-              clauses.push(propertySearches[0]);
-            } else {
-              clauses.push({ $or: propertySearches });
-            }
+            break;
           }
+        } else {
+          propertiesToSearch = properties;
+        }
+
+        if (propertiesToSearch.length === 0) {
+          break;
+        }
+
+        const propertySearches = propertiesToSearch.map((prop) => ({
+          [prop]: { $containsAnyTerm: searchTerm },
+        }));
+
+        if (propertySearches.length === 1) {
+          clauses.push(propertySearches[0]);
+        } else {
+          clauses.push({ $or: propertySearches });
         }
         break;
       }
 
       case "custom": {
-        const customState = state as CustomFilterState;
-        if (customState.type === "CUSTOM") {
-          // Custom filters provide their own toWhereClause function
-          const customClause = definition.toWhereClause(customState);
-          if (customClause && Object.keys(customClause).length > 0) {
-            clauses.push(customClause as Record<string, unknown>);
-          }
+        if (state.type !== "CUSTOM") {
+          break;
+        }
+        // TypeScript narrows state to CustomFilterState
+        const customClause = definition.toWhereClause(state);
+        if (customClause && Object.keys(customClause).length > 0) {
+          clauses.push(customClause as Record<string, unknown>);
         }
         break;
       }
+
+      default:
+        assertUnreachable(definition);
     }
   }
 

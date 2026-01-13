@@ -36,3 +36,12 @@ export function formatDateForDisplay(
     day: "numeric",
   });
 }
+
+export function parseDateFromISO(
+  value: string | Date | undefined | null,
+): Date | undefined {
+  if (value == null) return undefined;
+  if (value instanceof Date) return value;
+  const date = new Date(value);
+  return isNaN(date.getTime()) ? undefined : date;
+}
