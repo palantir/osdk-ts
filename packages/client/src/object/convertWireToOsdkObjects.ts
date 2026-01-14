@@ -25,6 +25,7 @@ import type {
   InterfaceToObjectTypeMappingsV2,
   InterfaceTypeApiName,
   OntologyObjectV2,
+  PropertySecurities,
 } from "@osdk/foundry.ontologies";
 import invariant from "tiny-invariant";
 import type { DerivedPropertyRuntimeMetadata } from "../derivedProperties/derivedPropertyRuntimeMetadata.js";
@@ -59,6 +60,7 @@ export async function convertWireToOsdkObjects(
   interfaceApiName: string | undefined,
   forceRemoveRid: boolean = false,
   derivedPropertyTypesByName: DerivedPropertyRuntimeMetadata,
+  propertySecurities: PropertySecurities[] | undefined,
   selectedProps?: ReadonlyArray<string>,
   strictNonNull: NullabilityAdherence = false,
 ): Promise<Array<ObjectHolder | InterfaceHolder>> {
@@ -116,6 +118,7 @@ export async function convertWireToOsdkObjects(
       objectDef,
       rawObj,
       derivedPropertyTypesByName,
+      propertySecurities,
     );
     if (interfaceApiName) osdkObject = osdkObject.$as(interfaceApiName);
 
@@ -130,6 +133,7 @@ export async function convertWireToOsdkObjects2(
   objects: OntologyObjectV2[],
   interfaceApiName: string,
   derivedPropertyTypeByName: DerivedPropertyRuntimeMetadata,
+  propertySecurities: PropertySecurities[] | undefined,
   forceRemoveRid?: boolean,
   selectedProps?: ReadonlyArray<string>,
   strictNonNull?: NullabilityAdherence,
@@ -147,6 +151,7 @@ export async function convertWireToOsdkObjects2(
   objects: OntologyObjectV2[],
   interfaceApiName: undefined,
   derivedPropertyTypeByName: DerivedPropertyRuntimeMetadata,
+  propertySecurities: PropertySecurities[] | undefined,
   forceRemoveRid?: boolean,
   selectedProps?: ReadonlyArray<string>,
   strictNonNull?: NullabilityAdherence,
@@ -164,6 +169,7 @@ export async function convertWireToOsdkObjects2(
   objects: OntologyObjectV2[],
   interfaceApiName: string | undefined,
   derivedPropertyTypeByName: DerivedPropertyRuntimeMetadata,
+  propertySecurities: PropertySecurities[] | undefined,
   forceRemoveRid?: boolean,
   selectedProps?: ReadonlyArray<string>,
   strictNonNull?: NullabilityAdherence,
@@ -184,6 +190,7 @@ export async function convertWireToOsdkObjects2(
   objects: OntologyObjectV2[],
   interfaceApiName: string | undefined,
   derivedPropertyTypeByName: DerivedPropertyRuntimeMetadata,
+  propertySecurities: PropertySecurities[] | undefined,
   forceRemoveRid: boolean = false,
   selectedProps?: ReadonlyArray<string>,
   strictNonNull: NullabilityAdherence = false,
@@ -260,6 +267,7 @@ export async function convertWireToOsdkObjects2(
       objectDef,
       rawObj,
       derivedPropertyTypeByName,
+      propertySecurities,
     );
     if (
       interfaceApiName && isInterfaceScoped

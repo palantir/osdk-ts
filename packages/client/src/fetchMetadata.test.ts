@@ -143,6 +143,15 @@ describe("FetchMetadata", () => {
             "valueFormatting": undefined,
             "valueTypeApiName": undefined,
           },
+          "favoriteRestaurants": {
+            "description": undefined,
+            "displayName": undefined,
+            "multiplicity": true,
+            "nullable": true,
+            "type": "string",
+            "valueFormatting": undefined,
+            "valueTypeApiName": undefined,
+          },
           "fullName": {
             "description": undefined,
             "displayName": undefined,
