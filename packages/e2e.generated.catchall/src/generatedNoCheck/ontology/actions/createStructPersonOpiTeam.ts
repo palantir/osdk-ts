@@ -35,7 +35,7 @@ export namespace createStructPersonOpiTeam {
    * Create a struct person on the OPI team
    */
   export interface Params {
-    readonly address?: ActionParam.StructType<{ city: 'string'; state: 'string'; zipcode: 'integer' }>;
+    readonly address?: ActionParam.StructType<{ city: 'string'; state: 'string'; zipcode: 'integer' }> | null;
 
     readonly age: ActionParam.PrimitiveType<'integer'>;
 
@@ -61,6 +61,11 @@ export namespace createStructPersonOpiTeam {
 
 /**
  * Create a struct person on the OPI team
+ *
+ * **Note on null values:** _For optional parameters, explicitly providing a null value instead of undefined
+ * can change the behavior of the applied action. If prefills are configured, null prevents them
+ * from being applied. If a parameter modifies an object's property, null will clear the data from
+ * the object, whereas undefined would not modify that property._
  * @param {ActionParam.StructType<{"city":"string","state":"string","zipcode":"integer"}>} [address]
  * @param {ActionParam.PrimitiveType<"integer">} age
  * @param {ActionParam.PrimitiveType<"string">} id

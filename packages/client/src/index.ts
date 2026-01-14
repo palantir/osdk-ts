@@ -16,7 +16,7 @@
 
 /* eslint-disable @typescript-eslint/no-deprecated */
 
-export { isOk, NULL_VALUE } from "@osdk/api";
+export { isOk } from "@osdk/api";
 export type {
   ActionDefinition,
   ActionEditResponse,

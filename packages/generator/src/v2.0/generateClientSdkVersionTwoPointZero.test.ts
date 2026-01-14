@@ -592,7 +592,7 @@ describe("generator", () => {
             /**
              * Todo(s) to be deleted
              */
-            readonly object?: ReadonlyArray<ActionParam.ObjectType<Todo>>;
+            readonly object?: ReadonlyArray<ActionParam.ObjectType<Todo>> | null;
           }
 
           // Represents a fqn of the action
@@ -614,6 +614,11 @@ describe("generator", () => {
 
         /**
          * An action which takes in an array of objects
+         *
+         * **Note on null values:** _For optional parameters, explicitly providing a null value instead of undefined
+         * can change the behavior of the applied action. If prefills are configured, null prevents them
+         * from being applied. If a parameter modifies an object's property, null will clear the data from
+         * the object, whereas undefined would not modify that property._
          * @param {ActionParam.ObjectType<Todo>} [object] Todo(s) to be deleted
          */
         export interface deleteTodos extends ActionDefinition<deleteTodos.Signatures> {
@@ -668,7 +673,7 @@ describe("generator", () => {
             /**
              * A Todo to mark completed
              */
-            readonly object?: ActionParam.ObjectType<Todo>;
+            readonly object?: ActionParam.ObjectType<Todo> | null;
           }
 
           // Represents a fqn of the action
@@ -690,6 +695,11 @@ describe("generator", () => {
 
         /**
          * An action which takes different types of parameters
+         *
+         * **Note on null values:** _For optional parameters, explicitly providing a null value instead of undefined
+         * can change the behavior of the applied action. If prefills are configured, null prevents them
+         * from being applied. If a parameter modifies an object's property, null will clear the data from
+         * the object, whereas undefined would not modify that property._
          * @param {ActionParam.ObjectType<Todo>} [object] A Todo to mark completed
          */
         export interface markTodoCompleted extends ActionDefinition<markTodoCompleted.Signatures> {
@@ -1255,7 +1265,7 @@ describe("generator", () => {
             /**
              * Todo(s) to be deleted
              */
-            readonly object?: ReadonlyArray<ActionParam.ObjectType<Todo>>;
+            readonly object?: ReadonlyArray<ActionParam.ObjectType<Todo>> | null;
           }
 
           // Represents a fqn of the action
@@ -1277,6 +1287,11 @@ describe("generator", () => {
 
         /**
          * An action which takes in an array of objects
+         *
+         * **Note on null values:** _For optional parameters, explicitly providing a null value instead of undefined
+         * can change the behavior of the applied action. If prefills are configured, null prevents them
+         * from being applied. If a parameter modifies an object's property, null will clear the data from
+         * the object, whereas undefined would not modify that property._
          * @param {ActionParam.ObjectType<Todo>} [object] Todo(s) to be deleted
          */
         export interface deleteTodos extends ActionDefinition<deleteTodos.Signatures> {
@@ -1331,7 +1346,7 @@ describe("generator", () => {
             /**
              * A Todo to mark completed
              */
-            readonly object?: ActionParam.ObjectType<Todo>;
+            readonly object?: ActionParam.ObjectType<Todo> | null;
           }
 
           // Represents a fqn of the action
@@ -1353,6 +1368,11 @@ describe("generator", () => {
 
         /**
          * An action which takes different types of parameters
+         *
+         * **Note on null values:** _For optional parameters, explicitly providing a null value instead of undefined
+         * can change the behavior of the applied action. If prefills are configured, null prevents them
+         * from being applied. If a parameter modifies an object's property, null will clear the data from
+         * the object, whereas undefined would not modify that property._
          * @param {ActionParam.ObjectType<Todo>} [object] A Todo to mark completed
          */
         export interface markTodoCompleted extends ActionDefinition<markTodoCompleted.Signatures> {
