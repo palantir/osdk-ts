@@ -424,6 +424,7 @@ describe("queries", () => {
       "queryAcceptsObjectSets",
       "queryOutputsInterface",
       "queryTypeReturnsArray",
+      "queryTypeReturnsArrayOfObjects",
       "queryTypeReturnsMap",
       "returnsDate",
       "returnsObject",
@@ -438,6 +439,25 @@ describe("queries", () => {
       { people: ["Brad", "George", "Ryan"] },
     );
     expect(result).toEqual(["Pitt", "Clooney", "Reynolds"]);
+  });
+
+  it("queries work with arrays of objects", async () => {
+    const result = await client($Queries.queryTypeReturnsArrayOfObjects)
+      .executeFunction();
+
+    expect(result).toHaveLength(2);
+    expect(result[0]).toEqual({
+      $apiName: "Employee",
+      $objectType: "Employee",
+      $primaryKey: 50030,
+      $objectSpecifier: "Employee:50030",
+    });
+    expect(result[1]).toEqual({
+      $apiName: "Employee",
+      $objectType: "Employee",
+      $primaryKey: 50031,
+      $objectSpecifier: "Employee:50031",
+    });
   });
 
   it("pinned queries call execute with the right version", async () => {

@@ -325,6 +325,10 @@ async function getRequiredDefinitions(
       break;
     }
 
+    case "array": {
+      return getRequiredDefinitions(dataType.array, client);
+    }
+
     case "set": {
       return getRequiredDefinitions(dataType.set, client);
     }
