@@ -235,6 +235,7 @@ describe("ObjectSetListenerWebsocket", async () => {
           "employeeSensor",
           "skillSet",
           "skillSetEmbedding",
+          "favoriteRestaurants",
         ]);
       });
 
@@ -313,7 +314,7 @@ describe("ObjectSetListenerWebsocket", async () => {
                 "$objectSpecifier": "Employee:undefined",
                 "$objectType": "Employee",
                 "$primaryKey": undefined,
-                "$propertySecurity": undefined,
+                "$propertySecurities": undefined,
                 "$title": undefined,
                 "employeeId": 1,
               },
@@ -335,7 +336,7 @@ describe("ObjectSetListenerWebsocket", async () => {
                 "$objectSpecifier": "Employee:12345",
                 "$objectType": "Employee",
                 "$primaryKey": "12345",
-                "$propertySecurity": undefined,
+                "$propertySecurities": undefined,
                 "$title": undefined,
                 "employeeId": "12345",
                 "employeeLocation": GeotimeSeriesPropertyImpl {

@@ -573,13 +573,13 @@ describe.each([
       expect(object.$objectSpecifier).toBe("Employee:50030");
     });
   });
-  describe("$propertySecurity", () => {
+  describe("$propertySecurities", () => {
     it("processes objects with secured property values correctly", async () => {
       const object = await client(Employee).fetchOne(20003, {
         $loadPropertySecurityMetadata: true,
       });
 
-      expectTypeOf(object.$propertySecurity).toMatchObjectType<
+      expectTypeOf(object.$propertySecurities).toMatchObjectType<
         {
           class: PropertySecurity[];
           employeeId: PropertySecurity[];
@@ -594,13 +594,19 @@ describe.each([
         }
       >();
 
+      expectTypeOf(object.$propertySecurities.class)
+        .toMatchTypeOf<PropertySecurity[]>();
+
+      expectTypeOf(object.$propertySecurities.favoriteRestaurants)
+        .toMatchTypeOf<PropertySecurity[][]>();
+
       expect(object).toMatchInlineSnapshot(`
         {
           "$apiName": "Employee",
           "$objectSpecifier": "Employee:20003",
           "$objectType": "Employee",
           "$primaryKey": 20003,
-          "$propertySecurity": {
+          "$propertySecurities": {
             "class": [
               {
                 "type": "errorComputingSecurity",
@@ -624,6 +630,32 @@ describe.each([
                 ],
                 "type": "propertyMarkings",
               },
+            ],
+            "favoriteRestaurants": [
+              [
+                {
+                  "type": "unsupportedPolicy",
+                },
+              ],
+              [
+                {
+                  "conjunctive": [
+                    "CONFIDENTIAL",
+                    "INTERNAL",
+                  ],
+                  "containerConjunctive": undefined,
+                  "containerDisjunctive": undefined,
+                  "disjunctive": [
+                    [
+                      "SECRET",
+                    ],
+                    [
+                      "TOP_SECRET",
+                    ],
+                  ],
+                  "type": "propertyMarkings",
+                },
+              ],
             ],
             "fullName": [
               {
@@ -672,6 +704,10 @@ describe.each([
           "$title": "Bruce Banner",
           "class": "Red",
           "employeeId": 20003,
+          "favoriteRestaurants": [
+            "Pasta Place",
+            "Sushi Spot",
+          ],
           "fullName": "Bruce Banner",
           "office": "NYC",
           "startDate": "2003-01-01",

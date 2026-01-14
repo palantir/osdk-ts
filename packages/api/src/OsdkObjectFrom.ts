@@ -79,8 +79,11 @@ export type MapPropNamesToObjectType<
   FROM extends ObjectOrInterfaceDefinition,
   TO extends ObjectTypeDefinition,
   P extends ValidOsdkPropParams<FROM>,
-  OPTIONS extends never | "$rid" | "$allBaseProperties" | "$propertySecurity" =
-    never,
+  OPTIONS extends
+    | never
+    | "$rid"
+    | "$allBaseProperties"
+    | "$propertySecurities" = never,
 > = "$allBaseProperties" extends OPTIONS
   ? PropertyKeys<FROM> extends P ? PropertyKeys<TO>
   : PropMapToObject<
@@ -131,8 +134,11 @@ export type ConvertProps<
   FROM extends ObjectOrInterfaceDefinition,
   TO extends ValidToFrom<FROM>,
   P extends ValidOsdkPropParams<FROM>,
-  OPTIONS extends never | "$rid" | "$allBaseProperties" | "$propertySecurity" =
-    never,
+  OPTIONS extends
+    | never
+    | "$rid"
+    | "$allBaseProperties"
+    | "$propertySecurities" = never,
 > = TO extends FROM ? P
   : TO extends ObjectTypeDefinition ? (
       UnionIfTrue<
@@ -211,7 +217,7 @@ export namespace Osdk {
       | never
       | "$rid"
       | "$allBaseProperties"
-      | "$propertySecurity" = never,
+      | "$propertySecurities" = never,
     P extends PropertyKeys<Q> = PropertyKeys<Q>,
     R extends Record<string, SimplePropertyDef> = {},
   > =
@@ -264,8 +270,8 @@ export namespace Osdk {
     }
     & (IsNever<OPTIONS> extends true ? {}
       : IsAny<OPTIONS> extends true ? {}
-      : "$propertySecurity" extends OPTIONS ? {
-          readonly $propertySecurity: ObjectPropertySecurities<
+      : "$propertySecurities" extends OPTIONS ? {
+          readonly $propertySecurities: ObjectPropertySecurities<
             Q,
             GetPropsKeys<
               Q,
@@ -308,7 +314,7 @@ export type ExtractRidOption<R extends boolean> = // comment for readability
 export type ExtractPropertySecurityOption<S extends boolean> = // comment for readability
   IsNever<S> extends true ? never
     : DefaultToFalse<S> extends false ? never
-    : "$propertySecurity";
+    : "$propertySecurities";
 
 export type ExtractAllPropertiesOption<T extends boolean> = // comment for readability
   IsNever<T> extends true ? never
@@ -330,5 +336,7 @@ type ObjectPropertySecurities<
   Q extends ObjectOrInterfaceDefinition,
   T extends PropertyKeys<Q>,
 > = {
-  [K in T]: PropertySecurity[];
+  [K in T]: CompileTimeMetadata<Q>["properties"][K]["multiplicity"] extends true
+    ? PropertySecurity[][]
+    : PropertySecurity[];
 };

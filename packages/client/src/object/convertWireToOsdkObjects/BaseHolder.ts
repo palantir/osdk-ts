@@ -41,7 +41,7 @@ export interface BaseHolder {
   readonly $primaryKey: string | number;
   readonly $title: string | undefined;
   readonly $objectSpecifier: ObjectSpecifier<any>;
-  readonly $propertySecurity: PropertySecurity[];
+  readonly $propertySecurities: PropertySecurity[];
 
   readonly "$as": (
     newDef: string | ObjectOrInterfaceDefinition,

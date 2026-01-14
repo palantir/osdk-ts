@@ -111,7 +111,7 @@ const basePropDefs = {
     },
     enumerable: true,
   },
-  "$propertySecurity": {
+  "$propertySecurities": {
     get: function(this: ObjectHolder) {
       return this[PropertySecuritiesRef];
     },
@@ -344,7 +344,7 @@ function parseWhenSecuritiesLoaded(
 ): {
   parsedObject: SimpleOsdkProperties;
   clientPropertySecurities:
-    | { [propName: string]: PropertySecurity[] }
+    | { [propName: string]: PropertySecurity[] | PropertySecurity[][] }
     | undefined;
 } {
   if (wirePropertySecurities == null || wirePropertySecurities.length === 0) {
@@ -352,8 +352,9 @@ function parseWhenSecuritiesLoaded(
   }
 
   const parsedObject: SimpleOsdkProperties = { ...rawObject };
-  const clientPropertySecurities: { [propName: string]: PropertySecurity[] } =
-    {};
+  const clientPropertySecurities: {
+    [propName: string]: PropertySecurity[] | PropertySecurity[][];
+  } = {};
 
   for (const propKey of Object.keys(rawObject)) {
     if (
@@ -361,8 +362,37 @@ function parseWhenSecuritiesLoaded(
     ) {
       const value = rawObject[propKey];
 
-      // Check if this is a secured property value
-      if (
+      if (Array.isArray(value)) {
+        const newVal: any[] = [];
+        const newSecurities: PropertySecurity[][] = [];
+        value.forEach(spv => {
+          invariant(
+            typeof spv === "object"
+              && spv != null
+              && "value" in spv
+              && "propertySecurityIndex" in spv,
+            "Expected destructured secured property value object in array",
+          );
+          const securedValue = spv as SecuredPropertyValue;
+          newVal.push(securedValue.value);
+          const securityIndex = securedValue.propertySecurityIndex;
+          invariant(
+            securityIndex != null,
+            "Expected property security index to be defined",
+          );
+          invariant(
+            securityIndex < wirePropertySecurities.length,
+            "Expected property security index to be within bounds",
+          );
+          newSecurities.push(
+            wirePropertySecurities[securityIndex].disjunction
+              .map(wireToClientPropertySecurities),
+          );
+        });
+        parsedObject[propKey] = newVal;
+        clientPropertySecurities[propKey] = newSecurities;
+      } // Check if this is a secured property value object
+      else if (
         typeof value === "object"
         && value != null
         && "value" in value
@@ -371,12 +401,18 @@ function parseWhenSecuritiesLoaded(
         const securedValue = value as SecuredPropertyValue;
         parsedObject[propKey] = securedValue.value;
 
-        const securityIndex = securedValue.propertySecurityIndex ?? 0;
-        if (securityIndex < wirePropertySecurities.length) {
-          clientPropertySecurities[propKey] =
-            wirePropertySecurities[securityIndex].disjunction
-              .map(wireToClientPropertySecurities);
-        }
+        const securityIndex = securedValue.propertySecurityIndex;
+        invariant(
+          securityIndex != null,
+          "Expected property security index to be defined",
+        );
+        invariant(
+          securityIndex < wirePropertySecurities.length,
+          "Expected property security index to be within bounds",
+        );
+        clientPropertySecurities[propKey] =
+          wirePropertySecurities[securityIndex].disjunction
+            .map(wireToClientPropertySecurities);
       } else {
         // Regular property without security
         parsedObject[propKey] = value;
