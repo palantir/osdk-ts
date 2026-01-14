@@ -50,6 +50,7 @@ import { type Client } from "../../Client.js";
 import { createClient } from "../../createClient.js";
 import { TestLogger } from "../../logger/TestLogger.js";
 import type { ObjectHolder } from "../../object/convertWireToOsdkObjects/ObjectHolder.js";
+import type { ObjectSetPayload } from "../ObjectSetPayload.js";
 import type {
   ObserveListOptions,
   Unsubscribable,
@@ -70,6 +71,7 @@ import {
   expectSingleObjectCallAndClear,
   getObject,
   mockListSubCallback,
+  mockObserver,
   mockSingleSubCallback,
   objectPayloadContaining,
   updateList,
@@ -1832,6 +1834,76 @@ describe(Store, () => {
           { isOptimistic: false },
         );
       });
+    });
+
+    it("works with pivotTo and orderBy on objectSets", async () => {
+      fauxFoundry.getDefaultDataStore().clear();
+
+      const officeA = fauxFoundry.getDefaultDataStore().registerObject(Office, {
+        $apiName: "Office",
+        officeId: "office-a",
+        name: "Zebra Office",
+      });
+      const officeB = fauxFoundry.getDefaultDataStore().registerObject(Office, {
+        $apiName: "Office",
+        officeId: "office-b",
+        name: "Alpha Office",
+      });
+
+      const emp1 = fauxFoundry.getDefaultDataStore().registerObject(Employee, {
+        $apiName: "Employee",
+        employeeId: 1,
+        fullName: "Test Employee",
+      });
+      const emp2 = fauxFoundry.getDefaultDataStore().registerObject(Employee, {
+        $apiName: "Employee",
+        employeeId: 2,
+        fullName: "Test Employee 2",
+      });
+
+      fauxFoundry.getDefaultDataStore().registerLink(
+        emp1,
+        "officeLink",
+        officeA,
+        "occupants",
+      );
+      fauxFoundry.getDefaultDataStore().registerLink(
+        emp2,
+        "officeLink",
+        officeB,
+        "occupants",
+      );
+
+      const sub = mockObserver<ObjectSetPayload | undefined>();
+      defer(
+        store.objectSets.observe({
+          baseObjectSet: client(Employee).pivotTo("officeLink"),
+          orderBy: { name: "asc" },
+        }, sub),
+      );
+
+      await vi.waitFor(
+        () => {
+          expect(sub.next).toHaveBeenLastCalledWith(
+            expect.objectContaining({
+              status: "loaded",
+            }),
+          );
+        },
+        { timeout: 5000 },
+      );
+
+      expect(sub.next).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          status: "loaded",
+          resolvedList: [
+            expect.objectContaining({ name: "Alpha Office" }),
+            expect.objectContaining({ name: "Zebra Office" }),
+          ],
+        }),
+      );
+
+      expect(sub.error).not.toHaveBeenCalled();
     });
   });
 
