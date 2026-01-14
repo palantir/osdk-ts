@@ -117,7 +117,10 @@ export function useOsdkObject<Q extends ObjectTypeDefinition>(
 
   return {
     object: payload?.object as Osdk.Instance<Q> | undefined,
-    isLoading: payload?.status === "loading",
+    isLoading: enabled
+      ? (payload?.status === "loading" || payload?.status === "init"
+        || !payload)
+      : false,
     isOptimistic: !!payload?.isOptimistic,
     error,
     forceUpdate: () => {
