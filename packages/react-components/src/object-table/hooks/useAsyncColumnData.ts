@@ -216,7 +216,7 @@ function mergeRowsWithEnrichedData<
           && colKey in rowEnrichedData;
 
         const asyncValue: AsyncValue<unknown> = hasColumnData
-          ? { type: "loaded", value: rowEnrichedData![colKey] }
+          ? { type: "loaded", value: rowEnrichedData[colKey] }
           : isDerivedPropertiesLoading
           ? { type: "loading" }
           : derivedPropertiesError
