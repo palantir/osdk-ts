@@ -181,7 +181,10 @@ export function useLinks<
 
   return {
     links: payload?.resolvedList,
-    isLoading: payload?.status === "loading",
+    isLoading: enabled
+      ? (payload?.status === "loading" || payload?.status === "init"
+        || !payload)
+      : false,
     isOptimistic: payload?.isOptimistic ?? false,
     error: payload?.error,
     fetchMore: payload?.fetchMore,
