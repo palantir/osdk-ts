@@ -1,5 +1,14 @@
 # @osdk/shared.test
 
+## 2.6.1
+
+### Patch Changes
+
+- 931dff7: Add Transaction ID to Queries
+- Updated dependencies [931dff7]
+  - @osdk/generator-converters@2.6.1
+  - @osdk/api@2.6.1
+
 ## 2.6.0
 
 ### Patch Changes
