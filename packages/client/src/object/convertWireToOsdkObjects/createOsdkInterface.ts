@@ -69,6 +69,10 @@ export function createOsdkInterface<
         value: clone,
         enumerable: false,
       },
+      "$propertySecurity": {
+        value: underlying.$propertySecurity,
+        enumerable: "$propertySecurity" in underlying,
+      },
       "$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata": {
         value: {
           "ObjectMetadata": underlying[ObjectDefRef],

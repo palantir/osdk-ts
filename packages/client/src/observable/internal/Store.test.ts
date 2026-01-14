@@ -311,6 +311,7 @@ describe(Store, () => {
               "$objectSpecifier": "Employee:1",
               "$objectType": "Employee",
               "$primaryKey": 1,
+              "$propertySecurity": undefined,
               "$title": undefined,
               "employeeId": 1,
               "office": "101",
