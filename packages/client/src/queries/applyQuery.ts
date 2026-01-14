@@ -59,6 +59,10 @@ export async function applyQuery<
     query.isFixedVersion ? query.version : undefined,
   );
 
+  if (client.flushEdits != null) {
+    await client.flushEdits();
+  }
+
   const response = await OntologiesV2.Queries.execute(
     addUserAgentAndRequestContextHeaders(
       augmentRequestContext(client, _ => ({ finalMethodCall: "applyQuery" })),
@@ -75,7 +79,10 @@ export async function applyQuery<
         )
         : {},
     },
-    { version: query.isFixedVersion ? query.version : undefined },
+    {
+      version: query.isFixedVersion ? query.version : undefined,
+      transactionId: client.transactionId,
+    },
   );
 
   const objectOutputDefs = await getRequiredDefinitions(
