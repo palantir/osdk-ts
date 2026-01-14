@@ -1601,8 +1601,8 @@ importers:
         specifier: workspace:~
         version: link:../cli.common
       '@osdk/foundry.ontologies':
-        specifier: 2.42.0
-        version: 2.42.0
+        specifier: 2.44.0
+        version: 2.44.0
       '@osdk/generator':
         specifier: workspace:~
         version: link:../generator
@@ -1684,14 +1684,14 @@ importers:
         specifier: workspace:*
         version: link:../client.unstable
       '@osdk/foundry.core':
-        specifier: 2.42.0
-        version: 2.42.0
+        specifier: 2.44.0
+        version: 2.44.0
       '@osdk/foundry.mediasets':
-        specifier: 2.42.0
-        version: 2.42.0
+        specifier: 2.44.0
+        version: 2.44.0
       '@osdk/foundry.ontologies':
-        specifier: 2.42.0
-        version: 2.42.0
+        specifier: 2.44.0
+        version: 2.44.0
       '@osdk/generator-converters':
         specifier: workspace:*
         version: link:../generator-converters
@@ -3032,8 +3032,8 @@ importers:
         specifier: workspace:~
         version: link:../e2e.generated.catchall
       '@osdk/foundry':
-        specifier: 2.42.0
-        version: 2.42.0
+        specifier: 2.44.0
+        version: 2.44.0
       '@osdk/functions':
         specifier: workspace:~
         version: link:../functions
@@ -3454,23 +3454,23 @@ importers:
         specifier: workspace:~
         version: link:../api
       '@osdk/foundry.core':
-        specifier: 2.42.0
-        version: 2.42.0
+        specifier: 2.44.0
+        version: 2.44.0
       '@osdk/foundry.geo':
-        specifier: 2.42.0
-        version: 2.42.0
+        specifier: 2.44.0
+        version: 2.44.0
       '@osdk/foundry.mediasets':
-        specifier: 2.42.0
-        version: 2.42.0
+        specifier: 2.44.0
+        version: 2.44.0
       '@osdk/foundry.ontologies':
-        specifier: 2.42.0
-        version: 2.42.0
+        specifier: 2.44.0
+        version: 2.44.0
       '@osdk/generator-converters':
         specifier: workspace:~
         version: link:../generator-converters
       '@osdk/internal.foundry.ontologies':
-        specifier: 2.42.0
-        version: 2.42.0
+        specifier: 2.44.0
+        version: 2.44.0
       date-fns:
         specifier: ^4.1.0
         version: 4.1.0
@@ -3561,11 +3561,11 @@ importers:
         specifier: workspace:*
         version: link:../client
       '@osdk/foundry.ontologies':
-        specifier: 2.42.0
-        version: 2.42.0
+        specifier: 2.44.0
+        version: 2.44.0
       '@osdk/foundry.thirdpartyapplications':
-        specifier: 2.42.0
-        version: 2.42.0
+        specifier: 2.44.0
+        version: 2.44.0
       '@osdk/generator':
         specifier: workspace:*
         version: link:../generator
@@ -3686,8 +3686,8 @@ importers:
         specifier: workspace:~
         version: link:../api
       '@osdk/foundry.ontologies':
-        specifier: 2.42.0
-        version: 2.42.0
+        specifier: 2.44.0
+        version: 2.44.0
       '@osdk/generator-converters':
         specifier: workspace:~
         version: link:../generator-converters
@@ -3735,7 +3735,7 @@ importers:
         specifier: workspace:~
         version: link:../api
       '@osdk/foundry.ontologies':
-        specifier: catalog:foundry-platform-typescript
+        specifier: 2.44.0
         version: 2.44.0
     devDependencies:
       '@osdk/monorepo.api-extractor':
@@ -3760,8 +3760,8 @@ importers:
         specifier: workspace:~
         version: link:../client.unstable
       '@osdk/foundry.ontologies':
-        specifier: 2.42.0
-        version: 2.42.0
+        specifier: 2.44.0
+        version: 2.44.0
       tiny-invariant:
         specifier: ^1.3.3
         version: 1.3.3
@@ -4169,20 +4169,20 @@ importers:
         specifier: workspace:~
         version: link:../api
       '@osdk/foundry.core':
-        specifier: 2.42.0
-        version: 2.42.0
+        specifier: 2.44.0
+        version: 2.44.0
       '@osdk/foundry.geo':
-        specifier: 2.42.0
-        version: 2.42.0
+        specifier: 2.44.0
+        version: 2.44.0
       '@osdk/foundry.ontologies':
-        specifier: 2.42.0
-        version: 2.42.0
+        specifier: 2.44.0
+        version: 2.44.0
       '@osdk/generator-converters':
         specifier: workspace:~
         version: link:../generator-converters
       '@osdk/internal.foundry.ontologies':
-        specifier: 2.42.0
-        version: 2.42.0
+        specifier: 2.44.0
+        version: 2.44.0
       date-fns:
         specifier: ^4.1.0
         version: 4.1.0
@@ -4523,8 +4523,8 @@ importers:
         specifier: workspace:*
         version: link:../faux
       '@osdk/foundry.ontologies':
-        specifier: 2.42.0
-        version: 2.42.0
+        specifier: 2.44.0
+        version: 2.44.0
       '@osdk/generator-converters.ontologyir':
         specifier: workspace:*
         version: link:../generator-converters.ontologyir

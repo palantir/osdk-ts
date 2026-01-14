@@ -43,7 +43,6 @@ export function createMinimalClient(
     logger?: Logger;
     transactionId?: string;
     flushEdits?: () => Promise<void>;
-    branch?: string;
   } = {},
   fetchFn: (
     input: Request | URL | string,

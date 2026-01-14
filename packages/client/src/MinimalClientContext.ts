@@ -35,7 +35,6 @@ export interface MinimalClient extends SharedClientContext {
   ontologyRid: string | Promise<string>;
   ontologyProvider: OntologyProvider;
   logger?: Logger;
-  branch?: string;
   /** @internal */
   objectSetFactory: ObjectSetFactory<any, any>;
   /** @internal */

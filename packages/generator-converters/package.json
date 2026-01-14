@@ -44,7 +44,7 @@
   },
   "dependencies": {
     "@osdk/api": "workspace:~",
-    "@osdk/foundry.ontologies": "catalog:foundry-platform-typescript"
+    "@osdk/foundry.ontologies": "2.44.0"
   },
   "devDependencies": {
     "@osdk/monorepo.api-extractor": "workspace:~",

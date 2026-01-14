@@ -894,7 +894,6 @@ describe("convertWireToOsdkObjects", () => {
                   "multiplicity": false,
                   "nullable": true,
                   "type": "stringTimeseries",
-                  "valueFormatting": undefined,
                   "valueTypeApiName": undefined,
                 },
                 "employeeStatus": {
