@@ -20,6 +20,7 @@ const columnDefinitions: ColumnDefinition<
       type: "property",
       id: "fullName",
     },
+    pinned: "left",
     renderHeader: () => <div style={{ color: "red" }}>My Name</div>,
   },
   // With isVisible prop

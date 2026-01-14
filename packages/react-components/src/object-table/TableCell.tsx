@@ -19,7 +19,8 @@ import { flexRender } from "@tanstack/react-table";
 import React, { useRef } from "react";
 import { CellContextMenu } from "./CellContextMenu.js";
 import { useCellContextMenu } from "./hooks/useCellContextMenu.js";
-import { SELECTION_COLUMN_ID } from "./hooks/useSelectionColumn.js";
+import { getCommonPinningStyles } from "./pinningUtils.js";
+import { SELECTION_COLUMN_ID } from "./utils/constants.js";
 
 interface TableCellProps<TData extends RowData> {
   cell: Cell<TData, unknown>;
@@ -48,6 +49,8 @@ export function TableCell<TData extends RowData>(
     && !!popoverPosition
     && !!renderCellContextMenu;
 
+  const { columnStyles } = getCommonPinningStyles(cell.column);
+
   return (
     <>
       <td
@@ -55,7 +58,11 @@ export function TableCell<TData extends RowData>(
         style={{
           display: "flex",
           alignItems: "center",
-          width: cell.column.getSize(),
+
+          padding: "0 16px",
+          borderRight: "1px dotted rgba(17, 20, 24, 0.15)",
+          backgroundColor: "white",
+          ...columnStyles,
         }}
         onContextMenu={handleOpenContextMenu}
       >
