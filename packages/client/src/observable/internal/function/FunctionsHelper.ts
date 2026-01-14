@@ -23,7 +23,7 @@ import type { Canonical } from "../Canonical.js";
 import type { KnownCacheKey } from "../KnownCacheKey.js";
 import type { QuerySubscription } from "../QuerySubscription.js";
 import type { Store } from "../Store.js";
-import type { FunctionCacheKey } from "./FunctionCacheKey.js";
+import { type FunctionCacheKey, PARAMS_IDX } from "./FunctionCacheKey.js";
 import type { CanonicalFunctionParams } from "./FunctionParamsCanonicalizer.js";
 import { FunctionParamsCanonicalizer } from "./FunctionParamsCanonicalizer.js";
 import { type FunctionObserveOptions, FunctionQuery } from "./FunctionQuery.js";
@@ -114,7 +114,7 @@ export class FunctionsHelper extends AbstractHelper<
       // If params provided, check for exact match
       if (canonicalParams !== undefined) {
         const queryCacheKey = cacheKey as FunctionCacheKey;
-        const queryParams = queryCacheKey.otherKeys[2];
+        const queryParams = queryCacheKey.otherKeys[PARAMS_IDX];
         if (queryParams !== canonicalParams) {
           continue;
         }

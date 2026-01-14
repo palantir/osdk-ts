@@ -41,7 +41,6 @@ type PathElement = PrimitiveValue | WireObjectSet;
 
 // Path markers use "$:" prefix. User data with this prefix is unlikely but could
 // theoretically cause collisions if it matches the exact marker sequence.
-
 function isPrimitiveValue(value: unknown): value is PrimitiveValue {
   if (value == null) return true;
   const t = typeof value;
