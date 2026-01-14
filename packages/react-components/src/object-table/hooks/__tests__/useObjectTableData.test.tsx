@@ -25,36 +25,22 @@ import type { Client } from "@osdk/client";
 import { OsdkProvider } from "@osdk/react";
 import { renderHook } from "@testing-library/react";
 import * as React from "react";
-import { describe, expect, it, vi } from "vitest";
+import type { Mock } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { ColumnDefinition } from "../../ObjectTableApi.js";
 import { useObjectTableData } from "../useObjectTableData.js";
 
-interface MockUseObjectSetReturn {
-  data: [];
-  isLoading: false;
-  error: undefined;
-  fetchNextPage: ReturnType<typeof vi.fn>;
-  hasNextPage: false;
-  isFetchingNextPage: false;
-  _testOptions: {
-    withProperties?: Record<string, unknown>;
-    pageSize: number;
-  };
-}
+const { mockUseObjectSet, mockUseAsyncColumnData } = vi.hoisted(() => ({
+  mockUseObjectSet: vi.fn(),
+  mockUseAsyncColumnData: vi.fn(),
+}));
 
 vi.mock("@osdk/react/experimental", () => ({
-  useObjectSet: vi.fn((objectSet, options): MockUseObjectSetReturn => {
-    return {
-      data: [],
-      isLoading: false,
-      error: undefined,
-      fetchNextPage: vi.fn(),
-      hasNextPage: false,
-      isFetchingNextPage: false,
-      // Return the options to verify they were passed correctly
-      _testOptions: options,
-    };
-  }),
+  useObjectSet: mockUseObjectSet,
+}));
+
+vi.mock("../useAsyncColumnData.js", () => ({
+  useAsyncColumnData: mockUseAsyncColumnData,
 }));
 
 const TestObjectType = {
@@ -79,31 +65,74 @@ describe(useObjectTableData, () => {
   const fakeClient = {} as unknown as Client;
   const wrapper = createWrapper(fakeClient);
 
-  it("calls useObjectSet with pageSize of 50", () => {
+  beforeEach(() => {
+    mockUseObjectSet.mockClear();
+    mockUseAsyncColumnData.mockClear();
+
+    // Default mock implementations
+    mockUseObjectSet.mockReturnValue({
+      data: [],
+      isLoading: false,
+      error: undefined,
+      fetchMore: vi.fn(),
+    });
+
+    mockUseAsyncColumnData.mockReturnValue({
+      rows: [],
+    });
+  });
+
+  it("when called with objectSet only, calls useObjectSet and returns rows from useAsyncColumnData", () => {
+    const mockBaseRows = [{ $primaryKey: "1" }] as any[];
+    const mockFetchMore = () => {};
+    mockUseObjectSet.mockReturnValue({
+      data: mockBaseRows,
+      isLoading: false,
+      error: undefined,
+      fetchMore: mockFetchMore,
+    });
+
+    mockUseAsyncColumnData.mockReturnValue({
+      rows: mockBaseRows,
+    });
+
     const { result } = renderHook(
       () => useObjectTableData(mockObjectSet),
       { wrapper },
     );
 
-    const mockResult = result.current as unknown as MockUseObjectSetReturn;
-    expect(mockResult._testOptions).toEqual({
-      withProperties: undefined,
-      pageSize: 50,
+    expect(mockUseObjectSet).toHaveBeenCalledWith(
+      mockObjectSet,
+      expect.objectContaining({
+        pageSize: 50,
+      }),
+    );
+
+    expect(mockUseAsyncColumnData).toHaveBeenCalledWith(
+      expect.objectContaining({
+        objectSet: mockObjectSet,
+        baseRows: mockBaseRows,
+        withProperties: undefined,
+        derivedPropertyKeys: [],
+      }),
+    );
+
+    expect(result.current).toEqual({
+      data: mockBaseRows,
+      fetchMore: mockFetchMore,
+      isLoading: false,
     });
   });
 
-  it("calls useObjectSet without withProperties when no columnDefinitions provided", () => {
-    const { result } = renderHook(
-      () => useObjectTableData(mockObjectSet, undefined),
-      { wrapper },
-    );
+  it("when columnDefinitions have no RDP columns, calls useAsyncColumnData with empty withProperties,", () => {
+    const mockBaseRows = [{ $primaryKey: "1" }] as any[];
+    mockUseObjectSet.mockReturnValue({
+      data: mockBaseRows,
+      isLoading: false,
+      error: undefined,
+      fetchMore: vi.fn(),
+    });
 
-    const mockResult = result.current as unknown as MockUseObjectSetReturn;
-    expect(mockResult._testOptions.withProperties).toBeUndefined();
-    expect(mockResult._testOptions.pageSize).toBe(50);
-  });
-
-  it("calls useObjectSet without withProperties when columnDefinitions have no RDP columns", () => {
     const columnDefinitions: Array<ColumnDefinition<TestObject, {}, {}>> = [
       {
         locator: { type: "property", id: "name" as TestObjectKeys },
@@ -113,17 +142,28 @@ describe(useObjectTableData, () => {
       },
     ];
 
-    const { result } = renderHook(
+    renderHook(
       () => useObjectTableData(mockObjectSet, columnDefinitions),
       { wrapper },
     );
 
-    const mockResult = result.current as unknown as MockUseObjectSetReturn;
-    expect(mockResult._testOptions.withProperties).toEqual({});
-    expect(mockResult._testOptions.pageSize).toBe(50);
+    expect(mockUseAsyncColumnData).toHaveBeenCalledWith(
+      expect.objectContaining({
+        withProperties: {},
+        derivedPropertyKeys: [],
+      }),
+    );
   });
 
-  it("extracts RDP creators and passes them to useObjectSet", () => {
+  it("extracts RDP creators and passes them to useAsyncColumnData", () => {
+    const mockBaseRows = [{ $primaryKey: "1" }] as any[];
+    mockUseObjectSet.mockReturnValue({
+      data: mockBaseRows,
+      isLoading: false,
+      error: undefined,
+      fetchMore: vi.fn(),
+    });
+
     const mockRdpCreator1 = vi.fn() as unknown as DerivedProperty.Creator<
       TestObject,
       SimplePropertyDef
@@ -154,55 +194,31 @@ describe(useObjectTableData, () => {
       },
     ];
 
-    const { result } = renderHook(
+    renderHook(
       () => useObjectTableData(mockObjectSet, columnDefinitions),
       { wrapper },
     );
 
-    const mockResult = result.current as unknown as MockUseObjectSetReturn;
-    expect(mockResult._testOptions.withProperties).toEqual({
-      rdp1: mockRdpCreator1,
-      rdp2: mockRdpCreator2,
-    });
-  });
-
-  it("memoizes withProperties based on columnDefinitions", () => {
-    const mockRdpCreator = vi.fn() as unknown as DerivedProperty.Creator<
-      TestObject,
-      SimplePropertyDef
-    >;
-
-    const columnDefinitions: Array<
-      ColumnDefinition<TestObject, { myRdp: any }, {}>
-    > = [
-      {
-        locator: { type: "rdp", id: "myRdp", creator: mockRdpCreator },
-      },
-    ];
-
-    const { result, rerender } = renderHook(
-      ({ colDefs }) => useObjectTableData(mockObjectSet, colDefs),
-      {
-        initialProps: { colDefs: columnDefinitions },
-        wrapper,
-      },
-    );
-
-    const firstMockResult = result.current as unknown as MockUseObjectSetReturn;
-    const firstWithProperties = firstMockResult._testOptions.withProperties;
-
-    // Rerender with same columnDefinitions reference
-    rerender({ colDefs: columnDefinitions });
-
-    // Should be the same reference (memoized)
-    const secondMockResult = result
-      .current as unknown as MockUseObjectSetReturn;
-    expect(secondMockResult._testOptions.withProperties).toBe(
-      firstWithProperties,
+    expect(mockUseAsyncColumnData).toHaveBeenCalledWith(
+      expect.objectContaining({
+        withProperties: {
+          rdp1: mockRdpCreator1,
+          rdp2: mockRdpCreator2,
+        },
+        derivedPropertyKeys: ["rdp1", "rdp2"],
+      }),
     );
   });
 
   it("updates withProperties when columnDefinitions change", () => {
+    const mockBaseRows = [{ $primaryKey: "1" }] as any[];
+    mockUseObjectSet.mockReturnValue({
+      data: mockBaseRows,
+      isLoading: false,
+      error: undefined,
+      fetchMore: vi.fn(),
+    });
+
     const mockRdpCreator1 = vi.fn() as unknown as DerivedProperty.Creator<
       TestObject,
       SimplePropertyDef
@@ -226,7 +242,7 @@ describe(useObjectTableData, () => {
       >
       | undefined;
 
-    const { result, rerender } = renderHook(
+    const { rerender } = renderHook(
       ({ colDefs }: { colDefs: ColDefs }) =>
         useObjectTableData(mockObjectSet, colDefs),
       {
@@ -235,8 +251,8 @@ describe(useObjectTableData, () => {
       },
     );
 
-    const firstMockResult = result.current as unknown as MockUseObjectSetReturn;
-    expect(firstMockResult._testOptions.withProperties).toEqual({
+    const firstCallProps = (mockUseAsyncColumnData as Mock).mock.calls[0][0];
+    expect(firstCallProps.withProperties).toEqual({
       rdp1: mockRdpCreator1,
     });
 
@@ -250,24 +266,10 @@ describe(useObjectTableData, () => {
 
     rerender({ colDefs: updatedColumnDefinitions as ColDefs });
 
-    const secondMockResult = result
-      .current as unknown as MockUseObjectSetReturn;
-    expect(secondMockResult._testOptions.withProperties).toEqual({
+    const secondCallProps = (mockUseAsyncColumnData as Mock).mock
+      .calls[1][0];
+    expect(secondCallProps.withProperties).toEqual({
       rdp2: mockRdpCreator2,
     });
-  });
-
-  it("returns useObjectSet result structure", () => {
-    const { result } = renderHook(
-      () => useObjectTableData(mockObjectSet),
-      { wrapper },
-    );
-
-    expect(result.current).toHaveProperty("data");
-    expect(result.current).toHaveProperty("isLoading");
-    expect(result.current).toHaveProperty("error");
-    expect(result.current).toHaveProperty("fetchNextPage");
-    expect(result.current).toHaveProperty("hasNextPage");
-    expect(result.current).toHaveProperty("isFetchingNextPage");
   });
 });

@@ -28,7 +28,7 @@ import { useMemo } from "react";
 import type { ColumnDefinition } from "../ObjectTableApi.js";
 import { useAsyncColumnData } from "./useAsyncColumnData.js";
 
-const PAGE_SIZE = 2;
+const PAGE_SIZE = 50;
 
 interface UseObjectTableDataResults<
   Q extends ObjectTypeDefinition,
@@ -98,13 +98,13 @@ export function useObjectTableData<
     );
   }, [columnDefinitions]);
 
-  // Load derived properties
   const derivedPropertyKeys = useMemo(
     () => withProperties ? Object.keys(withProperties) : [],
     [withProperties],
   );
   type DerivedPropertyKey = (typeof derivedPropertyKeys)[number];
 
+  // Get rows with slower columns that are loaded async
   const { rows } = useAsyncColumnData<
     Q,
     DerivedPropertyKey,
