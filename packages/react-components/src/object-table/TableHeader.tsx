@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import type { RowData, Table } from "@tanstack/react-table";
-import { flexRender } from "@tanstack/react-table";
-import type { ReactNode } from "react";
-import React from "react";
+import { flexRender, type RowData, type Table } from "@tanstack/react-table";
+import React, { type ReactNode } from "react";
+import { HeaderMenuPopover } from "./HeaderMenuPopover.js";
+import { getCommonPinningStyles } from "./pinningUtils.js";
 import styles from "./TableHeader.module.css";
+import { SELECTION_COLUMN_ID } from "./utils/constants.js";
 
 interface TableHeaderProps<TData extends RowData> {
   table: Table<TData>;
@@ -38,30 +39,46 @@ export function TableHeader<TData extends RowData>({
           key={headerGroup.id}
           className={styles.osdkTableHeaderRow}
         >
-          {headerGroup.headers.map((header) => (
-            <th
-              key={header.id}
-              className={styles.osdkTableHeaderCell}
-              style={{
-                width: header.getSize(),
-              }}
-            >
-              {header.isPlaceholder
-                ? null
-                : flexRender(
-                  header.column.columnDef.header,
-                  header.getContext(),
-                ) as ReactNode | React.JSX.Element}
-              {header.column.getCanResize() && (
-                <div
-                  className={styles.osdkTableHeaderResizer}
-                  onDoubleClick={() => header.column.resetSize()}
-                  onMouseDown={header.getResizeHandler()}
-                  onTouchStart={header.getResizeHandler()}
-                />
-              )}
-            </th>
-          ))}
+          {headerGroup.headers.map((header) => {
+            const { columnStyles } = getCommonPinningStyles(header.column);
+            const isColumnPinned = header.column.getIsPinned();
+            const isSelectColumn = header.id === SELECTION_COLUMN_ID;
+            return (
+              // TODO: Move inline styling to CSS file
+              <th
+                key={header.id}
+                className={styles.osdkTableHeaderCell}
+                style={{
+                  ...columnStyles,
+                }}
+              >
+                {isSelectColumn
+                  ? (
+                    <span>
+                      {flexRender(
+                        header.column.columnDef.header,
+                        header.getContext(),
+                      ) as ReactNode | React.JSX.Element}
+                    </span>
+                  )
+                  : (
+                    <HeaderMenuPopover
+                      header={header}
+                      isColumnPinned={isColumnPinned}
+                      setColumnPinning={table.setColumnPinning}
+                    />
+                  )}
+                {header.column.getCanResize() && (
+                  <div
+                    className={styles.osdkTableHeaderResizer}
+                    onDoubleClick={() => header.column.resetSize()}
+                    onMouseDown={header.getResizeHandler()}
+                    onTouchStart={header.getResizeHandler()}
+                  />
+                )}
+              </th>
+            );
+          })}
         </tr>
       ))}
     </thead>
