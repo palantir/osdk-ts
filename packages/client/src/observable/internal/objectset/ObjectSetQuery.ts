@@ -111,15 +111,15 @@ export class ObjectSetQuery extends BaseListQuery<
   #extractObjectTypes(opts: ObjectSetQueryOptions): Set<string> {
     const types = new Set<string>();
     const baseWire = JSON.parse(this.#baseObjectSetWire);
-    if (baseWire.type) {
-      types.add(baseWire.type);
+    if (baseWire.type === "base") {
+      types.add(baseWire.objectType);
     }
 
     if (opts.union) {
       for (const os of opts.union) {
         const wire = getWireObjectSet(os);
-        if (wire.type) {
-          types.add(wire.type);
+        if (wire.type === "base") {
+          types.add(wire.objectType);
         }
       }
     }
@@ -127,8 +127,8 @@ export class ObjectSetQuery extends BaseListQuery<
     if (opts.intersect) {
       for (const os of opts.intersect) {
         const wire = getWireObjectSet(os);
-        if (wire.type) {
-          types.add(wire.type);
+        if (wire.type === "base") {
+          types.add(wire.objectType);
         }
       }
     }
@@ -136,8 +136,8 @@ export class ObjectSetQuery extends BaseListQuery<
     if (opts.subtract) {
       for (const os of opts.subtract) {
         const wire = getWireObjectSet(os);
-        if (wire.type) {
-          types.add(wire.type);
+        if (wire.type === "base") {
+          types.add(wire.objectType);
         }
       }
     }
