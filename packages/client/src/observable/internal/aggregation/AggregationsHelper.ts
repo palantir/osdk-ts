@@ -16,18 +16,15 @@
 
 import type {
   AggregateOpts,
-  DerivedProperty,
   ObjectOrInterfaceDefinition,
-  ObjectSet,
   SimplePropertyDef,
-  WhereClause,
 } from "@osdk/api";
 import { getWireObjectSet } from "../../../objectSet/createObjectSet.js";
 import type {
-  CommonObserveOptions,
-  ObserveOptions,
-  Observer,
-} from "../../ObservableClient/common.js";
+  ObserveAggregationOptions,
+  ObserveAggregationOptionsWithObjectSet,
+} from "../../ObservableClient.js";
+import type { Observer } from "../../ObservableClient/common.js";
 import { AbstractHelper } from "../AbstractHelper.js";
 import type { CacheKeys } from "../CacheKeys.js";
 import type { Canonical } from "../Canonical.js";
@@ -44,49 +41,19 @@ import type {
 } from "./AggregationQuery.js";
 import { ObjectAggregationQuery } from "./ObjectAggregationQuery.js";
 
-export interface InternalAggregationOptions<
-  T extends ObjectOrInterfaceDefinition,
-  A extends AggregateOpts<T>,
-  RDPs extends Record<string, SimplePropertyDef> = {},
-> extends CommonObserveOptions, ObserveOptions {
-  type: T;
-  objectSet?: undefined;
-  where?: WhereClause<T, RDPs>;
-  withProperties?: DerivedProperty.Clause<T>;
-  intersectWith?: Array<{
-    where: WhereClause<T, RDPs>;
-  }>;
-  aggregate: A;
-}
-
-export interface InternalAggregationOptionsWithObjectSet<
-  T extends ObjectOrInterfaceDefinition,
-  A extends AggregateOpts<T>,
-  RDPs extends Record<string, SimplePropertyDef> = {},
-> extends CommonObserveOptions, ObserveOptions {
-  type: T;
-  objectSet: ObjectSet<T>;
-  where?: WhereClause<T, RDPs>;
-  withProperties?: DerivedProperty.Clause<T>;
-  intersectWith?: Array<{
-    where: WhereClause<T, RDPs>;
-  }>;
-  aggregate: A;
-}
-
-type AnyInternalAggregationOptions =
-  | InternalAggregationOptions<
+type AggregationOptions =
+  | ObserveAggregationOptions<
     ObjectOrInterfaceDefinition,
     AggregateOpts<ObjectOrInterfaceDefinition>
   >
-  | InternalAggregationOptionsWithObjectSet<
+  | ObserveAggregationOptionsWithObjectSet<
     ObjectOrInterfaceDefinition,
     AggregateOpts<ObjectOrInterfaceDefinition>
   >;
 
 export class AggregationsHelper extends AbstractHelper<
   AggregationQuery,
-  AnyInternalAggregationOptions
+  AggregationOptions
 > {
   whereCanonicalizer: WhereClauseCanonicalizer;
   rdpCanonicalizer: RdpCanonicalizer;
@@ -111,7 +78,7 @@ export class AggregationsHelper extends AbstractHelper<
     A extends AggregateOpts<T>,
     RDPs extends Record<string, SimplePropertyDef> = {},
   >(
-    options: InternalAggregationOptions<T, A, RDPs>,
+    options: ObserveAggregationOptions<T, A, RDPs>,
     subFn: Observer<AggregationPayloadBase>,
   ): QuerySubscription<AggregationQuery> {
     return super.observe(options, subFn);
@@ -122,14 +89,14 @@ export class AggregationsHelper extends AbstractHelper<
     A extends AggregateOpts<T>,
     RDPs extends Record<string, SimplePropertyDef> = {},
   >(
-    options: InternalAggregationOptionsWithObjectSet<T, A, RDPs>,
+    options: ObserveAggregationOptionsWithObjectSet<T, A, RDPs>,
     subFn: Observer<AggregationPayloadBase>,
   ): Promise<QuerySubscription<AggregationQuery>> {
     const query = this.getQueryWithObjectSet(options);
     await query.ensureInvalidationTypesReady();
     return this._subscribe(
       query,
-      options as AnyInternalAggregationOptions,
+      options as AggregationOptions,
       subFn,
     );
   }
@@ -139,7 +106,7 @@ export class AggregationsHelper extends AbstractHelper<
     A extends AggregateOpts<T>,
     RDPs extends Record<string, SimplePropertyDef> = {},
   >(
-    options: InternalAggregationOptions<T, A, RDPs>,
+    options: ObserveAggregationOptions<T, A, RDPs>,
   ): AggregationQuery {
     const { type, where, withProperties, intersectWith, aggregate } = options;
     const { apiName } = type;
@@ -159,7 +126,7 @@ export class AggregationsHelper extends AbstractHelper<
       "aggregation",
       typeKind,
       apiName,
-      undefined,
+      /* wireObjectSet */ undefined,
       canonWhere,
       canonRdp,
       canonIntersect,
@@ -186,7 +153,7 @@ export class AggregationsHelper extends AbstractHelper<
     A extends AggregateOpts<T>,
     RDPs extends Record<string, SimplePropertyDef> = {},
   >(
-    options: InternalAggregationOptionsWithObjectSet<T, A, RDPs>,
+    options: ObserveAggregationOptionsWithObjectSet<T, A, RDPs>,
   ): AggregationQuery {
     const { type, objectSet, where, withProperties, intersectWith, aggregate } =
       options;

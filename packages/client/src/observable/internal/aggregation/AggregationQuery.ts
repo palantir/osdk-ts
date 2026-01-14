@@ -94,7 +94,7 @@ export abstract class AggregationQuery extends Query<
   >;
   protected rdpConfig: Canonical<Rdp> | undefined;
   #invalidationTypes: Set<string>;
-  // Async computation of object types that should trigger invalidation (for pivoted object sets)
+  // Async computation of object types that should trigger invalidation
   #invalidationTypesPromise: Promise<Set<string>> | undefined;
 
   constructor(
@@ -145,12 +145,10 @@ export abstract class AggregationQuery extends Query<
       );
       return new Set([this.apiName, ...invalidationSet]);
     } catch (error) {
-      if (process.env.NODE_ENV !== "production") {
-        this.store.logger?.error(
-          "Failed to compute invalidation types for aggregation, falling back to base type only",
-          error,
-        );
-      }
+      this.store.logger?.error(
+        "Failed to compute invalidation types for aggregation, falling back to base type only",
+        error,
+      );
       return new Set([this.apiName]);
     }
   }
