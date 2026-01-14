@@ -265,6 +265,8 @@ export function filterObjects(
     }
     case "regex":
     case "wildcard":
+    case "interval":
+    case "relativeDateRange":
     // TODO: Implement geospatial filter clauses (require specialized geospatial libraries):
     case "doesNotIntersectBoundingBox":
     case "doesNotIntersectPolygon":
