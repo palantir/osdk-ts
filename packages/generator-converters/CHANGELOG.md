@@ -1,5 +1,12 @@
 # @osdk/generator-converters
 
+## 2.6.1
+
+### Patch Changes
+
+- 931dff7: Add Transaction ID to Queries
+  - @osdk/api@2.6.1
+
 ## 2.6.0
 
 ### Patch Changes

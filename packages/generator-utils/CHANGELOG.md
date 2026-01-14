@@ -1,5 +1,7 @@
 # @osdk/generator-utils
 
+## 2.6.1
+
 ## 2.6.0
 
 ### Patch Changes

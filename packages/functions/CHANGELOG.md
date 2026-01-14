@@ -1,5 +1,15 @@
 # @osdk/functions
 
+## 1.4.1
+
+### Patch Changes
+
+- 931dff7: Add ability to flush edits to transactions
+- 931dff7: Add Transaction ID to Queries
+- Updated dependencies [931dff7]
+- Updated dependencies [931dff7]
+  - @osdk/client@2.6.1
+
 ## 1.4.0
 
 ### Patch Changes
