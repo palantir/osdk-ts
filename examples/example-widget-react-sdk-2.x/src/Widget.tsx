@@ -56,7 +56,7 @@ export const Widget: React.FC = () => {
                 parameters.state === "not-started" ? (
                   <Skeleton>Hello, world!</Skeleton>
                 ) : (
-                  headerText ?? "dark-mode-osdk-template"
+                  headerText ?? "example-widget-react-sdk-2.x"
                 )}
               </Heading>
 
