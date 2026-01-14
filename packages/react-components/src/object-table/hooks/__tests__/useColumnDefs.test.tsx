@@ -16,17 +16,14 @@
 
 import type {
   DerivedProperty,
+  ObjectMetadata,
   ObjectTypeDefinition,
   Osdk,
   PropertyKeys,
   SimplePropertyDef,
 } from "@osdk/api";
-import type { Client } from "@osdk/client";
-import { OsdkProvider } from "@osdk/react";
 import type { AccessorKeyColumnDef } from "@tanstack/react-table";
-import { renderHook, waitFor } from "@testing-library/react";
-import pDefer from "p-defer";
-import * as React from "react";
+import { renderHook } from "@testing-library/react";
 import { describe, expect, it, vitest } from "vitest";
 import type { ColumnDefinition } from "../../ObjectTableApi.js";
 import { useColumnDefs } from "../useColumnDefs.js";
@@ -40,79 +37,31 @@ type TestObject = typeof TestObjectType;
 
 type TestObjectKeys = PropertyKeys<TestObject>;
 
-const mockMetadata = {
-  apiName: "TestObject",
-  primaryKeyApiName: "id",
-  primaryKeyType: "string",
-  properties: {
-    id: {
-      type: "string",
-      displayName: "ID",
-    },
-    name: {
-      type: "string",
-      displayName: "Name",
-    },
-    age: {
-      type: "integer",
-      displayName: "Age",
-    },
-    email: {
-      type: "string",
-      displayName: "Email Address",
-    },
-  },
+const mockProperties: Record<string, ObjectMetadata.Property> = {
+  id: {
+    type: "string",
+    displayName: "ID",
+  } as ObjectMetadata.Property,
+  name: {
+    type: "string",
+    displayName: "Name",
+  } as ObjectMetadata.Property,
+  age: {
+    type: "integer",
+    displayName: "Age",
+  } as ObjectMetadata.Property,
+  email: {
+    type: "string",
+    displayName: "Email Address",
+  } as ObjectMetadata.Property,
 };
+
 describe(useColumnDefs, () => {
-  const createWrapper = (client: Client) => {
-    return ({ children }: React.PropsWithChildren) => {
-      return (
-        <OsdkProvider client={client}>
-          {children}
-        </OsdkProvider>
-      );
-    };
-  };
-
-  it("returns loading state initially", () => {
-    const deferred = pDefer();
-    const fakeClient = {
-      fetchMetadata: vitest.fn(() => deferred.promise),
-    } as unknown as Client;
-
-    const wrapper = createWrapper(fakeClient);
-
-    const { result } = renderHook(
-      () => useColumnDefs(TestObjectType),
-      { wrapper },
-    );
-
-    expect(result.current.loading).toBe(true);
-    expect(result.current.columns).toEqual([]);
-    expect(result.current.error).toBeUndefined();
-  });
-
   describe("when no columnDefinitions provided", () => {
-    it("generates default columns from metadata", async () => {
-      const deferred = pDefer();
-      const fakeClient = {
-        fetchMetadata: vitest.fn(() => deferred.promise),
-      } as unknown as Client;
-
-      const wrapper = createWrapper(fakeClient);
-
-      const { result } = renderHook(
-        () => useColumnDefs(TestObjectType),
-        { wrapper },
+    it("generates default columns from properties", () => {
+      const { result } = renderHook(() =>
+        useColumnDefs(undefined, mockProperties)
       );
-
-      expect(result.current.loading).toBe(true);
-
-      deferred.resolve(mockMetadata);
-
-      await waitFor(() => {
-        expect(result.current.loading).toBe(false);
-      });
 
       expect(result.current.columns).toHaveLength(4);
       expect(result.current.columns[0]).toEqual({
@@ -133,56 +82,25 @@ describe(useColumnDefs, () => {
       });
     });
 
-    it("returns empty columns array when metadata has no properties", async () => {
-      const deferred = pDefer();
-      const fakeClient = {
-        fetchMetadata: vitest.fn(() => deferred.promise),
-      } as unknown as Client;
-
-      const wrapper = createWrapper(fakeClient);
-
-      const { result } = renderHook(
-        () => useColumnDefs(TestObjectType),
-        { wrapper },
-      );
-
-      deferred.resolve({
-        ...mockMetadata,
-        properties: undefined,
-      });
-
-      await waitFor(() => {
-        expect(result.current.loading).toBe(false);
-      });
+    it("returns empty columns array when properties is undefined", () => {
+      const { result } = renderHook(() => useColumnDefs(undefined, undefined));
 
       expect(result.current.columns).toEqual([]);
     });
 
-    it("uses property key as header when displayName is not available", async () => {
-      const deferred = pDefer();
-      const fakeClient = {
-        fetchMetadata: vitest.fn(() => deferred.promise),
-      } as unknown as Client;
+    it("uses property key as header when displayName is not available", () => {
+      const propsWithoutDisplayName: Record<
+        string,
+        ObjectMetadata.Property
+      > = {
+        noDisplayName: {
+          type: "string",
+        } as ObjectMetadata.Property,
+      };
 
-      const wrapper = createWrapper(fakeClient);
-
-      const { result } = renderHook(
-        () => useColumnDefs(TestObjectType),
-        { wrapper },
+      const { result } = renderHook(() =>
+        useColumnDefs(undefined, propsWithoutDisplayName)
       );
-
-      deferred.resolve({
-        ...mockMetadata,
-        properties: {
-          noDisplayName: {
-            type: "string",
-          },
-        },
-      });
-
-      await waitFor(() => {
-        expect(result.current.loading).toBe(false);
-      });
 
       expect(result.current.columns).toHaveLength(1);
       expect(result.current.columns[0]).toEqual({
@@ -193,14 +111,7 @@ describe(useColumnDefs, () => {
   });
 
   describe("when columnDefinitions is provided", () => {
-    it("builds columns from columnDefinitions with property locators", async () => {
-      const deferred = pDefer();
-      const fakeClient = {
-        fetchMetadata: vitest.fn(() => deferred.promise),
-      } as unknown as Client;
-
-      const wrapper = createWrapper(fakeClient);
-
+    it("builds columns from columnDefinitions with property locators", () => {
       const columnDefinitions: Array<ColumnDefinition<TestObject, {}, {}>> = [
         {
           locator: {
@@ -219,16 +130,9 @@ describe(useColumnDefs, () => {
         },
       ];
 
-      const { result } = renderHook(
-        () => useColumnDefs(TestObjectType, columnDefinitions),
-        { wrapper },
+      const { result } = renderHook(() =>
+        useColumnDefs(columnDefinitions, mockProperties)
       );
-
-      deferred.resolve(mockMetadata);
-
-      await waitFor(() => {
-        expect(result.current.loading).toBe(false);
-      });
 
       expect(result.current.columns).toHaveLength(2);
 
@@ -255,7 +159,7 @@ describe(useColumnDefs, () => {
       expect(emailColumn.header).toBe("Email Address");
     });
 
-    it("builds columns from columnDefinitions even when metadata has no properties", async () => {
+    it("builds columns from columnDefinitions even when properties is undefined", () => {
       const columnDefinitions: Array<ColumnDefinition<TestObject, {}, {}>> = [
         {
           locator: {
@@ -273,96 +177,81 @@ describe(useColumnDefs, () => {
           locator: { type: "property", id: "email" as TestObjectKeys },
         },
       ];
-      const deferred = pDefer();
-      const fakeClient = {
-        fetchMetadata: vitest.fn(() => deferred.promise),
-      } as unknown as Client;
 
-      const wrapper = createWrapper(fakeClient);
-
-      const { result } = renderHook(
-        () => useColumnDefs(TestObjectType, columnDefinitions),
-        { wrapper },
+      const { result } = renderHook(() =>
+        useColumnDefs(columnDefinitions, undefined)
       );
-
-      deferred.resolve({
-        ...mockMetadata,
-        properties: undefined,
-      });
-
-      await waitFor(() => {
-        expect(result.current.loading).toBe(false);
-      });
 
       expect(result.current.columns.length).toBe(2);
       const nameColumn = result.current.columns[0];
       expect(nameColumn.header).toBeUndefined();
-
-      const emailColumn = result.current.columns[1];
-      expect(emailColumn.header).toBeUndefined();
     });
 
-    it("uses custom renderHeader when provided", async () => {
-      const deferred = pDefer();
-      const fakeClient = {
-        fetchMetadata: vitest.fn(() => deferred.promise),
-      } as unknown as Client;
+    it("builds columns from columnDefinitions with RDP locators", () => {
+      const mockRdpCreator = (() => {}) as unknown as DerivedProperty.Creator<
+        TestObject,
+        SimplePropertyDef
+      >;
 
-      const wrapper = createWrapper(fakeClient);
-
-      const customHeader = () => <div>Custom Header</div>;
-
-      const columnDefinitions: Array<ColumnDefinition<TestObject, {}, {}>> = [
+      const columnDefinitions: Array<
+        ColumnDefinition<TestObject, { rdp1: SimplePropertyDef }, {}>
+      > = [
         {
-          locator: { type: "property", id: "name" as TestObjectKeys },
-          renderHeader: customHeader,
+          locator: {
+            type: "rdp",
+            id: "rdp1",
+            creator: mockRdpCreator,
+          },
         },
       ];
 
-      const { result } = renderHook(
-        () => useColumnDefs(TestObjectType, columnDefinitions),
-        { wrapper },
+      const { result } = renderHook(() =>
+        useColumnDefs(columnDefinitions, mockProperties)
       );
 
-      deferred.resolve(mockMetadata);
-
-      await waitFor(() => {
-        expect(result.current.loading).toBe(false);
-      });
-
-      expect(result.current.columns[0].header).toBe(customHeader);
+      expect(result.current.columns.length).toBe(1);
+      expect(result.current.columns[0].id).toBe("rdp1");
     });
 
-    it("uses custom renderCell when provided", async () => {
-      const deferred = pDefer();
-      const fakeClient = {
-        fetchMetadata: vitest.fn(() => deferred.promise),
-      } as unknown as Client;
+    it("builds columns from columnDefinitions with function locators", () => {
+      const columnDefinitions: Array<
+        ColumnDefinition<TestObject, {}, { myFunction: any }>
+      > = [
+        {
+          locator: {
+            type: "function",
+            id: "myFunction",
+          },
+        },
+      ];
 
-      const wrapper = createWrapper(fakeClient);
+      const { result } = renderHook(() =>
+        useColumnDefs(columnDefinitions, mockProperties)
+      );
+
+      expect(result.current.columns.length).toBe(1);
+      expect(result.current.columns[0].id).toBe("myFunction");
+    });
+
+    it("supports custom renderHeader and renderCell", () => {
+      const customRenderHeader = () => "Custom Header";
 
       const customRenderCell = vitest.fn((
         object: Osdk.Instance<TestObject>,
       ) => <div>Custom: {(object as unknown as { name: string }).name}</div>);
-
       const columnDefinitions: Array<ColumnDefinition<TestObject, {}, {}>> = [
         {
           locator: { type: "property", id: "name" as TestObjectKeys },
+          renderHeader: customRenderHeader,
           renderCell: customRenderCell,
         },
       ];
 
-      const { result } = renderHook(
-        () => useColumnDefs(TestObjectType, columnDefinitions),
-        { wrapper },
+      const { result } = renderHook(() =>
+        useColumnDefs(columnDefinitions, mockProperties)
       );
 
-      deferred.resolve(mockMetadata);
-
-      await waitFor(() => {
-        expect(result.current.loading).toBe(false);
-      });
-
+      expect(result.current.columns[0].header).toBe(customRenderHeader);
       const nameColumn = result.current.columns[0];
       expect(nameColumn.cell).toBeDefined();
 
@@ -387,30 +276,16 @@ describe(useColumnDefs, () => {
       );
     });
 
-    it("defaults to getValue when renderCell is not provided", async () => {
-      const deferred = pDefer();
-      const fakeClient = {
-        fetchMetadata: vitest.fn(() => deferred.promise),
-      } as unknown as Client;
-
-      const wrapper = createWrapper(fakeClient);
-
+    it("defaults to getValue when renderCell is not provided", () => {
       const columnDefinitions: Array<ColumnDefinition<TestObject, {}, {}>> = [
         {
           locator: { type: "property", id: "name" as TestObjectKeys },
         },
       ];
 
-      const { result } = renderHook(
-        () => useColumnDefs(TestObjectType, columnDefinitions),
-        { wrapper },
+      const { result } = renderHook(() =>
+        useColumnDefs(columnDefinitions, mockProperties)
       );
-
-      deferred.resolve(mockMetadata);
-
-      await waitFor(() => {
-        expect(result.current.loading).toBe(false);
-      });
 
       const nameColumn = result.current.columns[0];
       expect(nameColumn.cell).toBeDefined();
@@ -435,99 +310,7 @@ describe(useColumnDefs, () => {
       expect(mockGetValue).toHaveBeenCalled();
     });
 
-    it("handles function column locators", async () => {
-      const deferred = pDefer();
-      const fakeClient = {
-        fetchMetadata: vitest.fn(() => deferred.promise),
-      } as unknown as Client;
-
-      const wrapper = createWrapper(fakeClient);
-
-      const columnDefinitions: Array<
-        ColumnDefinition<TestObject, {}, { myFunction: any }>
-      > = [
-        {
-          locator: { type: "function", id: "myFunction" },
-          width: 150,
-        },
-      ];
-
-      const { result } = renderHook(
-        () => useColumnDefs(TestObjectType, columnDefinitions),
-        { wrapper },
-      );
-
-      deferred.resolve(mockMetadata);
-
-      await waitFor(() => {
-        expect(result.current.loading).toBe(false);
-      });
-
-      expect(result.current.columns).toHaveLength(1);
-
-      const functionColumn = result.current.columns[0];
-      expect(functionColumn.id).toBe("myFunction");
-      expect(
-        (functionColumn as AccessorKeyColumnDef<Osdk.Instance<TestObject>>)
-          .accessorKey,
-      ).toBe("myFunction");
-      expect(functionColumn.header).toBeUndefined();
-      expect(functionColumn.size).toBe(150);
-    });
-
-    it("handles RDP column locators", async () => {
-      const deferred = pDefer();
-      const fakeClient = {
-        fetchMetadata: vitest.fn(() => deferred.promise),
-      } as unknown as Client;
-
-      const wrapper = createWrapper(fakeClient);
-
-      const mockRdpCreator = vitest.fn() as unknown as DerivedProperty.Creator<
-        TestObject,
-        SimplePropertyDef
-      >;
-
-      const columnDefinitions: Array<
-        ColumnDefinition<TestObject, { myRdp: SimplePropertyDef }, {}>
-      > = [
-        {
-          locator: { type: "rdp", id: "myRdp", creator: mockRdpCreator },
-          width: 180,
-        },
-      ];
-
-      const { result } = renderHook(
-        () => useColumnDefs(TestObjectType, columnDefinitions),
-        { wrapper },
-      );
-
-      deferred.resolve(mockMetadata);
-
-      await waitFor(() => {
-        expect(result.current.loading).toBe(false);
-      });
-
-      expect(result.current.columns).toHaveLength(1);
-
-      const rdpColumn = result.current.columns[0];
-      expect(rdpColumn.id).toBe("myRdp");
-      expect(
-        (rdpColumn as AccessorKeyColumnDef<Osdk.Instance<TestObject>>)
-          .accessorKey,
-      ).toBe("myRdp");
-      expect(rdpColumn.header).toBeUndefined();
-      expect(rdpColumn.size).toBe(180);
-    });
-
-    it("updates columns when columnDefinitions changed", async () => {
-      const deferred = pDefer();
-      const fakeClient = {
-        fetchMetadata: vitest.fn(() => deferred.promise),
-      } as unknown as Client;
-
-      const wrapper = createWrapper(fakeClient);
-
+    it("updates columns when columnDefinitions change", () => {
       const initialColumnDefinitions: Array<
         ColumnDefinition<TestObject, {}, {}>
       > = [
@@ -536,100 +319,31 @@ describe(useColumnDefs, () => {
         },
       ];
 
-      type ColDefs =
-        | Array<
-          ColumnDefinition<TestObject, Record<string, SimplePropertyDef>, {}>
-        >
-        | undefined;
-
       const { result, rerender } = renderHook(
-        ({ colDefs }: { colDefs: ColDefs }) =>
-          useColumnDefs(TestObjectType, colDefs),
+        ({ colDefs, props }) => useColumnDefs(colDefs, props),
         {
-          initialProps: { colDefs: initialColumnDefinitions as ColDefs },
-          wrapper,
+          initialProps: {
+            colDefs: initialColumnDefinitions,
+            props: mockProperties,
+          },
         },
       );
 
-      deferred.resolve(mockMetadata);
-
-      await waitFor(() => {
-        expect(result.current.loading).toBe(false);
-      });
-
-      const firstColumns = result.current.columns;
+      expect(result.current.columns).toHaveLength(1);
+      expect(result.current.columns[0].id).toBe("name");
 
       const updatedColumnDefinitions: Array<
         ColumnDefinition<TestObject, {}, {}>
       > = [
         {
-          locator: { type: "property", id: "name" as TestObjectKeys },
-        },
-        {
           locator: { type: "property", id: "email" as TestObjectKeys },
         },
       ];
 
-      // Rerender with new columnDefinitions
-      rerender({ colDefs: updatedColumnDefinitions });
+      rerender({ colDefs: updatedColumnDefinitions, props: mockProperties });
 
-      // Updated columns should have two items
-      const updatedColumns = result.current.columns;
-
-      expect(firstColumns.length).toBe(1);
-      expect(updatedColumns.length).toBe(2);
+      expect(result.current.columns).toHaveLength(1);
+      expect(result.current.columns[0].id).toBe("email");
     });
-  });
-
-  it("handles metadata fetch errors", async () => {
-    const deferred = pDefer();
-    const fakeClient = {
-      fetchMetadata: vitest.fn(() => deferred.promise),
-    } as unknown as Client;
-
-    const wrapper = createWrapper(fakeClient);
-
-    const { result } = renderHook(
-      () => useColumnDefs(TestObjectType),
-      { wrapper },
-    );
-
-    const error = new Error("Failed to fetch metadata");
-    deferred.reject(error);
-
-    await waitFor(() => {
-      expect(result.current.loading).toBe(false);
-    });
-
-    expect(result.current.error).toBeDefined();
-    expect(result.current.columns).toEqual([]);
-  });
-
-  it("memoizes columns based on metadata properties", async () => {
-    const deferred = pDefer();
-    const fakeClient = {
-      fetchMetadata: vitest.fn(() => deferred.promise),
-    } as unknown as Client;
-
-    const wrapper = createWrapper(fakeClient);
-
-    const { result, rerender } = renderHook(
-      () => useColumnDefs(TestObjectType),
-      { wrapper },
-    );
-
-    deferred.resolve(mockMetadata);
-
-    await waitFor(() => {
-      expect(result.current.loading).toBe(false);
-    });
-
-    const firstColumns = result.current.columns;
-
-    // Rerender without changing metadata
-    rerender();
-
-    // Columns should be the same reference (memoized)
-    expect(result.current.columns).toBe(firstColumns);
   });
 });
