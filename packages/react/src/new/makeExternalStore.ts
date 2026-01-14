@@ -67,12 +67,10 @@ export function makeExternalStore<X>(
 
 /**
  * Like makeExternalStore but for async subscription creation.
- * Handles the case where the observation returns Promise<Unsubscribable>.
  *
- * Uses an isActive flag to handle React Strict Mode race conditions:
- * - If cleanup runs before promise resolves, the stale subscription is
- *   immediately unsubscribed when it eventually resolves
- * - Observer callbacks are ignored after cleanup
+ * Uses an isActive flag to handle race conditions:
+ * If cleanup runs before promise resolves, the stale subscription is
+ * immediately unsubscribed when it eventually resolves
  */
 export function makeExternalStoreAsync<X>(
   createObservation: (
