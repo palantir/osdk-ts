@@ -123,13 +123,17 @@ export function useAsyncColumnData<
   // Accumulate enriched data as it loads
   useEffect(() => {
     if (!isDerivedPropertiesLoading && derivedData) {
-      setEnrichedData(prev =>
-        mergeEnrichedData<Q, DerivedPropertyKey, RDPs>(
+      setEnrichedData(prev => {
+        const updated = mergeEnrichedData<Q, DerivedPropertyKey, RDPs>(
           prev,
           derivedData,
           derivedPropertyKeys,
-        )
-      );
+        );
+        // Only update if data actually changed
+        return JSON.stringify(prev) === JSON.stringify(updated)
+          ? prev
+          : updated;
+      });
     }
   }, [derivedData, derivedPropertyKeys, isDerivedPropertiesLoading]);
 

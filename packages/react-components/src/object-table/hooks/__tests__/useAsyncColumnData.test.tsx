@@ -35,10 +35,11 @@ const mockObjectSet = {
   objectType: TestObjectType,
 } as unknown as ObjectSet<TestObject>;
 
-const useObjectSetMock = vi.fn();
-
+const { mockUseObjectSet } = vi.hoisted(() => ({
+  mockUseObjectSet: vi.fn(),
+}));
 vi.mock("@osdk/react/experimental", () => ({
-  useObjectSet: useObjectSetMock,
+  useObjectSet: mockUseObjectSet,
 }));
 
 describe("useAsyncColumnData", () => {
@@ -52,11 +53,11 @@ describe("useAsyncColumnData", () => {
   const wrapper = createWrapper(fakeClient);
 
   beforeEach(() => {
-    useObjectSetMock.mockClear();
+    mockUseObjectSet.mockClear();
   });
 
   it("returns empty array when baseRows is undefined", () => {
-    useObjectSetMock.mockReturnValue({
+    mockUseObjectSet.mockReturnValue({
       data: undefined,
       isLoading: false,
       error: undefined,
@@ -83,7 +84,7 @@ describe("useAsyncColumnData", () => {
       { $primaryKey: "2", name: "Row 2" },
     ] as any[];
 
-    useObjectSetMock.mockReturnValue({
+    mockUseObjectSet.mockReturnValue({
       data: undefined,
       isLoading: true,
       error: undefined,
@@ -122,7 +123,7 @@ describe("useAsyncColumnData", () => {
       { $primaryKey: "2", derivedProp1: "value3", derivedProp2: "value4" },
     ] as any[];
 
-    useObjectSetMock.mockReturnValue({
+    mockUseObjectSet.mockReturnValue({
       data: derivedData,
       isLoading: false,
       error: undefined,
@@ -168,7 +169,7 @@ describe("useAsyncColumnData", () => {
       { $primaryKey: "1", derivedProp1: "value1", derivedProp2: "value2" },
     ] as any[];
 
-    useObjectSetMock.mockReturnValue({
+    mockUseObjectSet.mockReturnValue({
       data: initialDerivedData,
       isLoading: false,
       error: undefined,
@@ -203,7 +204,7 @@ describe("useAsyncColumnData", () => {
     ] as any[];
 
     // Mock loading state for new page
-    useObjectSetMock.mockReturnValue({
+    mockUseObjectSet.mockReturnValue({
       data: initialDerivedData,
       isLoading: true,
       error: undefined,
@@ -227,7 +228,7 @@ describe("useAsyncColumnData", () => {
 
     const error = new Error("Failed to load");
 
-    useObjectSetMock.mockReturnValue({
+    mockUseObjectSet.mockReturnValue({
       data: undefined,
       isLoading: false,
       error,
@@ -257,7 +258,7 @@ describe("useAsyncColumnData", () => {
 
     const derivedData = [{ $primaryKey: "1", derivedProp1: "value1" }] as any[];
 
-    useObjectSetMock.mockReturnValue({
+    mockUseObjectSet.mockReturnValue({
       data: derivedData,
       isLoading: false,
       error: undefined,
@@ -293,7 +294,7 @@ describe("useAsyncColumnData", () => {
 
     const error = new Error("Failed to load page 2");
 
-    useObjectSetMock.mockReturnValue({
+    mockUseObjectSet.mockReturnValue({
       data: derivedData,
       isLoading: false,
       error,
@@ -321,7 +322,7 @@ describe("useAsyncColumnData", () => {
       { $primaryKey: "2", name: "Row 2" },
     ] as any[];
 
-    useObjectSetMock.mockReturnValue({
+    mockUseObjectSet.mockReturnValue({
       data: undefined,
       isLoading: true,
       error: undefined,
@@ -339,7 +340,7 @@ describe("useAsyncColumnData", () => {
       { wrapper },
     );
 
-    expect(useObjectSetMock).toHaveBeenCalledWith(
+    expect(mockUseObjectSet).toHaveBeenCalledWith(
       mockObjectSet,
       expect.objectContaining({
         where: {
@@ -353,7 +354,7 @@ describe("useAsyncColumnData", () => {
   });
 
   it("does not fetch when baseRows is empty", () => {
-    useObjectSetMock.mockReturnValue({
+    mockUseObjectSet.mockReturnValue({
       data: undefined,
       isLoading: false,
       error: undefined,
@@ -371,7 +372,7 @@ describe("useAsyncColumnData", () => {
       { wrapper },
     );
 
-    expect(useObjectSetMock).toHaveBeenCalledWith(
+    expect(mockUseObjectSet).toHaveBeenCalledWith(
       mockObjectSet,
       expect.objectContaining({
         enabled: false,
