@@ -20,7 +20,10 @@ import { buildWhereClause } from "../utils/filterStateToWhereClause.js";
 import {
   createCheckboxListState,
   createContainsTextState,
+  createCustomFilterDef,
   createDateRangeState,
+  createHasLinkFilterDef,
+  createKeywordSearchFilterDef,
   createNumberRangeState,
   createPropertyFilterDef,
   createToggleState,
@@ -209,5 +212,58 @@ describe("buildWhereClause", () => {
     ]);
     const result = buildWhereClause(definitions, filterStates, "and");
     expect(result).toEqual({ name: { $in: ["John"] } });
+  });
+
+  it("builds $isNotNull for hasLink filter", () => {
+    const definitions = [createHasLinkFilterDef("employees")];
+    const filterStates = new Map<string, FilterState>([
+      ["hasLink:employees:0", { type: "HAS_LINK", hasLink: true }],
+    ]);
+    const result = buildWhereClause(definitions, filterStates, "and");
+    expect(result).toEqual({ employees: { $isNotNull: true } });
+  });
+
+  it("builds $containsAnyTerm for keywordSearch filter", () => {
+    const definitions = [createKeywordSearchFilterDef(["name"])];
+    const filterStates = new Map<string, FilterState>([
+      [
+        "keywordSearch-name:0",
+        { type: "KEYWORD_SEARCH", searchTerm: "test", operator: "AND" },
+      ],
+    ]);
+    const result = buildWhereClause(definitions, filterStates, "and");
+    expect(result).toEqual({ name: { $containsAnyTerm: "test" } });
+  });
+
+  it("builds $or for multi-property keywordSearch filter", () => {
+    const definitions = [createKeywordSearchFilterDef(["name", "email"])];
+    const filterStates = new Map<string, FilterState>([
+      [
+        "keywordSearch-name-email:0",
+        { type: "KEYWORD_SEARCH", searchTerm: "test", operator: "AND" },
+      ],
+    ]);
+    const result = buildWhereClause(definitions, filterStates, "and");
+    expect(result).toEqual({
+      $or: [
+        { name: { $containsAnyTerm: "test" } },
+        { email: { $containsAnyTerm: "test" } },
+      ],
+    });
+  });
+
+  it("calls toWhereClause for custom filter", () => {
+    const baseDef = createCustomFilterDef("myFilter");
+    const definitions = [
+      {
+        ...baseDef,
+        toWhereClause: () => ({ customProp: { $eq: "test" } }),
+      },
+    ];
+    const filterStates = new Map<string, FilterState>([
+      ["myFilter:0", { type: "CUSTOM", customState: { value: "test" } }],
+    ]);
+    const result = buildWhereClause(definitions, filterStates, "and");
+    expect(result).toEqual({ customProp: { $eq: "test" } });
   });
 });

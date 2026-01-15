@@ -257,8 +257,10 @@ export interface TimelineInputClassNames {
  * Returns undefined if no class names are provided (avoids empty className="" in DOM).
  */
 export function mergeClassNames(
-  ...classNames: Array<string | undefined>
+  ...classNames: ReadonlyArray<string | undefined | null | false>
 ): string | undefined {
-  const merged = classNames.filter(Boolean).join(" ");
-  return merged.length > 0 ? merged : undefined;
+  const filtered = classNames.filter(
+    (cn): cn is string => typeof cn === "string" && cn.length > 0,
+  );
+  return filtered.length > 0 ? filtered.join(" ") : undefined;
 }
