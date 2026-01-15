@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import type { User} from "@osdk/foundry.admin";
-import { Users } from "@osdk/foundry.admin";
+import { type User, Users } from "@osdk/foundry.admin";
 import type { UserStatus } from "@osdk/foundry.core";
 import React from "react";
 import { usePlatformQuery } from "../../../utils/usePlatformQuery.js";
