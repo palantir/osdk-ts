@@ -257,6 +257,11 @@ export interface PropertyFilterDefinition<
   type: "property";
 
   /**
+   * Optional unique identifier for stable keying across filter reorders.
+   */
+  id?: string;
+
+  /**
    * The property key to filter on
    */
   key: K;
