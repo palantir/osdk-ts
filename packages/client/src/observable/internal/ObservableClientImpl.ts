@@ -73,7 +73,7 @@ export class ObservableClientImpl implements ObservableClient {
     this.validateAction = store.validateAction.bind(store);
   }
 
-  public observeObject: <T extends ObjectTypeDefinition>(
+  public observeObject: <T extends ObjectTypeDefinition | InterfaceDefinition>(
     apiName: T["apiName"] | T,
     pk: PrimaryKeyType<T>,
     options: Omit<ObserveObjectOptions<T>, "apiName" | "pk">,

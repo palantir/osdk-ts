@@ -20,6 +20,7 @@ export { useFoundryUser } from "../new/platform-apis/admin/useFoundryUser.js";
 export { useFoundryUsersList } from "../new/platform-apis/admin/useFoundryUsersList.js";
 export { useLinks } from "../new/useLinks.js";
 export { useObjectSet } from "../new/useObjectSet.js";
+export { useObservableClient } from "../new/useObservableClient.js";
 export { useOsdkAction } from "../new/useOsdkAction.js";
 export type { UseOsdkAggregationResult } from "../new/useOsdkAggregation.js";
 export { useOsdkAggregation } from "../new/useOsdkAggregation.js";
