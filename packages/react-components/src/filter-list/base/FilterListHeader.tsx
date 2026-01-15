@@ -14,58 +14,66 @@
  * limitations under the License.
  */
 
-import React, { type ReactNode } from "react";
+import React, { memo, type ReactNode, useCallback } from "react";
 import type { FilterListClassNames } from "../types/ClassNameOverrides.js";
 
 interface FilterListHeaderProps {
   title?: string;
   titleIcon?: ReactNode;
-  collapsed: boolean;
-  onCollapsedChange: (collapsed: boolean) => void;
+  collapsed?: boolean;
+  onCollapsedChange?: (collapsed: boolean) => void;
   showResetButton?: boolean;
   onReset?: () => void;
   showActiveFilterCount?: boolean;
-  activeFilterCount: number;
+  activeFilterCount?: number;
   classNames?: FilterListClassNames;
 }
 
-export function FilterListHeader({
+function FilterListHeaderInner({
   title,
   titleIcon,
-  collapsed,
+  collapsed = false,
   onCollapsedChange,
   showResetButton,
   onReset,
   showActiveFilterCount,
-  activeFilterCount,
+  activeFilterCount = 0,
   classNames,
 }: FilterListHeaderProps): React.ReactElement {
+  const showCollapseButton = onCollapsedChange != null;
+
+  const handleCollapseClick = useCallback(() => {
+    onCollapsedChange?.(!collapsed);
+  }, [onCollapsedChange, collapsed]);
+
   return (
-    <div className={classNames?.header}>
-      <button
-        type="button"
-        className={classNames?.collapseButton}
-        onClick={() => onCollapsedChange(!collapsed)}
-        aria-expanded={!collapsed}
-        aria-label={collapsed ? "Expand filters" : "Collapse filters"}
-      >
-        <span
-          className={classNames?.collapseIcon}
-          data-collapsed={collapsed}
-        />
-      </button>
+    <div className={classNames?.header ?? "filter-list__header"}>
+      {showCollapseButton && (
+        <button
+          type="button"
+          className={classNames?.collapseButton}
+          onClick={handleCollapseClick}
+          aria-expanded={!collapsed}
+          aria-label={collapsed ? "Expand filters" : "Collapse filters"}
+        >
+          <span
+            className={classNames?.collapseIcon}
+            data-collapsed={collapsed}
+          />
+        </button>
+      )}
 
       {!collapsed && (
         <>
-          <div className={classNames?.titleContainer}>
+          <div className={classNames?.titleContainer ?? "filter-list__title-container"}>
             {titleIcon && (
               <span className={classNames?.titleIcon}>
                 {titleIcon}
               </span>
             )}
-            {title && <span className={classNames?.title}>{title}</span>}
+            {title && <span className={classNames?.title ?? "filter-list__title"}>{title}</span>}
             {showActiveFilterCount && activeFilterCount > 0 && (
-              <span className={classNames?.activeCount}>
+              <span className={classNames?.activeCount ?? "filter-list__active-count"}>
                 ({activeFilterCount})
               </span>
             )}
@@ -74,7 +82,7 @@ export function FilterListHeader({
           {showResetButton && (
             <button
               type="button"
-              className={classNames?.resetButton}
+              className={classNames?.resetButton ?? "filter-list__reset-button"}
               onClick={onReset}
               disabled={activeFilterCount === 0}
             >
@@ -86,3 +94,5 @@ export function FilterListHeader({
     </div>
   );
 }
+
+export const FilterListHeader = memo(FilterListHeaderInner);

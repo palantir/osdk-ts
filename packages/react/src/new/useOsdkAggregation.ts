@@ -202,12 +202,19 @@ export function useOsdkAggregation<
 
   const canonWhere = observableClient.canonicalizeWhereClause<Q>(where ?? {});
 
-  const stableObjectSetWire = React.useMemo(() => {
-    if (objectSet) {
-      return JSON.stringify(getWireObjectSet(objectSet));
-    }
-    return undefined;
-  }, [objectSet]);
+  // Use ref to hold objectSet - allows us to use stableObjectSetWire for memoization
+  // while still having access to the actual objectSet for API calls
+  const objectSetRef = React.useRef(objectSet);
+  objectSetRef.current = objectSet;
+
+  const objectSetWireString = objectSet
+    ? JSON.stringify(getWireObjectSet(objectSet))
+    : undefined;
+
+  const stableObjectSetWire = React.useMemo(
+    () => objectSetWireString,
+    [objectSetWireString],
+  );
 
   const stableWithProperties = React.useMemo(
     () => withProperties,
@@ -226,13 +233,13 @@ export function useOsdkAggregation<
 
   const { subscribe, getSnapShot } = React.useMemo(
     () => {
-      if (stableObjectSetWire && objectSet) {
+      if (stableObjectSetWire && objectSetRef.current) {
         return makeExternalStoreAsync<ObserveAggregationArgs<Q, A>>(
           (observer) =>
             observableClient.observeAggregation(
               {
                 type: type,
-                objectSet: objectSet,
+                objectSet: objectSetRef.current!,
                 where: canonWhere,
                 withProperties: stableWithProperties,
                 intersectWith: stableIntersectWith,
@@ -250,7 +257,6 @@ export function useOsdkAggregation<
       }
       return makeExternalStore<ObserveAggregationArgs<Q, A>>(
         (observer) =>
-           
           observableClient.observeAggregation(
             {
               type: type,
@@ -272,7 +278,7 @@ export function useOsdkAggregation<
       type.apiName,
       type.type,
       stableObjectSetWire,
-      objectSet,
+      // objectSet removed - use objectSetRef instead to avoid re-subscription on reference change
       canonWhere,
       stableWithProperties,
       stableIntersectWith,

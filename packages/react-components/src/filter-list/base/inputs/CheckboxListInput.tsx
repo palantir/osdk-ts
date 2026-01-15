@@ -15,12 +15,10 @@
  */
 
 import type {
-  AggregateOpts,
   ObjectSet,
   ObjectTypeDefinition,
   PropertyKeys,
 } from "@osdk/api";
-import { useOsdkAggregation } from "@osdk/react/experimental";
 import React, {
   memo,
   useCallback,
@@ -28,6 +26,7 @@ import React, {
   useMemo,
   useRef,
 } from "react";
+import { usePropertyAggregation } from "../../hooks/usePropertyAggregation.js";
 
 interface CheckboxListInputProps<
   Q extends ObjectTypeDefinition,
@@ -54,59 +53,55 @@ function CheckboxListInputInner<
   className,
   style,
 }: CheckboxListInputProps<Q, K>): React.ReactElement {
-  const aggregateOptions = useMemo(
-    () =>
-      ({
-        $select: { $count: "unordered" as const },
-        $groupBy: { [propertyKey as string]: "exact" as const },
-      }) as AggregateOpts<Q>,
-    [propertyKey],
+  const { data, isLoading, error } = usePropertyAggregation(
+    objectType,
+    propertyKey,
+    { objectSet },
   );
 
-  const aggOptions = {
-    aggregate: aggregateOptions,
-    ...(objectSet && { objectSet }),
-  };
-  const { data: countData, isLoading, error } = useOsdkAggregation(objectType, aggOptions);
+  const values = useMemo(
+    () => data.map((item) => item.value),
+    [data],
+  );
 
-  const values = useMemo(() => {
-    if (!countData) {
-      return [] as string[];
-    }
-    const extractedValues: string[] = [];
-    const dataArray = countData as Iterable<{
-      $group: Record<string, unknown>;
-      $count?: number;
-    }>;
-    for (const item of dataArray) {
-      const rawValue = item.$group[propertyKey as string];
-      const value = rawValue != null ? String(rawValue) : "";
-      if (value) {
-        extractedValues.push(value);
-      }
-    }
-    extractedValues.sort((a, b) => a.localeCompare(b));
-    return extractedValues;
-  }, [countData, propertyKey]);
+  // Use Set for O(1) membership checks
+  const selectedSet = useMemo(
+    () => new Set(selectedValues),
+    [selectedValues],
+  );
+
+  // Use refs to avoid recreating callbacks on every selectedValues change
+  const selectedValuesRef = useRef(selectedValues);
+  selectedValuesRef.current = selectedValues;
+
+  const selectedSetRef = useRef(selectedSet);
+  selectedSetRef.current = selectedSet;
 
   const toggleValue = useCallback(
     (value: string) => {
-      if (selectedValues.includes(value)) {
-        onChange(selectedValues.filter((v) => v !== value));
+      const currentSet = selectedSetRef.current;
+      const current = selectedValuesRef.current;
+      if (currentSet.has(value)) {
+        onChange(current.filter((v) => v !== value));
       } else {
-        onChange([...selectedValues, value]);
+        onChange([...current, value]);
       }
     },
-    [selectedValues, onChange],
+    [onChange],
   );
 
+  const valuesRef = useRef(values);
+  valuesRef.current = values;
+
   const toggleAll = useCallback(() => {
-    if (selectedValues.length === values.length) {
+    const current = selectedValuesRef.current;
+    const currentValues = valuesRef.current;
+    if (current.length === currentValues.length) {
       onChange([]);
     } else {
-      onChange([...values]);
+      onChange([...currentValues]);
     }
-  }, [selectedValues, values, onChange]);
+  }, [onChange]);
 
   const allSelected = values.length > 0
     && selectedValues.length === values.length;
@@ -163,7 +158,7 @@ function CheckboxListInputInner<
           )}
 
           {values.map((value) => {
-            const isSelected = selectedValues.includes(value);
+            const isSelected = selectedSet.has(value);
 
             return (
               <div

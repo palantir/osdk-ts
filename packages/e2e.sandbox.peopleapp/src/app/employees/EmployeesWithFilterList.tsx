@@ -21,10 +21,11 @@ import type { WhereClause } from "@osdk/api";
 import {
   FilterList,
   type FilterDefinitionUnion,
+  type FilterTemplate,
 } from "@osdk/react-components/experimental";
 import { useOsdkObjects } from "@osdk/react/experimental";
 import "@osdk/react-components/styles/FilterListBundle.css";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
 import { List } from "../../components/List.js";
 import { ListItem } from "../../components/ListItem.js";
@@ -65,7 +66,7 @@ interface EmployeesWithFilterListProps {
   onSelect: (employee: Employee.OsdkInstance) => void;
 }
 
-const FILTER_DEFINITIONS: FilterDefinitionUnion<Employee>[] = [
+const INITIAL_FILTER_DEFINITIONS: FilterDefinitionUnion<Employee>[] = [
   {
     type: "property",
     id: "department",
@@ -78,42 +79,69 @@ const FILTER_DEFINITIONS: FilterDefinitionUnion<Employee>[] = [
     showSelectAll: true,
     showOverflowMenu: true,
   } as FilterDefinitionUnion<Employee>,
+];
+
+const FILTER_TEMPLATES: FilterTemplate[] = [
   {
-    type: "property",
-    id: "businessTitle",
-    key: "businessTitle",
-    label: "Business Title",
-    filterComponent: "CONTAINS_TEXT",
-    filterState: { type: "CONTAINS_TEXT", value: undefined },
-    icon: <Icon icon="id-number" />,
-    showOverflowMenu: true,
-  } as FilterDefinitionUnion<Employee>,
-  {
-    type: "property",
-    id: "locationCity",
-    key: "locationCity",
-    label: "City",
+    id: "department",
+    label: "Department",
+    key: "department",
     filterComponent: "CHECKBOX_LIST",
-    filterState: { type: "CHECKBOX_LIST", selectedValues: [] },
-    icon: <Icon icon="map-marker" />,
-    dataIndicator: "histogram",
-    showSelectAll: true,
-    maxVisibleItems: 5,
-    showOverflowMenu: true,
-  } as FilterDefinitionUnion<Employee>,
+    icon: "office",
+    category: "SINGLE_PROPERTY",
+    allowMultiple: false,
+  },
   {
-    type: "linkedProperty",
-    id: "office-name",
-    linkName: "primaryOffice",
-    linkedPropertyKey: "name",
-    linkedFilterComponent: "CHECKBOX_LIST",
-    linkedFilterState: { type: "CHECKBOX_LIST", selectedValues: [], isExcluding: false },
-    label: "Office Name",
-  } as FilterDefinitionUnion<Employee>,
+    id: "businessTitle",
+    label: "Business Title",
+    key: "businessTitle",
+    filterComponent: "CONTAINS_TEXT",
+    icon: "id-number",
+    category: "SINGLE_PROPERTY",
+    allowMultiple: false,
+  },
+  {
+    id: "locationCity",
+    label: "City",
+    key: "locationCity",
+    filterComponent: "CHECKBOX_LIST",
+    icon: "map-marker",
+    category: "SINGLE_PROPERTY",
+    allowMultiple: false,
+  },
+  {
+    id: "locationState",
+    label: "State",
+    key: "locationState",
+    filterComponent: "CHECKBOX_LIST",
+    icon: "globe",
+    category: "SINGLE_PROPERTY",
+    allowMultiple: false,
+  },
 ];
 
 export function EmployeesWithFilterList(props: EmployeesWithFilterListProps) {
   const [whereClause, setWhereClause] = useState<WhereClause<Employee>>({});
+  const [filterDefinitions, setFilterDefinitions] = useState<
+    FilterDefinitionUnion<Employee>[]
+  >(INITIAL_FILTER_DEFINITIONS);
+
+  const handleFilterTemplateSelected = useCallback((template: FilterTemplate) => {
+    const newFilter: FilterDefinitionUnion<Employee> = {
+      type: "property",
+      id: template.id,
+      key: template.key as keyof Employee.Props,
+      label: template.label,
+      filterComponent: template.filterComponent,
+      filterState: template.filterComponent === "CHECKBOX_LIST"
+        ? { type: "CHECKBOX_LIST", selectedValues: [] }
+        : template.filterComponent === "CONTAINS_TEXT"
+          ? { type: "CONTAINS_TEXT", value: undefined }
+          : { type: "CHECKBOX_LIST", selectedValues: [] },
+    } as FilterDefinitionUnion<Employee>;
+
+    setFilterDefinitions((prev) => [...prev, newFilter]);
+  }, []);
 
   const employees = useOsdkObjects(Employee, {
     where: whereClause,
@@ -126,8 +154,13 @@ export function EmployeesWithFilterList(props: EmployeesWithFilterListProps) {
       <div style={{ display: "flex", gap: "16px", height: "100%" }}>
         <FilterList
           objectSet={$(Employee)}
-          filterDefinitions={FILTER_DEFINITIONS}
+          filterDefinitions={filterDefinitions}
           onFilterClauseChanged={setWhereClause}
+          showAddFilterButton={true}
+          filterTemplates={FILTER_TEMPLATES}
+          onFilterTemplateSelected={handleFilterTemplateSelected}
+          title="Filters"
+          showActiveFilterCount={true}
         />
 
         <div style={{ flex: 1, overflow: "auto" }}>

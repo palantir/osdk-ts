@@ -121,6 +121,7 @@ function FilterInputContent<Q extends ObjectTypeDefinition>({
       return (
         <PropertyFilterInput
           objectType={objectType}
+          objectSet={objectSet}
           definition={definition}
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}
@@ -189,6 +190,7 @@ const KeywordSearchInput = memo(function KeywordSearchInput({
 
 interface PropertyFilterInputProps<Q extends ObjectTypeDefinition> {
   objectType: Q;
+  objectSet: ObjectSet<Q>;
   definition: Extract<FilterDefinitionUnion<Q>, { type: "property" }>;
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
@@ -196,6 +198,7 @@ interface PropertyFilterInputProps<Q extends ObjectTypeDefinition> {
 
 function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
   objectType,
+  objectSet,
   definition,
   filterState,
   onFilterStateChanged,
@@ -205,6 +208,7 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
       return (
         <CheckboxListFilterInput
           objectType={objectType}
+          objectSet={objectSet}
           propertyKey={definition.key}
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}
@@ -321,6 +325,7 @@ const PropertyFilterInput = memo(PropertyFilterInputInner) as typeof PropertyFil
 
 interface CheckboxListFilterInputProps<Q extends ObjectTypeDefinition> {
   objectType: Q;
+  objectSet: ObjectSet<Q>;
   propertyKey: string;
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
@@ -328,6 +333,7 @@ interface CheckboxListFilterInputProps<Q extends ObjectTypeDefinition> {
 
 function CheckboxListFilterInputInner<Q extends ObjectTypeDefinition>({
   objectType,
+  objectSet,
   propertyKey,
   filterState,
   onFilterStateChanged,
@@ -349,6 +355,7 @@ function CheckboxListFilterInputInner<Q extends ObjectTypeDefinition>({
   return (
     <CheckboxListInput
       objectType={objectType}
+      objectSet={objectSet}
       propertyKey={propertyKey}
       selectedValues={selectedValues}
       onChange={handleChange}

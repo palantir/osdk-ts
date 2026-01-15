@@ -15,7 +15,7 @@
  */
 
 import type { ObjectTypeDefinition } from "@osdk/api";
-import React, { useCallback, useEffect, useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import type { FilterDefinitionUnion, FilterListProps } from "../FilterListApi.js";
 import { useFilterListState } from "../hooks/useFilterListState.js";
 import type { FilterListClassNames } from "../types/ClassNameOverrides.js";
@@ -38,7 +38,6 @@ export function FilterList<Q extends ObjectTypeDefinition>(
     title,
     titleIcon,
     filterDefinitions,
-    onFilterClauseChanged,
     showResetButton = false,
     onReset,
     showAddFilterButton = false,
@@ -55,14 +54,9 @@ export function FilterList<Q extends ObjectTypeDefinition>(
   const {
     filterStates,
     setFilterState,
-    whereClause,
     activeFilterCount,
     reset,
   } = useFilterListState(props);
-
-  useEffect(() => {
-    onFilterClauseChanged?.(whereClause);
-  }, [whereClause, onFilterClauseChanged]);
 
   const handleReset = useCallback(() => {
     reset();
@@ -94,8 +88,6 @@ export function FilterList<Q extends ObjectTypeDefinition>(
         <FilterListHeader
           title={title}
           titleIcon={titleIcon}
-          collapsed={false}
-          onCollapsedChange={() => {}}
           showResetButton={showResetButton}
           onReset={handleReset}
           showActiveFilterCount={showActiveFilterCount}

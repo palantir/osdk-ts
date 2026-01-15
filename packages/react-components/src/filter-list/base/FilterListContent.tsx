@@ -15,7 +15,7 @@
  */
 
 import type { ObjectSet, ObjectTypeDefinition } from "@osdk/api";
-import React, { useCallback } from "react";
+import React from "react";
 import type { FilterDefinitionUnion } from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
 import { getFilterKey } from "../utils/getFilterKey.js";
@@ -40,12 +40,6 @@ export function FilterListContent<Q extends ObjectTypeDefinition>({
   className,
   style,
 }: FilterListContentProps<Q>): React.ReactElement {
-  const handleFilterStateChanged = useCallback(
-    (instanceKey: string, newState: FilterState) => {
-      onFilterStateChanged(instanceKey, newState);
-    },
-    [onFilterStateChanged],
-  );
   if (!filterDefinitions || filterDefinitions.length === 0) {
     const emptyClassName = className
       ? `filter-list__content filter-list__content--empty ${className}`
@@ -81,7 +75,7 @@ export function FilterListContent<Q extends ObjectTypeDefinition>({
             objectSet={objectSet}
             definition={definition}
             filterState={state}
-            onFilterStateChanged={handleFilterStateChanged}
+            onFilterStateChanged={onFilterStateChanged}
           />
         );
       })}
