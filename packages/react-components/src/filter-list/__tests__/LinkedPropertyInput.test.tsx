@@ -55,15 +55,32 @@ function createMockObjectSet() {
 }
 
 function createDefinition(
-  linkedFilterComponent: "CHECKBOX_LIST" | "MULTI_SELECT" | "SINGLE_SELECT" | "CONTAINS_TEXT" | "TOGGLE" | "NUMBER_RANGE" | "DATE_RANGE",
-): LinkedPropertyFilterDefinition<ObjectTypeDefinition, string, ObjectTypeDefinition, PropertyKeys<ObjectTypeDefinition>> {
+  linkedFilterComponent:
+    | "CHECKBOX_LIST"
+    | "MULTI_SELECT"
+    | "SINGLE_SELECT"
+    | "CONTAINS_TEXT"
+    | "TOGGLE"
+    | "NUMBER_RANGE"
+    | "DATE_RANGE",
+): LinkedPropertyFilterDefinition<
+  ObjectTypeDefinition,
+  string,
+  ObjectTypeDefinition,
+  PropertyKeys<ObjectTypeDefinition>
+> {
   return {
     type: "linkedProperty",
     linkName: "primaryOffice",
     linkedPropertyKey: "name" as PropertyKeys<ObjectTypeDefinition>,
     linkedFilterComponent,
     linkedFilterState: { type: "CHECKBOX_LIST", selectedValues: [] },
-  } as LinkedPropertyFilterDefinition<ObjectTypeDefinition, string, ObjectTypeDefinition, PropertyKeys<ObjectTypeDefinition>>;
+  } as LinkedPropertyFilterDefinition<
+    ObjectTypeDefinition,
+    string,
+    ObjectTypeDefinition,
+    PropertyKeys<ObjectTypeDefinition>
+  >;
 }
 
 describe("LinkedPropertyInput", () => {
@@ -214,12 +231,17 @@ describe("LinkedPropertyInput", () => {
       expect(screen.getByPlaceholderText("Search name...")).toBeTruthy();
     });
 
-    it("renders unsupported message for unimplemented components", () => {
+    it("renders SingleDateInput for SINGLE_DATE component", () => {
       const mockObjectSet = createMockObjectSet();
       const definition = {
         ...createDefinition("CHECKBOX_LIST"),
-        linkedFilterComponent: "LISTOGRAM" as const,
-      } as LinkedPropertyFilterDefinition<ObjectTypeDefinition, string, ObjectTypeDefinition, PropertyKeys<ObjectTypeDefinition>>;
+        linkedFilterComponent: "SINGLE_DATE" as const,
+      } as LinkedPropertyFilterDefinition<
+        ObjectTypeDefinition,
+        string,
+        ObjectTypeDefinition,
+        PropertyKeys<ObjectTypeDefinition>
+      >;
 
       render(
         <LinkedPropertyInput
@@ -230,7 +252,9 @@ describe("LinkedPropertyInput", () => {
         />,
       );
 
-      expect(screen.getByText(/not yet supported/i)).toBeTruthy();
+      const dateInput = screen.getByLabelText("Select date");
+      expect(dateInput).toBeTruthy();
+      expect(dateInput.getAttribute("type")).toBe("date");
     });
   });
 });

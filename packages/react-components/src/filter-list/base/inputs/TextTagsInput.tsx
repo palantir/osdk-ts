@@ -14,11 +14,15 @@
  * limitations under the License.
  */
 
-import type {
-  ObjectTypeDefinition,
-  PropertyKeys,
-} from "@osdk/api";
-import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import type { ObjectSet, ObjectTypeDefinition, PropertyKeys } from "@osdk/api";
+import React, {
+  memo,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { usePropertyAggregation } from "../../hooks/usePropertyAggregation.js";
 
 interface TextTagsInputProps<
@@ -29,6 +33,7 @@ interface TextTagsInputProps<
   propertyKey: K;
   tags: string[];
   onChange: (tags: string[]) => void;
+  objectSet?: ObjectSet<Q>;
   className?: string;
   style?: React.CSSProperties;
   placeholder?: string;
@@ -44,6 +49,7 @@ function TextTagsInputInner<
   propertyKey,
   tags,
   onChange,
+  objectSet,
   className,
   style,
   placeholder = "Add a tag...",
@@ -63,7 +69,7 @@ function TextTagsInputInner<
   const { data: suggestions, isLoading, error } = usePropertyAggregation(
     objectType,
     propertyKey,
-    { limit: suggestFromData ? 50 : 0 },
+    { objectSet, limit: suggestFromData ? 50 : 0 },
   );
 
   const filteredSuggestions = useMemo(() => {

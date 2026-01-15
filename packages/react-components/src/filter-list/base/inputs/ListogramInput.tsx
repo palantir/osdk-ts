@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  ObjectTypeDefinition,
-  PropertyKeys,
-} from "@osdk/api";
+import type { ObjectSet, ObjectTypeDefinition, PropertyKeys } from "@osdk/api";
 import React, { memo, useCallback, useMemo, useState } from "react";
 import { usePropertyAggregation } from "../../hooks/usePropertyAggregation.js";
 
@@ -29,6 +26,7 @@ interface ListogramInputProps<
   propertyKey: K;
   selectedValues: string[];
   onChange: (values: string[]) => void;
+  objectSet?: ObjectSet<Q>;
   className?: string;
   style?: React.CSSProperties;
   maxVisibleItems?: number;
@@ -44,6 +42,7 @@ function ListogramInputInner<
   propertyKey,
   selectedValues,
   onChange,
+  objectSet,
   className,
   style,
   maxVisibleItems,
@@ -55,7 +54,7 @@ function ListogramInputInner<
   const { data: values, maxCount, isLoading, error } = usePropertyAggregation(
     objectType,
     propertyKey,
-    {},
+    { objectSet },
   );
 
   const toggleValue = useCallback(
@@ -106,7 +105,8 @@ function ListogramInputInner<
             const isSelected = selectedValues.includes(value);
             const percentage = maxCount > 0 ? (count / maxCount) * 100 : 0;
             const fillColor = isSelected
-              ? (selectedBarColor ?? "var(--filter-listogram-selected-color, #137cbd)")
+              ? (selectedBarColor
+                ?? "var(--filter-listogram-selected-color, #137cbd)")
               : (barColor ?? "var(--filter-listogram-bar-color, #d9e1e8)");
 
             return (
@@ -118,11 +118,9 @@ function ListogramInputInner<
                 }`}
                 onClick={() => toggleValue(value)}
                 aria-pressed={isSelected}
-                style={
-                  {
-                    "--bar-fill-color": fillColor,
-                  } as React.CSSProperties
-                }
+                style={{
+                  "--bar-fill-color": fillColor,
+                } as React.CSSProperties}
               >
                 <span className="filter-input__listogram-label">{value}</span>
                 <span className="filter-input__listogram-bar">

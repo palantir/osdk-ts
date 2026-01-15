@@ -24,13 +24,21 @@ import React, { memo, useCallback, useMemo } from "react";
 import type { FilterState } from "../../FilterListItemApi.js";
 import type { LinkedPropertyFilterDefinition } from "../../types/LinkedFilterTypes.js";
 import { assertUnreachable } from "../../utils/assertUnreachable.js";
-import { coerceToString, coerceToStringArray } from "../../utils/coerceFilterValue.js";
+import {
+  coerceToString,
+  coerceToStringArray,
+} from "../../utils/coerceFilterValue.js";
 import { CheckboxListInput } from "./CheckboxListInput.js";
 import { ContainsTextInput } from "./ContainsTextInput.js";
 import { DateRangeInput } from "./DateRangeInput.js";
+import { ListogramInput } from "./ListogramInput.js";
+import { MultiDateInput } from "./MultiDateInput.js";
 import { MultiSelectInput } from "./MultiSelectInput.js";
 import { NumberRangeInput } from "./NumberRangeInput.js";
+import { SingleDateInput } from "./SingleDateInput.js";
 import { SingleSelectInput } from "./SingleSelectInput.js";
+import { TextTagsInput } from "./TextTagsInput.js";
+import { TimelineInput } from "./TimelineInput.js";
 import { ToggleInput } from "./ToggleInput.js";
 
 interface LinkedPropertyInputProps<
@@ -38,7 +46,12 @@ interface LinkedPropertyInputProps<
   L extends LinkNames<Q>,
 > {
   objectSet: ObjectSet<Q>;
-  definition: LinkedPropertyFilterDefinition<Q, L, ObjectTypeDefinition, PropertyKeys<ObjectTypeDefinition>>;
+  definition: LinkedPropertyFilterDefinition<
+    Q,
+    L,
+    ObjectTypeDefinition,
+    PropertyKeys<ObjectTypeDefinition>
+  >;
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
   className?: string;
@@ -91,7 +104,9 @@ function LinkedPropertyInputInner<
           <CheckboxListInput
             objectType={linkedObjectType}
             objectSet={linkedObjectSet}
-            propertyKey={definition.linkedPropertyKey as PropertyKeys<typeof linkedObjectType>}
+            propertyKey={definition.linkedPropertyKey as PropertyKeys<
+              typeof linkedObjectType
+            >}
             selectedValues={selectedValues}
             onChange={(newSelectedValues) =>
               wrappedOnChange({
@@ -111,7 +126,9 @@ function LinkedPropertyInputInner<
           <MultiSelectInput
             objectType={linkedObjectType}
             objectSet={linkedObjectSet}
-            propertyKey={definition.linkedPropertyKey as PropertyKeys<typeof linkedObjectType>}
+            propertyKey={definition.linkedPropertyKey as PropertyKeys<
+              typeof linkedObjectType
+            >}
             selectedValues={values}
             onChange={(selectedValues) =>
               wrappedOnChange({
@@ -131,7 +148,9 @@ function LinkedPropertyInputInner<
           <SingleSelectInput
             objectType={linkedObjectType}
             objectSet={linkedObjectSet}
-            propertyKey={definition.linkedPropertyKey as PropertyKeys<typeof linkedObjectType>}
+            propertyKey={definition.linkedPropertyKey as PropertyKeys<
+              typeof linkedObjectType
+            >}
             selectedValue={value}
             onChange={(selectedValue) =>
               wrappedOnChange({
@@ -182,7 +201,9 @@ function LinkedPropertyInputInner<
           <NumberRangeInput
             objectType={linkedObjectType}
             objectSet={linkedObjectSet}
-            propertyKey={definition.linkedPropertyKey as PropertyKeys<typeof linkedObjectType>}
+            propertyKey={definition.linkedPropertyKey as PropertyKeys<
+              typeof linkedObjectType
+            >}
             minValue={nr?.minValue}
             maxValue={nr?.maxValue}
             onChange={(minValue, maxValue) =>
@@ -202,7 +223,9 @@ function LinkedPropertyInputInner<
           <DateRangeInput
             objectType={linkedObjectType}
             objectSet={linkedObjectSet}
-            propertyKey={definition.linkedPropertyKey as PropertyKeys<typeof linkedObjectType>}
+            propertyKey={definition.linkedPropertyKey as PropertyKeys<
+              typeof linkedObjectType
+            >}
             minValue={dr?.minValue}
             maxValue={dr?.maxValue}
             onChange={(minValue, maxValue) =>
@@ -216,16 +239,104 @@ function LinkedPropertyInputInner<
         );
       }
 
-      case "LISTOGRAM":
-      case "TEXT_TAGS":
-      case "SINGLE_DATE":
-      case "MULTI_DATE":
-      case "TIMELINE":
+      case "LISTOGRAM": {
+        const exactState = innerState?.type === "EXACT_MATCH"
+          ? innerState
+          : undefined;
+        const selectedValues = exactState
+          ? coerceToStringArray(exactState.values)
+          : [];
         return (
-          <div data-unsupported="true">
-            Linked filter component "{definition.linkedFilterComponent}" not yet supported
-          </div>
+          <ListogramInput
+            objectType={linkedObjectType}
+            objectSet={linkedObjectSet}
+            propertyKey={definition.linkedPropertyKey as PropertyKeys<
+              typeof linkedObjectType
+            >}
+            selectedValues={selectedValues}
+            onChange={(values) =>
+              wrappedOnChange({
+                type: "EXACT_MATCH",
+                values,
+                isExcluding: exactState?.isExcluding ?? false,
+              })}
+          />
         );
+      }
+
+      case "TEXT_TAGS": {
+        const exactState = innerState?.type === "EXACT_MATCH"
+          ? innerState
+          : undefined;
+        const tags = exactState ? coerceToStringArray(exactState.values) : [];
+        return (
+          <TextTagsInput
+            objectType={linkedObjectType}
+            objectSet={linkedObjectSet}
+            propertyKey={definition.linkedPropertyKey as PropertyKeys<
+              typeof linkedObjectType
+            >}
+            tags={tags}
+            onChange={(newTags) =>
+              wrappedOnChange({
+                type: "EXACT_MATCH",
+                values: newTags,
+                isExcluding: exactState?.isExcluding ?? false,
+              })}
+            suggestFromData={true}
+          />
+        );
+      }
+
+      case "SINGLE_DATE": {
+        const selectedDate = innerState?.type === "SINGLE_DATE"
+          ? innerState.selectedDate
+          : undefined;
+        return (
+          <SingleDateInput
+            selectedDate={selectedDate}
+            onChange={(date) =>
+              wrappedOnChange({
+                type: "SINGLE_DATE",
+                selectedDate: date,
+              })}
+            showClearButton={true}
+          />
+        );
+      }
+
+      case "MULTI_DATE": {
+        const selectedDates = innerState?.type === "MULTI_DATE"
+          ? innerState.selectedDates
+          : [];
+        return (
+          <MultiDateInput
+            selectedDates={selectedDates}
+            onChange={(dates) =>
+              wrappedOnChange({
+                type: "MULTI_DATE",
+                selectedDates: dates,
+              })}
+            showClearAll={true}
+          />
+        );
+      }
+
+      case "TIMELINE": {
+        const tl = innerState?.type === "TIMELINE" ? innerState : undefined;
+        return (
+          <TimelineInput
+            startDate={tl?.startDate}
+            endDate={tl?.endDate}
+            onChange={(start, end) =>
+              wrappedOnChange({
+                type: "TIMELINE",
+                startDate: start,
+                endDate: end,
+              })}
+          />
+        );
+      }
 
       default:
         return assertUnreachable(definition.linkedFilterComponent);
