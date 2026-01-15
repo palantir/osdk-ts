@@ -14,13 +14,26 @@
  * limitations under the License.
  */
 
-export type { FilterListProps } from "../filter-list/FilterListApi.js";
-export type { FilterListItemProps } from "../filter-list/FilterListItemApi.js";
+import type {
+  ObjectTypeDefinition,
+  Osdk,
+  PrimaryKeyType,
+  PropertyKeys,
+  SimplePropertyDef,
+} from "@osdk/api";
 
-// ObjectTable that loads and displays data for a given objectSet
-export { ObjectTable } from "../object-table/ObjectTable.js";
-export type {
-  ColumnDefinition,
-  ColumnDefinitionLocator,
-  ObjectTableProps,
-} from "../object-table/ObjectTableApi.js";
+export const getRowId = <
+  Q extends ObjectTypeDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<
+    string,
+    never
+  >,
+>(
+  row: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
+): string => {
+  return getRowIdFromPrimaryKey(row.$primaryKey);
+};
+
+export const getRowIdFromPrimaryKey = <Q extends ObjectTypeDefinition>(
+  primaryKey: PrimaryKeyType<Q>,
+): string => primaryKey.toString();
