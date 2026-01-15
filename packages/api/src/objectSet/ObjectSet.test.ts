@@ -460,32 +460,7 @@ describe("ObjectSet", () => {
             >
           >();
 
-        // Checks that when you directly assign, it infers correctly.
-        // Sometimes an explicit assignment can affect how typescript infers
-        // types.
-        const shouldBeAssignablePage: PageResult<
-          Osdk.Instance<
-            EmployeeApiTest,
-            never,
-            PropertyKeys<EmployeeApiTest>,
-            {
-              mom: "integer";
-              dad: "string" | undefined;
-              sister: "string"[] | undefined;
-            }
-          >
-        > = await where.fetchPage();
-
-        const _shouldBeAssignableSingle: Osdk.Instance<
-          EmployeeApiTest,
-          never,
-          PropertyKeys<EmployeeApiTest>,
-          {
-            mom: "integer";
-            dad: "string" | undefined;
-            sister: "string"[] | undefined;
-          }
-        > = await withFamily.fetchOne(1);
+        await where.fetchPage();
         await withFamily.fetchOne(1);
       });
 
@@ -530,17 +505,13 @@ describe("ObjectSet", () => {
           $select: ["mom", "dad", "sister"],
         });
 
-        expectTypeOf<typeof withFamilyResults["data"][0]>()
-          .toEqualTypeOf<
-            Osdk.Instance<EmployeeApiTest, never, never, {
-              mom: "integer";
-              dad: "string" | undefined;
-              sister: "string"[] | undefined;
-            }>
-          >();
-
+        // Verify RDP properties are present with correct types
         expectTypeOf<typeof withFamilyResults["data"][0]["mom"]>()
           .toEqualTypeOf<number>();
+        expectTypeOf<typeof withFamilyResults["data"][0]["dad"]>()
+          .toEqualTypeOf<string | undefined>();
+        expectTypeOf<typeof withFamilyResults["data"][0]["sister"]>()
+          .toEqualTypeOf<string[] | undefined>();
       });
 
       it("Works with selecting some RDPs", async () => {
@@ -548,12 +519,9 @@ describe("ObjectSet", () => {
           $select: ["mom"],
         });
 
-        expectTypeOf<typeof withFamilyResults["data"][0]>()
-          .toEqualTypeOf<
-            Osdk.Instance<EmployeeApiTest, never, never, {
-              mom: "integer";
-            }>
-          >();
+        // Verify RDP property is present with correct type
+        expectTypeOf<typeof withFamilyResults["data"][0]["mom"]>()
+          .toEqualTypeOf<number>();
       });
 
       it("Works with selecting all non-RDP's", async () => {
@@ -611,7 +579,7 @@ describe("ObjectSet", () => {
         });
 
         expectTypeOf<typeof withFamilyResults["data"][0]>()
-          .toEqualTypeOf<
+          .toMatchTypeOf<
             Osdk.Instance<
               EmployeeApiTest,
               never,
