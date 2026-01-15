@@ -120,7 +120,7 @@ export function createCustomFilterDef(
   return {
     type: "custom",
     key,
-    filterComponent: "CUSTOM" as const,
+    filterComponent: "CUSTOM",
     filterState: { type: "CUSTOM", customState: {} },
     renderInput: () => null,
     toWhereClause: () => ({}),

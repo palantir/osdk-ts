@@ -63,7 +63,7 @@ export type FilterState<Q extends ObjectTypeDefinition> =
 
 export interface FilterListProps<Q extends ObjectTypeDefinition> {
   /**
-   * The object set to filter. The type definition is extracted from this.
+   * The set of objects to be filtered
    */
   objectSet: ObjectSet<Q>;
 

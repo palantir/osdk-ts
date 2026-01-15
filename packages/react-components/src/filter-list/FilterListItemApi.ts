@@ -142,7 +142,7 @@ export type FilterStateType =
  */
 export interface BaseFilterState {
   /**
-   * The type discriminator for the filter state
+   * The type of filter component
    */
   type: FilterStateType;
 
@@ -255,6 +255,11 @@ export interface PropertyFilterDefinition<
    * Discriminator for filter definition type
    */
   type: "property";
+
+  /**
+   * Optional unique identifier for stable keying across filter reorders.
+   */
+  id?: string;
 
   /**
    * The property key to filter on

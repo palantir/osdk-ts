@@ -17,7 +17,6 @@
 import type { ObjectTypeDefinition, WhereClause } from "@osdk/api";
 import type { FilterDefinitionUnion } from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
-import { assertUnreachable } from "./assertUnreachable.js";
 import { getFilterKey } from "./getFilterKey.js";
 
 type PropertyFilter = Record<string, unknown> | boolean | string | number;
@@ -185,7 +184,8 @@ function filterStateToPropertyFilter(
       return undefined;
 
     default:
-      return assertUnreachable(state);
+      state satisfies never;
+      throw new Error(`Unknown filter state type`);
   }
 }
 
@@ -226,14 +226,10 @@ function buildWhereClauseInternal<Q extends ObjectTypeDefinition>(
       }
 
       case "hasLink": {
-        if (state.type !== "HAS_LINK") {
+        if (state.type !== "HAS_LINK" || !state.hasLink) {
           break;
         }
-        if (state.hasLink) {
-          clauses.push({ [definition.linkName]: { $isNotNull: true } });
-        } else {
-          clauses.push({ [definition.linkName]: { $isNull: true } });
-        }
+        clauses.push({ [definition.linkName]: { $isNotNull: true } });
         break;
       }
 
@@ -305,7 +301,7 @@ function buildWhereClauseInternal<Q extends ObjectTypeDefinition>(
       }
 
       default:
-        assertUnreachable(definition);
+        definition satisfies never;
     }
   }
 

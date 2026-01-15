@@ -66,6 +66,7 @@ export function filterHasActiveState(state: FilterState | undefined): boolean {
     case "CUSTOM":
       return true;
     default:
+      state satisfies never;
       return false;
   }
 }
