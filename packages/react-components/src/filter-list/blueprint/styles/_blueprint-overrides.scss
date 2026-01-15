@@ -1,0 +1,241 @@
+// Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+// Licensed under the Apache License, Version 2.0.
+
+// Blueprint-specific overrides for filter-list components
+
+@use "../../base/styles/variables" as *;
+
+// Dark mode overrides
+.bp6-dark .filter-list {
+  background-color: var(--filter-panel-bg-color, #{$filter-panel-bg-dark});
+  border-right-color: var(--filter-panel-border-color, #{$filter-panel-border-dark});
+}
+
+.bp6-dark .filter-list__header {
+  border-bottom-color: var(--filter-panel-border-color, #{$filter-panel-border-dark});
+}
+
+.bp6-dark .filter-list__item {
+  border-bottom-color: var(--filter-panel-border-color, #{$filter-panel-border-muted-dark});
+}
+
+.bp6-dark .filter-list__item-chevron {
+  color: var(--filter-count-text-color, #{$filter-muted-text-dark});
+}
+
+.bp6-dark .filter-list__add-button--fixed {
+  border-top-color: var(--filter-panel-border-color, #{$filter-panel-border-muted-dark});
+}
+
+// Blueprint Checkbox List Input overrides
+.filter-input--checkbox-list {
+  // Hide the native checkbox input in ALL checkboxes
+  .bp6-control.bp6-checkbox input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
+.filter-input--checkbox-list .bp6-control {
+  margin-bottom: 0;
+}
+
+.bp6-dark .filter-input--checkbox-list-select-all {
+  border-bottom-color: var(--filter-panel-border-color, #{$filter-panel-border-muted-dark});
+}
+
+.filter-input--checkbox-list-select-all .bp6-control {
+  font-weight: 500;
+}
+
+// Fix checkbox focus styling
+.filter-input--checkbox-list .bp6-control input:focus ~ .bp6-control-indicator {
+  outline: none;
+  box-shadow: 0 0 0 1px $filter-focus-ring;
+}
+
+// Blueprint checkbox in row
+.filter-input__checkbox-row .bp6-control.bp6-checkbox {
+  flex: 1;
+  min-width: 0;
+  margin-bottom: 0;
+}
+
+// Blueprint Text Input overrides
+.filter-input--text .bp6-input-group {
+  position: relative;
+  width: 100%;
+}
+
+.filter-input--text .bp6-input {
+  padding-right: 30px;
+}
+
+// Blueprint clear button in text input
+// Note: top: 40% (instead of 50%) compensates for Blueprint button's internal padding
+// which causes visual misalignment when using standard vertical centering
+.filter-input--text .filter-input__clear.bp6-button {
+  position: absolute;
+  top: 40%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  min-width: 24px;
+}
+
+// Blueprint Toggle/Switch overrides
+.filter-input--toggle .bp6-control {
+  margin-bottom: 0;
+}
+
+// Blueprint count dark mode
+.bp6-dark .filter-input__count {
+  color: var(--filter-count-text-color, #{$filter-muted-text-dark});
+}
+
+// Blueprint view all link
+.filter-input__view-all-link:hover {
+  color: var(--filter-link-color, #{$filter-link-color-light});
+}
+
+.bp6-dark .filter-input__view-all-link {
+  color: $filter-muted-text-dark;
+
+  &:hover {
+    color: var(--filter-link-color, #{$filter-link-color-dark});
+  }
+}
+
+// Blueprint range separator dark mode
+.bp6-dark .filter-input__range-separator {
+  color: var(--filter-muted-text-color, #{$filter-muted-text-dark});
+}
+
+// Blueprint range inputs
+.filter-input--number-range .bp6-input,
+.filter-input--date-range .bp6-input {
+  width: 100%;
+}
+
+// Blueprint null value row
+.filter-input__null-value-row {
+  .bp6-control.bp6-checkbox input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .bp6-control.bp6-checkbox {
+    flex: 1;
+    margin-bottom: 0;
+  }
+}
+
+.bp6-dark .filter-input__null-value-row {
+  border-top-color: var(--filter-panel-border-color, #{$filter-panel-border-muted-dark});
+}
+
+.bp6-dark .filter-input__null-label {
+  color: var(--filter-muted-text-color, #{$filter-muted-text-dark});
+}
+
+// Add Filter Button - Blueprint outlined button styling
+.filter-list__add-button.bp6-button.bp6-outlined {
+  color: $filter-muted-text-light;
+  border-color: $filter-panel-border-light;
+
+  .bp6-icon {
+    color: $filter-muted-text-light;
+  }
+
+  &:hover {
+    color: $filter-muted-text-light;
+    background-color: $filter-hover-bg;
+
+    .bp6-icon {
+      color: $filter-muted-text-light;
+    }
+  }
+}
+
+.bp6-dark .filter-list__add-button.bp6-button.bp6-outlined {
+  color: $filter-muted-text-dark;
+  border-color: $filter-panel-border-dark;
+
+  .bp6-icon {
+    color: $filter-muted-text-dark;
+  }
+
+  &:hover {
+    color: $filter-muted-text-dark;
+  }
+}
+
+// AddFilterMenu styles
+.filter-add-menu {
+  width: var(--filter-add-menu-width, 300px);
+  background-color: var(--filter-add-menu-bg, #{$filter-panel-bg-light});
+  border-radius: var(--filter-add-menu-radius, 3px);
+  box-shadow: var(--filter-add-menu-shadow, 0 2px 10px rgba(0, 0, 0, 0.15));
+}
+
+.filter-add-menu__search-container {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--filter-panel-border-color, #{$filter-panel-border-light});
+}
+
+.filter-add-menu__search-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  color: var(--filter-add-menu-text-color, #{$filter-text-light});
+  background-color: transparent;
+}
+
+.filter-add-menu__content {
+  max-height: var(--filter-add-menu-max-height, 400px);
+  overflow-y: auto;
+}
+
+.filter-add-menu__section-button {
+  padding: 10px 16px;
+  background-color: var(--filter-add-menu-section-bg, #{$filter-hover-bg});
+  border-bottom: 1px solid var(--filter-panel-border-color, #{$filter-panel-border-light});
+  border-radius: 0;
+}
+
+.filter-add-menu__section-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--filter-muted-text-color, #{$filter-muted-text-light});
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+// Dark mode for AddFilterMenu
+.bp6-dark .filter-add-menu {
+  background-color: var(--filter-add-menu-bg, #{$filter-panel-bg-dark});
+}
+
+.bp6-dark .filter-add-menu__search-container {
+  border-bottom-color: var(--filter-panel-border-color, #{$filter-panel-border-dark});
+}
+
+.bp6-dark .filter-add-menu__search-input {
+  color: var(--filter-add-menu-text-color, #{$filter-text-dark});
+}
+
+.bp6-dark .filter-add-menu__section-button {
+  background-color: var(--filter-add-menu-section-bg, #{$filter-panel-bg-dark});
+  border-bottom-color: var(--filter-panel-border-color, #{$filter-panel-border-dark});
+}
+
+.bp6-dark .filter-add-menu__section-label {
+  color: var(--filter-muted-text-color, #{$filter-muted-text-dark});
+}

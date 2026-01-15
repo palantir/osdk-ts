@@ -25,6 +25,12 @@
       "require": "./build/cjs/public/experimental.cjs",
       "default": "./build/browser/public/experimental.js"
     },
+    "./styles/*.css": {
+      "default": "./build/styles/*.css"
+    },
+    "./styles/scss": {
+      "default": "./build/styles/scss/index.scss"
+    },
     "./*": {
       "browser": "./build/browser/public/*.js",
       "import": {
@@ -39,10 +45,14 @@
     "check-attw": "attw --pack .",
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
+    "compileStyles": "sass src/filter-list/styles/index.scss build/styles/FilterList.css --style=compressed --source-map --load-path=../../node_modules --load-path=node_modules",
+    "compileBundle": "sass src/filter-list/styles/bundle.scss build/styles/FilterListBundle.css --style=compressed --source-map --load-path=../../node_modules --load-path=node_modules",
+    "copyScss": "mkdir -p build/styles/scss && cp -r src/filter-list/styles/*.scss build/styles/scss/",
+    "buildStyles": "pnpm compileStyles && pnpm compileBundle && pnpm copyScss",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
     "test": "vitest run",
-    "transpileBrowser": "monorepo.tool.transpile -f esm -m normal -t browser",
+    "transpileBrowser": "monorepo.tool.transpile -f esm -m normal -t browser && pnpm buildStyles",
     "transpileCjs": "monorepo.tool.transpile -f cjs -m bundle -t node",
     "transpileEsm": "monorepo.tool.transpile -f esm -m normal -t node",
     "transpileTypes": "monorepo.tool.transpile -f esm -m types -t node",
@@ -67,9 +77,18 @@
     "@testing-library/react": "^16.3.0",
     "@types/react": "^18.3.24",
     "eslint-plugin-react-hooks": "^5.2.0",
+    "happy-dom": "^16.8.1",
     "p-defer": "^4.0.1",
     "react": "^18.3.1",
-    "typescript": "~5.5.4"
+    "react-dom": "^18.3.1",
+    "sass": "^1.83.0",
+    "typescript": "~5.5.4",
+    "vitest": "^3.2.4"
+  },
+  "peerDependenciesMeta": {
+    "sass": {
+      "optional": true
+    }
   },
   "publishConfig": {
     "access": "public"
@@ -79,6 +98,7 @@
     "build/esm",
     "build/browser",
     "build/types",
+    "build/styles",
     "CHANGELOG.md",
     "package.json",
     "templates",
@@ -87,5 +107,10 @@
   "main": "./build/cjs/index.cjs",
   "module": "./build/esm/index.js",
   "types": "./build/cjs/index.d.cts",
-  "type": "module"
+  "type": "module",
+  "dependencies": {
+    "@blueprintjs/core": "^5.19.1",
+    "@blueprintjs/icons": "^5.23.0",
+    "classnames": "^2.5.1"
+  }
 }
