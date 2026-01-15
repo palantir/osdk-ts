@@ -52,9 +52,9 @@ export interface FilterTemplate {
 
   /**
    * Icon to display next to the filter label.
-   * Can be a string (icon name) or a ReactNode for custom icons.
+   * Can be a React element (JSX) or a string.
    */
-  icon: string | ReactNode;
+  icon: ReactNode;
 
   /**
    * Type of data indicator to show (histogram, count, none)
