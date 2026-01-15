@@ -551,112 +551,112 @@ describe("Interfaces", () => {
         },
       });
       expect(dumpOntologyFullMetadata().ontology).toMatchInlineSnapshot(`
-          {
+        {
+          "actionTypes": {},
+          "blockPermissionInformation": {
             "actionTypes": {},
-            "blockPermissionInformation": {
-              "actionTypes": {},
-              "linkTypes": {},
-              "objectTypes": {},
-            },
-            "interfaceTypes": {
-              "com.palantir.bar": {
-                "interfaceType": {
-                  "apiName": "com.palantir.bar",
-                  "displayMetadata": {
-                    "description": "Bar",
-                    "displayName": "Bar",
-                    "icon": {
-                      "blueprint": {
-                        "color": "#4C90F0",
-                        "locator": "layout-hierarchy",
-                      },
-                      "type": "blueprint",
+            "linkTypes": {},
+            "objectTypes": {},
+          },
+          "interfaceTypes": {
+            "com.palantir.bar": {
+              "interfaceType": {
+                "apiName": "com.palantir.bar",
+                "displayMetadata": {
+                  "description": "Bar",
+                  "displayName": "Bar",
+                  "icon": {
+                    "blueprint": {
+                      "color": "#4C90F0",
+                      "locator": "layout-hierarchy",
                     },
+                    "type": "blueprint",
                   },
-                  "extendsInterfaces": [],
-                  "links": [],
-                  "properties": [],
-                  "propertiesV2": {},
-                  "propertiesV3": {
-                    "struct": {
-                      "interfaceDefinedPropertyType": {
-                        "apiName": "struct",
-                        "constraints": {
-                          "dataConstraints": undefined,
-                          "indexedForSearch": true,
-                          "primaryKeyConstraint": "NO_RESTRICTION",
-                          "requireImplementation": true,
-                          "typeClasses": [],
-                          "valueType": undefined,
-                        },
-                        "displayMetadata": {
-                          "description": undefined,
-                          "displayName": "struct",
-                          "visibility": "NORMAL",
-                        },
-                        "type": {
-                          "struct": {
-                            "structFields": [
-                              {
-                                "aliases": [],
-                                "apiName": "field",
-                                "displayMetadata": {
-                                  "displayName": "Field",
-                                },
-                                "fieldType": {
-                                  "string": {
-                                    "analyzerOverride": undefined,
-                                    "enableAsciiFolding": undefined,
-                                    "isLongText": false,
-                                    "supportsEfficientLeadingWildcard": false,
-                                    "supportsExactMatching": true,
-                                  },
-                                  "type": "string",
-                                },
-                                "requireImplementation": true,
-                                "typeClasses": [],
-                              },
-                              {
-                                "aliases": [],
-                                "apiName": "optional",
-                                "displayMetadata": {
-                                  "description": undefined,
-                                  "displayName": "optional",
-                                },
-                                "fieldType": {
-                                  "string": {
-                                    "analyzerOverride": undefined,
-                                    "enableAsciiFolding": undefined,
-                                    "isLongText": false,
-                                    "supportsEfficientLeadingWildcard": false,
-                                    "supportsExactMatching": true,
-                                  },
-                                  "type": "string",
-                                },
-                                "requireImplementation": false,
-                                "typeClasses": [],
-                              },
-                            ],
-                          },
-                          "type": "struct",
-                        },
+                },
+                "extendsInterfaces": [],
+                "links": [],
+                "properties": [],
+                "propertiesV2": {},
+                "propertiesV3": {
+                  "struct": {
+                    "interfaceDefinedPropertyType": {
+                      "apiName": "struct",
+                      "constraints": {
+                        "dataConstraints": undefined,
+                        "indexedForSearch": true,
+                        "primaryKeyConstraint": "NO_RESTRICTION",
+                        "requireImplementation": true,
+                        "typeClasses": [],
+                        "valueType": undefined,
                       },
-                      "type": "interfaceDefinedPropertyType",
+                      "displayMetadata": {
+                        "description": undefined,
+                        "displayName": "struct",
+                        "visibility": "NORMAL",
+                      },
+                      "type": {
+                        "struct": {
+                          "structFields": [
+                            {
+                              "aliases": [],
+                              "apiName": "field",
+                              "displayMetadata": {
+                                "displayName": "Field",
+                              },
+                              "fieldType": {
+                                "string": {
+                                  "analyzerOverride": undefined,
+                                  "enableAsciiFolding": undefined,
+                                  "isLongText": false,
+                                  "supportsEfficientLeadingWildcard": false,
+                                  "supportsExactMatching": true,
+                                },
+                                "type": "string",
+                              },
+                              "requireImplementation": true,
+                              "typeClasses": [],
+                            },
+                            {
+                              "aliases": [],
+                              "apiName": "optional",
+                              "displayMetadata": {
+                                "description": undefined,
+                                "displayName": "optional",
+                              },
+                              "fieldType": {
+                                "string": {
+                                  "analyzerOverride": undefined,
+                                  "enableAsciiFolding": undefined,
+                                  "isLongText": false,
+                                  "supportsEfficientLeadingWildcard": false,
+                                  "supportsExactMatching": true,
+                                },
+                                "type": "string",
+                              },
+                              "requireImplementation": true,
+                              "typeClasses": [],
+                            },
+                          ],
+                        },
+                        "type": "struct",
+                      },
                     },
+                    "type": "interfaceDefinedPropertyType",
                   },
-                  "searchable": true,
-                  "status": {
-                    "active": {},
-                    "type": "active",
-                  },
+                },
+                "searchable": true,
+                "status": {
+                  "active": {},
+                  "type": "active",
                 },
               },
             },
-            "linkTypes": {},
-            "objectTypes": {},
-            "sharedPropertyTypes": {},
-          }
-        `);
+          },
+          "linkTypes": {},
+          "objectTypes": {},
+          "sharedPropertyTypes": {},
+        }
+      `);
     });
 
     it("Complex interface properties", () => {

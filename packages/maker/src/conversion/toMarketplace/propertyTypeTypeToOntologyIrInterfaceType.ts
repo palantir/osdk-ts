@@ -48,7 +48,7 @@ export function propertyTypeTypeToOntologyIrInterfaceType(
             fieldType: propertyTypeTypeToOntologyIrInterfaceType(
               fieldTypeDefinition,
             ),
-            requireImplementation: false,
+            requireImplementation: true,
           };
         } else {
           // If it is a full form type definition then process it as such
@@ -67,7 +67,7 @@ export function propertyTypeTypeToOntologyIrInterfaceType(
               typeClasses: fieldTypeDefinition.typeClasses ?? [],
               aliases: fieldTypeDefinition.aliases ?? [],
               requireImplementation: fieldTypeDefinition.requireImplementation
-                ?? false,
+                ?? true,
             };
           } else {
             field = {
@@ -78,7 +78,7 @@ export function propertyTypeTypeToOntologyIrInterfaceType(
               fieldType: propertyTypeTypeToOntologyIrInterfaceType(
                 fieldTypeDefinition,
               ),
-              requireImplementation: false,
+              requireImplementation: true,
             };
           }
         }
