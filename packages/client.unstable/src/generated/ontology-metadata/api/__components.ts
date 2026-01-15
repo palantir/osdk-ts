@@ -8389,7 +8389,10 @@ export interface OntologyIrInterfacePropertyLogicRuleValue_logicRuleValue {
 
 export interface OntologyIrInterfacePropertyLogicRuleValue_structLogicRuleValue {
   type: "structLogicRuleValue";
-  structLogicRuleValue: Record<StructFieldRid, StructFieldLogicRuleValue>;
+  structLogicRuleValue: Record<
+    ObjectTypeFieldApiName,
+    StructFieldLogicRuleValue
+  >;
 }
 export type OntologyIrInterfacePropertyLogicRuleValue =
   | OntologyIrInterfacePropertyLogicRuleValue_logicRuleValue

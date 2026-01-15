@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { convertMappingValue } from "../conversion/toMarketplace/convertMappingValue.js";
+import {
+  convertInterfacePropertyMappingValue,
+  convertMappingValue,
+} from "../conversion/toMarketplace/convertMappingValue.js";
 import { type ActionType } from "./action/ActionType.js";
 import type { InterfaceActionTypeUserDefinition } from "./defineAction.js";
 import {
@@ -103,10 +106,19 @@ export function defineCreateInterfaceObjectAction(
       ) => [id, prop.required ?? true]),
     ),
   );
+  let sptMappings = {};
   const mappings = Object.fromEntries(
     Object.entries(def.nonParameterMappings ?? {}).map((
       [id, value],
-    ) => [id, convertMappingValue(value)]),
+    ) => {
+      if (sptNames.includes(id)) {
+        sptMappings = {
+          ...sptMappings,
+          [id]: convertMappingValue(value),
+        };
+      }
+      return [id, convertInterfacePropertyMappingValue(value)];
+    }),
   );
 
   return defineAction({
@@ -140,7 +152,7 @@ export function defineCreateInterfaceObjectAction(
                 }],
               ),
             ),
-            ...mappings,
+            ...sptMappings,
           },
           interfacePropertyValues: {
             ...Object.fromEntries(
@@ -158,6 +170,7 @@ export function defineCreateInterfaceObjectAction(
                   },
                 ]),
             ),
+            ...mappings,
           },
         },
       },

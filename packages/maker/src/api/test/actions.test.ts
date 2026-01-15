@@ -9170,18 +9170,24 @@ describe("Action Types", () => {
                         {
                           "addInterfaceRule": {
                             "interfaceApiName": "com.palantir.exampleInterface",
-                            "interfacePropertyValues": {},
-                            "objectTypeParameter": "objectTypeParameter",
-                            "sharedPropertyValues": {
+                            "interfacePropertyValues": {
                               "com.palantir.property1": {
-                                "currentUser": {},
-                                "type": "currentUser",
+                                "logicRuleValue": {
+                                  "currentUser": {},
+                                  "type": "currentUser",
+                                },
+                                "type": "logicRuleValue",
                               },
                               "com.palantir.property2": {
-                                "currentTime": {},
-                                "type": "currentTime",
+                                "logicRuleValue": {
+                                  "currentTime": {},
+                                  "type": "currentTime",
+                                },
+                                "type": "logicRuleValue",
                               },
                             },
+                            "objectTypeParameter": "objectTypeParameter",
+                            "sharedPropertyValues": {},
                           },
                           "type": "addInterfaceRule",
                         },
@@ -9592,17 +9598,23 @@ describe("Action Types", () => {
                           "modifyInterfaceRule": {
                             "interfaceApiName": "com.palantir.exampleInterface",
                             "interfaceObjectToModifyParameter": "interfaceObjectToModifyParameter",
-                            "interfacePropertyValues": {},
-                            "sharedPropertyValues": {
+                            "interfacePropertyValues": {
                               "com.palantir.property1": {
-                                "currentUser": {},
-                                "type": "currentUser",
+                                "logicRuleValue": {
+                                  "currentUser": {},
+                                  "type": "currentUser",
+                                },
+                                "type": "logicRuleValue",
                               },
                               "com.palantir.property2": {
-                                "currentTime": {},
-                                "type": "currentTime",
+                                "logicRuleValue": {
+                                  "currentTime": {},
+                                  "type": "currentTime",
+                                },
+                                "type": "logicRuleValue",
                               },
                             },
+                            "sharedPropertyValues": {},
                           },
                           "type": "modifyInterfaceRule",
                         },

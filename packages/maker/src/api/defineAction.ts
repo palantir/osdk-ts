@@ -15,6 +15,7 @@
  */
 
 import type {
+  OntologyIrInterfacePropertyLogicRuleValue,
   OntologyIrParameterPrefill,
   ParameterId,
 } from "@osdk/client.unstable";
@@ -50,9 +51,10 @@ import {
   withoutNamespace,
 } from "./defineOntology.js";
 import { getFlattenedInterfaceProperties } from "./interface/getFlattenedInterfaceProperties.js";
-import type {
-  InterfaceDefinedProperty,
-  InterfacePropertyType,
+import {
+  getInterfacePropertyTypeType,
+  type InterfaceDefinedProperty,
+  type InterfacePropertyType,
 } from "./interface/InterfacePropertyType.js";
 import type { InterfaceType } from "./interface/InterfaceType.js";
 import type { ObjectPropertyType } from "./object/ObjectPropertyType.js";
@@ -1082,4 +1084,52 @@ export function getNonNamespacedParameterName(
 ): string {
   return def.conflictingParameterOverrides?.[parameter]
     ?? (parameter.split(".").pop() || parameter);
+}
+
+export function createInterfacePropertyLogicRuleValue(
+  id: string,
+  def: InterfacePropertyType,
+  actionDef: InterfaceActionTypeUserDefinition,
+): OntologyIrInterfacePropertyLogicRuleValue {
+  const type = getInterfacePropertyTypeType(def);
+  const array = ("sharedPropertyType" in def)
+    ? def.sharedPropertyType.array
+    : def.array;
+  const parameterId = actionDef.useNonNamespacedParameters
+    ? getNonNamespacedParameterName(actionDef, id)
+    : id;
+  if (isStruct(type)) {
+    return {
+      type: "structLogicRuleValue",
+      structLogicRuleValue: Object.fromEntries(
+        Object.entries(type.structDefinition).map(([apiName, fieldValue]) => {
+          return [
+            apiName,
+            array
+              ? {
+                type: "structListParameterFieldValue",
+                structListParameterFieldValue: {
+                  parameterId: parameterId,
+                  structFieldApiName: apiName,
+                },
+              }
+              : {
+                type: "structParameterFieldValue",
+                structParameterFieldValue: {
+                  parameterId: parameterId,
+                  structFieldApiName: apiName,
+                },
+              },
+          ];
+        }),
+      ),
+    };
+  }
+  return {
+    type: "logicRuleValue",
+    logicRuleValue: {
+      type: "parameterId",
+      parameterId: parameterId,
+    },
+  };
 }
