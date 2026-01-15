@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { Admin } from "@osdk/foundry";
-
+import { type User, Users } from "@osdk/foundry.admin";
 import React from "react";
 import { usePlatformQuery } from "../../../utils/usePlatformQuery.js";
 import { OsdkContext2 } from "../../OsdkContext2.js";
@@ -38,7 +37,7 @@ export interface UseCurrentFoundryUserOptions {
 }
 
 export interface UseCurrentFoundryUserResult {
-  currentUser: Admin.User | undefined;
+  currentUser: User | undefined;
   isLoading: boolean;
 
   error: Error | undefined;
@@ -56,7 +55,7 @@ export function useCurrentFoundryUser(
   const { client } = React.useContext(OsdkContext2);
 
   const handleQuery = React.useCallback(
-    () => Admin.Users.getCurrent(client),
+    () => Users.getCurrent(client),
     [client],
   );
 

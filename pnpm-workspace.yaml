@@ -15,6 +15,7 @@ catalogs:
     "@osdk/foundry.core": 2.44.0
     "@osdk/foundry.datasets": ~2.5.0
     "@osdk/foundry.geo": 2.44.0
+    "@osdk/foundry.admin": 2.44.0
     "@osdk/foundry.mediasets": 2.44.0
     "@osdk/foundry.ontologies": 2.44.0
     "@osdk/foundry.thirdpartyapplications": 2.44.0
