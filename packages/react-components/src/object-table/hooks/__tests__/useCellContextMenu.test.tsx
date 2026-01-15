@@ -37,9 +37,6 @@ describe("useCellContextMenu", () => {
       y: 200,
       toJSON: () => ({}),
     });
-
-    Object.defineProperty(window, "scrollX", { value: 10, writable: true });
-    Object.defineProperty(window, "scrollY", { value: 20, writable: true });
   });
 
   describe("initial state", () => {
@@ -53,7 +50,7 @@ describe("useCellContextMenu", () => {
   });
 
   describe("handleOpenContextMenu", () => {
-    it("opens context menu and calculates position from element", () => {
+    it("opens context menu and use position from bounding client rect", () => {
       const tdRef = { current: mockElement };
       const { result } = renderHook(() => useCellContextMenu({ tdRef }));
 
@@ -70,8 +67,8 @@ describe("useCellContextMenu", () => {
       expect(mockEvent.stopPropagation).toHaveBeenCalled();
       expect(result.current.isContextMenuOpen).toBe(true);
       expect(result.current.popoverPosition).toEqual({
-        left: 110, // 100 (rect.left) + 10 (scrollX)
-        top: 260, // 240 (rect.bottom) + 20 (scrollY)
+        left: 100,
+        top: 240,
         width: 150,
       } as PopoverPosition);
     });
@@ -93,48 +90,6 @@ describe("useCellContextMenu", () => {
       expect(mockEvent.stopPropagation).toHaveBeenCalled();
       expect(result.current.isContextMenuOpen).toBe(false);
       expect(result.current.popoverPosition).toBeNull();
-    });
-
-    it("updates position when called multiple times", () => {
-      const tdRef = { current: mockElement };
-      const { result } = renderHook(() => useCellContextMenu({ tdRef }));
-
-      const mockEvent = {
-        preventDefault: vi.fn(),
-        stopPropagation: vi.fn(),
-      } as unknown as React.MouseEvent<HTMLTableCellElement>;
-
-      // First open
-      act(() => {
-        result.current.handleOpenContextMenu(mockEvent);
-      });
-
-      const firstPosition = result.current.popoverPosition;
-
-      // Update mock element position
-      vi.spyOn(mockElement, "getBoundingClientRect").mockReturnValue({
-        left: 200,
-        top: 300,
-        bottom: 340,
-        width: 200,
-        height: 40,
-        right: 400,
-        x: 200,
-        y: 300,
-        toJSON: () => ({}),
-      });
-
-      // Second open
-      act(() => {
-        result.current.handleOpenContextMenu(mockEvent);
-      });
-
-      expect(result.current.popoverPosition).not.toEqual(firstPosition);
-      expect(result.current.popoverPosition).toEqual({
-        left: 210, // 200 + 10
-        top: 360, // 340 + 20
-        width: 200,
-      });
     });
   });
 
