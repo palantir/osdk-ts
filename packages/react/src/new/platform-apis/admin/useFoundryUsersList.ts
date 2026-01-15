@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import type { Core } from "@osdk/foundry";
-import { Admin } from "@osdk/foundry";
-
+import { type ListUsersResponse, Users } from "@osdk/foundry.admin";
+import type { UserStatus } from "@osdk/foundry.core";
 import React from "react";
 import { usePlatformQuery } from "../../../utils/usePlatformQuery.js";
 import { OsdkContext2 } from "../../OsdkContext2.js";
@@ -42,7 +41,7 @@ export interface UseFoundryUsersListOptions {
    *
    * @default "ACTIVE"
    */
-  include?: Core.UserStatus;
+  include?: UserStatus;
 
   /**
    * The preferred page size for the list.
@@ -60,7 +59,7 @@ export interface UseFoundryUsersListOptions {
 }
 
 export interface UseFoundryUsersListResult {
-  users: Admin.ListUsersResponse["data"] | undefined;
+  users: ListUsersResponse["data"] | undefined;
   /**
    * The page token to be used for the next page of users. If this is undefined, there are no more
    * pages of users to load.
@@ -84,7 +83,7 @@ export function useFoundryUsersList(
   const { client } = React.useContext(OsdkContext2);
 
   const handleQuery = React.useCallback(() => {
-    return Admin.Users.list(client, { include, pageSize, pageToken });
+    return Users.list(client, { include, pageSize, pageToken });
   }, [client, include, pageSize, pageToken]);
 
   const query = usePlatformQuery(
