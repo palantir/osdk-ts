@@ -46,6 +46,7 @@
     "transpileCjs": "monorepo.tool.transpile -f cjs -m bundle -t node",
     "transpileEsm": "monorepo.tool.transpile -f esm -m normal -t node",
     "transpileTypes": "monorepo.tool.transpile -f esm -m types -t node",
+    "transpileDeps": "pnpm --filter @osdk/api --filter @osdk/client --filter @osdk/react run transpileEsm",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "peerDependencies": {
