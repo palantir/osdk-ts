@@ -22,8 +22,10 @@ import type {
   WhereClause,
 } from "@osdk/api";
 import type { ObjectTypeDefinition } from "@osdk/client";
-import type { ObserveAggregationArgs } from "@osdk/client/unstable-do-not-use";
-import { getWireObjectSet } from "@osdk/client/unstable-do-not-use";
+import {
+  computeObjectSetCacheKey,
+  type ObserveAggregationArgs,
+} from "@osdk/client/unstable-do-not-use";
 import React from "react";
 import {
   makeExternalStore,
@@ -202,18 +204,18 @@ export function useOsdkAggregation<
 
   const canonWhere = observableClient.canonicalizeWhereClause<Q>(where ?? {});
 
-  // Use ref to hold objectSet - allows us to use stableObjectSetWire for memoization
+  // Use ref to hold objectSet - allows us to use stableObjectSetKey for memoization
   // while still having access to the actual objectSet for API calls
   const objectSetRef = React.useRef(objectSet);
   objectSetRef.current = objectSet;
 
-  const objectSetWireString = objectSet
-    ? JSON.stringify(getWireObjectSet(objectSet))
+  const objectSetKeyString = objectSet
+    ? computeObjectSetCacheKey(objectSet)
     : undefined;
 
-  const stableObjectSetWire = React.useMemo(
-    () => objectSetWireString,
-    [objectSetWireString],
+  const stableObjectSetKey = React.useMemo(
+    () => objectSetKeyString,
+    [objectSetKeyString],
   );
 
   const stableWithProperties = React.useMemo(
@@ -233,7 +235,7 @@ export function useOsdkAggregation<
 
   const { subscribe, getSnapShot } = React.useMemo(
     () => {
-      if (stableObjectSetWire && objectSetRef.current) {
+      if (stableObjectSetKey && objectSetRef.current) {
         return makeExternalStoreAsync<ObserveAggregationArgs<Q, A>>(
           (observer) =>
             observableClient.observeAggregation(
@@ -249,7 +251,7 @@ export function useOsdkAggregation<
               observer,
             ),
           process.env.NODE_ENV !== "production"
-            ? `aggregation ${type.apiName} ${stableObjectSetWire} ${
+            ? `aggregation ${type.apiName} ${stableObjectSetKey} ${
               JSON.stringify(canonWhere)
             }`
             : void 0,
@@ -257,6 +259,7 @@ export function useOsdkAggregation<
       }
       return makeExternalStore<ObserveAggregationArgs<Q, A>>(
         (observer) =>
+          // eslint-disable-next-line @typescript-eslint/no-deprecated
           observableClient.observeAggregation(
             {
               type: type,
@@ -277,7 +280,7 @@ export function useOsdkAggregation<
       observableClient,
       type.apiName,
       type.type,
-      stableObjectSetWire,
+      stableObjectSetKey,
       // objectSet removed - use objectSetRef instead to avoid re-subscription on reference change
       canonWhere,
       stableWithProperties,
