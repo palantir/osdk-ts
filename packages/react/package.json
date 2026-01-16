@@ -39,9 +39,10 @@
     "apiDocs": "npx typedoc ",
     "check-attw": "attw --pack .",
     "check-spelling": "cspell --quiet .",
-    "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
+    "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo docs",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
+    "prepack": "rm -rf docs && cp -r ../../docs/react docs",
     "test": "vitest run",
     "transpileBrowser": "monorepo.tool.transpile -f esm -m normal -t browser",
     "transpileCjs": "monorepo.tool.transpile -f cjs -m bundle -t node",
@@ -88,7 +89,9 @@
     "CHANGELOG.md",
     "package.json",
     "templates",
-    "*.d.ts"
+    "*.d.ts",
+    "AGENTS.md",
+    "docs"
   ],
   "main": "./build/cjs/index.cjs",
   "module": "./build/esm/index.js",
