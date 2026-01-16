@@ -68,6 +68,13 @@ export namespace ActionMetadata {
       | "geoshape"
       | "geohash";
 
+    export type StructFieldDefinition<
+      T extends DataType.BaseActionParameterTypes,
+    > = T | {
+      type: T;
+      nullable: boolean;
+    };
+
     export interface Object<
       T_Target extends ObjectTypeDefinition = never,
     > {
@@ -91,7 +98,10 @@ export namespace ActionMetadata {
     }
 
     export interface Struct<
-      T extends Record<string, DataType.BaseActionParameterTypes>,
+      T extends Record<
+        string,
+        StructFieldDefinition<DataType.BaseActionParameterTypes>
+      >,
     > {
       type: "struct";
       struct: T;

@@ -15,7 +15,11 @@ export namespace createStructPersonOpiTeam {
       description: undefined;
       multiplicity: false;
       nullable: true;
-      type: ActionMetadata.DataType.Struct<{ city: 'string'; state: 'string'; zipcode: 'integer' }>;
+      type: ActionMetadata.DataType.Struct<{
+        city: { type: 'string'; nullable: false };
+        state: { type: 'string'; nullable: false };
+        zipcode: { type: 'integer'; nullable: true };
+      }>;
     };
     age: {
       description: undefined;
@@ -35,7 +39,11 @@ export namespace createStructPersonOpiTeam {
    * Create a struct person on the OPI team
    */
   export interface Params {
-    readonly address?: ActionParam.StructType<{ city: 'string'; state: 'string'; zipcode: 'integer' }>;
+    readonly address?: ActionParam.StructType<{
+      city: { type: 'string'; nullable: false };
+      state: { type: 'string'; nullable: false };
+      zipcode: { type: 'integer'; nullable: true };
+    }>;
 
     readonly age: ActionParam.PrimitiveType<'integer'>;
 
@@ -61,7 +69,7 @@ export namespace createStructPersonOpiTeam {
 
 /**
  * Create a struct person on the OPI team
- * @param {ActionParam.StructType<{"city":"string","state":"string","zipcode":"integer"}>} [address]
+ * @param {ActionParam.StructType<{"city":{"type":"string","nullable":false},"state":{"type":"string","nullable":false},"zipcode":{"type":"integer","nullable":true}}>} [address]
  * @param {ActionParam.PrimitiveType<"integer">} age
  * @param {ActionParam.PrimitiveType<"string">} id
  */
