@@ -185,7 +185,6 @@ export function createPublicOauthClient(
   const authServer = createAuthorizationServer(ctxPath, url);
   const oauthHttpOptions: HttpRequestOptions = { [customFetch]: fetchFn };
 
-  // Resolve storage once at initialization - this determines where refresh tokens are stored
   const storage = getStorage(tokenStorage);
 
   const { makeTokenAndSaveRefresh, getToken } = common(
@@ -213,7 +212,6 @@ export function createPublicOauthClient(
   async function maybeRefresh(
     expectRefreshToken?: boolean,
   ): Promise<Token | undefined> {
-    // If tokenStorage is 'none', we never store refresh tokens, so skip this entirely
     if (tokenStorage === "none") {
       if (expectRefreshToken) throw new Error("No refresh token found");
       return;
