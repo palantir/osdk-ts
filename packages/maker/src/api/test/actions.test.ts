@@ -565,7 +565,12 @@ describe("Action Types", () => {
                               },
                             },
                             "objectTypeParameter": "objectTypeParameter",
-                            "sharedPropertyValues": {},
+                            "sharedPropertyValues": {
+                              "com.palantir.mySpt": {
+                                "parameterId": "com.palantir.mySpt",
+                                "type": "parameterId",
+                              },
+                            },
                           },
                           "type": "addInterfaceRule",
                         },
@@ -807,7 +812,12 @@ describe("Action Types", () => {
                                 "type": "logicRuleValue",
                               },
                             },
-                            "sharedPropertyValues": {},
+                            "sharedPropertyValues": {
+                              "com.palantir.mySpt": {
+                                "parameterId": "com.palantir.mySpt",
+                                "type": "parameterId",
+                              },
+                            },
                           },
                           "type": "modifyInterfaceRule",
                         },
@@ -1729,7 +1739,16 @@ describe("Action Types", () => {
                               },
                             },
                             "objectTypeParameter": "objectTypeParameter",
-                            "sharedPropertyValues": {},
+                            "sharedPropertyValues": {
+                              "com.palantir.spt1": {
+                                "parameterId": "spt1",
+                                "type": "parameterId",
+                              },
+                              "com.palantir.spt2": {
+                                "parameterId": "spt2",
+                                "type": "parameterId",
+                              },
+                            },
                           },
                           "type": "addInterfaceRule",
                         },
@@ -1960,7 +1979,16 @@ describe("Action Types", () => {
                               },
                             },
                             "objectTypeParameter": "objectTypeParameter",
-                            "sharedPropertyValues": {},
+                            "sharedPropertyValues": {
+                              "com.palantir.spt1": {
+                                "parameterId": "spt1",
+                                "type": "parameterId",
+                              },
+                              "com.palantir.spt2": {
+                                "parameterId": "overridden",
+                                "type": "parameterId",
+                              },
+                            },
                           },
                           "type": "addInterfaceRule",
                         },
@@ -2266,7 +2294,16 @@ describe("Action Types", () => {
                                 "type": "logicRuleValue",
                               },
                             },
-                            "sharedPropertyValues": {},
+                            "sharedPropertyValues": {
+                              "com.palantir.spt1": {
+                                "parameterId": "spt1",
+                                "type": "parameterId",
+                              },
+                              "com.palantir.spt2": {
+                                "parameterId": "spt2",
+                                "type": "parameterId",
+                              },
+                            },
                           },
                           "type": "modifyInterfaceRule",
                         },
@@ -2491,7 +2528,16 @@ describe("Action Types", () => {
                                 "type": "logicRuleValue",
                               },
                             },
-                            "sharedPropertyValues": {},
+                            "sharedPropertyValues": {
+                              "com.palantir.spt1": {
+                                "parameterId": "spt1",
+                                "type": "parameterId",
+                              },
+                              "com.palantir.spt2": {
+                                "parameterId": "overridden",
+                                "type": "parameterId",
+                              },
+                            },
                           },
                           "type": "modifyInterfaceRule",
                         },
@@ -4410,7 +4456,12 @@ describe("Action Types", () => {
                               },
                             },
                             "objectTypeParameter": "objectTypeParameter",
-                            "sharedPropertyValues": {},
+                            "sharedPropertyValues": {
+                              "com.palantir.property1": {
+                                "parameterId": "com.palantir.property1",
+                                "type": "parameterId",
+                              },
+                            },
                           },
                           "type": "addInterfaceRule",
                         },
@@ -4752,7 +4803,12 @@ describe("Action Types", () => {
                                 "type": "logicRuleValue",
                               },
                             },
-                            "sharedPropertyValues": {},
+                            "sharedPropertyValues": {
+                              "com.palantir.property1": {
+                                "parameterId": "com.palantir.property1",
+                                "type": "parameterId",
+                              },
+                            },
                           },
                           "type": "modifyInterfaceRule",
                         },
@@ -5787,7 +5843,12 @@ describe("Action Types", () => {
                               },
                             },
                             "objectTypeParameter": "objectTypeParameter",
-                            "sharedPropertyValues": {},
+                            "sharedPropertyValues": {
+                              "com.palantir.property1": {
+                                "parameterId": "com.palantir.property1",
+                                "type": "parameterId",
+                              },
+                            },
                           },
                           "type": "addInterfaceRule",
                         },
@@ -6050,7 +6111,12 @@ describe("Action Types", () => {
                                 "type": "logicRuleValue",
                               },
                             },
-                            "sharedPropertyValues": {},
+                            "sharedPropertyValues": {
+                              "com.palantir.property1": {
+                                "parameterId": "com.palantir.property1",
+                                "type": "parameterId",
+                              },
+                            },
                           },
                           "type": "modifyInterfaceRule",
                         },
@@ -10639,7 +10705,12 @@ describe("Action Types", () => {
                               },
                             },
                             "objectTypeParameter": "objectTypeParameter",
-                            "sharedPropertyValues": {},
+                            "sharedPropertyValues": {
+                              "com.palantir.property1": {
+                                "parameterId": "com.palantir.property1",
+                                "type": "parameterId",
+                              },
+                            },
                           },
                           "type": "addInterfaceRule",
                         },
@@ -11347,7 +11418,12 @@ describe("Action Types", () => {
                                 "type": "logicRuleValue",
                               },
                             },
-                            "sharedPropertyValues": {},
+                            "sharedPropertyValues": {
+                              "com.palantir.property1": {
+                                "parameterId": "com.palantir.property1",
+                                "type": "parameterId",
+                              },
+                            },
                           },
                           "type": "modifyInterfaceRule",
                         },

@@ -34,7 +34,10 @@ import {
   validateParameterOrdering,
 } from "./defineAction.js";
 import { getFlattenedInterfaceProperties } from "./interface/getFlattenedInterfaceProperties.js";
-import { getInterfacePropertyTypeType } from "./interface/InterfacePropertyType.js";
+import {
+  getInterfacePropertyTypeType,
+  isInterfaceSharedPropertyType,
+} from "./interface/InterfacePropertyType.js";
 
 export function defineModifyInterfaceObjectAction(
   def: InterfaceActionTypeUserDefinition,
@@ -54,8 +57,8 @@ export function defineModifyInterfaceObjectAction(
       );
     },
   );
-  const sptNames = Object.entries(actionInterfaceProperties)
-    .filter(([_apiName, type]) => "sharedPropertyType" in type)
+  const sptNames = actionInterfaceProperties
+    .filter(([_apiName, type]) => isInterfaceSharedPropertyType(type))
     .map(([apiName]) => apiName);
   const parameterNames = new Set(
     actionInterfaceProperties.map(([apiName, _type]) =>

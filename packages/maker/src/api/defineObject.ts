@@ -29,6 +29,7 @@ import { getFlattenedInterfaceProperties } from "./interface/getFlattenedInterfa
 import {
   getInterfacePropertyTypeType,
   type InterfacePropertyType,
+  isInterfaceSharedPropertyType,
 } from "./interface/InterfacePropertyType.js";
 import type { ObjectPropertyType } from "./object/ObjectPropertyType.js";
 import type { ObjectPropertyTypeUserDefinition } from "./object/ObjectPropertyTypeUserDefinition.js";
@@ -180,7 +181,7 @@ export function defineObject(
     const validateProperty = (
       interfaceProp: [string, InterfacePropertyType],
     ): ValidationResult => {
-      const apiName = "sharedPropertyType" in interfaceProp[1]
+      const apiName = isInterfaceSharedPropertyType(interfaceProp[1])
         ? interfaceProp[1].sharedPropertyType.apiName
         : interfaceProp[0];
       if (apiName in interfaceToObjectProperties) {

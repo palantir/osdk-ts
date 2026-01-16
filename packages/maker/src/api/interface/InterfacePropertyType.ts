@@ -36,10 +36,16 @@ export interface InterfaceSharedPropertyType {
   required: boolean;
 }
 
+export function isInterfaceSharedPropertyType(
+  interfacePropertyType: InterfacePropertyType,
+): interfacePropertyType is InterfaceSharedPropertyType {
+  return "sharedPropertyType" in interfacePropertyType;
+}
+
 export function getInterfacePropertyTypeType(
   interfacePropertyType: InterfacePropertyType,
 ): PropertyTypeType {
-  return "sharedPropertyType" in interfacePropertyType
+  return isInterfaceSharedPropertyType(interfacePropertyType)
     ? interfacePropertyType.sharedPropertyType.type
     : interfacePropertyType.type;
 }

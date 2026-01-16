@@ -55,6 +55,7 @@ import {
   getInterfacePropertyTypeType,
   type InterfaceDefinedProperty,
   type InterfacePropertyType,
+  isInterfaceSharedPropertyType,
 } from "./interface/InterfacePropertyType.js";
 import type { InterfaceType } from "./interface/InterfaceType.js";
 import type { ObjectPropertyType } from "./object/ObjectPropertyType.js";
@@ -1092,7 +1093,7 @@ export function createInterfacePropertyLogicRuleValue(
   actionDef: InterfaceActionTypeUserDefinition,
 ): OntologyIrInterfacePropertyLogicRuleValue {
   const type = getInterfacePropertyTypeType(def);
-  const array = ("sharedPropertyType" in def)
+  const array = isInterfaceSharedPropertyType(def)
     ? def.sharedPropertyType.array
     : def.array;
   const parameterId = actionDef.useNonNamespacedParameters

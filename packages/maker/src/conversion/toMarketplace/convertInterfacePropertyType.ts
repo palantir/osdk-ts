@@ -15,7 +15,10 @@
  */
 
 import type { OntologyIrMarketplaceInterfacePropertyType } from "@osdk/client.unstable";
-import type { InterfacePropertyType } from "../../api/interface/InterfacePropertyType.js";
+import {
+  type InterfacePropertyType,
+  isInterfaceSharedPropertyType,
+} from "../../api/interface/InterfacePropertyType.js";
 import { convertNullabilityToDataConstraint } from "./convertNullabilityToDataConstraint.js";
 import { convertSpt } from "./convertSpt.js";
 import { propertyTypeTypeToOntologyIrInterfaceType } from "./propertyTypeTypeToOntologyIrInterfaceType.js";
@@ -24,7 +27,7 @@ export function convertInterfaceProperty(
   prop: InterfacePropertyType,
   apiName: string,
 ): [string, OntologyIrMarketplaceInterfacePropertyType] {
-  if ("sharedPropertyType" in prop) {
+  if (isInterfaceSharedPropertyType(prop)) {
     return [prop.sharedPropertyType.apiName, {
       type: "sharedPropertyBasedPropertyType",
       sharedPropertyBasedPropertyType: {

@@ -24,9 +24,10 @@ import {
   updateOntology,
   withoutNamespace,
 } from "./defineOntology.js";
-import type {
-  InterfaceDefinedProperty,
-  InterfacePropertyType,
+import {
+  type InterfaceDefinedProperty,
+  type InterfacePropertyType,
+  isInterfaceSharedPropertyType,
 } from "./interface/InterfacePropertyType.js";
 import { type InterfaceType } from "./interface/InterfaceType.js";
 import { mapSimplifiedStatusToInterfaceTypeStatus } from "./interface/mapSimplifiedStatusToInterfaceTypeStatus.js";
@@ -74,11 +75,11 @@ export function defineInterface(
   // legacy support for propertiesV2 (only SPTs)
   const spts: Record<string, SptWithOptional> = Object.fromEntries(
     Object.entries(interfaceDef.properties ?? {}).filter(([_name, prop]) => {
-      return "sharedPropertyType" in prop || "apiName" in prop;
+      return isInterfaceSharedPropertyType(prop) || "apiName" in prop;
     }).map(([s, spt]) => {
-      const required = "sharedPropertyType" in spt ? spt.required : true;
+      const required = isInterfaceSharedPropertyType(spt) ? spt.required : true;
       return [s, {
-        sharedPropertyType: ("sharedPropertyType" in spt
+        sharedPropertyType: (isInterfaceSharedPropertyType(spt)
           ? spt.sharedPropertyType
           : spt) as SharedPropertyType,
         required: required,
@@ -111,24 +112,13 @@ export function defineInterface(
       [string, InterfacePropertyType]
     >(([apiName, prop]) => {
       const required =
-        (typeof prop === "object" && "sharedPropertyType" in prop)
+        (typeof prop === "object" && isInterfaceSharedPropertyType(prop))
           ? prop.required
           : true;
       const propertyBase: PropertyBase =
-        (typeof prop === "object" && "sharedPropertyType" in prop)
+        (typeof prop === "object" && isInterfaceSharedPropertyType(prop))
           ? prop.sharedPropertyType
           : prop;
-
-      // if (
-      //   typeof propertyBase === "string"
-      //   || (typeof propertyBase === "object" && !("apiName" in propertyBase))
-      // ) {
-      //   // construct IDP from minimal PropertyTypeType definition
-      //   return [apiName, {
-      //     apiName: apiName,
-      //     type: propertyBase,
-      //   }];
-      // } else if (
       if (
         typeof propertyBase === "object"
         && "nonNameSpacedApiName" in propertyBase
