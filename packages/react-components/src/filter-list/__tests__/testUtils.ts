@@ -27,8 +27,6 @@ import type {
   ToggleFilterState,
 } from "../FilterListItemApi.js";
 
-// Mock object type - double cast required because ObjectTypeDefinition is a complex SDK
-// branded type with internal properties that can't be satisfied with a literal
 export const MockObjectType = {
   apiName: "TestObject",
   type: "object",

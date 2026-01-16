@@ -20,7 +20,6 @@ import type {
   ObjectTypeDefinition,
   WhereClause,
 } from "@osdk/api";
-import type { ReactNode } from "react";
 import type {
   FilterState as FilterStateType,
   PropertyFilterDefinition,
@@ -68,16 +67,6 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
   objectSet: ObjectSet<Q>;
 
   /**
-   * Title displayed in the panel header
-   */
-  title?: string;
-
-  /**
-   * Icon displayed before the title
-   */
-  titleIcon?: ReactNode;
-
-  /**
    * The definition for all supported filter items in the list
    * If not supplied, all filterable properties will be available
    */
@@ -114,6 +103,40 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
   onFilterStateChanged?: (
     filterKey: FilterKey<Q>,
     newState: FilterStateType,
+  ) => void;
+
+  /**
+   * Called when a filter is added
+   * If provided, user will be allowed to add filters
+   *
+   * @param filterKey The key of the added filter
+   * @param newDefinitions The filter list with the new filter added
+   */
+  onFilterAdded?: (
+    filterKey: FilterKey<Q>,
+    newDefinitions: Array<FilterDefinitionUnion<Q>>,
+  ) => void;
+
+  /**
+   * Called when a filter is removed
+   * If provided, user will be allowed to remove filters
+   *
+   * @param filterKey The key of the removed filter
+   * @param newDefinitions The updated filter list with the filter removed
+   */
+  onFilterRemoved?: (
+    filterKey: FilterKey<Q>,
+    newDefinitions: Array<FilterDefinitionUnion<Q>>,
+  ) => void;
+
+  /**
+   * Called when filters are reordered
+   * If provided, the filter list becomes sortable
+   *
+   * @param newOrder The updated filter definitions in new order
+   */
+  onFiltersReordered?: (
+    newOrder: ReadonlyArray<FilterDefinitionUnion<Q>>,
   ) => void;
 
   /**
