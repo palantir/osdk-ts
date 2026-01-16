@@ -18,6 +18,7 @@ import type {
   ObjectOrInterfaceDefinition,
   PropertyKeys,
 } from "../ontology/ObjectOrInterface.js";
+import type { CompileTimeMetadata } from "../ontology/ObjectTypeDefinition.js";
 import type { Osdk } from "../OsdkObjectFrom.js";
 
 export namespace ObjectSetSubscription {
@@ -72,7 +73,8 @@ export namespace ObjectSetSubscription {
 
     /**
      * Whether to include the $rid property in the subscription. Defaults to false. RIDs will be returned on all updates unless the update
-     * contains a new value for a geotime series reference property, in which case the RID will be undefined.
+     * contains a new value for a geotime series reference property, in which case the RID will be undefined. RIDs will not be included
+     * on the objects themselves.
      */
     includeRid?: R;
   }
@@ -84,6 +86,29 @@ type ObjectUpdate<
   R extends boolean = false,
 > = {
   object: R extends false ? Osdk.Instance<O, never, P>
-    : Osdk.Instance<O, "$ridOrUndefined", P>;
+    : AllFalse<HasGeotimeSeriesReference<O, P>> extends true
+      ? Osdk.Instance<O, "$rid", P>
+    : Osdk.Instance<O, never, P>;
   state: "ADDED_OR_UPDATED" | "REMOVED";
 };
+
+type HasGeotimeSeriesReference<
+  Q extends ObjectOrInterfaceDefinition,
+  P extends PropertyKeys<Q>,
+> = {
+  [K in P]: CompileTimeMetadata<Q>["properties"][K]["type"] extends
+    "geotimeSeriesReference" ? true : false;
+};
+
+export type AllFalse<T extends Record<string, boolean>> =
+  // Get the union of all values in T, and check if it's assignable to false
+  Exclude<T[keyof T], false> extends never ? true : false;
+
+// type AllNotGeoTimeSeriesReference<
+//   Q extends ObjectOrInterfaceDefinition,
+//   P extends PropertyKeys<Q>,
+// > = true extends (
+//   CompileTimeMetadata<Q>["properties"][P]["type"] extends
+//     "geotimeSeriesReference" ? true : false
+// ) ? false
+//   : true;

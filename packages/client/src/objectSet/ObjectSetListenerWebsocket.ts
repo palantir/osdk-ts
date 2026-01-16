@@ -554,11 +554,20 @@ export class ObjectSetListenerWebsocket {
         ),
       ) as Array<Osdk.Instance<any>>;
       const singleOsdkObject = osdkObjectArray[0] ?? undefined;
+
+      const rid = singleOsdkObject["$rid"] as string | undefined;
+
       return singleOsdkObject != null
-        ? {
-          object: singleOsdkObject,
-          state: o.state,
-        }
+        ? rid === undefined
+          ? {
+            object: singleOsdkObject,
+            state: o.state,
+          }
+          : {
+            object: singleOsdkObject,
+            state: o.state,
+            rid: rid,
+          }
         : undefined;
     }));
 

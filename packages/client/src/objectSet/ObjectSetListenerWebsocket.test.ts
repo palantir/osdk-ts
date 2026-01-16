@@ -20,7 +20,7 @@ import type {
   Osdk,
   PropertyKeys,
 } from "@osdk/api";
-import { $ontologyRid, Employee } from "@osdk/client.test.ontology";
+import { $ontologyRid, Employee, Office } from "@osdk/client.test.ontology";
 import type {
   ObjectSetStreamSubscribeRequests,
   StreamMessage,
@@ -510,13 +510,37 @@ describe("ObjectSetListenerWebsocket", async () => {
   });
 
   describe("types", () => {
-    it("returns rid on type if requested", async () => {
+    it("does not return rid on object type if requested and object has a GTSR", async () => {
       const client: Client =
         ((a: any) => ({ subscribe: (a: any, b: any) => {} })) as Client;
 
       client(Employee).subscribe({
         onChange: (change) => {
-          expectTypeOf(change.object.$rid).toMatchTypeOf<string | undefined>();
+          // @ts-expect-error
+          change.object.$rid;
+        },
+      }, { includeRid: true });
+    });
+
+    it("does not return rid on object type if not requested and object does not have a GTSR", async () => {
+      const client: Client =
+        ((a: any) => ({ subscribe: (a: any, b: any) => {} })) as Client;
+
+      client(Office).subscribe({
+        onChange: (change) => {
+          // @ts-expect-error
+          change.object.$rid;
+        },
+      });
+    });
+
+    it("does return rid on object type if requested and object does not have a GTSR", async () => {
+      const client: Client =
+        ((a: any) => ({ subscribe: (a: any, b: any) => {} })) as Client;
+
+      client(Office).subscribe({
+        onChange: (change) => {
+          expectTypeOf(change.object.$rid).toBeString();
         },
       }, { includeRid: true });
     });
