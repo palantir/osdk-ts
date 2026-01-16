@@ -396,7 +396,6 @@ describe(createPublicOauthClient, () => {
             "api:use-ontologies-read",
             "api:use-ontologies-write",
           ]).sort().join(" "),
-        // storage parameter - undefined in test env since process.env.TARGET !== "browser"
         undefined,
       );
     });
