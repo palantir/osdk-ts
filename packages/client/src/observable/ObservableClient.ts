@@ -20,6 +20,7 @@ import type {
   ActionValidationResponse,
   AggregateOpts,
   AggregationsResults,
+  CompileTimeMetadata,
   DerivedProperty,
   InterfaceDefinition,
   ObjectOrInterfaceDefinition,
@@ -28,6 +29,7 @@ import type {
   Osdk,
   PrimaryKeyType,
   PropertyKeys,
+  QueryDefinition,
   SimplePropertyDef,
   WhereClause,
   WirePropertyTypes,
@@ -36,6 +38,7 @@ import { createFetchHeaderMutator } from "@osdk/shared.net.fetch";
 import type { ActionSignatureFromDef } from "../actions/applyAction.js";
 import { additionalContext, type Client } from "../Client.js";
 import { createClientFromContext } from "../createClient.js";
+import type { QueryReturnType } from "../queries/types.js";
 import { OBSERVABLE_USER_AGENT } from "../util/UserAgent.js";
 import type { Canonical } from "./internal/Canonical.js";
 import type { ObserveObjectSetOptions } from "./internal/objectset/ObjectSetQueryOptions.js";
@@ -170,6 +173,29 @@ export interface ObserveAggregationArgs<
   error?: Error;
 }
 
+export interface ObserveFunctionOptions extends CommonObserveOptions {
+  /**
+   * Object types this function depends on.
+   * When actions modify these types, the function will refetch.
+   */
+  dependsOn?: Array<ObjectTypeDefinition | string>;
+
+  /**
+   * Specific object instances this function depends on.
+   * When these objects change, the function will refetch.
+   */
+  dependsOnObjects?: Array<Osdk.Instance<ObjectTypeDefinition>>;
+}
+
+export interface ObserveFunctionCallbackArgs<
+  Q extends QueryDefinition<unknown>,
+> {
+  result: QueryReturnType<CompileTimeMetadata<Q>["output"]> | undefined;
+  status: Status;
+  lastUpdated: number;
+  error?: Error;
+}
+
 /**
  * User facing callback args for `observeLink`
  */
@@ -289,6 +315,28 @@ export interface ObservableClient extends ObserveLinks {
   ): Unsubscribable;
 
   /**
+   * Observe a function execution with automatic updates.
+   *
+   * @param queryDef - The QueryDefinition to execute
+   * @param params - Parameters to pass to the function (undefined if no params)
+   * @param options - Observation options including invalidation configuration
+   * @param subFn - Observer that receives function result updates
+   * @returns Subscription that can be unsubscribed to stop updates
+   *
+   * Supports:
+   * - Automatic caching and deduplication
+   * - Dependency-based invalidation (dependsOn object types)
+   * - Instance-based invalidation (dependsOnObjects)
+   * - Manual refetch via invalidateFunction()
+   */
+  observeFunction<Q extends QueryDefinition<unknown>>(
+    queryDef: Q,
+    params: Record<string, unknown> | undefined,
+    options: ObserveFunctionOptions,
+    subFn: Observer<ObserveFunctionCallbackArgs<Q>>,
+  ): Unsubscribable;
+
+  /**
    * Execute an action with optional optimistic updates.
    *
    * @param action - Action definition to execute
@@ -355,6 +403,30 @@ export interface ObservableClient extends ObserveLinks {
    */
   invalidateObjectType<T extends ObjectTypeDefinition>(
     type: T | T["apiName"],
+  ): Promise<void>;
+
+  /**
+   * Invalidate function queries.
+   * - If params undefined, invalidates ALL queries for this function
+   * - If params provided, invalidates only the query with exact params match
+   *
+   * @param apiName - Function API name string or QueryDefinition
+   * @param params - Optional params for exact match
+   */
+  invalidateFunction(
+    apiName: string | QueryDefinition<unknown>,
+    params?: Record<string, unknown>,
+  ): Promise<void>;
+
+  /**
+   * Invalidate functions that depend on a specific object instance.
+   *
+   * @param apiName - Object type API name
+   * @param primaryKey - Object primary key
+   */
+  invalidateFunctionsByObject(
+    apiName: string,
+    primaryKey: string | number,
   ): Promise<void>;
 
   canonicalizeWhereClause: <
