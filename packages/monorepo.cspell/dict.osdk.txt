@@ -21,3 +21,4 @@ timecode
 unistyles
 widgetregistry
 widgetset
+dsmtClient
