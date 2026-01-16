@@ -16,6 +16,7 @@
 
 import type {
   CompileTimeMetadata,
+  ObjectSet,
   ObjectTypeDefinition,
   PropertyKeys,
   WirePropertyTypes,
@@ -256,6 +257,11 @@ export interface PropertyFilterDefinition<
   type: "property";
 
   /**
+   * Optional unique identifier for stable keying across filter reorders.
+   */
+  id?: string;
+
+  /**
    * The property key to filter on
    */
   key: K;
@@ -283,4 +289,26 @@ export interface PropertyFilterDefinition<
    * @default true
    */
   isVisible?: boolean;
+}
+
+/**
+ * Props for a single filter list item component.
+ * Extends PropertyFilterDefinition with runtime props for rendering.
+ */
+export interface FilterListItemProps<
+  Q extends ObjectTypeDefinition,
+  K extends PropertyKeys<Q> = PropertyKeys<Q>,
+  C extends ValidComponentsForPropertyType<
+    PropertyTypeFromKey<Q, K>
+  > = ValidComponentsForPropertyType<PropertyTypeFromKey<Q, K>>,
+> extends PropertyFilterDefinition<Q, K, C> {
+  objectSet: ObjectSet<Q>;
+
+  /**
+   * Called when the state of the filter changes.
+   * Required in controlled mode.
+   */
+  onFilterStateChanged: (state: FilterStateByComponentType[C]) => void;
+
+  onFilterRemoved?: (key: PropertyKeys<Q>) => void;
 }

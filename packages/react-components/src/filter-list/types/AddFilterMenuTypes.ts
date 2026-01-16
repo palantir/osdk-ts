@@ -16,7 +16,6 @@
 
 import type { ReactNode } from "react";
 import type { FilterComponentType } from "../FilterListItemApi.js";
-import type { FilterDataIndicator } from "./FilterDisplayTypes.js";
 
 /**
  * Category for organizing filters in the add filter menu
@@ -52,24 +51,9 @@ export interface FilterTemplate {
 
   /**
    * Icon to display next to the filter label.
-   * Can be a string (icon name) or a ReactNode for custom icons.
+   * Can be a React element (JSX) or a string.
    */
-  icon: string | ReactNode;
-
-  /**
-   * Type of data indicator to show (histogram, count, none)
-   */
-  dataIndicator?: FilterDataIndicator;
-
-  /**
-   * Whether to show a "Select All" option for checkbox lists
-   */
-  showSelectAll?: boolean;
-
-  /**
-   * Maximum number of visible items before scrolling
-   */
-  maxVisibleItems?: number;
+  icon: ReactNode;
 
   /**
    * Whether multiple instances of this filter can be added
