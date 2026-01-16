@@ -105,4 +105,6 @@ function FilterListHeaderInner({
   );
 }
 
-export const FilterListHeader = memo(FilterListHeaderInner);
+export const FilterListHeader: React.MemoExoticComponent<
+  typeof FilterListHeaderInner
+> = memo(FilterListHeaderInner);

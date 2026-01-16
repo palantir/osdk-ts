@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { Icon } from "@blueprintjs/core";
 import "@blueprintjs/core/lib/css/blueprint.css";
 import "@blueprintjs/icons/lib/css/blueprint-icons.css";
 import type { WhereClause } from "@osdk/api";
@@ -74,10 +73,6 @@ const INITIAL_FILTER_DEFINITIONS: FilterDefinitionUnion<Employee>[] = [
     label: "Department",
     filterComponent: "CHECKBOX_LIST",
     filterState: { type: "CHECKBOX_LIST", selectedValues: [] },
-    icon: <Icon icon="office" />,
-    dataIndicator: "histogram",
-    showSelectAll: true,
-    showOverflowMenu: true,
   } as FilterDefinitionUnion<Employee>,
 ];
 
