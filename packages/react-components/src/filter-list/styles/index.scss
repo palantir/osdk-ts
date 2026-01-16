@@ -1,9 +1,8 @@
 // Copyright 2025 Palantir Technologies, Inc. All rights reserved.
 // Licensed under the Apache License, Version 2.0.
 
-// Main entry point for filter-list styles
-// This file compiles to FilterList.css
+// DEPRECATED: Use blueprint/styles/index.scss for Blueprint integration
+// or base/styles/index.scss for framework-agnostic styles
 
-@use "variables";
-@use "filter-list";
-@use "filter-inputs";
+// This file forwards to the Blueprint styles for backward compatibility
+@forward "../blueprint/styles/index.scss";

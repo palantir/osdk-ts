@@ -22,9 +22,10 @@ import type {
   ObjectTypeDefinition,
   Osdk,
   PropertyKeys,
+  SimplePropertyDef,
   WhereClause,
 } from "@osdk/api";
-import type { ObserveObjectsArgs } from "@osdk/client/unstable-do-not-use";
+import type { ObserveObjectsCallbackArgs } from "@osdk/client/unstable-do-not-use";
 import React from "react";
 import { makeExternalStore } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
@@ -152,9 +153,12 @@ export interface UseOsdkObjectsOptions<
 
 export interface UseOsdkListResult<
   T extends ObjectTypeDefinition | InterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = {},
 > {
   fetchMore: (() => Promise<void>) | undefined;
-  data: Osdk.Instance<T>[] | undefined;
+  data:
+    | Osdk.Instance<T, "$allBaseProperties", PropertyKeys<T>, RDPs>[]
+    | undefined;
   isLoading: boolean;
 
   error: Error | undefined;
@@ -189,7 +193,7 @@ export function useOsdkObjects<
 >(
   type: Q,
   options?: UseOsdkObjectsOptions<Q, WP>,
-): UseOsdkListResult<Q>;
+): UseOsdkListResult<Q, InferRdpTypes<Q, WP>>;
 
 export function useOsdkObjects<
   Q extends ObjectTypeDefinition | InterfaceDefinition,
@@ -197,7 +201,10 @@ export function useOsdkObjects<
 >(
   type: Q,
   options?: UseOsdkObjectsOptions<Q, WP>,
-): UseOsdkListResult<Q> | UseOsdkListResult<LinkedType<Q, LinkNames<Q>>> {
+):
+  | UseOsdkListResult<Q, InferRdpTypes<Q, WP>>
+  | UseOsdkListResult<LinkedType<Q, LinkNames<Q>>>
+{
   const {
     pageSize,
     orderBy,
@@ -216,7 +223,10 @@ export function useOsdkObjects<
       is stable. No real added cost as we canonicalize internal to
       the ObservableClient anyway.
    */
-  const canonWhere = observableClient.canonicalizeWhereClause<Q>(where ?? {});
+  const canonWhere = observableClient.canonicalizeWhereClause<
+    Q,
+    InferRdpTypes<Q, WP>
+  >(where ?? {});
 
   const stableWithProperties = React.useMemo(
     () => withProperties,
@@ -236,14 +246,18 @@ export function useOsdkObjects<
   const { subscribe, getSnapShot } = React.useMemo(
     () => {
       if (!enabled) {
-        return makeExternalStore<ObserveObjectsArgs<Q>>(
+        return makeExternalStore<
+          ObserveObjectsCallbackArgs<Q, InferRdpTypes<Q, WP>>
+        >(
           () => ({ unsubscribe: () => {} }),
           process.env.NODE_ENV !== "production"
             ? `list ${type.apiName} ${JSON.stringify(canonWhere)} [DISABLED]`
             : void 0,
         );
       }
-      return makeExternalStore<ObserveObjectsArgs<Q>>(
+      return makeExternalStore<
+        ObserveObjectsCallbackArgs<Q, InferRdpTypes<Q, WP>>
+      >(
         (observer) =>
           observableClient.observeList({
             type,
@@ -290,10 +304,13 @@ export function useOsdkObjects<
   }
 
   return {
-    fetchMore: listPayload?.fetchMore,
+    fetchMore: listPayload?.hasMore ? listPayload.fetchMore : undefined,
     error,
     data: listPayload?.resolvedList,
-    isLoading: listPayload?.status === "loading",
+    isLoading: enabled
+      ? (listPayload?.status === "loading" || listPayload?.status === "init"
+        || !listPayload)
+      : false,
     isOptimistic: listPayload?.isOptimistic ?? false,
   };
 }

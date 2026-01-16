@@ -21,33 +21,12 @@ import type {
   PropertyKeys,
   WirePropertyTypes,
 } from "@osdk/api";
-import type { ReactNode } from "react";
+import type { CustomFilterState } from "./types/CustomRendererTypes.js";
+import type { KeywordSearchFilterState } from "./types/KeywordSearchTypes.js";
 import type {
-  FilterDataIndicator,
-  FilterInteractionMode,
-  FilterItemColor,
-} from "./FilterDisplayTypes.js";
-
-/**
- * Props for a single filter list item component
- */
-export interface FilterListItemProps<
-  Q extends ObjectTypeDefinition,
-  K extends PropertyKeys<Q> = PropertyKeys<Q>,
-  C extends ValidComponentsForPropertyType<
-    PropertyTypeFromKey<Q, K>
-  > = ValidComponentsForPropertyType<PropertyTypeFromKey<Q, K>>,
-> extends PropertyFilterDefinition<Q, K, C> {
-  objectSet: ObjectSet<Q>;
-
-  /**
-   * Called when the state of the filter changes.
-   * Required in controlled mode.
-   */
-  onFilterStateChanged: (state: FilterStateByComponentType[C]) => void;
-
-  onFilterRemoved?: (key: PropertyKeys<Q>) => void;
-}
+  HasLinkFilterState,
+  LinkedPropertyFilterState,
+} from "./types/LinkedFilterTypes.js";
 
 /**
  * Helper type to extract the property type from an ObjectTypeDefinition given a property key
@@ -113,7 +92,11 @@ export type FilterState =
   | MultiDateFilterState
   | TimelineFilterState
   | CheckboxListFilterState
-  | ToggleFilterState;
+  | ToggleFilterState
+  | HasLinkFilterState
+  | LinkedPropertyFilterState
+  | KeywordSearchFilterState
+  | CustomFilterState;
 
 /**
  * Maps component types to their corresponding state types
@@ -274,6 +257,11 @@ export interface PropertyFilterDefinition<
   type: "property";
 
   /**
+   * Optional unique identifier for stable keying across filter reorders.
+   */
+  id?: string;
+
+  /**
    * The property key to filter on
    */
   key: K;
@@ -296,110 +284,31 @@ export interface PropertyFilterDefinition<
   filterState: FilterStateByComponentType[C];
 
   /**
-   * Default state for the filter when reset
+   * Controls whether this filter is rendered.
+   * When false, the filter is hidden but its state is preserved.
+   * @default true
    */
-  defaultFilterState?: FilterStateByComponentType[C];
+  isVisible?: boolean;
+}
+
+/**
+ * Props for a single filter list item component.
+ * Extends PropertyFilterDefinition with runtime props for rendering.
+ */
+export interface FilterListItemProps<
+  Q extends ObjectTypeDefinition,
+  K extends PropertyKeys<Q> = PropertyKeys<Q>,
+  C extends ValidComponentsForPropertyType<
+    PropertyTypeFromKey<Q, K>
+  > = ValidComponentsForPropertyType<PropertyTypeFromKey<Q, K>>,
+> extends PropertyFilterDefinition<Q, K, C> {
+  objectSet: ObjectSet<Q>;
 
   /**
-   * Interaction mode for the filter
-   * - "checkbox": Multi-select with checkboxes
-   * - "category": Single-click toggle
+   * Called when the state of the filter changes.
+   * Required in controlled mode.
    */
-  interactionMode?: FilterInteractionMode;
+  onFilterStateChanged: (state: FilterStateByComponentType[C]) => void;
 
-  /**
-   * Show "Select All" checkbox when using checkbox interaction mode
-   */
-  showSelectAll?: boolean;
-
-  /**
-   * Visual data indicator type
-   * - "histogram": Show distribution histogram bars
-   * - "count": Show count number only
-   * - "none": No data indicator
-   */
-  dataIndicator?: FilterDataIndicator;
-
-  /**
-   * Allow user to toggle between include/exclude mode
-   */
-  allowToggleExcludeMode?: boolean;
-
-  /**
-   * Called when exclude mode changes
-   */
-  onExcludeModeChange?: (isExcluding: boolean) => void;
-
-  /**
-   * Color formatting for the filter item
-   */
-  color?: FilterItemColor;
-
-  /**
-   * Color formatting for specific values within the filter
-   */
-  valueColors?: Record<string, FilterItemColor>;
-
-  // ─── Phase 2: Figma Alignment Props ─────────────────────────────────
-
-  /**
-   * Icon to display next to the filter label
-   */
-  icon?: ReactNode;
-
-  /**
-   * Controlled collapsed state for this filter item
-   */
-  itemCollapsed?: boolean;
-
-  /**
-   * Default collapsed state for this filter item (uncontrolled)
-   */
-  defaultItemCollapsed?: boolean;
-
-  /**
-   * Called when the filter item collapsed state changes
-   */
-  onItemCollapsedChange?: (collapsed: boolean) => void;
-
-  /**
-   * Show overflow menu (...) with standard actions
-   */
-  showOverflowMenu?: boolean;
-
-  /**
-   * Show search input for filtering values within this filter
-   */
-  showFilterSearch?: boolean;
-
-  /**
-   * Placeholder text for the filter search input
-   */
-  filterSearchPlaceholder?: string;
-
-  /**
-   * Controlled value for the filter search input
-   */
-  filterSearchValue?: string;
-
-  /**
-   * Called when the filter search value changes
-   */
-  onFilterSearchChange?: (value: string) => void;
-
-  /**
-   * Maximum number of values to display before truncation
-   * If not specified, all values are shown
-   */
-  maxVisibleItems?: number;
-
-  /**
-   * Show "View all (X)" link when values are truncated
-   */
-  showViewAllLink?: boolean;
-
-  /**
-   * Called when the "View all" link is clicked
-   */
-  onViewAllClick?: () => void;
+  onFilterRemoved?: (key: PropertyKeys<Q>) => void;
 }

@@ -4,9 +4,10 @@ import type { Employee } from "../../generatedNoCheck2/index.js";
 import { EmployeeDetails } from "./EmployeeDetails.js";
 import { EmployeesList } from "./EmployeesList.js";
 import { EmployeesListEnhanced } from "./EmployeesListEnhanced.js";
+import { EmployeesTable } from "./EmployeesTable.js";
 import { EmployeesWithFilterList } from "./EmployeesWithFilterList.js";
 
-type ListMode = "basic" | "enhanced" | "filterList";
+type ListMode = "basic" | "enhanced" | "filterList" | "table";
 
 export function EmployeesPage() {
   const [selectedEmployee, setSelectedEmployee] = useState<
@@ -45,6 +46,15 @@ export function EmployeesPage() {
             />
             FilterList Component Demo
           </label>
+          <label className="flex items-center gap-2">
+            <input
+              type="radio"
+              name="listMode"
+              checked={listMode === "table"}
+              onChange={() => setListMode("table")}
+            />
+            Table
+          </label>
         </div>
       </div>
 
@@ -63,6 +73,12 @@ export function EmployeesPage() {
                 <EmployeeDetails employee={selectedEmployee} />
               </Section>
             </div>
+          </div>
+        )
+        : listMode === "table"
+        ? (
+          <div className="flex w-192">
+            <EmployeesTable />
           </div>
         )
         : (

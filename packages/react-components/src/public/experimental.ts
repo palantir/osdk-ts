@@ -14,9 +14,17 @@
  * limitations under the License.
  */
 
-// ─── Filter List API ──────────────────────────────────────────────────────────
+// ─── Filter List Base (unstyled) ─────────────────────────────────────────────
 
-export { FilterList } from "../filter-list/components/FilterList.js";
+export { FilterList as BaseFilterList } from "../filter-list/base/FilterList.js";
+export type { FilterListComponentProps as BaseFilterListProps } from "../filter-list/base/FilterList.js";
+
+// ─── Filter List (Blueprint styled) ──────────────────────────────────────────
+
+export { FilterList } from "../filter-list/blueprint/FilterList.js";
+
+// Backwards compat aliases
+export { FilterList as BlueprintFilterList } from "../filter-list/blueprint/FilterList.js";
 
 export type {
   FilterDefinitionUnion,
@@ -32,7 +40,6 @@ export type {
   DateRangeFilterState,
   ExactMatchFilterState,
   FilterComponentType,
-  FilterListItemProps,
   FilterStateByComponentType,
   FilterStateType,
   MultiDateFilterState,
@@ -47,39 +54,52 @@ export type {
   ValidComponentsForPropertyType,
 } from "../filter-list/FilterListItemApi.js";
 
-export type {
-  FilterDataIndicator,
-  FilterInteractionMode,
-  FilterItemColor,
-  FilterListLayoutMode,
-} from "../filter-list/FilterDisplayTypes.js";
+// ─── Filter List Hooks ────────────────────────────────────────────────────────
 
-export type { FilterListTheme } from "../filter-list/FilterThemeTypes.js";
+export { useFilterListState } from "../filter-list/hooks/useFilterListState.js";
+export type { UseFilterListStateResult } from "../filter-list/hooks/useFilterListState.js";
+
+// ─── Filter List Input Components (Base) ─────────────────────────────────────
+
+export {
+  CheckboxListInput,
+  ContainsTextInput,
+  DateRangeInput,
+  NullValueWrapper,
+  NumberRangeInput,
+  ToggleInput,
+} from "../filter-list/base/inputs/index.js";
 
 export type {
   HasLinkFilterDefinition,
   HasLinkFilterState,
-  LinkedFilterDisplayMode,
-  LinkedFilterGroupConfig,
   LinkedPropertyFilterDefinition,
   LinkedPropertyFilterState,
-} from "../filter-list/LinkedFilterTypes.js";
+} from "../filter-list/types/LinkedFilterTypes.js";
 
 export type {
   KeywordSearchFilterDefinition,
   KeywordSearchFilterState,
   StringPropertyKeys,
-} from "../filter-list/KeywordSearchTypes.js";
+} from "../filter-list/types/KeywordSearchTypes.js";
 
 export type {
   CustomFilterDefinition,
   CustomFilterInputRendererProps,
   CustomFilterItemRendererProps,
   CustomFilterState,
-} from "../filter-list/CustomRendererTypes.js";
+} from "../filter-list/types/CustomRendererTypes.js";
 
-export type { FilterListPersistedState } from "../filter-list/FilterPanelTypes.js";
+export type {
+  FilterCategory,
+  FilterTemplate,
+} from "../filter-list/types/AddFilterMenuTypes.js";
 
 // ─── Object Table API ─────────────────────────────────────────────────────────
 
-export type { ObjectTableProps } from "../object-table/ObjectTableApi.js";
+export { ObjectTable } from "../object-table/ObjectTable.js";
+export type {
+  ColumnDefinition,
+  ColumnDefinitionLocator,
+  ObjectTableProps,
+} from "../object-table/ObjectTableApi.js";

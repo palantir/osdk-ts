@@ -1,5 +1,15 @@
 # @osdk/api
 
+## 2.7.0-beta.8
+
+## 2.7.0-beta.7
+
+## 2.7.0-beta.6
+
+### Minor Changes
+
+- c9ca08d: Add TS docs for in filter
+
 ## 2.7.0-beta.5
 
 ## 2.7.0-beta.4

@@ -1,14 +1,7 @@
 // Copyright 2025 Palantir Technologies, Inc. All rights reserved.
 // Licensed under the Apache License, Version 2.0.
 
-// Bundle variant that includes Blueprint CSS dependencies
-// This file compiles to FilterListBundle.css
+// DEPRECATED: Use blueprint/styles/bundle.scss for Blueprint integration
 
-// Note: @use must come before @import
-@use "variables";
-@use "filter-list";
-@use "filter-inputs";
-
-// Blueprint dependencies
-@import "@blueprintjs/icons/lib/css/blueprint-icons.css";
-@import "@blueprintjs/core/lib/css/blueprint.css";
+// This file forwards to the Blueprint bundle for backward compatibility
+@forward "../blueprint/styles/bundle.scss";

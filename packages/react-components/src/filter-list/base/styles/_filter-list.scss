@@ -1,0 +1,303 @@
+// Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+// Licensed under the Apache License, Version 2.0.
+
+// Base filter list styles - framework agnostic
+//
+// Design System Measurements:
+// - 280px: Standard filter panel width (comfortable for labels + controls)
+// - 200px: Minimum usable width (prevents content truncation)
+// - 48px: Collapsed width (fits single icon comfortably)
+// - 44px: Min header height (touch-friendly target per WCAG guidelines)
+// - 12px: Standard internal padding
+// - 8px: Small gap (between related items)
+// - 10px: Content padding (slight visual breathing room)
+
+@use "variables" as *;
+
+.filter-list {
+  display: flex;
+  flex-direction: column;
+  // 280px is the standard panel width - wide enough for filter labels and controls
+  width: var(--filter-list-width, 280px);
+  // 200px minimum prevents content from becoming unusably cramped
+  min-width: var(--filter-list-min-width, 200px);
+  background-color: var(--filter-panel-bg-color, #{$filter-panel-bg-light});
+  border-right: 1px solid var(--filter-panel-border-color, #{$filter-panel-border-light});
+  transition: width 0.2s ease-out, min-width 0.2s ease-out;
+}
+
+.filter-list--collapsed {
+  // 48px fits a single icon button comfortably with padding
+  width: 48px;
+  min-width: 48px;
+}
+
+// Header
+.filter-list__header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  background-color: var(--filter-header-bg-color, transparent);
+  border-bottom: 1px solid var(--filter-panel-border-color, #{$filter-panel-border-light});
+  // 44px minimum height ensures touch-friendly target size (WCAG 2.1 AAA)
+  min-height: 44px;
+}
+
+.filter-list__collapse-button {
+  flex-shrink: 0;
+}
+
+.filter-list__title-container {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+}
+
+.filter-list__title-icon {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.filter-list__title {
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.filter-list__active-count {
+  flex-shrink: 0;
+}
+
+// Content
+.filter-list__content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px;
+}
+
+.filter-list__content--empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+// Filter Item
+.filter-list__item {
+  border-bottom: 1px solid var(--filter-panel-border-color, #{$filter-panel-border-muted-light});
+  background-color: var(--filter-item-bg-color, transparent);
+}
+
+.filter-list__item:last-child {
+  border-bottom: none;
+}
+
+.filter-list__item-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 12px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.filter-list__item-header:hover {
+  background-color: var(--filter-item-hover-bg-color, #{$filter-hover-bg});
+}
+
+.filter-list__item-chevron {
+  flex-shrink: 0;
+  color: var(--filter-count-text-color, #{$filter-muted-text-light});
+  transition: transform 0.15s ease-out;
+}
+
+.filter-list__item-chevron--collapsed {
+  transform: rotate(-90deg);
+}
+
+.filter-list__item-header:hover .filter-list__item-chevron {
+  color: inherit;
+}
+
+.filter-list__item-header-button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+}
+
+.filter-list__item-label {
+  font-weight: 500;
+  font-size: $filter-font-size;
+  color: inherit;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.filter-list__item-content {
+  padding: 4px 12px 12px;
+}
+
+// Include/Exclude Mode
+.filter-list__item--excluding {
+  border-left: 3px solid $filter-danger-color;
+}
+
+.filter-list__item-exclude-badge {
+  background-color: $filter-danger-bg;
+  color: $filter-danger-color;
+  margin-left: 4px;
+}
+
+.filter-list__item-exclude-toggle {
+  opacity: 0.7;
+  margin-left: auto;
+}
+
+.filter-list__item-exclude-toggle:hover {
+  opacity: 1;
+}
+
+// Section Menu Button (...)
+.filter-list__item-overflow-menu {
+  flex-shrink: 0;
+  opacity: 0;
+  margin-left: auto;
+  transition: opacity 0.15s ease-out;
+}
+
+.filter-list__item-header:hover .filter-list__item-overflow-menu {
+  opacity: 0.7;
+}
+
+.filter-list__item-overflow-menu:hover {
+  opacity: 1;
+}
+
+// Add Filter Button (base styles)
+.filter-list__add-button {
+  width: 100%;
+  justify-content: center;
+}
+
+.filter-list__add-button--inline {
+  margin-top: 8px;
+  padding: 8px 12px;
+}
+
+.filter-list__add-button--fixed {
+  flex-shrink: 0;
+  border-top: 1px solid var(--filter-panel-border-color, #{$filter-panel-border-muted-light});
+  padding: 12px;
+}
+
+// Layout Modes
+.filter-list[data-layout-mode="pills"] {
+  width: auto;
+  min-width: auto;
+  max-width: 100%;
+  border-right: none;
+  background-color: transparent;
+
+  .filter-list__header {
+    border-bottom: none;
+    padding: 8px 0;
+  }
+
+  .filter-list__content {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 0;
+    overflow-y: visible;
+  }
+
+  .filter-list__item {
+    display: inline-flex;
+    flex-direction: column;
+    border-radius: 16px;
+    border: 1px solid var(--filter-panel-border-color, #{$filter-panel-border-light});
+    background-color: var(--filter-item-bg-color, #{$filter-panel-bg-light});
+    padding: 0;
+    border-bottom: 1px solid var(--filter-panel-border-color, #{$filter-panel-border-light});
+  }
+
+  .filter-list__item-header {
+    padding: 4px 12px;
+    gap: 4px;
+  }
+
+  .filter-list__item-label {
+    font-size: 12px;
+  }
+
+  .filter-list__item-content {
+    padding: 8px;
+  }
+
+  .filter-list__item-chevron {
+    display: none;
+  }
+}
+
+.filter-list[data-layout-mode="horizontal"] {
+  flex-direction: row;
+  width: auto;
+  min-width: auto;
+  max-width: 100%;
+  border-right: none;
+  border-bottom: 1px solid var(--filter-panel-border-color, #{$filter-panel-border-light});
+
+  .filter-list__header {
+    flex-shrink: 0;
+    border-bottom: none;
+    border-right: 1px solid var(--filter-panel-border-color, #{$filter-panel-border-light});
+    padding: 8px 12px;
+  }
+
+  .filter-list__content {
+    display: flex;
+    flex-direction: row;
+    gap: 16px;
+    padding: 8px 12px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    flex: 1;
+  }
+
+  .filter-list__item {
+    flex-shrink: 0;
+    border-bottom: none;
+    border-right: 1px solid var(--filter-panel-border-color, #{$filter-panel-border-muted-light});
+    padding-right: 16px;
+  }
+
+  .filter-list__item:last-child {
+    border-right: none;
+    padding-right: 0;
+  }
+
+  .filter-list__item-header {
+    padding: 4px 0;
+  }
+
+  .filter-list__item-content {
+    padding: 4px 0 0;
+  }
+}

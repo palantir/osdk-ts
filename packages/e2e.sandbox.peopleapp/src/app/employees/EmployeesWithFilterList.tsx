@@ -14,16 +14,21 @@
  * limitations under the License.
  */
 
+import "@blueprintjs/core/lib/css/blueprint.css";
+import "@blueprintjs/icons/lib/css/blueprint-icons.css";
 import type { WhereClause } from "@osdk/api";
 import {
+  type FilterDefinitionUnion,
   FilterList,
-  type PropertyFilterDefinition,
+  type FilterTemplate,
 } from "@osdk/react-components/experimental";
 import { useOsdkObjects } from "@osdk/react/experimental";
 import "@osdk/react-components/styles/FilterListBundle.css";
-import { useMemo, useState } from "react";
+import { useCallback, useState } from "react";
+
 import { List } from "../../components/List.js";
 import { ListItem } from "../../components/ListItem.js";
+import { $ } from "../../foundryClient.js";
 import { Employee } from "../../generatedNoCheck2/index.js";
 
 interface EmployeeListItemProps {
@@ -60,53 +65,81 @@ interface EmployeesWithFilterListProps {
   onSelect: (employee: Employee.OsdkInstance) => void;
 }
 
+const INITIAL_FILTER_DEFINITIONS: FilterDefinitionUnion<Employee>[] = [
+  {
+    type: "property",
+    id: "department",
+    key: "department",
+    label: "Department",
+    filterComponent: "CHECKBOX_LIST",
+    filterState: { type: "CHECKBOX_LIST", selectedValues: [] },
+  } as FilterDefinitionUnion<Employee>,
+];
+
+const FILTER_TEMPLATES: FilterTemplate[] = [
+  {
+    id: "department",
+    label: "Department",
+    key: "department",
+    filterComponent: "CHECKBOX_LIST",
+    icon: "office",
+    category: "SINGLE_PROPERTY",
+    allowMultiple: false,
+  },
+  {
+    id: "businessTitle",
+    label: "Business Title",
+    key: "businessTitle",
+    filterComponent: "CONTAINS_TEXT",
+    icon: "id-number",
+    category: "SINGLE_PROPERTY",
+    allowMultiple: false,
+  },
+  {
+    id: "locationCity",
+    label: "City",
+    key: "locationCity",
+    filterComponent: "CHECKBOX_LIST",
+    icon: "map-marker",
+    category: "SINGLE_PROPERTY",
+    allowMultiple: false,
+  },
+  {
+    id: "locationState",
+    label: "State",
+    key: "locationState",
+    filterComponent: "CHECKBOX_LIST",
+    icon: "globe",
+    category: "SINGLE_PROPERTY",
+    allowMultiple: false,
+  },
+];
+
 export function EmployeesWithFilterList(props: EmployeesWithFilterListProps) {
   const [whereClause, setWhereClause] = useState<WhereClause<Employee>>({});
+  const [filterDefinitions, setFilterDefinitions] = useState<
+    FilterDefinitionUnion<Employee>[]
+  >(INITIAL_FILTER_DEFINITIONS);
 
-  const filterDefinitions = useMemo<
-    Array<
-      PropertyFilterDefinition<
-        Employee,
-        "department" | "businessTitle" | "workerType" | "locationCity"
-      >
-    >
-  >(() => [
-    {
-      type: "property",
-      key: "department",
-      label: "Department",
-      filterComponent: "CHECKBOX_LIST",
-      filterState: { type: "CHECKBOX_LIST", selectedValues: [] },
-      dataIndicator: "histogram",
-      showSelectAll: true,
+  const handleFilterTemplateSelected = useCallback(
+    (template: FilterTemplate) => {
+      const newFilter: FilterDefinitionUnion<Employee> = {
+        type: "property",
+        id: template.id,
+        key: template.key as keyof Employee.Props,
+        label: template.label,
+        filterComponent: template.filterComponent,
+        filterState: template.filterComponent === "CHECKBOX_LIST"
+          ? { type: "CHECKBOX_LIST", selectedValues: [] }
+          : template.filterComponent === "CONTAINS_TEXT"
+          ? { type: "CONTAINS_TEXT", value: undefined }
+          : { type: "CHECKBOX_LIST", selectedValues: [] },
+      } as FilterDefinitionUnion<Employee>;
+
+      setFilterDefinitions((prev) => [...prev, newFilter]);
     },
-    {
-      type: "property",
-      key: "businessTitle",
-      label: "Business Title",
-      filterComponent: "CONTAINS_TEXT",
-      filterState: { type: "CONTAINS_TEXT", value: undefined },
-    },
-    {
-      type: "property",
-      key: "workerType",
-      label: "Worker Type",
-      filterComponent: "CHECKBOX_LIST",
-      filterState: { type: "CHECKBOX_LIST", selectedValues: [] },
-      dataIndicator: "histogram",
-      showSelectAll: true,
-    },
-    {
-      type: "property",
-      key: "locationCity",
-      label: "City",
-      filterComponent: "CHECKBOX_LIST",
-      filterState: { type: "CHECKBOX_LIST", selectedValues: [] },
-      dataIndicator: "histogram",
-      showSelectAll: true,
-      maxVisibleItems: 5,
-    },
-  ], []);
+    [],
+  );
 
   const employees = useOsdkObjects(Employee, {
     where: whereClause,
@@ -115,53 +148,58 @@ export function EmployeesWithFilterList(props: EmployeesWithFilterListProps) {
   });
 
   return (
-    <div style={{ display: "flex", gap: "16px", height: "100%" }}>
-      <FilterList
-        objectType={Employee}
-        filterDefinitions={filterDefinitions}
-        onFilterClauseChanged={setWhereClause}
-        title="Employee Filters"
-        showResetButton
-        showActiveFilterCount
-      />
-
-      <div style={{ flex: 1, overflow: "auto" }}>
-        <div
-          style={{ marginBottom: 8, padding: 8, backgroundColor: "#f0f0f0" }}
-        >
-          <h3>FilterList Demo</h3>
-          {employees.isLoading && <div>Loading...</div>}
-          {employees.error && (
-            <div style={{ color: "red" }}>
-              Error: {employees.error.message}
-            </div>
-          )}
-          <div style={{ fontSize: 12, color: "#666" }}>
-            {employees.data && `Found ${employees.data.length} employees`}
-            {employees.fetchMore && " (more available)"}
-          </div>
-          <pre style={{ fontSize: 10, marginTop: 8 }}>
-            Where: {JSON.stringify(whereClause, null, 2)}
-          </pre>
-        </div>
-
-        <List<Employee>
-          header="Employees"
-          items={employees}
-          Component={EmployeeListItem}
-          {...props}
+    <>
+      <div style={{ display: "flex", gap: "16px", height: "100%" }}>
+        <FilterList
+          objectSet={$(Employee)}
+          filterDefinitions={filterDefinitions}
+          onFilterClauseChanged={setWhereClause}
+          showAddFilterButton={true}
+          filterTemplates={FILTER_TEMPLATES}
+          onFilterTemplateSelected={handleFilterTemplateSelected}
+          title="Filters"
+          showActiveFilterCount={true}
         />
 
-        {employees.fetchMore && (
-          <button
-            onClick={() => employees.fetchMore?.()}
-            disabled={employees.isLoading}
-            style={{ marginTop: 8 }}
+        <div style={{ flex: 1, overflow: "auto" }}>
+          <div
+            style={{ marginBottom: 8, padding: 8, backgroundColor: "#f0f0f0" }}
           >
-            Load More
-          </button>
-        )}
+            <h3>FilterList Demo</h3>
+            {employees.isLoading && <div>Loading...</div>}
+            {employees.error && (
+              <div style={{ color: "red" }}>
+                Error: {employees.error.message}
+              </div>
+            )}
+            <div style={{ fontSize: 12, color: "#666" }}>
+              {employees.data && `Found ${employees.data.length} employees`}
+              {employees.fetchMore && " (more available)"}
+            </div>
+            <pre style={{ fontSize: 10, marginTop: 8 }}>
+            Where: {JSON.stringify(whereClause, null, 2)}
+            </pre>
+          </div>
+
+          <List<Employee>
+            header="Employees"
+            items={employees}
+            Component={EmployeeListItem}
+            {...props}
+          />
+
+          {employees.fetchMore && (
+            <button
+              type="button"
+              onClick={() => employees.fetchMore?.()}
+              disabled={employees.isLoading}
+              style={{ marginTop: 8 }}
+            >
+              Load More
+            </button>
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 }

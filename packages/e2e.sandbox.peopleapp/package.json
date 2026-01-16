@@ -37,6 +37,9 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
+    "@blueprintjs/core": "^6.4.1",
+    "@blueprintjs/icons": "^6.3.2",
+    "@blueprintjs/popover2": "^2.1.7",
     "@osdk/api": "workspace:~",
     "@osdk/client": "workspace:~",
     "@osdk/oauth": "workspace:~",

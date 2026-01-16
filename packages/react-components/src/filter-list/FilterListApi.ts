@@ -14,23 +14,24 @@
  * limitations under the License.
  */
 
-import type { LinkNames, ObjectTypeDefinition, WhereClause } from "@osdk/api";
-import type { ReactNode } from "react";
-import type { CustomFilterDefinition } from "./CustomRendererTypes.js";
-import type { FilterListLayoutMode } from "./FilterDisplayTypes.js";
 import type {
-  FilterState as FilterStateUnion,
+  LinkNames,
+  ObjectSet,
+  ObjectTypeDefinition,
+  WhereClause,
+} from "@osdk/api";
+import type { ReactNode } from "react";
+import type {
+  FilterState as FilterStateType,
   PropertyFilterDefinition,
 } from "./FilterListItemApi.js";
-import type { FilterListPersistedState } from "./FilterPanelTypes.js";
-import type { FilterListTheme } from "./FilterThemeTypes.js";
-import type { KeywordSearchFilterDefinition } from "./KeywordSearchTypes.js";
+import type { FilterTemplate } from "./types/AddFilterMenuTypes.js";
+import type { CustomFilterDefinition } from "./types/CustomRendererTypes.js";
+import type { KeywordSearchFilterDefinition } from "./types/KeywordSearchTypes.js";
 import type {
   HasLinkFilterDefinition,
-  LinkedFilterDisplayMode,
-  LinkedFilterGroupConfig,
   LinkedPropertyFilterDefinition,
-} from "./LinkedFilterTypes.js";
+} from "./types/LinkedFilterTypes.js";
 
 /**
  * Union type of all filter definition types
@@ -62,11 +63,21 @@ export type FilterState<Q extends ObjectTypeDefinition> =
 
 export interface FilterListProps<Q extends ObjectTypeDefinition> {
   /**
-   * The object type definition for the objects to be filtered
+   * The object set to filter. The type definition is extracted from this.
    */
   objectType: Q;
 
   // ─── Panel Header (Phase 2: Figma Alignment) ────────────────────────
+
+  /**
+   * Title displayed in the panel header
+   */
+  title?: string;
+
+  /**
+   * Icon displayed before the title
+   */
+  titleIcon?: ReactNode;
 
   /**
    * Title displayed in the panel header
@@ -114,99 +125,8 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
    */
   onFilterStateChanged?: (
     filterKey: FilterKey<Q>,
-    newState: FilterStateUnion,
+    newState: FilterStateType,
   ) => void;
-
-  /**
-   * Called when a filter is added
-   * If provided, user will be allowed to add filters
-   *
-   * @param filterKey The key of the added filter
-   * @param newDefinitions The filter list with the new filter added
-   */
-  onFilterAdded?: (
-    filterKey: FilterKey<Q>,
-    newDefinitions: Array<FilterDefinitionUnion<Q>>,
-  ) => void;
-
-  /**
-   * Called when a filter is removed
-   * If provided, user will be allowed to remove filters
-   *
-   * @param filterKey The key of the removed filter
-   * @param newDefinitions The updated filter list with the filter removed
-   */
-  onFilterRemoved?: (
-    filterKey: FilterKey<Q>,
-    newDefinitions: Array<FilterDefinitionUnion<Q>>,
-  ) => void;
-
-  /**
-   * Called when filters are reordered
-   * If provided, the filter list becomes sortable
-   *
-   * @param newOrder The updated filter definitions in new order
-   */
-  onFiltersReordered?: (
-    newOrder: ReadonlyArray<FilterDefinitionUnion<Q>>,
-  ) => void;
-
-  // ─── Layout & Display ───────────────────────────────────────────────
-
-  /**
-   * Layout mode for the filter list
-   * - "vertical": Standard vertical list (default)
-   * - "pills": Compact pill/chip layout
-   * - "horizontal": Horizontal scrolling layout
-   */
-  layoutMode?: FilterListLayoutMode;
-
-  /**
-   * Show global keyword search at the top of the filter list
-   */
-  showGlobalSearch?: boolean;
-
-  /**
-   * Show drag handles for sortable filters
-   */
-  showDragHandles?: boolean;
-
-  /**
-   * Custom drag handle renderer
-   */
-  renderDragHandle?: () => ReactNode;
-
-  // ─── Linked Filter Display ──────────────────────────────────────────
-
-  /**
-   * Display mode for linked filters
-   * - "inline": Show alongside non-linked filters
-   * - "grouped": Group by link type with collapsible sections
-   */
-  linkedFilterDisplay?: LinkedFilterDisplayMode;
-
-  /**
-   * Configuration for linked filter groups
-   * Only applicable when linkedFilterDisplay is "grouped"
-   */
-  linkedFilterGroups?: Array<LinkedFilterGroupConfig<Q>>;
-
-  // ─── Panel Behavior (Radix-style controlled/uncontrolled) ───────────
-
-  /**
-   * Controlled collapsed state
-   */
-  collapsed?: boolean;
-
-  /**
-   * Default collapsed state (uncontrolled)
-   */
-  defaultCollapsed?: boolean;
-
-  /**
-   * Called when collapsed state changes
-   */
-  onCollapsedChange?: (collapsed: boolean) => void;
 
   /**
    * Show reset filters button in header
@@ -224,9 +144,17 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
   showAddFilterButton?: boolean;
 
   /**
-   * Called when add filter button is clicked
+   * Available filter templates for the "Add filter" menu.
+   * When provided along with showAddFilterButton, clicking the button
+   * shows a popover with these templates organized by category.
    */
-  onAddFilter?: () => void;
+  filterTemplates?: FilterTemplate[];
+
+  /**
+   * Called when a filter template is selected from the add filter menu.
+   * The consumer should create a new filter definition and add it to filterDefinitions.
+   */
+  onFilterTemplateSelected?: (template: FilterTemplate) => void;
 
   /**
    * Position of the add filter button
@@ -240,47 +168,6 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
    * Show count of active filters in header
    */
   showActiveFilterCount?: boolean;
-
-  /**
-   * Apply filters immediately on change
-   * If false, an "Apply" button is shown
-   * @default true
-   */
-  applyOnChange?: boolean;
-
-  // ─── Default Behavior ───────────────────────────────────────────────
-
-  /**
-   * When true, an empty selection means "include all"
-   * When false, an empty selection means "exclude all"
-   * @default true
-   */
-  emptySelectionMeansAll?: boolean;
-
-  // ─── Persistence ────────────────────────────────────────────────────
-
-  /**
-   * Key for session persistence
-   * If provided, filter state will be persisted to session storage
-   */
-  persistenceKey?: string;
-
-  /**
-   * Called when filter state should be persisted
-   */
-  onPersistState?: (state: FilterListPersistedState<Q>) => void;
-
-  /**
-   * Initial persisted state to restore
-   */
-  initialPersistedState?: FilterListPersistedState<Q>;
-
-  // ─── Theming ────────────────────────────────────────────────────────
-
-  /**
-   * Theme configuration for CSS custom properties
-   */
-  theme?: FilterListTheme;
 
   /**
    * Additional CSS class name

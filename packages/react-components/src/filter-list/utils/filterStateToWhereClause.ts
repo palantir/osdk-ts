@@ -18,6 +18,7 @@ import type { ObjectTypeDefinition, WhereClause } from "@osdk/api";
 import type { FilterDefinitionUnion } from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
 import { assertUnreachable } from "./assertUnreachable.js";
+import { getFilterKey } from "./getFilterKey.js";
 
 type PropertyFilter = Record<string, unknown> | boolean | string | number;
 
@@ -40,7 +41,7 @@ function filterStateToPropertyFilter(
       if (!state.value) {
         return undefined;
       }
-      const filter = { $containsAllTermsInOrder: state.value };
+      const filter = { $containsAnyTerm: state.value };
       if (state.isExcluding) {
         return { $not: filter };
       }
@@ -61,13 +62,27 @@ function filterStateToPropertyFilter(
         conditions.push({ $lte: state.maxValue.toISOString() });
       }
 
-      if (conditions.length === 0) {
+      if (conditions.length === 0 && !state.includeNull) {
         return undefined;
       }
+
+      // Build the range filter
+      let rangeFilter: PropertyFilter | undefined;
       if (conditions.length === 1) {
-        return conditions[0];
+        rangeFilter = conditions[0];
+      } else if (conditions.length > 1) {
+        rangeFilter = { $and: conditions };
       }
-      return { $and: conditions };
+
+      // Handle includeNull: include objects with null values in addition to range
+      if (state.includeNull) {
+        if (rangeFilter) {
+          return { $or: [rangeFilter, { $isNull: true }] };
+        }
+        return { $isNull: true };
+      }
+
+      return rangeFilter;
     }
 
     case "NUMBER_RANGE": {
@@ -80,13 +95,27 @@ function filterStateToPropertyFilter(
         conditions.push({ $lte: state.maxValue });
       }
 
-      if (conditions.length === 0) {
+      if (conditions.length === 0 && !state.includeNull) {
         return undefined;
       }
+
+      // Build the range filter
+      let rangeFilter: PropertyFilter | undefined;
       if (conditions.length === 1) {
-        return conditions[0];
+        rangeFilter = conditions[0];
+      } else if (conditions.length > 1) {
+        rangeFilter = { $and: conditions };
       }
-      return { $and: conditions };
+
+      // Handle includeNull: include objects with null values in addition to range
+      if (state.includeNull) {
+        if (rangeFilter) {
+          return { $or: [rangeFilter, { $isNull: true }] };
+        }
+        return { $isNull: true };
+      }
+
+      return rangeFilter;
     }
 
     case "EXACT_MATCH": {
@@ -147,83 +176,172 @@ function filterStateToPropertyFilter(
       return { $and: conditions };
     }
 
+    // These filter types are handled separately in buildWhereClause
+    // since they need access to the full definition, not just state
+    case "HAS_LINK":
+    case "LINKED_PROPERTY":
+    case "KEYWORD_SEARCH":
+    case "CUSTOM":
+      return undefined;
+
     default:
       return assertUnreachable(state);
   }
 }
 
-/**
- * Builds a WhereClause from filter definitions and their current states.
- *
- * Note: The `as WhereClause<Q>` casts are necessary because we're building
- * clauses dynamically from property keys determined at runtime. TypeScript
- * cannot verify that the constructed clause structure matches the generic Q's
- * expected shape, but the structure is guaranteed to be valid by construction.
- */
-export function buildWhereClause<Q extends ObjectTypeDefinition>(
+type WhereClauseResult =
+  | { $and: Array<Record<string, unknown>> }
+  | { $or: Array<Record<string, unknown>> }
+  | Record<string, unknown>;
+
+function buildWhereClauseInternal<Q extends ObjectTypeDefinition>(
   definitions: Array<FilterDefinitionUnion<Q>> | undefined,
   filterStates: Map<string, FilterState>,
   operator: "and" | "or",
-): WhereClause<Q> {
+  objectType?: Q,
+): WhereClauseResult {
   if (!definitions || definitions.length === 0) {
-    return {} as WhereClause<Q>;
+    return {};
   }
 
   const clauses: Array<Record<string, unknown>> = [];
 
-  for (const definition of definitions) {
-    let key: string;
-    let state: FilterState | undefined;
-
-    switch (definition.type) {
-      case "property":
-        key = definition.key;
-        state = filterStates.get(key);
-        break;
-      case "hasLink":
-      case "linkedProperty":
-        key = definition.linkName;
-        state = filterStates.get(key);
-        break;
-      case "keywordSearch":
-        key = `keywordSearch-${
-          Array.isArray(definition.properties)
-            ? definition.properties.join("-")
-            : "all"
-        }`;
-        state = filterStates.get(key);
-        break;
-      case "custom":
-        key = definition.key;
-        state = filterStates.get(key);
-        break;
-      default:
-        continue;
-    }
+  for (let i = 0; i < definitions.length; i++) {
+    const definition = definitions[i];
+    const filterKey = getFilterKey(definition);
+    const instanceKey = `${filterKey}:${i}`;
+    const state = filterStates.get(instanceKey);
 
     if (!state) {
       continue;
     }
 
-    if (definition.type === "property") {
-      const filter = filterStateToPropertyFilter(state);
-      if (filter !== undefined) {
-        clauses.push({ [key]: filter });
+    switch (definition.type) {
+      case "property": {
+        const filter = filterStateToPropertyFilter(state);
+        if (filter !== undefined) {
+          clauses.push({ [definition.key]: filter });
+        }
+        break;
       }
+
+      case "hasLink": {
+        if (state.type !== "HAS_LINK") {
+          break;
+        }
+        if (state.hasLink) {
+          clauses.push({ [definition.linkName]: { $isNotNull: true } });
+        } else {
+          clauses.push({ [definition.linkName]: { $isNull: true } });
+        }
+        break;
+      }
+
+      case "linkedProperty": {
+        // LinkedProperty filters cannot be included in where clause
+        // (requires ObjectSet.pivotTo() operations)
+        break;
+      }
+
+      case "keywordSearch": {
+        if (state.type !== "KEYWORD_SEARCH" || !state.searchTerm) {
+          break;
+        }
+        const searchTerm = state.searchTerm.trim();
+        if (!searchTerm) {
+          break;
+        }
+
+        const properties = definition.properties;
+        let propertiesToSearch: string[];
+
+        if (properties === "all") {
+          if (objectType?.__DefinitionMetadata?.properties) {
+            propertiesToSearch = Object.entries(
+              objectType.__DefinitionMetadata.properties,
+            )
+              .filter(([, prop]) =>
+                prop.type === "string" && !prop.multiplicity
+              )
+              .map(([key]) => key);
+          } else {
+            if (process.env.NODE_ENV !== "production") {
+              // eslint-disable-next-line no-console
+              console.warn(
+                "[FilterList] Keyword search with properties: 'all' requires object type metadata. Filter will be skipped.",
+              );
+            }
+            break;
+          }
+        } else {
+          propertiesToSearch = properties;
+        }
+
+        if (propertiesToSearch.length === 0) {
+          break;
+        }
+
+        const propertySearches = propertiesToSearch.map((prop) => ({
+          [prop]: { $containsAnyTerm: searchTerm },
+        }));
+
+        if (propertySearches.length === 1) {
+          clauses.push(propertySearches[0]);
+        } else {
+          clauses.push({ $or: propertySearches });
+        }
+        break;
+      }
+
+      case "custom": {
+        if (state.type !== "CUSTOM") {
+          break;
+        }
+        const customClause = definition.toWhereClause(state);
+        if (customClause && Object.keys(customClause).length > 0) {
+          clauses.push(customClause);
+        }
+        break;
+      }
+
+      default:
+        assertUnreachable(definition);
     }
   }
 
   if (clauses.length === 0) {
-    return {} as WhereClause<Q>;
+    return {};
   }
 
   if (clauses.length === 1) {
-    return clauses[0] as WhereClause<Q>;
+    return clauses[0];
   }
 
   if (operator === "and") {
-    return { $and: clauses } as WhereClause<Q>;
+    return { $and: clauses };
   }
 
-  return { $or: clauses } as WhereClause<Q>;
+  return { $or: clauses };
+}
+
+/**
+ * Builds a WhereClause from filter definitions and their current states.
+ *
+ * The cast to WhereClause<Q> is necessary because we construct clauses dynamically
+ * from runtime property keys. TypeScript cannot statically verify the structure
+ * matches Q's shape, but it is guaranteed valid by construction.
+ */
+export function buildWhereClause<Q extends ObjectTypeDefinition>(
+  definitions: Array<FilterDefinitionUnion<Q>> | undefined,
+  filterStates: Map<string, FilterState>,
+  operator: "and" | "or",
+  objectType?: Q,
+): WhereClause<Q> {
+  const result = buildWhereClauseInternal(
+    definitions,
+    filterStates,
+    operator,
+    objectType,
+  );
+  return result as WhereClause<Q>;
 }
