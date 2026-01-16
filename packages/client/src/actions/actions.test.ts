@@ -207,14 +207,14 @@ describe.each([
     expectTypeOf<
       {
         name: string;
-        address: { city: string; state: string; zipcode: number };
+        address: { city: string; state: string; zipcode?: number | undefined };
       }
     >()
       .toMatchTypeOf<
         InferredParamType
       >();
 
-    const result = await client(createStructPerson).applyAction({
+    const result = void await client(createStructPerson).applyAction({
       name: "testMan",
       address: { city: "NYC", state: "NY", zipcode: 12345 },
     });

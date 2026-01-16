@@ -74,8 +74,38 @@ export namespace ActionParam {
   };
 
   export type StructType<
-    T extends Record<string, keyof DataValueClientToWire>,
-  > = { [K in keyof T]: DataValueClientToWire[T[K]] };
+    T extends Record<
+      string,
+      keyof DataValueClientToWire | {
+        type: keyof DataValueClientToWire;
+        nullable: boolean;
+      }
+    >,
+  > =
+    & {
+      [
+        K in keyof T as T[K] extends { type: infer U; nullable: infer R }
+          ? R extends true ? never : K
+          : K
+      ]: T[K] extends { type: infer U; nullable: infer R }
+        ? U extends keyof DataValueClientToWire ? R extends true ? never
+          : DataValueClientToWire[U]
+        : never
+        : T[K] extends keyof DataValueClientToWire ? DataValueClientToWire[T[K]]
+        : never;
+    }
+    & {
+      [
+        K in keyof T as T[K] extends { type: infer U; nullable: infer R }
+          ? R extends true ? K : never
+          : never
+      ]?: T[K] extends { type: infer U; nullable: infer R }
+        ? U extends keyof DataValueClientToWire
+          ? R extends true ? DataValueClientToWire[U] | undefined
+          : never
+        : never
+        : never;
+    };
 
   /**
    * Type of the symbol that indicates that a "null" value should be passed for the action parameter.
