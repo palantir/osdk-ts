@@ -331,6 +331,7 @@ export function createParameters(
             },
           defaultValue: def.parameterConfiguration?.[id]?.defaultValue,
           description: def.parameterConfiguration?.[id]?.description,
+          renderHint: def.parameterConfiguration?.[id]?.renderHint,
         };
       },
     ),

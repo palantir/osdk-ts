@@ -29,6 +29,7 @@ export function convertSpt(
     visibility,
     gothamMapping,
     typeClasses,
+    aliases,
     valueType,
     nullability,
     baseFormatter,
@@ -53,7 +54,7 @@ export function convertSpt(
         },
       }
       : propertyTypeTypeToOntologyIrType(type),
-    aliases: [],
+    aliases: aliases ?? [],
     baseFormatter,
     dataConstraints: dataConstraint,
     gothamMapping: gothamMapping,

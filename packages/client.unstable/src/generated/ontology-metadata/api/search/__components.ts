@@ -288,6 +288,11 @@ export interface CombinedEntityTypeTitleClause_objectTypeVisibility {
   objectTypeVisibility: _api_Visibility;
 }
 
+export interface CombinedEntityTypeTitleClause_interfaceTypeSupportsObjectSetSearch {
+  type: "interfaceTypeSupportsObjectSetSearch";
+  interfaceTypeSupportsObjectSetSearch: boolean;
+}
+
 export interface CombinedEntityTypeTitleClause_status {
   type: "status";
   status: CombinedEntityTypeStatusFilter;
@@ -300,6 +305,7 @@ export type CombinedEntityTypeTitleClause =
   | CombinedEntityTypeTitleClause_or
   | CombinedEntityTypeTitleClause_title
   | CombinedEntityTypeTitleClause_objectTypeVisibility
+  | CombinedEntityTypeTitleClause_interfaceTypeSupportsObjectSetSearch
   | CombinedEntityTypeTitleClause_status;
 
 export interface FullTextStringPredicate_exact {
@@ -397,6 +403,11 @@ export interface InterfaceTypeClause_externalMapping {
   type: "externalMapping";
   externalMapping: InterfaceTypeExternalMappingFilter;
 }
+
+export interface InterfaceTypeClause_supportsObjectSetSearch {
+  type: "supportsObjectSetSearch";
+  supportsObjectSetSearch: boolean;
+}
 /**
  * Data structure to represent a search query for InterfaceTypes. Supports filters for various
  * InterfaceType features.
@@ -413,7 +424,8 @@ export type InterfaceTypeClause =
   | InterfaceTypeClause_allProperty
   | InterfaceTypeClause_extendsInterface
   | InterfaceTypeClause_allExtendsInterface
-  | InterfaceTypeClause_externalMapping;
+  | InterfaceTypeClause_externalMapping
+  | InterfaceTypeClause_supportsObjectSetSearch;
 
 /**
  * Filter by external mapping type
@@ -458,6 +470,7 @@ export interface InterfaceTypeSearchRequest {
   clause: InterfaceTypeClause;
   excludedInterfaceTypeRids: Array<string>;
   fuzziness?: InterfaceTypeFuzziness | null | undefined;
+  includedInterfaceTypeRids: Array<string>;
   ontologyRids: Array<_api_OntologyRid>;
   pageSizeLimit: number;
   pageToken?: InterfaceTypeSearchPageToken | null | undefined;
@@ -481,7 +494,11 @@ export interface InterfaceTypeSort {
 /**
  * Specifies value to be used to sort InterfaceTypes.
  */
-export type InterfaceTypeSortBy = "INTERFACE_TYPE_DISPLAY_NAME";
+export type InterfaceTypeSortBy =
+  | "INTERFACE_TYPE_DISPLAY_NAME"
+  | "INTERFACE_TYPE_EXTENDS_INTERFACES_COUNT"
+  | "INTERFACE_TYPE_EXTENDS_INTERFACES_AND_ANCESTORS_COUNT"
+  | "INTERFACE_TYPE_IMPLEMENTATION_COUNT";
 
 /**
  * Specifies sort order for InterfaceTypes
@@ -1030,6 +1047,7 @@ export interface ObjectTypeSearchRequestV2 {
   ontologyRids: Array<_api_OntologyRid>;
   pageSizeLimit: number;
   pageToken?: ObjectTypeSearchPageTokenV2 | null | undefined;
+  searchBoostingOptions: Array<SearchBoostingOption>;
   semanticSearchQuery?: string | null | undefined;
   sort?: ObjectTypeSort | null | undefined;
 }
@@ -1087,6 +1105,13 @@ export type ObjectTypeStatusFilter =
 export type ObjectTypeTargetStorageBackendFilter =
   | "OBJECT_STORAGE_V1"
   | "OBJECT_STORAGE_V2";
+
+/**
+ * Favorites have a bigger boost than the boosted status-based resources. For status-based boosting, endorsed
+ * will come on top and deprecated at the end. The ordering is relative to exact vs partial matches, ie
+ * exacts that are deprecated will come on top of favorite and endorsed partials.
+ */
+export type SearchBoostingOption = "STATUS_BOOSTED" | "FAVORITES_BOOSTED";
 
 /**
  * Request to search a Title string over multiple Ontology entity types based on the given clause. The desired

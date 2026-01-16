@@ -35,4 +35,5 @@ export type ObjectTypeDefinition = {
   editsEnabled?: boolean;
   status?: ObjectTypeStatus;
   datasources?: Array<ObjectTypeDatasourceDefinition>;
+  aliases?: Array<string>;
 };

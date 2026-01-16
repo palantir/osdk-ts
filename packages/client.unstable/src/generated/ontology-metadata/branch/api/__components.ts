@@ -885,10 +885,10 @@ export interface InterfaceImplementationError_implicitAndExplicitPropertyImpleme
     ImplicitAndExplicitPropertyImplementationError;
 }
 
-export interface InterfaceImplementationError_localAndSharedPropertyTypesConflictingApiNames {
-  type: "localAndSharedPropertyTypesConflictingApiNames";
-  localAndSharedPropertyTypesConflictingApiNames:
-    LocalAndSharedPropertyTypesConflictingApiNamesError;
+export interface InterfaceImplementationError_objectAndInterfacePropertyTypesConflictingApiNames {
+  type: "objectAndInterfacePropertyTypesConflictingApiNames";
+  objectAndInterfacePropertyTypesConflictingApiNames:
+    ObjectAndInterfacePropertyTypesConflictingApiNamesError;
 }
 
 export interface InterfaceImplementationError_interfaceLinkNotFound {
@@ -963,7 +963,7 @@ export type InterfaceImplementationError =
   | InterfaceImplementationError_invalidPropertyImplementation
   | InterfaceImplementationError_conflictingPropertyImplementation
   | InterfaceImplementationError_implicitAndExplicitPropertyImplementation
-  | InterfaceImplementationError_localAndSharedPropertyTypesConflictingApiNames
+  | InterfaceImplementationError_objectAndInterfacePropertyTypesConflictingApiNames
   | InterfaceImplementationError_interfaceLinkNotFound
   | InterfaceImplementationError_invalidConflictingDefinitionsImplementingInterfaceLinkType
   | InterfaceImplementationError_requiredInterfaceLinkTypeNotImplemented
@@ -1440,18 +1440,6 @@ export interface LoadOntologyBranchResponse {
   ontologyBranch: OntologyBranch;
 }
 /**
- * An object type implements an interface by explicitly mapping properties. One of the SPTs on the interface has
- * the same apiName as a local property on the object type without the two being explicitly mapped. This is
- * disallowed.
- */
-export interface LocalAndSharedPropertyTypesConflictingApiNamesError {
-  interfaceTypeRidOrIdInRequest: _api_InterfaceTypeRidOrIdInRequest;
-  objectRid: _api_ObjectTypeRid;
-  objectTypeId?: _api_ObjectTypeId | null | undefined;
-  propertyTypeId?: _api_PropertyTypeId | null | undefined;
-  propertyTypeRid: _api_PropertyTypeRid;
-}
-/**
  * An error representing when a many-to-many link type datasource has a column referencing a primary key that
  * does not exist on the referenced object type.
  */
@@ -1746,6 +1734,18 @@ export type NumberOfDatasourcesConstraintError =
   | NumberOfDatasourcesConstraintError_linkTypesHaveNoDatasources
   | NumberOfDatasourcesConstraintError_linkTypesHaveMultipleDatasources;
 
+/**
+ * Object type property API name conflicts with interface property API name. Properties may only share an API
+ * name if the object property directly implements the interface property (not through reducers, struct fields,
+ * or partial struct mappings).
+ */
+export interface ObjectAndInterfacePropertyTypesConflictingApiNamesError {
+  interfaceTypeRidOrIdInRequest: _api_InterfaceTypeRidOrIdInRequest;
+  objectRid: _api_ObjectTypeRid;
+  objectTypeId?: _api_ObjectTypeId | null | undefined;
+  propertyTypeId?: _api_PropertyTypeId | null | undefined;
+  propertyTypeRid: _api_PropertyTypeRid;
+}
 /**
  * Object type datasources cannot have their assumed markings updated. Datasource needs to recreated with
  * new rid, when the set of assumed marking changes.

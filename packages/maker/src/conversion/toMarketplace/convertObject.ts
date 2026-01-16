@@ -123,7 +123,10 @@ export function convertObject(
       ...derivedDatasources,
       objectDatasource,
     ],
-    entityMetadata: { arePatchesEnabled: objectType.editsEnabled ?? false },
+    entityMetadata: {
+      arePatchesEnabled: objectType.editsEnabled ?? false,
+      aliases: objectType.aliases ?? [],
+    },
   };
 }
 
@@ -172,6 +175,7 @@ export function extractPropertyDatasource(
           assumedMarkings: [],
           mediaSetViewLocator: identifier,
           properties: [property.apiName],
+          uploadProperties: [],
         },
       };
       return [buildDatasource(property.apiName, mediaSetDefinition)];

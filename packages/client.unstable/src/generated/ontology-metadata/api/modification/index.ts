@@ -178,6 +178,8 @@ export type {
   ReducedPropertyTypeImplementationModification,
   RestorationStateModification,
   RetentionConfigModification,
+  RuleSetAndBindingsModification,
+  RuleSetModification,
   SensorTraitModification,
   SharedPropertyBasedPropertyTypeModification,
   SharedPropertyTypeModification,
