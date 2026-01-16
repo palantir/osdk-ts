@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
+import { Checkbox } from "@base-ui/react/checkbox";
 import type { Row, RowData } from "@tanstack/react-table";
 import React, { useCallback } from "react";
+import "./SelectionCells.css";
 
 interface SelectionHeaderCellProps {
   isAllSelected: boolean;
@@ -29,23 +31,15 @@ export function SelectionHeaderCell({
   onToggleAll,
 }: SelectionHeaderCellProps): React.ReactElement {
   return (
-    <div
-      style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        width: "100%",
-      }}
-    >
-      <input
-        type="checkbox"
+    <div className="osdk-selection-checkbox-container">
+      <Checkbox.Root
         checked={isAllSelected}
-        ref={(input) => {
-          if (input) input.indeterminate = hasSelection && !isAllSelected;
-        }}
-        onChange={onToggleAll}
+        indeterminate={hasSelection && !isAllSelected}
+        onCheckedChange={onToggleAll}
         aria-label="Select all rows"
-      />
+      >
+        <Checkbox.Indicator />
+      </Checkbox.Root>
     </div>
   );
 }
@@ -63,7 +57,7 @@ export function SelectionCell<TData extends RowData>({
   const isSelected = row.getIsSelected();
 
   const handleClick = useCallback(
-    (e: React.MouseEvent<HTMLInputElement>) => {
+    (e: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
       // Prevent onRowClick call
       e.stopPropagation();
 
@@ -73,21 +67,14 @@ export function SelectionCell<TData extends RowData>({
   );
 
   return (
-    <div
-      style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        width: "100%",
-      }}
-    >
-      <input
-        type="checkbox"
+    <div className="osdk-selection-checkbox-container">
+      <Checkbox.Root
         checked={isSelected}
         onClick={handleClick}
-        onChange={noop} // Using onClick here
         aria-label={`Select row ${row.index + 1}`}
-      />
+      >
+        <Checkbox.Indicator />
+      </Checkbox.Root>
     </div>
   );
 }
