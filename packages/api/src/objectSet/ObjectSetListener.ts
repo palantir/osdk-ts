@@ -100,15 +100,5 @@ type HasGeotimeSeriesReference<
     "geotimeSeriesReference" ? true : false;
 };
 
-export type AllFalse<T extends Record<string, boolean>> =
-  // Get the union of all values in T, and check if it's assignable to false
+type AllFalse<T extends Record<string, boolean>> =
   Exclude<T[keyof T], false> extends never ? true : false;
-
-// type AllNotGeoTimeSeriesReference<
-//   Q extends ObjectOrInterfaceDefinition,
-//   P extends PropertyKeys<Q>,
-// > = true extends (
-//   CompileTimeMetadata<Q>["properties"][P]["type"] extends
-//     "geotimeSeriesReference" ? true : false
-// ) ? false
-//   : true;
