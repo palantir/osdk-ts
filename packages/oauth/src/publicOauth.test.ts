@@ -396,6 +396,8 @@ describe(createPublicOauthClient, () => {
             "api:use-ontologies-read",
             "api:use-ontologies-write",
           ]).sort().join(" "),
+        // storage parameter - undefined in test env since process.env.TARGET !== "browser"
+        undefined,
       );
     });
 
@@ -530,6 +532,115 @@ describe(createPublicOauthClient, () => {
           );
         });
       }
+    });
+  });
+
+  describe("tokenStorage option", () => {
+    beforeEach(() => {
+      setupWindowLocation("https://foundry.local");
+      setupLocalState({});
+      vi.mocked(commonJs.readSession).mockImplementation(() => ({}));
+      // getStorage() checks process.env.TARGET to determine if we're in a browser
+      vi.stubGlobal("process", { env: { TARGET: "browser" } });
+    });
+
+    afterEach(() => {
+      vi.unstubAllGlobals();
+      // Re-stub the globals that the outer describe needs
+      vi.stubGlobal("window", mockWindow);
+      vi.stubGlobal("localStorage", mockLocalStorage);
+      vi.stubGlobal("sessionStorage", mockSessionStorage);
+    });
+
+    it("should pass localStorage to common when tokenStorage is 'localStorage'", () => {
+      createPublicOauthClient(
+        BASE_CLIENT_ARGS.clientId,
+        BASE_CLIENT_ARGS.foundryUrl,
+        BASE_CLIENT_ARGS.redirectUrl,
+        { tokenStorage: "localStorage" },
+      );
+
+      // common() is called with 8 args, the last one being the storage
+      const lastArg = vi.mocked(commonJs.common).mock.calls[0][7];
+      expect(lastArg).toBe(mockLocalStorage);
+    });
+
+    it("should pass sessionStorage to common when tokenStorage is 'sessionStorage'", () => {
+      createPublicOauthClient(
+        BASE_CLIENT_ARGS.clientId,
+        BASE_CLIENT_ARGS.foundryUrl,
+        BASE_CLIENT_ARGS.redirectUrl,
+        { tokenStorage: "sessionStorage" },
+      );
+
+      const lastArg = vi.mocked(commonJs.common).mock.calls[0][7];
+      expect(lastArg).toBe(mockSessionStorage);
+    });
+
+    it("should pass undefined to common when tokenStorage is 'none'", () => {
+      createPublicOauthClient(
+        BASE_CLIENT_ARGS.clientId,
+        BASE_CLIENT_ARGS.foundryUrl,
+        BASE_CLIENT_ARGS.redirectUrl,
+        { tokenStorage: "none" },
+      );
+
+      const lastArg = vi.mocked(commonJs.common).mock.calls[0][7];
+      expect(lastArg).toBeUndefined();
+    });
+
+    it("should not include offline_access scope when tokenStorage is 'none'", async () => {
+      const client = createPublicOauthClient(
+        BASE_CLIENT_ARGS.clientId,
+        BASE_CLIENT_ARGS.foundryUrl,
+        BASE_CLIENT_ARGS.redirectUrl,
+        { tokenStorage: "none" },
+      );
+
+      // Trigger the auth flow - this should redirect to multipass
+      await expect(client()).rejects.toThrowError("Unable to redirect");
+
+      expect(mockWindow.location.assign).toHaveBeenCalledOnce();
+
+      const url = new URL(mockWindow.location.assign.mock.calls[0][0]);
+      const scope = url.searchParams.get("scope");
+
+      // Should NOT include offline_access
+      expect(scope).not.toContain("offline_access");
+      // Should still include the regular scopes
+      expect(scope).toContain("api:read-data");
+    });
+
+    it("should include offline_access scope when tokenStorage is 'localStorage'", async () => {
+      const client = createPublicOauthClient(
+        BASE_CLIENT_ARGS.clientId,
+        BASE_CLIENT_ARGS.foundryUrl,
+        BASE_CLIENT_ARGS.redirectUrl,
+        { tokenStorage: "localStorage" },
+      );
+
+      await expect(client()).rejects.toThrowError("Unable to redirect");
+
+      const url = new URL(mockWindow.location.assign.mock.calls[0][0]);
+      const scope = url.searchParams.get("scope");
+
+      expect(scope).toContain("offline_access");
+    });
+
+    it("should include offline_access scope when tokenStorage is 'sessionStorage'", async () => {
+      const client = createPublicOauthClient(
+        BASE_CLIENT_ARGS.clientId,
+        BASE_CLIENT_ARGS.foundryUrl,
+        BASE_CLIENT_ARGS.redirectUrl,
+        { tokenStorage: "sessionStorage" },
+      );
+
+      await expect(client()).rejects.toThrowError("Unable to redirect");
+
+      const url = new URL(mockWindow.location.assign.mock.calls[0][0]);
+      const scope = url.searchParams.get("scope");
+
+      expect(scope).toContain("offline_access");
     });
   });
 });
