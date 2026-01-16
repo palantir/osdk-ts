@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+export type { TokenStorageType } from "./common.js";
 export { createConfidentialOauthClient } from "./createConfidentialOauthClient.js";
-export { createPublicOauthClient } from "./createPublicOauthClient.js";
+export {
+  createPublicOauthClient,
+  type PublicOauthClientOptions,
+} from "./createPublicOauthClient.js";
 export type { PublicOauthClient } from "./PublicOauthClient.js";
