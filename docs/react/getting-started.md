@@ -23,10 +23,9 @@ All `@osdk/*` packages must use **compatible versions**. Mismatched versions (e.
 ```json
 {
   "dependencies": {
-    "@osdk/api": "^2.6.1",
-    "@osdk/client": "^2.6.1",
-    "@osdk/oauth": "^1.6.0",
-    "@osdk/react": "^0.8.0"
+    "@osdk/api": "^2.7.0-beta.8",
+    "@osdk/client": "^2.7.0-beta.8",
+    "@osdk/react": "^0.9.0-beta.5"
   }
 }
 ```
@@ -34,7 +33,7 @@ All `@osdk/*` packages must use **compatible versions**. Mismatched versions (e.
 Or install via command line:
 
 ```bash
-npm install @osdk/api @osdk/client @osdk/oauth @osdk/react
+npm install @osdk/api @osdk/client @osdk/react
 ```
 
 Check for newer versions on npm:
@@ -222,9 +221,9 @@ This error occurs when your `@osdk/client` version is incompatible with `@osdk/r
 ```json
 {
   "dependencies": {
-    "@osdk/api": "^2.6.1",
-    "@osdk/client": "^2.6.1",
-    "@osdk/react": "^0.8.0"
+    "@osdk/api": "^2.7.0-beta.8",
+    "@osdk/client": "^2.7.0-beta.8",
+    "@osdk/react": "^0.9.0-beta.5"
   }
 }
 ```
@@ -325,7 +324,6 @@ If NPM has trouble resolving peer dependencies with beta packages, add to packag
 {
   "overrides": {
     "@osdk/client": "$@osdk/client",
-    "@osdk/oauth": "$@osdk/oauth",
     "@osdk/react": "$@osdk/react"
   }
 }
