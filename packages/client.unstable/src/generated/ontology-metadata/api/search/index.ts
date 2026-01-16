@@ -81,6 +81,7 @@ export type {
   ObjectTypeSortOrder,
   ObjectTypeStatusFilter,
   ObjectTypeTargetStorageBackendFilter,
+  SearchBoostingOption,
   SearchTitleInCombinedEntityTypeRequest,
   SearchTitleInCombinedEntityTypeResponse,
   SemanticSearchUnavailableReason,

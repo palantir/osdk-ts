@@ -703,6 +703,7 @@ export type OntologyIrMarketplaceInterfaceTypeStatus =
  * runtime conversion with default value.
  */
 export interface OntologyIrMarketplaceObjectTypeEntityMetadata {
+  aliases: Array<_api_entitymetadata_ObjectTypeAlias>;
   arePatchesEnabled: boolean;
 }
 export interface OntologyIrMarketplaceSharedPropertyBasedPropertyType {

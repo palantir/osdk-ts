@@ -47,6 +47,7 @@ export interface SharedPropertyTypeDefinition {
   visibility?: Visibility;
   nullability?: Nullability;
   typeClasses?: SharedPropertyType["typeClasses"];
+  aliases?: Array<string>;
   gothamMapping?: SharedPropertyTypeGothamMapping;
   baseFormatter?: OntologyIrBaseFormatter;
 }

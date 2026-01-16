@@ -1099,6 +1099,7 @@ describe("Miscellaneous Tests", () => {
                   },
                 ],
                 "entityMetadata": {
+                  "aliases": [],
                   "arePatchesEnabled": false,
                 },
                 "objectType": {

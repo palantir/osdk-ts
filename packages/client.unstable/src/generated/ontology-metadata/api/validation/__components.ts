@@ -326,6 +326,56 @@ export interface ActionTypeInsufficientPermissionsToAddStringCbacPickerTypeclass
 export interface ActionTypeInsufficientPermissionsToModifyMaxClassificationOfNonSecuringCbacParameter {
 }
 /**
+ * AddInterfaceLinkRule does not reference the interface link type's target object type in object reference parameter.
+ */
+export interface ActionTypeInterfaceLinkRuleDoesNotReferenceTheTargetObjectType {
+}
+/**
+ * AddInterfaceLinkRule cannot reference a created object of interface when the link target is an object type.
+ */
+export interface ActionTypeInterfaceLinkRuleHasInvalidCreatedObjectReference {
+}
+/**
+ * AddInterfaceLinkRule references a parameter with an invalid type to link existing objects.
+ */
+export interface ActionTypeInterfaceLinkRuleHasParameterWithInvalidTypeToLinkExistingObject {
+}
+/**
+ * AddInterfaceLinkRule references an object of interface reference parameter whose interface type does not match the interface type defined in th interface link type.
+ */
+export interface ActionTypeInterfaceLinkRuleInterfaceTypeMismatch {
+}
+/**
+ * AddInterfaceLinkRule references an object type on the interface side of an interface link type that does not implement the interface.
+ */
+export interface ActionTypeInterfaceLinkRuleReferenceObjectTypeThatDoesNotImplementInterface {
+}
+/**
+ * AddInterfaceLinkRule references an object type for the source of the interface link type that does not implement the interface link type.
+ */
+export interface ActionTypeInterfaceLinkRuleReferenceObjectTypeThatDoesNotImplementInterfaceLinkType {
+}
+/**
+ * InterfaceLinkRule references an add interface logic rule that attempts to create an interface that doesn't match with interface link rule definition.
+ */
+export interface ActionTypeInterfaceLinkRuleReferencesInvalidAddInterfaceTypeLogicRule {
+}
+/**
+ * InterfaceLinkRule references an add object type logic rule that attempts to create an object type that doesn't match with interface link rule definition.
+ */
+export interface ActionTypeInterfaceLinkRuleReferencesInvalidAddObjectTypeLogicRule {
+}
+/**
+ * InterfaceLinkRule references a create object or create interface logic rule that appears after the link rule in the rules list. Referenced logic rules must appear before the link rule.
+ */
+export interface ActionTypeInterfaceLinkRuleReferencesLogicRuleThatComesAfterIt {
+}
+/**
+ * AddInterfaceLinkRule references an interface link type that does not exist on the interface.
+ */
+export interface ActionTypeInterfaceLinkTypeDoesNotExistOnInterface {
+}
+/**
  * Interface reference parameter prefill value references non interface reference parameter.
  */
 export interface ActionTypeInterfaceReferenceParameterPrefillReferencesNonInterfaceReferenceParameter {
@@ -2220,6 +2270,18 @@ export interface ErrorType_objectTypeMediaReferencePropertyShouldNotHaveRenderHi
     ObjectTypeMediaReferencePropertyShouldNotHaveRenderHints;
 }
 
+export interface ErrorType_objectTypeMultipleUploadMediaSetViewDatasourcesForSameProperty {
+  type: "objectTypeMultipleUploadMediaSetViewDatasourcesForSameProperty";
+  objectTypeMultipleUploadMediaSetViewDatasourcesForSameProperty:
+    ObjectTypeMultipleUploadMediaSetViewDatasourcesForSameProperty;
+}
+
+export interface ErrorType_objectTypeMediaSetViewDatasourceUploadPropertyNotInProperties {
+  type: "objectTypeMediaSetViewDatasourceUploadPropertyNotInProperties";
+  objectTypeMediaSetViewDatasourceUploadPropertyNotInProperties:
+    ObjectTypeMediaSetViewDatasourceUploadPropertyNotInProperties;
+}
+
 export interface ErrorType_objectTypeGothamMappingAlreadyInUse {
   type: "objectTypeGothamMappingAlreadyInUse";
   objectTypeGothamMappingAlreadyInUse: ObjectTypeGothamMappingAlreadyInUse;
@@ -3072,6 +3134,69 @@ export interface ErrorType_actionTypeLinkRuleDoesNotReferenceManyToManyLinkType 
   type: "actionTypeLinkRuleDoesNotReferenceManyToManyLinkType";
   actionTypeLinkRuleDoesNotReferenceManyToManyLinkType:
     ActionTypeLinkRuleDoesNotReferenceManyToManyLinkType;
+}
+
+export interface ErrorType_actionTypeInterfaceLinkTypeDoesNotExistOnInterface {
+  type: "actionTypeInterfaceLinkTypeDoesNotExistOnInterface";
+  actionTypeInterfaceLinkTypeDoesNotExistOnInterface:
+    ActionTypeInterfaceLinkTypeDoesNotExistOnInterface;
+}
+
+export interface ErrorType_actionTypeInterfaceLinkRuleReferenceObjectTypeThatDoesNotImplementInterface {
+  type:
+    "actionTypeInterfaceLinkRuleReferenceObjectTypeThatDoesNotImplementInterface";
+  actionTypeInterfaceLinkRuleReferenceObjectTypeThatDoesNotImplementInterface:
+    ActionTypeInterfaceLinkRuleReferenceObjectTypeThatDoesNotImplementInterface;
+}
+
+export interface ErrorType_actionTypeInterfaceLinkRuleReferenceObjectTypeThatDoesNotImplementInterfaceLinkType {
+  type:
+    "actionTypeInterfaceLinkRuleReferenceObjectTypeThatDoesNotImplementInterfaceLinkType";
+  actionTypeInterfaceLinkRuleReferenceObjectTypeThatDoesNotImplementInterfaceLinkType:
+    ActionTypeInterfaceLinkRuleReferenceObjectTypeThatDoesNotImplementInterfaceLinkType;
+}
+
+export interface ErrorType_actionTypeInterfaceLinkRuleHasParameterWithInvalidTypeToLinkExistingObject {
+  type:
+    "actionTypeInterfaceLinkRuleHasParameterWithInvalidTypeToLinkExistingObject";
+  actionTypeInterfaceLinkRuleHasParameterWithInvalidTypeToLinkExistingObject:
+    ActionTypeInterfaceLinkRuleHasParameterWithInvalidTypeToLinkExistingObject;
+}
+
+export interface ErrorType_actionTypeInterfaceLinkRuleInterfaceTypeMismatch {
+  type: "actionTypeInterfaceLinkRuleInterfaceTypeMismatch";
+  actionTypeInterfaceLinkRuleInterfaceTypeMismatch:
+    ActionTypeInterfaceLinkRuleInterfaceTypeMismatch;
+}
+
+export interface ErrorType_actionTypeInterfaceLinkRuleHasInvalidCreatedObjectReference {
+  type: "actionTypeInterfaceLinkRuleHasInvalidCreatedObjectReference";
+  actionTypeInterfaceLinkRuleHasInvalidCreatedObjectReference:
+    ActionTypeInterfaceLinkRuleHasInvalidCreatedObjectReference;
+}
+
+export interface ErrorType_actionTypeInterfaceLinkRuleDoesNotReferenceTheTargetObjectType {
+  type: "actionTypeInterfaceLinkRuleDoesNotReferenceTheTargetObjectType";
+  actionTypeInterfaceLinkRuleDoesNotReferenceTheTargetObjectType:
+    ActionTypeInterfaceLinkRuleDoesNotReferenceTheTargetObjectType;
+}
+
+export interface ErrorType_actionTypeInterfaceLinkRuleReferencesInvalidAddObjectTypeLogicRule {
+  type: "actionTypeInterfaceLinkRuleReferencesInvalidAddObjectTypeLogicRule";
+  actionTypeInterfaceLinkRuleReferencesInvalidAddObjectTypeLogicRule:
+    ActionTypeInterfaceLinkRuleReferencesInvalidAddObjectTypeLogicRule;
+}
+
+export interface ErrorType_actionTypeInterfaceLinkRuleReferencesInvalidAddInterfaceTypeLogicRule {
+  type: "actionTypeInterfaceLinkRuleReferencesInvalidAddInterfaceTypeLogicRule";
+  actionTypeInterfaceLinkRuleReferencesInvalidAddInterfaceTypeLogicRule:
+    ActionTypeInterfaceLinkRuleReferencesInvalidAddInterfaceTypeLogicRule;
+}
+
+export interface ErrorType_actionTypeInterfaceLinkRuleReferencesLogicRuleThatComesAfterIt {
+  type: "actionTypeInterfaceLinkRuleReferencesLogicRuleThatComesAfterIt";
+  actionTypeInterfaceLinkRuleReferencesLogicRuleThatComesAfterIt:
+    ActionTypeInterfaceLinkRuleReferencesLogicRuleThatComesAfterIt;
 }
 
 export interface ErrorType_actionTypePrimaryKeyInAddObjectRuleDoesNotUseValidLogicRuleValue {
@@ -4234,6 +4359,8 @@ export type ErrorType =
   | ErrorType_objectTypeMediaReferenceIsNotOnObjectStorageV2ObjectType
   | ErrorType_objectTypeMediaReferencePropertyIsTitle
   | ErrorType_objectTypeMediaReferencePropertyShouldNotHaveRenderHints
+  | ErrorType_objectTypeMultipleUploadMediaSetViewDatasourcesForSameProperty
+  | ErrorType_objectTypeMediaSetViewDatasourceUploadPropertyNotInProperties
   | ErrorType_objectTypeGothamMappingAlreadyInUse
   | ErrorType_objectTypeMissingPermissionToEnableTypeMapping
   | ErrorType_objectTypeObjectStorageV1MappedToGotham
@@ -4383,6 +4510,16 @@ export type ErrorType =
   | ErrorType_actionTypeFormContentOrderingContainsDuplicates
   | ErrorType_actionTypeFormContentOrderingNotExactlySameAsParameterSet
   | ErrorType_actionTypeLinkRuleDoesNotReferenceManyToManyLinkType
+  | ErrorType_actionTypeInterfaceLinkTypeDoesNotExistOnInterface
+  | ErrorType_actionTypeInterfaceLinkRuleReferenceObjectTypeThatDoesNotImplementInterface
+  | ErrorType_actionTypeInterfaceLinkRuleReferenceObjectTypeThatDoesNotImplementInterfaceLinkType
+  | ErrorType_actionTypeInterfaceLinkRuleHasParameterWithInvalidTypeToLinkExistingObject
+  | ErrorType_actionTypeInterfaceLinkRuleInterfaceTypeMismatch
+  | ErrorType_actionTypeInterfaceLinkRuleHasInvalidCreatedObjectReference
+  | ErrorType_actionTypeInterfaceLinkRuleDoesNotReferenceTheTargetObjectType
+  | ErrorType_actionTypeInterfaceLinkRuleReferencesInvalidAddObjectTypeLogicRule
+  | ErrorType_actionTypeInterfaceLinkRuleReferencesInvalidAddInterfaceTypeLogicRule
+  | ErrorType_actionTypeInterfaceLinkRuleReferencesLogicRuleThatComesAfterIt
   | ErrorType_actionTypePrimaryKeyInAddObjectRuleDoesNotUseValidLogicRuleValue
   | ErrorType_actionTypeApiNameMissing
   | ErrorType_actionTypeDoesNotHaveActionTypeLevelValidation
@@ -5998,6 +6135,11 @@ export interface ObjectTypeMediaReferencePropertyShouldNotHaveRenderHints {
 export interface ObjectTypeMediaReferencePropertyTypeHasNoDatasources {
 }
 /**
+ * A property designated for media uploads is not present in the datasource's properties set. Upload properties must be a subset of the properties backed by the datasource.
+ */
+export interface ObjectTypeMediaSetViewDatasourceUploadPropertyNotInProperties {
+}
+/**
  * The provided media set view locators do not point to any existing media set view.
  */
 export interface ObjectTypeMediaSetViewLocatorsDoNotExist {
@@ -6021,6 +6163,11 @@ export interface ObjectTypeMissingPropertiesAssociatedWithWorkflow {
  * Both DataNullabity and DataNullabilityV2 are configured. This is most likely a misconfiguration as there is no reason to send both.
  */
 export interface ObjectTypeMultipleDataNullabilitiesConfigured {
+}
+/**
+ * Multiple media set view datasources are designated for uploads to the same property. Only one datasource per property can be used for uploads.
+ */
+export interface ObjectTypeMultipleUploadMediaSetViewDatasourcesForSameProperty {
 }
 /**
  * Can only set noEmptyCollections data constraint for Array type. Use noNulls for non collection types.
