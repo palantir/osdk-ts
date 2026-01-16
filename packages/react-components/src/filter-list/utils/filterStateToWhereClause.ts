@@ -189,22 +189,19 @@ function filterStateToPropertyFilter(
   }
 }
 
-/**
- * Builds a WhereClause from filter definitions and their current states.
- *
- * Note: The `as WhereClause<Q>` casts are necessary because we're building
- * clauses dynamically from property keys determined at runtime. TypeScript
- * cannot verify that the constructed clause structure matches the generic Q's
- * expected shape, but the structure is guaranteed to be valid by construction.
- */
-export function buildWhereClause<Q extends ObjectTypeDefinition>(
+type WhereClauseResult =
+  | { $and: Array<Record<string, unknown>> }
+  | { $or: Array<Record<string, unknown>> }
+  | Record<string, unknown>;
+
+function buildWhereClauseInternal<Q extends ObjectTypeDefinition>(
   definitions: Array<FilterDefinitionUnion<Q>> | undefined,
   filterStates: Map<string, FilterState>,
   operator: "and" | "or",
   objectType?: Q,
-): WhereClause<Q> {
+): WhereClauseResult {
   if (!definitions || definitions.length === 0) {
-    return {} as WhereClause<Q>;
+    return {};
   }
 
   const clauses: Array<Record<string, unknown>> = [];
@@ -232,7 +229,6 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
         if (state.type !== "HAS_LINK") {
           break;
         }
-        // TypeScript narrows state to HasLinkFilterState
         if (state.hasLink) {
           clauses.push({ [definition.linkName]: { $isNotNull: true } });
         } else {
@@ -242,11 +238,8 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
       }
 
       case "linkedProperty": {
-        // OSDK WhereClause does not support filtering through links.
-        // Link-based filtering requires ObjectSet operations (pivotTo/intersect).
-        // LinkedProperty filters render UI for selection but cannot be included
-        // in the where clause. Consumers needing linked property filtering must
-        // implement it using ObjectSet.pivotTo() and intersect().
+        // LinkedProperty filters cannot be included in where clause
+        // (requires ObjectSet.pivotTo() operations)
         break;
       }
 
@@ -254,7 +247,6 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
         if (state.type !== "KEYWORD_SEARCH" || !state.searchTerm) {
           break;
         }
-        // TypeScript narrows state to KeywordSearchFilterState
         const searchTerm = state.searchTerm.trim();
         if (!searchTerm) {
           break;
@@ -305,10 +297,9 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
         if (state.type !== "CUSTOM") {
           break;
         }
-        // TypeScript narrows state to CustomFilterState
         const customClause = definition.toWhereClause(state);
         if (customClause && Object.keys(customClause).length > 0) {
-          clauses.push(customClause as Record<string, unknown>);
+          clauses.push(customClause);
         }
         break;
       }
@@ -319,16 +310,38 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
   }
 
   if (clauses.length === 0) {
-    return {} as WhereClause<Q>;
+    return {};
   }
 
   if (clauses.length === 1) {
-    return clauses[0] as WhereClause<Q>;
+    return clauses[0];
   }
 
   if (operator === "and") {
-    return { $and: clauses } as WhereClause<Q>;
+    return { $and: clauses };
   }
 
-  return { $or: clauses } as WhereClause<Q>;
+  return { $or: clauses };
+}
+
+/**
+ * Builds a WhereClause from filter definitions and their current states.
+ *
+ * The cast to WhereClause<Q> is necessary because we construct clauses dynamically
+ * from runtime property keys. TypeScript cannot statically verify the structure
+ * matches Q's shape, but it is guaranteed valid by construction.
+ */
+export function buildWhereClause<Q extends ObjectTypeDefinition>(
+  definitions: Array<FilterDefinitionUnion<Q>> | undefined,
+  filterStates: Map<string, FilterState>,
+  operator: "and" | "or",
+  objectType?: Q,
+): WhereClause<Q> {
+  const result = buildWhereClauseInternal(
+    definitions,
+    filterStates,
+    operator,
+    objectType,
+  );
+  return result as WhereClause<Q>;
 }
