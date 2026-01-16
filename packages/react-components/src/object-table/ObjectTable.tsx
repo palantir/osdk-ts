@@ -21,15 +21,16 @@ import type {
   QueryDefinition,
   SimplePropertyDef,
 } from "@osdk/api";
-import {
-  type Cell,
-  type ColumnSizingState,
-  getCoreRowModel,
-  useReactTable,
+import type {
+  Cell,
+  ColumnSizingState,
+  SortingState,
 } from "@tanstack/react-table";
+import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import React, { useCallback, useMemo, useState } from "react";
 import { useColumnDefs } from "./hooks/useColumnDefs.js";
-import { useDefaultTableStates } from "./hooks/useDefaultTableStates.js";
+import { useColumnPinning } from "./hooks/useColumnPinning.js";
+import { useColumnVisibility } from "./hooks/useColumnVisibility.js";
 import { useObjectTableData } from "./hooks/useObjectTableData.js";
 import { useRowSelection } from "./hooks/useRowSelection.js";
 import { useSelectionColumn } from "./hooks/useSelectionColumn.js";
@@ -67,6 +68,9 @@ export function ObjectTable<
   selectedRows,
   ...props
 }: ObjectTableProps<Q, RDPs, FunctionColumns>): React.ReactElement {
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [columnSizing, setColumnSizing] = useState<ColumnSizingState>({});
+
   const { data, fetchMore, isLoading } = useObjectTableData<
     Q,
     RDPs,
@@ -75,6 +79,7 @@ export function ObjectTable<
     objectSet,
     columnDefinitions,
     filter,
+    sorting,
   );
 
   const { columns, loading: isColumnsLoading } = useColumnDefs<
@@ -86,9 +91,7 @@ export function ObjectTable<
     columnDefinitions,
   );
 
-  const { columnVisibility } = useDefaultTableStates({ columnDefinitions });
-
-  const [columnSizing, setColumnSizing] = useState<ColumnSizingState>({});
+  const columnVisibility = useColumnVisibility({ columnDefinitions });
 
   const {
     rowSelection,
@@ -111,6 +114,11 @@ export function ObjectTable<
     return selectionColumn ? [selectionColumn, ...columns] : columns;
   }, [selectionColumn, columns]);
 
+  const [columnPinning, setColumnPinning] = useColumnPinning({
+    columnDefinitions,
+    hasSelectionColumn: selectionColumn != null,
+  });
+
   const table = useReactTable<
     Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
   >({
@@ -120,12 +128,17 @@ export function ObjectTable<
     state: {
       columnVisibility,
       rowSelection,
+      sorting,
       columnSizing,
+      columnPinning,
     },
+    onSortingChange: setSorting,
     onColumnSizingChange: setColumnSizing,
+    onColumnPinningChange: setColumnPinning,
     enableRowSelection: selectionMode !== "none",
     columnResizeMode: "onChange",
     columnResizeDirection: "ltr",
+    manualSorting: true, // Enable manual sorting to indicate server-side sorting
     defaultColumn: {
       minSize: 80,
     },

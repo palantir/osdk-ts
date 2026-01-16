@@ -19,14 +19,11 @@ import type {
   QueryDefinition,
   SimplePropertyDef,
 } from "@osdk/api";
-import type {
-  ColumnPinningState,
-  VisibilityState,
-} from "@tanstack/react-table";
+import type { VisibilityState } from "@tanstack/react-table";
 import { useMemo } from "react";
 import type { ObjectTableProps } from "../ObjectTableApi.js";
 
-interface UseDefaultTableStatesProps<
+interface UseColumnVisibilityProps<
   Q extends ObjectTypeDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
@@ -41,12 +38,7 @@ interface UseDefaultTableStatesProps<
   >["columnDefinitions"];
 }
 
-interface UseDefaultTableStatesResult {
-  columnVisibility: VisibilityState | undefined;
-  columnPinning: ColumnPinningState | undefined;
-}
-
-export const useDefaultTableStates = <
+export const useColumnVisibility = <
   Q extends ObjectTypeDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
@@ -54,12 +46,12 @@ export const useDefaultTableStates = <
     never
   >,
 >(
-  { columnDefinitions }: UseDefaultTableStatesProps<
+  { columnDefinitions }: UseColumnVisibilityProps<
     Q,
     RDPs,
     FunctionColumns
   >,
-): UseDefaultTableStatesResult => {
+): VisibilityState | undefined => {
   const columnVisibility = useMemo(() => {
     if (columnDefinitions) {
       const colVisibility: VisibilityState = columnDefinitions.reduce(
@@ -82,35 +74,5 @@ export const useDefaultTableStates = <
     }
   }, [columnDefinitions]);
 
-  const columnPinning = useMemo(() => {
-    if (columnDefinitions) {
-      const defaultColumnPinning: ColumnPinningState = columnDefinitions.reduce<ColumnPinningState>(
-        (acc, colDef) => {
-          const { locator, pinned } = colDef;
-          const colKey: string = locator.id.toString();
-          const isPinned = pinned != null && pinned !== "none";
-          if (!isPinned) {
-            return acc;
-          }
-
-          if (pinned === "left") {
-            return {
-              ...acc,
-              left: [...(acc.left ?? []), colKey],
-            };
-          }
-
-          return {
-            ...acc,
-            right: [...(acc.right ?? []), colKey],
-          };
-        },
-        { left: [], right: [] },
-      );
-
-      return defaultColumnPinning;
-    }
-  }, [columnDefinitions]);
-
-  return { columnVisibility, columnPinning };
+  return columnVisibility;
 };
