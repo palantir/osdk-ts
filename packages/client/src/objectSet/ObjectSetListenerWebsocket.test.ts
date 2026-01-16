@@ -538,6 +538,12 @@ describe("ObjectSetListenerWebsocket", async () => {
       const client: Client =
         ((a: any) => ({ subscribe: (a: any, b: any) => {} })) as Client;
 
+      client(Employee).subscribe({
+        onChange: (change) => {
+          expectTypeOf(change.object.$rid).toBeString();
+        },
+      }, { includeRid: true, properties: ["employeeId"] });
+
       client(Office).subscribe({
         onChange: (change) => {
           expectTypeOf(change.object.$rid).toBeString();
