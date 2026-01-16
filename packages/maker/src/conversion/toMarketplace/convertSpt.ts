@@ -49,6 +49,7 @@ export function convertSpt(
         type: "array" as const,
         array: {
           subtype: propertyTypeTypeToOntologyIrType(type),
+          reducers: [],
         },
       }
       : propertyTypeTypeToOntologyIrType(type),

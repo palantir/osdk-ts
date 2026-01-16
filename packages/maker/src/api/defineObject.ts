@@ -23,9 +23,14 @@ import {
   namespace,
   ontologyDefinition,
   updateOntology,
+  withoutNamespace,
 } from "./defineOntology.js";
 import { getFlattenedInterfaceProperties } from "./interface/getFlattenedInterfaceProperties.js";
-import type { InterfacePropertyType } from "./interface/InterfacePropertyType.js";
+import {
+  getInterfacePropertyTypeType,
+  type InterfacePropertyType,
+  isInterfaceSharedPropertyType,
+} from "./interface/InterfacePropertyType.js";
 import type { ObjectPropertyType } from "./object/ObjectPropertyType.js";
 import type { ObjectPropertyTypeUserDefinition } from "./object/ObjectPropertyTypeUserDefinition.js";
 import type { ObjectType } from "./object/ObjectType.js";
@@ -37,7 +42,6 @@ import type {
 import type { ObjectTypeDefinition } from "./object/ObjectTypeDefinition.js";
 import type { PropertyTypeType } from "./properties/PropertyTypeType.js";
 import { isExotic } from "./properties/PropertyTypeType.js";
-import type { SharedPropertyType } from "./properties/SharedPropertyType.js";
 
 // From https://stackoverflow.com/a/79288714
 const ISO_8601_DURATION =
@@ -157,6 +161,8 @@ export function defineObject(
       .propertyMapping.map(val => val.interfaceProperty).filter(
         interfaceProperty =>
           allInterfaceProperties[addNamespaceIfNone(interfaceProperty)]
+            === undefined
+          && allInterfaceProperties[withoutNamespace(interfaceProperty)]
             === undefined,
       ).map(interfaceProp => ({
         type: "invalid",
@@ -167,7 +173,7 @@ export function defineObject(
     const interfaceToObjectProperties = Object.fromEntries(
       interfaceImpl.propertyMapping.map(
         mapping => [
-          addNamespaceIfNone(mapping.interfaceProperty),
+          mapping.interfaceProperty,
           mapping.mapsTo,
         ],
       ),
@@ -175,21 +181,21 @@ export function defineObject(
     const validateProperty = (
       interfaceProp: [string, InterfacePropertyType],
     ): ValidationResult => {
-      if (
-        interfaceProp[1].sharedPropertyType.apiName
-          in interfaceToObjectProperties
-      ) {
+      const apiName = isInterfaceSharedPropertyType(interfaceProp[1])
+        ? interfaceProp[1].sharedPropertyType.apiName
+        : interfaceProp[0];
+      if (apiName in interfaceToObjectProperties) {
         return validateInterfaceImplProperty(
-          interfaceProp[1].sharedPropertyType,
+          interfaceProp[1],
+          apiName,
           interfaceToObjectProperties[interfaceProp[0]],
           objectDef,
         );
       }
       return {
         type: "invalid",
-        reason: `Interface property ${
-          interfaceProp[1].sharedPropertyType.apiName
-        } not implemented by ${objectDef.apiName} object definition`,
+        reason:
+          `Interface spt ${apiName} not implemented by ${objectDef.apiName} object definition`,
       };
     };
     const validations = Object.entries(
@@ -231,7 +237,8 @@ function formatValidationErrors(
 
 // Validate that the object and the interface property match up
 function validateInterfaceImplProperty(
-  spt: SharedPropertyType,
+  type: InterfacePropertyType,
+  apiName: string,
   mappedObjectProp: string,
   object: ObjectTypeDefinition,
 ): ValidationResult {
@@ -243,11 +250,12 @@ function validateInterfaceImplProperty(
         `Object property mapped to interface does not exist. Object Property Mapped: ${mappedObjectProp}`,
     };
   }
-  if (JSON.stringify(spt.type) !== JSON.stringify(objProp?.type)) {
+  const propertyType = getInterfacePropertyTypeType(type);
+  if (JSON.stringify(propertyType) !== JSON.stringify(objProp?.type)) {
     return {
       type: "invalid",
       reason:
-        `Object property type does not match the interface property it is mapped to. Interface Property: ${spt.apiName}, objectProperty: ${mappedObjectProp}`,
+        `Object property type does not match the interface property it is mapped to. Interface Property: ${apiName}, objectProperty: ${mappedObjectProp}`,
     };
   }
 

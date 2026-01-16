@@ -55,121 +55,162 @@ describe("SPTs", () => {
     });
 
     expect(dumpOntologyFullMetadata().ontology).toMatchInlineSnapshot(`
-          {
-            "actionTypes": {},
-            "blockPermissionInformation": {
-              "actionTypes": {},
-              "linkTypes": {},
-              "objectTypes": {},
-            },
-            "interfaceTypes": {
-              "com.palantir.FooInterface": {
-                "interfaceType": {
-                  "apiName": "com.palantir.FooInterface",
-                  "displayMetadata": {
-                    "description": "Foo Interface",
-                    "displayName": "Foo Interface",
-                    "icon": {
-                      "blueprint": {
-                        "color": "#00000",
-                        "locator": "airplane",
-                      },
-                      "type": "blueprint",
-                    },
+      {
+        "actionTypes": {},
+        "blockPermissionInformation": {
+          "actionTypes": {},
+          "linkTypes": {},
+          "objectTypes": {},
+        },
+        "interfaceTypes": {
+          "com.palantir.FooInterface": {
+            "interfaceType": {
+              "apiName": "com.palantir.FooInterface",
+              "displayMetadata": {
+                "description": "Foo Interface",
+                "displayName": "Foo Interface",
+                "icon": {
+                  "blueprint": {
+                    "color": "#00000",
+                    "locator": "airplane",
                   },
-                  "extendsInterfaces": [],
-                  "links": [],
-                  "properties": [],
-                  "propertiesV2": {
-                    "com.palantir.fooSpt": {
-                      "required": true,
-                      "sharedPropertyType": {
-                        "aliases": [],
-                        "apiName": "com.palantir.fooSpt",
-                        "baseFormatter": undefined,
-                        "dataConstraints": undefined,
-                        "displayMetadata": {
-                          "description": undefined,
-                          "displayName": "fooSpt",
-                          "visibility": "NORMAL",
-                        },
-                        "gothamMapping": undefined,
-                        "indexedForSearch": true,
-                        "type": {
-                          "string": {
-                            "analyzerOverride": undefined,
-                            "enableAsciiFolding": undefined,
-                            "isLongText": false,
-                            "supportsEfficientLeadingWildcard": false,
-                            "supportsExactMatching": true,
-                          },
-                          "type": "string",
-                        },
-                        "typeClasses": [
-                          {
-                            "kind": "render_hint",
-                            "name": "SELECTABLE",
-                          },
-                          {
-                            "kind": "render_hint",
-                            "name": "SORTABLE",
-                          },
-                        ],
-                        "valueType": undefined,
-                      },
+                  "type": "blueprint",
+                },
+              },
+              "extendsInterfaces": [],
+              "links": [],
+              "properties": [],
+              "propertiesV2": {
+                "com.palantir.fooSpt": {
+                  "required": true,
+                  "sharedPropertyType": {
+                    "aliases": [],
+                    "apiName": "com.palantir.fooSpt",
+                    "baseFormatter": undefined,
+                    "dataConstraints": undefined,
+                    "displayMetadata": {
+                      "description": undefined,
+                      "displayName": "fooSpt",
+                      "visibility": "NORMAL",
                     },
-                  },
-                  "propertiesV3": {},
-                  "searchable": true,
-                  "status": {
-                    "active": {},
-                    "type": "active",
+                    "gothamMapping": undefined,
+                    "indexedForSearch": true,
+                    "type": {
+                      "string": {
+                        "analyzerOverride": undefined,
+                        "enableAsciiFolding": undefined,
+                        "isLongText": false,
+                        "supportsEfficientLeadingWildcard": false,
+                        "supportsExactMatching": true,
+                      },
+                      "type": "string",
+                    },
+                    "typeClasses": [
+                      {
+                        "kind": "render_hint",
+                        "name": "SELECTABLE",
+                      },
+                      {
+                        "kind": "render_hint",
+                        "name": "SORTABLE",
+                      },
+                    ],
+                    "valueType": undefined,
                   },
                 },
               },
-            },
-            "linkTypes": {},
-            "objectTypes": {},
-            "sharedPropertyTypes": {
-              "com.palantir.fooSpt": {
-                "sharedPropertyType": {
-                  "aliases": [],
-                  "apiName": "com.palantir.fooSpt",
-                  "baseFormatter": undefined,
-                  "dataConstraints": undefined,
-                  "displayMetadata": {
-                    "description": undefined,
-                    "displayName": "fooSpt",
-                    "visibility": "NORMAL",
+              "propertiesV3": {
+                "com.palantir.fooSpt": {
+                  "sharedPropertyBasedPropertyType": {
+                    "requireImplementation": true,
+                    "sharedPropertyType": {
+                      "aliases": [],
+                      "apiName": "com.palantir.fooSpt",
+                      "baseFormatter": undefined,
+                      "dataConstraints": undefined,
+                      "displayMetadata": {
+                        "description": undefined,
+                        "displayName": "fooSpt",
+                        "visibility": "NORMAL",
+                      },
+                      "gothamMapping": undefined,
+                      "indexedForSearch": true,
+                      "type": {
+                        "string": {
+                          "analyzerOverride": undefined,
+                          "enableAsciiFolding": undefined,
+                          "isLongText": false,
+                          "supportsEfficientLeadingWildcard": false,
+                          "supportsExactMatching": true,
+                        },
+                        "type": "string",
+                      },
+                      "typeClasses": [
+                        {
+                          "kind": "render_hint",
+                          "name": "SELECTABLE",
+                        },
+                        {
+                          "kind": "render_hint",
+                          "name": "SORTABLE",
+                        },
+                      ],
+                      "valueType": undefined,
+                    },
                   },
-                  "gothamMapping": undefined,
-                  "indexedForSearch": true,
-                  "type": {
-                    "string": {
-                      "analyzerOverride": undefined,
-                      "enableAsciiFolding": undefined,
-                      "isLongText": false,
-                      "supportsEfficientLeadingWildcard": false,
-                      "supportsExactMatching": true,
-                    },
-                    "type": "string",
-                  },
-                  "typeClasses": [
-                    {
-                      "kind": "render_hint",
-                      "name": "SELECTABLE",
-                    },
-                    {
-                      "kind": "render_hint",
-                      "name": "SORTABLE",
-                    },
-                  ],
-                  "valueType": undefined,
+                  "type": "sharedPropertyBasedPropertyType",
                 },
               },
+              "searchable": true,
+              "status": {
+                "active": {},
+                "type": "active",
+              },
             },
-          }
-        `);
+          },
+        },
+        "linkTypes": {},
+        "objectTypes": {},
+        "sharedPropertyTypes": {
+          "com.palantir.fooSpt": {
+            "sharedPropertyType": {
+              "aliases": [],
+              "apiName": "com.palantir.fooSpt",
+              "baseFormatter": undefined,
+              "dataConstraints": undefined,
+              "displayMetadata": {
+                "description": undefined,
+                "displayName": "fooSpt",
+                "visibility": "NORMAL",
+              },
+              "gothamMapping": undefined,
+              "indexedForSearch": true,
+              "type": {
+                "string": {
+                  "analyzerOverride": undefined,
+                  "enableAsciiFolding": undefined,
+                  "isLongText": false,
+                  "supportsEfficientLeadingWildcard": false,
+                  "supportsExactMatching": true,
+                },
+                "type": "string",
+              },
+              "typeClasses": [
+                {
+                  "kind": "render_hint",
+                  "name": "SELECTABLE",
+                },
+                {
+                  "kind": "render_hint",
+                  "name": "SORTABLE",
+                },
+              ],
+              "valueType": undefined,
+            },
+          },
+        },
+      }
+    `);
   });
 
   it("properly serializes both types of struct SPTs", () => {
@@ -339,7 +380,49 @@ describe("SPTs", () => {
                   },
                 },
               },
-              "propertiesV3": {},
+              "propertiesV3": {
+                "com.palantir.foo": {
+                  "sharedPropertyBasedPropertyType": {
+                    "requireImplementation": true,
+                    "sharedPropertyType": {
+                      "aliases": [],
+                      "apiName": "com.palantir.foo",
+                      "baseFormatter": undefined,
+                      "dataConstraints": undefined,
+                      "displayMetadata": {
+                        "description": undefined,
+                        "displayName": "foo",
+                        "visibility": "NORMAL",
+                      },
+                      "gothamMapping": undefined,
+                      "indexedForSearch": true,
+                      "type": {
+                        "string": {
+                          "analyzerOverride": undefined,
+                          "enableAsciiFolding": undefined,
+                          "isLongText": true,
+                          "supportsEfficientLeadingWildcard": true,
+                          "supportsExactMatching": false,
+                          "supportsFullTextRegex": undefined,
+                        },
+                        "type": "string",
+                      },
+                      "typeClasses": [
+                        {
+                          "kind": "render_hint",
+                          "name": "SELECTABLE",
+                        },
+                        {
+                          "kind": "render_hint",
+                          "name": "SORTABLE",
+                        },
+                      ],
+                      "valueType": undefined,
+                    },
+                  },
+                  "type": "sharedPropertyBasedPropertyType",
+                },
+              },
               "searchable": true,
               "status": {
                 "active": {},
