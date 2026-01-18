@@ -19,6 +19,7 @@ import React, { type ReactElement, useCallback, useRef } from "react";
 import styles from "./Table.module.css";
 import { TableBody } from "./TableBody.js";
 import { TableHeader } from "./TableHeader.js";
+import "./Table.css";
 
 interface TableProps<TData extends RowData> {
   table: Table<TData>;
@@ -75,6 +76,8 @@ export function Table<TData extends RowData>(
   );
 
   // TODO: Handle error, loading and empty states
+
+  const isResizing = table.getState().columnSizingInfo?.isResizingColumn;
 
   return (
     <div
