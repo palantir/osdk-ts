@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-.osdk-selection-checkbox-root {
+.osdk-checkbox-root {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -42,12 +42,7 @@
   }
 }
 
-.osdk-selection-checkbox-icon {
-  width: 0.75rem;
-  height: 0.75rem;
-}
-
-.osdk-selection-checkbox-indicator {
+.osdk-checkbox-indicator {
   display: flex;
   color: var(--color-gray-50);
 

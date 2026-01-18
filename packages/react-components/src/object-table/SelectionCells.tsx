@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { Checkbox } from "@base-ui/react/checkbox";
-import { Minus, Tick } from "@blueprintjs/icons";
 import type { Row, RowData } from "@tanstack/react-table";
 import React, { useCallback } from "react";
 import "./SelectionCells.css";
+import type { Checkbox as BaseUICheckbox } from "@base-ui/react";
+import { Checkbox } from "../base-components/checkbox/Checkbox.js";
 
 interface SelectionHeaderCellProps {
   isAllSelected: boolean;
@@ -31,29 +31,12 @@ export function SelectionHeaderCell({
   hasSelection,
   onToggleAll,
 }: SelectionHeaderCellProps): React.ReactElement {
-  const isIndeterminate = hasSelection && !isAllSelected;
   return (
-    <Checkbox.Root
-      className="osdk-selection-checkbox-root"
+    <Checkbox
+      indeterminate={hasSelection && !isAllSelected}
       checked={isAllSelected}
-      indeterminate={isIndeterminate}
       onCheckedChange={onToggleAll}
-    >
-      <Checkbox.Indicator className={"osdk-selection-checkbox-indicator"}>
-        {/* BP Icons don't take color from css */}
-        {isIndeterminate
-          ? (
-            <Minus
-              color={"white"}
-            />
-          )
-          : (
-            <Tick
-              color={"white"}
-            />
-          )}
-      </Checkbox.Indicator>
-    </Checkbox.Root>
+    />
   );
 }
 
@@ -66,10 +49,8 @@ export function SelectionCell<TData extends RowData>({
   row,
   onToggleRow,
 }: SelectionCellProps<TData>): React.ReactElement {
-  const isSelected = row.getIsSelected();
-
   const handleCheckedChange = useCallback(
-    (_: boolean, eventDetails: Checkbox.Root.ChangeEventDetails) => {
+    (_: boolean, eventDetails: BaseUICheckbox.Root.ChangeEventDetails) => {
       const isShiftClick = "shiftKey" in eventDetails.event
         ? !!eventDetails.event.shiftKey
         : false;
@@ -79,29 +60,9 @@ export function SelectionCell<TData extends RowData>({
   );
 
   return (
-    <Checkbox.Root
-      checked={isSelected}
+    <Checkbox
+      checked={row.getIsSelected()}
       onCheckedChange={handleCheckedChange}
-      className="osdk-selection-checkbox-root"
-    >
-      <Checkbox.Indicator className={"osdk-selection-checkbox-indicator"}>
-        <CheckIcon className={"osdk-selection-checkbox-icon"} />
-      </Checkbox.Indicator>
-    </Checkbox.Root>
-  );
-}
-
-// Replace with Blueprint Icon
-function CheckIcon(props: React.ComponentProps<"svg">) {
-  return (
-    <svg
-      fill="currentcolor"
-      width="10"
-      height="10"
-      viewBox="0 0 10 10"
-      {...props}
-    >
-      <path d="M9.1603 1.12218C9.50684 1.34873 9.60427 1.81354 9.37792 2.16038L5.13603 8.66012C5.01614 8.8438 4.82192 8.96576 4.60451 8.99384C4.3871 9.02194 4.1683 8.95335 4.00574 8.80615L1.24664 6.30769C0.939709 6.02975 0.916013 5.55541 1.19372 5.24822C1.47142 4.94102 1.94536 4.91731 2.2523 5.19524L4.36085 7.10461L8.12299 1.33999C8.34934 0.993152 8.81376 0.895638 9.1603 1.12218Z" />
-    </svg>
+    />
   );
 }
