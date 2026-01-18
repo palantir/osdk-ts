@@ -48,6 +48,35 @@ function EmployeeDirectory() {
 }
 ```
 
+### Running the Example People App
+
+The examples are added to `packages/e2e.sandbox.peopleapp`, so we need to run the example app.
+
+#### Steps:
+
+1. Create a .env.local file with the content below in packages/e2e.sandbox.peopleapp:
+
+```
+VITE_FOUNDRY_URL=https://swirl.palantirfoundry.com
+VITE_FOUNDRY_CLIENT_ID=<insert_client_id>
+VITE_FOUNDRY_CLIENT_SECRET=<insert_token>
+VITE_FOUNDRY_REDIRECT_URL=http://localhost:8080/auth/callback
+```
+
+2. Get VITE_FOUNDRY_CLIENT_ID from "https://swirl.palantirfoundry.com/workspace/developer-console/app/ri.third-party-applications.main.application.91b973ac-e504-4322-95b4-4962b60495fe/oauth" under App Credentials > Client ID.
+
+3. Transpile @osdk/react-components and its dependencies
+
+```
+pnpm --filter @osdk/react-components transpileAllDeps && pnpm --filter @osdk/react-components transpileBrowser
+```
+
+4. Run the people app
+
+```
+pnpm --filter @osdk/e2e.sandbox.peopleapp dev
+```
+
 ## Why this package?
 
 **OSDK-native.** These components understand Foundry concepts like Objects, Object Sets, and Actions. They are purpose-built for Ontology data.

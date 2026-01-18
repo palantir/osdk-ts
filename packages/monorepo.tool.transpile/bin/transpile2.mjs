@@ -266,7 +266,13 @@ async function transpileWithBabel(format, target) {
     MODE: process.env.production ? "production" : "development",
   });
 
-  const fileEndingsToCopy = [".d.ts", ".d.ts.map", ".d.mts", ".d.mts.map"];
+  const fileEndingsToCopy = [
+    ".d.ts",
+    ".d.ts.map",
+    ".d.mts",
+    ".d.mts.map",
+    ".css",
+  ];
 
   const extMap = {
     ".js": ".js",
