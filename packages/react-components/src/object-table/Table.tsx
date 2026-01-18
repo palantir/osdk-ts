@@ -16,6 +16,7 @@
 
 import type { Cell, RowData, Table } from "@tanstack/react-table";
 import React, { type ReactElement, useCallback, useRef } from "react";
+import styles from "./Table.module.css";
 import { TableBody } from "./TableBody.js";
 import { TableHeader } from "./TableHeader.js";
 
@@ -78,22 +79,10 @@ export function Table<TData extends RowData>(
   return (
     <div
       ref={tableContainerRef}
-      style={{
-        position: "relative", // needed for sticky header
-        height: "100%", // needed for scrolling
-        overflow: "auto",
-        cursor: table.getState().columnSizingInfo?.isResizingColumn
-          ? "col-resize"
-          : "default",
-        userSelect: table.getState().columnSizingInfo?.isResizingColumn
-          ? "none"
-          : "auto",
-      }}
+      className={styles.osdkTableContainer}
       onScroll={handleScroll}
     >
-      <table
-        style={{ display: "grid" }}
-      >
+      <table>
         <TableHeader table={table} />
         <TableBody
           rows={table.getRowModel().rows}

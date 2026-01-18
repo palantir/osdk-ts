@@ -21,6 +21,7 @@ import React, { useRef } from "react";
 import { CellContextMenu } from "./CellContextMenu.js";
 import { useCellContextMenu } from "./hooks/useCellContextMenu.js";
 import { SELECTION_COLUMN_ID } from "./hooks/useSelectionColumn.js";
+import styles from "./TableCell.module.css";
 
 interface TableCellProps<TData extends RowData> {
   cell: Cell<TData, unknown>;
@@ -53,9 +54,8 @@ export function TableCell<TData extends RowData>(
     <>
       <td
         ref={tdRef}
+        className={styles.osdkTableCell}
         style={{
-          display: "flex",
-          alignItems: "center",
           width: cell.column.getSize(),
         }}
         onContextMenu={handleOpenContextMenu}

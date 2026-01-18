@@ -1,8 +1,7 @@
 /**
- * CSS Layer setup for predictable cascade order
- * Following the RFC: https://github.com/palantir/osdk-ts/blob/main/rfc-themability.pdf
+ * CSS Layer setup
  */
-@layer osdk.tokens, user.theme;
+@layer osdk.tokens, custom.theme;
 
 /* Import OSDK tokens (Blueprint Level 1 + OSDK Level 2 tokens) */
 @import "@osdk/react-components-styles" layer(osdk.tokens);
