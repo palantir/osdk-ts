@@ -17,6 +17,7 @@
 import type { RowData, Table } from "@tanstack/react-table";
 import { flexRender } from "@tanstack/react-table";
 import React from "react";
+import "./TableHeader.css";
 
 interface TableHeaderProps<TData extends RowData> {
   table: Table<TData>;
@@ -26,31 +27,18 @@ export function TableHeader<TData extends RowData>({
   table,
 }: TableHeaderProps<TData>): React.ReactElement {
   return (
-    <thead
-      style={{
-        display: "grid",
-        position: "sticky",
-        top: 0,
-        zIndex: 1,
-      }}
-    >
+    <thead className="osdk-table-header">
       {table.getHeaderGroups().map((headerGroup) => (
         <tr
           key={headerGroup.id}
-          style={{
-            display: "flex",
-          }}
+          className="osdk-table-header-row"
         >
           {headerGroup.headers.map((header) => (
-            // TODO: Move inline styling to CSS file
             <th
               key={header.id}
+              className="osdk-table-header-cell"
               style={{
-                display: "flex",
                 width: header.getSize(),
-                justifyContent: "flex-start",
-                alignItems: "center",
-                position: "relative",
               }}
             >
               {header.isPlaceholder
@@ -61,18 +49,11 @@ export function TableHeader<TData extends RowData>({
                 )}
               {header.column.getCanResize() && (
                 <div
+                  className="osdk-table-header-resize-handle"
                   onDoubleClick={() => header.column.resetSize()}
                   onMouseDown={header.getResizeHandler()}
                   onTouchStart={header.getResizeHandler()}
                   style={{
-                    position: "absolute",
-                    right: 0,
-                    top: 0,
-                    height: "100%",
-                    width: "3px",
-                    cursor: "col-resize",
-                    touchAction: "none",
-                    zIndex: 11,
                     transform: header.column.getIsResizing()
                       ? `translateX(${
                         table.getState().columnSizingInfo.deltaOffset ?? 0
