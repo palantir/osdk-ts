@@ -18,7 +18,13 @@
   display: grid;
   position: sticky;
   top: 0;
-  z-index: 1;
+  z-index: var(--bp-surface-zIndex-1);
+  background-color: var(--osdk-table-header-bg);
+}
+
+.osdkTableHeader[data-resizing="true"] {
+  cursor: col-resize;
+  user-select: none;
 }
 
 .osdkTableHeaderRow {
@@ -27,18 +33,39 @@
 
 .osdkTableHeaderCell {
   display: flex;
-  justify-content: flex-start;
   align-items: center;
   position: relative;
+  padding: var(--osdk-table-cell-padding);
+  font-weight: var(--osdk-table-header-fontWeight);
+  font-size: var(--osdk-table-header-fontSize);
+  color: var(--osdk-table-header-color);
+  border: var(--osdk-table-border-width) solid var(--osdk-table-border-color);
 }
 
-.osdkTableHeaderResizeHandle {
+.osdkTableHeaderCell:has([role="checkbox"]) {
+  justify-content: center;
+}
+
+.osdkTableHeaderCell:not(:first-child) {
+  border-left: none;
+}
+
+.osdkTableHeaderResizer {
+  background: none;
+  cursor: col-resize;
+  height: 100%;
   position: absolute;
   right: 0;
   top: 0;
-  height: 100%;
-  width: 3px;
-  cursor: col-resize;
   touch-action: none;
-  z-index: 11;
+  width: 3px;
+  z-index: var(--bp-surface-zIndex-2);
+
+  &:hover {
+    background: var(--bp-intent-primary-hover);
+  }
+
+  &:active{
+    background: var(--bp-intent-primary-active);
+  }
 }

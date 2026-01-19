@@ -17,4 +17,11 @@
 .osdkTableCell {
   display: flex;
   align-items: center;
+  padding: var(--osdk-table-cell-padding);
+  font-size: var(--osdk-table-cell-fontSize);
+  color: var(--osdk-table-cell-color);
+}
+
+.osdkTableCell:has([role="checkbox"]) {
+  justify-content: center;
 }

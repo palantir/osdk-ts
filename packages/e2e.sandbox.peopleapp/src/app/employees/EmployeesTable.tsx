@@ -84,14 +84,14 @@ export function EmployeesTable() {
   return (
     <div
       style={{
-        height: "500px",
+        height: "200px",
         overflow: "auto",
       }}
     >
       <ObjectTable<Employee, { managerName: "string" }>
         objectSet={employeesObjectSet}
         objectType={Employee}
-        columnDefinitions={columnDefinitions}
+        // columnDefinitions={columnDefinitions}
         selectionMode={"multiple"}
         renderCellContextMenu={renderCellContextMenu}
       />

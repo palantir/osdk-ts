@@ -76,16 +76,13 @@ export function Table<TData extends RowData>(
 
   // TODO: Handle error, loading and empty states
 
-  const isResizing = table.getState().columnSizingInfo?.isResizingColumn;
-
   return (
     <div
       ref={tableContainerRef}
       className={styles.osdkTableContainer}
-      data-resizing={isResizing || undefined}
       onScroll={handleScroll}
     >
-      <table className={styles.osdkTable}>
+      <table>
         <TableHeader table={table} />
         <TableBody
           rows={table.getRowModel().rows}

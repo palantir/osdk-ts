@@ -291,6 +291,26 @@
 
 
   /* OSDK Component Tokens */
+
+  /* Checkbox */
   --osdk-checkbox-container-size: calc(var(--bp-iconography-size-small) * 1.25);
   --osdk-checkbox-icon-size: var(--bp-iconography-size-small);
+
+  /* Table */
+  --osdk-table-border-width: var(--bp-surface-borderWidth);
+  --osdk-table-border-color: var(--bp-surface-borderColor-default);
+
+  --osdk-table-header-bg: var(--bp-palette-gray-200);
+  --osdk-table-header-fontWeight: var(--bp-typography-weight-bold);
+  --osdk-table-header-fontSize: var(--bp-typography-size-bodyMedium);
+  --osdk-table-header-color: var(--bp-typography-colorRest-default);
+
+  --osdk-table-row-bg-default: var(--bp-palette-gray-100);
+  --osdk-table-row-bg-primary: var(--bp-palette-gray-200);
+  --osdk-table-row-bg-hover: oklch(from var(--bp-palette-gray-300) l c h / 0.2);
+  --osdk-table-row-bg-active: oklch(from var(--bp-palette-blue-600) l c h / 0.1);
+
+  --osdk-table-cell-padding: calc(var(--bp-surface-spacing) * 3) calc(var(--bp-surface-spacing) * 2);
+  --osdk-table-cell-fontSize: var(--bp-typography-size-bodyMedium);
+  --osdk-table-cell-color: var(--bp-typography-colorRest-default);
 }

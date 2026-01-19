@@ -42,6 +42,7 @@ export function TableRow<TData extends RowData>({
 
   return (
     <tr
+      data-selected={row.getIsSelected()}
       className={styles.osdkTableRow}
       style={{
         height: `${virtualRow.size}px`,

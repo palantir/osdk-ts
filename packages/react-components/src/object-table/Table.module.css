@@ -18,15 +18,5 @@
   position: relative; /* needed for sticky header */
   height: 100%; /* needed for scrolling */
   overflow: auto;
-  cursor: default;
-  user-select: auto;
 }
 
-.osdkTableContainer[data-resizing="true"] {
-  cursor: col-resize;
-  user-select: none;
-}
-
-.osdkTable {
-  display: grid;
-}

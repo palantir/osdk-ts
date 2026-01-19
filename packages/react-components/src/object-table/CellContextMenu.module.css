@@ -16,5 +16,5 @@
 
 .osdkCellContextMenu {
   position: fixed;
-  z-index: 9999;
+  z-index: var(--bp-surface-zIndex-2);
 }

@@ -26,8 +26,12 @@ interface TableHeaderProps<TData extends RowData> {
 export function TableHeader<TData extends RowData>({
   table,
 }: TableHeaderProps<TData>): React.ReactElement {
+  // TODO: If value is number type, right align header
+
+  const isResizing = !!table.getState().columnSizingInfo?.isResizingColumn;
+
   return (
-    <thead className={styles.osdkTableHeader}>
+    <thead className={styles.osdkTableHeader} data-resizing={isResizing}>
       {table.getHeaderGroups().map((headerGroup) => (
         <tr
           key={headerGroup.id}
@@ -49,17 +53,10 @@ export function TableHeader<TData extends RowData>({
                 )}
               {header.column.getCanResize() && (
                 <div
-                  className={styles.osdkTableHeaderResizeHandle}
+                  className={styles.osdkTableHeaderResizer}
                   onDoubleClick={() => header.column.resetSize()}
                   onMouseDown={header.getResizeHandler()}
                   onTouchStart={header.getResizeHandler()}
-                  style={{
-                    transform: header.column.getIsResizing()
-                      ? `translateX(${
-                        table.getState().columnSizingInfo.deltaOffset ?? 0
-                      }px)`
-                      : "",
-                  }}
                 />
               )}
             </th>
