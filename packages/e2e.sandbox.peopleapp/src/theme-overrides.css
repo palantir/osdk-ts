@@ -1,13 +1,6 @@
 /**
  * Example: Override primary intent color to green
  *
- * Usage in your app:
- *
- * // app/styles/main.css
- * @layer bp.tokens, bp.themes, osdk.tokens, user.theme, user.overrides;
- *
- * @import "@osdk/react-components/tokens.css" layer(osdk.tokens);
- * @import "./theme-overrides.css" layer(user.theme);
  */
 
 :root {

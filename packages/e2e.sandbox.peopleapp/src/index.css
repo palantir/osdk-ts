@@ -1,13 +1,13 @@
 /**
  * CSS Layer setup
  */
-@layer osdk.tokens, user.theme;
+@layer osdk.tokens, custom.theme;
 
 /* Import default OSDK tokens */
 @import "@osdk/react-components/tokens.css" layer(osdk.tokens);
 
 /* Import theme overrides (e.g., change primary intent to green) */
-/* @import "./theme-overrides.css" layer(user.theme); */
+/* @import "./theme-overrides.css" layer(custom.theme); */
 
 /* Tailwind for utility classes */
 @import 'tailwindcss';
