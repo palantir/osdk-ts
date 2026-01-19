@@ -57,7 +57,12 @@
 
 .osdkCheckboxIndicator {
   display: flex;
+  align-items: center;
+  justify-content: center;
   color: var(--bp-intent-primary-foreground);
+  width: var(--bp-iconography-size-default);
+  height: var(--bp-iconography-size-default);
+
 
   &[data-unchecked] {
     display: none;
