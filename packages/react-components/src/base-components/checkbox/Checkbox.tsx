@@ -33,9 +33,7 @@ interface CheckboxProps extends Omit<CheckboxRootProps, "className"> {
 
 export function Checkbox(
   {
-    checked,
     indeterminate,
-    onCheckedChange,
     className,
     indicatorProps,
     ...rest
@@ -44,9 +42,7 @@ export function Checkbox(
   return (
     <BaseUICheckbox.Root
       className={mergeClassNames(styles.osdkCheckboxRoot, className)}
-      checked={checked}
       indeterminate={indeterminate}
-      onCheckedChange={onCheckedChange}
       {...rest}
     >
       <BaseUICheckbox.Indicator
