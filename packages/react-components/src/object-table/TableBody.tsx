@@ -19,7 +19,6 @@ import { useVirtualizer } from "@tanstack/react-virtual";
 import React, { useLayoutEffect } from "react";
 import styles from "./TableBody.module.css";
 import { TableRow } from "./TableRow.js";
-import "./TableBody.css";
 
 interface TableBodyProps<TData extends RowData> {
   rows: Array<Row<TData>>;

@@ -19,7 +19,6 @@ import React, { type ReactElement, useCallback, useRef } from "react";
 import styles from "./Table.module.css";
 import { TableBody } from "./TableBody.js";
 import { TableHeader } from "./TableHeader.js";
-import "./Table.css";
 
 interface TableProps<TData extends RowData> {
   table: Table<TData>;

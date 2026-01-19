@@ -19,7 +19,6 @@ import { flexRender } from "@tanstack/react-table";
 import type { ReactNode } from "react";
 import React from "react";
 import styles from "./TableHeader.module.css";
-import "./TableHeader.css";
 
 interface TableHeaderProps<TData extends RowData> {
   table: Table<TData>;

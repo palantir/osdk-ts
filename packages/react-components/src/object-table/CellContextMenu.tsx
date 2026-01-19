@@ -19,7 +19,6 @@ import React, { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import styles from "./CellContextMenu.module.css";
 import type { PopoverPosition } from "./hooks/useCellContextMenu.js";
-import "./CellContextMenu.css";
 
 interface CellContextMenuProps<TData extends RowData> {
   cell: Cell<TData, unknown>;
