@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import "../theme.css";
+import "../tokens.css";
 
 export type { FilterListProps } from "../filter-list/FilterListApi.js";
 export type { FilterListItemProps } from "../filter-list/FilterListItemApi.js";

@@ -21,30 +21,43 @@
   width: 1.25rem;
   height: 1.25rem;
   box-sizing: border-box;
-  border-radius: 0.25rem;
-  outline: 0;
-  padding: 0;
-  margin: 0;
-  border: none;
+  cursor: pointer;
+  border-radius: var(--bp-surface-borderRadius);
 
   &[data-unchecked] {
-    border: 1px solid var(--color-gray-300);
     background-color: transparent;
+    border: var(--bp-surface-borderWidth) solid var(--bp-surface-borderColor-default);
+
+    &:hover {
+      background-color: var(--bp-surface-colorHover-default);
+    }
+
+    &:active {
+      background-color: var(--bp-surface-colorActive-default);
+    }
   }
 
   &[data-checked], &[data-indeterminate] {
-    background-color: var(--color-gray-900);
+    background-color: var(--bp-intent-primary-rest);
+
+    &:hover {
+      background-color: var(--bp-intent-primary-hover);
+    }
+
+    &:active {
+      background-color: var(--bp-intent-primary-active);
+    }
   }
 
   &:focus-visible {
-    outline: 2px solid var(--color-blue);
-    outline-offset: 2px;
+    outline: var(--bp-emphasis-focusWidth) solid var(--bp-emphasis-focusColor);
+    outline-offset: var(--bp-emphasis-focusOffset);
   }
 }
 
 .osdkCheckboxIndicator {
   display: flex;
-  color: var(--color-gray-50);
+  color: var(--bp-intent-primary-foreground);
 
   &[data-unchecked] {
     display: none;
