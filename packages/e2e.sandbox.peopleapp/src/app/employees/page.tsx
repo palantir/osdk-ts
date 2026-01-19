@@ -50,7 +50,7 @@ export function EmployeesPage() {
           </Section>
         </div>
       </div>
-      <div className="flex w-192 m-10 p-10">
+      <div className="flex w-192">
         <EmployeesTable />
       </div>
     </div>
