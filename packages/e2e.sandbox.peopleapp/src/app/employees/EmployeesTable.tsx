@@ -84,7 +84,7 @@ export function EmployeesTable() {
   return (
     <div
       style={{
-        height: "500px",
+        height: "200px",
         overflow: "auto",
       }}
     >

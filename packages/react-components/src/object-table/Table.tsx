@@ -76,8 +76,6 @@ export function Table<TData extends RowData>(
 
   // TODO: Handle error, loading and empty states
 
-  const isResizing = table.getState().columnSizingInfo?.isResizingColumn;
-
   return (
     <div
       ref={tableContainerRef}
