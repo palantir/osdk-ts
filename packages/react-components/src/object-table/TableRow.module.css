@@ -21,7 +21,7 @@
   border-bottom: var(--osdk-table-border-width) solid var(--osdk-table-border-color);
 
   &:hover {
-    background-color: var(--osdk-table-row-bg-hover, var(--bp-surface-colorHover-default));
+    background-color: var(--osdk-table-row-bg-hover);
   }
 
   &[data-selected="true"] {

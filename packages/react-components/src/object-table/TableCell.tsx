@@ -20,9 +20,9 @@ import type { ReactNode } from "react";
 import React, { useRef } from "react";
 import { CellContextMenu } from "./CellContextMenu.js";
 import { useCellContextMenu } from "./hooks/useCellContextMenu.js";
-import { getCommonPinningStyles } from "./pinningUtils.js";
 import styles from "./TableCell.module.css";
 import { SELECTION_COLUMN_ID } from "./utils/constants.js";
+import { getColumnPinningStyles } from "./utils/getColumnPinningStyles.js";
 
 interface TableCellProps<TData extends RowData> {
   cell: Cell<TData, unknown>;
@@ -51,16 +51,15 @@ export function TableCell<TData extends RowData>(
     && !!popoverPosition
     && !!renderCellContextMenu;
 
-  const { columnStyles } = getCommonPinningStyles(cell.column);
+  const { columnStyles } = getColumnPinningStyles(cell.column);
 
   return (
     <>
       <td
         ref={tdRef}
+        data-pinned={cell.column.getIsPinned()}
         className={styles.osdkTableCell}
-        style={{
-          ...columnStyles,
-        }}
+        style={columnStyles}
         onContextMenu={handleOpenContextMenu}
       >
         {flexRender(cell.column.columnDef.cell, cell.getContext()) as

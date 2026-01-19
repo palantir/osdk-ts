@@ -18,11 +18,10 @@ import type { Column } from "@tanstack/react-table";
 import type React from "react";
 
 interface PinningStyles {
-  columnClasses: string;
   columnStyles: React.CSSProperties;
 }
 
-export function getCommonPinningStyles<TData>(
+export function getColumnPinningStyles<TData>(
   column: Column<TData, unknown>,
 ): PinningStyles {
   const isPinned = column.getIsPinned();
@@ -31,26 +30,11 @@ export function getCommonPinningStyles<TData>(
   const isFirstRightPinnedColumn = isPinned === "right"
     && column.getIsFirstColumn("right");
 
-  const columnClasses = [
-    isLastLeftPinnedColumn && "border-right",
-    isFirstRightPinnedColumn && "border-left",
-    isPinned && "position-sticky",
-    !isPinned && "position-relative",
-    isPinned && "z-index-pinned",
-  ]
-    .filter(Boolean)
-    .join(" ");
-
   return {
-    columnClasses,
     columnStyles: {
       left: isPinned === "left" ? `${column.getStart("left")}px` : undefined,
       right: isPinned === "right" ? `${column.getAfter("right")}px` : undefined,
       width: column.getSize(),
-      position: isPinned ? "sticky" : "relative",
-      zIndex: isPinned ? 10 : 1,
-      borderRight: isLastLeftPinnedColumn ? "2px solid #d1d5db" : undefined,
-      borderLeft: isFirstRightPinnedColumn ? "2px solid #d1d5db" : undefined,
     },
   };
 }

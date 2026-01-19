@@ -19,7 +19,6 @@
   position: sticky;
   top: 0;
   z-index: var(--bp-surface-zIndex-1);
-  background-color: var(--osdk-table-header-bg);
 }
 
 .osdkTableHeader[data-resizing="true"] {
@@ -29,6 +28,7 @@
 
 .osdkTableHeaderRow {
   display: flex;
+  background-color: var(--osdk-table-header-bg);
 }
 
 .osdkTableHeaderCell {
@@ -40,6 +40,7 @@
   font-size: var(--osdk-table-header-fontSize);
   color: var(--osdk-table-header-color);
   border: var(--osdk-table-border-width) solid var(--osdk-table-border-color);
+  background-color: inherit;
 }
 
 .osdkTableHeaderCell:has([role="checkbox"]) {
@@ -48,6 +49,22 @@
 
 .osdkTableHeaderCell:not(:first-child) {
   border-left: none;
+}
+
+.osdkTableHeaderCell[data-pinned="left"],
+.osdkTableHeaderCell[data-pinned="right"] {
+  position: sticky;
+  z-index: var(--bp-surface-zIndex-2);
+}
+
+/* Last left-pinned column - no left-pinned siblings after it */
+.osdkTableHeaderCell[data-pinned="left"]:not(:has(~ [data-pinned="left"])) {
+  border-right: calc(var(--osdk-table-border-width) * 2) solid var(--osdk-table-border-color);
+}
+
+/* First right-pinned column - no right-pinned siblings before it */
+.osdkTableHeaderCell[data-pinned="right"]:not(:has(~ [data-pinned="right"]):nth-child(n+2)) {
+  border-left: calc(var(--osdk-table-border-width) * 2) solid var(--osdk-table-border-color);
 }
 
 .osdkTableHeaderResizer {

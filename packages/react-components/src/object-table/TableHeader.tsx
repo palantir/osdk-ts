@@ -17,9 +17,9 @@
 import { flexRender, type RowData, type Table } from "@tanstack/react-table";
 import React, { type ReactNode } from "react";
 import { HeaderMenuPopover } from "./HeaderMenuPopover.js";
-import { getCommonPinningStyles } from "./pinningUtils.js";
 import styles from "./TableHeader.module.css";
 import { SELECTION_COLUMN_ID } from "./utils/constants.js";
+import { getColumnPinningStyles } from "./utils/getColumnPinningStyles.js";
 
 interface TableHeaderProps<TData extends RowData> {
   table: Table<TData>;
@@ -40,17 +40,15 @@ export function TableHeader<TData extends RowData>({
           className={styles.osdkTableHeaderRow}
         >
           {headerGroup.headers.map((header) => {
-            const { columnStyles } = getCommonPinningStyles(header.column);
+            const { columnStyles } = getColumnPinningStyles(header.column);
             const isColumnPinned = header.column.getIsPinned();
             const isSelectColumn = header.id === SELECTION_COLUMN_ID;
             return (
-              // TODO: Move inline styling to CSS file
               <th
                 key={header.id}
+                data-pinned={header.column.getIsPinned()}
                 className={styles.osdkTableHeaderCell}
-                style={{
-                  ...columnStyles,
-                }}
+                style={columnStyles}
               >
                 {isSelectColumn
                   ? (
