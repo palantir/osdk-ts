@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-.osdk-checkbox-root {
+.osdkCheckboxRoot{
   display: flex;
   align-items: center;
   justify-content: center;
@@ -42,7 +42,7 @@
   }
 }
 
-.osdk-checkbox-indicator {
+.osdkCheckboxIndicator {
   display: flex;
   color: var(--color-gray-50);
 

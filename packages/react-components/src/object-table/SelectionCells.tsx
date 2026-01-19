@@ -16,8 +16,6 @@
 
 import type { Row, RowData } from "@tanstack/react-table";
 import React, { useCallback } from "react";
-import "./SelectionCells.css";
-import type { Checkbox as BaseUICheckbox } from "@base-ui/react";
 import { Checkbox } from "../base-components/checkbox/Checkbox.js";
 
 interface SelectionHeaderCellProps {
@@ -50,10 +48,8 @@ export function SelectionCell<TData extends RowData>({
   onToggleRow,
 }: SelectionCellProps<TData>): React.ReactElement {
   const handleCheckedChange = useCallback(
-    (_: boolean, eventDetails: BaseUICheckbox.Root.ChangeEventDetails) => {
-      const isShiftClick = "shiftKey" in eventDetails.event
-        ? !!eventDetails.event.shiftKey
-        : false;
+    (event: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
+      const isShiftClick = event.shiftKey;
       onToggleRow(row.id, row.index, isShiftClick);
     },
     [row, onToggleRow],
@@ -62,7 +58,7 @@ export function SelectionCell<TData extends RowData>({
   return (
     <Checkbox
       checked={row.getIsSelected()}
-      onCheckedChange={handleCheckedChange}
+      onClick={handleCheckedChange}
     />
   );
 }

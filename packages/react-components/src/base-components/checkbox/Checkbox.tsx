@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import type {
-  CheckboxIndicatorProps,
+import { mergeClassNames } from "@base-ui/react";
+import {
   Checkbox as BaseUICheckbox,
+  type CheckboxIndicatorProps,
   type CheckboxRootProps,
 } from "@base-ui/react/checkbox";
 import { Minus, Tick } from "@blueprintjs/icons";
 import React from "react";
-import "./Checkbox.css";
-import { mergeClassNames } from "@base-ui/react";
+import styles from "./Checkbox.module.css";
 
 interface CheckboxProps extends Omit<CheckboxRootProps, "className"> {
   className?: string;
@@ -43,7 +43,7 @@ export function Checkbox(
 ): React.ReactElement {
   return (
     <BaseUICheckbox.Root
-      className={mergeClassNames("osdk-checkbox-root", className)}
+      className={mergeClassNames(styles.osdkCheckboxRoot, className)}
       checked={checked}
       indeterminate={indeterminate}
       onCheckedChange={onCheckedChange}
@@ -52,7 +52,7 @@ export function Checkbox(
       <BaseUICheckbox.Indicator
         {...indicatorProps}
         className={mergeClassNames(
-          "osdk-checkbox-indicator",
+          styles.osdkCheckboxIndicator,
           indicatorProps?.className,
         )}
       >
