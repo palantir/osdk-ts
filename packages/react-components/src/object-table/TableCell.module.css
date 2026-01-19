@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-.osdk-table-body {
-  display: grid;
-  position: relative;
+.osdkTableCell {
+  display: flex;
+  align-items: center;
 }

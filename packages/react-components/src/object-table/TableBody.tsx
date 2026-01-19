@@ -17,8 +17,8 @@
 import type { Cell, Row, RowData } from "@tanstack/react-table";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import React, { useLayoutEffect } from "react";
+import styles from "./TableBody.module.css";
 import { TableRow } from "./TableRow.js";
-import "./TableBody.css";
 
 interface TableBodyProps<TData extends RowData> {
   rows: Array<Row<TData>>;
@@ -53,7 +53,7 @@ export function TableBody<TData extends RowData>({
 
   return (
     <tbody
-      className="osdk-table-body"
+      className={styles.osdkTableBody}
       style={{
         height: `${rowVirtualizer.getTotalSize()}px`,
       }}

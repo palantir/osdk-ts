@@ -17,7 +17,7 @@
 import type { RowData, Table } from "@tanstack/react-table";
 import { flexRender } from "@tanstack/react-table";
 import React from "react";
-import "./TableHeader.css";
+import styles from "./TableHeader.module.css";
 
 interface TableHeaderProps<TData extends RowData> {
   table: Table<TData>;
@@ -27,16 +27,16 @@ export function TableHeader<TData extends RowData>({
   table,
 }: TableHeaderProps<TData>): React.ReactElement {
   return (
-    <thead className="osdk-table-header">
+    <thead className={styles.osdkTableHeader}>
       {table.getHeaderGroups().map((headerGroup) => (
         <tr
           key={headerGroup.id}
-          className="osdk-table-header-row"
+          className={styles.osdkTableHeaderRow}
         >
           {headerGroup.headers.map((header) => (
             <th
               key={header.id}
-              className="osdk-table-header-cell"
+              className={styles.osdkTableHeaderCell}
               style={{
                 width: header.getSize(),
               }}
@@ -49,7 +49,7 @@ export function TableHeader<TData extends RowData>({
                 )}
               {header.column.getCanResize() && (
                 <div
-                  className="osdk-table-header-resize-handle"
+                  className={styles.osdkTableHeaderResizeHandle}
                   onDoubleClick={() => header.column.resetSize()}
                   onMouseDown={header.getResizeHandler()}
                   onTouchStart={header.getResizeHandler()}

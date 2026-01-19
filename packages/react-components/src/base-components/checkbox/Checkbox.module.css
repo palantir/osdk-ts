@@ -14,7 +14,39 @@
  * limitations under the License.
  */
 
-.osdk-table-cell {
+.osdkCheckboxRoot {
   display: flex;
   align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 0.25rem;
+  outline: 0;
+  padding: 0;
+  margin: 0;
+  border: none;
+
+  &[data-unchecked] {
+    border: 1px solid var(--color-gray-300);
+    background-color: transparent;
+  }
+
+  &[data-checked], &[data-indeterminate] {
+    background-color: var(--color-gray-900);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-blue);
+    outline-offset: 2px;
+  }
+}
+
+.osdkCheckboxIndicator {
+  display: flex;
+  color: var(--color-gray-50);
+
+  &[data-unchecked] {
+    display: none;
+  }
 }

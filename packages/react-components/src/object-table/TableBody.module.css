@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-.osdk-cell-context-menu {
-  position: fixed;
-  z-index: 9999;
+.osdkTableBody {
+  display: grid;
+  position: relative;
 }

@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
+import type { Checkbox as BaseUICheckbox } from "@base-ui/react";
 import type { Row, RowData } from "@tanstack/react-table";
 import React, { useCallback } from "react";
-import "./SelectionCells.css";
-import type { Checkbox as BaseUICheckbox } from "@base-ui/react";
 import { Checkbox } from "../base-components/checkbox/Checkbox.js";
 
 interface SelectionHeaderCellProps {

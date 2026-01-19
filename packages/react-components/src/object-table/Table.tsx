@@ -16,9 +16,9 @@
 
 import type { Cell, RowData, Table } from "@tanstack/react-table";
 import React, { type ReactElement, useCallback, useRef } from "react";
+import styles from "./Table.module.css";
 import { TableBody } from "./TableBody.js";
 import { TableHeader } from "./TableHeader.js";
-import "./Table.css";
 
 interface TableProps<TData extends RowData> {
   table: Table<TData>;
@@ -81,11 +81,11 @@ export function Table<TData extends RowData>(
   return (
     <div
       ref={tableContainerRef}
-      className="osdk-table-container"
+      className={styles.osdkTableContainer}
       data-resizing={isResizing || undefined}
       onScroll={handleScroll}
     >
-      <table className="osdk-table">
+      <table className={styles.osdkTable}>
         <TableHeader table={table} />
         <TableBody
           rows={table.getRowModel().rows}

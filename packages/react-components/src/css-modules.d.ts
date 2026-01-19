@@ -14,31 +14,7 @@
  * limitations under the License.
  */
 
-.osdk-table-header {
-  display: grid;
-  position: sticky;
-  top: 0;
-  z-index: 1;
-}
-
-.osdk-table-header-row {
-  display: flex;
-}
-
-.osdk-table-header-cell {
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  position: relative;
-}
-
-.osdk-table-header-resize-handle {
-  position: absolute;
-  right: 0;
-  top: 0;
-  height: 100%;
-  width: 3px;
-  cursor: col-resize;
-  touch-action: none;
-  z-index: 11;
+declare module "*.module.css" {
+  const classes: { readonly [key: string]: string };
+  export default classes;
 }

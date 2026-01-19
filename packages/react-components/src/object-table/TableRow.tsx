@@ -18,7 +18,7 @@ import type { Cell, Row, RowData } from "@tanstack/react-table";
 import type { VirtualItem } from "@tanstack/react-virtual";
 import React, { useCallback } from "react";
 import { TableCell } from "./TableCell.js";
-import "./TableRow.css";
+import styles from "./TableRow.module.css";
 
 interface TableRowProps<TData extends RowData> {
   row: Row<TData>;
@@ -42,7 +42,7 @@ export function TableRow<TData extends RowData>({
 
   return (
     <tr
-      className="osdk-table-row"
+      className={styles.osdkTableRow}
       style={{
         height: `${virtualRow.size}px`,
         transform: `translateY(${virtualRow.start}px)`,
