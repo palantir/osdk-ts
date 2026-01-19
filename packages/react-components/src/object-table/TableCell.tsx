@@ -16,6 +16,7 @@
 
 import type { Cell, RowData } from "@tanstack/react-table";
 import { flexRender } from "@tanstack/react-table";
+import type { ReactNode} from "react";
 import React, { useRef } from "react";
 import { CellContextMenu } from "./CellContextMenu.js";
 import { useCellContextMenu } from "./hooks/useCellContextMenu.js";
@@ -59,7 +60,9 @@ export function TableCell<TData extends RowData>(
         }}
         onContextMenu={handleOpenContextMenu}
       >
-        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+        {flexRender(cell.column.columnDef.cell, cell.getContext()) as
+          | ReactNode
+          | React.JSX.Element}
       </td>
       {shouldRenderContextMenu
         && (
