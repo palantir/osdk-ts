@@ -20,11 +20,6 @@
   background-color: var(--osdk-table-row-bg-default);
   border-bottom: var(--osdk-table-border-width) solid var(--osdk-table-border-color);
 
-  /* Zebra rows */
-  &:nth-child(even) {
-    background-color: var(--osdk-table-row-bg-primary);
-  }
-
   &:hover {
     background-color: var(--osdk-table-row-bg-hover, var(--bp-surface-colorHover-default));
   }
