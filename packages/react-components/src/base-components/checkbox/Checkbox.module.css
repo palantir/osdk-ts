@@ -18,8 +18,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 1.25rem;
-  height: 1.25rem;
+  width: var(--osdk-checkbox-container-size, 1.25rem);
+  height: var(--osdk-checkbox-container-size, 1.25rem);
   box-sizing: border-box;
   cursor: pointer;
   border-radius: var(--bp-surface-borderRadius);
@@ -60,8 +60,8 @@
   align-items: center;
   justify-content: center;
   color: var(--bp-intent-primary-foreground);
-  width: var(--bp-iconography-size-default);
-  height: var(--bp-iconography-size-default);
+  width: var(--osdk-checkbox-icon-size);
+  height: var(--osdk-checkbox-icon-size);
 
 
   &[data-unchecked] {

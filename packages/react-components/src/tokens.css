@@ -288,4 +288,9 @@
   --bp-typography-colorDisabled-success: var(--bp-intent-success-disabled);
   --bp-typography-colorDisabled-warning: var(--bp-intent-warning-disabled);
   --bp-typography-colorDisabled-danger: var(--bp-intent-danger-disabled);
+
+
+  /* OSDK Component Tokens */
+  --osdk-checkbox-container-size: calc(var(--bp-iconography-size-small) * 1.25);
+  --osdk-checkbox-icon-size: var(--bp-iconography-size-small);
 }
