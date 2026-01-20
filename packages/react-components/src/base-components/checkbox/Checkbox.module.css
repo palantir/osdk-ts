@@ -50,8 +50,8 @@
   }
 
   &:focus-visible {
-    outline: var(--bp-emphasis-focusWidth) solid var(--bp-emphasis-focusColor);
-    outline-offset: var(--bp-emphasis-focusOffset);
+    outline: var(--bp-surface-borderWidth) solid var(--bp-intent-primary-rest);
+    outline-offset: calc(-1 * var(--bp-surface-borderWidth));
   }
 }
 

@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import { flexRender, type RowData, type Table } from "@tanstack/react-table";
-import React, { type ReactNode } from "react";
-import { HeaderMenuPopover } from "./HeaderMenuPopover.js";
+import { type RowData, type Table } from "@tanstack/react-table";
+import React from "react";
 import styles from "./TableHeader.module.css";
+import { TableHeaderContent } from "./TableHeaderContent.js";
+import { TableHeaderWithPopover } from "./TableHeaderWithPopover.js";
 import { SELECTION_COLUMN_ID } from "./utils/constants.js";
 import { getColumnPinningStyles } from "./utils/getColumnPinningStyles.js";
 
@@ -51,16 +52,9 @@ export function TableHeader<TData extends RowData>({
                 style={columnStyles}
               >
                 {isSelectColumn
-                  ? (
-                    <span>
-                      {flexRender(
-                        header.column.columnDef.header,
-                        header.getContext(),
-                      ) as ReactNode | React.JSX.Element}
-                    </span>
-                  )
+                  ? <TableHeaderContent header={header} />
                   : (
-                    <HeaderMenuPopover
+                    <TableHeaderWithPopover
                       header={header}
                       isColumnPinned={isColumnPinned}
                       setColumnPinning={table.setColumnPinning}

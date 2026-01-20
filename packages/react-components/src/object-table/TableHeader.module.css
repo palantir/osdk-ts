@@ -33,6 +33,7 @@
 
 .osdkTableHeaderCell {
   display: flex;
+  justify-content: center;
   align-items: center;
   position: relative;
   padding: var(--osdk-table-cell-padding);
@@ -41,10 +42,6 @@
   color: var(--osdk-table-header-color);
   border: var(--osdk-table-border-width) solid var(--osdk-table-border-color);
   background-color: inherit;
-}
-
-.osdkTableHeaderCell:has([role="checkbox"]) {
-  justify-content: center;
 }
 
 .osdkTableHeaderCell:not(:first-child) {

@@ -11,3 +11,12 @@
 
 /* Tailwind for utility classes */
 @import 'tailwindcss';
+
+
+/* 
+* TODO: How do we make sure clients always add this to their root?
+* Needed for base UI popovers
+*/
+#root {
+  isolation: isolate;
+}
