@@ -26,7 +26,7 @@ import type {
   FieldKey,
   FieldValueType,
   FormFieldDefinition,
-} from "./FormFieldApi";
+} from "./FormFieldApi.js";
 
 /**
  * Props for the ActionForm component
