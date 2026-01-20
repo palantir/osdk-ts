@@ -2310,6 +2310,7 @@ export interface BatchedFunctionRuleModification {
 export interface BatchGetEnrichedActionTypeMetadataRequest {
   actionTypes: Array<ActionTypeRid>;
   ontologyBranchRid?: OntologyBranchRid | null | undefined;
+  versionReference?: VersionReference | null | undefined;
 }
 export interface BatchGetEnrichedActionTypeMetadataResponse {
   enrichedMetadata: Record<ActionTypeRid, EnrichedActionTypeMetadata>;
@@ -6944,6 +6945,7 @@ export interface ObjectTypeMediaSetViewDatasource {
   assumedMarkings: Array<MarkingId>;
   mediaSetViewLocator: MediaSetViewLocator;
   properties: Array<PropertyTypeRid>;
+  uploadProperties: Array<PropertyTypeRid>;
 }
 /**
  * ResourceIdentifier for the object type metadata input manager.
@@ -8389,10 +8391,7 @@ export interface OntologyIrInterfacePropertyLogicRuleValue_logicRuleValue {
 
 export interface OntologyIrInterfacePropertyLogicRuleValue_structLogicRuleValue {
   type: "structLogicRuleValue";
-  structLogicRuleValue: Record<
-    ObjectTypeFieldApiName,
-    StructFieldLogicRuleValue
-  >;
+  structLogicRuleValue: Record<StructFieldRid, StructFieldLogicRuleValue>;
 }
 export type OntologyIrInterfacePropertyLogicRuleValue =
   | OntologyIrInterfacePropertyLogicRuleValue_logicRuleValue
@@ -9407,6 +9406,7 @@ export interface OntologyIrObjectTypeMediaSetViewDatasource {
   assumedMarkings: Array<MarkingId>;
   mediaSetViewLocator: _api_blockdata_MediaSetViewName;
   properties: Array<ObjectTypeFieldApiName>;
+  uploadProperties: Array<ObjectTypeFieldApiName>;
 }
 /**
  * Object type datasource representing a restricted view on top of a stream.

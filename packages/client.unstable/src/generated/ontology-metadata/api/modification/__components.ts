@@ -57,6 +57,7 @@ import type {
   DataSecurity as _api_DataSecurity,
   DatasetRid as _api_DatasetRid,
   DatasourceRid as _api_DatasourceRid,
+  DataType as _api_DataType,
   DatePropertyType as _api_DatePropertyType,
   DecimalPropertyType as _api_DecimalPropertyType,
   DirectSourceRid as _api_DirectSourceRid,
@@ -160,6 +161,7 @@ import type {
   ValidationRuleIdInRequest as _api_ValidationRuleIdInRequest,
   ValidationRuleModification as _api_ValidationRuleModification,
   ValidationRuleRid as _api_ValidationRuleRid,
+  ValueReferenceId as _api_ValueReferenceId,
   ValueTypeRid as _api_ValueTypeRid,
   ValueTypeVersionId as _api_ValueTypeVersionId,
   VectorPropertyType as _api_VectorPropertyType,
@@ -191,10 +193,15 @@ import type {
     as _api_entitymetadata_provenance_MarketplaceEntityProvenance,
 } from "../entitymetadata/provenance/__components.js";
 import type {
+  RuleChain as _api_formatting_RuleChain,
   RuleSet as _api_formatting_RuleSet,
   RuleSetBindingModification as _api_formatting_RuleSetBindingModification,
   RuleSetCreate as _api_formatting_RuleSetCreate,
+  RuleSetIdentifier as _api_formatting_RuleSetIdentifier,
   RuleSetIdInRequest as _api_formatting_RuleSetIdInRequest,
+  RuleSetNamedType as _api_formatting_RuleSetNamedType,
+  ValueReferenceSourceModification
+    as _api_formatting_ValueReferenceSourceModification,
 } from "../formatting/__components.js";
 import type {
   PermissionModel as _api_permissions_PermissionModel,
@@ -1427,6 +1434,7 @@ export interface ObjectTypeMediaSetViewDatasourceModification {
   assumedMarkings: Array<_api_MarkingId>;
   mediaSetViewLocator: _api_MediaSetViewLocator;
   properties: Array<_api_PropertyTypeId>;
+  uploadProperties: Array<_api_PropertyTypeId>;
 }
 export interface ObjectTypeModification {
   apiName?: _api_ObjectTypeApiName | null | undefined;
@@ -1647,7 +1655,7 @@ export interface OntologyInformationInternal {
   apiName: _api_OntologyApiName;
   areOrganizationMarkingsInheritedFromNamespace: boolean;
   areRolesEnabled: boolean;
-  compassNamespaceRid?: CompassNamespaceRid | null | undefined;
+  compassNamespaceRid: CompassNamespaceRid;
   currentOntologyVersion: _api_OntologyVersion;
   currentSystemOntologyVersion: _api_OntologyVersion;
   defaultBranchRid: _api_OntologyBranchRid;
@@ -1924,6 +1932,7 @@ export interface PropertyTypeModification {
     | _api_formatting_RuleSetBindingModification
     | null
     | undefined;
+  ruleSetModification?: RuleSetAndBindingsModification | null | undefined;
   status?: PropertyTypeStatusModification | null | undefined;
   type: TypeForModification;
   typeClasses: Array<_api_TypeClass>;
@@ -2003,6 +2012,24 @@ export interface RestorationStateModification {
 export interface RetentionConfigModification {
   targetSize: number;
   triggerSize: number;
+}
+/**
+ * This is an experimental field. Do not use.
+ */
+export interface RuleSetAndBindingsModification {
+  bindings: Record<
+    _api_ValueReferenceId,
+    _api_formatting_ValueReferenceSourceModification
+  >;
+  identifier: _api_formatting_RuleSetIdentifier;
+  ruleSet: RuleSetModification;
+}
+export interface RuleSetModification {
+  chains: Array<_api_formatting_RuleChain>;
+  description?: string | null | undefined;
+  itType?: _api_DataType | null | undefined;
+  name: string;
+  namedTypes: Record<_api_ValueReferenceId, _api_formatting_RuleSetNamedType>;
 }
 export interface SensorTraitModification {
   readingPropertyTypeId: _api_PropertyTypeId;

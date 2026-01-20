@@ -663,4 +663,66 @@ describe("SPTs", () => {
       }
     `);
   });
+  it("Aliases properly set", () => {
+    const spt = defineSharedPropertyType({
+      apiName: "foo",
+      type: { type: "string" },
+      aliases: ["alias1", "alias2"],
+    });
+    expect(dumpOntologyFullMetadata().ontology).toMatchInlineSnapshot(`
+      {
+        "actionTypes": {},
+        "blockPermissionInformation": {
+          "actionTypes": {},
+          "linkTypes": {},
+          "objectTypes": {},
+        },
+        "interfaceTypes": {},
+        "linkTypes": {},
+        "objectTypes": {},
+        "sharedPropertyTypes": {
+          "com.palantir.foo": {
+            "sharedPropertyType": {
+              "aliases": [
+                "alias1",
+                "alias2",
+              ],
+              "apiName": "com.palantir.foo",
+              "baseFormatter": undefined,
+              "dataConstraints": undefined,
+              "displayMetadata": {
+                "description": undefined,
+                "displayName": "foo",
+                "visibility": "NORMAL",
+              },
+              "gothamMapping": undefined,
+              "indexedForSearch": true,
+              "type": {
+                "string": {
+                  "analyzerOverride": undefined,
+                  "enableAsciiFolding": undefined,
+                  "isLongText": false,
+                  "supportsEfficientLeadingWildcard": false,
+                  "supportsExactMatching": true,
+                  "supportsFullTextRegex": undefined,
+                },
+                "type": "string",
+              },
+              "typeClasses": [
+                {
+                  "kind": "render_hint",
+                  "name": "SELECTABLE",
+                },
+                {
+                  "kind": "render_hint",
+                  "name": "SORTABLE",
+                },
+              ],
+              "valueType": undefined,
+            },
+          },
+        },
+      }
+    `);
+  });
 });
