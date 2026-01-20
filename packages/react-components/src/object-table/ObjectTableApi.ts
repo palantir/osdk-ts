@@ -29,11 +29,25 @@ import type * as React from "react";
 
 export type ColumnDefinition<
   Q extends ObjectTypeDefinition,
-  RDPs extends Record<string, SimplePropertyDef>,
-  FunctionColumns extends Record<string, QueryDefinition<{}>>,
+  RDPs extends Record<string, SimplePropertyDef> = Record<
+    string,
+    never
+  >,
+  FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
+    string,
+    never
+  >,
 > = {
   locator: ColumnDefinitionLocator<Q, RDPs, FunctionColumns>;
+
+  /**
+   * @default true
+   */
   isVisible?: boolean;
+
+  /**
+   * @default none
+   */
   pinned?: "left" | "right" | "none";
   width?: number;
   minWidth?: number;
@@ -42,20 +56,26 @@ export type ColumnDefinition<
   orderable?: boolean;
   filterable?: boolean;
   renderCell?: (
-    object: Osdk.Instance<Q>,
+    object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
     locator: ColumnDefinitionLocator<Q, RDPs, FunctionColumns>,
   ) => React.ReactNode;
   renderHeader?: () => React.ReactNode;
 };
 
-type ColumnDefinitionLocator<
+export type ColumnDefinitionLocator<
   Q extends ObjectTypeDefinition,
-  RDPs extends Record<string, SimplePropertyDef>,
-  FunctionColumns extends Record<string, QueryDefinition<{}>> = {},
+  RDPs extends Record<string, SimplePropertyDef> = Record<
+    string,
+    never
+  >,
+  FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
+    string,
+    never
+  >,
 > =
   | {
     type: "property";
-    propertyKey: PropertyKeys<Q>;
+    id: PropertyKeys<Q>;
   }
   | {
     type: "function";
@@ -69,7 +89,10 @@ type ColumnDefinitionLocator<
 
 export interface ObjectTableProps<
   Q extends ObjectTypeDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = {},
+  RDPs extends Record<string, SimplePropertyDef> = Record<
+    string,
+    never
+  >,
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
     string,
     never
@@ -79,6 +102,11 @@ export interface ObjectTableProps<
    * The set of objects to show in the table
    */
   objectSet: ObjectSet<Q>;
+
+  /**
+   * The object type of the object
+   */
+  objectType: Q;
 
   /**
    * Ordered list of column definitions to show in the table
@@ -177,28 +205,21 @@ export interface ObjectTableProps<
   ) => void;
 
   /**
-   * Called when a cell is clicked.
-   *
-   * @param object The object representing the row
-   * @param columnDefinition The column definition for the clicked cell
-   */
-  onCellClick?: (
-    object: Osdk.Instance<Q>,
-    locator: ColumnDefinitionLocator<Q, RDPs, FunctionColumns>,
-  ) => void;
-
-  /**
    * Called when a row is clicked.
    *
    * @param object The object representing the clicked row
    */
-  onRowClick?: (object: Osdk.Instance<Q>) => void;
+  onRowClick?: (
+    object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
+  ) => void;
 
   /**
    * Selection mode for the table rows.
    *
    * If multiple, a checkbox will be shown for each row to allow selecting multiple rows
    * as well as a top-level checkbox in the header to select all rows.
+   *
+   * @default "none"
    */
   selectionMode?: "single" | "multiple" | "none";
 
@@ -212,15 +233,23 @@ export interface ObjectTableProps<
    * Called when the row selection changes.
    * Required when row selection is controlled.
    *
-   * @param objects The currently selected objects
+   * @param selectedRowIds The primary keys of currently selected rows
    */
-  onRowSelection?: (objects: PrimaryKeyType<Q>[]) => void;
+
+  onRowSelection?: (selectedRowIds: PrimaryKeyType<Q>[]) => void;
 
   /**
    * If provided, will render this context menu when right clicking on a cell
    */
   renderCellContextMenu?: (
-    object: Osdk.Instance<Q>,
-    locator: ColumnDefinitionLocator<Q, RDPs, FunctionColumns>,
+    row: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
+    cellValue: unknown,
   ) => React.ReactNode;
+
+  /**
+   * The height of each row in pixels.
+   *
+   * @default 40
+   */
+  rowHeight?: number;
 }

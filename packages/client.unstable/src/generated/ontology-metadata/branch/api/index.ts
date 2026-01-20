@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -85,11 +85,15 @@ export type {
   InvalidDataConstraintsError,
   InvalidDerivedForeignKeyError,
   InvalidForeignKeyTypeError,
+  InvalidInterfacePropertyForStructPropertyMappingImplementationError,
   InvalidIsIndexedForSearchError,
   InvalidLinkedEntityImplementingInterfaceLinkTypeError,
   InvalidNumberOfPropertyReferencesInPropertySecurityGroupError,
   InvalidPropertyImplementationError,
   InvalidPropertyTypeError,
+  InvalidStructFieldMappingError,
+  InvalidStructFieldTypeImplementationError,
+  InvalidStructPropertyMappingImplementationError,
   InvalidTypeClassesError,
   InvalidValueTypeError,
   LinkTypeInDerivedPropertyDefinitionNotFoundOrDeletedError,
@@ -134,6 +138,7 @@ export type {
   NonDefaultOntologyBranchDetails,
   NonIndexedBranchConfig,
   NonUniquePropertySecurityGroupNamesError,
+  NonUniquePropertySecurityGroupSecurityPoliciesError,
   NotAllPropertyTypesAreMappedToDatasourceWithinObjectType,
   NumberOfDatasourcesConstraintError,
   ObjectTypeDatasourceCannotHaveAssumedMarkingsUpdatedError,
@@ -175,6 +180,7 @@ export type {
   ProposalStatusV2,
   ProposalTaskDetails,
   ProposalV2Attribution,
+  ReducedPropertyMissingReducersError,
   RequiredInterfaceLinkTypeNotImplementedError,
   ResourceErrors,
   SchemaForLinkTypeDatasourceNotFoundError,
@@ -192,8 +198,8 @@ export type {
   TimeDependentPropertyTypeHasNoDatasourcesError,
   TimeSeriesDatasourceDoesNotReferenceExistingPropertiesError,
   TimeSeriesDatasourceDoesNotReferenceTimeDependentPropertiesError,
-  TitlePropertyTypeIsDerivedError,
   UnexpectedPropertyTypeReferencedInSecurityGroupGranularPolicyError,
+  UnmappedInterfaceStructFieldError,
   UnmappedPropertiesInPropertySecurityGroupError,
   ValidateOntologyBranchRequest,
   ValidateOntologyBranchResponse,

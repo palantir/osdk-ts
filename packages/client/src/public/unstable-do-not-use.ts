@@ -23,8 +23,8 @@ export { createObservableClient } from "../observable/ObservableClient.js";
 export type {
   ObservableClient,
   ObserveAggregationArgs,
-  ObserveObjectArgs,
-  ObserveObjectsArgs,
+  ObserveObjectCallbackArgs,
+  ObserveObjectsCallbackArgs,
   ObserveObjectSetArgs,
   Unsubscribable,
 } from "../observable/ObservableClient.js";

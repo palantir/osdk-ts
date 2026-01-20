@@ -168,7 +168,8 @@ export function useOsdkAggregation<
 
   return {
     data: payload?.result as AggregationsResults<Q, A> | undefined,
-    isLoading: payload?.status === "loading",
+    isLoading: payload?.status === "loading" || payload?.status === "init"
+      || !payload,
     error,
     refetch,
   };
