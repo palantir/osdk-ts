@@ -87,6 +87,10 @@ export type {
   MediaReference,
   MediaUpload,
 } from "./object/Media.js";
+export type {
+  PropertyMarkings,
+  PropertySecurity,
+} from "./object/PropertySecurity.js";
 export { isOk } from "./object/Result.js";
 export type { Result } from "./object/Result.js";
 export type { BaseObjectSet } from "./objectSet/BaseObjectSet.js";
