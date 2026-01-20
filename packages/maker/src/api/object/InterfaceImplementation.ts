@@ -15,8 +15,17 @@
  */
 
 import type { InterfaceType } from "../interface/InterfaceType.js";
+import type { LinkType } from "../links/LinkType.js";
+
+type InterfaceLinkTypeApiName = string;
+type LinkTypeApiName = string;
 
 export type InterfaceImplementation = {
   implements: InterfaceType;
   propertyMapping: { interfaceProperty: string; mapsTo: string }[];
+  linkImplementations?: Record<
+    InterfaceLinkTypeApiName,
+    // This is for the side of the link that
+    Array<{ linkType: LinkType; sideApiName: LinkTypeApiName }>
+  >;
 };
