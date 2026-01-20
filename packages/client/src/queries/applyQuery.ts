@@ -385,6 +385,10 @@ async function getRequiredDefinitions(
     case "twoDimensionalAggregation":
     case "union":
       break;
+    default: {
+      const _: never = dataType;
+      break;
+    }
   }
 
   return result;
