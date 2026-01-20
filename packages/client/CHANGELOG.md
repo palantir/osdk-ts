@@ -1,5 +1,19 @@
 # @osdk/client
 
+## 2.7.0-beta.9
+
+### Minor Changes
+
+- 6b27d8a: fix sorting strategy initialization for ListQuery and ObjectSetQuery
+
+### Patch Changes
+
+- Updated dependencies [8381ac2]
+- Updated dependencies [c95f3bc]
+  - @osdk/client.unstable@2.7.0-beta.9
+  - @osdk/api@2.7.0-beta.9
+  - @osdk/generator-converters@2.7.0-beta.9
+
 ## 2.7.0-beta.8
 
 ### Minor Changes
