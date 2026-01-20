@@ -22,3 +22,4 @@ unistyles
 widgetregistry
 widgetset
 dsmtClient
+sidc
