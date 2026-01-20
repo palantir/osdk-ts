@@ -25,6 +25,7 @@
       "require": "./build/cjs/public/experimental.cjs",
       "default": "./build/browser/public/experimental.js"
     },
+    "./tokens.css": "./src/tokens.css",
     "./*": {
       "browser": "./build/browser/public/*.js",
       "import": {
