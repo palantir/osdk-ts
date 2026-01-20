@@ -1,0 +1,89 @@
+/*
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+.cellRef {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  padding: 0 12px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.pinIcon {
+  margin-right: 6px;
+  font-size: 12px;
+}
+
+.headerText {
+  flex-grow: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sortIndicator {
+  display: flex;
+  align-items: center;
+  margin-left: 6px;
+}
+
+.sortIcon {
+  font-size: 12px;
+}
+
+.menuToggle {
+  margin-left: auto;
+  padding: 2px;
+  cursor: pointer;
+  opacity: 0.6;
+}
+
+.menuToggleOpen {
+  opacity: 1;
+}
+
+.chevronIcon {
+  font-size: 12px;
+}
+
+.menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 1000;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  min-width: 200px;
+  padding: 4px 0;
+}
+
+.menuItem {
+  padding: 8px 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}

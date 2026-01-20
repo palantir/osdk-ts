@@ -16,7 +16,15 @@
 
 import type { ColumnPinningState } from "@tanstack/react-table";
 import { flexRender } from "@tanstack/react-table";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import type {
+  ReactNode} from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+import styles from "./HeaderMenuPopover.module.css";
 
 interface HeaderMenuPopoverProps {
   header: any;
@@ -116,167 +124,74 @@ export function HeaderMenuPopover({
   const isSortable = header.column.getCanSort();
 
   return (
-    <div
-      style={{
-        position: "relative",
-        display: "flex",
-        alignItems: "center",
-        width: "100%",
-        height: "100%",
-      }}
-    >
+    <div className={styles.container}>
       <div
         ref={cellRef}
-        style={{
-          display: "flex",
-          alignItems: "center",
-          width: "100%",
-          height: "100%",
-          padding: "0 12px",
-          cursor: "pointer",
-          userSelect: "none",
-        }}
+        className={styles.cellRef}
         onContextMenu={handleInteraction}
       >
-        {isColumnPinned && (
-          <span style={{ marginRight: "6px", fontSize: "12px" }}>📌</span>
-        )}
-        <span
-          style={{ flexGrow: 1, overflow: "hidden", textOverflow: "ellipsis" }}
-        >
-          {flexRender(header.column.columnDef.header, header.getContext())}
+        {isColumnPinned && <span className={styles.pinIcon}>📌</span>}
+        <span className={styles.headerText}>
+          {flexRender(header.column.columnDef.header, header.getContext()) as
+            | ReactNode
+            | React.JSX.Element}
         </span>
 
         {isSorted && isSortable && (
-          <div
-            style={{ display: "flex", alignItems: "center", marginLeft: "6px" }}
-          >
-            <span style={{ fontSize: "12px" }}>
+          <div className={styles.sortIndicator}>
+            <span className={styles.sortIcon}>
               {isSorted === "asc" ? "↑" : "↓"}
             </span>
           </div>
         )}
 
         <div
-          style={{
-            marginLeft: "auto",
-            padding: "2px",
-            cursor: "pointer",
-            opacity: isOpen ? 1 : 0.6,
-          }}
+          className={`${styles.menuToggle} ${
+            isOpen ? styles.menuToggleOpen : ""
+          }`}
           onClick={handleInteraction}
         >
-          <span style={{ fontSize: "12px" }}>⌄</span>
+          <span className={styles.chevronIcon}>⌄</span>
         </div>
       </div>
 
       {isOpen && (
-        <div
-          ref={menuRef}
-          style={{
-            position: "absolute",
-            top: "100%",
-            left: 0,
-            zIndex: 1000,
-            backgroundColor: "white",
-            border: "1px solid #ccc",
-            borderRadius: "4px",
-            boxShadow: "0 2px 8px rgba(0, 0, 0, 0.15)",
-            minWidth: "200px",
-            padding: "4px 0",
-          }}
-        >
+        <div ref={menuRef} className={styles.menu}>
           {!isColumnPinned && (
             <>
-              <div
-                style={{
-                  padding: "8px 16px",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                }}
-                onClick={handlePinLeft}
-              >
+              <div className={styles.menuItem} onClick={handlePinLeft}>
                 Pin Left
               </div>
-              <div
-                style={{
-                  padding: "8px 16px",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                }}
-                onClick={handlePinRight}
-              >
+              <div className={styles.menuItem} onClick={handlePinRight}>
                 Pin Right
               </div>
             </>
           )}
           {isColumnPinned && (
-            <div
-              style={{
-                padding: "8px 16px",
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-              }}
-              onClick={handleUnpin}
-            >
+            <div className={styles.menuItem} onClick={handleUnpin}>
               Unpin Column
             </div>
           )}
 
           {isSortable && (
             <>
-              <div
-                style={{
-                  padding: "8px 16px",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                }}
-                onClick={handleSortAscending}
-              >
+              <div className={styles.menuItem} onClick={handleSortAscending}>
                 Sort Ascending
               </div>
 
-              <div
-                style={{
-                  padding: "8px 16px",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                }}
-                onClick={handleSortDescending}
-              >
+              <div className={styles.menuItem} onClick={handleSortDescending}>
                 Sort Descending
               </div>
 
               {isSorted && (
-                <div
-                  style={{
-                    padding: "8px 16px",
-                    cursor: "pointer",
-                    display: "flex",
-                    alignItems: "center",
-                  }}
-                  onClick={handleClearSort}
-                >
+                <div className={styles.menuItem} onClick={handleClearSort}>
                   Clear Sort
                 </div>
               )}
             </>
           )}
 
-          <div
-            style={{
-              padding: "8px 16px",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-            }}
-            onClick={handleResetSize}
-          >
+          <div className={styles.menuItem} onClick={handleResetSize}>
             Reset Column Size
           </div>
         </div>
