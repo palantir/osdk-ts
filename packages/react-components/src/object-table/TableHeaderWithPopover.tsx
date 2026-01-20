@@ -116,6 +116,7 @@ export function TableHeaderWithPopover({
           styles.osdkContentGap,
           styles.osdkHeaderContainer,
         )}
+        onContextMenu={handleInteraction}
       >
         <div
           className={classNames(

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Header, flexRender, type RowData } from "@tanstack/react-table";
+import { flexRender, type Header, type RowData } from "@tanstack/react-table";
 import React, { type ReactNode } from "react";
 import styles from "./TableHeaderContent.module.css";
 

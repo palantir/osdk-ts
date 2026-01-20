@@ -29,6 +29,7 @@
   justify-content: space-between;
   flex: 1;
   min-width: 0;
+  align-self: stretch;
 }
 
 .osdkHeaderContentLeft {
@@ -50,10 +51,6 @@
 
   &:hover {
     background-color: var(--bp-intent-default-hover);
-  }
-  
-  &:active {
-    background-color: var(--bp-intent-default-active);
   }
 
   &[data-popup-open] {
