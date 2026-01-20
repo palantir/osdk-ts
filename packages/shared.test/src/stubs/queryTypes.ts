@@ -498,6 +498,29 @@ export const queryTypeReturnsArray: QueryTypeV2 = {
   "version": "0.1.1",
 };
 
+export const queryTypeReturnsArrayOfObjects: QueryTypeV2 = {
+  "apiName": "queryTypeReturnsArrayOfObjects",
+  "output": {
+    "type": "array",
+    "subType": {
+      type: "object",
+      objectApiName: "Employee",
+      objectTypeApiName: "Employee",
+    },
+  },
+  "parameters": {
+    "people": {
+      "dataType": {
+        "type": "array",
+        "subType": { "type": "string" },
+      },
+    },
+  },
+  "rid":
+    "ri.function-registry.main.function.c3e58d52-8430-44ee-9f0b-3785d9a9bdda",
+  "version": "0.1.1",
+};
+
 export const queryTypeReturnsMap: QueryTypeV2 = {
   "apiName": "queryTypeReturnsMap",
   "output": {
