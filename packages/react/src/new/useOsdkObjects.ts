@@ -304,10 +304,13 @@ export function useOsdkObjects<
   }
 
   return {
-    fetchMore: listPayload?.fetchMore,
+    fetchMore: listPayload?.hasMore ? listPayload.fetchMore : undefined,
     error,
     data: listPayload?.resolvedList,
-    isLoading: listPayload?.status === "loading",
+    isLoading: enabled
+      ? (listPayload?.status === "loading" || listPayload?.status === "init"
+        || !listPayload)
+      : false,
     isOptimistic: listPayload?.isOptimistic ?? false,
   };
 }

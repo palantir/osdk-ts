@@ -62,7 +62,9 @@ export function useColumnDefs<
 ): UseColumnDefsResult<Q, RDPs> {
   const { metadata, loading, error } = useOsdkMetadata(objectType);
 
-  const columns = useMemo(() => {
+  const columns: AccessorColumnDef<
+    Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
+  >[] = useMemo(() => {
     const objectProperties = metadata?.properties;
     // If columnDefinitions is provided, construct colDefs with it
     if (columnDefinitions) {
