@@ -102,13 +102,19 @@ function actionPropertyToSdkPropertyDefinition(
           (
             structMap: Record<
               string,
-              ActionMetadata.DataType.BaseActionParameterTypes
+              {
+                type: ActionMetadata.DataType.BaseActionParameterTypes;
+                nullable: boolean;
+              }
             >,
             structField,
           ) => {
-            structMap[structField.name] = actionPropertyToSdkPropertyDefinition(
-              structField.fieldType as ActionParameterType,
-            ) as ActionMetadata.DataType.BaseActionParameterTypes;
+            structMap[structField.name] = {
+              type: actionPropertyToSdkPropertyDefinition(
+                structField.fieldType as ActionParameterType,
+              ) as ActionMetadata.DataType.BaseActionParameterTypes,
+              nullable: !structField.required,
+            };
             return structMap;
           },
           {},

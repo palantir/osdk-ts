@@ -89,12 +89,17 @@ export namespace ActionMetadata {
             type: "objectSet";
             		}
         		// (undocumented)
-        export interface Struct<T extends Record<string, DataType.BaseActionParameterTypes>> {
+        export interface Struct<T extends Record<string, StructFieldDefinition<DataType.BaseActionParameterTypes>>> {
             			// (undocumented)
             struct: T;
             			// (undocumented)
             type: "struct";
             		}
+        		// (undocumented)
+        export type StructFieldDefinition<T extends DataType.BaseActionParameterTypes> = T | {
+            			type: T
+            			nullable: boolean
+            		};
         	}
     	// (undocumented)
     export interface Parameter<T_Target extends ObjectTypeDefinition = never> {
@@ -129,7 +134,22 @@ export namespace ActionParam {
     	// (undocumented)
     export type PrimitiveType<T extends keyof DataValueClientToWire> = DataValueClientToWire[T];
     	// (undocumented)
-    export type StructType<T extends Record<string, keyof DataValueClientToWire>> = { [K in keyof T] : DataValueClientToWire[T[K]] };
+    export type StructType<T extends Record<string, keyof DataValueClientToWire | {
+        		type: keyof DataValueClientToWire
+        		nullable: boolean
+        	}>> = { [K in keyof T as T[K] extends {
+            		type: infer U
+            		nullable: infer R
+            	} ? R extends true ? never : K : K] : T[K] extends {
+            		type: infer U
+            		nullable: infer R
+            	} ? U extends keyof DataValueClientToWire ? R extends true ? never : DataValueClientToWire[U] : never : T[K] extends keyof DataValueClientToWire ? DataValueClientToWire[T[K]] : never } & { [K in keyof T as T[K] extends {
+            		type: infer U
+            		nullable: infer R
+            	} ? R extends true ? K : never : never]? : T[K] extends {
+            		type: infer U
+            		nullable: infer R
+            	} ? U extends keyof DataValueClientToWire ? R extends true ? DataValueClientToWire[U] | undefined : never : never : never };
 }
 
 // @public (undocumented)

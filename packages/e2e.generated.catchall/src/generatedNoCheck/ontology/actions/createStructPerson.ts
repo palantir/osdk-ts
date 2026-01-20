@@ -15,7 +15,10 @@ export namespace createStructPerson {
       description: undefined;
       multiplicity: false;
       nullable: true;
-      type: ActionMetadata.DataType.Struct<{ city: 'string'; state: 'string' }>;
+      type: ActionMetadata.DataType.Struct<{
+        city: { type: 'string'; nullable: false };
+        state: { type: 'string'; nullable: false };
+      }>;
     };
     name: {
       description: undefined;
@@ -29,7 +32,10 @@ export namespace createStructPerson {
    * Create a struct
    */
   export interface Params {
-    readonly address?: ActionParam.StructType<{ city: 'string'; state: 'string' }>;
+    readonly address?: ActionParam.StructType<{
+      city: { type: 'string'; nullable: false };
+      state: { type: 'string'; nullable: false };
+    }>;
 
     readonly name: ActionParam.PrimitiveType<'string'>;
   }
@@ -53,7 +59,7 @@ export namespace createStructPerson {
 
 /**
  * Create a struct
- * @param {ActionParam.StructType<{"city":"string","state":"string"}>} [address]
+ * @param {ActionParam.StructType<{"city":{"type":"string","nullable":false},"state":{"type":"string","nullable":false}}>} [address]
  * @param {ActionParam.PrimitiveType<"string">} name
  */
 export interface createStructPerson extends ActionDefinition<createStructPerson.Signatures> {
