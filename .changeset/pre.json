@@ -162,6 +162,7 @@
     "@osdk-widget.client-react-simulatedRelease",
     "@osdk-widget.client-simulatedRelease",
     "@osdk-widget.vite-plugin-simulatedRelease",
+    "angry-swans-lay",
     "bitter-streets-dress",
     "blue-trams-lose",
     "brave-taxes-allow",
@@ -177,6 +178,7 @@
     "free-candies-enter",
     "free-needles-eat",
     "fruity-tigers-drum",
+    "hot-beds-tie",
     "icy-cups-make",
     "icy-eyes-stand",
     "late-heads-melt",
@@ -201,6 +203,7 @@
     "small-corners-show",
     "smooth-rivers-beam",
     "spicy-jars-eat",
+    "strong-foxes-relate",
     "stupid-zoos-sniff",
     "tough-numbers-care",
     "tricky-ants-pay",
@@ -208,6 +211,7 @@
     "two-drinks-fall",
     "violet-lemons-raise",
     "wild-streets-sneeze",
+    "wise-dingos-camp",
     "witty-beers-laugh"
   ]
 }
