@@ -16,7 +16,7 @@
 
 import type { Cell, RowData } from "@tanstack/react-table";
 import { flexRender } from "@tanstack/react-table";
-import type { ReactNode} from "react";
+import type { ReactNode } from "react";
 import React, { useRef } from "react";
 import { CellContextMenu } from "./CellContextMenu.js";
 import { useCellContextMenu } from "./hooks/useCellContextMenu.js";

@@ -292,11 +292,21 @@ const archetypeRules = archetypes(
     [
       "@osdk/widget.client-react",
       "@osdk/react",
+    ],
+    {
+      ...LIBRARY_RULES,
+      react: true,
+    },
+  )
+  .addArchetype(
+    "reactComponentsLibrary",
+    [
       "@osdk/react-components",
     ],
     {
       ...LIBRARY_RULES,
       react: true,
+      extraFiles: ["src/*.css"],
     },
   )
   .addArchetype(
