@@ -17,7 +17,10 @@
 import invariant from "tiny-invariant";
 import { addNamespaceIfNone, ontologyDefinition } from "./defineOntology.js";
 import { getFlattenedInterfaceProperties } from "./interface/getFlattenedInterfaceProperties.js";
-import type { InterfacePropertyType } from "./interface/InterfacePropertyType.js";
+import {
+  type InterfacePropertyType,
+  isInterfaceSharedPropertyType,
+} from "./interface/InterfacePropertyType.js";
 import type { InterfaceType } from "./interface/InterfaceType.js";
 import type { LinkType } from "./links/LinkType.js";
 import type { ObjectTypeDefinition } from "./object/ObjectTypeDefinition.js";
@@ -33,7 +36,8 @@ function formatValidationErrors(
 
 // Validate that the object and the interface property match up
 function validateInterfaceImplProperty(
-  spt: SharedPropertyType,
+  interfaceProp: InterfacePropertyType,
+  interfacePropApiName: string,
   mappedObjectProp: string,
   object: ObjectTypeDefinition,
 ): ValidationResult {
@@ -45,11 +49,16 @@ function validateInterfaceImplProperty(
         `Object property mapped to interface does not exist. Object Property Mapped: ${mappedObjectProp}`,
     };
   }
-  if (JSON.stringify(spt.type) !== JSON.stringify(objProp?.type)) {
+
+  const interfacePropType = isInterfaceSharedPropertyType(interfaceProp)
+    ? interfaceProp.sharedPropertyType.type
+    : interfaceProp.type;
+
+  if (JSON.stringify(interfacePropType) !== JSON.stringify(objProp?.type)) {
     return {
       type: "invalid",
       reason:
-        `Object property type does not match the interface property it is mapped to. Interface Property: ${spt.apiName}, objectProperty: ${mappedObjectProp}`,
+        `Object property type does not match the interface property it is mapped to. Interface Property: ${interfacePropApiName}, objectProperty: ${mappedObjectProp}`,
     };
   }
 
@@ -99,20 +108,18 @@ export function implementInterface(
   const validateProperty = (
     interfaceProp: [string, InterfacePropertyType],
   ): ValidationResult => {
-    if (
-      interfaceProp[0] in interfaceToObjectProperties
-    ) {
+    const [apiName, propType] = interfaceProp;
+    if (apiName in interfaceToObjectProperties) {
       return validateInterfaceImplProperty(
-        interfaceProp[1].sharedPropertyType,
-        interfaceToObjectProperties[interfaceProp[0]],
+        propType,
+        apiName,
+        interfaceToObjectProperties[apiName],
         objectType,
       );
     }
     return {
       type: "invalid",
-      reason: `Interface property ${
-        interfaceProp[1].sharedPropertyType.apiName
-      } not implemented by ${objectType.apiName} object definition`,
+      reason: `Interface property ${apiName} not implemented by ${objectType.apiName} object definition`,
     };
   };
 
