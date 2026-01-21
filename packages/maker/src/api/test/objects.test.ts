@@ -34,12 +34,12 @@ describe("Object Types", () => {
         titlePropertyApiName: "bar",
         displayName: "Foo",
         pluralDisplayName: "Foo",
-        apiName: "foo_with_underscores",
+        apiName: "foo-with-dashes",
         primaryKeyPropertyApiName: "bar",
         properties: { "bar": { type: "string" } },
       });
     }).toThrowErrorMatchingInlineSnapshot(
-      `[Error: Invariant failed: Invalid API name foo_with_underscores. API names must match the regex /^([a-zA-Z][a-zA-Z0-9\\\\-]*)$/.]`,
+      `[Error: Invariant failed: Invalid API name foo-with-dashes. API names must match the regex /^([a-zA-Z][a-zA-Z0-9\\\\_]*)$/.]`,
     );
   });
   it("Fails if any property reference does not exist", () => {

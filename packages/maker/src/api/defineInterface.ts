@@ -34,6 +34,7 @@ import { mapSimplifiedStatusToInterfaceTypeStatus } from "./interface/mapSimplif
 import { combineApiNamespaceIfMissing } from "./namespace/combineApiNamespaceIfMissing.js";
 import { isExotic, isPropertyTypeType } from "./properties/PropertyTypeType.js";
 import { type SharedPropertyType } from "./properties/SharedPropertyType.js";
+import { OBJECT_AND_INTERFACE_API_NAME_PATTERN } from "./defineObject.js";
 
 export type SimplifiedInterfaceTypeStatus =
   | { type: "deprecated"; message: string; deadline: string }
@@ -70,6 +71,11 @@ export function defineInterface(
     ontologyDefinition[OntologyEntityTypeEnum.INTERFACE_TYPE][apiName]
       === undefined,
     `Interface ${apiName} already exists`,
+  );
+
+  invariant(
+    OBJECT_AND_INTERFACE_API_NAME_PATTERN.test(interfaceDef.apiName),
+    `Invalid API name ${interfaceDef.apiName}. API names must match the regex ${OBJECT_AND_INTERFACE_API_NAME_PATTERN}.`,
   );
 
   // legacy support for propertiesV2 (only SPTs)

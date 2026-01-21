@@ -32,7 +32,7 @@ describe("Object Status", () => {
             titlePropertyApiName: "bar",
             displayName: "ValidationTestObject",
             pluralDisplayName: "ValidationTestObjects",
-            apiName: "validation-test",
+            apiName: "validation_test",
             primaryKeyPropertyApiName: "bar",
             status: "experimental" as ObjectTypeStatus,
             properties: {
@@ -40,7 +40,7 @@ describe("Object Status", () => {
             },
           })
         ).toThrowError(
-          /When object "validation-test" has experimental status, no properties can have "active" status/,
+          /When object "validation_test" has experimental status, no properties can have "active" status/,
         );
       }, "/tmp/");
     });
@@ -52,7 +52,7 @@ describe("Object Status", () => {
             titlePropertyApiName: "bar",
             displayName: "ValidationTestObject2",
             pluralDisplayName: "ValidationTestObjects2",
-            apiName: "validation-test-2",
+            apiName: "validation_test_2",
             primaryKeyPropertyApiName: "bar",
             status: "experimental" as ObjectTypeStatus,
             properties: {
@@ -74,14 +74,14 @@ describe("Object Status", () => {
           titlePropertyApiName: "bar",
           displayName: "DefaultStatusObject",
           pluralDisplayName: "DefaultStatusObjects",
-          apiName: "default-status",
+          apiName: "default_status",
           primaryKeyPropertyApiName: "bar",
           properties: { "bar": { type: "string" } },
         });
 
         const metadata = dumpOntologyFullMetadata();
         expect(
-          metadata.ontology.objectTypes["com.palantir.default-status"]
+          metadata.ontology.objectTypes["com.palantir.default_status"]
             .objectType.status,
         ).toEqual({
           type: "active",
@@ -96,7 +96,7 @@ describe("Object Status", () => {
           titlePropertyApiName: "bar",
           displayName: "ActiveStatusObject",
           pluralDisplayName: "ActiveStatusObjects",
-          apiName: "active-status",
+          apiName: "active_status",
           primaryKeyPropertyApiName: "bar",
           properties: { "bar": { type: "string" } },
           status: "active" as ObjectTypeStatus,
@@ -104,7 +104,7 @@ describe("Object Status", () => {
 
         const metadata = dumpOntologyFullMetadata();
         expect(
-          metadata.ontology.objectTypes["com.palantir.active-status"]
+          metadata.ontology.objectTypes["com.palantir.active_status"]
             .objectType.status,
         ).toEqual({
           type: "active",
@@ -119,7 +119,7 @@ describe("Object Status", () => {
           titlePropertyApiName: "bar",
           displayName: "ExperimentalStatusObject",
           pluralDisplayName: "ExperimentalStatusObjects",
-          apiName: "experimental-status",
+          apiName: "experimental_status",
           primaryKeyPropertyApiName: "bar",
           properties: { "bar": { type: "string" } },
           status: "experimental" as ObjectTypeStatus,
@@ -127,7 +127,7 @@ describe("Object Status", () => {
 
         const metadata = dumpOntologyFullMetadata();
         expect(
-          metadata.ontology.objectTypes["com.palantir.experimental-status"]
+          metadata.ontology.objectTypes["com.palantir.experimental_status"]
             .objectType.status,
         ).toEqual({
           type: "experimental",
@@ -142,7 +142,7 @@ describe("Object Status", () => {
           titlePropertyApiName: "bar",
           displayName: "DeprecatedStatusObject",
           pluralDisplayName: "DeprecatedStatusObjects",
-          apiName: "deprecated-status",
+          apiName: "deprecated_status",
           primaryKeyPropertyApiName: "bar",
           properties: { "bar": { type: "string" } },
           status: {
@@ -154,7 +154,7 @@ describe("Object Status", () => {
 
         const metadata = dumpOntologyFullMetadata();
         expect(
-          metadata.ontology.objectTypes["com.palantir.deprecated-status"]
+          metadata.ontology.objectTypes["com.palantir.deprecated_status"]
             .objectType.status,
         ).toEqual({
           type: "deprecated",

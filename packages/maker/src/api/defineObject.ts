@@ -51,8 +51,8 @@ const ISO_8601_DURATION =
 const ISO_8601_DATETIME =
   /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|[+-]\d{2}:\d{2})?)?$/;
 
-const API_NAME_PATTERN = /^([a-zA-Z][a-zA-Z0-9\\-]*)$/;
-
+export const OBJECT_AND_INTERFACE_API_NAME_PATTERN: RegExp = /^([a-zA-Z][a-zA-Z0-9\\_]*)$/;
+  
 export function defineObject(
   objectDef: ObjectTypeDefinition,
 ): ObjectTypeDefinition {
@@ -69,8 +69,8 @@ export function defineObject(
     );
   }
   invariant(
-    API_NAME_PATTERN.test(objectDef.apiName),
-    `Invalid API name ${objectDef.apiName}. API names must match the regex ${API_NAME_PATTERN}.`,
+    OBJECT_AND_INTERFACE_API_NAME_PATTERN.test(objectDef.apiName),
+    `Invalid API name ${objectDef.apiName}. API names must match the regex ${OBJECT_AND_INTERFACE_API_NAME_PATTERN}.`,
   );
   invariant(
     propertyApiNames.includes(objectDef.titlePropertyApiName),
