@@ -2,22 +2,15 @@
 @import "./blueprint-tokens.css";
 
 :root {
-  /* OSDK Component Tokens (Level 2) */
-
   /* Checkbox */
-  --osdk-checkbox-size: calc(var(--bp-iconography-size-default) * 1.25);
-
-  /* Table */
-  --osdk-table-border-width: var(--bp-surface-borderWidth);
-  --osdk-table-border-color: var(--bp-surface-borderColor-default);
-  --osdk-table-header-bg: var(--bp-palette-gray-100);
-  --osdk-table-header-color: var(--bp-typography-colorRest-default);
-  --osdk-table-header-padding-x: 12px;
-  --osdk-table-header-padding-y: 8px;
-  --osdk-table-row-bg: var(--bp-palette-gray-100);
-  --osdk-table-row-bg-hover: var(--bp-surface-colorHover-default);
-  --osdk-table-row-bg-selected: var(--bp-palette-orange-100);
-  --osdk-table-cell-padding-x: 12px;
-  --osdk-table-cell-padding-y: 8px;
-  --osdk-table-cell-color: var(--bp-typography-colorRest-default);
+  --osdk-checkbox-icon-size: var(--bp-iconography-size-small);
+  --osdk-checkbox-padding: calc(var(--bp-surface-spacing) / 2);
+  --osdk-checkbox-border: var(--bp-surface-borderWidth) solid var(--bp-surface-borderColor-default);
+  --osdk-checkbox-bg: transparent;
+  --osdk-checkbox-bg-hover: var(--bp-surface-colorHover-default);
+  --osdk-checkbox-bg-active: var(--bp-surface-colorActive-default);
+  --osdk-checkbox-bg-checked: var(--bp-intent-primary-rest);
+  --osdk-checkbox-bg-checked-hover: var(--bp-intent-primary-hover);
+  --osdk-checkbox-bg-checked-active: var(--bp-intent-primary-active);
+  --osdk-checkbox-checked-foreground: var(--bp-intent-primary-foreground);
 }
