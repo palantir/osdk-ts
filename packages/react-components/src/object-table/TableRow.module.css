@@ -34,7 +34,6 @@
     background-color: var(--osdk-table-row-bg-active);
     border-top-color: var(--osdk-table-active-stroke);
     border-bottom-color: var(--osdk-table-active-stroke);
-    z-index: 1;
   }
 
   &[data-selected="true"] + &[data-selected="true"] {
