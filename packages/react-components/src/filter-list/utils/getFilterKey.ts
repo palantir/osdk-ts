@@ -16,6 +16,7 @@
 
 import type { ObjectTypeDefinition } from "@osdk/api";
 import type { FilterDefinitionUnion } from "../FilterListApi.js";
+import { assertUnreachable } from "./assertUnreachable.js";
 
 export function getFilterKey<Q extends ObjectTypeDefinition>(
   definition: FilterDefinitionUnion<Q>,
@@ -26,19 +27,16 @@ export function getFilterKey<Q extends ObjectTypeDefinition>(
     case "hasLink":
       return definition.id ?? `hasLink:${definition.linkName}`;
     case "linkedProperty":
-      return definition.id
-        ?? `linkedProperty:${definition.linkName}:${definition.linkedPropertyKey}`;
+      return definition.id ?? `linkedProperty:${definition.linkName}:${definition.linkedPropertyKey}`;
     case "keywordSearch":
-      return definition.id
-        ?? `keywordSearch-${
-          Array.isArray(definition.properties)
-            ? definition.properties.join("-")
-            : "all"
-        }`;
+      return definition.id ?? `keywordSearch-${
+        Array.isArray(definition.properties)
+          ? definition.properties.join("-")
+          : "all"
+      }`;
     case "custom":
       return definition.id ?? definition.key;
     default:
-      definition satisfies never;
-      throw new Error(`Unknown filter type`);
+      return assertUnreachable(definition);
   }
 }

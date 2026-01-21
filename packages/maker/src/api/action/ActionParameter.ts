@@ -17,6 +17,7 @@
 import type {
   OntologyIrParameterPrefill,
   ParameterId,
+  ParameterRenderHint,
 } from "@osdk/client.unstable";
 import type { TypeClass } from "../common/TypeClass.js";
 import type { ActionParameterConfiguration } from "./ActionParameterConfiguration.js";
@@ -30,6 +31,7 @@ export interface ActionParameter {
   description?: string;
   typeClasses?: Array<TypeClass>;
   defaultValue?: OntologyIrParameterPrefill;
+  renderHint?: ParameterRenderHint;
 }
 export type ActionParameterValidation = Omit<
   ActionParameterConfiguration,

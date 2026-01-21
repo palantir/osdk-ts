@@ -18,9 +18,7 @@
  * Coerces a filter value (string | boolean | number) to a string for display.
  * Returns undefined if the value is null or undefined.
  */
-export function coerceToString(
-  value: string | boolean | number | undefined | null,
-): string | undefined {
+export function coerceToString(value: string | boolean | number | undefined | null): string | undefined {
   if (value == null) return undefined;
   return String(value);
 }
@@ -29,9 +27,7 @@ export function coerceToString(
  * Coerces an array of filter values (string | boolean | number) to string[] for display.
  * Filters out null/undefined values and converts all others to strings.
  */
-export function coerceToStringArray(
-  values: Array<string | boolean | number> | undefined,
-): string[] {
+export function coerceToStringArray(values: Array<string | boolean | number> | undefined): string[] {
   if (!values) return [];
   return values.map((v) => String(v));
 }

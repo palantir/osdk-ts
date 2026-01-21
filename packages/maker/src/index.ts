@@ -68,6 +68,7 @@ export { defineSharedPropertyType } from "./api/defineSpt.js";
 export { defineValueType } from "./api/defineValueType.js";
 export { importOntologyEntity } from "./api/importOntologyEntity.js";
 export { importSharedPropertyType } from "./api/importSharedPropertyType.js";
+export type { InterfaceDefinedProperty } from "./api/interface/InterfacePropertyType.js";
 export type { InterfaceType } from "./api/interface/InterfaceType.js";
 export type { LinkType } from "./api/links/LinkType.js";
 export type { ObjectPropertyType } from "./api/object/ObjectPropertyType.js";

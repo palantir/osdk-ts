@@ -17,6 +17,7 @@
 import type { ObjectTypeDefinition, WhereClause } from "@osdk/api";
 import type { FilterDefinitionUnion } from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
+import { assertUnreachable } from "./assertUnreachable.js";
 import { getFilterKey } from "./getFilterKey.js";
 
 type PropertyFilter = Record<string, unknown> | boolean | string | number;
@@ -184,24 +185,26 @@ function filterStateToPropertyFilter(
       return undefined;
 
     default:
-      state satisfies never;
-      throw new Error(`Unknown filter state type`);
+      return assertUnreachable(state);
   }
 }
 
-type WhereClauseResult =
-  | { $and: Array<Record<string, unknown>> }
-  | { $or: Array<Record<string, unknown>> }
-  | Record<string, unknown>;
-
-function buildWhereClauseInternal<Q extends ObjectTypeDefinition>(
+/**
+ * Builds a WhereClause from filter definitions and their current states.
+ *
+ * Note: The `as WhereClause<Q>` casts are necessary because we're building
+ * clauses dynamically from property keys determined at runtime. TypeScript
+ * cannot verify that the constructed clause structure matches the generic Q's
+ * expected shape, but the structure is guaranteed to be valid by construction.
+ */
+export function buildWhereClause<Q extends ObjectTypeDefinition>(
   definitions: Array<FilterDefinitionUnion<Q>> | undefined,
   filterStates: Map<string, FilterState>,
   operator: "and" | "or",
   objectType?: Q,
-): WhereClauseResult {
+): WhereClause<Q> {
   if (!definitions || definitions.length === 0) {
-    return {};
+    return {} as WhereClause<Q>;
   }
 
   const clauses: Array<Record<string, unknown>> = [];
@@ -226,16 +229,24 @@ function buildWhereClauseInternal<Q extends ObjectTypeDefinition>(
       }
 
       case "hasLink": {
-        if (state.type !== "HAS_LINK" || !state.hasLink) {
+        if (state.type !== "HAS_LINK") {
           break;
         }
-        clauses.push({ [definition.linkName]: { $isNotNull: true } });
+        // TypeScript narrows state to HasLinkFilterState
+        if (state.hasLink) {
+          clauses.push({ [definition.linkName]: { $isNotNull: true } });
+        } else {
+          clauses.push({ [definition.linkName]: { $isNull: true } });
+        }
         break;
       }
 
       case "linkedProperty": {
-        // LinkedProperty filters cannot be included in where clause
-        // (requires ObjectSet.pivotTo() operations)
+        // OSDK WhereClause does not support filtering through links.
+        // Link-based filtering requires ObjectSet operations (pivotTo/intersect).
+        // LinkedProperty filters render UI for selection but cannot be included
+        // in the where clause. Consumers needing linked property filtering must
+        // implement it using ObjectSet.pivotTo() and intersect().
         break;
       }
 
@@ -243,6 +254,7 @@ function buildWhereClauseInternal<Q extends ObjectTypeDefinition>(
         if (state.type !== "KEYWORD_SEARCH" || !state.searchTerm) {
           break;
         }
+        // TypeScript narrows state to KeywordSearchFilterState
         const searchTerm = state.searchTerm.trim();
         if (!searchTerm) {
           break;
@@ -256,13 +268,10 @@ function buildWhereClauseInternal<Q extends ObjectTypeDefinition>(
             propertiesToSearch = Object.entries(
               objectType.__DefinitionMetadata.properties,
             )
-              .filter(([, prop]) =>
-                prop.type === "string" && !prop.multiplicity
-              )
+              .filter(([, prop]) => prop.type === "string" && !prop.multiplicity)
               .map(([key]) => key);
           } else {
             if (process.env.NODE_ENV !== "production") {
-              // eslint-disable-next-line no-console
               console.warn(
                 "[FilterList] Keyword search with properties: 'all' requires object type metadata. Filter will be skipped.",
               );
@@ -293,51 +302,30 @@ function buildWhereClauseInternal<Q extends ObjectTypeDefinition>(
         if (state.type !== "CUSTOM") {
           break;
         }
+        // TypeScript narrows state to CustomFilterState
         const customClause = definition.toWhereClause(state);
         if (customClause && Object.keys(customClause).length > 0) {
-          clauses.push(customClause);
+          clauses.push(customClause as Record<string, unknown>);
         }
         break;
       }
 
       default:
-        definition satisfies never;
+        assertUnreachable(definition);
     }
   }
 
   if (clauses.length === 0) {
-    return {};
+    return {} as WhereClause<Q>;
   }
 
   if (clauses.length === 1) {
-    return clauses[0];
+    return clauses[0] as WhereClause<Q>;
   }
 
   if (operator === "and") {
-    return { $and: clauses };
+    return { $and: clauses } as WhereClause<Q>;
   }
 
-  return { $or: clauses };
-}
-
-/**
- * Builds a WhereClause from filter definitions and their current states.
- *
- * The cast to WhereClause<Q> is necessary because we construct clauses dynamically
- * from runtime property keys. TypeScript cannot statically verify the structure
- * matches Q's shape, but it is guaranteed valid by construction.
- */
-export function buildWhereClause<Q extends ObjectTypeDefinition>(
-  definitions: Array<FilterDefinitionUnion<Q>> | undefined,
-  filterStates: Map<string, FilterState>,
-  operator: "and" | "or",
-  objectType?: Q,
-): WhereClause<Q> {
-  const result = buildWhereClauseInternal(
-    definitions,
-    filterStates,
-    operator,
-    objectType,
-  );
-  return result as WhereClause<Q>;
+  return { $or: clauses } as WhereClause<Q>;
 }
