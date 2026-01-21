@@ -18,6 +18,7 @@ import type { InterfaceTypeStatus } from "@osdk/client.unstable";
 import invariant from "tiny-invariant";
 import type { BlueprintIcon } from "./common/BlueprintIcons.js";
 import { OntologyEntityTypeEnum } from "./common/OntologyEntityTypeEnum.js";
+import { OBJECT_AND_INTERFACE_API_NAME_PATTERN } from "./defineObject.js";
 import {
   namespace,
   ontologyDefinition,
@@ -34,7 +35,6 @@ import { mapSimplifiedStatusToInterfaceTypeStatus } from "./interface/mapSimplif
 import { combineApiNamespaceIfMissing } from "./namespace/combineApiNamespaceIfMissing.js";
 import { isExotic, isPropertyTypeType } from "./properties/PropertyTypeType.js";
 import { type SharedPropertyType } from "./properties/SharedPropertyType.js";
-import { OBJECT_AND_INTERFACE_API_NAME_PATTERN } from "./defineObject.js";
 
 export type SimplifiedInterfaceTypeStatus =
   | { type: "deprecated"; message: string; deadline: string }
