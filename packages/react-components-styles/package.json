@@ -7,7 +7,7 @@
     "url": "https://github.com/palantir/osdk-ts.git"
   },
   "exports": {
-    "./osdk-components-tokens.css": "./src/osdk-components-tokens.css"
+    ".": "./src/index.css"
   },
   "scripts": {
     "check-spelling": "cspell --quiet .",
