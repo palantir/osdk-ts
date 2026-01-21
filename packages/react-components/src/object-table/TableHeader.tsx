@@ -16,6 +16,7 @@
 
 import type { RowData, Table } from "@tanstack/react-table";
 import { flexRender } from "@tanstack/react-table";
+import type { ReactNode } from "react";
 import React from "react";
 import styles from "./TableHeader.module.css";
 
@@ -50,7 +51,7 @@ export function TableHeader<TData extends RowData>({
                 : flexRender(
                   header.column.columnDef.header,
                   header.getContext(),
-                )}
+                ) as ReactNode | React.JSX.Element}
               {header.column.getCanResize() && (
                 <div
                   className={styles.osdkTableHeaderResizer}
