@@ -20,9 +20,14 @@ import type {
   ObjectTypeDefinition,
   WhereClause,
 } from "@osdk/api";
+import { PalantirApiError } from "@osdk/shared.net.errors";
 import type { Mock } from "vitest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { Client } from "../../Client.js";
+import {
+  ObjectDefRef,
+  UnderlyingOsdkObject,
+} from "../../object/convertWireToOsdkObjects/InternalSymbols.js";
 import { BulkObjectLoader } from "./BulkObjectLoader.js";
 import { createClientMockHelper, type MockClientHelper } from "./testUtils.js";
 
@@ -221,5 +226,95 @@ describe(BulkObjectLoader, () => {
     });
 
     vi.useRealTimers();
+  });
+
+  describe("interface loading", () => {
+    const mockObjectSet = (data: unknown[]) => {
+      const os: ObjectSet<ObjectTypeDefinition> = {
+        where: () => os,
+        fetchPage: vi.fn().mockResolvedValue({ data }),
+      } as Pick<
+        ObjectSet<ObjectTypeDefinition>,
+        "fetchPage" | "where"
+      > as ObjectSet<ObjectTypeDefinition>;
+      return os;
+    };
+
+    it("falls back to interface loading on 404 and reloads as full objects", async () => {
+      const loader = new BulkObjectLoader(client, 25, 100);
+      vi.useFakeTimers();
+
+      vi.mocked(client.fetchMetadata).mockRejectedValue(
+        new PalantirApiError("Not found", undefined, undefined, undefined, 404),
+      );
+
+      const interfaceObj = {
+        $apiName: "FooInterface",
+        $objectType: "Employee",
+        $primaryKey: 1,
+        [UnderlyingOsdkObject]: {
+          [ObjectDefRef]: {
+            apiName: "Employee",
+            primaryKeyApiName: "employeeId",
+          },
+        },
+      };
+      const fullObj = {
+        $apiName: "Employee",
+        $objectType: "Employee",
+        $primaryKey: 1,
+      };
+
+      client.mockReturnValueOnce(mockObjectSet([interfaceObj]));
+      client.mockReturnValueOnce(mockObjectSet([fullObj]));
+
+      const loadPromise = loader.fetch("FooInterface", 1);
+      vi.advanceTimersByTime(26);
+
+      await expect(loadPromise).resolves.toMatchObject({ $primaryKey: 1 });
+      vi.useRealTimers();
+    });
+
+    it("rejects when interface object is not found", async () => {
+      const loader = new BulkObjectLoader(client, 25, 100);
+      vi.useFakeTimers();
+
+      vi.mocked(client.fetchMetadata).mockRejectedValue(
+        new PalantirApiError("Not found", undefined, undefined, undefined, 404),
+      );
+
+      client.mockReturnValueOnce(mockObjectSet([]));
+
+      const loadPromise = loader.fetch("FooInterface", 1);
+      vi.advanceTimersByTime(26);
+
+      await expect(loadPromise).rejects.toThrow(
+        "Interface FooInterface object not found: 1",
+      );
+      vi.useRealTimers();
+    });
+
+    it("does not fall back to interface loading for non-404 errors", async () => {
+      const loader = new BulkObjectLoader(client, 25, 100);
+      vi.useFakeTimers();
+
+      vi.mocked(client.fetchMetadata).mockRejectedValue(
+        new PalantirApiError(
+          "Server error",
+          undefined,
+          undefined,
+          undefined,
+          500,
+        ),
+      );
+
+      const loadPromise = loader.fetch("Employee", 1);
+      vi.advanceTimersByTime(26);
+
+      await expect(loadPromise).rejects.toThrow(
+        "Failed to load Employee with pk 1: Server error",
+      );
+      vi.useRealTimers();
+    });
   });
 });

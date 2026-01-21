@@ -182,7 +182,9 @@ export class BulkObjectLoader {
           deferred.resolve(object);
         } else {
           deferred.reject(
-            new PalantirApiError(`Interface object not found: ${primaryKey}`),
+            new PalantirApiError(
+              `Interface ${apiName} object not found: ${primaryKey}`,
+            ),
           );
         }
       }
@@ -214,7 +216,11 @@ export class BulkObjectLoader {
         // The ObjectDefRef contains the full object definition with primaryKeyApiName
         const objectDef = (objects[0] as ObjectHolder)[UnderlyingOsdkObject][
           ObjectDefRef
-        ]!;
+        ];
+        invariant(
+          objectDef,
+          `ObjectDefRef missing for ${objects[0].$objectType}`,
+        );
 
         const where = {
           [objectDef.primaryKeyApiName]: {
