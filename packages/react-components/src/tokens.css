@@ -313,4 +313,5 @@
   --osdk-table-cell-padding: calc(var(--bp-surface-spacing) * 3) calc(var(--bp-surface-spacing) * 2);
   --osdk-table-cell-fontSize: var(--bp-typography-size-bodyMedium);
   --osdk-table-cell-color: var(--bp-typography-colorRest-default);
+  --osdk-table-active-stroke: var(--bp-intent-primary-rest);
 }
