@@ -309,6 +309,18 @@ const archetypeRules = archetypes(
       minimalChangesOnly: true,
       private: true,
     },
+  )
+  .addArchetype(
+    "cssOnlyPackage",
+    [
+      "@osdk/react-components-styles",
+    ],
+    {
+      repositoryUrl: "https://github.com/palantir/osdk-ts.git",
+      private: false,
+      output: OUTPUT_NONE,
+      minimalChangesOnly: true,
+    },
   );
 
 /**
