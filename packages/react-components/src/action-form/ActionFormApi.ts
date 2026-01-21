@@ -69,7 +69,7 @@ export interface ActionFormProps<Q extends ActionDefinition<unknown>> {
    * By default, the action's applyAction will be called with $validateOnly: false
    *
    * @param formState all field values when onSubmit is called
-   * @param applyAction the applyFunction to execute the action. Call it with $validateOnly: true options to run validation mode onSubmit.
+   * @param applyAction the function to execute the action. Call it with $validateOnly: true options to run validation mode onSubmit.
    * @returns a promise of the submission response
    */
   onSubmit?: <OP extends ApplyActionOptions>(

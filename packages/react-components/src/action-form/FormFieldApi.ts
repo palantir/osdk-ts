@@ -69,7 +69,7 @@ export interface FormFieldDefinition<
   placeholder?: string;
 
   /**
-   * Additional info to display on this field
+   * Additional information to display on this field
    * The placement of helper text depends on the value of helperTextPlacement prop
    */
   helperText?: string;
