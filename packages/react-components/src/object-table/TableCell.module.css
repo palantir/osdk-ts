@@ -25,3 +25,12 @@
 .osdkTableCell:has([role="checkbox"]) {
   justify-content: center;
 }
+
+.osdkTableCellContent:not(:has([role="checkbox"])) {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: left;
+  min-width: 0;
+  flex: 1;
+}

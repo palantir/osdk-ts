@@ -64,7 +64,6 @@
   width: var(--osdk-checkbox-icon-size);
   height: var(--osdk-checkbox-icon-size);
 
-
   &[data-unchecked] {
     display: none;
   }
