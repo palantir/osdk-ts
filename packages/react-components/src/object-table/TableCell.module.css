@@ -22,6 +22,7 @@
   color: var(--osdk-table-cell-color);
   background-color: inherit;
   position: relative;
+  text-align: left;
 }
 
 .osdkTableCell[data-pinned="left"],

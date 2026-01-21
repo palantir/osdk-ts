@@ -25,10 +25,6 @@ export function getColumnPinningStyles<TData>(
   column: Column<TData, unknown>,
 ): PinningStyles {
   const isPinned = column.getIsPinned();
-  const isLastLeftPinnedColumn = isPinned === "left"
-    && column.getIsLastColumn("left");
-  const isFirstRightPinnedColumn = isPinned === "right"
-    && column.getIsFirstColumn("right");
 
   return {
     columnStyles: {

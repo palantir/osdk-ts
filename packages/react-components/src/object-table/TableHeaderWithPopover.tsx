@@ -48,7 +48,6 @@ export function TableHeaderWithPopover({
   onSortChange,
   sorting = [],
   onResetSize,
-  onColumnConfig,
 }: TableHeaderWithPopoverProps): React.ReactElement {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -85,6 +84,7 @@ export function TableHeaderWithPopover({
   }, [header.column, onSortChange]);
 
   const handleClearAllSorts = useCallback(() => {
+    header.column.clearSorting();
     if (onSortChange) {
       onSortChange([]);
     }
@@ -224,7 +224,7 @@ export function TableHeaderWithPopover({
                   </Menu.Item>
                 </>
               )}
-              {sorting.length > 0 && (
+              {!!isSorted && (
                 <Menu.Item
                   closeOnClick
                   className={classNames(
@@ -235,7 +235,7 @@ export function TableHeaderWithPopover({
                   onClick={handleClearAllSorts}
                 >
                   <Remove className={styles.osdkHeaderIcon} />
-                  <span>Clear All Sorts</span>
+                  <span>Clear all sorts</span>
                 </Menu.Item>
               )}
               <Menu.Item
