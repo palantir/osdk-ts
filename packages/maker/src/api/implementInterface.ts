@@ -24,7 +24,6 @@ import {
 import type { InterfaceType } from "./interface/InterfaceType.js";
 import type { LinkType } from "./links/LinkType.js";
 import type { ObjectTypeDefinition } from "./object/ObjectTypeDefinition.js";
-import type { SharedPropertyType } from "./properties/SharedPropertyType.js";
 
 type ValidationResult = { type: "valid" } | { type: "invalid"; reason: string };
 
@@ -119,7 +118,8 @@ export function implementInterface(
     }
     return {
       type: "invalid",
-      reason: `Interface property ${apiName} not implemented by ${objectType.apiName} object definition`,
+      reason:
+        `Interface property ${apiName} not implemented by ${objectType.apiName} object definition`,
     };
   };
 
