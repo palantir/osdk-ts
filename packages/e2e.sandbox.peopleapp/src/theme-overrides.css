@@ -4,13 +4,6 @@
  */
 
 :root {
-  /* Override primary intent to use green palette instead of blue */
-  --bp-intent-primary-rest: var(--bp-palette-green-500);
-  --bp-intent-primary-hover: var(--bp-palette-green-400);
-  --bp-intent-primary-active: var(--bp-palette-green-600);
-  --bp-intent-primary-disabled: var(--bp-palette-green-300);
-  --bp-intent-primary-foreground: var(--bp-palette-gray-100);
-
   --bp-palette-black: oklch(0.2827 0.0190 238.86);
 
   --bp-palette-white: oklch(1.0000 0.0000 89.88);
