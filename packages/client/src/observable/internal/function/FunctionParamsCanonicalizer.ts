@@ -94,21 +94,11 @@ export class FunctionParamsCanonicalizer {
     seen: WeakSet<object>,
   ): CanonicalValue {
     if (value == null) {
-      path.push(null);
-      return null;
+      path.push(value);
+      return value;
     }
 
-    if (value === undefined) {
-      path.push(undefined);
-      return undefined;
-    }
-
-    if (
-      typeof value === "boolean"
-      || typeof value === "number"
-      || typeof value === "string"
-      || typeof value === "bigint"
-    ) {
+    if (isPrimitiveValue(value)) {
       path.push(value);
       return value;
     }

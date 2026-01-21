@@ -92,4 +92,34 @@ describe("FunctionParamsCanonicalizer", () => {
     // Type distinction
     expect(c.canonicalize({ val: 1 })).not.toBe(c.canonicalize({ val: "1" }));
   });
+
+  it("handles Set with non-primitive values", () => {
+    const c = new FunctionParamsCanonicalizer();
+    const obj1 = { id: 1, name: "first" };
+    const obj2 = { id: 2, name: "second" };
+    expect(c.canonicalize({ s: new Set([obj1, obj2]) }))
+      .toBe(c.canonicalize({ s: new Set([obj2, obj1]) }));
+  });
+
+  it("handles Map with non-primitive keys", () => {
+    const c = new FunctionParamsCanonicalizer();
+    const key1 = { id: 1 };
+    const key2 = { id: 2 };
+    expect(c.canonicalize({ m: new Map([[key1, "a"], [key2, "b"]]) }))
+      .toBe(c.canonicalize({ m: new Map([[key2, "b"], [key1, "a"]]) }));
+  });
+
+  it("handles Map with non-primitive values", () => {
+    const c = new FunctionParamsCanonicalizer();
+    const val1 = { data: "first" };
+    const val2 = { data: "second" };
+    expect(c.canonicalize({ m: new Map([["a", val1], ["b", val2]]) }))
+      .toBe(c.canonicalize({ m: new Map([["b", val2], ["a", val1]]) }));
+  });
+
+  it("distinguishes null from undefined", () => {
+    const c = new FunctionParamsCanonicalizer();
+    expect(c.canonicalize({ val: null }))
+      .not.toBe(c.canonicalize({ val: undefined }));
+  });
 });
