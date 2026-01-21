@@ -48,7 +48,7 @@ export type FilterDefinitionUnion<Q extends ObjectTypeDefinition> =
 export type FilterKey<Q extends ObjectTypeDefinition> =
   FilterDefinitionUnion<Q> extends infer D ? D extends { key: infer K } ? K
     : D extends { linkName: infer L } ? L
-    : never
+    : string
     : never;
 
 /**

@@ -268,10 +268,13 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
             propertiesToSearch = Object.entries(
               objectType.__DefinitionMetadata.properties,
             )
-              .filter(([, prop]) => prop.type === "string" && !prop.multiplicity)
+              .filter(([, prop]) =>
+                prop.type === "string" && !prop.multiplicity
+              )
               .map(([key]) => key);
           } else {
             if (process.env.NODE_ENV !== "production") {
+              // eslint-disable-next-line no-console
               console.warn(
                 "[FilterList] Keyword search with properties: 'all' requires object type metadata. Filter will be skipped.",
               );

@@ -15,6 +15,7 @@
  */
 
 import type { FilterState } from "../FilterListItemApi.js";
+import { assertUnreachable } from "./assertUnreachable.js";
 
 /** Case-insensitive substring filter for search functionality. */
 export function filterValuesBySearch<T>(
@@ -44,9 +45,11 @@ export function filterHasActiveState(state: FilterState | undefined): boolean {
     case "CONTAINS_TEXT":
       return state.value !== undefined && state.value !== "";
     case "NUMBER_RANGE":
-      return state.minValue !== undefined || state.maxValue !== undefined || state.includeNull === true;
+      return state.minValue !== undefined || state.maxValue !== undefined
+        || state.includeNull === true;
     case "DATE_RANGE":
-      return state.minValue !== undefined || state.maxValue !== undefined || state.includeNull === true;
+      return state.minValue !== undefined || state.maxValue !== undefined
+        || state.includeNull === true;
     case "SINGLE_DATE":
       return state.selectedDate !== undefined;
     case "MULTI_DATE":
@@ -64,6 +67,6 @@ export function filterHasActiveState(state: FilterState | undefined): boolean {
     case "CUSTOM":
       return true;
     default:
-      return false;
+      return assertUnreachable(state);
   }
 }

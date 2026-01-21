@@ -91,7 +91,6 @@ export function createLinkedPropertyFilterDef(
     linkedPropertyKey,
     linkedFilterComponent: "CHECKBOX_LIST",
     linkedFilterState: { type: "CHECKBOX_LIST", selectedValues: [] },
-    filterState: { type: "LINKED_PROPERTY", linkedFilterState: undefined },
   } as FilterDefinitionUnion<typeof MockObjectType>;
 }
 
