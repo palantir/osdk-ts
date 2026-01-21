@@ -15,6 +15,7 @@
  */
 
 import type { Cell, RowData, Table } from "@tanstack/react-table";
+import classNames from "classnames";
 import React, { type ReactElement, useCallback, useRef } from "react";
 import styles from "./Table.module.css";
 import { TableBody } from "./TableBody.js";
@@ -30,6 +31,7 @@ interface TableProps<TData extends RowData> {
     row: TData,
     cell: Cell<TData, unknown>,
   ) => React.ReactNode;
+  className?: string;
 }
 
 export function Table<TData extends RowData>(
@@ -40,6 +42,7 @@ export function Table<TData extends RowData>(
     onRowClick,
     rowHeight,
     renderCellContextMenu,
+    className,
   }: TableProps<TData>,
 ): ReactElement {
   const tableContainerRef = useRef<HTMLDivElement>(null);
@@ -79,7 +82,7 @@ export function Table<TData extends RowData>(
   return (
     <div
       ref={tableContainerRef}
-      className={styles.osdkTableContainer}
+      className={classNames(styles.osdkTableContainer, className)}
       onScroll={handleScroll}
     >
       <table>
