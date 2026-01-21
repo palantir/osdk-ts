@@ -2,6 +2,8 @@
  * Do not edit directly, this file was auto-generated.
  */
 
+ /* NOTE: This file should be imported from Blueprint */
+
 :root {
   --bp-emphasis-transitionDuration: 100ms;
   --bp-emphasis-ease-default: cubic-bezier(0.4, 1, 0.75, 0.9);
@@ -288,9 +290,4 @@
   --bp-typography-colorDisabled-success: var(--bp-intent-success-disabled);
   --bp-typography-colorDisabled-warning: var(--bp-intent-warning-disabled);
   --bp-typography-colorDisabled-danger: var(--bp-intent-danger-disabled);
-
-
-  /* OSDK Component Tokens */
-  --osdk-checkbox-container-size: calc(var(--bp-iconography-size-small) * 1.25);
-  --osdk-checkbox-icon-size: var(--bp-iconography-size-small);
 }

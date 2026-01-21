@@ -20,8 +20,8 @@ Import the CSS tokens in your application's entry point:
 /* app/index.css */
 @layer osdk.tokens;
 
-/* Import default OSDK tokens */
-@import "@osdk/react-components-styles/tokens.css" layer(osdk.tokens);
+/* Import default OSDK tokens (includes Blueprint tokens) */
+@import "@osdk/react-components-styles/osdk-components-tokens.css" layer(osdk.tokens);
 ```
 
 ### With Custom Theme Overrides
