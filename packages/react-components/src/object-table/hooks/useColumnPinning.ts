@@ -19,8 +19,8 @@ import type {
   QueryDefinition,
   SimplePropertyDef,
 } from "@osdk/api";
-import type { ColumnPinningState } from "@tanstack/react-table";
-import { useEffect, useState } from "react";
+import type { ColumnPinningState, OnChangeFn } from "@tanstack/react-table";
+import { useCallback, useEffect, useState } from "react";
 import type { ObjectTableProps } from "../ObjectTableApi.js";
 import { SELECTION_COLUMN_ID } from "../utils/constants.js";
 
@@ -37,7 +37,19 @@ interface UseColumnPinningProps<
     RDPs,
     FunctionColumns
   >["columnDefinitions"];
+
   hasSelectionColumn?: boolean;
+
+  onColumnsPinnedChanged?: ObjectTableProps<
+    Q,
+    RDPs,
+    FunctionColumns
+  >["onColumnsPinnedChanged"];
+}
+
+interface UseColumnPinningResults {
+  columnPinning: ColumnPinningState;
+  onColumnPinningChange: OnChangeFn<ColumnPinningState>;
 }
 
 export const useColumnPinning = <
@@ -48,24 +60,19 @@ export const useColumnPinning = <
     never
   >,
 >(
-  { columnDefinitions, hasSelectionColumn }: UseColumnPinningProps<
-    Q,
-    RDPs,
-    FunctionColumns
-  >,
-): [
-  ColumnPinningState,
-  (
-    updater:
-      | ColumnPinningState
-      | ((old: ColumnPinningState) => ColumnPinningState),
-  ) => void,
-] => {
+  { columnDefinitions, hasSelectionColumn, onColumnsPinnedChanged }:
+    UseColumnPinningProps<
+      Q,
+      RDPs,
+      FunctionColumns
+    >,
+): UseColumnPinningResults => {
   const [columnPinning, setColumnPinning] = useState<ColumnPinningState>({
     left: [],
     right: [],
   });
 
+  // Set default column pinning
   useEffect(() => {
     const defaultColumnPinningState = getColumnPinningStateFromColumnDefs(
       columnDefinitions,
@@ -84,7 +91,26 @@ export const useColumnPinning = <
     });
   }, [columnDefinitions, hasSelectionColumn]);
 
-  return [columnPinning, setColumnPinning];
+  const onColumnPinningChange: OnChangeFn<ColumnPinningState> = useCallback(
+    (updater) => {
+      const newPinning = typeof updater === "function"
+        ? updater(columnPinning)
+        : updater;
+
+      setColumnPinning(newPinning);
+
+      if (onColumnsPinnedChanged) {
+        const newStates = convertColumnPinningStateToArray(newPinning);
+        const stateWithoutSelectionCol = newStates.filter(state =>
+          state.columnId !== SELECTION_COLUMN_ID
+        );
+        onColumnsPinnedChanged(stateWithoutSelectionCol);
+      }
+    },
+    [columnPinning, onColumnsPinnedChanged],
+  );
+
+  return { columnPinning, onColumnPinningChange };
 };
 
 const getColumnPinningStateFromColumnDefs = <
@@ -131,3 +157,34 @@ const getColumnPinningStateFromColumnDefs = <
   );
   return columnPinningState;
 };
+
+/**
+ * Converts ColumnPinningState to array format for the callback
+ */
+function convertColumnPinningStateToArray(
+  pinningState: ColumnPinningState,
+): Array<{
+  columnId: string;
+  pinned: "left" | "right" | "none";
+}> {
+  const result: Array<{
+    columnId: string;
+    pinned: "left" | "right" | "none";
+  }> = [];
+
+  // Add left pinned columns
+  if (pinningState.left) {
+    pinningState.left.forEach((columnId) => {
+      result.push({ columnId, pinned: "left" });
+    });
+  }
+
+  // Add right pinned columns
+  if (pinningState.right) {
+    pinningState.right.forEach((columnId) => {
+      result.push({ columnId, pinned: "right" });
+    });
+  }
+
+  return result;
+}

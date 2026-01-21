@@ -21,11 +21,7 @@ import type {
   QueryDefinition,
   SimplePropertyDef,
 } from "@osdk/api";
-import type {
-  Cell,
-  ColumnSizingState,
-  SortingState,
-} from "@tanstack/react-table";
+import type { Cell, ColumnSizingState } from "@tanstack/react-table";
 import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import React, { useCallback, useMemo, useState } from "react";
 import { useColumnDefs } from "./hooks/useColumnDefs.js";
@@ -34,6 +30,7 @@ import { useColumnVisibility } from "./hooks/useColumnVisibility.js";
 import { useObjectTableData } from "./hooks/useObjectTableData.js";
 import { useRowSelection } from "./hooks/useRowSelection.js";
 import { useSelectionColumn } from "./hooks/useSelectionColumn.js";
+import { useTableSorting } from "./hooks/useTableSorting.js";
 import type { ObjectTableProps } from "./ObjectTableApi.js";
 import { Table } from "./Table.js";
 import { getRowId } from "./utils/getRowId.js";
@@ -62,14 +59,29 @@ export function ObjectTable<
   objectType,
   columnDefinitions,
   filter,
+  orderBy,
+  defaultOrderBy,
+  onOrderByChanged,
+  onColumnsPinnedChanged,
   onRowSelection,
   renderCellContextMenu,
   selectionMode = "none",
   selectedRows,
   ...props
 }: ObjectTableProps<Q, RDPs, FunctionColumns>): React.ReactElement {
-  const [sorting, setSorting] = useState<SortingState>([]);
   const [columnSizing, setColumnSizing] = useState<ColumnSizingState>({});
+
+  const { sorting, onSortingChange } = useTableSorting<
+    Q,
+    RDPs,
+    FunctionColumns
+  >(
+    {
+      orderBy,
+      defaultOrderBy,
+      onOrderByChanged,
+    },
+  );
 
   const { data, fetchMore, isLoading } = useObjectTableData<
     Q,
@@ -114,9 +126,10 @@ export function ObjectTable<
     return selectionColumn ? [selectionColumn, ...columns] : columns;
   }, [selectionColumn, columns]);
 
-  const [columnPinning, setColumnPinning] = useColumnPinning({
+  const { columnPinning, onColumnPinningChange } = useColumnPinning({
     columnDefinitions,
     hasSelectionColumn: selectionColumn != null,
+    onColumnsPinnedChanged,
   });
 
   const table = useReactTable<
@@ -132,9 +145,9 @@ export function ObjectTable<
       columnSizing,
       columnPinning,
     },
-    onSortingChange: setSorting,
+    onSortingChange,
     onColumnSizingChange: setColumnSizing,
-    onColumnPinningChange: setColumnPinning,
+    onColumnPinningChange,
     enableRowSelection: selectionMode !== "none",
     columnResizeMode: "onChange",
     columnResizeDirection: "ltr",
