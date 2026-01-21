@@ -17,6 +17,7 @@
 .osdkTableCell {
   display: flex;
   align-items: center;
+  justify-content: flex-start;
   padding: var(--osdk-table-cell-padding);
   font-size: var(--osdk-table-cell-fontSize);
   color: var(--osdk-table-cell-color);
@@ -24,4 +25,13 @@
 
 .osdkTableCell:has([role="checkbox"]) {
   justify-content: center;
+}
+
+.osdkTableCellContent {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: left;
+  min-width: 0;
+  flex: 1;
 }
