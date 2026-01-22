@@ -48,7 +48,10 @@ export class FauxAdmin {
 
   getCurrentUser(): User {
     if (this.#currentUserId == null) {
-      throw new Error();
+      throw new OpenApiCallError(
+        403,
+        CurrentUserPermissionDeniedError,
+      );
     }
 
     const user = this.getUser(this.#currentUserId, "ACTIVE");
