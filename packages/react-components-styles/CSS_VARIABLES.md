@@ -128,7 +128,7 @@ Semantic color system with 5 states per intent. These are the primary tokens for
 | `--bp-intent-primary-hover` | `var(--bp-palette-blue-400)` | Primary hover state |
 | `--bp-intent-primary-active` | `var(--bp-palette-blue-600)` | Primary active state |
 | `--bp-intent-primary-disabled` | `var(--bp-palette-blue-300)` | Primary disabled state |
-| `--bp-intent-primary-foreground` | `var(--bp-palette-gray-100)` | Contrast-compliant text on primary |
+| `--bp-intent-primary-foreground` | `var(--bp-palette-gray-100)` | Text color on primary background |
 
 #### Success Intent
 
@@ -162,22 +162,22 @@ Semantic color system with 5 states per intent. These are the primary tokens for
 
 ### Color Palettes
 
-All colors use OKLCH color space for perceptually uniform color scales. Each palette has 10 shades (100-1000).
+All colors use OKLCH color space for perceptually uniform color scales. Each palette has 10 shades (100-1000), where 100 is the lightest shade and 1000 is the darkest shade.
 
 #### Gray Palette
 
-| Variable | Value | Lightness |
-|----------|-------|-----------|
-| `--bp-palette-gray-100` | `oklch(1 0 256.73)` | Lightest |
-| `--bp-palette-gray-200` | `oklch(0.8765 0.0034 256.73)` | |
-| `--bp-palette-gray-300` | `oklch(0.7581 0.0066 256.73)` | |
-| `--bp-palette-gray-400` | `oklch(0.6447 0.0096 256.73)` | |
-| `--bp-palette-gray-500` | `oklch(0.5363 0.0125 256.73)` | |
-| `--bp-palette-gray-600` | `oklch(0.4329 0.0153 256.73)` | |
-| `--bp-palette-gray-700` | `oklch(0.3346 0.0179 256.73)` | |
-| `--bp-palette-gray-800` | `oklch(0.2412 0.0203 256.73)` | |
-| `--bp-palette-gray-900` | `oklch(0.1529 0.0227 256.73)` | |
-| `--bp-palette-gray-1000` | `oklch(0.0697 0.0247 256.94)` | Darkest |
+| Variable | Value |
+|----------|-------|
+| `--bp-palette-gray-100` | `oklch(1 0 256.73)` |
+| `--bp-palette-gray-200` | `oklch(0.8765 0.0034 256.73)` |
+| `--bp-palette-gray-300` | `oklch(0.7581 0.0066 256.73)` |
+| `--bp-palette-gray-400` | `oklch(0.6447 0.0096 256.73)` |
+| `--bp-palette-gray-500` | `oklch(0.5363 0.0125 256.73)` |
+| `--bp-palette-gray-600` | `oklch(0.4329 0.0153 256.73)` |
+| `--bp-palette-gray-700` | `oklch(0.3346 0.0179 256.73)` |
+| `--bp-palette-gray-800` | `oklch(0.2412 0.0203 256.73)` |
+| `--bp-palette-gray-900` | `oklch(0.1529 0.0227 256.73)` |
+| `--bp-palette-gray-1000` | `oklch(0.0697 0.0247 256.94)` |
 
 #### Blue Palette
 

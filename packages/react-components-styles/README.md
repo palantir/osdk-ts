@@ -76,7 +76,7 @@ When overriding theme tokens, you are responsible for ensuring that your custom 
 - Readable text on all background colors
 - Clear visual distinction between interactive states (rest, hover, active, disabled)
 
-The default tokens are designed to meet WCAG AA standards. Use tools like [WebAIM's Contrast Checker](https://webaim.org/resources/contrastchecker/) to verify your custom color combinations.
+The default tokens are designed to meet WCAG AA standards.
 
 ## Related Packages
 

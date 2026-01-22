@@ -1,6 +1,5 @@
 /**
- * Example: Override primary intent color to green
- *
+ * Example override
  */
 
 :root {
@@ -182,6 +181,5 @@
   --bp-palette-violet-800: oklch(0.3663 0.1105 327.54);
   --bp-palette-violet-900: oklch(0.2835 0.0896 327.48);
   --bp-palette-violet-1000: oklch(0.2006 0.0688 327.53);
-
-
 }
+
