@@ -18,7 +18,6 @@ import type {
   DerivedProperty,
   ObjectSet,
   ObjectTypeDefinition,
-  Osdk,
   PrimaryKeyType,
   WhereClause,
 } from "@osdk/api";
@@ -39,6 +38,7 @@ import { Query } from "../Query.js";
 import type { Store } from "../Store.js";
 import type { SubjectPayload } from "../SubjectPayload.js";
 import { tombstone } from "../tombstone.js";
+import type { ObjectUpdate } from "../types/ObjectUpdate.js";
 import { type ObjectCacheKey, RDP_CONFIG_IDX } from "./ObjectCacheKey.js";
 
 export class ObjectQuery extends Query<
@@ -198,7 +198,7 @@ export class ObjectQuery extends Query<
   };
 
   registerStreamUpdates(sub: Subscription): void {
-    this.#setupStreamUpdates(sub).catch((error) => {
+    this.#setupStreamUpdates(sub).catch((error: unknown) => {
       if (process.env.NODE_ENV !== "production") {
         this.logger?.error("Failed to setup stream updates", error);
       }
@@ -213,22 +213,7 @@ export class ObjectQuery extends Query<
     }
 
     const objectSet = await this.#createSingleObjectSet();
-
-    const websocketSubscription = objectSet.subscribe({
-      onChange: this.#onOswChange.bind(this),
-      onError: this.#onOswError.bind(this),
-      onOutOfDate: this.#onOswOutOfDate.bind(this),
-      onSuccessfulSubscription: this.#onOswSuccessfulSubscription.bind(this),
-    });
-
-    sub.add(() => {
-      if (process.env.NODE_ENV !== "production") {
-        this.logger?.child({ methodName: "registerStreamUpdates" }).info(
-          "Unsubscribing from websocket",
-        );
-      }
-      websocketSubscription.unsubscribe();
-    });
+    this.createWebsocketSubscription(objectSet, sub, "observeObject");
   }
 
   async #createSingleObjectSet(): Promise<ObjectSet<ObjectTypeDefinition>> {
@@ -240,44 +225,13 @@ export class ObjectQuery extends Query<
       apiName: this.#apiName,
     } as ObjectTypeDefinition;
 
-    // Cast needed because computed property name cannot be statically typed
-    // Same pattern used in SpecificLinkQuery.ts and getDollarLink.ts
     return this.store.client(objectType).where({
       [objDef.primaryKeyApiName]: this.#pk,
     } as WhereClause<ObjectTypeDefinition>);
   }
 
-  #onOswSuccessfulSubscription(): void {
-    if (process.env.NODE_ENV !== "production") {
-      this.logger?.child({ methodName: "onSuccessfulSubscription" }).debug("");
-    }
-  }
-
-  #onOswOutOfDate(): void {
-    if (process.env.NODE_ENV !== "production") {
-      this.logger?.child({ methodName: "onOutOfDate" }).debug("");
-    }
-    this.revalidate(true).catch((e: unknown) => {
-      if (process.env.NODE_ENV !== "production") {
-        this.logger?.error("Error revalidating after onOutOfDate", e);
-      }
-    });
-  }
-
-  #onOswError(errors: { subscriptionClosed: boolean; error: unknown }): void {
-    if (process.env.NODE_ENV !== "production") {
-      this.logger?.child({ methodName: "onError" }).error(
-        "subscription errors",
-        errors,
-      );
-    }
-  }
-
-  #onOswChange(
-    { object, state }: {
-      object: Osdk.Instance<ObjectTypeDefinition>;
-      state: "ADDED_OR_UPDATED" | "REMOVED";
-    },
+  protected override onOswChange(
+    { object, state }: ObjectUpdate<ObjectTypeDefinition, string>,
   ): void {
     if (process.env.NODE_ENV !== "production") {
       this.logger?.child({ methodName: "onOswChange" }).debug(
