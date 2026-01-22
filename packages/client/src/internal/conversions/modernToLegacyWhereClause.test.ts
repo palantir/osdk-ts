@@ -914,7 +914,7 @@ describe(modernToLegacyWhereClause, () => {
             }
           `);
       });
-      
+
       it("converts primitive arrays with nested filters correctly", () => {
         expect(
           modernToLegacyWhereClause<ObjAllProps>({
@@ -949,7 +949,7 @@ describe(modernToLegacyWhereClause, () => {
             "value": "test",
           }
         `);
-        
+
         expect(
           modernToLegacyWhereClause<ObjAllProps>({
             booleanArray: { $contains: { $eq: true } },
@@ -967,7 +967,7 @@ describe(modernToLegacyWhereClause, () => {
           }
         `);
       });
-      
+
       it("converts primitive arrays with multiple nested filter conditions", () => {
         expect(
           modernToLegacyWhereClause<ObjAllProps>({
