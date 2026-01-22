@@ -27,10 +27,7 @@ import {
   type ObserveAggregationArgs,
 } from "@osdk/client/unstable-do-not-use";
 import React from "react";
-import {
-  makeExternalStore,
-  makeExternalStoreAsync,
-} from "./makeExternalStore.js";
+import { makeExternalStoreAsync } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
 import type { InferRdpTypes } from "./types.js";
 
@@ -200,7 +197,7 @@ export function useOsdkAggregation<
   } = options;
   const objectSet = "objectSet" in options ? options.objectSet : undefined;
 
-  const { observableClient } = React.useContext(OsdkContext2);
+  const { observableClient, client } = React.useContext(OsdkContext2);
 
   const canonWhere = observableClient.canonicalizeWhereClause<Q>(where ?? {});
 
@@ -257,12 +254,12 @@ export function useOsdkAggregation<
             : void 0,
         );
       }
-      return makeExternalStore<ObserveAggregationArgs<Q, A>>(
+      return makeExternalStoreAsync<ObserveAggregationArgs<Q, A>>(
         (observer) =>
-           
           observableClient.observeAggregation(
             {
               type: type,
+              objectSet: client(type),
               where: canonWhere,
               withProperties: stableWithProperties,
               intersectWith: stableIntersectWith,
@@ -277,6 +274,7 @@ export function useOsdkAggregation<
       );
     },
     [
+      client,
       observableClient,
       type.apiName,
       type.type,
