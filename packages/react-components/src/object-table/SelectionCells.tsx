@@ -34,6 +34,7 @@ export function SelectionHeaderCell({
       indeterminate={hasSelection && !isAllSelected}
       checked={isAllSelected}
       onCheckedChange={onToggleAll}
+      aria-label={"Select all rows"}
     />
   );
 }
@@ -59,6 +60,7 @@ export function SelectionCell<TData extends RowData>({
     <Checkbox
       checked={row.getIsSelected()}
       onClick={handleCheckedChange}
+      aria-label={`Select row ${row.index + 1}`}
     />
   );
 }
