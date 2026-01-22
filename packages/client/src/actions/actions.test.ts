@@ -558,6 +558,31 @@ describe.each([
       },
     );
   });
+
+  it("nullable parameters work with nullish coalescing", () => {
+    const clientBoundAction = client(
+      createOffice,
+    ).applyAction;
+
+    type InferredParamType = Parameters<
+      typeof clientBoundAction
+    >[0];
+
+    expectTypeOf<
+      {
+        officeId: string;
+        address: string | null;
+        capacity: number | null;
+      }
+    >().toMatchTypeOf<
+      InferredParamType
+    >();
+
+    const params: InferredParamType = { officeId: "HQ", address: null };
+
+    const address: string = params.address ?? "address";
+    expect(address).toBe("address");
+  });
 });
 
 describe("ActionResponse remapping", () => {
