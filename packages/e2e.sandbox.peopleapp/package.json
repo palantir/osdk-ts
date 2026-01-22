@@ -43,6 +43,7 @@
     "@osdk/oauth": "workspace:~",
     "@osdk/react": "workspace:~",
     "@osdk/react-components": "workspace:~",
+    "@osdk/react-components-styles": "workspace:~",
     "@tanstack/react-table": "^8.21.3",
     "@tanstack/react-virtual": "^3.13.13",
     "core-js": "^3.45.1",

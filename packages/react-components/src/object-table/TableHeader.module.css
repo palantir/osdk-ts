@@ -35,6 +35,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  text-align: left;
   position: relative;
   padding: var(--osdk-table-cell-padding);
   font-weight: var(--osdk-table-header-fontWeight);

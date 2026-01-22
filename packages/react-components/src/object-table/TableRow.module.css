@@ -18,6 +18,7 @@
   position: absolute;
   display: flex;
   background-color: var(--osdk-table-row-bg-default);
+  border-top: var(--osdk-table-border-width) solid transparent;
   border-bottom: var(--osdk-table-border-width) solid var(--osdk-table-border-color);
 
   &:hover {
@@ -26,5 +27,15 @@
 
   &[data-selected="true"] {
     background-color: var(--osdk-table-row-bg-active);
+    border-top-color: var(--osdk-table-active-stroke);
+    border-bottom-color: var(--osdk-table-active-stroke);
+  }
+
+  &[data-selected="true"] + &[data-selected="true"] {
+    border-top-color: transparent;
+  }
+
+  &[data-selected="true"]:has(+ &[data-selected="true"]) {
+    border-bottom-color: transparent;
   }
 }

@@ -14,38 +14,39 @@
  * limitations under the License.
  */
 
-.osdkCheckboxRoot{
+.osdkCheckboxRoot {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: var(--osdk-checkbox-container-size, 1.25rem);
-  height: var(--osdk-checkbox-container-size, 1.25rem);
+  min-width: calc(var(--osdk-checkbox-icon-size) + var(--osdk-checkbox-padding) * 2);
+  min-height: calc(var(--osdk-checkbox-icon-size) + var(--osdk-checkbox-padding) * 2);
+  padding: var(--osdk-checkbox-padding);
   box-sizing: border-box;
   cursor: pointer;
   border-radius: var(--bp-surface-borderRadius);
 
   &[data-unchecked] {
-    background-color: transparent;
-    border: var(--bp-surface-borderWidth) solid var(--bp-surface-borderColor-default);
+    background-color: var(--osdk-checkbox-bg);
+    border: var(--osdk-checkbox-border);
 
     &:hover {
-      background-color: var(--bp-surface-colorHover-default);
+      background-color: var(--osdk-checkbox-bg-hover);
     }
 
     &:active {
-      background-color: var(--bp-surface-colorActive-default);
+      background-color: var(--osdk-checkbox-bg-active);
     }
   }
 
   &[data-checked], &[data-indeterminate] {
-    background-color: var(--bp-intent-primary-rest);
+    background-color: var(--osdk-checkbox-bg-checked);
 
     &:hover {
-      background-color: var(--bp-intent-primary-hover);
+      background-color: var(--osdk-checkbox-bg-checked-hover);
     }
 
     &:active {
-      background-color: var(--bp-intent-primary-active);
+      background-color: var(--osdk-checkbox-bg-checked-active);
     }
   }
 
@@ -59,7 +60,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--bp-intent-primary-foreground);
+  color: var(--osdk-checkbox-checked-foreground);
   width: var(--osdk-checkbox-icon-size);
   height: var(--osdk-checkbox-icon-size);
 

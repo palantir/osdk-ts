@@ -3224,6 +3224,9 @@ importers:
       '@osdk/react-components':
         specifier: workspace:~
         version: link:../react-components
+      '@osdk/react-components-styles':
+        specifier: workspace:~
+        version: link:../react-components-styles
       '@tanstack/react-table':
         specifier: ^8.21.3
         version: 8.21.3(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
@@ -4221,6 +4224,8 @@ importers:
       typescript:
         specifier: ~5.5.4
         version: 5.5.4
+
+  packages/react-components-styles: {}
 
   packages/shared.client.impl:
     dependencies:

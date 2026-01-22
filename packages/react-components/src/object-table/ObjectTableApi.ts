@@ -263,4 +263,6 @@ export interface ObjectTableProps<
    * @default 40
    */
   rowHeight?: number;
+
+  className?: string;
 }
