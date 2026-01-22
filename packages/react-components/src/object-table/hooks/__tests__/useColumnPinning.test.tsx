@@ -19,6 +19,7 @@ import { act, renderHook } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import type {
   ColumnDefinition,
+  ObjectTableProps,
 } from "../../ObjectTableApi.js";
 import { SELECTION_COLUMN_ID } from "../../utils/constants.js";
 import { useColumnPinning } from "../useColumnPinning.js";
@@ -194,7 +195,6 @@ describe("useColumnPinning", () => {
         });
       });
 
-      // Selection column should be filtered out
       expect(onColumnsPinnedChanged).toHaveBeenCalledWith([
         { columnId: "name", pinned: "left" },
         { columnId: "email", pinned: "right" },
@@ -218,7 +218,7 @@ describe("useColumnPinning", () => {
         });
       });
 
-      // Update using updater function
+      // Pin second column
       act(() => {
         result.current.onColumnPinningChange((prev) => ({
           ...prev,
@@ -230,249 +230,76 @@ describe("useColumnPinning", () => {
         left: ["name"],
         right: ["email"],
       });
+
       expect(onColumnsPinnedChanged).toHaveBeenLastCalledWith([
         { columnId: "name", pinned: "left" },
         { columnId: "email", pinned: "right" },
       ]);
-    });
 
-    it("does not call onColumnsPinnedChanged when not provided", () => {
-      const { result } = renderHook(() =>
-        useColumnPinning<TestObject>({
-          columnDefinitions: undefined,
-        })
-      );
-
-      // Should not throw
+      // Unpin first column
       act(() => {
-        result.current.onColumnPinningChange({
-          left: ["name"],
-          right: [],
-        });
+        result.current.onColumnPinningChange((prev) => ({
+          ...prev,
+          left: [],
+        }));
       });
+
+      expect(result.current.columnPinning).toEqual({
+        left: [],
+        right: ["email"],
+      });
+
+      expect(onColumnsPinnedChanged).toHaveBeenLastCalledWith([
+        { columnId: "email", pinned: "right" },
+      ]);
+    });
+  });
+
+  describe("updates when props change", () => {
+    it("updates pinning state when columnDefinitions change", () => {
+      const initialColumnDefinitions: ObjectTableProps<
+        TestObject
+      >["columnDefinitions"] = [
+        {
+          locator: { type: "property", id: "name" as PropertyKeys<TestObject> },
+          pinned: "left",
+        },
+      ];
+
+      const { result, rerender } = renderHook(
+        ({ columnDefinitions }) =>
+          useColumnPinning<TestObject>({
+            columnDefinitions,
+          }),
+        {
+          initialProps: { columnDefinitions: initialColumnDefinitions },
+        },
+      );
 
       expect(result.current.columnPinning).toEqual({
         left: ["name"],
         right: [],
       });
+
+      const newColumnDefinitions: ObjectTableProps<
+        TestObject
+      >["columnDefinitions"] = [
+        {
+          locator: { type: "property", id: "name" as PropertyKeys<TestObject> },
+          pinned: "left",
+        },
+        {
+          locator: { type: "property", id: "age" as PropertyKeys<TestObject> },
+          pinned: "right",
+        },
+      ];
+
+      rerender({ columnDefinitions: newColumnDefinitions });
+
+      expect(result.current.columnPinning).toEqual({
+        left: ["name"],
+        right: ["age"],
+      });
     });
   });
-
-  // describe("updates when props change", () => {
-  //   it("updates pinning state when columnDefinitions change", () => {
-  //     const initialColumnDefinitions: ObjectTableProps<
-  //       TestObject
-  //     >["columnDefinitions"] = [
-  //       {
-  //         locator: { type: "property", id: "name" },
-  //         pinned: "left",
-  //       },
-  //     ];
-
-  //     const { result, rerender } = renderHook(
-  //       ({ columnDefinitions }) =>
-  //         useColumnPinning<TestObject>({
-  //           columnDefinitions,
-  //         }),
-  //       {
-  //         initialProps: { columnDefinitions: initialColumnDefinitions },
-  //       },
-  //     );
-
-  //     expect(result.current.columnPinning).toEqual({
-  //       left: ["name"],
-  //       right: [],
-  //     });
-
-  //     const newColumnDefinitions: ObjectTableProps<
-  //       TestObject
-  //     >["columnDefinitions"] = [
-  //       {
-  //         locator: { type: "property", id: "name" },
-  //         pinned: "left",
-  //       },
-  //       {
-  //         locator: { type: "property", id: "age" },
-  //         pinned: "right",
-  //       },
-  //     ];
-
-  //     rerender({ columnDefinitions: newColumnDefinitions });
-
-  //     expect(result.current.columnPinning).toEqual({
-  //       left: ["name"],
-  //       right: ["age"],
-  //     });
-  //   });
-
-  //   it("updates pinning state when hasSelectionColumn changes", () => {
-  //     const columnDefinitions: ObjectTableProps<
-  //       TestObject
-  //     >["columnDefinitions"] = [
-  //       {
-  //         locator: { type: "property", id: "name" },
-  //         pinned: "left",
-  //       },
-  //     ];
-
-  //     const { result, rerender } = renderHook(
-  //       ({ hasSelectionColumn }) =>
-  //         useColumnPinning<TestObject>({
-  //           columnDefinitions,
-  //           hasSelectionColumn,
-  //         }),
-  //       {
-  //         initialProps: { hasSelectionColumn: false },
-  //       },
-  //     );
-
-  //     expect(result.current.columnPinning).toEqual({
-  //       left: ["name"],
-  //       right: [],
-  //     });
-
-  //     rerender({ hasSelectionColumn: true });
-
-  //     expect(result.current.columnPinning).toEqual({
-  //       left: [SELECTION_COLUMN_ID, "name"],
-  //       right: [],
-  //     });
-  //   });
-  // });
-
-  // describe("edge cases", () => {
-  //   it("handles empty columnDefinitions array", () => {
-  //     const { result } = renderHook(() =>
-  //       useColumnPinning<TestObject>({
-  //         columnDefinitions: [],
-  //       })
-  //     );
-
-  //     expect(result.current.columnPinning).toEqual({
-  //       left: [],
-  //       right: [],
-  //     });
-  //   });
-
-  //   it("handles columns with no pinned property", () => {
-  //     const columnDefinitions: ObjectTableProps<
-  //       TestObject
-  //     >["columnDefinitions"] = [
-  //       {
-  //         locator: { type: "property", id: "name" },
-  //       },
-  //       {
-  //         locator: { type: "property", id: "age" },
-  //       },
-  //     ];
-
-  //     const { result } = renderHook(() =>
-  //       useColumnPinning<TestObject>({
-  //         columnDefinitions,
-  //       })
-  //     );
-
-  //     expect(result.current.columnPinning).toEqual({
-  //       left: [],
-  //       right: [],
-  //     });
-  //   });
-
-  //   it("handles columns with pinned: 'none'", () => {
-  //     const columnDefinitions: ObjectTableProps<
-  //       TestObject
-  //     >["columnDefinitions"] = [
-  //       {
-  //         locator: { type: "property", id: "name" },
-  //         pinned: "none",
-  //       },
-  //       {
-  //         locator: { type: "property", id: "age" },
-  //         pinned: "left",
-  //       },
-  //     ];
-
-  //     const { result } = renderHook(() =>
-  //       useColumnPinning<TestObject>({
-  //         columnDefinitions,
-  //       })
-  //     );
-
-  //     expect(result.current.columnPinning).toEqual({
-  //       left: ["age"],
-  //       right: [],
-  //     });
-  //   });
-
-  //   it("handles unpinning all columns", () => {
-  //     const onColumnsPinnedChanged = vi.fn();
-  //     const columnDefinitions: ObjectTableProps<
-  //       TestObject
-  //     >["columnDefinitions"] = [
-  //       {
-  //         locator: { type: "property", id: "name" },
-  //         pinned: "left",
-  //       },
-  //     ];
-
-  //     const { result } = renderHook(() =>
-  //       useColumnPinning<TestObject>({
-  //         columnDefinitions,
-  //         onColumnsPinnedChanged,
-  //       })
-  //     );
-
-  //     expect(result.current.columnPinning).toEqual({
-  //       left: ["name"],
-  //       right: [],
-  //     });
-
-  //     act(() => {
-  //       result.current.onColumnPinningChange({
-  //         left: [],
-  //         right: [],
-  //       });
-  //     });
-
-  //     expect(result.current.columnPinning).toEqual({
-  //       left: [],
-  //       right: [],
-  //     });
-  //     expect(onColumnsPinnedChanged).toHaveBeenCalledWith([]);
-  //   });
-
-  //   it("handles moving column from left to right", () => {
-  //     const onColumnsPinnedChanged = vi.fn();
-  //     const { result } = renderHook(() =>
-  //       useColumnPinning<TestObject>({
-  //         columnDefinitions: undefined,
-  //         onColumnsPinnedChanged,
-  //       })
-  //     );
-
-  //     // Pin to left
-  //     act(() => {
-  //       result.current.onColumnPinningChange({
-  //         left: ["name"],
-  //         right: [],
-  //       });
-  //     });
-
-  //     // Move to right
-  //     act(() => {
-  //       result.current.onColumnPinningChange({
-  //         left: [],
-  //         right: ["name"],
-  //       });
-  //     });
-
-  //     expect(result.current.columnPinning).toEqual({
-  //       left: [],
-  //       right: ["name"],
-  //     });
-  //     expect(onColumnsPinnedChanged).toHaveBeenLastCalledWith([
-  //       { columnId: "name", pinned: "right" },
-  //     ]);
-  //   });
-  // });
 });
