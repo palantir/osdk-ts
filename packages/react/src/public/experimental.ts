@@ -23,6 +23,10 @@ export { useObjectSet } from "../new/useObjectSet.js";
 export { useOsdkAction } from "../new/useOsdkAction.js";
 export type { UseOsdkAggregationResult } from "../new/useOsdkAggregation.js";
 export { useOsdkAggregation } from "../new/useOsdkAggregation.js";
+export type {
+  UseOsdkObjectOptions,
+  UseOsdkObjectResult,
+} from "../new/useOsdkObject.js";
 export { useOsdkObject } from "../new/useOsdkObject.js";
 export type { UseOsdkListResult } from "../new/useOsdkObjects.js";
 export { useOsdkObjects } from "../new/useOsdkObjects.js";
