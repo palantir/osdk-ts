@@ -3523,6 +3523,9 @@ importers:
       '@osdk/api':
         specifier: workspace:~
         version: link:../api
+      '@osdk/foundry.admin':
+        specifier: catalog:foundry-platform-typescript
+        version: 2.45.0
       '@osdk/foundry.core':
         specifier: catalog:foundry-platform-typescript
         version: 2.45.0
