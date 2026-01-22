@@ -914,6 +914,96 @@ describe(modernToLegacyWhereClause, () => {
             }
           `);
       });
+      
+      it("converts primitive arrays with nested filters correctly", () => {
+        expect(
+          modernToLegacyWhereClause<ObjAllProps>({
+            integerArray: { $contains: { $lt: 5 } },
+          }, objectTypeWithAllPropertyTypes),
+        ).toMatchInlineSnapshot(`
+          {
+            "field": undefined,
+            "propertyIdentifier": {
+              "propertyApiName": "integerArray",
+              "structFieldApiName": "$lt",
+              "type": "structField",
+            },
+            "type": "eq",
+            "value": 5,
+          }
+        `);
+
+        expect(
+          modernToLegacyWhereClause<ObjAllProps>({
+            stringArray: { $contains: { $startsWith: "test" } },
+          }, objectTypeWithAllPropertyTypes),
+        ).toMatchInlineSnapshot(`
+          {
+            "field": undefined,
+            "propertyIdentifier": {
+              "propertyApiName": "stringArray",
+              "structFieldApiName": "$startsWith",
+              "type": "structField",
+            },
+            "type": "eq",
+            "value": "test",
+          }
+        `);
+        
+        expect(
+          modernToLegacyWhereClause<ObjAllProps>({
+            booleanArray: { $contains: { $eq: true } },
+          }, objectTypeWithAllPropertyTypes),
+        ).toMatchInlineSnapshot(`
+          {
+            "field": undefined,
+            "propertyIdentifier": {
+              "propertyApiName": "booleanArray",
+              "structFieldApiName": "$eq",
+              "type": "structField",
+            },
+            "type": "eq",
+            "value": true,
+          }
+        `);
+      });
+      
+      it("converts primitive arrays with multiple nested filter conditions", () => {
+        expect(
+          modernToLegacyWhereClause<ObjAllProps>({
+            $and: [
+              { integerArray: { $contains: { $gte: 1 } } },
+              { integerArray: { $contains: { $lt: 10 } } },
+            ],
+          }, objectTypeWithAllPropertyTypes),
+        ).toMatchInlineSnapshot(`
+          {
+            "type": "and",
+            "value": [
+              {
+                "field": undefined,
+                "propertyIdentifier": {
+                  "propertyApiName": "integerArray",
+                  "structFieldApiName": "$gte",
+                  "type": "structField",
+                },
+                "type": "eq",
+                "value": 1,
+              },
+              {
+                "field": undefined,
+                "propertyIdentifier": {
+                  "propertyApiName": "integerArray",
+                  "structFieldApiName": "$lt",
+                  "type": "structField",
+                },
+                "type": "eq",
+                "value": 10,
+              },
+            ],
+          }
+        `);
+      });
     });
 
     describe("multiple checks", () => {
