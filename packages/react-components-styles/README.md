@@ -48,7 +48,17 @@ Import the CSS tokens in your application's entry point:
 Core design tokens from Blueprint (e.g., `--bp-palette-blue-500`, `--bp-intent-primary-rest`)
 
 ### Level 2: OSDK Component Tokens
-Component-specific tokens that reference Level 1 tokens (e.g., `--osdk-table-header-bg`)
+Component-specific tokens that reference Level 1 tokens (e.g., `--osdk-checkbox-bg`)
+
+## API Documentation
+
+For a complete reference of all available CSS variables, see [CSS_VARIABLES.md](./CSS_VARIABLES.md).
+
+This document includes:
+- All Blueprint core tokens (emphasis, iconography, intents, palettes, surface, typography)
+- All OSDK component tokens
+- Complete color palette reference with OKLCH values
+- Theme customization guide with examples
 
 ## Customization
 
@@ -56,6 +66,8 @@ You can customize the appearance by:
 1. **Overriding Level 1 tokens** - Change core colors, spacing, typography
 2. **Overriding Level 2 tokens** - Change component-specific styling
 3. **Overriding tokens at component level** - Apply custom styles to specific component instances
+
+See [CSS_VARIABLES.md](./CSS_VARIABLES.md#creating-a-complete-custom-theme) for detailed examples.
 
 ## Related Packages
 
