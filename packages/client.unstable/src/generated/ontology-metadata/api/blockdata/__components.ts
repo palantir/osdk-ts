@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import type {
   ActionTypeRid as _api_ActionTypeRid,
   ActionTypeStatus as _api_ActionTypeStatus,
   ActionTypeVersion as _api_ActionTypeVersion,
+  BaseFormatter as _api_BaseFormatter,
   ButtonDisplayMetadata as _api_ButtonDisplayMetadata,
   ColumnName as _api_ColumnName,
   DataNullability as _api_DataNullability,
@@ -69,6 +70,7 @@ import type {
   OntologyIrActionTypeRichTextComponent
     as _api_OntologyIrActionTypeRichTextComponent,
   OntologyIrActionTypeStatus as _api_OntologyIrActionTypeStatus,
+  OntologyIrBaseFormatter as _api_OntologyIrBaseFormatter,
   OntologyIrFormContent as _api_OntologyIrFormContent,
   OntologyIrInterfacePropertyTypeType
     as _api_OntologyIrInterfacePropertyTypeType,
@@ -225,6 +227,10 @@ export interface KnownMarketplaceIdentifiers {
   geotimeSeriesSyncs: Record<_api_GeotimeSeriesIntegrationRid, BlockInternalId>;
   groupIds: Record<_api_GroupId, BlockInternalId>;
   interfaceLinkTypes: Record<_api_InterfaceLinkTypeRid, BlockInternalId>;
+  interfacePropertyTypes: Record<
+    _api_InterfacePropertyTypeRid,
+    BlockInternalId
+  >;
   interfaceTypes: Record<_api_InterfaceTypeRid, BlockInternalId>;
   linkTypeIds: Record<_api_LinkTypeId, BlockInternalId>;
   linkTypes: Record<_api_LinkTypeRid, BlockInternalId>;
@@ -277,6 +283,7 @@ export interface MarketplaceActionTypeDisplayMetadata {
   icon?: _api_Icon | null | undefined;
   submitButtonDisplayMetadata?: _api_ButtonDisplayMetadata | null | undefined;
   successMessage: Array<_api_ActionTypeRichTextComponent>;
+  toolDescription?: string | null | undefined;
   typeClasses: Array<_api_TypeClass>;
   undoButtonConfiguration?: boolean | null | undefined;
 }
@@ -331,6 +338,7 @@ export interface MarketplaceExperimentalInterfaceTypeStatus {
 }
 export interface MarketplaceInterfaceDefinedPropertyType {
   apiName: _api_InterfacePropertyTypeApiName;
+  baseFormatter?: _api_BaseFormatter | null | undefined;
   constraints: MarketplaceInterfaceDefinedPropertyTypeConstraints;
   displayMetadata: _api_InterfacePropertyTypeDisplayMetadata;
   rid: _api_InterfacePropertyTypeRid;
@@ -475,6 +483,10 @@ export interface ObjectTypeBlockDataV2 {
   datasources: Array<_api_ObjectTypeDatasource>;
   entityMetadata?: MarketplaceObjectTypeEntityMetadata | null | undefined;
   objectType: _api_ObjectType;
+  propertySecurityGroupPackagingVersion?:
+    | PropertySecurityGroupPackagingVersion
+    | null
+    | undefined;
   schemaMigrations?: SchemaMigrationBlockData | null | undefined;
   writebackDatasets: Array<ObjectsWritebackDataset>;
 }
@@ -531,6 +543,10 @@ export interface OntologyIrKnownMarketplaceIdentifiers {
   geotimeSeriesSyncs: Record<GeotimeSeriesIntegrationName, BlockInternalId>;
   groupIds: Record<_api_GroupId, BlockInternalId>;
   interfaceLinkTypes: Record<_api_InterfaceLinkTypeApiName, BlockInternalId>;
+  interfacePropertyTypes: Record<
+    _api_InterfacePropertyTypeApiName,
+    BlockInternalId
+  >;
   interfaceTypes: Record<_api_InterfaceTypeApiName, BlockInternalId>;
   linkTypeIds: Record<_api_LinkTypeId, BlockInternalId>;
   linkTypes: Record<_api_LinkTypeId, BlockInternalId>;
@@ -575,6 +591,7 @@ export interface OntologyIrMarketplaceActionTypeDisplayMetadata {
   icon?: _api_Icon | null | undefined;
   submitButtonDisplayMetadata?: _api_ButtonDisplayMetadata | null | undefined;
   successMessage: Array<_api_OntologyIrActionTypeRichTextComponent>;
+  toolDescription?: string | null | undefined;
   typeClasses: Array<_api_TypeClass>;
   undoButtonConfiguration?: boolean | null | undefined;
 }
@@ -603,6 +620,7 @@ export interface OntologyIrMarketplaceDeprecatedInterfaceTypeStatus {
 }
 export interface OntologyIrMarketplaceInterfaceDefinedPropertyType {
   apiName: _api_InterfacePropertyTypeApiName;
+  baseFormatter?: _api_OntologyIrBaseFormatter | null | undefined;
   constraints: OntologyIrMarketplaceInterfaceDefinedPropertyTypeConstraints;
   displayMetadata: _api_InterfacePropertyTypeDisplayMetadata;
   type: _api_OntologyIrInterfacePropertyTypeType;
@@ -685,6 +703,7 @@ export type OntologyIrMarketplaceInterfaceTypeStatus =
  * runtime conversion with default value.
  */
 export interface OntologyIrMarketplaceObjectTypeEntityMetadata {
+  aliases: Array<_api_entitymetadata_ObjectTypeAlias>;
   arePatchesEnabled: boolean;
 }
 export interface OntologyIrMarketplaceSharedPropertyBasedPropertyType {
@@ -712,6 +731,10 @@ export interface OntologyIrObjectTypeBlockDataV2 {
     | null
     | undefined;
   objectType: _api_OntologyIrObjectType;
+  propertySecurityGroupPackagingVersion?:
+    | PropertySecurityGroupPackagingVersion
+    | null
+    | undefined;
 }
 export interface OntologyIrOntologyBlockDataV2 {
   actionTypes: Record<_api_ActionTypeApiName, OntologyIrActionTypeBlockDataV2>;
@@ -805,6 +828,29 @@ export type PropertyPredicate =
   | PropertyPredicate_hasRid;
 
 export type PropertyRid = string;
+
+/**
+ * This is the old approach to PSG packaging. It will still be kept around for existing installations.
+ */
+export interface PropertySecurityGroupPackagingV1 {
+}
+/**
+ * This is the new approach to PSG packaging. See this quip for more details - https://palantir.quip.com/Ros7ABfTeLSH
+ */
+export interface PropertySecurityGroupPackagingV2 {
+}
+export interface PropertySecurityGroupPackagingVersion_v1 {
+  type: "v1";
+  v1: PropertySecurityGroupPackagingV1;
+}
+
+export interface PropertySecurityGroupPackagingVersion_v2 {
+  type: "v2";
+  v2: PropertySecurityGroupPackagingV2;
+}
+export type PropertySecurityGroupPackagingVersion =
+  | PropertySecurityGroupPackagingVersion_v1
+  | PropertySecurityGroupPackagingVersion_v2;
 
 /**
  * Ontology as code uses this as a stable ID for the restricted view input

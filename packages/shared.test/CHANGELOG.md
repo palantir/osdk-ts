@@ -1,5 +1,19 @@
 # @osdk/shared.test
 
+## 2.7.0-beta.4
+
+### Minor Changes
+
+- db44f6b: Add property security metadata to objects when requested
+- 266b901: Fix queries that return arrays of objects.
+
+### Patch Changes
+
+- Updated dependencies [db44f6b]
+- Updated dependencies [24a1e29]
+  - @osdk/api@2.7.0-beta.10
+  - @osdk/generator-converters@2.7.0-beta.10
+
 ## 2.7.0-beta.3
 
 ### Minor Changes

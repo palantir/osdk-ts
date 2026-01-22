@@ -15,10 +15,12 @@
  */
 
 import type { PageToken } from "@osdk/foundry.core";
+import type { PropertySecurities } from "@osdk/foundry.ontologies";
 
 export interface PagedBodyResponse<T> {
   nextPageToken?: string;
   data: T[];
+  propertySecurities: PropertySecurities[];
 }
 
 export interface PagedBodyResponseWithTotal<T> extends PagedBodyResponse<T> {
@@ -41,6 +43,7 @@ export function pageThroughResponseSearchParams<
     pageToken: PageToken | undefined;
   },
   includeCount?: TIncludeCount,
+  propertySecurities?: PropertySecurities[],
 ):
   | (TIncludeCount extends true ? PagedBodyResponseWithTotal<TData>
     : PagedBodyResponse<TData>)
@@ -66,6 +69,7 @@ export function pageThroughResponseSearchParams<
     ...(includeCount
       ? { totalCount: String(data.length) }
       : {}),
+    propertySecurities: propertySecurities ?? [],
   };
 
   return ret as

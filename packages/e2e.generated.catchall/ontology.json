@@ -445,6 +445,1559 @@
     }
   },
   "objectTypes": {
+    "MasonHeavyEquipment": {
+      "objectType": {
+        "apiName": "MasonHeavyEquipment",
+        "displayName": "[mason] Heavy Equipment",
+        "status": "EXPERIMENTAL",
+        "description": "",
+        "pluralDisplayName": "[mason] Heavy Equipments",
+        "icon": {
+          "type": "blueprint",
+          "color": "#4C90F0",
+          "name": "cube"
+        },
+        "primaryKey": "id",
+        "properties": {
+          "serviceRequirement": {
+            "displayName": "Service Requirement",
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "struct",
+                "structFieldTypes": [
+                  {
+                    "apiName": "createdBy",
+                    "rid": "ri.ontology.main.struct-field.b81acdf0-9dfd-41e7-a2a0-ae50344616eb",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "apiName": "createdTime",
+                    "rid": "ri.ontology.main.struct-field.5d365c5f-7387-4cf2-9ccb-e80758d900c7",
+                    "dataType": {
+                      "type": "timestamp"
+                    }
+                  },
+                  {
+                    "apiName": "datasourceGid",
+                    "rid": "ri.ontology.main.struct-field.e00543ba-e86d-40fd-8d1c-eeab1b6604b3",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "apiName": "datasourceName",
+                    "rid": "ri.ontology.main.struct-field.37d8cf24-93c9-4844-8907-e7a5fdc1005f",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "apiName": "endDatetime",
+                    "rid": "ri.ontology.main.struct-field.bf3e3633-25a4-4a67-b228-e82ad2a12920",
+                    "dataType": {
+                      "type": "timestamp"
+                    }
+                  },
+                  {
+                    "apiName": "lastModifiedBy",
+                    "rid": "ri.ontology.main.struct-field.3123d0e2-c430-493e-a542-ca95502433f4",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "apiName": "lastModifiedTime",
+                    "rid": "ri.ontology.main.struct-field.7a32fef6-d12d-4559-ac28-a2420b2cb2a5",
+                    "dataType": {
+                      "type": "timestamp"
+                    }
+                  },
+                  {
+                    "apiName": "startDatetime",
+                    "rid": "ri.ontology.main.struct-field.b83cc44e-90a8-455c-8d20-ee7652c0ef4c",
+                    "dataType": {
+                      "type": "timestamp"
+                    }
+                  },
+                  {
+                    "apiName": "value",
+                    "rid": "ri.ontology.main.struct-field.d696ef35-6b1d-4820-af5b-7524561f0af3",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  }
+                ]
+              },
+              "reducers": []
+            },
+            "rid": "ri.ontology.main.property.55f7463f-ef10-464d-9533-f63760f3a731",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "area": {
+            "displayName": "Area",
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "struct",
+                "structFieldTypes": [
+                  {
+                    "apiName": "createdBy",
+                    "rid": "ri.ontology.main.struct-field.66a6ef8c-42bb-43c9-999b-fb8cc27f2918",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "apiName": "createdTime",
+                    "rid": "ri.ontology.main.struct-field.3b63253c-3391-4d37-bab9-b10a5cdb48e8",
+                    "dataType": {
+                      "type": "timestamp"
+                    }
+                  },
+                  {
+                    "apiName": "value",
+                    "rid": "ri.ontology.main.struct-field.6c92bf01-e781-4ac5-a55c-13429eb58776",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "apiName": "startDatetime",
+                    "rid": "ri.ontology.main.struct-field.59a2d145-7730-4c4b-9d28-0c8c23b398a4",
+                    "dataType": {
+                      "type": "timestamp"
+                    }
+                  },
+                  {
+                    "apiName": "endDatetime",
+                    "rid": "ri.ontology.main.struct-field.68ae4b85-4be8-464d-b169-467f89ecacfd",
+                    "dataType": {
+                      "type": "timestamp"
+                    }
+                  },
+                  {
+                    "apiName": "datasourceGid",
+                    "rid": "ri.ontology.main.struct-field.718ded58-1330-4ade-ac94-f80c04e657d2",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "apiName": "datasourceName",
+                    "rid": "ri.ontology.main.struct-field.9511602b-9d75-4b9b-8929-7d202a96c00d",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "apiName": "lastModifiedBy",
+                    "rid": "ri.ontology.main.struct-field.aa39d453-7099-448f-871d-edcaa25f9bfc",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "apiName": "lastModifiedTime",
+                    "rid": "ri.ontology.main.struct-field.d25241a6-5974-4851-9fad-1110b30e4926",
+                    "dataType": {
+                      "type": "timestamp"
+                    }
+                  }
+                ]
+              },
+              "reducers": []
+            },
+            "rid": "ri.ontology.main.property.dd348a94-4871-40c1-a919-73a8355cfe71",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "id": {
+            "displayName": "Id",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.02995c4c-680e-499d-af7c-c18fffdd1599",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "sidc": {
+            "displayName": "Sidc",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.7f1c89e7-abd4-4624-a2a0-551cc96681ab",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "classification": {
+            "displayName": "Classification",
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "string"
+              },
+              "reducers": []
+            },
+            "rid": "ri.ontology.main.property.be69e99d-4cd7-49e9-a57f-881c8cb7c524",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "location": {
+            "displayName": "Location",
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "struct",
+                "structFieldTypes": [
+                  {
+                    "apiName": "createdBy",
+                    "rid": "ri.ontology.main.struct-field.addbe3d9-3f5a-4b9b-abd5-82aea970a9d2",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "apiName": "createdTime",
+                    "rid": "ri.ontology.main.struct-field.961bc902-e73a-4f91-8d41-a2f5ba9a643b",
+                    "dataType": {
+                      "type": "timestamp"
+                    }
+                  },
+                  {
+                    "apiName": "datasourceGid",
+                    "rid": "ri.ontology.main.struct-field.186f9e14-d4ef-40c0-8469-ad4b7aa59128",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "apiName": "datasourceName",
+                    "rid": "ri.ontology.main.struct-field.c67a0cc2-3ac5-4375-919b-772e3fc5e146",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "apiName": "lastModifiedBy",
+                    "rid": "ri.ontology.main.struct-field.8e50caaa-0a54-42fe-9498-a926615a6c94",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "apiName": "lastModifiedTime",
+                    "rid": "ri.ontology.main.struct-field.191192ef-6d63-48a7-af59-a2a1513c89b5",
+                    "dataType": {
+                      "type": "timestamp"
+                    }
+                  },
+                  {
+                    "apiName": "startDatetime",
+                    "rid": "ri.ontology.main.struct-field.01ad4cac-3629-4ea3-a69c-60a9f638c98c",
+                    "dataType": {
+                      "type": "timestamp"
+                    }
+                  },
+                  {
+                    "apiName": "value",
+                    "rid": "ri.ontology.main.struct-field.219e3862-b2f2-4346-9788-e135de3aaf02",
+                    "dataType": {
+                      "type": "geopoint"
+                    }
+                  },
+                  {
+                    "apiName": "endDatetime",
+                    "rid": "ri.ontology.main.struct-field.986037db-6dfc-466f-a961-670e19746635",
+                    "dataType": {
+                      "type": "timestamp"
+                    }
+                  }
+                ]
+              },
+              "reducers": []
+            },
+            "rid": "ri.ontology.main.property.ddb1b77a-339b-4469-a27d-0211cfdba06e",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "fullSize": {
+            "displayName": "Full Size",
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "struct",
+                "structFieldTypes": [
+                  {
+                    "apiName": "createdBy",
+                    "rid": "ri.ontology.main.struct-field.8dd4920f-109b-4f7c-9e65-b79d662a200d",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "apiName": "createdTime",
+                    "rid": "ri.ontology.main.struct-field.b48fcbc6-88a9-443e-a742-dd9974349000",
+                    "dataType": {
+                      "type": "timestamp"
+                    }
+                  },
+                  {
+                    "apiName": "datasourceGid",
+                    "rid": "ri.ontology.main.struct-field.d8682119-5601-4edc-bf34-d1737b0c26e0",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "apiName": "datasourceName",
+                    "rid": "ri.ontology.main.struct-field.b36402be-84b9-4619-8a09-776fcc53b0e5",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "apiName": "endDatetime",
+                    "rid": "ri.ontology.main.struct-field.298aa9d2-479d-4e18-9b70-b9271be9fabd",
+                    "dataType": {
+                      "type": "timestamp"
+                    }
+                  },
+                  {
+                    "apiName": "lastModifiedBy",
+                    "rid": "ri.ontology.main.struct-field.d1b76b36-601d-4d67-b87c-7b478e71672b",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "apiName": "lastModifiedTime",
+                    "rid": "ri.ontology.main.struct-field.46d6431f-2935-4d0b-ab65-82ca8b2d56da",
+                    "dataType": {
+                      "type": "timestamp"
+                    }
+                  },
+                  {
+                    "apiName": "startDatetime",
+                    "rid": "ri.ontology.main.struct-field.138bd4b2-95e3-4625-a50c-39d43f4e8971",
+                    "dataType": {
+                      "type": "timestamp"
+                    }
+                  },
+                  {
+                    "apiName": "value",
+                    "rid": "ri.ontology.main.struct-field.64694ee5-6a78-456c-8c52-8e4d9fff7574",
+                    "dataType": {
+                      "type": "integer"
+                    }
+                  }
+                ]
+              },
+              "reducers": []
+            },
+            "rid": "ri.ontology.main.property.4d841d41-f484-4fff-867e-56ca4937533d",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "weight": {
+            "displayName": "Weight",
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "struct",
+                "structFieldTypes": [
+                  {
+                    "apiName": "createdBy",
+                    "rid": "ri.ontology.main.struct-field.3b5f76c6-d841-4c82-88ad-3b975d818d3f",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "apiName": "createdTime",
+                    "rid": "ri.ontology.main.struct-field.8d36ed59-b5f8-45fc-a27c-f6fdd7a02060",
+                    "dataType": {
+                      "type": "timestamp"
+                    }
+                  },
+                  {
+                    "apiName": "datasourceGid",
+                    "rid": "ri.ontology.main.struct-field.77aba8e4-814b-450f-a0c6-d131d86bd6a6",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "apiName": "datasourceName",
+                    "rid": "ri.ontology.main.struct-field.3f54d582-2388-4290-94b0-61becefa3d20",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "apiName": "endDatetime",
+                    "rid": "ri.ontology.main.struct-field.c8979cc0-8bb5-46fa-b878-5b9fc0962557",
+                    "dataType": {
+                      "type": "timestamp"
+                    }
+                  },
+                  {
+                    "apiName": "lastModifiedBy",
+                    "rid": "ri.ontology.main.struct-field.b7e1fb8c-1a84-479e-b67d-3f83db30d013",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "apiName": "lastModifiedTime",
+                    "rid": "ri.ontology.main.struct-field.f19c88c3-2005-41af-a63e-4e5ed1b22f28",
+                    "dataType": {
+                      "type": "timestamp"
+                    }
+                  },
+                  {
+                    "apiName": "startDatetime",
+                    "rid": "ri.ontology.main.struct-field.d8410dd5-c308-41a7-9b15-06af95eefac5",
+                    "dataType": {
+                      "type": "timestamp"
+                    }
+                  },
+                  {
+                    "apiName": "value",
+                    "rid": "ri.ontology.main.struct-field.e859e81f-ebc4-4660-8ecc-87ccc022b186",
+                    "dataType": {
+                      "type": "integer"
+                    }
+                  }
+                ]
+              },
+              "reducers": []
+            },
+            "rid": "ri.ontology.main.property.8e5fe7ac-2b7c-472a-b158-444cf46f03c4",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "isCanonical": {
+            "displayName": "Is Canonical",
+            "dataType": {
+              "type": "boolean"
+            },
+            "rid": "ri.ontology.main.property.5870e3de-30bf-418f-b23e-b797d1ea0d61",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "driverId": {
+            "displayName": "Driver ID",
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "struct",
+                "structFieldTypes": [
+                  {
+                    "apiName": "createdBy",
+                    "rid": "ri.ontology.main.struct-field.2c245eae-6717-448c-bb14-adf0654d03f9",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "apiName": "createdTime",
+                    "rid": "ri.ontology.main.struct-field.d8a59705-c952-4de7-ba16-cf96c3b61f6d",
+                    "dataType": {
+                      "type": "timestamp"
+                    }
+                  },
+                  {
+                    "apiName": "datasourceGid",
+                    "rid": "ri.ontology.main.struct-field.54567911-ee95-45f4-8858-c55a9bf05e76",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "apiName": "datasourceName",
+                    "rid": "ri.ontology.main.struct-field.a451d240-c537-4a52-b020-5c620fb863fd",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "apiName": "lastModifiedBy",
+                    "rid": "ri.ontology.main.struct-field.3a05ac78-b813-486a-b837-ce832c9e0028",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "apiName": "lastModifiedTime",
+                    "rid": "ri.ontology.main.struct-field.f4caf559-6a5b-461f-b787-6b22d5d7ddb2",
+                    "dataType": {
+                      "type": "timestamp"
+                    }
+                  },
+                  {
+                    "apiName": "startDatetime",
+                    "rid": "ri.ontology.main.struct-field.20beab69-4cd9-428f-ad0e-f83673424e3e",
+                    "dataType": {
+                      "type": "timestamp"
+                    }
+                  },
+                  {
+                    "apiName": "endDatetime",
+                    "rid": "ri.ontology.main.struct-field.58502a2c-011d-4a08-a582-cf97a772ee11",
+                    "dataType": {
+                      "type": "timestamp"
+                    }
+                  },
+                  {
+                    "apiName": "value",
+                    "rid": "ri.ontology.main.struct-field.bf57b437-f5f8-4550-a75d-cc5c6eb08680",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  }
+                ]
+              },
+              "reducers": []
+            },
+            "rid": "ri.ontology.main.property.bb263b24-984d-4eb7-bc08-1680717b85dc",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "createdDatetime": {
+            "displayName": "Created Datetime",
+            "dataType": {
+              "type": "timestamp"
+            },
+            "rid": "ri.ontology.main.property.bc6cdbb9-96de-4506-a2e4-e70fad72227f",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "driverName": {
+            "displayName": "Driver Name",
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "struct",
+                "structFieldTypes": [
+                  {
+                    "apiName": "createdBy",
+                    "rid": "ri.ontology.main.struct-field.8f5be9ca-0af3-4703-be24-c2d7976257cf",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "apiName": "createdTime",
+                    "rid": "ri.ontology.main.struct-field.c911b057-88b9-4f69-9874-e926e5eaad4f",
+                    "dataType": {
+                      "type": "timestamp"
+                    }
+                  },
+                  {
+                    "apiName": "datasourceGid",
+                    "rid": "ri.ontology.main.struct-field.bf78c59c-47b7-4302-88f1-5226710f8032",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "apiName": "datasourceName",
+                    "rid": "ri.ontology.main.struct-field.599e5815-a5f3-4f7a-b99b-9ed1865d31b0",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "apiName": "endDatetime",
+                    "rid": "ri.ontology.main.struct-field.61937037-9e8e-427d-a10c-2364513dfa46",
+                    "dataType": {
+                      "type": "timestamp"
+                    }
+                  },
+                  {
+                    "apiName": "lastModifiedBy",
+                    "rid": "ri.ontology.main.struct-field.8d832c54-7a5c-48b0-8f9b-b97e813d827f",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "apiName": "lastModifiedTime",
+                    "rid": "ri.ontology.main.struct-field.4724866e-26a7-4c1e-9255-a59ddc5896f0",
+                    "dataType": {
+                      "type": "timestamp"
+                    }
+                  },
+                  {
+                    "apiName": "startDatetime",
+                    "rid": "ri.ontology.main.struct-field.0d69fe3f-38bd-4edd-bfd8-907bf1de38b2",
+                    "dataType": {
+                      "type": "timestamp"
+                    }
+                  },
+                  {
+                    "apiName": "value",
+                    "rid": "ri.ontology.main.struct-field.8f6dbc4d-bbcc-48e0-8ad2-79dc9236e70b",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  }
+                ]
+              },
+              "reducers": []
+            },
+            "rid": "ri.ontology.main.property.d69babb7-4373-40e7-8743-3f318d90406e",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "resolvedTo": {
+            "displayName": "Resolved To",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.296a2c6d-6378-456c-8d92-c1ef13bb210c",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "site": {
+            "displayName": "Site",
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "struct",
+                "structFieldTypes": [
+                  {
+                    "apiName": "createdBy",
+                    "rid": "ri.ontology.main.struct-field.6e79e750-0638-4312-88d7-8bf3068e5f4e",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "apiName": "createdTime",
+                    "rid": "ri.ontology.main.struct-field.00d52707-895e-4c8f-91eb-9f4c23d64573",
+                    "dataType": {
+                      "type": "timestamp"
+                    }
+                  },
+                  {
+                    "apiName": "datasourceGid",
+                    "rid": "ri.ontology.main.struct-field.6f18c737-7196-43db-92ff-7c8c6311024c",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "apiName": "datasourceName",
+                    "rid": "ri.ontology.main.struct-field.da78d575-e52d-48b9-9dd0-7a6c6e306d49",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "apiName": "endDatetime",
+                    "rid": "ri.ontology.main.struct-field.75aa4b36-6e5e-4a24-af6a-32e47fd46694",
+                    "dataType": {
+                      "type": "timestamp"
+                    }
+                  },
+                  {
+                    "apiName": "lastModifiedBy",
+                    "rid": "ri.ontology.main.struct-field.d3b7b3ff-5f78-4557-ac1b-b39cf9dad5aa",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "apiName": "lastModifiedTime",
+                    "rid": "ri.ontology.main.struct-field.a6862803-4307-4508-a418-76f4464e4d34",
+                    "dataType": {
+                      "type": "timestamp"
+                    }
+                  },
+                  {
+                    "apiName": "startDatetime",
+                    "rid": "ri.ontology.main.struct-field.2447357a-136a-49ab-9d18-8725c9975eff",
+                    "dataType": {
+                      "type": "timestamp"
+                    }
+                  },
+                  {
+                    "apiName": "value",
+                    "rid": "ri.ontology.main.struct-field.12ef81b2-bc8d-486c-b397-e0ad8419b983",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  }
+                ]
+              },
+              "reducers": []
+            },
+            "rid": "ri.ontology.main.property.946bacd9-f37d-411b-8075-83479eea2f28",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "externalId": {
+            "displayName": "External Id",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.7befc7ab-3f55-4879-891f-7c9982e5ca7f",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "maker": {
+            "displayName": "Maker",
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "struct",
+                "structFieldTypes": [
+                  {
+                    "apiName": "makerValue",
+                    "rid": "ri.ontology.main.struct-field.ec036821-c05a-4481-ad90-5a3e9cfe20bf",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "apiName": "createdBy",
+                    "rid": "ri.ontology.main.struct-field.84ed1ecf-f843-4c46-b588-613009383a9c",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "apiName": "createdTime",
+                    "rid": "ri.ontology.main.struct-field.bb4c301b-08d9-40da-8666-45d0235ace17",
+                    "dataType": {
+                      "type": "timestamp"
+                    }
+                  },
+                  {
+                    "apiName": "datasourceGid",
+                    "rid": "ri.ontology.main.struct-field.370ef529-16b5-4578-b0b5-a74e73be339b",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "apiName": "datasourceName",
+                    "rid": "ri.ontology.main.struct-field.55b4e1ea-d9e1-4f92-93e4-2acd66f14d1a",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "apiName": "lastModifiedBy",
+                    "rid": "ri.ontology.main.struct-field.998735cc-6914-4c6d-b79c-a6421203cb8b",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "apiName": "lastModifiedTime",
+                    "rid": "ri.ontology.main.struct-field.ecf76190-5eff-42ac-813e-e778bf624f74",
+                    "dataType": {
+                      "type": "timestamp"
+                    }
+                  },
+                  {
+                    "apiName": "endDatetime",
+                    "rid": "ri.ontology.main.struct-field.1ae50f76-ad97-486d-886c-fd756198c2a7",
+                    "dataType": {
+                      "type": "timestamp"
+                    }
+                  },
+                  {
+                    "apiName": "startDatetime",
+                    "rid": "ri.ontology.main.struct-field.0026a90d-1788-46e2-9365-a7cd37cdfdb6",
+                    "dataType": {
+                      "type": "timestamp"
+                    }
+                  }
+                ]
+              },
+              "reducers": []
+            },
+            "rid": "ri.ontology.main.property.740ee51e-45b2-4a42-8566-a23bc9c88ce7",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "badgeId": {
+            "displayName": "Badge ID",
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "struct",
+                "structFieldTypes": [
+                  {
+                    "apiName": "createdBy",
+                    "rid": "ri.ontology.main.struct-field.2afcbcb6-55de-4606-b12f-42a4ced5a21d",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "apiName": "createdTime",
+                    "rid": "ri.ontology.main.struct-field.b6a1a05e-fdc5-4e8e-9dad-2f777e2e12c5",
+                    "dataType": {
+                      "type": "timestamp"
+                    }
+                  },
+                  {
+                    "apiName": "datasourceGid",
+                    "rid": "ri.ontology.main.struct-field.a55ff395-33c8-4094-98dc-f0142ad559f9",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "apiName": "datasourceName",
+                    "rid": "ri.ontology.main.struct-field.012fd461-50db-4eb6-ba83-a90949cfbdf1",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "apiName": "endDatetime",
+                    "rid": "ri.ontology.main.struct-field.f33be644-fdfb-4123-8335-24c7bc4f3e60",
+                    "dataType": {
+                      "type": "timestamp"
+                    }
+                  },
+                  {
+                    "apiName": "lastModifiedBy",
+                    "rid": "ri.ontology.main.struct-field.ed7e7269-9133-47b4-a36b-4c41455c2cfb",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "apiName": "lastModifiedTime",
+                    "rid": "ri.ontology.main.struct-field.50425d1e-5a62-4cce-b11b-37f1254ef249",
+                    "dataType": {
+                      "type": "timestamp"
+                    }
+                  },
+                  {
+                    "apiName": "startDatetime",
+                    "rid": "ri.ontology.main.struct-field.936487fc-5d14-4dfa-80d6-266cc5ec56ce",
+                    "dataType": {
+                      "type": "timestamp"
+                    }
+                  },
+                  {
+                    "apiName": "value",
+                    "rid": "ri.ontology.main.struct-field.2f9baad7-ee31-4803-afa8-8636f0617987",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  }
+                ]
+              },
+              "reducers": []
+            },
+            "rid": "ri.ontology.main.property.0deeb320-a720-4372-b573-523134eae718",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "age": {
+            "displayName": "Age",
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "struct",
+                "structFieldTypes": [
+                  {
+                    "apiName": "createdBy",
+                    "rid": "ri.ontology.main.struct-field.fe45c6ba-c38b-4e20-a1e9-9e33e82a90f2",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "apiName": "createdTime",
+                    "rid": "ri.ontology.main.struct-field.d1cf16bd-5f68-4eca-815a-bdc74952751a",
+                    "dataType": {
+                      "type": "timestamp"
+                    }
+                  },
+                  {
+                    "apiName": "datasourceGid",
+                    "rid": "ri.ontology.main.struct-field.c6beb40a-a13a-4f4d-8ef6-001216e11df8",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "apiName": "datasourceName",
+                    "rid": "ri.ontology.main.struct-field.5f0a766f-136d-4cb8-9168-cdbb9afb3fe6",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "apiName": "endDatetime",
+                    "rid": "ri.ontology.main.struct-field.6f1b44a3-92b8-4d4d-9c4d-79b844109ed7",
+                    "dataType": {
+                      "type": "timestamp"
+                    }
+                  },
+                  {
+                    "apiName": "lastModifiedBy",
+                    "rid": "ri.ontology.main.struct-field.c518cf71-4afe-48f7-851d-209e1e36dbd1",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "apiName": "lastModifiedTime",
+                    "rid": "ri.ontology.main.struct-field.43426102-ff50-4ea8-995f-308d49fe6459",
+                    "dataType": {
+                      "type": "timestamp"
+                    }
+                  },
+                  {
+                    "apiName": "startDatetime",
+                    "rid": "ri.ontology.main.struct-field.023595f3-4491-4aff-9fe6-7a9cb4fe7442",
+                    "dataType": {
+                      "type": "timestamp"
+                    }
+                  },
+                  {
+                    "apiName": "value",
+                    "rid": "ri.ontology.main.struct-field.f606b629-4276-4f8e-a90a-ccde422a6884",
+                    "dataType": {
+                      "type": "integer"
+                    }
+                  }
+                ]
+              },
+              "reducers": []
+            },
+            "rid": "ri.ontology.main.property.d1614127-0102-487d-bcc1-08686496b11f",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "lastModified": {
+            "displayName": "Last Modified",
+            "dataType": {
+              "type": "timestamp"
+            },
+            "rid": "ri.ontology.main.property.6a620786-6681-4c61-93f5-4b75868f7143",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "backupDriverName": {
+            "displayName": "Backup Driver Name",
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "struct",
+                "structFieldTypes": [
+                  {
+                    "apiName": "createdBy",
+                    "rid": "ri.ontology.main.struct-field.b0861c19-0ba8-4263-9e6b-4fa4415fd1e7",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "apiName": "createdTime",
+                    "rid": "ri.ontology.main.struct-field.d8a4d2e7-a799-4843-bbc7-4c26afa4c6db",
+                    "dataType": {
+                      "type": "timestamp"
+                    }
+                  },
+                  {
+                    "apiName": "datasourceGid",
+                    "rid": "ri.ontology.main.struct-field.3218fd54-511d-45c7-9538-4b09d1e8f79d",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "apiName": "datasourceName",
+                    "rid": "ri.ontology.main.struct-field.be075072-e94b-4a2a-b7b2-13d96c5d5695",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "apiName": "endDatetime",
+                    "rid": "ri.ontology.main.struct-field.f8cfb3a0-1f27-480e-9014-81abe880e989",
+                    "dataType": {
+                      "type": "timestamp"
+                    }
+                  },
+                  {
+                    "apiName": "lastModifiedBy",
+                    "rid": "ri.ontology.main.struct-field.59a14211-83bc-4b01-ba45-4039cdacf933",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "apiName": "lastModifiedTime",
+                    "rid": "ri.ontology.main.struct-field.fd2aa139-ffe5-4d4c-b17c-3bfc14f16035",
+                    "dataType": {
+                      "type": "timestamp"
+                    }
+                  },
+                  {
+                    "apiName": "startDatetime",
+                    "rid": "ri.ontology.main.struct-field.417c6aaf-c109-43aa-8df9-751845353c60",
+                    "dataType": {
+                      "type": "timestamp"
+                    }
+                  },
+                  {
+                    "apiName": "value",
+                    "rid": "ri.ontology.main.struct-field.ae4322bd-8c51-4de7-8002-a4b6b7355ba5",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  }
+                ]
+              },
+              "reducers": []
+            },
+            "rid": "ri.ontology.main.property.3c4d4627-5b72-403b-85c8-c3254404ce50",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "shortId": {
+            "displayName": "Short ID",
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "struct",
+                "structFieldTypes": [
+                  {
+                    "apiName": "createdBy",
+                    "rid": "ri.ontology.main.struct-field.8e6bcf35-20b2-4144-b36c-a0c58f70d5f1",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "apiName": "createdTime",
+                    "rid": "ri.ontology.main.struct-field.1de91efb-4d3c-497e-a32a-806e28fec19f",
+                    "dataType": {
+                      "type": "timestamp"
+                    }
+                  },
+                  {
+                    "apiName": "datasourceGid",
+                    "rid": "ri.ontology.main.struct-field.8aea4c00-712a-426c-9a6b-238955723373",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "apiName": "datasourceName",
+                    "rid": "ri.ontology.main.struct-field.e8c67734-b043-4399-b4d3-6dd0295bc785",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "apiName": "endDatetime",
+                    "rid": "ri.ontology.main.struct-field.0b1ef9d6-2cf6-475f-8c5b-0055f2071aa0",
+                    "dataType": {
+                      "type": "timestamp"
+                    }
+                  },
+                  {
+                    "apiName": "lastModifiedBy",
+                    "rid": "ri.ontology.main.struct-field.26e2e0b8-39bc-430e-8e68-bffa82536334",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "apiName": "lastModifiedTime",
+                    "rid": "ri.ontology.main.struct-field.ec0c4bff-9e68-4718-8a66-25c902bffb54",
+                    "dataType": {
+                      "type": "timestamp"
+                    }
+                  },
+                  {
+                    "apiName": "startDatetime",
+                    "rid": "ri.ontology.main.struct-field.63760fc0-024a-4020-93c0-91ef01c4f7e2",
+                    "dataType": {
+                      "type": "timestamp"
+                    }
+                  },
+                  {
+                    "apiName": "value",
+                    "rid": "ri.ontology.main.struct-field.1b5c9e3c-9884-4344-a5ae-16a2b76548e5",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  }
+                ]
+              },
+              "reducers": []
+            },
+            "rid": "ri.ontology.main.property.fb8a6794-7a2b-4f18-a5ea-3db053717494",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "managerName": {
+            "displayName": "Manager Name",
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "struct",
+                "structFieldTypes": [
+                  {
+                    "apiName": "createdBy",
+                    "rid": "ri.ontology.main.struct-field.f90086d8-a0b8-4cf5-9d57-40222e92144b",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "apiName": "createdTime",
+                    "rid": "ri.ontology.main.struct-field.6fe0279c-d0db-488c-a35a-f0e76b8c6ed5",
+                    "dataType": {
+                      "type": "timestamp"
+                    }
+                  },
+                  {
+                    "apiName": "datasourceGid",
+                    "rid": "ri.ontology.main.struct-field.84f9904e-cb12-4a84-ad87-03b9976bcb5b",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "apiName": "datasourceName",
+                    "rid": "ri.ontology.main.struct-field.94e00170-bdeb-4445-bec7-c8819a534110",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "apiName": "endDatetime",
+                    "rid": "ri.ontology.main.struct-field.fdb0d00c-e84e-4702-846d-44903d604fd7",
+                    "dataType": {
+                      "type": "timestamp"
+                    }
+                  },
+                  {
+                    "apiName": "lastModifiedBy",
+                    "rid": "ri.ontology.main.struct-field.7dd237ea-8cbf-4d45-a772-0a964efff66a",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "apiName": "lastModifiedTime",
+                    "rid": "ri.ontology.main.struct-field.4d38aa83-73d4-4a66-87ca-db1d1a62311d",
+                    "dataType": {
+                      "type": "timestamp"
+                    }
+                  },
+                  {
+                    "apiName": "startDatetime",
+                    "rid": "ri.ontology.main.struct-field.6181d84a-7542-4a52-86c7-8f1421df4e07",
+                    "dataType": {
+                      "type": "timestamp"
+                    }
+                  },
+                  {
+                    "apiName": "value",
+                    "rid": "ri.ontology.main.struct-field.371a4dd0-bbc1-4e44-8293-3a2c494d076f",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  }
+                ]
+              },
+              "reducers": []
+            },
+            "rid": "ri.ontology.main.property.7118bc25-e8a5-4d90-a83b-15bb1a072511",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "title": {
+            "displayName": "Title",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.e5a8afc7-969a-4eb5-8b71-7e33d40a55d6",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "supervisorName": {
+            "displayName": "Supervisor Name",
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "struct",
+                "structFieldTypes": [
+                  {
+                    "apiName": "createdBy",
+                    "rid": "ri.ontology.main.struct-field.e5a572db-7390-417a-ba2e-d07a2979de8c",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "apiName": "createdTime",
+                    "rid": "ri.ontology.main.struct-field.b30c7123-b4b2-40d5-a276-bdfb7bca4d4c",
+                    "dataType": {
+                      "type": "timestamp"
+                    }
+                  },
+                  {
+                    "apiName": "datasourceGid",
+                    "rid": "ri.ontology.main.struct-field.718fafcd-1f6f-4896-ad41-088f76736520",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "apiName": "datasourceName",
+                    "rid": "ri.ontology.main.struct-field.bb356225-992a-4998-9125-0aeba2b71f51",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "apiName": "endDatetime",
+                    "rid": "ri.ontology.main.struct-field.8eb857a5-30d2-4c76-bc76-e434f4bad861",
+                    "dataType": {
+                      "type": "timestamp"
+                    }
+                  },
+                  {
+                    "apiName": "lastModifiedBy",
+                    "rid": "ri.ontology.main.struct-field.3c711ead-dfaf-4136-8802-7f389c7b0b08",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "apiName": "lastModifiedTime",
+                    "rid": "ri.ontology.main.struct-field.89100398-1f39-4e99-a1e1-bbcbe20c64d5",
+                    "dataType": {
+                      "type": "timestamp"
+                    }
+                  },
+                  {
+                    "apiName": "startDatetime",
+                    "rid": "ri.ontology.main.struct-field.375ce4f4-8a92-4f3e-98d3-ab565fa1eda0",
+                    "dataType": {
+                      "type": "timestamp"
+                    }
+                  },
+                  {
+                    "apiName": "value",
+                    "rid": "ri.ontology.main.struct-field.294de552-9f1e-418f-8b01-f4307af14722",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  }
+                ]
+              },
+              "reducers": []
+            },
+            "rid": "ri.ontology.main.property.be8dde58-d786-432f-be00-6af774c65aba",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "musicPlayer": {
+            "displayName": "Music Player",
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "struct",
+                "structFieldTypes": [
+                  {
+                    "apiName": "make",
+                    "rid": "ri.ontology.main.struct-field.8f785c61-714e-49ec-adbe-48c34d3425ac",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "apiName": "name",
+                    "rid": "ri.ontology.main.struct-field.9f517e66-e632-460b-a5d2-544da9a6ab1c",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "apiName": "year",
+                    "rid": "ri.ontology.main.struct-field.dac8727f-5bf5-4e4d-abd6-af6c2a3bac4d",
+                    "dataType": {
+                      "type": "integer"
+                    }
+                  }
+                ]
+              },
+              "reducers": []
+            },
+            "rid": "ri.ontology.main.property.1bbb5b92-c676-4a51-abea-6e34ceb2e4cb",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "internalSize": {
+            "displayName": "Internal Size",
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "struct",
+                "structFieldTypes": [
+                  {
+                    "apiName": "createdBy",
+                    "rid": "ri.ontology.main.struct-field.8f3eb50b-9444-49a3-bf5a-d054f8bad370",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "apiName": "createdTime",
+                    "rid": "ri.ontology.main.struct-field.411f9973-4e69-4b79-a64e-25e1f56d74c2",
+                    "dataType": {
+                      "type": "timestamp"
+                    }
+                  },
+                  {
+                    "apiName": "datasourceGid",
+                    "rid": "ri.ontology.main.struct-field.00758fc6-65dd-42cf-a754-f35744c3189a",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "apiName": "datasourceName",
+                    "rid": "ri.ontology.main.struct-field.d23223b1-1227-43e3-9c19-882d5d1c4094",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "apiName": "endDatetime",
+                    "rid": "ri.ontology.main.struct-field.8d07db3f-e7d0-469a-9dee-f9556e640261",
+                    "dataType": {
+                      "type": "timestamp"
+                    }
+                  },
+                  {
+                    "apiName": "lastModifiedBy",
+                    "rid": "ri.ontology.main.struct-field.d9bdea45-de0e-4ea8-8d47-9bd4540532bb",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "apiName": "lastModifiedTime",
+                    "rid": "ri.ontology.main.struct-field.822a5bfd-c00d-4932-819e-c3e345df1d9d",
+                    "dataType": {
+                      "type": "timestamp"
+                    }
+                  },
+                  {
+                    "apiName": "startDatetime",
+                    "rid": "ri.ontology.main.struct-field.2271c5b8-45bd-41d2-9757-d35665aa47b2",
+                    "dataType": {
+                      "type": "timestamp"
+                    }
+                  },
+                  {
+                    "apiName": "value",
+                    "rid": "ri.ontology.main.struct-field.1b0c0fbd-4bac-4245-a715-9253566ccd52",
+                    "dataType": {
+                      "type": "integer"
+                    }
+                  }
+                ]
+              },
+              "reducers": []
+            },
+            "rid": "ri.ontology.main.property.1397bc63-a3bc-4935-af32-0f93a15679f9",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          }
+        },
+        "rid": "ri.ontology.main.object-type.73756c21-5a63-47ae-af39-2f22bedd8ec2",
+        "titleProperty": "title",
+        "visibility": "NORMAL"
+      },
+      "linkTypes": [
+        {
+          "apiName": "masonHeavyEquipment",
+          "displayName": "[mason] Heavy Equipment",
+          "status": "EXPERIMENTAL",
+          "objectTypeApiName": "MasonHeavyEquipment",
+          "cardinality": "ONE",
+          "foreignKeyPropertyApiName": "resolvedTo",
+          "linkTypeRid": "ri.ontology.main.relation.1f0a20d8-4d47-4595-aa81-989f6c050193"
+        }
+      ],
+      "implementsInterfaces": [],
+      "implementsInterfaces2": {},
+      "sharedPropertyTypeMapping": {}
+    },
+    "MasonMovie": {
+      "objectType": {
+        "apiName": "MasonMovie",
+        "displayName": "[mason] movie",
+        "status": "EXPERIMENTAL",
+        "description": "",
+        "pluralDisplayName": "[mason] movies",
+        "icon": {
+          "type": "blueprint",
+          "color": "#4C90F0",
+          "name": "cube"
+        },
+        "primaryKey": "movie",
+        "properties": {
+          "classAlt": {
+            "displayName": "Class alt",
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "string"
+              },
+              "reducers": []
+            },
+            "rid": "ri.ontology.main.property.fa2b4182-259e-42db-b4ea-264a72dcb1fa",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "movie": {
+            "displayName": "Movie",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.a84f4d22-114b-4b5a-a93e-2640308cabd8",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "class": {
+            "displayName": "Class",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.f7308abf-2ef5-46ec-bbf3-19f1501c16d4",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "rating": {
+            "displayName": "Rating",
+            "dataType": {
+              "type": "decimal"
+            },
+            "rid": "ri.ontology.main.property.ea04a985-df3f-4a39-8a6b-9e0ca9cfaf91",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "topic": {
+            "displayName": "Topic",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.a29564d6-ab9d-4b65-aa11-3153a95a3913",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "class2": {
+            "displayName": "Class 2",
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "string"
+              },
+              "reducers": []
+            },
+            "rid": "ri.ontology.main.property.25dee438-f734-45d9-b01f-9716ab3cad4e",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          }
+        },
+        "rid": "ri.ontology.main.object-type.65a5444c-452e-450e-ac28-04f0028a243d",
+        "titleProperty": "movie",
+        "visibility": "NORMAL"
+      },
+      "linkTypes": [],
+      "implementsInterfaces": [],
+      "implementsInterfaces2": {},
+      "sharedPropertyTypeMapping": {}
+    },
     "EsongIssues": {
       "objectType": {
         "apiName": "EsongIssues",
@@ -661,17 +2214,6 @@
               "type": "string"
             },
             "rid": "ri.ontology.main.property.cc0f7992-b809-41cb-bb26-66b6493049ab",
-            "status": {
-              "type": "experimental"
-            },
-            "visibility": "NORMAL"
-          },
-          "cipherTest": {
-            "displayName": "Cipher test",
-            "dataType": {
-              "type": "cipherText"
-            },
-            "rid": "ri.ontology.main.property.57a0220e-329b-4210-a40a-1d818c5d618c",
             "status": {
               "type": "experimental"
             },

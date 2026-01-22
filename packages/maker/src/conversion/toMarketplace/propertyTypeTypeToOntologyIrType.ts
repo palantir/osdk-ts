@@ -53,6 +53,8 @@ export function propertyTypeTypeToOntologyIrType(
               fieldType: propertyTypeTypeToOntologyIrType(
                 fieldTypeDefinition.fieldType,
               ),
+              displayMetadata: fieldTypeDefinition.displayMetadata
+                ?? { displayName: key, description: undefined },
               typeClasses: fieldTypeDefinition.typeClasses ?? [],
               aliases: fieldTypeDefinition.aliases ?? [],
             };

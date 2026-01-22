@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,57 @@
  * limitations under the License.
  */
 
-import type { ReleasePlan } from "@changesets/types";
+import type { Release, ReleasePlan } from "@changesets/types";
 import chalk from "chalk";
-import * as path from "node:path";
-import { inc } from "semver";
+import path from "path";
+import { inc, parse } from "semver";
 import { FailedWithUserMessage } from "./FailedWithUserMessage.js";
+
+function isFirstMinorRelease(oldVersion: string, newVersion: string): boolean {
+  const oldSemver = parse(oldVersion);
+  const newSemver = parse(newVersion);
+  if (oldSemver == null || newSemver == null) {
+    throw new FailedWithUserMessage(
+      `Invalid version(s): ${oldVersion}, ${newVersion}`,
+    );
+  }
+  return (
+    oldSemver.prerelease.length > 0
+    && newSemver.prerelease.length === 0
+    && oldSemver.compareMain(newSemver) === 0
+    && newSemver.patch === 0
+  );
+}
+
+/**
+ * Checks that a release for a given changeset is valid.
+ * @param releasePlan The entire release plan
+ * @param releaseForChangeset A release entry from a specific changeset
+ * @returns
+ */
+function isPatchVersionOrFirstMinorRelease(
+  releasePlan: ReleasePlan,
+  releaseForChangeset: Release,
+): boolean {
+  if (releaseForChangeset.type === "patch") {
+    return true;
+  }
+  if (releaseForChangeset.type === "minor") {
+    // Find the matching release entry in the overall release plan
+    const releaseName = releaseForChangeset.name;
+    const matchingReleases = releasePlan.releases.filter((r) =>
+      r.name === releaseForChangeset.name
+    );
+    if (matchingReleases.length !== 1) {
+      throw new FailedWithUserMessage(
+        `Expected exactly one release entry for package "${releaseName}", but found ${matchingReleases.length}.`,
+      );
+    }
+    const release = matchingReleases[0];
+    return isFirstMinorRelease(release.oldVersion, release.newVersion);
+  }
+  return false;
+}
 
 export function mutateReleasePlan(
   cwd: string,
@@ -32,7 +78,8 @@ export function mutateReleasePlan(
       if (releaseType === "main" && release.type === "patch") {
         release.type = "minor";
       } else if (
-        releaseType === "release branch" && (release.type !== "patch")
+        releaseType === "release branch"
+        && (!isPatchVersionOrFirstMinorRelease(releasePlan, release))
         && (release.type !== "none")
       ) {
         if (!errorStarted) {

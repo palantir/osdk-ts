@@ -62,4 +62,5 @@ export interface ObjectTypeInner extends
   visibility: Visibility;
   editsEnabled: boolean;
   status?: ObjectTypeStatus;
+  aliases?: Array<string>;
 }

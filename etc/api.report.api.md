@@ -118,7 +118,9 @@ export namespace ActionParam {
             		} ? (U extends ReadonlyArray<never> ? string : U extends ReadonlyArray<string> ? U[number] : string) : string
         		$primaryKey: string | number
         	};
-    	// (undocumented)
+    	// Warning: (ae-forgotten-export) The symbol "NULL_VALUE" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
     export type NullValueType = typeof NULL_VALUE;
     	// (undocumented)
     export type ObjectSetType<T extends ObjectTypeDefinition> = ObjectSet<T>;
@@ -254,8 +256,9 @@ export interface AsyncIterArgs<
 	S extends NullabilityAdherence = NullabilityAdherence.Default,
 	T extends boolean = false,
 	RDP_KEYS extends string = never,
-	ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<K> = never
-> extends SelectArg<Q, K, R, S, RDP_KEYS>, OrderByArg<Q, PropertyKeys<Q> | RDP_KEYS, ORDER_BY_OPTIONS> {
+	ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<K> = never,
+	PROPERTY_SECURITIES extends boolean = false
+> extends SelectArg<Q, K, R, S, RDP_KEYS, PROPERTY_SECURITIES>, OrderByArg<Q, PropertyKeys<Q> | RDP_KEYS, ORDER_BY_OPTIONS> {
     	// (undocumented)
     $__UNSTABLE_useOldInterfaceApis?: boolean;
     	// (undocumented)
@@ -315,7 +318,7 @@ export type ConvertProps<
 	FROM extends ObjectOrInterfaceDefinition,
 	TO extends ValidToFrom<FROM>,
 	P extends ValidOsdkPropParams<FROM>,
-	OPTIONS extends never | "$rid" | "$allBaseProperties" = never
+	OPTIONS extends never | "$rid" | "$allBaseProperties" | "$propertySecurities" = never
 > = TO extends FROM ? P : TO extends ObjectTypeDefinition ? (UnionIfTrue<MapPropNamesToObjectType<FROM, TO, P, OPTIONS>, P extends "$rid" ? true : false, "$rid">) : TO extends InterfaceDefinition ? FROM extends ObjectTypeDefinition ? (UnionIfTrue<MapPropNamesToInterface<FROM, TO, P>, P extends "$rid" ? true : false, "$rid">) : never : never;
 
 // @public
@@ -620,8 +623,9 @@ export interface FetchPageArgs<
 	S extends NullabilityAdherence = NullabilityAdherence.Default,
 	T extends boolean = false,
 	RDP_KEYS extends string = never,
-	ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<K> = {}
-> extends AsyncIterArgs<Q, K, R, A, S, T, RDP_KEYS, ORDER_BY_OPTIONS> {
+	ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<K> = {},
+	PROPERTY_SECURITIES extends boolean = false
+> extends AsyncIterArgs<Q, K, R, A, S, T, RDP_KEYS, ORDER_BY_OPTIONS, PROPERTY_SECURITIES> {
     	// (undocumented)
     $nextPageToken?: string;
     	// (undocumented)
@@ -907,11 +911,6 @@ export type NotWhereClause<
 	RDPs extends Record<string, SimplePropertyDef> = {}
 > = {
     	$not: WhereClause<T, RDPs>
-};
-
-// @public (undocumented)
-export const NULL_VALUE: symbol & {
-    	__type: "NULL_VALUE"
 };
 
 // @public (undocumented)
@@ -1281,7 +1280,7 @@ export namespace Osdk {
     // (undocumented)
     export type Instance<
     		Q extends ObjectOrInterfaceDefinition,
-    		OPTIONS extends never | "$rid" | "$allBaseProperties" = never,
+    		OPTIONS extends never | "$rid" | "$allBaseProperties" | "$propertySecurities" = never,
     		P extends PropertyKeys<Q> = PropertyKeys<Q>,
     		R extends Record<string, SimplePropertyDef> = {}
     	> = OsdkBase<Q> & Pick<CompileTimeMetadata<Q>["props"], GetPropsKeys<Q, P, [R] extends [{}] ? false : true>> & ([R] extends [never] ? {} : { [A in keyof R] : SimplePropertyDef.ToRuntimeProperty<R[A]> }) & {
@@ -1300,7 +1299,9 @@ export namespace Osdk {
             			locale?: string
             			timezoneId?: string
             		}) => string | undefined
-        	} & (IsNever<OPTIONS> extends true ? {} : IsAny<OPTIONS> extends true ? {} : "$rid" extends OPTIONS ? {
+        	} & (IsNever<OPTIONS> extends true ? {} : IsAny<OPTIONS> extends true ? {} : "$propertySecurities" extends OPTIONS ? {
+        		readonly $propertySecurities: ObjectPropertySecurities<Q, GetPropsKeys<Q, P, [R] extends [{}] ? false : true>>
+        	} : {}) & (IsNever<OPTIONS> extends true ? {} : IsAny<OPTIONS> extends true ? {} : "$rid" extends OPTIONS ? {
         		readonly $rid: string
         	} : {});
 }
@@ -1430,6 +1431,15 @@ export interface PropertyKnownTypeFormattingRule {
     type: "knownType";
 }
 
+// @public
+export interface PropertyMarkings {
+    	// Warning: (ae-forgotten-export) The symbol "MarkingId" needs to be exported by the entry point index.d.ts
+    conjunctive?: Array<MarkingId>;
+    	containerConjunctive?: Array<MarkingId>;
+    	containerDisjunctive?: Array<Array<MarkingId>>;
+    	disjunctive?: Array<Array<MarkingId>>;
+}
+
 // @public (undocumented)
 export interface PropertyNumberFormattingRule {
     	// (undocumented)
@@ -1440,6 +1450,17 @@ export interface PropertyNumberFormattingRule {
 
 // @public (undocumented)
 export type PropertyNumberFormattingRuleType = NumberFormatStandard | NumberFormatFixedValues | NumberFormatCurrency | NumberFormatStandardUnit | NumberFormatCustomUnit | NumberFormatAffix | NumberFormatDuration | NumberFormatScale | NumberFormatRatio;
+
+// Warning: (tsdoc-undefined-tag) The TSDoc tag "@discriminator" is not defined in this configuration
+//
+// @public
+export type PropertySecurity = ({
+    	type: "propertyMarkings"
+} & PropertyMarkings) | ({
+    	type: "unsupportedPolicy"
+}) | ({
+    	type: "errorComputingSecurity"
+});
 
 // @public (undocumented)
 export interface PropertyTimestampFormattingRule {
@@ -1661,10 +1682,13 @@ export interface SelectArg<
 	L extends string = PropertyKeys<Q>,
 	R extends boolean = false,
 	S extends NullabilityAdherence = NullabilityAdherence.Default,
-	RDP_KEYS extends string = never
+	RDP_KEYS extends string = never,
+	PROPERTY_SECURITIES extends boolean = false
 > {
     	// (undocumented)
     $includeRid?: R;
+    	// (undocumented)
+    $loadPropertySecurityMetadata?: PROPERTY_SECURITIES;
     	// (undocumented)
     $select?: readonly L[];
 }
@@ -1876,6 +1900,7 @@ export type WirePropertyTypes = BaseWirePropertyTypes | Record<string, BaseWireP
 // src/Definitions.ts:42:52 - (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
 // src/Definitions.ts:42:52 - (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
 // src/Definitions.ts:42:52 - (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
+// src/OsdkObjectFrom.ts:273:49 - (ae-forgotten-export) The symbol "ObjectPropertySecurities" needs to be exported by the entry point index.d.ts
 // src/aggregate/AggregateOpts.ts:25:3 - (ae-forgotten-export) The symbol "UnorderedAggregationClause" needs to be exported by the entry point index.d.ts
 // src/aggregate/AggregateOpts.ts:25:3 - (ae-forgotten-export) The symbol "OrderedAggregationClause" needs to be exported by the entry point index.d.ts
 // src/aggregate/AggregationResultsWithGroups.ts:36:5 - (ae-forgotten-export) The symbol "MaybeNullable_2" needs to be exported by the entry point index.d.ts

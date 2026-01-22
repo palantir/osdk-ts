@@ -1,5 +1,16 @@
 # @osdk/functions
 
+## 1.5.0-beta.4
+
+### Minor Changes
+
+- c6124eb: Add ability to flush edits to transactions
+
+### Patch Changes
+
+- Updated dependencies [c6124eb]
+  - @osdk/client@2.7.0-beta.8
+
 ## 1.5.0-beta.3
 
 ### Minor Changes

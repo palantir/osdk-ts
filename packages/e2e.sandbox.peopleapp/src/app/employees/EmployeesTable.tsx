@@ -1,6 +1,7 @@
 import type { DerivedProperty, Osdk } from "@osdk/api";
 import type { ColumnDefinition } from "@osdk/react-components/experimental";
 import { ObjectTable } from "@osdk/react-components/experimental";
+import { useCallback } from "react";
 import { $ } from "../../foundryClient.js";
 import { Employee } from "../../generatedNoCheck2/index.js";
 
@@ -62,6 +63,24 @@ const columnDefinitions: ColumnDefinition<
 export function EmployeesTable() {
   const employeesObjectSet = $(Employee);
 
+  const renderCellContextMenu = useCallback(
+    (_: Osdk.Instance<Employee>, cellValue: unknown) => {
+      return (
+        <div
+          style={{
+            background: "white",
+            padding: 20,
+            border: "1px solid #d1d5db",
+            boxShadow: "0 2px 8px 0 rgba(0, 0, 0, 0.1)",
+          }}
+        >
+          {cellValue ? cellValue.toString() : "No Value"}
+        </div>
+      );
+    },
+    [],
+  );
+
   return (
     <div
       style={{
@@ -73,6 +92,8 @@ export function EmployeesTable() {
         objectSet={employeesObjectSet}
         objectType={Employee}
         columnDefinitions={columnDefinitions}
+        selectionMode={"multiple"}
+        renderCellContextMenu={renderCellContextMenu}
       />
     </div>
   );

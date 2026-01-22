@@ -59,6 +59,10 @@ export async function applyQuery<
     query.isFixedVersion ? query.version : undefined,
   );
 
+  if (client.flushEdits != null) {
+    await client.flushEdits();
+  }
+
   const response = await OntologiesV2.Queries.execute(
     addUserAgentAndRequestContextHeaders(
       augmentRequestContext(client, _ => ({ finalMethodCall: "applyQuery" })),
@@ -309,6 +313,13 @@ async function getRequiredDefinitions(
       result.set(dataType.objectSet, objectDef);
       break;
     }
+    case "interfaceObjectSet": {
+      const interfaceDef = await client.ontologyProvider.getInterfaceDefinition(
+        dataType.objectSet,
+      );
+      result.set(dataType.objectSet, interfaceDef);
+      break;
+    }
     case "object": {
       const objectDef = await client.ontologyProvider.getObjectDefinition(
         dataType.object,
@@ -327,6 +338,9 @@ async function getRequiredDefinitions(
 
     case "set": {
       return getRequiredDefinitions(dataType.set, client);
+    }
+    case "array": {
+      return getRequiredDefinitions(dataType.array, client);
     }
 
     case "map": {
@@ -371,6 +385,10 @@ async function getRequiredDefinitions(
     case "twoDimensionalAggregation":
     case "union":
       break;
+    default: {
+      const _: never = dataType;
+      break;
+    }
   }
 
   return result;

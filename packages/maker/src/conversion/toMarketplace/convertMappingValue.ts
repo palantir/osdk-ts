@@ -14,9 +14,50 @@
  * limitations under the License.
  */
 
-import type { OntologyIrLogicRuleValue } from "@osdk/client.unstable";
+import type {
+  OntologyIrInterfacePropertyLogicRuleValue,
+  OntologyIrLogicRuleValue,
+} from "@osdk/client.unstable";
 import { randomUUID } from "crypto";
 import type { MappingValue } from "../../api/action/MappingValue.js";
+
+export function convertInterfacePropertyMappingValue(
+  value: MappingValue,
+): OntologyIrInterfacePropertyLogicRuleValue {
+  switch (value.type) {
+    case "uuid":
+      return {
+        type: "logicRuleValue",
+        logicRuleValue: {
+          type: "uniqueIdentifier",
+          uniqueIdentifier: {
+            linkId: value.linkId ?? randomUUID(),
+          },
+        },
+      };
+    case "currentTime":
+      return {
+        type: "logicRuleValue",
+        logicRuleValue: {
+          type: "currentTime",
+          currentTime: {},
+        },
+      };
+    case "currentUser":
+      return {
+        type: "logicRuleValue",
+        logicRuleValue: {
+          type: "currentUser",
+          currentUser: {},
+        },
+      };
+    default:
+      return {
+        type: "logicRuleValue",
+        logicRuleValue: value,
+      };
+  }
+}
 
 export function convertMappingValue(
   value: MappingValue,

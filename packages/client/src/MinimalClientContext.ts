@@ -35,7 +35,6 @@ export interface MinimalClient extends SharedClientContext {
   ontologyRid: string | Promise<string>;
   ontologyProvider: OntologyProvider;
   logger?: Logger;
-  transactionId?: string;
   branch?: string;
   /** @internal */
   objectSetFactory: ObjectSetFactory<any, any>;
@@ -43,6 +42,10 @@ export interface MinimalClient extends SharedClientContext {
   objectFactory: typeof convertWireToOsdkObjects;
   /** @internal */
   objectFactory2: typeof convertWireToOsdkObjects2;
+  /** @internal */
+
+  transactionId?: string;
+  flushEdits?: () => Promise<void>;
 
   clientCacheKey: ClientCacheKey;
   requestContext: RequestContext;

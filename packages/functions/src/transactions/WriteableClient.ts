@@ -30,6 +30,7 @@ import type {
   UpdatableObjectOrInterfaceLocators,
 } from "../edits/EditBatch.js";
 import type { AnyEdit } from "../edits/types.js";
+import type { EditRequestManager } from "./EditRequestManager.js";
 
 /** @internal */
 export const writeableClientContext: unique symbol = Symbol(
@@ -38,7 +39,8 @@ export const writeableClientContext: unique symbol = Symbol(
 
 export interface WriteableClientContext {
   ontologyRid: string | Promise<string>;
-  transactionRid: string;
+  transactionId: string;
+  editRequestManager: EditRequestManager;
 }
 
 export interface WriteableClient<X extends AnyEdit>

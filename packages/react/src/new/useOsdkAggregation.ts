@@ -259,7 +259,7 @@ export function useOsdkAggregation<
       }
       return makeExternalStore<ObserveAggregationArgs<Q, A>>(
         (observer) =>
-          // eslint-disable-next-line @typescript-eslint/no-deprecated
+           
           observableClient.observeAggregation(
             {
               type: type,
@@ -305,7 +305,8 @@ export function useOsdkAggregation<
 
   return {
     data: payload?.result as AggregationsResults<Q, A> | undefined,
-    isLoading: payload?.status === "loading",
+    isLoading: payload?.status === "loading" || payload?.status === "init"
+      || !payload,
     error,
     refetch,
   };

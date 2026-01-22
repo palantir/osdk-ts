@@ -1,5 +1,20 @@
 # @osdk/react-components
 
+## 0.1.0-beta.2
+
+### Minor Changes
+
+- 9c9fb9b: Row selection, column resize, filter clause
+
+### Patch Changes
+
+- Updated dependencies [6b27d8a]
+- Updated dependencies [ba3159c]
+- Updated dependencies [0395d4b]
+  - @osdk/client@2.7.0-beta.9
+  - @osdk/react@0.9.0-beta.6
+  - @osdk/api@2.7.0-beta.9
+
 ## 0.1.0-beta.1
 
 ### Minor Changes

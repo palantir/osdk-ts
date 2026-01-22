@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import type { Core } from "@osdk/foundry";
-import { Admin } from "@osdk/foundry";
-
+import { type User, Users } from "@osdk/foundry.admin";
+import type { UserStatus } from "@osdk/foundry.core";
 import React from "react";
 import { usePlatformQuery } from "../../../utils/usePlatformQuery.js";
 import { OsdkContext2 } from "../../OsdkContext2.js";
@@ -42,11 +41,11 @@ export interface UseFoundryUserOptions {
    *
    * @default "ACTIVE"
    */
-  status?: Core.UserStatus;
+  status?: UserStatus;
 }
 
 export interface UseFoundryUserResult {
-  user: Admin.User | undefined;
+  user: User | undefined;
   isLoading: boolean;
 
   error: Error | undefined;
@@ -66,7 +65,7 @@ export function useFoundryUser(
   const { client } = React.useContext(OsdkContext2);
 
   const handleQuery = React.useCallback(() => {
-    return Admin.Users.get(client, userId, { status });
+    return Users.get(client, userId, { status });
   }, [client, userId, status]);
 
   const query = usePlatformQuery({

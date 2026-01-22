@@ -388,6 +388,7 @@ describe("Experimental Test Suite", () => {
                 },
               ],
               "entityMetadata": {
+                "aliases": [],
                 "arePatchesEnabled": false,
               },
               "objectType": {
@@ -578,6 +579,7 @@ describe("Experimental Test Suite", () => {
                 },
               ],
               "entityMetadata": {
+                "aliases": [],
                 "arePatchesEnabled": false,
               },
               "objectType": {

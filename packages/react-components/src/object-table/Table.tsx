@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { RowData, Table } from "@tanstack/react-table";
+import type { Cell, RowData, Table } from "@tanstack/react-table";
 import React, { type ReactElement, useCallback, useRef } from "react";
 import { TableBody } from "./TableBody.js";
 import { TableHeader } from "./TableHeader.js";
@@ -25,10 +25,21 @@ interface TableProps<TData extends RowData> {
   fetchNextPage?: () => Promise<void>;
   onRowClick?: (row: TData) => void;
   rowHeight?: number;
+  renderCellContextMenu?: (
+    row: TData,
+    cell: Cell<TData, unknown>,
+  ) => React.ReactNode;
 }
 
 export function Table<TData extends RowData>(
-  { table, isLoading, fetchNextPage, onRowClick, rowHeight }: TableProps<TData>,
+  {
+    table,
+    isLoading,
+    fetchNextPage,
+    onRowClick,
+    rowHeight,
+    renderCellContextMenu,
+  }: TableProps<TData>,
 ): ReactElement {
   const tableContainerRef = useRef<HTMLDivElement>(null);
 
@@ -71,18 +82,25 @@ export function Table<TData extends RowData>(
         position: "relative", // needed for sticky header
         height: "100%", // needed for scrolling
         overflow: "auto",
+        cursor: table.getState().columnSizingInfo?.isResizingColumn
+          ? "col-resize"
+          : "default",
+        userSelect: table.getState().columnSizingInfo?.isResizingColumn
+          ? "none"
+          : "auto",
       }}
       onScroll={handleScroll}
     >
       <table
         style={{ display: "grid" }}
       >
-        <TableHeader headerGroups={table.getHeaderGroups()} />
+        <TableHeader table={table} />
         <TableBody
           rows={table.getRowModel().rows}
           tableContainerRef={tableContainerRef}
           onRowClick={onRowClick}
           rowHeight={rowHeight}
+          renderCellContextMenu={renderCellContextMenu}
         />
       </table>
     </div>

@@ -14,15 +14,33 @@
  * limitations under the License.
  */
 
-import type { InterfacePropertyType } from "./InterfacePropertyType.js";
+import {
+  type InterfacePropertyType,
+  isInterfaceSharedPropertyType,
+} from "./InterfacePropertyType.js";
 import type { InterfaceType } from "./InterfaceType.js";
 
 export function getFlattenedInterfaceProperties(
   interfaceType: InterfaceType,
 ): Record<string, InterfacePropertyType> {
-  let properties = interfaceType.propertiesV2;
+  let properties: Record<string, InterfacePropertyType> = Object.fromEntries(
+    Object.entries(interfaceType.propertiesV3).map(([key, value]) => [
+      isInterfaceSharedPropertyType(value)
+        ? value.sharedPropertyType.apiName
+        : key,
+      value,
+    ]),
+  );
+  Object.entries(interfaceType.propertiesV2).forEach(([apiName, spt]) => {
+    if (!(apiName in properties)) {
+      properties[apiName] = spt;
+    }
+  });
   interfaceType.extendsInterfaces.forEach(ext => {
-    properties = { ...properties, ...getFlattenedInterfaceProperties(ext) };
+    properties = {
+      ...getFlattenedInterfaceProperties(ext),
+      ...properties,
+    };
   });
   return properties;
 }

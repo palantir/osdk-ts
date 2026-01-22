@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+export type { ConfidentialOauthClient } from "./ConfidentialOauthClient.js";
 export { createConfidentialOauthClient } from "./createConfidentialOauthClient.js";
 export { createPublicOauthClient } from "./createPublicOauthClient.js";
 export type { PublicOauthClient } from "./PublicOauthClient.js";

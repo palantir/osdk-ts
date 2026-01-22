@@ -314,7 +314,7 @@ export abstract class BaseListQuery<
       "loaded",
       this.abortController?.signal,
     ).then(() => void 0).finally(() => {
-      this.pendingPageFetch = undefined;
+      this.pendingFetch = undefined;
     });
     return this.pendingFetch;
   };

@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import type {
     as _api_OntologyIrQualifiedSeriesIdPropertyValue,
   PropertyTypeId as _api_PropertyTypeId,
   QualifiedSeriesIdPropertyValue as _api_QualifiedSeriesIdPropertyValue,
+  ScenarioRid as _api_ScenarioRid,
   SeriesIdPropertyValue as _api_SeriesIdPropertyValue,
   TemplateRidPropertyValue as _api_TemplateRidPropertyValue,
 } from "../__components.js";
@@ -199,6 +200,11 @@ export interface BaseParameterType_objectTypeReference {
   objectTypeReference: ObjectTypeReferenceType;
 }
 
+export interface BaseParameterType_scenarioReference {
+  type: "scenarioReference";
+  scenarioReference: ScenarioReferenceType;
+}
+
 export interface BaseParameterType_attachment {
   type: "attachment";
   attachment: AttachmentType;
@@ -280,6 +286,7 @@ export type BaseParameterType =
   | BaseParameterType_interfaceReferenceList
   | BaseParameterType_interfaceObjectSetRid
   | BaseParameterType_objectTypeReference
+  | BaseParameterType_scenarioReference
   | BaseParameterType_attachment
   | BaseParameterType_attachmentList
   | BaseParameterType_marking
@@ -431,6 +438,11 @@ export interface BaseParameterTypeModification_objectTypeReference {
   objectTypeReference: ObjectTypeReferenceType;
 }
 
+export interface BaseParameterTypeModification_scenarioReference {
+  type: "scenarioReference";
+  scenarioReference: ScenarioReferenceType;
+}
+
 export interface BaseParameterTypeModification_attachment {
   type: "attachment";
   attachment: AttachmentType;
@@ -512,6 +524,7 @@ export type BaseParameterTypeModification =
   | BaseParameterTypeModification_interfaceReferenceList
   | BaseParameterTypeModification_interfaceObjectSetRid
   | BaseParameterTypeModification_objectTypeReference
+  | BaseParameterTypeModification_scenarioReference
   | BaseParameterTypeModification_attachment
   | BaseParameterTypeModification_attachmentList
   | BaseParameterTypeModification_marking
@@ -739,6 +752,11 @@ export interface DataValue_structList {
   type: "structList";
   structList: StructListValue;
 }
+
+export interface DataValue_scenarioReference {
+  type: "scenarioReference";
+  scenarioReference: ScenarioReferenceValue;
+}
 export type DataValue =
   | DataValue_boolean
   | DataValue_booleanList
@@ -774,7 +792,8 @@ export type DataValue =
   | DataValue_geotimeSeriesReference
   | DataValue_geotimeSeriesReferenceList
   | DataValue_struct
-  | DataValue_structList;
+  | DataValue_structList
+  | DataValue_scenarioReference;
 
 /**
  * DateListType specifies that this parameter must be a list of Dates.
@@ -1315,6 +1334,11 @@ export interface OntologyIrBaseParameterType_objectTypeReference {
   objectTypeReference: ObjectTypeReferenceType;
 }
 
+export interface OntologyIrBaseParameterType_scenarioReference {
+  type: "scenarioReference";
+  scenarioReference: ScenarioReferenceType;
+}
+
 export interface OntologyIrBaseParameterType_attachment {
   type: "attachment";
   attachment: AttachmentType;
@@ -1396,6 +1420,7 @@ export type OntologyIrBaseParameterType =
   | OntologyIrBaseParameterType_interfaceReferenceList
   | OntologyIrBaseParameterType_interfaceObjectSetRid
   | OntologyIrBaseParameterType_objectTypeReference
+  | OntologyIrBaseParameterType_scenarioReference
   | OntologyIrBaseParameterType_attachment
   | OntologyIrBaseParameterType_attachmentList
   | OntologyIrBaseParameterType_marking
@@ -1581,6 +1606,11 @@ export interface OntologyIrDataValue_structList {
   type: "structList";
   structList: OntologyIrStructListValue;
 }
+
+export interface OntologyIrDataValue_scenarioReference {
+  type: "scenarioReference";
+  scenarioReference: ScenarioReferenceValue;
+}
 export type OntologyIrDataValue =
   | OntologyIrDataValue_boolean
   | OntologyIrDataValue_booleanList
@@ -1616,7 +1646,8 @@ export type OntologyIrDataValue =
   | OntologyIrDataValue_geotimeSeriesReference
   | OntologyIrDataValue_geotimeSeriesReferenceList
   | OntologyIrDataValue_struct
-  | OntologyIrDataValue_structList;
+  | OntologyIrDataValue_structList
+  | OntologyIrDataValue_scenarioReference;
 
 /**
  * InterfaceObjectSetRidType specifies that this parameter must be an ObjectSetRid of an object set consisting of
@@ -1885,6 +1916,7 @@ export interface ParameterDisabled {
 export interface ParameterEditable {
 }
 export interface ParameterHidden {
+  ignoreValue?: boolean | null | undefined;
 }
 export interface ParameterNotRequired {
 }
@@ -2064,6 +2096,18 @@ export interface Radio {
  */
 export type RelationSide = "SOURCE" | "TARGET" | "EITHER";
 export interface ResourcePicker {
+}
+/**
+ * A ScenarioReferenceType can be used to supply a scenario instance to an action. This is used by the
+ * ScenarioRule where you need to specify which scenario's edits should be applied when executing an Action.
+ */
+export interface ScenarioReferenceType {
+}
+/**
+ * A parameter type that consists of a ScenarioReference.
+ */
+export interface ScenarioReferenceValue {
+  scenarioRid: _api_ScenarioRid;
 }
 export interface SectionHidden {
 }

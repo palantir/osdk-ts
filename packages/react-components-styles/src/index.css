@@ -1,0 +1,16 @@
+/* Import Blueprint Level 1 tokens */
+@import "./blueprint-tokens.css";
+
+:root {
+  /* Checkbox */
+  --osdk-checkbox-icon-size: var(--bp-iconography-size-small);
+  --osdk-checkbox-padding: calc(var(--bp-surface-spacing) / 2);
+  --osdk-checkbox-border: var(--bp-surface-borderWidth) solid var(--bp-surface-borderColor-default);
+  --osdk-checkbox-bg: transparent;
+  --osdk-checkbox-bg-hover: var(--bp-surface-colorHover-default);
+  --osdk-checkbox-bg-active: var(--bp-surface-colorActive-default);
+  --osdk-checkbox-bg-checked: var(--bp-intent-primary-rest);
+  --osdk-checkbox-bg-checked-hover: var(--bp-intent-primary-hover);
+  --osdk-checkbox-bg-checked-active: var(--bp-intent-primary-active);
+  --osdk-checkbox-checked-foreground: var(--bp-intent-primary-foreground);
+}

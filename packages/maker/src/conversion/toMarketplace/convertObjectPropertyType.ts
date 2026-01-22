@@ -56,6 +56,7 @@ export function convertObjectPropertyType(
         type: "array" as const,
         array: {
           subtype: propertyTypeTypeToOntologyIrType(property.type),
+          reducers: [],
         },
       }
       : propertyTypeTypeToOntologyIrType(property.type),

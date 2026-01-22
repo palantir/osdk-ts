@@ -147,6 +147,7 @@ describe(createClient, () => {
       const transactionId = "test-transaction-id";
       const clientWithTransaction = createClientWithTransaction(
         transactionId,
+        async () => {},
         "https://mock.com",
         ontologyRid,
         async () => "Token",
