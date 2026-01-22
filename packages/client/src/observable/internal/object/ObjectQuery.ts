@@ -16,10 +16,13 @@
 
 import type {
   DerivedProperty,
+  ObjectSet,
   ObjectTypeDefinition,
+  Osdk,
   PrimaryKeyType,
+  WhereClause,
 } from "@osdk/api";
-import type { Connectable, Observable, Subject } from "rxjs";
+import type { Connectable, Observable, Subject, Subscription } from "rxjs";
 import { BehaviorSubject, connectable, map } from "rxjs";
 import { additionalContext } from "../../../Client.js";
 import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
@@ -193,4 +196,104 @@ export class ObjectQuery extends Query<
     }
     return Promise.resolve();
   };
+
+  registerStreamUpdates(sub: Subscription): void {
+    this.#setupStreamUpdates(sub).catch((error) => {
+      if (process.env.NODE_ENV !== "production") {
+        this.logger?.error("Failed to setup stream updates", error);
+      }
+    });
+  }
+
+  async #setupStreamUpdates(sub: Subscription): Promise<void> {
+    if (process.env.NODE_ENV !== "production") {
+      this.logger?.child({ methodName: "registerStreamUpdates" }).info(
+        "Subscribing to websocket for single object",
+      );
+    }
+
+    const objectSet = await this.#createSingleObjectSet();
+
+    const websocketSubscription = objectSet.subscribe({
+      onChange: this.#onOswChange.bind(this),
+      onError: this.#onOswError.bind(this),
+      onOutOfDate: this.#onOswOutOfDate.bind(this),
+      onSuccessfulSubscription: this.#onOswSuccessfulSubscription.bind(this),
+    });
+
+    sub.add(() => {
+      if (process.env.NODE_ENV !== "production") {
+        this.logger?.child({ methodName: "registerStreamUpdates" }).info(
+          "Unsubscribing from websocket",
+        );
+      }
+      websocketSubscription.unsubscribe();
+    });
+  }
+
+  async #createSingleObjectSet(): Promise<ObjectSet<ObjectTypeDefinition>> {
+    const objDef = await this.store.client[additionalContext].ontologyProvider
+      .getObjectDefinition(this.#apiName);
+
+    const objectType = {
+      type: "object" as const,
+      apiName: this.#apiName,
+    } as ObjectTypeDefinition;
+
+    // Cast needed because computed property name cannot be statically typed
+    // Same pattern used in SpecificLinkQuery.ts and getDollarLink.ts
+    return this.store.client(objectType).where({
+      [objDef.primaryKeyApiName]: this.#pk,
+    } as WhereClause<ObjectTypeDefinition>);
+  }
+
+  #onOswSuccessfulSubscription(): void {
+    if (process.env.NODE_ENV !== "production") {
+      this.logger?.child({ methodName: "onSuccessfulSubscription" }).debug("");
+    }
+  }
+
+  #onOswOutOfDate(): void {
+    if (process.env.NODE_ENV !== "production") {
+      this.logger?.child({ methodName: "onOutOfDate" }).debug("");
+    }
+    this.revalidate(true).catch((e: unknown) => {
+      if (process.env.NODE_ENV !== "production") {
+        this.logger?.error("Error revalidating after onOutOfDate", e);
+      }
+    });
+  }
+
+  #onOswError(errors: { subscriptionClosed: boolean; error: unknown }): void {
+    if (process.env.NODE_ENV !== "production") {
+      this.logger?.child({ methodName: "onError" }).error(
+        "subscription errors",
+        errors,
+      );
+    }
+  }
+
+  #onOswChange(
+    { object, state }: {
+      object: Osdk.Instance<ObjectTypeDefinition>;
+      state: "ADDED_OR_UPDATED" | "REMOVED";
+    },
+  ): void {
+    if (process.env.NODE_ENV !== "production") {
+      this.logger?.child({ methodName: "onOswChange" }).debug(
+        `Got an update of type: ${state}`,
+        object,
+      );
+    }
+
+    if (state === "ADDED_OR_UPDATED") {
+      this.store.batch({}, (batch) => {
+        this.writeToStore(object as ObjectHolder, "loaded", batch);
+      });
+    } else if (state === "REMOVED") {
+      this.store.batch({}, (batch) => {
+        this.deleteFromStore("loaded", batch);
+      });
+    }
+  }
 }
