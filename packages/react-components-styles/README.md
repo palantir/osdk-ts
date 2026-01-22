@@ -69,6 +69,15 @@ You can customize the appearance by:
 
 See [CSS_VARIABLES.md](./CSS_VARIABLES.md#creating-a-complete-custom-theme) for detailed examples.
 
+### Accessibility Note
+
+When overriding theme tokens, you are responsible for ensuring that your custom colors meet accessibility standards, including:
+- Sufficient color contrast ratios (WCAG AA: 4.5:1 for normal text, 3:1 for large text)
+- Readable text on all background colors
+- Clear visual distinction between interactive states (rest, hover, active, disabled)
+
+The default tokens are designed to meet WCAG AA standards. Use tools like [WebAIM's Contrast Checker](https://webaim.org/resources/contrastchecker/) to verify your custom color combinations.
+
 ## Related Packages
 
 - `@osdk/react-components` - Functional React components (unstyled by default)

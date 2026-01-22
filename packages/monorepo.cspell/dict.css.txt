@@ -4,3 +4,4 @@ OKLCH
 oklch
 Segoe
 vermillion
+WCAG

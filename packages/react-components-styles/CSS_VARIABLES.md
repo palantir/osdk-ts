@@ -397,8 +397,8 @@ Borders, shadows, spacing, z-index, and surface colors for cards, panels, and ba
 
 | Variable | Default Value | Description |
 |----------|---------------|-------------|
-| `--bp-surface-borderColor-default` | `oklch(from var(--bp-intent-default-rest) l c h / 0.12)` | Default border color (12% opacity) |
-| `--bp-surface-borderColor-strong` | `oklch(from var(--bp-intent-default-rest) l c h / 0.25)` | Strong border color (25% opacity) |
+| `--bp-surface-borderColor-default` | `oklch(from var(--bp-intent-default-rest) l c h / 0.12)` | Default border color |
+| `--bp-surface-borderColor-strong` | `oklch(from var(--bp-intent-default-rest) l c h / 0.25)` | Strong border color |
 | `--bp-surface-borderWidth` | `1px` | Standard border width |
 | `--bp-surface-borderRadius` | `4px` | Standard border radius |
 
@@ -572,8 +572,8 @@ Styling for checkbox components.
 
 | Variable | Default Value | Description |
 |----------|---------------|-------------|
-| `--osdk-checkbox-icon-size` | `var(--bp-iconography-size-small)` | Size of checkmark icon (16px) |
-| `--osdk-checkbox-padding` | `calc(var(--bp-surface-spacing) / 2)` | Internal padding (2px) |
+| `--osdk-checkbox-icon-size` | `var(--bp-iconography-size-small)` | Size of checkmark icon |
+| `--osdk-checkbox-padding` | `calc(var(--bp-surface-spacing) / 2)` | Internal padding |
 | `--osdk-checkbox-border` | `var(--bp-surface-borderWidth) solid var(--bp-surface-borderColor-default)` | Border style |
 | `--osdk-checkbox-bg` | `transparent` | Unchecked background |
 | `--osdk-checkbox-bg-hover` | `var(--bp-surface-colorHover-default)` | Unchecked hover background |
@@ -591,7 +591,7 @@ Styling for table components including headers, rows, and cells.
 
 | Variable | Default Value | Description |
 |----------|---------------|-------------|
-| `--osdk-table-border-width` | `var(--bp-surface-borderWidth)` | Table border width (1px) |
+| `--osdk-table-border-width` | `var(--bp-surface-borderWidth)` | Table border width |
 | `--osdk-table-border-color` | `var(--bp-surface-borderColor-default)` | Table border color |
 
 #### Header Styling
@@ -599,25 +599,25 @@ Styling for table components including headers, rows, and cells.
 | Variable | Default Value | Description |
 |----------|---------------|-------------|
 | `--osdk-table-header-bg` | `var(--bp-palette-gray-100)` | Table header background color |
-| `--osdk-table-header-fontWeight` | `var(--bp-typography-weight-bold)` | Header text weight (550) |
-| `--osdk-table-header-fontSize` | `var(--bp-typography-size-bodyMedium)` | Header text size (13px) |
+| `--osdk-table-header-fontWeight` | `var(--bp-typography-weight-bold)` | Header text weight |
+| `--osdk-table-header-fontSize` | `var(--bp-typography-size-bodyMedium)` | Header text size |
 | `--osdk-table-header-color` | `var(--bp-typography-colorRest-default)` | Header text color |
 
 #### Row Backgrounds
 
 | Variable | Default Value | Description |
 |----------|---------------|-------------|
-| `--osdk-table-row-bg-default` | `var(--bp-palette-white)` | Default row background (white) |
-| `--osdk-table-row-bg-primary` | `oklch(from var(--bp-palette-gray-100) l c h / 0.5)` | Primary row background (50% opacity gray-100) |
+| `--osdk-table-row-bg-default` | `var(--bp-palette-white)` | Default row background |
+| `--osdk-table-row-bg-primary` | `oklch(from var(--bp-palette-gray-100) l c h / 0.5)` | Primary row background |
 | `--osdk-table-row-bg-hover` | `var(--bp-palette-gray-200)` | Row hover background |
-| `--osdk-table-row-bg-active` | `oklch(from var(--bp-palette-blue-600) l c h / 0.1)` | Active/selected row background (10% opacity blue-600) |
+| `--osdk-table-row-bg-active` | `oklch(from var(--bp-palette-blue-600) l c h / 0.1)` | Active/selected row background |
 
 #### Cell Styling
 
 | Variable | Default Value | Description |
 |----------|---------------|-------------|
-| `--osdk-table-cell-padding` | `calc(var(--bp-surface-spacing) * 3) calc(var(--bp-surface-spacing) * 2)` | Cell padding (12px 8px) |
-| `--osdk-table-cell-fontSize` | `var(--bp-typography-size-bodyMedium)` | Cell text size (13px) |
+| `--osdk-table-cell-padding` | `calc(var(--bp-surface-spacing) * 3) calc(var(--bp-surface-spacing) * 2)` | Cell padding |
+| `--osdk-table-cell-fontSize` | `var(--bp-typography-size-bodyMedium)` | Cell text size |
 | `--osdk-table-cell-color` | `var(--bp-typography-colorRest-default)` | Cell text color |
 
 #### Active/Focus Indicators
@@ -663,6 +663,7 @@ To create a complete custom theme, override the tokens at the appropriate level:
 
 To create a fully custom theme, consider overriding these key token groups:
 
+- [ ] **Color Palettes** (`--bp-palette-*`) - Base color scales for the entire system
 - [ ] **Intent Colors** (`--bp-intent-*`) - Primary, success, warning, danger semantic colors
 - [ ] **Typography** (`--bp-typography-*`) - Font families, sizes, weights
 - [ ] **Surface** (`--bp-surface-*`) - Borders, spacing, shadows, background colors
