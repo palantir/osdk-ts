@@ -31,7 +31,7 @@ export function convertInterfaceProperty(
     return [prop.sharedPropertyType.apiName, {
       type: "sharedPropertyBasedPropertyType",
       sharedPropertyBasedPropertyType: {
-        requireImplementation: prop.required,
+        required: prop.required,
         sharedPropertyType: convertSpt(prop.sharedPropertyType),
       },
     }];
@@ -55,7 +55,7 @@ export function convertInterfaceProperty(
           : propertyTypeTypeToOntologyIrInterfaceType(prop.type),
         constraints: {
           primaryKeyConstraint: prop.primaryKeyConstraint ?? "NO_RESTRICTION",
-          requireImplementation: prop.required ?? true,
+          required: prop.required ?? true,
           indexedForSearch: true,
           typeClasses: prop.typeClasses ?? [],
           dataConstraints: convertNullabilityToDataConstraint({
