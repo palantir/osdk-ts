@@ -6,8 +6,14 @@ Built on top of [@osdk/react](../react), these components use OSDK hooks interna
 
 ## Installation
 
+Run the command to install:
+
+- @osdk/react-components - The unstyled components from this package
+- @osdk/react - The react toolkit for data-handling
+- @osdk/react-components-styles - The default styles for the components
+
 ```sh
-npm install @osdk/react-components @osdk/react
+npm install @osdk/react-components @osdk/react @osdk/react-components-styles
 ```
 
 **Prerequisites:**
@@ -15,6 +21,17 @@ npm install @osdk/react-components @osdk/react
 - React 18
 - A configured OSDK client
 - An OsdkProvider wrapping your application
+
+## Setup
+
+Add this to your application layout root as we are using Base UI portals. See https://base-ui.com/react/overview/quick-start#portals
+
+```css
+/* index.css */
+.root {
+  isolation: isolate;
+}
+```
 
 ## Components
 
@@ -27,6 +44,9 @@ The components that this package will provide are:
 | `ObjectTable` | Displays an Object Set as a sortable, paginated table                              |
 | `FilterList`  | Visualize a high-level summary of objects data to allow users to filter that data. |
 | `ActionForm`  | Auto-generated form for executing Ontology Actions                                 |
+
+## Custom Styling
+See `@osdk/react-components-styles` README on how to apply custom themes and styling to the components.
 
 ## Example Usage
 
