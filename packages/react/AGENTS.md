@@ -10,11 +10,13 @@
 ## Exports
 
 **Stable** (`@osdk/react`):
+
 - `OsdkProvider` - Legacy provider
 - `useOsdkClient` - Access client
 - `useOsdkMetadata` - Fetch metadata
 
 **Experimental** (`@osdk/react/experimental`):
+
 - `OsdkProvider2` - Modern provider (use this)
 - `useOsdkObjects` - Query lists of objects
 - `useOsdkObject` - Query single object by type+key or instance
@@ -28,9 +30,10 @@
 ## Correct Patterns
 
 ### Loading States
+
 ```tsx
-import { useOsdkObjects } from "@osdk/react/experimental";
 import { Todo } from "@my/osdk";
+import { useOsdkObjects } from "@osdk/react/experimental";
 
 function TodoList() {
   const { data, isLoading, error } = useOsdkObjects(Todo);
@@ -46,15 +49,16 @@ function TodoList() {
 ```
 
 ### Single Object (useOsdkObject)
+
 ```tsx
-import { useOsdkObject } from "@osdk/react/experimental";
 import { Employee } from "@my/osdk";
+import { useOsdkObject } from "@osdk/react/experimental";
 
 // By type + primary key (enabled is 3rd positional param)
 const { object, isLoading, error, isOptimistic } = useOsdkObject(
   Employee,
   "employee-123",
-  true // enabled (optional, defaults to true)
+  true, // enabled (optional, defaults to true)
 );
 
 // By existing instance (enabled is 2nd positional param)
@@ -62,11 +66,12 @@ const { object: refreshed } = useOsdkObject(existingEmployee, true);
 ```
 
 ### Conditional Fetching
+
 ```tsx
 // useOsdkObjects uses options object
 const { data: reports } = useOsdkObjects(Employee, {
   where: { managerId: selectedManagerId },
-  enabled: !!selectedManagerId
+  enabled: !!selectedManagerId,
 });
 
 // useOsdkObject uses positional enabled parameter
@@ -74,9 +79,10 @@ const { object: manager } = useOsdkObject(Employee, managerId, !!managerId);
 ```
 
 ### Actions (useOsdkAction)
+
 ```tsx
-import { useOsdkAction } from "@osdk/react/experimental";
 import { $Actions } from "@my/osdk";
+import { useOsdkAction } from "@osdk/react/experimental";
 
 function CompleteTodoButton({ todo }) {
   const {
@@ -86,7 +92,7 @@ function CompleteTodoButton({ todo }) {
     isValidating,
     error,
     data,
-    validationResult
+    validationResult,
   } = useOsdkAction($Actions.completeTodo);
 
   // Validate before applying
@@ -106,15 +112,20 @@ function CompleteTodoButton({ todo }) {
       isComplete: true,
       $optimisticUpdate: (ctx) => {
         ctx.updateObject(todo, { isComplete: true });
-      }
+      },
     });
   };
 
-  return <button onClick={handleComplete} disabled={isPending}>Complete</button>;
+  return (
+    <button onClick={handleComplete} disabled={isPending}>
+      Complete
+    </button>
+  );
 }
 ```
 
 ### Links (useLinks)
+
 ```tsx
 import { useLinks } from "@osdk/react/experimental";
 
@@ -122,20 +133,21 @@ import { useLinks } from "@osdk/react/experimental";
 const { links, isLoading, hasMore, fetchMore, error } = useLinks(
   employee,
   "directReports",
-  { pageSize: 20 }
+  { pageSize: 20 },
 );
 
 // Multiple objects (returns all linked objects)
 const { links: allReports } = useLinks(
   [employee1, employee2],
-  "directReports"
+  "directReports",
 );
 ```
 
 ### Object Set Operations (useObjectSet)
+
 ```tsx
-import { useObjectSet } from "@osdk/react/experimental";
 import { Employee } from "@my/osdk";
+import { useObjectSet } from "@osdk/react/experimental";
 
 const { data, isLoading, fetchMore, objectSet } = useObjectSet(
   Employee.all(),
@@ -147,15 +159,16 @@ const { data, isLoading, fetchMore, objectSet } = useObjectSet(
     intersect: [anotherObjectSet],
     autoFetchMore: 100, // fetch until 100 items
     streamUpdates: true,
-    enabled: true
-  }
+    enabled: true,
+  },
 );
 ```
 
 ### Aggregations (useOsdkAggregation)
+
 ```tsx
-import { useOsdkAggregation } from "@osdk/react/experimental";
 import { Employee } from "@my/osdk";
+import { useOsdkAggregation } from "@osdk/react/experimental";
 
 const { data, isLoading, error, refetch } = useOsdkAggregation(Employee, {
   where: { department: "Engineering" },
@@ -163,15 +176,16 @@ const { data, isLoading, error, refetch } = useOsdkAggregation(Employee, {
     groupBy: { department: "exact" },
     select: {
       avgSalary: { $avg: "salary" },
-      count: { $count: {} }
-    }
-  }
+      count: { $count: {} },
+    },
+  },
 });
 ```
 
 ## Anti-Patterns
 
 ### Wrong: Conditional Hook Call
+
 ```tsx
 if (shouldLoad) {
   const { data } = useOsdkObjects(Todo); // NEVER do this
@@ -179,22 +193,26 @@ if (shouldLoad) {
 ```
 
 ### Wrong: Early Return During Loading
+
 ```tsx
 if (isLoading) return <Spinner />; // Causes UI flashing
-if (!data) return null;            // Loses state
+if (!data) return null; // Loses state
 ```
 
 ### Wrong: Importing from Main Entry
+
 ```tsx
 import { useOsdkObjects } from "@osdk/react"; // WRONG - doesn't exist here
 ```
 
 ### Wrong: Using OsdkProvider Instead of OsdkProvider2
+
 ```tsx
 <OsdkProvider client={client}> // WRONG - new hooks won't work
 ```
 
 ### Wrong: Using options object for useOsdkObject enabled
+
 ```tsx
 // WRONG - enabled is positional, not in options
 const { object } = useOsdkObject(Employee, id, { enabled: false });
@@ -206,6 +224,7 @@ const { object } = useOsdkObject(Employee, id, false);
 ## Hook Options Reference
 
 **useOsdkObjects / useObjectSet:**
+
 - `where` - Filter conditions
 - `orderBy` - Sort order (`{ field: "asc" | "desc" }`)
 - `pageSize` - Results per page
@@ -216,15 +235,19 @@ const { object } = useOsdkObject(Employee, id, false);
 - `streamUpdates` - WebSocket updates
 
 **useObjectSet additional:**
+
 - `union`, `intersect`, `subtract` - Set operations
 - `pivotTo` - Pivot to linked type
 
 **useOsdkObject:**
+
 - `enabled` is a **positional parameter**, not in options
 
 **useLinks:**
+
 - `where`, `pageSize`, `enabled`
 - `mode` - `"force"` | `"offline"`
 
 **useOsdkAction:**
+
 - `$optimisticUpdate` - Passed to action with `$` prefix
