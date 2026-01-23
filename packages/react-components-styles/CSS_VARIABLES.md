@@ -589,10 +589,10 @@ Styling for table components including headers, rows, and cells.
 
 #### Border & Layout
 
-| Variable                        | Default Value                           | Description        |
-| ------------------------------- | --------------------------------------- | ------------------ |
-| `--osdk-table-row-border-width` | `var(--bp-surface-borderWidth)`         | Table border width |
-| `--osdk-table-row-border-color` | `var(--bp-surface-borderColor-default)` | Table border color |
+| Variable                     | Default Value                           | Description        |
+| ---------------------------- | --------------------------------------- | ------------------ |
+| `----bp-surface-borderWidth` | `var(--bp-surface-borderWidth)`         | Table border width |
+| `--osdk-table-border-color`  | `var(--bp-surface-borderColor-default)` | Table border color |
 
 #### Header Styling
 

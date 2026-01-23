@@ -190,6 +190,6 @@
   --osdk-table-header-color: var(--bp-typography-colorRest-default);
   --osdk-table-row-bg-alternate: oklch(from var(--bp-palette-gray-100) l c h / 0.5);
   --osdk-table-row-bg-hover: var(--bp-surface-colorHover-default);
-  --osdk-table-row-border-color-hover: var(--osdk-table-row-border-color);
+  --osdk-table-row-border-color-hover: var(--osdk-table-border-color);
   --osdk-table-row-bg-active:  var(--bp-palette-blue-100);
 }

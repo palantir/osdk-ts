@@ -15,8 +15,7 @@
   --osdk-checkbox-checked-foreground: var(--bp-intent-primary-foreground);
   
   /* Table */
-  --osdk-table-row-border-width: var(--bp-surface-borderWidth);
-  --osdk-table-row-border-color: var(--bp-surface-borderColor-default);
+  --osdk-table-border-color: var(--bp-surface-borderColor-default);
 
   --osdk-table-header-bg: var(--bp-palette-gray-100);
   --osdk-table-header-fontWeight: var(--bp-typography-weight-bold);

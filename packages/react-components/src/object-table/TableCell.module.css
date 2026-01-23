@@ -33,12 +33,12 @@
 
 /* Last left-pinned column - no left-pinned siblings after it */
 .osdkTableCell[data-pinned="left"]:not(:has(~ [data-pinned="left"])) {
-  border-right: calc(var(--osdk-table-border-width) * 2) solid var(--osdk-table-border-color);
+  border-right: calc(var(--bp-surface-borderWidth) * 2) solid var(--osdk-table-border-color);
 }
 
 /* First right-pinned column - no right-pinned siblings before it */
 .osdkTableCell[data-pinned="right"]:not(:has(~ [data-pinned="right"]):nth-child(n+2)) {
-  border-left: calc(var(--osdk-table-border-width) * 2) solid var(--osdk-table-border-color);
+  border-left: calc(var(--bp-surface-borderWidth) * 2) solid var(--osdk-table-border-color);
 }
 
 .osdkTableCell:has([role="checkbox"]) {

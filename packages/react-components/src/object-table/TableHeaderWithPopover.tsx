@@ -128,6 +128,7 @@ export function TableHeaderWithPopover({
           {isColumnPinned && (
             <Pin
               className={styles.osdkHeaderIcon}
+              color={"currentColor"}
             />
           )}
           <TableHeaderContent header={header} />
@@ -142,8 +143,18 @@ export function TableHeaderWithPopover({
           {isSorted && (
             <div className={styles.osdkCenterContainer}>
               {isSorted === "asc"
-                ? <SortAlphabetical className={styles.osdkHeaderIcon} />
-                : <SortAlphabeticalDesc className={styles.osdkHeaderIcon} />}
+                ? (
+                  <SortAlphabetical
+                    className={styles.osdkHeaderIcon}
+                    color={"currentColor"}
+                  />
+                )
+                : (
+                  <SortAlphabeticalDesc
+                    className={styles.osdkHeaderIcon}
+                    color={"currentColor"}
+                  />
+                )}
             </div>
           )}
           <Menu.Trigger
@@ -152,7 +163,9 @@ export function TableHeaderWithPopover({
               styles.osdkHeaderPopoverTrigger,
             )}
           >
-            <ChevronDown className={styles.osdkHeaderIcon} />
+            <ChevronDown
+              className={styles.osdkHeaderIcon}
+            />
           </Menu.Trigger>
         </div>
         <Menu.Portal container={document.body}>
@@ -170,7 +183,10 @@ export function TableHeaderWithPopover({
                   )}
                   onClick={handlePinLeft}
                 >
-                  <Pin className={styles.osdkHeaderIcon} />
+                  <Pin
+                    className={styles.osdkHeaderIcon}
+                    color={"currentColor"}
+                  />
                   <span>Pin column</span>
                 </Menu.Item>
               )}
@@ -186,7 +202,10 @@ export function TableHeaderWithPopover({
                   )}
                   onClick={handleUnpin}
                 >
-                  <Unpin className={styles.osdkHeaderIcon} />
+                  <Unpin
+                    className={styles.osdkHeaderIcon}
+                    color={"currentColor"}
+                  />
                   <span>Unpin Column</span>
                 </Menu.Item>
               )}
@@ -204,7 +223,10 @@ export function TableHeaderWithPopover({
                     )}
                     onClick={handleSortAscending}
                   >
-                    <SortAlphabetical className={styles.osdkHeaderIcon} />
+                    <SortAlphabetical
+                      className={styles.osdkHeaderIcon}
+                      color={"currentColor"}
+                    />
                     <span>Sort ascending</span>
                   </Menu.Item>
                   <Menu.Item
@@ -219,7 +241,10 @@ export function TableHeaderWithPopover({
                     )}
                     onClick={handleSortDescending}
                   >
-                    <SortAlphabeticalDesc className={styles.osdkHeaderIcon} />
+                    <SortAlphabeticalDesc
+                      className={styles.osdkHeaderIcon}
+                      color={"currentColor"}
+                    />
                     <span>Sort descending</span>
                   </Menu.Item>
                 </>
@@ -234,7 +259,10 @@ export function TableHeaderWithPopover({
                   )}
                   onClick={handleClearAllSorts}
                 >
-                  <Remove className={styles.osdkHeaderIcon} />
+                  <Remove
+                    className={styles.osdkHeaderIcon}
+                    color={"currentColor"}
+                  />
                   <span>Clear all sorts</span>
                 </Menu.Item>
               )}
@@ -247,7 +275,10 @@ export function TableHeaderWithPopover({
                 )}
                 onClick={handleResetSize}
               >
-                <VerticalDistribution className={styles.osdkHeaderIcon} />
+                <VerticalDistribution
+                  className={styles.osdkHeaderIcon}
+                  color={"currentColor"}
+                />
                 <span>Reset Column Size</span>
               </Menu.Item>
             </Menu.Popup>
