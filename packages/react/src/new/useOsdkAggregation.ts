@@ -16,6 +16,7 @@
 
 import type {
   AggregateOpts,
+  AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy,
   AggregationsResults,
   DerivedProperty,
   WhereClause,
@@ -29,7 +30,6 @@ import type { InferRdpTypes } from "./types.js";
 
 export interface UseOsdkAggregationOptions<
   T extends ObjectTypeDefinition,
-  A extends AggregateOpts<T>,
   WithProps extends DerivedProperty.Clause<T> | undefined = undefined,
 > {
   /**
@@ -42,11 +42,6 @@ export interface UseOsdkAggregationOptions<
    * The derived properties can be used in the where clause and aggregation groupBy/select.
    */
   withProperties?: WithProps;
-
-  /**
-   * Aggregation options including groupBy and select
-   */
-  aggregate: A;
 
   /**
    * The number of milliseconds to wait after the last observed aggregation change.
@@ -80,36 +75,35 @@ declare const process: {
  * Supports runtime derived properties and where clauses.
  *
  * @param type - The object or interface type to aggregate
- * @param options - Aggregation configuration including where clause, aggregation spec, and optional derived properties
+ * @param aggregate - Aggregation spec with $select and optional $groupBy
+ * @param options - Optional configuration including where clause and derived properties
  * @returns Object containing aggregation results, loading state, error state, and refetch function
  *
  * @example
  * ```tsx
- * const { data, isLoading, error } = useOsdkAggregation(Employee, {
- *   where: { department: "Engineering" },
- *   aggregate: {
- *     groupBy: { department: "exact" },
- *     select: {
- *       avgSalary: { $avg: "salary" },
- *       count: { $count: {} }
- *     }
- *   }
- * });
+ * const { data, isLoading, error } = useOsdkAggregation(
+ *   Employee,
+ *   {
+ *     $select: { $count: "unordered", "salary:avg": "unordered" },
+ *     $groupBy: { department: "exact" },
+ *   },
+ *   { where: { department: "Engineering" } }
+ * );
  * ```
  */
 export function useOsdkAggregation<
   Q extends ObjectTypeDefinition,
-  A extends AggregateOpts<Q>,
+  AO extends AggregateOpts<Q>,
   WP extends DerivedProperty.Clause<Q> | undefined = undefined,
 >(
   type: Q,
-  {
-    where = {},
-    withProperties,
-    aggregate,
-    dedupeIntervalMs,
-  }: UseOsdkAggregationOptions<Q, A, WP>,
-): UseOsdkAggregationResult<Q, A> {
+  aggregate: AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<
+    Q,
+    AO
+  >,
+  options: UseOsdkAggregationOptions<Q, WP> = {},
+): UseOsdkAggregationResult<Q, AO> {
+  const { where = {}, withProperties, dedupeIntervalMs } = options;
   const { observableClient } = React.useContext(OsdkContext2);
 
   const canonWhere = observableClient.canonicalizeWhereClause<Q>(where ?? {});
@@ -126,7 +120,7 @@ export function useOsdkAggregation<
 
   const { subscribe, getSnapShot } = React.useMemo(
     () =>
-      makeExternalStore<ObserveAggregationArgs<Q, A>>(
+      makeExternalStore<ObserveAggregationArgs<Q, AO>>(
         (observer) =>
           observableClient.observeAggregation(
             {
@@ -167,7 +161,7 @@ export function useOsdkAggregation<
   }, [observableClient, type.apiName]);
 
   return {
-    data: payload?.result as AggregationsResults<Q, A> | undefined,
+    data: payload?.result as AggregationsResults<Q, AO> | undefined,
     isLoading: payload?.status === "loading" || payload?.status === "init"
       || !payload,
     error,

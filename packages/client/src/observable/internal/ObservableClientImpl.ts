@@ -54,6 +54,7 @@ import type {
 import type { Observer } from "../ObservableClient/common.js";
 import type { ObserveLinks } from "../ObservableClient/ObserveLink.js";
 import type { AggregationPayloadBase } from "./aggregation/AggregationQuery.js";
+import type { ObserveAggregationOptions as InternalObserveAggregationOptions } from "./aggregation/AggregationsHelper.js";
 import type { Canonical } from "./Canonical.js";
 import type { ObserveObjectSetOptions } from "./objectset/ObjectSetQueryOptions.js";
 import type { Store } from "./Store.js";
@@ -123,8 +124,12 @@ export class ObservableClientImpl implements ObservableClient {
     options: ObserveAggregationOptions<T, A, RDPs>,
     subFn: Observer<ObserveAggregationArgs<T, A>>,
   ) => {
+    const internalOptions: InternalObserveAggregationOptions<T, A, RDPs> = {
+      ...options,
+      aggregate: options.aggregate as A,
+    };
     return this.__experimentalStore.aggregations.observe(
-      options,
+      internalOptions,
       subFn as Observer<AggregationPayloadBase>,
     );
   };

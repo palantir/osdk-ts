@@ -19,6 +19,7 @@ import type {
   ActionEditResponse,
   ActionValidationResponse,
   AggregateOpts,
+  AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy,
   AggregationsResults,
   CompileTimeMetadata,
   DerivedProperty,
@@ -160,7 +161,10 @@ export interface ObserveAggregationOptions<
   intersectWith?: Array<{
     where: WhereClause<T, RDPs>;
   }>;
-  aggregate: A;
+  aggregate: AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<
+    T,
+    A
+  >;
 }
 
 export interface ObserveAggregationArgs<
