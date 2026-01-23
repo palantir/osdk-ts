@@ -65,7 +65,7 @@
   border-left: calc(var(--bp-surface-borderWidth)* 2) solid var(--osdk-table-border-color);
 }
 
-.osdkTableHeaderResizeHandler {
+.osdkTableHeaderResizer {
   background: none;
   cursor: col-resize;
   height: 100%;

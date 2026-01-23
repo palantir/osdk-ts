@@ -64,7 +64,7 @@ export function TableHeader<TData extends RowData>({
                   )}
                 {header.column.getCanResize() && (
                   <div
-                    className={styles.osdkTableHeaderResizeHandler}
+                    className={styles.osdkTableHeaderResizer}
                     onDoubleClick={() => header.column.resetSize()}
                     onMouseDown={header.getResizeHandler()}
                     onTouchStart={header.getResizeHandler()}
