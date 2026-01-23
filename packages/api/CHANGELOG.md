@@ -1,5 +1,14 @@
 # @osdk/api
 
+## 2.7.0-beta.10
+
+### Minor Changes
+
+- db44f6b: Add property security metadata to objects when requested
+- 24a1e29: Remove multiplicity tag from query param types
+
+## 2.7.0-beta.9
+
 ## 2.7.0-beta.8
 
 ## 2.7.0-beta.7

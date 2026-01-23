@@ -106,4 +106,102 @@ describe(mutateReleasePlan, () => {
       `);
     });
   });
+
+  describe("first minor after patches", () => {
+    it("allows first minor after pre-release", () => {
+      const plan: ReleasePlan = {
+        changesets: [
+          {
+            id: "first-minor",
+            releases: [
+              { name: "foo", type: "minor" },
+            ],
+            summary: "foo summary",
+          },
+        ],
+        preState: undefined,
+        releases: [
+          {
+            changesets: ["first-minor"],
+            oldVersion: "2.2.0-beta.5",
+            newVersion: "2.2.0",
+            name: "foo",
+            type: "minor",
+          },
+        ],
+      };
+
+      mutateReleasePlan("/faux/cwd", plan, "release branch");
+    });
+    it("disallows minor without 0 patch version", () => {
+      const plan: ReleasePlan = {
+        changesets: [
+          {
+            id: "first-minor",
+            releases: [
+              { name: "foo", type: "minor" },
+            ],
+            summary: "foo summary",
+          },
+        ],
+        preState: undefined,
+        releases: [
+          {
+            changesets: ["first-minor"],
+            oldVersion: "2.2.0-beta.6",
+            newVersion: "2.2.1",
+            name: "foo",
+            type: "minor",
+          },
+        ],
+      };
+
+      expect(() => {
+        mutateReleasePlan("/faux/cwd", plan, "release branch");
+      }).toThrowErrorMatchingInlineSnapshot(`
+        [FailedWithUserMessage: Unable to create a release for the stable branch.
+
+        Our branching model requires that we only release patch changes on a stable branch to avoid version number collisions with main and the other release branches. Problems:
+
+        .changeset/first-minor.md:
+          - foo: minor
+        ]
+      `);
+    });
+    it("disallows minor not after pre-release", () => {
+      const plan: ReleasePlan = {
+        changesets: [
+          {
+            id: "first-minor",
+            releases: [
+              { name: "foo", type: "minor" },
+            ],
+            summary: "foo summary",
+          },
+        ],
+        preState: undefined,
+        releases: [
+          {
+            changesets: ["first-minor"],
+            oldVersion: "2.1.4",
+            newVersion: "2.2.0",
+            name: "foo",
+            type: "minor",
+          },
+        ],
+      };
+
+      expect(() => {
+        mutateReleasePlan("/faux/cwd", plan, "release branch");
+      }).toThrowErrorMatchingInlineSnapshot(`
+        [FailedWithUserMessage: Unable to create a release for the stable branch.
+
+        Our branching model requires that we only release patch changes on a stable branch to avoid version number collisions with main and the other release branches. Problems:
+
+        .changeset/first-minor.md:
+          - foo: minor
+        ]
+      `);
+    });
+  });
 });

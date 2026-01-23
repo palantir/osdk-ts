@@ -20,6 +20,7 @@ import type {
   ObjectTypeDefinition,
   QueryDefinition,
   SimplePropertyDef,
+  WhereClause,
 } from "@osdk/api";
 import { useObjectSet } from "@osdk/react/experimental";
 import { useMemo } from "react";
@@ -43,6 +44,7 @@ export function useObjectTableData<
 >(
   objectSet: ObjectSet<Q>,
   columnDefinitions?: Array<ColumnDefinition<Q, RDPs, FunctionColumns>>,
+  filter?: WhereClause<Q, RDPs>,
 ): ReturnType<typeof useObjectSet<Q, never, RDPs>> {
   // Extract derived properties definition to be passed to useObjectSet hook
   const withProperties = useMemo(() => {
@@ -76,6 +78,7 @@ export function useObjectTableData<
     {
       withProperties,
       pageSize: PAGE_SIZE,
+      where: filter,
     },
   );
 }
