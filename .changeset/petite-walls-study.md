@@ -3,4 +3,4 @@
 "@osdk/react-components": minor
 ---
 
-Support sorting and column pinning
+Support sorting and column pinning. Export BaseTable
