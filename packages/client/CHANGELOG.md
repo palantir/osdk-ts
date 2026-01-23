@@ -1,5 +1,21 @@
 # @osdk/client
 
+## 2.7.0-beta.11
+
+### Minor Changes
+
+- 6cfe14a: add new useOsdkFunction hook and supporting client infrastructure
+- ec6ad57: guard against empty ontology edits in actions
+- 38d5958: fix order by via key stabilization
+- d5cfc38: Add null option to actions to allow clearing data
+
+### Patch Changes
+
+- Updated dependencies [d5cfc38]
+  - @osdk/api@2.7.0-beta.11
+  - @osdk/client.unstable@2.7.0-beta.11
+  - @osdk/generator-converters@2.7.0-beta.11
+
 ## 2.7.0-beta.10
 
 ### Minor Changes
