@@ -40,7 +40,7 @@
   font-weight: var(--osdk-table-header-fontWeight);
   font-size: var(--osdk-table-header-fontSize);
   color: var(--osdk-table-header-color);
-  border: var(--osdk-table-border-width) solid var(--osdk-table-border-color);
+  border: var(--osdk-table-row-border-width) solid var(--osdk-table-row-border-color);
 }
 
 .osdkTableHeaderCell:has([role="checkbox"]) {

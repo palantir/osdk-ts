@@ -7,7 +7,7 @@
 @import "@osdk/react-components-styles" layer(osdk.tokens);
 
 /* Import theme overrides */
-@import "./theme-overrides.css" layer(custom.theme);
+/* @import "./theme-overrides.css" layer(custom.theme); */
 
 /* Tailwind for utility classes */
 @import 'tailwindcss';

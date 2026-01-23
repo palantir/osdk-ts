@@ -24,10 +24,10 @@
   box-sizing: border-box;
   cursor: pointer;
   border-radius: var(--bp-surface-borderRadius);
+  border: var(--osdk-checkbox-border);
 
   &[data-unchecked] {
     background-color: var(--osdk-checkbox-bg);
-    border: var(--osdk-checkbox-border);
 
     &:hover {
       background-color: var(--osdk-checkbox-bg-hover);

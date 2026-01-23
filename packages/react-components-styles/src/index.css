@@ -13,21 +13,24 @@
   --osdk-checkbox-bg-checked-hover: var(--bp-intent-primary-hover);
   --osdk-checkbox-bg-checked-active: var(--bp-intent-primary-active);
   --osdk-checkbox-checked-foreground: var(--bp-intent-primary-foreground);
-
+  
   /* Table */
-  --osdk-table-border-width: var(--bp-surface-borderWidth);
-  --osdk-table-border-color: var(--bp-surface-borderColor-default);
+  --osdk-table-row-border-width: var(--bp-surface-borderWidth);
+  --osdk-table-row-border-color: var(--bp-surface-borderColor-default);
 
-  --osdk-table-header-bg: var(--bp-palette-gray-200);
+  --osdk-table-header-bg: var(--bp-palette-gray-100);
   --osdk-table-header-fontWeight: var(--bp-typography-weight-bold);
   --osdk-table-header-fontSize: var(--bp-typography-size-bodyMedium);
-  --osdk-table-header-color: var(--bp-typography-colorRest-default);
+  --osdk-table-header-color: var(--bp-typography-colorMuted);
 
-  --osdk-table-row-bg-default: var(--bp-palette-gray-100);
-  --osdk-table-row-bg-hover: oklch(from var(--bp-palette-gray-300) l c h / 0.2);
-  --osdk-table-row-bg-active: oklch(from var(--bp-palette-blue-600) l c h / 0.1);
+  --osdk-table-row-bg-default: var(--bp-palette-white);
+  --osdk-table-row-bg-hover: oklch(from var(--bp-palette-blue-100) l c h / 0.2);
+  --osdk-table-row-bg-active: var(--bp-palette-blue-100);
+  --osdk-table-row-border-color-hover: var(--bp-intent-primary-rest);
+  --osdk-table-row-border-color-active: var(--bp-intent-primary-rest);
 
   --osdk-table-cell-padding: calc(var(--bp-surface-spacing) * 3) calc(var(--bp-surface-spacing) * 2);
   --osdk-table-cell-fontSize: var(--bp-typography-size-bodyMedium);
   --osdk-table-cell-color: var(--bp-typography-colorRest-default);
 }
+
