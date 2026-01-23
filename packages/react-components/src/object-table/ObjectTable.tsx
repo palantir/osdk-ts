@@ -32,7 +32,7 @@ import { useRowSelection } from "./hooks/useRowSelection.js";
 import { useSelectionColumn } from "./hooks/useSelectionColumn.js";
 import { useTableSorting } from "./hooks/useTableSorting.js";
 import type { ObjectTableProps } from "./ObjectTableApi.js";
-import { Table } from "./Table.js";
+import { BaseTable } from "./Table.js";
 import { getRowId } from "./utils/getRowId.js";
 
 /**
@@ -174,7 +174,7 @@ export function ObjectTable<
   const isTableLoading = isLoading || isColumnsLoading;
 
   return (
-    <Table
+    <BaseTable
       table={table}
       isLoading={isTableLoading}
       fetchNextPage={fetchMore}
