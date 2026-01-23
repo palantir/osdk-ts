@@ -922,13 +922,8 @@ describe(modernToLegacyWhereClause, () => {
           }, objectTypeWithAllPropertyTypes),
         ).toMatchInlineSnapshot(`
           {
-            "field": undefined,
-            "propertyIdentifier": {
-              "propertyApiName": "integerArray",
-              "structFieldApiName": "$lt",
-              "type": "structField",
-            },
-            "type": "eq",
+            "field": "integerArray",
+            "type": "lt",
             "value": 5,
           }
         `);
@@ -939,13 +934,8 @@ describe(modernToLegacyWhereClause, () => {
           }, objectTypeWithAllPropertyTypes),
         ).toMatchInlineSnapshot(`
           {
-            "field": undefined,
-            "propertyIdentifier": {
-              "propertyApiName": "stringArray",
-              "structFieldApiName": "$startsWith",
-              "type": "structField",
-            },
-            "type": "eq",
+            "field": "stringArray",
+            "type": "startsWith",
             "value": "test",
           }
         `);
@@ -956,12 +946,7 @@ describe(modernToLegacyWhereClause, () => {
           }, objectTypeWithAllPropertyTypes),
         ).toMatchInlineSnapshot(`
           {
-            "field": undefined,
-            "propertyIdentifier": {
-              "propertyApiName": "booleanArray",
-              "structFieldApiName": "$eq",
-              "type": "structField",
-            },
+            "field": "booleanArray",
             "type": "eq",
             "value": true,
           }
@@ -981,23 +966,13 @@ describe(modernToLegacyWhereClause, () => {
             "type": "and",
             "value": [
               {
-                "field": undefined,
-                "propertyIdentifier": {
-                  "propertyApiName": "integerArray",
-                  "structFieldApiName": "$gte",
-                  "type": "structField",
-                },
-                "type": "eq",
+                "field": "integerArray",
+                "type": "gte",
                 "value": 1,
               },
               {
-                "field": undefined,
-                "propertyIdentifier": {
-                  "propertyApiName": "integerArray",
-                  "structFieldApiName": "$lt",
-                  "type": "structField",
-                },
-                "type": "eq",
+                "field": "integerArray",
+                "type": "lt",
                 "value": 10,
               },
             ],

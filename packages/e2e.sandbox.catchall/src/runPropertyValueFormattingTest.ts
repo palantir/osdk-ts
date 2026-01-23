@@ -18,32 +18,36 @@ import { GraphqlFormatting } from "@osdk/e2e.generated.catchall";
 import { z2vClient } from "./client.js";
 
 export async function runPropertyValueFormattingTest(): Promise<void> {
-  const metadata = await z2vClient.fetchMetadata(GraphqlFormatting);
+  // const metadata = await z2vClient.fetchMetadata(GraphqlFormatting);
 
-  console.log(
-    "Boolean formatting",
-    metadata.properties["booleanFormattedTrue"].valueFormatting,
-  );
-  console.log(
-    "Numeric currency formatting",
-    metadata.properties["doubleCurrencyCompact"].valueFormatting,
-  );
-  console.log(
-    "Numeric duration formatting",
-    metadata.properties["durationSeconds"].valueFormatting,
-  );
-  console.log(
-    "timestamp formatting",
-    metadata.properties["timestampDatetime"].valueFormatting,
-  );
-  console.log(
-    "date formatting",
-    metadata.properties["dateShort"].valueFormatting,
-  );
-  console.log(
-    "Known user formatting",
-    metadata.properties["stringUser"].valueFormatting,
-  );
+  // console.log(
+  //   "Boolean formatting",
+  //   metadata.properties["booleanFormattedTrue"].valueFormatting,
+  // );
+  // console.log(
+  //   "Numeric currency formatting",
+  //   metadata.properties["doubleCurrencyCompact"].valueFormatting,
+  // );
+  // console.log(
+  //   "Numeric duration formatting",
+  //   metadata.properties["durationSeconds"].valueFormatting,
+  // );
+  // console.log(
+  //   "timestamp formatting",
+  //   metadata.properties["timestampDatetime"].valueFormatting,
+  // );
+  // console.log(
+  //   "date formatting",
+  //   metadata.properties["dateShort"].valueFormatting,
+  // );
+  // console.log(
+  //   "Known user formatting",
+  //   metadata.properties["stringUser"].valueFormatting,
+  // );
+  const a = await z2vClient(GraphqlFormatting).where({
+    arrayIntegers: { $contains: 3 },
+  }).fetchPage();
+  console.log(a.data[0]);
 }
 
 void runPropertyValueFormattingTest();
