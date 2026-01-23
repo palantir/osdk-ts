@@ -16,10 +16,9 @@
 
 import type {
   DerivedProperty,
-  InterfaceDefinition,
   LinkedType,
   LinkNames,
-  ObjectTypeDefinition,
+  ObjectOrInterfaceDefinition,
   Osdk,
   PropertyKeys,
   SimplePropertyDef,
@@ -32,7 +31,7 @@ import { OsdkContext2 } from "./OsdkContext2.js";
 import type { InferRdpTypes } from "./types.js";
 
 export interface UseOsdkObjectsOptions<
-  T extends ObjectTypeDefinition | InterfaceDefinition,
+  T extends ObjectOrInterfaceDefinition,
   WithProps extends DerivedProperty.Clause<T> | undefined = undefined,
 > {
   /**
@@ -152,7 +151,7 @@ export interface UseOsdkObjectsOptions<
 }
 
 export interface UseOsdkListResult<
-  T extends ObjectTypeDefinition | InterfaceDefinition,
+  T extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
 > {
   fetchMore: (() => Promise<void>) | undefined;
@@ -180,7 +179,7 @@ declare const process: {
 };
 
 export function useOsdkObjects<
-  Q extends ObjectTypeDefinition,
+  Q extends ObjectOrInterfaceDefinition,
   L extends LinkNames<Q>,
 >(
   type: Q,
@@ -188,7 +187,7 @@ export function useOsdkObjects<
 ): UseOsdkListResult<LinkedType<Q, L>>;
 
 export function useOsdkObjects<
-  Q extends ObjectTypeDefinition | InterfaceDefinition,
+  Q extends ObjectOrInterfaceDefinition,
   WP extends DerivedProperty.Clause<Q> | undefined,
 >(
   type: Q,
@@ -196,7 +195,7 @@ export function useOsdkObjects<
 ): UseOsdkListResult<Q, InferRdpTypes<Q, WP>>;
 
 export function useOsdkObjects<
-  Q extends ObjectTypeDefinition | InterfaceDefinition,
+  Q extends ObjectOrInterfaceDefinition,
   WP extends DerivedProperty.Clause<Q> | undefined,
 >(
   type: Q,
