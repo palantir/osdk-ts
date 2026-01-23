@@ -516,13 +516,15 @@ describe("ObjectSetListenerWebsocket", async () => {
 
       client(Employee).subscribe({
         onChange: (change) => {
-          // @ts-expect-error
-          change.object.$rid;
+          change.object.$rid; // This doesn't error because we're forcing the type through, this is expected
         },
-      }, { includeRid: true });
+      }, {
+        // @ts-expect-error
+        includeRid: true,
+      });
     });
 
-    it("does not return rid on object type if not requested and object does not have a GTSR", async () => {
+    it("does not return rid on object type if not requested", async () => {
       const client: Client =
         ((a: any) => ({ subscribe: (a: any, b: any) => {} })) as Client;
 

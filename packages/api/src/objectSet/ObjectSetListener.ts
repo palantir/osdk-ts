@@ -76,7 +76,8 @@ export namespace ObjectSetSubscription {
      * contains a new value for a geotime series reference property, in which case the RID will be undefined. RIDs will not be included
      * on the objects themselves.
      */
-    includeRid?: R;
+    includeRid?: AllFalse<HasGeotimeSeriesReference<O, P>> extends true ? R
+      : false;
   }
 }
 
@@ -86,9 +87,7 @@ type ObjectUpdate<
   R extends boolean = false,
 > = {
   object: R extends false ? Osdk.Instance<O, never, P>
-    : AllFalse<HasGeotimeSeriesReference<O, P>> extends true
-      ? Osdk.Instance<O, "$rid", P>
-    : Osdk.Instance<O, never, P>;
+    : Osdk.Instance<O, "$rid", P>;
   state: "ADDED_OR_UPDATED" | "REMOVED";
 };
 
