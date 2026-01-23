@@ -99,7 +99,6 @@ describe.each([
       },
     );
 
-     
     const undefinedResult = await client(createOffice).applyAction({
       officeId: "NYC",
       address: "123 Main Street",
@@ -257,7 +256,6 @@ describe.each([
         };
       }));
 
-       
       const result = await client(actionTakesAttachment).applyAction({
         attachment: "ri.some.rid",
       });
@@ -309,12 +307,10 @@ describe.each([
     // Mimics the Web file API (https://developer.mozilla.org/en-US/docs/Web/API/File). The File constructor is only available in Node 19.2.0 and above
     const fileAttachment = Object.assign(blob, { name: "file1.txt" });
 
-     
     const result = await client(actionTakesAttachment).applyAction({
       attachment,
     });
 
-     
     const result2 = await client(actionTakesAttachment).applyAction({
       attachment: fileAttachment,
     });
