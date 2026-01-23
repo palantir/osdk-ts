@@ -18,17 +18,24 @@
   position: absolute;
   display: flex;
   background-color: var(--osdk-table-row-bg-default);
-  border-top: var(--osdk-table-border-width) solid transparent;
-  border-bottom: var(--osdk-table-border-width) solid var(--osdk-table-border-color);
+  border-top: var(--osdk-table-row-border-width) solid transparent;
+  border-bottom: var(--osdk-table-row-border-width) solid var(--osdk-table-row-border-color);
+
+  /* Zebra rows */
+  &:nth-child(even) {
+    background-color: var(--osdk-table-row-bg-alternate, --osdk-table-row-bg-default);
+  }
 
   &:hover {
-    background-color: var(--osdk-table-row-bg-hover);
+    background-color: var(--osdk-table-row-bg-hover, var(--bp-surface-colorHover-default));
+    border-top-color: var(--osdk-table-row-border-color-hover);
+    border-bottom-color: var(--osdk-table-row-border-color-hover);
   }
 
   &[data-selected="true"] {
     background-color: var(--osdk-table-row-bg-active);
-    border-top-color: var(--osdk-table-active-stroke);
-    border-bottom-color: var(--osdk-table-active-stroke);
+    border-top-color: var(--osdk-table-row-border-color-active);
+    border-bottom-color: var(--osdk-table-row-border-color-active);
   }
 
   &[data-selected="true"] + &[data-selected="true"] {

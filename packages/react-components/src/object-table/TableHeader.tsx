@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { type RowData, type Table } from "@tanstack/react-table";
+import type { RowData, Table } from "@tanstack/react-table";
 import React from "react";
 import styles from "./TableHeader.module.css";
 import { TableHeaderContent } from "./TableHeaderContent.js";
@@ -51,7 +51,9 @@ export function TableHeader<TData extends RowData>({
                 className={styles.osdkTableHeaderCell}
                 style={columnStyles}
               >
-                {isSelectColumn
+                {header.isPlaceholder
+                  ? null
+                  : isSelectColumn
                   ? <TableHeaderContent header={header} />
                   : (
                     <TableHeaderWithPopover
@@ -62,7 +64,7 @@ export function TableHeader<TData extends RowData>({
                   )}
                 {header.column.getCanResize() && (
                   <div
-                    className={styles.osdkTableHeaderResizer}
+                    className={styles.osdkTableHeaderResizeHandler}
                     onDoubleClick={() => header.column.resetSize()}
                     onMouseDown={header.getResizeHandler()}
                     onTouchStart={header.getResizeHandler()}

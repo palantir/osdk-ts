@@ -1,8 +1,3 @@
-/**
- * Example: Override primary intent color to green
- *
- */
-
 :root {
   --bp-palette-black: oklch(0.2827 0.0190 238.86);
 
@@ -183,5 +178,18 @@
   --bp-palette-violet-900: oklch(0.2835 0.0896 327.48);
   --bp-palette-violet-1000: oklch(0.2006 0.0688 327.53);
 
+  /* OSDK tokens override */
+  --osdk-checkbox-border: var(--bp-surface-borderWidth) solid var(--bp-surface-borderColor-strong);
+  --osdk-checkbox-bg-hover: var(--bp-palette-gray-300);
+  --osdk-checkbox-bg-active: var(--bp-palette-gray-400);
+  --osdk-checkbox-bg-checked: var(--bp-palette-white);
+  --osdk-checkbox-bg-checked-hover: var(--bp-palette-gray-100);
+  --osdk-checkbox-bg-checked-active: var(--osdk-checkbox-bg-active);
+  --osdk-checkbox-checked-foreground: var(--bp-palette-gray-1000);
 
+  --osdk-table-header-color: var(--bp-typography-colorRest-default);
+  --osdk-table-row-bg-alternate: oklch(from var(--bp-palette-gray-100) l c h / 0.5);
+  --osdk-table-row-bg-hover: var(--bp-surface-colorHover-default);
+  --osdk-table-row-border-color-hover: var(--osdk-table-row-border-color);
+  --osdk-table-row-bg-active:  var(--bp-palette-blue-100);
 }

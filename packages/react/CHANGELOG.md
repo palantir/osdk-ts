@@ -1,5 +1,18 @@
 # @osdkkit/react
 
+## 0.9.0-beta.6
+
+### Minor Changes
+
+- ba3159c: improve loading logic to make loading state consistent / reduce flashing
+- 0395d4b: Pins Foundry core and admin packages to monorepo version
+
+### Patch Changes
+
+- Updated dependencies [6b27d8a]
+  - @osdk/client@2.7.0-beta.9
+  - @osdk/api@2.7.0-beta.9
+
 ## 0.9.0-beta.5
 
 ### Minor Changes

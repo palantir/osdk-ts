@@ -24,10 +24,10 @@
   box-sizing: border-box;
   cursor: pointer;
   border-radius: var(--bp-surface-borderRadius);
+  border: var(--osdk-checkbox-border);
 
   &[data-unchecked] {
     background-color: var(--osdk-checkbox-bg);
-    border: var(--osdk-checkbox-border);
 
     &:hover {
       background-color: var(--osdk-checkbox-bg-hover);
@@ -51,8 +51,8 @@
   }
 
   &:focus-visible {
-    outline: var(--bp-surface-borderWidth) solid var(--bp-intent-primary-rest);
-    outline-offset: calc(-1 * var(--bp-surface-borderWidth));
+    outline: var(--bp-emphasis-focusWidth) solid var(--bp-emphasis-focusColor);
+    outline-offset: var(--bp-emphasis-focusOffset);
   }
 }
 

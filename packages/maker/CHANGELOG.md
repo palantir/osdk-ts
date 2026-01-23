@@ -1,5 +1,16 @@
 # @osdk/maker
 
+## 0.15.0-beta.7
+
+### Minor Changes
+
+- 8381ac2: Alias and render hint overrides for oac
+- c95f3bc: Support IDPs in OAC
+
+### Patch Changes
+
+- @osdk/api@2.7.0-beta.9
+
 ## 0.15.0-beta.6
 
 ### Minor Changes

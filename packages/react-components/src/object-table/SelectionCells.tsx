@@ -34,6 +34,7 @@ export function SelectionHeaderCell({
       indeterminate={hasSelection && !isAllSelected}
       checked={isAllSelected}
       onCheckedChange={onToggleAll}
+      aria-label={"Select all rows"}
     />
   );
 }
@@ -47,7 +48,7 @@ export function SelectionCell<TData extends RowData>({
   row,
   onToggleRow,
 }: SelectionCellProps<TData>): React.ReactElement {
-  const handleCheckedChange = useCallback(
+  const handleClick = useCallback(
     (event: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
       const isShiftClick = event.shiftKey;
       onToggleRow(row.id, row.index, isShiftClick);
@@ -58,7 +59,8 @@ export function SelectionCell<TData extends RowData>({
   return (
     <Checkbox
       checked={row.getIsSelected()}
-      onClick={handleCheckedChange}
+      onClick={handleClick}
+      aria-label={`Select row ${row.index + 1}`}
     />
   );
 }

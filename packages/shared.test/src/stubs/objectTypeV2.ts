@@ -106,6 +106,16 @@ export const employeeObjectType: ObjectTypeV2 = {
       },
       rid: "rid",
     },
+    favoriteRestaurants: {
+      dataType: {
+        type: "array",
+        subType: {
+          type: "string",
+        },
+        reducers: [],
+      },
+      rid: "rid",
+    },
   },
   rid: "ri.ontology.main.object-type.401ac022-89eb-4591-8b7e-0a912b9efb44",
   status: "ACTIVE",

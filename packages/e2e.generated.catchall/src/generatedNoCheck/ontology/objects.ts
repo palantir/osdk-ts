@@ -9,6 +9,8 @@ export { EsongPds } from './objects/EsongPds.js';
 export { FintrafficAis } from './objects/FintrafficAis.js';
 export { GraphqlFormatting } from './objects/GraphqlFormatting.js';
 export { GtfsTripTrackObject } from './objects/GtfsTripTrackObject.js';
+export { MasonHeavyEquipment } from './objects/MasonHeavyEquipment.js';
+export { MasonMovie } from './objects/MasonMovie.js';
 export { MatthewvsDevOrderEmbedding } from './objects/MatthewvsDevOrderEmbedding.js';
 export { McAirportStruct } from './objects/McAirportStruct.js';
 export { MnayanOsdkMediaObject } from './objects/MnayanOsdkMediaObject.js';
