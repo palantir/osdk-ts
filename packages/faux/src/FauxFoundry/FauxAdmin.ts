@@ -86,11 +86,13 @@ export class FauxAdmin {
   }
 
   listUsers(
-    pageSize: number,
+    pageSize: number | undefined = this.#users.length,
     pageToken: string | undefined,
-    status: UserStatus,
+    status: UserStatus | undefined,
   ): { users: User[]; nextPageToken: string } {
-    const filteredUsers = this.#users.filter(user => user.status === status);
+    const filteredUsers = status != null
+      ? this.#users.filter(user => user.status === status)
+      : this.#users;
 
     const startIndex = pageToken != null
       ? filteredUsers.findIndex(user => user.id === pageToken)
