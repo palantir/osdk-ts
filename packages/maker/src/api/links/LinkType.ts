@@ -165,9 +165,9 @@ export type LinkSideMetadata = OptionalFields<
 >;
 
 export type UserLinkTypeStatus =
-  |"active" 
-  | "experimental" 
-  | "example" 
+  | "active"
+  | "experimental"
+  | "example"
   | {
     type: "deprecated";
     message: string;
