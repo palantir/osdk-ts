@@ -318,7 +318,7 @@ export type ConvertProps<
 	FROM extends ObjectOrInterfaceDefinition,
 	TO extends ValidToFrom<FROM>,
 	P extends ValidOsdkPropParams<FROM>,
-	OPTIONS extends never | "$rid" | "$ridOrUndefined" | "$allBaseProperties" = never
+	OPTIONS extends never | "$rid" | "$allBaseProperties" | "$propertySecurities" = never
 > = TO extends FROM ? P : TO extends ObjectTypeDefinition ? (UnionIfTrue<MapPropNamesToObjectType<FROM, TO, P, OPTIONS>, P extends "$rid" ? true : false, "$rid">) : TO extends InterfaceDefinition ? FROM extends ObjectTypeDefinition ? (UnionIfTrue<MapPropNamesToInterface<FROM, TO, P>, P extends "$rid" ? true : false, "$rid">) : never : never;
 
 // @public
@@ -1222,7 +1222,9 @@ export namespace ObjectSetSubscription {
     		P extends PropertyKeys<O> = PropertyKeys<O>,
     		R extends boolean = false
     	> {
-        		includeRid?: R;
+        		// Warning: (ae-forgotten-export) The symbol "AllFalse" needs to be exported by the entry point index.d.ts
+        // Warning: (ae-forgotten-export) The symbol "HasGeotimeSeriesReference" needs to be exported by the entry point index.d.ts
+        includeRid?: AllFalse<HasGeotimeSeriesReference<O, P>> extends true ? R : false;
         		properties?: Array<P>;
         	}
 }
@@ -1282,7 +1284,7 @@ export namespace Osdk {
     // (undocumented)
     export type Instance<
     		Q extends ObjectOrInterfaceDefinition,
-    		OPTIONS extends never | "$rid" | "$ridOrUndefined" | "$allBaseProperties" = never,
+    		OPTIONS extends never | "$rid" | "$allBaseProperties" | "$propertySecurities" = never,
     		P extends PropertyKeys<Q> = PropertyKeys<Q>,
     		R extends Record<string, SimplePropertyDef> = {}
     	> = OsdkBase<Q> & Pick<CompileTimeMetadata<Q>["props"], GetPropsKeys<Q, P, [R] extends [{}] ? false : true>> & ([R] extends [never] ? {} : { [A in keyof R] : SimplePropertyDef.ToRuntimeProperty<R[A]> }) & {
@@ -1305,8 +1307,6 @@ export namespace Osdk {
         		readonly $propertySecurities: ObjectPropertySecurities<Q, GetPropsKeys<Q, P, [R] extends [{}] ? false : true>>
         	} : {}) & (IsNever<OPTIONS> extends true ? {} : IsAny<OPTIONS> extends true ? {} : "$rid" extends OPTIONS ? {
         		readonly $rid: string
-        	} : "$ridOrUndefined" extends OPTIONS ? {
-        		readonly $rid: string | undefined
         	} : {});
 }
 
