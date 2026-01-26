@@ -15,12 +15,13 @@
  */
 
 import type {
+  DerivedProperty,
   ObjectOrInterfaceDefinition,
   QueryDefinition,
   SimplePropertyDef,
   WhereClause,
 } from "@osdk/api";
-import type { UseOsdkListResult} from "@osdk/react/experimental";
+import type { UseOsdkListResult } from "@osdk/react/experimental";
 import { useOsdkObjects } from "@osdk/react/experimental";
 import { useMemo } from "react";
 import type { ColumnDefinition } from "../ObjectTableApi.js";
@@ -32,10 +33,12 @@ const PAGE_SIZE = 50;
  * It extracts RDP locators from columnDefinitions and calls useObjectSet + withProperties
  * to return data containing the derived properties.
  */
-
 export function useObjectTableData<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef>,
+  RDPs extends Record<string, SimplePropertyDef> = Record<
+    string,
+    never
+  >,
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
     string,
     never
@@ -45,8 +48,11 @@ export function useObjectTableData<
   columnDefinitions?: Array<ColumnDefinition<Q, RDPs, FunctionColumns>>,
   filter?: WhereClause<Q, RDPs>,
 ): UseOsdkListResult<Q, RDPs> {
+  type WP<Q extends ObjectOrInterfaceDefinition> = {
+    [K in keyof RDPs]: DerivedProperty.Creator<Q, RDPs[K]>;
+  };
   // Extract derived properties definition to be passed to useObjectSet hook
-  const withProperties: RDPs | undefined = useMemo(() => {
+  const withProperties: WP<Q> | undefined = useMemo(() => {
     if (!columnDefinitions) {
       return;
     }
@@ -68,16 +74,33 @@ export function useObjectTableData<
           [cur.id]: cur.creator,
         };
       },
-      {} as RDPs,
+      {} as WP<Q>,
     );
   }, [columnDefinitions]);
 
-  return useOsdkObjects<Q, RDPs>(
+  const where: WhereClause<Q, InferRdpTypes<Q, WP<Q>>> = useMemo(() => {
+    return filter ? filter : {};
+  }, []);
+
+  return useOsdkObjects<
+    Q,
+    WP<Q>
+  >(
     objectOrInterfaceType,
     {
       withProperties,
       pageSize: PAGE_SIZE,
-      where: filter,
+      where,
     },
-  );
+  ) as UseOsdkListResult<Q, RDPs>;
 }
+
+// InferRdpTypes utility type extracts RDPs from the DerivedProperty.Creator objects
+type InferRdpTypes<
+  Q extends ObjectOrInterfaceDefinition,
+  WP extends DerivedProperty.Clause<Q> | undefined,
+> = WP extends DerivedProperty.Clause<Q> ? {
+    [K in keyof WP]: WP[K] extends DerivedProperty.Creator<Q, infer T> ? T
+      : never;
+  }
+  : {};

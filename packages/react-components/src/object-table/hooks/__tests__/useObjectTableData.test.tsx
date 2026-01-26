@@ -16,7 +16,6 @@
 
 import type {
   DerivedProperty,
-  ObjectSet,
   ObjectTypeDefinition,
   PropertyKeys,
   SimplePropertyDef,
@@ -45,7 +44,7 @@ interface MockUseObjectSetReturn {
 }
 
 vi.mock("@osdk/react/experimental", () => ({
-  useObjectSet: vi.fn((objectSet, options): MockUseObjectSetReturn => {
+  useOsdkObjects: vi.fn((objectType, options): MockUseObjectSetReturn => {
     return {
       data: [],
       isLoading: false,
@@ -67,10 +66,6 @@ const TestObjectType = {
 type TestObject = typeof TestObjectType;
 type TestObjectKeys = PropertyKeys<TestObject>;
 
-const mockObjectSet = {
-  objectType: TestObjectType,
-} as unknown as ObjectSet<TestObject>;
-
 describe(useObjectTableData, () => {
   const createWrapper = (client: Client) => {
     return ({ children }: React.PropsWithChildren) => {
@@ -83,7 +78,7 @@ describe(useObjectTableData, () => {
 
   it("calls useObjectSet with pageSize of 50", () => {
     const { result } = renderHook(
-      () => useObjectTableData(mockObjectSet),
+      () => useObjectTableData(TestObjectType),
       { wrapper },
     );
 
@@ -99,7 +94,7 @@ describe(useObjectTableData, () => {
       name: "John",
     } as unknown as WhereClause<TestObject>;
     const { result } = renderHook(
-      () => useObjectTableData(mockObjectSet, undefined, filterClause),
+      () => useObjectTableData(TestObjectType, undefined, filterClause),
       { wrapper },
     );
 
@@ -109,7 +104,7 @@ describe(useObjectTableData, () => {
 
   it("calls useObjectSet without withProperties when no columnDefinitions provided", () => {
     const { result } = renderHook(
-      () => useObjectTableData(mockObjectSet, undefined),
+      () => useObjectTableData(TestObjectType, undefined),
       { wrapper },
     );
 
@@ -129,7 +124,7 @@ describe(useObjectTableData, () => {
     ];
 
     const { result } = renderHook(
-      () => useObjectTableData(mockObjectSet, columnDefinitions),
+      () => useObjectTableData(TestObjectType, columnDefinitions),
       { wrapper },
     );
 
@@ -170,7 +165,7 @@ describe(useObjectTableData, () => {
     ];
 
     const { result } = renderHook(
-      () => useObjectTableData(mockObjectSet, columnDefinitions),
+      () => useObjectTableData(TestObjectType, columnDefinitions),
       { wrapper },
     );
 
@@ -196,7 +191,7 @@ describe(useObjectTableData, () => {
     ];
 
     const { result, rerender } = renderHook(
-      ({ colDefs }) => useObjectTableData(mockObjectSet, colDefs),
+      ({ colDefs }) => useObjectTableData(TestObjectType, colDefs),
       {
         initialProps: { colDefs: columnDefinitions },
         wrapper,
@@ -243,7 +238,7 @@ describe(useObjectTableData, () => {
 
     const { result, rerender } = renderHook(
       ({ colDefs }: { colDefs: ColDefs }) =>
-        useObjectTableData(mockObjectSet, colDefs),
+        useObjectTableData(TestObjectType, colDefs),
       {
         initialProps: { colDefs: initialColumnDefinitions as ColDefs },
         wrapper,
@@ -274,7 +269,7 @@ describe(useObjectTableData, () => {
 
   it("returns useObjectSet result structure", () => {
     const { result } = renderHook(
-      () => useObjectTableData(mockObjectSet),
+      () => useObjectTableData(TestObjectType),
       { wrapper },
     );
 

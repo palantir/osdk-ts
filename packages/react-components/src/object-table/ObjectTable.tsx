@@ -102,7 +102,7 @@ export function ObjectTable<
     data,
   });
 
-  const selectionColumn = useSelectionColumn<Q, any>(
+  const selectionColumn = useSelectionColumn<Q, RDPs>(
     { selectionMode, isAllSelected, hasSelection, onToggleAll, onToggleRow },
   );
 

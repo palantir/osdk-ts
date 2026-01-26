@@ -4,9 +4,9 @@ import { ObjectTable } from "@osdk/react-components/experimental";
 import { useCallback } from "react";
 import { Employee } from "../../generatedNoCheck2/index.js";
 
-interface RDPs extends DerivedProperty.Clause<Employee> {
-  managerName: DerivedProperty.Creator<Employee, "string">;
-}
+type RDPs = {
+  managerName: "string";
+};
 
 const columnDefinitions: Array<
   ColumnDefinition<

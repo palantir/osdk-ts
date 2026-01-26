@@ -72,7 +72,7 @@ export function useColumnDefs<
     }
 
     // If not, return the default columns from the object properties
-    return getDefaultColumns<Q>(objectProperties);
+    return getDefaultColumns<Q, RDPs>(objectProperties);
   }, [columnDefinitions, metadata?.properties]);
 
   return { columns, loading, error };
