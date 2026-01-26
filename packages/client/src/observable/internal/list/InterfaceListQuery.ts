@@ -69,7 +69,7 @@ export class InterfaceListQuery extends ListQuery {
   protected async postProcessFetchedData(
     data: Osdk.Instance<any>[],
   ): Promise<Osdk.Instance<any>[]> {
-    return reloadDataAsFullObjects(this.store.client, data);
+    return reloadDataAsFullObjects(this.store.client, data, this.apiName);
   }
 
   protected extractRelevantObjects(
@@ -107,6 +107,7 @@ export class InterfaceListQuery extends ListQuery {
 async function reloadDataAsFullObjects(
   client: Client,
   data: Osdk.Instance<any>[],
+  interfaceApiName: string,
 ) {
   const groups = groupBy(data, (x) => x.$objectType);
   const objectTypeToPrimaryKeyToObject = Object.fromEntries(
@@ -147,11 +148,13 @@ async function reloadDataAsFullObjects(
   );
 
   data = data.map((obj) => {
+    const fullObject =
+      objectTypeToPrimaryKeyToObject[obj.$objectType][obj.$primaryKey];
     invariant(
-      objectTypeToPrimaryKeyToObject[obj.$objectType][obj.$primaryKey],
+      fullObject,
       `Could not find object ${obj.$objectType} ${obj.$primaryKey}`,
     );
-    return objectTypeToPrimaryKeyToObject[obj.$objectType][obj.$primaryKey];
+    return fullObject.$as(interfaceApiName);
   });
 
   return data;
