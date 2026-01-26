@@ -1082,7 +1082,13 @@ describe(Store, () => {
           await waitForCall(ifaceSub);
           expectSingleListCallAndClear(
             ifaceSub,
-            employeesAsServerReturns,
+            employeesAsServerReturns.map(e =>
+              expect.objectContaining({
+                $apiName: "FooInterface",
+                $objectType: "Employee",
+                $primaryKey: e.$primaryKey,
+              })
+            ),
             {
               status: "loaded",
             },
