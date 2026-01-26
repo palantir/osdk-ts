@@ -26,10 +26,7 @@ import {
   cleanAndValidateLinkTypeId,
   ontologyDefinition,
 } from "../../api/defineOntology.js";
-import type {
-  LinkType,
-  UserLinkTypeStatus,
-} from "../../api/links/LinkType.js";
+import type { LinkType, UserLinkTypeStatus } from "../../api/links/LinkType.js";
 import type { ObjectType } from "../../api/object/ObjectType.js";
 import type { ObjectTypeDefinition } from "../../api/object/ObjectTypeDefinition.js";
 import { convertCardinality } from "./convertCardinality.js";
@@ -267,14 +264,17 @@ export function getObject(
 export function convertLinkStatus(
   status: UserLinkTypeStatus | undefined,
 ): OntologyIrLinkTypeStatus {
-  if (typeof status === "object" && "type" in status && status.type === "deprecated") {
+  if (
+    typeof status === "object" && "type" in status
+    && status.type === "deprecated"
+  ) {
     return {
       type: "deprecated",
       deprecated: {
         message: status.message,
         deadline: status.deadline,
-      }
-    }
+      },
+    };
   }
   switch (status) {
     case "experimental":

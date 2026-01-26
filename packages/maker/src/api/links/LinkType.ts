@@ -164,12 +164,13 @@ export type LinkSideMetadata = OptionalFields<
   "visibility" | "typeClasses"
 >;
 
-export type UserLinkTypeStatus = "active" 
-| "experimental" 
-| "example" 
-| {
+export type UserLinkTypeStatus =
+  |"active" 
+  | "experimental" 
+  | "example" 
+  | {
     type: "deprecated";
     message: string;
     deadline: string;
     replacedBy?: LinkTypeId;
-};
+  };

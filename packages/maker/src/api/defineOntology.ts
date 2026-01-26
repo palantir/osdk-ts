@@ -298,7 +298,7 @@ export function convertObjectStatus(status: any): any {
       experimental: {},
     };
   }
-  
+
   if (status === "example") {
     return {
       type: "example",

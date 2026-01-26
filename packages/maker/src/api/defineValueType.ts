@@ -123,13 +123,12 @@ export type ValueTypeDefinition = {
   status?: UserValueTypeStatus;
 };
 
-export type UserValueTypeStatus = 
-"active" | {
+export type UserValueTypeStatus = "active" | {
   type: "deprecated";
   message: string;
   deadline: string;
   replacedBy?: ValueTypeRid;
-}
+};
 
 export function defineValueType(
   valueTypeDef: ValueTypeDefinition,
@@ -187,6 +186,6 @@ export function convertUserValueTypeStatusToValueTypeStatus(
         replacedBy: status.replacedBy,
       },
     };
-  } 
+  }
   return { type: "active", active: {} };
 }
