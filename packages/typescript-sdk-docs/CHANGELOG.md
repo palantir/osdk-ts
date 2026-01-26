@@ -1,5 +1,11 @@
 # @osdk/typescript-sdk-docs
 
+## 0.6.0-beta.4
+
+### Minor Changes
+
+- 3bfde5a: Add rendering support for objectSet action parameters
+
 ## 0.6.0-beta.3
 
 ### Minor Changes
