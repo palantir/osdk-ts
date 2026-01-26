@@ -2,18 +2,19 @@ import type { DerivedProperty, Osdk } from "@osdk/api";
 import type { ColumnDefinition } from "@osdk/react-components/experimental";
 import { ObjectTable } from "@osdk/react-components/experimental";
 import { useCallback } from "react";
-import { $ } from "../../foundryClient.js";
 import { Employee } from "../../generatedNoCheck2/index.js";
 
-type RDPs = {
-  managerName: "string";
-};
+interface RDPs extends DerivedProperty.Clause<Employee> {
+  managerName: DerivedProperty.Creator<Employee, "string">;
+}
 
-const columnDefinitions: ColumnDefinition<
-  Employee,
-  RDPs,
-  {}
->[] = [
+const columnDefinitions: Array<
+  ColumnDefinition<
+    Employee,
+    RDPs,
+    {}
+  >
+> = [
   // With renderHeader prop
   {
     locator: {
@@ -61,8 +62,6 @@ const columnDefinitions: ColumnDefinition<
 ];
 
 export function EmployeesTable() {
-  const employeesObjectSet = $(Employee);
-
   const renderCellContextMenu = useCallback(
     (_: Osdk.Instance<Employee>, cellValue: unknown) => {
       return (
@@ -88,8 +87,7 @@ export function EmployeesTable() {
         overflow: "auto",
       }}
     >
-      <ObjectTable<Employee, { managerName: "string" }>
-        objectSet={employeesObjectSet}
+      <ObjectTable<Employee, RDPs>
         objectType={Employee}
         columnDefinitions={columnDefinitions}
         selectionMode={"multiple"}

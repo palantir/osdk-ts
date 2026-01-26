@@ -15,7 +15,7 @@
  */
 
 import type {
-  ObjectTypeDefinition,
+  ObjectOrInterfaceDefinition,
   Osdk,
   PropertyKeys,
   SimplePropertyDef,
@@ -34,7 +34,7 @@ interface UseSelectionColumnProps {
 
 export const SELECTION_COLUMN_ID = "__selection__";
 export const useSelectionColumn = <
-  Q extends ObjectTypeDefinition,
+  Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = Record<
     string,
     never

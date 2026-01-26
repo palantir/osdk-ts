@@ -16,8 +16,7 @@
 
 import type {
   DerivedProperty,
-  ObjectSet,
-  ObjectTypeDefinition,
+  ObjectOrInterfaceDefinition,
   Osdk,
   PrimaryKeyType,
   PropertyKeys,
@@ -28,7 +27,7 @@ import type {
 import type * as React from "react";
 
 export type ColumnDefinition<
-  Q extends ObjectTypeDefinition,
+  Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = Record<
     string,
     never
@@ -63,7 +62,7 @@ export type ColumnDefinition<
 };
 
 export type ColumnDefinitionLocator<
-  Q extends ObjectTypeDefinition,
+  Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = Record<
     string,
     never
@@ -88,7 +87,7 @@ export type ColumnDefinitionLocator<
   };
 
 export interface ObjectTableProps<
-  Q extends ObjectTypeDefinition,
+  Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = Record<
     string,
     never
@@ -98,11 +97,6 @@ export interface ObjectTableProps<
     never
   >,
 > {
-  /**
-   * The set of objects to show in the table
-   */
-  objectSet: ObjectSet<Q>;
-
   /**
    * The object type of the object
    */

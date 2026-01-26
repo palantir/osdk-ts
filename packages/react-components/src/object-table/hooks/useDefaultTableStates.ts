@@ -15,7 +15,7 @@
  */
 
 import type {
-  ObjectTypeDefinition,
+  ObjectOrInterfaceDefinition,
   QueryDefinition,
   SimplePropertyDef,
 } from "@osdk/api";
@@ -24,7 +24,7 @@ import { useMemo } from "react";
 import type { ObjectTableProps } from "../ObjectTableApi.js";
 
 interface UseDefaultTableStatesProps<
-  Q extends ObjectTypeDefinition,
+  Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
     string,
@@ -43,7 +43,7 @@ interface UseDefaultTableStatesResult {
 }
 
 export const useDefaultTableStates = <
-  Q extends ObjectTypeDefinition,
+  Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
     string,

@@ -15,7 +15,7 @@
  */
 
 import type {
-  ObjectTypeDefinition,
+  ObjectOrInterfaceDefinition,
   Osdk,
   PropertyKeys,
   QueryDefinition,
@@ -42,12 +42,12 @@ import { getRowId } from "./utils/getRowId.js";
  *
  * @example
  * ```tsx
- * <ObjectTable objectSet={myObjectSet} objectType={MyObjectType} />
+ * <ObjectTable objectType={MyObjectType} />
  * ```
  */
 
 export function ObjectTable<
-  Q extends ObjectTypeDefinition,
+  Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = Record<
     string,
     never
@@ -57,7 +57,6 @@ export function ObjectTable<
     never
   >,
 >({
-  objectSet,
   objectType,
   columnDefinitions,
   filter,
@@ -72,7 +71,7 @@ export function ObjectTable<
     RDPs,
     FunctionColumns
   >(
-    objectSet,
+    objectType,
     columnDefinitions,
     filter,
   );
@@ -103,7 +102,7 @@ export function ObjectTable<
     data,
   });
 
-  const selectionColumn = useSelectionColumn<Q, RDPs>(
+  const selectionColumn = useSelectionColumn<Q, any>(
     { selectionMode, isAllSelected, hasSelection, onToggleAll, onToggleRow },
   );
 

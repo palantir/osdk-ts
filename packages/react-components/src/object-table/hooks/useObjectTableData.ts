@@ -15,39 +15,38 @@
  */
 
 import type {
-  DerivedProperty,
-  ObjectSet,
-  ObjectTypeDefinition,
+  ObjectOrInterfaceDefinition,
   QueryDefinition,
   SimplePropertyDef,
   WhereClause,
 } from "@osdk/api";
-import { useObjectSet } from "@osdk/react/experimental";
+import type { UseOsdkListResult} from "@osdk/react/experimental";
+import { useOsdkObjects } from "@osdk/react/experimental";
 import { useMemo } from "react";
 import type { ColumnDefinition } from "../ObjectTableApi.js";
 
 const PAGE_SIZE = 50;
 
 /**
- * This hook is a wrapper around useObjectSet
+ * This hook is a wrapper around useOsdkObjects
  * It extracts RDP locators from columnDefinitions and calls useObjectSet + withProperties
  * to return data containing the derived properties.
  */
 
 export function useObjectTableData<
-  Q extends ObjectTypeDefinition,
+  Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef>,
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
     string,
     never
   >,
 >(
-  objectSet: ObjectSet<Q>,
+  objectOrInterfaceType: Q,
   columnDefinitions?: Array<ColumnDefinition<Q, RDPs, FunctionColumns>>,
   filter?: WhereClause<Q, RDPs>,
-): ReturnType<typeof useObjectSet<Q, never, RDPs>> {
+): UseOsdkListResult<Q, RDPs> {
   // Extract derived properties definition to be passed to useObjectSet hook
-  const withProperties = useMemo(() => {
+  const withProperties: RDPs | undefined = useMemo(() => {
     if (!columnDefinitions) {
       return;
     }
@@ -58,23 +57,23 @@ export function useObjectTableData<
       },
     );
 
-    return rdpColumns.reduce<
-      { [K in keyof RDPs]: DerivedProperty.Creator<Q, RDPs[K]> }
-    >(
+    if (!rdpColumns.length) {
+      return;
+    }
+
+    return rdpColumns.reduce(
       (acc, cur) => {
         return {
           ...acc,
           [cur.id]: cur.creator,
         };
       },
-      {} as {
-        [K in keyof RDPs]: DerivedProperty.Creator<Q, RDPs[K]>;
-      },
+      {} as RDPs,
     );
   }, [columnDefinitions]);
 
-  return useObjectSet<Q, never, RDPs>(
-    objectSet,
+  return useOsdkObjects<Q, RDPs>(
+    objectOrInterfaceType,
     {
       withProperties,
       pageSize: PAGE_SIZE,
