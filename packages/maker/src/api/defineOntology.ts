@@ -298,6 +298,13 @@ export function convertObjectStatus(status: any): any {
       experimental: {},
     };
   }
+  
+  if (status === "example") {
+    return {
+      type: "example",
+      example: {},
+    };
+  }
 
   if (typeof status === "object" && status.type === "deprecated") {
     return {

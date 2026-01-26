@@ -18,7 +18,6 @@ import type {
   LinkTypeDisplayMetadata,
   LinkTypeId,
   LinkTypeMetadata,
-  OntologyIrLinkTypeStatus,
   Visibility,
 } from "@osdk/client.unstable";
 import type { OptionalFields } from "../../util/OptionalFields.js";
