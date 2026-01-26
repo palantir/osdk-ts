@@ -260,7 +260,6 @@ export function getObject(
   return { apiName: objectApiName, object: fullObject };
 }
 
-
 export function convertLinkStatus(
   status: UserLinkTypeStatus | undefined,
 ): OntologyIrLinkTypeStatus {
