@@ -1,5 +1,41 @@
 # @osdk/maker
 
+## 0.15.0-beta.7
+
+### Minor Changes
+
+- 8381ac2: Alias and render hint overrides for oac
+- c95f3bc: Support IDPs in OAC
+
+### Patch Changes
+
+- @osdk/api@2.7.0-beta.9
+
+## 0.15.0-beta.6
+
+### Minor Changes
+
+- 2fd6f6e: Fix self-referential derived datasources
+
+## 0.15.0-beta.5
+
+### Minor Changes
+
+- 1cb0862: fix property parameter defaults
+
+## 0.15.0-beta.4
+
+### Minor Changes
+
+- 9088072: Add users from static groups as action parameters in OAC
+- bb8d059: Support customizations for delete object action parameters
+- 33e10e3: Implement user and group action parameters
+
+### Patch Changes
+
+- Updated dependencies [c9ca08d]
+  - @osdk/api@2.7.0-beta.6
+
 ## 0.15.0-beta.3
 
 ### Minor Changes

@@ -1,5 +1,41 @@
 # @osdk/generator-converters.ontologyir
 
+## 2.7.0-beta.10
+
+### Patch Changes
+
+- @osdk/client.unstable@2.7.0-beta.10
+
+## 2.7.0-beta.9
+
+### Minor Changes
+
+- 8381ac2: Alias and render hint overrides for oac
+
+### Patch Changes
+
+- Updated dependencies [8381ac2]
+- Updated dependencies [c95f3bc]
+  - @osdk/client.unstable@2.7.0-beta.9
+
+## 2.7.0-beta.8
+
+### Patch Changes
+
+- @osdk/client.unstable@2.7.0-beta.8
+
+## 2.7.0-beta.7
+
+### Patch Changes
+
+- @osdk/client.unstable@2.7.0-beta.7
+
+## 2.7.0-beta.6
+
+### Patch Changes
+
+- @osdk/client.unstable@2.7.0-beta.6
+
 ## 2.7.0-beta.5
 
 ### Minor Changes

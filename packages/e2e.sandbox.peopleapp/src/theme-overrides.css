@@ -1,0 +1,13 @@
+/**
+ * Example: Override primary intent color to green
+ *
+ */
+
+:root {
+  /* Override primary intent to use green palette instead of blue */
+  --bp-intent-primary-rest: var(--bp-palette-green-500);
+  --bp-intent-primary-hover: var(--bp-palette-green-400);
+  --bp-intent-primary-active: var(--bp-palette-green-600);
+  --bp-intent-primary-disabled: var(--bp-palette-green-300);
+  --bp-intent-primary-foreground: var(--bp-palette-gray-100);
+}

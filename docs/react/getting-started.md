@@ -14,7 +14,11 @@ This guide covers installation, setup, and your first OSDK React application.
 
 ### 1. Install Beta Packages
 
-Using `latest` doesn't always install actual latest versions for beta packages. Specify them explicitly:
+Using `latest` doesn't always install actual latest versions for beta packages. Specify them explicitly.
+
+:::warning Version Compatibility
+All `@osdk/*` packages must use **compatible versions**. Mismatched versions (e.g., mixing an old `@osdk/client` with a newer `@osdk/react`) will cause TypeScript errors.
+:::
 
 ```json
 {
@@ -28,6 +32,7 @@ Using `latest` doesn't always install actual latest versions for beta packages. 
 ```
 
 Check for newer versions on npm:
+
 - [@osdk/react versions](https://www.npmjs.com/package/@osdk/react?activeTab=versions)
 - [@osdk/client versions](https://www.npmjs.com/package/@osdk/client?activeTab=versions)
 - [@osdk/api versions](https://www.npmjs.com/package/@osdk/api?activeTab=versions)
@@ -56,11 +61,11 @@ If you haven't generated an SDK yet:
 
 `@osdk/react` has two entry points:
 
-| | `@osdk/react` | `@osdk/react/experimental` |
-|---|---|---|
-| **Use when** | You only need client access | You want reactive data hooks (most apps) |
-| **Features** | Client provider, metadata | Queries, actions, caching, optimistic updates |
-| **API stability** | Stable | APIs may change between releases |
+|                   | `@osdk/react`               | `@osdk/react/experimental`                    |
+| ----------------- | --------------------------- | --------------------------------------------- |
+| **Use when**      | You only need client access | You want reactive data hooks (most apps)      |
+| **Features**      | Client provider, metadata   | Queries, actions, caching, optimistic updates |
+| **API stability** | Stable                      | APIs may change between releases              |
 
 **We recommend starting with experimental.** The "experimental" label indicates the API surface may evolve, not that the features are unstable or buggy. Most applications benefit from the reactive hooks, automatic caching, and optimistic update support.
 
@@ -80,6 +85,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
 ```
 
 Stable exports (use with `OsdkProvider`):
+
 - `OsdkProvider` - Provider component for basic client access
 - `useOsdkClient` - Access the OSDK client directly
 - `useOsdkMetadata` - Fetch type metadata
@@ -110,6 +116,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
 **All experimental hooks require `OsdkProvider2` at your app root.**
 
 Experimental exports:
+
 - `OsdkProvider2` - Provider for experimental features
 - `useOsdkObjects` - Query collections of objects
 - `useOsdkObject` - Query single objects
@@ -117,6 +124,7 @@ Experimental exports:
 - `useLinks` - Navigate object relationships
 - `useObjectSet` - Advanced queries with set operations
 - `useOsdkAggregation` - Server-side aggregations
+- `useOsdkFunction` - Execute and observe OSDK functions
 - `useDebouncedCallback` - Debounce callbacks
 - `useOsdkClient` - Access the OSDK client
 - `useOsdkMetadata` - Fetch type metadata (also available from stable)
@@ -156,9 +164,7 @@ function TodoList() {
 
   return (
     <div>
-      {data?.map(todo => (
-        <div key={todo.$primaryKey}>{todo.title}</div>
-      ))}
+      {data?.map(todo => <div key={todo.$primaryKey}>{todo.title}</div>)}
     </div>
   );
 }
@@ -173,7 +179,9 @@ import { $Actions, Todo } from "@my/osdk";
 import { useOsdkAction } from "@osdk/react/experimental";
 
 function CompleteTodoButton({ todo }: { todo: Todo.OsdkInstance }) {
-  const { applyAction, isPending, error } = useOsdkAction($Actions.completeTodo);
+  const { applyAction, isPending, error } = useOsdkAction(
+    $Actions.completeTodo,
+  );
 
   const handleClick = () => {
     applyAction({ todo, isComplete: true });
@@ -194,11 +202,34 @@ See [Actions](/react/actions) for validation, batch actions, and optimistic upda
 
 ## Troubleshooting
 
+### "Property 'store' is missing" with OsdkProvider2
+
+This error occurs when your `@osdk/client` version is incompatible with `@osdk/react`. The versions must match.
+
+**Fix:** Ensure all `@osdk/*` packages use compatible beta versions:
+
+1. Go to **Developer Console** → **SDK versions** → **Settings**
+2. Enable **beta features** for TypeScript
+3. Generate a new SDK version with the latest beta generator
+4. Check the **Installation instructions** for the compatible `@osdk/client` version
+5. Update your package.json to use matching versions:
+
+```json
+{
+  "dependencies": {
+    "@osdk/client": "^2.6.0-beta.11",
+    "@osdk/react": "^0.8.0-beta.4",
+    "@osdk/api": "^2.6.0-beta.11"
+  }
+}
+```
+
 ### "Cannot read property 'observableClient' of undefined"
 
 The component is outside `<OsdkProvider2>`. Move OsdkProvider2 higher in your component tree.
 
 **Wrong:**
+
 ```tsx
 function App() {
   return <TodoList />; // No OsdkProvider2!
@@ -206,6 +237,7 @@ function App() {
 ```
 
 **Correct:**
+
 ```tsx
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <OsdkProvider2 client={client}>
@@ -219,6 +251,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
 OsdkProvider2 is not at the root.
 
 **Wrong:**
+
 ```tsx
 function App() {
   return (
@@ -233,6 +266,7 @@ function App() {
 ```
 
 **Correct:**
+
 ```tsx
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <OsdkProvider2 client={client}>
@@ -246,11 +280,13 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
 Ensure you're passing the same client instance, not creating a new one:
 
 **Wrong:**
+
 ```tsx
 <OsdkProvider2 client={createNewClient()}> {/* New instance each render */}
 ```
 
 **Correct:**
+
 ```tsx
 import client from "./client"; // Created once
 <OsdkProvider2 client={client}>
@@ -261,6 +297,7 @@ import client from "./client"; // Created once
 Use the `enabled` option instead of conditional hook calls:
 
 **Wrong:**
+
 ```tsx
 if (shouldLoad) {
   const { data } = useOsdkObjects(Todo); // Conditional hook!
@@ -268,6 +305,7 @@ if (shouldLoad) {
 ```
 
 **Correct:**
+
 ```tsx
 const { data } = useOsdkObjects(Todo, {
   enabled: shouldLoad,
@@ -294,3 +332,4 @@ If NPM has trouble resolving peer dependencies with beta packages, add to packag
 - [Actions](/react/actions) - useOsdkAction, validation, optimistic updates, debouncing
 - [Advanced Queries](/react/advanced-queries) - useObjectSet, derived properties, aggregations
 - [Cache Management](/react/cache-management) - Cache behavior and manual invalidation
+- [Platform APIs](/react/platform-apis) - useCurrentFoundryUser, useFoundryUser, useFoundryUsersList

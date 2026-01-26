@@ -1,5 +1,73 @@
 # @osdk/client
 
+## 2.7.0-beta.10
+
+### Minor Changes
+
+- db44f6b: Add property security metadata to objects when requested
+- 266b901: Fix queries that return arrays of objects.
+
+### Patch Changes
+
+- Updated dependencies [db44f6b]
+- Updated dependencies [24a1e29]
+  - @osdk/api@2.7.0-beta.10
+  - @osdk/client.unstable@2.7.0-beta.10
+  - @osdk/generator-converters@2.7.0-beta.10
+
+## 2.7.0-beta.9
+
+### Minor Changes
+
+- 6b27d8a: fix sorting strategy initialization for ListQuery and ObjectSetQuery
+
+### Patch Changes
+
+- Updated dependencies [8381ac2]
+- Updated dependencies [c95f3bc]
+  - @osdk/client.unstable@2.7.0-beta.9
+  - @osdk/api@2.7.0-beta.9
+  - @osdk/generator-converters@2.7.0-beta.9
+
+## 2.7.0-beta.8
+
+### Minor Changes
+
+- c6124eb: Add ability to flush edits to transactions
+
+### Patch Changes
+
+- @osdk/api@2.7.0-beta.8
+- @osdk/client.unstable@2.7.0-beta.8
+- @osdk/generator-converters@2.7.0-beta.8
+
+## 2.7.0-beta.7
+
+### Minor Changes
+
+- adca853: fix fetchMore behavior
+- 0b0be9f: fix object spread related bug by using createOsdkObject
+
+### Patch Changes
+
+- @osdk/api@2.7.0-beta.7
+- @osdk/client.unstable@2.7.0-beta.7
+- @osdk/generator-converters@2.7.0-beta.7
+
+## 2.7.0-beta.6
+
+### Minor Changes
+
+- c332598: Adds experimental platform API hooks to fetch Foundry users
+- 0b2cd91: fix SimplePropertyDef issue, wire RDPs through, update names
+
+### Patch Changes
+
+- Updated dependencies [c9ca08d]
+  - @osdk/api@2.7.0-beta.6
+  - @osdk/client.unstable@2.7.0-beta.6
+  - @osdk/generator-converters@2.7.0-beta.6
+
 ## 2.7.0-beta.5
 
 ### Minor Changes

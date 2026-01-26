@@ -15,5 +15,6 @@ mediaitem
 mediaReference
 mediasets
 mediasetview
+objectset
 Rdps
 writeback

@@ -1,5 +1,59 @@
 # @osdk/foundry-sdk-generator
 
+## 2.7.0-beta.10
+
+### Minor Changes
+
+- db44f6b: Add property security metadata to objects when requested
+
+### Patch Changes
+
+- Updated dependencies [db44f6b]
+- Updated dependencies [24a1e29]
+- Updated dependencies [266b901]
+  - @osdk/client@2.7.0-beta.10
+  - @osdk/api@2.7.0-beta.10
+  - @osdk/generator@2.7.0-beta.10
+
+## 2.7.0-beta.9
+
+### Patch Changes
+
+- Updated dependencies [6b27d8a]
+  - @osdk/client@2.7.0-beta.9
+  - @osdk/api@2.7.0-beta.9
+  - @osdk/generator@2.7.0-beta.9
+
+## 2.7.0-beta.8
+
+### Patch Changes
+
+- Updated dependencies [c6124eb]
+  - @osdk/client@2.7.0-beta.8
+  - @osdk/api@2.7.0-beta.8
+  - @osdk/generator@2.7.0-beta.8
+
+## 2.7.0-beta.7
+
+### Patch Changes
+
+- Updated dependencies [adca853]
+- Updated dependencies [0b0be9f]
+  - @osdk/client@2.7.0-beta.7
+  - @osdk/api@2.7.0-beta.7
+  - @osdk/generator@2.7.0-beta.7
+
+## 2.7.0-beta.6
+
+### Patch Changes
+
+- Updated dependencies [c9ca08d]
+- Updated dependencies [c332598]
+- Updated dependencies [0b2cd91]
+  - @osdk/api@2.7.0-beta.6
+  - @osdk/client@2.7.0-beta.6
+  - @osdk/generator@2.7.0-beta.6
+
 ## 2.7.0-beta.5
 
 ### Minor Changes
