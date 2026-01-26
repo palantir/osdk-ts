@@ -83,11 +83,9 @@ export class ObjectsHelper extends AbstractHelper<
     batch: BatchContext,
     rdpConfig?: Canonical<Rdp> | null,
   ): ObjectCacheKey[] {
-    // update the cache for any object that has changed
-    // and save the mapped values to return
     return values.map(v =>
       this.getQuery({
-        apiName: v.$apiName,
+        apiName: v.$objectType ?? v.$apiName,
         pk: v.$primaryKey as string | number,
       }, rdpConfig).writeToStore(
         v as ObjectHolder,
