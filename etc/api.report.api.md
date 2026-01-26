@@ -1223,8 +1223,8 @@ export namespace ObjectSetSubscription {
     		R extends boolean = false
     	> {
         		// Warning: (ae-forgotten-export) The symbol "AllFalse" needs to be exported by the entry point index.d.ts
-        // Warning: (ae-forgotten-export) The symbol "HasGeotimeSeriesReference" needs to be exported by the entry point index.d.ts
-        includeRid?: AllFalse<HasGeotimeSeriesReference<O, P>> extends true ? R : false;
+        // Warning: (ae-forgotten-export) The symbol "PropertyTypesOnDefMatchesType" needs to be exported by the entry point index.d.ts
+        includeRid?: AllFalse<PropertyTypesOnDefMatchesType<O, P, "geotimeSeriesReference">> extends true ? R : false;
         		properties?: Array<P>;
         	}
 }

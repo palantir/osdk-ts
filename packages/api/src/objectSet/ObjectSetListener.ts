@@ -19,6 +19,7 @@ import type {
   PropertyKeys,
 } from "../ontology/ObjectOrInterface.js";
 import type { CompileTimeMetadata } from "../ontology/ObjectTypeDefinition.js";
+import type { WirePropertyTypes } from "../ontology/WirePropertyTypes.js";
 import type { Osdk } from "../OsdkObjectFrom.js";
 
 export namespace ObjectSetSubscription {
@@ -76,7 +77,9 @@ export namespace ObjectSetSubscription {
      * contains a new value for a geotime series reference property, in which case the RID will be undefined. RIDs will not be included
      * on the objects themselves.
      */
-    includeRid?: AllFalse<HasGeotimeSeriesReference<O, P>> extends true ? R
+    includeRid?: AllFalse<
+      PropertyTypesOnDefMatchesType<O, P, "geotimeSeriesReference">
+    > extends true ? R
       : false;
   }
 }
@@ -91,12 +94,15 @@ type ObjectUpdate<
   state: "ADDED_OR_UPDATED" | "REMOVED";
 };
 
-type HasGeotimeSeriesReference<
+type PropertyTypesOnDefMatchesType<
   Q extends ObjectOrInterfaceDefinition,
   P extends PropertyKeys<Q>,
+  T extends WirePropertyTypes,
 > = {
-  [K in P]: CompileTimeMetadata<Q>["properties"][K]["type"] extends
-    "geotimeSeriesReference" ? true : false;
+  [K in P]: CompileTimeMetadata<Q>["properties"][K][
+    "type"
+  ] extends T ? true
+    : false;
 };
 
 type AllFalse<T extends Record<string, boolean>> =
