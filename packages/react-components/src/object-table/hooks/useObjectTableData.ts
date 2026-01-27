@@ -80,7 +80,7 @@ export function useObjectTableData<
 
   const where: WhereClause<Q, InferRdpTypes<Q, WP<Q>>> = useMemo(() => {
     return filter ? filter : {};
-  }, []);
+  }, [filter]);
 
   return useOsdkObjects<
     Q,
