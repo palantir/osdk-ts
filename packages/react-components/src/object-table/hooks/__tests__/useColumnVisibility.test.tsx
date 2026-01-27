@@ -24,7 +24,7 @@ import type {
 import { renderHook, waitFor } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import type { ColumnDefinition } from "../../ObjectTableApi.js";
-import { useDefaultTableStates } from "../useDefaultTableStates.js";
+import { useColumnVisibility } from "../useColumnVisibility.js";
 
 const TestObjectType = {
   type: "object",
@@ -34,15 +34,15 @@ const TestObjectType = {
 type TestObject = typeof TestObjectType;
 type TestObjectKeys = PropertyKeys<TestObject>;
 
-describe(useDefaultTableStates, () => {
+describe(useColumnVisibility, () => {
   it("returns undefined columnVisibility when no columnDefinitions provided", () => {
     const { result } = renderHook(() =>
-      useDefaultTableStates({
+      useColumnVisibility({
         columnDefinitions: undefined,
       })
     );
 
-    expect(result.current.columnVisibility).toBeUndefined();
+    expect(result.current).toBeUndefined();
   });
 
   it("returns empty columnVisibility when columnDefinitions have no isVisible properties", () => {
@@ -56,12 +56,12 @@ describe(useDefaultTableStates, () => {
     ];
 
     const { result } = renderHook(() =>
-      useDefaultTableStates({
+      useColumnVisibility({
         columnDefinitions,
       })
     );
 
-    expect(result.current.columnVisibility).toEqual({});
+    expect(result.current).toEqual({});
   });
 
   it("handles mixed column types with different visibility states", async () => {
@@ -95,13 +95,13 @@ describe(useDefaultTableStates, () => {
     ];
 
     const { result } = renderHook(() =>
-      useDefaultTableStates({
+      useColumnVisibility({
         columnDefinitions,
       })
     );
 
     await waitFor(() => {
-      expect(result.current.columnVisibility).toEqual({
+      expect(result.current).toEqual({
         name: true,
         myFunction: false,
         myRdp: true,
@@ -121,7 +121,7 @@ describe(useDefaultTableStates, () => {
 
     const { result, rerender } = renderHook(
       ({ columnDefinitions }) =>
-        useDefaultTableStates({
+        useColumnVisibility({
           columnDefinitions,
         }),
       {
@@ -130,7 +130,7 @@ describe(useDefaultTableStates, () => {
     );
 
     await waitFor(() => {
-      expect(result.current.columnVisibility).toEqual({
+      expect(result.current).toEqual({
         name: true,
       });
     });
@@ -151,7 +151,7 @@ describe(useDefaultTableStates, () => {
     rerender({ columnDefinitions: updatedColumnDefinitions });
 
     await waitFor(() => {
-      expect(result.current.columnVisibility).toEqual({
+      expect(result.current).toEqual({
         name: false,
         email: true,
       });
@@ -177,20 +177,20 @@ describe(useDefaultTableStates, () => {
     ];
 
     const { result } = renderHook(() =>
-      useDefaultTableStates({
+      useColumnVisibility({
         columnDefinitions,
       })
     );
 
     await waitFor(() => {
-      expect(result.current.columnVisibility).toEqual({
+      expect(result.current).toEqual({
         name: true,
         age: false,
       });
     });
 
     // Verify that columns without isVisible are not in the state
-    expect(result.current.columnVisibility).not.toHaveProperty("email");
-    expect(result.current.columnVisibility).not.toHaveProperty("id");
+    expect(result.current).not.toHaveProperty("email");
+    expect(result.current).not.toHaveProperty("id");
   });
 });

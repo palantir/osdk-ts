@@ -21,6 +21,7 @@ const columnDefinitions: Array<
       type: "property",
       id: "fullName",
     },
+    pinned: "left",
     renderHeader: () => <div style={{ color: "red" }}>My Name</div>,
   },
   // With isVisible prop
@@ -68,9 +69,10 @@ export function EmployeesTable() {
         <div
           style={{
             background: "white",
-            padding: 20,
+            padding: 8,
             border: "1px solid #d1d5db",
             boxShadow: "0 2px 8px 0 rgba(0, 0, 0, 0.1)",
+            fontSize: 13,
           }}
         >
           {cellValue ? cellValue.toString() : "No Value"}
@@ -89,7 +91,7 @@ export function EmployeesTable() {
     >
       <ObjectTable<Employee, RDPs>
         objectType={Employee}
-        columnDefinitions={columnDefinitions}
+        // columnDefinitions={columnDefinitions}
         selectionMode={"multiple"}
         renderCellContextMenu={renderCellContextMenu}
       />

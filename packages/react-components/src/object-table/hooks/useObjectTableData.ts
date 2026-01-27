@@ -17,12 +17,14 @@
 import type {
   DerivedProperty,
   ObjectOrInterfaceDefinition,
+  PropertyKeys,
   QueryDefinition,
   SimplePropertyDef,
   WhereClause,
 } from "@osdk/api";
 import type { UseOsdkListResult } from "@osdk/react/experimental";
 import { useOsdkObjects } from "@osdk/react/experimental";
+import type { SortingState } from "@tanstack/react-table";
 import { useMemo } from "react";
 import type { ColumnDefinition } from "../ObjectTableApi.js";
 
@@ -47,12 +49,27 @@ export function useObjectTableData<
   objectOrInterfaceType: Q,
   columnDefinitions?: Array<ColumnDefinition<Q, RDPs, FunctionColumns>>,
   filter?: WhereClause<Q, RDPs>,
+  sorting?: SortingState,
 ): UseOsdkListResult<Q, RDPs> {
   type WP<Q extends ObjectOrInterfaceDefinition> = {
     [K in keyof RDPs]: DerivedProperty.Creator<Q, RDPs[K]>;
   };
-  // Extract derived properties definition to be passed to useObjectSet hook
-  const withProperties: WP<Q> | undefined = useMemo(() => {
+  const orderBy = useMemo(() => {
+    if (!sorting || sorting.length === 0) {
+      return undefined;
+    }
+
+    return sorting.reduce<{ [K in PropertyKeys<Q>]?: "asc" | "desc" }>(
+      (acc, sort) => {
+        acc[sort.id as PropertyKeys<Q>] = sort.desc ? "desc" : "asc";
+        return acc;
+      },
+      {},
+    );
+  }, [sorting]);
+
+  // Extract derived properties definition
+  const withProperties: WP<Q> | undefined = useMemo(() => { // Convert React Table sorting state to OSDK orderBy format
     if (!columnDefinitions) {
       return;
     }
@@ -91,6 +108,7 @@ export function useObjectTableData<
       withProperties,
       pageSize: PAGE_SIZE,
       where,
+      orderBy,
     },
   ) as UseOsdkListResult<Q, RDPs>;
 }

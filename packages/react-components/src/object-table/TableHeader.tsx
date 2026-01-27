@@ -15,9 +15,12 @@
  */
 
 import type { RowData, Table } from "@tanstack/react-table";
-import { flexRender } from "@tanstack/react-table";
-import type { ReactNode } from "react";
 import React from "react";
+import styles from "./TableHeader.module.css";
+import { TableHeaderContent } from "./TableHeaderContent.js";
+import { TableHeaderWithPopover } from "./TableHeaderWithPopover.js";
+import { SELECTION_COLUMN_ID } from "./utils/constants.js";
+import { getColumnPinningStyles } from "./utils/getColumnPinningStyles.js";
 
 interface TableHeaderProps<TData extends RowData> {
   table: Table<TData>;
@@ -26,64 +29,50 @@ interface TableHeaderProps<TData extends RowData> {
 export function TableHeader<TData extends RowData>({
   table,
 }: TableHeaderProps<TData>): React.ReactElement {
+  // TODO: If value is number type, right align header
+
+  const isResizing = !!table.getState().columnSizingInfo?.isResizingColumn;
+
   return (
-    <thead
-      style={{
-        display: "grid",
-        position: "sticky",
-        top: 0,
-        zIndex: 1,
-      }}
-    >
+    <thead className={styles.osdkTableHeader} data-resizing={isResizing}>
       {table.getHeaderGroups().map((headerGroup) => (
         <tr
           key={headerGroup.id}
-          style={{
-            display: "flex",
-          }}
+          className={styles.osdkTableHeaderRow}
         >
-          {headerGroup.headers.map((header) => (
-            // TODO: Move inline styling to CSS file
-            <th
-              key={header.id}
-              style={{
-                display: "flex",
-                width: header.getSize(),
-                justifyContent: "flex-start",
-                alignItems: "center",
-                position: "relative",
-              }}
-            >
-              {header.isPlaceholder
-                ? null
-                : flexRender(
-                  header.column.columnDef.header,
-                  header.getContext(),
-                ) as ReactNode | React.JSX.Element}
-              {header.column.getCanResize() && (
-                <div
-                  onDoubleClick={() => header.column.resetSize()}
-                  onMouseDown={header.getResizeHandler()}
-                  onTouchStart={header.getResizeHandler()}
-                  style={{
-                    position: "absolute",
-                    right: 0,
-                    top: 0,
-                    height: "100%",
-                    width: "3px",
-                    cursor: "col-resize",
-                    touchAction: "none",
-                    zIndex: 11,
-                    transform: header.column.getIsResizing()
-                      ? `translateX(${
-                        table.getState().columnSizingInfo.deltaOffset ?? 0
-                      }px)`
-                      : "",
-                  }}
-                />
-              )}
-            </th>
-          ))}
+          {headerGroup.headers.map((header) => {
+            const { columnStyles } = getColumnPinningStyles(header.column);
+            const isColumnPinned = header.column.getIsPinned();
+            const isSelectColumn = header.id === SELECTION_COLUMN_ID;
+            return (
+              <th
+                key={header.id}
+                data-pinned={header.column.getIsPinned()}
+                className={styles.osdkTableHeaderCell}
+                style={columnStyles}
+              >
+                {header.isPlaceholder
+                  ? null
+                  : isSelectColumn
+                  ? <TableHeaderContent header={header} />
+                  : (
+                    <TableHeaderWithPopover
+                      header={header}
+                      isColumnPinned={isColumnPinned}
+                      setColumnPinning={table.setColumnPinning}
+                    />
+                  )}
+                {header.column.getCanResize() && (
+                  <div
+                    className={styles.osdkTableHeaderResizer}
+                    onDoubleClick={() => header.column.resetSize()}
+                    onMouseDown={header.getResizeHandler()}
+                    onTouchStart={header.getResizeHandler()}
+                  />
+                )}
+              </th>
+            );
+          })}
         </tr>
       ))}
     </thead>

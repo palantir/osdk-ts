@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-.osdkCheckboxRoot{
+.osdkCheckboxRoot {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -24,10 +24,10 @@
   box-sizing: border-box;
   cursor: pointer;
   border-radius: var(--bp-surface-borderRadius);
+  border: var(--osdk-checkbox-border);
 
   &[data-unchecked] {
     background-color: var(--osdk-checkbox-bg);
-    border: var(--osdk-checkbox-border);
 
     &:hover {
       background-color: var(--osdk-checkbox-bg-hover);
@@ -63,7 +63,6 @@
   color: var(--osdk-checkbox-checked-foreground);
   width: var(--osdk-checkbox-icon-size);
   height: var(--osdk-checkbox-icon-size);
-
 
   &[data-unchecked] {
     display: none;

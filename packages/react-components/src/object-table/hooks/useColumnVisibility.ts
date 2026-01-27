@@ -23,7 +23,7 @@ import type { VisibilityState } from "@tanstack/react-table";
 import { useMemo } from "react";
 import type { ObjectTableProps } from "../ObjectTableApi.js";
 
-interface UseDefaultTableStatesProps<
+interface UseColumnVisibilityProps<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
@@ -38,11 +38,7 @@ interface UseDefaultTableStatesProps<
   >["columnDefinitions"];
 }
 
-interface UseDefaultTableStatesResult {
-  columnVisibility: VisibilityState | undefined;
-}
-
-export const useDefaultTableStates = <
+export const useColumnVisibility = <
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
@@ -50,19 +46,18 @@ export const useDefaultTableStates = <
     never
   >,
 >(
-  { columnDefinitions }: UseDefaultTableStatesProps<
+  { columnDefinitions }: UseColumnVisibilityProps<
     Q,
     RDPs,
     FunctionColumns
   >,
-): UseDefaultTableStatesResult => {
+): VisibilityState | undefined => {
   const columnVisibility = useMemo(() => {
     if (columnDefinitions) {
       const colVisibility: VisibilityState = columnDefinitions.reduce(
         (acc, colDef) => {
           if (colDef.isVisible !== undefined) {
             const { locator } = colDef;
-
             const colKey = locator.id;
 
             return {
@@ -79,5 +74,5 @@ export const useDefaultTableStates = <
     }
   }, [columnDefinitions]);
 
-  return { columnVisibility };
+  return columnVisibility;
 };

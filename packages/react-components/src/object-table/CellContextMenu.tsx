@@ -17,6 +17,7 @@
 import type { Cell, RowData } from "@tanstack/react-table";
 import React, { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
+import styles from "./CellContextMenu.module.css";
 import type { PopoverPosition } from "./hooks/useCellContextMenu.js";
 
 interface CellContextMenuProps<TData extends RowData> {
@@ -51,9 +52,8 @@ export function CellContextMenu<TData extends RowData>({
   return createPortal(
     <div
       ref={ref}
+      className={styles.osdkCellContextMenu}
       style={{
-        position: "fixed",
-        zIndex: 9999,
         left: position.left,
         top: position.top,
         minWidth: position.width,

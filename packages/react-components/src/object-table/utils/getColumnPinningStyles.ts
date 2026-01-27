@@ -14,17 +14,23 @@
  * limitations under the License.
  */
 
-export type { FilterListProps } from "../filter-list/FilterListApi.js";
-export type { FilterListItemProps } from "../filter-list/FilterListItemApi.js";
+import type { Column } from "@tanstack/react-table";
+import type React from "react";
 
-// ObjectTable that loads and displays data for a given objectSet
-export { ObjectTable } from "../object-table/ObjectTable.js";
-export type {
-  ColumnDefinition,
-  ColumnDefinitionLocator,
-  ObjectTableProps,
-} from "../object-table/ObjectTableApi.js";
+interface PinningStyles {
+  columnStyles: React.CSSProperties;
+}
 
-// BaseTable that does not handle data fetching
-export type { BaseTableProps } from "../object-table/Table.js";
-export { BaseTable } from "../object-table/Table.js";
+export function getColumnPinningStyles<TData>(
+  column: Column<TData, unknown>,
+): PinningStyles {
+  const isPinned = column.getIsPinned();
+
+  return {
+    columnStyles: {
+      left: isPinned === "left" ? `${column.getStart("left")}px` : undefined,
+      right: isPinned === "right" ? `${column.getAfter("right")}px` : undefined,
+      width: column.getSize(),
+    },
+  };
+}
