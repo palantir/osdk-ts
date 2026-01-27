@@ -1,5 +1,12 @@
 # @osdk/create-widget.template.react.v2
 
+## 3.3.3
+
+### Patch Changes
+
+- 134b20d: Widget template dark mode support
+- 134b20d: Provide FoundryWidget#client by default
+
 ## 3.3.2
 
 ## 3.3.1

@@ -1,5 +1,12 @@
 # @osdk/widget.vite-plugin
 
+## 3.3.3
+
+### Patch Changes
+
+- 69f133b: Add internalDoNotUseMetadata.rid to interfaces
+  - @osdk/widget.api@3.3.3
+
 ## 3.3.2
 
 ### Patch Changes
