@@ -28,16 +28,15 @@ import type { ObserveObjectsCallbackArgs } from "@osdk/client/unstable-do-not-us
 import React from "react";
 import { makeExternalStore } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
-import type { InferRdpTypes } from "./types.js";
 
 export interface UseOsdkObjectsOptions<
   T extends ObjectOrInterfaceDefinition,
-  WithProps extends DerivedProperty.Clause<T> | undefined = undefined,
+  RDPs extends Record<string, SimplePropertyDef> = {},
 > {
   /**
    * Standard OSDK Where with RDP support
    */
-  where?: WhereClause<T, InferRdpTypes<T, WithProps>>;
+  where?: WhereClause<T, RDPs>;
 
   /**
    *  The preferred page size for the list.
@@ -53,7 +52,7 @@ export interface UseOsdkObjectsOptions<
    * Define derived properties (RDPs) to be computed server-side and attached to each object.
    * These properties will be available on the returned objects alongside their regular properties.
    */
-  withProperties?: WithProps;
+  withProperties?: { [K in keyof RDPs]: DerivedProperty.Creator<T, RDPs[K]> };
 
   /**
    * Intersect the results with additional object sets.
@@ -61,7 +60,7 @@ export interface UseOsdkObjectsOptions<
    * The final result will only include objects that match ALL conditions.
    */
   intersectWith?: Array<{
-    where: WhereClause<T, InferRdpTypes<T, WithProps>>;
+    where: WhereClause<T, RDPs>;
   }>;
 
   /**
@@ -188,20 +187,20 @@ export function useOsdkObjects<
 
 export function useOsdkObjects<
   Q extends ObjectOrInterfaceDefinition,
-  WP extends DerivedProperty.Clause<Q> | undefined,
+  RDPs extends Record<string, SimplePropertyDef> = {},
 >(
   type: Q,
-  options?: UseOsdkObjectsOptions<Q, WP>,
-): UseOsdkListResult<Q, InferRdpTypes<Q, WP>>;
+  options?: UseOsdkObjectsOptions<Q, RDPs>,
+): UseOsdkListResult<Q, RDPs>;
 
 export function useOsdkObjects<
   Q extends ObjectOrInterfaceDefinition,
-  WP extends DerivedProperty.Clause<Q> | undefined,
+  RDPs extends Record<string, SimplePropertyDef> = {},
 >(
   type: Q,
-  options?: UseOsdkObjectsOptions<Q, WP>,
+  options?: UseOsdkObjectsOptions<Q, RDPs>,
 ):
-  | UseOsdkListResult<Q, InferRdpTypes<Q, WP>>
+  | UseOsdkListResult<Q, RDPs>
   | UseOsdkListResult<LinkedType<Q, LinkNames<Q>>>
 {
   const {
@@ -224,7 +223,7 @@ export function useOsdkObjects<
    */
   const canonWhere = observableClient.canonicalizeWhereClause<
     Q,
-    InferRdpTypes<Q, WP>
+    RDPs
   >(where ?? {});
 
   const stableWithProperties = React.useMemo(
@@ -246,7 +245,7 @@ export function useOsdkObjects<
     () => {
       if (!enabled) {
         return makeExternalStore<
-          ObserveObjectsCallbackArgs<Q, InferRdpTypes<Q, WP>>
+          ObserveObjectsCallbackArgs<Q, RDPs>
         >(
           () => ({ unsubscribe: () => {} }),
           process.env.NODE_ENV !== "production"
@@ -255,7 +254,7 @@ export function useOsdkObjects<
         );
       }
       return makeExternalStore<
-        ObserveObjectsCallbackArgs<Q, InferRdpTypes<Q, WP>>
+        ObserveObjectsCallbackArgs<Q, RDPs>
       >(
         (observer) =>
           observableClient.observeList({
