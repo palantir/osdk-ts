@@ -339,7 +339,7 @@ export async function fetchPageInternal<
     return await fetchInterfacePage(
       client,
       objectType,
-      args as FetchPageArgs<
+      { ...args, $includeAllBaseObjectProperties: true } as FetchPageArgs<
         InterfaceDefinition,
         L,
         R,
