@@ -1,5 +1,13 @@
 # @osdk/generator
 
+## 2.6.2
+
+### Patch Changes
+
+- 69f133b: Add internalDoNotUseMetadata.rid to interfaces
+  - @osdk/api@2.6.2
+  - @osdk/generator-converters@2.6.2
+
 ## 2.6.1
 
 ### Patch Changes
