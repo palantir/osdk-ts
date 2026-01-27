@@ -7,6 +7,8 @@
 | @osdk/foundry-sdk-generator | [![npm](https://img.shields.io/npm/v/@osdk/foundry-sdk-generator.svg)](https://www.npmjs.com/package/@osdk/foundry-sdk-generator) |
 | @osdk/oauth | [![npm](https://img.shields.io/npm/v/@osdk/oauth.svg)](https://www.npmjs.com/package/@osdk/oauth) |
 
+[![Node.js Version](https://img.shields.io/badge/node-%3E=18.19.0-brightgreen)](https://nodejs.org/)
+
 ## Getting Started
 
 The TypeScript SDK is a library used for interacting with Palantir's Ontology.

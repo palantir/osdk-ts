@@ -1,5 +1,49 @@
 # @osdkkit/react
 
+## 0.9.0-beta.7
+
+### Minor Changes
+
+- acf6331: Include AGENTS.md and docs directory in published package for improved AI assistant support
+- 6cfe14a: add new useOsdkFunction hook and supporting client infrastructure
+- 38d5958: fix order by via key stabilization
+- 56ba08f: support interfaces for osdk react hooks
+
+### Patch Changes
+
+- Updated dependencies [6cfe14a]
+- Updated dependencies [ec6ad57]
+- Updated dependencies [38d5958]
+- Updated dependencies [d5cfc38]
+  - @osdk/client@2.7.0-beta.11
+  - @osdk/api@2.7.0-beta.11
+
+## 0.9.0-beta.6
+
+### Minor Changes
+
+- ba3159c: improve loading logic to make loading state consistent / reduce flashing
+- 0395d4b: Pins Foundry core and admin packages to monorepo version
+
+### Patch Changes
+
+- Updated dependencies [6b27d8a]
+  - @osdk/client@2.7.0-beta.9
+  - @osdk/api@2.7.0-beta.9
+
+## 0.9.0-beta.5
+
+### Minor Changes
+
+- adca853: fix fetchMore behavior
+
+### Patch Changes
+
+- Updated dependencies [adca853]
+- Updated dependencies [0b0be9f]
+  - @osdk/client@2.7.0-beta.7
+  - @osdk/api@2.7.0-beta.7
+
 ## 0.9.0-beta.4
 
 ### Minor Changes

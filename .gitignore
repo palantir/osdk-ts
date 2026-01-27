@@ -32,7 +32,6 @@ packages/e2e.test.foundry-sdk-generator/src/generatedNoCheck
 
 .log
 pnpm-publish-summary.json
-.npmrc
 
 api-docs/
 temp/

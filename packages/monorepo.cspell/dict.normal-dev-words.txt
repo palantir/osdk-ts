@@ -27,6 +27,8 @@ retryable
 rsort
 semver
 streamutils
+subdependencies
+subdeps
 struct
 structs
 tsdoc

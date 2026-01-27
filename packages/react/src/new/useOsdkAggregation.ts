@@ -18,9 +18,9 @@ import type {
   AggregateOpts,
   AggregationsResults,
   DerivedProperty,
+  ObjectOrInterfaceDefinition,
   WhereClause,
 } from "@osdk/api";
-import type { ObjectTypeDefinition } from "@osdk/client";
 import type { ObserveAggregationArgs } from "@osdk/client/unstable-do-not-use";
 import React from "react";
 import { makeExternalStore } from "./makeExternalStore.js";
@@ -28,7 +28,7 @@ import { OsdkContext2 } from "./OsdkContext2.js";
 import type { InferRdpTypes } from "./types.js";
 
 export interface UseOsdkAggregationOptions<
-  T extends ObjectTypeDefinition,
+  T extends ObjectOrInterfaceDefinition,
   A extends AggregateOpts<T>,
   WithProps extends DerivedProperty.Clause<T> | undefined = undefined,
 > {
@@ -58,7 +58,7 @@ export interface UseOsdkAggregationOptions<
 }
 
 export interface UseOsdkAggregationResult<
-  T extends ObjectTypeDefinition,
+  T extends ObjectOrInterfaceDefinition,
   A extends AggregateOpts<T>,
 > {
   data: AggregationsResults<T, A> | undefined;
@@ -98,7 +98,7 @@ declare const process: {
  * ```
  */
 export function useOsdkAggregation<
-  Q extends ObjectTypeDefinition,
+  Q extends ObjectOrInterfaceDefinition,
   A extends AggregateOpts<Q>,
   WP extends DerivedProperty.Clause<Q> | undefined = undefined,
 >(
@@ -168,7 +168,8 @@ export function useOsdkAggregation<
 
   return {
     data: payload?.result as AggregationsResults<Q, A> | undefined,
-    isLoading: payload?.status === "loading",
+    isLoading: payload?.status === "loading" || payload?.status === "init"
+      || !payload,
     error,
     refetch,
   };
