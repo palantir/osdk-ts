@@ -1,5 +1,19 @@
 # @osdk/client
 
+## 2.7.0-beta.12
+
+### Minor Changes
+
+- 3fc5fe6: fix interface loading
+- bb9d25c: Allow requesting rids for OSW updates
+
+### Patch Changes
+
+- Updated dependencies [bb9d25c]
+  - @osdk/api@2.7.0-beta.12
+  - @osdk/client.unstable@2.7.0-beta.12
+  - @osdk/generator-converters@2.7.0-beta.12
+
 ## 2.7.0-beta.11
 
 ### Minor Changes
