@@ -1326,6 +1326,9 @@ importers:
       '@osdk/widget.client-react':
         specifier: workspace:*
         version: link:../../packages/widget.client-react
+      clsx:
+        specifier: ^2.1.1
+        version: 2.1.1
       react:
         specifier: ^18
         version: 18.3.1
@@ -2758,6 +2761,9 @@ importers:
       '@blueprintjs/core':
         specifier: ^5.19.1
         version: 5.19.1(@types/react@18.3.24)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      clsx:
+        specifier: ^2.1.1
+        version: 2.1.1
       react:
         specifier: ^18
         version: 18.3.1
