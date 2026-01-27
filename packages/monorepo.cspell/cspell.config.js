@@ -89,6 +89,9 @@ const cspell = {
     "packages/e2e.test.foundry-sdk-generator/src/generatedNoCheck/**/*",
     "packages/create-app.template.*/src/generatedNoCheck/**/*",
     "CHANGELOG.md",
+
+    // Data generator has fake names/places for test data
+    "packages/e2e.sandbox.officenetwork/src/components/DataGenerator.tsx",
   ],
   dictionaryDefinitions: [
     ...getDictionaryDefinitions(),
@@ -211,6 +214,10 @@ const cspell = {
         "Dherlihy",
         "Mnayan",
         "Matthewvs",
+        "hier",
+        "nums",
+        "carto",
+        "emps",
       ],
     },
   ],

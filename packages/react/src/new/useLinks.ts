@@ -135,6 +135,7 @@ export function useLinks<
   }, [objects]);
 
   // Convert single object to array for consistent handling
+  // Using objectsKey as dependency instead of objects for referential stability
   const objectsArray: ReadonlyArray<Osdk.Instance<T>> = React.useMemo(() => {
     return objects === undefined
       ? emptyArray
