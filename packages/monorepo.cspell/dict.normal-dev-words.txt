@@ -6,6 +6,8 @@ Canonicalizer
 Canonicalizers
 codegen
 commitish
+Cpath
+Csvg
 devx
 Discoverability
 duplicative
