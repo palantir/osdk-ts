@@ -16,8 +16,8 @@
 
 import type {
   LinkTypeDisplayMetadata,
+  LinkTypeId,
   LinkTypeMetadata,
-  OntologyIrLinkTypeStatus,
   Visibility,
 } from "@osdk/client.unstable";
 import type { OptionalFields } from "../../util/OptionalFields.js";
@@ -66,7 +66,7 @@ export interface OneToManyLinkTypeDefinition {
   manyForeignKeyProperty: ObjectTypePropertyApiName;
   cardinality: "OneToMany" | "OneToOne" | undefined;
   editsEnabled?: boolean;
-  status?: OntologyIrLinkTypeStatus;
+  status?: UserLinkTypeStatus;
   redacted?: boolean;
 }
 
@@ -80,6 +80,8 @@ export interface OneToManyLinkTypeUserDefinition {
   one: OneToManyObjectLinkReferenceUserDefinition;
   toMany: OneToManyObjectLinkReferenceUserDefinition;
   manyForeignKeyProperty: ObjectTypePropertyApiName;
+  editsEnabled?: boolean;
+  status?: UserLinkTypeStatus;
   cardinality?: "OneToMany" | "OneToOne" | undefined;
 }
 
@@ -93,7 +95,7 @@ export interface ManyToManyLinkTypeDefinition {
   many: ManyToManyObjectLinkReference;
   toMany: ManyToManyObjectLinkReference;
   editsEnabled?: boolean;
-  status?: OntologyIrLinkTypeStatus;
+  status?: UserLinkTypeStatus;
   redacted?: boolean;
 }
 
@@ -106,6 +108,8 @@ export interface ManyToManyLinkTypeUserDefinition {
   apiName: string;
   many: ManyToManyObjectLinkReferenceUserDefinition;
   toMany: ManyToManyObjectLinkReferenceUserDefinition;
+  editsEnabled?: boolean;
+  status?: UserLinkTypeStatus;
 }
 
 export interface ManyToManyObjectLinkReferenceUserDefinition {
@@ -119,7 +123,7 @@ export interface IntermediaryLinkTypeDefinition {
   toMany: IntermediaryObjectLinkReference;
   intermediaryObjectType: ObjectTypeDefinition;
   editsEnabled?: boolean;
-  status?: OntologyIrLinkTypeStatus;
+  status?: UserLinkTypeStatus;
   redacted?: boolean;
 }
 
@@ -134,6 +138,8 @@ export interface IntermediaryLinkTypeUserDefinition {
   many: IntermediaryObjectLinkReferenceUserDefinition;
   toMany: IntermediaryObjectLinkReferenceUserDefinition;
   intermediaryObjectType: ObjectTypeDefinition | string;
+  editsEnabled?: boolean;
+  status?: UserLinkTypeStatus;
 }
 
 export interface IntermediaryObjectLinkReferenceUserDefinition {
@@ -157,3 +163,14 @@ export type LinkSideMetadata = OptionalFields<
   >,
   "visibility" | "typeClasses"
 >;
+
+export type UserLinkTypeStatus =
+  | "active"
+  | "experimental"
+  | "example"
+  | {
+    type: "deprecated";
+    message: string;
+    deadline: string;
+    replacedBy?: LinkTypeId;
+  };

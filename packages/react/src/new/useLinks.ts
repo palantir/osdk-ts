@@ -14,21 +14,19 @@
  * limitations under the License.
  */
 
-import type { LinkedType, LinkNames } from "@osdk/api";
 import type {
-  InterfaceDefinition,
-  ObjectTypeDefinition,
-  Osdk,
-  PropertyKeys,
-  WhereClause,
-} from "@osdk/client";
+  LinkedType,
+  LinkNames,
+  ObjectOrInterfaceDefinition,
+} from "@osdk/api";
+import type { Osdk, PropertyKeys, WhereClause } from "@osdk/client";
 import type { ObserveLinks } from "@osdk/client/unstable-do-not-use";
 import React from "react";
 import { makeExternalStore } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
 
 export interface UseLinksOptions<
-  T extends ObjectTypeDefinition | InterfaceDefinition,
+  T extends ObjectOrInterfaceDefinition,
 > {
   /**
    * Standard OSDK Where clause for filtering linked objects
@@ -76,7 +74,7 @@ export interface UseLinksOptions<
 }
 
 export interface UseLinksResult<
-  Q extends ObjectTypeDefinition | InterfaceDefinition,
+  Q extends ObjectOrInterfaceDefinition,
 > {
   links: Osdk.Instance<Q>[] | undefined;
   isLoading: boolean;
@@ -109,7 +107,7 @@ const emptyArray = Object.freeze([]);
  * @returns UseLinksResult with links data and metadata
  */
 export function useLinks<
-  T extends ObjectTypeDefinition,
+  T extends ObjectOrInterfaceDefinition,
   L extends LinkNames<T>,
 >(
   objects: Osdk.Instance<T> | Array<Osdk.Instance<T>> | undefined,
@@ -181,7 +179,10 @@ export function useLinks<
 
   return {
     links: payload?.resolvedList,
-    isLoading: payload?.status === "loading",
+    isLoading: enabled
+      ? (payload?.status === "loading" || payload?.status === "init"
+        || !payload)
+      : false,
     isOptimistic: payload?.isOptimistic ?? false,
     error: payload?.error,
     fetchMore: payload?.fetchMore,

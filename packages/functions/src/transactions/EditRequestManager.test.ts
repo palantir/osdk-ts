@@ -229,4 +229,163 @@ describe("EditRequestManager", () => {
         }
       `);
   });
+
+  describe("flushPendingEdits", () => {
+    it("immediately dispatches pending edits without timeout", async () => {
+      void editRequestManager.postEdit(addLinkEdit);
+      void editRequestManager.postEdit(addObjectEdit);
+
+      expect(mockedRequestHandler).toHaveBeenCalledTimes(0);
+
+      await editRequestManager.flushPendingEdits();
+
+      expect(mockedRequestHandler).toHaveBeenCalledTimes(1);
+      expect(await mockedRequestHandler.mock.calls[0][0].request.json())
+        .toMatchInlineSnapshot(`
+          {
+            "edits": [
+              {
+                "linkType": "test-link-type",
+                "linkedObjectPrimaryKey": "test-linked-object-primary-key",
+                "objectType": "test-object-type",
+                "primaryKey": "test-primary-key",
+                "type": "addLink",
+              },
+              {
+                "objectType": "test-object-type",
+                "properties": {},
+                "type": "addObject",
+              },
+            ],
+          }
+        `);
+    });
+
+    it("waits for in-flight and queued requests to complete", async () => {
+      maybeDeferServer = pDefer();
+      const firstEdit = editRequestManager.postEdit(addLinkEdit);
+      await new Promise(resolve => setTimeout(resolve, 0));
+
+      const secondEdit = editRequestManager.postEdit(addObjectEdit);
+
+      const flushPromise = editRequestManager.flushPendingEdits();
+
+      expect(mockedRequestHandler).toHaveBeenCalledTimes(1);
+
+      maybeDeferServer.resolve();
+      await Promise.all([firstEdit, secondEdit, flushPromise]);
+
+      expect(mockedRequestHandler).toHaveBeenCalledTimes(2);
+      expect(await mockedRequestHandler.mock.calls[0][0].request.json())
+        .toMatchInlineSnapshot(`
+          {
+            "edits": [
+              {
+                "linkType": "test-link-type",
+                "linkedObjectPrimaryKey": "test-linked-object-primary-key",
+                "objectType": "test-object-type",
+                "primaryKey": "test-primary-key",
+                "type": "addLink",
+              },
+            ],
+          }
+        `);
+      expect(await mockedRequestHandler.mock.calls[1][0].request.json())
+        .toMatchInlineSnapshot(`
+          {
+            "edits": [
+              {
+                "objectType": "test-object-type",
+                "properties": {},
+                "type": "addObject",
+              },
+            ],
+          }
+        `);
+    });
+
+    it("does nothing when there are no pending edits", async () => {
+      await editRequestManager.flushPendingEdits();
+
+      expect(mockedRequestHandler).not.toHaveBeenCalled();
+    });
+
+    it("cancels timeout and immediately dispatches edits", async () => {
+      const clearTimeoutSpy = vi.spyOn(global, "clearTimeout");
+
+      void editRequestManager.postEdit(addLinkEdit);
+
+      await editRequestManager.flushPendingEdits();
+
+      expect(clearTimeoutSpy).toHaveBeenCalled();
+      expect(mockedRequestHandler).toHaveBeenCalledTimes(1);
+      expect(await mockedRequestHandler.mock.calls[0][0].request.json())
+        .toMatchInlineSnapshot(`
+          {
+            "edits": [
+              {
+                "linkType": "test-link-type",
+                "linkedObjectPrimaryKey": "test-linked-object-primary-key",
+                "objectType": "test-object-type",
+                "primaryKey": "test-primary-key",
+                "type": "addLink",
+              },
+            ],
+          }
+        `);
+
+      clearTimeoutSpy.mockRestore();
+    });
+
+    it("ensures all requests complete when multiple edits are queued", async () => {
+      maybeDeferServer = pDefer();
+      const firstEdit = editRequestManager.postEdit(addLinkEdit);
+      await new Promise(resolve => setTimeout(resolve, 0));
+
+      const secondEdit = editRequestManager.postEdit(addObjectEdit);
+      await new Promise(resolve => setTimeout(resolve, 0));
+
+      const thirdEdit = editRequestManager.postEdit(addLinkEdit);
+
+      const flushPromise = editRequestManager.flushPendingEdits();
+
+      maybeDeferServer.resolve();
+      await Promise.all([firstEdit, secondEdit, thirdEdit, flushPromise]);
+
+      expect(mockedRequestHandler).toHaveBeenCalledTimes(2);
+      expect(await mockedRequestHandler.mock.calls[0][0].request.json())
+        .toMatchInlineSnapshot(`
+          {
+            "edits": [
+              {
+                "linkType": "test-link-type",
+                "linkedObjectPrimaryKey": "test-linked-object-primary-key",
+                "objectType": "test-object-type",
+                "primaryKey": "test-primary-key",
+                "type": "addLink",
+              },
+            ],
+          }
+        `);
+      expect(await mockedRequestHandler.mock.calls[1][0].request.json())
+        .toMatchInlineSnapshot(`
+          {
+            "edits": [
+              {
+                "linkType": "test-link-type",
+                "linkedObjectPrimaryKey": "test-linked-object-primary-key",
+                "objectType": "test-object-type",
+                "primaryKey": "test-primary-key",
+                "type": "addLink",
+              },
+              {
+                "objectType": "test-object-type",
+                "properties": {},
+                "type": "addObject",
+              },
+            ],
+          }
+        `);
+    });
+  });
 });

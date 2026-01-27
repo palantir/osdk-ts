@@ -201,6 +201,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
               ],
               "entityMetadata": {
                 "arePatchesEnabled": false,
+                "aliases": [],
               },
             },
             "Dc3Restaurant": {
@@ -379,6 +380,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
               ],
               "entityMetadata": {
                 "arePatchesEnabled": false,
+                "aliases": [],
               },
             },
             "Dc3DistributionRouteAnalysis": {
@@ -565,6 +567,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
               ],
               "entityMetadata": {
                 "arePatchesEnabled": false,
+                "aliases": [],
               },
             },
           },
