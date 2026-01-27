@@ -17,6 +17,7 @@
 import type {
   OntologyIrLinkDefinition,
   OntologyIrLinkTypeBlockDataV2,
+  OntologyIrLinkTypeStatus,
   OntologyIrManyToManyLinkTypeDatasource,
 } from "@osdk/client.unstable";
 import invariant from "tiny-invariant";
@@ -25,7 +26,7 @@ import {
   cleanAndValidateLinkTypeId,
   ontologyDefinition,
 } from "../../api/defineOntology.js";
-import type { LinkType } from "../../api/links/LinkType.js";
+import type { LinkType, UserLinkTypeStatus } from "../../api/links/LinkType.js";
 import type { ObjectType } from "../../api/object/ObjectType.js";
 import type { ObjectTypeDefinition } from "../../api/object/ObjectTypeDefinition.js";
 import { convertCardinality } from "./convertCardinality.js";
@@ -159,7 +160,7 @@ export function convertLink(
     linkType: {
       definition: definition,
       id: cleanAndValidateLinkTypeId(linkType.apiName),
-      status: linkType.status ?? { type: "active", active: {} },
+      status: convertLinkStatus(linkType.status),
       redacted: linkType.redacted ?? false,
     },
     datasources: datasource !== undefined ? [datasource] : [],
@@ -257,4 +258,30 @@ export function getObject(
     `Object ${objectApiName} is not defined`,
   );
   return { apiName: objectApiName, object: fullObject };
+}
+
+export function convertLinkStatus(
+  status: UserLinkTypeStatus | undefined,
+): OntologyIrLinkTypeStatus {
+  if (
+    typeof status === "object" && "type" in status
+    && status.type === "deprecated"
+  ) {
+    return {
+      type: "deprecated",
+      deprecated: {
+        message: status.message,
+        deadline: status.deadline,
+      },
+    };
+  }
+  switch (status) {
+    case "experimental":
+      return { type: "experimental", experimental: {} };
+    case "example":
+      return { type: "example", example: {} };
+    case "active":
+    default:
+      return { type: "active", active: {} };
+  }
 }

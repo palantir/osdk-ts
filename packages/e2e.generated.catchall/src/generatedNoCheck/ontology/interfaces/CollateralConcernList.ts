@@ -85,8 +85,11 @@ export interface CollateralConcernList extends $InterfaceDefinition {
   };
 }
 
-export const CollateralConcernList: CollateralConcernList = {
+export const CollateralConcernList = {
   type: 'interface',
   apiName: 'com.palantir.pcl.civpro.collateral-concern-core.CollateralConcernList',
   osdkMetadata: $osdkMetadata,
-};
+  internalDoNotUseMetadata: {
+    rid: 'ri.ontology.main.interface.7d459ce8-bb84-4ea5-9039-71560d82b53f',
+  },
+} satisfies CollateralConcernList & { internalDoNotUseMetadata: { rid: string } } as CollateralConcernList;

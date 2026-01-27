@@ -90,8 +90,11 @@ export interface Athlete extends $InterfaceDefinition {
   };
 }
 
-export const Athlete: Athlete = {
+export const Athlete = {
   type: 'interface',
   apiName: 'Athlete',
   osdkMetadata: $osdkMetadata,
-};
+  internalDoNotUseMetadata: {
+    rid: 'ri.ontology.main.interface-type.1b1b1b1b-1b1b-1b1b-1b1b-1b1b1b1b1b1b',
+  },
+} satisfies Athlete & { internalDoNotUseMetadata: { rid: string } } as Athlete;

@@ -59,7 +59,10 @@ export class Changes {
     data: ObjectHolder,
     isNew: boolean,
   ): void => {
-    this[isNew ? "addedObjects" : "modifiedObjects"].set(data.$apiName, data);
+    this[isNew ? "addedObjects" : "modifiedObjects"].set(
+      data.$objectType ?? data.$apiName,
+      data,
+    );
     this[isNew ? "added" : "modified"].add(cacheKey);
   };
 

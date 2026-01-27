@@ -18,7 +18,11 @@ import type { PrimaryKeyTypes } from "@osdk/api";
 
 export function isObjectSpecifiersObject(
   o: any,
-): o is { $apiName: string; $primaryKey: PrimaryKeyTypes } {
+): o is {
+  $apiName: string;
+  $objectType?: string;
+  $primaryKey: PrimaryKeyTypes;
+} {
   return o && typeof o === "object" && typeof o.$apiName === "string"
     && o.$primaryKey != null;
 }

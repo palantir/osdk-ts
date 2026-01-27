@@ -1204,10 +1204,11 @@ export namespace ObjectSetSubscription {
     	// (undocumented)
     export interface Listener<
     		O extends ObjectOrInterfaceDefinition,
-    		P extends PropertyKeys<O> = PropertyKeys<O>
+    		P extends PropertyKeys<O> = PropertyKeys<O>,
+    		R extends boolean = false
     	> {
         		// Warning: (ae-forgotten-export) The symbol "ObjectUpdate" needs to be exported by the entry point index.d.ts
-        onChange?: (objectUpdate: ObjectUpdate<O, P>) => void;
+        onChange?: (objectUpdate: ObjectUpdate<O, P, R>) => void;
         		onError?: (errors: {
             			subscriptionClosed: boolean
             			error: any
@@ -1218,10 +1219,13 @@ export namespace ObjectSetSubscription {
     	// (undocumented)
     export interface Options<
     		O extends ObjectOrInterfaceDefinition,
-    		P extends PropertyKeys<O> = PropertyKeys<O>
+    		P extends PropertyKeys<O> = PropertyKeys<O>,
+    		R extends boolean = false
     	> {
-        		// (undocumented)
-        properties?: Array<P>;
+        		// Warning: (ae-forgotten-export) The symbol "AllFalse" needs to be exported by the entry point index.d.ts
+        // Warning: (ae-forgotten-export) The symbol "PropertyTypesOnDefMatchesType" needs to be exported by the entry point index.d.ts
+        includeRid?: AllFalse<PropertyTypesOnDefMatchesType<O, P, "geotimeSeriesReference">> extends true ? R : false;
+        		properties?: Array<P>;
         	}
 }
 

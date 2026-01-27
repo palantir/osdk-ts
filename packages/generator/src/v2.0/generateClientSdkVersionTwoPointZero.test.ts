@@ -800,11 +800,14 @@ describe("generator", () => {
           };
         }
 
-        export const SomeInterface: SomeInterface = {
+        export const SomeInterface = {
           type: 'interface',
           apiName: 'SomeInterface',
           osdkMetadata: $osdkMetadata,
-        };
+          internalDoNotUseMetadata: {
+            rid: 'idk',
+          },
+        } satisfies SomeInterface & { internalDoNotUseMetadata: { rid: string } } as SomeInterface;
         ",
           "/foo/ontology/objects.ts": "export { Person } from './objects/Person.js';
         export { Todo } from './objects/Todo.js';
@@ -1473,11 +1476,14 @@ describe("generator", () => {
           };
         }
 
-        export const SomeInterface: SomeInterface = {
+        export const SomeInterface = {
           type: 'interface',
           apiName: 'foo.bar.SomeInterface',
           osdkMetadata: $osdkMetadata,
-        };
+          internalDoNotUseMetadata: {
+            rid: 'idk',
+          },
+        } satisfies SomeInterface & { internalDoNotUseMetadata: { rid: string } } as SomeInterface;
         ",
           "/foo/ontology/objects.ts": "export { Person } from './objects/Person.js';
         export { Todo } from './objects/Todo.js';
@@ -2739,11 +2745,14 @@ describe("generator", () => {
           };
         }
 
-        export const SomeInterface: SomeInterface = {
+        export const SomeInterface = {
           type: 'interface',
           apiName: 'com.example.dep.SomeInterface',
           osdkMetadata: $osdkMetadata,
-        };
+          internalDoNotUseMetadata: {
+            rid: 'idk2',
+          },
+        } satisfies SomeInterface & { internalDoNotUseMetadata: { rid: string } } as SomeInterface;
         ",
           "/foo/ontology/objects.ts": "export { Task } from './objects/Task.js';
         ",

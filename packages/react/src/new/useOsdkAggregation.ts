@@ -18,6 +18,7 @@ import type {
   AggregateOpts,
   AggregationsResults,
   DerivedProperty,
+  ObjectOrInterfaceDefinition,
   ObjectSet,
   WhereClause,
 } from "@osdk/api";
@@ -32,7 +33,7 @@ import { OsdkContext2 } from "./OsdkContext2.js";
 import type { InferRdpTypes } from "./types.js";
 
 export interface UseOsdkAggregationOptions<
-  T extends ObjectTypeDefinition,
+  T extends ObjectOrInterfaceDefinition,
   A extends AggregateOpts<T>,
   WithProps extends DerivedProperty.Clause<T> | undefined = undefined,
 > {
@@ -115,7 +116,7 @@ export interface UseOsdkAggregationOptionsWithObjectSet<
 }
 
 export interface UseOsdkAggregationResult<
-  T extends ObjectTypeDefinition,
+  T extends ObjectOrInterfaceDefinition,
   A extends AggregateOpts<T>,
 > {
   data: AggregationsResults<T, A> | undefined;
@@ -163,8 +164,8 @@ declare const process: {
  * ```
  */
 export function useOsdkAggregation<
-  Q extends ObjectTypeDefinition,
-  A extends AggregateOpts<Q>,
+  Q extends ObjectOrInterfaceDefinition,
+  const A extends AggregateOpts<Q>,
   WP extends DerivedProperty.Clause<Q> | undefined = undefined,
 >(
   type: Q,

@@ -38,7 +38,8 @@ import { type SharedPropertyType } from "./properties/SharedPropertyType.js";
 export type SimplifiedInterfaceTypeStatus =
   | { type: "deprecated"; message: string; deadline: string }
   | { type: "active" }
-  | { type: "experimental" };
+  | { type: "experimental" }
+  | { type: "example" };
 
 type PropertyBase =
   | SharedPropertyType

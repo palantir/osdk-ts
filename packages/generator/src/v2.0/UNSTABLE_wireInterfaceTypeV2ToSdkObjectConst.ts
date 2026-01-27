@@ -212,9 +212,12 @@ ${
   return `${imports}
     ${v2 ? getV2Types(forInternalUse) : ""}
 
-    export const ${interfaceDef.shortApiName}: ${interfaceDef.shortApiName} = {
+    export const ${interfaceDef.shortApiName} = {
       type: "interface",
       apiName: "${interfaceDef.fullApiName}",
       osdkMetadata: $osdkMetadata,
-       };`;
+      internalDoNotUseMetadata: {
+        rid: "${definition.rid}",
+      },
+    } satisfies ${interfaceDef.shortApiName} & { internalDoNotUseMetadata: { rid: string } } as ${interfaceDef.shortApiName};`;
 }

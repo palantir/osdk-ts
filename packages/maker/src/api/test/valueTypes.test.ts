@@ -179,4 +179,69 @@ describe("Value Types", () => {
         }
       `);
   });
+  it("Correctly sets a status", () => {
+    defineValueType({
+      apiName: "apiName",
+      displayName: "displayName",
+      type: {
+        "type": "boolean",
+        constraints: [{ constraint: { "allowedValues": ["TRUE_VALUE"] } }],
+      },
+      status: {
+        type: "deprecated",
+        deadline: "2026-01-01",
+        message: "This value type is deprecated",
+      },
+      version: "0.1.0",
+    });
+    expect(dumpValueTypeWireType()).toMatchInlineSnapshot(`
+      {
+        "valueTypes": [
+          {
+            "metadata": {
+              "apiName": "apiName",
+              "displayMetadata": {
+                "description": "",
+                "displayName": "displayName",
+              },
+              "packageNamespace": "com.palantir",
+              "status": {
+                "deprecated": {
+                  "deadline": "2026-01-01",
+                  "message": "This value type is deprecated",
+                  "replacedBy": undefined,
+                },
+                "type": "deprecated",
+              },
+            },
+            "versions": [
+              {
+                "baseType": {
+                  "boolean": {},
+                  "type": "boolean",
+                },
+                "constraints": [
+                  {
+                    "constraint": {
+                      "constraint": {
+                        "boolean": {
+                          "allowedValues": [
+                            "TRUE_VALUE",
+                          ],
+                        },
+                        "type": "boolean",
+                      },
+                      "failureMessage": undefined,
+                    },
+                  },
+                ],
+                "exampleValues": [],
+                "version": "0.1.0",
+              },
+            ],
+          },
+        ],
+      }
+    `);
+  });
 });

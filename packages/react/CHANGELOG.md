@@ -1,5 +1,23 @@
 # @osdkkit/react
 
+## 0.9.0-beta.7
+
+### Minor Changes
+
+- acf6331: Include AGENTS.md and docs directory in published package for improved AI assistant support
+- 6cfe14a: add new useOsdkFunction hook and supporting client infrastructure
+- 38d5958: fix order by via key stabilization
+- 56ba08f: support interfaces for osdk react hooks
+
+### Patch Changes
+
+- Updated dependencies [6cfe14a]
+- Updated dependencies [ec6ad57]
+- Updated dependencies [38d5958]
+- Updated dependencies [d5cfc38]
+  - @osdk/client@2.7.0-beta.11
+  - @osdk/api@2.7.0-beta.11
+
 ## 0.9.0-beta.6
 
 ### Minor Changes

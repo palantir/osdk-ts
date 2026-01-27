@@ -157,7 +157,7 @@ export class ObservableClientImpl implements ObservableClient {
       typeof dep === "string" ? dep : dep.apiName
     );
     const dependsOnObjects = options.dependsOnObjects?.map(obj => ({
-      $apiName: obj.$apiName,
+      $apiName: obj.$objectType ?? obj.$apiName,
       $primaryKey: obj.$primaryKey,
     }));
 
@@ -198,7 +198,7 @@ export class ObservableClientImpl implements ObservableClient {
             ...options,
             srcType: {
               type: "object",
-              apiName: obj.$apiName,
+              apiName: obj.$objectType ?? obj.$apiName,
             },
             linkName,
             pk: obj.$primaryKey,
