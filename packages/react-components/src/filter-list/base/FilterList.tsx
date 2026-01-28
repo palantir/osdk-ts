@@ -105,27 +105,13 @@ export function FilterList<Q extends ObjectTypeDefinition>(
         renderEmptyAction={showAddFilterButton ? renderAddFilterButton : undefined}
       />
 
-      {showAddFilterButton && addFilterPosition === "inline"
-        && renderAddFilterButton && (
+      {showAddFilterButton && renderAddFilterButton && (
         <div
           className={classnames(
             styles.addButtonContainer,
             classNames?.addButtonContainer,
           )}
-          data-position="inline"
-        >
-          {renderAddFilterButton()}
-        </div>
-      )}
-
-      {showAddFilterButton && addFilterPosition === "fixed"
-        && renderAddFilterButton && (
-        <div
-          className={classnames(
-            styles.addButtonContainer,
-            classNames?.addButtonContainer,
-          )}
-          data-position="fixed"
+          data-position={addFilterPosition}
         >
           {renderAddFilterButton()}
         </div>
