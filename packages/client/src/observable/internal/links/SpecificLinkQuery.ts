@@ -221,23 +221,16 @@ export class SpecificLinkQuery extends BaseListQuery<
     }
 
     // Fetch the linked objects with pagination
-    // Add orderBy to the query parameters if specified
-    const queryParams: any = {
+    const response = await linkQuery.fetchPage({
       $pageSize: this.options.pageSize || 100,
       $nextPageToken: this.nextPageToken,
-    };
-
-    // Include orderBy if it has entries
-    if (this.#orderBy && Object.keys(this.#orderBy).length > 0) {
-      queryParams.$orderBy = this.#orderBy;
-    }
-
-    // Include whereClause if it has entries
-    if (this.#whereClause && Object.keys(this.#whereClause).length > 0) {
-      queryParams.$where = this.#whereClause;
-    }
-
-    const response = await linkQuery.fetchPage(queryParams);
+      ...(Object.keys(this.#orderBy).length > 0
+        ? { $orderBy: this.#orderBy }
+        : {}),
+      ...(Object.keys(this.#whereClause).length > 0
+        ? { $where: this.#whereClause }
+        : {}),
+    });
 
     // Store the next page token for pagination
     this.nextPageToken = response.nextPageToken;
