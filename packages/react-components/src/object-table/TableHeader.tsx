@@ -51,7 +51,9 @@ export function TableHeader<TData extends RowData>({
                 : flexRender(
                   header.column.columnDef.header,
                   header.getContext(),
-                ) as ReactNode | React.JSX.Element}
+                ) as
+                  | ReactNode
+                  | React.JSX.Element}
               {header.column.getCanResize() && (
                 <div
                   className={styles.osdkTableHeaderResizer}
