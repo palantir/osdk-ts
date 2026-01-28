@@ -106,4 +106,16 @@ describe("ObjectSet", () => {
       ObjectSet<FooInterface, never>
     >;
   });
+
+  it("$link on interface instances includes interface links", async () => {
+    const { data: fooInstances } = await client(FooInterface).fetchPage();
+    const fooInstance = fooInstances[0];
+    expect(fooInstance).toBeDefined();
+
+    expect(fooInstance.$link).toBeDefined();
+    expect(fooInstance.$link.toBar).toBeDefined();
+    expectTypeOf<typeof fooInstance.$link.toBar>().toEqualTypeOf<
+      ObjectSet<BarInterface, never>
+    >;
+  });
 });

@@ -99,16 +99,20 @@ export function resolveInterfaceObjectSet(
   interfaceTypeApiName: string,
   args: FetchPageArgs<any, any, any, any, any, any>,
 ): ObjectSet {
-  return args?.$includeAllBaseObjectProperties
-    ? {
+  if (!args?.$includeAllBaseObjectProperties) {
+    return objectSet;
+  }
+
+  return {
+    type: "asBaseObjectTypes",
+    objectSet: {
       type: "intersect",
-      objectSets: [objectSet, {
-        type: "interfaceBase",
-        interfaceType: interfaceTypeApiName,
-        includeAllBaseObjectProperties: true,
-      }],
-    }
-    : objectSet;
+      objectSets: [
+        { type: "interfaceBase", interfaceType: interfaceTypeApiName },
+        objectSet,
+      ],
+    },
+  };
 }
 
 /** @internal */
@@ -265,6 +269,7 @@ async function fetchInterfacePage<
     client,
     objectSet,
   ))?.apiName ?? interfaceType.apiName;
+
   const resolvedInterfaceObjectSet = resolveInterfaceObjectSet(
     objectSet,
     extractedInterfaceTypeApiName,

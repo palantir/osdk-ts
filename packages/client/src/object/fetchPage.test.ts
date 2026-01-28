@@ -191,23 +191,25 @@ describe(fetchPage, () => {
       }),
     ).toEqual(
       {
-        type: "intersect",
-        objectSets: [
-          {
-            type: "filter",
-            where: {
-              type: "eq",
-              field: "fooSpt",
-              value: "hello",
+        type: "asBaseObjectTypes",
+        objectSet: {
+          type: "intersect",
+          objectSets: [
+            { type: "interfaceBase", interfaceType: "FooInterface" },
+            {
+              type: "filter",
+              where: {
+                type: "eq",
+                field: "fooSpt",
+                value: "hello",
+              },
+              objectSet: {
+                interfaceType: "FooInterface",
+                type: "interfaceBase",
+              },
             },
-            objectSet: { interfaceType: "FooInterface", type: "interfaceBase" },
-          },
-          {
-            type: "interfaceBase",
-            interfaceType: "FooInterface",
-            includeAllBaseObjectProperties: true,
-          },
-        ],
+          ],
+        },
       },
     );
 
