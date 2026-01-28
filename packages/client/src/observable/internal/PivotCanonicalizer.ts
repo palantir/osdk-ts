@@ -18,6 +18,7 @@ import type { Canonical } from "./Canonical.js";
 
 export interface PivotInfo {
   sourceType: string;
+  sourceTypeKind: "object" | "interface";
   linkName: string;
   targetType: string;
 }
@@ -25,14 +26,19 @@ export interface PivotInfo {
 export class PivotCanonicalizer {
   #cache = new Map<string, Canonical<PivotInfo>>();
 
-  canonicalize(sourceType: string, linkName: string): Canonical<PivotInfo> {
-    const key = `${sourceType}::${linkName}`;
+  canonicalize(
+    sourceType: string,
+    sourceTypeKind: "object" | "interface",
+    linkName: string,
+  ): Canonical<PivotInfo> {
+    const key = `${sourceTypeKind}:${sourceType}::${linkName}`;
 
     let canonical = this.#cache.get(key);
 
     if (!canonical) {
       canonical = {
         sourceType,
+        sourceTypeKind,
         linkName,
         targetType: "<targetType>",
       } as Canonical<PivotInfo>;

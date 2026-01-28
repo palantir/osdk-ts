@@ -16,6 +16,7 @@
 
 import type {
   DerivedProperty,
+  InterfaceDefinition,
   ObjectSet,
   ObjectTypeDefinition,
   Osdk,
@@ -54,10 +55,15 @@ export class ObjectListQuery extends ListQuery {
     } as ObjectTypeDefinition;
 
     if (pivotInfo != null) {
-      let sourceSet = store.client({
-        type: "object",
-        apiName: pivotInfo.sourceType,
-      } as ObjectTypeDefinition);
+      let sourceSet = (pivotInfo.sourceTypeKind === "interface"
+        ? store.client({
+          type: "interface",
+          apiName: pivotInfo.sourceType,
+        } as InterfaceDefinition)
+        : store.client({
+          type: "object",
+          apiName: pivotInfo.sourceType,
+        } as ObjectTypeDefinition)) as ObjectSet<ObjectTypeDefinition>;
 
       // Filter source objects before pivoting to linked objects
       sourceSet = sourceSet.where(this.canonicalWhere);

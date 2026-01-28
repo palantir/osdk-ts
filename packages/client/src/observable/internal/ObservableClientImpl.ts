@@ -211,14 +211,23 @@ export class ObservableClientImpl implements ObservableClient {
     const parentSub = new Subscription();
 
     for (const obj of objectsArray) {
+      // Determine if the source is an object type or interface
+      // For object instances, $apiName equals $objectType
+      // For interface instances, $apiName is the interface name, $objectType is the underlying type
+      const sourceType: "object" | "interface" =
+        obj.$apiName === obj.$objectType
+          ? "object"
+          : "interface";
+
       const querySubscription = this.__experimentalStore.links
         .observe(
           {
             ...options,
             srcType: {
-              type: "object",
-              apiName: obj.$objectType ?? obj.$apiName,
+              type: sourceType,
+              apiName: obj.$apiName,
             },
+            sourceUnderlyingObjectType: obj.$objectType,
             linkName,
             pk: obj.$primaryKey,
           },
