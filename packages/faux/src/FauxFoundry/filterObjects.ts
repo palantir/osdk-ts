@@ -153,22 +153,6 @@ export function filterObjects(
       });
     }
 
-    case "startsWith": {
-      const { propertyIdentifier, field } = where;
-      if (propertyIdentifier) {
-        console.error("propertyIdentifier not supported", where);
-        throw new Error("propertyIdentifier not supported");
-      }
-      invariant(field);
-      return objects.filter((obj) => {
-        const fieldValue = obj[field];
-        if (typeof fieldValue === "string") {
-          return fieldValue.startsWith(where.value);
-        }
-        return false;
-      });
-    }
-
     case "containsAnyTerm": {
       const { propertyIdentifier, field } = where;
       if (propertyIdentifier) {
@@ -231,6 +215,7 @@ export function filterObjects(
       });
     }
 
+    case "startsWith":
     case "containsAllTermsInOrderPrefixLastTerm": {
       const { propertyIdentifier, field } = where;
       if (propertyIdentifier) {
