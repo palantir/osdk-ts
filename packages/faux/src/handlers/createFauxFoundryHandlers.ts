@@ -17,6 +17,7 @@
 import type { RequestHandler } from "msw";
 import type { FauxFoundry } from "../FauxFoundry/FauxFoundry.js";
 import { createActionHandlers } from "./createActionHandlers.js";
+import { createAdminHandlers } from "./createAdminHandlers.js";
 import { createAttachmentHandlers } from "./createAttachmentHandlers.js";
 import { createLoadObjectsHandlers } from "./createLoadObjectsHandlers.js";
 import { createMediaRefHandlers } from "./createMediaRefHandlers.js";
@@ -45,5 +46,6 @@ export function createFauxFoundryHandlers(
     createTimeseriesAndGeotimeHandlers,
     createAttachmentHandlers,
     createMediaRefHandlers,
+    createAdminHandlers,
   ].flatMap(x => x(baseUrl, fauxFoundry));
 }
