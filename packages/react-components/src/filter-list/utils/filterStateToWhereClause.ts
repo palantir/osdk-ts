@@ -18,7 +18,6 @@ import type { ObjectTypeDefinition, WhereClause } from "@osdk/api";
 import type { FilterDefinitionUnion } from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
 import { assertUnreachable } from "./assertUnreachable.js";
-import { getFilterKey } from "./getFilterKey.js";
 
 type PropertyFilter = Record<string, unknown> | boolean | string | number;
 
@@ -167,9 +166,9 @@ function filterStateToPropertyFilter(
 /**
  * Builds a WhereClause from filter definitions and their current states.
  *
- * The filterStates map uses string keys derived from getFilterKey().
- * This avoids dependence on object identity, so filter definition objects
- * can be safely recreated across renders without breaking state lookups.
+ * The filterStates map uses filter definition objects as keys (object identity).
+ * This ensures stable state lookups even when filters are reordered, as long as
+ * the same definition object references are maintained.
  *
  * Note: The `as WhereClause<Q>` casts are necessary because we're building
  * clauses dynamically from property keys determined at runtime. TypeScript
@@ -178,7 +177,7 @@ function filterStateToPropertyFilter(
  */
 export function buildWhereClause<Q extends ObjectTypeDefinition>(
   definitions: Array<FilterDefinitionUnion<Q>> | undefined,
-  filterStates: Map<string, FilterState>,
+  filterStates: Map<FilterDefinitionUnion<Q>, FilterState>,
   operator: "and" | "or",
   objectType?: Q,
 ): WhereClause<Q> {
@@ -189,7 +188,7 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
   const clauses: Array<Record<string, unknown>> = [];
 
   for (const definition of definitions) {
-    const state = filterStates.get(getFilterKey(definition));
+    const state = filterStates.get(definition);
 
     if (!state) {
       continue;
