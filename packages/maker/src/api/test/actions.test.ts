@@ -1330,18 +1330,21 @@ describe("Action Types", () => {
                     {
                       "interfaceTypeApiName": "com.palantir.exampleInterface",
                       "linksV2": {},
-                      "properties": {
+                      "properties": {},
+                      "propertiesV2": {
                         "com.palantir.mySpt": {
                           "propertyTypeRid": "bar",
-                        },
-                        "com.palantir.property1": {
-                          "propertyTypeRid": "property1",
+                          "type": "propertyTypeRid",
                         },
                         "com.palantir.property2": {
                           "propertyTypeRid": "property2",
+                          "type": "propertyTypeRid",
+                        },
+                        "property1": {
+                          "propertyTypeRid": "property1",
+                          "type": "propertyTypeRid",
                         },
                       },
-                      "propertiesV2": {},
                     },
                   ],
                   "primaryKeys": [

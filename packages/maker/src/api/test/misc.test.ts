@@ -1123,15 +1123,17 @@ describe("Miscellaneous Tests", () => {
                     {
                       "interfaceTypeApiName": "com.palantir.childInterface",
                       "linksV2": {},
-                      "properties": {
+                      "properties": {},
+                      "propertiesV2": {
                         "com.palantir.iProperty1": {
                           "propertyTypeRid": "property1",
+                          "type": "propertyTypeRid",
                         },
                         "com.palantir.iProperty2": {
                           "propertyTypeRid": "property2",
+                          "type": "propertyTypeRid",
                         },
                       },
-                      "propertiesV2": {},
                     },
                   ],
                   "primaryKeys": [
