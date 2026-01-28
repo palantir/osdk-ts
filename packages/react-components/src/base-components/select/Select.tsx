@@ -66,7 +66,9 @@ function SelectTrigger({
     >
       {children ?? (
         <>
-          <BaseUISelect.Value placeholder={placeholder} />
+          <BaseUISelect.Value>
+            {(value) => (value != null ? String(value) : placeholder)}
+          </BaseUISelect.Value>
           <BaseUISelect.Icon className={styles.osdkSelectIcon}>
             <CaretDown color="currentColor" />
           </BaseUISelect.Icon>
@@ -139,9 +141,7 @@ function SelectPopup({
   );
 }
 
-interface SelectItemComponentProps
-  extends Omit<SelectItemProps, "className">
-{
+interface SelectItemComponentProps extends Omit<SelectItemProps, "className"> {
   className?: string;
 }
 
