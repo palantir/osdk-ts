@@ -44,9 +44,11 @@ export function filterHasActiveState(state: FilterState | undefined): boolean {
     case "CONTAINS_TEXT":
       return state.value !== undefined && state.value !== "";
     case "NUMBER_RANGE":
-      return state.minValue !== undefined || state.maxValue !== undefined || state.includeNull === true;
+      return state.minValue !== undefined || state.maxValue !== undefined
+        || state.includeNull === true;
     case "DATE_RANGE":
-      return state.minValue !== undefined || state.maxValue !== undefined || state.includeNull === true;
+      return state.minValue !== undefined || state.maxValue !== undefined
+        || state.includeNull === true;
     case "SINGLE_DATE":
       return state.selectedDate !== undefined;
     case "MULTI_DATE":

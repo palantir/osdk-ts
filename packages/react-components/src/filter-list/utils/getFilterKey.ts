@@ -27,13 +27,15 @@ export function getFilterKey<Q extends ObjectTypeDefinition>(
     case "hasLink":
       return definition.id ?? `hasLink:${definition.linkName}`;
     case "linkedProperty":
-      return definition.id ?? `linkedProperty:${definition.linkName}:${definition.linkedPropertyKey}`;
+      return definition.id
+        ?? `linkedProperty:${definition.linkName}:${definition.linkedPropertyKey}`;
     case "keywordSearch":
-      return definition.id ?? `keywordSearch-${
-        Array.isArray(definition.properties)
-          ? definition.properties.join("-")
-          : "all"
-      }`;
+      return definition.id
+        ?? `keywordSearch-${
+          Array.isArray(definition.properties)
+            ? definition.properties.join("-")
+            : "all"
+        }`;
     case "custom":
       return definition.id ?? definition.key;
     default:
