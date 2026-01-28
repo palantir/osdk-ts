@@ -20,6 +20,7 @@ const columnDefinitions: ColumnDefinition<
       type: "property",
       id: "fullName",
     },
+    pinned: "left",
     renderHeader: () => <div style={{ color: "red" }}>My Name</div>,
   },
   // With isVisible prop
@@ -92,7 +93,7 @@ export function EmployeesTable() {
       <ObjectTable<Employee, { managerName: "string" }>
         objectSet={employeesObjectSet}
         objectType={Employee}
-        columnDefinitions={columnDefinitions}
+        // columnDefinitions={columnDefinitions}
         selectionMode={"multiple"}
         renderCellContextMenu={renderCellContextMenu}
       />

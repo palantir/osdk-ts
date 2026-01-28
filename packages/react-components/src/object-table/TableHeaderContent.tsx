@@ -14,17 +14,23 @@
  * limitations under the License.
  */
 
-export type { FilterListProps } from "../filter-list/FilterListApi.js";
-export type { FilterListItemProps } from "../filter-list/FilterListItemApi.js";
+import { flexRender, type Header, type RowData } from "@tanstack/react-table";
+import React from "react";
+import styles from "./TableHeaderContent.module.css";
 
-// ObjectTable that loads and displays data for a given objectSet
-export { ObjectTable } from "../object-table/ObjectTable.js";
-export type {
-  ColumnDefinition,
-  ColumnDefinitionLocator,
-  ObjectTableProps,
-} from "../object-table/ObjectTableApi.js";
+interface TableHeaderContentProps<TData extends RowData> {
+  header: Header<TData, unknown>;
+}
 
-// BaseTable that does not handle data fetching
-export type { BaseTableProps } from "../object-table/Table.js";
-export { BaseTable } from "../object-table/Table.js";
+export function TableHeaderContent<TData extends RowData>(
+  { header }: TableHeaderContentProps<TData>,
+): React.ReactElement {
+  return (
+    <div className={styles.osdkHeaderContent}>
+      {flexRender(
+        header.column.columnDef.header,
+        header.getContext(),
+      )}
+    </div>
+  );
+}
