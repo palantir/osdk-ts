@@ -28,11 +28,14 @@ import classnames from "classnames";
 import React from "react";
 import styles from "./Select.module.css";
 
-export interface SelectProps<Value extends string | number>
+export interface SelectProps<Value>
   extends Omit<SelectRootProps<Value, false>, "className" | "multiple">
-{}
+{
+  className?: string;
+}
 
-function SelectRoot<Value extends string | number>({
+function SelectRoot<Value>({
+  className,
   children,
   ...rest
 }: SelectProps<Value>): React.ReactElement {
@@ -63,9 +66,7 @@ function SelectTrigger({
     >
       {children ?? (
         <>
-          <BaseUISelect.Value>
-            {(value) => (value != null ? String(value) : placeholder)}
-          </BaseUISelect.Value>
+          <BaseUISelect.Value placeholder={placeholder} />
           <BaseUISelect.Icon className={styles.osdkSelectIcon}>
             <CaretDown color="currentColor" />
           </BaseUISelect.Icon>
@@ -85,6 +86,14 @@ function SelectValue(
       {...rest}
     />
   );
+}
+
+function SelectPortal({
+  children,
+}: {
+  children: React.ReactNode;
+}): React.ReactElement {
+  return <BaseUISelect.Portal>{children}</BaseUISelect.Portal>;
 }
 
 interface SelectPositionerComponentProps
@@ -130,7 +139,9 @@ function SelectPopup({
   );
 }
 
-interface SelectItemComponentProps extends Omit<SelectItemProps, "className"> {
+interface SelectItemComponentProps
+  extends Omit<SelectItemProps, "className">
+{
   className?: string;
 }
 
@@ -153,7 +164,7 @@ export const Select: {
   Root: typeof SelectRoot;
   Trigger: typeof SelectTrigger;
   Value: typeof SelectValue;
-  Portal: typeof BaseUISelect.Portal;
+  Portal: typeof SelectPortal;
   Positioner: typeof SelectPositioner;
   Popup: typeof SelectPopup;
   Item: typeof SelectItem;
@@ -161,7 +172,7 @@ export const Select: {
   Root: SelectRoot,
   Trigger: SelectTrigger,
   Value: SelectValue,
-  Portal: BaseUISelect.Portal,
+  Portal: SelectPortal,
   Positioner: SelectPositioner,
   Popup: SelectPopup,
   Item: SelectItem,
