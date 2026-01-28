@@ -95,6 +95,9 @@ export default tseslint.config(
       "no-console": "error",
 
       "unused-imports/no-unused-imports": "error",
+      "import/no-extraneous-dependencies": ["error", {
+        "devDependencies": false,
+      }],
     },
     settings: {
       "import/parsers": {
@@ -226,7 +229,13 @@ export default tseslint.config(
     ],
     rules: {
       "no-console": "off",
+      // should be able to use dev deps in tests
+      "import/no-extraneous-dependencies": "off",
     },
+  },
+  {
+    files: ["**/vitest.config.mts", "**/*.mjs"],
+    rules: { "import/no-extraneous-dependencies": "off" },
   },
   //
   // Flat out ignore these globs
