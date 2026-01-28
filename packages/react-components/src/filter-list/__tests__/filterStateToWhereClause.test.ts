@@ -15,9 +15,10 @@
  */
 
 import { describe, expect, it } from "vitest";
+import type { FilterDefinitionUnion } from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
 import { buildWhereClause } from "../utils/filterStateToWhereClause.js";
-import { getFilterKey } from "../utils/getFilterKey.js";
+import type { MockObjectType } from "./testUtils.js";
 import {
   createContainsTextState,
   createCustomFilterDef,
@@ -30,11 +31,13 @@ import {
   createToggleState,
 } from "./testUtils.js";
 
+type TestFilterDef = FilterDefinitionUnion<typeof MockObjectType>;
+
 describe("buildWhereClause", () => {
   it("returns empty object for undefined definitions", () => {
     const result = buildWhereClause(
       undefined,
-      new Map<string, FilterState>(),
+      new Map<TestFilterDef, FilterState>(),
       "and",
     );
     expect(result).toEqual({});
@@ -46,8 +49,8 @@ describe("buildWhereClause", () => {
       "CHECKBOX_LIST",
       createSelectState(["a", "b"]),
     );
-    const filterStates = new Map<string, FilterState>([
-      [getFilterKey(def), createSelectState(["a", "b"])],
+    const filterStates = new Map<TestFilterDef, FilterState>([
+      [def, createSelectState(["a", "b"])],
     ]);
     const result = buildWhereClause([def], filterStates, "and");
     expect(result).toEqual({ name: { $in: ["a", "b"] } });
@@ -59,8 +62,8 @@ describe("buildWhereClause", () => {
       "CHECKBOX_LIST",
       createSelectState(["a"], { isExcluding: true }),
     );
-    const filterStates = new Map<string, FilterState>([
-      [getFilterKey(def), createSelectState(["a"], { isExcluding: true })],
+    const filterStates = new Map<TestFilterDef, FilterState>([
+      [def, createSelectState(["a"], { isExcluding: true })],
     ]);
     const result = buildWhereClause([def], filterStates, "and");
     expect(result).toEqual({ name: { $not: "a" } });
@@ -72,8 +75,8 @@ describe("buildWhereClause", () => {
       "CONTAINS_TEXT",
       createContainsTextState("test"),
     );
-    const filterStates = new Map<string, FilterState>([
-      [getFilterKey(def), createContainsTextState("test")],
+    const filterStates = new Map<TestFilterDef, FilterState>([
+      [def, createContainsTextState("test")],
     ]);
     const result = buildWhereClause([def], filterStates, "and");
     expect(result).toEqual({ name: { $containsAnyTerm: "test" } });
@@ -85,8 +88,8 @@ describe("buildWhereClause", () => {
       "TOGGLE",
       createToggleState(true),
     );
-    const filterStates = new Map<string, FilterState>([
-      [getFilterKey(def), createToggleState(true)],
+    const filterStates = new Map<TestFilterDef, FilterState>([
+      [def, createToggleState(true)],
     ]);
     const result = buildWhereClause([def], filterStates, "and");
     expect(result).toEqual({ active: true });
@@ -98,8 +101,8 @@ describe("buildWhereClause", () => {
       "NUMBER_RANGE",
       createNumberRangeState(18, undefined),
     );
-    const filterStates = new Map<string, FilterState>([
-      [getFilterKey(def), createNumberRangeState(18, undefined)],
+    const filterStates = new Map<TestFilterDef, FilterState>([
+      [def, createNumberRangeState(18, undefined)],
     ]);
     const result = buildWhereClause([def], filterStates, "and");
     expect(result).toEqual({ age: { $gte: 18 } });
@@ -111,8 +114,8 @@ describe("buildWhereClause", () => {
       "NUMBER_RANGE",
       createNumberRangeState(18, 65),
     );
-    const filterStates = new Map<string, FilterState>([
-      [getFilterKey(def), createNumberRangeState(18, 65)],
+    const filterStates = new Map<TestFilterDef, FilterState>([
+      [def, createNumberRangeState(18, 65)],
     ]);
     const result = buildWhereClause([def], filterStates, "and");
     expect(result).toEqual({ age: { $and: [{ $gte: 18 }, { $lte: 65 }] } });
@@ -124,11 +127,8 @@ describe("buildWhereClause", () => {
       "NUMBER_RANGE",
       createNumberRangeState(18, undefined, { includeNull: true }),
     );
-    const filterStates = new Map<string, FilterState>([
-      [
-        getFilterKey(def),
-        createNumberRangeState(18, undefined, { includeNull: true }),
-      ],
+    const filterStates = new Map<TestFilterDef, FilterState>([
+      [def, createNumberRangeState(18, undefined, { includeNull: true })],
     ]);
     const result = buildWhereClause([def], filterStates, "and");
     expect(result).toEqual({ age: { $or: [{ $gte: 18 }, { $isNull: true }] } });
@@ -142,8 +142,8 @@ describe("buildWhereClause", () => {
       "DATE_RANGE",
       createDateRangeState(minDate, maxDate),
     );
-    const filterStates = new Map<string, FilterState>([
-      [getFilterKey(def), createDateRangeState(minDate, maxDate)],
+    const filterStates = new Map<TestFilterDef, FilterState>([
+      [def, createDateRangeState(minDate, maxDate)],
     ]);
     const result = buildWhereClause([def], filterStates, "and");
     expect(result).toEqual({
@@ -167,9 +167,9 @@ describe("buildWhereClause", () => {
       "TOGGLE",
       createToggleState(true),
     );
-    const filterStates = new Map<string, FilterState>([
-      [getFilterKey(nameDef), createSelectState(["John"])],
-      [getFilterKey(activeDef), createToggleState(true)],
+    const filterStates = new Map<TestFilterDef, FilterState>([
+      [nameDef, createSelectState(["John"])],
+      [activeDef, createToggleState(true)],
     ]);
     const result = buildWhereClause([nameDef, activeDef], filterStates, "and");
     expect(result).toEqual({
@@ -188,9 +188,9 @@ describe("buildWhereClause", () => {
       "TOGGLE",
       createToggleState(true),
     );
-    const filterStates = new Map<string, FilterState>([
-      [getFilterKey(nameDef), createSelectState(["John"])],
-      [getFilterKey(activeDef), createToggleState(true)],
+    const filterStates = new Map<TestFilterDef, FilterState>([
+      [nameDef, createSelectState(["John"])],
+      [activeDef, createToggleState(true)],
     ]);
     const result = buildWhereClause([nameDef, activeDef], filterStates, "or");
     expect(result).toEqual({
@@ -209,8 +209,8 @@ describe("buildWhereClause", () => {
       "TOGGLE",
       createToggleState(false),
     );
-    const filterStates = new Map<string, FilterState>([
-      [getFilterKey(nameDef), createSelectState(["John"])],
+    const filterStates = new Map<TestFilterDef, FilterState>([
+      [nameDef, createSelectState(["John"])],
     ]);
     const result = buildWhereClause([nameDef, activeDef], filterStates, "and");
     expect(result).toEqual({ name: "John" });
@@ -218,8 +218,8 @@ describe("buildWhereClause", () => {
 
   it("builds $isNotNull for hasLink filter", () => {
     const def = createHasLinkFilterDef("employees");
-    const filterStates = new Map<string, FilterState>([
-      [getFilterKey(def), { type: "HAS_LINK", hasLink: true }],
+    const filterStates = new Map<TestFilterDef, FilterState>([
+      [def, { type: "HAS_LINK", hasLink: true }],
     ]);
     const result = buildWhereClause([def], filterStates, "and");
     expect(result).toEqual({ employees: { $isNotNull: true } });
@@ -227,8 +227,8 @@ describe("buildWhereClause", () => {
 
   it("emits no clause for hasLink filter when hasLink is false", () => {
     const def = createHasLinkFilterDef("employees");
-    const filterStates = new Map<string, FilterState>([
-      [getFilterKey(def), { type: "HAS_LINK", hasLink: false }],
+    const filterStates = new Map<TestFilterDef, FilterState>([
+      [def, { type: "HAS_LINK", hasLink: false }],
     ]);
     const result = buildWhereClause([def], filterStates, "and");
     expect(result).toEqual({});
@@ -236,12 +236,8 @@ describe("buildWhereClause", () => {
 
   it("builds $containsAllTerms for keywordSearch filter with AND operator", () => {
     const def = createKeywordSearchFilterDef(["name"]);
-    const filterStates = new Map<string, FilterState>([
-      [getFilterKey(def), {
-        type: "KEYWORD_SEARCH",
-        searchTerm: "test",
-        operator: "AND",
-      }],
+    const filterStates = new Map<TestFilterDef, FilterState>([
+      [def, { type: "KEYWORD_SEARCH", searchTerm: "test", operator: "AND" }],
     ]);
     const result = buildWhereClause([def], filterStates, "and");
     expect(result).toEqual({ name: { $containsAllTerms: "test" } });
@@ -249,12 +245,8 @@ describe("buildWhereClause", () => {
 
   it("builds $containsAnyTerm for keywordSearch filter with OR operator", () => {
     const def = createKeywordSearchFilterDef(["name"]);
-    const filterStates = new Map<string, FilterState>([
-      [getFilterKey(def), {
-        type: "KEYWORD_SEARCH",
-        searchTerm: "test",
-        operator: "OR",
-      }],
+    const filterStates = new Map<TestFilterDef, FilterState>([
+      [def, { type: "KEYWORD_SEARCH", searchTerm: "test", operator: "OR" }],
     ]);
     const result = buildWhereClause([def], filterStates, "and");
     expect(result).toEqual({ name: { $containsAnyTerm: "test" } });
@@ -262,12 +254,8 @@ describe("buildWhereClause", () => {
 
   it("builds $or for multi-property keywordSearch filter", () => {
     const def = createKeywordSearchFilterDef(["name", "email"]);
-    const filterStates = new Map<string, FilterState>([
-      [getFilterKey(def), {
-        type: "KEYWORD_SEARCH",
-        searchTerm: "test",
-        operator: "OR",
-      }],
+    const filterStates = new Map<TestFilterDef, FilterState>([
+      [def, { type: "KEYWORD_SEARCH", searchTerm: "test", operator: "OR" }],
     ]);
     const result = buildWhereClause([def], filterStates, "and");
     expect(result).toEqual({
@@ -280,9 +268,9 @@ describe("buildWhereClause", () => {
 
   it("builds $not wrapper for keywordSearch filter with isExcluding", () => {
     const def = createKeywordSearchFilterDef(["name"]);
-    const filterStates = new Map<string, FilterState>([
+    const filterStates = new Map<TestFilterDef, FilterState>([
       [
-        getFilterKey(def),
+        def,
         {
           type: "KEYWORD_SEARCH",
           searchTerm: "test",
@@ -301,8 +289,8 @@ describe("buildWhereClause", () => {
       ...baseDef,
       toWhereClause: () => ({ customProp: { $eq: "test" } }),
     };
-    const filterStates = new Map<string, FilterState>([
-      [getFilterKey(def), { type: "CUSTOM", customState: { value: "test" } }],
+    const filterStates = new Map<TestFilterDef, FilterState>([
+      [def, { type: "CUSTOM", customState: { value: "test" } }],
     ]);
     const result = buildWhereClause([def], filterStates, "and");
     expect(result).toEqual({ customProp: { $eq: "test" } });
@@ -319,9 +307,9 @@ describe("buildWhereClause", () => {
       "TOGGLE",
       createToggleState(true),
     );
-    const filterStates = new Map<string, FilterState>([
-      [getFilterKey(nameDef), createSelectState(["John"])],
-      [getFilterKey(activeDef), createToggleState(true)],
+    const filterStates = new Map<TestFilterDef, FilterState>([
+      [nameDef, createSelectState(["John"])],
+      [activeDef, createToggleState(true)],
     ]);
 
     const result1 = buildWhereClause([nameDef, activeDef], filterStates, "and");
@@ -333,23 +321,5 @@ describe("buildWhereClause", () => {
     expect(result2).toEqual({
       $and: [{ active: true }, { name: "John" }],
     });
-  });
-
-  it("looks up state by key, not object identity", () => {
-    const def1 = createPropertyFilterDef(
-      "name",
-      "CHECKBOX_LIST",
-      createSelectState(["Alice"]),
-    );
-    const def2 = createPropertyFilterDef(
-      "name",
-      "CHECKBOX_LIST",
-      createSelectState([]),
-    );
-    const filterStates = new Map<string, FilterState>([
-      [getFilterKey(def1), createSelectState(["Alice"])],
-    ]);
-    const result = buildWhereClause([def2], filterStates, "and");
-    expect(result).toEqual({ name: "Alice" });
   });
 });
