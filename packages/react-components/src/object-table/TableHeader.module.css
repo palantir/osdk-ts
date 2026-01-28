@@ -40,15 +40,21 @@
   font-weight: var(--osdk-table-header-fontWeight);
   font-size: var(--osdk-table-header-fontSize);
   color: var(--osdk-table-header-color);
-  border: var(--osdk-table-row-border-width) solid var(--osdk-table-row-border-color);
+  border-top: var(--osdk-table-border);
+  border-right: var(--osdk-table-header-divider);
+  background-color: inherit;
+
+  &:first-child {
+    border-left: var(--osdk-table-border);
+  }
+
+  &:last-child {
+    border-right: var(--osdk-table-border);
+  }
 }
 
 .osdkTableHeaderCell:has([role="checkbox"]) {
   justify-content: center;
-}
-
-.osdkTableHeaderCell:not(:first-child) {
-  border-left: none;
 }
 
 .osdkTableHeaderResizer {
@@ -56,7 +62,7 @@
   cursor: col-resize;
   height: 100%;
   position: absolute;
-  right: 0;
+  right: calc(-1 * var(--osdk-table-border-width));
   top: 0;
   touch-action: none;
   width: 3px;
@@ -66,7 +72,7 @@
     background: var(--bp-intent-primary-hover);
   }
 
-  &:active{
+  &:active {
     background: var(--bp-intent-primary-active);
   }
 }
