@@ -1,0 +1,164 @@
+/* ===========================================================================
+ * App Layout with Sidebar
+ * =========================================================================== */
+
+.app-layout {
+  display: flex;
+  min-height: 100vh;
+  background-color: #f5f8fa;
+}
+
+/* ---------------------------------------------------------------------------
+ * Sidebar Styles
+ * --------------------------------------------------------------------------- */
+
+.sidebar {
+  width: 280px;
+  min-width: 280px;
+  background-color: #fff;
+  border-right: 1px solid #e1e8ed;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  position: sticky;
+  top: 0;
+}
+
+.sidebar-header {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid #e1e8ed;
+}
+
+.sidebar-header h2 {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #182026;
+}
+
+.sidebar-search {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #e1e8ed;
+}
+
+.sidebar-content {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.sidebar-menu {
+  padding: 0.5rem 0;
+}
+
+.sidebar-menu .bp5-menu-item {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.sidebar-menu .category-header {
+  font-weight: 500;
+  color: #5c7080;
+  background-color: transparent;
+}
+
+.sidebar-menu .category-header:hover {
+  background-color: #f5f8fa;
+}
+
+.sidebar-menu .nav-item {
+  padding-left: 2.5rem;
+  font-size: 0.875rem;
+}
+
+.sidebar-menu .nav-item.bp5-active {
+  background-color: #137cbd;
+  color: #fff;
+}
+
+.sidebar-menu .bp5-menu-divider {
+  margin: 0.5rem 0;
+}
+
+/* ---------------------------------------------------------------------------
+ * Main Content Area
+ * --------------------------------------------------------------------------- */
+
+.main-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.5rem;
+  max-width: 100%;
+}
+
+/* ---------------------------------------------------------------------------
+ * Welcome Page
+ * --------------------------------------------------------------------------- */
+
+.welcome-page {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 4rem;
+}
+
+.welcome-card {
+  max-width: 500px;
+  padding: 2rem;
+}
+
+/* ---------------------------------------------------------------------------
+ * Documentation Content Overrides
+ * --------------------------------------------------------------------------- */
+
+.object-type-documentation,
+.action-type-documentation,
+.query-type-documentation,
+.interface-type-documentation {
+  max-width: 100%;
+  padding: 0;
+}
+
+/* ---------------------------------------------------------------------------
+ * Responsive Design
+ * --------------------------------------------------------------------------- */
+
+@media (max-width: 1024px) {
+  .sidebar {
+    width: 240px;
+    min-width: 240px;
+  }
+}
+
+@media (max-width: 768px) {
+  .app-layout {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    min-width: 100%;
+    height: auto;
+    position: relative;
+    max-height: 50vh;
+  }
+
+  .main-content {
+    padding: 1rem;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+ * Blueprint Overrides
+ * --------------------------------------------------------------------------- */
+
+.bp5-menu {
+  background: transparent;
+}
+
+.bp5-non-ideal-state {
+  max-width: none;
+}
+
+.bp5-non-ideal-state-visual {
+  margin-bottom: 1rem;
+}
