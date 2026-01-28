@@ -41,7 +41,7 @@ export function evaluateFilter(
     case "$ne":
       return realValue !== expected;
     case "$in":
-      return expected.$in.includes(realValue);
+      return Array.isArray(expected) && expected.includes(realValue);
     case "$isNull":
       return realValue == null;
     case "$startsWith":
