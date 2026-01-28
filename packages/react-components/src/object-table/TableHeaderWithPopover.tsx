@@ -24,31 +24,64 @@ import {
   Unpin,
   VerticalDistribution,
 } from "@blueprintjs/icons";
-import type { ColumnPinningState, SortingState } from "@tanstack/react-table";
+import type {
+  ColumnPinningState,
+  Header,
+  RowData,
+  SortingState,
+} from "@tanstack/react-table";
 import classNames from "classnames";
 import React, { useCallback, useState } from "react";
 import { TableHeaderContent } from "./TableHeaderContent.js";
 import styles from "./TableHeaderWithPopover.module.css";
 
-interface TableHeaderWithPopoverProps {
-  header: any;
+interface HeaderMenuItemProps {
+  onClick: () => void;
+  icon: React.ComponentType<{ className?: string; color?: string }>;
+  label: string;
+  active?: boolean;
+}
+
+function HeaderMenuItem({
+  onClick,
+  icon: Icon,
+  label,
+  active = false,
+}: HeaderMenuItemProps): React.ReactElement {
+  return (
+    <Menu.Item
+      closeOnClick
+      className={classNames(
+        styles.osdkCenterContainer,
+        styles.osdkContentGap,
+        styles.osdkHeaderMenuItem,
+        active && styles.osdkHeaderActiveMenuItem,
+      )}
+      onClick={onClick}
+    >
+      <Icon className={styles.osdkHeaderIcon} color="currentColor" />
+      <span>{label}</span>
+    </Menu.Item>
+  );
+}
+
+interface TableHeaderWithPopoverProps<TData extends RowData> {
+  header: Header<TData, unknown>;
   isColumnPinned: false | "left" | "right";
   setColumnPinning: React.Dispatch<React.SetStateAction<ColumnPinningState>>;
   onSortChange?: (sorting: SortingState) => void;
-  sorting?: SortingState;
   onResetSize?: () => void;
   onColumnConfig?: () => void;
   enableColumnPinningRight?: boolean;
 }
 
-export function TableHeaderWithPopover({
+export function TableHeaderWithPopover<TData extends RowData>({
   header,
   isColumnPinned,
   setColumnPinning,
   onSortChange,
-  sorting = [],
   onResetSize,
-}: TableHeaderWithPopoverProps): React.ReactElement {
+}: TableHeaderWithPopoverProps<TData>): React.ReactElement {
   const [isOpen, setIsOpen] = useState(false);
 
   const handlePinLeft = useCallback(() => {
@@ -71,24 +104,18 @@ export function TableHeaderWithPopover({
 
   const handleSortAscending = useCallback(() => {
     header.column.toggleSorting(false);
-    if (onSortChange) {
-      onSortChange([{ id: header.column.id, desc: false }]);
-    }
+    onSortChange?.([{ id: header.column.id, desc: false }]);
   }, [header.column, onSortChange]);
 
   const handleSortDescending = useCallback(() => {
     header.column.toggleSorting(true);
-    if (onSortChange) {
-      onSortChange([{ id: header.column.id, desc: true }]);
-    }
+    onSortChange?.([{ id: header.column.id, desc: true }]);
   }, [header.column, onSortChange]);
 
   const handleClearAllSorts = useCallback(() => {
     header.column.clearSorting();
-    if (onSortChange) {
-      onSortChange([]);
-    }
-  }, [onSortChange]);
+    onSortChange?.([]);
+  }, [header.column, onSortChange]);
 
   const handleResetSize = useCallback(() => {
     header.column.resetSize();
@@ -158,6 +185,7 @@ export function TableHeaderWithPopover({
             </div>
           )}
           <Menu.Trigger
+            aria-label={`Open header menu for column with id=${header.column.id}`}
             className={classNames(
               styles.osdkCenterContainer,
               styles.osdkHeaderPopoverTrigger,
@@ -174,113 +202,49 @@ export function TableHeaderWithPopover({
               className={styles.osdkHeaderPopup}
             >
               {!isColumnPinned && (
-                <Menu.Item
-                  closeOnClick
-                  className={classNames(
-                    styles.osdkCenterContainer,
-                    styles.osdkContentGap,
-                    styles.osdkHeaderMenuItem,
-                  )}
+                <HeaderMenuItem
                   onClick={handlePinLeft}
-                >
-                  <Pin
-                    className={styles.osdkHeaderIcon}
-                    color={"currentColor"}
-                  />
-                  <span>Pin column</span>
-                </Menu.Item>
+                  icon={Pin}
+                  label="Pin column"
+                />
               )}
 
               {isColumnPinned && (
-                <Menu.Item
-                  closeOnClick
-                  className={classNames(
-                    styles.osdkCenterContainer,
-                    styles.osdkContentGap,
-                    styles.osdkHeaderMenuItem,
-                    styles.osdkHeaderActiveMenuItem,
-                  )}
+                <HeaderMenuItem
                   onClick={handleUnpin}
-                >
-                  <Unpin
-                    className={styles.osdkHeaderIcon}
-                    color={"currentColor"}
-                  />
-                  <span>Unpin Column</span>
-                </Menu.Item>
+                  icon={Unpin}
+                  label="Unpin Column"
+                  active={true}
+                />
               )}
               {isSortable && (
                 <>
-                  <Menu.Item
-                    closeOnClick
-                    className={classNames(
-                      styles.osdkCenterContainer,
-                      styles.osdkContentGap,
-                      styles.osdkHeaderMenuItem,
-                      {
-                        [styles.osdkHeaderActiveMenuItem]: isSorted === "asc",
-                      },
-                    )}
+                  <HeaderMenuItem
                     onClick={handleSortAscending}
-                  >
-                    <SortAlphabetical
-                      className={styles.osdkHeaderIcon}
-                      color={"currentColor"}
-                    />
-                    <span>Sort ascending</span>
-                  </Menu.Item>
-                  <Menu.Item
-                    closeOnClick
-                    className={classNames(
-                      styles.osdkCenterContainer,
-                      styles.osdkContentGap,
-                      styles.osdkHeaderMenuItem,
-                      {
-                        [styles.osdkHeaderActiveMenuItem]: isSorted === "desc",
-                      },
-                    )}
+                    icon={SortAlphabetical}
+                    label="Sort ascending"
+                    active={isSorted === "asc"}
+                  />
+                  <HeaderMenuItem
                     onClick={handleSortDescending}
-                  >
-                    <SortAlphabeticalDesc
-                      className={styles.osdkHeaderIcon}
-                      color={"currentColor"}
-                    />
-                    <span>Sort descending</span>
-                  </Menu.Item>
+                    icon={SortAlphabeticalDesc}
+                    label="Sort descending"
+                    active={isSorted === "desc"}
+                  />
                 </>
               )}
               {!!isSorted && (
-                <Menu.Item
-                  closeOnClick
-                  className={classNames(
-                    styles.osdkCenterContainer,
-                    styles.osdkContentGap,
-                    styles.osdkHeaderMenuItem,
-                  )}
+                <HeaderMenuItem
                   onClick={handleClearAllSorts}
-                >
-                  <Remove
-                    className={styles.osdkHeaderIcon}
-                    color={"currentColor"}
-                  />
-                  <span>Clear all sorts</span>
-                </Menu.Item>
-              )}
-              <Menu.Item
-                closeOnClick
-                className={classNames(
-                  styles.osdkCenterContainer,
-                  styles.osdkContentGap,
-                  styles.osdkHeaderMenuItem,
-                )}
-                onClick={handleResetSize}
-              >
-                <VerticalDistribution
-                  className={styles.osdkHeaderIcon}
-                  color={"currentColor"}
+                  icon={Remove}
+                  label="Clear all sorts"
                 />
-                <span>Reset Column Size</span>
-              </Menu.Item>
+              )}
+              <HeaderMenuItem
+                onClick={handleResetSize}
+                icon={VerticalDistribution}
+                label="Reset Column Size"
+              />
             </Menu.Popup>
           </Menu.Positioner>
         </Menu.Portal>

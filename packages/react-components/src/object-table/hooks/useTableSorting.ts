@@ -32,17 +32,9 @@ interface UseTableSortingProps<
     never
   >,
 > {
-  orderBy?: ObjectTableProps<
-    Q,
-    RDPs,
-    FunctionColumns
-  >["orderBy"];
+  orderBy?: ObjectTableProps<Q, RDPs, FunctionColumns>["orderBy"];
 
-  defaultOrderBy?: ObjectTableProps<
-    Q,
-    RDPs,
-    FunctionColumns
-  >["defaultOrderBy"];
+  defaultOrderBy?: ObjectTableProps<Q, RDPs, FunctionColumns>["defaultOrderBy"];
 
   onOrderByChanged?: ObjectTableProps<
     Q,
@@ -63,32 +55,25 @@ export const useTableSorting = <
     string,
     never
   >,
->(
-  { orderBy, defaultOrderBy, onOrderByChanged }: UseTableSortingProps<
-    Q,
-    RDPs,
-    FunctionColumns
-  >,
-): UseTableSortingResults => {
+>({
+  orderBy,
+  defaultOrderBy,
+  onOrderByChanged,
+}: UseTableSortingProps<Q, RDPs, FunctionColumns>): UseTableSortingResults => {
   // The sorting state in uncontrolled mode
-  const [internalSorting, setInternalSorting] = useState<SortingState>(() => {
-    // Initialize with defaultOrderBy if provided
-    return defaultOrderBy
-      ? convertOrderByToSortingState(defaultOrderBy)
-      : [];
-  });
+  const [internalSorting, setInternalSorting] = useState<SortingState>(() =>
+    defaultOrderBy ? convertOrderByToSortingState(defaultOrderBy) : []
+  );
 
   const isControlled = orderBy !== undefined;
 
   // Sorting state
   // If controlled mode, return the state from orderBy prop
   // If uncontrolled, return the internalSorting state
-  const sortingState: SortingState = useMemo(() => {
-    if (isControlled && orderBy) {
-      return convertOrderByToSortingState(orderBy);
-    }
-    return internalSorting;
-  }, [isControlled, orderBy, internalSorting]);
+  const sortingState: SortingState = useMemo(
+    () => (orderBy ? convertOrderByToSortingState(orderBy) : internalSorting),
+    [orderBy, internalSorting],
+  );
 
   const onSortingChange: OnChangeFn<SortingState> = useCallback(
     (updater) => {
@@ -118,9 +103,9 @@ function convertOrderByToSortingState<Q extends ObjectTypeDefinition>(
     direction: "asc" | "desc";
   }>,
 ): SortingState {
-  return orderBy.map((sort) => ({
-    id: sort.property,
-    desc: sort.direction === "desc",
+  return orderBy.map(({ property, direction }) => ({
+    id: property,
+    desc: direction === "desc",
   }));
 }
 
@@ -130,8 +115,8 @@ function convertSortingStateToOrderBy<Q extends ObjectTypeDefinition>(
   property: PropertyKeys<Q>;
   direction: "asc" | "desc";
 }> {
-  return sorting.map((sort) => ({
-    property: sort.id as PropertyKeys<Q>,
-    direction: sort.desc ? "desc" : "asc",
+  return sorting.map(({ id, desc }) => ({
+    property: id as PropertyKeys<Q>,
+    direction: desc ? "desc" : "asc",
   }));
 }

@@ -20,7 +20,7 @@ import type {
   SimplePropertyDef,
 } from "@osdk/api";
 import type { ColumnPinningState, OnChangeFn } from "@tanstack/react-table";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import type { ObjectTableProps } from "../ObjectTableApi.js";
 import { SELECTION_COLUMN_ID } from "../utils/constants.js";
 
@@ -59,55 +59,43 @@ export const useColumnPinning = <
     string,
     never
   >,
->(
-  { columnDefinitions, hasSelectionColumn, onColumnsPinnedChanged }:
-    UseColumnPinningProps<
-      Q,
-      RDPs,
-      FunctionColumns
-    >,
-): UseColumnPinningResults => {
-  const [columnPinning, setColumnPinning] = useState<ColumnPinningState>({
-    left: [],
-    right: [],
+>({
+  columnDefinitions,
+  hasSelectionColumn,
+  onColumnsPinnedChanged,
+}: UseColumnPinningProps<
+  Q,
+  RDPs,
+  FunctionColumns
+>): UseColumnPinningResults => {
+  const [columnPinning, setColumnPinning] = useState<ColumnPinningState>(() => {
+    const defaultState = getColumnPinningStateFromColumnDefs(columnDefinitions);
+    const selectionCol = hasSelectionColumn ? [SELECTION_COLUMN_ID] : [];
+    return {
+      left: [...selectionCol, ...(defaultState.left ?? [])],
+      right: [...(defaultState.right ?? [])],
+    };
   });
-
-  // Set default column pinning
-  useEffect(() => {
-    const defaultColumnPinningState = getColumnPinningStateFromColumnDefs(
-      columnDefinitions,
-    );
-    const maybePinnedSelectionColumn = hasSelectionColumn
-      ? [SELECTION_COLUMN_ID]
-      : [];
-    setColumnPinning({
-      left: [
-        ...maybePinnedSelectionColumn,
-        ...(defaultColumnPinningState.left ?? []),
-      ],
-      right: [
-        ...(defaultColumnPinningState.right ?? []),
-      ],
-    });
-  }, [columnDefinitions, hasSelectionColumn]);
 
   const onColumnPinningChange: OnChangeFn<ColumnPinningState> = useCallback(
     (updater) => {
-      const newPinning = typeof updater === "function"
-        ? updater(columnPinning)
-        : updater;
+      setColumnPinning((prev) => {
+        const newPinning = typeof updater === "function"
+          ? updater(prev)
+          : updater;
 
-      setColumnPinning(newPinning);
+        if (onColumnsPinnedChanged) {
+          const newStates = convertColumnPinningStateToArray(newPinning);
+          const stateWithoutSelectionCol = newStates.filter(
+            (state) => state.columnId !== SELECTION_COLUMN_ID,
+          );
+          onColumnsPinnedChanged(stateWithoutSelectionCol);
+        }
 
-      if (onColumnsPinnedChanged) {
-        const newStates = convertColumnPinningStateToArray(newPinning);
-        const stateWithoutSelectionCol = newStates.filter(state =>
-          state.columnId !== SELECTION_COLUMN_ID
-        );
-        onColumnsPinnedChanged(stateWithoutSelectionCol);
-      }
+        return newPinning;
+      });
     },
-    [columnPinning, onColumnsPinnedChanged],
+    [onColumnsPinnedChanged],
   );
 
   return { columnPinning, onColumnPinningChange };
@@ -133,8 +121,7 @@ const getColumnPinningStateFromColumnDefs = <
   const columnPinningState: ColumnPinningState = columnDefinitions.reduce<
     ColumnPinningState
   >(
-    (acc, colDef) => {
-      const { locator, pinned } = colDef;
+    (acc, { locator, pinned }) => {
       const colKey: string = locator.id.toString();
       const isPinned = pinned != null && pinned !== "none";
       if (!isPinned) {
@@ -163,28 +150,15 @@ const getColumnPinningStateFromColumnDefs = <
  */
 function convertColumnPinningStateToArray(
   pinningState: ColumnPinningState,
-): Array<{
-  columnId: string;
-  pinned: "left" | "right" | "none";
-}> {
-  const result: Array<{
-    columnId: string;
-    pinned: "left" | "right" | "none";
-  }> = [];
-
-  // Add left pinned columns
-  if (pinningState.left) {
-    pinningState.left.forEach((columnId) => {
-      result.push({ columnId, pinned: "left" });
-    });
-  }
-
-  // Add right pinned columns
-  if (pinningState.right) {
-    pinningState.right.forEach((columnId) => {
-      result.push({ columnId, pinned: "right" });
-    });
-  }
-
-  return result;
+): Array<{ columnId: string; pinned: "left" | "right" | "none" }> {
+  return [
+    ...(pinningState.left ?? []).map((columnId) => ({
+      columnId,
+      pinned: "left" as const,
+    })),
+    ...(pinningState.right ?? []).map((columnId) => ({
+      columnId,
+      pinned: "right" as const,
+    })),
+  ];
 }
