@@ -88,7 +88,7 @@ export function TableHeaderWithPopover({
     if (onSortChange) {
       onSortChange([]);
     }
-  }, [onSortChange]);
+  }, [header.column, onSortChange]);
 
   const handleResetSize = useCallback(() => {
     header.column.resetSize();
@@ -97,13 +97,10 @@ export function TableHeaderWithPopover({
     }
   }, [header.column, onResetSize]);
 
-  const handleInteraction = useCallback(
-    (e: React.MouseEvent) => {
-      e.preventDefault();
-      setIsOpen((prev) => !prev);
-    },
-    [],
-  );
+  const handleInteraction = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsOpen((prev) => !prev);
+  }, []);
 
   const isSorted = header.column.getIsSorted();
   const isSortable = header.column.getCanSort();
@@ -126,10 +123,7 @@ export function TableHeaderWithPopover({
           )}
         >
           {isColumnPinned && (
-            <Pin
-              className={styles.osdkHeaderIcon}
-              color={"currentColor"}
-            />
+            <Pin className={styles.osdkHeaderIcon} color={"currentColor"} />
           )}
           <TableHeaderContent header={header} />
         </div>
@@ -163,16 +157,12 @@ export function TableHeaderWithPopover({
               styles.osdkHeaderPopoverTrigger,
             )}
           >
-            <ChevronDown
-              className={styles.osdkHeaderIcon}
-            />
+            <ChevronDown className={styles.osdkHeaderIcon} />
           </Menu.Trigger>
         </div>
         <Menu.Portal container={document.body}>
           <Menu.Positioner sideOffset={4}>
-            <Menu.Popup
-              className={styles.osdkHeaderPopup}
-            >
+            <Menu.Popup className={styles.osdkHeaderPopup}>
               {!isColumnPinned && (
                 <Menu.Item
                   closeOnClick

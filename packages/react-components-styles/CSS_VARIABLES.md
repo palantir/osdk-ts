@@ -587,30 +587,49 @@ Styling for checkbox components.
 
 Styling for table components including headers, rows, and cells.
 
-#### Border & Layout
+#### Base Border Properties
 
-| Variable                     | Default Value                           | Description        |
-| ---------------------------- | --------------------------------------- | ------------------ |
-| `----bp-surface-borderWidth` | `var(--bp-surface-borderWidth)`         | Table border width |
-| `--osdk-table-border-color`  | `var(--bp-surface-borderColor-default)` | Table border color |
+| Variable                    | Default Value                           | Description                      |
+| --------------------------- | --------------------------------------- | -------------------------------- |
+| `--osdk-table-border-color` | `var(--bp-surface-borderColor-default)` | Base color for all table borders |
+| `--osdk-table-border-width` | `var(--bp-surface-borderWidth)`         | Base width for all table borders |
+
+#### Semantic Border Variables
+
+These variables define the purpose of each border type, making it easier to customize specific borders without affecting others.
+
+| Variable                            | Default Value                                                                   | Description                                                 |
+| ----------------------------------- | ------------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| `--osdk-table-border`               | `var(--osdk-table-border-width) solid var(--osdk-table-border-color)`           | Base table border (outermost edges)                         |
+| `--osdk-table-header-divider`       | `var(--osdk-table-border)`                                                      | Vertical divider between header cells                       |
+| `--osdk-table-cell-divider`         | `var(--osdk-table-border-width) solid transparent`                              | Vertical divider between row cells (transparent by default) |
+| `--osdk-table-row-divider`          | `var(--osdk-table-border)`                                                      | Horizontal divider between rows                             |
+| `--osdk-table-pinned-column-border` | `calc(var(--osdk-table-border-width) * 2) solid var(--osdk-table-border-color)` | Border for pinned columns (thicker for emphasis)            |
 
 #### Header Styling
 
-| Variable                         | Default Value                            | Description                   |
-| -------------------------------- | ---------------------------------------- | ----------------------------- |
-| `--osdk-table-header-bg`         | `var(--bp-palette-gray-100)`             | Table header background color |
-| `--osdk-table-header-fontWeight` | `var(--bp-typography-weight-bold)`       | Header text weight            |
-| `--osdk-table-header-fontSize`   | `var(--bp-typography-size-bodyMedium)`   | Header text size              |
-| `--osdk-table-header-color`      | `var(--bp-typography-colorRest-default)` | Header text color             |
+| Variable                         | Default Value                          | Description                   |
+| -------------------------------- | -------------------------------------- | ----------------------------- |
+| `--osdk-table-header-bg`         | `var(--bp-palette-gray-100)`           | Table header background color |
+| `--osdk-table-header-fontWeight` | `var(--bp-typography-weight-bold)`     | Header text weight            |
+| `--osdk-table-header-fontSize`   | `var(--bp-typography-size-bodyMedium)` | Header text size              |
+| `--osdk-table-header-color`      | `var(--bp-typography-colorMuted)`      | Header text color             |
 
 #### Row Backgrounds
 
-| Variable                        | Default Value                                        | Description                    |
-| ------------------------------- | ---------------------------------------------------- | ------------------------------ |
-| `--osdk-table-row-bg-default`   | `var(--bp-palette-white)`                            | Default row background         |
-| `--osdk-table-row-bg-alternate` | `oklch(from var(--bp-palette-gray-100) l c h / 0.5)` | Primary row background         |
-| `--osdk-table-row-bg-hover`     | `var(--bp-palette-gray-200)`                         | Row hover background           |
-| `--osdk-table-row-bg-active`    | `oklch(from var(--bp-palette-blue-600) l c h / 0.1)` | Active/selected row background |
+| Variable                        | Default Value                                        | Description                               |
+| ------------------------------- | ---------------------------------------------------- | ----------------------------------------- |
+| `--osdk-table-row-bg-default`   | `var(--bp-palette-gray-100)`                         | Default row background                    |
+| `--osdk-table-row-bg-alternate` | (falls back to `--osdk-table-row-bg-default`)        | Alternate row background (zebra striping) |
+| `--osdk-table-row-bg-hover`     | `oklch(from var(--bp-palette-blue-100) l c h / 0.2)` | Row hover background                      |
+| `--osdk-table-row-bg-active`    | `var(--bp-palette-blue-100)`                         | Active/selected row background            |
+
+#### Row Border Colors (Hover/Active States)
+
+| Variable                               | Default Value                   | Description                    |
+| -------------------------------------- | ------------------------------- | ------------------------------ |
+| `--osdk-table-row-border-color-hover`  | `var(--bp-intent-primary-rest)` | Border color for hovered rows  |
+| `--osdk-table-row-border-color-active` | `var(--bp-intent-primary-rest)` | Border color for selected rows |
 
 #### Cell Styling
 
@@ -619,12 +638,6 @@ Styling for table components including headers, rows, and cells.
 | `--osdk-table-cell-padding`  | `calc(var(--bp-surface-spacing) * 3) calc(var(--bp-surface-spacing) * 2)` | Cell padding    |
 | `--osdk-table-cell-fontSize` | `var(--bp-typography-size-bodyMedium)`                                    | Cell text size  |
 | `--osdk-table-cell-color`    | `var(--bp-typography-colorRest-default)`                                  | Cell text color |
-
-#### Active/Focus Indicators
-
-| Variable                               | Default Value                   | Description                            |
-| -------------------------------------- | ------------------------------- | -------------------------------------- |
-| `--osdk-table-row-border-color-active` | `var(--bp-intent-primary-rest)` | Stroke color for active table elements |
 
 ## Creating a Complete Custom Theme
 
@@ -638,7 +651,7 @@ To create a complete custom theme, override the tokens at the appropriate level:
 @layer custom.theme {
   :root {
     /* Override color palettes to change the entire color system */
-    --bp-palette-blue-500: oklch(0.6 0.15 180);  /* Change primary to teal */
+    --bp-palette-blue-500: oklch(0.6 0.15 180); /* Change primary to teal */
 
     /* Or directly override intent colors */
     --bp-intent-primary-rest: var(--bp-palette-green-500);
