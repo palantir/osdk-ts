@@ -1,0 +1,50 @@
+/*
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.nullWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--osdk-filter-null-wrapper-gap);
+}
+
+.nullValueRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--osdk-filter-null-row-padding);
+  border-top: var(--osdk-filter-null-row-border-top);
+}
+
+.nullLabel {
+  display: flex;
+  align-items: center;
+  gap: var(--osdk-filter-null-label-gap);
+  cursor: pointer;
+}
+
+.nullLabelText {
+  font-family: var(--osdk-filter-null-label-font-family);
+  font-size: var(--osdk-filter-null-label-font-size);
+  line-height: var(--osdk-filter-null-label-line-height);
+  color: var(--osdk-filter-null-label-color);
+}
+
+.count {
+  font-family: var(--bp-typography-family-default);
+  font-size: var(--bp-typography-size-bodySmall);
+  font-variant-numeric: tabular-nums;
+  color: var(--bp-typography-colorMuted);
+}
