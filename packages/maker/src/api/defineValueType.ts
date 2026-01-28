@@ -20,6 +20,8 @@ import type {
   DataConstraintWrapper,
   FailureMessage,
   ValueTypeDataConstraint,
+  ValueTypeRid,
+  ValueTypeStatus,
 } from "@osdk/client.unstable";
 import invariant from "tiny-invariant";
 import { OntologyEntityTypeEnum } from "./common/OntologyEntityTypeEnum.js";
@@ -118,6 +120,14 @@ export type ValueTypeDefinition = {
   description?: string;
   type: NewValueTypeDefinition;
   version: string;
+  status?: UserValueTypeStatus;
+};
+
+export type UserValueTypeStatus = "active" | {
+  type: "deprecated";
+  message: string;
+  deadline: string;
+  replacedBy?: ValueTypeRid;
 };
 
 export function defineValueType(
@@ -153,7 +163,7 @@ export function defineValueType(
       displayName: displayName,
       description: description ?? "",
     },
-    status: { type: "active", active: {} },
+    status: convertUserValueTypeStatusToValueTypeStatus(valueTypeDef.status),
     version: version,
     baseType: baseType,
     constraints: constraints,
@@ -162,4 +172,20 @@ export function defineValueType(
   };
   updateOntology(vt);
   return vt;
+}
+
+export function convertUserValueTypeStatusToValueTypeStatus(
+  status: UserValueTypeStatus | undefined,
+): ValueTypeStatus {
+  if (typeof status === "object" && status.type === "deprecated") {
+    return {
+      type: "deprecated",
+      deprecated: {
+        message: status.message,
+        deadline: status.deadline,
+        replacedBy: status.replacedBy,
+      },
+    };
+  }
+  return { type: "active", active: {} };
 }

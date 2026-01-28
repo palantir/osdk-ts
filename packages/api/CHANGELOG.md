@@ -1,5 +1,17 @@
 # @osdk/api
 
+## 2.7.0-beta.12
+
+### Minor Changes
+
+- bb9d25c: Allow requesting rids for OSW updates
+
+## 2.7.0-beta.11
+
+### Minor Changes
+
+- d5cfc38: Add null option to actions to allow clearing data
+
 ## 2.7.0-beta.10
 
 ### Minor Changes

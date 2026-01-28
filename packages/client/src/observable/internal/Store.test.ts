@@ -1082,7 +1082,13 @@ describe(Store, () => {
           await waitForCall(ifaceSub);
           expectSingleListCallAndClear(
             ifaceSub,
-            employeesAsServerReturns,
+            employeesAsServerReturns.map(e =>
+              expect.objectContaining({
+                $apiName: "FooInterface",
+                $objectType: "Employee",
+                $primaryKey: e.$primaryKey,
+              })
+            ),
             {
               status: "loaded",
             },
@@ -1095,6 +1101,73 @@ describe(Store, () => {
           expect(listSub1.error).not.toHaveBeenCalled();
           expect(ifaceSub.next).not.toHaveBeenCalled();
           expect(ifaceSub.error).not.toHaveBeenCalled();
+        });
+
+        it("cache stores raw objects when loading via interface", async () => {
+          defer(
+            cache.lists.observe({
+              type: FooInterface,
+              orderBy: {},
+              mode: "force",
+            }, ifaceSub),
+          );
+          await waitForCall(ifaceSub, 2);
+
+          const pk = employeesAsServerReturns[0].$primaryKey as number;
+          const cached = getObject(cache, "Employee", pk);
+          expect(cached?.$apiName).toBe("Employee");
+          expect(cached?.$objectType).toBe("Employee");
+        });
+
+        it("interface queries return interface view while cache stores raw object", async () => {
+          defer(
+            cache.lists.observe({
+              type: FooInterface,
+              orderBy: {},
+              mode: "force",
+            }, ifaceSub),
+          );
+          await waitForCall(ifaceSub, 2);
+
+          const ifacePayload = ifaceSub.next.mock.calls[1][0];
+          expect(ifacePayload?.resolvedList?.[0]?.$apiName).toBe(
+            "FooInterface",
+          );
+          expect(ifacePayload?.resolvedList?.[0]?.$objectType).toBe("Employee");
+
+          const pk = employeesAsServerReturns[0].$primaryKey as number;
+          const cached = getObject(cache, "Employee", pk);
+          expect(cached?.$apiName).toBe("Employee");
+        });
+
+        it("direct query after interface query preserves interface $apiName", async () => {
+          const objSub = mockSingleSubCallback();
+
+          defer(
+            cache.lists.observe({
+              type: FooInterface,
+              orderBy: {},
+              mode: "force",
+            }, ifaceSub),
+          );
+          await waitForCall(ifaceSub, 2);
+
+          expect(ifaceSub.next.mock.calls[1][0]?.resolvedList?.[0]?.$apiName)
+            .toBe("FooInterface");
+
+          defer(
+            cache.objects.observe({
+              apiName: Employee,
+              pk: employeesAsServerReturns[0].$primaryKey,
+              mode: "force",
+            }, objSub),
+          );
+          await waitForCall(objSub, 2);
+
+          expect(
+            ifaceSub.next.mock.calls.at(-1)?.[0]?.resolvedList?.[0]?.$apiName,
+          )
+            .toBe("FooInterface");
         });
 
         it("subsequent load", async () => {

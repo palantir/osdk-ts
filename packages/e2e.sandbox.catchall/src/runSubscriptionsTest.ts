@@ -70,7 +70,7 @@ function normalSubscription() {
           });
         },
       },
-      { properties: ["stringProperty"] },
+      { properties: ["stringProperty"], includeRid: true },
     );
 }
 

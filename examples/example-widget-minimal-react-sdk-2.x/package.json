@@ -18,6 +18,7 @@
     "@blueprintjs/core": "^5.19.1",
     "@osdk/widget.client": "workspace:*",
     "@osdk/widget.client-react": "workspace:*",
+    "clsx": "^2.1.1",
     "react": "^18",
     "react-dom": "^18",
     "react-router-dom": "^6.30.1"
