@@ -190,4 +190,20 @@ describe("Timeseries", () => {
       expect.objectContaining({ value: -1 }),
     ]);
   });
+
+  it("getAll points works with absolute range in TimeSeriesQueryV2", async () => {
+    const employee = await client(Employee).fetchOne(50030);
+    expect(employee.$primaryKey).toEqual(50030);
+    const points = await employee.employeeStatus?.getAllPoints({
+      range: {
+        startTime: "2013-03-12T12:00:00.000Z",
+        endTime: "2014-04-14T12:00:00.000Z",
+      },
+    });
+    expect(points).toBeDefined();
+    expect(points!).toEqual([{
+      time: "2013-03-13",
+      value: 20,
+    }, { time: "2014-04-14", value: 30 }]);
+  });
 });

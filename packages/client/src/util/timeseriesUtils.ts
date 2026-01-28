@@ -14,8 +14,16 @@
  * limitations under the License.
  */
 
-import type { TimeSeriesQuery } from "@osdk/api";
-import { TimeseriesDurationMapping } from "@osdk/api";
+import type {
+  TimeSeriesQuery,
+  TimeSeriesQueryWrapper,
+  TimeSeriesRange,
+} from "@osdk/api";
+import {
+  isLegacyTimeSeriesQuery,
+  isTimeSeriesQueryV2,
+  TimeseriesDurationMapping,
+} from "@osdk/api";
 import type { TimeRange } from "@osdk/foundry.ontologies";
 import { iterateReadableStream, parseStreamedResponse } from "./streamutils.js";
 
@@ -44,6 +52,34 @@ export function getTimeRange(body: TimeSeriesQuery): TimeRange {
         unit: TimeseriesDurationMapping[body.$unit],
       },
     };
+}
+
+export function parseTimeSeriesRangeV2(
+  range: TimeSeriesRange,
+): TimeRange {
+  return {
+    type: "absolute",
+    startTime: range.$startTime,
+    endTime: range.$endTime,
+  };
+}
+
+export function parseTimeSeriesQuery(query: TimeSeriesQueryWrapper): {
+  range?: TimeRange;
+} {
+  if (isLegacyTimeSeriesQuery(query)) {
+    return {
+      range: getTimeRange(query),
+    };
+  }
+
+  if (isTimeSeriesQueryV2(query)) {
+    return {
+      range: query.$range ? parseTimeSeriesRangeV2(query.$range) : undefined,
+    };
+  }
+
+  return {};
 }
 
 export async function* asyncIterPointsHelper<
