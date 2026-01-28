@@ -14,20 +14,25 @@
  * limitations under the License.
  */
 
+type FilterValue = string | boolean | number;
+
 /**
- * Coerces a filter value (string | boolean | number) to a string for display.
- * Returns undefined if the value is null or undefined.
+ * Coerces a filter value to a string for display.
+ * Returns undefined if the value is undefined.
  */
-export function coerceToString(value: string | boolean | number | undefined | null): string | undefined {
-  if (value == null) return undefined;
+export function coerceToString(
+  value: FilterValue | undefined,
+): string | undefined {
+  if (value === undefined) return undefined;
   return String(value);
 }
 
 /**
- * Coerces an array of filter values (string | boolean | number) to string[] for display.
- * Filters out null/undefined values and converts all others to strings.
+ * Coerces an array of filter values to string[] for display.
  */
-export function coerceToStringArray(values: Array<string | boolean | number> | undefined): string[] {
-  if (!values) return [];
+export function coerceToStringArray(
+  values: FilterValue[] | undefined,
+): string[] {
+  if (values === undefined) return [];
   return values.map((v) => String(v));
 }
