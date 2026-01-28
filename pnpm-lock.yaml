@@ -10,7 +10,7 @@ catalogs:
       specifier: 0.6.0
       version: 0.6.0
     '@osdk/docs-spec-sdk':
-      specifier: ^0.16.0
+      specifier: 0.16.0
       version: 0.16.0
     '@osdk/foundry':
       specifier: 2.45.0
