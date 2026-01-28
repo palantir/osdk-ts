@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import classnames from "classnames";
 import React, { memo } from "react";
 import { Switch } from "../../../base-components/switch/Switch.js";
 import styles from "./ToggleInput.module.css";
@@ -33,9 +34,11 @@ function ToggleInputInner({
   className,
   style,
 }: ToggleInputProps): React.ReactElement {
-  const rootClassName = className
-    ? `filter-input--toggle ${styles.toggleInput} ${className}`
-    : `filter-input--toggle ${styles.toggleInput}`;
+  const rootClassName = classnames(
+    "filter-input--toggle",
+    styles.toggleInput,
+    className,
+  );
 
   return (
     <div className={rootClassName} style={style} data-enabled={enabled}>
