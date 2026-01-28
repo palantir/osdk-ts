@@ -154,12 +154,26 @@ export interface UseOsdkListResult<
   T extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
 > {
+  /**
+   * Function to fetch more pages (undefined if no more pages)
+   */
   fetchMore: (() => Promise<void>) | undefined;
+
+  /**
+   * The fetched data with derived properties
+   */
   data:
     | Osdk.Instance<T, "$allBaseProperties", PropertyKeys<T>, RDPs>[]
     | undefined;
+
+  /**
+   * Whether data is currently being loaded
+   */
   isLoading: boolean;
 
+  /**
+   * Any error that occurred during fetching
+   */
   error: Error | undefined;
 
   /**
@@ -170,6 +184,11 @@ export interface UseOsdkListResult<
    * do that on a per object basis with useOsdkObject
    */
   isOptimistic: boolean;
+
+  /**
+   * The total count of objects matching the query (if available from the API)
+   */
+  totalCount?: string;
 }
 
 declare const process: {
@@ -311,5 +330,6 @@ export function useOsdkObjects<
         || !listPayload)
       : false,
     isOptimistic: listPayload?.isOptimistic ?? false,
+    totalCount: listPayload?.totalCount,
   };
 }
