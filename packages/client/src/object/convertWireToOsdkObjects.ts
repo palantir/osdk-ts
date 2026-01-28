@@ -271,7 +271,7 @@ export async function convertWireToOsdkObjects2(
     );
     if (
       interfaceApiName && isInterfaceScoped
-    ) osdkObject = osdkObject.$as(interfaceApiName);
+    ) osdkObject = { ...osdkObject, ...osdkObject.$as(interfaceApiName) };
 
     ret.push(osdkObject);
   }

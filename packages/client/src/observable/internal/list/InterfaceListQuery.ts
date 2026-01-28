@@ -68,7 +68,24 @@ export class InterfaceListQuery extends ListQuery {
   protected async postProcessFetchedData(
     data: Osdk.Instance<any>[],
   ): Promise<Osdk.Instance<any>[]> {
-    return reloadDataAsFullObjects(this.store.client, data);
+    // No post-processing
+    return data;
+  }
+
+  protected createPayload(
+    params: CollectionConnectableParams,
+  ): ListPayload {
+    // No $as casting
+    const resolvedList = params.resolvedData;
+
+    return {
+      resolvedList,
+      isOptimistic: params.isOptimistic,
+      fetchMore: this.fetchMore,
+      hasMore: this.nextPageToken != null,
+      status: params.status,
+      lastUpdated: params.lastUpdated,
+    };
   }
 
   protected createPayload(
