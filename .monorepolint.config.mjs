@@ -291,22 +291,12 @@ const archetypeRules = archetypes(
     "reactLibrary",
     [
       "@osdk/widget.client-react",
+      "@osdk/react",
       "@osdk/react-components",
     ],
     {
       ...LIBRARY_RULES,
       react: true,
-    },
-  )
-  .addArchetype(
-    "reactLibraryWithDocs",
-    [
-      "@osdk/react",
-    ],
-    {
-      ...LIBRARY_RULES,
-      react: true,
-      extraPublishFiles: ["AGENTS.md", "docs"],
     },
   )
   .addArchetype(
