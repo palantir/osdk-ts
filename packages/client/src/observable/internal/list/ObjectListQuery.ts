@@ -16,6 +16,7 @@
 
 import type {
   DerivedProperty,
+  InterfaceDefinition,
   ObjectSet,
   ObjectTypeDefinition,
   Osdk,
@@ -45,10 +46,18 @@ export class ObjectListQuery extends ListQuery {
     const pivotInfo = this.cacheKey.otherKeys[PIVOT_IDX];
 
     if (pivotInfo != null) {
-      const sourceSet = store.client({
-        type: "object",
-        apiName: pivotInfo.sourceType,
-      } as ObjectTypeDefinition);
+      // Use the source type kind from pivot info (can be "object" or "interface")
+      // Cast to ObjectSet because runtime supports pivotTo for both types
+      // but the type system only exposes it on ObjectSet<ObjectTypeDefinition>
+      const sourceSet = (pivotInfo.sourceTypeKind === "interface"
+        ? store.client({
+          type: "interface",
+          apiName: pivotInfo.sourceType,
+        } as InterfaceDefinition)
+        : store.client({
+          type: "object",
+          apiName: pivotInfo.sourceType,
+        } as ObjectTypeDefinition)) as ObjectSet<ObjectTypeDefinition>;
 
       let objectSet = sourceSet.pivotTo(pivotInfo.linkName);
 
