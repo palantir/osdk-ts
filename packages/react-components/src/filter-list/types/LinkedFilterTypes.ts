@@ -102,24 +102,3 @@ export interface LinkedPropertyFilterDefinition<
    */
   isVisible?: boolean;
 }
-
-/**
- * Display mode for linked filters
- *
- * - "inline": Show alongside non-linked filters in the main list
- * - "grouped": Group by link type with collapsible sections
- */
-export type LinkedFilterDisplayMode = "inline" | "grouped";
-
-/**
- * Configuration for a group of linked filters
- */
-export interface LinkedFilterGroupConfig<
-  Q extends ObjectTypeDefinition,
-  L extends LinkNames<Q> = LinkNames<Q>,
-> {
-  linkName: L;
-  displayMode: LinkedFilterDisplayMode;
-  collapsedByDefault?: boolean;
-  groupLabel?: string;
-}
