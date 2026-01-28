@@ -19,6 +19,7 @@ import type { FilterDefinitionUnion } from "../FilterListApi.js";
 import type {
   ContainsTextFilterState,
   DateRangeFilterState,
+  ExactMatchFilterState,
   FilterComponentType,
   FilterState,
   NumberRangeFilterState,
@@ -200,5 +201,19 @@ export function createDateRangeState(
     minValue,
     maxValue,
     includeNull: options?.includeNull,
+  };
+}
+
+/**
+ * Helper to create an ExactMatchFilterState
+ */
+export function createExactMatchState(
+  values: Array<string | boolean>,
+  options?: { isExcluding?: boolean },
+): ExactMatchFilterState<string | boolean> {
+  return {
+    type: "EXACT_MATCH",
+    values,
+    isExcluding: options?.isExcluding,
   };
 }
