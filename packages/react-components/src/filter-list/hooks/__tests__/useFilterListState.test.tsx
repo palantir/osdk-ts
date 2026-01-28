@@ -60,101 +60,95 @@ describe("useFilterListState", () => {
 
   it("initializes filter states from filterState for property filters", () => {
     const initialState = createCheckboxListState([]);
+    const nameDef = createPropertyFilterDef(
+      "name",
+      "CHECKBOX_LIST",
+      initialState,
+    );
     const props = createProps({
-      filterDefinitions: [
-        createPropertyFilterDef("name", "CHECKBOX_LIST", initialState),
-      ],
+      filterDefinitions: [nameDef],
     });
     const { result } = renderHook(() => useFilterListState(props));
-    expect(result.current.filterStates.get("name:0")).toEqual(initialState);
+    expect(result.current.filterStates.get(nameDef)).toEqual(initialState);
   });
 
   it("updates filter state via setFilterState", () => {
+    const nameDef = createPropertyFilterDef(
+      "name",
+      "CHECKBOX_LIST",
+      createCheckboxListState([]),
+    );
     const props = createProps({
-      filterDefinitions: [
-        createPropertyFilterDef(
-          "name",
-          "CHECKBOX_LIST",
-          createCheckboxListState([]),
-        ),
-      ],
+      filterDefinitions: [nameDef],
     });
     const { result } = renderHook(() => useFilterListState(props));
     act(() => {
       result.current.setFilterState(
-        "name:0",
+        nameDef,
         createCheckboxListState(["selected"]),
       );
     });
-    expect(result.current.filterStates.get("name:0")).toEqual(
+    expect(result.current.filterStates.get(nameDef)).toEqual(
       createCheckboxListState(["selected"]),
     );
   });
 
   it("calls onFilterStateChanged callback", () => {
     const onFilterStateChanged = vi.fn();
+    const nameDef = createPropertyFilterDef(
+      "name",
+      "CHECKBOX_LIST",
+      createCheckboxListState([]),
+    );
     const props = createProps({
-      filterDefinitions: [
-        createPropertyFilterDef(
-          "name",
-          "CHECKBOX_LIST",
-          createCheckboxListState([]),
-        ),
-      ],
+      filterDefinitions: [nameDef],
       onFilterStateChanged,
     });
     const { result } = renderHook(() => useFilterListState(props));
     const newState = createCheckboxListState(["selected"]);
     act(() => {
-      result.current.setFilterState("name:0", newState);
+      result.current.setFilterState(nameDef, newState);
     });
-    expect(onFilterStateChanged).toHaveBeenCalledWith("name:0", newState);
+    expect(onFilterStateChanged).toHaveBeenCalledWith(nameDef, newState);
   });
 
   it("builds whereClause from filter states", () => {
+    const nameDef = createPropertyFilterDef(
+      "name",
+      "CHECKBOX_LIST",
+      createCheckboxListState([]),
+    );
     const props = createProps({
-      filterDefinitions: [
-        createPropertyFilterDef(
-          "name",
-          "CHECKBOX_LIST",
-          createCheckboxListState([]),
-        ),
-      ],
+      filterDefinitions: [nameDef],
     });
     const { result } = renderHook(() => useFilterListState(props));
     act(() => {
-      result.current.setFilterState(
-        "name:0",
-        createCheckboxListState(["John"]),
-      );
+      result.current.setFilterState(nameDef, createCheckboxListState(["John"]));
     });
     expect(result.current.whereClause).toEqual({ name: { $in: ["John"] } });
   });
 
   it("handles multiple filter definitions", () => {
+    const nameDef = createPropertyFilterDef(
+      "name",
+      "CHECKBOX_LIST",
+      createCheckboxListState([]),
+    );
+    const activeDef = createPropertyFilterDef(
+      "active",
+      "TOGGLE",
+      createToggleState(false),
+    );
     const props = createProps({
-      filterDefinitions: [
-        createPropertyFilterDef(
-          "name",
-          "CHECKBOX_LIST",
-          createCheckboxListState([]),
-        ),
-        createPropertyFilterDef("active", "TOGGLE", createToggleState(false)),
-      ],
+      filterDefinitions: [nameDef, activeDef],
     });
     const { result } = renderHook(() => useFilterListState(props));
     act(() => {
-      result.current.setFilterState(
-        "name:0",
-        createCheckboxListState(["John"]),
-      );
-      result.current.setFilterState("active:1", createToggleState(true));
+      result.current.setFilterState(nameDef, createCheckboxListState(["John"]));
+      result.current.setFilterState(activeDef, createToggleState(true));
     });
     expect(result.current.whereClause).toEqual({
-      $and: [
-        { name: { $in: ["John"] } },
-        { active: true },
-      ],
+      $and: [{ name: { $in: ["John"] } }, { active: true }],
     });
   });
 });

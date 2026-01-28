@@ -16,17 +16,22 @@
 
 import type { ObjectTypeDefinition, WhereClause } from "@osdk/api";
 import { useCallback, useMemo, useRef, useState } from "react";
-import type { FilterKey, FilterListProps } from "../FilterListApi.js";
+import type {
+  FilterDefinitionUnion,
+  FilterListProps,
+} from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
 import type { LinkedPropertyFilterState } from "../types/LinkedFilterTypes.js";
 import { assertUnreachable } from "../utils/assertUnreachable.js";
 import { buildWhereClause } from "../utils/filterStateToWhereClause.js";
 import { filterHasActiveState } from "../utils/filterValues.js";
-import { getFilterKey } from "../utils/getFilterKey.js";
 
 export interface UseFilterListStateResult<Q extends ObjectTypeDefinition> {
-  filterStates: Map<string, FilterState>;
-  setFilterState: (key: string, state: FilterState) => void;
+  filterStates: Map<FilterDefinitionUnion<Q>, FilterState>;
+  setFilterState: (
+    definition: FilterDefinitionUnion<Q>,
+    state: FilterState,
+  ) => void;
   whereClause: WhereClause<Q>;
   activeFilterCount: number;
   reset: () => void;
@@ -34,26 +39,23 @@ export interface UseFilterListStateResult<Q extends ObjectTypeDefinition> {
 
 /**
  * Build initial states from filter definitions.
+ * Uses filter definition objects as keys (object identity).
  */
 function buildInitialStates<Q extends ObjectTypeDefinition>(
   definitions: FilterListProps<Q>["filterDefinitions"],
-): Map<string, FilterState> {
-  const states = new Map<string, FilterState>();
+): Map<FilterDefinitionUnion<Q>, FilterState> {
+  const states = new Map<FilterDefinitionUnion<Q>, FilterState>();
 
   if (!definitions) {
     return states;
   }
 
-  for (let i = 0; i < definitions.length; i++) {
-    const definition = definitions[i];
-    const filterKey = getFilterKey(definition);
-    const instanceKey = `${filterKey}:${i}`;
-
+  for (const definition of definitions) {
     switch (definition.type) {
       case "property": {
         const state = definition.filterState;
         if (state) {
-          states.set(instanceKey, state);
+          states.set(definition, state);
         }
         break;
       }
@@ -62,7 +64,7 @@ function buildInitialStates<Q extends ObjectTypeDefinition>(
       case "custom": {
         const state = definition.defaultFilterState;
         if (state) {
-          states.set(instanceKey, state);
+          states.set(definition, state);
         }
         break;
       }
@@ -73,7 +75,7 @@ function buildInitialStates<Q extends ObjectTypeDefinition>(
             type: "LINKED_PROPERTY",
             linkedFilterState: innerState,
           };
-          states.set(instanceKey, state);
+          states.set(definition, state);
         }
         break;
       }
@@ -99,10 +101,8 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
   const objectType = objectSet.$objectSetInternals.def;
 
   const [internalFilterStates, setInternalFilterStates] = useState<
-    Map<string, FilterState>
-  >(
-    () => buildInitialStates(filterDefinitions),
-  );
+    Map<FilterDefinitionUnion<Q>, FilterState>
+  >(() => buildInitialStates(filterDefinitions));
 
   const filterStates = internalFilterStates;
 
@@ -120,12 +120,12 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
   onFilterClauseChangedRef.current = onFilterClauseChanged;
 
   const setFilterState = useCallback(
-    (key: string, state: FilterState) => {
+    (definition: FilterDefinitionUnion<Q>, state: FilterState) => {
       let newWhereClause: WhereClause<Q> | undefined;
 
       setInternalFilterStates((prev) => {
         const next = new Map(prev);
-        next.set(key, state);
+        next.set(definition, state);
 
         // Compute inside updater for access to 'next', store for callback outside
         newWhereClause = buildWhereClause(
@@ -142,8 +142,7 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
       if (newWhereClause !== undefined) {
         onFilterClauseChangedRef.current?.(newWhereClause);
       }
-      // Cast is safe: keys are derived from filter definitions via getFilterKey()
-      onFilterStateChanged?.(key as FilterKey<Q>, state);
+      onFilterStateChanged?.(definition, state);
     },
     [onFilterStateChanged],
   );
