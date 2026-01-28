@@ -107,7 +107,9 @@ export interface ObserveListOptions<
   pivotTo?: string;
 }
 
-export interface ObserveObjectCallbackArgs<T extends ObjectTypeDefinition> {
+export interface ObserveObjectCallbackArgs<
+  T extends ObjectTypeDefinition | InterfaceDefinition,
+> {
   object: Osdk.Instance<T> | undefined;
   isOptimistic: boolean;
   status: Status;
@@ -222,9 +224,9 @@ export interface ObserveLinkCallbackArgs<
  */
 export interface ObservableClient extends ObserveLinks {
   /**
-   * Observe a single object with automatic updates when it changes.
+   * Observe a single object or interface instance with automatic updates when it changes.
    *
-   * @param apiName - The object type definition or name
+   * @param apiName - The object type or interface definition, or its API name
    * @param pk - The object's primary key
    * @param options - Observation options including deduplication interval
    * @param subFn - Observer that receives object state updates
@@ -236,7 +238,7 @@ export interface ObservableClient extends ObserveLinks {
    * - Updates when the object changes
    * - Error state if fetch fails
    */
-  observeObject<T extends ObjectTypeDefinition>(
+  observeObject<T extends ObjectTypeDefinition | InterfaceDefinition>(
     apiName: T["apiName"] | T,
     pk: PrimaryKeyType<T>,
     options: ObserveOptions,

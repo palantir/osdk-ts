@@ -14,13 +14,20 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition, Osdk, PrimaryKeyType } from "@osdk/api";
+import type {
+  InterfaceDefinition,
+  ObjectTypeDefinition,
+  Osdk,
+  PrimaryKeyType,
+} from "@osdk/api";
 import type { ObserveObjectCallbackArgs } from "@osdk/client/unstable-do-not-use";
 import React from "react";
 import { makeExternalStore } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
 
-export interface UseOsdkObjectResult<Q extends ObjectTypeDefinition> {
+export interface UseOsdkObjectResult<
+  Q extends ObjectTypeDefinition | InterfaceDefinition,
+> {
   object: Osdk.Instance<Q> | undefined;
   isLoading: boolean;
 
@@ -37,18 +44,22 @@ export interface UseOsdkObjectResult<Q extends ObjectTypeDefinition> {
  * @param obj an existing `Osdk.Instance` object to get metadata for.
  * @param enabled Enable or disable the query (defaults to true)
  */
-export function useOsdkObject<Q extends ObjectTypeDefinition>(
+export function useOsdkObject<
+  Q extends ObjectTypeDefinition | InterfaceDefinition,
+>(
   obj: Osdk.Instance<Q>,
   enabled?: boolean,
 ): UseOsdkObjectResult<Q>;
 /**
- * Loads an object by type and primary key.
+ * Loads an object or interface instance by type and primary key.
  *
- * @param type
- * @param primaryKey
+ * @param type The object type or interface definition
+ * @param primaryKey The primary key of the object
  * @param enabled Enable or disable the query (defaults to true)
  */
-export function useOsdkObject<Q extends ObjectTypeDefinition>(
+export function useOsdkObject<
+  Q extends ObjectTypeDefinition | InterfaceDefinition,
+>(
   type: Q,
   primaryKey: PrimaryKeyType<Q>,
   enabled?: boolean,
@@ -56,7 +67,9 @@ export function useOsdkObject<Q extends ObjectTypeDefinition>(
 /*
     Implementation of useOsdkObject
  */
-export function useOsdkObject<Q extends ObjectTypeDefinition>(
+export function useOsdkObject<
+  Q extends ObjectTypeDefinition | InterfaceDefinition,
+>(
   ...args:
     | [obj: Osdk.Instance<Q>, enabled?: boolean]
     | [type: Q, primaryKey: PrimaryKeyType<Q>, enabled?: boolean]
