@@ -170,6 +170,11 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
   onReset?: () => void;
 
   /**
+   * Show add filter button at bottom
+   */
+  showAddFilterButton?: boolean;
+
+  /**
    * Available filter templates for the "Add filter" menu.
    * When provided along with onFilterAdded, clicking the add button
    * shows a popover with these templates organized by category.
@@ -181,6 +186,14 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
    * The consumer should create a new filter definition and add it to filterDefinitions.
    */
   onFilterTemplateSelected?: (template: FilterTemplate) => void;
+
+  /**
+   * Position of the add filter button
+   * - "fixed": Fixed at the bottom of the panel
+   * - "inline": Scrolls with the filter list content
+   * @default "fixed"
+   */
+  addFilterPosition?: "fixed" | "inline";
 
   /**
    * Show count of active filters in header

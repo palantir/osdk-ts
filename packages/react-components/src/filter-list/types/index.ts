@@ -16,5 +16,7 @@
 
 export * from "./AddFilterMenuTypes.js";
 export * from "./CustomRendererTypes.js";
+export * from "./FilterDisplayTypes.js";
+export * from "./FilterPanelTypes.js";
 export * from "./KeywordSearchTypes.js";
 export * from "./LinkedFilterTypes.js";
