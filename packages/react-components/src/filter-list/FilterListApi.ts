@@ -106,11 +106,11 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
   /**
    * Called when filter state changes
    *
-   * @param filterKey The key of the updated filter
+   * @param definition The filter definition whose state changed
    * @param newState The updated filter state
    */
   onFilterStateChanged?: (
-    filterKey: FilterKey<Q>,
+    definition: FilterDefinitionUnion<Q>,
     newState: FilterStateType,
   ) => void;
 
