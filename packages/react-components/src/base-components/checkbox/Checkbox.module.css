@@ -14,20 +14,24 @@
  * limitations under the License.
  */
 
-.osdkCheckboxRoot{
+.osdkCheckboxRoot {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: calc(var(--osdk-checkbox-icon-size) + var(--osdk-checkbox-padding) * 2);
-  min-height: calc(var(--osdk-checkbox-icon-size) + var(--osdk-checkbox-padding) * 2);
+  min-width: calc(
+    var(--osdk-checkbox-icon-size) + var(--osdk-checkbox-padding) * 2
+  );
+  min-height: calc(
+    var(--osdk-checkbox-icon-size) + var(--osdk-checkbox-padding) * 2
+  );
   padding: var(--osdk-checkbox-padding);
   box-sizing: border-box;
   cursor: pointer;
   border-radius: var(--bp-surface-borderRadius);
+  border: var(--osdk-checkbox-border);
 
   &[data-unchecked] {
     background-color: var(--osdk-checkbox-bg);
-    border: var(--osdk-checkbox-border);
 
     &:hover {
       background-color: var(--osdk-checkbox-bg-hover);
@@ -38,7 +42,8 @@
     }
   }
 
-  &[data-checked], &[data-indeterminate] {
+  &[data-checked],
+  &[data-indeterminate] {
     background-color: var(--osdk-checkbox-bg-checked);
 
     &:hover {
@@ -57,9 +62,6 @@
 }
 
 .osdkCheckboxIndicator {
-  display: flex;
-  align-items: center;
-  justify-content: center;
   color: var(--osdk-checkbox-checked-foreground);
   width: var(--osdk-checkbox-icon-size);
   height: var(--osdk-checkbox-icon-size);

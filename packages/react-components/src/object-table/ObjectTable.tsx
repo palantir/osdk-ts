@@ -155,6 +155,7 @@ export function ObjectTable<
       onRowClick={props.onRowClick}
       rowHeight={props.rowHeight}
       renderCellContextMenu={onRenderCellContextMenu}
+      className={props.className}
     />
   );
 }
