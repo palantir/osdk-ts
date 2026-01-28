@@ -107,14 +107,12 @@ export function convertObject(
         interfaceTypeApiName: impl.implements.apiName,
         linksV2: {},
         propertiesV2: Object.fromEntries(impl.propertyMapping
-        .map(
-          mappings => [mappings.interfaceProperty,
-            {
+          .map(
+            mappings => [mappings.interfaceProperty, {
               type: "propertyTypeRid",
               propertyTypeRid: mappings.mapsTo,
-            }
-          ]
-        )),
+            }],
+          )),
         properties: {},
       })),
       allImplementsInterfaces: {},
