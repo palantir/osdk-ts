@@ -205,13 +205,8 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
         break;
       }
 
-<<<<<<< HEAD
       case "HAS_LINK": {
-        if (state.type !== "HAS_LINK") {
-=======
-      case "hasLink": {
         if (state.type !== "hasLink") {
->>>>>>> fcc29fd1e (address comments)
           if (process.env.NODE_ENV !== "production") {
             // eslint-disable-next-line no-console
             console.warn(
@@ -236,13 +231,8 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
         break;
       }
 
-<<<<<<< HEAD
       case "KEYWORD_SEARCH": {
-        if (state.type !== "KEYWORD_SEARCH") {
-=======
-      case "keywordSearch": {
         if (state.type !== "keywordSearch") {
->>>>>>> fcc29fd1e (address comments)
           if (process.env.NODE_ENV !== "production") {
             // eslint-disable-next-line no-console
             console.warn(
@@ -307,13 +297,8 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
         break;
       }
 
-<<<<<<< HEAD
       case "CUSTOM": {
-        if (state.type !== "CUSTOM") {
-=======
-      case "custom": {
         if (state.type !== "custom") {
->>>>>>> fcc29fd1e (address comments)
           if (process.env.NODE_ENV !== "production") {
             // eslint-disable-next-line no-console
             console.warn(
