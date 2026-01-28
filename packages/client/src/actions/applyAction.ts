@@ -138,7 +138,7 @@ export async function applyAction<
           ? await remapBatchActionParams(
             parameters,
             client,
-            await client.ontologyProvider.getActionDefinition(action.apiName),
+            action.parameters,
           )
           : [],
         options: {
@@ -163,7 +163,7 @@ export async function applyAction<
             CompileTimeActionMetadata<AD>["parameters"]
           >,
           client,
-          await client.ontologyProvider.getActionDefinition(action.apiName),
+          action.parameters,
         ),
         options: {
           mode: (options as ApplyActionOptions)?.$validateOnly
