@@ -17,10 +17,17 @@
 import type {
   OntologyIrObjectTypeDatasourceDefinition,
   PropertyTypeMappingInfo,
+  OntologyIrPropertySecurityGroup,
+  OntologyIrPropertySecurityGroups,
+  OntologyIrSecurityGroupGranularCondition,
+  OntologyIrSecurityGroupGranularSecurityDefinition,
   RetentionPolicy,
 } from "@osdk/client.unstable";
+import invariant from "tiny-invariant";
 import type { ObjectPropertyType } from "../../api/object/ObjectPropertyType.js";
 import type { ObjectType } from "../../api/object/ObjectType.js";
+import type { ObjectSecurityPolicy, PropertySecurityGroup } from "../../api/object/ObjectTypeDatasourceDefinition.js";
+import type { SecurityConditionDefinition } from "../../api/object/SecurityCondition.js";
 
 export function convertDatasourceDefinition(
   objectType: ObjectType,
@@ -58,6 +65,18 @@ export function convertDatasourceDefinition(
         },
       };
     case "dataset":
+      if ("objectSecuirityPolicy" in baseDatasource || "propertySecurityGroups" in baseDatasource) {
+        return {
+          type: "datasetV3",
+          datasetV3: {
+            datasetRid: objectType.apiName,
+            propertyMapping: buildPropertyMapping(properties),
+            branchId: "master",
+            propertySecurityGroups: (baseDatasource.objectSecurityPolicy || baseDatasource.propertySecurityGroups)
+            ? convertPropertySecurityGroups(properties, objectType.primaryKeyPropertyApiName, baseDatasource.objectSecurityPolicy, baseDatasource.propertySecurityGroups) : undefined,
+          }
+        }
+      }
     default:
       return {
         type: "datasetV2",
@@ -67,6 +86,152 @@ export function convertDatasourceDefinition(
         },
       };
   }
+}
+
+function convertPropertySecurityGroups(
+  properties: ObjectPropertyType[],
+  primaryKeyPropertyApiName: string,
+  objectSecurityPolicy?: ObjectSecurityPolicy,
+  propertySecurityGroups?: Array<PropertySecurityGroup>,
+): OntologyIrPropertySecurityGroups {
+  const validPropertyNames = new Set(properties.map(prop => prop.apiName));
+  const usedProperties = new Set();
+
+  propertySecurityGroups?.forEach(psg => {
+    psg.properties.forEach(propertyName => {
+      invariant(
+        validPropertyNames.has(propertyName),
+        `Property "${propertyName}" in property security group ${psg.name} does not exist in the properties list`
+      );
+      invariant(
+        !usedProperties.has(propertyName),
+        `Property "${propertyName}" is used in multiple property security groups`
+      );
+      invariant(
+        propertyName !== primaryKeyPropertyApiName,
+        `Property "${propertyName}" in property security group ${psg.name} cannot be the primary key`
+      );
+      usedProperties.add(propertyName);
+    });
+  });
+  
+  const objectSecurityPolicyGroup: OntologyIrPropertySecurityGroup = {
+    rid: objectSecurityPolicy?.name || "defaultObjectSecurityPolicy",
+    security: {
+      type: "granular",
+      granular: convertGranularPolicy(
+        objectSecurityPolicy?.granularPolicy,
+        objectSecurityPolicy?.additionalMandatoryMarkings),
+    },
+    type: {
+      type: "primaryKey",
+      primaryKey: {},
+    },
+    properties: properties
+      .filter(prop => !usedProperties.has(prop.apiName))
+      .map(prop => prop.apiName),
+  };
+
+  return {
+    groups: [
+      objectSecurityPolicyGroup,
+      ...(propertySecurityGroups?.map(psg => ({
+        rid: psg.name,
+        security: {
+          type: "granular" as const,
+          granular: convertGranularPolicy(
+            psg.granularPolicy,
+            psg.additionalMandatoryMarkings),
+        },
+        type: {
+          type: "property" as const,
+          property: {
+            name: psg.name,
+          },
+        },
+        properties: psg.properties ?? [],
+      })) ?? []),
+    ]
+  }
+}
+
+function convertGranularPolicy(
+  granularPolicy?: SecurityConditionDefinition,
+  additionalMandatoryMarkings?: Array<string>,
+): OntologyIrSecurityGroupGranularSecurityDefinition {
+  return {
+    viewPolicy: {
+      granularPolicyCondition: granularPolicy ? 
+      convertSecurityCondition(granularPolicy) : 
+        {
+          type: "and",
+          and: {
+            conditions: [],
+          }
+        },
+      additionalMandatory: {
+        markings: additionalMandatoryMarkings ?? [],
+        assumedMarkings: [],
+      },
+    }
+  }
+}
+
+function convertSecurityCondition(condition: SecurityConditionDefinition): OntologyIrSecurityGroupGranularCondition {
+  switch (condition.type) {
+      case "and":
+        if ("conditions" in condition) {
+          return {
+            type: "and",
+            and: {
+              conditions: condition.conditions.map(c =>
+                convertSecurityCondition(c)
+              ),
+            },
+          };
+        } else {
+          return condition;
+        }
+      case "or":
+        if ("conditions" in condition) {
+          return {
+            type: "or",
+            or: {
+              conditions: condition.conditions.map(c =>
+                convertSecurityCondition(c)
+              ),
+            },
+          };
+        } else {
+          return condition;
+        }
+      case "group":
+        return {
+          type: "comparison",
+          comparison: {
+            operator: "INTERSECTS",
+            left: {
+              type: "userProperty",
+              userProperty: {
+                type: "groupIds",
+                groupIds: {},
+              },
+            },
+            right: {
+              type: "constant",
+              constant: {
+                type: "strings",
+                strings: [
+                  condition.name,
+                ],
+              }
+            },
+          },
+        };
+
+      default:
+        return condition;
+    }
 }
 
 function buildPropertyMapping(

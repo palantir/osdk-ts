@@ -19,6 +19,7 @@ import type {
   ObjectTypeFieldApiName,
 } from "@osdk/client.unstable";
 import type { LinkType } from "../links/LinkType.js";
+import type { SecurityConditionDefinition } from "./SecurityCondition.js";
 
 export type ObjectTypeDatasourceDefinition =
   | ObjectTypeDatasourceDefinition_stream
@@ -28,6 +29,21 @@ export type ObjectTypeDatasourceDefinition =
 
 export interface ObjectTypeDatasourceDefinition_dataset {
   type: "dataset";
+  objectSecurityPolicy?: ObjectSecurityPolicy
+  propertySecurityGroups?: Array<PropertySecurityGroup>;
+}
+
+export interface ObjectSecurityPolicy{
+  name: string,
+  granularPolicy?: SecurityConditionDefinition,
+  additionalMandatoryMarkings?: Array<string>,
+}
+
+export interface PropertySecurityGroup {
+  name: string,
+  properties: Array<string>
+  granularPolicy?: SecurityConditionDefinition,
+  additionalMandatoryMarkings?: Array<string>,
 }
 
 export interface ObjectTypeDatasourceDefinition_stream {
