@@ -18,6 +18,9 @@
     "check-spelling": "cspell --quiet .",
     "lint": "echo 'No linting needed for CSS-only package'"
   },
+  "dependencies": {
+    "@blueprintjs/core": "^6.7.0"
+  },
   "publishConfig": {
     "access": "public"
   },

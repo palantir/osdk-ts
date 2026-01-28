@@ -18,7 +18,7 @@
   display: grid;
   position: sticky;
   top: 0;
-  z-index: var(--bp-surface-zIndex-1);
+  z-index: var(--bp-surface-z-index-1);
   background-color: var(--osdk-table-header-bg);
 }
 
@@ -66,7 +66,7 @@
   top: 0;
   touch-action: none;
   width: 3px;
-  z-index: var(--bp-surface-zIndex-2);
+  z-index: var(--bp-surface-z-index-2);
 
   &:hover {
     background: var(--bp-intent-primary-hover);
