@@ -51,7 +51,7 @@ export function List<T extends ObjectTypeDefinition>({
         )
         : (
           <ul className={className}>
-            {data.map(item => (
+            {data.filter(item => item != null).map(item => (
               <Component
                 key={item.$primaryKey}
                 item={item}
