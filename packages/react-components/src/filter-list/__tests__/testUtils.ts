@@ -20,7 +20,6 @@ import type {
   CheckboxListFilterState,
   ContainsTextFilterState,
   DateRangeFilterState,
-  ExactMatchFilterState,
   FilterComponentType,
   FilterState,
   NumberRangeFilterState,
@@ -91,7 +90,10 @@ export function createLinkedPropertyFilterDef(
     linkedPropertyKey,
     linkedFilterComponent: "CHECKBOX_LIST",
     linkedFilterState: { type: "CHECKBOX_LIST", selectedValues: [] },
-    filterState: { type: "LINKED_PROPERTY", linkedFilterState: undefined },
+    filterState: {
+      type: "LINKED_PROPERTY",
+      linkedFilterState: { type: "CHECKBOX_LIST", selectedValues: [] },
+    },
   } as FilterDefinitionUnion<typeof MockObjectType>;
 }
 
@@ -193,19 +195,5 @@ export function createDateRangeState(
     minValue,
     maxValue,
     includeNull: options?.includeNull,
-  };
-}
-
-/**
- * Helper to create an ExactMatchFilterState
- */
-export function createExactMatchState(
-  values: Array<string | boolean>,
-  options?: { isExcluding?: boolean },
-): ExactMatchFilterState<string | boolean> {
-  return {
-    type: "EXACT_MATCH",
-    values,
-    isExcluding: options?.isExcluding,
   };
 }
