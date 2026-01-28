@@ -14,30 +14,28 @@
  * limitations under the License.
  */
 
-import type React from "react";
-
-/**
- * Class name overrides for FilterList component elements.
- * Users can pass custom class names to style any element.
- */
-export interface FilterListClassNames {
-  root?: string;
-  header?: string;
-  collapseButton?: string;
-  collapseIcon?: string;
-  titleContainer?: string;
-  titleIcon?: string;
-  title?: string;
-  activeCount?: string;
-  resetButton?: string;
-  addButtonContainer?: string;
+.filterList {
+  display: flex;
+  flex-direction: column;
+  background: var(--osdk-filter-list-bg);
+  border: var(--osdk-filter-list-border);
+  border-radius: var(--osdk-filter-list-border-radius);
+  padding: var(--osdk-filter-list-padding);
+  gap: var(--osdk-filter-list-gap);
 }
 
-/**
- * Render props for ContainsTextInput icons.
- */
-export interface ContainsTextInputRenderProps {
-  renderSearchIcon?: () => React.ReactNode;
-  renderClearIcon?: () => React.ReactNode;
+.addButtonContainer {
+  display: flex;
+  justify-content: center;
 }
 
+.addButtonContainer > * {
+  flex: 1;
+}
+
+.addButtonContainer[data-position="fixed"] {
+  position: sticky;
+  bottom: 0;
+  padding-top: var(--osdk-filter-list-addButton-padding-top);
+  background: var(--osdk-filter-list-addButton-container-bg, var(--osdk-filter-list-bg));
+}

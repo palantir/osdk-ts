@@ -3,8 +3,8 @@
  */
 @layer osdk.tokens, custom.theme;
 
-/* Import OSDK tokens (Blueprint Level 1 + OSDK Level 2 tokens) */
-@import "@osdk/react-components-styles" layer(osdk.tokens);
+/* Import default OSDK tokens */
+@import "@osdk/react-components/tokens.css" layer(osdk.tokens);
 
 /* Import theme overrides */
 /* @import "./theme-overrides.css" layer(custom.theme); */

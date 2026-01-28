@@ -14,30 +14,15 @@
  * limitations under the License.
  */
 
-import type React from "react";
+.chevron {
+  transform: rotate(-90deg);
+  transition: transform 150ms ease;
 
-/**
- * Class name overrides for FilterList component elements.
- * Users can pass custom class names to style any element.
- */
-export interface FilterListClassNames {
-  root?: string;
-  header?: string;
-  collapseButton?: string;
-  collapseIcon?: string;
-  titleContainer?: string;
-  titleIcon?: string;
-  title?: string;
-  activeCount?: string;
-  resetButton?: string;
-  addButtonContainer?: string;
+  &[data-expanded="true"] {
+    transform: rotate(0deg);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
 }
-
-/**
- * Render props for ContainsTextInput icons.
- */
-export interface ContainsTextInputRenderProps {
-  renderSearchIcon?: () => React.ReactNode;
-  renderClearIcon?: () => React.ReactNode;
-}
-

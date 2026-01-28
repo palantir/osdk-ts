@@ -14,30 +14,14 @@
  * limitations under the License.
  */
 
-import type React from "react";
-
 /**
- * Class name overrides for FilterList component elements.
- * Users can pass custom class names to style any element.
+ * Component-specific style overrides for FilterList
+ * This demonstrates how to customize filter list styling per-instance
  */
-export interface FilterListClassNames {
-  root?: string;
-  header?: string;
-  collapseButton?: string;
-  collapseIcon?: string;
-  titleContainer?: string;
-  titleIcon?: string;
-  title?: string;
-  activeCount?: string;
-  resetButton?: string;
-  addButtonContainer?: string;
-}
 
-/**
- * Render props for ContainsTextInput icons.
- */
-export interface ContainsTextInputRenderProps {
-  renderSearchIcon?: () => React.ReactNode;
-  renderClearIcon?: () => React.ReactNode;
+.employeeFilterList {
+  /* Example: Override filter list background for this instance */
+  --osdk-filter-list-bg: var(--bp-palette-gray-100);
+  min-width: 280px;
+  max-width: 320px;
 }
-

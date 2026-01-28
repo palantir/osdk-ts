@@ -14,30 +14,11 @@
  * limitations under the License.
  */
 
-import type React from "react";
+import type { FilterListClassNames } from "../types/ClassNameOverrides.js";
 
 /**
- * Class name overrides for FilterList component elements.
- * Users can pass custom class names to style any element.
+ * Blueprint-specific class names for FilterList component.
+ * Base styling is handled by CSS modules in each component.
+ * These are additional class names that can be used for Blueprint integration.
  */
-export interface FilterListClassNames {
-  root?: string;
-  header?: string;
-  collapseButton?: string;
-  collapseIcon?: string;
-  titleContainer?: string;
-  titleIcon?: string;
-  title?: string;
-  activeCount?: string;
-  resetButton?: string;
-  addButtonContainer?: string;
-}
-
-/**
- * Render props for ContainsTextInput icons.
- */
-export interface ContainsTextInputRenderProps {
-  renderSearchIcon?: () => React.ReactNode;
-  renderClearIcon?: () => React.ReactNode;
-}
-
+export const filterListClassNames: FilterListClassNames = {};
