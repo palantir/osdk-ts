@@ -146,27 +146,20 @@ export type GeoFilter_Intersects = {
     | Polygon;
 };
 
-type FilterFor<PD extends ObjectMetadata.Property> = PD["multiplicity"] extends
-  true
-  ? (PD["type"] extends Record<string, BaseWirePropertyTypes>
-    ? ArrayFilter<StructArrayFilterOpts<PD["type"]>>
-    : PD["type"] extends PropertyTypesRepresentedAsStringsForArrayWhereClause
-      ? ArrayFilter<string>
-    : (PD["type"] extends boolean ? ArrayFilter<boolean>
-      : ArrayFilter<number>))
-  : PD["type"] extends Record<string, BaseWirePropertyTypes> ?
-      | StructFilter<PD["type"]>
-      | BaseFilter.$isNull<string>
-  : (PD["type"] extends "string" ? StringFilter
-    : PD["type"] extends "geopoint" | "geoshape" ? GeoFilter
-    : PD["type"] extends "datetime" | "timestamp" ? DatetimeFilter
-    : PD["type"] extends "boolean" ? BooleanFilter
-    : PD["type"] extends WhereClauseNumberPropertyTypes ? NumberFilter
-    : BaseFilter<string>); // FIXME we need to represent all types
+type BaseFilterFor<T> = T extends Record<string, BaseWirePropertyTypes>
+  ? StructFilterOpts<T>
+  : T extends "string" ? StringFilter
+  : T extends "geopoint" | "geoshape" ? GeoFilter
+  : T extends "datetime" | "timestamp" ? DatetimeFilter
+  : T extends "boolean" ? BooleanFilter
+  : T extends WhereClauseNumberPropertyTypes ? NumberFilter
+  : BaseFilter<string>; // Fallback for unknown types
 
-type StructArrayFilterOpts<ST extends Record<string, BaseWirePropertyTypes>> = {
-  [K in keyof ST]?: FilterFor<{ "type": ST[K] }>;
-};
+type FilterFor<PD extends ObjectMetadata.Property> = PD["multiplicity"] extends
+  true ? ArrayFilter<BaseFilterFor<PD["type"]>>
+  : PD["type"] extends Record<string, BaseWirePropertyTypes>
+    ? StructFilter<PD["type"]> | BaseFilter.$isNull<string>
+  : BaseFilterFor<PD["type"]>;
 
 type StructFilterOpts<ST extends Record<string, BaseWirePropertyTypes>> = {
   [K in keyof ST]?: FilterFor<{ "type": ST[K] }>;
@@ -175,12 +168,6 @@ type StructFilter<ST extends Record<string, BaseWirePropertyTypes>> = {
   [K in keyof ST]: Just<K, StructFilterOpts<ST>>;
 }[keyof ST];
 
-type PropertyTypesRepresentedAsStringsForArrayWhereClause =
-  | "string"
-  | "geopoint"
-  | "geoshape"
-  | "datetime"
-  | "timestamp";
 type WhereClauseNumberPropertyTypes =
   | "double"
   | "integer"

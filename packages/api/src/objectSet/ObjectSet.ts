@@ -587,9 +587,10 @@ interface Subscribe<
    */
   readonly subscribe: <
     const P extends PropertyKeys<Q>,
+    const R extends boolean = false,
   >(
-    listener: ObjectSetSubscription.Listener<Q, P>,
-    opts?: ObjectSetSubscription.Options<Q, P>,
+    listener: ObjectSetSubscription.Listener<Q, P, R>,
+    opts?: ObjectSetSubscription.Options<Q, P, R>,
   ) => { unsubscribe: () => void };
 }
 

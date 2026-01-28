@@ -61,15 +61,22 @@ describe(filterObjects, () => {
   it("properly handles startsWith", () =>
     expect(filterObjects(objects, {
       type: "startsWith",
-      field: "name",
-      value: "abc",
-    })).toEqual([object1, object3]));
+      field: "description",
+      value: "hello wor",
+    })).toEqual([object1]));
+
+  it("startsWith with single term prefix", () =>
+    expect(filterObjects(objects, {
+      type: "startsWith",
+      field: "description",
+      value: "hel",
+    })).toEqual([object1, object4]));
 
   it("startsWith returns empty for non-string fields", () =>
     expect(filterObjects(objects, {
       type: "startsWith",
       field: "age",
-      value: "2",
+      value: "25",
     })).toEqual([]));
 
   it("properly handles eq", () =>
