@@ -66,7 +66,6 @@ function filterStateToPropertyFilter(
         return undefined;
       }
 
-      // Build the range filter
       let rangeFilter: PropertyFilter | undefined;
       if (conditions.length === 1) {
         rangeFilter = conditions[0];
@@ -74,7 +73,6 @@ function filterStateToPropertyFilter(
         rangeFilter = { $and: conditions };
       }
 
-      // Handle includeNull: include objects with null values in addition to range
       if (state.includeNull) {
         if (rangeFilter) {
           return { $or: [rangeFilter, { $isNull: true }] };
@@ -99,7 +97,6 @@ function filterStateToPropertyFilter(
         return undefined;
       }
 
-      // Build the range filter
       let rangeFilter: PropertyFilter | undefined;
       if (conditions.length === 1) {
         rangeFilter = conditions[0];
@@ -107,7 +104,6 @@ function filterStateToPropertyFilter(
         rangeFilter = { $and: conditions };
       }
 
-      // Handle includeNull: include objects with null values in addition to range
       if (state.includeNull) {
         if (rangeFilter) {
           return { $or: [rangeFilter, { $isNull: true }] };
@@ -122,15 +118,21 @@ function filterStateToPropertyFilter(
       if (state.values.length === 0) {
         return undefined;
       }
-      if (state.values.length === 1) {
-        return state.values[0];
+      const filter = state.values.length === 1
+        ? state.values[0]
+        : { $in: state.values };
+      if (state.isExcluding) {
+        return { $not: filter };
       }
-      return { $in: state.values };
+      return filter;
     }
 
     case "SINGLE_SELECT": {
       if (state.selectedValue === undefined) {
         return undefined;
+      }
+      if (state.isExcluding) {
+        return { $not: state.selectedValue };
       }
       return state.selectedValue;
     }
@@ -139,10 +141,13 @@ function filterStateToPropertyFilter(
       if (state.selectedValues.length === 0) {
         return undefined;
       }
-      if (state.selectedValues.length === 1) {
-        return state.selectedValues[0];
+      const filter = state.selectedValues.length === 1
+        ? state.selectedValues[0]
+        : { $in: state.selectedValues };
+      if (state.isExcluding) {
+        return { $not: filter };
       }
-      return { $in: state.selectedValues };
+      return filter;
     }
 
     case "SINGLE_DATE": {
@@ -230,6 +235,12 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
 
       case "hasLink": {
         if (state.type !== "HAS_LINK") {
+          if (process.env.NODE_ENV !== "production") {
+            // eslint-disable-next-line no-console
+            console.warn(
+              `[FilterList] State type mismatch for hasLink filter "${definition.linkName}": expected HAS_LINK, got ${state.type}`,
+            );
+          }
           break;
         }
         // TypeScript narrows state to HasLinkFilterState
@@ -251,7 +262,16 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
       }
 
       case "keywordSearch": {
-        if (state.type !== "KEYWORD_SEARCH" || !state.searchTerm) {
+        if (state.type !== "KEYWORD_SEARCH") {
+          if (process.env.NODE_ENV !== "production") {
+            // eslint-disable-next-line no-console
+            console.warn(
+              `[FilterList] State type mismatch for keywordSearch filter: expected KEYWORD_SEARCH, got ${state.type}`,
+            );
+          }
+          break;
+        }
+        if (!state.searchTerm) {
           break;
         }
         // TypeScript narrows state to KeywordSearchFilterState
@@ -268,12 +288,15 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
             propertiesToSearch = Object.entries(
               objectType.__DefinitionMetadata.properties,
             )
-              .filter(([, prop]) => prop.type === "string" && !prop.multiplicity)
+              .filter(([, prop]) =>
+                prop.type === "string" && !prop.multiplicity
+              )
               .map(([key]) => key);
           } else {
             if (process.env.NODE_ENV !== "production") {
+              // eslint-disable-next-line no-console
               console.warn(
-                "[FilterList] Keyword search with properties: 'all' requires object type metadata. Filter will be skipped.",
+                "[FilterList] Keyword search with properties: 'all' requires objectType to be provided. Filter will be skipped.",
               );
             }
             break;
@@ -300,6 +323,12 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
 
       case "custom": {
         if (state.type !== "CUSTOM") {
+          if (process.env.NODE_ENV !== "production") {
+            // eslint-disable-next-line no-console
+            console.warn(
+              `[FilterList] State type mismatch for custom filter "${definition.key}": expected CUSTOM, got ${state.type}`,
+            );
+          }
           break;
         }
         // TypeScript narrows state to CustomFilterState
