@@ -15,11 +15,13 @@
  */
 
 import type { Cell, RowData, Table } from "@tanstack/react-table";
+import classNames from "classnames";
 import React, { type ReactElement, useCallback, useRef } from "react";
+import styles from "./Table.module.css";
 import { TableBody } from "./TableBody.js";
 import { TableHeader } from "./TableHeader.js";
 
-interface TableProps<TData extends RowData> {
+export interface BaseTableProps<TData extends RowData> {
   table: Table<TData>;
   isLoading?: boolean;
   fetchNextPage?: () => Promise<void>;
@@ -29,9 +31,10 @@ interface TableProps<TData extends RowData> {
     row: TData,
     cell: Cell<TData, unknown>,
   ) => React.ReactNode;
+  className?: string;
 }
 
-export function Table<TData extends RowData>(
+export function BaseTable<TData extends RowData>(
   {
     table,
     isLoading,
@@ -39,7 +42,8 @@ export function Table<TData extends RowData>(
     onRowClick,
     rowHeight,
     renderCellContextMenu,
-  }: TableProps<TData>,
+    className,
+  }: BaseTableProps<TData>,
 ): ReactElement {
   const tableContainerRef = useRef<HTMLDivElement>(null);
 
@@ -78,22 +82,10 @@ export function Table<TData extends RowData>(
   return (
     <div
       ref={tableContainerRef}
-      style={{
-        position: "relative", // needed for sticky header
-        height: "100%", // needed for scrolling
-        overflow: "auto",
-        cursor: table.getState().columnSizingInfo?.isResizingColumn
-          ? "col-resize"
-          : "default",
-        userSelect: table.getState().columnSizingInfo?.isResizingColumn
-          ? "none"
-          : "auto",
-      }}
+      className={classNames(styles.osdkTableContainer, className)}
       onScroll={handleScroll}
     >
-      <table
-        style={{ display: "grid" }}
-      >
+      <table>
         <TableHeader table={table} />
         <TableBody
           rows={table.getRowModel().rows}

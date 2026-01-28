@@ -16,38 +16,60 @@
 
 import type {
   DerivedProperty,
-  ObjectSet,
-  ObjectTypeDefinition,
+  ObjectOrInterfaceDefinition,
+  PropertyKeys,
   QueryDefinition,
   SimplePropertyDef,
   WhereClause,
 } from "@osdk/api";
-import { useObjectSet } from "@osdk/react/experimental";
+import type { UseOsdkListResult } from "@osdk/react/experimental";
+import { useOsdkObjects } from "@osdk/react/experimental";
+import type { SortingState } from "@tanstack/react-table";
 import { useMemo } from "react";
 import type { ColumnDefinition } from "../ObjectTableApi.js";
 
 const PAGE_SIZE = 50;
 
 /**
- * This hook is a wrapper around useObjectSet
+ * This hook is a wrapper around useOsdkObjects
  * It extracts RDP locators from columnDefinitions and calls useObjectSet + withProperties
  * to return data containing the derived properties.
  */
-
 export function useObjectTableData<
-  Q extends ObjectTypeDefinition,
-  RDPs extends Record<string, SimplePropertyDef>,
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<
+    string,
+    never
+  >,
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
     string,
     never
   >,
 >(
-  objectSet: ObjectSet<Q>,
+  objectOrInterfaceType: Q,
   columnDefinitions?: Array<ColumnDefinition<Q, RDPs, FunctionColumns>>,
   filter?: WhereClause<Q, RDPs>,
-): ReturnType<typeof useObjectSet<Q, never, RDPs>> {
-  // Extract derived properties definition to be passed to useObjectSet hook
-  const withProperties = useMemo(() => {
+  sorting?: SortingState,
+): UseOsdkListResult<Q, RDPs> {
+  type WP<Q extends ObjectOrInterfaceDefinition> = {
+    [K in keyof RDPs]: DerivedProperty.Creator<Q, RDPs[K]>;
+  };
+  const orderBy = useMemo(() => {
+    if (!sorting || sorting.length === 0) {
+      return undefined;
+    }
+
+    return sorting.reduce<{ [K in PropertyKeys<Q>]?: "asc" | "desc" }>(
+      (acc, sort) => {
+        acc[sort.id as PropertyKeys<Q>] = sort.desc ? "desc" : "asc";
+        return acc;
+      },
+      {},
+    );
+  }, [sorting]);
+
+  // Extract derived properties definition
+  const withProperties: WP<Q> | undefined = useMemo(() => { // Convert React Table sorting state to OSDK orderBy format
     if (!columnDefinitions) {
       return;
     }
@@ -58,27 +80,45 @@ export function useObjectTableData<
       },
     );
 
-    return rdpColumns.reduce<
-      { [K in keyof RDPs]: DerivedProperty.Creator<Q, RDPs[K]> }
-    >(
+    if (!rdpColumns.length) {
+      return;
+    }
+
+    return rdpColumns.reduce(
       (acc, cur) => {
         return {
           ...acc,
           [cur.id]: cur.creator,
         };
       },
-      {} as {
-        [K in keyof RDPs]: DerivedProperty.Creator<Q, RDPs[K]>;
-      },
+      {} as WP<Q>,
     );
   }, [columnDefinitions]);
 
-  return useObjectSet<Q, never, RDPs>(
-    objectSet,
+  const where: WhereClause<Q, InferRdpTypes<Q, WP<Q>>> = useMemo(() => {
+    return filter ? filter : {};
+  }, [filter]);
+
+  return useOsdkObjects<
+    Q,
+    WP<Q>
+  >(
+    objectOrInterfaceType,
     {
       withProperties,
       pageSize: PAGE_SIZE,
-      where: filter,
+      where,
+      orderBy,
     },
-  );
+  ) as UseOsdkListResult<Q, RDPs>;
 }
+
+// InferRdpTypes utility type extracts RDPs from the DerivedProperty.Creator objects
+type InferRdpTypes<
+  Q extends ObjectOrInterfaceDefinition,
+  WP extends DerivedProperty.Clause<Q> | undefined,
+> = WP extends DerivedProperty.Clause<Q> ? {
+    [K in keyof WP]: WP[K] extends DerivedProperty.Creator<Q, infer T> ? T
+      : never;
+  }
+  : {};

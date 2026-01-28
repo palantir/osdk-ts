@@ -14,13 +14,17 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition, Osdk, PrimaryKeyType } from "@osdk/api";
+import type {
+  ObjectOrInterfaceDefinition,
+  Osdk,
+  PrimaryKeyType,
+} from "@osdk/api";
 import type { RowSelectionState } from "@tanstack/react-table";
 import { useCallback, useMemo, useState } from "react";
 import { getRowId, getRowIdFromPrimaryKey } from "../utils/getRowId.js";
 
 export interface UseRowSelectionProps<
-  Q extends ObjectTypeDefinition,
+  Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, any> = Record<string, never>,
 > {
   selectionMode?: "single" | "multiple" | "none";
@@ -42,7 +46,7 @@ export interface UseRowSelectionResult {
 }
 
 export function useRowSelection<
-  Q extends ObjectTypeDefinition,
+  Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, any> = Record<string, never>,
 >({
   selectionMode = "none",
@@ -153,7 +157,7 @@ export function useRowSelection<
 }
 
 interface GetSelectedRowsProps<
-  Q extends ObjectTypeDefinition,
+  Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, any> = Record<string, never>,
 > {
   rowId: string;
@@ -164,7 +168,7 @@ interface GetSelectedRowsProps<
 }
 
 function getSingleSelectionRows<
-  Q extends ObjectTypeDefinition,
+  Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, any> = Record<string, never>,
 >(
   { rowId, rowIndex, data, rowSelectionState }: GetSelectedRowsProps<Q, RDPs>,
@@ -176,7 +180,7 @@ function getSingleSelectionRows<
 }
 
 function getRangeSelectionRows<
-  Q extends ObjectTypeDefinition,
+  Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, any> = Record<string, never>,
 >(
   { lastSelectedRowIndex, rowIndex, data, rowSelectionState }:
@@ -203,7 +207,7 @@ function getRangeSelectionRows<
 }
 
 function getMultipleSelectionRows<
-  Q extends ObjectTypeDefinition,
+  Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, any> = Record<string, never>,
 >(
   { rowIndex, data, rowSelectionState }: GetSelectedRowsProps<Q, RDPs>,
@@ -221,7 +225,7 @@ function getMultipleSelectionRows<
  * Builds a range of rows from startIndex to endIndex
  */
 function getRowsInRange<
-  Q extends ObjectTypeDefinition,
+  Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, any> = Record<string, never>,
 >(
   data: Array<Osdk.Instance<Q, "$allBaseProperties", any, RDPs>>,
@@ -245,7 +249,7 @@ function getRowsInRange<
 /**
  * Converts an array of primary keys to a RowSelectionState object
  */
-function getRowSelectionState<Q extends ObjectTypeDefinition>(
+function getRowSelectionState<Q extends ObjectOrInterfaceDefinition>(
   primaryKeys: PrimaryKeyType<Q>[],
 ): RowSelectionState {
   return primaryKeys.reduce<RowSelectionState>(
@@ -261,7 +265,7 @@ function getRowSelectionState<Q extends ObjectTypeDefinition>(
  * Converts from a RowSelectionState object back to an array of primary keys
  */
 function getSelectedPrimaryKeys<
-  Q extends ObjectTypeDefinition,
+  Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, any> = Record<string, never>,
 >(
   selectionState: RowSelectionState,

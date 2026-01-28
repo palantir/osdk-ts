@@ -16,7 +16,7 @@
 
 import type {
   ObjectMetadata,
-  ObjectTypeDefinition,
+  ObjectOrInterfaceDefinition,
   Osdk,
   PropertyKeys,
   QueryDefinition,
@@ -28,11 +28,8 @@ import { useMemo } from "react";
 import type { ColumnDefinition } from "../ObjectTableApi.js";
 
 interface UseColumnDefsResult<
-  Q extends ObjectTypeDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<
-    string,
-    never
-  >,
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
 > {
   columns: AccessorColumnDef<
     Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
@@ -47,7 +44,7 @@ interface UseColumnDefsResult<
  * Hook which builds column definitions for tanstack-table given the objectSet
  */
 export function useColumnDefs<
-  Q extends ObjectTypeDefinition,
+  Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = Record<
     string,
     never
@@ -82,7 +79,7 @@ export function useColumnDefs<
 }
 
 function getColumnsFromColumnDefinitions<
-  Q extends ObjectTypeDefinition,
+  Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = Record<
     string,
     never
@@ -149,7 +146,7 @@ function getColumnsFromColumnDefinitions<
 }
 
 function getDefaultColumns<
-  Q extends ObjectTypeDefinition,
+  Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = Record<
     string,
     never
