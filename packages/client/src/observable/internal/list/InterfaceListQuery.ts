@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import type { ObjectSet, ObjectTypeDefinition, Osdk } from "@osdk/api";
+import type {
+  DerivedProperty,
+  InterfaceDefinition,
+  ObjectSet,
+  ObjectTypeDefinition,
+  Osdk,
+} from "@osdk/api";
 import groupBy from "object.groupby";
 import invariant from "tiny-invariant";
 import type { Client } from "../../../Client.js";
@@ -27,7 +33,7 @@ import type { Changes } from "../Changes.js";
 import type { Rdp } from "../RdpCanonicalizer.js";
 import type { SimpleWhereClause } from "../SimpleWhereClause.js";
 import type { Store } from "../Store.js";
-import { ListQuery, RDP_IDX } from "./ListQuery.js";
+import { INTERSECT_IDX, ListQuery, PIVOT_IDX, RDP_IDX } from "./ListQuery.js";
 
 type ExtractRelevantObjectsResult = Record<"added" | "modified", {
   all: (ObjectHolder | InterfaceHolder)[];
@@ -38,6 +44,53 @@ type ExtractRelevantObjectsResult = Record<"added" | "modified", {
 export class InterfaceListQuery extends ListQuery {
   protected createObjectSet(store: Store): ObjectSet<ObjectTypeDefinition> {
     const rdpConfig = this.cacheKey.otherKeys[RDP_IDX];
+    const intersectWith = this.cacheKey.otherKeys[INTERSECT_IDX];
+    const pivotInfo = this.cacheKey.otherKeys[PIVOT_IDX];
+
+    // Handle pivotTo case - when pivoting from object/interface via a link
+    if (pivotInfo != null) {
+      // Use the source type kind from pivot info (can be "object" or "interface")
+      // Cast to ObjectSet because runtime supports pivotTo for both types
+      // but the type system only exposes it on ObjectSet<ObjectTypeDefinition>
+      const sourceSet = (pivotInfo.sourceTypeKind === "interface"
+        ? store.client({
+          type: "interface",
+          apiName: pivotInfo.sourceType,
+        } as InterfaceDefinition)
+        : store.client({
+          type: "object",
+          apiName: pivotInfo.sourceType,
+        } as ObjectTypeDefinition)) as ObjectSet<ObjectTypeDefinition>;
+
+      let objectSet = sourceSet.pivotTo(pivotInfo.linkName);
+
+      // RDPs must be applied before where clauses
+      if (rdpConfig != null) {
+        objectSet = objectSet.withProperties(
+          rdpConfig as DerivedProperty.Clause<ObjectTypeDefinition>,
+        );
+      }
+
+      objectSet = objectSet.where(this.canonicalWhere);
+
+      if (intersectWith != null && intersectWith.length > 0) {
+        const intersectSets = intersectWith.map(whereClause => {
+          const intersectSet = store.client({
+            type: "interface",
+            apiName: pivotInfo.targetType,
+          } as InterfaceDefinition);
+
+          // Note: RDPs on interface intersect sets not supported currently
+          return intersectSet.where(whereClause);
+        });
+
+        objectSet = objectSet.intersect(...intersectSets);
+      }
+
+      return objectSet;
+    }
+
+    // Non-pivot case - direct interface query
     const type: string = "interface" as const;
     const objectTypeDef = {
       type,

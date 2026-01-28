@@ -38,6 +38,7 @@ export namespace ObserveLinks {
     L extends keyof CompileTimeMetadata<Q>["links"] & string,
   > extends CommonObserveOptions, ObserveOptions {
     srcType: Pick<Q, "type" | "apiName">;
+    sourceUnderlyingObjectType: string;
     pk: PrimaryKeyType<Q>;
     linkName: L;
     where?: WhereClause<CompileTimeMetadata<Q>["links"][L]["targetType"]>;

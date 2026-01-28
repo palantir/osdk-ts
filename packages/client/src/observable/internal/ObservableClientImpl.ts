@@ -321,14 +321,20 @@ function observeSingleLink(
   const parentSub = new Subscription();
 
   for (const obj of objectsArray) {
+    const sourceType: "object" | "interface" =
+      obj.$apiName === obj.$objectType
+        ? "object"
+        : "interface";
+
     parentSub.add(
       store.links.observe(
         {
           ...options,
           srcType: {
-            type: "object",
-            apiName: obj.$objectType ?? obj.$apiName,
+            type: sourceType,
+            apiName: obj.$apiName,
           },
+          sourceUnderlyingObjectType: obj.$objectType,
           linkName,
           pk: obj.$primaryKey,
         },
@@ -403,14 +409,20 @@ function observeMultiLinks(
   for (const obj of objectsArray) {
     const objKey = `${obj.$objectType ?? obj.$apiName}:${obj.$primaryKey}`;
 
+    const sourceType: "object" | "interface" =
+      obj.$apiName === obj.$objectType
+        ? "object"
+        : "interface";
+
     parentSub.add(
       store.links.observe(
         {
           ...options,
           srcType: {
-            type: "object",
-            apiName: obj.$objectType ?? obj.$apiName,
+            type: sourceType,
+            apiName: obj.$apiName,
           },
+          sourceUnderlyingObjectType: obj.$objectType,
           linkName,
           pk: obj.$primaryKey,
         },

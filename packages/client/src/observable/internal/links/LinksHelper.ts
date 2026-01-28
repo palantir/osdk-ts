@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import type { CompileTimeMetadata, ObjectTypeDefinition } from "@osdk/api";
+import type {
+  CompileTimeMetadata,
+  InterfaceDefinition,
+  ObjectTypeDefinition,
+} from "@osdk/api";
 import type { SpecificLinkPayload } from "../../LinkPayload.js";
 
 import type { Observer } from "../../ObservableClient/common.js";
@@ -31,7 +35,7 @@ import { SpecificLinkQuery } from "./SpecificLinkQuery.js";
 
 export interface LinksHelper {
   observe<
-    T extends ObjectTypeDefinition,
+    T extends ObjectTypeDefinition | InterfaceDefinition,
     L extends keyof CompileTimeMetadata<T>["links"] & string,
   >(
     options: ObserveLinks.Options<T, L>,
@@ -39,14 +43,14 @@ export interface LinksHelper {
   ): QuerySubscription<SpecificLinkQuery>;
 
   getQuery<
-    T extends ObjectTypeDefinition,
+    T extends ObjectTypeDefinition | InterfaceDefinition,
     L extends keyof CompileTimeMetadata<T>["links"] & string,
   >(options: ObserveLinks.Options<T, L>): SpecificLinkQuery;
 }
 
 export class LinksHelper extends AbstractHelper<
   SpecificLinkQuery,
-  ObserveLinks.Options<ObjectTypeDefinition, string>
+  ObserveLinks.Options<ObjectTypeDefinition | InterfaceDefinition, string>
 > {
   whereCanonicalizer: WhereClauseCanonicalizer;
   orderByCanonicalizer: OrderByCanonicalizer;
@@ -64,10 +68,10 @@ export class LinksHelper extends AbstractHelper<
   }
 
   getQuery<
-    T extends ObjectTypeDefinition,
+    T extends ObjectTypeDefinition | InterfaceDefinition,
     L extends keyof CompileTimeMetadata<T>["links"] & string,
   >(options: ObserveLinks.Options<T, L>): SpecificLinkQuery {
-    const { apiName } = options.srcType;
+    const { apiName, type: sourceTypeKind } = options.srcType;
 
     const canonWhere = this.whereCanonicalizer.canonicalize(
       options.where ?? {},
@@ -78,6 +82,8 @@ export class LinksHelper extends AbstractHelper<
     const linkCacheKey = this.cacheKeys.get<SpecificLinkCacheKey>(
       "specificLink",
       apiName,
+      sourceTypeKind,
+      options.sourceUnderlyingObjectType,
       options.pk,
       options.linkName,
       canonWhere,
