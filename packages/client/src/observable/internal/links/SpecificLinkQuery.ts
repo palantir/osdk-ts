@@ -221,7 +221,6 @@ export class SpecificLinkQuery extends BaseListQuery<
     }
 
     // Fetch the linked objects with pagination
-    // Add orderBy to the query parameters if specified
     const queryParams: {
       $pageSize: number;
       $nextPageToken: string | undefined;
@@ -234,12 +233,10 @@ export class SpecificLinkQuery extends BaseListQuery<
       $includeRid: true,
     };
 
-    // Include orderBy if it has entries
     if (this.#orderBy && Object.keys(this.#orderBy).length > 0) {
       queryParams.$orderBy = this.#orderBy;
     }
 
-    // Include whereClause if it has entries
     if (this.#whereClause && Object.keys(this.#whereClause).length > 0) {
       queryParams.$where = this.#whereClause;
     }
