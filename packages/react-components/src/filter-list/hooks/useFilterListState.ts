@@ -16,7 +16,10 @@
 
 import type { ObjectTypeDefinition, WhereClause } from "@osdk/api";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import type { FilterListProps } from "../FilterListApi.js";
+import type {
+  FilterDefinitionUnion,
+  FilterListProps,
+} from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
 import type { LinkedPropertyFilterState } from "../types/LinkedFilterTypes.js";
 import { assertUnreachable } from "../utils/assertUnreachable.js";
