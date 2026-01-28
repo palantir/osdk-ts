@@ -75,7 +75,7 @@ export function EmployeesTable() {
             fontSize: 13,
           }}
         >
-          {cellValue ? cellValue.toString() : "No Value"}
+          {cellValue ? cellValue : "No Value"}
         </div>
       );
     },
@@ -85,7 +85,7 @@ export function EmployeesTable() {
   return (
     <div
       style={{
-        height: "500px",
+        height: "98px",
         overflow: "auto",
       }}
     >

@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-.osdkTableContainer {
-  position: relative; /* needed for sticky header */
-  height: 100%; /* needed for scrolling */
-  overflow: auto;
-}
+import classNames from "classnames";
+import React from "react";
+import styles from "./LoadingCell.module.css";
 
-.tableLoading {
-  display: grid;
-  grid-template-rows: auto 1fr auto;
-  height: 100%;
+export function LoadingCell(): React.ReactElement {
+  return (
+    <div
+      className={classNames(styles.osdkLoadingCell, styles.osdkCellSkeleton)}
+    />
+  );
 }

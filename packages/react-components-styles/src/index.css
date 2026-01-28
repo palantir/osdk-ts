@@ -29,7 +29,7 @@
 
   --osdk-table-header-bg: var(--bp-palette-light-gray-5);
   --osdk-table-header-fontWeight: var(--bp-typography-weight-bold);
-  --osdk-table-header-fontSize: var(--bp-typography-size-body-medium);
+  --osdk-table-header-fontSize: var(--bp-typography-size-body-small);
   --osdk-table-header-color: var(--bp-typography-color-muted);
 
   --osdk-table-row-bg-default: var(--bp-palette-light-gray-5);
@@ -42,4 +42,9 @@
     calc(var(--bp-surface-spacing) * 2);
   --osdk-table-cell-fontSize: var(--bp-typography-size-body-medium);
   --osdk-table-cell-color: var(--bp-typography-color-default-rest);
+
+  /* Skeleton loading */
+  --osdk-table-skeleton-color-from: rgba(211, 216, 222, 0.4);
+  --osdk-table-skeleton-color-to: rgba(95, 107, 124, 0.4);
+  --osdk-table-skeleton-border-color: rgba(211, 216, 222, 0.6);
 }
