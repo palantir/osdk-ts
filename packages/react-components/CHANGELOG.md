@@ -1,23 +1,5 @@
 # @osdk/react-components
 
-## 0.1.0-beta.3
-
-### Minor Changes
-
-- 9cd0b26: Add base UI component and css module
-
-### Patch Changes
-
-- Updated dependencies [acf6331]
-- Updated dependencies [6cfe14a]
-- Updated dependencies [ec6ad57]
-- Updated dependencies [38d5958]
-- Updated dependencies [56ba08f]
-- Updated dependencies [d5cfc38]
-  - @osdk/react@0.9.0-beta.7
-  - @osdk/client@2.7.0-beta.11
-  - @osdk/api@2.7.0-beta.11
-
 ## 0.1.0-beta.2
 
 ### Minor Changes
