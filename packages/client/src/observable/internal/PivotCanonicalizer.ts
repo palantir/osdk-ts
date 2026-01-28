@@ -20,7 +20,6 @@ export interface PivotInfo {
   sourceType: string;
   sourceTypeKind: "object" | "interface";
   linkName: string;
-  targetType: string;
 }
 
 export class PivotCanonicalizer {
@@ -40,7 +39,6 @@ export class PivotCanonicalizer {
         sourceType,
         sourceTypeKind,
         linkName,
-        targetType: "<targetType>",
       } as Canonical<PivotInfo>;
       this.#cache.set(key, canonical);
     }

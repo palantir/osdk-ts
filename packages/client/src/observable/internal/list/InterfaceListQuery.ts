@@ -75,9 +75,11 @@ export class InterfaceListQuery extends ListQuery {
 
       if (intersectWith != null && intersectWith.length > 0) {
         const intersectSets = intersectWith.map(whereClause => {
+          // Use this.apiName as the target type since InterfaceListQuery is created
+          // for the target interface of the link (same as this.apiName)
           const intersectSet = store.client({
             type: "interface",
-            apiName: pivotInfo.targetType,
+            apiName: this.apiName,
           } as InterfaceDefinition);
 
           // Note: RDPs on interface intersect sets not supported currently
