@@ -89,9 +89,11 @@ export class ObjectListQuery extends ListQuery {
 
       if (intersectWith != null && intersectWith.length > 0) {
         const intersectSets = intersectWith.map(whereClause => {
+          // Use this.apiName as the target type since ObjectListQuery is created
+          // for the target type of the link (same as this.apiName)
           let intersectSet = store.client({
             type: "object",
-            apiName: pivotInfo.targetType,
+            apiName: this.apiName,
           } as ObjectTypeDefinition);
 
           if (rdpConfig != null) {

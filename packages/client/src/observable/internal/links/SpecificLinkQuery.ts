@@ -311,45 +311,73 @@ export class SpecificLinkQuery extends BaseListQuery<
     objectType: string,
     changes: Changes | undefined,
   ): Promise<void> => {
-    // We need to invalidate links in two cases:
+    // We need to invalidate links in multiple cases:
     // 1. When the source object type matches the apiName (direct invalidation)
-    // 2. When the target object type might be the invalidated type (affected by target changes)
+    // 2. When the source is an interface and the invalidated type implements it
+    // 3. When the target type matches the invalidated type
+    // 4. When the target is an interface and the invalidated type implements it
 
-    // For case 1 - direct source object type match
-    if (this.#sourceApiName === objectType) {
+    // For case 1 - direct source object type match (object links only)
+    if (
+      this.#sourceTypeKind === "object" && this.#sourceApiName === objectType
+    ) {
       changes?.modified.add(this.cacheKey);
       return this.revalidate(true);
-    } else {
-      // For case 2 - check if the link's target type matches the invalidated type
-      // We need to use the ontology provider to get the link metadata
-      // Since this is async, we'll collect all the metadata check promises
-      return (async () => {
-        const ontologyProvider = this.store.client[additionalContext]
-          .ontologyProvider;
-
-        let targetTypeApiName: string | undefined;
-
-        if (this.#sourceTypeKind === "interface") {
-          // Get interface metadata
-          const interfaceMetadata = await ontologyProvider
-            .getInterfaceDefinition(this.#sourceApiName);
-          const linkDef = interfaceMetadata.links?.[this.#linkName];
-          targetTypeApiName = linkDef?.targetTypeApiName;
-        } else {
-          // Get object metadata
-          const objectMetadata = await ontologyProvider
-            .getObjectDefinition(this.#sourceApiName);
-          const linkDef = objectMetadata.links?.[this.#linkName];
-          targetTypeApiName = linkDef?.targetType;
-        }
-
-        if (!targetTypeApiName || targetTypeApiName !== objectType) return;
-
-        const promise = this.revalidate(true);
-        changes?.modified.add(this.cacheKey);
-        return promise;
-      })();
     }
+
+    // For all other cases, we need async metadata lookups
+    return (async () => {
+      const ontologyProvider = this.store.client[additionalContext]
+        .ontologyProvider;
+
+      // Case 2 - source is an interface, check if invalidated type implements it
+      if (this.#sourceTypeKind === "interface") {
+        const objectMetadata = await ontologyProvider.getObjectDefinition(
+          objectType,
+        );
+        if (this.#sourceApiName in objectMetadata.interfaceMap) {
+          changes?.modified.add(this.cacheKey);
+          return this.revalidate(true);
+        }
+      }
+
+      // Cases 3 & 4 - check if the link's target type matches the invalidated type
+      let targetTypeApiName: string | undefined;
+      let targetTypeKind: "object" | "interface" | undefined;
+
+      if (this.#sourceTypeKind === "interface") {
+        const interfaceMetadata = await ontologyProvider
+          .getInterfaceDefinition(this.#sourceApiName);
+        const linkDef = interfaceMetadata.links?.[this.#linkName];
+        targetTypeApiName = linkDef?.targetTypeApiName;
+        targetTypeKind = linkDef?.targetType;
+      } else {
+        const objectMetadata = await ontologyProvider
+          .getObjectDefinition(this.#sourceApiName);
+        const linkDef = objectMetadata.links?.[this.#linkName];
+        targetTypeApiName = linkDef?.targetType;
+        targetTypeKind = "object"; // Object links always target objects
+      }
+
+      if (!targetTypeApiName) return;
+
+      // Case 3 - direct target type match
+      if (targetTypeApiName === objectType) {
+        changes?.modified.add(this.cacheKey);
+        return this.revalidate(true);
+      }
+
+      // Case 4 - target is an interface, check if invalidated type implements it
+      if (targetTypeKind === "interface") {
+        const objectMetadata = await ontologyProvider.getObjectDefinition(
+          objectType,
+        );
+        if (targetTypeApiName in objectMetadata.interfaceMap) {
+          changes?.modified.add(this.cacheKey);
+          return this.revalidate(true);
+        }
+      }
+    })();
   };
 }
 
