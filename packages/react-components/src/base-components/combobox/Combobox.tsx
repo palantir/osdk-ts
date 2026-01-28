@@ -23,11 +23,30 @@ import {
   type ComboboxItemProps,
   type ComboboxPopupProps,
   type ComboboxPositionerProps,
+  type ComboboxRootProps,
 } from "@base-ui/react/combobox";
 import { Cross, Search } from "@blueprintjs/icons";
 import classnames from "classnames";
 import React from "react";
 import styles from "./Combobox.module.css";
+
+export interface ComboboxProps<Value, Multiple extends boolean | undefined>
+  extends Omit<ComboboxRootProps<Value, Multiple>, "className">
+{
+  className?: string;
+}
+
+function ComboboxRoot<Value, Multiple extends boolean | undefined = false>({
+  className,
+  children,
+  ...rest
+}: ComboboxProps<Value, Multiple>): React.ReactElement {
+  return (
+    <BaseUICombobox.Root<Value, Multiple> {...rest}>
+      {children}
+    </BaseUICombobox.Root>
+  );
+}
 
 interface ComboboxInputComponentProps
   extends Omit<ComboboxInputProps, "className">
@@ -48,6 +67,14 @@ function ComboboxInput({
       />
     </div>
   );
+}
+
+function ComboboxPortal({
+  children,
+}: {
+  children: React.ReactNode;
+}): React.ReactElement {
+  return <BaseUICombobox.Portal>{children}</BaseUICombobox.Portal>;
 }
 
 interface ComboboxPositionerComponentProps
@@ -210,9 +237,9 @@ function ComboboxEmpty({
 }
 
 export const Combobox: {
-  Root: typeof BaseUICombobox.Root;
+  Root: typeof ComboboxRoot;
   Input: typeof ComboboxInput;
-  Portal: typeof BaseUICombobox.Portal;
+  Portal: typeof ComboboxPortal;
   Positioner: typeof ComboboxPositioner;
   Popup: typeof ComboboxPopup;
   Item: typeof ComboboxItem;
@@ -222,9 +249,9 @@ export const Combobox: {
   Clear: typeof ComboboxClear;
   Empty: typeof ComboboxEmpty;
 } = {
-  Root: BaseUICombobox.Root,
+  Root: ComboboxRoot,
   Input: ComboboxInput,
-  Portal: BaseUICombobox.Portal,
+  Portal: ComboboxPortal,
   Positioner: ComboboxPositioner,
   Popup: ComboboxPopup,
   Item: ComboboxItem,
