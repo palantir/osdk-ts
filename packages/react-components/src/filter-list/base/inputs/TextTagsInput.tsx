@@ -16,7 +16,7 @@
 
 import type { ObjectSet, ObjectTypeDefinition, PropertyKeys } from "@osdk/api";
 import classnames from "classnames";
-import React, { memo, useCallback, useMemo, useRef, useState } from "react";
+import React, { memo, useCallback, useMemo, useState } from "react";
 import { Combobox } from "../../../base-components/combobox/Combobox.js";
 import { usePropertyAggregation } from "../../hooks/usePropertyAggregation.js";
 import sharedStyles from "./shared.module.css";
@@ -54,7 +54,6 @@ function TextTagsInputInner<
   suggestFromData = true,
 }: TextTagsInputProps<Q, K>): React.ReactElement {
   const [inputValue, setInputValue] = useState("");
-  const inputRef = useRef<HTMLInputElement>(null);
 
   const { data: suggestions, isLoading, error } = usePropertyAggregation(
     objectType,
@@ -178,7 +177,6 @@ function TextTagsInputInner<
         )}
 
         <Combobox.Input
-          ref={inputRef}
           className={styles.input}
           placeholder={tags.length > 0 ? "" : placeholder}
           onKeyDown={handleKeyDown}
