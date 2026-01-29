@@ -1,5 +1,18 @@
 # @osdk/shared.test
 
+## 0.5.0-beta.3
+
+### Minor Changes
+
+- db44f6b: Add property security metadata to objects when requested
+
+### Patch Changes
+
+- Updated dependencies [db44f6b]
+- Updated dependencies [24a1e29]
+  - @osdk/api@2.7.0-beta.10
+  - @osdk/generator-converters@2.7.0-beta.10
+
 ## 0.5.0-beta.2
 
 ### Minor Changes

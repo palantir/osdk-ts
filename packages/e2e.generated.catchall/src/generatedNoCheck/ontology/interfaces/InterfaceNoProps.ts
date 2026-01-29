@@ -52,8 +52,11 @@ export interface InterfaceNoProps extends $InterfaceDefinition {
   };
 }
 
-export const InterfaceNoProps: InterfaceNoProps = {
+export const InterfaceNoProps = {
   type: 'interface',
   apiName: 'InterfaceNoProps',
   osdkMetadata: $osdkMetadata,
-};
+  internalDoNotUseMetadata: {
+    rid: 'ri.ontology.main.interface-type.1b1b1b1b-1b1b-1b1b-1b1b-1b1b1b1b1b1b',
+  },
+} satisfies InterfaceNoProps & { internalDoNotUseMetadata: { rid: string } } as InterfaceNoProps;

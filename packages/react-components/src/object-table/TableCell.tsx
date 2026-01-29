@@ -16,10 +16,12 @@
 
 import type { Cell, RowData } from "@tanstack/react-table";
 import { flexRender } from "@tanstack/react-table";
+import type { ReactNode } from "react";
 import React, { useRef } from "react";
 import { CellContextMenu } from "./CellContextMenu.js";
 import { useCellContextMenu } from "./hooks/useCellContextMenu.js";
 import { SELECTION_COLUMN_ID } from "./hooks/useSelectionColumn.js";
+import styles from "./TableCell.module.css";
 
 interface TableCellProps<TData extends RowData> {
   cell: Cell<TData, unknown>;
@@ -52,14 +54,17 @@ export function TableCell<TData extends RowData>(
     <>
       <td
         ref={tdRef}
+        className={styles.osdkTableCell}
         style={{
-          display: "flex",
-          alignItems: "center",
           width: cell.column.getSize(),
         }}
         onContextMenu={handleOpenContextMenu}
       >
-        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+        <div className={styles.osdkTableCellContent}>
+          {flexRender(cell.column.columnDef.cell, cell.getContext()) as
+            | ReactNode
+            | React.JSX.Element}
+        </div>
       </td>
       {shouldRenderContextMenu
         && (

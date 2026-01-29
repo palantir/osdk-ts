@@ -213,19 +213,32 @@ function handleWherePair(
   const firstKey = keysOfFilter[0] as PossibleWhereClauseFilters;
   invariant(filter[firstKey] != null);
 
-  // Struct array
   if (firstKey === "$contains" && filter[firstKey] instanceof Object) {
-    const structFilter: [string, any][] = Object.entries(filter[firstKey]);
-    invariant(
-      structFilter.length === 1,
-      "Cannot filter on more than one struct field in the same clause, need to use an and clause",
-    );
-    const structFieldApiName = structFilter[0][0];
+    const containsValue = filter[firstKey];
+    const containsKeys = Object.keys(containsValue);
 
-    return handleWherePair(structFilter[0], objectOrInterface, {
-      propertyApiName: fieldName,
-      structFieldApiName,
-    });
+    const isFilterObject = containsKeys.some(key => key.startsWith("$"));
+
+    if (isFilterObject) {
+      return handleWherePair(
+        [fieldName, containsValue],
+        objectOrInterface,
+        structFieldSelector,
+        rdpNames,
+      );
+    } else {
+      const structFilter: [string, any][] = Object.entries(containsValue);
+      invariant(
+        structFilter.length === 1,
+        "Cannot filter on more than one struct field in the same clause, need to use an and clause",
+      );
+      const structFieldApiName = structFilter[0][0];
+
+      return handleWherePair(structFilter[0], objectOrInterface, {
+        propertyApiName: fieldName,
+        structFieldApiName,
+      });
+    }
   }
 
   if (firstKey === "$ne") {

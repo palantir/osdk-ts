@@ -54,14 +54,15 @@ function doNothing() {}
 function fillOutListener<
   Q extends ObjectOrInterfaceDefinition,
   P extends PropertyKeys<Q>,
+  R extends boolean = false,
 >(
   {
     onChange = doNothing,
     onError = doNothing,
     onOutOfDate = doNothing,
     onSuccessfulSubscription = doNothing,
-  }: ObjectSetSubscription.Listener<Q, P>,
-): Required<ObjectSetSubscription.Listener<Q, P>> {
+  }: ObjectSetSubscription.Listener<Q, P, R>,
+): Required<ObjectSetSubscription.Listener<Q, P, R>> {
   return { onChange, onError, onOutOfDate, onSuccessfulSubscription };
 }
 
@@ -86,6 +87,7 @@ interface Subscription<
 
   interfaceApiName?: string;
   primaryKeyPropertyName?: string;
+  loadRids: boolean;
 }
 
 function isReady<
@@ -189,6 +191,7 @@ export class ObjectSetListenerWebsocket {
     objectSet: ObjectSet,
     listener: ObjectSetSubscription.Listener<Q, P>,
     properties: Array<P> = [],
+    shouldLoadRids: boolean = false,
   ): Promise<() => void> {
     const objOrInterfaceDef = objectType.type === "object"
       ? await this.#client.ontologyProvider.getObjectDefinition(
@@ -228,6 +231,7 @@ export class ObjectSetListenerWebsocket {
       interfaceApiName: objOrInterfaceDef.type === "object"
         ? undefined
         : objOrInterfaceDef.apiName,
+      loadRids: shouldLoadRids,
     };
 
     this.#subscriptions.set(sub.subscriptionId, sub);
@@ -303,6 +307,7 @@ export class ObjectSetListenerWebsocket {
           objectSet: objectSet,
           propertySet: requestedProperties,
           referenceSet: requestedReferenceProperties,
+          objectLoadingResponseOptions: { shouldLoadObjectRids: true },
         };
       }),
     };
@@ -498,6 +503,7 @@ export class ObjectSetListenerWebsocket {
           }],
           sub.interfaceApiName,
           {},
+          undefined,
           false,
           undefined,
           false,
@@ -540,6 +546,7 @@ export class ObjectSetListenerWebsocket {
         [o.object],
         sub.interfaceApiName,
         {},
+        undefined,
         false,
         undefined,
         false,
@@ -549,11 +556,20 @@ export class ObjectSetListenerWebsocket {
         ),
       ) as Array<Osdk.Instance<any>>;
       const singleOsdkObject = osdkObjectArray[0] ?? undefined;
+
+      const rid = singleOsdkObject["$rid"] as string | undefined;
+
       return singleOsdkObject != null
-        ? {
-          object: singleOsdkObject,
-          state: o.state,
-        }
+        ? rid === undefined
+          ? {
+            object: singleOsdkObject,
+            state: o.state,
+          }
+          : {
+            object: singleOsdkObject,
+            state: o.state,
+            rid: rid,
+          }
         : undefined;
     }));
 

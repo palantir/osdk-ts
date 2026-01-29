@@ -1,5 +1,16 @@
 # @osdk/maker
 
+## 0.15.0-beta.8
+
+### Minor Changes
+
+- c773e8f: Expose more status options on OAC
+
+### Patch Changes
+
+- Updated dependencies [bb9d25c]
+  - @osdk/api@2.7.0-beta.12
+
 ## 0.15.0-beta.7
 
 ### Minor Changes

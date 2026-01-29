@@ -1158,4 +1158,16 @@ describe("Interfaces", () => {
     });
     expect(result.status).toEqual(deprecatedStatus);
   });
+
+  it("sets interface status as example from opts", () => {
+    const exampleStatus = {
+      type: "example",
+      example: {},
+    };
+    const result = defineInterface({
+      apiName: "Foo",
+      status: { type: "example" },
+    });
+    expect(result.status).toEqual(exampleStatus);
+  });
 });

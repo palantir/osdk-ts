@@ -24,6 +24,11 @@ export { useOsdkAction } from "../new/useOsdkAction.js";
 export type { UseOsdkAggregationResult } from "../new/useOsdkAggregation.js";
 export { useOsdkAggregation } from "../new/useOsdkAggregation.js";
 export type {
+  UseOsdkFunctionOptions,
+  UseOsdkFunctionResult,
+} from "../new/useOsdkFunction.js";
+export { useOsdkFunction } from "../new/useOsdkFunction.js";
+export type {
   UseOsdkObjectOptions,
   UseOsdkObjectResult,
 } from "../new/useOsdkObject.js";

@@ -66,8 +66,11 @@ export interface TestAsTypeIltInterface extends $InterfaceDefinition {
   };
 }
 
-export const TestAsTypeIltInterface: TestAsTypeIltInterface = {
+export const TestAsTypeIltInterface = {
   type: 'interface',
   apiName: 'TestAsTypeIltInterface',
   osdkMetadata: $osdkMetadata,
-};
+  internalDoNotUseMetadata: {
+    rid: 'ri.ontology.main.interface.93463b40-940d-430d-9283-9eca82fa9aa4',
+  },
+} satisfies TestAsTypeIltInterface & { internalDoNotUseMetadata: { rid: string } } as TestAsTypeIltInterface;

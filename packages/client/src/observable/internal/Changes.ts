@@ -19,6 +19,7 @@ import type { ObjectHolder } from "../../object/convertWireToOsdkObjects/ObjectH
 import type { AggregationCacheKey } from "./aggregation/AggregationCacheKey.js";
 import type { CacheKey } from "./CacheKey.js";
 import { DEBUG_ONLY__cacheKeyToString } from "./CacheKey.js";
+import type { FunctionCacheKey } from "./function/FunctionCacheKey.js";
 import type { SpecificLinkCacheKey } from "./links/SpecificLinkCacheKey.js";
 import type { ListCacheKey } from "./list/ListCacheKey.js";
 import type { ObjectCacheKey } from "./object/ObjectCacheKey.js";
@@ -30,6 +31,7 @@ export class Changes {
 
   added: Set<
     | AggregationCacheKey
+    | FunctionCacheKey
     | ListCacheKey
     | ObjectCacheKey
     | SpecificLinkCacheKey
@@ -37,6 +39,7 @@ export class Changes {
   > = new Set();
   modified: Set<
     | AggregationCacheKey
+    | FunctionCacheKey
     | ListCacheKey
     | ObjectCacheKey
     | SpecificLinkCacheKey
@@ -44,6 +47,7 @@ export class Changes {
   > = new Set();
   deleted: Set<
     | AggregationCacheKey
+    | FunctionCacheKey
     | ListCacheKey
     | ObjectCacheKey
     | SpecificLinkCacheKey
@@ -55,7 +59,10 @@ export class Changes {
     data: ObjectHolder,
     isNew: boolean,
   ): void => {
-    this[isNew ? "addedObjects" : "modifiedObjects"].set(data.$apiName, data);
+    this[isNew ? "addedObjects" : "modifiedObjects"].set(
+      data.$objectType ?? data.$apiName,
+      data,
+    );
     this[isNew ? "added" : "modified"].add(cacheKey);
   };
 
@@ -76,6 +83,10 @@ export class Changes {
   };
 
   registerObjectSet = (key: ObjectSetCacheKey): void => {
+    this.modified.add(key);
+  };
+
+  registerFunction = (key: FunctionCacheKey): void => {
     this.modified.add(key);
   };
 

@@ -129,7 +129,7 @@ describe("validateWidgetConfig", () => {
       },
     };
     expect(() => validateWidgetConfig(invalidConfig)).toThrow(
-      "ObjectSet parameter \"myObjectSet\" must have a valid rid in its metadata, make sure your OSDK was generated with a generator version >=2.5.0",
+      "ObjectSet parameter \"myObjectSet\" must have a valid rid in its metadata, make sure your OSDK was generated with a generator version >=2.6.2",
     );
   });
 });

@@ -315,6 +315,16 @@ exports[`Load Ontologies Metadata > Loads action types with media refs, interfac
               "description": "TimeSeries of the status of the employee",
               "rid": "rid",
             },
+            "favoriteRestaurants": {
+              "dataType": {
+                "reducers": [],
+                "subType": {
+                  "type": "string",
+                },
+                "type": "array",
+              },
+              "rid": "rid",
+            },
             "fullName": {
               "dataType": {
                 "type": "string",
@@ -578,6 +588,16 @@ exports[`Load Ontologies Metadata > Loads object and action types using only spe
                 "type": "timeseries",
               },
               "description": "TimeSeries of the status of the employee",
+              "rid": "rid",
+            },
+            "favoriteRestaurants": {
+              "dataType": {
+                "reducers": [],
+                "subType": {
+                  "type": "string",
+                },
+                "type": "array",
+              },
               "rid": "rid",
             },
             "fullName": {
@@ -934,6 +954,16 @@ exports[`Load Ontologies Metadata > Loads object, action, interface types withou
                 "type": "timeseries",
               },
               "description": "TimeSeries of the status of the employee",
+              "rid": "rid",
+            },
+            "favoriteRestaurants": {
+              "dataType": {
+                "reducers": [],
+                "subType": {
+                  "type": "string",
+                },
+                "type": "array",
+              },
               "rid": "rid",
             },
             "fullName": {

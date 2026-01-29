@@ -16,6 +16,7 @@
 
 import type { Row, RowData } from "@tanstack/react-table";
 import React, { useCallback } from "react";
+import { Checkbox } from "../base-components/checkbox/Checkbox.js";
 
 interface SelectionHeaderCellProps {
   isAllSelected: boolean;
@@ -29,24 +30,12 @@ export function SelectionHeaderCell({
   onToggleAll,
 }: SelectionHeaderCellProps): React.ReactElement {
   return (
-    <div
-      style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        width: "100%",
-      }}
-    >
-      <input
-        type="checkbox"
-        checked={isAllSelected}
-        ref={(input) => {
-          if (input) input.indeterminate = hasSelection && !isAllSelected;
-        }}
-        onChange={onToggleAll}
-        aria-label="Select all rows"
-      />
-    </div>
+    <Checkbox
+      indeterminate={hasSelection && !isAllSelected}
+      checked={isAllSelected}
+      onCheckedChange={onToggleAll}
+      aria-label={"Select all rows"}
+    />
   );
 }
 
@@ -55,39 +44,23 @@ interface SelectionCellProps<TData extends RowData> {
   onToggleRow: (rowId: string, rowIndex: number, isShiftClick: boolean) => void;
 }
 
-const noop = () => {};
 export function SelectionCell<TData extends RowData>({
   row,
   onToggleRow,
 }: SelectionCellProps<TData>): React.ReactElement {
-  const isSelected = row.getIsSelected();
-
   const handleClick = useCallback(
-    (e: React.MouseEvent<HTMLInputElement>) => {
-      // Prevent onRowClick call
-      e.stopPropagation();
-
-      onToggleRow(row.id, row.index, e.shiftKey);
+    (event: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
+      const isShiftClick = event.shiftKey;
+      onToggleRow(row.id, row.index, isShiftClick);
     },
     [row, onToggleRow],
   );
 
   return (
-    <div
-      style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        width: "100%",
-      }}
-    >
-      <input
-        type="checkbox"
-        checked={isSelected}
-        onClick={handleClick}
-        onChange={noop} // Using onClick here
-        aria-label={`Select row ${row.index + 1}`}
-      />
-    </div>
+    <Checkbox
+      checked={row.getIsSelected()}
+      onClick={handleClick}
+      aria-label={`Select row ${row.index + 1}`}
+    />
   );
 }

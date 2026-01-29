@@ -188,11 +188,14 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
         };
       }
 
-      export const Bar: Bar = {
+      export const Bar = {
         type: "interface",
         apiName: "Bar",
         osdkMetadata: $osdkMetadata,
-      };
+        internalDoNotUseMetadata: {
+          rid: "BarRid",
+        },
+      } satisfies Bar & { internalDoNotUseMetadata: { rid: string } } as Bar;
       "
     `);
   });
@@ -289,11 +292,14 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
         };
       }
 
-      export const Foo: Foo = {
+      export const Foo = {
         type: "interface",
         apiName: "Foo",
         osdkMetadata: $osdkMetadata,
-      };
+        internalDoNotUseMetadata: {
+          rid: "FooRid",
+        },
+      } satisfies Foo & { internalDoNotUseMetadata: { rid: string } } as Foo;
       "
     `);
   });
@@ -401,11 +407,14 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
         };
       }
 
-      export const Foo: Foo = {
+      export const Foo = {
         type: "interface",
         apiName: "Foo",
         osdkMetadata: $osdkMetadata,
-      };
+        internalDoNotUseMetadata: {
+          rid: "FooRid",
+        },
+      } satisfies Foo & { internalDoNotUseMetadata: { rid: string } } as Foo;
       "
     `);
   });
@@ -501,11 +510,14 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
         };
       }
 
-      export const Foo: Foo = {
+      export const Foo = {
         type: "interface",
         apiName: "Foo",
         osdkMetadata: $osdkMetadata,
-      };
+        internalDoNotUseMetadata: {
+          rid: "FooRid",
+        },
+      } satisfies Foo & { internalDoNotUseMetadata: { rid: string } } as Foo;
       "
     `);
   });

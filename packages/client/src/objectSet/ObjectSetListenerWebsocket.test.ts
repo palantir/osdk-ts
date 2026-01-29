@@ -20,7 +20,7 @@ import type {
   Osdk,
   PropertyKeys,
 } from "@osdk/api";
-import { $ontologyRid, Employee } from "@osdk/client.test.ontology";
+import { $ontologyRid, Employee, Office } from "@osdk/client.test.ontology";
 import type {
   ObjectSetStreamSubscribeRequests,
   StreamMessage,
@@ -41,10 +41,12 @@ import {
   beforeEach,
   describe,
   expect,
+  expectTypeOf,
   it,
   vi,
 } from "vitest";
 import { z } from "zod";
+import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 import { createMinimalClient } from "../createMinimalClient.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
@@ -235,6 +237,7 @@ describe("ObjectSetListenerWebsocket", async () => {
           "employeeSensor",
           "skillSet",
           "skillSetEmbedding",
+          "favoriteRestaurants",
         ]);
       });
 
@@ -313,6 +316,7 @@ describe("ObjectSetListenerWebsocket", async () => {
                 "$objectSpecifier": "Employee:undefined",
                 "$objectType": "Employee",
                 "$primaryKey": undefined,
+                "$propertySecurities": undefined,
                 "$title": undefined,
                 "employeeId": 1,
               },
@@ -334,6 +338,7 @@ describe("ObjectSetListenerWebsocket", async () => {
                 "$objectSpecifier": "Employee:12345",
                 "$objectType": "Employee",
                 "$primaryKey": "12345",
+                "$propertySecurities": undefined,
                 "$title": undefined,
                 "employeeId": "12345",
                 "employeeLocation": GeotimeSeriesPropertyImpl {
@@ -504,6 +509,51 @@ describe("ObjectSetListenerWebsocket", async () => {
         unsubscribe();
         setWebSocketState(ws5, "close");
       });
+    });
+  });
+
+  describe("types", () => {
+    it("does not return rid on object type if requested and object has a GTSR", async () => {
+      const client: Client =
+        ((a: any) => ({ subscribe: (a: any, b: any) => {} })) as Client;
+
+      client(Employee).subscribe({
+        onChange: (change) => {
+          change.object.$rid; // This doesn't error because we're forcing the type through, this is expected
+        },
+      }, {
+        // @ts-expect-error
+        includeRid: true,
+      });
+    });
+
+    it("does not return rid on object type if not requested", async () => {
+      const client: Client =
+        ((a: any) => ({ subscribe: (a: any, b: any) => {} })) as Client;
+
+      client(Office).subscribe({
+        onChange: (change) => {
+          // @ts-expect-error
+          change.object.$rid;
+        },
+      });
+    });
+
+    it("does return rid on object type if requested and object does not have a GTSR", async () => {
+      const client: Client =
+        ((a: any) => ({ subscribe: (a: any, b: any) => {} })) as Client;
+
+      client(Employee).subscribe({
+        onChange: (change) => {
+          expectTypeOf(change.object.$rid).toBeString();
+        },
+      }, { includeRid: true, properties: ["employeeId"] });
+
+      client(Office).subscribe({
+        onChange: (change) => {
+          expectTypeOf(change.object.$rid).toBeString();
+        },
+      }, { includeRid: true });
     });
   });
 });
