@@ -38,7 +38,24 @@
   justify-content: center;
 }
 
-.osdkTableCellContent {
+
+.osdkTableCell[data-pinned="left"],
+.osdkTableCell[data-pinned="right"] {
+  position: sticky;
+  z-index: var(--bp-surface-zIndex-1);
+}
+
+/* Last left-pinned column - no left-pinned siblings after it */
+.osdkTableCell[data-pinned="left"]:not(:has(~ [data-pinned="left"])) {
+  border-right: calc(var(--bp-surface-borderWidth) * 2) solid var(--osdk-table-border-color);
+}
+
+/* First right-pinned column - no right-pinned siblings before it */
+.osdkTableCell[data-pinned="right"]:not(:has(~ [data-pinned="right"]):nth-child(n+2)) {
+  border-left: calc(var(--bp-surface-borderWidth) * 2) solid var(--osdk-table-border-color);
+}
+
+.osdkTableCellContent:not(:has([role="checkbox"])) {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
