@@ -179,6 +179,7 @@ export class ObjectSetQuery extends BaseListQuery<
     const resp = await this.#composedObjectSet.fetchPage({
       $nextPageToken: this.nextPageToken,
       $pageSize: this.options.pageSize,
+      $includeRid: true,
       // OrderBy is already applied in the composed ObjectSet
       ...(this.#operations.orderBy
           && Object.keys(this.#operations.orderBy).length > 0
