@@ -15,7 +15,7 @@
  */
 
 import { flexRender, type Header, type RowData } from "@tanstack/react-table";
-import React, { type ReactNode } from "react";
+import React from "react";
 import styles from "./TableHeaderContent.module.css";
 
 interface TableHeaderContentProps<TData extends RowData> {
@@ -30,7 +30,7 @@ export function TableHeaderContent<TData extends RowData>(
       {flexRender(
         header.column.columnDef.header,
         header.getContext(),
-      ) as ReactNode | React.JSX.Element}
+      )}
     </div>
   );
 }
