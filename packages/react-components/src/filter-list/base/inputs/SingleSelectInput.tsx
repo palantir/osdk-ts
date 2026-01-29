@@ -74,7 +74,9 @@ function SingleSelectInputInner<
   const items = useMemo(() => {
     const result: Record<string, string> = {};
     for (const { value, count } of values) {
-      result[value] = showCounts ? `${value} (${count.toLocaleString()})` : value;
+      result[value] = showCounts
+        ? `${value} (${count.toLocaleString()})`
+        : value;
     }
     return result;
   }, [values, showCounts]);
