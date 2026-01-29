@@ -27,8 +27,11 @@ interface FilterListContentProps<Q extends ObjectTypeDefinition> {
   objectType: Q;
   objectSet: ObjectSet<Q>;
   filterDefinitions?: Array<FilterDefinitionUnion<Q>>;
-  filterStates: Map<string, FilterState>;
-  onFilterStateChanged: (key: string, state: FilterState) => void;
+  filterStates: Map<FilterDefinitionUnion<Q>, FilterState>;
+  onFilterStateChanged: (
+    definition: FilterDefinitionUnion<Q>,
+    state: FilterState,
+  ) => void;
   className?: string;
   style?: React.CSSProperties;
   renderEmptyAction?: () => React.ReactNode;
@@ -68,13 +71,11 @@ export function FilterListContent<Q extends ObjectTypeDefinition>({
     >
       {filterDefinitions.map((definition, index) => {
         const filterKey = getFilterKey(definition);
-        const instanceKey = `${filterKey}:${index}`;
-        const state = filterStates.get(instanceKey);
+        const state = filterStates.get(definition);
 
         return (
           <FilterListItem
-            key={instanceKey}
-            instanceKey={instanceKey}
+            key={`${filterKey}:${index}`}
             objectType={objectType}
             objectSet={objectSet}
             definition={definition}
