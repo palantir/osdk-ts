@@ -93,7 +93,7 @@ export function EmployeesTable() {
       <ObjectTable<Employee, { managerName: "string" }>
         objectSet={employeesObjectSet}
         objectType={Employee}
-        // columnDefinitions={columnDefinitions}
+        columnDefinitions={columnDefinitions}
         selectionMode={"multiple"}
         renderCellContextMenu={renderCellContextMenu}
       />
