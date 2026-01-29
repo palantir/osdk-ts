@@ -97,8 +97,6 @@ function FilterListHeaderInner({
                   styles.activeCount,
                   classNames?.activeCount,
                 )}
-                // cspell:ignore nums
-                style={{ fontVariantNumeric: "tabular-nums" }}
               >
                 ({activeFilterCount})
               </span>

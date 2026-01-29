@@ -88,15 +88,12 @@ function FilterInputContent<Q extends ObjectTypeDefinition>({
       const customFilterState = filterState?.type === "CUSTOM"
         ? filterState
         : definition.filterState;
-      const typedCallback = onFilterStateChanged as (
-        state: typeof customFilterState,
-      ) => void;
       return (
         <>
           {definition.renderInput({
             objectSet,
             filterState: customFilterState,
-            onFilterStateChanged: typedCallback,
+            onFilterStateChanged: (state) => onFilterStateChanged(state),
           })}
         </>
       );
