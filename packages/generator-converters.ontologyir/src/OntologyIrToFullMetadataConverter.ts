@@ -1056,16 +1056,7 @@ export class OntologyIrToFullMetadataConverter {
     }
   }
 
-  /**
-   * Convert a string to kebab-case for use as a RID locator.
-   * The locator must match pattern [a-z0-9-]+ for downstream consumers.
-   */
-  private static toKebabCase(str: string): string {
-    return str
-      .replace(/\./g, "-") // Replace dots with hyphens
-      .replace(/([a-z])([A-Z])/g, "$1-$2") // Insert hyphen before caps
-      .toLowerCase();
-  }
+
 
   /**
    * Generate a deterministic UUID from a string.
