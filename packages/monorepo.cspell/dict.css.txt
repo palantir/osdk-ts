@@ -1,5 +1,6 @@
 Cantarell
 Neue
+nums
 OKLCH
 oklch
 Resizer
