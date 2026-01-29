@@ -140,9 +140,9 @@ export class OntologyIrToFullMetadataConverter {
           // Ensure the RID is valid - if it doesn't start with "ri.", create a proper RID
           let propertyRid = propKey;
           if (!propKey.startsWith("ri.")) {
-            // Generate a proper RID for the property
-            // Format: ri.property-type.<object-api-name>.<property-key>
-            propertyRid = `ri.property-type.${object.apiName}.${propKey}`;
+            // Generate a proper RID for the property using a deterministic UUID as the locator.
+            // The locator must be a UUID because downstream consumers validate this for SQL safety.
+            propertyRid = `ri.ontology.main.property-type.${this.toUuid(propKey)}`;
           }
 
           // Use the validated RID as both the key and the rid field
@@ -171,7 +171,7 @@ export class OntologyIrToFullMetadataConverter {
         },
         status: this.convertObjectTypeStatus(object.status),
         properties,
-        rid: `ri.${object.apiName}`,
+        rid: `ri.ontology.main.object-type.${this.toUuid(object.apiName)}`,
       };
 
       const sharedPropertyTypeMappings: Record<ApiName, ApiName> = {};
@@ -464,7 +464,7 @@ export class OntologyIrToFullMetadataConverter {
     for (const action of actions) {
       const metadata = action.actionType.metadata;
       const actionType: Ontologies.ActionTypeV2 = {
-        rid: `ri.action.${metadata.apiName}`,
+        rid: `ri.ontology.main.action-type.${this.toUuid(metadata.apiName)}`,
         apiName: metadata.apiName,
         displayName: metadata.displayMetadata.displayName,
         description: metadata.displayMetadata.description,
@@ -1054,6 +1054,27 @@ export class OntologyIrToFullMetadataConverter {
       default:
         throw new Error(`Unknown link type status: ${status}`);
     }
+  }
+
+  /**
+   * Convert a string to kebab-case for use as a RID locator.
+   * The locator must match pattern [a-z0-9-]+ for downstream consumers.
+   */
+  private static toKebabCase(str: string): string {
+    return str
+      .replace(/\./g, "-") // Replace dots with hyphens
+      .replace(/([a-z])([A-Z])/g, "$1-$2") // Insert hyphen before caps
+      .toLowerCase();
+  }
+
+  /**
+   * Generate a deterministic UUID from a string.
+   * Uses SHA-256 hash truncated to UUID format for consistency.
+   */
+  private static toUuid(str: string): string {
+    const hashHex = hash("sha256", str, "hex");
+    // Format as UUID: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+    return `${hashHex.slice(0, 8)}-${hashHex.slice(8, 12)}-${hashHex.slice(12, 16)}-${hashHex.slice(16, 20)}-${hashHex.slice(20, 32)}`;
   }
 }
 
