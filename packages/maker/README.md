@@ -467,6 +467,54 @@ const eventObject = defineObject({
 });
 ```
 
+### Object with Property Security Groups
+
+```typescript
+const object = defineObject({
+  apiName: "person",
+  displayName: "Person",
+  pluralDisplayName: "Persons",
+  titlePropertyApiName: "name",
+  primaryKeyPropertyApiName: "name",
+  properties: {
+    "name": { type: "string", displayName: "Name" },
+    "protectedProperty": { type: "string", displayName: "Event Name" },
+    "markingProperty": {
+      type: {
+        type: "marking",
+        markingType: "MANDATORY",
+        markingInputGroupName: "myMarking",
+      }
+    },
+  },
+  datasources: [{
+    type: "dataset",
+    // you can optionally define an objectSecurityPolicy here as well 
+    propertySecurityGroups: [
+      {
+        name: "myPsg",
+        properties: ["protectedProperty"],
+        granularPolicy: {
+          type: "and",
+          conditions: [
+            {
+              type: "markingProperty",
+              property: "markingProperty",
+            }, {
+              type: "group",
+              name: "myInputGroup"
+            }
+          ],
+        },
+        additionalMandatoryMarkings: {
+          "myCbacMarking": "CBAC"
+        }
+      }
+    ]
+  }],
+});
+```
+
 ## Defining Links
 
 Links define relationships between objects.
