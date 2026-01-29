@@ -2,4 +2,4 @@
 "@osdk/react": minor
 ---
 
-Fix fetchMore in useObjectSet
+Fix fetchMore in useObjectSet and useLinks
