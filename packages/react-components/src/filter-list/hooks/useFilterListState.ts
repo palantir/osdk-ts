@@ -26,6 +26,7 @@ import { assertUnreachable } from "../utils/assertUnreachable.js";
 import { buildWhereClause } from "../utils/filterStateToWhereClause.js";
 import { filterHasActiveState } from "../utils/filterValues.js";
 import { getFilterKey } from "../utils/getFilterKey.js";
+import { useLatestRef } from "./useLatestRef.js";
 
 export interface UseFilterListStateResult<Q extends ObjectTypeDefinition> {
   filterStates: Map<string, FilterState>;
@@ -106,6 +107,10 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
     Map<string, FilterState>
   >(() => buildInitialStates(filterDefinitions));
 
+  const filterDefinitionsRef = useLatestRef(filterDefinitions);
+  const onFilterStateChangedRef = useLatestRef(onFilterStateChanged);
+  const onFilterClauseChangedRef = useLatestRef(onFilterClauseChanged);
+
   const setFilterState = useCallback(
     (filterKey: string, state: FilterState) => {
       setFilterStates((prev) => {
@@ -113,14 +118,14 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
         next.set(filterKey, state);
         return next;
       });
-      const definition = filterDefinitions?.find(
+      const definition = filterDefinitionsRef.current?.find(
         (d) => getFilterKey(d) === filterKey,
       );
       if (definition) {
-        onFilterStateChanged?.(definition, state);
+        onFilterStateChangedRef.current?.(definition, state);
       }
     },
-    [filterDefinitions, onFilterStateChanged],
+    [],
   );
 
   const whereClause = useMemo(
@@ -140,8 +145,8 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
       isFirstRender.current = false;
       return;
     }
-    onFilterClauseChanged?.(whereClause);
-  }, [whereClause, onFilterClauseChanged]);
+    onFilterClauseChangedRef.current?.(whereClause);
+  }, [whereClause, onFilterClauseChangedRef]);
 
   const activeFilterCount = useMemo(() => {
     let count = 0;
@@ -154,8 +159,8 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
   }, [filterStates]);
 
   const reset = useCallback(() => {
-    setFilterStates(buildInitialStates(filterDefinitions));
-  }, [filterDefinitions]);
+    setFilterStates(buildInitialStates(filterDefinitionsRef.current));
+  }, [filterDefinitionsRef]);
 
   return useMemo(() => ({
     filterStates,
