@@ -26,6 +26,22 @@ import React, { memo, useCallback, useMemo } from "react";
 import { Checkbox } from "../../../base-components/checkbox/Checkbox.js";
 import styles from "./NullValueWrapper.module.css";
 
+// Helper functions to encapsulate OSDK type casts
+function createNullCountAggregateOptions<
+  Q extends ObjectTypeDefinition,
+>(): AggregateOpts<Q> {
+  return {
+    $select: { $count: "unordered" as const },
+  } as AggregateOpts<Q>;
+}
+
+function createNullWhereClause<
+  Q extends ObjectTypeDefinition,
+  K extends PropertyKeys<Q>,
+>(propertyKey: K): WhereClause<Q> {
+  return { [propertyKey as string]: { $isNull: true } } as WhereClause<Q>;
+}
+
 interface NullValueWrapperProps<
   Q extends ObjectTypeDefinition,
   K extends PropertyKeys<Q>,
@@ -54,16 +70,14 @@ function NullValueWrapperInner<
   style,
 }: NullValueWrapperProps<Q, K>): React.ReactElement {
   const nullCountAggregateOptions = useMemo(
-    () =>
-      ({
-        $select: { $count: "unordered" as const },
-      }) as AggregateOpts<Q>,
+    () => createNullCountAggregateOptions<Q>(),
     [],
   );
 
-  const nullWhereClause = useMemo(() => {
-    return { [propertyKey as string]: { $isNull: true } } as WhereClause<Q>;
-  }, [propertyKey]);
+  const nullWhereClause = useMemo(
+    () => createNullWhereClause<Q, K>(propertyKey),
+    [propertyKey],
+  );
 
   const { data: nullCountData, isLoading } = useOsdkAggregation(objectType, {
     where: nullWhereClause,
