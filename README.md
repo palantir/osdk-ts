@@ -111,8 +111,3 @@ For more details, refer to the [public docs](https://www.palantir.com/docs/found
 3. `pnpm install`
 4. `./scripts/createReleasePr.sh`
 5. Once your release PR has been merged, run `/scripts/tag-release.sh [COMMIT_SHA]` to tag your release.
-
-
-
-npx pnpm run transpileEsm
-node convert-json.js  /Volumes/git/ontology-as-code-template/packages/ontology-c5486156-c346-4624-88a7-833ae7892439-ontology/build/ontology/block/ontology.json result.json

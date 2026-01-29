@@ -96,16 +96,8 @@ export class OntologyIrToFullMetadataConverter {
         throw new Error("Object must have exactly 1 primary key");
       }
 
-      // // Ensure primaryKey and titleProperty are valid RIDs
       let primaryKey = object.primaryKeys[0];
-      // if (!primaryKey.startsWith("ri.")) {
-      //   primaryKey = `ri.property-type.${object.apiName}.${primaryKey}`;
-      // }
-
       let titleProperty = object.titlePropertyTypeRid;
-      // if (titleProperty && !titleProperty.startsWith("ri.")) {
-      //   titleProperty = `ri.property-type.${object.apiName}.${titleProperty}`;
-      // }
 
       const properties: Record<ApiName, Ontologies.PropertyV2> = {};
       for (const [propKey, prop] of Object.entries(object.propertyTypes)) {
