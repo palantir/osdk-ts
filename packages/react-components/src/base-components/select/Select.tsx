@@ -28,13 +28,13 @@ import classnames from "classnames";
 import React from "react";
 import styles from "./Select.module.css";
 
-export interface SelectProps<Value>
+export interface SelectProps<Value extends string | number>
   extends Omit<SelectRootProps<Value, false>, "className" | "multiple">
 {
   className?: string;
 }
 
-function SelectRoot<Value>({
+function SelectRoot<Value extends string | number>({
   className,
   children,
   ...rest
