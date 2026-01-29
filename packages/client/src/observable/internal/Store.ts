@@ -67,7 +67,7 @@ import { OrderByCanonicalizer } from "./OrderByCanonicalizer.js";
 import { PivotCanonicalizer } from "./PivotCanonicalizer.js";
 import { Queries } from "./Queries.js";
 import { type Rdp, RdpCanonicalizer } from "./RdpCanonicalizer.js";
-import { RidListCanonicalizer } from "./rid-list/RidListCanonicalizer.js";
+import { RidListCanonicalizer } from "./RidListCanonicalizer.js";
 import type { Subjects } from "./Subjects.js";
 import { WhereClauseCanonicalizer } from "./WhereClauseCanonicalizer.js";
 

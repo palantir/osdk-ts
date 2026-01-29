@@ -26,7 +26,7 @@ import type { OrderByCanonicalizer } from "../OrderByCanonicalizer.js";
 import type { PivotCanonicalizer } from "../PivotCanonicalizer.js";
 import type { QuerySubscription } from "../QuerySubscription.js";
 import type { RdpCanonicalizer } from "../RdpCanonicalizer.js";
-import type { RidListCanonicalizer } from "../rid-list/RidListCanonicalizer.js";
+import type { RidListCanonicalizer } from "../RidListCanonicalizer.js";
 import type { Store } from "../Store.js";
 import type { WhereClauseCanonicalizer } from "../WhereClauseCanonicalizer.js";
 import { InterfaceListQuery } from "./InterfaceListQuery.js";
