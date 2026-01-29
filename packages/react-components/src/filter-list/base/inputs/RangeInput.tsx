@@ -42,6 +42,17 @@ import sharedStyles from "./shared.module.css";
 
 const DEBOUNCE_MS = 300;
 
+// Helper function to encapsulate OSDK type cast for group-by aggregation
+function createGroupByAggregateOptions<
+  Q extends ObjectTypeDefinition,
+  K extends PropertyKeys<Q>,
+>(propertyKey: K): AggregateOpts<Q> {
+  return {
+    $select: { $count: "unordered" as const },
+    $groupBy: { [propertyKey as string]: "exact" as const },
+  } as AggregateOpts<Q>;
+}
+
 export interface RangeInputConfig<T> {
   inputType: "number" | "date";
   formatValue: (value: T | undefined) => string;
@@ -127,11 +138,7 @@ function RangeInputInner<
   }, []);
 
   const aggregateOptions = useMemo(
-    () =>
-      ({
-        $select: { $count: "unordered" as const },
-        $groupBy: { [propertyKey as string]: "exact" as const },
-      }) as AggregateOpts<Q>,
+    () => createGroupByAggregateOptions<Q, K>(propertyKey),
     [propertyKey],
   );
 

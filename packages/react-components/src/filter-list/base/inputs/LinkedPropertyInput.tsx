@@ -76,6 +76,11 @@ function LinkedPropertyInputInner<
 
   const linkedObjectType = linkedObjectSet.$objectSetInternals.def;
 
+  // Single cast for the linked property key - the definition ensures this is valid
+  const linkedPropertyKey = definition.linkedPropertyKey as PropertyKeys<
+    typeof linkedObjectType
+  >;
+
   const innerState = filterState?.type === "LINKED_PROPERTY"
     ? filterState.linkedFilterState
     : undefined;
@@ -104,9 +109,7 @@ function LinkedPropertyInputInner<
           <CheckboxListInput
             objectType={linkedObjectType}
             objectSet={linkedObjectSet}
-            propertyKey={definition.linkedPropertyKey as PropertyKeys<
-              typeof linkedObjectType
-            >}
+            propertyKey={linkedPropertyKey}
             selectedValues={selectedValues}
             onChange={(newSelectedValues) =>
               wrappedOnChange({
@@ -128,9 +131,7 @@ function LinkedPropertyInputInner<
           <MultiSelectInput
             objectType={linkedObjectType}
             objectSet={linkedObjectSet}
-            propertyKey={definition.linkedPropertyKey as PropertyKeys<
-              typeof linkedObjectType
-            >}
+            propertyKey={linkedPropertyKey}
             selectedValues={values}
             onChange={(selectedValues) =>
               wrappedOnChange({
@@ -156,9 +157,7 @@ function LinkedPropertyInputInner<
           <SingleSelectInput
             objectType={linkedObjectType}
             objectSet={linkedObjectSet}
-            propertyKey={definition.linkedPropertyKey as PropertyKeys<
-              typeof linkedObjectType
-            >}
+            propertyKey={linkedPropertyKey}
             selectedValue={value}
             onChange={(selectedValue) =>
               wrappedOnChange({
@@ -211,9 +210,7 @@ function LinkedPropertyInputInner<
           <NumberRangeInput
             objectType={linkedObjectType}
             objectSet={linkedObjectSet}
-            propertyKey={definition.linkedPropertyKey as PropertyKeys<
-              typeof linkedObjectType
-            >}
+            propertyKey={linkedPropertyKey}
             minValue={nr?.minValue}
             maxValue={nr?.maxValue}
             onChange={(minValue, maxValue) =>
@@ -233,9 +230,7 @@ function LinkedPropertyInputInner<
           <DateRangeInput
             objectType={linkedObjectType}
             objectSet={linkedObjectSet}
-            propertyKey={definition.linkedPropertyKey as PropertyKeys<
-              typeof linkedObjectType
-            >}
+            propertyKey={linkedPropertyKey}
             minValue={dr?.minValue}
             maxValue={dr?.maxValue}
             onChange={(minValue, maxValue) =>
@@ -260,9 +255,7 @@ function LinkedPropertyInputInner<
           <ListogramInput
             objectType={linkedObjectType}
             objectSet={linkedObjectSet}
-            propertyKey={definition.linkedPropertyKey as PropertyKeys<
-              typeof linkedObjectType
-            >}
+            propertyKey={linkedPropertyKey}
             selectedValues={selectedValues}
             onChange={(values) =>
               wrappedOnChange({
@@ -283,9 +276,7 @@ function LinkedPropertyInputInner<
           <TextTagsInput
             objectType={linkedObjectType}
             objectSet={linkedObjectSet}
-            propertyKey={definition.linkedPropertyKey as PropertyKeys<
-              typeof linkedObjectType
-            >}
+            propertyKey={linkedPropertyKey}
             tags={tags}
             onChange={(newTags) =>
               wrappedOnChange({
