@@ -67,7 +67,10 @@ export interface ObserveLinks {
   >(
     objects: Osdk.Instance<T> | ReadonlyArray<Osdk.Instance<T>>,
     linkName: L,
-    options: Omit<ObserveLinks.Options<T, L>, "srcType" | "pk">,
+    options: Omit<
+      ObserveLinks.Options<T, L>,
+      "srcType" | "pk" | "sourceUnderlyingObjectType"
+    >,
     subFn: Observer<
       ObserveLinks.CallbackArgs<
         CompileTimeMetadata<T>["links"][L]["targetType"]
