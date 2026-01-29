@@ -20,7 +20,7 @@ import type {
   SimplePropertyDef,
 } from "@osdk/api";
 import type { ColumnPinningState, OnChangeFn } from "@tanstack/react-table";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { ObjectTableProps } from "../ObjectTableApi.js";
 import { SELECTION_COLUMN_ID } from "../utils/constants.js";
 
@@ -68,14 +68,20 @@ export const useColumnPinning = <
   RDPs,
   FunctionColumns
 >): UseColumnPinningResults => {
-  const [columnPinning, setColumnPinning] = useState<ColumnPinningState>(() => {
+  const [columnPinning, setColumnPinning] = useState<ColumnPinningState>({
+    left: [],
+    right: [],
+  });
+
+  // Update column pinning when columnDefinitions change
+  useEffect(() => {
     const defaultState = getColumnPinningStateFromColumnDefs(columnDefinitions);
     const selectionCol = hasSelectionColumn ? [SELECTION_COLUMN_ID] : [];
-    return {
+    setColumnPinning({
       left: [...selectionCol, ...(defaultState.left ?? [])],
       right: [...(defaultState.right ?? [])],
-    };
-  });
+    });
+  }, [columnDefinitions, hasSelectionColumn]);
 
   const onColumnPinningChange: OnChangeFn<ColumnPinningState> = useCallback(
     (updater) => {
