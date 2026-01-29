@@ -19,6 +19,7 @@
   position: sticky;
   top: 0;
   z-index: var(--bp-surface-zIndex-1);
+  background-color: var(--osdk-table-header-bg);
 }
 
 .osdkTableHeader[data-resizing="true"] {
@@ -41,12 +42,21 @@
   font-weight: var(--osdk-table-header-fontWeight);
   font-size: var(--osdk-table-header-fontSize);
   color: var(--osdk-table-header-color);
-  border: var(--bp-surface-borderWidth)solid var(--osdk-table-border-color);
+  border-top: var(--osdk-table-border);
+  border-right: var(--osdk-table-header-divider);
   background-color: inherit;
+
+  &:first-child {
+    border-left: var(--osdk-table-border);
+  }
+
+  &:last-child {
+    border-right: var(--osdk-table-border);
+  }
 }
 
-.osdkTableHeaderCell:not(:first-child) {
-  border-left: none;
+.osdkTableHeaderCell:has([role="checkbox"]) {
+  justify-content: center;
 }
 
 .osdkTableHeaderCell[data-pinned="left"],
@@ -57,30 +67,29 @@
 
 /* Last left-pinned column - no left-pinned siblings after it */
 .osdkTableHeaderCell[data-pinned="left"]:not(:has(~ [data-pinned="left"])) {
-  border-right: calc(var(--bp-surface-borderWidth)* 2) solid var(--osdk-table-border-color);
+  border-right: var(--osdk-table-pinned-column-border);
 }
 
 /* First right-pinned column - no right-pinned siblings before it */
 .osdkTableHeaderCell[data-pinned="right"]:not(:has(~ [data-pinned="right"]):nth-child(n+2)) {
-  border-left: calc(var(--bp-surface-borderWidth)* 2) solid var(--osdk-table-border-color);
+  border-left: var(--osdk-table-pinned-column-border);
 }
-
 .osdkTableHeaderResizer {
   background: none;
   cursor: col-resize;
   height: 100%;
   position: absolute;
-  right: 0;
+  right: calc(-1 * var(--osdk-table-border-width));
   top: 0;
   touch-action: none;
   width: 3px;
-  z-index: var(--bp-surface-zIndex-2);
+  z-index: var(--bp-surface-z-index-2);
 
   &:hover {
     background: var(--bp-intent-primary-hover);
   }
 
-  &:active{
+  &:active {
     background: var(--bp-intent-primary-active);
   }
 }

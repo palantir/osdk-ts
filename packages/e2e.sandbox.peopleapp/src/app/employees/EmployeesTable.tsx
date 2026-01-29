@@ -75,7 +75,7 @@ export function EmployeesTable() {
             fontSize: 13,
           }}
         >
-          {cellValue ? cellValue.toString() : "No Value"}
+          {cellValue ? cellValue : "No Value"}
         </div>
       );
     },
@@ -86,12 +86,12 @@ export function EmployeesTable() {
     <div
       style={{
         height: "500px",
-        overflow: "auto",
+        overflow: "hidden",
       }}
     >
       <ObjectTable<Employee, RDPs>
         objectType={Employee}
-        // columnDefinitions={columnDefinitions}
+        columnDefinitions={columnDefinitions}
         selectionMode={"multiple"}
         renderCellContextMenu={renderCellContextMenu}
       />

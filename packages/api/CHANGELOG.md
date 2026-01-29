@@ -1,5 +1,11 @@
 # @osdk/api
 
+## 2.7.0-beta.12
+
+### Minor Changes
+
+- bb9d25c: Allow requesting rids for OSW updates
+
 ## 2.7.0-beta.11
 
 ### Minor Changes

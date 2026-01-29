@@ -18,12 +18,16 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: calc(var(--osdk-checkbox-icon-size) + var(--osdk-checkbox-padding) * 2);
-  min-height: calc(var(--osdk-checkbox-icon-size) + var(--osdk-checkbox-padding) * 2);
+  min-width: calc(
+    var(--osdk-checkbox-icon-size) + var(--osdk-checkbox-padding) * 2
+  );
+  min-height: calc(
+    var(--osdk-checkbox-icon-size) + var(--osdk-checkbox-padding) * 2
+  );
   padding: var(--osdk-checkbox-padding);
   box-sizing: border-box;
   cursor: pointer;
-  border-radius: var(--bp-surface-borderRadius);
+  border-radius: var(--bp-surface-border-radius);
   border: var(--osdk-checkbox-border);
 
   &[data-unchecked] {
@@ -38,7 +42,8 @@
     }
   }
 
-  &[data-checked], &[data-indeterminate] {
+  &[data-checked],
+  &[data-indeterminate] {
     background-color: var(--osdk-checkbox-bg-checked);
 
     &:hover {
@@ -51,15 +56,12 @@
   }
 
   &:focus-visible {
-    outline: var(--bp-emphasis-focusWidth) solid var(--bp-emphasis-focusColor);
-    outline-offset: var(--bp-emphasis-focusOffset);
+    outline: var(--bp-emphasis-focus-width) solid var(--bp-emphasis-focus-color);
+    outline-offset: var(--bp-emphasis-focus-offset);
   }
 }
 
 .osdkCheckboxIndicator {
-  display: flex;
-  align-items: center;
-  justify-content: center;
   color: var(--osdk-checkbox-checked-foreground);
   width: var(--osdk-checkbox-icon-size);
   height: var(--osdk-checkbox-icon-size);

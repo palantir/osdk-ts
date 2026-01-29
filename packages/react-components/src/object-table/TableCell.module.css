@@ -17,12 +17,21 @@
 .osdkTableCell {
   display: flex;
   align-items: center;
+  text-align: left;
+  position: relative;
   padding: var(--osdk-table-cell-padding);
   font-size: var(--osdk-table-cell-fontSize);
   color: var(--osdk-table-cell-color);
   background-color: inherit;
-  position: relative;
-  text-align: left;
+  border-right: var(--osdk-table-cell-divider);
+
+  &:first-child {
+    border-left: var(--osdk-table-border);
+  }
+
+  &:last-child {
+    border-right: var(--osdk-table-border);
+  }
 }
 
 .osdkTableCell[data-pinned="left"],
@@ -33,12 +42,12 @@
 
 /* Last left-pinned column - no left-pinned siblings after it */
 .osdkTableCell[data-pinned="left"]:not(:has(~ [data-pinned="left"])) {
-  border-right: calc(var(--bp-surface-borderWidth) * 2) solid var(--osdk-table-border-color);
+  border-right: var(--osdk-table-pinned-column-border);
 }
 
 /* First right-pinned column - no right-pinned siblings before it */
 .osdkTableCell[data-pinned="right"]:not(:has(~ [data-pinned="right"]):nth-child(n+2)) {
-  border-left: calc(var(--bp-surface-borderWidth) * 2) solid var(--osdk-table-border-color);
+  border-left: var(--osdk-table-pinned-column-border);
 }
 
 .osdkTableCell:has([role="checkbox"]) {
