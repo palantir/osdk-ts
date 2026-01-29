@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-export type { FilterListProps } from "../filter-list/FilterListApi.js";
-export type { FilterListItemProps } from "../filter-list/FilterListItemApi.js";
+.osdkHeaderContent {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
-// ObjectTable that loads and displays data for a given objectSet
-export { ObjectTable } from "../object-table/ObjectTable.js";
-export type {
-  ColumnDefinition,
-  ColumnDefinitionLocator,
-  ObjectTableProps,
-} from "../object-table/ObjectTableApi.js";
-
-// BaseTable that does not handle data fetching
-export type { BaseTableProps } from "../object-table/Table.js";
-export { BaseTable } from "../object-table/Table.js";
+.osdkHeaderContent:has([role="checkbox"]) {
+  display: flex;
+  justify-content: center;
+}

@@ -1,0 +1,105 @@
+/*
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.osdkCenterContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.osdkContentGap {
+  display: flex;
+  gap: var(--bp-surface-spacing);
+}
+
+.osdkHeaderContainer {
+  justify-content: space-between;
+  flex: 1;
+  min-width: 0;
+  align-self: stretch;
+}
+
+.osdkHeaderContentLeft {
+  min-width: 0;
+  flex-shrink: 1;
+}
+
+.osdkHeaderContentRight {
+  flex-shrink: 0;
+}
+
+.osdkHeaderPopoverTrigger {
+  flex-shrink: 0;
+  flex-grow: 0;
+  border: var(--bp-surface-borderWidth) solid
+    var(--bp-surface-borderColor-default);
+  border-radius: var(--bp-surface-borderRadius);
+  color: var(--bp-intent-default-foreground);
+  user-select: none;
+  &:hover {
+    background-color: var(--bp-intent-default-hover);
+  }
+
+  &[data-popup-open] {
+    background-color: var(--bp-intent-primary-rest);
+  }
+
+  &:focus-visible {
+    outline: var(--bp-surface-borderWidth) solid var(--bp-intent-primary-rest);
+    outline-offset: calc(-1 * var(--bp-surface-borderWidth));
+  }
+}
+
+.osdkHeaderIcon {
+  width: var(--bp-iconography-size-small);
+  height: var(--bp-iconography-size-small);
+}
+
+.osdkHeaderPopup {
+  box-sizing: border-box;
+  padding: var(--bp-surface-spacing);
+  border-radius: var(--bp-surface-borderRadius);
+  border: var(--bp-surface-borderWidth) solid
+    var(--bp-surface-borderColor-default);
+  background-color: var(--bp-palette-gray-100);
+  color: var(--bp-typography-colorRest-default);
+  box-shadow: var(--bp-surface-shadow-2);
+  font-size: var(--bp-typography-size-bodyMedium);
+}
+
+.osdkHeaderMenuItem {
+  justify-content: flex-start;
+  padding: var(--bp-surface-spacing);
+  cursor: pointer;
+}
+
+.osdkHeaderMenuItem:hover {
+  background-color: var(--bp-surface-colorHover-default);
+  border-radius: var(--bp-surface-borderRadius);
+}
+
+.osdkHeaderActiveMenuItem {
+  background-color: var(--bp-intent-primary-rest);
+  color: var(--bp-intent-primary-foreground);
+}
+
+.osdkHeaderActiveMenuItem:hover {
+  background-color: var(--bp-intent-primary-hover);
+}
+
+.osdkHeaderActiveMenuItem:active {
+  background-color: var(--bp-intent-primary-active);
+}
