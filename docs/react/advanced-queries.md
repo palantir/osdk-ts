@@ -474,9 +474,9 @@ function TodoStats() {
   const { data, isLoading, error } = useOsdkAggregation(Todo, {
     aggregate: {
       $select: {
-        totalCount: { $count: {} },
-        avgPriority: { $avg: "priority" },
-        maxDueDate: { $max: "dueDate" },
+        $count: "unordered",
+        "priority:avg": "unordered",
+        "dueDate:max": "unordered",
       },
     },
   });
@@ -489,11 +489,12 @@ function TodoStats() {
     return <div>Error: {JSON.stringify(error)}</div>;
   }
 
+  // Results: "propertyName:metric" in $select becomes data.propertyName.metric
   return (
     <div>
-      <p>Total Todos: {data?.totalCount}</p>
-      <p>Average Priority: {data?.avgPriority}</p>
-      <p>Latest Due Date: {data?.maxDueDate}</p>
+      <p>Total Todos: {data?.$count}</p>
+      <p>Average Priority: {data?.priority.avg}</p>
+      <p>Latest Due Date: {data?.dueDate.max}</p>
     </div>
   );
 }
@@ -510,8 +511,8 @@ function TodosByStatus() {
     aggregate: {
       $groupBy: { status: "exact" },
       $select: {
-        count: { $count: {} },
-        avgPriority: { $avg: "priority" },
+        $count: "unordered",
+        "priority:avg": "unordered",
       },
     },
   });
@@ -525,8 +526,8 @@ function TodosByStatus() {
       {data?.map((group, idx) => (
         <div key={idx}>
           <h3>Status: {group.$group.status}</h3>
-          <p>Count: {group.count}</p>
-          <p>Avg Priority: {group.avgPriority}</p>
+          <p>Count: {group.$count}</p>
+          <p>Avg Priority: {group.priority.avg}</p>
         </div>
       ))}
     </div>
@@ -545,8 +546,8 @@ function HighPriorityStats() {
     where: { priority: "high", isComplete: false },
     aggregate: {
       $select: {
-        count: { $count: {} },
-        earliestDue: { $min: "dueDate" },
+        $count: "unordered",
+        "dueDate:min": "unordered",
       },
     },
   });
@@ -555,33 +556,38 @@ function HighPriorityStats() {
 
   return (
     <div>
-      <p>High Priority Incomplete: {data.count}</p>
-      <p>Earliest Due: {data.earliestDue}</p>
+      <p>High Priority Incomplete: {data.$count}</p>
+      <p>Earliest Due: {data.dueDate.min}</p>
     </div>
   );
 }
 ```
 
-### Aggregation Operators
+### Aggregation Syntax
 
-- `$count` - Count of objects: `{ $count: {} }`
-- `$sum` - Sum of a property: `{ $sum: "propertyName" }`
-- `$avg` - Average of a property: `{ $avg: "propertyName" }`
-- `$min` - Minimum value: `{ $min: "propertyName" }`
-- `$max` - Maximum value: `{ $max: "propertyName" }`
+The `$select` object uses a special key format where each key is a metric and each value is an ordering directive (`"unordered"`, `"asc"`, or `"desc"`). When using `$groupBy`, the ordering determines the order results are returned.
+
+**Key formats:**
+- `$count` - Count of objects
+- `"propertyName:sum"` - Sum of a numeric property
+- `"propertyName:avg"` - Average of a numeric property
+- `"propertyName:min"` - Minimum value of a property
+- `"propertyName:max"` - Maximum value of a property
+- `"propertyName:exactDistinct"` - Exact distinct count
+- `"propertyName:approximateDistinct"` - Approximate distinct count (more performant for large datasets)
 
 ### Options
 
 - `where` - Filter objects before aggregation
 - `withProperties` - Add derived properties for computed values
 - `aggregate` - Aggregation configuration:
-  - `$select` (required) - Object mapping metric names to aggregation operators
+  - `$select` (required) - Object mapping metric keys (e.g., `$count`, `"salary:avg"`) to ordering (`"unordered"`, `"asc"`, or `"desc"`)
   - `$groupBy` (optional) - Object mapping property names to grouping strategy (e.g., `"exact"`, `{ $fixedWidth: 10 }`)
 - `dedupeIntervalMs` - Minimum time between re-fetches (default: 2000ms)
 
 ### Return Values
 
-- `data` - Aggregation result (single object for non-grouped, array for grouped)
+- `data` - Aggregation result (single object for non-grouped, array for grouped). For `$count`, access via `data.$count`. For property metrics like `"salary:avg"`, access via `data.salary.avg`
 - `isLoading` - True while fetching
 - `error` - Error object if fetch failed
 - `refetch` - Manual refetch function

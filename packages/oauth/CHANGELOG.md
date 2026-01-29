@@ -1,5 +1,11 @@
 # @osdk/oauth
 
+## 1.7.0-beta.2
+
+### Minor Changes
+
+- cceaedf: Export `ConfidentialOauthClient` from `oauth`
+
 ## 1.5.0
 
 ### Patch Changes

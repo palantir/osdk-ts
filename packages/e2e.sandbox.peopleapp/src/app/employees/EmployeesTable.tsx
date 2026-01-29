@@ -85,11 +85,11 @@ export function EmployeesTable() {
   return (
     <div
       style={{
-        height: "98px",
+        height: "500px",
         overflow: "auto",
       }}
     >
-      <ObjectTable<Employee, { managerName: "string" }>
+      <ObjectTable<Employee, RDPs>
         objectSet={employeesObjectSet}
         objectType={Employee}
         columnDefinitions={columnDefinitions}
