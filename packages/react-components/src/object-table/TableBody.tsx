@@ -56,10 +56,9 @@ export function TableBody<TData extends RowData>({
     rowVirtualizer.measure();
   }, [rowVirtualizer, rows.length]);
 
-  const SKELETON_ROW_COUNT = 3;
   const totalSize = rowVirtualizer.getTotalSize();
   const bodyHeight = isLoadingMore
-    ? totalSize + SKELETON_ROW_COUNT * rowHeight
+    ? totalSize + rowHeight
     : totalSize;
 
   const headers = headerGroups[0]?.headers ?? [];
@@ -84,15 +83,13 @@ export function TableBody<TData extends RowData>({
           />
         );
       })}
-      {isLoadingMore
-        && Array.from({ length: SKELETON_ROW_COUNT }).map((_, index) => (
-          <LoadingRow
-            key={`skeleton-${index}`}
-            headers={headers}
-            translateY={totalSize + rowHeight * index}
-            rowHeight={rowHeight}
-          />
-        ))}
+      {isLoadingMore && (
+        <LoadingRow
+          headers={headers}
+          translateY={totalSize}
+          rowHeight={rowHeight}
+        />
+      )}
     </tbody>
   );
 }

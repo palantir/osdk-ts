@@ -19,9 +19,3 @@
   height: 100%; /* needed for scrolling */
   overflow: auto;
 }
-
-.tableLoading {
-  display: grid;
-  grid-template-rows: auto 1fr auto;
-  height: 100%;
-}

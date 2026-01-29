@@ -103,7 +103,7 @@ export function Table<TData extends RowData>(
       className={classNames(styles.osdkTableContainer, className)}
       onScroll={handleScroll}
     >
-      <table className={classNames({ [styles.tableLoading]: isLoading })}>
+      <table>
         <TableHeader table={table} />
         {hasData || !isLoading
           ? (

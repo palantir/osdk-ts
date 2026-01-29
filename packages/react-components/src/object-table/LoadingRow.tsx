@@ -17,7 +17,6 @@
 import type { HeaderGroup, RowData } from "@tanstack/react-table";
 import React from "react";
 import { LoadingCell } from "./LoadingCell.js";
-import cellStyles from "./TableCell.module.css";
 import rowStyles from "./TableRow.module.css";
 
 interface LoadingRowProps<TData extends RowData> {
@@ -40,15 +39,7 @@ export function LoadingRow<TData extends RowData>({
       }}
     >
       {headers.map((header) => {
-        return (
-          <td
-            key={header.id}
-            className={cellStyles.osdkTableCell}
-            style={{ width: header.column.getSize() }}
-          >
-            <LoadingCell />
-          </td>
-        );
+        return <LoadingCell key={header.id} width={header.column.getSize()} />;
       })}
     </tr>
   );

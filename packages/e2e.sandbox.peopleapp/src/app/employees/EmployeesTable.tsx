@@ -86,7 +86,7 @@ export function EmployeesTable() {
     <div
       style={{
         height: "500px",
-        overflow: "auto",
+        overflow: "hidden",
       }}
     >
       <ObjectTable<Employee, RDPs>

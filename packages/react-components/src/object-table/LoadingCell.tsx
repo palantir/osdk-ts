@@ -17,11 +17,17 @@
 import classNames from "classnames";
 import React from "react";
 import styles from "./LoadingCell.module.css";
+import cellStyles from "./TableCell.module.css";
 
-export function LoadingCell(): React.ReactElement {
+export function LoadingCell({ width }: { width: number }): React.ReactElement {
   return (
-    <div
-      className={classNames(styles.osdkLoadingCell, styles.osdkCellSkeleton)}
-    />
+    <td
+      className={cellStyles.osdkTableCell}
+      style={{ width }}
+    >
+      <div
+        className={classNames(styles.osdkLoadingCell, styles.osdkCellSkeleton)}
+      />
+    </td>
   );
 }

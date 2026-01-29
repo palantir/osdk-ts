@@ -26,7 +26,7 @@ import { useObjectSet } from "@osdk/react/experimental";
 import { useMemo } from "react";
 import type { ColumnDefinition } from "../ObjectTableApi.js";
 
-const PAGE_SIZE = 50;
+const PAGE_SIZE = 20;
 
 /**
  * This hook is a wrapper around useObjectSet
