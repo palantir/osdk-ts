@@ -27,7 +27,7 @@ export type SecurityConditionDefinition =
 
 export type SecurityUnionCondition = {
   type: "and" | "or";
-  conditions: Array<OntologyIrSecurityGroupGranularCondition>;
+  conditions: Array<SecurityConditionDefinition>;
 };
 
 // checks if user is part of a static group id

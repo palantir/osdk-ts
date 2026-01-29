@@ -22,6 +22,7 @@ import { defineLink } from "../defineLink.js";
 import { defineObject } from "../defineObject.js";
 import { defineOntology, dumpOntologyFullMetadata } from "../defineOntology.js";
 import { defineSharedPropertyType } from "../defineSpt.js";
+import { convertObject } from "../../conversion/toMarketplace/convertObject.js";
 
 describe("Object Types", () => {
   beforeEach(async () => {
@@ -3060,36 +3061,768 @@ describe("Object Types", () => {
     `);
   });
 
-  // it("PSGs correctly validate incorrect configuration", () => {
-  //   expect(() => {
-  //     defineObject({
-  //       displayName: "Person",
-  //       pluralDisplayName: "Persons",
-  //       description: "person",
-  //       apiName: "person",
-  //       titlePropertyApiName: "pk",
-  //       primaryKeyPropertyApiName: "pk",
-  //       properties: {
-  //         "pk": { displayName: "pk", type: "string" },
-  //         "SSN": {
-  //           displayName: "Parent FK",
-  //           type: "string",
-  //         },
-  //       },
-  //       datasources: [
-  //         {
-  //           type: "dataset",
-  //           propertySecurityGroups: [
-  //             {
-  //               name: "invalidProperty",
-  //               properties: ["buzz"],
-  //             }
-  //           ]
-  //         },
-  //       ],
-  //     });
-  //   }).toThrowErrorMatchingInlineSnapshot(
-  //     `[Error: Invariant failed: Title property fizz is not defined on object foo]`,
-  //   );
-  // });
+  it("Default PSGs configurations are defined correctly", () => {
+    const obj = defineObject({
+        displayName: "Person",
+        pluralDisplayName: "Persons",
+        description: "person",
+        apiName: "person",
+        titlePropertyApiName: "pk",
+        primaryKeyPropertyApiName: "pk",
+        properties: {
+          "pk": { displayName: "pk", type: "string" },
+          "normalProperty": { displayName: "Normal Property", type: "string" },
+          "SSN": {
+            displayName: "SSN",
+            type: "string",
+          },
+        },
+        datasources: [
+          {
+            type: "dataset",
+            propertySecurityGroups: [
+              {
+                name: "invalidProperty",
+                properties: ["SSN"],
+              }
+            ]
+          },
+        ],
+      });
+    expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
+      {
+        "importedOntology": {
+          "actionTypes": {},
+          "blockPermissionInformation": {
+            "actionTypes": {},
+            "linkTypes": {},
+            "objectTypes": {},
+          },
+          "interfaceTypes": {},
+          "linkTypes": {},
+          "objectTypes": {},
+          "sharedPropertyTypes": {},
+        },
+        "importedValueTypes": {
+          "valueTypes": [],
+        },
+        "ontology": {
+          "actionTypes": {},
+          "blockPermissionInformation": {
+            "actionTypes": {},
+            "linkTypes": {},
+            "objectTypes": {},
+          },
+          "interfaceTypes": {},
+          "linkTypes": {},
+          "objectTypes": {
+            "com.palantir.person": {
+              "datasources": [
+                {
+                  "datasource": {
+                    "datasetV3": {
+                      "branchId": "master",
+                      "datasetRid": "com.palantir.person",
+                      "propertyMapping": {
+                        "SSN": {
+                          "column": "SSN",
+                          "type": "column",
+                        },
+                        "normalProperty": {
+                          "column": "normalProperty",
+                          "type": "column",
+                        },
+                        "pk": {
+                          "column": "pk",
+                          "type": "column",
+                        },
+                      },
+                      "propertySecurityGroups": {
+                        "groups": [
+                          {
+                            "properties": [
+                              "pk",
+                              "normalProperty",
+                            ],
+                            "rid": "defaultObjectSecurityPolicy",
+                            "security": {
+                              "granular": {
+                                "viewPolicy": {
+                                  "additionalMandatory": {
+                                    "assumedMarkings": [],
+                                    "markings": {},
+                                  },
+                                  "granularPolicyCondition": {
+                                    "and": {
+                                      "conditions": [],
+                                    },
+                                    "type": "and",
+                                  },
+                                },
+                              },
+                              "type": "granular",
+                            },
+                            "type": {
+                              "primaryKey": {},
+                              "type": "primaryKey",
+                            },
+                          },
+                          {
+                            "properties": [
+                              "SSN",
+                            ],
+                            "rid": "invalidProperty",
+                            "security": {
+                              "granular": {
+                                "viewPolicy": {
+                                  "additionalMandatory": {
+                                    "assumedMarkings": [],
+                                    "markings": {},
+                                  },
+                                  "granularPolicyCondition": {
+                                    "and": {
+                                      "conditions": [],
+                                    },
+                                    "type": "and",
+                                  },
+                                },
+                              },
+                              "type": "granular",
+                            },
+                            "type": {
+                              "property": {
+                                "name": "invalidProperty",
+                              },
+                              "type": "property",
+                            },
+                          },
+                        ],
+                      },
+                    },
+                    "type": "datasetV3",
+                  },
+                  "datasourceName": "com.palantir.person",
+                  "editsConfiguration": {
+                    "onlyAllowPrivilegedEdits": false,
+                  },
+                  "redacted": false,
+                },
+              ],
+              "entityMetadata": {
+                "aliases": [],
+                "arePatchesEnabled": false,
+              },
+              "objectType": {
+                "allImplementsInterfaces": {},
+                "apiName": "com.palantir.person",
+                "displayMetadata": {
+                  "description": "person",
+                  "displayName": "Person",
+                  "groupDisplayName": undefined,
+                  "icon": {
+                    "blueprint": {
+                      "color": "#2D72D2",
+                      "locator": "cube",
+                    },
+                    "type": "blueprint",
+                  },
+                  "pluralDisplayName": "Persons",
+                  "visibility": "NORMAL",
+                },
+                "implementsInterfaces2": [],
+                "primaryKeys": [
+                  "pk",
+                ],
+                "propertyTypes": {
+                  "SSN": {
+                    "apiName": "SSN",
+                    "baseFormatter": undefined,
+                    "dataConstraints": undefined,
+                    "displayMetadata": {
+                      "description": undefined,
+                      "displayName": "SSN",
+                      "visibility": "NORMAL",
+                    },
+                    "indexedForSearch": true,
+                    "inlineAction": undefined,
+                    "ruleSetBinding": undefined,
+                    "sharedPropertyTypeApiName": undefined,
+                    "sharedPropertyTypeRid": undefined,
+                    "status": {
+                      "active": {},
+                      "type": "active",
+                    },
+                    "type": {
+                      "string": {
+                        "analyzerOverride": undefined,
+                        "enableAsciiFolding": undefined,
+                        "isLongText": false,
+                        "supportsEfficientLeadingWildcard": false,
+                        "supportsExactMatching": true,
+                      },
+                      "type": "string",
+                    },
+                    "typeClasses": [
+                      {
+                        "kind": "render_hint",
+                        "name": "SELECTABLE",
+                      },
+                      {
+                        "kind": "render_hint",
+                        "name": "SORTABLE",
+                      },
+                    ],
+                    "valueType": undefined,
+                  },
+                  "normalProperty": {
+                    "apiName": "normalProperty",
+                    "baseFormatter": undefined,
+                    "dataConstraints": undefined,
+                    "displayMetadata": {
+                      "description": undefined,
+                      "displayName": "Normal Property",
+                      "visibility": "NORMAL",
+                    },
+                    "indexedForSearch": true,
+                    "inlineAction": undefined,
+                    "ruleSetBinding": undefined,
+                    "sharedPropertyTypeApiName": undefined,
+                    "sharedPropertyTypeRid": undefined,
+                    "status": {
+                      "active": {},
+                      "type": "active",
+                    },
+                    "type": {
+                      "string": {
+                        "analyzerOverride": undefined,
+                        "enableAsciiFolding": undefined,
+                        "isLongText": false,
+                        "supportsEfficientLeadingWildcard": false,
+                        "supportsExactMatching": true,
+                      },
+                      "type": "string",
+                    },
+                    "typeClasses": [
+                      {
+                        "kind": "render_hint",
+                        "name": "SELECTABLE",
+                      },
+                      {
+                        "kind": "render_hint",
+                        "name": "SORTABLE",
+                      },
+                    ],
+                    "valueType": undefined,
+                  },
+                  "pk": {
+                    "apiName": "pk",
+                    "baseFormatter": undefined,
+                    "dataConstraints": undefined,
+                    "displayMetadata": {
+                      "description": undefined,
+                      "displayName": "pk",
+                      "visibility": "NORMAL",
+                    },
+                    "indexedForSearch": true,
+                    "inlineAction": undefined,
+                    "ruleSetBinding": undefined,
+                    "sharedPropertyTypeApiName": undefined,
+                    "sharedPropertyTypeRid": undefined,
+                    "status": {
+                      "active": {},
+                      "type": "active",
+                    },
+                    "type": {
+                      "string": {
+                        "analyzerOverride": undefined,
+                        "enableAsciiFolding": undefined,
+                        "isLongText": false,
+                        "supportsEfficientLeadingWildcard": false,
+                        "supportsExactMatching": true,
+                      },
+                      "type": "string",
+                    },
+                    "typeClasses": [
+                      {
+                        "kind": "render_hint",
+                        "name": "SELECTABLE",
+                      },
+                      {
+                        "kind": "render_hint",
+                        "name": "SORTABLE",
+                      },
+                    ],
+                    "valueType": undefined,
+                  },
+                },
+                "redacted": false,
+                "status": {
+                  "active": {},
+                  "type": "active",
+                },
+                "titlePropertyTypeRid": "pk",
+              },
+              "propertySecurityGroupPackagingVersion": {
+                "type": "v2",
+                "v2": {},
+              },
+            },
+          },
+          "sharedPropertyTypes": {},
+        },
+        "randomnessKey": undefined,
+        "valueTypes": {
+          "valueTypes": [],
+        },
+      }
+    `);
+  });
+
+  it("Complex PSGs configurations are defined correctly", () => {
+    const obj = defineObject({
+        displayName: "Person",
+        pluralDisplayName: "Persons",
+        description: "person",
+        apiName: "person",
+        titlePropertyApiName: "pk",
+        primaryKeyPropertyApiName: "pk",
+        properties: {
+          "pk": { displayName: "pk", type: "string" },
+          "group": { displayName: "Group Property", type: "string" },
+          "mandatory": {
+            type: {
+              type: "marking",
+              markingType: "MANDATORY",
+              markingInputGroupName: "myMarking",
+            },
+            displayName: "mandatory",
+          },
+          "SSN": {
+            displayName: "SSN",
+            type: "string",
+          },
+        },
+        datasources: [
+          {
+            type: "dataset",
+            objectSecurityPolicy: {
+              name: "customObjectLevelPolicy",
+              granularPolicy: {
+                type: "group",
+                name: "objectLevelGroup",
+              },
+              additionalMandatoryMarkings: {
+                "objectLevelMarking": "CBAC",
+              },
+            },
+            propertySecurityGroups: [
+              {
+                name: "customPsg",
+                properties: ["SSN"],
+                granularPolicy: {
+                  type: "and",
+                  conditions: [
+                    {
+                      type: "groupProperty",
+                      property: "group",
+                    }, {
+                      type: "markingProperty",
+                      property: "mandatory",
+                    }
+                  ] 
+                },
+                additionalMandatoryMarkings: {
+                  "propertyLevelMarking": "MANDATORY",
+                  
+                }
+              }
+            ]
+          },
+        ],
+      });
+    expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
+      {
+        "importedOntology": {
+          "actionTypes": {},
+          "blockPermissionInformation": {
+            "actionTypes": {},
+            "linkTypes": {},
+            "objectTypes": {},
+          },
+          "interfaceTypes": {},
+          "linkTypes": {},
+          "objectTypes": {},
+          "sharedPropertyTypes": {},
+        },
+        "importedValueTypes": {
+          "valueTypes": [],
+        },
+        "ontology": {
+          "actionTypes": {},
+          "blockPermissionInformation": {
+            "actionTypes": {},
+            "linkTypes": {},
+            "objectTypes": {},
+          },
+          "interfaceTypes": {},
+          "linkTypes": {},
+          "objectTypes": {
+            "com.palantir.person": {
+              "datasources": [
+                {
+                  "dataSecurity": {
+                    "classificationConstraint": undefined,
+                    "markingConstraint": {
+                      "markingGroupName": "myMarking",
+                    },
+                  },
+                  "datasource": {
+                    "datasetV3": {
+                      "branchId": "master",
+                      "datasetRid": "com.palantir.person",
+                      "propertyMapping": {
+                        "SSN": {
+                          "column": "SSN",
+                          "type": "column",
+                        },
+                        "group": {
+                          "column": "group",
+                          "type": "column",
+                        },
+                        "mandatory": {
+                          "column": "mandatory",
+                          "type": "column",
+                        },
+                        "pk": {
+                          "column": "pk",
+                          "type": "column",
+                        },
+                      },
+                      "propertySecurityGroups": {
+                        "groups": [
+                          {
+                            "properties": [
+                              "pk",
+                              "group",
+                              "mandatory",
+                            ],
+                            "rid": "customObjectLevelPolicy",
+                            "security": {
+                              "granular": {
+                                "viewPolicy": {
+                                  "additionalMandatory": {
+                                    "assumedMarkings": [],
+                                    "markings": {
+                                      "objectLevelMarking": "CBAC",
+                                    },
+                                  },
+                                  "granularPolicyCondition": {
+                                    "comparison": {
+                                      "left": {
+                                        "type": "userProperty",
+                                        "userProperty": {
+                                          "groupIds": {},
+                                          "type": "groupIds",
+                                        },
+                                      },
+                                      "operator": "INTERSECTS",
+                                      "right": {
+                                        "constant": {
+                                          "strings": [
+                                            "objectLevelGroup",
+                                          ],
+                                          "type": "strings",
+                                        },
+                                        "type": "constant",
+                                      },
+                                    },
+                                    "type": "comparison",
+                                  },
+                                },
+                              },
+                              "type": "granular",
+                            },
+                            "type": {
+                              "primaryKey": {},
+                              "type": "primaryKey",
+                            },
+                          },
+                          {
+                            "properties": [
+                              "SSN",
+                            ],
+                            "rid": "customPsg",
+                            "security": {
+                              "granular": {
+                                "viewPolicy": {
+                                  "additionalMandatory": {
+                                    "assumedMarkings": [],
+                                    "markings": {
+                                      "propertyLevelMarking": "MANDATORY",
+                                    },
+                                  },
+                                  "granularPolicyCondition": {
+                                    "and": {
+                                      "conditions": [
+                                        {
+                                          "comparison": {
+                                            "left": {
+                                              "type": "userProperty",
+                                              "userProperty": {
+                                                "groupIds": {},
+                                                "type": "groupIds",
+                                              },
+                                            },
+                                            "operator": "INTERSECTS",
+                                            "right": {
+                                              "property": "group",
+                                              "type": "property",
+                                            },
+                                          },
+                                          "type": "comparison",
+                                        },
+                                        {
+                                          "markings": {
+                                            "property": "mandatory",
+                                          },
+                                          "type": "markings",
+                                        },
+                                      ],
+                                    },
+                                    "type": "and",
+                                  },
+                                },
+                              },
+                              "type": "granular",
+                            },
+                            "type": {
+                              "property": {
+                                "name": "customPsg",
+                              },
+                              "type": "property",
+                            },
+                          },
+                        ],
+                      },
+                    },
+                    "type": "datasetV3",
+                  },
+                  "datasourceName": "com.palantir.person",
+                  "editsConfiguration": {
+                    "onlyAllowPrivilegedEdits": false,
+                  },
+                  "redacted": false,
+                },
+              ],
+              "entityMetadata": {
+                "aliases": [],
+                "arePatchesEnabled": false,
+              },
+              "objectType": {
+                "allImplementsInterfaces": {},
+                "apiName": "com.palantir.person",
+                "displayMetadata": {
+                  "description": "person",
+                  "displayName": "Person",
+                  "groupDisplayName": undefined,
+                  "icon": {
+                    "blueprint": {
+                      "color": "#2D72D2",
+                      "locator": "cube",
+                    },
+                    "type": "blueprint",
+                  },
+                  "pluralDisplayName": "Persons",
+                  "visibility": "NORMAL",
+                },
+                "implementsInterfaces2": [],
+                "primaryKeys": [
+                  "pk",
+                ],
+                "propertyTypes": {
+                  "SSN": {
+                    "apiName": "SSN",
+                    "baseFormatter": undefined,
+                    "dataConstraints": undefined,
+                    "displayMetadata": {
+                      "description": undefined,
+                      "displayName": "SSN",
+                      "visibility": "NORMAL",
+                    },
+                    "indexedForSearch": true,
+                    "inlineAction": undefined,
+                    "ruleSetBinding": undefined,
+                    "sharedPropertyTypeApiName": undefined,
+                    "sharedPropertyTypeRid": undefined,
+                    "status": {
+                      "active": {},
+                      "type": "active",
+                    },
+                    "type": {
+                      "string": {
+                        "analyzerOverride": undefined,
+                        "enableAsciiFolding": undefined,
+                        "isLongText": false,
+                        "supportsEfficientLeadingWildcard": false,
+                        "supportsExactMatching": true,
+                      },
+                      "type": "string",
+                    },
+                    "typeClasses": [
+                      {
+                        "kind": "render_hint",
+                        "name": "SELECTABLE",
+                      },
+                      {
+                        "kind": "render_hint",
+                        "name": "SORTABLE",
+                      },
+                    ],
+                    "valueType": undefined,
+                  },
+                  "group": {
+                    "apiName": "group",
+                    "baseFormatter": undefined,
+                    "dataConstraints": undefined,
+                    "displayMetadata": {
+                      "description": undefined,
+                      "displayName": "Group Property",
+                      "visibility": "NORMAL",
+                    },
+                    "indexedForSearch": true,
+                    "inlineAction": undefined,
+                    "ruleSetBinding": undefined,
+                    "sharedPropertyTypeApiName": undefined,
+                    "sharedPropertyTypeRid": undefined,
+                    "status": {
+                      "active": {},
+                      "type": "active",
+                    },
+                    "type": {
+                      "string": {
+                        "analyzerOverride": undefined,
+                        "enableAsciiFolding": undefined,
+                        "isLongText": false,
+                        "supportsEfficientLeadingWildcard": false,
+                        "supportsExactMatching": true,
+                      },
+                      "type": "string",
+                    },
+                    "typeClasses": [
+                      {
+                        "kind": "render_hint",
+                        "name": "SELECTABLE",
+                      },
+                      {
+                        "kind": "render_hint",
+                        "name": "SORTABLE",
+                      },
+                    ],
+                    "valueType": undefined,
+                  },
+                  "mandatory": {
+                    "apiName": "mandatory",
+                    "baseFormatter": undefined,
+                    "dataConstraints": {
+                      "nullability": undefined,
+                      "nullabilityV2": {
+                        "noNulls": true,
+                      },
+                      "propertyTypeConstraints": [],
+                    },
+                    "displayMetadata": {
+                      "description": undefined,
+                      "displayName": "mandatory",
+                      "visibility": "NORMAL",
+                    },
+                    "indexedForSearch": true,
+                    "inlineAction": undefined,
+                    "ruleSetBinding": undefined,
+                    "sharedPropertyTypeApiName": undefined,
+                    "sharedPropertyTypeRid": undefined,
+                    "status": {
+                      "active": {},
+                      "type": "active",
+                    },
+                    "type": {
+                      "marking": {
+                        "markingType": "MANDATORY",
+                      },
+                      "type": "marking",
+                    },
+                    "typeClasses": [
+                      {
+                        "kind": "render_hint",
+                        "name": "SELECTABLE",
+                      },
+                      {
+                        "kind": "render_hint",
+                        "name": "SORTABLE",
+                      },
+                    ],
+                    "valueType": undefined,
+                  },
+                  "pk": {
+                    "apiName": "pk",
+                    "baseFormatter": undefined,
+                    "dataConstraints": undefined,
+                    "displayMetadata": {
+                      "description": undefined,
+                      "displayName": "pk",
+                      "visibility": "NORMAL",
+                    },
+                    "indexedForSearch": true,
+                    "inlineAction": undefined,
+                    "ruleSetBinding": undefined,
+                    "sharedPropertyTypeApiName": undefined,
+                    "sharedPropertyTypeRid": undefined,
+                    "status": {
+                      "active": {},
+                      "type": "active",
+                    },
+                    "type": {
+                      "string": {
+                        "analyzerOverride": undefined,
+                        "enableAsciiFolding": undefined,
+                        "isLongText": false,
+                        "supportsEfficientLeadingWildcard": false,
+                        "supportsExactMatching": true,
+                      },
+                      "type": "string",
+                    },
+                    "typeClasses": [
+                      {
+                        "kind": "render_hint",
+                        "name": "SELECTABLE",
+                      },
+                      {
+                        "kind": "render_hint",
+                        "name": "SORTABLE",
+                      },
+                    ],
+                    "valueType": undefined,
+                  },
+                },
+                "redacted": false,
+                "status": {
+                  "active": {},
+                  "type": "active",
+                },
+                "titlePropertyTypeRid": "pk",
+              },
+              "propertySecurityGroupPackagingVersion": {
+                "type": "v2",
+                "v2": {},
+              },
+            },
+          },
+          "sharedPropertyTypes": {},
+        },
+        "randomnessKey": undefined,
+        "valueTypes": {
+          "valueTypes": [],
+        },
+      }
+    `);
+  });
 });
