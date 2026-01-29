@@ -10,10 +10,6 @@
     ".": "./src/index.css",
     "./styles.css": "./src/index.css"
   },
-  "style": "./src/index.css",
-  "sideEffects": [
-    "**/*.css"
-  ],
   "scripts": {
     "check-spelling": "cspell --quiet .",
     "lint": "echo 'No linting needed for CSS-only package'"

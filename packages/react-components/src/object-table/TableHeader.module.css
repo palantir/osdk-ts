@@ -18,7 +18,7 @@
   display: grid;
   position: sticky;
   top: 0;
-  z-index: var(--bp-surface-zIndex-1);
+  z-index: var(--bp-surface-z-index-1);
   background-color: var(--osdk-table-header-bg);
 }
 
@@ -29,12 +29,10 @@
 
 .osdkTableHeaderRow {
   display: flex;
-  background-color: var(--osdk-table-header-bg);
 }
 
 .osdkTableHeaderCell {
   display: flex;
-  justify-content: center;
   align-items: center;
   text-align: left;
   position: relative;
@@ -62,7 +60,7 @@
 .osdkTableHeaderCell[data-pinned="left"],
 .osdkTableHeaderCell[data-pinned="right"] {
   position: sticky;
-  z-index: var(--bp-surface-zIndex-2);
+  z-index: var(--bp-surface-z-index-2);
 }
 
 /* Last left-pinned column - no left-pinned siblings after it */

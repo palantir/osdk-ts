@@ -128,10 +128,12 @@
   --osdk-checkbox-bg-checked-active: var(--osdk-checkbox-bg-active);
   --osdk-checkbox-checked-foreground: var(--bp-palette-dark-gray-1);
 
-  --osdk-table-header-color: var(--bp-typography-colorRest-default);
+  --osdk-table-header-color: var(--bp-typography-color-default-rest);
   --osdk-table-row-bg-default: var(--bp-palette-white);
-  --osdk-table-row-bg-alternate: oklch(from var(--bp-palette-gray-100) l c h / 0.5);
-  --osdk-table-row-bg-hover: var(--bp-surface-colorHover-default);
+  --osdk-table-row-bg-alternate: oklch(
+    from var(--bp-palette-light-gray-5) l c h / 0.5
+  );
+  --osdk-table-row-bg-hover: var(--bp-surface-background-color-default-hover);
   --osdk-table-row-border-color-hover: var(--osdk-table-border-color);
-  --osdk-table-row-bg-active:  var(--bp-palette-blue-100);
+  --osdk-table-row-bg-active: var(--bp-palette-blue-5);
 }

@@ -368,10 +368,10 @@ Styling for table components including headers, rows, and cells.
 
 #### Base Border Properties
 
-| Variable                    | Default Value                            | Description                      |
-| --------------------------- | ---------------------------------------- | -------------------------------- |
-| `--osdk-table-border-color` | `var(--bp-surface-borderColor-default)` | Base color for all table borders |
-| `--osdk-table-border-width` | `var(--bp-surface-borderWidth)`         | Base width for all table borders |
+| Variable                    | Default Value                             | Description                      |
+| --------------------------- | ----------------------------------------- | -------------------------------- |
+| `--osdk-table-border-color` | `var(--bp-surface-border-color-default)`  | Base color for all table borders |
+| `--osdk-table-border-width` | `var(--bp-surface-border-width)`          | Base width for all table borders |
 
 #### Semantic Border Variables
 
@@ -387,12 +387,12 @@ These variables define the purpose of each border type, making it easier to cust
 
 #### Header Styling
 
-| Variable                         | Default Value                           | Description                   |
-| -------------------------------- | --------------------------------------- | ----------------------------- |
-| `--osdk-table-header-bg`         | `var(--bp-palette-light-gray-5)`        | Table header background color |
-| `--osdk-table-header-fontWeight` | `var(--bp-typography-weight-bold)`      | Header text weight            |
-| `--osdk-table-header-fontSize`   | `var(--bp-typography-size-body-medium)` | Header text size              |
-| `--osdk-table-header-color`      | `var(--bp-typography-color-muted)`      | Header text color             |
+| Variable                         | Default Value                          | Description                   |
+| -------------------------------- | -------------------------------------- | ----------------------------- |
+| `--osdk-table-header-bg`         | `var(--bp-palette-light-gray-5)`       | Table header background color |
+| `--osdk-table-header-fontWeight` | `var(--bp-typography-weight-bold)`     | Header text weight            |
+| `--osdk-table-header-fontSize`   | `var(--bp-typography-size-body-small)` | Header text size              |
+| `--osdk-table-header-color`      | `var(--bp-typography-color-muted)`     | Header text color             |
 
 #### Row Backgrounds
 
@@ -417,6 +417,14 @@ These variables define the purpose of each border type, making it easier to cust
 | `--osdk-table-cell-padding`  | `calc(var(--bp-surface-spacing) * 3) calc(var(--bp-surface-spacing) * 2)` | Cell padding    |
 | `--osdk-table-cell-fontSize` | `var(--bp-typography-size-body-medium)`                                   | Cell text size  |
 | `--osdk-table-cell-color`    | `var(--bp-typography-color-default-rest)`                                 | Cell text color |
+
+#### Skeleton Loading
+
+| Variable                            | Default Value               | Description                        |
+| ----------------------------------- | --------------------------- | ---------------------------------- |
+| `--osdk-table-skeleton-color-from`  | `rgba(211, 216, 222, 0.4)`  | Skeleton animation start color     |
+| `--osdk-table-skeleton-color-to`    | `rgba(95, 107, 124, 0.4)`   | Skeleton animation end color       |
+| `--osdk-table-skeleton-border-color`| `rgba(211, 216, 222, 0.6)`  | Skeleton cell border color         |
 
 ## Creating a Complete Custom Theme
 
