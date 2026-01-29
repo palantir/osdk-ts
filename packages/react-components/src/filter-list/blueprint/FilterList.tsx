@@ -14,15 +14,22 @@
  * limitations under the License.
  */
 
-import { Button, Popover } from "@blueprintjs/core";
+import { Button } from "@blueprintjs/core";
 import type { ObjectTypeDefinition } from "@osdk/api";
 import classnames from "classnames";
-import React, { useCallback, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { FilterList as BaseFilterList } from "../base/FilterList.js";
 import type { FilterListProps } from "../FilterListApi.js";
 import type { FilterTemplate } from "../types/AddFilterMenuTypes.js";
 import { AddFilterMenu } from "./AddFilterMenu.js";
 import { filterListClassNames } from "./classNames.js";
+import styles from "./FilterList.module.css";
 
 export function FilterList<Q extends ObjectTypeDefinition>(
   props: FilterListProps<Q>,
@@ -63,34 +70,44 @@ export function FilterList<Q extends ObjectTypeDefinition>(
     [onFilterTemplateSelected],
   );
 
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!isAddFilterOpen) return;
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsAddFilterOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [isAddFilterOpen]);
+
   const renderAddFilterButton = useCallback(() => {
     const hasTemplates = filterTemplates && filterTemplates.length > 0;
 
     return (
-      <Popover
-        content={
-          <AddFilterMenu
-            templates={filterTemplates ?? []}
-            activeCounts={activeCounts}
-            onSelectFilter={handleSelectFilter}
-            onClose={() => setIsAddFilterOpen(false)}
-          />
-        }
-        placement="top"
-        minimal
-        fill
-        isOpen={isAddFilterOpen}
-        onClose={() => setIsAddFilterOpen(false)}
-        disabled={!hasTemplates}
-      >
+      <div className={styles.addFilterWrapper} ref={menuRef}>
         <Button
           text="Add filter"
           fill
           className="filter-list__add-button"
-          onClick={() => setIsAddFilterOpen(true)}
+          onClick={() => setIsAddFilterOpen(!isAddFilterOpen)}
           disabled={!hasTemplates}
         />
-      </Popover>
+        {isAddFilterOpen && (
+          <div className={styles.addFilterDropdown}>
+            <AddFilterMenu
+              templates={filterTemplates ?? []}
+              activeCounts={activeCounts}
+              onSelectFilter={handleSelectFilter}
+              onClose={() => setIsAddFilterOpen(false)}
+            />
+          </div>
+        )}
+      </div>
     );
   }, [filterTemplates, isAddFilterOpen, activeCounts, handleSelectFilter]);
 

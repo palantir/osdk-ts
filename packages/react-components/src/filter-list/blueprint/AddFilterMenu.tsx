@@ -170,9 +170,8 @@ export function AddFilterMenu({
                   return (
                     <MenuItem
                       key={template.id}
-                      // Blueprint handles invalid icon names gracefully (renders nothing)
                       icon={typeof template.icon === "string"
-                        ? (template.icon as IconName)
+                        ? template.icon as IconName
                         : undefined}
                       text={
                         <>
