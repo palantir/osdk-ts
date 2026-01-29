@@ -74,7 +74,7 @@ export function createCollectionConnectable<
             map(params =>
               createPayload({
                 resolvedData: Array.isArray(params.resolvedData)
-                  ? params.resolvedData.filter(item => item != null)
+                  ? params.resolvedData
                   : [],
                 isOptimistic: params.isOptimistic,
                 status: params.status,
