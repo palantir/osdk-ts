@@ -15,7 +15,7 @@
  */
 
 import type { ObjectTypeDefinition, WhereClause } from "@osdk/api";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import type {
   FilterDefinitionUnion,
   FilterListProps,
@@ -25,6 +25,7 @@ import type { LinkedPropertyFilterState } from "../types/LinkedFilterTypes.js";
 import { assertUnreachable } from "../utils/assertUnreachable.js";
 import { buildWhereClause } from "../utils/filterStateToWhereClause.js";
 import { filterHasActiveState } from "../utils/filterValues.js";
+import { useLatestRef } from "./useLatestRef.js";
 
 export interface UseFilterListStateResult<Q extends ObjectTypeDefinition> {
   filterStates: Map<FilterDefinitionUnion<Q>, FilterState>;
@@ -100,30 +101,22 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
 
   const objectType = objectSet.$objectSetInternals.def;
 
-  const [internalFilterStates, setInternalFilterStates] = useState<
+  const [filterStates, setFilterStates] = useState<
     Map<FilterDefinitionUnion<Q>, FilterState>
   >(() => buildInitialStates(filterDefinitions));
 
-  const filterStates = internalFilterStates;
-
-  // Use refs to avoid stale closures in setFilterState callback
-  const filterDefinitionsRef = useRef(filterDefinitions);
-  filterDefinitionsRef.current = filterDefinitions;
-
-  const filterOperatorRef = useRef(filterOperator);
-  filterOperatorRef.current = filterOperator;
-
-  const objectTypeRef = useRef(objectType);
-  objectTypeRef.current = objectType;
-
-  const onFilterClauseChangedRef = useRef(onFilterClauseChanged);
-  onFilterClauseChangedRef.current = onFilterClauseChanged;
+  // Use refs to avoid stale closures in callbacks
+  const filterDefinitionsRef = useLatestRef(filterDefinitions);
+  const filterOperatorRef = useLatestRef(filterOperator);
+  const objectTypeRef = useLatestRef(objectType);
+  const onFilterClauseChangedRef = useLatestRef(onFilterClauseChanged);
+  const onFilterStateChangedRef = useLatestRef(onFilterStateChanged);
 
   const setFilterState = useCallback(
     (definition: FilterDefinitionUnion<Q>, state: FilterState) => {
       let newWhereClause: WhereClause<Q> | undefined;
 
-      setInternalFilterStates((prev) => {
+      setFilterStates((prev) => {
         const next = new Map(prev);
         next.set(definition, state);
 
@@ -138,13 +131,13 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
         return next;
       });
 
-      // Call callback OUTSIDE the updater - safe for React Strict Mode
+      // Call callbacks OUTSIDE the updater - safe for React Strict Mode
       if (newWhereClause !== undefined) {
         onFilterClauseChangedRef.current?.(newWhereClause);
       }
-      onFilterStateChanged?.(definition, state);
+      onFilterStateChangedRef.current?.(definition, state);
     },
-    [onFilterStateChanged],
+    [],
   );
 
   const whereClause = useMemo(
@@ -170,7 +163,7 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
 
   const reset = useCallback(() => {
     const initialStates = buildInitialStates(filterDefinitionsRef.current);
-    setInternalFilterStates(initialStates);
+    setFilterStates(initialStates);
 
     // Build and emit the where clause for initial states
     const newWhereClause = buildWhereClause(
