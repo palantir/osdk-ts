@@ -1483,6 +1483,10 @@ describe("Action Types", () => {
                   },
                   "titlePropertyTypeRid": "bar",
                 },
+                "propertySecurityGroupPackagingVersion": {
+                  "type": "v2",
+                  "v2": {},
+                },
               },
             },
             "sharedPropertyTypes": {
@@ -7455,6 +7459,10 @@ describe("Action Types", () => {
                   },
                   "titlePropertyTypeRid": "bar",
                 },
+                "propertySecurityGroupPackagingVersion": {
+                  "type": "v2",
+                  "v2": {},
+                },
               },
             },
             "sharedPropertyTypes": {},
@@ -9117,6 +9125,10 @@ describe("Action Types", () => {
                   },
                   "titlePropertyTypeRid": "bar",
                 },
+                "propertySecurityGroupPackagingVersion": {
+                  "type": "v2",
+                  "v2": {},
+                },
               },
             },
             "sharedPropertyTypes": {},
@@ -10314,6 +10326,10 @@ describe("Action Types", () => {
                     "type": "active",
                   },
                   "titlePropertyTypeRid": "bar",
+                },
+                "propertySecurityGroupPackagingVersion": {
+                  "type": "v2",
+                  "v2": {},
                 },
               },
             },
@@ -12117,6 +12133,10 @@ describe("Action Types", () => {
                   },
                   "titlePropertyTypeRid": "id",
                 },
+                "propertySecurityGroupPackagingVersion": {
+                  "type": "v2",
+                  "v2": {},
+                },
               },
             },
             "sharedPropertyTypes": {
@@ -12913,6 +12933,10 @@ describe("Action Types", () => {
                   },
                   "titlePropertyTypeRid": "id",
                 },
+                "propertySecurityGroupPackagingVersion": {
+                  "type": "v2",
+                  "v2": {},
+                },
               },
               "com.palantir.manager": {
                 "datasources": [
@@ -13009,6 +13033,10 @@ describe("Action Types", () => {
                     "type": "active",
                   },
                   "titlePropertyTypeRid": "id",
+                },
+                "propertySecurityGroupPackagingVersion": {
+                  "type": "v2",
+                  "v2": {},
                 },
               },
             },
@@ -13428,6 +13456,10 @@ describe("Action Types", () => {
                     "type": "active",
                   },
                   "titlePropertyTypeRid": "name",
+                },
+                "propertySecurityGroupPackagingVersion": {
+                  "type": "v2",
+                  "v2": {},
                 },
               },
             },
@@ -13878,6 +13910,10 @@ describe("Action Types", () => {
                     "type": "active",
                   },
                   "titlePropertyTypeRid": "name",
+                },
+                "propertySecurityGroupPackagingVersion": {
+                  "type": "v2",
+                  "v2": {},
                 },
               },
             },
@@ -14736,6 +14772,10 @@ describe("Action Types", () => {
                   },
                   "titlePropertyTypeRid": "id",
                 },
+                "propertySecurityGroupPackagingVersion": {
+                  "type": "v2",
+                  "v2": {},
+                },
               },
             },
             "sharedPropertyTypes": {},
@@ -15203,6 +15243,10 @@ describe("Action Types", () => {
                     "type": "active",
                   },
                   "titlePropertyTypeRid": "name",
+                },
+                "propertySecurityGroupPackagingVersion": {
+                  "type": "v2",
+                  "v2": {},
                 },
               },
             },
@@ -15814,6 +15858,10 @@ describe("Action Types", () => {
                     "type": "active",
                   },
                   "titlePropertyTypeRid": "name",
+                },
+                "propertySecurityGroupPackagingVersion": {
+                  "type": "v2",
+                  "v2": {},
                 },
               },
             },
@@ -16428,6 +16476,10 @@ describe("Action Types", () => {
                     "type": "active",
                   },
                   "titlePropertyTypeRid": "bar",
+                },
+                "propertySecurityGroupPackagingVersion": {
+                  "type": "v2",
+                  "v2": {},
                 },
               },
             },

@@ -16,6 +16,7 @@
 
 import type {
   DerivedPropertyLinkTypeSide,
+  MarkingType,
   ObjectTypeFieldApiName,
 } from "@osdk/client.unstable";
 import type { LinkType } from "../links/LinkType.js";
@@ -36,14 +37,14 @@ export interface ObjectTypeDatasourceDefinition_dataset {
 export interface ObjectSecurityPolicy{
   name: string,
   granularPolicy?: SecurityConditionDefinition,
-  additionalMandatoryMarkings?: Array<string>,
+  additionalMandatoryMarkings?: Record<string, MarkingType>,
 }
 
 export interface PropertySecurityGroup {
   name: string,
   properties: Array<string>
   granularPolicy?: SecurityConditionDefinition,
-  additionalMandatoryMarkings?: Array<string>,
+  additionalMandatoryMarkings?: Record<string, MarkingType>,
 }
 
 export interface ObjectTypeDatasourceDefinition_stream {

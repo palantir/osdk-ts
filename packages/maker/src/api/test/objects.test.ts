@@ -512,6 +512,10 @@ describe("Object Types", () => {
               },
               "titlePropertyTypeRid": "bar",
             },
+            "propertySecurityGroupPackagingVersion": {
+              "type": "v2",
+              "v2": {},
+            },
           },
         },
         "sharedPropertyTypes": {
@@ -698,6 +702,10 @@ describe("Object Types", () => {
               },
               "titlePropertyTypeRid": "buzz",
             },
+            "propertySecurityGroupPackagingVersion": {
+              "type": "v2",
+              "v2": {},
+            },
           },
           "com.palantir.fizz": {
             "datasources": [
@@ -838,6 +846,10 @@ describe("Object Types", () => {
               },
               "titlePropertyTypeRid": "fizz",
             },
+            "propertySecurityGroupPackagingVersion": {
+              "type": "v2",
+              "v2": {},
+            },
           },
           "com.palantir.foo": {
             "datasources": [
@@ -934,6 +946,10 @@ describe("Object Types", () => {
                 "type": "active",
               },
               "titlePropertyTypeRid": "bar",
+            },
+            "propertySecurityGroupPackagingVersion": {
+              "type": "v2",
+              "v2": {},
             },
           },
         },
@@ -1076,6 +1092,10 @@ describe("Object Types", () => {
                   "type": "active",
                 },
                 "titlePropertyTypeRid": "bar",
+              },
+              "propertySecurityGroupPackagingVersion": {
+                "type": "v2",
+                "v2": {},
               },
             },
           },
@@ -1272,6 +1292,10 @@ describe("Object Types", () => {
                   "type": "active",
                 },
                 "titlePropertyTypeRid": "bar",
+              },
+              "propertySecurityGroupPackagingVersion": {
+                "type": "v2",
+                "v2": {},
               },
             },
           },
@@ -1501,6 +1525,10 @@ describe("Object Types", () => {
                   "type": "active",
                 },
                 "titlePropertyTypeRid": "bar",
+              },
+              "propertySecurityGroupPackagingVersion": {
+                "type": "v2",
+                "v2": {},
               },
             },
           },
@@ -2462,6 +2490,10 @@ describe("Object Types", () => {
                 },
                 "titlePropertyTypeRid": "id",
               },
+              "propertySecurityGroupPackagingVersion": {
+                "type": "v2",
+                "v2": {},
+              },
             },
             "com.palantir.passenger": {
               "datasources": [
@@ -2602,6 +2634,10 @@ describe("Object Types", () => {
                   "type": "active",
                 },
                 "titlePropertyTypeRid": "name",
+              },
+              "propertySecurityGroupPackagingVersion": {
+                "type": "v2",
+                "v2": {},
               },
             },
           },
@@ -3008,6 +3044,10 @@ describe("Object Types", () => {
                 },
                 "titlePropertyTypeRid": "pk",
               },
+              "propertySecurityGroupPackagingVersion": {
+                "type": "v2",
+                "v2": {},
+              },
             },
           },
           "sharedPropertyTypes": {},
@@ -3019,4 +3059,37 @@ describe("Object Types", () => {
       }
     `);
   });
+
+  // it("PSGs correctly validate incorrect configuration", () => {
+  //   expect(() => {
+  //     defineObject({
+  //       displayName: "Person",
+  //       pluralDisplayName: "Persons",
+  //       description: "person",
+  //       apiName: "person",
+  //       titlePropertyApiName: "pk",
+  //       primaryKeyPropertyApiName: "pk",
+  //       properties: {
+  //         "pk": { displayName: "pk", type: "string" },
+  //         "SSN": {
+  //           displayName: "Parent FK",
+  //           type: "string",
+  //         },
+  //       },
+  //       datasources: [
+  //         {
+  //           type: "dataset",
+  //           propertySecurityGroups: [
+  //             {
+  //               name: "invalidProperty",
+  //               properties: ["buzz"],
+  //             }
+  //           ]
+  //         },
+  //       ],
+  //     });
+  //   }).toThrowErrorMatchingInlineSnapshot(
+  //     `[Error: Invariant failed: Title property fizz is not defined on object foo]`,
+  //   );
+  // });
 });

@@ -15,6 +15,7 @@
  */
 
 import type {
+  MarkingType,
   OntologyIrObjectTypeDatasourceDefinition,
   PropertyTypeMappingInfo,
   OntologyIrPropertySecurityGroup,
@@ -26,7 +27,7 @@ import type {
 import invariant from "tiny-invariant";
 import type { ObjectPropertyType } from "../../api/object/ObjectPropertyType.js";
 import type { ObjectType } from "../../api/object/ObjectType.js";
-import type { ObjectSecurityPolicy, PropertySecurityGroup } from "../../api/object/ObjectTypeDatasourceDefinition.js";
+import type { ObjectTypeDatasourceDefinition_dataset } from "../../api/object/ObjectTypeDatasourceDefinition.js";
 import type { SecurityConditionDefinition } from "../../api/object/SecurityCondition.js";
 
 export function convertDatasourceDefinition(
@@ -64,20 +65,29 @@ export function convertDatasourceDefinition(
           propertyMapping: buildPropertyMapping(properties),
         },
       };
+    case "derived":
+      return {
+          type: "datasetV2",
+          datasetV2: {
+            datasetRid: objectType.apiName,
+            propertyMapping: buildPropertyMapping(properties),
+          },
+        };
     case "dataset":
-      if ("objectSecuirityPolicy" in baseDatasource || "propertySecurityGroups" in baseDatasource) {
-        return {
+    default:
+      if (objectType.properties?.some(prop => typeof prop.type === "object" && prop.type.type === "marking")
+      || baseDatasource?.objectSecurityPolicy
+      || baseDatasource?.propertySecurityGroups) {
+      return {
           type: "datasetV3",
           datasetV3: {
             datasetRid: objectType.apiName,
             propertyMapping: buildPropertyMapping(properties),
             branchId: "master",
-            propertySecurityGroups: (baseDatasource.objectSecurityPolicy || baseDatasource.propertySecurityGroups)
-            ? convertPropertySecurityGroups(properties, objectType.primaryKeyPropertyApiName, baseDatasource.objectSecurityPolicy, baseDatasource.propertySecurityGroups) : undefined,
+            propertySecurityGroups: convertPropertySecurityGroups(baseDatasource, properties, objectType.primaryKeyPropertyApiName), 
           }
-        }
-      }
-    default:
+        };
+      };
       return {
         type: "datasetV2",
         datasetV2: {
@@ -89,15 +99,45 @@ export function convertDatasourceDefinition(
 }
 
 function convertPropertySecurityGroups(
+  ds: ObjectTypeDatasourceDefinition_dataset | undefined,
   properties: ObjectPropertyType[],
   primaryKeyPropertyApiName: string,
-  objectSecurityPolicy?: ObjectSecurityPolicy,
-  propertySecurityGroups?: Array<PropertySecurityGroup>,
 ): OntologyIrPropertySecurityGroups {
+  if (!ds || (!("objectSecurityPolicy" in ds) && !("propertySecurityGroups" in ds))) {
+    return {
+      groups: [
+        {
+          properties: properties.map(prop => prop.apiName),
+          rid: "defaultObjectSecurityPolicy",
+          security: {
+            type: "granular",
+            granular: {
+              viewPolicy: {
+                granularPolicyCondition: {
+                  type: "and",
+                  and: {
+                    conditions: [],
+                  }
+                },
+                additionalMandatory: {
+                  markings: {},
+                  assumedMarkings: [],
+                },
+              }
+            }
+          },
+          type: {
+            type: "primaryKey",
+            primaryKey: {},
+          }
+        }],
+    }
+  }
+
   const validPropertyNames = new Set(properties.map(prop => prop.apiName));
   const usedProperties = new Set();
 
-  propertySecurityGroups?.forEach(psg => {
+  ds.propertySecurityGroups?.forEach(psg => {
     psg.properties.forEach(propertyName => {
       invariant(
         validPropertyNames.has(propertyName),
@@ -116,12 +156,12 @@ function convertPropertySecurityGroups(
   });
   
   const objectSecurityPolicyGroup: OntologyIrPropertySecurityGroup = {
-    rid: objectSecurityPolicy?.name || "defaultObjectSecurityPolicy",
+    rid: ds.objectSecurityPolicy?.name || "defaultObjectSecurityPolicy",
     security: {
       type: "granular",
       granular: convertGranularPolicy(
-        objectSecurityPolicy?.granularPolicy,
-        objectSecurityPolicy?.additionalMandatoryMarkings),
+        ds.objectSecurityPolicy?.granularPolicy,
+        ds.objectSecurityPolicy?.additionalMandatoryMarkings),
     },
     type: {
       type: "primaryKey",
@@ -135,7 +175,7 @@ function convertPropertySecurityGroups(
   return {
     groups: [
       objectSecurityPolicyGroup,
-      ...(propertySecurityGroups?.map(psg => ({
+      ...(ds.propertySecurityGroups?.map(psg => ({
         rid: psg.name,
         security: {
           type: "granular" as const,
@@ -157,7 +197,7 @@ function convertPropertySecurityGroups(
 
 function convertGranularPolicy(
   granularPolicy?: SecurityConditionDefinition,
-  additionalMandatoryMarkings?: Array<string>,
+  additionalMandatoryMarkings?: Record<string, MarkingType>,
 ): OntologyIrSecurityGroupGranularSecurityDefinition {
   return {
     viewPolicy: {
@@ -170,7 +210,7 @@ function convertGranularPolicy(
           }
         },
       additionalMandatory: {
-        markings: additionalMandatoryMarkings ?? [],
+        markings: additionalMandatoryMarkings ?? {},
         assumedMarkings: [],
       },
     }
@@ -204,6 +244,31 @@ function convertSecurityCondition(condition: SecurityConditionDefinition): Ontol
           };
         } else {
           return condition;
+        }
+      case "markingProperty":
+        return {
+          type: "markings",
+          markings: {
+            property: condition.property
+          }
+        }
+      case "groupProperty":
+        return {
+          type: "comparison",
+          comparison: {
+            operator: "INTERSECTS",
+            left: {
+              type: "userProperty",
+              userProperty: {
+                type: "groupIds",
+                groupIds: {},
+              },
+            },
+            right: {
+              type: "property",
+              property: condition.property,
+            }
+          }
         }
       case "group":
         return {

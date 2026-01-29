@@ -21,21 +21,28 @@ import type {
 export type SecurityConditionDefinition =
   | SecurityUnionCondition
   | OntologyIrSecurityGroupGranularCondition
-  | SecurityGroupValidationRule;
-  // | SecurityParameterValidationRule;
+  | SecurityGroupValidationRule
+  | SecurityGroupPropertyValidationRule
+  | SecurityMarkingPropertyRule;
 
 export type SecurityUnionCondition = {
   type: "and" | "or";
   conditions: Array<OntologyIrSecurityGroupGranularCondition>;
 };
 
+// checks if user is part of a static group id
 export type SecurityGroupValidationRule = {
   type: "group";
   name: string;
 };
 
-// export type SecurityParameterValidationRule = {
-//   type: "parameter";
-//   parameterId: string;
-//   matches: OntologyIrSecurityGroupGranularCondition;
-// };
+// checks if user's group ids matches a property
+export type SecurityGroupPropertyValidationRule = {
+  type: "groupProperty";
+  property: string;
+};
+
+export type SecurityMarkingPropertyRule = {
+  type: "markingProperty";
+  property: string;
+}
