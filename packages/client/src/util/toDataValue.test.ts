@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { NULL_VALUE } from "@osdk/api";
 import type { ActionMetadata, MediaUpload } from "@osdk/api";
 import { Employee, Task } from "@osdk/client.test.ontology";
 import type { MediaReference } from "@osdk/foundry.core";
@@ -268,24 +267,12 @@ describe(toDataValue, () => {
     expect(converted).toEqual(mediaReference);
   });
 
-  it("Converts NULL_VALUE to null", async () => {
+  it("passes through nulls correctly", async () => {
     const converted = await toDataValue(
-      NULL_VALUE,
+      null,
       clientCtx,
       mockActionMetadata,
     );
     expect(converted).toBeNull();
-  });
-
-  it("Converts NULL_VALUE equivalents to null", async () => {
-    const clearData = Symbol.for("NULL_VALUE") as symbol & {
-      __type: "NULL_VALUE";
-    };
-    const converted = await toDataValue(
-      clearData,
-      clientCtx,
-      mockActionMetadata,
-    );
-    expect(converted).toEqual(null);
   });
 });

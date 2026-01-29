@@ -19,9 +19,9 @@ import type {
   AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy,
   AggregationsResults,
   DerivedProperty,
+  ObjectOrInterfaceDefinition,
   WhereClause,
 } from "@osdk/api";
-import type { ObjectTypeDefinition } from "@osdk/client";
 import type { ObserveAggregationArgs } from "@osdk/client/unstable-do-not-use";
 import React from "react";
 import { makeExternalStore } from "./makeExternalStore.js";
@@ -29,7 +29,7 @@ import { OsdkContext2 } from "./OsdkContext2.js";
 import type { InferRdpTypes } from "./types.js";
 
 export interface UseOsdkAggregationOptions<
-  T extends ObjectTypeDefinition,
+  T extends ObjectOrInterfaceDefinition,
   WithProps extends DerivedProperty.Clause<T> | undefined = undefined,
 > {
   /**
@@ -53,7 +53,7 @@ export interface UseOsdkAggregationOptions<
 }
 
 export interface UseOsdkAggregationResult<
-  T extends ObjectTypeDefinition,
+  T extends ObjectOrInterfaceDefinition,
   A extends AggregateOpts<T>,
 > {
   data: AggregationsResults<T, A> | undefined;
@@ -92,8 +92,8 @@ declare const process: {
  * ```
  */
 export function useOsdkAggregation<
-  Q extends ObjectTypeDefinition,
-  AO extends AggregateOpts<Q>,
+  Q extends ObjectOrInterfaceDefinition,
+  const AO extends AggregateOpts<Q>,
   WP extends DerivedProperty.Clause<Q> | undefined = undefined,
 >(
   type: Q,

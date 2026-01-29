@@ -27,6 +27,7 @@ import type {
   ObjectOrInterfaceDefinition,
   ObjectSet,
   ObjectSetArgs,
+  ObjectSetSubscription,
   ObjectTypeDefinition,
   Osdk,
   PrimaryKeyType,
@@ -270,8 +271,9 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       ).subscribe(
         objectType,
         objectSet,
-        listener,
+        listener as ObjectSetSubscription.Listener<Q, any>,
         opts?.properties,
+        opts?.includeRid,
       );
 
       return { unsubscribe: async () => (await pendingSubscribe)() };

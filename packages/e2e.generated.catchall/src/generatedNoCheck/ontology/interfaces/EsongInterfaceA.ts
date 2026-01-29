@@ -66,8 +66,11 @@ export interface EsongInterfaceA extends $InterfaceDefinition {
   };
 }
 
-export const EsongInterfaceA: EsongInterfaceA = {
+export const EsongInterfaceA = {
   type: 'interface',
   apiName: 'EsongInterfaceA',
   osdkMetadata: $osdkMetadata,
-};
+  internalDoNotUseMetadata: {
+    rid: 'ri.ontology.main.interface.3f52b54b-dab9-41f1-b02c-4eba39846673',
+  },
+} satisfies EsongInterfaceA & { internalDoNotUseMetadata: { rid: string } } as EsongInterfaceA;
