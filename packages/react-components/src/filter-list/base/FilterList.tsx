@@ -105,7 +105,8 @@ export function FilterList<Q extends ObjectTypeDefinition>(
         renderEmptyAction={showAddFilterButton ? renderAddFilterButton : undefined}
       />
 
-      {showAddFilterButton && renderAddFilterButton && (
+      {showAddFilterButton && renderAddFilterButton
+        && visibleFilterDefinitions && visibleFilterDefinitions.length > 0 && (
         <div
           className={classnames(
             styles.addButtonContainer,
