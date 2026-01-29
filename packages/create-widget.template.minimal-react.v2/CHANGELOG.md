@@ -1,5 +1,7 @@
 # @osdk/create-widget.template.react.v2
 
+## 3.3.4
+
 ## 3.3.3
 
 ### Patch Changes
