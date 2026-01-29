@@ -64,6 +64,7 @@ type ObjectTypeCreatable<T extends ObjectTypeDefinition> =
   & ObjectTypeCreatableWithoutApiName<T>
   & {
     $apiName: CompileTimeMetadata<T>["apiName"];
+    $rid?: string;
   };
 
 /**
@@ -276,11 +277,6 @@ export class FauxDataStore {
     const frozenBso = Object.freeze({ ...bso });
     this.#objects.get(bso.__apiName).set(String(bso.__primaryKey), frozenBso);
 
-    if (this.#strict) {
-      // registers links
-      this.replaceObjectOrThrow(frozenBso);
-    }
-
     return frozenBso;
   }
 
@@ -380,41 +376,43 @@ export class FauxDataStore {
         const fkValue = x[fkName];
         const oldFkValue = oldObject[fkName];
 
-        const dstSide = this.ontology.getOtherLinkTypeSideV2OrThrow(
-          objectType.objectType.apiName,
-          linkDef.apiName,
-        );
-        const dstLocator = objectLocator({
-          __apiName: linkDef.objectTypeApiName,
-          __primaryKey: fkValue,
-        });
-
-        const target = this.getObject(linkDef.objectTypeApiName, fkValue);
-
-        if (fkValue != null && !target) {
-          // eslint-disable-next-line no-console
-          console.log(
-            `WARNING! Setting a FK value to a non-existent object: ${dstLocator}`,
+        if (oldObject[fkName] !== x[fkName]) {
+          const dstSide = this.ontology.getOtherLinkTypeSideV2OrThrow(
+            objectType.objectType.apiName,
+            linkDef.apiName,
           );
-        }
+          const dstLocator = objectLocator({
+            __apiName: linkDef.objectTypeApiName,
+            __primaryKey: fkValue,
+          });
 
-        if (fkValue != null) {
-          linksToUpdate.push({
-            dstSide,
-            dstLocator,
-            srcSide: linkDef,
-            srcLocator: objectLocator(x),
-          });
-        } else if (oldFkValue != null) {
-          linksToRemove.push({
-            srcLocator: objectLocator(x),
-            srcSide: linkDef,
-            dstLocator: objectLocator({
-              __apiName: linkDef.objectTypeApiName,
-              __primaryKey: oldFkValue,
-            }),
-            dstSide,
-          });
+          const target = this.getObject(linkDef.objectTypeApiName, fkValue);
+
+          if (fkValue != null && !target) {
+            // eslint-disable-next-line no-console
+            console.log(
+              `WARNING! Setting a FK value to a non-existent object: ${dstLocator}`,
+            );
+          }
+
+          if (fkValue != null) {
+            linksToUpdate.push({
+              dstSide,
+              dstLocator,
+              srcSide: linkDef,
+              srcLocator: objectLocator(x),
+            });
+          } else {
+            linksToRemove.push({
+              srcLocator: objectLocator(x),
+              srcSide: linkDef,
+              dstLocator: objectLocator({
+                __apiName: linkDef.objectTypeApiName,
+                __primaryKey: oldFkValue,
+              }),
+              dstSide,
+            });
+          }
         }
       }
     }

@@ -86,6 +86,25 @@ export interface ObserveListOptions<
   withProperties?: DerivedProperty.Clause<Q>;
 
   /**
+   * Fetch objects by their Resource Identifiers (RIDs).
+   * When provided, starts with a static objectset containing these RIDs.
+   * Can be combined with `where` to filter the RID set, and with `orderBy` to sort results.
+   *
+   * @example
+   * // Fetch specific objects by RID
+   * observeList({ type: Employee, rids: ['ri.foo.123', 'ri.foo.456'] }, observer)
+   *
+   * @example
+   * // Fetch specific objects by RID, filtered by status
+   * observeList({
+   *   type: Employee,
+   *   rids: ['ri.foo.123', 'ri.foo.456', 'ri.foo.789'],
+   *   where: { status: 'active' }
+   * }, observer)
+   */
+  rids?: readonly string[];
+
+  /**
    * Automatically fetch additional pages on initial load.
    *
    * - `true`: Fetch all available pages automatically

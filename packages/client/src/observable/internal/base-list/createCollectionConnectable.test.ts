@@ -745,9 +745,9 @@ describe("createCollectionConnectable", () => {
       // Should handle undefined object entry gracefully by filtering it out
       expect(observer.next).toHaveBeenCalledWith(
         expect.objectContaining({
-          data: [undefined], // The function maps the undefined value from the store
+          data: [],
           status: "loaded",
-          count: 1,
+          count: 0,
         }),
       );
 
