@@ -43,6 +43,7 @@
   },
   "dependencies": {
     "@osdk/api": "workspace:~",
+    "@osdk/foundry.admin": "catalog:foundry-platform-typescript",
     "@osdk/foundry.core": "catalog:foundry-platform-typescript",
     "@osdk/foundry.geo": "catalog:foundry-platform-typescript",
     "@osdk/foundry.mediasets": "catalog:foundry-platform-typescript",

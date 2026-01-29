@@ -14,5 +14,33 @@
  * limitations under the License.
  */
 
-export * as Admin from "./Admin/index.js";
-export * as OntologiesV2 from "./OntologiesV2/index.js";
+.osdkTableCell {
+  display: flex;
+  align-items: center;
+  text-align: left;
+  position: relative;
+  padding: var(--osdk-table-cell-padding);
+  font-size: var(--osdk-table-cell-fontSize);
+  color: var(--osdk-table-cell-color);
+  background-color: inherit;
+  border-right: var(--osdk-table-cell-divider);
+
+  &:first-child {
+    border-left: var(--osdk-table-border);
+  }
+
+  &:last-child {
+    border-right: var(--osdk-table-border);
+  }
+}
+
+.osdkTableCell:has([role="checkbox"]) {
+  justify-content: center;
+}
+
+.osdkTableCellContent {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: left;
+}

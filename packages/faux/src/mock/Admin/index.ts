@@ -14,5 +14,4 @@
  * limitations under the License.
  */
 
-export * as Admin from "./Admin/index.js";
-export * as OntologiesV2 from "./OntologiesV2/index.js";
+export * as Users from "./Users.js";
