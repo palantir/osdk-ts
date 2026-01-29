@@ -17,11 +17,11 @@
 import type {
   MarkingType,
   OntologyIrObjectTypeDatasourceDefinition,
-  PropertyTypeMappingInfo,
   OntologyIrPropertySecurityGroup,
   OntologyIrPropertySecurityGroups,
   OntologyIrSecurityGroupGranularCondition,
   OntologyIrSecurityGroupGranularSecurityDefinition,
+  PropertyTypeMappingInfo,
   RetentionPolicy,
 } from "@osdk/client.unstable";
 import invariant from "tiny-invariant";
@@ -67,27 +67,35 @@ export function convertDatasourceDefinition(
       };
     case "derived":
       return {
-          type: "datasetV2",
-          datasetV2: {
-            datasetRid: objectType.apiName,
-            propertyMapping: buildPropertyMapping(properties),
-          },
-        };
+        type: "datasetV2",
+        datasetV2: {
+          datasetRid: objectType.apiName,
+          propertyMapping: buildPropertyMapping(properties),
+        },
+      };
     case "dataset":
     default:
-      if (objectType.properties?.some(prop => typeof prop.type === "object" && prop.type.type === "marking")
-      || baseDatasource?.objectSecurityPolicy
-      || baseDatasource?.propertySecurityGroups) {
-      return {
+      if (
+        objectType.properties?.some(prop =>
+          typeof prop.type === "object" && prop.type.type === "marking"
+        )
+        || baseDatasource?.objectSecurityPolicy
+        || baseDatasource?.propertySecurityGroups
+      ) {
+        return {
           type: "datasetV3",
           datasetV3: {
             datasetRid: objectType.apiName,
             propertyMapping: buildPropertyMapping(properties),
             branchId: "master",
-            propertySecurityGroups: convertPropertySecurityGroups(baseDatasource, properties, objectType.primaryKeyPropertyApiName), 
-          }
+            propertySecurityGroups: convertPropertySecurityGroups(
+              baseDatasource,
+              properties,
+              objectType.primaryKeyPropertyApiName,
+            ),
+          },
         };
-      };
+      }
       return {
         type: "datasetV2",
         datasetV2: {
@@ -103,7 +111,10 @@ function convertPropertySecurityGroups(
   properties: ObjectPropertyType[],
   primaryKeyPropertyApiName: string,
 ): OntologyIrPropertySecurityGroups {
-  if (!ds || (!("objectSecurityPolicy" in ds) && !("propertySecurityGroups" in ds))) {
+  if (
+    !ds
+    || (!("objectSecurityPolicy" in ds) && !("propertySecurityGroups" in ds))
+  ) {
     return {
       groups: [
         {
@@ -117,21 +128,22 @@ function convertPropertySecurityGroups(
                   type: "and",
                   and: {
                     conditions: [],
-                  }
+                  },
                 },
                 additionalMandatory: {
                   markings: {},
                   assumedMarkings: [],
                 },
-              }
-            }
+              },
+            },
           },
           type: {
             type: "primaryKey",
             primaryKey: {},
-          }
-        }],
-    }
+          },
+        },
+      ],
+    };
   }
 
   const validPropertyNames = new Set(properties.map(prop => prop.apiName));
@@ -141,27 +153,28 @@ function convertPropertySecurityGroups(
     psg.properties.forEach(propertyName => {
       invariant(
         validPropertyNames.has(propertyName),
-        `Property "${propertyName}" in property security group ${psg.name} does not exist in the properties list`
+        `Property "${propertyName}" in property security group ${psg.name} does not exist in the properties list`,
       );
       invariant(
         !usedProperties.has(propertyName),
-        `Property "${propertyName}" is used in multiple property security groups`
+        `Property "${propertyName}" is used in multiple property security groups`,
       );
       invariant(
         propertyName !== primaryKeyPropertyApiName,
-        `Property "${propertyName}" in property security group ${psg.name} cannot be the primary key`
+        `Property "${propertyName}" in property security group ${psg.name} cannot be the primary key`,
       );
       usedProperties.add(propertyName);
     });
   });
-  
+
   const objectSecurityPolicyGroup: OntologyIrPropertySecurityGroup = {
     rid: ds.objectSecurityPolicy?.name || "defaultObjectSecurityPolicy",
     security: {
       type: "granular",
       granular: convertGranularPolicy(
         ds.objectSecurityPolicy?.granularPolicy,
-        ds.objectSecurityPolicy?.additionalMandatoryMarkings),
+        ds.objectSecurityPolicy?.additionalMandatoryMarkings,
+      ),
     },
     type: {
       type: "primaryKey",
@@ -181,7 +194,8 @@ function convertPropertySecurityGroups(
           type: "granular" as const,
           granular: convertGranularPolicy(
             psg.granularPolicy,
-            psg.additionalMandatoryMarkings),
+            psg.additionalMandatoryMarkings,
+          ),
         },
         type: {
           type: "property" as const,
@@ -191,8 +205,8 @@ function convertPropertySecurityGroups(
         },
         properties: psg.properties ?? [],
       })) ?? []),
-    ]
-  }
+    ],
+  };
 }
 
 function convertGranularPolicy(
@@ -201,102 +215,104 @@ function convertGranularPolicy(
 ): OntologyIrSecurityGroupGranularSecurityDefinition {
   return {
     viewPolicy: {
-      granularPolicyCondition: granularPolicy ? 
-      convertSecurityCondition(granularPolicy) : 
-        {
+      granularPolicyCondition: granularPolicy
+        ? convertSecurityCondition(granularPolicy)
+        : {
           type: "and",
           and: {
             conditions: [],
-          }
+          },
         },
       additionalMandatory: {
         markings: additionalMandatoryMarkings ?? {},
         assumedMarkings: [],
       },
-    }
-  }
+    },
+  };
 }
 
-function convertSecurityCondition(condition: SecurityConditionDefinition): OntologyIrSecurityGroupGranularCondition {
+function convertSecurityCondition(
+  condition: SecurityConditionDefinition,
+): OntologyIrSecurityGroupGranularCondition {
   switch (condition.type) {
-      case "and":
-        if ("conditions" in condition) {
-          return {
-            type: "and",
-            and: {
-              conditions: condition.conditions.map(c =>
-                convertSecurityCondition(c)
-              ),
-            },
-          };
-        } else {
-          return condition;
-        }
-      case "or":
-        if ("conditions" in condition) {
-          return {
-            type: "or",
-            or: {
-              conditions: condition.conditions.map(c =>
-                convertSecurityCondition(c)
-              ),
-            },
-          };
-        } else {
-          return condition;
-        }
-      case "markingProperty":
+    case "and":
+      if ("conditions" in condition) {
         return {
-          type: "markings",
-          markings: {
-            property: condition.property
-          }
-        }
-      case "groupProperty":
-        return {
-          type: "comparison",
-          comparison: {
-            operator: "INTERSECTS",
-            left: {
-              type: "userProperty",
-              userProperty: {
-                type: "groupIds",
-                groupIds: {},
-              },
-            },
-            right: {
-              type: "property",
-              property: condition.property,
-            }
-          }
-        }
-      case "group":
-        return {
-          type: "comparison",
-          comparison: {
-            operator: "INTERSECTS",
-            left: {
-              type: "userProperty",
-              userProperty: {
-                type: "groupIds",
-                groupIds: {},
-              },
-            },
-            right: {
-              type: "constant",
-              constant: {
-                type: "strings",
-                strings: [
-                  condition.name,
-                ],
-              }
-            },
+          type: "and",
+          and: {
+            conditions: condition.conditions.map(c =>
+              convertSecurityCondition(c)
+            ),
           },
         };
-
-      default:
+      } else {
         return condition;
-    }
+      }
+    case "or":
+      if ("conditions" in condition) {
+        return {
+          type: "or",
+          or: {
+            conditions: condition.conditions.map(c =>
+              convertSecurityCondition(c)
+            ),
+          },
+        };
+      } else {
+        return condition;
+      }
+    case "markingProperty":
+      return {
+        type: "markings",
+        markings: {
+          property: condition.property,
+        },
+      };
+    case "groupProperty":
+      return {
+        type: "comparison",
+        comparison: {
+          operator: "INTERSECTS",
+          left: {
+            type: "userProperty",
+            userProperty: {
+              type: "groupIds",
+              groupIds: {},
+            },
+          },
+          right: {
+            type: "property",
+            property: condition.property,
+          },
+        },
+      };
+    case "group":
+      return {
+        type: "comparison",
+        comparison: {
+          operator: "INTERSECTS",
+          left: {
+            type: "userProperty",
+            userProperty: {
+              type: "groupIds",
+              groupIds: {},
+            },
+          },
+          right: {
+            type: "constant",
+            constant: {
+              type: "strings",
+              strings: [
+                condition.name,
+              ],
+            },
+          },
+        },
+      };
+
+    default:
+      return condition;
+  }
 }
 
 function buildPropertyMapping(

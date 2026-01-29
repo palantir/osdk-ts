@@ -45,4 +45,4 @@ export type SecurityGroupPropertyValidationRule = {
 export type SecurityMarkingPropertyRule = {
   type: "markingProperty";
   property: string;
-}
+};

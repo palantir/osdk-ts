@@ -30,21 +30,21 @@ export type ObjectTypeDatasourceDefinition =
 
 export interface ObjectTypeDatasourceDefinition_dataset {
   type: "dataset";
-  objectSecurityPolicy?: ObjectSecurityPolicy
+  objectSecurityPolicy?: ObjectSecurityPolicy;
   propertySecurityGroups?: Array<PropertySecurityGroup>;
 }
 
-export interface ObjectSecurityPolicy{
-  name: string,
-  granularPolicy?: SecurityConditionDefinition,
-  additionalMandatoryMarkings?: Record<string, MarkingType>,
+export interface ObjectSecurityPolicy {
+  name: string;
+  granularPolicy?: SecurityConditionDefinition;
+  additionalMandatoryMarkings?: Record<string, MarkingType>;
 }
 
 export interface PropertySecurityGroup {
-  name: string,
-  properties: Array<string>
-  granularPolicy?: SecurityConditionDefinition,
-  additionalMandatoryMarkings?: Record<string, MarkingType>,
+  name: string;
+  properties: Array<string>;
+  granularPolicy?: SecurityConditionDefinition;
+  additionalMandatoryMarkings?: Record<string, MarkingType>;
 }
 
 export interface ObjectTypeDatasourceDefinition_stream {

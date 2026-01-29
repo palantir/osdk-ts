@@ -22,7 +22,6 @@ import { defineLink } from "../defineLink.js";
 import { defineObject } from "../defineObject.js";
 import { defineOntology, dumpOntologyFullMetadata } from "../defineOntology.js";
 import { defineSharedPropertyType } from "../defineSpt.js";
-import { convertObject } from "../../conversion/toMarketplace/convertObject.js";
 
 describe("Object Types", () => {
   beforeEach(async () => {
@@ -3063,32 +3062,32 @@ describe("Object Types", () => {
 
   it("Default PSGs configurations are defined correctly", () => {
     const obj = defineObject({
-        displayName: "Person",
-        pluralDisplayName: "Persons",
-        description: "person",
-        apiName: "person",
-        titlePropertyApiName: "pk",
-        primaryKeyPropertyApiName: "pk",
-        properties: {
-          "pk": { displayName: "pk", type: "string" },
-          "normalProperty": { displayName: "Normal Property", type: "string" },
-          "SSN": {
-            displayName: "SSN",
-            type: "string",
-          },
+      displayName: "Person",
+      pluralDisplayName: "Persons",
+      description: "person",
+      apiName: "person",
+      titlePropertyApiName: "pk",
+      primaryKeyPropertyApiName: "pk",
+      properties: {
+        "pk": { displayName: "pk", type: "string" },
+        "normalProperty": { displayName: "Normal Property", type: "string" },
+        "SSN": {
+          displayName: "SSN",
+          type: "string",
         },
-        datasources: [
-          {
-            type: "dataset",
-            propertySecurityGroups: [
-              {
-                name: "invalidProperty",
-                properties: ["SSN"],
-              }
-            ]
-          },
-        ],
-      });
+      },
+      datasources: [
+        {
+          type: "dataset",
+          propertySecurityGroups: [
+            {
+              name: "invalidProperty",
+              properties: ["SSN"],
+            },
+          ],
+        },
+      ],
+    });
     expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
       {
         "importedOntology": {
@@ -3380,66 +3379,66 @@ describe("Object Types", () => {
 
   it("Complex PSGs configurations are defined correctly", () => {
     const obj = defineObject({
-        displayName: "Person",
-        pluralDisplayName: "Persons",
-        description: "person",
-        apiName: "person",
-        titlePropertyApiName: "pk",
-        primaryKeyPropertyApiName: "pk",
-        properties: {
-          "pk": { displayName: "pk", type: "string" },
-          "group": { displayName: "Group Property", type: "string" },
-          "mandatory": {
-            type: {
-              type: "marking",
-              markingType: "MANDATORY",
-              markingInputGroupName: "myMarking",
-            },
-            displayName: "mandatory",
+      displayName: "Person",
+      pluralDisplayName: "Persons",
+      description: "person",
+      apiName: "person",
+      titlePropertyApiName: "pk",
+      primaryKeyPropertyApiName: "pk",
+      properties: {
+        "pk": { displayName: "pk", type: "string" },
+        "group": { displayName: "Group Property", type: "string" },
+        "mandatory": {
+          type: {
+            type: "marking",
+            markingType: "MANDATORY",
+            markingInputGroupName: "myMarking",
           },
-          "SSN": {
-            displayName: "SSN",
-            type: "string",
-          },
+          displayName: "mandatory",
         },
-        datasources: [
-          {
-            type: "dataset",
-            objectSecurityPolicy: {
-              name: "customObjectLevelPolicy",
+        "SSN": {
+          displayName: "SSN",
+          type: "string",
+        },
+      },
+      datasources: [
+        {
+          type: "dataset",
+          objectSecurityPolicy: {
+            name: "customObjectLevelPolicy",
+            granularPolicy: {
+              type: "group",
+              name: "objectLevelGroup",
+            },
+            additionalMandatoryMarkings: {
+              "objectLevelMarking": "CBAC",
+            },
+          },
+          propertySecurityGroups: [
+            {
+              name: "customPsg",
+              properties: ["SSN"],
               granularPolicy: {
-                type: "group",
-                name: "objectLevelGroup",
+                type: "and",
+                conditions: [
+                  {
+                    type: "groupProperty",
+                    property: "group",
+                  },
+                  {
+                    type: "markingProperty",
+                    property: "mandatory",
+                  },
+                ],
               },
               additionalMandatoryMarkings: {
-                "objectLevelMarking": "CBAC",
+                "propertyLevelMarking": "MANDATORY",
               },
             },
-            propertySecurityGroups: [
-              {
-                name: "customPsg",
-                properties: ["SSN"],
-                granularPolicy: {
-                  type: "and",
-                  conditions: [
-                    {
-                      type: "groupProperty",
-                      property: "group",
-                    }, {
-                      type: "markingProperty",
-                      property: "mandatory",
-                    }
-                  ] 
-                },
-                additionalMandatoryMarkings: {
-                  "propertyLevelMarking": "MANDATORY",
-                  
-                }
-              }
-            ]
-          },
-        ],
-      });
+          ],
+        },
+      ],
+    });
     expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
       {
         "importedOntology": {

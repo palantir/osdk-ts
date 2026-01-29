@@ -130,7 +130,7 @@ export function convertObject(
     propertySecurityGroupPackagingVersion: {
       type: "v2",
       v2: {},
-    }
+    },
   };
 }
 
