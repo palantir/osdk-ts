@@ -54,7 +54,6 @@ export function FilterListContent<Q extends ObjectTypeDefinition>({
         style={style}
         data-empty="true"
       >
-        <p className={styles.emptyMessage}>No filters configured</p>
         {renderEmptyAction && (
           <div className={styles.emptyAction}>
             {renderEmptyAction()}

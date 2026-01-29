@@ -42,4 +42,65 @@
     calc(var(--bp-surface-spacing) * 2);
   --osdk-table-cell-fontSize: var(--bp-typography-size-bodyMedium);
   --osdk-table-cell-color: var(--bp-typography-colorRest-default);
+
+  /* FilterList */
+  --osdk-filter-list-bg: var(--bp-palette-white);
+  --osdk-filter-list-border: 1px solid var(--bp-surface-borderColor-default);
+  --osdk-filter-list-border-radius: 4px;
+  --osdk-filter-list-padding: 16px;
+  --osdk-filter-list-gap: 16px;
+  --osdk-filter-list-addButton-padding-top: 8px;
+
+  /* FilterList Header */
+  --osdk-filter-list-header-font-size: 14px;
+  --osdk-filter-list-header-font-weight: 600;
+  --osdk-filter-list-header-color: var(--bp-typography-colorRest-default);
+  --osdk-filter-list-header-gap: 8px;
+
+  /* FilterList Item */
+  --osdk-filter-item-gap: 8px;
+  --osdk-filter-item-label-font-family: inherit;
+  --osdk-filter-item-label-font-size: 13px;
+  --osdk-filter-item-label-font-weight: 500;
+  --osdk-filter-item-label-color: var(--bp-typography-colorRest-default);
+
+  /* FilterList Inputs */
+  --osdk-filter-input-padding: 8px;
+  --osdk-filter-input-border: 1px solid var(--bp-surface-borderColor-default);
+  --osdk-filter-input-border-radius: 4px;
+  --osdk-filter-input-bg: var(--bp-palette-white);
+  --osdk-filter-input-focus-border-color: var(--bp-intent-primary-rest);
+
+  /* Checkbox List Input */
+  --osdk-filter-checkbox-list-gap: 4px;
+  --osdk-filter-checkbox-row-padding: 4px 0;
+  --osdk-filter-checkbox-label-gap: 8px;
+  --osdk-filter-checkbox-value-font-family: inherit;
+  --osdk-filter-checkbox-value-font-size: 13px;
+  --osdk-filter-checkbox-value-line-height: 1.4;
+  --osdk-filter-checkbox-value-color: var(--bp-typography-colorRest-default);
+  --osdk-filter-checkbox-item-padding: 4px 8px;
+  --osdk-filter-checkbox-item-border-radius: 4px;
+  --osdk-filter-checkbox-item-hover-bg: var(--bp-surface-colorHover-default);
+  --osdk-filter-checkbox-bar-height: 4px;
+  --osdk-filter-checkbox-bar-bg: var(--bp-intent-primary-rest);
+  --osdk-filter-checkbox-bar-track-bg: var(--bp-palette-gray-200);
+
+  /* Text Input */
+  --osdk-filter-input-gap: 8px;
+  --osdk-filter-input-transition: 0.15s ease;
+  --osdk-filter-input-focus-border: var(--bp-intent-primary-rest);
+  --osdk-filter-input-focus-outline-width: 2px;
+  --osdk-filter-input-focus-outline-color: rgba(45, 114, 210, 0.3);
+  --osdk-filter-input-focus-outline-offset: 0;
+  --osdk-filter-input-icon-color: var(--bp-typography-colorMuted);
+  --osdk-filter-input-font-family: inherit;
+  --osdk-filter-input-font-size: 13px;
+  --osdk-filter-input-color: var(--bp-typography-colorRest-default);
+  --osdk-filter-input-placeholder-color: var(--bp-typography-colorMuted);
+  --osdk-filter-input-clear-padding: 4px;
+  --osdk-filter-input-clear-bg: transparent;
+  --osdk-filter-input-clear-bg-hover: var(--bp-surface-colorHover-default);
+  --osdk-filter-input-clear-bg-active: var(--bp-surface-colorActive-default);
+  --osdk-filter-input-clear-border-radius: 4px;
 }
