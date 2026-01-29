@@ -484,12 +484,12 @@ const object = defineObject({
         type: "marking",
         markingType: "MANDATORY",
         markingInputGroupName: "myMarking",
-      }
+      },
     },
   },
   datasources: [{
     type: "dataset",
-    // you can optionally define an objectSecurityPolicy here as well 
+    // you can optionally define an objectSecurityPolicy here as well
     propertySecurityGroups: [
       {
         name: "myPsg",
@@ -500,17 +500,18 @@ const object = defineObject({
             {
               type: "markingProperty",
               property: "markingProperty",
-            }, {
+            },
+            {
               type: "group",
-              name: "myInputGroup"
-            }
+              name: "myInputGroup",
+            },
           ],
         },
         additionalMandatoryMarkings: {
-          "myCbacMarking": "CBAC"
-        }
-      }
-    ]
+          "myCbacMarking": "CBAC",
+        },
+      },
+    ],
   }],
 });
 ```
