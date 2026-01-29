@@ -36,4 +36,7 @@
   "[markdown]": {
     "editor.defaultFormatter": "dprint.dprint"
   },
+  "[css]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
 }

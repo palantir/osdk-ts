@@ -7,7 +7,8 @@
     "url": "https://github.com/palantir/osdk-ts.git"
   },
   "exports": {
-    ".": "./src/index.css"
+    ".": "./src/index.css",
+    "./styles.css": "./src/index.css"
   },
   "scripts": {
     "check-spelling": "cspell --quiet .",
@@ -22,5 +23,9 @@
     "package.json",
     "README.md"
   ],
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "style": "./src/index.css",
   "type": "module"
 }

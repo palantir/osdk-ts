@@ -5,6 +5,7 @@ import { $ } from "../../foundryClient.js";
 import { Office } from "../../generatedNoCheck2/index.js";
 import { OfficeDetails } from "./OfficeDetails.js";
 import { OfficesList } from "./OfficesList.js";
+import styles from "./OfficeTable.module.css";
 
 export function OfficesPage() {
   const [selectedOffice, setSelectedOffice] = useState<
@@ -41,8 +42,13 @@ export function OfficesPage() {
           </Section>
         </div>
       </div>
-      <div className="w-192">
-        <ObjectTable objectSet={$(Office)} objectType={Office} />
+      <div className="flex">
+        <ObjectTable
+          objectSet={$(Office)}
+          objectType={Office}
+          className={styles.officeTable}
+          selectionMode="single"
+        />
       </div>
     </div>
   );
