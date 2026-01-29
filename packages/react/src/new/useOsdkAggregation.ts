@@ -99,7 +99,7 @@ declare const process: {
  */
 export function useOsdkAggregation<
   Q extends ObjectOrInterfaceDefinition,
-  A extends AggregateOpts<Q>,
+  const A extends AggregateOpts<Q>,
   RDPs extends Record<string, SimplePropertyDef> = {},
 >(
   type: Q,
