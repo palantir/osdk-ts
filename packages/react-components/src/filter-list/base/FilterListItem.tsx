@@ -23,18 +23,19 @@ import { FilterInput } from "./FilterInput.js";
 import styles from "./FilterListItem.module.css";
 
 interface FilterListItemProps<Q extends ObjectTypeDefinition> {
-  instanceKey: string;
   objectType: Q;
   objectSet: ObjectSet<Q>;
   definition: FilterDefinitionUnion<Q>;
   filterState: FilterState | undefined;
-  onFilterStateChanged: (instanceKey: string, state: FilterState) => void;
+  onFilterStateChanged: (
+    definition: FilterDefinitionUnion<Q>,
+    state: FilterState,
+  ) => void;
   className?: string;
   style?: React.CSSProperties;
 }
 
 function FilterListItemInner<Q extends ObjectTypeDefinition>({
-  instanceKey,
   objectType,
   objectSet,
   definition,
@@ -47,9 +48,9 @@ function FilterListItemInner<Q extends ObjectTypeDefinition>({
 
   const handleFilterStateChanged = useCallback(
     (newState: FilterState) => {
-      onFilterStateChanged(instanceKey, newState);
+      onFilterStateChanged(definition, newState);
     },
-    [instanceKey, onFilterStateChanged],
+    [definition, onFilterStateChanged],
   );
 
   return (
