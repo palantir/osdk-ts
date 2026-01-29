@@ -1,6 +1,11 @@
 @import "@blueprintjs/core/lib/css/blueprint.css";
 
 :root {
+  /* Shared styling */
+  --osdk-focus-visible-outline: var(--bp-emphasis-focus-width) solid
+    var(--bp-emphasis-focus-color);
+  --osdk-focus-visible-outline-offset: var(--bp-emphasis-focus-offset);
+
   /* Checkbox */
   --osdk-checkbox-icon-size: var(--bp-iconography-size-small);
   --osdk-checkbox-padding: calc(var(--bp-surface-spacing) / 2);

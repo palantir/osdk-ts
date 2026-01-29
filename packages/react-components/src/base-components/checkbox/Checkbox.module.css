@@ -55,13 +55,20 @@
     }
   }
 
+  &:focus {
+    outline: none;
+  }
+
   &:focus-visible {
-    outline: var(--bp-emphasis-focus-width) solid var(--bp-emphasis-focus-color);
-    outline-offset: var(--bp-emphasis-focus-offset);
+    outline: var(--osdk-focus-visible-outline);
+    outline-offset: calc(-1 * var(--osdk-focus-visible-outline-offset));
   }
 }
 
 .osdkCheckboxIndicator {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   color: var(--osdk-checkbox-checked-foreground);
   width: var(--osdk-checkbox-icon-size);
   height: var(--osdk-checkbox-icon-size);

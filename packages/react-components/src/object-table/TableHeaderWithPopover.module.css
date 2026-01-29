@@ -43,11 +43,14 @@
 
 .osdkHeaderPopoverTrigger {
   padding: 0;
-  border: var(--bp-surface-border-width) solid
-    var(--bp-surface-border-color-default);
-  border-radius: var(--bp-surface-border-radius);
+  flex-shrink: 0;
+  flex-grow: 0;
+  border: var(--bp-surface-borderWidth) solid
+    var(--bp-surface-borderColor-default);
+  border-radius: var(--bp-surface-borderRadius);
   color: var(--bp-intent-default-foreground);
   user-select: none;
+  outline: none;
 
   &:hover {
     background-color: var(--bp-intent-default-hover);
@@ -58,8 +61,8 @@
   }
 
   &:focus-visible {
-    outline: var(--bp-surface-border-width) solid var(--bp-intent-primary-rest);
-    outline-offset: calc(-1 * var(--bp-surface-border-width));
+    outline: var(--osdk-focus-visible-outline);
+    outline-offset: var(--osdk-focus-visible-outline-offset);
   }
 }
 
@@ -78,6 +81,7 @@
   color: var(--bp-typography-color-default-rest);
   box-shadow: var(--bp-surface-shadow-2);
   font-size: var(--bp-typography-size-body-medium);
+  outline: none;
 }
 
 .osdkHeaderMenuItem {
@@ -87,6 +91,7 @@
 }
 
 .osdkHeaderMenuItem:hover {
+  outline: none;
   background-color: var(--bp-surface-background-color-default-hover);
   border-radius: var(--bp-surface-border-radius);
 }

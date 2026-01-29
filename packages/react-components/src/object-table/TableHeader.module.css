@@ -53,10 +53,6 @@
   }
 }
 
-.osdkTableHeaderCell:has([role="checkbox"]) {
-  justify-content: center;
-}
-
 .osdkTableHeaderCell[data-pinned="left"],
 .osdkTableHeaderCell[data-pinned="right"] {
   position: sticky;
@@ -72,6 +68,11 @@
 .osdkTableHeaderCell[data-pinned="right"]:not(:has(~ [data-pinned="right"]):nth-child(n+2)) {
   border-left: var(--osdk-table-pinned-column-border);
 }
+
+.osdkTableHeaderCell:has([role="checkbox"]) {
+  justify-content: center;
+}
+
 .osdkTableHeaderResizer {
   background: none;
   cursor: col-resize;
