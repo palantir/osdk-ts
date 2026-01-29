@@ -36,6 +36,16 @@ const SECTION_LABELS: Record<FilterCategory, string> = {
   LINKED_OBJECT: "FILTER ON A LINKED OBJECT",
 };
 
+const KEYWORD_SEARCH_TEMPLATE: FilterTemplate = {
+  id: "keyword-search",
+  label: "Keyword Search",
+  key: "$search",
+  filterComponent: "CONTAINS_TEXT",
+  icon: "search",
+  allowMultiple: false,
+  category: "ALL_PROPERTIES",
+};
+
 export function AddFilterMenu({
   templates,
   activeCounts,
@@ -150,17 +160,7 @@ export function AddFilterMenu({
                     icon="search"
                     text="Keyword search"
                     labelElement={<Icon icon="small-plus" />}
-                    onClick={() => {
-                      onSelectFilter({
-                        id: "keyword-search",
-                        label: "Keyword Search",
-                        key: "$search",
-                        filterComponent: "CONTAINS_TEXT",
-                        icon: "search",
-                        allowMultiple: false,
-                        category: "ALL_PROPERTIES",
-                      });
-                    }}
+                    onClick={() => onSelectFilter(KEYWORD_SEARCH_TEMPLATE)}
                   />
                 )}
                 {items.map((template) => {
