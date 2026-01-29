@@ -1,5 +1,18 @@
 # @osdk/client
 
+## 2.7.0-beta.14
+
+### Minor Changes
+
+- 24730c7: fix rdp pivot behavior
+- ecd18e2: fix pivotTo with where usage
+
+### Patch Changes
+
+- @osdk/api@2.7.0-beta.14
+- @osdk/client.unstable@2.7.0-beta.14
+- @osdk/generator-converters@2.7.0-beta.14
+
 ## 2.7.0-beta.13
 
 ### Minor Changes
