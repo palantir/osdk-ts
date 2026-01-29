@@ -3215,6 +3215,9 @@ importers:
       '@base-ui/react':
         specifier: ^1.0.0
         version: 1.0.0(@types/react@19.1.12)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+      '@blueprintjs/core':
+        specifier: ^5.0.0
+        version: 5.19.1(@types/react@19.1.12)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       '@osdk/api':
         specifier: workspace:~
         version: link:../api
@@ -4181,9 +4184,12 @@ importers:
       '@base-ui/react':
         specifier: ^1.0.0
         version: 1.0.0(@types/react@18.3.24)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@blueprintjs/core':
+        specifier: ^5.0.0
+        version: 5.19.1(@types/react@18.3.24)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@blueprintjs/icons':
-        specifier: ^6.0.0
-        version: 6.4.0(@types/react@18.3.24)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        specifier: ^5.0.0
+        version: 5.23.0(@types/react@18.3.24)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@tanstack/react-table':
         specifier: ^8.21.3
         version: 8.21.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -5899,16 +5905,6 @@ packages:
       '@types/react': ^16.14.41 || 17 || 18
       react: ^16.8 || 17 || 18
       react-dom: ^16.8 || 17 || 18
-    peerDependenciesMeta:
-      '@types/react':
-        optional: true
-
-  '@blueprintjs/icons@6.4.0':
-    resolution: {integrity: sha512-8THDnE4Cz6V0DGNX0tQys6IiIYyKKvmMBZHHiFviBsdkduUqle096UdD+1XROa2dcwmGYSjvMQ/wKqYowCJINQ==}
-    peerDependencies:
-      '@types/react': '18'
-      react: '18'
-      react-dom: '18'
     peerDependenciesMeta:
       '@types/react':
         optional: true
@@ -19225,9 +19221,26 @@ snapshots:
       react-transition-group: 4.4.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react-uid: 2.3.3(@types/react@18.3.24)(react@18.3.1)
       tslib: 2.6.3
-      use-sync-external-store: 1.5.0(react@18.3.1)
+      use-sync-external-store: 1.6.0(react@18.3.1)
     optionalDependencies:
       '@types/react': 18.3.24
+
+  '@blueprintjs/core@5.19.1(@types/react@19.1.12)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)':
+    dependencies:
+      '@blueprintjs/colors': 5.1.9
+      '@blueprintjs/icons': 5.23.0(@types/react@19.1.12)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+      '@popperjs/core': 2.11.8
+      classnames: 2.5.1
+      normalize.css: 8.0.1
+      react: 19.1.1
+      react-dom: 19.1.1(react@19.1.1)
+      react-popper: 2.3.0(@popperjs/core@2.11.8)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+      react-transition-group: 4.4.5(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+      react-uid: 2.3.3(@types/react@19.1.12)(react@19.1.1)
+      tslib: 2.6.3
+      use-sync-external-store: 1.6.0(react@19.1.1)
+    optionalDependencies:
+      '@types/react': 19.1.12
 
   '@blueprintjs/icons@5.23.0(@types/react@18.3.24)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
@@ -19239,15 +19252,15 @@ snapshots:
     optionalDependencies:
       '@types/react': 18.3.24
 
-  '@blueprintjs/icons@6.4.0(@types/react@18.3.24)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@blueprintjs/icons@5.23.0(@types/react@19.1.12)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)':
     dependencies:
       change-case: 4.1.2
       classnames: 2.5.1
-      react: 18.3.1
-      react-dom: 18.3.1(react@18.3.1)
+      react: 19.1.1
+      react-dom: 19.1.1(react@19.1.1)
       tslib: 2.6.3
     optionalDependencies:
-      '@types/react': 18.3.24
+      '@types/react': 19.1.12
 
   '@braidai/lang@1.1.0': {}
 
@@ -23181,7 +23194,7 @@ snapshots:
   '@radix-ui/react-use-is-hydrated@0.1.0(@types/react@18.3.24)(react@18.3.1)':
     dependencies:
       react: 18.3.1
-      use-sync-external-store: 1.5.0(react@18.3.1)
+      use-sync-external-store: 1.6.0(react@18.3.1)
     optionalDependencies:
       '@types/react': 18.3.24
 
@@ -23503,7 +23516,7 @@ snapshots:
       react: 18.3.1
       react-is: 19.1.0
       use-latest-callback: 0.2.4(react@18.3.1)
-      use-sync-external-store: 1.5.0(react@18.3.1)
+      use-sync-external-store: 1.6.0(react@18.3.1)
 
   '@react-navigation/core@7.12.4(react@19.1.1)':
     dependencies:
@@ -23514,7 +23527,7 @@ snapshots:
       react: 19.1.1
       react-is: 19.1.0
       use-latest-callback: 0.2.4(react@19.1.1)
-      use-sync-external-store: 1.5.0(react@19.1.1)
+      use-sync-external-store: 1.6.0(react@19.1.1)
 
   '@react-navigation/elements@2.6.4(@react-navigation/native@7.1.17(react-native@0.76.3(@babel/core@7.28.4)(@babel/preset-env@7.26.0(@babel/core@7.28.4))(@types/react@18.3.24)(react@18.3.1))(react@18.3.1))(react-native-safe-area-context@4.12.0(react-native@0.76.3(@babel/core@7.28.4)(@babel/preset-env@7.26.0(@babel/core@7.28.4))(@types/react@18.3.24)(react@18.3.1))(react@18.3.1))(react-native@0.76.3(@babel/core@7.28.4)(@babel/preset-env@7.26.0(@babel/core@7.28.4))(@types/react@18.3.24)(react@18.3.1))(react@18.3.1)':
     dependencies:
@@ -32350,6 +32363,14 @@ snapshots:
       react-fast-compare: 3.2.2
       warning: 4.0.3
 
+  react-popper@2.3.0(@popperjs/core@2.11.8)(react-dom@19.1.1(react@19.1.1))(react@19.1.1):
+    dependencies:
+      '@popperjs/core': 2.11.8
+      react: 19.1.1
+      react-dom: 19.1.1(react@19.1.1)
+      react-fast-compare: 3.2.2
+      warning: 4.0.3
+
   react-refresh@0.14.2: {}
 
   react-refresh@0.17.0: {}
@@ -32466,12 +32487,28 @@ snapshots:
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
 
+  react-transition-group@4.4.5(react-dom@19.1.1(react@19.1.1))(react@19.1.1):
+    dependencies:
+      '@babel/runtime': 7.28.4
+      dom-helpers: 5.2.1
+      loose-envify: 1.4.0
+      prop-types: 15.8.1
+      react: 19.1.1
+      react-dom: 19.1.1(react@19.1.1)
+
   react-uid@2.3.3(@types/react@18.3.24)(react@18.3.1):
     dependencies:
       react: 18.3.1
       tslib: 2.8.1
     optionalDependencies:
       '@types/react': 18.3.24
+
+  react-uid@2.3.3(@types/react@19.1.12)(react@19.1.1):
+    dependencies:
+      react: 19.1.1
+      tslib: 2.8.1
+    optionalDependencies:
+      '@types/react': 19.1.12
 
   react@18.3.1:
     dependencies:
