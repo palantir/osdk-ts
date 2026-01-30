@@ -83,14 +83,49 @@ function convertParameter(
 ): ManifestParameterDefinition {
   if (parameter.type === "objectSet") {
     // Config has already been validated so rid must be present
-    if (parameter.objectType.internalDoNotUseMetadata == null) {
-      throw new Error("Expected internal metadata to be present");
-    }
-    return {
-      type: "objectSet",
-      displayName: parameter.displayName,
-      objectTypeRids: [parameter.objectType.internalDoNotUseMetadata.rid],
+    // Extract the type source from either objectType (legacy) or allowedType (new)
+    const objectSetParam = parameter as {
+      type: "objectSet";
+      displayName: string;
+      objectType?: {
+        type?: string;
+        internalDoNotUseMetadata?: { rid: string };
+      };
+      allowedType?: {
+        type?: string;
+        internalDoNotUseMetadata?: { rid: string };
+      };
     };
+
+    if (objectSetParam.objectType?.internalDoNotUseMetadata?.rid != null) {
+      return {
+        type: "objectSet",
+        displayName: parameter.displayName,
+        objectTypeRids: [
+          objectSetParam.objectType.internalDoNotUseMetadata.rid,
+        ],
+      };
+    } else if (
+      objectSetParam.allowedType?.internalDoNotUseMetadata?.rid
+        != null
+    ) {
+      const rid = objectSetParam.allowedType.internalDoNotUseMetadata.rid;
+      if (objectSetParam.allowedType.type === "interface") {
+        return {
+          type: "objectSet",
+          displayName: parameter.displayName,
+          interfaceTypeRids: [rid],
+        };
+      }
+      return {
+        type: "objectSet",
+        displayName: parameter.displayName,
+        objectTypeRids: [rid],
+      };
+    }
+    throw new Error(
+      "ObjectSet parameter must have either objectType or allowedType with valid metadata",
+    );
   }
   return parameter;
 }
