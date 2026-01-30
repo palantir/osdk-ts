@@ -85,7 +85,7 @@ async function generate() {
   console.log(`Generating SDK to ${fullOutputDir}...`);
 
   await generateClientSdkVersionTwoPointZero(
-    metadata as any,
+    metadata,
     `osdk-generator/${packageVersion} (from-ir)`,
     hostFs,
     fullOutputDir,
