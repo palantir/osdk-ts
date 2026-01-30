@@ -51,17 +51,28 @@ function setupOntology(fauxFoundry: FauxFoundry) {
   );
 }
 
-function setupTodos(fauxFoundry: FauxFoundry, count: number) {
+function setupTodos(
+  fauxFoundry: FauxFoundry,
+  count: number,
+  options?: { withRids?: boolean; textFn?: (i: number) => string },
+): string[] {
   const dataStore = fauxFoundry.getDefaultDataStore();
   dataStore.clear();
+  const rids: string[] = [];
 
   for (let i = 0; i < count; i++) {
+    const rid = options?.withRids
+      ? `ri.phonograph2-objects.main.object.todo-${i}`
+      : undefined;
+    if (rid) rids.push(rid);
     dataStore.registerObject(Todo, {
       $apiName: "Todo",
+      $rid: rid,
       id: i,
-      text: `Todo ${i}`,
+      text: options?.textFn?.(i) ?? `Todo ${i}`,
     });
   }
+  return rids;
 }
 
 describe("ListQuery autoFetchMore tests", () => {
@@ -345,6 +356,91 @@ describe("ListQuery autoFetchMore tests", () => {
       const lastItem = payload.resolvedList[payload.resolvedList.length - 1];
       expect(firstItem.id).toBeGreaterThanOrEqual((lastItem as any).id);
     }
+
+    testStage("Verify no additional unexpected calls");
+    expectNoMoreCalls(listSub);
+  });
+
+  it("supports rids with where, orderBy, and pagination", async () => {
+    const rids = setupTodos(fauxFoundry, 6, {
+      withRids: true,
+      textFn: (i) => (i % 2 === 0 ? "even" : "odd"),
+    });
+
+    testStage("Setup observation with rids + where + orderBy + pageSize");
+    const listSub = mockListSubCallback();
+    defer(
+      store.lists.observe(
+        {
+          type: Todo,
+          rids,
+          where: { text: { $eq: "even" } },
+          orderBy: { id: "desc" },
+          pageSize: 2,
+        },
+        listSub,
+      ),
+    );
+
+    testStage("Initial loading state");
+    await waitForCall(listSub.next, 1);
+    expectSingleListCallAndClear(listSub, [], { status: "loading" });
+
+    testStage("First page: 2 even items sorted desc (ids 4, 2)");
+    await waitForCall(listSub.next, 1);
+    let payload = expectSingleListCallAndClear(listSub, expect.anything(), {
+      status: "loaded",
+    });
+    expect(payload?.resolvedList.length).toBe(2);
+    expect(payload?.resolvedList[0].id).toBe(4);
+    expect(payload?.resolvedList[1].id).toBe(2);
+    expect(payload?.hasMore).toBe(true);
+
+    testStage("fetchMore() to get last even item (id 0)");
+    void payload!.fetchMore();
+    await waitForCall(listSub.next, 1);
+    payload = expectSingleListCallAndClear(listSub, expect.anything(), {
+      status: "loading",
+    });
+    await waitForCall(listSub.next, 1);
+    payload = expectSingleListCallAndClear(listSub, expect.anything(), {
+      status: "loaded",
+    });
+    expect(payload?.resolvedList.length).toBe(3);
+    expect(payload?.resolvedList[2].id).toBe(0);
+    expect(payload?.hasMore).toBe(false);
+
+    testStage("Verify no additional unexpected calls");
+    expectNoMoreCalls(listSub);
+  });
+
+  it("handles empty RID list", async () => {
+    setupTodos(fauxFoundry, 5);
+
+    testStage("Setup observation with empty rids array");
+    const listSub = mockListSubCallback();
+    defer(
+      store.lists.observe(
+        {
+          type: Todo,
+          rids: [],
+          pageSize: 10,
+        },
+        listSub,
+      ),
+    );
+
+    testStage("Initial loading state");
+    await waitForCall(listSub.next, 1);
+    expectSingleListCallAndClear(listSub, [], { status: "loading" });
+
+    testStage("Empty result with hasMore: false");
+    await waitForCall(listSub.next, 1);
+    const payload = expectSingleListCallAndClear(listSub, expect.anything(), {
+      status: "loaded",
+    });
+    expect(payload?.resolvedList.length).toBe(0);
+    expect(payload?.hasMore).toBe(false);
 
     testStage("Verify no additional unexpected calls");
     expectNoMoreCalls(listSub);
