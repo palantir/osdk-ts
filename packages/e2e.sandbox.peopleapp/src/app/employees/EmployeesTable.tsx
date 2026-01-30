@@ -2,18 +2,19 @@ import type { DerivedProperty, Osdk } from "@osdk/api";
 import type { ColumnDefinition } from "@osdk/react-components/experimental";
 import { ObjectTable } from "@osdk/react-components/experimental";
 import { useCallback } from "react";
-import { $ } from "../../foundryClient.js";
 import { Employee } from "../../generatedNoCheck2/index.js";
 
 type RDPs = {
   managerName: "string";
 };
 
-const columnDefinitions: ColumnDefinition<
-  Employee,
-  RDPs,
-  {}
->[] = [
+const columnDefinitions: Array<
+  ColumnDefinition<
+    Employee,
+    RDPs,
+    {}
+  >
+> = [
   // With renderHeader prop
   {
     locator: {
@@ -62,8 +63,6 @@ const columnDefinitions: ColumnDefinition<
 ];
 
 export function EmployeesTable() {
-  const employeesObjectSet = $(Employee);
-
   const renderCellContextMenu = useCallback(
     (_: Osdk.Instance<Employee>, cellValue: unknown) => {
       return (
@@ -87,15 +86,18 @@ export function EmployeesTable() {
     <div
       style={{
         height: "500px",
-        overflow: "auto",
+        overflow: "hidden",
       }}
     >
-      <ObjectTable<Employee, { managerName: "string" }>
-        objectSet={employeesObjectSet}
+      <ObjectTable<Employee, RDPs>
         objectType={Employee}
         columnDefinitions={columnDefinitions}
         selectionMode={"multiple"}
         renderCellContextMenu={renderCellContextMenu}
+        defaultOrderBy={[{
+          property: "firstFullTimeStartDate",
+          direction: "desc",
+        }]}
       />
     </div>
   );

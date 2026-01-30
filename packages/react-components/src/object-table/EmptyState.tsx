@@ -14,26 +14,13 @@
  * limitations under the License.
  */
 
-import type {
-  ObjectOrInterfaceDefinition,
-  Osdk,
-  PrimaryKeyType,
-  PropertyKeys,
-  SimplePropertyDef,
-} from "@osdk/api";
+import React from "react";
+import styles from "./EmptyState.module.css";
 
-export const getRowId = <
-  Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<
-    string,
-    never
-  >,
->(
-  row: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
-): string => {
-  return getRowIdFromPrimaryKey(row.$primaryKey);
-};
-
-export const getRowIdFromPrimaryKey = <Q extends ObjectOrInterfaceDefinition>(
-  primaryKey: PrimaryKeyType<Q>,
-): string => primaryKey.toString();
+export function EmptyState(): React.ReactElement {
+  return (
+    <div className={styles.emptyState}>
+      <div className={styles.emptyStateMessage}>No Data</div>
+    </div>
+  );
+}
