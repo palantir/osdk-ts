@@ -144,10 +144,16 @@ export function getObjectsFromSet(
       invariant(methodInput, "expected a methodInput");
       return [methodInput];
 
-    case "asBaseObjectTypes":
-      throw new Error(
-        `Unhandled objectSet type ${JSON.stringify(objectSet)} in shared.test`,
-      );
+    case "asBaseObjectTypes": {
+      const results = getObjectsFromSet(ds, objectSet.objectSet, methodInput);
+      return results.map(obj => {
+        const originalObj = ds.getObject(obj.__apiName, obj.__primaryKey);
+        return {
+          ...obj,
+          $propsToReturn: originalObj ?? obj,
+        };
+      });
+    }
 
     case "asType":
       throw new Error(
