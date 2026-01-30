@@ -41,7 +41,7 @@ export function OfficesPage() {
           </Section>
         </div>
       </div>
-      <div className="flex h-100 w-96">
+      <div className="flex h-100 w-130">
         <ObjectTable
           objectType={Office}
           className={styles.officeTable}

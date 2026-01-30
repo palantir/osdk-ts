@@ -94,6 +94,10 @@ export function EmployeesTable() {
         columnDefinitions={columnDefinitions}
         selectionMode={"multiple"}
         renderCellContextMenu={renderCellContextMenu}
+        defaultOrderBy={[{
+          property: "firstFullTimeStartDate",
+          direction: "desc",
+        }]}
       />
     </div>
   );
