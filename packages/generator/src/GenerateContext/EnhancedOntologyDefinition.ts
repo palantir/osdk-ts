@@ -76,18 +76,8 @@ export class EnhancedOntologyDefinition {
       EnhancedObjectType,
       externalObjects,
     );
-    // Handle ActionTypeFullMetadata structure
-    const actionTypeV2s: Record<string, any> = {};
-    for (const [key, value] of Object.entries(raw.actionTypes ?? {})) {
-      // Check if it's ActionTypeFullMetadata (has actionType field) or ActionTypeV2 (direct)
-      if ('actionType' in value) {
-        actionTypeV2s[key] = value.actionType;
-      } else {
-        actionTypeV2s[key] = value;
-      }
-    }
     this.actionTypes = remap(
-      actionTypeV2s,
+      raw.actionTypes,
       this.common,
       EnhancedAction,
     );

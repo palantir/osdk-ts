@@ -39,26 +39,11 @@ export function sanitizeMetadata<
   return {
     ...ontology,
     actionTypes: Object.fromEntries(
-      Object.values(ontology.actionTypes).map(actionTypeOrFullMetadata => {
-        // Handle both ActionTypeV2 and ActionTypeFullMetadata structures
-        const isFullMetadata = 'actionType' in actionTypeOrFullMetadata;
-        const actionType = isFullMetadata ? actionTypeOrFullMetadata.actionType : actionTypeOrFullMetadata;
-        const camelizedApiName = camelize(actionType.apiName);
-
-        if (isFullMetadata) {
-          return [camelizedApiName, {
-            ...actionTypeOrFullMetadata,
-            actionType: {
-              ...actionType,
-              apiName: camelizedApiName,
-            }
-          }];
-        } else {
-          return [camelizedApiName, {
-            ...actionType,
-            apiName: camelizedApiName,
-          }];
-        }
+      Object.values(ontology.actionTypes).map(actionType => {
+        return [camelize(actionType.apiName), {
+          ...actionType,
+          apiName: camelize(actionType.apiName),
+        }];
       }),
     ),
   };

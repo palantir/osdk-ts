@@ -26,7 +26,6 @@ import type {
   OntologyIrOntologyBlockDataV2,
   OntologyIrSharedPropertyTypeBlockDataV2,
   OntologyIrType,
-  OntologyIrLogicRule,
 } from "@osdk/client.unstable";
 import type * as Ontologies from "@osdk/foundry.ontologies";
 import { hash } from "node:crypto";
@@ -54,19 +53,19 @@ export class OntologyIrToFullMetadataConverter {
       Object.values(ir.objectTypes),
       Object.values(ir.linkTypes),
     );
-    const actionTypes = this.getOsdkActionTypes(Object.values(ir.actionTypes), ir);
+    const actionTypes = this.getOsdkActionTypes(Object.values(ir.actionTypes));
 
     return {
       interfaceTypes,
       sharedPropertyTypes,
       objectTypes,
       queryTypes: {},
-      actionTypes: actionTypes as any, // todo
+      actionTypes,
       ontology: {
         apiName: "ontology",
-        rid: `ri.ontology.main.ontology.0`,
+        rid: `ri.00000`,
         displayName: "ontology",
-        description: "local ontology",
+        description: "",
       },
       valueTypes: {},
     };
@@ -96,8 +95,8 @@ export class OntologyIrToFullMetadataConverter {
         throw new Error("Object must have exactly 1 primary key");
       }
 
-      let primaryKey = object.primaryKeys[0];
-      let titleProperty = object.titlePropertyTypeRid;
+      const primaryKey = object.primaryKeys[0];
+      const titleProperty = object.titlePropertyTypeRid;
 
       const properties: Record<ApiName, Ontologies.PropertyV2> = {};
       for (const [propKey, prop] of Object.entries(object.propertyTypes)) {
@@ -129,18 +128,11 @@ export class OntologyIrToFullMetadataConverter {
             ...((prop.status as any)[prop.status.type] ?? {}),
           } as unknown as Ontologies.PropertyTypeStatus;
 
-          // Ensure the RID is valid - if it doesn't start with "ri.", create a proper RID
-          let propertyRid = propKey;
-          if (!propKey.startsWith("ri.")) {
-            // Generate a proper RID for the property using a deterministic UUID as the locator.
-            // The locator must be a UUID because downstream consumers validate this for SQL safety.
-            propertyRid = `ri.ontology.main.property-type.${this.toUuid(propKey)}`;
-          }
-
-          // Use the validated RID as both the key and the rid field
           properties[propKey] = {
             displayName: prop.displayMetadata.displayName,
-            rid: propertyRid,
+            rid: `ri.ontology.main.property.${
+              toUuid(object.apiName + "." + propKey)
+            }`,
             status,
             description: prop.displayMetadata.description ?? undefined,
             visibility: visibilityEnum,
@@ -163,7 +155,7 @@ export class OntologyIrToFullMetadataConverter {
         },
         status: this.convertObjectTypeStatus(object.status),
         properties,
-        rid: `ri.ontology.main.object-type.${this.toUuid(object.apiName)}`,
+        rid: `ri.${object.apiName}`,
       };
 
       const sharedPropertyTypeMappings: Record<ApiName, ApiName> = {};
@@ -179,11 +171,7 @@ export class OntologyIrToFullMetadataConverter {
         for (
           const [sharedPropKey, propMapping] of Object.entries(ii.properties)
         ) {
-          let propertyApiName = propMapping.propertyTypeRid;
-          // Ensure the property RID is valid
-          if (!propertyApiName.startsWith("ri.")) {
-            propertyApiName = `ri.property-type.${object.apiName}.${propertyApiName}`;
-          }
+          const propertyApiName = propMapping.propertyTypeRid;
           propertyMappings[sharedPropKey] = propertyApiName;
           sharedPropertyTypeMappings[sharedPropKey] = propertyApiName;
         }
@@ -307,156 +295,17 @@ export class OntologyIrToFullMetadataConverter {
   }
 
   /**
-   * Convert OntologyIrLogicRule to ActionLogicRule
-   */
-  static convertIrLogicRuleToActionLogicRule(
-    irRule: OntologyIrLogicRule,
-    action: OntologyIrActionTypeBlockDataV2,
-    ir?: OntologyIrOntologyBlockDataV2,
-  ): Ontologies.ActionLogicRule {
-    // Helper function to get the correct apiName from objectTypeId
-    // The objectTypeId coming from the rules may have hyphens instead of dots
-    const getObjectApiName = (objectTypeId: string): string => {
-      // The objectTypeId in the action rules uses hyphens, but the object types
-      // in the IR have apiName with dots. Look up by key.
-      if (ir?.objectTypes) {
-        // Try direct lookup first
-        if (ir.objectTypes[objectTypeId]) {
-          return ir.objectTypes[objectTypeId].objectType.apiName;
-        }
-        // Also try to find by searching through values
-        for (const obj of Object.values(ir.objectTypes)) {
-          // Check if the apiName with hyphens replaced matches
-          const hyphenatedApiName = obj.objectType.apiName.replace(/\./g, '-');
-          if (hyphenatedApiName === objectTypeId) {
-            return obj.objectType.apiName;
-          }
-        }
-      }
-      // Fallback: if not found in IR, return the ID as-is
-      return objectTypeId;
-    };
-
-    // Helper function to get the correct apiName for interfaces
-    const getInterfaceApiName = (interfaceId: string): string => {
-      // The interfaceId in the action rules may use hyphens instead of dots
-      if (ir?.interfaceTypes) {
-        // Try direct lookup first
-        if (ir.interfaceTypes[interfaceId]) {
-          return ir.interfaceTypes[interfaceId].interfaceType.apiName;
-        }
-        // Also try to find by searching through values
-        for (const intf of Object.values(ir.interfaceTypes)) {
-          // Check if the apiName with hyphens replaced matches
-          const hyphenatedApiName = intf.interfaceType.apiName.replace(/\./g, '-');
-          if (hyphenatedApiName === interfaceId) {
-            return intf.interfaceType.apiName;
-          }
-        }
-      }
-      // Fallback: if not found in IR, return the ID as-is
-      return interfaceId;
-    };
-
-    switch (irRule.type) {
-      case "addObjectRule": {
-        const r = irRule.addObjectRule;
-        let propertyArguments:  Record<Ontologies.PropertyApiName, Ontologies.LogicRuleArgument> = {}
-        for (const [k, v] of Object.entries(r.propertyValues)) {
-          propertyArguments[k] = v as any;
-        }
-        return {
-          type: "createObject",
-          objectTypeApiName: getObjectApiName(r.objectTypeId),
-          propertyArguments,
-          structPropertyArguments: {},
-        } as Ontologies.CreateObjectLogicRule & { type: "createObject" };
-      }
-      case "addOrModifyObjectRuleV2": {
-        const r = irRule.addOrModifyObjectRuleV2;
-        const modifyParamType = action.actionType.metadata.parameters[r.objectToModify].type;
-        if (modifyParamType.type === "objectReference") {
-          return {
-            type: "createOrModifyObject",
-            objectTypeApiName: getObjectApiName(modifyParamType.objectReference.objectTypeId),
-            propertyArguments: {},
-            structPropertyArguments: {},
-          } as Ontologies.CreateOrModifyObjectLogicRule & { type: "createOrModifyObject" };
-        } else {
-          throw new Error(
-            "Unable to convert createOrModifyObject because parameter does not exist",
-          );
-        }
-      }
-      case "modifyObjectRule": {
-        const r = irRule.modifyObjectRule;
-        const modifyParamType = action.actionType.metadata.parameters[r.objectToModify].type;
-        if (modifyParamType.type === "objectReference") {
-          return {
-            type: "modifyObject",
-            objectToModify: r.objectToModify,
-            propertyArguments: {},
-            structPropertyArguments: {},
-          } as Ontologies.ModifyObjectLogicRule & { type: "modifyObject" };
-        } else {
-          throw new Error(
-            "Unable to convert modifyObject because parameter does not exist",
-          );
-        }
-      }
-      case "deleteObjectRule": {
-        const r = irRule.deleteObjectRule;
-        return {
-          type: "deleteObject",
-          objectToDelete: r.objectToDelete,
-        } as Ontologies.DeleteObjectLogicRule & { type: "deleteObject" };
-      }
-      case "addInterfaceRule": {
-        const r = irRule.addInterfaceRule;
-        const interfaceApiName = getInterfaceApiName(r.interfaceApiName);
-        return {
-          type: "createInterface",
-          interfaceTypeApiName: interfaceApiName,
-          objectType: interfaceApiName, // This might need to be resolved properly
-          sharedPropertyArguments: {},
-          structPropertyArguments: {},
-        } as Ontologies.CreateInterfaceLogicRule & { type: "createInterface" };
-      }
-      case "modifyInterfaceRule": {
-        const r = irRule.modifyInterfaceRule;
-        return {
-          type: "modifyInterface",
-          interfaceObjectToModify: r.interfaceObjectToModifyParameter,
-          sharedPropertyArguments: {},
-          structPropertyArguments: {},
-        } as Ontologies.ModifyInterfaceLogicRule & { type: "modifyInterface" };
-      }
-      case "addLinkRule": {
-        // For now, throw an error for unsupported link rules
-        throw new Error("Add link rule not supported for ActionLogicRule conversion");
-      }
-      case "deleteLinkRule": {
-        // For now, throw an error for unsupported link rules
-        throw new Error("Delete link rule not supported for ActionLogicRule conversion");
-      }
-      default:
-        throw new Error(`Unsupported OntologyIrLogicRule type: ${(irRule as any).type}`);
-    }
-  }
-
-  /**
    * Convert IR action types to OSDK format
    */
   static getOsdkActionTypes(
     actions: OntologyIrActionTypeBlockDataV2[],
-    ir?: OntologyIrOntologyBlockDataV2,
-  ): Record<ApiName, Ontologies.ActionTypeFullMetadata> {
-    const result: Record<ApiName, Ontologies.ActionTypeFullMetadata> = {};
+  ): Record<ApiName, Ontologies.ActionTypeV2> {
+    const result: Record<ApiName, Ontologies.ActionTypeV2> = {};
 
     for (const action of actions) {
       const metadata = action.actionType.metadata;
       const actionType: Ontologies.ActionTypeV2 = {
-        rid: `ri.ontology.main.action-type.${this.toUuid(metadata.apiName)}`,
+        rid: `ri.action.${metadata.apiName}`,
         apiName: metadata.apiName,
         displayName: metadata.displayMetadata.displayName,
         description: metadata.displayMetadata.description,
@@ -465,13 +314,7 @@ export class OntologyIrToFullMetadataConverter {
         status: this.convertActionTypeStatus(metadata.status),
       };
 
-      result[actionType.apiName] = {
-        actionType,
-        fullLogicRules: action.actionType.actionTypeLogic.logic.rules
-          .map(rule =>  this.convertIrLogicRuleToActionLogicRule(rule, action, ir)
-
-          )
-      };
+      result[actionType.apiName] = actionType;
     }
 
     return result;
@@ -1047,18 +890,6 @@ export class OntologyIrToFullMetadataConverter {
         throw new Error(`Unknown link type status: ${status}`);
     }
   }
-
-
-
-  /**
-   * Generate a deterministic UUID from a string.
-   * Uses SHA-256 hash truncated to UUID format for consistency.
-   */
-  private static toUuid(str: string): string {
-    const hashHex = hash("sha256", str, "hex");
-    // Format as UUID: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
-    return `${hashHex.slice(0, 8)}-${hashHex.slice(8, 12)}-${hashHex.slice(12, 16)}-${hashHex.slice(16, 20)}-${hashHex.slice(20, 32)}`;
-  }
 }
 
 function isParameterRequired(
@@ -1068,4 +899,16 @@ function isParameterRequired(
   return action.actionType.actionTypeLogic.validation
     .parameterValidations[paramKey].defaultValidation.validation.required.type
     === "required";
+}
+
+/**
+ * Generate a deterministic UUID from a string.
+ * Uses SHA-256 hash truncated to UUID format for consistency.
+ */
+function toUuid(str: string): string {
+  const hashHex = hash("sha256", str, "hex");
+  // Format as UUID: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+  return `${hashHex.slice(0, 8)}-${hashHex.slice(8, 12)}-${
+    hashHex.slice(12, 16)
+  }-${hashHex.slice(16, 20)}-${hashHex.slice(20, 32)}`;
 }
