@@ -42,7 +42,7 @@ export function OfficesPage() {
           </Section>
         </div>
       </div>
-      <div className="flex">
+      <div className="flex h-100">
         <ObjectTable
           objectSet={$(Office)}
           objectType={Office}
