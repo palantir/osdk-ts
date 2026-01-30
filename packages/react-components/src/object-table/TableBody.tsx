@@ -88,6 +88,7 @@ export function TableBody<TData extends RowData>({
           headers={headers}
           translateY={totalSize}
           rowHeight={rowHeight}
+          columnCount={headers.length}
         />
       )}
     </tbody>

@@ -21,14 +21,18 @@ import rowStyles from "./TableRow.module.css";
 
 interface LoadingRowProps<TData extends RowData> {
   headers: HeaderGroup<TData>["headers"];
+  columnCount: number;
   translateY: number;
-  rowHeight: number;
+  rowHeight?: number;
+  columnWidth?: number;
 }
 
 export function LoadingRow<TData extends RowData>({
   headers,
+  columnCount,
   translateY,
-  rowHeight,
+  rowHeight = 40,
+  columnWidth = 80,
 }: LoadingRowProps<TData>): React.ReactElement {
   return (
     <tr
@@ -38,9 +42,16 @@ export function LoadingRow<TData extends RowData>({
         transform: `translateY(${translateY}px)`,
       }}
     >
-      {headers.map((header) => {
-        return <LoadingCell key={header.id} width={header.column.getSize()} />;
-      })}
+      {
+        <>
+          {Array.from({ length: columnCount }).map((_, index) => {
+            const width = headers.length > index
+              ? headers[index].getSize()
+              : columnWidth;
+            return <LoadingCell key={`loading-cell-${index}`} width={width} />;
+          })}
+        </>
+      }
     </tr>
   );
 }

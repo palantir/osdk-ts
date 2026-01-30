@@ -32,10 +32,11 @@ export function TableHeader<TData extends RowData>({
   // TODO: If value is number type, right align header
 
   const isResizing = !!table.getState().columnSizingInfo?.isResizingColumn;
+  const headerGroups = table.getHeaderGroups();
 
   return (
     <thead className={styles.osdkTableHeader} data-resizing={isResizing}>
-      {table.getHeaderGroups().map((headerGroup) => (
+      {headerGroups.map((headerGroup) => (
         <tr
           key={headerGroup.id}
           className={styles.osdkTableHeaderRow}

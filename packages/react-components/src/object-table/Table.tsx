@@ -23,7 +23,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { LoadingStateBody } from "./LoadingStateBody.js";
+import { LoadingStateTable } from "./LoadingStateTable.js";
 import styles from "./Table.module.css";
 import { TableBody } from "./TableBody.js";
 import { TableHeader } from "./TableHeader.js";
@@ -94,7 +94,6 @@ export function BaseTable<TData extends RowData>(
 
   const rows = table.getRowModel().rows;
   const headerGroups = table.getHeaderGroups();
-
   const hasData = rows.length > 0;
 
   return (
@@ -104,23 +103,27 @@ export function BaseTable<TData extends RowData>(
       onScroll={handleScroll}
     >
       <table>
-        <TableHeader table={table} />
         {hasData || !isLoading
           ? (
-            <TableBody
-              rows={rows}
-              tableContainerRef={tableContainerRef}
-              onRowClick={onRowClick}
-              rowHeight={rowHeight}
-              renderCellContextMenu={renderCellContextMenu}
-              isLoadingMore={isLoadingMore}
-              headerGroups={headerGroups}
-            />
+            <>
+              <TableHeader table={table} />
+              <TableBody
+                rows={rows}
+                tableContainerRef={tableContainerRef}
+                onRowClick={onRowClick}
+                rowHeight={rowHeight}
+                renderCellContextMenu={renderCellContextMenu}
+                isLoadingMore={isLoadingMore}
+                headerGroups={headerGroups}
+              />
+            </>
           )
           : (
-            <LoadingStateBody
+            <LoadingStateTable
+              table={table}
               headerGroups={headerGroups}
               rowHeight={rowHeight}
+              tableContainerRef={tableContainerRef}
             />
           )}
       </table>

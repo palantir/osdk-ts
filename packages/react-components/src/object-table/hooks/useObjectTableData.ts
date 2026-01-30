@@ -28,7 +28,7 @@ import type { SortingState } from "@tanstack/react-table";
 import { useMemo } from "react";
 import type { ColumnDefinition } from "../ObjectTableApi.js";
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 50;
 
 /**
  * This hook is a wrapper around useOsdkObjects

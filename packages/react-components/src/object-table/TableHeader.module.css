@@ -93,3 +93,26 @@
     background: var(--bp-intent-primary-active);
   }
 }
+
+.osdkLoadingHeaderCell {
+  height: var(--osdk-table-header-fontSize);
+  border-radius: calc(var(--bp-surface-border-radius) * 0.5);
+  flex: 1;
+  animation: 1000ms linear infinite alternate skeleton-glow;
+  background: var(--osdk-table-skeleton-color-from);
+  background-clip: padding-box;
+  border-color: var(--osdk-table-skeleton-color-from);
+  border: 1px solid var(--osdk-table-skeleton-border-color);
+}
+
+@keyframes skeleton-glow {
+  from {
+    background: var(--osdk-table-skeleton-color-from);
+    border-color: var(--osdk-table-skeleton-color-from);
+  }
+
+  to {
+    background: var(--osdk-table-skeleton-color-to);
+    border-color: var(--osdk-table-skeleton-color-to);
+  }
+}
