@@ -1,0 +1,25 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "extends": [
+    "//"
+  ],
+  "tasks": {
+    "dev": {
+      "dependsOn": [
+        "@osdk/react-components#transpileBrowser",
+        "@osdk/react-components-styles#build"
+      ],
+      "cache": false,
+      "persistent": true
+    },
+    "build": {
+      "dependsOn": [
+        "@osdk/react-components#transpileBrowser", 
+        "@osdk/react-components-styles#build"
+      ],
+      "outputs": [
+        "storybook-static/**"
+      ]
+    }
+  }
+}

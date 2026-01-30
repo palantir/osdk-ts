@@ -1,0 +1,16 @@
+{
+  "extends": "@osdk/monorepo.tsconfig/base.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": "build",
+    "jsx": "react-jsx"
+  },
+  "include": [
+    "src/**/*",
+    ".storybook/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "build"
+  ]
+}
