@@ -1,0 +1,289 @@
+/*
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/* ===========================================================================
+ * Documentation Components - Shared Styles
+ * =========================================================================== */
+
+/* Import Blueprint CSS - consumers should import this in their app */
+/* @import "@blueprintjs/core/lib/css/blueprint.css"; */
+/* @import "@blueprintjs/icons/lib/css/blueprint-icons.css"; */
+
+/* ---------------------------------------------------------------------------
+ * Page Layout
+ * --------------------------------------------------------------------------- */
+
+.object-type-documentation,
+.action-type-documentation,
+.query-type-documentation,
+.interface-type-documentation {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+/* ---------------------------------------------------------------------------
+ * Header Styles
+ * --------------------------------------------------------------------------- */
+
+.docs-header {
+  margin-bottom: 1.5rem;
+}
+
+.type-title {
+  margin: 0 0 0.5rem 0;
+  font-size: 2rem;
+  font-weight: 600;
+  color: #182026;
+}
+
+.docs-header .api-name {
+  margin: 0;
+  color: #5c7080;
+  font-size: 0.875rem;
+}
+
+.docs-header code {
+  background-color: #f5f8fa;
+  padding: 0.125rem 0.375rem;
+  border-radius: 3px;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 0.8125rem;
+}
+
+/* ---------------------------------------------------------------------------
+ * Section Styles
+ * --------------------------------------------------------------------------- */
+
+.type-info,
+.properties-section,
+.parameters-section,
+.links-section,
+.implementing-types-section,
+.snippets-section {
+  margin-bottom: 1.5rem;
+}
+
+.description-text {
+  margin: 0;
+  color: #394b59;
+  line-height: 1.6;
+}
+
+.output-type-row,
+.version-row {
+  margin-top: 0.75rem;
+}
+
+/* ---------------------------------------------------------------------------
+ * Table Styles
+ * --------------------------------------------------------------------------- */
+
+.properties-table,
+.parameters-table,
+.links-table {
+  width: 100%;
+}
+
+.property-name,
+.parameter-name,
+.link-name {
+  font-weight: 500;
+}
+
+.property-type,
+.parameter-type {
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 0.8125rem;
+  color: #1f4788;
+}
+
+.property-description,
+.parameter-description {
+  color: #5c7080;
+}
+
+.api-name-badge {
+  background-color: #f5f8fa;
+  padding: 0.125rem 0.375rem;
+  border-radius: 3px;
+  font-size: 0.75rem;
+  color: #5c7080;
+}
+
+.pk-badge {
+  margin-left: 0.5rem;
+  vertical-align: middle;
+}
+
+/* ---------------------------------------------------------------------------
+ * Implementing Types Section
+ * --------------------------------------------------------------------------- */
+
+.implementing-types-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.implementing-type-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.implementing-type-tag .tag-api-name {
+  font-size: 0.75rem;
+  color: #5c7080;
+}
+
+/* ---------------------------------------------------------------------------
+ * Snippets Grid
+ * --------------------------------------------------------------------------- */
+
+.snippets-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* ---------------------------------------------------------------------------
+ * Snippet Card - Two Column Layout
+ * --------------------------------------------------------------------------- */
+
+.snippet-card {
+  padding: 0 !important;
+  overflow: hidden;
+}
+
+.snippet-card-layout {
+  display: grid;
+  grid-template-columns: minmax(250px, 1fr) minmax(400px, 2fr);
+  min-height: 120px;
+}
+
+.snippet-card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem;
+  background-color: #fff;
+  border-right: 1px solid #e1e8ed;
+}
+
+.snippet-card-info .snippet-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #182026;
+}
+
+.snippet-description {
+  margin: 0;
+  color: #5c7080;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.snippet-selectors {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.variable-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.selector-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #5c7080;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+.snippet-card-code {
+  background-color: #1e1e1e;
+  padding: 0;
+  overflow: auto;
+}
+
+.snippet-card-code pre {
+  margin: 0;
+  min-height: 100%;
+}
+
+.error-message {
+  padding: 1rem;
+  color: #db3737;
+  font-size: 0.875rem;
+  background-color: #fff;
+}
+
+/* ---------------------------------------------------------------------------
+ * Responsive Design
+ * --------------------------------------------------------------------------- */
+
+@media (max-width: 768px) {
+  .snippet-card-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .snippet-card-info {
+    border-right: none;
+    border-bottom: 1px solid #e1e8ed;
+  }
+
+  .type-title {
+    font-size: 1.5rem;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+ * Dark Mode Support (optional)
+ * --------------------------------------------------------------------------- */
+
+.bp5-dark .type-title,
+.bp5-dark .snippet-card-info .snippet-title {
+  color: #f5f8fa;
+}
+
+.bp5-dark .description-text {
+  color: #a7b6c2;
+}
+
+.bp5-dark .snippet-description,
+.bp5-dark .property-description,
+.bp5-dark .parameter-description {
+  color: #a7b6c2;
+}
+
+.bp5-dark .api-name-badge {
+  background-color: #30404d;
+  color: #a7b6c2;
+}
+
+.bp5-dark .docs-header code {
+  background-color: #30404d;
+}
+
+.bp5-dark .snippet-card-info {
+  background-color: #30404d;
+  border-right-color: #394b59;
+}
