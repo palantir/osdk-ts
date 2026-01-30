@@ -1,5 +1,14 @@
 # @osdk/foundry-sdk-generator
 
+## 2.6.3
+
+### Patch Changes
+
+- 700679a: Fix linkType parsing for object types with dots in API names
+  - @osdk/api@2.6.3
+  - @osdk/client@2.6.3
+  - @osdk/generator@2.6.3
+
 ## 2.6.2
 
 ### Patch Changes
