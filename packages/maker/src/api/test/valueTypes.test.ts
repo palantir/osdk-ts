@@ -244,4 +244,47 @@ describe("Value Types", () => {
       }
     `);
   });
+
+  it("Prefixes apiName with namespace when namespacePrefix is true", () => {
+    defineValueType({
+      apiName: "myValueType",
+      displayName: "My Value Type",
+      type: {
+        type: "string",
+      },
+      version: "1.0.0",
+      namespacePrefix: true,
+    });
+    expect(dumpValueTypeWireType()).toMatchInlineSnapshot(`
+      {
+        "valueTypes": [
+          {
+            "metadata": {
+              "apiName": "com.palantir.myValueType",
+              "displayMetadata": {
+                "description": "",
+                "displayName": "My Value Type",
+              },
+              "packageNamespace": "com.palantir",
+              "status": {
+                "active": {},
+                "type": "active",
+              },
+            },
+            "versions": [
+              {
+                "baseType": {
+                  "string": {},
+                  "type": "string",
+                },
+                "constraints": [],
+                "exampleValues": [],
+                "version": "1.0.0",
+              },
+            ],
+          },
+        ],
+      }
+    `);
+  });
 });

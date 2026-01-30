@@ -121,6 +121,7 @@ export type ValueTypeDefinition = {
   type: NewValueTypeDefinition;
   version: string;
   status?: UserValueTypeStatus;
+  namespacePrefix?: boolean;
 };
 
 export type UserValueTypeStatus = "active" | {
@@ -133,7 +134,15 @@ export type UserValueTypeStatus = "active" | {
 export function defineValueType(
   valueTypeDef: ValueTypeDefinition,
 ): ValueTypeDefinitionVersion {
-  const { apiName, displayName, description, type, version } = valueTypeDef;
+  const {
+    apiName: inputApiName,
+    displayName,
+    description,
+    type,
+    version,
+    namespacePrefix,
+  } = valueTypeDef;
+  const apiName = namespacePrefix ? namespace + inputApiName : inputApiName;
   const semverValidation =
     /^((([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?)(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?)$/;
   invariant(semverValidation.test(version), "Version is not a valid semver");
