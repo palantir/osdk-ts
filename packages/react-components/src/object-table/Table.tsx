@@ -23,6 +23,7 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { EmptyState } from "./EmptyState.js";
 import { LoadingStateTable } from "./LoadingStateTable.js";
 import styles from "./Table.module.css";
 import { TableBody } from "./TableBody.js";
@@ -103,28 +104,32 @@ export function BaseTable<TData extends RowData>(
       onScroll={handleScroll}
     >
       <table>
-        {hasData || !isLoading
+        {isLoading && !hasData
           ? (
-            <>
-              <TableHeader table={table} />
-              <TableBody
-                rows={rows}
-                tableContainerRef={tableContainerRef}
-                onRowClick={onRowClick}
-                rowHeight={rowHeight}
-                renderCellContextMenu={renderCellContextMenu}
-                isLoadingMore={isLoadingMore}
-                headerGroups={headerGroups}
-              />
-            </>
-          )
-          : (
             <LoadingStateTable
               table={table}
               headerGroups={headerGroups}
               rowHeight={rowHeight}
               tableContainerRef={tableContainerRef}
             />
+          )
+          : (
+            <>
+              <TableHeader table={table} />
+              {hasData
+                ? (
+                  <TableBody
+                    rows={rows}
+                    tableContainerRef={tableContainerRef}
+                    onRowClick={onRowClick}
+                    rowHeight={rowHeight}
+                    renderCellContextMenu={renderCellContextMenu}
+                    isLoadingMore={isLoadingMore}
+                    headerGroups={headerGroups}
+                  />
+                )
+                : <EmptyState />}
+            </>
           )}
       </table>
     </div>
