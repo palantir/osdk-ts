@@ -360,12 +360,14 @@ export function expectSingleLinkCallAndClear<T extends ObjectTypeDefinition>(
     vitest.runOnlyPendingTimers();
   }
   expect(subFn.next).toHaveBeenCalledExactlyOnceWith(
-    linkPayloadContaining({
-      ...payloadOptions,
-      resolvedList: resolvedList as unknown as Array<
-        ObjectHolder
-      >,
-    }),
+    expect.objectContaining(
+      linkPayloadContaining({
+        ...payloadOptions,
+        resolvedList: resolvedList as unknown as Array<
+          ObjectHolder
+        >,
+      }),
+    ),
   );
 
   const ret = subFn.next.mock.calls[0][0];
@@ -596,7 +598,10 @@ export function linkPayloadContaining(
     isOptimistic: expect.any(Boolean),
     status: x.status ?? expect.anything(),
     lastUpdated: x.lastUpdated ?? expect.anything(),
-  };
+    ...("totalCount" in x
+      ? { totalCount: x.totalCount }
+      : {}),
+  } as SpecificLinkPayload;
 }
 
 export function applyCustomMatchers(): void {

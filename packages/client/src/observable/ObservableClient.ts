@@ -129,6 +129,7 @@ export interface ObserveObjectsCallbackArgs<
   fetchMore: () => Promise<void>;
   hasMore: boolean;
   status: Status;
+  totalCount?: string;
 }
 
 export interface ObserveObjectSetArgs<
@@ -147,6 +148,7 @@ export interface ObserveObjectSetArgs<
   hasMore: boolean;
   status: Status;
   objectSet: ObjectSet<T, RDPs>;
+  totalCount?: string;
 }
 
 export interface ObserveAggregationOptions<
@@ -208,6 +210,7 @@ export interface ObserveLinkCallbackArgs<
   fetchMore: () => Promise<void>;
   hasMore: boolean;
   status: Status;
+  totalCount?: string;
 }
 
 /**
