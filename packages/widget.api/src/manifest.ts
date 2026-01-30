@@ -102,8 +102,9 @@ export interface WidgetManifestConfigV1 {
   events: Record<string, EventDefinition<ParameterConfig>>;
 
   /**
-   * The additional browser permissions requested by this widget. This is a hint and does not
-   * guarantee the widget will have access to the browser permission at runtime.
+   * The additional browser permissions requested by this widget. This does not guarantee the widget
+   * will have access to the browser permission at runtime. For example, the user may need to also
+   * accept a browser prompt depending on the particular permission and browser settings.
    * @optional
    */
   permissions?: BrowserPermission[];
