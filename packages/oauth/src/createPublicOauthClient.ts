@@ -29,6 +29,7 @@ import {
 import {
   common,
   createAuthorizationServer,
+  getStorage,
   readLocal,
   readSession,
   removeLocal,
@@ -36,6 +37,7 @@ import {
   saveLocal,
   saveSession,
 } from "./common.js";
+import type { TokenStorageType } from "./common.js";
 import type { PublicOauthClient } from "./PublicOauthClient.js";
 import { throwIfError } from "./throwIfError.js";
 import type { Token } from "./Token.js";
@@ -83,6 +85,22 @@ export interface PublicOauthClientOptions {
    * Allows for an additional value to be appended to the local storage key for the refresh token.
    */
   refreshTokenMarker?: string;
+
+  /**
+   * Controls how refresh tokens are stored. Affects security vs. convenience tradeoff.
+   *
+   * - `'localStorage'` (default): Tokens persist across browser sessions.
+   *   Best UX but vulnerable on shared devices.
+   *
+   * - `'sessionStorage'`: Tokens cleared when browser/tab closes.
+   *   Recommended for shared devices. Users re-authenticate each browser session.
+   *
+   * - `'none'`: Tokens never stored. Users re-authenticate on every page load.
+   *   Most secure but worst UX. Does not request `offline_access` scope.
+   *
+   * @default 'localStorage'
+   */
+  tokenStorage?: TokenStorageType;
 }
 
 /**
@@ -139,6 +157,7 @@ export function createPublicOauthClient(
 ): PublicOauthClient {
   let refreshTokenMarker: string | undefined;
   let joinedScopes: string;
+  let tokenStorage: TokenStorageType;
   ({
     useHistory,
     loginPage,
@@ -147,6 +166,7 @@ export function createPublicOauthClient(
     fetchFn,
     ctxPath,
     refreshTokenMarker,
+    tokenStorage,
   } = processOptionsAndAssignDefaults(
     url,
     redirect_uri,
@@ -165,6 +185,8 @@ export function createPublicOauthClient(
   const authServer = createAuthorizationServer(ctxPath, url);
   const oauthHttpOptions: HttpRequestOptions = { [customFetch]: fetchFn };
 
+  const storage = getStorage(tokenStorage);
+
   const { makeTokenAndSaveRefresh, getToken } = common(
     client,
     authServer,
@@ -173,6 +195,7 @@ export function createPublicOauthClient(
     maybeRefresh.bind(globalThis, true),
     refreshTokenMarker,
     joinedScopes,
+    storage,
   );
 
   // as an arrow function, `useHistory` is known to be a boolean
@@ -189,11 +212,16 @@ export function createPublicOauthClient(
   async function maybeRefresh(
     expectRefreshToken?: boolean,
   ): Promise<Token | undefined> {
+    if (tokenStorage === "none") {
+      if (expectRefreshToken) throw new Error("No refresh token found");
+      return;
+    }
+
     const {
       refresh_token,
       refreshTokenMarker: lastRefreshTokenMarker,
       requestedScopes: initialRequestedScopes,
-    } = readLocal(client);
+    } = readLocal(client, storage);
 
     const areScopesEqual = initialRequestedScopes != null
       && joinedScopes === initialRequestedScopes;
@@ -241,7 +269,7 @@ export function createPublicOauthClient(
           e,
         );
       }
-      removeLocal(client);
+      removeLocal(client, storage);
       if (expectRefreshToken) {
         throw new Error("Could not refresh token");
       }
@@ -288,7 +316,7 @@ export function createPublicOauthClient(
           e,
         );
       }
-      removeLocal(client);
+      removeLocal(client, storage);
       removeSession(client);
       throw e;
     }
@@ -301,7 +329,7 @@ export function createPublicOauthClient(
       && window.location.href !== loginPage
       && window.location.pathname !== loginPage
     ) {
-      saveLocal(client, {});
+      saveLocal(client, {}, storage);
       saveSession(client, { oldUrl: postLoginPage });
       await go(loginPage);
       return;
@@ -310,8 +338,13 @@ export function createPublicOauthClient(
     const state = generateRandomState()!;
     const codeVerifier = generateRandomCodeVerifier();
     const oldUrl = readSession(client).oldUrl ?? window.location.toString();
-    saveLocal(client, {});
+    saveLocal(client, {}, storage);
     saveSession(client, { codeVerifier, state, oldUrl });
+
+    // Only request offline_access (refresh tokens) if we're going to store them
+    const scopeString = tokenStorage === "none"
+      ? joinedScopes
+      : `offline_access ${joinedScopes}`;
 
     window.location.assign(`${authServer
       .authorization_endpoint!}?${new URLSearchParams({
@@ -321,7 +354,7 @@ export function createPublicOauthClient(
       redirect_uri,
       code_challenge: await calculatePKCECodeChallenge(codeVerifier),
       code_challenge_method: "S256",
-      scope: `offline_access ${joinedScopes}`,
+      scope: scopeString,
     })}`);
 
     // Give time for redirect to happen
