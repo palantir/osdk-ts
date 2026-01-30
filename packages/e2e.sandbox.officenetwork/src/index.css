@@ -1,0 +1,200 @@
+@import 'tailwindcss';
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   GOTHAM DESIGN SYSTEM - Palantir-inspired theme
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* ─────────────────────────────────────────────────────────────────────────
+     BACKGROUNDS - Deep Navy Scale
+     ───────────────────────────────────────────────────────────────────────── */
+  --gotham-bg-base: #0d1117;
+  --gotham-bg-surface: #161b22;
+  --gotham-bg-elevated: #21262d;
+  --gotham-bg-overlay: #2d333b;
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     BORDERS
+     ───────────────────────────────────────────────────────────────────────── */
+  --gotham-border-default: #30363d;
+  --gotham-border-muted: #21262d;
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     TEXT
+     ───────────────────────────────────────────────────────────────────────── */
+  --gotham-text-primary: #e6edf3;
+  --gotham-text-secondary: #8b949e;
+  --gotham-text-muted: #6e7681;
+  --gotham-text-link: #58a6ff;
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     ACCENT - Cyan/Teal (Primary)
+     ───────────────────────────────────────────────────────────────────────── */
+  --gotham-accent-cyan: #58a6ff;
+  --gotham-accent-cyan-muted: #388bfd;
+  --gotham-accent-teal: #39c5cf;
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     STATUS COLORS
+     ───────────────────────────────────────────────────────────────────────── */
+  --gotham-status-ready: #3fb950;
+  --gotham-status-ready-bg: rgba(63, 185, 80, 0.15);
+  --gotham-status-error: #f85149;
+  --gotham-status-error-bg: rgba(248, 81, 73, 0.15);
+  --gotham-status-warning: #d29922;
+  --gotham-status-warning-bg: rgba(210, 153, 34, 0.15);
+  --gotham-status-info: #58a6ff;
+  --gotham-status-info-bg: rgba(88, 166, 255, 0.15);
+  --gotham-status-offline: #6e7681;
+  --gotham-status-offline-bg: rgba(110, 118, 129, 0.15);
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     HIERARCHY COLORS (Gotham-ified)
+     ───────────────────────────────────────────────────────────────────────── */
+  --gotham-hier-ceo: #f0c000;
+  --gotham-hier-evp: #a371f7;
+  --gotham-hier-vp: #58a6ff;
+  --gotham-hier-director: #39c5cf;
+  --gotham-hier-manager: #d29922;
+  --gotham-hier-ic: #3fb950;
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     TYPOGRAPHY
+     ───────────────────────────────────────────────────────────────────────── */
+  --gotham-font-sans: 'IBM Plex Sans', 'SF Pro Text', system-ui, sans-serif;
+  --gotham-font-mono: 'IBM Plex Mono', 'JetBrains Mono', monospace;
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     LEGACY VARIABLE MAPPINGS (for gradual migration)
+     ───────────────────────────────────────────────────────────────────────── */
+  --bg-primary: var(--gotham-bg-base);
+  --bg-secondary: var(--gotham-bg-surface);
+  --bg-tertiary: var(--gotham-bg-elevated);
+  --text-primary: var(--gotham-text-primary);
+  --text-secondary: var(--gotham-text-secondary);
+  --text-muted: var(--gotham-text-muted);
+  --accent-cyan: var(--gotham-accent-cyan);
+  --accent-violet: var(--gotham-hier-evp);
+  --accent-emerald: var(--gotham-status-ready);
+  --accent-amber: var(--gotham-status-warning);
+  --border-subtle: var(--gotham-border-default);
+  --border-accent: var(--gotham-border-default);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   BASE STYLES
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--gotham-font-sans);
+  font-size: 13px;
+  line-height: 1.5;
+  background: var(--gotham-bg-base);
+  color: var(--gotham-text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100dvh;
+}
+
+#root {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SCROLLBAR - Gotham Style
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--gotham-bg-surface);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--gotham-border-default);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--gotham-text-muted);
+}
+
+::-webkit-scrollbar-corner {
+  background: var(--gotham-bg-surface);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   GOTHAM COMPONENT STYLES
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Status Badges */
+.gotham-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 6px;
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  border-radius: 3px;
+}
+
+.gotham-badge-ready {
+  background: var(--gotham-status-ready-bg);
+  color: var(--gotham-status-ready);
+}
+
+.gotham-badge-error {
+  background: var(--gotham-status-error-bg);
+  color: var(--gotham-status-error);
+}
+
+.gotham-badge-warning {
+  background: var(--gotham-status-warning-bg);
+  color: var(--gotham-status-warning);
+}
+
+.gotham-badge-info {
+  background: var(--gotham-status-info-bg);
+  color: var(--gotham-status-info);
+}
+
+.gotham-badge-offline {
+  background: var(--gotham-status-offline-bg);
+  color: var(--gotham-status-offline);
+}
+
+/* Section Headers */
+.gotham-section-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--gotham-text-muted);
+}
+
+/* Monospace text */
+.gotham-mono {
+  font-family: var(--gotham-font-mono);
+}
+
+/* Focus styles */
+:focus-visible {
+  outline: 2px solid var(--gotham-accent-cyan);
+  outline-offset: 2px;
+}
+
+/* Selection */
+::selection {
+  background: rgba(88, 166, 255, 0.3);
+}
