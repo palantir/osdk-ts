@@ -169,7 +169,9 @@ export function EmployeePanel({
   const { links: directReports, isLoading: reportsLoading } = useLinks(
     employee,
     "peeps",
+    { orderBy: { fullName: "asc" } },
   );
+
   const { links: manager } = useLinks(employee, "lead");
   const managerObj = manager?.[0];
 
@@ -189,7 +191,7 @@ export function EmployeePanel({
   const { links: colleagues, isLoading: colleaguesLoading } = useLinks(
     employeeOfficeObj,
     "occupants",
-    { enabled: !!employeeOfficeObj },
+    { enabled: !!employeeOfficeObj, orderBy: { fullName: "asc" } },
   );
   const colleaguesExcludingSelf = React.useMemo(
     () =>
@@ -200,7 +202,7 @@ export function EmployeePanel({
   const { links: peerReports, isLoading: peersLoading } = useLinks(
     managerObj,
     "peeps",
-    { enabled: !!managerObj },
+    { enabled: !!managerObj, orderBy: { fullName: "asc" } },
   );
   const peersExcludingSelf = React.useMemo(
     () =>
@@ -225,7 +227,8 @@ export function EmployeePanel({
   const accentColor = LENS_ACCENT[lensMode];
   const lensTitle = LENS_PANEL_TITLE[lensMode];
 
-  const showFullNetwork = lensMode === "network" || lensMode === "employees";
+  // Always show network info for employees unless in chain-only or team-only mode
+  const showFullNetwork = lensMode !== "chain" && lensMode !== "team";
   const showChain = lensMode === "chain";
   const showTeam = lensMode === "team";
 
@@ -446,8 +449,8 @@ export function EmployeePanel({
           <PersonListSection
             title="Direct reports"
             people={directReports}
-            count={enrichedEmployee?.reportCount ?? directReports?.length ?? 0}
-            isLoading={reportsLoading || rdpLoading}
+            count={enrichedEmployee?.reportCount ?? directReports?.length}
+            isLoading={reportsLoading}
             maxVisible={5}
             maxHeight="max-h-32"
             countColor="var(--gotham-hier-evp)"
@@ -490,10 +493,10 @@ export function EmployeePanel({
           <PersonListSection
             title="Peers"
             people={peersExcludingSelf}
-            isLoading={peersLoading}
+            isLoading={peersLoading && !!managerObj}
             maxVisible={4}
             countColor="var(--gotham-hier-evp)"
-            emptyMessage="No peers"
+            emptyMessage={managerObj ? "No peers" : "No manager (no peers)"}
             onSelectEmployee={onSelectEmployee}
           />
         )}
@@ -503,10 +506,12 @@ export function EmployeePanel({
           <PersonListSection
             title="Colleagues"
             people={colleaguesExcludingSelf}
-            isLoading={colleaguesLoading}
+            isLoading={colleaguesLoading && !!employeeOfficeObj}
             maxVisible={4}
             countColor="var(--gotham-status-ready)"
-            emptyMessage="No colleagues"
+            emptyMessage={employeeOfficeObj
+              ? "No colleagues"
+              : "No office assigned"}
             onSelectEmployee={onSelectEmployee}
           />
         )}

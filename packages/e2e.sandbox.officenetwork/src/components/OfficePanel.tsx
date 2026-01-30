@@ -1,5 +1,6 @@
-import { useLinks } from "@osdk/react/experimental";
-import type { Employee, Office } from "../generatedNoCheck2/index.js";
+import { useLinks, useOsdkAggregation } from "@osdk/react/experimental";
+import { Employee } from "../generatedNoCheck2/index.js";
+import type { Office } from "../generatedNoCheck2/index.js";
 import {
   getHierarchyLevel,
   HIERARCHY_COLORS,
@@ -17,6 +18,21 @@ export function OfficePanel(
   { office, onSelectEmployee, onClose }: OfficePanelProps,
 ) {
   const { links: occupants, isLoading, error } = useLinks(office, "occupants");
+
+  const {
+    data: occupantAgg,
+    isLoading: aggLoading,
+    error: aggError,
+  } = useOsdkAggregation(Employee, {
+    where: { primaryOfficeId: office.primaryKey_ },
+    aggregate: {
+      $select: {
+        $count: "unordered",
+      },
+    },
+  });
+
+  const aggregatedCount = occupantAgg?.$count;
 
   const coords = office.location
     ? `${office.location.coordinates[1].toFixed(4)}, ${

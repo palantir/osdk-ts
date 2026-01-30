@@ -117,7 +117,7 @@ function generateShuffleChanges(
 
 function generateSwapChanges(
   employees: Employee.OsdkInstance[],
-  offices: Office.OsdkInstance[],
+  _offices: Office.OsdkInstance[],
   config: ReorgConfig,
 ): Map<number, EmployeeChange> {
   const changes = new Map<number, EmployeeChange>();
@@ -138,7 +138,7 @@ function generateSwapChanges(
 
 function generateConsolidateChanges(
   employees: Employee.OsdkInstance[],
-  offices: Office.OsdkInstance[],
+  _offices: Office.OsdkInstance[],
   config: ReorgConfig,
 ): Map<number, EmployeeChange> {
   const changes = new Map<number, EmployeeChange>();

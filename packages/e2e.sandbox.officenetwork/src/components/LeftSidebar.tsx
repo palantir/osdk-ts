@@ -1,12 +1,14 @@
 import React from "react";
 import type { Employee, Office } from "../generatedNoCheck2/index.js";
 
+type OfficeWithRdps = Office.OsdkInstance & { employeeCount?: number };
+
 interface LeftSidebarProps {
-  offices: Office.OsdkInstance[];
+  offices: OfficeWithRdps[];
   employees: Employee.OsdkInstance[];
   selectedOffice: Office.OsdkInstance | null;
   selectedEmployee: Employee.OsdkInstance | null;
-  onSelectOffice: (office: Office.OsdkInstance) => void;
+  onSelectOffice: (office: OfficeWithRdps) => void;
   onSelectEmployee: (employee: Employee.OsdkInstance) => void;
   isCollapsed: boolean;
   onToggleCollapse: () => void;
@@ -205,9 +207,14 @@ export function LeftSidebar({
                       >
                         <path d="M3 21h18M3 7v14m6-14v14m6-14v14m6-14v14M3 7l9-4 9 4" />
                       </svg>
-                      <span className="text-xs truncate">
+                      <span className="text-xs truncate flex-1">
                         {office.name ?? "Unknown"}
                       </span>
+                      {office.employeeCount !== undefined && (
+                        <span className="text-[9px] tabular-nums px-1.5 py-0.5 rounded bg-[var(--gotham-bg-elevated)] text-[var(--gotham-text-muted)]">
+                          {office.employeeCount}
+                        </span>
+                      )}
                     </button>
                   );
                 })}

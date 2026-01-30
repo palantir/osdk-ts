@@ -107,8 +107,9 @@ export function useFullChain(
 
   const lastNode = chain[chain.length - 1];
   const lastEmployee = lastNode?.employee;
-  const isTopOfChain = lastEmployee != null && (
+  const isTopOfChain = lastEmployee !== undefined && (
     lastEmployee.leadEmployeeNumber === lastEmployee.employeeNumber
+    || lastEmployee.leadEmployeeNumber === undefined
     || lastEmployee.leadEmployeeNumber == null
     || lastEmployee.jobTitle?.toLowerCase().includes("ceo")
     || lastEmployee.jobTitle?.toLowerCase().includes("chief executive")

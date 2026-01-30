@@ -25,7 +25,8 @@ export function PersonListSection({
   emptyMessage,
   onSelectEmployee,
 }: PersonListSectionProps) {
-  const displayCount = count ?? people?.length ?? 0;
+  const displayCount = count ?? people?.length;
+  const hasCount = displayCount !== undefined;
 
   return (
     <div className="p-4 border-b border-[var(--gotham-border-default)]">
@@ -35,7 +36,7 @@ export function PersonListSection({
           className="text-lg font-semibold tabular-nums"
           style={{ color: countColor }}
         >
-          {displayCount}
+          {hasCount ? displayCount : "—"}
         </div>
         {isLoading && <LoadingIndicator size="sm" />}
       </div>

@@ -1,5 +1,7 @@
+import type { DerivedProperty } from "@osdk/api";
 import { useOsdkObjects } from "@osdk/react/experimental";
 import React from "react";
+import { AggregationStatsPanel } from "./components/AggregationStatsPanel.js";
 import { EmployeePanel } from "./components/EmployeePanel.js";
 import { LeftSidebar } from "./components/LeftSidebar.js";
 import { OfficeMap } from "./components/OfficeMap.js";
@@ -10,6 +12,13 @@ import { TopBar } from "./components/TopBar.js";
 import { Employee, Office } from "./generatedNoCheck2/index.js";
 import { getHierarchyLevel, type HierarchyLevel } from "./utils/hierarchy.js";
 import type { LensMode } from "./utils/lensTheme.js";
+
+const officeWithRdps = {
+  employeeCount: (base: DerivedProperty.Builder<Office, false>) =>
+    base.pivotTo("occupants").aggregate("$count"),
+};
+
+type OfficeWithRdps = Office.OsdkInstance & { employeeCount?: number };
 
 interface ErrorBoundaryState {
   hasError: boolean;
@@ -89,6 +98,8 @@ function App() {
   const { data: offices, isLoading: officesLoading, error: officesError } =
     useOsdkObjects(Office, {
       pageSize: 100,
+      orderBy: { name: "asc" },
+      withProperties: officeWithRdps,
     });
 
   const {
@@ -97,6 +108,7 @@ function App() {
     error: employeesError,
   } = useOsdkObjects(Employee, {
     pageSize: 200,
+    orderBy: { fullName: "asc" },
   });
 
   if (officesError) {
@@ -108,7 +120,7 @@ function App() {
   }
 
   const handleSelectOffice = React.useCallback(
-    (office: Office.OsdkInstance) => {
+    (office: OfficeWithRdps) => {
       setSelectedOffice(office);
       setSelectedEmployee(null);
     },
@@ -284,6 +296,11 @@ function App() {
               </div>
             </div>
           )}
+
+          {/* Aggregation Stats Panel */}
+          <div className="absolute bottom-4 right-4 z-10">
+            <AggregationStatsPanel />
+          </div>
         </div>
 
         {/* Right Panels */}

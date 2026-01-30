@@ -73,16 +73,19 @@ export function useOrgTree(
     !!level1Employees[7] && maxDepth >= 2,
   );
 
-  const level1Results = [
-    level1a,
-    level1b,
-    level1c,
-    level1d,
-    level1e,
-    level1f,
-    level1g,
-    level1h,
-  ];
+  const level1Results = React.useMemo(
+    () => [
+      level1a,
+      level1b,
+      level1c,
+      level1d,
+      level1e,
+      level1f,
+      level1g,
+      level1h,
+    ],
+    [level1a, level1b, level1c, level1d, level1e, level1f, level1g, level1h],
+  );
   const MAX_EXPANDED_REPORTS = level1Results.length;
 
   const tree = React.useMemo((): OrgTreeNode | null => {
