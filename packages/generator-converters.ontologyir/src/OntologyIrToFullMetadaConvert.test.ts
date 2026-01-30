@@ -3132,7 +3132,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                   },
                   "description": undefined,
                   "displayName": "Name",
-                  "rid": "ri.ontology.main.property.a46c21b9-d58c-2027-3cb8-b535a8951fe8",
+                  "rid": "ri.Dc3DistributionCenterProposal.name",
                   "status": {
                     "type": "active",
                   },
@@ -3144,7 +3144,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                   },
                   "description": "The price of the distribution center proposal in USD",
                   "displayName": "Price",
-                  "rid": "ri.ontology.main.property.347ebb52-11c5-26f5-02bd-37bbfd520fac",
+                  "rid": "ri.Dc3DistributionCenterProposal.price",
                   "status": {
                     "type": "active",
                   },
@@ -3156,7 +3156,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                   },
                   "description": undefined,
                   "displayName": "Primary Key",
-                  "rid": "ri.ontology.main.property.b83a1676-558b-12ea-0ed3-6fc2f6be6b94",
+                  "rid": "ri.Dc3DistributionCenterProposal.primaryKey_",
                   "status": {
                     "type": "active",
                   },
@@ -3168,7 +3168,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                   },
                   "description": undefined,
                   "displayName": "Proposed Location",
-                  "rid": "ri.ontology.main.property.0a8a105e-c5dc-8ec6-9234-1131ab90d336",
+                  "rid": "ri.Dc3DistributionCenterProposal.proposedLocation",
                   "status": {
                     "type": "active",
                   },
@@ -3222,7 +3222,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                   },
                   "description": undefined,
                   "displayName": "Distribution Proposal",
-                  "rid": "ri.ontology.main.property.d0a7cfb4-575d-2b37-4af8-4f1eb331c400",
+                  "rid": "ri.Dc3DistributionRouteAnalysis.distributionProposal",
                   "status": {
                     "type": "active",
                   },
@@ -3234,7 +3234,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                   },
                   "description": undefined,
                   "displayName": "Primary Key",
-                  "rid": "ri.ontology.main.property.4c7118f5-2e13-376a-9d4f-77124d9917de",
+                  "rid": "ri.Dc3DistributionRouteAnalysis.primaryKey_",
                   "status": {
                     "type": "active",
                   },
@@ -3246,7 +3246,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                   },
                   "description": undefined,
                   "displayName": "Restaurant",
-                  "rid": "ri.ontology.main.property.cd4cf427-205c-80b4-8245-7029c7f8fe74",
+                  "rid": "ri.Dc3DistributionRouteAnalysis.restaurant",
                   "status": {
                     "type": "active",
                   },
@@ -3258,7 +3258,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                   },
                   "description": undefined,
                   "displayName": "Time (Minutes)",
-                  "rid": "ri.ontology.main.property.946091b3-4710-8062-c1c2-62f431c27e3e",
+                  "rid": "ri.Dc3DistributionRouteAnalysis.timeMinutes",
                   "status": {
                     "type": "active",
                   },
@@ -3302,7 +3302,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                   },
                   "description": undefined,
                   "displayName": "Location",
-                  "rid": "ri.ontology.main.property.f5ebad8e-1784-2d32-05e7-d764d3e1fe40",
+                  "rid": "ri.Dc3Restaurant.location",
                   "status": {
                     "type": "active",
                   },
@@ -3314,7 +3314,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                   },
                   "description": undefined,
                   "displayName": "Name",
-                  "rid": "ri.ontology.main.property.a35c7c7d-00f1-a79a-b0c2-dd257130e882",
+                  "rid": "ri.Dc3Restaurant.name",
                   "status": {
                     "type": "active",
                   },
@@ -3326,7 +3326,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                   },
                   "description": undefined,
                   "displayName": "Primary Key",
-                  "rid": "ri.ontology.main.property.108895a6-a55a-1661-1b4f-0c4f5b70e323",
+                  "rid": "ri.Dc3Restaurant.primaryKey_",
                   "status": {
                     "type": "active",
                   },
@@ -3338,7 +3338,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                   },
                   "description": undefined,
                   "displayName": "Rating",
-                  "rid": "ri.ontology.main.property.8435cc5f-b49b-d18b-fa75-2b0cebe52aab",
+                  "rid": "ri.Dc3Restaurant.rating",
                   "status": {
                     "type": "active",
                   },

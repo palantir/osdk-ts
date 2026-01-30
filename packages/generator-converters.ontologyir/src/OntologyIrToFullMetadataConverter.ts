@@ -130,9 +130,7 @@ export class OntologyIrToFullMetadataConverter {
 
           properties[propKey] = {
             displayName: prop.displayMetadata.displayName,
-            rid: `ri.ontology.main.property.${
-              toUuid(object.apiName + "." + propKey)
-            }`,
+            rid: `ri.${object.apiName}.${propKey}`,
             status,
             description: prop.displayMetadata.description ?? undefined,
             visibility: visibilityEnum,
@@ -899,16 +897,4 @@ function isParameterRequired(
   return action.actionType.actionTypeLogic.validation
     .parameterValidations[paramKey].defaultValidation.validation.required.type
     === "required";
-}
-
-/**
- * Generate a deterministic UUID from a string.
- * Uses SHA-256 hash truncated to UUID format for consistency.
- */
-function toUuid(str: string): string {
-  const hashHex = hash("sha256", str, "hex");
-  // Format as UUID: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
-  return `${hashHex.slice(0, 8)}-${hashHex.slice(8, 12)}-${
-    hashHex.slice(12, 16)
-  }-${hashHex.slice(16, 20)}-${hashHex.slice(20, 32)}`;
 }
