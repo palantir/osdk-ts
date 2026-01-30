@@ -27,7 +27,6 @@
   user-select: none;
 }
 
-
 .osdkTableHeaderRow {
   display: flex;
 }
@@ -66,7 +65,9 @@
 }
 
 /* First right-pinned column - no right-pinned siblings before it */
-.osdkTableHeaderCell[data-pinned="right"]:not(:has(~ [data-pinned="right"]):nth-child(n+2)) {
+.osdkTableHeaderCell[data-pinned="right"]:not(
+    :has(~ [data-pinned="right"]):nth-child(n + 2)
+  ) {
   border-left: var(--osdk-table-pinned-column-border);
 }
 
