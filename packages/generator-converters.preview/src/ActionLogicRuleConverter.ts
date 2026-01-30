@@ -43,7 +43,7 @@ function resolveObjectApiName(
       }
     }
   }
-  // Fallback: if not found in IR, return the ID as-is
+
   return objectTypeId;
 }
 
