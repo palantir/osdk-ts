@@ -1228,6 +1228,10 @@ describe("Miscellaneous Tests", () => {
                   },
                   "titlePropertyTypeRid": "property1",
                 },
+                "propertySecurityGroupPackagingVersion": {
+                  "type": "v2",
+                  "v2": {},
+                },
               },
             },
             "sharedPropertyTypes": {

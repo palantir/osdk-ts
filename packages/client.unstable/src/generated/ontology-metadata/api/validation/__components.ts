@@ -1570,6 +1570,12 @@ export interface ErrorType_objectTypePropertySecurityGroupsNotSupportedWithMater
     ObjectTypePropertySecurityGroupsNotSupportedWithMaterializations;
 }
 
+export interface ErrorType_objectTypePropertySecurityGroupsNotSupportedWithRvMaterializations {
+  type: "objectTypePropertySecurityGroupsNotSupportedWithRvMaterializations";
+  objectTypePropertySecurityGroupsNotSupportedWithRvMaterializations:
+    ObjectTypePropertySecurityGroupsNotSupportedWithRvMaterializations;
+}
+
 export interface ErrorType_editsOnlyObjectTypeMustHavePropertySecurityGroups {
   type: "editsOnlyObjectTypeMustHavePropertySecurityGroups";
   editsOnlyObjectTypeMustHavePropertySecurityGroups:
@@ -2789,6 +2795,61 @@ export interface ErrorType_objectTypeDeletedDatasourceMissingSchemaMigration {
   type: "objectTypeDeletedDatasourceMissingSchemaMigration";
   objectTypeDeletedDatasourceMissingSchemaMigration:
     ObjectTypeDeletedDatasourceMissingSchemaMigration;
+}
+
+export interface ErrorType_objectTypeSchemaMigrationSourceSchemaVersionContainsMultipleTransitions {
+  type:
+    "objectTypeSchemaMigrationSourceSchemaVersionContainsMultipleTransitions";
+  objectTypeSchemaMigrationSourceSchemaVersionContainsMultipleTransitions:
+    ObjectTypeSchemaMigrationSourceSchemaVersionContainsMultipleTransitions;
+}
+
+export interface ErrorType_objectTypeContainsTooManySchemaMigrations {
+  type: "objectTypeContainsTooManySchemaMigrations";
+  objectTypeContainsTooManySchemaMigrations:
+    ObjectTypeContainsTooManySchemaMigrations;
+}
+
+export interface ErrorType_objectTypeReferencedBySchemaMigrationDoesNotExist {
+  type: "objectTypeReferencedBySchemaMigrationDoesNotExist";
+  objectTypeReferencedBySchemaMigrationDoesNotExist:
+    ObjectTypeReferencedBySchemaMigrationDoesNotExist;
+}
+
+export interface ErrorType_objectTypeSchemaMigrationSchemaVersionNewerThanLatest {
+  type: "objectTypeSchemaMigrationSchemaVersionNewerThanLatest";
+  objectTypeSchemaMigrationSchemaVersionNewerThanLatest:
+    ObjectTypeSchemaMigrationSchemaVersionNewerThanLatest;
+}
+
+export interface ErrorType_objectTypeSchemaMigrationSchemaVersionLessThanOne {
+  type: "objectTypeSchemaMigrationSchemaVersionLessThanOne";
+  objectTypeSchemaMigrationSchemaVersionLessThanOne:
+    ObjectTypeSchemaMigrationSchemaVersionLessThanOne;
+}
+
+export interface ErrorType_objectTypeSchemaMigrationSourceSchemaVersionNewerOrEqualToTarget {
+  type: "objectTypeSchemaMigrationSourceSchemaVersionNewerOrEqualToTarget";
+  objectTypeSchemaMigrationSourceSchemaVersionNewerOrEqualToTarget:
+    ObjectTypeSchemaMigrationSourceSchemaVersionNewerOrEqualToTarget;
+}
+
+export interface ErrorType_objectTypeSchemaMigrationModifiesPastTransitionsOnBranch {
+  type: "objectTypeSchemaMigrationModifiesPastTransitionsOnBranch";
+  objectTypeSchemaMigrationModifiesPastTransitionsOnBranch:
+    ObjectTypeSchemaMigrationModifiesPastTransitionsOnBranch;
+}
+
+export interface ErrorType_objectTypeSchemaMigrationDeletesTransitionsOnBranch {
+  type: "objectTypeSchemaMigrationDeletesTransitionsOnBranch";
+  objectTypeSchemaMigrationDeletesTransitionsOnBranch:
+    ObjectTypeSchemaMigrationDeletesTransitionsOnBranch;
+}
+
+export interface ErrorType_objectTypeSchemaMigrationContainsDuplicateSchemaMigrationRids {
+  type: "objectTypeSchemaMigrationContainsDuplicateSchemaMigrationRids";
+  objectTypeSchemaMigrationContainsDuplicateSchemaMigrationRids:
+    ObjectTypeSchemaMigrationContainsDuplicateSchemaMigrationRids;
 }
 
 export interface ErrorType_objectTypePropertySecurityGroupReferencesNonExistentProperty {
@@ -4241,6 +4302,7 @@ export type ErrorType =
   | ErrorType_objectTypeInvalidNumberOfPropertyReferencesInPropertySecurityGroup
   | ErrorType_objectTypePropertySecurityGroupsNotSupportedWithMultipleDatasources
   | ErrorType_objectTypePropertySecurityGroupsNotSupportedWithMaterializations
+  | ErrorType_objectTypePropertySecurityGroupsNotSupportedWithRvMaterializations
   | ErrorType_editsOnlyObjectTypeMustHavePropertySecurityGroups
   | ErrorType_objectTypePropertySecurityGroupsNotSupportedOnBranches
   | ErrorType_builderCannotDeletePropertySecurityGroupsSetOnParentBranch
@@ -4448,6 +4510,15 @@ export type ErrorType =
   | ErrorType_objectTypeDeletedPropertyTypeMissingSchemaMigration
   | ErrorType_objectTypePropertyDataTypeChangeMissingSchemaMigration
   | ErrorType_objectTypeDeletedDatasourceMissingSchemaMigration
+  | ErrorType_objectTypeSchemaMigrationSourceSchemaVersionContainsMultipleTransitions
+  | ErrorType_objectTypeContainsTooManySchemaMigrations
+  | ErrorType_objectTypeReferencedBySchemaMigrationDoesNotExist
+  | ErrorType_objectTypeSchemaMigrationSchemaVersionNewerThanLatest
+  | ErrorType_objectTypeSchemaMigrationSchemaVersionLessThanOne
+  | ErrorType_objectTypeSchemaMigrationSourceSchemaVersionNewerOrEqualToTarget
+  | ErrorType_objectTypeSchemaMigrationModifiesPastTransitionsOnBranch
+  | ErrorType_objectTypeSchemaMigrationDeletesTransitionsOnBranch
+  | ErrorType_objectTypeSchemaMigrationContainsDuplicateSchemaMigrationRids
   | ErrorType_objectTypePropertySecurityGroupReferencesNonExistentProperty
   | ErrorType_objectTypeReferencedTypeGroupsDoNotExist
   | ErrorType_objectTypeForbiddenTitleProperty
@@ -5492,6 +5563,11 @@ export interface ObjectTypeColumnMissingFromBackingDatasource {
 export interface ObjectTypeCompositePrimaryKeysNotAllowed {
 }
 /**
+ * Too many migrations in a single transition for the given ObjectType.
+ */
+export interface ObjectTypeContainsTooManySchemaMigrations {
+}
+/**
  * The count of object types exceeds the allowed limit.
  */
 export interface ObjectTypeCountExceeded {
@@ -6312,6 +6388,12 @@ export interface ObjectTypePropertySecurityGroupsNotSupportedWithMaterialization
 export interface ObjectTypePropertySecurityGroupsNotSupportedWithMultipleDatasources {
 }
 /**
+ * Property security groups are not supported for Object Types that have Restricted View Materializations.
+ */
+export interface ObjectTypePropertySecurityGroupsNotSupportedWithRvMaterializations {
+  rvMaterializationRids: Array<string>;
+}
+/**
  * The description of an object type property exceeds the maximum length.
  */
 export interface ObjectTypePropertyTypeDescriptionTooLong {
@@ -6372,6 +6454,11 @@ export interface ObjectTypeReadOnlyV1V2NotAllowed {
 export interface ObjectTypeReducerOnStructPropertyMissingSortField {
 }
 /**
+ * At least one schema migration is referencing an ObjectTypeRid that does not exist in the latest ontology.
+ */
+export interface ObjectTypeReferencedBySchemaMigrationDoesNotExist {
+}
+/**
  * The specified datasources do not exist.
  */
 export interface ObjectTypeReferencedDatasourceNotFound {
@@ -6430,6 +6517,41 @@ export interface ObjectTypeRevDbIntegrationHasNoMappedProperties {
  * RuleSetBindings cannot be associated with a derived property type. Derived property types may not always get loaded so they cannot be trusted for conditional formatting.
  */
 export interface ObjectTypeRuleSetBindingAssociatedWithDerivedPropertyType {
+}
+/**
+ * Duplicate schema migration in a single transition for the given ObjectType.
+ */
+export interface ObjectTypeSchemaMigrationContainsDuplicateSchemaMigrationRids {
+}
+/**
+ * Cannot delete transitions on a branch.
+ */
+export interface ObjectTypeSchemaMigrationDeletesTransitionsOnBranch {
+}
+/**
+ * Cannot modify past transitions on a branch.
+ */
+export interface ObjectTypeSchemaMigrationModifiesPastTransitionsOnBranch {
+}
+/**
+ * The schema version provided in the schema migration is less than one which is the lowest possible version.
+ */
+export interface ObjectTypeSchemaMigrationSchemaVersionLessThanOne {
+}
+/**
+ * The schema version provided in the schema migration is newer than the latest.
+ */
+export interface ObjectTypeSchemaMigrationSchemaVersionNewerThanLatest {
+}
+/**
+ * There are at least two transitions from the same source schema version in the request.
+ */
+export interface ObjectTypeSchemaMigrationSourceSchemaVersionContainsMultipleTransitions {
+}
+/**
+ * The source schema version provided in the schema migration is newer or equal to the target.
+ */
+export interface ObjectTypeSchemaMigrationSourceSchemaVersionNewerOrEqualToTarget {
 }
 /**
  * The sensor trait contains a property type id that is not present in the ObjectType's properties.

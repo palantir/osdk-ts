@@ -126,6 +126,10 @@ export function convertObject(
       arePatchesEnabled: objectType.editsEnabled ?? false,
       aliases: objectType.aliases ?? [],
     },
+    propertySecurityGroupPackagingVersion: {
+      type: "v2",
+      v2: {},
+    },
   };
 }
 
