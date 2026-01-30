@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import { hash } from "node:crypto";
+import { createHash } from "node:crypto";
 
 /**
  * Generate a deterministic UUID from a string.
  * Uses SHA-256 hash truncated to UUID format for consistency.
  */
 export function toUuid(str: string): string {
-  const hashHex = hash("sha256", str, "hex");
+  const hashHex = createHash("sha256").update(str).digest("hex");
   // Format as UUID: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
   return `${hashHex.slice(0, 8)}-${hashHex.slice(8, 12)}-${
     hashHex.slice(12, 16)
