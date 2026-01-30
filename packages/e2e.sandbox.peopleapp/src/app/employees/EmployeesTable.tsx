@@ -75,7 +75,7 @@ export function EmployeesTable() {
             fontSize: 13,
           }}
         >
-          {cellValue ? cellValue : "No Value"}
+          {cellValue ? cellValue.toString() : "No Value"}
         </div>
       );
     },

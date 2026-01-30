@@ -51,9 +51,6 @@ export function useObjectTableData<
   filter?: WhereClause<Q, RDPs>,
   sorting?: SortingState,
 ): UseOsdkListResult<Q, RDPs> {
-  type WP<Q extends ObjectOrInterfaceDefinition> = {
-    [K in keyof RDPs]: DerivedProperty.Creator<Q, RDPs[K]>;
-  };
   const orderBy = useMemo(() => {
     if (!sorting || sorting.length === 0) {
       return undefined;
@@ -69,7 +66,7 @@ export function useObjectTableData<
   }, [sorting]);
 
   // Extract derived properties definition
-  const withProperties: WP<Q> | undefined = useMemo(() => { // Convert React Table sorting state to OSDK orderBy format
+  const withProperties = useMemo(() => {
     if (!columnDefinitions) {
       return;
     }
@@ -84,24 +81,26 @@ export function useObjectTableData<
       return;
     }
 
-    return rdpColumns.reduce(
+    return rdpColumns.reduce<
+      { [K in keyof RDPs]: DerivedProperty.Creator<Q, RDPs[K]> }
+    >(
       (acc, cur) => {
         return {
           ...acc,
           [cur.id]: cur.creator,
         };
       },
-      {} as WP<Q>,
+      {} as { [K in keyof RDPs]: DerivedProperty.Creator<Q, RDPs[K]> },
     );
   }, [columnDefinitions]);
 
-  const where: WhereClause<Q, InferRdpTypes<Q, WP<Q>>> = useMemo(() => {
+  const where: WhereClause<Q, RDPs> = useMemo(() => {
     return filter ? filter : {};
   }, [filter]);
 
   return useOsdkObjects<
     Q,
-    WP<Q>
+    RDPs
   >(
     objectOrInterfaceType,
     {
@@ -110,15 +109,5 @@ export function useObjectTableData<
       where,
       orderBy,
     },
-  ) as UseOsdkListResult<Q, RDPs>;
+  );
 }
-
-// InferRdpTypes utility type extracts RDPs from the DerivedProperty.Creator objects
-type InferRdpTypes<
-  Q extends ObjectOrInterfaceDefinition,
-  WP extends DerivedProperty.Clause<Q> | undefined,
-> = WP extends DerivedProperty.Clause<Q> ? {
-    [K in keyof WP]: WP[K] extends DerivedProperty.Creator<Q, infer T> ? T
-      : never;
-  }
-  : {};
