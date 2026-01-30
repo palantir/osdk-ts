@@ -24,3 +24,7 @@ export type {
   ColumnDefinitionLocator,
   ObjectTableProps,
 } from "../object-table/ObjectTableApi.js";
+
+// BaseTable that does not handle data fetching
+export type { BaseTableProps } from "../object-table/Table.js";
+export { BaseTable } from "../object-table/Table.js";

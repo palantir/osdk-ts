@@ -1,5 +1,19 @@
 # @osdk/api
 
+## 2.7.0-beta.14
+
+## 2.7.0-beta.13
+
+### Minor Changes
+
+- fb83808: Allow arrays to use all subtype filters
+
+## 2.7.0-beta.12
+
+### Minor Changes
+
+- bb9d25c: Allow requesting rids for OSW updates
+
 ## 2.7.0-beta.11
 
 ### Minor Changes

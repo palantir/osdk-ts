@@ -1,5 +1,32 @@
 # @osdkkit/react
 
+## 0.9.0-beta.9
+
+### Minor Changes
+
+- 43d342e: Fix fetchMore in useObjectSet and useLinks
+- ecd18e2: fix pivotTo with where usage
+
+### Patch Changes
+
+- Updated dependencies [24730c7]
+- Updated dependencies [ecd18e2]
+  - @osdk/client@2.7.0-beta.14
+  - @osdk/api@2.7.0-beta.14
+
+## 0.9.0-beta.8
+
+### Minor Changes
+
+- 74e3ba7: Preserve aggregate option literal types in useOsdkAggregation using const type parameter
+
+### Patch Changes
+
+- Updated dependencies [3fc5fe6]
+- Updated dependencies [bb9d25c]
+  - @osdk/client@2.7.0-beta.12
+  - @osdk/api@2.7.0-beta.12
+
 ## 0.9.0-beta.7
 
 ### Minor Changes

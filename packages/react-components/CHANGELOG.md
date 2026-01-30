@@ -1,5 +1,33 @@
 # @osdk/react-components
 
+## 0.1.0-beta.5
+
+### Minor Changes
+
+- 30617fa: Support sorting and column pinning. Export BaseTable
+
+### Patch Changes
+
+- Updated dependencies [43d342e]
+- Updated dependencies [24730c7]
+- Updated dependencies [ecd18e2]
+  - @osdk/react@0.9.0-beta.9
+  - @osdk/client@2.7.0-beta.14
+  - @osdk/api@2.7.0-beta.14
+
+## 0.1.0-beta.4
+
+### Minor Changes
+
+- 476604f: Apply table styling
+
+### Patch Changes
+
+- Updated dependencies [fb83808]
+  - @osdk/client@2.7.0-beta.13
+  - @osdk/api@2.7.0-beta.13
+  - @osdk/react@0.9.0-beta.8
+
 ## 0.1.0-beta.3
 
 ### Minor Changes

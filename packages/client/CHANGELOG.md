@@ -1,5 +1,45 @@
 # @osdk/client
 
+## 2.7.0-beta.14
+
+### Minor Changes
+
+- 24730c7: fix rdp pivot behavior
+- ecd18e2: fix pivotTo with where usage
+
+### Patch Changes
+
+- @osdk/api@2.7.0-beta.14
+- @osdk/client.unstable@2.7.0-beta.14
+- @osdk/generator-converters@2.7.0-beta.14
+
+## 2.7.0-beta.13
+
+### Minor Changes
+
+- fb83808: Allow arrays to use all subtype filters
+
+### Patch Changes
+
+- Updated dependencies [fb83808]
+  - @osdk/api@2.7.0-beta.13
+  - @osdk/client.unstable@2.7.0-beta.13
+  - @osdk/generator-converters@2.7.0-beta.13
+
+## 2.7.0-beta.12
+
+### Minor Changes
+
+- 3fc5fe6: fix interface loading
+- bb9d25c: Allow requesting rids for OSW updates
+
+### Patch Changes
+
+- Updated dependencies [bb9d25c]
+  - @osdk/api@2.7.0-beta.12
+  - @osdk/client.unstable@2.7.0-beta.12
+  - @osdk/generator-converters@2.7.0-beta.12
+
 ## 2.7.0-beta.11
 
 ### Minor Changes

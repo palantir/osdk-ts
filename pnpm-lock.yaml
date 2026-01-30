@@ -7,11 +7,11 @@ settings:
 catalogs:
   foundry-platform-typescript:
     '@osdk/docs-spec-core':
-      specifier: ^0.5.0
-      version: 0.5.0
+      specifier: 0.6.0
+      version: 0.6.0
     '@osdk/docs-spec-sdk':
-      specifier: ^0.14.0
-      version: 0.14.0
+      specifier: 0.16.0
+      version: 0.16.0
     '@osdk/foundry':
       specifier: 2.45.0
       version: 2.45.0
@@ -1393,6 +1393,9 @@ importers:
       '@osdk/widget.client-react':
         specifier: workspace:*
         version: link:../../packages/widget.client-react
+      clsx:
+        specifier: ^2.1.1
+        version: 2.1.1
       react:
         specifier: ^18
         version: 18.3.1
@@ -2825,6 +2828,9 @@ importers:
       '@blueprintjs/core':
         specifier: ^5.19.1
         version: 5.19.1(@types/react@18.3.24)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      clsx:
+        specifier: ^2.1.1
+        version: 2.1.1
       react:
         specifier: ^18
         version: 18.3.1
@@ -3535,6 +3541,9 @@ importers:
       '@osdk/api':
         specifier: workspace:~
         version: link:../api
+      '@osdk/foundry.admin':
+        specifier: catalog:foundry-platform-typescript
+        version: 2.45.0
       '@osdk/foundry.core':
         specifier: catalog:foundry-platform-typescript
         version: 2.45.0
@@ -4182,7 +4191,7 @@ importers:
         specifier: ^3.13.13
         version: 3.13.17(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       classnames:
-        specifier: ^2.5.1
+        specifier: ^2.0.0
         version: 2.5.1
       react-dom:
         specifier: ^17 || ^18 || ^19
@@ -4571,10 +4580,10 @@ importers:
     dependencies:
       '@osdk/docs-spec-core':
         specifier: catalog:foundry-platform-typescript
-        version: 0.5.0
+        version: 0.6.0
       '@osdk/docs-spec-sdk':
         specifier: catalog:foundry-platform-typescript
-        version: 0.14.0
+        version: 0.16.0
       outdent:
         specifier: ^0.8.0
         version: 0.8.0
@@ -7274,11 +7283,14 @@ packages:
   '@osdk/docs-spec-core@0.5.0':
     resolution: {integrity: sha512-sHkNoGV5MdcZWfjIslZWWqmJlgSJfWJbnM4vC1RcGyyzKDpZXRMJ4AjSpKr9VqtuTlNHGmD2Y3bQUO/wpSQBbw==}
 
+  '@osdk/docs-spec-core@0.6.0':
+    resolution: {integrity: sha512-fR5E67XrAVk6R4h8dzq+lu8wWH+nFnWllDsIC2+pXtZKbMIS4TjArH15Qa1G6NeiGQazFjvXbsJYXYqMbblk8g==}
+
   '@osdk/docs-spec-sdk@0.1.0':
     resolution: {integrity: sha512-xGW/bBjlQvyg4YdRaEC+GdaKoh6qoWmyp7uLEfH2h4XCWDKpDGaQD5dLgkGjNqao1jk2mTZb6YrTjkz0CB+9JA==}
 
-  '@osdk/docs-spec-sdk@0.14.0':
-    resolution: {integrity: sha512-loiVIfa/UkUL5GO1zFgDiK3Z5htXYwPShXxG8rJzUwAnVtrp/WbMlru8OGSbP/W1oe9pOxlkGhuw5PyTXpMyfA==}
+  '@osdk/docs-spec-sdk@0.16.0':
+    resolution: {integrity: sha512-2hCEQK0xpDkM6jYHT/U/YQ1fzBBm0X3buyIEeF+ZZGr4OUjVyeDBfmml5615egq4jZguKrw8w5mTpRW9RT7Xag==}
 
   '@osdk/foundry.admin@2.43.0':
     resolution: {integrity: sha512-4HWw24Gdd25s4UdXJ8YW7nFAwV0l/3cfcUttLnGlvG8IDIIBfr/k1+dl9hpK5Fx0TLWp81yGormjPZihJIurdA==}
@@ -21752,13 +21764,15 @@ snapshots:
 
   '@osdk/docs-spec-core@0.5.0': {}
 
+  '@osdk/docs-spec-core@0.6.0': {}
+
   '@osdk/docs-spec-sdk@0.1.0':
     dependencies:
       '@osdk/docs-spec-core': 0.5.0
 
-  '@osdk/docs-spec-sdk@0.14.0':
+  '@osdk/docs-spec-sdk@0.16.0':
     dependencies:
-      '@osdk/docs-spec-core': 0.5.0
+      '@osdk/docs-spec-core': 0.6.0
 
   '@osdk/foundry.admin@2.43.0':
     dependencies:
