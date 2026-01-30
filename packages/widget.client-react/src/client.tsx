@@ -15,7 +15,7 @@
  */
 
 import type { Client, ObjectSet } from "@osdk/client";
-import type { ObjectType } from "@osdk/widget.api";
+import type { AllowedObjectSetType } from "@osdk/widget.api";
 import {
   type AsyncValue,
   createFoundryWidgetClient,
@@ -39,7 +39,10 @@ import { transformEmitEventPayload } from "./utils/transformEmitEventPayload.js"
 type ExtractObjectTypes<C extends WidgetConfig<C["parameters"]>> =
   C["parameters"][keyof C["parameters"]] extends infer Param
     ? Param extends { type: "objectSet"; objectType: infer OT }
-      ? OT extends ObjectType ? OT
+      ? OT extends AllowedObjectSetType ? OT
+      : never
+    : Param extends { type: "objectSet"; allowedType: infer OT }
+      ? OT extends AllowedObjectSetType ? OT
       : never
     : never
     : never;
