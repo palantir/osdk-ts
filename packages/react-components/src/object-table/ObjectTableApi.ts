@@ -144,8 +144,19 @@ export interface ObjectTableProps<
   orderable?: boolean;
 
   /**
+   * The default order by clause to sort the objects in the table.
+   * If provided without orderBy prop, the sorting is uncontrolled.
+   * If both orderBy and defaultOrderBy are provided, orderBy takes precedence.
+   */
+  defaultOrderBy?: Array<{
+    property: PropertyKeys<Q>;
+    direction: "asc" | "desc";
+  }>;
+
+  /**
    * The current order by clause to sort the objects in the table.
    * If provided, the sorting is controlled.
+   * If both orderBy and defaultOrderBy are provided, orderBy takes precedence.
    */
   orderBy?: Array<{
     property: PropertyKeys<Q>;

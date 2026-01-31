@@ -1,5 +1,18 @@
 # @osdk/shared.test
 
+## 0.5.0-beta.4
+
+### Minor Changes
+
+- ab1957f: Added FauxAdmin support
+- 862910e: Adds support for wider variety of query filters
+
+### Patch Changes
+
+- Updated dependencies [fb83808]
+  - @osdk/api@2.7.0-beta.13
+  - @osdk/generator-converters@2.7.0-beta.13
+
 ## 0.5.0-beta.3
 
 ### Minor Changes

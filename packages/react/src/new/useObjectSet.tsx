@@ -273,7 +273,7 @@ export function useObjectSet<
     error: payload && "error" in payload
       ? payload.error
       : undefined,
-    fetchMore: payload?.fetchMore,
+    fetchMore: payload?.hasMore ? payload.fetchMore : undefined,
     objectSet: payload?.objectSet as ObjectSet<Q, RDPs> || baseObjectSet,
   };
 }

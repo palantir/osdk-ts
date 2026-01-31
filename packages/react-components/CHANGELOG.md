@@ -1,5 +1,18 @@
 # @osdk/react-components
 
+## 0.1.0-beta.4
+
+### Minor Changes
+
+- 476604f: Apply table styling
+
+### Patch Changes
+
+- Updated dependencies [fb83808]
+  - @osdk/client@2.7.0-beta.13
+  - @osdk/api@2.7.0-beta.13
+  - @osdk/react@0.9.0-beta.8
+
 ## 0.1.0-beta.3
 
 ### Minor Changes

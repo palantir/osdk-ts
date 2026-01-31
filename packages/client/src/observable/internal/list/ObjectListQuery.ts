@@ -49,7 +49,7 @@ export class ObjectListQuery extends ListQuery {
       // Use the source type kind from pivot info (can be "object" or "interface")
       // Cast to ObjectSet because runtime supports pivotTo for both types
       // but the type system only exposes it on ObjectSet<ObjectTypeDefinition>
-      const sourceSet = (pivotInfo.sourceTypeKind === "interface"
+      let sourceSet = (pivotInfo.sourceTypeKind === "interface"
         ? store.client({
           type: "interface",
           apiName: pivotInfo.sourceType,
@@ -59,16 +59,15 @@ export class ObjectListQuery extends ListQuery {
           apiName: pivotInfo.sourceType,
         } as ObjectTypeDefinition)) as ObjectSet<ObjectTypeDefinition>;
 
+      // Filter source objects before pivoting to linked objects
+      sourceSet = sourceSet.where(this.canonicalWhere);
       let objectSet = sourceSet.pivotTo(pivotInfo.linkName);
 
-      // RDPs must be applied before where clauses
       if (rdpConfig != null) {
         objectSet = objectSet.withProperties(
           rdpConfig as DerivedProperty.Clause<ObjectTypeDefinition>,
         );
       }
-
-      objectSet = objectSet.where(this.canonicalWhere);
 
       if (intersectWith != null && intersectWith.length > 0) {
         const intersectSets = intersectWith.map(whereClause => {

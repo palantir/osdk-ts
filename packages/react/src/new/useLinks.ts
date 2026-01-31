@@ -185,7 +185,7 @@ export function useLinks<
       : false,
     isOptimistic: payload?.isOptimistic ?? false,
     error: payload?.error,
-    fetchMore: payload?.fetchMore,
+    fetchMore: payload?.hasMore ? payload?.fetchMore : undefined,
     hasMore: payload?.hasMore ?? false,
   };
 }
