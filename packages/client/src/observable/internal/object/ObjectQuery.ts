@@ -19,6 +19,7 @@ import type { Connectable, Observable, Subject } from "rxjs";
 import { BehaviorSubject, connectable, map } from "rxjs";
 import { additionalContext } from "../../../Client.js";
 import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
+import type { DefType } from "../../../util/interfaceUtils.js";
 import type { ObjectPayload } from "../../ObjectPayload.js";
 import type {
   CommonObserveOptions,
@@ -41,6 +42,7 @@ export class ObjectQuery extends Query<
 > {
   #apiName: string;
   #pk: string | number | boolean;
+  #defType: DefType;
 
   constructor(
     store: Store,
@@ -49,6 +51,7 @@ export class ObjectQuery extends Query<
     pk: PrimaryKeyType<ObjectTypeDefinition>,
     cacheKey: ObjectCacheKey,
     opts: CommonObserveOptions,
+    defType: DefType = "object",
   ) {
     super(
       store,
@@ -67,6 +70,7 @@ export class ObjectQuery extends Query<
     );
     this.#apiName = type;
     this.#pk = pk;
+    this.#defType = defType;
   }
 
   protected _createConnectable(
@@ -107,7 +111,7 @@ export class ObjectQuery extends Query<
     // tests separate from subscription notification tests.
 
     const obj = await getBulkObjectLoader(this.store.client)
-      .fetch(this.#apiName, this.#pk);
+      .fetch(this.#apiName, this.#pk, this.#defType);
 
     this.store.batch({}, (batch) => {
       this.writeToStore(obj, "loaded", batch);

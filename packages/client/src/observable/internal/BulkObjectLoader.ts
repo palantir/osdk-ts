@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import type { Logger, ObjectSet, ObjectTypeDefinition, Osdk } from "@osdk/api";
+import type {
+  InterfaceDefinition,
+  Logger,
+  ObjectSet,
+  ObjectTypeDefinition,
+  Osdk,
+} from "@osdk/api";
 import { PalantirApiError } from "@osdk/shared.net.errors";
 import { DefaultMap, DefaultWeakMap } from "mnemonist";
 import groupBy from "object.groupby";
@@ -29,6 +35,7 @@ import {
 import type {
   ObjectHolder,
 } from "../../object/convertWireToOsdkObjects/ObjectHolder.js";
+import type { DefType } from "../../util/interfaceUtils.js";
 import type { SimpleWhereClause } from "./SimpleWhereClause.js";
 
 interface InternalValue {
@@ -39,6 +46,7 @@ interface InternalValue {
 interface Accumulator {
   data: InternalValue[];
   timer?: ReturnType<typeof setTimeout>;
+  defType?: DefType;
 }
 
 const weakCache = new DefaultWeakMap<Client, BulkObjectLoader>(c =>
@@ -70,6 +78,7 @@ export class BulkObjectLoader {
   public async fetch(
     apiName: string,
     primaryKey: string | number | boolean,
+    defType: DefType = "object",
   ): Promise<ObjectHolder> {
     const deferred = pDefer<ObjectHolder>();
 
@@ -79,26 +88,37 @@ export class BulkObjectLoader {
       deferred,
     });
 
+    if (entry.defType === undefined) {
+      entry.defType = defType;
+    }
+
     if (!entry.timer) {
       entry.timer = setTimeout(() => {
-        this.#loadObjects(apiName, entry.data);
+        this.#loadObjects(apiName, entry.data, entry.defType ?? "object");
       }, this.#maxWait);
     }
 
     if (entry.data.length >= this.#maxEntries) {
       clearTimeout(entry.timer);
-      this.#loadObjects(apiName, entry.data);
+      this.#loadObjects(apiName, entry.data, entry.defType ?? "object");
     }
 
     return await deferred.promise;
   }
 
-  #loadObjects(apiName: string, arr: InternalValue[]) {
+  #loadObjects(
+    apiName: string,
+    arr: InternalValue[],
+    defType: DefType,
+  ) {
     this.#m.delete(apiName);
 
-    this.#reallyLoadObjects(apiName, arr).catch((e: unknown) => {
+    const loadFn = defType === "interface"
+      ? this.#loadInterfaceObjects(apiName, arr)
+      : this.#loadObjectTypeObjects(apiName, arr);
+
+    loadFn.catch((e: unknown) => {
       this.#logger?.error("Unhandled exception", e);
-      // Reject all pending deferred if there's an unhandled error
       for (const { primaryKey, deferred } of arr) {
         const errorMessage = e instanceof Error ? e.message : String(e);
         deferred.reject(
@@ -110,22 +130,9 @@ export class BulkObjectLoader {
     });
   }
 
-  async #reallyLoadObjects(apiName: string, arr: InternalValue[]) {
+  async #loadObjectTypeObjects(apiName: string, arr: InternalValue[]) {
     const objectDef = { type: "object", apiName } as ObjectTypeDefinition;
-
-    // Try to get object metadata - if this fails with 404 (not found),
-    // then try as interface. Do NOT catch network/auth errors.
-    let objMetadata;
-    try {
-      objMetadata = await this.#client.fetchMetadata(objectDef);
-    } catch (e) {
-      // Only fall through to interface loading for 404 (type not found)
-      if (e instanceof PalantirApiError && e.statusCode === 404) {
-        return this.#loadInterfaceObjects(apiName, arr);
-      }
-      // Re-throw other errors (network, auth, etc.) to be handled by caller
-      throw e;
-    }
+    const objMetadata = await this.#client.fetchMetadata(objectDef);
 
     const pks = arr.map(x => x.primaryKey);
 
@@ -158,10 +165,11 @@ export class BulkObjectLoader {
     const pks = arr.map(x => x.primaryKey);
 
     try {
-      // Query interface - cast to satisfy client callable signature
-      // This follows the same pattern as InterfaceListQuery.createObjectSet
-      const type: string = "interface" as const;
-      const interfaceDef = { type, apiName } as ObjectTypeDefinition;
+      // Query interface
+      const interfaceDef = {
+        type: "interface",
+        apiName,
+      } as InterfaceDefinition;
 
       const { data } = await this.#client(interfaceDef)
         .where(

@@ -93,7 +93,7 @@ describe("useOsdkObject enabled option", () => {
     );
   });
 
-  it("should NOT use offline mode for type signature", () => {
+  it("should NOT use offline mode for type signature and pass full definition", () => {
     const wrapper = createWrapper();
 
     renderHook(
@@ -102,7 +102,7 @@ describe("useOsdkObject enabled option", () => {
     );
 
     expect(mockObserveObject).toHaveBeenCalledWith(
-      "MockObject",
+      MockObjectType,
       "pk-222",
       { mode: undefined },
       expect.any(Object),

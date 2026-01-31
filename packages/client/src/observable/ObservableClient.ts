@@ -21,7 +21,6 @@ import type {
   AggregateOpts,
   AggregationsResults,
   DerivedProperty,
-  InterfaceDefinition,
   ObjectOrInterfaceDefinition,
   ObjectSet,
   ObjectTypeDefinition,
@@ -58,14 +57,14 @@ export namespace ObservableClient {
 }
 
 export interface ObserveObjectOptions<
-  T extends ObjectTypeDefinition | InterfaceDefinition,
+  T extends ObjectOrInterfaceDefinition,
 > extends ObserveOptions {
   apiName: T["apiName"] | T;
   pk: PrimaryKeyType<T>;
   select?: PropertyKeys<T>[];
 }
 
-export type OrderBy<Q extends ObjectTypeDefinition | InterfaceDefinition> = {
+export type OrderBy<Q extends ObjectOrInterfaceDefinition> = {
   [K in PropertyKeys<Q>]?: "asc" | "desc" | undefined;
 };
 
@@ -105,7 +104,7 @@ export interface ObserveListOptions<
 }
 
 export interface ObserveObjectCallbackArgs<
-  T extends ObjectTypeDefinition | InterfaceDefinition,
+  T extends ObjectOrInterfaceDefinition,
 > {
   object: Osdk.Instance<T> | undefined;
   isOptimistic: boolean;
@@ -114,7 +113,7 @@ export interface ObserveObjectCallbackArgs<
 }
 
 export interface ObserveObjectsCallbackArgs<
-  T extends ObjectTypeDefinition | InterfaceDefinition,
+  T extends ObjectOrInterfaceDefinition,
   RDPs extends Record<
     string,
     WirePropertyTypes | undefined | Array<WirePropertyTypes>
@@ -131,7 +130,7 @@ export interface ObserveObjectsCallbackArgs<
 }
 
 export interface ObserveObjectSetArgs<
-  T extends ObjectTypeDefinition | InterfaceDefinition,
+  T extends ObjectOrInterfaceDefinition,
   RDPs extends Record<
     string,
     WirePropertyTypes | undefined | Array<WirePropertyTypes>
@@ -176,7 +175,7 @@ export interface ObserveAggregationArgs<
  * User facing callback args for `observeLink`
  */
 export interface ObserveLinkCallbackArgs<
-  T extends ObjectTypeDefinition | InterfaceDefinition,
+  T extends ObjectOrInterfaceDefinition,
 > {
   resolvedList: Osdk.Instance<T>[];
   isOptimistic: boolean;
@@ -212,7 +211,7 @@ export interface ObservableClient extends ObserveLinks {
    * - Updates when the object changes
    * - Error state if fetch fails
    */
-  observeObject<T extends ObjectTypeDefinition | InterfaceDefinition>(
+  observeObject<T extends ObjectOrInterfaceDefinition>(
     apiName: T["apiName"] | T,
     pk: PrimaryKeyType<T>,
     options: ObserveOptions,
@@ -233,7 +232,7 @@ export interface ObservableClient extends ObserveLinks {
    * - Automatic updates when any matching object changes
    */
   observeList<
-    T extends ObjectTypeDefinition | InterfaceDefinition,
+    T extends ObjectOrInterfaceDefinition,
     RDPs extends Record<string, SimplePropertyDef> = {},
   >(
     options: ObserveListOptions<T, RDPs>,
@@ -360,7 +359,7 @@ export interface ObservableClient extends ObserveLinks {
   ): Promise<void>;
 
   canonicalizeWhereClause: <
-    T extends ObjectTypeDefinition | InterfaceDefinition,
+    T extends ObjectOrInterfaceDefinition,
     RDPs extends Record<string, SimplePropertyDef> = {},
   >(
     where: WhereClause<T, RDPs>,

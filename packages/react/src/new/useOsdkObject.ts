@@ -86,37 +86,45 @@ export function useOsdkObject<
     ? (typeof args[1] === "boolean" ? args[1] : true)
     : (typeof args[2] === "boolean" ? args[2] : true);
 
-  // TODO: Figure out what the correct default behavior is for the various scenarios
   const mode = isInstanceSignature ? "offline" : undefined;
-  const objectType = isInstanceSignature
+
+  // For type signature, pass full definition to preserve type info (object vs interface)
+  // For instance signature, use $objectType string (always the concrete object type)
+  const typeOrApiName = isInstanceSignature
     ? (args[0] as Osdk.Instance<Q>).$objectType
-    : (args[0] as Q).apiName;
+    : (args[0] as Q);
+
   const primaryKey = isInstanceSignature
     ? (args[0] as Osdk.Instance<Q>).$primaryKey
     : (args[1] as PrimaryKeyType<Q>);
+
+  // Extract apiName string for display/memoization
+  const apiNameString = typeof typeOrApiName === "string"
+    ? typeOrApiName
+    : typeOrApiName.apiName;
 
   const { subscribe, getSnapShot } = React.useMemo(
     () => {
       if (!enabled) {
         return makeExternalStore<ObserveObjectCallbackArgs<Q>>(
           () => ({ unsubscribe: () => {} }),
-          `object ${objectType} ${primaryKey} [DISABLED]`,
+          `object ${apiNameString} ${primaryKey} [DISABLED]`,
         );
       }
       return makeExternalStore<ObserveObjectCallbackArgs<Q>>(
         (observer) =>
           observableClient.observeObject(
-            objectType,
+            typeOrApiName,
             primaryKey,
             {
               mode,
             },
             observer,
           ),
-        `object ${objectType} ${primaryKey}`,
+        `object ${apiNameString} ${primaryKey}`,
       );
     },
-    [enabled, observableClient, objectType, primaryKey, mode],
+    [enabled, observableClient, typeOrApiName, apiNameString, primaryKey, mode],
   );
 
   const payload = React.useSyncExternalStore(subscribe, getSnapShot);

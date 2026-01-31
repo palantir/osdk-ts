@@ -20,7 +20,6 @@ import type {
   ObjectTypeDefinition,
   WhereClause,
 } from "@osdk/api";
-import { PalantirApiError } from "@osdk/shared.net.errors";
 import type { Mock } from "vitest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { Client } from "../../Client.js";
@@ -240,13 +239,9 @@ describe(BulkObjectLoader, () => {
       return os;
     };
 
-    it("falls back to interface loading on 404 and reloads as full objects", async () => {
+    it("loads interface objects when defType='interface' and reloads as full objects", async () => {
       const loader = new BulkObjectLoader(client, 25, 100);
       vi.useFakeTimers();
-
-      vi.mocked(client.fetchMetadata).mockRejectedValue(
-        new PalantirApiError("Not found", undefined, undefined, undefined, 404),
-      );
 
       const interfaceObj = {
         $apiName: "FooInterface",
@@ -268,7 +263,7 @@ describe(BulkObjectLoader, () => {
       client.mockReturnValueOnce(mockObjectSet([interfaceObj]));
       client.mockReturnValueOnce(mockObjectSet([fullObj]));
 
-      const loadPromise = loader.fetch("FooInterface", 1);
+      const loadPromise = loader.fetch("FooInterface", 1, "interface");
       vi.advanceTimersByTime(26);
 
       await expect(loadPromise).resolves.toMatchObject({ $primaryKey: 1 });
@@ -279,13 +274,9 @@ describe(BulkObjectLoader, () => {
       const loader = new BulkObjectLoader(client, 25, 100);
       vi.useFakeTimers();
 
-      vi.mocked(client.fetchMetadata).mockRejectedValue(
-        new PalantirApiError("Not found", undefined, undefined, undefined, 404),
-      );
-
       client.mockReturnValueOnce(mockObjectSet([]));
 
-      const loadPromise = loader.fetch("FooInterface", 1);
+      const loadPromise = loader.fetch("FooInterface", 1, "interface");
       vi.advanceTimersByTime(26);
 
       await expect(loadPromise).rejects.toThrow(
@@ -294,26 +285,22 @@ describe(BulkObjectLoader, () => {
       vi.useRealTimers();
     });
 
-    it("does not fall back to interface loading for non-404 errors", async () => {
+    it("loads object type when defType='object' (default)", async () => {
       const loader = new BulkObjectLoader(client, 25, 100);
       vi.useFakeTimers();
 
-      vi.mocked(client.fetchMetadata).mockRejectedValue(
-        new PalantirApiError(
-          "Server error",
-          undefined,
-          undefined,
-          undefined,
-          500,
-        ),
-      );
+      const firstRequest = mockClient.mockFetchPageOnce();
 
       const loadPromise = loader.fetch("Employee", 1);
       vi.advanceTimersByTime(26);
 
-      await expect(loadPromise).rejects.toThrow(
-        "Failed to load Employee with pk 1: Server error",
-      );
+      firstRequest.resolve({
+        data: [employees[1]],
+        nextPageToken: undefined,
+        totalCount: "1",
+      });
+
+      await expect(loadPromise).resolves.toMatchObject({ $primaryKey: 1 });
       vi.useRealTimers();
     });
   });
