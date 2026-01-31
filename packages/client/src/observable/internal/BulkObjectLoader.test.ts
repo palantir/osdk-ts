@@ -23,6 +23,10 @@ import type {
 import type { Mock } from "vitest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { Client } from "../../Client.js";
+import {
+  ObjectDefRef,
+  UnderlyingOsdkObject,
+} from "../../object/convertWireToOsdkObjects/InternalSymbols.js";
 import { BulkObjectLoader } from "./BulkObjectLoader.js";
 import { createClientMockHelper, type MockClientHelper } from "./testUtils.js";
 
@@ -221,5 +225,83 @@ describe(BulkObjectLoader, () => {
     });
 
     vi.useRealTimers();
+  });
+
+  describe("interface loading", () => {
+    const mockObjectSet = (data: unknown[]) => {
+      const os: ObjectSet<ObjectTypeDefinition> = {
+        where: () => os,
+        fetchPage: vi.fn().mockResolvedValue({ data }),
+      } as Pick<
+        ObjectSet<ObjectTypeDefinition>,
+        "fetchPage" | "where"
+      > as ObjectSet<ObjectTypeDefinition>;
+      return os;
+    };
+
+    it("loads interface objects when defType='interface' and reloads as full objects", async () => {
+      const loader = new BulkObjectLoader(client, 25, 100);
+      vi.useFakeTimers();
+
+      const interfaceObj = {
+        $apiName: "FooInterface",
+        $objectType: "Employee",
+        $primaryKey: 1,
+        [UnderlyingOsdkObject]: {
+          [ObjectDefRef]: {
+            apiName: "Employee",
+            primaryKeyApiName: "employeeId",
+          },
+        },
+      };
+      const fullObj = {
+        $apiName: "Employee",
+        $objectType: "Employee",
+        $primaryKey: 1,
+      };
+
+      client.mockReturnValueOnce(mockObjectSet([interfaceObj]));
+      client.mockReturnValueOnce(mockObjectSet([fullObj]));
+
+      const loadPromise = loader.fetch("FooInterface", 1, "interface");
+      vi.advanceTimersByTime(26);
+
+      await expect(loadPromise).resolves.toMatchObject({ $primaryKey: 1 });
+      vi.useRealTimers();
+    });
+
+    it("rejects when interface object is not found", async () => {
+      const loader = new BulkObjectLoader(client, 25, 100);
+      vi.useFakeTimers();
+
+      client.mockReturnValueOnce(mockObjectSet([]));
+
+      const loadPromise = loader.fetch("FooInterface", 1, "interface");
+      vi.advanceTimersByTime(26);
+
+      await expect(loadPromise).rejects.toThrow(
+        "Interface FooInterface object not found: 1",
+      );
+      vi.useRealTimers();
+    });
+
+    it("loads object type when defType='object' (default)", async () => {
+      const loader = new BulkObjectLoader(client, 25, 100);
+      vi.useFakeTimers();
+
+      const firstRequest = mockClient.mockFetchPageOnce();
+
+      const loadPromise = loader.fetch("Employee", 1);
+      vi.advanceTimersByTime(26);
+
+      firstRequest.resolve({
+        data: [employees[1]],
+        nextPageToken: undefined,
+        totalCount: "1",
+      });
+
+      await expect(loadPromise).resolves.toMatchObject({ $primaryKey: 1 });
+      vi.useRealTimers();
+    });
   });
 });

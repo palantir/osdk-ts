@@ -14,7 +14,22 @@
  * limitations under the License.
  */
 
-import type { ActionParam, PrimaryKeyTypes, QueryParam } from "@osdk/api";
+import type {
+  ActionParam,
+  ObjectOrInterfaceDefinition,
+  PrimaryKeyTypes,
+  QueryParam,
+} from "@osdk/api";
+
+/** Type representing whether a definition is an object or interface */
+export type DefType = "object" | "interface";
+
+/** @internal */
+export function getDefType(
+  apiNameOrDef: string | ObjectOrInterfaceDefinition,
+): DefType {
+  return typeof apiNameOrDef === "string" ? "object" : apiNameOrDef.type;
+}
 
 /** @internal */
 export function isInterfaceActionParam(
