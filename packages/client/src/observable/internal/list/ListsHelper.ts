@@ -97,7 +97,7 @@ export class ListsHelper extends AbstractHelper<
       : undefined;
 
     const canonPivot = pivotTo
-      ? this.pivotCanonicalizer.canonicalize(apiName, pivotTo)
+      ? this.pivotCanonicalizer.canonicalize(apiName, type, pivotTo)
       : undefined;
 
     const listCacheKey = this.cacheKeys.get<ListCacheKey>(
