@@ -21,6 +21,7 @@ export type { BaseAPIError } from "./BaseError.js";
 export * as Errors from "./errors.js";
 export type { BaseServerObject } from "./FauxFoundry/BaseServerObject.js";
 export type { FauxActionImpl } from "./FauxFoundry/FauxActionImpl.js";
+export { FauxAdmin } from "./FauxFoundry/FauxAdmin.js";
 export { FauxDataStore } from "./FauxFoundry/FauxDataStore.js";
 export type { FauxDataStoreBatch } from "./FauxFoundry/FauxDataStoreBatch.js";
 export { FauxFoundry } from "./FauxFoundry/FauxFoundry.js";

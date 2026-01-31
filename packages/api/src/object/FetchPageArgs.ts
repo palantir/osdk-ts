@@ -76,9 +76,11 @@ export interface SelectArg<
   R extends boolean = false,
   S extends NullabilityAdherence = NullabilityAdherence.Default,
   RDP_KEYS extends string = never,
+  PROPERTY_SECURITIES extends boolean = false,
 > {
   $select?: readonly L[];
   $includeRid?: R;
+  $loadPropertySecurityMetadata?: PROPERTY_SECURITIES;
 }
 
 export interface OrderByArg<
@@ -104,7 +106,20 @@ export interface FetchPageArgs<
   T extends boolean = false,
   RDP_KEYS extends string = never,
   ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<K> = {},
-> extends AsyncIterArgs<Q, K, R, A, S, T, RDP_KEYS, ORDER_BY_OPTIONS> {
+  PROPERTY_SECURITIES extends boolean = false,
+> extends
+  AsyncIterArgs<
+    Q,
+    K,
+    R,
+    A,
+    S,
+    T,
+    RDP_KEYS,
+    ORDER_BY_OPTIONS,
+    PROPERTY_SECURITIES
+  >
+{
   $nextPageToken?: string;
   $pageSize?: number;
 }
@@ -118,8 +133,9 @@ export interface AsyncIterArgs<
   T extends boolean = false,
   RDP_KEYS extends string = never,
   ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<K> = never,
+  PROPERTY_SECURITIES extends boolean = false,
 > extends
-  SelectArg<Q, K, R, S, RDP_KEYS>,
+  SelectArg<Q, K, R, S, RDP_KEYS, PROPERTY_SECURITIES>,
   OrderByArg<Q, PropertyKeys<Q> | RDP_KEYS, ORDER_BY_OPTIONS>
 {
   $__UNSTABLE_useOldInterfaceApis?: boolean;

@@ -14,21 +14,36 @@
  * limitations under the License.
  */
 
-import type { RowData, Table } from "@tanstack/react-table";
+import type { Cell, RowData, Table } from "@tanstack/react-table";
+import classNames from "classnames";
 import React, { type ReactElement, useCallback, useRef } from "react";
+import styles from "./Table.module.css";
 import { TableBody } from "./TableBody.js";
 import { TableHeader } from "./TableHeader.js";
 
-interface TableProps<TData extends RowData> {
+export interface BaseTableProps<TData extends RowData> {
   table: Table<TData>;
   isLoading?: boolean;
   fetchNextPage?: () => Promise<void>;
   onRowClick?: (row: TData) => void;
   rowHeight?: number;
+  renderCellContextMenu?: (
+    row: TData,
+    cell: Cell<TData, unknown>,
+  ) => React.ReactNode;
+  className?: string;
 }
 
-export function Table<TData extends RowData>(
-  { table, isLoading, fetchNextPage, onRowClick, rowHeight }: TableProps<TData>,
+export function BaseTable<TData extends RowData>(
+  {
+    table,
+    isLoading,
+    fetchNextPage,
+    onRowClick,
+    rowHeight,
+    renderCellContextMenu,
+    className,
+  }: BaseTableProps<TData>,
 ): ReactElement {
   const tableContainerRef = useRef<HTMLDivElement>(null);
 
@@ -67,22 +82,17 @@ export function Table<TData extends RowData>(
   return (
     <div
       ref={tableContainerRef}
-      style={{
-        position: "relative", // needed for sticky header
-        height: "100%", // needed for scrolling
-        overflow: "auto",
-      }}
+      className={classNames(styles.osdkTableContainer, className)}
       onScroll={handleScroll}
     >
-      <table
-        style={{ display: "grid" }}
-      >
-        <TableHeader headerGroups={table.getHeaderGroups()} />
+      <table>
+        <TableHeader table={table} />
         <TableBody
           rows={table.getRowModel().rows}
           tableContainerRef={tableContainerRef}
           onRowClick={onRowClick}
           rowHeight={rowHeight}
+          renderCellContextMenu={renderCellContextMenu}
         />
       </table>
     </div>

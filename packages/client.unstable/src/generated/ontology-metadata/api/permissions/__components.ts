@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -769,14 +769,7 @@ export interface TypeGroupPermissionModel_roles {
   type: "roles";
   roles: RolesPermissionModel;
 }
-
-export interface TypeGroupPermissionModel_publicProject {
-  type: "publicProject";
-  publicProject: PublicProjectPermissionModel;
-}
-export type TypeGroupPermissionModel =
-  | TypeGroupPermissionModel_roles
-  | TypeGroupPermissionModel_publicProject;
+export type TypeGroupPermissionModel = TypeGroupPermissionModel_roles;
 
 /**
  * Adds or removes the requested entities to/from a package. Removing means moving the resources to the default

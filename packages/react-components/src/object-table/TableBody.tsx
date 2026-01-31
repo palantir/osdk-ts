@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import type { Row, RowData } from "@tanstack/react-table";
+import type { Cell, Row, RowData } from "@tanstack/react-table";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import React, { useLayoutEffect } from "react";
+import styles from "./TableBody.module.css";
 import { TableRow } from "./TableRow.js";
 
 interface TableBodyProps<TData extends RowData> {
@@ -24,12 +25,17 @@ interface TableBodyProps<TData extends RowData> {
   tableContainerRef: React.RefObject<HTMLDivElement>;
   onRowClick?: (row: TData) => void;
   rowHeight?: number;
+  renderCellContextMenu?: (
+    row: TData,
+    cell: Cell<TData, unknown>,
+  ) => React.ReactNode;
 }
 
 export function TableBody<TData extends RowData>({
   rows,
   tableContainerRef,
   onRowClick,
+  renderCellContextMenu,
   rowHeight = 40,
 }: TableBodyProps<TData>): React.ReactElement {
   // Important: Keep the row virtualizer in the lowest component possible to avoid unnecessary re-renders.
@@ -47,9 +53,8 @@ export function TableBody<TData extends RowData>({
 
   return (
     <tbody
+      className={styles.osdkTableBody}
       style={{
-        display: "grid",
-        position: "relative",
         height: `${rowVirtualizer.getTotalSize()}px`,
       }}
     >
@@ -62,6 +67,7 @@ export function TableBody<TData extends RowData>({
             row={row}
             virtualRow={virtualRow}
             onRowClick={onRowClick}
+            renderCellContextMenu={renderCellContextMenu}
           />
         );
       })}

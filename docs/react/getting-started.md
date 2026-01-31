@@ -23,12 +23,17 @@ All `@osdk/*` packages must use **compatible versions**. Mismatched versions (e.
 ```json
 {
   "dependencies": {
-    "@osdk/client": "^2.6.0-beta.11",
-    "@osdk/oauth": "^1.3.0-beta.1",
-    "@osdk/react": "^0.8.0-beta.4",
-    "@osdk/api": "^2.6.0-beta.11"
+    "@osdk/api": "^2.7.0-beta.8",
+    "@osdk/client": "^2.7.0-beta.8",
+    "@osdk/react": "^0.9.0-beta.5"
   }
 }
+```
+
+Or install via command line:
+
+```bash
+npm install @osdk/api @osdk/client @osdk/react
 ```
 
 Check for newer versions on npm:
@@ -124,6 +129,7 @@ Experimental exports:
 - `useLinks` - Navigate object relationships
 - `useObjectSet` - Advanced queries with set operations
 - `useOsdkAggregation` - Server-side aggregations
+- `useOsdkFunction` - Execute and observe OSDK functions
 - `useDebouncedCallback` - Debounce callbacks
 - `useOsdkClient` - Access the OSDK client
 - `useOsdkMetadata` - Fetch type metadata (also available from stable)
@@ -216,9 +222,9 @@ This error occurs when your `@osdk/client` version is incompatible with `@osdk/r
 ```json
 {
   "dependencies": {
-    "@osdk/client": "^2.6.0-beta.11",
-    "@osdk/react": "^0.8.0-beta.4",
-    "@osdk/api": "^2.6.0-beta.11"
+    "@osdk/api": "^2.7.0-beta.8",
+    "@osdk/client": "^2.7.0-beta.8",
+    "@osdk/react": "^0.9.0-beta.5"
   }
 }
 ```
@@ -319,9 +325,51 @@ If NPM has trouble resolving peer dependencies with beta packages, add to packag
 {
   "overrides": {
     "@osdk/client": "$@osdk/client",
-    "@osdk/oauth": "$@osdk/oauth",
     "@osdk/react": "$@osdk/react"
   }
+}
+```
+
+## FAQ
+
+### When should I use `@osdk/react` vs React Query?
+
+**Use `@osdk/react`** when your application primarily works with OSDK data:
+
+- Querying Foundry objects and ontology data
+- Executing actions on Foundry objects
+- Taking advantage of automatic cache management for OSDK objects
+- Real-time updates via WebSocket subscriptions
+
+**Use React Query** when you need to make requests to third-party APIs or non-OSDK endpoints:
+
+- External REST APIs
+- GraphQL services not backed by Foundry
+- Custom backend services
+
+**You can use both together.** `@osdk/react` hooks work independently from React Query. For applications that mix OSDK data with external services, use `@osdk/react` for Foundry operations and React Query for external APIs.
+
+```tsx
+import { Todo } from "@my/osdk";
+import { useOsdkObjects } from "@osdk/react/experimental";
+import { useQuery } from "@tanstack/react-query";
+
+function Dashboard() {
+  // Use @osdk/react for Foundry data
+  const { data: todos } = useOsdkObjects(Todo);
+
+  // Use React Query for external APIs
+  const { data: weatherData } = useQuery({
+    queryKey: ["weather"],
+    queryFn: () => fetch("https://api.weather.com/current").then(r => r.json()),
+  });
+
+  return (
+    <div>
+      <TodoList todos={todos} />
+      <WeatherWidget data={weatherData} />
+    </div>
+  );
 }
 ```
 

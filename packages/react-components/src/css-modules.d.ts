@@ -14,17 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  DerivedProperty,
-  InterfaceDefinition,
-  ObjectTypeDefinition,
-} from "@osdk/api";
-
-export type InferRdpTypes<
-  Q extends ObjectTypeDefinition | InterfaceDefinition,
-  WP extends DerivedProperty.Clause<Q> | undefined,
-> = WP extends DerivedProperty.Clause<Q> ? {
-    [K in keyof WP]: WP[K] extends DerivedProperty.Creator<Q, infer T> ? T
-      : never;
-  }
-  : {};
+declare module "*.module.css" {
+  const classes: { readonly [key: string]: string };
+  export default classes;
+}

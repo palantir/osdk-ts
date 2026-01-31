@@ -21,13 +21,19 @@ import type {
   QueryDefinition,
   SimplePropertyDef,
 } from "@osdk/api";
+import type { Cell, ColumnSizingState } from "@tanstack/react-table";
 import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
-import React from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { useColumnDefs } from "./hooks/useColumnDefs.js";
-import { useDefaultTableStates } from "./hooks/useDefaultTableStates.js";
+import { useColumnPinning } from "./hooks/useColumnPinning.js";
+import { useColumnVisibility } from "./hooks/useColumnVisibility.js";
 import { useObjectTableData } from "./hooks/useObjectTableData.js";
+import { useRowSelection } from "./hooks/useRowSelection.js";
+import { useSelectionColumn } from "./hooks/useSelectionColumn.js";
+import { useTableSorting } from "./hooks/useTableSorting.js";
 import type { ObjectTableProps } from "./ObjectTableApi.js";
-import { Table } from "./Table.js";
+import { BaseTable } from "./Table.js";
+import { getRowId } from "./utils/getRowId.js";
 
 /**
  * ObjectTable - A headless table component for displaying OSDK object sets
@@ -52,9 +58,31 @@ export function ObjectTable<
   objectSet,
   objectType,
   columnDefinitions,
-  onRowClick,
-  rowHeight,
+  filter,
+  orderBy,
+  defaultOrderBy,
+  onOrderByChanged,
+  onColumnsPinnedChanged,
+  onRowSelection,
+  renderCellContextMenu,
+  selectionMode = "none",
+  selectedRows,
+  ...props
 }: ObjectTableProps<Q, RDPs, FunctionColumns>): React.ReactElement {
+  const [columnSizing, setColumnSizing] = useState<ColumnSizingState>({});
+
+  const { sorting, onSortingChange } = useTableSorting<
+    Q,
+    RDPs,
+    FunctionColumns
+  >(
+    {
+      orderBy,
+      defaultOrderBy,
+      onOrderByChanged,
+    },
+  );
+
   const { data, fetchMore, isLoading } = useObjectTableData<
     Q,
     RDPs,
@@ -62,6 +90,8 @@ export function ObjectTable<
   >(
     objectSet,
     columnDefinitions,
+    filter,
+    sorting,
   );
 
   const { columns, loading: isColumnsLoading } = useColumnDefs<
@@ -73,28 +103,85 @@ export function ObjectTable<
     columnDefinitions,
   );
 
-  const { columnVisibility } = useDefaultTableStates({ columnDefinitions });
+  const columnVisibility = useColumnVisibility({ columnDefinitions });
+
+  const {
+    rowSelection,
+    isAllSelected,
+    hasSelection,
+    onToggleAll,
+    onToggleRow,
+  } = useRowSelection<Q, RDPs>({
+    selectionMode,
+    selectedRows,
+    onRowSelection,
+    data,
+  });
+
+  const selectionColumn = useSelectionColumn<Q, RDPs>(
+    { selectionMode, isAllSelected, hasSelection, onToggleAll, onToggleRow },
+  );
+
+  const allColumns = useMemo(() => {
+    return selectionColumn ? [selectionColumn, ...columns] : columns;
+  }, [selectionColumn, columns]);
+
+  const { columnPinning, onColumnPinningChange } = useColumnPinning({
+    columnDefinitions,
+    hasSelectionColumn: selectionColumn != null,
+    onColumnsPinnedChanged,
+  });
 
   const table = useReactTable<
     Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
   >({
     data: data ?? [],
-    columns,
+    columns: allColumns,
     getCoreRowModel: getCoreRowModel(),
     state: {
       columnVisibility,
+      rowSelection,
+      sorting,
+      columnSizing,
+      columnPinning,
     },
+    onSortingChange,
+    onColumnSizingChange: setColumnSizing,
+    onColumnPinningChange,
+    enableRowSelection: selectionMode !== "none",
+    columnResizeMode: "onChange",
+    columnResizeDirection: "ltr",
+    manualSorting: true, // Enable manual sorting to indicate server-side sorting
+    defaultColumn: {
+      minSize: 80,
+    },
+    getRowId,
   });
+
+  const onRenderCellContextMenu = useCallback(
+    (
+      row: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
+      cell: Cell<
+        Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
+        unknown
+      >,
+    ) => {
+      return renderCellContextMenu?.(row, cell.getValue());
+    },
+    [renderCellContextMenu],
+  );
 
   const isTableLoading = isLoading || isColumnsLoading;
 
   return (
-    <Table
+    <BaseTable
       table={table}
       isLoading={isTableLoading}
       fetchNextPage={fetchMore}
-      onRowClick={onRowClick}
-      rowHeight={rowHeight}
+      onRowClick={props.onRowClick}
+      rowHeight={props.rowHeight}
+      renderCellContextMenu={onRenderCellContextMenu}
+      className={props.className}
     />
   );
 }

@@ -156,6 +156,26 @@ export async function generatePerActionDataFiles(
         const jsDocBlock = ["/**"];
         if (action.description != null) {
           jsDocBlock.push(`* ${action.description}`);
+
+          // Add note about null values to the action description if there are nullable parameters
+          const hasNullableParams = Object.values(
+            fullActionDef.parameters || {},
+          ).some(param => param.nullable === true);
+          if (hasNullableParams) {
+            jsDocBlock.push(`* `);
+            jsDocBlock.push(
+              `* **Note on null values:** _For optional parameters, explicitly providing a null value instead of undefined`,
+            );
+            jsDocBlock.push(
+              `* can change the behavior of the applied action. If prefills are configured, null prevents them`,
+            );
+            jsDocBlock.push(
+              `* from being applied. If a parameter modifies an object's property, null will clear the data from`,
+            );
+            jsDocBlock.push(
+              `* the object, whereas undefined would not modify that property._`,
+            );
+          }
         }
         // the params must be a `type` to align properly with the `ActionDefinition` interface
         // this way we can generate a strict type for the function itself and reference it from the Action Definition
@@ -172,13 +192,14 @@ export async function generatePerActionDataFiles(
               const key = `${getDescriptionIfPresent(ogValue.description)}
                   readonly "${ogKey}"${ogValue.nullable ? "?" : ""}`;
 
-              const value = ogValue.multiplicity
+              const value = (ogValue.multiplicity
                 ? `ReadonlyArray<${getActionParamType(ogValue.type)}>`
-                : `${getActionParamType(ogValue.type)}`;
+                : `${getActionParamType(ogValue.type)}`)
+                + (ogValue.nullable ? " | null" : "");
               jsDocBlock.push(
                 `* @param {${getActionParamType(ogValue.type)}} ${
                   ogValue.nullable ? `[${ogKey}]` : ogKey
-                } ${ogValue.description ?? ""} `,
+                } ${ogValue.description ?? ""}`,
               );
               return [key, value];
             },
