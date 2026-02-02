@@ -59,6 +59,7 @@
     "semver": "^7.7.2",
     "tsc-absolute": "^1.0.1",
     "tsup": "^8.5.0",
+    "tsx": "^4.20.5",
     "turbo": "^2.5.6",
     "typedoc": "^0.27.9",
     "typedoc-github-theme": "^0.2.1",

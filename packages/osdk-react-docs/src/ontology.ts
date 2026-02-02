@@ -1,0 +1,6643 @@
+import { OntologyFullMetadata } from "@osdk/foundry.ontologies";
+
+export const ontology: OntologyFullMetadata = {
+  "ontology": {
+    "apiName": "default",
+    "rid": "ri.ontology.main.ontology.a35bb7f9-2c57-4199-a1cd-af461d88bd6e",
+    "displayName": "",
+    "description": "",
+  },
+  "actionTypes": {
+    "create-osdk-test-object": {
+      "apiName": "create-osdk-test-object",
+      "displayName": "Create Osdk Test Object",
+      "status": "EXPERIMENTAL",
+      "parameters": {
+        "description": {
+          "dataType": {
+            "type": "string",
+          },
+          "required": true,
+        },
+        "osdk_object_name": {
+          "dataType": {
+            "type": "string",
+          },
+          "required": true,
+        },
+        "string_property": {
+          "dataType": {
+            "type": "string",
+          },
+          "required": true,
+        },
+      },
+      "rid": "ri.actions.main.action-type.75c72b90-815b-48df-a3b3-314af2e9e2eb",
+      "operations": [
+        {
+          "type": "createObject",
+          "objectTypeApiName": "OsdkTestObject",
+        },
+      ],
+    },
+    "create-media-object": {
+      "apiName": "create-media-object",
+      "displayName": "Create media object",
+      "status": "EXPERIMENTAL",
+      "parameters": {
+        "path": {
+          "dataType": {
+            "type": "string",
+          },
+          "required": true,
+        },
+        "media_reference": {
+          "dataType": {
+            "type": "mediaReference",
+          },
+          "required": true,
+        },
+      },
+      "rid": "ri.actions.main.action-type.55c19ac6-47a4-46f6-9bab-b97f9016ff92",
+      "operations": [
+        {
+          "type": "createObject",
+          "objectTypeApiName": "MnayanOsdkMediaObject",
+        },
+      ],
+    },
+    "create-test-geo-action": {
+      "apiName": "create-test-geo-action",
+      "displayName": "Create Test Geo object",
+      "status": "EXPERIMENTAL",
+      "parameters": {
+        "geo_title": {
+          "dataType": {
+            "type": "string",
+          },
+          "required": true,
+        },
+        "geohash_prop": {
+          "dataType": {
+            "type": "geohash",
+          },
+          "required": true,
+        },
+        "geoshape_prop": {
+          "dataType": {
+            "type": "geoshape",
+          },
+          "required": true,
+        },
+      },
+      "rid": "ri.actions.main.action-type.7558117e-5dd4-461c-9c81-760deb512d32",
+      "operations": [
+        {
+          "type": "createObject",
+          "objectTypeApiName": "TestGeoAction",
+        },
+      ],
+    },
+    "create-media-via-function": {
+      "apiName": "create-media-via-function",
+      "displayName": "Create media object via function",
+      "status": "EXPERIMENTAL",
+      "parameters": {
+        "mediaItem": {
+          "dataType": {
+            "type": "mediaReference",
+          },
+          "required": true,
+        },
+      },
+      "rid": "ri.actions.main.action-type.55c19ac6-47a4-46f6-9bab-b97f9016ff92",
+      "operations": [
+        {
+          "type": "createObject",
+          "objectTypeApiName": "MnayanOsdkMediaObject",
+        },
+      ],
+    },
+    "delete-osdk-test-object": {
+      "apiName": "delete-osdk-test-object",
+      "displayName": "Delete Osdk Test Object",
+      "status": "EXPERIMENTAL",
+      "parameters": {
+        "OsdkTestObject": {
+          "dataType": {
+            "type": "object",
+            "objectApiName": "OsdkTestObject",
+            "objectTypeApiName": "OsdkTestObject",
+          },
+          "required": true,
+        },
+      },
+      "rid": "ri.actions.main.action-type.3858bab4-49c7-4fdf-a780-6ccbc359d817",
+      "operations": [
+        {
+          "type": "deleteObject",
+          "objectTypeApiName": "OsdkTestObject",
+        },
+      ],
+    },
+    "edit-osdk-test-object": {
+      "apiName": "edit-osdk-test-object",
+      "displayName": "Edit Osdk Test Object",
+      "status": "EXPERIMENTAL",
+      "parameters": {
+        "OsdkTestObject": {
+          "dataType": {
+            "type": "object",
+            "objectApiName": "OsdkTestObject",
+            "objectTypeApiName": "OsdkTestObject",
+          },
+          "required": true,
+        },
+        "string_property": {
+          "dataType": {
+            "type": "string",
+          },
+          "required": true,
+        },
+      },
+      "rid": "ri.actions.main.action-type.4a70a939-b2ee-46dd-8099-a290cafa28e1",
+      "operations": [
+        {
+          "type": "modifyObject",
+          "objectTypeApiName": "OsdkTestObject",
+        },
+      ],
+    },
+    "actionTakesAllParameterTypes": {
+      "apiName": "actionTakesAllParameterTypes",
+      "description": "An action which takes different types of parameters",
+      "parameters": {
+        "objectSet": {
+          "dataType": {
+            "type": "objectSet",
+            "objectTypeApiName": "Todo",
+          },
+          "required": true,
+        },
+        "object": {
+          "description": "A person Object",
+          "dataType": {
+            "type": "object",
+            "objectApiName": "Person",
+            "objectTypeApiName": "Person",
+          },
+          "required": false,
+        },
+        "string": {
+          "dataType": {
+            "type": "string",
+          },
+          "required": true,
+        },
+        "time-stamp": {
+          "dataType": {
+            "type": "timestamp",
+          },
+          "required": true,
+        },
+        "dateArray": {
+          "dataType": {
+            "type": "array",
+            "subType": {
+              "type": "date",
+            },
+          },
+          "required": false,
+        },
+        "attachmentArray": {
+          "dataType": {
+            "type": "array",
+            "subType": {
+              "type": "attachment",
+            },
+          },
+          "required": true,
+        },
+      },
+      "rid":
+        "ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f2",
+      "operations": [
+        {
+          "type": "createObject",
+          "objectTypeApiName": "Todo",
+        },
+        {
+          "type": "modifyObject",
+          "objectTypeApiName": "Todo",
+        },
+        {
+          "type": "modifyObject",
+          "objectTypeApiName": "ObjectTypeWithAllPropertyTypes",
+        },
+      ],
+      "status": "ACTIVE",
+    },
+    "create-todo": {
+      "apiName": "create-todo",
+      "description": "Creates a new Todo",
+      "parameters": {},
+      "status": "ACTIVE",
+      "rid": "ri.a.b.c.d",
+      "operations": [
+        {
+          "type": "createObject",
+          "objectTypeApiName": "Todo",
+        },
+      ],
+    },
+    "create-unstructured-image-example": {
+      "apiName": "create-unstructured-image-example",
+      "displayName": "Creates an Unstructured Image Example Object",
+      "status": "EXPERIMENTAL",
+      "parameters": {
+        "path": {
+          "dataType": {
+            "type": "string",
+          },
+          "required": true,
+        },
+        "media_reference": {
+          "dataType": {
+            "type": "mediaReference",
+          },
+          "required": true,
+        },
+      },
+      "rid": "ri.actions.main.action-type.9d28a423-b11e-485f-8a4c-f8b4131c0b85",
+      "operations": [
+        {
+          "type": "createObject",
+          "objectTypeApiName": "UnstructuredImageExample",
+        },
+      ],
+    },
+    "assign-employee-1": {
+      "apiName": "assign-employee-1",
+      "description": "Assigns an employee to a venture",
+      "parameters": {
+        "employee-1": {
+          "dataType": {
+            "type": "object",
+            "objectApiName": "Employee",
+            "objectTypeApiName": "Employee",
+          },
+          "required": true,
+        },
+        "venture-1": {
+          "dataType": {
+            "type": "object",
+            "objectApiName": "Venture",
+            "objectTypeApiName": "Venture",
+          },
+          "required": true,
+        },
+      },
+      "status": "ACTIVE",
+      "rid": "ri.a.b.c.d",
+      "operations": [
+        {
+          "type": "modifyObject",
+          "objectTypeApiName": "Employee",
+        },
+      ],
+    },
+    "delete-foo-interface": {
+      "apiName": "delete-foo-interface",
+      "displayName": "Delete Foo Interface",
+      "parameters": {
+        "deletedInterface": {
+          "dataType": {
+            "type": "interfaceObject",
+            "interfaceTypeApiName": "FooInterface",
+          },
+          "required": true,
+        },
+      },
+      "status": "ACTIVE",
+      "rid": "ri.actions.main.action-type.3828bab4-49c7-4fdf-a780-6ccbc359d817",
+      "operations": [
+        {
+          "type": "deleteInterfaceObject",
+          "interfaceTypeApiName": "FooInterface",
+        },
+      ],
+    },
+    "create-foo-interface": {
+      "apiName": "create-foo-interface",
+      "displayName": "Create Foo Interface",
+      "status": "EXPERIMENTAL",
+      "parameters": {
+        "createdInterface": {
+          "dataType": {
+            "type": "objectType",
+          },
+          "required": true,
+        },
+      },
+      "rid": "ri.actions.main.action-type.3828bab4-49c7-4fdf-a780-6ccbc359d817",
+      "operations": [
+        {
+          "type": "createInterfaceObject",
+          "interfaceTypeApiName": "FooInterface",
+        },
+      ],
+    },
+    "create-struct-person": {
+      "apiName": "create-struct-person",
+      "description": "Create a struct",
+      "parameters": {
+        "name": {
+          "dataType": {
+            "type": "string",
+          },
+          "required": true,
+        },
+        "address": {
+          "dataType": {
+            "type": "struct",
+            "fields": [
+              {
+                "name": "city",
+                "fieldType": {
+                  "type": "string",
+                },
+                "required": true,
+              },
+              {
+                "name": "state",
+                "fieldType": {
+                  "type": "string",
+                },
+                "required": true,
+              },
+            ],
+          },
+          "required": false,
+        },
+      },
+      "status": "ACTIVE",
+      "rid": "ri.a.b.c.d",
+      "operations": [
+        {
+          "type": "modifyObject",
+          "objectTypeApiName": "Employee",
+        },
+      ],
+    },
+    "create-struct-person-opi-team": {
+      "apiName": "create-struct-person-opi-team",
+      "description": "Create a struct person on the OPI team",
+      "parameters": {
+        "id": {
+          "dataType": {
+            "type": "string",
+          },
+          "required": true,
+        },
+        "address": {
+          "dataType": {
+            "type": "struct",
+            "fields": [
+              {
+                "name": "city",
+                "fieldType": {
+                  "type": "string",
+                },
+                "required": true,
+              },
+              {
+                "name": "state",
+                "fieldType": {
+                  "type": "string",
+                },
+                "required": true,
+              },
+              {
+                "name": "zipcode",
+                "fieldType": {
+                  "type": "integer",
+                },
+                "required": true,
+              },
+            ],
+          },
+          "required": false,
+        },
+        "age": {
+          "dataType": {
+            "type": "integer",
+          },
+          "required": true,
+        },
+      },
+
+      "status": "ACTIVE",
+      "rid": "ri.a.b.c.d",
+      "operations": [
+        {
+          "type": "createObject",
+          "objectTypeApiName": "StructPersonOpisTeam",
+        },
+      ],
+    },
+  },
+  "objectTypes": {
+    "MasonHeavyEquipment": {
+      "objectType": {
+        "apiName": "MasonHeavyEquipment",
+        "displayName": "[mason] Heavy Equipment",
+        "status": "EXPERIMENTAL",
+        "description": "",
+        "pluralDisplayName": "[mason] Heavy Equipments",
+        "icon": {
+          "type": "blueprint",
+          "color": "#4C90F0",
+          "name": "cube",
+        },
+        "primaryKey": "id",
+        "properties": {
+          "serviceRequirement": {
+            "displayName": "Service Requirement",
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "struct",
+                "structFieldTypes": [
+                  {
+                    "apiName": "createdBy",
+                    "rid":
+                      "ri.ontology.main.struct-field.b81acdf0-9dfd-41e7-a2a0-ae50344616eb",
+                    "dataType": {
+                      "type": "string",
+                    },
+                  },
+                  {
+                    "apiName": "createdTime",
+                    "rid":
+                      "ri.ontology.main.struct-field.5d365c5f-7387-4cf2-9ccb-e80758d900c7",
+                    "dataType": {
+                      "type": "timestamp",
+                    },
+                  },
+                  {
+                    "apiName": "datasourceGid",
+                    "rid":
+                      "ri.ontology.main.struct-field.e00543ba-e86d-40fd-8d1c-eeab1b6604b3",
+                    "dataType": {
+                      "type": "string",
+                    },
+                  },
+                  {
+                    "apiName": "datasourceName",
+                    "rid":
+                      "ri.ontology.main.struct-field.37d8cf24-93c9-4844-8907-e7a5fdc1005f",
+                    "dataType": {
+                      "type": "string",
+                    },
+                  },
+                  {
+                    "apiName": "endDatetime",
+                    "rid":
+                      "ri.ontology.main.struct-field.bf3e3633-25a4-4a67-b228-e82ad2a12920",
+                    "dataType": {
+                      "type": "timestamp",
+                    },
+                  },
+                  {
+                    "apiName": "lastModifiedBy",
+                    "rid":
+                      "ri.ontology.main.struct-field.3123d0e2-c430-493e-a542-ca95502433f4",
+                    "dataType": {
+                      "type": "string",
+                    },
+                  },
+                  {
+                    "apiName": "lastModifiedTime",
+                    "rid":
+                      "ri.ontology.main.struct-field.7a32fef6-d12d-4559-ac28-a2420b2cb2a5",
+                    "dataType": {
+                      "type": "timestamp",
+                    },
+                  },
+                  {
+                    "apiName": "startDatetime",
+                    "rid":
+                      "ri.ontology.main.struct-field.b83cc44e-90a8-455c-8d20-ee7652c0ef4c",
+                    "dataType": {
+                      "type": "timestamp",
+                    },
+                  },
+                  {
+                    "apiName": "value",
+                    "rid":
+                      "ri.ontology.main.struct-field.d696ef35-6b1d-4820-af5b-7524561f0af3",
+                    "dataType": {
+                      "type": "string",
+                    },
+                  },
+                ],
+              },
+              "reducers": [],
+            },
+            "rid":
+              "ri.ontology.main.property.55f7463f-ef10-464d-9533-f63760f3a731",
+            "status": {
+              "type": "experimental",
+            },
+            "visibility": "NORMAL",
+          },
+          "area": {
+            "displayName": "Area",
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "struct",
+                "structFieldTypes": [
+                  {
+                    "apiName": "createdBy",
+                    "rid":
+                      "ri.ontology.main.struct-field.66a6ef8c-42bb-43c9-999b-fb8cc27f2918",
+                    "dataType": {
+                      "type": "string",
+                    },
+                  },
+                  {
+                    "apiName": "createdTime",
+                    "rid":
+                      "ri.ontology.main.struct-field.3b63253c-3391-4d37-bab9-b10a5cdb48e8",
+                    "dataType": {
+                      "type": "timestamp",
+                    },
+                  },
+                  {
+                    "apiName": "value",
+                    "rid":
+                      "ri.ontology.main.struct-field.6c92bf01-e781-4ac5-a55c-13429eb58776",
+                    "dataType": {
+                      "type": "string",
+                    },
+                  },
+                  {
+                    "apiName": "startDatetime",
+                    "rid":
+                      "ri.ontology.main.struct-field.59a2d145-7730-4c4b-9d28-0c8c23b398a4",
+                    "dataType": {
+                      "type": "timestamp",
+                    },
+                  },
+                  {
+                    "apiName": "endDatetime",
+                    "rid":
+                      "ri.ontology.main.struct-field.68ae4b85-4be8-464d-b169-467f89ecacfd",
+                    "dataType": {
+                      "type": "timestamp",
+                    },
+                  },
+                  {
+                    "apiName": "datasourceGid",
+                    "rid":
+                      "ri.ontology.main.struct-field.718ded58-1330-4ade-ac94-f80c04e657d2",
+                    "dataType": {
+                      "type": "string",
+                    },
+                  },
+                  {
+                    "apiName": "datasourceName",
+                    "rid":
+                      "ri.ontology.main.struct-field.9511602b-9d75-4b9b-8929-7d202a96c00d",
+                    "dataType": {
+                      "type": "string",
+                    },
+                  },
+                  {
+                    "apiName": "lastModifiedBy",
+                    "rid":
+                      "ri.ontology.main.struct-field.aa39d453-7099-448f-871d-edcaa25f9bfc",
+                    "dataType": {
+                      "type": "string",
+                    },
+                  },
+                  {
+                    "apiName": "lastModifiedTime",
+                    "rid":
+                      "ri.ontology.main.struct-field.d25241a6-5974-4851-9fad-1110b30e4926",
+                    "dataType": {
+                      "type": "timestamp",
+                    },
+                  },
+                ],
+              },
+              "reducers": [],
+            },
+            "rid":
+              "ri.ontology.main.property.dd348a94-4871-40c1-a919-73a8355cfe71",
+            "status": {
+              "type": "experimental",
+            },
+            "visibility": "NORMAL",
+          },
+          "id": {
+            "displayName": "Id",
+            "dataType": {
+              "type": "string",
+            },
+            "rid":
+              "ri.ontology.main.property.02995c4c-680e-499d-af7c-c18fffdd1599",
+            "status": {
+              "type": "experimental",
+            },
+            "visibility": "NORMAL",
+          },
+          "sidc": {
+            "displayName": "Sidc",
+            "dataType": {
+              "type": "string",
+            },
+            "rid":
+              "ri.ontology.main.property.7f1c89e7-abd4-4624-a2a0-551cc96681ab",
+            "status": {
+              "type": "experimental",
+            },
+            "visibility": "NORMAL",
+          },
+          "classification": {
+            "displayName": "Classification",
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "string",
+              },
+              "reducers": [],
+            },
+            "rid":
+              "ri.ontology.main.property.be69e99d-4cd7-49e9-a57f-881c8cb7c524",
+            "status": {
+              "type": "experimental",
+            },
+            "visibility": "NORMAL",
+          },
+          "location": {
+            "displayName": "Location",
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "struct",
+                "structFieldTypes": [
+                  {
+                    "apiName": "createdBy",
+                    "rid":
+                      "ri.ontology.main.struct-field.addbe3d9-3f5a-4b9b-abd5-82aea970a9d2",
+                    "dataType": {
+                      "type": "string",
+                    },
+                  },
+                  {
+                    "apiName": "createdTime",
+                    "rid":
+                      "ri.ontology.main.struct-field.961bc902-e73a-4f91-8d41-a2f5ba9a643b",
+                    "dataType": {
+                      "type": "timestamp",
+                    },
+                  },
+                  {
+                    "apiName": "datasourceGid",
+                    "rid":
+                      "ri.ontology.main.struct-field.186f9e14-d4ef-40c0-8469-ad4b7aa59128",
+                    "dataType": {
+                      "type": "string",
+                    },
+                  },
+                  {
+                    "apiName": "datasourceName",
+                    "rid":
+                      "ri.ontology.main.struct-field.c67a0cc2-3ac5-4375-919b-772e3fc5e146",
+                    "dataType": {
+                      "type": "string",
+                    },
+                  },
+                  {
+                    "apiName": "lastModifiedBy",
+                    "rid":
+                      "ri.ontology.main.struct-field.8e50caaa-0a54-42fe-9498-a926615a6c94",
+                    "dataType": {
+                      "type": "string",
+                    },
+                  },
+                  {
+                    "apiName": "lastModifiedTime",
+                    "rid":
+                      "ri.ontology.main.struct-field.191192ef-6d63-48a7-af59-a2a1513c89b5",
+                    "dataType": {
+                      "type": "timestamp",
+                    },
+                  },
+                  {
+                    "apiName": "startDatetime",
+                    "rid":
+                      "ri.ontology.main.struct-field.01ad4cac-3629-4ea3-a69c-60a9f638c98c",
+                    "dataType": {
+                      "type": "timestamp",
+                    },
+                  },
+                  {
+                    "apiName": "value",
+                    "rid":
+                      "ri.ontology.main.struct-field.219e3862-b2f2-4346-9788-e135de3aaf02",
+                    "dataType": {
+                      "type": "geopoint",
+                    },
+                  },
+                  {
+                    "apiName": "endDatetime",
+                    "rid":
+                      "ri.ontology.main.struct-field.986037db-6dfc-466f-a961-670e19746635",
+                    "dataType": {
+                      "type": "timestamp",
+                    },
+                  },
+                ],
+              },
+              "reducers": [],
+            },
+            "rid":
+              "ri.ontology.main.property.ddb1b77a-339b-4469-a27d-0211cfdba06e",
+            "status": {
+              "type": "experimental",
+            },
+            "visibility": "NORMAL",
+          },
+          "fullSize": {
+            "displayName": "Full Size",
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "struct",
+                "structFieldTypes": [
+                  {
+                    "apiName": "createdBy",
+                    "rid":
+                      "ri.ontology.main.struct-field.8dd4920f-109b-4f7c-9e65-b79d662a200d",
+                    "dataType": {
+                      "type": "string",
+                    },
+                  },
+                  {
+                    "apiName": "createdTime",
+                    "rid":
+                      "ri.ontology.main.struct-field.b48fcbc6-88a9-443e-a742-dd9974349000",
+                    "dataType": {
+                      "type": "timestamp",
+                    },
+                  },
+                  {
+                    "apiName": "datasourceGid",
+                    "rid":
+                      "ri.ontology.main.struct-field.d8682119-5601-4edc-bf34-d1737b0c26e0",
+                    "dataType": {
+                      "type": "string",
+                    },
+                  },
+                  {
+                    "apiName": "datasourceName",
+                    "rid":
+                      "ri.ontology.main.struct-field.b36402be-84b9-4619-8a09-776fcc53b0e5",
+                    "dataType": {
+                      "type": "string",
+                    },
+                  },
+                  {
+                    "apiName": "endDatetime",
+                    "rid":
+                      "ri.ontology.main.struct-field.298aa9d2-479d-4e18-9b70-b9271be9fabd",
+                    "dataType": {
+                      "type": "timestamp",
+                    },
+                  },
+                  {
+                    "apiName": "lastModifiedBy",
+                    "rid":
+                      "ri.ontology.main.struct-field.d1b76b36-601d-4d67-b87c-7b478e71672b",
+                    "dataType": {
+                      "type": "string",
+                    },
+                  },
+                  {
+                    "apiName": "lastModifiedTime",
+                    "rid":
+                      "ri.ontology.main.struct-field.46d6431f-2935-4d0b-ab65-82ca8b2d56da",
+                    "dataType": {
+                      "type": "timestamp",
+                    },
+                  },
+                  {
+                    "apiName": "startDatetime",
+                    "rid":
+                      "ri.ontology.main.struct-field.138bd4b2-95e3-4625-a50c-39d43f4e8971",
+                    "dataType": {
+                      "type": "timestamp",
+                    },
+                  },
+                  {
+                    "apiName": "value",
+                    "rid":
+                      "ri.ontology.main.struct-field.64694ee5-6a78-456c-8c52-8e4d9fff7574",
+                    "dataType": {
+                      "type": "integer",
+                    },
+                  },
+                ],
+              },
+              "reducers": [],
+            },
+            "rid":
+              "ri.ontology.main.property.4d841d41-f484-4fff-867e-56ca4937533d",
+            "status": {
+              "type": "experimental",
+            },
+            "visibility": "NORMAL",
+          },
+          "weight": {
+            "displayName": "Weight",
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "struct",
+                "structFieldTypes": [
+                  {
+                    "apiName": "createdBy",
+                    "rid":
+                      "ri.ontology.main.struct-field.3b5f76c6-d841-4c82-88ad-3b975d818d3f",
+                    "dataType": {
+                      "type": "string",
+                    },
+                  },
+                  {
+                    "apiName": "createdTime",
+                    "rid":
+                      "ri.ontology.main.struct-field.8d36ed59-b5f8-45fc-a27c-f6fdd7a02060",
+                    "dataType": {
+                      "type": "timestamp",
+                    },
+                  },
+                  {
+                    "apiName": "datasourceGid",
+                    "rid":
+                      "ri.ontology.main.struct-field.77aba8e4-814b-450f-a0c6-d131d86bd6a6",
+                    "dataType": {
+                      "type": "string",
+                    },
+                  },
+                  {
+                    "apiName": "datasourceName",
+                    "rid":
+                      "ri.ontology.main.struct-field.3f54d582-2388-4290-94b0-61becefa3d20",
+                    "dataType": {
+                      "type": "string",
+                    },
+                  },
+                  {
+                    "apiName": "endDatetime",
+                    "rid":
+                      "ri.ontology.main.struct-field.c8979cc0-8bb5-46fa-b878-5b9fc0962557",
+                    "dataType": {
+                      "type": "timestamp",
+                    },
+                  },
+                  {
+                    "apiName": "lastModifiedBy",
+                    "rid":
+                      "ri.ontology.main.struct-field.b7e1fb8c-1a84-479e-b67d-3f83db30d013",
+                    "dataType": {
+                      "type": "string",
+                    },
+                  },
+                  {
+                    "apiName": "lastModifiedTime",
+                    "rid":
+                      "ri.ontology.main.struct-field.f19c88c3-2005-41af-a63e-4e5ed1b22f28",
+                    "dataType": {
+                      "type": "timestamp",
+                    },
+                  },
+                  {
+                    "apiName": "startDatetime",
+                    "rid":
+                      "ri.ontology.main.struct-field.d8410dd5-c308-41a7-9b15-06af95eefac5",
+                    "dataType": {
+                      "type": "timestamp",
+                    },
+                  },
+                  {
+                    "apiName": "value",
+                    "rid":
+                      "ri.ontology.main.struct-field.e859e81f-ebc4-4660-8ecc-87ccc022b186",
+                    "dataType": {
+                      "type": "integer",
+                    },
+                  },
+                ],
+              },
+              "reducers": [],
+            },
+            "rid":
+              "ri.ontology.main.property.8e5fe7ac-2b7c-472a-b158-444cf46f03c4",
+            "status": {
+              "type": "experimental",
+            },
+            "visibility": "NORMAL",
+          },
+          "isCanonical": {
+            "displayName": "Is Canonical",
+            "dataType": {
+              "type": "boolean",
+            },
+            "rid":
+              "ri.ontology.main.property.5870e3de-30bf-418f-b23e-b797d1ea0d61",
+            "status": {
+              "type": "experimental",
+            },
+            "visibility": "NORMAL",
+          },
+          "driverId": {
+            "displayName": "Driver ID",
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "struct",
+                "structFieldTypes": [
+                  {
+                    "apiName": "createdBy",
+                    "rid":
+                      "ri.ontology.main.struct-field.2c245eae-6717-448c-bb14-adf0654d03f9",
+                    "dataType": {
+                      "type": "string",
+                    },
+                  },
+                  {
+                    "apiName": "createdTime",
+                    "rid":
+                      "ri.ontology.main.struct-field.d8a59705-c952-4de7-ba16-cf96c3b61f6d",
+                    "dataType": {
+                      "type": "timestamp",
+                    },
+                  },
+                  {
+                    "apiName": "datasourceGid",
+                    "rid":
+                      "ri.ontology.main.struct-field.54567911-ee95-45f4-8858-c55a9bf05e76",
+                    "dataType": {
+                      "type": "string",
+                    },
+                  },
+                  {
+                    "apiName": "datasourceName",
+                    "rid":
+                      "ri.ontology.main.struct-field.a451d240-c537-4a52-b020-5c620fb863fd",
+                    "dataType": {
+                      "type": "string",
+                    },
+                  },
+                  {
+                    "apiName": "lastModifiedBy",
+                    "rid":
+                      "ri.ontology.main.struct-field.3a05ac78-b813-486a-b837-ce832c9e0028",
+                    "dataType": {
+                      "type": "string",
+                    },
+                  },
+                  {
+                    "apiName": "lastModifiedTime",
+                    "rid":
+                      "ri.ontology.main.struct-field.f4caf559-6a5b-461f-b787-6b22d5d7ddb2",
+                    "dataType": {
+                      "type": "timestamp",
+                    },
+                  },
+                  {
+                    "apiName": "startDatetime",
+                    "rid":
+                      "ri.ontology.main.struct-field.20beab69-4cd9-428f-ad0e-f83673424e3e",
+                    "dataType": {
+                      "type": "timestamp",
+                    },
+                  },
+                  {
+                    "apiName": "endDatetime",
+                    "rid":
+                      "ri.ontology.main.struct-field.58502a2c-011d-4a08-a582-cf97a772ee11",
+                    "dataType": {
+                      "type": "timestamp",
+                    },
+                  },
+                  {
+                    "apiName": "value",
+                    "rid":
+                      "ri.ontology.main.struct-field.bf57b437-f5f8-4550-a75d-cc5c6eb08680",
+                    "dataType": {
+                      "type": "string",
+                    },
+                  },
+                ],
+              },
+              "reducers": [],
+            },
+            "rid":
+              "ri.ontology.main.property.bb263b24-984d-4eb7-bc08-1680717b85dc",
+            "status": {
+              "type": "experimental",
+            },
+            "visibility": "NORMAL",
+          },
+          "createdDatetime": {
+            "displayName": "Created Datetime",
+            "dataType": {
+              "type": "timestamp",
+            },
+            "rid":
+              "ri.ontology.main.property.bc6cdbb9-96de-4506-a2e4-e70fad72227f",
+            "status": {
+              "type": "experimental",
+            },
+            "visibility": "NORMAL",
+          },
+          "driverName": {
+            "displayName": "Driver Name",
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "struct",
+                "structFieldTypes": [
+                  {
+                    "apiName": "createdBy",
+                    "rid":
+                      "ri.ontology.main.struct-field.8f5be9ca-0af3-4703-be24-c2d7976257cf",
+                    "dataType": {
+                      "type": "string",
+                    },
+                  },
+                  {
+                    "apiName": "createdTime",
+                    "rid":
+                      "ri.ontology.main.struct-field.c911b057-88b9-4f69-9874-e926e5eaad4f",
+                    "dataType": {
+                      "type": "timestamp",
+                    },
+                  },
+                  {
+                    "apiName": "datasourceGid",
+                    "rid":
+                      "ri.ontology.main.struct-field.bf78c59c-47b7-4302-88f1-5226710f8032",
+                    "dataType": {
+                      "type": "string",
+                    },
+                  },
+                  {
+                    "apiName": "datasourceName",
+                    "rid":
+                      "ri.ontology.main.struct-field.599e5815-a5f3-4f7a-b99b-9ed1865d31b0",
+                    "dataType": {
+                      "type": "string",
+                    },
+                  },
+                  {
+                    "apiName": "endDatetime",
+                    "rid":
+                      "ri.ontology.main.struct-field.61937037-9e8e-427d-a10c-2364513dfa46",
+                    "dataType": {
+                      "type": "timestamp",
+                    },
+                  },
+                  {
+                    "apiName": "lastModifiedBy",
+                    "rid":
+                      "ri.ontology.main.struct-field.8d832c54-7a5c-48b0-8f9b-b97e813d827f",
+                    "dataType": {
+                      "type": "string",
+                    },
+                  },
+                  {
+                    "apiName": "lastModifiedTime",
+                    "rid":
+                      "ri.ontology.main.struct-field.4724866e-26a7-4c1e-9255-a59ddc5896f0",
+                    "dataType": {
+                      "type": "timestamp",
+                    },
+                  },
+                  {
+                    "apiName": "startDatetime",
+                    "rid":
+                      "ri.ontology.main.struct-field.0d69fe3f-38bd-4edd-bfd8-907bf1de38b2",
+                    "dataType": {
+                      "type": "timestamp",
+                    },
+                  },
+                  {
+                    "apiName": "value",
+                    "rid":
+                      "ri.ontology.main.struct-field.8f6dbc4d-bbcc-48e0-8ad2-79dc9236e70b",
+                    "dataType": {
+                      "type": "string",
+                    },
+                  },
+                ],
+              },
+              "reducers": [],
+            },
+            "rid":
+              "ri.ontology.main.property.d69babb7-4373-40e7-8743-3f318d90406e",
+            "status": {
+              "type": "experimental",
+            },
+            "visibility": "NORMAL",
+          },
+          "resolvedTo": {
+            "displayName": "Resolved To",
+            "dataType": {
+              "type": "string",
+            },
+            "rid":
+              "ri.ontology.main.property.296a2c6d-6378-456c-8d92-c1ef13bb210c",
+            "status": {
+              "type": "experimental",
+            },
+            "visibility": "NORMAL",
+          },
+          "site": {
+            "displayName": "Site",
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "struct",
+                "structFieldTypes": [
+                  {
+                    "apiName": "createdBy",
+                    "rid":
+                      "ri.ontology.main.struct-field.6e79e750-0638-4312-88d7-8bf3068e5f4e",
+                    "dataType": {
+                      "type": "string",
+                    },
+                  },
+                  {
+                    "apiName": "createdTime",
+                    "rid":
+                      "ri.ontology.main.struct-field.00d52707-895e-4c8f-91eb-9f4c23d64573",
+                    "dataType": {
+                      "type": "timestamp",
+                    },
+                  },
+                  {
+                    "apiName": "datasourceGid",
+                    "rid":
+                      "ri.ontology.main.struct-field.6f18c737-7196-43db-92ff-7c8c6311024c",
+                    "dataType": {
+                      "type": "string",
+                    },
+                  },
+                  {
+                    "apiName": "datasourceName",
+                    "rid":
+                      "ri.ontology.main.struct-field.da78d575-e52d-48b9-9dd0-7a6c6e306d49",
+                    "dataType": {
+                      "type": "string",
+                    },
+                  },
+                  {
+                    "apiName": "endDatetime",
+                    "rid":
+                      "ri.ontology.main.struct-field.75aa4b36-6e5e-4a24-af6a-32e47fd46694",
+                    "dataType": {
+                      "type": "timestamp",
+                    },
+                  },
+                  {
+                    "apiName": "lastModifiedBy",
+                    "rid":
+                      "ri.ontology.main.struct-field.d3b7b3ff-5f78-4557-ac1b-b39cf9dad5aa",
+                    "dataType": {
+                      "type": "string",
+                    },
+                  },
+                  {
+                    "apiName": "lastModifiedTime",
+                    "rid":
+                      "ri.ontology.main.struct-field.a6862803-4307-4508-a418-76f4464e4d34",
+                    "dataType": {
+                      "type": "timestamp",
+                    },
+                  },
+                  {
+                    "apiName": "startDatetime",
+                    "rid":
+                      "ri.ontology.main.struct-field.2447357a-136a-49ab-9d18-8725c9975eff",
+                    "dataType": {
+                      "type": "timestamp",
+                    },
+                  },
+                  {
+                    "apiName": "value",
+                    "rid":
+                      "ri.ontology.main.struct-field.12ef81b2-bc8d-486c-b397-e0ad8419b983",
+                    "dataType": {
+                      "type": "string",
+                    },
+                  },
+                ],
+              },
+              "reducers": [],
+            },
+            "rid":
+              "ri.ontology.main.property.946bacd9-f37d-411b-8075-83479eea2f28",
+            "status": {
+              "type": "experimental",
+            },
+            "visibility": "NORMAL",
+          },
+          "externalId": {
+            "displayName": "External Id",
+            "dataType": {
+              "type": "string",
+            },
+            "rid":
+              "ri.ontology.main.property.7befc7ab-3f55-4879-891f-7c9982e5ca7f",
+            "status": {
+              "type": "experimental",
+            },
+            "visibility": "NORMAL",
+          },
+          "maker": {
+            "displayName": "Maker",
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "struct",
+                "structFieldTypes": [
+                  {
+                    "apiName": "makerValue",
+                    "rid":
+                      "ri.ontology.main.struct-field.ec036821-c05a-4481-ad90-5a3e9cfe20bf",
+                    "dataType": {
+                      "type": "string",
+                    },
+                  },
+                  {
+                    "apiName": "createdBy",
+                    "rid":
+                      "ri.ontology.main.struct-field.84ed1ecf-f843-4c46-b588-613009383a9c",
+                    "dataType": {
+                      "type": "string",
+                    },
+                  },
+                  {
+                    "apiName": "createdTime",
+                    "rid":
+                      "ri.ontology.main.struct-field.bb4c301b-08d9-40da-8666-45d0235ace17",
+                    "dataType": {
+                      "type": "timestamp",
+                    },
+                  },
+                  {
+                    "apiName": "datasourceGid",
+                    "rid":
+                      "ri.ontology.main.struct-field.370ef529-16b5-4578-b0b5-a74e73be339b",
+                    "dataType": {
+                      "type": "string",
+                    },
+                  },
+                  {
+                    "apiName": "datasourceName",
+                    "rid":
+                      "ri.ontology.main.struct-field.55b4e1ea-d9e1-4f92-93e4-2acd66f14d1a",
+                    "dataType": {
+                      "type": "string",
+                    },
+                  },
+                  {
+                    "apiName": "lastModifiedBy",
+                    "rid":
+                      "ri.ontology.main.struct-field.998735cc-6914-4c6d-b79c-a6421203cb8b",
+                    "dataType": {
+                      "type": "string",
+                    },
+                  },
+                  {
+                    "apiName": "lastModifiedTime",
+                    "rid":
+                      "ri.ontology.main.struct-field.ecf76190-5eff-42ac-813e-e778bf624f74",
+                    "dataType": {
+                      "type": "timestamp",
+                    },
+                  },
+                  {
+                    "apiName": "endDatetime",
+                    "rid":
+                      "ri.ontology.main.struct-field.1ae50f76-ad97-486d-886c-fd756198c2a7",
+                    "dataType": {
+                      "type": "timestamp",
+                    },
+                  },
+                  {
+                    "apiName": "startDatetime",
+                    "rid":
+                      "ri.ontology.main.struct-field.0026a90d-1788-46e2-9365-a7cd37cdfdb6",
+                    "dataType": {
+                      "type": "timestamp",
+                    },
+                  },
+                ],
+              },
+              "reducers": [],
+            },
+            "rid":
+              "ri.ontology.main.property.740ee51e-45b2-4a42-8566-a23bc9c88ce7",
+            "status": {
+              "type": "experimental",
+            },
+            "visibility": "NORMAL",
+          },
+          "badgeId": {
+            "displayName": "Badge ID",
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "struct",
+                "structFieldTypes": [
+                  {
+                    "apiName": "createdBy",
+                    "rid":
+                      "ri.ontology.main.struct-field.2afcbcb6-55de-4606-b12f-42a4ced5a21d",
+                    "dataType": {
+                      "type": "string",
+                    },
+                  },
+                  {
+                    "apiName": "createdTime",
+                    "rid":
+                      "ri.ontology.main.struct-field.b6a1a05e-fdc5-4e8e-9dad-2f777e2e12c5",
+                    "dataType": {
+                      "type": "timestamp",
+                    },
+                  },
+                  {
+                    "apiName": "datasourceGid",
+                    "rid":
+                      "ri.ontology.main.struct-field.a55ff395-33c8-4094-98dc-f0142ad559f9",
+                    "dataType": {
+                      "type": "string",
+                    },
+                  },
+                  {
+                    "apiName": "datasourceName",
+                    "rid":
+                      "ri.ontology.main.struct-field.012fd461-50db-4eb6-ba83-a90949cfbdf1",
+                    "dataType": {
+                      "type": "string",
+                    },
+                  },
+                  {
+                    "apiName": "endDatetime",
+                    "rid":
+                      "ri.ontology.main.struct-field.f33be644-fdfb-4123-8335-24c7bc4f3e60",
+                    "dataType": {
+                      "type": "timestamp",
+                    },
+                  },
+                  {
+                    "apiName": "lastModifiedBy",
+                    "rid":
+                      "ri.ontology.main.struct-field.ed7e7269-9133-47b4-a36b-4c41455c2cfb",
+                    "dataType": {
+                      "type": "string",
+                    },
+                  },
+                  {
+                    "apiName": "lastModifiedTime",
+                    "rid":
+                      "ri.ontology.main.struct-field.50425d1e-5a62-4cce-b11b-37f1254ef249",
+                    "dataType": {
+                      "type": "timestamp",
+                    },
+                  },
+                  {
+                    "apiName": "startDatetime",
+                    "rid":
+                      "ri.ontology.main.struct-field.936487fc-5d14-4dfa-80d6-266cc5ec56ce",
+                    "dataType": {
+                      "type": "timestamp",
+                    },
+                  },
+                  {
+                    "apiName": "value",
+                    "rid":
+                      "ri.ontology.main.struct-field.2f9baad7-ee31-4803-afa8-8636f0617987",
+                    "dataType": {
+                      "type": "string",
+                    },
+                  },
+                ],
+              },
+              "reducers": [],
+            },
+            "rid":
+              "ri.ontology.main.property.0deeb320-a720-4372-b573-523134eae718",
+            "status": {
+              "type": "experimental",
+            },
+            "visibility": "NORMAL",
+          },
+          "age": {
+            "displayName": "Age",
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "struct",
+                "structFieldTypes": [
+                  {
+                    "apiName": "createdBy",
+                    "rid":
+                      "ri.ontology.main.struct-field.fe45c6ba-c38b-4e20-a1e9-9e33e82a90f2",
+                    "dataType": {
+                      "type": "string",
+                    },
+                  },
+                  {
+                    "apiName": "createdTime",
+                    "rid":
+                      "ri.ontology.main.struct-field.d1cf16bd-5f68-4eca-815a-bdc74952751a",
+                    "dataType": {
+                      "type": "timestamp",
+                    },
+                  },
+                  {
+                    "apiName": "datasourceGid",
+                    "rid":
+                      "ri.ontology.main.struct-field.c6beb40a-a13a-4f4d-8ef6-001216e11df8",
+                    "dataType": {
+                      "type": "string",
+                    },
+                  },
+                  {
+                    "apiName": "datasourceName",
+                    "rid":
+                      "ri.ontology.main.struct-field.5f0a766f-136d-4cb8-9168-cdbb9afb3fe6",
+                    "dataType": {
+                      "type": "string",
+                    },
+                  },
+                  {
+                    "apiName": "endDatetime",
+                    "rid":
+                      "ri.ontology.main.struct-field.6f1b44a3-92b8-4d4d-9c4d-79b844109ed7",
+                    "dataType": {
+                      "type": "timestamp",
+                    },
+                  },
+                  {
+                    "apiName": "lastModifiedBy",
+                    "rid":
+                      "ri.ontology.main.struct-field.c518cf71-4afe-48f7-851d-209e1e36dbd1",
+                    "dataType": {
+                      "type": "string",
+                    },
+                  },
+                  {
+                    "apiName": "lastModifiedTime",
+                    "rid":
+                      "ri.ontology.main.struct-field.43426102-ff50-4ea8-995f-308d49fe6459",
+                    "dataType": {
+                      "type": "timestamp",
+                    },
+                  },
+                  {
+                    "apiName": "startDatetime",
+                    "rid":
+                      "ri.ontology.main.struct-field.023595f3-4491-4aff-9fe6-7a9cb4fe7442",
+                    "dataType": {
+                      "type": "timestamp",
+                    },
+                  },
+                  {
+                    "apiName": "value",
+                    "rid":
+                      "ri.ontology.main.struct-field.f606b629-4276-4f8e-a90a-ccde422a6884",
+                    "dataType": {
+                      "type": "integer",
+                    },
+                  },
+                ],
+              },
+              "reducers": [],
+            },
+            "rid":
+              "ri.ontology.main.property.d1614127-0102-487d-bcc1-08686496b11f",
+            "status": {
+              "type": "experimental",
+            },
+            "visibility": "NORMAL",
+          },
+          "lastModified": {
+            "displayName": "Last Modified",
+            "dataType": {
+              "type": "timestamp",
+            },
+            "rid":
+              "ri.ontology.main.property.6a620786-6681-4c61-93f5-4b75868f7143",
+            "status": {
+              "type": "experimental",
+            },
+            "visibility": "NORMAL",
+          },
+          "backupDriverName": {
+            "displayName": "Backup Driver Name",
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "struct",
+                "structFieldTypes": [
+                  {
+                    "apiName": "createdBy",
+                    "rid":
+                      "ri.ontology.main.struct-field.b0861c19-0ba8-4263-9e6b-4fa4415fd1e7",
+                    "dataType": {
+                      "type": "string",
+                    },
+                  },
+                  {
+                    "apiName": "createdTime",
+                    "rid":
+                      "ri.ontology.main.struct-field.d8a4d2e7-a799-4843-bbc7-4c26afa4c6db",
+                    "dataType": {
+                      "type": "timestamp",
+                    },
+                  },
+                  {
+                    "apiName": "datasourceGid",
+                    "rid":
+                      "ri.ontology.main.struct-field.3218fd54-511d-45c7-9538-4b09d1e8f79d",
+                    "dataType": {
+                      "type": "string",
+                    },
+                  },
+                  {
+                    "apiName": "datasourceName",
+                    "rid":
+                      "ri.ontology.main.struct-field.be075072-e94b-4a2a-b7b2-13d96c5d5695",
+                    "dataType": {
+                      "type": "string",
+                    },
+                  },
+                  {
+                    "apiName": "endDatetime",
+                    "rid":
+                      "ri.ontology.main.struct-field.f8cfb3a0-1f27-480e-9014-81abe880e989",
+                    "dataType": {
+                      "type": "timestamp",
+                    },
+                  },
+                  {
+                    "apiName": "lastModifiedBy",
+                    "rid":
+                      "ri.ontology.main.struct-field.59a14211-83bc-4b01-ba45-4039cdacf933",
+                    "dataType": {
+                      "type": "string",
+                    },
+                  },
+                  {
+                    "apiName": "lastModifiedTime",
+                    "rid":
+                      "ri.ontology.main.struct-field.fd2aa139-ffe5-4d4c-b17c-3bfc14f16035",
+                    "dataType": {
+                      "type": "timestamp",
+                    },
+                  },
+                  {
+                    "apiName": "startDatetime",
+                    "rid":
+                      "ri.ontology.main.struct-field.417c6aaf-c109-43aa-8df9-751845353c60",
+                    "dataType": {
+                      "type": "timestamp",
+                    },
+                  },
+                  {
+                    "apiName": "value",
+                    "rid":
+                      "ri.ontology.main.struct-field.ae4322bd-8c51-4de7-8002-a4b6b7355ba5",
+                    "dataType": {
+                      "type": "string",
+                    },
+                  },
+                ],
+              },
+              "reducers": [],
+            },
+            "rid":
+              "ri.ontology.main.property.3c4d4627-5b72-403b-85c8-c3254404ce50",
+            "status": {
+              "type": "experimental",
+            },
+            "visibility": "NORMAL",
+          },
+          "shortId": {
+            "displayName": "Short ID",
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "struct",
+                "structFieldTypes": [
+                  {
+                    "apiName": "createdBy",
+                    "rid":
+                      "ri.ontology.main.struct-field.8e6bcf35-20b2-4144-b36c-a0c58f70d5f1",
+                    "dataType": {
+                      "type": "string",
+                    },
+                  },
+                  {
+                    "apiName": "createdTime",
+                    "rid":
+                      "ri.ontology.main.struct-field.1de91efb-4d3c-497e-a32a-806e28fec19f",
+                    "dataType": {
+                      "type": "timestamp",
+                    },
+                  },
+                  {
+                    "apiName": "datasourceGid",
+                    "rid":
+                      "ri.ontology.main.struct-field.8aea4c00-712a-426c-9a6b-238955723373",
+                    "dataType": {
+                      "type": "string",
+                    },
+                  },
+                  {
+                    "apiName": "datasourceName",
+                    "rid":
+                      "ri.ontology.main.struct-field.e8c67734-b043-4399-b4d3-6dd0295bc785",
+                    "dataType": {
+                      "type": "string",
+                    },
+                  },
+                  {
+                    "apiName": "endDatetime",
+                    "rid":
+                      "ri.ontology.main.struct-field.0b1ef9d6-2cf6-475f-8c5b-0055f2071aa0",
+                    "dataType": {
+                      "type": "timestamp",
+                    },
+                  },
+                  {
+                    "apiName": "lastModifiedBy",
+                    "rid":
+                      "ri.ontology.main.struct-field.26e2e0b8-39bc-430e-8e68-bffa82536334",
+                    "dataType": {
+                      "type": "string",
+                    },
+                  },
+                  {
+                    "apiName": "lastModifiedTime",
+                    "rid":
+                      "ri.ontology.main.struct-field.ec0c4bff-9e68-4718-8a66-25c902bffb54",
+                    "dataType": {
+                      "type": "timestamp",
+                    },
+                  },
+                  {
+                    "apiName": "startDatetime",
+                    "rid":
+                      "ri.ontology.main.struct-field.63760fc0-024a-4020-93c0-91ef01c4f7e2",
+                    "dataType": {
+                      "type": "timestamp",
+                    },
+                  },
+                  {
+                    "apiName": "value",
+                    "rid":
+                      "ri.ontology.main.struct-field.1b5c9e3c-9884-4344-a5ae-16a2b76548e5",
+                    "dataType": {
+                      "type": "string",
+                    },
+                  },
+                ],
+              },
+              "reducers": [],
+            },
+            "rid":
+              "ri.ontology.main.property.fb8a6794-7a2b-4f18-a5ea-3db053717494",
+            "status": {
+              "type": "experimental",
+            },
+            "visibility": "NORMAL",
+          },
+          "managerName": {
+            "displayName": "Manager Name",
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "struct",
+                "structFieldTypes": [
+                  {
+                    "apiName": "createdBy",
+                    "rid":
+                      "ri.ontology.main.struct-field.f90086d8-a0b8-4cf5-9d57-40222e92144b",
+                    "dataType": {
+                      "type": "string",
+                    },
+                  },
+                  {
+                    "apiName": "createdTime",
+                    "rid":
+                      "ri.ontology.main.struct-field.6fe0279c-d0db-488c-a35a-f0e76b8c6ed5",
+                    "dataType": {
+                      "type": "timestamp",
+                    },
+                  },
+                  {
+                    "apiName": "datasourceGid",
+                    "rid":
+                      "ri.ontology.main.struct-field.84f9904e-cb12-4a84-ad87-03b9976bcb5b",
+                    "dataType": {
+                      "type": "string",
+                    },
+                  },
+                  {
+                    "apiName": "datasourceName",
+                    "rid":
+                      "ri.ontology.main.struct-field.94e00170-bdeb-4445-bec7-c8819a534110",
+                    "dataType": {
+                      "type": "string",
+                    },
+                  },
+                  {
+                    "apiName": "endDatetime",
+                    "rid":
+                      "ri.ontology.main.struct-field.fdb0d00c-e84e-4702-846d-44903d604fd7",
+                    "dataType": {
+                      "type": "timestamp",
+                    },
+                  },
+                  {
+                    "apiName": "lastModifiedBy",
+                    "rid":
+                      "ri.ontology.main.struct-field.7dd237ea-8cbf-4d45-a772-0a964efff66a",
+                    "dataType": {
+                      "type": "string",
+                    },
+                  },
+                  {
+                    "apiName": "lastModifiedTime",
+                    "rid":
+                      "ri.ontology.main.struct-field.4d38aa83-73d4-4a66-87ca-db1d1a62311d",
+                    "dataType": {
+                      "type": "timestamp",
+                    },
+                  },
+                  {
+                    "apiName": "startDatetime",
+                    "rid":
+                      "ri.ontology.main.struct-field.6181d84a-7542-4a52-86c7-8f1421df4e07",
+                    "dataType": {
+                      "type": "timestamp",
+                    },
+                  },
+                  {
+                    "apiName": "value",
+                    "rid":
+                      "ri.ontology.main.struct-field.371a4dd0-bbc1-4e44-8293-3a2c494d076f",
+                    "dataType": {
+                      "type": "string",
+                    },
+                  },
+                ],
+              },
+              "reducers": [],
+            },
+            "rid":
+              "ri.ontology.main.property.7118bc25-e8a5-4d90-a83b-15bb1a072511",
+            "status": {
+              "type": "experimental",
+            },
+            "visibility": "NORMAL",
+          },
+          "title": {
+            "displayName": "Title",
+            "dataType": {
+              "type": "string",
+            },
+            "rid":
+              "ri.ontology.main.property.e5a8afc7-969a-4eb5-8b71-7e33d40a55d6",
+            "status": {
+              "type": "experimental",
+            },
+            "visibility": "NORMAL",
+          },
+          "supervisorName": {
+            "displayName": "Supervisor Name",
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "struct",
+                "structFieldTypes": [
+                  {
+                    "apiName": "createdBy",
+                    "rid":
+                      "ri.ontology.main.struct-field.e5a572db-7390-417a-ba2e-d07a2979de8c",
+                    "dataType": {
+                      "type": "string",
+                    },
+                  },
+                  {
+                    "apiName": "createdTime",
+                    "rid":
+                      "ri.ontology.main.struct-field.b30c7123-b4b2-40d5-a276-bdfb7bca4d4c",
+                    "dataType": {
+                      "type": "timestamp",
+                    },
+                  },
+                  {
+                    "apiName": "datasourceGid",
+                    "rid":
+                      "ri.ontology.main.struct-field.718fafcd-1f6f-4896-ad41-088f76736520",
+                    "dataType": {
+                      "type": "string",
+                    },
+                  },
+                  {
+                    "apiName": "datasourceName",
+                    "rid":
+                      "ri.ontology.main.struct-field.bb356225-992a-4998-9125-0aeba2b71f51",
+                    "dataType": {
+                      "type": "string",
+                    },
+                  },
+                  {
+                    "apiName": "endDatetime",
+                    "rid":
+                      "ri.ontology.main.struct-field.8eb857a5-30d2-4c76-bc76-e434f4bad861",
+                    "dataType": {
+                      "type": "timestamp",
+                    },
+                  },
+                  {
+                    "apiName": "lastModifiedBy",
+                    "rid":
+                      "ri.ontology.main.struct-field.3c711ead-dfaf-4136-8802-7f389c7b0b08",
+                    "dataType": {
+                      "type": "string",
+                    },
+                  },
+                  {
+                    "apiName": "lastModifiedTime",
+                    "rid":
+                      "ri.ontology.main.struct-field.89100398-1f39-4e99-a1e1-bbcbe20c64d5",
+                    "dataType": {
+                      "type": "timestamp",
+                    },
+                  },
+                  {
+                    "apiName": "startDatetime",
+                    "rid":
+                      "ri.ontology.main.struct-field.375ce4f4-8a92-4f3e-98d3-ab565fa1eda0",
+                    "dataType": {
+                      "type": "timestamp",
+                    },
+                  },
+                  {
+                    "apiName": "value",
+                    "rid":
+                      "ri.ontology.main.struct-field.294de552-9f1e-418f-8b01-f4307af14722",
+                    "dataType": {
+                      "type": "string",
+                    },
+                  },
+                ],
+              },
+              "reducers": [],
+            },
+            "rid":
+              "ri.ontology.main.property.be8dde58-d786-432f-be00-6af774c65aba",
+            "status": {
+              "type": "experimental",
+            },
+            "visibility": "NORMAL",
+          },
+          "musicPlayer": {
+            "displayName": "Music Player",
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "struct",
+                "structFieldTypes": [
+                  {
+                    "apiName": "make",
+                    "rid":
+                      "ri.ontology.main.struct-field.8f785c61-714e-49ec-adbe-48c34d3425ac",
+                    "dataType": {
+                      "type": "string",
+                    },
+                  },
+                  {
+                    "apiName": "name",
+                    "rid":
+                      "ri.ontology.main.struct-field.9f517e66-e632-460b-a5d2-544da9a6ab1c",
+                    "dataType": {
+                      "type": "string",
+                    },
+                  },
+                  {
+                    "apiName": "year",
+                    "rid":
+                      "ri.ontology.main.struct-field.dac8727f-5bf5-4e4d-abd6-af6c2a3bac4d",
+                    "dataType": {
+                      "type": "integer",
+                    },
+                  },
+                ],
+              },
+              "reducers": [],
+            },
+            "rid":
+              "ri.ontology.main.property.1bbb5b92-c676-4a51-abea-6e34ceb2e4cb",
+            "status": {
+              "type": "experimental",
+            },
+            "visibility": "NORMAL",
+          },
+          "internalSize": {
+            "displayName": "Internal Size",
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "struct",
+                "structFieldTypes": [
+                  {
+                    "apiName": "createdBy",
+                    "rid":
+                      "ri.ontology.main.struct-field.8f3eb50b-9444-49a3-bf5a-d054f8bad370",
+                    "dataType": {
+                      "type": "string",
+                    },
+                  },
+                  {
+                    "apiName": "createdTime",
+                    "rid":
+                      "ri.ontology.main.struct-field.411f9973-4e69-4b79-a64e-25e1f56d74c2",
+                    "dataType": {
+                      "type": "timestamp",
+                    },
+                  },
+                  {
+                    "apiName": "datasourceGid",
+                    "rid":
+                      "ri.ontology.main.struct-field.00758fc6-65dd-42cf-a754-f35744c3189a",
+                    "dataType": {
+                      "type": "string",
+                    },
+                  },
+                  {
+                    "apiName": "datasourceName",
+                    "rid":
+                      "ri.ontology.main.struct-field.d23223b1-1227-43e3-9c19-882d5d1c4094",
+                    "dataType": {
+                      "type": "string",
+                    },
+                  },
+                  {
+                    "apiName": "endDatetime",
+                    "rid":
+                      "ri.ontology.main.struct-field.8d07db3f-e7d0-469a-9dee-f9556e640261",
+                    "dataType": {
+                      "type": "timestamp",
+                    },
+                  },
+                  {
+                    "apiName": "lastModifiedBy",
+                    "rid":
+                      "ri.ontology.main.struct-field.d9bdea45-de0e-4ea8-8d47-9bd4540532bb",
+                    "dataType": {
+                      "type": "string",
+                    },
+                  },
+                  {
+                    "apiName": "lastModifiedTime",
+                    "rid":
+                      "ri.ontology.main.struct-field.822a5bfd-c00d-4932-819e-c3e345df1d9d",
+                    "dataType": {
+                      "type": "timestamp",
+                    },
+                  },
+                  {
+                    "apiName": "startDatetime",
+                    "rid":
+                      "ri.ontology.main.struct-field.2271c5b8-45bd-41d2-9757-d35665aa47b2",
+                    "dataType": {
+                      "type": "timestamp",
+                    },
+                  },
+                  {
+                    "apiName": "value",
+                    "rid":
+                      "ri.ontology.main.struct-field.1b0c0fbd-4bac-4245-a715-9253566ccd52",
+                    "dataType": {
+                      "type": "integer",
+                    },
+                  },
+                ],
+              },
+              "reducers": [],
+            },
+            "rid":
+              "ri.ontology.main.property.1397bc63-a3bc-4935-af32-0f93a15679f9",
+            "status": {
+              "type": "experimental",
+            },
+            "visibility": "NORMAL",
+          },
+        },
+        "rid":
+          "ri.ontology.main.object-type.73756c21-5a63-47ae-af39-2f22bedd8ec2",
+        "titleProperty": "title",
+        "visibility": "NORMAL",
+      },
+      "linkTypes": [
+        {
+          "apiName": "masonHeavyEquipment",
+          "displayName": "[mason] Heavy Equipment",
+          "status": "EXPERIMENTAL",
+          "objectTypeApiName": "MasonHeavyEquipment",
+          "cardinality": "ONE",
+          "foreignKeyPropertyApiName": "resolvedTo",
+          "linkTypeRid":
+            "ri.ontology.main.relation.1f0a20d8-4d47-4595-aa81-989f6c050193",
+        },
+      ],
+      "implementsInterfaces": [],
+      "implementsInterfaces2": {},
+      "sharedPropertyTypeMapping": {},
+    },
+    "MasonMovie": {
+      "objectType": {
+        "apiName": "MasonMovie",
+        "displayName": "[mason] movie",
+        "status": "EXPERIMENTAL",
+        "description": "",
+        "pluralDisplayName": "[mason] movies",
+        "icon": {
+          "type": "blueprint",
+          "color": "#4C90F0",
+          "name": "cube",
+        },
+        "primaryKey": "movie",
+        "properties": {
+          "classAlt": {
+            "displayName": "Class alt",
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "string",
+              },
+              "reducers": [],
+            },
+            "rid":
+              "ri.ontology.main.property.fa2b4182-259e-42db-b4ea-264a72dcb1fa",
+            "status": {
+              "type": "experimental",
+            },
+            "visibility": "NORMAL",
+          },
+          "movie": {
+            "displayName": "Movie",
+            "dataType": {
+              "type": "string",
+            },
+            "rid":
+              "ri.ontology.main.property.a84f4d22-114b-4b5a-a93e-2640308cabd8",
+            "status": {
+              "type": "experimental",
+            },
+            "visibility": "NORMAL",
+          },
+          "class": {
+            "displayName": "Class",
+            "dataType": {
+              "type": "string",
+            },
+            "rid":
+              "ri.ontology.main.property.f7308abf-2ef5-46ec-bbf3-19f1501c16d4",
+            "status": {
+              "type": "experimental",
+            },
+            "visibility": "NORMAL",
+          },
+          "rating": {
+            "displayName": "Rating",
+            "dataType": {
+              "type": "decimal",
+            },
+            "rid":
+              "ri.ontology.main.property.ea04a985-df3f-4a39-8a6b-9e0ca9cfaf91",
+            "status": {
+              "type": "experimental",
+            },
+            "visibility": "NORMAL",
+          },
+          "topic": {
+            "displayName": "Topic",
+            "dataType": {
+              "type": "string",
+            },
+            "rid":
+              "ri.ontology.main.property.a29564d6-ab9d-4b65-aa11-3153a95a3913",
+            "status": {
+              "type": "experimental",
+            },
+            "visibility": "NORMAL",
+          },
+          "class2": {
+            "displayName": "Class 2",
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "string",
+              },
+              "reducers": [],
+            },
+            "rid":
+              "ri.ontology.main.property.25dee438-f734-45d9-b01f-9716ab3cad4e",
+            "status": {
+              "type": "experimental",
+            },
+            "visibility": "NORMAL",
+          },
+        },
+        "rid":
+          "ri.ontology.main.object-type.65a5444c-452e-450e-ac28-04f0028a243d",
+        "titleProperty": "movie",
+        "visibility": "NORMAL",
+      },
+      "linkTypes": [],
+      "implementsInterfaces": [],
+      "implementsInterfaces2": {},
+      "sharedPropertyTypeMapping": {},
+    },
+    "EsongIssues": {
+      "objectType": {
+        "apiName": "EsongIssues",
+        "displayName": "[esong] Issues",
+        "status": "EXPERIMENTAL",
+        "description": "",
+        "pluralDisplayName": "[esong] Issues",
+        "icon": {
+          "type": "blueprint",
+          "color": "#4C90F0",
+          "name": "cube",
+        },
+        "primaryKey": "id",
+        "properties": {
+          "id": {
+            "displayName": "Id",
+            "dataType": {
+              "type": "integer",
+            },
+            "rid":
+              "ri.ontology.main.property.e573401d-7b77-4363-bd42-a8e613bb37b8",
+            "status": {
+              "type": "experimental",
+            },
+            "visibility": "NORMAL",
+          },
+          "numComments": {
+            "displayName": "Num Comments",
+            "dataType": {
+              "type": "integer",
+            },
+            "rid":
+              "ri.ontology.main.property.7e19312c-70f1-419a-88ef-d240271940d1",
+            "status": {
+              "type": "experimental",
+            },
+            "visibility": "NORMAL",
+          },
+          "pdsTicket": {
+            "displayName": "Pds Ticket",
+            "dataType": {
+              "type": "string",
+            },
+            "rid":
+              "ri.ontology.main.property.30be4798-4e87-490c-8573-dd6c63ade9b1",
+            "status": {
+              "type": "experimental",
+            },
+            "visibility": "NORMAL",
+          },
+          "status": {
+            "displayName": "Status",
+            "dataType": {
+              "type": "string",
+            },
+            "rid":
+              "ri.ontology.main.property.6455e41e-d8be-4477-af32-fadf06169415",
+            "status": {
+              "type": "experimental",
+            },
+            "visibility": "NORMAL",
+          },
+          "pdsTicketId": {
+            "displayName": "Pds Ticket Id",
+            "dataType": {
+              "type": "integer",
+            },
+            "rid":
+              "ri.ontology.main.property.1e310f6c-cb8a-460c-b413-3d19ed1d8915",
+            "status": {
+              "type": "experimental",
+            },
+            "visibility": "NORMAL",
+          },
+          "title": {
+            "displayName": "Title",
+            "dataType": {
+              "type": "string",
+            },
+            "rid":
+              "ri.ontology.main.property.be06b046-9dcc-443d-9ed0-2c4511761284",
+            "status": {
+              "type": "experimental",
+            },
+            "visibility": "NORMAL",
+          },
+          "label": {
+            "displayName": "Label",
+            "dataType": {
+              "type": "string",
+            },
+            "rid":
+              "ri.ontology.main.property.7622a49d-a8f0-4916-a45c-a7ff31d78d2d",
+            "status": {
+              "type": "experimental",
+            },
+            "visibility": "NORMAL",
+          },
+          "createdAt": {
+            "displayName": "Created At",
+            "dataType": {
+              "type": "date",
+            },
+            "rid":
+              "ri.ontology.main.property.1dd3a051-cc63-4e15-8e0f-55e49a9b29e9",
+            "status": {
+              "type": "experimental",
+            },
+            "visibility": "NORMAL",
+          },
+        },
+        "rid":
+          "ri.ontology.main.object-type.9e50a0d3-5b89-41f5-a894-b0e9bb388950",
+        "titleProperty": "title",
+        "visibility": "NORMAL",
+      },
+      "linkTypes": [
+        {
+          "apiName": "esongPds",
+          "displayName": "[esong] Pds",
+          "status": "EXPERIMENTAL",
+          "objectTypeApiName": "EsongPds",
+          "cardinality": "ONE",
+          "foreignKeyPropertyApiName": "pdsTicketId",
+          "linkTypeRid":
+            "ri.ontology.main.relation.dc8e30bb-f515-40d7-9d6c-6ad3439bcd08",
+        },
+        {
+          "apiName": "esongPdsM2m",
+          "displayName": "[esong] Pd",
+          "status": "EXPERIMENTAL",
+          "objectTypeApiName": "EsongPds",
+          "cardinality": "MANY",
+          "linkTypeRid":
+            "ri.ontology.main.relation.00bf78d1-c6ef-4df7-8050-5499a71b57fb",
+        },
+      ],
+      "implementsInterfaces": [
+        "EsongInterfaceWithIlts",
+        "EsongInterfaceA",
+        "EsongInterfaceC",
+      ],
+      "implementsInterfaces2": {
+        "EsongInterfaceC": {
+          "properties": {
+            "esongId": "label",
+          },
+        },
+        "EsongInterfaceWithIlts": {
+          "properties": {
+            "esongId": "title",
+          },
+        },
+        "EsongInterfaceA": {
+          "properties": {
+            "esongSptA": "label",
+          },
+        },
+      },
+      "sharedPropertyTypeMapping": {
+        "label": "label",
+      },
+    },
+    "EsongPds": {
+      "objectType": {
+        "apiName": "EsongPds",
+        "displayName": "[esong] Pds",
+        "status": "EXPERIMENTAL",
+        "description": "asdaaaaa",
+        "pluralDisplayName": "[esong] Pds",
+        "icon": {
+          "type": "blueprint",
+          "color": "#4C90F0",
+          "name": "cube",
+        },
+        "primaryKey": "id",
+        "properties": {
+          "assignee": {
+            "displayName": "Assignee",
+            "dataType": {
+              "type": "string",
+            },
+            "rid":
+              "ri.ontology.main.property.9e9a74a5-d7e2-4053-af81-0ab52c1bc169",
+            "status": {
+              "type": "experimental",
+            },
+            "visibility": "NORMAL",
+          },
+          "id": {
+            "displayName": "Id",
+            "dataType": {
+              "type": "integer",
+            },
+            "rid":
+              "ri.ontology.main.property.f5cde78b-85c1-4de6-97f9-cf83ea0302fa",
+            "status": {
+              "type": "experimental",
+            },
+            "visibility": "NORMAL",
+          },
+          "priority": {
+            "displayName": "Priority",
+            "dataType": {
+              "type": "integer",
+            },
+            "rid":
+              "ri.ontology.main.property.397fe50b-fcb2-4b13-8ccd-3f4459caa46e",
+            "status": {
+              "type": "experimental",
+            },
+            "visibility": "NORMAL",
+          },
+          "status": {
+            "displayName": "Status",
+            "dataType": {
+              "type": "string",
+            },
+            "rid":
+              "ri.ontology.main.property.95b93fa4-fda1-4e9d-b8ee-8924e28419b3",
+            "status": {
+              "type": "experimental",
+            },
+            "visibility": "NORMAL",
+          },
+          "title": {
+            "displayName": "Title",
+            "dataType": {
+              "type": "string",
+            },
+            "rid":
+              "ri.ontology.main.property.cc0f7992-b809-41cb-bb26-66b6493049ab",
+            "status": {
+              "type": "experimental",
+            },
+            "visibility": "NORMAL",
+          },
+          "createdAt": {
+            "displayName": "Created At",
+            "dataType": {
+              "type": "date",
+            },
+            "rid":
+              "ri.ontology.main.property.9feabe35-8592-4d1f-8beb-fc231c9dbcf9",
+            "status": {
+              "type": "experimental",
+            },
+            "visibility": "NORMAL",
+          },
+        },
+        "rid":
+          "ri.ontology.main.object-type.afa55844-81e8-4a1f-9b8e-bf51a9938a4d",
+        "titleProperty": "title",
+        "visibility": "NORMAL",
+      },
+      "linkTypes": [
+        {
+          "apiName": "esongIssues",
+          "displayName": "[esong] Issues",
+          "status": "EXPERIMENTAL",
+          "objectTypeApiName": "EsongIssues",
+          "cardinality": "ONE",
+          "linkTypeRid":
+            "ri.ontology.main.relation.dc8e30bb-f515-40d7-9d6c-6ad3439bcd08",
+        },
+        {
+          "apiName": "esongIssuesM2m",
+          "displayName": "[esong] Issue",
+          "status": "EXPERIMENTAL",
+          "objectTypeApiName": "EsongIssues",
+          "cardinality": "MANY",
+          "linkTypeRid":
+            "ri.ontology.main.relation.00bf78d1-c6ef-4df7-8050-5499a71b57fb",
+        },
+      ],
+      "implementsInterfaces": [],
+      "implementsInterfaces2": {},
+      "sharedPropertyTypeMapping": {},
+    },
+    "StateTerritory": {
+      "objectType": {
+        "apiName": "StateTerritory",
+        "displayName": "State/Territory",
+        "status": "EXPERIMENTAL",
+        "description": "",
+        "pluralDisplayName": "States",
+        "icon": {
+          "type": "blueprint",
+          "color": "#4C90F0",
+          "name": "cube",
+        },
+        "primaryKey": "airportStateName",
+        "properties": {
+          "airportStateName": {
+            "displayName": "airportStateName",
+            "dataType": {
+              "type": "string",
+            },
+          },
+          "airportStateCode": {
+            "displayName": "airportStateCode",
+            "dataType": {
+              "type": "string",
+            },
+          },
+          "country": {
+            "displayName": "country",
+            "dataType": {
+              "type": "string",
+            },
+          },
+        },
+        "rid":
+          "ri.ontology.main.object-type.98f324e1-b8f4-42ef-aee7-5c4a1494ce5e",
+        "titleProperty": "airportStateName",
+        "visibility": "NORMAL",
+      },
+      "linkTypes": [
+        {
+          "apiName": "country1",
+          "cardinality": "ONE",
+          "displayName": "State Country",
+          "objectTypeApiName": "Country_1",
+          "status": "ACTIVE",
+          "foreignKeyPropertyApiName": "airportCountryName",
+        },
+      ],
+      "implementsInterfaces": [],
+      "implementsInterfaces2": {},
+      "sharedPropertyTypeMapping": {},
+    },
+    "Country_1": {
+      "objectType": {
+        "apiName": "Country_1",
+        "displayName": "Country",
+        "status": "EXPERIMENTAL",
+        "description": "",
+        "pluralDisplayName": "Countries",
+        "icon": {
+          "type": "blueprint",
+          "color": "#4C90F0",
+          "name": "cube",
+        },
+        "primaryKey": "airportCountryName",
+        "properties": {
+          "airportCountryName": {
+            "displayName": "Airport Country Name",
+            "dataType": {
+              "type": "string",
+            },
+            "status": {
+              "type": "deprecated",
+              "message": "This property is deprecated.",
+              "deadline": "2024-12-31",
+              "replacedBy": "newProperty",
+            },
+          },
+          "airportCountryIsoCode": {
+            "displayName": "airportCountryIsoCode",
+            "dataType": {
+              "type": "string",
+            },
+            "status": {
+              "type": "experimental",
+            },
+          },
+        },
+        "rid":
+          "ri.ontology.main.object-type.0a276176-8d93-489e-93b4-77673de56b9e",
+        "titleProperty": "airportCountryName",
+        "visibility": "NORMAL",
+      },
+      "linkTypes": [
+        {
+          "apiName": "stateTerritory",
+          "cardinality": "MANY",
+          "displayName": "State Country",
+          "objectTypeApiName": "StateTerritory",
+          "status": "ACTIVE",
+          "foreignKeyPropertyApiName": "airportStateName",
+        },
+      ],
+      "implementsInterfaces": [],
+      "implementsInterfaces2": {},
+      "sharedPropertyTypeMapping": {},
+    },
+    "OsdkTestObject": {
+      "objectType": {
+        "apiName": "OsdkTestObject",
+        "displayName": "Osdk Test Object",
+        "status": "EXPERIMENTAL",
+        "description": "",
+        "pluralDisplayName": "Osdk Test Objects",
+        "icon": {
+          "type": "blueprint",
+          "color": "#4C90F0",
+          "name": "cube",
+        },
+        "primaryKey": "primaryKey_",
+        "properties": {
+          "structArray": {
+            "displayName": "StructArray",
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "struct",
+                "structFieldTypes": [
+                  {
+                    "apiName": "string1",
+                    "rid":
+                      "ri.ontology.main.struct-field.108c5fd9-ac85-45aa-8b89-0854c40a51b8",
+                    "dataType": {
+                      "type": "string",
+                    },
+                  },
+                  {
+                    "apiName": "string2",
+                    "rid":
+                      "ri.ontology.main.struct-field.a993c24d-cb2f-4c0b-b013-3a06304da519",
+                    "dataType": {
+                      "type": "string",
+                    },
+                  },
+                  {
+                    "apiName": "number",
+                    "rid":
+                      "ri.ontology.main.struct-field.5febfe99-dae4-4467-8a83-918d8e36a24e",
+                    "dataType": {
+                      "type": "integer",
+                    },
+                  },
+                ],
+              },
+            },
+            "rid":
+              "ri.ontology.main.property.345b80f5-4901-4f40-9aae-b830d1ed9432",
+            "status": {
+              "type": "experimental",
+            },
+            "visibility": "NORMAL",
+          },
+          "description": {
+            "displayName": "Description",
+            "dataType": {
+              "type": "string",
+            },
+          },
+          "osdkObjectName": {
+            "displayName": "osdkObjectName",
+            "dataType": {
+              "type": "string",
+            },
+          },
+          "primaryKey_": {
+            "displayName": "Primary Key",
+            "dataType": {
+              "type": "string",
+            },
+          },
+          "stringProperty": {
+            "displayName": "String Property",
+            "dataType": {
+              "type": "string",
+            },
+            "valueTypeApiName": "colorValueType",
+          },
+        },
+        "rid":
+          "ri.ontology.main.object-type.ba4a949c-547a-45de-9c78-b772bb55acfb",
+        "titleProperty": "primaryKey_",
+        "visibility": "NORMAL",
+      },
+      "linkTypes": [],
+      "implementsInterfaces": ["FooInterface", "OsdkTestInterface"],
+      "implementsInterfaces2": {
+        "FooInterface": {
+          "properties": {
+            "name": "osdkObjectName",
+            "description": "description",
+          },
+        },
+        "OsdkTestInterface": {
+          "properties": {
+            "objectDescription": "description",
+          },
+        },
+      },
+      "sharedPropertyTypeMapping": {},
+    },
+    "WeatherStation": {
+      "objectType": {
+        "apiName": "WeatherStation",
+        "primaryKey": "stationId",
+        "displayName": "Weather Station",
+        "description": "Weather Station",
+        "properties": {
+          "stationId": {
+            "dataType": {
+              "type": "string",
+            },
+          },
+          "geohash": {
+            "dataType": {
+              "type": "geopoint",
+            },
+            "description": "geopoint",
+            "displayName": "Geohash",
+          },
+        },
+        "status": "ACTIVE",
+        "rid": "ri.a.b.c.d",
+        "icon": {
+          "type": "blueprint",
+          "name": "weather",
+          "color": "color",
+        },
+        "titleProperty": "stationId",
+        "pluralDisplayName": "Weather Stations",
+      },
+      "linkTypes": [],
+    },
+    "TestGeoAction": {
+      "objectType": {
+        "apiName": "TestGeoAction",
+        "primaryKey": "geoPk",
+        "displayName": "Test Geo Object",
+        "description": "Test Geo Object",
+        "properties": {
+          "geoPk": {
+            "dataType": {
+              "type": "string",
+            },
+          },
+          "geohashProp": {
+            "dataType": {
+              "type": "geohash",
+            },
+            "description": "geopoint",
+            "displayName": "Geohash",
+          },
+          "geoshapeProp": {
+            "dataType": {
+              "type": "geoshape",
+            },
+            "description": "geoshape",
+            "displayName": "Geoshape",
+          },
+          "geoTitle": {
+            "dataType": {
+              "type": "string",
+            },
+            "description": "geoTitle",
+            "displayName": "Geotitle",
+          },
+        },
+        "status": "ACTIVE",
+        "rid": "ri.a.b.c.d",
+        "icon": {
+          "type": "blueprint",
+          "name": "weather",
+          "color": "color",
+        },
+        "titleProperty": "stationId",
+        "pluralDisplayName": "Weather Stations",
+      },
+      "linkTypes": [],
+    },
+    "BoundariesUsState": {
+      "objectType": {
+        "apiName": "BoundariesUsState",
+        "primaryKey": "usState",
+        "displayName": "Boundaries US State",
+        "description": "Boundaries US State",
+        "properties": {
+          "usState": {
+            "dataType": {
+              "type": "string",
+            },
+          },
+          "latitude": {
+            "dataType": {
+              "type": "double",
+            },
+          },
+          "longitude": {
+            "dataType": {
+              "type": "double",
+            },
+          },
+          "geometry10M": {
+            "dataType": {
+              "type": "geoshape",
+            },
+            "description": "geoshape",
+            "displayName": "Geometry10M",
+          },
+        },
+        "status": "ACTIVE",
+        "rid": "ri.a.b.c.d",
+        "icon": {
+          "type": "blueprint",
+          "name": "usState",
+          "color": "color",
+        },
+        "titleProperty": "usState",
+        "pluralDisplayName": "Boundaries US States",
+      },
+      "linkTypes": [],
+    },
+    "FintrafficAis": {
+      "objectType": {
+        "apiName": "FintrafficAis",
+        "primaryKey": "mmsi",
+        "displayName": "Fintraffic AIS",
+        "description": "Fintraffic AIS",
+        "properties": {
+          "mmsi": {
+            "dataType": {
+              "type": "string",
+            },
+          },
+          "name": {
+            "dataType": {
+              "type": "string",
+            },
+          },
+          "centroid": {
+            "dataType": {
+              "type": "geopoint",
+            },
+          },
+          "geometry": {
+            "dataType": {
+              "type": "geoshape",
+            },
+          },
+          "seriesId": {
+            "dataType": {
+              "type": "geotimeSeriesReference",
+            },
+          },
+          "shipType": {
+            "dataType": {
+              "type": "string",
+            },
+          },
+          "timestamp": {
+            "dataType": {
+              "type": "timestamp",
+            },
+          },
+        },
+        "status": "ACTIVE",
+        "rid": "ri.a.b.c.d",
+        "icon": {
+          "type": "blueprint",
+          "name": "traffic",
+          "color": "color",
+        },
+        "titleProperty": "name",
+        "pluralDisplayName": "Fintraffic AIS",
+      },
+      "linkTypes": [],
+    },
+    "MtaBus": {
+      "objectType": {
+        "apiName": "MtaBus",
+        "primaryKey": "vehicleId",
+        "displayName": "MtaBus",
+        "description": "MtaBus",
+        "properties": {
+          "vehicleId": {
+            "dataType": {
+              "type": "string",
+            },
+          },
+          "nextStopId": {
+            "dataType": {
+              "type": "string",
+            },
+          },
+          "routeId": {
+            "dataType": {
+              "type": "string",
+            },
+          },
+          "positionId": {
+            "dataType": {
+              "type": "geotimeSeriesReference",
+            },
+          },
+        },
+        "status": "ACTIVE",
+        "rid": "ri.a.b.c.d",
+        "icon": {
+          "type": "blueprint",
+          "name": "traffic",
+          "color": "color",
+        },
+        "titleProperty": "name",
+        "pluralDisplayName": "Fintraffic AIS",
+      },
+      "linkTypes": [],
+    },
+    "RhemmingsObjectWithGtsrProperty2": {
+      "objectType": {
+        "apiName": "RhemmingsObjectWithGtsrProperty2",
+        "primaryKey": "id",
+        "displayName": "(rhemmings) Object with GTSR property 2",
+        "description": "(rhemmings) Object with GTSR property 2",
+        "properties": {
+          "id": {
+            "dataType": {
+              "type": "string",
+            },
+          },
+          "type": {
+            "dataType": {
+              "type": "string",
+            },
+          },
+          "location": {
+            "dataType": {
+              "type": "geopoint",
+            },
+          },
+          "gtsr": {
+            "dataType": {
+              "type": "geotimeSeriesReference",
+            },
+          },
+          "timestamp": {
+            "dataType": {
+              "type": "timestamp",
+            },
+          },
+        },
+        "status": "ACTIVE",
+        "rid": "ri.a.b.c.d",
+        "icon": {
+          "type": "blueprint",
+          "name": "traffic",
+          "color": "color",
+        },
+        "titleProperty": "id",
+        "pluralDisplayName": "(rhemmings) Object with GTSR property 2",
+      },
+      "linkTypes": [],
+    },
+    "GtfsTripTrackObject": {
+      "objectType": {
+        "apiName": "GtfsTripTrackObject",
+        "primaryKey": "entityId",
+        "displayName": "GtfsTripTrackObject",
+        "description": "GtfsTripTrackObject",
+        "properties": {
+          "entityId": {
+            "dataType": {
+              "type": "string",
+            },
+          },
+          "geotimeSeriesReferences": {
+            "dataType": {
+              "type": "geotimeSeriesReference",
+            },
+          },
+          "timestamp": {
+            "dataType": {
+              "type": "timestamp",
+            },
+          },
+        },
+        "status": "ACTIVE",
+        "rid": "ri.a.b.c.d",
+        "icon": {
+          "type": "blueprint",
+          "name": "traffic",
+          "color": "color",
+        },
+        "titleProperty": "entityId",
+        "pluralDisplayName": "GtfsTripTrackObject",
+      },
+      "linkTypes": [],
+    },
+    "BgaoNflPlayer": {
+      "objectType": {
+        "apiName": "BgaoNflPlayer",
+        "primaryKey": "id",
+        "displayName": "BgaoNflPlayer",
+        "description": "BgaoNflPlayer",
+        "properties": {
+          "id": {
+            "dataType": {
+              "type": "string",
+            },
+          },
+          "gamesPlayed": {
+            "dataType": {
+              "type": "integer",
+            },
+          },
+          "name": {
+            "dataType": {
+              "type": "string",
+            },
+          },
+          "number": {
+            "dataType": {
+              "type": "integer",
+            },
+          },
+          "wikiUrl": {
+            "dataType": {
+              "type": "string",
+            },
+          },
+          "address": {
+            "dataType": {
+              "type": "struct",
+              "structFieldTypes": [
+                {
+                  "apiName": "addressLine1",
+                  "dataType": {
+                    "type": "string",
+                  },
+                },
+                {
+                  "apiName": "addressLine2",
+                  "dataType": {
+                    "type": "string",
+                  },
+                },
+                {
+                  "apiName": "city",
+                  "dataType": {
+                    "type": "string",
+                  },
+                },
+                {
+                  "apiName": "state",
+                  "dataType": {
+                    "type": "string",
+                  },
+                },
+                {
+                  "apiName": "zipCode",
+                  "dataType": {
+                    "type": "integer",
+                  },
+                },
+              ],
+            },
+          },
+        },
+
+        "status": "ACTIVE",
+        "rid": "ri.a.b.c.d",
+        "icon": {
+          "type": "blueprint",
+          "name": "traffic",
+          "color": "color",
+        },
+        "titleProperty": "entityId",
+        "pluralDisplayName": "GtfsTripTrackObject",
+      },
+      "linkTypes": [],
+    },
+    "NbaPlayer": {
+      "objectType": {
+        "apiName": "NbaPlayer",
+        "primaryKey": "id",
+        "displayName": "NbaPlayer",
+        "description": "NbaPlayer",
+        "properties": {
+          "id": {
+            "dataType": {
+              "type": "string",
+            },
+          },
+          "gamesPlayed": {
+            "dataType": {
+              "type": "integer",
+            },
+          },
+          "name": {
+            "dataType": {
+              "type": "string",
+            },
+          },
+          "jerseyNumber": {
+            "dataType": {
+              "type": "integer",
+            },
+          },
+          "wikiUrl": {
+            "dataType": {
+              "type": "string",
+            },
+          },
+        },
+
+        "status": "ACTIVE",
+        "rid": "ri.a.b.c.d",
+        "icon": {
+          "type": "blueprint",
+          "name": "traffic",
+          "color": "color",
+        },
+        "titleProperty": "name",
+        "pluralDisplayName": "names",
+      },
+      "implementsInterfaces": ["Athlete"],
+      "implementsInterfaces2": {
+        "Athlete": {
+          "properties": {
+            "jerseyNumber": "jerseyNumber",
+            "athleteId": "id",
+            "name22": "name",
+          },
+        },
+      },
+      "linkTypes": [],
+    },
+    "StructPerson": {
+      "objectType": {
+        "apiName": "StructPerson",
+        "primaryKey": "name",
+        "displayName": "StructPerson",
+        "description": "StructPerson",
+        "properties": {
+          "name": {
+            "dataType": {
+              "type": "string",
+            },
+          },
+          "address": {
+            "dataType": {
+              "type": "struct",
+              "structFieldTypes": [
+                {
+                  "apiName": "city",
+                  "dataType": {
+                    "type": "string",
+                  },
+                },
+                {
+                  "apiName": "state",
+                  "dataType": {
+                    "type": "string",
+                  },
+                },
+              ],
+            },
+          },
+        },
+
+        "status": "ACTIVE",
+        "rid": "ri.a.b.c.d",
+        "icon": {
+          "type": "blueprint",
+          "name": "traffic",
+          "color": "color",
+        },
+        "titleProperty": "name",
+        "pluralDisplayName": "StructPeople",
+      },
+      "linkTypes": [],
+    },
+    "StructPersonOpisTeam": {
+      "objectType": {
+        "apiName": "StructPersonOpisTeam",
+        "primaryKey": "id",
+        "displayName": "StructPersonOpisTeam",
+        "description": "StructPersonOpisTeam",
+        "properties": {
+          "id": {
+            "dataType": {
+              "type": "string",
+            },
+          },
+          "age": {
+            "dataType": {
+              "type": "integer",
+            },
+          },
+          "address": {
+            "dataType": {
+              "type": "struct",
+              "structFieldTypes": [
+                {
+                  "apiName": "city",
+                  "dataType": {
+                    "type": "string",
+                  },
+                },
+                {
+                  "apiName": "state",
+                  "dataType": {
+                    "type": "string",
+                  },
+                },
+                {
+                  "apiName": "zipcode",
+                  "dataType": {
+                    "type": "integer",
+                  },
+                },
+              ],
+            },
+          },
+        },
+
+        "status": "ACTIVE",
+        "rid": "ri.a.b.c.d",
+        "icon": {
+          "type": "blueprint",
+          "name": "traffic",
+          "color": "color",
+        },
+        "titleProperty": "name",
+        "pluralDisplayName": "StructPeople",
+      },
+      "linkTypes": [],
+    },
+    "DherlihyComplexObject": {
+      "objectType": {
+        "apiName": "DherlihyComplexObject",
+        "primaryKey": "id",
+        "displayName": "Dherlihy Complex Object",
+        "description": "Dherlihy Complex Object",
+        "properties": {
+          "id": {
+            "dataType": {
+              "type": "string",
+            },
+          },
+          "secret": {
+            "dataType": {
+              "type": "string",
+            },
+          },
+          "seriesId": {
+            "dataType": {
+              "type": "timeseries",
+              "itemType": {
+                "type": "double",
+              },
+            },
+          },
+        },
+        "status": "ACTIVE",
+        "rid": "rid.a.b.c.d",
+        "icon": {
+          "type": "blueprint",
+          "name": "dherlihy",
+          "color": "color",
+        },
+        "titleProperty": "id",
+        "pluralDisplayName": "Dherlihy Complex Objects",
+      },
+      "linkTypes": [],
+    },
+    "MnayanOsdkMediaObject": {
+      "objectType": {
+        "apiName": "MnayanOsdkMediaObject",
+        "primaryKey": "id",
+        "displayName": "MnayanOSDKMediaObject",
+        "description": "Media OT for OSDK e2e testing",
+        "properties": {
+          "id": {
+            "dataType": {
+              "type": "string",
+            },
+          },
+          "path": {
+            "dataType": {
+              "type": "string",
+            },
+          },
+          "mediaReference": {
+            "dataType": {
+              "type": "mediaReference",
+            },
+          },
+        },
+        "status": "ACTIVE",
+        "rid": "rid.a.b.c.d",
+        "icon": {
+          "type": "blueprint",
+          "name": "object",
+          "color": "color",
+        },
+        "titleProperty": "path",
+        "pluralDisplayName": "Mnayan OSDKMedia Objects",
+      },
+      "linkTypes": [],
+    },
+    "UnstructuredImageExample": {
+      "objectType": {
+        "apiName": "UnstructuredImageExample",
+        "primaryKey": "mediaItemRid",
+        "displayName": "Unstructured Image Example",
+        "description": "Media OT for OSDK e2e testing",
+        "properties": {
+          "mediaItemRid": {
+            "dataType": {
+              "type": "string",
+            },
+          },
+          "path": {
+            "dataType": {
+              "type": "string",
+            },
+          },
+          "mediaReference": {
+            "dataType": {
+              "type": "mediaReference",
+            },
+          },
+        },
+        "status": "ACTIVE",
+        "rid": "rid.a.b.c.d",
+        "icon": {
+          "type": "blueprint",
+          "name": "object",
+          "color": "color",
+        },
+        "titleProperty": "path",
+        "pluralDisplayName": "Unstructured Image Examples",
+      },
+      "linkTypes": [],
+    },
+    "SotSensor": {
+      "objectType": {
+        "apiName": "SotSensor",
+        "primaryKey": "seriesId",
+        "displayName": "SOT-Sensor",
+        "description": "SOT-Sensor",
+        "properties": {
+          "isEnum": {
+            "displayName": "Is Enum",
+            "dataType": {
+              "type": "boolean",
+            },
+            "valueTypeApiName": "booleanValueType",
+          },
+          "timeSeriesProperty": {
+            "displayName": "Time Series Property",
+            "dataType": {
+              "type": "timeseries",
+            },
+          },
+          "sensorName": {
+            "displayName": "Sensor Name",
+            "dataType": {
+              "type": "string",
+            },
+          },
+          "seriesId": {
+            "displayName": "Series Id",
+            "dataType": {
+              "type": "string",
+            },
+          },
+          "wellId": {
+            "displayName": "Well Id",
+            "dataType": {
+              "type": "string",
+            },
+          },
+        },
+        "status": "ACTIVE",
+        "rid": "rid.a.b.c.d",
+        "icon": {
+          "type": "blueprint",
+          "name": "sotsensor",
+          "color": "color",
+        },
+        "titleProperty": "seriesId",
+        "pluralDisplayName": "SOT-Sensors",
+      },
+      "linkTypes": [],
+    },
+    "McAirportStruct": {
+      "objectType": {
+        "apiName": "McAirportStruct",
+        "primaryKey": "airportName",
+        "displayName": "McAirportStruct",
+        "description": "McAirportStruct",
+        "properties": {
+          "airportName": {
+            "displayName": "Airport Name",
+            "dataType": {
+              "type": "string",
+            },
+          },
+          "city": {
+            "displayName": "City",
+            "dataType": {
+              "type": "string",
+            },
+          },
+          "airportStruct": {
+            "displayName": "Airport Struct",
+            "dataType": {
+              "type": "struct",
+              "structFieldTypes": [
+                {
+                  "apiName": "code",
+                  "dataType": {
+                    "type": "string",
+                  },
+                },
+                {
+                  "apiName": "geoHash",
+                  "dataType": {
+                    "type": "string",
+                  },
+                },
+                {
+                  "apiName": "timestamp",
+                  "dataType": {
+                    "type": "string",
+                  },
+                },
+              ],
+            },
+          },
+          "state": {
+            "displayName": "State",
+            "dataType": {
+              "type": "string",
+            },
+          },
+          "originDate": {
+            "displayName": "Origin Date",
+            "dataType": {
+              "type": "timestamp",
+            },
+          },
+        },
+        "status": "ACTIVE",
+        "rid": "rid.a.b.c.d",
+        "icon": {
+          "type": "blueprint",
+          "name": "mcAirportStruct",
+          "color": "color",
+        },
+        "titleProperty": "airportName",
+        "pluralDisplayName": "McAirportStructs",
+      },
+      "linkTypes": [],
+    },
+    "BuilderDeploymentState": {
+      "objectType": {
+        "apiName": "BuilderDeploymentState",
+        "primaryKey": "skuId",
+        "displayName": "BuilderDeploymentState",
+        "description": "Builder Deployment State",
+        "properties": {
+          "skuId": {
+            "dataType": {
+              "type": "string",
+            },
+          },
+          "date": {
+            "dataType": {
+              "type": "date",
+            },
+          },
+          "currentTimestamp": {
+            "dataType": {
+              "type": "timestamp",
+            },
+          },
+        },
+        "status": "ACTIVE",
+        "rid": "rid.a.b.c.d",
+        "icon": {
+          "type": "blueprint",
+          "name": "builder",
+          "color": "color",
+        },
+        "titleProperty": "skuId",
+        "pluralDisplayName": "Builder Deployment States",
+      },
+      "linkTypes": [],
+    },
+    "Todo": {
+      "objectType": {
+        "apiName": "Todo",
+        "primaryKey": "id",
+        "displayName": "AwesomeTodoDisplayname",
+        "description": "Its a todo item.",
+        "properties": {
+          "id": {
+            "dataType": {
+              "type": "integer",
+            },
+          },
+          "body": {
+            "dataType": {
+              "type": "string",
+            },
+            "description": "The text of the todo",
+            "displayName": "Body",
+          },
+          "text": {
+            "dataType": {
+              "type": "string",
+            },
+            "displayName": "Text",
+          },
+          "priority": {
+            "dataType": {
+              "type": "integer",
+            },
+          },
+          "complete": {
+            "dataType": {
+              "type": "boolean",
+            },
+          },
+        },
+        "status": "ACTIVE",
+        "rid": "rid.a.b.c.d",
+        "icon": {
+          "type": "blueprint",
+          "name": "todo",
+          "color": "color",
+        },
+        "titleProperty": "body",
+        "pluralDisplayName": "AwesomeTodoDisplayname",
+      },
+      "linkTypes": [
+        {
+          "apiName": "Assignee",
+          "cardinality": "ONE",
+          "displayName": "Assignee",
+          "objectTypeApiName": "Person",
+          "status": "ACTIVE",
+          "foreignKeyPropertyApiName": "email",
+        },
+      ],
+    },
+    "Person": {
+      "objectType": {
+        "apiName": "Person",
+        "primaryKey": "email",
+        "displayName": "Person",
+        "description": "A person",
+        "properties": {
+          "email": {
+            "dataType": {
+              "type": "string",
+            },
+          },
+        },
+
+        "rid": "rid.a.b.c.d",
+        "status": "ACTIVE",
+        "icon": {
+          "type": "blueprint",
+          "name": "person",
+          "color": "color",
+        },
+        "titleProperty": "email",
+        "pluralDisplayName": "People",
+      },
+      "linkTypes": [
+        {
+          "apiName": "Todos",
+          "cardinality": "MANY",
+          "displayName": "Todos",
+          "objectTypeApiName": "Todo",
+          "status": "ACTIVE",
+          "foreignKeyPropertyApiName": "id",
+        },
+        {
+          "apiName": "Friends",
+          "cardinality": "MANY",
+          "displayName": "Friends",
+          "objectTypeApiName": "Person",
+          "status": "ACTIVE",
+        },
+      ],
+    },
+    "Employee": {
+      "objectType": {
+        "apiName": "Employee",
+        "primaryKey": "id",
+        "displayName": "Employee",
+        "description": "An employee",
+        "icon": {
+          "type": "blueprint",
+          "name": "color",
+          "color": "color",
+        },
+        "properties": {
+          "id": {
+            "dataType": {
+              "type": "string",
+            },
+          },
+          "firstName": {
+            "dataType": {
+              "type": "string",
+            },
+          },
+          "email": {
+            "dataType": {
+              "type": "string",
+            },
+          },
+          "adUsername": {
+            "dataType": {
+              "type": "string",
+            },
+          },
+          "locationName": {
+            "dataType": {
+              "type": "string",
+            },
+          },
+          "locationCity": {
+            "dataType": {
+              "type": "string",
+            },
+          },
+          "firstFullTimeStartDate": {
+            "dataType": {
+              "type": "date",
+            },
+          },
+          "businessTitle": {
+            "dataType": {
+              "type": "string",
+            },
+          },
+          "employeeNumber": {
+            "dataType": {
+              "type": "double",
+            },
+          },
+          "jobProfile": {
+            "dataType": {
+              "type": "string",
+            },
+          },
+          "locationType": {
+            "dataType": {
+              "type": "string",
+            },
+          },
+          "favPlace": {
+            "dataType": {
+              "type": "geopoint",
+            },
+          },
+        },
+
+        "rid": "rid.a.b.c.d",
+        "status": "ACTIVE",
+        "titleProperty": "firstName",
+        "pluralDisplayName": "Employees",
+      },
+      "linkTypes": [
+        {
+          "apiName": "lead",
+          "cardinality": "ONE",
+          "displayName": "Lead",
+          "objectTypeApiName": "Employee",
+          "status": "ACTIVE",
+          "foreignKeyPropertyApiName": "adUsername",
+        },
+        {
+          "apiName": "peeps",
+          "cardinality": "MANY",
+          "displayName": "Peeps",
+          "objectTypeApiName": "Employee",
+          "status": "ACTIVE",
+          "foreignKeyPropertyApiName": "adUsername",
+        },
+        {
+          "apiName": "ventures",
+          "cardinality": "MANY",
+          "displayName": "Ventures",
+          "objectTypeApiName": "Venture",
+          "foreignKeyPropertyApiName": "ventureId",
+        },
+      ],
+      "implementsInterfaces": ["FooInterface"],
+      "implementsInterfaces2": {
+        "FooInterface": {
+          "properties": {
+            "name": "firstName",
+            "description": "email",
+          },
+        },
+      },
+      "sharedPropertyTypeMapping": {
+        "name": "firstName",
+        "description": "email",
+      },
+    },
+    "Venture": {
+      "objectType": {
+        "apiName": "Venture",
+        "primaryKey": "ventureId",
+        "displayName": "Venture",
+        "description": "A venture",
+        "properties": {
+          "ventureId": {
+            "dataType": {
+              "type": "string",
+            },
+          },
+          "ventureName": {
+            "dataType": {
+              "type": "string",
+            },
+          },
+          "ventureStart": {
+            "dataType": {
+              "type": "date",
+            },
+          },
+        },
+        "icon": {
+          "type": "blueprint",
+          "name": "ventureIcon",
+          "color": "color",
+        },
+        "rid": "rid.a.b.c.d",
+        "status": "ACTIVE",
+        "titleProperty": "ventureName",
+        "pluralDisplayName": "Ventures",
+      },
+      "linkTypes": [
+        {
+          "apiName": "employees",
+          "cardinality": "MANY",
+          "displayName": "Employees",
+          "objectTypeApiName": "Employee",
+          "foreignKeyPropertyApiName": "id",
+        },
+      ],
+    },
+    "ObjectTypeWithAllPropertyTypes": {
+      "objectType": {
+        "apiName": "ObjectTypeWithAllPropertyTypes",
+        "primaryKey": "id",
+        "displayName": "ObjectTypeWithAllPropertyTypes",
+        "description": "A type with all property types",
+        "rid": "rid.a.b.c.d",
+        "status": "ACTIVE",
+        "titleProperty": "id",
+        "pluralDisplayName": "ObjectTypeWithAllPropertyTypes",
+        "icon": {
+          "type": "blueprint",
+          "name": "objectTypeWithAllPropertyTypes",
+          "color": "color",
+        },
+        "properties": {
+          "id": {
+            "dataType": {
+              "type": "integer",
+            },
+          },
+          "string": {
+            "dataType": {
+              "type": "string",
+            },
+          },
+          "boolean": {
+            "dataType": {
+              "type": "boolean",
+            },
+          },
+          "date": {
+            "dataType": {
+              "type": "date",
+            },
+          },
+          "dateTime": {
+            "dataType": {
+              "type": "timestamp",
+            },
+          },
+          "decimal": {
+            "dataType": {
+              "type": "decimal",
+            },
+          },
+          "integer": {
+            "dataType": {
+              "type": "integer",
+            },
+          },
+          "long": {
+            "dataType": {
+              "type": "long",
+            },
+          },
+          "short": {
+            "dataType": {
+              "type": "short",
+            },
+          },
+          "float": {
+            "dataType": {
+              "type": "float",
+            },
+          },
+          "double": {
+            "dataType": {
+              "type": "double",
+            },
+          },
+          "byte": {
+            "dataType": {
+              "type": "byte",
+            },
+          },
+          "attachment": {
+            "dataType": {
+              "type": "attachment",
+            },
+          },
+          "geoPoint": {
+            "dataType": {
+              "type": "geopoint",
+            },
+          },
+          "geoShape": {
+            "dataType": {
+              "type": "geoshape",
+            },
+          },
+          "stringArray": {
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "string",
+              },
+            },
+          },
+          "booleanArray": {
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "boolean",
+              },
+            },
+          },
+          "dateArray": {
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "date",
+              },
+            },
+          },
+          "dateTimeArray": {
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "timestamp",
+              },
+            },
+          },
+          "decimalArray": {
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "decimal",
+              },
+            },
+          },
+          "integerArray": {
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "integer",
+              },
+            },
+          },
+          "longArray": {
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "long",
+              },
+            },
+          },
+          "shortArray": {
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "short",
+              },
+            },
+          },
+          "floatArray": {
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "float",
+              },
+            },
+          },
+          "doubleArray": {
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "double",
+              },
+            },
+          },
+          "byteArray": {
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "byte",
+              },
+            },
+          },
+          "attachmentArray": {
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "attachment",
+              },
+            },
+          },
+          "geoPointArray": {
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "geopoint",
+              },
+            },
+          },
+          "geoShapeArray": {
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "geoshape",
+              },
+            },
+          },
+          "numericTimeseries": {
+            "dataType": {
+              "type": "timeseries",
+              "itemType": {
+                "type": "double",
+              },
+            },
+          },
+          "stringTimeseries": {
+            "dataType": {
+              "type": "timeseries",
+              "itemType": {
+                "type": "string",
+              },
+            },
+          },
+        },
+      },
+      "linkTypes": [],
+    },
+    "MatthewvsDevOrderEmbedding": {
+      "objectType": {
+        "apiName": "MatthewvsDevOrderEmbedding",
+        "primaryKey": "orderId",
+        "displayName": "[matthewvs-dev] Order Embedding",
+        "description": "A venture",
+        "properties": {
+          "orderId": {
+            "dataType": {
+              "type": "string",
+            },
+          },
+          "orderTitle": {
+            "dataType": {
+              "type": "string",
+            },
+          },
+          "embedding": {
+            "displayName": "Embedding",
+            "dataType": {
+              "type": "vector",
+              "dimension": 1536,
+              "supportsSearchWith": [
+                {
+                  "value": "COSINE_SIMILARITY",
+                },
+              ],
+              "embeddingModel": {
+                "type": "lms",
+                "value": "OPENAI_TEXT_EMBEDDING_ADA_002",
+              },
+            },
+            "rid":
+              "ri.ontology.main.property.de94ac47-509e-4094-913e-5c66f370abc8",
+            "status": {
+              "type": "experimental",
+            },
+            "visibility": "NORMAL",
+          },
+        },
+        "icon": {
+          "type": "blueprint",
+          "name": "ventureIcon",
+          "color": "color",
+        },
+        "rid": "rid.a.b.c.d",
+        "status": "ACTIVE",
+        "titleProperty": "orderTitle",
+        "pluralDisplayName": "[matthewvs-dev] Order Embeddings",
+      },
+      "linkTypes": [],
+    },
+    "NihalbCastingObjectTypeA": {
+      "objectType": {
+        "apiName": "NihalbCastingObjectTypeA",
+        "displayName": "(nihalb) Casting Object Type A",
+        "status": "EXPERIMENTAL",
+        "description": "",
+        "pluralDisplayName": "(nihalb) Casting Object Type AS",
+        "icon": { "type": "blueprint", "color": "#4C90F0", "name": "cube" },
+        "primaryKey": "primaryKey_",
+        "properties": {
+          "additionalProperty": {
+            "displayName": "Additional Property",
+            "dataType": { "type": "string" },
+            "rid":
+              "ri.ontology.main.property.b7fe356f-0f79-46ab-90fd-98604eeff14e",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+          },
+          "primaryKey_": {
+            "displayName": "Primary Key",
+            "dataType": { "type": "string" },
+            "rid":
+              "ri.ontology.main.property.1eb5d966-e4c0-4d35-8d1a-56fb23d810a5",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+          },
+        },
+        "rid":
+          "ri.ontology.main.object-type.47776705-2ee2-4f59-af48-da192cd42456",
+        "titleProperty": "primaryKey_",
+        "visibility": "NORMAL",
+      },
+      "linkTypes": [
+        {
+          "apiName": "nihalbCastingLinkedObjectTypeAs",
+          "displayName": "(nihalb) Casting Linked Object Type A",
+          "status": "EXPERIMENTAL",
+          "objectTypeApiName": "NihalbCastingLinkedObjectTypeA",
+          "cardinality": "MANY",
+          "linkTypeRid":
+            "ri.ontology.main.relation.11001c0f-83a9-41c8-8e2d-38eee3061383",
+        },
+      ],
+      "implementsInterfaces": ["NihalbCastingInterfaceTypeA"],
+      "implementsInterfaces2": {
+        "NihalbCastingInterfaceTypeA": {
+          "properties": { "interfaceProperty": "primaryKey_" },
+          "links": {
+            "nihalbCastingLinkedObjectTypeA": [
+              "nihalbCastingLinkedObjectTypeAs",
+            ],
+          },
+        },
+      },
+      "sharedPropertyTypeMapping": {},
+    },
+    "NihalbCastingObjectTypeB": {
+      "objectType": {
+        "apiName": "NihalbCastingObjectTypeB",
+        "displayName": "(nihalb) Casting Object Type B",
+        "status": "EXPERIMENTAL",
+        "description": "",
+        "pluralDisplayName": "(nihalb) Casting Object Type BS",
+        "icon": { "type": "blueprint", "color": "#4C90F0", "name": "cube" },
+        "primaryKey": "primaryKey_",
+        "properties": {
+          "additionalProperty": {
+            "displayName": "Additional Property",
+            "dataType": { "type": "string" },
+            "rid":
+              "ri.ontology.main.property.1c15cc93-42ed-424f-ad1c-6d14b96ed49f",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+          },
+          "primaryKey_": {
+            "displayName": "Primary Key",
+            "dataType": { "type": "string" },
+            "rid":
+              "ri.ontology.main.property.fb2eab7d-6fa2-40de-aa5e-373dd5ebadd8",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+          },
+        },
+        "rid":
+          "ri.ontology.main.object-type.66898c81-9a3f-4f8b-937a-6934f6d9f660",
+        "titleProperty": "primaryKey_",
+        "visibility": "NORMAL",
+      },
+      "linkTypes": [
+        {
+          "apiName": "nihalbCastingLinkedObjectTypeAs",
+          "displayName": "(nihalb) Casting Linked Object Type A",
+          "status": "EXPERIMENTAL",
+          "objectTypeApiName": "NihalbCastingLinkedObjectTypeA",
+          "cardinality": "MANY",
+          "linkTypeRid":
+            "ri.ontology.main.relation.07607d04-e331-4302-b3ba-1d1c6e4bac71",
+        },
+      ],
+      "implementsInterfaces": [
+        "NihalbCastingInterfaceTypeA",
+        "NihalbCastingInterfaceB",
+      ],
+      "implementsInterfaces2": {
+        "NihalbCastingInterfaceB": {
+          "properties": { "interfaceProperty": "primaryKey_" },
+          "links": {
+            "nihalbCastingLinkedObjectTypeA": [
+              "nihalbCastingLinkedObjectTypeAs",
+            ],
+          },
+        },
+        "NihalbCastingInterfaceTypeA": {
+          "properties": { "interfaceProperty": "primaryKey_" },
+          "links": {
+            "nihalbCastingLinkedObjectTypeA": [
+              "nihalbCastingLinkedObjectTypeAs",
+            ],
+          },
+        },
+      },
+      "sharedPropertyTypeMapping": {},
+    },
+    "NihalbCastingObjectTypeC": {
+      "objectType": {
+        "apiName": "NihalbCastingObjectTypeC",
+        "displayName": "(nihalb) Casting Object Type C",
+        "status": "EXPERIMENTAL",
+        "description": "",
+        "pluralDisplayName": "(nihalb) Casting Object Type CS",
+        "icon": { "type": "blueprint", "color": "#4C90F0", "name": "cube" },
+        "primaryKey": "primaryKey_",
+        "properties": {
+          "additionalProperty": {
+            "displayName": "Additional Property",
+            "dataType": { "type": "string" },
+            "rid":
+              "ri.ontology.main.property.043a143f-48b3-41a1-a266-55c6ce1b7f5f",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+          },
+          "primaryKey_": {
+            "displayName": "Primary Key",
+            "dataType": { "type": "string" },
+            "rid":
+              "ri.ontology.main.property.668073de-e254-422d-802f-84f3485ca0fa",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+          },
+        },
+        "rid":
+          "ri.ontology.main.object-type.cf0cc2e5-f032-4659-9f5a-aec285317898",
+        "titleProperty": "primaryKey_",
+        "visibility": "NORMAL",
+      },
+      "linkTypes": [
+        {
+          "apiName": "nihalbCastingLinkedObjectTypeAs",
+          "displayName": "(nihalb) Casting Linked Object Type A",
+          "status": "EXPERIMENTAL",
+          "objectTypeApiName": "NihalbCastingLinkedObjectTypeA",
+          "cardinality": "MANY",
+          "linkTypeRid":
+            "ri.ontology.main.relation.0cf2ae57-2062-49fa-9a91-96005cc2c1fb",
+        },
+      ],
+      "implementsInterfaces": ["NihalbCastingInterfaceB"],
+      "implementsInterfaces2": {
+        "NihalbCastingInterfaceB": {
+          "properties": { "interfaceProperty": "primaryKey_" },
+          "links": {
+            "nihalbCastingLinkedObjectTypeA": [
+              "nihalbCastingLinkedObjectTypeAs",
+            ],
+          },
+        },
+      },
+      "sharedPropertyTypeMapping": {},
+    },
+    "NihalbCastingLinkedObjectTypeA": {
+      "objectType": {
+        "apiName": "NihalbCastingLinkedObjectTypeA",
+        "displayName": "(nihalb) Casting Linked Object Type A",
+        "status": "EXPERIMENTAL",
+        "description": "",
+        "pluralDisplayName": "(nihalb) Casting Linked Object Type AS",
+        "icon": { "type": "blueprint", "color": "#4C90F0", "name": "cube" },
+        "primaryKey": "primaryKey_",
+        "properties": {
+          "foreignKeyProperty": {
+            "displayName": "ForeignKeyProperty",
+            "dataType": { "type": "string" },
+            "rid":
+              "ri.ontology.main.property.b2feb6b8-7745-4539-8ce5-c16a19ccf26f",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+          },
+          "primaryKey_": {
+            "displayName": "Primary Key",
+            "dataType": { "type": "string" },
+            "rid":
+              "ri.ontology.main.property.e5a3537e-8284-43e2-98ee-c89d2c6ee480",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+          },
+        },
+        "rid":
+          "ri.ontology.main.object-type.e257ea9e-8127-471f-9253-d641f5585d26",
+        "titleProperty": "primaryKey_",
+        "visibility": "NORMAL",
+      },
+      "linkTypes": [
+        {
+          "apiName": "nihalbCastingObjectTypeA",
+          "displayName": "(nihalb) Casting Object Type A",
+          "status": "EXPERIMENTAL",
+          "objectTypeApiName": "NihalbCastingObjectTypeA",
+          "cardinality": "ONE",
+          "foreignKeyPropertyApiName": "foreignKeyProperty",
+          "linkTypeRid":
+            "ri.ontology.main.relation.11001c0f-83a9-41c8-8e2d-38eee3061383",
+        },
+        {
+          "apiName": "nihalbCastingObjectTypeB",
+          "displayName": "(nihalb) Casting Object Type B",
+          "status": "EXPERIMENTAL",
+          "objectTypeApiName": "NihalbCastingObjectTypeB",
+          "cardinality": "ONE",
+          "foreignKeyPropertyApiName": "foreignKeyProperty",
+          "linkTypeRid":
+            "ri.ontology.main.relation.07607d04-e331-4302-b3ba-1d1c6e4bac71",
+        },
+        {
+          "apiName": "nihalbCastingObjectTypeC",
+          "displayName": "(nihalb) Casting Object Type C",
+          "status": "EXPERIMENTAL",
+          "objectTypeApiName": "NihalbCastingObjectTypeC",
+          "cardinality": "ONE",
+          "foreignKeyPropertyApiName": "foreignKeyProperty",
+          "linkTypeRid":
+            "ri.ontology.main.relation.0cf2ae57-2062-49fa-9a91-96005cc2c1fb",
+        },
+      ],
+      "implementsInterfaces": ["NihalbCastingLinkedInterfaceTypeA"],
+      "implementsInterfaces2": {
+        "NihalbCastingLinkedInterfaceTypeA": {
+          "properties": { "primaryKeyProp": "primaryKey_" },
+          "links": { "nihalbCastingInterfaceB": ["nihalbCastingObjectTypeC"] },
+        },
+      },
+      "sharedPropertyTypeMapping": {},
+    },
+    "GraphqlFormatting": {
+      "objectType": {
+        "apiName": "GraphqlFormatting",
+        "displayName": "Graphql Formatting",
+        "status": "EXPERIMENTAL",
+        "description": "",
+        "pluralDisplayName": "Graphql Formatting",
+        "icon": { "type": "blueprint", "color": "#4C90F0", "name": "cube" },
+        "primaryKey": "stringPlain",
+        "properties": {
+          "doubleUnitKilogram": {
+            "displayName": "Double Unit Kilogram",
+            "dataType": { "type": "double" },
+            "rid":
+              "ri.ontology.main.property.ac9c7b85-56cc-4a5b-ab82-ce904796f15e",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "number",
+              "numberType": {
+                "type": "standardUnit",
+                "baseFormatOptions": {},
+                "unit": { "type": "constant", "value": "kilogram" },
+              },
+            },
+          },
+          "doubleCurrencyEur": {
+            "displayName": "Double Currency Eur",
+            "dataType": { "type": "double" },
+            "rid":
+              "ri.ontology.main.property.8aae8e24-ea23-4ac6-8203-a32ea6345355",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "number",
+              "numberType": {
+                "type": "currency",
+                "baseFormatOptions": {},
+                "style": "STANDARD",
+                "currencyCode": { "type": "constant", "value": "EUR" },
+              },
+            },
+          },
+          "timestampTimeOnly": {
+            "displayName": "Timestamp Time Only",
+            "dataType": { "type": "timestamp" },
+            "rid":
+              "ri.ontology.main.property.9b8ef264-7fbb-48a0-ad0c-6986a7424554",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "timestamp",
+              "format": {
+                "type": "localizedFormat",
+                "format": "DATE_FORMAT_TIME",
+              },
+              "displayTimezone": { "type": "user" },
+            },
+          },
+          "arrayIntegers": {
+            "displayName": "Array Integers",
+            "dataType": { "type": "array", "subType": { "type": "integer" } },
+            "rid":
+              "ri.ontology.main.property.48f0f993-98be-4179-b5e1-1774f1b94731",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+          },
+          "datePatternMdy": {
+            "displayName": "Date Pattern Mdy",
+            "dataType": { "type": "date" },
+            "rid":
+              "ri.ontology.main.property.2accc5d1-20f7-44f7-bf9c-b48f7e71c689",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "date",
+              "format": { "type": "stringFormat", "pattern": "MM-dd-yyyy" },
+            },
+          },
+          "marking": {
+            "displayName": "Marking",
+            "dataType": { "type": "array", "subType": { "type": "marking" } },
+            "rid":
+              "ri.ontology.main.property.71130aa8-15d4-46c3-a320-06ca0af703b9",
+            "status": { "type": "experimental" },
+            "visibility": "HIDDEN",
+          },
+          "dateIso": {
+            "displayName": "Date Iso",
+            "dataType": { "type": "date" },
+            "rid":
+              "ri.ontology.main.property.e8726d33-07e9-4191-93a7-fc7899c351c2",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "date",
+              "format": {
+                "type": "localizedFormat",
+                "format": "DATE_FORMAT_ISO_INSTANT",
+              },
+            },
+          },
+          "longScientific": {
+            "displayName": "Long Scientific",
+            "dataType": { "type": "long" },
+            "rid":
+              "ri.ontology.main.property.82afc5cc-8e19-4eb7-b535-31afa0c3fe5e",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "number",
+              "numberType": {
+                "type": "standard",
+                "baseFormatOptions": {
+                  "useGrouping": false,
+                  "notation": "SCIENTIFIC",
+                },
+              },
+            },
+          },
+          "negativePercentage": {
+            "displayName": "Negative Percentage",
+            "dataType": { "type": "float" },
+            "rid":
+              "ri.ontology.main.property.5704ebf5-133a-4614-b6d2-965ad2ccfc4b",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "number",
+              "numberType": {
+                "type": "ratio",
+                "ratioType": "PERCENTAGE",
+                "baseFormatOptions": {},
+              },
+            },
+          },
+          "doublePerMille": {
+            "displayName": "Double Per Mille",
+            "dataType": { "type": "double" },
+            "rid":
+              "ri.ontology.main.property.96ac8fe6-d0ff-4bc4-b95e-f2b41e0d3036",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "number",
+              "numberType": {
+                "type": "ratio",
+                "ratioType": "PER_MILLE",
+                "baseFormatOptions": {},
+              },
+            },
+          },
+          "longCompact": {
+            "displayName": "Long Compact",
+            "dataType": { "type": "long" },
+            "rid":
+              "ri.ontology.main.property.79ad9e72-cb83-4668-b7d4-073751bc1bac",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "number",
+              "numberType": {
+                "type": "standard",
+                "baseFormatOptions": { "notation": "COMPACT" },
+              },
+            },
+          },
+          "mediaReference": {
+            "displayName": "Media Reference",
+            "dataType": { "type": "mediaReference" },
+            "rid":
+              "ri.ontology.main.property.759af777-d31e-4f0c-b641-1dd15ff75825",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+          },
+          "dateRelative": {
+            "displayName": "Date Relative",
+            "dataType": { "type": "date" },
+            "rid":
+              "ri.ontology.main.property.fa4ff85f-d30f-4724-893a-f2b445819c85",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "date",
+              "format": {
+                "type": "localizedFormat",
+                "format": "DATE_FORMAT_RELATIVE_TO_NOW",
+              },
+            },
+          },
+          "doublePrecision2": {
+            "displayName": "Double Precision 2",
+            "dataType": { "type": "double" },
+            "rid":
+              "ri.ontology.main.property.56764344-8833-4cca-aede-8eaffecbbb1f",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "number",
+              "numberType": {
+                "type": "standard",
+                "baseFormatOptions": { "maximumSignificantDigits": 2 },
+              },
+            },
+          },
+          "timestampUtc": {
+            "displayName": "Timestamp reference",
+            "dataType": { "type": "timestamp" },
+            "rid":
+              "ri.ontology.main.property.1ff56297-df30-482a-b65b-742459b921b1",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "timestamp",
+              "format": {
+                "type": "localizedFormat",
+                "format": "DATE_FORMAT_DATE_TIME",
+              },
+              "displayTimezone": {
+                "type": "static",
+                "zoneId": {
+                  "type": "propertyType",
+                  "propertyApiName": "timezoneProperty",
+                },
+              },
+            },
+          },
+          "doubleBasisPoints": {
+            "displayName": "Double Basis Points",
+            "dataType": { "type": "double" },
+            "rid":
+              "ri.ontology.main.property.36454a70-193b-4e36-bcb6-d1e8c3f306d4",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "number",
+              "numberType": {
+                "type": "ratio",
+                "ratioType": "BASIS_POINTS",
+                "baseFormatOptions": {},
+              },
+            },
+          },
+          "timestampDatetimeShort": {
+            "displayName": "Timestamp Datetime Short",
+            "dataType": { "type": "timestamp" },
+            "rid":
+              "ri.ontology.main.property.f6286441-40e5-4d27-a04c-1ee38ac8e568",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "timestamp",
+              "format": {
+                "type": "localizedFormat",
+                "format": "DATE_FORMAT_DATE_TIME_SHORT",
+              },
+              "displayTimezone": { "type": "user" },
+            },
+          },
+          "doublePrecision4": {
+            "displayName": "Double Precision 4",
+            "dataType": { "type": "double" },
+            "rid":
+              "ri.ontology.main.property.9d88d3ed-4d17-44a0-987f-ba7c82317f12",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "number",
+              "numberType": {
+                "type": "standard",
+                "baseFormatOptions": { "maximumSignificantDigits": 4 },
+              },
+            },
+          },
+          "longPlain": {
+            "displayName": "Long Plain",
+            "dataType": { "type": "long" },
+            "rid":
+              "ri.ontology.main.property.29015584-f568-47c4-8a9d-11dc335ece73",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+          },
+          "zeroValue": {
+            "displayName": "Zero Value",
+            "dataType": { "type": "integer" },
+            "rid":
+              "ri.ontology.main.property.fcd3cce0-ed7c-4b86-8b3d-540d5f7b6a4e",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+          },
+          "doublePlain": {
+            "displayName": "Double Plain",
+            "dataType": { "type": "double" },
+            "rid":
+              "ri.ontology.main.property.21bdad64-a2c4-4cc3-a816-72037b8a6c11",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+          },
+          "struct": {
+            "displayName": "Struct",
+            "dataType": {
+              "type": "struct",
+              "structFieldTypes": [
+                {
+                  "apiName": "stringValue",
+                  "rid":
+                    "ri.ontology.main.struct-field.3139784a-2d62-4253-adb6-41a382b67f38",
+                  "dataType": { "type": "string" },
+                },
+                {
+                  "apiName": "integerValue",
+                  "rid":
+                    "ri.ontology.main.struct-field.9d468bb0-d746-4e33-a427-161b52f02106",
+                  "dataType": { "type": "integer" },
+                },
+                {
+                  "apiName": "doubleValue",
+                  "rid":
+                    "ri.ontology.main.struct-field.43da6e54-c60d-47c3-afcd-6202f94af125",
+                  "dataType": { "type": "double" },
+                },
+                {
+                  "apiName": "booleanValue",
+                  "rid":
+                    "ri.ontology.main.struct-field.2206f35a-7b60-4fa9-9fc2-34f0581da37c",
+                  "dataType": { "type": "boolean" },
+                },
+                {
+                  "apiName": "dateValue",
+                  "rid":
+                    "ri.ontology.main.struct-field.278920e4-67b6-4384-8e8e-1225a495c4a2",
+                  "dataType": { "type": "date" },
+                },
+                {
+                  "apiName": "timestampValue",
+                  "rid":
+                    "ri.ontology.main.struct-field.81925279-1f5e-48e2-8ca7-8f5a6860ef96",
+                  "dataType": { "type": "timestamp" },
+                },
+                {
+                  "apiName": "nullValue",
+                  "rid":
+                    "ri.ontology.main.struct-field.018f4a3f-da21-48d9-b287-7e8d8e010dd7",
+                  "dataType": { "type": "string" },
+                },
+              ],
+            },
+            "rid":
+              "ri.ontology.main.property.807d466f-0b5a-4f53-bfef-83a633cc4708",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+          },
+          "doubleSignificant3": {
+            "displayName": "Double Significant 3",
+            "dataType": { "type": "double" },
+            "rid":
+              "ri.ontology.main.property.5e2cffdf-55e2-40d1-873b-9a5fae8ef85f",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "number",
+              "numberType": {
+                "type": "standard",
+                "baseFormatOptions": { "minimumSignificantDigits": 3 },
+              },
+            },
+          },
+          "doubleUnitCelsius": {
+            "displayName": "Double Unit Celsius",
+            "dataType": { "type": "double" },
+            "rid":
+              "ri.ontology.main.property.9fc90260-2bc5-42e2-81a3-7afa4b47a630",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "number",
+              "numberType": {
+                "type": "standardUnit",
+                "baseFormatOptions": {},
+                "unit": { "type": "constant", "value": "celsius" },
+              },
+            },
+          },
+          "integerPlain": {
+            "displayName": "Integer Plain",
+            "dataType": { "type": "integer" },
+            "rid":
+              "ri.ontology.main.property.5171cf63-cbc1-479a-a53f-e261972672d3",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+          },
+          "attachmentList": {
+            "displayName": "Attachment list",
+            "dataType": {
+              "type": "array",
+              "subType": { "type": "attachment" },
+            },
+            "rid":
+              "ri.ontology.main.property.6a57c283-a437-47af-87d8-8cc085153c45",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+          },
+          "doubleRoundingCeil": {
+            "displayName": "Double Rounding Ceil",
+            "dataType": { "type": "double" },
+            "rid":
+              "ri.ontology.main.property.bb5446a3-2e77-478a-8a1b-5897ee6ab7eb",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "number",
+              "numberType": {
+                "type": "standard",
+                "baseFormatOptions": { "useGrouping": false },
+              },
+            },
+          },
+          "durationMilliseconds": {
+            "displayName": "Duration Milliseconds",
+            "dataType": { "type": "long" },
+            "rid":
+              "ri.ontology.main.property.6f4262dc-e6ac-4d38-82a4-18f496e01da0",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "number",
+              "numberType": {
+                "type": "duration",
+                "formatStyle": { "type": "timecode" },
+                "precision": "AUTO",
+                "baseValue": "MILLISECONDS",
+              },
+            },
+          },
+          "dateLong": {
+            "displayName": "Date Long",
+            "dataType": { "type": "date" },
+            "rid":
+              "ri.ontology.main.property.ffa86138-345c-4df0-969d-5ef9bf6677a7",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "date",
+              "format": {
+                "type": "localizedFormat",
+                "format": "DATE_FORMAT_DATE_TIME",
+              },
+            },
+          },
+          "doubleCustomUnit": {
+            "displayName": "Double Custom Unit",
+            "dataType": { "type": "double" },
+            "rid":
+              "ri.ontology.main.property.8bafe298-fac9-44f2-8e80-36636dc81e2d",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "number",
+              "numberType": {
+                "type": "customUnit",
+                "baseFormatOptions": {},
+                "unit": { "type": "constant", "value": "custom unit" },
+              },
+            },
+          },
+          "doubleThousandsK": {
+            "displayName": "Double Thousands K",
+            "dataType": { "type": "double" },
+            "rid":
+              "ri.ontology.main.property.699dabf4-0afd-4510-a769-3033934a4881",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "number",
+              "numberType": {
+                "type": "scale",
+                "scaleType": "THOUSANDS",
+                "baseFormatOptions": {},
+              },
+            },
+          },
+          "arrayFormattedNumbers": {
+            "displayName": "Array Formatted Numbers",
+            "dataType": { "type": "array", "subType": { "type": "double" } },
+            "rid":
+              "ri.ontology.main.property.b37747e1-37a0-4b42-ac63-532208185d96",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "number",
+              "numberType": {
+                "type": "ratio",
+                "ratioType": "PERCENTAGE",
+                "baseFormatOptions": {},
+              },
+            },
+          },
+          "doublePrefixPostfix": {
+            "displayName": "Double Prefix Postfix",
+            "dataType": { "type": "double" },
+            "rid":
+              "ri.ontology.main.property.a3ed561c-a28b-4d01-acf1-ac170fc75cb9",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "number",
+              "numberType": {
+                "type": "affix",
+                "baseFormatOptions": {},
+                "affix": {
+                  "prefix": { "type": "constant", "value": "Prefix" },
+                  "postfix": { "type": "constant", "value": "Postfix" },
+                },
+              },
+            },
+          },
+          "longEngineering": {
+            "displayName": "Long Engineering",
+            "dataType": { "type": "long" },
+            "rid":
+              "ri.ontology.main.property.5ca92318-27a5-4f38-8ec7-eb805de03d7e",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "number",
+              "numberType": {
+                "type": "standard",
+                "baseFormatOptions": { "notation": "ENGINEERING" },
+              },
+            },
+          },
+          "doubleUnitMeter": {
+            "displayName": "Double Unit Meter",
+            "dataType": { "type": "double" },
+            "rid":
+              "ri.ontology.main.property.ac58686a-8b05-42cc-822f-c40b6b605cce",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "number",
+              "numberType": {
+                "type": "standardUnit",
+                "baseFormatOptions": {},
+                "unit": { "type": "constant", "value": "meter" },
+              },
+            },
+          },
+          "geopoint": {
+            "displayName": "Geopoint",
+            "dataType": { "type": "geopoint" },
+            "rid":
+              "ri.ontology.main.property.d709cd11-9172-415d-90f3-2ab967fe41fd",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+          },
+          "doubleCurrencyJpy": {
+            "displayName": "Double Currency Jpy",
+            "dataType": { "type": "double" },
+            "rid":
+              "ri.ontology.main.property.2ef54e93-df93-450e-b6c3-6dafba41baf3",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "number",
+              "numberType": {
+                "type": "currency",
+                "baseFormatOptions": {},
+                "style": "STANDARD",
+                "currencyCode": { "type": "constant", "value": "JPY" },
+              },
+            },
+          },
+          "integerOrdinal1": {
+            "displayName": "Integer Ordinal 1",
+            "dataType": { "type": "integer" },
+            "rid":
+              "ri.ontology.main.property.f2c3e0ca-995d-4ef6-93cd-417cb7715533",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "number",
+              "numberType": {
+                "type": "fixedValues",
+                "values": { "1": "Second", "2": "Third", "0": "First" },
+              },
+            },
+          },
+          "booleanFormattedFalse": {
+            "displayName": "Boolean Formatted False",
+            "dataType": { "type": "boolean" },
+            "rid":
+              "ri.ontology.main.property.5d14f397-2d49-471c-8cd2-9ca68bc28276",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+          },
+          "datePatternDmy": {
+            "displayName": "Date Pattern Dmy",
+            "dataType": { "type": "date" },
+            "rid":
+              "ri.ontology.main.property.c2a2f9b5-f092-419a-927a-9cfb8e0c9d4c",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "date",
+              "format": { "type": "stringFormat", "pattern": "dd/MM/yyyy" },
+            },
+          },
+          "doubleCurrencyUsd": {
+            "displayName": "Double Currency Usd",
+            "dataType": { "type": "double" },
+            "rid":
+              "ri.ontology.main.property.3a5a0e82-2a0f-471e-a20b-26405a1f6f1f",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "number",
+              "numberType": {
+                "type": "currency",
+                "baseFormatOptions": {},
+                "style": "STANDARD",
+                "currencyCode": { "type": "constant", "value": "USD" },
+              },
+            },
+          },
+          "doublePercentage": {
+            "displayName": "Double Percentage",
+            "dataType": { "type": "double" },
+            "rid":
+              "ri.ontology.main.property.d7fb9de8-ac0c-4325-ad23-230ba1180013",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "number",
+              "numberType": {
+                "type": "ratio",
+                "ratioType": "PERCENTAGE",
+                "baseFormatOptions": {},
+              },
+            },
+          },
+          "booleanFormattedTrue": {
+            "displayName": "Boolean Formatted True",
+            "dataType": { "type": "boolean" },
+            "rid":
+              "ri.ontology.main.property.87b7fc4a-9321-454d-add1-49e05ee918a6",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "boolean",
+              "valueIfTrue": "ITS TRUUUEEEE",
+              "valueIfFalse": "Not true :( ",
+            },
+          },
+          "arrayStrings": {
+            "displayName": "Array Strings",
+            "dataType": { "type": "array", "subType": { "type": "string" } },
+            "rid":
+              "ri.ontology.main.property.2cf68168-8e46-4a1f-b05b-532f197a6663",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+          },
+          "doubleBillionsB": {
+            "displayName": "Double Billions B",
+            "dataType": { "type": "double" },
+            "rid":
+              "ri.ontology.main.property.6394b70e-1888-486f-8435-21067f5ef9de",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "number",
+              "numberType": {
+                "type": "scale",
+                "scaleType": "BILLIONS",
+                "baseFormatOptions": {},
+              },
+            },
+          },
+          "integerMinDigits": {
+            "displayName": "Integer Min Digits",
+            "dataType": { "type": "decimal" },
+            "rid":
+              "ri.ontology.main.property.a2046737-6596-4f51-b4e5-e13c5f0decf3",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+          },
+          "doubleCurrencyCompact": {
+            "displayName": "Double Currency Reference Prominent",
+            "dataType": { "type": "double" },
+            "rid":
+              "ri.ontology.main.property.23d3bfae-f43e-4780-ba87-dbd239df5e96",
+            "status": { "type": "experimental" },
+            "visibility": "PROMINENT",
+            "valueFormatting": {
+              "type": "number",
+              "numberType": {
+                "type": "currency",
+                "baseFormatOptions": { "notation": "COMPACT" },
+                "style": "STANDARD",
+                "currencyCode": {
+                  "type": "propertyType",
+                  "propertyApiName": "currency",
+                },
+              },
+            },
+          },
+          "timezoneProperty": {
+            "displayName": "Timezone Property",
+            "dataType": { "type": "string" },
+            "rid":
+              "ri.ontology.main.property.4c52472a-f27a-46c2-9592-0d0526dbd0ea",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+          },
+          "timestampPattern12h": {
+            "displayName": "Timestamp Pattern 12h",
+            "dataType": { "type": "timestamp" },
+            "rid":
+              "ri.ontology.main.property.ceb9a20c-2314-4bc2-90f2-23c70e41fcd8",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "timestamp",
+              "format": {
+                "type": "stringFormat",
+                "pattern": "yyyy/MM/dd h:mm",
+              },
+              "displayTimezone": { "type": "user" },
+            },
+          },
+          "timestampPattern24h": {
+            "displayName": "Timestamp Pattern 24h",
+            "dataType": { "type": "timestamp" },
+            "rid":
+              "ri.ontology.main.property.a7d8da94-cfcd-46a8-abd3-fabde4caca3a",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "timestamp",
+              "format": {
+                "type": "stringFormat",
+                "pattern": "yyyy/MM/dd H:mm",
+              },
+              "displayTimezone": { "type": "user" },
+            },
+          },
+          "arrayEmpty": {
+            "displayName": "Array Empty",
+            "dataType": { "type": "array", "subType": { "type": "string" } },
+            "rid":
+              "ri.ontology.main.property.83f6d741-937f-4d4d-8ac3-37c5512ada36",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+          },
+          "negativeNumber": {
+            "displayName": "Negative Number",
+            "dataType": { "type": "integer" },
+            "rid":
+              "ri.ontology.main.property.720f4fec-9329-4dd9-9723-6484e827d46a",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+          },
+          "arrayBooleans": {
+            "displayName": "Array Booleans",
+            "dataType": { "type": "array", "subType": { "type": "boolean" } },
+            "rid":
+              "ri.ontology.main.property.0965b540-1722-49be-8e9e-23a545dc7408",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "boolean",
+              "valueIfTrue": "TRUEEE",
+              "valueIfFalse": "FAAALSE",
+            },
+          },
+          "durationSeconds": {
+            "displayName": "Duration Seconds",
+            "dataType": { "type": "long" },
+            "rid":
+              "ri.ontology.main.property.98f360fe-422d-4889-8fb4-f16ea16aff26",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "number",
+              "numberType": {
+                "type": "duration",
+                "formatStyle": {
+                  "type": "humanReadable",
+                  "showFullUnits": true,
+                },
+                "precision": "AUTO",
+                "baseValue": "SECONDS",
+              },
+            },
+          },
+          "stringUser": {
+            "displayName": "String User",
+            "dataType": { "type": "string" },
+            "rid":
+              "ri.ontology.main.property.1fd594a3-8b86-40c8-af3f-1538848ef120",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "knownType",
+              "knownType": "USERORGROUPRID",
+            },
+          },
+          "dateMonthYear": {
+            "displayName": "Date Month Year",
+            "dataType": { "type": "date" },
+            "rid":
+              "ri.ontology.main.property.cc8e9413-0172-4da3-a009-4ce9343eefd8",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "date",
+              "format": {
+                "type": "localizedFormat",
+                "format": "DATE_FORMAT_YEAR_AND_MONTH",
+              },
+            },
+          },
+          "integerNoGrouping": {
+            "displayName": "Integer No Grouping",
+            "dataType": { "type": "integer" },
+            "rid":
+              "ri.ontology.main.property.c76bbdbc-298a-4b48-9f63-96c95354d773",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "number",
+              "numberType": {
+                "type": "standard",
+                "baseFormatOptions": { "useGrouping": true },
+              },
+            },
+          },
+          "negativeCurrency": {
+            "displayName": "Negative Currency",
+            "dataType": { "type": "double" },
+            "rid":
+              "ri.ontology.main.property.efe25052-d5bd-4091-815b-fb54256fb46a",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+          },
+          "nullValue": {
+            "displayName": "Null Value",
+            "dataType": { "type": "string" },
+            "rid":
+              "ri.ontology.main.property.e7864713-dca6-4942-aea1-55450d5819d7",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+          },
+          "doubleRoundingFloor": {
+            "displayName": "Double Rounding Floor",
+            "dataType": { "type": "double" },
+            "rid":
+              "ri.ontology.main.property.d369aebb-6a6a-438d-b400-880f46afed37",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+          },
+          "smallDecimal": {
+            "displayName": "Small Decimal",
+            "dataType": { "type": "decimal" },
+            "rid":
+              "ri.ontology.main.property.21a680c6-c166-475c-9442-6e7028f03aec",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+          },
+          "doubleMillionsM": {
+            "displayName": "Double Millions M",
+            "dataType": { "type": "double" },
+            "rid":
+              "ri.ontology.main.property.4be46c9d-4fd0-4c23-9d8f-2e2d34eb261a",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "number",
+              "numberType": {
+                "type": "scale",
+                "scaleType": "MILLIONS",
+                "baseFormatOptions": {},
+              },
+            },
+          },
+          "link_": {
+            "displayName": "Link",
+            "dataType": { "type": "string" },
+            "rid":
+              "ri.ontology.main.property.d62911db-c568-40c8-8f58-d330c7ed4067",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+          },
+          "dateShort": {
+            "displayName": "Date Short",
+            "dataType": { "type": "date" },
+            "rid":
+              "ri.ontology.main.property.10a8aaa1-139a-4955-a54a-9f45df91db5a",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "date",
+              "format": {
+                "type": "localizedFormat",
+                "format": "DATE_FORMAT_DATE_TIME_SHORT",
+              },
+            },
+          },
+          "doublePercentageDecimal": {
+            "displayName": "Double Percentage Decimal",
+            "dataType": { "type": "double" },
+            "rid":
+              "ri.ontology.main.property.67657069-bb49-4139-bcaa-2512963c5c33",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "number",
+              "numberType": {
+                "type": "ratio",
+                "ratioType": "PERCENTAGE",
+                "baseFormatOptions": {
+                  "useGrouping": true,
+                  "minimumFractionDigits": 0,
+                  "maximumFractionDigits": 1,
+                },
+              },
+            },
+          },
+          "stringResource": {
+            "displayName": "String Resource",
+            "dataType": { "type": "string" },
+            "rid":
+              "ri.ontology.main.property.3bf2c29f-c80c-4c78-bc0c-6ef136909a7a",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "knownType",
+              "knownType": "RESOURCERID",
+            },
+          },
+          "timestampDatetime": {
+            "displayName": "Timestamp Datetime",
+            "dataType": { "type": "timestamp" },
+            "rid":
+              "ri.ontology.main.property.482a218f-f0b8-46a3-952b-32a1d7945f1c",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "timestamp",
+              "format": {
+                "type": "localizedFormat",
+                "format": "DATE_FORMAT_DATE_TIME",
+              },
+              "displayTimezone": { "type": "user" },
+            },
+          },
+          "timestampNyc": {
+            "displayName": "Timestamp Nyc",
+            "dataType": { "type": "timestamp" },
+            "rid":
+              "ri.ontology.main.property.4c87a2d7-d1d2-4971-8dea-889220c4210c",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "timestamp",
+              "format": {
+                "type": "localizedFormat",
+                "format": "DATE_FORMAT_DATE_TIME",
+              },
+              "displayTimezone": {
+                "type": "static",
+                "zoneId": { "type": "constant", "value": "America/New_York" },
+              },
+            },
+          },
+          "vector": {
+            "displayName": "Vector",
+            "dataType": {
+              "type": "vector",
+              "dimension": 1536,
+              "supportsSearchWith": [{ "value": "COSINE_SIMILARITY" }],
+              "embeddingModel": {
+                "type": "lms",
+                "value": "OPENAI_TEXT_EMBEDDING_ADA_002",
+              },
+            },
+            "rid":
+              "ri.ontology.main.property.dffa2690-bb18-4700-bb3f-4805629721de",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+          },
+          "geoshape": {
+            "displayName": "Geoshape",
+            "dataType": { "type": "geoshape" },
+            "rid":
+              "ri.ontology.main.property.d0e39c4a-9b5c-4022-815a-c03c9815b35e",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+          },
+          "currency": {
+            "displayName": "Currency",
+            "dataType": { "type": "string" },
+            "rid":
+              "ri.ontology.main.property.51156291-1216-40d8-9778-ef7753fe14a0",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+          },
+          "arrayOfStructs": {
+            "displayName": "Array of structs",
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "struct",
+                "structFieldTypes": [
+                  {
+                    "apiName": "stringValue",
+                    "rid":
+                      "ri.ontology.main.struct-field.85cd742d-e416-4f3f-8100-b6c034924951",
+                    "dataType": { "type": "string" },
+                  },
+                ],
+              },
+            },
+            "rid":
+              "ri.ontology.main.property.4f39886e-6da4-425c-a055-9b67462f7bf2",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+          },
+          "stringPlain": {
+            "displayName": "String Plain Prominent",
+            "dataType": { "type": "string" },
+            "rid":
+              "ri.ontology.main.property.e0917926-82fa-4006-b540-4f00090a9f9f",
+            "status": { "type": "experimental" },
+            "visibility": "PROMINENT",
+          },
+          "arrayMixed": {
+            "displayName": "Array Mixed",
+            "dataType": { "type": "array", "subType": { "type": "string" } },
+            "rid":
+              "ri.ontology.main.property.5130623d-76d2-4628-ad36-fabdf5bed86e",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+          },
+          "doubleRoundingHalf": {
+            "displayName": "Double Rounding Half",
+            "dataType": { "type": "double" },
+            "rid":
+              "ri.ontology.main.property.505b2f0d-2ad1-4fcc-b961-b43dd8dc5b44",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+          },
+          "timestampIso": {
+            "displayName": "Timestamp Iso",
+            "dataType": { "type": "timestamp" },
+            "rid":
+              "ri.ontology.main.property.225b1499-e96d-4d55-a8c3-052af69db5d8",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "timestamp",
+              "format": {
+                "type": "localizedFormat",
+                "format": "DATE_FORMAT_ISO_INSTANT",
+              },
+              "displayTimezone": { "type": "user" },
+            },
+          },
+          "timestampTokyo": {
+            "displayName": "Timestamp Tokyo",
+            "dataType": { "type": "timestamp" },
+            "rid":
+              "ri.ontology.main.property.8e365b10-bf76-451b-859d-312179e9dcfd",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "timestamp",
+              "format": {
+                "type": "localizedFormat",
+                "format": "DATE_FORMAT_DATE_TIME_SHORT",
+              },
+              "displayTimezone": {
+                "type": "static",
+                "zoneId": { "type": "constant", "value": "Asia/Tokyo" },
+              },
+            },
+          },
+          "largeNumber": {
+            "displayName": "Large Number",
+            "dataType": { "type": "decimal" },
+            "rid":
+              "ri.ontology.main.property.1766d88e-ff96-4d53-95e6-c1b0f26d4275",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "number",
+              "numberType": {
+                "type": "standard",
+                "baseFormatOptions": { "notation": "ENGINEERING" },
+              },
+            },
+          },
+          "integerThousands": {
+            "displayName": "Integer Thousands",
+            "dataType": { "type": "integer" },
+            "rid":
+              "ri.ontology.main.property.84486939-273d-4da8-ab38-286b29f21517",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "number",
+              "numberType": {
+                "type": "scale",
+                "scaleType": "THOUSANDS",
+                "baseFormatOptions": {},
+              },
+            },
+          },
+        },
+        "rid":
+          "ri.ontology.main.object-type.353eb83c-df7e-4c97-a362-1e94689869bc",
+        "titleProperty": "stringPlain",
+        "visibility": "NORMAL",
+      },
+      "linkTypes": [],
+      "implementsInterfaces": [],
+      "implementsInterfaces2": {},
+      "sharedPropertyTypeMapping": {},
+    },
+  },
+  "queryTypes": {
+    "queryTakesAllParameterTypes": {
+      "apiName": "queryTakesAllParameterTypes",
+      "version": "version",
+      "rid": "query.rid",
+      "description": "description of the query that takes all parameter types",
+      "displayName": "qTAPT",
+      "output": { "type": "string" },
+      "parameters": {
+        "double": {
+          "dataType": { "type": "double" },
+          "description": "a double parameter",
+        },
+        "float": {
+          "dataType": { "type": "float" },
+        },
+        "with spaces": {
+          "dataType": { "type": "float" },
+        },
+        "integer": {
+          "dataType": { "type": "integer" },
+        },
+        "long": {
+          "dataType": { "type": "long" },
+        },
+        "attachment": {
+          "dataType": { "type": "attachment" },
+        },
+        "boolean": {
+          "dataType": { "type": "boolean" },
+        },
+        "date": {
+          "dataType": { "type": "date" },
+        },
+        "string": {
+          "dataType": { "type": "string" },
+        },
+        "timestamp": {
+          "dataType": { "type": "timestamp" },
+        },
+        "object": {
+          "dataType": {
+            "type": "object",
+            "objectApiName": "Todo",
+            "objectTypeApiName": "Todo",
+          },
+        },
+        "objectSet": {
+          "dataType": {
+            "type": "objectSet",
+            "objectApiName": "Todo",
+            "objectTypeApiName": "Todo",
+          },
+        },
+        "array": {
+          "dataType": { "type": "array", "subType": { "type": "string" } },
+          "description": "an array of strings",
+        },
+        "set": {
+          "dataType": { "type": "set", "subType": { "type": "string" } },
+          "description": "a set of strings",
+        },
+        "unionNonNullable": {
+          "dataType": {
+            "type": "union",
+            "unionTypes": [
+              {
+                "type": "string",
+              },
+              { "type": "integer" },
+            ],
+          },
+          "description": "a union of strings and integers",
+        },
+        "unionNullable": {
+          "dataType": {
+            "type": "union",
+            "unionTypes": [
+              { "type": "string" },
+              { "type": "integer" },
+              { "type": "null" },
+            ],
+          },
+          "description": "a union of strings and integers but its optional",
+        },
+        "struct": {
+          "dataType": {
+            "type": "struct",
+            "fields": [
+              { "name": "name", "fieldType": { "type": "string" } },
+              { "name": "id", "fieldType": { "type": "integer" } },
+            ],
+          },
+          "description": "a struct with some fields",
+        },
+        "twoDimensionalAggregation": {
+          "dataType": {
+            "type": "twoDimensionalAggregation",
+            "keyType": {
+              "type": "string",
+            },
+            "valueType": {
+              "type": "double",
+            },
+          },
+        },
+        "threeDimensionalAggregation": {
+          "dataType": {
+            "type": "threeDimensionalAggregation",
+            "keyType": {
+              "type": "range",
+              "subType": {
+                "type": "date",
+              },
+            },
+            "valueType": {
+              "keyType": {
+                "type": "range",
+                "subType": {
+                  "type": "timestamp",
+                },
+              },
+              "valueType": {
+                "type": "date",
+              },
+            },
+          },
+        },
+        "functionMapObjectKey": {
+          "dataType": {
+            "type": "entrySet",
+            "keyType": {
+              "type": "object",
+              "objectApiName": "Todo",
+              "objectTypeApiName": "Todo",
+            },
+            "valueType": { "type": "string" },
+          },
+        },
+        "functionMap": {
+          "dataType": {
+            "type": "entrySet",
+            "keyType": { "type": "float" },
+            "valueType": { "type": "string" },
+          },
+        },
+      },
+    },
+    "getTodoCount": {
+      "apiName": "getTodoCount",
+      "output": {
+        "type": "integer",
+      },
+      "parameters": {},
+      "rid": "query.rid2",
+      "version": "0.1.2",
+    },
+    "getNamesOfCustomersFromCountry": {
+      "apiName": "getNamesOfCustomersFromCountry",
+      "output": {
+        "type": "array",
+        "subType": { "type": "string" },
+      },
+      "parameters": {
+        "country": {
+          "dataType": { "type": "string" },
+        },
+      },
+      "rid":
+        "ri.function-registry.main.function.c3e58d52-8430-44ee-9f0b-3785d9a9bdda",
+      "version": "0.1.1",
+    },
+    "getBusId": {
+      "apiName": "getBusId",
+      "displayName": "inputInterface",
+      "parameters": {
+        "bus": {
+          "dataType": {
+            "type": "interfaceObject",
+            "interfaceTypeApiName": "bus_1",
+          },
+        },
+      },
+      "output": {
+        "type": "string",
+      },
+      "rid":
+        "ri.function-registry.main.function.615ebd6c-7494-48ea-8197-0b35a91f2a94",
+      "version": "0.13.0",
+    },
+    "getBusFromSet": {
+      "apiName": "getBusFromSet",
+      "displayName": "inputInterfaceObjectSet",
+      "parameters": {
+        "busesObjectSet": {
+          "dataType": {
+            "type": "interfaceObjectSet",
+            "interfaceTypeApiName": "bus_1",
+          },
+        },
+      },
+      "output": {
+        "type": "string",
+      },
+      "rid":
+        "ri.function-registry.main.function.4db06290-7bb9-43fd-a22d-608b7ecc1849",
+      "version": "0.14.0",
+    },
+    "getBusInterface": {
+      "apiName": "getBusInterface",
+      "displayName": "outputInterface",
+      "parameters": {
+        "vehicleIdToFind": {
+          "dataType": {
+            "type": "string",
+          },
+        },
+      },
+      "output": {
+        "type": "interfaceObject",
+        "interfaceTypeApiName": "bus_1",
+      },
+      "rid":
+        "ri.function-registry.main.function.876cbb9b-8545-4cd1-9513-1340c9363058",
+      "version": "0.14.0",
+    },
+    "getBusInterfaceSet": {
+      "apiName": "getBusInterfaceSet",
+      "displayName": "outputInterfaceObjectSet",
+      "parameters": {
+        "vehicleIdToFind": {
+          "dataType": {
+            "type": "string",
+          },
+        },
+      },
+      "output": {
+        "type": "interfaceObjectSet",
+        "interfaceTypeApiName": "bus_1",
+      },
+      "rid":
+        "ri.function-registry.main.function.93aa9d56-fcb5-4c48-a40f-7d631d6b5800",
+      "version": "0.14.0",
+    },
+    "getFirstSecondElementOf2DArray": {
+      "apiName": "getFirstSecondElementOf2DArray",
+      "displayName": "getFirstSecondElementOf2DArray",
+      "parameters": {
+        "array": {
+          "dataType": {
+            "type": "array",
+            "subType": {
+              "type": "array",
+              "subType": {
+                "type": "double",
+              },
+            },
+          },
+        },
+      },
+      "output": {
+        "type": "double",
+      },
+      "rid":
+        "ri.function-registry.main.function.0d736075-0c52-409f-93e1-b7cc05963913",
+      "version": "1.0.0",
+    },
+    "identity2DArray": {
+      "apiName": "identity2DArray",
+      "displayName": "identity2DArray",
+      "parameters": {
+        "array": {
+          "dataType": {
+            "type": "array",
+            "subType": {
+              "type": "array",
+              "subType": {
+                "type": "double",
+              },
+            },
+          },
+        },
+      },
+      "output": {
+        "type": "array",
+        "subType": {
+          "type": "array",
+          "subType": {
+            "type": "double",
+          },
+        },
+      },
+      "rid":
+        "ri.function-registry.main.function.3c154359-8f43-4684-b108-ddb947949349",
+      "version": "1.1.0",
+    },
+  },
+  "interfaceTypes": {
+    "iltTest": {
+      "rid": "ri.ontology.main.interface.93463b40-940d-430d-9283-9eca82fa9aa4",
+      "apiName": "TestAsTypeIltInterface",
+      "displayName": "TestAsTypeIltInterface",
+      "description": "",
+      "properties": {
+        "com.palantir.defense.ontology.collateralConcernName": {
+          "rid":
+            "ri.ontology.main.shared-property.d0ee77e6-8473-4d9a-bec2-0e1ef1f23293",
+          "apiName": "com.palantir.defense.ontology.collateralConcernName",
+          "displayName": "Name",
+          "description":
+            "[Palantir Defense Ontology] Human-readabe display name of a collateral concern entity. If present, this value will be used to identify the entity in relevant UI components. If not present, the entity title property will be used instead.",
+          "dataType": {
+            "type": "string",
+          },
+          "required": true,
+        },
+      },
+      "allProperties": {
+        "com.palantir.defense.ontology.collateralConcernName": {
+          "rid":
+            "ri.ontology.main.shared-property.d0ee77e6-8473-4d9a-bec2-0e1ef1f23293",
+          "apiName": "com.palantir.defense.ontology.collateralConcernName",
+          "displayName": "Name",
+          "description":
+            "[Palantir Defense Ontology] Human-readabe display name of a collateral concern entity. If present, this value will be used to identify the entity in relevant UI components. If not present, the entity title property will be used instead.",
+          "dataType": {
+            "type": "string",
+          },
+          "required": true,
+        },
+      },
+      "extendsInterfaces": [],
+      "allExtendsInterfaces": [],
+      "implementedByObjectTypes": ["testIlt2"],
+      "links": {},
+      "allLinks": {},
+    },
+    "NihalbCastingInterfaceTypeA": {
+      "rid": "ri.ontology.main.interface.daed91f9-ee83-4e6c-bfc7-a17c8ff9433c",
+      "apiName": "NihalbCastingInterfaceTypeA",
+      "displayName": "(nihalb) CastingInterfaceTypeA",
+      "description": "",
+      "properties": {
+        "interfaceProperty": {
+          "rid":
+            "ri.ontology.main.shared-property.38ab96fe-719c-4f53-a53a-8ab595d8e038",
+          "apiName": "interfaceProperty",
+          "displayName": "InterfaceProperty",
+          "dataType": { "type": "string" },
+          "required": true,
+        },
+      },
+      "allProperties": {
+        "interfaceProperty": {
+          "rid":
+            "ri.ontology.main.shared-property.38ab96fe-719c-4f53-a53a-8ab595d8e038",
+          "apiName": "interfaceProperty",
+          "displayName": "InterfaceProperty",
+          "dataType": { "type": "string" },
+          "required": true,
+        },
+      },
+      "extendsInterfaces": [],
+      "allExtendsInterfaces": [],
+      "implementedByObjectTypes": [
+        "NihalbCastingObjectTypeB",
+        "NihalbCastingObjectTypeA",
+      ],
+      "links": {
+        "nihalbCastingLinkedObjectTypeA": {
+          "rid":
+            "ri.ontology.main.interface-link.830df50e-1bad-4dab-b352-dd55b01191ec",
+          "apiName": "nihalbCastingLinkedObjectTypeA",
+          "displayName": "(nihalb) Casting Linked Object Type A",
+          "description": "",
+          "linkedEntityApiName": {
+            "type": "objectTypeApiName",
+            "apiName": "NihalbCastingLinkedObjectTypeA",
+          },
+          "cardinality": "MANY",
+          "required": true,
+        },
+      },
+      "allLinks": {
+        "nihalbCastingLinkedObjectTypeA": {
+          "rid":
+            "ri.ontology.main.interface-link.830df50e-1bad-4dab-b352-dd55b01191ec",
+          "apiName": "nihalbCastingLinkedObjectTypeA",
+          "displayName": "(nihalb) Casting Linked Object Type A",
+          "description": "",
+          "linkedEntityApiName": {
+            "type": "objectTypeApiName",
+            "apiName": "NihalbCastingLinkedObjectTypeA",
+          },
+          "cardinality": "MANY",
+          "required": true,
+        },
+      },
+    },
+    "NihalbCastingInterfaceB": {
+      "rid": "ri.ontology.main.interface.001b6854-774a-4ba4-9ea7-dedc05901e4f",
+      "apiName": "NihalbCastingInterfaceB",
+      "displayName": "(nihalb) Casting Interface B",
+      "description": "",
+      "properties": {
+        "interfaceProperty": {
+          "rid":
+            "ri.ontology.main.shared-property.38ab96fe-719c-4f53-a53a-8ab595d8e038",
+          "apiName": "interfaceProperty",
+          "displayName": "InterfaceProperty",
+          "dataType": { "type": "string" },
+          "required": true,
+        },
+      },
+      "allProperties": {
+        "interfaceProperty": {
+          "rid":
+            "ri.ontology.main.shared-property.38ab96fe-719c-4f53-a53a-8ab595d8e038",
+          "apiName": "interfaceProperty",
+          "displayName": "InterfaceProperty",
+          "dataType": { "type": "string" },
+          "required": true,
+        },
+      },
+      "extendsInterfaces": [],
+      "allExtendsInterfaces": [],
+      "implementedByObjectTypes": [
+        "NihalbCastingObjectTypeB",
+        "NihalbCastingObjectTypeC",
+      ],
+      "links": {
+        "nihalbCastingLinkedObjectTypeA": {
+          "rid":
+            "ri.ontology.main.interface-link.4ea56ae0-c396-45d5-b432-32d321416faa",
+          "apiName": "nihalbCastingLinkedObjectTypeA",
+          "displayName": "(nihalb) Casting Linked Object Type A",
+          "description": "",
+          "linkedEntityApiName": {
+            "type": "objectTypeApiName",
+            "apiName": "NihalbCastingLinkedObjectTypeA",
+          },
+          "cardinality": "MANY",
+          "required": true,
+        },
+      },
+      "allLinks": {
+        "nihalbCastingLinkedObjectTypeA": {
+          "rid":
+            "ri.ontology.main.interface-link.4ea56ae0-c396-45d5-b432-32d321416faa",
+          "apiName": "nihalbCastingLinkedObjectTypeA",
+          "displayName": "(nihalb) Casting Linked Object Type A",
+          "description": "",
+          "linkedEntityApiName": {
+            "type": "objectTypeApiName",
+            "apiName": "NihalbCastingLinkedObjectTypeA",
+          },
+          "cardinality": "MANY",
+          "required": true,
+        },
+      },
+    },
+    "NihalbCastingLinkedInterfaceTypeA": {
+      "rid": "ri.ontology.main.interface.d3f8faae-48ea-44c6-8d43-687183d586c9",
+      "apiName": "NihalbCastingLinkedInterfaceTypeA",
+      "displayName": "(nihalb) CastingLinkedInterfaceTypeA",
+      "description": "",
+      "properties": {
+        "primaryKeyProp": {
+          "rid":
+            "ri.ontology.main.shared-property.f0b380fb-2b4e-4da2-a365-b1a25cf07c6a",
+          "apiName": "primaryKeyProp",
+          "displayName": "PrimaryKeyProp",
+          "dataType": { "type": "string" },
+          "required": true,
+        },
+      },
+      "allProperties": {
+        "primaryKeyProp": {
+          "rid":
+            "ri.ontology.main.shared-property.f0b380fb-2b4e-4da2-a365-b1a25cf07c6a",
+          "apiName": "primaryKeyProp",
+          "displayName": "PrimaryKeyProp",
+          "dataType": { "type": "string" },
+          "required": true,
+        },
+      },
+      "extendsInterfaces": [],
+      "allExtendsInterfaces": [],
+      "implementedByObjectTypes": ["NihalbCastingLinkedObjectTypeA"],
+      "links": {
+        "nihalbCastingInterfaceB": {
+          "rid":
+            "ri.ontology.main.interface-link.b31758a1-a6ce-4adb-beaa-1e8e78572b3b",
+          "apiName": "nihalbCastingInterfaceB",
+          "displayName": "(nihalb) Casting Interface B",
+          "description": "",
+          "linkedEntityApiName": {
+            "type": "interfaceTypeApiName",
+            "apiName": "NihalbCastingInterfaceB",
+          },
+          "cardinality": "ONE",
+          "required": true,
+        },
+      },
+      "allLinks": {
+        "nihalbCastingInterfaceB": {
+          "rid":
+            "ri.ontology.main.interface-link.b31758a1-a6ce-4adb-beaa-1e8e78572b3b",
+          "apiName": "nihalbCastingInterfaceB",
+          "displayName": "(nihalb) Casting Interface B",
+          "description": "",
+          "linkedEntityApiName": {
+            "type": "interfaceTypeApiName",
+            "apiName": "NihalbCastingInterfaceB",
+          },
+          "cardinality": "ONE",
+          "required": true,
+        },
+      },
+    },
+    "bus_1": {
+      "rid": "ri.ontology.main.interface.13ac66ef-d94e-4020-ac20-3285557149dd",
+      "apiName": "bus_1",
+      "displayName": "Bus",
+      "description": "",
+      "properties": {
+        "vehicleId_1": {
+          "rid":
+            "ri.ontology.main.shared-property.43a9b4ad-6e09-454c-8daf-b2951689157f",
+          "apiName": "vehicleId_1",
+          "displayName": "Vehicle Id",
+          "dataType": {
+            "type": "string",
+          },
+          "required": true,
+        },
+      },
+      "allProperties": {
+        "vehicleId_1": {
+          "rid":
+            "ri.ontology.main.shared-property.43a9b4ad-6e09-454c-8daf-b2951689157f",
+          "apiName": "vehicleId_1",
+          "displayName": "Vehicle Id",
+          "dataType": {
+            "type": "string",
+          },
+          "required": true,
+        },
+      },
+      "propertiesV2": {
+        "vehicleId_1": {
+          "type": "interfaceSharedPropertyType",
+          "rid":
+            "ri.ontology.main.shared-property.43a9b4ad-6e09-454c-8daf-b2951689157f",
+          "apiName": "vehicleId_1",
+          "displayName": "Vehicle Id",
+          "dataType": {
+            "type": "string",
+          },
+          "required": true,
+        },
+      },
+      "allPropertiesV2": {
+        "vehicleId_1": {
+          "rid":
+            "ri.ontology.main.interface-property.43a9b4ad-6e09-454c-8daf-b2951689157f",
+          "apiName": "vehicleId_1",
+          "displayName": "Vehicle Id",
+          "dataType": {
+            "type": "string",
+          },
+          "requireImplementation": true,
+        },
+      },
+      "extendsInterfaces": [],
+      "allExtendsInterfaces": [],
+      "implementedByObjectTypes": [
+        "TestBus",
+        "KaguinaldoNycBusTrip",
+        "EdgeXWmataBusNoGeotime",
+        "WmataBus",
+      ],
+      "links": {},
+      "allLinks": {},
+    },
+    "FooInterface": {
+      "apiName": "FooInterface",
+      "displayName": "Foo interface",
+      "description": "Its a Foo.",
+      "properties": {
+        "name": {
+          "rid":
+            "ri.ontology.main.shared-property.6618a6fc-5f14-4899-9540-615c9364c5d6",
+          "apiName": "name",
+          "dataType": {
+            "type": "string",
+          },
+          "displayName": "Name",
+          "description": "Name of Foo",
+        },
+        "description": {
+          "rid":
+            "ri.ontology.main.shared-property.3ad47761-fd8c-477c-bc96-5721a6ed46d7",
+          "apiName": "description",
+          "dataType": {
+            "type": "string",
+          },
+          "displayName": "Description",
+          "description": "Description of Description",
+        },
+        "deprecatedName": {
+          "rid":
+            "ri.ontology.main.shared-property.6618a6fc-5f14-4899-9540-615c9364c5d7",
+          "apiName": "deprecatedName",
+          "dataType": {
+            "type": "string",
+          },
+          "displayName": "Deprecated Name",
+          "description": "A deprecated name property",
+          "status": {
+            "type": "deprecated",
+            "message": "This property is deprecated and will be removed.",
+            "deadline": "2024-12-31",
+            "replacedBy": "name",
+          },
+        },
+        "deprecatedDescription": {
+          "rid":
+            "ri.ontology.main.shared-property.3ad47761-fd8c-477c-bc96-5721a6ed46d8",
+          "apiName": "deprecatedDescription",
+          "dataType": {
+            "type": "string",
+          },
+          "displayName": "Deprecated Description",
+          "description": "A deprecated description property",
+          "status": {
+            "type": "deprecated",
+            "message": "Use description instead.",
+            "deadline": "2025-06-30",
+            "replacedBy": "description",
+          },
+        },
+        "experimentalProperty": {
+          "rid":
+            "ri.ontology.main.shared-property.3ad47761-fd8c-477c-bc96-5721a6ed46d9",
+          "apiName": "experimentalProperty",
+          "dataType": {
+            "type": "string",
+          },
+          "displayName": "Experimental Property",
+          "description": "An experimental property for testing",
+          "status": {
+            "type": "experimental",
+          },
+        },
+      },
+      "allProperties": {
+        "name": {
+          "rid":
+            "ri.ontology.main.shared-property.6618a6fc-5f14-4899-9540-615c9364c5d6",
+          "apiName": "name",
+          "dataType": {
+            "type": "string",
+          },
+          "displayName": "Name",
+          "description": "Name of Foo",
+        },
+        "description": {
+          "rid":
+            "ri.ontology.main.shared-property.3ad47761-fd8c-477c-bc96-5721a6ed46d7",
+          "apiName": "description",
+          "dataType": {
+            "type": "string",
+          },
+          "displayName": "Description",
+          "description": "Description of Description",
+        },
+        "inheritedDescription": {
+          "rid":
+            "ri.ontology.main.shared-property.3ad47761-fd8c-477c-bc96-5721a6ed46d7",
+          "apiName": "inheritedDescription",
+          "dataType": {
+            "type": "string",
+          },
+          "displayName": "Inherited Description",
+          "description":
+            "Description property we inherited from some parent interface",
+        },
+        "deprecatedName": {
+          "rid":
+            "ri.ontology.main.shared-property.6618a6fc-5f14-4899-9540-615c9364c5d7",
+          "apiName": "deprecatedName",
+          "dataType": {
+            "type": "string",
+          },
+          "displayName": "Deprecated Name",
+          "description": "A deprecated name property",
+          "status": {
+            "type": "deprecated",
+            "message": "This property is deprecated and will be removed.",
+            "deadline": "2024-12-31",
+            "replacedBy": "name",
+          },
+        },
+        "deprecatedDescription": {
+          "rid":
+            "ri.ontology.main.shared-property.3ad47761-fd8c-477c-bc96-5721a6ed46d8",
+          "apiName": "deprecatedDescription",
+          "dataType": {
+            "type": "string",
+          },
+          "displayName": "Deprecated Description",
+          "description": "A deprecated description property",
+          "status": {
+            "type": "deprecated",
+            "message": "Use description instead.",
+            "deadline": "2025-06-30",
+            "replacedBy": "description",
+          },
+        },
+        "experimentalProperty": {
+          "rid":
+            "ri.ontology.main.shared-property.3ad47761-fd8c-477c-bc96-5721a6ed46d9",
+          "apiName": "experimentalProperty",
+          "dataType": {
+            "type": "string",
+          },
+          "displayName": "Experimental Property",
+          "description": "An experimental property for testing",
+          "status": {
+            "type": "experimental",
+          },
+        },
+      },
+      "rid":
+        "ri.ontology.main.interface-type.1b1b1b1b-1b1b-1b1b-1b1b-1b1b1b1b1b1b",
+      "status": "ACTIVE",
+    },
+    "Athlete": {
+      "apiName": "Athlete",
+      "displayName": "Athlete interface",
+      "description": "Its an athlete.",
+      "properties": {
+        "jerseyNumber": {
+          "rid":
+            "ri.ontology.main.shared-property.6618a6fc-5f14-4899-9540-615c9364c5d6",
+          "apiName": "jerseyNumber",
+          "dataType": {
+            "type": "integer",
+          },
+          "displayName": "Jersey Number",
+          "description": "Jersey Number",
+        },
+        "athleteId": {
+          "rid":
+            "ri.ontology.main.shared-property.3ad47761-fd8c-477c-bc96-5721a6ed46d7",
+          "apiName": "athleteId",
+          "dataType": {
+            "type": "string",
+          },
+          "displayName": "Athlete ID",
+          "description": "Athlete ID",
+        },
+        "name22": {
+          "rid":
+            "ri.ontology.main.shared-property.3ad47761-fd8c-477c-bc96-5721a6ed46d7",
+          "apiName": "name22",
+          "dataType": {
+            "type": "string",
+          },
+          "displayName": "Name",
+          "description": "Name",
+        },
+      },
+      "allProperties": {
+        "jerseyNumber": {
+          "rid":
+            "ri.ontology.main.shared-property.6618a6fc-5f14-4899-9540-615c9364c5d6",
+          "apiName": "jerseyNumber",
+          "dataType": {
+            "type": "integer",
+          },
+          "displayName": "Jersey Number",
+          "description": "Jersey Number",
+        },
+        "athleteId": {
+          "rid":
+            "ri.ontology.main.shared-property.3ad47761-fd8c-477c-bc96-5721a6ed46d7",
+          "apiName": "athleteId",
+          "dataType": {
+            "type": "string",
+          },
+          "displayName": "Athlete ID",
+          "description": "Athlete ID",
+        },
+        "name22": {
+          "rid":
+            "ri.ontology.main.shared-property.3ad47761-fd8c-477c-bc96-5721a6ed46d7",
+          "apiName": "name22",
+          "dataType": {
+            "type": "string",
+          },
+          "displayName": "Name",
+          "description": "Name",
+        },
+      },
+      "rid":
+        "ri.ontology.main.interface-type.1b1b1b1b-1b1b-1b1b-1b1b-1b1b1b1b1b1b",
+      "status": "ACTIVE",
+    },
+    "com.palantir.pcl.civpro.collateral-concern-core.CollateralConcernList": {
+      "rid": "ri.ontology.main.interface.7d459ce8-bb84-4ea5-9039-71560d82b53f",
+      "apiName":
+        "com.palantir.pcl.civpro.collateral-concern-core.CollateralConcernList",
+      "displayName": "Collateral Concern List",
+      "description":
+        "A list of entities that can be considered as collateral concerns.",
+      "properties": {
+        "com.palantir.pcl.civpro.collateral-concern-core.collateralConcernListDescription":
+          {
+            "rid":
+              "ri.ontology.main.shared-property.c5d03cd9-eaae-4872-9385-9e5aeef8eb0e",
+            "apiName":
+              "com.palantir.pcl.civpro.collateral-concern-core.collateralConcernListDescription",
+            "displayName": "Description",
+            "description": "The description of a collateral concern list.",
+            "dataType": {
+              "type": "string",
+            },
+            "required": false,
+          },
+        "com.palantir.pcl.civpro.collateral-concern-core.collateralConcernListName":
+          {
+            "rid":
+              "ri.ontology.main.shared-property.7c94a726-f81d-417a-80f7-3ea17031693e",
+            "apiName":
+              "com.palantir.pcl.civpro.collateral-concern-core.collateralConcernListName",
+            "displayName": "Name",
+            "description": "The name of a collateral concern list.",
+            "dataType": {
+              "type": "string",
+            },
+            "required": false,
+          },
+      },
+      "allProperties": {
+        "com.palantir.pcl.civpro.collateral-concern-core.collateralConcernListDescription":
+          {
+            "rid":
+              "ri.ontology.main.shared-property.c5d03cd9-eaae-4872-9385-9e5aeef8eb0e",
+            "apiName":
+              "com.palantir.pcl.civpro.collateral-concern-core.collateralConcernListDescription",
+            "displayName": "Description",
+            "description": "The description of a collateral concern list.",
+            "dataType": {
+              "type": "string",
+            },
+            "required": false,
+          },
+        "com.palantir.pcl.civpro.collateral-concern-core.collateralConcernListName":
+          {
+            "rid":
+              "ri.ontology.main.shared-property.7c94a726-f81d-417a-80f7-3ea17031693e",
+            "apiName":
+              "com.palantir.pcl.civpro.collateral-concern-core.collateralConcernListName",
+            "displayName": "Name",
+            "description": "The name of a collateral concern list.",
+            "dataType": {
+              "type": "string",
+            },
+            "required": false,
+          },
+      },
+      "extendsInterfaces": [],
+      "allExtendsInterfaces": [],
+      "implementedByObjectTypes": ["GenericCollateralConcernList"],
+      "links": {
+        "com.palantir.pcl.civpro.collateral-concern-core.collateralConcernListToEntity":
+          {
+            "rid":
+              "ri.ontology.main.interface-link.a91c9d55-1fc3-43dc-8efd-0f71ebf42e22",
+            "apiName":
+              "com.palantir.pcl.civpro.collateral-concern-core.collateralConcernListToEntity",
+            "displayName": "Entities",
+            "description":
+              "Collateral concern lists have a many-to-many relationship with collateral concern entities.",
+            "linkedEntityApiName": {
+              "type": "interfaceTypeApiName",
+              "apiName":
+                "com.palantir.pcl.civpro.collateral-concern-core.CollateralConcernCandidate",
+            },
+            "cardinality": "MANY",
+            "required": true,
+          },
+      },
+      "allLinks": {
+        "com.palantir.pcl.civpro.collateral-concern-core.collateralConcernListToEntity":
+          {
+            "rid":
+              "ri.ontology.main.interface-link.a91c9d55-1fc3-43dc-8efd-0f71ebf42e22",
+            "apiName":
+              "com.palantir.pcl.civpro.collateral-concern-core.collateralConcernListToEntity",
+            "displayName": "Entities",
+            "description":
+              "Collateral concern lists have a many-to-many relationship with collateral concern entities.",
+            "linkedEntityApiName": {
+              "type": "interfaceTypeApiName",
+              "apiName":
+                "com.palantir.pcl.civpro.collateral-concern-core.CollateralConcernCandidate",
+            },
+            "cardinality": "MANY",
+            "required": true,
+          },
+      },
+    },
+    "com.palantir.pcl.civpro.collateral-concern-core.CollateralConcernCandidate":
+      {
+        "rid":
+          "ri.ontology.main.interface.81202dc9-3dcb-4031-b102-bfdb01a0e17c",
+        "apiName":
+          "com.palantir.pcl.civpro.collateral-concern-core.CollateralConcernCandidate",
+        "displayName": "Collateral Concern Candidate",
+        "description":
+          "Represents entities that can be considered as collateral concerns.",
+        "properties": {
+          "com.palantir.pcl.civpro.collateral-concern-core.collateralConcernName":
+            {
+              "rid":
+                "ri.ontology.main.shared-property.8dba55dd-b6d8-4f10-b948-dd7edd90326b",
+              "apiName":
+                "com.palantir.pcl.civpro.collateral-concern-core.collateralConcernName",
+              "displayName": "Name",
+              "description": "The name of a collateral concern entity.",
+              "dataType": {
+                "type": "string",
+              },
+              "required": false,
+            },
+          "com.palantir.pcl.civpro.collateral-concern-core.collateralConcernDescription":
+            {
+              "rid":
+                "ri.ontology.main.shared-property.c9a9f33c-9e31-48a7-9b47-3fb198988fd7",
+              "apiName":
+                "com.palantir.pcl.civpro.collateral-concern-core.collateralConcernDescription",
+              "displayName": "Description",
+              "description": "The description of a collateral concern entity.",
+              "dataType": {
+                "type": "string",
+              },
+              "required": false,
+            },
+        },
+        "allProperties": {
+          "com.palantir.pcl.civpro.collateral-concern-core.collateralConcernName":
+            {
+              "rid":
+                "ri.ontology.main.shared-property.8dba55dd-b6d8-4f10-b948-dd7edd90326b",
+              "apiName":
+                "com.palantir.pcl.civpro.collateral-concern-core.collateralConcernName",
+              "displayName": "Name",
+              "description": "The name of a collateral concern entity.",
+              "dataType": {
+                "type": "string",
+              },
+              "required": false,
+            },
+          "com.palantir.pcl.civpro.collateral-concern-core.collateralConcernDescription":
+            {
+              "rid":
+                "ri.ontology.main.shared-property.c9a9f33c-9e31-48a7-9b47-3fb198988fd7",
+              "apiName":
+                "com.palantir.pcl.civpro.collateral-concern-core.collateralConcernDescription",
+              "displayName": "Description",
+              "description": "The description of a collateral concern entity.",
+              "dataType": {
+                "type": "string",
+              },
+              "required": false,
+            },
+        },
+        "extendsInterfaces": [],
+        "allExtendsInterfaces": [],
+        "implementedByObjectTypes": ["GenericCollateralConcernCandidate"],
+        "links": {
+          "com.palantir.pcl.civpro.collateral-concern-core.collateralConcernEntityToList":
+            {
+              "rid":
+                "ri.ontology.main.interface-link.e21d5d03-4772-4740-ba4d-1c7027836421",
+              "apiName":
+                "com.palantir.pcl.civpro.collateral-concern-core.collateralConcernEntityToList",
+              "displayName": "Collateral Concern Lists",
+              "description":
+                "Collateral concern entities have a many-to-many relationship with collateral concern lists.",
+              "linkedEntityApiName": {
+                "type": "interfaceTypeApiName",
+                "apiName":
+                  "com.palantir.pcl.civpro.collateral-concern-core.CollateralConcernList",
+              },
+              "cardinality": "MANY",
+              "required": true,
+            },
+        },
+        "allLinks": {
+          "com.palantir.pcl.civpro.collateral-concern-core.collateralConcernEntityToList":
+            {
+              "rid":
+                "ri.ontology.main.interface-link.e21d5d03-4772-4740-ba4d-1c7027836421",
+              "apiName":
+                "com.palantir.pcl.civpro.collateral-concern-core.collateralConcernEntityToList",
+              "displayName": "Collateral Concern Lists",
+              "description":
+                "Collateral concern entities have a many-to-many relationship with collateral concern lists.",
+              "linkedEntityApiName": {
+                "type": "interfaceTypeApiName",
+                "apiName":
+                  "com.palantir.pcl.civpro.collateral-concern-core.CollateralConcernList",
+              },
+              "cardinality": "MANY",
+              "required": true,
+            },
+        },
+      },
+    "EsongInterfaceA": {
+      "rid": "ri.ontology.main.interface.3f52b54b-dab9-41f1-b02c-4eba39846673",
+      "apiName": "EsongInterfaceA",
+      "displayName": "[esong] Interface A",
+      "description": "",
+      "properties": {
+        "esongSptA": {
+          "rid":
+            "ri.ontology.main.shared-property.b37450de-4a7b-402c-879f-fa1803ac6a21",
+          "apiName": "esongSptA",
+          "displayName": "[esong] SPT A",
+          "dataType": {
+            "type": "string",
+          },
+          "required": true,
+        },
+      },
+      "allProperties": {
+        "esongSptA": {
+          "rid":
+            "ri.ontology.main.shared-property.b37450de-4a7b-402c-879f-fa1803ac6a21",
+          "apiName": "esongSptA",
+          "displayName": "[esong] SPT A",
+          "dataType": {
+            "type": "string",
+          },
+          "required": true,
+        },
+      },
+      "extendsInterfaces": [],
+      "allExtendsInterfaces": [],
+      "implementedByObjectTypes": ["EsongIssues"],
+      "links": {
+        "esongPds": {
+          "rid":
+            "ri.ontology.main.interface-link.753bc7f9-4cf5-4cd6-af49-d92891df84c4",
+          "apiName": "esongPds",
+          "displayName": "[esong] Pds",
+          "description": "",
+          "linkedEntityApiName": {
+            "type": "objectTypeApiName",
+            "apiName": "EsongPds",
+          },
+          "cardinality": "ONE",
+          "required": false,
+        },
+      },
+      "allLinks": {
+        "esongPds": {
+          "rid":
+            "ri.ontology.main.interface-link.753bc7f9-4cf5-4cd6-af49-d92891df84c4",
+          "apiName": "esongPds",
+          "displayName": "[esong] Pds",
+          "description": "",
+          "linkedEntityApiName": {
+            "type": "objectTypeApiName",
+            "apiName": "EsongPds",
+          },
+          "cardinality": "ONE",
+          "required": false,
+        },
+      },
+    },
+    "InterfaceNoProps": {
+      "apiName": "InterfaceNoProps",
+      "displayName": "FInterfaceNoProps",
+      "description": "Its a Foo.",
+      "properties": {},
+      "rid":
+        "ri.ontology.main.interface-type.1b1b1b1b-1b1b-1b1b-1b1b-1b1b1b1b1b1b",
+      "status": "ACTIVE",
+    },
+    "OsdkTestInterface": {
+      "apiName": "OsdkTestInterface",
+      "displayName": "OsdkTestInterface",
+      "description": "OsdkTestInterface",
+      "properties": {
+        "objectDescription": {
+          "rid":
+            "ri.ontology.main.shared-property.751ed7ee-5d2c-41a1-bf60-9cbef5623f23",
+          "apiName": "objectDescription",
+          "dataType": {
+            "type": "string",
+          },
+        },
+      },
+      "rid": "ri.ontology.main.interface.06c534fd-4f68-44d9-b268-72729a47eaab",
+      "status": "ACTIVE",
+      "implementedByObjectTypes": ["OsdkTestObject"],
+    },
+    "MwaltherTestInterface": {
+      "rid": "ri.ontology.main.interface.2bf99935-b656-4c38-87ff-5970ccb3f2a7",
+      "apiName": "mwaltherPerson",
+      "displayName": "[mwalther] Person (has IDP)",
+      "description": "",
+      "properties": {
+        "mwaltherName": {
+          "rid":
+            "ri.ontology.main.shared-property.893c33d7-5bb4-41fb-8357-2d10095d7c96",
+          "apiName": "mwaltherName",
+          "displayName": "[mwalther] Name",
+          "dataType": {
+            "type": "string",
+          },
+          "required": true,
+        },
+      },
+      "allProperties": {
+        "mwaltherName": {
+          "rid":
+            "ri.ontology.main.shared-property.893c33d7-5bb4-41fb-8357-2d10095d7c96",
+          "apiName": "mwaltherName",
+          "displayName": "[mwalther] Name",
+          "dataType": {
+            "type": "string",
+          },
+          "required": true,
+        },
+      },
+      "propertiesV2": {
+        "age": {
+          "type": "interfaceDefinedPropertyType",
+          "rid":
+            "ri.ontology.main.interface-property.143eff7c-9f90-420b-bb77-0e43d1923ed2",
+          "apiName": "age",
+          "displayName": "Age (IDP)",
+          "dataType": {
+            "type": "integer",
+          },
+          "requireImplementation": true,
+        },
+        "mwaltherName": {
+          "type": "interfaceSharedPropertyType",
+          "rid":
+            "ri.ontology.main.shared-property.893c33d7-5bb4-41fb-8357-2d10095d7c96",
+          "apiName": "mwaltherName",
+          "displayName": "[mwalther] Name",
+          "dataType": {
+            "type": "string",
+          },
+          "required": true,
+        },
+      },
+      "allPropertiesV2": {
+        "age": {
+          "rid":
+            "ri.ontology.main.interface-property.143eff7c-9f90-420b-bb77-0e43d1923ed2",
+          "apiName": "age",
+          "displayName": "Age (IDP)",
+          "dataType": {
+            "type": "integer",
+          },
+          "requireImplementation": true,
+        },
+        "mwaltherName": {
+          "rid":
+            "ri.ontology.main.interface-property.893c33d7-5bb4-41fb-8357-2d10095d7c96",
+          "apiName": "mwaltherName",
+          "displayName": "[mwalther] Name",
+          "dataType": {
+            "type": "string",
+          },
+          "requireImplementation": true,
+        },
+      },
+      "extendsInterfaces": [],
+      "allExtendsInterfaces": [],
+      "implementedByObjectTypes": [
+        "MwaltherPersonOt",
+      ],
+      "links": {},
+      "allLinks": {},
+    },
+  },
+
+  "sharedPropertyTypes": {
+    "name": {
+      "rid":
+        "ri.ontology.main.shared-property.6618a6fc-5f14-4899-9540-615c9364c5d6",
+      "apiName": "name",
+      "dataType": {
+        "type": "string",
+      },
+      "displayName": "Name",
+      "description": "Name of Foo",
+    },
+    "description": {
+      "rid":
+        "ri.ontology.main.shared-property.3ad47761-fd8c-477c-bc96-5721a6ed46d7",
+      "apiName": "description",
+      "dataType": {
+        "type": "string",
+      },
+      "displayName": "Description",
+      "description": "Description of Description",
+    },
+  },
+
+  "valueTypes": {
+    "colorValueType": {
+      "apiName": "colorValueType",
+      "description": "A value type for specific colors",
+      "displayName": "Color Value Type",
+      "rid": "ri.a.b.c.d",
+      "version": "1.0.0",
+      "fieldType": {
+        "type": "string",
+      },
+      "constraints": [
+        {
+          "type": "enum",
+          "options": ["brown", "found.com"],
+        },
+      ],
+    },
+    "booleanValueType": {
+      "apiName": "booleanValueType",
+      "description": "A value type for boolean values",
+      "displayName": "Boolean Value Type",
+      "rid": "ri.a.b.c.d",
+      "version": "1.0.0",
+      "fieldType": {
+        "type": "boolean",
+      },
+      "constraints": [
+        {
+          "type": "enum",
+          "options": [true, null],
+        },
+      ],
+    },
+  },
+} as any;
