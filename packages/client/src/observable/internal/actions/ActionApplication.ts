@@ -39,7 +39,7 @@ export class ActionApplication {
   ) => Promise<ActionEditResponse> = async (
     action,
     args,
-    { optimisticUpdate } = {},
+    { optimisticUpdate, alsoInvalidates } = {},
   ) => {
     const logger = process.env.NODE_ENV !== "production"
       ? this.store.logger?.child({ methodName: "applyAction" })
@@ -64,6 +64,7 @@ export class ActionApplication {
               );
 
           await this.#invalidateActionEditResponse(results);
+          await this.#handleAlsoInvalidates(alsoInvalidates);
 
           return results;
         }
@@ -85,6 +86,7 @@ export class ActionApplication {
           }
         }
         await this.#invalidateActionEditResponse(actionResults);
+        await this.#handleAlsoInvalidates(alsoInvalidates);
         return actionResults;
       } finally {
         if (process.env.NODE_ENV !== "production") {
@@ -96,6 +98,31 @@ export class ActionApplication {
         await removeOptimisticResult();
       }
     })();
+  };
+
+  #handleAlsoInvalidates = async (
+    alsoInvalidates: Store.AlsoInvalidatesOptions | undefined,
+  ): Promise<void> => {
+    if (alsoInvalidates == null) {
+      return;
+    }
+
+    const { objectTypes, objects } = alsoInvalidates;
+
+    if (objectTypes != null && objectTypes.length > 0) {
+      await Promise.all(
+        objectTypes.map(t =>
+          this.store.invalidateObjectType(
+            typeof t === "string" ? t : t.apiName,
+            undefined,
+          )
+        ),
+      );
+    }
+
+    if (objects != null && objects.length > 0) {
+      await this.store.invalidateObjects(objects);
+    }
   };
 
   #invalidateActionEditResponse = async (

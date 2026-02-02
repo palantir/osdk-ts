@@ -55,8 +55,14 @@ import type { ObserveLinks } from "./ObservableClient/ObserveLink.js";
 import type { OptimisticBuilder } from "./OptimisticBuilder.js";
 
 export namespace ObservableClient {
+  export interface AlsoInvalidatesOptions {
+    objectTypes?: Array<ObjectTypeDefinition | string>;
+    objects?: Array<Osdk.Instance<ObjectTypeDefinition>>;
+  }
+
   export interface ApplyActionOptions {
     optimisticUpdate?: (ctx: OptimisticBuilder) => void;
+    alsoInvalidates?: AlsoInvalidatesOptions;
   }
 }
 

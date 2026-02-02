@@ -18,6 +18,8 @@ import type {
   ActionDefinition,
   ActionEditResponse,
   ActionValidationResponse,
+  ObjectTypeDefinition,
+  Osdk,
 } from "@osdk/client";
 import { ActionValidationError } from "@osdk/client";
 import type {
@@ -26,6 +28,29 @@ import type {
 } from "@osdk/client/unstable-do-not-use";
 import React from "react";
 import { OsdkContext2 } from "./OsdkContext2.js";
+
+function mergeInvalidations(
+  invalidations: Array<
+    ObservableClient.ApplyActionOptions["alsoInvalidates"] | undefined
+  >,
+): ObservableClient.AlsoInvalidatesOptions | undefined {
+  const objectTypes: Array<ObjectTypeDefinition | string> = [];
+  const objects: Array<Osdk.Instance<ObjectTypeDefinition>> = [];
+
+  for (const inv of invalidations) {
+    if (inv?.objectTypes) {
+      objectTypes.push(...inv.objectTypes);
+    }
+    if (inv?.objects) {
+      objects.push(...inv.objects);
+    }
+  }
+
+  if (objectTypes.length === 0 && objects.length === 0) {
+    return undefined;
+  }
+  return { objectTypes, objects };
+}
 
 type ApplyActionParams<Q extends ActionDefinition<any>> =
   & Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0]
@@ -94,10 +119,16 @@ export function useOsdkAction<Q extends ActionDefinition<any>>(
         const updates: Array<
           ObservableClient.ApplyActionOptions["optimisticUpdate"]
         > = [];
+        const invalidations: Array<
+          ObservableClient.ApplyActionOptions["alsoInvalidates"]
+        > = [];
         const args = hookArgs.map(a => {
-          const { $optimisticUpdate, ...args } = a;
+          const { $optimisticUpdate, $alsoInvalidates, ...args } = a;
           if ($optimisticUpdate) {
             updates.push($optimisticUpdate);
+          }
+          if ($alsoInvalidates) {
+            invalidations.push($alsoInvalidates);
           }
           return args;
         });
@@ -108,14 +139,16 @@ export function useOsdkAction<Q extends ActionDefinition<any>>(
               update?.(ctx);
             }
           },
+          alsoInvalidates: mergeInvalidations(invalidations),
         });
         setData(r);
         return r;
       } else {
-        const { $optimisticUpdate, ...args } = hookArgs;
+        const { $optimisticUpdate, $alsoInvalidates, ...args } = hookArgs;
 
         const r = await observableClient.applyAction(actionDef, args, {
           optimisticUpdate: $optimisticUpdate,
+          alsoInvalidates: $alsoInvalidates,
         });
         setData(r);
         return r;

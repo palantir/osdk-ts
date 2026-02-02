@@ -71,8 +71,14 @@ import type { Subjects } from "./Subjects.js";
 import { WhereClauseCanonicalizer } from "./WhereClauseCanonicalizer.js";
 
 export namespace Store {
+  export interface AlsoInvalidatesOptions {
+    objectTypes?: Array<ObjectTypeDefinition | string>;
+    objects?: Array<Osdk.Instance<ObjectTypeDefinition>>;
+  }
+
   export interface ApplyActionOptions {
     optimisticUpdate?: (ctx: OptimisticBuilder) => void;
+    alsoInvalidates?: AlsoInvalidatesOptions;
   }
 }
 
