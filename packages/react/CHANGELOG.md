@@ -1,5 +1,11 @@
 # @osdkkit/react
 
+## 0.9.0-beta.10
+
+### Minor Changes
+
+- db28747: rdp typing improvements
+
 ## 0.9.0-beta.9
 
 ### Minor Changes
