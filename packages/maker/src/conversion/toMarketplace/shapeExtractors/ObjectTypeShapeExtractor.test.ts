@@ -115,6 +115,9 @@ function createMockRidGenerator(
       apiName: string,
       interfaceTypeApiName: string,
     ) => `interface-prop.${interfaceTypeApiName}.${apiName}` as any,
+    toBlockInternalId: (readableId: ReadableId) => {
+      return readableId;
+    },
     ...overrides,
   };
 }

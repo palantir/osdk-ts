@@ -22,6 +22,7 @@ import type {
   LocalizedTitleAndDescription,
 } from "@osdk/client.unstable/api";
 import type { CodeBlockSpec } from "./CodeBlockSpec.js";
+import type { SemverVersion } from "./specGenerators.js";
 
 /**
  * The spec for a blockset created from code blocks. This is transported as a marketplace product artifact.
@@ -45,7 +46,7 @@ export interface CodeBlockSetSpec {
   /**
    * The semantic version of this block set (e.g., "1.0.0").
    */
-  version: BlockSetVersion;
+  version: SemverVersion;
 
   /**
    * ISO timestamp of when this block set version was created.

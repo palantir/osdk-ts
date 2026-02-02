@@ -37,6 +37,7 @@ import type {
 // ParameterRid is defined in ontology-metadata but may not be re-exported through the main API
 type ParameterRid = string;
 import { createHash } from "crypto";
+import { toBlockShapeId } from "../cli/marketplaceSerialization/CodeBlockSpec.js";
 
 // Given a unique key generates a rid deterministically (from a lock file eventually)
 export type ReadableId = string & { __brand: "ReadableId" };
@@ -99,6 +100,7 @@ export interface OntologyRidGenerator {
     apiName: string,
     interfaceTypeApiName: string,
   ): InterfacePropertyTypeRid;
+  toBlockInternalId(readableId: ReadableId): string;
 }
 
 export interface ParameterRidAndId {
@@ -127,17 +129,9 @@ export interface BlockShapes {
 }
 
 /**
- * Helper to convert readable ID to block shape ID
- */
-function toBlockShapeId(readableId: string, randomnessKey?: string): string {
-  // Placeholder implementation - should match Java's ReadableId.toBlockShapeId logic
-  return randomnessKey ? `${readableId}-${randomnessKey}` : readableId;
-}
-
-/**
  * ReadableId generator functions matching Java's ReadableIdGenerator
  */
-class ReadableIdGenerator {
+export class ReadableIdGenerator {
   static get(interfaceTypeApiName: string): ReadableId;
   static get(
     interfaceApiName: string,
@@ -630,5 +624,9 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
       rid,
     );
     return rid;
+  }
+
+  toBlockInternalId(readableId: ReadableId): string {
+    return toBlockShapeId(readableId, this.randomnessUuid);
   }
 }

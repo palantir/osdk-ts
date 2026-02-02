@@ -21,7 +21,10 @@ import type {
   OutputShape,
   SerializedDataLocator,
 } from "@osdk/client.unstable/api";
+import type { UUID } from "crypto";
+import crypto, { createHash } from "crypto";
 import type { ReadableId } from "../../util/generateRid.js";
+import type { SemverVersion } from "./specGenerators.js";
 import type {
   GeneratedBlockExternalRecommendations,
   InputMappingEntry,
@@ -74,4 +77,44 @@ export interface CodeBlockSpec {
    * Includes information like whether the input is optional, accessed in reconcile, etc.
    */
   inputShapeMetadata: Record<ReadableId, InputShapeMetadata>;
+}
+
+export function getBlockVersionId(
+  blockSpec: CodeBlockSpec,
+  blockSetVersion: SemverVersion,
+  randomnessKey?: string,
+): UUID {
+  let mergedString = `${blockSpec.blockMavenCoordinate}_${blockSetVersion}`;
+  if (randomnessKey) {
+    mergedString =
+      `${blockSpec.blockMavenCoordinate}_${blockSetVersion}_${randomnessKey}`;
+  }
+
+  return generateUUIDFromStr(mergedString);
+}
+
+function generateUUIDFromStr(input: crypto.BinaryLike): UUID {
+  const md5Bytes = crypto.createHash("md5").update(input).digest();
+  md5Bytes[6] &= 0x0f; /* clear version        */
+  md5Bytes[6] |= 0x30; /* set to version 3     */
+  md5Bytes[8] &= 0x3f; /* clear variant        */
+  md5Bytes[8] |= 0x80; /* set to IETF variant  */
+  const hex = md5Bytes.toString("hex");
+  const uuid = hex.replace(
+    /(\w{8})(\w{4})(\w{4})(\w{4})(\w{12})/,
+    "$1-$2-$3-$4-$5",
+  );
+  return uuid as UUID;
+}
+
+
+export function toBlockShapeId(readableId: string, salt?: string): string {
+    let toHash = readableId;
+    if (salt) {
+        toHash = readableId + salt;
+    }
+    const digest = createHash('sha256');
+    digest.update(toHash, 'utf8');
+    const encodedhash = digest.digest();
+    return generateUUIDFromStr(encodedhash);
 }

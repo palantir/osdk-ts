@@ -16,12 +16,12 @@
 
 import type { OntologyIr } from "@osdk/client.unstable";
 import type { SerializedDataLocator } from "@osdk/client.unstable/api";
-import consola from "consola";
 import type { UUID } from "crypto";
 import { getShapes } from "../../conversion/toMarketplace/shapeExtractors/IrShapeExtractor.js";
 import { OntologyRidGeneratorImpl } from "../../util/generateRid.js";
 import type { CodeBlockSetSpec } from "./CodeBlockSetSpec.js";
 import type { CodeBlockSpec } from "./CodeBlockSpec.js";
+import type { MarketplaceBundleManifestEntry } from "./StoreManifestEntry.js";
 
 const ADD_ON_FILE_LOCATOR: SerializedDataLocator = {
   type: "files",
@@ -41,6 +41,7 @@ export function generateBlockSetSpec(
   version: SemverVersion,
   productName: string,
   productDesc: string,
+  packageName: string,
   codeBlocks: Record<UUID, CodeBlockSpec>,
 ): CodeBlockSetSpec {
   return {
@@ -53,7 +54,21 @@ export function generateBlockSetSpec(
       localizedTitle: {},
     },
     generatedBlocks: codeBlocks,
+    packageName,
   };
+}
+
+export function generateStoreManifest(
+  blockSetSpecs: Record<UUID, CodeBlockSetSpec>,
+): MarketplaceBundleManifestEntry[] {
+  return Object.entries(blockSetSpecs).map(([fileName, spec]) => {
+    return {
+      blockSetVersionId: fileName as UUID,
+      blockSetVersion: spec.version,
+      titleAndDescription: spec.about,
+      mavenProductId: spec.packageName,
+    };
+  });
 }
 
 export function generateOntologyBlockSpec(
@@ -66,7 +81,6 @@ export function generateOntologyBlockSpec(
     new OntologyRidGeneratorImpl(),
     randomnessKey,
   );
-  consola.log("currentOutputShapes", shapes.outputShapes);
   return {
     blockMavenCoordinate: `${mavenGroup}:ontology`,
     inputs: Object.fromEntries(shapes.inputShapes),
@@ -76,7 +90,7 @@ export function generateOntologyBlockSpec(
       files: {
         path: "ontology.json",
       },
-    }, ADD_ON_FILE_LOCATOR],
+    }],
     blockType: "ONTOLOGY",
     inputMappingEntries: [],
     externalRecommendations: [],
