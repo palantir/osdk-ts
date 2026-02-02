@@ -1,5 +1,13 @@
 # @osdk/maker
 
+## 0.15.0-beta.9
+
+### Minor Changes
+
+- ace2d68: Allow custom "then" configuration on visibility overrides
+- 044f478: Wire propertiesV2 to implementsInterface
+- 3693275: Add flag to add namespace prefix to value type api names
+
 ## 0.15.0-beta.8
 
 ### Minor Changes

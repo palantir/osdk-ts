@@ -1,5 +1,16 @@
 # @osdk/react-components
 
+## 0.1.0-beta.6
+
+### Minor Changes
+
+- cac3e9a: Add ActionFormApi
+
+### Patch Changes
+
+- Updated dependencies [db28747]
+  - @osdk/react@0.9.0-beta.10
+
 ## 0.1.0-beta.5
 
 ### Minor Changes
