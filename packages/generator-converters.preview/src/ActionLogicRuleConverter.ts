@@ -185,5 +185,14 @@ export function convertIrLogicRuleToActionLogicRule(
 
     case "deleteLinkRule":
       throw new Error("deleteLinkRule is not supported for ActionLogicRule");
+
+    default: {
+      const _exhaustiveCheck: never = irRule;
+      throw new Error(
+        `Unknown logic rule type: ${
+          (_exhaustiveCheck as { type: string }).type
+        }`,
+      );
+    }
   }
 }
