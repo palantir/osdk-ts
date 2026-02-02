@@ -82,7 +82,7 @@ export function ObjectTable<
     },
   );
 
-  const { data, fetchMore, isLoading } = useObjectTableData<
+  const { data, fetchMore, isLoading, error } = useObjectTableData<
     Q,
     RDPs,
     FunctionColumns
@@ -181,6 +181,7 @@ export function ObjectTable<
       rowHeight={props.rowHeight}
       renderCellContextMenu={onRenderCellContextMenu}
       className={props.className}
+      error={error}
     />
   );
 }

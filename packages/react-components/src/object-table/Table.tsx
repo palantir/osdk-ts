@@ -23,8 +23,8 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { EmptyState } from "./EmptyState.js";
 import { LoadingStateTable } from "./LoadingStateTable.js";
+import { NonIdealState } from "./NonIdealState.js";
 import styles from "./Table.module.css";
 import { TableBody } from "./TableBody.js";
 import { TableHeader } from "./TableHeader.js";
@@ -40,6 +40,7 @@ export interface BaseTableProps<TData extends RowData> {
     cell: Cell<TData, unknown>,
   ) => React.ReactNode;
   className?: string;
+  error?: Error;
 }
 
 export function BaseTable<TData extends RowData>(
@@ -51,6 +52,7 @@ export function BaseTable<TData extends RowData>(
     rowHeight,
     renderCellContextMenu,
     className,
+    error,
   }: BaseTableProps<TData>,
 ): ReactElement {
   const tableContainerRef = useRef<HTMLDivElement>(null);
@@ -116,8 +118,9 @@ export function BaseTable<TData extends RowData>(
           : (
             <>
               <TableHeader table={table} />
-              {hasData
-                ? (
+              {!hasData && error == null
+                ? <NonIdealState message={"No Data"} />
+                : (
                   <TableBody
                     rows={rows}
                     tableContainerRef={tableContainerRef}
@@ -127,10 +130,12 @@ export function BaseTable<TData extends RowData>(
                     isLoadingMore={isLoadingMore}
                     headerGroups={headerGroups}
                   />
-                )
-                : <EmptyState />}
+                )}
             </>
           )}
+        {error != null && (
+          <NonIdealState message={`Error Loading Data: ${error.message}`} />
+        )}
       </table>
     </div>
   );

@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-import React from "react";
-import styles from "./EmptyState.module.css";
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  min-height: 80px;
+}
 
-export function EmptyState(): React.ReactElement {
-  return (
-    <div className={styles.emptyState}>
-      <div className={styles.emptyStateMessage}>No Data</div>
-    </div>
-  );
+.message {
+  color: var(--bp-typography-color-muted);
 }

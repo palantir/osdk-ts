@@ -14,15 +14,21 @@
  * limitations under the License.
  */
 
-.emptyState {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
-  min-height: 200px;
+import React from "react";
+import styles from "./NonIdealState.module.css";
+
+interface NonIdealStateProps {
+  message: string;
 }
 
-.emptyStateMessage {
-  color: var(--bp-typography-color-muted);
+export function NonIdealState(
+  { message }: NonIdealStateProps,
+): React.ReactElement {
+  return (
+    <div className={styles.container}>
+      <div className={styles.message}>
+        {message}
+      </div>
+    </div>
+  );
 }
