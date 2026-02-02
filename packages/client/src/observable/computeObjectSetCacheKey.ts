@@ -22,11 +22,13 @@ import type {
 } from "@osdk/api";
 import { getWireObjectSet } from "../objectSet/createObjectSet.js";
 import type { ObserveObjectSetOptions } from "./internal/objectset/ObjectSetQueryOptions.js";
+import { ObjectSetArrayCanonicalizer } from "./internal/ObjectSetArrayCanonicalizer.js";
 import { OrderByCanonicalizer } from "./internal/OrderByCanonicalizer.js";
 import { WhereClauseCanonicalizer } from "./internal/WhereClauseCanonicalizer.js";
 
 const whereCanonicalizer = new WhereClauseCanonicalizer();
 const orderByCanonicalizer = new OrderByCanonicalizer();
+const objectSetArrayCanonicalizer = new ObjectSetArrayCanonicalizer();
 
 /**
  * Computes a stable cache key for an ObjectSet with options.
@@ -71,27 +73,21 @@ export function computeObjectSetCacheKey<
   if (options.union && options.union.length > 0) {
     keyParts.push(
       "union",
-      options.union.map((os: ObjectSet<T>) =>
-        getWireObjectSet(os as unknown as ObjectSet<any>)
-      ),
+      objectSetArrayCanonicalizer.canonicalizeUnion(options.union),
     );
   }
 
   if (options.intersect && options.intersect.length > 0) {
     keyParts.push(
       "intersect",
-      options.intersect.map((os: ObjectSet<T>) =>
-        getWireObjectSet(os as unknown as ObjectSet<any>)
-      ),
+      objectSetArrayCanonicalizer.canonicalizeIntersect(options.intersect),
     );
   }
 
   if (options.subtract && options.subtract.length > 0) {
     keyParts.push(
       "subtract",
-      options.subtract.map((os: ObjectSet<T>) =>
-        getWireObjectSet(os as unknown as ObjectSet<any>)
-      ),
+      objectSetArrayCanonicalizer.canonicalizeSubtract(options.subtract),
     );
   }
 
