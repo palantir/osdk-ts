@@ -28,6 +28,7 @@ import invariant from "tiny-invariant";
 import type { ActionSignatureFromDef } from "../../actions/applyAction.js";
 import { additionalContext, type Client } from "../../Client.js";
 import { DEBUG_REFCOUNTS } from "../DebugFlags.js";
+import type { ObservableClient } from "../ObservableClient.js";
 import type { OptimisticBuilder } from "../OptimisticBuilder.js";
 import { ActionApplication } from "./actions/ActionApplication.js";
 import {
@@ -71,10 +72,7 @@ import type { Subjects } from "./Subjects.js";
 import { WhereClauseCanonicalizer } from "./WhereClauseCanonicalizer.js";
 
 export namespace Store {
-  export interface AlsoInvalidatesOptions {
-    objectTypes?: Array<ObjectTypeDefinition | string>;
-    objects?: Array<Osdk.Instance<ObjectTypeDefinition>>;
-  }
+  export type AlsoInvalidatesOptions = ObservableClient.AlsoInvalidatesOptions;
 
   export interface ApplyActionOptions {
     optimisticUpdate?: (ctx: OptimisticBuilder) => void;

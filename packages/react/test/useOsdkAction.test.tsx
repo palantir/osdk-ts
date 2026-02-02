@@ -237,6 +237,32 @@ describe("useOsdkAction", () => {
     );
   });
 
+  it("should omit empty arrays from alsoInvalidates", async () => {
+    const wrapper = createWrapper();
+
+    const { result } = renderHook(() => useOsdkAction(MockActionDef), {
+      wrapper,
+    });
+
+    await act(async () => {
+      await result.current.applyAction({
+        someParam: "value",
+        $alsoInvalidates: {
+          objectTypes: [MockObjectType],
+          objects: [],
+        },
+      });
+    });
+
+    expect(mockApplyAction).toHaveBeenCalledTimes(1);
+    const callArgs = mockApplyAction.mock.calls[0];
+    const options = callArgs[2];
+    expect(options.alsoInvalidates).toEqual({
+      objectTypes: [MockObjectType],
+    });
+    expect(options.alsoInvalidates).not.toHaveProperty("objects");
+  });
+
   it("should set isPending while action is in progress", async () => {
     const wrapper = createWrapper();
 

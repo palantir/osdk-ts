@@ -49,7 +49,11 @@ function mergeInvalidations(
   if (objectTypes.length === 0 && objects.length === 0) {
     return undefined;
   }
-  return { objectTypes, objects };
+
+  return {
+    ...(objectTypes.length > 0 && { objectTypes }),
+    ...(objects.length > 0 && { objects }),
+  };
 }
 
 type ApplyActionParams<Q extends ActionDefinition<any>> =
@@ -148,7 +152,7 @@ export function useOsdkAction<Q extends ActionDefinition<any>>(
 
         const r = await observableClient.applyAction(actionDef, args, {
           optimisticUpdate: $optimisticUpdate,
-          alsoInvalidates: $alsoInvalidates,
+          alsoInvalidates: mergeInvalidations([$alsoInvalidates]),
         });
         setData(r);
         return r;
