@@ -29,30 +29,39 @@ import type {
 import React from "react";
 import { OsdkContext2 } from "./OsdkContext2.js";
 
-function mergeInvalidations(
-  invalidations: Array<
-    ObservableClient.ApplyActionOptions["alsoInvalidates"] | undefined
-  >,
-): ObservableClient.AlsoInvalidatesOptions | undefined {
-  const objectTypes: Array<ObjectTypeDefinition | string> = [];
-  const objects: Array<Osdk.Instance<ObjectTypeDefinition>> = [];
+interface MergedDependencies {
+  dependsOn?: Array<ObjectTypeDefinition | string>;
+  dependsOnObjects?: Array<Osdk.Instance<ObjectTypeDefinition>>;
+}
 
-  for (const inv of invalidations) {
-    if (inv?.objectTypes) {
-      objectTypes.push(...inv.objectTypes);
+function mergeDependencies(
+  deps: Array<
+    {
+      dependsOn?: ObservableClient.ApplyActionOptions["dependsOn"];
+      dependsOnObjects?:
+        ObservableClient.ApplyActionOptions["dependsOnObjects"];
+    } | undefined
+  >,
+): MergedDependencies | undefined {
+  const dependsOn: Array<ObjectTypeDefinition | string> = [];
+  const dependsOnObjects: Array<Osdk.Instance<ObjectTypeDefinition>> = [];
+
+  for (const dep of deps) {
+    if (dep?.dependsOn) {
+      dependsOn.push(...dep.dependsOn);
     }
-    if (inv?.objects) {
-      objects.push(...inv.objects);
+    if (dep?.dependsOnObjects) {
+      dependsOnObjects.push(...dep.dependsOnObjects);
     }
   }
 
-  if (objectTypes.length === 0 && objects.length === 0) {
+  if (dependsOn.length === 0 && dependsOnObjects.length === 0) {
     return undefined;
   }
 
   return {
-    ...(objectTypes.length > 0 && { objectTypes }),
-    ...(objects.length > 0 && { objects }),
+    ...(dependsOn.length > 0 && { dependsOn }),
+    ...(dependsOnObjects.length > 0 && { dependsOnObjects }),
   };
 }
 
@@ -123,36 +132,47 @@ export function useOsdkAction<Q extends ActionDefinition<any>>(
         const updates: Array<
           ObservableClient.ApplyActionOptions["optimisticUpdate"]
         > = [];
-        const invalidations: Array<
-          ObservableClient.ApplyActionOptions["alsoInvalidates"]
-        > = [];
+        const dependencies: Array<{
+          dependsOn?: ObservableClient.ApplyActionOptions["dependsOn"];
+          dependsOnObjects?:
+            ObservableClient.ApplyActionOptions["dependsOnObjects"];
+        }> = [];
         const args = hookArgs.map(a => {
-          const { $optimisticUpdate, $alsoInvalidates, ...args } = a;
+          const { $optimisticUpdate, $dependsOn, $dependsOnObjects, ...args } =
+            a;
           if ($optimisticUpdate) {
             updates.push($optimisticUpdate);
           }
-          if ($alsoInvalidates) {
-            invalidations.push($alsoInvalidates);
+          if ($dependsOn || $dependsOnObjects) {
+            dependencies.push({
+              dependsOn: $dependsOn,
+              dependsOnObjects: $dependsOnObjects,
+            });
           }
           return args;
         });
 
+        const merged = mergeDependencies(dependencies);
         const r = await observableClient.applyAction(actionDef, args, {
           optimisticUpdate: (ctx) => {
             for (const update of updates) {
               update?.(ctx);
             }
           },
-          alsoInvalidates: mergeInvalidations(invalidations),
+          ...merged,
         });
         setData(r);
         return r;
       } else {
-        const { $optimisticUpdate, $alsoInvalidates, ...args } = hookArgs;
+        const { $optimisticUpdate, $dependsOn, $dependsOnObjects, ...args } =
+          hookArgs;
 
+        const merged = mergeDependencies([
+          { dependsOn: $dependsOn, dependsOnObjects: $dependsOnObjects },
+        ]);
         const r = await observableClient.applyAction(actionDef, args, {
           optimisticUpdate: $optimisticUpdate,
-          alsoInvalidates: mergeInvalidations([$alsoInvalidates]),
+          ...merged,
         });
         setData(r);
         return r;

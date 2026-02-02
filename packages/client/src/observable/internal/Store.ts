@@ -72,11 +72,10 @@ import type { Subjects } from "./Subjects.js";
 import { WhereClauseCanonicalizer } from "./WhereClauseCanonicalizer.js";
 
 export namespace Store {
-  export type AlsoInvalidatesOptions = ObservableClient.AlsoInvalidatesOptions;
-
   export interface ApplyActionOptions {
     optimisticUpdate?: (ctx: OptimisticBuilder) => void;
-    alsoInvalidates?: AlsoInvalidatesOptions;
+    dependsOn?: ObservableClient.ApplyActionOptions["dependsOn"];
+    dependsOnObjects?: ObservableClient.ApplyActionOptions["dependsOnObjects"];
   }
 }
 

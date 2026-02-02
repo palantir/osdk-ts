@@ -74,7 +74,7 @@ describe("useOsdkAction", () => {
     mockValidateAction.mockResolvedValue({ result: "VALID" });
   });
 
-  it("should call applyAction with $alsoInvalidates for single call", async () => {
+  it("should call applyAction with $dependsOn and $dependsOnObjects for single call", async () => {
     const wrapper = createWrapper();
 
     const { result } = renderHook(() => useOsdkAction(MockActionDef), {
@@ -91,10 +91,8 @@ describe("useOsdkAction", () => {
     await act(async () => {
       await result.current.applyAction({
         someParam: "value",
-        $alsoInvalidates: {
-          objectTypes: [MockObjectType],
-          objects: [mockObject],
-        },
+        $dependsOn: [MockObjectType],
+        $dependsOnObjects: [mockObject],
       });
     });
 
@@ -103,15 +101,13 @@ describe("useOsdkAction", () => {
       MockActionDef,
       { someParam: "value" },
       expect.objectContaining({
-        alsoInvalidates: {
-          objectTypes: [MockObjectType],
-          objects: [mockObject],
-        },
+        dependsOn: [MockObjectType],
+        dependsOnObjects: [mockObject],
       }),
     );
   });
 
-  it("should call applyAction with $alsoInvalidates using string api name", async () => {
+  it("should call applyAction with $dependsOn using string api name", async () => {
     const wrapper = createWrapper();
 
     const { result } = renderHook(() => useOsdkAction(MockActionDef), {
@@ -121,9 +117,7 @@ describe("useOsdkAction", () => {
     await act(async () => {
       await result.current.applyAction({
         someParam: "value",
-        $alsoInvalidates: {
-          objectTypes: ["MockObject", "AnotherObject"],
-        },
+        $dependsOn: ["MockObject", "AnotherObject"],
       });
     });
 
@@ -132,14 +126,12 @@ describe("useOsdkAction", () => {
       MockActionDef,
       { someParam: "value" },
       expect.objectContaining({
-        alsoInvalidates: {
-          objectTypes: ["MockObject", "AnotherObject"],
-        },
+        dependsOn: ["MockObject", "AnotherObject"],
       }),
     );
   });
 
-  it("should merge $alsoInvalidates for batch calls", async () => {
+  it("should merge $dependsOn and $dependsOnObjects for batch calls", async () => {
     const wrapper = createWrapper();
 
     const { result } = renderHook(() => useOsdkAction(MockActionDef), {
@@ -164,17 +156,13 @@ describe("useOsdkAction", () => {
       await result.current.applyAction([
         {
           someParam: "value1",
-          $alsoInvalidates: {
-            objectTypes: [MockObjectType],
-            objects: [mockObject1],
-          },
+          $dependsOn: [MockObjectType],
+          $dependsOnObjects: [mockObject1],
         },
         {
           someParam: "value2",
-          $alsoInvalidates: {
-            objectTypes: [AnotherObjectType],
-            objects: [mockObject2],
-          },
+          $dependsOn: [AnotherObjectType],
+          $dependsOnObjects: [mockObject2],
         },
       ]);
     });
@@ -184,15 +172,13 @@ describe("useOsdkAction", () => {
       MockActionDef,
       [{ someParam: "value1" }, { someParam: "value2" }],
       expect.objectContaining({
-        alsoInvalidates: {
-          objectTypes: [MockObjectType, AnotherObjectType],
-          objects: [mockObject1, mockObject2],
-        },
+        dependsOn: [MockObjectType, AnotherObjectType],
+        dependsOnObjects: [mockObject1, mockObject2],
       }),
     );
   });
 
-  it("should not include alsoInvalidates when not provided", async () => {
+  it("should not include dependsOn/dependsOnObjects when not provided", async () => {
     const wrapper = createWrapper();
 
     const { result } = renderHook(() => useOsdkAction(MockActionDef), {
@@ -204,16 +190,13 @@ describe("useOsdkAction", () => {
     });
 
     expect(mockApplyAction).toHaveBeenCalledTimes(1);
-    expect(mockApplyAction).toHaveBeenCalledWith(
-      MockActionDef,
-      { someParam: "value" },
-      expect.objectContaining({
-        alsoInvalidates: undefined,
-      }),
-    );
+    const callArgs = mockApplyAction.mock.calls[0];
+    const options = callArgs[2];
+    expect(options.dependsOn).toBeUndefined();
+    expect(options.dependsOnObjects).toBeUndefined();
   });
 
-  it("should return undefined for merged alsoInvalidates when batch has no invalidations", async () => {
+  it("should return undefined for merged dependencies when batch has no dependencies", async () => {
     const wrapper = createWrapper();
 
     const { result } = renderHook(() => useOsdkAction(MockActionDef), {
@@ -228,16 +211,13 @@ describe("useOsdkAction", () => {
     });
 
     expect(mockApplyAction).toHaveBeenCalledTimes(1);
-    expect(mockApplyAction).toHaveBeenCalledWith(
-      MockActionDef,
-      [{ someParam: "value1" }, { someParam: "value2" }],
-      expect.objectContaining({
-        alsoInvalidates: undefined,
-      }),
-    );
+    const callArgs = mockApplyAction.mock.calls[0];
+    const options = callArgs[2];
+    expect(options.dependsOn).toBeUndefined();
+    expect(options.dependsOnObjects).toBeUndefined();
   });
 
-  it("should omit empty arrays from alsoInvalidates", async () => {
+  it("should omit empty dependsOnObjects from options", async () => {
     const wrapper = createWrapper();
 
     const { result } = renderHook(() => useOsdkAction(MockActionDef), {
@@ -247,20 +227,16 @@ describe("useOsdkAction", () => {
     await act(async () => {
       await result.current.applyAction({
         someParam: "value",
-        $alsoInvalidates: {
-          objectTypes: [MockObjectType],
-          objects: [],
-        },
+        $dependsOn: [MockObjectType],
+        $dependsOnObjects: [],
       });
     });
 
     expect(mockApplyAction).toHaveBeenCalledTimes(1);
     const callArgs = mockApplyAction.mock.calls[0];
     const options = callArgs[2];
-    expect(options.alsoInvalidates).toEqual({
-      objectTypes: [MockObjectType],
-    });
-    expect(options.alsoInvalidates).not.toHaveProperty("objects");
+    expect(options.dependsOn).toEqual([MockObjectType]);
+    expect(options).not.toHaveProperty("dependsOnObjects");
   });
 
   it("should set isPending while action is in progress", async () => {
