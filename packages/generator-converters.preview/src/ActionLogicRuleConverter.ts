@@ -21,59 +21,61 @@ import type {
 } from "@osdk/client.unstable";
 import type * as Ontologies from "@osdk/foundry.ontologies";
 
-/**
- * Helper function to resolve the correct apiName from objectTypeId.
- * The objectTypeId coming from the rules may have hyphens instead of dots.
- */
-function resolveObjectApiName(
-  objectTypeId: string,
-  ir?: OntologyIrOntologyBlockDataV2,
-): string {
-  if (ir?.objectTypes) {
-    // Try direct lookup first
-    if (ir.objectTypes[objectTypeId]) {
-      return ir.objectTypes[objectTypeId].objectType.apiName;
-    }
-    // Also try to find by searching through values
-    for (const obj of Object.values(ir.objectTypes)) {
-      // Check if the apiName with hyphens replaced matches
-      const hyphenatedApiName = obj.objectType.apiName.replace(/\./g, "-");
-      if (hyphenatedApiName === objectTypeId) {
-        return obj.objectType.apiName;
-      }
-    }
-  }
-
-  return objectTypeId;
+interface ApiNameLookup {
+  byId: Map<string, string>;
+  byHyphenated: Map<string, string>;
 }
 
-/**
- * Helper function to resolve the correct apiName for interfaces.
- * The interfaceId in the action rules may use hyphens instead of dots.
- */
-function resolveInterfaceApiName(
-  interfaceId: string,
-  ir?: OntologyIrOntologyBlockDataV2,
-): string {
-  if (ir?.interfaceTypes) {
-    // Try direct lookup first
-    if (ir.interfaceTypes[interfaceId]) {
-      return ir.interfaceTypes[interfaceId].interfaceType.apiName;
-    }
-    // Also try to find by searching through values
-    for (const interfaceEntry of Object.values(ir.interfaceTypes)) {
-      // Check if the apiName with hyphens replaced matches
-      const hyphenatedApiName = interfaceEntry.interfaceType.apiName.replace(
-        /\./g,
-        "-",
-      );
-      if (hyphenatedApiName === interfaceId) {
-        return interfaceEntry.interfaceType.apiName;
-      }
-    }
+function buildObjectTypeLookup(
+  ir: OntologyIrOntologyBlockDataV2 | undefined,
+): ApiNameLookup | undefined {
+  if (!ir?.objectTypes) {
+    return undefined;
   }
-  // Fallback: if not found in IR, return the ID as-is
-  return interfaceId;
+  const byId = new Map<string, string>();
+  const byHyphenated = new Map<string, string>();
+  for (const [key, value] of Object.entries(ir.objectTypes)) {
+    const apiName = value.objectType.apiName;
+    byId.set(key, apiName);
+    byHyphenated.set(apiName.replace(/\./g, "-"), apiName);
+  }
+  return { byId, byHyphenated };
+}
+
+function buildInterfaceTypeLookup(
+  ir: OntologyIrOntologyBlockDataV2 | undefined,
+): ApiNameLookup | undefined {
+  if (!ir?.interfaceTypes) {
+    return undefined;
+  }
+  const byId = new Map<string, string>();
+  const byHyphenated = new Map<string, string>();
+  for (const [key, value] of Object.entries(ir.interfaceTypes)) {
+    const apiName = value.interfaceType.apiName;
+    byId.set(key, apiName);
+    byHyphenated.set(apiName.replace(/\./g, "-"), apiName);
+  }
+  return { byId, byHyphenated };
+}
+
+function resolveApiName(id: string, lookup: ApiNameLookup | undefined): string {
+  if (!lookup) {
+    return id;
+  }
+  return lookup.byId.get(id) ?? lookup.byHyphenated.get(id) ?? id;
+}
+
+function getObjectReferenceType(
+  action: OntologyIrActionTypeBlockDataV2,
+  paramKey: string,
+): { objectTypeId: string } {
+  const param = action.actionType.metadata.parameters[paramKey];
+  if (!param || param.type.type !== "objectReference") {
+    throw new Error(
+      `Parameter '${paramKey}' must be an objectReference type`,
+    );
+  }
+  return param.type.objectReference;
 }
 
 /**
@@ -84,6 +86,9 @@ export function convertIrLogicRuleToActionLogicRule(
   action: OntologyIrActionTypeBlockDataV2,
   ir?: OntologyIrOntologyBlockDataV2,
 ): Ontologies.ActionLogicRule {
+  const objectLookup = buildObjectTypeLookup(ir);
+  const interfaceLookup = buildInterfaceTypeLookup(ir);
+
   switch (irRule.type) {
     case "addObjectRule": {
       const r = irRule.addObjectRule;
@@ -94,102 +99,91 @@ export function convertIrLogicRuleToActionLogicRule(
       for (const [k, v] of Object.entries(r.propertyValues)) {
         propertyArguments[k] = v as Ontologies.LogicRuleArgument;
       }
-      return {
+      const result: Ontologies.CreateObjectLogicRule & {
+        type: "createObject";
+      } = {
         type: "createObject",
-        objectTypeApiName: resolveObjectApiName(r.objectTypeId, ir),
+        objectTypeApiName: resolveApiName(r.objectTypeId, objectLookup),
         propertyArguments,
         structPropertyArguments: {},
-      } as Ontologies.CreateObjectLogicRule & { type: "createObject" };
+      };
+      return result;
     }
 
     case "addOrModifyObjectRuleV2": {
       const r = irRule.addOrModifyObjectRuleV2;
-      const modifyParamType =
-        action.actionType.metadata.parameters[r.objectToModify].type;
-      if (modifyParamType.type === "objectReference") {
-        return {
-          type: "createOrModifyObject",
-          objectTypeApiName: resolveObjectApiName(
-            modifyParamType.objectReference.objectTypeId,
-            ir,
-          ),
-          propertyArguments: {},
-          structPropertyArguments: {},
-        } as Ontologies.CreateOrModifyObjectLogicRule & {
-          type: "createOrModifyObject";
-        };
-      } else {
-        throw new Error(
-          "Unable to convert createOrModifyObject because parameter does not exist",
-        );
-      }
+      const objRef = getObjectReferenceType(action, r.objectToModify);
+      const result: Ontologies.CreateOrModifyObjectLogicRule & {
+        type: "createOrModifyObject";
+      } = {
+        type: "createOrModifyObject",
+        objectTypeApiName: resolveApiName(objRef.objectTypeId, objectLookup),
+        propertyArguments: {},
+        structPropertyArguments: {},
+      };
+      return result;
     }
 
     case "modifyObjectRule": {
       const r = irRule.modifyObjectRule;
-      const modifyParamType =
-        action.actionType.metadata.parameters[r.objectToModify].type;
-      if (modifyParamType.type === "objectReference") {
-        return {
-          type: "modifyObject",
-          objectToModify: r.objectToModify,
-          propertyArguments: {},
-          structPropertyArguments: {},
-        } as Ontologies.ModifyObjectLogicRule & { type: "modifyObject" };
-      } else {
-        throw new Error(
-          "Unable to convert modifyObject because parameter does not exist",
-        );
-      }
+      getObjectReferenceType(action, r.objectToModify);
+      const result: Ontologies.ModifyObjectLogicRule & {
+        type: "modifyObject";
+      } = {
+        type: "modifyObject",
+        objectToModify: r.objectToModify,
+        propertyArguments: {},
+        structPropertyArguments: {},
+      };
+      return result;
     }
 
     case "deleteObjectRule": {
       const r = irRule.deleteObjectRule;
-      return {
+      const result: Ontologies.DeleteObjectLogicRule & {
+        type: "deleteObject";
+      } = {
         type: "deleteObject",
         objectToDelete: r.objectToDelete,
-      } as Ontologies.DeleteObjectLogicRule & { type: "deleteObject" };
+      };
+      return result;
     }
 
     case "addInterfaceRule": {
       const r = irRule.addInterfaceRule;
-      const interfaceApiName = resolveInterfaceApiName(r.interfaceApiName, ir);
-      return {
+      const interfaceApiName = resolveApiName(
+        r.interfaceApiName,
+        interfaceLookup,
+      );
+      const result: Ontologies.CreateInterfaceLogicRule & {
+        type: "createInterface";
+      } = {
         type: "createInterface",
         interfaceTypeApiName: interfaceApiName,
-        objectType: interfaceApiName, // This might need to be resolved properly
+        objectType: interfaceApiName,
         sharedPropertyArguments: {},
         structPropertyArguments: {},
-      } as Ontologies.CreateInterfaceLogicRule & { type: "createInterface" };
+      };
+      return result;
     }
 
     case "modifyInterfaceRule": {
       const r = irRule.modifyInterfaceRule;
-      return {
+      const result: Ontologies.ModifyInterfaceLogicRule & {
+        type: "modifyInterface";
+      } = {
         type: "modifyInterface",
         interfaceObjectToModify: r.interfaceObjectToModifyParameter,
         sharedPropertyArguments: {},
         structPropertyArguments: {},
-      } as Ontologies.ModifyInterfaceLogicRule & { type: "modifyInterface" };
+      };
+      return result;
     }
 
-    case "addLinkRule": {
-      throw new Error(
-        "Add link rule not supported for ActionLogicRule conversion",
-      );
-    }
+    case "addLinkRule":
+      throw new Error("addLinkRule is not supported for ActionLogicRule");
 
-    case "deleteLinkRule": {
-      throw new Error(
-        "Delete link rule not supported for ActionLogicRule conversion",
-      );
-    }
-
-    default:
-      throw new Error(
-        `Unsupported OntologyIrLogicRule type: ${
-          (irRule as OntologyIrLogicRule).type
-        }`,
-      );
+    case "deleteLinkRule":
+      throw new Error("deleteLinkRule is not supported for ActionLogicRule");
   }
 }

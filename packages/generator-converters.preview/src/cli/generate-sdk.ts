@@ -20,34 +20,60 @@ import * as fs from "node:fs/promises";
 import * as path from "node:path";
 import { PreviewOntologyIrConverter } from "../PreviewOntologyIrConverter.js";
 
-const args = process.argv.slice(2);
+const USAGE =
+  `Usage: generate-sdk <input-ontology-ir.json> <package-name> <package-version> <output-dir>
 
-if (args.length < 4) {
-  // eslint-disable-next-line no-console
-  console.error(
-    "Usage: generate-sdk <input-ontology-ir.json> <package-name> <package-version> <output-dir>",
-  );
-  process.exit(1);
-}
+Arguments:
+  input-ontology-ir.json  Path to the OntologyIR JSON file
+  package-name            Name for the generated SDK package
+  package-version         Version string for the generated SDK
+  output-dir              Directory where the SDK will be generated`;
 
-const inputFile = path.resolve(args[0]);
-const packageName = args[1];
-const packageVersion = args[2];
-const outputDir = path.resolve(args[3]);
+async function main(): Promise<void> {
+  const args = process.argv.slice(2);
 
-async function generate() {
-  // Step 1: Convert IR to full metadata (with ActionTypeFullMetadata)
+  if (args.length < 4) {
+    // eslint-disable-next-line no-console
+    console.error(USAGE);
+    process.exit(1);
+  }
+
+  const [inputArg, packageName, packageVersion, outputArg] = args;
+  const inputFile = path.resolve(inputArg);
+  const outputDir = path.resolve(outputArg);
+
+  // Validate input file exists
+  try {
+    await fs.access(inputFile);
+  } catch {
+    // eslint-disable-next-line no-console
+    console.error(`Error: Input file does not exist: ${inputFile}`);
+    process.exit(1);
+  }
+
   // eslint-disable-next-line no-console
   console.log(`Converting ${inputFile}...`);
-  const fileContent = JSON.parse(await fs.readFile(inputFile, "utf-8"));
-  // Handle both wrapped (ontology.objectTypes) and unwrapped (objectTypes) formats
-  const irJson = fileContent.ontology ?? fileContent;
+
+  const fileContent = await fs.readFile(inputFile, "utf-8");
+  let irJson: unknown;
+  try {
+    const parsed = JSON.parse(fileContent);
+    // Handle both wrapped (ontology.objectTypes) and unwrapped (objectTypes) formats
+    irJson = parsed.ontology ?? parsed;
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.error(`Error: Failed to parse JSON from ${inputFile}`);
+    process.exit(1);
+  }
+
   const previewMetadata = PreviewOntologyIrConverter
-    .getPreviewFullMetadataFromIr(irJson);
+    .getPreviewFullMetadataFromIr(
+      irJson as Parameters<
+        typeof PreviewOntologyIrConverter.getPreviewFullMetadataFromIr
+      >[0],
+    );
 
   // Convert ActionTypeFullMetadata to ActionTypeV2 for generator compatibility
-  // The generator expects actionTypes: Record<string, ActionTypeV2>
-  // but preview returns actionTypes: Record<string, ActionTypeFullMetadata>
   const metadata = {
     ...previewMetadata,
     actionTypes: Object.fromEntries(
@@ -58,25 +84,24 @@ async function generate() {
     ),
   };
 
-  // Step 2: Generate SDK
   const fullOutputDir = path.join(outputDir, packageName);
   await fs.mkdir(fullOutputDir, { recursive: true });
 
   const hostFs = {
-    async writeFile(filePath: string, contents: string) {
+    async writeFile(filePath: string, contents: string): Promise<void> {
       const fullPath = path.isAbsolute(filePath)
         ? filePath
         : path.join(fullOutputDir, filePath);
       await fs.mkdir(path.dirname(fullPath), { recursive: true });
       await fs.writeFile(fullPath, contents, "utf-8");
     },
-    async mkdir(dirPath: string) {
+    async mkdir(dirPath: string): Promise<void> {
       const fullPath = path.isAbsolute(dirPath)
         ? dirPath
         : path.join(fullOutputDir, dirPath);
       await fs.mkdir(fullPath, { recursive: true });
     },
-    async readdir(dirPath: string) {
+    async readdir(dirPath: string): Promise<string[]> {
       return fs.readdir(dirPath);
     },
   };
@@ -97,30 +122,21 @@ async function generate() {
     [],
   );
 
-  // Write metadata - include full metadata with ActionTypeFullMetadata for consumers
+  const metadataPath = path.join(fullOutputDir, "ontology-metadata.json");
   await fs.writeFile(
-    path.join(fullOutputDir, "ontology-metadata.json"),
+    metadataPath,
     JSON.stringify(previewMetadata, null, 2),
     "utf-8",
   );
 
-  // Also write result.json next to this script (in the package directory)
-  const scriptDir = path.dirname(new URL(import.meta.url).pathname);
-  const packageDir = path.resolve(scriptDir, "../../..");
-  await fs.writeFile(
-    path.join(packageDir, "result.json"),
-    JSON.stringify(previewMetadata, null, 2),
-    "utf-8",
-  );
   // eslint-disable-next-line no-console
-  console.log(`Wrote ${path.join(packageDir, "result.json")}`);
-
+  console.log(`Wrote ${metadataPath}`);
   // eslint-disable-next-line no-console
   console.log("Done!");
 }
 
-generate().catch((err: unknown) => {
+main().catch((err: unknown) => {
   // eslint-disable-next-line no-console
-  console.error("Error:", err);
+  console.error("Error:", err instanceof Error ? err.message : err);
   process.exit(1);
 });

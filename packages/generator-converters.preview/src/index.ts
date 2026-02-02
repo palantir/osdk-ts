@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-export { convertIrLogicRuleToActionLogicRule } from "./ActionLogicRuleConverter.js";
 export {
   type PreviewOntologyFullMetadata,
   PreviewOntologyIrConverter,
 } from "./PreviewOntologyIrConverter.js";
-export { toUuid } from "./ridUtils.js";
