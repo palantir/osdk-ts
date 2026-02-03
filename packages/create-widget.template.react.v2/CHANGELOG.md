@@ -39,6 +39,23 @@
 
 - 265b09b: Update generated `.npmrc` file
 
+## 3.3.0
+
+### Patch Changes
+
+-   322c5bc: Simulated release
+
+-   baf1e30: Introduce widget resize message for automatic heights
+
+-   5eb7aa0: Update generated `.npmrc` file
+
+-   af4f3bf: Remove the following features for RC:
+    -   Property formatting
+    -   Branching
+    -   Constant RDPs
+
+-   02fb0ac: Bump widget template dependency versions on widget libraries
+
 ## 3.3.0-beta.11
 
 ### Minor Changes

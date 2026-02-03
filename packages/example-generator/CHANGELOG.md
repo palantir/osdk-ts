@@ -15,6 +15,37 @@
   - @osdk/create-widget@3.4.0-beta.2
   - @osdk/create-app@2.7.0-beta.2
 
+## 0.14.0
+
+### Patch Changes
+
+-   322c5bc: Simulated release
+
+-   5eb7aa0: Allow CLI template bootstrapping without an OSDK
+
+-   af4f3bf: Remove the following features for RC:
+    -   Property formatting
+    -   Branching
+    -   Constant RDPs
+
+-   Updated dependencies [322c5bc]
+
+-   Updated dependencies [322c5bc]
+
+-   Updated dependencies [14abc06]
+
+-   Updated dependencies [5eb7aa0]
+
+-   Updated dependencies [5eb7aa0]
+
+-   Updated dependencies [5eb7aa0]
+
+-   Updated dependencies [5eb7aa0]
+
+-   Updated dependencies [af4f3bf]
+    -   @osdk/create-app@2.6.0
+    -   @osdk/create-widget@3.3.0
+
 ## 0.13.0
 
 ### Patch Changes

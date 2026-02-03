@@ -137,6 +137,103 @@
   - @osdk/client.unstable@2.7.0-beta.2
   - @osdk/cli@0.31.0-beta.2
 
+## 0.4.0
+
+### Patch Changes
+
+-   150da1a: Simulated release
+
+-   b313525: bump osdk
+
+-   af4f3bf: Remove the following features for RC:
+    -   Property formatting
+    -   Branching
+    -   Constant RDPs
+
+-   Updated dependencies [322c5bc]
+
+-   Updated dependencies [322c5bc]
+
+-   Updated dependencies [322c5bc]
+
+-   Updated dependencies [150da1a]
+
+-   Updated dependencies [150da1a]
+
+-   Updated dependencies [322c5bc]
+
+-   Updated dependencies [a26bfab]
+
+-   Updated dependencies [9e2d70a]
+
+-   Updated dependencies [5e4aabd]
+
+-   Updated dependencies [98cdfee]
+
+-   Updated dependencies [9ddb3b4]
+
+-   Updated dependencies [995064b]
+
+-   Updated dependencies [55e104e]
+
+-   Updated dependencies [b313525]
+
+-   Updated dependencies [3fbb596]
+
+-   Updated dependencies [09242c5]
+
+-   Updated dependencies [f7ae38a]
+
+-   Updated dependencies [486ef7e]
+
+-   Updated dependencies [ea077c6]
+
+-   Updated dependencies [296b34d]
+
+-   Updated dependencies [3d7dc0a]
+
+-   Updated dependencies [aca0e5d]
+
+-   Updated dependencies [949646b]
+
+-   Updated dependencies [88ac696]
+
+-   Updated dependencies [7fd788b]
+
+-   Updated dependencies [2556c64]
+
+-   Updated dependencies [6532b54]
+
+-   Updated dependencies [5a9cd8f]
+
+-   Updated dependencies [878c2eb]
+
+-   Updated dependencies [7601f9f]
+
+-   Updated dependencies [b307201]
+
+-   Updated dependencies [04bfbfc]
+
+-   Updated dependencies [e7bf02a]
+
+-   Updated dependencies [a1ffb20]
+
+-   Updated dependencies [b959085]
+
+-   Updated dependencies [6ddabf4]
+
+-   Updated dependencies [a03ea8d]
+
+-   Updated dependencies [af4f3bf]
+
+-   Updated dependencies [e62c692]
+    -   @osdk/api@2.6.0
+    -   @osdk/cli@0.30.0
+    -   @osdk/client.unstable@2.6.0
+    -   @osdk/faux@0.4.0
+    -   @osdk/generator-converters.ontologyir@2.6.0
+    -   @osdk/maker@0.14.0
+
 ## 0.4.0-beta.13
 
 ### Patch Changes

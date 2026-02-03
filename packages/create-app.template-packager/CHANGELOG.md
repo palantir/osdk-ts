@@ -30,6 +30,17 @@
 
 - 935b7ac: Allow CLI template bootstrapping without an OSDK
 
+## 2.6.0
+
+### Patch Changes
+
+-   322c5bc: Simulated release
+-   5eb7aa0: Allow CLI template bootstrapping without an OSDK
+-   af4f3bf: Remove the following features for RC:
+    -   Property formatting
+    -   Branching
+    -   Constant RDPs
+
 ## 2.6.0-beta.13
 
 ## 2.6.0-beta.12

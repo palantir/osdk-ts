@@ -12,6 +12,44 @@
   - @osdk/generator@2.7.0-beta.2
   - @osdk/cli.common@0.31.0-beta.2
 
+## 0.30.0
+
+### Patch Changes
+
+-   322c5bc: Simulated release
+
+-   b313525: bump osdk
+
+-   3fbb596: Pipe through transactionId to endpoints that load data via object sets
+
+-   a1ffb20: Use new ephemeral media upload endpoint.
+
+-   af4f3bf: Remove the following features for RC:
+    -   Property formatting
+    -   Branching
+    -   Constant RDPs
+
+-   Updated dependencies [322c5bc]
+
+-   Updated dependencies [322c5bc]
+
+-   Updated dependencies [322c5bc]
+
+-   Updated dependencies [b313525]
+
+-   Updated dependencies [3fbb596]
+
+-   Updated dependencies [486ef7e]
+
+-   Updated dependencies [a1ffb20]
+
+-   Updated dependencies [b959085]
+
+-   Updated dependencies [af4f3bf]
+    -   @osdk/cli.common@0.30.0
+    -   @osdk/generator@2.6.0
+    -   @osdk/shared.client.impl@1.6.0
+
 ## 0.30.0-beta.5
 
 ### Minor Changes

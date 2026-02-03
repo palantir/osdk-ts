@@ -143,6 +143,75 @@
   - @osdk/client@2.7.0-beta.2
   - @osdk/api@2.7.0-beta.2
 
+## 2.6.0
+
+### Patch Changes
+
+-   322c5bc: Simulated release
+
+-   f234d5c: Don't throw for nested array query params
+
+-   b313525: bump osdk
+
+-   3fbb596: Pipe through transactionId to endpoints that load data via object sets
+
+-   a1ffb20: Use new ephemeral media upload endpoint.
+
+-   af4f3bf: Remove the following features for RC:
+    -   Property formatting
+    -   Branching
+    -   Constant RDPs
+
+-   Updated dependencies [322c5bc]
+
+-   Updated dependencies [322c5bc]
+
+-   Updated dependencies [322c5bc]
+
+-   Updated dependencies [322c5bc]
+
+-   Updated dependencies [b48526f]
+
+-   Updated dependencies [b313525]
+
+-   Updated dependencies [3fbb596]
+
+-   Updated dependencies [f7ae38a]
+
+-   Updated dependencies [486ef7e]
+
+-   Updated dependencies [ea077c6]
+
+-   Updated dependencies [507ec7f]
+
+-   Updated dependencies [c5a3815]
+
+-   Updated dependencies [3d7dc0a]
+
+-   Updated dependencies [2556c64]
+
+-   Updated dependencies [5a9cd8f]
+
+-   Updated dependencies [b307201]
+
+-   Updated dependencies [61eb5b0]
+
+-   Updated dependencies [9961f06]
+
+-   Updated dependencies [e7bf02a]
+
+-   Updated dependencies [a1ffb20]
+
+-   Updated dependencies [b959085]
+
+-   Updated dependencies [af4f3bf]
+
+-   Updated dependencies [e62c692]
+    -   @osdk/api@2.6.0
+    -   @osdk/client@2.6.0
+    -   @osdk/generator@2.6.0
+    -   @osdk/shared.client.impl@1.6.0
+
 ## 2.6.0-beta.13
 
 ### Minor Changes
