@@ -7,12 +7,13 @@
     "url": "https://github.com/palantir/osdk-ts.git"
   },
   "exports": {
-    ".": "./src/index.css",
-    "./styles.css": "./src/index.css"
+    ".": "./src/index.css"
   },
   "scripts": {
-    "check-spelling": "cspell --quiet .",
-    "lint": "echo 'No linting needed for CSS-only package'"
+    "check-spelling": "cspell --quiet ."
+  },
+  "dependencies": {
+    "@blueprintjs/core": "^6.7.0"
   },
   "publishConfig": {
     "access": "public"
