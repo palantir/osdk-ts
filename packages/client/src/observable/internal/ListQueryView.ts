@@ -106,25 +106,28 @@ export class ListQueryView<PAYLOAD extends BaseListPayloadShape> {
 
   #createFetchMore(): () => Promise<void> {
     return async () => {
-      // Prevent rapid-click over-incrementing
       if (this.#pendingFetchMore) {
         return this.#pendingFetchMore;
       }
 
-      this.#viewLimit += this.#pageSize;
+      const doFetch = async () => {
+        this.#viewLimit += this.#pageSize;
 
-      const loadedCount = this.#query.getLoadedCount();
-      const hasMoreOnServer = this.#query.hasMorePages();
+        const loadedCount = this.#query.getLoadedCount();
+        const hasMoreOnServer = this.#query.hasMorePages();
 
-      if (this.#viewLimit > loadedCount && hasMoreOnServer) {
-        this.#pendingFetchMore = this.#query.fetchMore().finally(() => {
-          this.#pendingFetchMore = undefined;
-        });
-        return this.#pendingFetchMore;
-      } else {
-        // Data already in cache, just notify to re-render with new viewLimit
-        this.#query.notifySubscribers();
-      }
+        if (this.#viewLimit > loadedCount && hasMoreOnServer) {
+          await this.#query.fetchMore();
+        } else {
+          this.#query.notifySubscribers();
+        }
+      };
+
+      this.#pendingFetchMore = doFetch().finally(() => {
+        this.#pendingFetchMore = undefined;
+      });
+
+      return this.#pendingFetchMore;
     };
   }
 }

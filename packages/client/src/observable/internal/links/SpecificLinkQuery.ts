@@ -159,7 +159,7 @@ export class SpecificLinkQuery extends BaseListQuery<
       $orderBy?: Record<string, "asc" | "desc" | undefined>;
       $where?: Record<string, unknown>;
     } = {
-      $pageSize: this.options.pageSize || 100,
+      $pageSize: this.getEffectiveFetchPageSize(),
       $nextPageToken: this.nextPageToken,
       $includeRid: true,
     };

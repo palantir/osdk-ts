@@ -105,7 +105,7 @@ export abstract class AbstractHelper<
     }
 
     // For queries that support views (list-like queries), wrap with ListQueryView
-    // to handle per-subscriber pageSize
+    // to handle per-subscriber view data such as pageSize
     const listOptions = options as ListObserveOptions;
     const useView = supportsViews<PAYLOAD & BaseListPayloadShape>(query)
       && (listOptions.pageSize !== undefined
