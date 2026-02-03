@@ -23,6 +23,7 @@ import type { Connectable, Observable, Subject } from "rxjs";
 import { BehaviorSubject, connectable, map } from "rxjs";
 import { additionalContext } from "../../../Client.js";
 import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
+import { getWireObjectSet } from "../../../objectSet/createObjectSet.js";
 import type { ObjectPayload } from "../../ObjectPayload.js";
 import type {
   CommonObserveOptions,
@@ -31,6 +32,7 @@ import type {
 import type { BatchContext } from "../BatchContext.js";
 import { getBulkObjectLoader } from "../BulkObjectLoader.js";
 import type { Changes } from "../Changes.js";
+import { getObjectTypesThatInvalidate } from "../getObjectTypesThatInvalidate.js";
 import type { Entry } from "../Layer.js";
 import { Query } from "../Query.js";
 import type { Store } from "../Store.js";
@@ -45,6 +47,9 @@ export class ObjectQuery extends Query<
 > {
   #apiName: string;
   #pk: string | number | boolean;
+
+  // Object types that should trigger invalidation of this query (computed from RDP dependencies)
+  #invalidationTypes: Set<string> | undefined;
 
   constructor(
     store: Store,
@@ -120,13 +125,24 @@ export class ObjectQuery extends Query<
         apiName: this.#apiName,
       } as ObjectTypeDefinition;
 
-      obj = await this.store.client(miniDef)
+      const objectSet = this.store.client(miniDef)
         .withProperties(
           rdpConfig as DerivedProperty.Clause<ObjectTypeDefinition>,
-        )
-        .fetchOne(
-          this.#pk as PrimaryKeyType<ObjectTypeDefinition>,
-        ) as ObjectHolder;
+        );
+
+      // Compute invalidation types if not already computed (for RDP queries)
+      if (this.#invalidationTypes === undefined) {
+        const wireObjectSet = getWireObjectSet(objectSet);
+        const { invalidationSet } = await getObjectTypesThatInvalidate(
+          this.store.client[additionalContext],
+          wireObjectSet,
+        );
+        this.#invalidationTypes = invalidationSet;
+      }
+
+      obj = await objectSet.fetchOne(
+        this.#pk as PrimaryKeyType<ObjectTypeDefinition>,
+      ) as ObjectHolder;
     } else {
       // Use batched loader for non-RDP objects (efficient batching)
       obj = await getBulkObjectLoader(this.store.client)
@@ -185,10 +201,19 @@ export class ObjectQuery extends Query<
     objectType: string,
     changes: Changes | undefined,
   ): Promise<void> => {
+    // Direct type match - the query's primary object type was invalidated
     if (this.#apiName === objectType) {
       changes?.modified.add(this.cacheKey);
       return this.revalidate(true);
     }
+
+    // Check RDP dependencies - if this query depends on the invalidated type
+    // through derived properties, we need to revalidate
+    if (this.#invalidationTypes?.has(objectType)) {
+      changes?.modified.add(this.cacheKey);
+      return this.revalidate(true);
+    }
+
     return Promise.resolve();
   };
 }

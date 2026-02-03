@@ -18,6 +18,8 @@ import type {
   ActionDefinition,
   ActionEditResponse,
   ActionValidationResponse,
+  ObjectTypeDefinition,
+  Osdk,
 } from "@osdk/client";
 import { ActionValidationError } from "@osdk/client";
 import type {
@@ -26,6 +28,42 @@ import type {
 } from "@osdk/client/unstable-do-not-use";
 import React from "react";
 import { OsdkContext2 } from "./OsdkContext2.js";
+
+interface MergedDependencies {
+  dependsOn?: Array<ObjectTypeDefinition | string>;
+  dependsOnObjects?: Array<Osdk.Instance<ObjectTypeDefinition>>;
+}
+
+function mergeDependencies(
+  deps: Array<
+    {
+      dependsOn?: ObservableClient.ApplyActionOptions["dependsOn"];
+      dependsOnObjects?:
+        ObservableClient.ApplyActionOptions["dependsOnObjects"];
+    } | undefined
+  >,
+): MergedDependencies | undefined {
+  const dependsOn: Array<ObjectTypeDefinition | string> = [];
+  const dependsOnObjects: Array<Osdk.Instance<ObjectTypeDefinition>> = [];
+
+  for (const dep of deps) {
+    if (dep?.dependsOn) {
+      dependsOn.push(...dep.dependsOn);
+    }
+    if (dep?.dependsOnObjects) {
+      dependsOnObjects.push(...dep.dependsOnObjects);
+    }
+  }
+
+  if (dependsOn.length === 0 && dependsOnObjects.length === 0) {
+    return undefined;
+  }
+
+  return {
+    ...(dependsOn.length > 0 && { dependsOn }),
+    ...(dependsOnObjects.length > 0 && { dependsOnObjects }),
+  };
+}
 
 type ApplyActionParams<Q extends ActionDefinition<any>> =
   & Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0]
@@ -94,28 +132,47 @@ export function useOsdkAction<Q extends ActionDefinition<any>>(
         const updates: Array<
           ObservableClient.ApplyActionOptions["optimisticUpdate"]
         > = [];
+        const dependencies: Array<{
+          dependsOn?: ObservableClient.ApplyActionOptions["dependsOn"];
+          dependsOnObjects?:
+            ObservableClient.ApplyActionOptions["dependsOnObjects"];
+        }> = [];
         const args = hookArgs.map(a => {
-          const { $optimisticUpdate, ...args } = a;
+          const { $optimisticUpdate, $dependsOn, $dependsOnObjects, ...args } =
+            a;
           if ($optimisticUpdate) {
             updates.push($optimisticUpdate);
+          }
+          if ($dependsOn || $dependsOnObjects) {
+            dependencies.push({
+              dependsOn: $dependsOn,
+              dependsOnObjects: $dependsOnObjects,
+            });
           }
           return args;
         });
 
+        const merged = mergeDependencies(dependencies);
         const r = await observableClient.applyAction(actionDef, args, {
           optimisticUpdate: (ctx) => {
             for (const update of updates) {
               update?.(ctx);
             }
           },
+          ...merged,
         });
         setData(r);
         return r;
       } else {
-        const { $optimisticUpdate, ...args } = hookArgs;
+        const { $optimisticUpdate, $dependsOn, $dependsOnObjects, ...args } =
+          hookArgs;
 
+        const merged = mergeDependencies([
+          { dependsOn: $dependsOn, dependsOnObjects: $dependsOnObjects },
+        ]);
         const r = await observableClient.applyAction(actionDef, args, {
           optimisticUpdate: $optimisticUpdate,
+          ...merged,
         });
         setData(r);
         return r;

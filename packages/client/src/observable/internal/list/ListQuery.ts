@@ -91,6 +91,9 @@ export abstract class ListQuery extends BaseListQuery<
   #pivotInfo: Canonical<PivotInfo> | undefined;
   #objectSet: ObjectSet<ObjectTypeDefinition>;
 
+  // Object types that should trigger invalidation of this query (computed from RDP/pivot dependencies)
+  #invalidationTypes: Set<string> | undefined;
+
   /**
    * Register changes to the cache specific to ListQuery
    */
@@ -176,10 +179,33 @@ export abstract class ListQuery extends BaseListQuery<
   protected async fetchPageData(
     signal: AbortSignal | undefined,
   ): Promise<PageResult<Osdk.Instance<any>>> {
-    if (
+    // Compute invalidation types if not already computed
+    // This determines which object types should trigger revalidation of this query
+    if (this.#invalidationTypes === undefined) {
+      const wireObjectSet = getWireObjectSet(this.#objectSet);
+      const { resultType, invalidationSet } =
+        await getObjectTypesThatInvalidate(
+          this.store.client[additionalContext],
+          wireObjectSet,
+        );
+      this.#invalidationTypes = invalidationSet;
+
+      // Initialize sorting strategy if needed (for pivot queries)
+      if (
+        Object.keys(this.#orderBy).length > 0
+        && !(this.sortingStrategy instanceof OrderBySortingStrategy)
+      ) {
+        this.sortingStrategy = new OrderBySortingStrategy(
+          resultType.apiName,
+          this.#orderBy,
+        );
+      }
+    } else if (
       Object.keys(this.#orderBy).length > 0
       && !(this.sortingStrategy instanceof OrderBySortingStrategy)
     ) {
+      // Fallback: compute just the result type if invalidation types were already computed
+      // but sorting strategy wasn't initialized (shouldn't happen in practice)
       const wireObjectSet = getWireObjectSet(this.#objectSet);
       const { resultType } = await getObjectTypesThatInvalidate(
         this.store.client[additionalContext],
@@ -256,8 +282,15 @@ export abstract class ListQuery extends BaseListQuery<
     objectType: string,
     changes: Changes | undefined,
   ): Promise<void> => {
+    // Direct type match - the query's primary object type was invalidated
     if (this.apiName === objectType) {
-      // Only invalidate lists for the matching apiName
+      changes?.modified.add(this.cacheKey);
+      return this.revalidate(true);
+    }
+
+    // Check RDP/pivot dependencies - if this query depends on the invalidated type
+    // through derived properties or pivots, we need to revalidate
+    if (this.#invalidationTypes?.has(objectType)) {
       changes?.modified.add(this.cacheKey);
       return this.revalidate(true);
     }

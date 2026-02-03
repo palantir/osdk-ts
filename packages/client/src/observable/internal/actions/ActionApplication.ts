@@ -39,7 +39,7 @@ export class ActionApplication {
   ) => Promise<ActionEditResponse> = async (
     action,
     args,
-    { optimisticUpdate } = {},
+    { optimisticUpdate, dependsOn, dependsOnObjects } = {},
   ) => {
     const logger = process.env.NODE_ENV !== "production"
       ? this.store.logger?.child({ methodName: "applyAction" })
@@ -64,6 +64,7 @@ export class ActionApplication {
               );
 
           await this.#invalidateActionEditResponse(results);
+          await this.#handleDependencies(dependsOn, dependsOnObjects);
 
           return results;
         }
@@ -85,6 +86,7 @@ export class ActionApplication {
           }
         }
         await this.#invalidateActionEditResponse(actionResults);
+        await this.#handleDependencies(dependsOn, dependsOnObjects);
         return actionResults;
       } finally {
         if (process.env.NODE_ENV !== "production") {
@@ -96,6 +98,26 @@ export class ActionApplication {
         await removeOptimisticResult();
       }
     })();
+  };
+
+  #handleDependencies = async (
+    dependsOn: Store.ApplyActionOptions["dependsOn"],
+    dependsOnObjects: Store.ApplyActionOptions["dependsOnObjects"],
+  ): Promise<void> => {
+    if (dependsOn != null && dependsOn.length > 0) {
+      await Promise.all(
+        dependsOn.map(t =>
+          this.store.invalidateObjectType(
+            typeof t === "string" ? t : t.apiName,
+            undefined,
+          )
+        ),
+      );
+    }
+
+    if (dependsOnObjects != null && dependsOnObjects.length > 0) {
+      await this.store.invalidateObjects(dependsOnObjects);
+    }
   };
 
   #invalidateActionEditResponse = async (

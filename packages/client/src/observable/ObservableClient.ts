@@ -57,6 +57,8 @@ import type { OptimisticBuilder } from "./OptimisticBuilder.js";
 export namespace ObservableClient {
   export interface ApplyActionOptions {
     optimisticUpdate?: (ctx: OptimisticBuilder) => void;
+    dependsOn?: Array<ObjectTypeDefinition | string>;
+    dependsOnObjects?: Array<Osdk.Instance<ObjectTypeDefinition>>;
   }
 }
 
