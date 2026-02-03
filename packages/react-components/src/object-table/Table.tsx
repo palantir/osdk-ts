@@ -21,7 +21,7 @@ import styles from "./Table.module.css";
 import { TableBody } from "./TableBody.js";
 import { TableHeader } from "./TableHeader.js";
 
-interface TableProps<TData extends RowData> {
+export interface BaseTableProps<TData extends RowData> {
   table: Table<TData>;
   isLoading?: boolean;
   fetchNextPage?: () => Promise<void>;
@@ -34,7 +34,7 @@ interface TableProps<TData extends RowData> {
   className?: string;
 }
 
-export function Table<TData extends RowData>(
+export function BaseTable<TData extends RowData>(
   {
     table,
     isLoading,
@@ -43,7 +43,7 @@ export function Table<TData extends RowData>(
     rowHeight,
     renderCellContextMenu,
     className,
-  }: TableProps<TData>,
+  }: BaseTableProps<TData>,
 ): ReactElement {
   const tableContainerRef = useRef<HTMLDivElement>(null);
 

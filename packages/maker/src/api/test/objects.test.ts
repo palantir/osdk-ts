@@ -352,12 +352,13 @@ describe("Object Types", () => {
                 {
                   "interfaceTypeApiName": "com.palantir.interface",
                   "linksV2": {},
-                  "properties": {
+                  "properties": {},
+                  "propertiesV2": {
                     "com.palantir.foo": {
                       "propertyTypeRid": "bar",
+                      "type": "propertyTypeRid",
                     },
                   },
-                  "propertiesV2": {},
                 },
               ],
               "primaryKeys": [

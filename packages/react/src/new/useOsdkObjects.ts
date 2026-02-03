@@ -28,11 +28,10 @@ import type { ObserveObjectsCallbackArgs } from "@osdk/client/unstable-do-not-us
 import React from "react";
 import { makeExternalStore } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
-import type { InferRdpTypes } from "./types.js";
 
 export interface UseOsdkObjectsOptions<
   T extends ObjectOrInterfaceDefinition,
-  WithProps extends DerivedProperty.Clause<T> | undefined = undefined,
+  RDPs extends Record<string, SimplePropertyDef> = {},
 > {
   /**
    * Fetch objects by their RIDs (Resource Identifiers).
@@ -57,7 +56,7 @@ export interface UseOsdkObjectsOptions<
    * When used with `rids`, filters the RID set.
    * When used alone, filters all objects of the type.
    */
-  where?: WhereClause<T, InferRdpTypes<T, WithProps>>;
+  where?: WhereClause<T, RDPs>;
 
   /**
    * Sort results by one or more properties.
@@ -75,7 +74,7 @@ export interface UseOsdkObjectsOptions<
    * Define derived properties (RDPs) to be computed server-side and attached to each object.
    * These properties will be available on the returned objects alongside their regular properties.
    */
-  withProperties?: WithProps;
+  withProperties?: { [K in keyof RDPs]: DerivedProperty.Creator<T, RDPs[K]> };
 
   /**
    * The number of milliseconds to wait after the last observed list change.
@@ -101,7 +100,7 @@ export interface UseOsdkObjectsOptions<
    * The final result will only include objects that match ALL conditions.
    */
   intersectWith?: Array<{
-    where: WhereClause<T, InferRdpTypes<T, WithProps>>;
+    where: WhereClause<T, RDPs>;
   }>;
 
   /**
@@ -128,12 +127,26 @@ export interface UseOsdkListResult<
   T extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
 > {
+  /**
+   * Function to fetch more pages (undefined if no more pages)
+   */
   fetchMore: (() => Promise<void>) | undefined;
+
+  /**
+   * The fetched data with derived properties
+   */
   data:
     | Osdk.Instance<T, "$allBaseProperties", PropertyKeys<T>, RDPs>[]
     | undefined;
+
+  /**
+   * Whether data is currently being loaded
+   */
   isLoading: boolean;
 
+  /**
+   * Any error that occurred during fetching
+   */
   error: Error | undefined;
 
   /**
@@ -144,6 +157,11 @@ export interface UseOsdkListResult<
    * do that on a per object basis with useOsdkObject
    */
   isOptimistic: boolean;
+
+  /**
+   * The total count of objects matching the query (if available from the API)
+   */
+  totalCount?: string;
 }
 
 declare const process: {
@@ -162,20 +180,20 @@ export function useOsdkObjects<
 
 export function useOsdkObjects<
   Q extends ObjectOrInterfaceDefinition,
-  WP extends DerivedProperty.Clause<Q> | undefined,
+  RDPs extends Record<string, SimplePropertyDef> = {},
 >(
   type: Q,
-  options?: UseOsdkObjectsOptions<Q, WP>,
-): UseOsdkListResult<Q, InferRdpTypes<Q, WP>>;
+  options?: UseOsdkObjectsOptions<Q, RDPs>,
+): UseOsdkListResult<Q, RDPs>;
 
 export function useOsdkObjects<
   Q extends ObjectOrInterfaceDefinition,
-  WP extends DerivedProperty.Clause<Q> | undefined,
+  RDPs extends Record<string, SimplePropertyDef> = {},
 >(
   type: Q,
-  options?: UseOsdkObjectsOptions<Q, WP>,
+  options?: UseOsdkObjectsOptions<Q, RDPs>,
 ):
-  | UseOsdkListResult<Q, InferRdpTypes<Q, WP>>
+  | UseOsdkListResult<Q, RDPs>
   | UseOsdkListResult<LinkedType<Q, LinkNames<Q>>>
 {
   const { observableClient } = React.useContext(OsdkContext2);
@@ -196,7 +214,7 @@ export function useOsdkObjects<
 
   const canonWhere = observableClient.canonicalizeWhereClause<
     Q,
-    InferRdpTypes<Q, WP>
+    RDPs
   >(where ?? {});
 
   const stableRids = React.useMemo(
@@ -223,7 +241,7 @@ export function useOsdkObjects<
     () => {
       if (!enabled) {
         return makeExternalStore<
-          ObserveObjectsCallbackArgs<Q, InferRdpTypes<Q, WP>>
+          ObserveObjectsCallbackArgs<Q, RDPs>
         >(
           () => ({ unsubscribe: () => {} }),
           process.env.NODE_ENV !== "production"
@@ -233,7 +251,7 @@ export function useOsdkObjects<
       }
 
       return makeExternalStore<
-        ObserveObjectsCallbackArgs<Q, InferRdpTypes<Q, WP>>
+        ObserveObjectsCallbackArgs<Q, RDPs>
       >(
         (observer) =>
           observableClient.observeList({
@@ -293,5 +311,6 @@ export function useOsdkObjects<
         || !listPayload)
       : false,
     isOptimistic: listPayload?.isOptimistic ?? false,
+    totalCount: listPayload?.totalCount,
   };
 }

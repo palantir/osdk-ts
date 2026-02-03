@@ -54,21 +54,20 @@ export class ObjectListQuery extends ListQuery {
     } as ObjectTypeDefinition;
 
     if (pivotInfo != null) {
-      const sourceSet = store.client({
+      let sourceSet = store.client({
         type: "object",
         apiName: pivotInfo.sourceType,
       } as ObjectTypeDefinition);
 
+      // Filter source objects before pivoting to linked objects
+      sourceSet = sourceSet.where(this.canonicalWhere);
       let objectSet = sourceSet.pivotTo(pivotInfo.linkName);
 
-      // RDPs must be applied before where clauses
       if (rdpConfig != null) {
         objectSet = objectSet.withProperties(
           rdpConfig as DerivedProperty.Clause<ObjectTypeDefinition>,
         );
       }
-
-      objectSet = objectSet.where(this.canonicalWhere);
 
       if (intersectWith != null && intersectWith.length > 0) {
         const intersectSets = intersectWith.map(whereClause => {

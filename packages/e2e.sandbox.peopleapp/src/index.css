@@ -6,8 +6,12 @@
 /* Import OSDK tokens (Blueprint Level 1 + OSDK Level 2 tokens) */
 @import "@osdk/react-components-styles" layer(osdk.tokens);
 
-/* Import theme overrides */
-/* @import "./theme-overrides.css" layer(custom.theme); */
+/* Import theme overrides (e.g., change primary intent to green) */
+@import "./theme-overrides.css" layer(custom.theme);
 
 /* Tailwind for utility classes */
-@import "tailwindcss";
+@import 'tailwindcss';
+
+#root {
+  isolation: isolate;
+}

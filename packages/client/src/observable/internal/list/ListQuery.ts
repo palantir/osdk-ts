@@ -230,7 +230,12 @@ export abstract class ListQuery extends BaseListQuery<
 
     // We don't call super.handleFetchError because ListQuery has special error handling
     // but we still use writeToStore to create a properly structured Entry
-    return this.writeToStore({ data: [] }, "error", batch);
+    const existingTotalCount = batch.read(this.cacheKey)?.value?.totalCount;
+    return this.writeToStore(
+      { data: [], totalCount: existingTotalCount },
+      "error",
+      batch,
+    );
   }
 
   /**
@@ -356,11 +361,13 @@ export abstract class ListQuery extends BaseListQuery<
           newList.push(this.getObjectCacheKey(obj));
         }
 
+        const existingTotalCount = batch.read(this.cacheKey)?.value?.totalCount;
         this._updateList(
           newList,
           status,
           batch,
           /* append */ false,
+          existingTotalCount,
         );
       });
 
@@ -473,9 +480,10 @@ export abstract class ListQuery extends BaseListQuery<
         // updated (or didn't exist, which is nonsensical)
         if (newObjects?.length !== existing.value?.data.length) {
           batch.changes.registerList(this.cacheKey);
+          const existingTotalCount = existing.value?.totalCount;
           batch.write(
             this.cacheKey,
-            { data: newObjects ?? [] },
+            { data: newObjects ?? [], totalCount: existingTotalCount },
             "loaded",
           );
           // Should there be an else for this case? Do we need to invalidate

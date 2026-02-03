@@ -28,11 +28,19 @@ export type ActionParameterConditionalOverride =
 export type VisibilityOverride = {
   type: "visibility";
   condition: ConditionDefinition;
+  then?:
+    | "editable"
+    | "disabled"
+    | "hidden";
 };
 
 export type DisabledOverride = {
   type: "disabled";
   condition: ConditionDefinition;
+  then?:
+    | "editable"
+    | "disabled"
+    | "hidden";
 };
 
 export type RequiredOverride = {
