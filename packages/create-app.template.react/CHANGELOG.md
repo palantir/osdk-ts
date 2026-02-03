@@ -31,6 +31,18 @@
 - 1c57da8: Fix icon imports
 - 4e96d14: Update create-app React, Vue, and Expo templates
 
+## 2.6.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- 5eb7aa0: Fix icon imports
+- 5eb7aa0: Update create-app React, Vue, and Expo templates
+- af4f3bf: Remove the following features for RC:
+  - Property formatting
+  - Branching
+  - Constant RDPs
+
 ## 2.6.0-beta.13
 
 ## 2.6.0-beta.12

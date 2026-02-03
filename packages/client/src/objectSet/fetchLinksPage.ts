@@ -14,14 +14,21 @@
  * limitations under the License.
  */
 
-import type {
-  FetchLinksPageResult,
-  LinkTypeApiNamesFor,
-  ObjectIdentifiers,
-  ObjectOrInterfaceDefinition,
-} from "@osdk/api";
+import type { ObjectIdentifiers, ObjectOrInterfaceDefinition } from "@osdk/api";
 import * as OntologiesV2 from "@osdk/foundry.ontologies";
 import type { MinimalClient } from "../MinimalClientContext.js";
+import type {
+  LinkTypeApiNamesFor,
+  MinimalDirectedObjectLinkInstance,
+} from "./createObjectSet.js";
+
+export type FetchLinksPageResult<
+  Q extends ObjectOrInterfaceDefinition,
+  LINK_TYPE extends LinkTypeApiNamesFor<Q>,
+> = {
+  data: Array<MinimalDirectedObjectLinkInstance<Q, LINK_TYPE>>;
+  nextPageToken?: string;
+};
 
 /** @internal */
 export const fetchLinksPage = async <
@@ -48,7 +55,7 @@ export const fetchLinksPage = async <
       objectSet,
       links,
     },
-    { branch: client.branch, preview: true },
+    { preview: true },
   );
 
   return remapLinksPage(result);

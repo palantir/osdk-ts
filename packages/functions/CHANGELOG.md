@@ -34,6 +34,68 @@
 - Updated dependencies [f0a57a5]
   - @osdk/client@2.7.0-beta.3
 
+## 1.4.0
+
+### Patch Changes
+
+- 776ae8a: Simulated release
+
+- b313525: bump osdk
+
+- 3fbb596: Pipe through transactionId to endpoints that load data via object sets
+
+- 7f9f123: Add foundry hostname util
+
+- 3d7dc0a: introduce new token field, note readToken as deprecated
+
+- f318daf: Use correct API gateway service name
+
+- b307201: Add edits support for media reference.
+
+- a2e9c62: Fix upload function.
+
+- a1ffb20: Use new ephemeral media upload endpoint.
+
+- af4f3bf: Remove the following features for RC:
+  - Property formatting
+  - Branching
+  - Constant RDPs
+
+- Updated dependencies [322c5bc]
+
+- Updated dependencies [b48526f]
+
+- Updated dependencies [b313525]
+
+- Updated dependencies [3fbb596]
+
+- Updated dependencies [f7ae38a]
+
+- Updated dependencies [486ef7e]
+
+- Updated dependencies [ea077c6]
+
+- Updated dependencies [507ec7f]
+
+- Updated dependencies [c5a3815]
+
+- Updated dependencies [5a9cd8f]
+
+- Updated dependencies [61eb5b0]
+
+- Updated dependencies [9961f06]
+
+- Updated dependencies [e7bf02a]
+
+- Updated dependencies [a1ffb20]
+
+- Updated dependencies [b959085]
+
+- Updated dependencies [af4f3bf]
+
+- Updated dependencies [e62c692]
+  - @osdk/client@2.6.0
+
 ## 1.4.0-beta.9
 
 ### Minor Changes

@@ -25,7 +25,7 @@ import { useOsdkObjects } from "@osdk/react/experimental";
 
 function TestComponent() {
   const withProps: DerivedProperty.Clause<typeof Employee> = {
-    constantValue: (employee) => employee.constant.integer(42),
+    constantValue: (employee) => employee.selectProperty("class"),
   };
 
   const { data } = useOsdkObjects(Employee, {

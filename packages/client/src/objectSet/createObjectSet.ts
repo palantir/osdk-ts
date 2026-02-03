@@ -17,13 +17,13 @@
 import type {
   AsyncIterArgs,
   Augments,
+  CompileTimeMetadata,
   FetchPageResult,
   InterfaceDefinition,
   LinkedType,
   LinkNames,
-  LinkTypeApiNamesFor,
-  MinimalDirectedObjectLinkInstance,
   NullabilityAdherence,
+  ObjectIdentifiers,
   ObjectOrInterfaceDefinition,
   ObjectSet,
   ObjectSetArgs,
@@ -57,6 +57,28 @@ import { resolveBaseObjectSetType } from "../util/objectSetUtils.js";
 import { isWireObjectSet } from "../util/WireObjectSet.js";
 import { fetchLinksPage } from "./fetchLinksPage.js";
 import { ObjectSetListenerWebsocket } from "./ObjectSetListenerWebsocket.js";
+
+export type LinkTypeApiNamesFor<Q extends ObjectOrInterfaceDefinition> =
+  Extract<
+    keyof CompileTimeMetadata<Q>["links"],
+    string
+  >;
+
+export type MinimalDirectedObjectLinkInstance<
+  Q extends ObjectOrInterfaceDefinition,
+  LINK_TYPE_API_NAME extends LinkTypeApiNamesFor<Q>,
+> = {
+  source: ObjectIdentifiers<Q>;
+  target: ObjectIdentifiers<LinkedObjectType<Q, LINK_TYPE_API_NAME>>;
+  linkType: LINK_TYPE_API_NAME;
+};
+
+export type LinkedObjectType<
+  Q extends ObjectOrInterfaceDefinition,
+  LINK_TYPE_API_NAME extends LinkTypeApiNamesFor<Q>,
+> = NonNullable<
+  CompileTimeMetadata<Q>["links"][LINK_TYPE_API_NAME]["__OsdkLinkTargetType"]
+>;
 
 function isObjectTypeDefinition(
   def: ObjectOrInterfaceDefinition,

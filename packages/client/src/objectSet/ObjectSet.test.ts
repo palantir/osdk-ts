@@ -141,7 +141,7 @@ describe("ObjectSet", () => {
       pks.add(emp.$primaryKey);
     }
 
-    expect(pks.size).toEqual(7);
+    expect(pks.size).toEqual(6);
     expect(pks.has(stubData.employee1.employeeId)).toBe(true);
     expect(pks.has(stubData.employee2.employeeId)).toBe(true);
     expect(pks.has(stubData.employee3.employeeId)).toBe(true);
@@ -179,7 +179,7 @@ describe("ObjectSet", () => {
       pks.add(emp.$primaryKey);
     }
 
-    expect(pks.size).toEqual(7);
+    expect(pks.size).toEqual(6);
     expect(pks.has(stubData.employee1.employeeId)).toBe(true);
     expect(pks.has(stubData.employee2.employeeId)).toBe(true);
     expect(pks.has(stubData.employee3.employeeId)).toBe(true);
@@ -199,7 +199,6 @@ describe("ObjectSet", () => {
 
     expect(employees.map(e => e.$primaryKey))
       .toEqual([
-        20003,
         50030,
         50031,
         50032,
@@ -436,7 +435,7 @@ describe("ObjectSet", () => {
       pks.add(emp.$primaryKey);
     }
 
-    expect(pks.size).toEqual(7);
+    expect(pks.size).toEqual(6);
     expect(pks.has(stubData.employee1.employeeId)).toBe(true);
     expect(pks.has(stubData.employee2.employeeId)).toBe(true);
     expect(pks.has(stubData.employee3.employeeId)).toBe(true);
@@ -570,7 +569,7 @@ describe("ObjectSet", () => {
             ? await client(Employee).fetchPage(opts)
             : (await client(Employee).fetchPageWithErrors(opts)).value!;
 
-          expect(result.data).toHaveLength(7);
+          expect(result.data).toHaveLength(6);
           expectTypeOf(result.data[0]).branded.toEqualTypeOf<
             Osdk<Employee, "$all" | "$notStrict" | "$rid">
           >();
@@ -586,7 +585,7 @@ describe("ObjectSet", () => {
             ? await client(Employee).fetchPage(opts)
             : (await client(Employee).fetchPageWithErrors(opts)).value!;
 
-          expect(result.data).toHaveLength(7);
+          expect(result.data).toHaveLength(6);
           expectTypeOf(result.data[0]).branded.toEqualTypeOf<
             Osdk<Employee, "$all" | "$notStrict">
           >();
@@ -1086,7 +1085,6 @@ describe("ObjectSet", () => {
             | "employeeSensor"
             | "skillSet"
             | "skillSetEmbedding"
-            | "favoriteRestaurants"
           >();
 
         expectTypeOf<
@@ -1118,7 +1116,6 @@ describe("ObjectSet", () => {
             | "employeeLocation"
             | "skillSet"
             | "skillSetEmbedding"
-            | "favoriteRestaurants"
           >();
 
         // We don't have a proper definition that has

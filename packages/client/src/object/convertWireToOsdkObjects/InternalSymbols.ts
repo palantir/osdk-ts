@@ -15,7 +15,6 @@
  */
 
 import type { ObjectOrInterfaceDefinition, OsdkBase } from "@osdk/api";
-import type { PropertySecurities } from "@osdk/foundry.ontologies";
 
 /** @internal */
 export const UnderlyingOsdkObject = Symbol(
@@ -37,14 +36,8 @@ export const ClientRef = Symbol(
   process.env.MODE !== "production" ? "ClientRef" : undefined,
 );
 
-/** @internal */
-export const PropertySecuritiesRef = Symbol(
-  process.env.MODE !== "production" ? "Property Securities" : undefined,
-);
-
 export interface HolderBase<T extends ObjectOrInterfaceDefinition> {
   [UnderlyingOsdkObject]: OsdkBase<any>;
   [ObjectDefRef]?: T;
   [InterfaceDefRef]?: T;
-  [PropertySecuritiesRef]?: PropertySecurities[];
 }

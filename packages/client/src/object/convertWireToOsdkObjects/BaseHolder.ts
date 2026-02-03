@@ -18,23 +18,16 @@ import type {
   ObjectMetadata,
   ObjectOrInterfaceDefinition,
   ObjectSpecifier,
-  PropertySecurity,
 } from "@osdk/api";
 import type { FormatPropertyOptions } from "../formatting/applyPropertyFormatter.js";
 import type { InterfaceHolder } from "./InterfaceHolder.js";
-import type {
-  PropertySecuritiesRef,
-  UnderlyingOsdkObject,
-} from "./InternalSymbols.js";
+import type { UnderlyingOsdkObject } from "./InternalSymbols.js";
 import type { ObjectHolder } from "./ObjectHolder.js";
 
 /** @internal */
 
 export interface BaseHolder {
   readonly [UnderlyingOsdkObject]: ObjectHolder;
-  readonly [PropertySecuritiesRef]:
-    | { [propName: string]: PropertySecurity[] }
-    | undefined;
 
   readonly $apiName: string;
   readonly $objectType: string;
@@ -42,7 +35,6 @@ export interface BaseHolder {
   readonly $title: string | undefined;
   readonly $rid?: string;
   readonly $objectSpecifier: ObjectSpecifier<any>;
-  readonly $propertySecurities: PropertySecurity[];
 
   readonly "$as": (
     newDef: string | ObjectOrInterfaceDefinition,

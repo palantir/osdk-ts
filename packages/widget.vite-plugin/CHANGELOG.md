@@ -91,6 +91,47 @@
 - Updated dependencies [31909c1]
   - @osdk/widget.api@3.4.0-beta.2
 
+## 3.3.0
+
+### Patch Changes
+
+- 7901ae0: Simulated release
+
+- 1940934: Support extension-less widget config import and improve reporting when config files not found
+
+- e6a96c0: Validate widget sets before building their manifest
+
+- cc33fec: improve dev mode error surfacing
+
+- 5bd88fc: Fix InvalidDevModeFilePath errors
+
+- 27f2122: warn when using wrong dev command
+
+- 54e674e: Fix widget dev mode with tailwind causing project imports
+
+- edb062f: Propagate validation error cause in message for widget config validation
+
+- e95637e: Fix Windows dev mode
+
+- 953c649: Use Vite logger instead of console.warn in validateDevEnvironment
+
+- af4f3bf: Remove the following features for RC:
+  - Property formatting
+  - Branching
+  - Constant RDPs
+
+- Updated dependencies [322c5bc]
+
+- Updated dependencies [7901ae0]
+
+- Updated dependencies [baf1e30]
+
+- Updated dependencies [4d37e98]
+
+- Updated dependencies [af4f3bf]
+  - @osdk/foundry-config-json@1.5.0
+  - @osdk/widget.api@3.3.0
+
 ## 3.3.0-beta.11
 
 ### Minor Changes

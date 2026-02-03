@@ -37,7 +37,6 @@ import type {
   SearchOrderByV2,
 } from "@osdk/foundry.ontologies";
 import * as OntologiesV2 from "@osdk/foundry.ontologies";
-import invariant from "tiny-invariant";
 import { extractNamespace } from "../internal/conversions/extractNamespace.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { addUserAgentAndRequestContextHeaders } from "../util/addUserAgentAndRequestContextHeaders.js";
@@ -137,8 +136,6 @@ export async function fetchStaticRidPage<
     T
   >
 > {
-  const shouldLoadPropertySecurities = args.$loadPropertySecurityMetadata
-    ?? false;
   const requestBody = await applyFetchArgs(
     args,
     {
@@ -149,7 +146,6 @@ export async function fetchStaticRidPage<
       select: ((args?.$select as string[] | undefined) ?? []),
       excludeRid: !args?.$includeRid,
       snapshot: useSnapshot,
-      loadPropertySecurities: shouldLoadPropertySecurities,
     } as LoadObjectSetV2MultipleObjectTypesRequest,
     client,
     { type: "object", apiName: "" },
@@ -172,7 +168,6 @@ export async function fetchStaticRidPage<
       result.data,
       undefined,
       {},
-      shouldLoadPropertySecurities ? result.propertySecurities : undefined,
       !args.$includeRid,
       args.$select,
       false,
@@ -206,11 +201,6 @@ async function fetchInterfacePage<
   useSnapshot: boolean = false,
 ): Promise<FetchPageResult<Q, L, R, S, T>> {
   if (args.$__UNSTABLE_useOldInterfaceApis) {
-    invariant(
-      args.$loadPropertySecurityMetadata === false
-        || args.$loadPropertySecurityMetadata === undefined,
-      "`$loadPropertySecurityMetadata` is not supported with old interface APIs",
-    );
     const baseRequestBody: SearchObjectsForInterfaceRequest = {
       augmentedProperties: {},
       augmentedSharedPropertyTypes: {},
@@ -256,7 +246,6 @@ async function fetchInterfacePage<
       interfaceType.apiName,
       !args.$includeRid,
       await extractRdpDefinition(client, objectSet),
-      undefined,
     );
     return result as any;
   }
@@ -270,15 +259,12 @@ async function fetchInterfacePage<
     extractedInterfaceTypeApiName,
     args,
   );
-  const shouldLoadPropertySecurities = args.$loadPropertySecurityMetadata
-    ?? false;
   const requestBody = await buildAndRemapRequestBody(
     args,
     {
       objectSet: resolvedInterfaceObjectSet,
       select: args?.$select ? [...args.$select] : [],
       selectV2: [],
-      loadPropertySecurities: shouldLoadPropertySecurities,
       excludeRid: !args?.$includeRid,
       snapshot: useSnapshot,
     },
@@ -296,7 +282,6 @@ async function fetchInterfacePage<
     requestBody,
     {
       preview: true,
-      branch: client.branch,
       transactionId: client.transactionId,
     },
   );
@@ -307,7 +292,6 @@ async function fetchInterfacePage<
       result.data,
       extractedInterfaceTypeApiName,
       {},
-      shouldLoadPropertySecurities ? result.propertySecurities : undefined,
       !args.$includeRid,
       args.$select,
       false,
@@ -450,7 +434,6 @@ async function buildAndRemapRequestBody<
     pageSize?: PageSize;
     select?: readonly string[];
     selectedSharedPropertyTypes?: readonly string[];
-    loadPropertySecurity?: boolean;
   },
 >(
   args: FetchPageArgs<Q, L, R, A, S, T>,
@@ -509,7 +492,6 @@ async function applyFetchArgs<
     orderBy?: SearchOrderByV2;
     pageToken?: PageToken;
     pageSize?: PageSize;
-    loadPropertySecurities?: boolean;
   },
 >(
   args: FetchPageArgs<
@@ -532,10 +514,6 @@ async function applyFetchArgs<
 
   if (args?.$pageSize != null) {
     body.pageSize = args.$pageSize;
-  }
-
-  if (args?.$loadPropertySecurityMetadata) {
-    body.loadPropertySecurities = true;
   }
 
   const orderBy = args?.$orderBy;
@@ -586,16 +564,12 @@ export async function fetchObjectPage<
     () => {},
   );
 
-  const shouldLoadPropertySecurities = args.$loadPropertySecurityMetadata
-    ?? false;
-
   const requestBody = await buildAndRemapRequestBody(
     args,
     {
       objectSet,
       select: args?.$select ? [...args.$select] : [],
       selectV2: [],
-      loadPropertySecurities: shouldLoadPropertySecurities,
       excludeRid: !args?.$includeRid,
       snapshot: useSnapshot,
     },
@@ -611,7 +585,7 @@ export async function fetchObjectPage<
     addUserAgentAndRequestContextHeaders(client, objectType),
     await client.ontologyRid,
     requestBody,
-    { branch: client.branch, transactionId: client.transactionId },
+    { transactionId: client.transactionId },
   );
 
   return Promise.resolve({
@@ -621,7 +595,6 @@ export async function fetchObjectPage<
       undefined,
       undefined,
       await extractRdpDefinition(client, objectSet),
-      shouldLoadPropertySecurities ? r.propertySecurities : undefined,
       args.$select,
       false,
     ),

@@ -83,6 +83,30 @@
 - Updated dependencies [31909c1]
   - @osdk/widget.api@3.4.0-beta.2
 
+## 3.3.0
+
+### Patch Changes
+
+- 7901ae0: Simulated release
+
+- baf1e30: Introduce widget resize message for automatic heights
+
+- af4f3bf: Remove the following features for RC:
+  - Property formatting
+  - Branching
+  - Constant RDPs
+
+- ad648f5: Create createFoundryWidgetTokenProvider helper
+
+- Updated dependencies [7901ae0]
+
+- Updated dependencies [baf1e30]
+
+- Updated dependencies [4d37e98]
+
+- Updated dependencies [af4f3bf]
+  - @osdk/widget.api@3.3.0
+
 ## 3.3.0-beta.11
 
 ### Patch Changes

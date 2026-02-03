@@ -38,6 +38,22 @@
 - 935b7ac: Allow CLI template bootstrapping without an OSDK
 - 4e96d14: Update create-app React, Vue, and Expo templates
 
+## 2.6.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- 14abc06: Add `osdk/foundry` to `create-app` templates
+- 5eb7aa0: Update generated `.npmrc` file
+- cc52b8e: Add padding and export `client` as a named export
+- 5eb7aa0: Fix icon imports
+- 5eb7aa0: Allow CLI template bootstrapping without an OSDK
+- 5eb7aa0: Update create-app React, Vue, and Expo templates
+- af4f3bf: Remove the following features for RC:
+  - Property formatting
+  - Branching
+  - Constant RDPs
+
 ## 2.6.0-beta.13
 
 ## 2.6.0-beta.12

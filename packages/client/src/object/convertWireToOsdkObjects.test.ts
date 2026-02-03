@@ -79,7 +79,6 @@ describe("convertWireToOsdkObjects", () => {
       "$apiName",
       "$objectType",
       "$primaryKey",
-      "$propertySecurities",
       "$objectSpecifier",
       "employeeLocation",
     ].sort());
@@ -230,7 +229,6 @@ describe("convertWireToOsdkObjects", () => {
       undefined,
       {},
       undefined,
-      undefined,
       false,
     );
     const prototypeAfter = Object.getPrototypeOf(object2);
@@ -262,7 +260,6 @@ describe("convertWireToOsdkObjects", () => {
       {},
       undefined,
       undefined,
-      undefined,
       false,
     );
     const prototypeAfter = Object.getPrototypeOf(object2);
@@ -290,7 +287,6 @@ describe("convertWireToOsdkObjects", () => {
       FooInterface.apiName,
       undefined,
       {},
-      undefined,
     )) as unknown as Osdk<FooInterface>[];
 
     expect(objAsFoo).toMatchInlineSnapshot(`
@@ -299,7 +295,6 @@ describe("convertWireToOsdkObjects", () => {
         "$objectSpecifier": "Employee:0",
         "$objectType": "Employee",
         "$primaryKey": 0,
-        "$propertySecurities": undefined,
         "$title": "Steve",
         "fooSpt": "Steve",
       }
@@ -314,7 +309,6 @@ describe("convertWireToOsdkObjects", () => {
         "$objectSpecifier": "Employee:0",
         "$objectType": "Employee",
         "$primaryKey": 0,
-        "$propertySecurities": undefined,
         "$title": "Steve",
         "employeeId": 0,
         "fullName": "Steve",
@@ -342,7 +336,6 @@ describe("convertWireToOsdkObjects", () => {
       [objectFromWire],
       FooInterface.apiName,
       {},
-      undefined,
       false,
       undefined,
       false,
@@ -355,7 +348,6 @@ describe("convertWireToOsdkObjects", () => {
         "$objectSpecifier": "Employee:0",
         "$objectType": "Employee",
         "$primaryKey": 0,
-        "$propertySecurities": undefined,
         "$title": "Steve",
         "fooIdp": "SEA",
         "fooSpt": "Steve",
@@ -371,7 +363,6 @@ describe("convertWireToOsdkObjects", () => {
         "$objectSpecifier": "Employee:0",
         "$objectType": "Employee",
         "$primaryKey": 0,
-        "$propertySecurities": undefined,
         "$title": "Steve",
         "fullName": "Steve",
         "office": "SEA",
@@ -399,7 +390,6 @@ describe("convertWireToOsdkObjects", () => {
       [objectFromWire],
       FooInterface.apiName,
       {},
-      undefined,
       false,
       undefined,
       false,
@@ -413,7 +403,6 @@ describe("convertWireToOsdkObjects", () => {
         "$objectSpecifier": "Employee:0",
         "$objectType": "Employee",
         "$primaryKey": 0,
-        "$propertySecurities": undefined,
         "$title": "Steve",
         "fooIdp": "SEA",
         "fooSpt": "Steve",
@@ -429,7 +418,6 @@ describe("convertWireToOsdkObjects", () => {
         "$objectSpecifier": "Employee:0",
         "$objectType": "Employee",
         "$primaryKey": 0,
-        "$propertySecurities": undefined,
         "$title": "Steve",
         "fullName": "Steve",
         "office": "SEA",
@@ -458,7 +446,6 @@ describe("convertWireToOsdkObjects", () => {
       FooInterface.apiName,
       undefined,
       {},
-      undefined,
     )) as unknown as Osdk<FooInterface, "$rid" | "$all">[];
 
     expect(objAsFoo).toMatchInlineSnapshot(`
@@ -467,7 +454,6 @@ describe("convertWireToOsdkObjects", () => {
         "$objectSpecifier": "Employee:0",
         "$objectType": "Employee",
         "$primaryKey": 0,
-        "$propertySecurities": undefined,
         "$rid": "hiMom",
         "$title": "Steve",
         "fooSpt": "Steve",
@@ -484,7 +470,6 @@ describe("convertWireToOsdkObjects", () => {
         "$objectSpecifier": "Employee:0",
         "$objectType": "Employee",
         "$primaryKey": 0,
-        "$propertySecurities": undefined,
         "$rid": "hiMom",
         "$title": "Steve",
         "employeeId": 0,
@@ -516,7 +501,6 @@ describe("convertWireToOsdkObjects", () => {
       [objectFromWire],
       FooInterface.apiName,
       {},
-      undefined,
       false,
       undefined,
       false,
@@ -529,7 +513,6 @@ describe("convertWireToOsdkObjects", () => {
         "$objectSpecifier": "Employee:0",
         "$objectType": "Employee",
         "$primaryKey": 0,
-        "$propertySecurities": undefined,
         "$rid": "hiMom",
         "$title": "Steve",
         "fooIdp": "SEA",
@@ -547,7 +530,6 @@ describe("convertWireToOsdkObjects", () => {
         "$objectSpecifier": "Employee:0",
         "$objectType": "Employee",
         "$primaryKey": 0,
-        "$propertySecurities": undefined,
         "$rid": "hiMom",
         "$title": "Steve",
         "employeeId": 0,
@@ -580,7 +562,6 @@ describe("convertWireToOsdkObjects", () => {
       [objectFromWire],
       FooInterface.apiName,
       {},
-      undefined,
       false,
       undefined,
       false,
@@ -594,7 +575,6 @@ describe("convertWireToOsdkObjects", () => {
         "$objectSpecifier": "Employee:0",
         "$objectType": "Employee",
         "$primaryKey": 0,
-        "$propertySecurities": undefined,
         "$rid": "hiMom",
         "$title": "Steve",
         "fooIdp": "SEA",
@@ -612,7 +592,6 @@ describe("convertWireToOsdkObjects", () => {
         "$objectSpecifier": "Employee:0",
         "$objectType": "Employee",
         "$primaryKey": 0,
-        "$propertySecurities": undefined,
         "$rid": "hiMom",
         "$title": "Steve",
         "employeeId": 0,
@@ -637,7 +616,6 @@ describe("convertWireToOsdkObjects", () => {
           undefined,
           undefined,
           {},
-          undefined,
           ["employeeId"],
           "throw",
         )
@@ -659,7 +637,6 @@ describe("convertWireToOsdkObjects", () => {
           undefined,
           undefined,
           {},
-          undefined,
           ["fullName"],
           "throw",
         ),
@@ -678,7 +655,6 @@ describe("convertWireToOsdkObjects", () => {
         undefined,
         undefined,
         {},
-        undefined,
         ["employeeId"],
         "drop",
       );
@@ -698,7 +674,6 @@ describe("convertWireToOsdkObjects", () => {
         undefined,
         undefined,
         {},
-        undefined,
         ["fullName"],
         "drop",
       );
@@ -721,7 +696,6 @@ describe("convertWireToOsdkObjects", () => {
           undefined,
           {},
           undefined,
-          undefined,
           ["employeeId"],
           "throw",
         )
@@ -743,7 +717,6 @@ describe("convertWireToOsdkObjects", () => {
           undefined,
           {},
           undefined,
-          undefined,
           ["fullName"],
           "throw",
         ),
@@ -761,7 +734,6 @@ describe("convertWireToOsdkObjects", () => {
         [object],
         undefined,
         {},
-        undefined,
         undefined,
         ["employeeId"],
         "drop",
@@ -781,7 +753,6 @@ describe("convertWireToOsdkObjects", () => {
         [object],
         undefined,
         {},
-        undefined,
         undefined,
         ["fullName"],
         "drop",
@@ -806,7 +777,6 @@ describe("convertWireToOsdkObjects", () => {
           {},
           undefined,
           undefined,
-          undefined,
           "throw",
         )
       ).rejects.toThrowErrorMatchingInlineSnapshot(
@@ -829,7 +799,6 @@ describe("convertWireToOsdkObjects", () => {
           {},
           undefined,
           undefined,
-          undefined,
           "throw",
         ),
       ).resolves.to.not.toBeUndefined();
@@ -846,7 +815,6 @@ describe("convertWireToOsdkObjects", () => {
         [object],
         undefined,
         {},
-        undefined,
         undefined,
         undefined,
         "drop",
@@ -867,7 +835,6 @@ describe("convertWireToOsdkObjects", () => {
         [object],
         undefined,
         {},
-        undefined,
         undefined,
         undefined,
         "drop",
@@ -892,7 +859,6 @@ describe("convertWireToOsdkObjects", () => {
           {},
           undefined,
           undefined,
-          undefined,
           "throw",
         )
       ).rejects.toThrowErrorMatchingInlineSnapshot(
@@ -915,7 +881,6 @@ describe("convertWireToOsdkObjects", () => {
           {},
           undefined,
           undefined,
-          undefined,
           "throw",
         ),
       ).resolves.to.not.toBeUndefined();
@@ -932,7 +897,6 @@ describe("convertWireToOsdkObjects", () => {
         [object],
         undefined,
         {},
-        undefined,
         undefined,
         undefined,
         "drop",
@@ -955,7 +919,6 @@ describe("convertWireToOsdkObjects", () => {
         {},
         undefined,
         undefined,
-        undefined,
         "drop",
       );
 
@@ -975,7 +938,6 @@ describe("convertWireToOsdkObjects", () => {
       [object],
       "FooInterface",
       {},
-      undefined,
       undefined,
       ["fooSpt"],
       "drop",
@@ -998,7 +960,6 @@ describe("convertWireToOsdkObjects", () => {
       [object],
       "FooInterface",
       {},
-      undefined,
       undefined,
       ["fooSpt", "fooIdp"],
       "drop",
@@ -1110,15 +1071,6 @@ describe("convertWireToOsdkObjects", () => {
                   "multiplicity": false,
                   "nullable": true,
                   "type": "stringTimeseries",
-                  "valueFormatting": undefined,
-                  "valueTypeApiName": undefined,
-                },
-                "favoriteRestaurants": {
-                  "description": undefined,
-                  "displayName": undefined,
-                  "multiplicity": true,
-                  "nullable": true,
-                  "type": "string",
                   "valueFormatting": undefined,
                   "valueTypeApiName": undefined,
                 },

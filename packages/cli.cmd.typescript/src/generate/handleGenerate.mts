@@ -106,7 +106,6 @@ async function generateFromStack(args: TypescriptGenerateArgs) {
     const ontology = await OntologiesV2.getFullMetadata(
       ctx,
       ontologies.data[0].apiName as OntologyIdentifier,
-      { branch: args.branch },
     );
 
     function sortKeys<T extends Record<string, any>>(

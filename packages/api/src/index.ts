@@ -86,19 +86,10 @@ export type {
   MediaReference,
   MediaUpload,
 } from "./object/Media.js";
-export type {
-  PropertyMarkings,
-  PropertySecurity,
-} from "./object/PropertySecurity.js";
 export { isOk } from "./object/Result.js";
 export type { Result } from "./object/Result.js";
 export type { BaseObjectSet } from "./objectSet/BaseObjectSet.js";
 export type { ObjectSet } from "./objectSet/ObjectSet.js";
-export type {
-  FetchLinksPageResult,
-  LinkTypeApiNamesFor,
-  MinimalDirectedObjectLinkInstance,
-} from "./objectSet/ObjectSetLinks.js";
 export type { ObjectSetSubscription } from "./objectSet/ObjectSetListener.js";
 export type {
   ActionDefinition,

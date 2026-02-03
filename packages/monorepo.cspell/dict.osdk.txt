@@ -21,5 +21,3 @@ timecode
 unistyles
 widgetregistry
 widgetset
-dsmtClient
-sidc

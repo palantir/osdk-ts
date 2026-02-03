@@ -80,6 +80,93 @@
   - @osdk/typescript-sdk-docs@0.6.0-beta.2
   - @osdk/api@2.7.0-beta.2
 
+## 0.14.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+
+- a26bfab: Remove import section from readme
+
+- 9e2d70a: Interface actions have the option to not include namespaces on parameters for Java OSDK generation
+
+- 5e4aabd: Add decimal property type customizations
+
+- 9ddb3b4: Update snippet names and get latest template
+
+- 995064b: Make tests run synchronously
+
+- 55e104e: Add code snippet generation into osdk/maker
+
+- 09242c5: Move mustache dependency
+
+- 296b34d: Add support for interface deletes
+
+- aca0e5d: Add parameter/property configuration for OAC interface actions
+
+- 949646b: Fix delete interface bug
+
+- 88ac696: Remove apiName field from user object property definitions
+
+- 7fd788b: Support derived properties
+
+- 6532b54: Move osdk/typescript-sdk-docs from dev dependencies to normal dep
+
+- 878c2eb: Add display name, api name, status customizations to OAC interface actions
+
+- 7601f9f: Fix condition validation
+
+- 04bfbfc: Add default format and table config options to OAC interface actions
+
+- 6ddabf4: Fix bug with action level validation on interface actions
+
+- a03ea8d: Sections, submission metadata, layout switching for OAC interface actions
+
+- af4f3bf: Remove the following features for RC:
+  - Property formatting
+  - Branching
+  - Constant RDPs
+
+- Updated dependencies [322c5bc]
+
+- Updated dependencies [776ae8a]
+
+- Updated dependencies [a035fdc]
+
+- Updated dependencies [f7ae38a]
+
+- Updated dependencies [486ef7e]
+
+- Updated dependencies [ea077c6]
+
+- Updated dependencies [dd8c385]
+
+- Updated dependencies [3d7dc0a]
+
+- Updated dependencies [2556c64]
+
+- Updated dependencies [823c756]
+
+- Updated dependencies [5a9cd8f]
+
+- Updated dependencies [0e863aa]
+
+- Updated dependencies [b307201]
+
+- Updated dependencies [e7bf02a]
+
+- Updated dependencies [7cac2f8]
+
+- Updated dependencies [a1ffb20]
+
+- Updated dependencies [b959085]
+
+- Updated dependencies [af4f3bf]
+
+- Updated dependencies [e62c692]
+  - @osdk/api@2.6.0
+  - @osdk/typescript-sdk-docs@0.5.0
+
 ## 0.14.0-beta.15
 
 ### Minor Changes
