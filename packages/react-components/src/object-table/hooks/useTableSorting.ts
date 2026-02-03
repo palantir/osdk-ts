@@ -15,7 +15,7 @@
  */
 
 import type {
-  ObjectTypeDefinition,
+  ObjectOrInterfaceDefinition,
   PropertyKeys,
   QueryDefinition,
   SimplePropertyDef,
@@ -25,7 +25,7 @@ import { useCallback, useMemo, useState } from "react";
 import type { ObjectTableProps } from "../ObjectTableApi.js";
 
 interface UseTableSortingProps<
-  Q extends ObjectTypeDefinition,
+  Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
     string,
@@ -49,7 +49,7 @@ interface UseTableSortingResults {
 }
 
 export const useTableSorting = <
-  Q extends ObjectTypeDefinition,
+  Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
     string,
@@ -97,7 +97,7 @@ export const useTableSorting = <
   return { sorting: sortingState, onSortingChange };
 };
 
-function convertOrderByToSortingState<Q extends ObjectTypeDefinition>(
+function convertOrderByToSortingState<Q extends ObjectOrInterfaceDefinition>(
   orderBy: Array<{
     property: PropertyKeys<Q>;
     direction: "asc" | "desc";
@@ -109,7 +109,7 @@ function convertOrderByToSortingState<Q extends ObjectTypeDefinition>(
   }));
 }
 
-function convertSortingStateToOrderBy<Q extends ObjectTypeDefinition>(
+function convertSortingStateToOrderBy<Q extends ObjectOrInterfaceDefinition>(
   sorting: SortingState,
 ): Array<{
   property: PropertyKeys<Q>;

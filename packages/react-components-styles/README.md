@@ -42,36 +42,65 @@ Import the CSS tokens in your application's entry point:
 }
 ```
 
-## Token Levels
+## Understanding Token Scopes
 
-### Level 1: Blueprint Core Tokens
+**OSDK Tokens (`--osdk-*`):**
 
-Core design tokens from Blueprint (e.g., `--bp-palette-blue-500`, `--bp-intent-primary-rest`)
+- All tokens used in OSDK components are prefixed with --osdk.
+- Any blueprint token used in OSDK components is mapped to an --osdk-* token, e.g. `--osdk-surface-spacing: var(--bp-surface-spacing);`
+- Override these to theme **OSDK components only**
+- Safe to customize without affecting other Blueprint components in your app
 
-### Level 2: OSDK Component Tokens
+**Blueprint Tokens (`--bp-*`):**
 
-Component-specific tokens that reference Level 1 tokens (e.g., `--osdk-checkbox-bg`)
+- Core design tokens from Blueprint
+- Override these to theme **both Blueprint and OSDK components**
+- Use this for consistent theming across your entire application
 
 ## API Documentation
 
-For a complete reference of all available CSS variables, see [CSS_VARIABLES.md](./CSS_VARIABLES.md).
-
-This document includes:
-
-- All Blueprint core tokens (emphasis, iconography, intents, palettes, surface, typography)
-- All OSDK component tokens
-- Complete color palette reference with OKLCH values
-- Theme customization guide with examples
+For a complete reference of all available OSDK tokens, see [CSS_VARIABLES.md](./CSS_VARIABLES.md).
 
 ## Customization
 
-You can customize the appearance by:
+You can customize the appearance by overriding CSS custom properties at different levels:
 
-1. **Overriding Level 1 tokens** - Change core colors, spacing, typography
-2. **Overriding Level 2 tokens** - Change component-specific styling
-3. **Overriding tokens at component level** - Apply custom styles to specific component instances
+### Customization Strategies
 
-See [CSS_VARIABLES.md](./CSS_VARIABLES.md#creating-a-complete-custom-theme) for detailed examples.
+1. **Override OSDK tokens** - Change OSDK component styling without affecting Blueprint components
+   ```css
+   @layer user.theme {
+     :root {
+       /* Only affects OSDK table headers */
+       --osdk-table-header-bg: #f0f0f0;
+       --osdk-table-border-color: #e0e0e0;
+
+       /* Only affects OSDK components using primary intent */
+       --osdk-intent-primary-rest: #2563eb;
+       --osdk-intent-primary-hover: #1d4ed8;
+     }
+   }
+   ```
+
+2. **Override Blueprint tokens** - Change both Blueprint and OSDK components for consistent theming
+   ```css
+   @layer user.theme {
+     :root {
+       /* Affects ALL components (Blueprint + OSDK) using primary intent */
+       --bp-intent-primary-rest: #2563eb;
+       --bp-intent-primary-hover: #1d4ed8;
+       --bp-intent-primary-active: #1e40af;
+
+       /* Affects all spacing and borders across the design system */
+       --bp-surface-spacing: 8px;
+       --bp-surface-border-radius: 8px;
+     }
+   }
+   ```
+
+3. **Scoped overrides** - Apply custom styles to specific component instances using data attributes or classes
+
+See [CSS_VARIABLES.md](./CSS_VARIABLES.md#creating-a-custom-theme) for detailed examples and complete token reference.
 
 ### Accessibility Note
 
