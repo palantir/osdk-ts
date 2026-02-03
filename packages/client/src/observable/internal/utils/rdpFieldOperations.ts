@@ -50,6 +50,7 @@ function stripRdpFields(
     $objectType: underlying.$objectType,
     $primaryKey: underlying.$primaryKey,
     $title: underlying.$title,
+    $rid: underlying.$rid,
   };
 
   for (const key of Object.keys(underlying)) {
@@ -86,6 +87,7 @@ function filterToRdpFields(
     $objectType: underlying.$objectType,
     $primaryKey: underlying.$primaryKey,
     $title: underlying.$title,
+    $rid: underlying.$rid,
   };
 
   for (const key of Object.keys(underlying)) {
@@ -126,6 +128,7 @@ export function mergeObjectFields(
     $objectType: sourceUnderlying.$objectType,
     $primaryKey: sourceUnderlying.$primaryKey,
     $title: sourceUnderlying.$title,
+    $rid: sourceUnderlying.$rid,
   };
 
   for (const key of Object.keys(sourceUnderlying)) {

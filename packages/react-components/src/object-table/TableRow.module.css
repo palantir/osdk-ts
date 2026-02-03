@@ -37,7 +37,7 @@
     z-index: 1;
     background-color: var(
       --osdk-table-row-bg-hover,
-      var(--bp-surface-colorHover-default)
+      var(--osdk-surface-background-color-default-hover)
     );
     border-top-color: var(--osdk-table-row-border-color-hover);
     border-bottom-color: var(--osdk-table-row-border-color-hover);

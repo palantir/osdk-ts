@@ -64,6 +64,7 @@ type ObjectTypeCreatable<T extends ObjectTypeDefinition> =
   & ObjectTypeCreatableWithoutApiName<T>
   & {
     $apiName: CompileTimeMetadata<T>["apiName"];
+    $rid?: string;
   };
 
 /**

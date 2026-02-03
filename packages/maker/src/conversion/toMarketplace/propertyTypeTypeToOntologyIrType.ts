@@ -129,6 +129,11 @@ export function propertyTypeTypeToOntologyIrType(
         type: "geotimeSeriesReference",
         geotimeSeriesReference: {},
       };
+    case (type === "attachment"):
+      return {
+        type: "attachment",
+        attachment: {},
+      };
 
     default:
       // use helper function to distribute `type` properly

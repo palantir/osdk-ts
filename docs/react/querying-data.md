@@ -55,6 +55,33 @@ function TodoList() {
 `isOptimistic` refers to whether the **ordered list of objects** (considering only primary keys) is optimistic. To check if individual object contents are optimistic, use `useOsdkObject` on each object.
 :::
 
+### Fetching by RID
+
+Fetch specific objects by their RIDs:
+
+```tsx
+import { Employee } from "@my/osdk";
+import { useOsdkObjects } from "@osdk/react/experimental";
+
+function SelectedEmployees({ selectedRids }: { selectedRids: string[] }) {
+  const { data, isLoading } = useOsdkObjects(Employee, {
+    rids: selectedRids,
+  });
+
+  if (isLoading && !data) {
+    return <div>Loading selected employees...</div>;
+  }
+
+  return (
+    <div>
+      {data?.map(employee => (
+        <div key={employee.$primaryKey}>{employee.fullName}</div>
+      ))}
+    </div>
+  );
+}
+```
+
 ### Filtering with `where`
 
 ```ts
@@ -366,6 +393,7 @@ function ManagerReports() {
 const { data, isLoading, isOptimistic, fetchMore, error } = useOsdkObjects(
   Todo,
   {
+    rids: ["ri.phonograph2-objects.main.object.abc123", "ri.phonograph2-objects.main.object.def456"],
     where: { isComplete: false },
     pageSize: 20,
     orderBy: { createdAt: "desc" },

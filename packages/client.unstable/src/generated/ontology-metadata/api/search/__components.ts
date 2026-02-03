@@ -1336,6 +1336,11 @@ export interface TypeGroupClause_description {
   type: "description";
   description: FullTextStringPredicate;
 }
+
+export interface TypeGroupClause_typeGroupRid {
+  type: "typeGroupRid";
+  typeGroupRid: _api_TypeGroupRid;
+}
 /**
  * Data structure to represent a search query for InterfaceTypes. Supports filters for various
  * InterfaceType features.
@@ -1344,7 +1349,8 @@ export type TypeGroupClause =
   | TypeGroupClause_and
   | TypeGroupClause_or
   | TypeGroupClause_displayName
-  | TypeGroupClause_description;
+  | TypeGroupClause_description
+  | TypeGroupClause_typeGroupRid;
 
 export interface TypeGroupFuzziness_off {
   type: "off";
