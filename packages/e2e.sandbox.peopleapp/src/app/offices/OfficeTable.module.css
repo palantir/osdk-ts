@@ -5,5 +5,5 @@
 
 .officeTable {
   /* Override header background color to a light blue for this table only */
-  --osdk-table-header-bg: var(--bp-palette-blue-100);
+  --osdk-table-header-bg: var(--bp-palette-blue-5);
 }
