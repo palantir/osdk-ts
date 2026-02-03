@@ -9,11 +9,11 @@ Built on top of [@osdk/react](../react), these components use OSDK hooks interna
 Run the command to install:
 
 - @osdk/react-components - The unstyled components from this package
-- @osdk/react - The react toolkit for data-handling
 - @osdk/react-components-styles - The default styles for the components
+- @osdk/react, @osdk/api, @osdk/client - The packages required for data-handling
 
 ```sh
-npm install @osdk/react-components @osdk/react @osdk/react-components-styles
+npm install @osdk/react-components @osdk/react-components-styles @osdk/react @osdk/client @osdk/api
 ```
 
 **Prerequisites:**
@@ -58,11 +58,8 @@ import { ObjectTable } from "@osdk/react-components";
 import { $, Employee } from "@your-osdk-package";
 
 function EmployeeDirectory() {
-  const employeeObjectSet = $(Employee).where({ department: "Engineering" });
-
   return (
     <ObjectTable
-      objectSet={employeeObjectSet}
       objectType={Employee}
     />
   );

@@ -16,7 +16,15 @@
 
 import type { Cell, RowData, Table } from "@tanstack/react-table";
 import classNames from "classnames";
-import React, { type ReactElement, useCallback, useRef } from "react";
+import React, {
+  type ReactElement,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+import { LoadingStateTable } from "./LoadingStateTable.js";
+import { NonIdealState } from "./NonIdealState.js";
 import styles from "./Table.module.css";
 import { TableBody } from "./TableBody.js";
 import { TableHeader } from "./TableHeader.js";
@@ -32,6 +40,7 @@ export interface BaseTableProps<TData extends RowData> {
     cell: Cell<TData, unknown>,
   ) => React.ReactNode;
   className?: string;
+  error?: Error;
 }
 
 export function BaseTable<TData extends RowData>(
@@ -43,31 +52,40 @@ export function BaseTable<TData extends RowData>(
     rowHeight,
     renderCellContextMenu,
     className,
+    error,
   }: BaseTableProps<TData>,
 ): ReactElement {
   const tableContainerRef = useRef<HTMLDivElement>(null);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
 
   // Using a ref to prevent duplicate fetches from rapid scroll events while a fetch is in-flight
   const fetchingRef = useRef(false);
 
+  useEffect(() => {
+    if (!isLoading || fetchNextPage == null) {
+      setIsLoadingMore(false);
+    }
+  }, [isLoading, fetchNextPage]);
+
   const fetchMoreOnEndReached = useCallback(
     async (containerRefElement?: HTMLDivElement | null) => {
-      if (containerRefElement && !fetchingRef.current) {
+      if (containerRefElement && !fetchingRef.current && !isLoadingMore) {
         const { scrollHeight, scrollTop, clientHeight } = containerRefElement;
         if (
           scrollHeight - scrollTop - clientHeight < 100
-          && !isLoading
+          && !isLoading && fetchNextPage != null
         ) {
           fetchingRef.current = true;
+          setIsLoadingMore(true);
           try {
-            await fetchNextPage?.();
+            await fetchNextPage();
           } finally {
             fetchingRef.current = false;
           }
         }
       }
     },
-    [fetchNextPage, isLoading],
+    [fetchNextPage, isLoading, isLoadingMore],
   );
 
   const handleScroll = useCallback(
@@ -77,7 +95,9 @@ export function BaseTable<TData extends RowData>(
     [fetchMoreOnEndReached],
   );
 
-  // TODO: Handle error, loading and empty states
+  const rows = table.getRowModel().rows;
+  const headerGroups = table.getHeaderGroups();
+  const hasData = rows.length > 0;
 
   return (
     <div
@@ -86,14 +106,36 @@ export function BaseTable<TData extends RowData>(
       onScroll={handleScroll}
     >
       <table>
-        <TableHeader table={table} />
-        <TableBody
-          rows={table.getRowModel().rows}
-          tableContainerRef={tableContainerRef}
-          onRowClick={onRowClick}
-          rowHeight={rowHeight}
-          renderCellContextMenu={renderCellContextMenu}
-        />
+        {isLoading && !hasData
+          ? (
+            <LoadingStateTable
+              table={table}
+              headerGroups={headerGroups}
+              rowHeight={rowHeight}
+              tableContainerRef={tableContainerRef}
+            />
+          )
+          : (
+            <>
+              <TableHeader table={table} />
+              {!hasData && error == null
+                ? <NonIdealState message={"No Data"} />
+                : (
+                  <TableBody
+                    rows={rows}
+                    tableContainerRef={tableContainerRef}
+                    onRowClick={onRowClick}
+                    rowHeight={rowHeight}
+                    renderCellContextMenu={renderCellContextMenu}
+                    isLoadingMore={isLoadingMore}
+                    headerGroups={headerGroups}
+                  />
+                )}
+            </>
+          )}
+        {error != null && (
+          <NonIdealState message={`Error Loading Data: ${error.message}`} />
+        )}
       </table>
     </div>
   );
