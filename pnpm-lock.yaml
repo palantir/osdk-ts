@@ -4367,6 +4367,31 @@ importers:
         specifier: ^6.7.0
         version: 6.7.0(@types/react@18.3.24)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
 
+  packages/react-sdk-docs:
+    dependencies:
+      '@osdk/docs-spec-core':
+        specifier: catalog:foundry-platform-typescript
+        version: 0.6.0
+      '@osdk/docs-spec-sdk':
+        specifier: catalog:foundry-platform-typescript
+        version: 0.16.0
+      outdent:
+        specifier: ^0.8.0
+        version: 0.8.0
+    devDependencies:
+      '@osdk/monorepo.api-extractor':
+        specifier: workspace:~
+        version: link:../monorepo.api-extractor
+      '@osdk/monorepo.tsconfig':
+        specifier: workspace:~
+        version: link:../monorepo.tsconfig
+      typescript:
+        specifier: ~5.5.4
+        version: 5.5.4
+      yaml:
+        specifier: ^2.8.1
+        version: 2.8.1
+
   packages/shared.client.impl:
     dependencies:
       '@osdk/shared.client':
