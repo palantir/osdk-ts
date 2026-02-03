@@ -199,9 +199,7 @@ export class ObjectQuery extends Query<
 
   registerStreamUpdates(sub: Subscription): void {
     this.#setupStreamUpdates(sub).catch((error: unknown) => {
-      if (process.env.NODE_ENV !== "production") {
-        this.logger?.error("Failed to setup stream updates", error);
-      }
+      this.logger?.error("Failed to setup stream updates", error);
     });
   }
 
@@ -220,10 +218,10 @@ export class ObjectQuery extends Query<
     const objDef = await this.store.client[additionalContext].ontologyProvider
       .getObjectDefinition(this.#apiName);
 
-    const objectType = {
-      type: "object" as const,
+    const objectType: ObjectTypeDefinition = {
+      type: "object",
       apiName: this.#apiName,
-    } as ObjectTypeDefinition;
+    };
 
     return this.store.client(objectType).where({
       [objDef.primaryKeyApiName]: this.#pk,

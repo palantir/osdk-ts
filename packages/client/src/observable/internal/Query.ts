@@ -340,9 +340,8 @@ export abstract class Query<
         websocketSubscription.unsubscribe();
       });
     } catch (error) {
-      if (this.logger) {
-        this.logger.child({ methodName })
-          .error("Failed to register stream updates", error);
+      if (logger) {
+        logger.error("Failed to register stream updates", error);
       }
       this.onOswError({ subscriptionClosed: true, error });
     }
