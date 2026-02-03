@@ -115,7 +115,6 @@ export function subSelectProperties<
       nextPageToken: objects.nextPageToken,
       data: result as T[],
       totalCount: (objects as PagedBodyResponseWithTotal<T>).totalCount,
-      propertySecurities: objects.propertySecurities,
     };
 
   return ret as TIncludeCount extends true ? PagedBodyResponseWithTotal<T>

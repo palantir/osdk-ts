@@ -84,7 +84,7 @@ type SubSelectKeysHelper<
 
 type SubSelectKeys<
   Q extends ObjectOrInterfaceDefinition,
-  X extends SelectArg<Q, PropertyKeys<Q>, any, any, any, any> = never,
+  X extends SelectArg<Q, PropertyKeys<Q>, any, any> = never,
 > = SubSelectKeysHelper<Q, Extract$Select<X>>;
 
 type NOOP<T> = T extends (...args: any[]) => any ? T
@@ -192,25 +192,14 @@ interface FetchPageSignature<
     S extends NullabilityAdherence = NullabilityAdherence.Default,
     T extends boolean = false,
     ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<L> = {},
-    PROPERTY_SECURITIES extends boolean = false,
   >(
-    args?: FetchPageArgs<
-      Q,
-      L,
-      R,
-      A,
-      S,
-      T,
-      never,
-      ORDER_BY_OPTIONS,
-      PROPERTY_SECURITIES
-    >,
+    args?: FetchPageArgs<Q, L, R, A, S, T, never, ORDER_BY_OPTIONS>,
   ): Promise<
     PageResult<
       MaybeScore<
         Osdk.Instance<
           Q,
-          ExtractOptions<R, S, T, PROPERTY_SECURITIES>,
+          ExtractOptions<R, S, T>,
           NoInfer<SubSelectKeys<Q, NonNullable<typeof args>>>,
           SubSelectRDPs<RDPs, NonNullable<typeof args>>
         >,
@@ -244,7 +233,6 @@ interface NearestNeighbors<Q extends ObjectOrInterfaceDefinition> {
 interface FetchPageWithErrorsSignature<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
-  PROPERTY_SECURITIES extends boolean = false,
 > {
   /**
    * Gets a page of objects of this type, with a result wrapper
@@ -268,24 +256,14 @@ interface FetchPageWithErrorsSignature<
     T extends boolean = false,
     ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<L> = {},
   >(
-    args?: FetchPageArgs<
-      Q,
-      L,
-      R,
-      A,
-      S,
-      T,
-      never,
-      ORDER_BY_OPTIONS,
-      PROPERTY_SECURITIES
-    >,
+    args?: FetchPageArgs<Q, L, R, A, S, T, never, ORDER_BY_OPTIONS>,
   ): Promise<
     Result<
       PageResult<
         MaybeScore<
           Osdk.Instance<
             Q,
-            ExtractOptions<R, S, T, PROPERTY_SECURITIES>,
+            ExtractOptions<R, S, T>,
             NoInfer<SubSelectKeys<Q, NonNullable<typeof args>>>,
             SubSelectRDPs<RDPs, NonNullable<typeof args>>
           >,
@@ -320,7 +298,6 @@ interface AsyncIterSignature<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
   ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<PropertyKeys<Q>> = {},
-  PROPERTY_SECURITIES extends boolean = false,
 > {
   /**
    * Returns an async iterator to load all objects of this type
@@ -357,22 +334,12 @@ interface AsyncIterSignature<
     T extends boolean = false,
     ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<PropertyKeys<Q>> = {},
   >(
-    args?: AsyncIterArgs<
-      Q,
-      L,
-      R,
-      A,
-      S,
-      T,
-      never,
-      ORDER_BY_OPTIONS,
-      PROPERTY_SECURITIES
-    >,
+    args?: AsyncIterArgs<Q, L, R, A, S, T, never, ORDER_BY_OPTIONS>,
   ): AsyncIterableIterator<
     MaybeScore<
       Osdk.Instance<
         Q,
-        ExtractOptions<R, S, T, PROPERTY_SECURITIES>,
+        ExtractOptions<R, S, T>,
         NoInfer<SubSelectKeys<Q, NonNullable<typeof args>>>,
         SubSelectRDPs<RDPs, NonNullable<typeof args>>
       >,
@@ -524,14 +491,13 @@ interface FetchOneSignature<
     const L extends PropertyKeys<Q> | (string & keyof RDPs),
     const R extends boolean,
     const S extends false | "throw" = NullabilityAdherence.Default,
-    PROPERTY_SECURITIES extends boolean = false,
   >(
     primaryKey: PrimaryKeyType<Q>,
-    options?: SelectArg<Q, L, R, S, never, PROPERTY_SECURITIES>,
+    options?: SelectArg<Q, L, R, S>,
   ): Promise<
     Osdk.Instance<
       Q,
-      ExtractOptions<R, S, false, PROPERTY_SECURITIES>,
+      ExtractOptions<R, S>,
       NoInfer<SubSelectKeys<Q, { $select: Array<L> }>>,
       SubSelectRDPs<RDPs, { $select: Array<L> }>
     >
@@ -549,15 +515,14 @@ interface FetchOneWithErrorsSignature<
     const L extends PropertyKeys<Q> | (string & keyof RDPs),
     const R extends boolean,
     const S extends false | "throw" = NullabilityAdherence.Default,
-    PROPERTY_SECURITIES extends boolean = false,
   >(
     primaryKey: PrimaryKeyType<Q>,
-    options?: SelectArg<Q, L, R, S, never, PROPERTY_SECURITIES>,
+    options?: SelectArg<Q, L, R, S>,
   ): Promise<
     Result<
       Osdk.Instance<
         Q,
-        ExtractOptions<R, S, false, PROPERTY_SECURITIES>,
+        ExtractOptions<R, S>,
         NoInfer<SubSelectKeys<Q, { $select: Array<L> }>>,
         SubSelectRDPs<RDPs, { $select: Array<L> }>
       >

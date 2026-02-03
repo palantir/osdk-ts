@@ -136,7 +136,6 @@ describe("intellisense", () => {
       "employeeLocation",
       "employeeSensor",
       "employeeStatus",
-      "favoriteRestaurants",
       "fullName",
       "office",
       "skillSet",

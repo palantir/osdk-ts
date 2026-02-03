@@ -159,7 +159,6 @@ const baseObjectSetResponse: LoadObjectSetV2MultipleObjectTypesResponse = {
     },
   },
   totalCount: "1",
-  propertySecurities: [],
 };
 
 const equalsObjectSetResponse: LoadObjectSetV2MultipleObjectTypesResponse = {
@@ -182,7 +181,6 @@ const equalsObjectSetResponse: LoadObjectSetV2MultipleObjectTypesResponse = {
     },
   },
   totalCount: "1",
-  propertySecurities: [],
 };
 
 const baseObjectFullScopeSetResponse:
@@ -206,7 +204,6 @@ const baseObjectFullScopeSetResponse:
       },
     },
     totalCount: "1",
-    propertySecurities: [],
   };
 
 const equalsFullScopeObjectSetResponse:
@@ -230,7 +227,6 @@ const equalsFullScopeObjectSetResponse:
       },
     },
     totalCount: "1",
-    propertySecurities: [],
   };
 
 export const loadInterfaceObjectSetHandlers: {

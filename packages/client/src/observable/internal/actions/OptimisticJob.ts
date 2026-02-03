@@ -98,7 +98,6 @@ export class OptimisticJob {
           }],
           undefined,
           {},
-          undefined,
         ).then(objs => {
           return objs[0];
         });

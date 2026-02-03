@@ -35,7 +35,7 @@ export async function runWithPropertiesTest(): Promise<void> {
       base.pivotTo("stateTerritory").aggregate("airportStateName:collectSet", {
         "limit": 10,
       }),
-  }).fetchPage({ $loadPropertySecurityMetadata: true });
+  }).fetchPage();
 
   console.log(
     result2.data.map((

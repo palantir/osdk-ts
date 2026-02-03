@@ -28,10 +28,9 @@ export const createObjectSetHandlers = (
   OntologiesV2.OntologyObjectSets.load(
     baseUrl,
     async ({ request, params }) => {
-      const a = fauxFoundry
+      return fauxFoundry
         .getDataStore(params.ontologyApiName)
         .getObjectsFromObjectSet(await request.json());
-      return a;
     },
   ),
 
@@ -63,7 +62,6 @@ export const createObjectSetHandlers = (
           .getInterfaceToObjectTypeMappings(objectApiNames),
         interfaceToObjectTypeMappingsV2: {},
         ...pagedResponse,
-        propertySecurities: [],
       };
     },
   ),
