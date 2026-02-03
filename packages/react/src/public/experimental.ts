@@ -29,7 +29,10 @@ export type {
 } from "../new/useOsdkFunction.js";
 export { useOsdkFunction } from "../new/useOsdkFunction.js";
 export { useOsdkObject } from "../new/useOsdkObject.js";
-export type { UseOsdkListResult } from "../new/useOsdkObjects.js";
+export type {
+  UseOsdkListResult,
+  UseOsdkObjectsOptions,
+} from "../new/useOsdkObjects.js";
 export { useOsdkObjects } from "../new/useOsdkObjects.js";
 export { useOsdkClient } from "../useOsdkClient.js";
 export { useOsdkMetadata } from "../useOsdkMetadata.js";

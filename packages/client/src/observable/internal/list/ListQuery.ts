@@ -59,6 +59,7 @@ export {
   INTERSECT_IDX,
   PIVOT_IDX,
   RDP_IDX,
+  RIDS_IDX,
 } from "./ListCacheKey.js";
 import type { ListQueryOptions } from "./ListQueryOptions.js";
 
@@ -195,6 +196,7 @@ export abstract class ListQuery extends BaseListQuery<
     const resp = await this.#objectSet.fetchPage({
       $nextPageToken: this.nextPageToken,
       $pageSize: this.options.pageSize,
+      $includeRid: true,
       // For now this keeps the shared test code from falling apart
       // but shouldn't be needed ideally
       ...(Object.keys(this.#orderBy).length > 0

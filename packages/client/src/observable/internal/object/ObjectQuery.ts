@@ -120,13 +120,15 @@ export class ObjectQuery extends Query<
         apiName: this.#apiName,
       } as ObjectTypeDefinition;
 
-      obj = await this.store.client(miniDef)
+      const fetched = await this.store.client(miniDef)
         .withProperties(
           rdpConfig as DerivedProperty.Clause<ObjectTypeDefinition>,
         )
         .fetchOne(
           this.#pk as PrimaryKeyType<ObjectTypeDefinition>,
-        ) as ObjectHolder;
+          { $includeRid: true },
+        );
+      obj = fetched as ObjectHolder;
     } else {
       // Use batched loader for non-RDP objects (efficient batching)
       obj = await getBulkObjectLoader(this.store.client)
