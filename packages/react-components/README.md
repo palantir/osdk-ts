@@ -81,7 +81,7 @@ VITE_FOUNDRY_CLIENT_SECRET=<insert_token>
 VITE_FOUNDRY_REDIRECT_URL=http://localhost:8080/auth/callback
 ```
 
-2. Get VITE_FOUNDRY_CLIENT_ID from "https://swirl.palantirfoundry.com/workspace/developer-console/app/ri.third-party-applications.main.application.91b973ac-e504-4322-95b4-4962b60495fe/oauth" under App Credentials > Client ID
+2. Get VITE_FOUNDRY_CLIENT_ID from "https://swirl.palantirfoundry.com/workspace/developer-console/app/ri.third-party-applications.main.application.91b973ac-e504-4322-95b4-4962b60495fe/oauth" under App Credentials > Client ID.
 
 3. Transpile @osdk/react-components and its dependencies
 
