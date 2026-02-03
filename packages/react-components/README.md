@@ -42,7 +42,7 @@ The components that this package will provide are:
 | Component     | Description                                                                        |
 | ------------- | ---------------------------------------------------------------------------------- |
 | `ObjectTable` | Displays an Object Set as a sortable, paginated table                              |
-| `FilterList`  | Visualize a high-level summary of objects data to allow users to filter that data. |
+| `FilterList`  | Visualize a high-level summary of objects data to allow users to filter that data  |
 | `ActionForm`  | Auto-generated form for executing Ontology Actions                                 |
 
 ## Custom Styling
