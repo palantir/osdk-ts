@@ -86,7 +86,6 @@ describe(useObjectTableData, () => {
     expect(mockResult._testOptions).toEqual({
       withProperties: undefined,
       pageSize: 50,
-      where: {},
       orderBy: undefined,
     });
   });
