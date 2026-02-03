@@ -55,7 +55,7 @@ export const fetchLinksPage = async <
       objectSet,
       links,
     },
-    { branch: client.branch, preview: true },
+    { preview: true },
   );
 
   return remapLinksPage(result);
