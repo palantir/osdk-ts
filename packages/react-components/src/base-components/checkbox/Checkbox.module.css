@@ -27,7 +27,7 @@
   padding: var(--osdk-checkbox-padding);
   box-sizing: border-box;
   cursor: pointer;
-  border-radius: var(--bp-surface-border-radius);
+  border-radius: var(--osdk-surface-border-radius);
   border: var(--osdk-checkbox-border);
 
   &[data-unchecked] {

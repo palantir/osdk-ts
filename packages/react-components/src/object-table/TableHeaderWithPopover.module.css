@@ -22,7 +22,7 @@
 
 .osdkContentGap {
   display: flex;
-  gap: var(--bp-surface-spacing);
+  gap: var(--osdk-surface-spacing);
 }
 
 .osdkHeaderContainer {
@@ -45,19 +45,19 @@
   padding: 0;
   flex-shrink: 0;
   flex-grow: 0;
-  border: var(--bp-surface-borderWidth) solid
-    var(--bp-surface-borderColor-default);
-  border-radius: var(--bp-surface-borderRadius);
-  color: var(--bp-intent-default-foreground);
+  border: var(--osdk-surface-border-width) solid
+    var(--osdk-surface-border-color-default);
+  border-radius: var(--osdk-surface-border-radius);
+  color: var(--osdk-intent-default-foreground);
   user-select: none;
   outline: none;
 
   &:hover {
-    background-color: var(--bp-intent-default-hover);
+    background-color: var(--osdk-intent-default-hover);
   }
 
   &[data-popup-open] {
-    background-color: var(--bp-intent-primary-rest);
+    background-color: var(--osdk-intent-primary-rest);
   }
 
   &:focus-visible {
@@ -67,44 +67,44 @@
 }
 
 .osdkHeaderIcon {
-  width: var(--bp-iconography-size-small);
-  height: var(--bp-iconography-size-small);
+  width: var(--osdk-iconography-size-small);
+  height: var(--osdk-iconography-size-small);
 }
 
 .osdkHeaderPopup {
   box-sizing: border-box;
-  padding: var(--bp-surface-spacing);
-  border-radius: var(--bp-surface-border-radius);
-  border: var(--bp-surface-border-width) solid
-    var(--bp-surface-border-color-default);
-  background-color: var(--bp-palette-light-gray-5);
-  color: var(--bp-typography-color-default-rest);
-  box-shadow: var(--bp-surface-shadow-2);
-  font-size: var(--bp-typography-size-body-medium);
+  padding: var(--osdk-surface-spacing);
+  border-radius: var(--osdk-surface-border-radius);
+  border: var(--osdk-surface-border-width) solid
+    var(--osdk-surface-border-color-default);
+  background-color: var(--osdk-surface-background-color-default);
+  color: var(--osdk-typography-color-default-rest);
+  box-shadow: var(--osdk-surface-shadow-2);
+  font-size: var(--osdk-typography-size-body-medium);
   outline: none;
 }
 
 .osdkHeaderMenuItem {
   justify-content: flex-start;
-  padding: var(--bp-surface-spacing);
+  padding: var(--osdk-surface-spacing);
   cursor: pointer;
 }
 
 .osdkHeaderMenuItem:hover {
   outline: none;
-  background-color: var(--bp-surface-background-color-default-hover);
-  border-radius: var(--bp-surface-border-radius);
+  background-color: var(--osdk-surface-background-color-default-hover);
+  border-radius: var(--osdk-surface-border-radius);
 }
 
 .osdkHeaderActiveMenuItem {
-  background-color: var(--bp-intent-primary-rest);
-  color: var(--bp-intent-primary-foreground);
+  background-color: var(--osdk-intent-primary-rest);
+  color: var(--osdk-intent-primary-foreground);
 }
 
 .osdkHeaderActiveMenuItem:hover {
-  background-color: var(--bp-intent-primary-hover);
+  background-color: var(--osdk-intent-primary-hover);
 }
 
 .osdkHeaderActiveMenuItem:active {
-  background-color: var(--bp-intent-primary-active);
+  background-color: var(--osdk-intent-primary-active);
 }

@@ -36,9 +36,14 @@ export function LoadingStateTable<TData extends RowData>({
   tableContainerRef,
   headerGroups,
   rowHeight = 40,
-  columnWidth = 80,
+  columnWidth = 120,
 }: LoadingStateTableProps<TData>): React.ReactElement {
+  // If selection enabled, there will be a header for the selection column
+  const isSelectionEnabled = table.options.enableRowSelection;
+  const minHeaderCount = isSelectionEnabled ? 1 : 0;
   const headers = headerGroups[0]?.headers ?? [];
+  const hasHeadersLoaded = headers.length > minHeaderCount;
+
   const headerRef = useRef<HTMLTableSectionElement>(null);
   const bodyRef = useRef<HTMLTableSectionElement>(null);
   const [loadingRowCount, setLoadingRowCount] = useState<number>(MIN_ROWS);
@@ -47,14 +52,18 @@ export function LoadingStateTable<TData extends RowData>({
   );
   // Calculate number of columns needed to fill container width
   useEffect(() => {
-    if (tableContainerRef.current) {
-      const tableWidth = tableContainerRef.current.clientWidth;
-      if (tableWidth > 0) {
-        const columnsNeeded = Math.ceil(tableWidth / 80);
-        setLoadingColumnCount(columnsNeeded);
+    if (hasHeadersLoaded) {
+      setLoadingColumnCount(headers.length);
+    } else {
+      if (tableContainerRef.current) {
+        const tableWidth = tableContainerRef.current.clientWidth;
+        if (tableWidth > 0) {
+          const columnsNeeded = Math.ceil(tableWidth / columnWidth);
+          setLoadingColumnCount(columnsNeeded);
+        }
       }
     }
-  }, [tableContainerRef]);
+  }, [columnWidth, hasHeadersLoaded, headers, tableContainerRef]);
 
   // Calculate number of rows needed to fill container height
   useEffect(() => {
@@ -69,10 +78,6 @@ export function LoadingStateTable<TData extends RowData>({
     }
   }, [tableContainerRef, rowHeight]);
 
-  // If selection enabled, there will be a header for the selection column
-  const isSelectionEnabled = table.options.enableRowSelection;
-  const minHeaderCount = isSelectionEnabled ? 1 : 0;
-  const hasHeadersLoaded = headers.length > minHeaderCount;
   return (
     <>
       {hasHeadersLoaded

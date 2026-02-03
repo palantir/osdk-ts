@@ -37,7 +37,7 @@
 .osdkTableCell[data-pinned="left"],
 .osdkTableCell[data-pinned="right"] {
   position: sticky;
-  z-index: var(--bp-surface-z-index-1);
+  z-index: var(--osdk-surface-z-index-1);
 }
 
 /* Last left-pinned column - no left-pinned siblings after it */
