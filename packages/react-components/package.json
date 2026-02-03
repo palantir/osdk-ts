@@ -16,6 +16,16 @@
       "require": "./build/cjs/index.cjs",
       "default": "./build/browser/index.js"
     },
+    "./index.css": {
+      "browser": "./build/browser/index.css",
+      "default": "./build/esm/index.css"
+    },
+    "./osdk-react-components.css": {
+      "browser": "./build/browser/osdk-react-components.css",
+      "import": "./build/esm/osdk-react-components.css",
+      "require": "./build/cjs/osdk-react-components.css",
+      "default": "./build/esm/osdk-react-components.css"
+    },
     "./experimental": {
       "browser": "./build/browser/public/experimental.js",
       "import": {
@@ -43,10 +53,11 @@
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
     "test": "vitest run",
     "transpileAllDeps": "pnpm --filter @osdk/api --filter @osdk/client --filter @osdk/react run transpileBrowser",
-    "transpileBrowser": "monorepo.tool.transpile -f esm -m normal -t browser",
-    "transpileCjs": "monorepo.tool.transpile -f cjs -m bundle -t node",
-    "transpileEsm": "monorepo.tool.transpile -f esm -m normal -t node",
+    "transpileBrowser": "monorepo.tool.transpile -f esm -m normal -t browser && node scripts/compile-css-modules.mjs",
+    "transpileCjs": "monorepo.tool.transpile -f cjs -m bundle -t node && node scripts/compile-css-modules.mjs",
+    "transpileEsm": "monorepo.tool.transpile -f esm -m normal -t node && node scripts/compile-css-modules.mjs",
     "transpileTypes": "monorepo.tool.transpile -f esm -m types -t node",
+    "compile-css": "node scripts/compile-css-modules.mjs",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
@@ -73,8 +84,11 @@
     "@testing-library/react": "^16.3.0",
     "@types/react": "^18.3.24",
     "@types/react-dom": "^18.3.7",
+    "autoprefixer": "^10.4.22",
     "eslint-plugin-react-hooks": "^5.2.0",
     "p-defer": "^4.0.1",
+    "postcss": "^8.5.6",
+    "postcss-modules": "^6.0.1",
     "react": "^18.3.1",
     "typescript": "~5.5.4"
   },
@@ -94,5 +108,6 @@
   "main": "./build/cjs/index.cjs",
   "module": "./build/esm/index.js",
   "types": "./build/cjs/index.d.cts",
-  "type": "module"
+  "type": "module",
+  "style": "./build/esm/osdk-react-components.css"
 }

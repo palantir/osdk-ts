@@ -172,6 +172,7 @@ async function transpileWithTsup(format, target) {
 
     // don't try to load config files from disk
     config: false,
+    
 
     // these packages are not CJS compatible so we need to bundle them up when we do tsup with cjs
     noExternal: format === "cjs"
@@ -213,10 +214,11 @@ async function transpileWithTsup(format, target) {
     target: "es2022",
 
     esbuildOptions(options) {
-      // Bundle CSS into JS instead of emitting separate files
-      // Using 'local-css' loader makes esbuild inline CSS modules as JS objects
-      options.loader = options.loader || {};
-      options.loader[".css"] = "local-css";
+      // For CJS builds, exclude CSS files from bundling
+      // CJS consumers will need to handle CSS separately
+      options.external = options.external || [];
+      // Add CSS files to external list
+      options.external.push("*.css");
     },
 
     esbuildPlugins: [
@@ -226,6 +228,19 @@ async function transpileWithTsup(format, target) {
           plugins: ["babel-plugin-dev-expression"],
         },
       })),
+      // Plugin to handle CSS imports in CJS builds
+      {
+        name: "ignore-css",
+        setup(build) {
+          // Replace CSS imports with empty exports
+          build.onLoad({ filter: /\.css$/ }, () => {
+            return {
+              contents: "module.exports = {}",
+              loader: "js",
+            };
+          });
+        },
+      },
     ],
   });
 }
@@ -378,126 +393,8 @@ async function transpileWithBabel(format, target) {
     await mkdir(path.dirname(destPath), { recursive: true });
     await writeFile(destPath, result.code);
   }
-
-  // Post-process to inline CSS modules using esbuild
-  if (target === "browser") {
-    await inlineCssModules(outDir);
-
-    // Remove CSS files after inlining since they're now bundled into JS
-    for (
-      const f of await readdir(outDir, {
-        recursive: true,
-        withFileTypes: true,
-        encoding: "utf-8",
-      })
-    ) {
-      if (f.isFile() && f.name.endsWith(".css")) {
-        await rm(path.join(f.parentPath, f.name));
-      }
-    }
-  }
 }
 
-/**
- * Post-process JS files to inline CSS module imports using esbuild
- * @param {string} outDir - The output directory containing transpiled JS files
- */
-async function inlineCssModules(outDir) {
-  const { build } = await import("esbuild");
-
-  // Find all JS files that import CSS
-  const jsFiles = [];
-  for (
-    const f of await readdir(outDir, {
-      recursive: true,
-      withFileTypes: true,
-      encoding: "utf-8",
-    })
-  ) {
-    if (f.isFile() && f.name.endsWith(".js")) {
-      const fullPath = path.join(f.parentPath, f.name);
-      const content = await readFile(fullPath, "utf-8");
-
-      // Check if this file imports CSS
-      if (content.includes('.module.css"') || content.includes(".module.css'")) {
-        jsFiles.push(fullPath);
-      }
-    }
-  }
-
-  // Custom esbuild plugin to inline CSS and inject it into the DOM
-  const inlineCssPlugin = {
-    name: "inline-css",
-    setup(build) {
-      build.onLoad({ filter: /\.module\.css$/ }, async (args) => {
-        const css = await readFile(args.path, "utf-8");
-
-        // Extract class names from CSS modules (only capture CSS class selectors, not URLs)
-        const classNames = {};
-        const classNameRegex = /^\s*\.([a-zA-Z_][\w-]*)/gm;
-        let match;
-        while ((match = classNameRegex.exec(css)) !== null) {
-          const className = match[1];
-          classNames[className] = className;
-        }
-
-        // Generate code that injects CSS into the DOM at runtime and exports class names
-        const contents = `
-const css = ${JSON.stringify(css)};
-if (typeof document !== 'undefined') {
-  const style = document.createElement('style');
-  style.textContent = css;
-  document.head.appendChild(style);
-}
-export default ${JSON.stringify(classNames)};
-`;
-        return { contents, loader: "js" };
-      });
-
-      // For non-module CSS files, just inject without exporting class names
-      build.onLoad({ filter: /\.css$/ }, async (args) => {
-        if (args.path.endsWith('.module.css')) return; // Already handled above
-
-        const css = await readFile(args.path, "utf-8");
-        const contents = `
-const css = ${JSON.stringify(css)};
-if (typeof document !== 'undefined') {
-  const style = document.createElement('style');
-  style.textContent = css;
-  document.head.appendChild(style);
-}
-`;
-        return { contents, loader: "js" };
-      });
-    },
-  };
-
-  // Bundle each file with CSS inlined
-  for (const jsFile of jsFiles) {
-    try {
-      const result = await build({
-        entryPoints: [jsFile],
-        bundle: true,
-        format: "esm",
-        write: false,
-        outfile: jsFile,
-        plugins: [inlineCssPlugin],
-        external: ["react", "react-dom", "react/jsx-runtime", "classnames", "@base-ui/*", "@blueprintjs/*", "@tanstack/*"],
-        logLevel: "silent",
-        minify: false,
-        treeShaking: true,
-      });
-
-      if (result.outputFiles && result.outputFiles.length > 0) {
-        const outputCode = result.outputFiles[0].text;
-        await writeFile(jsFile, outputCode);
-      }
-    } catch (error) {
-      console.error(`Failed to inline CSS for ${jsFile}:`, error);
-      // Continue processing other files even if one fails
-    }
-  }
-}
 
 async function readPackageVersion(k) {
   const workspaceFile = await findUp("pnpm-workspace.yaml");
