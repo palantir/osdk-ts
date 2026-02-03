@@ -94,10 +94,6 @@ export function useObjectTableData<
     );
   }, [columnDefinitions]);
 
-  const where: WhereClause<Q, RDPs> = useMemo(() => {
-    return filter ? filter : {};
-  }, [filter]);
-
   return useOsdkObjects<
     Q,
     RDPs
@@ -106,7 +102,7 @@ export function useObjectTableData<
     {
       withProperties,
       pageSize: PAGE_SIZE,
-      where,
+      where: filter,
       orderBy,
     },
   );
