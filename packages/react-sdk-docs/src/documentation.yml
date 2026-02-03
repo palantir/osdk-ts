@@ -1,0 +1,649 @@
+kind: sdk
+versions:
+  "1.0.0":
+    snippets:
+      reactProviderSetup:
+        - template: |-
+            import { OsdkProvider2 } from "@osdk/react/experimental";
+            import { createClient } from "@osdk/client";
+
+            const client = createClient(
+              "https://your-stack.palantirfoundry.com",
+              "{{{packageName}}}",
+              async () => "your-token"
+            );
+
+            function App() {
+              return (
+                <OsdkProvider2 client={client}>
+                  <YourApp />
+                </OsdkProvider2>
+              );
+            }
+
+      reactUseOsdkObjectsBasic:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { useOsdkObjects } from "@osdk/react/experimental";
+
+            function {{objectType}}List() {
+              const { data, isLoading, error, fetchMore } = useOsdkObjects({{objectType}});
+
+              return (
+                <div>
+                  {error && <div className="error-banner">Error: {error.message}</div>}
+                  {isLoading && !data && <div className="skeleton">Loading...</div>}
+                  <ul>
+                    {data?.map(obj => (
+                      <li key={obj.$primaryKey}>{obj.{{titleProperty}}}</li>
+                    ))}
+                  </ul>
+                  {isLoading && data && <span className="refresh-indicator">Refreshing...</span>}
+                  {fetchMore && <button onClick={fetchMore}>Load more</button>}
+                </div>
+              );
+            }
+
+      reactUseOsdkObjectsFilter:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { useOsdkObjects } from "@osdk/react/experimental";
+
+            function Filtered{{objectType}}List() {
+              const { data, isLoading, error } = useOsdkObjects({{objectType}}, {
+                where: {
+                  {{titleProperty}}: { $isNotNull: true }
+                }
+              });
+
+              return (
+                <div>
+                  {error && <div className="error-banner">Error: {error.message}</div>}
+                  {isLoading && !data && <div className="skeleton">Loading...</div>}
+                  <ul>
+                    {data?.map(obj => (
+                      <li key={obj.$primaryKey}>{obj.{{titleProperty}}}</li>
+                    ))}
+                  </ul>
+                </div>
+              );
+            }
+
+      reactUseOsdkObjectByPrimaryKey:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { useOsdkObject } from "@osdk/react/experimental";
+
+            function {{objectType}}Detail({ primaryKey }: { primaryKey: string }) {
+              const { data, isLoading, error } = useOsdkObject({{objectType}}, primaryKey);
+
+              return (
+                <div>
+                  {error && <div className="error-banner">Error: {error.message}</div>}
+                  {isLoading && !data && <div className="skeleton">Loading...</div>}
+                  {data && (
+                    <div>
+                      <h2>{data.{{titleProperty}}}</h2>
+                    </div>
+                  )}
+                </div>
+              );
+            }
+
+      reactUseLinksBasic:
+        - template: |-
+            import { {{sourceObjectType}} } from "{{{packageName}}}";
+            import { useLinks } from "@osdk/react/experimental";
+
+            function Linked{{linkedObjectType}}({ source }: { source: {{sourceObjectType}}.OsdkInstance }) {
+              const { data, isLoading, error } = useLinks(source, "{{linkApiName}}");
+
+              return (
+                <div>
+                  {error && <div className="error-banner">Error: {error.message}</div>}
+                  {isLoading && !data && <div className="skeleton">Loading...</div>}
+                  <ul>
+                    {data?.map(linked => (
+                      <li key={linked.$primaryKey}>{linked.$primaryKey}</li>
+                    ))}
+                  </ul>
+                </div>
+              );
+            }
+
+      reactUseOsdkActionBasic:
+        - template: |-
+            import { {{actionApiName}} } from "{{{packageName}}}";
+            import { useOsdkAction } from "@osdk/react/experimental";
+
+            function {{actionApiName}}Button() {
+              const { applyAction, isPending, error } = useOsdkAction({{actionApiName}});
+
+              const handleClick = async () => {
+                await applyAction({
+                  {{#actionParameterSampleValuesV2}}
+                  {{key}}: {{value}}{{^last}},{{/last}}
+                  {{/actionParameterSampleValuesV2}}
+                });
+              };
+
+              return (
+                <div>
+                  {error && <div className="error-banner">Error: {String(error.unknown ?? error.actionValidation)}</div>}
+                  <button onClick={handleClick} disabled={isPending}>
+                    {isPending ? "Applying..." : "Apply {{actionApiName}}"}
+                  </button>
+                </div>
+              );
+            }
+          computedVariables:
+            - actionParameterSampleValuesV2
+
+      reactUseOsdkAggregationBasic:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { useOsdkAggregation } from "@osdk/react/experimental";
+
+            function {{objectType}}Count() {
+              const { data, isLoading, error } = useOsdkAggregation({{objectType}}, agg => agg.count());
+
+              return (
+                <div>
+                  {error && <div className="error-banner">Error: {error.message}</div>}
+                  {isLoading && data == null && <div className="skeleton">Loading...</div>}
+                  {data != null && <span>Total: {data}</span>}
+                </div>
+              );
+            }
+
+      reactUseOsdkObjectsEnabled:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { useOsdkObjects } from "@osdk/react/experimental";
+
+            function Conditional{{objectType}}List({ shouldFetch }: { shouldFetch: boolean }) {
+              const { data, isLoading, error } = useOsdkObjects({{objectType}}, {
+                enabled: shouldFetch
+              });
+
+              if (!shouldFetch) {
+                return <div>Select criteria to load data</div>;
+              }
+
+              return (
+                <div>
+                  {error && <div className="error-banner">Error: {error.message}</div>}
+                  {isLoading && !data && <div className="skeleton">Loading...</div>}
+                  <ul>
+                    {data?.map(obj => (
+                      <li key={obj.$primaryKey}>{obj.{{titleProperty}}}</li>
+                    ))}
+                  </ul>
+                </div>
+              );
+            }
+
+      loadSingleObjectGuide:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { useOsdkObject } from "@osdk/react/experimental";
+
+            function {{objectType}}Detail({ primaryKey }: { primaryKey: string }) {
+              const { data, isLoading, error } = useOsdkObject({{objectType}}, primaryKey);
+
+              if (error) return <div>Error: {error.message}</div>;
+              if (isLoading && !data) return <div>Loading...</div>;
+
+              return <div>{data?.{{titleProperty}}}</div>;
+            }
+      loadObjectPageGuide:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { useOsdkObjects } from "@osdk/react/experimental";
+
+            function {{objectType}}List() {
+              const { data, isLoading, error, fetchMore } = useOsdkObjects({{objectType}}, {
+                pageSize: 30
+              });
+
+              if (error) return <div>Error: {error.message}</div>;
+              if (isLoading && !data) return <div>Loading...</div>;
+
+              return (
+                <div>
+                  <ul>
+                    {data?.map(obj => <li key={obj.$primaryKey}>{obj.{{titleProperty}}}</li>)}
+                  </ul>
+                  {fetchMore && <button onClick={fetchMore}>Load more</button>}
+                </div>
+              );
+            }
+      orderObjectsGuide:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { useOsdkObjects } from "@osdk/react/experimental";
+
+            function Sorted{{objectType}}List() {
+              const { data, isLoading, error } = useOsdkObjects({{objectType}}, {
+                orderBy: { {{titleProperty}}: "asc" }
+              });
+
+              if (error) return <div>Error: {error.message}</div>;
+              if (isLoading && !data) return <div>Loading...</div>;
+
+              return (
+                <ul>
+                  {data?.map(obj => <li key={obj.$primaryKey}>{obj.{{titleProperty}}}</li>)}
+                </ul>
+              );
+            }
+      searchObjectsGuide:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { useOsdkObjects } from "@osdk/react/experimental";
+
+            function Filtered{{objectType}}List() {
+              const { data, isLoading, error } = useOsdkObjects({{objectType}}, {
+                where: {
+                  {{titleProperty}}: { $isNotNull: true }
+                }
+              });
+
+              if (error) return <div>Error: {error.message}</div>;
+              if (isLoading && !data) return <div>Loading...</div>;
+
+              return (
+                <ul>
+                  {data?.map(obj => <li key={obj.$primaryKey}>{obj.{{titleProperty}}}</li>)}
+                </ul>
+              );
+            }
+      loadSingleObjectReference:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { useOsdkObject } from "@osdk/react/experimental";
+
+            function {{objectType}}Detail({ primaryKey }: { primaryKey: string }) {
+              const { data, isLoading, error } = useOsdkObject({{objectType}}, primaryKey);
+
+              return (
+                <div>
+                  {error && <div>Error: {error.message}</div>}
+                  {isLoading && !data && <div>Loading...</div>}
+                  {data && <div>{data.{{titleProperty}}}</div>}
+                </div>
+              );
+            }
+      loadObjectsReference:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { useOsdkObjects } from "@osdk/react/experimental";
+
+            function {{objectType}}List() {
+              const { data, isLoading, error, fetchMore } = useOsdkObjects({{objectType}}, {
+                pageSize: 30
+              });
+
+              return (
+                <div>
+                  {error && <div>Error: {error.message}</div>}
+                  {isLoading && !data && <div>Loading...</div>}
+                  <ul>
+                    {data?.map(obj => <li key={obj.$primaryKey}>{obj.{{titleProperty}}}</li>)}
+                  </ul>
+                  {fetchMore && <button onClick={fetchMore}>Load more</button>}
+                </div>
+              );
+            }
+      loadAllObjectsReference:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { useOsdkObjects } from "@osdk/react/experimental";
+
+            // Note: For large datasets, consider using pagination with fetchMore
+            function All{{objectType}}List() {
+              const { data, isLoading, error, fetchMore } = useOsdkObjects({{objectType}});
+
+              return (
+                <div>
+                  {error && <div>Error: {error.message}</div>}
+                  {isLoading && !data && <div>Loading...</div>}
+                  <ul>
+                    {data?.map(obj => <li key={obj.$primaryKey}>{obj.{{titleProperty}}}</li>)}
+                  </ul>
+                  {fetchMore && <button onClick={fetchMore}>Load more</button>}
+                </div>
+              );
+            }
+      loadLinkedObjectReference:
+        - template: |-
+            import { {{sourceObjectType}} } from "{{{packageName}}}";
+            import { useLinks } from "@osdk/react/experimental";
+
+            function {{linkedObjectType}}Detail({ source }: { source: {{sourceObjectType}}.OsdkInstance }) {
+              const { data, isLoading, error } = useLinks(source, "{{linkApiName}}");
+              const linkedObject = data?.[0];
+
+              return (
+                <div>
+                  {error && <div>Error: {error.message}</div>}
+                  {isLoading && !data && <div>Loading...</div>}
+                  {linkedObject && <div>{linkedObject.$primaryKey}</div>}
+                </div>
+              );
+            }
+      loadLinkedObjectsReference:
+        - template: |-
+            import { {{sourceObjectType}} } from "{{{packageName}}}";
+            import { useLinks } from "@osdk/react/experimental";
+
+            function Linked{{linkedObjectType}}List({ source }: { source: {{sourceObjectType}}.OsdkInstance }) {
+              const { data, isLoading, error, fetchMore } = useLinks(source, "{{linkApiName}}");
+
+              return (
+                <div>
+                  {error && <div>Error: {error.message}</div>}
+                  {isLoading && !data && <div>Loading...</div>}
+                  <ul>
+                    {data?.map(obj => <li key={obj.$primaryKey}>{obj.$primaryKey}</li>)}
+                  </ul>
+                  {fetchMore && <button onClick={fetchMore}>Load more</button>}
+                </div>
+              );
+            }
+      aggregationTemplate:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { useOsdkAggregation } from "@osdk/react/experimental";
+
+            function {{objectType}}Aggregation() {
+              const { data, isLoading, error } = useOsdkAggregation({{objectType}}, agg =>
+                agg
+                  .where(q => q.{{property}}.$isNotNull())
+                  .groupBy(p => p.{{property}}.exact())
+                  .count()
+              );
+
+              return (
+                <div>
+                  {error && <div>Error: {error.message}</div>}
+                  {isLoading && data == null && <div>Loading...</div>}
+                  {data != null && <pre>{JSON.stringify(data, null, 2)}</pre>}
+                </div>
+              );
+            }
+      countAggregationTemplate:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { useOsdkAggregation } from "@osdk/react/experimental";
+
+            function {{objectType}}Count() {
+              const { data, isLoading, error } = useOsdkAggregation({{objectType}}, agg => agg.count());
+
+              return (
+                <div>
+                  {error && <div>Error: {error.message}</div>}
+                  {isLoading && data == null && <div>Loading...</div>}
+                  {data != null && <span>Total: {data}</span>}
+                </div>
+              );
+            }
+      approximateDistinctAggregationTemplate:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { useOsdkAggregation } from "@osdk/react/experimental";
+
+            function {{objectType}}DistinctCount() {
+              const { data, isLoading, error } = useOsdkAggregation({{objectType}}, agg =>
+                agg.approximateDistinct(obj => obj.{{property}})
+              );
+
+              return (
+                <div>
+                  {error && <div>Error: {error.message}</div>}
+                  {isLoading && data == null && <div>Loading...</div>}
+                  {data != null && <span>Distinct count: {data}</span>}
+                </div>
+              );
+            }
+      exactDistinctAggregationTemplate:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { useOsdkAggregation } from "@osdk/react/experimental";
+
+            function {{objectType}}ExactDistinctCount() {
+              const { data, isLoading, error } = useOsdkAggregation({{objectType}}, agg =>
+                agg.exactDistinct(obj => obj.{{property}})
+              );
+
+              return (
+                <div>
+                  {error && <div>Error: {error.message}</div>}
+                  {isLoading && data == null && <div>Loading...</div>}
+                  {data != null && <span>Exact distinct count: {data}</span>}
+                </div>
+              );
+            }
+      numericAggregationTemplate:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { useOsdkAggregation } from "@osdk/react/experimental";
+
+            function {{objectType}}{{operation}}() {
+              const { data, isLoading, error } = useOsdkAggregation({{objectType}}, agg =>
+                agg.{{operation}}(obj => obj.{{property}})
+              );
+
+              return (
+                <div>
+                  {error && <div>Error: {error.message}</div>}
+                  {isLoading && data == null && <div>Loading...</div>}
+                  {data != null && <span>{{operation}}: {data}</span>}
+                </div>
+              );
+            }
+      fixedWidthGroupByTemplate:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { useOsdkAggregation } from "@osdk/react/experimental";
+
+            function {{objectType}}GroupedByFixedWidth() {
+              const { data, isLoading, error } = useOsdkAggregation({{objectType}}, agg =>
+                agg.groupBy(obj => obj.{{property}}.fixedWidth(10)).count()
+              );
+
+              return (
+                <div>
+                  {error && <div>Error: {error.message}</div>}
+                  {isLoading && data == null && <div>Loading...</div>}
+                  {data != null && <pre>{JSON.stringify(data, null, 2)}</pre>}
+                </div>
+              );
+            }
+      durationGroupByTemplate:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { useOsdkAggregation } from "@osdk/react/experimental";
+
+            function {{objectType}}GroupedByDuration() {
+              const { data, isLoading, error } = useOsdkAggregation({{objectType}}, agg =>
+                agg.groupBy(obj => obj.{{property}}.by{{duration}}({{#durationText}}{{arg}}{{/durationText}})).count()
+              );
+
+              return (
+                <div>
+                  {error && <div>Error: {error.message}</div>}
+                  {isLoading && data == null && <div>Loading...</div>}
+                  {data != null && <pre>{JSON.stringify(data, null, 2)}</pre>}
+                </div>
+              );
+            }
+      exactGroupByTemplate:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { useOsdkAggregation } from "@osdk/react/experimental";
+
+            function {{objectType}}GroupedByExact() {
+              const { data, isLoading, error } = useOsdkAggregation({{objectType}}, agg =>
+                agg.groupBy(obj => obj.{{property}}.exact()).count()
+              );
+
+              return (
+                <div>
+                  {error && <div>Error: {error.message}</div>}
+                  {isLoading && data == null && <div>Loading...</div>}
+                  {data != null && <pre>{JSON.stringify(data, null, 2)}</pre>}
+                </div>
+              );
+            }
+      rangeGroupByTemplate:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { useOsdkAggregation } from "@osdk/react/experimental";
+
+            function {{objectType}}GroupedByRange() {
+              const { data, isLoading, error } = useOsdkAggregation({{objectType}}, agg =>
+                agg.groupBy(obj => obj.{{property}}.ranges([{
+                  startValue: {{propertyValueV2}},
+                  endValue: {{propertyValueV2}}
+                }])).count()
+              );
+
+              return (
+                <div>
+                  {error && <div>Error: {error.message}</div>}
+                  {isLoading && data == null && <div>Loading...</div>}
+                  {data != null && <pre>{JSON.stringify(data, null, 2)}</pre>}
+                </div>
+              );
+            }
+          computedVariables:
+            - propertyValueV2
+      applyAction:
+        - template: |-
+            import { {{actionApiName}} } from "{{{packageName}}}";
+            import { useOsdkAction } from "@osdk/react/experimental";
+
+            function {{actionApiName}}Button() {
+              const { applyAction, isPending, error } = useOsdkAction({{actionApiName}});
+
+              const handleClick = async () => {
+                await applyAction({
+                  {{#actionParameterSampleValuesV2}}
+                  {{key}}: {{value}}{{^last}},{{/last}}
+                  {{/actionParameterSampleValuesV2}}
+                });
+              };
+
+              return (
+                <div>
+                  {error && <div>Error: {String(error.unknown ?? error.actionValidation)}</div>}
+                  <button onClick={handleClick} disabled={isPending}>
+                    {isPending ? "Applying..." : "Apply"}
+                  </button>
+                </div>
+              );
+            }
+          computedVariables:
+            - actionParameterSampleValuesV2
+      applyActionResponse:
+        - template: |-
+            // React hooks handle response state automatically
+            // Access the result via the hook's return value
+            import { {{actionApiName}} } from "{{{packageName}}}";
+            import { useOsdkAction } from "@osdk/react/experimental";
+
+            function {{actionApiName}}WithResult() {
+              const { applyAction, isPending, error, result } = useOsdkAction({{actionApiName}});
+
+              // result contains the action result after successful execution
+              return (
+                <div>
+                  {result && <div>Action completed successfully</div>}
+                </div>
+              );
+            }
+      validateAction:
+        - template: |-
+            import { {{actionApiName}} } from "{{{packageName}}}";
+            import { useOsdkAction } from "@osdk/react/experimental";
+            import { useState, useEffect } from "react";
+
+            function {{actionApiName}}WithValidation() {
+              const { validateAction, applyAction, isPending, validationResult } = useOsdkAction({{actionApiName}});
+              const [params, setParams] = useState({});
+
+              useEffect(() => {
+                validateAction(params);
+              }, [params, validateAction]);
+
+              return (
+                <div>
+                  {validationResult?.isValid === false && (
+                    <div>Validation errors present</div>
+                  )}
+                  <button
+                    onClick={() => applyAction(params)}
+                    disabled={isPending || validationResult?.isValid === false}
+                  >
+                    {isPending ? "Applying..." : "Apply"}
+                  </button>
+                </div>
+              );
+            }
+      batchApplyAction:
+        - template: |-
+            // Batch actions in React should be handled with multiple hook calls
+            // or by using the client directly for batch operations
+            import { {{actionApiName}} } from "{{{packageName}}}";
+            import { useOsdkAction } from "@osdk/react/experimental";
+
+            function Batch{{actionApiName}}() {
+              const { applyAction, isPending } = useOsdkAction({{actionApiName}});
+
+              const handleBatchApply = async (items: Array<{ /* params */ }>) => {
+                await Promise.all(items.map(item => applyAction(item)));
+              };
+
+              return (
+                <button onClick={() => handleBatchApply([])} disabled={isPending}>
+                  Apply Batch
+                </button>
+              );
+            }
+      clientSetup:
+        - template: |-
+            import { OsdkProvider2 } from "@osdk/react/experimental";
+            import { createClient } from "@osdk/client";
+
+            const client = createClient(
+              "https://your-stack.palantirfoundry.com",
+              "{{{packageName}}}",
+              async () => "your-token"
+            );
+
+            function App() {
+              return (
+                <OsdkProvider2 client={client}>
+                  <YourApp />
+                </OsdkProvider2>
+              );
+            }
+      callFunction:
+        - template: |-
+            import { {{functionApiName}} } from "{{{packageName}}}";
+            import { useOsdkFunction } from "@osdk/react/experimental";
+
+            function {{functionApiName}}Caller() {
+              const { execute, data, isLoading, error } = useOsdkFunction({{functionApiName}});
+
+              return (
+                <div>
+                  {error && <div>Error: {error.message}</div>}
+                  <button onClick={() => execute({ /* params */ })} disabled={isLoading}>
+                    {isLoading ? "Running..." : "Run Function"}
+                  </button>
+                  {data && <pre>{JSON.stringify(data, null, 2)}</pre>}
+                </div>
+              );
+            }
