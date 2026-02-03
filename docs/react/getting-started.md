@@ -14,11 +14,12 @@ This guide covers installation, setup, and your first OSDK React application.
 
 ### 1. Install Beta Packages
 
-Using `latest` doesn't always install actual latest versions for beta packages. Specify them explicitly.
+```bash
+npm install @osdk/api@beta @osdk/client@beta @osdk/react@beta
+```
 
 :::warning Version Compatibility
-All `@osdk/*` packages must use **compatible versions**. Mismatched versions (e.g., mixing an old `@osdk/client` with a newer `@osdk/react`) will cause TypeScript errors.
-:::
+All `@osdk/*` packages must use **compatible versions**. Mismatched versions (e.g., mixing an old `@osdk/client` with a newer `@osdk/react`) will cause TypeScript errors. See [troubleshooting](#property-store-is-missing-with-osdkprovider2) if you encounter issues.
 
 ```json
 {
@@ -29,14 +30,9 @@ All `@osdk/*` packages must use **compatible versions**. Mismatched versions (e.
   }
 }
 ```
+:::
 
-Or install via command line:
-
-```bash
-npm install @osdk/api @osdk/client @osdk/react
-```
-
-Check for newer versions on npm:
+You can find the latest versions on npm:
 
 - [@osdk/react versions](https://www.npmjs.com/package/@osdk/react?activeTab=versions)
 - [@osdk/client versions](https://www.npmjs.com/package/@osdk/client?activeTab=versions)
