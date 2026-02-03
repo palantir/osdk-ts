@@ -224,16 +224,16 @@ export class SpecificLinkQuery extends BaseListQuery<
     changes: Changes,
     _optimisticId: OptimisticId | undefined,
   ): Promise<void> => {
+    // If our cache key is already in changes.modified, we already triggered
+    // revalidation (e.g. from writeToStore or invalidateObjectType), so skip
+    // to avoid double revalidation
+    if (changes.modified.has(this.cacheKey)) {
+      return Promise.resolve();
+    }
+
     // TODO: Implement proper invalidation logic for linked objects
     // This would check if any of the linked objects have changed,
     // or if the source object's links might have changed
-
-    // For now, simply check if this specific link cache key was modified
-    if (changes.modified.has(this.cacheKey)) {
-      return this.revalidate(true);
-    }
-
-    // No relevant changes were detected
     return Promise.resolve();
   };
 
