@@ -34,25 +34,65 @@ export interface UseOsdkObjectsOptions<
   RDPs extends Record<string, SimplePropertyDef> = {},
 > {
   /**
-   * Standard OSDK Where with RDP support
+   * Fetch objects by their RIDs (Resource Identifiers).
+   * When provided, starts with a static objectset containing these RIDs.
+   * Can be combined with `where` to filter the RID set, and with `orderBy` to sort results.
+   *
+   * @example
+   * // Fetch specific objects by RID
+   * useOsdkObjects(Employee, { rids: ['ri.foo.123', 'ri.foo.456'] })
+   *
+   * @example
+   * // Fetch specific objects by RID, filtered by status
+   * useOsdkObjects(Employee, {
+   *   rids: ['ri.foo.123', 'ri.foo.456', 'ri.foo.789'],
+   *   where: { status: 'active' }
+   * })
+   */
+  rids?: readonly string[];
+
+  /**
+   * Standard OSDK Where clause with RDP support.
+   * When used with `rids`, filters the RID set.
+   * When used alone, filters all objects of the type.
    */
   where?: WhereClause<T, RDPs>;
 
   /**
-   *  The preferred page size for the list.
+   * Sort results by one or more properties.
    */
-  pageSize?: number;
-
-  /** */
   orderBy?: {
     [K in PropertyKeys<T>]?: "asc" | "desc";
   };
+
+  /**
+   * The preferred page size for the list.
+   */
+  pageSize?: number;
 
   /**
    * Define derived properties (RDPs) to be computed server-side and attached to each object.
    * These properties will be available on the returned objects alongside their regular properties.
    */
   withProperties?: { [K in keyof RDPs]: DerivedProperty.Creator<T, RDPs[K]> };
+
+  /**
+   * The number of milliseconds to wait after the last observed list change.
+   *
+   * Two uses of `useOsdkObjects` with the same parameters will only trigger one
+   * network request if the second is within `dedupeIntervalMs`.
+   */
+  dedupeIntervalMs?: number;
+
+  /**
+   * Enable or disable the query.
+   *
+   * When `false`, the query will not automatically execute. It will still
+   * return any cached data, but will not fetch from the server.
+   *
+   * @default true
+   */
+  enabled?: boolean;
 
   /**
    * Intersect the results with additional object sets.
@@ -77,76 +117,10 @@ export interface UseOsdkObjectsOptions<
    * - `true`: Fetch all available pages automatically
    * - `number`: Fetch pages until at least this many items are loaded
    * - `undefined` (default): Only fetch the first page, user must call fetchMore()
-   *
-   * Note: When using `autoFetchMore: true` with large datasets, the initial
-   * load may take significant time. Consider using a specific number instead
-   * or implementing virtual scrolling.
-   *
-   * @example
-   * // Fetch all todos at once
-   * const { data } = useOsdkObjects(Todo, { autoFetchMore: true })
-   *
-   * @example
-   * // Fetch at least 100 todos (with 25 per page, fetches 4 pages)
-   * const { data } = useOsdkObjects(Todo, {
-   *   autoFetchMore: 100,
-   *   pageSize: 25
-   * })
    */
   autoFetchMore?: boolean | number;
 
-  /**
-   * Upon a list being revalidated, this option determines how the component
-   * will be re-rendered with the data.
-   *
-   * An example to help understand the options:
-   *
-   * Suppose pageSize is 10 and we have called `fetchMore()` twice. The list is
-   * now 30 items long.
-   *
-   * Upon revalidation, we get the first 10 items of the list. The options behave
-   * as follows:
-   *
-   * - `"in-place"`: The first 10 items of the list are replaced with the new 10
-   *   items. The list is now 30 items long, but only the first 10 items are valid.
-   * - `"wait"`: The old list is returned until after the next 20 items are loaded
-   *   (which will happen automatically). The list is now 30 items long.
-   * - `"reset"`: The entire list is replaced with the new 10 items. The list is
-   *   now 10 items long.
-   */
-  // invalidationMode?: "in-place" | "wait" | "reset";
-
-  /**
-   * The number of milliseconds to wait after the last observed list change.
-   *
-   * Two uses of `useOsdkObjects` with the where clause will only trigger one
-   * network request if the second is within `dedupeIntervalMs`.
-   */
-  dedupeIntervalMs?: number;
-
   streamUpdates?: boolean;
-
-  /**
-   * Enable or disable the query.
-   *
-   * When `false`, the query will not automatically execute. It will still
-   * return any cached data, but will not fetch from the server.
-   *
-   * This is useful for:
-   * - Lazy/on-demand queries that should wait for user interaction
-   * - Dependent queries that need data from another query first
-   * - Conditional queries based on component state
-   *
-   * @default true
-   * @example
-   * // Dependent query - wait for parent data
-   * const { data: employee } = useOsdkObject(Employee, employeeId);
-   * const { data: reports } = useOsdkObjects(Employee, {
-   *   where: { managerId: employee?.id },
-   *   enabled: !!employee
-   * });
-   */
-  enabled?: boolean;
 }
 
 export interface UseOsdkListResult<
@@ -222,28 +196,31 @@ export function useOsdkObjects<
   | UseOsdkListResult<Q, RDPs>
   | UseOsdkListResult<LinkedType<Q, LinkNames<Q>>>
 {
+  const { observableClient } = React.useContext(OsdkContext2);
+
   const {
     pageSize,
-    orderBy,
     dedupeIntervalMs,
-    where = {},
-    streamUpdates,
     withProperties,
+    enabled = true,
+    rids,
+    where,
+    orderBy,
+    streamUpdates,
     autoFetchMore,
     intersectWith,
     pivotTo,
-    enabled = true,
   } = options ?? {};
-  const { observableClient } = React.useContext(OsdkContext2);
 
-  /*  We want the canonical where clause so that the use of `React.useMemo`
-      is stable. No real added cost as we canonicalize internal to
-      the ObservableClient anyway.
-   */
   const canonWhere = observableClient.canonicalizeWhereClause<
     Q,
     RDPs
   >(where ?? {});
+
+  const stableRids = React.useMemo(
+    () => rids,
+    [JSON.stringify(rids)],
+  );
 
   const stableWithProperties = React.useMemo(
     () => withProperties,
@@ -268,16 +245,18 @@ export function useOsdkObjects<
         >(
           () => ({ unsubscribe: () => {} }),
           process.env.NODE_ENV !== "production"
-            ? `list ${type.apiName} ${JSON.stringify(canonWhere)} [DISABLED]`
+            ? `list ${type.apiName} [DISABLED]`
             : void 0,
         );
       }
+
       return makeExternalStore<
         ObserveObjectsCallbackArgs<Q, RDPs>
       >(
         (observer) =>
           observableClient.observeList({
             type,
+            rids: stableRids,
             where: canonWhere,
             dedupeInterval: dedupeIntervalMs ?? 2_000,
             pageSize,
@@ -291,7 +270,9 @@ export function useOsdkObjects<
             ...(pivotTo ? { pivotTo } : {}),
           }, observer),
         process.env.NODE_ENV !== "production"
-          ? `list ${type.apiName} ${JSON.stringify(canonWhere)}`
+          ? `list ${type.apiName} ${
+            stableRids ? `[${stableRids.length} rids]` : ""
+          } ${JSON.stringify(canonWhere)}`
           : void 0,
       );
     },
@@ -299,6 +280,7 @@ export function useOsdkObjects<
       enabled,
       observableClient,
       type,
+      stableRids,
       canonWhere,
       dedupeIntervalMs,
       pageSize,

@@ -384,12 +384,14 @@ export function expectSingleListCallAndClear<T extends ObjectTypeDefinition>(
     vitest.runOnlyPendingTimers();
   }
   expect(subFn.next).toHaveBeenCalledExactlyOnceWith(
-    listPayloadContaining({
-      ...payloadOptions,
-      resolvedList: resolvedList as unknown as Array<
-        ObjectHolder
-      >,
-    }),
+    expect.objectContaining(
+      listPayloadContaining({
+        ...payloadOptions,
+        resolvedList: resolvedList as unknown as Array<
+          ObjectHolder
+        >,
+      }),
+    ),
   );
   const ret = subFn.next.mock.calls[0][0];
   subFn.next.mockClear();
