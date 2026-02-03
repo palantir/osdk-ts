@@ -134,9 +134,10 @@ export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
   );
   if (maybeBadProperties.length > 0) {
     throw new Error(
-      `Interfaces with fully qualified api names MUST NOT have any properties with an unqualified api name where the root conflicts with a qualified property api name. Interface: ${interfaceDef.fullApiName}, properties: ${
+      `Property name collision in interface "${interfaceDef.fullApiName}": ${
         maybeBadProperties.join(", ")
-      }`,
+      }.  +
+Cannot have both an unqualified property and a namespaced property with matching root name when the namespace matches the interface.`,
     );
   }
 
