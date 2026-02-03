@@ -80,9 +80,14 @@ export function useOsdkObject<Q extends ObjectTypeDefinition>(
   const isInstanceSignature = "$objectType" in args[0];
 
   // Extract options - 2nd param for instance signature, 3rd for type signature
-  const options: UseOsdkObjectOptions = isInstanceSignature
-    ? (args[1] as UseOsdkObjectOptions | undefined) ?? {}
-    : (args[2] as UseOsdkObjectOptions | undefined) ?? {};
+  // Support both boolean (legacy) and object signatures for backwards compatibility
+  const rawOptions: UseOsdkObjectOptions | boolean | undefined =
+    isInstanceSignature
+      ? (args[1] as UseOsdkObjectOptions | boolean | undefined)
+      : (args[2] as UseOsdkObjectOptions | boolean | undefined);
+  const options: UseOsdkObjectOptions = typeof rawOptions === "boolean"
+    ? { enabled: rawOptions }
+    : rawOptions ?? {};
 
   const enabled = options.enabled ?? true;
   const streamUpdates = options.streamUpdates ?? false;
