@@ -16,7 +16,7 @@
 
 import type { RowData, Table } from "@tanstack/react-table";
 import React from "react";
-import styles from "./TableHeader.module.css";
+import styles from "./TableHeader.module.scss";
 import { TableHeaderContent } from "./TableHeaderContent.js";
 import { TableHeaderWithPopover } from "./TableHeaderWithPopover.js";
 import { SELECTION_COLUMN_ID } from "./utils/constants.js";

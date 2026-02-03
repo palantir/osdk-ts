@@ -17,7 +17,7 @@
 import type { Cell, RowData, Table } from "@tanstack/react-table";
 import classNames from "classnames";
 import React, { type ReactElement, useCallback, useRef } from "react";
-import styles from "./Table.module.css";
+import styles from "./Table.module.scss";
 import { TableBody } from "./TableBody.js";
 import { TableHeader } from "./TableHeader.js";
 

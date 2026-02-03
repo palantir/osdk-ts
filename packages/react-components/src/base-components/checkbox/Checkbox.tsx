@@ -22,7 +22,7 @@ import {
 import { Minus, Tick } from "@blueprintjs/icons";
 import classnames from "classnames";
 import React from "react";
-import styles from "./Checkbox.module.css";
+import styles from "./Checkbox.module.scss";
 
 interface CheckboxProps extends Omit<CheckboxRootProps, "className"> {
   className?: string;

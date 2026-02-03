@@ -33,7 +33,7 @@ import type {
 import classNames from "classnames";
 import React, { useCallback, useState } from "react";
 import { TableHeaderContent } from "./TableHeaderContent.js";
-import styles from "./TableHeaderWithPopover.module.css";
+import styles from "./TableHeaderWithPopover.module.scss";
 
 interface HeaderMenuItemProps {
   onClick: () => void;

@@ -18,7 +18,7 @@ import type { Cell, Row, RowData } from "@tanstack/react-table";
 import type { VirtualItem } from "@tanstack/react-virtual";
 import React, { useCallback } from "react";
 import { TableCell } from "./TableCell.js";
-import styles from "./TableRow.module.css";
+import styles from "./TableRow.module.scss";
 
 interface TableRowProps<TData extends RowData> {
   row: Row<TData>;

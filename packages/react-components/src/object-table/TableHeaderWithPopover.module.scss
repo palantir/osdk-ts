@@ -49,6 +49,7 @@
   border-radius: var(--bp-surface-borderRadius);
   color: var(--bp-intent-default-foreground);
   user-select: none;
+
   &:hover {
     background-color: var(--bp-intent-default-hover);
   }

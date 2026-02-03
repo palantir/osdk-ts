@@ -16,7 +16,7 @@
 
 import { flexRender, type Header, type RowData } from "@tanstack/react-table";
 import React from "react";
-import styles from "./TableHeaderContent.module.css";
+import styles from "./TableHeaderContent.module.scss";
 
 interface TableHeaderContentProps<TData extends RowData> {
   header: Header<TData, unknown>;

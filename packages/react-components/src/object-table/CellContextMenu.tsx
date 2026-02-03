@@ -17,7 +17,7 @@
 import type { Cell, RowData } from "@tanstack/react-table";
 import React, { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
-import styles from "./CellContextMenu.module.css";
+import styles from "./CellContextMenu.module.scss";
 import type { PopoverPosition } from "./hooks/useCellContextMenu.js";
 
 interface CellContextMenuProps<TData extends RowData> {

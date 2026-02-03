@@ -20,7 +20,7 @@ import type { ReactNode } from "react";
 import React, { useRef } from "react";
 import { CellContextMenu } from "./CellContextMenu.js";
 import { useCellContextMenu } from "./hooks/useCellContextMenu.js";
-import styles from "./TableCell.module.css";
+import styles from "./TableCell.module.scss";
 import { SELECTION_COLUMN_ID } from "./utils/constants.js";
 import { getColumnPinningStyles } from "./utils/getColumnPinningStyles.js";
 
