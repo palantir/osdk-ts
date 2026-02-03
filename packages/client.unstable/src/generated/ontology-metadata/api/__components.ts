@@ -10198,7 +10198,7 @@ export interface OntologyIrSecurityGroupMandatoryOnlySecurityDefinition {
 }
 export interface OntologyIrSecurityGroupMandatoryPolicy {
   assumedMarkings: Array<MarkingId>;
-  markings: Array<MarkingId>;
+  markings: Record<MarkingId, MarkingType>;
 }
 /**
  * Condition that specifies that user's markings must be evaluated against the marking(s) contained on each
