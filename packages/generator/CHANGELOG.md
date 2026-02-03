@@ -118,56 +118,56 @@
 
 ### Patch Changes
 
--   322c5bc: Simulated release
+- 322c5bc: Simulated release
 
--   b313525: bump osdk
+- b313525: bump osdk
 
--   3fbb596: Pipe through transactionId to endpoints that load data via object sets
+- 3fbb596: Pipe through transactionId to endpoints that load data via object sets
 
--   486ef7e: Deprecate multiplicity in query params/outputs
+- 486ef7e: Deprecate multiplicity in query params/outputs
 
--   a1ffb20: Use new ephemeral media upload endpoint.
+- a1ffb20: Use new ephemeral media upload endpoint.
 
--   b959085: Fix nested array query param type handling
+- b959085: Fix nested array query param type handling
 
--   af4f3bf: Remove the following features for RC:
-    -   Property formatting
-    -   Branching
-    -   Constant RDPs
+- af4f3bf: Remove the following features for RC:
+  - Property formatting
+  - Branching
+  - Constant RDPs
 
--   Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
 
--   Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
 
--   Updated dependencies [b313525]
+- Updated dependencies [b313525]
 
--   Updated dependencies [3fbb596]
+- Updated dependencies [3fbb596]
 
--   Updated dependencies [f7ae38a]
+- Updated dependencies [f7ae38a]
 
--   Updated dependencies [486ef7e]
+- Updated dependencies [486ef7e]
 
--   Updated dependencies [ea077c6]
+- Updated dependencies [ea077c6]
 
--   Updated dependencies [3d7dc0a]
+- Updated dependencies [3d7dc0a]
 
--   Updated dependencies [2556c64]
+- Updated dependencies [2556c64]
 
--   Updated dependencies [5a9cd8f]
+- Updated dependencies [5a9cd8f]
 
--   Updated dependencies [b307201]
+- Updated dependencies [b307201]
 
--   Updated dependencies [e7bf02a]
+- Updated dependencies [e7bf02a]
 
--   Updated dependencies [a1ffb20]
+- Updated dependencies [a1ffb20]
 
--   Updated dependencies [b959085]
+- Updated dependencies [b959085]
 
--   Updated dependencies [af4f3bf]
+- Updated dependencies [af4f3bf]
 
--   Updated dependencies [e62c692]
-    -   @osdk/api@2.6.0
-    -   @osdk/generator-converters@2.6.0
+- Updated dependencies [e62c692]
+  - @osdk/api@2.6.0
+  - @osdk/generator-converters@2.6.0
 
 ## 2.6.0-beta.13
 

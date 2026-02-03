@@ -35,12 +35,12 @@
 
 ### Patch Changes
 
--   322c5bc: Simulated release
--   7fd788b: Support derived properties
--   af4f3bf: Remove the following features for RC:
-    -   Property formatting
-    -   Branching
-    -   Constant RDPs
+- 322c5bc: Simulated release
+- 7fd788b: Support derived properties
+- af4f3bf: Remove the following features for RC:
+  - Property formatting
+  - Branching
+  - Constant RDPs
 
 ## 2.6.0-beta.13
 

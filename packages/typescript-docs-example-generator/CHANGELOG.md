@@ -4,16 +4,16 @@
 
 ### Patch Changes
 
--   a1bc06f: Simulated release
--   7cac2f8: Upgrade to latest spec and fix attachment template"
--   Updated dependencies [776ae8a]
--   Updated dependencies [a035fdc]
--   Updated dependencies [dd8c385]
--   Updated dependencies [823c756]
--   Updated dependencies [0e863aa]
--   Updated dependencies [7cac2f8]
--   Updated dependencies [af4f3bf]
-    -   @osdk/typescript-sdk-docs@0.5.0
+- a1bc06f: Simulated release
+- 7cac2f8: Upgrade to latest spec and fix attachment template"
+- Updated dependencies [776ae8a]
+- Updated dependencies [a035fdc]
+- Updated dependencies [dd8c385]
+- Updated dependencies [823c756]
+- Updated dependencies [0e863aa]
+- Updated dependencies [7cac2f8]
+- Updated dependencies [af4f3bf]
+  - @osdk/typescript-sdk-docs@0.5.0
 
 ## 0.3.0-beta.2
 

@@ -10,12 +10,12 @@
 
 ### Patch Changes
 
--   a1bc06f: Simulated release
--   8fe0df0: Add generated context to git
--   a035fdc: Add draft of media upload docs
--   dd8c385: Update upload media ontology edits docs
--   9f3455d: Add a separate generator package for osdk docs context to make it independent from example package
--   0e863aa: Tweak media upload snippet
+- a1bc06f: Simulated release
+- 8fe0df0: Add generated context to git
+- a035fdc: Add draft of media upload docs
+- dd8c385: Update upload media ontology edits docs
+- 9f3455d: Add a separate generator package for osdk docs context to make it independent from example package
+- 0e863aa: Tweak media upload snippet
 
 ## 0.3.0-beta.6
 

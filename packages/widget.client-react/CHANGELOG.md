@@ -123,29 +123,29 @@
 
 ### Patch Changes
 
--   7901ae0: Simulated release
+- 7901ae0: Simulated release
 
--   a8802b3: Add error boundary for custom widgets
+- a8802b3: Add error boundary for custom widgets
 
--   baf1e30: Introduce widget resize message for automatic heights
+- baf1e30: Introduce widget resize message for automatic heights
 
--   8d7b8db: Expand ErrorBoundary to catch all errors
+- 8d7b8db: Expand ErrorBoundary to catch all errors
 
--   4d37e98: Improved support for object set parameters in widget.client-react
+- 4d37e98: Improved support for object set parameters in widget.client-react
 
--   af4f3bf: Remove the following features for RC:
-    -   Property formatting
-    -   Branching
-    -   Constant RDPs
+- af4f3bf: Remove the following features for RC:
+  - Property formatting
+  - Branching
+  - Constant RDPs
 
--   Updated dependencies [7901ae0]
+- Updated dependencies [7901ae0]
 
--   Updated dependencies [baf1e30]
+- Updated dependencies [baf1e30]
 
--   Updated dependencies [af4f3bf]
+- Updated dependencies [af4f3bf]
 
--   Updated dependencies [ad648f5]
-    -   @osdk/widget.client@3.3.0
+- Updated dependencies [ad648f5]
+  - @osdk/widget.client@3.3.0
 
 ## 3.3.0-beta.11
 

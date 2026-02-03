@@ -6,11 +6,11 @@
 
 ### Patch Changes
 
--   322c5bc: Simulated release
--   af4f3bf: Remove the following features for RC:
-    -   Property formatting
-    -   Branching
-    -   Constant RDPs
+- 322c5bc: Simulated release
+- af4f3bf: Remove the following features for RC:
+  - Property formatting
+  - Branching
+  - Constant RDPs
 
 ## 0.30.0-beta.5
 

@@ -4,23 +4,23 @@
 
 ### Patch Changes
 
--   322c5bc: Simulated release
+- 322c5bc: Simulated release
 
--   af4f3bf: Remove the following features for RC:
-    -   Property formatting
-    -   Branching
-    -   Constant RDPs
+- af4f3bf: Remove the following features for RC:
+  - Property formatting
+  - Branching
+  - Constant RDPs
 
--   Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
 
--   Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
 
--   Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
 
--   Updated dependencies [af4f3bf]
-    -   @osdk/shared.client.impl@1.6.0
-    -   @osdk/shared.net.errors@2.6.0
-    -   @osdk/shared.net.fetch@1.6.0
+- Updated dependencies [af4f3bf]
+  - @osdk/shared.client.impl@1.6.0
+  - @osdk/shared.net.errors@2.6.0
+  - @osdk/shared.net.fetch@1.6.0
 
 ## 2.5.0
 
