@@ -15,7 +15,9 @@
  */
 
 import type { HeaderGroup, RowData, Table } from "@tanstack/react-table";
+import classNames from "classnames";
 import React, { useEffect, useRef, useState } from "react";
+import loadingStyles from "./LoadingCell.module.css";
 import { LoadingRow } from "./LoadingRow.js";
 import bodyStyles from "./TableBody.module.css";
 import { TableHeader } from "./TableHeader.js";
@@ -98,7 +100,12 @@ export function LoadingStateTable<TData extends RowData>({
                     className={headerStyles.osdkTableHeaderCell}
                     style={{ width }}
                   >
-                    <div className={headerStyles.osdkLoadingHeaderCell} />
+                    <div
+                      className={classNames(
+                        headerStyles.osdkLoadingHeaderCell,
+                        loadingStyles.osdkCellSkeleton,
+                      )}
+                    />
                   </th>
                 );
               })}
