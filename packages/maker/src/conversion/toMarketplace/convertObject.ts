@@ -23,6 +23,7 @@ import type {
   OntologyIrPropertyType,
 } from "@osdk/client.unstable";
 import {
+  addNamespaceIfNone,
   buildDatasource,
   cleanAndValidateLinkTypeId,
   convertObjectStatus,
@@ -103,18 +104,22 @@ export function convertObject(
       apiName: objectType.apiName,
       status: convertObjectStatus(objectType.status),
       redacted: false,
-      implementsInterfaces2: implementations.map(impl => ({
-        interfaceTypeApiName: impl.implements.apiName,
-        linksV2: {},
-        propertiesV2: Object.fromEntries(impl.propertyMapping
+      implementsInterfaces2: implementations.map(impl => {
+        const mappedProps = Object.fromEntries(impl.propertyMapping
           .map(
-            mappings => [mappings.interfaceProperty, {
+            mappings => [addNamespaceIfNone(mappings.interfaceProperty), {
               type: "propertyTypeRid",
               propertyTypeRid: mappings.mapsTo,
             }],
-          )),
-        properties: {},
-      })),
+          ));
+        return {
+          interfaceTypeApiName: impl.implements.apiName,
+          linksV2: {},
+          propertiesV2: {},
+          propertiesV3: mappedProps,
+          properties: {},
+        };
+      }),
       allImplementsInterfaces: {},
     },
     datasources: [

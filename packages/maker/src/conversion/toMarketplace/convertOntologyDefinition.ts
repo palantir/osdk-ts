@@ -24,8 +24,9 @@ export function convertOntologyDefinition(
   ontology: OntologyDefinition,
   randomnessKey?: string,
 ): OntologyIr {
+  const wireData = convertOntologyDefinitionToWireBlockData(ontology);
   return {
-    ontology: convertOntologyDefinitionToWireBlockData(ontology),
+    ontology: wireData,
     importedOntology: convertOntologyDefinitionToWireBlockData(importedTypes),
     valueTypes: convertOntologyToValueTypeIr(ontology),
     importedValueTypes: convertOntologyToValueTypeIr(importedTypes),
