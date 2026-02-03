@@ -14,26 +14,21 @@
  * limitations under the License.
  */
 
-import type {
-  ObjectOrInterfaceDefinition,
-  Osdk,
-  PrimaryKeyType,
-  PropertyKeys,
-  SimplePropertyDef,
-} from "@osdk/api";
+import React from "react";
+import styles from "./NonIdealState.module.css";
 
-export const getRowId = <
-  Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<
-    string,
-    never
-  >,
->(
-  row: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
-): string => {
-  return getRowIdFromPrimaryKey(row.$primaryKey);
-};
+interface NonIdealStateProps {
+  message: string;
+}
 
-export const getRowIdFromPrimaryKey = <Q extends ObjectOrInterfaceDefinition>(
-  primaryKey: PrimaryKeyType<Q>,
-): string => primaryKey.toString();
+export function NonIdealState(
+  { message }: NonIdealStateProps,
+): React.ReactElement {
+  return (
+    <div className={styles.container}>
+      <div className={styles.message}>
+        {message}
+      </div>
+    </div>
+  );
+}
