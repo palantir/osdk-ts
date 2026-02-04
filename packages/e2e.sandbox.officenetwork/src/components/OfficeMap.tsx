@@ -2,7 +2,12 @@ import type { Point } from "geojson";
 import type { StyleSpecification } from "maplibre-gl";
 import React from "react";
 import "maplibre-gl/dist/maplibre-gl.css";
-import Map, { type MapRef, Marker } from "react-map-gl/maplibre";
+import {
+  Map,
+  type MapRef,
+  Marker,
+  type MarkerEvent,
+} from "react-map-gl/maplibre";
 import type { Employee, Office } from "../generatedNoCheck2/index.js";
 import { useNetworkConnections } from "../hooks/useNetworkConnections.js";
 import { isPoint } from "../utils/geo.js";
@@ -215,6 +220,7 @@ export function OfficeMap({
 
   return (
     <div className="absolute inset-0">
+      {/* @ts-expect-error react-map-gl types not yet compatible with React 19 */}
       <Map
         ref={mapRef}
         mapLib={import("maplibre-gl")}
@@ -237,12 +243,13 @@ export function OfficeMap({
           const isSelected = selectedOffice?.primaryKey_ === office.primaryKey_;
 
           return (
+            // @ts-expect-error react-map-gl types not yet compatible with React 19
             <Marker
               key={office.primaryKey_}
               longitude={longitude}
               latitude={latitude}
               anchor="bottom"
-              onClick={(e) => {
+              onClick={(e: MarkerEvent<MouseEvent>) => {
                 e.originalEvent.stopPropagation();
                 onSelectOffice(office);
               }}
@@ -316,12 +323,13 @@ export function OfficeMap({
               const isDimmed = filteredLevel && !matchesFilter;
 
               return (
+                // @ts-expect-error react-map-gl types not yet compatible with React 19
                 <Marker
                   key={`${officeId}-${emp.employee.employeeNumber}`}
                   longitude={longitude}
                   latitude={latitude}
                   anchor="center"
-                  onClick={(e) => {
+                  onClick={(e: MarkerEvent<MouseEvent>) => {
                     e.originalEvent.stopPropagation();
                     if (!isDimmed) {
                       onSelectEmployee(emp.employee);
