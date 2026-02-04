@@ -1,5 +1,21 @@
 # @osdk/vite-plugin-oac
 
+## 0.5.0-rc.15
+
+### Patch Changes
+
+- 31cd835: Revert beta changes
+- Updated dependencies [e462938]
+- Updated dependencies [31cd835]
+- Updated dependencies [e6689b3]
+- Updated dependencies [0dbd0d0]
+  - @osdk/client.unstable@2.7.0-rc.15
+  - @osdk/maker@0.15.0-rc.10
+  - @osdk/generator-converters.ontologyir@2.7.0-rc.15
+  - @osdk/faux@0.5.0-rc.5
+  - @osdk/api@2.7.0-rc.15
+  - @osdk/cli@0.31.0-rc.3
+
 ## 0.5.0-beta.14
 
 ### Patch Changes

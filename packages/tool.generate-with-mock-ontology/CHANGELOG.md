@@ -1,5 +1,16 @@
 # @osdk/tool.generate-with-mock-ontology
 
+## 0.7.0-rc.2
+
+### Patch Changes
+
+- 31cd835: Revert beta changes
+- Updated dependencies [eb3a556]
+- Updated dependencies [31cd835]
+- Updated dependencies [0dbd0d0]
+  - @osdk/client@2.7.0-rc.15
+  - @osdk/api@2.7.0-rc.15
+
 ## 0.6.0
 
 ### Patch Changes

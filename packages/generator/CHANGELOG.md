@@ -1,5 +1,15 @@
 # @osdk/generator
 
+## 2.7.0-rc.15
+
+### Patch Changes
+
+- 1706c79: Relax interface creation validation.
+- 31cd835: Revert beta changes
+- Updated dependencies [31cd835]
+  - @osdk/generator-converters@2.7.0-rc.15
+  - @osdk/api@2.7.0-rc.15
+
 ## 2.7.0-beta.14
 
 ### Patch Changes

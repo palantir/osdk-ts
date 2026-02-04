@@ -1,5 +1,19 @@
 # @osdk/foundry-sdk-generator
 
+## 2.7.0-rc.15
+
+### Patch Changes
+
+- 31cd835: Revert beta changes
+- Updated dependencies [1706c79]
+- Updated dependencies [eb3a556]
+- Updated dependencies [31cd835]
+- Updated dependencies [0dbd0d0]
+  - @osdk/generator@2.7.0-rc.15
+  - @osdk/client@2.7.0-rc.15
+  - @osdk/shared.client.impl@1.7.0-rc.2
+  - @osdk/api@2.7.0-rc.15
+
 ## 2.7.0-beta.14
 
 ### Patch Changes

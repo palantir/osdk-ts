@@ -1,5 +1,13 @@
 # @osdk/typescript-docs-example-generator
 
+## 0.4.0-rc.2
+
+### Patch Changes
+
+- 31cd835: Revert beta changes
+- Updated dependencies [31cd835]
+  - @osdk/typescript-sdk-docs@0.6.0-rc.6
+
 ## 0.3.0
 
 ### Patch Changes

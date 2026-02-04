@@ -1,5 +1,11 @@
 # @osdk/create-widget.template.react.v2
 
+## 3.4.0-rc.15
+
+### Patch Changes
+
+- 31cd835: Revert beta changes
+
 ## 3.4.0-beta.14
 
 ## 3.4.0-beta.13

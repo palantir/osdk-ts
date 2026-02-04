@@ -1,5 +1,14 @@
 # @osdk/widget.api
 
+## 3.4.0-rc.15
+
+### Patch Changes
+
+- 9ac627c: Declare requested widget permissions in config/manifest
+- 31cd835: Revert beta changes
+- Updated dependencies [31cd835]
+  - @osdk/api@2.7.0-rc.15
+
 ## 3.4.0-beta.14
 
 ### Patch Changes

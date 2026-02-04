@@ -1,5 +1,11 @@
 # @osdk/shared.net.errors
 
+## 2.7.0-rc.2
+
+### Patch Changes
+
+- 31cd835: Revert beta changes
+
 ## 2.6.0
 
 ### Patch Changes

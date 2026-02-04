@@ -1,5 +1,13 @@
 # @osdk/osdk-docs-context-generator
 
+## 0.3.0-rc.2
+
+### Patch Changes
+
+- 31cd835: Revert beta changes
+- Updated dependencies [31cd835]
+  - @osdk/typescript-sdk-docs-examples@0.4.0-rc.3
+
 ## 0.2.0
 
 ### Patch Changes

@@ -1,5 +1,16 @@
 # @osdk/maker
 
+## 0.15.0-rc.10
+
+### Patch Changes
+
+- e462938: Support PSGs in OAC
+- 31cd835: Revert beta changes
+- e6689b3: Attachment properties in oac
+- Updated dependencies [31cd835]
+  - @osdk/typescript-sdk-docs@0.6.0-rc.6
+  - @osdk/api@2.7.0-rc.15
+
 ## 0.15.0-beta.9
 
 ### Minor Changes

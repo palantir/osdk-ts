@@ -1,5 +1,19 @@
 # @osdkkit/react
 
+## 0.9.0-rc.11
+
+### Patch Changes
+
+- a6d4d49: fix useLinks stabilization
+- eb3a556: wire totalCount for osdk react hooks
+- 31cd835: Revert beta changes
+- 0dbd0d0: add useOsdkObjects rid querying support
+- Updated dependencies [eb3a556]
+- Updated dependencies [31cd835]
+- Updated dependencies [0dbd0d0]
+  - @osdk/client@2.7.0-rc.15
+  - @osdk/api@2.7.0-rc.15
+
 ## 0.9.0-beta.10
 
 ### Minor Changes

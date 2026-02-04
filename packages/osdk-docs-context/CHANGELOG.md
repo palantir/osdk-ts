@@ -1,5 +1,11 @@
 # @osdk/osdk-docs-context
 
+## 0.4.0-rc.3
+
+### Patch Changes
+
+- 31cd835: Revert beta changes
+
 ## 0.4.0-beta.2
 
 ### Minor Changes

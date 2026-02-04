@@ -1,5 +1,16 @@
 # @osdk/widget.client-react
 
+## 3.4.0-rc.15
+
+### Patch Changes
+
+- 31cd835: Revert beta changes
+- Updated dependencies [eb3a556]
+- Updated dependencies [31cd835]
+- Updated dependencies [0dbd0d0]
+  - @osdk/client@2.7.0-rc.15
+  - @osdk/widget.client@3.4.0-rc.15
+
 ## 3.4.0-beta.14
 
 ### Patch Changes

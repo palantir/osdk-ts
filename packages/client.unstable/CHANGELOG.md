@@ -1,5 +1,12 @@
 # @osdk/client.unstable
 
+## 2.7.0-rc.15
+
+### Patch Changes
+
+- e462938: Support PSGs in OAC
+- 31cd835: Revert beta changes
+
 ## 2.7.0-beta.14
 
 ## 2.7.0-beta.13
