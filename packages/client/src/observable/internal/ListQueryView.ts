@@ -53,6 +53,8 @@ export class ListQueryView<PAYLOAD extends BaseListPayloadShape> {
   #viewId: string;
   #fetchMore: () => Promise<void>;
   #pendingFetchMore: Promise<void> | undefined;
+  #lastPayload: PAYLOAD | undefined;
+  #observer: Observer<PAYLOAD> | undefined;
 
   constructor(
     query: ListQueryViewTarget<PAYLOAD>,
@@ -77,8 +79,10 @@ export class ListQueryView<PAYLOAD extends BaseListPayloadShape> {
   }
 
   subscribe(observer: Observer<PAYLOAD>): Subscription {
+    this.#observer = observer;
     const sub = this.#query.subscribe({
       next: (payload) => {
+        this.#lastPayload = payload;
         observer.next?.(this.#transformPayload(payload));
       },
       error: (err) => observer.error?.(err),
@@ -88,9 +92,17 @@ export class ListQueryView<PAYLOAD extends BaseListPayloadShape> {
     // Cleanup: unregister pageSize when subscriber unsubscribes
     sub.add(() => {
       this.#query.unregisterFetchPageSize(this.#viewId);
+      this.#observer = undefined;
+      this.#lastPayload = undefined;
     });
 
     return sub;
+  }
+
+  #reemitWithNewViewLimit(): void {
+    if (this.#lastPayload && this.#observer) {
+      this.#observer.next?.(this.#transformPayload(this.#lastPayload));
+    }
   }
 
   #transformPayload(payload: PAYLOAD): PAYLOAD {
@@ -105,29 +117,27 @@ export class ListQueryView<PAYLOAD extends BaseListPayloadShape> {
   }
 
   #createFetchMore(): () => Promise<void> {
-    return async () => {
+    return () => {
       if (this.#pendingFetchMore) {
         return this.#pendingFetchMore;
       }
 
-      const doFetch = async () => {
-        this.#viewLimit += this.#pageSize;
+      this.#viewLimit += this.#pageSize;
 
-        const loadedCount = this.#query.getLoadedCount();
-        const hasMoreOnServer = this.#query.hasMorePages();
+      const loadedCount = this.#query.getLoadedCount();
+      const hasMoreOnServer = this.#query.hasMorePages();
 
-        if (this.#viewLimit > loadedCount && hasMoreOnServer) {
-          await this.#query.fetchMore();
-        } else {
-          this.#query.notifySubscribers();
-        }
-      };
+      if (this.#viewLimit > loadedCount && hasMoreOnServer) {
+        // Need to fetch more data from server
+        this.#pendingFetchMore = this.#query.fetchMore().finally(() => {
+          this.#pendingFetchMore = undefined;
+        });
+        return this.#pendingFetchMore;
+      }
 
-      this.#pendingFetchMore = doFetch().finally(() => {
-        this.#pendingFetchMore = undefined;
-      });
-
-      return this.#pendingFetchMore;
+      // We have enough data in cache, just re-emit with new viewLimit (sync)
+      this.#reemitWithNewViewLimit();
+      return Promise.resolve();
     };
   }
 }
