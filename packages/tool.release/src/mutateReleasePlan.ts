@@ -36,6 +36,16 @@ function isFirstMinorRelease(oldVersion: string, newVersion: string): boolean {
   );
 }
 
+function isPrereleaseWithPatchZero(newVersion: string): boolean {
+  const newSemver = parse(newVersion);
+  if (newSemver == null) {
+    throw new FailedWithUserMessage(
+      `Invalid version: ${newVersion}`,
+    );
+  }
+  return newSemver.prerelease.length > 0 && newSemver.patch === 0;
+}
+
 /**
  * Checks that a release for a given changeset is valid.
  * @param releasePlan The entire release plan
@@ -61,7 +71,8 @@ function isPatchVersionOrFirstMinorRelease(
       );
     }
     const release = matchingReleases[0];
-    return isFirstMinorRelease(release.oldVersion, release.newVersion);
+    return isFirstMinorRelease(release.oldVersion, release.newVersion)
+      || isPrereleaseWithPatchZero(release.newVersion);
   }
   return false;
 }

@@ -203,5 +203,65 @@ describe(mutateReleasePlan, () => {
         ]
       `);
     });
+    it("allows minor bump to prerelease with patch 0", () => {
+      const plan: ReleasePlan = {
+        changesets: [
+          {
+            id: "rc-minor",
+            releases: [
+              { name: "foo", type: "minor" },
+            ],
+            summary: "foo summary",
+          },
+        ],
+        preState: undefined,
+        releases: [
+          {
+            changesets: ["rc-minor"],
+            oldVersion: "2.1.0",
+            newVersion: "2.2.0-rc.0",
+            name: "foo",
+            type: "minor",
+          },
+        ],
+      };
+
+      mutateReleasePlan("/faux/cwd", plan, "release branch");
+    });
+    it("disallows minor bump to prerelease with non-zero patch", () => {
+      const plan: ReleasePlan = {
+        changesets: [
+          {
+            id: "rc-minor",
+            releases: [
+              { name: "foo", type: "minor" },
+            ],
+            summary: "foo summary",
+          },
+        ],
+        preState: undefined,
+        releases: [
+          {
+            changesets: ["rc-minor"],
+            oldVersion: "2.1.0",
+            newVersion: "2.2.1-rc.0",
+            name: "foo",
+            type: "minor",
+          },
+        ],
+      };
+
+      expect(() => {
+        mutateReleasePlan("/faux/cwd", plan, "release branch");
+      }).toThrowErrorMatchingInlineSnapshot(`
+        [FailedWithUserMessage: Unable to create a release for the stable branch.
+
+        Our branching model requires that we only release patch changes on a stable branch to avoid version number collisions with main and the other release branches. Problems:
+
+        .changeset/rc-minor.md:
+          - foo: minor
+        ]
+      `);
+    });
   });
 });
