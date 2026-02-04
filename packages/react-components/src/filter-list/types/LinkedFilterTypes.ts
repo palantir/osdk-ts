@@ -32,7 +32,7 @@ import type {
  * State for "has link" filter
  */
 export interface HasLinkFilterState extends BaseFilterState {
-  type: "HAS_LINK";
+  type: "hasLink";
   hasLink: boolean;
 }
 
@@ -43,7 +43,7 @@ export interface HasLinkFilterState extends BaseFilterState {
 export interface LinkedPropertyFilterState<S extends FilterState = FilterState>
   extends BaseFilterState
 {
-  type: "LINKED_PROPERTY";
+  type: "linkedProperty";
   linkedFilterState: S;
 }
 
