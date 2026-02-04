@@ -25,6 +25,7 @@
       "require": "./build/cjs/public/experimental.cjs",
       "default": "./build/browser/public/experimental.js"
     },
+    "./styles.css": "./build/browser/styles.css",
     "./*": {
       "browser": "./build/browser/public/*.js",
       "import": {
@@ -43,7 +44,7 @@
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
     "test": "vitest run",
     "transpileAllDeps": "pnpm --filter @osdk/api --filter @osdk/client --filter @osdk/react run transpileBrowser",
-    "transpileBrowser": "monorepo.tool.transpile -f esm -m normal -t browser",
+    "transpileBrowser": "monorepo.tool.transpile -f esm -m normal -t browser && node scripts/build-css.mjs",
     "transpileCjs": "monorepo.tool.transpile -f cjs -m bundle -t node",
     "transpileEsm": "monorepo.tool.transpile -f esm -m normal -t node",
     "transpileTypes": "monorepo.tool.transpile -f esm -m types -t node",
@@ -75,6 +76,7 @@
     "@types/react-dom": "^18.3.7",
     "eslint-plugin-react-hooks": "^5.2.0",
     "p-defer": "^4.0.1",
+    "postcss-modules": "^6.0.1",
     "react": "^18.3.1",
     "typescript": "~5.5.4"
   },
