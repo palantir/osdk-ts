@@ -135,6 +135,7 @@ export function createSelectState<T = string>(
   options?: {
     isExcluding?: boolean;
     includeNull?: boolean;
+    selectAll?: boolean;
   },
 ): SelectFilterState<T> {
   return {
@@ -142,6 +143,7 @@ export function createSelectState<T = string>(
     selectedValues,
     isExcluding: options?.isExcluding,
     includeNull: options?.includeNull,
+    selectAll: options?.selectAll,
   };
 }
 
