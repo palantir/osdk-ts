@@ -220,7 +220,6 @@ export function OfficeMap({
 
   return (
     <div className="absolute inset-0">
-      {/* @ts-expect-error react-map-gl types not yet compatible with React 19 */}
       <Map
         ref={mapRef}
         mapLib={import("maplibre-gl")}
@@ -243,7 +242,6 @@ export function OfficeMap({
           const isSelected = selectedOffice?.primaryKey_ === office.primaryKey_;
 
           return (
-            // @ts-expect-error react-map-gl types not yet compatible with React 19
             <Marker
               key={office.primaryKey_}
               longitude={longitude}
@@ -323,7 +321,6 @@ export function OfficeMap({
               const isDimmed = filteredLevel && !matchesFilter;
 
               return (
-                // @ts-expect-error react-map-gl types not yet compatible with React 19
                 <Marker
                   key={`${officeId}-${emp.employee.employeeNumber}`}
                   longitude={longitude}
