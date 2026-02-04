@@ -15,23 +15,12 @@
  */
 
 import type {
-  InterfaceDefinedPropertyType,
   InterfacePropertyApiName,
   InterfacePropertyTypeRid,
   InterfaceType,
 } from "@osdk/foundry.ontologies";
-import { fooSpt } from "./spts.js";
-
-const idp: InterfaceDefinedPropertyType = {
-  rid: "ri.interfacePropertyType.main.interfacePropertyType.1",
-  apiName: "fooIdp",
-  displayName: "Foo IDP",
-  description: "A Foo IDP",
-  dataType: {
-    type: "string",
-  },
-  requireImplementation: true,
-};
+import { birthDateIdp, idp } from "./idps.js";
+import { ageSpt, firstNameSpt, fooSpt, lastNameSpt } from "./spts.js";
 
 export const BarInterface: InterfaceType = {
   apiName: "BarInterface",
@@ -141,4 +130,80 @@ export const FooInterface: InterfaceType = {
       required: true,
     },
   },
+};
+
+export const InterfaceWithNamespace: InterfaceType = {
+  apiName: "com.example.namespace.myInterface",
+  description: "Interface for Foo",
+  displayName: "Foo Interface",
+  rid: "ri.interface.main.interface.1",
+  extendsInterfaces: [],
+  properties: {
+    fooSpt: {
+      ...fooSpt,
+      required: true,
+    },
+  },
+  propertiesV2: {
+    "com.example.namespace.firstName": {
+      ...firstNameSpt,
+      type: "interfaceSharedPropertyType",
+      required: true,
+    },
+    "com.example.namespace.lastName": {
+      ...lastNameSpt,
+      type: "interfaceSharedPropertyType",
+      required: true,
+    },
+    "com.example.namespace.age": {
+      ...ageSpt,
+      type: "interfaceSharedPropertyType",
+      required: true,
+    },
+    "myBirthday": {
+      ...birthDateIdp,
+      type: "interfaceDefinedPropertyType",
+    },
+  },
+  links: {},
+  implementedByObjectTypes: [],
+  allProperties: {
+    "com.example.namespace.firstName": {
+      ...firstNameSpt,
+      required: true,
+    },
+    "com.example.namespace.lastName": {
+      ...lastNameSpt,
+      required: true,
+    },
+    "com.example.namespace.age": {
+      ...ageSpt,
+      required: true,
+    },
+  },
+  allPropertiesV2: {
+    "com.example.namespace.firstName": {
+      ...firstNameSpt,
+      rid: firstNameSpt.rid as InterfacePropertyTypeRid,
+      apiName: firstNameSpt.apiName as InterfacePropertyApiName,
+      requireImplementation: true,
+    },
+    "com.example.namespace.lastName": {
+      ...lastNameSpt,
+      rid: lastNameSpt.rid as InterfacePropertyTypeRid,
+      apiName: lastNameSpt.apiName as InterfacePropertyApiName,
+      requireImplementation: true,
+    },
+    "com.example.namespace.age": {
+      ...ageSpt,
+      rid: ageSpt.rid as InterfacePropertyTypeRid,
+      apiName: ageSpt.apiName as InterfacePropertyApiName,
+      requireImplementation: true,
+    },
+    "myBirthday": {
+      ...birthDateIdp,
+    },
+  },
+  allExtendsInterfaces: [],
+  allLinks: {},
 };

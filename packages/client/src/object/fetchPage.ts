@@ -44,6 +44,7 @@ import { addUserAgentAndRequestContextHeaders } from "../util/addUserAgentAndReq
 import { extractObjectOrInterfaceType } from "../util/extractObjectOrInterfaceType.js";
 import { extractRdpDefinition } from "../util/extractRdpDefinition.js";
 import { resolveBaseObjectSetType } from "../util/objectSetUtils.js";
+import { sanitizeInterfacePropertyNames } from "../util/sanitizeInterfacePropertyNames.js";
 
 export function augment<
   Q extends ObjectOrInterfaceDefinition,
@@ -230,9 +231,10 @@ async function fetchInterfacePage<
     );
 
     if (requestBody.selectedSharedPropertyTypes.length > 0) {
-      const remapped = remapPropertyNames(
+      const remapped = await remapPropertyNames(
         interfaceType,
         requestBody.selectedSharedPropertyTypes,
+        client,
       );
       requestBody.selectedSharedPropertyTypes = Array.from(remapped);
     }
@@ -265,8 +267,12 @@ async function fetchInterfacePage<
     client,
     objectSet,
   ))?.apiName ?? interfaceType.apiName;
-  const resolvedInterfaceObjectSet = resolveInterfaceObjectSet(
+  const sanitizedObjectset = await sanitizeInterfacePropertyNames(
+    client,
     objectSet,
+  );
+  const resolvedInterfaceObjectSet = resolveInterfaceObjectSet(
+    sanitizedObjectset,
     extractedInterfaceTypeApiName,
     args,
   );
@@ -466,9 +472,10 @@ async function buildAndRemapRequestBody<
   );
 
   if (requestBody.select != null && requestBody.select.length > 0) {
-    const remapped = remapPropertyNames(
+    const remapped = await remapPropertyNames(
       objectType,
       requestBody.select,
+      client,
     );
     return { ...requestBody, select: remapped };
   }
@@ -477,19 +484,26 @@ async function buildAndRemapRequestBody<
 }
 
 /** @internal */
-export function remapPropertyNames(
+export async function remapPropertyNames(
   objectOrInterface: ObjectOrInterfaceDefinition | undefined,
   propertyNames: readonly string[],
-): readonly string[] {
+  clientCtx: MinimalClient,
+): Promise<readonly string[]> {
   if (objectOrInterface == null) {
     return propertyNames;
   }
 
   if (objectOrInterface.type === "interface") {
+    const fullInterfaceDef = await clientCtx.ontologyProvider
+      .getInterfaceDefinition(objectOrInterface.apiName);
+    const interfaceUnmodifiedProperties = new Set(
+      Object.keys(fullInterfaceDef.properties),
+    );
     const [objApiNamespace] = extractNamespace(objectOrInterface.apiName);
     return propertyNames.map(name => {
       const [fieldApiNamespace, fieldShortName] = extractNamespace(name);
-      return (fieldApiNamespace == null && objApiNamespace != null)
+      return (fieldApiNamespace == null && objApiNamespace != null
+          && !interfaceUnmodifiedProperties.has(fieldShortName))
         ? `${objApiNamespace}.${fieldShortName}`
         : name;
     });
@@ -523,7 +537,7 @@ async function applyFetchArgs<
     ObjectSetArgs.OrderByOptions<any>
   >,
   body: X,
-  _client: MinimalClient,
+  client: MinimalClient,
   objectType: Q,
 ): Promise<X> {
   if (args?.$nextPageToken) {
@@ -545,9 +559,10 @@ async function applyFetchArgs<
     } else {
       const orderByEntries = Object.entries(orderBy);
       const fieldNames = orderByEntries.map(([field]) => field);
-      const remappedFields = remapPropertyNames(
+      const remappedFields = await remapPropertyNames(
         objectType,
         fieldNames,
+        client,
       );
 
       body.orderBy = {
