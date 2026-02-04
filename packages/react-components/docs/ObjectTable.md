@@ -1,10 +1,13 @@
-# ObjectTable Setup Guide
+# ObjectTable
 
-A comprehensive guide for setting up and using the ObjectTable component from `@osdk/react-components`.
+A comprehensive guide for using the ObjectTable component from `@osdk/react-components`.
+
+## Prerequisites
+
+Before using ObjectTable, make sure you have completed the library setup described in the [README](../README.md#installation).
 
 ## Table of Contents
 
-- [Installation](#installation)
 - [Basic Usage](#basic-usage)
 - [Props Reference](#props-reference)
 - [Column Definitions](#column-definitions)
@@ -15,80 +18,7 @@ A comprehensive guide for setting up and using the ObjectTable component from `@
 - [Troubleshooting](#troubleshooting)
 - [Theming](#theming)
 
-## Installation
-
-### 1. Install Dependencies
-
-Install the required OSDK packages:
-
-```bash
-pnpm add @osdk/react-components @osdk/react-components-styles @osdk/react @osdk/client @osdk/api
-```
-
-**Package Breakdown:**
-
-- `@osdk/react-components` - The React components (including ObjectTable)
-- `@osdk/react-components-styles` - Default Blueprint-based styling and CSS tokens
-- `@osdk/react` - OSDK React hooks for data fetching
-- `@osdk/client` - Core OSDK client library
-- `@osdk/api` - OSDK API type definitions
-
-### 2. Install Peer Dependencies
-
-The ObjectTable component requires the following peer dependencies:
-
-```bash
-pnpm add react react-dom classnames
-```
-
-**Peer Dependencies:**
-
-- `react` - React library (version 17, 18, or 19)
-- `react-dom` - React DOM rendering
-- `classnames` - Utility for conditionally joining CSS class names
-
-### 3. Import Styles in Your Application
-
-Import the OSDK styles in your application's main CSS file (e.g., `src/index.css` or `app/globals.css`):
-
-```css
-/* app/index.css or src/index.css */
-@layer osdk.tokens;
-
-/* Import default OSDK tokens (includes Blueprint tokens) */
-@import "@osdk/react-components-styles/index.css" layer(osdk.tokens);
-```
-
-**Why is this needed?**
-The `@osdk/react-components-styles` package provides CSS custom properties (tokens) that define colors, spacing, borders, and other visual styles for all OSDK components. Without importing these styles, the ObjectTable will not have proper styling.
-
-#### Alternative: With Custom Theme Overrides
-
-If you want to customize the default theme, use CSS layers:
-
-```css
-/* app/index.css */
-@layer osdk.tokens, user.theme;
-
-@import "@osdk/react-components-styles/index.css" layer(osdk.tokens);
-
-/* Override styles in a higher layer */
-@layer user.theme {
-  :root {
-    /* Customize primary intent colors */
-    --bp-intent-primary-rest: #2563eb;
-    --bp-intent-primary-hover: #1d4ed8;
-
-    /* Customize OSDK table-specific tokens */
-    --osdk-table-header-bg: #f0f0f0;
-    --osdk-table-border-color: #e0e0e0;
-  }
-}
-```
-
-**Note:** See the [Theming](#theming) section below for more customization options.
-
-### 4. Import the Component
+## Import
 
 ```typescript
 import { ObjectTable } from "@osdk/react-components/experimental";

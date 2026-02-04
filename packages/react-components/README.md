@@ -24,14 +24,18 @@ npm install @osdk/react-components @osdk/react-components-styles @osdk/react @os
 
 ## Setup
 
-Add this to your application layout root as we are using Base UI portals. See https://base-ui.com/react/overview/quick-start#portals
+Add this to your application's entry css file (e.g., `index.css` or `index.scss`):
 
 ```css
 /* index.css */
+@import "@osdk/react-components/styles.css";
+
 .root {
   isolation: isolate;
 }
 ```
+
+The `.root` isolation is required for Base UI portals. See https://base-ui.com/react/overview/quick-start#portals
 
 ## Components
 
