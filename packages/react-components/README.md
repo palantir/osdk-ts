@@ -54,7 +54,7 @@ See `@osdk/react-components-styles` README on how to apply custom themes and sty
 ### Object Table
 
 ```ts
-import { ObjectTable } from "@osdk/react-components";
+import { ObjectTable } from "@osdk/react-components/experimental";
 import { $, Employee } from "@your-osdk-package";
 
 function EmployeeDirectory() {

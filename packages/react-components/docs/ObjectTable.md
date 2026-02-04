@@ -3,6 +3,7 @@
 A comprehensive guide for setting up and using the ObjectTable component from `@osdk/react-components`.
 
 ## Table of Contents
+
 - [Installation](#installation)
 - [Basic Usage](#basic-usage)
 - [Props Reference](#props-reference)
@@ -25,6 +26,7 @@ pnpm add @osdk/react-components @osdk/react-components-styles @osdk/react @osdk/
 ```
 
 **Package Breakdown:**
+
 - `@osdk/react-components` - The React components (including ObjectTable)
 - `@osdk/react-components-styles` - Default Blueprint-based styling and CSS tokens
 - `@osdk/react` - OSDK React hooks for data fetching
@@ -40,6 +42,7 @@ pnpm add react react-dom classnames
 ```
 
 **Peer Dependencies:**
+
 - `react` - React library (version 17, 18, or 19)
 - `react-dom` - React DOM rendering
 - `classnames` - Utility for conditionally joining CSS class names
@@ -88,8 +91,8 @@ If you want to customize the default theme, use CSS layers:
 ### 4. Import the Component
 
 ```typescript
-import { ObjectTable } from "@osdk/react-components";
-import type { ColumnDefinition } from "@osdk/react-components";
+import { ObjectTable } from "@osdk/react-components/experimental";
+import type { ColumnDefinition } from "@osdk/react-components/experimental";
 ```
 
 ## Basic Usage
@@ -99,8 +102,8 @@ import type { ColumnDefinition } from "@osdk/react-components";
 The simplest way to use ObjectTable is with just an object type:
 
 ```typescript
-import { ObjectTable } from "@osdk/react-components";
-import { Office } from "@yourapp/sdk";
+import { ObjectTable } from "@osdk/react-components/experimental";
+import { Office } from "@YourApp/sdk";
 
 function OfficesPage() {
   return (
@@ -120,59 +123,59 @@ Add selection mode to enable row selection:
 ```typescript
 <ObjectTable
   objectType={Office}
-  selectionMode="single"  // or "multiple" or "none" (default)
-/>
+  selectionMode="single" // or "multiple" or "none" (default)
+/>;
 ```
 
 ## Props Reference
 
 ### Core Props
 
-| Prop | Type | Required | Default | Description |
-|------|------|----------|---------|-------------|
-| `objectType` | `Q` | ✅ | - | The OSDK object type to display |
-| `className` | `string` | ❌ | - | CSS class for custom styling |
-| `rowHeight` | `number` | ❌ | `40` | Height of each row in pixels |
+| Prop         | Type     | Required | Default | Description                     |
+| ------------ | -------- | -------- | ------- | ------------------------------- |
+| `objectType` | `Q`      | ✅       | -       | The OSDK object type to display |
+| `className`  | `string` | ❌       | -       | CSS class for custom styling    |
+| `rowHeight`  | `number` | ❌       | `40`    | Height of each row in pixels    |
 
 ### Column Management
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `columnDefinitions` | `Array<ColumnDefinition>` | - | Ordered list of columns. If omitted, shows all properties |
-| `onColumnVisibilityChanged` | `(newStates) => void` | - | Called when column visibility changes |
-| `onColumnsPinnedChanged` | `(newStates) => void` | - | Called when column pinning changes |
-| `onColumnResize` | `(columnId, newWidth) => void` | - | Called when a column is resized |
+| Prop                        | Type                           | Default | Description                                               |
+| --------------------------- | ------------------------------ | ------- | --------------------------------------------------------- |
+| `columnDefinitions`         | `Array<ColumnDefinition>`      | -       | Ordered list of columns. If omitted, shows all properties |
+| `onColumnVisibilityChanged` | `(newStates) => void`          | -       | Called when column visibility changes                     |
+| `onColumnsPinnedChanged`    | `(newStates) => void`          | -       | Called when column pinning changes                        |
+| `onColumnResize`            | `(columnId, newWidth) => void` | -       | Called when a column is resized                           |
 
 ### Filtering
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `filterable` | `boolean` | `true` | Whether users can filter the table |
-| `filter` | `WhereClause<Q>` | - | Current filter (controlled mode) |
-| `onFilterChanged` | `(newWhere) => void` | - | Required when `filter` is provided |
+| Prop              | Type                 | Default | Description                        |
+| ----------------- | -------------------- | ------- | ---------------------------------- |
+| `filterable`      | `boolean`            | `true`  | Whether users can filter the table |
+| `filter`          | `WhereClause<Q>`     | -       | Current filter (controlled mode)   |
+| `onFilterChanged` | `(newWhere) => void` | -       | Required when `filter` is provided |
 
 ### Sorting
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `orderable` | `boolean` | `true` | Whether users can sort columns |
-| `defaultOrderBy` | `Array<{property, direction}>` | - | Initial sort order (uncontrolled) |
-| `orderBy` | `Array<{property, direction}>` | - | Current sort order (controlled) |
-| `onOrderByChanged` | `(newOrderBy) => void` | - | Required when `orderBy` is provided |
+| Prop               | Type                           | Default | Description                         |
+| ------------------ | ------------------------------ | ------- | ----------------------------------- |
+| `orderable`        | `boolean`                      | `true`  | Whether users can sort columns      |
+| `defaultOrderBy`   | `Array<{property, direction}>` | -       | Initial sort order (uncontrolled)   |
+| `orderBy`          | `Array<{property, direction}>` | -       | Current sort order (controlled)     |
+| `onOrderByChanged` | `(newOrderBy) => void`         | -       | Required when `orderBy` is provided |
 
 ### Row Selection
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `selectionMode` | `"single" \| "multiple" \| "none"` | `"none"` | Selection mode. "multiple" shows checkboxes |
-| `selectedRows` | `PrimaryKeyType<Q>[]` | - | Selected rows (controlled mode) |
-| `onRowSelection` | `(selectedRowIds) => void` | - | Required when `selectedRows` is provided |
+| Prop             | Type                               | Default  | Description                                 |
+| ---------------- | ---------------------------------- | -------- | ------------------------------------------- |
+| `selectionMode`  | `"single" \| "multiple" \| "none"` | `"none"` | Selection mode. "multiple" shows checkboxes |
+| `selectedRows`   | `PrimaryKeyType<Q>[]`              | -        | Selected rows (controlled mode)             |
+| `onRowSelection` | `(selectedRowIds) => void`         | -        | Required when `selectedRows` is provided    |
 
 ### Interactions
 
-| Prop | Type | Description |
-|------|------|-------------|
-| `onRowClick` | `(object) => void` | Called when a row is clicked |
+| Prop                    | Type                            | Description                                  |
+| ----------------------- | ------------------------------- | -------------------------------------------- |
+| `onRowClick`            | `(object) => void`              | Called when a row is clicked                 |
 | `renderCellContextMenu` | `(row, cellValue) => ReactNode` | Custom context menu for right-click on cells |
 
 ## Column Definitions
@@ -182,22 +185,23 @@ Add selection mode to enable row selection:
 ```typescript
 type ColumnDefinition<Q, RDPs, FunctionColumns> = {
   locator: ColumnDefinitionLocator<Q, RDPs, FunctionColumns>;
-  isVisible?: boolean;           // default: true
-  pinned?: "left" | "right" | "none";  // default: "none"
-  width?: number;                // Fixed width in pixels
-  minWidth?: number;             // Minimum width
-  maxWidth?: number;             // Maximum width
-  resizable?: boolean;           // Allow column resizing
-  orderable?: boolean;           // Allow column sorting
-  filterable?: boolean;          // Allow column filtering
-  renderCell?: (object, locator) => React.ReactNode;    // Custom cell renderer
-  renderHeader?: () => React.ReactNode;                  // Custom header renderer
+  isVisible?: boolean; // default: true
+  pinned?: "left" | "right" | "none"; // default: "none"
+  width?: number; // Fixed width in pixels
+  minWidth?: number; // Minimum width
+  maxWidth?: number; // Maximum width
+  resizable?: boolean; // Allow column resizing
+  orderable?: boolean; // Allow column sorting
+  filterable?: boolean; // Allow column filtering
+  renderCell?: (object, locator) => React.ReactNode; // Custom cell renderer
+  renderHeader?: () => React.ReactNode; // Custom header renderer
 };
 ```
 
 ### Column Locator Types
 
 #### 1. Property Column
+
 Displays a property from the object type:
 
 ```typescript
@@ -208,6 +212,7 @@ Displays a property from the object type:
 ```
 
 #### 2. Derived Property (RDP) Column
+
 Displays a computed property:
 
 ```typescript
@@ -219,6 +224,7 @@ Displays a computed property:
 ```
 
 #### 3. Function Column
+
 Displays custom computed values:
 
 ```typescript
@@ -233,8 +239,11 @@ Displays custom computed values:
 ### Example 1: Basic Table with Custom Columns
 
 ```typescript
-import { ObjectTable, type ColumnDefinition } from "@osdk/react-components";
-import { Employee } from "@yourapp/sdk";
+import {
+  type ColumnDefinition,
+  ObjectTable,
+} from "@osdk/react-components/experimental";
+import { Employee } from "@YourApp/sdk";
 
 function EmployeesTable() {
   const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
@@ -267,8 +276,8 @@ function EmployeesTable() {
 ### Example 2: Table with Multiple Selection
 
 ```typescript
-import { ObjectTable } from "@osdk/react-components";
-import { Employee } from "@yourapp/sdk";
+import { ObjectTable } from "@osdk/react-components/experimental";
+import { Employee } from "@YourApp/sdk";
 
 function EmployeesTable() {
   return (
@@ -283,8 +292,8 @@ function EmployeesTable() {
 ### Example 3: Table with Default Sorting
 
 ```typescript
-import { ObjectTable } from "@osdk/react-components";
-import { Employee } from "@yourapp/sdk";
+import { ObjectTable } from "@osdk/react-components/experimental";
+import { Employee } from "@YourApp/sdk";
 
 function EmployeesTable() {
   return (
@@ -302,8 +311,11 @@ function EmployeesTable() {
 ### Example 4: Custom Cell Rendering
 
 ```typescript
-import { ObjectTable, type ColumnDefinition } from "@osdk/react-components";
-import { Employee } from "@yourapp/sdk";
+import {
+  type ColumnDefinition,
+  ObjectTable,
+} from "@osdk/react-components/experimental";
+import { Employee } from "@YourApp/sdk";
 
 function EmployeesTable() {
   const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
@@ -336,8 +348,11 @@ function EmployeesTable() {
 ### Example 5: Custom Header Rendering
 
 ```typescript
-import { ObjectTable, type ColumnDefinition } from "@osdk/react-components";
-import { Employee } from "@yourapp/sdk";
+import {
+  type ColumnDefinition,
+  ObjectTable,
+} from "@osdk/react-components/experimental";
+import { Employee } from "@YourApp/sdk";
 
 function EmployeesTable() {
   const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
@@ -375,7 +390,7 @@ const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
   },
   {
     locator: { type: "property", id: "jobTitle" },
-    isVisible: false,  // Hidden by default
+    isVisible: false, // Hidden by default
   },
 ];
 ```
@@ -383,17 +398,19 @@ const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
 ### Example 7: Context Menu on Cell Right-Click
 
 ```typescript
-import { ObjectTable } from "@osdk/react-components";
-import { Employee } from "@yourapp/sdk";
+import { ObjectTable } from "@osdk/react-components/experimental";
+import { Employee } from "@YourApp/sdk";
 
 function EmployeesTable() {
   const renderCellContextMenu = (employee: Employee, cellValue: unknown) => (
-    <div style={{
-      background: "white",
-      border: "1px solid #ccc",
-      borderRadius: "4px",
-      padding: "8px"
-    }}>
+    <div
+      style={{
+        background: "white",
+        border: "1px solid #ccc",
+        borderRadius: "4px",
+        padding: "8px",
+      }}
+    >
       <div onClick={() => console.log("View", employee.fullName)}>
         View Details
       </div>
@@ -418,8 +435,8 @@ function EmployeesTable() {
 ### Example 8: Row Click Handler
 
 ```typescript
-import { ObjectTable } from "@osdk/react-components";
-import { Employee } from "@yourapp/sdk";
+import { ObjectTable } from "@osdk/react-components/experimental";
+import { Employee } from "@YourApp/sdk";
 import { useRouter } from "next/router";
 
 function EmployeesTable() {
@@ -441,9 +458,12 @@ function EmployeesTable() {
 ### Example 9: Derived Property (RDP) Column
 
 ```typescript
-import { ObjectTable, type ColumnDefinition } from "@osdk/react-components";
-import { Employee } from "@yourapp/sdk";
 import { DerivedProperty } from "@osdk/client";
+import {
+  type ColumnDefinition,
+  ObjectTable,
+} from "@osdk/react-components/experimental";
+import { Employee } from "@YourApp/sdk";
 
 type RDPs = {
   managerName: string | undefined;
@@ -482,16 +502,18 @@ function EmployeesTable() {
 ### Example 10: Controlled Sorting
 
 ```typescript
-import { ObjectTable } from "@osdk/react-components";
-import { Employee } from "@yourapp/sdk";
+import { ObjectTable } from "@osdk/react-components/experimental";
+import { Employee } from "@YourApp/sdk";
 import { useState } from "react";
 
 function EmployeesTable() {
-  const [orderBy, setOrderBy] = useState<Array<{
-    property: keyof Employee;
-    direction: "asc" | "desc";
-  }>>([
-    { property: "fullName", direction: "asc" }
+  const [orderBy, setOrderBy] = useState<
+    Array<{
+      property: keyof Employee;
+      direction: "asc" | "desc";
+    }>
+  >([
+    { property: "fullName", direction: "asc" },
   ]);
 
   return (
@@ -507,8 +529,8 @@ function EmployeesTable() {
 ### Example 11: Controlled Row Selection
 
 ```typescript
-import { ObjectTable } from "@osdk/react-components";
-import { Employee } from "@yourapp/sdk";
+import { ObjectTable } from "@osdk/react-components/experimental";
+import { Employee } from "@YourApp/sdk";
 import { useState } from "react";
 
 function EmployeesTable() {
@@ -533,9 +555,12 @@ function EmployeesTable() {
 This is a real-world example from the OSDK test application:
 
 ```typescript
-import { ObjectTable, type ColumnDefinition } from "@osdk/react-components";
-import { Employee } from "@yourapp/sdk";
 import { DerivedProperty } from "@osdk/client";
+import {
+  type ColumnDefinition,
+  ObjectTable,
+} from "@osdk/react-components/experimental";
+import { Employee } from "@YourApp/sdk";
 
 type RDPs = {
   managerName: string | undefined;
@@ -587,13 +612,15 @@ function EmployeesTable() {
   ];
 
   const renderCellContextMenu = (employee: Employee, cellValue: unknown) => (
-    <div style={{
-      background: "white",
-      border: "1px solid #ddd",
-      borderRadius: "4px",
-      padding: "8px",
-      boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
-    }}>
+    <div
+      style={{
+        background: "white",
+        border: "1px solid #ddd",
+        borderRadius: "4px",
+        padding: "8px",
+        boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+      }}
+    >
       <div
         onClick={() => console.log("View", employee.fullName)}
         style={{ cursor: "pointer", padding: "4px 8px" }}
@@ -634,7 +661,7 @@ Pin columns to the left or right side of the table:
 const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
   {
     locator: { type: "property", id: "fullName" },
-    pinned: "left",  // Stays visible when scrolling horizontally
+    pinned: "left", // Stays visible when scrolling horizontally
   },
   {
     locator: { type: "property", id: "email" },
@@ -666,7 +693,7 @@ Listen to resize events:
   onColumnResize={(columnId, newWidth) => {
     console.log(`Column ${columnId} resized to ${newWidth}px`);
   }}
-/>
+/>;
 ```
 
 ### Disable Filtering or Sorting
@@ -678,7 +705,7 @@ Disable filtering or sorting globally:
   objectType={Employee}
   filterable={false}
   orderable={false}
-/>
+/>;
 ```
 
 Or per column:
@@ -700,13 +727,14 @@ Adjust row height for better readability:
 ```typescript
 <ObjectTable
   objectType={Employee}
-  rowHeight={56}  // Larger rows for more content
-/>
+  rowHeight={56} // Larger rows for more content
+/>;
 ```
 
 ### Loading and Empty States
 
 The ObjectTable automatically handles:
+
 - **Loading state**: Shows skeleton rows while data is loading
 - **Empty state**: Shows appropriate message when no data matches filters
 - **Error state**: Displays error messages if data fetching fails
@@ -724,8 +752,11 @@ The ObjectTable automatically implements infinite scroll pagination. As users sc
 Use TypeScript generics to ensure type safety:
 
 ```typescript
-import { ObjectTable, type ColumnDefinition } from "@osdk/react-components";
-import { Employee } from "@yourapp/sdk";
+import {
+  type ColumnDefinition,
+  ObjectTable,
+} from "@osdk/react-components/experimental";
+import { Employee } from "@YourApp/sdk";
 
 type RDPs = {
   managerName: string | undefined;
@@ -735,10 +766,10 @@ type RDPs = {
 const columnDefinitions: Array<ColumnDefinition<typeof Employee, RDPs>> = [
   // TypeScript will validate property names and types
   {
-    locator: { type: "property", id: "fullName" },  // ✅ Valid
+    locator: { type: "property", id: "fullName" }, // ✅ Valid
   },
   {
-    locator: { type: "property", id: "invalidProp" },  // ❌ Type error
+    locator: { type: "property", id: "invalidProp" }, // ❌ Type error
   },
 ];
 ```
@@ -748,8 +779,8 @@ const columnDefinitions: Array<ColumnDefinition<typeof Employee, RDPs>> = [
 Let TypeScript infer types from your OSDK object type:
 
 ```typescript
-import { Employee } from "@yourapp/sdk";
 import type { PropertyKeys } from "@osdk/client";
+import { Employee } from "@YourApp/sdk";
 
 // PropertyKeys gives you all valid property names
 type EmployeeProps = PropertyKeys<typeof Employee>;
@@ -768,23 +799,28 @@ type EmployeeProps = PropertyKeys<typeof Employee>;
 ## Troubleshooting
 
 ### Table not displaying data
+
 - Ensure your OSDK client is properly configured
 - Check that the object type is imported correctly
 - Verify network requests in browser DevTools
 
 ### Type errors with columnDefinitions
+
 - Ensure you're using the correct type parameters: `ColumnDefinition<typeof YourObjectType, RDPs, FunctionColumns>`
 - Property IDs must exactly match property names from your object type
 
 ### Selection not working
+
 - Ensure `selectionMode` is set to "single" or "multiple"
 - For controlled mode, provide both `selectedRows` and `onRowSelection`
 
 ### Custom rendering not appearing
+
 - Ensure `renderCell` returns valid React elements
 - Check browser console for errors in your render function
 
 ### Table has no styling or looks broken
+
 - Ensure you've imported `@osdk/react-components-styles` in your main CSS file
 - Check that the CSS import is in the correct location (application entry point)
 - Verify the CSS layer syntax is correct: `@layer osdk.tokens;` must come before the import
@@ -797,12 +833,14 @@ The ObjectTable (and all OSDK components) can be themed using CSS custom propert
 ### Understanding Token Scopes
 
 **OSDK Tokens (`--osdk-*`)**
+
 - All tokens used in OSDK components are prefixed with `--osdk-`
 - Any Blueprint token used in OSDK components is mapped to an `--osdk-*` token
 - Override these to theme **OSDK components only**
 - Safe to customize without affecting other Blueprint components in your app
 
 **Blueprint Tokens (`--bp-*`)**
+
 - Core design tokens from Blueprint design system
 - Override these to theme **both Blueprint and OSDK components**
 - Use this for consistent theming across your entire application
@@ -864,7 +902,7 @@ Apply custom styles to specific ObjectTable instances using the `className` prop
 <ObjectTable
   objectType={Employee}
   className="custom-employee-table"
-/>
+/>;
 ```
 
 ```css
@@ -906,7 +944,7 @@ Apply custom styles to specific ObjectTable instances using the `className` prop
   objectType={Employee}
   className="compact-table"
   rowHeight={32}
-/>
+/>;
 ```
 
 #### Custom Brand Colors
@@ -925,12 +963,14 @@ Apply custom styles to specific ObjectTable instances using the `className` prop
 ### Available CSS Variables
 
 For a complete reference of all available CSS tokens for theming, see:
+
 - [@osdk/react-components-styles CSS Variables Documentation](../../react-components-styles/CSS_VARIABLES.md)
 - [@osdk/react-components-styles README](../../react-components-styles/README.md)
 
 ### Accessibility Note
 
 When overriding theme tokens, ensure your custom colors meet accessibility standards:
+
 - **Color contrast ratios** (WCAG AA): 4.5:1 for normal text, 3:1 for large text
 - **Readable text** on all background colors
 - **Clear visual distinction** between interactive states (rest, hover, active, disabled)
