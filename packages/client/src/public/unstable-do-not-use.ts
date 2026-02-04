@@ -15,6 +15,7 @@
  */
 
 export { augment } from "../object/fetchPage.js";
+export { getWireObjectSet, isObjectSet } from "../objectSet/createObjectSet.js";
 
 // THIS IS NOT THE FINAL NAME DO NOT SHIP LIKE THIS
 export type { ActionSignatureFromDef } from "../actions/applyAction.js";

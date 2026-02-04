@@ -33,6 +33,12 @@ import type {
 } from "@osdk/api";
 import { Subscription } from "rxjs";
 import type { ActionSignatureFromDef } from "../../actions/applyAction.js";
+import { additionalContext } from "../../Client.js";
+import {
+  getWireObjectSet,
+  isObjectSet,
+} from "../../objectSet/createObjectSet.js";
+import { extractObjectOrInterfaceType } from "../../util/extractObjectOrInterfaceType.js";
 import type { FunctionPayload } from "../FunctionPayload.js";
 import type { SpecificLinkPayload } from "../LinkPayload.js";
 import type { ListPayload } from "../ListPayload.js";
@@ -138,10 +144,41 @@ export class ObservableClientImpl implements ObservableClient {
     const dependsOn = options.dependsOn?.map(dep =>
       typeof dep === "string" ? dep : dep.apiName
     );
-    const dependsOnObjects = options.dependsOnObjects?.map(obj => ({
-      $apiName: obj.$objectType ?? obj.$apiName,
-      $primaryKey: obj.$primaryKey,
-    }));
+
+    // Partition dependsOnObjects into instances vs ObjectSets
+    type ObjectDependency = { $apiName: string; $primaryKey: string | number };
+    const instances: ObjectDependency[] = [];
+    const objectSetWires: Array<
+      ReturnType<typeof getWireObjectSet>
+    > = [];
+
+    for (const item of options.dependsOnObjects ?? []) {
+      if (isObjectSet(item)) {
+        objectSetWires.push(getWireObjectSet(item));
+      } else {
+        const instance = item as Osdk.Instance<ObjectTypeDefinition>;
+        instances.push({
+          $apiName: instance.$objectType ?? instance.$apiName,
+          $primaryKey: instance.$primaryKey,
+        });
+      }
+    }
+
+    // Start async extraction of ObjectSet types
+    const objectSetTypesPromise = objectSetWires.length > 0
+      ? Promise.all(
+        objectSetWires.map(wire =>
+          extractObjectOrInterfaceType(
+            this.__experimentalStore.client[additionalContext],
+            wire,
+          )
+        ),
+      ).then(types =>
+        types
+          .filter((t): t is NonNullable<typeof t> => t != null)
+          .map(t => t.apiName)
+      )
+      : undefined;
 
     return this.__experimentalStore.functions.observe(
       {
@@ -149,7 +186,8 @@ export class ObservableClientImpl implements ObservableClient {
         queryDef,
         params,
         dependsOn,
-        dependsOnObjects,
+        dependsOnObjects: instances,
+        objectSetTypesPromise,
       },
       subFn as unknown as Observer<FunctionPayload>,
     );
