@@ -17,12 +17,12 @@
 import { describe, expect, it } from "vitest";
 import { getFilterKey } from "../utils/getFilterKey.js";
 import {
-  createCheckboxListState,
   createCustomFilterDef,
   createHasLinkFilterDef,
   createKeywordSearchFilterDef,
   createLinkedPropertyFilterDef,
   createPropertyFilterDef,
+  createSelectState,
 } from "./testUtils.js";
 
 describe("getFilterKey", () => {
@@ -30,7 +30,7 @@ describe("getFilterKey", () => {
     const definition = createPropertyFilterDef(
       "name",
       "CHECKBOX_LIST",
-      createCheckboxListState([]),
+      createSelectState([]),
     );
     expect(getFilterKey(definition)).toBe("name");
   });

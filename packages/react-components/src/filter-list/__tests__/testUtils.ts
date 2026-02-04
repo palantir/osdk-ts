@@ -17,12 +17,12 @@
 import type { ObjectTypeDefinition } from "@osdk/api";
 import type { FilterDefinitionUnion } from "../FilterListApi.js";
 import type {
-  CheckboxListFilterState,
   ContainsTextFilterState,
   DateRangeFilterState,
   FilterComponentType,
   FilterState,
   NumberRangeFilterState,
+  SelectFilterState,
   ToggleFilterState,
 } from "../FilterListItemApi.js";
 
@@ -71,7 +71,7 @@ export function createHasLinkFilterDef(
   return {
     type: "hasLink",
     linkName,
-    filterState: { type: "HAS_LINK", hasLink: false },
+    filterState: { type: "hasLink", hasLink: false },
   } as FilterDefinitionUnion<typeof MockObjectType>;
 }
 
@@ -89,10 +89,10 @@ export function createLinkedPropertyFilterDef(
     linkName,
     linkedPropertyKey,
     linkedFilterComponent: "CHECKBOX_LIST",
-    linkedFilterState: { type: "CHECKBOX_LIST", selectedValues: [] },
+    linkedFilterState: { type: "SELECT", selectedValues: [] },
     filterState: {
-      type: "LINKED_PROPERTY",
-      linkedFilterState: { type: "CHECKBOX_LIST", selectedValues: [] },
+      type: "linkedProperty",
+      linkedFilterState: { type: "SELECT", selectedValues: [] },
     },
   } as FilterDefinitionUnion<typeof MockObjectType>;
 }
@@ -106,7 +106,7 @@ export function createKeywordSearchFilterDef(
   return {
     type: "keywordSearch",
     properties,
-    filterState: { type: "KEYWORD_SEARCH", searchTerm: "", operator: "AND" },
+    filterState: { type: "keywordSearch", searchTerm: "", operator: "AND" },
   } as FilterDefinitionUnion<typeof MockObjectType>;
 }
 
@@ -121,24 +121,29 @@ export function createCustomFilterDef(
     type: "custom",
     key,
     filterComponent: "CUSTOM",
-    filterState: { type: "CUSTOM", customState: {} },
+    filterState: { type: "custom", customState: {} },
     renderInput: () => null,
     toWhereClause: () => ({}),
   } as FilterDefinitionUnion<typeof MockObjectType>;
 }
 
 /**
- * Helper to create a CheckboxListFilterState
+ * Helper to create a SelectFilterState
  */
-export function createCheckboxListState(
-  selectedValues: string[],
-  options?: { isExcluding?: boolean; includeNull?: boolean },
-): CheckboxListFilterState {
+export function createSelectState<T = string>(
+  selectedValues: T[],
+  options?: {
+    isExcluding?: boolean;
+    includeNull?: boolean;
+    selectAll?: boolean;
+  },
+): SelectFilterState<T> {
   return {
-    type: "CHECKBOX_LIST",
+    type: "SELECT",
     selectedValues,
     isExcluding: options?.isExcluding,
     includeNull: options?.includeNull,
+    selectAll: options?.selectAll,
   };
 }
 
