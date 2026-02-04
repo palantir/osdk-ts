@@ -1,5 +1,11 @@
 # @osdk/tool.release
 
+## 0.12.0-rc.3
+
+### Patch Changes
+
+- 31cd835: Revert beta changes
+
 ## 0.12.0-beta.2
 
 ### Minor Changes

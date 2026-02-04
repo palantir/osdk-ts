@@ -1,5 +1,21 @@
 # @osdk/client
 
+## 2.7.0-rc.15
+
+### Patch Changes
+
+- eb3a556: wire totalCount for osdk react hooks
+- 31cd835: Revert beta changes
+- 0dbd0d0: add useOsdkObjects rid querying support
+- Updated dependencies [e462938]
+- Updated dependencies [31cd835]
+  - @osdk/client.unstable@2.7.0-rc.15
+  - @osdk/generator-converters@2.7.0-rc.15
+  - @osdk/shared.client.impl@1.7.0-rc.2
+  - @osdk/shared.net.errors@2.7.0-rc.2
+  - @osdk/shared.net.fetch@1.7.0-rc.2
+  - @osdk/api@2.7.0-rc.15
+
 ## 2.7.0-beta.14
 
 ### Minor Changes

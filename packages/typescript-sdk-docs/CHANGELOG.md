@@ -1,5 +1,11 @@
 # @osdk/typescript-sdk-docs
 
+## 0.6.0-rc.6
+
+### Patch Changes
+
+- 31cd835: Revert beta changes
+
 ## 0.6.0-beta.5
 
 ### Minor Changes

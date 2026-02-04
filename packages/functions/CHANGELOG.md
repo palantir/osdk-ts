@@ -1,5 +1,15 @@
 # @osdk/functions
 
+## 1.5.0-rc.5
+
+### Patch Changes
+
+- 31cd835: Revert beta changes
+- Updated dependencies [eb3a556]
+- Updated dependencies [31cd835]
+- Updated dependencies [0dbd0d0]
+  - @osdk/client@2.7.0-rc.15
+
 ## 1.5.0-beta.4
 
 ### Minor Changes

@@ -1,5 +1,11 @@
 # @osdk/oauth
 
+## 1.7.0-rc.3
+
+### Patch Changes
+
+- 31cd835: Revert beta changes
+
 ## 1.7.0-beta.2
 
 ### Minor Changes

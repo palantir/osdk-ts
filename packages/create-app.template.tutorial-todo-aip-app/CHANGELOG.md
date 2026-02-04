@@ -1,5 +1,11 @@
 # @osdk/create-app.template.tutorial-todo-aip-app
 
+## 2.7.0-rc.15
+
+### Patch Changes
+
+- 31cd835: Revert beta changes
+
 ## 2.7.0-beta.14
 
 ## 2.7.0-beta.13

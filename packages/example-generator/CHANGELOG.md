@@ -1,5 +1,14 @@
 # @osdk/example-generator
 
+## 0.15.0-rc.3
+
+### Patch Changes
+
+- 31cd835: Revert beta changes
+- Updated dependencies [31cd835]
+  - @osdk/create-widget@3.4.0-rc.15
+  - @osdk/create-app@2.7.0-rc.15
+
 ## 0.15.0-beta.2
 
 ### Minor Changes

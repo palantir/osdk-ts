@@ -1,5 +1,16 @@
 # @osdk/cli.cmd.typescript
 
+## 0.31.0-rc.3
+
+### Patch Changes
+
+- 31cd835: Revert beta changes
+- Updated dependencies [1706c79]
+- Updated dependencies [31cd835]
+  - @osdk/generator@2.7.0-rc.15
+  - @osdk/shared.client.impl@1.7.0-rc.2
+  - @osdk/cli.common@0.31.0-rc.3
+
 ## 0.31.0-beta.2
 
 ### Minor Changes

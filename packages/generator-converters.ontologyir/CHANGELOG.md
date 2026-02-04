@@ -1,5 +1,14 @@
 # @osdk/generator-converters.ontologyir
 
+## 2.7.0-rc.15
+
+### Patch Changes
+
+- 31cd835: Revert beta changes
+- Updated dependencies [e462938]
+- Updated dependencies [31cd835]
+  - @osdk/client.unstable@2.7.0-rc.15
+
 ## 2.7.0-beta.14
 
 ### Patch Changes

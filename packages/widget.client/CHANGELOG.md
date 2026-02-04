@@ -1,5 +1,14 @@
 # @osdk/widget.client
 
+## 3.4.0-rc.15
+
+### Patch Changes
+
+- 31cd835: Revert beta changes
+- Updated dependencies [9ac627c]
+- Updated dependencies [31cd835]
+  - @osdk/widget.api@3.4.0-rc.15
+
 ## 3.4.0-beta.14
 
 ### Patch Changes

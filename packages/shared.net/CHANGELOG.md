@@ -1,5 +1,15 @@
 # @osdk/shared.net
 
+## 2.7.0-rc.2
+
+### Patch Changes
+
+- 31cd835: Revert beta changes
+- Updated dependencies [31cd835]
+  - @osdk/shared.client.impl@1.7.0-rc.2
+  - @osdk/shared.net.errors@2.7.0-rc.2
+  - @osdk/shared.net.fetch@1.7.0-rc.2
+
 ## 2.6.0
 
 ### Patch Changes

@@ -1,5 +1,15 @@
 # @osdk/shared.test
 
+## 0.5.0-rc.5
+
+### Patch Changes
+
+- 31cd835: Revert beta changes
+- 0dbd0d0: add useOsdkObjects rid querying support
+- Updated dependencies [31cd835]
+  - @osdk/generator-converters@2.7.0-rc.15
+  - @osdk/api@2.7.0-rc.15
+
 ## 0.5.0-beta.4
 
 ### Minor Changes
