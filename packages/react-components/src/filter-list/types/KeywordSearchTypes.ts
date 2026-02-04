@@ -27,7 +27,7 @@ export type StringPropertyKeys<Q extends ObjectTypeDefinition> =
  * State for keyword search filter
  */
 export interface KeywordSearchFilterState extends BaseFilterState {
-  type: "KEYWORD_SEARCH";
+  type: "keywordSearch";
   searchTerm: string;
   /**
    * How multiple terms are combined
@@ -35,10 +35,6 @@ export interface KeywordSearchFilterState extends BaseFilterState {
    * - "OR": Any term must match
    */
   operator: "AND" | "OR";
-  /**
-   * Terms to exclude from results
-   */
-  notTerms?: string[];
 }
 
 /**

@@ -33,11 +33,7 @@ export function filterHasActiveState(state: FilterState | undefined): boolean {
   if (!state) return false;
 
   switch (state.type) {
-    case "CHECKBOX_LIST":
-      return state.selectedValues.length > 0;
-    case "SINGLE_SELECT":
-      return state.selectedValue !== undefined;
-    case "MULTI_SELECT":
+    case "SELECT":
       return state.selectedValues.length > 0;
     case "EXACT_MATCH":
       return state.values.length > 0;
@@ -49,21 +45,17 @@ export function filterHasActiveState(state: FilterState | undefined): boolean {
     case "DATE_RANGE":
       return state.minValue !== undefined || state.maxValue !== undefined
         || state.includeNull === true;
-    case "SINGLE_DATE":
-      return state.selectedDate !== undefined;
-    case "MULTI_DATE":
-      return state.selectedDates.length > 0;
     case "TOGGLE":
       return state.enabled;
-    case "HAS_LINK":
+    case "hasLink":
       return state.hasLink;
-    case "LINKED_PROPERTY":
+    case "linkedProperty":
       return filterHasActiveState(state.linkedFilterState);
-    case "KEYWORD_SEARCH":
+    case "keywordSearch":
       return state.searchTerm !== undefined && state.searchTerm !== "";
     case "TIMELINE":
       return state.startDate !== undefined || state.endDate !== undefined;
-    case "CUSTOM":
+    case "custom":
       return true;
     default:
       return false;

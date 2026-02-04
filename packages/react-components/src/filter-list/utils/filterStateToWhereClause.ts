@@ -25,17 +25,6 @@ function filterStateToPropertyFilter(
   state: FilterState,
 ): PropertyFilter | undefined {
   switch (state.type) {
-    case "CHECKBOX_LIST": {
-      if (state.selectedValues.length === 0) {
-        return undefined;
-      }
-      const filter = { $in: state.selectedValues };
-      if (state.isExcluding) {
-        return { $not: filter };
-      }
-      return filter;
-    }
-
     case "CONTAINS_TEXT": {
       if (!state.value) {
         return undefined;
@@ -126,41 +115,19 @@ function filterStateToPropertyFilter(
       return filter;
     }
 
-    case "SINGLE_SELECT": {
-      if (state.selectedValue === undefined) {
-        return undefined;
-      }
-      if (state.isExcluding) {
-        return { $not: state.selectedValue };
-      }
-      return state.selectedValue;
-    }
-
-    case "MULTI_SELECT": {
+    case "SELECT": {
       if (state.selectedValues.length === 0) {
         return undefined;
       }
-      const filter = state.selectedValues.length === 1
-        ? state.selectedValues[0]
-        : { $in: state.selectedValues };
+      const isDateValue = state.selectedValues[0] instanceof Date;
+      const values: (string | number | boolean)[] = isDateValue
+        ? state.selectedValues.map((v) => (v as Date).toISOString())
+        : state.selectedValues as (string | number | boolean)[];
+      const filter = values.length === 1 ? values[0] : { $in: values };
       if (state.isExcluding) {
         return { $not: filter };
       }
       return filter;
-    }
-
-    case "SINGLE_DATE": {
-      if (state.selectedDate === undefined) {
-        return undefined;
-      }
-      return state.selectedDate.toISOString();
-    }
-
-    case "MULTI_DATE": {
-      if (state.selectedDates.length === 0) {
-        return undefined;
-      }
-      return { $in: state.selectedDates.map((d) => d.toISOString()) };
     }
 
     case "TIMELINE": {
@@ -182,10 +149,10 @@ function filterStateToPropertyFilter(
 
     // These filter types are handled separately in buildWhereClause
     // since they need access to the full definition, not just state
-    case "HAS_LINK":
-    case "LINKED_PROPERTY":
-    case "KEYWORD_SEARCH":
-    case "CUSTOM":
+    case "hasLink":
+    case "linkedProperty":
+    case "keywordSearch":
+    case "custom":
       return undefined;
 
     default:
@@ -234,11 +201,11 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
       }
 
       case "hasLink": {
-        if (state.type !== "HAS_LINK") {
+        if (state.type !== "hasLink") {
           if (process.env.NODE_ENV !== "production") {
             // eslint-disable-next-line no-console
             console.warn(
-              `[FilterList] State type mismatch for hasLink filter "${definition.linkName}": expected HAS_LINK, got ${state.type}`,
+              `[FilterList] State type mismatch for hasLink filter "${definition.linkName}": expected hasLink, got ${state.type}`,
             );
           }
           break;
@@ -262,11 +229,11 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
       }
 
       case "keywordSearch": {
-        if (state.type !== "KEYWORD_SEARCH") {
+        if (state.type !== "keywordSearch") {
           if (process.env.NODE_ENV !== "production") {
             // eslint-disable-next-line no-console
             console.warn(
-              `[FilterList] State type mismatch for keywordSearch filter: expected KEYWORD_SEARCH, got ${state.type}`,
+              `[FilterList] State type mismatch for keywordSearch filter: expected keywordSearch, got ${state.type}`,
             );
           }
           break;
@@ -309,8 +276,14 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
           break;
         }
 
+        const containsOp = state.operator === "AND"
+          ? "$containsAllTerms"
+          : "$containsAnyTerm";
+
         const propertySearches = propertiesToSearch.map((prop) => ({
-          [prop]: { $containsAnyTerm: searchTerm },
+          [prop]: state.isExcluding
+            ? { $not: { [containsOp]: searchTerm } }
+            : { [containsOp]: searchTerm },
         }));
 
         if (propertySearches.length === 1) {
@@ -322,11 +295,11 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
       }
 
       case "custom": {
-        if (state.type !== "CUSTOM") {
+        if (state.type !== "custom") {
           if (process.env.NODE_ENV !== "production") {
             // eslint-disable-next-line no-console
             console.warn(
-              `[FilterList] State type mismatch for custom filter "${definition.key}": expected CUSTOM, got ${state.type}`,
+              `[FilterList] State type mismatch for custom filter "${definition.key}": expected custom, got ${state.type}`,
             );
           }
           break;

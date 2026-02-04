@@ -24,7 +24,7 @@ import type { BaseFilterState } from "../FilterListItemApi.js";
 export interface CustomFilterState<T = Record<string, unknown>>
   extends BaseFilterState
 {
-  type: "CUSTOM";
+  type: "custom";
   customState: T;
 }
 
