@@ -20,7 +20,6 @@ import type { FilterState } from "../FilterListItemApi.js";
 import { buildWhereClause } from "../utils/filterStateToWhereClause.js";
 import type { MockObjectType } from "./testUtils.js";
 import {
-  createCheckboxListState,
   createContainsTextState,
   createCustomFilterDef,
   createDateRangeState,
@@ -28,6 +27,7 @@ import {
   createKeywordSearchFilterDef,
   createNumberRangeState,
   createPropertyFilterDef,
+  createSelectState,
   createToggleState,
 } from "./testUtils.js";
 
@@ -47,10 +47,10 @@ describe("buildWhereClause", () => {
     const def = createPropertyFilterDef(
       "name",
       "CHECKBOX_LIST",
-      createCheckboxListState(["a", "b"]),
+      createSelectState(["a", "b"]),
     );
     const filterStates = new Map<TestFilterDef, FilterState>([
-      [def, createCheckboxListState(["a", "b"])],
+      [def, createSelectState(["a", "b"])],
     ]);
     const result = buildWhereClause([def], filterStates, "and");
     expect(result).toEqual({ name: { $in: ["a", "b"] } });
@@ -60,13 +60,13 @@ describe("buildWhereClause", () => {
     const def = createPropertyFilterDef(
       "name",
       "CHECKBOX_LIST",
-      createCheckboxListState(["a"], { isExcluding: true }),
+      createSelectState(["a"], { isExcluding: true }),
     );
     const filterStates = new Map<TestFilterDef, FilterState>([
-      [def, createCheckboxListState(["a"], { isExcluding: true })],
+      [def, createSelectState(["a"], { isExcluding: true })],
     ]);
     const result = buildWhereClause([def], filterStates, "and");
-    expect(result).toEqual({ name: { $not: { $in: ["a"] } } });
+    expect(result).toEqual({ name: { $not: "a" } });
   });
 
   it("builds $containsAnyTerm for CONTAINS_TEXT", () => {
@@ -160,7 +160,7 @@ describe("buildWhereClause", () => {
     const nameDef = createPropertyFilterDef(
       "name",
       "CHECKBOX_LIST",
-      createCheckboxListState(["John"]),
+      createSelectState(["John"]),
     );
     const activeDef = createPropertyFilterDef(
       "active",
@@ -168,12 +168,12 @@ describe("buildWhereClause", () => {
       createToggleState(true),
     );
     const filterStates = new Map<TestFilterDef, FilterState>([
-      [nameDef, createCheckboxListState(["John"])],
+      [nameDef, createSelectState(["John"])],
       [activeDef, createToggleState(true)],
     ]);
     const result = buildWhereClause([nameDef, activeDef], filterStates, "and");
     expect(result).toEqual({
-      $and: [{ name: { $in: ["John"] } }, { active: true }],
+      $and: [{ name: "John" }, { active: true }],
     });
   });
 
@@ -181,7 +181,7 @@ describe("buildWhereClause", () => {
     const nameDef = createPropertyFilterDef(
       "name",
       "CHECKBOX_LIST",
-      createCheckboxListState(["John"]),
+      createSelectState(["John"]),
     );
     const activeDef = createPropertyFilterDef(
       "active",
@@ -189,12 +189,12 @@ describe("buildWhereClause", () => {
       createToggleState(true),
     );
     const filterStates = new Map<TestFilterDef, FilterState>([
-      [nameDef, createCheckboxListState(["John"])],
+      [nameDef, createSelectState(["John"])],
       [activeDef, createToggleState(true)],
     ]);
     const result = buildWhereClause([nameDef, activeDef], filterStates, "or");
     expect(result).toEqual({
-      $or: [{ name: { $in: ["John"] } }, { active: true }],
+      $or: [{ name: "John" }, { active: true }],
     });
   });
 
@@ -202,7 +202,7 @@ describe("buildWhereClause", () => {
     const nameDef = createPropertyFilterDef(
       "name",
       "CHECKBOX_LIST",
-      createCheckboxListState(["John"]),
+      createSelectState(["John"]),
     );
     const activeDef = createPropertyFilterDef(
       "active",
@@ -210,25 +210,34 @@ describe("buildWhereClause", () => {
       createToggleState(false),
     );
     const filterStates = new Map<TestFilterDef, FilterState>([
-      [nameDef, createCheckboxListState(["John"])],
+      [nameDef, createSelectState(["John"])],
     ]);
     const result = buildWhereClause([nameDef, activeDef], filterStates, "and");
-    expect(result).toEqual({ name: { $in: ["John"] } });
+    expect(result).toEqual({ name: "John" });
   });
 
   it("builds $isNotNull for hasLink filter", () => {
     const def = createHasLinkFilterDef("employees");
     const filterStates = new Map<TestFilterDef, FilterState>([
-      [def, { type: "HAS_LINK", hasLink: true }],
+      [def, { type: "hasLink", hasLink: true }],
     ]);
     const result = buildWhereClause([def], filterStates, "and");
     expect(result).toEqual({ employees: { $isNotNull: true } });
   });
 
-  it("builds $containsAnyTerm for keywordSearch filter", () => {
+  it("builds $containsAllTerms for keywordSearch filter with AND operator", () => {
     const def = createKeywordSearchFilterDef(["name"]);
     const filterStates = new Map<TestFilterDef, FilterState>([
-      [def, { type: "KEYWORD_SEARCH", searchTerm: "test", operator: "AND" }],
+      [def, { type: "keywordSearch", searchTerm: "test", operator: "AND" }],
+    ]);
+    const result = buildWhereClause([def], filterStates, "and");
+    expect(result).toEqual({ name: { $containsAllTerms: "test" } });
+  });
+
+  it("builds $containsAnyTerm for keywordSearch filter with OR operator", () => {
+    const def = createKeywordSearchFilterDef(["name"]);
+    const filterStates = new Map<TestFilterDef, FilterState>([
+      [def, { type: "keywordSearch", searchTerm: "test", operator: "OR" }],
     ]);
     const result = buildWhereClause([def], filterStates, "and");
     expect(result).toEqual({ name: { $containsAnyTerm: "test" } });
@@ -237,7 +246,7 @@ describe("buildWhereClause", () => {
   it("builds $or for multi-property keywordSearch filter", () => {
     const def = createKeywordSearchFilterDef(["name", "email"]);
     const filterStates = new Map<TestFilterDef, FilterState>([
-      [def, { type: "KEYWORD_SEARCH", searchTerm: "test", operator: "AND" }],
+      [def, { type: "keywordSearch", searchTerm: "test", operator: "OR" }],
     ]);
     const result = buildWhereClause([def], filterStates, "and");
     expect(result).toEqual({
@@ -248,6 +257,23 @@ describe("buildWhereClause", () => {
     });
   });
 
+  it("builds $not wrapper for keywordSearch filter with isExcluding", () => {
+    const def = createKeywordSearchFilterDef(["name"]);
+    const filterStates = new Map<TestFilterDef, FilterState>([
+      [
+        def,
+        {
+          type: "keywordSearch",
+          searchTerm: "test",
+          operator: "AND",
+          isExcluding: true,
+        },
+      ],
+    ]);
+    const result = buildWhereClause([def], filterStates, "and");
+    expect(result).toEqual({ name: { $not: { $containsAllTerms: "test" } } });
+  });
+
   it("calls toWhereClause for custom filter", () => {
     const baseDef = createCustomFilterDef("myFilter");
     const def = {
@@ -255,7 +281,7 @@ describe("buildWhereClause", () => {
       toWhereClause: () => ({ customProp: { $eq: "test" } }),
     };
     const filterStates = new Map<TestFilterDef, FilterState>([
-      [def, { type: "CUSTOM", customState: { value: "test" } }],
+      [def, { type: "custom", customState: { value: "test" } }],
     ]);
     const result = buildWhereClause([def], filterStates, "and");
     expect(result).toEqual({ customProp: { $eq: "test" } });
@@ -265,7 +291,7 @@ describe("buildWhereClause", () => {
     const nameDef = createPropertyFilterDef(
       "name",
       "CHECKBOX_LIST",
-      createCheckboxListState(["John"]),
+      createSelectState(["John"]),
     );
     const activeDef = createPropertyFilterDef(
       "active",
@@ -273,22 +299,18 @@ describe("buildWhereClause", () => {
       createToggleState(true),
     );
     const filterStates = new Map<TestFilterDef, FilterState>([
-      [nameDef, createCheckboxListState(["John"])],
+      [nameDef, createSelectState(["John"])],
       [activeDef, createToggleState(true)],
     ]);
 
-    // Original order
     const result1 = buildWhereClause([nameDef, activeDef], filterStates, "and");
-
-    // Reordered
     const result2 = buildWhereClause([activeDef, nameDef], filterStates, "and");
 
-    // Both should produce valid clauses (order in $and may differ)
     expect(result1).toEqual({
-      $and: [{ name: { $in: ["John"] } }, { active: true }],
+      $and: [{ name: "John" }, { active: true }],
     });
     expect(result2).toEqual({
-      $and: [{ active: true }, { name: { $in: ["John"] } }],
+      $and: [{ active: true }, { name: "John" }],
     });
   });
 });

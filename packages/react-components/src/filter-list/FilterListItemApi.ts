@@ -86,12 +86,9 @@ export type FilterState =
   | DateRangeFilterState
   | ContainsTextFilterState
   | NumberRangeFilterState
-  | SingleSelectFilterState<string | boolean | number>
-  | MultiSelectFilterState<string | boolean | number>
-  | SingleDateFilterState
-  | MultiDateFilterState
+  | SelectFilterState<string | boolean | number>
+  | SelectFilterState<Date>
   | TimelineFilterState
-  | CheckboxListFilterState
   | ToggleFilterState
   | HasLinkFilterState
   | LinkedPropertyFilterState
@@ -107,12 +104,12 @@ export interface FilterStateByComponentType {
   TEXT_TAGS: ExactMatchFilterState<string>;
   CONTAINS_TEXT: ContainsTextFilterState;
   NUMBER_RANGE: NumberRangeFilterState;
-  SINGLE_SELECT: SingleSelectFilterState<string | boolean | number>;
-  MULTI_SELECT: MultiSelectFilterState<string | boolean | number>;
-  SINGLE_DATE: SingleDateFilterState;
-  MULTI_DATE: MultiDateFilterState;
+  SINGLE_SELECT: SelectFilterState<string | boolean | number>;
+  MULTI_SELECT: SelectFilterState<string | boolean | number>;
+  SINGLE_DATE: SelectFilterState<Date>;
+  MULTI_DATE: SelectFilterState<Date>;
   TIMELINE: TimelineFilterState;
-  CHECKBOX_LIST: CheckboxListFilterState;
+  CHECKBOX_LIST: SelectFilterState<string>;
   TOGGLE: ToggleFilterState;
 }
 
@@ -124,17 +121,13 @@ export type FilterStateType =
   | "DATE_RANGE"
   | "NUMBER_RANGE"
   | "CONTAINS_TEXT"
-  | "SINGLE_SELECT"
-  | "MULTI_SELECT"
-  | "SINGLE_DATE"
-  | "MULTI_DATE"
+  | "SELECT"
   | "TIMELINE"
-  | "CHECKBOX_LIST"
   | "TOGGLE"
-  | "HAS_LINK"
-  | "LINKED_PROPERTY"
-  | "KEYWORD_SEARCH"
-  | "CUSTOM";
+  | "hasLink"
+  | "linkedProperty"
+  | "keywordSearch"
+  | "custom";
 
 /**
  * Base interface for all filter states
@@ -195,28 +188,19 @@ export interface NumberRangeFilterState extends BaseFilterState {
   maxValue?: number;
 }
 
-export interface SingleSelectFilterState<T = string | boolean | number>
+/**
+ * Consolidated state type for select-based filters.
+ * Used by SINGLE_SELECT, MULTI_SELECT, SINGLE_DATE, MULTI_DATE, and CHECKBOX_LIST.
+ */
+export interface SelectFilterState<T = string | boolean | number | Date>
   extends BaseFilterState
 {
-  type: "SINGLE_SELECT";
-  selectedValue?: T;
-}
-
-export interface MultiSelectFilterState<T = string | boolean | number>
-  extends BaseFilterState
-{
-  type: "MULTI_SELECT";
+  type: "SELECT";
   selectedValues: T[];
-}
-
-export interface SingleDateFilterState extends BaseFilterState {
-  type: "SINGLE_DATE";
-  selectedDate?: Date;
-}
-
-export interface MultiDateFilterState extends BaseFilterState {
-  type: "MULTI_DATE";
-  selectedDates: Date[];
+  /**
+   * UI state for checkbox list indicating all options are selected
+   */
+  selectAll?: boolean;
 }
 
 export interface TimelineFilterState extends BaseFilterState {
@@ -224,12 +208,6 @@ export interface TimelineFilterState extends BaseFilterState {
   startDate?: Date;
   endDate?: Date;
   granularity?: "day" | "week" | "month" | "quarter" | "year";
-}
-
-export interface CheckboxListFilterState extends BaseFilterState {
-  type: "CHECKBOX_LIST";
-  selectedValues: string[];
-  selectAll?: boolean;
 }
 
 export interface ToggleFilterState extends BaseFilterState {
