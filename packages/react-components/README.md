@@ -10,15 +10,27 @@ Run the command to install:
 
 - @osdk/react-components - The unstyled components from this package
 - @osdk/react-components-styles - The default styles for the components
-- @osdk/react, @osdk/api, @osdk/client - The packages required for data-handling
 
 ```sh
-npm install @osdk/react-components @osdk/react-components-styles @osdk/react @osdk/client @osdk/api
+npm install @osdk/react-components @osdk/react-components-styles
 ```
+
+**Peer Dependencies:**
+
+The following peer dependencies are required:
+
+```sh
+npm install react react-dom classnames @osdk/react @osdk/client @osdk/api
+```
+
+- `react` and `react-dom` - React 17, 18, or 19
+- `classnames` - Utility for conditionally joining CSS class names
+- `@osdk/react`, `@osdk/api`, `@osdk/client` - The packages required for data-handling
+
+For TypeScript users, also install `@types/react`.
 
 **Prerequisites:**
 
-- React 18
 - A configured OSDK client
 - An OsdkProvider wrapping your application
 
