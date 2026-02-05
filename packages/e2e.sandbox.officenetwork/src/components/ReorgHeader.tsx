@@ -22,7 +22,7 @@ export function ReorgHeader({ currentStep }: ReorgHeaderProps) {
   const currentIndex = steps.findIndex((s) => s.id === currentStep);
 
   return (
-    <div className="px-4 py-3 border-b border-[var(--gotham-border-default)] bg-[var(--gotham-bg-base)]">
+    <div className="px-4 py-3 border-b border-[var(--officenetwork-border-default)] bg-[var(--officenetwork-bg-base)]">
       <div className="flex items-center gap-2">
         {steps.map((step, index) => {
           const isActive = step.id === currentStep;
@@ -34,10 +34,10 @@ export function ReorgHeader({ currentStep }: ReorgHeaderProps) {
                 <div
                   className={`size-6 rounded flex items-center justify-center text-xs font-bold transition-colors ${
                     isActive
-                      ? "bg-[var(--gotham-status-warning)] text-[var(--gotham-bg-base)]"
+                      ? "bg-[var(--officenetwork-status-warning)] text-[var(--officenetwork-bg-base)]"
                       : isCompleted
-                      ? "bg-[var(--gotham-status-ready)] text-[var(--gotham-bg-base)]"
-                      : "bg-[var(--gotham-bg-elevated)] text-[var(--gotham-text-muted)] border border-[var(--gotham-border-default)]"
+                      ? "bg-[var(--officenetwork-status-ready)] text-[var(--officenetwork-bg-base)]"
+                      : "bg-[var(--officenetwork-bg-elevated)] text-[var(--officenetwork-text-muted)] border border-[var(--officenetwork-border-default)]"
                   }`}
                 >
                   {isCompleted
@@ -64,10 +64,10 @@ export function ReorgHeader({ currentStep }: ReorgHeaderProps) {
                 <span
                   className={`text-xs font-medium ${
                     isActive
-                      ? "text-[var(--gotham-status-warning)]"
+                      ? "text-[var(--officenetwork-status-warning)]"
                       : isCompleted
-                      ? "text-[var(--gotham-status-ready)]"
-                      : "text-[var(--gotham-text-muted)]"
+                      ? "text-[var(--officenetwork-status-ready)]"
+                      : "text-[var(--officenetwork-text-muted)]"
                   }`}
                 >
                   {step.label}
@@ -77,8 +77,8 @@ export function ReorgHeader({ currentStep }: ReorgHeaderProps) {
                 <div
                   className={`flex-1 h-px max-w-8 ${
                     index < currentIndex
-                      ? "bg-[var(--gotham-status-ready)]"
-                      : "bg-[var(--gotham-border-default)]"
+                      ? "bg-[var(--officenetwork-status-ready)]"
+                      : "bg-[var(--officenetwork-border-default)]"
                   }`}
                 />
               )}

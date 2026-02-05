@@ -89,9 +89,6 @@ const cspell = {
     "packages/e2e.test.foundry-sdk-generator/src/generatedNoCheck/**/*",
     "packages/create-app.template.*/src/generatedNoCheck/**/*",
     "CHANGELOG.md",
-
-    // Data generator has fake names/places for test data
-    "packages/e2e.sandbox.officenetwork/src/components/DataGenerator.tsx",
   ],
   dictionaryDefinitions: [
     ...getDictionaryDefinitions(),
@@ -218,6 +215,7 @@ const cspell = {
         "nums",
         "carto",
         "emps",
+        "officenetwork",
       ],
     },
   ],

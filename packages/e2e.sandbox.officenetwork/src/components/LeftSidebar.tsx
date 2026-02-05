@@ -29,13 +29,13 @@ function CollapsibleSection(
   const [isOpen, setIsOpen] = React.useState(defaultOpen);
 
   return (
-    <div className="border-b border-[var(--gotham-border-muted)]">
+    <div className="border-b border-[var(--officenetwork-border-muted)]">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center gap-2 px-3 py-2 hover:bg-[var(--gotham-bg-elevated)] transition-colors"
+        className="w-full flex items-center gap-2 px-3 py-2 hover:bg-[var(--officenetwork-bg-elevated)] transition-colors"
       >
         <svg
-          className={`size-3 text-[var(--gotham-text-muted)] transition-transform ${
+          className={`size-3 text-[var(--officenetwork-text-muted)] transition-transform ${
             isOpen ? "rotate-90" : ""
           }`}
           viewBox="0 0 24 24"
@@ -44,9 +44,11 @@ function CollapsibleSection(
         >
           <path d="M8 5l8 7-8 7V5z" />
         </svg>
-        <span className="gotham-section-label flex-1 text-left">{title}</span>
+        <span className="officenetwork-section-label flex-1 text-left">
+          {title}
+        </span>
         {count !== undefined && (
-          <span className="text-[10px] text-[var(--gotham-text-muted)] tabular-nums">
+          <span className="text-[10px] text-[var(--officenetwork-text-muted)] tabular-nums">
             {count}
           </span>
         )}
@@ -87,14 +89,14 @@ export function LeftSidebar({
 
   if (isCollapsed) {
     return (
-      <aside className="w-12 flex flex-col bg-[var(--gotham-bg-surface)] border-r border-[var(--gotham-border-default)]">
+      <aside className="w-12 flex flex-col bg-[var(--officenetwork-bg-surface)] border-r border-[var(--officenetwork-border-default)]">
         <button
           onClick={onToggleCollapse}
-          className="p-3 hover:bg-[var(--gotham-bg-elevated)] transition-colors"
+          className="p-3 hover:bg-[var(--officenetwork-bg-elevated)] transition-colors"
           aria-label="Expand sidebar"
         >
           <svg
-            className="size-5 text-[var(--gotham-text-muted)]"
+            className="size-5 text-[var(--officenetwork-text-muted)]"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
@@ -106,7 +108,7 @@ export function LeftSidebar({
         </button>
         <div className="flex-1 flex flex-col items-center gap-2 py-2">
           <button
-            className="p-2 rounded hover:bg-[var(--gotham-bg-elevated)] text-[var(--gotham-text-muted)] hover:text-[var(--gotham-accent-cyan)]"
+            className="p-2 rounded hover:bg-[var(--officenetwork-bg-elevated)] text-[var(--officenetwork-text-muted)] hover:text-[var(--officenetwork-accent-cyan)]"
             title="Offices"
           >
             <svg
@@ -121,7 +123,7 @@ export function LeftSidebar({
             </svg>
           </button>
           <button
-            className="p-2 rounded hover:bg-[var(--gotham-bg-elevated)] text-[var(--gotham-text-muted)] hover:text-[var(--gotham-accent-cyan)]"
+            className="p-2 rounded hover:bg-[var(--officenetwork-bg-elevated)] text-[var(--officenetwork-text-muted)] hover:text-[var(--officenetwork-accent-cyan)]"
             title="People"
           >
             <svg
@@ -141,13 +143,13 @@ export function LeftSidebar({
   }
 
   return (
-    <aside className="w-60 flex flex-col bg-[var(--gotham-bg-surface)] border-r border-[var(--gotham-border-default)]">
+    <aside className="w-60 flex flex-col bg-[var(--officenetwork-bg-surface)] border-r border-[var(--officenetwork-border-default)]">
       {/* Header */}
-      <div className="flex items-center justify-between px-3 py-2 border-b border-[var(--gotham-border-default)]">
-        <span className="gotham-section-label">Explorer</span>
+      <div className="flex items-center justify-between px-3 py-2 border-b border-[var(--officenetwork-border-default)]">
+        <span className="officenetwork-section-label">Explorer</span>
         <button
           onClick={onToggleCollapse}
-          className="p-1 rounded hover:bg-[var(--gotham-bg-elevated)] text-[var(--gotham-text-muted)]"
+          className="p-1 rounded hover:bg-[var(--officenetwork-bg-elevated)] text-[var(--officenetwork-text-muted)]"
           aria-label="Collapse sidebar"
         >
           <svg
@@ -173,12 +175,12 @@ export function LeftSidebar({
               value={officeFilter}
               onChange={(e) => setOfficeFilter(e.target.value)}
               placeholder="Filter offices..."
-              className="w-full h-6 px-2 text-xs bg-[var(--gotham-bg-elevated)] border border-[var(--gotham-border-muted)] rounded text-[var(--gotham-text-primary)] placeholder:text-[var(--gotham-text-muted)] focus:outline-none focus:border-[var(--gotham-accent-cyan)]"
+              className="w-full h-6 px-2 text-xs bg-[var(--officenetwork-bg-elevated)] border border-[var(--officenetwork-border-muted)] rounded text-[var(--officenetwork-text-primary)] placeholder:text-[var(--officenetwork-text-muted)] focus:outline-none focus:border-[var(--officenetwork-accent-cyan)]"
             />
           </div>
           {isLoadingOffices
             ? (
-              <div className="px-3 py-2 text-xs text-[var(--gotham-text-muted)]">
+              <div className="px-3 py-2 text-xs text-[var(--officenetwork-text-muted)]">
                 Loading...
               </div>
             )
@@ -193,8 +195,8 @@ export function LeftSidebar({
                       onClick={() => onSelectOffice(office)}
                       className={`w-full flex items-center gap-2 px-3 py-1.5 text-left transition-colors ${
                         isSelected
-                          ? "bg-[var(--gotham-accent-cyan)]/10 text-[var(--gotham-accent-cyan)]"
-                          : "text-[var(--gotham-text-secondary)] hover:bg-[var(--gotham-bg-elevated)] hover:text-[var(--gotham-text-primary)]"
+                          ? "bg-[var(--officenetwork-accent-cyan)]/10 text-[var(--officenetwork-accent-cyan)]"
+                          : "text-[var(--officenetwork-text-secondary)] hover:bg-[var(--officenetwork-bg-elevated)] hover:text-[var(--officenetwork-text-primary)]"
                       }`}
                     >
                       <svg
@@ -211,7 +213,7 @@ export function LeftSidebar({
                         {office.name ?? "Unknown"}
                       </span>
                       {office.employeeCount !== undefined && (
-                        <span className="text-[9px] tabular-nums px-1.5 py-0.5 rounded bg-[var(--gotham-bg-elevated)] text-[var(--gotham-text-muted)]">
+                        <span className="text-[9px] tabular-nums px-1.5 py-0.5 rounded bg-[var(--officenetwork-bg-elevated)] text-[var(--officenetwork-text-muted)]">
                           {office.employeeCount}
                         </span>
                       )}
@@ -234,12 +236,12 @@ export function LeftSidebar({
               value={employeeFilter}
               onChange={(e) => setEmployeeFilter(e.target.value)}
               placeholder="Filter people..."
-              className="w-full h-6 px-2 text-xs bg-[var(--gotham-bg-elevated)] border border-[var(--gotham-border-muted)] rounded text-[var(--gotham-text-primary)] placeholder:text-[var(--gotham-text-muted)] focus:outline-none focus:border-[var(--gotham-accent-cyan)]"
+              className="w-full h-6 px-2 text-xs bg-[var(--officenetwork-bg-elevated)] border border-[var(--officenetwork-border-muted)] rounded text-[var(--officenetwork-text-primary)] placeholder:text-[var(--officenetwork-text-muted)] focus:outline-none focus:border-[var(--officenetwork-accent-cyan)]"
             />
           </div>
           {isLoadingEmployees
             ? (
-              <div className="px-3 py-2 text-xs text-[var(--gotham-text-muted)]">
+              <div className="px-3 py-2 text-xs text-[var(--officenetwork-text-muted)]">
                 Loading...
               </div>
             )
@@ -254,11 +256,11 @@ export function LeftSidebar({
                       onClick={() => onSelectEmployee(employee)}
                       className={`w-full flex items-center gap-2 px-3 py-1.5 text-left transition-colors ${
                         isSelected
-                          ? "bg-[var(--gotham-accent-cyan)]/10 text-[var(--gotham-accent-cyan)]"
-                          : "text-[var(--gotham-text-secondary)] hover:bg-[var(--gotham-bg-elevated)] hover:text-[var(--gotham-text-primary)]"
+                          ? "bg-[var(--officenetwork-accent-cyan)]/10 text-[var(--officenetwork-accent-cyan)]"
+                          : "text-[var(--officenetwork-text-secondary)] hover:bg-[var(--officenetwork-bg-elevated)] hover:text-[var(--officenetwork-text-primary)]"
                       }`}
                     >
-                      <span className="size-5 rounded-full bg-[var(--gotham-bg-elevated)] flex items-center justify-center text-[9px] font-medium shrink-0">
+                      <span className="size-5 rounded-full bg-[var(--officenetwork-bg-elevated)] flex items-center justify-center text-[9px] font-medium shrink-0">
                         {employee.fullName?.split(" ").map((n) => n[0]).join("")
                           .slice(0, 2) ?? "?"}
                       </span>
@@ -269,7 +271,7 @@ export function LeftSidebar({
                   );
                 })}
                 {employees.length > 50 && !employeeFilter && (
-                  <div className="px-3 py-1.5 text-[10px] text-[var(--gotham-text-muted)]">
+                  <div className="px-3 py-1.5 text-[10px] text-[var(--officenetwork-text-muted)]">
                     +{employees.length - 50} more (use filter)
                   </div>
                 )}

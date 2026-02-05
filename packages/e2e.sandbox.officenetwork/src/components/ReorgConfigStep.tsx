@@ -58,7 +58,7 @@ export function ReorgConfigStep({
     <div className="p-4 space-y-6">
       {/* Reorg Type */}
       <section>
-        <h3 className="gotham-section-label mb-3">
+        <h3 className="officenetwork-section-label mb-3">
           Reorg Type
         </h3>
         <div className="space-y-2">
@@ -67,8 +67,8 @@ export function ReorgConfigStep({
               key={type.id}
               className={`flex items-start gap-3 p-3 rounded border cursor-pointer transition-colors ${
                 config.reorgType === type.id
-                  ? "border-[var(--gotham-status-warning)]/50 bg-[var(--gotham-status-warning)]/10"
-                  : "border-[var(--gotham-border-default)] hover:bg-[var(--gotham-bg-elevated)]"
+                  ? "border-[var(--officenetwork-status-warning)]/50 bg-[var(--officenetwork-status-warning)]/10"
+                  : "border-[var(--officenetwork-border-default)] hover:bg-[var(--officenetwork-bg-elevated)]"
               }`}
             >
               <input
@@ -77,13 +77,13 @@ export function ReorgConfigStep({
                 value={type.id}
                 checked={config.reorgType === type.id}
                 onChange={() => onUpdateConfig({ reorgType: type.id })}
-                className="mt-0.5 accent-[var(--gotham-status-warning)]"
+                className="mt-0.5 accent-[var(--officenetwork-status-warning)]"
               />
               <div>
-                <div className="text-sm font-medium text-[var(--gotham-text-primary)]">
+                <div className="text-sm font-medium text-[var(--officenetwork-text-primary)]">
                   {type.label}
                 </div>
-                <div className="text-xs text-[var(--gotham-text-muted)] text-pretty">
+                <div className="text-xs text-[var(--officenetwork-text-muted)] text-pretty">
                   {type.description}
                 </div>
               </div>
@@ -94,7 +94,7 @@ export function ReorgConfigStep({
 
       {/* Algorithm */}
       <section>
-        <h3 className="gotham-section-label mb-3">
+        <h3 className="officenetwork-section-label mb-3">
           Algorithm
         </h3>
         <div className="space-y-2">
@@ -103,8 +103,8 @@ export function ReorgConfigStep({
               key={algo.id}
               className={`flex items-start gap-3 p-3 rounded border cursor-pointer transition-colors ${
                 config.algorithm === algo.id
-                  ? "border-[var(--gotham-status-warning)]/50 bg-[var(--gotham-status-warning)]/10"
-                  : "border-[var(--gotham-border-default)] hover:bg-[var(--gotham-bg-elevated)]"
+                  ? "border-[var(--officenetwork-status-warning)]/50 bg-[var(--officenetwork-status-warning)]/10"
+                  : "border-[var(--officenetwork-border-default)] hover:bg-[var(--officenetwork-bg-elevated)]"
               }`}
             >
               <input
@@ -113,13 +113,13 @@ export function ReorgConfigStep({
                 value={algo.id}
                 checked={config.algorithm === algo.id}
                 onChange={() => onUpdateConfig({ algorithm: algo.id })}
-                className="mt-0.5 accent-[var(--gotham-status-warning)]"
+                className="mt-0.5 accent-[var(--officenetwork-status-warning)]"
               />
               <div>
-                <div className="text-sm font-medium text-[var(--gotham-text-primary)]">
+                <div className="text-sm font-medium text-[var(--officenetwork-text-primary)]">
                   {algo.label}
                 </div>
-                <div className="text-xs text-[var(--gotham-text-muted)] text-pretty">
+                <div className="text-xs text-[var(--officenetwork-text-muted)] text-pretty">
                   {algo.description}
                 </div>
               </div>
@@ -131,12 +131,12 @@ export function ReorgConfigStep({
       {/* Swap Offices */}
       {config.algorithm === "swap" && (
         <section>
-          <h3 className="gotham-section-label mb-3">
+          <h3 className="officenetwork-section-label mb-3">
             Swap Offices
           </h3>
           <div className="space-y-2">
             <div>
-              <label className="text-xs text-[var(--gotham-text-secondary)] mb-1 block">
+              <label className="text-xs text-[var(--officenetwork-text-secondary)] mb-1 block">
                 Office A
               </label>
               <select
@@ -148,7 +148,7 @@ export function ReorgConfigStep({
                       config.swapOfficeIds?.[1] ?? "",
                     ],
                   })}
-                className="w-full px-3 py-2 text-sm bg-[var(--gotham-bg-elevated)] border border-[var(--gotham-border-default)] rounded text-[var(--gotham-text-primary)]"
+                className="w-full px-3 py-2 text-sm bg-[var(--officenetwork-bg-elevated)] border border-[var(--officenetwork-border-default)] rounded text-[var(--officenetwork-text-primary)]"
               >
                 <option value="">Select office...</option>
                 {offices.map((office) => (
@@ -159,7 +159,7 @@ export function ReorgConfigStep({
               </select>
             </div>
             <div>
-              <label className="text-xs text-[var(--gotham-text-secondary)] mb-1 block">
+              <label className="text-xs text-[var(--officenetwork-text-secondary)] mb-1 block">
                 Office B
               </label>
               <select
@@ -171,7 +171,7 @@ export function ReorgConfigStep({
                       e.target.value,
                     ],
                   })}
-                className="w-full px-3 py-2 text-sm bg-[var(--gotham-bg-elevated)] border border-[var(--gotham-border-default)] rounded text-[var(--gotham-text-primary)]"
+                className="w-full px-3 py-2 text-sm bg-[var(--officenetwork-bg-elevated)] border border-[var(--officenetwork-border-default)] rounded text-[var(--officenetwork-text-primary)]"
               >
                 <option value="">Select office...</option>
                 {offices.map((office) => (
@@ -188,14 +188,14 @@ export function ReorgConfigStep({
       {/* Consolidate Target */}
       {config.algorithm === "consolidate" && (
         <section>
-          <h3 className="gotham-section-label mb-3">
+          <h3 className="officenetwork-section-label mb-3">
             Target Office
           </h3>
           <select
             value={config.consolidateOfficeId ?? ""}
             onChange={(e) =>
               onUpdateConfig({ consolidateOfficeId: e.target.value })}
-            className="w-full px-3 py-2 text-sm bg-[var(--gotham-bg-elevated)] border border-[var(--gotham-border-default)] rounded text-[var(--gotham-text-primary)]"
+            className="w-full px-3 py-2 text-sm bg-[var(--officenetwork-bg-elevated)] border border-[var(--officenetwork-border-default)] rounded text-[var(--officenetwork-text-primary)]"
           >
             <option value="">Select target office...</option>
             {offices.map((office) => (
@@ -209,7 +209,7 @@ export function ReorgConfigStep({
 
       {/* Constraints */}
       <section>
-        <h3 className="gotham-section-label mb-3">
+        <h3 className="officenetwork-section-label mb-3">
           Constraints
         </h3>
         <div className="space-y-3">
@@ -221,13 +221,13 @@ export function ReorgConfigStep({
                 onUpdateConstraints({
                   keepHeadcountBalanced: e.target.checked,
                 })}
-              className="accent-[var(--gotham-status-warning)]"
+              className="accent-[var(--officenetwork-status-warning)]"
             />
             <div>
-              <div className="text-sm text-[var(--gotham-text-primary)]">
+              <div className="text-sm text-[var(--officenetwork-text-primary)]">
                 Keep headcount balanced
               </div>
-              <div className="text-xs text-[var(--gotham-text-muted)]">
+              <div className="text-xs text-[var(--officenetwork-text-muted)]">
                 Maintain office sizes within tolerance
               </div>
             </div>
@@ -235,7 +235,7 @@ export function ReorgConfigStep({
 
           {config.constraints.keepHeadcountBalanced && (
             <div className="ml-6">
-              <label className="text-xs text-[var(--gotham-text-secondary)] mb-1 block gotham-mono">
+              <label className="text-xs text-[var(--officenetwork-text-secondary)] mb-1 block officenetwork-mono">
                 Tolerance: ±{config.constraints.headcountTolerance}
               </label>
               <input
@@ -247,7 +247,7 @@ export function ReorgConfigStep({
                   onUpdateConstraints({
                     headcountTolerance: Number(e.target.value),
                   })}
-                className="w-full accent-[var(--gotham-status-warning)]"
+                className="w-full accent-[var(--officenetwork-status-warning)]"
               />
             </div>
           )}
@@ -258,13 +258,13 @@ export function ReorgConfigStep({
               checked={config.constraints.keepTeamComposition}
               onChange={(e) =>
                 onUpdateConstraints({ keepTeamComposition: e.target.checked })}
-              className="accent-[var(--gotham-status-warning)]"
+              className="accent-[var(--officenetwork-status-warning)]"
             />
             <div>
-              <div className="text-sm text-[var(--gotham-text-primary)]">
+              <div className="text-sm text-[var(--officenetwork-text-primary)]">
                 Keep team composition
               </div>
-              <div className="text-xs text-[var(--gotham-text-muted)]">
+              <div className="text-xs text-[var(--officenetwork-text-muted)]">
                 Maintain manager/IC ratios
               </div>
             </div>
@@ -279,13 +279,13 @@ export function ReorgConfigStep({
                   onUpdateConstraints({
                     maxMovesPerOffice: e.target.checked ? 50 : null,
                   })}
-                className="accent-[var(--gotham-status-warning)]"
+                className="accent-[var(--officenetwork-status-warning)]"
               />
               <div>
-                <div className="text-sm text-[var(--gotham-text-primary)]">
+                <div className="text-sm text-[var(--officenetwork-text-primary)]">
                   Limit moves per office
                 </div>
-                <div className="text-xs text-[var(--gotham-text-muted)]">
+                <div className="text-xs text-[var(--officenetwork-text-muted)]">
                   Cap churn in any single location
                 </div>
               </div>
@@ -293,7 +293,7 @@ export function ReorgConfigStep({
 
             {config.constraints.maxMovesPerOffice != null && (
               <div className="ml-6 mt-2">
-                <label className="text-xs text-[var(--gotham-text-secondary)] mb-1 block gotham-mono">
+                <label className="text-xs text-[var(--officenetwork-text-secondary)] mb-1 block officenetwork-mono">
                   Max moves: {config.constraints.maxMovesPerOffice}%
                 </label>
                 <input
@@ -306,7 +306,7 @@ export function ReorgConfigStep({
                     onUpdateConstraints({
                       maxMovesPerOffice: Number(e.target.value),
                     })}
-                  className="w-full accent-[var(--gotham-status-warning)]"
+                  className="w-full accent-[var(--officenetwork-status-warning)]"
                 />
               </div>
             )}

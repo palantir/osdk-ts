@@ -63,12 +63,12 @@ export function getLensTitle(mode: LensMode): string {
 }
 
 export const LENS_ACCENT: Record<LensMode, string> = {
-  offices: "var(--gotham-accent-cyan)",
-  employees: "var(--gotham-accent-teal)",
-  network: "var(--gotham-hier-evp)",
-  chain: "var(--gotham-status-warning)",
-  team: "var(--gotham-hier-evp)",
-  reorg: "var(--gotham-status-error)",
+  offices: "var(--officenetwork-accent-cyan)",
+  employees: "var(--officenetwork-accent-teal)",
+  network: "var(--officenetwork-hier-evp)",
+  chain: "var(--officenetwork-status-warning)",
+  team: "var(--officenetwork-hier-evp)",
+  reorg: "var(--officenetwork-status-error)",
 };
 
 export const LENS_PANEL_TITLE: Record<LensMode, string> = {

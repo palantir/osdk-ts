@@ -12,7 +12,7 @@ export function LoadingIndicator(
 
   return (
     <span
-      className={`inline-block ${sizeClasses} rounded-full animate-spin border-2 border-[var(--gotham-accent-cyan)] border-t-transparent`}
+      className={`inline-block ${sizeClasses} rounded-full animate-spin border-2 border-[var(--officenetwork-accent-cyan)] border-t-transparent`}
     />
   );
 }
@@ -28,7 +28,7 @@ export function StatusBadge(
 ) {
   if (error) {
     return (
-      <span className="gotham-badge gotham-badge-error">
+      <span className="officenetwork-badge officenetwork-badge-error">
         Error
       </span>
     );
@@ -36,7 +36,7 @@ export function StatusBadge(
 
   if (isOptimistic) {
     return (
-      <span className="gotham-badge gotham-badge-warning">
+      <span className="officenetwork-badge officenetwork-badge-warning">
         Optimistic
       </span>
     );
@@ -44,7 +44,7 @@ export function StatusBadge(
 
   if (isLoading) {
     return (
-      <span className="gotham-badge gotham-badge-info flex items-center gap-1.5">
+      <span className="officenetwork-badge officenetwork-badge-info flex items-center gap-1.5">
         <LoadingIndicator isLoading size="sm" />
         Loading
       </span>

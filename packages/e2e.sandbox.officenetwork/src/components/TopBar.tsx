@@ -46,7 +46,7 @@ function TabButton({
         relative px-3 py-2 text-xs font-medium transition-colors
         ${
         !isActive
-          ? "text-[var(--gotham-text-secondary)] hover:text-[var(--gotham-text-primary)]"
+          ? "text-[var(--officenetwork-text-secondary)] hover:text-[var(--officenetwork-text-primary)]"
           : ""
       }
       `}
@@ -72,13 +72,13 @@ export function TopBar({
   isLoading,
 }: TopBarProps) {
   return (
-    <header className="h-10 flex items-center justify-between px-3 bg-[var(--gotham-bg-surface)] border-b border-[var(--gotham-border-default)]">
+    <header className="h-10 flex items-center justify-between px-3 bg-[var(--officenetwork-bg-surface)] border-b border-[var(--officenetwork-border-default)]">
       <div className="flex items-center gap-4">
         {/* Logo */}
         <div className="flex items-center gap-2">
-          <div className="size-6 rounded bg-[var(--gotham-accent-cyan)] flex items-center justify-center">
+          <div className="size-6 rounded bg-[var(--officenetwork-accent-cyan)] flex items-center justify-center">
             <svg
-              className="size-4 text-[var(--gotham-bg-base)]"
+              className="size-4 text-[var(--officenetwork-bg-base)]"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
@@ -89,7 +89,7 @@ export function TopBar({
               <path d="M12 2v4m0 12v4M2 12h4m12 0h4" />
             </svg>
           </div>
-          <span className="text-sm font-semibold text-[var(--gotham-text-primary)] tracking-tight">
+          <span className="text-sm font-semibold text-[var(--officenetwork-text-primary)] tracking-tight">
             Office Network
           </span>
         </div>
@@ -98,7 +98,7 @@ export function TopBar({
         <nav className="flex items-center gap-4">
           {/* Lenses */}
           <div className="flex items-center">
-            <span className="text-[10px] font-semibold uppercase tracking-wider text-[var(--gotham-accent-cyan)] bg-[var(--gotham-accent-cyan)]/10 border border-[var(--gotham-accent-cyan)]/30 px-2 py-0.5 rounded mr-2">
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-[var(--officenetwork-accent-cyan)] bg-[var(--officenetwork-accent-cyan)]/10 border border-[var(--officenetwork-accent-cyan)]/30 px-2 py-0.5 rounded mr-2">
               Lenses
             </span>
             <div className="flex items-center">
@@ -107,7 +107,7 @@ export function TopBar({
                   key={tab.id}
                   tab={tab}
                   isActive={lensMode === tab.id}
-                  activeColor="var(--gotham-accent-cyan)"
+                  activeColor="var(--officenetwork-accent-cyan)"
                   onClick={() => onLensModeChange(tab.id)}
                 />
               ))}
@@ -115,11 +115,11 @@ export function TopBar({
           </div>
 
           {/* Divider */}
-          <div className="h-5 w-px bg-[var(--gotham-border-default)]" />
+          <div className="h-5 w-px bg-[var(--officenetwork-border-default)]" />
 
           {/* Workflows */}
           <div className="flex items-center">
-            <span className="text-[10px] font-semibold uppercase tracking-wider text-[var(--gotham-status-warning)] bg-[var(--gotham-status-warning)]/10 border border-[var(--gotham-status-warning)]/30 px-2 py-0.5 rounded mr-2">
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-[var(--officenetwork-status-warning)] bg-[var(--officenetwork-status-warning)]/10 border border-[var(--officenetwork-status-warning)]/30 px-2 py-0.5 rounded mr-2">
               Workflows
             </span>
             <div className="flex items-center">
@@ -128,7 +128,7 @@ export function TopBar({
                   key={tab.id}
                   tab={tab}
                   isActive={lensMode === tab.id}
-                  activeColor="var(--gotham-status-error)"
+                  activeColor="var(--officenetwork-status-error)"
                   onClick={() => onLensModeChange(tab.id)}
                 />
               ))}
@@ -141,7 +141,7 @@ export function TopBar({
         {/* Search */}
         <div className="relative">
           <svg
-            className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-[var(--gotham-text-muted)]"
+            className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-[var(--officenetwork-text-muted)]"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
@@ -156,9 +156,9 @@ export function TopBar({
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder="Search..."
-            className="w-48 h-7 pl-8 pr-3 text-xs bg-[var(--gotham-bg-elevated)] border border-[var(--gotham-border-default)] rounded text-[var(--gotham-text-primary)] placeholder:text-[var(--gotham-text-muted)] focus:outline-none focus:border-[var(--gotham-accent-cyan)]"
+            className="w-48 h-7 pl-8 pr-3 text-xs bg-[var(--officenetwork-bg-elevated)] border border-[var(--officenetwork-border-default)] rounded text-[var(--officenetwork-text-primary)] placeholder:text-[var(--officenetwork-text-muted)] focus:outline-none focus:border-[var(--officenetwork-accent-cyan)]"
           />
-          <kbd className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-[var(--gotham-text-muted)] font-mono">
+          <kbd className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-[var(--officenetwork-text-muted)] font-mono">
             /
           </kbd>
         </div>
@@ -167,7 +167,7 @@ export function TopBar({
         <button
           onClick={onGenerateData}
           disabled={isLoading}
-          className="h-7 px-3 text-xs font-medium bg-[var(--gotham-bg-elevated)] border border-[var(--gotham-border-default)] rounded text-[var(--gotham-text-secondary)] hover:text-[var(--gotham-text-primary)] hover:border-[var(--gotham-text-muted)] transition-colors disabled:opacity-50"
+          className="h-7 px-3 text-xs font-medium bg-[var(--officenetwork-bg-elevated)] border border-[var(--officenetwork-border-default)] rounded text-[var(--officenetwork-text-secondary)] hover:text-[var(--officenetwork-text-primary)] hover:border-[var(--officenetwork-text-muted)] transition-colors disabled:opacity-50"
         >
           {isLoading
             ? (
@@ -202,8 +202,8 @@ export function TopBar({
 
         {/* Status Indicator */}
         <div className="flex items-center gap-1.5">
-          <span className="size-2 rounded-full bg-[var(--gotham-status-ready)]" />
-          <span className="text-[10px] text-[var(--gotham-text-muted)] uppercase tracking-wider">
+          <span className="size-2 rounded-full bg-[var(--officenetwork-status-ready)]" />
+          <span className="text-[10px] text-[var(--officenetwork-text-muted)] uppercase tracking-wider">
             Connected
           </span>
         </div>

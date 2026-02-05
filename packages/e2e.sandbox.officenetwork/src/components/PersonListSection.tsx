@@ -29,9 +29,9 @@ export function PersonListSection({
   const hasCount = displayCount !== undefined;
 
   return (
-    <div className="p-4 border-b border-[var(--gotham-border-default)]">
+    <div className="p-4 border-b border-[var(--officenetwork-border-default)]">
       <div className="flex items-center gap-3 mb-2">
-        <div className="gotham-section-label">{title}</div>
+        <div className="officenetwork-section-label">{title}</div>
         <div
           className="text-lg font-semibold tabular-nums"
           style={{ color: countColor }}
@@ -49,20 +49,20 @@ export function PersonListSection({
                 <button
                   key={person.employeeNumber}
                   onClick={() => onSelectEmployee(person)}
-                  className="w-full flex items-center gap-2 px-2 py-1.5 rounded text-left hover:bg-[var(--gotham-bg-elevated)] transition-colors group"
+                  className="w-full flex items-center gap-2 px-2 py-1.5 rounded text-left hover:bg-[var(--officenetwork-bg-elevated)] transition-colors group"
                 >
                   <div
                     className="size-2 rounded-sm shrink-0"
                     style={{ backgroundColor: HIERARCHY_COLORS[level] }}
                   />
-                  <span className="text-sm text-[var(--gotham-text-secondary)] group-hover:text-[var(--gotham-accent-cyan)] truncate">
+                  <span className="text-sm text-[var(--officenetwork-text-secondary)] group-hover:text-[var(--officenetwork-accent-cyan)] truncate">
                     {person.fullName ?? `#${person.employeeNumber}`}
                   </span>
                 </button>
               );
             })}
             {people.length > maxVisible && (
-              <div className="text-[10px] text-[var(--gotham-text-muted)] px-2 py-1 gotham-mono">
+              <div className="text-[10px] text-[var(--officenetwork-text-muted)] px-2 py-1 officenetwork-mono">
                 +{people.length - maxVisible} more
               </div>
             )}
@@ -70,7 +70,7 @@ export function PersonListSection({
         )
         : !isLoading
         ? (
-          <div className="text-sm text-[var(--gotham-text-muted)]">
+          <div className="text-sm text-[var(--officenetwork-text-muted)]">
             {emptyMessage}
           </div>
         )

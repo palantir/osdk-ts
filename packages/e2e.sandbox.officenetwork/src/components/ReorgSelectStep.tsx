@@ -105,19 +105,19 @@ export function ReorgSelectStep({
   return (
     <div className="flex flex-col h-full">
       {/* Filters */}
-      <div className="p-4 border-b border-[var(--gotham-border-default)] space-y-3">
+      <div className="p-4 border-b border-[var(--officenetwork-border-default)] space-y-3">
         <div className="flex items-center gap-2">
           <input
             type="text"
             placeholder="Search employees..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="flex-1 px-3 py-1.5 text-sm bg-[var(--gotham-bg-elevated)] border border-[var(--gotham-border-default)] rounded text-[var(--gotham-text-primary)] placeholder:text-[var(--gotham-text-muted)]"
+            className="flex-1 px-3 py-1.5 text-sm bg-[var(--officenetwork-bg-elevated)] border border-[var(--officenetwork-border-default)] rounded text-[var(--officenetwork-text-primary)] placeholder:text-[var(--officenetwork-text-muted)]"
           />
           <select
             value={filterOffice}
             onChange={(e) => setFilterOffice(e.target.value)}
-            className="px-3 py-1.5 text-sm bg-[var(--gotham-bg-elevated)] border border-[var(--gotham-border-default)] rounded text-[var(--gotham-text-primary)]"
+            className="px-3 py-1.5 text-sm bg-[var(--officenetwork-bg-elevated)] border border-[var(--officenetwork-border-default)] rounded text-[var(--officenetwork-text-primary)]"
           >
             <option value="">All offices</option>
             {offices.map((office) => (
@@ -131,14 +131,14 @@ export function ReorgSelectStep({
         <div className="flex items-center gap-2 flex-wrap">
           <button
             onClick={handleSelectAll}
-            className="px-2.5 py-1 text-xs font-medium text-[var(--gotham-status-warning)] border border-[var(--gotham-status-warning)]/30 rounded hover:bg-[var(--gotham-status-warning)]/10 transition-colors"
+            className="px-2.5 py-1 text-xs font-medium text-[var(--officenetwork-status-warning)] border border-[var(--officenetwork-status-warning)]/30 rounded hover:bg-[var(--officenetwork-status-warning)]/10 transition-colors"
           >
             Select All ({filteredEmployees.length})
           </button>
           <button
             onClick={onClearSelection}
             disabled={selectedIds.size === 0}
-            className="px-2.5 py-1 text-xs font-medium text-[var(--gotham-text-muted)] border border-[var(--gotham-border-default)] rounded hover:text-[var(--gotham-text-primary)] hover:border-[var(--gotham-text-muted)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-2.5 py-1 text-xs font-medium text-[var(--officenetwork-text-muted)] border border-[var(--officenetwork-border-default)] rounded hover:text-[var(--officenetwork-text-primary)] hover:border-[var(--officenetwork-text-muted)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Clear
           </button>
@@ -146,7 +146,7 @@ export function ReorgSelectStep({
             <button
               key={office.primaryKey_}
               onClick={() => handleSelectByOffice(office.primaryKey_)}
-              className="px-2.5 py-1 text-xs font-medium text-[var(--gotham-text-secondary)] border border-[var(--gotham-border-default)] rounded hover:text-[var(--gotham-text-primary)] hover:border-[var(--gotham-text-muted)] transition-colors"
+              className="px-2.5 py-1 text-xs font-medium text-[var(--officenetwork-text-secondary)] border border-[var(--officenetwork-border-default)] rounded hover:text-[var(--officenetwork-text-primary)] hover:border-[var(--officenetwork-text-muted)] transition-colors"
             >
               + {office.name}
             </button>
@@ -156,7 +156,7 @@ export function ReorgSelectStep({
 
       {/* Employee List */}
       <div className="flex-1 overflow-auto">
-        <div className="divide-y divide-[var(--gotham-border-default)]">
+        <div className="divide-y divide-[var(--officenetwork-border-default)]">
           {filteredEmployees.map((employee) => {
             const isSelected = selectedIds.has(employee.employeeNumber);
             const office = employee.primaryOfficeId
@@ -168,31 +168,31 @@ export function ReorgSelectStep({
                 key={employee.employeeNumber}
                 className={`flex items-center gap-3 px-4 py-2.5 cursor-pointer transition-colors ${
                   isSelected
-                    ? "bg-[var(--gotham-status-warning)]/10"
-                    : "hover:bg-[var(--gotham-bg-elevated)]"
+                    ? "bg-[var(--officenetwork-status-warning)]/10"
+                    : "hover:bg-[var(--officenetwork-bg-elevated)]"
                 }`}
               >
                 <input
                   type="checkbox"
                   checked={isSelected}
                   onChange={() => onToggleEmployee(employee.employeeNumber)}
-                  className="accent-[var(--gotham-status-warning)]"
+                  className="accent-[var(--officenetwork-status-warning)]"
                 />
                 <div className="flex-1 min-w-0">
-                  <div className="text-sm font-medium text-[var(--gotham-text-primary)] truncate">
+                  <div className="text-sm font-medium text-[var(--officenetwork-text-primary)] truncate">
                     {employee.fullName ?? `Employee ${employee.employeeNumber}`}
                   </div>
-                  <div className="text-xs text-[var(--gotham-text-muted)] truncate">
+                  <div className="text-xs text-[var(--officenetwork-text-muted)] truncate">
                     {employee.jobTitle ?? "Unknown role"}
                     {office && (
-                      <span className="ml-2 text-[var(--gotham-accent-cyan)]">
+                      <span className="ml-2 text-[var(--officenetwork-accent-cyan)]">
                         @ {office.name}
                       </span>
                     )}
                   </div>
                 </div>
                 {employee.team && (
-                  <span className="text-xs text-[var(--gotham-text-muted)] bg-[var(--gotham-bg-elevated)] px-2 py-0.5 rounded gotham-mono">
+                  <span className="text-xs text-[var(--officenetwork-text-muted)] bg-[var(--officenetwork-bg-elevated)] px-2 py-0.5 rounded officenetwork-mono">
                     {employee.team}
                   </span>
                 )}
@@ -203,7 +203,7 @@ export function ReorgSelectStep({
 
         {filteredEmployees.length === 0 && (
           <div className="text-center py-8">
-            <p className="text-[var(--gotham-text-muted)] text-sm text-pretty">
+            <p className="text-[var(--officenetwork-text-muted)] text-sm text-pretty">
               No employees match your filters
             </p>
           </div>
@@ -212,9 +212,9 @@ export function ReorgSelectStep({
 
       {/* Selection summary */}
       {selectedIds.size > 0 && (
-        <div className="p-3 border-t border-[var(--gotham-border-default)] bg-[var(--gotham-bg-elevated)]">
-          <div className="text-xs text-[var(--gotham-text-muted)] gotham-mono">
-            <span className="font-semibold text-[var(--gotham-status-warning)] tabular-nums">
+        <div className="p-3 border-t border-[var(--officenetwork-border-default)] bg-[var(--officenetwork-bg-elevated)]">
+          <div className="text-xs text-[var(--officenetwork-text-muted)] officenetwork-mono">
+            <span className="font-semibold text-[var(--officenetwork-status-warning)] tabular-nums">
               {selectedIds.size}
             </span>{" "}
             employees selected across{" "}

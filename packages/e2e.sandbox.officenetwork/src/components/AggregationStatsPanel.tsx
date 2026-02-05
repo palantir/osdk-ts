@@ -77,14 +77,14 @@ export function AggregationStatsPanel() {
   }, [byOffice]);
 
   return (
-    <div className="bg-[var(--gotham-bg-surface)]/95 backdrop-blur border border-[var(--gotham-border-default)] rounded-lg shadow-xl min-w-56">
+    <div className="bg-[var(--officenetwork-bg-surface)]/95 backdrop-blur border border-[var(--officenetwork-border-default)] rounded-lg shadow-xl min-w-56">
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full flex items-center justify-between p-3 hover:bg-[var(--gotham-bg-elevated)]/50 transition-colors"
+        className="w-full flex items-center justify-between p-3 hover:bg-[var(--officenetwork-bg-elevated)]/50 transition-colors"
       >
         <div className="flex items-center gap-2">
           <svg
-            className={`size-3 text-[var(--gotham-text-muted)] transition-transform ${
+            className={`size-3 text-[var(--officenetwork-text-muted)] transition-transform ${
               isExpanded ? "rotate-90" : ""
             }`}
             viewBox="0 0 24 24"
@@ -93,21 +93,21 @@ export function AggregationStatsPanel() {
           >
             <path d="M8 5l8 7-8 7V5z" />
           </svg>
-          <span className="text-[10px] text-[var(--gotham-text-muted)] uppercase tracking-wider font-semibold">
+          <span className="text-[10px] text-[var(--officenetwork-text-muted)] uppercase tracking-wider font-semibold">
             Aggregations
           </span>
         </div>
         <div className="flex items-center gap-2">
           {isLoading && <LoadingIndicator size="sm" />}
           {hasError && (
-            <span className="size-2 rounded-full bg-[var(--gotham-status-error)]" />
+            <span className="size-2 rounded-full bg-[var(--officenetwork-status-error)]" />
           )}
           <button
             onClick={(e) => {
               e.stopPropagation();
               handleRefresh();
             }}
-            className="p-1 rounded hover:bg-[var(--gotham-bg-elevated)] text-[var(--gotham-text-muted)] hover:text-[var(--gotham-accent-cyan)]"
+            className="p-1 rounded hover:bg-[var(--officenetwork-bg-elevated)] text-[var(--officenetwork-text-muted)] hover:text-[var(--officenetwork-accent-cyan)]"
             aria-label="Refresh aggregations"
           >
             <svg
@@ -131,38 +131,38 @@ export function AggregationStatsPanel() {
       {isExpanded && (
         <div className="px-3 pb-3 space-y-3">
           <div className="space-y-1">
-            <div className="text-[9px] text-[var(--gotham-accent-cyan)] uppercase tracking-wider">
+            <div className="text-[9px] text-[var(--officenetwork-accent-cyan)] uppercase tracking-wider">
               Total Count
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-xs text-[var(--gotham-text-muted)]">
+              <span className="text-xs text-[var(--officenetwork-text-muted)]">
                 Employees
               </span>
               {totalLoading
                 ? <LoadingIndicator size="sm" />
                 : totalError
                 ? (
-                  <span className="text-xs text-[var(--gotham-status-error)]">
+                  <span className="text-xs text-[var(--officenetwork-status-error)]">
                     Error
                   </span>
                 )
                 : (
-                  <span className="text-sm font-bold tabular-nums text-[var(--gotham-accent-cyan)]">
+                  <span className="text-sm font-bold tabular-nums text-[var(--officenetwork-accent-cyan)]">
                     {totalCounts?.$count ?? 0}
                   </span>
                 )}
             </div>
           </div>
 
-          <div className="border-t border-[var(--gotham-border-muted)] pt-2 space-y-1">
-            <div className="text-[9px] text-[var(--gotham-status-warning)] uppercase tracking-wider">
+          <div className="border-t border-[var(--officenetwork-border-muted)] pt-2 space-y-1">
+            <div className="text-[9px] text-[var(--officenetwork-status-warning)] uppercase tracking-wider">
               By Department (Top 5)
             </div>
             {deptLoading
               ? <LoadingIndicator size="sm" />
               : deptError
               ? (
-                <span className="text-xs text-[var(--gotham-status-error)]">
+                <span className="text-xs text-[var(--officenetwork-status-error)]">
                   Error
                 </span>
               )
@@ -174,10 +174,10 @@ export function AggregationStatsPanel() {
                       key={item.$group.department ?? `dept-${index}`}
                       className="flex items-center justify-between"
                     >
-                      <span className="text-[10px] text-[var(--gotham-text-secondary)] truncate max-w-32">
+                      <span className="text-[10px] text-[var(--officenetwork-text-secondary)] truncate max-w-32">
                         {item.$group.department}
                       </span>
-                      <span className="text-[10px] font-medium tabular-nums text-[var(--gotham-status-warning)]">
+                      <span className="text-[10px] font-medium tabular-nums text-[var(--officenetwork-status-warning)]">
                         {item.$count}
                       </span>
                     </div>
@@ -185,21 +185,21 @@ export function AggregationStatsPanel() {
                 </div>
               )
               : (
-                <span className="text-[10px] text-[var(--gotham-text-muted)]">
+                <span className="text-[10px] text-[var(--officenetwork-text-muted)]">
                   No data
                 </span>
               )}
           </div>
 
-          <div className="border-t border-[var(--gotham-border-muted)] pt-2 space-y-1">
-            <div className="text-[9px] text-[var(--gotham-status-ready)] uppercase tracking-wider">
+          <div className="border-t border-[var(--officenetwork-border-muted)] pt-2 space-y-1">
+            <div className="text-[9px] text-[var(--officenetwork-status-ready)] uppercase tracking-wider">
               By Office (Top 5)
             </div>
             {officeLoading
               ? <LoadingIndicator size="sm" />
               : officeError
               ? (
-                <span className="text-xs text-[var(--gotham-status-error)]">
+                <span className="text-xs text-[var(--officenetwork-status-error)]">
                   Error
                 </span>
               )
@@ -211,10 +211,10 @@ export function AggregationStatsPanel() {
                       key={item.$group.primaryOfficeId ?? `office-${index}`}
                       className="flex items-center justify-between"
                     >
-                      <span className="text-[10px] text-[var(--gotham-text-secondary)] truncate max-w-32 gotham-mono">
+                      <span className="text-[10px] text-[var(--officenetwork-text-secondary)] truncate max-w-32 officenetwork-mono">
                         {item.$group.primaryOfficeId}
                       </span>
-                      <span className="text-[10px] font-medium tabular-nums text-[var(--gotham-status-ready)]">
+                      <span className="text-[10px] font-medium tabular-nums text-[var(--officenetwork-status-ready)]">
                         {item.$count}
                       </span>
                     </div>
@@ -222,13 +222,13 @@ export function AggregationStatsPanel() {
                 </div>
               )
               : (
-                <span className="text-[10px] text-[var(--gotham-text-muted)]">
+                <span className="text-[10px] text-[var(--officenetwork-text-muted)]">
                   No data
                 </span>
               )}
           </div>
 
-          <div className="pt-1 text-[9px] text-[var(--gotham-text-muted)] gotham-mono">
+          <div className="pt-1 text-[9px] text-[var(--officenetwork-text-muted)] officenetwork-mono">
             useOsdkAggregation()
           </div>
         </div>

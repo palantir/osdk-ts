@@ -120,21 +120,21 @@ export function ReorgWizard({ employees, offices, onClose }: ReorgWizardProps) {
   const canGoBack = state.step !== "configure" && !isExecuting;
 
   return (
-    <div className="h-full flex flex-col bg-[var(--gotham-bg-surface)]">
+    <div className="h-full flex flex-col bg-[var(--officenetwork-bg-surface)]">
       {/* Header */}
-      <div className="p-4 border-b border-[var(--gotham-border-default)] flex items-start justify-between">
+      <div className="p-4 border-b border-[var(--officenetwork-border-default)] flex items-start justify-between">
         <div>
-          <div className="gotham-section-label text-[var(--gotham-status-error)] mb-1">
+          <div className="officenetwork-section-label text-[var(--officenetwork-status-error)] mb-1">
             Reorg Mode
           </div>
-          <h2 className="text-lg font-semibold text-[var(--gotham-text-primary)] text-balance">
+          <h2 className="text-lg font-semibold text-[var(--officenetwork-text-primary)] text-balance">
             Office Reorganization
           </h2>
         </div>
         <button
           onClick={onClose}
           disabled={isExecuting}
-          className="p-1.5 text-[var(--gotham-text-muted)] hover:text-[var(--gotham-text-primary)] hover:bg-[var(--gotham-bg-elevated)] rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="p-1.5 text-[var(--officenetwork-text-muted)] hover:text-[var(--officenetwork-text-primary)] hover:bg-[var(--officenetwork-bg-elevated)] rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           aria-label="Close reorg wizard"
         >
           <svg
@@ -205,18 +205,18 @@ export function ReorgWizard({ employees, offices, onClose }: ReorgWizardProps) {
       </div>
 
       {/* Footer */}
-      <div className="p-4 border-t border-[var(--gotham-border-default)] bg-[var(--gotham-bg-base)]">
+      <div className="p-4 border-t border-[var(--officenetwork-border-default)] bg-[var(--officenetwork-bg-base)]">
         <div className="flex items-center justify-between">
-          <div className="text-xs text-[var(--gotham-text-muted)] gotham-mono tabular-nums">
+          <div className="text-xs text-[var(--officenetwork-text-muted)] officenetwork-mono tabular-nums">
             {selectedCount > 0 && (
               <span>
-                <span className="text-[var(--gotham-status-warning)]">
+                <span className="text-[var(--officenetwork-status-warning)]">
                   {selectedCount}
                 </span>{" "}
                 selected
                 {changesCount > 0 && (
                   <span className="ml-2">
-                    <span className="text-[var(--gotham-status-ready)]">
+                    <span className="text-[var(--officenetwork-status-ready)]">
                       {changesCount}
                     </span>{" "}
                     changes
@@ -229,7 +229,7 @@ export function ReorgWizard({ employees, offices, onClose }: ReorgWizardProps) {
             {canGoBack && (
               <button
                 onClick={handlePrevStep}
-                className="px-3 py-1.5 text-xs font-medium text-[var(--gotham-text-secondary)] hover:text-[var(--gotham-text-primary)] border border-[var(--gotham-border-default)] rounded transition-colors"
+                className="px-3 py-1.5 text-xs font-medium text-[var(--officenetwork-text-secondary)] hover:text-[var(--officenetwork-text-primary)] border border-[var(--officenetwork-border-default)] rounded transition-colors"
               >
                 Back
               </button>
@@ -238,7 +238,7 @@ export function ReorgWizard({ employees, offices, onClose }: ReorgWizardProps) {
               <button
                 onClick={handleNextStep}
                 disabled={!canProceed}
-                className="px-4 py-1.5 text-xs font-medium bg-[var(--gotham-status-warning)] text-[var(--gotham-bg-base)] rounded hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-4 py-1.5 text-xs font-medium bg-[var(--officenetwork-status-warning)] text-[var(--officenetwork-bg-base)] rounded hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {state.step === "preview" ? "Execute" : "Next"}
               </button>
@@ -247,7 +247,7 @@ export function ReorgWizard({ employees, offices, onClose }: ReorgWizardProps) {
               && (
                 <button
                   onClick={onClose}
-                  className="px-4 py-1.5 text-xs font-medium bg-[var(--gotham-status-ready)] text-[var(--gotham-bg-base)] rounded hover:opacity-90 transition-opacity"
+                  className="px-4 py-1.5 text-xs font-medium bg-[var(--officenetwork-status-ready)] text-[var(--officenetwork-bg-base)] rounded hover:opacity-90 transition-opacity"
                 >
                   Done
                 </button>

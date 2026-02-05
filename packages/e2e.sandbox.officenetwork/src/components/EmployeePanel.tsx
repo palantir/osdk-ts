@@ -61,7 +61,7 @@ const OrgTreeNodeView = React.memo(
           >
             <button
               onClick={() => onToggleExpand(node.employee.employeeNumber)}
-              className="size-4 flex items-center justify-center text-[10px] text-[var(--gotham-text-muted)] hover:text-[var(--gotham-text-primary)] transition-colors"
+              className="size-4 flex items-center justify-center text-[10px] text-[var(--officenetwork-text-muted)] hover:text-[var(--officenetwork-text-primary)] transition-colors"
               disabled={!hasReports && !node.isLoading}
             >
               {node.isLoading
@@ -84,12 +84,12 @@ const OrgTreeNodeView = React.memo(
             />
             <button
               onClick={() => onSelectEmployee(node.employee)}
-              className="text-[11px] text-[var(--gotham-text-secondary)] hover:text-[var(--gotham-accent-cyan)] truncate transition-colors"
+              className="text-[11px] text-[var(--officenetwork-text-secondary)] hover:text-[var(--officenetwork-accent-cyan)] truncate transition-colors"
             >
               {node.employee.fullName ?? `#${node.employee.employeeNumber}`}
             </button>
             {node.reports.length > 0 && (
-              <span className="text-[9px] text-[var(--gotham-text-muted)] gotham-mono">
+              <span className="text-[9px] text-[var(--officenetwork-text-muted)] officenetwork-mono">
                 ({node.reports.length})
               </span>
             )}
@@ -235,25 +235,25 @@ export function EmployeePanel({
   const hierarchyLevel = getHierarchyLevel(employee.jobTitle);
 
   return (
-    <div className="h-full flex flex-col bg-[var(--gotham-bg-surface)]">
+    <div className="h-full flex flex-col bg-[var(--officenetwork-bg-surface)]">
       {/* Header */}
-      <div className="p-4 border-b border-[var(--gotham-border-default)] flex items-start justify-between">
+      <div className="p-4 border-b border-[var(--officenetwork-border-default)] flex items-start justify-between">
         <div>
           <div
-            className="gotham-section-label mb-1"
+            className="officenetwork-section-label mb-1"
             style={{ color: accentColor }}
           >
             {lensTitle}
           </div>
-          <h2 className="text-lg font-semibold text-[var(--gotham-text-primary)]">
+          <h2 className="text-lg font-semibold text-[var(--officenetwork-text-primary)]">
             {employee.fullName ?? `#${employee.employeeNumber}`}
           </h2>
           <div className="flex items-center gap-2 mt-1">
-            <span className="text-xs text-[var(--gotham-text-muted)]">
+            <span className="text-xs text-[var(--officenetwork-text-muted)]">
               {employee.jobTitle ?? "No title"}
             </span>
             <span
-              className="gotham-badge"
+              className="officenetwork-badge"
               style={{
                 backgroundColor: `${HIERARCHY_COLORS[hierarchyLevel]}20`,
                 color: HIERARCHY_COLORS[hierarchyLevel],
@@ -265,7 +265,7 @@ export function EmployeePanel({
         </div>
         <button
           onClick={onClose}
-          className="p-1.5 text-[var(--gotham-text-muted)] hover:text-[var(--gotham-text-primary)] hover:bg-[var(--gotham-bg-elevated)] rounded transition-colors"
+          className="p-1.5 text-[var(--officenetwork-text-muted)] hover:text-[var(--officenetwork-text-primary)] hover:bg-[var(--officenetwork-bg-elevated)] rounded transition-colors"
           aria-label="Close panel"
         >
           <svg
@@ -287,26 +287,26 @@ export function EmployeePanel({
 
       <div className="flex-1 overflow-auto">
         {/* Works at */}
-        <div className="p-4 border-b border-[var(--gotham-border-default)]">
-          <div className="gotham-section-label mb-1">Works at</div>
+        <div className="p-4 border-b border-[var(--officenetwork-border-default)]">
+          <div className="officenetwork-section-label mb-1">Works at</div>
           {officeLoading
             ? <LoadingIndicator size="sm" />
             : employeeOfficeObj
             ? (
-              <div className="text-sm font-medium text-[var(--gotham-accent-cyan)]">
+              <div className="text-sm font-medium text-[var(--officenetwork-accent-cyan)]">
                 {employeeOfficeObj.name ?? "Unknown Office"}
               </div>
             )
             : (
-              <div className="text-sm text-[var(--gotham-text-muted)]">
+              <div className="text-sm text-[var(--officenetwork-text-muted)]">
                 No office assigned
               </div>
             )}
         </div>
 
         {/* Reports to */}
-        <div className="p-4 border-b border-[var(--gotham-border-default)]">
-          <div className="gotham-section-label mb-1">Reports to</div>
+        <div className="p-4 border-b border-[var(--officenetwork-border-default)]">
+          <div className="officenetwork-section-label mb-1">Reports to</div>
           {managerObj
             ? (
               <div className="flex items-center gap-2">
@@ -319,19 +319,19 @@ export function EmployeePanel({
                 />
                 <button
                   onClick={() => handleSelectAndPan(managerObj)}
-                  className="text-sm font-medium text-[var(--gotham-status-ready)] hover:underline"
+                  className="text-sm font-medium text-[var(--officenetwork-status-ready)] hover:underline"
                 >
                   {managerObj.fullName ?? `#${managerObj.employeeNumber}`}
                 </button>
                 {isCrossOffice && (
-                  <span className="gotham-badge gotham-badge-warning">
+                  <span className="officenetwork-badge officenetwork-badge-warning">
                     {managerOfficeObj?.name ?? "Other office"}
                   </span>
                 )}
               </div>
             )
             : (
-              <div className="text-sm text-[var(--gotham-text-muted)]">
+              <div className="text-sm text-[var(--officenetwork-text-muted)]">
                 No manager (top of org)
               </div>
             )}
@@ -339,8 +339,8 @@ export function EmployeePanel({
 
         {/* Skip-level manager */}
         {(showChain || showFullNetwork) && skipLevelManagerObj && (
-          <div className="p-4 border-b border-[var(--gotham-border-default)]">
-            <div className="gotham-section-label mb-1">Skip-level</div>
+          <div className="p-4 border-b border-[var(--officenetwork-border-default)]">
+            <div className="officenetwork-section-label mb-1">Skip-level</div>
             <div className="flex items-center gap-2">
               <div
                 className="size-2 rounded-sm shrink-0"
@@ -352,13 +352,13 @@ export function EmployeePanel({
               />
               <button
                 onClick={() => onSelectEmployee(skipLevelManagerObj)}
-                className="text-sm font-medium text-[var(--gotham-status-warning)] hover:underline"
+                className="text-sm font-medium text-[var(--officenetwork-status-warning)] hover:underline"
               >
                 {skipLevelManagerObj.fullName
                   ?? `#${skipLevelManagerObj.employeeNumber}`}
               </button>
               {skipLevelOfficeObj && (
-                <span className="text-[10px] text-[var(--gotham-text-muted)] gotham-mono">
+                <span className="text-[10px] text-[var(--officenetwork-text-muted)] officenetwork-mono">
                   @ {skipLevelOfficeObj.name ?? "Unknown"}
                 </span>
               )}
@@ -368,19 +368,21 @@ export function EmployeePanel({
 
         {/* Full Reporting Chain */}
         {showChain && chain.length > 0 && (
-          <div className="p-4 border-b border-[var(--gotham-border-default)]">
+          <div className="p-4 border-b border-[var(--officenetwork-border-default)]">
             <div className="flex items-center justify-between mb-3">
               <div
-                className="gotham-section-label"
-                style={{ color: "var(--gotham-status-warning)" }}
+                className="officenetwork-section-label"
+                style={{ color: "var(--officenetwork-status-warning)" }}
               >
                 Full Reporting Chain
               </div>
-              <div className="flex items-center gap-2 text-[10px] text-[var(--gotham-text-muted)] gotham-mono">
+              <div className="flex items-center gap-2 text-[10px] text-[var(--officenetwork-text-muted)] officenetwork-mono">
                 <span>{chainDepth} lvl{chainDepth !== 1 ? "s" : ""}</span>
                 {chainLoading && <LoadingIndicator size="sm" />}
                 {chainComplete && (
-                  <span className="text-[var(--gotham-status-ready)]">✓</span>
+                  <span className="text-[var(--officenetwork-status-ready)]">
+                    ✓
+                  </span>
                 )}
               </div>
             </div>
@@ -399,25 +401,25 @@ export function EmployeePanel({
                   >
                     <div className="flex flex-col items-center w-4">
                       {!isFirst && (
-                        <div className="w-0.5 h-2 bg-[var(--gotham-border-default)]" />
+                        <div className="w-0.5 h-2 bg-[var(--officenetwork-border-default)]" />
                       )}
                       <div
                         className="size-2.5 rounded-sm shrink-0"
                         style={{ backgroundColor: HIERARCHY_COLORS[level] }}
                       />
                       {!isLast && !node.isLoading && (
-                        <div className="w-0.5 h-2 bg-[var(--gotham-border-default)]" />
+                        <div className="w-0.5 h-2 bg-[var(--officenetwork-border-default)]" />
                       )}
                       {node.isLoading && (
-                        <div className="w-0.5 h-2 animate-pulse bg-[var(--gotham-status-warning)]" />
+                        <div className="w-0.5 h-2 animate-pulse bg-[var(--officenetwork-status-warning)]" />
                       )}
                     </div>
                     <button
                       onClick={() => onSelectEmployee(node.employee)}
-                      className={`text-xs hover:text-[var(--gotham-accent-cyan)] truncate transition-colors ${
+                      className={`text-xs hover:text-[var(--officenetwork-accent-cyan)] truncate transition-colors ${
                         isFirst
-                          ? "font-semibold text-[var(--gotham-text-primary)]"
-                          : "text-[var(--gotham-text-secondary)]"
+                          ? "font-semibold text-[var(--officenetwork-text-primary)]"
+                          : "text-[var(--officenetwork-text-secondary)]"
                       }`}
                     >
                       {isCeo && "👑 "}
@@ -425,7 +427,7 @@ export function EmployeePanel({
                         ?? `#${node.employee.employeeNumber}`}
                     </button>
                     <span
-                      className="text-[9px] gotham-mono shrink-0"
+                      className="text-[9px] officenetwork-mono shrink-0"
                       style={{ color: HIERARCHY_COLORS[level] }}
                     >
                       {HIERARCHY_LABELS[level]}
@@ -434,7 +436,7 @@ export function EmployeePanel({
                 );
               })}
               {chainLoading && (
-                <div className="flex items-center gap-2 text-[10px] text-[var(--gotham-text-muted)]">
+                <div className="flex items-center gap-2 text-[10px] text-[var(--officenetwork-text-muted)]">
                   <div className="w-4" />
                   <LoadingIndicator size="sm" />
                   <span>Loading...</span>
@@ -453,7 +455,7 @@ export function EmployeePanel({
             isLoading={reportsLoading}
             maxVisible={5}
             maxHeight="max-h-32"
-            countColor="var(--gotham-hier-evp)"
+            countColor="var(--officenetwork-hier-evp)"
             emptyMessage="No direct reports"
             onSelectEmployee={onSelectEmployee}
           />
@@ -461,15 +463,15 @@ export function EmployeePanel({
 
         {/* Organization Tree */}
         {showTeam && orgTree && orgTree.reports.length > 0 && (
-          <div className="p-4 border-b border-[var(--gotham-border-default)]">
+          <div className="p-4 border-b border-[var(--officenetwork-border-default)]">
             <div className="flex items-center justify-between mb-3">
               <div
-                className="gotham-section-label"
-                style={{ color: "var(--gotham-hier-evp)" }}
+                className="officenetwork-section-label"
+                style={{ color: "var(--officenetwork-hier-evp)" }}
               >
                 Organization Tree
               </div>
-              <div className="flex items-center gap-2 text-[10px] text-[var(--gotham-text-muted)] gotham-mono">
+              <div className="flex items-center gap-2 text-[10px] text-[var(--officenetwork-text-muted)] officenetwork-mono">
                 <span>{orgTotalCount} total</span>
                 <span>·</span>
                 <span>{orgMaxDepth} lvl{orgMaxDepth !== 1 ? "s" : ""}</span>
@@ -495,7 +497,7 @@ export function EmployeePanel({
             people={peersExcludingSelf}
             isLoading={peersLoading && !!managerObj}
             maxVisible={4}
-            countColor="var(--gotham-hier-evp)"
+            countColor="var(--officenetwork-hier-evp)"
             emptyMessage={managerObj ? "No peers" : "No manager (no peers)"}
             onSelectEmployee={onSelectEmployee}
           />
@@ -508,7 +510,7 @@ export function EmployeePanel({
             people={colleaguesExcludingSelf}
             isLoading={colleaguesLoading && !!employeeOfficeObj}
             maxVisible={4}
-            countColor="var(--gotham-status-ready)"
+            countColor="var(--officenetwork-status-ready)"
             emptyMessage={employeeOfficeObj
               ? "No colleagues"
               : "No office assigned"}
@@ -518,10 +520,10 @@ export function EmployeePanel({
 
         {/* Interface Comparison */}
         {lensMode === "employees" && (
-          <div className="p-4 border-b border-[var(--gotham-border-default)]">
+          <div className="p-4 border-b border-[var(--officenetwork-border-default)]">
             <div
-              className="gotham-section-label mb-3"
-              style={{ color: "var(--gotham-accent-teal)" }}
+              className="officenetwork-section-label mb-3"
+              style={{ color: "var(--officenetwork-accent-teal)" }}
             >
               Interface Comparison
             </div>
@@ -529,61 +531,63 @@ export function EmployeePanel({
               ? <LoadingIndicator size="sm" />
               : (
                 <div className="space-y-2">
-                  <div className="grid grid-cols-4 gap-1 text-[10px] font-medium border-b border-[var(--gotham-border-default)] pb-2">
-                    <span className="text-[var(--gotham-text-muted)] gotham-mono">
+                  <div className="grid grid-cols-4 gap-1 text-[10px] font-medium border-b border-[var(--officenetwork-border-default)] pb-2">
+                    <span className="text-[var(--officenetwork-text-muted)] officenetwork-mono">
                       Property
                     </span>
-                    <span className="text-[var(--gotham-hier-evp)]">
+                    <span className="text-[var(--officenetwork-hier-evp)]">
                       Employee
                     </span>
-                    <span className="text-[var(--gotham-accent-teal)]">
+                    <span className="text-[var(--officenetwork-accent-teal)]">
                       Worker
                     </span>
-                    <span className="text-[var(--gotham-status-ready)]">
+                    <span className="text-[var(--officenetwork-status-ready)]">
                       Person
                     </span>
                   </div>
                   <div className="grid grid-cols-4 gap-1 text-[10px]">
-                    <span className="text-[var(--gotham-text-muted)] gotham-mono">
+                    <span className="text-[var(--officenetwork-text-muted)] officenetwork-mono">
                       name
                     </span>
-                    <span className="text-[var(--gotham-text-secondary)] truncate">
+                    <span className="text-[var(--officenetwork-text-secondary)] truncate">
                       {employee.fullName ?? "—"}
                     </span>
-                    <span className="text-[var(--gotham-accent-teal)] truncate">
+                    <span className="text-[var(--officenetwork-accent-teal)] truncate">
                       {worker?.name ?? "—"}
                     </span>
-                    <span className="text-[var(--gotham-text-muted)]">—</span>
+                    <span className="text-[var(--officenetwork-text-muted)]">
+                      —
+                    </span>
                   </div>
                   <div className="grid grid-cols-4 gap-1 text-[10px]">
-                    <span className="text-[var(--gotham-text-muted)] gotham-mono">
+                    <span className="text-[var(--officenetwork-text-muted)] officenetwork-mono">
                       email
                     </span>
-                    <span className="text-[var(--gotham-text-secondary)] truncate">
+                    <span className="text-[var(--officenetwork-text-secondary)] truncate">
                       {employee.emailPrimaryWork ?? "—"}
                     </span>
-                    <span className="text-[var(--gotham-accent-teal)] truncate">
+                    <span className="text-[var(--officenetwork-accent-teal)] truncate">
                       {worker?.email ?? "—"}
                     </span>
-                    <span className="text-[var(--gotham-status-ready)] truncate">
+                    <span className="text-[var(--officenetwork-status-ready)] truncate">
                       {person?.email ?? "—"}
                     </span>
                   </div>
                   <div className="grid grid-cols-4 gap-1 text-[10px]">
-                    <span className="text-[var(--gotham-text-muted)] gotham-mono">
+                    <span className="text-[var(--officenetwork-text-muted)] officenetwork-mono">
                       empNum
                     </span>
-                    <span className="text-[var(--gotham-text-secondary)]">
+                    <span className="text-[var(--officenetwork-text-secondary)]">
                       {employee.employeeNumber}
                     </span>
-                    <span className="text-[var(--gotham-accent-teal)]">
+                    <span className="text-[var(--officenetwork-accent-teal)]">
                       {worker?.employeeNumber ?? "—"}
                     </span>
-                    <span className="text-[var(--gotham-status-ready)]">
+                    <span className="text-[var(--officenetwork-status-ready)]">
                       {person?.employeeNumber ?? "—"}
                     </span>
                   </div>
-                  <div className="mt-2 text-[9px] text-[var(--gotham-text-muted)] italic">
+                  <div className="mt-2 text-[9px] text-[var(--officenetwork-text-muted)] italic">
                     Same data accessed via 3 different views
                   </div>
                 </div>
@@ -593,8 +597,8 @@ export function EmployeePanel({
       </div>
 
       {/* Footer */}
-      <div className="p-3 border-t border-[var(--gotham-border-default)] bg-[var(--gotham-bg-base)]">
-        <div className="text-[10px] text-[var(--gotham-text-muted)] gotham-mono flex items-center gap-2">
+      <div className="p-3 border-t border-[var(--officenetwork-border-default)] bg-[var(--officenetwork-bg-base)]">
+        <div className="text-[10px] text-[var(--officenetwork-text-muted)] officenetwork-mono flex items-center gap-2">
           <span
             className="size-1.5 rounded-full"
             style={{ backgroundColor: accentColor }}

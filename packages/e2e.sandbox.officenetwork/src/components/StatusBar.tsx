@@ -48,18 +48,18 @@ export function StatusBar({
   });
 
   return (
-    <footer className="h-7 flex items-center justify-between px-3 bg-[var(--gotham-bg-surface)] border-t border-[var(--gotham-border-default)] text-[10px]">
+    <footer className="h-7 flex items-center justify-between px-3 bg-[var(--officenetwork-bg-surface)] border-t border-[var(--officenetwork-border-default)] text-[10px]">
       {/* Left: Mode and Selection */}
       <div className="flex items-center gap-4">
         <div className="flex items-center gap-1.5">
-          <span className="size-1.5 rounded-full bg-[var(--gotham-accent-cyan)]" />
-          <span className="text-[var(--gotham-text-muted)] uppercase tracking-wider">
+          <span className="size-1.5 rounded-full bg-[var(--officenetwork-accent-cyan)]" />
+          <span className="text-[var(--officenetwork-text-muted)] uppercase tracking-wider">
             {LENS_LABELS[lensMode]}
           </span>
         </div>
 
         {selectedOffice && (
-          <div className="flex items-center gap-1.5 text-[var(--gotham-text-secondary)]">
+          <div className="flex items-center gap-1.5 text-[var(--officenetwork-text-secondary)]">
             <svg
               className="size-3"
               viewBox="0 0 24 24"
@@ -75,7 +75,7 @@ export function StatusBar({
         )}
 
         {selectedEmployee && (
-          <div className="flex items-center gap-1.5 text-[var(--gotham-text-secondary)]">
+          <div className="flex items-center gap-1.5 text-[var(--officenetwork-text-secondary)]">
             <svg
               className="size-3"
               viewBox="0 0 24 24"
@@ -94,7 +94,7 @@ export function StatusBar({
       {/* Right: Stats and Time */}
       <div className="flex items-center gap-4">
         {/* Data Stats */}
-        <div className="flex items-center gap-3 text-[var(--gotham-text-muted)]">
+        <div className="flex items-center gap-3 text-[var(--officenetwork-text-muted)]">
           <div className="flex items-center gap-1">
             <svg
               className="size-3"
@@ -128,18 +128,18 @@ export function StatusBar({
         </div>
 
         {/* Divider */}
-        <div className="w-px h-3 bg-[var(--gotham-border-default)]" />
+        <div className="w-px h-3 bg-[var(--officenetwork-border-default)]" />
 
         {/* Time */}
-        <div className="flex items-center gap-2 text-[var(--gotham-text-muted)] gotham-mono">
+        <div className="flex items-center gap-2 text-[var(--officenetwork-text-muted)] officenetwork-mono">
           <span>{dateString}</span>
           <span>{timeString}</span>
         </div>
 
         {/* Connection Status */}
         <div className="flex items-center gap-1.5">
-          <span className="size-1.5 rounded-full bg-[var(--gotham-status-ready)]" />
-          <span className="text-[var(--gotham-status-ready)] uppercase tracking-wider">
+          <span className="size-1.5 rounded-full bg-[var(--officenetwork-status-ready)]" />
+          <span className="text-[var(--officenetwork-status-ready)] uppercase tracking-wider">
             Online
           </span>
         </div>

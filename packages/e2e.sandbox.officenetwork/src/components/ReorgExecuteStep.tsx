@@ -261,35 +261,35 @@ export function ReorgExecuteStep({
   return (
     <div className="flex flex-col h-full">
       {/* Progress */}
-      <div className="p-4 border-b border-[var(--gotham-border-default)]">
+      <div className="p-4 border-b border-[var(--officenetwork-border-default)]">
         <div className="flex items-center justify-between mb-3">
-          <div className="text-sm font-medium text-[var(--gotham-text-primary)]">
+          <div className="text-sm font-medium text-[var(--officenetwork-text-primary)]">
             {execution.status === "idle" && "Preparing..."}
             {execution.status === "running" && "Executing reorg..."}
             {execution.status === "success" && "Reorg complete!"}
             {execution.status === "error" && "Reorg failed"}
             {execution.status === "rolling-back" && "Rolling back..."}
           </div>
-          <div className="text-xs text-[var(--gotham-text-muted)] gotham-mono tabular-nums">
+          <div className="text-xs text-[var(--officenetwork-text-muted)] officenetwork-mono tabular-nums">
             {execution.progress.completed} / {execution.progress.total}
           </div>
         </div>
 
-        <div className="h-2 bg-[var(--gotham-bg-elevated)] rounded overflow-hidden">
+        <div className="h-2 bg-[var(--officenetwork-bg-elevated)] rounded overflow-hidden">
           <div
             className={`h-full rounded transition-all duration-150 ${
               execution.status === "error"
-                ? "bg-[var(--gotham-status-error)]"
+                ? "bg-[var(--officenetwork-status-error)]"
                 : execution.status === "success"
-                ? "bg-[var(--gotham-status-ready)]"
-                : "bg-[var(--gotham-status-warning)]"
+                ? "bg-[var(--officenetwork-status-ready)]"
+                : "bg-[var(--officenetwork-status-warning)]"
             }`}
             style={{ width: `${progressPercent}%` }}
           />
         </div>
 
         {execution.status !== "idle" && (
-          <div className="flex items-center gap-4 mt-3 text-xs text-[var(--gotham-text-muted)] gotham-mono">
+          <div className="flex items-center gap-4 mt-3 text-xs text-[var(--officenetwork-text-muted)] officenetwork-mono">
             <span className="tabular-nums">
               {elapsedTime.toFixed(1)}s elapsed
             </span>
@@ -302,21 +302,21 @@ export function ReorgExecuteStep({
 
       {/* Logs */}
       <div className="flex-1 overflow-auto p-4">
-        <div className="gotham-mono text-xs space-y-1 text-[var(--gotham-text-secondary)]">
+        <div className="officenetwork-mono text-xs space-y-1 text-[var(--officenetwork-text-secondary)]">
           {logs.map((log, i) => (
             <div
               key={i}
               className={log.includes("✓")
-                ? "text-[var(--gotham-status-ready)]"
+                ? "text-[var(--officenetwork-status-ready)]"
                 : log.includes("✗")
-                ? "text-[var(--gotham-status-error)]"
+                ? "text-[var(--officenetwork-status-error)]"
                 : ""}
             >
               {log}
             </div>
           ))}
           {execution.status === "running" && (
-            <div className="animate-pulse text-[var(--gotham-status-warning)]">
+            <div className="animate-pulse text-[var(--officenetwork-status-warning)]">
               Processing...
             </div>
           )}
@@ -325,20 +325,20 @@ export function ReorgExecuteStep({
 
       {/* Error state */}
       {execution.status === "error" && execution.snapshots.length > 0 && (
-        <div className="p-4 border-t border-[var(--gotham-border-default)] bg-[var(--gotham-status-error)]/10">
+        <div className="p-4 border-t border-[var(--officenetwork-border-default)] bg-[var(--officenetwork-status-error)]/10">
           <div className="flex items-center justify-between">
             <div>
-              <div className="text-sm font-medium text-[var(--gotham-status-error)]">
+              <div className="text-sm font-medium text-[var(--officenetwork-status-error)]">
                 Execution failed
               </div>
-              <div className="text-xs text-[var(--gotham-text-muted)]">
+              <div className="text-xs text-[var(--officenetwork-text-muted)]">
                 {execution.snapshots.length}{" "}
                 changes were applied before the error
               </div>
             </div>
             <button
               onClick={handleRollback}
-              className="px-3 py-1.5 text-xs font-medium text-[var(--gotham-status-error)] border border-[var(--gotham-status-error)]/50 rounded hover:bg-[var(--gotham-status-error)]/10 transition-colors"
+              className="px-3 py-1.5 text-xs font-medium text-[var(--officenetwork-status-error)] border border-[var(--officenetwork-status-error)]/50 rounded hover:bg-[var(--officenetwork-status-error)]/10 transition-colors"
             >
               Rollback Changes
             </button>
@@ -348,20 +348,20 @@ export function ReorgExecuteStep({
 
       {/* Success state */}
       {execution.status === "success" && (
-        <div className="p-4 border-t border-[var(--gotham-border-default)] bg-[var(--gotham-status-ready)]/10">
+        <div className="p-4 border-t border-[var(--officenetwork-border-default)] bg-[var(--officenetwork-status-ready)]/10">
           <div className="flex items-center justify-between">
             <div>
-              <div className="text-sm font-medium text-[var(--gotham-status-ready)]">
+              <div className="text-sm font-medium text-[var(--officenetwork-status-ready)]">
                 Reorg completed successfully
               </div>
-              <div className="text-xs text-[var(--gotham-text-muted)] gotham-mono tabular-nums">
+              <div className="text-xs text-[var(--officenetwork-text-muted)] officenetwork-mono tabular-nums">
                 {execution.progress.completed} employees moved in{" "}
                 {elapsedTime.toFixed(1)}s
               </div>
             </div>
             <button
               onClick={onComplete}
-              className="px-3 py-1.5 text-xs font-medium bg-[var(--gotham-status-ready)] text-[var(--gotham-bg-base)] rounded hover:opacity-90 transition-opacity"
+              className="px-3 py-1.5 text-xs font-medium bg-[var(--officenetwork-status-ready)] text-[var(--officenetwork-bg-base)] rounded hover:opacity-90 transition-opacity"
             >
               Done
             </button>

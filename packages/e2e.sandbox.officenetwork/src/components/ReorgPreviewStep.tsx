@@ -75,29 +75,29 @@ export function ReorgPreviewStep({
   return (
     <div className="flex flex-col h-full">
       {/* Summary */}
-      <div className="p-4 border-b border-[var(--gotham-border-default)]">
+      <div className="p-4 border-b border-[var(--officenetwork-border-default)]">
         <div className="flex items-center gap-4">
           <div className="text-center">
-            <div className="text-2xl font-semibold text-[var(--gotham-status-warning)] tabular-nums">
+            <div className="text-2xl font-semibold text-[var(--officenetwork-status-warning)] tabular-nums">
               {summary.totalMoves}
             </div>
-            <div className="text-xs text-[var(--gotham-text-muted)] gotham-mono">
+            <div className="text-xs text-[var(--officenetwork-text-muted)] officenetwork-mono">
               moves
             </div>
           </div>
           <div className="text-center">
-            <div className="text-2xl font-semibold text-[var(--gotham-accent-cyan)] tabular-nums">
+            <div className="text-2xl font-semibold text-[var(--officenetwork-accent-cyan)] tabular-nums">
               {summary.officesAffected}
             </div>
-            <div className="text-xs text-[var(--gotham-text-muted)] gotham-mono">
+            <div className="text-xs text-[var(--officenetwork-text-muted)] officenetwork-mono">
               offices
             </div>
           </div>
           <div className="text-center">
-            <div className="text-2xl font-semibold text-[var(--gotham-hier-evp)] tabular-nums">
+            <div className="text-2xl font-semibold text-[var(--officenetwork-hier-evp)] tabular-nums">
               {selectedIds.size}
             </div>
-            <div className="text-xs text-[var(--gotham-text-muted)] gotham-mono">
+            <div className="text-xs text-[var(--officenetwork-text-muted)] officenetwork-mono">
               selected
             </div>
           </div>
@@ -107,23 +107,23 @@ export function ReorgPreviewStep({
       {/* Changes Table */}
       <div className="flex-1 overflow-auto">
         <table className="w-full text-sm">
-          <thead className="sticky top-0 bg-[var(--gotham-bg-surface)] z-10">
-            <tr className="border-b border-[var(--gotham-border-default)]">
-              <th className="text-left px-4 py-2 gotham-section-label">
+          <thead className="sticky top-0 bg-[var(--officenetwork-bg-surface)] z-10">
+            <tr className="border-b border-[var(--officenetwork-border-default)]">
+              <th className="text-left px-4 py-2 officenetwork-section-label">
                 Employee
               </th>
-              <th className="text-left px-4 py-2 gotham-section-label">
+              <th className="text-left px-4 py-2 officenetwork-section-label">
                 From
               </th>
-              <th className="text-center px-2 py-2 text-xs font-semibold text-[var(--gotham-text-muted)]">
+              <th className="text-center px-2 py-2 text-xs font-semibold text-[var(--officenetwork-text-muted)]">
                 →
               </th>
-              <th className="text-left px-4 py-2 gotham-section-label">
+              <th className="text-left px-4 py-2 officenetwork-section-label">
                 To
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-[var(--gotham-border-default)]">
+          <tbody className="divide-y divide-[var(--officenetwork-border-default)]">
             {changesWithEmployees.map(({ employee, change }) => {
               const fromOffice = employee.primaryOfficeId
                 ? officeMap.get(employee.primaryOfficeId)
@@ -138,27 +138,27 @@ export function ReorgPreviewStep({
                 <tr
                   key={employee.employeeNumber}
                   className={hasOfficeChange
-                    ? "bg-[var(--gotham-status-warning)]/5"
+                    ? "bg-[var(--officenetwork-status-warning)]/5"
                     : ""}
                 >
                   <td className="px-4 py-2">
-                    <div className="font-medium text-[var(--gotham-text-primary)]">
+                    <div className="font-medium text-[var(--officenetwork-text-primary)]">
                       {employee.fullName}
                     </div>
-                    <div className="text-xs text-[var(--gotham-text-muted)]">
+                    <div className="text-xs text-[var(--officenetwork-text-muted)]">
                       {employee.jobTitle}
                     </div>
                   </td>
                   <td className="px-4 py-2">
                     <span
                       className={hasOfficeChange
-                        ? "text-[var(--gotham-status-error)]"
-                        : "text-[var(--gotham-text-secondary)]"}
+                        ? "text-[var(--officenetwork-status-error)]"
+                        : "text-[var(--officenetwork-text-secondary)]"}
                     >
                       {fromOffice?.name ?? "—"}
                     </span>
                   </td>
-                  <td className="px-2 py-2 text-center text-[var(--gotham-text-muted)]">
+                  <td className="px-2 py-2 text-center text-[var(--officenetwork-text-muted)]">
                     {hasOfficeChange ? "→" : "—"}
                   </td>
                   <td className="px-4 py-2">
@@ -172,7 +172,7 @@ export function ReorgPreviewStep({
                               ...change,
                               targetOfficeId: e.target.value || undefined,
                             })}
-                          className="w-full px-2 py-1 text-sm bg-[var(--gotham-bg-elevated)] border border-[var(--gotham-border-default)] rounded text-[var(--gotham-text-primary)]"
+                          className="w-full px-2 py-1 text-sm bg-[var(--officenetwork-bg-elevated)] border border-[var(--officenetwork-border-default)] rounded text-[var(--officenetwork-text-primary)]"
                         >
                           <option value="">No change</option>
                           {offices.map((office) => (
@@ -188,8 +188,8 @@ export function ReorgPreviewStep({
                       : (
                         <span
                           className={hasOfficeChange
-                            ? "text-[var(--gotham-status-ready)]"
-                            : "text-[var(--gotham-text-secondary)]"}
+                            ? "text-[var(--officenetwork-status-ready)]"
+                            : "text-[var(--officenetwork-text-secondary)]"}
                         >
                           {toOffice?.name ?? fromOffice?.name ?? "—"}
                         </span>
@@ -203,11 +203,11 @@ export function ReorgPreviewStep({
 
         {changesWithEmployees.length === 0 && selectedIds.size > 0 && (
           <div className="text-center py-8">
-            <p className="text-[var(--gotham-text-muted)] text-sm text-pretty mb-4">
+            <p className="text-[var(--officenetwork-text-muted)] text-sm text-pretty mb-4">
               No changes configured yet
             </p>
             {config.algorithm === "manual" && (
-              <p className="text-xs text-[var(--gotham-text-muted)]">
+              <p className="text-xs text-[var(--officenetwork-text-muted)]">
                 Select target offices for each employee above
               </p>
             )}
@@ -216,10 +216,10 @@ export function ReorgPreviewStep({
 
         {selectedIds.size === 0 && (
           <div className="text-center py-8">
-            <p className="text-[var(--gotham-text-muted)] text-sm text-pretty">
+            <p className="text-[var(--officenetwork-text-muted)] text-sm text-pretty">
               No employees selected
             </p>
-            <p className="text-xs text-[var(--gotham-text-muted)] mt-1">
+            <p className="text-xs text-[var(--officenetwork-text-muted)] mt-1">
               Go back to select employees for the reorg
             </p>
           </div>
@@ -228,10 +228,10 @@ export function ReorgPreviewStep({
 
       {/* Ready summary */}
       {summary.totalMoves > 0 && (
-        <div className="p-3 border-t border-[var(--gotham-border-default)] bg-[var(--gotham-bg-elevated)]">
-          <div className="text-xs text-[var(--gotham-text-muted)] gotham-mono text-pretty">
+        <div className="p-3 border-t border-[var(--officenetwork-border-default)] bg-[var(--officenetwork-bg-elevated)]">
+          <div className="text-xs text-[var(--officenetwork-text-muted)] officenetwork-mono text-pretty">
             Ready to move{" "}
-            <span className="font-semibold text-[var(--gotham-status-warning)] tabular-nums">
+            <span className="font-semibold text-[var(--officenetwork-status-warning)] tabular-nums">
               {summary.totalMoves}
             </span>{" "}
             employees across{" "}

@@ -45,11 +45,11 @@ class ErrorBoundary extends React.Component<
   render(): React.ReactNode {
     if (this.state.hasError) {
       return (
-        <div className="h-dvh flex items-center justify-center bg-[var(--gotham-bg-base)]">
+        <div className="h-dvh flex items-center justify-center bg-[var(--officenetwork-bg-base)]">
           <div className="text-center max-w-md p-8">
-            <div className="size-12 mx-auto mb-4 rounded-full bg-[var(--gotham-status-error)]/10 flex items-center justify-center">
+            <div className="size-12 mx-auto mb-4 rounded-full bg-[var(--officenetwork-status-error)]/10 flex items-center justify-center">
               <svg
-                className="size-6 text-[var(--gotham-status-error)]"
+                className="size-6 text-[var(--officenetwork-status-error)]"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
@@ -60,15 +60,15 @@ class ErrorBoundary extends React.Component<
                 <path d="M12 8v4m0 4h.01" />
               </svg>
             </div>
-            <h1 className="text-lg font-semibold text-[var(--gotham-text-primary)] mb-2">
+            <h1 className="text-lg font-semibold text-[var(--officenetwork-text-primary)] mb-2">
               Something went wrong
             </h1>
-            <p className="text-sm text-[var(--gotham-text-muted)] mb-4 text-pretty">
+            <p className="text-sm text-[var(--officenetwork-text-muted)] mb-4 text-pretty">
               {this.state.error?.message ?? "An unexpected error occurred"}
             </p>
             <button
               onClick={() => window.location.reload()}
-              className="px-4 py-2 text-sm font-medium bg-[var(--gotham-accent-cyan)] text-[var(--gotham-bg-base)] rounded hover:bg-[var(--gotham-accent-cyan)]/90 transition-colors"
+              className="px-4 py-2 text-sm font-medium bg-[var(--officenetwork-accent-cyan)] text-[var(--officenetwork-bg-base)] rounded hover:bg-[var(--officenetwork-accent-cyan)]/90 transition-colors"
             >
               Reload Page
             </button>
@@ -201,7 +201,7 @@ function App() {
   const showReorgWizard = lensMode === "reorg";
 
   return (
-    <div className="h-dvh flex flex-col bg-[var(--gotham-bg-base)]">
+    <div className="h-dvh flex flex-col bg-[var(--officenetwork-bg-base)]">
       {/* Top Bar */}
       <TopBar
         lensMode={lensMode}
@@ -249,10 +249,10 @@ function App() {
             ? (
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="text-center">
-                  <div className="text-lg text-[var(--gotham-text-muted)] text-balance">
+                  <div className="text-lg text-[var(--officenetwork-text-muted)] text-balance">
                     No offices found
                   </div>
-                  <div className="text-xs text-[var(--gotham-text-muted)] mt-2 text-pretty">
+                  <div className="text-xs text-[var(--officenetwork-text-muted)] mt-2 text-pretty">
                     Click "Generate Data" to create sample data
                   </div>
                 </div>
@@ -260,7 +260,7 @@ function App() {
             )
             : (
               <div className="absolute inset-0 flex items-center justify-center">
-                <div className="flex items-center gap-2 text-[var(--gotham-text-muted)]">
+                <div className="flex items-center gap-2 text-[var(--officenetwork-text-muted)]">
                   <svg
                     className="size-5 animate-spin"
                     viewBox="0 0 24 24"
@@ -289,7 +289,7 @@ function App() {
           {/* Error indicators */}
           {(officesError || employeesError) && (
             <div className="absolute top-4 left-4 z-10">
-              <div className="gotham-badge gotham-badge-error">
+              <div className="officenetwork-badge officenetwork-badge-error">
                 {officesError
                   ? "Failed to load offices"
                   : "Failed to load employees"}
@@ -305,7 +305,7 @@ function App() {
 
         {/* Right Panels */}
         {showOfficePanel && (
-          <div className="w-80 shrink-0 h-full border-l border-[var(--gotham-border-default)]">
+          <div className="w-80 shrink-0 h-full border-l border-[var(--officenetwork-border-default)]">
             <OfficePanel
               office={selectedOffice}
               onSelectEmployee={handleSelectEmployee}
@@ -315,7 +315,7 @@ function App() {
         )}
 
         {showEmployeePanel && (
-          <div className="w-96 shrink-0 h-full border-l border-[var(--gotham-border-default)]">
+          <div className="w-96 shrink-0 h-full border-l border-[var(--officenetwork-border-default)]">
             <EmployeePanel
               employee={selectedEmployee}
               currentOffice={selectedOffice}
@@ -328,7 +328,7 @@ function App() {
         )}
 
         {showReorgWizard && offices && employees && (
-          <div className="w-[480px] shrink-0 h-full border-l border-[var(--gotham-border-default)]">
+          <div className="w-[480px] shrink-0 h-full border-l border-[var(--officenetwork-border-default)]">
             <ReorgWizard
               employees={employees}
               offices={offices}

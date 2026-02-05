@@ -19,12 +19,12 @@ export function getHierarchyLevel(
 }
 
 export const HIERARCHY_COLORS: Record<HierarchyLevel, string> = {
-  ceo: "#f0c000", // Gotham gold
-  evp: "#a371f7", // Gotham purple
-  vp: "#58a6ff", // Gotham cyan/blue
-  director: "#39c5cf", // Gotham teal
-  manager: "#d29922", // Gotham amber
-  ic: "#3fb950", // Gotham green
+  ceo: "#f0c000", // officenetwork gold
+  evp: "#a371f7", // officenetwork purple
+  vp: "#58a6ff", // officenetwork cyan/blue
+  director: "#39c5cf", // officenetwork teal
+  manager: "#d29922", // officenetwork amber
+  ic: "#3fb950", // officenetwork green
 };
 
 export const HIERARCHY_LABELS: Record<HierarchyLevel, string> = {

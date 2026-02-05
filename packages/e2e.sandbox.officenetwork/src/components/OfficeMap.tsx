@@ -34,7 +34,7 @@ interface OfficeMapProps {
   freezeMap?: boolean;
 }
 
-// Custom navy-tinted dark map style inspired by Palantir Gotham
+// Custom navy-tinted dark map style
 const mapStyle: StyleSpecification = {
   version: 8,
   glyphs: "https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf",
@@ -264,29 +264,29 @@ export function OfficeMap({
                 }}
                 className={`cursor-pointer transition-transform ${
                   isSelected ? "scale-125" : "hover:scale-110"
-                } focus:outline-none focus:ring-2 focus:ring-[var(--gotham-accent-cyan)] focus:ring-offset-2 focus:ring-offset-[var(--gotham-bg-base)]`}
+                } focus:outline-none focus:ring-2 focus:ring-[var(--officenetwork-accent-cyan)] focus:ring-offset-2 focus:ring-offset-[var(--officenetwork-bg-base)]`}
               >
                 <div
                   className="size-8 rounded flex items-center justify-center text-xs font-semibold"
                   style={{
                     boxShadow: isSelected
-                      ? "0 0 0 2px var(--gotham-accent-cyan), 0 2px 12px rgba(88,166,255,0.5)"
+                      ? "0 0 0 2px var(--officenetwork-accent-cyan), 0 2px 12px rgba(88,166,255,0.5)"
                       : "0 2px 8px rgba(0,0,0,0.5)",
                     backgroundColor: isSelected
-                      ? "var(--gotham-accent-cyan)"
-                      : "var(--gotham-bg-surface)",
+                      ? "var(--officenetwork-accent-cyan)"
+                      : "var(--officenetwork-bg-surface)",
                     color: isSelected
-                      ? "var(--gotham-bg-base)"
-                      : "var(--gotham-accent-cyan)",
+                      ? "var(--officenetwork-bg-base)"
+                      : "var(--officenetwork-accent-cyan)",
                     border: isSelected
-                      ? "2px solid var(--gotham-accent-cyan)"
-                      : "2px solid var(--gotham-accent-cyan)",
+                      ? "2px solid var(--officenetwork-accent-cyan)"
+                      : "2px solid var(--officenetwork-accent-cyan)",
                   }}
                 >
                   {office.name?.charAt(0) ?? "?"}
                 </div>
                 {isSelected && (
-                  <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 whitespace-nowrap text-[10px] font-medium text-[var(--gotham-accent-cyan)] bg-[var(--gotham-bg-surface)]/95 px-2 py-0.5 rounded border border-[var(--gotham-border-default)]">
+                  <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 whitespace-nowrap text-[10px] font-medium text-[var(--officenetwork-accent-cyan)] bg-[var(--officenetwork-bg-surface)]/95 px-2 py-0.5 rounded border border-[var(--officenetwork-border-default)]">
                     {office.name}
                   </div>
                 )}
@@ -315,7 +315,7 @@ export function OfficeMap({
                 : null;
               const hierarchyColor = hierarchyLevel
                 ? HIERARCHY_COLORS[hierarchyLevel]
-                : "var(--gotham-hier-evp)";
+                : "var(--officenetwork-hier-evp)";
               const matchesFilter = !filteredLevel
                 || hierarchyLevel === filteredLevel || isSelected;
               const isDimmed = filteredLevel && !matchesFilter;
@@ -350,7 +350,7 @@ export function OfficeMap({
                       isSelected ? "scale-125 z-10" : "hover:scale-110"
                     } ${
                       isDimmed ? "pointer-events-none" : "cursor-pointer"
-                    } focus:outline-none focus:ring-2 focus:ring-[var(--gotham-accent-cyan)] focus:ring-offset-2 focus:ring-offset-[var(--gotham-bg-base)]`}
+                    } focus:outline-none focus:ring-2 focus:ring-[var(--officenetwork-accent-cyan)] focus:ring-offset-2 focus:ring-offset-[var(--officenetwork-bg-base)]`}
                     style={{
                       transform: `translate(${offset.x}px, ${offset.y}px)`,
                       opacity: isDimmed ? 0.15 : 1,
@@ -362,9 +362,9 @@ export function OfficeMap({
                       style={{
                         backgroundColor: isSelected
                           ? hierarchyColor
-                          : "var(--gotham-bg-surface)",
+                          : "var(--officenetwork-bg-surface)",
                         color: isSelected
-                          ? "var(--gotham-bg-base)"
+                          ? "var(--officenetwork-bg-base)"
                           : hierarchyColor,
                         boxShadow: isSelected
                           ? `0 0 0 2px ${hierarchyColor}, 0 2px 12px ${hierarchyColor}80`
@@ -376,7 +376,7 @@ export function OfficeMap({
                     </div>
                     {isSelected && (
                       <div
-                        className="absolute -bottom-6 left-1/2 -translate-x-1/2 whitespace-nowrap text-[10px] font-medium bg-[var(--gotham-bg-surface)]/95 px-2 py-0.5 rounded border border-[var(--gotham-border-default)]"
+                        className="absolute -bottom-6 left-1/2 -translate-x-1/2 whitespace-nowrap text-[10px] font-medium bg-[var(--officenetwork-bg-surface)]/95 px-2 py-0.5 rounded border border-[var(--officenetwork-border-default)]"
                         style={{ color: hierarchyColor }}
                       >
                         {emp.employee.fullName}
@@ -390,9 +390,9 @@ export function OfficeMap({
       </Map>
 
       {usesHierarchyColors(lensMode) && (
-        <div className="absolute bottom-4 left-4 z-10 bg-[var(--gotham-bg-surface)]/95 backdrop-blur px-3 py-2 rounded border border-[var(--gotham-border-default)]">
+        <div className="absolute bottom-4 left-4 z-10 bg-[var(--officenetwork-bg-surface)]/95 backdrop-blur px-3 py-2 rounded border border-[var(--officenetwork-border-default)]">
           <div className="flex items-center gap-1 text-[10px]">
-            <span className="gotham-section-label mr-2">Filter</span>
+            <span className="officenetwork-section-label mr-2">Filter</span>
             {HIERARCHY_ORDER.map((level) => {
               const isActive = filteredLevel === level;
               return (
@@ -401,10 +401,10 @@ export function OfficeMap({
                   onClick={() => onFilterLevelChange(isActive ? null : level)}
                   className={`flex items-center gap-1 px-2 py-1 rounded transition-all ${
                     isActive
-                      ? "bg-[var(--gotham-bg-elevated)] ring-1 ring-[var(--gotham-accent-cyan)]/50"
+                      ? "bg-[var(--officenetwork-bg-elevated)] ring-1 ring-[var(--officenetwork-accent-cyan)]/50"
                       : filteredLevel
                       ? "opacity-40 hover:opacity-70"
-                      : "hover:bg-[var(--gotham-bg-elevated)]"
+                      : "hover:bg-[var(--officenetwork-bg-elevated)]"
                   }`}
                 >
                   <span
@@ -413,8 +413,8 @@ export function OfficeMap({
                   />
                   <span
                     className={isActive
-                      ? "text-[var(--gotham-text-primary)]"
-                      : "text-[var(--gotham-text-muted)]"}
+                      ? "text-[var(--officenetwork-text-primary)]"
+                      : "text-[var(--officenetwork-text-muted)]"}
                   >
                     {HIERARCHY_LABELS[level]}
                   </span>
@@ -424,7 +424,7 @@ export function OfficeMap({
             {filteredLevel && (
               <button
                 onClick={() => onFilterLevelChange(null)}
-                className="ml-1 text-[var(--gotham-text-muted)] hover:text-[var(--gotham-text-primary)] px-1.5 py-1 rounded hover:bg-[var(--gotham-bg-elevated)]"
+                className="ml-1 text-[var(--officenetwork-text-muted)] hover:text-[var(--officenetwork-text-primary)] px-1.5 py-1 rounded hover:bg-[var(--officenetwork-bg-elevated)]"
                 title="Clear filter"
                 aria-label="Clear filter"
               >
