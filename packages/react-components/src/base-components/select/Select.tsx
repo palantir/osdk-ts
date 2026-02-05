@@ -90,14 +90,6 @@ function SelectValue(
   );
 }
 
-function SelectPortal({
-  children,
-}: {
-  children: React.ReactNode;
-}): React.ReactElement {
-  return <BaseUISelect.Portal>{children}</BaseUISelect.Portal>;
-}
-
 interface SelectPositionerComponentProps
   extends Omit<SelectPositionerProps, "className">
 {
@@ -160,19 +152,11 @@ function SelectItem({
   );
 }
 
-export const Select: {
-  Root: typeof SelectRoot;
-  Trigger: typeof SelectTrigger;
-  Value: typeof SelectValue;
-  Portal: typeof SelectPortal;
-  Positioner: typeof SelectPositioner;
-  Popup: typeof SelectPopup;
-  Item: typeof SelectItem;
-} = {
+export const Select = {
   Root: SelectRoot,
   Trigger: SelectTrigger,
   Value: SelectValue,
-  Portal: SelectPortal,
+  Portal: BaseUISelect.Portal,
   Positioner: SelectPositioner,
   Popup: SelectPopup,
   Item: SelectItem,
