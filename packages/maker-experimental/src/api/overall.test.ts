@@ -535,6 +535,10 @@ describe("Experimental Test Suite", () => {
                 },
                 "titlePropertyTypeRid": "id",
               },
+              "propertySecurityGroupPackagingVersion": {
+                "type": "v2",
+                "v2": {},
+              },
             },
           },
           "sharedPropertyTypes": {},
@@ -691,6 +695,10 @@ describe("Experimental Test Suite", () => {
                   "type": "active",
                 },
                 "titlePropertyTypeRid": "id",
+              },
+              "propertySecurityGroupPackagingVersion": {
+                "type": "v2",
+                "v2": {},
               },
             },
           },

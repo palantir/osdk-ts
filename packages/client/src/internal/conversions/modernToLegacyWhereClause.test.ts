@@ -914,6 +914,71 @@ describe(modernToLegacyWhereClause, () => {
             }
           `);
       });
+
+      it("converts primitive arrays with nested filters correctly", () => {
+        expect(
+          modernToLegacyWhereClause<ObjAllProps>({
+            integerArray: { $contains: { $lt: 5 } },
+          }, objectTypeWithAllPropertyTypes),
+        ).toMatchInlineSnapshot(`
+          {
+            "field": "integerArray",
+            "type": "lt",
+            "value": 5,
+          }
+        `);
+
+        expect(
+          modernToLegacyWhereClause<ObjAllProps>({
+            stringArray: { $contains: { $startsWith: "test" } },
+          }, objectTypeWithAllPropertyTypes),
+        ).toMatchInlineSnapshot(`
+          {
+            "field": "stringArray",
+            "type": "startsWith",
+            "value": "test",
+          }
+        `);
+
+        expect(
+          modernToLegacyWhereClause<ObjAllProps>({
+            booleanArray: { $contains: { $eq: true } },
+          }, objectTypeWithAllPropertyTypes),
+        ).toMatchInlineSnapshot(`
+          {
+            "field": "booleanArray",
+            "type": "eq",
+            "value": true,
+          }
+        `);
+      });
+
+      it("converts primitive arrays with multiple nested filter conditions", () => {
+        expect(
+          modernToLegacyWhereClause<ObjAllProps>({
+            $and: [
+              { integerArray: { $contains: { $gte: 1 } } },
+              { integerArray: { $contains: { $lt: 10 } } },
+            ],
+          }, objectTypeWithAllPropertyTypes),
+        ).toMatchInlineSnapshot(`
+          {
+            "type": "and",
+            "value": [
+              {
+                "field": "integerArray",
+                "type": "gte",
+                "value": 1,
+              },
+              {
+                "field": "integerArray",
+                "type": "lt",
+                "value": 10,
+              },
+            ],
+          }
+        `);
+      });
     });
 
     describe("multiple checks", () => {

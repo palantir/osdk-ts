@@ -109,6 +109,7 @@ export class BulkObjectLoader {
     const { data } = await this.#client(miniDef)
       .where(whereClause).fetchPage({
         $pageSize: pks.length,
+        $includeRid: true,
       });
 
     for (const { primaryKey, deferred } of arr) {

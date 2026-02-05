@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Todo } from "@osdk/client.test.ontology";
+import { Employee, Office, Todo } from "@osdk/client.test.ontology";
 import type { SetupServer } from "@osdk/shared.test";
 import {
   FauxFoundry,
@@ -51,17 +51,28 @@ function setupOntology(fauxFoundry: FauxFoundry) {
   );
 }
 
-function setupTodos(fauxFoundry: FauxFoundry, count: number) {
+function setupTodos(
+  fauxFoundry: FauxFoundry,
+  count: number,
+  options?: { withRids?: boolean; textFn?: (i: number) => string },
+): string[] {
   const dataStore = fauxFoundry.getDefaultDataStore();
   dataStore.clear();
+  const rids: string[] = [];
 
   for (let i = 0; i < count; i++) {
+    const rid = options?.withRids
+      ? `ri.phonograph2-objects.main.object.todo-${i}`
+      : undefined;
+    if (rid) rids.push(rid);
     dataStore.registerObject(Todo, {
       $apiName: "Todo",
+      $rid: rid,
       id: i,
-      text: `Todo ${i}`,
+      text: options?.textFn?.(i) ?? `Todo ${i}`,
     });
   }
+  return rids;
 }
 
 describe("ListQuery autoFetchMore tests", () => {
@@ -347,6 +358,202 @@ describe("ListQuery autoFetchMore tests", () => {
     }
 
     testStage("Verify no additional unexpected calls");
+    expectNoMoreCalls(listSub);
+  });
+
+  it("supports rids with where, orderBy, and pagination", async () => {
+    const rids = setupTodos(fauxFoundry, 6, {
+      withRids: true,
+      textFn: (i) => (i % 2 === 0 ? "even" : "odd"),
+    });
+
+    testStage("Setup observation with rids + where + orderBy + pageSize");
+    const listSub = mockListSubCallback();
+    defer(
+      store.lists.observe(
+        {
+          type: Todo,
+          rids,
+          where: { text: { $eq: "even" } },
+          orderBy: { id: "desc" },
+          pageSize: 2,
+        },
+        listSub,
+      ),
+    );
+
+    testStage("Initial loading state");
+    await waitForCall(listSub.next, 1);
+    expectSingleListCallAndClear(listSub, [], { status: "loading" });
+
+    testStage("First page: 2 even items sorted desc (ids 4, 2)");
+    await waitForCall(listSub.next, 1);
+    let payload = expectSingleListCallAndClear(listSub, expect.anything(), {
+      status: "loaded",
+    });
+    expect(payload?.resolvedList.length).toBe(2);
+    expect(payload?.resolvedList[0].id).toBe(4);
+    expect(payload?.resolvedList[1].id).toBe(2);
+    expect(payload?.hasMore).toBe(true);
+
+    testStage("fetchMore() to get last even item (id 0)");
+    void payload!.fetchMore();
+    await waitForCall(listSub.next, 1);
+    payload = expectSingleListCallAndClear(listSub, expect.anything(), {
+      status: "loading",
+    });
+    await waitForCall(listSub.next, 1);
+    payload = expectSingleListCallAndClear(listSub, expect.anything(), {
+      status: "loaded",
+    });
+    expect(payload?.resolvedList.length).toBe(3);
+    expect(payload?.resolvedList[2].id).toBe(0);
+    expect(payload?.hasMore).toBe(false);
+
+    testStage("Verify no additional unexpected calls");
+    expectNoMoreCalls(listSub);
+  });
+
+  it("handles empty RID list", async () => {
+    setupTodos(fauxFoundry, 5);
+
+    testStage("Setup observation with empty rids array");
+    const listSub = mockListSubCallback();
+    defer(
+      store.lists.observe(
+        {
+          type: Todo,
+          rids: [],
+          pageSize: 10,
+        },
+        listSub,
+      ),
+    );
+
+    testStage("Initial loading state");
+    await waitForCall(listSub.next, 1);
+    expectSingleListCallAndClear(listSub, [], { status: "loading" });
+
+    testStage("Empty result with hasMore: false");
+    await waitForCall(listSub.next, 1);
+    const payload = expectSingleListCallAndClear(listSub, expect.anything(), {
+      status: "loaded",
+    });
+    expect(payload?.resolvedList.length).toBe(0);
+    expect(payload?.hasMore).toBe(false);
+
+    testStage("Verify no additional unexpected calls");
+    expectNoMoreCalls(listSub);
+  });
+});
+
+describe("ListQuery pivotTo tests", () => {
+  let client: Client;
+  let apiServer: SetupServer;
+  let fauxFoundry: FauxFoundry;
+  let store: Store;
+
+  beforeAll(() => {
+    const testSetup = startNodeApiServer(
+      new FauxFoundry("https://stack.palantir.com/", undefined, { logger }),
+      createClient,
+      { logger },
+    );
+    ({ client, apiServer, fauxFoundry } = testSetup);
+
+    setupOntology(testSetup.fauxFoundry);
+
+    return () => {
+      testSetup.apiServer.close();
+    };
+  });
+
+  beforeEach(() => {
+    apiServer.resetHandlers();
+    store = new Store(client);
+  });
+
+  it("pivotTo with where clause filters source objects before pivot", async () => {
+    fauxFoundry.getDefaultDataStore().clear();
+
+    const officeA = fauxFoundry.getDefaultDataStore().registerObject(Office, {
+      $apiName: "Office",
+      officeId: "office-a",
+      name: "Office A",
+    });
+    const officeB = fauxFoundry.getDefaultDataStore().registerObject(Office, {
+      $apiName: "Office",
+      officeId: "office-b",
+      name: "Office B",
+    });
+
+    const emp1 = fauxFoundry.getDefaultDataStore().registerObject(Employee, {
+      $apiName: "Employee",
+      employeeId: 1,
+      fullName: "Employee 1",
+    });
+    const emp2 = fauxFoundry.getDefaultDataStore().registerObject(Employee, {
+      $apiName: "Employee",
+      employeeId: 2,
+      fullName: "Employee 2",
+    });
+    const emp3 = fauxFoundry.getDefaultDataStore().registerObject(Employee, {
+      $apiName: "Employee",
+      employeeId: 3,
+      fullName: "Employee 3",
+    });
+
+    fauxFoundry.getDefaultDataStore().registerLink(
+      emp1,
+      "officeLink",
+      officeA,
+      "occupants",
+    );
+    fauxFoundry.getDefaultDataStore().registerLink(
+      emp2,
+      "officeLink",
+      officeA,
+      "occupants",
+    );
+    fauxFoundry.getDefaultDataStore().registerLink(
+      emp3,
+      "officeLink",
+      officeB,
+      "occupants",
+    );
+
+    testStage("Observe with pivotTo and where clause filtering on employeeId");
+    const listSub = mockListSubCallback();
+    defer(
+      store.lists.observe<typeof Employee>(
+        {
+          type: Employee,
+          where: { employeeId: 1 },
+          orderBy: {},
+          pivotTo: "officeLink",
+        },
+        listSub,
+      ),
+    );
+
+    testStage("Initial loading state");
+    await waitForCall(listSub.next, 1);
+    expectSingleListCallAndClear(listSub, [], { status: "loading" });
+
+    testStage("Data loads");
+    await waitForCall(listSub.next, 1);
+    const payload = expectSingleListCallAndClear(listSub, expect.anything(), {
+      status: "loaded",
+    });
+
+    testStage("Verify only office linked to employee 1 is returned");
+    expect(payload?.resolvedList.length).toBe(1);
+    expect(payload?.resolvedList[0]).toMatchObject({
+      officeId: "office-a",
+      name: "Office A",
+    });
+
+    testStage("Verify no additional calls");
     expectNoMoreCalls(listSub);
   });
 });

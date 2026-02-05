@@ -1,0 +1,62 @@
+/*
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.osdkTableCell {
+  display: flex;
+  align-items: center;
+  text-align: left;
+  position: relative;
+  padding: var(--osdk-table-cell-padding);
+  font-size: var(--osdk-table-cell-fontSize);
+  color: var(--osdk-table-cell-color);
+  background-color: inherit;
+  border-right: var(--osdk-table-cell-divider);
+
+  &:first-child {
+    border-left: var(--osdk-table-border);
+  }
+
+  &:last-child {
+    border-right: var(--osdk-table-border);
+  }
+}
+
+.osdkTableCell[data-pinned="left"],
+.osdkTableCell[data-pinned="right"] {
+  position: sticky;
+  z-index: var(--osdk-surface-z-index-1);
+}
+
+/* Last left-pinned column - no left-pinned siblings after it */
+.osdkTableCell[data-pinned="left"]:not(:has(~ [data-pinned="left"])) {
+  border-right: var(--osdk-table-pinned-column-border);
+}
+
+/* First right-pinned column - no right-pinned siblings before it */
+.osdkTableCell[data-pinned="right"]:not(:has(~ [data-pinned="right"]):nth-child(n+2)) {
+  border-left: var(--osdk-table-pinned-column-border);
+}
+
+.osdkTableCell:has([role="checkbox"]) {
+  justify-content: center;
+}
+
+.osdkTableCellContent:not(:has([role="checkbox"])) {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: left;
+}

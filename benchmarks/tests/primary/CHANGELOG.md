@@ -1,5 +1,28 @@
 # @osdk/benchmarks.primary
 
+## 0.1.0-beta.100
+
+### Patch Changes
+
+- Updated dependencies [24730c7]
+- Updated dependencies [ecd18e2]
+  - @osdk/client@2.7.0-beta.14
+
+## 0.1.0-beta.99
+
+### Patch Changes
+
+- Updated dependencies [fb83808]
+  - @osdk/client@2.7.0-beta.13
+
+## 0.1.0-beta.98
+
+### Patch Changes
+
+- Updated dependencies [3fc5fe6]
+- Updated dependencies [bb9d25c]
+  - @osdk/client@2.7.0-beta.12
+
 ## 0.1.0-beta.97
 
 ### Patch Changes

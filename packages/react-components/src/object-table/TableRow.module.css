@@ -1,0 +1,60 @@
+/*
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.osdkTableRow {
+  position: absolute;
+  display: flex;
+  background-color: var(--osdk-table-row-bg-default);
+  border-top: var(--osdk-table-row-divider);
+  border-bottom: var(--osdk-table-border-width) solid transparent;
+
+  &:last-child {
+    border-bottom: var(--osdk-table-border);
+  }
+
+  /* Zebra rows */
+  &:nth-child(even) {
+    background-color: var(
+      --osdk-table-row-bg-alternate,
+      var(--osdk-table-row-bg-default)
+    );
+  }
+
+  &:hover {
+    z-index: 1;
+    background-color: var(
+      --osdk-table-row-bg-hover,
+      var(--osdk-surface-background-color-default-hover)
+    );
+    border-top-color: var(--osdk-table-row-border-color-hover);
+    border-bottom-color: var(--osdk-table-row-border-color-hover);
+  }
+
+  &[data-selected="true"] {
+    z-index: 2;
+    background-color: var(--osdk-table-row-bg-active);
+    border-top-color: var(--osdk-table-row-border-color-active);
+    border-bottom-color: var(--osdk-table-row-border-color-active);
+  }
+
+  &[data-selected="true"] + &[data-selected="true"] {
+    border-top-color: transparent;
+  }
+
+  &[data-selected="true"]:has(+ &[data-selected="true"]) {
+    border-bottom-color: transparent;
+  }
+}

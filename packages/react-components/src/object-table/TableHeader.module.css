@@ -1,0 +1,101 @@
+/*
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.osdkTableHeader {
+  display: grid;
+  position: sticky;
+  top: 0;
+  z-index: var(--osdk-surface-z-index-1);
+  background-color: var(--osdk-table-header-bg);
+}
+
+.osdkTableHeader[data-resizing="true"] {
+  cursor: col-resize;
+  user-select: none;
+}
+
+.osdkTableHeaderRow {
+  display: flex;
+}
+
+.osdkTableHeaderCell {
+  display: flex;
+  align-items: center;
+  text-align: left;
+  position: relative;
+  padding: var(--osdk-table-cell-padding);
+  font-weight: var(--osdk-table-header-fontWeight);
+  font-size: var(--osdk-table-header-fontSize);
+  color: var(--osdk-table-header-color);
+  border-top: var(--osdk-table-border);
+  border-right: var(--osdk-table-header-divider);
+  background-color: inherit;
+
+  &:first-child {
+    border-left: var(--osdk-table-border);
+  }
+
+  &:last-child {
+    border-right: var(--osdk-table-border);
+  }
+}
+
+.osdkTableHeaderCell[data-pinned="left"],
+.osdkTableHeaderCell[data-pinned="right"] {
+  position: sticky;
+  z-index: var(--osdk-surface-z-index-2);
+}
+
+/* Last left-pinned column - no left-pinned siblings after it */
+.osdkTableHeaderCell[data-pinned="left"]:not(:has(~ [data-pinned="left"])) {
+  border-right: var(--osdk-table-pinned-column-border);
+}
+
+/* First right-pinned column - no right-pinned siblings before it */
+.osdkTableHeaderCell[data-pinned="right"]:not(
+    :has(~ [data-pinned="right"]):nth-child(n + 2)
+  ) {
+  border-left: var(--osdk-table-pinned-column-border);
+}
+
+.osdkTableHeaderCell:has([role="checkbox"]) {
+  justify-content: center;
+}
+
+.osdkTableHeaderResizer {
+  background: none;
+  cursor: col-resize;
+  height: 100%;
+  position: absolute;
+  right: calc(-1 * var(--osdk-table-border-width));
+  top: 0;
+  touch-action: none;
+  width: 3px;
+  z-index: var(--osdk-surface-z-index-2);
+
+  &:hover {
+    background: var(--osdk-intent-primary-hover);
+  }
+
+  &:active {
+    background: var(--osdk-intent-primary-active);
+  }
+}
+
+.osdkLoadingHeaderCell {
+  height: var(--osdk-table-header-fontSize);
+  flex: 1;
+}

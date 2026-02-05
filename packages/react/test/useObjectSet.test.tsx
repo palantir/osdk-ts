@@ -220,6 +220,29 @@ describe(useObjectSet, () => {
 
       expect(result.current.fetchMore).toBe(mockFetchMore);
     });
+
+    it("should not return fetchMore when hasMore is false", () => {
+      const wrapper = createWrapper();
+
+      const { result } = renderHook(
+        () => useObjectSet(mockObjectSet),
+        { wrapper },
+      );
+
+      const mockFetchMore = vitest.fn();
+      const mockData = {
+        resolvedList: [{ $primaryKey: "1", name: "Test" }],
+        status: "loaded",
+        fetchMore: mockFetchMore,
+        hasMore: false,
+      };
+
+      act(() => {
+        capturedObserver?.next(mockData);
+      });
+
+      expect(result.current.fetchMore).toBeUndefined();
+    });
   });
 
   describe("error handling", () => {

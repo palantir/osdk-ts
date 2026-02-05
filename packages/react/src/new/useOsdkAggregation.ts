@@ -20,6 +20,7 @@ import type {
   DerivedProperty,
   ObjectOrInterfaceDefinition,
   ObjectSet,
+  SimplePropertyDef,
   WhereClause,
 } from "@osdk/api";
 import type { ObjectTypeDefinition } from "@osdk/client";
@@ -30,23 +31,22 @@ import {
 import React from "react";
 import { makeExternalStoreAsync } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
-import type { InferRdpTypes } from "./types.js";
 
 export interface UseOsdkAggregationOptions<
   T extends ObjectOrInterfaceDefinition,
   A extends AggregateOpts<T>,
-  WithProps extends DerivedProperty.Clause<T> | undefined = undefined,
+  RDPs extends Record<string, SimplePropertyDef> = {},
 > {
   /**
    * Standard OSDK Where clause to filter objects before aggregation
    */
-  where?: WhereClause<T, InferRdpTypes<T, WithProps>>;
+  where?: WhereClause<T, RDPs>;
 
   /**
    * Define derived properties (RDPs) to be computed server-side.
    * The derived properties can be used in the where clause and aggregation groupBy/select.
    */
-  withProperties?: WithProps;
+  withProperties?: { [K in keyof RDPs]: DerivedProperty.Creator<T, RDPs[K]> };
 
   /**
    * Intersect the main query with additional filtered object sets.
@@ -54,7 +54,7 @@ export interface UseOsdkAggregationOptions<
    * and the final result is the intersection of all sets.
    */
   intersectWith?: Array<{
-    where: WhereClause<T, InferRdpTypes<T, WithProps>>;
+    where: WhereClause<T, RDPs>;
   }>;
 
   /**
@@ -74,7 +74,7 @@ export interface UseOsdkAggregationOptions<
 export interface UseOsdkAggregationOptionsWithObjectSet<
   T extends ObjectTypeDefinition,
   A extends AggregateOpts<T>,
-  WithProps extends DerivedProperty.Clause<T> | undefined = undefined,
+  RDPs extends Record<string, SimplePropertyDef> = {},
 > {
   /**
    * The ObjectSet to aggregate on. Enables aggregation on pivoted, filtered, or composed ObjectSets.
@@ -84,13 +84,13 @@ export interface UseOsdkAggregationOptionsWithObjectSet<
   /**
    * Standard OSDK Where clause to filter objects before aggregation
    */
-  where?: WhereClause<T, InferRdpTypes<T, WithProps>>;
+  where?: WhereClause<T, RDPs>;
 
   /**
    * Define derived properties (RDPs) to be computed server-side.
    * The derived properties can be used in the where clause and aggregation groupBy/select.
    */
-  withProperties?: WithProps;
+  withProperties?: { [K in keyof RDPs]: DerivedProperty.Creator<T, RDPs[K]> };
 
   /**
    * Intersect the main query with additional filtered object sets.
@@ -98,7 +98,7 @@ export interface UseOsdkAggregationOptionsWithObjectSet<
    * and the final result is the intersection of all sets.
    */
   intersectWith?: Array<{
-    where: WhereClause<T, InferRdpTypes<T, WithProps>>;
+    where: WhereClause<T, RDPs>;
   }>;
 
   /**
@@ -166,28 +166,28 @@ declare const process: {
 export function useOsdkAggregation<
   Q extends ObjectOrInterfaceDefinition,
   const A extends AggregateOpts<Q>,
-  WP extends DerivedProperty.Clause<Q> | undefined = undefined,
+  RDPs extends Record<string, SimplePropertyDef> = {},
 >(
   type: Q,
-  options: UseOsdkAggregationOptions<Q, A, WP>,
+  options: UseOsdkAggregationOptions<Q, A, RDPs>,
 ): UseOsdkAggregationResult<Q, A>;
 export function useOsdkAggregation<
   Q extends ObjectTypeDefinition,
-  A extends AggregateOpts<Q>,
-  WP extends DerivedProperty.Clause<Q> | undefined = undefined,
+  const A extends AggregateOpts<Q>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
 >(
   type: Q,
-  options: UseOsdkAggregationOptionsWithObjectSet<Q, A, WP>,
+  options: UseOsdkAggregationOptionsWithObjectSet<Q, A, RDPs>,
 ): UseOsdkAggregationResult<Q, A>;
 export function useOsdkAggregation<
   Q extends ObjectTypeDefinition,
-  A extends AggregateOpts<Q>,
-  WP extends DerivedProperty.Clause<Q> | undefined = undefined,
+  const A extends AggregateOpts<Q>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
 >(
   type: Q,
   options:
-    | UseOsdkAggregationOptions<Q, A, WP>
-    | UseOsdkAggregationOptionsWithObjectSet<Q, A, WP>,
+    | UseOsdkAggregationOptions<Q, A, RDPs>
+    | UseOsdkAggregationOptionsWithObjectSet<Q, A, RDPs>,
 ): UseOsdkAggregationResult<Q, A> {
   const {
     where = {},
@@ -202,8 +202,6 @@ export function useOsdkAggregation<
 
   const canonWhere = observableClient.canonicalizeWhereClause<Q>(where ?? {});
 
-  // Use ref to hold objectSet - allows us to use stableObjectSetKey for memoization
-  // while still having access to the actual objectSet for API calls
   const objectSetRef = React.useRef(objectSet);
   objectSetRef.current = objectSet;
 
@@ -280,7 +278,6 @@ export function useOsdkAggregation<
       type.apiName,
       type.type,
       stableObjectSetKey,
-      // objectSet removed - use objectSetRef instead to avoid re-subscription on reference change
       canonWhere,
       stableWithProperties,
       stableIntersectWith,

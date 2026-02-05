@@ -422,7 +422,9 @@ describe(Store, () => {
       setupOntology(testSetup.fauxFoundry);
       setupSomeEmployees(testSetup.fauxFoundry);
 
-      employeesAsServerReturns = (await client(Employee).fetchPage()).data;
+      employeesAsServerReturns = (await client(Employee).fetchPage({
+        $includeRid: true,
+      })).data;
       mutatedEmployees = [
         employeesAsServerReturns[0],
         employeesAsServerReturns[1].$clone({
@@ -1622,7 +1624,7 @@ describe(Store, () => {
               text,
             });
 
-            return client(Todo).fetchOne(id);
+            return client(Todo).fetchOne(id, { $includeRid: true });
           }),
         );
       });
@@ -1892,7 +1894,9 @@ describe(Store, () => {
         const pkForD = (await pActionResult).addedObjects?.[0].primaryKey;
         invariant(typeof pkForD === "number");
         // load this without the cache for comparisons
-        const createdObjectD = await client(Todo).fetchOne(pkForD);
+        const createdObjectD = await client(Todo).fetchOne(pkForD, {
+          $includeRid: true,
+        });
 
         await waitForCall(subListUnordered, 1);
         expectSingleListCallAndClear(subListUnordered, [
