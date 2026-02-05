@@ -25,9 +25,7 @@ import type {
   ObserveFunctionCallbackArgs,
   QueryParameterType,
 } from "@osdk/client/unstable-do-not-use";
-import {
-  getWireObjectSet,
-} from "@osdk/client/unstable-do-not-use";
+import { getWireObjectSet } from "@osdk/client/unstable-do-not-use";
 import React from "react";
 import { makeExternalStore } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
