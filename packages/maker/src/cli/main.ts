@@ -14,13 +14,47 @@
  * limitations under the License.
  */
 
+import { OntologyIrToFullMetadataConverter } from "@osdk/generator-converters.ontologyir";
 import { consola } from "consola";
+import { execa } from "execa";
+import { createJiti } from "jiti";
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
 import invariant from "tiny-invariant";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { defineOntology } from "../api/defineOntology.js";
+import type { OntologyIr } from "@osdk/client.unstable";
+
+// Dynamic imports for optional function discovery dependencies
+let generateFunctionsIr: ((
+  rootDir: string,
+  configPath: string | undefined,
+  entityMappings: IEntityMetadataMapping,
+) => unknown) | undefined;
+let IEntityMetadataMapping: unknown;
+
+interface IEntityMetadataMapping {
+  ontologies: Record<string, {
+    objectTypes: Record<string, {
+      objectTypeId: string;
+      primaryKey: { propertyId: string };
+      propertyTypes: Record<string, { propertyId: string }>;
+      linkTypes: Record<string, unknown>;
+    }>;
+    interfaceTypes: Record<string, unknown>;
+  }>;
+}
+
+async function loadFunctionDiscoveryDeps(): Promise<boolean> {
+  try {
+    const defineFunctionModule = await import("../api/defineFunction.js");
+    generateFunctionsIr = defineFunctionModule.generateFunctionsIr;
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 const apiNamespaceRegex = /^[a-z0-9-]+(\.[a-z0-9-]+)*\.$/;
 const uuidRegex =
@@ -37,10 +71,16 @@ export default async function main(
     valueTypesOutput: string;
     outputDir?: string;
     dependencies?: string;
+    // Code snippet options (from action logic rules)
     generateCodeSnippets: boolean;
     codeSnippetPackageName: string;
     codeSnippetDir: string;
     randomnessKey?: string;
+    // Function discovery options
+    generateFunctionsOsdk?: string;
+    functionsRootDir?: string;
+    functionsOutput?: string;
+    configPath?: string;
   } = await yargs(hideBin(args))
     .version(process.env.PACKAGE_VERSION ?? "")
     .wrap(Math.min(150, yargs().terminalWidth()))
@@ -90,6 +130,7 @@ export default async function main(
         type: "string",
         coerce: path.resolve,
       },
+      // Code snippet options
       generateCodeSnippets: {
         describe: "Enable code snippet files creation",
         type: "boolean",
@@ -112,6 +153,28 @@ export default async function main(
         type: "string",
         coerce: path.resolve,
       },
+      // Function discovery options
+      generateFunctionsOsdk: {
+        describe: "Output folder for generated OSDK for functions",
+        type: "string",
+        coerce: path.resolve,
+      },
+      functionsRootDir: {
+        alias: "f",
+        describe: "Root folder containing function definitions",
+        type: "string",
+        coerce: path.resolve,
+      },
+      functionsOutput: {
+        describe: "Output folder for function IR",
+        type: "string",
+        coerce: path.resolve,
+      },
+      configPath: {
+        describe: "Path to the TypeScript config file",
+        type: "string",
+        coerce: path.resolve,
+      },
     })
     .parseAsync();
   let apiNamespace = "";
@@ -125,6 +188,7 @@ export default async function main(
       "API namespace is invalid! It is expected to conform to ^[a-z0-9-]+(\.[a-z0-9-]+)*\.$",
     );
   }
+
   consola.info(`Loading ontology from ${commandLineOpts.input}`);
 
   if (
@@ -154,6 +218,7 @@ export default async function main(
     commandLineOpts.codeSnippetDir,
     commandLineOpts.randomnessKey,
   );
+  consola.log(JSON.stringify(ontologyIr, null, 2));
 
   consola.info(`Saving ontology to ${commandLineOpts.output}`);
   await fs.writeFile(
@@ -178,6 +243,48 @@ export default async function main(
       ),
     );
   }
+
+  // Function discovery feature (requires optional dependencies)
+  if (
+    commandLineOpts.functionsOutput !== undefined
+    && commandLineOpts.functionsRootDir !== undefined
+  ) {
+    const hasFunctionDeps = await loadFunctionDiscoveryDeps();
+    if (!hasFunctionDeps || !generateFunctionsIr) {
+      consola.error(
+        "Function discovery requires optional dependencies. Install @foundry/functions-typescript-* packages.",
+      );
+      return;
+    }
+    consola.info(`Loading function IR`);
+    const functionsIr = generateFunctionsIr(
+      commandLineOpts.functionsRootDir,
+      commandLineOpts.configPath,
+      createEntityMappings(ontologyIr),
+    );
+    consola.log(JSON.stringify(functionsIr, null, 2));
+    await fs.writeFile(
+      commandLineOpts.functionsOutput,
+      JSON.stringify(functionsIr, null, 2),
+    );
+    return;
+  }
+
+  if (commandLineOpts.generateFunctionsOsdk !== undefined) {
+    // Generate full ontology metadata for functions OSDK
+    const fullMetadata = OntologyIrToFullMetadataConverter
+      .getFullMetadataFromIr(ontologyIr.ontology);
+    consola.info(
+      `Saving full ontology metadata to ${commandLineOpts.generateFunctionsOsdk}`,
+    );
+
+    await fs.writeFile(
+      path.join(commandLineOpts.generateFunctionsOsdk, ".ontology.json"),
+      JSON.stringify(fullMetadata, null, 2),
+    );
+
+    await fullMetadataToOsdk(commandLineOpts.generateFunctionsOsdk);
+  }
 }
 
 async function loadOntology(
@@ -192,7 +299,16 @@ async function loadOntology(
 ) {
   const q = await defineOntology(
     apiNamespace,
-    async () => await import(input),
+    async () => {
+      const jiti = createJiti(import.meta.filename, {
+        moduleCache: true,
+        debug: false,
+        importMeta: import.meta,
+      });
+      const module = await jiti.import(input);
+
+      // await import(input);
+    },
     outputDir,
     dependencyFile,
     generateCodeSnippets,
@@ -201,4 +317,73 @@ async function loadOntology(
     randomnessKey,
   );
   return q;
+}
+
+async function fullMetadataToOsdk(
+  workDir: string,
+): Promise<void> {
+  // First create a clean temporary directory to generate the SDK into
+  const functionOsdkDir = path.join(
+    workDir,
+    "generated",
+  );
+  await fs.rm(functionOsdkDir, { recursive: true, force: true });
+  await fs.mkdir(functionOsdkDir, { recursive: true });
+
+  try {
+    // Generate the source code for the osdk
+    const { stdout, stderr, exitCode } = await execa("pnpm", [
+      "exec",
+      "osdk",
+      "unstable",
+      "typescript",
+      "generate",
+      "--outDir",
+      functionOsdkDir,
+      "--ontologyPath",
+      path.join(workDir, ".ontology.json"),
+      "--beta",
+      "true",
+      "--packageType",
+      "module",
+      "--version",
+      "dev",
+    ]);
+  } catch (error) {
+    await fs.rm(functionOsdkDir, { recursive: true, force: true });
+    throw error;
+  }
+}
+
+function createEntityMappings(ontologyIr: OntologyIr): IEntityMetadataMapping {
+  const entityMappings: IEntityMetadataMapping = {
+    ontologies: {},
+  };
+
+  const ontologyRid = "ontology";
+  entityMappings.ontologies[ontologyRid] = {
+    objectTypes: {},
+    interfaceTypes: {},
+  };
+
+  for (
+    const [apiName, blockData] of Object.entries(ontologyIr.ontology.objectTypes)
+  ) {
+    const propertyTypesMap: Record<string, { propertyId: string }> = {};
+
+    Object.keys(blockData.objectType.propertyTypes).forEach((propertyName) => {
+      propertyTypesMap[propertyName] = { propertyId: propertyName };
+    });
+
+    entityMappings.ontologies[ontologyRid].objectTypes[apiName] = {
+      objectTypeId: apiName,
+      primaryKey: {
+        propertyId: blockData.objectType.primaryKeys[0],
+      },
+      propertyTypes: propertyTypesMap,
+      linkTypes: {},
+    };
+  }
+
+  return entityMappings;
 }

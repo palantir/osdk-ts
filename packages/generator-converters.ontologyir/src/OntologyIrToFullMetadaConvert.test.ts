@@ -18,6 +18,14 @@ import { describe, expect, it } from "vitest";
 import { OntologyIrToFullMetadataConverter } from "./OntologyIrToFullMetadataConverter.js";
 
 describe(OntologyIrToFullMetadataConverter, () => {
+  it("functions metadata", async () => {
+    const result = OntologyIrToFullMetadataConverter
+      .getOsdkQueryTypes(
+        "testFunctions",
+      );
+    expect(result).toMatchInlineSnapshot(``);
+  });
+
   it("should convert ontology IR to full metadata", async () => {
     const result = OntologyIrToFullMetadataConverter
       .getFullMetadataFromIr(
