@@ -226,7 +226,7 @@ describe("buildWhereClause", () => {
   it("builds $isNotNull for hasLink filter", () => {
     const def = createHasLinkFilterDef("employees");
     const filterStates = stateMap(
-      [def, { type: "hasLink", hasLink: true }],
+      [def, { type: "HAS_LINK", hasLink: true }],
     );
     const result = buildWhereClause([def], filterStates, "and");
     expect(result).toEqual({ employees: { $isNotNull: true } });
@@ -235,7 +235,7 @@ describe("buildWhereClause", () => {
   it("emits no clause for hasLink filter when hasLink is false", () => {
     const def = createHasLinkFilterDef("employees");
     const filterStates = stateMap(
-      [def, { type: "hasLink", hasLink: false }],
+      [def, { type: "HAS_LINK", hasLink: false }],
     );
     const result = buildWhereClause([def], filterStates, "and");
     expect(result).toEqual({});
@@ -244,7 +244,7 @@ describe("buildWhereClause", () => {
   it("builds $containsAllTerms for keywordSearch filter with AND operator", () => {
     const def = createKeywordSearchFilterDef(["name"]);
     const filterStates = stateMap(
-      [def, { type: "keywordSearch", searchTerm: "test", operator: "AND" }],
+      [def, { type: "KEYWORD_SEARCH", searchTerm: "test", operator: "AND" }],
     );
     const result = buildWhereClause([def], filterStates, "and");
     expect(result).toEqual({ name: { $containsAllTerms: "test" } });
@@ -253,7 +253,7 @@ describe("buildWhereClause", () => {
   it("builds $containsAnyTerm for keywordSearch filter with OR operator", () => {
     const def = createKeywordSearchFilterDef(["name"]);
     const filterStates = stateMap(
-      [def, { type: "keywordSearch", searchTerm: "test", operator: "OR" }],
+      [def, { type: "KEYWORD_SEARCH", searchTerm: "test", operator: "OR" }],
     );
     const result = buildWhereClause([def], filterStates, "and");
     expect(result).toEqual({ name: { $containsAnyTerm: "test" } });
@@ -262,7 +262,7 @@ describe("buildWhereClause", () => {
   it("builds $or for multi-property keywordSearch filter", () => {
     const def = createKeywordSearchFilterDef(["name", "email"]);
     const filterStates = stateMap(
-      [def, { type: "keywordSearch", searchTerm: "test", operator: "OR" }],
+      [def, { type: "KEYWORD_SEARCH", searchTerm: "test", operator: "OR" }],
     );
     const result = buildWhereClause([def], filterStates, "and");
     expect(result).toEqual({
@@ -279,7 +279,7 @@ describe("buildWhereClause", () => {
       [
         def,
         {
-          type: "keywordSearch",
+          type: "KEYWORD_SEARCH",
           searchTerm: "test",
           operator: "AND",
           isExcluding: true,
@@ -297,7 +297,7 @@ describe("buildWhereClause", () => {
       toWhereClause: () => ({ customProp: { $eq: "test" } }),
     };
     const filterStates = stateMap(
-      [def, { type: "custom", customState: { value: "test" } }],
+      [def, { type: "CUSTOM", customState: { value: "test" } }],
     );
     const result = buildWhereClause([def], filterStates, "and");
     expect(result).toEqual({ customProp: { $eq: "test" } });
