@@ -647,4 +647,155 @@ describe("Store Invalidation Type Isolation", () => {
       expect(empSubFn.next).not.toHaveBeenCalled();
     });
   });
+
+  describe("onInvalidation listener", () => {
+    it("should receive events when objects are modified", async () => {
+      const listener = vi.fn();
+      const sub = cache.addInvalidationListener(listener);
+
+      const { subFn: empSubFn } = await expectStandardObserveObject({
+        cache,
+        type: Employee,
+        primaryKey: EMPLOYEE_1_ID,
+      });
+
+      empSubFn.next.mockClear();
+      listener.mockClear();
+
+      await cache.invalidateObjectType(Employee, undefined);
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      expect(listener).toHaveBeenCalled();
+      const event = listener.mock.calls[0][0];
+      expect(event.modifiedObjectTypes).toBeInstanceOf(Set);
+      expect(event.modifiedObjectTypes.has("Employee")).toBe(true);
+      expect(event.isOptimistic).toBe(false);
+      expect(typeof event.timestamp).toBe("number");
+
+      sub.unsubscribe();
+    });
+
+    it("should filter events by objectTypes option", async () => {
+      const employeeListener = vi.fn();
+      const officeListener = vi.fn();
+
+      const empSub = cache.addInvalidationListener(employeeListener, {
+        objectTypes: ["Employee"],
+      });
+      const officeSub = cache.addInvalidationListener(officeListener, {
+        objectTypes: ["Office"],
+      });
+
+      await expectStandardObserveObject({
+        cache,
+        type: Employee,
+        primaryKey: EMPLOYEE_1_ID,
+      });
+      await expectStandardObserveObject({
+        cache,
+        type: Office,
+        primaryKey: OFFICE_1_ID,
+      });
+
+      employeeListener.mockClear();
+      officeListener.mockClear();
+
+      await cache.invalidateObjectType(Employee, undefined);
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      expect(employeeListener).toHaveBeenCalled();
+      expect(officeListener).not.toHaveBeenCalled();
+
+      empSub.unsubscribe();
+      officeSub.unsubscribe();
+    });
+
+    it("should stop receiving events after unsubscribe", async () => {
+      const listener = vi.fn();
+      const sub = cache.addInvalidationListener(listener);
+
+      await expectStandardObserveObject({
+        cache,
+        type: Employee,
+        primaryKey: EMPLOYEE_1_ID,
+      });
+
+      listener.mockClear();
+
+      sub.unsubscribe();
+
+      await cache.invalidateObjectType(Employee, undefined);
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      expect(listener).not.toHaveBeenCalled();
+    });
+
+    it("should support multiple listeners", async () => {
+      const listener1 = vi.fn();
+      const listener2 = vi.fn();
+
+      const sub1 = cache.addInvalidationListener(listener1);
+      const sub2 = cache.addInvalidationListener(listener2);
+
+      await expectStandardObserveObject({
+        cache,
+        type: Employee,
+        primaryKey: EMPLOYEE_1_ID,
+      });
+
+      listener1.mockClear();
+      listener2.mockClear();
+
+      await cache.invalidateObjectType(Employee, undefined);
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      expect(listener1).toHaveBeenCalled();
+      expect(listener2).toHaveBeenCalled();
+
+      sub1.unsubscribe();
+      sub2.unsubscribe();
+    });
+
+    it("should not propagate errors from listener callbacks", async () => {
+      const errorListener = vi.fn(() => {
+        throw new Error("Listener error");
+      });
+      const goodListener = vi.fn();
+
+      const errorSub = cache.addInvalidationListener(errorListener);
+      const goodSub = cache.addInvalidationListener(goodListener);
+
+      await expectStandardObserveObject({
+        cache,
+        type: Employee,
+        primaryKey: EMPLOYEE_1_ID,
+      });
+
+      errorListener.mockClear();
+      goodListener.mockClear();
+
+      await cache.invalidateObjectType(Employee, undefined);
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      expect(errorListener).toHaveBeenCalled();
+      expect(goodListener).toHaveBeenCalled();
+
+      errorSub.unsubscribe();
+      goodSub.unsubscribe();
+    });
+
+    it("should not fire for empty changes", async () => {
+      const listener = vi.fn();
+      const sub = cache.addInvalidationListener(listener);
+
+      listener.mockClear();
+
+      await cache.invalidateAll();
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      expect(listener).not.toHaveBeenCalled();
+
+      sub.unsubscribe();
+    });
+  });
 });

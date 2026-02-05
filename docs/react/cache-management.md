@@ -206,8 +206,146 @@ function TodoView({ todo }: { todo: Todo.OsdkInstance }) {
 }
 ```
 
+## Listening to Invalidation Events
+
+Subscribe to cache invalidation events to synchronize external systems or trigger side effects when data changes.
+
+### useOnInvalidation
+
+*Experimental - import from `@osdk/react/experimental`*
+
+Listen to cache invalidation events inside React components.
+
+```tsx
+import { useOnInvalidation } from "@osdk/react/experimental";
+import { useState } from "react";
+
+function DataSyncIndicator() {
+  const [lastSync, setLastSync] = useState<Date | null>(null);
+
+  useOnInvalidation((event) => {
+    setLastSync(new Date(event.timestamp));
+  });
+
+  return <div>Last synced: {lastSync?.toLocaleTimeString() ?? "Never"}</div>;
+}
+```
+
+#### Filtering by Object Type
+
+Subscribe to specific object types only:
+
+```tsx
+import { useOnInvalidation } from "@osdk/react/experimental";
+
+function TodoSyncNotifier() {
+  useOnInvalidation(
+    (event) => {
+      if (!event.isOptimistic) {
+        showToast("Todos updated from server");
+      }
+    },
+    { objectTypes: ["Todo"] },
+  );
+
+  return null;
+}
+```
+
+#### Filtering by ObjectSet
+
+If you already have an ObjectSet, you can pass it directly instead of extracting the type name:
+
+```tsx
+import { Todo } from "@my/osdk";
+import { useOsdkClient } from "@osdk/react/experimental";
+import { useOnInvalidation } from "@osdk/react/experimental";
+
+function IncompleteTodoWatcher() {
+  const client = useOsdkClient();
+  const incompleteTodos = client(Todo).where({ isComplete: false });
+
+  useOnInvalidation(
+    (event) => {
+      console.log("Todo data changed");
+    },
+    { objectSets: [incompleteTodos] },
+  );
+
+  return null;
+}
+```
+
+This is equivalent to `{ objectTypes: ["Todo"] }` but more ergonomic when you already have the ObjectSet.
+
+#### InvalidationEvent
+
+The callback receives an event with the following properties:
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `addedObjectTypes` | `ReadonlySet<string>` | Object types where new objects were added to cache |
+| `modifiedObjectTypes` | `ReadonlySet<string>` | Object types where existing objects were modified |
+| `isOptimistic` | `boolean` | `true` if triggered by an optimistic update (not yet confirmed) |
+| `timestamp` | `number` | Unix timestamp when the invalidation occurred |
+
+### Client-Level Subscription
+
+For subscribing outside React components (e.g., in setup code or middleware), use the `ObservableClient` directly:
+
+```tsx
+import { observableClient } from "./client";
+
+// Subscribe to all invalidations
+const subscription = observableClient.onInvalidation((event) => {
+  console.log("Added types:", [...event.addedObjectTypes]);
+  console.log("Modified types:", [...event.modifiedObjectTypes]);
+  console.log("Is optimistic:", event.isOptimistic);
+});
+
+// Later: clean up
+subscription.unsubscribe();
+```
+
+With filtering by type:
+
+```tsx
+const subscription = observableClient.onInvalidation(
+  (event) => {
+    externalCache.invalidate([...event.modifiedObjectTypes]);
+  },
+  { objectTypes: ["Employee", "Office"] },
+);
+```
+
+With filtering by ObjectSet:
+
+```tsx
+import { Todo } from "@my/osdk";
+
+const incompleteTodos = client(Todo).where({ isComplete: false });
+
+const subscription = observableClient.onInvalidation(
+  (event) => {
+    console.log("Todo data changed");
+  },
+  { objectSets: [incompleteTodos] },
+);
+```
+
+### Use Cases
+
+- **Sync external caches**: Invalidate localStorage, IndexedDB, or other caches when OSDK data changes
+- **Analytics**: Track when and how often data is refreshed
+- **UI feedback**: Show sync indicators or toast notifications
+- **Debugging**: Log cache activity during development
+
+---
+
 ## Best Practices
 
 1. **Be specific**: Use `invalidateObjects` when you know what data specifically changed
 2. **Use type-level invalidation**: `invalidateObjectType` for external bulk changes
 3. **Avoid multiple sources of truth**: Coordinating side effects between multiple systems is tricky; we recommend solely using the OSDK React cache when possible for data loading
+4. **Filter invalidation listeners**: Use the `objectTypes` option to avoid processing irrelevant events
+5. **Check `isOptimistic`**: Skip side effects for optimistic updates if you only care about confirmed server data
