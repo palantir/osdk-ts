@@ -27,7 +27,7 @@ export type StringPropertyKeys<Q extends ObjectTypeDefinition> =
  * State for keyword search filter
  */
 export interface KeywordSearchFilterState extends BaseFilterState {
-  type: "keywordSearch";
+  type: "KEYWORD_SEARCH";
   searchTerm: string;
   /**
    * How multiple terms are combined
@@ -44,7 +44,7 @@ export interface KeywordSearchFilterDefinition<
   Q extends ObjectTypeDefinition,
   K extends StringPropertyKeys<Q> = StringPropertyKeys<Q>,
 > {
-  type: "keywordSearch";
+  type: "KEYWORD_SEARCH";
   /**
    * Optional unique identifier for stable keying across filter reorders.
    */

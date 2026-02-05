@@ -124,10 +124,10 @@ export type FilterStateType =
   | "SELECT"
   | "TIMELINE"
   | "TOGGLE"
-  | "hasLink"
-  | "linkedProperty"
-  | "keywordSearch"
-  | "custom";
+  | "HAS_LINK"
+  | "LINKED_PROPERTY"
+  | "KEYWORD_SEARCH"
+  | "CUSTOM";
 
 /**
  * Base interface for all filter states
@@ -197,10 +197,6 @@ export interface SelectFilterState<T = string | boolean | number | Date>
 {
   type: "SELECT";
   selectedValues: T[];
-  /**
-   * UI state for checkbox list indicating all options are selected
-   */
-  selectAll?: boolean;
 }
 
 export interface TimelineFilterState extends BaseFilterState {

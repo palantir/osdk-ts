@@ -32,7 +32,7 @@ import type {
  * State for "has link" filter
  */
 export interface HasLinkFilterState extends BaseFilterState {
-  type: "hasLink";
+  type: "HAS_LINK";
   hasLink: boolean;
 }
 
@@ -43,7 +43,7 @@ export interface HasLinkFilterState extends BaseFilterState {
 export interface LinkedPropertyFilterState<S extends FilterState = FilterState>
   extends BaseFilterState
 {
-  type: "linkedProperty";
+  type: "LINKED_PROPERTY";
   linkedFilterState: S;
 }
 
@@ -55,7 +55,7 @@ export interface HasLinkFilterDefinition<
   Q extends ObjectTypeDefinition,
   L extends LinkNames<Q> = LinkNames<Q>,
 > {
-  type: "hasLink";
+  type: "HAS_LINK";
   /**
    * Optional unique identifier for stable keying across filter reorders.
    */
@@ -84,7 +84,7 @@ export interface LinkedPropertyFilterDefinition<
     PropertyTypeFromKey<LinkedQ, LinkedK>
   > = ValidComponentsForPropertyType<PropertyTypeFromKey<LinkedQ, LinkedK>>,
 > {
-  type: "linkedProperty";
+  type: "LINKED_PROPERTY";
   /**
    * Optional unique identifier for stable keying across filter reorders.
    */
