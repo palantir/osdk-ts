@@ -64,7 +64,6 @@ function isObjectTypeDefinition(
   return def.type === "object";
 }
 
-/* @internal */
 export function isObjectSet(
   o: object,
 ): o is ObjectSet<ObjectOrInterfaceDefinition> {
@@ -72,7 +71,6 @@ export function isObjectSet(
     && isWireObjectSet(objectSetDefinitions.get(o));
 }
 
-/** @internal */
 export function getWireObjectSet(
   objectSet: ObjectSet<any> | MinimalObjectSet<any>,
 ): WireObjectSet {
