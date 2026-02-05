@@ -25,3 +25,33 @@ export const fooSpt: SharedPropertyType = {
   displayName: "Foo",
   description: "A foo",
 } satisfies SharedPropertyType;
+
+export const firstNameSpt: SharedPropertyType = {
+  rid: "ri.sharedPropertyType.main.sharedPropertyType.2",
+  apiName: "com.example.namespace.firstName",
+  dataType: {
+    type: "string",
+  },
+  displayName: "first name",
+  description: "A first name",
+} satisfies SharedPropertyType;
+
+export const lastNameSpt: SharedPropertyType = {
+  rid: "ri.sharedPropertyType.main.sharedPropertyType.3",
+  apiName: "com.example.namespace.lastName",
+  dataType: {
+    type: "string",
+  },
+  displayName: "last name",
+  description: "A last name",
+} satisfies SharedPropertyType;
+
+export const ageSpt: SharedPropertyType = {
+  rid: "ri.sharedPropertyType.main.sharedPropertyType.4",
+  apiName: "com.example.namespace.age",
+  dataType: {
+    type: "string",
+  },
+  displayName: "age",
+  description: "An age",
+} satisfies SharedPropertyType;

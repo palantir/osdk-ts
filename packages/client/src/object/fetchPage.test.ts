@@ -25,7 +25,11 @@ import type {
 } from "@osdk/api";
 import { Employee, FooInterface, Todo } from "@osdk/client.test.ontology";
 import type { SearchJsonQueryV2 } from "@osdk/foundry.ontologies";
-import { describe, expect, expectTypeOf, it } from "vitest";
+import { LegacyFauxFoundry, startNodeApiServer } from "@osdk/shared.test";
+import { beforeAll, describe, expect, expectTypeOf, it } from "vitest";
+import type { Client } from "../Client.js";
+import { additionalContext } from "../Client.js";
+import { createClient } from "../createClient.js";
 import { createMinimalClient } from "../createMinimalClient.js";
 import {
   fetchPage,
@@ -378,38 +382,52 @@ describe(fetchPage, () => {
   });
 
   describe("remapPropertyNames", () => {
-    it("returns original names for objects", () => {
+    let client: Client;
+    beforeAll(() => {
+      const testSetup = startNodeApiServer(
+        new LegacyFauxFoundry(),
+        createClient,
+      );
+      ({ client } = testSetup);
+      return () => {
+        testSetup.apiServer.close();
+      };
+    });
+    it("returns original names for objects", async () => {
       const objectType = {
         type: "object" as const,
         apiName: "SimpleObject",
       };
 
-      const result = remapPropertyNames(
+      const result = await remapPropertyNames(
         objectType,
         ["firstName", "lastName"],
+        client[additionalContext],
       );
 
       expect(result).toEqual(["firstName", "lastName"]);
     });
 
-    it("returns original names when objectOrInterface is undefined", () => {
-      const result = remapPropertyNames(
+    it("returns original names when objectOrInterface is undefined", async () => {
+      const result = await remapPropertyNames(
         undefined,
         ["firstName", "lastName"],
+        client[additionalContext],
       );
 
       expect(result).toEqual(["firstName", "lastName"]);
     });
 
-    it("remaps simple names to fully qualified names for interfaces", () => {
+    it("remaps simple names to fully qualified names for interfaces", async () => {
       const interfaceType = {
         type: "interface" as const,
-        apiName: "com.example.namespace.MyInterface",
+        apiName: "com.example.namespace.myInterface",
       };
 
-      const result = remapPropertyNames(
+      const result = await remapPropertyNames(
         interfaceType,
         ["firstName", "lastName", "age"],
+        client[additionalContext],
       );
 
       expect(result).toEqual([
@@ -419,15 +437,16 @@ describe(fetchPage, () => {
       ]);
     });
 
-    it("preserves already fully qualified names for interfaces", () => {
+    it("preserves already fully qualified names for interfaces", async () => {
       const interfaceType = {
         type: "interface" as const,
-        apiName: "com.example.namespace.MyInterface",
+        apiName: "com.example.namespace.myInterface",
       };
 
-      const result = remapPropertyNames(
+      const result = await remapPropertyNames(
         interfaceType,
         ["com.example.namespace.firstName", "lastName"],
+        client[additionalContext],
       );
 
       expect(result).toEqual([
@@ -436,18 +455,39 @@ describe(fetchPage, () => {
       ]);
     });
 
-    it("returns original names for interfaces without namespace", () => {
+    it("returns original names for interfaces without namespace", async () => {
       const interfaceType = {
         type: "interface" as const,
-        apiName: "MyInterface",
+        apiName: "FooInterface",
       };
 
-      const result = remapPropertyNames(
+      const result = await remapPropertyNames(
         interfaceType,
-        ["firstName", "lastName"],
+        ["fooSpt", "fooIdp"],
+        client[additionalContext],
       );
 
-      expect(result).toEqual(["firstName", "lastName"]);
+      expect(result).toEqual(["fooSpt", "fooIdp"]);
+    });
+
+    it("remaps simple names to fully qualified names for interfaces, but doesn't remap idps", async () => {
+      const interfaceType = {
+        type: "interface" as const,
+        apiName: "com.example.namespace.myInterface",
+      };
+
+      const result = await remapPropertyNames(
+        interfaceType,
+        ["firstName", "lastName", "age", "myBirthday"],
+        client[additionalContext],
+      );
+
+      expect(result).toEqual([
+        "com.example.namespace.firstName",
+        "com.example.namespace.lastName",
+        "com.example.namespace.age",
+        "myBirthday",
+      ]);
     });
   });
 });

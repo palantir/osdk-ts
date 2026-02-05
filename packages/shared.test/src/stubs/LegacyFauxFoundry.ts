@@ -19,7 +19,11 @@ import { FauxFoundry } from "@osdk/faux";
 import invariant from "tiny-invariant";
 import { registerLazyActions } from "./actions.js";
 import { ActionTypeWithUnsupportedTypes, editTodo } from "./actionTypes.js";
-import { BarInterface, FooInterface } from "./interfaceTypes.js";
+import {
+  BarInterface,
+  FooInterface,
+  InterfaceWithNamespace,
+} from "./interfaceTypes.js";
 import {
   basicPropertySecurities,
   employee1 as employee_John_50030,
@@ -64,6 +68,7 @@ export class LegacyFauxFoundry extends FauxFoundry {
 
     legacyFullOntology.registerInterfaceType(BarInterface);
     legacyFullOntology.registerInterfaceType(FooInterface);
+    legacyFullOntology.registerInterfaceType(InterfaceWithNamespace);
 
     legacyFullOntology.registerSharedPropertyType(fooSpt);
 
