@@ -124,10 +124,10 @@ export type FilterStateType =
   | "SELECT"
   | "TIMELINE"
   | "TOGGLE"
-  | "hasLink"
-  | "linkedProperty"
-  | "keywordSearch"
-  | "custom";
+  | "HAS_LINK"
+  | "LINKED_PROPERTY"
+  | "KEYWORD_SEARCH"
+  | "CUSTOM";
 
 /**
  * Base interface for all filter states
