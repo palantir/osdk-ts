@@ -14,17 +14,14 @@
  * limitations under the License.
  */
 
-import type {
-  Client,
-  InterfaceDefinition,
-  ObjectSet,
-  ObjectTypeDefinition,
-} from "@osdk/client";
+import type { Client, ObjectSet } from "@osdk/client";
 import { hydrateObjectSetFromRid } from "@osdk/client/internal";
-import type { AsyncParameterValueMap, WidgetConfig } from "@osdk/widget.api";
+import type {
+  AllowedObjectSetType,
+  AsyncParameterValueMap,
+  WidgetConfig,
+} from "@osdk/widget.api";
 import type { ExtendedAsyncParameterValueMap } from "../context.js";
-
-type ObjectOrInterfaceDefinition = ObjectTypeDefinition | InterfaceDefinition;
 
 /**
  * Patches parameter values with hydrated object sets for object set parameters.
@@ -86,7 +83,7 @@ export function extendParametersWithObjectSets<
   return extendedParameters;
 }
 
-function getOrHydrateObjectSet<T extends ObjectOrInterfaceDefinition>(
+function getOrHydrateObjectSet<T extends AllowedObjectSetType>(
   osdkClient: Client | undefined,
   cache: Map<string, { objectSetRid: string; objectSet: ObjectSet<T> }>,
   paramKey: string,
