@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-import type {
-  DerivedProperty,
-  InterfaceDefinition,
-  ObjectTypeDefinition,
-} from "@osdk/api";
+.osdkHeaderContent {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
-export type InferRdpTypes<
-  Q extends ObjectTypeDefinition | InterfaceDefinition,
-  WP extends DerivedProperty.Clause<Q> | undefined,
-> = WP extends DerivedProperty.Clause<Q> ? {
-    [K in keyof WP]: WP[K] extends DerivedProperty.Creator<Q, infer T> ? T
-      : never;
-  }
-  : {};
+.osdkHeaderContent:has([role="checkbox"]) {
+  display: flex;
+  justify-content: center;
+}

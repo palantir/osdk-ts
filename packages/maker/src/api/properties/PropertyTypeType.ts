@@ -31,7 +31,8 @@ export type PropertyTypeTypePrimitive =
   | "long"
   | "short"
   | "string"
-  | "timestamp";
+  | "timestamp"
+  | "attachment";
 
 export type PropertyTypeTypeExotic =
   | "geopoint"

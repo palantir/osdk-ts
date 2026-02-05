@@ -25,7 +25,11 @@ import type {
 } from "@osdk/client.unstable";
 import invariant from "tiny-invariant";
 import { OntologyEntityTypeEnum } from "./common/OntologyEntityTypeEnum.js";
-import { namespace, updateOntology } from "./defineOntology.js";
+import {
+  namespace,
+  ontologyDefinition,
+  updateOntology,
+} from "./defineOntology.js";
 import { type ValueTypeDefinitionVersion } from "./values/ValueTypeDefinitionVersion.js";
 import { type ValueTypeType } from "./values/ValueTypeType.js";
 
@@ -121,6 +125,7 @@ export type ValueTypeDefinition = {
   type: NewValueTypeDefinition;
   version: string;
   status?: UserValueTypeStatus;
+  namespacePrefix?: boolean;
 };
 
 export type UserValueTypeStatus = "active" | {
@@ -133,10 +138,26 @@ export type UserValueTypeStatus = "active" | {
 export function defineValueType(
   valueTypeDef: ValueTypeDefinition,
 ): ValueTypeDefinitionVersion {
-  const { apiName, displayName, description, type, version } = valueTypeDef;
+  const {
+    apiName: inputApiName,
+    displayName,
+    description,
+    type,
+    version,
+    namespacePrefix,
+  } = valueTypeDef;
+  const apiName = namespacePrefix ? namespace + inputApiName : inputApiName;
   const semverValidation =
     /^((([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?)(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?)$/;
   invariant(semverValidation.test(version), "Version is not a valid semver");
+
+  const existingVersions =
+    ontologyDefinition[OntologyEntityTypeEnum.VALUE_TYPE][apiName] ?? [];
+  const duplicateVersion = existingVersions.find(vt => vt.version === version);
+  invariant(
+    duplicateVersion === undefined,
+    `Value type with apiName ${apiName} and version ${version} is already defined`,
+  );
 
   const typeName: TypeNames = typeof type.type === "string"
     ? type.type

@@ -742,6 +742,8 @@ function extractAllowedValuesFromPropertyType(
       return { type: "mediaReference" };
     case "geotimeSeries":
       return { type: "geotimeSeriesReference" };
+    case "attachment":
+      return { type: "attachment" };
     default:
       switch (type.type) {
         case "marking":

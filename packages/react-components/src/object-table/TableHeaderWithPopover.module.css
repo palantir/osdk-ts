@@ -1,0 +1,110 @@
+/*
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.osdkCenterContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.osdkContentGap {
+  display: flex;
+  gap: var(--osdk-surface-spacing);
+}
+
+.osdkHeaderContainer {
+  justify-content: space-between;
+  flex: 1;
+  min-width: 0;
+  align-self: stretch;
+}
+
+.osdkHeaderContentLeft {
+  min-width: 0;
+  flex-shrink: 1;
+}
+
+.osdkHeaderContentRight {
+  flex-shrink: 0;
+}
+
+.osdkHeaderPopoverTrigger {
+  padding: 0;
+  flex-shrink: 0;
+  flex-grow: 0;
+  border: var(--osdk-surface-border-width) solid
+    var(--osdk-surface-border-color-default);
+  border-radius: var(--osdk-surface-border-radius);
+  color: var(--osdk-intent-default-foreground);
+  user-select: none;
+  outline: none;
+
+  &:hover {
+    background-color: var(--osdk-intent-default-hover);
+  }
+
+  &[data-popup-open] {
+    background-color: var(--osdk-intent-primary-rest);
+  }
+
+  &:focus-visible {
+    outline: var(--osdk-focus-visible-outline);
+    outline-offset: var(--osdk-focus-visible-outline-offset);
+  }
+}
+
+.osdkHeaderIcon {
+  width: var(--osdk-iconography-size-small);
+  height: var(--osdk-iconography-size-small);
+}
+
+.osdkHeaderPopup {
+  box-sizing: border-box;
+  padding: var(--osdk-surface-spacing);
+  border-radius: var(--osdk-surface-border-radius);
+  border: var(--osdk-surface-border-width) solid
+    var(--osdk-surface-border-color-default);
+  background-color: var(--osdk-surface-background-color-default);
+  color: var(--osdk-typography-color-default-rest);
+  box-shadow: var(--osdk-surface-shadow-2);
+  font-size: var(--osdk-typography-size-body-medium);
+  outline: none;
+}
+
+.osdkHeaderMenuItem {
+  justify-content: flex-start;
+  padding: var(--osdk-surface-spacing);
+  cursor: pointer;
+}
+
+.osdkHeaderMenuItem:hover {
+  outline: none;
+  background-color: var(--osdk-surface-background-color-default-hover);
+  border-radius: var(--osdk-surface-border-radius);
+}
+
+.osdkHeaderActiveMenuItem {
+  background-color: var(--osdk-intent-primary-rest);
+  color: var(--osdk-intent-primary-foreground);
+}
+
+.osdkHeaderActiveMenuItem:hover {
+  background-color: var(--osdk-intent-primary-hover);
+}
+
+.osdkHeaderActiveMenuItem:active {
+  background-color: var(--osdk-intent-primary-active);
+}

@@ -76,6 +76,8 @@ export abstract class BaseListQuery<
    */
   protected pendingPageFetch?: Promise<void>;
 
+  protected currentTotalCount?: string;
+
   //
   // Shared Implementations
   //
@@ -88,6 +90,7 @@ export abstract class BaseListQuery<
    * @param status Status to set for the list
    * @param batch Batch context to use
    * @param append Whether to append to the existing list or replace it
+   * @param totalCount Optional total count from API response
    * @returns The updated entry
    */
   public _updateList<T extends ObjectCacheKey | Osdk.Instance<any>>(
@@ -95,6 +98,7 @@ export abstract class BaseListQuery<
     status: Status,
     batch: BatchContext,
     append: boolean = false,
+    totalCount?: string,
   ): Entry<KEY> {
     if (process.env.NODE_ENV !== "production") {
       this.logger
@@ -125,7 +129,11 @@ export abstract class BaseListQuery<
     objectCacheKeys = this._sortCacheKeys(objectCacheKeys, batch);
     objectCacheKeys = removeDuplicates(objectCacheKeys, batch);
 
-    return this.writeToStore({ data: objectCacheKeys }, status, batch);
+    return this.writeToStore(
+      { data: objectCacheKeys, totalCount },
+      status,
+      batch,
+    );
   }
 
   /**
@@ -250,6 +258,7 @@ export abstract class BaseListQuery<
       hasMore: this.nextPageToken != null,
       status: params.status,
       lastUpdated: params.lastUpdated,
+      totalCount: params.totalCount,
     } as unknown as PAYLOAD; // Type assertion needed since we don't know exact subtype
   }
 
@@ -390,6 +399,8 @@ export abstract class BaseListQuery<
       // Call the subclass-specific implementation to fetch data
       const result = await this.fetchPageData(signal);
 
+      this.currentTotalCount = result.totalCount;
+
       // Check for abort again after fetch
       if (signal?.aborted) {
         return undefined;
@@ -411,6 +422,7 @@ export abstract class BaseListQuery<
           finalStatus,
           batch,
           append,
+          this.currentTotalCount,
         );
       });
 
@@ -461,9 +473,12 @@ export abstract class BaseListQuery<
     _status: Status,
     batch: BatchContext,
   ): Entry<KEY> {
-    // Default implementation writes an empty list with error status
-    // Most subclasses should be able to use this
-    return this.writeToStore({ data: [] }, "error", batch);
+    const existingTotalCount = batch.read(this.cacheKey)?.value?.totalCount;
+    return this.writeToStore(
+      { data: [], totalCount: existingTotalCount },
+      "error",
+      batch,
+    );
   }
 
   /**
@@ -538,7 +553,12 @@ export abstract class BaseListQuery<
     objectCacheKeys = removeDuplicates(objectCacheKeys, batch);
 
     // Step 5: Write to store
-    return this.writeToStore({ data: objectCacheKeys }, options.status, batch);
+    const existingTotalCount = batch.read(this.cacheKey)?.value?.totalCount;
+    return this.writeToStore(
+      { data: objectCacheKeys, totalCount: existingTotalCount },
+      options.status,
+      batch,
+    );
   }
 
   //

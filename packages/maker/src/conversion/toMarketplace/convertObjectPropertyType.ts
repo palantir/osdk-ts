@@ -22,6 +22,7 @@ import {
   defaultTypeClasses,
   getPropertyTypeName,
   hasRenderHints,
+  shouldBeIndexedForSearch,
   shouldNotHaveRenderHints,
 } from "../../api/propertyConversionUtils.js";
 import { convertNullabilityToDataConstraint } from "./convertNullabilityToDataConstraint.js";
@@ -48,7 +49,8 @@ export function convertObjectPropertyType(
       description: property.description,
       visibility: property.visibility ?? "NORMAL",
     },
-    indexedForSearch: property.indexedForSearch ?? true,
+    indexedForSearch: property.indexedForSearch
+      ?? shouldBeIndexedForSearch(property.type),
     ruleSetBinding: undefined,
     baseFormatter: property.baseFormatter,
     type: property.array
