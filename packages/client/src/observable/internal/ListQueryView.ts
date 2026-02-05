@@ -99,7 +99,7 @@ export class ListQueryView<PAYLOAD extends BaseListPayloadShape> {
     return sub;
   }
 
-  #reemitWithNewViewLimit(): void {
+  #reEmitWithNewViewLimit(): void {
     if (this.#lastPayload && this.#observer) {
       this.#observer.next?.(this.#transformPayload(this.#lastPayload));
     }
@@ -136,7 +136,7 @@ export class ListQueryView<PAYLOAD extends BaseListPayloadShape> {
       }
 
       // We have enough data in cache, just re-emit with new viewLimit (sync)
-      this.#reemitWithNewViewLimit();
+      this.#reEmitWithNewViewLimit();
       return Promise.resolve();
     };
   }
