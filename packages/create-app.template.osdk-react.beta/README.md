@@ -1,6 +1,6 @@
-# @osdk/create-app.template.react-hooks.beta
+# @osdk/create-app.template.osdk-react.beta
 
-React template using @osdk/react hooks (useOsdkObjects, useOsdkAction, etc.) with OsdkProvider2.
+React template using `@osdk/react` hooks (useOsdkObjects, useOsdkAction, etc.) with OsdkProvider2.
 
 ## Overview
 
