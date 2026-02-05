@@ -59,7 +59,7 @@ describe("useOsdkObject enabled option", () => {
     const wrapper = createWrapper();
 
     renderHook(
-      () => useOsdkObject(mockInstance, false),
+      () => useOsdkObject(mockInstance, { enabled: false }),
       { wrapper },
     );
 
@@ -70,7 +70,7 @@ describe("useOsdkObject enabled option", () => {
     const wrapper = createWrapper();
 
     renderHook(
-      () => useOsdkObject(MockObjectType, "pk-000", false),
+      () => useOsdkObject(MockObjectType, "pk-000", { enabled: false }),
       { wrapper },
     );
 
@@ -88,7 +88,7 @@ describe("useOsdkObject enabled option", () => {
     expect(mockObserveObject).toHaveBeenCalledWith(
       "MockObject",
       "instance-123",
-      { mode: "offline" },
+      { mode: "offline", streamUpdates: false },
       expect.any(Object),
     );
   });
@@ -104,7 +104,7 @@ describe("useOsdkObject enabled option", () => {
     expect(mockObserveObject).toHaveBeenCalledWith(
       "MockObject",
       "pk-222",
-      { mode: undefined },
+      { mode: undefined, streamUpdates: false },
       expect.any(Object),
     );
   });
@@ -113,7 +113,7 @@ describe("useOsdkObject enabled option", () => {
     const wrapper = createWrapper();
 
     const { rerender } = renderHook(
-      ({ enabled }) => useOsdkObject(mockInstance, enabled),
+      ({ enabled }) => useOsdkObject(mockInstance, { enabled }),
       {
         wrapper,
         initialProps: { enabled: false },
@@ -125,5 +125,79 @@ describe("useOsdkObject enabled option", () => {
     rerender({ enabled: true });
 
     expect(mockObserveObject).toHaveBeenCalledTimes(1);
+  });
+
+  it("should support legacy boolean enabled parameter (instance signature)", () => {
+    const wrapper = createWrapper();
+
+    renderHook(
+      () => useOsdkObject(mockInstance, false),
+      { wrapper },
+    );
+
+    expect(mockObserveObject).not.toHaveBeenCalled();
+  });
+
+  it("should support legacy boolean enabled parameter (type signature)", () => {
+    const wrapper = createWrapper();
+
+    renderHook(
+      () => useOsdkObject(MockObjectType, "pk-123", false),
+      { wrapper },
+    );
+
+    expect(mockObserveObject).not.toHaveBeenCalled();
+  });
+
+  it("should pass streamUpdates option to observeObject", () => {
+    const wrapper = createWrapper();
+
+    renderHook(
+      () => useOsdkObject(MockObjectType, "pk-123", { streamUpdates: true }),
+      { wrapper },
+    );
+
+    expect(mockObserveObject).toHaveBeenCalledWith(
+      "MockObject",
+      "pk-123",
+      { mode: undefined, streamUpdates: true },
+      expect.any(Object),
+    );
+  });
+
+  it("should default streamUpdates to false", () => {
+    const wrapper = createWrapper();
+
+    renderHook(
+      () => useOsdkObject(MockObjectType, "pk-123"),
+      { wrapper },
+    );
+
+    expect(mockObserveObject).toHaveBeenCalledWith(
+      "MockObject",
+      "pk-123",
+      { mode: undefined, streamUpdates: false },
+      expect.any(Object),
+    );
+  });
+
+  it("should support both enabled and streamUpdates options together", () => {
+    const wrapper = createWrapper();
+
+    renderHook(
+      () =>
+        useOsdkObject(MockObjectType, "pk-123", {
+          enabled: true,
+          streamUpdates: true,
+        }),
+      { wrapper },
+    );
+
+    expect(mockObserveObject).toHaveBeenCalledWith(
+      "MockObject",
+      "pk-123",
+      { mode: undefined, streamUpdates: true },
+      expect.any(Object),
+    );
   });
 });
