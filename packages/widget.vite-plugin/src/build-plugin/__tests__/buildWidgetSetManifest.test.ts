@@ -15,9 +15,22 @@
  */
 
 import type { ParameterDefinition, WidgetSetInputSpec } from "@osdk/widget.api";
-import { describe, expect, test } from "vitest";
+import type { Logger } from "vite";
+import { describe, expect, test, vi } from "vitest";
 import { buildWidgetSetManifest } from "../buildWidgetSetManifest.js";
 import type { WidgetBuildOutputs } from "../getWidgetBuildOutputs.js";
+
+function createMockLogger(): Logger {
+  return {
+    info: vi.fn(),
+    warn: vi.fn(),
+    warnOnce: vi.fn(),
+    error: vi.fn(),
+    clearScreen: vi.fn(),
+    hasErrorLogged: vi.fn(),
+    hasWarned: false,
+  };
+}
 
 describe("buildWidgetSetManifest", () => {
   const WIDGET_SET_RID = "ri.widgetregistry..widget-set.test-widget-set";
@@ -45,6 +58,7 @@ describe("buildWidgetSetManifest", () => {
       WIDGET_SET_VERSION,
       widgetBuilds,
       widgetSetInputSpec,
+      createMockLogger(),
     );
 
     expect(manifest).toEqual({
@@ -154,6 +168,7 @@ describe("buildWidgetSetManifest", () => {
       WIDGET_SET_VERSION,
       widgetBuilds,
       widgetSetInputSpec,
+      createMockLogger(),
     );
 
     expect(manifest.widgetSet.widgets.widget.parameters.objectSetParamLegacy)
@@ -203,6 +218,7 @@ describe("buildWidgetSetManifest", () => {
       WIDGET_SET_VERSION,
       widgetBuilds,
       widgetSetInputSpec,
+      createMockLogger(),
     );
 
     expect(manifest.widgetSet.widgets.widget.entrypointJs[0].path).toBe(
@@ -229,6 +245,7 @@ describe("buildWidgetSetManifest", () => {
       WIDGET_SET_VERSION,
       widgetBuilds,
       widgetSetInputSpec,
+      createMockLogger(),
     );
 
     expect(manifest.widgetSet.widgets.widget.entrypointJs[0].path).toBe(

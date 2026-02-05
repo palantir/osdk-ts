@@ -93,6 +93,7 @@ export function FoundryWidgetBuildPlugin(): Plugin {
           widgetSetVersion,
           widgetBuilds,
           widgetSetInputSpec,
+          config.logger,
         );
 
         // Write the manifest to the dist directory

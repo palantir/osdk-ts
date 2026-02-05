@@ -77,6 +77,7 @@ function validateWidgetParameters(parameters: ParameterConfig): void {
     }
     if (parameterConfig.type === "objectSet") {
       if (
+        // eslint-disable-next-line @typescript-eslint/no-deprecated
         parameterConfig.objectType != null
         && parameterConfig.allowedType != null
       ) {
@@ -84,6 +85,7 @@ function validateWidgetParameters(parameters: ParameterConfig): void {
           `Parameter id "${parameterId}" cannot have both objectType and allowedType defined, use only allowedType.`,
         );
       }
+       
       const typeSource = parameterConfig.allowedType
         ?? parameterConfig.objectType;
 

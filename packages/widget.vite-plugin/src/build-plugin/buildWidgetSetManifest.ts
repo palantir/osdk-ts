@@ -21,14 +21,17 @@ import type {
   WidgetSetInputSpec,
   WidgetSetManifest,
 } from "@osdk/widget.api";
+import type { Logger } from "vite";
 import type { WidgetBuildOutputs } from "./getWidgetBuildOutputs.js";
 import { validateWidgetSet } from "./validateWidgetSet.js";
+import colors from "picocolors";
 
 export function buildWidgetSetManifest(
   widgetSetRid: string,
   widgetSetVersion: string,
   widgetBuilds: WidgetBuildOutputs[],
   widgetSetInputSpec: WidgetSetInputSpec,
+  logger: Logger,
 ): WidgetSetManifest {
   validateWidgetSet(widgetBuilds);
   return {
@@ -38,7 +41,7 @@ export function buildWidgetSetManifest(
       version: widgetSetVersion,
       widgets: Object.fromEntries(
         widgetBuilds
-          .map(buildWidgetManifest)
+          .map(build => buildWidgetManifest(build, logger))
           .map((widgetManifest) => [widgetManifest.id, widgetManifest]),
       ),
       inputSpec: widgetSetInputSpec,
@@ -48,6 +51,7 @@ export function buildWidgetSetManifest(
 
 function buildWidgetManifest(
   widgetBuild: WidgetBuildOutputs,
+  logger: Logger,
 ): WidgetManifestConfig {
   const widgetConfig = widgetBuild.widgetConfig;
   return {
@@ -62,7 +66,7 @@ function buildWidgetManifest(
     entrypointCss: widgetBuild.stylesheets.map((path) => ({
       path: trimLeadingSlash(path),
     })),
-    parameters: convertParameters(widgetConfig.parameters),
+    parameters: convertParameters(widgetConfig.parameters, logger),
     events: widgetConfig.events,
     permissions: widgetConfig.permissions,
   };
@@ -70,25 +74,30 @@ function buildWidgetManifest(
 
 function convertParameters(
   parameters: Record<string, ParameterDefinition>,
+  logger: Logger,
 ): Record<string, ManifestParameterDefinition> {
   return Object.fromEntries(
     Object.entries(parameters).map(([key, param]) => [
       key,
-      convertParameter(param),
+      convertParameter(param, logger),
     ]),
   );
 }
 
 function convertParameter(
   parameter: ParameterDefinition,
+  logger: Logger,
 ): ManifestParameterDefinition {
   if (parameter.type === "objectSet") {
     // Config has already been validated so rid must be present
-    // Extract the type source from either objectType (legacy) or allowedType (new)
-
     const allowedType = parameter.allowedType ?? parameter.objectType;
     const allowedTypeRid = allowedType.internalDoNotUseMetadata?.rid;
     if (allowedTypeRid != null) {
+      if (parameter.objectType != null) {
+        logger.warn(
+          colors.yellow(`Parameter "${parameter.displayName}" uses the deprecated objectType field which will be removed in the future. Please use allowedType instead.`),
+        );
+      }
       return {
         type: "objectSet",
         displayName: parameter.displayName,

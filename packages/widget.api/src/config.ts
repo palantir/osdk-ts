@@ -35,6 +35,7 @@ interface ArrayParameterDefinition<S extends ParameterValue.PrimitiveType> {
 interface ObjectSetParameterDefinitionLegacy<T extends ObjectType> {
   type: "objectSet";
   displayName: string;
+  /** @deprecated prefer allowedType instead */
   objectType: T;
   allowedType?: never;
 }
