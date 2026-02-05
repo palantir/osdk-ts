@@ -1,0 +1,78 @@
+# {{project}}
+
+A React application built with OSDK React hooks.
+
+## Getting Started
+
+1. Install dependencies:
+```bash
+npm install
+```
+
+2. Create a `.env.local` file with your Foundry credentials:
+```
+VITE_FOUNDRY_API_URL=https://your-stack.palantirfoundry.com
+VITE_FOUNDRY_CLIENT_ID=your-client-id
+VITE_FOUNDRY_REDIRECT_URL=http://localhost:8080
+{{#if osdkPackage}}
+VITE_FOUNDRY_ONTOLOGY_RID=your-ontology-rid
+{{/if}}
+```
+
+3. Start the development server:
+```bash
+npm run dev
+```
+
+## Project Structure
+
+- `src/main.tsx` - Entry point with OsdkProvider2
+- `src/client.ts` - OSDK client setup with OAuth
+- `src/App.tsx` - Main application component
+- `src/components/` - Example components using OSDK hooks
+
+## Available Scripts
+
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run lint` - Run ESLint
+- `npm run preview` - Preview production build
+
+## OSDK Hooks
+
+This template uses the modern OSDK React hooks pattern:
+
+### useOsdkObjects
+Fetch a list of objects with filtering, sorting, and pagination:
+```tsx
+const { data, isLoading, error, fetchMore } = useOsdkObjects(Employee, {
+  where: { department: "Engineering" },
+  orderBy: { hireDate: "desc" },
+  pageSize: 25,
+});
+```
+
+### useOsdkObject
+Subscribe to a single object by primary key:
+```tsx
+const { object, isLoading, isOptimistic } = useOsdkObject(Employee, employeeId);
+```
+
+### useOsdkAction
+Apply actions with optimistic updates:
+```tsx
+const { applyAction, isPending, error } = useOsdkAction(updateEmployee);
+
+await applyAction({
+  employee,
+  newTitle: "Senior Engineer",
+  $optimisticUpdate: (ctx) => {
+    ctx.updateObject(employee.$clone({ title: "Senior Engineer" }));
+  },
+});
+```
+
+## Learn More
+
+- [OSDK Documentation]({{foundryUrl}}/docs/ontology-sdk)
+- [React Documentation](https://react.dev/)

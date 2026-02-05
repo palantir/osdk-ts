@@ -5,6 +5,7 @@ import { EmployeeDetails } from "./EmployeeDetails.js";
 import { EmployeesList } from "./EmployeesList.js";
 import { EmployeesListEnhanced } from "./EmployeesListEnhanced.js";
 import { EmployeesTable } from "./EmployeesTable.js";
+import { FunctionDemo } from "./FunctionDemo.js";
 
 export function EmployeesPage() {
   const [selectedEmployee, setSelectedEmployee] = useState<
@@ -52,6 +53,12 @@ export function EmployeesPage() {
       </div>
       <div className="flex w-192">
         <EmployeesTable />
+      </div>
+
+      <div className="mt-8">
+        <Section>
+          <FunctionDemo />
+        </Section>
       </div>
     </div>
   );
