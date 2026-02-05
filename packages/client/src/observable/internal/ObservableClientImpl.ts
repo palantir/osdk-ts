@@ -156,10 +156,9 @@ export class ObservableClientImpl implements ObservableClient {
       if (isObjectSet(item)) {
         objectSetWires.push(getWireObjectSet(item));
       } else {
-        const instance = item as Osdk.Instance<ObjectTypeDefinition>;
         instances.push({
-          $apiName: instance.$objectType ?? instance.$apiName,
-          $primaryKey: instance.$primaryKey,
+          $apiName: item.$objectType ?? item.$apiName,
+          $primaryKey: item.$primaryKey,
         });
       }
     }
