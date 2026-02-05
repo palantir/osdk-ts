@@ -114,7 +114,7 @@ describe("buildWidgetSetManifest", () => {
       objectSetParam: {
         type: "objectSet",
         displayName: "Object Set Parameter",
-        objectType: {
+        allowedType: {
           type: "object",
           apiName: "employee",
           internalDoNotUseMetadata: {

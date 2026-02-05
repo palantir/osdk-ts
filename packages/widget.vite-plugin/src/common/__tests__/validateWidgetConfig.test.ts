@@ -107,7 +107,7 @@ describe("validateWidgetConfig", () => {
     validConfig.parameters.myObjectSet = {
       type: "objectSet",
       displayName: "My Object Set",
-      objectType: {
+      allowedType: {
         type: "object",
         apiName: "employee",
         internalDoNotUseMetadata: {
@@ -123,7 +123,7 @@ describe("validateWidgetConfig", () => {
     invalidConfig.parameters.myObjectSet = {
       type: "objectSet",
       displayName: "My Object Set",
-      objectType: {
+      allowedType: {
         type: "object",
         apiName: "employee",
       },
