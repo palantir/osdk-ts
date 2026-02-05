@@ -30,6 +30,8 @@ import type {
 import type * as Ontologies from "@osdk/foundry.ontologies";
 
 import { hash } from "node:crypto";
+import { createRequire } from "node:module";
+import { pathToFileURL } from "node:url";
 import * as path from "path";
 import invariant from "tiny-invariant";
 import * as ts from "typescript";
@@ -68,18 +70,30 @@ interface IFunctionDiscovererConstructor {
 // Lazy-loaded function discovery module
 let FunctionDiscovererClass: IFunctionDiscovererConstructor | null = null;
 
-async function loadFunctionDiscoverer(): Promise<
-  IFunctionDiscovererConstructor | null
-> {
-  if (FunctionDiscovererClass !== null) {
+async function loadFunctionDiscoverer(
+  nodeModulesPath?: string,
+): Promise<IFunctionDiscovererConstructor | null> {
+  if (FunctionDiscovererClass != null) {
     return FunctionDiscovererClass;
   }
   try {
-    // Use dynamic import to avoid compile-time dependency on optional package
-    const modulePath = "@foundry/functions-typescript-osdk-discovery";
-    const module = await import(/* @vite-ignore */ modulePath);
-    FunctionDiscovererClass = module.FunctionDiscoverer;
-    return FunctionDiscovererClass;
+    if (nodeModulesPath) {
+      // Use createRequire to load from the specified node_modules path
+      const requireFromPath = createRequire(
+        pathToFileURL(path.join(nodeModulesPath, "package.json")).href,
+      );
+      const module = requireFromPath(
+        "@foundry/functions-typescript-osdk-discovery",
+      );
+      FunctionDiscovererClass = module.FunctionDiscoverer;
+      return FunctionDiscovererClass;
+    } else {
+      // Use dynamic import to avoid compile-time dependency on optional package
+      const modulePath = "@foundry/functions-typescript-osdk-discovery";
+      const module = await import(/* @vite-ignore */ modulePath);
+      FunctionDiscovererClass = module.FunctionDiscoverer;
+      return FunctionDiscovererClass;
+    }
   } catch {
     return null;
   }
@@ -127,7 +141,8 @@ export class OntologyIrToFullMetadataConverter {
   // includes functions - requires optional @foundry/functions-typescript-osdk-discovery
   static async getFullMetadataFromIrAndFunctions(
     ir: OntologyIrOntologyBlockDataV2,
-    srcDir: string,
+    functionsDir: string,
+    nodeModulesPath?: string,
   ): Promise<Ontologies.OntologyFullMetadata> {
     const interfaceTypes = this.getOsdkInterfaceTypes(
       Object.values(ir.interfaceTypes),
@@ -140,7 +155,10 @@ export class OntologyIrToFullMetadataConverter {
       Object.values(ir.linkTypes),
     );
     const actionTypes = this.getOsdkActionTypes(Object.values(ir.actionTypes));
-    const queryTypes = await this.getOsdkQueryTypes(srcDir);
+    const queryTypes = await this.getOsdkQueryTypes(
+      functionsDir,
+      nodeModulesPath,
+    );
 
     return {
       interfaceTypes,
@@ -160,33 +178,51 @@ export class OntologyIrToFullMetadataConverter {
 
   static async getOsdkQueryTypes(
     functionsDir: string,
-  ): Promise<Record<Ontologies.VersionedQueryTypeApiName, Ontologies.QueryTypeV2>> {
-    const FunctionDiscoverer = await loadFunctionDiscoverer();
+    nodeModulesPath?: string,
+  ): Promise<
+    Record<Ontologies.VersionedQueryTypeApiName, Ontologies.QueryTypeV2>
+  > {
+    const FunctionDiscoverer = await loadFunctionDiscoverer(nodeModulesPath);
     if (!FunctionDiscoverer) {
       // Function discovery not available - return empty
       return {};
     }
 
-    const srcDir =
-      "/Volumes/git/osdk-ts/packages/generator-converters.ontologyir/src";
-    const tsConfigFilePath = path.join(srcDir, "tsconfig.json");
-    const program = this.createProgram(tsConfigFilePath, srcDir);
-    const entryPointPath = path.join(srcDir, "index.ts");
-    const fullFilePath = path.join(srcDir, functionsDir);
+    // Find tsconfig.json - try functionsDir first, then parent directory
+    let tsConfigPath = path.join(functionsDir, "tsconfig.json");
+    let projectDir = functionsDir;
+    try {
+      ts.readConfigFile(tsConfigPath, ts.sys.readFile);
+    } catch {
+      // Try parent directory
+      tsConfigPath = path.join(path.dirname(functionsDir), "tsconfig.json");
+      projectDir = path.dirname(functionsDir);
+    }
+
+    const program = this.createProgram(tsConfigPath, projectDir);
+
+    // Find index.ts or use first file as entry point
+    const sourceFiles = program.getSourceFiles()
+      .map(sf => sf.fileName)
+      .filter(f => !f.includes("node_modules"));
+    const entryPointPath = sourceFiles.find(f => f.endsWith("index.ts"))
+      ?? sourceFiles[0];
 
     // Initialize FunctionDiscoverer with the program
-    const fd = new FunctionDiscoverer(program, entryPointPath, fullFilePath);
+    const fd = new FunctionDiscoverer(program, entryPointPath, functionsDir);
 
     // Discover functions using the provided filePath as the functionsDirectoryPath
     const functions = fd.discover();
 
     const queries: Ontologies.QueryTypeV2[] = [];
     functions.discoveredFunctions.forEach((func: IDiscoveredFunction) => {
+      if (func.locator.type !== "typescriptOsdk") {
+        return;
+      }
+      const functionName = func.locator.typescriptOsdk!.functionName;
       const queryType: Ontologies.QueryTypeV2 = {
-        apiName: func.locator.type === "typescriptOsdk"
-          ? func.locator.typescriptOsdk!.functionName
-          : "placeholder",
-        rid: "placeholder.rid",
+        apiName: functionName,
+        rid: `ri.function-registry.main.function.${functionName}`,
         version: "0.0.0",
         parameters: func.inputs.reduce<
           Record<ApiName, Ontologies.QueryParameterV2>

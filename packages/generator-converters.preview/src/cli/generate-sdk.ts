@@ -16,21 +16,42 @@
  */
 
 import { generateClientSdkVersionTwoPointZero } from "@osdk/generator";
+import { OntologyIrToFullMetadataConverter } from "@osdk/generator-converters.ontologyir";
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
 import { PreviewOntologyIrConverter } from "../PreviewOntologyIrConverter.js";
 
 const USAGE =
-  `Usage: generate-sdk <input-ontology-ir.json> <package-name> <package-version> <output-dir>
+  `Usage: generate-sdk <input-ontology-ir.json> <package-name> <package-version> <output-dir> [options]
 
 Arguments:
   input-ontology-ir.json  Path to the OntologyIR JSON file
   package-name            Name for the generated SDK package
   package-version         Version string for the generated SDK
-  output-dir              Directory where the SDK will be generated`;
+  output-dir              Directory where the SDK will be generated
+
+Options:
+  --functions-dir <path>       Path to functions source directory (enables function discovery)
+  --node-modules-path <path>   Path to node_modules containing @foundry packages (required for function discovery)`;
 
 async function main(): Promise<void> {
   const args = process.argv.slice(2);
+
+  // Parse --functions-dir option
+  let functionsDir: string | undefined;
+  const functionsDirIndex = args.indexOf("--functions-dir");
+  if (functionsDirIndex !== -1 && args[functionsDirIndex + 1]) {
+    functionsDir = path.resolve(args[functionsDirIndex + 1]);
+    args.splice(functionsDirIndex, 2);
+  }
+
+  // Parse --node-modules-path option
+  let nodeModulesPath: string | undefined;
+  const nodeModulesIndex = args.indexOf("--node-modules-path");
+  if (nodeModulesIndex !== -1 && args[nodeModulesIndex + 1]) {
+    nodeModulesPath = path.resolve(args[nodeModulesIndex + 1]);
+    args.splice(nodeModulesIndex, 2);
+  }
 
   if (args.length < 4) {
     // eslint-disable-next-line no-console
@@ -72,6 +93,32 @@ async function main(): Promise<void> {
         typeof PreviewOntologyIrConverter.getPreviewFullMetadataFromIr
       >[0],
     );
+
+  // Discover functions if --functions-dir is provided
+  if (functionsDir) {
+    // eslint-disable-next-line no-console
+    console.log(`Discovering functions in ${functionsDir}...`);
+
+    const queryTypes = await OntologyIrToFullMetadataConverter
+      .getOsdkQueryTypes(
+        functionsDir,
+        nodeModulesPath,
+      );
+
+    const functionNames = Object.keys(queryTypes);
+    if (functionNames.length > 0) {
+      previewMetadata.queryTypes = queryTypes;
+      // eslint-disable-next-line no-console
+      console.log(
+        `Discovered ${functionNames.length} function(s): ${
+          functionNames.join(", ")
+        }`,
+      );
+    } else {
+      // eslint-disable-next-line no-console
+      console.log("No functions discovered.");
+    }
+  }
 
   // Convert ActionTypeFullMetadata to ActionTypeV2 for generator compatibility
   const metadata = {
