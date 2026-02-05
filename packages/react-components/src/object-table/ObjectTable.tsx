@@ -66,11 +66,12 @@ export function ObjectTable<
   renderCellContextMenu,
   selectionMode = "none",
   selectedRows,
+  onColumnVisibilityChanged,
   ...props
 }: ObjectTableProps<Q, RDPs, FunctionColumns>): React.ReactElement {
   const [columnSizing, setColumnSizing] = useState<ColumnSizingState>({});
 
-  const { sorting, onSortingChange } = useTableSorting<
+  const { sorting, onSortingChange, enableSorting } = useTableSorting<
     Q,
     RDPs,
     FunctionColumns
@@ -102,19 +103,29 @@ export function ObjectTable<
     columnDefinitions,
   );
 
-  const columnVisibility = useColumnVisibility({ columnDefinitions });
-
   const {
     rowSelection,
     isAllSelected,
     hasSelection,
     onToggleAll,
     onToggleRow,
+    isSelectionEnabled,
   } = useRowSelection<Q, RDPs>({
     selectionMode,
     selectedRows,
     onRowSelection,
     data,
+  });
+
+  const {
+    columnVisibility,
+    onColumnVisibilityChange,
+    columnOrder,
+    onColumnOrderChange,
+  } = useColumnVisibility({
+    columnDefinitions,
+    onColumnVisibilityChanged,
+    hasSelectionColumn: isSelectionEnabled,
   });
 
   const selectionColumn = useSelectionColumn<Q, RDPs>(
@@ -127,7 +138,7 @@ export function ObjectTable<
 
   const { columnPinning, onColumnPinningChange } = useColumnPinning({
     columnDefinitions,
-    hasSelectionColumn: selectionColumn != null,
+    hasSelectionColumn: isSelectionEnabled,
     onColumnsPinnedChanged,
   });
 
@@ -139,6 +150,7 @@ export function ObjectTable<
     getCoreRowModel: getCoreRowModel(),
     state: {
       columnVisibility,
+      columnOrder,
       rowSelection,
       sorting,
       columnSizing,
@@ -147,7 +159,10 @@ export function ObjectTable<
     onSortingChange,
     onColumnSizingChange: setColumnSizing,
     onColumnPinningChange,
-    enableRowSelection: selectionMode !== "none",
+    onColumnVisibilityChange,
+    onColumnOrderChange,
+    enableRowSelection: isSelectionEnabled,
+    enableSorting,
     columnResizeMode: "onChange",
     columnResizeDirection: "ltr",
     manualSorting: true, // Enable manual sorting to indicate server-side sorting
@@ -173,7 +188,12 @@ export function ObjectTable<
   const isTableLoading = isLoading || isColumnsLoading;
 
   return (
-    <BaseTable
+    <BaseTable<
+      Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
+      Q,
+      RDPs,
+      FunctionColumns
+    >
       table={table}
       isLoading={isTableLoading}
       fetchNextPage={fetchMore}
@@ -182,6 +202,8 @@ export function ObjectTable<
       renderCellContextMenu={onRenderCellContextMenu}
       className={props.className}
       error={error}
+      onSortChange={onSortingChange}
+      onColumnVisibilityChanged={onColumnVisibilityChanged}
     />
   );
 }

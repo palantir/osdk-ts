@@ -14,24 +14,102 @@
  * limitations under the License.
  */
 
-import type { RowData, Table } from "@tanstack/react-table";
-import React from "react";
+import type {
+  ObjectOrInterfaceDefinition,
+  PropertyKeys,
+  QueryDefinition,
+  SimplePropertyDef,
+} from "@osdk/api";
+import type {
+  Column,
+  Header,
+  RowData,
+  SortingState,
+  Table,
+} from "@tanstack/react-table";
+import React, { useMemo } from "react";
 import styles from "./TableHeader.module.css";
 import { TableHeaderContent } from "./TableHeaderContent.js";
 import { TableHeaderWithPopover } from "./TableHeaderWithPopover.js";
 import { SELECTION_COLUMN_ID } from "./utils/constants.js";
 import { getColumnPinningStyles } from "./utils/getColumnPinningStyles.js";
+import type { ColumnOption } from "./utils/types.js";
 
-interface TableHeaderProps<TData extends RowData> {
+interface TableHeaderProps<
+  TData extends RowData,
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
+    string,
+    never
+  >,
+> {
   table: Table<TData>;
+  onSortChange?: (sorting: SortingState) => void;
+  onColumnVisibilityChanged?: (
+    newStates: Array<{
+      columnId: PropertyKeys<Q> | keyof RDPs | keyof FunctionColumns;
+      isVisible: boolean;
+    }>,
+  ) => void;
 }
 
-export function TableHeader<TData extends RowData>({
+const getHeaderName = <TData,>(
+  column: Column<TData, unknown>,
+  allHeaders: Header<TData, unknown>[],
+) => {
+  const { id, columnDef } = column;
+  const header = allHeaders.find(header => header.id === id);
+  const headerDef = columnDef.header;
+
+  if (headerDef) {
+    if (typeof headerDef === "string") {
+      return headerDef;
+    }
+    // Try to get header title from the renderHeader function
+    if (header) {
+      const displayedHeader = headerDef(header.getContext());
+      if (typeof displayedHeader === "string") return displayedHeader;
+    }
+  }
+  // Fallback to use the headerTitle provided by user or id
+  const { meta } = columnDef;
+  return meta?.headerTitle ?? id;
+};
+
+export function TableHeader<
+  TData extends RowData,
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
+    string,
+    never
+  >,
+>({
   table,
-}: TableHeaderProps<TData>): React.ReactElement {
+  onSortChange,
+  onColumnVisibilityChanged,
+}: TableHeaderProps<TData, Q, RDPs, FunctionColumns>): React.ReactElement {
   // TODO: If value is number type, right align header
 
   const isResizing = !!table.getState().columnSizingInfo?.isResizingColumn;
+  // Get column options for dialogs
+  const columnOptions: ColumnOption[] = useMemo(() => {
+    const allHeaders = table.getHeaderGroups().flatMap(headerGroup =>
+      headerGroup.headers
+    );
+
+    return table
+      .getAllColumns()
+      .filter((column) => column.id !== SELECTION_COLUMN_ID)
+      .map((column) => {
+        return {
+          id: column.id,
+          name: getHeaderName(column, allHeaders),
+          canSort: column.getCanSort(),
+        };
+      });
+  }, [table]);
 
   return (
     <thead className={styles.osdkTableHeader} data-resizing={isResizing}>
@@ -60,6 +138,14 @@ export function TableHeader<TData extends RowData>({
                       header={header}
                       isColumnPinned={isColumnPinned}
                       setColumnPinning={table.setColumnPinning}
+                      onSortChange={onSortChange}
+                      currentSorting={table.getState().sorting}
+                      columnOptions={columnOptions}
+                      onColumnVisibilityChanged={onColumnVisibilityChanged}
+                      setColumnVisibility={table.setColumnVisibility}
+                      currentVisibility={table.getState().columnVisibility}
+                      setColumnOrder={table.setColumnOrder}
+                      currentColumnOrder={table.getState().columnOrder}
                     />
                   )}
                 {header.column.getCanResize() && (

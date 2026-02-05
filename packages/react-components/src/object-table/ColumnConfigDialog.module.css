@@ -1,0 +1,297 @@
+/*
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.content {
+  /* Override body padding from base Dialog since we have custom layout */
+  & > div:nth-child(2) {
+    padding: 0;
+  }
+}
+
+.dialogLayout {
+  display: flex;
+  flex-direction: row;
+  gap: 30px;
+  padding: calc(var(--osdk-surface-spacing) * 4)
+    calc(var(--osdk-surface-spacing) * 5);
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.visibleColumnsContainer {
+  flex: 1.5;
+  min-width: 250px;
+  display: flex;
+  flex-direction: column;
+}
+
+.availableColumnsContainer {
+  flex: 1;
+  min-width: 250px;
+  display: flex;
+  flex-direction: column;
+}
+
+.sectionTitle {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: calc(var(--osdk-surface-spacing) * 5);
+  color: var(--osdk-typography-color-default-rest);
+}
+
+.columnList {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  min-height: 0;
+}
+
+.draggableColumn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--osdk-column-config-draggable-bg, var(--osdk-palette-white));
+  border: var(
+    --osdk-column-config-draggable-border,
+    1px solid var(--osdk-palette-light-gray-3)
+  );
+  border-radius: var(--osdk-surface-border-radius);
+  padding: calc(var(--osdk-surface-spacing) * 2)
+    calc(var(--osdk-surface-spacing) * 3);
+  touch-action: none;
+  user-select: none;
+}
+
+.dragContent {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  user-select: none;
+}
+
+.dragIcon {
+  color: var(--osdk-column-config-drag-icon-color, var(--osdk-palette-gray-1));
+  cursor: grab;
+  margin-right: 8px;
+  width: 16px;
+  height: 16px;
+  outline: none;
+
+  &:hover {
+    color: var(
+      --osdk-column-config-drag-icon-color-hover,
+      var(--osdk-palette-gray-2)
+    );
+  }
+
+  &:active {
+    cursor: grabbing;
+  }
+
+  &:focus-visible {
+    outline: none;
+  }
+}
+
+.trashButton {
+  background: none;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  border-radius: var(--osdk-surface-border-radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    background-color: var(--osdk-intent-danger-rest);
+  }
+
+  &:hover .trashIcon {
+    color: var(--osdk-palette-white);
+  }
+}
+
+.trashIcon {
+  width: 16px;
+  height: 16px;
+  color: var(--osdk-palette-gray-1);
+  transition: color 0.2s ease;
+}
+
+.searchContainer {
+  margin-bottom: calc(var(--osdk-surface-spacing) * 5);
+}
+
+.searchInputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 10px;
+  width: 16px;
+  height: 16px;
+  color: var(--osdk-typography-color-muted);
+  pointer-events: none;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 8px 12px 8px 36px;
+  border: 1px solid var(--osdk-surface-border-color-default);
+  border-radius: var(--osdk-surface-border-radius);
+  font-size: var(--osdk-typography-size-body-medium);
+  outline: none;
+  transition: border-color 0.2s;
+
+  &:focus {
+    border-color: var(--osdk-intent-primary-rest);
+  }
+
+  &::placeholder {
+    color: var(--osdk-typography-color-muted);
+  }
+}
+
+.propertiesList {
+  flex: 1;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  width: 100%;
+}
+
+.categoryHeader {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  padding: calc(var(--osdk-surface-spacing) * 2)
+    calc(var(--osdk-surface-spacing) * 3);
+  background: none;
+  border: none;
+  margin: 0;
+  gap: 12px;
+}
+
+.categoryTrigger {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.categoryTitle {
+  flex: 1;
+  color: var(
+    --osdk-column-config-category-title-color,
+    var(--osdk-palette-gray-1)
+  );
+  letter-spacing: 0.5px;
+  text-align: left;
+}
+
+.categoryCount {
+  color: var(
+    --osdk-column-config-category-title-color,
+    var(--osdk-palette-gray-1)
+  );
+  margin-left: 8px;
+}
+
+.caretIcon {
+  color: var(--osdk-typography-color-muted);
+  transition: transform 0.2s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.categoryTrigger[data-panel-open="false"] .caretIcon {
+  transform: rotate(-90deg);
+}
+
+.checkbox {
+  width: 12px;
+  height: 12px;
+}
+
+.propertyList {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--osdk-surface-spacing) * 3);
+}
+
+.propertyItem {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+  gap: calc(var(--osdk-surface-spacing) * 3);
+  padding: calc(var(--osdk-surface-spacing) * 2)
+    calc(var(--osdk-surface-spacing) * 3);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: var(--osdk-surface-background-color-default-hover);
+  }
+}
+
+.checkboxIndicator {
+  color: var(--osdk-intent-primary-foreground);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.propertyName {
+  flex: 1;
+  font-size: var(--osdk-typography-size-body-medium);
+  font-weight: 500;
+  color: var(--osdk-typography-color-default-rest);
+  margin-bottom: 2px;
+  padding-left: 4px;
+}
+
+.emptyState {
+  padding: calc(var(--osdk-surface-spacing) * 5);
+  text-align: center;
+  color: var(--osdk-typography-color-muted);
+  font-style: italic;
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100px;
+  color: var(--osdk-palette-gray-1);
+}

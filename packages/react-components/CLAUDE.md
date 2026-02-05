@@ -20,7 +20,7 @@
 
 - Do not hardcode CSS colors and pixel values.
 - ALWAYS use css variables to enable themabiltiy using CSS variables. Any default styling should be added to @osdk/react-components-styles index.css
-- ALWAYS try to use --bp tokens first before using any hardcoded value.
+- ALWAYS try to use --bp tokens first before using any hardcoded value. The --bp tokens used should always be mapped from a --osdk token.
 
 ## Project Management
 

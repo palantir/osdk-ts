@@ -20,7 +20,11 @@
   /* Blueprint token mappings - Typography tokens */
   --osdk-typography-color-muted: var(--bp-typography-color-muted);
   --osdk-typography-color-default-rest: var(--bp-typography-color-default-rest);
+  --osdk-typography-color-subtle-rest: var(--bp-typography-color-muted);
   --osdk-typography-size-body-medium: var(--bp-typography-size-body-medium);
+  --osdk-typography-size-body-small: var(--bp-typography-size-body-small);
+  --osdk-typography-size-body-x-small: var(--bp-typography-size-body-x-small);
+  --osdk-typography-weight-bold: var(--bp-typography-weight-bold);
 
   /* Blueprint token mappings - Intent tokens */
   --osdk-intent-default-foreground: var(--bp-intent-default-foreground);
@@ -29,9 +33,21 @@
   --osdk-intent-primary-foreground: var(--bp-intent-primary-foreground);
   --osdk-intent-primary-hover: var(--bp-intent-primary-hover);
   --osdk-intent-primary-active: var(--bp-intent-primary-active);
+  --osdk-intent-danger-rest: var(--bp-intent-danger-rest);
+  --osdk-intent-danger-hover: var(--bp-intent-danger-hover);
 
   /* Blueprint token mappings - Iconography tokens */
   --osdk-iconography-size-small: var(--bp-iconography-size-small);
+
+  /* Blueprint token mappings - Palette tokens */
+  --osdk-palette-white: var(--bp-palette-white);
+  --osdk-palette-gray-1: var(--bp-palette-gray-1);
+  --osdk-palette-gray-2: var(--bp-palette-gray-2);
+  --osdk-palette-light-gray-3: var(--bp-palette-light-gray-3);
+  --osdk-palette-light-gray-4: var(--bp-palette-light-gray-4);
+  --osdk-palette-light-gray-5: var(--bp-palette-light-gray-5);
+  --osdk-palette-blue-2: var(--bp-palette-blue-2);
+  --osdk-palette-blue-5: var(--bp-palette-blue-5);
 
   /* Shared Styling */
   --osdk-focus-visible-outline: var(--bp-emphasis-focus-width) solid
@@ -58,25 +74,33 @@
 
   --osdk-table-border: var(--osdk-table-border-width) solid
     var(--osdk-table-border-color);
-  --osdk-table-header-divider: var(--osdk-table-border);
+  --osdk-table-header-divider: var(--osdk-table-border-width) dotted
+    rgba(17, 20, 24, 0.15);
   --osdk-table-cell-divider: var(--osdk-table-border-width) solid transparent;
   --osdk-table-row-divider: var(--osdk-table-border);
   --osdk-table-pinned-column-border: calc(var(--osdk-table-border-width) * 2)
     solid var(--osdk-table-border-color);
 
-  --osdk-table-header-bg: var(--bp-palette-light-gray-5);
-  --osdk-table-header-fontWeight: var(--bp-typography-weight-bold);
-  --osdk-table-header-fontSize: var(--bp-typography-size-body-small);
-  --osdk-table-header-color: var(--bp-typography-color-muted);
+  /* Table Header - matching rtt-validation-ccs */
+  --osdk-table-header-height: 50px;
+  --osdk-table-header-bg: #f1f5f9; /* slate-100 */
+  --osdk-table-header-fontWeight: var(--osdk-typography-weight-bold);
+  --osdk-table-header-fontSize: 0.75rem; /* 12px */
+  --osdk-table-header-color: #4b5563; /* slate-600 */
+  --osdk-table-header-padding: 0 16px;
+  --osdk-table-header-border-bottom: 1px solid #d1d5db; /* slate-300 */
 
-  --osdk-table-row-bg-default: var(--bp-palette-light-gray-5);
-  --osdk-table-row-bg-hover: oklch(from var(--bp-palette-blue-5) l c h / 0.2);
-  --osdk-table-row-bg-active: var(--bp-palette-blue-5);
-  --osdk-table-row-border-color-hover: var(--bp-intent-primary-rest);
-  --osdk-table-row-border-color-active: var(--bp-intent-primary-rest);
+  /* Table Row - matching rtt-validation-ccs */
+  --osdk-table-row-height: 40px;
+  --osdk-table-row-bg-default: var(--osdk-palette-white);
+  --osdk-table-row-bg-alternate: var(--osdk-palette-light-gray-4);
+  --osdk-table-row-bg-hover: #e6f0fa; /* rgba(0, 116, 217, 0.1) on white = #e6f0fa */
+  --osdk-table-row-bg-active: #e6f0fa; /* rgba(0, 116, 217, 0.1) on white = #e6f0fa */
+  --osdk-table-row-border-color-hover: oklch(80.9% 0.105 251.813);
+  --osdk-table-row-border-color-active: oklch(80.9% 0.105 251.813);
 
-  --osdk-table-cell-padding: calc(var(--bp-surface-spacing) * 3)
-    calc(var(--bp-surface-spacing) * 2);
+  /* Table Cell */
+  --osdk-table-cell-padding: 0 16px;
   --osdk-table-cell-fontSize: var(--bp-typography-size-body-medium);
   --osdk-table-cell-color: var(--bp-typography-color-default-rest);
 
@@ -84,8 +108,57 @@
   --osdk-table-skeleton-color-from: oklch(
     from var(--bp-palette-light-gray-1) l c h / 0.4
   );
-  --osdk-table-skeleton-color-to: oklch(from var(--bp-palette-gray-1) l c h / 0.4);
+  --osdk-table-skeleton-color-to: oklch(
+    from var(--bp-palette-gray-1) l c h / 0.4
+  );
   --osdk-table-skeleton-border-color: oklch(
     from var(--bp-palette-light-gray-1) l c h / 0.6
   );
+
+  /* Header Menu Icon - matching rtt-validation-ccs */
+  --osdk-table-header-menu-padding: 1px;
+  --osdk-table-header-menu-bg: rgba(241, 245, 249, 0.5);
+  --osdk-table-header-menu-border: 1px solid rgba(100, 116, 139, 0.2);
+  --osdk-table-header-menu-color: #64748b; /* slate-500 */
+  --osdk-table-header-menu-color-active: #334155; /* slate-700 */
+  --osdk-table-header-menu-bg-hover: rgba(0, 0, 0, 0.05);
+  --osdk-table-header-menu-bg-open: rgba(0, 0, 0, 0.08);
+
+  /* Sort Icon - matching rtt-validation-ccs */
+  --osdk-table-sort-icon-color: #64748b; /* slate-500 */
+
+  /* Pinned Icon */
+  --osdk-table-pinned-icon-color: #64748b; /* slate-500 */
+
+  /* Active Menu Item - matching rtt-validation-ccs */
+  --osdk-table-menu-active-bg: #eff6ff; /* blue-50 */
+  --osdk-table-menu-active-bg-hover: #dbeafe; /* blue-100 */
+  --osdk-table-menu-active-icon-color: #2563eb; /* blue-600 */
+
+  /* Resizer - matching rtt-validation-ccs */
+  --osdk-table-resizer-color-hover: rgba(0, 116, 217, 0.5);
+  --osdk-table-resizer-color-active: rgba(0, 116, 217, 1);
+
+  /* Dialog Styling - matching rtt-validation-ccs */
+  --osdk-dialog-bg: var(--osdk-palette-white);
+  --osdk-dialog-border-radius: var(--bp-surface-border-radius);
+  --osdk-dialog-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
+  --osdk-dialog-width: 800px;
+  --osdk-dialog-height-large: calc(var(--bp-surface-spacing) * 75);
+  --osdk-dialog-padding-vertical: calc(var(--bp-surface-spacing) * 2);
+  --osdk-dialog-padding-horizontal: calc(var(--bp-surface-spacing) * 2.5);
+  --osdk-dialog-footer-padding-vertical: calc(var(--bp-surface-spacing) * 1.5);
+  --osdk-dialog-footer-gap: var(--bp-surface-spacing);
+  --osdk-dialog-close-button-offset: calc(var(--bp-surface-spacing) * 1.5);
+  --osdk-dialog-close-button-padding: calc(var(--bp-surface-spacing) / 2);
+  --osdk-dialog-title-font-size: var(--bp-typography-size-body-medium);
+  --osdk-dialog-title-font-weight: var(--osdk-typography-weight-bold);
+
+  /* Column Config Dialog */
+  --osdk-column-config-draggable-bg: var(--osdk-palette-white);
+  --osdk-column-config-draggable-border: 1px solid
+    var(--osdk-palette-light-gray-3);
+  --osdk-column-config-drag-icon-color: var(--osdk-palette-gray-1);
+  --osdk-column-config-drag-icon-color-hover: var(--osdk-palette-gray-2);
+  --osdk-column-config-category-title-color: var(--osdk-palette-gray-1);
 }

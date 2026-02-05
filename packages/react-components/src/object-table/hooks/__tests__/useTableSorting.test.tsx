@@ -34,6 +34,12 @@ describe("useTableSorting", () => {
       expect(result.current.sorting).toEqual([]);
     });
 
+    it("enables sorting by default", () => {
+      const { result } = renderHook(() => useTableSorting({}));
+
+      expect(result.current.enableSorting).toBe(true);
+    });
+
     it("initializes with defaultOrderBy when provided", () => {
       const defaultOrderBy: Array<{
         property: PropertyKeys<TestObject>;
@@ -53,6 +59,8 @@ describe("useTableSorting", () => {
         { id: "name", desc: false },
         { id: "age", desc: true },
       ]);
+
+      expect(result.current.enableSorting).toBe(true);
     });
 
     it("updates internal sorting state when onSortingChange is called", () => {
@@ -136,6 +144,42 @@ describe("useTableSorting", () => {
       ]);
     });
 
+    it("disables sorting when orderBy is provided without onOrderByChanged", () => {
+      const orderBy: Array<{
+        property: PropertyKeys<TestObject>;
+        direction: "asc" | "desc";
+      }> = [
+        { property: "name" as PropertyKeys<TestObject>, direction: "asc" },
+      ];
+
+      const { result } = renderHook(() =>
+        useTableSorting<TestObject>({
+          orderBy,
+        })
+      );
+
+      expect(result.current.enableSorting).toBe(false);
+    });
+
+    it("enables sorting when orderBy is provided with onOrderByChanged", () => {
+      const orderBy: Array<{
+        property: PropertyKeys<TestObject>;
+        direction: "asc" | "desc";
+      }> = [
+        { property: "name" as PropertyKeys<TestObject>, direction: "asc" },
+      ];
+      const onOrderByChanged = vi.fn();
+
+      const { result } = renderHook(() =>
+        useTableSorting<TestObject>({
+          orderBy,
+          onOrderByChanged,
+        })
+      );
+
+      expect(result.current.enableSorting).toBe(true);
+    });
+
     it("when both orderBy and defaultOrderBy are provided, orderBy takes precedence", () => {
       const orderBy: Array<{
         property: PropertyKeys<TestObject>;
@@ -216,6 +260,226 @@ describe("useTableSorting", () => {
       // Now state reflects the prop
       expect(result.current.sorting).toEqual([
         { id: "age", desc: true },
+      ]);
+    });
+  });
+
+  describe("multisort scenarios", () => {
+    it("supports sorting by multiple columns simultaneously", () => {
+      const onOrderByChanged = vi.fn();
+      const { result } = renderHook(() =>
+        useTableSorting<TestObject>({
+          onOrderByChanged,
+        })
+      );
+
+      act(() => {
+        result.current.onSortingChange([
+          { id: "name", desc: false },
+          { id: "age", desc: true },
+          { id: "email", desc: false },
+        ]);
+      });
+
+      expect(result.current.sorting).toEqual([
+        { id: "name", desc: false },
+        { id: "age", desc: true },
+        { id: "email", desc: false },
+      ]);
+
+      expect(onOrderByChanged).toHaveBeenCalledWith([
+        { property: "name", direction: "asc" },
+        { property: "age", direction: "desc" },
+        { property: "email", direction: "asc" },
+      ]);
+    });
+
+    it("initializes with multiple columns in defaultOrderBy", () => {
+      const defaultOrderBy: Array<{
+        property: PropertyKeys<TestObject>;
+        direction: "asc" | "desc";
+      }> = [
+        { property: "name" as PropertyKeys<TestObject>, direction: "asc" },
+        { property: "age" as PropertyKeys<TestObject>, direction: "desc" },
+        { property: "email" as PropertyKeys<TestObject>, direction: "asc" },
+      ];
+
+      const { result } = renderHook(() =>
+        useTableSorting<TestObject>({
+          defaultOrderBy,
+        })
+      );
+
+      expect(result.current.sorting).toEqual([
+        { id: "name", desc: false },
+        { id: "age", desc: true },
+        { id: "email", desc: false },
+      ]);
+    });
+
+    it("preserves order of sort columns when adding a new sort", () => {
+      const onOrderByChanged = vi.fn();
+      const { result } = renderHook(() =>
+        useTableSorting<TestObject>({
+          defaultOrderBy: [
+            { property: "name" as PropertyKeys<TestObject>, direction: "asc" },
+          ],
+          onOrderByChanged,
+        })
+      );
+
+      // Add a second sort column
+      act(() => {
+        result.current.onSortingChange([
+          { id: "name", desc: false },
+          { id: "age", desc: true },
+        ]);
+      });
+
+      expect(result.current.sorting).toEqual([
+        { id: "name", desc: false },
+        { id: "age", desc: true },
+      ]);
+
+      expect(onOrderByChanged).toHaveBeenCalledWith([
+        { property: "name", direction: "asc" },
+        { property: "age", direction: "desc" },
+      ]);
+    });
+
+    it("supports removing a column from multisort", () => {
+      const onOrderByChanged = vi.fn();
+      const { result } = renderHook(() =>
+        useTableSorting<TestObject>({
+          defaultOrderBy: [
+            { property: "name" as PropertyKeys<TestObject>, direction: "asc" },
+            { property: "age" as PropertyKeys<TestObject>, direction: "desc" },
+            { property: "email" as PropertyKeys<TestObject>, direction: "asc" },
+          ],
+          onOrderByChanged,
+        })
+      );
+
+      // Remove the middle sort column
+      act(() => {
+        result.current.onSortingChange([
+          { id: "name", desc: false },
+          { id: "email", desc: false },
+        ]);
+      });
+
+      expect(result.current.sorting).toEqual([
+        { id: "name", desc: false },
+        { id: "email", desc: false },
+      ]);
+
+      expect(onOrderByChanged).toHaveBeenCalledWith([
+        { property: "name", direction: "asc" },
+        { property: "email", direction: "asc" },
+      ]);
+    });
+
+    it("supports changing direction of one column in multisort", () => {
+      const onOrderByChanged = vi.fn();
+      const { result } = renderHook(() =>
+        useTableSorting<TestObject>({
+          defaultOrderBy: [
+            { property: "name" as PropertyKeys<TestObject>, direction: "asc" },
+            { property: "age" as PropertyKeys<TestObject>, direction: "asc" },
+          ],
+          onOrderByChanged,
+        })
+      );
+
+      // Change direction of second column
+      act(() => {
+        result.current.onSortingChange([
+          { id: "name", desc: false },
+          { id: "age", desc: true },
+        ]);
+      });
+
+      expect(result.current.sorting).toEqual([
+        { id: "name", desc: false },
+        { id: "age", desc: true },
+      ]);
+
+      expect(onOrderByChanged).toHaveBeenCalledWith([
+        { property: "name", direction: "asc" },
+        { property: "age", direction: "desc" },
+      ]);
+    });
+
+    it("supports reordering sort columns", () => {
+      const onOrderByChanged = vi.fn();
+      const { result } = renderHook(() =>
+        useTableSorting<TestObject>({
+          defaultOrderBy: [
+            { property: "name" as PropertyKeys<TestObject>, direction: "asc" },
+            { property: "age" as PropertyKeys<TestObject>, direction: "desc" },
+          ],
+          onOrderByChanged,
+        })
+      );
+
+      // Reorder: age becomes primary, name becomes secondary
+      act(() => {
+        result.current.onSortingChange([
+          { id: "age", desc: true },
+          { id: "name", desc: false },
+        ]);
+      });
+
+      expect(result.current.sorting).toEqual([
+        { id: "age", desc: true },
+        { id: "name", desc: false },
+      ]);
+
+      expect(onOrderByChanged).toHaveBeenCalledWith([
+        { property: "age", direction: "desc" },
+        { property: "name", direction: "asc" },
+      ]);
+    });
+
+    it("controlled mode with multisort reflects orderBy changes", () => {
+      const onOrderByChanged = vi.fn();
+      const initialOrderBy: Array<{
+        property: PropertyKeys<TestObject>;
+        direction: "asc" | "desc";
+      }> = [
+        { property: "name" as PropertyKeys<TestObject>, direction: "asc" },
+      ];
+
+      const { result, rerender } = renderHook(
+        ({ orderBy }) =>
+          useTableSorting<TestObject>({
+            orderBy,
+            onOrderByChanged,
+          }),
+        {
+          initialProps: { orderBy: initialOrderBy },
+        },
+      );
+
+      expect(result.current.sorting).toEqual([
+        { id: "name", desc: false },
+      ]);
+
+      // Parent adds more sort columns
+      const newOrderBy: Array<{
+        property: PropertyKeys<TestObject>;
+        direction: "asc" | "desc";
+      }> = [
+        { property: "name" as PropertyKeys<TestObject>, direction: "asc" },
+        { property: "age" as PropertyKeys<TestObject>, direction: "desc" },
+        { property: "email" as PropertyKeys<TestObject>, direction: "asc" },
+      ];
+      rerender({ orderBy: newOrderBy });
+
+      expect(result.current.sorting).toEqual([
+        { id: "name", desc: false },
+        { id: "age", desc: true },
+        { id: "email", desc: false },
       ]);
     });
   });

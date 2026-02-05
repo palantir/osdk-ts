@@ -18,6 +18,8 @@ import type {
   ObjectOrInterfaceDefinition,
   Osdk,
   PrimaryKeyType,
+  PropertyKeys,
+  SimplePropertyDef,
 } from "@osdk/api";
 import type { RowSelectionState } from "@tanstack/react-table";
 import { useCallback, useMemo, useState } from "react";
@@ -25,18 +27,21 @@ import { getRowId, getRowIdFromPrimaryKey } from "../utils/getRowId.js";
 
 export interface UseRowSelectionProps<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, any> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
 > {
   selectionMode?: "single" | "multiple" | "none";
   selectedRows?: PrimaryKeyType<Q>[];
   onRowSelection?: (selectedRowIds: PrimaryKeyType<Q>[]) => void;
-  data: Array<Osdk.Instance<Q, "$allBaseProperties", any, RDPs>> | undefined;
+  data:
+    | Array<Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>>
+    | undefined;
 }
 
 export interface UseRowSelectionResult {
   rowSelection: RowSelectionState;
   isAllSelected: boolean;
   hasSelection: boolean;
+  isSelectionEnabled: boolean;
   onToggleAll: () => void;
   onToggleRow: (
     rowId: string,
@@ -47,7 +52,7 @@ export interface UseRowSelectionResult {
 
 export function useRowSelection<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, any> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
 >({
   selectionMode = "none",
   selectedRows,
@@ -150,6 +155,7 @@ export function useRowSelection<
   return {
     rowSelection: rowSelectionState,
     isAllSelected,
+    isSelectionEnabled,
     hasSelection,
     onToggleAll,
     onToggleRow,
@@ -158,18 +164,18 @@ export function useRowSelection<
 
 interface GetSelectedRowsProps<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, any> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
 > {
   rowId: string;
   rowIndex: number;
-  data: Array<Osdk.Instance<Q, "$allBaseProperties", any, RDPs>>;
+  data: Array<Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>>;
   rowSelectionState: RowSelectionState;
   lastSelectedRowIndex?: number;
 }
 
 function getSingleSelectionRows<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, any> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
 >(
   { rowId, rowIndex, data, rowSelectionState }: GetSelectedRowsProps<Q, RDPs>,
 ): PrimaryKeyType<Q>[] {
@@ -181,7 +187,7 @@ function getSingleSelectionRows<
 
 function getRangeSelectionRows<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, any> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
 >(
   { lastSelectedRowIndex, rowIndex, data, rowSelectionState }:
     GetSelectedRowsProps<Q, RDPs>,
@@ -208,7 +214,7 @@ function getRangeSelectionRows<
 
 function getMultipleSelectionRows<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, any> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
 >(
   { rowIndex, data, rowSelectionState }: GetSelectedRowsProps<Q, RDPs>,
 ): PrimaryKeyType<Q>[] {
@@ -226,15 +232,17 @@ function getMultipleSelectionRows<
  */
 function getRowsInRange<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, any> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
 >(
-  data: Array<Osdk.Instance<Q, "$allBaseProperties", any, RDPs>>,
+  data: Array<Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>>,
   startIndex: number,
   endIndex: number,
-): Array<Osdk.Instance<Q, "$allBaseProperties", any, RDPs>> {
+): Array<Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>> {
   const start = Math.min(startIndex, endIndex);
   const end = Math.max(startIndex, endIndex);
-  const rows: Array<Osdk.Instance<Q, "$allBaseProperties", any, RDPs>> = [];
+  const rows: Array<
+    Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
+  > = [];
 
   for (let i = start; i <= end; i++) {
     const item = data[i];
@@ -266,10 +274,10 @@ function getRowSelectionState<Q extends ObjectOrInterfaceDefinition>(
  */
 function getSelectedPrimaryKeys<
   Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, any> = Record<string, never>,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
 >(
   selectionState: RowSelectionState,
-  data: Array<Osdk.Instance<Q, "$allBaseProperties", any, RDPs>>,
+  data: Array<Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>>,
 ): PrimaryKeyType<Q>[] {
   return data
     .filter(item => selectionState[getRowId(item)])

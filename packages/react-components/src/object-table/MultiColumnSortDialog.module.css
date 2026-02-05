@@ -1,0 +1,133 @@
+/*
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.sortColumnsList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+  width: 400px;
+}
+
+.selectedColumnsContainer {
+  margin-bottom: 16px;
+}
+
+.sortColumnItem {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  min-width: 0;
+}
+
+.sortColumnName {
+  flex: 1;
+  font-size: var(--osdk-typography-size-body-medium);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.sortDirectionButton {
+  background: none;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--osdk-surface-border-radius);
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: var(--osdk-surface-background-color-default-hover);
+  }
+}
+
+.sortIcon {
+  color: var(--osdk-typography-color-muted);
+}
+
+.addColumnButton {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--osdk-surface-spacing) * 2);
+  width: 100%;
+  padding: calc(var(--osdk-surface-spacing) * 2)
+    calc(var(--osdk-surface-spacing) * 3);
+  background-color: var(--osdk-palette-light-gray-5);
+  border: 1px solid var(--osdk-surface-border-color-default);
+  border-radius: var(--osdk-surface-border-radius);
+  cursor: pointer;
+  font-size: var(--osdk-typography-size-body-medium);
+  color: var(--osdk-typography-color-muted);
+  transition: all 0.2s;
+  margin-top: calc(var(--osdk-surface-spacing) * 2);
+
+  &:hover:not(:disabled) {
+    background-color: var(--osdk-surface-background-color-default-hover);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.addIcon {
+  width: 16px;
+  height: 16px;
+  color: currentColor;
+}
+
+.addColumnText {
+  flex: 1;
+  text-align: left;
+}
+
+.menuPositioner {
+  z-index: 1100;
+}
+
+.dropdownMenu {
+  background-color: var(--osdk-surface-background-color-default);
+  border: 1px solid var(--osdk-surface-border-color-default);
+  border-radius: var(--osdk-surface-border-radius);
+  box-shadow: var(--osdk-surface-shadow-2);
+  max-height: 250px;
+  overflow-y: auto;
+  min-width: 200px;
+}
+
+.dropdownItem {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: calc(var(--osdk-surface-spacing) * 2)
+    calc(var(--osdk-surface-spacing) * 3);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: var(--osdk-typography-size-body-medium);
+  color: var(--osdk-typography-color-default-rest);
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: var(--osdk-surface-background-color-default-hover);
+  }
+}
