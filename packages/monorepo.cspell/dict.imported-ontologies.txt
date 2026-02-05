@@ -4,3 +4,5 @@ Emailable
 mmsi
 sotsensor
 Geotitle
+Fafe
+favplace
