@@ -4,3 +4,15 @@ if [ "$(git config user.email)" = "checkpoint@cline.bot" ]; then
 fi
 
 TERM=dumb npx lint-staged
+
+# Run full cspell check to catch violations in generated files that lint-staged excludes
+echo "Running cspell check..."
+pnpm cspell:all
+if [ $? -ne 0 ]; then
+  echo ""
+  echo "cspell found spelling errors. Either:"
+  echo "  1. Fix the typo"
+  echo "  2. Add the word to a dictionary file in packages/monorepo.cspell/"
+  echo "  3. Add a cspell:ignore comment above the line"
+  exit 1
+fi
