@@ -29,8 +29,8 @@ export const TEMPLATES = [
     buildDirectory: "./dist",
   },
   {
-    id: "react-hooks",
-    label: "React (Hooks)",
+    id: "osdk-react",
+    label: "React (@osdk/react)",
     envPrefix: "VITE_",
     buildDirectory: "./dist",
   },
