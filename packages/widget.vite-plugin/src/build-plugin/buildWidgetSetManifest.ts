@@ -84,14 +84,21 @@ function convertParameter(
 ): ManifestParameterDefinition {
   if (parameter.type === "objectSet") {
     // Config has already been validated so rid must be present
-    if (parameter.objectType.internalDoNotUseMetadata == null) {
-      throw new Error("Expected internal metadata to be present");
+    // Extract the type source from either objectType (legacy) or allowedType (new)
+
+    const allowedType = parameter.allowedType ?? parameter.objectType;
+    const allowedTypeRid = allowedType.internalDoNotUseMetadata?.rid;
+    if (allowedTypeRid != null) {
+      return {
+        type: "objectSet",
+        displayName: parameter.displayName,
+        objectTypeRids: allowedType.type === "object" ? [allowedTypeRid] : [],
+        allowedType: allowedTypeRid,
+      };
     }
-    return {
-      type: "objectSet",
-      displayName: parameter.displayName,
-      objectTypeRids: [parameter.objectType.internalDoNotUseMetadata.rid],
-    };
+    throw new Error(
+      "ObjectSet parameter must have either objectType or allowedType with valid metadata",
+    );
   }
   return parameter;
 }

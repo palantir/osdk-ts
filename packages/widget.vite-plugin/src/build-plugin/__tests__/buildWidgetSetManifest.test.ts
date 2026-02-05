@@ -111,7 +111,7 @@ describe("buildWidgetSetManifest", () => {
 
   test("converts object set parameters correctly", () => {
     const widgetBuild = createMockWidgetBuild("widget", {
-      objectSetParam: {
+      objectSetParamLegacy: {
         type: "objectSet",
         displayName: "Object Set Parameter",
         objectType: {
@@ -119,6 +119,28 @@ describe("buildWidgetSetManifest", () => {
           apiName: "employee",
           internalDoNotUseMetadata: {
             rid: "ri.ontology.main.object-type.employee",
+          },
+        },
+      },
+      objectSetParam: {
+        type: "objectSet",
+        displayName: "Object Set Parameter",
+        allowedType: {
+          type: "object",
+          apiName: "employee",
+          internalDoNotUseMetadata: {
+            rid: "ri.ontology.main.object-type.employee",
+          },
+        },
+      },
+      objectSetParamInterfaces: {
+        type: "objectSet",
+        displayName: "Object Set Parameter with interface",
+        allowedType: {
+          type: "interface",
+          apiName: "animal",
+          internalDoNotUseMetadata: {
+            rid: "ri.ontology.main.interface.animal",
           },
         },
       },
@@ -134,11 +156,33 @@ describe("buildWidgetSetManifest", () => {
       widgetSetInputSpec,
     );
 
+    expect(manifest.widgetSet.widgets.widget.parameters.objectSetParamLegacy)
+      .toEqual(
+        {
+          type: "objectSet",
+          displayName: "Object Set Parameter",
+          objectTypeRids: ["ri.ontology.main.object-type.employee"],
+          allowedType: "ri.ontology.main.object-type.employee",
+        },
+      );
+
     expect(manifest.widgetSet.widgets.widget.parameters.objectSetParam).toEqual(
       {
         type: "objectSet",
         displayName: "Object Set Parameter",
         objectTypeRids: ["ri.ontology.main.object-type.employee"],
+        allowedType: "ri.ontology.main.object-type.employee",
+      },
+    );
+
+    expect(
+      manifest.widgetSet.widgets.widget.parameters.objectSetParamInterfaces,
+    ).toEqual(
+      {
+        type: "objectSet",
+        displayName: "Object Set Parameter with interface",
+        objectTypeRids: [],
+        allowedType: "ri.ontology.main.interface.animal",
       },
     );
   });

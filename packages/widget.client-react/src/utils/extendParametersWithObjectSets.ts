@@ -14,10 +14,17 @@
  * limitations under the License.
  */
 
-import type { Client, ObjectSet, ObjectTypeDefinition } from "@osdk/client";
+import type {
+  Client,
+  InterfaceDefinition,
+  ObjectSet,
+  ObjectTypeDefinition,
+} from "@osdk/client";
 import { hydrateObjectSetFromRid } from "@osdk/client/internal";
 import type { AsyncParameterValueMap, WidgetConfig } from "@osdk/widget.api";
 import type { ExtendedAsyncParameterValueMap } from "../context.js";
+
+type ObjectOrInterfaceDefinition = ObjectTypeDefinition | InterfaceDefinition;
 
 /**
  * Patches parameter values with hydrated object sets for object set parameters.
@@ -51,12 +58,18 @@ export function extendParametersWithObjectSets<
           && typeof parameterValue.objectSetRid === "string"
         ) {
           const objectSetRid = parameterValue.objectSetRid;
+          const typeDefinition = param.allowedType ?? param.objectType;
+          if (typeDefinition == null) {
+            throw new Error(
+              `ObjectSet parameter "${parameterId}" must have objectType or allowedType`,
+            );
+          }
           const objectSet = getOrHydrateObjectSet(
             osdkClient,
             cache,
             parameterId,
             objectSetRid,
-            param.objectType as ObjectTypeDefinition,
+            typeDefinition,
           );
           (parameterValue as any).objectSet = objectSet;
         } else {
@@ -73,7 +86,7 @@ export function extendParametersWithObjectSets<
   return extendedParameters;
 }
 
-function getOrHydrateObjectSet<T extends ObjectTypeDefinition>(
+function getOrHydrateObjectSet<T extends ObjectOrInterfaceDefinition>(
   osdkClient: Client | undefined,
   cache: Map<string, { objectSetRid: string; objectSet: ObjectSet<T> }>,
   paramKey: string,

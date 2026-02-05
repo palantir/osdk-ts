@@ -77,12 +77,22 @@ function validateWidgetParameters(parameters: ParameterConfig): void {
     }
     if (parameterConfig.type === "objectSet") {
       if (
-        typeof parameterConfig.objectType.internalDoNotUseMetadata?.rid
-          !== "string"
+        parameterConfig.objectType != null
+        && parameterConfig.allowedType != null
       ) {
         throw new Error(
+          `Parameter id "${parameterId}" cannot have both objectType and allowedType defined, use only allowedType.`,
+        );
+      }
+      const typeSource = parameterConfig.allowedType
+        ?? parameterConfig.objectType;
+
+      if (typeof typeSource?.internalDoNotUseMetadata?.rid !== "string") {
+        throw new Error(
           `ObjectSet parameter "${parameterId}" must have a valid rid in its metadata, make sure your OSDK was generated with a generator version >=2.6.2. Provided type: '${
-            JSON.stringify(parameterConfig.objectType)
+            JSON.stringify(
+              typeSource,
+            )
           }'`,
         );
       }

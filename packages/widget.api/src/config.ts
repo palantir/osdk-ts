@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import type { ObjectType, ParameterValue } from "./parameters.js";
+import type {
+  AllowedObjectSetType,
+  ObjectType,
+  ParameterValue,
+} from "./parameters.js";
 import type { BrowserPermission } from "./permissions.js";
 import type { AsyncValue } from "./utils/asyncValue.js";
 
@@ -27,26 +31,52 @@ interface ArrayParameterDefinition<S extends ParameterValue.PrimitiveType> {
   displayName: string;
   subType: S;
 }
-interface ObjectSetParameterDefinition<T extends ObjectType> {
+
+interface ObjectSetParameterDefinitionLegacy<T extends ObjectType> {
   type: "objectSet";
   displayName: string;
   objectType: T;
+  allowedType?: never;
 }
+
+interface ObjectSetParameterDefinitionWithInterfaces<
+  T extends AllowedObjectSetType,
+> {
+  type: "objectSet";
+  displayName: string;
+  allowedType: T;
+  objectType?: never;
+}
+
+type ObjectSetParameterDefinition<
+  T extends AllowedObjectSetType = AllowedObjectSetType,
+> =
+  | ObjectSetParameterDefinitionLegacy<T extends ObjectType ? T : never>
+  | ObjectSetParameterDefinitionWithInterfaces<T>;
+
 export type ParameterDefinition =
   | PrimitiveParameterDefinition<ParameterValue.PrimitiveType>
   | ArrayParameterDefinition<ParameterValue.PrimitiveType>
-  | ObjectSetParameterDefinition<ObjectType>;
+  | ObjectSetParameterDefinition<AllowedObjectSetType>;
 
-interface ManifestObjectSetParameterDefinition<T extends ObjectType> {
-  type: ObjectSetParameterDefinition<T>["type"];
+type ExtractObjectSetTypeFromDef<P> = P extends
+  { type: "objectSet"; objectType: infer T extends AllowedObjectSetType } ? T
+  : P extends
+    { type: "objectSet"; allowedType: infer T extends AllowedObjectSetType } ? T
+  : never;
+
+interface ManifestObjectSetParameterDefinition {
+  type: "objectSet";
   displayName: string;
-  objectTypeRids: [string];
+  /** @deprecated prefer allowedType instead */
+  objectTypeRids: [string] | [];
+  allowedType: string;
 }
 
 export type ManifestParameterDefinition =
   | PrimitiveParameterDefinition<ParameterValue.PrimitiveType>
   | ArrayParameterDefinition<ParameterValue.PrimitiveType>
-  | ManifestObjectSetParameterDefinition<ObjectType>;
+  | ManifestObjectSetParameterDefinition;
 
 export interface EventDefinition<P extends ParameterConfig> {
   displayName: string;
@@ -90,8 +120,10 @@ export type AsyncParameterValueMap<C extends WidgetConfig<C["parameters"]>> = {
         value: AsyncValue<P>;
       }
     : never
-    : C["parameters"][K] extends ObjectSetParameterDefinition<infer T>
-      ? ParameterValue.ObjectSet<T>["value"] extends AsyncValue<infer P> ? {
+    : C["parameters"][K] extends { type: "objectSet" }
+      ? ParameterValue.ObjectSet<
+        ExtractObjectSetTypeFromDef<C["parameters"][K]>
+      >["value"] extends AsyncValue<infer P> ? {
           type: "objectSet";
           value: AsyncValue<P>;
         }
@@ -119,8 +151,10 @@ export type ParameterValueMap<C extends WidgetConfig<C["parameters"]>> = {
       { type: C["parameters"][K]["type"]; subType: S }
     >["value"] extends AsyncValue<infer P> ? P
     : never
-    : C["parameters"][K] extends ObjectSetParameterDefinition<infer T>
-      ? ParameterValue.ObjectSet<T>["value"] extends AsyncValue<infer P> ? P
+    : C["parameters"][K] extends { type: "objectSet" }
+      ? ParameterValue.ObjectSet<
+        ExtractObjectSetTypeFromDef<C["parameters"][K]>
+      >["value"] extends AsyncValue<infer P> ? P
       : never
     : Extract<
       ParameterValue,

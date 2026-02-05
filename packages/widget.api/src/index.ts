@@ -45,7 +45,12 @@ export {
   visitWidgetMessage,
 } from "./messages/widgetMessages.js";
 export type { WidgetMessage } from "./messages/widgetMessages.js";
-export type { ObjectType, ParameterValue } from "./parameters.js";
+export type {
+  AllowedObjectSetType,
+  InterfaceType,
+  ObjectType,
+  ParameterValue,
+} from "./parameters.js";
 export type { BrowserPermission } from "./permissions.js";
 export type {
   AsyncFailedValue,
