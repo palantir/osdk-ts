@@ -139,8 +139,44 @@ describe("buildWidgetSetManifest", () => {
         type: "objectSet",
         displayName: "Object Set Parameter",
         objectTypeRids: ["ri.ontology.main.object-type.employee"],
+        allowedType: "ri.ontology.main.object-type.employee",
       },
     );
+  });
+
+  test("converts interface set parameters correctly", () => {
+    const widgetBuild = createMockWidgetBuild("widget", {
+      interfaceSetParam: {
+        type: "objectSet",
+        displayName: "Interface Set Parameter",
+        allowedType: {
+          type: "interface",
+          apiName: "MyInterface",
+          internalDoNotUseMetadata: {
+            rid: "ri.ontology.main.interface.my-interface",
+          },
+        },
+      },
+    });
+
+    const widgetBuilds: WidgetBuildOutputs[] = [widgetBuild];
+    const widgetSetInputSpec: WidgetSetInputSpec = {};
+
+    const manifest = buildWidgetSetManifest(
+      WIDGET_SET_RID,
+      WIDGET_SET_VERSION,
+      widgetBuilds,
+      widgetSetInputSpec,
+    );
+
+    expect(
+      manifest.widgetSet.widgets.widget.parameters.interfaceSetParam,
+    ).toEqual({
+      type: "objectSet",
+      displayName: "Interface Set Parameter",
+      objectTypeRids: [],
+      allowedType: "ri.ontology.main.interface.my-interface",
+    });
   });
 
   test("trims leading slashes from paths", () => {
