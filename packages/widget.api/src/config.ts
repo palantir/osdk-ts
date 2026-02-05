@@ -16,7 +16,6 @@
 
 import type {
   AllowedObjectSetParameterType,
-  ObjectType,
   ParameterValue,
 } from "./parameters.js";
 import type { BrowserPermission } from "./permissions.js";
@@ -38,7 +37,7 @@ interface ObjectSetParameterDefinition<
   displayName: string;
   allowedType: T;
   /** @deprecated Use allowedType instead */
-  objectType?: ObjectType;
+  objectType?: "\"objectType\" is deprecated, use \"allowedType\" instead";
 }
 export type ParameterDefinition =
   | PrimitiveParameterDefinition<ParameterValue.PrimitiveType>

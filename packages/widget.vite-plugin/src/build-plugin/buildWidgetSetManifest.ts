@@ -87,11 +87,6 @@ function convertParameter(
     if (parameter.allowedType.internalDoNotUseMetadata == null) {
       throw new Error("Expected internal metadata to be present");
     }
-    if ("objectType" in parameter) {
-      throw new Error(
-        `Parameter '${parameter.displayName}' is using the deprecated 'objectType' field, please remove it and use only 'allowedType'`,
-      );
-    }
     return {
       type: "objectSet",
       displayName: parameter.displayName,
