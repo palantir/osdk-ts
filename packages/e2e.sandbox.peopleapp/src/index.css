@@ -10,7 +10,7 @@
 @import "@osdk/react-components-styles" layer(osdk.tokens);
 
 /* Import theme overrides (e.g., change primary intent to green) */
-@import "./theme-overrides.css" layer(custom.theme);
+/* @import "./theme-overrides.css" layer(custom.theme); */
 
 /* Tailwind for utility classes */
 @import "tailwindcss" layer(tailwind);

@@ -14,7 +14,19 @@
  * limitations under the License.
  */
 
-import type { Cell, RowData, Table } from "@tanstack/react-table";
+import type {
+  ObjectOrInterfaceDefinition,
+  PropertyKeys,
+  QueryDefinition,
+  SimplePropertyDef,
+} from "@osdk/api";
+import type {
+  Cell,
+  OnChangeFn,
+  RowData,
+  SortingState,
+  Table,
+} from "@tanstack/react-table";
 import classNames from "classnames";
 import React, {
   type ReactElement,
@@ -25,11 +37,26 @@ import React, {
 } from "react";
 import { LoadingStateTable } from "./LoadingStateTable.js";
 import { NonIdealState } from "./NonIdealState.js";
+import type { ColumnDefinition } from "./ObjectTableApi.js";
 import styles from "./Table.module.css";
 import { TableBody } from "./TableBody.js";
 import { TableHeader } from "./TableHeader.js";
 
-export interface BaseTableProps<TData extends RowData> {
+declare module "@tanstack/react-table" {
+  interface ColumnMeta<TData extends RowData, TValue> {
+    headerTitle?: string;
+  }
+}
+
+export interface BaseTableProps<
+  TData extends RowData,
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
+    string,
+    never
+  >,
+> {
   table: Table<TData>;
   isLoading?: boolean;
   fetchNextPage?: () => Promise<void>;
@@ -41,9 +68,25 @@ export interface BaseTableProps<TData extends RowData> {
   ) => React.ReactNode;
   className?: string;
   error?: Error;
+  onSortChange?: OnChangeFn<SortingState>;
+  columnDefinitions?: Array<ColumnDefinition<Q, RDPs, FunctionColumns>>;
+  onColumnVisibilityChanged?: (
+    newStates: Array<{
+      columnId: PropertyKeys<Q> | keyof RDPs | keyof FunctionColumns;
+      isVisible: boolean;
+    }>,
+  ) => void;
 }
 
-export function BaseTable<TData extends RowData>(
+export function BaseTable<
+  TData extends RowData,
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
+    string,
+    never
+  >,
+>(
   {
     table,
     isLoading,
@@ -53,7 +96,9 @@ export function BaseTable<TData extends RowData>(
     renderCellContextMenu,
     className,
     error,
-  }: BaseTableProps<TData>,
+    onSortChange,
+    onColumnVisibilityChanged,
+  }: BaseTableProps<TData, Q, RDPs, FunctionColumns>,
 ): ReactElement {
   const tableContainerRef = useRef<HTMLDivElement>(null);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
@@ -117,7 +162,11 @@ export function BaseTable<TData extends RowData>(
           )
           : (
             <>
-              <TableHeader table={table} />
+              <TableHeader
+                table={table}
+                onSortChange={onSortChange}
+                onColumnVisibilityChanged={onColumnVisibilityChanged}
+              />
               <TableBody
                 rows={rows}
                 tableContainerRef={tableContainerRef}

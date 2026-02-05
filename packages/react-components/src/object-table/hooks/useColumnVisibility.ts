@@ -16,12 +16,18 @@
 
 import type {
   ObjectOrInterfaceDefinition,
+  PropertyKeys,
   QueryDefinition,
   SimplePropertyDef,
 } from "@osdk/api";
-import type { VisibilityState } from "@tanstack/react-table";
-import { useMemo } from "react";
+import type {
+  ColumnOrderState,
+  OnChangeFn,
+  VisibilityState,
+} from "@tanstack/react-table";
+import { useCallback, useEffect, useState } from "react";
 import type { ObjectTableProps } from "../ObjectTableApi.js";
+import { SELECTION_COLUMN_ID } from "../utils/constants.js";
 
 interface UseColumnVisibilityProps<
   Q extends ObjectOrInterfaceDefinition,
@@ -36,6 +42,20 @@ interface UseColumnVisibilityProps<
     RDPs,
     FunctionColumns
   >["columnDefinitions"];
+  onColumnVisibilityChanged?: (
+    newStates: Array<{
+      columnId: PropertyKeys<Q> | keyof RDPs | keyof FunctionColumns;
+      isVisible: boolean;
+    }>,
+  ) => void;
+  hasSelectionColumn?: boolean;
+}
+
+interface UseColumnVisibilityResult {
+  columnVisibility: VisibilityState;
+  onColumnVisibilityChange: OnChangeFn<VisibilityState>;
+  columnOrder: ColumnOrderState;
+  onColumnOrderChange: OnChangeFn<ColumnOrderState>;
 }
 
 export const useColumnVisibility = <
@@ -46,33 +66,87 @@ export const useColumnVisibility = <
     never
   >,
 >(
-  { columnDefinitions }: UseColumnVisibilityProps<
-    Q,
-    RDPs,
-    FunctionColumns
-  >,
-): VisibilityState | undefined => {
-  const columnVisibility = useMemo(() => {
-    if (columnDefinitions) {
-      const colVisibility: VisibilityState = columnDefinitions.reduce(
-        (acc, colDef) => {
-          if (colDef.isVisible !== undefined) {
-            const { locator } = colDef;
-            const colKey = locator.id;
+  {
+    columnDefinitions,
+    onColumnVisibilityChanged,
+    hasSelectionColumn,
+  }: UseColumnVisibilityProps<Q, RDPs, FunctionColumns>,
+): UseColumnVisibilityResult => {
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
+    {},
+  );
 
-            return {
-              ...acc,
-              [colKey]: colDef.isVisible,
-            };
-          }
-          return acc;
-        },
-        {},
-      );
+  const [columnOrder, setColumnOrder] = useState<ColumnOrderState>(
+    [],
+  );
 
-      return colVisibility;
-    }
+  useEffect(() => {
+    const initialVisibility: VisibilityState = columnDefinitions
+      ? columnDefinitions.reduce((acc, colDef) => {
+        return {
+          ...acc,
+          [colDef.locator.id]: colDef.isVisible !== false,
+        };
+      }, {})
+      : {};
+
+    setColumnVisibility(initialVisibility);
   }, [columnDefinitions]);
 
-  return columnVisibility;
+  useEffect(() => {
+    const selectionColumn = hasSelectionColumn ? [SELECTION_COLUMN_ID] : [];
+    const initialColumnOrder: ColumnOrderState = columnDefinitions
+      ? [
+        ...selectionColumn,
+        ...columnDefinitions.map(colDef => String(colDef.locator.id)),
+      ]
+      : [];
+
+    setColumnOrder(initialColumnOrder);
+  }, [columnDefinitions, hasSelectionColumn]);
+
+  const onColumnVisibilityChange: OnChangeFn<VisibilityState> = useCallback(
+    (updaterOrValue) => {
+      setColumnVisibility((prev) => {
+        const newState = typeof updaterOrValue === "function"
+          ? updaterOrValue(prev)
+          : updaterOrValue;
+
+        if (onColumnVisibilityChanged) {
+          const changes = Object.entries(newState).map(
+            ([columnId, isVisible]) => ({
+              columnId: columnId as
+                | PropertyKeys<Q>
+                | keyof RDPs
+                | keyof FunctionColumns,
+              isVisible,
+            }),
+          );
+          onColumnVisibilityChanged(changes);
+        }
+
+        return newState;
+      });
+    },
+    [onColumnVisibilityChanged],
+  );
+
+  const onColumnOrderChange: OnChangeFn<ColumnOrderState> = useCallback(
+    (updaterOrValue) => {
+      setColumnOrder((prev) => {
+        const newState = typeof updaterOrValue === "function"
+          ? updaterOrValue(prev)
+          : updaterOrValue;
+        return newState;
+      });
+    },
+    [],
+  );
+
+  return {
+    columnVisibility,
+    onColumnVisibilityChange,
+    columnOrder,
+    onColumnOrderChange,
+  };
 };

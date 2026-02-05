@@ -55,6 +55,14 @@ export type ColumnDefinition<
     object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
     locator: ColumnDefinitionLocator<Q, RDPs, FunctionColumns>,
   ) => React.ReactNode;
+
+  /**
+   * If not provided,
+   * for a property column, the property displayName will be used
+   * for other columns, the id will be used.
+   */
+  headerTitle?: string;
+
   renderHeader?: () => React.ReactNode;
 };
 
@@ -78,6 +86,10 @@ export type ColumnDefinitionLocator<
     type: "rdp";
     id: keyof RDPs;
     creator: DerivedProperty.Creator<Q, RDPs[keyof RDPs]>;
+  }
+  | {
+    type: "custom";
+    id: string;
   };
 
 export interface ObjectTableProps<

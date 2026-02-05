@@ -17,6 +17,7 @@
 .osdkTableCell {
   display: flex;
   align-items: center;
+  height: 100%;
   text-align: left;
   position: relative;
   padding: var(--osdk-table-cell-padding);
@@ -38,6 +39,7 @@
 .osdkTableCell[data-pinned="right"] {
   position: sticky;
   z-index: var(--osdk-surface-z-index-1);
+  background-color: inherit;
 }
 
 /* Last left-pinned column - no left-pinned siblings after it */
@@ -52,6 +54,7 @@
 
 .osdkTableCell:has([role="checkbox"]) {
   justify-content: center;
+  padding: 0;
 }
 
 .osdkTableCellContent:not(:has([role="checkbox"])) {
@@ -59,4 +62,12 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   text-align: left;
+}
+
+.osdkCheckboxContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
 }
