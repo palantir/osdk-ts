@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -157,6 +157,10 @@ export interface ActionLogRule {
   enabled: boolean;
   propertyValues: Record<PropertyTypeId, ActionLogValue>;
   reasonCodes: Array<PropertyTypeId>;
+  structFieldValues: Record<
+    PropertyTypeId,
+    Record<StructFieldRid, ActionLogStructFieldValue>
+  >;
 }
 /**
  * Users can optionally configure an ActionLogicRule for their ActionType that defines how Action parameters and
@@ -168,7 +172,75 @@ export interface ActionLogRuleModification {
   enabled: boolean;
   propertyValues: Record<PropertyTypeId, ActionLogValueModification>;
   reasonCodes: Array<PropertyTypeId>;
+  structFieldValues: Record<PropertyTypeId, Array<ActionLogStructFieldMapping>>;
 }
+/**
+ * Maps a struct field (by RID or API name) to a value source for action log rules.
+ * Used in lists instead of maps to support StructFieldApiNameOrRid as keys.
+ */
+export interface ActionLogStructFieldMapping {
+  structFieldApiNameOrRid: StructFieldApiNameOrRid;
+  value: ActionLogStructFieldValueModification;
+}
+export interface ActionLogStructFieldValue_structParameterFieldValue {
+  type: "structParameterFieldValue";
+  structParameterFieldValue: StructParameterFieldValue;
+}
+
+export interface ActionLogStructFieldValue_structListParameterFieldValue {
+  type: "structListParameterFieldValue";
+  structListParameterFieldValue: StructListParameterFieldValue;
+}
+
+export interface ActionLogStructFieldValue_objectParameterStructFieldValue {
+  type: "objectParameterStructFieldValue";
+  objectParameterStructFieldValue: ObjectParameterStructFieldValue;
+}
+
+export interface ActionLogStructFieldValue_objectParameterStructListFieldValue {
+  type: "objectParameterStructListFieldValue";
+  objectParameterStructListFieldValue: ObjectParameterStructListFieldValue;
+}
+/**
+ * Values that can be mapped to struct fields in action log rules.
+ * Supports mapping from both struct parameters and object parameter struct properties.
+ */
+export type ActionLogStructFieldValue =
+  | ActionLogStructFieldValue_structParameterFieldValue
+  | ActionLogStructFieldValue_structListParameterFieldValue
+  | ActionLogStructFieldValue_objectParameterStructFieldValue
+  | ActionLogStructFieldValue_objectParameterStructListFieldValue;
+
+export interface ActionLogStructFieldValueModification_structParameterFieldValue {
+  type: "structParameterFieldValue";
+  structParameterFieldValue: StructParameterFieldValue;
+}
+
+export interface ActionLogStructFieldValueModification_structListParameterFieldValue {
+  type: "structListParameterFieldValue";
+  structListParameterFieldValue: StructListParameterFieldValue;
+}
+
+export interface ActionLogStructFieldValueModification_objectParameterStructFieldValue {
+  type: "objectParameterStructFieldValue";
+  objectParameterStructFieldValue: ObjectParameterStructFieldValueModification;
+}
+
+export interface ActionLogStructFieldValueModification_objectParameterStructListFieldValue {
+  type: "objectParameterStructListFieldValue";
+  objectParameterStructListFieldValue:
+    ObjectParameterStructListFieldValueModification;
+}
+/**
+ * Values that can be mapped to struct fields in action log rules for incoming requests.
+ * Supports mapping from both struct parameters and object parameter struct properties.
+ */
+export type ActionLogStructFieldValueModification =
+  | ActionLogStructFieldValueModification_structParameterFieldValue
+  | ActionLogStructFieldValueModification_structListParameterFieldValue
+  | ActionLogStructFieldValueModification_objectParameterStructFieldValue
+  | ActionLogStructFieldValueModification_objectParameterStructListFieldValue;
+
 export interface ActionLogSummaryPart_message {
   type: "message";
   message: ActionLogMessage;
@@ -719,6 +791,7 @@ export interface ActionTypeDisplayMetadata {
   icon?: Icon | null | undefined;
   submitButtonDisplayMetadata?: ButtonDisplayMetadata | null | undefined;
   successMessage: Array<ActionTypeRichTextComponent>;
+  toolDescription?: string | null | undefined;
   typeClasses: Array<TypeClass>;
   undoButtonConfiguration?: boolean | null | undefined;
 }
@@ -740,6 +813,7 @@ export interface ActionTypeDisplayMetadataModification {
   icon?: Icon | null | undefined;
   submitButtonDisplayMetadata?: ButtonDisplayMetadata | null | undefined;
   successMessage: Array<ActionTypeRichTextComponent>;
+  toolDescription?: string | null | undefined;
   typeClasses: Array<TypeClass>;
   undoButtonConfiguration?: boolean | null | undefined;
 }
@@ -1263,12 +1337,25 @@ export interface AddInterfaceLinkRuleModification {
   sourceObject: ParameterId;
   targetObject: ParameterId;
 }
+export interface AddInterfaceLinkRuleModificationV2 {
+  interfaceLinkTypeRidOrIdInRequest: InterfaceLinkTypeRidOrIdInRequest;
+  interfaceTypeRidOrIdInRequest: InterfaceTypeRidOrIdInRequest;
+  sourceObjects: Array<LinkedObjectReferenceModification>;
+  targetObjects: Array<LinkedObjectReferenceModification>;
+}
+export interface AddInterfaceLinkRuleV2 {
+  interfaceLinkTypeRid: InterfaceLinkTypeRid;
+  interfaceTypeRid: InterfaceTypeRid;
+  sourceObjects: Array<LinkedObjectReference>;
+  targetObjects: Array<LinkedObjectReference>;
+}
 export interface AddInterfaceRule {
   interfacePropertyValues: Record<
     InterfacePropertyTypeRid,
     InterfacePropertyLogicRuleValue
   >;
   interfaceTypeRid: InterfaceTypeRid;
+  logicRuleRid?: LogicRuleRid | null | undefined;
   objectType: ParameterId;
   sharedPropertyValues: Record<SharedPropertyTypeRid, LogicRuleValue>;
   structFieldValues: Record<
@@ -1281,6 +1368,7 @@ export interface AddInterfaceRuleModification {
     InterfacePropertyTypeLogicRuleValueModification
   >;
   interfaceTypeRidOrIdInRequest: InterfaceTypeRidOrIdInRequest;
+  logicRuleIdentifier?: LogicRuleIdentifier | null | undefined;
   objectType: ParameterId;
   sharedPropertyTypeLogicRuleValueModifications: Array<
     SharedPropertyTypeLogicRuleValueModification
@@ -1299,6 +1387,7 @@ export interface AddLinkRule {
   targetObject: ParameterId;
 }
 export interface AddObjectRule {
+  logicRuleRid?: LogicRuleRid | null | undefined;
   objectTypeId: ObjectTypeId;
   propertyValues: Record<PropertyTypeId, LogicRuleValue>;
   structFieldValues: Record<
@@ -1307,6 +1396,7 @@ export interface AddObjectRule {
   >;
 }
 export interface AddObjectRuleModification {
+  logicRuleIdentifier?: LogicRuleIdentifier | null | undefined;
   objectTypeId: ObjectTypeId;
   propertyValues: Record<PropertyTypeId, LogicRuleValueModification>;
   structFieldValues: Record<
@@ -1514,6 +1604,11 @@ export interface AllowedParameterValues_valueType {
   type: "valueType";
   valueType: ParameterValueTypeWithVersionIdOrEmpty;
 }
+
+export interface AllowedParameterValues_scenarioReference {
+  type: "scenarioReference";
+  scenarioReference: ParameterScenarioReferenceOrEmpty;
+}
 export type AllowedParameterValues =
   | AllowedParameterValues_oneOf
   | AllowedParameterValues_range
@@ -1539,7 +1634,8 @@ export type AllowedParameterValues =
   | AllowedParameterValues_geotimeSeriesReference
   | AllowedParameterValues_redacted
   | AllowedParameterValues_struct
-  | AllowedParameterValues_valueType;
+  | AllowedParameterValues_valueType
+  | AllowedParameterValues_scenarioReference;
 
 export interface AllowedParameterValuesModification_oneOf {
   type: "oneOf";
@@ -1665,6 +1761,11 @@ export interface AllowedParameterValuesModification_valueType {
   type: "valueType";
   valueType: ParameterValueTypeOrEmpty;
 }
+
+export interface AllowedParameterValuesModification_scenarioReference {
+  type: "scenarioReference";
+  scenarioReference: ParameterScenarioReferenceOrEmpty;
+}
 export type AllowedParameterValuesModification =
   | AllowedParameterValuesModification_oneOf
   | AllowedParameterValuesModification_range
@@ -1690,7 +1791,8 @@ export type AllowedParameterValuesModification =
   | AllowedParameterValuesModification_geotimeSeriesReference
   | AllowedParameterValuesModification_redacted
   | AllowedParameterValuesModification_struct
-  | AllowedParameterValuesModification_valueType;
+  | AllowedParameterValuesModification_valueType
+  | AllowedParameterValuesModification_scenarioReference;
 
 export interface AllowedParameterValuesRequest_oneOf {
   type: "oneOf";
@@ -1816,6 +1918,11 @@ export interface AllowedParameterValuesRequest_valueType {
   type: "valueType";
   valueType: ParameterValueTypeOrEmpty;
 }
+
+export interface AllowedParameterValuesRequest_scenarioReference {
+  type: "scenarioReference";
+  scenarioReference: ParameterScenarioReferenceOrEmpty;
+}
 /**
  * This type is used to decouple AllowParameterValues from the request type, should only be used within
  * ActionTypeModificationRequest, PutParameterRequest, and EditParameterRequest object.
@@ -1845,7 +1952,8 @@ export type AllowedParameterValuesRequest =
   | AllowedParameterValuesRequest_geotimeSeriesReference
   | AllowedParameterValuesRequest_redacted
   | AllowedParameterValuesRequest_struct
-  | AllowedParameterValuesRequest_valueType;
+  | AllowedParameterValuesRequest_valueType
+  | AllowedParameterValuesRequest_scenarioReference;
 
 export interface AllowedStructFieldValues_oneOf {
   type: "oneOf";
@@ -2029,8 +2137,16 @@ export interface AndConditionModification {
 export interface AnyNotificationRenderingCanFail {
 }
 export interface ArrayPropertyType {
+  reducers: Array<ArrayPropertyTypeReducer>;
   subtype: Type;
 }
+export interface ArrayPropertyTypeReducer {
+  direction: ArrayPropertyTypeReducerSortDirection;
+  field?: StructFieldRid | null | undefined;
+}
+export type ArrayPropertyTypeReducerSortDirection =
+  | "ASCENDING_NULLS_LAST"
+  | "DESCENDING_NULLS_LAST";
 export interface ArrayTypeDataConstraints {
   elementsConstraint?: PropertyTypeDataConstraints | null | undefined;
   elementsUnique?: ArrayTypeElementsUniqueConstraint | null | undefined;
@@ -2194,6 +2310,7 @@ export interface BatchedFunctionRuleModification {
 export interface BatchGetEnrichedActionTypeMetadataRequest {
   actionTypes: Array<ActionTypeRid>;
   ontologyBranchRid?: OntologyBranchRid | null | undefined;
+  versionReference?: VersionReference | null | undefined;
 }
 export interface BatchGetEnrichedActionTypeMetadataResponse {
   enrichedMetadata: Record<ActionTypeRid, EnrichedActionTypeMetadata>;
@@ -2297,6 +2414,19 @@ export type BranchId = string;
 export interface BranchMergedEvent {
   ontologyBranch: OntologyBranch;
   ontologyRid: OntologyRid;
+}
+/**
+ * Event indicating that an object type index on a branch should be reset. Any service receiving this event
+ * should "reset" the state of the object type, as if the service were receiving an object type indexing event
+ * on this branched object type for the first time, at the ontology version specified in the event.
+ * For example, in Funnel this would mean resetting the state of the index and pulling in edits from main if
+ * copy edits on initial indexing is configured.
+ */
+export interface BranchObjectTypeResetEvent {
+  objectTypeRid: ObjectTypeRid;
+  ontologyBranch: OntologyBranch;
+  ontologyRid: OntologyRid;
+  ontologyVersion: OntologyVersion;
 }
 export interface BranchRecipientsBranchOwner {
 }
@@ -2635,6 +2765,24 @@ export type ConditionValueModification =
   | ConditionValueModification_userProperty
   | ConditionValueModification_parameterLength;
 
+/**
+ * References a newly created object of interface by its type and primary key. Used to support creating
+ * a new object and linking it to another object in the same action type for a parameter - primary key
+ * mapping.
+ */
+export interface CreatedInterfaceObjectReferenceByPk {
+  objectType: ParameterId;
+  primaryKey: ParameterId;
+}
+/**
+ * References a newly created object of interface by its type and unique identifier. Used to support creating
+ * a new object and linking it to another object in the same action type for a unique identifier - primary key
+ * mapping.
+ */
+export interface CreatedInterfaceObjectReferenceByUniqueIdentifier {
+  objectType: ParameterId;
+  uniqueIdentifier: UniqueIdentifier;
+}
 /**
  * The time that the user submits the Action will be used for this value.
  */
@@ -4092,6 +4240,7 @@ export interface InterfaceCipherTextPropertyType {
 }
 export interface InterfaceDefinedPropertyType {
   apiName: InterfacePropertyTypeApiName;
+  baseFormatter?: BaseFormatter | null | undefined;
   constraints: InterfaceDefinedPropertyTypeConstraints;
   displayMetadata: InterfacePropertyTypeDisplayMetadata;
   rid: InterfacePropertyTypeRid;
@@ -4186,9 +4335,6 @@ export interface InterfaceParameterPropertyValueModification {
   parameterId: ParameterId;
   sharedPropertyTypeRidOrIdInRequest: SharedPropertyTypeRidOrIdInRequest;
 }
-/**
- * Used to reference interface properties. Note, these are curently unsupported on the actions backend.
- */
 export interface InterfaceParameterPropertyValueModificationV2 {
   interfacePropertyTypeRidOrIdInRequest: InterfacePropertyTypeRidOrIdInRequest;
   parameterId: ParameterId;
@@ -4241,8 +4387,26 @@ export interface InterfacePropertyTypeImplementation_propertyTypeRid {
   type: "propertyTypeRid";
   propertyTypeRid: PropertyTypeRid;
 }
+
+export interface InterfacePropertyTypeImplementation_structPropertyTypeMapping {
+  type: "structPropertyTypeMapping";
+  structPropertyTypeMapping: StructPropertyTypeImplementation;
+}
+
+export interface InterfacePropertyTypeImplementation_structField {
+  type: "structField";
+  structField: StructFieldImplementation;
+}
+
+export interface InterfacePropertyTypeImplementation_reducedProperty {
+  type: "reducedProperty";
+  reducedProperty: ReducedPropertyTypeImplementation;
+}
 export type InterfacePropertyTypeImplementation =
-  InterfacePropertyTypeImplementation_propertyTypeRid;
+  | InterfacePropertyTypeImplementation_propertyTypeRid
+  | InterfacePropertyTypeImplementation_structPropertyTypeMapping
+  | InterfacePropertyTypeImplementation_structField
+  | InterfacePropertyTypeImplementation_reducedProperty;
 
 export interface InterfacePropertyTypeLogicRuleValueModification {
   interfacePropertyLogicRuleModification:
@@ -4613,6 +4777,11 @@ export interface KnownFormatter_artifactGidFormatter {
   artifactGidFormatter: ArtifactGidFormatter;
 }
 
+export interface KnownFormatter_sidcFormatter {
+  type: "sidcFormatter";
+  sidcFormatter: SidcFormatter;
+}
+
 export interface KnownFormatter_userId {
   type: "userId";
   userId: FormatterUserId;
@@ -4627,6 +4796,7 @@ export interface KnownFormatter_ridFormatter {
  */
 export type KnownFormatter =
   | KnownFormatter_artifactGidFormatter
+  | KnownFormatter_sidcFormatter
   | KnownFormatter_userId
   | KnownFormatter_ridFormatter;
 
@@ -4639,6 +4809,7 @@ export interface LabelledValue {
  * guarantee that a given language-specific analyzer will be available for use.
  */
 export type LanguageAnalyzer =
+  | "ENGLISH"
   | "FRENCH"
   | "GERMAN"
   | "JAPANESE"
@@ -4697,6 +4868,64 @@ export interface LinkedEntityTypeRidOrIdInRequest_interfaceType {
 export type LinkedEntityTypeRidOrIdInRequest =
   | LinkedEntityTypeRidOrIdInRequest_objectType
   | LinkedEntityTypeRidOrIdInRequest_interfaceType;
+
+export interface LinkedObjectReference_existingObject {
+  type: "existingObject";
+  existingObject: ParameterId;
+}
+
+export interface LinkedObjectReference_createdObjectReference {
+  type: "createdObjectReference";
+  createdObjectReference: LogicRuleRid;
+}
+
+export interface LinkedObjectReference_createdInterfaceObjectReferenceByPk {
+  type: "createdInterfaceObjectReferenceByPk";
+  createdInterfaceObjectReferenceByPk: CreatedInterfaceObjectReferenceByPk;
+}
+
+export interface LinkedObjectReference_createdInterfaceObjectReferenceByUniqueIdentifier {
+  type: "createdInterfaceObjectReferenceByUniqueIdentifier";
+  createdInterfaceObjectReferenceByUniqueIdentifier:
+    CreatedInterfaceObjectReferenceByUniqueIdentifier;
+}
+/**
+ * References to object(s) that will be linked.
+ */
+export type LinkedObjectReference =
+  | LinkedObjectReference_existingObject
+  | LinkedObjectReference_createdObjectReference
+  | LinkedObjectReference_createdInterfaceObjectReferenceByPk
+  | LinkedObjectReference_createdInterfaceObjectReferenceByUniqueIdentifier;
+
+export interface LinkedObjectReferenceModification_existingObject {
+  type: "existingObject";
+  existingObject: ParameterId;
+}
+
+export interface LinkedObjectReferenceModification_createdObjectReference {
+  type: "createdObjectReference";
+  createdObjectReference: LogicRuleIdentifier;
+}
+
+export interface LinkedObjectReferenceModification_createdInterfaceObjectReferenceByPk {
+  type: "createdInterfaceObjectReferenceByPk";
+  createdInterfaceObjectReferenceByPk: CreatedInterfaceObjectReferenceByPk;
+}
+
+export interface LinkedObjectReferenceModification_createdInterfaceObjectReferenceByUniqueIdentifier {
+  type: "createdInterfaceObjectReferenceByUniqueIdentifier";
+  createdInterfaceObjectReferenceByUniqueIdentifier:
+    CreatedInterfaceObjectReferenceByUniqueIdentifier;
+}
+/**
+ * References to object(s) that will be linked.
+ */
+export type LinkedObjectReferenceModification =
+  | LinkedObjectReferenceModification_existingObject
+  | LinkedObjectReferenceModification_createdObjectReference
+  | LinkedObjectReferenceModification_createdInterfaceObjectReferenceByPk
+  | LinkedObjectReferenceModification_createdInterfaceObjectReferenceByUniqueIdentifier;
 
 export interface LinkMetadata_linkType {
   type: "linkType";
@@ -4956,6 +5185,7 @@ export type LmsEmbeddingModel =
   | "TEXT_EMBEDDING_3_SMALL"
   | "TEXT_EMBEDDING_3_LARGE"
   | "SNOWFLAKE_ARCTIC_EMBED_M"
+  | "LLAMA_3_2_NV_EMBEDQA_1B_V2"
   | "INSTRUCTOR_LARGE"
   | "BGE_BASE_EN_V1_5";
 export interface LoadActionTypesFromOntologyRequest {
@@ -5066,6 +5296,7 @@ export type LoadAllObjectTypesPageToken = string;
  */
 export interface LoadAllOntologiesRequest {
   includeEmptyDefaultOntology?: boolean | null | undefined;
+  includeOntologiesWithDeletedProject?: boolean | null | undefined;
 }
 /**
  * Response to LoadAllOntologiesRequest. This includes information
@@ -5173,6 +5404,11 @@ export interface LogicRule_addInterfaceLinkRule {
   addInterfaceLinkRule: AddInterfaceLinkRule;
 }
 
+export interface LogicRule_addInterfaceLinkRuleV2 {
+  type: "addInterfaceLinkRuleV2";
+  addInterfaceLinkRuleV2: AddInterfaceLinkRuleV2;
+}
+
 export interface LogicRule_deleteInterfaceLinkRule {
   type: "deleteInterfaceLinkRule";
   deleteInterfaceLinkRule: DeleteInterfaceLinkRule;
@@ -5187,6 +5423,11 @@ export interface LogicRule_batchedFunctionRule {
   type: "batchedFunctionRule";
   batchedFunctionRule: BatchedFunctionRule;
 }
+
+export interface LogicRule_scenarioRule {
+  type: "scenarioRule";
+  scenarioRule: ScenarioRule;
+}
 export type LogicRule =
   | LogicRule_addObjectRule
   | LogicRule_addOrModifyObjectRule
@@ -5198,10 +5439,32 @@ export type LogicRule =
   | LogicRule_addLinkRule
   | LogicRule_deleteLinkRule
   | LogicRule_addInterfaceLinkRule
+  | LogicRule_addInterfaceLinkRuleV2
   | LogicRule_deleteInterfaceLinkRule
   | LogicRule_functionRule
-  | LogicRule_batchedFunctionRule;
+  | LogicRule_batchedFunctionRule
+  | LogicRule_scenarioRule;
 
+export interface LogicRuleIdentifier_rid {
+  type: "rid";
+  rid: LogicRuleRid;
+}
+
+export interface LogicRuleIdentifier_logicRuleIdInRequest {
+  type: "logicRuleIdInRequest";
+  logicRuleIdInRequest: LogicRuleIdInRequest;
+}
+/**
+ * A type to uniquely identify a logic rule in an ActionType.
+ */
+export type LogicRuleIdentifier =
+  | LogicRuleIdentifier_rid
+  | LogicRuleIdentifier_logicRuleIdInRequest;
+
+/**
+ * Reference to a LogicRule. Used when referencing a LogicRule in the same request it is created in.
+ */
+export type LogicRuleIdInRequest = string;
 export interface LogicRuleModification_addObjectRule {
   type: "addObjectRule";
   addObjectRule: AddObjectRuleModification;
@@ -5252,9 +5515,19 @@ export interface LogicRuleModification_addInterfaceLinkRule {
   addInterfaceLinkRule: AddInterfaceLinkRuleModification;
 }
 
+export interface LogicRuleModification_addInterfaceLinkRuleV2 {
+  type: "addInterfaceLinkRuleV2";
+  addInterfaceLinkRuleV2: AddInterfaceLinkRuleModificationV2;
+}
+
 export interface LogicRuleModification_deleteInterfaceLinkRule {
   type: "deleteInterfaceLinkRule";
   deleteInterfaceLinkRule: DeleteInterfaceLinkRuleModification;
+}
+
+export interface LogicRuleModification_scenarioRule {
+  type: "scenarioRule";
+  scenarioRule: ScenarioRuleModification;
 }
 
 export interface LogicRuleModification_functionRule {
@@ -5277,10 +5550,13 @@ export type LogicRuleModification =
   | LogicRuleModification_addLinkRule
   | LogicRuleModification_deleteLinkRule
   | LogicRuleModification_addInterfaceLinkRule
+  | LogicRuleModification_addInterfaceLinkRuleV2
   | LogicRuleModification_deleteInterfaceLinkRule
+  | LogicRuleModification_scenarioRule
   | LogicRuleModification_functionRule
   | LogicRuleModification_batchedFunctionRule;
 
+export type LogicRuleRid = string;
 export interface LogicRuleValue_parameterId {
   type: "parameterId";
   parameterId: ParameterId;
@@ -5493,6 +5769,11 @@ export interface ManyToManyLinkTypeStreamDatasource {
   retentionPolicy: RetentionPolicy;
   streamLocator: StreamLocator;
 }
+/**
+ * Display name for a marking. If present, this should be used for display purposes
+ * instead of the MarkingId. If empty, fall back to using the MarkingId.
+ */
+export type MarkingDisplayName = string | null | undefined;
 export interface MarkingFilter_markingTypes {
   type: "markingTypes";
   markingTypes: MarkingTypesFilter;
@@ -5506,6 +5787,14 @@ export type MarkingFilter = MarkingFilter_markingTypes;
  * A Cbac, Mandatory or Organization marking ID
  */
 export type MarkingId = string;
+
+/**
+ * Combined information about a marking including its type and optional display name.
+ */
+export interface MarkingInfo {
+  displayName: MarkingDisplayName;
+  markingType: MarkingType;
+}
 export interface MarkingPropertyType {
   markingType: MarkingType;
 }
@@ -5703,6 +5992,29 @@ export interface MultiplicationOperation {
 }
 export interface MustBeEmpty {
 }
+export interface NestedInterfacePropertyTypeImplementation_propertyTypeRid {
+  type: "propertyTypeRid";
+  propertyTypeRid: PropertyTypeRid;
+}
+
+export interface NestedInterfacePropertyTypeImplementation_structPropertyTypeMapping {
+  type: "structPropertyTypeMapping";
+  structPropertyTypeMapping: StructPropertyTypeImplementation;
+}
+
+export interface NestedInterfacePropertyTypeImplementation_structField {
+  type: "structField";
+  structField: StructFieldImplementation;
+}
+/**
+ * Copy of InterfacePropertyTypeImplementation without reducedProperty to avoid enabling nested reducer
+ * implementations.
+ */
+export type NestedInterfacePropertyTypeImplementation =
+  | NestedInterfacePropertyTypeImplementation_propertyTypeRid
+  | NestedInterfacePropertyTypeImplementation_structPropertyTypeMapping
+  | NestedInterfacePropertyTypeImplementation_structField;
+
 export interface NestedStructFieldApiNameMapping {
   apiName: ObjectTypeFieldApiName;
   mappings: Record<StructFieldName, NestedStructFieldApiNameMapping>;
@@ -6484,11 +6796,25 @@ export interface ObjectTypeError_patchBackupInitializationConfigurationSourceDoe
   patchBackupInitializationConfigurationSourceDoesNotExist:
     PatchBackupInitializationConfigurationSourceDoesNotExistError;
 }
+
+export interface ObjectTypeError_reducerStructFieldApiNamesNotFound {
+  type: "reducerStructFieldApiNamesNotFound";
+  reducerStructFieldApiNamesNotFound:
+    ObjectTypeReducerStructFieldApiNamesNotFoundError;
+}
+
+export interface ObjectTypeError_mainValueStructFieldApiNamesNotFound {
+  type: "mainValueStructFieldApiNamesNotFound";
+  mainValueStructFieldApiNamesNotFound:
+    ObjectTypeMainValueStructFieldApiNamesNotFoundError;
+}
 export type ObjectTypeError =
   | ObjectTypeError_objectTypesAlreadyExist
   | ObjectTypeError_objectTypesNotFound
   | ObjectTypeError_objectTypeRidsNotFound
-  | ObjectTypeError_patchBackupInitializationConfigurationSourceDoesNotExist;
+  | ObjectTypeError_patchBackupInitializationConfigurationSourceDoesNotExist
+  | ObjectTypeError_reducerStructFieldApiNamesNotFound
+  | ObjectTypeError_mainValueStructFieldApiNamesNotFound;
 
 /**
  * A string indicating the API Name to use for the given entity that will be a field of an ObjectType.
@@ -6545,6 +6871,7 @@ export interface ObjectTypeIdsAndInterfaceTypeRids {
  */
 export interface ObjectTypeInputManagerProperties {
   datasources: Array<DatasourceRid>;
+  isUserCodeWorkflow?: boolean | null | undefined;
 }
 /**
  * ResourceIdentifier for the object type input manager.
@@ -6594,6 +6921,15 @@ export interface ObjectTypeLoadResponse {
   resolvedBranch: ResolvedBranch;
 }
 /**
+ * Struct property type main value references struct field API names that do not exist on the overall struct
+ * property type.
+ */
+export interface ObjectTypeMainValueStructFieldApiNamesNotFoundError {
+  missingStructFieldApiNames: Array<ObjectTypeFieldApiName>;
+  objectTypeId?: ObjectTypeId | null | undefined;
+  propertyTypeId?: PropertyTypeId | null | undefined;
+}
+/**
  * Object type datasource that is backed by media, uniquely identified by its rid.
  */
 export interface ObjectTypeMediaDatasource {
@@ -6609,6 +6945,7 @@ export interface ObjectTypeMediaSetViewDatasource {
   assumedMarkings: Array<MarkingId>;
   mediaSetViewLocator: MediaSetViewLocator;
   properties: Array<PropertyTypeRid>;
+  uploadProperties: Array<PropertyTypeRid>;
 }
 /**
  * ResourceIdentifier for the object type metadata input manager.
@@ -6636,6 +6973,15 @@ export interface ObjectTypePeeringMetadataV1 {
  */
 export type ObjectTypePeeringRid = string;
 
+/**
+ * Array property type reducers reference struct field API names that do not exist on the overall struct property
+ * type.
+ */
+export interface ObjectTypeReducerStructFieldApiNamesNotFoundError {
+  missingStructFieldApiNames: Array<ObjectTypeFieldApiName>;
+  objectTypeId?: ObjectTypeId | null | undefined;
+  propertyTypeId?: PropertyTypeId | null | undefined;
+}
 /**
  * Object type datasource representing a restricted view on top of a stream.
  */
@@ -6941,6 +7287,12 @@ export interface OntologyEntitiesUsedInTypeGroup {
   actionTypeRids: Array<ActionTypeRid>;
   objectTypeRids: Array<ObjectTypeRid>;
 }
+export interface OntologyIndexingEvent_branchObjectTypeReset {
+  type: "branchObjectTypeReset";
+  branchObjectTypeReset: BranchObjectTypeResetEvent;
+}
+export type OntologyIndexingEvent = OntologyIndexingEvent_branchObjectTypeReset;
+
 /**
  * Information about an Ontology.
  */
@@ -6977,7 +7329,41 @@ export interface OntologyIrActionLogRule {
   enabled: boolean;
   propertyValues: Record<ObjectTypeFieldApiName, OntologyIrActionLogValue>;
   reasonCodes: Array<ObjectTypeFieldApiName>;
+  structFieldValues: Record<
+    ObjectTypeFieldApiName,
+    Record<StructFieldRid, OntologyIrActionLogStructFieldValue>
+  >;
 }
+export interface OntologyIrActionLogStructFieldValue_structParameterFieldValue {
+  type: "structParameterFieldValue";
+  structParameterFieldValue: StructParameterFieldValue;
+}
+
+export interface OntologyIrActionLogStructFieldValue_structListParameterFieldValue {
+  type: "structListParameterFieldValue";
+  structListParameterFieldValue: StructListParameterFieldValue;
+}
+
+export interface OntologyIrActionLogStructFieldValue_objectParameterStructFieldValue {
+  type: "objectParameterStructFieldValue";
+  objectParameterStructFieldValue: OntologyIrObjectParameterStructFieldValue;
+}
+
+export interface OntologyIrActionLogStructFieldValue_objectParameterStructListFieldValue {
+  type: "objectParameterStructListFieldValue";
+  objectParameterStructListFieldValue:
+    OntologyIrObjectParameterStructListFieldValue;
+}
+/**
+ * Values that can be mapped to struct fields in action log rules.
+ * Supports mapping from both struct parameters and object parameter struct properties.
+ */
+export type OntologyIrActionLogStructFieldValue =
+  | OntologyIrActionLogStructFieldValue_structParameterFieldValue
+  | OntologyIrActionLogStructFieldValue_structListParameterFieldValue
+  | OntologyIrActionLogStructFieldValue_objectParameterStructFieldValue
+  | OntologyIrActionLogStructFieldValue_objectParameterStructListFieldValue;
+
 export interface OntologyIrActionLogValue_parameterValue {
   type: "parameterValue";
   parameterValue: ParameterId;
@@ -7256,8 +7642,19 @@ export interface OntologyIrAddInterfaceLinkRule {
   sourceObject: ParameterId;
   targetObject: ParameterId;
 }
+export interface OntologyIrAddInterfaceLinkRuleV2 {
+  interfaceLinkTypeRid: InterfaceLinkTypeApiName;
+  interfaceTypeRid: InterfaceTypeApiName;
+  sourceObjects: Array<LinkedObjectReference>;
+  targetObjects: Array<LinkedObjectReference>;
+}
 export interface OntologyIrAddInterfaceRule {
   interfaceApiName: InterfaceTypeApiName;
+  interfacePropertyValues: Record<
+    InterfacePropertyTypeApiName,
+    OntologyIrInterfacePropertyLogicRuleValue
+  >;
+  logicRuleRid?: LogicRuleRid | null | undefined;
   objectTypeParameter: ParameterId;
   sharedPropertyValues: Record<
     ObjectTypeFieldApiName,
@@ -7269,6 +7666,7 @@ export interface OntologyIrAdditionOperation {
   rightOperand: OntologyIrParameterTransformPrefillValue;
 }
 export interface OntologyIrAddObjectRule {
+  logicRuleRid?: LogicRuleRid | null | undefined;
   objectTypeId: ObjectTypeApiName;
   propertyValues: Record<ObjectTypeFieldApiName, OntologyIrLogicRuleValue>;
   structFieldValues: Record<
@@ -7419,6 +7817,11 @@ export interface OntologyIrAllowedParameterValues_valueType {
   type: "valueType";
   valueType: ParameterValueTypeWithVersionIdOrEmpty;
 }
+
+export interface OntologyIrAllowedParameterValues_scenarioReference {
+  type: "scenarioReference";
+  scenarioReference: ParameterScenarioReferenceOrEmpty;
+}
 export type OntologyIrAllowedParameterValues =
   | OntologyIrAllowedParameterValues_oneOf
   | OntologyIrAllowedParameterValues_range
@@ -7443,7 +7846,8 @@ export type OntologyIrAllowedParameterValues =
   | OntologyIrAllowedParameterValues_geoshape
   | OntologyIrAllowedParameterValues_geotimeSeriesReference
   | OntologyIrAllowedParameterValues_redacted
-  | OntologyIrAllowedParameterValues_valueType;
+  | OntologyIrAllowedParameterValues_valueType
+  | OntologyIrAllowedParameterValues_scenarioReference;
 
 export interface OntologyIrAllowedStructFieldValues_oneOf {
   type: "oneOf";
@@ -7505,7 +7909,12 @@ export interface OntologyIrAndCondition {
   displayMetadata?: ConditionDisplayMetadata | null | undefined;
 }
 export interface OntologyIrArrayPropertyType {
+  reducers: Array<OntologyIrArrayPropertyTypeReducer>;
   subtype: OntologyIrType;
+}
+export interface OntologyIrArrayPropertyTypeReducer {
+  direction: ArrayPropertyTypeReducerSortDirection;
+  field?: StructFieldRid | null | undefined;
 }
 export interface OntologyIrAsynchronousPostWritebackWebhook_staticDirectInput {
   type: "staticDirectInput";
@@ -7992,8 +8401,26 @@ export interface OntologyIrInterfacePropertyTypeImplementation_propertyTypeRid {
   type: "propertyTypeRid";
   propertyTypeRid: ObjectTypeFieldApiName;
 }
+
+export interface OntologyIrInterfacePropertyTypeImplementation_structPropertyTypeMapping {
+  type: "structPropertyTypeMapping";
+  structPropertyTypeMapping: OntologyIrStructPropertyTypeImplementation;
+}
+
+export interface OntologyIrInterfacePropertyTypeImplementation_structField {
+  type: "structField";
+  structField: OntologyIrStructFieldImplementation;
+}
+
+export interface OntologyIrInterfacePropertyTypeImplementation_reducedProperty {
+  type: "reducedProperty";
+  reducedProperty: OntologyIrReducedPropertyTypeImplementation;
+}
 export type OntologyIrInterfacePropertyTypeImplementation =
-  OntologyIrInterfacePropertyTypeImplementation_propertyTypeRid;
+  | OntologyIrInterfacePropertyTypeImplementation_propertyTypeRid
+  | OntologyIrInterfacePropertyTypeImplementation_structPropertyTypeMapping
+  | OntologyIrInterfacePropertyTypeImplementation_structField
+  | OntologyIrInterfacePropertyTypeImplementation_reducedProperty;
 
 export interface OntologyIrInterfacePropertyTypeType_array {
   type: "array";
@@ -8286,6 +8713,16 @@ export interface OntologyIrLogicRule_deleteLinkRule {
   type: "deleteLinkRule";
   deleteLinkRule: DeleteLinkRule;
 }
+
+export interface OntologyIrLogicRule_addInterfaceLinkRuleV2 {
+  type: "addInterfaceLinkRuleV2";
+  addInterfaceLinkRuleV2: OntologyIrAddInterfaceLinkRuleV2;
+}
+
+export interface OntologyIrLogicRule_scenarioRule {
+  type: "scenarioRule";
+  scenarioRule: OntologyIrScenarioRule;
+}
 export type OntologyIrLogicRule =
   | OntologyIrLogicRule_addObjectRule
   | OntologyIrLogicRule_addOrModifyObjectRuleV2
@@ -8294,7 +8731,9 @@ export type OntologyIrLogicRule =
   | OntologyIrLogicRule_addInterfaceRule
   | OntologyIrLogicRule_modifyInterfaceRule
   | OntologyIrLogicRule_addLinkRule
-  | OntologyIrLogicRule_deleteLinkRule;
+  | OntologyIrLogicRule_deleteLinkRule
+  | OntologyIrLogicRule_addInterfaceLinkRuleV2
+  | OntologyIrLogicRule_scenarioRule;
 
 export interface OntologyIrLogicRuleValue_parameterId {
   type: "parameterId";
@@ -8434,7 +8873,12 @@ export type OntologyIrMediaSourceRid =
   | OntologyIrMediaSourceRid_datasetRid;
 
 export interface OntologyIrModifyInterfaceRule {
+  interfaceApiName: InterfaceTypeApiName;
   interfaceObjectToModifyParameter: ParameterId;
+  interfacePropertyValues: Record<
+    InterfacePropertyTypeApiName,
+    OntologyIrInterfacePropertyLogicRuleValue
+  >;
   sharedPropertyValues: Record<
     ObjectTypeFieldApiName,
     OntologyIrLogicRuleValue
@@ -8462,6 +8906,29 @@ export interface OntologyIrMultiplicationOperation {
   leftOperand: OntologyIrParameterTransformPrefillValue;
   rightOperand: OntologyIrParameterTransformPrefillValue;
 }
+export interface OntologyIrNestedInterfacePropertyTypeImplementation_propertyTypeRid {
+  type: "propertyTypeRid";
+  propertyTypeRid: ObjectTypeFieldApiName;
+}
+
+export interface OntologyIrNestedInterfacePropertyTypeImplementation_structPropertyTypeMapping {
+  type: "structPropertyTypeMapping";
+  structPropertyTypeMapping: OntologyIrStructPropertyTypeImplementation;
+}
+
+export interface OntologyIrNestedInterfacePropertyTypeImplementation_structField {
+  type: "structField";
+  structField: OntologyIrStructFieldImplementation;
+}
+/**
+ * Copy of InterfacePropertyTypeImplementation without reducedProperty to avoid enabling nested reducer
+ * implementations.
+ */
+export type OntologyIrNestedInterfacePropertyTypeImplementation =
+  | OntologyIrNestedInterfacePropertyTypeImplementation_propertyTypeRid
+  | OntologyIrNestedInterfacePropertyTypeImplementation_structPropertyTypeMapping
+  | OntologyIrNestedInterfacePropertyTypeImplementation_structField;
+
 /**
  * A URL target for a newly created object.
  */
@@ -8939,6 +9406,7 @@ export interface OntologyIrObjectTypeMediaSetViewDatasource {
   assumedMarkings: Array<MarkingId>;
   mediaSetViewLocator: _api_blockdata_MediaSetViewName;
   properties: Array<ObjectTypeFieldApiName>;
+  uploadProperties: Array<ObjectTypeFieldApiName>;
 }
 /**
  * Object type datasource representing a restricted view on top of a stream.
@@ -9463,7 +9931,7 @@ export interface OntologyIrPrePostFix {
  */
 export interface OntologyIrPropertySecurityGroup {
   properties: Array<ObjectTypeFieldApiName>;
-  rid: PropertySecurityGroupRid;
+  rid: PropertySecurityGroupName;
   security: OntologyIrSecurityGroupSecurityDefinition;
   type?: PropertySecurityGroupType | null | undefined;
 }
@@ -9569,6 +10037,12 @@ export interface OntologyIrQualifiedSeriesIdPropertyValue {
   seriesId: SeriesIdPropertyValue;
   syncRid: _api_blockdata_TimeSeriesSyncName;
 }
+/**
+ * Denotes that that the reduced value of the implementation is used to implement the interface property.
+ */
+export interface OntologyIrReducedPropertyTypeImplementation {
+  implementation: OntologyIrNestedInterfacePropertyTypeImplementation;
+}
 export interface OntologyIrRegexCondition {
   displayMetadata?: ConditionDisplayMetadata | null | undefined;
   regex: string;
@@ -9589,6 +10063,22 @@ export interface OntologyIrRidUrlTarget {
 export interface OntologyIrRuleSetBinding {
   bindings: Record<ValueReferenceId, OntologyIrValueReferenceSource>;
   ruleSetRid: RuleSetRid;
+}
+/**
+ * Applies the edits from a specified Scenario instance to the main branch
+ */
+export interface OntologyIrScenarioRule {
+  scenario: ParameterId;
+  scope: OntologyIrScenarioScope;
+}
+/**
+ * We can't automatically determine the scope, and statically determine the affected action type entities. We
+ * therefore require the user to explicitly specify the scope of the scenario edits to be applied, and use it
+ * to populate the affected entities in the ActionTypeEntities field.
+ */
+export interface OntologyIrScenarioScope {
+  linkTypes: Array<LinkTypeId>;
+  objectTypes: Array<ObjectTypeApiName>;
 }
 /**
  * A physical and logical grouping of parameters on the action form.
@@ -9708,7 +10198,7 @@ export interface OntologyIrSecurityGroupMandatoryOnlySecurityDefinition {
 }
 export interface OntologyIrSecurityGroupMandatoryPolicy {
   assumedMarkings: Array<MarkingId>;
-  markings: Array<MarkingId>;
+  markings: Record<MarkingId, MarkingType>;
 }
 /**
  * Condition that specifies that user's markings must be evaluated against the marking(s) contained on each
@@ -9863,6 +10353,13 @@ export interface OntologyIrStructFieldConditionalValidationBlock {
   conditionalOverrides: Array<OntologyIrStructFieldConditionalOverride>;
   defaultValidation: OntologyIrStructFieldValidationBlock;
 }
+/**
+ * Used to implement an interface non-struct property with an object struct property field.
+ */
+export interface OntologyIrStructFieldImplementation {
+  propertyTypeRid: ObjectTypeFieldApiName;
+  structFieldRid: StructFieldRid;
+}
 export interface OntologyIrStructFieldPrefill_objectParameterStructFieldValue {
   type: "objectParameterStructFieldValue";
   objectParameterStructFieldValue: OntologyIrObjectParameterStructFieldValue;
@@ -9948,8 +10445,23 @@ export interface OntologyIrStructFieldValidationDisplayMetadata {
   renderHint: _api_types_ParameterRenderHint;
   visibility: _api_types_ParameterVisibility;
 }
+export interface OntologyIrStructMainValue {
+  fields: Array<StructFieldRid>;
+  type: OntologyIrType;
+}
 export interface OntologyIrStructPropertyType {
+  mainValue?: OntologyIrStructMainValue | null | undefined;
   structFields: Array<OntologyIrStructFieldType>;
+}
+/**
+ * Used to implement an interface struct property with an object struct property type AND specify an explicit
+ * mapping from interface property struct fields to object property struct fields. This is useful when
+ * implementing an interface struct property with a subset of the fields on the object struct property type–
+ * for example, its main value fields.
+ */
+export interface OntologyIrStructPropertyTypeImplementation {
+  propertyTypeRid: ObjectTypeFieldApiName;
+  structFieldRidMapping: Record<StructFieldRid, StructFieldRid>;
 }
 /**
  * An action notification's structured short body.
@@ -11408,6 +11920,20 @@ export interface ParameterRequiredOverride {
  * The rid for a Parameter, autogenerated by Ontology-Metadata-Service and used for permissioning and logging.
  */
 export type ParameterRid = string;
+export interface ParameterScenarioReference {
+}
+export interface ParameterScenarioReferenceOrEmpty_empty {
+  type: "empty";
+  empty: MustBeEmpty;
+}
+
+export interface ParameterScenarioReferenceOrEmpty_scenarioReference {
+  type: "scenarioReference";
+  scenarioReference: ParameterScenarioReference;
+}
+export type ParameterScenarioReferenceOrEmpty =
+  | ParameterScenarioReferenceOrEmpty_empty
+  | ParameterScenarioReferenceOrEmpty_scenarioReference;
 
 /**
  * Some ParameterIds are not matching between ActionType and ParameterOrdering
@@ -11844,18 +12370,12 @@ export interface ProjectEntityRid_interfaceTypeRid {
   type: "interfaceTypeRid";
   interfaceTypeRid: InterfaceTypeRid;
 }
-
-export interface ProjectEntityRid_typeGroupRid {
-  type: "typeGroupRid";
-  typeGroupRid: TypeGroupRid;
-}
 export type ProjectEntityRid =
   | ProjectEntityRid_objectTypeRid
   | ProjectEntityRid_linkTypeRid
   | ProjectEntityRid_actionTypeRid
   | ProjectEntityRid_sharedPropertyTypeRid
-  | ProjectEntityRid_interfaceTypeRid
-  | ProjectEntityRid_typeGroupRid;
+  | ProjectEntityRid_interfaceTypeRid;
 
 export interface PropertiesReferenceDuplicateColumnNameWrapper {
   columnName: string;
@@ -12338,6 +12858,7 @@ export interface QualifiedSeriesIdPropertyValue {
   seriesId: SeriesIdPropertyValue;
   syncRid: TimeSeriesSyncRid;
 }
+export type Quantization = "NO_QUANTIZATION" | "BYTE" | "HALF_BYTE" | "BINARY";
 export interface QuiverDashboardReference {
   quiverDashboardRid: QuiverDashboardRid;
   quiverDashboardVersion: QuiverDashboardVersion;
@@ -12366,6 +12887,12 @@ export interface RedactionOverrideOptions_everyoneTrusted {
 }
 export type RedactionOverrideOptions = RedactionOverrideOptions_everyoneTrusted;
 
+/**
+ * Denotes that that the reduced value of the implementation is used to implement the interface property.
+ */
+export interface ReducedPropertyTypeImplementation {
+  implementation: NestedInterfacePropertyTypeImplementation;
+}
 /**
  * Some of the referenced linkTypes in the Workflow do not exist.
  */
@@ -12479,6 +13006,7 @@ export interface ResolvedDefaultBranch {
  */
 export interface ResolvedInterfacePropertyType {
   apiName: InterfacePropertyTypeApiName;
+  baseFormatter?: BaseFormatter | null | undefined;
   constraints: ResolvedInterfacePropertyTypeConstraints;
   displayMetadata: InterfacePropertyTypeDisplayMetadata;
   rid: InterfacePropertyTypeRid;
@@ -12680,6 +13208,34 @@ export type SafeDatasourceIdentifier =
   | SafeDatasourceIdentifier_derivedPropertiesSourceRid
   | SafeDatasourceIdentifier_tableRid;
 
+/**
+ * The rid for a Scenario V2 instance defined in actions.
+ */
+export type ScenarioRid = string;
+
+/**
+ * Applies the edits from a specified Scenario instance to the main branch
+ */
+export interface ScenarioRule {
+  scenario: ParameterId;
+  scope: ScenarioScope;
+}
+/**
+ * Applies the edits from a specified Scenario instance to the main branch
+ */
+export interface ScenarioRuleModification {
+  scenario: ParameterId;
+  scope: ScenarioScope;
+}
+/**
+ * We can't automatically determine the scope, and statically determine the affected action type entities. We
+ * therefore require the user to explicitly specify the scope of the scenario edits to be applied, and use it
+ * to populate the affected entities in the ActionTypeEntities field.
+ */
+export interface ScenarioScope {
+  linkTypes: Array<LinkTypeId>;
+  objectTypes: Array<ObjectTypeId>;
+}
 /**
  * Identifier for a schema migration.
  */
@@ -13217,9 +13773,23 @@ export interface SharedPropertyTypeError_sharedPropertyTypesAlreadyExist {
   type: "sharedPropertyTypesAlreadyExist";
   sharedPropertyTypesAlreadyExist: SharedPropertyTypesAlreadyExistError;
 }
+
+export interface SharedPropertyTypeError_reducerStructFieldApiNamesNotFound {
+  type: "reducerStructFieldApiNamesNotFound";
+  reducerStructFieldApiNamesNotFound:
+    SharedPropertyTypeReducerStructFieldApiNamesNotFoundError;
+}
+
+export interface SharedPropertyTypeError_mainValueStructFieldApiNamesNotFound {
+  type: "mainValueStructFieldApiNamesNotFound";
+  mainValueStructFieldApiNamesNotFound:
+    SharedPropertyTypeMainValueStructFieldApiNamesNotFoundError;
+}
 export type SharedPropertyTypeError =
   | SharedPropertyTypeError_sharedPropertyTypesNotFound
-  | SharedPropertyTypeError_sharedPropertyTypesAlreadyExist;
+  | SharedPropertyTypeError_sharedPropertyTypesAlreadyExist
+  | SharedPropertyTypeError_reducerStructFieldApiNamesNotFound
+  | SharedPropertyTypeError_mainValueStructFieldApiNamesNotFound;
 
 /**
  * Reference to a SharedPropertyType. Used when referencing an SharedPropertyType in the same request it is
@@ -13248,6 +13818,22 @@ export interface SharedPropertyTypeLoadResponse {
  */
 export interface SharedPropertyTypeLogicRuleValueModification {
   logicRuleValueModification: LogicRuleValueModification;
+  sharedPropertyTypeRidOrIdInRequest: SharedPropertyTypeRidOrIdInRequest;
+}
+/**
+ * Struct shared property type main value references struct field API names that do not exist in the overall
+ * struct property type.
+ */
+export interface SharedPropertyTypeMainValueStructFieldApiNamesNotFoundError {
+  missingStructFieldApiNames: Array<ObjectTypeFieldApiName>;
+  sharedPropertyTypeRidOrIdInRequest: SharedPropertyTypeRidOrIdInRequest;
+}
+/**
+ * Array property type reducers on shared property type reference struct field API names that do not exist in the
+ * overall struct property type.
+ */
+export interface SharedPropertyTypeReducerStructFieldApiNamesNotFoundError {
+  missingStructFieldApiNames: Array<ObjectTypeFieldApiName>;
   sharedPropertyTypeRidOrIdInRequest: SharedPropertyTypeRidOrIdInRequest;
 }
 /**
@@ -13341,6 +13927,13 @@ export type ShortTypeDataValue = number;
 export interface ShortTypeRangeConstraint {
   max?: ShortTypeDataValue | null | undefined;
   min?: ShortTypeDataValue | null | undefined;
+}
+/**
+ * Convert SIDC (Symbol Identification Code) strings into military symbol icons using the symbology service.
+ * A SIDC is a standardized way to encode military symbols, representing information about a
+ * symbol through a series of characters.
+ */
+export interface SidcFormatter {
 }
 /**
  * The simple analyzer breaks text into terms whenever it encounters a character which is not a letter
@@ -13568,6 +14161,13 @@ export interface StructFieldDisplayMetadata {
   description?: string | null | undefined;
   displayName: string;
 }
+/**
+ * Used to implement an interface non-struct property with an object struct property field.
+ */
+export interface StructFieldImplementation {
+  propertyTypeRid: PropertyTypeRid;
+  structFieldRid: StructFieldRid;
+}
 export interface StructFieldLogicRuleValue_structParameterFieldValue {
   type: "structParameterFieldValue";
   structParameterFieldValue: StructParameterFieldValue;
@@ -13774,6 +14374,10 @@ export interface StructListParameterFieldValue {
   parameterId: ParameterId;
   structFieldApiName: _api_types_StructParameterFieldApiName;
 }
+export interface StructMainValue {
+  fields: Array<StructFieldRid>;
+  type: Type;
+}
 export interface StructParameterFieldDisplayMetadata {
   displayName: string;
 }
@@ -13846,7 +14450,18 @@ export type StructPropertyFieldType =
   | StructPropertyFieldType_timestamp;
 
 export interface StructPropertyType {
+  mainValue?: StructMainValue | null | undefined;
   structFields: Array<StructFieldType>;
+}
+/**
+ * Used to implement an interface struct property with an object struct property type AND specify an explicit
+ * mapping from interface property struct fields to object property struct fields. This is useful when
+ * implementing an interface struct property with a subset of the fields on the object struct property type–
+ * for example, its main value fields.
+ */
+export interface StructPropertyTypeImplementation {
+  propertyTypeRid: PropertyTypeRid;
+  structFieldRidMapping: Record<StructFieldRid, StructFieldRid>;
 }
 export interface StructTypeDataConstraints {
   elementConstraints: StructTypeElementsConstraint;
@@ -14297,6 +14912,22 @@ export interface TypeGroupDisplayMetadata {
   displayName: string;
   iconColors: TypeGroupIconColors;
 }
+export interface TypeGroupEntityRid_objectTypeRid {
+  type: "objectTypeRid";
+  objectTypeRid: ObjectTypeRid;
+}
+
+export interface TypeGroupEntityRid_actionTypeRid {
+  type: "actionTypeRid";
+  actionTypeRid: ActionTypeRid;
+}
+/**
+ * The set of entities supported in type groups.
+ */
+export type TypeGroupEntityRid =
+  | TypeGroupEntityRid_objectTypeRid
+  | TypeGroupEntityRid_actionTypeRid;
+
 export interface TypeGroupError_typeGroupsNotFound {
   type: "typeGroupsNotFound";
   typeGroupsNotFound: TypeGroupsNotFoundError;
@@ -14634,6 +15265,7 @@ export type ValueTypeVersionId = string;
 export interface VectorPropertyType {
   dimension: number;
   embeddingModel?: EmbeddingModel | null | undefined;
+  quantization?: Quantization | null | undefined;
   supportsSearchWith: Array<VectorSimilarityFunction>;
 }
 export type VectorSimilarityFunction =

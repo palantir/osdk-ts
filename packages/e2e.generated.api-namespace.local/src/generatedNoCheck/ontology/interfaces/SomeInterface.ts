@@ -62,8 +62,11 @@ export interface SomeInterface extends $InterfaceDefinition {
   };
 }
 
-export const SomeInterface: SomeInterface = {
+export const SomeInterface = {
   type: 'interface',
   apiName: 'com.example.local.SomeInterface',
   osdkMetadata: $osdkMetadata,
-};
+  internalDoNotUseMetadata: {
+    rid: 'idk2',
+  },
+} satisfies SomeInterface & { internalDoNotUseMetadata: { rid: string } } as SomeInterface;

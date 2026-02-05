@@ -50,6 +50,7 @@ import { type Client } from "../../Client.js";
 import { createClient } from "../../createClient.js";
 import { TestLogger } from "../../logger/TestLogger.js";
 import type { ObjectHolder } from "../../object/convertWireToOsdkObjects/ObjectHolder.js";
+import type { ObjectSetPayload } from "../ObjectSetPayload.js";
 import type {
   ObserveListOptions,
   Unsubscribable,
@@ -70,6 +71,7 @@ import {
   expectSingleObjectCallAndClear,
   getObject,
   mockListSubCallback,
+  mockObserver,
   mockSingleSubCallback,
   objectPayloadContaining,
   updateList,
@@ -311,6 +313,7 @@ describe(Store, () => {
               "$objectSpecifier": "Employee:1",
               "$objectType": "Employee",
               "$primaryKey": 1,
+              "$propertySecurities": undefined,
               "$title": undefined,
               "employeeId": 1,
               "office": "101",
@@ -419,7 +422,9 @@ describe(Store, () => {
       setupOntology(testSetup.fauxFoundry);
       setupSomeEmployees(testSetup.fauxFoundry);
 
-      employeesAsServerReturns = (await client(Employee).fetchPage()).data;
+      employeesAsServerReturns = (await client(Employee).fetchPage({
+        $includeRid: true,
+      })).data;
       mutatedEmployees = [
         employeesAsServerReturns[0],
         employeesAsServerReturns[1].$clone({
@@ -1079,7 +1084,13 @@ describe(Store, () => {
           await waitForCall(ifaceSub);
           expectSingleListCallAndClear(
             ifaceSub,
-            employeesAsServerReturns,
+            employeesAsServerReturns.map(e =>
+              expect.objectContaining({
+                $apiName: "FooInterface",
+                $objectType: "Employee",
+                $primaryKey: e.$primaryKey,
+              })
+            ),
             {
               status: "loaded",
             },
@@ -1092,6 +1103,73 @@ describe(Store, () => {
           expect(listSub1.error).not.toHaveBeenCalled();
           expect(ifaceSub.next).not.toHaveBeenCalled();
           expect(ifaceSub.error).not.toHaveBeenCalled();
+        });
+
+        it("cache stores raw objects when loading via interface", async () => {
+          defer(
+            cache.lists.observe({
+              type: FooInterface,
+              orderBy: {},
+              mode: "force",
+            }, ifaceSub),
+          );
+          await waitForCall(ifaceSub, 2);
+
+          const pk = employeesAsServerReturns[0].$primaryKey as number;
+          const cached = getObject(cache, "Employee", pk);
+          expect(cached?.$apiName).toBe("Employee");
+          expect(cached?.$objectType).toBe("Employee");
+        });
+
+        it("interface queries return interface view while cache stores raw object", async () => {
+          defer(
+            cache.lists.observe({
+              type: FooInterface,
+              orderBy: {},
+              mode: "force",
+            }, ifaceSub),
+          );
+          await waitForCall(ifaceSub, 2);
+
+          const ifacePayload = ifaceSub.next.mock.calls[1][0];
+          expect(ifacePayload?.resolvedList?.[0]?.$apiName).toBe(
+            "FooInterface",
+          );
+          expect(ifacePayload?.resolvedList?.[0]?.$objectType).toBe("Employee");
+
+          const pk = employeesAsServerReturns[0].$primaryKey as number;
+          const cached = getObject(cache, "Employee", pk);
+          expect(cached?.$apiName).toBe("Employee");
+        });
+
+        it("direct query after interface query preserves interface $apiName", async () => {
+          const objSub = mockSingleSubCallback();
+
+          defer(
+            cache.lists.observe({
+              type: FooInterface,
+              orderBy: {},
+              mode: "force",
+            }, ifaceSub),
+          );
+          await waitForCall(ifaceSub, 2);
+
+          expect(ifaceSub.next.mock.calls[1][0]?.resolvedList?.[0]?.$apiName)
+            .toBe("FooInterface");
+
+          defer(
+            cache.objects.observe({
+              apiName: Employee,
+              pk: employeesAsServerReturns[0].$primaryKey,
+              mode: "force",
+            }, objSub),
+          );
+          await waitForCall(objSub, 2);
+
+          expect(
+            ifaceSub.next.mock.calls.at(-1)?.[0]?.resolvedList?.[0]?.$apiName,
+          )
+            .toBe("FooInterface");
         });
 
         it("subsequent load", async () => {
@@ -1546,7 +1624,7 @@ describe(Store, () => {
               text,
             });
 
-            return client(Todo).fetchOne(id);
+            return client(Todo).fetchOne(id, { $includeRid: true });
           }),
         );
       });
@@ -1816,7 +1894,9 @@ describe(Store, () => {
         const pkForD = (await pActionResult).addedObjects?.[0].primaryKey;
         invariant(typeof pkForD === "number");
         // load this without the cache for comparisons
-        const createdObjectD = await client(Todo).fetchOne(pkForD);
+        const createdObjectD = await client(Todo).fetchOne(pkForD, {
+          $includeRid: true,
+        });
 
         await waitForCall(subListUnordered, 1);
         expectSingleListCallAndClear(subListUnordered, [
@@ -1832,6 +1912,76 @@ describe(Store, () => {
           { isOptimistic: false },
         );
       });
+    });
+
+    it("works with pivotTo and orderBy on objectSets", async () => {
+      fauxFoundry.getDefaultDataStore().clear();
+
+      const officeA = fauxFoundry.getDefaultDataStore().registerObject(Office, {
+        $apiName: "Office",
+        officeId: "office-a",
+        name: "Zebra Office",
+      });
+      const officeB = fauxFoundry.getDefaultDataStore().registerObject(Office, {
+        $apiName: "Office",
+        officeId: "office-b",
+        name: "Alpha Office",
+      });
+
+      const emp1 = fauxFoundry.getDefaultDataStore().registerObject(Employee, {
+        $apiName: "Employee",
+        employeeId: 1,
+        fullName: "Test Employee",
+      });
+      const emp2 = fauxFoundry.getDefaultDataStore().registerObject(Employee, {
+        $apiName: "Employee",
+        employeeId: 2,
+        fullName: "Test Employee 2",
+      });
+
+      fauxFoundry.getDefaultDataStore().registerLink(
+        emp1,
+        "officeLink",
+        officeA,
+        "occupants",
+      );
+      fauxFoundry.getDefaultDataStore().registerLink(
+        emp2,
+        "officeLink",
+        officeB,
+        "occupants",
+      );
+
+      const sub = mockObserver<ObjectSetPayload | undefined>();
+      defer(
+        store.objectSets.observe({
+          baseObjectSet: client(Employee).pivotTo("officeLink"),
+          orderBy: { name: "asc" },
+        }, sub),
+      );
+
+      await vi.waitFor(
+        () => {
+          expect(sub.next).toHaveBeenLastCalledWith(
+            expect.objectContaining({
+              status: "loaded",
+            }),
+          );
+        },
+        { timeout: 5000 },
+      );
+
+      expect(sub.next).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          status: "loaded",
+          resolvedList: [
+            expect.objectContaining({ name: "Alpha Office" }),
+            expect.objectContaining({ name: "Zebra Office" }),
+          ],
+        }),
+      );
+
+      expect(sub.error).not.toHaveBeenCalled();
     });
   });
 

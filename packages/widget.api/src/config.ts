@@ -15,6 +15,7 @@
  */
 
 import type { ObjectType, ParameterValue } from "./parameters.js";
+import type { BrowserPermission } from "./permissions.js";
 import type { AsyncValue } from "./utils/asyncValue.js";
 
 interface PrimitiveParameterDefinition<T extends ParameterValue.PrimitiveType> {
@@ -62,6 +63,7 @@ export interface WidgetConfig<P extends ParameterConfig> {
   type: "workshop";
   parameters: ParameterConfig;
   events: { [eventId: string]: EventDefinition<NoInfer<P>> };
+  permissions?: BrowserPermission[];
 }
 
 /**

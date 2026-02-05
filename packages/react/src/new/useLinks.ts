@@ -14,21 +14,19 @@
  * limitations under the License.
  */
 
-import type { LinkedType, LinkNames } from "@osdk/api";
 import type {
-  InterfaceDefinition,
-  ObjectTypeDefinition,
-  Osdk,
-  PropertyKeys,
-  WhereClause,
-} from "@osdk/client";
+  LinkedType,
+  LinkNames,
+  ObjectOrInterfaceDefinition,
+} from "@osdk/api";
+import type { Osdk, PropertyKeys, WhereClause } from "@osdk/client";
 import type { ObserveLinks } from "@osdk/client/unstable-do-not-use";
 import React from "react";
 import { makeExternalStore } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
 
 export interface UseLinksOptions<
-  T extends ObjectTypeDefinition | InterfaceDefinition,
+  T extends ObjectOrInterfaceDefinition,
 > {
   /**
    * Standard OSDK Where clause for filtering linked objects
@@ -76,7 +74,7 @@ export interface UseLinksOptions<
 }
 
 export interface UseLinksResult<
-  Q extends ObjectTypeDefinition | InterfaceDefinition,
+  Q extends ObjectOrInterfaceDefinition,
 > {
   links: Osdk.Instance<Q>[] | undefined;
   isLoading: boolean;
@@ -109,7 +107,7 @@ const emptyArray = Object.freeze([]);
  * @returns UseLinksResult with links data and metadata
  */
 export function useLinks<
-  T extends ObjectTypeDefinition,
+  T extends ObjectOrInterfaceDefinition,
   L extends LinkNames<T>,
 >(
   objects: Osdk.Instance<T> | Array<Osdk.Instance<T>> | undefined,
@@ -120,6 +118,22 @@ export function useLinks<
 
   const { enabled = true, ...otherOptions } = options;
 
+  const stableWhere = React.useMemo(
+    () => otherOptions.where,
+    [JSON.stringify(otherOptions.where)],
+  );
+
+  const stableOrderBy = React.useMemo(
+    () => otherOptions.orderBy,
+    [JSON.stringify(otherOptions.orderBy)],
+  );
+
+  const objectsKey = React.useMemo(() => {
+    if (objects === undefined) return "";
+    const arr = Array.isArray(objects) ? objects : [objects];
+    return arr.map(obj => `${obj.$apiName}:${obj.$primaryKey}`).join(",");
+  }, [objects]);
+
   // Convert single object to array for consistent handling
   const objectsArray: ReadonlyArray<Osdk.Instance<T>> = React.useMemo(() => {
     return objects === undefined
@@ -127,18 +141,14 @@ export function useLinks<
       : Array.isArray(objects)
       ? objects
       : [objects];
-  }, [objects]);
+  }, [objectsKey, objects]);
 
   const { subscribe, getSnapShot } = React.useMemo(
     () => {
       if (!enabled) {
         return makeExternalStore<ObserveLinks.CallbackArgs<T>>(
           () => ({ unsubscribe: () => {} }),
-          `links ${linkName} for ${
-            objectsArray.map(obj => `${obj.$apiName}:${obj.$primaryKey}`).join(
-              ",",
-            )
-          } [DISABLED]`,
+          `links ${linkName} for ${objectsKey} [DISABLED]`,
         );
       }
       return makeExternalStore<ObserveLinks.CallbackArgs<T>>(
@@ -148,28 +158,25 @@ export function useLinks<
             linkName,
             {
               linkName,
-              where: otherOptions.where,
+              where: stableWhere,
               pageSize: otherOptions.pageSize,
-              orderBy: otherOptions.orderBy,
+              orderBy: stableOrderBy,
               mode: otherOptions.mode,
             },
             observer,
           ),
-        `links ${linkName} for ${
-          objectsArray.map(obj => `${obj.$apiName}:${obj.$primaryKey}`).join(
-            ",",
-          )
-        }`,
+        `links ${linkName} for ${objectsKey}`,
       );
     },
     [
       enabled,
       observableClient,
       objectsArray,
+      objectsKey,
       linkName,
-      otherOptions.where,
+      stableWhere,
       otherOptions.pageSize,
-      otherOptions.orderBy,
+      stableOrderBy,
       otherOptions.mode,
     ],
   );
@@ -181,10 +188,13 @@ export function useLinks<
 
   return {
     links: payload?.resolvedList,
-    isLoading: payload?.status === "loading",
+    isLoading: enabled
+      ? (payload?.status === "loading" || payload?.status === "init"
+        || !payload)
+      : false,
     isOptimistic: payload?.isOptimistic ?? false,
     error: payload?.error,
-    fetchMore: payload?.fetchMore,
+    fetchMore: payload?.hasMore ? payload?.fetchMore : undefined,
     hasMore: payload?.hasMore ?? false,
   };
 }

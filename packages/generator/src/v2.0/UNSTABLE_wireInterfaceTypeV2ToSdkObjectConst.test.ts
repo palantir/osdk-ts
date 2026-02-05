@@ -18,13 +18,18 @@ import type {
   InterfaceType,
   SharedPropertyType,
 } from "@osdk/foundry.ontologies";
+import { __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition } from "@osdk/generator-converters";
 import { format } from "prettier";
 import { describe, expect, it } from "vitest";
 import { EnhancedInterfaceType } from "../GenerateContext/EnhancedInterfaceType.js";
 import { enhanceOntology } from "../GenerateContext/enhanceOntology.js";
 import { ForeignType } from "../GenerateContext/ForeignType.js";
+import { deleteUndefineds } from "../util/deleteUndefineds.js";
 import type { WireOntologyDefinition } from "../WireOntologyDefinition.js";
-import { __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst } from "./UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst.js";
+import {
+  __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst,
+  getInvalidInterfaceProperties,
+} from "./UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst.js";
 
 function simpleSpt<T extends string>(apiName: T, metadataLevel: 0 | 1 | 2 = 2) {
   return {
@@ -188,11 +193,14 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
         };
       }
 
-      export const Bar: Bar = {
+      export const Bar = {
         type: "interface",
         apiName: "Bar",
         osdkMetadata: $osdkMetadata,
-      };
+        internalDoNotUseMetadata: {
+          rid: "BarRid",
+        },
+      } satisfies Bar & { internalDoNotUseMetadata: { rid: string } } as Bar;
       "
     `);
   });
@@ -289,11 +297,14 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
         };
       }
 
-      export const Foo: Foo = {
+      export const Foo = {
         type: "interface",
         apiName: "Foo",
         osdkMetadata: $osdkMetadata,
-      };
+        internalDoNotUseMetadata: {
+          rid: "FooRid",
+        },
+      } satisfies Foo & { internalDoNotUseMetadata: { rid: string } } as Foo;
       "
     `);
   });
@@ -401,11 +412,14 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
         };
       }
 
-      export const Foo: Foo = {
+      export const Foo = {
         type: "interface",
         apiName: "Foo",
         osdkMetadata: $osdkMetadata,
-      };
+        internalDoNotUseMetadata: {
+          rid: "FooRid",
+        },
+      } satisfies Foo & { internalDoNotUseMetadata: { rid: string } } as Foo;
       "
     `);
   });
@@ -501,11 +515,14 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
         };
       }
 
-      export const Foo: Foo = {
+      export const Foo = {
         type: "interface",
         apiName: "Foo",
         osdkMetadata: $osdkMetadata,
-      };
+        internalDoNotUseMetadata: {
+          rid: "FooRid",
+        },
+      } satisfies Foo & { internalDoNotUseMetadata: { rid: string } } as Foo;
       "
     `);
   });
@@ -547,5 +564,66 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
       // Check that the array is sorted alphabetically
       expect(implementsStr).toContain("\"ParentA\", \"ParentC\", \"ParentZ\"");
     }
+  });
+  it("correctly identifies invalid properties", async () => {
+    const ontology = enhanceOntology({
+      sanitized: simpleOntology("ontology", [
+        simpleInterface("Child", [simpleSpt("child")], []),
+        simpleInterface("com.A.myChild", [
+          simpleSpt("son"),
+          simpleSpt("com.B.son"),
+          simpleSpt("com.A.daughter"),
+        ], []),
+        simpleInterface("com.A.myChildNo", [
+          simpleSpt("son"),
+          simpleSpt("com.A.son"),
+          simpleSpt("com.B.daughter"),
+        ], []),
+      ]),
+      importExt: "",
+    });
+
+    const interfaceDefNoNamespace = deleteUndefineds(
+      __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition(
+        (ontology.interfaceTypes.Child as EnhancedInterfaceType).raw,
+        false,
+      ),
+    );
+
+    const interfaceDefWithNamespaceOk = deleteUndefineds(
+      __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition(
+        (ontology.interfaceTypes["com.A.myChild"] as EnhancedInterfaceType).raw,
+        false,
+      ),
+    );
+
+    const interfaceDefWithNamespaceNotOk = deleteUndefineds(
+      __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition(
+        (ontology.interfaceTypes["com.A.myChildNo"] as EnhancedInterfaceType)
+          .raw,
+        false,
+      ),
+    );
+
+    const noBadProperties = getInvalidInterfaceProperties(
+      ontology.interfaceTypes.Child as EnhancedInterfaceType,
+      interfaceDefNoNamespace,
+    );
+
+    expect(noBadProperties.length).toBe(0);
+
+    const noBadProperties2 = getInvalidInterfaceProperties(
+      ontology.interfaceTypes["com.A.myChild"] as EnhancedInterfaceType,
+      interfaceDefWithNamespaceOk,
+    );
+
+    expect(noBadProperties2.length).toBe(0);
+
+    const badProperties = getInvalidInterfaceProperties(
+      ontology.interfaceTypes["com.A.myChildNo"] as EnhancedInterfaceType,
+      interfaceDefWithNamespaceNotOk,
+    );
+
+    expect(badProperties.length).toBe(1);
   });
 });

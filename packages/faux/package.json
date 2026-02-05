@@ -1,6 +1,6 @@
 {
   "name": "@osdk/faux",
-  "version": "0.5.0-beta.2",
+  "version": "0.6.0-beta.1",
   "description": "",
   "access": "private",
   "license": "Apache-2.0",
@@ -43,6 +43,7 @@
   },
   "dependencies": {
     "@osdk/api": "workspace:~",
+    "@osdk/foundry.admin": "catalog:foundry-platform-typescript",
     "@osdk/foundry.core": "catalog:foundry-platform-typescript",
     "@osdk/foundry.geo": "catalog:foundry-platform-typescript",
     "@osdk/foundry.mediasets": "catalog:foundry-platform-typescript",

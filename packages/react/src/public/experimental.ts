@@ -23,8 +23,16 @@ export { useObjectSet } from "../new/useObjectSet.js";
 export { useOsdkAction } from "../new/useOsdkAction.js";
 export type { UseOsdkAggregationResult } from "../new/useOsdkAggregation.js";
 export { useOsdkAggregation } from "../new/useOsdkAggregation.js";
+export type {
+  UseOsdkFunctionOptions,
+  UseOsdkFunctionResult,
+} from "../new/useOsdkFunction.js";
+export { useOsdkFunction } from "../new/useOsdkFunction.js";
 export { useOsdkObject } from "../new/useOsdkObject.js";
-export type { UseOsdkListResult } from "../new/useOsdkObjects.js";
+export type {
+  UseOsdkListResult,
+  UseOsdkObjectsOptions,
+} from "../new/useOsdkObjects.js";
 export { useOsdkObjects } from "../new/useOsdkObjects.js";
 export { useOsdkClient } from "../useOsdkClient.js";
 export { useOsdkMetadata } from "../useOsdkMetadata.js";

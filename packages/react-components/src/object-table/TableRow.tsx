@@ -14,21 +14,27 @@
  * limitations under the License.
  */
 
-import type { Row, RowData } from "@tanstack/react-table";
-import { flexRender } from "@tanstack/react-table";
+import type { Cell, Row, RowData } from "@tanstack/react-table";
 import type { VirtualItem } from "@tanstack/react-virtual";
 import React, { useCallback } from "react";
+import { TableCell } from "./TableCell.js";
+import styles from "./TableRow.module.css";
 
 interface TableRowProps<TData extends RowData> {
   row: Row<TData>;
   virtualRow: VirtualItem;
   onRowClick?: (row: TData) => void;
+  renderCellContextMenu?: (
+    row: TData,
+    cell: Cell<TData, unknown>,
+  ) => React.ReactNode;
 }
 
 export function TableRow<TData extends RowData>({
   row,
   virtualRow,
   onRowClick,
+  renderCellContextMenu,
 }: TableRowProps<TData>): React.ReactElement {
   const handleClick = useCallback(() => {
     onRowClick?.(row.original);
@@ -36,25 +42,20 @@ export function TableRow<TData extends RowData>({
 
   return (
     <tr
+      data-selected={row.getIsSelected()}
+      className={styles.osdkTableRow}
       style={{
-        position: "absolute",
         height: `${virtualRow.size}px`,
         transform: `translateY(${virtualRow.start}px)`,
-        display: "flex",
       }}
       onClick={handleClick}
     >
       {row.getVisibleCells().map((cell) => (
-        <td
+        <TableCell
           key={cell.id}
-          style={{
-            display: "flex",
-            alignItems: "center",
-            width: cell.column.getSize(),
-          }}
-        >
-          {flexRender(cell.column.columnDef.cell, cell.getContext())}
-        </td>
+          cell={cell}
+          renderCellContextMenu={renderCellContextMenu}
+        />
       ))}
     </tr>
   );

@@ -31,7 +31,8 @@ export type PropertyTypeTypePrimitive =
   | "long"
   | "short"
   | "string"
-  | "timestamp";
+  | "timestamp"
+  | "attachment";
 
 export type PropertyTypeTypeExotic =
   | "geopoint"
@@ -99,7 +100,9 @@ export function isExotic(
       type,
     );
   } else if (typeof type === "object" && type != null) {
-    return type.type === "marking" || type.type === "struct";
+    return type.type === "marking" || type.type === "struct"
+      || type.type === "string"
+      || type.type === "decimal";
   }
   return false;
 }
@@ -121,4 +124,5 @@ export interface StructPropertyType extends
   >
 {
   fieldType: PropertyTypeTypesWithoutStruct;
+  requireImplementation?: boolean;
 }

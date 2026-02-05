@@ -1,6 +1,6 @@
 {
   "name": "@osdk/react-components",
-  "version": "0.1.0-beta.1",
+  "version": "0.2.0-beta.1",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -42,17 +42,25 @@
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
     "test": "vitest run",
+    "transpileAllDeps": "pnpm --filter @osdk/api --filter @osdk/client --filter @osdk/react run transpileBrowser",
     "transpileBrowser": "monorepo.tool.transpile -f esm -m normal -t browser",
     "transpileCjs": "monorepo.tool.transpile -f cjs -m bundle -t node",
     "transpileEsm": "monorepo.tool.transpile -f esm -m normal -t node",
     "transpileTypes": "monorepo.tool.transpile -f esm -m types -t node",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
+  "dependencies": {
+    "@base-ui/react": "^1.0.0",
+    "@blueprintjs/icons": "^6.0.0",
+    "@tanstack/react-table": "^8.21.3",
+    "@tanstack/react-virtual": "^3.13.13"
+  },
   "peerDependencies": {
     "@osdk/api": "*",
     "@osdk/client": "*",
     "@osdk/react": "*",
     "@types/react": "^17 || ^18 || ^19",
+    "classnames": "^2.0.0",
     "react": "^17 || ^18 || ^19",
     "react-dom": "^17 || ^18 || ^19"
   },
@@ -62,10 +70,9 @@
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@osdk/react": "workspace:*",
-    "@tanstack/react-table": "^8.21.3",
-    "@tanstack/react-virtual": "^3.13.13",
     "@testing-library/react": "^16.3.0",
     "@types/react": "^18.3.24",
+    "@types/react-dom": "^18.3.7",
     "eslint-plugin-react-hooks": "^5.2.0",
     "p-defer": "^4.0.1",
     "react": "^18.3.1",

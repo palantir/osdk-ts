@@ -99,9 +99,18 @@ export class ActionApplication {
   };
 
   #invalidateActionEditResponse = async (
-    { deletedObjects, modifiedObjects, addedObjects, editedObjectTypes, type }:
-      ActionEditResponse,
+    actionEditResponse: ActionEditResponse | undefined,
   ): Promise<void> => {
+    if (actionEditResponse == null) {
+      return;
+    }
+    const {
+      deletedObjects,
+      modifiedObjects,
+      addedObjects,
+      editedObjectTypes,
+      type,
+    } = actionEditResponse;
     let changes: Changes | undefined;
     if (type === "edits") {
       const promisesToWait: Promise<any>[] = [];

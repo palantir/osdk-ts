@@ -28,6 +28,7 @@ export interface SimpleOsdkProperties {
   $objectType: string;
   $primaryKey: string | number | boolean;
   $title: string | undefined;
+  $rid?: string;
 
   [key: string]:
     | string

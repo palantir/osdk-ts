@@ -1,5 +1,36 @@
 # @osdk/api
 
+## 2.8.0-beta.2
+
+## 2.7.0-beta.14
+
+## 2.7.0-beta.13
+
+### Minor Changes
+
+- fb83808: Allow arrays to use all subtype filters
+
+## 2.7.0-beta.12
+
+### Minor Changes
+
+- bb9d25c: Allow requesting rids for OSW updates
+
+## 2.7.0-beta.11
+
+### Minor Changes
+
+- d5cfc38: Add null option to actions to allow clearing data
+
+## 2.7.0-beta.10
+
+### Minor Changes
+
+- db44f6b: Add property security metadata to objects when requested
+- 24a1e29: Remove multiplicity tag from query param types
+
+## 2.7.0-beta.9
+
 ## 2.7.0-beta.8
 
 ## 2.7.0-beta.7

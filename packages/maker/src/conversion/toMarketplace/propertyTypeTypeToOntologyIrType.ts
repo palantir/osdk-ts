@@ -53,6 +53,8 @@ export function propertyTypeTypeToOntologyIrType(
               fieldType: propertyTypeTypeToOntologyIrType(
                 fieldTypeDefinition.fieldType,
               ),
+              displayMetadata: fieldTypeDefinition.displayMetadata
+                ?? { displayName: key, description: undefined },
               typeClasses: fieldTypeDefinition.typeClasses ?? [],
               aliases: fieldTypeDefinition.aliases ?? [],
             };
@@ -126,6 +128,11 @@ export function propertyTypeTypeToOntologyIrType(
       return {
         type: "geotimeSeriesReference",
         geotimeSeriesReference: {},
+      };
+    case (type === "attachment"):
+      return {
+        type: "attachment",
+        attachment: {},
       };
 
     default:

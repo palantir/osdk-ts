@@ -29,7 +29,7 @@ export namespace createStructPerson {
    * Create a struct
    */
   export interface Params {
-    readonly address?: ActionParam.StructType<{ city: 'string'; state: 'string' }>;
+    readonly address?: ActionParam.StructType<{ city: 'string'; state: 'string' }> | null;
 
     readonly name: ActionParam.PrimitiveType<'string'>;
   }
@@ -53,6 +53,11 @@ export namespace createStructPerson {
 
 /**
  * Create a struct
+ *
+ * **Note on null values:** _For optional parameters, explicitly providing a null value instead of undefined
+ * can change the behavior of the applied action. If prefills are configured, null prevents them
+ * from being applied. If a parameter modifies an object's property, null will clear the data from
+ * the object, whereas undefined would not modify that property._
  * @param {ActionParam.StructType<{"city":"string","state":"string"}>} [address]
  * @param {ActionParam.PrimitiveType<"string">} name
  */

@@ -43,6 +43,8 @@ export {
   FintrafficAis,
   GraphqlFormatting,
   GtfsTripTrackObject,
+  MasonHeavyEquipment,
+  MasonMovie,
   MatthewvsDevOrderEmbedding,
   McAirportStruct,
   MnayanOsdkMediaObject,

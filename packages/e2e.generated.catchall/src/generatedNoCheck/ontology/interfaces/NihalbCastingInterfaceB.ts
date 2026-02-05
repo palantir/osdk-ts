@@ -66,8 +66,11 @@ export interface NihalbCastingInterfaceB extends $InterfaceDefinition {
   };
 }
 
-export const NihalbCastingInterfaceB: NihalbCastingInterfaceB = {
+export const NihalbCastingInterfaceB = {
   type: 'interface',
   apiName: 'NihalbCastingInterfaceB',
   osdkMetadata: $osdkMetadata,
-};
+  internalDoNotUseMetadata: {
+    rid: 'ri.ontology.main.interface.001b6854-774a-4ba4-9ea7-dedc05901e4f',
+  },
+} satisfies NihalbCastingInterfaceB & { internalDoNotUseMetadata: { rid: string } } as NihalbCastingInterfaceB;

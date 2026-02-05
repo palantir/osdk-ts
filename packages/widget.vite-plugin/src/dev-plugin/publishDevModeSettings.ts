@@ -56,7 +56,7 @@ function getHintForError(
     parsed.errorName === "Api:WidgetIdNotFound"
     || parsed.errorName === "WidgetIdNotFound"
   ) {
-    return "You first need to publish changes to your widget configuration files before you can develop against them.";
+    return "You first need to publish changes to your widget configuration files before you can develop against them.\n\nSee: https://www.palantir.com/docs/foundry/custom-widgets/publish/";
   }
   return undefined;
 }

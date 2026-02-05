@@ -64,6 +64,7 @@ type ObjectTypeCreatable<T extends ObjectTypeDefinition> =
   & ObjectTypeCreatableWithoutApiName<T>
   & {
     $apiName: CompileTimeMetadata<T>["apiName"];
+    $rid?: string;
   };
 
 /**
@@ -104,6 +105,11 @@ export class FauxDataStore {
     Map<string, BaseServerObject>
   >((key) => new Map());
 
+  #objectsWithSecurities = new DefaultMap<
+    OntologiesV2.ObjectTypeApiName,
+    Map<string, BaseServerObject>
+  >((key) => new Map());
+
   #singleLinks = new DefaultMap(
     (_objectLocator: ObjectLocator) =>
       new Map<OntologiesV2.LinkTypeApiName, ObjectLocator>(),
@@ -126,6 +132,11 @@ export class FauxDataStore {
               [] as Array<OntologiesV2.TimeSeriesPoint>,
           ),
       ),
+  );
+
+  #propertySecurities = new DefaultMap(
+    (_objectLocator: ObjectLocator) =>
+      [{}] as Array<OntologiesV2.PropertySecurities>,
   );
 
   #media = new DefaultMap(
@@ -266,7 +277,30 @@ export class FauxDataStore {
     const frozenBso = Object.freeze({ ...bso });
     this.#objects.get(bso.__apiName).set(String(bso.__primaryKey), frozenBso);
 
+    if (this.#strict) {
+      // registers links
+      this.replaceObjectOrThrow(frozenBso);
+    }
+
     return frozenBso;
+  }
+
+  registerObjectWithPropertySecurities(
+    regularObject: BaseServerObject,
+    securedObject: BaseServerObject,
+    propertySecurities: OntologiesV2.PropertySecurities[],
+  ): BaseServerObject {
+    const registeredObj = this.registerObject(regularObject);
+
+    this.#objectsWithSecurities.get(registeredObj.__apiName).set(
+      String(registeredObj.__primaryKey),
+      Object.freeze({ ...securedObject }),
+    );
+    this.#propertySecurities.set(
+      objectLocator(registeredObj),
+      propertySecurities,
+    );
+    return registeredObj;
   }
 
   #osdkCreatableToBso(
@@ -347,43 +381,41 @@ export class FauxDataStore {
         const fkValue = x[fkName];
         const oldFkValue = oldObject[fkName];
 
-        if (oldObject[fkName] !== x[fkName]) {
-          const dstSide = this.ontology.getOtherLinkTypeSideV2OrThrow(
-            objectType.objectType.apiName,
-            linkDef.apiName,
+        const dstSide = this.ontology.getOtherLinkTypeSideV2OrThrow(
+          objectType.objectType.apiName,
+          linkDef.apiName,
+        );
+        const dstLocator = objectLocator({
+          __apiName: linkDef.objectTypeApiName,
+          __primaryKey: fkValue,
+        });
+
+        const target = this.getObject(linkDef.objectTypeApiName, fkValue);
+
+        if (fkValue != null && !target) {
+          // eslint-disable-next-line no-console
+          console.log(
+            `WARNING! Setting a FK value to a non-existent object: ${dstLocator}`,
           );
-          const dstLocator = objectLocator({
-            __apiName: linkDef.objectTypeApiName,
-            __primaryKey: fkValue,
+        }
+
+        if (fkValue != null) {
+          linksToUpdate.push({
+            dstSide,
+            dstLocator,
+            srcSide: linkDef,
+            srcLocator: objectLocator(x),
           });
-
-          const target = this.getObject(linkDef.objectTypeApiName, fkValue);
-
-          if (fkValue != null && !target) {
-            // eslint-disable-next-line no-console
-            console.log(
-              `WARNING! Setting a FK value to a non-existent object: ${dstLocator}`,
-            );
-          }
-
-          if (fkValue != null) {
-            linksToUpdate.push({
-              dstSide,
-              dstLocator,
-              srcSide: linkDef,
-              srcLocator: objectLocator(x),
-            });
-          } else {
-            linksToRemove.push({
-              srcLocator: objectLocator(x),
-              srcSide: linkDef,
-              dstLocator: objectLocator({
-                __apiName: linkDef.objectTypeApiName,
-                __primaryKey: oldFkValue,
-              }),
-              dstSide,
-            });
-          }
+        } else if (oldFkValue != null) {
+          linksToRemove.push({
+            srcLocator: objectLocator(x),
+            srcSide: linkDef,
+            dstLocator: objectLocator({
+              __apiName: linkDef.objectTypeApiName,
+              __primaryKey: oldFkValue,
+            }),
+            dstSide,
+          });
         }
       }
     }
@@ -749,6 +781,13 @@ export class FauxDataStore {
     return object;
   }
 
+  getObjectWithSecurities(
+    apiName: string,
+    primaryKey: string | number | boolean,
+  ): BaseServerObject | undefined {
+    return this.#objectsWithSecurities.get(apiName).get(String(primaryKey));
+  }
+
   getObjectByRid(rid: string): BaseServerObject | undefined {
     for (const [, pkToObjects] of this.#objects) {
       for (const [, obj] of pkToObjects) {
@@ -828,15 +867,30 @@ export class FauxDataStore {
       | OntologiesV2.LoadObjectSetRequestV2,
   ): PagedBodyResponseWithTotal<BaseServerObject> {
     const selected = parsedBody.select;
+    const loadPropertySecurities = parsedBody.loadPropertySecurities ?? false;
     // when we have interfaces in here, we have a little trick for
     // caching off the important properties
     let objects = getObjectsFromSet(this, parsedBody.objectSet, undefined);
 
+    if (loadPropertySecurities) {
+      invariant(
+        objects.length === 1,
+        "Loading property securities is only supported when loading a single object",
+      );
+
+      objects = [
+        this.getObjectWithSecurities(
+          objects[0].__apiName,
+          objects[0].__primaryKey,
+        )!,
+      ];
+    }
     if (!objects || objects.length === 0) {
       return {
         data: [],
         totalCount: "0",
         nextPageToken: undefined,
+        propertySecurities: [],
       };
     }
 
@@ -851,6 +905,11 @@ export class FauxDataStore {
       objects,
       getPaginationParamsFromRequest(parsedBody),
       false,
+      loadPropertySecurities
+        ? this.#propertySecurities.get(
+          objectLocator(objects[0]),
+        )
+        : undefined,
     );
 
     if (!page) {

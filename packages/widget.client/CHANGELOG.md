@@ -1,5 +1,47 @@
 # @osdk/widget.client
 
+## 3.5.0-beta.2
+
+### Patch Changes
+
+- @osdk/widget.api@3.5.0-beta.2
+
+## 3.4.0-beta.14
+
+### Patch Changes
+
+- @osdk/widget.api@3.4.0-beta.14
+
+## 3.4.0-beta.13
+
+### Patch Changes
+
+- @osdk/widget.api@3.4.0-beta.13
+
+## 3.4.0-beta.12
+
+### Patch Changes
+
+- @osdk/widget.api@3.4.0-beta.12
+
+## 3.4.0-beta.11
+
+### Patch Changes
+
+- @osdk/widget.api@3.4.0-beta.11
+
+## 3.4.0-beta.10
+
+### Patch Changes
+
+- @osdk/widget.api@3.4.0-beta.10
+
+## 3.4.0-beta.9
+
+### Patch Changes
+
+- @osdk/widget.api@3.4.0-beta.9
+
 ## 3.4.0-beta.8
 
 ### Patch Changes

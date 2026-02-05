@@ -6,8 +6,14 @@ Built on top of [@osdk/react](../react), these components use OSDK hooks interna
 
 ## Installation
 
+Run the command to install:
+
+- @osdk/react-components - The unstyled components from this package
+- @osdk/react-components-styles - The default styles for the components
+- @osdk/react, @osdk/api, @osdk/client - The packages required for data-handling
+
 ```sh
-npm install @osdk/react-components @osdk/react
+npm install @osdk/react-components @osdk/react-components-styles @osdk/react @osdk/client @osdk/api
 ```
 
 **Prerequisites:**
@@ -15,6 +21,17 @@ npm install @osdk/react-components @osdk/react
 - React 18
 - A configured OSDK client
 - An OsdkProvider wrapping your application
+
+## Setup
+
+Add this to your application layout root as we are using Base UI portals. See https://base-ui.com/react/overview/quick-start#portals
+
+```css
+/* index.css */
+.root {
+  isolation: isolate;
+}
+```
 
 ## Components
 
@@ -28,6 +45,10 @@ The components that this package will provide are:
 | `FilterList`  | Visualize a high-level summary of objects data to allow users to filter that data. |
 | `ActionForm`  | Auto-generated form for executing Ontology Actions                                 |
 
+## Custom Styling
+
+See `@osdk/react-components-styles` README on how to apply custom themes and styling to the components.
+
 ## Example Usage
 
 ### Object Table
@@ -37,15 +58,41 @@ import { ObjectTable } from "@osdk/react-components";
 import { $, Employee } from "@your-osdk-package";
 
 function EmployeeDirectory() {
-  const employeeObjectSet = $(Employee).where({ department: "Engineering" });
-
   return (
     <ObjectTable
-      objectSet={employeeObjectSet}
       objectType={Employee}
     />
   );
 }
+```
+
+### Running the Example People App
+
+The examples are added to `packages/e2e.sandbox.peopleapp`, so we need to run the example app.
+
+#### Steps:
+
+1. Create a .env.local file with the content below in packages/e2e.sandbox.peopleapp:
+
+```
+VITE_FOUNDRY_URL=https://swirl.palantirfoundry.com
+VITE_FOUNDRY_CLIENT_ID=<insert_client_id>
+VITE_FOUNDRY_CLIENT_SECRET=<insert_token>
+VITE_FOUNDRY_REDIRECT_URL=http://localhost:8080/auth/callback
+```
+
+2. Get VITE_FOUNDRY_CLIENT_ID from "https://swirl.palantirfoundry.com/workspace/developer-console/app/ri.third-party-applications.main.application.91b973ac-e504-4322-95b4-4962b60495fe/oauth" under App Credentials > Client ID.
+
+3. Transpile @osdk/react-components and its dependencies
+
+```
+pnpm --filter @osdk/react-components transpileAllDeps && pnpm --filter @osdk/react-components transpileBrowser
+```
+
+4. Run the people app
+
+```
+pnpm --filter @osdk/e2e.sandbox.peopleapp dev
 ```
 
 ## Why this package?

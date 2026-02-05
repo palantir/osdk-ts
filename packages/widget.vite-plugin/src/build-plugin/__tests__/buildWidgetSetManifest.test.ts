@@ -47,7 +47,7 @@ describe("buildWidgetSetManifest", () => {
       widgetSetInputSpec,
     );
 
-    expect(manifest).toMatchObject({
+    expect(manifest).toEqual({
       manifestVersion: "1.0.0",
       widgetSet: {
         rid: WIDGET_SET_RID,
@@ -59,7 +59,7 @@ describe("buildWidgetSetManifest", () => {
             description: "Widget widgetOne Description",
             type: "workshopWidgetV1",
             entrypointJs: [
-              { path: "scripts/widgetOne.js" },
+              { path: "scripts/widgetOne.js", type: "module" },
             ],
             entrypointCss: [
               { path: "styles/widgetOne.css" },
@@ -76,6 +76,7 @@ describe("buildWidgetSetManifest", () => {
                 parameterUpdateIds: ["stringParam"],
               },
             },
+            permissions: ["camera"],
           },
           widgetTwo: {
             id: "widgetTwo",
@@ -100,6 +101,7 @@ describe("buildWidgetSetManifest", () => {
                 parameterUpdateIds: ["stringParam"],
               },
             },
+            permissions: ["camera"],
           },
         },
         inputSpec: widgetSetInputSpec,
@@ -231,6 +233,7 @@ function createMockWidgetBuild(
           parameterUpdateIds: ["stringParam"],
         },
       },
+      permissions: ["camera"],
     },
   };
 }

@@ -292,12 +292,22 @@ const archetypeRules = archetypes(
     "reactLibrary",
     [
       "@osdk/widget.client-react",
-      "@osdk/react",
       "@osdk/react-components",
     ],
     {
       ...LIBRARY_RULES,
       react: true,
+    },
+  )
+  .addArchetype(
+    "reactLibraryWithDocs",
+    [
+      "@osdk/react",
+    ],
+    {
+      ...LIBRARY_RULES,
+      react: true,
+      extraPublishFiles: ["AGENTS.md", "docs"],
     },
   )
   .addArchetype(
@@ -309,6 +319,18 @@ const archetypeRules = archetypes(
       ...LIBRARY_RULES,
       minimalChangesOnly: true,
       private: true,
+    },
+  )
+  .addArchetype(
+    "cssOnlyPackage",
+    [
+      "@osdk/react-components-styles",
+    ],
+    {
+      repositoryUrl: "https://github.com/palantir/osdk-ts.git",
+      private: false,
+      output: OUTPUT_NONE,
+      minimalChangesOnly: true,
     },
   );
 

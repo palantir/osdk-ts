@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -130,6 +130,8 @@ import type {
     as _api_association_metadata_UpdateAssociationResponse,
 } from "../association/metadata/__components.js";
 import type {
+  GetStreamingProfileConfigsResponse
+    as _api_entitymetadata_GetStreamingProfileConfigsResponse,
   LoadEntityMetadataRequest as _api_entitymetadata_LoadEntityMetadataRequest,
   SystemEntityMetadataModificationRequest
     as _api_entitymetadata_SystemEntityMetadataModificationRequest,
@@ -278,11 +280,15 @@ import type {
 import type { LoadObjectTypeSchemaMigrationsRequest as _api_schemamigrations_LoadObjectTypeSchemaMigrationsRequest } from "../schemamigrations/__components.js";
 import type {
   ActionTypeSearchRequest as _api_search_ActionTypeSearchRequest,
+  CombinedEntityTypeRid as _api_search_CombinedEntityTypeRid,
   GetObjectTypeSemanticSearchStatusResponse
     as _api_search_GetObjectTypeSemanticSearchStatusResponse,
   InterfaceTypeSearchRequest as _api_search_InterfaceTypeSearchRequest,
+  LinkTypeSearchRequest as _api_search_LinkTypeSearchRequest,
   ObjectTypeSearchRequest as _api_search_ObjectTypeSearchRequest,
   ObjectTypeSearchRequestV2 as _api_search_ObjectTypeSearchRequestV2,
+  SearchTitleInCombinedEntityTypeRequest
+    as _api_search_SearchTitleInCombinedEntityTypeRequest,
   SharedPropertyTypeSearchRequest
     as _api_search_SharedPropertyTypeSearchRequest,
   TypeGroupSearchRequest as _api_search_TypeGroupSearchRequest,
@@ -375,6 +381,13 @@ export interface ActionTypeSetOrganizationsRequestParams {
     Array<_api_OrganizationRid>
   >;
 }
+export interface CombinedEntityTypeTitleSearchAuditRecord {
+  entityTypes: Array<CombinedEntityTypeTitleSearchHitAuditRecord>;
+}
+export interface CombinedEntityTypeTitleSearchHitAuditRecord {
+  combinedEntityTypeRid: _api_search_CombinedEntityTypeRid;
+  ontologyVersion: _api_OntologyVersion;
+}
 export interface CreatedActionTypeAuditRecord {
   actionTypeRid: _api_ActionTypeRid;
   version: _api_ActionTypeVersion;
@@ -426,6 +439,13 @@ export interface LinkTypeLoadAuditRecord {
   ontologyVersion: _api_OntologyVersion;
 }
 export interface LinkTypeLoadAuditRecordWithoutId {
+  linkTypeRid: _api_LinkTypeRid;
+  ontologyVersion: _api_OntologyVersion;
+}
+export interface LinkTypeSearchAuditRecord {
+  linkTypes: Array<LinkTypeSearchHitAuditRecord>;
+}
+export interface LinkTypeSearchHitAuditRecord {
   linkTypeRid: _api_LinkTypeRid;
   ontologyVersion: _api_OntologyVersion;
 }
@@ -572,6 +592,11 @@ export interface OntologyBulkLoadEntitiesAuditRecord {
 export interface OntologyBulkLoadEntitiesByDatasourcesAuditRecord {
   entities: Array<EntityLoadByDatasourceRecord>;
 }
+export interface OntologyEntityMetadataServiceGetStreamingProfileConfigsRequestParams {
+}
+export interface OntologyEntityMetadataServiceGetStreamingProfileConfigsResponseParams {
+  response: _api_entitymetadata_GetStreamingProfileConfigsResponse;
+}
 export interface OntologyEntityMetadataServiceLoadEntityMetadataRequestParams {
   request: _api_entitymetadata_LoadEntityMetadataRequest;
 }
@@ -681,6 +706,8 @@ export type OntologyMetadataAuditEvent =
   | "ONTOLOGY_METADATA_SEARCH_SERVICE_SEARCH_INTERFACE_TYPES"
   | "ONTOLOGY_METADATA_SEARCH_SERVICE_SEARCH_SHARED_PROPERTY_TYPES"
   | "ONTOLOGY_METADATA_SEARCH_SERVICE_SEARCH_TYPE_GROUPS"
+  | "ONTOLOGY_METADATA_SEARCH_SERVICE_SEARCH_LINK_TYPES"
+  | "ONTOLOGY_METADATA_SEARCH_SERVICE_SEARCH_TITLE_IN_COMBINED_ENTITY_TYPE"
   | "ONTOLOGY_METADATA_SERVICE_USAGE_REPORT_USAGE_METADATA"
   | "ONTOLOGY_METADATA_SERVICE_USAGE_GET_USAGE"
   | "ONTOLOGY_METADATA_SERVICE_USAGE_GET_USAGE_V2"
@@ -735,6 +762,7 @@ export type OntologyMetadataAuditEvent =
   | "ONTOLOGY_METADATA_APPROVALS_SERVICE_LOAD_BRANCH_WITH_PROPOSAL"
   | "ONTOLOGY_METADATA_APPROVALS_SERVICE_MODIFY_BRANCH_WITH_PROPOSAL"
   | "ONTOLOGY_ENTITY_METADATA_SERVICE_LOAD_ENTITY_METADATA"
+  | "ONTOLOGY_ENTITY_METADATA_SERVICE_GET_STREAMING_PROFILE_CONFIGS"
   | "ONTOLOGY_SCHEMA_MIGRATION_SERVICE_LOAD_OBJECT_TYPE_SCHEMA_MIGRATIONS"
   | "ONTOLOGY_SCHEMA_MIGRATION_SERVICE_BULK_LOAD_OBJECT_TYPE_SCHEMA_MIGRATIONS";
 export interface OntologyMetadataSearchServiceObjectTypeSearchRequestParams {
@@ -755,6 +783,12 @@ export interface OntologyMetadataSearchServiceSearchInterfaceTypesRequestParams 
 export interface OntologyMetadataSearchServiceSearchInterfaceTypesResponseParams {
   record: InterfaceTypeSearchAuditRecord;
 }
+export interface OntologyMetadataSearchServiceSearchLinkTypesRequestParams {
+  record: _api_search_LinkTypeSearchRequest;
+}
+export interface OntologyMetadataSearchServiceSearchLinkTypesResponseParams {
+  record: LinkTypeSearchAuditRecord;
+}
 export interface OntologyMetadataSearchServiceSearchObjectTypesRequestParams {
   request: _api_search_ObjectTypeSearchRequestV2;
 }
@@ -766,6 +800,12 @@ export interface OntologyMetadataSearchServiceSearchSharedPropertyTypesRequestPa
 }
 export interface OntologyMetadataSearchServiceSearchSharedPropertyTypesResponseParams {
   record: SharedPropertyTypeSearchAuditRecord;
+}
+export interface OntologyMetadataSearchServiceSearchTitleInCombinedEntityTypeRequestParams {
+  record: _api_search_SearchTitleInCombinedEntityTypeRequest;
+}
+export interface OntologyMetadataSearchServiceSearchTitleInCombinedEntityTypeResponseParams {
+  record: CombinedEntityTypeTitleSearchAuditRecord;
 }
 export interface OntologyMetadataSearchServiceSearchTypeGroupsRequestParams {
   request: _api_search_TypeGroupSearchRequest;

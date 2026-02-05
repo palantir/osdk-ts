@@ -16,8 +16,7 @@
 
 import type {
   DerivedProperty,
-  ObjectSet,
-  ObjectTypeDefinition,
+  ObjectOrInterfaceDefinition,
   Osdk,
   PrimaryKeyType,
   PropertyKeys,
@@ -28,11 +27,8 @@ import type {
 import type * as React from "react";
 
 export type ColumnDefinition<
-  Q extends ObjectTypeDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<
-    string,
-    never
-  >,
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
     string,
     never
@@ -63,11 +59,8 @@ export type ColumnDefinition<
 };
 
 export type ColumnDefinitionLocator<
-  Q extends ObjectTypeDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<
-    string,
-    never
-  >,
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
     string,
     never
@@ -88,21 +81,13 @@ export type ColumnDefinitionLocator<
   };
 
 export interface ObjectTableProps<
-  Q extends ObjectTypeDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<
-    string,
-    never
-  >,
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
     string,
     never
   >,
 > {
-  /**
-   * The set of objects to show in the table
-   */
-  objectSet: ObjectSet<Q>;
-
   /**
    * The object type of the object
    */
@@ -144,8 +129,19 @@ export interface ObjectTableProps<
   orderable?: boolean;
 
   /**
+   * The default order by clause to sort the objects in the table.
+   * If provided without orderBy prop, the sorting is uncontrolled.
+   * If both orderBy and defaultOrderBy are provided, orderBy takes precedence.
+   */
+  defaultOrderBy?: Array<{
+    property: PropertyKeys<Q>;
+    direction: "asc" | "desc";
+  }>;
+
+  /**
    * The current order by clause to sort the objects in the table.
    * If provided, the sorting is controlled.
+   * If both orderBy and defaultOrderBy are provided, orderBy takes precedence.
    */
   orderBy?: Array<{
     property: PropertyKeys<Q>;
@@ -205,17 +201,6 @@ export interface ObjectTableProps<
   ) => void;
 
   /**
-   * Called when a cell is clicked.
-   *
-   * @param object The object representing the row
-   * @param columnDefinition The column definition for the clicked cell
-   */
-  onCellClick?: (
-    object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
-    locator: ColumnDefinitionLocator<Q, RDPs, FunctionColumns>,
-  ) => void;
-
-  /**
    * Called when a row is clicked.
    *
    * @param object The object representing the clicked row
@@ -229,6 +214,8 @@ export interface ObjectTableProps<
    *
    * If multiple, a checkbox will be shown for each row to allow selecting multiple rows
    * as well as a top-level checkbox in the header to select all rows.
+   *
+   * @default "none"
    */
   selectionMode?: "single" | "multiple" | "none";
 
@@ -242,16 +229,17 @@ export interface ObjectTableProps<
    * Called when the row selection changes.
    * Required when row selection is controlled.
    *
-   * @param objects The currently selected objects
+   * @param selectedRowIds The primary keys of currently selected rows
    */
-  onRowSelection?: (objects: PrimaryKeyType<Q>[]) => void;
+
+  onRowSelection?: (selectedRowIds: PrimaryKeyType<Q>[]) => void;
 
   /**
    * If provided, will render this context menu when right clicking on a cell
    */
   renderCellContextMenu?: (
-    object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
-    locator: ColumnDefinitionLocator<Q, RDPs, FunctionColumns>,
+    row: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
+    cellValue: unknown,
   ) => React.ReactNode;
 
   /**
@@ -260,4 +248,6 @@ export interface ObjectTableProps<
    * @default 40
    */
   rowHeight?: number;
+
+  className?: string;
 }

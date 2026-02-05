@@ -24,6 +24,7 @@ import { BaseListQuery } from "../base-list/BaseListQuery.js";
 import type { BatchContext } from "../BatchContext.js";
 import type { Canonical } from "../Canonical.js";
 import type { Changes } from "../Changes.js";
+import { getObjectTypesThatInvalidate } from "../getObjectTypesThatInvalidate.js";
 import type { Entry } from "../Layer.js";
 import { OrderBySortingStrategy } from "../sorting/SortingStrategy.js";
 import type { Store } from "../Store.js";
@@ -72,14 +73,6 @@ export class ObjectSetQuery extends BaseListQuery<
     this.#operations = operations;
     this.#composedObjectSet = this.#composeObjectSet(opts);
     this.#objectTypes = this.#extractObjectTypes(opts);
-
-    if (operations.orderBy && Object.keys(operations.orderBy).length > 0) {
-      const firstType = Array.from(this.#objectTypes)[0];
-      this.sortingStrategy = new OrderBySortingStrategy(
-        firstType,
-        operations.orderBy,
-      );
-    }
 
     if (opts.autoFetchMore === true) {
       this.minResultsToLoad = Number.MAX_SAFE_INTEGER;
@@ -149,8 +142,6 @@ export class ObjectSetQuery extends BaseListQuery<
       }
     }
 
-    // TODO: support pivotTo, requires resolving the target type from link metadata
-
     return types;
   }
 
@@ -168,10 +159,27 @@ export class ObjectSetQuery extends BaseListQuery<
   protected async fetchPageData(
     signal: AbortSignal | undefined,
   ): Promise<PageResult<Osdk.Instance<any>>> {
+    if (
+      this.#operations.orderBy
+      && Object.keys(this.#operations.orderBy).length > 0
+      && !(this.sortingStrategy instanceof OrderBySortingStrategy)
+    ) {
+      const wireObjectSet = getWireObjectSet(this.#composedObjectSet);
+      const { resultType } = await getObjectTypesThatInvalidate(
+        this.store.client[additionalContext],
+        wireObjectSet,
+      );
+      this.sortingStrategy = new OrderBySortingStrategy(
+        resultType.apiName,
+        this.#operations.orderBy,
+      );
+    }
+
     // Fetch the data with pagination
     const resp = await this.#composedObjectSet.fetchPage({
       $nextPageToken: this.nextPageToken,
       $pageSize: this.options.pageSize,
+      $includeRid: true,
       // OrderBy is already applied in the composed ObjectSet
       ...(this.#operations.orderBy
           && Object.keys(this.#operations.orderBy).length > 0
@@ -196,7 +204,12 @@ export class ObjectSetQuery extends BaseListQuery<
     this.logger?.error("error", error);
     this.store.subjects.get(this.cacheKey).error(error);
 
-    return this.writeToStore({ data: [] }, "error", batch);
+    const existingTotalCount = batch.read(this.cacheKey)?.value?.totalCount;
+    return this.writeToStore(
+      { data: [], totalCount: existingTotalCount },
+      "error",
+      batch,
+    );
   }
 
   registerStreamUpdates(sub: Subscription): void {
@@ -224,6 +237,7 @@ export class ObjectSetQuery extends BaseListQuery<
       isOptimistic: boolean;
       status: Status;
       lastUpdated: number;
+      totalCount?: string;
     },
   ): ObjectSetPayload {
     return {
@@ -234,6 +248,7 @@ export class ObjectSetQuery extends BaseListQuery<
       status: params.status,
       lastUpdated: params.lastUpdated,
       objectSet: this.#composedObjectSet,
+      totalCount: params.totalCount,
     };
   }
 }

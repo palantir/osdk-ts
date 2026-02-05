@@ -15,6 +15,7 @@
  */
 
 import type {
+  OntologyIrInterfacePropertyLogicRuleValue,
   OntologyIrParameterPrefill,
   ParameterId,
 } from "@osdk/client.unstable";
@@ -47,8 +48,15 @@ import {
   namespace,
   ontologyDefinition,
   updateOntology,
+  withoutNamespace,
 } from "./defineOntology.js";
 import { getFlattenedInterfaceProperties } from "./interface/getFlattenedInterfaceProperties.js";
+import {
+  getInterfacePropertyTypeType,
+  type InterfaceDefinedProperty,
+  type InterfacePropertyType,
+  isInterfaceSharedPropertyType,
+} from "./interface/InterfacePropertyType.js";
 import type { InterfaceType } from "./interface/InterfaceType.js";
 import type { ObjectPropertyType } from "./object/ObjectPropertyType.js";
 import type { ObjectPropertyTypeUserDefinition } from "./object/ObjectPropertyTypeUserDefinition.js";
@@ -57,7 +65,6 @@ import {
   isStruct,
   type PropertyTypeType,
 } from "./properties/PropertyTypeType.js";
-import type { SharedPropertyType } from "./properties/SharedPropertyType.js";
 
 export const MODIFY_OBJECT_PARAMETER: string = "objectToModifyParameter";
 
@@ -251,8 +258,16 @@ export function isPropertyParameter(
   name: string,
   type: PropertyTypeType,
 ): boolean {
+  if ("interfaceType" in def) {
+    return (Object.keys(getFlattenedInterfaceProperties(def.interfaceType))
+      .includes(name)
+      && !Object.keys(def.nonParameterMappings ?? {}).includes(name)
+      && !isStruct(type)
+      && !def.excludedProperties?.includes(name));
+  }
   return (
-    !Object.keys(def.nonParameterMappings ?? {}).includes(name)
+    Object.keys(def.objectType.properties ?? {}).includes(name)
+    && !Object.keys(def.nonParameterMappings ?? {}).includes(name)
     && !isStruct(type)
     && !def.excludedProperties?.includes(name)
   );
@@ -262,7 +277,7 @@ export function createParameters(
   def: ActionTypeUserDefinition | InterfaceActionTypeUserDefinition,
   propertyMap:
     | Record<string, ObjectPropertyTypeUserDefinition>
-    | Record<string, SharedPropertyType>,
+    | Record<string, InterfacePropertyType>,
   parameterSet: Set<string>,
   requiredMap?: Record<string, boolean>,
 ): Array<ActionParameter> {
@@ -270,14 +285,20 @@ export function createParameters(
   return [
     ...targetParams,
     ...Array.from(parameterSet).map(
-      id => (
-        {
+      id => {
+        let propertyMetadata = undefined;
+        if (id in propertyMap) {
+          propertyMetadata = "sharedPropertyType" in propertyMap[id]
+            ? propertyMap[id].sharedPropertyType
+            : propertyMap[id];
+        }
+        return {
           id,
           displayName: def.parameterConfiguration?.[id]?.displayName
-            ?? propertyMap[id]?.displayName
+            ?? propertyMetadata?.displayName
             ?? uppercaseFirstLetter(id),
           type: def.parameterConfiguration?.[id]?.customParameterType
-            ?? extractActionParameterType(propertyMap[id]!),
+            ?? extractActionParameterType(propertyMetadata!),
           validation: (def.parameterConfiguration?.[id] !== undefined)
             ? {
               ...def.parameterConfiguration?.[id],
@@ -287,31 +308,32 @@ export function createParameters(
                     def.parameterConfiguration?.[id].customParameterType,
                   )
                   : extractAllowedValuesFromPropertyType(
-                    propertyMap[id]?.type!,
+                    propertyMetadata!.type,
                   )),
               required: def.parameterConfiguration?.[id].required
-                ?? (propertyMap[id]?.nullability?.noNulls
+                ?? (propertyMetadata?.nullability?.noNulls
                   ?? false),
             }
             : {
-              required: (propertyMap[id]?.array ?? false)
+              required: (propertyMetadata!.array ?? false)
                 ? {
-                  listLength: propertyMap[id]?.nullability
+                  listLength: propertyMetadata!.nullability
                       ?.noEmptyCollections
                     ? { min: 1 }
                     : {},
                 }
                 : requiredMap?.[id]
-                  ?? propertyMap[id]?.nullability?.noNulls
+                  ?? propertyMetadata?.nullability?.noNulls
                   ?? false,
               allowedValues: extractAllowedValuesFromPropertyType(
-                propertyMap[id]?.type!,
+                propertyMetadata?.type!,
               ),
             },
           defaultValue: def.parameterConfiguration?.[id]?.defaultValue,
           description: def.parameterConfiguration?.[id]?.description,
-        }
-      ),
+          renderHint: def.parameterConfiguration?.[id]?.renderHint,
+        };
+      },
     ),
   ];
 }
@@ -720,6 +742,8 @@ function extractAllowedValuesFromPropertyType(
       return { type: "mediaReference" };
     case "geotimeSeries":
       return { type: "geotimeSeriesReference" };
+    case "attachment":
+      return { type: "attachment" };
     default:
       switch (type.type) {
         case "marking":
@@ -739,7 +763,7 @@ function extractAllowedValuesFromPropertyType(
 
 function extractActionParameterType(
   pt:
-    | SharedPropertyType
+    | InterfaceDefinedProperty
     | ObjectPropertyType
     | ObjectPropertyTypeUserDefinition,
 ): ActionParameterType {
@@ -779,7 +803,7 @@ function extractActionParameterType(
 function maybeAddList(
   type: ActionParameterTypePrimitive,
   pt:
-    | SharedPropertyType
+    | InterfaceDefinedProperty
     | ObjectPropertyType
     | ObjectPropertyTypeUserDefinition,
 ): ActionParameterType {
@@ -969,7 +993,8 @@ export function validateActionParameters(
   ].forEach(id => {
     invariant(
       properties.includes(id)
-        || properties.includes(addNamespaceIfNone(id)),
+        || properties.includes(addNamespaceIfNone(id))
+        || properties.includes(withoutNamespace(id)),
       `Property ${id} does not exist as a property on ${name}`,
     );
   });
@@ -1063,4 +1088,52 @@ export function getNonNamespacedParameterName(
 ): string {
   return def.conflictingParameterOverrides?.[parameter]
     ?? (parameter.split(".").pop() || parameter);
+}
+
+export function createInterfacePropertyLogicRuleValue(
+  id: string,
+  def: InterfacePropertyType,
+  actionDef: InterfaceActionTypeUserDefinition,
+): OntologyIrInterfacePropertyLogicRuleValue {
+  const type = getInterfacePropertyTypeType(def);
+  const array = isInterfaceSharedPropertyType(def)
+    ? def.sharedPropertyType.array
+    : def.array;
+  const parameterId = actionDef.useNonNamespacedParameters
+    ? getNonNamespacedParameterName(actionDef, id)
+    : id;
+  if (isStruct(type)) {
+    return {
+      type: "structLogicRuleValue",
+      structLogicRuleValue: Object.fromEntries(
+        Object.entries(type.structDefinition).map(([apiName, fieldValue]) => {
+          return [
+            apiName,
+            array
+              ? {
+                type: "structListParameterFieldValue",
+                structListParameterFieldValue: {
+                  parameterId: parameterId,
+                  structFieldApiName: apiName,
+                },
+              }
+              : {
+                type: "structParameterFieldValue",
+                structParameterFieldValue: {
+                  parameterId: parameterId,
+                  structFieldApiName: apiName,
+                },
+              },
+          ];
+        }),
+      ),
+    };
+  }
+  return {
+    type: "logicRuleValue",
+    logicRuleValue: {
+      type: "parameterId",
+      parameterId: parameterId,
+    },
+  };
 }

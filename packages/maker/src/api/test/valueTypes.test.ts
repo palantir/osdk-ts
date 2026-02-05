@@ -179,4 +179,164 @@ describe("Value Types", () => {
         }
       `);
   });
+  it("Correctly sets a status", () => {
+    defineValueType({
+      apiName: "apiName",
+      displayName: "displayName",
+      type: {
+        "type": "boolean",
+        constraints: [{ constraint: { "allowedValues": ["TRUE_VALUE"] } }],
+      },
+      status: {
+        type: "deprecated",
+        deadline: "2026-01-01",
+        message: "This value type is deprecated",
+      },
+      version: "0.1.0",
+    });
+    expect(dumpValueTypeWireType()).toMatchInlineSnapshot(`
+      {
+        "valueTypes": [
+          {
+            "metadata": {
+              "apiName": "apiName",
+              "displayMetadata": {
+                "description": "",
+                "displayName": "displayName",
+              },
+              "packageNamespace": "com.palantir",
+              "status": {
+                "deprecated": {
+                  "deadline": "2026-01-01",
+                  "message": "This value type is deprecated",
+                  "replacedBy": undefined,
+                },
+                "type": "deprecated",
+              },
+            },
+            "versions": [
+              {
+                "baseType": {
+                  "boolean": {},
+                  "type": "boolean",
+                },
+                "constraints": [
+                  {
+                    "constraint": {
+                      "constraint": {
+                        "boolean": {
+                          "allowedValues": [
+                            "TRUE_VALUE",
+                          ],
+                        },
+                        "type": "boolean",
+                      },
+                      "failureMessage": undefined,
+                    },
+                  },
+                ],
+                "exampleValues": [],
+                "version": "0.1.0",
+              },
+            ],
+          },
+        ],
+      }
+    `);
+  });
+
+  it("Prefixes apiName with namespace when namespacePrefix is true", () => {
+    defineValueType({
+      apiName: "myValueType",
+      displayName: "My Value Type",
+      type: {
+        type: "string",
+      },
+      version: "1.0.0",
+      namespacePrefix: true,
+    });
+    expect(dumpValueTypeWireType()).toMatchInlineSnapshot(`
+      {
+        "valueTypes": [
+          {
+            "metadata": {
+              "apiName": "com.palantir.myValueType",
+              "displayMetadata": {
+                "description": "",
+                "displayName": "My Value Type",
+              },
+              "packageNamespace": "com.palantir",
+              "status": {
+                "active": {},
+                "type": "active",
+              },
+            },
+            "versions": [
+              {
+                "baseType": {
+                  "string": {},
+                  "type": "string",
+                },
+                "constraints": [],
+                "exampleValues": [],
+                "version": "1.0.0",
+              },
+            ],
+          },
+        ],
+      }
+    `);
+  });
+
+  it("Fails to define duplicate value type with same apiName and version", () => {
+    defineValueType({
+      apiName: "duplicateTest",
+      displayName: "First Value Type",
+      type: {
+        type: "string",
+      },
+      version: "1.0.0",
+    });
+
+    expect(() =>
+      defineValueType({
+        apiName: "duplicateTest",
+        displayName: "Second Value Type",
+        type: {
+          type: "boolean",
+        },
+        version: "1.0.0",
+      })
+    ).toThrowErrorMatchingInlineSnapshot(
+      "[Error: Invariant failed: Value type with apiName duplicateTest and version 1.0.0 is already defined]",
+    );
+  });
+
+  it("Allows multiple versions of the same value type", () => {
+    defineValueType({
+      apiName: "multiVersion",
+      displayName: "Multi Version Type",
+      type: {
+        type: "string",
+      },
+      version: "1.0.0",
+    });
+
+    defineValueType({
+      apiName: "multiVersion",
+      displayName: "Multi Version Type",
+      type: {
+        type: "string",
+      },
+      version: "2.0.0",
+    });
+
+    const wireType = dumpValueTypeWireType();
+    expect(wireType.valueTypes).toHaveLength(1);
+    expect(wireType.valueTypes[0].versions).toHaveLength(2);
+    expect(wireType.valueTypes[0].versions.map(v => v.version)).toEqual([
+      "1.0.0",
+      "2.0.0",
+    ]);
+  });
 });

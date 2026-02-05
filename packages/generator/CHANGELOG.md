@@ -1,5 +1,68 @@
 # @osdk/generator
 
+## 2.8.0-beta.2
+
+### Minor Changes
+
+- 1706c79: Relax interface creation validation.
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.2
+- @osdk/generator-converters@2.8.0-beta.2
+
+## 2.7.0-beta.14
+
+### Patch Changes
+
+- @osdk/api@2.7.0-beta.14
+- @osdk/generator-converters@2.7.0-beta.14
+
+## 2.7.0-beta.13
+
+### Patch Changes
+
+- Updated dependencies [fb83808]
+  - @osdk/api@2.7.0-beta.13
+  - @osdk/generator-converters@2.7.0-beta.13
+
+## 2.7.0-beta.12
+
+### Patch Changes
+
+- Updated dependencies [bb9d25c]
+  - @osdk/api@2.7.0-beta.12
+  - @osdk/generator-converters@2.7.0-beta.12
+
+## 2.7.0-beta.11
+
+### Minor Changes
+
+- 211cb0d: Add internalDoNotUseMetadata.rid to interfaces
+- d5cfc38: Add null option to actions to allow clearing data
+
+### Patch Changes
+
+- Updated dependencies [d5cfc38]
+  - @osdk/api@2.7.0-beta.11
+  - @osdk/generator-converters@2.7.0-beta.11
+
+## 2.7.0-beta.10
+
+### Patch Changes
+
+- Updated dependencies [db44f6b]
+- Updated dependencies [24a1e29]
+  - @osdk/api@2.7.0-beta.10
+  - @osdk/generator-converters@2.7.0-beta.10
+
+## 2.7.0-beta.9
+
+### Patch Changes
+
+- @osdk/api@2.7.0-beta.9
+- @osdk/generator-converters@2.7.0-beta.9
+
 ## 2.7.0-beta.8
 
 ### Patch Changes

@@ -23,6 +23,7 @@ import type {
   ObjectSetArgs,
 } from "./object/FetchPageArgs.js";
 import type { UnionIfTrue } from "./object/FetchPageResult.js";
+import type { PropertySecurity } from "./object/PropertySecurity.js";
 import type {
   InterfaceDefinition,
   InterfaceMetadata,
@@ -78,7 +79,11 @@ export type MapPropNamesToObjectType<
   FROM extends ObjectOrInterfaceDefinition,
   TO extends ObjectTypeDefinition,
   P extends ValidOsdkPropParams<FROM>,
-  OPTIONS extends never | "$rid" | "$allBaseProperties" = never,
+  OPTIONS extends
+    | never
+    | "$rid"
+    | "$allBaseProperties"
+    | "$propertySecurities" = never,
 > = "$allBaseProperties" extends OPTIONS
   ? PropertyKeys<FROM> extends P ? PropertyKeys<TO>
   : PropMapToObject<
@@ -129,7 +134,11 @@ export type ConvertProps<
   FROM extends ObjectOrInterfaceDefinition,
   TO extends ValidToFrom<FROM>,
   P extends ValidOsdkPropParams<FROM>,
-  OPTIONS extends never | "$rid" | "$allBaseProperties" = never,
+  OPTIONS extends
+    | never
+    | "$rid"
+    | "$allBaseProperties"
+    | "$propertySecurities" = never,
 > = TO extends FROM ? P
   : TO extends ObjectTypeDefinition ? (
       UnionIfTrue<
@@ -204,7 +213,11 @@ export type MaybeScore<
 export namespace Osdk {
   export type Instance<
     Q extends ObjectOrInterfaceDefinition,
-    OPTIONS extends never | "$rid" | "$allBaseProperties" = never,
+    OPTIONS extends
+      | never
+      | "$rid"
+      | "$allBaseProperties"
+      | "$propertySecurities" = never,
     P extends PropertyKeys<Q> = PropertyKeys<Q>,
     R extends Record<string, SimplePropertyDef> = {},
   > =
@@ -255,6 +268,19 @@ export namespace Osdk {
         options?: { locale?: string; timezoneId?: string },
       ) => string | undefined;
     }
+    & (IsNever<OPTIONS> extends true ? {}
+      : IsAny<OPTIONS> extends true ? {}
+      : "$propertySecurities" extends OPTIONS ? {
+          readonly $propertySecurities: ObjectPropertySecurities<
+            Q,
+            GetPropsKeys<
+              Q,
+              P,
+              [R] extends [{}] ? false : true
+            >
+          >;
+        }
+      : {})
     // We are hiding the $rid field if it wasn't requested as we want to discourage its use
     & (IsNever<OPTIONS> extends true ? {}
       : IsAny<OPTIONS> extends true ? {}
@@ -285,6 +311,11 @@ export type ExtractRidOption<R extends boolean> = // comment for readability
     : DefaultToFalse<R> extends false ? never
     : "$rid";
 
+export type ExtractPropertySecurityOption<S extends boolean> = // comment for readability
+  IsNever<S> extends true ? never
+    : DefaultToFalse<S> extends false ? never
+    : "$propertySecurities";
+
 export type ExtractAllPropertiesOption<T extends boolean> = // comment for readability
   IsNever<T> extends true ? never
     : DefaultToFalse<T> extends false ? never
@@ -292,7 +323,20 @@ export type ExtractAllPropertiesOption<T extends boolean> = // comment for reada
 
 // not exported from package
 export type ExtractOptions<
-  R extends boolean,
-  S extends NullabilityAdherence = NullabilityAdherence.Default,
-  T extends boolean = false,
-> = ExtractRidOption<R> | ExtractAllPropertiesOption<T>;
+  RID extends boolean,
+  UNUSED extends NullabilityAdherence = NullabilityAdherence.Default,
+  ALL_PROPERTIES extends boolean = false,
+  PROPERTY_SECURITIES extends boolean = false,
+> =
+  | ExtractRidOption<RID>
+  | ExtractAllPropertiesOption<ALL_PROPERTIES>
+  | ExtractPropertySecurityOption<PROPERTY_SECURITIES>;
+
+type ObjectPropertySecurities<
+  Q extends ObjectOrInterfaceDefinition,
+  T extends PropertyKeys<Q>,
+> = {
+  [K in T]: CompileTimeMetadata<Q>["properties"][K]["multiplicity"] extends true
+    ? PropertySecurity[][]
+    : PropertySecurity[];
+};

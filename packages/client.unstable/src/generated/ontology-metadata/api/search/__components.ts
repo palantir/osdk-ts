@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,6 @@ import type {
   FunctionRid as _api_FunctionRid,
   InterfaceType as _api_InterfaceType,
   InterfaceTypeRid as _api_InterfaceTypeRid,
-  LinkType as _api_LinkType,
-  LinkTypeId as _api_LinkTypeId,
   LinkTypeRid as _api_LinkTypeRid,
   ObjectType as _api_ObjectType,
   ObjectTypeRid as _api_ObjectTypeRid,
@@ -227,6 +225,89 @@ export type ActionTypeStatusFilter =
   | "ACTIVE"
   | "DEPRECATED"
   | "EXAMPLE";
+export type CombinedEntityTypeInclude =
+  | "INCLUDE_OBJECT_TYPES"
+  | "INCLUDE_INTERFACE_TYPES";
+export interface CombinedEntityTypeRid_objectTypeRid {
+  type: "objectTypeRid";
+  objectTypeRid: _api_ObjectTypeRid;
+}
+
+export interface CombinedEntityTypeRid_interfaceTypeRid {
+  type: "interfaceTypeRid";
+  interfaceTypeRid: _api_InterfaceTypeRid;
+}
+/**
+ * Union type to represent RIDs returned in CombinedEntityTypeSearchHit.
+ */
+export type CombinedEntityTypeRid =
+  | CombinedEntityTypeRid_objectTypeRid
+  | CombinedEntityTypeRid_interfaceTypeRid;
+
+/**
+ * Wrapper around a RID and Ontology Version returned as part of the SearchResponse to a SearchRequest over
+ * various Ontology entity types.
+ */
+export interface CombinedEntityTypeSearchHit {
+  entityTypeRid: CombinedEntityTypeRid;
+  ontologyVersion: _api_OntologyVersion;
+}
+/**
+ * A paging token used to retrieve further pages of a combined entity type search by including it in the
+ * SearchTitleInCombinedEntityTypeRequest. Clients should not make any assumptions about the content of the token and it
+ * should not be parsed/modified.
+ */
+export type CombinedEntityTypeSearchPageToken = string;
+
+/**
+ * Filter by status across entity types.
+ */
+export type CombinedEntityTypeStatusFilter =
+  | "EXPERIMENTAL"
+  | "ACTIVE"
+  | "DEPRECATED"
+  | "EXAMPLE"
+  | "ENDORSED";
+export interface CombinedEntityTypeTitleClause_and {
+  type: "and";
+  and: Array<CombinedEntityTypeTitleClause>;
+}
+
+export interface CombinedEntityTypeTitleClause_or {
+  type: "or";
+  or: Array<CombinedEntityTypeTitleClause>;
+}
+
+export interface CombinedEntityTypeTitleClause_title {
+  type: "title";
+  title: FullTextStringPredicate;
+}
+
+export interface CombinedEntityTypeTitleClause_objectTypeVisibility {
+  type: "objectTypeVisibility";
+  objectTypeVisibility: _api_Visibility;
+}
+
+export interface CombinedEntityTypeTitleClause_interfaceTypeSupportsObjectSetSearch {
+  type: "interfaceTypeSupportsObjectSetSearch";
+  interfaceTypeSupportsObjectSetSearch: boolean;
+}
+
+export interface CombinedEntityTypeTitleClause_status {
+  type: "status";
+  status: CombinedEntityTypeStatusFilter;
+}
+/**
+ * Data structure to represent Title search query over specified Ontology entity types.
+ */
+export type CombinedEntityTypeTitleClause =
+  | CombinedEntityTypeTitleClause_and
+  | CombinedEntityTypeTitleClause_or
+  | CombinedEntityTypeTitleClause_title
+  | CombinedEntityTypeTitleClause_objectTypeVisibility
+  | CombinedEntityTypeTitleClause_interfaceTypeSupportsObjectSetSearch
+  | CombinedEntityTypeTitleClause_status;
+
 export interface FullTextStringPredicate_exact {
   type: "exact";
   exact: string;
@@ -322,6 +403,11 @@ export interface InterfaceTypeClause_externalMapping {
   type: "externalMapping";
   externalMapping: InterfaceTypeExternalMappingFilter;
 }
+
+export interface InterfaceTypeClause_supportsObjectSetSearch {
+  type: "supportsObjectSetSearch";
+  supportsObjectSetSearch: boolean;
+}
 /**
  * Data structure to represent a search query for InterfaceTypes. Supports filters for various
  * InterfaceType features.
@@ -338,7 +424,8 @@ export type InterfaceTypeClause =
   | InterfaceTypeClause_allProperty
   | InterfaceTypeClause_extendsInterface
   | InterfaceTypeClause_allExtendsInterface
-  | InterfaceTypeClause_externalMapping;
+  | InterfaceTypeClause_externalMapping
+  | InterfaceTypeClause_supportsObjectSetSearch;
 
 /**
  * Filter by external mapping type
@@ -383,6 +470,7 @@ export interface InterfaceTypeSearchRequest {
   clause: InterfaceTypeClause;
   excludedInterfaceTypeRids: Array<string>;
   fuzziness?: InterfaceTypeFuzziness | null | undefined;
+  includedInterfaceTypeRids: Array<string>;
   ontologyRids: Array<_api_OntologyRid>;
   pageSizeLimit: number;
   pageToken?: InterfaceTypeSearchPageToken | null | undefined;
@@ -406,7 +494,11 @@ export interface InterfaceTypeSort {
 /**
  * Specifies value to be used to sort InterfaceTypes.
  */
-export type InterfaceTypeSortBy = "INTERFACE_TYPE_DISPLAY_NAME";
+export type InterfaceTypeSortBy =
+  | "INTERFACE_TYPE_DISPLAY_NAME"
+  | "INTERFACE_TYPE_EXTENDS_INTERFACES_COUNT"
+  | "INTERFACE_TYPE_EXTENDS_INTERFACES_AND_ANCESTORS_COUNT"
+  | "INTERFACE_TYPE_IMPLEMENTATION_COUNT";
 
 /**
  * Specifies sort order for InterfaceTypes
@@ -446,7 +538,7 @@ export interface LinkTypeClause_linkTypeRid {
 
 export interface LinkTypeClause_linkTypeId {
   type: "linkTypeId";
-  linkTypeId: _api_LinkTypeId;
+  linkTypeId: FullTextStringPredicate;
 }
 
 export interface LinkTypeClause_description {
@@ -585,7 +677,6 @@ export type LinkTypeDefinitionTypeFilter =
 export type LinkTypeEntityProvenanceFilter =
   | "BUILDER"
   | "MARKETPLACE"
-  | "EDITS_HISTORY"
   | "OTHER";
 export interface LinkTypeFuzziness_off {
   type: "off";
@@ -610,11 +701,10 @@ export type LinkTypePermissionModelFilter =
   | "COMPASS_PROJECT";
 
 /**
- * Wrapper around single LinkType contained in LinkTypeSearchResponse.
+ * Wrapper around single LinkTypeRid contained in LinkTypeSearchResponse.
  */
 export interface LinkTypeSearchHit {
-  linkType: _api_LinkType;
-  ontologyRid: _api_OntologyRid;
+  linkTypeRid: _api_LinkTypeRid;
   ontologyVersion: _api_OntologyVersion;
 }
 /**
@@ -630,7 +720,7 @@ export type LinkTypeSearchPageToken = string;
  */
 export interface LinkTypeSearchRequest {
   clause: LinkTypeClause;
-  excludedLinkTypeRids: Array<_api_LinkTypeRid>;
+  excludedLinkTypeRids: Array<string>;
   fuzziness?: LinkTypeFuzziness | null | undefined;
   ontologyBranchRid?: _api_OntologyBranchRid | null | undefined;
   ontologyRids: Array<_api_OntologyRid>;
@@ -957,6 +1047,7 @@ export interface ObjectTypeSearchRequestV2 {
   ontologyRids: Array<_api_OntologyRid>;
   pageSizeLimit: number;
   pageToken?: ObjectTypeSearchPageTokenV2 | null | undefined;
+  searchBoostingOptions: Array<SearchBoostingOption>;
   semanticSearchQuery?: string | null | undefined;
   sort?: ObjectTypeSort | null | undefined;
 }
@@ -1015,6 +1106,33 @@ export type ObjectTypeTargetStorageBackendFilter =
   | "OBJECT_STORAGE_V1"
   | "OBJECT_STORAGE_V2";
 
+/**
+ * Favorites have a bigger boost than the boosted status-based resources. For status-based boosting, endorsed
+ * will come on top and deprecated at the end. The ordering is relative to exact vs partial matches, ie
+ * exacts that are deprecated will come on top of favorite and endorsed partials.
+ */
+export type SearchBoostingOption = "STATUS_BOOSTED" | "FAVORITES_BOOSTED";
+
+/**
+ * Request to search a Title string over multiple Ontology entity types based on the given clause. The desired
+ * entity types are searched across all Ontologies the user has access to.
+ */
+export interface SearchTitleInCombinedEntityTypeRequest {
+  clause: CombinedEntityTypeTitleClause;
+  includeTypes: Array<CombinedEntityTypeInclude>;
+  ontologyBranchRid?: _api_OntologyBranchRid | null | undefined;
+  ontologyRids: Array<_api_OntologyRid>;
+  pageSizeLimit: number;
+  pageToken?: CombinedEntityTypeSearchPageToken | null | undefined;
+}
+/**
+ * Page response to SearchTitleInCombinedEntityTypeRequest containing specified entity types matching the search query.
+ */
+export interface SearchTitleInCombinedEntityTypeResponse {
+  entityTypes: Array<CombinedEntityTypeSearchHit>;
+  nextPageToken?: CombinedEntityTypeSearchPageToken | null | undefined;
+  totalResults: number;
+}
 /**
  * Reasons why semantic search might be unavailable.
  */
@@ -1218,6 +1336,11 @@ export interface TypeGroupClause_description {
   type: "description";
   description: FullTextStringPredicate;
 }
+
+export interface TypeGroupClause_typeGroupRid {
+  type: "typeGroupRid";
+  typeGroupRid: _api_TypeGroupRid;
+}
 /**
  * Data structure to represent a search query for InterfaceTypes. Supports filters for various
  * InterfaceType features.
@@ -1226,7 +1349,8 @@ export type TypeGroupClause =
   | TypeGroupClause_and
   | TypeGroupClause_or
   | TypeGroupClause_displayName
-  | TypeGroupClause_description;
+  | TypeGroupClause_description
+  | TypeGroupClause_typeGroupRid;
 
 export interface TypeGroupFuzziness_off {
   type: "off";
@@ -1290,7 +1414,10 @@ export interface TypeGroupSort {
 /**
  * Specifies value to be used to sort TypeGroups.
  */
-export type TypeGroupSortBy = "TYPE_GROUP_DISPLAY_NAME";
+export type TypeGroupSortBy =
+  | "TYPE_GROUP_DISPLAY_NAME"
+  | "OBJECT_TYPE_COUNT"
+  | "MODIFIED_AT";
 
 /**
  * Specifies sort order for TypeGroups

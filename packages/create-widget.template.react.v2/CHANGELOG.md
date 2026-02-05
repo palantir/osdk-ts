@@ -1,5 +1,23 @@
 # @osdk/create-widget.template.react.v2
 
+## 3.5.0-beta.2
+
+## 3.4.0-beta.14
+
+## 3.4.0-beta.13
+
+## 3.4.0-beta.12
+
+### Minor Changes
+
+- cbd0725: Widget template dark mode support
+
+## 3.4.0-beta.11
+
+## 3.4.0-beta.10
+
+## 3.4.0-beta.9
+
 ## 3.4.0-beta.8
 
 ## 3.4.0-beta.7

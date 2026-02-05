@@ -120,6 +120,7 @@ const cspell = {
     "foundry-words",
     "normal-dev-words",
     "oauth",
+    "css",
   ],
   words: ["todoapp"],
   suggestWords: [],

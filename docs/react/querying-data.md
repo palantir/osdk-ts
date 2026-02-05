@@ -55,12 +55,153 @@ function TodoList() {
 `isOptimistic` refers to whether the **ordered list of objects** (considering only primary keys) is optimistic. To check if individual object contents are optimistic, use `useOsdkObject` on each object.
 :::
 
+### Fetching by RID
+
+Fetch specific objects by their RIDs:
+
+```tsx
+import { Employee } from "@my/osdk";
+import { useOsdkObjects } from "@osdk/react/experimental";
+
+function SelectedEmployees({ selectedRids }: { selectedRids: string[] }) {
+  const { data, isLoading } = useOsdkObjects(Employee, {
+    rids: selectedRids,
+  });
+
+  if (isLoading && !data) {
+    return <div>Loading selected employees...</div>;
+  }
+
+  return (
+    <div>
+      {data?.map(employee => (
+        <div key={employee.$primaryKey}>{employee.fullName}</div>
+      ))}
+    </div>
+  );
+}
+```
+
 ### Filtering with `where`
 
 ```ts
 const { data, isLoading } = useOsdkObjects(Todo, {
   where: { text: { $startsWith: "cool " } },
 });
+```
+
+### Text Search Filters
+
+OSDK provides several text search operators for string properties. Understanding the differences helps you choose the right one for your use case.
+
+#### `$startsWith`
+
+Matches strings that begin with the specified prefix.
+
+```ts
+const { data } = useOsdkObjects(Employee, {
+  where: { fullName: { $startsWith: "John" } },
+});
+// Matches: "John Smith", "Johnny Appleseed"
+// Does NOT match: "Mary Johnson"
+```
+
+#### `$containsAnyTerm`
+
+Matches if the property contains **any** of the search terms. Terms are space-separated. Useful for broad searches where matching any word is sufficient.
+
+```ts
+const { data } = useOsdkObjects(Article, {
+  where: { content: { $containsAnyTerm: "react typescript javascript" } },
+});
+// Matches articles containing "react" OR "typescript" OR "javascript"
+```
+
+With fuzzy matching enabled, minor typos are tolerated:
+
+```ts
+const { data } = useOsdkObjects(Article, {
+  where: { content: { $containsAnyTerm: { term: "react", fuzzySearch: true } } },
+});
+// Fuzzy matching handles common typos automatically
+```
+
+#### `$containsAllTerms`
+
+Matches if the property contains **all** of the search terms, in any order. Use this for more precise searches where all keywords must be present.
+
+```ts
+const { data } = useOsdkObjects(Article, {
+  where: { content: { $containsAllTerms: "react hooks tutorial" } },
+});
+// Matches: "This tutorial covers React hooks in depth"
+// Matches: "Learn hooks - a React tutorial"
+// Does NOT match: "React components guide" (missing "hooks" and "tutorial")
+```
+
+With fuzzy matching:
+
+```ts
+const { data } = useOsdkObjects(Article, {
+  where: { content: { $containsAllTerms: { term: "react hooks", fuzzySearch: true } } },
+});
+```
+
+#### `$containsAllTermsInOrder`
+
+Matches if the property contains all terms **in the exact order specified**. Use this for phrase matching.
+
+```ts
+const { data } = useOsdkObjects(Document, {
+  where: { title: { $containsAllTermsInOrder: "quarterly sales report" } },
+});
+// Matches: "Q4 Quarterly Sales Report 2024"
+// Does NOT match: "Sales Report - Quarterly" (wrong order)
+```
+
+#### Search Filter Comparison
+
+| Filter | Match Requirement | Use Case |
+|--------|-------------------|----------|
+| `$startsWith` | Begins with prefix | Autocomplete, prefix search |
+| `$containsAnyTerm` | Any term present | Broad keyword search |
+| `$containsAllTerms` | All terms present (any order) | Precise multi-keyword search |
+| `$containsAllTermsInOrder` | All terms in exact order | Phrase/exact match search |
+
+#### Search Example: Building a Search Box
+
+```tsx
+import { Article } from "@my/osdk";
+import { useOsdkObjects } from "@osdk/react/experimental";
+import { useState } from "react";
+
+function ArticleSearch() {
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const { data, isLoading } = useOsdkObjects(Article, {
+    where: searchQuery
+      ? { title: { $containsAnyTerm: { term: searchQuery, fuzzySearch: true } } }
+      : undefined,
+    enabled: searchQuery.length >= 2,
+  });
+
+  return (
+    <div>
+      <input
+        type="text"
+        placeholder="Search articles..."
+        value={searchQuery}
+        onChange={e => setSearchQuery(e.target.value)}
+      />
+
+      {isLoading && <div>Searching...</div>}
+
+      {data?.map(article => (
+        <div key={article.$primaryKey}>{article.title}</div>
+      ))}
+    </div>
+  );
+}
 ```
 
 ### Sorting with `orderBy`
@@ -252,6 +393,7 @@ function ManagerReports() {
 const { data, isLoading, isOptimistic, fetchMore, error } = useOsdkObjects(
   Todo,
   {
+    rids: ["ri.phonograph2-objects.main.object.abc123", "ri.phonograph2-objects.main.object.def456"],
     where: { isComplete: false },
     pageSize: 20,
     orderBy: { createdAt: "desc" },

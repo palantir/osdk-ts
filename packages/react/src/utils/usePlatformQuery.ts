@@ -113,7 +113,7 @@ export function usePlatformQuery<T>(
 
   return {
     data: payload?.data,
-    isLoading: payload?.status === "loading",
+    isLoading: enabled ? (payload?.status === "loading" || !payload) : false,
     error,
     refetch: handleQuery,
   };
