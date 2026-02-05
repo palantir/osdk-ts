@@ -37,7 +37,7 @@
     }
   },
   "scripts": {
-    "check-attw": "attw --pack .",
+    "check-attw": "attw --pack . --exclude-entrypoints ./styles.css",
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
