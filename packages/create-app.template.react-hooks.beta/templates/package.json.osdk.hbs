@@ -1,0 +1,24 @@
+{
+  "name": "{{project}}",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
+    "lint:fix": "eslint --report-unused-disable-directives --max-warnings 0 --fix",
+    "test": "vitest run",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "{{osdkPackage}}": "latest",
+    "@osdk/client": "{{clientVersion}}",
+    "@osdk/foundry": "latest",
+    "@osdk/oauth": "^1.1.0",
+    "@osdk/react": "^0.7.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18.0.0"
+  }
+}

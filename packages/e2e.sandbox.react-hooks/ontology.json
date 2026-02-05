@@ -1,0 +1,128 @@
+{
+  "ontology": {
+    "apiName": "ontology-d097f725-ab77-46cf-83c0-e3cb9186bff1",
+    "displayName": "EA Ontology",
+    "description": " Ontology",
+    "rid": "ri.ontology.main.ontology.a35bb7f9-2c57-4199-a1cd-af461d88bd6e"
+  },
+  "objectTypes": {
+    "Todo": {
+      "objectType": {
+        "apiName": "Todo",
+        "displayName": "Todo",
+        "status": "EXPERIMENTAL",
+        "description": "",
+        "pluralDisplayName": "Todos",
+        "icon": {
+          "type": "blueprint",
+          "color": "#4C90F0",
+          "name": "confirm"
+        },
+        "primaryKey": "id",
+        "properties": {
+          "id": {
+            "displayName": "Id",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.13141fd9-e8a2-43bd-89f8-6d2e9068af64",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "isComplete": {
+            "displayName": "Is Complete",
+            "dataType": {
+              "type": "boolean"
+            },
+            "rid": "ri.ontology.main.property.c0ff9395-ab66-40ca-8e9f-53d039d6bb66",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "title": {
+            "displayName": "Title",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.0cfaf423-6364-4439-8ae2-db19d5723457",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          }
+        },
+        "rid": "ri.ontology.main.object-type.a3fcfef9-ec11-4f2d-8a4c-dc010de837bf",
+        "titleProperty": "title",
+        "visibility": "NORMAL"
+      },
+      "linkTypes": [],
+      "implementsInterfaces": [],
+      "implementsInterfaces2": {},
+      "sharedPropertyTypeMapping": {}
+    }
+  },
+  "actionTypes": {
+    "create-todo": {
+      "apiName": "create-todo",
+      "description": "Creates Todo",
+      "displayName": "Create Todo",
+      "status": "ACTIVE",
+      "parameters": {
+        "Todo": {
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        },
+        "is_complete": {
+          "dataType": {
+            "type": "boolean"
+          },
+          "required": true
+        }
+      },
+      "rid": "ri.actions.main.action-type.1913052f-0395-4643-9d37-62fc7f74289d",
+      "operations": [
+        {
+          "type": "createObject",
+          "objectTypeApiName": "Todo"
+        }
+      ]
+    },
+    "complete-todo": {
+      "apiName": "complete-todo",
+      "description": "Marks Todo complete/incomplete",
+      "displayName": "Complete To Do",
+      "status": "ACTIVE",
+      "parameters": {
+        "Todo": {
+          "dataType": {
+            "type": "object",
+            "objectApiName": "Todo",
+            "objectTypeApiName": "Todo"
+          },
+          "required": true
+        },
+        "is_complete": {
+          "dataType": {
+            "type": "boolean"
+          },
+          "required": true
+        }
+      },
+      "rid": "ri.actions.main.action-type.b8ed5dbd-6d22-4b6d-8ab4-3b63c6007df9",
+      "operations": [
+        {
+          "type": "modifyObject",
+          "objectTypeApiName": "Todo"
+        }
+      ]
+    }
+  },
+  "queryTypes": {},
+  "interfaceTypes": {},
+  "sharedPropertyTypes": {}
+}

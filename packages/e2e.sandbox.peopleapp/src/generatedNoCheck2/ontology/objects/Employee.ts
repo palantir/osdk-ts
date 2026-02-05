@@ -162,7 +162,7 @@ export namespace Employee {
      *
      *   property status: experimental
      *
-     *   display name: 'Full Name'
+     *   display name: 'Name'
      */
     readonly fullName: $PropType['string'] | undefined;
     /**
@@ -329,9 +329,29 @@ export interface Employee extends $ObjectTypeDefinition {
       color: '#EC9A3C';
       name: 'person';
     };
-    implements: [];
-    interfaceMap: {};
-    inverseInterfaceMap: {};
+    implements: ['Person', 'Worker'];
+    interfaceMap: {
+      Person: {
+        email: 'emailPrimaryWork';
+        employeeNumber: 'employeeNumber';
+      };
+      Worker: {
+        email: 'emailPrimaryWork';
+        name: 'fullName';
+        employeeNumber: 'employeeNumber';
+      };
+    };
+    inverseInterfaceMap: {
+      Person: {
+        emailPrimaryWork: 'email';
+        employeeNumber: 'employeeNumber';
+      };
+      Worker: {
+        emailPrimaryWork: 'email';
+        fullName: 'name';
+        employeeNumber: 'employeeNumber';
+      };
+    };
     links: {
       lead: $ObjectMetadata.Link<Employee, false>;
       peeps: $ObjectMetadata.Link<Employee, true>;
@@ -448,7 +468,7 @@ export interface Employee extends $ObjectTypeDefinition {
        *
        *   property status: experimental
        *
-       *   display name: 'Full Name'
+       *   display name: 'Name'
        */
       fullName: $PropertyDef<'string', 'nullable', 'single'>;
       /**

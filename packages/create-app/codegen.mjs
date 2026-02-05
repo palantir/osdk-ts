@@ -29,6 +29,12 @@ export const TEMPLATES = [
     buildDirectory: "./dist",
   },
   {
+    id: "react-hooks",
+    label: "React (Hooks)",
+    envPrefix: "VITE_",
+    buildDirectory: "./dist",
+  },
+  {
     id: "expo",
     label: "Expo",
     envPrefix: "EXPO_PUBLIC_",
