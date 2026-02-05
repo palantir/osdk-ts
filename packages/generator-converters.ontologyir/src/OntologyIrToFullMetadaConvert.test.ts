@@ -19,11 +19,12 @@ import { OntologyIrToFullMetadataConverter } from "./OntologyIrToFullMetadataCon
 
 describe(OntologyIrToFullMetadataConverter, () => {
   it("functions metadata", async () => {
-    const result = OntologyIrToFullMetadataConverter
+    const result = await OntologyIrToFullMetadataConverter
       .getOsdkQueryTypes(
         "testFunctions",
       );
-    expect(result).toMatchInlineSnapshot(``);
+    // Function discovery is optional - returns empty without the @foundry packages
+    expect(result).toMatchInlineSnapshot(`{}`);
   });
 
   it("should convert ontology IR to full metadata", async () => {

@@ -72,7 +72,7 @@ import type {
   Visibility,
 } from "@osdk/client.unstable";
 
-import type { BlueprintIcon } from "./iconNames.js";
+import type { BlueprintIcon } from "./common/BlueprintIcons.js";
 
 export interface OntologyEntityBase {
   __type: OntologyEntityTypeEnum;

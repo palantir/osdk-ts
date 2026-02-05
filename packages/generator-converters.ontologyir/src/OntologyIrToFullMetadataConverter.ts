@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { FunctionDiscoverer } from "@foundry/functions-typescript-osdk-discovery";
 import type {
   OntologyIrActionTypeBlockDataV2,
   OntologyIrActionTypeStatus,
@@ -30,17 +29,61 @@ import type {
 } from "@osdk/client.unstable";
 import type * as Ontologies from "@osdk/foundry.ontologies";
 
-
-import type {
-  IDataType} from "@palantir/function-registry-api/functions-api-types/dataType.js";
-
-
 import { hash } from "node:crypto";
 import * as path from "path";
 import invariant from "tiny-invariant";
 import * as ts from "typescript";
 import type { ApiName } from "./ApiName.js";
-// import { IDiscoveredFunction } from "@foundry/functions-typescript-discovery-common";
+
+// Type definitions for optional function discovery dependencies
+// These are declared inline to avoid compile-time dependency on optional packages
+interface IDataType {
+  type: string;
+  [key: string]: unknown;
+}
+
+interface IDiscoveredFunction {
+  locator: { type: string; typescriptOsdk?: { functionName: string } };
+  inputs: Array<{ name: string; dataType: IDataType }>;
+  output: { single: { dataType: IDataType } };
+  customTypes: Record<string, unknown>;
+}
+
+interface IDiscoveryResult {
+  discoveredFunctions: IDiscoveredFunction[];
+}
+
+interface IFunctionDiscoverer {
+  discover(): IDiscoveryResult;
+}
+
+interface IFunctionDiscovererConstructor {
+  new(
+    program: ts.Program,
+    entryPointPath: string,
+    fullFilePath: string,
+  ): IFunctionDiscoverer;
+}
+
+// Lazy-loaded function discovery module
+let FunctionDiscovererClass: IFunctionDiscovererConstructor | null = null;
+
+async function loadFunctionDiscoverer(): Promise<
+  IFunctionDiscovererConstructor | null
+> {
+  if (FunctionDiscovererClass !== null) {
+    return FunctionDiscovererClass;
+  }
+  try {
+    // Use dynamic import to avoid compile-time dependency on optional package
+    const modulePath = "@foundry/functions-typescript-osdk-discovery";
+    const module = await import(/* @vite-ignore */ modulePath);
+    FunctionDiscovererClass = module.FunctionDiscoverer;
+    return FunctionDiscovererClass;
+  } catch {
+    return null;
+  }
+}
 
 /**
  * TypeScript equivalent of OntologyIrToFullMetadataConverter.java
@@ -81,11 +124,11 @@ export class OntologyIrToFullMetadataConverter {
     };
   }
 
-  // includes functions
-  static getFullMetadataFromIrAndFunctions(
+  // includes functions - requires optional @foundry/functions-typescript-osdk-discovery
+  static async getFullMetadataFromIrAndFunctions(
     ir: OntologyIrOntologyBlockDataV2,
     srcDir: string,
-  ): Ontologies.OntologyFullMetadata {
+  ): Promise<Ontologies.OntologyFullMetadata> {
     const interfaceTypes = this.getOsdkInterfaceTypes(
       Object.values(ir.interfaceTypes),
     );
@@ -97,7 +140,7 @@ export class OntologyIrToFullMetadataConverter {
       Object.values(ir.linkTypes),
     );
     const actionTypes = this.getOsdkActionTypes(Object.values(ir.actionTypes));
-    const queryTypes = this.getOsdkQueryTypes(srcDir);
+    const queryTypes = await this.getOsdkQueryTypes(srcDir);
 
     return {
       interfaceTypes,
@@ -115,9 +158,15 @@ export class OntologyIrToFullMetadataConverter {
     };
   }
 
-  static getOsdkQueryTypes(
+  static async getOsdkQueryTypes(
     functionsDir: string,
-  ): Record<Ontologies.VersionedQueryTypeApiName, Ontologies.QueryTypeV2> {
+  ): Promise<Record<Ontologies.VersionedQueryTypeApiName, Ontologies.QueryTypeV2>> {
+    const FunctionDiscoverer = await loadFunctionDiscoverer();
+    if (!FunctionDiscoverer) {
+      // Function discovery not available - return empty
+      return {};
+    }
+
     const srcDir =
       "/Volumes/git/osdk-ts/packages/generator-converters.ontologyir/src";
     const tsConfigFilePath = path.join(srcDir, "tsconfig.json");
@@ -132,14 +181,16 @@ export class OntologyIrToFullMetadataConverter {
     const functions = fd.discover();
 
     const queries: Ontologies.QueryTypeV2[] = [];
-    functions.discoveredFunctions.forEach((func) => {
+    functions.discoveredFunctions.forEach((func: IDiscoveredFunction) => {
       const queryType: Ontologies.QueryTypeV2 = {
         apiName: func.locator.type === "typescriptOsdk"
-          ? func.locator.typescriptOsdk.functionName
+          ? func.locator.typescriptOsdk!.functionName
           : "placeholder",
         rid: "placeholder.rid",
         version: "0.0.0",
-        parameters: func.inputs.reduce<Record<ApiName, Ontologies.QueryParameterV2>>((acc, input) => {
+        parameters: func.inputs.reduce<
+          Record<ApiName, Ontologies.QueryParameterV2>
+        >((acc, input) => {
           acc[input.name] = {
             dataType: this.convertDataType(input.dataType, func.customTypes),
           };
@@ -152,10 +203,12 @@ export class OntologyIrToFullMetadataConverter {
       };
       queries.push(queryType);
     });
-    return queries.reduce<Record<
+    return queries.reduce<
+      Record<
         Ontologies.VersionedQueryTypeApiName,
         Ontologies.QueryTypeV2
-      >>(
+      >
+    >(
       (acc, query) => {
         acc[query.apiName as string] = query;
         return acc;
@@ -166,7 +219,7 @@ export class OntologyIrToFullMetadataConverter {
 
   static convertDataType(
     dataType: IDataType,
-    customTypes: any,
+    customTypes: Record<string, unknown>,
     required?: boolean,
   ): Ontologies.QueryDataType {
     if (required === false && dataType.type !== "optionalType") {
@@ -196,46 +249,76 @@ export class OntologyIrToFullMetadataConverter {
         return { type: "timestamp" };
       case "attachment":
         return { type: "attachment" };
-      case "optionalType":
+      case "optionalType": {
+        const optionalData = dataType as {
+          type: "optionalType";
+          optionalType: { wrappedType: IDataType };
+        };
         return {
           type: "union",
           unionTypes: [
             this.convertDataType(
-              dataType.optionalType.wrappedType,
+              optionalData.optionalType.wrappedType,
               customTypes,
             ),
             { type: "null" },
           ],
         };
-      case "set":
+      }
+      case "set": {
+        const setData = dataType as {
+          type: "set";
+          set: { elementsType: IDataType };
+        };
         return {
           type: "set",
-          subType: this.convertDataType(dataType.set.elementsType, customTypes),
+          subType: this.convertDataType(setData.set.elementsType, customTypes),
         };
-      case "objectSet":
+      }
+      case "objectSet": {
+        const objectSetData = dataType as {
+          type: "objectSet";
+          objectSet: { objectTypeId: string };
+        };
         return {
           type: "objectSet",
-          objectApiName: dataType.objectSet.objectTypeId,
+          objectApiName: objectSetData.objectSet.objectTypeId,
         };
-      case "list":
+      }
+      case "list": {
+        const listData = dataType as {
+          type: "list";
+          list: { elementsType: IDataType };
+        };
         return {
           type: "array",
           subType: this.convertDataType(
-            dataType.list.elementsType,
+            listData.list.elementsType,
             customTypes,
           ),
         };
-      case "functionCustomType":
+      }
+      case "functionCustomType": {
+        const customTypeData = dataType as {
+          type: "functionCustomType";
+          functionCustomType: string;
+        };
         return this.convertFunctionCustomType(
-          dataType.functionCustomType,
+          customTypeData.functionCustomType,
           customTypes,
         );
-      case "object":
+      }
+      case "object": {
+        const objectData = dataType as {
+          type: "object";
+          object: { objectTypeId: string };
+        };
         return {
           type: "object",
-          objectApiName: dataType.object.objectTypeId,
-          objectTypeApiName: dataType.object.objectTypeId,
+          objectApiName: objectData.object.objectTypeId,
+          objectTypeApiName: objectData.object.objectTypeId,
         };
+      }
       default:
         throw new Error(`Unsupported data type: ${dataType.type}`);
     }
@@ -243,10 +326,14 @@ export class OntologyIrToFullMetadataConverter {
 
   static convertFunctionCustomType(
     functionId: string,
-    customTypes: any,
+    customTypes: Record<string, unknown>,
   ): Ontologies.QueryDataType {
-    const fieldMetadata = customTypes[functionId].fieldMetadata;
-    const fields = customTypes[functionId].fields;
+    const customType = customTypes[functionId] as {
+      fieldMetadata: Record<string, { required?: boolean }>;
+      fields: Record<string, IDataType>;
+    };
+    const fieldMetadata = customType.fieldMetadata;
+    const fields = customType.fields;
     const structFields = Object.keys(fields).map(key => {
       return {
         name: key,
@@ -334,7 +421,9 @@ export class OntologyIrToFullMetadataConverter {
         if (dataType) {
           const status = {
             type: prop.status.type,
-            ...((prop.status as any)[prop.status.type] ?? {}),
+            ...((prop.status as unknown as Record<string, unknown>)[
+              prop.status.type
+            ] ?? {}),
           } as unknown as Ontologies.PropertyTypeStatus;
 
           properties[propKey] = {

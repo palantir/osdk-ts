@@ -31,8 +31,7 @@ let generateFunctionsIr: ((
   rootDir: string,
   configPath: string | undefined,
   entityMappings: IEntityMetadataMapping,
-) => unknown) | undefined;
-let IEntityMetadataMapping: unknown;
+) => Promise<unknown>) | undefined;
 
 interface IEntityMetadataMapping {
   ontologies: Record<string, {
@@ -257,7 +256,7 @@ export default async function main(
       return;
     }
     consola.info(`Loading function IR`);
-    const functionsIr = generateFunctionsIr(
+    const functionsIr = await generateFunctionsIr(
       commandLineOpts.functionsRootDir,
       commandLineOpts.configPath,
       createEntityMappings(ontologyIr),
