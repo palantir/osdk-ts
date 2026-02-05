@@ -17,7 +17,7 @@
 import type { InterfaceDefinition, ObjectTypeDefinition } from "@osdk/api";
 import type { AsyncValue } from "./utils/asyncValue.js";
 
-interface ObjectType extends ObjectTypeDefinition {
+export interface ObjectType extends ObjectTypeDefinition {
   internalDoNotUseMetadata?: {
     rid: string;
   };
