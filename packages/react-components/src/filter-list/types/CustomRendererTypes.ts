@@ -24,7 +24,7 @@ import type { BaseFilterState } from "../FilterListItemApi.js";
 export interface CustomFilterState<T = Record<string, unknown>>
   extends BaseFilterState
 {
-  type: "custom";
+  type: "CUSTOM";
   customState: T;
 }
 
@@ -60,7 +60,7 @@ export interface CustomFilterDefinition<
   Q extends ObjectTypeDefinition,
   State extends BaseFilterState = CustomFilterState,
 > {
-  type: "custom";
+  type: "CUSTOM";
   /**
    * Optional unique identifier for stable keying across filter reorders.
    * If provided, takes precedence over `key` for state keying.

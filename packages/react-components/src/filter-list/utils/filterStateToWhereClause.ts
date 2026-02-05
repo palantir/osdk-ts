@@ -149,10 +149,10 @@ function filterStateToPropertyFilter(
 
     // These filter types are handled separately in buildWhereClause
     // since they need access to the full definition, not just state
-    case "hasLink":
-    case "linkedProperty":
-    case "keywordSearch":
-    case "custom":
+    case "HAS_LINK":
+    case "LINKED_PROPERTY":
+    case "KEYWORD_SEARCH":
+    case "CUSTOM":
       return undefined;
 
     default:
@@ -200,12 +200,12 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
         break;
       }
 
-      case "hasLink": {
-        if (state.type !== "hasLink") {
+      case "HAS_LINK": {
+        if (state.type !== "HAS_LINK") {
           if (process.env.NODE_ENV !== "production") {
             // eslint-disable-next-line no-console
             console.warn(
-              `[FilterList] State type mismatch for hasLink filter "${definition.linkName}": expected hasLink, got ${state.type}`,
+              `[FilterList] State type mismatch for hasLink filter "${definition.linkName}": expected HAS_LINK, got ${state.type}`,
             );
           }
           break;
@@ -219,7 +219,7 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
         break;
       }
 
-      case "linkedProperty": {
+      case "LINKED_PROPERTY": {
         // OSDK WhereClause does not support filtering through links.
         // Link-based filtering requires ObjectSet operations (pivotTo/intersect).
         // LinkedProperty filters render UI for selection but cannot be included
@@ -228,12 +228,12 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
         break;
       }
 
-      case "keywordSearch": {
-        if (state.type !== "keywordSearch") {
+      case "KEYWORD_SEARCH": {
+        if (state.type !== "KEYWORD_SEARCH") {
           if (process.env.NODE_ENV !== "production") {
             // eslint-disable-next-line no-console
             console.warn(
-              `[FilterList] State type mismatch for keywordSearch filter: expected keywordSearch, got ${state.type}`,
+              `[FilterList] State type mismatch for keywordSearch filter: expected KEYWORD_SEARCH, got ${state.type}`,
             );
           }
           break;
@@ -294,12 +294,12 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
         break;
       }
 
-      case "custom": {
-        if (state.type !== "custom") {
+      case "CUSTOM": {
+        if (state.type !== "CUSTOM") {
           if (process.env.NODE_ENV !== "production") {
             // eslint-disable-next-line no-console
             console.warn(
-              `[FilterList] State type mismatch for custom filter "${definition.key}": expected custom, got ${state.type}`,
+              `[FilterList] State type mismatch for custom filter "${definition.key}": expected CUSTOM, got ${state.type}`,
             );
           }
           break;
