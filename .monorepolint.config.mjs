@@ -292,11 +292,21 @@ const archetypeRules = archetypes(
     "reactLibrary",
     [
       "@osdk/widget.client-react",
+    ],
+    {
+      ...LIBRARY_RULES,
+      react: true,
+    },
+  )
+  .addArchetype(
+    "reactLibraryWithCss",
+    [
       "@osdk/react-components",
     ],
     {
       ...LIBRARY_RULES,
       react: true,
+      cssExport: true,
     },
   )
   .addArchetype(
@@ -489,7 +499,8 @@ async function dirExists(dirPath) {
 /**
  * @type {import("@monorepolint/rules").RuleFactoryFn< {
  *   browser?: boolean,
- *   cjs?: boolean
+ *   cjs?: boolean,
+ *   cssExport?: boolean
  * }>}
  */
 const ourExportsConvention = createRuleFactory({
@@ -558,6 +569,11 @@ const ourExportsConvention = createRuleFactory({
         const b = path.basename(q.name, ".ts");
         expectedExports.exports["./" + b] = makeExport(b);
       }
+    }
+
+    // add CSS export if enabled (must come before the wildcard)
+    if (options.cssExport) {
+      expectedExports.exports["./styles.css"] = "./build/browser/styles.css";
     }
 
     // include the fallback for the * for now, as it will make development easier
@@ -797,6 +813,7 @@ function minimalPackageRules(shared, options) {
  * @property { boolean } [minimalChangesOnly]
  * @property { "vite" | undefined } [framework]
  * @property { import("typescript").CompilerOptions} [extraTsConfigCompilerOptions]
+ * @property { boolean } [cssExport]
  */
 
 /**
@@ -885,7 +902,9 @@ function standardPackageRules(shared, options) {
           "check-spelling": "cspell --quiet .",
           "check-attw": options.skipAttw
             ? DELETE_SCRIPT_ENTRY
-            : `attw${options.output.cjs ? "" : " --profile esm-only"} --pack .`,
+            : `attw${options.output.cjs ? "" : " --profile esm-only"} --pack .${
+              options.cssExport ? " --exclude-entrypoints ./styles.css" : ""
+            }`,
           lint: "eslint . && dprint check  --config $(find-up dprint.json)",
           "fix-lint":
             "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
@@ -894,7 +913,9 @@ function standardPackageRules(shared, options) {
             ? `monorepo.tool.transpile -f esm -m ${options.output.esm} -t node`
             : DELETE_SCRIPT_ENTRY,
           transpileBrowser: options.output.browser
-            ? `monorepo.tool.transpile -f esm -m ${options.output.esm} -t browser`
+            ? `monorepo.tool.transpile -f esm -m ${options.output.esm} -t browser${
+              options.cssExport ? " && node scripts/build-css.mjs" : ""
+            }`
             : DELETE_SCRIPT_ENTRY,
           transpileCjs: options.output.cjs === "bundle"
             ? "monorepo.tool.transpile -f cjs -m bundle -t node"
@@ -912,6 +933,7 @@ function standardPackageRules(shared, options) {
       options: {
         cjs: !!options.output.cjs,
         browser: !!options.output.browser,
+        cssExport: !!options.cssExport,
       },
     }),
     packageEntry({

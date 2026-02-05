@@ -12,7 +12,10 @@
   "scripts": {
     "check-spelling": "cspell --quiet ."
   },
-  "dependencies": {
+  "peerDependencies": {
+    "@blueprintjs/core": "^5.19.1 || ^6.7.0"
+  },
+  "devDependencies": {
     "@blueprintjs/core": "^6.7.0"
   },
   "publishConfig": {
