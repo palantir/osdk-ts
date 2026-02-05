@@ -41,7 +41,7 @@ export interface UseRowSelectionResult {
   rowSelection: RowSelectionState;
   isAllSelected: boolean;
   hasSelection: boolean;
-  isSelectionEnabled: boolean;
+  enableRowSelection: boolean;
   onToggleAll: () => void;
   onToggleRow: (
     rowId: string,
@@ -70,19 +70,19 @@ export function useRowSelection<
   >(null);
 
   const isControlled = selectedRows !== undefined;
-  const isSelectionEnabled = selectionMode !== "none";
+  const enableRowSelection = selectionMode !== "none";
 
   // Row selection state
   // If controlled mode, return the state from selectedRows prop
   // If uncontrolled, return the internalRowSelection state
   const rowSelectionState: RowSelectionState = useMemo(() => {
-    if (!isSelectionEnabled) return {};
+    if (!enableRowSelection) return {};
     if (isControlled && selectedRows) {
       return getRowSelectionState(selectedRows);
     }
     return internalRowSelection;
   }, [
-    isSelectionEnabled,
+    enableRowSelection,
     isControlled,
     selectedRows,
     internalRowSelection,
@@ -94,7 +94,7 @@ export function useRowSelection<
   const hasSelection = selectedCount > 0;
 
   const onToggleAll = useCallback(() => {
-    if (!isSelectionEnabled || !data) return;
+    if (!enableRowSelection || !data) return;
 
     const newSelectedRows: PrimaryKeyType<Q>[] = isAllSelected
       ? []
@@ -104,11 +104,11 @@ export function useRowSelection<
       setInternalRowSelection(getRowSelectionState(newSelectedRows));
     }
     onRowSelection?.(newSelectedRows);
-  }, [isSelectionEnabled, data, isAllSelected, isControlled, onRowSelection]);
+  }, [enableRowSelection, data, isAllSelected, isControlled, onRowSelection]);
 
   const onToggleRow = useCallback(
     (rowId: string, rowIndex: number, isShiftClick: boolean = false) => {
-      if (!isSelectionEnabled || !data) return;
+      if (!enableRowSelection || !data) return;
 
       let newSelectedRows: PrimaryKeyType<Q>[] = [];
 
@@ -142,7 +142,7 @@ export function useRowSelection<
       onRowSelection?.(newSelectedRows);
     },
     [
-      isSelectionEnabled,
+      enableRowSelection,
       data,
       selectionMode,
       lastSelectedRowIndex,
@@ -155,7 +155,7 @@ export function useRowSelection<
   return {
     rowSelection: rowSelectionState,
     isAllSelected,
-    isSelectionEnabled,
+    enableRowSelection,
     hasSelection,
     onToggleAll,
     onToggleRow,

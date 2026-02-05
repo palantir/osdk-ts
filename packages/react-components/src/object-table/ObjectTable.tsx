@@ -109,7 +109,7 @@ export function ObjectTable<
     hasSelection,
     onToggleAll,
     onToggleRow,
-    isSelectionEnabled,
+    enableRowSelection,
   } = useRowSelection<Q, RDPs>({
     selectionMode,
     selectedRows,
@@ -125,7 +125,7 @@ export function ObjectTable<
   } = useColumnVisibility({
     columnDefinitions,
     onColumnVisibilityChanged,
-    hasSelectionColumn: isSelectionEnabled,
+    hasSelectionColumn: enableRowSelection,
   });
 
   const selectionColumn = useSelectionColumn<Q, RDPs>(
@@ -138,7 +138,7 @@ export function ObjectTable<
 
   const { columnPinning, onColumnPinningChange } = useColumnPinning({
     columnDefinitions,
-    hasSelectionColumn: isSelectionEnabled,
+    hasSelectionColumn: enableRowSelection,
     onColumnsPinnedChanged,
   });
 
@@ -161,7 +161,7 @@ export function ObjectTable<
     onColumnPinningChange,
     onColumnVisibilityChange,
     onColumnOrderChange,
-    enableRowSelection: isSelectionEnabled,
+    enableRowSelection,
     enableSorting,
     columnResizeMode: "onChange",
     columnResizeDirection: "ltr",
