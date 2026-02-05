@@ -71,7 +71,7 @@ export function createHasLinkFilterDef(
   return {
     type: "HAS_LINK",
     linkName,
-    filterState: { type: "hasLink", hasLink: false },
+    filterState: { type: "HAS_LINK", hasLink: false },
   } as FilterDefinitionUnion<typeof MockObjectType>;
 }
 
@@ -91,7 +91,7 @@ export function createLinkedPropertyFilterDef(
     linkedFilterComponent: "CHECKBOX_LIST",
     linkedFilterState: { type: "SELECT", selectedValues: [] },
     filterState: {
-      type: "linkedProperty",
+      type: "LINKED_PROPERTY",
       linkedFilterState: { type: "SELECT", selectedValues: [] },
     },
   } as FilterDefinitionUnion<typeof MockObjectType>;
@@ -106,7 +106,7 @@ export function createKeywordSearchFilterDef(
   return {
     type: "KEYWORD_SEARCH",
     properties,
-    filterState: { type: "keywordSearch", searchTerm: "", operator: "AND" },
+    filterState: { type: "KEYWORD_SEARCH", searchTerm: "", operator: "AND" },
   } as FilterDefinitionUnion<typeof MockObjectType>;
 }
 
@@ -121,7 +121,7 @@ export function createCustomFilterDef(
     type: "CUSTOM",
     key,
     filterComponent: "CUSTOM",
-    filterState: { type: "custom", customState: {} },
+    filterState: { type: "CUSTOM", customState: {} },
     renderInput: () => null,
     toWhereClause: () => ({}),
   } as FilterDefinitionUnion<typeof MockObjectType>;
@@ -135,7 +135,6 @@ export function createSelectState<T = string>(
   options?: {
     isExcluding?: boolean;
     includeNull?: boolean;
-    selectAll?: boolean;
   },
 ): SelectFilterState<T> {
   return {
@@ -143,7 +142,6 @@ export function createSelectState<T = string>(
     selectedValues,
     isExcluding: options?.isExcluding,
     includeNull: options?.includeNull,
-    selectAll: options?.selectAll,
   };
 }
 
