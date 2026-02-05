@@ -1,0 +1,159 @@
+/*
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import type {
+  OntologyIrActionTypeBlockDataV2,
+  OntologyIrActionTypeStatus,
+  OntologyIrOntologyBlockDataV2,
+} from "@osdk/client.unstable";
+import type * as Ontologies from "@osdk/foundry.ontologies";
+import { OntologyIrToFullMetadataConverter } from "@osdk/generator-converters.ontologyir";
+import { convertIrLogicRuleToActionLogicRule } from "./ActionLogicRuleConverter.js";
+import { toUuid } from "./ridUtils.js";
+
+/**
+ * Extended return type that uses ActionTypeFullMetadata instead of ActionTypeV2.
+ */
+export interface PreviewOntologyFullMetadata
+  extends Omit<Ontologies.OntologyFullMetadata, "actionTypes">
+{
+  actionTypes: Record<string, Ontologies.ActionTypeFullMetadata>;
+}
+
+/**
+ * Preview converter that extends the base OntologyIrToFullMetadataConverter
+ * to return ActionTypeFullMetadata with fullLogicRules instead of ActionTypeV2.
+ */
+export class PreviewOntologyIrConverter {
+  /**
+   * Main entry point - converts IR to full metadata with enhanced action types.
+   * Returns ActionTypeFullMetadata which includes fullLogicRules.
+   */
+  static getPreviewFullMetadataFromIr(
+    ir: OntologyIrOntologyBlockDataV2,
+  ): PreviewOntologyFullMetadata {
+    const baseMetadata = OntologyIrToFullMetadataConverter
+      .getFullMetadataFromIr(ir);
+
+    const actionTypes = this.convertActionTypesWithFullLogicRules(
+      Object.values(ir.actionTypes),
+      ir,
+    );
+
+    // Post-process object types to use UUID-based RIDs
+    const objectTypes = this.convertObjectTypesWithUuidRids(
+      baseMetadata.objectTypes,
+    );
+
+    return {
+      ...baseMetadata,
+      objectTypes,
+      actionTypes,
+      ontology: {
+        apiName: "ontology",
+        rid: "ri.ontology.main.ontology.0",
+        displayName: "ontology",
+        description: "local ontology",
+      },
+    };
+  }
+
+  /**
+   * Post-process object types to use UUID-based RIDs for properties.
+   */
+  private static convertObjectTypesWithUuidRids(
+    objectTypes: Record<string, Ontologies.ObjectTypeFullMetadata>,
+  ): Record<string, Ontologies.ObjectTypeFullMetadata> {
+    const result: Record<string, Ontologies.ObjectTypeFullMetadata> = {};
+
+    for (const [apiName, fullMetadata] of Object.entries(objectTypes)) {
+      const objectType = fullMetadata.objectType;
+      const properties: Record<string, Ontologies.PropertyV2> = {};
+
+      for (const [propKey, prop] of Object.entries(objectType.properties)) {
+        properties[propKey] = {
+          ...prop,
+          rid: `ri.ontology.main.property.${toUuid(apiName + "." + propKey)}`,
+        };
+      }
+
+      result[apiName] = {
+        ...fullMetadata,
+        objectType: {
+          ...objectType,
+          rid: `ri.ontology.main.object-type.${toUuid(apiName)}`,
+          properties,
+        },
+      };
+    }
+
+    return result;
+  }
+
+  /**
+   * Convert IR action types to ActionTypeFullMetadata format.
+   * Uses base converter for parameters and operations, adds fullLogicRules.
+   */
+  private static convertActionTypesWithFullLogicRules(
+    actions: OntologyIrActionTypeBlockDataV2[],
+    ir: OntologyIrOntologyBlockDataV2,
+  ): Record<string, Ontologies.ActionTypeFullMetadata> {
+    const result: Record<string, Ontologies.ActionTypeFullMetadata> = {};
+
+    for (const action of actions) {
+      const metadata = action.actionType.metadata;
+      const actionType: Ontologies.ActionTypeV2 = {
+        rid: `ri.ontology.main.action-type.${toUuid(metadata.apiName)}`,
+        apiName: metadata.apiName,
+        displayName: metadata.displayMetadata.displayName,
+        description: metadata.displayMetadata.description,
+        parameters: OntologyIrToFullMetadataConverter.getOsdkActionParameters(
+          action,
+        ),
+        operations: OntologyIrToFullMetadataConverter.getOsdkActionOperations(
+          action,
+        ),
+        status: this.convertActionTypeStatus(metadata.status),
+      };
+
+      result[actionType.apiName] = {
+        actionType,
+        fullLogicRules: action.actionType.actionTypeLogic.logic.rules.map(
+          rule => convertIrLogicRuleToActionLogicRule(rule, action, ir),
+        ),
+      };
+    }
+
+    return result;
+  }
+
+  private static convertActionTypeStatus(
+    status: OntologyIrActionTypeStatus,
+  ): "ACTIVE" | "DEPRECATED" | "EXPERIMENTAL" {
+    switch (status.type) {
+      case "active":
+        return "ACTIVE";
+      case "deprecated":
+        return "DEPRECATED";
+      case "experimental":
+        return "EXPERIMENTAL";
+      case "example":
+        throw new Error(
+          "Example status cannot be mapped to ActionTypeStatus",
+        );
+    }
+  }
+}
