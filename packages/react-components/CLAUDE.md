@@ -9,6 +9,7 @@
 - Always put new components in their own file and create separate components instead of inline functions
 - NEVER conditionally call React hooks
 - ALWAYS keep components rendering during loading/error states. Don't use early returns like `if (isLoading) return <LoadingMessage />`. Show loading/error indicators while rendering existing data to prevent UI flashing
+- ALWAYS memoize non-primitive values passed to component props with useCallback or useMemo
 
 ## OSDK Component Architecture
 
