@@ -16,8 +16,7 @@
 
 import type {
   CompileTimeMetadata,
-  InterfaceDefinition,
-  ObjectTypeDefinition,
+  ObjectOrInterfaceDefinition,
 } from "@osdk/api";
 import type { SpecificLinkPayload } from "../../LinkPayload.js";
 
@@ -35,7 +34,7 @@ import { SpecificLinkQuery } from "./SpecificLinkQuery.js";
 
 export interface LinksHelper {
   observe<
-    T extends ObjectTypeDefinition | InterfaceDefinition,
+    T extends ObjectOrInterfaceDefinition,
     L extends keyof CompileTimeMetadata<T>["links"] & string,
   >(
     options: ObserveLinks.Options<T, L>,
@@ -43,14 +42,14 @@ export interface LinksHelper {
   ): QuerySubscription<SpecificLinkQuery>;
 
   getQuery<
-    T extends ObjectTypeDefinition | InterfaceDefinition,
+    T extends ObjectOrInterfaceDefinition,
     L extends keyof CompileTimeMetadata<T>["links"] & string,
   >(options: ObserveLinks.Options<T, L>): SpecificLinkQuery;
 }
 
 export class LinksHelper extends AbstractHelper<
   SpecificLinkQuery,
-  ObserveLinks.Options<ObjectTypeDefinition | InterfaceDefinition, string>
+  ObserveLinks.Options<ObjectOrInterfaceDefinition, string>
 > {
   whereCanonicalizer: WhereClauseCanonicalizer;
   orderByCanonicalizer: OrderByCanonicalizer;
@@ -68,7 +67,7 @@ export class LinksHelper extends AbstractHelper<
   }
 
   getQuery<
-    T extends ObjectTypeDefinition | InterfaceDefinition,
+    T extends ObjectOrInterfaceDefinition,
     L extends keyof CompileTimeMetadata<T>["links"] & string,
   >(options: ObserveLinks.Options<T, L>): SpecificLinkQuery {
     const { apiName, type: sourceTypeKind } = options.srcType;

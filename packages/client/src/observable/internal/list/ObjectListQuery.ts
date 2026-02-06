@@ -17,9 +17,11 @@
 import type {
   DerivedProperty,
   InterfaceDefinition,
+  ObjectOrInterfaceDefinition,
   ObjectSet,
   ObjectTypeDefinition,
   Osdk,
+  WhereClause,
 } from "@osdk/api";
 import { additionalContext } from "../../../Client.js";
 import type { InterfaceHolder } from "../../../object/convertWireToOsdkObjects/InterfaceHolder.js";
@@ -55,7 +57,7 @@ export class ObjectListQuery extends ListQuery {
     } as ObjectTypeDefinition;
 
     if (pivotInfo != null) {
-      let sourceSet = (pivotInfo.sourceTypeKind === "interface"
+      const sourceSet = (pivotInfo.sourceTypeKind === "interface"
         ? store.client({
           type: "interface",
           apiName: pivotInfo.sourceType,
@@ -63,11 +65,11 @@ export class ObjectListQuery extends ListQuery {
         : store.client({
           type: "object",
           apiName: pivotInfo.sourceType,
-        } as ObjectTypeDefinition)) as ObjectSet<ObjectTypeDefinition>;
+        } as ObjectTypeDefinition)) as ObjectSet<ObjectOrInterfaceDefinition>;
 
-      // Filter source objects before pivoting to linked objects
-      sourceSet = sourceSet.where(this.canonicalWhere);
-      let objectSet = sourceSet.pivotTo(pivotInfo.linkName);
+      let objectSet = sourceSet
+        .where(this.canonicalWhere as WhereClause<any>)
+        .pivotTo(pivotInfo.linkName);
 
       if (rdpConfig != null) {
         objectSet = objectSet.withProperties(
@@ -77,8 +79,6 @@ export class ObjectListQuery extends ListQuery {
 
       if (intersectWith != null && intersectWith.length > 0) {
         const intersectSets = intersectWith.map(whereClause => {
-          // Use this.apiName as the target type since ObjectListQuery is created
-          // for the target type of the link (same as this.apiName)
           let intersectSet = store.client({
             type: "object",
             apiName: this.apiName,
@@ -90,7 +90,7 @@ export class ObjectListQuery extends ListQuery {
             );
           }
 
-          return intersectSet.where(whereClause);
+          return intersectSet.where(whereClause as WhereClause<any>);
         });
 
         objectSet = objectSet.intersect(...intersectSets);
