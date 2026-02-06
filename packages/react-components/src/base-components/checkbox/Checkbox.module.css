@@ -1,0 +1,79 @@
+/*
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.osdkCheckboxRoot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: calc(
+    var(--osdk-checkbox-icon-size) + var(--osdk-checkbox-padding) * 2
+  );
+  min-height: calc(
+    var(--osdk-checkbox-icon-size) + var(--osdk-checkbox-padding) * 2
+  );
+  padding: var(--osdk-checkbox-padding);
+  box-sizing: border-box;
+  cursor: pointer;
+  border-radius: var(--osdk-surface-border-radius);
+  border: var(--osdk-checkbox-border);
+
+  &[data-unchecked] {
+    background-color: var(--osdk-checkbox-bg);
+
+    &:hover {
+      background-color: var(--osdk-checkbox-bg-hover);
+    }
+
+    &:active {
+      background-color: var(--osdk-checkbox-bg-active);
+    }
+  }
+
+  &[data-checked],
+  &[data-indeterminate] {
+    background-color: var(--osdk-checkbox-bg-checked);
+
+    &:hover {
+      background-color: var(--osdk-checkbox-bg-checked-hover);
+    }
+
+    &:active {
+      background-color: var(--osdk-checkbox-bg-checked-active);
+    }
+  }
+
+  &:focus {
+    outline: none;
+  }
+
+  &:focus-visible {
+    outline: var(--osdk-focus-visible-outline);
+    outline-offset: calc(-1 * var(--osdk-focus-visible-outline-offset));
+  }
+}
+
+.osdkCheckboxIndicator {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--osdk-checkbox-checked-foreground);
+  width: var(--osdk-checkbox-icon-size);
+  height: var(--osdk-checkbox-icon-size);
+
+  &[data-unchecked] {
+    display: none;
+  }
+}

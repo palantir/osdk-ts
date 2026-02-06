@@ -1,5 +1,145 @@
 # @osdk/generator
 
+## 2.8.0-beta.2
+
+### Minor Changes
+
+- 1706c79: Relax interface creation validation.
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.2
+- @osdk/generator-converters@2.8.0-beta.2
+
+## 2.7.0-beta.14
+
+### Patch Changes
+
+- @osdk/api@2.7.0-beta.14
+- @osdk/generator-converters@2.7.0-beta.14
+
+## 2.7.0-beta.13
+
+### Patch Changes
+
+- Updated dependencies [fb83808]
+  - @osdk/api@2.7.0-beta.13
+  - @osdk/generator-converters@2.7.0-beta.13
+
+## 2.7.0-beta.12
+
+### Patch Changes
+
+- Updated dependencies [bb9d25c]
+  - @osdk/api@2.7.0-beta.12
+  - @osdk/generator-converters@2.7.0-beta.12
+
+## 2.7.0-beta.11
+
+### Minor Changes
+
+- 211cb0d: Add internalDoNotUseMetadata.rid to interfaces
+- d5cfc38: Add null option to actions to allow clearing data
+
+### Patch Changes
+
+- Updated dependencies [d5cfc38]
+  - @osdk/api@2.7.0-beta.11
+  - @osdk/generator-converters@2.7.0-beta.11
+
+## 2.7.0-beta.10
+
+### Patch Changes
+
+- Updated dependencies [db44f6b]
+- Updated dependencies [24a1e29]
+  - @osdk/api@2.7.0-beta.10
+  - @osdk/generator-converters@2.7.0-beta.10
+
+## 2.7.0-beta.9
+
+### Patch Changes
+
+- @osdk/api@2.7.0-beta.9
+- @osdk/generator-converters@2.7.0-beta.9
+
+## 2.7.0-beta.8
+
+### Patch Changes
+
+- @osdk/api@2.7.0-beta.8
+- @osdk/generator-converters@2.7.0-beta.8
+
+## 2.7.0-beta.7
+
+### Patch Changes
+
+- @osdk/api@2.7.0-beta.7
+- @osdk/generator-converters@2.7.0-beta.7
+
+## 2.7.0-beta.6
+
+### Patch Changes
+
+- Updated dependencies [c9ca08d]
+  - @osdk/api@2.7.0-beta.6
+  - @osdk/generator-converters@2.7.0-beta.6
+
+## 2.7.0-beta.5
+
+### Minor Changes
+
+- dc33f68: Add Transaction ID to Queries
+
+### Patch Changes
+
+- Updated dependencies [dc33f68]
+  - @osdk/generator-converters@2.7.0-beta.5
+  - @osdk/api@2.7.0-beta.5
+
+## 2.7.0-beta.4
+
+### Patch Changes
+
+- Updated dependencies [1e3c147]
+  - @osdk/api@2.7.0-beta.4
+  - @osdk/generator-converters@2.7.0-beta.4
+
+## 2.7.0-beta.3
+
+### Patch Changes
+
+- Updated dependencies [448763f]
+- Updated dependencies [f0a57a5]
+  - @osdk/api@2.7.0-beta.3
+  - @osdk/generator-converters@2.7.0-beta.3
+
+## 2.7.0-beta.2
+
+### Minor Changes
+
+- 03db734: Move platform SDK deps to pnpm catalog
+
+### Patch Changes
+
+- @osdk/api@2.7.0-beta.2
+- @osdk/generator-converters@2.7.0-beta.2
+
+## 2.6.0-beta.13
+
+### Minor Changes
+
+- 84f0eef: Bumping OSDK apis
+- 486ef7e: Deprecate multiplicity in query params/outputs
+
+### Patch Changes
+
+- Updated dependencies [84f0eef]
+- Updated dependencies [486ef7e]
+- Updated dependencies [ea077c6]
+  - @osdk/generator-converters@2.6.0-beta.13
+  - @osdk/api@2.6.0-beta.13
+
 ## 2.6.0-beta.12
 
 ### Patch Changes
@@ -109,6 +249,65 @@
 
 - @osdk/api@2.5.0-beta.15
 - @osdk/generator-converters@2.5.0-beta.15
+
+## 2.5.2
+
+### Patch Changes
+
+- @osdk/api@2.5.2
+- @osdk/generator-converters@2.5.2
+
+## 2.5.1
+
+### Patch Changes
+
+- 099b4d8: Fix nested array query param type handling
+- Updated dependencies [099b4d8]
+  - @osdk/generator-converters@2.5.1
+  - @osdk/api@2.5.1
+
+## 2.5.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- 4b4a458: Allow exporting rid for object types
+- 7cdab1d: Update platform sdk dependencies
+- a00d2ed: Update Platform SDK dependencies
+- d29cdfb: Fixes query generation with disallowed javascript identifiers.
+- a6f49e9: experimentalDoNotUseMetadata -> internalDoNotUseMetadata
+- 7bdac45: Update Platform SDK dependency
+- a96d89e: Update Platform SDK dependencies
+- 78be29f: mark deprecated properties with JSDoc for interface types
+- 7bdac45: Support value type enum generation for strings and booleans
+- cbcf2ad: Add branching support
+- 4248b80: Temporarily remove NullValue type from codegen
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [7160276]
+- Updated dependencies [7cdab1d]
+- Updated dependencies [a00d2ed]
+- Updated dependencies [7bdac45]
+- Updated dependencies [37eb75b]
+- Updated dependencies [7b97128]
+- Updated dependencies [76905f5]
+- Updated dependencies [a96d89e]
+- Updated dependencies [7bdac45]
+- Updated dependencies [20962bc]
+- Updated dependencies [cbcf2ad]
+- Updated dependencies [052a96b]
+- Updated dependencies [ca1fabe]
+- Updated dependencies [e48be06]
+  - @osdk/api@2.5.0
+  - @osdk/generator-converters@2.5.0
+
+## 2.5.0-rc.15
+
+### Patch Changes
+
+- Updated dependencies [37eb75b]
+  - @osdk/api@2.5.0-rc.15
+  - @osdk/generator-converters@2.5.0-rc.15
 
 ## 2.5.0-beta.14
 

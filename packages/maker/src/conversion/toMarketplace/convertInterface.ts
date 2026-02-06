@@ -17,6 +17,7 @@
 import type { MarketplaceInterfaceType } from "@osdk/client.unstable";
 import type { InterfaceType } from "../../api/interface/InterfaceType.js";
 import type { OntologyRidGenerator } from "../../util/generateRid.js";
+import { convertInterfaceProperty } from "./convertInterfacePropertyType.js";
 import { convertSpt } from "./convertSpt.js";
 
 export function convertInterface(
@@ -62,7 +63,10 @@ export function convertInterface(
     })),
     // these are omitted from our internal types but we need to re-add them for the final json
     properties: [],
-    // TODO(mwalther): Support propertiesV3
-    propertiesV3: {},
+    propertiesV3: Object.fromEntries(
+      Object.entries(interfaceType.propertiesV3).map(([apiName, prop]) =>
+        convertInterfaceProperty(prop, apiName, interfaceType.apiName, ridGenerator)
+      ),
+    ),
   };
 }

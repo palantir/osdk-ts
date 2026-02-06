@@ -22,6 +22,7 @@ import {
   defaultTypeClasses,
   getPropertyTypeName,
   hasRenderHints,
+  shouldBeIndexedForSearch,
   shouldNotHaveRenderHints,
 } from "../../api/propertyConversionUtils.js";
 import type { OntologyRidGenerator } from "../../util/generateRid.js";
@@ -58,7 +59,8 @@ export function convertObjectPropertyType(
       description: property.description,
       visibility: property.visibility ?? "NORMAL",
     },
-    indexedForSearch: property.indexedForSearch ?? true,
+    indexedForSearch: property.indexedForSearch
+      ?? shouldBeIndexedForSearch(property.type),
     ruleSetBinding: undefined,
     baseFormatter: property.baseFormatter,
     type: property.array
@@ -69,6 +71,7 @@ export function convertObjectPropertyType(
             property.type,
             ridGenerator,
           ),
+          //reducers: [],
         },
       }
       : propertyTypeTypeToOntologyIrType(property.type, ridGenerator),

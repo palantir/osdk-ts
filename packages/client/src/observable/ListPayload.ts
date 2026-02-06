@@ -14,12 +14,16 @@
  * limitations under the License.
  */
 
+import type { WirePropertyTypes } from "@osdk/api";
 import type { InterfaceHolder } from "../object/convertWireToOsdkObjects/InterfaceHolder.js";
 import type { ObjectHolder } from "../object/convertWireToOsdkObjects/ObjectHolder.js";
-import type { ObserveObjectsArgs } from "./ObservableClient.js";
+import type { ObserveObjectsCallbackArgs } from "./ObservableClient.js";
 
-export interface ListPayload
-  extends Omit<ObserveObjectsArgs<any>, "resolvedList">
-{
+export interface ListPayload<
+  RDPs extends Record<
+    string,
+    WirePropertyTypes | undefined | Array<WirePropertyTypes>
+  > = {},
+> extends Omit<ObserveObjectsCallbackArgs<any, RDPs>, "resolvedList"> {
   resolvedList: Array<ObjectHolder | InterfaceHolder>;
 }

@@ -74,7 +74,7 @@ async function getRemoteBranches(): Promise<string[]> {
     "ls-remote",
     "--heads",
     "origin",
-    "release/*",
+    "refs/heads/release/*",
   ], { cwd: repoRoot });
   return stdout.split("\n").filter(line => !!line).map(line => {
     const match = line.match(/release\/(.*)/);

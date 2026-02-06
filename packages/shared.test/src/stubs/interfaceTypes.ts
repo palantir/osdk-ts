@@ -14,8 +14,24 @@
  * limitations under the License.
  */
 
-import type { InterfaceType } from "@osdk/foundry.ontologies";
+import type {
+  InterfaceDefinedPropertyType,
+  InterfacePropertyApiName,
+  InterfacePropertyTypeRid,
+  InterfaceType,
+} from "@osdk/foundry.ontologies";
 import { fooSpt } from "./spts.js";
+
+const idp: InterfaceDefinedPropertyType = {
+  rid: "ri.interfacePropertyType.main.interfacePropertyType.1",
+  apiName: "fooIdp",
+  displayName: "Foo IDP",
+  description: "A Foo IDP",
+  dataType: {
+    type: "string",
+  },
+  requireImplementation: true,
+};
 
 export const BarInterface: InterfaceType = {
   apiName: "BarInterface",
@@ -69,7 +85,17 @@ export const FooInterface: InterfaceType = {
       required: true,
     },
   },
-  propertiesV2: {},
+  propertiesV2: {
+    fooSpt: {
+      ...fooSpt,
+      type: "interfaceSharedPropertyType",
+      required: true,
+    },
+    fooIdp: {
+      ...idp,
+      type: "interfaceDefinedPropertyType",
+    },
+  },
   links: {
     "toBar": {
       rid: "ri.interface.link.main.2",
@@ -90,7 +116,17 @@ export const FooInterface: InterfaceType = {
       required: true,
     },
   },
-  allPropertiesV2: {},
+  allPropertiesV2: {
+    fooSpt: {
+      ...fooSpt,
+      rid: fooSpt.rid as InterfacePropertyTypeRid,
+      apiName: fooSpt.apiName as InterfacePropertyApiName,
+      requireImplementation: true,
+    },
+    fooIdp: {
+      ...idp,
+    },
+  },
   allExtendsInterfaces: [],
   allLinks: {
     "toBar": {

@@ -30,7 +30,7 @@ import {
   type ObserveObjectSetArgs,
 } from "@osdk/client/unstable-do-not-use";
 import React from "react";
-import { makeExternalStore } from "./makeExternalStore.js";
+import { makeExternalStore, type Snapshot } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
 
 export interface UseObjectSetOptions<
@@ -154,6 +154,11 @@ export interface UseObjectSetResult<
    * The final ObjectSet after all transformations
    */
   objectSet: ObjectSet<Q, RDPs>;
+
+  /**
+   * The total count of objects matching the query (if available from the API)
+   */
+  totalCount?: string;
 }
 
 declare const process: {
@@ -185,6 +190,18 @@ export function useObjectSet<
 
   const { enabled = true, streamUpdates, ...otherOptions } = options;
 
+  // Track object type to detect when we switch to a different object type
+  const objectTypeKey = baseObjectSet.$objectSetInternals.def.apiName;
+  const previousObjectTypeRef = React.useRef<string>(objectTypeKey);
+  const previousPayloadRef = React.useRef<
+    Snapshot<ObserveObjectSetArgs<Q, RDPs>> | undefined
+  >();
+
+  const objectTypeChanged = previousObjectTypeRef.current !== objectTypeKey;
+  if (objectTypeChanged) {
+    previousObjectTypeRef.current = objectTypeKey;
+  }
+
   // Compute a stable cache key for the ObjectSet and options
   // dedupeIntervalMs and enabled are excluded as they don't affect the data
   const stableKey = computeObjectSetCacheKey(baseObjectSet, {
@@ -208,6 +225,11 @@ export function useObjectSet<
             : void 0,
         );
       }
+
+      const initialValue = objectTypeChanged
+        ? undefined
+        : previousPayloadRef.current;
+
       return makeExternalStore<ObserveObjectSetArgs<Q, RDPs>>(
         (observer) => {
           const subscription = observableClient.observeObjectSet(
@@ -232,12 +254,18 @@ export function useObjectSet<
         process.env.NODE_ENV !== "production"
           ? `objectSet ${stableKey}`
           : void 0,
+        initialValue,
       );
     },
-    [enabled, observableClient, stableKey, streamUpdates],
+    [enabled, observableClient, stableKey, streamUpdates, objectTypeChanged],
   );
 
   const payload = React.useSyncExternalStore(subscribe, getSnapShot);
+  React.useEffect(() => {
+    if (payload) {
+      previousPayloadRef.current = payload;
+    }
+  }, [payload]);
 
   return {
     data: payload?.resolvedList as Osdk.Instance<
@@ -250,7 +278,8 @@ export function useObjectSet<
     error: payload && "error" in payload
       ? payload.error
       : undefined,
-    fetchMore: payload?.fetchMore,
+    fetchMore: payload?.hasMore ? payload.fetchMore : undefined,
     objectSet: payload?.objectSet as ObjectSet<Q, RDPs> || baseObjectSet,
+    totalCount: payload?.totalCount,
   };
 }

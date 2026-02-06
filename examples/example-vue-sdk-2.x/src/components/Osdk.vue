@@ -1,0 +1,50 @@
+<script setup lang="ts"></script>
+
+<template>
+  <div class="osdk">
+    <div>
+      <span>OSDK: </span>
+      <span class="tag">@osdk/e2e.generated.catchall</span>
+    </div>
+    <a
+      href="https://fake.palantirfoundry.com/workspace/developer-console/app/ri.third-party-applications.main.application.fake/docs/guide/loading-data?language=typescript"
+      class="docs"
+      target="_blank"
+      rel="noreferrer"
+    >
+      <img src="/book.svg" width="16" height="16" alt="Book icon" />
+      <span>View documentation</span>
+    </a>
+  </div>
+</template>
+
+<style scoped>
+.osdk {
+  align-self: baseline;
+  display: flex;
+  justify-content: space-between;
+  width: 800px;
+}
+
+.tag {
+  border: 1px solid #11141826;
+  border-radius: 2px;
+  padding: 2px 4px;
+}
+
+.docs {
+  align-items: center;
+  border-radius: 2px;
+  color: #1c2127;
+  display: flex;
+  gap: 8px;
+  height: 30px;
+  justify-content: center;
+  padding: 0 5px;
+  text-decoration: none;
+}
+
+.docs:hover {
+  background: #8f99a826;
+}
+</style>

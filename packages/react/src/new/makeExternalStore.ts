@@ -26,12 +26,13 @@ export type Snapshot<X> =
 
 export function makeExternalStore<X>(
   createObservation: (callback: Observer<X | undefined>) => Unsubscribable,
-  name?: string,
+  _name?: string,
+  initialValue?: Snapshot<X>,
 ): {
   subscribe: (notifyUpdate: () => void) => () => void;
   getSnapShot: () => Snapshot<X>;
 } {
-  let lastResult: Snapshot<X>;
+  let lastResult: Snapshot<X> = initialValue;
 
   function getSnapShot(): Snapshot<X> {
     return lastResult;

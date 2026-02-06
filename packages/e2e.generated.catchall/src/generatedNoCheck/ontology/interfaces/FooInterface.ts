@@ -168,8 +168,11 @@ export interface FooInterface extends $InterfaceDefinition {
   };
 }
 
-export const FooInterface: FooInterface = {
+export const FooInterface = {
   type: 'interface',
   apiName: 'FooInterface',
   osdkMetadata: $osdkMetadata,
-};
+  internalDoNotUseMetadata: {
+    rid: 'ri.ontology.main.interface-type.1b1b1b1b-1b1b-1b1b-1b1b-1b1b1b1b1b1b',
+  },
+} satisfies FooInterface & { internalDoNotUseMetadata: { rid: string } } as FooInterface;

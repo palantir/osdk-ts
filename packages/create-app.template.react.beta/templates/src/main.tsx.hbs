@@ -1,0 +1,22 @@
+{{#if osdkPackage}}
+import { OsdkProvider } from "@osdk/react";
+{{/if}}
+import ReactDOM from "react-dom/client";
+import { RouterProvider } from "react-router-dom";
+import "./index.css";
+{{#if osdkPackage}}
+import client from "./client";
+{{/if}}
+import { router } from "./router";
+
+{{#if osdkPackage}}
+ReactDOM.createRoot(document.getElementById("root")!).render(
+  <OsdkProvider client={client}>
+    <RouterProvider router={router} />
+  </OsdkProvider>,
+);
+{{else}}
+ReactDOM.createRoot(document.getElementById("root")!).render(
+  <RouterProvider router={router} />
+);
+{{/if}}

@@ -112,7 +112,7 @@ describe("intellisense", () => {
     }
   });
 
-  afterEach(async () => {
+  afterEach(() => {
     if (tsServer) {
       tsServer.stop();
       tsServer = undefined;

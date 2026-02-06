@@ -37,7 +37,13 @@ export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition(
       ? [...interfaceType.extendsInterfaces].sort((a, b) => a.localeCompare(b))
       : undefined,
     properties: Object.fromEntries(
-      Object.entries(interfaceType.allProperties ?? interfaceType.properties)
+      Object.entries(
+        // prefer V2 if available and non-empty, otherwise fall back to V1
+        (interfaceType.allPropertiesV2
+            && Object.keys(interfaceType.allPropertiesV2).length > 0)
+          ? interfaceType.allPropertiesV2
+          : (interfaceType.allProperties ?? interfaceType.properties),
+      )
         .map((
           [key, value],
         ) => {

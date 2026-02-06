@@ -18,30 +18,30 @@ import type {
   AggregateOpts,
   AggregationsResults,
   DerivedProperty,
+  ObjectOrInterfaceDefinition,
+  SimplePropertyDef,
   WhereClause,
 } from "@osdk/api";
-import type { ObjectTypeDefinition } from "@osdk/client";
 import type { ObserveAggregationArgs } from "@osdk/client/unstable-do-not-use";
 import React from "react";
 import { makeExternalStore } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
-import type { InferRdpTypes } from "./types.js";
 
 export interface UseOsdkAggregationOptions<
-  T extends ObjectTypeDefinition,
+  T extends ObjectOrInterfaceDefinition,
   A extends AggregateOpts<T>,
-  WithProps extends DerivedProperty.Clause<T> | undefined = undefined,
+  RDPs extends Record<string, SimplePropertyDef> = {},
 > {
   /**
    * Standard OSDK Where clause to filter objects before aggregation
    */
-  where?: WhereClause<T, InferRdpTypes<T, WithProps>>;
+  where?: WhereClause<T, RDPs>;
 
   /**
    * Define derived properties (RDPs) to be computed server-side.
    * The derived properties can be used in the where clause and aggregation groupBy/select.
    */
-  withProperties?: WithProps;
+  withProperties?: { [K in keyof RDPs]: DerivedProperty.Creator<T, RDPs[K]> };
 
   /**
    * Aggregation options including groupBy and select
@@ -58,7 +58,7 @@ export interface UseOsdkAggregationOptions<
 }
 
 export interface UseOsdkAggregationResult<
-  T extends ObjectTypeDefinition,
+  T extends ObjectOrInterfaceDefinition,
   A extends AggregateOpts<T>,
 > {
   data: AggregationsResults<T, A> | undefined;
@@ -98,9 +98,9 @@ declare const process: {
  * ```
  */
 export function useOsdkAggregation<
-  Q extends ObjectTypeDefinition,
-  A extends AggregateOpts<Q>,
-  WP extends DerivedProperty.Clause<Q> | undefined = undefined,
+  Q extends ObjectOrInterfaceDefinition,
+  const A extends AggregateOpts<Q>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
 >(
   type: Q,
   {
@@ -108,7 +108,7 @@ export function useOsdkAggregation<
     withProperties,
     aggregate,
     dedupeIntervalMs,
-  }: UseOsdkAggregationOptions<Q, A, WP>,
+  }: UseOsdkAggregationOptions<Q, A, RDPs>,
 ): UseOsdkAggregationResult<Q, A> {
   const { observableClient } = React.useContext(OsdkContext2);
 
@@ -168,7 +168,8 @@ export function useOsdkAggregation<
 
   return {
     data: payload?.result as AggregationsResults<Q, A> | undefined,
-    isLoading: payload?.status === "loading",
+    isLoading: payload?.status === "loading" || payload?.status === "init"
+      || !payload,
     error,
     refetch,
   };

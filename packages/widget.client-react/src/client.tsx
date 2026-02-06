@@ -16,26 +16,31 @@
 
 import type { Client, ObjectSet } from "@osdk/client";
 import type { ObjectType } from "@osdk/widget.api";
-import type {
-  AsyncValue,
-  ParameterConfig,
-  WidgetConfig,
+import {
+  type AsyncValue,
+  createFoundryWidgetClient,
+  type FoundryWidgetClient,
+  type ParameterConfig,
+  type WidgetConfig,
 } from "@osdk/widget.client";
-import { createFoundryWidgetClient } from "@osdk/widget.client";
-import React, { useEffect, useMemo, useRef } from "react";
+import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import type {
+  AugmentedEmitEvent,
   ExtendedAsyncParameterValueMap,
   ExtendedParameterValueMap,
   FoundryWidgetClientContext,
 } from "./context.js";
 import { FoundryWidgetContext } from "./context.js";
+import { ErrorBoundary } from "./ErrorBoundary.js";
 import { extendParametersWithObjectSets } from "./utils/extendParametersWithObjectSets.js";
 import { initializeParameters } from "./utils/initializeParameters.js";
+import { transformEmitEventPayload } from "./utils/transformEmitEventPayload.js";
 
 type ExtractObjectTypes<C extends WidgetConfig<C["parameters"]>> =
   C["parameters"][keyof C["parameters"]] extends infer Param
     ? Param extends { type: "objectSet"; objectType: infer OT }
-      ? OT extends ObjectType ? OT : never
+      ? OT extends ObjectType ? OT
+      : never
     : never
     : never;
 
@@ -90,6 +95,50 @@ export const FoundryWidget = <C extends WidgetConfig<C["parameters"]>>({
   const objectSetCache = useRef<
     Map<string, { objectSetRid: string; objectSet: ObjectSet }>
   >(new Map());
+
+  const emitEventCallIds = useRef<Map<string, number>>(new Map());
+
+  const emitEvent: AugmentedEmitEvent<C> = useCallback(
+    (eventId: Parameters<FoundryWidgetClient<C>["emitEvent"]>[0], payload) => {
+      const transformResult = transformEmitEventPayload(
+        config,
+        eventId,
+        payload,
+        osdkClient,
+      );
+      if (transformResult.type === "passThrough") {
+        client.emitEvent(
+          eventId,
+          transformResult.payload as Parameters<
+            FoundryWidgetClient<C>["emitEvent"]
+          >[1],
+        );
+        return;
+      }
+
+      async function handleAsyncEmitEvent() {
+        const eventKey = String(eventId);
+        const thisCallId = (emitEventCallIds.current.get(eventKey) ?? 0) + 1;
+        emitEventCallIds.current.set(eventKey, thisCallId);
+
+        const transformedPayload = await transformResult.payload;
+
+        if (thisCallId !== emitEventCallIds.current.get(eventKey)) {
+          return;
+        }
+
+        client.emitEvent(
+          eventId,
+          transformedPayload as Parameters<
+            FoundryWidgetClient<C>["emitEvent"]
+          >[1],
+        );
+      }
+
+      void handleAsyncEmitEvent();
+    },
+    [osdkClient, config, client],
+  );
 
   useEffect(() => {
     client.subscribe();
@@ -181,15 +230,40 @@ export const FoundryWidget = <C extends WidgetConfig<C["parameters"]>>({
       },
     );
     client.ready();
+
+    const resizeObserver = new ResizeObserver((entries) => {
+      if (entries.length !== 1) {
+        // eslint-disable-next-line no-console
+        console.error(
+          "Expected exactly one resize observer entry but received:",
+          entries,
+        );
+        return;
+      }
+      const entry = entries[0];
+      if (entry.borderBoxSize.length !== 1) {
+        // eslint-disable-next-line no-console
+        console.error(
+          "Expected exactly one border box size but received:",
+          entry.borderBoxSize,
+        );
+        return;
+      }
+      const { inlineSize: width, blockSize: height } = entry.borderBoxSize[0];
+      client.resize({ width, height });
+    });
+    resizeObserver.observe(document.body, { box: "border-box" });
+
     return () => {
       client.unsubscribe();
+      resizeObserver.disconnect();
     };
   }, []);
 
   return (
     <FoundryWidgetContext.Provider
       value={{
-        emitEvent: client.emitEvent,
+        emitEvent,
         hostEventTarget: client.hostEventTarget,
         asyncParameterValues,
         parameters: {
@@ -199,7 +273,9 @@ export const FoundryWidget = <C extends WidgetConfig<C["parameters"]>>({
         // Unfortunately the context is statically defined so we can't use the generic type, hence the cast
       } as FoundryWidgetClientContext<WidgetConfig<ParameterConfig>>}
     >
-      {children}
+      <ErrorBoundary>
+        {children}
+      </ErrorBoundary>
     </FoundryWidgetContext.Provider>
   );
 };

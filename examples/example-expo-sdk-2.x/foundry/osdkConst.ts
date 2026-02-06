@@ -1,13 +1,15 @@
 // Read configuration from EXPO Environment Variables
 const foundry_url = process.env.EXPO_PUBLIC_FOUNDRY_API_URL;
 const client_id = process.env.EXPO_PUBLIC_FOUNDRY_CLIENT_ID;
+const ontology_rid = process.env.EXPO_PUBLIC_FOUNDRY_ONTOLOGY_RID;
 
 checkEnv(foundry_url, "EXPO_PUBLIC_FOUNDRY_API_URL");
 checkEnv(client_id, "EXPO_PUBLIC_FOUNDRY_CLIENT_ID");
+checkEnv(ontology_rid, "EXPO_PUBLIC_FOUNDRY_ONTOLOGY_RID");
 
 function checkEnv(
   value: string | undefined,
-  name: string,
+  name: string
 ): asserts value is string {
   if (value == null) {
     throw new Error(`Missing environment variable: ${name}`);
@@ -16,3 +18,4 @@ function checkEnv(
 
 export const FOUNDRY_URL = foundry_url;
 export const CLIENT_ID = client_id;
+export const ONTOLOGY_RID = ontology_rid;

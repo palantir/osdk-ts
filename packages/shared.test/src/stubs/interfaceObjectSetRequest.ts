@@ -34,6 +34,7 @@ const baseObjectSet: LoadObjectSetV2MultipleObjectTypesRequest = {
     interfaceType: FooInterface.apiName,
   },
   select: [],
+  selectV2: [],
   excludeRid: true,
 };
 
@@ -50,6 +51,7 @@ const baseObjectSetFullObject: LoadObjectSetV2MultipleObjectTypesRequest = {
     ],
   },
   select: [],
+  selectV2: [],
   excludeRid: true,
 };
 
@@ -72,6 +74,7 @@ const baseObjectSetSelect: LoadObjectSetV2MultipleObjectTypesRequest = {
     interfaceType: FooInterface.apiName,
   },
   select: ["fullName"],
+  selectV2: [],
   excludeRid: true,
 };
 
@@ -89,6 +92,7 @@ const baseObjectSetSelectFullObject: LoadObjectSetV2MultipleObjectTypesRequest =
       ],
     },
     select: ["fullName"],
+    selectV2: [],
     excludeRid: true,
   };
 
@@ -106,6 +110,7 @@ const eqSearchBody: LoadObjectSetV2MultipleObjectTypesRequest = {
     },
   },
   select: [],
+  selectV2: [],
   excludeRid: true,
 };
 
@@ -130,6 +135,7 @@ const eqSearchBodyFullScope: LoadObjectSetV2MultipleObjectTypesRequest = {
     }],
   },
   select: [],
+  selectV2: [],
   excludeRid: true,
 };
 
@@ -138,8 +144,22 @@ const baseObjectSetResponse: LoadObjectSetV2MultipleObjectTypesResponse = {
   interfaceToObjectTypeMappings: {
     FooInterface: { Employee: { fooSpt: "fullName" } },
   },
-  interfaceToObjectTypeMappingsV2: {},
+  interfaceToObjectTypeMappingsV2: {
+    FooInterface: {
+      Employee: {
+        fooSpt: {
+          type: "localPropertyImplementation",
+          propertyApiName: "fullName",
+        },
+        fooIdp: {
+          type: "localPropertyImplementation",
+          propertyApiName: "office",
+        },
+      },
+    },
+  },
   totalCount: "1",
+  propertySecurities: [],
 };
 
 const equalsObjectSetResponse: LoadObjectSetV2MultipleObjectTypesResponse = {
@@ -147,8 +167,22 @@ const equalsObjectSetResponse: LoadObjectSetV2MultipleObjectTypesResponse = {
   interfaceToObjectTypeMappings: {
     FooInterface: { Employee: { fooSpt: "fullName" } },
   },
-  interfaceToObjectTypeMappingsV2: {},
+  interfaceToObjectTypeMappingsV2: {
+    FooInterface: {
+      Employee: {
+        fooSpt: {
+          type: "localPropertyImplementation",
+          propertyApiName: "fullName",
+        },
+        fooIdp: {
+          type: "localPropertyImplementation",
+          propertyApiName: "office",
+        },
+      },
+    },
+  },
   totalCount: "1",
+  propertySecurities: [],
 };
 
 const baseObjectFullScopeSetResponse:
@@ -157,8 +191,22 @@ const baseObjectFullScopeSetResponse:
     interfaceToObjectTypeMappings: {
       FooInterface: { Employee: { fooSpt: "fullName" } },
     },
-    interfaceToObjectTypeMappingsV2: {},
+    interfaceToObjectTypeMappingsV2: {
+      FooInterface: {
+        Employee: {
+          fooSpt: {
+            type: "localPropertyImplementation",
+            propertyApiName: "fullName",
+          },
+          fooIdp: {
+            type: "localPropertyImplementation",
+            propertyApiName: "office",
+          },
+        },
+      },
+    },
     totalCount: "1",
+    propertySecurities: [],
   };
 
 const equalsFullScopeObjectSetResponse:
@@ -167,8 +215,22 @@ const equalsFullScopeObjectSetResponse:
     interfaceToObjectTypeMappings: {
       FooInterface: { Employee: { fooSpt: "fullName" } },
     },
-    interfaceToObjectTypeMappingsV2: {},
+    interfaceToObjectTypeMappingsV2: {
+      FooInterface: {
+        Employee: {
+          fooSpt: {
+            type: "localPropertyImplementation",
+            propertyApiName: "fullName",
+          },
+          fooIdp: {
+            type: "localPropertyImplementation",
+            propertyApiName: "office",
+          },
+        },
+      },
+    },
     totalCount: "1",
+    propertySecurities: [],
   };
 
 export const loadInterfaceObjectSetHandlers: {

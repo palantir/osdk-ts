@@ -67,8 +67,13 @@ export interface NihalbCastingLinkedInterfaceTypeA extends $InterfaceDefinition 
   };
 }
 
-export const NihalbCastingLinkedInterfaceTypeA: NihalbCastingLinkedInterfaceTypeA = {
+export const NihalbCastingLinkedInterfaceTypeA = {
   type: 'interface',
   apiName: 'NihalbCastingLinkedInterfaceTypeA',
   osdkMetadata: $osdkMetadata,
-};
+  internalDoNotUseMetadata: {
+    rid: 'ri.ontology.main.interface.d3f8faae-48ea-44c6-8d43-687183d586c9',
+  },
+} satisfies NihalbCastingLinkedInterfaceTypeA & {
+  internalDoNotUseMetadata: { rid: string };
+} as NihalbCastingLinkedInterfaceTypeA;

@@ -1,4 +1,8 @@
+{{#if osdkPackage}}
 import { createClient, type Client } from "@osdk/client";
+{{else}}
+import { createPlatformClient, type PlatformClient } from "@osdk/client";
+{{/if}}
 import { createPublicOauthClient, type PublicOauthClient } from "@osdk/oauth";
 
 function getMetaTagContent(tagName: string): string {
@@ -9,7 +13,12 @@ function getMetaTagContent(tagName: string): string {
     throw new Error(`Meta tag ${tagName} not found or empty`);
   }
   if (value.match(/%.+%/)) {
-    throw new Error(`Meta tag ${tagName} contains placeholder value. Please add ${value.replace(/%/g, "")} to your .env files`);
+    throw new Error(
+      `Meta tag ${tagName} contains placeholder value. Please add ${value.replace(
+        /%/g,
+        ""
+      )} to your .env files`
+    );
   }
   return value;
 }
@@ -17,7 +26,10 @@ function getMetaTagContent(tagName: string): string {
 const foundryUrl = getMetaTagContent("osdk-foundryUrl");
 const clientId = getMetaTagContent("osdk-clientId");
 const redirectUrl = getMetaTagContent("osdk-redirectUrl");
+{{#if osdkPackage}}
 const ontologyRid = getMetaTagContent("osdk-ontologyRid");
+{{/if}}
+
 {{#if scopes}}
 const scopes = [
   {{#each scopes}}
@@ -31,17 +43,20 @@ export const auth: PublicOauthClient = createPublicOauthClient(
   foundryUrl,
   redirectUrl,
   {{#if scopes}}
-  { scopes },
+  { scopes }
   {{/if}}
 );
 
+{{#if osdkPackage}}
 /**
- * Initialize the client to interact with the Ontology SDK
+ * Initialize the client to interact with the Ontology and Platform SDKs
  */
-const client: Client = createClient(
-  foundryUrl,
-  ontologyRid,
-  auth,
-);
+export const client: Client = createClient(foundryUrl, ontologyRid, auth);
+{{else}}
+/**
+ * Initialize the client to interact with the Platform SDK
+ */
+export const client: PlatformClient = createPlatformClient(foundryUrl, auth);
+{{/if}}
 
 export default client;

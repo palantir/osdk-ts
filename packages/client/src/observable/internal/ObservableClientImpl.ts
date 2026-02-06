@@ -16,6 +16,7 @@
 
 import type {
   ActionDefinition,
+  ActionEditResponse,
   ActionValidationResponse,
   AggregateOpts,
   CompileTimeMetadata,
@@ -25,12 +26,14 @@ import type {
   ObjectTypeDefinition,
   Osdk,
   PrimaryKeyType,
+  QueryDefinition,
   SimplePropertyDef,
   WhereClause,
   WirePropertyTypes,
 } from "@osdk/api";
 import { Subscription } from "rxjs";
 import type { ActionSignatureFromDef } from "../../actions/applyAction.js";
+import type { FunctionPayload } from "../FunctionPayload.js";
 import type { SpecificLinkPayload } from "../LinkPayload.js";
 import type { ListPayload } from "../ListPayload.js";
 import type { ObjectPayload } from "../ObjectPayload.js";
@@ -39,10 +42,12 @@ import type {
   ObservableClient,
   ObserveAggregationArgs,
   ObserveAggregationOptions,
+  ObserveFunctionCallbackArgs,
+  ObserveFunctionOptions,
   ObserveListOptions,
-  ObserveObjectArgs,
+  ObserveObjectCallbackArgs,
   ObserveObjectOptions,
-  ObserveObjectsArgs,
+  ObserveObjectsCallbackArgs,
   ObserveObjectSetArgs,
   Unsubscribable,
 } from "../ObservableClient.js";
@@ -76,7 +81,7 @@ export class ObservableClientImpl implements ObservableClient {
     apiName: T["apiName"] | T,
     pk: PrimaryKeyType<T>,
     options: Omit<ObserveObjectOptions<T>, "apiName" | "pk">,
-    subFn: Observer<ObserveObjectArgs<T>>,
+    subFn: Observer<ObserveObjectCallbackArgs<T>>,
   ) => Unsubscribable = (apiName, pk, options, subFn) => {
     return this.__experimentalStore.objects.observe(
       {
@@ -94,7 +99,7 @@ export class ObservableClientImpl implements ObservableClient {
     RDPs extends Record<string, SimplePropertyDef> = {},
   >(
     options: ObserveListOptions<T, RDPs>,
-    subFn: Observer<ObserveObjectsArgs<T>>,
+    subFn: Observer<ObserveObjectsCallbackArgs<T, RDPs>>,
   ) => Unsubscribable = (options, subFn) => {
     return this.__experimentalStore.lists.observe(
       options,
@@ -124,6 +129,32 @@ export class ObservableClientImpl implements ObservableClient {
     );
   };
 
+  public observeFunction: <Q extends QueryDefinition<unknown>>(
+    queryDef: Q,
+    params: Record<string, unknown> | undefined,
+    options: ObserveFunctionOptions,
+    subFn: Observer<ObserveFunctionCallbackArgs<Q>>,
+  ) => Unsubscribable = (queryDef, params, options, subFn) => {
+    const dependsOn = options.dependsOn?.map(dep =>
+      typeof dep === "string" ? dep : dep.apiName
+    );
+    const dependsOnObjects = options.dependsOnObjects?.map(obj => ({
+      $apiName: obj.$objectType ?? obj.$apiName,
+      $primaryKey: obj.$primaryKey,
+    }));
+
+    return this.__experimentalStore.functions.observe(
+      {
+        ...options,
+        queryDef,
+        params,
+        dependsOn,
+        dependsOnObjects,
+      },
+      subFn as unknown as Observer<FunctionPayload>,
+    );
+  };
+
   public observeLinks: <
     T extends ObjectTypeDefinition | InterfaceDefinition,
     L extends keyof CompileTimeMetadata<T>["links"] & string,
@@ -149,7 +180,7 @@ export class ObservableClientImpl implements ObservableClient {
             ...options,
             srcType: {
               type: "object",
-              apiName: obj.$apiName,
+              apiName: obj.$objectType ?? obj.$apiName,
             },
             linkName,
             pk: obj.$primaryKey,
@@ -168,7 +199,7 @@ export class ObservableClientImpl implements ObservableClient {
     action: Q,
     args: Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0],
     opts?: ObservableClient.ApplyActionOptions,
-  ) => Promise<unknown>;
+  ) => Promise<ActionEditResponse>;
 
   public validateAction: <Q extends ActionDefinition<any>>(
     action: Q,
@@ -209,6 +240,23 @@ export class ObservableClientImpl implements ObservableClient {
     type: T | T["apiName"],
   ): Promise<void> {
     return this.__experimentalStore.invalidateObjectType(type, undefined);
+  }
+
+  public invalidateFunction(
+    apiName: string | QueryDefinition<unknown>,
+    params?: Record<string, unknown>,
+  ): Promise<void> {
+    return this.__experimentalStore.invalidateFunction(apiName, params);
+  }
+
+  public invalidateFunctionsByObject(
+    apiName: string,
+    primaryKey: string | number,
+  ): Promise<void> {
+    return this.__experimentalStore.invalidateFunctionsByObject(
+      apiName,
+      primaryKey,
+    );
   }
 
   public canonicalizeWhereClause<

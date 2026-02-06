@@ -17,6 +17,7 @@
 import type {
   LinkDefinition,
   LinkTypeBlockDataV2,
+  LinkTypeStatus,
   ManyToManyLinkTypeDatasource,
 } from "@osdk/client.unstable";
 import invariant from "tiny-invariant";
@@ -25,7 +26,7 @@ import {
   cleanAndValidateLinkTypeId,
   ontologyDefinition,
 } from "../../api/defineOntology.js";
-import type { LinkType } from "../../api/links/LinkType.js";
+import type { LinkType, UserLinkTypeStatus } from "../../api/links/LinkType.js";
 import type { ObjectType } from "../../api/object/ObjectType.js";
 import type { ObjectTypeDefinition } from "../../api/object/ObjectTypeDefinition.js";
 import type { OntologyRidGenerator } from "../../util/generateRid.js";
@@ -180,9 +181,9 @@ export function convertLink(
   return {
     linkType: {
       definition: definition,
-      id: linkTypeId,
       rid: ridGenerator.generateRidForLinkType(linkTypeId),
-      status: linkType.status ?? { type: "active", active: {} },
+      id: cleanAndValidateLinkTypeId(linkType.apiName),
+      status: convertLinkStatus(linkType.status, ridGenerator),
       redacted: linkType.redacted ?? false,
     },
     datasources: datasource !== undefined ? [datasource] : [],
@@ -286,4 +287,32 @@ export function getObject(
     `Object ${objectApiName} is not defined`,
   );
   return { apiName: objectApiName, object: fullObject };
+}
+
+export function convertLinkStatus(
+  status: UserLinkTypeStatus | undefined,
+  ridGenerator: OntologyRidGenerator,
+): LinkTypeStatus {
+  if (
+    typeof status === "object" && "type" in status
+    && status.type === "deprecated"
+  ) {
+    return {
+      type: "deprecated",
+      deprecated: {
+        message: status.message,
+        deadline: status.deadline,
+        replacedBy: status.replacedBy ? ridGenerator.generateRidForLinkType(status.replacedBy) : undefined,
+      },
+    };
+  }
+  switch (status) {
+    case "experimental":
+      return { type: "experimental", experimental: {} };
+    case "example":
+      return { type: "example", example: {} };
+    case "active":
+    default:
+      return { type: "active", active: {} };
+  }
 }

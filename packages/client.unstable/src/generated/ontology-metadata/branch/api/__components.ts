@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -316,11 +316,6 @@ export interface DatasourceModificationConstraintError_primaryKeyIsDerived {
   primaryKeyIsDerived: PrimaryKeyIsDerivedError;
 }
 
-export interface DatasourceModificationConstraintError_titlePropertyTypeIsDerived {
-  type: "titlePropertyTypeIsDerived";
-  titlePropertyTypeIsDerived: TitlePropertyTypeIsDerivedError;
-}
-
 export interface DatasourceModificationConstraintError_linkTypeInDerivedPropertyDefinitionNotFoundOrDeleted {
   type: "linkTypeInDerivedPropertyDefinitionNotFoundOrDeleted";
   linkTypeInDerivedPropertyDefinitionNotFoundOrDeleted:
@@ -436,7 +431,6 @@ export type DatasourceModificationConstraintError =
   | DatasourceModificationConstraintError_notAllPropertyTypesAreMappedToDatasourceWithinObjectType
   | DatasourceModificationConstraintError_manyToManyLinkTypeDatasourcePrimaryKeyMismatch
   | DatasourceModificationConstraintError_primaryKeyIsDerived
-  | DatasourceModificationConstraintError_titlePropertyTypeIsDerived
   | DatasourceModificationConstraintError_linkTypeInDerivedPropertyDefinitionNotFoundOrDeleted
   | DatasourceModificationConstraintError_foreignPropertyTypeInDerivedPropertyDefinitionNotFound
   | DatasourceModificationConstraintError_derivedPropertyTypeDependOnAnotherDerivedProperty
@@ -748,8 +742,10 @@ export interface GeotimeSeriesDatasourceDoesNotReferenceExistingPropertiesError 
  */
 export interface GeotimeSeriesDatasourceDoesNotReferenceGeotimeSeriesReferencePropertiesError {
   geotimeSeriesIntegrationRid: _api_GeotimeSeriesIntegrationRid;
+  nonGeotimeSeriesReferenceIds: Array<_api_PropertyTypeId>;
   nonGeotimeSeriesReferenceRids: Array<_api_PropertyTypeRid>;
   objectType: _api_ObjectTypeRid;
+  objectTypeId?: _api_ObjectTypeId | null | undefined;
 }
 export interface GeotimeSeriesReferencePropertyTypeConstraintError_geotimeSeriesReferencePropertyTypeHasNoDatasources {
   type: "geotimeSeriesReferencePropertyTypeHasNoDatasources";
@@ -889,10 +885,10 @@ export interface InterfaceImplementationError_implicitAndExplicitPropertyImpleme
     ImplicitAndExplicitPropertyImplementationError;
 }
 
-export interface InterfaceImplementationError_localAndSharedPropertyTypesConflictingApiNames {
-  type: "localAndSharedPropertyTypesConflictingApiNames";
-  localAndSharedPropertyTypesConflictingApiNames:
-    LocalAndSharedPropertyTypesConflictingApiNamesError;
+export interface InterfaceImplementationError_objectAndInterfacePropertyTypesConflictingApiNames {
+  type: "objectAndInterfacePropertyTypesConflictingApiNames";
+  objectAndInterfacePropertyTypesConflictingApiNames:
+    ObjectAndInterfacePropertyTypesConflictingApiNamesError;
 }
 
 export interface InterfaceImplementationError_interfaceLinkNotFound {
@@ -967,7 +963,7 @@ export type InterfaceImplementationError =
   | InterfaceImplementationError_invalidPropertyImplementation
   | InterfaceImplementationError_conflictingPropertyImplementation
   | InterfaceImplementationError_implicitAndExplicitPropertyImplementation
-  | InterfaceImplementationError_localAndSharedPropertyTypesConflictingApiNames
+  | InterfaceImplementationError_objectAndInterfacePropertyTypesConflictingApiNames
   | InterfaceImplementationError_interfaceLinkNotFound
   | InterfaceImplementationError_invalidConflictingDefinitionsImplementingInterfaceLinkType
   | InterfaceImplementationError_requiredInterfaceLinkTypeNotImplemented
@@ -1104,6 +1100,23 @@ export interface InvalidForeignKeyTypeError {
   primaryKeyObjectType: _api_ObjectTypeRid;
 }
 /**
+ * The interface property type is not a struct or the interface struct field rid cannot be found.
+ */
+export interface InvalidInterfacePropertyForStructPropertyMappingImplementationError {
+  interfacePropertyTypeRidOrIdInRequest:
+    _api_InterfacePropertyTypeRidOrIdInRequest;
+  interfaceTypeRidOrIdInRequest: _api_InterfaceTypeRidOrIdInRequest;
+  invalidInterfaceStructFieldRid?: _api_StructFieldRid | null | undefined;
+  objectRid: _api_ObjectTypeRid;
+  objectTypeId?: _api_ObjectTypeId | null | undefined;
+  propertyTypeId?: _api_PropertyTypeId | null | undefined;
+  propertyTypeRid: _api_PropertyTypeRid;
+  sharedPropertyTypeRidOrIdInRequest?:
+    | _api_SharedPropertyTypeRidOrIdInRequest
+    | null
+    | undefined;
+}
+/**
  * Expected local property implementing interface property to have the same value for indexed for search, but it
  * did not.
  */
@@ -1195,6 +1208,39 @@ export interface InvalidPropertyImplementationError_interfacePropertyNotImplemen
   interfacePropertyNotImplementedWithPrimaryKey:
     InterfacePropertyNotImplementedWithPrimaryKeyError;
 }
+
+export interface InvalidPropertyImplementationError_invalidStructFieldTypeImplementation {
+  type: "invalidStructFieldTypeImplementation";
+  invalidStructFieldTypeImplementation:
+    InvalidStructFieldTypeImplementationError;
+}
+
+export interface InvalidPropertyImplementationError_invalidInterfacePropertyForStructPropertyMappingImplementation {
+  type: "invalidInterfacePropertyForStructPropertyMappingImplementation";
+  invalidInterfacePropertyForStructPropertyMappingImplementation:
+    InvalidInterfacePropertyForStructPropertyMappingImplementationError;
+}
+
+export interface InvalidPropertyImplementationError_invalidStructPropertyMappingImplementation {
+  type: "invalidStructPropertyMappingImplementation";
+  invalidStructPropertyMappingImplementation:
+    InvalidStructPropertyMappingImplementationError;
+}
+
+export interface InvalidPropertyImplementationError_invalidStructFieldMapping {
+  type: "invalidStructFieldMapping";
+  invalidStructFieldMapping: InvalidStructFieldMappingError;
+}
+
+export interface InvalidPropertyImplementationError_unmappedInterfaceStructField {
+  type: "unmappedInterfaceStructField";
+  unmappedInterfaceStructField: UnmappedInterfaceStructFieldError;
+}
+
+export interface InvalidPropertyImplementationError_reducedPropertyMissingReducers {
+  type: "reducedPropertyMissingReducers";
+  reducedPropertyMissingReducers: ReducedPropertyMissingReducersError;
+}
 export type InvalidPropertyImplementationError =
   | InvalidPropertyImplementationError_invalidPropertyTypeV2
   | InvalidPropertyImplementationError_invalidTypeClassesV2
@@ -1205,7 +1251,13 @@ export type InvalidPropertyImplementationError =
   | InvalidPropertyImplementationError_interfacePropertyNotFound
   | InvalidPropertyImplementationError_interfacePropertyTypeNotFound
   | InvalidPropertyImplementationError_interfacePropertyImplementedWithPrimaryKey
-  | InvalidPropertyImplementationError_interfacePropertyNotImplementedWithPrimaryKey;
+  | InvalidPropertyImplementationError_interfacePropertyNotImplementedWithPrimaryKey
+  | InvalidPropertyImplementationError_invalidStructFieldTypeImplementation
+  | InvalidPropertyImplementationError_invalidInterfacePropertyForStructPropertyMappingImplementation
+  | InvalidPropertyImplementationError_invalidStructPropertyMappingImplementation
+  | InvalidPropertyImplementationError_invalidStructFieldMapping
+  | InvalidPropertyImplementationError_unmappedInterfaceStructField
+  | InvalidPropertyImplementationError_reducedPropertyMissingReducers;
 
 /**
  * Expected local property implementing interface property to have the same type, but it did not.
@@ -1216,6 +1268,58 @@ export interface InvalidPropertyTypeError {
     _api_InterfacePropertyTypeRidOrIdInRequest;
   interfaceTypeRidOrIdInRequest: _api_InterfaceTypeRidOrIdInRequest;
   objectPropertyType: _api_Type;
+  objectRid: _api_ObjectTypeRid;
+  objectTypeId?: _api_ObjectTypeId | null | undefined;
+  propertyTypeId?: _api_PropertyTypeId | null | undefined;
+  propertyTypeRid: _api_PropertyTypeRid;
+  sharedPropertyTypeRidOrIdInRequest?:
+    | _api_SharedPropertyTypeRidOrIdInRequest
+    | null
+    | undefined;
+}
+/**
+ * One or more struct field mappings from interface property to object property have mismatched base types.
+ */
+export interface InvalidStructFieldMappingError {
+  interfacePropertyTypeRidOrIdInRequest:
+    _api_InterfacePropertyTypeRidOrIdInRequest;
+  interfaceStructFieldRid: _api_StructFieldRid;
+  interfaceTypeRidOrIdInRequest: _api_InterfaceTypeRidOrIdInRequest;
+  objectRid: _api_ObjectTypeRid;
+  objectStructFieldRid: _api_StructFieldRid;
+  objectTypeId?: _api_ObjectTypeId | null | undefined;
+  propertyTypeId?: _api_PropertyTypeId | null | undefined;
+  propertyTypeRid: _api_PropertyTypeRid;
+  sharedPropertyTypeRidOrIdInRequest?:
+    | _api_SharedPropertyTypeRidOrIdInRequest
+    | null
+    | undefined;
+}
+/**
+ * The implementing property type is not a struct or the struct field does not exist in the struct type.
+ */
+export interface InvalidStructFieldTypeImplementationError {
+  interfacePropertyTypeRidOrIdInRequest:
+    _api_InterfacePropertyTypeRidOrIdInRequest;
+  interfaceTypeRidOrIdInRequest: _api_InterfaceTypeRidOrIdInRequest;
+  objectRid: _api_ObjectTypeRid;
+  objectTypeId?: _api_ObjectTypeId | null | undefined;
+  propertyTypeId?: _api_PropertyTypeId | null | undefined;
+  propertyTypeRid: _api_PropertyTypeRid;
+  sharedPropertyTypeRidOrIdInRequest?:
+    | _api_SharedPropertyTypeRidOrIdInRequest
+    | null
+    | undefined;
+  structFieldRid: _api_StructFieldRid;
+}
+/**
+ * The implementing property type is not a struct or the object struct field rid cannot be found.
+ */
+export interface InvalidStructPropertyMappingImplementationError {
+  interfacePropertyTypeRidOrIdInRequest:
+    _api_InterfacePropertyTypeRidOrIdInRequest;
+  interfaceTypeRidOrIdInRequest: _api_InterfaceTypeRidOrIdInRequest;
+  invalidObjectStructFieldRid?: _api_StructFieldRid | null | undefined;
   objectRid: _api_ObjectTypeRid;
   objectTypeId?: _api_ObjectTypeId | null | undefined;
   propertyTypeId?: _api_PropertyTypeId | null | undefined;
@@ -1330,21 +1434,10 @@ export interface LoadOntologyBranchMarkingsResponse {
   markingIds: Array<_api_MarkingId>;
 }
 export interface LoadOntologyBranchRequest {
+  includeEditsHistoryObjectTypes?: boolean | null | undefined;
 }
 export interface LoadOntologyBranchResponse {
   ontologyBranch: OntologyBranch;
-}
-/**
- * An object type implements an interface by explicitly mapping properties. One of the SPTs on the interface has
- * the same apiName as a local property on the object type without the two being explicitly mapped. This is
- * disallowed.
- */
-export interface LocalAndSharedPropertyTypesConflictingApiNamesError {
-  interfaceTypeRidOrIdInRequest: _api_InterfaceTypeRidOrIdInRequest;
-  objectRid: _api_ObjectTypeRid;
-  objectTypeId?: _api_ObjectTypeId | null | undefined;
-  propertyTypeId?: _api_PropertyTypeId | null | undefined;
-  propertyTypeRid: _api_PropertyTypeRid;
 }
 /**
  * An error representing when a many-to-many link type datasource has a column referencing a primary key that
@@ -1557,7 +1650,7 @@ export interface MissingPropertyDataTypeSchemaMigrationError {
   targetType: _api_Type;
 }
 /**
- * Property security groups are not yet supported with MDOs.
+ * Property security groups must be named.
  */
 export interface MissingPropertySecurityGroupTypeError {
   objectTypeRid: _api_ObjectTypeRid;
@@ -1594,9 +1687,15 @@ export interface NonDefaultOntologyBranchDetails {
 export interface NonIndexedBranchConfig {
 }
 /**
- * Property security groups are not yet supported with MDOs.
+ * Property security group names must be unique.
  */
 export interface NonUniquePropertySecurityGroupNamesError {
+  objectTypeRid: _api_ObjectTypeRid;
+}
+/**
+ * Property security group security policies must be unique within the object type.
+ */
+export interface NonUniquePropertySecurityGroupSecurityPoliciesError {
   objectTypeRid: _api_ObjectTypeRid;
 }
 /**
@@ -1635,6 +1734,18 @@ export type NumberOfDatasourcesConstraintError =
   | NumberOfDatasourcesConstraintError_linkTypesHaveNoDatasources
   | NumberOfDatasourcesConstraintError_linkTypesHaveMultipleDatasources;
 
+/**
+ * Object type property API name conflicts with interface property API name. Properties may only share an API
+ * name if the object property directly implements the interface property (not through reducers, struct fields,
+ * or partial struct mappings).
+ */
+export interface ObjectAndInterfacePropertyTypesConflictingApiNamesError {
+  interfaceTypeRidOrIdInRequest: _api_InterfaceTypeRidOrIdInRequest;
+  objectRid: _api_ObjectTypeRid;
+  objectTypeId?: _api_ObjectTypeId | null | undefined;
+  propertyTypeId?: _api_PropertyTypeId | null | undefined;
+  propertyTypeRid: _api_PropertyTypeRid;
+}
 /**
  * Object type datasources cannot have their assumed markings updated. Datasource needs to recreated with
  * new rid, when the set of assumed marking changes.
@@ -1964,6 +2075,12 @@ export interface PropertySecurityGroupsConstraintError_nonUniquePropertySecurity
   nonUniquePropertySecurityGroupNames: NonUniquePropertySecurityGroupNamesError;
 }
 
+export interface PropertySecurityGroupsConstraintError_nonUniquePropertySecurityGroupSecurityPolicies {
+  type: "nonUniquePropertySecurityGroupSecurityPolicies";
+  nonUniquePropertySecurityGroupSecurityPolicies:
+    NonUniquePropertySecurityGroupSecurityPoliciesError;
+}
+
 export interface PropertySecurityGroupsConstraintError_unexpectedPropertyTypeReferencedInSecurityGroupGranularPolicyError {
   type: "unexpectedPropertyTypeReferencedInSecurityGroupGranularPolicyError";
   unexpectedPropertyTypeReferencedInSecurityGroupGranularPolicyError:
@@ -1978,6 +2095,7 @@ export type PropertySecurityGroupsConstraintError =
   | PropertySecurityGroupsConstraintError_primaryKeyReferencesInMultiplePropertySecurityGroups
   | PropertySecurityGroupsConstraintError_missingPropertySecurityGroupType
   | PropertySecurityGroupsConstraintError_nonUniquePropertySecurityGroupNames
+  | PropertySecurityGroupsConstraintError_nonUniquePropertySecurityGroupSecurityPolicies
   | PropertySecurityGroupsConstraintError_unexpectedPropertyTypeReferencedInSecurityGroupGranularPolicyError;
 
 /**
@@ -2028,6 +2146,22 @@ export type ProposalTaskDetails =
 export interface ProposalV2Attribution {
   author: _api_UserId;
   createdAt: string;
+}
+/**
+ * The interface property is implemented through a reducer but the implementing property does not have any reducers defined on it.
+ */
+export interface ReducedPropertyMissingReducersError {
+  interfacePropertyTypeRidOrIdInRequest:
+    _api_InterfacePropertyTypeRidOrIdInRequest;
+  interfaceTypeRidOrIdInRequest: _api_InterfaceTypeRidOrIdInRequest;
+  objectRid: _api_ObjectTypeRid;
+  objectTypeId?: _api_ObjectTypeId | null | undefined;
+  propertyTypeId?: _api_PropertyTypeId | null | undefined;
+  propertyTypeRid: _api_PropertyTypeRid;
+  sharedPropertyTypeRidOrIdInRequest?:
+    | _api_SharedPropertyTypeRidOrIdInRequest
+    | null
+    | undefined;
 }
 /**
  * A required interface link type is missing an implementation.
@@ -2189,13 +2323,6 @@ export interface TimeSeriesDatasourceDoesNotReferenceTimeDependentPropertiesErro
   timeSeriesSyncRid: _api_TimeSeriesSyncRid;
 }
 /**
- * The title property type of an object type cannot be backed by a derived properties datasource.
- */
-export interface TitlePropertyTypeIsDerivedError {
-  objectType: _api_ObjectTypeRid;
-  titlePropertyType: _api_PropertyTypeId;
-}
-/**
  * A property referenced in granular policy security is not of expected type.
  */
 export interface UnexpectedPropertyTypeReferencedInSecurityGroupGranularPolicyError {
@@ -2204,6 +2331,23 @@ export interface UnexpectedPropertyTypeReferencedInSecurityGroupGranularPolicyEr
   expectedPropertyType: string;
   objectTypeRid: _api_ObjectTypeRid;
   propertyTypeId: _api_PropertyTypeId;
+}
+/**
+ * One or more interface struct fields are not mapped to any object property struct field.
+ */
+export interface UnmappedInterfaceStructFieldError {
+  interfacePropertyTypeRidOrIdInRequest:
+    _api_InterfacePropertyTypeRidOrIdInRequest;
+  interfaceTypeRidOrIdInRequest: _api_InterfaceTypeRidOrIdInRequest;
+  objectRid: _api_ObjectTypeRid;
+  objectTypeId?: _api_ObjectTypeId | null | undefined;
+  propertyTypeId?: _api_PropertyTypeId | null | undefined;
+  propertyTypeRid: _api_PropertyTypeRid;
+  sharedPropertyTypeRidOrIdInRequest?:
+    | _api_SharedPropertyTypeRidOrIdInRequest
+    | null
+    | undefined;
+  unmappedInterfaceStructFieldRids: Array<_api_StructFieldRid>;
 }
 /**
  * A property specified in a property security group does not have a mapping in the datasource definition.

@@ -78,7 +78,8 @@ export async function extractObjectOrInterfaceType(
       );
     case "asType":
       return {
-        type: clientCtx.asTypeInterfaceOrObjectMapping[objectSet.entityType],
+        type:
+          clientCtx.narrowTypeInterfaceOrObjectMapping[objectSet.entityType],
         apiName: objectSet.entityType,
       };
     case "intersect": {

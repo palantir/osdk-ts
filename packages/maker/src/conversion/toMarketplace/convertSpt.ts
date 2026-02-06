@@ -33,8 +33,10 @@ export function convertSpt(
     visibility,
     gothamMapping,
     typeClasses,
+    aliases,
     valueType,
     nullability,
+    baseFormatter,
   }: SharedPropertyType,
   ridGenerator: OntologyRidGenerator,
 ): SharedPropertyTypeWire {
@@ -55,11 +57,12 @@ export function convertSpt(
         type: "array" as const,
         array: {
           subtype: propertyTypeTypeToOntologyIrType(type, ridGenerator),
+          // reducers: [],
         },
       }
       : propertyTypeTypeToOntologyIrType(type, ridGenerator),
-    aliases: [],
-    baseFormatter: undefined,
+    aliases: aliases ?? [],
+    baseFormatter,
     dataConstraints: dataConstraint,
     gothamMapping: gothamMapping,
     indexedForSearch: true,

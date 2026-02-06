@@ -20,9 +20,12 @@ import type {
   ObjectMetadata,
 } from "@osdk/api";
 import type {
+  InterfacePropertyLocalPropertyImplementation,
   InterfaceToObjectTypeMappings,
+  InterfaceToObjectTypeMappingsV2,
   InterfaceTypeApiName,
   OntologyObjectV2,
+  PropertySecurities,
 } from "@osdk/foundry.ontologies";
 import invariant from "tiny-invariant";
 import type { DerivedPropertyRuntimeMetadata } from "../derivedProperties/derivedPropertyRuntimeMetadata.js";
@@ -57,6 +60,7 @@ export async function convertWireToOsdkObjects(
   interfaceApiName: string | undefined,
   forceRemoveRid: boolean = false,
   derivedPropertyTypesByName: DerivedPropertyRuntimeMetadata,
+  propertySecurities: PropertySecurities[] | undefined,
   selectedProps?: ReadonlyArray<string>,
   strictNonNull: NullabilityAdherence = false,
 ): Promise<Array<ObjectHolder | InterfaceHolder>> {
@@ -114,6 +118,7 @@ export async function convertWireToOsdkObjects(
       objectDef,
       rawObj,
       derivedPropertyTypesByName,
+      propertySecurities,
     );
     if (interfaceApiName) osdkObject = osdkObject.$as(interfaceApiName);
 
@@ -128,12 +133,17 @@ export async function convertWireToOsdkObjects2(
   objects: OntologyObjectV2[],
   interfaceApiName: string,
   derivedPropertyTypeByName: DerivedPropertyRuntimeMetadata,
+  propertySecurities: PropertySecurities[] | undefined,
   forceRemoveRid?: boolean,
   selectedProps?: ReadonlyArray<string>,
   strictNonNull?: NullabilityAdherence,
   interfaceToObjectTypeMappings?: Record<
     InterfaceTypeApiName,
     InterfaceToObjectTypeMappings
+  >,
+  interfaceToObjectTypeMappingsV2?: Record<
+    InterfaceTypeApiName,
+    InterfaceToObjectTypeMappingsV2
   >,
 ): Promise<Array<InterfaceHolder>>;
 export async function convertWireToOsdkObjects2(
@@ -141,6 +151,7 @@ export async function convertWireToOsdkObjects2(
   objects: OntologyObjectV2[],
   interfaceApiName: undefined,
   derivedPropertyTypeByName: DerivedPropertyRuntimeMetadata,
+  propertySecurities: PropertySecurities[] | undefined,
   forceRemoveRid?: boolean,
   selectedProps?: ReadonlyArray<string>,
   strictNonNull?: NullabilityAdherence,
@@ -148,18 +159,27 @@ export async function convertWireToOsdkObjects2(
     InterfaceTypeApiName,
     InterfaceToObjectTypeMappings
   >,
+  interfaceToObjectTypeMappingsV2?: Record<
+    InterfaceTypeApiName,
+    InterfaceToObjectTypeMappingsV2
+  >,
 ): Promise<Array<ObjectHolder>>;
 export async function convertWireToOsdkObjects2(
   client: MinimalClient,
   objects: OntologyObjectV2[],
   interfaceApiName: string | undefined,
   derivedPropertyTypeByName: DerivedPropertyRuntimeMetadata,
+  propertySecurities: PropertySecurities[] | undefined,
   forceRemoveRid?: boolean,
   selectedProps?: ReadonlyArray<string>,
   strictNonNull?: NullabilityAdherence,
   interfaceToObjectTypeMappings?: Record<
     InterfaceTypeApiName,
     InterfaceToObjectTypeMappings
+  >,
+  interfaceToObjectTypeMappingsV2?: Record<
+    InterfaceTypeApiName,
+    InterfaceToObjectTypeMappingsV2
   >,
 ): Promise<Array<ObjectHolder | InterfaceHolder>>;
 /**
@@ -170,6 +190,7 @@ export async function convertWireToOsdkObjects2(
   objects: OntologyObjectV2[],
   interfaceApiName: string | undefined,
   derivedPropertyTypeByName: DerivedPropertyRuntimeMetadata,
+  propertySecurities: PropertySecurities[] | undefined,
   forceRemoveRid: boolean = false,
   selectedProps?: ReadonlyArray<string>,
   strictNonNull: NullabilityAdherence = false,
@@ -177,11 +198,22 @@ export async function convertWireToOsdkObjects2(
     InterfaceTypeApiName,
     InterfaceToObjectTypeMappings
   > = {},
+  interfaceToObjectTypeMappingsV2: Record<
+    InterfaceTypeApiName,
+    InterfaceToObjectTypeMappingsV2
+  > = {},
 ): Promise<Array<ObjectHolder | InterfaceHolder>> {
   fixObjectPropertiesInPlace(objects, forceRemoveRid);
 
-  const isInterfaceScoped =
-    Object.keys(interfaceToObjectTypeMappings).length > 0;
+  // prefer V2 mappings if non-empty, otherwise fall back to V1
+  const effectiveMappings =
+    Object.keys(interfaceToObjectTypeMappingsV2).length > 0
+      ? convertInterfaceToObjectTypeMappingsV2ToV1(
+        interfaceToObjectTypeMappingsV2,
+      )
+      : interfaceToObjectTypeMappings;
+
+  const isInterfaceScoped = Object.keys(effectiveMappings).length > 0;
   const ret = [];
   for (const rawObj of objects) {
     const objectDef = await client.ontologyProvider.getObjectDefinition(
@@ -189,11 +221,8 @@ export async function convertWireToOsdkObjects2(
     );
     invariant(objectDef, `Missing definition for '${rawObj.$apiName}'`);
 
-    const interfaceToObjMapping = (interfaceApiName
-        && isInterfaceScoped)
-      ? interfaceToObjectTypeMappings[
-        interfaceApiName as InterfaceTypeApiName
-      ][
+    const interfaceToObjMapping = (interfaceApiName && isInterfaceScoped)
+      ? effectiveMappings[interfaceApiName as InterfaceTypeApiName][
         rawObj.$apiName
       ]
       : undefined;
@@ -238,6 +267,7 @@ export async function convertWireToOsdkObjects2(
       objectDef,
       rawObj,
       derivedPropertyTypeByName,
+      propertySecurities,
     );
     if (
       interfaceApiName && isInterfaceScoped
@@ -383,4 +413,39 @@ function fixObjectPropertiesInPlace(
     delete obj.__primaryKey;
     delete obj.__title;
   }
+}
+
+/**
+ * Converts interfaceToObjectTypeMappingsV2 format to the V1 format.
+ * V2 format: { interfaceProp: { type: "localPropertyImplementation", propertyApiName: "objectProp" } }
+ * V1 format: { interfaceProp: "objectProp" }
+ */
+function convertInterfaceToObjectTypeMappingsV2ToV1(
+  mappingsV2: Record<InterfaceTypeApiName, InterfaceToObjectTypeMappingsV2>,
+): Record<InterfaceTypeApiName, InterfaceToObjectTypeMappings> {
+  return Object.fromEntries(
+    Object.entries(mappingsV2).map((
+      [interfaceApiName, objectTypeMappingsV2],
+    ) => [
+      interfaceApiName,
+      Object.fromEntries(
+        Object.entries(objectTypeMappingsV2).map((
+          [objectTypeName, propertyMappings],
+        ) => [
+          objectTypeName,
+          Object.fromEntries(
+            Object.entries(propertyMappings)
+              .filter(([, impl]) => impl.type === "localPropertyImplementation")
+              .map((
+                [interfaceProp, impl],
+              ) => [
+                interfaceProp,
+                (impl as InterfacePropertyLocalPropertyImplementation)
+                  .propertyApiName,
+              ]),
+          ),
+        ]),
+      ),
+    ]),
+  );
 }

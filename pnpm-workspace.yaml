@@ -5,3 +5,18 @@ packages:
   - "examples-extra/basic/*"
   - "tests/*"
   - "benchmarks/*/*"
+  - "docs"
+
+catalogs:
+  foundry-platform-typescript:
+    "@osdk/docs-spec-core": 0.6.0
+    "@osdk/docs-spec-sdk": 0.16.0
+    "@osdk/foundry": 2.45.0
+    "@osdk/foundry.core": 2.45.0
+    "@osdk/foundry.datasets": ~2.5.0
+    "@osdk/foundry.geo": 2.45.0
+    "@osdk/foundry.admin": 2.45.0
+    "@osdk/foundry.mediasets": 2.45.0
+    "@osdk/foundry.ontologies": 2.45.0
+    "@osdk/foundry.thirdpartyapplications": 2.45.0
+    "@osdk/internal.foundry.ontologies": 2.45.0

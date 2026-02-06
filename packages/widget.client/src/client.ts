@@ -30,6 +30,11 @@ export interface FoundryWidgetClient<C extends WidgetConfig<C["parameters"]>> {
   ready: () => void;
 
   /**
+   * Notifies the host that the widget has resized
+   */
+  resize: (payload: WidgetMessage.Payload.Resize) => void;
+
+  /**
    * Emits an event with the given ID and payload
    */
   emitEvent: <
@@ -123,6 +128,12 @@ export function createFoundryWidgetClient<
         payload: {
           apiVersion: HostMessage.Version,
         },
+      });
+    },
+    resize: (payload) => {
+      sendMessageToHost({
+        type: "widget.resize",
+        payload,
       });
     },
     emitEvent: (eventId, payload) => {

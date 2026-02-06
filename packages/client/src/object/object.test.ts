@@ -19,6 +19,7 @@ import type {
   InterfaceMetadata,
   Osdk,
   PropertyKeys,
+  PropertySecurity,
 } from "@osdk/api";
 import { $Objects, Employee, FooInterface } from "@osdk/client.test.ontology";
 import {
@@ -570,6 +571,148 @@ describe.each([
 
       const object = result.data[0];
       expect(object.$objectSpecifier).toBe("Employee:50030");
+    });
+  });
+  describe("$propertySecurities", () => {
+    it("processes objects with secured property values correctly", async () => {
+      const object = await client(Employee).fetchOne(20003, {
+        $loadPropertySecurityMetadata: true,
+      });
+
+      expectTypeOf(object.$propertySecurities).toMatchObjectType<
+        {
+          class: PropertySecurity[];
+          employeeId: PropertySecurity[];
+          fullName: PropertySecurity[];
+          office: PropertySecurity[];
+          startDate: PropertySecurity[];
+          employeeLocation: PropertySecurity[];
+          employeeSensor: PropertySecurity[];
+          employeeStatus: PropertySecurity[];
+          skillSet: PropertySecurity[];
+          skillSetEmbedding: PropertySecurity[];
+        }
+      >();
+
+      expectTypeOf(object.$propertySecurities.class)
+        .toMatchTypeOf<PropertySecurity[]>();
+
+      expectTypeOf(object.$propertySecurities.favoriteRestaurants)
+        .toMatchTypeOf<PropertySecurity[][]>();
+
+      expect(object).toMatchInlineSnapshot(`
+        {
+          "$apiName": "Employee",
+          "$objectSpecifier": "Employee:20003",
+          "$objectType": "Employee",
+          "$primaryKey": 20003,
+          "$propertySecurities": {
+            "class": [
+              {
+                "type": "errorComputingSecurity",
+              },
+            ],
+            "employeeId": [
+              {
+                "conjunctive": [
+                  "CONFIDENTIAL",
+                  "INTERNAL",
+                ],
+                "containerConjunctive": undefined,
+                "containerDisjunctive": undefined,
+                "disjunctive": [
+                  [
+                    "SECRET",
+                  ],
+                  [
+                    "TOP_SECRET",
+                  ],
+                ],
+                "type": "propertyMarkings",
+              },
+            ],
+            "favoriteRestaurants": [
+              [
+                {
+                  "type": "unsupportedPolicy",
+                },
+              ],
+              [
+                {
+                  "conjunctive": [
+                    "CONFIDENTIAL",
+                    "INTERNAL",
+                  ],
+                  "containerConjunctive": undefined,
+                  "containerDisjunctive": undefined,
+                  "disjunctive": [
+                    [
+                      "SECRET",
+                    ],
+                    [
+                      "TOP_SECRET",
+                    ],
+                  ],
+                  "type": "propertyMarkings",
+                },
+              ],
+            ],
+            "fullName": [
+              {
+                "conjunctive": [
+                  "CONFIDENTIAL",
+                  "INTERNAL",
+                ],
+                "containerConjunctive": undefined,
+                "containerDisjunctive": undefined,
+                "disjunctive": [
+                  [
+                    "SECRET",
+                  ],
+                  [
+                    "TOP_SECRET",
+                  ],
+                ],
+                "type": "propertyMarkings",
+              },
+            ],
+            "office": [
+              {
+                "type": "unsupportedPolicy",
+              },
+            ],
+            "startDate": [
+              {
+                "conjunctive": [
+                  "CONFIDENTIAL",
+                  "INTERNAL",
+                ],
+                "containerConjunctive": undefined,
+                "containerDisjunctive": undefined,
+                "disjunctive": [
+                  [
+                    "SECRET",
+                  ],
+                  [
+                    "TOP_SECRET",
+                  ],
+                ],
+                "type": "propertyMarkings",
+              },
+            ],
+          },
+          "$title": "Bruce Banner",
+          "class": "Red",
+          "employeeId": 20003,
+          "favoriteRestaurants": [
+            "Pasta Place",
+            "Sushi Spot",
+          ],
+          "fullName": "Bruce Banner",
+          "office": "NYC",
+          "startDate": "2003-01-01",
+        }
+      `);
     });
   });
 });

@@ -54,4 +54,23 @@ export type ActionParameterAllowedValues =
   | { type: "geoshape" }
   | { type: "geotimeSeriesReference" }
   | { type: "interfaceObjectQuery" }
-  | { type: "redacted" };
+  | { type: "redacted" }
+  | { type: "multipassGroup" }
+  | {
+    type: "user";
+    fromGroups?: Array<UserGroup>;
+  };
+
+export type UserGroup =
+  | ParameterUserGroup
+  | StaticUserGroup;
+
+export type ParameterUserGroup = {
+  type: "parameter";
+  parameter: string;
+};
+
+export type StaticUserGroup = {
+  type: "static";
+  name: string;
+};

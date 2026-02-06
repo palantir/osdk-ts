@@ -1,7 +1,7 @@
 {
   "name": "@osdk/monorepo.cspell",
   "private": true,
-  "version": "0.5.0-beta.1",
+  "version": "0.7.0-beta.1",
   "description": "CSpell configuration for the monorepo",
   "license": "Apache-2.0",
   "repository": {

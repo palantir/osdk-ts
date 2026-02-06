@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-import { convertMappingValue } from "../conversion/toMarketplace/convertMappingValue.js";
+import {
+  convertInterfacePropertyMappingValue,
+  convertMappingValue,
+} from "../conversion/toMarketplace/convertMappingValue.js";
 import { type ActionType } from "./action/ActionType.js";
 import type { InterfaceActionTypeUserDefinition } from "./defineAction.js";
 import {
-  addNamespaceToActionDefinition,
   convertValidationRule,
   createDefaultParameterOrdering,
   createParameters,
@@ -32,31 +34,41 @@ import {
   validateParameterOrdering,
 } from "./defineAction.js";
 import { getFlattenedInterfaceProperties } from "./interface/getFlattenedInterfaceProperties.js";
+import {
+  getInterfacePropertyTypeType,
+  isInterfaceSharedPropertyType,
+} from "./interface/InterfacePropertyType.js";
 
 export function defineModifyInterfaceObjectAction(
   def: InterfaceActionTypeUserDefinition,
 ): ActionType {
-  addNamespaceToActionDefinition(def);
   const allProperties = getFlattenedInterfaceProperties(def.interfaceType);
   validateActionParameters(
     def,
     Object.keys(allProperties),
     def.interfaceType.apiName,
   );
-  const sptNames = Object.keys(allProperties).filter(apiName =>
-    isPropertyParameter(
-      def,
-      apiName,
-      allProperties[apiName].sharedPropertyType.type,
-    )
+  const actionInterfaceProperties = Object.entries(allProperties).filter(
+    ([apiName, type]) => {
+      return isPropertyParameter(
+        def,
+        apiName,
+        getInterfacePropertyTypeType(type),
+      );
+    },
   );
+  const sptNames = actionInterfaceProperties
+    .filter(([_apiName, type]) => isInterfaceSharedPropertyType(type))
+    .map(([apiName]) => apiName);
   const parameterNames = new Set(
-    sptNames.map(apiName => getInterfaceParameterName(def, apiName)),
+    actionInterfaceProperties.map(([apiName, _type]) =>
+      getInterfaceParameterName(def, apiName)
+    ),
   );
   const propertyMap = Object.fromEntries(
     Object.entries(allProperties).map((
       [id, prop],
-    ) => [getInterfaceParameterName(def, id), prop.sharedPropertyType]),
+    ) => [getInterfaceParameterName(def, id), prop]),
   );
 
   Object.keys(def.parameterConfiguration ?? {}).forEach(param =>
@@ -93,13 +105,24 @@ export function defineModifyInterfaceObjectAction(
     propertyMap,
     parameterNames,
     Object.fromEntries(
-      Object.entries(allProperties).map(([id, prop]) => [id, prop.required]),
+      Object.entries(allProperties).map((
+        [id, prop],
+      ) => [id, prop.required ?? true]),
     ),
   );
+  let sptMappings = {};
   const mappings = Object.fromEntries(
     Object.entries(def.nonParameterMappings ?? {}).map((
       [id, value],
-    ) => [id, convertMappingValue(value)]),
+    ) => {
+      if (sptNames.includes(id)) {
+        sptMappings = {
+          ...sptMappings,
+          [id]: convertMappingValue(value),
+        };
+      }
+      return [id, convertInterfacePropertyMappingValue(value)];
+    }),
   );
 
   return defineAction({
@@ -120,6 +143,7 @@ export function defineModifyInterfaceObjectAction(
       {
         type: "modifyInterfaceRule",
         modifyInterfaceRule: {
+          interfaceApiName: def.interfaceType.apiName,
           interfaceObjectToModifyParameter: "interfaceObjectToModifyParameter",
           sharedPropertyValues: {
             ...Object.fromEntries(
@@ -131,6 +155,24 @@ export function defineModifyInterfaceObjectAction(
                     : id,
                 }],
               ),
+            ),
+            ...sptMappings,
+          },
+          interfacePropertyValues: {
+            ...Object.fromEntries(
+              actionInterfaceProperties
+                .map(([id, _type]) => [
+                  id,
+                  {
+                    type: "logicRuleValue",
+                    logicRuleValue: {
+                      type: "parameterId",
+                      parameterId: def.useNonNamespacedParameters
+                        ? getNonNamespacedParameterName(def, id)
+                        : id,
+                    },
+                  },
+                ]),
             ),
             ...mappings,
           },
@@ -168,5 +210,6 @@ export function defineModifyInterfaceObjectAction(
       }),
     ...(def.submissionMetadata
       && { submissionMetadata: def.submissionMetadata }),
+    ...(def.icon && { icon: def.icon }),
   });
 }

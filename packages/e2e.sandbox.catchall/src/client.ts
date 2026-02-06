@@ -41,9 +41,25 @@ export const dsClient: Client = createClient(
   loggingFetch,
 );
 
+export const dsmtClient: Client = createClient(
+  process.env.SECONDARY_FOUNDRY_STACK,
+  "ri.ontology.main.ontology.7ab4d20d-b742-4f58-b795-55695e862bc7",
+  async () => process.env.SECONDARY_FOUNDRY_USER_TOKEN!,
+  { logger },
+  loggingFetch,
+);
+
 export const z2vClient: Client = createClient(
   process.env.FOUNDRY_STACK,
   "ri.ontology.main.ontology.8fca0141-468f-4910-9949-8d9b6d9939b2",
+  async () => process.env.FOUNDRY_USER_TOKEN!,
+  { logger },
+  loggingFetch,
+);
+
+export const ontologyClient: Client = createClient(
+  process.env.FOUNDRY_STACK,
+  "ri.ontology.main.ontology.273dd4a1-84fa-4401-88df-d08bb2f3f397",
   async () => process.env.FOUNDRY_USER_TOKEN!,
   { logger },
   loggingFetch,

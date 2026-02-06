@@ -15,6 +15,7 @@
  */
 
 import type {
+  OntologyIrBaseFormatter,
   OntologyIrValueTypeReferenceWithMetadata,
   SharedPropertyTypeGothamMapping,
   Visibility,
@@ -26,6 +27,7 @@ import {
   ontologyDefinition,
   updateOntology,
 } from "./defineOntology.js";
+import type { Nullability } from "./properties/Nullability.js";
 import { type PropertyTypeType } from "./properties/PropertyTypeType.js";
 import { type SharedPropertyType } from "./properties/SharedPropertyType.js";
 import {
@@ -43,8 +45,11 @@ export interface SharedPropertyTypeDefinition {
   displayName?: string;
   valueType?: OntologyIrValueTypeReferenceWithMetadata;
   visibility?: Visibility;
+  nullability?: Nullability;
   typeClasses?: SharedPropertyType["typeClasses"];
+  aliases?: Array<string>;
   gothamMapping?: SharedPropertyTypeGothamMapping;
+  baseFormatter?: OntologyIrBaseFormatter;
 }
 
 export function defineSharedPropertyType(

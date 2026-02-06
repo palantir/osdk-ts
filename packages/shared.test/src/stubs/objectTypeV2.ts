@@ -75,6 +75,7 @@ export const employeeObjectType: ObjectTypeV2 = {
       description: "TimeSeries sensor of the status of the employee",
       dataType: {
         type: "timeseries",
+        itemType: { type: "string" },
       },
       rid: "rid",
     },
@@ -102,6 +103,16 @@ export const employeeObjectType: ObjectTypeV2 = {
           type: "lms",
           value: "OPENAI_TEXT_EMBEDDING_ADA_002",
         },
+      },
+      rid: "rid",
+    },
+    favoriteRestaurants: {
+      dataType: {
+        type: "array",
+        subType: {
+          type: "string",
+        },
+        reducers: [],
       },
       rid: "rid",
     },
@@ -370,6 +381,7 @@ export const objectTypeWithAllPropertyTypes: ObjectTypeV2 = {
         subType: {
           type: "string",
         },
+        reducers: [],
       },
       rid: "rid",
     },
@@ -379,6 +391,7 @@ export const objectTypeWithAllPropertyTypes: ObjectTypeV2 = {
         subType: {
           type: "boolean",
         },
+        reducers: [],
       },
       rid: "rid",
     },
@@ -388,6 +401,7 @@ export const objectTypeWithAllPropertyTypes: ObjectTypeV2 = {
         subType: {
           type: "date",
         },
+        reducers: [],
       },
       rid: "rid",
     },
@@ -397,6 +411,7 @@ export const objectTypeWithAllPropertyTypes: ObjectTypeV2 = {
         subType: {
           type: "timestamp",
         },
+        reducers: [],
       },
       rid: "rid",
     },
@@ -406,6 +421,7 @@ export const objectTypeWithAllPropertyTypes: ObjectTypeV2 = {
         subType: {
           type: "decimal",
         },
+        reducers: [],
       },
       rid: "rid",
     },
@@ -415,6 +431,7 @@ export const objectTypeWithAllPropertyTypes: ObjectTypeV2 = {
         subType: {
           type: "integer",
         },
+        reducers: [],
       },
       rid: "rid",
     },
@@ -424,6 +441,7 @@ export const objectTypeWithAllPropertyTypes: ObjectTypeV2 = {
         subType: {
           type: "long",
         },
+        reducers: [],
       },
       rid: "rid",
     },
@@ -433,6 +451,7 @@ export const objectTypeWithAllPropertyTypes: ObjectTypeV2 = {
         subType: {
           type: "short",
         },
+        reducers: [],
       },
       rid: "rid",
     },
@@ -442,6 +461,7 @@ export const objectTypeWithAllPropertyTypes: ObjectTypeV2 = {
         subType: {
           type: "float",
         },
+        reducers: [],
       },
       rid: "rid",
     },
@@ -451,6 +471,7 @@ export const objectTypeWithAllPropertyTypes: ObjectTypeV2 = {
         subType: {
           type: "double",
         },
+        reducers: [],
       },
       rid: "rid",
     },
@@ -460,6 +481,7 @@ export const objectTypeWithAllPropertyTypes: ObjectTypeV2 = {
         subType: {
           type: "byte",
         },
+        reducers: [],
       },
       rid: "rid",
     },
@@ -469,6 +491,7 @@ export const objectTypeWithAllPropertyTypes: ObjectTypeV2 = {
         subType: {
           type: "attachment",
         },
+        reducers: [],
       },
       rid: "rid",
     },
@@ -478,6 +501,7 @@ export const objectTypeWithAllPropertyTypes: ObjectTypeV2 = {
         subType: {
           type: "geopoint",
         },
+        reducers: [],
       },
       rid: "rid",
     },
@@ -487,6 +511,7 @@ export const objectTypeWithAllPropertyTypes: ObjectTypeV2 = {
         subType: {
           type: "geoshape",
         },
+        reducers: [],
       },
       rid: "rid",
     },
@@ -714,6 +739,7 @@ export const BGaoNflPlayerObjectType: ObjectTypeV2 = {
             },
           ],
         },
+        reducers: [],
       },
       rid: "ri.a.b.c.structArray",
     },

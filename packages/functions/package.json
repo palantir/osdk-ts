@@ -1,6 +1,6 @@
 {
   "name": "@osdk/functions",
-  "version": "1.4.0-beta.8",
+  "version": "1.6.0-beta.1",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
@@ -17,6 +17,15 @@
       },
       "require": "./build/cjs/index.cjs",
       "default": "./build/browser/index.js"
+    },
+    "./experimental": {
+      "browser": "./build/browser/public/experimental.js",
+      "import": {
+        "types": "./build/types/public/experimental.d.ts",
+        "default": "./build/esm/public/experimental.js"
+      },
+      "require": "./build/cjs/public/experimental.cjs",
+      "default": "./build/browser/public/experimental.js"
     },
     "./internal": {
       "browser": "./build/browser/public/internal.js",
@@ -61,9 +70,9 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
-    "@osdk/foundry.core": "^2.41.0",
-    "@osdk/foundry.mediasets": "^2.41.0",
-    "@osdk/foundry.ontologies": "^2.41.0",
+    "@osdk/foundry.core": "^2.44.0",
+    "@osdk/foundry.mediasets": "^2.44.0",
+    "@osdk/foundry.ontologies": "^2.44.0",
     "@types/geojson": "^7946.0.16",
     "yaml": "^2.8.1"
   },

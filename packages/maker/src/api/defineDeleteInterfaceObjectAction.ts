@@ -58,5 +58,6 @@ export function defineDeleteInterfaceObjectAction(
       affectedLinkTypes: [],
       typeGroups: [],
     },
+    ...(def.icon && { icon: def.icon }),
   });
 }

@@ -239,10 +239,10 @@ const personInterface = defineInterface({
   displayName: "Person",
   description: "Represents a person",
   properties: {
-    firstName: "string",
-    lastName: "string",
-    email: "string",
-    age: "integer",
+    firstName: { type: "string" }, // creates an interface defined property
+    lastName: { type: "string" },
+    email: { type: "string" },
+    age: { type: "integer" },
   },
 });
 
@@ -254,10 +254,10 @@ const employeeInterface = defineInterface({
   properties: {
     firstName: nameProperty, // Using previously defined SPT
     lastName: nameProperty, // Using previously defined SPT
-    employeeId: "string",
-    department: "string",
-    hireDate: "date",
-    isActive: "boolean",
+    employeeId: { type: "string" },
+    department: { type: "string" },
+    hireDate: { type: "date" },
+    isActive: { type: "boolean" },
   },
 });
 ```
@@ -269,12 +269,16 @@ const customerInterface = defineInterface({
   apiName: "Customer",
   displayName: "Customer",
   properties: {
-    name: "string",
-    email: "string",
-    // Define an optional property
+    // Define an optional interface defined property
+    name: {
+      type: "string",
+      required: false,
+    },
+    email: { type: "string" },
+    // Define an optional interface SPT
     phoneNumber: {
       required: false,
-      propertyDefinition: "string",
+      sharedPropertyType: phoneNumber, // Using previously defined SPT
     },
   },
 });
@@ -288,8 +292,8 @@ const managerInterface = defineInterface({
   apiName: "Manager",
   displayName: "Manager",
   properties: {
-    managementLevel: "string",
-    directReports: "integer",
+    managementLevel: { type: "string" },
+    directReports: { type: "integer" },
   },
   extends: [employeeInterface], // Extends the Employee interface
 });
@@ -299,7 +303,7 @@ const executiveInterface = defineInterface({
   apiName: "Executive",
   displayName: "Executive",
   properties: {
-    stockOptions: "boolean",
+    stockOptions: { type: "boolean" },
   },
   extends: ["Manager"], // Extends using apiName
 });
@@ -316,9 +320,9 @@ const productInterface = defineInterface({
     color: "#007bff",
   },
   properties: {
-    name: "string",
-    sku: "string",
-    price: "decimal",
+    name: { type: "string" },
+    sku: { type: "string" },
+    price: { type: "decimal" },
   },
 });
 ```
@@ -330,8 +334,8 @@ const legacyInterface = defineInterface({
   apiName: "LegacySystem",
   displayName: "Legacy System",
   properties: {
-    systemName: "string",
-    version: "string",
+    systemName: { type: "string" },
+    version: { type: "string" },
   },
   status: {
     type: "deprecated",
@@ -344,8 +348,8 @@ const experimentalInterface = defineInterface({
   apiName: "ExperimentalFeature",
   displayName: "Experimental Feature",
   properties: {
-    featureName: "string",
-    enabled: "boolean",
+    featureName: { type: "string" },
+    enabled: { type: "boolean" },
   },
   status: {
     type: "experimental",
@@ -459,6 +463,55 @@ const eventObject = defineObject({
   datasources: [{
     type: "stream",
     retentionPeriod: "P90D", // 90 days retention (ISO 8601 duration format)
+  }],
+});
+```
+
+### Object with Property Security Groups
+
+```typescript
+const object = defineObject({
+  apiName: "person",
+  displayName: "Person",
+  pluralDisplayName: "Persons",
+  titlePropertyApiName: "name",
+  primaryKeyPropertyApiName: "name",
+  properties: {
+    "name": { type: "string", displayName: "Name" },
+    "protectedProperty": { type: "string", displayName: "Event Name" },
+    "markingProperty": {
+      type: {
+        type: "marking",
+        markingType: "MANDATORY",
+        markingInputGroupName: "myMarking",
+      },
+    },
+  },
+  datasources: [{
+    type: "dataset",
+    // you can optionally define an objectSecurityPolicy here as well
+    propertySecurityGroups: [
+      {
+        name: "myPsg",
+        properties: ["protectedProperty"],
+        granularPolicy: {
+          type: "and",
+          conditions: [
+            {
+              type: "markingProperty",
+              property: "markingProperty",
+            },
+            {
+              type: "group",
+              name: "myInputGroup",
+            },
+          ],
+        },
+        additionalMandatoryMarkings: {
+          "myCbacMarking": "CBAC",
+        },
+      },
+    ],
   }],
 });
 ```

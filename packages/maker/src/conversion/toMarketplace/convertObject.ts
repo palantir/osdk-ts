@@ -24,7 +24,6 @@ import type {
 } from "@osdk/client.unstable";
 import { randomUUID } from "crypto";
 import {
-  addNamespaceIfNone,
   buildDatasource,
   cleanAndValidateLinkTypeId,
   convertObjectStatus,
@@ -147,17 +146,17 @@ export function convertObject(
         interfaceTypeApiName: impl.implements.apiName,
         links: {},
         linksV2: {},
-        propertiesV2: {},
-        properties: Object.fromEntries(
-          impl.propertyMapping.map(
-            mapping => [addNamespaceIfNone(mapping.interfaceProperty), {
+        propertiesV2: Object.fromEntries(impl.propertyMapping
+          .map(
+            mappings => [mappings.interfaceProperty, {
+              type: "propertyTypeRid",
               propertyTypeRid: ridGenerator.generatePropertyRid(
-                mapping.mapsTo,
+                mappings.mapsTo,
                 objectType.apiName,
               ),
             }],
-          ),
-        ),
+          )),
+        properties: {},
       })),
       allImplementsInterfaces: {},
       traits: { workflowObjectTypeTraits: {} },
@@ -170,8 +169,8 @@ export function convertObject(
     ],
     entityMetadata: {
       // TODO: Expand entity metadata with all required fields
-      aliases: [],
       arePatchesEnabled: objectType.editsEnabled ?? false,
+    aliases: objectType.aliases ?? [],
       diffEdits: false,
       entityConfig: {
         // TODO: Add objectDbTypeConfigs based on storage backend configuration
@@ -179,10 +178,15 @@ export function convertObject(
       },
       targetStorageBackend: { type: "objectStorageV2", objectStorageV2: {} },
     },
+    
     // TODO: Add schema migrations support
     schemaMigrations: undefined,
     // TODO: Add writeback datasets support
     writebackDatasets: [],
+    //propertySecurityGroupPackagingVersion: {
+    //  type: "v2",
+    //  v2: {},
+    //},
   };
 }
 
@@ -241,20 +245,14 @@ export function extractPropertyDatasource(
         mediaSetView: {
           assumedMarkings: [],
           mediaSetViewLocator: {
-            mediaSetBranchRid: ridGenerator.generateRid(
-              `mediaset.branch.${identifier}`,
-            ),
-            mediaSetRid: ridGenerator.generateRid(`mediaset.${identifier}`),
-            mediaSetViewRid: ridGenerator.generateRid(
-              `mediaset.view.${identifier}`,
-            ),
+            mediaSetBranchRid: "",
+            mediaSetRid: "",
+            mediaSetViewRid: ""
           },
-          properties: [
-            ridGenerator.generatePropertyRid(
+          properties: [ridGenerator.generatePropertyRid(
               property.apiName,
               objectTypeApiName,
-            ),
-          ],
+            )],
         },
       };
       return [

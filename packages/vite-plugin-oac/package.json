@@ -1,6 +1,6 @@
 {
   "name": "@osdk/vite-plugin-oac",
-  "version": "0.4.0-beta.12",
+  "version": "0.6.0-beta.2",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -44,7 +44,7 @@
     "@osdk/cli": "workspace:*",
     "@osdk/client.unstable": "workspace:*",
     "@osdk/faux": "workspace:*",
-    "@osdk/foundry.ontologies": "2.41.0",
+    "@osdk/foundry.ontologies": "catalog:foundry-platform-typescript",
     "@osdk/generator-converters.ontologyir": "workspace:*",
     "@osdk/maker": "workspace:*",
     "chalk": "^5.6.2",

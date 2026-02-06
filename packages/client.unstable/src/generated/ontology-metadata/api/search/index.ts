@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,12 @@ export type {
   ActionTypeSortBy,
   ActionTypeSortOrder,
   ActionTypeStatusFilter,
+  CombinedEntityTypeInclude,
+  CombinedEntityTypeRid,
+  CombinedEntityTypeSearchHit,
+  CombinedEntityTypeSearchPageToken,
+  CombinedEntityTypeStatusFilter,
+  CombinedEntityTypeTitleClause,
   FullTextStringPredicate,
   FuzzinessAuto,
   FuzzinessOff,
@@ -75,6 +81,9 @@ export type {
   ObjectTypeSortOrder,
   ObjectTypeStatusFilter,
   ObjectTypeTargetStorageBackendFilter,
+  SearchBoostingOption,
+  SearchTitleInCombinedEntityTypeRequest,
+  SearchTitleInCombinedEntityTypeResponse,
   SemanticSearchUnavailableReason,
   SharedPropertyTypeClause,
   SharedPropertyTypeExternalMappingFilter,

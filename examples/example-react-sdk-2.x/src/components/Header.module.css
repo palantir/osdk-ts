@@ -1,0 +1,21 @@
+.header {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.logos {
+  display: flex;
+  gap: 32px;
+}
+
+.logo {
+  height: 48px;
+  transition: filter 300ms;
+  will-change: filter;
+}
+
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}

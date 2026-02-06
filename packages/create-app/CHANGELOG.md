@@ -1,5 +1,45 @@
 # @osdk/create-app
 
+## 2.8.0-beta.2
+
+## 2.7.0-beta.14
+
+## 2.7.0-beta.13
+
+## 2.7.0-beta.12
+
+## 2.7.0-beta.11
+
+## 2.7.0-beta.10
+
+## 2.7.0-beta.9
+
+## 2.7.0-beta.8
+
+## 2.7.0-beta.7
+
+## 2.7.0-beta.6
+
+## 2.7.0-beta.5
+
+## 2.7.0-beta.4
+
+### Minor Changes
+
+- 5ba2346: Add `osdk/foundry` to `create-app` templates
+
+## 2.7.0-beta.3
+
+## 2.7.0-beta.2
+
+### Minor Changes
+
+- 935b7ac: Allow CLI template bootstrapping without an OSDK
+- 4e96d14: Update create-app React, Vue, and Expo templates
+- b0d44f0: Update `.npmrc` credentials
+
+## 2.6.0-beta.13
+
 ## 2.6.0-beta.12
 
 ## 2.6.0-beta.11
@@ -23,6 +63,18 @@
 ## 2.6.0-beta.2
 
 ## 2.5.0-beta.15
+
+## 2.5.2
+
+## 2.5.1
+
+## 2.5.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+
+## 2.5.0-rc.15
 
 ## 2.5.0-beta.14
 

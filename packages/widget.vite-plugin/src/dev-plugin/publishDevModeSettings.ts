@@ -27,11 +27,14 @@ import { enableDevMode, setWidgetSetSettings } from "./network.js";
 class ResponseError extends Error {
   // To avoid inspect() from logging the error response since it's already logged
   #response: string;
+  #hint: string | undefined;
 
   constructor(message: string, response: string) {
     super(message);
     try {
-      this.#response = JSON.stringify(JSON.parse(response), null, 4);
+      const parsed = JSON.parse(response);
+      this.#response = JSON.stringify(parsed, null, 4);
+      this.#hint = getHintForError(parsed);
     } catch {
       this.#response = response;
     }
@@ -40,6 +43,22 @@ class ResponseError extends Error {
   get response(): string {
     return this.#response;
   }
+
+  get hint(): string | undefined {
+    return this.#hint;
+  }
+}
+
+function getHintForError(
+  parsed: { errorName?: string },
+): string | undefined {
+  if (
+    parsed.errorName === "Api:WidgetIdNotFound"
+    || parsed.errorName === "WidgetIdNotFound"
+  ) {
+    return "You first need to publish changes to your widget configuration files before you can develop against them.\n\nSee: https://www.palantir.com/docs/foundry/custom-widgets/publish/";
+  }
+  return undefined;
 }
 
 /**
@@ -118,6 +137,7 @@ export async function publishDevModeSettings(
           status: "error",
           error: inspect(error),
           response: error instanceof ResponseError ? error.response : undefined,
+          hint: error instanceof ResponseError ? error.hint : undefined,
         },
       ),
     );

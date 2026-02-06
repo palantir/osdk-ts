@@ -17,8 +17,13 @@
 import type { AttachmentUpload } from "@osdk/api";
 
 export function isAttachmentUpload(o: any): o is AttachmentUpload {
-  return typeof o === `object` && "name" in o && "data" in o
-    && o.data instanceof Blob;
+  return typeof o === "object"
+    && o != null
+    && "name" in o
+    && typeof o.name === "string"
+    && "data" in o
+    && o.data instanceof Blob
+    && !("fileName" in o);
 }
 
 export function isAttachmentFile(

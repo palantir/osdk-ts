@@ -29,7 +29,9 @@ const valid = "https://app.com";
 test("it accepts valid application url from prompt", async () => {
   vi.mocked(consola).prompt.mockResolvedValueOnce("yes");
   vi.mocked(consola).prompt.mockResolvedValueOnce(valid);
-  expect(await promptApplicationUrl({})).toEqual(valid);
+  expect(await promptApplicationUrl({ skipApplicationUrl: false })).toEqual(
+    valid,
+  );
   expect(vi.mocked(consola).prompt).toHaveBeenCalledTimes(2);
 });
 

@@ -40,6 +40,8 @@ export interface MediaReference {
       mediaItemRid: string;
       mediaSetRid: string;
       mediaSetViewRid: string;
+      token?: string;
+      /** @deprecated Use `token` instead */
       readToken?: string;
     };
   };

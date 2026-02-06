@@ -32,6 +32,7 @@ import type {
   PropertyTypeRid,
   ResolvedDatasourceColumnShape,
   SharedPropertyTypeRid,
+  StructFieldRid,
   TimeSeriesSyncRid,
 } from "@osdk/client.unstable/api";
 // ParameterRid is defined in ontology-metadata but may not be re-exported through the main API
@@ -100,6 +101,10 @@ export interface OntologyRidGenerator {
     apiName: string,
     interfaceTypeApiName: string,
   ): InterfacePropertyTypeRid;
+  generateStructFieldRid(
+    propertyApiName: string,
+    apiName: string,
+  ): StructFieldRid;
   toBlockInternalId(readableId: ReadableId): string;
 }
 
@@ -626,11 +631,19 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
     return rid;
   }
 
+  // Struct Field RIDs
+  generateStructFieldRid(
+    propertyApiName: string,
+    apiName: string,
+  ): StructFieldRid {
+    const rid = `ri.ontology-metadata..temp.struct-field.${
+      this.hashString(propertyApiName + "." + apiName)
+    }` as StructFieldRid;
+    return rid;
+  }
+
   toBlockInternalId(readableId: ReadableId): string {
     const id = toBlockShapeId(readableId, this.randomnessUuid);
-    console.log(
-      `Mapping readable ID "${readableId}" to block internal ID ${id}`,
-    );
     return id;
   }
 }

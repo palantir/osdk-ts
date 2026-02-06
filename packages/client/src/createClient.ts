@@ -102,6 +102,7 @@ class QueryInvoker<Q extends QueryDefinition<any>>
 export function createClientInternal(
   objectSetFactory: ObjectSetFactory<any, any>,
   transactionRid: string | undefined,
+  flushEdits: (() => Promise<void>) | undefined,
   baseUrl: string,
   ontologyRid: string | Promise<string>,
   tokenProvider: () => Promise<string>,
@@ -130,6 +131,7 @@ export function createClientInternal(
       ...options,
       logger: options?.logger ?? new MinimalLogger(),
       transactionId: transactionRid,
+      flushEdits,
       branch: options?.branch,
     },
     fetchFn,
@@ -185,7 +187,7 @@ export function createClientFromContext(clientCtx: MinimalClient) {
         case __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchOneByRid.name:
           return {
             fetchOneByRid: async <
-              Q extends ObjectTypeDefinition,
+              Q extends ObjectOrInterfaceDefinition,
               const L extends PropertyKeys<Q>,
               const R extends boolean,
               const S extends false | "throw" = NullabilityAdherence.Default,
@@ -320,15 +322,18 @@ export const createClient: (
   undefined,
   createObjectSet,
   undefined,
+  undefined,
 );
 
 export const createClientWithTransaction: (
-  transactionRid: string,
+  transactionId: string,
+  flushEdits: () => Promise<void>,
   ...args: Parameters<typeof createClient>
-) => Client = (transactionRid, ...args) =>
+) => Client = (transactionRid, flushEdits, ...args) =>
   createClientInternal(
     createObjectSet,
     transactionRid,
+    flushEdits,
     ...args,
   ) as Client;
 

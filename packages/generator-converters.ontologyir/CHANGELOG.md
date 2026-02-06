@@ -1,5 +1,114 @@
 # @osdk/generator-converters.ontologyir
 
+## 2.8.0-beta.2
+
+### Patch Changes
+
+- Updated dependencies [e462938]
+  - @osdk/client.unstable@2.8.0-beta.2
+
+## 2.7.0-beta.14
+
+### Patch Changes
+
+- @osdk/client.unstable@2.7.0-beta.14
+
+## 2.7.0-beta.13
+
+### Patch Changes
+
+- @osdk/client.unstable@2.7.0-beta.13
+
+## 2.7.0-beta.12
+
+### Patch Changes
+
+- @osdk/client.unstable@2.7.0-beta.12
+
+## 2.7.0-beta.11
+
+### Patch Changes
+
+- @osdk/client.unstable@2.7.0-beta.11
+
+## 2.7.0-beta.10
+
+### Patch Changes
+
+- @osdk/client.unstable@2.7.0-beta.10
+
+## 2.7.0-beta.9
+
+### Minor Changes
+
+- 8381ac2: Alias and render hint overrides for oac
+
+### Patch Changes
+
+- Updated dependencies [8381ac2]
+- Updated dependencies [c95f3bc]
+  - @osdk/client.unstable@2.7.0-beta.9
+
+## 2.7.0-beta.8
+
+### Patch Changes
+
+- @osdk/client.unstable@2.7.0-beta.8
+
+## 2.7.0-beta.7
+
+### Patch Changes
+
+- @osdk/client.unstable@2.7.0-beta.7
+
+## 2.7.0-beta.6
+
+### Patch Changes
+
+- @osdk/client.unstable@2.7.0-beta.6
+
+## 2.7.0-beta.5
+
+### Minor Changes
+
+- dc33f68: Add Transaction ID to Queries
+
+### Patch Changes
+
+- @osdk/client.unstable@2.7.0-beta.5
+
+## 2.7.0-beta.4
+
+### Patch Changes
+
+- @osdk/client.unstable@2.7.0-beta.4
+
+## 2.7.0-beta.3
+
+### Patch Changes
+
+- @osdk/client.unstable@2.7.0-beta.3
+
+## 2.7.0-beta.2
+
+### Minor Changes
+
+- 03db734: Move platform SDK deps to pnpm catalog
+
+### Patch Changes
+
+- @osdk/client.unstable@2.7.0-beta.2
+
+## 2.6.0-beta.13
+
+### Minor Changes
+
+- 84f0eef: Bumping OSDK apis
+
+### Patch Changes
+
+- @osdk/client.unstable@2.6.0-beta.13
+
 ## 2.6.0-beta.12
 
 ### Patch Changes
@@ -84,6 +193,42 @@
 ### Patch Changes
 
 - @osdk/client.unstable@2.5.0-beta.15
+
+## 2.5.2
+
+### Patch Changes
+
+- @osdk/client.unstable@2.5.2
+
+## 2.5.1
+
+### Patch Changes
+
+- @osdk/client.unstable@2.5.1
+
+## 2.5.0
+
+### Patch Changes
+
+- 150da1a: Simulated release
+- a6f49e9: Fix Maker Rid Generation
+- 7cdab1d: Update platform sdk dependencies
+- a00d2ed: Update Platform SDK dependencies
+- 7bdac45: Update Platform SDK dependency
+- a96d89e: Update Platform SDK dependencies
+- 7bdac45: Support value type enum generation for strings and booleans
+- cbcf2ad: Add branching support
+- Updated dependencies [322c5bc]
+- Updated dependencies [a6f49e9]
+- Updated dependencies [a6f49e9]
+- Updated dependencies [04fe946]
+  - @osdk/client.unstable@2.5.0
+
+## 2.5.0-rc.15
+
+### Patch Changes
+
+- @osdk/client.unstable@2.5.0-rc.15
 
 ## 2.5.0-beta.14
 

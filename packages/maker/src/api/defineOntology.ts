@@ -36,8 +36,11 @@ import { convertActionValidation } from "../conversion/toMarketplace/convertActi
 import { convertOntologyDefinition } from "../conversion/toMarketplace/convertOntologyDefinition.js";
 import { convertOntologyToValueTypeIr } from "../conversion/toMarketplace/convertOntologyToValueTypeIr.js";
 import { getFormContentOrdering } from "../conversion/toMarketplace/getFormContentOrdering.js";
+import type {
+  ActionParameter,
+  ActionParameterValidation,
+} from "./action/ActionParameter.js";
 import type { OntologyRidGenerator } from "../util/generateRid.js";
-import type { ActionParameter } from "./action/ActionParameter.js";
 import type { ActionParameterAllowedValues } from "./action/ActionParameterAllowedValues.js";
 import type { ActionType } from "./action/ActionType.js";
 import type { OntologyDefinition } from "./common/OntologyDefinition.js";
@@ -279,6 +282,13 @@ export function convertObjectStatus(status: any): any {
     };
   }
 
+  if (status === "example") {
+    return {
+      type: "example",
+      example: {},
+    };
+  }
+
   if (typeof status === "object" && status.type === "deprecated") {
     return {
       type: "deprecated",
@@ -470,6 +480,42 @@ export function extractAllowedValues(
           geotimeSeries: {},
         },
       };
+    case "user":
+      return {
+        type: "user",
+        user: {
+          type: "user",
+          user: {
+            filter: (allowedValues.fromGroups ?? []).map(group => {
+              return {
+                type: "groupFilter",
+                groupFilter: {
+                  groupId: group.type === "static"
+                    ? {
+                      type: "staticValue",
+                      staticValue: {
+                        type: "string",
+                        string: group.name,
+                      },
+                    }
+                    : {
+                      type: "parameterId",
+                      parameterId: group.parameter,
+                    },
+                },
+              };
+            }),
+          },
+        },
+      };
+    case "multipassGroup":
+      return {
+        type: "multipassGroup",
+        multipassGroup: {
+          type: "group",
+          group: {},
+        },
+      };
     default:
       const k: Partial<OntologyIrAllowedParameterValues["type"]> =
         allowedValues.type;
@@ -486,6 +532,7 @@ export function extractAllowedValues(
 
 export function renderHintFromBaseType(
   parameter: ActionParameter,
+  validation?: ActionParameterValidation,
 ): ParameterRenderHint {
   // TODO(dpaquin): these are just guesses, we should find where they're actually defined
   const type = typeof parameter.type === "string"
@@ -505,6 +552,12 @@ export function renderHintFromBaseType(
     case "decimalList":
       return { type: "numericInput", numericInput: {} };
     case "string":
+      if (
+        validation?.allowedValues?.type === "user"
+        || validation?.allowedValues?.type === "multipassGroup"
+      ) {
+        return { type: "userDropdown", userDropdown: {} };
+      }
     case "stringList":
     case "geohash":
     case "geohashList":

@@ -23,8 +23,10 @@ export { createObservableClient } from "../observable/ObservableClient.js";
 export type {
   ObservableClient,
   ObserveAggregationArgs,
-  ObserveObjectArgs,
-  ObserveObjectsArgs,
+  ObserveFunctionCallbackArgs,
+  ObserveFunctionOptions,
+  ObserveObjectCallbackArgs,
+  ObserveObjectsCallbackArgs,
   ObserveObjectSetArgs,
   Unsubscribable,
 } from "../observable/ObservableClient.js";
@@ -37,3 +39,4 @@ export {
 export type { OsdkConfig } from "../public-utils/osdkConfig.js";
 
 export { createClientWithTransaction } from "../createClient.js";
+export type { QueryParameterType, QueryReturnType } from "../queries/types.js";

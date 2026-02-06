@@ -1,6 +1,6 @@
 {
   "name": "@osdk/widget.client-react",
-  "version": "3.3.0-beta.10",
+  "version": "3.5.0-beta.2",
   "description": "Wrapper around @osdk/widget.client",
   "access": "public",
   "license": "Apache-2.0",
@@ -34,6 +34,7 @@
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
+    "test": "vitest run",
     "transpileBrowser": "monorepo.tool.transpile -f esm -m normal -t browser",
     "transpileCjs": "monorepo.tool.transpile -f cjs -m bundle -t node",
     "transpileEsm": "monorepo.tool.transpile -f esm -m normal -t node",

@@ -3,10 +3,11 @@
     <a
       href="https://www.palantir.com/docs/foundry/ontology-sdk/overview/"
       target="_blank"
+      rel="noreferrer"
     >
       <img src="/palantir.svg" class="logo" alt="Palantir logo" />
     </a>
-    <a href="https://vuejs.org/" target="_blank">
+    <a href="https://vuejs.org/" target="_blank" rel="noreferrer">
       <img src="/vue.svg" class="logo" alt="Vue logo" />
     </a>
   </div>

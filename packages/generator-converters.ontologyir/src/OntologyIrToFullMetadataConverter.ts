@@ -767,7 +767,7 @@ export class OntologyIrToFullMetadataConverter {
       case "array": {
         const value = type.array;
         const subType = this.getOsdkPropertyType(value.subtype);
-        return subType ? { type: "array", subType } : null;
+        return subType ? { type: "array", subType, reducers: [] } : null;
       }
       case "boolean":
         return { type: "boolean" };

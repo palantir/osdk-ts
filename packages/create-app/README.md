@@ -34,10 +34,11 @@ npx @osdk/create-app [project] [--<option>]
 | --applicationUrl     | URL the production application will be hosted on [string]                        |
 | --skipApplicationUrl | Skip filling in URL the production application will be hosted on [boolean]       |
 | --application        | Application resource identifier (rid) [string]                                   |
-| --ontology           | Ontology resource identifier (rid) [string]                                      |
 | --clientId           | OAuth client ID for application [string]                                         |
+| --ontology           | Ontology resource identifier (rid) [string]                                      |
 | --osdkPackage        | OSDK package name for application [string]                                       |
 | --osdkRegistryUrl    | URL for NPM registry to install OSDK package [string]                            |
+| --skipOsdk           | Skip filling in OSDK-related options [boolean]                                   |
 | --corsProxy          | Include a CORS proxy for Foundry API requests during local development [boolean] |
 | --scopes             | Scopes to request during OAuth flow [array<string>]                              |
 

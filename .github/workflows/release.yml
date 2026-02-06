@@ -22,15 +22,15 @@ jobs:
       pull-requests: write
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup PNPM
         uses: pnpm/action-setup@v4
 
       - name: Setup Node.js environment
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: 18
+          node-version: 24
           registry-url: 'https://registry.npmjs.org'
           cache: "pnpm"
 
@@ -43,7 +43,7 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Save publish data
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: published-packages
           path: pnpm-publish-summary.json
@@ -55,7 +55,7 @@ jobs:
   #   runs-on: ubuntu-latest
   #   steps:
   #     - name: Checkout Repo
-  #       uses: actions/checkout@v4
+  #       uses: actions/checkout@v6
 
   #     - name: Setup PNPM
   #       uses: pnpm/action-setup@v4
@@ -63,9 +63,9 @@ jobs:
   #         version: 8.7.4
 
   #     - name: Setup Node.js environment
-  #       uses: actions/setup-node@v4
+  #       uses: actions/setup-node@v6
   #       with:
-  #         node-version: 18
+  #         node-version: 24
   #         registry-url: 'https://registry.npmjs.org'
   #         cache: "pnpm"
 

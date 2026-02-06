@@ -66,12 +66,14 @@ describe("FetchMetadata", () => {
         ],
         "interfaceMap": {
           "FooInterface": {
+            "fooIdp": "office",
             "fooSpt": "fullName",
           },
         },
         "inverseInterfaceMap": {
           "FooInterface": {
             "fullName": "fooSpt",
+            "office": "fooIdp",
           },
         },
         "links": {
@@ -128,7 +130,7 @@ describe("FetchMetadata", () => {
             "displayName": undefined,
             "multiplicity": false,
             "nullable": true,
-            "type": "sensorTimeseries",
+            "type": "stringTimeseries",
             "valueFormatting": undefined,
             "valueTypeApiName": undefined,
           },
@@ -138,6 +140,15 @@ describe("FetchMetadata", () => {
             "multiplicity": false,
             "nullable": true,
             "type": "stringTimeseries",
+            "valueFormatting": undefined,
+            "valueTypeApiName": undefined,
+          },
+          "favoriteRestaurants": {
+            "description": undefined,
+            "displayName": undefined,
+            "multiplicity": true,
+            "nullable": true,
+            "type": "string",
             "valueFormatting": undefined,
             "valueTypeApiName": undefined,
           },
@@ -224,6 +235,15 @@ describe("FetchMetadata", () => {
           },
         },
         "properties": {
+          "fooIdp": {
+            "description": "A Foo IDP",
+            "displayName": "Foo IDP",
+            "multiplicity": false,
+            "nullable": true,
+            "type": "string",
+            "valueFormatting": undefined,
+            "valueTypeApiName": undefined,
+          },
           "fooSpt": {
             "description": "A foo",
             "displayName": "Foo",

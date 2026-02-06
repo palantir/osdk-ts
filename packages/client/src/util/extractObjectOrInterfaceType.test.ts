@@ -148,8 +148,8 @@ describe("extractObjectOrInterfaceType", () => {
     );
   });
 
-  it("correctly gets the type of the object from asType", async () => {
-    const asTypeObjectSet: ObjectSet = {
+  it("correctly gets the type of the object from narrowToType", async () => {
+    const narrowToTypeObjectSet: ObjectSet = {
       type: "asType",
       entityType: "BaseType",
       objectSet: {
@@ -161,9 +161,9 @@ describe("extractObjectOrInterfaceType", () => {
     const result = await extractObjectOrInterfaceType(
       {
         ...mockClientCtx,
-        asTypeInterfaceOrObjectMapping: { BaseType: "object" },
+        narrowTypeInterfaceOrObjectMapping: { BaseType: "object" },
       },
-      asTypeObjectSet,
+      narrowToTypeObjectSet,
     );
 
     expect(result).toEqual({ apiName: "BaseType", type: "object" });

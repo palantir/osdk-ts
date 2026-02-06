@@ -1,5 +1,52 @@
 # @osdk/functions
 
+## 1.5.0-beta.4
+
+### Minor Changes
+
+- c6124eb: Add ability to flush edits to transactions
+
+### Patch Changes
+
+- Updated dependencies [c6124eb]
+  - @osdk/client@2.7.0-beta.8
+
+## 1.5.0-beta.3
+
+### Minor Changes
+
+- dc33f68: Add Transaction ID to Queries
+
+### Patch Changes
+
+- Updated dependencies [dc33f68]
+  - @osdk/client@2.7.0-beta.5
+
+## 1.5.0-beta.2
+
+### Minor Changes
+
+- 448763f: introduce new token field, note readToken as deprecated
+
+### Patch Changes
+
+- Updated dependencies [a23784c]
+- Updated dependencies [f0a57a5]
+  - @osdk/client@2.7.0-beta.3
+
+## 1.4.0-beta.9
+
+### Minor Changes
+
+- 84f0eef: Bumping OSDK apis
+
+### Patch Changes
+
+- Updated dependencies [84f0eef]
+- Updated dependencies [486ef7e]
+- Updated dependencies [ea077c6]
+  - @osdk/client@2.6.0-beta.13
+
 ## 1.4.0-beta.8
 
 ### Minor Changes
@@ -65,6 +112,46 @@
 - Updated dependencies [f7ae38a]
 - Updated dependencies [f085283]
   - @osdk/client@2.6.0-beta.2
+
+## 1.3.0
+
+### Patch Changes
+
+- 776ae8a: Simulated release
+- a41b62a: add markings types to osdk/functions
+- 4b1b399: Update dependencies with @osdk/foundry.core
+- 0a0e560: Reexport user and group id types with branding
+- 7cdab1d: Update platform sdk dependencies
+- a00d2ed: Update Platform SDK dependencies
+- 9bbe664: Add compile check to prevent link and unlink edits when traversing a One direction
+- 1a647a8: Adding geometry type support
+- a96d89e: Update Platform SDK dependencies
+- 3ae01bb: Add UserFacingError to functions package
+- ba5f116: Add Principal Type
+- 7cdab1d: Add implementation for transaction edits
+- Updated dependencies [322c5bc]
+- Updated dependencies [b05075d]
+- Updated dependencies [d797f0c]
+- Updated dependencies [7160276]
+- Updated dependencies [7cdab1d]
+- Updated dependencies [a00d2ed]
+- Updated dependencies [ab29baa]
+- Updated dependencies [85e8edb]
+- Updated dependencies [eeaf8eb]
+- Updated dependencies [3d7461d]
+- Updated dependencies [7bdac45]
+- Updated dependencies [37eb75b]
+- Updated dependencies [7b97128]
+- Updated dependencies [b9e9a88]
+- Updated dependencies [76905f5]
+- Updated dependencies [48d52b7]
+- Updated dependencies [a96d89e]
+- Updated dependencies [48040a8]
+- Updated dependencies [20962bc]
+- Updated dependencies [cbcf2ad]
+- Updated dependencies [052a96b]
+- Updated dependencies [f49171a]
+  - @osdk/client@2.5.0
 
 ## 1.3.0-beta.7
 

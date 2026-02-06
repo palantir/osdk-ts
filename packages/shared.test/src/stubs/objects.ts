@@ -15,6 +15,7 @@
  */
 
 import type { GeoJsonObject } from "@osdk/foundry.geo";
+import type { PropertySecurities } from "@osdk/foundry.ontologies";
 import { employeeInterfaceScoped } from "./interfaces.js";
 
 export const employee50050: {
@@ -355,4 +356,96 @@ export const objectWithAllPropertyTypes2 = {
     },
   ],
   mediaReference: "ri.MediaReferencePlaceholder2",
+} as const;
+
+export const basicPropertySecurities: PropertySecurities[] = [
+  {
+    disjunction: [
+      {
+        type: "propertyMarkingSummary" as const,
+        conjunctive: ["CONFIDENTIAL", "INTERNAL"] as const,
+        disjunctive: [["SECRET"], ["TOP_SECRET"]] as const,
+      },
+    ],
+  },
+  {
+    disjunction: [
+      {
+        type: "unsupportedPolicy" as const,
+      },
+    ],
+  },
+  {
+    disjunction: [
+      {
+        type: "errorComputingSecurity" as const,
+      },
+    ],
+  },
+];
+
+export const unsecuredEmployee = {
+  __rid: "ri.phonograph2-objects.main.object.88a6fccb-f333-46d6-a07e-as3der",
+  __primaryKey: 20003,
+  __apiName: "Employee",
+  __title: "Bruce Banner",
+  employeeId: 20003,
+  fullName: "Bruce Banner",
+  office: "NYC",
+  class: "Red",
+  startDate: "2003-01-01",
+} as const;
+
+export const securedEmployee = {
+  __rid: "ri.phonograph2-objects.main.object.88a6fccb-f333-46d6-a07e-as3der",
+  __primaryKey: 20003,
+  __apiName: "Employee",
+  __title: "Bruce Banner",
+  employeeId: {
+    value: 20003,
+    propertySecurityIndex: 0,
+  },
+  fullName: {
+    value: "Bruce Banner",
+    propertySecurityIndex: 0,
+  },
+  office: {
+    value: "NYC",
+    propertySecurityIndex: 1,
+  },
+  class: {
+    value: "Red",
+    propertySecurityIndex: 2,
+  },
+  startDate: {
+    value: "2003-01-01",
+    propertySecurityIndex: 0,
+  },
+  favoriteRestaurants: [{ value: "Pasta Place", propertySecurityIndex: 1 }, {
+    value: "Sushi Spot",
+    propertySecurityIndex: 0,
+  }],
+} as const;
+
+// Mixed secured and regular properties for testing
+export const employeeMixedSecurity = {
+  __rid:
+    "ri.phonograph2-objects.main.object.ae6a0b9a-9b9a-4b9e-8b0a-2b0b9a9a0b9a",
+  __primaryKey: 50031,
+  __apiName: "Employee",
+  __title: "Jane Doe",
+  employeeId: {
+    value: 50031,
+    propertySecurityIndex: 0,
+  },
+  fullName: "Jane Doe", // Regular property without security
+  office: {
+    value: "SEA",
+    propertySecurityIndex: 1,
+  },
+  class: "Blue", // Regular property without security
+  startDate: {
+    value: "2012-02-12",
+    propertySecurityIndex: 0,
+  },
 } as const;

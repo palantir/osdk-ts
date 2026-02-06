@@ -1,0 +1,28 @@
+.osdk {
+  align-self: baseline;
+  display: flex;
+  justify-content: space-between;
+  width: 800px;
+}
+
+.tag {
+  border: 1px solid #11141826;
+  border-radius: 2px;
+  padding: 2px 4px;
+}
+
+.docs {
+  align-items: center;
+  border-radius: 2px;
+  color: #1c2127;
+  display: flex;
+  gap: 8px;
+  height: 30px;
+  justify-content: center;
+  padding: 0 5px;
+  text-decoration: none;
+}
+
+.docs:hover {
+  background: #8f99a826;
+}

@@ -53,6 +53,11 @@ describe.each(TEMPLATES)("template $id", (template) => {
         template,
         corsProxy: false,
         sdkVersion,
+        skipOsdk: false,
+        ontology: "ri.ontology.main.ontology.fake",
+        osdkPackage: "@fake/sdk",
+        osdkRegistryUrl:
+          "https://example.palantirfoundry.com/artifacts/api/repositories/ri.artifacts.main.repository.fake/contents/release/npm",
       });
     });
 
@@ -62,20 +67,76 @@ describe.each(TEMPLATES)("template $id", (template) => {
         template,
         corsProxy: true,
         sdkVersion,
+        skipOsdk: false,
+        ontology: "ri.ontology.main.ontology.fake",
+        osdkPackage: "@fake/sdk",
+        osdkRegistryUrl:
+          "https://example.palantirfoundry.com/artifacts/api/repositories/ri.artifacts.main.repository.fake/contents/release/npm",
       });
     });
   });
 });
 
-async function runTest(
-  { project, template, corsProxy, sdkVersion }: {
-    project: string;
-    template: Template;
-    corsProxy: boolean;
-    sdkVersion: string;
+describe.each(TEMPLATES.filter(template => !template.hidden))(
+  "template $id",
+  (template) => {
+    test(`CLI creates ${template.id} without OSDK`, async () => {
+      await runTest({
+        project: `expected-${template.id}`,
+        template,
+        corsProxy: false,
+        sdkVersion: "2.x",
+        skipOsdk: true,
+      });
+    });
   },
+);
+
+const VISIBLE_TEMPLATE = TEMPLATES.filter(template => !template.hidden)[0];
+
+test(`CLI rejects no OSDK with 1.x`, async () => {
+  await expect(runTest({
+    project: `expected-${VISIBLE_TEMPLATE.id}`,
+    template: VISIBLE_TEMPLATE,
+    corsProxy: false,
+    sdkVersion: "1.x",
+    skipOsdk: true,
+  })).rejects.toThrowError();
+});
+
+async function runTest(
+  {
+    project,
+    template,
+    corsProxy,
+    sdkVersion,
+    skipOsdk,
+    ontology,
+    osdkPackage,
+    osdkRegistryUrl,
+  }:
+    & {
+      project: string;
+      template: Template;
+      corsProxy: boolean;
+      sdkVersion: string;
+    }
+    & (
+      | {
+        skipOsdk: true;
+        ontology?: undefined;
+        osdkPackage?: undefined;
+        osdkRegistryUrl?: undefined;
+      }
+      | {
+        skipOsdk: false;
+        ontology: string;
+        osdkPackage: string;
+        osdkRegistryUrl: string;
+      }
+    ),
 ): Promise<void> {
-  await cli([
+  const args = [
     "npx",
     "@osdk/create-app",
     project,
@@ -88,21 +149,25 @@ async function runTest(
     "https://app.example.palantirfoundry.com",
     "--application",
     "ri.third-party-applications.main.application.fake",
-    "--ontology",
-    "ri.ontology.main.ontology.fake",
     "--clientId",
     "123",
-    "--osdkPackage",
-    "@fake/sdk",
-    "--osdkRegistryUrl",
-    "https://example.palantirfoundry.com/artifacts/api/repositories/ri.artifacts.main.repository.fake/contents/release/npm",
     "--corsProxy",
     corsProxy.toString(),
     "--sdkVersion",
     sdkVersion,
     "--scopes",
     "api:read-data",
-  ]);
+  ];
+
+  if (!skipOsdk) {
+    args.push("--ontology", ontology);
+    args.push("--osdkPackage", osdkPackage);
+    args.push("--osdkRegistryUrl", osdkRegistryUrl);
+  } else {
+    args.push("--skipOsdk", "true");
+  }
+
+  await cli(args);
 
   expect(fs.readdirSync(path.join(process.cwd(), project)).length)
     .toBeGreaterThan(0);

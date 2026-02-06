@@ -76,10 +76,8 @@ export function defineCreateOrModifyObjectAction(
   );
   parameters.forEach(
     p => {
-      if (
-        p.id !== CREATE_OR_MODIFY_OBJECT_PARAMETER
-        && p.defaultValue === undefined
-      ) {
+      // create prefilled parameters for object type properties unless overridden
+      if (def.objectType.properties?.[p.id] && p.defaultValue === undefined) {
         p.defaultValue = {
           type: "objectParameterPropertyValue",
           objectParameterPropertyValue: {
@@ -154,5 +152,6 @@ export function defineCreateOrModifyObjectAction(
       }),
     ...(def.submissionMetadata
       && { submissionMetadata: def.submissionMetadata }),
+    ...(def.icon && { icon: def.icon }),
   });
 }

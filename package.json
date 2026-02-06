@@ -56,6 +56,10 @@
     "husky": "^9.1.7",
     "lint-staged": "^15.5.2",
     "micromatch": "^4.0.8",
+    "postcss": "^8.5.6",
+    "postcss-cli": "^11.0.1",
+    "postcss-import": "^16.1.1",
+    "postcss-preset-env": "^11.1.2",
     "semver": "^7.7.2",
     "tsc-absolute": "^1.0.1",
     "tsup": "^8.5.0",
@@ -69,19 +73,31 @@
     "vitest": "^3.2.4"
   },
   "pnpm": {
+    "onlyBuiltDependencies": [
+      "@swc/core",
+      "@tailwindcss/oxide",
+      "canvas",
+      "core-js",
+      "core-js-pure",
+      "dprint",
+      "esbuild",
+      "msw",
+      "unrs-resolver"
+    ],
     "overrides": {
       "trim@0.0.1": "0.0.3",
       "cookie@0.6.0": "0.7.2",
       "cookie@0.7.1": "0.7.2",
       "esbuild@^0.23.0": "^0.25.0",
-      "esbuild@^0.24.0": "^0.25.0"
+      "esbuild@^0.24.0": "^0.25.0",
+      "react-server-dom-webpack": ">=19.2.2"
     }
   },
   "engines": {
     "node": ">=18.19.0",
-    "pnpm": "=9.5.0"
+    "pnpm": "=10.27.0"
   },
-  "packageManager": "pnpm@9.5.0+sha512.140036830124618d624a2187b50d04289d5a087f326c9edfc0ccd733d76c4f52c3a313d4fc148794a2a9d81553016004e6742e8cf850670268a7387fc220c903",
+  "packageManager": "pnpm@10.27.0+sha512.72d699da16b1179c14ba9e64dc71c9a40988cbdc65c264cb0e489db7de917f20dcf4d64d8723625f2969ba52d4b7e2a1170682d9ac2a5dcaeaab732b7e16f04a",
   "dependencies": {
     "@react-navigation/native": "^7.1.17",
     "@vitejs/plugin-react": "^4.7.0",

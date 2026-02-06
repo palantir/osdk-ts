@@ -379,6 +379,8 @@ function renderType(
           : `{ __primaryKey: ${primaryKeyValue}, /* other properties */ }`;
       }
       return primaryKeyValue;
+    case "objectSet":
+      return `client(${type.objectTypeApiName}).where({ /* filter conditions */ })`;
     case "anonymousCustomType":
     case "customType":
       return "{}";

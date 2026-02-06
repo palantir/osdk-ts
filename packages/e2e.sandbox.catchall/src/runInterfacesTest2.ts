@@ -20,6 +20,7 @@ import {
   Athlete,
   CollateralConcernCandidate,
   EsongInterfaceA,
+  MwaltherTestIdp,
   NbaPlayer,
   NihalbCastingInterfaceB,
   NihalbCastingInterfaceTypeA,
@@ -28,7 +29,7 @@ import {
 import invariant from "tiny-invariant";
 import type { TypeOf } from "ts-expect";
 import { expectType } from "ts-expect";
-import { client, dsClient } from "./client.js";
+import { client, dsClient, ontologyClient } from "./client.js";
 
 export async function runInterfacesTest2(): Promise<void> {
   const athletes = await dsClient(Athlete).where({
@@ -106,7 +107,7 @@ export async function runInterfacesTest2(): Promise<void> {
 
   const implementObjectTypeAAndB = await client(
     NihalbCastingInterfaceTypeA,
-  ).asType(NihalbCastingInterfaceB).fetchPage();
+  ).narrowToType(NihalbCastingInterfaceB).fetchPage();
 
   const linkedToObjectTypeAAndB = await client(
     NihalbCastingInterfaceTypeA,
@@ -122,7 +123,7 @@ export async function runInterfacesTest2(): Promise<void> {
     ).fetchPage();
 
   const linkedToObjectTypeB = await client(NihalbCastingInterfaceB)
-    .asType(NihalbCastingInterfaceTypeA)
+    .narrowToType(NihalbCastingInterfaceTypeA)
     .pivotTo(
       "nihalbCastingLinkedObjectTypeA",
     ).fetchPage();
@@ -130,10 +131,10 @@ export async function runInterfacesTest2(): Promise<void> {
   const linkedToObjectTypeBAsInterface = await client(
     NihalbCastingInterfaceB,
   )
-    .asType(NihalbCastingInterfaceTypeA)
+    .narrowToType(NihalbCastingInterfaceTypeA)
     .pivotTo(
       "nihalbCastingLinkedObjectTypeA",
-    ).asType(NihalbCastingLinkedInterfaceTypeA).fetchPage({
+    ).narrowToType(NihalbCastingLinkedInterfaceTypeA).fetchPage({
       $includeAllBaseObjectProperties: true,
     });
   console.log(
@@ -157,6 +158,33 @@ export async function runInterfacesTest2(): Promise<void> {
     linkedToObjectTypeBAsInterface.data[0].$as(
       $Objects.NihalbCastingLinkedObjectTypeA,
     ),
+  );
+
+  const myInterfaceIdpData = await ontologyClient(MwaltherTestIdp).fetchPage();
+  const myFilteredInterfaceIdpData = await ontologyClient(MwaltherTestIdp)
+    .where({
+      $or: [{ idpAge: { $lt: 30 } }, {
+        mwaltherName: { $eq: "different combined" },
+      }],
+    }).fetchPage();
+
+  console.log(
+    "We get all data loading by interface with IDP: ",
+    myInterfaceIdpData.data,
+  );
+  console.log(
+    "property accessors work on idp and then spt with namespace: ",
+    myInterfaceIdpData.data[0].idpAge,
+    myInterfaceIdpData.data[1].mwaltherName,
+  );
+  console.log(
+    "We get all data loading by interface with simple filter IDP: ",
+    myFilteredInterfaceIdpData.data,
+  );
+  console.log(
+    "property accessors STILL work on idp and then spt with namespace: ",
+    myFilteredInterfaceIdpData.data[0].idpAge,
+    myFilteredInterfaceIdpData.data[1].mwaltherName,
   );
 }
 

@@ -1,0 +1,51 @@
+{
+  "name": "@psdk/examples.react-sdk-2.x",
+  "private": true,
+  "version": "0.0.0",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/palantir/osdk-ts.git"
+  },
+  "scripts": {
+    "build": "tsc && vite build",
+    "dev": "vite",
+    "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
+    "lint:fix": "eslint --report-unused-disable-directives --max-warnings 0 --fix",
+    "preview": "vite preview",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@osdk/client": "workspace:*",
+    "@osdk/foundry": "latest",
+    "@osdk/oauth": "workspace:*",
+    "@osdk/react": "workspace:*",
+    "react": "^18",
+    "react-dom": "^18",
+    "react-router-dom": "^6.30.1"
+  },
+  "devDependencies": {
+    "@eslint/compat": "^1.3.2",
+    "@eslint/js": "^9.35.0",
+    "@types/eslint-plugin-jsx-a11y": "^6.10.0",
+    "@types/node": "^18.0.0",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "@typescript-eslint/eslint-plugin": "^8.43.0",
+    "@typescript-eslint/parser": "^8.43.0",
+    "@vitejs/plugin-react": "^4.7.0",
+    "eslint": "^9.35.0",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-prettier": "^5.5.4",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.20",
+    "globals": "^15.15.0",
+    "typescript": "~5.5.4",
+    "typescript-eslint": "^8.43.0",
+    "vite": "^6.3.6",
+    "vitest": "^3.2.4"
+  },
+  "type": "module"
+}

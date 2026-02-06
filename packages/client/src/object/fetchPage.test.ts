@@ -340,7 +340,15 @@ describe(fetchPage, () => {
         }>();
 
       expectTypeOf<
-        Awaited<FetchPageResult<FooInterface, "fooSpt", true, "drop", false>>
+        Awaited<
+          FetchPageResult<
+            FooInterface,
+            "fooSpt" | "fooIdp",
+            true,
+            "drop",
+            false
+          >
+        >
       >()
         .branded
         .toEqualTypeOf<{
@@ -350,7 +358,15 @@ describe(fetchPage, () => {
         }>();
 
       expectTypeOf<
-        Awaited<FetchPageResult<FooInterface, "fooSpt", true, "drop", false>>
+        Awaited<
+          FetchPageResult<
+            FooInterface,
+            "fooSpt" | "fooIdp",
+            true,
+            "drop",
+            false
+          >
+        >
       >()
         .branded
         .toEqualTypeOf<{

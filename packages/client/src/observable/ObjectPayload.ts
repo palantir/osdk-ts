@@ -16,9 +16,11 @@
 
 import type { ObjectTypeDefinition, Osdk } from "@osdk/api";
 import type { ObjectHolder } from "../object/convertWireToOsdkObjects/ObjectHolder.js";
-import type { ObserveObjectArgs } from "./ObservableClient.js";
+import type { ObserveObjectCallbackArgs } from "./ObservableClient.js";
 
-export interface ObjectPayload extends Omit<ObserveObjectArgs<any>, "object"> {
+export interface ObjectPayload
+  extends Omit<ObserveObjectCallbackArgs<any>, "object">
+{
   object: ObjectHolder | undefined;
 }
 

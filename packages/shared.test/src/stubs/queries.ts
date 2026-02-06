@@ -32,6 +32,7 @@ import {
   queryTypeAcceptsTwoDimensionalAggregation,
   queryTypeOutputsInterfaceObjectSet,
   queryTypeReturnsArray,
+  queryTypeReturnsArrayOfObjects,
   queryTypeReturnsComplexStruct,
   queryTypeReturnsDate,
   queryTypeReturnsMap,
@@ -328,6 +329,12 @@ export const queryTypeReturnsMapResponse: ExecuteQueryResponse = {
   value: [{ key: "50030", value: "bye" }],
 };
 
+export const queryTypeReturnsArrayOfObjectsResponse: ExecuteQueryResponse = {
+  value: [
+    employee1.__primaryKey,
+  ],
+};
+
 export const emptyBody: string = JSON.stringify({
   parameters: {},
 });
@@ -422,6 +429,12 @@ const queryRequestHandlers: {
         queryTypeReturnsArrayResponse,
     },
   },
+  [queryTypeReturnsArrayOfObjects.apiName]: {
+    [queryTypeReturnsArrayOfObjects.version]: {
+      [JSON.stringify(queryTypeReturnsArrayRequest)]:
+        queryTypeReturnsArrayOfObjectsResponse,
+    },
+  },
   [queryTypeReturnsMap.apiName]: {
     [queryTypeReturnsMap.version]: {
       [JSON.stringify(queryTypeReturnsMapRequest)]: queryTypeReturnsMapResponse,
@@ -461,6 +474,7 @@ export function registerLazyQueries(fauxOntology: FauxOntology): void {
     queryTypeAcceptsInterfaces,
     queryTypeAcceptsInterfaceObjectSet,
     queryTypeOutputsInterfaceObjectSet,
+    queryTypeReturnsArrayOfObjects,
   ];
 
   for (const queryType of Object.values(queryTypes)) {

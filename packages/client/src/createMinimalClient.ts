@@ -42,6 +42,7 @@ export function createMinimalClient(
   options: OntologyCachingOptions & {
     logger?: Logger;
     transactionId?: string;
+    flushEdits?: () => Promise<void>;
     branch?: string;
   } = {},
   fetchFn: (
@@ -85,7 +86,7 @@ export function createMinimalClient(
     clientCacheKey: {} as ClientCacheKey,
     requestContext: {},
     branch: options.branch,
-    asTypeInterfaceOrObjectMapping: {},
+    narrowTypeInterfaceOrObjectMapping: {},
   } satisfies Omit<
     MinimalClient,
     "ontologyProvider"

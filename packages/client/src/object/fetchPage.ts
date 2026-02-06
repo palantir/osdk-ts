@@ -37,6 +37,7 @@ import type {
   SearchOrderByV2,
 } from "@osdk/foundry.ontologies";
 import * as OntologiesV2 from "@osdk/foundry.ontologies";
+import invariant from "tiny-invariant";
 import { extractNamespace } from "../internal/conversions/extractNamespace.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { addUserAgentAndRequestContextHeaders } from "../util/addUserAgentAndRequestContextHeaders.js";
@@ -136,6 +137,8 @@ export async function fetchStaticRidPage<
     T
   >
 > {
+  const shouldLoadPropertySecurities = args.$loadPropertySecurityMetadata
+    ?? false;
   const requestBody = await applyFetchArgs(
     args,
     {
@@ -146,10 +149,15 @@ export async function fetchStaticRidPage<
       select: ((args?.$select as string[] | undefined) ?? []),
       excludeRid: !args?.$includeRid,
       snapshot: useSnapshot,
+      loadPropertySecurities: shouldLoadPropertySecurities,
     } as LoadObjectSetV2MultipleObjectTypesRequest,
     client,
     { type: "object", apiName: "" },
   );
+
+  if (client.flushEdits != null) {
+    await client.flushEdits();
+  }
 
   const result = await OntologiesV2.OntologyObjectSets.loadMultipleObjectTypes(
     addUserAgentAndRequestContextHeaders(client, { osdkMetadata: undefined }),
@@ -164,10 +172,12 @@ export async function fetchStaticRidPage<
       result.data,
       undefined,
       {},
+      shouldLoadPropertySecurities ? result.propertySecurities : undefined,
       !args.$includeRid,
       args.$select,
       false,
       result.interfaceToObjectTypeMappings,
+      result.interfaceToObjectTypeMappingsV2,
     ),
     nextPageToken: result.nextPageToken,
     totalCount: result.totalCount,
@@ -196,12 +206,19 @@ async function fetchInterfacePage<
   useSnapshot: boolean = false,
 ): Promise<FetchPageResult<Q, L, R, S, T>> {
   if (args.$__UNSTABLE_useOldInterfaceApis) {
+    invariant(
+      args.$loadPropertySecurityMetadata === false
+        || args.$loadPropertySecurityMetadata === undefined,
+      "`$loadPropertySecurityMetadata` is not supported with old interface APIs",
+    );
     const baseRequestBody: SearchObjectsForInterfaceRequest = {
       augmentedProperties: {},
       augmentedSharedPropertyTypes: {},
+      augmentedInterfacePropertyTypes: {},
       otherInterfaceTypes: [],
       selectedObjectTypes: [],
       selectedSharedPropertyTypes: args.$select ? [...args.$select] : [],
+      selectedInterfacePropertyTypes: [],
       where: objectSetToSearchJsonV2(objectSet, interfaceType.apiName),
     };
 
@@ -220,6 +237,10 @@ async function fetchInterfacePage<
       requestBody.selectedSharedPropertyTypes = Array.from(remapped);
     }
 
+    if (client.flushEdits != null) {
+      await client.flushEdits();
+    }
+
     const result = await OntologiesV2.OntologyInterfaces
       .search(
         addUserAgentAndRequestContextHeaders(client, interfaceType),
@@ -235,6 +256,7 @@ async function fetchInterfacePage<
       interfaceType.apiName,
       !args.$includeRid,
       await extractRdpDefinition(client, objectSet),
+      undefined,
     );
     return result as any;
   }
@@ -248,17 +270,25 @@ async function fetchInterfacePage<
     extractedInterfaceTypeApiName,
     args,
   );
+  const shouldLoadPropertySecurities = args.$loadPropertySecurityMetadata
+    ?? false;
   const requestBody = await buildAndRemapRequestBody(
     args,
     {
       objectSet: resolvedInterfaceObjectSet,
       select: args?.$select ? [...args.$select] : [],
+      selectV2: [],
+      loadPropertySecurities: shouldLoadPropertySecurities,
       excludeRid: !args?.$includeRid,
       snapshot: useSnapshot,
     },
     client,
     interfaceType,
   );
+
+  if (client.flushEdits != null) {
+    await client.flushEdits();
+  }
 
   const result = await OntologiesV2.OntologyObjectSets.loadMultipleObjectTypes(
     addUserAgentAndRequestContextHeaders(client, interfaceType),
@@ -277,10 +307,12 @@ async function fetchInterfacePage<
       result.data,
       extractedInterfaceTypeApiName,
       {},
+      shouldLoadPropertySecurities ? result.propertySecurities : undefined,
       !args.$includeRid,
       args.$select,
       false,
       result.interfaceToObjectTypeMappings,
+      result.interfaceToObjectTypeMappingsV2,
     ),
     nextPageToken: result.nextPageToken,
     totalCount: result.totalCount,
@@ -418,6 +450,7 @@ async function buildAndRemapRequestBody<
     pageSize?: PageSize;
     select?: readonly string[];
     selectedSharedPropertyTypes?: readonly string[];
+    loadPropertySecurity?: boolean;
   },
 >(
   args: FetchPageArgs<Q, L, R, A, S, T>,
@@ -476,6 +509,7 @@ async function applyFetchArgs<
     orderBy?: SearchOrderByV2;
     pageToken?: PageToken;
     pageSize?: PageSize;
+    loadPropertySecurities?: boolean;
   },
 >(
   args: FetchPageArgs<
@@ -498,6 +532,10 @@ async function applyFetchArgs<
 
   if (args?.$pageSize != null) {
     body.pageSize = args.$pageSize;
+  }
+
+  if (args?.$loadPropertySecurityMetadata) {
+    body.loadPropertySecurities = true;
   }
 
   const orderBy = args?.$orderBy;
@@ -548,17 +586,26 @@ export async function fetchObjectPage<
     () => {},
   );
 
+  const shouldLoadPropertySecurities = args.$loadPropertySecurityMetadata
+    ?? false;
+
   const requestBody = await buildAndRemapRequestBody(
     args,
     {
       objectSet,
       select: args?.$select ? [...args.$select] : [],
+      selectV2: [],
+      loadPropertySecurities: shouldLoadPropertySecurities,
       excludeRid: !args?.$includeRid,
       snapshot: useSnapshot,
     },
     client,
     objectType,
   );
+
+  if (client.flushEdits != null) {
+    await client.flushEdits();
+  }
 
   const r = await OntologiesV2.OntologyObjectSets.load(
     addUserAgentAndRequestContextHeaders(client, objectType),
@@ -574,6 +621,7 @@ export async function fetchObjectPage<
       undefined,
       undefined,
       await extractRdpDefinition(client, objectSet),
+      shouldLoadPropertySecurities ? r.propertySecurities : undefined,
       args.$select,
       false,
     ),

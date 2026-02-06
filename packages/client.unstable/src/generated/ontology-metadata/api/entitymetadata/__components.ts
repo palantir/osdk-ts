@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,6 +67,31 @@ export type ActionLogRequirednessSetting =
 
 export type ActiveStorageBackend = "V1" | "V2";
 export type Alias = string;
+
+/**
+ * Indicates the that given object type is archived.
+ */
+export interface ArchivedState {
+}
+export interface ArchiveState_archivedState {
+  type: "archivedState";
+  archivedState: ArchivedState;
+}
+
+export interface ArchiveState_pendingRestorationState {
+  type: "pendingRestorationState";
+  pendingRestorationState: RestorationState;
+}
+/**
+ * Archive state for an OSv2 object type. It can be either Archived, or PendingRestoration. Archived means the
+ * object type is archived and cannot be queried by OSS or modified by actions. PendingRestoration means that
+ * restoration of the object type was requested, and Funnel is currently in the process of restoring it.
+ * In the future, can have different archival modes, such as "light" archiving, where we deindex from Highbury,
+ * but keep the pipelines active.
+ */
+export type ArchiveState =
+  | ArchiveState_archivedState
+  | ArchiveState_pendingRestorationState;
 
 /**
  * Delegates the selected transform profile to Funnel.
@@ -139,6 +164,7 @@ export type EditsHistory = EditsHistory_config | EditsHistory_none;
  */
 export interface EditsHistoryConfig {
   store: _api_ObjectTypeRid;
+  storeAllPreviousProperties?: boolean | null | undefined;
 }
 /**
  * Contains configuration to import edits history from Phonograph to Funnel/Highbury.
@@ -322,6 +348,15 @@ export interface GetCombinedOntologyHistoryResponse {
   nextPageToken?: CombinedOntologyHistoryPageToken | null | undefined;
 }
 /**
+ * Response to getStreamingProfileConfigs.
+ */
+export interface GetStreamingProfileConfigsResponse {
+  streamingProfileConfigs: Record<
+    StreamingProfileConfigId,
+    StreamingProfileConfigDetails
+  >;
+}
+/**
  * Contains additional metadata associated with a LinkType.
  */
 export interface LinkTypeEntityMetadata {
@@ -471,6 +506,7 @@ export interface ObjectStorageV1 {
  * endpoint can be used.
  */
 export interface ObjectStorageV2 {
+  archiveState?: ArchiveState | null | undefined;
   editsHistoryImportConfiguration?:
     | EditsHistoryImportConfiguration
     | null
@@ -529,6 +565,11 @@ export interface ObjectTypeEntityMetadataLoadResponse {
  * Settings related to indexing object types in Funnel.
  */
 export interface ObjectTypeIndexingSettings {
+  streamingConsistencyGuarantee?:
+    | StreamingConsistencyGuarantee
+    | null
+    | undefined;
+  streamingProfileConfig?: StreamingProfileConfig | null | undefined;
   transformProfileConfig?: TransformProfileConfig | null | undefined;
 }
 /**
@@ -573,6 +614,7 @@ export type OntologyIrEditsHistory =
  */
 export interface OntologyIrEditsHistoryConfig {
   store: _api_ObjectTypeApiName;
+  storeAllPreviousProperties?: boolean | null | undefined;
 }
 /**
  * Wrapper for multiple strategies as objects can have multiple datasources.
@@ -623,6 +665,11 @@ export type PatchApplicationStrategy =
  */
 export interface ReadOnlyV1V2 {
 }
+/**
+ * Indicates that the given object type is in the process of being restored by funnel.
+ */
+export interface RestorationState {
+}
 export type SharedPropertyTypeAlias = Alias;
 
 /**
@@ -654,6 +701,40 @@ export type StorageBackend =
   | StorageBackend_objectStorageV1
   | StorageBackend_readOnlyV1V2
   | StorageBackend_objectStorageV2;
+
+export type StreamingConsistencyGuarantee = "AT_LEAST_ONCE" | "EXACTLY_ONCE";
+
+/**
+ * A Flink streaming profile.
+ */
+export type StreamingProfile = string;
+
+/**
+ * A complete streaming profile configuration.
+ */
+export interface StreamingProfileConfig {
+  id: StreamingProfileConfigId;
+}
+/**
+ * A preconfigured set of Flink streaming profiles.
+ */
+export interface StreamingProfileConfigDetails {
+  id: StreamingProfileConfigId;
+  jobManagerMemory: number;
+  parallelism: number;
+  streamingProfiles: Array<StreamingProfile>;
+  taskManagerMemory: number;
+}
+/**
+ * The ID of a preconfigured streaming profile configuration. Each corresponds to exactly one
+ * `StreamingProfileConfigDetails`.
+ */
+export type StreamingProfileConfigId =
+  | "EXTRA_SMALL"
+  | "SMALL"
+  | "MEDIUM"
+  | "LARGE"
+  | "EXTRA_LARGE";
 
 /**
  * No distinct SyncConfig is supported at the moment.
@@ -688,6 +769,7 @@ export interface SystemEntityMetadataModificationRequest {
     _api_ObjectTypeRid,
     ObjectTypeSystemEntityMetadataModification
   >;
+  ontologyBranchRid?: _api_OntologyBranchRid | null | undefined;
 }
 /**
  * Response to SystemEntityMetadataModificationRequest.

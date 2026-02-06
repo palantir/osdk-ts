@@ -29,12 +29,14 @@ import {
   VITE_INJECTIONS_PATH,
 } from "../common/constants.js";
 import { getInputHtmlEntrypoints } from "../common/getInputHtmlEntrypoints.js";
-import { standardizeFileExtension } from "../common/standardizeFileExtension.js";
+import { standardizePathAndFileExtension } from "../common/standardizePathAndFileExtension.js";
+import { isCodeWorkspacesMode } from "./codeWorkspacesMode.js";
 import { extractInjectedScripts } from "./extractInjectedScripts.js";
 import { getBaseHref } from "./getBaseHref.js";
 import { getFoundryToken } from "./getFoundryToken.js";
 import { getWidgetIdOverrideMap } from "./getWidgetIdOverrideMap.js";
 import { publishDevModeSettings } from "./publishDevModeSettings.js";
+import { warnIfWrongDevCommand } from "./validateDevEnvironment.js";
 
 // Location of the setup page assets
 const DIR_DIST: string = typeof __dirname !== "undefined"
@@ -73,7 +75,8 @@ export function FoundryWidgetDevPlugin(): Plugin {
     /**
      * Check for the required token environment variable in dev mode.
      */
-    config(resolvedConfig) {
+    configResolved(resolvedConfig) {
+      warnIfWrongDevCommand(resolvedConfig.mode, resolvedConfig.logger);
       getFoundryToken(resolvedConfig.mode);
     },
 
@@ -215,7 +218,7 @@ export function FoundryWidgetDevPlugin(): Plugin {
       }
 
       // Standardize the source file extension and get the full path
-      const standardizedSource = standardizeFileExtension(
+      const standardizedSource = standardizePathAndFileExtension(
         getFullSourcePath(
           // If the source path is absolute, resolve it against the current working directory
           source.startsWith("/") ? path.join(process.cwd(), source) : source,
@@ -223,10 +226,7 @@ export function FoundryWidgetDevPlugin(): Plugin {
         ),
       );
       // Importers are already full paths, so just standardize the extension
-      // Normalize to ensure consistent path separators on Windows
-      const standardizedImporter = standardizeFileExtension(
-        path.normalize(importer),
-      );
+      const standardizedImporter = standardizePathAndFileExtension(importer);
 
       // In dev mode all entrypoints have a generic HTML importer value
       if (
@@ -248,7 +248,7 @@ export function FoundryWidgetDevPlugin(): Plugin {
         && standardizedSource.includes("/src/")
         && codeEntrypoints[standardizedImporter] != null
       ) {
-        const fullSourcePath = standardizeFileExtension(
+        const fullSourcePath = standardizePathAndFileExtension(
           getFullSourcePath(source, standardizedImporter),
         );
         configFileToEntrypoint[fullSourcePath] = standardizedImporter;
@@ -270,10 +270,20 @@ function serverPath(server: ViteDevServer, subPath: string): string {
 }
 
 function printSetupPageUrl(server: ViteDevServer) {
-  const setupRoute = `${getBaseHref(server)}${SETUP_PATH}/`;
-  server.config.logger.info(
-    `  ${color.green("➜")}  ${
-      color.bold("Click to enter developer mode for your widget set")
-    }: ${color.green(setupRoute)}`,
-  );
+  if (isCodeWorkspacesMode(server.config.mode)) {
+    server.config.logger.info(
+      `  ${color.green("➜")}  ${
+        color.bold(
+          "Select a widget from the preview panel to enter developer mode",
+        )
+      }`,
+    );
+  } else {
+    const setupRoute = `${getBaseHref(server)}${SETUP_PATH}/`;
+    server.config.logger.info(
+      `  ${color.green("➜")}  ${
+        color.bold("Click to enter developer mode for your widget set")
+      }: ${color.green(setupRoute)}`,
+    );
+  }
 }

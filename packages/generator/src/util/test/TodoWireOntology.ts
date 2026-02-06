@@ -111,6 +111,7 @@ export const TodoWireOntology: WireOntologyDefinition = {
               subType: {
                 type: "string",
               },
+              reducers: [],
             },
             valueTypeApiName: "arrayValueType",
             rid: "rid",

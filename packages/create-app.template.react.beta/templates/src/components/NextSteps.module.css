@@ -1,0 +1,55 @@
+.nextSteps {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.nextStepsHeader {
+  align-self: baseline;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.nextStep {
+  border: 1px solid #11141826;
+  border-radius: 4px;
+  display: flex;
+  gap: 15px;
+  padding: 16px;
+}
+
+.nextStepContent {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-align: left;
+}
+
+.title {
+  font-weight: 600;
+}
+
+.subtitle {
+  color: #5f6b7c;
+  line-height: 20px;
+}
+
+.icon {
+  height: 34px;
+}
+
+.code {
+  background: #8f99a826;
+  padding: 2px;
+  white-space: nowrap;
+  border-radius: 2px;
+}
+
+.learnMore {
+  color: #215db0;
+  text-decoration: none;
+}
+
+.learnMore:hover {
+  text-decoration: underline;
+}

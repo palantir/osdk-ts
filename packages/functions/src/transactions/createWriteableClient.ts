@@ -16,7 +16,7 @@
 
 import { createClientWithTransaction } from "@osdk/client/unstable-do-not-use";
 
-import type { Client } from "@osdk/client";
+import type { Client, createClient } from "@osdk/client";
 import type {
   AddLinkApiNames,
   AddLinkSources,
@@ -43,12 +43,16 @@ import { writeableClientContext } from "./WriteableClient.js";
 export function createWriteableClient<
   X extends AnyEdit = never,
 >(
-  ...args: Parameters<typeof createClientWithTransaction>
+  transactionId: string,
+  ...args: Parameters<typeof createClient>
 ): WriteableClient<X> {
-  const transactionRid = args[0];
-  const ontologyRid = args[2];
+  const ontologyRid = args[1];
 
-  const client = createClientWithTransaction(...args);
+  const client = createClientWithTransaction(
+    transactionId,
+    async () => {},
+    ...args,
+  ) as Client;
 
   const editRequestManager = new EditRequestManager(
     client as WriteableClient<any>, // This cast is safe because we create the writeable client properties below.
@@ -173,7 +177,8 @@ export function createWriteableClient<
       [writeableClientContext]: {
         value: {
           ontologyRid,
-          transactionRid,
+          transactionId,
+          editRequestManager,
         } satisfies WriteableClientContext,
       },
     } satisfies Record<

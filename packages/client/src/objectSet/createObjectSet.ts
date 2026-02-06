@@ -21,10 +21,13 @@ import type {
   InterfaceDefinition,
   LinkedType,
   LinkNames,
+  LinkTypeApiNamesFor,
+  MinimalDirectedObjectLinkInstance,
   NullabilityAdherence,
   ObjectOrInterfaceDefinition,
   ObjectSet,
   ObjectSetArgs,
+  ObjectSetSubscription,
   ObjectTypeDefinition,
   Osdk,
   PrimaryKeyType,
@@ -52,6 +55,7 @@ import { fetchSingle, fetchSingleWithErrors } from "../object/fetchSingle.js";
 import { augmentRequestContext } from "../util/augmentRequestContext.js";
 import { resolveBaseObjectSetType } from "../util/objectSetUtils.js";
 import { isWireObjectSet } from "../util/WireObjectSet.js";
+import { fetchLinksPage } from "./fetchLinksPage.js";
 import { ObjectSetListenerWebsocket } from "./ObjectSetListenerWebsocket.js";
 
 function isObjectTypeDefinition(
@@ -267,8 +271,9 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       ).subscribe(
         objectType,
         objectSet,
-        listener,
+        listener as ObjectSetSubscription.Listener<Q, any>,
         opts?.properties,
+        opts?.includeRid,
       );
 
       return { unsubscribe: async () => (await pendingSubscribe)() };
@@ -302,14 +307,16 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       );
     },
 
-    asType: (objectTypeDef: ObjectTypeDefinition | InterfaceDefinition) => {
+    narrowToType: (
+      objectTypeDef: ObjectTypeDefinition | InterfaceDefinition,
+    ) => {
       const existingMapping =
-        clientCtx.asTypeInterfaceOrObjectMapping[objectTypeDef.apiName];
+        clientCtx.narrowTypeInterfaceOrObjectMapping[objectTypeDef.apiName];
       invariant(
         !existingMapping || existingMapping === objectTypeDef.type,
         `${objectTypeDef.apiName} was previously used as an ${existingMapping}, but now used as a ${objectTypeDef.type}.`,
       );
-      clientCtx.asTypeInterfaceOrObjectMapping[objectTypeDef.apiName] =
+      clientCtx.narrowTypeInterfaceOrObjectMapping[objectTypeDef.apiName] =
         objectTypeDef.type;
 
       return clientCtx.objectSetFactory(
@@ -321,6 +328,32 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
           entityType: objectTypeDef.apiName,
         },
       );
+    },
+
+    experimental_asyncIterLinks: async function*<
+      LINK_TYPE_API_NAME extends LinkTypeApiNamesFor<Q>,
+    >(
+      links: LINK_TYPE_API_NAME[],
+    ): AsyncIterableIterator<
+      MinimalDirectedObjectLinkInstance<Q, LINK_TYPE_API_NAME>
+    > {
+      let $nextPageToken: string | undefined = undefined;
+      do {
+        const result = await fetchLinksPage(
+          augmentRequestContext(
+            clientCtx,
+            _ => ({ finalMethodCall: "asyncIterLinks" }),
+          ),
+          objectType,
+          objectSet,
+          links,
+        );
+        $nextPageToken = result.nextPageToken;
+
+        for (const obj of result.data) {
+          yield obj;
+        }
+      } while ($nextPageToken != null);
     },
 
     $objectSetInternals: {

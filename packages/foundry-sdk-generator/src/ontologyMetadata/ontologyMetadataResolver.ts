@@ -29,6 +29,29 @@ import type {
 import { createSharedClientContext } from "@osdk/shared.client.impl";
 import { Result } from "./Result.js";
 
+/**
+ * Parses a link type string in the format "ObjectTypeApiName.linkTypeApiName".
+ * Handles object type API names that contain dots (e.g., "com.foo.ObjectName.myLink").
+ *
+ * @param linkType - The link type string to parse
+ * @returns A tuple of [objectTypeApiName, linkTypeApiName]
+ * @throws Error if the link type string doesn't contain a dot
+ */
+export function parseLinkType(
+  linkType: string,
+): [objectTypeApiName: string, linkTypeApiName: string] {
+  const lastDotIndex = linkType.lastIndexOf(".");
+  if (lastDotIndex === -1) {
+    throw new Error(
+      `Invalid link type format: "${linkType}". Expected format: "ObjectTypeApiName.linkTypeApiName"`,
+    );
+  }
+  return [
+    linkType.slice(0, lastDotIndex),
+    linkType.slice(lastDotIndex + 1),
+  ];
+}
+
 type PackageInfo = Map<string, {
   sdkPackage: SdkPackage;
   sdk: Sdk;
@@ -270,9 +293,7 @@ export class OntologyMetadataResolver {
       const interfaceTypes = new Set(entities.interfaceTypesApiNamesToLoad);
 
       for (const linkType of entities.linkTypesApiNamesToLoad ?? []) {
-        const [objectTypeApiName, linkTypeApiName] = linkType.split(
-          ".",
-        );
+        const [objectTypeApiName, linkTypeApiName] = parseLinkType(linkType);
         if (!linkTypes.has(objectTypeApiName)) {
           linkTypes.set(objectTypeApiName, new Set());
         }
@@ -324,9 +345,7 @@ export class OntologyMetadataResolver {
       const linkTypes = new Map<string, Set<string>>();
 
       for (const linkType of entities.linkTypesApiNamesToLoad ?? []) {
-        const [objectTypeApiName, linkTypeApiName] = linkType.split(
-          ".",
-        );
+        const [objectTypeApiName, linkTypeApiName] = parseLinkType(linkType);
         if (!linkTypes.has(objectTypeApiName)) {
           linkTypes.set(objectTypeApiName, new Set());
         }

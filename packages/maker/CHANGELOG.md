@@ -1,5 +1,95 @@
 # @osdk/maker
 
+## 0.16.0-beta.2
+
+### Minor Changes
+
+- e462938: Support PSGs in OAC
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.2
+
+## 0.15.0-beta.9
+
+### Minor Changes
+
+- ace2d68: Allow custom "then" configuration on visibility overrides
+- 044f478: Wire propertiesV2 to implementsInterface
+- 3693275: Add flag to add namespace prefix to value type api names
+
+## 0.15.0-beta.8
+
+### Minor Changes
+
+- c773e8f: Expose more status options on OAC
+
+### Patch Changes
+
+- Updated dependencies [bb9d25c]
+  - @osdk/api@2.7.0-beta.12
+
+## 0.15.0-beta.7
+
+### Minor Changes
+
+- 8381ac2: Alias and render hint overrides for oac
+- c95f3bc: Support IDPs in OAC
+
+### Patch Changes
+
+- @osdk/api@2.7.0-beta.9
+
+## 0.15.0-beta.6
+
+### Minor Changes
+
+- 2fd6f6e: Fix self-referential derived datasources
+
+## 0.15.0-beta.5
+
+### Minor Changes
+
+- 1cb0862: fix property parameter defaults
+
+## 0.15.0-beta.4
+
+### Minor Changes
+
+- 9088072: Add users from static groups as action parameters in OAC
+- bb8d059: Support customizations for delete object action parameters
+- 33e10e3: Implement user and group action parameters
+
+### Patch Changes
+
+- Updated dependencies [c9ca08d]
+  - @osdk/api@2.7.0-beta.6
+
+## 0.15.0-beta.3
+
+### Minor Changes
+
+- e743064: Expose icon param in actions
+
+### Patch Changes
+
+- Updated dependencies [1e3c147]
+- Updated dependencies [579e518]
+  - @osdk/api@2.7.0-beta.4
+  - @osdk/typescript-sdk-docs@0.6.0-beta.3
+
+## 0.15.0-beta.2
+
+### Minor Changes
+
+- 448caa8: Support formatting for SPTs
+
+### Patch Changes
+
+- Updated dependencies [03db734]
+  - @osdk/typescript-sdk-docs@0.6.0-beta.2
+  - @osdk/api@2.7.0-beta.2
+
 ## 0.14.0-beta.15
 
 ### Minor Changes
@@ -157,6 +247,46 @@
 ### Patch Changes
 
 - @osdk/api@2.5.0-beta.15
+
+## 0.13.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- 6da8fd2: Write value type IR correctly
+- 37eb75b: readme update and missing changeset for wiring up randomness key
+- a6f49e9: Intermediary links in oac
+- a6f49e9: Fix Maker Rid Generation
+- f025f30: Fix semantic merge conflict
+- 1b60527: Remove foundry.ontologies dependency
+- 7cdab1d: Update platform sdk dependencies
+- a00d2ed: Update Platform SDK dependencies
+- 40d43c2: Make codegen TS compiler friendly
+- d815339: Allow interface props to be excluded from actions
+- f9b6dc4: Write value types to ontology IR file
+- 07083e1: Action submission conditions can have custom metadata
+- b1c99bf: Revert .js -> .ts extension for codegen
+- 11fd3fb: Add api name validation for object types
+- 5f72188: Fix object action param optionality for non-array props
+- 5fd12eb: Fix interface display metadata to include icon
+- 7bdac45: Update Platform SDK dependency
+- a96d89e: Update Platform SDK dependencies
+- f2dbc3d: Fix test from semantic merge conflict
+- cbcf2ad: Add branching support
+- 04fe946: Use block data type for imports
+- 7f0ad5c: Check extended interfaces when verifying interface actions
+- 712dfbe: Improve interface action validation
+- Updated dependencies [322c5bc]
+- Updated dependencies [7160276]
+- Updated dependencies [7bdac45]
+- Updated dependencies [37eb75b]
+- Updated dependencies [7b97128]
+- Updated dependencies [76905f5]
+- Updated dependencies [20962bc]
+- Updated dependencies [052a96b]
+- Updated dependencies [ca1fabe]
+- Updated dependencies [e48be06]
+  - @osdk/api@2.5.0
 
 ## 0.13.0-beta.15
 

@@ -1,0 +1,35 @@
+{
+  "name": "@osdk/react-components-styles",
+  "version": "0.2.0-beta.1",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/palantir/osdk-ts.git"
+  },
+  "exports": {
+    ".": "./src/index.css"
+  },
+  "scripts": {
+    "check-spelling": "cspell --quiet ."
+  },
+  "peerDependencies": {
+    "@blueprintjs/core": "^5.19.1 || ^6.7.0"
+  },
+  "devDependencies": {
+    "@blueprintjs/core": "^6.7.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "src/*.css",
+    "CHANGELOG.md",
+    "package.json",
+    "README.md"
+  ],
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "style": "./src/index.css",
+  "type": "module"
+}

@@ -22,12 +22,15 @@ import type {
 import type {
   ObjectPropertyType,
   PropertyV2,
+  ResolvedInterfacePropertyType,
   SharedPropertyType,
 } from "@osdk/foundry.ontologies";
 import { wirePropertyFormattingToSdkFormatting } from "./wirePropertyFormattingToSdkFormatting.js";
 
 export function wirePropertyV2ToSdkPropertyDefinition(
-  input: (PropertyV2 | SharedPropertyType) & { nullable?: boolean },
+  input: (PropertyV2 | SharedPropertyType | ResolvedInterfacePropertyType) & {
+    nullable?: boolean;
+  },
   isNullable: boolean = true,
   log?: { info: (msg: string) => void },
 ): ObjectMetadata.Property | undefined {

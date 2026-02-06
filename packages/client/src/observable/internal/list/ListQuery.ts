@@ -29,6 +29,7 @@ import type { InterfaceHolder } from "../../../object/convertWireToOsdkObjects/I
 import type {
   ObjectHolder,
 } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
+import { getWireObjectSet } from "../../../objectSet/createObjectSet.js";
 import type { ListPayload } from "../../ListPayload.js";
 import type { Status } from "../../ObservableClient/common.js";
 import { BaseListQuery } from "../base-list/BaseListQuery.js";
@@ -36,6 +37,7 @@ import type { BatchContext } from "../BatchContext.js";
 import { type CacheKey } from "../CacheKey.js";
 import type { Canonical } from "../Canonical.js";
 import { type Changes, DEBUG_ONLY__changesToString } from "../Changes.js";
+import { getObjectTypesThatInvalidate } from "../getObjectTypesThatInvalidate.js";
 import type { Entry } from "../Layer.js";
 import { type ObjectCacheKey } from "../object/ObjectCacheKey.js";
 import { objectSortaMatchesWhereClause as objectMatchesWhereClause } from "../objectMatchesWhereClause.js";
@@ -57,6 +59,7 @@ export {
   INTERSECT_IDX,
   PIVOT_IDX,
   RDP_IDX,
+  RIDS_IDX,
 } from "./ListCacheKey.js";
 import type { ListQueryOptions } from "./ListQueryOptions.js";
 
@@ -125,11 +128,16 @@ export abstract class ListQuery extends BaseListQuery<
     this.#intersectWith = cacheKey.otherKeys[INTERSECT_IDX];
     this.#pivotInfo = cacheKey.otherKeys[PIVOT_IDX];
     this.#objectSet = this.createObjectSet(store);
-    // Initialize the sorting strategy
-    this.sortingStrategy = new OrderBySortingStrategy(
-      this.apiName,
-      this.#orderBy,
-    );
+
+    // Only initialize the sorting strategy here if there's no pivotTo.
+    // When pivotTo is used, the target type differs from apiName, so we
+    // defer initialization to fetchPageData where we can resolve the actual type.
+    if (!this.#pivotInfo) {
+      this.sortingStrategy = new OrderBySortingStrategy(
+        this.apiName,
+        this.#orderBy,
+      );
+    }
 
     if (opts.autoFetchMore === true) {
       this.minResultsToLoad = Number.MAX_SAFE_INTEGER;
@@ -169,10 +177,26 @@ export abstract class ListQuery extends BaseListQuery<
   protected async fetchPageData(
     signal: AbortSignal | undefined,
   ): Promise<PageResult<Osdk.Instance<any>>> {
+    if (
+      Object.keys(this.#orderBy).length > 0
+      && !(this.sortingStrategy instanceof OrderBySortingStrategy)
+    ) {
+      const wireObjectSet = getWireObjectSet(this.#objectSet);
+      const { resultType } = await getObjectTypesThatInvalidate(
+        this.store.client[additionalContext],
+        wireObjectSet,
+      );
+      this.sortingStrategy = new OrderBySortingStrategy(
+        resultType.apiName,
+        this.#orderBy,
+      );
+    }
+
     // Fetch the data with pagination
     const resp = await this.#objectSet.fetchPage({
       $nextPageToken: this.nextPageToken,
       $pageSize: this.options.pageSize,
+      $includeRid: true,
       // For now this keeps the shared test code from falling apart
       // but shouldn't be needed ideally
       ...(Object.keys(this.#orderBy).length > 0
@@ -206,7 +230,12 @@ export abstract class ListQuery extends BaseListQuery<
 
     // We don't call super.handleFetchError because ListQuery has special error handling
     // but we still use writeToStore to create a properly structured Entry
-    return this.writeToStore({ data: [] }, "error", batch);
+    const existingTotalCount = batch.read(this.cacheKey)?.value?.totalCount;
+    return this.writeToStore(
+      { data: [], totalCount: existingTotalCount },
+      "error",
+      batch,
+    );
   }
 
   /**
@@ -332,11 +361,13 @@ export abstract class ListQuery extends BaseListQuery<
           newList.push(this.getObjectCacheKey(obj));
         }
 
+        const existingTotalCount = batch.read(this.cacheKey)?.value?.totalCount;
         this._updateList(
           newList,
           status,
           batch,
           /* append */ false,
+          existingTotalCount,
         );
       });
 
@@ -449,9 +480,10 @@ export abstract class ListQuery extends BaseListQuery<
         // updated (or didn't exist, which is nonsensical)
         if (newObjects?.length !== existing.value?.data.length) {
           batch.changes.registerList(this.cacheKey);
+          const existingTotalCount = existing.value?.totalCount;
           batch.write(
             this.cacheKey,
-            { data: newObjects ?? [] },
+            { data: newObjects ?? [], totalCount: existingTotalCount },
             "loaded",
           );
           // Should there be an else for this case? Do we need to invalidate

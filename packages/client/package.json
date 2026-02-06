@@ -1,6 +1,6 @@
 {
   "name": "@osdk/client",
-  "version": "2.6.0-beta.12",
+  "version": "2.8.0-beta.2",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
@@ -73,9 +73,9 @@
   "dependencies": {
     "@osdk/api": "workspace:*",
     "@osdk/client.unstable": "workspace:*",
-    "@osdk/foundry.core": "2.41.0",
-    "@osdk/foundry.mediasets": "2.41.0",
-    "@osdk/foundry.ontologies": "2.41.0",
+    "@osdk/foundry.core": "catalog:foundry-platform-typescript",
+    "@osdk/foundry.mediasets": "catalog:foundry-platform-typescript",
+    "@osdk/foundry.ontologies": "catalog:foundry-platform-typescript",
     "@osdk/generator-converters": "workspace:*",
     "@osdk/shared.client": "^1.0.1",
     "@osdk/shared.client.impl": "workspace:~",

@@ -92,12 +92,12 @@ describe("ObjectSet", () => {
     const asEmployee2 = interfaceObj2.$as(Employee);
 
     expectTypeOf<typeof asEmployee2>().toEqualTypeOf<
-      Osdk.Instance<Employee, never, "fullName", {}>
+      Osdk.Instance<Employee, never, "fullName" | "office", {}>
     >;
 
     expect(asEmployee2.fullName).toEqual("Santa Claus");
     // @ts-expect-error
-    expect(asEmployee2.office).toBeUndefined();
+    expect(asEmployee2.employeeId).toBeUndefined();
   });
 
   it("interface links", async () => {

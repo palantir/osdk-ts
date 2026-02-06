@@ -211,7 +211,6 @@ async function transpileWithTsup(format, target) {
     keepNames: false,
     treeshake: true,
     target: "es2022",
-
     esbuildPlugins: [
       /** @type {any} */ (babel({
         config: {
@@ -266,7 +265,13 @@ async function transpileWithBabel(format, target) {
     MODE: process.env.production ? "production" : "development",
   });
 
-  const fileEndingsToCopy = [".d.ts", ".d.ts.map", ".d.mts", ".d.mts.map"];
+  const fileEndingsToCopy = [
+    ".d.ts",
+    ".d.ts.map",
+    ".d.mts",
+    ".d.mts.map",
+    ".css",
+  ];
 
   const extMap = {
     ".js": ".js",

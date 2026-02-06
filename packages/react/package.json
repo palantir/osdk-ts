@@ -1,6 +1,6 @@
 {
   "name": "@osdk/react",
-  "version": "0.8.0-beta.4",
+  "version": "0.10.0-beta.1",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -42,6 +42,7 @@
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
+    "prepack": "rm -rf docs && cp -r ../../docs/react docs",
     "test": "vitest run",
     "transpileBrowser": "monorepo.tool.transpile -f esm -m normal -t browser",
     "transpileCjs": "monorepo.tool.transpile -f cjs -m bundle -t node",
@@ -52,14 +53,26 @@
   "peerDependencies": {
     "@osdk/api": "*",
     "@osdk/client": "*",
+    "@osdk/foundry.admin": "*",
+    "@osdk/foundry.core": "*",
     "@types/react": "^17 || ^18 || ^19",
     "react": "^17 || ^18 || ^19",
     "react-dom": "^17 || ^18 || ^19"
+  },
+  "peerDependenciesMeta": {
+    "@osdk/foundry.admin": {
+      "optional": true
+    },
+    "@osdk/foundry.core": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@osdk/api": "workspace:*",
     "@osdk/client": "workspace:*",
     "@osdk/client.test.ontology": "workspace:*",
+    "@osdk/foundry.admin": "catalog:foundry-platform-typescript",
+    "@osdk/foundry.core": "catalog:foundry-platform-typescript",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@testing-library/react": "^16.3.0",
@@ -79,6 +92,8 @@
     "access": "public"
   },
   "files": [
+    "AGENTS.md",
+    "docs",
     "build/cjs",
     "build/esm",
     "build/browser",

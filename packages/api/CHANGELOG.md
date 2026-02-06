@@ -1,5 +1,69 @@
 # @osdk/api
 
+## 2.8.0-beta.2
+
+## 2.7.0-beta.14
+
+## 2.7.0-beta.13
+
+### Minor Changes
+
+- fb83808: Allow arrays to use all subtype filters
+
+## 2.7.0-beta.12
+
+### Minor Changes
+
+- bb9d25c: Allow requesting rids for OSW updates
+
+## 2.7.0-beta.11
+
+### Minor Changes
+
+- d5cfc38: Add null option to actions to allow clearing data
+
+## 2.7.0-beta.10
+
+### Minor Changes
+
+- db44f6b: Add property security metadata to objects when requested
+- 24a1e29: Remove multiplicity tag from query param types
+
+## 2.7.0-beta.9
+
+## 2.7.0-beta.8
+
+## 2.7.0-beta.7
+
+## 2.7.0-beta.6
+
+### Minor Changes
+
+- c9ca08d: Add TS docs for in filter
+
+## 2.7.0-beta.5
+
+## 2.7.0-beta.4
+
+### Minor Changes
+
+- 1e3c147: Add experimental_asyncIterLinks method on object sets
+
+## 2.7.0-beta.3
+
+### Minor Changes
+
+- 448763f: introduce new token field, note readToken as deprecated
+
+## 2.7.0-beta.2
+
+## 2.6.0-beta.13
+
+### Minor Changes
+
+- 486ef7e: Deprecate multiplicity in query params/outputs
+- ea077c6: Change asType to narrowToType
+
 ## 2.6.0-beta.12
 
 ## 2.6.0-beta.11
@@ -50,6 +114,35 @@
 - f7ae38a: Allow exact matching for arrays of structs
 
 ## 2.5.0-beta.15
+
+## 2.5.2
+
+## 2.5.1
+
+### Patch Changes
+
+- 099b4d8: Fix nested array query param type handling
+
+## 2.5.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- 7160276: Add order by relevance support to nearest neighbors
+- 7bdac45: Update Platform SDK dependency
+- 37eb75b: remove features not supported for RC
+- 7b97128: add useObjectSet hook
+- 76905f5: Remove undefined type from aggregation $group value
+- 20962bc: Add a new experimental fetchPageByRidNoType method
+- 052a96b: Add $link support.
+- ca1fabe: Fix experimental metadata types for objects
+- e48be06: Fix casting types with fully qualified property names.
+
+## 2.5.0-rc.15
+
+### Patch Changes
+
+- 37eb75b: remove features not supported for RC
 
 ## 2.5.0-beta.14
 

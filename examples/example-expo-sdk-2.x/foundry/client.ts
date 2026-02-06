@@ -1,13 +1,17 @@
-import { Client, createClient, createPlatformClient, PlatformClient } from '@osdk/client';
-import { FOUNDRY_URL } from './osdkConst';
-import { getValidAuthToken } from './Auth';
-import { $ontologyRid } from "@osdk/e2e.generated.catchall";
+import {
+  Client,
+  createClient,
+  createPlatformClient,
+  PlatformClient,
+} from "@osdk/client";
+import { FOUNDRY_URL, ONTOLOGY_RID } from "./osdkConst";
+import { getValidAuthToken } from "./Auth";
 
-
+/**
+ * Initialize the client to interact with the Ontology and Platform SDKs
+ */
 export const client: Client = createClient(
     FOUNDRY_URL, 
-    $ontologyRid, 
+    ONTOLOGY_RID, 
     getValidAuthToken,
 );
-
-export const platformClient: PlatformClient = createPlatformClient(FOUNDRY_URL, getValidAuthToken);

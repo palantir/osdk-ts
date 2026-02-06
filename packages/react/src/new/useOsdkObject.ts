@@ -15,7 +15,7 @@
  */
 
 import type { ObjectTypeDefinition, Osdk, PrimaryKeyType } from "@osdk/api";
-import type { ObserveObjectArgs } from "@osdk/client/unstable-do-not-use";
+import type { ObserveObjectCallbackArgs } from "@osdk/client/unstable-do-not-use";
 import React from "react";
 import { makeExternalStore } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
@@ -85,12 +85,12 @@ export function useOsdkObject<Q extends ObjectTypeDefinition>(
   const { subscribe, getSnapShot } = React.useMemo(
     () => {
       if (!enabled) {
-        return makeExternalStore<ObserveObjectArgs<Q>>(
+        return makeExternalStore<ObserveObjectCallbackArgs<Q>>(
           () => ({ unsubscribe: () => {} }),
           `object ${objectType} ${primaryKey} [DISABLED]`,
         );
       }
-      return makeExternalStore<ObserveObjectArgs<Q>>(
+      return makeExternalStore<ObserveObjectCallbackArgs<Q>>(
         (observer) =>
           observableClient.observeObject(
             objectType,
@@ -117,7 +117,10 @@ export function useOsdkObject<Q extends ObjectTypeDefinition>(
 
   return {
     object: payload?.object as Osdk.Instance<Q> | undefined,
-    isLoading: payload?.status === "loading",
+    isLoading: enabled
+      ? (payload?.status === "loading" || payload?.status === "init"
+        || !payload)
+      : false,
     isOptimistic: !!payload?.isOptimistic,
     error,
     forceUpdate: () => {

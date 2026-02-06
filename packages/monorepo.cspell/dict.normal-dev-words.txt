@@ -6,6 +6,8 @@ Canonicalizer
 Canonicalizers
 codegen
 commitish
+Cpath
+Csvg
 devx
 Discoverability
 duplicative
@@ -14,6 +16,7 @@ geofence
 Geolocatable
 geosearch
 groupable
+hideable
 inbetween
 isModifierable
 jsons
@@ -26,6 +29,8 @@ retryable
 rsort
 semver
 streamutils
+subdependencies
+subdeps
 struct
 structs
 tsdoc

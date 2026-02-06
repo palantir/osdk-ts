@@ -1,5 +1,116 @@
 # @osdk/widget.vite-plugin
 
+## 3.5.0-beta.2
+
+### Patch Changes
+
+- @osdk/widget.api@3.5.0-beta.2
+
+## 3.4.0-beta.14
+
+### Patch Changes
+
+- @osdk/widget.api@3.4.0-beta.14
+
+## 3.4.0-beta.13
+
+### Patch Changes
+
+- @osdk/widget.api@3.4.0-beta.13
+
+## 3.4.0-beta.12
+
+### Patch Changes
+
+- @osdk/widget.api@3.4.0-beta.12
+
+## 3.4.0-beta.11
+
+### Minor Changes
+
+- 211cb0d: Add internalDoNotUseMetadata.rid to interfaces
+
+### Patch Changes
+
+- @osdk/widget.api@3.4.0-beta.11
+
+## 3.4.0-beta.10
+
+### Patch Changes
+
+- @osdk/widget.api@3.4.0-beta.10
+
+## 3.4.0-beta.9
+
+### Minor Changes
+
+- 18a6c93: Link to docs on WidgetIdNotFound error
+
+### Patch Changes
+
+- @osdk/widget.api@3.4.0-beta.9
+
+## 3.4.0-beta.8
+
+### Patch Changes
+
+- @osdk/widget.api@3.4.0-beta.8
+
+## 3.4.0-beta.7
+
+### Patch Changes
+
+- @osdk/widget.api@3.4.0-beta.7
+
+## 3.4.0-beta.6
+
+### Patch Changes
+
+- @osdk/widget.api@3.4.0-beta.6
+
+## 3.4.0-beta.5
+
+### Minor Changes
+
+- 239a2a8: Show hint for WidgetIdNotFound errors
+
+### Patch Changes
+
+- @osdk/widget.api@3.4.0-beta.5
+
+## 3.4.0-beta.4
+
+### Patch Changes
+
+- @osdk/widget.api@3.4.0-beta.4
+
+## 3.4.0-beta.3
+
+### Patch Changes
+
+- @osdk/widget.api@3.4.0-beta.3
+
+## 3.4.0-beta.2
+
+### Patch Changes
+
+- Updated dependencies [31909c1]
+  - @osdk/widget.api@3.4.0-beta.2
+
+## 3.3.0-beta.11
+
+### Minor Changes
+
+- e6a96c0: Validate widget sets before building their manifest
+- 5bd88fc: Fix InvalidDevModeFilePath errors
+- 27f2122: warn when using wrong dev command
+- e95637e: Fix Windows dev mode
+- 953c649: Use Vite logger instead of console.warn in validateDevEnvironment
+
+### Patch Changes
+
+- @osdk/widget.api@3.3.0-beta.11
+
 ## 3.3.0-beta.10
 
 ### Patch Changes
@@ -61,6 +172,61 @@
 
 - Updated dependencies [4d37e98]
   - @osdk/widget.api@3.3.0-beta.2
+
+## 3.2.5
+
+### Patch Changes
+
+- 71f33ca: Validate widget sets before building their manifest
+- 71f33ca: Fix InvalidDevModeFilePath errors
+- 71f33ca: warn when using wrong dev command
+- 71f33ca: Fix Windows dev mode
+- 71f33ca: Use Vite logger instead of console.warn in validateDevEnvironment
+- Updated dependencies [a2df5ba]
+  - @osdk/widget.api@3.2.5
+
+## 3.2.4
+
+### Patch Changes
+
+- 3b43586: Support extension-less widget config import and improve reporting when config files not found
+- 66896c7: Fix widget dev mode with tailwind causing project imports
+- 3d7cb29: Propagate validation error cause in message for widget config validation
+  - @osdk/widget.api@3.2.4
+
+## 3.2.3
+
+### Patch Changes
+
+- @osdk/widget.api@3.2.3
+
+## 3.2.2
+
+### Patch Changes
+
+- f372662: improve dev mode error surfacing
+  - @osdk/widget.api@3.2.2
+
+## 3.2.1
+
+### Patch Changes
+
+- Updated dependencies [77475e6]
+  - @osdk/widget.api@3.2.1
+
+## 3.2.0
+
+### Patch Changes
+
+- 7901ae0: Simulated release
+- 2b73c3c: Fix @osdk/widget.vite-plugin dependency on resolve-package-path in devDependencies rather than dependencies
+- 71fc408: Validate camelCase for widget/parameter IDs
+- 34df269: Fix widgets dev mode on Windows
+- Updated dependencies [322c5bc]
+- Updated dependencies [7901ae0]
+- Updated dependencies [a6f49e9]
+  - @osdk/foundry-config-json@1.4.0
+  - @osdk/widget.api@3.2.0
 
 ## 3.2.0-beta.5
 

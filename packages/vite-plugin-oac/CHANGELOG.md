@@ -1,5 +1,165 @@
 # @osdk/vite-plugin-oac
 
+## 0.6.0-beta.2
+
+### Patch Changes
+
+- Updated dependencies [e462938]
+  - @osdk/client.unstable@2.8.0-beta.2
+  - @osdk/maker@0.16.0-beta.2
+  - @osdk/api@2.8.0-beta.2
+  - @osdk/generator-converters.ontologyir@2.8.0-beta.2
+
+## 0.5.0-beta.14
+
+### Patch Changes
+
+- @osdk/api@2.7.0-beta.14
+- @osdk/client.unstable@2.7.0-beta.14
+- @osdk/generator-converters.ontologyir@2.7.0-beta.14
+
+## 0.5.0-beta.13
+
+### Patch Changes
+
+- Updated dependencies [fb83808]
+- Updated dependencies [ab1957f]
+- Updated dependencies [862910e]
+  - @osdk/api@2.7.0-beta.13
+  - @osdk/faux@0.5.0-beta.4
+  - @osdk/client.unstable@2.7.0-beta.13
+  - @osdk/generator-converters.ontologyir@2.7.0-beta.13
+
+## 0.5.0-beta.12
+
+### Patch Changes
+
+- Updated dependencies [c773e8f]
+- Updated dependencies [bb9d25c]
+  - @osdk/maker@0.15.0-beta.8
+  - @osdk/api@2.7.0-beta.12
+  - @osdk/client.unstable@2.7.0-beta.12
+  - @osdk/generator-converters.ontologyir@2.7.0-beta.12
+
+## 0.5.0-beta.11
+
+### Patch Changes
+
+- Updated dependencies [d5cfc38]
+  - @osdk/api@2.7.0-beta.11
+  - @osdk/client.unstable@2.7.0-beta.11
+  - @osdk/generator-converters.ontologyir@2.7.0-beta.11
+
+## 0.5.0-beta.10
+
+### Patch Changes
+
+- Updated dependencies [db44f6b]
+- Updated dependencies [24a1e29]
+  - @osdk/faux@0.5.0-beta.3
+  - @osdk/api@2.7.0-beta.10
+  - @osdk/client.unstable@2.7.0-beta.10
+  - @osdk/generator-converters.ontologyir@2.7.0-beta.10
+
+## 0.5.0-beta.9
+
+### Patch Changes
+
+- Updated dependencies [8381ac2]
+- Updated dependencies [c95f3bc]
+  - @osdk/generator-converters.ontologyir@2.7.0-beta.9
+  - @osdk/client.unstable@2.7.0-beta.9
+  - @osdk/maker@0.15.0-beta.7
+  - @osdk/api@2.7.0-beta.9
+
+## 0.5.0-beta.8
+
+### Patch Changes
+
+- @osdk/api@2.7.0-beta.8
+- @osdk/client.unstable@2.7.0-beta.8
+- @osdk/generator-converters.ontologyir@2.7.0-beta.8
+
+## 0.5.0-beta.7
+
+### Patch Changes
+
+- @osdk/api@2.7.0-beta.7
+- @osdk/client.unstable@2.7.0-beta.7
+- @osdk/generator-converters.ontologyir@2.7.0-beta.7
+
+## 0.5.0-beta.6
+
+### Patch Changes
+
+- Updated dependencies [9088072]
+- Updated dependencies [c9ca08d]
+- Updated dependencies [bb8d059]
+- Updated dependencies [33e10e3]
+  - @osdk/maker@0.15.0-beta.4
+  - @osdk/api@2.7.0-beta.6
+  - @osdk/client.unstable@2.7.0-beta.6
+  - @osdk/generator-converters.ontologyir@2.7.0-beta.6
+
+## 0.5.0-beta.5
+
+### Patch Changes
+
+- Updated dependencies [dc33f68]
+  - @osdk/generator-converters.ontologyir@2.7.0-beta.5
+  - @osdk/api@2.7.0-beta.5
+  - @osdk/client.unstable@2.7.0-beta.5
+
+## 0.5.0-beta.4
+
+### Patch Changes
+
+- Updated dependencies [1e3c147]
+- Updated dependencies [e743064]
+  - @osdk/api@2.7.0-beta.4
+  - @osdk/maker@0.15.0-beta.3
+  - @osdk/client.unstable@2.7.0-beta.4
+  - @osdk/generator-converters.ontologyir@2.7.0-beta.4
+
+## 0.5.0-beta.3
+
+### Patch Changes
+
+- Updated dependencies [448763f]
+  - @osdk/api@2.7.0-beta.3
+  - @osdk/client.unstable@2.7.0-beta.3
+  - @osdk/generator-converters.ontologyir@2.7.0-beta.3
+
+## 0.5.0-beta.2
+
+### Minor Changes
+
+- 03db734: Move platform SDK deps to pnpm catalog
+
+### Patch Changes
+
+- Updated dependencies [03db734]
+- Updated dependencies [448caa8]
+  - @osdk/generator-converters.ontologyir@2.7.0-beta.2
+  - @osdk/faux@0.5.0-beta.2
+  - @osdk/maker@0.15.0-beta.2
+  - @osdk/api@2.7.0-beta.2
+  - @osdk/client.unstable@2.7.0-beta.2
+  - @osdk/cli@0.31.0-beta.2
+
+## 0.4.0-beta.13
+
+### Patch Changes
+
+- Updated dependencies [84f0eef]
+- Updated dependencies [486ef7e]
+- Updated dependencies [ea077c6]
+  - @osdk/generator-converters.ontologyir@2.6.0-beta.13
+  - @osdk/faux@0.4.0-beta.6
+  - @osdk/api@2.6.0-beta.13
+  - @osdk/client.unstable@2.6.0-beta.13
+  - @osdk/cli@0.30.0-beta.5
+
 ## 0.4.0-beta.12
 
 ### Patch Changes
@@ -138,6 +298,86 @@
   - @osdk/api@2.5.0-beta.15
   - @osdk/client.unstable@2.5.0-beta.15
   - @osdk/generator-converters.ontologyir@2.5.0-beta.15
+
+## 0.3.2
+
+### Patch Changes
+
+- @osdk/api@2.5.2
+- @osdk/client.unstable@2.5.2
+- @osdk/generator-converters.ontologyir@2.5.2
+
+## 0.3.1
+
+### Patch Changes
+
+- Updated dependencies [099b4d8]
+  - @osdk/api@2.5.1
+  - @osdk/client.unstable@2.5.1
+  - @osdk/generator-converters.ontologyir@2.5.1
+
+## 0.3.0
+
+### Patch Changes
+
+- 150da1a: Simulated release
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [150da1a]
+- Updated dependencies [150da1a]
+- Updated dependencies [322c5bc]
+- Updated dependencies [6da8fd2]
+- Updated dependencies [37eb75b]
+- Updated dependencies [a6f49e9]
+- Updated dependencies [a6f49e9]
+- Updated dependencies [f025f30]
+- Updated dependencies [1b60527]
+- Updated dependencies [7160276]
+- Updated dependencies [9c9110c]
+- Updated dependencies [7cdab1d]
+- Updated dependencies [a00d2ed]
+- Updated dependencies [40d43c2]
+- Updated dependencies [d815339]
+- Updated dependencies [f9b6dc4]
+- Updated dependencies [07083e1]
+- Updated dependencies [b1c99bf]
+- Updated dependencies [11fd3fb]
+- Updated dependencies [5f72188]
+- Updated dependencies [3d7461d]
+- Updated dependencies [5fd12eb]
+- Updated dependencies [7bdac45]
+- Updated dependencies [37eb75b]
+- Updated dependencies [7b97128]
+- Updated dependencies [f194536]
+- Updated dependencies [76905f5]
+- Updated dependencies [a96d89e]
+- Updated dependencies [f2dbc3d]
+- Updated dependencies [7bdac45]
+- Updated dependencies [20962bc]
+- Updated dependencies [cbcf2ad]
+- Updated dependencies [04fe946]
+- Updated dependencies [052a96b]
+- Updated dependencies [ca1fabe]
+- Updated dependencies [e48be06]
+- Updated dependencies [7f0ad5c]
+- Updated dependencies [712dfbe]
+  - @osdk/api@2.5.0
+  - @osdk/cli@0.29.0
+  - @osdk/client.unstable@2.5.0
+  - @osdk/faux@0.3.0
+  - @osdk/generator-converters.ontologyir@2.5.0
+  - @osdk/maker@0.13.0
+
+## 0.3.0-rc.15
+
+### Patch Changes
+
+- Updated dependencies [37eb75b]
+  - @osdk/api@2.5.0-rc.15
+  - @osdk/client.unstable@2.5.0-rc.15
+  - @osdk/generator-converters.ontologyir@2.5.0-rc.15
+  - @osdk/cli@0.29.0-rc.6
 
 ## 0.3.0-beta.14
 

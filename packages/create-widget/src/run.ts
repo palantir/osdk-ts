@@ -126,7 +126,7 @@ export async function run({
         `Template ${template.id} requires OSDK package and registry URL`,
       );
     }
-    const npmRc = generateNpmRc({ osdkPackage, osdkRegistryUrl });
+    const npmRc = generateNpmRc({ osdkPackage, osdkRegistryUrl, foundryUrl });
     fs.writeFileSync(path.join(root, ".npmrc"), npmRc);
   }
 

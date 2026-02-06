@@ -1,5 +1,109 @@
 # @osdk/widget.api
 
+## 3.5.0-beta.2
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.2
+
+## 3.4.0-beta.14
+
+### Patch Changes
+
+- @osdk/api@2.7.0-beta.14
+
+## 3.4.0-beta.13
+
+### Patch Changes
+
+- Updated dependencies [fb83808]
+  - @osdk/api@2.7.0-beta.13
+
+## 3.4.0-beta.12
+
+### Patch Changes
+
+- Updated dependencies [bb9d25c]
+  - @osdk/api@2.7.0-beta.12
+
+## 3.4.0-beta.11
+
+### Patch Changes
+
+- Updated dependencies [d5cfc38]
+  - @osdk/api@2.7.0-beta.11
+
+## 3.4.0-beta.10
+
+### Patch Changes
+
+- Updated dependencies [db44f6b]
+- Updated dependencies [24a1e29]
+  - @osdk/api@2.7.0-beta.10
+
+## 3.4.0-beta.9
+
+### Patch Changes
+
+- @osdk/api@2.7.0-beta.9
+
+## 3.4.0-beta.8
+
+### Patch Changes
+
+- @osdk/api@2.7.0-beta.8
+
+## 3.4.0-beta.7
+
+### Patch Changes
+
+- @osdk/api@2.7.0-beta.7
+
+## 3.4.0-beta.6
+
+### Patch Changes
+
+- Updated dependencies [c9ca08d]
+  - @osdk/api@2.7.0-beta.6
+
+## 3.4.0-beta.5
+
+### Patch Changes
+
+- @osdk/api@2.7.0-beta.5
+
+## 3.4.0-beta.4
+
+### Patch Changes
+
+- Updated dependencies [1e3c147]
+  - @osdk/api@2.7.0-beta.4
+
+## 3.4.0-beta.3
+
+### Patch Changes
+
+- Updated dependencies [448763f]
+  - @osdk/api@2.7.0-beta.3
+
+## 3.4.0-beta.2
+
+### Minor Changes
+
+- 31909c1: Include isWidgetResizeMessage type guard
+
+### Patch Changes
+
+- @osdk/api@2.7.0-beta.2
+
+## 3.3.0-beta.11
+
+### Patch Changes
+
+- Updated dependencies [486ef7e]
+- Updated dependencies [ea077c6]
+  - @osdk/api@2.6.0-beta.13
+
 ## 3.3.0-beta.10
 
 ### Patch Changes
@@ -58,6 +162,40 @@
 ### Minor Changes
 
 - 4d37e98: Improved support for object set parameters in widget.client-react
+
+## 3.2.5
+
+### Patch Changes
+
+- a2df5ba: Introduce widget resize message for automatic heights
+
+## 3.2.4
+
+## 3.2.3
+
+### Patch Changes
+
+- @osdk/api@2.5.2
+
+## 3.2.2
+
+### Patch Changes
+
+- Updated dependencies [099b4d8]
+  - @osdk/api@2.5.1
+
+## 3.2.1
+
+### Patch Changes
+
+- 77475e6: Improved support for object set parameters in widget.client-react
+
+## 3.2.0
+
+### Patch Changes
+
+- 7901ae0: Simulated release
+- a6f49e9: Allow specifying object sets in widget configs
 
 ## 3.2.0-beta.5
 
