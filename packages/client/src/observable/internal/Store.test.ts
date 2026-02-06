@@ -741,10 +741,6 @@ describe(Store, () => {
     });
 
     it("invalidateObjectType correctly invalidates interface link queries when object implements source interface", async () => {
-      // Setup: Create an interface link query from FooInterface
-      // FooInterface is implemented by Employee (see interfaceTypes.ts)
-      // When Employee is invalidated, link queries from FooInterface should be invalidated
-
       const { payload: emp1Payload } = await expectStandardObserveObject({
         cache,
         type: Employee,
@@ -756,7 +752,6 @@ describe(Store, () => {
       const fooInterfaceInstance = emp1.$as(FooInterface);
       const linkSubFn = mockLinkSubCallback();
 
-      // Create a link query from the interface instance
       const subscription = cache.links.observe({
         linkName: "toBar",
         srcType: { type: "interface", apiName: fooInterfaceInstance.$apiName },
@@ -764,16 +759,11 @@ describe(Store, () => {
         pk: fooInterfaceInstance.$primaryKey,
       }, linkSubFn);
 
-      // Wait for initial loading state
       await waitForCall(linkSubFn);
       linkSubFn.next.mockClear();
 
-      // Now invalidate the Employee type
-      // Since Employee implements FooInterface, the link query should be invalidated
       await cache.invalidateObjectType(Employee, undefined);
 
-      // The link query should have been invalidated (revalidate called)
-      // We verify by checking if next was called with loading state
       await waitForCall(linkSubFn);
       expect(linkSubFn.next).toHaveBeenCalled();
 

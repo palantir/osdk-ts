@@ -20,7 +20,6 @@ import type {
   ActionValidationResponse,
   AggregateOpts,
   CompileTimeMetadata,
-  InterfaceDefinition,
   ObjectOrInterfaceDefinition,
   ObjectSet,
   ObjectTypeDefinition,
@@ -101,7 +100,7 @@ export class ObservableClientImpl implements ObservableClient {
   };
 
   public observeList: <
-    T extends ObjectTypeDefinition | InterfaceDefinition,
+    T extends ObjectOrInterfaceDefinition,
     RDPs extends Record<string, SimplePropertyDef> = {},
   >(
     options: ObserveListOptions<T, RDPs>,
@@ -290,7 +289,7 @@ export class ObservableClientImpl implements ObservableClient {
   }
 
   public canonicalizeWhereClause<
-    T extends ObjectTypeDefinition | InterfaceDefinition,
+    T extends ObjectOrInterfaceDefinition,
     RDPs extends Record<string, SimplePropertyDef> = {},
   >(where: WhereClause<T, RDPs>): Canonical<WhereClause<T, RDPs>> {
     return this.__experimentalStore.whereCanonicalizer

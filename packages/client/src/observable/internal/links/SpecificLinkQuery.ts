@@ -16,6 +16,7 @@
 
 import type {
   InterfaceDefinition,
+  ObjectOrInterfaceDefinition,
   ObjectSet,
   ObjectTypeDefinition,
   Osdk,
@@ -53,7 +54,7 @@ import type { SpecificLinkCacheKey } from "./SpecificLinkCacheKey.js";
 export class SpecificLinkQuery extends BaseListQuery<
   SpecificLinkCacheKey,
   SpecificLinkPayload,
-  ObserveLinks.Options<ObjectTypeDefinition | InterfaceDefinition, string>
+  ObserveLinks.Options<ObjectOrInterfaceDefinition, string>
 > {
   #sourceApiName: string;
   #sourceTypeKind: "object" | "interface";
@@ -74,10 +75,7 @@ export class SpecificLinkQuery extends BaseListQuery<
     store: Store,
     subject: Subject<SubjectPayload<SpecificLinkCacheKey>>,
     cacheKey: SpecificLinkCacheKey,
-    opts: ObserveLinks.Options<
-      ObjectTypeDefinition | InterfaceDefinition,
-      string
-    >,
+    opts: ObserveLinks.Options<ObjectOrInterfaceDefinition, string>,
   ) {
     super(
       store,
@@ -116,14 +114,10 @@ export class SpecificLinkQuery extends BaseListQuery<
   protected async fetchPageData(
     signal: AbortSignal | undefined,
   ): Promise<PageResult<Osdk.Instance<any>>> {
-    // Use the client API to create a query that pivots to linked objects
     const client = this.store.client;
     const ontologyProvider = client[additionalContext].ontologyProvider;
-
-    // Get metadata based on whether source is object or interface
     const isInterface = this.#sourceTypeKind === "interface";
 
-    // Initialize sorting strategy with the link's target type
     if (this.#orderBy && Object.keys(this.#orderBy).length > 0) {
       let targetTypeApiName: string;
 
@@ -137,7 +131,6 @@ export class SpecificLinkQuery extends BaseListQuery<
             `Missing link definition for link '${this.#linkName}' on interface '${this.#sourceApiName}'`,
           );
         }
-        // Interface links use targetTypeApiName
         targetTypeApiName = linkDef.targetTypeApiName;
       } else {
         const objectMetadata = await ontologyProvider.getObjectDefinition(
@@ -149,7 +142,6 @@ export class SpecificLinkQuery extends BaseListQuery<
             `Missing link definition or targetType for link '${this.#linkName}' on object type '${this.#sourceApiName}'`,
           );
         }
-        // Object links use targetType directly as the API name
         targetTypeApiName = linkDef.targetType;
       }
 
@@ -159,21 +151,9 @@ export class SpecificLinkQuery extends BaseListQuery<
       );
     }
 
-    // For interfaces, we need to query differently since they don't have a primary key
-    // We'll use the underlying object's primary key via $as
-    let linkQuery;
+    let linkQuery: ObjectSet<ObjectOrInterfaceDefinition>;
 
     if (isInterface) {
-      // For interface links, we need to filter by the specific source object's primary key.
-      // Interface link constraints define relationships at the interface level, but when
-      // observing links for a specific instance, we need to filter to just that instance.
-      //
-      // The correct approach is to:
-      // 1. Create an interface object set
-      // 2. Intersect it with the underlying object type filtered by primary key
-      // 3. Then pivot to the link
-      //
-      // This mirrors the approach used in get$linkForInterface in getDollarLink.ts
       const objectMetadata = await ontologyProvider.getObjectDefinition(
         this.#sourceUnderlyingObjectType,
       );
@@ -181,23 +161,19 @@ export class SpecificLinkQuery extends BaseListQuery<
       const interfaceSet = client({
         type: "interface",
         apiName: this.#sourceApiName,
-      } as InterfaceDefinition) as unknown as ObjectSet<ObjectTypeDefinition>;
+      } as InterfaceDefinition) as ObjectSet<ObjectOrInterfaceDefinition>;
 
       const objectFilteredByPk = client({
         type: "object",
         apiName: this.#sourceUnderlyingObjectType,
       } as ObjectTypeDefinition).where({
         [objectMetadata.primaryKeyApiName]: this.#sourcePk,
-      } as WhereClause<ObjectTypeDefinition>);
+      } as WhereClause<any>);
 
-      // Intersect the interface set with the filtered object set, then pivot
       const filteredSource = interfaceSet.intersect(objectFilteredByPk);
 
-      // Cast to ObjectSet because runtime supports pivotTo for interfaces
-      // but the type system only exposes it on ObjectSet<ObjectTypeDefinition>
       linkQuery = filteredSource.pivotTo(this.#linkName);
     } else {
-      // For object types, use where clause with primary key
       const objectMetadata = await ontologyProvider.getObjectDefinition(
         this.#sourceApiName,
       );
@@ -211,11 +187,9 @@ export class SpecificLinkQuery extends BaseListQuery<
         [objectMetadata.primaryKeyApiName]: this.#sourcePk,
       } as WhereClause<any>);
 
-      // Pivot to the linked objects
       linkQuery = sourceQuery.pivotTo(this.#linkName);
     }
 
-    // Check for abort signal again before fetching
     if (signal?.aborted) {
       throw new Error("Aborted");
     }
@@ -314,7 +288,6 @@ export class SpecificLinkQuery extends BaseListQuery<
     // 3. When the target type matches the invalidated type
     // 4. When the target is an interface and the invalidated type implements it
 
-    // For case 1 - direct source object type match (object links only)
     if (
       this.#sourceTypeKind === "object" && this.#sourceApiName === objectType
     ) {
@@ -322,12 +295,10 @@ export class SpecificLinkQuery extends BaseListQuery<
       return this.revalidate(true);
     }
 
-    // For all other cases, we need async metadata lookups
     return (async () => {
       const ontologyProvider = this.store.client[additionalContext]
         .ontologyProvider;
 
-      // Case 2 - source is an interface, check if invalidated type implements it
       if (this.#sourceTypeKind === "interface") {
         const objectMetadata = await ontologyProvider.getObjectDefinition(
           objectType,
@@ -338,7 +309,6 @@ export class SpecificLinkQuery extends BaseListQuery<
         }
       }
 
-      // Cases 3 & 4 - check if the link's target type matches the invalidated type
       let targetTypeApiName: string | undefined;
       let targetTypeKind: "object" | "interface" | undefined;
 
@@ -353,18 +323,16 @@ export class SpecificLinkQuery extends BaseListQuery<
           .getObjectDefinition(this.#sourceApiName);
         const linkDef = objectMetadata.links?.[this.#linkName];
         targetTypeApiName = linkDef?.targetType;
-        targetTypeKind = "object"; // Object links always target objects
+        targetTypeKind = "object";
       }
 
       if (!targetTypeApiName) return;
 
-      // Case 3 - direct target type match
       if (targetTypeApiName === objectType) {
         changes?.modified.add(this.cacheKey);
         return this.revalidate(true);
       }
 
-      // Case 4 - target is an interface, check if invalidated type implements it
       if (targetTypeKind === "interface") {
         const objectMetadata = await ontologyProvider.getObjectDefinition(
           objectType,

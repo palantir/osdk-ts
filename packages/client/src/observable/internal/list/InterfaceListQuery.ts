@@ -17,9 +17,11 @@
 import type {
   DerivedProperty,
   InterfaceDefinition,
+  ObjectOrInterfaceDefinition,
   ObjectSet,
   ObjectTypeDefinition,
   Osdk,
+  WhereClause,
 } from "@osdk/api";
 import groupBy from "object.groupby";
 import invariant from "tiny-invariant";
@@ -47,11 +49,7 @@ export class InterfaceListQuery extends ListQuery {
     const intersectWith = this.cacheKey.otherKeys[INTERSECT_IDX];
     const pivotInfo = this.cacheKey.otherKeys[PIVOT_IDX];
 
-    // Handle pivotTo case - when pivoting from object/interface via a link
     if (pivotInfo != null) {
-      // Use the source type kind from pivot info (can be "object" or "interface")
-      // Cast to ObjectSet because runtime supports pivotTo for both types
-      // but the type system only exposes it on ObjectSet<ObjectTypeDefinition>
       const sourceSet = (pivotInfo.sourceTypeKind === "interface"
         ? store.client({
           type: "interface",
@@ -60,30 +58,27 @@ export class InterfaceListQuery extends ListQuery {
         : store.client({
           type: "object",
           apiName: pivotInfo.sourceType,
-        } as ObjectTypeDefinition)) as ObjectSet<ObjectTypeDefinition>;
+        } as ObjectTypeDefinition)) as ObjectSet<ObjectOrInterfaceDefinition>;
 
-      let objectSet = sourceSet.pivotTo(pivotInfo.linkName);
+      let objectSet = sourceSet
+        .where(this.canonicalWhere as WhereClause<any>)
+        .pivotTo(pivotInfo.linkName);
 
-      // RDPs must be applied before where clauses
       if (rdpConfig != null) {
         objectSet = objectSet.withProperties(
           rdpConfig as DerivedProperty.Clause<ObjectTypeDefinition>,
         );
       }
 
-      objectSet = objectSet.where(this.canonicalWhere);
-
       if (intersectWith != null && intersectWith.length > 0) {
+        const type: string = "interface" as const;
         const intersectSets = intersectWith.map(whereClause => {
-          // Use this.apiName as the target type since InterfaceListQuery is created
-          // for the target interface of the link (same as this.apiName)
           const intersectSet = store.client({
-            type: "interface",
+            type,
             apiName: this.apiName,
-          } as InterfaceDefinition);
+          } as ObjectTypeDefinition);
 
-          // Note: RDPs on interface intersect sets not supported currently
-          return intersectSet.where(whereClause);
+          return intersectSet.where(whereClause as WhereClause<any>);
         });
 
         objectSet = objectSet.intersect(...intersectSets);
@@ -92,7 +87,6 @@ export class InterfaceListQuery extends ListQuery {
       return objectSet;
     }
 
-    // Non-pivot case - direct interface query
     const type: string = "interface" as const;
     const objectTypeDef = {
       type,
