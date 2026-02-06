@@ -37,72 +37,6 @@ export interface MockOsdkObjectOptions {
 
 // TODO: Add support for RDPs
 
-type LinkStubs<Q extends ObjectTypeDefinition> = {
-  [LINK_NAME in LinkNames<Q>]?:
-    CompileTimeMetadata<Q>["links"][LINK_NAME]["multiplicity"] extends true
-      ? Array<Osdk.Instance<LinkedType<Q, LINK_NAME>>>
-      : Osdk.Instance<LinkedType<Q, LINK_NAME>>;
-};
-
-function createSingleLinkStub<T extends ObjectTypeDefinition>(
-  linkedObject: Osdk.Instance<T>,
-): {
-  fetchOne: () => Promise<Osdk.Instance<T>>;
-  fetchOneWithErrors: () => Promise<{ value: Osdk.Instance<T> }>;
-} {
-  return {
-    fetchOne: () => Promise.resolve(linkedObject),
-    fetchOneWithErrors: () => Promise.resolve({ value: linkedObject }),
-  };
-}
-
-function createManyLinkStub<T extends ObjectTypeDefinition>(
-  linkedObjects: Array<Osdk.Instance<T>>,
-): {
-  fetchOne: (primaryKey: unknown) => Promise<Osdk.Instance<T> | undefined>;
-  fetchPage: () => Promise<
-    { data: Array<Osdk.Instance<T>>; nextPageToken: undefined }
-  >;
-  asyncIter: () => AsyncIterableIterator<Osdk.Instance<T>>;
-  aggregate: () => never;
-} {
-  return {
-    fetchOne: (primaryKey: unknown) => {
-      if (linkedObjects.length > 0 && linkedObjects[0].$primaryKey == null) {
-        invariant(
-          false,
-          `fetchOne requires primaryKeyApiName to be set on linked objects`,
-        );
-      }
-      const found = linkedObjects.find((obj) => obj.$primaryKey === primaryKey);
-      invariant(
-        found != null,
-        `fetchOne could not find object with primary key ${String(primaryKey)}`,
-      );
-      return Promise.resolve(found);
-    },
-    fetchPage: () =>
-      Promise.resolve({ data: linkedObjects, nextPageToken: undefined }),
-    asyncIter: () => {
-      let index = 0;
-      return {
-        [Symbol.asyncIterator]() {
-          return this;
-        },
-        async next() {
-          if (index < linkedObjects.length) {
-            return { value: linkedObjects[index++], done: false as const };
-          }
-          return { value: undefined, done: true as const };
-        },
-      };
-    },
-    aggregate: () => {
-      invariant(false, `aggregate is not supported on mock link stubs.`);
-    },
-  };
-}
-
 /**
  * Creates a mock OSDK object for testing purposes.
  *
@@ -116,20 +50,23 @@ function createManyLinkStub<T extends ObjectTypeDefinition>(
  *
  * @example
  * ```typescript
- * const employee = createMockOsdkObject(
- *   Employee,
- *   { employeeId: 1, fullName: "John Doe" },
- *   undefined, // links
- *   { primaryKeyApiName: "employeeId", titlePropertyApiName: "fullName" },
- * );
+ * const employee = createMockOsdkObject(Employee, {
+ *   employeeId: 1,
+ *   fullName: "John Doe",
+ *   office: "NYC"
+ * }, {
+ *   primaryKeyApiName: "employeeId",
+ *   titlePropertyApiName: "fullName"
+ * });
  *
+ * expect(employee.$apiName).toBe("Employee");
  * expect(employee.$primaryKey).toBe(1);
  * expect(employee.$title).toBe("John Doe");
+ * expect(employee.fullName).toBe("John Doe");
  * ```
  *
  * @param objectType - The object type definition (e.g., Employee)
  * @param properties - The properties for the mock object
- * @param links - Objects linked to this object by API name
  * @param options - Configuration including primaryKeyApiName and titlePropertyApiName
  * @returns A frozen mock OSDK object
  */
@@ -138,7 +75,14 @@ export function createMockOsdkObject<
 >(
   objectType: Q,
   properties?: Partial<CompileTimeMetadata<Q>["props"]>,
-  links?: LinkStubs<Q>,
+  links?: {
+    [LINK_NAME in LinkNames<Q>]:
+      CompileTimeMetadata<Q>["links"][LINK_NAME]["multiplicity"] extends true
+        ? never // TODO: Support multi links
+        : Osdk.Instance<
+          LinkedType<Q, LINK_NAME>
+        >;
+  },
   options: MockOsdkObjectOptions = {},
 ): Osdk.Instance<Q> {
   const {
@@ -185,6 +129,9 @@ export function createMockOsdkObject<
     ...properties,
   };
 
+  // Define $primaryKey - returns undefined if primaryKeyApiName not provided.
+  // We return undefined instead of throwing so that vitest matchers can
+  // safely access this property without causing test failures.
   Object.defineProperty(mockObject, "$primaryKey", {
     get() {
       return $primaryKey;
@@ -192,6 +139,9 @@ export function createMockOsdkObject<
     enumerable: true,
   });
 
+  // Define $title - returns undefined if titlePropertyApiName not provided.
+  // We return undefined instead of throwing so that vitest matchers can
+  // safely access this property without causing test failures.
   Object.defineProperty(mockObject, "$title", {
     get() {
       return $title;
@@ -207,6 +157,9 @@ export function createMockOsdkObject<
     enumerable: true,
   });
 
+  // Define $objectSpecifier - returns undefined if primaryKeyApiName not provided.
+  // We return undefined instead of throwing so that vitest matchers can
+  // safely access this property without causing test failures as this field is enumerable.
   Object.defineProperty(mockObject, "$objectSpecifier", {
     get() {
       if (primaryKeyApiName == null) {
@@ -217,27 +170,15 @@ export function createMockOsdkObject<
     enumerable: true,
   });
 
+  // Define $link - returns the configured links or undefined if not provided.
+  // We return undefined instead of throwing so that vitest matchers can
+  // safely access this property without causing test failures as this field is enumerable.
   Object.defineProperty(mockObject, "$link", {
     get() {
       if (links == null) {
         return undefined;
       }
-      const linkAccessors: Record<string, unknown> = {};
-      for (const [linkName, linkValue] of Object.entries(links)) {
-        if (linkValue == null) {
-          continue;
-        }
-        if (Array.isArray(linkValue)) {
-          linkAccessors[linkName] = createManyLinkStub(
-            linkValue as Array<Osdk.Instance<ObjectTypeDefinition>>,
-          );
-        } else {
-          linkAccessors[linkName] = createSingleLinkStub(
-            linkValue as Osdk.Instance<ObjectTypeDefinition>,
-          );
-        }
-      }
-      return linkAccessors;
+      return links;
     },
     enumerable: true,
   });
@@ -262,6 +203,7 @@ export function createMockOsdkObject<
         ) as any;
       }
 
+      // Check if primary key is being changed
       if (primaryKeyApiName != null && primaryKeyApiName in updates) {
         invariant(
           updates[primaryKeyApiName as keyof typeof updates] === $primaryKey,

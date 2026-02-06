@@ -227,172 +227,26 @@ describe("createMockOsdkObject", () => {
       expect(mockEmployee.$link).toBeUndefined();
     });
 
-    describe("single links", () => {
-      it("returns configured single link with fetchOne", async () => {
-        const mockOffice = createMockOsdkObject(
-          Office,
-          { officeId: "nyc", name: "New York Office" },
-          undefined,
-          { primaryKeyApiName: "officeId" },
-        );
-        const mockEmployee = createMockOsdkObject(
-          Employee,
-          { employeeId: 1 },
-          { officeLink: mockOffice },
-          { primaryKeyApiName: "employeeId" },
-        );
+    it("returns configured single link", () => {
+      const mockOffice = createMockOsdkObject(
+        Office,
+        { officeId: "nyc" },
+        undefined,
+        { primaryKeyApiName: "officeId" },
+      );
+      const mockEmployee = createMockOsdkObject(
+        Employee,
+        { employeeId: 1 },
+        {
+          officeLink: mockOffice,
+        } as any,
+        { primaryKeyApiName: "employeeId" },
+      );
 
-        const linkedOffice = await mockEmployee.$link.officeLink.fetchOne();
-        expect(linkedOffice).toBe(mockOffice);
-        expect(linkedOffice.officeId).toBe("nyc");
-      });
-
-      it("returns configured single link with fetchOneWithErrors", async () => {
-        const mockOffice = createMockOsdkObject(
-          Office,
-          { officeId: "la", name: "Los Angeles Office" },
-          undefined,
-          { primaryKeyApiName: "officeId" },
-        );
-        const mockEmployee = createMockOsdkObject(
-          Employee,
-          { employeeId: 2 },
-          { officeLink: mockOffice },
-          { primaryKeyApiName: "employeeId" },
-        );
-
-        const result = await mockEmployee.$link.officeLink.fetchOneWithErrors();
-        expect(result.value).toBe(mockOffice);
-      });
-    });
-
-    describe("many links", () => {
-      it("returns configured many link with fetchPage", async () => {
-        const mockPeep1 = createMockOsdkObject(
-          Employee,
-          { employeeId: 10, fullName: "Peep One" },
-          undefined,
-          { primaryKeyApiName: "employeeId" },
-        );
-        const mockPeep2 = createMockOsdkObject(
-          Employee,
-          { employeeId: 11, fullName: "Peep Two" },
-          undefined,
-          { primaryKeyApiName: "employeeId" },
-        );
-        const mockEmployee = createMockOsdkObject(
-          Employee,
-          { employeeId: 1 },
-          { peeps: [mockPeep1, mockPeep2] },
-          { primaryKeyApiName: "employeeId" },
-        );
-
-        expect(mockEmployee.$link).toBeDefined();
-        const page = await mockEmployee.$link.peeps.fetchPage();
-        expect(page.data).toHaveLength(2);
-        expect(page.data[0]).toBe(mockPeep1);
-        expect(page.data[1]).toBe(mockPeep2);
-        expect(page.nextPageToken).toBeUndefined();
-      });
-
-      it("returns configured many link with fetchOne by primary key", async () => {
-        const mockPeep1 = createMockOsdkObject(
-          Employee,
-          { employeeId: 10, fullName: "Peep One" },
-          undefined,
-          { primaryKeyApiName: "employeeId" },
-        );
-        const mockPeep2 = createMockOsdkObject(
-          Employee,
-          { employeeId: 11, fullName: "Peep Two" },
-          undefined,
-          { primaryKeyApiName: "employeeId" },
-        );
-        const mockEmployee = createMockOsdkObject(
-          Employee,
-          { employeeId: 1 },
-          { peeps: [mockPeep1, mockPeep2] },
-          { primaryKeyApiName: "employeeId" },
-        );
-
-        const foundPeep = await mockEmployee.$link.peeps.fetchOne(11);
-        expect(foundPeep).toBe(mockPeep2);
-      });
-
-      it("throws when fetchOne primary key is not found", () => {
-        const mockPeep1 = createMockOsdkObject(
-          Employee,
-          { employeeId: 10 },
-          undefined,
-          { primaryKeyApiName: "employeeId" },
-        );
-        const mockEmployee = createMockOsdkObject(
-          Employee,
-          { employeeId: 1 },
-          { peeps: [mockPeep1] },
-          { primaryKeyApiName: "employeeId" },
-        );
-
-        expect(() => mockEmployee.$link.peeps.fetchOne(999)).toThrow(
-          "fetchOne could not find object with primary key 999",
-        );
-      });
-
-      it("throws when fetchOne is called but linked objects lack primaryKeyApiName", () => {
-        const mockPeepNoPK = createMockOsdkObject(Employee, { employeeId: 10 });
-        const mockEmployee = createMockOsdkObject(
-          Employee,
-          { employeeId: 1 },
-          { peeps: [mockPeepNoPK] } as any,
-          { primaryKeyApiName: "employeeId" },
-        );
-
-        expect(() => mockEmployee.$link.peeps.fetchOne(10)).toThrow(
-          "fetchOne requires primaryKeyApiName to be set on linked objects",
-        );
-      });
-
-      it("returns configured many link with asyncIter", async () => {
-        const mockPeep1 = createMockOsdkObject(
-          Employee,
-          { employeeId: 10, fullName: "Peep One" },
-          undefined,
-          { primaryKeyApiName: "employeeId" },
-        );
-        const mockPeep2 = createMockOsdkObject(
-          Employee,
-          { employeeId: 11, fullName: "Peep Two" },
-          undefined,
-          { primaryKeyApiName: "employeeId" },
-        );
-        const mockEmployee = createMockOsdkObject(
-          Employee,
-          { employeeId: 1 },
-          { peeps: [mockPeep1, mockPeep2] },
-          { primaryKeyApiName: "employeeId" },
-        );
-
-        const results: Array<typeof mockPeep1> = [];
-        for await (const peep of mockEmployee.$link.peeps.asyncIter()) {
-          results.push(peep);
-        }
-        expect(results).toHaveLength(2);
-        expect(results[0]).toBe(mockPeep1);
-        expect(results[1]).toBe(mockPeep2);
-      });
-
-      it("throws when aggregate is called on many link stub", async () => {
-        const mockEmployee = createMockOsdkObject(
-          Employee,
-          { employeeId: 1 },
-          { peeps: [] },
-          { primaryKeyApiName: "employeeId" },
-        );
-
-        expect(() => mockEmployee.$link.peeps.aggregate({} as any)).toThrow(
-          "aggregate is not supported on mock link stubs.",
-        );
-      });
+      expect(mockEmployee.$link).toBeDefined();
+      expect(mockEmployee.$link.officeLink).toBe(
+        mockOffice,
+      );
     });
   });
 
@@ -431,6 +285,29 @@ describe("createMockOsdkObject", () => {
       ).toThrow(
         "$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue is not supported on mock objects.",
       );
+    });
+  });
+
+  describe("different object types", () => {
+    it("works with Office object type", () => {
+      const mockOffice = createMockOsdkObject(
+        Office,
+        {
+          officeId: "nyc-001",
+          name: "New York Office",
+          capacity: 500,
+        },
+        undefined,
+        {
+          primaryKeyApiName: "officeId",
+          titlePropertyApiName: "name",
+        },
+      );
+
+      expect(mockOffice.$apiName).toBe("Office");
+      expect(mockOffice.$primaryKey).toBe("nyc-001");
+      expect(mockOffice.$title).toBe("New York Office");
+      expect(mockOffice.capacity).toBe(500);
     });
   });
 
