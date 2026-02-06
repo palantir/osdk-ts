@@ -1,3 +1,26 @@
+# Check for changesets on non-main branches
+current_branch="$(git branch --show-current 2>/dev/null)"
+
+if [ "$current_branch" != "main" ] && [ -n "$current_branch" ]; then
+  changeset_files="$(git diff origin/main --name-only -- .changeset/ 2>/dev/null | grep '\.md$' | grep -v 'README\.md' | grep -v 'simulatedRelease')"
+
+  if [ -z "$changeset_files" ]; then
+    echo ""
+    echo "No changeset detected on branch '$current_branch'"
+    echo "Run 'pnpm changeset' to create one."
+    echo ""
+    printf "Push anyway? [y/N] "
+    read -r answer < /dev/tty
+    case "$answer" in
+      [yY]|[yY][eE][sS]) ;;
+      *)
+        echo "Push aborted."
+        exit 1
+        ;;
+    esac
+  fi
+fi
+
 # Run full cspell check before pushing to catch violations that would fail CI
 echo "Running cspell check..."
 pnpm cspell:all
