@@ -17,12 +17,12 @@
 import type {
   ObjectTypeDatasourceDefinition,
   MarkingType,
-  OntologyIrPropertySecurityGroup,
-  OntologyIrPropertySecurityGroups,
-  OntologyIrSecurityGroupGranularCondition,
-  OntologyIrSecurityGroupGranularSecurityDefinition,
   PropertyTypeMappingInfo,
   RetentionPolicy,
+  PropertySecurityGroups,
+  PropertySecurityGroup,
+  SecurityGroupGranularSecurityDefinition,
+  SecurityGroupGranularCondition,
 } from "@osdk/client.unstable";
 import invariant from "tiny-invariant";
 import type { ObjectPropertyType } from "../../api/object/ObjectPropertyType.js";
@@ -137,7 +137,7 @@ function convertPropertySecurityGroups(
   ds: ObjectTypeDatasourceDefinition_dataset | undefined,
   properties: ObjectPropertyType[],
   primaryKeyPropertyApiName: string,
-): OntologyIrPropertySecurityGroups {
+): PropertySecurityGroups {
   if (
     !ds
     || (!("objectSecurityPolicy" in ds) && !("propertySecurityGroups" in ds))
@@ -194,7 +194,7 @@ function convertPropertySecurityGroups(
     });
   });
 
-  const objectSecurityPolicyGroup: OntologyIrPropertySecurityGroup = {
+  const objectSecurityPolicyGroup: PropertySecurityGroup = {
     rid: ds.objectSecurityPolicy?.name || "defaultObjectSecurityPolicy",
     security: {
       type: "granular",
@@ -239,7 +239,7 @@ function convertPropertySecurityGroups(
 function convertGranularPolicy(
   granularPolicy?: SecurityConditionDefinition,
   additionalMandatoryMarkings?: Record<string, MarkingType>,
-): OntologyIrSecurityGroupGranularSecurityDefinition {
+): SecurityGroupGranularSecurityDefinition {
   return {
     viewPolicy: {
       granularPolicyCondition: granularPolicy
@@ -260,7 +260,7 @@ function convertGranularPolicy(
 
 function convertSecurityCondition(
   condition: SecurityConditionDefinition,
-): OntologyIrSecurityGroupGranularCondition {
+): SecurityGroupGranularCondition {
   switch (condition.type) {
     case "and":
       if ("conditions" in condition) {
