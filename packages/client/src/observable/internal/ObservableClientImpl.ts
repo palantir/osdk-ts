@@ -57,7 +57,7 @@ import type {
   ObserveObjectSetArgs,
   Unsubscribable,
 } from "../ObservableClient.js";
-import type { Observer, Status } from "../ObservableClient/common.js";
+import type { Observer } from "../ObservableClient/common.js";
 import type { ObserveLinks } from "../ObservableClient/ObserveLink.js";
 import type { AggregationPayloadBase } from "./aggregation/AggregationQuery.js";
 import type { Canonical } from "./Canonical.js";
@@ -193,7 +193,7 @@ export class ObservableClientImpl implements ObservableClient {
   };
 
   public observeLinks: <
-    T extends ObjectTypeDefinition | InterfaceDefinition,
+    T extends ObjectOrInterfaceDefinition,
     L extends keyof CompileTimeMetadata<T>["links"] & string,
   >(
     objects: Osdk.Instance<T> | Array<Osdk.Instance<T>>,
@@ -208,23 +208,21 @@ export class ObservableClientImpl implements ObservableClient {
     const objectsArray = Array.isArray(objects) ? objects : [objects];
     const observer = subFn as unknown as Observer<SpecificLinkPayload>;
 
-    if (objectsArray.length <= 1) {
-      return observeSingleLink(
+    return objectsArray.length <= 1
+      ? observeSingleLink(
+        this.__experimentalStore,
+        objectsArray,
+        linkName,
+        options,
+        observer,
+      )
+      : observeMultiLinks(
         this.__experimentalStore,
         objectsArray,
         linkName,
         options,
         observer,
       );
-    }
-
-    return observeMultiLinks(
-      this.__experimentalStore,
-      objectsArray,
-      linkName,
-      options,
-      observer,
-    );
   };
 
   public applyAction: <Q extends ActionDefinition<any>>(
@@ -302,14 +300,9 @@ export class ObservableClientImpl implements ObservableClient {
 
 function observeSingleLink(
   store: Store,
-  objectsArray: ReadonlyArray<
-    Osdk.Instance<ObjectTypeDefinition | InterfaceDefinition>
-  >,
+  objectsArray: ReadonlyArray<Osdk.Instance<ObjectOrInterfaceDefinition>>,
   linkName: string,
-  options: ObserveLinks.Options<
-    ObjectTypeDefinition | InterfaceDefinition,
-    string
-  >,
+  options: ObserveLinks.Options<ObjectOrInterfaceDefinition, string>,
   observer: Observer<SpecificLinkPayload>,
 ): Unsubscribable {
   const parentSub = new Subscription();
@@ -336,92 +329,61 @@ function observeSingleLink(
 
 function observeMultiLinks(
   store: Store,
-  objectsArray: ReadonlyArray<
-    Osdk.Instance<ObjectTypeDefinition | InterfaceDefinition>
-  >,
+  objectsArray: ReadonlyArray<Osdk.Instance<ObjectOrInterfaceDefinition>>,
   linkName: string,
-  options: ObserveLinks.Options<
-    ObjectTypeDefinition | InterfaceDefinition,
-    string
-  >,
+  options: ObserveLinks.Options<ObjectOrInterfaceDefinition, string>,
   observer: Observer<SpecificLinkPayload>,
 ): Unsubscribable {
   const parentSub = new Subscription();
   const totalExpected = objectsArray.length;
   const perObjectResults = new Map<string, SpecificLinkPayload>();
 
-  const mergeAndEmit = (): void => {
-    let mergedStatus: Status = "loaded";
-    let anyLoading = false;
-    let anyError = false;
-    let latestUpdated = 0;
-    let mergedIsOptimistic = false;
-    let mergedHasMore = false;
-    const fetchMores: Array<() => Promise<void>> = [];
-
+  function mergeAndEmit() {
     const seen = new Map<string, SpecificLinkPayload["resolvedList"][number]>();
+    const fetchMores: Array<() => Promise<void>> = [];
+    let latestUpdated = 0;
+    let hasMore = false;
+    let isOptimistic = false;
 
     for (const payload of perObjectResults.values()) {
-      if (payload.status === "init" || payload.status === "loading") {
-        anyLoading = true;
+      for (const obj of payload.resolvedList) {
+        seen.set(`${obj.$objectType}:${obj.$primaryKey}`, obj);
       }
-      if (payload.status === "error") {
-        anyError = true;
-      }
-
       if (payload.lastUpdated > latestUpdated) {
         latestUpdated = payload.lastUpdated;
       }
-      if (payload.isOptimistic) mergedIsOptimistic = true;
+      if (payload.isOptimistic) {
+        isOptimistic = true;
+      }
       if (payload.hasMore) {
-        mergedHasMore = true;
+        hasMore = true;
         fetchMores.push(payload.fetchMore);
       }
-
-      for (const obj of payload.resolvedList) {
-        const key = `${obj.$objectType}:${obj.$primaryKey}`;
-        seen.set(key, obj);
-      }
     }
 
-    if (perObjectResults.size < totalExpected) {
-      anyLoading = true;
-    }
+    const payloads = [...perObjectResults.values()];
+    const loading = perObjectResults.size < totalExpected
+      || payloads.some(p => p.status === "init" || p.status === "loading");
 
-    if (anyLoading) {
-      mergedStatus = "loading";
-    } else if (anyError) {
-      mergedStatus = "error";
-    }
-
-    const mergedPayload: SpecificLinkPayload = {
+    observer.next({
       resolvedList: Array.from(seen.values()),
-      isOptimistic: mergedIsOptimistic,
+      isOptimistic,
       lastUpdated: latestUpdated,
-      fetchMore: mergedHasMore
+      fetchMore: hasMore
         ? () => Promise.all(fetchMores.map(fn => fn())).then(() => {})
         : () => Promise.resolve(),
-      hasMore: mergedHasMore,
-      status: mergedStatus,
-      ...(!mergedHasMore ? { totalCount: String(seen.size) } : {}),
-    };
-
-    observer.next(mergedPayload);
-  };
+      hasMore,
+      status: loading
+        ? "loading"
+        : payloads.some(p => p.status === "error")
+        ? "error"
+        : "loaded",
+      ...(!hasMore ? { totalCount: String(seen.size) } : {}),
+    });
+  }
 
   for (const obj of objectsArray) {
     const objKey = `${obj.$objectType ?? obj.$apiName}:${obj.$primaryKey}`;
-
-    const perObjectObserver: Observer<SpecificLinkPayload> = {
-      next: (payload: SpecificLinkPayload) => {
-        perObjectResults.set(objKey, payload);
-        mergeAndEmit();
-      },
-      error: (err: unknown) => {
-        observer.error(err);
-      },
-      complete: () => {},
-    };
 
     parentSub.add(
       store.links.observe(
@@ -434,7 +396,14 @@ function observeMultiLinks(
           linkName,
           pk: obj.$primaryKey,
         },
-        perObjectObserver,
+        {
+          next: (payload: SpecificLinkPayload) => {
+            perObjectResults.set(objKey, payload);
+            mergeAndEmit();
+          },
+          error: (err: unknown) => observer.error(err),
+          complete: () => {},
+        },
       ),
     );
   }
