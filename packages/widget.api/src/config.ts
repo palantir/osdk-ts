@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import type { ObjectType, ParameterValue } from "./parameters.js";
+import type {
+  AllowedObjectSetParameterType,
+  ParameterValue,
+} from "./parameters.js";
 import type { BrowserPermission } from "./permissions.js";
 import type { AsyncValue } from "./utils/asyncValue.js";
 
@@ -27,26 +30,34 @@ interface ArrayParameterDefinition<S extends ParameterValue.PrimitiveType> {
   displayName: string;
   subType: S;
 }
-interface ObjectSetParameterDefinition<T extends ObjectType> {
+interface ObjectSetParameterDefinition<
+  T extends AllowedObjectSetParameterType,
+> {
   type: "objectSet";
   displayName: string;
-  objectType: T;
+  allowedType: T;
+  /** @deprecated Use allowedType instead */
+  objectType?: "\"objectType\" is deprecated, use \"allowedType\" instead";
 }
 export type ParameterDefinition =
   | PrimitiveParameterDefinition<ParameterValue.PrimitiveType>
   | ArrayParameterDefinition<ParameterValue.PrimitiveType>
-  | ObjectSetParameterDefinition<ObjectType>;
+  | ObjectSetParameterDefinition<AllowedObjectSetParameterType>;
 
-interface ManifestObjectSetParameterDefinition<T extends ObjectType> {
+interface ManifestObjectSetParameterDefinition<
+  T extends AllowedObjectSetParameterType,
+> {
   type: ObjectSetParameterDefinition<T>["type"];
   displayName: string;
-  objectTypeRids: [string];
+  /** @deprecated Eventually stop writing this once the backend stops accepting it */
+  objectTypeRids: [string] | [];
+  allowedType: string;
 }
 
 export type ManifestParameterDefinition =
   | PrimitiveParameterDefinition<ParameterValue.PrimitiveType>
   | ArrayParameterDefinition<ParameterValue.PrimitiveType>
-  | ManifestObjectSetParameterDefinition<ObjectType>;
+  | ManifestObjectSetParameterDefinition<AllowedObjectSetParameterType>;
 
 export interface EventDefinition<P extends ParameterConfig> {
   displayName: string;
