@@ -49,6 +49,7 @@ interface ManifestObjectSetParameterDefinition<
 > {
   type: ObjectSetParameterDefinition<T>["type"];
   displayName: string;
+  /** @deprecated Eventually stop writing this once the backend stops accepting it */
   objectTypeRids: [string] | [];
   allowedType: string;
 }

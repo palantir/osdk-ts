@@ -1,7 +1,7 @@
 ---
-"@osdk/widget.client-react": patch
-"@osdk/widget.vite-plugin": patch
-"@osdk/widget.api": patch
+"@osdk/widget.client-react": minor
+"@osdk/widget.vite-plugin": minor
+"@osdk/widget.api": minor
 ---
 
 Support interfaces in object set parameters
