@@ -14,52 +14,32 @@
  * limitations under the License.
  */
 
-import archiver from "archiver";
 import { consola } from "consola";
 import { createJiti } from "jiti";
-import { randomUUID } from "node:crypto";
 import * as fs from "node:fs";
 import * as path from "node:path";
 import invariant from "tiny-invariant";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { defineOntology } from "../api/defineOntology.js";
-import { getBlockVersionId } from "./marketplaceSerialization/CodeBlockSpec.js";
-import {
-  generateBlockSetSpec,
-  generateOntologyBlockSpec,
-  generateStoreManifest,
-  isSemver,
-} from "./marketplaceSerialization/specGenerators.js";
+import { getShapes } from "../conversion/toMarketplace/shapeExtractors/IrShapeExtractor.js";
+import { OntologyRidGeneratorImpl } from "../util/generateRid.js";
+import type { BlockGeneratorResult } from "./marketplaceSerialization/BlockGeneratorResult.js";
 
 const apiNamespaceRegex = /^[a-z0-9-]+(\.[a-z0-9-]+)*\.$/;
 const uuidRegex =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 
-const MANIFEST_FILE_NAME = "generatedManifest.v1.json";
-const STORE_MANIFEST_FILE_NAME = "manifest.json";
-
-const DOCS_MANIFEST_CONTENT = `{ "attachmentList": [] }`;
-const DOCS_MANIFEST_FILE_NAME = "documentation/manifest.v1.json";
-const FREE_FORM_CONTENT = `{ "type": "markdown", "markdown": "" }`;
-const FREE_FORM_FILE_NAME = "documentation/FreeForm.json";
-const BLOCK_ARCHIVE_PATH = "code_blocks";
-// TODO: Add this to the block
-const BLOCK_ADD_ON = "marketplace_internal_block_add_on";
-
 export default async function main(
   args: string[] = process.argv,
 ): Promise<void> {
-  consola.log("Hello?");
+  consola.log("Generating BlockGeneratorResult for ontology...");
 
   const commandLineOpts: {
     input: string;
     output: string;
     apiNamespace: string;
-    packageName: string;
     buildDir: string;
-    productName: string;
-    productVersion: string;
     randomnessKey?: string;
   } = await yargs(hideBin(args))
     .version(process.env.PACKAGE_VERSION ?? "")
@@ -76,9 +56,9 @@ export default async function main(
       },
       output: {
         alias: "o",
-        describe: "Output file",
+        describe: "Output file for BlockGeneratorResult JSON",
         type: "string",
-        default: "ontology.zip",
+        default: "build/block_generator_result.json",
         coerce: path.resolve,
       },
       apiNamespace: {
@@ -86,70 +66,12 @@ export default async function main(
         type: "string",
         default: "",
       },
-      packageName: {
-        describe: "Maven package name appended to the end of the apiNamespace",
-        type: "string",
-        require: true,
-      },
-      /**snapshotDir: {
-        alias: "s",
-        describe: "Snapshot directory",
-        type: "string",
-        default: "snapshots",
-        coerce: path.resolve,
-      },**/
-      /**outputDir: {
-        alias: "d",
-        describe: "Directory for generated marketplace product",
-        type: "string",
-        coerce: path.resolve,
-      },**/
-
       buildDir: {
         alias: "b",
         describe: "Directory for build files",
         type: "string",
         default: "build/",
         coerce: path.resolve,
-      },
-      /**valueTypesOutput: {
-        describe: "Value Type Output File",
-        type: "string",
-        default: "value-types.json",
-        coerce: path.resolve,
-      },
-      dependencies: {
-        describe: "File to write dependencies to",
-        type: "string",
-        coerce: path.resolve,
-      },
-      generateCodeSnippets: {
-        describe: "Enable code snippet files creation",
-        type: "boolean",
-        default: false,
-      },
-      codeSnippetPackageName: {
-        describe:
-          "The package name that will be displayed in the code snippets",
-        default: "",
-        type: "string",
-      },
-      codeSnippetDir: {
-        describe: "Directory for generated code snippet files",
-        type: "string",
-        default: "./",
-        coerce: path.resolve,
-      }, **/
-      productName: {
-        describe: "Marketplace product name",
-        type: "string",
-        default: "Ontology",
-      },
-      productVersion: {
-        describe:
-          "Semver version for generated marketplace product. Must be format x.x.x",
-        type: "string",
-        default: "0.1.0",
       },
       randomnessKey: {
         describe: "Value used to assure uniqueness of entities",
@@ -185,136 +107,62 @@ export default async function main(
     commandLineOpts.randomnessKey,
   );
 
-  const ontologyBlockSpec = generateOntologyBlockSpec(
-    apiNamespace,
-    ontologyIr,
-    commandLineOpts.randomnessKey,
-  );
-  invariant(
-    isSemver(commandLineOpts.productVersion),
-    `Version specified is not a simple semver (x.x.x) ${commandLineOpts.productVersion}`,
-  );
+  // The ontologyIr already contains the converted OntologyBlockDataV2
+  const ontologyBlockDataV2 = ontologyIr.ontology;
 
-  const ontBlockUuid = getBlockVersionId(
-    ontologyBlockSpec,
-    commandLineOpts.productVersion,
+  // Create RID generator for shape extraction
+  const ridGenerator = new OntologyRidGeneratorImpl();
+
+  // Extract shapes from the ontology
+  const shapes = getShapes(
+    ontologyBlockDataV2,
+    ridGenerator,
     commandLineOpts.randomnessKey,
   );
 
-  const blockSetUUID = randomUUID();
-
-  consola.log("got this far");
-  const blockSetSpec = generateBlockSetSpec(
-    commandLineOpts.productVersion,
-    commandLineOpts.productName,
-    "",
-    `${commandLineOpts.apiNamespace}:${commandLineOpts.packageName}`,
-    { [ontBlockUuid]: ontologyBlockSpec },
-  );
-
-  const storeManifest = generateStoreManifest({ [blockSetUUID]: blockSetSpec });
-
-  if (!fs.existsSync(commandLineOpts.buildDir)) {
-    await fs.promises.mkdir(commandLineOpts.buildDir);
+  // Create temp directory for block data
+  const blockDataDir = path.join(commandLineOpts.buildDir, "temp_block_data");
+  if (!fs.existsSync(blockDataDir)) {
+    await fs.promises.mkdir(blockDataDir, { recursive: true });
   }
-  const ontologyBlockPath = commandLineOpts.buildDir + "/" + ontBlockUuid;
-  const blockOutput = fs.createWriteStream(
-    ontologyBlockPath,
-  );
 
-  const blockArchive = archiver("zip");
+  // Write ontology.json to the block data directory
+  const ontologyJsonPath = path.join(blockDataDir, "ontology.json");
+  const ontologyJson = JSON.stringify(ontologyBlockDataV2, null, 2);
+  await fs.promises.writeFile(ontologyJsonPath, ontologyJson);
+  consola.info(`Wrote ontology.json to ${ontologyJsonPath}`);
 
-  blockArchive.pipe(blockOutput);
+  // Create BlockGeneratorResult
+  const blockGeneratorResult: BlockGeneratorResult = {
+    block_identifier: "ontology",
+    block_data_directory: blockDataDir,
+    oci_block_data_metadata: undefined,
+    maven_block_data_metadata: undefined,
+    inputs: Object.fromEntries(shapes.inputShapes),
+    outputs: Object.fromEntries(shapes.outputShapes),
+    input_mapping_entries: [],
+    external_recommendations: [],
+    add_on_override: undefined,
+    input_shape_metadata: Object.fromEntries(shapes.inputShapeMetadata),
+    block_type: "ONTOLOGY",
+  };
 
-  const blockDataStr = JSON.stringify(
-    ontologyIr.ontology,
+  // Write BlockGeneratorResult to output file
+  const blockGeneratorResultJson = JSON.stringify(
+    blockGeneratorResult,
     null,
     2,
   );
-
-  const blockManifestStr = JSON.stringify(
-    ontologyBlockSpec,
-    null,
-    2,
-  );
-
-  const ontologyBlockDataStr = blockArchive.append(blockDataStr, {
-    name: "files/ontology.json",
-  });
-  blockArchive.append(blockManifestStr, { name: MANIFEST_FILE_NAME });
-
-  consola.info(`Saving ontology to ${commandLineOpts.output}`);
-
-  await blockArchive.finalize();
-
-  const blockSetPath = commandLineOpts.buildDir + "/" + blockSetUUID;
-
-  const blockSetOutput = fs.createWriteStream(
-    blockSetPath,
-  );
-
-  const blockSetArchive = archiver("zip");
-  blockSetArchive.pipe(blockSetOutput);
-
-  blockSetArchive.append(DOCS_MANIFEST_CONTENT, {
-    name: DOCS_MANIFEST_FILE_NAME,
-  });
-  blockSetArchive.append(FREE_FORM_CONTENT, { name: FREE_FORM_FILE_NAME });
-
-  const blockSetManifestStr = JSON.stringify(
-    blockSetSpec,
-    null,
-    2,
-  );
-  blockSetArchive.append(blockSetManifestStr, { name: MANIFEST_FILE_NAME });
-  blockSetArchive.append(
-    fs.createReadStream(ontologyBlockPath),
-    { name: `${BLOCK_ARCHIVE_PATH}/${ontBlockUuid}` },
-  );
-
-  await blockSetArchive.finalize();
-
-  const storeOutput = fs.createWriteStream(
+  await fs.promises.writeFile(
     commandLineOpts.output,
+    blockGeneratorResultJson,
   );
-
-  const storeArchive = archiver("zip");
-  storeArchive.pipe(storeOutput);
-
-  storeArchive.append(fs.createReadStream(blockSetPath), {
-    name: blockSetUUID,
-  });
-
-  const storeManifestStr = JSON.stringify(
-    storeManifest,
-    null,
-    2,
+  consola.success(
+    `BlockGeneratorResult written to ${commandLineOpts.output}`,
   );
-  storeArchive.append(storeManifestStr, { name: STORE_MANIFEST_FILE_NAME });
-  await storeArchive.finalize();
-
-  /**await fs.promises.writeFile(
-    commandLineOpts.output,
-    JSON.stringify(
-      ontologyIr,
-      null,
-      2,
-    ),
+  consola.info(
+    `Block data directory: ${blockDataDir}`,
   );
-  // No point in generating block if there aren't any value types
-  if (
-    ontologyIr.valueTypes.valueTypes.length > 0
-    || ontologyIr.importedValueTypes.valueTypes.length > 0
-  ) {
-    await fs.writeFile(
-      commandLineOpts.valueTypesOutput,
-      JSON.stringify(
-        ontologyIr.valueTypes,
-        null,
-        2,
-      ),
-    );
-  }**/
 }
 
 async function loadOntology(

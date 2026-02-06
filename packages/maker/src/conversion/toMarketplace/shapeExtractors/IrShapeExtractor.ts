@@ -37,10 +37,11 @@ import type {
   SharedPropertyTypeInputShape,
   SharedPropertyTypeOutputShape,
 } from "@osdk/client.unstable/api";
-import type {
-  BlockShapes,
-  OntologyRidGenerator,
-  ReadableId,
+import {
+  type BlockShapes,
+  type OntologyRidGenerator,
+  type ReadableId,
+  ReadableIdGenerator,
 } from "../../../util/generateRid.js";
 import { LinkTypeShapeExtractor } from "./LinkTypeShapeExtractor.js";
 import { ObjectTypeShapeExtractor } from "./ObjectTypeShapeExtractor.js";
@@ -436,18 +437,21 @@ function consumeBlockShapes(target: BlockShapes, source: BlockShapes): void {
 // These should match the Java ReadableIdGenerator patterns
 
 function getReadableIdForSpt(apiName: string): ReadableId {
-  return `spt.${apiName}` as ReadableId;
+  return ReadableIdGenerator.getForSpt(apiName);
 }
 
 function getReadableIdForInterface(apiName: string): ReadableId {
-  return `interface.${apiName}` as ReadableId;
+  return ReadableIdGenerator.getForInterface(apiName);
 }
 
 function getReadableIdForInterfaceLink(
   interfaceApiName: string,
   linkApiName: string,
 ): ReadableId {
-  return `${interfaceApiName}.${linkApiName}` as ReadableId;
+  return ReadableIdGenerator.getForInterfaceLinkType(
+    interfaceApiName,
+    linkApiName,
+  );
 }
 
 // Placeholder type conversion functions

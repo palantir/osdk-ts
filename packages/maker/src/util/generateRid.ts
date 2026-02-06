@@ -627,6 +627,10 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
   }
 
   toBlockInternalId(readableId: ReadableId): string {
-    return toBlockShapeId(readableId, this.randomnessUuid);
+    const id = toBlockShapeId(readableId, this.randomnessUuid);
+    console.log(
+      `Mapping readable ID "${readableId}" to block internal ID ${id}`,
+    );
+    return id;
   }
 }
