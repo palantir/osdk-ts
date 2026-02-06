@@ -305,6 +305,19 @@ function observeSingleLink(
   options: ObserveLinks.Options<ObjectOrInterfaceDefinition, string>,
   observer: Observer<SpecificLinkPayload>,
 ): Unsubscribable {
+  if (objectsArray.length === 0) {
+    observer.next({
+      resolvedList: [],
+      isOptimistic: false,
+      lastUpdated: 0,
+      fetchMore: () => Promise.resolve(),
+      hasMore: false,
+      status: "loaded",
+      totalCount: "0",
+    });
+    return new UnsubscribableWrapper(new Subscription());
+  }
+
   const parentSub = new Subscription();
 
   for (const obj of objectsArray) {
