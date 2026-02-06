@@ -1,5 +1,15 @@
 # @osdk/maker
 
+## 0.16.0-beta.2
+
+### Minor Changes
+
+- e462938: Support PSGs in OAC
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.2
+
 ## 0.15.0-beta.9
 
 ### Minor Changes

@@ -16,7 +16,10 @@
 
 import type { Client, ObjectSet } from "@osdk/client";
 import { hydrateObjectSetFromRid } from "@osdk/client/internal";
-import type { AsyncParameterValueMap, ObjectType } from "@osdk/widget.api";
+import type {
+  AllowedObjectSetParameterType,
+  AsyncParameterValueMap,
+} from "@osdk/widget.api";
 import { defineConfig } from "@osdk/widget.client";
 import type { Mock } from "vitest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -34,7 +37,9 @@ describe("extendParametersWithObjectSets", () => {
   >();
 
   // Test helpers
-  const createMockObjectType = (rid = "ri.object-type.123"): ObjectType => ({
+  const createMockObjectType = (
+    rid = "ri.object-type.123",
+  ): AllowedObjectSetParameterType => ({
     apiName: "MyObjectType",
     type: "object",
     internalDoNotUseMetadata: { rid },
@@ -77,7 +82,7 @@ describe("extendParametersWithObjectSets", () => {
         myObjectSet: {
           displayName: "My Object Set",
           type: "objectSet",
-          objectType: createMockObjectType(),
+          allowedType: createMockObjectType(),
         },
         myString: {
           displayName: "My String",
@@ -161,12 +166,12 @@ describe("extendParametersWithObjectSets", () => {
         objectsA: {
           displayName: "Object Set A",
           type: "objectSet",
-          objectType: mockObjectType,
+          allowedType: mockObjectType,
         },
         objectsB: {
           displayName: "Object Set B",
           type: "objectSet",
-          objectType: mockObjectType,
+          allowedType: mockObjectType,
         },
       },
       events: {},
@@ -243,7 +248,7 @@ describe("extendParametersWithObjectSets", () => {
         myObjectSet: {
           displayName: "My Object Set",
           type: "objectSet",
-          objectType: createMockObjectType(),
+          allowedType: createMockObjectType(),
         },
         myString: {
           displayName: "My String",
@@ -316,7 +321,7 @@ describe("extendParametersWithObjectSets", () => {
         myObjectSet: {
           displayName: "My Object Set",
           type: "objectSet",
-          objectType: createMockObjectType(),
+          allowedType: createMockObjectType(),
         },
       },
       events: {},
@@ -345,7 +350,7 @@ describe("extendParametersWithObjectSets", () => {
         myObjectSet: {
           displayName: "My Object Set",
           type: "objectSet",
-          objectType: createMockObjectType(),
+          allowedType: createMockObjectType(),
         },
       },
       events: {},
@@ -381,7 +386,7 @@ describe("extendParametersWithObjectSets", () => {
         myObjectSet: {
           displayName: "My Object Set",
           type: "objectSet",
-          objectType: createMockObjectType(),
+          allowedType: createMockObjectType(),
         },
       },
       events: {},

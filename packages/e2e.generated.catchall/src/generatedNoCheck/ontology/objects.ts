@@ -15,6 +15,7 @@ export { MatthewvsDevOrderEmbedding } from './objects/MatthewvsDevOrderEmbedding
 export { McAirportStruct } from './objects/McAirportStruct.js';
 export { MnayanOsdkMediaObject } from './objects/MnayanOsdkMediaObject.js';
 export { MtaBus } from './objects/MtaBus.js';
+export { MwaltherPersonOt } from './objects/MwaltherPersonOt.js';
 export { NbaPlayer } from './objects/NbaPlayer.js';
 export { NihalbCastingLinkedObjectTypeA } from './objects/NihalbCastingLinkedObjectTypeA.js';
 export { NihalbCastingObjectTypeA } from './objects/NihalbCastingObjectTypeA.js';

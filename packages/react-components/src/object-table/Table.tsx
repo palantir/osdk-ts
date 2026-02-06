@@ -118,25 +118,22 @@ export function BaseTable<TData extends RowData>(
           : (
             <>
               <TableHeader table={table} />
-              {!hasData && error == null
-                ? <NonIdealState message={"No Data"} />
-                : (
-                  <TableBody
-                    rows={rows}
-                    tableContainerRef={tableContainerRef}
-                    onRowClick={onRowClick}
-                    rowHeight={rowHeight}
-                    renderCellContextMenu={renderCellContextMenu}
-                    isLoadingMore={isLoadingMore}
-                    headerGroups={headerGroups}
-                  />
-                )}
+              <TableBody
+                rows={rows}
+                tableContainerRef={tableContainerRef}
+                onRowClick={onRowClick}
+                rowHeight={rowHeight}
+                renderCellContextMenu={renderCellContextMenu}
+                isLoadingMore={isLoadingMore}
+                headerGroups={headerGroups}
+              />
             </>
           )}
-        {error != null && (
-          <NonIdealState message={`Error Loading Data: ${error.message}`} />
-        )}
       </table>
+      {!hasData && error == null && <NonIdealState message={"No Data"} />}
+      {error != null && (
+        <NonIdealState message={`Error Loading Data: ${error.message}`} />
+      )}
     </div>
   );
 }

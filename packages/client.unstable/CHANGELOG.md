@@ -1,5 +1,11 @@
 # @osdk/client.unstable
 
+## 2.8.0-beta.2
+
+### Minor Changes
+
+- e462938: Support PSGs in OAC
+
 ## 2.7.0-beta.14
 
 ## 2.7.0-beta.13

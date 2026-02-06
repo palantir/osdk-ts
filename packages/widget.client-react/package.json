@@ -1,6 +1,6 @@
 {
   "name": "@osdk/widget.client-react",
-  "version": "3.4.0-beta.14",
+  "version": "3.5.0-beta.2",
   "description": "Wrapper around @osdk/widget.client",
   "access": "public",
   "license": "Apache-2.0",
