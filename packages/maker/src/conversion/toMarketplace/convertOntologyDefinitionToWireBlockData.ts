@@ -317,6 +317,15 @@ function buildKnownIdentifiers(
     ) => [groupId, ridGenerator.toBlockInternalId(readableId)]),
   );
 
+  // Interface property types: InterfacePropertyTypeRid -> BlockInternalId
+  const interfacePropertyMappings = Object.fromEntries(
+    Array.from(ridGenerator.getInterfacePropertyTypeRids().inverse().entries())
+      .map(([rid, readableId]) => [
+        rid,
+        ridGenerator.toBlockInternalId(readableId),
+      ]),
+  );
+
   // Value types: ValueTypeRid -> (ValueTypeVersionId -> BlockInternalId)
   const valueTypeMappings: Record<string, Record<string, string>> = {};
   ridGenerator.getConsumedValueTypeReferences().asMap().forEach((
@@ -341,6 +350,7 @@ function buildKnownIdentifiers(
     geotimeSeriesSyncs: geotimeSeriesSyncs,
     groupIds: groupMappings,
     interfaceLinkTypes: interfaceLinkMappings,
+    interfacePropertyTypes: interfacePropertyMappings,
     interfaceTypes: interfaceMappings,
     linkTypeIds: linkTypeIds,
     linkTypes: linkTypeRids,

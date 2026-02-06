@@ -39,13 +39,25 @@ export function convertDatasourceDefinition(
   const baseDatasource = objectType.datasources?.find(ds =>
     ["dataset", "stream", "restrictedView"].includes(ds.type)
   );
-  // TODO: Convert datasource definitions to use RIDs
+
+  // Helper to get column names from properties
+  const getColumnNames = (props: ObjectPropertyType[]): Set<string> => {
+    return new Set(props.map(p => p.apiName));
+  };
+
   switch (baseDatasource?.type) {
     case "stream":
       const window = baseDatasource.retentionPeriod;
       const retentionPolicy: RetentionPolicy = window
         ? { type: "time", time: { window } }
         : { type: "none", none: {} };
+
+      // Use generateStreamLocator instead of generateRid
+      const streamLocator = ridGenerator.generateStreamLocator(
+        objectType.apiName,
+        getColumnNames(properties)
+      );
+
       const propertyMapping = Object.fromEntries(
         properties.map((
           prop,
@@ -57,28 +69,31 @@ export function convertDatasourceDefinition(
           prop.apiName,
         ]),
       );
+
       return {
         type: "streamV2",
         streamV2: {
-          // TODO: Add proper streamLocator with branch and stream RID
           streamLocator: {
-            branchId: "main",
-            streamLocatorRid: ridGenerator.generateRid(
-              `stream.${objectType.apiName}`,
-            ),
+            branchId: streamLocator.branchId,
+            streamLocatorRid: streamLocator.streamLocatorRid,
           },
           propertyMapping,
           retentionPolicy,
           propertySecurityGroups: undefined,
         },
       };
+
     case "restrictedView":
+      // Use generateRestrictedViewLocator instead of generateRid
+      const restrictedViewLocator = ridGenerator.generateRestrictedViewLocator(
+        objectType.apiName,
+        getColumnNames(properties)
+      );
+
       return {
         type: "restrictedViewV2",
         restrictedViewV2: {
-          restrictedViewRid: ridGenerator.generateRid(
-            `restrictedview.${objectType.apiName}`,
-          ),
+          restrictedViewRid: restrictedViewLocator.rid,
           propertyMapping: buildPropertyMapping(
             properties,
             objectType.apiName,
@@ -86,12 +101,19 @@ export function convertDatasourceDefinition(
           ),
         },
       };
+
     case "derived":
+      // Use generateLocator for dataset datasources
+      const derivedDatasetLocator = ridGenerator.generateLocator(
+        objectType.apiName,
+        getColumnNames(properties)
+      );
+
       return {
         type: "datasetV2",
         datasetV2: {
-          branchId: "main",
-          datasetRid: ridGenerator.generateRid(`dataset.${objectType.apiName}`),
+          branchId: derivedDatasetLocator.branchId,
+          datasetRid: derivedDatasetLocator.rid,
           propertyMapping: buildPropertyMapping(
             properties,
             objectType.apiName,
@@ -99,8 +121,15 @@ export function convertDatasourceDefinition(
           ),
         },
       };
+
     case "dataset":
     default:
+      // Use generateLocator for dataset datasources
+      const datasetLocator = ridGenerator.generateLocator(
+        objectType.apiName,
+        getColumnNames(properties)
+      );
+
       if (
         objectType.properties?.some(prop =>
           typeof prop.type === "object" && prop.type.type === "marking"
@@ -111,13 +140,15 @@ export function convertDatasourceDefinition(
         return {
           type: "datasetV3",
           datasetV3: {
-            datasetRid: objectType.apiName,
+            datasetRid: datasetLocator.rid,
             propertyMapping: buildPropertyMapping(properties, objectType.apiName, ridGenerator),
-            branchId: "master",
+            branchId: datasetLocator.branchId,
             propertySecurityGroups: convertPropertySecurityGroups(
               baseDatasource,
               properties,
               objectType.primaryKeyPropertyApiName,
+              objectType.apiName,
+              ridGenerator,
             ),
           },
         };
@@ -125,8 +156,8 @@ export function convertDatasourceDefinition(
       return {
         type: "datasetV2",
         datasetV2: {
-          datasetRid: objectType.apiName,
-          branchId: "main",
+          datasetRid: datasetLocator.rid,
+          branchId: datasetLocator.branchId,
           propertyMapping: buildPropertyMapping(properties, objectType.apiName, ridGenerator),
         },
       };
@@ -137,16 +168,24 @@ function convertPropertySecurityGroups(
   ds: ObjectTypeDatasourceDefinition_dataset | undefined,
   properties: ObjectPropertyType[],
   primaryKeyPropertyApiName: string,
+  objectTypeApiName: string,
+  ridGenerator: OntologyRidGenerator,
 ): PropertySecurityGroups {
+
   if (
     !ds
     || (!("objectSecurityPolicy" in ds) && !("propertySecurityGroups" in ds))
   ) {
+    // Default security group - use property RIDs
+    const propertyRids = properties.map(prop =>
+      ridGenerator.generatePropertyRid(prop.apiName, objectTypeApiName)
+    );
+
     return {
       groups: [
         {
-          properties: properties.map(prop => prop.apiName),
-          rid: "defaultObjectSecurityPolicy",
+          properties: propertyRids,
+          rid: ridGenerator.generateRid("defaultObjectSecurityPolicy"),
           security: {
             type: "granular",
             granular: {
@@ -174,28 +213,74 @@ function convertPropertySecurityGroups(
   }
 
   const validPropertyNames = new Set(properties.map(prop => prop.apiName));
-  const usedProperties = new Set();
+  const usedPropertyApiNames = new Set<string>();
 
+  // Collect and register group IDs (matching Java's collectSecurityGroupIds)
+  const collectGroupIds = (granularPolicy?: SecurityConditionDefinition) => {
+    if (!granularPolicy) return;
+
+    const collectFromCondition = (condition: SecurityConditionDefinition) => {
+      switch (condition.type) {
+        case "group":
+          // Register group ID with the ridGenerator
+          const groupId = condition.name;
+          ridGenerator.getGroupIds().put(
+            `group-${groupId}` as any,
+            groupId as any
+          );
+          break;
+        case "and":
+        case "or":
+          if ("conditions" in condition) {
+            condition.conditions.forEach(collectFromCondition);
+          }
+          break;
+      }
+    };
+
+    collectFromCondition(granularPolicy);
+  };
+
+  // Collect group IDs from object security policy
+  if (ds.objectSecurityPolicy?.granularPolicy) {
+    collectGroupIds(ds.objectSecurityPolicy.granularPolicy);
+  }
+
+  // Validate and collect property security groups
   ds.propertySecurityGroups?.forEach(psg => {
+    // Collect group IDs from property security groups
+    if (psg.granularPolicy) {
+      collectGroupIds(psg.granularPolicy);
+    }
+
     psg.properties.forEach(propertyName => {
       invariant(
         validPropertyNames.has(propertyName),
         `Property "${propertyName}" in property security group ${psg.name} does not exist in the properties list`,
       );
       invariant(
-        !usedProperties.has(propertyName),
+        !usedPropertyApiNames.has(propertyName),
         `Property "${propertyName}" is used in multiple property security groups`,
       );
       invariant(
         propertyName !== primaryKeyPropertyApiName,
         `Property "${propertyName}" in property security group ${psg.name} cannot be the primary key`,
       );
-      usedProperties.add(propertyName);
+      usedPropertyApiNames.add(propertyName);
     });
   });
 
+  // Build property RID mapping
+  const propertyApiNameToRid = new Map<string, string>();
+  properties.forEach(prop => {
+    propertyApiNameToRid.set(
+      prop.apiName,
+      ridGenerator.generatePropertyRid(prop.apiName, objectTypeApiName)
+    );
+  });
+
   const objectSecurityPolicyGroup: PropertySecurityGroup = {
-    rid: ds.objectSecurityPolicy?.name || "defaultObjectSecurityPolicy",
+    rid: ridGenerator.generateRid(ds.objectSecurityPolicy?.name || "defaultObjectSecurityPolicy"),
     security: {
       type: "granular",
       granular: convertGranularPolicy(
@@ -208,15 +293,15 @@ function convertPropertySecurityGroups(
       primaryKey: {},
     },
     properties: properties
-      .filter(prop => !usedProperties.has(prop.apiName))
-      .map(prop => prop.apiName),
+      .filter(prop => !usedPropertyApiNames.has(prop.apiName))
+      .map(prop => propertyApiNameToRid.get(prop.apiName)!),
   };
 
   return {
     groups: [
       objectSecurityPolicyGroup,
       ...(ds.propertySecurityGroups?.map(psg => ({
-        rid: psg.name,
+        rid: ridGenerator.generateRid(psg.name),
         security: {
           type: "granular" as const,
           granular: convertGranularPolicy(
@@ -230,7 +315,7 @@ function convertPropertySecurityGroups(
             name: psg.name,
           },
         },
-        properties: psg.properties ?? [],
+        properties: psg.properties.map(apiName => propertyApiNameToRid.get(apiName)!),
       })) ?? []),
     ],
   };

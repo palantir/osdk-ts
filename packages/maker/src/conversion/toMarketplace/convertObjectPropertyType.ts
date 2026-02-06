@@ -71,7 +71,7 @@ export function convertObjectPropertyType(
             property.type,
             ridGenerator,
           ),
-          //reducers: [],
+          reducers: [],
         },
       }
       : propertyTypeTypeToOntologyIrType(property.type, ridGenerator),

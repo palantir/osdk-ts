@@ -115,6 +115,27 @@ function createMockRidGenerator(
       apiName: string,
       interfaceTypeApiName: string,
     ) => `interface-prop.${interfaceTypeApiName}.${apiName}` as any,
+    generateStructFieldRid: (propertyApiName: string, apiName: string) =>
+      `struct-field.${propertyApiName}.${apiName}` as any,
+    generateLocator: (dataSetName: string, _columnNames: Set<string>) => ({
+      rid: `dataset.${dataSetName}`,
+      branchId: "main",
+    }),
+    generateStreamLocator: (streamName: string, _columnNames: Set<string>) => ({
+      streamLocatorRid: `stream.${streamName}`,
+      branchId: "main",
+    }),
+    generateRestrictedViewLocator: (
+      restrictedViewName: string,
+      _columnNames: Set<string>,
+    ) => ({
+      rid: `restricted-view.${restrictedViewName}`,
+    }),
+    generateMediaSetViewLocator: (mediaSetViewName: string) => ({
+      mediaSetRid: `media-set.${mediaSetViewName}`,
+      mediaSetViewRid: `media-set-view.${mediaSetViewName}`,
+      mediaSetBranchRid: `media-set-branch.${mediaSetViewName}`,
+    }),
     toBlockInternalId: (readableId: ReadableId) => {
       return readableId;
     },

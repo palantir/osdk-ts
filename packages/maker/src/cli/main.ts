@@ -114,7 +114,7 @@ export default async function main(
   const ridGenerator = new OntologyRidGeneratorImpl();
 
   // Extract shapes from the ontology
-  const shapes = getShapes(
+  const shapes = await getShapes(
     ontologyBlockDataV2,
     ridGenerator,
     commandLineOpts.randomnessKey,

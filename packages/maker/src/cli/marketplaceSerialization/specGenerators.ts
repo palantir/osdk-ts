@@ -71,12 +71,12 @@ export function generateStoreManifest(
   });
 }
 
-export function generateOntologyBlockSpec(
+export async function generateOntologyBlockSpec(
   mavenGroup: string,
   ontologyBlockDataV2: OntologyIr,
   randomnessKey?: string,
-): CodeBlockSpec {
-  const shapes = getShapes(
+): Promise<CodeBlockSpec> {
+  const shapes = await getShapes(
     ontologyBlockDataV2.ontology,
     new OntologyRidGeneratorImpl(),
     randomnessKey,

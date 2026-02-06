@@ -244,15 +244,12 @@ export function extractPropertyDatasource(
         type: "mediaSetView",
         mediaSetView: {
           assumedMarkings: [],
-          mediaSetViewLocator: {
-            mediaSetBranchRid: "",
-            mediaSetRid: "",
-            mediaSetViewRid: ""
-          },
+          mediaSetViewLocator:ridGenerator.generateMediaSetViewLocator(identifier),
           properties: [ridGenerator.generatePropertyRid(
-              property.apiName,
-              objectTypeApiName,
-            )],
+            property.apiName,
+            objectTypeApiName
+          )],
+          uploadProperties: []
         },
       };
       return [

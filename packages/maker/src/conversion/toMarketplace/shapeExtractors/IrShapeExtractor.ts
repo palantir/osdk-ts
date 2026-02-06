@@ -67,11 +67,11 @@ function createLocalizedAbout(
 /**
  * Main entry point for extracting all shapes from an ontology
  */
-export function getShapes(
+export async function getShapes(
   ontologyBlockDataV2: OntologyBlockDataV2,
   ridGenerator: OntologyRidGenerator,
   randomnessKey?: string,
-): BlockShapes {
+): Promise<BlockShapes> {
   const allBlockShapes: BlockShapes = {
     inputShapes: new Map(),
     outputShapes: new Map(),
@@ -145,16 +145,17 @@ export function getShapes(
     }
   }
 
-  // Actions (placeholder - ActionTypeShapeExtractor not yet ported)
-  // for (const [_rid, actionType] of Object.entries(ontologyBlockDataV2.actionTypes)) {
-  //   const actionShapes = extractActionType(
-  //     actionType,
-  //     ridGenerator,
-  //     ontologyBlockDataV2.knownIdentifiers,
-  //     randomnessKey,
-  //   );
-  //   consumeBlockShapes(allBlockShapes, actionShapes);
-  // }
+  // Actions
+  const { ActionTypeShapeExtractor } = await import('./ActionTypeShapeExtractor.js');
+  for (const [_rid, actionType] of Object.entries(ontologyBlockDataV2.actionTypes || {})) {
+    const actionExtractor = new ActionTypeShapeExtractor(randomnessKey);
+    const actionShapes = actionExtractor.extract(
+      actionType,
+      ridGenerator,
+      ontologyBlockDataV2.knownIdentifiers,
+    );
+    consumeBlockShapes(allBlockShapes, actionShapes);
+  }
 
   // Multipass groups
   for (const [readableId, groupId] of ridGenerator.getGroupIds().entries()) {

@@ -47,6 +47,27 @@ export type ReadableId = string & { __brand: "ReadableId" };
  * Placeholder interface for OntologyRidGenerator
  * This should be filled in with actual implementation
  */
+// Types for datasource locators
+export interface DatasetDatasourceLocator {
+  rid: string;
+  branchId: string;
+}
+
+export interface StreamLocator {
+  streamLocatorRid: string;
+  branchId: string;
+}
+
+export interface RestrictedViewLocator {
+  rid: string;
+}
+
+export interface MediaSetViewLocator {
+  mediaSetRid: string;
+  mediaSetViewRid: string;
+  mediaSetBranchRid: string;
+}
+
 export interface OntologyRidGenerator {
   getActionTypeRids(): BiMap<ReadableId, ActionTypeRid>;
   getParameterRidAndIds(): Map<string, BiMap<ReadableId, ParameterRidAndId>>;
@@ -105,6 +126,11 @@ export interface OntologyRidGenerator {
     propertyApiName: string,
     apiName: string,
   ): StructFieldRid;
+  // Datasource locator methods
+  generateLocator(dataSetName: string, columnNames: Set<string>): DatasetDatasourceLocator;
+  generateStreamLocator(streamName: string, columnNames: Set<string>): StreamLocator;
+  generateRestrictedViewLocator(restrictedViewName: string, columnNames: Set<string>): RestrictedViewLocator;
+  generateMediaSetViewLocator(mediaSetViewName: string): MediaSetViewLocator;
   toBlockInternalId(readableId: ReadableId): string;
 }
 
@@ -640,6 +666,127 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
       this.hashString(propertyApiName + "." + apiName)
     }` as StructFieldRid;
     return rid;
+  }
+
+  // Datasource locator methods
+  generateLocator(dataSetName: string, columnNames: Set<string>): DatasetDatasourceLocator {
+    const datasetRid = `ri.ontology-metadata..temp.dataset.${this.hashString(dataSetName)}`;
+    const branchId = "main";
+
+    // Register column shapes
+    columnNames.forEach(name => {
+      this.columnShapes.put(
+        ReadableIdGenerator.getForDataSetColumn(dataSetName, name),
+        {
+          datasource: {
+            type: "dataset",
+            dataset: { rid: datasetRid, branch: branchId }
+          } as DatasourceLocator,
+          name: name
+        } as ResolvedDatasourceColumnShape
+      );
+    });
+
+    // Register datasource locator
+    this.datasourceLocators.put(
+      ReadableIdGenerator.getForDataSet(dataSetName),
+      {
+        type: "dataset",
+        dataset: { rid: datasetRid, branch: branchId }
+      } as DatasourceLocator
+    );
+
+    return { rid: datasetRid, branchId };
+  }
+
+  generateStreamLocator(streamName: string, columnNames: Set<string>): StreamLocator {
+    const streamLocatorRid = `ri.ontology-metadata..temp.stream-datasource.${this.hashString(streamName)}`;
+    const branchId = "main";
+
+    const locator: StreamLocator = {
+      streamLocatorRid,
+      branchId
+    };
+
+    const marketplaceLocator: DatasourceLocator = {
+      type: "stream",
+      stream: {
+        rid: streamLocatorRid,
+        branch: branchId
+      }
+    } as DatasourceLocator;
+
+    // Register column shapes
+    columnNames.forEach(name => {
+      this.columnShapes.put(
+        ReadableIdGenerator.getForStreamColumn(streamName, name),
+        {
+          datasource: marketplaceLocator,
+          name: name
+        } as ResolvedDatasourceColumnShape
+      );
+    });
+
+    // Register datasource locator
+    this.datasourceLocators.put(
+      ReadableIdGenerator.getForStream(streamName),
+      marketplaceLocator
+    );
+
+    return locator;
+  }
+
+  generateRestrictedViewLocator(restrictedViewName: string, columnNames: Set<string>): RestrictedViewLocator {
+    const restrictedViewRid = `ri.ontology-metadata..temp.restricted-view.${this.hashString(restrictedViewName)}`;
+
+    // Register column shapes
+    columnNames.forEach(name => {
+      this.columnShapes.put(
+        ReadableIdGenerator.getForRestrictedViewColumn(restrictedViewName, name),
+        {
+          datasource: {
+            type: "restrictedView",
+            restrictedView: { rid: restrictedViewRid }
+          } as DatasourceLocator,
+          name: name
+        } as ResolvedDatasourceColumnShape
+      );
+    });
+
+    // Register datasource locator
+    this.datasourceLocators.put(
+      ReadableIdGenerator.getForRestrictedView(restrictedViewName),
+      {
+        type: "restrictedView",
+        restrictedView: { rid: restrictedViewRid }
+      } as DatasourceLocator
+    );
+
+    return { rid: restrictedViewRid };
+  }
+
+  generateMediaSetViewLocator(mediaSetViewName: string): MediaSetViewLocator {
+    const mediaSetRid = `ri.ontology-metadata..temp.media-set.${this.hashString(mediaSetViewName)}`;
+    const mediaSetBranchRid = `ri.ontology-metadata..temp.media-set-branch.${this.hashString(mediaSetViewName)}`;
+    const mediaSetViewRid = `ri.ontology-metadata..temp.media-set-view.${this.hashString(mediaSetViewName)}`;
+
+    // Register files datasource locator
+    this.filesDatasourceLocators.put(
+      ReadableIdGenerator.getForMediaSetView(mediaSetViewName),
+      {
+        type: "mediaSet",
+        mediaSet: {
+          rid: mediaSetRid,
+          branch: "master" // matches OntologyMetadataConstants.ONTOLOGY_DATASET_BRANCH_ID
+        }
+      } as FilesDatasourceLocator
+    );
+
+    return {
+      mediaSetRid,
+      mediaSetViewRid,
+      mediaSetBranchRid
+    };
   }
 
   toBlockInternalId(readableId: ReadableId): string {

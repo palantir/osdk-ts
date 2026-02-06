@@ -57,7 +57,7 @@ export function convertSpt(
         type: "array" as const,
         array: {
           subtype: propertyTypeTypeToOntologyIrType(type, ridGenerator),
-          // reducers: [],
+          reducers: [],
         },
       }
       : propertyTypeTypeToOntologyIrType(type, ridGenerator),
