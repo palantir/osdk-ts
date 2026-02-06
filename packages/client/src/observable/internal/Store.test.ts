@@ -404,7 +404,6 @@ describe(Store, () => {
     });
 
     it("observeLinks correctly constructs query for interface instances", async () => {
-      // First, get an Employee object
       const { payload: emp1Payload } = await expectStandardObserveObject({
         cache,
         type: Employee,
@@ -413,19 +412,13 @@ describe(Store, () => {
       const emp1 = emp1Payload?.object;
       invariant(emp1);
 
-      // Cast the Employee to FooInterface (creates an interface instance)
-      // Interface instances have $apiName !== $objectType
       const fooInterfaceInstance = emp1.$as(FooInterface);
 
-      // Verify this is an interface instance
       expect(fooInterfaceInstance.$apiName).toBe("FooInterface");
       expect(fooInterfaceInstance.$objectType).toBe("Employee");
 
-      // Test that we can create a link query with interface instance params
-      // The link won't exist in FauxFoundry but we can verify the query construction
       const linkSubFn = mockLinkSubCallback();
 
-      // This tests the cache key and query construction works for interface sources
       const subscription = cache.links.observe({
         linkName: "toBar",
         srcType: { type: "interface", apiName: fooInterfaceInstance.$apiName },
@@ -433,23 +426,15 @@ describe(Store, () => {
         pk: fooInterfaceInstance.$primaryKey,
       }, linkSubFn);
 
-      // Wait for loading state - this confirms the query was properly constructed
       await waitForCall(linkSubFn);
       expect(linkSubFn.next).toHaveBeenCalled();
 
-      // The query will fail since FauxFoundry doesn't support interface links,
-      // but we've verified the query construction and cache key generation works
-      // Clean up
       subscription.unsubscribe();
 
       testStage("Interface link query construction verified");
     });
 
     it("invalidateObjectType correctly invalidates interface link queries when object implements source interface", async () => {
-      // Setup: Create an interface link query from FooInterface
-      // FooInterface is implemented by Employee (see interfaceTypes.ts)
-      // When Employee is invalidated, link queries from FooInterface should be invalidated
-
       const { payload: emp1Payload } = await expectStandardObserveObject({
         cache,
         type: Employee,
@@ -461,7 +446,6 @@ describe(Store, () => {
       const fooInterfaceInstance = emp1.$as(FooInterface);
       const linkSubFn = mockLinkSubCallback();
 
-      // Create a link query from the interface instance
       const subscription = cache.links.observe({
         linkName: "toBar",
         srcType: { type: "interface", apiName: fooInterfaceInstance.$apiName },
@@ -469,16 +453,11 @@ describe(Store, () => {
         pk: fooInterfaceInstance.$primaryKey,
       }, linkSubFn);
 
-      // Wait for initial loading state
       await waitForCall(linkSubFn);
       linkSubFn.next.mockClear();
 
-      // Now invalidate the Employee type
-      // Since Employee implements FooInterface, the link query should be invalidated
       await cache.invalidateObjectType(Employee, undefined);
 
-      // The link query should have been invalidated (revalidate called)
-      // We verify by checking if next was called with loading state
       await waitForCall(linkSubFn);
       expect(linkSubFn.next).toHaveBeenCalled();
 
@@ -508,7 +487,9 @@ describe(Store, () => {
       setupOntology(testSetup.fauxFoundry);
       setupSomeEmployees(testSetup.fauxFoundry);
 
-      employeesAsServerReturns = (await client(Employee).fetchPage()).data;
+      employeesAsServerReturns = (await client(Employee).fetchPage({
+        $includeRid: true,
+      })).data;
       mutatedEmployees = [
         employeesAsServerReturns[0],
         employeesAsServerReturns[1].$clone({
@@ -1708,7 +1689,7 @@ describe(Store, () => {
               text,
             });
 
-            return client(Todo).fetchOne(id);
+            return client(Todo).fetchOne(id, { $includeRid: true });
           }),
         );
       });
@@ -1978,7 +1959,9 @@ describe(Store, () => {
         const pkForD = (await pActionResult).addedObjects?.[0].primaryKey;
         invariant(typeof pkForD === "number");
         // load this without the cache for comparisons
-        const createdObjectD = await client(Todo).fetchOne(pkForD);
+        const createdObjectD = await client(Todo).fetchOne(pkForD, {
+          $includeRid: true,
+        });
 
         await waitForCall(subListUnordered, 1);
         expectSingleListCallAndClear(subListUnordered, [

@@ -40,6 +40,7 @@ export interface BaseHolder {
   readonly $objectType: string;
   readonly $primaryKey: string | number;
   readonly $title: string | undefined;
+  readonly $rid?: string;
   readonly $objectSpecifier: ObjectSpecifier<any>;
   readonly $propertySecurities: PropertySecurity[];
 

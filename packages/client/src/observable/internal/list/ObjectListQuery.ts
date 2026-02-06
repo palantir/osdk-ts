@@ -17,10 +17,13 @@
 import type {
   DerivedProperty,
   InterfaceDefinition,
+  ObjectOrInterfaceDefinition,
   ObjectSet,
   ObjectTypeDefinition,
   Osdk,
+  WhereClause,
 } from "@osdk/api";
+import { additionalContext } from "../../../Client.js";
 import type { InterfaceHolder } from "../../../object/convertWireToOsdkObjects/InterfaceHolder.js";
 import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import type { Changes } from "../Changes.js";
@@ -31,6 +34,7 @@ import {
   ListQuery,
   PIVOT_IDX,
   RDP_IDX,
+  RIDS_IDX,
 } from "./ListQuery.js";
 
 type ExtractRelevantObjectsResult = Record<"added" | "modified", {
@@ -44,12 +48,16 @@ export class ObjectListQuery extends ListQuery {
     const rdpConfig = this.cacheKey.otherKeys[RDP_IDX];
     const intersectWith = this.cacheKey.otherKeys[INTERSECT_IDX];
     const pivotInfo = this.cacheKey.otherKeys[PIVOT_IDX];
+    const rids = this.cacheKey.otherKeys[RIDS_IDX];
+
+    const clientCtx = store.client[additionalContext];
+    const typeDefinition = {
+      type: "object",
+      apiName: this.apiName,
+    } as ObjectTypeDefinition;
 
     if (pivotInfo != null) {
-      // Use the source type kind from pivot info (can be "object" or "interface")
-      // Cast to ObjectSet because runtime supports pivotTo for both types
-      // but the type system only exposes it on ObjectSet<ObjectTypeDefinition>
-      let sourceSet = (pivotInfo.sourceTypeKind === "interface"
+      const sourceSet = (pivotInfo.sourceTypeKind === "interface"
         ? store.client({
           type: "interface",
           apiName: pivotInfo.sourceType,
@@ -57,11 +65,11 @@ export class ObjectListQuery extends ListQuery {
         : store.client({
           type: "object",
           apiName: pivotInfo.sourceType,
-        } as ObjectTypeDefinition)) as ObjectSet<ObjectTypeDefinition>;
+        } as ObjectTypeDefinition)) as ObjectSet<ObjectOrInterfaceDefinition>;
 
-      // Filter source objects before pivoting to linked objects
-      sourceSet = sourceSet.where(this.canonicalWhere);
-      let objectSet = sourceSet.pivotTo(pivotInfo.linkName);
+      let objectSet = sourceSet
+        .where(this.canonicalWhere as WhereClause<any>)
+        .pivotTo(pivotInfo.linkName);
 
       if (rdpConfig != null) {
         objectSet = objectSet.withProperties(
@@ -71,8 +79,6 @@ export class ObjectListQuery extends ListQuery {
 
       if (intersectWith != null && intersectWith.length > 0) {
         const intersectSets = intersectWith.map(whereClause => {
-          // Use this.apiName as the target type since ObjectListQuery is created
-          // for the target type of the link (same as this.apiName)
           let intersectSet = store.client({
             type: "object",
             apiName: this.apiName,
@@ -84,7 +90,7 @@ export class ObjectListQuery extends ListQuery {
             );
           }
 
-          return intersectSet.where(whereClause);
+          return intersectSet.where(whereClause as WhereClause<any>);
         });
 
         objectSet = objectSet.intersect(...intersectSets);
@@ -93,10 +99,17 @@ export class ObjectListQuery extends ListQuery {
       return objectSet;
     }
 
-    let objectSet = store.client({
-      type: "object",
-      apiName: this.apiName,
-    } as ObjectTypeDefinition);
+    // Start with either a static objectset (for RIDs) or a base objectset
+    let objectSet: ObjectSet<ObjectTypeDefinition>;
+    if (rids != null) {
+      objectSet = clientCtx.objectSetFactory(
+        typeDefinition,
+        clientCtx,
+        { type: "static", objects: [...rids] },
+      );
+    } else {
+      objectSet = store.client(typeDefinition);
+    }
 
     if (rdpConfig != null) {
       objectSet = objectSet.withProperties(
