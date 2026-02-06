@@ -22,6 +22,8 @@ export type { ActionSignatureFromDef } from "../actions/applyAction.js";
 export { computeObjectSetCacheKey } from "../observable/computeObjectSetCacheKey.js";
 export { createObservableClient } from "../observable/ObservableClient.js";
 export type {
+  InvalidationEvent,
+  InvalidationListenerOptions,
   ObservableClient,
   ObserveAggregationArgs,
   ObserveFunctionCallbackArgs,

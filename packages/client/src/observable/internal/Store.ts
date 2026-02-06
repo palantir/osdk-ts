@@ -27,7 +27,16 @@ import type {
 import invariant from "tiny-invariant";
 import type { ActionSignatureFromDef } from "../../actions/applyAction.js";
 import { additionalContext, type Client } from "../../Client.js";
+import {
+  getWireObjectSet,
+} from "../../objectSet/createObjectSet.js";
+import { extractObjectOrInterfaceType } from "../../util/extractObjectOrInterfaceType.js";
 import { DEBUG_REFCOUNTS } from "../DebugFlags.js";
+import type {
+  InvalidationEvent,
+  InvalidationListenerOptions,
+  Unsubscribable,
+} from "../ObservableClient.js";
 import type { OptimisticBuilder } from "../OptimisticBuilder.js";
 import { ActionApplication } from "./actions/ActionApplication.js";
 import {
@@ -77,6 +86,11 @@ export namespace Store {
   }
 }
 
+interface InvalidationListener {
+  callback: (event: InvalidationEvent) => void;
+  objectTypes: Set<string> | undefined;
+}
+
 /*
   Notes:
     - Subjects are one per type per store (by cache key)
@@ -124,6 +138,8 @@ export class Store {
   readonly objects: ObjectsHelper;
   readonly links: LinksHelper;
   readonly objectSets: ObjectSetHelper;
+
+  #invalidationListeners: Set<InvalidationListener> = new Set();
 
   constructor(client: Client) {
     this.logger = client[additionalContext].logger?.child({}, {
@@ -316,6 +332,8 @@ export class Store {
         if (promise) promises.push(promise);
       }
       await Promise.all(promises);
+
+      this.#notifyInvalidationListeners(changes, optimisticId);
     } finally {
       if (process.env.NODE_ENV !== "production") {
         logger?.debug("in finally", DEBUG_ONLY__changesToString(changes));
@@ -546,5 +564,85 @@ export class Store {
     primaryKey: string | number,
   ): Promise<void> {
     return this.functions.invalidateFunctionsByObject(apiName, primaryKey);
+  }
+
+  public addInvalidationListener(
+    callback: (event: InvalidationEvent) => void,
+    options?: InvalidationListenerOptions,
+  ): Unsubscribable {
+    const listener: InvalidationListener = {
+      callback,
+      objectTypes: options?.objectTypes
+        ? new Set(options.objectTypes)
+        : undefined,
+    };
+    this.#invalidationListeners.add(listener);
+
+    if (options?.objectSets && options.objectSets.length > 0) {
+      const objectSetWires = options.objectSets.map(os => getWireObjectSet(os));
+      Promise.all(
+        objectSetWires.map(wire =>
+          extractObjectOrInterfaceType(
+            this.client[additionalContext],
+            wire,
+          )
+        ),
+      )
+        .then(types => {
+          if (!this.#invalidationListeners.has(listener)) return;
+
+          for (const type of types) {
+            if (type) {
+              if (!listener.objectTypes) {
+                listener.objectTypes = new Set();
+              }
+              listener.objectTypes.add(type.apiName);
+            }
+          }
+        })
+        .catch((error: unknown) => {
+          if (process.env.NODE_ENV !== "production") {
+            this.logger?.error("Failed to extract ObjectSet types", error);
+          }
+        });
+    }
+
+    return {
+      unsubscribe: () => {
+        this.#invalidationListeners.delete(listener);
+      },
+    };
+  }
+
+  #notifyInvalidationListeners(
+    changes: Changes,
+    optimisticId?: OptimisticId,
+  ): void {
+    if (this.#invalidationListeners.size === 0) return;
+    if (changes.isEmpty()) return;
+
+    const event: InvalidationEvent = {
+      addedObjectTypes: new Set(changes.addedObjects.keys()),
+      modifiedObjectTypes: new Set(changes.modifiedObjects.keys()),
+      isOptimistic: !!optimisticId,
+      timestamp: Date.now(),
+    };
+
+    const listeners = [...this.#invalidationListeners];
+    for (const listener of listeners) {
+      const filterTypes = listener.objectTypes;
+      if (filterTypes) {
+        const types = [...event.addedObjectTypes, ...event.modifiedObjectTypes];
+        if (!types.some(t => filterTypes.has(t))) continue;
+      }
+
+      try {
+        listener.callback(event);
+      } catch (e) {
+        if (process.env.NODE_ENV !== "production") {
+          this.logger?.error("Error in invalidation listener", e);
+        }
+      }
+    }
   }
 }

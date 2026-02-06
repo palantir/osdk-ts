@@ -463,6 +463,21 @@ export interface ObservableClient extends ObserveLinks {
   >(
     where: WhereClause<T, RDPs>,
   ) => Canonical<WhereClause<T, RDPs>>;
+
+  /**
+   * Subscribe to cache invalidation events.
+   *
+   * Use this to synchronize external caches with the ObservableClient's cache.
+   * The listener is called after internal invalidation is complete.
+   *
+   * @param listener - Callback invoked when cache entries are invalidated
+   * @param options - Optional filtering options
+   * @returns Unsubscribable to stop receiving events
+   */
+  onInvalidation(
+    listener: (event: InvalidationEvent) => void,
+    options?: InvalidationListenerOptions,
+  ): Unsubscribable;
 }
 
 export function createObservableClient(client: Client): ObservableClient {
@@ -493,4 +508,16 @@ export function createObservableClient(client: Client): ObservableClient {
 
 export interface Unsubscribable {
   unsubscribe: () => void;
+}
+
+export interface InvalidationEvent {
+  addedObjectTypes: ReadonlySet<string>;
+  modifiedObjectTypes: ReadonlySet<string>;
+  isOptimistic: boolean;
+  timestamp: number;
+}
+
+export interface InvalidationListenerOptions {
+  objectTypes?: ReadonlyArray<string>;
+  objectSets?: ReadonlyArray<ObjectSet<ObjectTypeDefinition>>;
 }
