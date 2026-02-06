@@ -57,7 +57,7 @@ import type {
   ObserveObjectSetArgs,
   Unsubscribable,
 } from "../ObservableClient.js";
-import type { Observer } from "../ObservableClient/common.js";
+import type { Observer, Status } from "../ObservableClient/common.js";
 import type { ObserveLinks } from "../ObservableClient/ObserveLink.js";
 import type { AggregationPayloadBase } from "./aggregation/AggregationQuery.js";
 import type { Canonical } from "./Canonical.js";
@@ -205,31 +205,26 @@ export class ObservableClientImpl implements ObservableClient {
       >
     >,
   ) => Unsubscribable = (objects, linkName, options, subFn) => {
-    // Convert to array if single object provided
     const objectsArray = Array.isArray(objects) ? objects : [objects];
+    const observer = subFn as unknown as Observer<SpecificLinkPayload>;
 
-    const parentSub = new Subscription();
-
-    for (const obj of objectsArray) {
-      const querySubscription = this.__experimentalStore.links
-        .observe(
-          {
-            ...options,
-            srcType: {
-              type: "object",
-              apiName: obj.$objectType ?? obj.$apiName,
-            },
-            linkName,
-            pk: obj.$primaryKey,
-          },
-          // cast to cross typed to untyped barrier
-          subFn as unknown as Observer<SpecificLinkPayload>,
-        );
-
-      parentSub.add(querySubscription);
+    if (objectsArray.length <= 1) {
+      return observeSingleLink(
+        this.__experimentalStore,
+        objectsArray,
+        linkName,
+        options,
+        observer,
+      );
     }
 
-    return new UnsubscribableWrapper(parentSub);
+    return observeMultiLinks(
+      this.__experimentalStore,
+      objectsArray,
+      linkName,
+      options,
+      observer,
+    );
   };
 
   public applyAction: <Q extends ActionDefinition<any>>(
@@ -303,4 +298,146 @@ export class ObservableClientImpl implements ObservableClient {
     return this.__experimentalStore.whereCanonicalizer
       .canonicalize(where) as Canonical<WhereClause<T, RDPs>>;
   }
+}
+
+function observeSingleLink(
+  store: Store,
+  objectsArray: ReadonlyArray<
+    Osdk.Instance<ObjectTypeDefinition | InterfaceDefinition>
+  >,
+  linkName: string,
+  options: ObserveLinks.Options<
+    ObjectTypeDefinition | InterfaceDefinition,
+    string
+  >,
+  observer: Observer<SpecificLinkPayload>,
+): Unsubscribable {
+  const parentSub = new Subscription();
+
+  for (const obj of objectsArray) {
+    parentSub.add(
+      store.links.observe(
+        {
+          ...options,
+          srcType: {
+            type: "object",
+            apiName: obj.$objectType ?? obj.$apiName,
+          },
+          linkName,
+          pk: obj.$primaryKey,
+        },
+        observer,
+      ),
+    );
+  }
+
+  return new UnsubscribableWrapper(parentSub);
+}
+
+function observeMultiLinks(
+  store: Store,
+  objectsArray: ReadonlyArray<
+    Osdk.Instance<ObjectTypeDefinition | InterfaceDefinition>
+  >,
+  linkName: string,
+  options: ObserveLinks.Options<
+    ObjectTypeDefinition | InterfaceDefinition,
+    string
+  >,
+  observer: Observer<SpecificLinkPayload>,
+): Unsubscribable {
+  const parentSub = new Subscription();
+  const totalExpected = objectsArray.length;
+  const perObjectResults = new Map<string, SpecificLinkPayload>();
+
+  const mergeAndEmit = (): void => {
+    let mergedStatus: Status = "loaded";
+    let anyLoading = false;
+    let anyError = false;
+    let latestUpdated = 0;
+    let mergedIsOptimistic = false;
+    let mergedHasMore = false;
+    const fetchMores: Array<() => Promise<void>> = [];
+
+    const seen = new Map<string, SpecificLinkPayload["resolvedList"][number]>();
+
+    for (const payload of perObjectResults.values()) {
+      if (payload.status === "init" || payload.status === "loading") {
+        anyLoading = true;
+      }
+      if (payload.status === "error") {
+        anyError = true;
+      }
+
+      if (payload.lastUpdated > latestUpdated) {
+        latestUpdated = payload.lastUpdated;
+      }
+      if (payload.isOptimistic) mergedIsOptimistic = true;
+      if (payload.hasMore) {
+        mergedHasMore = true;
+        fetchMores.push(payload.fetchMore);
+      }
+
+      for (const obj of payload.resolvedList) {
+        const key = `${obj.$objectType}:${obj.$primaryKey}`;
+        seen.set(key, obj);
+      }
+    }
+
+    if (perObjectResults.size < totalExpected) {
+      anyLoading = true;
+    }
+
+    if (anyLoading) {
+      mergedStatus = "loading";
+    } else if (anyError) {
+      mergedStatus = "error";
+    }
+
+    const mergedPayload: SpecificLinkPayload = {
+      resolvedList: Array.from(seen.values()),
+      isOptimistic: mergedIsOptimistic,
+      lastUpdated: latestUpdated,
+      fetchMore: mergedHasMore
+        ? () => Promise.all(fetchMores.map(fn => fn())).then(() => {})
+        : () => Promise.resolve(),
+      hasMore: mergedHasMore,
+      status: mergedStatus,
+      ...(!mergedHasMore ? { totalCount: String(seen.size) } : {}),
+    };
+
+    observer.next(mergedPayload);
+  };
+
+  for (const obj of objectsArray) {
+    const objKey = `${obj.$objectType ?? obj.$apiName}:${obj.$primaryKey}`;
+
+    const perObjectObserver: Observer<SpecificLinkPayload> = {
+      next: (payload: SpecificLinkPayload) => {
+        perObjectResults.set(objKey, payload);
+        mergeAndEmit();
+      },
+      error: (err: unknown) => {
+        observer.error(err);
+      },
+      complete: () => {},
+    };
+
+    parentSub.add(
+      store.links.observe(
+        {
+          ...options,
+          srcType: {
+            type: "object",
+            apiName: obj.$objectType ?? obj.$apiName,
+          },
+          linkName,
+          pk: obj.$primaryKey,
+        },
+        perObjectObserver,
+      ),
+    );
+  }
+
+  return new UnsubscribableWrapper(parentSub);
 }
