@@ -70,6 +70,7 @@ import {
   expectSingleListCallAndClear,
   expectSingleObjectCallAndClear,
   getObject,
+  mockLinkSubCallback,
   mockListSubCallback,
   mockObserver,
   mockSingleSubCallback,
@@ -400,6 +401,70 @@ describe(Store, () => {
       expect(occupantsLinkSubFn.next).not.toHaveBeenCalled();
       expect(empSubFn.next).not.toHaveBeenCalled();
       expect(officeSubFn.next).not.toHaveBeenCalled();
+    });
+
+    it("observeLinks correctly constructs query for interface instances", async () => {
+      const { payload: emp1Payload } = await expectStandardObserveObject({
+        cache,
+        type: Employee,
+        primaryKey: 1,
+      });
+      const emp1 = emp1Payload?.object;
+      invariant(emp1);
+
+      const fooInterfaceInstance = emp1.$as(FooInterface);
+
+      expect(fooInterfaceInstance.$apiName).toBe("FooInterface");
+      expect(fooInterfaceInstance.$objectType).toBe("Employee");
+
+      const linkSubFn = mockLinkSubCallback();
+
+      const subscription = cache.links.observe({
+        linkName: "toBar",
+        srcType: { type: "interface", apiName: fooInterfaceInstance.$apiName },
+        sourceUnderlyingObjectType: fooInterfaceInstance.$objectType,
+        pk: fooInterfaceInstance.$primaryKey,
+      }, linkSubFn);
+
+      await waitForCall(linkSubFn);
+      expect(linkSubFn.next).toHaveBeenCalled();
+
+      subscription.unsubscribe();
+
+      testStage("Interface link query construction verified");
+    });
+
+    it("invalidateObjectType correctly invalidates interface link queries when object implements source interface", async () => {
+      const { payload: emp1Payload } = await expectStandardObserveObject({
+        cache,
+        type: Employee,
+        primaryKey: 1,
+      });
+      const emp1 = emp1Payload?.object;
+      invariant(emp1);
+
+      const fooInterfaceInstance = emp1.$as(FooInterface);
+      const linkSubFn = mockLinkSubCallback();
+
+      const subscription = cache.links.observe({
+        linkName: "toBar",
+        srcType: { type: "interface", apiName: fooInterfaceInstance.$apiName },
+        sourceUnderlyingObjectType: fooInterfaceInstance.$objectType,
+        pk: fooInterfaceInstance.$primaryKey,
+      }, linkSubFn);
+
+      await waitForCall(linkSubFn);
+      linkSubFn.next.mockClear();
+
+      await cache.invalidateObjectType(Employee, undefined);
+
+      await waitForCall(linkSubFn);
+      expect(linkSubFn.next).toHaveBeenCalled();
+
+      subscription.unsubscribe();
+      testStage(
+        "Interface link invalidation via implementing object type verified",
+      );
     });
   });
 
