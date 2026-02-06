@@ -14,14 +14,22 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition } from "@osdk/api";
+import type { InterfaceDefinition, ObjectTypeDefinition } from "@osdk/api";
 import type { AsyncValue } from "./utils/asyncValue.js";
 
-export interface ObjectType extends ObjectTypeDefinition {
+interface ObjectType extends ObjectTypeDefinition {
   internalDoNotUseMetadata?: {
     rid: string;
   };
 }
+
+interface InterfaceType extends InterfaceDefinition {
+  internalDoNotUseMetadata?: {
+    rid: string;
+  };
+}
+
+export type AllowedObjectSetParameterType = ObjectType | InterfaceType;
 
 /**
  * Map of the name of the type to the corresponding JavaScript type.
@@ -42,7 +50,9 @@ export interface AbstractParameterValue<T extends PrimitiveParameterType> {
   value: AsyncValue<PrimitiveParameterTypes[T]>;
 }
 
-export interface ObjectSetParameterValue<T extends ObjectType> {
+export interface ObjectSetParameterValue<
+  T extends AllowedObjectSetParameterType,
+> {
   type: "objectSet";
   value: AsyncValue<{
     objectSetRid: string;
@@ -64,8 +74,9 @@ export namespace ParameterValue {
   export type Boolean = AbstractParameterValue<"boolean">;
   export type Date = AbstractParameterValue<"date">;
   export type Timestamp = AbstractParameterValue<"timestamp">;
-  export type ObjectSet<T extends ObjectType = ObjectType> =
-    ObjectSetParameterValue<T>;
+  export type ObjectSet<
+    T extends AllowedObjectSetParameterType = AllowedObjectSetParameterType,
+  > = ObjectSetParameterValue<T>;
 
   export type StringArray = GenericArrayParameterValue<"string">;
   export type NumberArray = GenericArrayParameterValue<"number">;

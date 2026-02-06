@@ -102,16 +102,32 @@ describe("validateWidgetConfig", () => {
     );
   });
 
-  test("accepts valid object set parameter", () => {
+  test("accepts valid object set parameter using object types", () => {
     const validConfig = getValidConfig();
     validConfig.parameters.myObjectSet = {
       type: "objectSet",
       displayName: "My Object Set",
-      objectType: {
+      allowedType: {
         type: "object",
         apiName: "employee",
         internalDoNotUseMetadata: {
           rid: "ri.object-type.employee",
+        },
+      },
+    };
+    expect(() => validateWidgetConfig(validConfig)).not.toThrow();
+  });
+
+  test("accepts valid object set parameter using interfaces", () => {
+    const validConfig = getValidConfig();
+    validConfig.parameters.myInterfaceSet = {
+      type: "objectSet",
+      displayName: "My Object Set",
+      allowedType: {
+        type: "interface",
+        apiName: "MyInterface",
+        internalDoNotUseMetadata: {
+          rid: "ri.ontology.main.interface.my-interface",
         },
       },
     };
@@ -123,7 +139,7 @@ describe("validateWidgetConfig", () => {
     invalidConfig.parameters.myObjectSet = {
       type: "objectSet",
       displayName: "My Object Set",
-      objectType: {
+      allowedType: {
         type: "object",
         apiName: "employee",
       },

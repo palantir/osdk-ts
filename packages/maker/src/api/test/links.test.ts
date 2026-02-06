@@ -273,6 +273,10 @@ describe("Link Types", () => {
                 },
                 "titlePropertyTypeRid": "fizz",
               },
+              "propertySecurityGroupPackagingVersion": {
+                "type": "v2",
+                "v2": {},
+              },
             },
             "com.palantir.foo": {
               "datasources": [
@@ -369,6 +373,10 @@ describe("Link Types", () => {
                   "type": "active",
                 },
                 "titlePropertyTypeRid": "bar",
+              },
+              "propertySecurityGroupPackagingVersion": {
+                "type": "v2",
+                "v2": {},
               },
             },
           },
@@ -666,6 +674,10 @@ describe("Link Types", () => {
                 },
                 "titlePropertyTypeRid": "fizz",
               },
+              "propertySecurityGroupPackagingVersion": {
+                "type": "v2",
+                "v2": {},
+              },
             },
             "com.palantir.foo": {
               "datasources": [
@@ -762,6 +774,10 @@ describe("Link Types", () => {
                   "type": "active",
                 },
                 "titlePropertyTypeRid": "bar",
+              },
+              "propertySecurityGroupPackagingVersion": {
+                "type": "v2",
+                "v2": {},
               },
             },
           },
@@ -1126,6 +1142,10 @@ describe("Link Types", () => {
                 },
                 "titlePropertyTypeRid": "bar",
               },
+              "propertySecurityGroupPackagingVersion": {
+                "type": "v2",
+                "v2": {},
+              },
             },
             "com.palantir.buzzObject": {
               "datasources": [
@@ -1311,6 +1331,10 @@ describe("Link Types", () => {
                 },
                 "titlePropertyTypeRid": "buzz",
               },
+              "propertySecurityGroupPackagingVersion": {
+                "type": "v2",
+                "v2": {},
+              },
             },
             "com.palantir.fizzObject": {
               "datasources": [
@@ -1407,6 +1431,10 @@ describe("Link Types", () => {
                   "type": "active",
                 },
                 "titlePropertyTypeRid": "fizz",
+              },
+              "propertySecurityGroupPackagingVersion": {
+                "type": "v2",
+                "v2": {},
               },
             },
           },
@@ -1657,6 +1685,10 @@ describe("Link Types", () => {
                 },
                 "titlePropertyTypeRid": "fizz",
               },
+              "propertySecurityGroupPackagingVersion": {
+                "type": "v2",
+                "v2": {},
+              },
             },
             "com.palantir.foo": {
               "datasources": [
@@ -1753,6 +1785,10 @@ describe("Link Types", () => {
                   "type": "active",
                 },
                 "titlePropertyTypeRid": "bar",
+              },
+              "propertySecurityGroupPackagingVersion": {
+                "type": "v2",
+                "v2": {},
               },
             },
           },

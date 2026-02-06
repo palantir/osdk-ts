@@ -211,7 +211,6 @@ async function transpileWithTsup(format, target) {
     keepNames: false,
     treeshake: true,
     target: "es2022",
-
     esbuildPlugins: [
       /** @type {any} */ (babel({
         config: {

@@ -15,7 +15,7 @@
  */
 
 import type {
-  ObjectTypeDefinition,
+  ObjectOrInterfaceDefinition,
   Osdk,
   PropertyKeys,
   QueryDefinition,
@@ -40,12 +40,12 @@ import { getRowId } from "./utils/getRowId.js";
  *
  * @example
  * ```tsx
- * <ObjectTable objectSet={myObjectSet} objectType={MyObjectType} />
+ * <ObjectTable objectType={MyObjectType} />
  * ```
  */
 
 export function ObjectTable<
-  Q extends ObjectTypeDefinition,
+  Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = Record<
     string,
     never
@@ -55,7 +55,6 @@ export function ObjectTable<
     never
   >,
 >({
-  objectSet,
   objectType,
   columnDefinitions,
   filter,
@@ -83,12 +82,12 @@ export function ObjectTable<
     },
   );
 
-  const { data, fetchMore, isLoading } = useObjectTableData<
+  const { data, fetchMore, isLoading, error } = useObjectTableData<
     Q,
     RDPs,
     FunctionColumns
   >(
-    objectSet,
+    objectType,
     columnDefinitions,
     filter,
     sorting,
@@ -182,6 +181,7 @@ export function ObjectTable<
       rowHeight={props.rowHeight}
       renderCellContextMenu={onRenderCellContextMenu}
       className={props.className}
+      error={error}
     />
   );
 }

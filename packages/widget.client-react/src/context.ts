@@ -16,9 +16,9 @@
 
 import type { ObjectSet } from "@osdk/client";
 import type {
+  AllowedObjectSetParameterType,
   EventId,
   EventParameterValueMap,
-  ObjectType,
   WidgetMessage,
 } from "@osdk/widget.api";
 import {
@@ -36,8 +36,8 @@ export type AugmentedEventParameterValueMap<
   K extends EventId<C>,
 > = {
   [P in keyof EventParameterValueMap<C, K>]: P extends keyof C["parameters"]
-    ? C["parameters"][P] extends { type: "objectSet"; objectType: infer T }
-      ? T extends ObjectType ? ObjectSet<T>
+    ? C["parameters"][P] extends { type: "objectSet"; allowedType: infer T }
+      ? T extends AllowedObjectSetParameterType ? ObjectSet<T>
       : EventParameterValueMap<C, K>[P]
     : EventParameterValueMap<C, K>[P]
     : EventParameterValueMap<C, K>[P];
@@ -101,8 +101,8 @@ export interface FoundryWidgetClientContext<
 export type ExtendedParameterValueMap<C extends WidgetConfig<C["parameters"]>> =
   {
     [K in keyof C["parameters"]]: K extends keyof ParameterValueMap<C>
-      ? C["parameters"][K] extends { type: "objectSet"; objectType: infer T }
-        ? T extends ObjectType
+      ? C["parameters"][K] extends { type: "objectSet"; allowedType: infer T }
+        ? T extends AllowedObjectSetParameterType
           ? ParameterValueMap<C>[K] & { objectSet: ObjectSet<T> }
         : ParameterValueMap<C>[K]
       : ParameterValueMap<C>[K]
@@ -113,8 +113,9 @@ export type ExtendedAsyncParameterValueMap<
   C extends WidgetConfig<C["parameters"]>,
 > = {
   [K in keyof C["parameters"]]: K extends keyof AsyncParameterValueMap<C>
-    ? C["parameters"][K] extends { type: "objectSet"; objectType: infer T }
-      ? T extends ObjectType ? AsyncParameterValueMap<C>[K] & {
+    ? C["parameters"][K] extends { type: "objectSet"; allowedType: infer T }
+      ? T extends AllowedObjectSetParameterType
+        ? AsyncParameterValueMap<C>[K] & {
           value: AsyncValue<
             ParameterValueMap<C>[K] & { objectSet: ObjectSet<T> }
           >;

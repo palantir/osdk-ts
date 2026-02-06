@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition } from "@osdk/api";
 import { describe, expectTypeOf, it } from "vitest";
 import {
   type AsyncParameterValueMap,
@@ -25,7 +24,10 @@ import {
   type ParameterId,
   type ParameterValueMap,
 } from "./config.js";
-import type { ObjectType, ParameterValue } from "./parameters.js";
+import type {
+  AllowedObjectSetParameterType,
+  ParameterValue,
+} from "./parameters.js";
 import type { AsyncValue } from "./utils/asyncValue.js";
 
 describe("WidgetConfig", () => {
@@ -287,12 +289,10 @@ describe("WidgetConfig", () => {
       const Employee = {
         type: "object",
         apiName: "employee",
-        experimentalDoNotUseMetadata: {
+        internalDoNotUseMetadata: {
           rid: "ri.object-type.employee",
         },
-      } as const satisfies ObjectTypeDefinition & {
-        experimentalDoNotUseMetadata: { rid: string };
-      } & ObjectType;
+      } as const satisfies AllowedObjectSetParameterType;
 
       type Employee = typeof Employee;
 
@@ -305,7 +305,7 @@ describe("WidgetConfig", () => {
           myObjectSet: {
             displayName: "My Object Set",
             type: "objectSet",
-            objectType: Employee,
+            allowedType: Employee,
           },
         },
         events: {},

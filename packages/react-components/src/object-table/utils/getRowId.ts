@@ -15,7 +15,7 @@
  */
 
 import type {
-  ObjectTypeDefinition,
+  ObjectOrInterfaceDefinition,
   Osdk,
   PrimaryKeyType,
   PropertyKeys,
@@ -23,7 +23,7 @@ import type {
 } from "@osdk/api";
 
 export const getRowId = <
-  Q extends ObjectTypeDefinition,
+  Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = Record<
     string,
     never
@@ -34,6 +34,6 @@ export const getRowId = <
   return getRowIdFromPrimaryKey(row.$primaryKey);
 };
 
-export const getRowIdFromPrimaryKey = <Q extends ObjectTypeDefinition>(
+export const getRowIdFromPrimaryKey = <Q extends ObjectOrInterfaceDefinition>(
   primaryKey: PrimaryKeyType<Q>,
 ): string => primaryKey.toString();

@@ -5066,6 +5066,141 @@
       "implementsInterfaces": [],
       "implementsInterfaces2": {},
       "sharedPropertyTypeMapping": {}
+    },
+    "MwaltherPersonOt": {
+      "objectType": {
+        "apiName": "MwaltherPersonOt",
+        "displayName": "[mwalther] Person",
+        "status": "EXPERIMENTAL",
+        "description": "asd",
+        "pluralDisplayName": "[mwalther] OT implement IDPS",
+        "icon": {
+          "type": "blueprint",
+          "color": "#4C90F0",
+          "name": "cube"
+        },
+        "primaryKey": "id",
+        "properties": {
+          "age": {
+            "displayName": "Age",
+            "dataType": {
+              "type": "integer"
+            },
+            "rid": "ri.ontology.main.property.4729c931-d5c8-4cf4-9961-2640afcfcad2",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "id": {
+            "displayName": "ID",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.35d25594-f060-45c5-afaf-03fb476f34c1",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "name": {
+            "displayName": "Name",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.cb7aab0b-b874-4a09-83b9-2c35e4fb2002",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL",
+            "valueTypeApiName": "mwaltherIdpValueTypeString"
+          }
+        },
+        "rid": "ri.ontology.main.object-type.4ee4fa8d-e080-4317-be09-5e900223f4d5",
+        "titleProperty": "id",
+        "visibility": "NORMAL"
+      },
+      "linkTypes": [],
+      "implementsInterfaces": [
+        "MwaltherTestUpgrade",
+        "MwaltherPersonV2",
+        "com.palantirfoundry.swirl.esong.MwaltherTest",
+        "com.palantirfoundry.swirl.esong.MwaltherTestIdp"
+      ],
+      "implementsInterfaces2": {
+        "com.palantirfoundry.swirl.esong.MwaltherTest": {
+          "apiName": "com.palantirfoundry.swirl.esong.MwaltherTest",
+          "rid": "ri.ontology.main.interface.2fac5dfa-2bf8-49c1-9af1-1b484eb3d859",
+          "properties": {
+            "mwaltherVtInputTest": "name",
+            "com.palantirfoundry.swirl.esong.mwaltherName": "name"
+          },
+          "propertiesV2": {
+            "mwaltherVtInputTest": {
+              "type": "localPropertyImplementation",
+              "propertyApiName": "name"
+            },
+            "com.palantirfoundry.swirl.esong.mwaltherName": {
+              "type": "localPropertyImplementation",
+              "propertyApiName": "name"
+            }
+          },
+          "links": {}
+        },
+        "com.palantirfoundry.swirl.esong.MwaltherTestIdp": {
+          "apiName": "com.palantirfoundry.swirl.esong.MwaltherTestIdp",
+          "rid": "ri.ontology.main.interface.19fcaed0-457d-4e4c-82b1-7e3933a61df3",
+          "properties": {
+            "com.palantirfoundry.swirl.esong.mwaltherName": "name"
+          },
+          "propertiesV2": {
+            "newProperty1": {
+              "type": "localPropertyImplementation",
+              "propertyApiName": "name"
+            },
+            "idpAge": {
+              "type": "localPropertyImplementation",
+              "propertyApiName": "age"
+            },
+            "mwaltherNam": {
+              "type": "localPropertyImplementation",
+              "propertyApiName": "id"
+            },
+            "com.palantirfoundry.swirl.esong.mwaltherName": {
+              "type": "localPropertyImplementation",
+              "propertyApiName": "name"
+            }
+          },
+          "links": {}
+        },
+        "MwaltherPersonV2": {
+          "apiName": "MwaltherPersonV2",
+          "rid": "ri.ontology.main.interface.2fc1336c-6d4d-428f-9a4f-4f3ebfaf860e",
+          "properties": {},
+          "propertiesV2": {
+            "mwaltherNam": {
+              "type": "localPropertyImplementation",
+              "propertyApiName": "id"
+            }
+          },
+          "links": {}
+        },
+        "MwaltherTestUpgrade": {
+          "apiName": "MwaltherTestUpgrade",
+          "rid": "ri.ontology.main.interface.2b48a0b4-9fa0-4a9b-98c7-32ff71b2db79",
+          "properties": {
+            "com.palantirfoundry.swirl.esong.mwaltherName": "name"
+          },
+          "propertiesV2": {
+            "com.palantirfoundry.swirl.esong.mwaltherName": {
+              "type": "localPropertyImplementation",
+              "propertyApiName": "name"
+            }
+          },
+          "links": {}
+        }
+      },
+      "sharedPropertyTypeMapping": {}
     }
   },
   "queryTypes": {
@@ -6140,6 +6275,157 @@
           "rid": "ri.ontology.main.interface-property.893c33d7-5bb4-41fb-8357-2d10095d7c96",
           "apiName": "mwaltherName",
           "displayName": "[mwalther] Name",
+          "dataType": {
+            "type": "string"
+          },
+          "requireImplementation": true
+        }
+      },
+      "extendsInterfaces": [],
+      "allExtendsInterfaces": [],
+      "implementedByObjectTypes": [
+        "MwaltherPersonOt"
+      ],
+      "links": {},
+      "allLinks": {}
+    },
+    "com.palantirfoundry.swirl.esong.MwaltherTestIdp": {
+      "rid": "ri.ontology.main.interface.19fcaed0-457d-4e4c-82b1-7e3933a61df3",
+      "apiName": "com.palantirfoundry.swirl.esong.MwaltherTestIdp",
+      "displayName": "[mwalther] test IDP",
+      "description": "",
+      "properties": {
+        "com.palantirfoundry.swirl.esong.mwaltherName": {
+          "rid": "ri.ontology.main.shared-property.893c33d7-5bb4-41fb-8357-2d10095d7c96",
+          "apiName": "com.palantirfoundry.swirl.esong.mwaltherName",
+          "displayName": "Details - Details",
+          "description": "Additional details explaining this entity",
+          "dataType": {
+            "type": "string"
+          },
+          "required": false
+        }
+      },
+      "allProperties": {
+        "com.palantirfoundry.swirl.esong.mwaltherName": {
+          "rid": "ri.ontology.main.shared-property.893c33d7-5bb4-41fb-8357-2d10095d7c96",
+          "apiName": "com.palantirfoundry.swirl.esong.mwaltherName",
+          "displayName": "Details - Details",
+          "description": "Additional details explaining this entity",
+          "dataType": {
+            "type": "string"
+          },
+          "required": false
+        }
+      },
+      "propertiesV2": {
+        "newProperty1": {
+          "type": "interfaceDefinedPropertyType",
+          "rid": "ri.ontology.main.interface-property.4a52af6d-fe87-429e-8998-e836ad82bd4d",
+          "apiName": "newProperty1",
+          "displayName": "New property 1",
+          "dataType": {
+            "type": "string"
+          },
+          "requireImplementation": true
+        },
+        "idpAge": {
+          "type": "interfaceDefinedPropertyType",
+          "rid": "ri.ontology.main.interface-property.b96558a8-0056-4059-9eb1-d72844761dca",
+          "apiName": "idpAge",
+          "displayName": "Age",
+          "dataType": {
+            "type": "integer"
+          },
+          "requireImplementation": true
+        },
+        "com.palantirfoundry.swirl.esong.mwaltherName": {
+          "type": "interfaceSharedPropertyType",
+          "rid": "ri.ontology.main.shared-property.893c33d7-5bb4-41fb-8357-2d10095d7c96",
+          "apiName": "com.palantirfoundry.swirl.esong.mwaltherName",
+          "displayName": "Details - Details",
+          "description": "Additional details explaining this entity",
+          "dataType": {
+            "type": "string"
+          },
+          "required": false
+        }
+      },
+      "allPropertiesV2": {
+        "newProperty1": {
+          "rid": "ri.ontology.main.interface-property.4a52af6d-fe87-429e-8998-e836ad82bd4d",
+          "apiName": "newProperty1",
+          "displayName": "New property 1",
+          "dataType": {
+            "type": "string"
+          },
+          "requireImplementation": true
+        },
+        "mwaltherNam": {
+          "rid": "ri.ontology.main.interface-property.3f087600-19f7-47c9-80cd-5037767676d1",
+          "apiName": "mwaltherNam",
+          "displayName": "prop1",
+          "dataType": {
+            "type": "string"
+          },
+          "requireImplementation": true
+        },
+        "idpAge": {
+          "rid": "ri.ontology.main.interface-property.b96558a8-0056-4059-9eb1-d72844761dca",
+          "apiName": "idpAge",
+          "displayName": "Age",
+          "dataType": {
+            "type": "integer"
+          },
+          "requireImplementation": true
+        },
+        "com.palantirfoundry.swirl.esong.mwaltherName": {
+          "rid": "ri.ontology.main.interface-property.893c33d7-5bb4-41fb-8357-2d10095d7c96",
+          "apiName": "com.palantirfoundry.swirl.esong.mwaltherName",
+          "displayName": "Details - Details",
+          "description": "Additional details explaining this entity",
+          "dataType": {
+            "type": "string"
+          },
+          "requireImplementation": false
+        }
+      },
+      "extendsInterfaces": [
+        "MwaltherPersonV2"
+      ],
+      "allExtendsInterfaces": [
+        "MwaltherPersonV2"
+      ],
+      "implementedByObjectTypes": [
+        "MwaltherPersonOt"
+      ],
+      "links": {},
+      "allLinks": {}
+    },
+    "MwaltherPersonV2": {
+      "rid": "ri.ontology.main.interface.2fc1336c-6d4d-428f-9a4f-4f3ebfaf860e",
+      "apiName": "MwaltherPersonV2",
+      "displayName": "[mwalther] Person V2",
+      "description": "",
+      "properties": {},
+      "allProperties": {},
+      "propertiesV2": {
+        "mwaltherNam": {
+          "type": "interfaceDefinedPropertyType",
+          "rid": "ri.ontology.main.interface-property.3f087600-19f7-47c9-80cd-5037767676d1",
+          "apiName": "mwaltherNam",
+          "displayName": "prop1",
+          "dataType": {
+            "type": "string"
+          },
+          "requireImplementation": true
+        }
+      },
+      "allPropertiesV2": {
+        "mwaltherNam": {
+          "rid": "ri.ontology.main.interface-property.3f087600-19f7-47c9-80cd-5037767676d1",
+          "apiName": "mwaltherNam",
+          "displayName": "prop1",
           "dataType": {
             "type": "string"
           },

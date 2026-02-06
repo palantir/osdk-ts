@@ -109,6 +109,10 @@ export class ListsHelper extends AbstractHelper<
       ? this.ridListCanonicalizer.canonicalize(rids)
       : undefined;
 
+    const canonRids = rids != null
+      ? this.ridListCanonicalizer.canonicalize(rids)
+      : undefined;
+
     const listCacheKey = this.cacheKeys.get<ListCacheKey>(
       "list",
       type,

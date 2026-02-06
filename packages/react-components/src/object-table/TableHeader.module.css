@@ -18,7 +18,7 @@
   display: grid;
   position: sticky;
   top: 0;
-  z-index: var(--bp-surface-zIndex-1);
+  z-index: var(--osdk-surface-z-index-1);
   background-color: var(--osdk-table-header-bg);
 }
 
@@ -26,7 +26,6 @@
   cursor: col-resize;
   user-select: none;
 }
-
 
 .osdkTableHeaderRow {
   display: flex;
@@ -57,17 +56,19 @@
 .osdkTableHeaderCell[data-pinned="left"],
 .osdkTableHeaderCell[data-pinned="right"] {
   position: sticky;
-  z-index: var(--bp-surface-zIndex-2);
+  z-index: var(--osdk-surface-z-index-2);
 }
 
 /* Last left-pinned column - no left-pinned siblings after it */
 .osdkTableHeaderCell[data-pinned="left"]:not(:has(~ [data-pinned="left"])) {
-  border-right: calc(var(--osdk-table-border-width)* 2) solid var(--osdk-table-border-color);
+  border-right: var(--osdk-table-pinned-column-border);
 }
 
 /* First right-pinned column - no right-pinned siblings before it */
-.osdkTableHeaderCell[data-pinned="right"]:not(:has(~ [data-pinned="right"]):nth-child(n+2)) {
-  border-left: calc(var(--osdk-table-border-width)* 2) solid var(--osdk-table-border-color);
+.osdkTableHeaderCell[data-pinned="right"]:not(
+    :has(~ [data-pinned="right"]):nth-child(n + 2)
+  ) {
+  border-left: var(--osdk-table-pinned-column-border);
 }
 
 .osdkTableHeaderCell:has([role="checkbox"]) {
@@ -83,13 +84,18 @@
   top: 0;
   touch-action: none;
   width: 3px;
-  z-index: var(--bp-surface-zIndex-2);
+  z-index: var(--osdk-surface-z-index-2);
 
   &:hover {
-    background: var(--bp-intent-primary-hover);
+    background: var(--osdk-intent-primary-hover);
   }
 
   &:active {
-    background: var(--bp-intent-primary-active);
+    background: var(--osdk-intent-primary-active);
   }
+}
+
+.osdkLoadingHeaderCell {
+  height: var(--osdk-table-header-fontSize);
+  flex: 1;
 }

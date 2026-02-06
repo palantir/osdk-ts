@@ -1,5 +1,23 @@
 # @osdk/maker
 
+## 0.16.0-beta.2
+
+### Minor Changes
+
+- e462938: Support PSGs in OAC
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.2
+
+## 0.15.0-beta.9
+
+### Minor Changes
+
+- ace2d68: Allow custom "then" configuration on visibility overrides
+- 044f478: Wire propertiesV2 to implementsInterface
+- 3693275: Add flag to add namespace prefix to value type api names
+
 ## 0.15.0-beta.8
 
 ### Minor Changes

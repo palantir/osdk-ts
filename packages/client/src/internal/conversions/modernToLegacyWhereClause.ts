@@ -141,7 +141,8 @@ function handleWherePair(
 ): SearchJsonQueryV2 {
   invariant(
     filter != null,
-    "Defined key values are only allowed when they are not undefined.",
+    `Cannot filter on property "${fieldName}" with an undefined or null value. `
+      + `If the value might be undefined, check it before adding to the where clause.`,
   );
 
   const isRdp = !structFieldSelector && rdpNames?.has(fieldName);

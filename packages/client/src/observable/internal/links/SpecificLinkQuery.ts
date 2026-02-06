@@ -195,17 +195,27 @@ export class SpecificLinkQuery extends BaseListQuery<
     }
 
     // Fetch the linked objects with pagination
-    const response = await linkQuery.fetchPage({
+    const queryParams: {
+      $pageSize: number;
+      $nextPageToken: string | undefined;
+      $includeRid: true;
+      $orderBy?: Record<string, "asc" | "desc" | undefined>;
+      $where?: Record<string, unknown>;
+    } = {
       $pageSize: this.options.pageSize || 100,
       $nextPageToken: this.nextPageToken,
       $includeRid: true,
-      ...(Object.keys(this.#orderBy).length > 0
-        ? { $orderBy: this.#orderBy }
-        : {}),
-      ...(Object.keys(this.#whereClause).length > 0
-        ? { $where: this.#whereClause }
-        : {}),
-    });
+    };
+
+    if (this.#orderBy && Object.keys(this.#orderBy).length > 0) {
+      queryParams.$orderBy = this.#orderBy;
+    }
+
+    if (this.#whereClause && Object.keys(this.#whereClause).length > 0) {
+      queryParams.$where = this.#whereClause;
+    }
+
+    const response = await linkQuery.fetchPage(queryParams);
 
     // Store the next page token for pagination
     this.nextPageToken = response.nextPageToken;

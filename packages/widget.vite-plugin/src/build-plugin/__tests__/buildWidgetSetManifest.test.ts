@@ -47,7 +47,7 @@ describe("buildWidgetSetManifest", () => {
       widgetSetInputSpec,
     );
 
-    expect(manifest).toMatchObject({
+    expect(manifest).toEqual({
       manifestVersion: "1.0.0",
       widgetSet: {
         rid: WIDGET_SET_RID,
@@ -59,7 +59,7 @@ describe("buildWidgetSetManifest", () => {
             description: "Widget widgetOne Description",
             type: "workshopWidgetV1",
             entrypointJs: [
-              { path: "scripts/widgetOne.js" },
+              { path: "scripts/widgetOne.js", type: "module" },
             ],
             entrypointCss: [
               { path: "styles/widgetOne.css" },
@@ -76,6 +76,7 @@ describe("buildWidgetSetManifest", () => {
                 parameterUpdateIds: ["stringParam"],
               },
             },
+            permissions: ["camera"],
           },
           widgetTwo: {
             id: "widgetTwo",
@@ -100,6 +101,7 @@ describe("buildWidgetSetManifest", () => {
                 parameterUpdateIds: ["stringParam"],
               },
             },
+            permissions: ["camera"],
           },
         },
         inputSpec: widgetSetInputSpec,
@@ -112,7 +114,7 @@ describe("buildWidgetSetManifest", () => {
       objectSetParam: {
         type: "objectSet",
         displayName: "Object Set Parameter",
-        objectType: {
+        allowedType: {
           type: "object",
           apiName: "employee",
           internalDoNotUseMetadata: {
@@ -137,8 +139,44 @@ describe("buildWidgetSetManifest", () => {
         type: "objectSet",
         displayName: "Object Set Parameter",
         objectTypeRids: ["ri.ontology.main.object-type.employee"],
+        allowedType: "ri.ontology.main.object-type.employee",
       },
     );
+  });
+
+  test("converts interface set parameters correctly", () => {
+    const widgetBuild = createMockWidgetBuild("widget", {
+      interfaceSetParam: {
+        type: "objectSet",
+        displayName: "Interface Set Parameter",
+        allowedType: {
+          type: "interface",
+          apiName: "MyInterface",
+          internalDoNotUseMetadata: {
+            rid: "ri.ontology.main.interface.my-interface",
+          },
+        },
+      },
+    });
+
+    const widgetBuilds: WidgetBuildOutputs[] = [widgetBuild];
+    const widgetSetInputSpec: WidgetSetInputSpec = {};
+
+    const manifest = buildWidgetSetManifest(
+      WIDGET_SET_RID,
+      WIDGET_SET_VERSION,
+      widgetBuilds,
+      widgetSetInputSpec,
+    );
+
+    expect(
+      manifest.widgetSet.widgets.widget.parameters.interfaceSetParam,
+    ).toEqual({
+      type: "objectSet",
+      displayName: "Interface Set Parameter",
+      objectTypeRids: [],
+      allowedType: "ri.ontology.main.interface.my-interface",
+    });
   });
 
   test("trims leading slashes from paths", () => {
@@ -231,6 +269,7 @@ function createMockWidgetBuild(
           parameterUpdateIds: ["stringParam"],
         },
       },
+      permissions: ["camera"],
     },
   };
 }

@@ -15,7 +15,7 @@
  */
 
 import type {
-  ObjectTypeDefinition,
+  ObjectOrInterfaceDefinition,
   QueryDefinition,
   SimplePropertyDef,
 } from "@osdk/api";
@@ -24,7 +24,7 @@ import { useMemo } from "react";
 import type { ObjectTableProps } from "../ObjectTableApi.js";
 
 interface UseColumnVisibilityProps<
-  Q extends ObjectTypeDefinition,
+  Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
     string,
@@ -39,7 +39,7 @@ interface UseColumnVisibilityProps<
 }
 
 export const useColumnVisibility = <
-  Q extends ObjectTypeDefinition,
+  Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
     string,

@@ -154,6 +154,11 @@ export interface UseObjectSetResult<
    * The final ObjectSet after all transformations
    */
   objectSet: ObjectSet<Q, RDPs>;
+
+  /**
+   * The total count of objects matching the query (if available from the API)
+   */
+  totalCount?: string;
 }
 
 declare const process: {
@@ -275,5 +280,6 @@ export function useObjectSet<
       : undefined,
     fetchMore: payload?.hasMore ? payload.fetchMore : undefined,
     objectSet: payload?.objectSet as ObjectSet<Q, RDPs> || baseObjectSet,
+    totalCount: payload?.totalCount,
   };
 }
