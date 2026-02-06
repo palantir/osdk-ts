@@ -62,6 +62,7 @@ export class FunctionQuery extends Query<
     params: FunctionParams | undefined,
     cacheKey: FunctionCacheKey,
     opts: FunctionObserveOptions,
+    objectSetTypesPromise?: Promise<string[]>,
   ) {
     super(
       store,
@@ -84,6 +85,36 @@ export class FunctionQuery extends Query<
     this.#dependsOn = opts.dependsOn;
     this.#dependsOnObjects = opts.dependsOnObjects;
     this.#queryDef = queryDef;
+
+    // Handle async ObjectSet type resolution
+    if (objectSetTypesPromise) {
+      objectSetTypesPromise
+        .then(types => {
+          if (this.abortController?.signal.aborted) return;
+
+          let addedNewTypes = false;
+          for (const type of types) {
+            if (!this.#dependsOn) {
+              this.#dependsOn = [];
+            }
+            if (!this.#dependsOn.includes(type)) {
+              this.#dependsOn.push(type);
+              addedNewTypes = true;
+            }
+          }
+          // Revalidate to catch any changes that occurred during async resolution
+          if (addedNewTypes) {
+            void this.revalidate(true);
+          }
+        })
+        .catch((error: unknown) => {
+          if (this.abortController?.signal.aborted) return;
+
+          if (process.env.NODE_ENV !== "production") {
+            this.logger?.error("Failed to extract ObjectSet types", error);
+          }
+        });
+    }
   }
 
   protected _createConnectable(
