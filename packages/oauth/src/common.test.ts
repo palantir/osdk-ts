@@ -43,10 +43,11 @@ describe("local functions", () => {
     };
 
     const oldLocalStorageKey = `@osdk/oauth : refresh : ${client.client_id}`;
+    const storage = globalThis.localStorage;
 
-    readLocal(client);
-    removeLocal(client);
-    saveLocal(client, {});
+    readLocal(client, storage);
+    removeLocal(client, storage);
+    saveLocal(client, {}, storage);
 
     expect(vi.mocked(globalThis.localStorage.getItem)).toBeCalledWith(
       oldLocalStorageKey,
@@ -69,6 +70,7 @@ describe("local functions", () => {
 
     const signIn = vi.fn();
     const refresh = vi.fn();
+    const storage = globalThis.localStorage;
 
     const authServer = createAuthorizationServer(
       "multipass",
@@ -83,6 +85,7 @@ describe("local functions", () => {
       refresh,
       "marker marker",
       "yay:my-fun-scope sad:my-boring-scope",
+      storage,
     );
 
     makeTokenAndSaveRefresh({
