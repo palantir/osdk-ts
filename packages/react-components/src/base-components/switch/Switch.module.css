@@ -30,7 +30,8 @@
   border-radius: calc(var(--osdk-switch-track-height) / 2);
   position: relative;
   border: none;
-  transition: background-color var(--bp-emphasis-transitionDuration) var(--bp-emphasis-ease-default);
+  transition: background-color var(--osdk-switch-transition-duration, var(--bp-emphasis-transitionDuration))
+    var(--osdk-switch-transition-ease, var(--bp-emphasis-ease-default));
 
   &[data-unchecked] {
     background-color: var(--osdk-switch-track-bg, var(--bp-intent-default-rest));
@@ -62,8 +63,9 @@
   }
 
   &:focus-visible {
-    outline: var(--bp-emphasis-focusWidth) solid var(--bp-emphasis-focusColor);
-    outline-offset: var(--bp-emphasis-focusOffset);
+    outline: var(--osdk-switch-focus-width, var(--bp-emphasis-focusWidth)) solid
+      var(--osdk-switch-focus-color, var(--bp-emphasis-focusColor));
+    outline-offset: var(--osdk-switch-focus-offset, var(--bp-emphasis-focusOffset));
   }
 }
 
@@ -76,7 +78,8 @@
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  transition: left var(--bp-emphasis-transitionDuration) var(--bp-emphasis-ease-default);
+  transition: left var(--osdk-switch-transition-duration, var(--bp-emphasis-transitionDuration))
+    var(--osdk-switch-transition-ease, var(--bp-emphasis-ease-default));
 
   &[data-unchecked] {
     left: var(--osdk-switch-thumb-offset);
