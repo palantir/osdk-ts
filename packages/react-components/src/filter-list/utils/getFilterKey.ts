@@ -22,7 +22,7 @@ export function getFilterKey<Q extends ObjectTypeDefinition>(
   definition: FilterDefinitionUnion<Q>,
 ): string {
   switch (definition.type) {
-    case "property":
+    case "PROPERTY":
       return definition.key;
     case "HAS_LINK":
       return definition.id ?? `hasLink:${definition.linkName}`;

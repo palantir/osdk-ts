@@ -55,7 +55,7 @@ export function createPropertyFilterDef<
   filterState: FilterState,
 ): FilterDefinitionUnion<typeof MockObjectType> {
   return {
-    type: "property",
+    type: "PROPERTY",
     key,
     filterComponent,
     filterState,
