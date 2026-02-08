@@ -192,7 +192,7 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
     }
 
     switch (definition.type) {
-      case "property": {
+      case "PROPERTY": {
         const filter = filterStateToPropertyFilter(state);
         if (filter !== undefined) {
           clauses.push({ [definition.key]: filter });

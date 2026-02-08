@@ -228,7 +228,7 @@ export interface PropertyFilterDefinition<
   /**
    * Discriminator for filter definition type
    */
-  type: "property";
+  type: "PROPERTY";
 
   /**
    * Optional unique identifier for stable keying across filter reorders.
