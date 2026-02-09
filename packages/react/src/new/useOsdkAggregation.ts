@@ -67,6 +67,8 @@ export interface UseOsdkAggregationResult<
   refetch: () => void;
 }
 
+const EMPTY_WHERE = {};
+
 declare const process: {
   env: {
     NODE_ENV: "development" | "production";
@@ -104,7 +106,7 @@ export function useOsdkAggregation<
 >(
   type: Q,
   {
-    where = {},
+    where = EMPTY_WHERE,
     withProperties,
     aggregate,
     dedupeIntervalMs,
@@ -112,7 +114,14 @@ export function useOsdkAggregation<
 ): UseOsdkAggregationResult<Q, A> {
   const { observableClient } = React.useContext(OsdkContext2);
 
-  const canonWhere = observableClient.canonicalizeWhereClause<Q>(where ?? {});
+  const canonWhere = observableClient.canonicalizeWhereClause<Q>(
+    where ?? EMPTY_WHERE,
+  );
+
+  const stableCanonWhere = React.useMemo(
+    () => canonWhere,
+    [JSON.stringify(canonWhere)],
+  );
 
   const stableWithProperties = React.useMemo(
     () => withProperties,
@@ -131,7 +140,7 @@ export function useOsdkAggregation<
           observableClient.observeAggregation(
             {
               type: type,
-              where: canonWhere,
+              where: stableCanonWhere,
               withProperties: stableWithProperties,
               aggregate: stableAggregate,
               dedupeInterval: dedupeIntervalMs ?? 2_000,
@@ -139,14 +148,14 @@ export function useOsdkAggregation<
             observer,
           ),
         process.env.NODE_ENV !== "production"
-          ? `aggregation ${type.apiName} ${JSON.stringify(canonWhere)}`
+          ? `aggregation ${type.apiName} ${JSON.stringify(stableCanonWhere)}`
           : void 0,
       ),
     [
       observableClient,
       type.apiName,
       type.type,
-      canonWhere,
+      stableCanonWhere,
       stableWithProperties,
       stableAggregate,
       dedupeIntervalMs,
