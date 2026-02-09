@@ -55,7 +55,13 @@ import type {
   BlockShapes,
   OntologyRidGenerator,
   ReadableId,
+  ReadableIdGenerator,
 } from "../../../util/generateRid.js";
+import {
+  typeToConcreteDataType,
+  typeToMarketplaceBaseType,
+  typeToMarketplaceObjectPropertyType,
+} from "../typeVisitors.js";
 
 /**
  * Helper to create LocalizedTitleAndDescription with empty localizations
@@ -114,6 +120,7 @@ export class ObjectTypeShapeExtractor {
             objectReadableId,
             propertyType,
             readableIdsForSptRid.asMap(),
+            ridGenerator,
           ),
         );
       }
@@ -154,7 +161,7 @@ export class ObjectTypeShapeExtractor {
         ? "EDITS_ENABLED"
         : "EDITS_DISABLED",
       objectsBackendVersion: "V2",
-      propertyTypes: Array.from(propertyOutputShapeMap.keys()),
+      propertyTypes: Array.from(propertyOutputShapeMap.keys()).map(val => ridGenerator.toBlockInternalId(val)),
     };
 
     const blockShapes: BlockShapes = {
@@ -193,6 +200,7 @@ export class ObjectTypeShapeExtractor {
         propertyOutputShapeMap,
         timeSeriesSyncRidByReadableId,
         columnShapes,
+        ridGenerator,
       );
       for (const [id, shape] of Array.from(dsShapes.entries())) {
         blockShapes.inputShapes.set(id, shape);
@@ -219,6 +227,7 @@ export class ObjectTypeShapeExtractor {
     objectBlockShapeId: ReadableId,
     propertyType: PropertyType,
     readableIdsForSptRid: Map<SharedPropertyTypeRid, ReadableId>,
+    ridGenerator: OntologyRidGenerator,
   ): PropertyOutputShape {
     const shape: PropertyOutputShape = {
       about: createLocalizedAbout(
@@ -226,7 +235,7 @@ export class ObjectTypeShapeExtractor {
         propertyType.displayMetadata.description ?? "",
       ),
       type: this.convertPropertyTypeToMarketplaceType(propertyType.type),
-      objectType: objectBlockShapeId,
+      objectType: ridGenerator.toBlockInternalId(objectBlockShapeId),
     };
 
     if (propertyType.sharedPropertyTypeRid) {
@@ -234,7 +243,7 @@ export class ObjectTypeShapeExtractor {
         propertyType.sharedPropertyTypeRid,
       );
       if (sptReadableId) {
-        shape.sharedPropertyType = sptReadableId;
+        shape.sharedPropertyType = ridGenerator.toBlockInternalId(sptReadableId);
       }
     }
 
@@ -254,6 +263,7 @@ export class ObjectTypeShapeExtractor {
     propertyOutputShapeMap: Map<ReadableId, PropertyOutputShape>,
     timeSeriesSyncRidByReadableId: BiMap<ReadableId, TimeSeriesSyncRid>,
     columnReadableIds: Map<ReadableId, ResolvedDatasourceColumnShape>,
+    ridGenerator: OntologyRidGenerator,
   ): Map<ReadableId, InputShape> {
     const dsDefinition = datasource.datasource;
 
@@ -270,6 +280,7 @@ export class ObjectTypeShapeExtractor {
           dsDefinition.datasetV2.datasetRid,
           dsDefinition.datasetV2.branchId,
           dsDefinition.datasetV2.propertyMapping,
+          ridGenerator,
         );
       case "datasetV3":
         return this.getShapesFromDataset(
@@ -281,6 +292,7 @@ export class ObjectTypeShapeExtractor {
           dsDefinition.datasetV3.datasetRid,
           dsDefinition.datasetV3.branchId,
           dsDefinition.datasetV3.propertyMapping,
+          ridGenerator,
         );
       case "derived":
         return new Map(); // Empty per original
@@ -313,6 +325,7 @@ export class ObjectTypeShapeExtractor {
           columnReadableIds,
           dsDefinition.restrictedViewV2.restrictedViewRid,
           dsDefinition.restrictedViewV2.propertyMapping,
+          ridGenerator,
         );
       case "stream":
         return this.getShapesFromStream(
@@ -324,6 +337,7 @@ export class ObjectTypeShapeExtractor {
           dsDefinition.stream.streamLocator.streamLocatorRid,
           dsDefinition.stream.streamLocator.branchId,
           dsDefinition.stream.propertyMapping,
+          ridGenerator,
         );
       case "streamV2":
         return this.getShapesFromStream(
@@ -335,6 +349,7 @@ export class ObjectTypeShapeExtractor {
           dsDefinition.streamV2.streamLocator.streamLocatorRid,
           dsDefinition.streamV2.streamLocator.branchId,
           dsDefinition.streamV2.propertyMapping,
+          ridGenerator,
         );
       case "streamV3":
         const mapping = new Map<PropertyTypeRid, ColumnName>();
@@ -357,6 +372,7 @@ export class ObjectTypeShapeExtractor {
           dsDefinition.streamV3.streamLocator.streamLocatorRid,
           dsDefinition.streamV3.streamLocator.branchId,
           mapping,
+          ridGenerator,
         );
       case "table":
         return new Map();
@@ -479,6 +495,7 @@ export class ObjectTypeShapeExtractor {
     streamLocatorRid: StreamLocatorRid,
     branchId: BranchId,
     propertyMapping: Map<PropertyTypeRid, T> | Record<string, T>,
+    ridGenerator: OntologyRidGenerator,
   ): Map<ReadableId, InputShape> {
     const streamLocator: DatasourceLocator = {
       type: "stream",
@@ -511,13 +528,14 @@ export class ObjectTypeShapeExtractor {
       propertyOutputShapeMap,
       datasourceReadableId,
       propertyMappingMap,
+      ridGenerator,
       (val: T) => (typeof val === "string" ? val : (val as any)),
     );
 
     const datasourceInputShape: TabularDatasourceInputShape = {
       about: createLocalizedAbout(datasourceReadableId, ""),
       supportedTypes: ["STREAM"],
-      schema: Array.from(columnShapes.keys()),
+      schema: Array.from(columnShapes.keys()).map(id => ridGenerator.toBlockInternalId(id)),
     };
 
     const result = new Map<ReadableId, InputShape>([
@@ -543,6 +561,7 @@ export class ObjectTypeShapeExtractor {
     datasetRid: DatasetRid,
     branchId: BranchId,
     propertyMapping: Record<ReadableId, PropertyTypeMappingInfo>,
+    ridGenerator: OntologyRidGenerator,
   ): Map<ReadableId, InputShape> {
     const datasourceLocator: DatasourceLocator = {
       type: "dataset",
@@ -578,6 +597,7 @@ export class ObjectTypeShapeExtractor {
       propertyOutputShapeMap,
       datasourceReadableId,
       propertyMappingMap,
+      ridGenerator,
       (val: PropertyTypeMappingInfo) => {
         if (val.type === "column") return val.column;
         if (val.type === "struct") return val.struct.column;
@@ -588,7 +608,7 @@ export class ObjectTypeShapeExtractor {
     const datasourceInputShape: TabularDatasourceInputShape = {
       about: createLocalizedAbout(datasourceReadableId, ""),
       supportedTypes: ["DATASET"],
-      schema: Array.from(columnShapes.keys()),
+      schema: Array.from(columnShapes.keys()).map(id => ridGenerator.toBlockInternalId(id)),
     };
 
     const result = new Map<ReadableId, InputShape>([
@@ -613,12 +633,13 @@ export class ObjectTypeShapeExtractor {
     columnReadableIds: Map<ReadableId, ResolvedDatasourceColumnShape>,
     restrictedViewRid: RestrictedViewRid,
     propertyMapping: Record<ReadableId, PropertyTypeMappingInfo>,
+    ridGenerator: OntologyRidGenerator,
   ): Map<ReadableId, InputShape> {
     const datasourceLocator: DatasourceLocator = {
       type: "restrictedView",
       restrictedView: {
         rid: restrictedViewRid,
-      } as RestrictedViewLocator,
+      },
     };
 
     let datasourceReadableId: ReadableId | undefined;
@@ -647,6 +668,7 @@ export class ObjectTypeShapeExtractor {
       propertyOutputShapeMap,
       datasourceReadableId,
       propertyMappingMap,
+      ridGenerator,
       (val: PropertyTypeMappingInfo) => {
         if (val.type === "column") return val.column;
         if (val.type === "struct") return val.struct.column;
@@ -657,7 +679,7 @@ export class ObjectTypeShapeExtractor {
     const datasourceInputShape: TabularDatasourceInputShape = {
       about: createLocalizedAbout(datasourceReadableId, ""),
       supportedTypes: ["RESTRICTED_VIEW"],
-      schema: Array.from(columnShapes.keys()),
+      schema: Array.from(columnShapes.keys()).map(id => ridGenerator.toBlockInternalId(id)),
     };
 
     const result = new Map<ReadableId, InputShape>([
@@ -682,6 +704,7 @@ export class ObjectTypeShapeExtractor {
     propertyOutputShapeMap: Map<ReadableId, PropertyOutputShape>,
     datasourceReadableId: ReadableId,
     columns: Map<PropertyTypeRid, T>,
+    ridGenerator: OntologyRidGenerator,
     columnNameGetter: (val: T) => string,
   ): Map<ReadableId, DatasourceColumnShape> {
     const result = new Map<ReadableId, DatasourceColumnShape>();
@@ -723,8 +746,8 @@ export class ObjectTypeShapeExtractor {
         type: {
           type: "concrete",
           concrete: this.typeToConcreteDataType(propertyType),
-        } as DatasourceColumnType,
-        datasource: datasourceReadableId,
+        },
+        datasource: ridGenerator.toBlockInternalId(datasourceReadableId),
         typeclasses: [],
       };
 
@@ -749,8 +772,20 @@ export class ObjectTypeShapeExtractor {
     blockShapes: BlockShapes,
     ridGenerator: OntologyRidGenerator,
   ): void {
-    // Placeholder - implement value type extraction
-    // This would call IrShapeExtractor.extractValueTypeInputShapeIfPresent equivalent
+    if (!valueTypeReference) return;
+
+    const valueTypeInput: InputShape = {
+      type: "valueType",
+      valueType: {
+        about: createLocalizedAbout(`Value Type Input for ${displayName}`, ""),
+        baseType: typeToMarketplaceBaseType(type),
+      },
+    };
+
+    const mappingEntry = ridGenerator.valueTypeMappingForReference(
+      valueTypeReference,
+    );
+    blockShapes.inputShapes.set(mappingEntry.input, valueTypeInput);
   }
 
   private getTimeSeriesSyncType(type: Type): TimeSeriesSyncType | undefined {
@@ -763,14 +798,10 @@ export class ObjectTypeShapeExtractor {
   }
 
   private convertPropertyTypeToMarketplaceType(type: Type): any {
-    // Placeholder - should convert Type to ObjectPropertyType
-    // This would use TypeToMarketplaceShapeObjectPropertyTypeVisitor equivalent
-    return {};
+    return typeToMarketplaceObjectPropertyType(type);
   }
 
   private typeToConcreteDataType(type: Type): any {
-    // Placeholder - should convert Type to ConcreteDataType
-    // This would use TypeToConcreteDataTypeVisitor equivalent
-    return {};
+    return typeToConcreteDataType(type);
   }
 }

@@ -90,6 +90,7 @@ export function convertObject(
   const objectTypeRid = ridGenerator.generateRidForObjectType(
     objectType.apiName,
   );
+  console.log(`Generated RID for object type ${objectType.apiName}: ${objectTypeRid}`);
 
   // Convert propertyTypes to use RIDs as keys
   const propertyTypesWithRids = Object.fromEntries(

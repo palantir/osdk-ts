@@ -22,8 +22,6 @@ import invariant from "tiny-invariant";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { defineOntology } from "../api/defineOntology.js";
-import { getShapes } from "../conversion/toMarketplace/shapeExtractors/IrShapeExtractor.js";
-import { OntologyRidGeneratorImpl } from "../util/generateRid.js";
 import type { BlockGeneratorResult } from "./marketplaceSerialization/BlockGeneratorResult.js";
 
 const apiNamespaceRegex = /^[a-z0-9-]+(\.[a-z0-9-]+)*\.$/;
@@ -108,17 +106,9 @@ export default async function main(
   );
 
   // The ontologyIr already contains the converted OntologyBlockDataV2
-  const ontologyBlockDataV2 = ontologyIr.ontology;
+  const [ontologyBlockDataV2, shapes] = ontologyIr;
 
-  // Create RID generator for shape extraction
-  const ridGenerator = new OntologyRidGeneratorImpl();
-
-  // Extract shapes from the ontology
-  const shapes = await getShapes(
-    ontologyBlockDataV2,
-    ridGenerator,
-    commandLineOpts.randomnessKey,
-  );
+  
 
   // Create temp directory for block data
   const blockDataDir = path.join(commandLineOpts.buildDir, "temp_block_data");
@@ -128,7 +118,7 @@ export default async function main(
 
   // Write ontology.json to the block data directory
   const ontologyJsonPath = path.join(blockDataDir, "ontology.json");
-  const ontologyJson = JSON.stringify(ontologyBlockDataV2, null, 2);
+  const ontologyJson = JSON.stringify(ontologyBlockDataV2.ontology, null, 2);
   await fs.promises.writeFile(ontologyJsonPath, ontologyJson);
   consola.info(`Wrote ontology.json to ${ontologyJsonPath}`);
 

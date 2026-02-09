@@ -40,12 +40,14 @@ import type {
   ActionParameter,
   ActionParameterValidation,
 } from "./action/ActionParameter.js";
-import type { OntologyRidGenerator } from "../util/generateRid.js";
+import type { BlockShapes, OntologyRidGenerator} from "../util/generateRid.js";
+import { OntologyRidGeneratorImpl } from "../util/generateRid.js";
 import type { ActionParameterAllowedValues } from "./action/ActionParameterAllowedValues.js";
 import type { ActionType } from "./action/ActionType.js";
 import type { OntologyDefinition } from "./common/OntologyDefinition.js";
 import { OntologyEntityTypeEnum } from "./common/OntologyEntityTypeEnum.js";
 import type { OntologyEntityType } from "./common/OntologyEntityTypeMapping.js";
+import { getShapes } from "../conversion/toMarketplace/shapeExtractors/IrShapeExtractor.js";
 
 // type -> apiName -> entity
 /** @internal */
@@ -86,7 +88,7 @@ export async function defineOntology(
   ns: string,
   body: () => void | Promise<void>,
   randomnessKey?: string,
-): Promise<OntologyIr> {
+): Promise<[OntologyIr, BlockShapes]> {
   namespace = ns;
   dependencies = {};
   ontologyDefinition = {
@@ -115,7 +117,16 @@ export async function defineOntology(
     );
     throw e;
   }
-  return convertOntologyDefinition(ontologyDefinition, randomnessKey);
+  const ridGenerator = new OntologyRidGeneratorImpl();
+  const ontDef = convertOntologyDefinition(ontologyDefinition, ridGenerator, randomnessKey);
+
+  // Extract shapes from the ontology
+    const shapes = await getShapes(
+      ontDef.ontology,
+      ridGenerator,
+      randomnessKey,
+    );
+  return [ontDef, shapes];
 }
 
 export function writeStaticObjects(outputDir: string): void {
@@ -253,7 +264,7 @@ export function cleanAndValidateLinkTypeId(apiName: string): string {
 }
 
 export function dumpOntologyFullMetadata(): OntologyIr {
-  return convertOntologyDefinition(ontologyDefinition);
+  return convertOntologyDefinition(ontologyDefinition, new OntologyRidGeneratorImpl());
 }
 
 export function dumpValueTypeWireType(): OntologyIrValueTypeBlockData {

@@ -111,9 +111,11 @@ export async function getShapes(
 
   // Objects
   const objectReadableIds = ridGenerator.getObjectTypeRids().inverse();
+  console.log("Readable IDs collected", ridGenerator);
   for (
     const [rid, objectType] of Object.entries(ontologyBlockDataV2.objectTypes)
   ) {
+    console.log(`Processing object type with RID ${rid} and API name ${objectType.objectType.apiName}`);
     const readableId = objectReadableIds.get(rid as ObjectTypeRid);
     if (readableId) {
       const objectExtractor = new ObjectTypeShapeExtractor(randomnessKey);
@@ -122,6 +124,7 @@ export async function getShapes(
         objectType,
         ridGenerator,
       );
+      console.log(`Extracted shapes for object type ${objectType.objectType.apiName}, shapes:`, objectShapes);
       consumeBlockShapes(allBlockShapes, objectShapes);
     }
   }
