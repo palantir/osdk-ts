@@ -15,14 +15,18 @@
  */
 
 import { consola } from "../consola.js";
+import { DEFAULT_SDK_VERSION } from "../templates.js";
 import type { SdkVersion, Template } from "../templates.js";
 
 export async function promptSdkVersion(
   { sdkVersion, template }: { sdkVersion?: string; template: Template },
 ): Promise<SdkVersion> {
   if (sdkVersion == null) {
-    // If the SDK version is not provided, default to the earliest template version for backwards-compatibility
-    return Object.keys(template.files)[0] as SdkVersion;
+    // Default to the latest template version to match the platform default
+    if (template.files[DEFAULT_SDK_VERSION] != null) {
+      return DEFAULT_SDK_VERSION;
+    }
+    return Object.keys(template.files).at(-1) as SdkVersion;
   }
 
   if (template.files[sdkVersion as SdkVersion] == null) {
