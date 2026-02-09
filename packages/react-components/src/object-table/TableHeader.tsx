@@ -15,43 +15,33 @@
  */
 
 import type {
-  ObjectOrInterfaceDefinition,
-  PropertyKeys,
-  QueryDefinition,
-  SimplePropertyDef,
-} from "@osdk/api";
-import type {
   Column,
   Header,
+  OnChangeFn,
   RowData,
   SortingState,
   Table,
+  VisibilityState,
 } from "@tanstack/react-table";
 import React, { useMemo } from "react";
 import styles from "./TableHeader.module.css";
 import { TableHeaderContent } from "./TableHeaderContent.js";
-import { TableHeaderWithPopover } from "./TableHeaderWithPopover.js";
+import {
+  type HeaderMenuFeatureFlags,
+  TableHeaderWithPopover,
+  type TableState,
+} from "./TableHeaderWithPopover.js";
 import { SELECTION_COLUMN_ID } from "./utils/constants.js";
 import { getColumnPinningStyles } from "./utils/getColumnPinningStyles.js";
 import type { ColumnOption } from "./utils/types.js";
 
 interface TableHeaderProps<
   TData extends RowData,
-  Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
-  FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
-    string,
-    never
-  >,
 > {
   table: Table<TData>;
-  onSortChange?: (sorting: SortingState) => void;
-  onColumnVisibilityChanged?: (
-    newStates: Array<{
-      columnId: PropertyKeys<Q> | keyof RDPs | keyof FunctionColumns;
-      isVisible: boolean;
-    }>,
-  ) => void;
+  onSortChange?: OnChangeFn<SortingState>;
+  onColumnVisibilityChanged?: OnChangeFn<VisibilityState>;
+  headerMenuFeatureFlags?: HeaderMenuFeatureFlags;
 }
 
 const getHeaderName = <TData,>(
@@ -79,20 +69,32 @@ const getHeaderName = <TData,>(
 
 export function TableHeader<
   TData extends RowData,
-  Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
-  FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
-    string,
-    never
-  >,
 >({
   table,
   onSortChange,
   onColumnVisibilityChanged,
-}: TableHeaderProps<TData, Q, RDPs, FunctionColumns>): React.ReactElement {
+  headerMenuFeatureFlags,
+}: TableHeaderProps<TData>): React.ReactElement {
   // TODO: If value is number type, right align header
 
-  const isResizing = !!table.getState().columnSizingInfo?.isResizingColumn;
+  const rawTableState = table.getState();
+  const isResizing = !!rawTableState.columnSizingInfo?.isResizingColumn;
+
+  const tableState: TableState = useMemo(() => ({
+    sorting: rawTableState.sorting,
+    columnVisibility: rawTableState.columnVisibility,
+    columnOrder: rawTableState.columnOrder,
+    setColumnPinning: table.setColumnPinning,
+    setColumnVisibility: table.setColumnVisibility,
+    setColumnOrder: table.setColumnOrder,
+  }), [
+    rawTableState.sorting,
+    rawTableState.columnVisibility,
+    rawTableState.columnOrder,
+    table.setColumnPinning,
+    table.setColumnVisibility,
+    table.setColumnOrder,
+  ]);
   // Get column options for dialogs
   const columnOptions: ColumnOption[] = useMemo(() => {
     const allHeaders = table.getHeaderGroups().flatMap(headerGroup =>
@@ -137,18 +139,15 @@ export function TableHeader<
                     <TableHeaderWithPopover
                       header={header}
                       isColumnPinned={isColumnPinned}
-                      setColumnPinning={table.setColumnPinning}
+                      tableState={tableState}
                       onSortChange={onSortChange}
-                      currentSorting={table.getState().sorting}
                       columnOptions={columnOptions}
                       onColumnVisibilityChanged={onColumnVisibilityChanged}
-                      setColumnVisibility={table.setColumnVisibility}
-                      currentVisibility={table.getState().columnVisibility}
-                      setColumnOrder={table.setColumnOrder}
-                      currentColumnOrder={table.getState().columnOrder}
+                      featureFlags={headerMenuFeatureFlags}
                     />
                   )}
-                {header.column.getCanResize() && (
+                {header.column.getCanResize()
+                  && headerMenuFeatureFlags?.showResizeItem !== false && (
                   <div
                     className={styles.osdkTableHeaderResizer}
                     onDoubleClick={() => header.column.resetSize()}

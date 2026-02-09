@@ -15,6 +15,12 @@
  */
 
 .content {
+  /* Override dialog sizing for column config */
+  --osdk-dialog-min-width: 600px;
+  --osdk-dialog-max-width: 800px;
+  --osdk-dialog-min-height: 400px;
+  --osdk-dialog-max-height: 600px;
+
   /* Override body padding from base Dialog since we have custom layout */
   & > div:nth-child(2) {
     padding: 0;
@@ -24,7 +30,7 @@
 .dialogLayout {
   display: flex;
   flex-direction: row;
-  gap: 30px;
+  gap: calc(var(--osdk-surface-spacing) * 3.75);
   padding: calc(var(--osdk-surface-spacing) * 4)
     calc(var(--osdk-surface-spacing) * 5);
   flex: 1;
@@ -37,6 +43,7 @@
   min-width: 250px;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 .availableColumnsContainer {
@@ -44,122 +51,51 @@
   min-width: 250px;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 .sectionTitle {
-  font-size: 14px;
-  font-weight: 600;
+  font-size: var(--osdk-typography-size-body-medium);
+  font-weight: var(--osdk-typography-weight-bold);
   margin-bottom: calc(var(--osdk-surface-spacing) * 5);
   color: var(--osdk-typography-color-default-rest);
+  flex-shrink: 0;
 }
 
 .columnList {
   flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+  min-height: 0;
   overflow-y: auto;
   overscroll-behavior: contain;
-  min-height: 0;
-}
-
-.draggableColumn {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: var(--osdk-column-config-draggable-bg, var(--osdk-palette-white));
-  border: var(
-    --osdk-column-config-draggable-border,
-    1px solid var(--osdk-palette-light-gray-3)
-  );
-  border-radius: var(--osdk-surface-border-radius);
-  padding: calc(var(--osdk-surface-spacing) * 2)
-    calc(var(--osdk-surface-spacing) * 3);
-  touch-action: none;
-  user-select: none;
-}
-
-.dragContent {
-  display: flex;
-  align-items: center;
-  flex: 1;
-  user-select: none;
-}
-
-.dragIcon {
-  color: var(--osdk-column-config-drag-icon-color, var(--osdk-palette-gray-1));
-  cursor: grab;
-  margin-right: 8px;
-  width: 16px;
-  height: 16px;
-  outline: none;
-
-  &:hover {
-    color: var(
-      --osdk-column-config-drag-icon-color-hover,
-      var(--osdk-palette-gray-2)
-    );
-  }
-
-  &:active {
-    cursor: grabbing;
-  }
-
-  &:focus-visible {
-    outline: none;
-  }
-}
-
-.trashButton {
-  background: none;
-  border: none;
-  padding: 4px;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-  border-radius: var(--osdk-surface-border-radius);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  &:hover {
-    background-color: var(--osdk-intent-danger-rest);
-  }
-
-  &:hover .trashIcon {
-    color: var(--osdk-palette-white);
-  }
-}
-
-.trashIcon {
-  width: 16px;
-  height: 16px;
-  color: var(--osdk-palette-gray-1);
-  transition: color 0.2s ease;
 }
 
 .searchContainer {
   margin-bottom: calc(var(--osdk-surface-spacing) * 5);
+  flex-shrink: 0;
 }
 
 .searchInputWrapper {
   position: relative;
   display: flex;
   align-items: center;
+  gap: calc(var(--osdk-surface-spacing) * 2);
 }
 
 .searchIcon {
   position: absolute;
-  left: 10px;
-  width: 16px;
-  height: 16px;
+  left: calc(var(--osdk-surface-spacing) * 1.25);
+  width: var(--osdk-iconography-size-small);
+  height: var(--osdk-iconography-size-small);
   color: var(--osdk-typography-color-muted);
   pointer-events: none;
 }
 
 .searchInput {
   width: 100%;
-  padding: 8px 12px 8px 36px;
-  border: 1px solid var(--osdk-surface-border-color-default);
+  padding: var(--osdk-surface-spacing) calc(var(--osdk-surface-spacing) * 1.5)
+    var(--osdk-surface-spacing) calc(var(--osdk-surface-spacing) * 4.5);
+  border: var(--osdk-surface-border-width) solid
+    var(--osdk-surface-border-color-default);
   border-radius: var(--osdk-surface-border-radius);
   font-size: var(--osdk-typography-size-body-medium);
   outline: none;
@@ -176,8 +112,9 @@
 
 .propertiesList {
   flex: 1;
-  overflow-y: auto;
-  overscroll-behavior: contain;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
   width: 100%;
 }
 
@@ -191,7 +128,8 @@
   background: none;
   border: none;
   margin: 0;
-  gap: 12px;
+  gap: calc(var(--osdk-surface-spacing) * 1.5);
+  flex-shrink: 0;
 }
 
 .categoryTrigger {
@@ -206,20 +144,14 @@
 
 .categoryTitle {
   flex: 1;
-  color: var(
-    --osdk-column-config-category-title-color,
-    var(--osdk-palette-gray-1)
-  );
+  color: var(--osdk-typography-color-muted);
   letter-spacing: 0.5px;
   text-align: left;
 }
 
 .categoryCount {
-  color: var(
-    --osdk-column-config-category-title-color,
-    var(--osdk-palette-gray-1)
-  );
-  margin-left: 8px;
+  color: var(--osdk-typography-color-muted);
+  margin-left: var(--osdk-surface-spacing);
 }
 
 .caretIcon {
@@ -235,14 +167,18 @@
 }
 
 .checkbox {
-  width: 12px;
-  height: 12px;
+  width: var(--osdk-checkbox-icon-size);
+  height: var(--osdk-checkbox-icon-size);
 }
 
 .propertyList {
   display: flex;
   flex-direction: column;
   gap: calc(var(--osdk-surface-spacing) * 3);
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .propertyItem {
@@ -277,8 +213,8 @@
   font-size: var(--osdk-typography-size-body-medium);
   font-weight: 500;
   color: var(--osdk-typography-color-default-rest);
-  margin-bottom: 2px;
-  padding-left: 4px;
+  margin-bottom: calc(var(--osdk-surface-spacing) / 4);
+  padding-left: calc(var(--osdk-surface-spacing) / 2);
 }
 
 .emptyState {
@@ -292,6 +228,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 100px;
-  color: var(--osdk-palette-gray-1);
+  height: calc(var(--osdk-surface-spacing) * 12.5);
+  color: var(--osdk-typography-color-muted);
 }

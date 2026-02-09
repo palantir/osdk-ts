@@ -80,18 +80,37 @@ Add selection mode to enable row selection:
 
 | Prop              | Type                 | Default | Description                        |
 | ----------------- | -------------------- | ------- | ---------------------------------- |
-| `filterable`      | `boolean`            | `true`  | Whether users can filter the table |
+| `enableFiltering` | `boolean`            | `true`  | Whether users can filter the table |
 | `filter`          | `WhereClause<Q>`     | -       | Current filter (controlled mode)   |
 | `onFilterChanged` | `(newWhere) => void` | -       | Required when `filter` is provided |
 
 ### Sorting
 
-| Prop               | Type                           | Default | Description                         |
-| ------------------ | ------------------------------ | ------- | ----------------------------------- |
-| `orderable`        | `boolean`                      | `true`  | Whether users can sort columns      |
-| `defaultOrderBy`   | `Array<{property, direction}>` | -       | Initial sort order (uncontrolled)   |
-| `orderBy`          | `Array<{property, direction}>` | -       | Current sort order (controlled)     |
-| `onOrderByChanged` | `(newOrderBy) => void`         | -       | Required when `orderBy` is provided |
+| Prop               | Type                           | Default | Description                                   |
+| ------------------ | ------------------------------ | ------- | --------------------------------------------- |
+| `enableOrdering`   | `boolean`                      | `true`  | Whether sorting menu items are shown          |
+| `defaultOrderBy`   | `Array<{property, direction}>` | -       | Initial sort order (uncontrolled)             |
+| `orderBy`          | `Array<{property, direction}>` | -       | Current sort order (controlled)               |
+| `onOrderByChanged` | `(newOrderBy) => void`         | -       | Required when `orderBy` is provided           |
+
+### Column Features
+
+| Prop                    | Type      | Default | Description                                      |
+| ----------------------- | --------- | ------- | ------------------------------------------------ |
+| `enableColumnPinning`   | `boolean` | `true`  | Whether pinning menu items are shown             |
+| `enableColumnResizing`  | `boolean` | `true`  | Whether resize menu item is shown                |
+| `enableColumnConfig`    | `boolean` | `true`  | Whether column configuration menu item is shown  |
+
+#### Controlled Mode Behavior
+
+When using controlled mode (i.e., providing a state prop like `orderBy`), you must also provide the corresponding handler function (e.g., `onOrderByChanged`) for the feature to be enabled. If you provide a controlled state without a handler, the menu items for that feature will be hidden.
+
+| Feature               | Controlled State Prop | Handler Prop                | Menu Items Visible When                                        |
+| --------------------- | --------------------- | --------------------------- | -------------------------------------------------------------- |
+| Sorting               | `orderBy`             | `onOrderByChanged`          | `enableOrdering=true` AND (`orderBy` is undefined OR `onOrderByChanged` is provided) |
+| Column Pinning        | -                     | `onColumnsPinnedChanged`    | `enableColumnPinning=true`                                     |
+| Column Resizing       | -                     | `onColumnResize`            | `enableColumnResizing=true`                                    |
+| Column Configuration  | -                     | `onColumnVisibilityChanged` | `enableColumnConfig=true`                                      |
 
 ### Row Selection
 
@@ -633,8 +652,8 @@ Disable filtering or sorting globally:
 ```typescript
 <ObjectTable
   objectType={Employee}
-  filterable={false}
-  orderable={false}
+  enableFiltering={false}
+  enableOrdering={false}
 />;
 ```
 

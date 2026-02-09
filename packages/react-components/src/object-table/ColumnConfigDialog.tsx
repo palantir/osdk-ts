@@ -16,32 +16,10 @@
 
 import { Button } from "@base-ui/react/button";
 import { Collapsible } from "@base-ui/react/collapsible";
-import {
-  CaretDown,
-  DragHandleVertical,
-  Search,
-  Trash,
-} from "@blueprintjs/icons";
-import {
-  closestCenter,
-  DndContext,
-  type DragEndEvent,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-} from "@dnd-kit/core";
-import {
-  arrayMove,
-  SortableContext,
-  sortableKeyboardCoordinates,
-  useSortable,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
+import { CaretDown, Search } from "@blueprintjs/icons";
+import { arrayMove } from "@dnd-kit/sortable";
 import type {
   ObjectOrInterfaceDefinition,
-  PropertyKeys,
   QueryDefinition,
   SimplePropertyDef,
 } from "@osdk/api";
@@ -50,27 +28,23 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Checkbox } from "../base-components/checkbox/Checkbox.js";
 import { Dialog, DialogButton } from "../base-components/dialog/Dialog.js";
 import styles from "./ColumnConfigDialog.module.css";
+import { DraggableList } from "./DraggableList.js";
 import type { ColumnOption } from "./utils/types.js";
 
-export interface ColumnConfigDialogProps<
-  Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
-  FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
-    string,
-    never
-  >,
-> {
+export interface ColumnConfig {
+  columnId: string;
+  isVisible: boolean;
+  order: number;
+}
+
+export interface ColumnConfigDialogProps {
   isOpen: boolean;
   onClose: () => void;
   columnOptions: ColumnOption[];
   currentVisibility?: VisibilityState;
   currentColumnOrder?: ColumnOrderState;
   onApply: (
-    columns: Array<{
-      columnId: PropertyKeys<Q> | keyof RDPs | keyof FunctionColumns;
-      isVisible: boolean;
-      order: number;
-    }>,
+    columns: ColumnConfig[],
   ) => void;
 }
 
@@ -94,14 +68,13 @@ export function ColumnConfigDialog<
   currentVisibility,
   currentColumnOrder,
   onApply,
-}: ColumnConfigDialogProps<Q, RDPs, FunctionColumns>):
+}: ColumnConfigDialogProps):
   | React.ReactElement
   | null
 {
   const [visibleColumns, setVisibleColumns] = useState<ColumnItem[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
 
-  // All available columns derived from columnOptions
   const allColumns = useMemo(() => {
     return columnOptions.map((opt) => {
       const isVisible = currentVisibility
@@ -121,7 +94,7 @@ export function ColumnConfigDialog<
       const visibleCols = allColumns.filter((col) => col.isVisible);
 
       // Sort by current column order if available
-      if (currentColumnOrder && currentColumnOrder.length > 0) {
+      if (!!currentColumnOrder?.length) {
         visibleCols.sort((a, b) => {
           const indexA = currentColumnOrder.indexOf(a.id);
           const indexB = currentColumnOrder.indexOf(b.id);
@@ -137,23 +110,9 @@ export function ColumnConfigDialog<
     }
   }, [isOpen, allColumns, currentColumnOrder]);
 
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 5,
-      },
-    }),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    }),
-  );
-
   const handleApply = useCallback(() => {
     const result = allColumns.map((col) => ({
-      columnId: col.id as
-        | PropertyKeys<Q>
-        | keyof RDPs
-        | keyof FunctionColumns,
+      columnId: col.id,
       isVisible: visibleColumns.some((v) => v.id === col.id),
       order: visibleColumns.findIndex((v) => v.id === col.id),
     }));
@@ -177,17 +136,12 @@ export function ColumnConfigDialog<
 
   const isApplyDisabled = visibleColumns.length === 0;
 
-  const handleDragEnd = useCallback((event: DragEndEvent) => {
-    const { active, over } = event;
-
-    if (over && active.id !== over.id) {
-      setVisibleColumns((items) => {
-        const oldIndex = items.findIndex((item) => item.id === active.id);
-        const newIndex = items.findIndex((item) => item.id === over.id);
-        return arrayMove(items, oldIndex, newIndex);
-      });
-    }
-  }, []);
+  const handleReorderColumns = useCallback(
+    (fromIndex: number, toIndex: number) => {
+      setVisibleColumns((items) => arrayMove(items, fromIndex, toIndex));
+    },
+    [],
+  );
 
   const handleRemoveColumn = useCallback((columnId: string) => {
     setVisibleColumns((prev) => prev.filter((col) => col.id !== columnId));
@@ -267,8 +221,7 @@ export function ColumnConfigDialog<
       <div className={styles.dialogLayout}>
         <VisibleColumnsList
           columns={visibleColumns}
-          sensors={sensors}
-          onDragEnd={handleDragEnd}
+          onReorder={handleReorderColumns}
           onRemove={handleRemoveColumn}
         />
         <AvailableColumnsList
@@ -286,93 +239,26 @@ export function ColumnConfigDialog<
 
 interface VisibleColumnsListProps {
   columns: ColumnItem[];
-  sensors: ReturnType<typeof useSensors>;
-  onDragEnd: (event: DragEndEvent) => void;
+  onReorder: (fromIndex: number, toIndex: number) => void;
   onRemove: (columnId: string) => void;
 }
 
 function VisibleColumnsList({
   columns,
-  sensors,
-  onDragEnd,
+  onReorder,
   onRemove,
 }: VisibleColumnsListProps): React.ReactElement {
   return (
     <div className={styles.visibleColumnsContainer}>
       <h4 className={styles.sectionTitle}>Visible Columns</h4>
-      <div className={styles.columnList}>
-        <DndContext
-          sensors={sensors}
-          collisionDetection={closestCenter}
-          onDragEnd={onDragEnd}
-        >
-          <SortableContext
-            items={columns.map((col) => col.id)}
-            strategy={verticalListSortingStrategy}
-          >
-            {columns.map((column) => (
-              <SortableItem
-                key={column.id}
-                column={column}
-                onRemove={onRemove}
-              />
-            ))}
-          </SortableContext>
-        </DndContext>
-        {columns.length === 0 && (
-          <div className={styles.emptyState}>No visible columns</div>
-        )}
-      </div>
-    </div>
-  );
-}
-
-interface SortableItemProps {
-  column: ColumnItem;
-  onRemove: (columnId: string) => void;
-}
-
-function SortableItem(
-  { column, onRemove }: SortableItemProps,
-): React.ReactElement {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({
-    id: column.id,
-  });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.7 : 1,
-  };
-
-  const handleRemove = useCallback(() => {
-    onRemove(column.id);
-  }, [column.id, onRemove]);
-
-  return (
-    <div ref={setNodeRef} style={style} className={styles.draggableColumn}>
-      <span className={styles.dragContent}>
-        <DragHandleVertical
-          className={styles.dragIcon}
-          {...attributes}
-          {...listeners}
-        />
-        {column.label}
-      </span>
-      <button
-        className={styles.trashButton}
-        onClick={handleRemove}
-        aria-label="Remove column"
-      >
-        <Trash className={styles.trashIcon} />
-      </button>
+      <DraggableList
+        items={columns}
+        onReorder={onReorder}
+        onRemove={onRemove}
+        removeIconVariant="trash"
+        emptyMessage="No visible columns"
+        className={styles.columnList}
+      />
     </div>
   );
 }

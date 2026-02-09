@@ -123,6 +123,7 @@ export function MultiColumnSortDialog({
   const sortableItems: SortableItem[] = useMemo(() => {
     return selectedSortColumns.map((item) => ({
       id: item.id,
+      label: item.name,
       content: (
         <div className={styles.sortColumnItem}>
           <span className={styles.sortColumnName}>{item.name}</span>
@@ -162,6 +163,7 @@ export function MultiColumnSortDialog({
             items={sortableItems}
             onReorder={handleReorderSortColumns}
             onRemove={handleRemoveSortColumn}
+            className={styles.sortableList}
           />
         )}
         <Menu.Root>

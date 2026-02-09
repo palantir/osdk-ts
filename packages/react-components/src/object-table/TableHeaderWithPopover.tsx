@@ -27,12 +27,6 @@ import {
   VerticalDistribution,
 } from "@blueprintjs/icons";
 import type {
-  ObjectOrInterfaceDefinition,
-  PropertyKeys,
-  QueryDefinition,
-  SimplePropertyDef,
-} from "@osdk/api";
-import type {
   ColumnOrderState,
   ColumnPinningState,
   Header,
@@ -43,12 +37,21 @@ import type {
 } from "@tanstack/react-table";
 import classNames from "classnames";
 import React, { useCallback, useState } from "react";
-import { ColumnConfigDialog } from "./ColumnConfigDialog.js";
+import { type ColumnConfig, ColumnConfigDialog } from "./ColumnConfigDialog.js";
 import { MultiColumnSortDialog } from "./MultiColumnSortDialog.js";
 import { TableHeaderContent } from "./TableHeaderContent.js";
 import styles from "./TableHeaderWithPopover.module.css";
 import { SELECTION_COLUMN_ID } from "./utils/constants.js";
 import type { ColumnOption } from "./utils/types.js";
+
+export interface TableState {
+  sorting: SortingState;
+  columnVisibility: VisibilityState;
+  columnOrder: ColumnOrderState;
+  setColumnPinning: React.Dispatch<React.SetStateAction<ColumnPinningState>>;
+  setColumnVisibility: OnChangeFn<VisibilityState>;
+  setColumnOrder: OnChangeFn<ColumnOrderState>;
+}
 
 interface HeaderMenuItemProps {
   onClick: () => void;
@@ -80,62 +83,68 @@ function HeaderMenuItem({
   );
 }
 
+export interface HeaderMenuFeatureFlags {
+  /**
+   * Whether sorting menu items should be shown.
+   * When false, hides "Sort ascending", "Sort descending", "Sort on multiple columns", and "Clear all sorts".
+   */
+  showSortingItems?: boolean;
+  /**
+   * Whether pinning menu items should be shown.
+   * When false, hides "Pin column" and "Unpin Column".
+   */
+  showPinningItems?: boolean;
+  /**
+   * Whether resize menu item should be shown.
+   * When false, hides "Reset Column Size".
+   */
+  showResizeItem?: boolean;
+  /**
+   * Whether column config menu item should be shown.
+   * When false, hides "Configure Columns".
+   */
+  showConfigItem?: boolean;
+}
+
 interface TableHeaderWithPopoverProps<
   TData extends RowData,
-  Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
-  FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
-    string,
-    never
-  >,
 > {
   header: Header<TData, unknown>;
   isColumnPinned: false | "left" | "right";
-  setColumnPinning: React.Dispatch<React.SetStateAction<ColumnPinningState>>;
-  onSortChange?: (sorting: SortingState) => void;
+  tableState: TableState;
+  onSortChange?: OnChangeFn<SortingState>;
   onResetSize?: () => void;
-  enableColumnPinningRight?: boolean;
-  currentSorting?: SortingState;
   columnOptions?: ColumnOption[];
-  onColumnVisibilityChanged?: (
-    newStates: Array<{
-      columnId: PropertyKeys<Q> | keyof RDPs | keyof FunctionColumns;
-      isVisible: boolean;
-    }>,
-  ) => void;
-  setColumnVisibility?: OnChangeFn<VisibilityState>;
-  currentVisibility?: VisibilityState;
-  setColumnOrder?: OnChangeFn<ColumnOrderState>;
-  currentColumnOrder?: ColumnOrderState;
+  onColumnVisibilityChanged?: OnChangeFn<VisibilityState>;
+  featureFlags?: HeaderMenuFeatureFlags;
 }
 
 export function TableHeaderWithPopover<
   TData extends RowData,
-  Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
-  FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
-    string,
-    never
-  >,
 >({
   header,
   isColumnPinned,
-  setColumnPinning,
+  tableState,
   onSortChange,
   onResetSize,
-  currentSorting,
   columnOptions,
   onColumnVisibilityChanged,
-  setColumnVisibility,
-  currentVisibility,
-  setColumnOrder,
-  currentColumnOrder,
-}: TableHeaderWithPopoverProps<
-  TData,
-  Q,
-  RDPs,
-  FunctionColumns
->): React.ReactElement {
+  featureFlags,
+}: TableHeaderWithPopoverProps<TData>): React.ReactElement {
+  const {
+    showSortingItems = true,
+    showPinningItems = true,
+    showResizeItem = true,
+    showConfigItem = true,
+  } = featureFlags ?? {};
+  const {
+    sorting: currentSorting,
+    columnVisibility: currentVisibility,
+    columnOrder: currentColumnOrder,
+    setColumnPinning,
+    setColumnVisibility,
+    setColumnOrder,
+  } = tableState;
   const [isOpen, setIsOpen] = useState(false);
   const [configDialogOpen, setConfigDialogOpen] = useState(false);
   const [multiSortDialogOpen, setMultiSortDialogOpen] = useState(false);
@@ -216,22 +225,15 @@ export function TableHeaderWithPopover<
 
   const handleApplyColumnConfig = useCallback(
     (
-      updates: Array<{
-        columnId: PropertyKeys<Q> | keyof RDPs | keyof FunctionColumns;
-        isVisible: boolean;
-        order: number;
-      }>,
+      updates: ColumnConfig[],
     ) => {
       // Sort updates by order
       const sortedUpdates = [...updates].sort((a, b) => a.order - b.order);
 
-      // Update table's column visibility state
-      if (setColumnVisibility) {
-        const newVisibilityState: VisibilityState = {};
-        for (const update of sortedUpdates) {
-          newVisibilityState[String(update.columnId)] = update.isVisible;
-        }
-        setColumnVisibility(newVisibilityState);
+      // Build new visibility state
+      const newVisibilityState: VisibilityState = {};
+      for (const update of sortedUpdates) {
+        newVisibilityState[update.columnId] = update.isVisible;
       }
 
       // Update table's column order state
@@ -247,22 +249,17 @@ export function TableHeaderWithPopover<
         }
         // Add all columns in their new order (visible first, then hidden)
         for (const update of sortedUpdates) {
-          newColumnOrder.push(String(update.columnId));
+          newColumnOrder.push(update.columnId);
         }
         setColumnOrder(newColumnOrder);
       }
 
       // Notify parent about visibility changes
       if (onColumnVisibilityChanged) {
-        const visibilityChanges = sortedUpdates.map((update) => ({
-          columnId: update.columnId,
-          isVisible: update.isVisible,
-        }));
-        onColumnVisibilityChanged(visibilityChanges);
+        onColumnVisibilityChanged(newVisibilityState);
       }
     },
     [
-      setColumnVisibility,
       setColumnOrder,
       currentColumnOrder,
       onColumnVisibilityChanged,
@@ -273,6 +270,12 @@ export function TableHeaderWithPopover<
   const isSortable = header.column.getCanSort();
   const sortIndex = currentSorting?.findIndex(s => s.id === header.column.id)
     ?? -1;
+
+  // Determine if any menu items would be shown
+  const hasAnyMenuItems = showPinningItems
+    || (showSortingItems && isSortable)
+    || showResizeItem
+    || showConfigItem;
 
   return (
     <>
@@ -324,24 +327,26 @@ export function TableHeaderWithPopover<
                   && <span className={styles.sortIndex}>{sortIndex + 1}</span>}
               </div>
             )}
-            <Menu.Trigger
-              aria-label={`Open header menu for column with id=${header.column.id}`}
-              className={classNames(
-                styles.osdkCenterContainer,
-                styles.osdkHeaderPopoverTrigger,
-              )}
-            >
-              <ChevronDown
-                className={styles.osdkHeaderIcon}
-              />
-            </Menu.Trigger>
+            {hasAnyMenuItems && (
+              <Menu.Trigger
+                aria-label={`Open header menu for column with id=${header.column.id}`}
+                className={classNames(
+                  styles.osdkCenterContainer,
+                  styles.osdkHeaderPopoverTrigger,
+                )}
+              >
+                <ChevronDown
+                  className={styles.osdkHeaderIcon}
+                />
+              </Menu.Trigger>
+            )}
           </div>
           <Menu.Portal container={document.body}>
             <Menu.Positioner sideOffset={4}>
               <Menu.Popup
                 className={styles.osdkHeaderPopup}
               >
-                {!isColumnPinned && (
+                {showPinningItems && !isColumnPinned && (
                   <HeaderMenuItem
                     onClick={handlePinLeft}
                     icon={Pin}
@@ -349,7 +354,7 @@ export function TableHeaderWithPopover<
                   />
                 )}
 
-                {isColumnPinned && (
+                {showPinningItems && isColumnPinned && (
                   <HeaderMenuItem
                     onClick={handleUnpin}
                     icon={Unpin}
@@ -357,7 +362,7 @@ export function TableHeaderWithPopover<
                     active={true}
                   />
                 )}
-                {isSortable && (
+                {showSortingItems && isSortable && (
                   <>
                     <HeaderMenuItem
                       onClick={handleSortAscending}
@@ -380,7 +385,7 @@ export function TableHeaderWithPopover<
                     )}
                   </>
                 )}
-                {isSortable && !!currentSorting && currentSorting.length > 0
+                {showSortingItems && isSortable && !!currentSorting?.length
                   && (
                     <HeaderMenuItem
                       onClick={handleClearAllSorts}
@@ -388,17 +393,21 @@ export function TableHeaderWithPopover<
                       label="Clear all sorts"
                     />
                   )}
-                <HeaderMenuItem
-                  onClick={handleResetSize}
-                  icon={VerticalDistribution}
-                  label="Reset Column Size"
-                />
+                {showResizeItem && (
+                  <HeaderMenuItem
+                    onClick={handleResetSize}
+                    icon={VerticalDistribution}
+                    label="Reset Column Size"
+                  />
+                )}
 
-                <HeaderMenuItem
-                  onClick={handleOpenColumnConfig}
-                  icon={Settings}
-                  label="Configure Columns"
-                />
+                {showConfigItem && (
+                  <HeaderMenuItem
+                    onClick={handleOpenColumnConfig}
+                    icon={Settings}
+                    label="Configure Columns"
+                  />
+                )}
               </Menu.Popup>
             </Menu.Positioner>
           </Menu.Portal>

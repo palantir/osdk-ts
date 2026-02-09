@@ -86,18 +86,18 @@
 
 /* Sort Icon */
 .osdkSortIcon {
-  color: var(--osdk-table-sort-icon-color);
+  color: var(--osdk-table-header-menu-icon-color);
   flex-shrink: 0;
   line-height: 1;
-  margin-right: 6px;
+  margin-right: calc(var(--osdk-surface-spacing) * 0.75);
 }
 
 /* Pinned Icon */
 .osdkPinnedIcon {
-  color: var(--osdk-table-pinned-icon-color);
+  color: var(--osdk-table-header-menu-icon-color);
   flex-shrink: 0;
   line-height: 1;
-  margin-right: 6px;
+  margin-right: calc(var(--osdk-surface-spacing) * 0.75);
   position: relative;
   top: 0;
 }

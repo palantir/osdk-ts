@@ -33,6 +33,7 @@ import { useSelectionColumn } from "./hooks/useSelectionColumn.js";
 import { useTableSorting } from "./hooks/useTableSorting.js";
 import type { ObjectTableProps } from "./ObjectTableApi.js";
 import { BaseTable } from "./Table.js";
+import type { HeaderMenuFeatureFlags } from "./TableHeaderWithPopover.js";
 import { getRowId } from "./utils/getRowId.js";
 
 /**
@@ -67,11 +68,15 @@ export function ObjectTable<
   selectionMode = "none",
   selectedRows,
   onColumnVisibilityChanged,
+  enableOrdering = true,
+  enableColumnPinning = true,
+  enableColumnResizing = true,
+  enableColumnConfig = true,
   ...props
 }: ObjectTableProps<Q, RDPs, FunctionColumns>): React.ReactElement {
   const [columnSizing, setColumnSizing] = useState<ColumnSizingState>({});
 
-  const { sorting, onSortingChange, enableSorting } = useTableSorting<
+  const { sorting, onSortingChange } = useTableSorting<
     Q,
     RDPs,
     FunctionColumns
@@ -117,17 +122,6 @@ export function ObjectTable<
     data,
   });
 
-  const {
-    columnVisibility,
-    onColumnVisibilityChange,
-    columnOrder,
-    onColumnOrderChange,
-  } = useColumnVisibility({
-    columnDefinitions,
-    onColumnVisibilityChanged,
-    hasSelectionColumn: enableRowSelection,
-  });
-
   const selectionColumn = useSelectionColumn<Q, RDPs>(
     { selectionMode, isAllSelected, hasSelection, onToggleAll, onToggleRow },
   );
@@ -135,6 +129,18 @@ export function ObjectTable<
   const allColumns = useMemo(() => {
     return selectionColumn ? [selectionColumn, ...columns] : columns;
   }, [selectionColumn, columns]);
+
+  const {
+    columnVisibility,
+    onColumnVisibilityChange,
+    columnOrder,
+    onColumnOrderChange,
+  } = useColumnVisibility({
+    allColumns,
+    columnDefinitions,
+    onColumnVisibilityChanged,
+    hasSelectionColumn: enableRowSelection,
+  });
 
   const { columnPinning, onColumnPinningChange } = useColumnPinning({
     columnDefinitions,
@@ -162,7 +168,7 @@ export function ObjectTable<
     onColumnVisibilityChange,
     onColumnOrderChange,
     enableRowSelection,
-    enableSorting,
+    enableSorting: enableOrdering,
     columnResizeMode: "onChange",
     columnResizeDirection: "ltr",
     manualSorting: true, // Enable manual sorting to indicate server-side sorting
@@ -187,13 +193,22 @@ export function ObjectTable<
 
   const isTableLoading = isLoading || isColumnsLoading;
 
+  // Compute header menu feature flags based on table-level props
+  // Note: enableOrdering controls visibility of sorting menu items independently of controlled mode
+  const headerMenuFeatureFlags: HeaderMenuFeatureFlags = useMemo(() => ({
+    showSortingItems: enableOrdering,
+    showPinningItems: enableColumnPinning,
+    showResizeItem: enableColumnResizing,
+    showConfigItem: enableColumnConfig,
+  }), [
+    enableOrdering,
+    enableColumnPinning,
+    enableColumnResizing,
+    enableColumnConfig,
+  ]);
+
   return (
-    <BaseTable<
-      Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
-      Q,
-      RDPs,
-      FunctionColumns
-    >
+    <BaseTable<Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>>
       table={table}
       isLoading={isTableLoading}
       fetchNextPage={fetchMore}
@@ -203,7 +218,8 @@ export function ObjectTable<
       className={props.className}
       error={error}
       onSortChange={onSortingChange}
-      onColumnVisibilityChanged={onColumnVisibilityChanged}
+      onColumnVisibilityChanged={onColumnVisibilityChange}
+      headerMenuFeatureFlags={headerMenuFeatureFlags}
     />
   );
 }

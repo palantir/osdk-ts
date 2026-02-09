@@ -15,17 +15,12 @@
  */
 
 import type {
-  ObjectOrInterfaceDefinition,
-  PropertyKeys,
-  QueryDefinition,
-  SimplePropertyDef,
-} from "@osdk/api";
-import type {
   Cell,
   OnChangeFn,
   RowData,
   SortingState,
   Table,
+  VisibilityState,
 } from "@tanstack/react-table";
 import classNames from "classnames";
 import React, {
@@ -37,10 +32,10 @@ import React, {
 } from "react";
 import { LoadingStateTable } from "./LoadingStateTable.js";
 import { NonIdealState } from "./NonIdealState.js";
-import type { ColumnDefinition } from "./ObjectTableApi.js";
 import styles from "./Table.module.css";
 import { TableBody } from "./TableBody.js";
 import { TableHeader } from "./TableHeader.js";
+import type { HeaderMenuFeatureFlags } from "./TableHeaderWithPopover.js";
 
 declare module "@tanstack/react-table" {
   interface ColumnMeta<TData extends RowData, TValue> {
@@ -50,12 +45,6 @@ declare module "@tanstack/react-table" {
 
 export interface BaseTableProps<
   TData extends RowData,
-  Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
-  FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
-    string,
-    never
-  >,
 > {
   table: Table<TData>;
   isLoading?: boolean;
@@ -69,23 +58,12 @@ export interface BaseTableProps<
   className?: string;
   error?: Error;
   onSortChange?: OnChangeFn<SortingState>;
-  columnDefinitions?: Array<ColumnDefinition<Q, RDPs, FunctionColumns>>;
-  onColumnVisibilityChanged?: (
-    newStates: Array<{
-      columnId: PropertyKeys<Q> | keyof RDPs | keyof FunctionColumns;
-      isVisible: boolean;
-    }>,
-  ) => void;
+  onColumnVisibilityChanged?: OnChangeFn<VisibilityState>;
+  headerMenuFeatureFlags?: HeaderMenuFeatureFlags;
 }
 
 export function BaseTable<
   TData extends RowData,
-  Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
-  FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
-    string,
-    never
-  >,
 >(
   {
     table,
@@ -98,7 +76,8 @@ export function BaseTable<
     error,
     onSortChange,
     onColumnVisibilityChanged,
-  }: BaseTableProps<TData, Q, RDPs, FunctionColumns>,
+    headerMenuFeatureFlags,
+  }: BaseTableProps<TData>,
 ): ReactElement {
   const tableContainerRef = useRef<HTMLDivElement>(null);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
@@ -166,6 +145,7 @@ export function BaseTable<
                 table={table}
                 onSortChange={onSortChange}
                 onColumnVisibilityChanged={onColumnVisibilityChanged}
+                headerMenuFeatureFlags={headerMenuFeatureFlags}
               />
               <TableBody
                 rows={rows}

@@ -17,13 +17,18 @@
 .sortColumnsList {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  margin-bottom: 16px;
-  width: 400px;
+  gap: var(--osdk-surface-spacing);
+  flex: 1;
+  min-width: calc(var(--osdk-surface-spacing) * 50);
+  justify-content: space-between;
+}
+
+.sortableList {
+  max-height: calc(var(--osdk-surface-spacing) * 37.5);
 }
 
 .selectedColumnsContainer {
-  margin-bottom: 16px;
+  margin-bottom: calc(var(--osdk-surface-spacing) * 2);
 }
 
 .sortColumnItem {
@@ -46,7 +51,7 @@
 .sortDirectionButton {
   background: none;
   border: none;
-  padding: 4px;
+  padding: calc(var(--osdk-surface-spacing) / 2);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -90,8 +95,8 @@
 }
 
 .addIcon {
-  width: 16px;
-  height: 16px;
+  width: var(--osdk-iconography-size-small);
+  height: var(--osdk-iconography-size-small);
   color: currentColor;
 }
 
@@ -101,17 +106,18 @@
 }
 
 .menuPositioner {
-  z-index: 1100;
+  z-index: var(--osdk-surface-z-index-2);
 }
 
 .dropdownMenu {
   background-color: var(--osdk-surface-background-color-default);
-  border: 1px solid var(--osdk-surface-border-color-default);
+  border: var(--osdk-surface-border-width) solid
+    var(--osdk-surface-border-color-default);
   border-radius: var(--osdk-surface-border-radius);
   box-shadow: var(--osdk-surface-shadow-2);
-  max-height: 250px;
+  max-height: calc(var(--osdk-surface-spacing) * 31.25);
   overflow-y: auto;
-  min-width: 200px;
+  min-width: calc(var(--osdk-surface-spacing) * 25);
 }
 
 .dropdownItem {

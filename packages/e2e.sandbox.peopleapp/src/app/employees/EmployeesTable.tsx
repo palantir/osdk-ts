@@ -132,15 +132,19 @@ export function EmployeesTable() {
     >
       <ObjectTable<Employee, RDPs>
         objectType={Employee}
-        columnDefinitions={columnDefinitions}
+        // columnDefinitions={columnDefinitions}
         selectionMode={"multiple"}
         renderCellContextMenu={renderCellContextMenu}
         defaultOrderBy={[{
-          property: "firstFullTimeStartDate",
+          property: "fullName",
           direction: "desc",
         }]}
-        onOrderByChanged={handleOrderByChanged}
+        // onOrderByChanged={handleOrderByChanged}
         onColumnVisibilityChanged={handleColumnVisibilityChanged}
+        enableOrdering={true}
+        enableColumnPinning={false}
+        enableColumnConfig={true}
+        enableFiltering={false}
       />
     </div>
   );

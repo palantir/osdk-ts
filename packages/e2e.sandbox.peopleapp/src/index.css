@@ -13,7 +13,7 @@
 /* @import "./theme-overrides.css" layer(custom.theme); */
 
 /* Tailwind for utility classes */
-@import "tailwindcss" layer(tailwind);
+/* @import "tailwindcss" layer(tailwind); */
 
 #root {
   isolation: isolate;

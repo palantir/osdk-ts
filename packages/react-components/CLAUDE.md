@@ -14,7 +14,7 @@
 ## OSDK Component Architecture
 
 - The outermost component, e.g. ObjectTable should handle data fetching from Foundry using @osdk/react hooks.
-- The base component should contain all component interactions and styling. This will enable users to build on top of the base component with their own data fetching.
+- The base component should contain all component interactions and styling. Ideally, it should be an OSDK-agnostic component. The outer component should process OSDK data and pass to the base component. This will enable users to build on top of the base component with their own data fetching.
 
 ## CSS Styling Best Practices
 

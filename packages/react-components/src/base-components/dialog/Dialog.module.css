@@ -26,8 +26,10 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  max-width: calc(100vw - 48px);
-  max-height: calc(100vh - 48px);
+  min-width: var(--osdk-dialog-min-width);
+  max-width: var(--osdk-dialog-max-width);
+  min-height: var(--osdk-dialog-min-height);
+  max-height: var(--osdk-dialog-max-height);
   background-color: var(--osdk-dialog-bg);
   border-radius: var(--osdk-dialog-border-radius);
   box-shadow: var(--osdk-dialog-shadow);
@@ -48,6 +50,7 @@
 }
 
 .body {
+  display: flex;
   padding: var(--osdk-dialog-padding-vertical)
     var(--osdk-dialog-padding-horizontal);
   overflow-y: auto;

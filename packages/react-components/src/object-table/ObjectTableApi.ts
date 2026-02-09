@@ -117,7 +117,7 @@ export interface ObjectTableProps<
    *
    * @default true
    */
-  filterable?: boolean;
+  enableFiltering?: boolean;
 
   /**
    * The current where clause to filter the objects in the table.
@@ -138,7 +138,28 @@ export interface ObjectTableProps<
    *
    * @default true
    */
-  orderable?: boolean;
+  enableOrdering?: boolean;
+
+  /**
+   * Whether columns can be pinned by the user.
+   *
+   * @default true
+   */
+  enableColumnPinning?: boolean;
+
+  /**
+   * Whether columns can be resized by the user.
+   *
+   * @default true
+   */
+  enableColumnResizing?: boolean;
+
+  /**
+   * Whether the column configuration dialog is available to the user.
+   *
+   * @default true
+   */
+  enableColumnConfig?: boolean;
 
   /**
    * The default order by clause to sort the objects in the table.
@@ -174,11 +195,11 @@ export interface ObjectTableProps<
   ) => void;
 
   /**
-   * Called when the visible columns change.
+   * Called when the column visibility or ordering changed.
    *
    * If provided, the table will allow the user to show/hide columns.
    *
-   * @param newStates The new list of column visibility states
+   * @param newStates The columns sorted in their display order in the table and their visibility state.
    */
   onColumnVisibilityChanged?: (
     newStates: Array<{
