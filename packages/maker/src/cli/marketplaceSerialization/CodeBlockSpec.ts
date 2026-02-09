@@ -115,6 +115,6 @@ export function toBlockShapeId(readableId: string, salt?: string): string {
     }
     const digest = createHash('sha256');
     digest.update(toHash, 'utf8');
-    const encodedhash = digest.digest();
-    return generateUUIDFromStr(encodedhash);
+    const encodedHash = digest.digest();
+    return generateUUIDFromStr(encodedHash);
 }
