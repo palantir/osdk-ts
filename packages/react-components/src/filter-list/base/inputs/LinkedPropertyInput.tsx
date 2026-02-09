@@ -97,8 +97,8 @@ function LinkedPropertyInputInner<
   const content = (() => {
     switch (definition.linkedFilterComponent) {
       case "CHECKBOX_LIST": {
-        const selectedValues = innerState?.type === "CHECKBOX_LIST"
-          ? innerState.selectedValues
+        const selectedValues = innerState?.type === "SELECT"
+          ? innerState.selectedValues as string[]
           : [];
         return (
           <CheckboxListInput
@@ -110,7 +110,7 @@ function LinkedPropertyInputInner<
             selectedValues={selectedValues}
             onChange={(newSelectedValues) =>
               wrappedOnChange({
-                type: "CHECKBOX_LIST",
+                type: "SELECT",
                 selectedValues: newSelectedValues,
                 isExcluding: innerState?.isExcluding ?? false,
               })}
@@ -119,8 +119,10 @@ function LinkedPropertyInputInner<
       }
 
       case "MULTI_SELECT": {
-        const values = innerState?.type === "MULTI_SELECT"
-          ? coerceToStringArray(innerState.selectedValues)
+        const values = innerState?.type === "SELECT"
+          ? coerceToStringArray(
+            innerState.selectedValues as (string | boolean | number)[],
+          )
           : [];
         return (
           <MultiSelectInput
@@ -132,7 +134,7 @@ function LinkedPropertyInputInner<
             selectedValues={values}
             onChange={(selectedValues) =>
               wrappedOnChange({
-                type: "MULTI_SELECT",
+                type: "SELECT",
                 selectedValues,
                 isExcluding: innerState?.isExcluding ?? false,
               })}
@@ -141,8 +143,14 @@ function LinkedPropertyInputInner<
       }
 
       case "SINGLE_SELECT": {
-        const value = innerState?.type === "SINGLE_SELECT"
-          ? coerceToString(innerState.selectedValue)
+        const value = innerState?.type === "SELECT"
+          ? coerceToString(
+            innerState.selectedValues[0] as
+              | string
+              | boolean
+              | number
+              | undefined,
+          )
           : undefined;
         return (
           <SingleSelectInput
@@ -154,8 +162,10 @@ function LinkedPropertyInputInner<
             selectedValue={value}
             onChange={(selectedValue) =>
               wrappedOnChange({
-                type: "SINGLE_SELECT",
-                selectedValue,
+                type: "SELECT",
+                selectedValues: selectedValue !== undefined
+                  ? [selectedValue]
+                  : [],
                 isExcluding: innerState?.isExcluding ?? false,
               })}
           />
@@ -289,16 +299,18 @@ function LinkedPropertyInputInner<
       }
 
       case "SINGLE_DATE": {
-        const selectedDate = innerState?.type === "SINGLE_DATE"
-          ? innerState.selectedDate
+        const selectedDate = innerState?.type === "SELECT"
+          ? (innerState.selectedValues[0] instanceof Date
+            ? innerState.selectedValues[0]
+            : undefined)
           : undefined;
         return (
           <SingleDateInput
             selectedDate={selectedDate}
             onChange={(date) =>
               wrappedOnChange({
-                type: "SINGLE_DATE",
-                selectedDate: date,
+                type: "SELECT",
+                selectedValues: date !== undefined ? [date] : [],
                 isExcluding: innerState?.isExcluding ?? false,
               })}
             showClearButton={true}
@@ -307,16 +319,18 @@ function LinkedPropertyInputInner<
       }
 
       case "MULTI_DATE": {
-        const selectedDates = innerState?.type === "MULTI_DATE"
-          ? innerState.selectedDates
+        const selectedDates = innerState?.type === "SELECT"
+          ? innerState.selectedValues.filter(
+            (v): v is Date => v instanceof Date,
+          )
           : [];
         return (
           <MultiDateInput
             selectedDates={selectedDates}
             onChange={(dates) =>
               wrappedOnChange({
-                type: "MULTI_DATE",
-                selectedDates: dates,
+                type: "SELECT",
+                selectedValues: dates,
               })}
             showClearAll={true}
           />

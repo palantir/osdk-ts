@@ -76,7 +76,7 @@ function FilterInputContent<Q extends ObjectTypeDefinition>({
   onFilterStateChanged,
 }: FilterInputProps<Q>): React.ReactElement {
   switch (definition.type) {
-    case "hasLink":
+    case "HAS_LINK":
       return (
         <HasLinkInput
           filterState={filterState}
@@ -84,7 +84,7 @@ function FilterInputContent<Q extends ObjectTypeDefinition>({
         />
       );
 
-    case "linkedProperty":
+    case "LINKED_PROPERTY":
       return (
         <LinkedPropertyInput
           objectSet={objectSet}
@@ -94,7 +94,7 @@ function FilterInputContent<Q extends ObjectTypeDefinition>({
         />
       );
 
-    case "keywordSearch":
+    case "KEYWORD_SEARCH":
       return (
         <KeywordSearchInput
           filterState={filterState}
@@ -103,7 +103,7 @@ function FilterInputContent<Q extends ObjectTypeDefinition>({
         />
       );
 
-    case "custom": {
+    case "CUSTOM": {
       if (!definition.renderInput) {
         return (
           <div data-unsupported="true">Custom filter missing renderInput</div>
@@ -123,7 +123,7 @@ function FilterInputContent<Q extends ObjectTypeDefinition>({
       );
     }
 
-    case "property":
+    case "PROPERTY":
       return (
         <PropertyFilterInput
           objectType={objectType}
@@ -203,7 +203,7 @@ const KeywordSearchInput = memo(function KeywordSearchInput({
 interface PropertyFilterInputProps<Q extends ObjectTypeDefinition> {
   objectType: Q;
   objectSet: ObjectSet<Q>;
-  definition: Extract<FilterDefinitionUnion<Q>, { type: "property" }>;
+  definition: Extract<FilterDefinitionUnion<Q>, { type: "PROPERTY" }>;
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
 }
@@ -356,15 +356,15 @@ function CheckboxListFilterInputInner<Q extends ObjectTypeDefinition>({
   filterState,
   onFilterStateChanged,
 }: CheckboxListFilterInputProps<Q>): React.ReactElement {
-  const selectedValues = filterState?.type === "CHECKBOX_LIST"
-    ? filterState.selectedValues
+  const selectedValues = filterState?.type === "SELECT"
+    ? filterState.selectedValues as string[]
     : [];
   const isExcluding = filterState?.isExcluding ?? false;
 
   const handleChange = useCallback(
     (newSelectedValues: string[]) => {
       onFilterStateChanged({
-        type: "CHECKBOX_LIST",
+        type: "SELECT",
         selectedValues: newSelectedValues,
         isExcluding,
       });
@@ -576,16 +576,18 @@ function SingleSelectFilterInputInner<Q extends ObjectTypeDefinition>({
   filterState,
   onFilterStateChanged,
 }: SingleSelectFilterInputProps<Q>): React.ReactElement {
-  const selectedValue = filterState?.type === "SINGLE_SELECT"
-    ? coerceToString(filterState.selectedValue)
+  const selectedValue = filterState?.type === "SELECT"
+    ? coerceToString(
+      filterState.selectedValues[0] as string | boolean | number | undefined,
+    )
     : undefined;
   const isExcluding = filterState?.isExcluding ?? false;
 
   const handleChange = useCallback(
     (value: string | undefined) => {
       onFilterStateChanged({
-        type: "SINGLE_SELECT",
-        selectedValue: value,
+        type: "SELECT",
+        selectedValues: value !== undefined ? [value] : [],
         isExcluding,
       });
     },
@@ -619,15 +621,17 @@ function MultiSelectFilterInputInner<Q extends ObjectTypeDefinition>({
   filterState,
   onFilterStateChanged,
 }: MultiSelectFilterInputProps<Q>): React.ReactElement {
-  const selectedValues = filterState?.type === "MULTI_SELECT"
-    ? coerceToStringArray(filterState.selectedValues)
+  const selectedValues = filterState?.type === "SELECT"
+    ? coerceToStringArray(
+      filterState.selectedValues as (string | boolean | number)[],
+    )
     : [];
   const isExcluding = filterState?.isExcluding ?? false;
 
   const handleChange = useCallback(
     (selectedValues: string[]) => {
       onFilterStateChanged({
-        type: "MULTI_SELECT",
+        type: "SELECT",
         selectedValues,
         isExcluding,
       });
@@ -658,16 +662,18 @@ const SingleDateFilterInput = memo(function SingleDateFilterInput({
   filterState,
   onFilterStateChanged,
 }: SingleDateFilterInputProps): React.ReactElement {
-  const selectedDate = filterState?.type === "SINGLE_DATE"
-    ? filterState.selectedDate
+  const selectedDate = filterState?.type === "SELECT"
+    ? (filterState.selectedValues[0] instanceof Date
+      ? filterState.selectedValues[0]
+      : undefined)
     : undefined;
   const isExcluding = filterState?.isExcluding ?? false;
 
   const handleChange = useCallback(
     (selectedDate: Date | undefined) => {
       onFilterStateChanged({
-        type: "SINGLE_DATE",
-        selectedDate,
+        type: "SELECT",
+        selectedValues: selectedDate !== undefined ? [selectedDate] : [],
         isExcluding,
       });
     },
@@ -688,16 +694,16 @@ const MultiDateFilterInput = memo(function MultiDateFilterInput({
   filterState,
   onFilterStateChanged,
 }: MultiDateFilterInputProps): React.ReactElement {
-  const selectedDates = filterState?.type === "MULTI_DATE"
-    ? filterState.selectedDates
+  const selectedDates = filterState?.type === "SELECT"
+    ? filterState.selectedValues.filter((v): v is Date => v instanceof Date)
     : [];
   const isExcluding = filterState?.isExcluding ?? false;
 
   const handleChange = useCallback(
     (selectedDates: Date[]) => {
       onFilterStateChanged({
-        type: "MULTI_DATE",
-        selectedDates,
+        type: "SELECT",
+        selectedValues: selectedDates,
         isExcluding,
       });
     },
