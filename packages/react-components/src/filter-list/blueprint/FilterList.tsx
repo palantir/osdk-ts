@@ -76,13 +76,27 @@ export function FilterList<Q extends ObjectTypeDefinition>(
     if (!isAddFilterOpen) return;
 
     const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+      if (
+        menuRef.current
+        && event.target instanceof Node
+        && !menuRef.current.contains(event.target)
+      ) {
+        setIsAddFilterOpen(false);
+      }
+    };
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
         setIsAddFilterOpen(false);
       }
     };
 
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
   }, [isAddFilterOpen]);
 
   const renderAddFilterButton = useCallback(() => {
@@ -94,7 +108,7 @@ export function FilterList<Q extends ObjectTypeDefinition>(
           text="Add filter"
           fill
           className="filter-list__add-button"
-          onClick={() => setIsAddFilterOpen(!isAddFilterOpen)}
+          onClick={() => setIsAddFilterOpen(prev => !prev)}
           disabled={!hasTemplates}
         />
         {isAddFilterOpen && (
@@ -109,7 +123,13 @@ export function FilterList<Q extends ObjectTypeDefinition>(
         )}
       </div>
     );
-  }, [filterTemplates, isAddFilterOpen, activeCounts, handleSelectFilter]);
+  }, [
+    filterTemplates,
+    isAddFilterOpen,
+    activeCounts,
+    handleSelectFilter,
+    showAddFilterButton,
+  ]);
 
   return (
     <BaseFilterList

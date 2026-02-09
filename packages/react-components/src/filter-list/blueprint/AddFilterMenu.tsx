@@ -171,7 +171,7 @@ export function AddFilterMenu({
                     <MenuItem
                       key={template.id}
                       icon={typeof template.icon === "string"
-                        ? template.icon as IconName
+                        ? (template.icon as IconName)
                         : undefined}
                       text={
                         <>
