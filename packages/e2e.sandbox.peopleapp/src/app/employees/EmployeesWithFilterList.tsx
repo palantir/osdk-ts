@@ -173,7 +173,6 @@ export function EmployeesWithFilterList(props: EmployeesWithFilterListProps) {
             objectSet={$(Employee)}
             filterDefinitions={filterDefinitions}
             onFilterClauseChanged={setWhereClause}
-            showAddFilterButton={true}
             filterTemplates={FILTER_TEMPLATES}
             onFilterTemplateSelected={handleFilterTemplateSelected}
             title="Filters"
