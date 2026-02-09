@@ -88,14 +88,14 @@ function getLabel<Q extends ObjectTypeDefinition>(
   }
 
   switch (definition.type) {
-    case "property":
+    case "PROPERTY":
       return definition.key;
-    case "hasLink":
-    case "linkedProperty":
+    case "HAS_LINK":
+    case "LINKED_PROPERTY":
       return definition.linkName;
-    case "keywordSearch":
+    case "KEYWORD_SEARCH":
       return "Search";
-    case "custom":
+    case "CUSTOM":
       return definition.key;
   }
 }
