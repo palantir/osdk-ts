@@ -70,11 +70,11 @@ function createDefinition(
   PropertyKeys<ObjectTypeDefinition>
 > {
   return {
-    type: "linkedProperty",
+    type: "LINKED_PROPERTY",
     linkName: "primaryOffice",
     linkedPropertyKey: "name" as PropertyKeys<ObjectTypeDefinition>,
     linkedFilterComponent,
-    linkedFilterState: { type: "CHECKBOX_LIST", selectedValues: [] },
+    linkedFilterState: { type: "SELECT", selectedValues: [] },
   } as LinkedPropertyFilterDefinition<
     ObjectTypeDefinition,
     string,
@@ -163,7 +163,7 @@ describe("LinkedPropertyInput", () => {
       const onFilterStateChanged = vi.fn();
 
       const wrongState: FilterState = {
-        type: "CHECKBOX_LIST",
+        type: "SELECT",
         selectedValues: ["value1"],
       };
 
