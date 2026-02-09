@@ -14,17 +14,20 @@
  * limitations under the License.
  */
 
-export {
-  createMockOsdkObject,
-  type MockOsdkObjectOptions,
-} from "./mock/createMockOsdkObject.js";
+import type { Osdk } from "@osdk/api";
+import type { Client } from "@osdk/client";
+import { Employee } from "@osdk/client.test.ontology";
 
-export {
-  type AggregateStubBuilder,
-  createMockClient,
-  type FetchOneStubBuilder,
-  type FetchPageStubBuilder,
-  type MockClient,
-  type StubBuilderFor,
-  type StubClient,
-} from "./mock/createMockClient.js";
+export async function basicFetchPage(
+  client: Client,
+): Promise<Osdk.Instance<Employee>> {
+  const objects = await client(Employee).fetchPage();
+  const object = objects.data[0];
+  if (object == null) {
+    throw new Error("No objects returned");
+  }
+  if (object.employeeId !== 1 || object.fullName !== "John") {
+    throw new Error(`Unexpected object returned: ${JSON.stringify(object)}`);
+  }
+  return object;
+}
