@@ -1,5 +1,18 @@
 # @osdkkit/react
 
+## 0.10.0-beta.2
+
+### Minor Changes
+
+- 0d174a2: useOsdkFunction typing updates
+
+### Patch Changes
+
+- Updated dependencies [26cec61]
+- Updated dependencies [0d174a2]
+  - @osdk/client@2.8.0-beta.3
+  - @osdk/api@2.8.0-beta.3
+
 ## 0.9.0-beta.10
 
 ### Minor Changes

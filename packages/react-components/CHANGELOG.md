@@ -1,5 +1,19 @@
 # @osdk/react-components
 
+## 0.2.0-beta.2
+
+### Minor Changes
+
+- 5ad3ba1: Fix conflicting dependencies and add docs
+
+### Patch Changes
+
+- Updated dependencies [26cec61]
+- Updated dependencies [0d174a2]
+  - @osdk/client@2.8.0-beta.3
+  - @osdk/react@0.10.0-beta.2
+  - @osdk/api@2.8.0-beta.3
+
 ## 0.1.0-beta.6
 
 ### Minor Changes

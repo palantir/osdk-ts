@@ -92,7 +92,9 @@
     "@psdk/examples.vue-sdk-2.x": "0.0.0",
     "@osdk/docs": "0.0.0",
     "@osdk/react-components": "0.1.0",
-    "@osdk/react-components-styles": "0.1.0"
+    "@osdk/react-components-styles": "0.1.0",
+    "@osdk/e2e.sandbox.officenetwork": "0.0.1",
+    "@osdk/generator-converters.preview": "0.1.0-beta.0"
   },
   "changesets": [
     "@osdk-api-simulatedRelease",
@@ -166,7 +168,13 @@
     "@osdk-widget.client-simulatedRelease",
     "@osdk-widget.vite-plugin-simulatedRelease",
     "eager-views-pump",
+    "fancy-grapes-pull",
     "five-baboons-check",
-    "good-hoops-sing"
+    "good-hoops-sing",
+    "hip-sheep-tie",
+    "major-spiders-repair",
+    "many-heads-cheer",
+    "ready-roses-relate",
+    "tender-crews-deny"
   ]
 }
