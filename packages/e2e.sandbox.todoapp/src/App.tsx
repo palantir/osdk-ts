@@ -5,7 +5,6 @@ import CreateTodoForm from "./CreateTodoForm.js";
 import FilterSelector from "./FilterSelector.js";
 import { Todo } from "./generatedNoCheck2/index.js";
 import { H1 } from "./H2.js";
-import PaginatedTodoList from "./PaginatedTodoList.js";
 import { Section } from "./Section.js";
 import TodoList from "./TodoList.js";
 import ValidateActionDemo from "./ValidateActionDemo.js";
@@ -23,12 +22,6 @@ function App() {
         <div className="min-w-80 mr-8">
           <Section>
             <TodoList where={whereClause} />
-          </Section>
-        </div>
-
-        <div className="min-w-80 mr-8">
-          <Section>
-            <PaginatedTodoList where={whereClause} />
           </Section>
         </div>
 
