@@ -27,15 +27,12 @@
 .addButtonContainer {
   display: flex;
   justify-content: center;
-}
-
-.addButtonContainer > * {
-  flex: 1;
-}
-
-.addButtonContainer[data-position="fixed"] {
   position: sticky;
   bottom: 0;
   padding-top: var(--osdk-filter-list-addButton-padding-top);
   background: var(--osdk-filter-list-addButton-container-bg, var(--osdk-filter-list-bg));
+}
+
+.addButtonContainer > * {
+  flex: 1;
 }

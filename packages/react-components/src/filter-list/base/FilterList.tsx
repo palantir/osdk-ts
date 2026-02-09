@@ -45,8 +45,6 @@ export function FilterList<Q extends ObjectTypeDefinition>(
     filterDefinitions,
     showResetButton = false,
     onReset,
-    showAddFilterButton = false,
-    addFilterPosition = "fixed",
     showActiveFilterCount = false,
     className,
     classNames,
@@ -102,17 +100,16 @@ export function FilterList<Q extends ObjectTypeDefinition>(
         filterDefinitions={visibleFilterDefinitions}
         filterStates={filterStates}
         onFilterStateChanged={setFilterState}
-        renderEmptyAction={showAddFilterButton ? renderAddFilterButton : undefined}
+        renderEmptyAction={renderAddFilterButton}
       />
 
-      {showAddFilterButton && renderAddFilterButton
+      {renderAddFilterButton
         && visibleFilterDefinitions && visibleFilterDefinitions.length > 0 && (
         <div
           className={classnames(
             styles.addButtonContainer,
             classNames?.addButtonContainer,
           )}
-          data-position={addFilterPosition}
         >
           {renderAddFilterButton()}
         </div>

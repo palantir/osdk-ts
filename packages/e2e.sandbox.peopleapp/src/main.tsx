@@ -7,9 +7,11 @@ import { $ } from "./foundryClient.js";
 import { Router } from "./router.js";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
-  <OverlaysProvider>
-    <OsdkProvider2 client={$}>
-      <Router />
-    </OsdkProvider2>
-  </OverlaysProvider>,
+  <React.StrictMode>
+    <OverlaysProvider>
+      <OsdkProvider2 client={$}>
+        <Router />
+      </OsdkProvider2>
+    </OverlaysProvider>
+  </React.StrictMode>,
 );

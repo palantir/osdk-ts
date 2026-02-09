@@ -91,7 +91,7 @@ export function EmployeesTable() {
     >
       <ObjectTable<Employee, RDPs>
         objectType={Employee}
-        // columnDefinitions={columnDefinitions}
+        columnDefinitions={columnDefinitions}
         selectionMode={"multiple"}
         renderCellContextMenu={renderCellContextMenu}
         defaultOrderBy={[{

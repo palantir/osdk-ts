@@ -31,9 +31,12 @@ export function FilterList<Q extends ObjectTypeDefinition>(
     filterTemplates,
     onFilterTemplateSelected,
     filterDefinitions,
-    showAddFilterButton,
     ...restProps
   } = props;
+
+  const showAddFilterButton = Boolean(
+    filterTemplates && onFilterTemplateSelected,
+  );
 
   const [isAddFilterOpen, setIsAddFilterOpen] = useState(false);
 
@@ -95,7 +98,6 @@ export function FilterList<Q extends ObjectTypeDefinition>(
     <BaseFilterList
       {...restProps}
       filterDefinitions={filterDefinitions}
-      showAddFilterButton={showAddFilterButton}
       classNames={mergedClassNames}
       renderAddFilterButton={showAddFilterButton && filterTemplates
         ? renderAddFilterButton
