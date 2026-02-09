@@ -42,7 +42,7 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "peerDependencies": {
-    "@osdk/client": "^2",
+    "@osdk/client": "workspace:~",
     "@osdk/widget.client": "workspace:~",
     "@types/react": "^18 || ^19",
     "@types/react-dom": "^18 || ^19",
