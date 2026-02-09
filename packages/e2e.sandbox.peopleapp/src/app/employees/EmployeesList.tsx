@@ -55,14 +55,6 @@ export function EmployeesList(props: EmployeesListProps) {
     },
   });
 
-  const { data } = useOsdkObjects(Employee, {
-    withProperties,
-    where: {
-      department: "Media Team",
-      reportCount: { $gt: 0 },
-    },
-  });
-
   return (
     <List<Employee>
       header="Employees"
