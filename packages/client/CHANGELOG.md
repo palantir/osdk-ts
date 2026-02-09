@@ -1,5 +1,18 @@
 # @osdk/client
 
+## 2.8.0-beta.4
+
+### Minor Changes
+
+- 73e617e: expose dedupeInterval on useLinks and fix forced revalidation bypassing dedupeInterval
+- 5848e3c: add a new View abstraction layer to fix a pageSize caching bug where multiple subscribers with different pageSize values would share cached data incorrectly
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.4
+- @osdk/client.unstable@2.8.0-beta.4
+- @osdk/generator-converters@2.8.0-beta.4
+
 ## 2.8.0-beta.3
 
 ### Minor Changes
