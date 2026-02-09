@@ -29,7 +29,9 @@ import type {
 } from "@osdk/client.unstable";
 import type * as Ontologies from "@osdk/foundry.ontologies";
 
+import { spawnSync } from "node:child_process";
 import { hash } from "node:crypto";
+import { existsSync } from "node:fs";
 import { createRequire } from "node:module";
 import { pathToFileURL } from "node:url";
 import * as path from "path";
@@ -65,6 +67,98 @@ interface IFunctionDiscovererConstructor {
     entryPointPath: string,
     fullFilePath: string,
   ): IFunctionDiscoverer;
+}
+
+// Python function discovery types
+// Python discovery output uses the same format as IDataType with type field at top level
+interface IPythonDiscoveredFunction {
+  locator: {
+    type: "python3";
+    python3: { moduleName: string; functionName: string };
+  };
+  inputs: Array<{ name: string; dataType: IDataType; required?: boolean }>;
+  output: { type: "single"; single: { dataType: IDataType } };
+  customTypes?: Record<string, IPythonCustomType>;
+}
+
+interface IPythonCustomType {
+  fieldMetadata: Record<string, { required?: boolean }>;
+  fields: Record<string, IDataType>;
+}
+
+interface IPythonDiscoveryResult {
+  functions: IPythonDiscoveredFunction[];
+  errors?: Array<unknown>;
+}
+
+/**
+ * Discover Python functions by invoking `python3 -m functions.bin parse`
+ * Similar to foundry-as-code's DiscoverPythonFunctionsCommand.java
+ */
+function discoverPythonFunctions(
+  srcDir: string,
+  rootProjectDir: string,
+  pythonBinary?: string,
+): IPythonDiscoveryResult | null {
+  // Resolve Python binary - prefer explicit path, then look for Maestro's python
+  let pythonPath = pythonBinary;
+  if (!pythonPath) {
+    const maestroPython = path.join(
+      rootProjectDir,
+      ".maestro",
+      "bin",
+      "python3",
+    );
+    if (existsSync(maestroPython)) {
+      pythonPath = maestroPython;
+    } else {
+      // Fall back to system python3
+      pythonPath = "python3";
+    }
+  }
+
+  // Run python3 -m functions.bin parse
+  const result = spawnSync(
+    pythonPath,
+    [
+      "-m",
+      "functions.bin",
+      "parse",
+      "--src-dir",
+      srcDir,
+      "--root-project-dir",
+      rootProjectDir,
+      "--handle-errors",
+    ],
+    {
+      cwd: rootProjectDir,
+      encoding: "utf-8",
+      maxBuffer: 50 * 1024 * 1024, // 50MB buffer for large outputs
+    },
+  );
+
+  if (result.error) {
+    // Python not available or other spawn error
+    return null;
+  }
+
+  if (result.status !== 0) {
+    // Parse error - could log stderr but return null for now
+    // eslint-disable-next-line no-console
+    console.error(
+      `Python function discovery failed: ${result.stderr || result.stdout}`,
+    );
+    return null;
+  }
+
+  try {
+    const output = JSON.parse(result.stdout) as IPythonDiscoveryResult;
+    return output;
+  } catch {
+    // eslint-disable-next-line no-console
+    console.error(`Failed to parse Python discovery output: ${result.stdout}`);
+    return null;
+  }
 }
 
 // Lazy-loaded function discovery module
@@ -143,6 +237,9 @@ export class OntologyIrToFullMetadataConverter {
     ir: OntologyIrOntologyBlockDataV2,
     functionsDir: string,
     nodeModulesPath?: string,
+    pythonFunctionsDir?: string,
+    pythonRootProjectDir?: string,
+    pythonBinary?: string,
   ): Promise<Ontologies.OntologyFullMetadata> {
     const interfaceTypes = this.getOsdkInterfaceTypes(
       Object.values(ir.interfaceTypes),
@@ -158,6 +255,9 @@ export class OntologyIrToFullMetadataConverter {
     const queryTypes = await this.getOsdkQueryTypes(
       functionsDir,
       nodeModulesPath,
+      pythonFunctionsDir,
+      pythonRootProjectDir,
+      pythonBinary,
     );
 
     return {
@@ -179,66 +279,107 @@ export class OntologyIrToFullMetadataConverter {
   static async getOsdkQueryTypes(
     functionsDir: string,
     nodeModulesPath?: string,
+    pythonFunctionsDir?: string,
+    pythonRootProjectDir?: string,
+    pythonBinary?: string,
   ): Promise<
     Record<Ontologies.VersionedQueryTypeApiName, Ontologies.QueryTypeV2>
   > {
-    const FunctionDiscoverer = await loadFunctionDiscoverer(nodeModulesPath);
-    if (!FunctionDiscoverer) {
-      // Function discovery not available - return empty
-      return {};
-    }
-
-    // Find tsconfig.json - try functionsDir first, then parent directory
-    let tsConfigPath = path.join(functionsDir, "tsconfig.json");
-    let projectDir = functionsDir;
-    try {
-      ts.readConfigFile(tsConfigPath, ts.sys.readFile);
-    } catch {
-      // Try parent directory
-      tsConfigPath = path.join(path.dirname(functionsDir), "tsconfig.json");
-      projectDir = path.dirname(functionsDir);
-    }
-
-    const program = this.createProgram(tsConfigPath, projectDir);
-
-    // Find index.ts or use first file as entry point
-    const sourceFiles = program.getSourceFiles()
-      .map(sf => sf.fileName)
-      .filter(f => !f.includes("node_modules"));
-    const entryPointPath = sourceFiles.find(f => f.endsWith("index.ts"))
-      ?? sourceFiles[0];
-
-    // Initialize FunctionDiscoverer with the program
-    const fd = new FunctionDiscoverer(program, entryPointPath, functionsDir);
-
-    // Discover functions using the provided filePath as the functionsDirectoryPath
-    const functions = fd.discover();
-
     const queries: Ontologies.QueryTypeV2[] = [];
-    functions.discoveredFunctions.forEach((func: IDiscoveredFunction) => {
-      if (func.locator.type !== "typescriptOsdk") {
-        return;
+
+    // TypeScript function discovery
+    const FunctionDiscoverer = await loadFunctionDiscoverer(nodeModulesPath);
+    if (FunctionDiscoverer) {
+      // Find tsconfig.json - try functionsDir first, then parent directory
+      let tsConfigPath = path.join(functionsDir, "tsconfig.json");
+      let projectDir = functionsDir;
+      try {
+        ts.readConfigFile(tsConfigPath, ts.sys.readFile);
+      } catch {
+        // Try parent directory
+        tsConfigPath = path.join(path.dirname(functionsDir), "tsconfig.json");
+        projectDir = path.dirname(functionsDir);
       }
-      const functionName = func.locator.typescriptOsdk!.functionName;
-      const queryType: Ontologies.QueryTypeV2 = {
-        apiName: functionName,
-        rid: `ri.function-registry.main.function.${functionName}`,
-        version: "0.0.0",
-        parameters: func.inputs.reduce<
-          Record<ApiName, Ontologies.QueryParameterV2>
-        >((acc, input) => {
-          acc[input.name] = {
-            dataType: this.convertDataType(input.dataType, func.customTypes),
+
+      const program = this.createProgram(tsConfigPath, projectDir);
+
+      // Find index.ts or use first file as entry point
+      const sourceFiles = program.getSourceFiles()
+        .map(sf => sf.fileName)
+        .filter(f => !f.includes("node_modules"));
+      const entryPointPath = sourceFiles.find(f => f.endsWith("index.ts"))
+        ?? sourceFiles[0];
+
+      // Initialize FunctionDiscoverer with the program
+      const fd = new FunctionDiscoverer(program, entryPointPath, functionsDir);
+
+      // Discover functions using the provided filePath as the functionsDirectoryPath
+      const functions = fd.discover();
+
+      functions.discoveredFunctions.forEach((func: IDiscoveredFunction) => {
+        if (func.locator.type !== "typescriptOsdk") {
+          return;
+        }
+        const functionName = func.locator.typescriptOsdk!.functionName;
+        const queryType: Ontologies.QueryTypeV2 = {
+          apiName: functionName,
+          rid: `ri.function-registry.main.function.${functionName}`,
+          version: "0.0.0",
+          parameters: func.inputs.reduce<
+            Record<ApiName, Ontologies.QueryParameterV2>
+          >((acc, input) => {
+            acc[input.name] = {
+              dataType: this.convertDataType(input.dataType, func.customTypes),
+            };
+            return acc;
+          }, {}),
+          output: this.convertDataType(
+            func.output.single.dataType,
+            func.customTypes,
+          ),
+        };
+        queries.push(queryType);
+      });
+    }
+
+    // Python function discovery
+    if (pythonFunctionsDir && pythonRootProjectDir) {
+      const pythonResult = discoverPythonFunctions(
+        pythonFunctionsDir,
+        pythonRootProjectDir,
+        pythonBinary,
+      );
+
+      if (pythonResult) {
+        for (const func of pythonResult.functions) {
+          const functionName = func.locator.python3.functionName;
+          const customTypes = func.customTypes ?? {};
+          const queryType: Ontologies.QueryTypeV2 = {
+            apiName: functionName,
+            rid: `ri.function-registry.main.function.${functionName}`,
+            version: "0.0.0",
+            parameters: func.inputs.reduce<
+              Record<ApiName, Ontologies.QueryParameterV2>
+            >((acc, input) => {
+              acc[input.name] = {
+                dataType: this.convertDataType(
+                  input.dataType,
+                  customTypes,
+                  input.required,
+                ),
+              };
+              return acc;
+            }, {}),
+            output: this.convertDataType(
+              func.output.single.dataType,
+              customTypes,
+            ),
           };
-          return acc;
-        }, {}),
-        output: this.convertDataType(
-          func.output.single.dataType,
-          func.customTypes,
-        ),
-      };
-      queries.push(queryType);
-    });
+          queries.push(queryType);
+        }
+      }
+    }
+
     return queries.reduce<
       Record<
         Ontologies.VersionedQueryTypeApiName,

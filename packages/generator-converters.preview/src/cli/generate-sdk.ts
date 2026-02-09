@@ -31,8 +31,11 @@ Arguments:
   output-dir              Directory where the SDK will be generated
 
 Options:
-  --functions-dir <path>       Path to functions source directory (enables function discovery)
-  --node-modules-path <path>   Path to node_modules containing @foundry packages (required for function discovery)`;
+  --functions-dir <path>            Path to TypeScript functions source directory (enables TS function discovery)
+  --node-modules-path <path>        Path to node_modules containing @foundry packages (required for TS function discovery)
+  --python-functions-dir <path>     Path to Python functions source directory (enables Python function discovery)
+  --python-root-project-dir <path>  Root project directory for Python functions (defaults to parent of python-functions-dir)
+  --python-binary <path>            Path to Python binary (defaults to .maestro/bin/python3 or system python3)`;
 
 async function main(): Promise<void> {
   const args = process.argv.slice(2);
@@ -51,6 +54,30 @@ async function main(): Promise<void> {
   if (nodeModulesIndex !== -1 && args[nodeModulesIndex + 1]) {
     nodeModulesPath = path.resolve(args[nodeModulesIndex + 1]);
     args.splice(nodeModulesIndex, 2);
+  }
+
+  // Parse --python-functions-dir option
+  let pythonFunctionsDir: string | undefined;
+  const pythonFunctionsDirIndex = args.indexOf("--python-functions-dir");
+  if (pythonFunctionsDirIndex !== -1 && args[pythonFunctionsDirIndex + 1]) {
+    pythonFunctionsDir = path.resolve(args[pythonFunctionsDirIndex + 1]);
+    args.splice(pythonFunctionsDirIndex, 2);
+  }
+
+  // Parse --python-root-project-dir option
+  let pythonRootProjectDir: string | undefined;
+  const pythonRootIndex = args.indexOf("--python-root-project-dir");
+  if (pythonRootIndex !== -1 && args[pythonRootIndex + 1]) {
+    pythonRootProjectDir = path.resolve(args[pythonRootIndex + 1]);
+    args.splice(pythonRootIndex, 2);
+  }
+
+  // Parse --python-binary option
+  let pythonBinary: string | undefined;
+  const pythonBinaryIndex = args.indexOf("--python-binary");
+  if (pythonBinaryIndex !== -1 && args[pythonBinaryIndex + 1]) {
+    pythonBinary = path.resolve(args[pythonBinaryIndex + 1]);
+    args.splice(pythonBinaryIndex, 2);
   }
 
   if (args.length < 4) {
@@ -94,15 +121,28 @@ async function main(): Promise<void> {
       >[0],
     );
 
-  // Discover functions if --functions-dir is provided
-  if (functionsDir) {
-    // eslint-disable-next-line no-console
-    console.log(`Discovering functions in ${functionsDir}...`);
+  // Discover functions if --functions-dir or --python-functions-dir is provided
+  if (functionsDir || pythonFunctionsDir) {
+    if (functionsDir) {
+      // eslint-disable-next-line no-console
+      console.log(`Discovering TypeScript functions in ${functionsDir}...`);
+    }
+    if (pythonFunctionsDir) {
+      // eslint-disable-next-line no-console
+      console.log(`Discovering Python functions in ${pythonFunctionsDir}...`);
+    }
+
+    // Default pythonRootProjectDir to parent of pythonFunctionsDir if not specified
+    const effectivePythonRootDir = pythonRootProjectDir
+      ?? (pythonFunctionsDir ? path.dirname(pythonFunctionsDir) : undefined);
 
     const queryTypes = await OntologyIrToFullMetadataConverter
       .getOsdkQueryTypes(
-        functionsDir,
+        functionsDir ?? "",
         nodeModulesPath,
+        pythonFunctionsDir,
+        effectivePythonRootDir,
+        pythonBinary,
       );
 
     const functionNames = Object.keys(queryTypes);
