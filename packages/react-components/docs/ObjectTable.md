@@ -6,6 +6,30 @@ A comprehensive guide for using the ObjectTable component from `@osdk/react-comp
 
 Before using ObjectTable, make sure you have completed the library setup described in the [README](../README.md#installation).
 
+## Features
+
+- [x] Display OSDK object sets with automatic data fetching and infinite scroll
+- [x] Column definitions for property, RDP, and function column types
+- [x] Column pinning (left/right) with UI controls
+- [x] Column resizing with drag handles
+- [x] Column visibility (`isVisible` on column definitions)
+- [x] Custom cell rendering (`renderCell`)
+- [x] Custom header rendering (`renderHeader`)
+- [x] Sorting — controlled and uncontrolled, with header UI
+- [x] Row selection — single, multiple (with checkboxes), and shift-click range
+- [x] Row click handler (`onRowClick`)
+- [x] Cell context menu on right-click (`renderCellContextMenu`)
+- [x] Programmatic filtering via `filter` prop (`WhereClause`)
+- [x] Custom row height
+- [x] CSS theming via custom properties
+- [x] Loading, empty, and error states (built-in)
+- [ ] Interactive filtering UI (user-driven filter controls)
+- [ ] `filterable` prop (table-level and column-level — not yet wired)
+- [ ] `orderable` prop at table level (column-level `orderable` works)
+- [ ] `onColumnVisibilityChanged` callback
+- [ ] `onColumnResize` callback
+- [ ] `onFilterChanged` callback
+
 ## Table of Contents
 
 - [Basic Usage](#basic-usage)
@@ -69,29 +93,30 @@ Add selection mode to enable row selection:
 
 ### Column Management
 
-| Prop                        | Type                           | Default | Description                                               |
-| --------------------------- | ------------------------------ | ------- | --------------------------------------------------------- |
-| `columnDefinitions`         | `Array<ColumnDefinition>`      | -       | Ordered list of columns. If omitted, shows all properties |
-| `onColumnVisibilityChanged` | `(newStates) => void`          | -       | Called when column visibility changes                     |
-| `onColumnsPinnedChanged`    | `(newStates) => void`          | -       | Called when column pinning changes                        |
-| `onColumnResize`            | `(columnId, newWidth) => void` | -       | Called when a column is resized                           |
+| Prop                     | Type                      | Default | Description                                               |
+| ------------------------ | ------------------------- | ------- | --------------------------------------------------------- |
+| `columnDefinitions`      | `Array<ColumnDefinition>` | -       | Ordered list of columns. If omitted, shows all properties |
+| `onColumnsPinnedChanged` | `(newStates) => void`     | -       | Called when column pinning changes                        |
+
+> **Note:** `onColumnVisibilityChanged` and `onColumnResize` are defined in the API but not yet functional.
 
 ### Filtering
 
-| Prop              | Type                 | Default | Description                        |
-| ----------------- | -------------------- | ------- | ---------------------------------- |
-| `filterable`      | `boolean`            | `true`  | Whether users can filter the table |
-| `filter`          | `WhereClause<Q>`     | -       | Current filter (controlled mode)   |
-| `onFilterChanged` | `(newWhere) => void` | -       | Required when `filter` is provided |
+| Prop     | Type             | Default | Description                                      |
+| -------- | ---------------- | ------- | ------------------------------------------------ |
+| `filter` | `WhereClause<Q>` | -       | Programmatic filter applied to the data query     |
+
+> **Note:** The `filterable` and `onFilterChanged` props are defined in the API but not yet functional. Use the `filter` prop to apply filters programmatically.
 
 ### Sorting
 
 | Prop               | Type                           | Default | Description                         |
 | ------------------ | ------------------------------ | ------- | ----------------------------------- |
-| `orderable`        | `boolean`                      | `true`  | Whether users can sort columns      |
 | `defaultOrderBy`   | `Array<{property, direction}>` | -       | Initial sort order (uncontrolled)   |
 | `orderBy`          | `Array<{property, direction}>` | -       | Current sort order (controlled)     |
 | `onOrderByChanged` | `(newOrderBy) => void`         | -       | Required when `orderBy` is provided |
+
+> **Note:** The table-level `orderable` prop is defined in the API but not yet functional. Use the column-level `orderable` property in column definitions to control per-column sorting.
 
 ### Row Selection
 
@@ -122,7 +147,6 @@ type ColumnDefinition<Q, RDPs, FunctionColumns> = {
   maxWidth?: number; // Maximum width
   resizable?: boolean; // Allow column resizing
   orderable?: boolean; // Allow column sorting
-  filterable?: boolean; // Allow column filtering
   renderCell?: (object, locator) => React.ReactNode; // Custom cell renderer
   renderHeader?: () => React.ReactNode; // Custom header renderer
 };
@@ -480,7 +504,157 @@ function EmployeesTable() {
 }
 ```
 
-### Example 12: Complete Example from PeopleApp
+### Example 12: Filtering with the `filter` Prop
+
+The `filter` prop accepts a `WhereClause` and is applied directly to the data query. There is no built-in filtering UI — you provide the filter value programmatically.
+
+#### Filtering a Property Column
+
+```typescript
+import { ObjectTable } from "@osdk/react-components/experimental";
+import type { WhereClause } from "@osdk/api";
+import { Employee } from "@YourApp/sdk";
+import { useState } from "react";
+
+function EmployeesTable() {
+  const [searchText, setSearchText] = useState("");
+
+  const filter: WhereClause<typeof Employee> | undefined = searchText
+    ? { fullName: { $startsWith: searchText } }
+    : undefined;
+
+  return (
+    <div>
+      <input
+        placeholder="Search by name..."
+        value={searchText}
+        onChange={(e) => setSearchText(e.target.value)}
+      />
+      <ObjectTable
+        objectType={Employee}
+        filter={filter}
+      />
+    </div>
+  );
+}
+```
+
+You can combine multiple property filters using `$and` / `$or`:
+
+```typescript
+const filter: WhereClause<typeof Employee> = {
+  $and: [
+    { department: { $eq: "Engineering" } },
+    { firstFullTimeStartDate: { $gte: "2023-01-01" } },
+  ],
+};
+```
+
+#### Filtering an RDP Column
+
+RDP (derived property) columns resolve on the server, so their values can be included in `WhereClause` via the RDPs type parameter:
+
+```typescript
+import { DerivedProperty } from "@osdk/client";
+import {
+  type ColumnDefinition,
+  ObjectTable,
+} from "@osdk/react-components/experimental";
+import type { WhereClause } from "@osdk/api";
+import { Employee } from "@YourApp/sdk";
+
+type RDPs = {
+  managerName: string | undefined;
+};
+
+function EmployeesTable() {
+  const columnDefinitions: Array<ColumnDefinition<typeof Employee, RDPs>> = [
+    {
+      locator: { type: "property", id: "fullName" },
+    },
+    {
+      locator: {
+        type: "rdp",
+        id: "managerName",
+        creator: DerivedProperty.creator<typeof Employee, string | undefined>(
+          (base) =>
+            base.lead.select({
+              fullName: true,
+            }),
+          (pivot) => pivot?.fullName,
+        ),
+      },
+      renderHeader: () => <span>Manager</span>,
+    },
+  ];
+
+  const filter: WhereClause<typeof Employee, RDPs> = {
+    managerName: { $startsWith: "Jane" },
+  };
+
+  return (
+    <ObjectTable
+      objectType={Employee}
+      columnDefinitions={columnDefinitions}
+      filter={filter}
+    />
+  );
+}
+```
+
+#### Filtering a Function Column
+
+Function columns are computed client-side and do not participate in the server-side `WhereClause`. To filter data shown in function columns, apply a `filter` on the underlying properties that the function depends on:
+
+```typescript
+import {
+  type ColumnDefinition,
+  ObjectTable,
+} from "@osdk/react-components/experimental";
+import type { WhereClause } from "@osdk/api";
+import { Employee } from "@YourApp/sdk";
+
+type FunctionColumns = {
+  tenure: QueryDefinition<{}>;
+};
+
+function EmployeesTable() {
+  const columnDefinitions: Array<
+    ColumnDefinition<typeof Employee, Record<string, never>, FunctionColumns>
+  > = [
+    {
+      locator: { type: "property", id: "fullName" },
+    },
+    {
+      locator: { type: "function", id: "tenure" },
+      renderCell: (employee) => {
+        const startDate = employee.firstFullTimeStartDate;
+        if (!startDate) return "-";
+        const years = new Date().getFullYear() -
+          new Date(startDate).getFullYear();
+        return `${years} years`;
+      },
+      renderHeader: () => <span>Tenure</span>,
+    },
+  ];
+
+  // Function columns can't be filtered directly — filter on the
+  // underlying property instead:
+  const filter: WhereClause<typeof Employee> = {
+    firstFullTimeStartDate: { $lte: "2020-01-01" },
+  };
+
+  return (
+    <ObjectTable
+      objectType={Employee}
+      columnDefinitions={columnDefinitions}
+      filter={filter}
+    />
+  );
+}
+```
+
+### Example 13: Complete Example from PeopleApp
 
 This is a real-world example from the OSDK test application:
 
@@ -615,37 +789,19 @@ const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
 ];
 ```
 
-Listen to resize events:
+### Disable Sorting Per Column
 
-```typescript
-<ObjectTable
-  objectType={Employee}
-  onColumnResize={(columnId, newWidth) => {
-    console.log(`Column ${columnId} resized to ${newWidth}px`);
-  }}
-/>;
-```
-
-### Disable Filtering or Sorting
-
-Disable filtering or sorting globally:
-
-```typescript
-<ObjectTable
-  objectType={Employee}
-  filterable={false}
-  orderable={false}
-/>;
-```
-
-Or per column:
+Disable sorting on individual columns:
 
 ```typescript
 const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
   {
     locator: { type: "property", id: "fullName" },
-    orderable: false,
-    filterable: false,
+    orderable: false, // This column cannot be sorted
+  },
+  {
+    locator: { type: "property", id: "email" },
+    // orderable defaults to true
   },
 ];
 ```
