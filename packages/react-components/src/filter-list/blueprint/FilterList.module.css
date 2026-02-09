@@ -24,10 +24,10 @@
   left: 0;
   right: 0;
   margin-bottom: 4px;
-  background: white;
+  background: var(--bp-surface-colorRest-default, white);
   border: 1px solid var(--bp-surface-borderColor-default, #d3d8de);
-  border-radius: 4px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+  border-radius: var(--bp-surface-borderRadius, 4px);
+  box-shadow: var(--bp-surface-shadow-2, 0 2px 10px rgba(0, 0, 0, 0.15));
   z-index: 100;
   max-height: 400px;
   overflow-y: auto;
