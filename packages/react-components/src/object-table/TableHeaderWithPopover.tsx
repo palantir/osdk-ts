@@ -33,6 +33,7 @@ import type {
   OnChangeFn,
   RowData,
   SortingState,
+  Table,
   VisibilityState,
 } from "@tanstack/react-table";
 import classNames from "classnames";
@@ -109,13 +110,12 @@ export interface HeaderMenuFeatureFlags {
 interface TableHeaderWithPopoverProps<
   TData extends RowData,
 > {
+  table: Table<TData>;
   header: Header<TData, unknown>;
   isColumnPinned: false | "left" | "right";
-  tableState: TableState;
   onSortChange?: OnChangeFn<SortingState>;
   onResetSize?: () => void;
   columnOptions?: ColumnOption[];
-  onColumnVisibilityChanged?: OnChangeFn<VisibilityState>;
   featureFlags?: HeaderMenuFeatureFlags;
 }
 
@@ -123,12 +123,11 @@ export function TableHeaderWithPopover<
   TData extends RowData,
 >({
   header,
+  table,
   isColumnPinned,
-  tableState,
   onSortChange,
   onResetSize,
   columnOptions,
-  onColumnVisibilityChanged,
   featureFlags,
 }: TableHeaderWithPopoverProps<TData>): React.ReactElement {
   const {
@@ -137,14 +136,17 @@ export function TableHeaderWithPopover<
     showResizeItem = true,
     showConfigItem = true,
   } = featureFlags ?? {};
+
   const {
-    sorting: currentSorting,
-    columnVisibility: currentVisibility,
-    columnOrder: currentColumnOrder,
     setColumnPinning,
-    setColumnVisibility,
     setColumnOrder,
-  } = tableState;
+    setColumnVisibility,
+  } = table;
+
+  const currentSorting = table.getState().sorting;
+  const currentVisibility = table.getState().columnVisibility;
+  const currentColumnOrder = table.getState().columnOrder;
+
   const [isOpen, setIsOpen] = useState(false);
   const [configDialogOpen, setConfigDialogOpen] = useState(false);
   const [multiSortDialogOpen, setMultiSortDialogOpen] = useState(false);
@@ -254,15 +256,14 @@ export function TableHeaderWithPopover<
         setColumnOrder(newColumnOrder);
       }
 
-      // Notify parent about visibility changes
-      if (onColumnVisibilityChanged) {
-        onColumnVisibilityChanged(newVisibilityState);
+      if (setColumnVisibility) {
+        setColumnVisibility(newVisibilityState);
       }
     },
     [
       setColumnOrder,
       currentColumnOrder,
-      onColumnVisibilityChanged,
+      setColumnVisibility,
     ],
   );
 
@@ -271,7 +272,6 @@ export function TableHeaderWithPopover<
   const sortIndex = currentSorting?.findIndex(s => s.id === header.column.id)
     ?? -1;
 
-  // Determine if any menu items would be shown
   const hasAnyMenuItems = showPinningItems
     || (showSortingItems && isSortable)
     || showResizeItem
@@ -323,7 +323,7 @@ export function TableHeaderWithPopover<
                       className={styles.osdkHeaderIcon}
                     />
                   )}
-                {currentSorting && currentSorting.length > 1 && sortIndex >= 0
+                {sortIndex >= 0
                   && <span className={styles.sortIndex}>{sortIndex + 1}</span>}
               </div>
             )}
@@ -346,7 +346,7 @@ export function TableHeaderWithPopover<
               <Menu.Popup
                 className={styles.osdkHeaderPopup}
               >
-                {showPinningItems && !isColumnPinned && (
+                {!isColumnPinned && (
                   <HeaderMenuItem
                     onClick={handlePinLeft}
                     icon={Pin}
@@ -385,7 +385,7 @@ export function TableHeaderWithPopover<
                     )}
                   </>
                 )}
-                {showSortingItems && isSortable && !!currentSorting?.length
+                {showSortingItems && !!currentSorting?.length
                   && (
                     <HeaderMenuItem
                       onClick={handleClearAllSorts}
@@ -400,7 +400,6 @@ export function TableHeaderWithPopover<
                     label="Reset Column Size"
                   />
                 )}
-
                 {showConfigItem && (
                   <HeaderMenuItem
                     onClick={handleOpenColumnConfig}

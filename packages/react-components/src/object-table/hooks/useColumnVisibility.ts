@@ -27,7 +27,6 @@ import type {
   VisibilityState,
 } from "@tanstack/react-table";
 import { useCallback, useEffect, useState } from "react";
-import type { ObjectTableProps } from "../ObjectTableApi.js";
 
 interface UseColumnVisibilityProps<
   Q extends ObjectOrInterfaceDefinition,
@@ -39,11 +38,6 @@ interface UseColumnVisibilityProps<
   TData = unknown,
 > {
   allColumns: ColumnDef<TData>[];
-  columnDefinitions?: ObjectTableProps<
-    Q,
-    RDPs,
-    FunctionColumns
-  >["columnDefinitions"];
   onColumnVisibilityChanged?: (
     newStates: Array<{
       columnId: PropertyKeys<Q> | keyof RDPs | keyof FunctionColumns;
@@ -71,7 +65,6 @@ export const useColumnVisibility = <
 >(
   {
     allColumns,
-    columnDefinitions,
     onColumnVisibilityChanged,
     hasSelectionColumn,
   }: UseColumnVisibilityProps<Q, RDPs, FunctionColumns, TData>,
@@ -85,49 +78,30 @@ export const useColumnVisibility = <
   );
 
   useEffect(() => {
-    let initialVisibility: VisibilityState;
-
-    if (columnDefinitions) {
-      // Use columnDefinitions to determine visibility
-      initialVisibility = columnDefinitions.reduce((acc, colDef) => {
-        return {
-          ...acc,
-          [colDef.locator.id]: colDef.isVisible !== false,
-        };
-      }, {});
-    } else {
-      // Default: all columns visible
-      initialVisibility = allColumns.reduce((acc, col) => {
+    const initialVisibility: VisibilityState = allColumns.reduce(
+      (acc, col) => {
         const colId = col.id ?? (col as { accessorKey?: string }).accessorKey;
         if (colId) {
           return {
             ...acc,
-            [colId]: true,
+            [colId]: col.meta?.isVisible !== false,
           };
         }
         return acc;
-      }, {});
-    }
+      },
+      {},
+    );
 
     setColumnVisibility(initialVisibility);
-  }, [columnDefinitions, allColumns]);
+  }, [allColumns]);
 
   useEffect(() => {
-    let initialColumnOrder: ColumnOrderState;
-
-    if (columnDefinitions) {
-      initialColumnOrder = columnDefinitions.map(colDef =>
-        String(colDef.locator.id)
-      );
-    } else {
-      // Default: order based on allColumns (excluding selection column which is handled separately)
-      initialColumnOrder = allColumns
-        .map(col => col.id ?? (col as { accessorKey?: string }).accessorKey)
-        .filter((id): id is string => id !== undefined);
-    }
+    const initialColumnOrder: ColumnOrderState = allColumns
+      .map(col => col.id ?? (col as { accessorKey?: string }).accessorKey)
+      .filter((id): id is string => id !== undefined);
 
     setColumnOrder(initialColumnOrder);
-  }, [columnDefinitions, allColumns, hasSelectionColumn]);
+  }, [allColumns, hasSelectionColumn]);
 
   const onColumnVisibilityChange: OnChangeFn<VisibilityState> = useCallback(
     (updaterOrValue) => {

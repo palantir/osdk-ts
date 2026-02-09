@@ -60,7 +60,6 @@
 
 .itemContent {
   flex: 1;
-  font-size: var(--osdk-typography-size-body-small);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -75,7 +74,9 @@
   align-items: center;
   justify-content: center;
   color: var(--osdk-draggable-item-drag-icon-color);
-  transition: background-color 0.2s ease, color 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
   border-radius: var(--osdk-surface-border-radius);
 }
 

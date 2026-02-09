@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-import React from "react";
-import { type DraggableItem, DraggableList } from "./DraggableList.js";
+import React, { useCallback } from "react";
+import {
+  type DraggableItem,
+  DraggableList,
+} from "../base-components/draggable-list/DraggableList.js";
 
 export interface SortableItem extends DraggableItem {
   content: React.ReactNode;
@@ -34,13 +37,15 @@ export function SortableItemsList({
   onRemove,
   className,
 }: SortableItemsListProps): React.ReactElement {
+  const renderContent = useCallback((item: SortableItem) => item.content, []);
+
   return (
     <DraggableList
       items={items}
       onReorder={onReorder}
       onRemove={onRemove}
       removeIconVariant="cross"
-      renderContent={(item) => (item as SortableItem).content}
+      renderContent={renderContent}
       className={className}
     />
   );

@@ -16,19 +16,16 @@
 
 import { Button } from "@base-ui/react/button";
 import { Collapsible } from "@base-ui/react/collapsible";
+import { Input } from "@base-ui/react/input";
 import { CaretDown, Search } from "@blueprintjs/icons";
 import { arrayMove } from "@dnd-kit/sortable";
-import type {
-  ObjectOrInterfaceDefinition,
-  QueryDefinition,
-  SimplePropertyDef,
-} from "@osdk/api";
 import type { ColumnOrderState, VisibilityState } from "@tanstack/react-table";
+import classNames from "classnames";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Checkbox } from "../base-components/checkbox/Checkbox.js";
 import { Dialog, DialogButton } from "../base-components/dialog/Dialog.js";
+import { DraggableList } from "../base-components/draggable-list/DraggableList.js";
 import styles from "./ColumnConfigDialog.module.css";
-import { DraggableList } from "./DraggableList.js";
 import type { ColumnOption } from "./utils/types.js";
 
 export interface ColumnConfig {
@@ -54,14 +51,7 @@ interface ColumnItem {
   isVisible: boolean;
 }
 
-export function ColumnConfigDialog<
-  Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
-  FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
-    string,
-    never
-  >,
->({
+export function ColumnConfigDialog({
   isOpen,
   onClose,
   columnOptions,
@@ -213,7 +203,7 @@ export function ColumnConfigDialog<
   return (
     <Dialog
       isOpen={isOpen}
-      onClose={onClose}
+      onOpenChange={onClose}
       title="Configure Columns"
       footer={footer}
       className={styles.content}
@@ -250,7 +240,7 @@ function VisibleColumnsList({
 }: VisibleColumnsListProps): React.ReactElement {
   return (
     <div className={styles.visibleColumnsContainer}>
-      <h4 className={styles.sectionTitle}>Visible Columns</h4>
+      <div className={styles.sectionTitle}>Visible Columns</div>
       <DraggableList
         items={columns}
         onReorder={onReorder}
@@ -296,9 +286,14 @@ function AvailableColumnsList({
   return (
     <div className={styles.availableColumnsContainer}>
       <div className={styles.searchContainer}>
-        <div className={styles.searchInputWrapper}>
+        <div
+          className={classNames(
+            styles.searchInputWrapper,
+            styles.searchInputFocus,
+          )}
+        >
           <Search className={styles.searchIcon} />
-          <input
+          <Input
             type="text"
             placeholder="Search available columns"
             value={searchQuery}

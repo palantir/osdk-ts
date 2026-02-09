@@ -16,8 +16,8 @@
 
 .content {
   /* Override dialog sizing for column config */
-  --osdk-dialog-min-width: 600px;
-  --osdk-dialog-max-width: 800px;
+  --osdk-dialog-min-width: 800px;
+  --osdk-dialog-max-width: 1000px;
   --osdk-dialog-min-height: 400px;
   --osdk-dialog-max-height: 600px;
 
@@ -55,6 +55,9 @@
 }
 
 .sectionTitle {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
   font-size: var(--osdk-typography-size-body-medium);
   font-weight: var(--osdk-typography-weight-bold);
   margin-bottom: calc(var(--osdk-surface-spacing) * 5);
@@ -93,17 +96,14 @@
 .searchInput {
   width: 100%;
   padding: var(--osdk-surface-spacing) calc(var(--osdk-surface-spacing) * 1.5)
-    var(--osdk-surface-spacing) calc(var(--osdk-surface-spacing) * 4.5);
+    var(--osdk-surface-spacing) calc(var(--osdk-surface-spacing) * 5.5);
   border: var(--osdk-surface-border-width) solid
     var(--osdk-surface-border-color-default);
   border-radius: var(--osdk-surface-border-radius);
   font-size: var(--osdk-typography-size-body-medium);
+  font-weight: var(--osdk-typography-size-body-medium);
   outline: none;
   transition: border-color 0.2s;
-
-  &:focus {
-    border-color: var(--osdk-intent-primary-rest);
-  }
 
   &::placeholder {
     color: var(--osdk-typography-color-muted);
@@ -128,7 +128,7 @@
   background: none;
   border: none;
   margin: 0;
-  gap: calc(var(--osdk-surface-spacing) * 1.5);
+  gap: calc(var(--osdk-surface-spacing) * 3);
   flex-shrink: 0;
 }
 
@@ -174,7 +174,6 @@
 .propertyList {
   display: flex;
   flex-direction: column;
-  gap: calc(var(--osdk-surface-spacing) * 3);
   flex: 1;
   min-height: 0;
   overflow-y: auto;

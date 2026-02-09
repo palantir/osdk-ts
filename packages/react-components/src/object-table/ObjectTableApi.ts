@@ -57,12 +57,20 @@ export type ColumnDefinition<
   ) => React.ReactNode;
 
   /**
+   * If provided, this will be used in the column header.
+   * If both columnName and renderHeader are provided, renderHeader will take precedence in the table header.
+   * columnName will still be used in other parts where the column name is displayed.
+   *
    * If not provided,
    * for a property column, the property displayName will be used
    * for other columns, the id will be used.
    */
-  headerTitle?: string;
+  columnName?: string;
 
+  /**
+   * If provided, this will be used to render the header component.
+   * When both columnName and renderHeader are provided, renderHeader will take precedence in the table header.
+   */
   renderHeader?: () => React.ReactNode;
 };
 
@@ -155,7 +163,7 @@ export interface ObjectTableProps<
   enableColumnResizing?: boolean;
 
   /**
-   * Whether the column configuration dialog is available to the user.
+   * Whether the column configuration dialog for column visibility and ordering is available to the user.
    *
    * @default true
    */

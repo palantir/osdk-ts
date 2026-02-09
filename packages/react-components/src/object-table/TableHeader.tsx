@@ -29,7 +29,6 @@ import { TableHeaderContent } from "./TableHeaderContent.js";
 import {
   type HeaderMenuFeatureFlags,
   TableHeaderWithPopover,
-  type TableState,
 } from "./TableHeaderWithPopover.js";
 import { SELECTION_COLUMN_ID } from "./utils/constants.js";
 import { getColumnPinningStyles } from "./utils/getColumnPinningStyles.js";
@@ -56,15 +55,15 @@ const getHeaderName = <TData,>(
     if (typeof headerDef === "string") {
       return headerDef;
     }
-    // Try to get header title from the renderHeader function
+    // Try to get header name from the renderHeader function
     if (header) {
       const displayedHeader = headerDef(header.getContext());
       if (typeof displayedHeader === "string") return displayedHeader;
     }
   }
-  // Fallback to use the headerTitle provided by user or id
+  // Fallback to use the columnName provided by user or id
   const { meta } = columnDef;
-  return meta?.headerTitle ?? id;
+  return meta?.columnName ?? id;
 };
 
 export function TableHeader<
@@ -77,25 +76,8 @@ export function TableHeader<
 }: TableHeaderProps<TData>): React.ReactElement {
   // TODO: If value is number type, right align header
 
-  const rawTableState = table.getState();
-  const isResizing = !!rawTableState.columnSizingInfo?.isResizingColumn;
+  const isResizing = !!table.getState().columnSizingInfo?.isResizingColumn;
 
-  const tableState: TableState = useMemo(() => ({
-    sorting: rawTableState.sorting,
-    columnVisibility: rawTableState.columnVisibility,
-    columnOrder: rawTableState.columnOrder,
-    setColumnPinning: table.setColumnPinning,
-    setColumnVisibility: table.setColumnVisibility,
-    setColumnOrder: table.setColumnOrder,
-  }), [
-    rawTableState.sorting,
-    rawTableState.columnVisibility,
-    rawTableState.columnOrder,
-    table.setColumnPinning,
-    table.setColumnVisibility,
-    table.setColumnOrder,
-  ]);
-  // Get column options for dialogs
   const columnOptions: ColumnOption[] = useMemo(() => {
     const allHeaders = table.getHeaderGroups().flatMap(headerGroup =>
       headerGroup.headers
@@ -138,11 +120,10 @@ export function TableHeader<
                   : (
                     <TableHeaderWithPopover
                       header={header}
+                      table={table}
                       isColumnPinned={isColumnPinned}
-                      tableState={tableState}
                       onSortChange={onSortChange}
                       columnOptions={columnOptions}
-                      onColumnVisibilityChanged={onColumnVisibilityChanged}
                       featureFlags={headerMenuFeatureFlags}
                     />
                   )}

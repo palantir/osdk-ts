@@ -1,7 +1,7 @@
 /**
  * CSS Layer setup
  */
-@layer tailwind, osdk.components, osdk.tokens, custom.theme;
+@layer tailwind, osdk.tokens, osdk.components, custom.theme;
 
 /* Import OSDK components styles */
 @import "@osdk/react-components/styles.css" layer(osdk.components);

@@ -39,7 +39,8 @@ import type { HeaderMenuFeatureFlags } from "./TableHeaderWithPopover.js";
 
 declare module "@tanstack/react-table" {
   interface ColumnMeta<TData extends RowData, TValue> {
-    headerTitle?: string;
+    columnName?: string;
+    isVisible?: boolean;
   }
 }
 

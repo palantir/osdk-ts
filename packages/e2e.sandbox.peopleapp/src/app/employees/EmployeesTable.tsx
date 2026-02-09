@@ -22,7 +22,7 @@ const columnDefinitions: Array<
       id: "fullName",
     },
     pinned: "left",
-    headerTitle: "My Name",
+    columnName: "My Name",
     renderHeader: () => <div style={{ color: "red" }}>My Name</div>,
   },
   // With isVisible prop
@@ -53,7 +53,7 @@ const columnDefinitions: Array<
       creator: (baseObjectSet: DerivedProperty.Builder<Employee, false>) =>
         baseObjectSet.pivotTo("lead").selectProperty("fullName"),
     },
-    headerTitle: "Derived Manager Name",
+    columnName: "Derived Manager Name",
     renderCell: (object: Osdk.Instance<Employee>) => {
       if ("managerName" in object) {
         return object["managerName"] as string;
@@ -141,10 +141,10 @@ export function EmployeesTable() {
         }]}
         // onOrderByChanged={handleOrderByChanged}
         onColumnVisibilityChanged={handleColumnVisibilityChanged}
-        enableOrdering={true}
-        enableColumnPinning={false}
-        enableColumnConfig={true}
-        enableFiltering={false}
+        // enableOrdering={true}
+        // enableColumnPinning={false}
+        // enableColumnConfig={true}
+        // enableFiltering={false}
       />
     </div>
   );

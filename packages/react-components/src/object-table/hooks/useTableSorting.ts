@@ -46,7 +46,6 @@ interface UseTableSortingProps<
 interface UseTableSortingResults {
   sorting: SortingState;
   onSortingChange: OnChangeFn<SortingState>;
-  enableSorting: boolean;
 }
 
 export const useTableSorting = <
@@ -67,9 +66,6 @@ export const useTableSorting = <
   );
 
   const isControlled = orderBy !== undefined;
-
-  // Sorting is enabled unless in controlled mode without a callback
-  const enableSorting = !(isControlled && onOrderByChanged === undefined);
 
   // Sorting state
   // If controlled mode, return the state from orderBy prop
@@ -98,7 +94,7 @@ export const useTableSorting = <
     [isControlled, sortingState, onOrderByChanged],
   );
 
-  return { sorting: sortingState, onSortingChange, enableSorting };
+  return { sorting: sortingState, onSortingChange };
 };
 
 function convertOrderByToSortingState<Q extends ObjectOrInterfaceDefinition>(

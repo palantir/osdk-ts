@@ -117,7 +117,7 @@
   box-shadow: var(--osdk-surface-shadow-2);
   max-height: calc(var(--osdk-surface-spacing) * 31.25);
   overflow-y: auto;
-  min-width: calc(var(--osdk-surface-spacing) * 25);
+  width: var(--anchor-width);
 }
 
 .dropdownItem {

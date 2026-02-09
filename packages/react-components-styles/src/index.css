@@ -26,7 +26,7 @@
   --osdk-typography-color-subtle-rest: var(--bp-typography-color-muted);
   --osdk-typography-size-body-medium: var(--bp-typography-size-body-medium);
   --osdk-typography-size-body-small: var(--bp-typography-size-body-small);
-  --osdk-typography-weight-bold: var(--bp-typography-weight-bold);
+  --osdk-typography-weight-bold: 600; /* No corresponding bp token */
 
   /* Blueprint token mappings - Intent tokens */
   --osdk-intent-primary-rest: var(--bp-intent-primary-rest);

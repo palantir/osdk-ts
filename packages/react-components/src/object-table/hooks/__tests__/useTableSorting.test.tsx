@@ -34,12 +34,6 @@ describe("useTableSorting", () => {
       expect(result.current.sorting).toEqual([]);
     });
 
-    it("enables sorting by default", () => {
-      const { result } = renderHook(() => useTableSorting({}));
-
-      expect(result.current.enableSorting).toBe(true);
-    });
-
     it("initializes with defaultOrderBy when provided", () => {
       const defaultOrderBy: Array<{
         property: PropertyKeys<TestObject>;
@@ -59,8 +53,6 @@ describe("useTableSorting", () => {
         { id: "name", desc: false },
         { id: "age", desc: true },
       ]);
-
-      expect(result.current.enableSorting).toBe(true);
     });
 
     it("updates internal sorting state when onSortingChange is called", () => {
@@ -144,23 +136,6 @@ describe("useTableSorting", () => {
       ]);
     });
 
-    it("disables sorting when orderBy is provided without onOrderByChanged", () => {
-      const orderBy: Array<{
-        property: PropertyKeys<TestObject>;
-        direction: "asc" | "desc";
-      }> = [
-        { property: "name" as PropertyKeys<TestObject>, direction: "asc" },
-      ];
-
-      const { result } = renderHook(() =>
-        useTableSorting<TestObject>({
-          orderBy,
-        })
-      );
-
-      expect(result.current.enableSorting).toBe(false);
-    });
-
     it("enables sorting when orderBy is provided with onOrderByChanged", () => {
       const orderBy: Array<{
         property: PropertyKeys<TestObject>;
@@ -176,8 +151,6 @@ describe("useTableSorting", () => {
           onOrderByChanged,
         })
       );
-
-      expect(result.current.enableSorting).toBe(true);
     });
 
     it("when both orderBy and defaultOrderBy are provided, orderBy takes precedence", () => {

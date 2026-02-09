@@ -137,7 +137,6 @@ export function ObjectTable<
     onColumnOrderChange,
   } = useColumnVisibility({
     allColumns,
-    columnDefinitions,
     onColumnVisibilityChanged,
     hasSelectionColumn: enableRowSelection,
   });
@@ -193,8 +192,6 @@ export function ObjectTable<
 
   const isTableLoading = isLoading || isColumnsLoading;
 
-  // Compute header menu feature flags based on table-level props
-  // Note: enableOrdering controls visibility of sorting menu items independently of controlled mode
   const headerMenuFeatureFlags: HeaderMenuFeatureFlags = useMemo(() => ({
     showSortingItems: enableOrdering,
     showPinningItems: enableColumnPinning,

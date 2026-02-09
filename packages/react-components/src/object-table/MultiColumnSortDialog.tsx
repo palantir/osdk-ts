@@ -153,7 +153,7 @@ export function MultiColumnSortDialog({
   return (
     <Dialog
       isOpen={isOpen}
-      onClose={onClose}
+      onOpenChange={onClose}
       title="Sort on Multiple Columns"
       footer={footer}
     >

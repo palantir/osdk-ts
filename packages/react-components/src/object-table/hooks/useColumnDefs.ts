@@ -107,7 +107,7 @@ function getColumnsFromColumnDefinitions<
       filterable,
       renderCell,
       renderHeader,
-      headerTitle,
+      columnName,
     } = col;
 
     const propertyMetadata = locator.type === "property"
@@ -121,9 +121,10 @@ function getColumnsFromColumnDefinitions<
     > = {
       id: colKey,
       accessorKey: colKey,
-      header: renderHeader ?? (headerTitle || propertyMetadata?.displayName),
+      header: renderHeader ?? (columnName || propertyMetadata?.displayName),
       meta: {
-        headerTitle: headerTitle || propertyMetadata?.displayName,
+        columnName: columnName || propertyMetadata?.displayName,
+        isVisible: col.isVisible === false ? false : true,
       },
       size: width,
       ...(minWidth ? { minSize: minWidth } : {}),
