@@ -157,9 +157,9 @@
   --osdk-dialog-border-radius: var(--osdk-surface-border-radius);
   --osdk-dialog-shadow: var(--osdk-surface-shadow-2);
   --osdk-dialog-min-width: 500px;
-  --osdk-dialog-max-width: calc(100vw - 48px);
   --osdk-dialog-min-height: 300px;
-  --osdk-dialog-max-height: calc(100vh - 48px);
+  --osdk-dialog-max-width: 1000px;
+  --osdk-dialog-max-height: 600px;
   --osdk-dialog-padding-vertical: calc(var(--osdk-surface-spacing) * 2);
   --osdk-dialog-padding-horizontal: calc(var(--osdk-surface-spacing) * 2.5);
   --osdk-dialog-footer-padding-vertical: calc(

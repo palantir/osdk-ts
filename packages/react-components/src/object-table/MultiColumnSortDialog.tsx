@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Button } from "@base-ui/react/button";
 import { Menu } from "@base-ui/react/menu";
 import {
   Add,
@@ -127,7 +128,7 @@ export function MultiColumnSortDialog({
       content: (
         <div className={styles.sortColumnItem}>
           <span className={styles.sortColumnName}>{item.name}</span>
-          <button
+          <Button
             className={styles.sortDirectionButton}
             onClick={() => handleToggleSortDirection(item.id)}
             aria-label={`Toggle sort direction for ${item.name}`}
@@ -135,7 +136,7 @@ export function MultiColumnSortDialog({
             {item.direction === "asc"
               ? <SortAlphabetical className={styles.sortIcon} />
               : <SortAlphabeticalDesc className={styles.sortIcon} />}
-          </button>
+          </Button>
         </div>
       ),
     }));
@@ -158,14 +159,13 @@ export function MultiColumnSortDialog({
       footer={footer}
     >
       <div className={styles.sortColumnsList}>
-        {selectedSortColumns.length > 0 && (
-          <SortableItemsList
-            items={sortableItems}
-            onReorder={handleReorderSortColumns}
-            onRemove={handleRemoveSortColumn}
-            className={styles.sortableList}
-          />
-        )}
+        <SortableItemsList
+          items={sortableItems}
+          onReorder={handleReorderSortColumns}
+          onRemove={handleRemoveSortColumn}
+          className={styles.sortableList}
+        />
+
         <Menu.Root>
           <Menu.Trigger
             className={styles.addColumnButton}
@@ -179,13 +179,11 @@ export function MultiColumnSortDialog({
             <Menu.Positioner className={styles.menuPositioner} sideOffset={4}>
               <Menu.Popup className={styles.dropdownMenu}>
                 {availableColumns.map((column) => (
-                  <Menu.Item
+                  <AvailableColumnMenuItem
                     key={column.id}
-                    className={styles.dropdownItem}
-                    onClick={() => handleAddColumn(column)}
-                  >
-                    {column.name}
-                  </Menu.Item>
+                    column={column}
+                    onAddColumn={handleAddColumn}
+                  />
                 ))}
               </Menu.Popup>
             </Menu.Positioner>
@@ -193,5 +191,23 @@ export function MultiColumnSortDialog({
         </Menu.Root>
       </div>
     </Dialog>
+  );
+}
+
+function AvailableColumnMenuItem(
+  { column, onAddColumn }: {
+    column: ColumnOption;
+    onAddColumn: (column: ColumnOption) => void;
+  },
+) {
+  const onClick = useCallback(() => onAddColumn(column), [onAddColumn, column]);
+
+  return (
+    <Menu.Item
+      className={styles.dropdownItem}
+      onClick={onClick}
+    >
+      {column.name}
+    </Menu.Item>
   );
 }

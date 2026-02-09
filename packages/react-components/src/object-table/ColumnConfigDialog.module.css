@@ -17,9 +17,7 @@
 .content {
   /* Override dialog sizing for column config */
   --osdk-dialog-min-width: 800px;
-  --osdk-dialog-max-width: 1000px;
   --osdk-dialog-min-height: 400px;
-  --osdk-dialog-max-height: 600px;
 
   /* Override body padding from base Dialog since we have custom layout */
   & > div:nth-child(2) {
@@ -30,7 +28,7 @@
 .dialogLayout {
   display: flex;
   flex-direction: row;
-  gap: calc(var(--osdk-surface-spacing) * 3.75);
+  gap: calc(var(--osdk-surface-spacing) * 4);
   padding: calc(var(--osdk-surface-spacing) * 4)
     calc(var(--osdk-surface-spacing) * 5);
   flex: 1;
@@ -95,8 +93,8 @@
 
 .searchInput {
   width: 100%;
-  padding: var(--osdk-surface-spacing) calc(var(--osdk-surface-spacing) * 1.5)
-    var(--osdk-surface-spacing) calc(var(--osdk-surface-spacing) * 5.5);
+  padding: var(--osdk-surface-spacing) calc(var(--osdk-surface-spacing) * 2)
+    var(--osdk-surface-spacing) calc(var(--osdk-surface-spacing) * 6);
   border: var(--osdk-surface-border-width) solid
     var(--osdk-surface-border-color-default);
   border-radius: var(--osdk-surface-border-radius);
@@ -221,12 +219,4 @@
   text-align: center;
   color: var(--osdk-typography-color-muted);
   font-style: italic;
-}
-
-.loading {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: calc(var(--osdk-surface-spacing) * 12.5);
-  color: var(--osdk-typography-color-muted);
 }

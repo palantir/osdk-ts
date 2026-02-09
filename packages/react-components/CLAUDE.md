@@ -10,6 +10,7 @@
 - NEVER conditionally call React hooks
 - ALWAYS keep components rendering during loading/error states. Don't use early returns like `if (isLoading) return <LoadingMessage />`. Show loading/error indicators while rendering existing data to prevent UI flashing
 - ALWAYS memoize non-primitive values passed to component props with useCallback or useMemo
+- ALWAYS combine classnames with the classnames function. NEVER use string literal.
 
 ## OSDK Component Architecture
 

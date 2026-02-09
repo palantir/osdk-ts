@@ -100,8 +100,8 @@
 }
 
 .button {
-  padding: calc(var(--bp-surface-spacing) * 2)
-    calc(var(--bp-surface-spacing) * 4);
+  padding: calc(var(--osdk-surface-spacing) * 2)
+    calc(var(--osdk-surface-spacing) * 4);
   border-radius: var(--osdk-surface-border-radius);
   font-size: var(--osdk-typography-size-body-medium);
   cursor: pointer;

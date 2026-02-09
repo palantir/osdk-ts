@@ -70,37 +70,19 @@ export const useColumnVisibility = <
   }: UseColumnVisibilityProps<Q, RDPs, FunctionColumns, TData>,
 ): UseColumnVisibilityResult => {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
-    {},
+    () => getColumnVisibilityState<TData>(allColumns),
   );
 
   const [columnOrder, setColumnOrder] = useState<ColumnOrderState>(
-    [],
+    () => getColumnOrder(allColumns),
   );
 
   useEffect(() => {
-    const initialVisibility: VisibilityState = allColumns.reduce(
-      (acc, col) => {
-        const colId = col.id ?? (col as { accessorKey?: string }).accessorKey;
-        if (colId) {
-          return {
-            ...acc,
-            [colId]: col.meta?.isVisible !== false,
-          };
-        }
-        return acc;
-      },
-      {},
-    );
-
-    setColumnVisibility(initialVisibility);
+    setColumnVisibility(getColumnVisibilityState<TData>(allColumns));
   }, [allColumns]);
 
   useEffect(() => {
-    const initialColumnOrder: ColumnOrderState = allColumns
-      .map(col => col.id ?? (col as { accessorKey?: string }).accessorKey)
-      .filter((id): id is string => id !== undefined);
-
-    setColumnOrder(initialColumnOrder);
+    setColumnOrder(getColumnOrder(allColumns));
   }, [allColumns, hasSelectionColumn]);
 
   const onColumnVisibilityChange: OnChangeFn<VisibilityState> = useCallback(
@@ -144,4 +126,30 @@ export const useColumnVisibility = <
     columnOrder,
     onColumnOrderChange,
   };
+};
+
+const getColumnVisibilityState = <TData>(
+  allColumns: ColumnDef<TData>[],
+): VisibilityState => {
+  return allColumns.reduce(
+    (acc, col) => {
+      const colId = col.id ?? (col as { accessorKey?: string }).accessorKey;
+      if (colId) {
+        return {
+          ...acc,
+          [colId]: col.meta?.isVisible !== false,
+        };
+      }
+      return acc;
+    },
+    {},
+  );
+};
+
+const getColumnOrder = <TData>(
+  allColumns: ColumnDef<TData>[],
+): ColumnOrderState => {
+  return allColumns
+    .map(col => col.id ?? (col as { accessorKey?: string }).accessorKey)
+    .filter((id): id is string => id != null);
 };

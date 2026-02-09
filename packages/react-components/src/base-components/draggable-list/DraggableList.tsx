@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
+import { Button } from "@base-ui/react/button";
 import { DragHandleVertical, SmallCross, Trash } from "@blueprintjs/icons";
 import {
   closestCenter,
-  DndContext,
+  DndContext as BaseDndContext,
   type DragEndEvent,
   KeyboardSensor,
   PointerSensor,
@@ -31,7 +32,8 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import React, { useCallback } from "react";
+import classNames from "classnames";
+import React, { useCallback, useMemo } from "react";
 import styles from "./DraggableList.module.css";
 
 export interface DraggableItem {
@@ -41,19 +43,19 @@ export interface DraggableItem {
 
 type RemoveIconVariant = "trash" | "cross";
 
-interface DraggableListItemProps {
-  item: DraggableItem;
+interface DraggableListItemProps<T extends DraggableItem> {
+  item: T;
   onRemove?: (id: string) => void;
   removeIconVariant?: RemoveIconVariant;
-  renderContent?: (item: DraggableItem) => React.ReactNode;
+  renderContent?: (item: T) => React.ReactNode;
 }
 
-function DraggableListItem({
+function DraggableListItem<T extends DraggableItem>({
   item,
   onRemove,
   removeIconVariant = "trash",
   renderContent,
-}: DraggableListItemProps): React.ReactElement {
+}: DraggableListItemProps<T>): React.ReactElement {
   const {
     attributes,
     listeners,
@@ -88,14 +90,13 @@ function DraggableListItem({
         {renderContent ? renderContent(item) : item.label}
       </div>
       {onRemove && (
-        <button
+        <Button
           className={styles.removeButton}
-          data-variant={removeIconVariant}
           onClick={handleRemove}
           aria-label={`Remove ${item.label}`}
         >
           <RemoveIcon className={styles.icon} />
-        </button>
+        </Button>
       )}
     </div>
   );
@@ -120,6 +121,7 @@ export function DraggableList<T extends DraggableItem>({
   emptyMessage,
   className,
 }: DraggableListProps<T>): React.ReactElement {
+  const itemIds = useMemo(() => items.map((item) => item.id), [items]);
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -144,26 +146,26 @@ export function DraggableList<T extends DraggableItem>({
     [items, onReorder],
   );
 
+  const DndContext = BaseDndContext as any;
+
   return (
-    <div className={`${styles.draggableListContainer} ${className ?? ""}`}>
+    <div className={classNames(styles.draggableListContainer, className)}>
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
         onDragEnd={handleDragEnd}
       >
         <SortableContext
-          items={items.map((item) => item.id)}
+          items={itemIds}
           strategy={verticalListSortingStrategy}
         >
           {items.map((item) => (
-            <DraggableListItem
+            <DraggableListItem<T>
               key={item.id}
               item={item}
               onRemove={onRemove}
               removeIconVariant={removeIconVariant}
-              renderContent={renderContent as
-                | ((item: DraggableItem) => React.ReactNode)
-                | undefined}
+              renderContent={renderContent}
             />
           ))}
         </SortableContext>

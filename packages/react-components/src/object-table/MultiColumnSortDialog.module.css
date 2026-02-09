@@ -24,7 +24,7 @@
 }
 
 .sortableList {
-  max-height: calc(var(--osdk-surface-spacing) * 37.5);
+  flex: 1;
 }
 
 .selectedColumnsContainer {

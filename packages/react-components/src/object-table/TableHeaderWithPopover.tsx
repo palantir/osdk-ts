@@ -229,30 +229,23 @@ export function TableHeaderWithPopover<
     (
       updates: ColumnConfig[],
     ) => {
-      // Sort updates by order
-      const sortedUpdates = [...updates].sort((a, b) => a.order - b.order);
-
-      // Build new visibility state
       const newVisibilityState: VisibilityState = {};
-      for (const update of sortedUpdates) {
+      for (const update of updates) {
         newVisibilityState[update.columnId] = update.isVisible;
       }
 
       // Update table's column order state
       if (setColumnOrder) {
-        // Build new column order from sorted updates (includes ALL columns)
-        // Keep selection column at the start if present
-        const newColumnOrder: ColumnOrderState = [];
+        const newColumnOrder: ColumnOrderState = updates.map(col =>
+          col.columnId
+        );
+        // Insert selection column in the first column
         if (
-          currentColumnOrder
-          && currentColumnOrder.includes(SELECTION_COLUMN_ID)
+          currentColumnOrder.includes(SELECTION_COLUMN_ID)
         ) {
-          newColumnOrder.push(SELECTION_COLUMN_ID);
+          newColumnOrder.unshift(SELECTION_COLUMN_ID);
         }
-        // Add all columns in their new order (visible first, then hidden)
-        for (const update of sortedUpdates) {
-          newColumnOrder.push(update.columnId);
-        }
+
         setColumnOrder(newColumnOrder);
       }
 

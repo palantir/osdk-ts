@@ -81,12 +81,7 @@
 }
 
 .removeButton:hover {
-  color: var(--osdk-draggable-item-drag-icon-color-hover);
-}
-
-.removeButton[data-variant="trash"]:hover {
-  background-color: var(--osdk-intent-danger-rest);
-  color: var(--osdk-palette-white);
+  color: var(--osdk-intent-danger-rest);
 }
 
 .icon {

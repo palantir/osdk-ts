@@ -31,7 +31,6 @@ import type { ColumnOption } from "./utils/types.js";
 export interface ColumnConfig {
   columnId: string;
   isVisible: boolean;
-  order: number;
 }
 
 export interface ColumnConfigDialogProps {
@@ -101,24 +100,14 @@ export function ColumnConfigDialog({
   }, [isOpen, allColumns, currentColumnOrder]);
 
   const handleApply = useCallback(() => {
-    const result = allColumns.map((col) => ({
-      columnId: col.id,
-      isVisible: visibleColumns.some((v) => v.id === col.id),
-      order: visibleColumns.findIndex((v) => v.id === col.id),
-    }));
+    const hiddenColumns = allColumns.filter(
+      (col) => !visibleColumns.some((v) => v.id === col.id),
+    );
 
-    // Sort by visibility order, non-visible at the end
-    result.sort((a, b) => {
-      if (a.isVisible && !b.isVisible) return -1;
-      if (!a.isVisible && b.isVisible) return 1;
-      if (a.isVisible && b.isVisible) return a.order - b.order;
-      return 0;
-    });
-
-    // Re-assign orders
-    result.forEach((item, index) => {
-      item.order = index;
-    });
+    const result: ColumnConfig[] = [
+      ...visibleColumns.map((col) => ({ columnId: col.id, isVisible: true })),
+      ...hiddenColumns.map((col) => ({ columnId: col.id, isVisible: false })),
+    ];
 
     onApply(result);
     onClose();
