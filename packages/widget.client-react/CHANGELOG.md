@@ -1,5 +1,19 @@
 # @osdk/widget.client-react
 
+## 3.5.0-beta.3
+
+### Minor Changes
+
+- cbd657f: Fix widget.client-react peer dependency
+- b9066dd: Support interfaces in object set parameters
+
+### Patch Changes
+
+- Updated dependencies [26cec61]
+- Updated dependencies [0d174a2]
+  - @osdk/client@2.8.0-beta.3
+  - @osdk/widget.client@3.5.0-beta.3
+
 ## 3.5.0-beta.2
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
   "name": "@osdk/generator-converters.preview",
-  "version": "0.1.0-beta.0",
+  "version": "0.1.0-beta.1",
   "description": "Preview converters for OntologyIR with full action metadata",
   "access": "public",
   "license": "Apache-2.0",

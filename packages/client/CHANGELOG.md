@@ -1,5 +1,18 @@
 # @osdk/client
 
+## 2.8.0-beta.3
+
+### Minor Changes
+
+- 26cec61: Improves invalid where clause undefined key error message
+- 0d174a2: useOsdkFunction typing updates
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.3
+- @osdk/client.unstable@2.8.0-beta.3
+- @osdk/generator-converters@2.8.0-beta.3
+
 ## 2.8.0-beta.2
 
 ### Patch Changes

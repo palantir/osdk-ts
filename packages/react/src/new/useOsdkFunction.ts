@@ -16,6 +16,7 @@
 
 import type {
   CompileTimeMetadata,
+  ObjectSet,
   ObjectTypeDefinition,
   Osdk,
   QueryDefinition,
@@ -23,8 +24,8 @@ import type {
 import type {
   ObserveFunctionCallbackArgs,
   QueryParameterType,
-  QueryReturnType,
 } from "@osdk/client/unstable-do-not-use";
+import { getWireObjectSet } from "@osdk/client/unstable-do-not-use";
 import React from "react";
 import { makeExternalStore } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
@@ -51,17 +52,25 @@ export interface UseOsdkFunctionOptions<Q extends QueryDefinition<unknown>> {
   dependsOn?: Array<ObjectTypeDefinition | string>;
 
   /**
-   * Specific object instances this function depends on.
+   * Specific object instances or ObjectSets this function depends on.
    * When any of these specific objects change, the function will refetch.
    * More fine-grained than dependsOn for precise invalidation control.
+   *
+   * For ObjectSets, the object type is extracted asynchronously and changes
+   * to any object of that type will trigger a refetch.
    *
    * @example
    * ```tsx
    * // Refetch when this specific employee changes
    * { dependsOnObjects: [employee] }
+   *
+   * // Refetch when any object in the ObjectSet's type changes
+   * { dependsOnObjects: [employeeObjectSet] }
    * ```
    */
-  dependsOnObjects?: Array<Osdk.Instance<ObjectTypeDefinition>>;
+  dependsOnObjects?: Array<
+    Osdk.Instance<ObjectTypeDefinition> | ObjectSet<ObjectTypeDefinition>
+  >;
 
   /**
    * The number of milliseconds to dedupe identical function calls.
@@ -93,7 +102,11 @@ export interface UseOsdkFunctionResult<Q extends QueryDefinition<unknown>> {
   /**
    * The function result, or undefined if not yet loaded or on error.
    */
-  data: QueryReturnType<CompileTimeMetadata<Q>["output"]> | undefined;
+  data:
+    | (CompileTimeMetadata<Q>["signature"] extends (...args: never[]) => infer R
+      ? Awaited<R>
+      : never)
+    | undefined;
 
   /**
    * True while the function is executing.
@@ -182,10 +195,11 @@ export function useOsdkFunction<Q extends QueryDefinition<unknown>>(
   const stableDependsOnObjects = React.useMemo(
     () => dependsOnObjects,
     [JSON.stringify(
-      dependsOnObjects?.map(o => ({
-        $apiName: o.$apiName,
-        $primaryKey: o.$primaryKey,
-      })),
+      dependsOnObjects?.map(item =>
+        "$apiName" in item
+          ? { $apiName: item.$apiName, $primaryKey: item.$primaryKey }
+          : { __objectSet: getWireObjectSet(item) }
+      ),
     )],
   );
 
@@ -245,9 +259,7 @@ export function useOsdkFunction<Q extends QueryDefinition<unknown>>(
   }, [observableClient, queryDef, paramsForApi]);
 
   return {
-    data: payload?.result as
-      | QueryReturnType<CompileTimeMetadata<Q>["output"]>
-      | undefined,
+    data: payload?.result as UseOsdkFunctionResult<Q>["data"],
     isLoading: payload?.status === "loading",
     error,
     lastUpdated: payload?.lastUpdated ?? 0,
