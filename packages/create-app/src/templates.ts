@@ -16,8 +16,6 @@
 
 export type SdkVersion = "1.x" | "2.x";
 
-export const DEFAULT_SDK_VERSION: SdkVersion = "2.x";
-
 export type ModuleImportFiles = Map<
   string,
   {
