@@ -2,7 +2,7 @@
 current_branch="$(git branch --show-current 2>/dev/null)"
 
 if [ "$current_branch" != "main" ] && [ -n "$current_branch" ]; then
-  changeset_files="$(git diff origin/main --name-only -- .changeset/ 2>/dev/null | grep '\.md$' | grep -v 'README\.md' | grep -v 'simulatedRelease')"
+  changeset_files="$(git diff origin/main --diff-filter=A --name-only -- .changeset/ 2>/dev/null | grep '\.md$' | grep -v 'README\.md' | grep -v 'simulatedRelease' || true)"
 
   if [ -z "$changeset_files" ]; then
     echo ""
