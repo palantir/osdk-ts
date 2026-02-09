@@ -18,11 +18,42 @@ import type {
   CommonObserveOptions,
   Observer,
 } from "../ObservableClient/common.js";
+import type { BaseListPayloadShape } from "./base-list/BaseListQuery.js";
 import type { CacheKeys } from "./CacheKeys.js";
 import type { KnownCacheKey } from "./KnownCacheKey.js";
+import { ListQueryView, type ListQueryViewTarget } from "./ListQueryView.js";
 import type { Query } from "./Query.js";
 import { QuerySubscription } from "./QuerySubscription.js";
 import type { Store } from "./Store.js";
+
+/**
+ * Check if a query supports view-based pagination (has the required methods).
+ * Generic over PAYLOAD to preserve type information when the guard passes.
+ */
+function supportsViews<PAYLOAD extends BaseListPayloadShape>(
+  query: unknown,
+): query is ListQueryViewTarget<PAYLOAD> {
+  return (
+    query != null
+    && typeof (query as ListQueryViewTarget<PAYLOAD>).registerFetchPageSize
+      === "function"
+    && typeof (query as ListQueryViewTarget<PAYLOAD>).getLoadedCount
+      === "function"
+    && typeof (query as ListQueryViewTarget<PAYLOAD>).hasMorePages
+      === "function"
+    && typeof (query as ListQueryViewTarget<PAYLOAD>).notifySubscribers
+      === "function"
+    && typeof (query as ListQueryViewTarget<PAYLOAD>).fetchMore === "function"
+  );
+}
+
+/**
+ * Options that may include list-specific pagination settings.
+ */
+interface ListObserveOptions {
+  pageSize?: number;
+  autoFetchMore?: boolean | number;
+}
 
 export abstract class AbstractHelper<
   TQuery extends Query<KnownCacheKey, any, CommonObserveOptions>,
@@ -48,12 +79,12 @@ export abstract class AbstractHelper<
 
   abstract getQuery(options: TObserveOptions): TQuery;
 
-  protected _subscribe(
+  protected _subscribe<
+    PAYLOAD extends (TQuery extends Query<any, infer P, any> ? P : never),
+  >(
     query: TQuery,
     options: TObserveOptions,
-    subFn: Observer<
-      TQuery extends Query<any, infer PAYLOAD, any> ? PAYLOAD : never
-    >,
+    subFn: Observer<PAYLOAD>,
   ): QuerySubscription<TQuery> {
     // the ListQuery represents the shared state of the list
     this.store.cacheKeys.retain(query.cacheKey);
@@ -73,12 +104,26 @@ export abstract class AbstractHelper<
       });
     }
 
-    const sub = query.subscribe(subFn);
+    // For queries that support views (list-like queries), wrap with ListQueryView
+    // to handle per-subscriber view data such as pageSize
+    const listOptions = options as ListObserveOptions;
+    const useView = supportsViews<PAYLOAD & BaseListPayloadShape>(query)
+      && (listOptions.pageSize !== undefined
+        || listOptions.autoFetchMore !== undefined);
+
+    const sub = useView
+      ? new ListQueryView<PAYLOAD & BaseListPayloadShape>(
+        query,
+        listOptions.pageSize ?? 100,
+        listOptions.autoFetchMore,
+      ).subscribe(subFn as Observer<PAYLOAD & BaseListPayloadShape>)
+      : query.subscribe(subFn);
+
     const querySub = new QuerySubscription(query, sub);
 
     query.registerSubscriptionDedupeInterval(
       querySub.subscriptionId,
-      (options as CommonObserveOptions).dedupeInterval,
+      options.dedupeInterval,
     );
 
     sub.add(() => {
