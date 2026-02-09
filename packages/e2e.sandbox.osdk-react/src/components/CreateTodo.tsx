@@ -9,22 +9,27 @@ export function CreateTodo(): React.ReactElement {
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
-      if (!title.trim()) return;
+      if (!title.trim()) {
+        return;
+      }
 
-      await applyAction({
-        Todo: title.trim(),
-        is_complete: false,
-        $optimisticUpdate: (ctx) => {
-          const tempId = `temp-${crypto.randomUUID()}`;
-          ctx.createObject(Todo, tempId, {
-            id: tempId,
-            title: title.trim(),
-            isComplete: false,
-          });
-        },
-      });
-
-      setTitle("");
+      try {
+        await applyAction({
+          Todo: title.trim(),
+          is_complete: false,
+          $optimisticUpdate: (ctx) => {
+            const tempId = `temp-${crypto.randomUUID()}`;
+            ctx.createObject(Todo, tempId, {
+              id: tempId,
+              title: title.trim(),
+              isComplete: false,
+            });
+          },
+        });
+        setTitle("");
+      } catch {
+        // Error is captured in the error state from useOsdkAction
+      }
     },
     [applyAction, title],
   );

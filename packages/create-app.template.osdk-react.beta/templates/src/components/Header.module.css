@@ -13,7 +13,7 @@
 
 .logo {
   height: 48px;
-  transition: filter 300ms;
+  transition: filter 200ms;
 }
 
 .logo:hover {
