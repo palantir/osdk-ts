@@ -25,7 +25,7 @@ function FilterSelector({ setFilter, heading }: FilterSelectorProps) {
 
     // inform our parent what to use
     setFilter(whereClauses[newIdx]);
-  }, [clauseIdx, setClauseIdx]);
+  }, [clauseIdx, setClauseIdx, setFilter]);
 
   return (
     <>
