@@ -150,9 +150,15 @@ type ColumnDefinition<Q, RDPs, FunctionColumns> = {
   orderable?: boolean; // Allow column sorting
   filterable?: boolean; // Allow column filtering
   renderCell?: (object, locator) => React.ReactNode; // Custom cell renderer
-  renderHeader?: () => React.ReactNode; // Custom header renderer
+  columnName?: string; // Custom column name for the header
+  renderHeader?: () => React.ReactNode; // Custom header renderer (takes precedence over columnName)
 };
 ```
+
+#### `columnName` vs `renderHeader`
+
+- **`columnName`**: If provided, this string is used as the column header text. If not provided, property columns default to the property's `displayName`, and other column types default to the `id`.
+- **`renderHeader`**: If provided, this function renders the header component. When both `columnName` and `renderHeader` are provided, `renderHeader` takes precedence in the table header, but `columnName` is still used in other places where the column name is displayed (e.g., the column configuration dialog, multi-sort dialog).
 
 ### Column Locator Types
 
@@ -523,6 +529,45 @@ function EmployeesTable() {
 }
 ```
 
+### Example 12: Custom Column Type
+
+In a custom column type, you can render anything in the column by passing in renderHeader and renderCell props.
+
+```typescript
+import {
+  type ColumnDefinition,
+  ObjectTable,
+} from "@osdk/react-components/experimental";
+import { Employee } from "@YourApp/sdk";
+
+function EmployeesTable() {
+  const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
+    {
+      locator: {
+        type: "custom",
+        id: "Custom Column",
+      },
+      renderHeader: () => "Custom",
+      renderCell: (object: Osdk.Instance<Employee>) => {
+        return (
+          <button onClick={() => alert(`Clicked ${object["$title"]}`)}>
+            Click me
+          </button>
+        );
+      },
+      orderable: false,
+    },
+  ];
+
+  return (
+    <ObjectTable
+      objectType={Employee}
+      columnDefinitions={columnDefinitions}
+    />
+  );
+}
+```
+
 ### Column Pinning
 
 Pin columns to the left or right side of the table:
@@ -573,7 +618,9 @@ Disable filtering or sorting globally:
 ```typescript
 <ObjectTable
   objectType={Employee}
-  enableFiltering={false}
+  enableColumnPinning={false}
+  enableColumnResizing={false}
+  enableColumnConfig={false}
   enableOrdering={false}
 />;
 ```
