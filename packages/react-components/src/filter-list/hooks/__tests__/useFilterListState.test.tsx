@@ -24,6 +24,7 @@ import {
   MockObjectType,
 } from "../../__tests__/testUtils.js";
 import type { FilterListProps } from "../../FilterListApi.js";
+import { getFilterKey } from "../../utils/getFilterKey.js";
 import { useFilterListState } from "../useFilterListState.js";
 
 function createMockObjectSet(): ObjectSet<typeof MockObjectType> {
@@ -69,7 +70,9 @@ describe("useFilterListState", () => {
       filterDefinitions: [nameDef],
     });
     const { result } = renderHook(() => useFilterListState(props));
-    expect(result.current.filterStates.get(nameDef)).toEqual(initialState);
+    expect(result.current.filterStates.get(getFilterKey(nameDef))).toEqual(
+      initialState,
+    );
   });
 
   it("updates filter state via setFilterState", () => {
@@ -88,7 +91,7 @@ describe("useFilterListState", () => {
         createSelectState(["selected"]),
       );
     });
-    expect(result.current.filterStates.get(nameDef)).toEqual(
+    expect(result.current.filterStates.get(getFilterKey(nameDef))).toEqual(
       createSelectState(["selected"]),
     );
   });

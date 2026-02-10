@@ -25,10 +25,11 @@ import type { LinkedPropertyFilterState } from "../types/LinkedFilterTypes.js";
 import { assertUnreachable } from "../utils/assertUnreachable.js";
 import { buildWhereClause } from "../utils/filterStateToWhereClause.js";
 import { filterHasActiveState } from "../utils/filterValues.js";
+import { getFilterKey } from "../utils/getFilterKey.js";
 import { useLatestRef } from "./useLatestRef.js";
 
 export interface UseFilterListStateResult<Q extends ObjectTypeDefinition> {
-  filterStates: Map<FilterDefinitionUnion<Q>, FilterState>;
+  filterStates: Map<string, FilterState>;
   setFilterState: (
     definition: FilterDefinitionUnion<Q>,
     state: FilterState,
@@ -40,23 +41,24 @@ export interface UseFilterListStateResult<Q extends ObjectTypeDefinition> {
 
 /**
  * Build initial states from filter definitions.
- * Uses filter definition objects as keys (object identity).
+ * Uses string keys derived from getFilterKey() for stable lookups.
  */
 function buildInitialStates<Q extends ObjectTypeDefinition>(
   definitions: FilterListProps<Q>["filterDefinitions"],
-): Map<FilterDefinitionUnion<Q>, FilterState> {
-  const states = new Map<FilterDefinitionUnion<Q>, FilterState>();
+): Map<string, FilterState> {
+  const states = new Map<string, FilterState>();
 
   if (!definitions) {
     return states;
   }
 
   for (const definition of definitions) {
+    const key = getFilterKey(definition);
     switch (definition.type) {
       case "PROPERTY": {
         const state = definition.filterState;
         if (state) {
-          states.set(definition, state);
+          states.set(key, state);
         }
         break;
       }
@@ -65,7 +67,7 @@ function buildInitialStates<Q extends ObjectTypeDefinition>(
       case "CUSTOM": {
         const state = definition.defaultFilterState;
         if (state) {
-          states.set(definition, state);
+          states.set(key, state);
         }
         break;
       }
@@ -76,7 +78,7 @@ function buildInitialStates<Q extends ObjectTypeDefinition>(
             type: "LINKED_PROPERTY",
             linkedFilterState: innerState,
           };
-          states.set(definition, state);
+          states.set(key, state);
         }
         break;
       }
@@ -102,7 +104,7 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
   const objectType = objectSet.$objectSetInternals.def;
 
   const [filterStates, setFilterStates] = useState<
-    Map<FilterDefinitionUnion<Q>, FilterState>
+    Map<string, FilterState>
   >(() => buildInitialStates(filterDefinitions));
 
   // Use refs to avoid stale closures in callbacks
@@ -115,10 +117,11 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
   const setFilterState = useCallback(
     (definition: FilterDefinitionUnion<Q>, state: FilterState) => {
       let newWhereClause: WhereClause<Q> | undefined;
+      const key = getFilterKey(definition);
 
       setFilterStates((prev) => {
         const next = new Map(prev);
-        next.set(definition, state);
+        next.set(key, state);
 
         // Compute inside updater for access to 'next', store for callback outside
         newWhereClause = buildWhereClause(
