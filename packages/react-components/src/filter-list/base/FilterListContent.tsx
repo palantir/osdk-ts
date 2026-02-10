@@ -16,12 +16,24 @@
 
 import type { ObjectSet, ObjectTypeDefinition, WhereClause } from "@osdk/api";
 import classnames from "classnames";
-import React from "react";
+import React, { Suspense } from "react";
 import type { FilterDefinitionUnion } from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
 import { getFilterKey } from "../utils/getFilterKey.js";
 import styles from "./FilterListContent.module.css";
 import { FilterListItem } from "./FilterListItem.js";
+import type { SortableFilterListContentProps } from "./SortableFilterListContent.js";
+
+const LazySortableFilterListContent = React.lazy(
+  () => import("./SortableFilterListContent.js"),
+);
+
+function SortableContentBridge<Q extends ObjectTypeDefinition>(
+  props: SortableFilterListContentProps<Q>,
+): React.ReactElement {
+  // @ts-expect-error React.lazy erases generic type parameters; runtime types are correct
+  return <LazySortableFilterListContent {...props} />;
+}
 
 interface FilterListContentProps<Q extends ObjectTypeDefinition> {
   objectType: Q;
@@ -33,6 +45,9 @@ interface FilterListContentProps<Q extends ObjectTypeDefinition> {
     state: FilterState,
   ) => void;
   whereClause: WhereClause<Q>;
+  onFiltersReordered?: (
+    newOrder: ReadonlyArray<FilterDefinitionUnion<Q>>,
+  ) => void;
   className?: string;
   style?: React.CSSProperties;
   renderEmptyAction?: () => React.ReactNode;
@@ -45,6 +60,7 @@ export function FilterListContent<Q extends ObjectTypeDefinition>({
   filterStates,
   onFilterStateChanged,
   whereClause,
+  onFiltersReordered,
   className,
   style,
   renderEmptyAction,
@@ -62,6 +78,49 @@ export function FilterListContent<Q extends ObjectTypeDefinition>({
           </div>
         )}
       </div>
+    );
+  }
+
+  if (onFiltersReordered) {
+    const plainFallback = (
+      <div
+        className={classnames(styles.content, className)}
+        style={style}
+      >
+        {filterDefinitions.map((definition, index) => {
+          const filterKey = getFilterKey(definition);
+          const state = filterStates.get(filterKey);
+
+          return (
+            <FilterListItem
+              key={`${filterKey}:${index}`}
+              objectType={objectType}
+              objectSet={objectSet}
+              definition={definition}
+              filterKey={filterKey}
+              filterState={state}
+              onFilterStateChanged={onFilterStateChanged}
+              whereClause={whereClause}
+            />
+          );
+        })}
+      </div>
+    );
+
+    return (
+      <Suspense fallback={plainFallback}>
+        <SortableContentBridge
+          objectType={objectType}
+          objectSet={objectSet}
+          filterDefinitions={filterDefinitions}
+          filterStates={filterStates}
+          onFilterStateChanged={onFilterStateChanged}
+          whereClause={whereClause}
+          onFiltersReordered={onFiltersReordered}
+          className={className}
+          style={style}
+        />
+      </Suspense>
     );
   }
 
