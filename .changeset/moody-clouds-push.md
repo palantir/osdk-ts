@@ -5,4 +5,4 @@
 "@osdk/docs": patch
 ---
 
-fix dual @types/react version mismatch
+downgrade and hold to react 18
