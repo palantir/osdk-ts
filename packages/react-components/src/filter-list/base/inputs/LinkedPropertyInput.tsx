@@ -20,6 +20,7 @@ import type {
   ObjectTypeDefinition,
   PropertyKeys,
 } from "@osdk/api";
+import classnames from "classnames";
 import React, { memo, useCallback, useMemo } from "react";
 import type { FilterState } from "../../FilterListItemApi.js";
 import type { LinkedPropertyFilterDefinition } from "../../types/LinkedFilterTypes.js";
@@ -31,6 +32,7 @@ import {
 import { CheckboxListInput } from "./CheckboxListInput.js";
 import { ContainsTextInput } from "./ContainsTextInput.js";
 import { DateRangeInput } from "./DateRangeInput.js";
+import styles from "./LinkedPropertyInput.module.css";
 import { ListogramInput } from "./ListogramInput.js";
 import { MultiDateInput } from "./MultiDateInput.js";
 import { MultiSelectInput } from "./MultiSelectInput.js";
@@ -94,10 +96,6 @@ function LinkedPropertyInputInner<
     },
     [onFilterStateChanged],
   );
-
-  const rootClassName = className
-    ? `filter-input--linked-property ${className}`
-    : "filter-input--linked-property";
 
   const content = (() => {
     switch (definition.linkedFilterComponent) {
@@ -351,7 +349,7 @@ function LinkedPropertyInputInner<
   })();
 
   return (
-    <div className={rootClassName} style={style}>
+    <div className={classnames(styles.linkedProperty, className)} style={style}>
       {content}
     </div>
   );
