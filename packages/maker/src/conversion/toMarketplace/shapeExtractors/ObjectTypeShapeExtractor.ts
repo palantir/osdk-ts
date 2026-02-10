@@ -726,8 +726,8 @@ export class ObjectTypeShapeExtractor {
       let columnReadableId: ReadableId | undefined;
       for (const [id, shape] of columnReadableIds.entries()) {
         if (
-          shape.datasource.type === resolvedShape.datasource.type
-          && shape.name === resolvedShape.name
+          shape.name === resolvedShape.name
+          && this.datasourceLocatorsMatch(shape.datasource, resolvedShape.datasource)
         ) {
           columnReadableId = id;
           break;
@@ -803,5 +803,28 @@ export class ObjectTypeShapeExtractor {
 
   private typeToConcreteDataType(type: Type): any {
     return typeToConcreteDataType(type);
+  }
+
+  private datasourceLocatorsMatch(
+    a: DatasourceLocator,
+    b: DatasourceLocator,
+  ): boolean {
+    if (a.type !== b.type) return false;
+
+    switch (a.type) {
+      case "dataset":
+        return b.type === "dataset"
+          && a.dataset.rid === b.dataset.rid
+          && a.dataset.branch === b.dataset.branch;
+      case "stream":
+        return b.type === "stream"
+          && a.stream.rid === b.stream.rid
+          && a.stream.branch === b.stream.branch;
+      case "restrictedView":
+        return b.type === "restrictedView"
+          && a.restrictedView.rid === b.restrictedView.rid;
+      default:
+        return false;
+    }
   }
 }
