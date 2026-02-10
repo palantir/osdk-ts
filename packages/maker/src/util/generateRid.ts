@@ -37,7 +37,7 @@ import type {
 } from "@osdk/client.unstable/api";
 // ParameterRid is defined in ontology-metadata but may not be re-exported through the main API
 type ParameterRid = string;
-import { createHash } from "crypto";
+import { createHash, randomUUID } from "crypto";
 import { toBlockShapeId } from "../cli/marketplaceSerialization/CodeBlockSpec.js";
 
 // Given a unique key generates a rid deterministically (from a lock file eventually)
@@ -132,6 +132,8 @@ export interface OntologyRidGenerator {
   generateRestrictedViewLocator(restrictedViewName: string, columnNames: Set<string>): RestrictedViewLocator;
   generateMediaSetViewLocator(mediaSetViewName: string): MediaSetViewLocator;
   toBlockInternalId(readableId: ReadableId): string;
+  generateObjectTypeId(objectTypeApiName: string): string;
+  getObjectTypeIds(): BiMap<ReadableId, string>;
 }
 
 export interface ParameterRidAndId {
@@ -364,6 +366,7 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
   >;
   private readonly linkTypeRids: BiMap<ReadableId, LinkTypeRid>;
   private readonly groupIds: BiMap<ReadableId, GroupId>;
+  private readonly objectTypeIds: BiMap<ReadableId, string>;
   private readonly randomnessUuid?: string;
 
   constructor(randomnessUuid?: string) {
@@ -385,6 +388,7 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
     this.timeSeriesSyncs = BiMapImpl.create();
     this.linkTypeRids = BiMapImpl.create();
     this.groupIds = BiMapImpl.create();
+    this.objectTypeIds = BiMapImpl.create();
   }
 
   hashString(input: string): string {
@@ -792,5 +796,17 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
   toBlockInternalId(readableId: ReadableId): string {
     const id = toBlockShapeId(readableId, this.randomnessUuid);
     return id;
+  }
+
+  getObjectTypeIds(): BiMap<ReadableId, string> {
+    return this.objectTypeIds;
+  }
+
+  generateObjectTypeId(objectTypeApiName: string): string {
+    const readableId = ReadableIdGenerator.getForObjectType(objectTypeApiName);
+    const uuid = randomUUID();
+    const objectTypeId = `a${uuid}`;
+    this.objectTypeIds.put(readableId, objectTypeId);
+    return objectTypeId;
   }
 }

@@ -39,7 +39,7 @@ export function convertInterfaceProperty(
       },
     }];
   } else {
-    return [apiName, {
+    return [ridGenerator.generateInterfacePropertyTypeRid(apiName, interfaceApiName), {
       type: "interfaceDefinedPropertyType",
       interfaceDefinedPropertyType: {
         apiName: apiName,

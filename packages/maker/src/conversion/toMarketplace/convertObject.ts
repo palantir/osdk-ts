@@ -134,7 +134,7 @@ export function convertObject(
       titlePropertyTypeRid: titlePropertyRid,
       apiName: objectType.apiName,
       rid: objectTypeRid,
-      id: randomUUID(),
+      id: ridGenerator.generateObjectTypeId(objectType.apiName),
       status: convertObjectStatus(objectType.status),
       redacted: false,
       implementsInterfaces: implementations.map(impl =>

@@ -135,6 +135,8 @@ function createMockRidGenerator(
     toBlockInternalId: (readableId: ReadableId) => {
       return readableId;
     },
+    getObjectTypeIds: () => new MockBiMap([]) as any,
+    generateObjectTypeId: (objectTypeApiName: string) => `a00000000-0000-0000-0000-000000000000`,
     ...overrides,
   };
 }

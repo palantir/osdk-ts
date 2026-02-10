@@ -207,8 +207,10 @@ function extractInterfaceType(
   };
 
   // Add shared property type input shapes for properties not in output
-  for (const spt of interfaceType.properties ?? []) {
-    if (!outputSharedPropertyTypeRids.has(spt.rid)) {
+  for (const [properyRid, property] of Object.entries(interfaceType.propertiesV3) ?? []) {
+    if (property.type === "sharedPropertyBasedPropertyType" && 
+      !outputSharedPropertyTypeRids.has(property.sharedPropertyBasedPropertyType.sharedPropertyType.rid)) {
+        const spt = property.sharedPropertyBasedPropertyType.sharedPropertyType;
       const sptReadableId = getReadableIdForSpt(spt.apiName);
       const sharedPropInputShape: SharedPropertyTypeInputShape = {
         about: getTitleAndDescriptionForSharedPropertyType(spt),
@@ -221,6 +223,9 @@ function extractInterfaceType(
           sharedPropertyType: sharedPropInputShape,
         },
       );
+    }
+    else if(property.type == "interfaceDefinedPropertyType"){
+      //outputShapeMap.set(ReadableIdGenerator.get)
     }
   }
 

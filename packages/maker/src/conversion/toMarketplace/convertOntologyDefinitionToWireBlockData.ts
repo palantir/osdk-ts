@@ -188,10 +188,8 @@ function buildKnownIdentifiers(
 
   // Object type IDs: ObjectTypeId -> BlockInternalId
   const objectTypeIds = Object.fromEntries(
-    Object.keys(ontology[OntologyEntityTypeEnum.OBJECT_TYPE]).map((
-      objectTypeApiName,
-    ) => [
-      objectTypeApiName,
+    Object.entries(ontology[OntologyEntityTypeEnum.OBJECT_TYPE]).map(([objectTypeApiName, objectType]) => [
+      ridGenerator.getObjectTypeIds().get(ReadableIdGenerator.getForObjectType(objectTypeApiName)),
       ridGenerator.toBlockInternalId(
         ReadableIdGenerator.getForObjectType(objectTypeApiName),
       ),
@@ -212,7 +210,8 @@ function buildKnownIdentifiers(
         ),
       );
     });
-    propertyTypeIds[objectTypeApiName] = propMap;
+    const objTypeId = ridGenerator.getObjectTypeIds().get(ReadableIdGenerator.getForObjectType(objectTypeApiName))!;
+    propertyTypeIds[objTypeId] = propMap;
   });
 
   // Property type RIDs: PropertyTypeRid -> BlockInternalId
