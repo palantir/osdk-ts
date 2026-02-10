@@ -68,7 +68,8 @@ export function ColumnConfigDialog({
     return columnOptions.map((opt) => {
       const isVisible = currentVisibility
         ? currentVisibility[opt.id]
-        : true;
+        : false;
+
       return {
         id: opt.id,
         label: opt.name,

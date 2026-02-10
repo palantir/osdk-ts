@@ -28,9 +28,7 @@ import {
 } from "@blueprintjs/icons";
 import type {
   ColumnOrderState,
-  ColumnPinningState,
   Header,
-  OnChangeFn,
   RowData,
   SortingState,
   Table,
@@ -44,15 +42,6 @@ import { TableHeaderContent } from "./TableHeaderContent.js";
 import styles from "./TableHeaderWithPopover.module.css";
 import { SELECTION_COLUMN_ID } from "./utils/constants.js";
 import type { ColumnOption } from "./utils/types.js";
-
-export interface TableState {
-  sorting: SortingState;
-  columnVisibility: VisibilityState;
-  columnOrder: ColumnOrderState;
-  setColumnPinning: React.Dispatch<React.SetStateAction<ColumnPinningState>>;
-  setColumnVisibility: OnChangeFn<VisibilityState>;
-  setColumnOrder: OnChangeFn<ColumnOrderState>;
-}
 
 interface HeaderMenuItemProps {
   onClick: () => void;

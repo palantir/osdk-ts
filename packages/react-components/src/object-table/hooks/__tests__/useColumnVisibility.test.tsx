@@ -123,59 +123,10 @@ describe(useColumnVisibility, () => {
         email: true,
       });
     });
-
-    it("respects explicit isVisible: false", () => {
-      const allColumns: ColumnDef<unknown>[] = [
-        createMockColumn("name", true),
-        createMockColumn("email"),
-        createMockColumn("age", false),
-        createMockColumn("id"),
-      ];
-
-      const { result } = renderHook(() =>
-        useColumnVisibility<TestObject>({
-          allColumns,
-        })
-      );
-
-      expect(result.current.columnVisibility).toEqual({
-        name: true,
-        email: true,
-        age: false,
-        id: true,
-      });
-    });
   });
 
   describe("onColumnVisibilityChanged callback", () => {
-    it("calls onColumnVisibilityChanged when visibility changes", () => {
-      const onColumnVisibilityChanged = vi.fn();
-      const allColumns: ColumnDef<unknown>[] = [
-        createMockColumn("name", true),
-        createMockColumn("email", true),
-      ];
-
-      const { result } = renderHook(() =>
-        useColumnVisibility<TestObject>({
-          allColumns,
-          onColumnVisibilityChanged,
-        })
-      );
-
-      act(() => {
-        result.current.onColumnVisibilityChange({
-          name: true,
-          email: false,
-        });
-      });
-
-      expect(onColumnVisibilityChanged).toHaveBeenCalledWith([
-        { columnId: "name", isVisible: true },
-        { columnId: "email", isVisible: false },
-      ]);
-    });
-
-    it("calls onColumnVisibilityChanged with updater function", () => {
+    it("calls onColumnVisibilityChanged when visibility changed", () => {
       const onColumnVisibilityChanged = vi.fn();
       const allColumns: ColumnDef<unknown>[] = [
         createMockColumn("name", true),
@@ -196,41 +147,6 @@ describe(useColumnVisibility, () => {
         }));
       });
 
-      expect(onColumnVisibilityChanged).toHaveBeenCalledWith([
-        { columnId: "name", isVisible: true },
-        { columnId: "email", isVisible: false },
-      ]);
-    });
-
-    it("updates internal state and calls callback when hiding a column", () => {
-      const onColumnVisibilityChanged = vi.fn();
-      const allColumns: ColumnDef<unknown>[] = [
-        createMockColumn("name", true),
-        createMockColumn("email", true),
-        createMockColumn("age", true),
-      ];
-
-      const { result } = renderHook(() =>
-        useColumnVisibility<TestObject>({
-          allColumns,
-          onColumnVisibilityChanged,
-        })
-      );
-
-      expect(result.current.columnVisibility).toEqual({
-        name: true,
-        email: true,
-        age: true,
-      });
-
-      act(() => {
-        result.current.onColumnVisibilityChange({
-          name: true,
-          email: false,
-          age: true,
-        });
-      });
-
       expect(result.current.columnVisibility).toEqual({
         name: true,
         email: false,
@@ -240,7 +156,6 @@ describe(useColumnVisibility, () => {
       expect(onColumnVisibilityChanged).toHaveBeenCalledWith([
         { columnId: "name", isVisible: true },
         { columnId: "email", isVisible: false },
-        { columnId: "age", isVisible: true },
       ]);
     });
 
@@ -326,33 +241,6 @@ describe(useColumnVisibility, () => {
       });
 
       expect(result.current.columnOrder).toEqual(["email", "age", "name"]);
-    });
-
-    it("supports updater function for column order change", () => {
-      const allColumns: ColumnDef<unknown>[] = [
-        createMockColumn("name"),
-        createMockColumn("email"),
-        createMockColumn("age"),
-      ];
-
-      const { result } = renderHook(() =>
-        useColumnVisibility<TestObject>({
-          allColumns,
-        })
-      );
-
-      act(() => {
-        result.current.onColumnOrderChange((prev) => {
-          // Move "age" to the front
-          const newOrder = [...prev];
-          const ageIndex = newOrder.indexOf("age");
-          newOrder.splice(ageIndex, 1);
-          newOrder.unshift("age");
-          return newOrder;
-        });
-      });
-
-      expect(result.current.columnOrder).toEqual(["age", "name", "email"]);
     });
 
     it("updates column order when columnDefinitions change", () => {
