@@ -42,6 +42,7 @@ import React, { useCallback, useMemo, useState } from "react";
 import type { FilterDefinitionUnion } from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
 import { getFilterKey } from "../utils/getFilterKey.js";
+import { getFilterLabel } from "../utils/getFilterLabel.js";
 import contentStyles from "./FilterListContent.module.css";
 import { FilterListItem } from "./FilterListItem.js";
 import { SortableFilterListItem } from "./SortableFilterListItem.js";
@@ -144,7 +145,7 @@ export default function SortableFilterListContent<
       onDragStart({ active }) {
         const idx = sortableIds.indexOf(String(active.id));
         const def = idx >= 0 ? filterDefinitions[idx] : undefined;
-        const label = def ? getLabelFromDefinition(def) : "filter";
+        const label = def ? getFilterLabel(def) : "filter";
         return `Picked up ${label} filter`;
       },
       onDragOver({ active, over }) {
@@ -157,7 +158,7 @@ export default function SortableFilterListContent<
       onDragEnd({ active, over }) {
         const idx = sortableIds.indexOf(String(active.id));
         const def = idx >= 0 ? filterDefinitions[idx] : undefined;
-        const label = def ? getLabelFromDefinition(def) : "filter";
+        const label = def ? getFilterLabel(def) : "filter";
         if (over && active.id !== over.id) {
           const overIdx = sortableIds.indexOf(String(over.id));
           return `Dropped ${label} filter at position ${overIdx + 1}`;
@@ -167,7 +168,7 @@ export default function SortableFilterListContent<
       onDragCancel({ active }) {
         const idx = sortableIds.indexOf(String(active.id));
         const def = idx >= 0 ? filterDefinitions[idx] : undefined;
-        const label = def ? getLabelFromDefinition(def) : "filter";
+        const label = def ? getFilterLabel(def) : "filter";
         return `Cancelled dragging ${label} filter`;
       },
     }),
@@ -239,24 +240,4 @@ export default function SortableFilterListContent<
       </DndContext>
     </div>
   );
-}
-
-function getLabelFromDefinition<Q extends ObjectTypeDefinition>(
-  definition: FilterDefinitionUnion<Q>,
-): string {
-  if ("label" in definition && definition.label) {
-    return definition.label;
-  }
-
-  switch (definition.type) {
-    case "PROPERTY":
-      return definition.key;
-    case "HAS_LINK":
-    case "LINKED_PROPERTY":
-      return definition.linkName;
-    case "KEYWORD_SEARCH":
-      return "Search";
-    case "CUSTOM":
-      return definition.key;
-  }
 }
