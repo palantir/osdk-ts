@@ -216,6 +216,8 @@ const cspell = {
         "carto",
         "emps",
         "officenetwork",
+        "llms",
+        "llmstxt",
       ],
     },
   ],
