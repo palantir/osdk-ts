@@ -1,0 +1,615 @@
+/* @osdk/react-components - Combined styles */
+
+/* base-components/checkbox/Checkbox.module.css */
+/*
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.Checkbox-module__osdkCheckboxRoot___puTtZ6zA {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: calc(
+    var(--osdk-checkbox-icon-size) + var(--osdk-checkbox-padding) * 2
+  );
+  min-height: calc(
+    var(--osdk-checkbox-icon-size) + var(--osdk-checkbox-padding) * 2
+  );
+  padding: var(--osdk-checkbox-padding);
+  box-sizing: border-box;
+  cursor: pointer;
+  border-radius: var(--osdk-surface-border-radius);
+  border: var(--osdk-checkbox-border);
+
+  &[data-unchecked] {
+    background-color: var(--osdk-checkbox-bg);
+
+    &:hover {
+      background-color: var(--osdk-checkbox-bg-hover);
+    }
+
+    &:active {
+      background-color: var(--osdk-checkbox-bg-active);
+    }
+  }
+
+  &[data-checked],
+  &[data-indeterminate] {
+    background-color: var(--osdk-checkbox-bg-checked);
+
+    &:hover {
+      background-color: var(--osdk-checkbox-bg-checked-hover);
+    }
+
+    &:active {
+      background-color: var(--osdk-checkbox-bg-checked-active);
+    }
+  }
+
+  &:focus {
+    outline: none;
+  }
+
+  &:focus-visible {
+    outline: var(--osdk-focus-visible-outline);
+    outline-offset: calc(-1 * var(--osdk-focus-visible-outline-offset));
+  }
+}
+
+.Checkbox-module__osdkCheckboxIndicator___WOhQM8rb {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--osdk-checkbox-checked-foreground);
+  width: var(--osdk-checkbox-icon-size);
+  height: var(--osdk-checkbox-icon-size);
+
+  &[data-unchecked] {
+    display: none;
+  }
+}
+
+
+/* object-table/CellContextMenu.module.css */
+/*
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.CellContextMenu-module__osdkCellContextMenu___lZrHhShI {
+  position: fixed;
+  z-index: var(--osdk-surface-z-index-2);
+}
+
+
+/* object-table/LoadingCell.module.css */
+/*
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.LoadingCell-module__osdkLoadingCell___XLlRWu8h {
+  height: var(--osdk-table-cell-fontSize);
+  border-radius: calc(var(--osdk-surface-border-radius) * 0.5);
+  flex: 1;
+}
+
+/* Blueprint skeleton animation keyframes */
+@keyframes LoadingCell-module__skeleton-glow___pznGbRk6 {
+  from {
+    background: var(--osdk-table-skeleton-color-from);
+    border-color: var(--osdk-table-skeleton-color-from);
+  }
+
+  to {
+    background: var(--osdk-table-skeleton-color-to);
+    border-color: var(--osdk-table-skeleton-color-to);
+  }
+}
+
+.LoadingCell-module__osdkCellSkeleton___LJKGtJS1 {
+  animation: 1000ms linear infinite alternate LoadingCell-module__skeleton-glow___pznGbRk6;
+  background: var(--osdk-table-skeleton-color-from);
+  background-clip: padding-box;
+  border-color: var(--osdk-table-skeleton-color-from);
+  border-radius: calc(var(--osdk-surface-border-radius) * 0.5);
+  border: 1px solid var(--osdk-table-skeleton-border-color);
+  box-shadow: none;
+  color: transparent;
+  cursor: default;
+  pointer-events: none;
+  user-select: none;
+}
+
+
+/* object-table/NonIdealState.module.css */
+/*
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.NonIdealState-module__container___43YWBKdO {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  min-height: 80px;
+}
+
+.NonIdealState-module__message___6OFyA4q- {
+  color: var(--osdk-typography-color-muted);
+}
+
+
+/* object-table/Table.module.css */
+/*
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.Table-module__osdkTableContainer___QBj68RD- {
+  position: relative; /* needed for sticky header */
+  height: 100%;
+  width: 100%;
+  overflow: auto;
+}
+
+
+/* object-table/TableBody.module.css */
+/*
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.TableBody-module__osdkTableBody___YC9dMzce {
+  display: grid;
+  position: relative;
+}
+
+
+/* object-table/TableCell.module.css */
+/*
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.TableCell-module__osdkTableCell___gVl6jToJ {
+  display: flex;
+  align-items: center;
+  text-align: left;
+  position: relative;
+  padding: var(--osdk-table-cell-padding);
+  font-size: var(--osdk-table-cell-fontSize);
+  color: var(--osdk-table-cell-color);
+  background-color: inherit;
+  border-right: var(--osdk-table-cell-divider);
+
+  &:first-child {
+    border-left: var(--osdk-table-border);
+  }
+
+  &:last-child {
+    border-right: var(--osdk-table-border);
+  }
+}
+
+.TableCell-module__osdkTableCell___gVl6jToJ[data-pinned="left"],
+.TableCell-module__osdkTableCell___gVl6jToJ[data-pinned="right"] {
+  position: sticky;
+  z-index: var(--osdk-surface-z-index-1);
+}
+
+/* Last left-pinned column - no left-pinned siblings after it */
+.TableCell-module__osdkTableCell___gVl6jToJ[data-pinned="left"]:not(:has(~ [data-pinned="left"])) {
+  border-right: var(--osdk-table-pinned-column-border);
+}
+
+/* First right-pinned column - no right-pinned siblings before it */
+.TableCell-module__osdkTableCell___gVl6jToJ[data-pinned="right"]:not(:has(~ [data-pinned="right"]):nth-child(n+2)) {
+  border-left: var(--osdk-table-pinned-column-border);
+}
+
+.TableCell-module__osdkTableCell___gVl6jToJ:has([role="checkbox"]) {
+  justify-content: center;
+}
+
+.TableCell-module__osdkTableCellContent___tcj6DRaU:not(:has([role="checkbox"])) {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: left;
+}
+
+
+/* object-table/TableHeader.module.css */
+/*
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.TableHeader-module__osdkTableHeader___4Wzqkog9 {
+  display: grid;
+  position: sticky;
+  top: 0;
+  z-index: var(--osdk-surface-z-index-1);
+  background-color: var(--osdk-table-header-bg);
+}
+
+.TableHeader-module__osdkTableHeader___4Wzqkog9[data-resizing="true"] {
+  cursor: col-resize;
+  user-select: none;
+}
+
+.TableHeader-module__osdkTableHeaderRow___lUjQpm91 {
+  display: flex;
+}
+
+.TableHeader-module__osdkTableHeaderCell___iS9lGU8Z {
+  display: flex;
+  align-items: center;
+  text-align: left;
+  position: relative;
+  padding: var(--osdk-table-cell-padding);
+  font-weight: var(--osdk-table-header-fontWeight);
+  font-size: var(--osdk-table-header-fontSize);
+  color: var(--osdk-table-header-color);
+  border-top: var(--osdk-table-border);
+  border-right: var(--osdk-table-header-divider);
+  background-color: inherit;
+
+  &:first-child {
+    border-left: var(--osdk-table-border);
+  }
+
+  &:last-child {
+    border-right: var(--osdk-table-border);
+  }
+}
+
+.TableHeader-module__osdkTableHeaderCell___iS9lGU8Z[data-pinned="left"],
+.TableHeader-module__osdkTableHeaderCell___iS9lGU8Z[data-pinned="right"] {
+  position: sticky;
+  z-index: var(--osdk-surface-z-index-2);
+}
+
+/* Last left-pinned column - no left-pinned siblings after it */
+.TableHeader-module__osdkTableHeaderCell___iS9lGU8Z[data-pinned="left"]:not(:has(~ [data-pinned="left"])) {
+  border-right: var(--osdk-table-pinned-column-border);
+}
+
+/* First right-pinned column - no right-pinned siblings before it */
+.TableHeader-module__osdkTableHeaderCell___iS9lGU8Z[data-pinned="right"]:not(
+    :has(~ [data-pinned="right"]):nth-child(n + 2)
+  ) {
+  border-left: var(--osdk-table-pinned-column-border);
+}
+
+.TableHeader-module__osdkTableHeaderCell___iS9lGU8Z:has([role="checkbox"]) {
+  justify-content: center;
+}
+
+.TableHeader-module__osdkTableHeaderResizer___qpjGLncF {
+  background: none;
+  cursor: col-resize;
+  height: 100%;
+  position: absolute;
+  right: calc(-1 * var(--osdk-table-border-width));
+  top: 0;
+  touch-action: none;
+  width: 3px;
+  z-index: var(--osdk-surface-z-index-2);
+
+  &:hover {
+    background: var(--osdk-intent-primary-hover);
+  }
+
+  &:active {
+    background: var(--osdk-intent-primary-active);
+  }
+}
+
+.TableHeader-module__osdkLoadingHeaderCell___gohWQuYX {
+  height: var(--osdk-table-header-fontSize);
+  flex: 1;
+}
+
+
+/* object-table/TableHeaderContent.module.css */
+/*
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.TableHeaderContent-module__osdkHeaderContent___UQM9R9VU {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.TableHeaderContent-module__osdkHeaderContent___UQM9R9VU:has([role="checkbox"]) {
+  display: flex;
+  justify-content: center;
+}
+
+
+/* object-table/TableHeaderWithPopover.module.css */
+/*
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.TableHeaderWithPopover-module__osdkCenterContainer___7EQ0efaV {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.TableHeaderWithPopover-module__osdkContentGap___ydRnh6Gk {
+  display: flex;
+  gap: var(--osdk-surface-spacing);
+}
+
+.TableHeaderWithPopover-module__osdkHeaderContainer___Yp1FKb-z {
+  justify-content: space-between;
+  flex: 1;
+  min-width: 0;
+  align-self: stretch;
+}
+
+.TableHeaderWithPopover-module__osdkHeaderContentLeft___PpdFKG5D {
+  min-width: 0;
+  flex-shrink: 1;
+}
+
+.TableHeaderWithPopover-module__osdkHeaderContentRight___-cSZMBVb {
+  flex-shrink: 0;
+}
+
+.TableHeaderWithPopover-module__osdkHeaderPopoverTrigger___Y5Q22NIE {
+  padding: 0;
+  flex-shrink: 0;
+  flex-grow: 0;
+  border: var(--osdk-surface-border-width) solid
+    var(--osdk-surface-border-color-default);
+  border-radius: var(--osdk-surface-border-radius);
+  color: var(--osdk-intent-default-foreground);
+  user-select: none;
+  outline: none;
+
+  &:hover {
+    background-color: var(--osdk-intent-default-hover);
+  }
+
+  &[data-popup-open] {
+    background-color: var(--osdk-intent-primary-rest);
+  }
+
+  &:focus-visible {
+    outline: var(--osdk-focus-visible-outline);
+    outline-offset: var(--osdk-focus-visible-outline-offset);
+  }
+}
+
+.TableHeaderWithPopover-module__osdkHeaderIcon___lgyu9GmV {
+  width: var(--osdk-iconography-size-small);
+  height: var(--osdk-iconography-size-small);
+}
+
+.TableHeaderWithPopover-module__osdkHeaderPopup___TMO39wLW {
+  box-sizing: border-box;
+  padding: var(--osdk-surface-spacing);
+  border-radius: var(--osdk-surface-border-radius);
+  border: var(--osdk-surface-border-width) solid
+    var(--osdk-surface-border-color-default);
+  background-color: var(--osdk-surface-background-color-default);
+  color: var(--osdk-typography-color-default-rest);
+  box-shadow: var(--osdk-surface-shadow-2);
+  font-size: var(--osdk-typography-size-body-medium);
+  outline: none;
+}
+
+.TableHeaderWithPopover-module__osdkHeaderMenuItem___f-D5iGwi {
+  justify-content: flex-start;
+  padding: var(--osdk-surface-spacing);
+  cursor: pointer;
+}
+
+.TableHeaderWithPopover-module__osdkHeaderMenuItem___f-D5iGwi:hover {
+  outline: none;
+  background-color: var(--osdk-surface-background-color-default-hover);
+  border-radius: var(--osdk-surface-border-radius);
+}
+
+.TableHeaderWithPopover-module__osdkHeaderActiveMenuItem___K007KHkr {
+  background-color: var(--osdk-intent-primary-rest);
+  color: var(--osdk-intent-primary-foreground);
+}
+
+.TableHeaderWithPopover-module__osdkHeaderActiveMenuItem___K007KHkr:hover {
+  background-color: var(--osdk-intent-primary-hover);
+}
+
+.TableHeaderWithPopover-module__osdkHeaderActiveMenuItem___K007KHkr:active {
+  background-color: var(--osdk-intent-primary-active);
+}
+
+
+/* object-table/TableRow.module.css */
+/*
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.TableRow-module__osdkTableRow___sjVwZnzA {
+  position: absolute;
+  display: flex;
+  background-color: var(--osdk-table-row-bg-default);
+  border-top: var(--osdk-table-row-divider);
+  border-bottom: var(--osdk-table-border-width) solid transparent;
+
+  &:last-child {
+    border-bottom: var(--osdk-table-border);
+  }
+
+  /* Zebra rows */
+  &:nth-child(even) {
+    background-color: var(
+      --osdk-table-row-bg-alternate,
+      var(--osdk-table-row-bg-default)
+    );
+  }
+
+  &:hover {
+    z-index: 1;
+    background-color: var(
+      --osdk-table-row-bg-hover,
+      var(--osdk-surface-background-color-default-hover)
+    );
+    border-top-color: var(--osdk-table-row-border-color-hover);
+    border-bottom-color: var(--osdk-table-row-border-color-hover);
+  }
+
+  &[data-selected="true"] {
+    z-index: 2;
+    background-color: var(--osdk-table-row-bg-active);
+    border-top-color: var(--osdk-table-row-border-color-active);
+    border-bottom-color: var(--osdk-table-row-border-color-active);
+  }
+
+  &[data-selected="true"] + &[data-selected="true"] {
+    border-top-color: transparent;
+  }
+
+  &[data-selected="true"]:has(+ &[data-selected="true"]) {
+    border-bottom-color: transparent;
+  }
+}
+
+
