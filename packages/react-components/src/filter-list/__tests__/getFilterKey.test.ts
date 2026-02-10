@@ -15,7 +15,9 @@
  */
 
 import { describe, expect, it } from "vitest";
+import type { FilterDefinitionUnion } from "../FilterListApi.js";
 import { getFilterKey } from "../utils/getFilterKey.js";
+import type { MockObjectType } from "./testUtils.js";
 import {
   createCustomFilterDef,
   createHasLinkFilterDef,
@@ -33,6 +35,18 @@ describe("getFilterKey", () => {
       createSelectState([]),
     );
     expect(getFilterKey(definition)).toBe("name");
+  });
+
+  it("returns id over key for property filter when id is set", () => {
+    const definition = {
+      ...createPropertyFilterDef(
+        "name",
+        "CHECKBOX_LIST",
+        createSelectState([]),
+      ),
+      id: "name-filter-1",
+    } as FilterDefinitionUnion<typeof MockObjectType>;
+    expect(getFilterKey(definition)).toBe("name-filter-1");
   });
 
   it("returns hasLink:{linkName} for hasLink filter", () => {

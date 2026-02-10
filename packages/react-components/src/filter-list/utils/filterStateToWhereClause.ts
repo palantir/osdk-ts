@@ -18,8 +18,13 @@ import type { ObjectTypeDefinition, WhereClause } from "@osdk/api";
 import type { FilterDefinitionUnion } from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
 import { assertUnreachable } from "./assertUnreachable.js";
+import { getFilterKey } from "./getFilterKey.js";
 
 type PropertyFilter = Record<string, unknown> | boolean | string | number;
+
+function isDate(value: unknown): value is Date {
+  return value instanceof Date;
+}
 
 function filterStateToPropertyFilter(
   state: FilterState,
@@ -43,10 +48,10 @@ function filterStateToPropertyFilter(
     case "DATE_RANGE": {
       const conditions: PropertyFilter[] = [];
 
-      if (state.minValue) {
+      if (state.minValue !== undefined) {
         conditions.push({ $gte: state.minValue.toISOString() });
       }
-      if (state.maxValue) {
+      if (state.maxValue !== undefined) {
         conditions.push({ $lte: state.maxValue.toISOString() });
       }
 
@@ -119,10 +124,9 @@ function filterStateToPropertyFilter(
       if (state.selectedValues.length === 0) {
         return undefined;
       }
-      const isDateValue = state.selectedValues[0] instanceof Date;
-      const values: (string | number | boolean)[] = isDateValue
-        ? state.selectedValues.map((v) => (v as Date).toISOString())
-        : state.selectedValues as (string | number | boolean)[];
+      const values: (string | number | boolean)[] = state.selectedValues.map(
+        (v) => isDate(v) ? v.toISOString() : v as string | number | boolean,
+      );
       const filter = values.length === 1 ? values[0] : { $in: values };
       if (state.isExcluding) {
         return { $not: filter };
@@ -132,10 +136,10 @@ function filterStateToPropertyFilter(
 
     case "TIMELINE": {
       const conditions: PropertyFilter[] = [];
-      if (state.startDate) {
+      if (state.startDate !== undefined) {
         conditions.push({ $gte: state.startDate.toISOString() });
       }
-      if (state.endDate) {
+      if (state.endDate !== undefined) {
         conditions.push({ $lte: state.endDate.toISOString() });
       }
       if (conditions.length === 0) {
@@ -163,9 +167,9 @@ function filterStateToPropertyFilter(
 /**
  * Builds a WhereClause from filter definitions and their current states.
  *
- * The filterStates map uses filter definition objects as keys (object identity).
- * This ensures stable state lookups even when filters are reordered, as long as
- * the same definition object references are maintained.
+ * The filterStates map uses string keys derived from getFilterKey().
+ * This avoids dependence on object identity, so filter definition objects
+ * can be safely recreated across renders without breaking state lookups.
  *
  * Note: The `as WhereClause<Q>` casts are necessary because we're building
  * clauses dynamically from property keys determined at runtime. TypeScript
@@ -174,7 +178,7 @@ function filterStateToPropertyFilter(
  */
 export function buildWhereClause<Q extends ObjectTypeDefinition>(
   definitions: Array<FilterDefinitionUnion<Q>> | undefined,
-  filterStates: Map<FilterDefinitionUnion<Q>, FilterState>,
+  filterStates: Map<string, FilterState>,
   operator: "and" | "or",
   objectType?: Q,
 ): WhereClause<Q> {
@@ -185,7 +189,7 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
   const clauses: Array<Record<string, unknown>> = [];
 
   for (const definition of definitions) {
-    const state = filterStates.get(definition);
+    const state = filterStates.get(getFilterKey(definition));
 
     if (!state) {
       continue;
@@ -210,12 +214,10 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
           }
           break;
         }
-        // TypeScript narrows state to HasLinkFilterState
-        if (state.hasLink) {
-          clauses.push({ [definition.linkName]: { $isNotNull: true } });
-        } else {
-          clauses.push({ [definition.linkName]: { $isNull: true } });
+        if (!state.hasLink) {
+          break;
         }
+        clauses.push({ [definition.linkName]: { $isNotNull: true } });
         break;
       }
 

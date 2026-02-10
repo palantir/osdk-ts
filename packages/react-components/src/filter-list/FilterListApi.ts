@@ -61,13 +61,12 @@ export type FilterState<Q extends ObjectTypeDefinition> =
     : never;
 
 /**
- * Map from filter definition objects to their current state.
- * Uses object identity for keys, ensuring stable lookups across reorders.
+ * Map from filter keys to their current state.
+ * Uses string keys derived from getFilterKey() for stable lookups
+ * that don't depend on object identity, avoiding re-render issues
+ * when filter definition objects are recreated.
  */
-export type FilterStatesMap<Q extends ObjectTypeDefinition> = Map<
-  FilterDefinitionUnion<Q>,
-  FilterStateType
->;
+export type FilterStatesMap = Map<string, FilterStateType>;
 
 export interface FilterListProps<Q extends ObjectTypeDefinition> {
   /**

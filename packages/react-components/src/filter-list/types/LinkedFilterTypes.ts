@@ -94,6 +94,7 @@ export interface LinkedPropertyFilterDefinition<
   linkedFilterComponent: LinkedC;
   linkedFilterState: FilterStateByComponentType[LinkedC];
   defaultLinkedFilterState?: FilterStateByComponentType[LinkedC];
+  filterState: LinkedPropertyFilterState<FilterStateByComponentType[LinkedC]>;
   label?: string;
   /**
    * Controls whether this filter is rendered.
