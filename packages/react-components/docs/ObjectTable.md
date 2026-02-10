@@ -78,39 +78,46 @@ Add selection mode to enable row selection:
 
 ### Filtering
 
-| Prop              | Type                 | Default | Description                        |
-| ----------------- | -------------------- | ------- | ---------------------------------- |
-| `enableFiltering` | `boolean`            | `true`  | Whether users can filter the table |
-| `filter`          | `WhereClause<Q>`     | -       | Current filter (controlled mode)   |
-| `onFilterChanged` | `(newWhere) => void` | -       | Required when `filter` is provided |
+> **Note:** The table filtering UI is not yet supported. However, you can still pass a `filter` prop to programmatically filter the objects displayed in the table.
+
+| Prop              | Type                   | Default | Description                                                      |
+| ----------------- | ---------------------- | ------- | ---------------------------------------------------------------- |
+| `enableFiltering` | `boolean`              | `true`  | Whether filtering menu items are shown in the column header menu |
+| `filter`          | `WhereClause<Q, RDPs>` | -       | Current where clause filter (controlled mode)                    |
+| `onFilterChanged` | `(newWhere) => void`   | -       | Required when `filter` is provided                               |
 
 ### Sorting
 
-| Prop               | Type                           | Default | Description                                   |
-| ------------------ | ------------------------------ | ------- | --------------------------------------------- |
-| `enableOrdering`   | `boolean`                      | `true`  | Whether sorting menu items are shown          |
-| `defaultOrderBy`   | `Array<{property, direction}>` | -       | Initial sort order (uncontrolled)             |
-| `orderBy`          | `Array<{property, direction}>` | -       | Current sort order (controlled)               |
-| `onOrderByChanged` | `(newOrderBy) => void`         | -       | Required when `orderBy` is provided           |
+| Prop               | Type                           | Default | Description                          |
+| ------------------ | ------------------------------ | ------- | ------------------------------------ |
+| `enableOrdering`   | `boolean`                      | `true`  | Whether sorting menu items are shown |
+| `defaultOrderBy`   | `Array<{property, direction}>` | -       | Initial sort order (uncontrolled)    |
+| `orderBy`          | `Array<{property, direction}>` | -       | Current sort order (controlled)      |
+| `onOrderByChanged` | `(newOrderBy) => void`         | -       | Required when `orderBy` is provided  |
 
 ### Column Features
 
-| Prop                    | Type      | Default | Description                                      |
-| ----------------------- | --------- | ------- | ------------------------------------------------ |
-| `enableColumnPinning`   | `boolean` | `true`  | Whether pinning menu items are shown             |
-| `enableColumnResizing`  | `boolean` | `true`  | Whether resize menu item is shown                |
-| `enableColumnConfig`    | `boolean` | `true`  | Whether column configuration menu item is shown  |
+| Prop                   | Type      | Default | Description                                     |
+| ---------------------- | --------- | ------- | ----------------------------------------------- |
+| `enableOrdering`       | `boolean` | `true`  | Whether sorting menu items are shown            |
+| `enableColumnPinning`  | `boolean` | `true`  | Whether pinning menu items are shown            |
+| `enableColumnResizing` | `boolean` | `true`  | Whether resize menu item is shown               |
+| `enableColumnConfig`   | `boolean` | `true`  | Whether column configuration menu item is shown |
 
-#### Controlled Mode Behavior
+#### Hiding Header Menu Items
 
-When using controlled mode (i.e., providing a state prop like `orderBy`), you must also provide the corresponding handler function (e.g., `onOrderByChanged`) for the feature to be enabled. If you provide a controlled state without a handler, the menu items for that feature will be hidden.
+Each column header has a menu with items for sorting, filtering, pinning, resizing, and column configuration. You can hide specific menu items by setting the corresponding `enable...` prop to `false`:
 
-| Feature               | Controlled State Prop | Handler Prop                | Menu Items Visible When                                        |
-| --------------------- | --------------------- | --------------------------- | -------------------------------------------------------------- |
-| Sorting               | `orderBy`             | `onOrderByChanged`          | `enableOrdering=true` AND (`orderBy` is undefined OR `onOrderByChanged` is provided) |
-| Column Pinning        | -                     | `onColumnsPinnedChanged`    | `enableColumnPinning=true`                                     |
-| Column Resizing       | -                     | `onColumnResize`            | `enableColumnResizing=true`                                    |
-| Column Configuration  | -                     | `onColumnVisibilityChanged` | `enableColumnConfig=true`                                      |
+```typescript
+<ObjectTable
+  objectType={Employee}
+  enableFiltering={false} // Hides "Filter" menu items from column headers
+  enableOrdering={false} // Hides "Sort" menu items from column headers
+  enableColumnPinning={false} // Hides "Pin" menu items from column headers
+  enableColumnResizing={false} // Hides "Resize" menu item from column headers
+  enableColumnConfig={false} // Hides "Column configuration" menu item from column headers
+/>;
+```
 
 ### Row Selection
 
@@ -172,20 +179,31 @@ Displays a computed property:
 }
 ```
 
-#### 3. Function Column
+#### 3. Function Column (Not supported yet)
 
 Displays custom computed values:
 
 ```typescript
 {
   type: "function",
-  id: "functionName"  // Must match a key in FunctionColumns type
+  id: "functionName"
+}
+```
+
+#### 4. Custom Column
+
+Displays header and cell with the provided custom renderers.
+
+```typescript
+{
+  type: "custom",
+  id: "columnName" 
 }
 ```
 
 ## Examples
 
-### Example 1: Basic Table with Custom Columns
+### Example 1: Basic Table with Custom Column Definitions
 
 ```typescript
 import {
@@ -404,7 +422,9 @@ function EmployeesTable() {
 }
 ```
 
-### Example 9: Derived Property (RDP) Column
+### Example 9: Filtering on Object Properties and Derived Properties (RDPs)
+
+You can filter by object properties and derived properties by including them in the `WhereClause`:
 
 ```typescript
 import { DerivedProperty } from "@osdk/client";
@@ -418,7 +438,7 @@ type RDPs = {
   managerName: string | undefined;
 };
 
-function EmployeesTable() {
+function EmployeesWithManagerTable() {
   const columnDefinitions: Array<ColumnDefinition<typeof Employee, RDPs>> = [
     {
       locator: { type: "property", id: "fullName" },
@@ -443,6 +463,10 @@ function EmployeesTable() {
     <ObjectTable
       objectType={Employee}
       columnDefinitions={columnDefinitions}
+      filter={{
+        fullName: { $containsAnyTerm: "Paul" },
+        managerName: { $eq: "Jane Smith" },
+      }}
     />
   );
 }
@@ -498,109 +522,6 @@ function EmployeesTable() {
   );
 }
 ```
-
-### Example 12: Complete Example from PeopleApp
-
-This is a real-world example from the OSDK test application:
-
-```typescript
-import { DerivedProperty } from "@osdk/client";
-import {
-  type ColumnDefinition,
-  ObjectTable,
-} from "@osdk/react-components/experimental";
-import { Employee } from "@YourApp/sdk";
-
-type RDPs = {
-  managerName: string | undefined;
-};
-
-function EmployeesTable() {
-  const columnDefinitions: Array<ColumnDefinition<typeof Employee, RDPs>> = [
-    {
-      locator: { type: "property", id: "fullName" },
-      renderHeader: () => (
-        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <span>👤</span>
-          <span>Full Name</span>
-        </div>
-      ),
-      pinned: "left",
-    },
-    {
-      locator: { type: "property", id: "jobTitle" },
-      isVisible: false,
-    },
-    {
-      locator: { type: "property", id: "firstFullTimeStartDate" },
-      width: 180,
-      renderCell: (employee) => {
-        const date = employee.firstFullTimeStartDate;
-        if (!date) return "-";
-        return new Date(date).toLocaleDateString("en-US", {
-          year: "numeric",
-          month: "short",
-          day: "numeric",
-        });
-      },
-    },
-    {
-      locator: {
-        type: "rdp",
-        id: "managerName",
-        creator: DerivedProperty.creator<typeof Employee, string | undefined>(
-          (base) =>
-            base.lead.select({
-              fullName: true,
-            }),
-          (pivot) => pivot?.fullName,
-        ),
-      },
-      renderHeader: () => <span>Manager</span>,
-    },
-  ];
-
-  const renderCellContextMenu = (employee: Employee, cellValue: unknown) => (
-    <div
-      style={{
-        background: "white",
-        border: "1px solid #ddd",
-        borderRadius: "4px",
-        padding: "8px",
-        boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
-      }}
-    >
-      <div
-        onClick={() => console.log("View", employee.fullName)}
-        style={{ cursor: "pointer", padding: "4px 8px" }}
-      >
-        View Details
-      </div>
-      <div
-        onClick={() => navigator.clipboard.writeText(String(cellValue))}
-        style={{ cursor: "pointer", padding: "4px 8px" }}
-      >
-        Copy Value
-      </div>
-    </div>
-  );
-
-  return (
-    <ObjectTable<typeof Employee, RDPs>
-      objectType={Employee}
-      columnDefinitions={columnDefinitions}
-      selectionMode="multiple"
-      renderCellContextMenu={renderCellContextMenu}
-      defaultOrderBy={[{
-        property: "firstFullTimeStartDate",
-        direction: "desc",
-      }]}
-    />
-  );
-}
-```
-
-## Advanced Features
 
 ### Column Pinning
 
@@ -692,7 +613,7 @@ No additional configuration needed - these states are built-in!
 
 ### Infinite Scrolling
 
-The ObjectTable automatically implements infinite scroll pagination. As users scroll down, more data is loaded seamlessly. No configuration required!
+The ObjectTable automatically implements infinite scroll pagination, with page size of 50. As users scroll down, more data is loaded seamlessly. No configuration required!
 
 ## TypeScript Tips
 
@@ -734,16 +655,6 @@ import { Employee } from "@YourApp/sdk";
 // PropertyKeys gives you all valid property names
 type EmployeeProps = PropertyKeys<typeof Employee>;
 ```
-
-## Best Practices
-
-1. **Define columns explicitly** - Use `columnDefinitions` to control column order and visibility rather than relying on defaults
-2. **Pin important columns** - Pin key identifier columns (like name or ID) to the left for better UX
-3. **Set reasonable widths** - Define `minWidth` and `maxWidth` to prevent columns from becoming too narrow or wide
-4. **Use controlled state when needed** - Use controlled sorting/filtering when you need to sync with URL params or external state
-5. **Custom cell renderers for formatting** - Use `renderCell` for dates, numbers, or complex content rather than displaying raw values
-6. **Provide context menus** - Enhance UX by providing relevant actions via `renderCellContextMenu`
-7. **Handle row clicks thoughtfully** - Use `onRowClick` for navigation but avoid if you have selection enabled to prevent conflicts
 
 ## Troubleshooting
 

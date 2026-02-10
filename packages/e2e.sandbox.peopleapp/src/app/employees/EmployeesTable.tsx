@@ -21,7 +21,7 @@ const columnDefinitions: Array<
       type: "property",
       id: "fullName",
     },
-    pinned: "left",
+    pinned: "right",
     columnName: "My Name",
     renderHeader: () => <div style={{ color: "red" }}>My Name</div>,
   },
