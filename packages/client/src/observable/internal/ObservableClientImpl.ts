@@ -45,6 +45,8 @@ import type { ListPayload } from "../ListPayload.js";
 import type { ObjectPayload } from "../ObjectPayload.js";
 import type { ObjectSetPayload } from "../ObjectSetPayload.js";
 import type {
+  InvalidationEvent,
+  InvalidationListenerOptions,
   ObservableClient,
   ObserveAggregationArgs,
   ObserveAggregationOptions,
@@ -302,5 +304,12 @@ export class ObservableClientImpl implements ObservableClient {
   >(where: WhereClause<T, RDPs>): Canonical<WhereClause<T, RDPs>> {
     return this.__experimentalStore.whereCanonicalizer
       .canonicalize(where) as Canonical<WhereClause<T, RDPs>>;
+  }
+
+  public onInvalidation(
+    listener: (event: InvalidationEvent) => void,
+    options?: InvalidationListenerOptions,
+  ): Unsubscribable {
+    return this.__experimentalStore.addInvalidationListener(listener, options);
   }
 }
