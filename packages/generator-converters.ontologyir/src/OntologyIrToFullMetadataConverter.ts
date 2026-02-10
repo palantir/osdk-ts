@@ -173,16 +173,28 @@ function discoverPythonFunctions(
 
 // Lazy-loaded function discovery module
 let FunctionDiscovererClass: IFunctionDiscovererConstructor | null = null;
+let FunctionDiscovererTs: typeof ts | null = null;
+
+interface FunctionDiscoveryModules {
+  FunctionDiscoverer: IFunctionDiscovererConstructor;
+  typescript: typeof ts;
+}
 
 async function loadFunctionDiscoverer(
   nodeModulesPath?: string,
-): Promise<IFunctionDiscovererConstructor | null> {
-  if (FunctionDiscovererClass != null) {
-    return FunctionDiscovererClass;
+): Promise<FunctionDiscoveryModules | null> {
+  if (FunctionDiscovererClass != null && FunctionDiscovererTs != null) {
+    return {
+      FunctionDiscoverer: FunctionDiscovererClass,
+      typescript: FunctionDiscovererTs,
+    };
   }
   try {
     if (nodeModulesPath) {
       // Use createRequire to load from the specified node_modules path
+      // Both FunctionDiscoverer and TypeScript must be from the same node_modules
+      // to ensure version compatibility (TypeScript versions must match for
+      // program/typechecker interoperability)
       const requireFromPath = createRequire(
         pathToFileURL(path.join(nodeModulesPath, "package.json")).href,
       );
@@ -190,13 +202,21 @@ async function loadFunctionDiscoverer(
         "@foundry/functions-typescript-osdk-discovery",
       );
       FunctionDiscovererClass = module.FunctionDiscoverer;
-      return FunctionDiscovererClass;
+      FunctionDiscovererTs = requireFromPath("typescript");
+      return {
+        FunctionDiscoverer: FunctionDiscovererClass!,
+        typescript: FunctionDiscovererTs!,
+      };
     } else {
       // Use dynamic import to avoid compile-time dependency on optional package
       const modulePath = "@foundry/functions-typescript-osdk-discovery";
       const module = await import(/* @vite-ignore */ modulePath);
       FunctionDiscovererClass = module.FunctionDiscoverer;
-      return FunctionDiscovererClass;
+      FunctionDiscovererTs = ts; // Use the bundled TypeScript
+      return {
+        FunctionDiscoverer: FunctionDiscovererClass!,
+        typescript: FunctionDiscovererTs,
+      };
     }
   } catch {
     return null;
@@ -298,30 +318,31 @@ export class OntologyIrToFullMetadataConverter {
     const queries: Ontologies.QueryTypeV2[] = [];
 
     // TypeScript function discovery
-    const FunctionDiscoverer = await loadFunctionDiscoverer(nodeModulesPath);
-    if (FunctionDiscoverer) {
+    const discoveryModules = await loadFunctionDiscoverer(nodeModulesPath);
+    if (discoveryModules) {
+      const { FunctionDiscoverer, typescript: discoveryTs } = discoveryModules;
       // Find tsconfig.json - try functionsDir first, then parent directory
       let tsConfigPath = path.join(functionsDir, "tsconfig.json");
       let projectDir = functionsDir;
-      try {
-        ts.readConfigFile(tsConfigPath, ts.sys.readFile);
-      } catch {
+      const configResult = discoveryTs.readConfigFile(
+        tsConfigPath,
+        discoveryTs.sys.readFile,
+      );
+      if (configResult.error) {
         // Try parent directory
         tsConfigPath = path.join(path.dirname(functionsDir), "tsconfig.json");
         projectDir = path.dirname(functionsDir);
       }
 
-      const program = this.createProgram(tsConfigPath, projectDir);
-
-      // Find index.ts or use first file as entry point
-      const sourceFiles = program.getSourceFiles()
-        .map(sf => sf.fileName)
-        .filter(f => !f.includes("node_modules"));
-      const entryPointPath = sourceFiles.find(f => f.endsWith("index.ts"))
-        ?? sourceFiles[0];
+      const program = this.createProgramWithTs(
+        discoveryTs,
+        tsConfigPath,
+        projectDir,
+      );
 
       // Initialize FunctionDiscoverer with the program
-      const fd = new FunctionDiscoverer(program, entryPointPath, functionsDir);
+      // FunctionDiscoverer expects (program, rootDirectoryPath, functionsDirectoryPath)
+      const fd = new FunctionDiscoverer(program, projectDir, functionsDir);
 
       // Discover functions using the provided filePath as the functionsDirectoryPath
       const functions = fd.discover();
@@ -541,13 +562,25 @@ export class OntologyIrToFullMetadataConverter {
     tsConfigFilePath: string,
     projectDir: string,
   ): ts.Program {
-    const { config } = ts.readConfigFile(tsConfigFilePath, ts.sys.readFile);
-    const { options, fileNames, errors } = ts.parseJsonConfigFileContent(
-      config,
-      ts.sys,
-      projectDir,
+    return this.createProgramWithTs(ts, tsConfigFilePath, projectDir);
+  }
+
+  static createProgramWithTs(
+    typescript: typeof ts,
+    tsConfigFilePath: string,
+    projectDir: string,
+  ): ts.Program {
+    const { config } = typescript.readConfigFile(
+      tsConfigFilePath,
+      typescript.sys.readFile,
     );
-    return ts.createProgram({
+    const { options, fileNames, errors } = typescript
+      .parseJsonConfigFileContent(
+        config,
+        typescript.sys,
+        projectDir,
+      );
+    return typescript.createProgram({
       options,
       rootNames: fileNames,
       configFileParsingDiagnostics: errors,

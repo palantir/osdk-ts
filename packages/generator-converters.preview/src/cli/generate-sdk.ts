@@ -121,43 +121,44 @@ async function main(): Promise<void> {
       >[0],
     );
 
-  // Discover functions if --functions-dir or --python-functions-dir is provided
-  if (functionsDir || pythonFunctionsDir) {
-    if (functionsDir) {
-      // eslint-disable-next-line no-console
-      console.log(`Discovering TypeScript functions in ${functionsDir}...`);
-    }
-    if (pythonFunctionsDir) {
-      // eslint-disable-next-line no-console
-      console.log(`Discovering Python functions in ${pythonFunctionsDir}...`);
-    }
+  if (!functionsDir) {
+     
+    throw new Error(
+      "Error: --functions-dir is required for TypeScript function discovery",
+    );
+  }
+  if (!pythonFunctionsDir) {
+     
+    throw new Error(
+      "Error: --python-functions-dir is required for Python function discovery",
+    );
+  }
 
-    // Default pythonRootProjectDir to parent of pythonFunctionsDir if not specified
-    const effectivePythonRootDir = pythonRootProjectDir
-      ?? (pythonFunctionsDir ? path.dirname(pythonFunctionsDir) : undefined);
+  // Default pythonRootProjectDir to parent of pythonFunctionsDir if not specified
+  const effectivePythonRootDir = pythonRootProjectDir
+    ?? (pythonFunctionsDir ? path.dirname(pythonFunctionsDir) : undefined);
 
-    const queryTypes = await OntologyIrToFullMetadataConverter
-      .getOsdkQueryTypes(
-        functionsDir ?? "",
-        nodeModulesPath,
-        pythonFunctionsDir,
-        effectivePythonRootDir,
-        pythonBinary,
-      );
+  const queryTypes = await OntologyIrToFullMetadataConverter
+    .getOsdkQueryTypes(
+      functionsDir,
+      nodeModulesPath,
+      pythonFunctionsDir,
+      effectivePythonRootDir,
+      pythonBinary,
+    );
 
-    const functionNames = Object.keys(queryTypes);
-    if (functionNames.length > 0) {
-      previewMetadata.queryTypes = queryTypes;
-      // eslint-disable-next-line no-console
-      console.log(
-        `Discovered ${functionNames.length} function(s): ${
-          functionNames.join(", ")
-        }`,
-      );
-    } else {
-      // eslint-disable-next-line no-console
-      console.log("No functions discovered.");
-    }
+  const functionNames = Object.keys(queryTypes);
+  if (functionNames.length > 0) {
+    previewMetadata.queryTypes = queryTypes;
+    // eslint-disable-next-line no-console
+    console.log(
+      `Discovered ${functionNames.length} function(s): ${
+        functionNames.join(", ")
+      }`,
+    );
+  } else {
+    // eslint-disable-next-line no-console
+    console.log("No functions discovered.");
   }
 
   // Convert ActionTypeFullMetadata to ActionTypeV2 for generator compatibility
