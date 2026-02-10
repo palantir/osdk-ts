@@ -23,6 +23,7 @@ import classnames from "classnames";
 import React, { memo, useCallback } from "react";
 import type { FilterDefinitionUnion } from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
+import { getFilterLabel } from "../utils/getFilterLabel.js";
 import { DragHandleIcon } from "./DragHandleIcon.js";
 import { FilterInput } from "./FilterInput.js";
 import styles from "./FilterListItem.module.css";
@@ -53,7 +54,7 @@ function FilterListItemInner<Q extends ObjectTypeDefinition>({
   className,
   style,
 }: FilterListItemProps<Q>): React.ReactElement {
-  const label = getLabel(definition);
+  const label = getFilterLabel(definition);
 
   const handleFilterStateChanged = useCallback(
     (newState: FilterState) => {
@@ -71,6 +72,7 @@ function FilterListItemInner<Q extends ObjectTypeDefinition>({
       <div className={styles.itemHeader}>
         {dragHandleAttributes && (
           <button
+            type="button"
             className={styles.dragHandle}
             aria-label={`Reorder ${label}`}
             {...dragHandleAttributes}
@@ -98,23 +100,3 @@ function FilterListItemInner<Q extends ObjectTypeDefinition>({
 export const FilterListItem = memo(
   FilterListItemInner,
 ) as typeof FilterListItemInner;
-
-function getLabel<Q extends ObjectTypeDefinition>(
-  definition: FilterDefinitionUnion<Q>,
-): string {
-  if ("label" in definition && definition.label) {
-    return definition.label;
-  }
-
-  switch (definition.type) {
-    case "PROPERTY":
-      return definition.key;
-    case "HAS_LINK":
-    case "LINKED_PROPERTY":
-      return definition.linkName;
-    case "KEYWORD_SEARCH":
-      return "Search";
-    case "CUSTOM":
-      return definition.key;
-  }
-}

@@ -18,7 +18,7 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import type { ObjectSet, ObjectTypeDefinition } from "@osdk/api";
 import classnames from "classnames";
-import React from "react";
+import React, { useMemo } from "react";
 import type { FilterDefinitionUnion } from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
 import { FilterListItem } from "./FilterListItem.js";
@@ -53,10 +53,10 @@ export function SortableFilterListItem<Q extends ObjectTypeDefinition>({
     isDragging,
   } = useSortable({ id });
 
-  const style: React.CSSProperties = {
+  const style = useMemo<React.CSSProperties>(() => ({
     transform: CSS.Transform.toString(transform),
     transition: transition ?? undefined,
-  };
+  }), [transform, transition]);
 
   return (
     <div
