@@ -57,7 +57,9 @@ function createFilterStates(
     FilterState
   >();
   for (const def of definitions) {
-    map.set(def, def.filterState);
+    if (def.filterState) {
+      map.set(def, def.filterState);
+    }
   }
   return map;
 }
