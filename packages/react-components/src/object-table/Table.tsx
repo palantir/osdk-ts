@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  Cell,
-  RowData,
-  Table,
-} from "@tanstack/react-table";
+import type { Cell, RowData, Table } from "@tanstack/react-table";
 import classNames from "classnames";
 import React, {
   type ReactElement,

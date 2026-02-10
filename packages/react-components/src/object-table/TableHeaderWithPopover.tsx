@@ -225,7 +225,6 @@ export function TableHeaderWithPopover<
     },
     [
       setColumnOrder,
-      currentColumnOrder,
       setColumnVisibility,
     ],
   );

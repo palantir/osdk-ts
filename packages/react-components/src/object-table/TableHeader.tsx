@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  Column,
-  Header,
-  RowData,
-  Table,
-} from "@tanstack/react-table";
+import type { Column, Header, RowData, Table } from "@tanstack/react-table";
 import React, { useMemo } from "react";
 import styles from "./TableHeader.module.css";
 import { TableHeaderContent } from "./TableHeaderContent.js";

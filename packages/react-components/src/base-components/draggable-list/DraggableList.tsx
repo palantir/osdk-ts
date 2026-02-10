@@ -33,14 +33,8 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import classNames from "classnames";
-import type {
-  RefObject} from "react";
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-} from "react";
+import type { RefObject } from "react";
+import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import styles from "./DraggableList.module.css";
 
 export interface DraggableItem {
@@ -236,5 +230,5 @@ const useKeyboardEvents = (containerRef: RefObject<HTMLDivElement>) => {
 
     el.addEventListener("keydown", handleCapture, true);
     return () => el.removeEventListener("keydown", handleCapture, true);
-  }, []);
+  }, [containerRef]);
 };
