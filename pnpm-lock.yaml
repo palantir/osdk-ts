@@ -4291,9 +4291,12 @@ importers:
       '@base-ui/react':
         specifier: ^1.0.0
         version: 1.0.0(@types/react@18.3.24)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@blueprintjs/core':
+        specifier: ^5.0.0
+        version: 5.19.1(@types/react@18.3.24)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@blueprintjs/icons':
-        specifier: ^6.0.0
-        version: 6.4.0(@types/react@18.3.24)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        specifier: ^5.0.0
+        version: 5.23.0(@types/react@18.3.24)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@tanstack/react-table':
         specifier: ^8.21.3
         version: 8.21.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -6030,16 +6033,6 @@ packages:
       '@types/react': ^16.14.41 || 17 || 18
       react: ^16.8 || 17 || 18
       react-dom: ^16.8 || 17 || 18
-    peerDependenciesMeta:
-      '@types/react':
-        optional: true
-
-  '@blueprintjs/icons@6.4.0':
-    resolution: {integrity: sha512-8THDnE4Cz6V0DGNX0tQys6IiIYyKKvmMBZHHiFviBsdkduUqle096UdD+1XROa2dcwmGYSjvMQ/wKqYowCJINQ==}
-    peerDependencies:
-      '@types/react': '18'
-      react: '18'
-      react-dom: '18'
     peerDependenciesMeta:
       '@types/react':
         optional: true
@@ -19925,16 +19918,6 @@ snapshots:
       '@types/react': 18.3.24
 
   '@blueprintjs/icons@5.23.0(@types/react@18.3.24)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
-    dependencies:
-      change-case: 4.1.2
-      classnames: 2.5.1
-      react: 18.3.1
-      react-dom: 18.3.1(react@18.3.1)
-      tslib: 2.6.3
-    optionalDependencies:
-      '@types/react': 18.3.24
-
-  '@blueprintjs/icons@6.4.0(@types/react@18.3.24)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       change-case: 4.1.2
       classnames: 2.5.1
