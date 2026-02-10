@@ -14,24 +14,23 @@
  * limitations under the License.
  */
 
-.content {
-  display: flex;
-  flex-direction: column;
-  gap: var(--osdk-filter-list-content-gap);
-}
+import React from "react";
 
-.emptyMessage {
-  margin: 0;
-  color: var(--osdk-filter-list-empty-text-color);
-  font-size: var(--osdk-filter-list-empty-font-size);
-}
-
-.emptyAction {
-  margin-top: var(--osdk-filter-list-empty-action-margin-top);
-}
-
-.dragOverlay {
-  box-shadow: var(--osdk-filter-item-drag-overlay-shadow, 0 2px 8px rgba(0, 0, 0, 0.15));
-  border-radius: var(--osdk-filter-item-drag-overlay-border-radius, 4px);
-  background: var(--osdk-filter-item-drag-overlay-bg, #fff);
+export function DragHandleIcon(): React.ReactElement {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="currentColor"
+      aria-hidden="true"
+    >
+      <circle cx="5.5" cy="3.5" r="1.5" />
+      <circle cx="10.5" cy="3.5" r="1.5" />
+      <circle cx="5.5" cy="8" r="1.5" />
+      <circle cx="10.5" cy="8" r="1.5" />
+      <circle cx="5.5" cy="12.5" r="1.5" />
+      <circle cx="10.5" cy="12.5" r="1.5" />
+    </svg>
+  );
 }

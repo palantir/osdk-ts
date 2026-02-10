@@ -14,11 +14,16 @@
  * limitations under the License.
  */
 
+import type {
+  DraggableAttributes,
+  DraggableSyntheticListeners,
+} from "@dnd-kit/core";
 import type { ObjectSet, ObjectTypeDefinition } from "@osdk/api";
 import classnames from "classnames";
 import React, { memo, useCallback } from "react";
 import type { FilterDefinitionUnion } from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
+import { DragHandleIcon } from "./DragHandleIcon.js";
 import { FilterInput } from "./FilterInput.js";
 import styles from "./FilterListItem.module.css";
 
@@ -31,6 +36,8 @@ interface FilterListItemProps<Q extends ObjectTypeDefinition> {
     definition: FilterDefinitionUnion<Q>,
     state: FilterState,
   ) => void;
+  dragHandleAttributes?: DraggableAttributes;
+  dragHandleListeners?: DraggableSyntheticListeners;
   className?: string;
   style?: React.CSSProperties;
 }
@@ -41,6 +48,8 @@ function FilterListItemInner<Q extends ObjectTypeDefinition>({
   definition,
   filterState,
   onFilterStateChanged,
+  dragHandleAttributes,
+  dragHandleListeners,
   className,
   style,
 }: FilterListItemProps<Q>): React.ReactElement {
@@ -60,6 +69,16 @@ function FilterListItemInner<Q extends ObjectTypeDefinition>({
       data-filter-type={definition.type}
     >
       <div className={styles.itemHeader}>
+        {dragHandleAttributes && (
+          <button
+            className={styles.dragHandle}
+            aria-label={`Reorder ${label}`}
+            {...dragHandleAttributes}
+            {...dragHandleListeners}
+          >
+            <DragHandleIcon />
+          </button>
+        )}
         <span className={styles.itemLabel}>{label}</span>
       </div>
 
