@@ -14,17 +14,14 @@
  * limitations under the License.
  */
 
-import "@blueprintjs/core/lib/css/blueprint.css";
-import "@blueprintjs/icons/lib/css/blueprint-icons.css";
 import type { WhereClause } from "@osdk/api";
 import {
-  BaseFilterList,
   type FilterDefinitionUnion,
   FilterList,
   type FilterTemplate,
 } from "@osdk/react-components/experimental";
+import "@osdk/react-components/styles.css";
 import { useOsdkObjects } from "@osdk/react/experimental";
-import "@osdk/react-components/styles/FilterListBundle.css";
 import { useCallback, useState } from "react";
 
 import { List } from "../../components/List.js";
@@ -143,6 +140,13 @@ export function EmployeesWithFilterList(props: EmployeesWithFilterListProps) {
     [],
   );
 
+  const handleFiltersReordered = useCallback(
+    (newOrder: ReadonlyArray<FilterDefinitionUnion<Employee>>) => {
+      setFilterDefinitions([...newOrder]);
+    },
+    [],
+  );
+
   const employees = useOsdkObjects(Employee, {
     where: whereClause,
     orderBy: { fullName: "asc" },
@@ -152,20 +156,6 @@ export function EmployeesWithFilterList(props: EmployeesWithFilterListProps) {
   return (
     <>
       <div style={{ display: "flex", gap: "16px", height: "100%" }}>
-        {/* Base FilterList (unstyled, no Blueprint tokens) */}
-        <div>
-          <h4 style={{ margin: "0 0 8px 0" }}>Base (unstyled)</h4>
-          <BaseFilterList
-            className={styles.employeeFilterList}
-            objectSet={$(Employee)}
-            filterDefinitions={filterDefinitions}
-            onFilterClauseChanged={setWhereClause}
-            title="Filters"
-            showActiveFilterCount={true}
-          />
-        </div>
-
-        {/* Blueprint FilterList (with BP tokens and Add Filter button) */}
         <div>
           <h4 style={{ margin: "0 0 8px 0" }}>Blueprint (styled)</h4>
           <FilterList
@@ -173,6 +163,7 @@ export function EmployeesWithFilterList(props: EmployeesWithFilterListProps) {
             objectSet={$(Employee)}
             filterDefinitions={filterDefinitions}
             onFilterClauseChanged={setWhereClause}
+            onFiltersReordered={handleFiltersReordered}
             filterTemplates={FILTER_TEMPLATES}
             onFilterTemplateSelected={handleFilterTemplateSelected}
             title="Filters"
