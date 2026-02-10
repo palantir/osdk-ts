@@ -72,42 +72,6 @@
   flex-shrink: 0;
 }
 
-.searchInputWrapper {
-  display: flex;
-  align-items: center;
-  gap: var(--osdk-surface-spacing);
-  padding: var(--osdk-surface-spacing) calc(var(--osdk-surface-spacing) * 1.5);
-  border: var(--osdk-surface-border);
-  border-radius: var(--osdk-surface-border-radius);
-
-  &:focus {
-    outline: var(--osdk-focus-outline);
-  }
-}
-
-.searchIcon {
-  width: var(--osdk-iconography-size-small);
-  height: var(--osdk-iconography-size-small);
-  color: var(--osdk-typography-color-muted);
-  pointer-events: none;
-}
-
-.searchInput {
-  border: none;
-  width: 100%;
-  padding: var(--osdk-surface-spacing) 0;
-  font-size: var(--osdk-typography-size-body-medium);
-  font-weight: var(--osdk-typography-size-body-medium);
-
-  &:focus {
-    outline: none;
-  }
-
-  &::placeholder {
-    color: var(--osdk-typography-color-muted);
-  }
-}
-
 .propertiesList {
   flex: 1;
   min-height: 0;

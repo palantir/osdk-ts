@@ -99,30 +99,6 @@ export function EmployeesTable() {
     [],
   );
 
-  const handleOrderByChanged = useCallback(
-    (
-      newOrderBy: Array<{
-        property: string;
-        direction: "asc" | "desc";
-      }>,
-    ) => {
-      console.log("[EmployeesTable] Sorting changed:", newOrderBy);
-    },
-    [],
-  );
-
-  const handleColumnVisibilityChanged = useCallback(
-    (
-      newStates: Array<{
-        columnId: string;
-        isVisible: boolean;
-      }>,
-    ) => {
-      console.log("[EmployeesTable] Column visibility changed:", newStates);
-    },
-    [],
-  );
-
   return (
     <div
       style={{
@@ -132,19 +108,13 @@ export function EmployeesTable() {
     >
       <ObjectTable<Employee, RDPs>
         objectType={Employee}
-        // columnDefinitions={columnDefinitions}
+        columnDefinitions={columnDefinitions}
         selectionMode={"multiple"}
         renderCellContextMenu={renderCellContextMenu}
         defaultOrderBy={[{
-          property: "fullName",
+          property: "firstFullTimeStartDate",
           direction: "desc",
         }]}
-        // onOrderByChanged={handleOrderByChanged}
-        onColumnVisibilityChanged={handleColumnVisibilityChanged}
-        // enableOrdering={true}
-        // enableColumnPinning={false}
-        // enableColumnConfig={true}
-        // enableFiltering={false}
       />
     </div>
   );

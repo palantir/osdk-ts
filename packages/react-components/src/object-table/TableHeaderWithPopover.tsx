@@ -27,7 +27,6 @@ import {
   VerticalDistribution,
 } from "@blueprintjs/icons";
 import type {
-  ColumnOrderState,
   Header,
   RowData,
   SortingState,
@@ -40,7 +39,6 @@ import { type ColumnConfig, ColumnConfigDialog } from "./ColumnConfigDialog.js";
 import { MultiColumnSortDialog } from "./MultiColumnSortDialog.js";
 import { TableHeaderContent } from "./TableHeaderContent.js";
 import styles from "./TableHeaderWithPopover.module.css";
-import { SELECTION_COLUMN_ID } from "./utils/constants.js";
 import type { ColumnOption } from "./utils/types.js";
 
 interface HeaderMenuItemProps {
@@ -222,24 +220,8 @@ export function TableHeaderWithPopover<
         newVisibilityState[update.columnId] = update.isVisible;
       }
 
-      // Update table's column order state
-      if (setColumnOrder) {
-        const newColumnOrder: ColumnOrderState = updates.map(col =>
-          col.columnId
-        );
-        // Insert selection column in the first column
-        if (
-          currentColumnOrder.includes(SELECTION_COLUMN_ID)
-        ) {
-          newColumnOrder.unshift(SELECTION_COLUMN_ID);
-        }
-
-        setColumnOrder(newColumnOrder);
-      }
-
-      if (setColumnVisibility) {
-        setColumnVisibility(newVisibilityState);
-      }
+      setColumnOrder(updates.map(col => col.columnId));
+      setColumnVisibility(newVisibilityState);
     },
     [
       setColumnOrder,

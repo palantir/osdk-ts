@@ -28,7 +28,7 @@
   color: var(--osdk-button-secondary-color);
 
   &:hover {
-    background-color: var(--osdk-surface-background-color-default-hover);
+    background-color: var(--osdk-button-secondary-bg-hover);
   }
 }
 

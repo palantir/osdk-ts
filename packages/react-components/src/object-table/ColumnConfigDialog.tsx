@@ -15,8 +15,7 @@
  */
 
 import { Collapsible } from "@base-ui/react/collapsible";
-import { Input } from "@base-ui/react/input";
-import { CaretDown, Cog, Search } from "@blueprintjs/icons";
+import { CaretDown, Cog } from "@blueprintjs/icons";
 import { arrayMove } from "@dnd-kit/sortable";
 import type { ColumnOrderState, VisibilityState } from "@tanstack/react-table";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
@@ -24,6 +23,7 @@ import { Button } from "../base-components/button/Button.js";
 import { Checkbox } from "../base-components/checkbox/Checkbox.js";
 import { Dialog } from "../base-components/dialog/Dialog.js";
 import { DraggableList } from "../base-components/draggable-list/DraggableList.js";
+import { SearchBar } from "../base-components/search-bar/SearchBar.js";
 import styles from "./ColumnConfigDialog.module.css";
 import type { ColumnOption } from "./utils/types.js";
 
@@ -294,21 +294,13 @@ function AvailableColumnsList({
 
   return (
     <div className={styles.availableColumnsContainer}>
-      <div className={styles.searchContainer}>
-        <div
-          className={styles.searchInputWrapper}
-        >
-          <Search className={styles.searchIcon} />
-          <Input
-            type="text"
-            placeholder="Search available columns"
-            aria-label="Search available columns"
-            value={searchQuery}
-            onChange={onSearchChange}
-            className={styles.searchInput}
-          />
-        </div>
-      </div>
+      <SearchBar
+        value={searchQuery}
+        onChange={onSearchChange}
+        placeholder="Search available columns"
+        aria-label="Search available columns"
+        className={styles.searchContainer}
+      />
       <Collapsible.Root defaultOpen className={styles.propertiesList}>
         <div className={styles.categoryHeader}>
           <Checkbox

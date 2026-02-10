@@ -19,7 +19,6 @@
   flex-direction: column;
   gap: var(--osdk-surface-spacing);
   flex: 1;
-  min-width: calc(var(--osdk-surface-spacing) * 50);
   justify-content: space-between;
 }
 
@@ -74,16 +73,15 @@
   width: 100%;
   padding: calc(var(--osdk-surface-spacing) * 2)
     calc(var(--osdk-surface-spacing) * 3);
-  background-color: var(--osdk-palette-light-gray-5);
-  border: 1px solid var(--osdk-surface-border-color-default);
+  background-color: var(--osdk-button-secondary-bg);
+  border: var(--osdk-surface-border);
   border-radius: var(--osdk-surface-border-radius);
   cursor: pointer;
-  font-size: var(--osdk-typography-size-body-medium);
-  color: var(--osdk-typography-color-muted);
+  color: var(--osdk-button-secondary-color);
   margin-top: calc(var(--osdk-surface-spacing) * 2);
 
   &:hover:not(:disabled) {
-    background-color: var(--osdk-surface-background-color-default-hover);
+    background-color: var(--osdk-button-secondary-bg-hover);
   }
 
   &:disabled {
@@ -112,9 +110,25 @@
   border: var(--osdk-surface-border);
   border-radius: var(--osdk-surface-border-radius);
   box-shadow: var(--osdk-surface-shadow-2);
-  max-height: calc(var(--osdk-surface-spacing) * 31.25);
+  max-height: calc(var(--osdk-dialog-max-height) * 0.5);
   overflow-y: auto;
   width: var(--anchor-width);
+}
+
+.menuSearchContainer {
+  border: none;
+  border-bottom: var(--osdk-surface-border);
+  border-radius: 0;
+  position: sticky;
+  top: 0;
+  background-color: var(--osdk-surface-background-color-default-rest);
+}
+
+.menuEmptyState {
+  padding: calc(var(--osdk-surface-spacing) * 3);
+  text-align: center;
+  color: var(--osdk-typography-color-muted);
+  font-size: var(--osdk-typography-size-body-medium);
 }
 
 .dropdownItem {

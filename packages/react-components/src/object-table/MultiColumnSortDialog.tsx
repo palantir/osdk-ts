@@ -26,6 +26,7 @@ import type { SortingState } from "@tanstack/react-table";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Button } from "../base-components/button/Button.js";
 import { Dialog } from "../base-components/dialog/Dialog.js";
+import { SearchBar } from "../base-components/search-bar/SearchBar.js";
 import styles from "./MultiColumnSortDialog.module.css";
 import { type SortableItem, SortableItemsList } from "./SortableItemsList.js";
 import type { ColumnOption } from "./utils/types.js";
@@ -52,6 +53,7 @@ export function MultiColumnSortDialog({
   const [selectedSortColumns, setSelectedSortColumns] = useState<
     SortColumnItem[]
   >([]);
+  const [menuSearchQuery, setMenuSearchQuery] = useState("");
 
   // Initialize selected sort columns from current sorting
   useEffect(() => {
@@ -117,6 +119,29 @@ export function MultiColumnSortDialog({
     [columnOptions, selectedSortColumns],
   );
 
+  const filteredAvailableColumns = useMemo(() => {
+    const query = menuSearchQuery.toLowerCase().trim();
+    if (!query) {
+      return availableColumns;
+    }
+    return availableColumns.filter((col) =>
+      col.name.toLowerCase().includes(query)
+    );
+  }, [availableColumns, menuSearchQuery]);
+
+  const handleMenuSearchChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      setMenuSearchQuery(event.target.value);
+    },
+    [],
+  );
+
+  const handleMenuOpenChange = useCallback((open: boolean) => {
+    if (open) {
+      setMenuSearchQuery("");
+    }
+  }, []);
+
   const sortableItems: SortableItem[] = useMemo(() => {
     return selectedSortColumns.map((item) => ({
       id: item.id,
@@ -161,8 +186,7 @@ export function MultiColumnSortDialog({
           onRemove={handleRemoveSortColumn}
           className={styles.sortableList}
         />
-
-        <Menu.Root>
+        <Menu.Root onOpenChange={handleMenuOpenChange}>
           <Menu.Trigger
             className={styles.addColumnButton}
             disabled={availableColumns.length === 0}
@@ -175,13 +199,26 @@ export function MultiColumnSortDialog({
           <Menu.Portal>
             <Menu.Positioner className={styles.menuPositioner} sideOffset={4}>
               <Menu.Popup className={styles.dropdownMenu}>
-                {availableColumns.map((column) => (
+                <SearchBar
+                  value={menuSearchQuery}
+                  onChange={handleMenuSearchChange}
+                  placeholder="Search columns"
+                  aria-label="Search columns to sort"
+                  className={styles.menuSearchContainer}
+                  onKeyDown={(e) => e.stopPropagation()}
+                />
+                {filteredAvailableColumns.map((column) => (
                   <AvailableColumnMenuItem
                     key={column.id}
                     column={column}
                     onAddColumn={handleAddColumn}
                   />
                 ))}
+                {filteredAvailableColumns.length === 0 && (
+                  <div className={styles.menuEmptyState}>
+                    No matching columns
+                  </div>
+                )}
               </Menu.Popup>
             </Menu.Positioner>
           </Menu.Portal>
