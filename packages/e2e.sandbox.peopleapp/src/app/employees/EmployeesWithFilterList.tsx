@@ -14,17 +14,14 @@
  * limitations under the License.
  */
 
-import "@blueprintjs/core/lib/css/blueprint.css";
-import "@blueprintjs/icons/lib/css/blueprint-icons.css";
 import type { WhereClause } from "@osdk/api";
 import {
-  BaseFilterList,
   type FilterDefinitionUnion,
   FilterList,
   type FilterTemplate,
 } from "@osdk/react-components/experimental";
+import "@osdk/react-components/styles.css";
 import { useOsdkObjects } from "@osdk/react/experimental";
-import "@osdk/react-components/styles/FilterListBundle.css";
 import { useCallback, useState } from "react";
 
 import { List } from "../../components/List.js";
@@ -69,12 +66,12 @@ interface EmployeesWithFilterListProps {
 
 const INITIAL_FILTER_DEFINITIONS: FilterDefinitionUnion<Employee>[] = [
   {
-    type: "property",
+    type: "PROPERTY",
     id: "department",
     key: "department",
     label: "Department",
     filterComponent: "CHECKBOX_LIST",
-    filterState: { type: "CHECKBOX_LIST", selectedValues: [] },
+    filterState: { type: "SELECT", selectedValues: [] },
   } as FilterDefinitionUnion<Employee>,
 ];
 
@@ -126,19 +123,26 @@ export function EmployeesWithFilterList(props: EmployeesWithFilterListProps) {
   const handleFilterTemplateSelected = useCallback(
     (template: FilterTemplate) => {
       const newFilter: FilterDefinitionUnion<Employee> = {
-        type: "property",
+        type: "PROPERTY",
         id: template.id,
         key: template.key as keyof Employee.Props,
         label: template.label,
         filterComponent: template.filterComponent,
         filterState: template.filterComponent === "CHECKBOX_LIST"
-          ? { type: "CHECKBOX_LIST", selectedValues: [] }
+          ? { type: "SELECT", selectedValues: [] }
           : template.filterComponent === "CONTAINS_TEXT"
           ? { type: "CONTAINS_TEXT", value: undefined }
-          : { type: "CHECKBOX_LIST", selectedValues: [] },
+          : { type: "SELECT", selectedValues: [] },
       } as FilterDefinitionUnion<Employee>;
 
       setFilterDefinitions((prev) => [...prev, newFilter]);
+    },
+    [],
+  );
+
+  const handleFiltersReordered = useCallback(
+    (newOrder: ReadonlyArray<FilterDefinitionUnion<Employee>>) => {
+      setFilterDefinitions([...newOrder]);
     },
     [],
   );
@@ -152,20 +156,6 @@ export function EmployeesWithFilterList(props: EmployeesWithFilterListProps) {
   return (
     <>
       <div style={{ display: "flex", gap: "16px", height: "100%" }}>
-        {/* Base FilterList (unstyled, no Blueprint tokens) */}
-        <div>
-          <h4 style={{ margin: "0 0 8px 0" }}>Base (unstyled)</h4>
-          <BaseFilterList
-            className={styles.employeeFilterList}
-            objectSet={$(Employee)}
-            filterDefinitions={filterDefinitions}
-            onFilterClauseChanged={setWhereClause}
-            title="Filters"
-            showActiveFilterCount={true}
-          />
-        </div>
-
-        {/* Blueprint FilterList (with BP tokens and Add Filter button) */}
         <div>
           <h4 style={{ margin: "0 0 8px 0" }}>Blueprint (styled)</h4>
           <FilterList
@@ -173,6 +163,7 @@ export function EmployeesWithFilterList(props: EmployeesWithFilterListProps) {
             objectSet={$(Employee)}
             filterDefinitions={filterDefinitions}
             onFilterClauseChanged={setWhereClause}
+            onFiltersReordered={handleFiltersReordered}
             filterTemplates={FILTER_TEMPLATES}
             onFilterTemplateSelected={handleFilterTemplateSelected}
             title="Filters"
