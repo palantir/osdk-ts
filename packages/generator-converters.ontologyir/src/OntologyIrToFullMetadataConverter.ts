@@ -611,11 +611,22 @@ export class OntologyIrToFullMetadataConverter {
         throw new Error("Object must have exactly 1 primary key");
       }
 
-      const primaryKey = object.primaryKeys[0];
-      const titleProperty = object.titlePropertyTypeRid;
+      // Build a mapping from property RID to apiName for resolving references
+      const propRidToApiName: Record<string, string> = {};
+      for (const [propRid, prop] of Object.entries(object.propertyTypes)) {
+        propRidToApiName[propRid] = prop.apiName;
+      }
+
+      // Resolve primaryKey and titleProperty from RID to apiName
+      const primaryKeyRid = object.primaryKeys[0];
+      const primaryKey = propRidToApiName[primaryKeyRid] ?? primaryKeyRid;
+      const titlePropertyRid = object.titlePropertyTypeRid;
+      const titleProperty = propRidToApiName[titlePropertyRid]
+        ?? titlePropertyRid;
 
       const properties: Record<ApiName, Ontologies.PropertyV2> = {};
-      for (const [propKey, prop] of Object.entries(object.propertyTypes)) {
+      for (const [propRid, prop] of Object.entries(object.propertyTypes)) {
+        const propApiName = prop.apiName;
         const visibility = prop.displayMetadata.visibility;
         let visibilityEnum: "NORMAL" | "PROMINENT" | "HIDDEN" = "NORMAL";
 
@@ -646,9 +657,9 @@ export class OntologyIrToFullMetadataConverter {
             ] ?? {}),
           } as unknown as Ontologies.PropertyTypeStatus;
 
-          properties[propKey] = {
+          properties[propApiName] = {
             displayName: prop.displayMetadata.displayName,
-            rid: `ri.${object.apiName}.${propKey}`,
+            rid: `ri.${object.apiName}.${propApiName}`,
             status,
             description: prop.displayMetadata.description ?? undefined,
             visibility: visibilityEnum,
