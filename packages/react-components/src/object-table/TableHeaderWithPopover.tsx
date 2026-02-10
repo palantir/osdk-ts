@@ -113,7 +113,6 @@ interface TableHeaderWithPopoverProps<
   table: Table<TData>;
   header: Header<TData, unknown>;
   isColumnPinned: false | "left" | "right";
-  onSortChange?: OnChangeFn<SortingState>;
   onResetSize?: () => void;
   columnOptions?: ColumnOption[];
   featureFlags?: HeaderMenuFeatureFlags;
@@ -125,22 +124,22 @@ export function TableHeaderWithPopover<
   header,
   table,
   isColumnPinned,
-  onSortChange,
   onResetSize,
   columnOptions,
   featureFlags,
 }: TableHeaderWithPopoverProps<TData>): React.ReactElement {
   const {
-    showSortingItems = true,
-    showPinningItems = true,
-    showResizeItem = true,
-    showConfigItem = true,
+    showSortingItems = false,
+    showPinningItems = false,
+    showResizeItem = false,
+    showConfigItem = false,
   } = featureFlags ?? {};
 
   const {
     setColumnPinning,
     setColumnOrder,
     setColumnVisibility,
+    setSorting,
   } = table;
 
   const currentSorting = table.getState().sorting;
@@ -171,18 +170,18 @@ export function TableHeaderWithPopover<
 
   const handleSortAscending = useCallback(() => {
     header.column.toggleSorting(false);
-    onSortChange?.([{ id: header.column.id, desc: false }]);
-  }, [header.column, onSortChange]);
+    setSorting?.([{ id: header.column.id, desc: false }]);
+  }, [header.column, setSorting]);
 
   const handleSortDescending = useCallback(() => {
     header.column.toggleSorting(true);
-    onSortChange?.([{ id: header.column.id, desc: true }]);
-  }, [header.column, onSortChange]);
+    setSorting?.([{ id: header.column.id, desc: true }]);
+  }, [header.column, setSorting]);
 
   const handleClearAllSorts = useCallback(() => {
     header.column.clearSorting();
-    onSortChange?.([]);
-  }, [header.column, onSortChange]);
+    setSorting?.([]);
+  }, [header.column, setSorting]);
 
   const handleResetSize = useCallback(() => {
     header.column.resetSize();
@@ -220,9 +219,9 @@ export function TableHeaderWithPopover<
   const handleApplyMultiSort = useCallback(
     (sortColumns: SortingState) => {
       setMultiSortDialogOpen(false);
-      onSortChange?.(sortColumns);
+      setSorting?.(sortColumns);
     },
-    [onSortChange],
+    [setSorting],
   );
 
   const handleApplyColumnConfig = useCallback(
@@ -316,7 +315,7 @@ export function TableHeaderWithPopover<
                       className={styles.osdkHeaderIcon}
                     />
                   )}
-                {sortIndex >= 0
+                {currentSorting.length > 1 && sortIndex >= 0
                   && <span className={styles.sortIndex}>{sortIndex + 1}</span>}
               </div>
             )}
@@ -339,7 +338,7 @@ export function TableHeaderWithPopover<
               <Menu.Popup
                 className={styles.osdkHeaderPopup}
               >
-                {!isColumnPinned && (
+                {showPinningItems && !isColumnPinned && (
                   <HeaderMenuItem
                     onClick={handlePinLeft}
                     icon={Pin}

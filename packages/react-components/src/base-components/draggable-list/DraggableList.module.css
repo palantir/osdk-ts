@@ -54,10 +54,6 @@
   cursor: grabbing;
 }
 
-.dragHandle:focus-visible {
-  outline: none;
-}
-
 .itemContent {
   flex: 1;
   overflow: hidden;

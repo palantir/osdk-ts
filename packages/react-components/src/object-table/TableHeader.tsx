@@ -17,11 +17,8 @@
 import type {
   Column,
   Header,
-  OnChangeFn,
   RowData,
-  SortingState,
   Table,
-  VisibilityState,
 } from "@tanstack/react-table";
 import React, { useMemo } from "react";
 import styles from "./TableHeader.module.css";
@@ -38,8 +35,6 @@ interface TableHeaderProps<
   TData extends RowData,
 > {
   table: Table<TData>;
-  onSortChange?: OnChangeFn<SortingState>;
-  onColumnVisibilityChanged?: OnChangeFn<VisibilityState>;
   headerMenuFeatureFlags?: HeaderMenuFeatureFlags;
 }
 
@@ -70,8 +65,6 @@ export function TableHeader<
   TData extends RowData,
 >({
   table,
-  onSortChange,
-  onColumnVisibilityChanged,
   headerMenuFeatureFlags,
 }: TableHeaderProps<TData>): React.ReactElement {
   // TODO: If value is number type, right align header
@@ -119,10 +112,9 @@ export function TableHeader<
                   ? <TableHeaderContent header={header} />
                   : (
                     <TableHeaderWithPopover
-                      header={header}
                       table={table}
+                      header={header}
                       isColumnPinned={isColumnPinned}
-                      onSortChange={onSortChange}
                       columnOptions={columnOptions}
                       featureFlags={headerMenuFeatureFlags}
                     />

@@ -214,8 +214,6 @@ export function ObjectTable<
       renderCellContextMenu={onRenderCellContextMenu}
       className={props.className}
       error={error}
-      onSortChange={onSortingChange}
-      onColumnVisibilityChanged={onColumnVisibilityChange}
       headerMenuFeatureFlags={headerMenuFeatureFlags}
     />
   );

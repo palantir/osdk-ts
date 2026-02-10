@@ -17,7 +17,6 @@
 .osdkTableRow {
   position: absolute;
   display: flex;
-  width: 100%;
   background-color: var(--osdk-table-row-bg-default);
   border-top: var(--osdk-table-row-divider);
   border-bottom: var(--osdk-table-border-width) solid transparent;

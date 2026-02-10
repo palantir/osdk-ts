@@ -16,11 +16,8 @@
 
 import type {
   Cell,
-  OnChangeFn,
   RowData,
-  SortingState,
   Table,
-  VisibilityState,
 } from "@tanstack/react-table";
 import classNames from "classnames";
 import React, {
@@ -58,8 +55,6 @@ export interface BaseTableProps<
   ) => React.ReactNode;
   className?: string;
   error?: Error;
-  onSortChange?: OnChangeFn<SortingState>;
-  onColumnVisibilityChanged?: OnChangeFn<VisibilityState>;
   headerMenuFeatureFlags?: HeaderMenuFeatureFlags;
 }
 
@@ -75,8 +70,6 @@ export function BaseTable<
     renderCellContextMenu,
     className,
     error,
-    onSortChange,
-    onColumnVisibilityChanged,
     headerMenuFeatureFlags,
   }: BaseTableProps<TData>,
 ): ReactElement {
@@ -144,8 +137,6 @@ export function BaseTable<
             <>
               <TableHeader
                 table={table}
-                onSortChange={onSortChange}
-                onColumnVisibilityChanged={onColumnVisibilityChanged}
                 headerMenuFeatureFlags={headerMenuFeatureFlags}
               />
               <TableBody
