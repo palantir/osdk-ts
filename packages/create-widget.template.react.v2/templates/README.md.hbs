@@ -2,6 +2,11 @@
 
 This project was generated with [`@osdk/create-widget`](https://www.npmjs.com/package/@osdk/create-widget) and demonstrates developing custom widgets to be embedded within Foundry UIs such as Workshop. It uses the Ontology SDK package `{{osdkPackage}}` with React on top of Vite. Check out the [Vite](https://vitejs.dev/guide/) docs for further configuration. The Vite plugin [`@osdk/widget.vite-plugin`](https://www.npmjs.com/package/@osdk/widget.vite-plugin) automatically generates a `widgets.config.json` manifest file containing metadata about widgets inside this project during the build command.
 
+> **Note:** Custom widget npm library versions are not automatically updated in this repository due to the lockfile dependency versions in `package-lock.json`. This ensures builds are reproducible across developers and Foundry CI. To receive the latest features and bug fixes, periodically update library versions manually by running:
+> ```sh
+> npm install @osdk/widget.client-react@latest @osdk/widget.client@latest @osdk/widget.vite-plugin@latest
+> ```
+
 ## Developing
 
 > **Note:** Before starting development, you need to deploy an initial version of your widget set. See the [Deploying](#deploying) section below to create your first deployment.
