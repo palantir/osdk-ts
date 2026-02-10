@@ -149,7 +149,15 @@ function SelectItem({
   );
 }
 
-export const Select = {
+export const Select: {
+  Root: typeof SelectRoot;
+  Trigger: typeof SelectTrigger;
+  Value: typeof SelectValue;
+  Portal: typeof BaseUISelect.Portal;
+  Positioner: typeof SelectPositioner;
+  Popup: typeof SelectPopup;
+  Item: typeof SelectItem;
+} = {
   Root: SelectRoot,
   Trigger: SelectTrigger,
   Value: SelectValue,

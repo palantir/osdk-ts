@@ -209,7 +209,19 @@ function ComboboxEmpty({
   );
 }
 
-export const Combobox = {
+export const Combobox: {
+  Root: typeof BaseUICombobox.Root;
+  Input: typeof ComboboxInput;
+  Portal: typeof BaseUICombobox.Portal;
+  Positioner: typeof ComboboxPositioner;
+  Popup: typeof ComboboxPopup;
+  Item: typeof ComboboxItem;
+  Chips: typeof ComboboxChips;
+  Chip: typeof ComboboxChip;
+  ChipRemove: typeof ComboboxChipRemove;
+  Clear: typeof ComboboxClear;
+  Empty: typeof ComboboxEmpty;
+} = {
   Root: BaseUICombobox.Root,
   Input: ComboboxInput,
   Portal: BaseUICombobox.Portal,
