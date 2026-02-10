@@ -53,23 +53,23 @@ function buildInitialStates<Q extends ObjectTypeDefinition>(
 
   for (const definition of definitions) {
     switch (definition.type) {
-      case "property": {
+      case "PROPERTY": {
         const state = definition.filterState;
         if (state) {
           states.set(definition, state);
         }
         break;
       }
-      case "hasLink":
-      case "keywordSearch":
-      case "custom": {
+      case "HAS_LINK":
+      case "KEYWORD_SEARCH":
+      case "CUSTOM": {
         const state = definition.defaultFilterState;
         if (state) {
           states.set(definition, state);
         }
         break;
       }
-      case "linkedProperty": {
+      case "LINKED_PROPERTY": {
         const innerState = definition.defaultLinkedFilterState;
         if (innerState) {
           const state: LinkedPropertyFilterState = {

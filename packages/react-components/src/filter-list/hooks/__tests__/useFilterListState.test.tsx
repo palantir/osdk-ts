@@ -18,8 +18,8 @@ import type { ObjectSet } from "@osdk/api";
 import { act, renderHook } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
-  createCheckboxListState,
   createPropertyFilterDef,
+  createSelectState,
   createToggleState,
   MockObjectType,
 } from "../../__tests__/testUtils.js";
@@ -59,7 +59,7 @@ describe("useFilterListState", () => {
   });
 
   it("initializes filter states from filterState for property filters", () => {
-    const initialState = createCheckboxListState([]);
+    const initialState = createSelectState([]);
     const nameDef = createPropertyFilterDef(
       "name",
       "CHECKBOX_LIST",
@@ -76,7 +76,7 @@ describe("useFilterListState", () => {
     const nameDef = createPropertyFilterDef(
       "name",
       "CHECKBOX_LIST",
-      createCheckboxListState([]),
+      createSelectState([]),
     );
     const props = createProps({
       filterDefinitions: [nameDef],
@@ -85,11 +85,11 @@ describe("useFilterListState", () => {
     act(() => {
       result.current.setFilterState(
         nameDef,
-        createCheckboxListState(["selected"]),
+        createSelectState(["selected"]),
       );
     });
     expect(result.current.filterStates.get(nameDef)).toEqual(
-      createCheckboxListState(["selected"]),
+      createSelectState(["selected"]),
     );
   });
 
@@ -98,14 +98,14 @@ describe("useFilterListState", () => {
     const nameDef = createPropertyFilterDef(
       "name",
       "CHECKBOX_LIST",
-      createCheckboxListState([]),
+      createSelectState([]),
     );
     const props = createProps({
       filterDefinitions: [nameDef],
       onFilterStateChanged,
     });
     const { result } = renderHook(() => useFilterListState(props));
-    const newState = createCheckboxListState(["selected"]);
+    const newState = createSelectState(["selected"]);
     act(() => {
       result.current.setFilterState(nameDef, newState);
     });
@@ -116,23 +116,23 @@ describe("useFilterListState", () => {
     const nameDef = createPropertyFilterDef(
       "name",
       "CHECKBOX_LIST",
-      createCheckboxListState([]),
+      createSelectState([]),
     );
     const props = createProps({
       filterDefinitions: [nameDef],
     });
     const { result } = renderHook(() => useFilterListState(props));
     act(() => {
-      result.current.setFilterState(nameDef, createCheckboxListState(["John"]));
+      result.current.setFilterState(nameDef, createSelectState(["John"]));
     });
-    expect(result.current.whereClause).toEqual({ name: { $in: ["John"] } });
+    expect(result.current.whereClause).toEqual({ name: "John" });
   });
 
   it("handles multiple filter definitions", () => {
     const nameDef = createPropertyFilterDef(
       "name",
       "CHECKBOX_LIST",
-      createCheckboxListState([]),
+      createSelectState([]),
     );
     const activeDef = createPropertyFilterDef(
       "active",
@@ -144,11 +144,11 @@ describe("useFilterListState", () => {
     });
     const { result } = renderHook(() => useFilterListState(props));
     act(() => {
-      result.current.setFilterState(nameDef, createCheckboxListState(["John"]));
+      result.current.setFilterState(nameDef, createSelectState(["John"]));
       result.current.setFilterState(activeDef, createToggleState(true));
     });
     expect(result.current.whereClause).toEqual({
-      $and: [{ name: { $in: ["John"] } }, { active: true }],
+      $and: [{ name: "John" }, { active: true }],
     });
   });
 });
