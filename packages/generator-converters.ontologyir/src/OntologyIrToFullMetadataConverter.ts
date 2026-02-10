@@ -152,7 +152,17 @@ function discoverPythonFunctions(
   }
 
   try {
-    const output = JSON.parse(result.stdout) as IPythonDiscoveryResult;
+    // The Python command may output log lines before the JSON
+    // Find the JSON object which starts with {"functions":
+    const stdout = result.stdout;
+    const jsonStart = stdout.indexOf("{\"functions\":");
+    if (jsonStart === -1) {
+      // eslint-disable-next-line no-console
+      console.error(`No JSON found in Python discovery output: ${stdout}`);
+      return null;
+    }
+    const jsonStr = stdout.slice(jsonStart);
+    const output = JSON.parse(jsonStr) as IPythonDiscoveryResult;
     return output;
   } catch {
     // eslint-disable-next-line no-console
