@@ -150,7 +150,6 @@ describe(useColumnVisibility, () => {
       expect(result.current.columnVisibility).toEqual({
         name: true,
         email: false,
-        age: true,
       });
 
       expect(onColumnVisibilityChanged).toHaveBeenCalledWith([
@@ -210,7 +209,6 @@ describe(useColumnVisibility, () => {
       const { result } = renderHook(() =>
         useColumnVisibility<TestObject>({
           allColumns,
-          hasSelectionColumn: true,
         })
       );
 

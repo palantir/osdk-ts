@@ -1,0 +1,80 @@
+:root {
+  /* Table Border */
+  --osdk-table-border-color: var(--osdk-surface-border-color-default);
+  --osdk-table-border-width: var(--osdk-surface-border-width);
+  --osdk-table-border: var(--osdk-table-border-width) solid
+    var(--osdk-table-border-color);
+
+  --osdk-table-header-divider: var(--osdk-table-border);
+  --osdk-table-cell-divider: var(--osdk-table-border-width) solid transparent;
+  --osdk-table-row-divider: var(--osdk-table-border);
+  --osdk-table-pinned-column-border: calc(var(--osdk-table-border-width) * 2)
+    solid var(--osdk-table-border-color);
+
+  /* Table Header */
+  --osdk-table-header-height: 50px;
+  --osdk-table-header-bg: var(--osdk-palette-light-gray-5);
+  --osdk-table-header-fontWeight: var(--osdk-typography-weight-bold);
+  --osdk-table-header-fontSize: var(--osdk-typography-size-body-small);
+  --osdk-table-header-color: var(--osdk-typography-color-muted);
+
+  /* Table Row */
+  --osdk-table-row-bg-default: var(--osdk-palette-white);
+  --osdk-table-row-bg-alternate: var(--osdk-palette-light-gray-4);
+  --osdk-table-row-bg-hover: color-mix(
+    in srgb,
+    var(--osdk-intent-primary-hover) 10%,
+    var(--osdk-palette-white)
+  );
+  --osdk-table-row-bg-active: color-mix(
+    in srgb,
+    var(--osdk-intent-primary-hover) 10%,
+    var(--osdk-palette-white)
+  );
+  --osdk-table-row-border-color-hover: var(--osdk-intent-primary-rest);
+  --osdk-table-row-border-color-active: var(--osdk-intent-primary-rest);
+
+  /* Table Cell */
+  --osdk-table-cell-padding: 0 calc(var(--osdk-surface-spacing) * 2);
+  --osdk-table-cell-fontSize: var(--osdk-typography-size-body-medium);
+  --osdk-table-cell-color: var(--osdk-typography-color-default-rest);
+
+  /* Table Header Menu */
+  --osdk-table-header-menu-padding: calc(var(--osdk-surface-spacing) * 0.25);
+  --osdk-table-header-menu-bg: oklch(
+    from var(--osdk-palette-light-gray-5) l c h / 0.5
+  );
+  --osdk-table-header-menu-border: var(--osdk-surface-border-width) solid
+    oklch(from var(--osdk-palette-gray-1) l c h / 0.2);
+  --osdk-table-header-menu-color: var(--osdk-typography-color-muted);
+  --osdk-table-header-menu-color-active: var(
+    --osdk-typography-color-default-rest
+  );
+  --osdk-table-header-menu-bg-hover: oklch(
+    from var(--osdk-palette-gray-1) l c h / 0.05
+  );
+  --osdk-table-header-menu-bg-active: oklch(
+    from var(--osdk-palette-gray-1) l c h / 0.08
+  );
+
+  /* Resizer */
+  --osdk-table-resizer-color-hover: oklch(
+    from var(--osdk-intent-primary-rest) l c h / 0.5
+  );
+  --osdk-table-resizer-color-active: var(--osdk-intent-primary-rest);
+
+  /* Table Skeleton loading */
+  --osdk-table-skeleton-color-from: oklch(
+    from var(--osdk-palette-light-gray-1) l c h / 0.4
+  );
+  --osdk-table-skeleton-color-to: oklch(
+    from var(--osdk-palette-gray-1) l c h / 0.4
+  );
+  --osdk-table-skeleton-border-color: oklch(
+    from var(--osdk-palette-light-gray-1) l c h / 0.6
+  );
+
+  /* Column Config Dialog */
+  --osdk-table-column-config-dialog-min-width: 800px;
+  --osdk-table-column-config-dialog-min-height: 400px;
+}

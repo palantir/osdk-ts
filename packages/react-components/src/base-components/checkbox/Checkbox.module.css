@@ -55,12 +55,7 @@
     }
   }
 
-  &:focus {
-    outline: none;
-  }
-
   &:focus-visible {
-    outline: var(--osdk-focus-visible-outline);
     outline-offset: calc(-1 * var(--osdk-focus-visible-outline-offset));
   }
 }

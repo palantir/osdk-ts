@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { Button } from "@base-ui/react/button";
 import { Dialog as BaseUIDialog } from "@base-ui/react/dialog";
 import { Cross } from "@blueprintjs/icons";
 import classnames from "classnames";
@@ -24,7 +23,7 @@ import styles from "./Dialog.module.css";
 export interface DialogProps {
   isOpen: boolean;
   onOpenChange: () => void;
-  title: string;
+  title: React.ReactNode;
   children: React.ReactNode;
   footer?: React.ReactNode;
   className?: string;
@@ -48,49 +47,21 @@ export function Dialog({
             className,
           )}
         >
-          <BaseUIDialog.Title className={styles.title}>
-            {title}
-          </BaseUIDialog.Title>
+          <div className={styles.header}>
+            <BaseUIDialog.Title className={styles.title}>
+              {title}
+            </BaseUIDialog.Title>
+            <BaseUIDialog.Close
+              className={styles.closeButton}
+              aria-label="Close dialog"
+            >
+              <Cross className={styles.closeIcon} />
+            </BaseUIDialog.Close>
+          </div>
           <div className={styles.body}>{children}</div>
           {footer != null && <div className={styles.footer}>{footer}</div>}
-          <BaseUIDialog.Close className={styles.closeButton}>
-            <Cross className={styles.closeIcon} />
-          </BaseUIDialog.Close>
         </BaseUIDialog.Popup>
       </BaseUIDialog.Portal>
     </BaseUIDialog.Root>
-  );
-}
-
-export interface DialogFooterProps {
-  children: React.ReactNode;
-}
-
-export function DialogFooter({
-  children,
-}: DialogFooterProps): React.ReactElement {
-  return <div className={styles.footerActions}>{children}</div>;
-}
-
-export interface DialogButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>
-{
-  variant?: "primary" | "secondary";
-}
-
-export function DialogButton({
-  variant = "secondary",
-  className,
-  ...rest
-}: DialogButtonProps): React.ReactElement {
-  return (
-    <Button
-      className={classnames(
-        styles.button,
-        variant === "primary" ? styles.primaryButton : styles.secondaryButton,
-        className,
-      )}
-      {...rest}
-    />
   );
 }

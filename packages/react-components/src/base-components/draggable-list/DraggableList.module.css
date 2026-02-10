@@ -29,7 +29,6 @@
   background-color: var(--osdk-draggable-item-bg);
   border: var(--osdk-draggable-item-border);
   border-radius: var(--osdk-draggable-item-border-radius);
-  transition: background-color 0.2s ease;
   width: 100%;
   touch-action: none;
   user-select: none;
@@ -43,7 +42,6 @@
   display: flex;
   cursor: grab;
   color: var(--osdk-draggable-item-drag-icon-color);
-  outline: none;
 }
 
 .dragHandle:hover {
@@ -64,25 +62,24 @@
 .removeButton {
   background: none;
   border: none;
-  padding: calc(var(--osdk-surface-spacing) / 4);
+  padding: var(--osdk-surface-spacing);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--osdk-draggable-item-drag-icon-color);
-  transition:
-    background-color 0.2s ease,
-    color 0.2s ease;
   border-radius: var(--osdk-surface-border-radius);
-}
 
-.removeButton:hover {
-  color: var(--osdk-intent-danger-rest);
-}
+  &:hover {
+    color: var(--osdk-typography-color-danger-rest);
+  }
 
-.icon {
-  width: var(--osdk-draggable-item-icon-size);
-  height: var(--osdk-draggable-item-icon-size);
+  &:active {
+    color: var(--osdk-typography-color-danger-rest);
+    background: oklch(
+      from var(--osdk-surface-background-color-danger-hover) l c h / 0.2
+    );
+  }
 }
 
 .emptyState {

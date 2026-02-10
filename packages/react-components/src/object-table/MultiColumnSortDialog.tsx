@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { Button } from "@base-ui/react/button";
 import { Menu } from "@base-ui/react/menu";
 import {
   Add,
@@ -22,9 +21,11 @@ import {
   SortAlphabetical,
   SortAlphabeticalDesc,
 } from "@blueprintjs/icons";
+import { arrayMove } from "@dnd-kit/sortable";
 import type { SortingState } from "@tanstack/react-table";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { Dialog, DialogButton } from "../base-components/dialog/Dialog.js";
+import { Button } from "../base-components/button/Button.js";
+import { Dialog } from "../base-components/dialog/Dialog.js";
 import styles from "./MultiColumnSortDialog.module.css";
 import { type SortableItem, SortableItemsList } from "./SortableItemsList.js";
 import type { ColumnOption } from "./utils/types.js";
@@ -82,12 +83,7 @@ export function MultiColumnSortDialog({
 
   const handleReorderSortColumns = useCallback(
     (fromIndex: number, toIndex: number) => {
-      setSelectedSortColumns((prev) => {
-        const newColumns = [...prev];
-        const [removed] = newColumns.splice(fromIndex, 1);
-        newColumns.splice(toIndex, 0, removed);
-        return newColumns;
-      });
+      setSelectedSortColumns((items) => arrayMove(items, fromIndex, toIndex));
     },
     [],
   );
@@ -144,10 +140,10 @@ export function MultiColumnSortDialog({
 
   const footer = (
     <>
-      <DialogButton onClick={onClose}>Cancel</DialogButton>
-      <DialogButton variant="primary" onClick={handleApply}>
+      <Button onClick={onClose}>Cancel</Button>
+      <Button variant="primary" onClick={handleApply}>
         Apply Sorts
-      </DialogButton>
+      </Button>
     </>
   );
 
@@ -170,6 +166,7 @@ export function MultiColumnSortDialog({
           <Menu.Trigger
             className={styles.addColumnButton}
             disabled={availableColumns.length === 0}
+            aria-label="Add column to sort"
           >
             <Add className={styles.addIcon} />
             <span className={styles.addColumnText}>Add Column to Sort</span>

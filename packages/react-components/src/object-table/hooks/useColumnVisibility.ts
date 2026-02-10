@@ -44,7 +44,6 @@ interface UseColumnVisibilityProps<
       isVisible: boolean;
     }>,
   ) => void;
-  hasSelectionColumn?: boolean;
 }
 
 interface UseColumnVisibilityResult {
@@ -66,7 +65,6 @@ export const useColumnVisibility = <
   {
     allColumns,
     onColumnVisibilityChanged,
-    hasSelectionColumn,
   }: UseColumnVisibilityProps<Q, RDPs, FunctionColumns, TData>,
 ): UseColumnVisibilityResult => {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
@@ -83,7 +81,7 @@ export const useColumnVisibility = <
 
   useEffect(() => {
     setColumnOrder(getColumnOrder(allColumns));
-  }, [allColumns, hasSelectionColumn]);
+  }, [allColumns]);
 
   const onColumnVisibilityChange: OnChangeFn<VisibilityState> = useCallback(
     (updaterOrValue) => {

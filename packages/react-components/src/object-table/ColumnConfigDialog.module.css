@@ -14,23 +14,22 @@
  * limitations under the License.
  */
 
-.content {
-  /* Override dialog sizing for column config */
-  --osdk-dialog-min-width: 800px;
-  --osdk-dialog-min-height: 400px;
+.title {
+  display: flex;
+  align-items: center;
+  gap: var(--osdk-surface-spacing);
+}
 
-  /* Override body padding from base Dialog since we have custom layout */
-  & > div:nth-child(2) {
-    padding: 0;
-  }
+.content {
+  --osdk-dialog-min-width: var(--osdk-table-column-config-dialog-min-width);
+  --osdk-dialog-min-height: var(--osdk-table-column-config-dialog-min-height);
 }
 
 .dialogLayout {
   display: flex;
   flex-direction: row;
   gap: calc(var(--osdk-surface-spacing) * 4);
-  padding: calc(var(--osdk-surface-spacing) * 4)
-    calc(var(--osdk-surface-spacing) * 5);
+  padding: calc(var(--osdk-surface-spacing) * 3) var(--osdk-surface-spacing);
   flex: 1;
   min-height: 0;
   overflow: hidden;
@@ -38,7 +37,6 @@
 
 .visibleColumnsContainer {
   flex: 1.5;
-  min-width: 250px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -46,7 +44,6 @@
 
 .availableColumnsContainer {
   flex: 1;
-  min-width: 250px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -76,15 +73,19 @@
 }
 
 .searchInputWrapper {
-  position: relative;
   display: flex;
   align-items: center;
-  gap: calc(var(--osdk-surface-spacing) * 2);
+  gap: var(--osdk-surface-spacing);
+  padding: var(--osdk-surface-spacing) calc(var(--osdk-surface-spacing) * 1.5);
+  border: var(--osdk-surface-border);
+  border-radius: var(--osdk-surface-border-radius);
+
+  &:focus {
+    outline: var(--osdk-focus-outline);
+  }
 }
 
 .searchIcon {
-  position: absolute;
-  left: calc(var(--osdk-surface-spacing) * 1.25);
   width: var(--osdk-iconography-size-small);
   height: var(--osdk-iconography-size-small);
   color: var(--osdk-typography-color-muted);
@@ -92,16 +93,15 @@
 }
 
 .searchInput {
+  border: none;
   width: 100%;
-  padding: var(--osdk-surface-spacing) calc(var(--osdk-surface-spacing) * 2)
-    var(--osdk-surface-spacing) calc(var(--osdk-surface-spacing) * 6);
-  border: var(--osdk-surface-border-width) solid
-    var(--osdk-surface-border-color-default);
-  border-radius: var(--osdk-surface-border-radius);
+  padding: var(--osdk-surface-spacing) 0;
   font-size: var(--osdk-typography-size-body-medium);
   font-weight: var(--osdk-typography-size-body-medium);
-  outline: none;
-  transition: border-color 0.2s;
+
+  &:focus {
+    outline: none;
+  }
 
   &::placeholder {
     color: var(--osdk-typography-color-muted);
@@ -154,7 +154,6 @@
 
 .caretIcon {
   color: var(--osdk-typography-color-muted);
-  transition: transform 0.2s ease;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -191,7 +190,6 @@
   border: none;
   cursor: pointer;
   text-align: left;
-  transition: background-color 0.2s;
 
   &:hover {
     background-color: var(--osdk-surface-background-color-default-hover);

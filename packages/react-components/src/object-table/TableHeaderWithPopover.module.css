@@ -41,7 +41,6 @@
   flex-shrink: 0;
 }
 
-/* Header Text */
 .osdkHeaderText {
   display: -webkit-box;
   -webkit-box-orient: vertical;
@@ -53,7 +52,7 @@
 }
 
 .osdkHeaderPopoverTrigger {
-  padding: var(--osdk-table-header-menu-padding, 1px);
+  padding: var(--osdk-table-header-menu-padding);
   flex-shrink: 0;
   flex-grow: 0;
   background-color: var(--osdk-table-header-menu-bg);
@@ -62,20 +61,14 @@
   color: var(--osdk-table-header-menu-color);
   cursor: pointer;
   user-select: none;
-  outline: none;
 
   &:hover {
     background-color: var(--osdk-table-header-menu-bg-hover);
   }
 
   &[data-popup-open] {
-    background-color: var(--osdk-table-header-menu-bg-open);
+    background-color: var(--osdk-table-header-menu-bg-active);
     color: var(--osdk-table-header-menu-color-active);
-  }
-
-  &:focus-visible {
-    outline: var(--osdk-focus-visible-outline);
-    outline-offset: var(--osdk-focus-visible-outline-offset);
   }
 }
 
@@ -84,66 +77,43 @@
   height: var(--osdk-iconography-size-small);
 }
 
-/* Sort Icon */
-.osdkSortIcon {
-  color: var(--osdk-table-header-menu-icon-color);
-  flex-shrink: 0;
-  line-height: 1;
-  margin-right: calc(var(--osdk-surface-spacing) * 0.75);
-}
-
-/* Pinned Icon */
-.osdkPinnedIcon {
-  color: var(--osdk-table-header-menu-icon-color);
-  flex-shrink: 0;
-  line-height: 1;
-  margin-right: calc(var(--osdk-surface-spacing) * 0.75);
-  position: relative;
-  top: 0;
-}
-
 .osdkHeaderPopup {
   box-sizing: border-box;
   padding: var(--osdk-surface-spacing);
   border-radius: var(--osdk-surface-border-radius);
-  border: var(--osdk-surface-border-width) solid
-    var(--osdk-surface-border-color-default);
-  background-color: var(--osdk-surface-background-color-default);
+  border: var(--osdk-surface-border);
+  background-color: var(--osdk-surface-background-color-default-rest);
   color: var(--osdk-typography-color-default-rest);
   box-shadow: var(--osdk-surface-shadow-2);
   font-size: var(--osdk-typography-size-body-medium);
-  outline: none;
 }
 
 .osdkHeaderMenuItem {
   justify-content: flex-start;
   padding: var(--osdk-surface-spacing);
   cursor: pointer;
+
+  &:hover {
+    background-color: var(--osdk-surface-background-color-default-hover);
+    border-radius: var(--osdk-surface-border-radius);
+  }
 }
 
-.osdkHeaderMenuItem:hover {
-  outline: none;
-  background-color: var(--osdk-surface-background-color-default-hover);
-  border-radius: var(--osdk-surface-border-radius);
-}
-
-.osdkHeaderActiveMenuItem {
+.osdkHeaderMenuItem .osdkHeaderActiveMenuItem {
   background-color: var(--osdk-intent-primary-rest);
   color: var(--osdk-intent-primary-foreground);
+
+  &:hover {
+    background-color: var(--osdk-intent-primary-hover);
+  }
+
+  &:active {
+    background-color: var(--osdk-intent-primary-active);
+  }
 }
 
-.osdkHeaderActiveMenuItem:hover {
-  background-color: var(--osdk-intent-primary-hover);
-}
-
-.osdkHeaderActiveMenuItem:active {
-  background-color: var(--osdk-intent-primary-active);
-}
-
-/* Sort Index Badge */
 .sortIndex {
-  font-size: var(--osdk-typography-size-caption-medium);
-  margin-left: 4px;
-  color: var(--osdk-typography-color-subtle-rest);
-  font-weight: 500;
+  font-size: var(--osdk-typography-size-body-x-small);
+  margin-left: var(--osdk-surface-spacing);
+  color: var(--osdk-typography-color-muted);
 }

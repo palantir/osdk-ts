@@ -14,16 +14,15 @@
  * limitations under the License.
  */
 
-import { Button } from "@base-ui/react/button";
 import { Collapsible } from "@base-ui/react/collapsible";
 import { Input } from "@base-ui/react/input";
-import { CaretDown, Search } from "@blueprintjs/icons";
+import { CaretDown, Cog, Search } from "@blueprintjs/icons";
 import { arrayMove } from "@dnd-kit/sortable";
 import type { ColumnOrderState, VisibilityState } from "@tanstack/react-table";
-import classNames from "classnames";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { Button } from "../base-components/button/Button.js";
 import { Checkbox } from "../base-components/checkbox/Checkbox.js";
-import { Dialog, DialogButton } from "../base-components/dialog/Dialog.js";
+import { Dialog } from "../base-components/dialog/Dialog.js";
 import { DraggableList } from "../base-components/draggable-list/DraggableList.js";
 import styles from "./ColumnConfigDialog.module.css";
 import type { ColumnOption } from "./utils/types.js";
@@ -33,15 +32,18 @@ export interface ColumnConfig {
   isVisible: boolean;
 }
 
+export type ColumnConfigOptions = Array<Pick<ColumnOption, "id" | "name">>;
+
 export interface ColumnConfigDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  columnOptions: ColumnOption[];
+  columnOptions: ColumnConfigOptions;
   currentVisibility?: VisibilityState;
   currentColumnOrder?: ColumnOrderState;
   onApply: (
     columns: ColumnConfig[],
   ) => void;
+  isValidConfig?: (columns: ColumnConfig[]) => boolean;
 }
 
 interface ColumnItem {
@@ -57,6 +59,7 @@ export function ColumnConfigDialog({
   currentVisibility,
   currentColumnOrder,
   onApply,
+  isValidConfig,
 }: ColumnConfigDialogProps):
   | React.ReactElement
   | null
@@ -64,7 +67,7 @@ export function ColumnConfigDialog({
   const [visibleColumns, setVisibleColumns] = useState<ColumnItem[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
 
-  const allColumns = useMemo(() => {
+  const allColumns: ColumnItem[] = useMemo(() => {
     return columnOptions.map((opt) => {
       const isVisible = currentVisibility
         ? currentVisibility[opt.id]
@@ -101,20 +104,16 @@ export function ColumnConfigDialog({
   }, [isOpen, allColumns, currentColumnOrder]);
 
   const handleApply = useCallback(() => {
-    const hiddenColumns = allColumns.filter(
-      (col) => !visibleColumns.some((v) => v.id === col.id),
-    );
-
-    const result: ColumnConfig[] = [
-      ...visibleColumns.map((col) => ({ columnId: col.id, isVisible: true })),
-      ...hiddenColumns.map((col) => ({ columnId: col.id, isVisible: false })),
-    ];
-
-    onApply(result);
+    onApply(getColumnConfig(allColumns, visibleColumns));
     onClose();
   }, [allColumns, visibleColumns, onApply, onClose]);
 
-  const isApplyDisabled = visibleColumns.length === 0;
+  // If no condition provided, default to valid
+  const isValid = isValidConfig
+    ? isValidConfig(getColumnConfig(allColumns, visibleColumns))
+    : true;
+
+  const isApplyDisabled = visibleColumns.length === 0 || !isValid;
 
   const handleReorderColumns = useCallback(
     (fromIndex: number, toIndex: number) => {
@@ -179,14 +178,14 @@ export function ColumnConfigDialog({
 
   const footer = (
     <>
-      <DialogButton onClick={onClose}>Cancel</DialogButton>
-      <DialogButton
+      <Button onClick={onClose}>Cancel</Button>
+      <Button
         variant="primary"
         onClick={handleApply}
         disabled={isApplyDisabled}
       >
         Apply
-      </DialogButton>
+      </Button>
     </>
   );
 
@@ -194,7 +193,7 @@ export function ColumnConfigDialog({
     <Dialog
       isOpen={isOpen}
       onOpenChange={onClose}
-      title="Configure Columns"
+      title={DialogTitle}
       footer={footer}
       className={styles.content}
     >
@@ -216,6 +215,26 @@ export function ColumnConfigDialog({
     </Dialog>
   );
 }
+
+const DialogTitle = (
+  <div className={styles.title}>
+    <Cog />Configure Columns
+  </div>
+);
+
+const getColumnConfig = (
+  allColumns: ColumnItem[],
+  visibleColumns: ColumnItem[],
+): ColumnConfig[] => {
+  const hiddenColumns = allColumns.filter(
+    (col) => !visibleColumns.some((v) => v.id === col.id),
+  );
+
+  return [
+    ...visibleColumns.map((col) => ({ columnId: col.id, isVisible: true })),
+    ...hiddenColumns.map((col) => ({ columnId: col.id, isVisible: false })),
+  ];
+};
 
 interface VisibleColumnsListProps {
   columns: ColumnItem[];
@@ -277,15 +296,13 @@ function AvailableColumnsList({
     <div className={styles.availableColumnsContainer}>
       <div className={styles.searchContainer}>
         <div
-          className={classNames(
-            styles.searchInputWrapper,
-            styles.searchInputFocus,
-          )}
+          className={styles.searchInputWrapper}
         >
           <Search className={styles.searchIcon} />
           <Input
             type="text"
             placeholder="Search available columns"
+            aria-label="Search available columns"
             value={searchQuery}
             onChange={onSearchChange}
             className={styles.searchInput}

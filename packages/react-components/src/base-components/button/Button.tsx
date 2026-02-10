@@ -14,14 +14,30 @@
  * limitations under the License.
  */
 
-.container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+import { Button as BaseUIButton } from "@base-ui/react/button";
+import classNames from "classnames";
+import React from "react";
+import styles from "./Button.module.css";
+
+export interface ButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement>
+{
+  variant?: "primary" | "secondary";
 }
 
-.message {
-  padding: calc(var(--osdk-surface-spacing) * 5);
-  color: var(--osdk-typography-color-muted);
-  font-style: italic;
+export function Button({
+  variant = "secondary",
+  className,
+  ...rest
+}: ButtonProps): React.ReactElement {
+  return (
+    <BaseUIButton
+      className={classNames(
+        styles.button,
+        variant === "primary" ? styles.primaryButton : styles.secondaryButton,
+        className,
+      )}
+      {...rest}
+    />
+  );
 }

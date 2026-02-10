@@ -32,7 +32,7 @@
 .osdkTableHeaderRow {
   display: flex;
   width: 100%;
-  border-bottom: var(--osdk-table-header-border-bottom);
+  border-bottom: var(--osdk-table-border);
 }
 
 .osdkTableHeaderCell {

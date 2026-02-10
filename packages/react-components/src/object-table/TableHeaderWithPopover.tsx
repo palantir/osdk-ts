@@ -407,9 +407,9 @@ export function TableHeaderWithPopover<
         <MultiColumnSortDialog
           isOpen={multiSortDialogOpen}
           onClose={handleCloseMultiSort}
-          onApply={handleApplyMultiSort}
-          currentSorting={currentSorting ?? []}
           columnOptions={columnOptions}
+          currentSorting={currentSorting}
+          onApply={handleApplyMultiSort}
         />
       )}
     </>

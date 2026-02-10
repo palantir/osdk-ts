@@ -17,7 +17,7 @@
 .backdrop {
   position: fixed;
   inset: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: var(--osdk-dialog-backdrop-bg);
   z-index: var(--osdk-surface-z-index-1);
 }
 
@@ -31,62 +31,50 @@
   min-height: var(--osdk-dialog-min-height);
   max-height: var(--osdk-dialog-max-height);
   background-color: var(--osdk-dialog-bg);
-  border-radius: var(--osdk-dialog-border-radius);
+  border-radius: var(--osdk-surface-border-radius);
   box-shadow: var(--osdk-dialog-shadow);
   z-index: var(--osdk-surface-z-index-2);
-  overflow: hidden;
   display: flex;
   flex-direction: column;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--osdk-dialog-header-padding);
+  border-bottom: var(--osdk-surface-border);
 }
 
 .title {
   font-size: var(--osdk-dialog-title-font-size);
   font-weight: var(--osdk-dialog-title-font-weight);
-  padding: var(--osdk-dialog-padding-vertical)
-    var(--osdk-dialog-padding-horizontal);
-  margin: 0;
-  border-bottom: var(--osdk-surface-border-width) solid
-    var(--osdk-surface-border-color-default);
 }
 
 .body {
   display: flex;
-  padding: var(--osdk-dialog-padding-vertical)
-    var(--osdk-dialog-padding-horizontal);
+  padding: var(--osdk-dialog-body-padding);
   overflow-y: auto;
   flex: 1;
-  min-height: 0;
 }
 
 .footer {
   display: flex;
   justify-content: flex-end;
-  gap: var(--osdk-dialog-footer-gap);
-  padding: var(--osdk-dialog-footer-padding-vertical)
-    var(--osdk-dialog-padding-horizontal);
-  border-top: var(--osdk-surface-border-width) solid
-    var(--osdk-surface-border-color-default);
-}
-
-.footerActions {
-  display: flex;
-  justify-content: flex-end;
-  gap: var(--osdk-dialog-footer-gap);
+  gap: calc(var(--osdk-surface-spacing) * 2);
+  padding: var(--osdk-dialog-footer-padding);
+  border-top: var(--osdk-surface-border);
 }
 
 .closeButton {
-  position: absolute;
-  top: var(--osdk-dialog-close-button-offset);
-  right: var(--osdk-dialog-close-button-offset);
   background: none;
   border: none;
-  padding: var(--osdk-dialog-close-button-padding);
+  padding: calc(var(--osdk-surface-spacing) * 0.5);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: var(--osdk-surface-border-radius);
-  transition: background-color 0.2s;
 
   &:hover {
     background-color: var(--osdk-surface-background-color-default-hover);
@@ -99,41 +87,3 @@
   color: var(--osdk-typography-color-muted);
 }
 
-.button {
-  padding: calc(var(--osdk-surface-spacing) * 2)
-    calc(var(--osdk-surface-spacing) * 4);
-  border-radius: var(--osdk-surface-border-radius);
-  font-size: var(--osdk-typography-size-body-medium);
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.secondaryButton {
-  background-color: var(--osdk-palette-light-gray-5);
-  border: var(--osdk-surface-border-width) solid
-    var(--osdk-surface-border-color-default);
-  color: var(--osdk-typography-color-muted);
-
-  &:hover {
-    background-color: var(--osdk-surface-background-color-default-hover);
-  }
-}
-
-.primaryButton {
-  background-color: var(--osdk-intent-primary-rest);
-  border: none;
-  color: var(--osdk-intent-primary-foreground);
-
-  &:hover:not(:disabled) {
-    background-color: var(--osdk-intent-primary-hover);
-  }
-
-  &:active:not(:disabled) {
-    background-color: var(--osdk-intent-primary-active);
-  }
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-}

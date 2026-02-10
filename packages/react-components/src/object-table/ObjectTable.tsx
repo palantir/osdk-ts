@@ -126,19 +126,14 @@ export function ObjectTable<
     { selectionMode, isAllSelected, hasSelection, onToggleAll, onToggleRow },
   );
 
-  const allColumns = useMemo(() => {
-    return selectionColumn ? [selectionColumn, ...columns] : columns;
-  }, [selectionColumn, columns]);
-
   const {
     columnVisibility,
     onColumnVisibilityChange,
     columnOrder,
     onColumnOrderChange,
   } = useColumnVisibility({
-    allColumns,
+    allColumns: columns,
     onColumnVisibilityChanged,
-    hasSelectionColumn: enableRowSelection,
   });
 
   const { columnPinning, onColumnPinningChange } = useColumnPinning({
@@ -146,6 +141,10 @@ export function ObjectTable<
     hasSelectionColumn: enableRowSelection,
     onColumnsPinnedChanged,
   });
+
+  const allColumns = useMemo(() => {
+    return selectionColumn ? [selectionColumn, ...columns] : columns;
+  }, [selectionColumn, columns]);
 
   const table = useReactTable<
     Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>

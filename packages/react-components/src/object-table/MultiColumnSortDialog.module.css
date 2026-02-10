@@ -51,13 +51,12 @@
 .sortDirectionButton {
   background: none;
   border: none;
-  padding: calc(var(--osdk-surface-spacing) / 2);
+  padding: var(--osdk-surface-spacing);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: var(--osdk-surface-border-radius);
-  transition: background-color 0.2s;
 
   &:hover {
     background-color: var(--osdk-surface-background-color-default-hover);
@@ -81,7 +80,6 @@
   cursor: pointer;
   font-size: var(--osdk-typography-size-body-medium);
   color: var(--osdk-typography-color-muted);
-  transition: all 0.2s;
   margin-top: calc(var(--osdk-surface-spacing) * 2);
 
   &:hover:not(:disabled) {
@@ -110,9 +108,8 @@
 }
 
 .dropdownMenu {
-  background-color: var(--osdk-surface-background-color-default);
-  border: var(--osdk-surface-border-width) solid
-    var(--osdk-surface-border-color-default);
+  background-color: var(--osdk-surface-background-color-default-rest);
+  border: var(--osdk-surface-border);
   border-radius: var(--osdk-surface-border-radius);
   box-shadow: var(--osdk-surface-shadow-2);
   max-height: calc(var(--osdk-surface-spacing) * 31.25);
@@ -131,7 +128,6 @@
   cursor: pointer;
   font-size: var(--osdk-typography-size-body-medium);
   color: var(--osdk-typography-color-default-rest);
-  transition: background-color 0.2s;
 
   &:hover {
     background-color: var(--osdk-surface-background-color-default-hover);
