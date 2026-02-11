@@ -230,7 +230,7 @@ export class BulkObjectLoader {
           objectDef as ObjectTypeDefinition,
         ).where(
           where as Parameters<ObjectSet<ObjectTypeDefinition>["where"]>[0],
-        ).fetchPage();
+        ).fetchPage({ $pageSize: objects.length });
 
         for (const obj of fetchResult.data) {
           result.set(obj.$primaryKey, obj as ObjectHolder);
