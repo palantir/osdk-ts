@@ -1,3 +1,16 @@
+/* ============================================
+   THEME CONFIGURATION
+   ============================================
+   Available themes (set via data-theme attribute on root element):
+   - "ocean" - Cool blue tones
+   - "forest" - Earthy green palette
+   - "sunset" - Warm orange and gold hues
+   - "midnight" - Dark mode for low-light environments
+   - "violet" - Purple and indigo tones
+
+   Usage: <div data-theme="ocean">...</div>
+   ============================================ */
+
 :root {
   --bp-palette-black: oklch(0.2827 0.019 238.86);
 
@@ -118,7 +131,7 @@
   --bp-palette-violet-4: oklch(0.6483 0.1481 327.11);
   --bp-palette-violet-5: oklch(0.8867 0.0342 327.64);
 
-  /* OSDK tokens override */
+  /* OSDK tokens override - Default theme */
   --osdk-checkbox-border: var(--bp-surface-border-width) solid
     var(--bp-surface-border-color-strong);
   --osdk-checkbox-bg-hover: var(--bp-palette-gray-5);
@@ -136,4 +149,94 @@
   --osdk-table-row-bg-hover: var(--bp-surface-background-color-default-hover);
   --osdk-table-row-border-color-hover: var(--osdk-table-border-color);
   --osdk-table-row-bg-active: var(--bp-palette-blue-5);
+}
+
+/* Ocean Theme - Cool blue tones */
+[data-theme="ocean"] {
+  --osdk-table-header-bg: var(--bp-palette-cerulean-5);
+  --osdk-table-row-bg-default: oklch(0.98 0.01 238.05);
+  --osdk-table-row-bg-alternate: oklch(
+    from var(--bp-palette-cerulean-5) l c h / 0.3
+  );
+  --osdk-table-row-bg-hover: oklch(
+    from var(--bp-palette-cerulean-4) l c h / 0.2
+  );
+  --osdk-table-row-bg-active: oklch(
+    from var(--bp-palette-cerulean-4) l c h / 0.4
+  );
+  --osdk-intent-primary-rest: var(--bp-palette-cerulean-2);
+  --osdk-intent-primary-hover: var(--bp-palette-cerulean-1);
+  --osdk-intent-primary-active: var(--bp-palette-cerulean-1);
+}
+
+/* Forest Theme - Earthy green palette */
+[data-theme="forest"] {
+  --osdk-table-header-bg: var(--bp-palette-forest-5);
+  --osdk-table-row-bg-default: oklch(0.98 0.01 144.08);
+  --osdk-table-row-bg-alternate: oklch(
+    from var(--bp-palette-forest-5) l c h / 0.3
+  );
+  --osdk-table-row-bg-hover: oklch(from var(--bp-palette-forest-4) l c h / 0.2);
+  --osdk-table-row-bg-active: oklch(
+    from var(--bp-palette-forest-4) l c h / 0.4
+  );
+  --osdk-intent-primary-rest: var(--bp-palette-forest-2);
+  --osdk-intent-primary-hover: var(--bp-palette-forest-1);
+  --osdk-intent-primary-active: var(--bp-palette-forest-1);
+  --osdk-checkbox-bg-checked: var(--bp-palette-forest-4);
+}
+
+/* Sunset Theme - Warm orange and gold hues */
+[data-theme="sunset"] {
+  --osdk-table-header-bg: var(--bp-palette-gold-5);
+  --osdk-table-row-bg-default: oklch(0.98 0.01 81.27);
+  --osdk-table-row-bg-alternate: oklch(
+    from var(--bp-palette-gold-5) l c h / 0.3
+  );
+  --osdk-table-row-bg-hover: oklch(from var(--bp-palette-gold-4) l c h / 0.2);
+  --osdk-table-row-bg-active: oklch(
+    from var(--bp-palette-orange-4) l c h / 0.4
+  );
+  --osdk-intent-primary-rest: var(--bp-palette-orange-2);
+  --osdk-intent-primary-hover: var(--bp-palette-orange-1);
+  --osdk-intent-primary-active: var(--bp-palette-orange-1);
+  --osdk-checkbox-bg-checked: var(--bp-palette-gold-4);
+}
+
+/* Midnight Theme - Dark mode for low-light environments */
+[data-theme="midnight"] {
+  --osdk-table-header-bg: var(--bp-palette-dark-gray-2);
+  --osdk-table-header-color: var(--bp-palette-light-gray-2);
+  --osdk-table-row-bg-default: var(--bp-palette-dark-gray-1);
+  --osdk-table-row-bg-alternate: var(--bp-palette-dark-gray-2);
+  --osdk-table-row-bg-hover: var(--bp-palette-dark-gray-3);
+  --osdk-table-row-bg-active: oklch(from var(--bp-palette-blue-3) l c h / 0.3);
+  --osdk-table-cell-color: var(--bp-palette-light-gray-2);
+  --osdk-table-border: 1px solid var(--bp-palette-dark-gray-3);
+  --osdk-intent-primary-rest: var(--bp-palette-blue-3);
+  --osdk-intent-primary-hover: var(--bp-palette-blue-2);
+  --osdk-intent-primary-active: var(--bp-palette-blue-2);
+  --osdk-checkbox-bg: var(--bp-palette-dark-gray-3);
+  --osdk-checkbox-bg-hover: var(--bp-palette-dark-gray-4);
+  --osdk-checkbox-bg-checked: var(--bp-palette-blue-3);
+  --osdk-checkbox-checked-foreground: var(--bp-palette-white);
+  --osdk-surface-border-color-default: var(--bp-palette-dark-gray-3);
+  --osdk-surface-background-color-default: var(--bp-palette-dark-gray-2);
+}
+
+/* Violet Theme - Purple and indigo tones */
+[data-theme="violet"] {
+  --osdk-table-header-bg: var(--bp-palette-violet-5);
+  --osdk-table-row-bg-default: oklch(0.98 0.01 327.64);
+  --osdk-table-row-bg-alternate: oklch(
+    from var(--bp-palette-violet-5) l c h / 0.3
+  );
+  --osdk-table-row-bg-hover: oklch(from var(--bp-palette-indigo-5) l c h / 0.3);
+  --osdk-table-row-bg-active: oklch(
+    from var(--bp-palette-indigo-4) l c h / 0.4
+  );
+  --osdk-intent-primary-rest: var(--bp-palette-indigo-2);
+  --osdk-intent-primary-hover: var(--bp-palette-indigo-1);
+  --osdk-intent-primary-active: var(--bp-palette-indigo-1);
+  --osdk-checkbox-bg-checked: var(--bp-palette-violet-4);
 }
