@@ -1,0 +1,23 @@
+# OSDK Component Library
+
+> A React component library for building applications on the Ontology SDK (OSDK). Provides data-bound UI components for displaying, editing, and interacting with ontology objects.
+
+## Components
+
+- [Object Table](/components/object-table): High-scale, data-agnostic table for displaying ontology objects with sorting, filtering, and row actions.
+- [Object List](/components/object-list): Vertical list view for ontology objects with customizable item rendering.
+- [Property Editor](/components/property-editor): Form component for viewing and editing object properties.
+- [Filter Bar](/components/filter-bar): Configurable filter interface for narrowing object sets.
+- [Action Button](/components/action-button): Button that triggers ontology actions with built-in validation and confirmation.
+
+## Key Concepts
+
+- Object Types: Define the schema and structure of ontology objects.
+- Properties: Typed attributes on object types (string, number, date, etc.).
+- Filters: Predicates for narrowing object sets by property values.
+- Actions: Operations that modify ontology objects with defined parameters and validation.
+
+## Optional
+
+- [Theming](/guides/theming): Customize component appearance via CSS variables and design tokens.
+- [Integration](/guides/integration): Connect components to OSDK client instances.

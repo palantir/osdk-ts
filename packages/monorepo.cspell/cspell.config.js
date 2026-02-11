@@ -195,9 +195,9 @@ const cspell = {
     },
     {
       filename: [
-        "packages/e2e.*/src/**/*.{mts,cts,ts,tsx}",
-        "packages/shared.test/src/mock-ontology/**/*.{mts,cts,ts,tsx}",
-        "examples-extra/*/src/**/*.{mts,cts,ts,tsx}",
+        "packages/e2e.*/src/**/*.{mts,cts,ts,tsx,js,jsx}",
+        "packages/shared.test/src/mock-ontology/**/*.{mts,cts,ts,tsx,js,jsx}",
+        "examples-extra/*/src/**/*.{mts,cts,ts,tsx,js,jsx}",
       ],
       dictionaries: ["imported-ontologies"],
       ignoreRegExpList: [
@@ -216,6 +216,8 @@ const cspell = {
         "carto",
         "emps",
         "officenetwork",
+        "llms",
+        "llmstxt",
       ],
     },
   ],

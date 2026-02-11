@@ -1,19 +1,5 @@
 # @osdkkit/react
 
-## 0.10.0-beta.3
-
-### Minor Changes
-
-- 73e617e: expose dedupeInterval on useLinks and fix forced revalidation bypassing dedupeInterval
-- a027f3c: stabilize subscription deps in useOsdkObjects and useOsdkAggregation
-
-### Patch Changes
-
-- Updated dependencies [73e617e]
-- Updated dependencies [5848e3c]
-  - @osdk/client@2.8.0-beta.4
-  - @osdk/api@2.8.0-beta.4
-
 ## 0.10.0-beta.2
 
 ### Minor Changes

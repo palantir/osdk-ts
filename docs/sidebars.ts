@@ -33,8 +33,20 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: "category",
+      label: "@osdk/react-components",
+      items: [
+        "react-components/object-table",
+      ],
+    },
+    {
+      type: "category",
       label: "Guides",
       items: ["guides/vite"],
+    },
+    {
+      type: "category",
+      label: "Examples",
+      items: [],
     },
   ],
 };

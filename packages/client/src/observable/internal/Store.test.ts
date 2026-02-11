@@ -70,7 +70,6 @@ import {
   expectSingleListCallAndClear,
   expectSingleObjectCallAndClear,
   getObject,
-  mockLinkSubCallback,
   mockListSubCallback,
   mockObserver,
   mockSingleSubCallback,
@@ -401,89 +400,6 @@ describe(Store, () => {
       expect(occupantsLinkSubFn.next).not.toHaveBeenCalled();
       expect(empSubFn.next).not.toHaveBeenCalled();
       expect(officeSubFn.next).not.toHaveBeenCalled();
-    });
-
-    it("re-subscribing within dedupeInterval does not refetch", async () => {
-      const { payload: emp1Payload } = await expectStandardObserveObject({
-        cache,
-        type: Employee,
-        primaryKey: 2,
-      });
-      const emp2 = emp1Payload?.object;
-      invariant(emp2);
-
-      const linkSubFn1 = mockLinkSubCallback();
-      const sub1 = cache.links.observe({
-        linkName: "peeps",
-        srcType: { type: "object", apiName: emp2.$apiName },
-        pk: emp2.$primaryKey,
-        dedupeInterval: 60_000,
-      }, linkSubFn1);
-
-      await waitForCall(linkSubFn1);
-      expectSingleLinkCallAndClear(linkSubFn1, [], { status: "loading" });
-
-      await waitForCall(linkSubFn1);
-      expectSingleLinkCallAndClear(linkSubFn1, [], {
-        status: "loaded",
-      });
-
-      sub1.unsubscribe();
-
-      const linkSubFn2 = mockLinkSubCallback();
-      defer(cache.links.observe({
-        linkName: "peeps",
-        srcType: { type: "object", apiName: emp2.$apiName },
-        pk: emp2.$primaryKey,
-        dedupeInterval: 60_000,
-      }, linkSubFn2));
-
-      await waitForCall(linkSubFn2);
-      expectSingleLinkCallAndClear(linkSubFn2, [], {
-        status: "loaded",
-      });
-    });
-
-    it("forced revalidation bypasses dedupeInterval", async () => {
-      const { payload: emp1Payload } = await expectStandardObserveObject({
-        cache,
-        type: Employee,
-        primaryKey: 2,
-      });
-      const emp2 = emp1Payload?.object;
-      invariant(emp2);
-
-      const linkSubFn = mockLinkSubCallback();
-      defer(cache.links.observe({
-        linkName: "peeps",
-        srcType: { type: "object", apiName: emp2.$apiName },
-        pk: emp2.$primaryKey,
-        dedupeInterval: 60_000,
-      }, linkSubFn));
-
-      await waitForCall(linkSubFn);
-      expectSingleLinkCallAndClear(linkSubFn, [], { status: "loading" });
-
-      await waitForCall(linkSubFn);
-      expectSingleLinkCallAndClear(linkSubFn, [], {
-        status: "loaded",
-      });
-
-      const invalidatePromise = cache.invalidateObjectType(
-        "Employee",
-        undefined,
-      );
-
-      await waitForCall(linkSubFn);
-      expectSingleLinkCallAndClear(linkSubFn, [], {
-        status: "loading",
-      });
-
-      await invalidatePromise;
-
-      expectSingleLinkCallAndClear(linkSubFn, [], {
-        status: "loaded",
-      });
     });
   });
 

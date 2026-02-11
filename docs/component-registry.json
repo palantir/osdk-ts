@@ -1,0 +1,79 @@
+{
+  "components": [
+    {
+      "name": "ObjectTable",
+      "type": "component",
+      "package": "@osdk/react-components",
+      "importPath": "@osdk/react-components/experimental",
+      "stability": "experimental",
+      "description": "High-performance table component for displaying collections of OSDK objects with sorting, filtering, pagination, and selection",
+      "docPath": "docs/react-components/object-table.md",
+      "sourcePath": "packages/react-components/src/object-table/ObjectTable.tsx",
+      "category": "data-display",
+      "tags": ["table", "data-grid", "sorting", "filtering", "pagination", "selection", "virtualization"],
+      "usageExample": "<ObjectTable objectType={Employee} />",
+      "parameters": [
+        {
+          "name": "objectType",
+          "type": "ObjectOrInterfaceDefinition",
+          "required": true,
+          "description": "The OSDK object type to display"
+        },
+        {
+          "name": "columnDefinitions",
+          "type": "ColumnDefinition[]",
+          "required": false,
+          "description": "Ordered list of columns to display. If not provided, all properties are shown"
+        },
+        {
+          "name": "filter",
+          "type": "WhereClause<Q>",
+          "required": false,
+          "description": "Where clause to filter objects (controlled mode)"
+        },
+        {
+          "name": "orderBy",
+          "type": "{ property: PropertyKeys<Q>; direction: 'asc' | 'desc' }[]",
+          "required": false,
+          "description": "Current sort order (controlled mode)"
+        },
+        {
+          "name": "defaultOrderBy",
+          "type": "{ property: PropertyKeys<Q>; direction: 'asc' | 'desc' }[]",
+          "required": false,
+          "description": "Initial sort order (uncontrolled mode)"
+        },
+        {
+          "name": "selectionMode",
+          "type": "'none' | 'single' | 'multiple'",
+          "required": false,
+          "description": "Row selection mode (default: 'none')"
+        },
+        {
+          "name": "onRowClick",
+          "type": "(object: Osdk.Instance) => void",
+          "required": false,
+          "description": "Called when a row is clicked"
+        },
+        {
+          "name": "renderCellContextMenu",
+          "type": "(row: Osdk.Instance, cellValue: unknown) => ReactNode",
+          "required": false,
+          "description": "Custom right-click context menu for cells"
+        },
+        {
+          "name": "rowHeight",
+          "type": "number",
+          "required": false,
+          "description": "Height of each row in pixels (default: 40)"
+        }
+      ],
+      "returnValue": {
+        "type": "React.ReactElement",
+        "description": "Rendered table component"
+      },
+      "relatedComponents": ["useOsdkObjects"],
+      "requires": ["OsdkProvider2"]
+    }
+  ]
+}
