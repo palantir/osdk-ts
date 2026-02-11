@@ -116,6 +116,8 @@ export class ObjectSetListenerSSE {
 
     if (properties.length === 0) {
       properties = Object.keys(objOrInterfaceDef.properties) as Array<P>;
+    } else {
+      properties = properties.filter((p) => p in objOrInterfaceDef.properties);
     }
 
     const objectProperties = properties.filter((p) =>
