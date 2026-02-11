@@ -29,6 +29,7 @@ import {
 } from "./defineOntology.js";
 import type { Nullability } from "./properties/Nullability.js";
 import { type PropertyTypeType } from "./properties/PropertyTypeType.js";
+import type { ReducerType } from "./properties/ReducerType.js";
 import { type SharedPropertyType } from "./properties/SharedPropertyType.js";
 import {
   defaultTypeClasses,
@@ -41,6 +42,7 @@ export interface SharedPropertyTypeDefinition {
   apiName: string;
   type: PropertyTypeType;
   array?: boolean;
+  reducers?: Array<ReducerType>;
   description?: string;
   displayName?: string;
   valueType?: OntologyIrValueTypeReferenceWithMetadata;

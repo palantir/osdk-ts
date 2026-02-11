@@ -1110,6 +1110,7 @@ describe("Action Types", () => {
                         "indexedForSearch": true,
                         "type": {
                           "struct": {
+                            "mainValue": undefined,
                             "structFields": [
                               {
                                 "aliases": [],
@@ -1197,6 +1198,7 @@ describe("Action Types", () => {
                           "indexedForSearch": true,
                           "type": {
                             "struct": {
+                              "mainValue": undefined,
                               "structFields": [
                                 {
                                   "aliases": [],
@@ -1451,6 +1453,7 @@ describe("Action Types", () => {
                       },
                       "type": {
                         "struct": {
+                          "mainValue": undefined,
                           "structFields": [
                             {
                               "aliases": [],
@@ -1544,6 +1547,7 @@ describe("Action Types", () => {
                   "indexedForSearch": true,
                   "type": {
                     "struct": {
+                      "mainValue": undefined,
                       "structFields": [
                         {
                           "aliases": [],
@@ -7427,6 +7431,7 @@ describe("Action Types", () => {
                       },
                       "type": {
                         "struct": {
+                          "mainValue": undefined,
                           "structFields": [
                             {
                               "aliases": [],

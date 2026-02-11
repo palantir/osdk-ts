@@ -232,70 +232,71 @@ describe("SPTs", () => {
     });
 
     expect(dumpOntologyFullMetadata().ontology).toMatchInlineSnapshot(`
-                  {
-                    "actionTypes": {},
-                    "blockPermissionInformation": {
-                      "actionTypes": {},
-                      "linkTypes": {},
-                      "objectTypes": {},
-                    },
-                    "interfaceTypes": {},
-                    "linkTypes": {},
-                    "objectTypes": {},
-                    "sharedPropertyTypes": {
-                      "com.palantir.fooSpt": {
-                        "sharedPropertyType": {
-                          "aliases": [],
-                          "apiName": "com.palantir.fooSpt",
-                          "baseFormatter": undefined,
-                          "dataConstraints": undefined,
-                          "displayMetadata": {
-                            "description": undefined,
-                            "displayName": "fooSpt",
-                            "visibility": "NORMAL",
-                          },
-                          "gothamMapping": undefined,
-                          "indexedForSearch": true,
-                          "type": {
-                            "struct": {
-                              "structFields": [
-                                {
-                                  "aliases": [],
-                                  "apiName": "simpleProperty",
-                                  "displayMetadata": {
-                                    "description": undefined,
-                                    "displayName": "simpleProperty",
-                                  },
-                                  "fieldType": {
-                                    "boolean": {},
-                                    "type": "boolean",
-                                  },
-                                  "typeClasses": [],
-                                },
-                                {
-                                  "aliases": [],
-                                  "apiName": "complexProperty",
-                                  "displayMetadata": {
-                                    "description": undefined,
-                                    "displayName": "complex property",
-                                  },
-                                  "fieldType": {
-                                    "date": {},
-                                    "type": "date",
-                                  },
-                                  "typeClasses": [],
-                                },
-                              ],
-                            },
-                            "type": "struct",
-                          },
-                          "typeClasses": [],
-                          "valueType": undefined,
-                        },
+      {
+        "actionTypes": {},
+        "blockPermissionInformation": {
+          "actionTypes": {},
+          "linkTypes": {},
+          "objectTypes": {},
+        },
+        "interfaceTypes": {},
+        "linkTypes": {},
+        "objectTypes": {},
+        "sharedPropertyTypes": {
+          "com.palantir.fooSpt": {
+            "sharedPropertyType": {
+              "aliases": [],
+              "apiName": "com.palantir.fooSpt",
+              "baseFormatter": undefined,
+              "dataConstraints": undefined,
+              "displayMetadata": {
+                "description": undefined,
+                "displayName": "fooSpt",
+                "visibility": "NORMAL",
+              },
+              "gothamMapping": undefined,
+              "indexedForSearch": true,
+              "type": {
+                "struct": {
+                  "mainValue": undefined,
+                  "structFields": [
+                    {
+                      "aliases": [],
+                      "apiName": "simpleProperty",
+                      "displayMetadata": {
+                        "description": undefined,
+                        "displayName": "simpleProperty",
                       },
+                      "fieldType": {
+                        "boolean": {},
+                        "type": "boolean",
+                      },
+                      "typeClasses": [],
                     },
-                  }
-          `);
+                    {
+                      "aliases": [],
+                      "apiName": "complexProperty",
+                      "displayMetadata": {
+                        "description": undefined,
+                        "displayName": "complex property",
+                      },
+                      "fieldType": {
+                        "date": {},
+                        "type": "date",
+                      },
+                      "typeClasses": [],
+                    },
+                  ],
+                },
+                "type": "struct",
+              },
+              "typeClasses": [],
+              "valueType": undefined,
+            },
+          },
+        },
+      }
+    `);
   });
 
   it("Custom string fields properly set", () => {

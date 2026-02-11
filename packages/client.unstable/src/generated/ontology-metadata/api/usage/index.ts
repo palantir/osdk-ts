@@ -17,8 +17,11 @@
 export * as ExperimentalOntologyUsageService from "./ExperimentalOntologyUsageService.js";
 
 export type {
+  ActionTypeProvenanceStatus,
   ActionTypeUsage,
   Backend,
+  CheckActionTypeProvenanceStatusRequest,
+  CheckActionTypeProvenanceStatusResponse,
   DeprecationOntologyEntityIdentifier,
   DeprecationUsage,
   DeprecationUsageByOriginResourceChain,
@@ -36,6 +39,9 @@ export type {
   GetUsageSettingsByOrganizationResponse,
   GetUsageSettingsByUserRequest,
   GetUsageSettingsByUserResponse,
+  IncorrectProvenanceRecorded,
+  NoFunctionRules,
+  NoIncorrectProvenanceRecorded,
   ObjectTypeAndPropertyTypeIdentifiers,
   ObjectTypeWithProperties,
   OntologyEntityIdentifier,
