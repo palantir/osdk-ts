@@ -17,12 +17,14 @@
 import type { OntologyIrSharedPropertyType } from "@osdk/client.unstable";
 import type { SharedPropertyType } from "../../api/properties/SharedPropertyType.js";
 import { convertNullabilityToDataConstraint } from "./convertNullabilityToDataConstraint.js";
+import { convertReducers } from "./convertReducers.js";
 import { propertyTypeTypeToOntologyIrType } from "./propertyTypeTypeToOntologyIrType.js";
 
 export function convertSpt(
   {
     type,
     array,
+    reducers,
     description,
     apiName,
     displayName,
@@ -50,7 +52,7 @@ export function convertSpt(
         type: "array" as const,
         array: {
           subtype: propertyTypeTypeToOntologyIrType(type),
-          reducers: [],
+          reducers: convertReducers(type, apiName, reducers),
         },
       }
       : propertyTypeTypeToOntologyIrType(type),

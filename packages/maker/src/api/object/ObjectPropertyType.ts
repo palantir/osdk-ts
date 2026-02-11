@@ -21,6 +21,7 @@ import type {
 import type { RequiredFields } from "../../util/RequiredFields.js";
 import type { Nullability } from "../properties/Nullability.js";
 import type { PropertyTypeType } from "../properties/PropertyTypeType.js";
+import type { ReducerType } from "../properties/ReducerType.js";
 import type { SharedPropertyType } from "../properties/SharedPropertyType.js";
 import type { ValueTypeDefinitionVersion } from "../values/ValueTypeDefinitionVersion.js";
 import type { ObjectTypeStatus } from "./ObjectTypeStatus.js";
@@ -44,6 +45,7 @@ export interface ObjectPropertyTypeInner {
   // </These values are taken from OntologyIrPropertyType (Old code used an Omit)>
   type: PropertyTypeType;
   array?: boolean;
+  reducers?: Array<ReducerType>;
   valueType: ValueTypeDefinitionVersion;
   sharedPropertyType: SharedPropertyType;
   description: string | undefined;

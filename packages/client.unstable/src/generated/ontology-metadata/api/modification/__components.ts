@@ -125,6 +125,7 @@ import type {
   ParameterRid as _api_ParameterRid,
   PolicyVersion as _api_PolicyVersion,
   PrimaryKeyConstraint as _api_PrimaryKeyConstraint,
+  PropertySecurityGroupPatch as _api_PropertySecurityGroupPatch,
   PropertySecurityGroupsModification as _api_PropertySecurityGroupsModification,
   PropertyTypeDisplayMetadata as _api_PropertyTypeDisplayMetadata,
   PropertyTypeId as _api_PropertyTypeId,
@@ -266,6 +267,8 @@ export type ActionLogRequirednessModification =
 
 /**
  * Internal request object to edit existing Action Types, useful in certain conversions.
+ *
+ * Used in OntologyModifyStoreRequest.
  */
 export interface ActionTypeModification {
   actionApplyClientSettings?:
@@ -1202,6 +1205,15 @@ export interface ObjectTypeDatasetDatasourceV2Modification {
 export interface ObjectTypeDatasetDatasourceV3Modification {
   datasetRid: _api_DatasetRid;
   propertyMapping: Record<_api_PropertyTypeId, _api_PropertyTypeMappingInfo>;
+  propertySecurityGroupPatches: Array<_api_PropertySecurityGroupPatch>;
+  propertySecurityGroups?:
+    | _api_PropertySecurityGroupsModification
+    | null
+    | undefined;
+}
+export interface ObjectTypeDatasetDatasourceV3ModificationInternal {
+  datasetRid: _api_DatasetRid;
+  propertyMapping: Record<_api_PropertyTypeId, _api_PropertyTypeMappingInfo>;
   propertySecurityGroups?:
     | _api_PropertySecurityGroupsModification
     | null
@@ -1321,6 +1333,115 @@ export type ObjectTypeDatasourceModificationDefinition =
   | ObjectTypeDatasourceModificationDefinition_direct
   | ObjectTypeDatasourceModificationDefinition_derived;
 
+export interface ObjectTypeDatasourceModificationDefinitionInternal_dataset {
+  type: "dataset";
+  dataset: ObjectTypeDatasetDatasourceModification;
+}
+
+export interface ObjectTypeDatasourceModificationDefinitionInternal_stream {
+  type: "stream";
+  stream: ObjectTypeStreamDatasourceModification;
+}
+
+export interface ObjectTypeDatasourceModificationDefinitionInternal_streamV2 {
+  type: "streamV2";
+  streamV2: ObjectTypeStreamDatasourceV2ModificationInternal;
+}
+
+export interface ObjectTypeDatasourceModificationDefinitionInternal_streamV3 {
+  type: "streamV3";
+  streamV3: ObjectTypeStreamDatasourceV3ModificationInternal;
+}
+
+export interface ObjectTypeDatasourceModificationDefinitionInternal_restrictedStream {
+  type: "restrictedStream";
+  restrictedStream: ObjectTypeRestrictedStreamDatasourceModification;
+}
+
+export interface ObjectTypeDatasourceModificationDefinitionInternal_restrictedView {
+  type: "restrictedView";
+  restrictedView: ObjectTypeRestrictedViewDatasourceModification;
+}
+
+export interface ObjectTypeDatasourceModificationDefinitionInternal_timeSeries {
+  type: "timeSeries";
+  timeSeries: ObjectTypeTimeSeriesDatasourceModification;
+}
+
+export interface ObjectTypeDatasourceModificationDefinitionInternal_datasetV2 {
+  type: "datasetV2";
+  datasetV2: ObjectTypeDatasetDatasourceV2Modification;
+}
+
+export interface ObjectTypeDatasourceModificationDefinitionInternal_datasetV3 {
+  type: "datasetV3";
+  datasetV3: ObjectTypeDatasetDatasourceV3ModificationInternal;
+}
+
+export interface ObjectTypeDatasourceModificationDefinitionInternal_restrictedViewV2 {
+  type: "restrictedViewV2";
+  restrictedViewV2: ObjectTypeRestrictedViewDatasourceV2Modification;
+}
+
+export interface ObjectTypeDatasourceModificationDefinitionInternal_media {
+  type: "media";
+  media: ObjectTypeMediaDatasourceModification;
+}
+
+export interface ObjectTypeDatasourceModificationDefinitionInternal_mediaSetView {
+  type: "mediaSetView";
+  mediaSetView: ObjectTypeMediaSetViewDatasourceModification;
+}
+
+export interface ObjectTypeDatasourceModificationDefinitionInternal_geotimeSeries {
+  type: "geotimeSeries";
+  geotimeSeries: ObjectTypeGeotimeSeriesDatasourceModification;
+}
+
+export interface ObjectTypeDatasourceModificationDefinitionInternal_table {
+  type: "table";
+  table: ObjectTypeTableDatasourceModification;
+}
+
+export interface ObjectTypeDatasourceModificationDefinitionInternal_editsOnly {
+  type: "editsOnly";
+  editsOnly: ObjectTypeEditsOnlyDatasourceModificationInternal;
+}
+
+export interface ObjectTypeDatasourceModificationDefinitionInternal_direct {
+  type: "direct";
+  direct: ObjectTypeDirectDatasourceModificationInternal;
+}
+
+export interface ObjectTypeDatasourceModificationDefinitionInternal_derived {
+  type: "derived";
+  derived: ObjectTypeDerivedPropertiesDatasourceModification;
+}
+/**
+ * Wrapper type for all supported object type datasource types. We use this internal type to ensure we properly
+ * translate the propertySecurityGroupPatches from streamV2, streamV3, datasetV3, editsOnly, and direct
+ * datasources. Internally we should always use this type and only use ObjectTypeDatasourceModificationDefinition
+ * in out api.
+ */
+export type ObjectTypeDatasourceModificationDefinitionInternal =
+  | ObjectTypeDatasourceModificationDefinitionInternal_dataset
+  | ObjectTypeDatasourceModificationDefinitionInternal_stream
+  | ObjectTypeDatasourceModificationDefinitionInternal_streamV2
+  | ObjectTypeDatasourceModificationDefinitionInternal_streamV3
+  | ObjectTypeDatasourceModificationDefinitionInternal_restrictedStream
+  | ObjectTypeDatasourceModificationDefinitionInternal_restrictedView
+  | ObjectTypeDatasourceModificationDefinitionInternal_timeSeries
+  | ObjectTypeDatasourceModificationDefinitionInternal_datasetV2
+  | ObjectTypeDatasourceModificationDefinitionInternal_datasetV3
+  | ObjectTypeDatasourceModificationDefinitionInternal_restrictedViewV2
+  | ObjectTypeDatasourceModificationDefinitionInternal_media
+  | ObjectTypeDatasourceModificationDefinitionInternal_mediaSetView
+  | ObjectTypeDatasourceModificationDefinitionInternal_geotimeSeries
+  | ObjectTypeDatasourceModificationDefinitionInternal_table
+  | ObjectTypeDatasourceModificationDefinitionInternal_editsOnly
+  | ObjectTypeDatasourceModificationDefinitionInternal_direct
+  | ObjectTypeDatasourceModificationDefinitionInternal_derived;
+
 export interface ObjectTypeDatasourceModifyRequest_create {
   type: "create";
   create: ObjectTypeDatasourceCreate;
@@ -1354,11 +1475,31 @@ export interface ObjectTypeDerivedPropertiesDatasourceModification {
 export interface ObjectTypeDirectDatasourceModification {
   directSourceRid: _api_DirectSourceRid;
   propertyMapping: Record<_api_PropertyTypeId, _api_PropertyTypeMappingInfo>;
+  propertySecurityGroupPatches: Array<_api_PropertySecurityGroupPatch>;
+  propertySecurityGroups?:
+    | _api_PropertySecurityGroupsModification
+    | null
+    | undefined;
+  retentionConfig?: _api_RetentionConfig | null | undefined;
+  retentionConfigV2?: RetentionConfigModification | null | undefined;
+}
+export interface ObjectTypeDirectDatasourceModificationInternal {
+  directSourceRid: _api_DirectSourceRid;
+  propertyMapping: Record<_api_PropertyTypeId, _api_PropertyTypeMappingInfo>;
   propertySecurityGroups: _api_PropertySecurityGroupsModification;
   retentionConfig?: _api_RetentionConfig | null | undefined;
   retentionConfigV2?: RetentionConfigModification | null | undefined;
 }
 export interface ObjectTypeEditsOnlyDatasourceModification {
+  editsOnlyRid?: _api_EditsOnlyRid | null | undefined;
+  properties: Array<_api_PropertyTypeId>;
+  propertySecurityGroupPatches: Array<_api_PropertySecurityGroupPatch>;
+  propertySecurityGroups?:
+    | _api_PropertySecurityGroupsModification
+    | null
+    | undefined;
+}
+export interface ObjectTypeEditsOnlyDatasourceModificationInternal {
   editsOnlyRid?: _api_EditsOnlyRid | null | undefined;
   properties: Array<_api_PropertyTypeId>;
   propertySecurityGroups: _api_PropertySecurityGroupsModification;
@@ -1511,6 +1652,16 @@ export interface ObjectTypeStreamDatasourceModification {
 }
 export interface ObjectTypeStreamDatasourceV2Modification {
   propertyMapping: Record<_api_PropertyTypeId, _api_ColumnName>;
+  propertySecurityGroupPatches: Array<_api_PropertySecurityGroupPatch>;
+  propertySecurityGroups?:
+    | _api_PropertySecurityGroupsModification
+    | null
+    | undefined;
+  retentionPolicy?: _api_RetentionPolicy | null | undefined;
+  streamLocator: _api_StreamLocator;
+}
+export interface ObjectTypeStreamDatasourceV2ModificationInternal {
+  propertyMapping: Record<_api_PropertyTypeId, _api_ColumnName>;
   propertySecurityGroups?:
     | _api_PropertySecurityGroupsModification
     | null
@@ -1519,6 +1670,16 @@ export interface ObjectTypeStreamDatasourceV2Modification {
   streamLocator: _api_StreamLocator;
 }
 export interface ObjectTypeStreamDatasourceV3Modification {
+  propertyMapping: Record<_api_PropertyTypeId, _api_PropertyTypeMappingInfo>;
+  propertySecurityGroupPatches: Array<_api_PropertySecurityGroupPatch>;
+  propertySecurityGroups?:
+    | _api_PropertySecurityGroupsModification
+    | null
+    | undefined;
+  retentionPolicy?: _api_RetentionPolicy | null | undefined;
+  streamLocator: _api_StreamLocator;
+}
+export interface ObjectTypeStreamDatasourceV3ModificationInternal {
   propertyMapping: Record<_api_PropertyTypeId, _api_PropertyTypeMappingInfo>;
   propertySecurityGroups?:
     | _api_PropertySecurityGroupsModification
