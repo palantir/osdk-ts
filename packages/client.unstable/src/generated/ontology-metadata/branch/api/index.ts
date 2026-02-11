@@ -145,6 +145,7 @@ export type {
   ObjectTypeDatasourceCannotHaveDataSecurityUpdatedOnBranchError,
   ObjectTypeDatasourceColumnMappingMismatchError,
   ObjectTypeDatasourceWithInvalidRetentionTargetSizeError,
+  ObjectTypeDatasourceWithInvalidTimeBasedRetentionError,
   ObjectTypeDatasourceWithoutPrimaryKeyColumnError,
   ObjectTypeImplementsTooManyInterfacesError,
   ObjectTypePropertyConstraintError,
