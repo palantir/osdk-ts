@@ -99,33 +99,4 @@ describe("useLinks enabled option", () => {
 
     expect(mockObserveLinks).toHaveBeenCalledTimes(1);
   });
-
-  it("should pass dedupeInterval with default of 2000", () => {
-    const wrapper = createWrapper();
-
-    renderHook(
-      () => useLinks(mockObject, "relatedObjects"),
-      { wrapper },
-    );
-
-    expect(mockObserveLinks).toHaveBeenCalledTimes(1);
-    const options = mockObserveLinks.mock.calls[0][2];
-    expect(options.dedupeInterval).toBe(2_000);
-  });
-
-  it("should pass custom dedupeIntervalMs to observeLinks", () => {
-    const wrapper = createWrapper();
-
-    renderHook(
-      () =>
-        useLinks(mockObject, "relatedObjects", {
-          dedupeIntervalMs: 5000,
-        }),
-      { wrapper },
-    );
-
-    expect(mockObserveLinks).toHaveBeenCalledTimes(1);
-    const options = mockObserveLinks.mock.calls[0][2];
-    expect(options.dedupeInterval).toBe(5000);
-  });
 });

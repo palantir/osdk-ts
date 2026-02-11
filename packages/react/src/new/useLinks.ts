@@ -52,14 +52,6 @@ export interface UseLinksOptions<
   mode?: "force" | "offline";
 
   /**
-   * The number of milliseconds to wait after the last observed link change.
-   *
-   * Two uses of `useLinks` with the same parameters will only trigger one
-   * network request if the second is within `dedupeIntervalMs`.
-   */
-  dedupeIntervalMs?: number;
-
-  /**
    * Enable or disable the query.
    *
    * When `false`, the query will not automatically execute. It will still
@@ -170,7 +162,6 @@ export function useLinks<
               pageSize: otherOptions.pageSize,
               orderBy: stableOrderBy,
               mode: otherOptions.mode,
-              dedupeInterval: otherOptions.dedupeIntervalMs ?? 2_000,
             },
             observer,
           ),
@@ -187,7 +178,6 @@ export function useLinks<
       otherOptions.pageSize,
       stableOrderBy,
       otherOptions.mode,
-      otherOptions.dedupeIntervalMs,
     ],
   );
 

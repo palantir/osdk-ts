@@ -21,8 +21,8 @@ export async function promptSdkVersion(
   { sdkVersion, template }: { sdkVersion?: string; template: Template },
 ): Promise<SdkVersion> {
   if (sdkVersion == null) {
-    // Default to the latest discovered version for the template
-    return Object.keys(template.files).at(-1) as SdkVersion;
+    // If the SDK version is not provided, default to the earliest template version for backwards-compatibility
+    return Object.keys(template.files)[0] as SdkVersion;
   }
 
   if (template.files[sdkVersion as SdkVersion] == null) {
