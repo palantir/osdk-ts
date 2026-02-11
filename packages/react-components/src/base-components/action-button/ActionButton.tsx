@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { Button as BaseUIButton } from "@base-ui/react/button";
+import { Button } from "@base-ui/react/button";
 import classNames from "classnames";
 import React from "react";
-import styles from "./Button.module.css";
+import styles from "./ActionButton.module.css";
 
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>
@@ -25,13 +25,13 @@ export interface ButtonProps
   variant?: "primary" | "secondary";
 }
 
-export function Button({
+export function ActionButton({
   variant = "secondary",
   className,
   ...rest
 }: ButtonProps): React.ReactElement {
   return (
-    <BaseUIButton
+    <Button
       className={classNames(
         styles.button,
         variant === "primary" ? styles.primaryButton : styles.secondaryButton,

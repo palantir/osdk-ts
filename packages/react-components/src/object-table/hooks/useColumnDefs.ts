@@ -124,7 +124,7 @@ function getColumnsFromColumnDefinitions<
       header: renderHeader ?? (columnName || propertyMetadata?.displayName),
       meta: {
         columnName: columnName || propertyMetadata?.displayName,
-        isVisible: col.isVisible === false ? false : true,
+        isVisible: col.isVisible !== false,
       },
       size: width,
       ...(minWidth ? { minSize: minWidth } : {}),

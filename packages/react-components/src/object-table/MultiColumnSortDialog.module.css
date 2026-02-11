@@ -14,12 +14,19 @@
  * limitations under the License.
  */
 
+.title {
+  display: flex;
+  align-items: center;
+  gap: var(--osdk-surface-spacing);
+}
+
 .sortColumnsList {
   display: flex;
   flex-direction: column;
   gap: var(--osdk-surface-spacing);
   flex: 1;
   justify-content: space-between;
+  overflow-x: hidden;
 }
 
 .sortableList {
@@ -31,23 +38,20 @@
 }
 
 .sortColumnItem {
-  align-items: center;
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  width: 100%;
   min-width: 0;
+  width: 100%;
 }
 
 .sortColumnName {
-  flex: 1;
-  font-size: var(--osdk-typography-size-body-medium);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
   min-width: 0;
+  flex-shrink: 1;
 }
 
 .sortDirectionButton {
+  flex-shrink: 0;
   background: none;
   border: none;
   padding: var(--osdk-surface-spacing);
@@ -58,7 +62,16 @@
   border-radius: var(--osdk-surface-border-radius);
 
   &:hover {
-    background-color: var(--osdk-surface-background-color-default-hover);
+    background-color: var(--osdk-button-secondary-bg-hover);
+  }
+
+  &:focus {
+    outline: none;
+  }
+
+  &:focus-visible {
+    outline: var(--osdk-focus-outline);
+    outline-offset: calc(-1 * var(--osdk-focus-visible-outline-offset));
   }
 }
 
@@ -88,6 +101,15 @@
     opacity: 0.5;
     cursor: not-allowed;
   }
+
+  &:focus {
+    outline: none;
+  }
+
+  &:focus-visible {
+    outline: var(--osdk-focus-outline);
+    outline-offset: calc(-1 * var(--osdk-focus-visible-outline-offset));
+  }
 }
 
 .addIcon {
@@ -113,6 +135,15 @@
   max-height: calc(var(--osdk-dialog-max-height) * 0.5);
   overflow-y: auto;
   width: var(--anchor-width);
+
+  &:focus {
+    outline: none;
+  }
+
+  &:focus-visible {
+    outline: var(--osdk-focus-outline);
+    outline-offset: var(--osdk-focus-visible-outline-offset);
+  }
 }
 
 .menuSearchContainer {
@@ -146,4 +177,19 @@
   &:hover {
     background-color: var(--osdk-surface-background-color-default-hover);
   }
+
+  &:focus {
+    outline: none;
+  }
+
+  &:focus-visible {
+    outline: var(--osdk-focus-outline);
+    outline-offset: calc(-1 * var(--osdk-focus-visible-outline-offset));
+  }
+}
+
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }

@@ -36,6 +36,10 @@
   z-index: var(--osdk-surface-z-index-2);
   display: flex;
   flex-direction: column;
+
+  &:focus {
+    outline: none;
+  }
 }
 
 .header {
@@ -79,6 +83,15 @@
   &:hover {
     background-color: var(--osdk-surface-background-color-default-hover);
   }
+
+  &:focus {
+    outline: none;
+  }
+
+  &:focus-visible {
+    outline: var(--osdk-focus-outline);
+    outline-offset: var(--osdk-focus-visible-outline-offset);
+  }
 }
 
 .closeIcon {
@@ -86,4 +99,3 @@
   height: var(--osdk-iconography-size-small);
   color: var(--osdk-typography-color-muted);
 }
-

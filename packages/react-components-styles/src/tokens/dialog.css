@@ -21,7 +21,3 @@
   /* Footer */
   --osdk-dialog-footer-padding: var(--osdk-dialog-padding);
 }
-
-h2 {
-  margin: 0;
-}

@@ -26,17 +26,9 @@ import {
   Unpin,
   VerticalDistribution,
 } from "@blueprintjs/icons";
-import type {
-  Header,
-  RowData,
-  SortingState,
-  Table,
-  VisibilityState,
-} from "@tanstack/react-table";
+import type { Header, RowData, Table } from "@tanstack/react-table";
 import classNames from "classnames";
 import React, { useCallback, useState } from "react";
-import { type ColumnConfig, ColumnConfigDialog } from "./ColumnConfigDialog.js";
-import { MultiColumnSortDialog } from "./MultiColumnSortDialog.js";
 import { TableHeaderContent } from "./TableHeaderContent.js";
 import styles from "./TableHeaderWithPopover.module.css";
 import type { ColumnOption } from "./utils/types.js";
@@ -103,6 +95,8 @@ interface TableHeaderWithPopoverProps<
   onResetSize?: () => void;
   columnOptions?: ColumnOption[];
   featureFlags?: HeaderMenuFeatureFlags;
+  onOpenColumnConfig?: () => void;
+  onOpenMultiSort?: () => void;
 }
 
 export function TableHeaderWithPopover<
@@ -114,6 +108,8 @@ export function TableHeaderWithPopover<
   onResetSize,
   columnOptions,
   featureFlags,
+  onOpenColumnConfig,
+  onOpenMultiSort,
 }: TableHeaderWithPopoverProps<TData>): React.ReactElement {
   const {
     showSortingItems = false,
@@ -124,18 +120,12 @@ export function TableHeaderWithPopover<
 
   const {
     setColumnPinning,
-    setColumnOrder,
-    setColumnVisibility,
     setSorting,
   } = table;
 
   const currentSorting = table.getState().sorting;
-  const currentVisibility = table.getState().columnVisibility;
-  const currentColumnOrder = table.getState().columnOrder;
 
   const [isOpen, setIsOpen] = useState(false);
-  const [configDialogOpen, setConfigDialogOpen] = useState(false);
-  const [multiSortDialogOpen, setMultiSortDialogOpen] = useState(false);
 
   const handlePinLeft = useCallback(() => {
     setColumnPinning((prev) => {
@@ -186,48 +176,14 @@ export function TableHeaderWithPopover<
   );
 
   const handleOpenColumnConfig = useCallback(() => {
-    setConfigDialogOpen(true);
+    onOpenColumnConfig?.();
     setIsOpen(false);
-  }, []);
-
-  const handleCloseColumnConfig = useCallback(() => {
-    setConfigDialogOpen(false);
-  }, []);
+  }, [onOpenColumnConfig]);
 
   const handleOpenMultiSort = useCallback(() => {
-    setMultiSortDialogOpen(true);
+    onOpenMultiSort?.();
     setIsOpen(false);
-  }, []);
-
-  const handleCloseMultiSort = useCallback(() => {
-    setMultiSortDialogOpen(false);
-  }, []);
-
-  const handleApplyMultiSort = useCallback(
-    (sortColumns: SortingState) => {
-      setMultiSortDialogOpen(false);
-      setSorting?.(sortColumns);
-    },
-    [setSorting],
-  );
-
-  const handleApplyColumnConfig = useCallback(
-    (
-      updates: ColumnConfig[],
-    ) => {
-      const newVisibilityState: VisibilityState = {};
-      for (const update of updates) {
-        newVisibilityState[update.columnId] = update.isVisible;
-      }
-
-      setColumnOrder(updates.map(col => col.columnId));
-      setColumnVisibility(newVisibilityState);
-    },
-    [
-      setColumnOrder,
-      setColumnVisibility,
-    ],
-  );
+  }, [onOpenMultiSort]);
 
   const isSorted = header.column.getIsSorted();
   const isSortable = header.column.getCanSort();
@@ -374,25 +330,6 @@ export function TableHeaderWithPopover<
           </Menu.Portal>
         </div>
       </Menu.Root>
-      {!!columnOptions?.length && (
-        <ColumnConfigDialog
-          isOpen={configDialogOpen}
-          onClose={handleCloseColumnConfig}
-          columnOptions={columnOptions}
-          currentVisibility={currentVisibility}
-          currentColumnOrder={currentColumnOrder}
-          onApply={handleApplyColumnConfig}
-        />
-      )}
-      {columnOptions?.some(col => col.canSort) && (
-        <MultiColumnSortDialog
-          isOpen={multiSortDialogOpen}
-          onClose={handleCloseMultiSort}
-          columnOptions={columnOptions}
-          currentSorting={currentSorting}
-          onApply={handleApplyMultiSort}
-        />
-      )}
     </>
   );
 }

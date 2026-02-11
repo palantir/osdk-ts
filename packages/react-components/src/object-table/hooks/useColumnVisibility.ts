@@ -75,6 +75,7 @@ export const useColumnVisibility = <
     () => getColumnOrder(allColumns),
   );
 
+  // TODO: Explore other ways to respond to props changes for controlled mode
   useEffect(() => {
     setColumnVisibility(getColumnVisibilityState<TData>(allColumns));
   }, [allColumns]);

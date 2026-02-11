@@ -234,11 +234,11 @@ export interface ObjectTableProps<
    * Called when a column is resized.
    *
    * @param columnId The ID of the resized column
-   * @param newWidth The new width of the column
+   * @param newWidth The new width of the column. When newWidth = null, the column size is reset.
    */
   onColumnResize?: (
     columnId: PropertyKeys<Q> | keyof RDPs | keyof FunctionColumns,
-    newWidth: number,
+    newWidth: number | null,
   ) => void;
 
   /**

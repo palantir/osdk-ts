@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
+import { Button } from "@base-ui/react/button";
 import { Collapsible } from "@base-ui/react/collapsible";
 import { CaretDown, Cog } from "@blueprintjs/icons";
 import { arrayMove } from "@dnd-kit/sortable";
 import type { ColumnOrderState, VisibilityState } from "@tanstack/react-table";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { Button } from "../base-components/button/Button.js";
+import { ActionButton } from "../base-components/action-button/ActionButton.js";
 import { Checkbox } from "../base-components/checkbox/Checkbox.js";
 import { Dialog } from "../base-components/dialog/Dialog.js";
 import { DraggableList } from "../base-components/draggable-list/DraggableList.js";
@@ -176,18 +177,18 @@ export function ColumnConfigDialog({
     );
   }, [allColumns, searchQuery]);
 
-  const footer = (
+  const footer = useMemo(() => (
     <>
-      <Button onClick={onClose}>Cancel</Button>
-      <Button
+      <ActionButton onClick={onClose}>Cancel</ActionButton>
+      <ActionButton
         variant="primary"
         onClick={handleApply}
         disabled={isApplyDisabled}
       >
         Apply
-      </Button>
+      </ActionButton>
     </>
-  );
+  ), [onClose, handleApply, isApplyDisabled]);
 
   return (
     <Dialog
@@ -356,13 +357,18 @@ function PropertyItem({
   }, [onToggle, column]);
 
   return (
-    <Button className={styles.propertyItem} onClick={handleClick}>
+    <div className={styles.propertyItem}>
       <Checkbox
         checked={isSelected}
         onCheckedChange={handleClick}
         className={styles.checkbox}
       />
-      <span className={styles.propertyName}>{column.label}</span>
-    </Button>
+      <Button
+        onClick={handleClick}
+        className={styles.propertyName}
+      >
+        {column.label}
+      </Button>
+    </div>
   );
 }

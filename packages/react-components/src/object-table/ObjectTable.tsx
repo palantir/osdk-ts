@@ -21,11 +21,12 @@ import type {
   QueryDefinition,
   SimplePropertyDef,
 } from "@osdk/api";
-import type { Cell, ColumnSizingState } from "@tanstack/react-table";
+import type { Cell } from "@tanstack/react-table";
 import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useMemo } from "react";
 import { useColumnDefs } from "./hooks/useColumnDefs.js";
 import { useColumnPinning } from "./hooks/useColumnPinning.js";
+import { useColumnResize } from "./hooks/useColumnResize.js";
 import { useColumnVisibility } from "./hooks/useColumnVisibility.js";
 import { useObjectTableData } from "./hooks/useObjectTableData.js";
 import { useRowSelection } from "./hooks/useRowSelection.js";
@@ -63,6 +64,7 @@ export function ObjectTable<
   defaultOrderBy,
   onOrderByChanged,
   onColumnsPinnedChanged,
+  onColumnResize,
   onRowSelection,
   renderCellContextMenu,
   selectionMode = "none",
@@ -74,7 +76,9 @@ export function ObjectTable<
   enableColumnConfig = true,
   ...props
 }: ObjectTableProps<Q, RDPs, FunctionColumns>): React.ReactElement {
-  const [columnSizing, setColumnSizing] = useState<ColumnSizingState>({});
+  const { columnSizing, onColumnSizingChange } = useColumnResize({
+    onColumnResize,
+  });
 
   const { sorting, onSortingChange } = useTableSorting<
     Q,
@@ -161,7 +165,7 @@ export function ObjectTable<
       columnPinning,
     },
     onSortingChange,
-    onColumnSizingChange: setColumnSizing,
+    onColumnSizingChange,
     onColumnPinningChange,
     onColumnVisibilityChange,
     onColumnOrderChange,

@@ -42,14 +42,23 @@
   display: flex;
   cursor: grab;
   color: var(--osdk-draggable-item-drag-icon-color);
-}
 
-.dragHandle:hover {
-  color: var(--osdk-draggable-item-drag-icon-color-hover);
-}
+  &:hover {
+    color: var(--osdk-draggable-item-drag-icon-color-hover);
+  }
 
-.dragHandle:active {
-  cursor: grabbing;
+  &:active {
+    cursor: grabbing;
+  }
+
+  &:focus {
+    outline: none;
+  }
+
+  &:focus-visible {
+    outline: var(--osdk-focus-outline);
+    outline-offset: var(--osdk-focus-visible-outline-offset);
+  }
 }
 
 .itemContent {
@@ -79,6 +88,15 @@
     background: oklch(
       from var(--osdk-surface-background-color-danger-hover) l c h / 0.2
     );
+  }
+
+  &:focus {
+    outline: none;
+  }
+
+  &:focus-visible {
+    outline: var(--osdk-focus-outline);
+    outline-offset: var(--osdk-focus-visible-outline-offset);
   }
 }
 

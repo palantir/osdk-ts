@@ -68,7 +68,7 @@
 }
 
 .searchContainer {
-  margin-bottom: calc(var(--osdk-surface-spacing) * 5);
+  margin-bottom: var(--osdk-surface-spacing);
   flex-shrink: 0;
 }
 
@@ -145,7 +145,6 @@
   display: flex;
   align-items: center;
   flex-direction: row;
-  justify-content: space-between;
   width: 100%;
   gap: calc(var(--osdk-surface-spacing) * 3);
   padding: calc(var(--osdk-surface-spacing) * 2)
@@ -154,6 +153,7 @@
   border: none;
   cursor: pointer;
   text-align: left;
+  border-radius: var(--osdk-surface-border-radius);
 
   &:hover {
     background-color: var(--osdk-surface-background-color-default-hover);
@@ -168,12 +168,16 @@
 }
 
 .propertyName {
+  text-align: left;
   flex: 1;
   font-size: var(--osdk-typography-size-body-medium);
   font-weight: 500;
   color: var(--osdk-typography-color-default-rest);
   margin-bottom: calc(var(--osdk-surface-spacing) / 4);
   padding-left: calc(var(--osdk-surface-spacing) / 2);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .emptyState {

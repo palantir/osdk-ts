@@ -28,3 +28,9 @@ export type {
 // BaseTable that does not handle data fetching
 export type { BaseTableProps } from "../object-table/Table.js";
 export { BaseTable } from "../object-table/Table.js";
+
+export { ColumnConfigDialog } from "../object-table/ColumnConfigDialog.js";
+export type {
+  ColumnConfigDialogProps,
+  ColumnConfigOptions,
+} from "../object-table/ColumnConfigDialog.js";

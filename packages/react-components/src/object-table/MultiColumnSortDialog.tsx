@@ -14,17 +14,20 @@
  * limitations under the License.
  */
 
+import { Button } from "@base-ui/react/button";
 import { Menu } from "@base-ui/react/menu";
 import {
   Add,
   CaretDown,
+  Cog,
   SortAlphabetical,
   SortAlphabeticalDesc,
 } from "@blueprintjs/icons";
 import { arrayMove } from "@dnd-kit/sortable";
 import type { SortingState } from "@tanstack/react-table";
+import classNames from "classnames";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { Button } from "../base-components/button/Button.js";
+import { ActionButton } from "../base-components/action-button/ActionButton.js";
 import { Dialog } from "../base-components/dialog/Dialog.js";
 import { SearchBar } from "../base-components/search-bar/SearchBar.js";
 import styles from "./MultiColumnSortDialog.module.css";
@@ -148,7 +151,9 @@ export function MultiColumnSortDialog({
       label: item.name,
       content: (
         <div className={styles.sortColumnItem}>
-          <span className={styles.sortColumnName}>{item.name}</span>
+          <span className={classNames(styles.sortColumnName, styles.truncate)}>
+            {item.name}
+          </span>
           <Button
             className={styles.sortDirectionButton}
             onClick={() => handleToggleSortDirection(item.id)}
@@ -165,10 +170,10 @@ export function MultiColumnSortDialog({
 
   const footer = (
     <>
-      <Button onClick={onClose}>Cancel</Button>
-      <Button variant="primary" onClick={handleApply}>
+      <ActionButton onClick={onClose}>Cancel</ActionButton>
+      <ActionButton variant="primary" onClick={handleApply}>
         Apply Sorts
-      </Button>
+      </ActionButton>
     </>
   );
 
@@ -176,7 +181,7 @@ export function MultiColumnSortDialog({
     <Dialog
       isOpen={isOpen}
       onOpenChange={onClose}
-      title="Sort on Multiple Columns"
+      title={DialogTitle}
       footer={footer}
     >
       <div className={styles.sortColumnsList}>
@@ -193,7 +198,9 @@ export function MultiColumnSortDialog({
             aria-label="Add column to sort"
           >
             <Add className={styles.addIcon} />
-            <span className={styles.addColumnText}>Add Column to Sort</span>
+            <span className={styles.addColumnText}>
+              Add Column to Sort
+            </span>
             <CaretDown color={"currentColor"} />
           </Menu.Trigger>
           <Menu.Portal>
@@ -228,6 +235,11 @@ export function MultiColumnSortDialog({
   );
 }
 
+const DialogTitle = (
+  <div className={styles.title}>
+    <Cog />Sort on Multiple Columns
+  </div>
+);
 function AvailableColumnMenuItem(
   { column, onAddColumn }: {
     column: ColumnOption;
@@ -238,7 +250,7 @@ function AvailableColumnMenuItem(
 
   return (
     <Menu.Item
-      className={styles.dropdownItem}
+      className={classNames(styles.dropdownItem, styles.truncate)}
       onClick={onClick}
     >
       {column.name}

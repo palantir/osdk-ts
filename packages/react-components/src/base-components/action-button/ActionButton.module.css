@@ -20,6 +20,15 @@
   border-radius: var(--osdk-surface-border-radius);
   font-size: var(--osdk-typography-size-body-medium);
   cursor: pointer;
+
+  &:focus {
+    outline: none;
+  }
+
+  &:focus-visible {
+    outline: var(--osdk-focus-outline);
+    outline-offset: var(--osdk-focus-visible-outline-offset);
+  }
 }
 
 .secondaryButton {

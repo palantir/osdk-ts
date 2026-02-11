@@ -76,15 +76,4 @@
   --osdk-focus-visible-outline-offset: var(--osdk-emphasis-focus-offset);
   --osdk-surface-border: var(--osdk-surface-border-width) solid
     var(--osdk-surface-border-color-default);
-
-  /* Override blueprint focus outline */
-  :focus {
-    outline: none;
-  }
-
-  /* Focus outline for accessibility */
-  :focus-visible {
-    outline: var(--osdk-focus-outline);
-    outline-offset: var(--osdk-focus-visible-outline-offset);
-  }
 }

@@ -21,6 +21,11 @@
   padding: var(--osdk-surface-spacing) calc(var(--osdk-surface-spacing) * 1.5);
   border: var(--osdk-surface-border);
   border-radius: var(--osdk-surface-border-radius);
+
+  &:focus-within {
+    outline: var(--osdk-focus-outline);
+    outline-offset: calc(-1 * var(--osdk-focus-visible-outline-offset));
+  }
 }
 
 .searchIcon {
