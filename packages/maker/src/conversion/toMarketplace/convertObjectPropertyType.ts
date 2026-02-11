@@ -58,15 +58,20 @@ export function convertObjectPropertyType(
       ? {
         type: "array" as const,
         array: {
-          subtype: propertyTypeTypeToOntologyIrType(property.type),
+          subtype: propertyTypeTypeToOntologyIrType(
+            property.type,
+            property.apiName,
+            property.sharedPropertyType,
+          ),
           reducers: convertReducers(
             property.type,
             property.apiName,
             property.reducers ?? [],
+            property.sharedPropertyType,
           ),
         },
       }
-      : propertyTypeTypeToOntologyIrType(property.type),
+      : propertyTypeTypeToOntologyIrType(property.type, property.apiName),
     typeClasses: property.typeClasses
       ?? (shouldNotHaveRenderHints(property.type) ? [] : defaultTypeClasses),
     status: convertObjectStatus(property.status),

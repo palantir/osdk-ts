@@ -51,11 +51,11 @@ export function convertSpt(
       ? {
         type: "array" as const,
         array: {
-          subtype: propertyTypeTypeToOntologyIrType(type),
+          subtype: propertyTypeTypeToOntologyIrType(type, apiName),
           reducers: convertReducers(type, apiName, reducers),
         },
       }
-      : propertyTypeTypeToOntologyIrType(type),
+      : propertyTypeTypeToOntologyIrType(type, apiName),
     aliases: aliases ?? [],
     baseFormatter,
     dataConstraints: dataConstraint,

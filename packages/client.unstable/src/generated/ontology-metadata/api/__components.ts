@@ -10482,7 +10482,8 @@ export interface OntologyIrStructFieldValidationDisplayMetadata {
   visibility: _api_types_ParameterVisibility;
 }
 export interface OntologyIrStructMainValue {
-  fields: Array<StructFieldRid>;
+  fieldApiNames: Array<ObjectTypeFieldApiName>;
+  structApiName: ObjectTypeFieldApiName;
   type: OntologyIrType;
 }
 export interface OntologyIrStructPropertyType {

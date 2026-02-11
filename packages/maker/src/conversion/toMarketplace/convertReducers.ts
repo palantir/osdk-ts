@@ -17,16 +17,17 @@
 import type { OntologyIrArrayPropertyTypeReducer } from "@osdk/client.unstable";
 import invariant from "tiny-invariant";
 import type {
-  PropertyTypeType} from "../../api/properties/PropertyTypeType.js";
-import {
-  isStruct
+  PropertyTypeType,
 } from "../../api/properties/PropertyTypeType.js";
+import { isStruct } from "../../api/properties/PropertyTypeType.js";
 import type { ReducerType } from "../../api/properties/ReducerType.js";
+import type { SharedPropertyType } from "../../api/properties/SharedPropertyType.js";
 
 export function convertReducers(
   type: PropertyTypeType,
   apiName: string,
   reducers?: Array<ReducerType>,
+  sharedPropertyType?: SharedPropertyType,
 ): Array<OntologyIrArrayPropertyTypeReducer> {
   reducers?.forEach(reducer => {
     if (reducer.structField) {
@@ -37,6 +38,42 @@ export function convertReducers(
       );
     }
   });
+  if (sharedPropertyType) {
+    return mapReducers(sharedPropertyType.apiName, sharedPropertyType.reducers);
+  } else {
+    return mapReducers(apiName, reducers);
+  }
+
+  //   return reducers?.map(reducer => {
+  //     switch (reducer.direction) {
+  //       case "ascending":
+  //         return sharedPropertyType ? {
+  //             direction: "ASCENDING_NULLS_LAST",
+  //             structApiName: sharedPropertyType.reducers?.structField ? apiName : undefined,
+  //             fieldApiName: reducer.structField,
+  //         } :
+  //         {
+  //           direction: "ASCENDING_NULLS_LAST",
+  //           structApiName: reducer.structField ? apiName : undefined,
+  //           fieldApiName: reducer.structField,
+  //         };
+  //       case "descending":
+  //         return {
+  //           direction: "DESCENDING_NULLS_LAST",
+  //           structApiName: reducer.structField ? apiName : undefined,
+  //           fieldApiName: reducer.structField,
+  //         };
+  //       default: {
+  //         throw new Error(`Unsupported reducer direction: ${reducer.direction}`);
+  //       }
+  //     }
+  //   }) ?? [];
+}
+
+export function mapReducers(
+  apiName: string,
+  reducers?: Array<ReducerType>,
+): Array<OntologyIrArrayPropertyTypeReducer> {
   return reducers?.map(reducer => {
     switch (reducer.direction) {
       case "ascending":
