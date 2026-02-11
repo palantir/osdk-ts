@@ -27,7 +27,6 @@ import type {
   ObjectSetStreamSubscribeRequests,
   ObjectSetSubscribeResponses,
   ObjectSetUpdates,
-  ObjectState,
   RefreshObjectSet,
   StreamMessage,
   SubscriptionClosed,
@@ -61,9 +60,16 @@ function fillOutListener<
     onError = doNothing,
     onOutOfDate = doNothing,
     onSuccessfulSubscription = doNothing,
+    onInitialLoadComplete = doNothing,
   }: ObjectSetSubscription.Listener<Q, P, R>,
 ): Required<ObjectSetSubscription.Listener<Q, P, R>> {
-  return { onChange, onError, onOutOfDate, onSuccessfulSubscription };
+  return {
+    onChange,
+    onError,
+    onOutOfDate,
+    onSuccessfulSubscription,
+    onInitialLoadComplete,
+  };
 }
 
 interface Subscription<
@@ -192,6 +198,7 @@ export class ObjectSetListenerWebsocket {
     listener: ObjectSetSubscription.Listener<Q, P>,
     properties: Array<P> = [],
     shouldLoadRids: boolean = false,
+    _includeInitialState: boolean = false,
   ): Promise<() => void> {
     const objOrInterfaceDef = objectType.type === "object"
       ? await this.#client.ontologyProvider.getObjectDefinition(
@@ -301,13 +308,14 @@ export class ObjectSetListenerWebsocket {
           requestedProperties,
           requestedReferenceProperties,
           interfaceApiName,
+          loadRids,
         },
       ) => {
         return {
           objectSet: objectSet,
           propertySet: requestedProperties,
           referenceSet: requestedReferenceProperties,
-          objectLoadingResponseOptions: { shouldLoadObjectRids: true },
+          objectLoadingResponseOptions: { shouldLoadObjectRids: loadRids },
         };
       }),
     };
@@ -516,7 +524,7 @@ export class ObjectSetListenerWebsocket {
         return singleOsdkObject != null
           ? {
             object: singleOsdkObject as Osdk.Instance<any, never, any>,
-            state: "ADDED_OR_UPDATED" as ObjectState,
+            state: "ADDED_OR_UPDATED" as const,
           }
           : undefined;
       }),

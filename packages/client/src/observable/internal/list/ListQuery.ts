@@ -420,8 +420,16 @@ export abstract class ListQuery extends BaseListQuery<
     changes: Changes,
   ): ExtractRelevantObjectsResult;
 
-  registerStreamUpdates(sub: Subscription): void {
-    this.createWebsocketSubscription(this.#objectSet, sub, "observeList");
+  registerStreamUpdates(
+    sub: Subscription,
+    streamTransport?: "websocket" | "sse",
+  ): void {
+    this.createStreamSubscription(
+      this.#objectSet,
+      sub,
+      "observeList",
+      streamTransport,
+    );
   }
 
   protected onOswChange(

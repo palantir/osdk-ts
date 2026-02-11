@@ -567,43 +567,52 @@ export abstract class BaseListQuery<
   }
 
   //
-  // Shared Websocket Subscription Methods
+  // Shared Stream Subscription Methods
   //
 
   /**
-   * Create standard websocket subscription handlers for an ObjectSet.
+   * Create stream subscription handlers for an ObjectSet.
    * Subclasses can override individual handlers for custom behavior.
    *
    * @param objectSet The ObjectSet to subscribe to
    * @param sub The parent subscription to add cleanup to
    * @param methodName The method name for logging purposes
+   * @param streamTransport The transport to use ("websocket" or "sse")
    */
-  protected createWebsocketSubscription(
+  protected createStreamSubscription(
     objectSet: ObjectSet<any>,
     sub: Subscription,
     methodName: string = "registerStreamUpdates",
+    streamTransport?: "websocket" | "sse",
   ): void {
     const logger = process.env.NODE_ENV !== "production"
       ? this.logger?.child({ methodName })
       : this.logger;
 
     if (process.env.NODE_ENV !== "production") {
-      logger?.child({ methodName }).info("Subscribing from websocket");
+      logger?.child({ methodName }).info(
+        `Subscribing via ${streamTransport ?? "websocket"}`,
+      );
     }
 
     try {
-      const websocketSubscription = objectSet.subscribe({
-        onChange: this.onOswChange.bind(this),
-        onError: this.onOswError.bind(this),
-        onOutOfDate: this.onOswOutOfDate.bind(this),
-        onSuccessfulSubscription: this.onOswSuccessfulSubscription.bind(this),
-      });
+      const streamSubscription = objectSet.subscribe(
+        {
+          onChange: this.onOswChange.bind(this),
+          onError: this.onOswError.bind(this),
+          onOutOfDate: this.onOswOutOfDate.bind(this),
+          onSuccessfulSubscription: this.onOswSuccessfulSubscription.bind(this),
+        },
+        { streamTransport },
+      );
 
       sub.add(() => {
         if (process.env.NODE_ENV !== "production") {
-          logger?.child({ methodName }).info("Unsubscribing from websocket");
+          logger?.child({ methodName }).info(
+            `Unsubscribing from ${streamTransport ?? "websocket"}`,
+          );
         }
-        websocketSubscription.unsubscribe();
+        streamSubscription.unsubscribe();
       });
     } catch (error) {
       if (this.logger) {

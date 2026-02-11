@@ -72,7 +72,10 @@ export class ListsHelper extends AbstractHelper<
     const ret = super.observe(options, subFn);
 
     if (options.streamUpdates) {
-      ret.query.registerStreamUpdates(ret.subscription);
+      ret.query.registerStreamUpdates(
+        ret.subscription,
+        options.streamTransport,
+      );
     }
     return ret;
   }

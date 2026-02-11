@@ -58,6 +58,7 @@ export interface ObserveObjectSetOptions<
    * @default false
    */
   streamUpdates?: boolean;
+  streamTransport?: "websocket" | "sse";
 }
 
 export interface ObjectSetQueryOptions

@@ -56,6 +56,7 @@ import { augmentRequestContext } from "../util/augmentRequestContext.js";
 import { resolveBaseObjectSetType } from "../util/objectSetUtils.js";
 import { isWireObjectSet } from "../util/WireObjectSet.js";
 import { fetchLinksPage } from "./fetchLinksPage.js";
+import { ObjectSetListenerSSE } from "./ObjectSetListenerSSE.js";
 import { ObjectSetListenerWebsocket } from "./ObjectSetListenerWebsocket.js";
 
 function isObjectTypeDefinition(
@@ -266,14 +267,31 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       listener,
       opts,
     ) => {
-      const pendingSubscribe = ObjectSetListenerWebsocket.getInstance(
-        clientCtx,
-      ).subscribe(
+      const transport = opts?.streamTransport
+        ?? clientCtx.streamTransport
+        ?? "websocket";
+
+      if (process.env.NODE_ENV !== "production") {
+        if (opts?.includeInitialState && transport !== "sse") {
+          // eslint-disable-next-line no-console
+          console.warn(
+            "includeInitialState is only supported with the 'sse' streamTransport. "
+              + "The option will be ignored with the current transport.",
+          );
+        }
+      }
+
+      const getInstance = transport === "sse"
+        ? ObjectSetListenerSSE.getInstance
+        : ObjectSetListenerWebsocket.getInstance;
+
+      const pendingSubscribe = getInstance(clientCtx).subscribe(
         objectType,
         objectSet,
         listener as ObjectSetSubscription.Listener<Q, any>,
         opts?.properties,
         opts?.includeRid,
+        opts?.includeInitialState,
       );
 
       return { unsubscribe: async () => (await pendingSubscribe)() };

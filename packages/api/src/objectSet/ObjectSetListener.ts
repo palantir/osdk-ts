@@ -47,6 +47,12 @@ export namespace ObjectSetSubscription {
     onOutOfDate?: () => void;
 
     /**
+     * The initial load of objects has completed. Only fired when `includeInitialState` is true.
+     * All objects received via `onChange` before this callback are part of the initial state.
+     */
+    onInitialLoadComplete?: () => void;
+
+    /**
      * There was a fatal error with the subscription process. The subscription will close or will not be established.
      */
     onError?: (errors: { subscriptionClosed: boolean; error: any }) => void;
@@ -81,6 +87,20 @@ export namespace ObjectSetSubscription {
       PropertyTypesOnDefMatchesType<O, P, "geotimeSeriesReference">
     > extends true ? R
       : false;
+
+    /**
+     * Transport to use for streaming updates.
+     * - "websocket": Use WebSocket (default)
+     * - "sse": Use Server-Sent Events
+     */
+    streamTransport?: "websocket" | "sse";
+
+    /**
+     * When true, the server will progressively stream the initial set of objects
+     * via `onChange` callbacks before firing `onInitialLoadComplete`. Only supported
+     * with the "sse" transport.
+     */
+    includeInitialState?: boolean;
   }
 }
 

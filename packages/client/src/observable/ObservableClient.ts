@@ -83,6 +83,7 @@ export interface ObserveListOptions<
   invalidationMode?: InvalidationMode;
   expectedLength?: number;
   streamUpdates?: boolean;
+  streamTransport?: "websocket" | "sse";
   withProperties?: DerivedProperty.Clause<Q>;
 
   /**
@@ -459,11 +460,19 @@ export interface ObservableClient extends ObserveLinks {
   ) => Canonical<WhereClause<T, RDPs>>;
 }
 
-export function createObservableClient(client: Client): ObservableClient {
+export interface ObservableClientOptions {
+  streamTransport?: "websocket" | "sse";
+}
+
+export function createObservableClient(
+  client: Client,
+  options?: ObservableClientOptions,
+): ObservableClient {
   // First we need a modified client that adds an extra header so we know its
   // an observable client
   const tweakedClient = createClientFromContext({
     ...client[additionalContext],
+    streamTransport: options?.streamTransport,
 
     fetch: createFetchHeaderMutator(
       client[additionalContext].fetch,

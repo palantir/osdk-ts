@@ -50,6 +50,7 @@ export interface MinimalClient extends SharedClientContext {
   clientCacheKey: ClientCacheKey;
   requestContext: RequestContext;
   narrowTypeInterfaceOrObjectMapping: Record<string, "object" | "interface">;
+  streamTransport?: "websocket" | "sse";
 }
 
 export type MinimalClientParams = {

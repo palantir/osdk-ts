@@ -103,6 +103,13 @@ export interface UseObjectSetOptions<
   streamUpdates?: boolean;
 
   /**
+   * Transport to use for streaming updates.
+   * - "websocket": Use WebSocket (default)
+   * - "sse": Use Server-Sent Events
+   */
+  streamTransport?: "websocket" | "sse";
+
+  /**
    * Enable or disable the query.
    *
    * When `false`, the query will not automatically execute. It will still
@@ -246,6 +253,7 @@ export function useObjectSet<
               dedupeInterval: otherOptions.dedupeIntervalMs ?? 2_000,
               autoFetchMore: otherOptions.autoFetchMore,
               streamUpdates,
+              streamTransport: otherOptions.streamTransport,
             },
             observer,
           );
@@ -257,7 +265,14 @@ export function useObjectSet<
         initialValue,
       );
     },
-    [enabled, observableClient, stableKey, streamUpdates, objectTypeChanged],
+    [
+      enabled,
+      observableClient,
+      stableKey,
+      streamUpdates,
+      otherOptions.streamTransport,
+      objectTypeChanged,
+    ],
   );
 
   const payload = React.useSyncExternalStore(subscribe, getSnapShot);

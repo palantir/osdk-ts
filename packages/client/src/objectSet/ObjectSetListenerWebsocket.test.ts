@@ -161,6 +161,7 @@ describe("ObjectSetListenerWebsocket", async () => {
         onError: vi.fn(),
         onOutOfDate: vi.fn(),
         onSuccessfulSubscription: vi.fn(),
+        onInitialLoadComplete: vi.fn(),
       };
 
       let objectSetRidCounter = 0;
@@ -463,6 +464,7 @@ describe("ObjectSetListenerWebsocket", async () => {
           onError: vi.fn(),
           onOutOfDate: vi.fn(),
           onSuccessfulSubscription: vi.fn(),
+          onInitialLoadComplete: vi.fn(),
         };
 
         vi.useFakeTimers();

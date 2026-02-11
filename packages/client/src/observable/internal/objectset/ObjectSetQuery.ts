@@ -212,11 +212,15 @@ export class ObjectSetQuery extends BaseListQuery<
     );
   }
 
-  registerStreamUpdates(sub: Subscription): void {
-    this.createWebsocketSubscription(
+  registerStreamUpdates(
+    sub: Subscription,
+    streamTransport?: "websocket" | "sse",
+  ): void {
+    this.createStreamSubscription(
       this.#composedObjectSet,
       sub,
       "observeObjectSet",
+      streamTransport,
     );
   }
 

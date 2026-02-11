@@ -121,6 +121,13 @@ export interface UseOsdkObjectsOptions<
   autoFetchMore?: boolean | number;
 
   streamUpdates?: boolean;
+
+  /**
+   * Transport to use for streaming updates.
+   * - "websocket": Use WebSocket (default)
+   * - "sse": Use Server-Sent Events
+   */
+  streamTransport?: "websocket" | "sse";
 }
 
 export interface UseOsdkListResult<
@@ -207,6 +214,7 @@ export function useOsdkObjects<
     where,
     orderBy,
     streamUpdates,
+    streamTransport,
     autoFetchMore,
     intersectWith,
     pivotTo,
@@ -262,6 +270,7 @@ export function useOsdkObjects<
             pageSize,
             orderBy: stableOrderBy,
             streamUpdates,
+            streamTransport,
             withProperties: stableWithProperties,
             autoFetchMore,
             ...(stableIntersectWith
@@ -286,6 +295,7 @@ export function useOsdkObjects<
       pageSize,
       stableOrderBy,
       streamUpdates,
+      streamTransport,
       stableWithProperties,
       autoFetchMore,
       stableIntersectWith,
