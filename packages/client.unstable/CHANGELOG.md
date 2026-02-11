@@ -1,5 +1,11 @@
 # @osdk/client.unstable
 
+## 2.8.0-beta.5
+
+### Minor Changes
+
+- 6499ff9: Support reducers and struct main values in oac
+
 ## 2.8.0-beta.4
 
 ## 2.8.0-beta.3
