@@ -112,8 +112,9 @@ function discoverPythonFunctions(
     if (existsSync(maestroPython)) {
       pythonPath = maestroPython;
     } else {
-      // Fall back to system python3
-      pythonPath = "python3";
+      throw new Error(
+        `Python binary not found at ${maestroPython}. Please provide a path to Python 3.10+ binary or install Maestro for automatic discovery.`,
+      );
     }
   }
 
