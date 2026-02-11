@@ -14,12 +14,34 @@
  * limitations under the License.
  */
 
+import { useState } from 'react';
 import { OsdkProvider2 } from '@osdk/react/experimental';
 import { ObjectTable } from '@osdk/react-components/experimental';
 import { client } from './foundryClient.js';
 import { Employee } from './generatedNoCheck/index.js';
+import { ObjectTableExamplesPage } from './pages/ObjectTableExamplesPage.js';
 
 function App() {
+  const [showExamples, setShowExamples] = useState(false);
+
+  if (showExamples) {
+    return (
+      <OsdkProvider2 client={client}>
+        <div className="min-h-screen bg-gray-50 p-8">
+          <div className="max-w-6xl mx-auto">
+            <button
+              onClick={() => setShowExamples(false)}
+              className="mb-4 text-blue-600 hover:text-blue-800 flex items-center gap-2"
+            >
+              ← Back to basics
+            </button>
+            <ObjectTableExamplesPage />
+          </div>
+        </div>
+      </OsdkProvider2>
+    );
+  }
+
   return (
     <OsdkProvider2 client={client}>
       <div className="min-h-screen bg-gray-50 p-8">
@@ -33,7 +55,7 @@ function App() {
             </p>
           </header>
 
-          <main>
+          <main className="space-y-6">
             <section className="bg-white rounded-lg shadow p-6">
               <h2 className="text-2xl font-bold text-gray-900 mb-4">
                 ObjectTable - Basic Example
@@ -55,6 +77,21 @@ function App() {
                   <li>Drag column edges to resize</li>
                 </ul>
               </div>
+            </section>
+
+            <section className="bg-white rounded-lg shadow p-6">
+              <h2 className="text-2xl font-bold text-gray-900 mb-3">
+                More Examples
+              </h2>
+              <p className="text-gray-600 mb-4">
+                Explore advanced ObjectTable features with 7 comprehensive examples.
+              </p>
+              <button
+                onClick={() => setShowExamples(true)}
+                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+              >
+                View All Examples →
+              </button>
             </section>
           </main>
         </div>
