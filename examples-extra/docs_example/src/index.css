@@ -9,6 +9,12 @@
 /* Import OSDK tokens (Blueprint Level 1 + OSDK Level 2 tokens) */
 @import "@osdk/react-components-styles" layer(osdk.tokens);
 
+/* Import custom documentation component styles */
+@import "./components.css" layer(custom.theme);
+
+/* Import theme definitions */
+@import "./themes.css" layer(custom.theme);
+
 /* Tailwind directives in their own layer */
 @layer tailwind {
   @tailwind base;

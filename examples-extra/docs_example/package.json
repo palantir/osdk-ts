@@ -16,6 +16,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@base-ui/react": "^1.0.0",
     "@osdk/api": "workspace:~",
     "@osdk/client": "workspace:~",
     "@osdk/legacy-client": "^2.5.6",
