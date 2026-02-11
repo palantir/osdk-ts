@@ -6,11 +6,12 @@
   --osdk-button-primary-bg-active: var(--osdk-intent-primary-active);
 
   /* Secondary Button */
-  --osdk-button-secondary-color: var(--osdk-typography-color-muted);
-  --osdk-button-secondary-bg: var(
-    --osdk-palette-light-gray-5
-  ); /* Should map to default intent later */
+  --osdk-button-secondary-color: var(--osdk-typography-color-default-rest);
+  --osdk-button-secondary-bg: var(--osdk-background-secondary);
   --osdk-button-secondary-bg-hover: var(
     --osdk-surface-background-color-default-hover
+  );
+  --osdk-button-secondary-bg-active: var(
+    --osdk-surface-background-color-default-active
   );
 }

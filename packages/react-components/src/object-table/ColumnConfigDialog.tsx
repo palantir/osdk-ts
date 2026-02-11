@@ -16,9 +16,10 @@
 
 import { Button } from "@base-ui/react/button";
 import { Collapsible } from "@base-ui/react/collapsible";
-import { CaretDown, Cog } from "@blueprintjs/icons";
+import { CaretDown, Cog, SmallInfoSign } from "@blueprintjs/icons";
 import { arrayMove } from "@dnd-kit/sortable";
 import type { ColumnOrderState, VisibilityState } from "@tanstack/react-table";
+import classNames from "classnames";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { ActionButton } from "../base-components/action-button/ActionButton.js";
 import { Checkbox } from "../base-components/checkbox/Checkbox.js";
@@ -196,7 +197,7 @@ export function ColumnConfigDialog({
       onOpenChange={onClose}
       title={DialogTitle}
       footer={footer}
-      className={styles.content}
+      className={styles.columnConfigDialog}
     >
       <div className={styles.dialogLayout}>
         <VisibleColumnsList
@@ -219,7 +220,7 @@ export function ColumnConfigDialog({
 
 const DialogTitle = (
   <div className={styles.title}>
-    <Cog />Configure Columns
+    <Cog />Configure Table Columns
   </div>
 );
 
@@ -250,7 +251,13 @@ function VisibleColumnsList({
 }: VisibleColumnsListProps): React.ReactElement {
   return (
     <div className={styles.visibleColumnsContainer}>
-      <div className={styles.sectionTitle}>Visible Columns</div>
+      <div className={styles.sectionHeader}>
+        <div className={styles.sectionTitle}>
+          <span>Visible Columns</span>
+          <span className={styles.countTag}>{columns.length}</span>
+        </div>
+        <div className={styles.sectionHint}>Drag to reorder</div>
+      </div>
       <DraggableList
         items={columns}
         onReorder={onReorder}
@@ -295,10 +302,13 @@ function AvailableColumnsList({
 
   return (
     <div className={styles.availableColumnsContainer}>
+      <div className={classNames(styles.sectionHeader, styles.sectionTitle)}>
+        Add or Remove Columns
+      </div>
       <SearchBar
         value={searchQuery}
         onChange={onSearchChange}
-        placeholder="Search available columns"
+        placeholder="Search..."
         aria-label="Search available columns"
         className={styles.searchContainer}
       />
@@ -311,9 +321,9 @@ function AvailableColumnsList({
             className={styles.checkbox}
           />
           <Collapsible.Trigger className={styles.categoryTrigger}>
-            <span className={styles.categoryTitle}>Available Columns</span>
+            <span className={styles.categoryTitle}>All Columns</span>
             <span className={styles.categoryCount}>
-              {selectedCount} / {totalCount}
+              {selectedCount}/{totalCount}
             </span>
             <CaretDown className={styles.caretIcon} />
           </Collapsible.Trigger>
@@ -345,12 +355,14 @@ interface PropertyItemProps {
   column: ColumnItem;
   isSelected: boolean;
   onToggle: (column: ColumnItem) => void;
+  showInfoIcon?: boolean;
 }
 
 function PropertyItem({
   column,
   isSelected,
   onToggle,
+  showInfoIcon = false,
 }: PropertyItemProps): React.ReactElement {
   const handleClick = useCallback(() => {
     onToggle(column);
@@ -369,6 +381,7 @@ function PropertyItem({
       >
         {column.label}
       </Button>
+      {showInfoIcon && <SmallInfoSign className={styles.infoIcon} />}
     </div>
   );
 }

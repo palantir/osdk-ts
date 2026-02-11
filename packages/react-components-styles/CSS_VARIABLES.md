@@ -89,12 +89,30 @@ Semantic colors for interactive elements and states.
 | Variable                           | Maps to Blueprint Token          | Description                       |
 | ---------------------------------- | -------------------------------- | --------------------------------- |
 | `--osdk-intent-default-rest`       | `--bp-intent-default-rest`       | Default rest state                |
+| `--osdk-intent-default-hover`      | `--bp-intent-default-hover`      | Default hover state               |
+| `--osdk-intent-default-active`     | `--bp-intent-default-active`     | Default active/pressed state      |
+| `--osdk-intent-default-disabled`   | `--bp-intent-default-disabled`   | Default disabled state            |
+| `--osdk-intent-default-foreground` | `--bp-intent-default-foreground` | Text color on default backgrounds |
 | `--osdk-intent-primary-rest`       | `--bp-intent-primary-rest`       | Primary rest state                |
-| `--osdk-intent-primary-foreground` | `--bp-intent-primary-foreground` | Text color on primary backgrounds |
 | `--osdk-intent-primary-hover`      | `--bp-intent-primary-hover`      | Primary hover state               |
 | `--osdk-intent-primary-active`     | `--bp-intent-primary-active`     | Primary active/pressed state      |
+| `--osdk-intent-primary-disabled`   | `--bp-intent-primary-disabled`   | Primary disabled state            |
+| `--osdk-intent-primary-foreground` | `--bp-intent-primary-foreground` | Text color on primary backgrounds |
+| `--osdk-intent-success-rest`       | `--bp-intent-success-rest`       | Success rest state                |
+| `--osdk-intent-success-hover`      | `--bp-intent-success-hover`      | Success hover state               |
+| `--osdk-intent-success-active`     | `--bp-intent-success-active`     | Success active/pressed state      |
+| `--osdk-intent-success-disabled`   | `--bp-intent-success-disabled`   | Success disabled state            |
+| `--osdk-intent-success-foreground` | `--bp-intent-success-foreground` | Text color on success backgrounds |
+| `--osdk-intent-warning-rest`       | `--bp-intent-warning-rest`       | Warning rest state                |
+| `--osdk-intent-warning-hover`      | `--bp-intent-warning-hover`      | Warning hover state               |
+| `--osdk-intent-warning-active`     | `--bp-intent-warning-active`     | Warning active/pressed state      |
+| `--osdk-intent-warning-disabled`   | `--bp-intent-warning-disabled`   | Warning disabled state            |
+| `--osdk-intent-warning-foreground` | `--bp-intent-warning-foreground` | Text color on warning backgrounds |
 | `--osdk-intent-danger-rest`        | `--bp-intent-danger-rest`        | Danger rest state                 |
 | `--osdk-intent-danger-hover`       | `--bp-intent-danger-hover`       | Danger hover state                |
+| `--osdk-intent-danger-active`      | `--bp-intent-danger-active`      | Danger active/pressed state       |
+| `--osdk-intent-danger-disabled`    | `--bp-intent-danger-disabled`    | Danger disabled state             |
+| `--osdk-intent-danger-foreground`  | `--bp-intent-danger-foreground`  | Text color on danger backgrounds  |
 
 ### Iconography Tokens
 
@@ -129,6 +147,35 @@ Raw color palette tokens.
 | `--osdk-palette-white`        | `--bp-palette-white`        | White        |
 | `--osdk-palette-black`        | `--bp-palette-black`        | Black        |
 
+### Semantic Color Tokens
+
+Semantic tokens that abstract palette usage for better maintainability.
+
+#### Background Colors
+
+| Variable                          | Default Value                                        | Description                                |
+| --------------------------------- | ---------------------------------------------------- | ------------------------------------------ |
+| `--osdk-background-primary`       | `var(--osdk-palette-white)`                          | Primary background color (white)           |
+| `--osdk-background-secondary`     | `var(--osdk-palette-light-gray-5)`                   | Secondary background color (light gray)    |
+| `--osdk-background-tertiary`      | `var(--osdk-palette-light-gray-4)`                   | Tertiary background color (alternate rows) |
+| `--osdk-background-skeleton-from` | `var(--osdk-palette-light-gray-1)`                   | Skeleton loading animation start color     |
+| `--osdk-background-skeleton-to`   | `oklch(from var(--osdk-palette-gray-1) l c h / 0.4)` | Skeleton loading animation end color       |
+| `--osdk-background-backdrop`      | `oklch(from var(--osdk-palette-black) l c h / 0.5)`  | Modal backdrop base color                  |
+
+#### Custom Colors
+
+These tokens are pre-calculated colors with opacity for specific UI effects.
+
+| Variable                           | Default Value                                              | Description                  |
+| ---------------------------------- | ---------------------------------------------------------- | ---------------------------- |
+| `--osdk-custom-color-gray-1`       | `oklch(from var(--osdk-palette-gray-1) l c h / 0.05)`      | Gray at 5% opacity           |
+| `--osdk-custom-color-gray-2`       | `oklch(from var(--osdk-palette-gray-1) l c h / 0.08)`      | Gray at 8% opacity           |
+| `--osdk-custom-color-gray-3`       | `oklch(from var(--osdk-palette-gray-1) l c h / 0.1)`       | Gray at 10% opacity          |
+| `--osdk-custom-color-gray-4`       | `oklch(from var(--osdk-palette-gray-1) l c h / 0.2)`       | Gray at 20% opacity          |
+| `--osdk-custom-color-light-gray-1` | `oklch(from var(--osdk-palette-light-gray-1) l c h / 0.6)` | Light gray at 60% opacity    |
+| `--osdk-custom-color-light-gray-2` | `oklch(from var(--osdk-palette-light-gray-5) l c h / 0.5)` | Light gray at 50% opacity    |
+| `--osdk-custom-color-primary-1`    | `oklch(from var(--osdk-intent-primary-rest) l c h / 0.5)`  | Primary color at 50% opacity |
+
 ## OSDK Component Tokens
 
 Component-specific semantic tokens that may reference Blueprint tokens or define custom values.
@@ -156,11 +203,12 @@ Styling for button components.
 
 #### Secondary Button
 
-| Variable                           | Default Value                                        | Description                       |
-| ---------------------------------- | ---------------------------------------------------- | --------------------------------- |
-| `--osdk-button-secondary-color`    | `var(--osdk-typography-color-muted)`                 | Secondary button text color       |
-| `--osdk-button-secondary-bg`       | `var(--osdk-palette-light-gray-5)`                   | Secondary button background       |
-| `--osdk-button-secondary-bg-hover` | `var(--osdk-surface-background-color-default-hover)` | Secondary button hover background |
+| Variable                            | Default Value                                         | Description                        |
+| ----------------------------------- | ----------------------------------------------------- | ---------------------------------- |
+| `--osdk-button-secondary-color`     | `var(--osdk-typography-color-default-rest)`           | Secondary button text color        |
+| `--osdk-button-secondary-bg`        | `var(--osdk-background-secondary)`                    | Secondary button background        |
+| `--osdk-button-secondary-bg-hover`  | `var(--osdk-surface-background-color-default-hover)`  | Secondary button hover background  |
+| `--osdk-button-secondary-bg-active` | `var(--osdk-surface-background-color-default-active)` | Secondary button active background |
 
 ### Checkbox
 
@@ -186,11 +234,11 @@ Styling for dialog/modal components.
 | Variable                          | Default Value                                                                 | Description              |
 | --------------------------------- | ----------------------------------------------------------------------------- | ------------------------ |
 | `--osdk-dialog-padding`           | `calc(var(--osdk-surface-spacing) * 2) calc(var(--osdk-surface-spacing) * 4)` | Base dialog padding      |
-| `--osdk-dialog-backdrop-bg`       | `oklch(from var(--osdk-palette-black) l c h / 0.5)`                           | Backdrop overlay color   |
+| `--osdk-dialog-backdrop-bg`       | `var(--osdk-custom-color-backdrop)`                                           | Backdrop overlay color   |
 | `--osdk-dialog-header-padding`    | `var(--osdk-dialog-padding)`                                                  | Header section padding   |
 | `--osdk-dialog-title-font-size`   | `var(--osdk-typography-size-body-medium)`                                     | Dialog title font size   |
 | `--osdk-dialog-title-font-weight` | `var(--osdk-typography-weight-bold)`                                          | Dialog title font weight |
-| `--osdk-dialog-bg`                | `var(--osdk-palette-white)`                                                   | Dialog background color  |
+| `--osdk-dialog-bg`                | `var(--osdk-background-primary)`                                              | Dialog background color  |
 | `--osdk-dialog-shadow`            | `var(--osdk-surface-shadow-2)`                                                | Dialog box shadow        |
 | `--osdk-dialog-min-width`         | `500px`                                                                       | Minimum dialog width     |
 | `--osdk-dialog-min-height`        | `300px`                                                                       | Minimum dialog height    |
@@ -205,7 +253,7 @@ Styling for draggable list item components.
 
 | Variable                                      | Default Value                                                                 | Description                  |
 | --------------------------------------------- | ----------------------------------------------------------------------------- | ---------------------------- |
-| `--osdk-draggable-item-bg`                    | `var(--osdk-palette-white)`                                                   | Draggable item background    |
+| `--osdk-draggable-item-bg`                    | `var(--osdk-background-primary)`                                              | Draggable item background    |
 | `--osdk-draggable-item-border`                | `var(--osdk-surface-border)`                                                  | Draggable item border        |
 | `--osdk-draggable-item-border-radius`         | `var(--osdk-surface-border-radius)`                                           | Draggable item border radius |
 | `--osdk-draggable-item-padding`               | `calc(var(--osdk-surface-spacing) * 2) calc(var(--osdk-surface-spacing) * 3)` | Draggable item padding       |
@@ -242,19 +290,19 @@ These variables define the purpose of each border type, making it easier to cust
 | Variable                         | Default Value                            | Description                   |
 | -------------------------------- | ---------------------------------------- | ----------------------------- |
 | `--osdk-table-header-height`     | `50px`                                   | Table header row height       |
-| `--osdk-table-header-bg`         | `var(--osdk-palette-light-gray-5)`       | Table header background color |
+| `--osdk-table-header-bg`         | `var(--osdk-background-secondary)`       | Table header background color |
 | `--osdk-table-header-fontWeight` | `var(--osdk-typography-weight-bold)`     | Header text weight            |
 | `--osdk-table-header-fontSize`   | `var(--osdk-typography-size-body-small)` | Header text size              |
 | `--osdk-table-header-color`      | `var(--osdk-typography-color-muted)`     | Header text color             |
 
 #### Row Backgrounds
 
-| Variable                        | Default Value                                                                         | Description                           |
-| ------------------------------- | ------------------------------------------------------------------------------------- | ------------------------------------- |
-| `--osdk-table-row-bg-default`   | `var(--osdk-palette-white)`                                                           | Default row background                |
-| `--osdk-table-row-bg-alternate` | `var(--osdk-palette-light-gray-4)`                                                    | Alternate row background for striping |
-| `--osdk-table-row-bg-hover`     | `color-mix(in srgb, var(--osdk-intent-primary-hover) 10%, var(--osdk-palette-white))` | Row hover background                  |
-| `--osdk-table-row-bg-active`    | `color-mix(in srgb, var(--osdk-intent-primary-hover) 10%, var(--osdk-palette-white))` | Active/selected row background        |
+| Variable                        | Default Value                                                                              | Description                           |
+| ------------------------------- | ------------------------------------------------------------------------------------------ | ------------------------------------- |
+| `--osdk-table-row-bg-default`   | `var(--osdk-background-primary)`                                                           | Default row background                |
+| `--osdk-table-row-bg-alternate` | `var(--osdk-background-tertiary)`                                                          | Alternate row background for striping |
+| `--osdk-table-row-bg-hover`     | `color-mix(in srgb, var(--osdk-intent-primary-hover) 10%, var(--osdk-background-primary))` | Row hover background                  |
+| `--osdk-table-row-bg-active`    | `color-mix(in srgb, var(--osdk-intent-primary-hover) 10%, var(--osdk-background-primary))` | Active/selected row background        |
 
 #### Row Border Colors (Hover/Active States)
 
@@ -275,39 +323,40 @@ These variables define the purpose of each border type, making it easier to cust
 
 Styling for the column header dropdown menu.
 
-| Variable                                | Default Value                                                                               | Description                   |
-| --------------------------------------- | ------------------------------------------------------------------------------------------- | ----------------------------- |
-| `--osdk-table-header-menu-padding`      | `calc(var(--osdk-surface-spacing) * 0.25)`                                                  | Menu button padding           |
-| `--osdk-table-header-menu-bg`           | `oklch(from var(--osdk-palette-light-gray-5) l c h / 0.5)`                                  | Menu button background        |
-| `--osdk-table-header-menu-border`       | `var(--osdk-surface-border-width) solid oklch(from var(--osdk-palette-gray-1) l c h / 0.2)` | Menu button border            |
-| `--osdk-table-header-menu-color`        | `var(--osdk-typography-color-muted)`                                                        | Menu icon color               |
-| `--osdk-table-header-menu-color-active` | `var(--osdk-typography-color-default-rest)`                                                 | Menu icon active color        |
-| `--osdk-table-header-menu-bg-hover`     | `oklch(from var(--osdk-palette-gray-1) l c h / 0.05)`                                       | Menu button hover background  |
-| `--osdk-table-header-menu-bg-active`    | `oklch(from var(--osdk-palette-gray-1) l c h / 0.08)`                                       | Menu button active background |
+| Variable                                | Default Value                                                            | Description                   |
+| --------------------------------------- | ------------------------------------------------------------------------ | ----------------------------- |
+| `--osdk-table-header-menu-padding`      | `calc(var(--osdk-surface-spacing) * 0.25)`                               | Menu button padding           |
+| `--osdk-table-header-menu-bg`           | `var(--osdk-custom-color-light-gray-2)`                                  | Menu button background        |
+| `--osdk-table-header-menu-border`       | `var(--osdk-surface-border-width) solid var(--osdk-custom-color-gray-4)` | Menu button border            |
+| `--osdk-table-header-menu-color`        | `var(--osdk-typography-color-muted)`                                     | Menu icon color               |
+| `--osdk-table-header-menu-color-active` | `var(--osdk-typography-color-default-rest)`                              | Menu icon active color        |
+| `--osdk-table-header-menu-bg-hover`     | `var(--osdk-custom-color-gray-1)`                                        | Menu button hover background  |
+| `--osdk-table-header-menu-bg-active`    | `var(--osdk-custom-color-gray-2)`                                        | Menu button active background |
 
 #### Resizer
 
 Styling for column resize handles.
 
-| Variable                            | Default Value                                             | Description                |
-| ----------------------------------- | --------------------------------------------------------- | -------------------------- |
-| `--osdk-table-resizer-color-hover`  | `oklch(from var(--osdk-intent-primary-rest) l c h / 0.5)` | Resize handle hover color  |
-| `--osdk-table-resizer-color-active` | `var(--osdk-intent-primary-rest)`                         | Resize handle active color |
+| Variable                            | Default Value                            | Description                |
+| ----------------------------------- | ---------------------------------------- | -------------------------- |
+| `--osdk-table-resizer-color-hover`  | `var(--osdk-custom-color-primary-1)` | Resize handle hover color  |
+| `--osdk-table-resizer-color-active` | `var(--osdk-intent-primary-rest)`        | Resize handle active color |
 
 #### Skeleton Loading
 
-| Variable                             | Default Value                                              | Description                                                |
-| ------------------------------------ | ---------------------------------------------------------- | ---------------------------------------------------------- |
-| `--osdk-table-skeleton-color-from`   | `oklch(from var(--osdk-palette-light-gray-1) l c h / 0.4)` | Skeleton animation start color (light gray at 40% opacity) |
-| `--osdk-table-skeleton-color-to`     | `oklch(from var(--osdk-palette-gray-1) l c h / 0.4)`       | Skeleton animation end color (medium gray at 40% opacity)  |
-| `--osdk-table-skeleton-border-color` | `oklch(from var(--osdk-palette-light-gray-1) l c h / 0.6)` | Skeleton cell border color (light gray at 60% opacity)     |
+| Variable                             | Default Value                           | Description                                                |
+| ------------------------------------ | --------------------------------------- | ---------------------------------------------------------- |
+| `--osdk-table-skeleton-color-from`   | `var(--osdk-custom-color-light-gray-1)` | Skeleton animation start color (light gray at 40% opacity) |
+| `--osdk-table-skeleton-color-to`     | `var(--osdk-custom-color-gray-4)`       | Skeleton animation end color (medium gray at 40% opacity)  |
+| `--osdk-table-skeleton-border-color` | `var(--osdk-custom-color-light-gray-2)` | Skeleton cell border color (light gray at 60% opacity)     |
 
 #### Column Config Dialog
 
-| Variable                                       | Default Value | Description                             |
-| ---------------------------------------------- | ------------- | --------------------------------------- |
-| `--osdk-table-column-config-dialog-min-width`  | `800px`       | Minimum width for column config dialog  |
-| `--osdk-table-column-config-dialog-min-height` | `400px`       | Minimum height for column config dialog |
+| Variable                                        | Default Value                      | Description                             |
+| ----------------------------------------------- | ---------------------------------- | --------------------------------------- |
+| `--osdk-table-column-config-dialog-min-width`   | `800px`                            | Minimum width for column config dialog  |
+| `--osdk-table-column-config-dialog-min-height`  | `400px`                            | Minimum height for column config dialog |
+| `--osdk-table-column-config-visible-columns-bg` | `var(--osdk-background-secondary)` | Background for visible columns section  |
 
 ## Creating a Custom Theme
 

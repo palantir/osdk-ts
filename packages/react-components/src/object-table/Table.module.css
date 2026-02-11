@@ -23,7 +23,6 @@
 }
 
 .osdkTableContainer table {
-  background-color: var(--osdk-palette-white);
   border-collapse: collapse;
   display: grid;
   table-layout: fixed;

@@ -1,5 +1,5 @@
 :root {
-  --osdk-draggable-item-bg: var(--osdk-palette-white);
+  --osdk-draggable-item-bg: var(--osdk-background-primary);
   --osdk-draggable-item-border: var(--osdk-surface-border);
   --osdk-draggable-item-border-radius: var(--osdk-surface-border-radius);
   --osdk-draggable-item-padding: calc(var(--osdk-surface-spacing) * 2)

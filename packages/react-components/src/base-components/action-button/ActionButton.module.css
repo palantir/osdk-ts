@@ -36,8 +36,17 @@
   border: var(--osdk-surface-border);
   color: var(--osdk-button-secondary-color);
 
-  &:hover {
+  &:hover:not(:disabled) {
     background-color: var(--osdk-button-secondary-bg-hover);
+  }
+
+  &:active:not(:disabled) {
+    background-color: var(--osdk-button-secondary-bg-active);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
   }
 }
 

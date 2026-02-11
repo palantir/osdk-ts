@@ -2,7 +2,7 @@
 :root {
   --osdk-dialog-padding: calc(var(--osdk-surface-spacing) * 2)
     calc(var(--osdk-surface-spacing) * 4);
-  --osdk-dialog-backdrop-bg: oklch(from var(--osdk-palette-black) l c h / 0.5);
+  --osdk-dialog-backdrop-bg: var(--osdk-background-backdrop);
 
   /* Header */
   --osdk-dialog-header-padding: var(--osdk-dialog-padding);
@@ -10,7 +10,7 @@
   --osdk-dialog-title-font-weight: var(--osdk-typography-weight-bold);
 
   /* Body */
-  --osdk-dialog-bg: var(--osdk-palette-white);
+  --osdk-dialog-bg: var(--osdk-background-primary);
   --osdk-dialog-shadow: var(--osdk-surface-shadow-2);
   --osdk-dialog-min-width: 500px;
   --osdk-dialog-min-height: 300px;
