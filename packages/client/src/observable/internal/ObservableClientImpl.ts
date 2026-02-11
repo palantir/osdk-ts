@@ -210,9 +210,6 @@ export class ObservableClientImpl implements ObservableClient {
     const parentSub = new Subscription();
 
     for (const obj of objectsArray) {
-      // Determine if the source is an object type or interface
-      // For object instances, $apiName equals $objectType
-      // For interface instances, $apiName is the interface name, $objectType is the underlying type
       const sourceType: "object" | "interface" =
         obj.$apiName === obj.$objectType
           ? "object"

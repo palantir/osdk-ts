@@ -105,11 +105,8 @@ export class SpecificLinkQuery extends BaseListQuery<
     ] = cacheKey.otherKeys;
   }
 
-  // _fetchAndStore is now implemented in BaseCollectionQuery
-
   /**
    * Implements fetchPageData from the BaseCollectionQuery template method pattern
-   * Fetches a page of linked objects
    */
   protected async fetchPageData(
     signal: AbortSignal | undefined,
@@ -194,7 +191,6 @@ export class SpecificLinkQuery extends BaseListQuery<
       throw new Error("Aborted");
     }
 
-    // Fetch the linked objects with pagination
     const queryParams: {
       $pageSize: number;
       $nextPageToken: string | undefined;
@@ -265,16 +261,10 @@ export class SpecificLinkQuery extends BaseListQuery<
     changes: Changes,
     _optimisticId: OptimisticId | undefined,
   ): Promise<void> => {
-    // TODO: Implement proper invalidation logic for linked objects
-    // This would check if any of the linked objects have changed,
-    // or if the source object's links might have changed
-
-    // For now, simply check if this specific link cache key was modified
     if (changes.modified.has(this.cacheKey)) {
       return this.revalidate(true);
     }
 
-    // No relevant changes were detected
     return Promise.resolve();
   };
 
@@ -322,6 +312,7 @@ export class SpecificLinkQuery extends BaseListQuery<
         const objectMetadata = await ontologyProvider
           .getObjectDefinition(this.#sourceApiName);
         const linkDef = objectMetadata.links?.[this.#linkName];
+        // On object link defs, targetType is the target API name (not the kind)
         targetTypeApiName = linkDef?.targetType;
         targetTypeKind = "object";
       }
