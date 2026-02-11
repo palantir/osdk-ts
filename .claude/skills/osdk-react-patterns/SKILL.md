@@ -19,7 +19,7 @@ This skill is automatically loaded when you work on React code in the osdk-ts re
 
 Best practices and patterns for building applications with @osdk/react.
 
-**Generated on**: 2026-02-10T22:46:52.812Z
+**Auto-generated**: This file is generated from individual rule files in `rules/`. To regenerate, run `pnpm build` in this directory.
 **Total patterns**: 6
 
 ---
@@ -76,23 +76,37 @@ function TodoDetail({ id }: { id: string }) {
 
   return (
     <div>
+      {/* Show loading indicator while fetching */}
       {isLoading && (
         <div className="loading-indicator">
           <Spinner size="small" /> Refreshing...
         </div>
       )}
-      {error && (
+
+      {/* Show error if there's an error and no data */}
+      {error && !data && (
         <Alert variant="error">
           Failed to load: {error.message}
         </Alert>
       )}
+
+      {/* Show error banner if there's an error but we have stale data */}
+      {error && data && (
+        <Alert variant="warning">
+          Failed to refresh: {error.message}
+        </Alert>
+      )}
+
+      {/* Show data if available */}
       {data && (
         <>
           <h1>{data.title}</h1>
           <p>{data.description}</p>
         </>
       )}
-      {!data && !isLoading && (
+
+      {/* Show empty state only when no data, no loading, and no error */}
+      {!data && !isLoading && !error && (
         <EmptyState message="No todo found" />
       )}
     </div>
@@ -104,6 +118,8 @@ function TodoDetail({ id }: { id: string }) {
 - Component stays mounted through all states
 - Shows loading indicator while keeping existing data visible
 - Gracefully handles errors without destroying the UI
+- Distinguishes between fatal errors (no data) and refresh errors (stale data available)
+- Shows warning instead of error when stale data is available
 - Provides better user experience during revalidation
 - Takes advantage of @osdk/react's ability to show stale data while loading fresh data
 
@@ -547,23 +563,44 @@ function UpdateEmployeeButton({ employee, newOfficeId }: Props) {
 ```tsx
 import { useOsdkAction } from "@osdk/react/experimental";
 import { modifyEmployee } from "@myapp/sdk";
+import { useState } from "react";
 
 function UpdateEmployeeButton({ employee, newOfficeId }: Props) {
   const { applyAction, isLoading, error } = useOsdkAction(modifyEmployee);
+  const [success, setSuccess] = useState(false);
 
   const handleClick = async () => {
-    await applyAction({
-      employee,
-      primary_office_id: newOfficeId,
-    });
+    try {
+      // applyAction will throw on error
+      await applyAction({
+        employee,
+        primary_office_id: newOfficeId,
+      });
+      // Success - show feedback
+      setSuccess(true);
+      setTimeout(() => setSuccess(false), 3000);
+    } catch (err) {
+      // Error is available in the 'error' state
+      // Additional error handling can be done here if needed
+      console.error("Action failed:", err);
+    }
   };
 
   return (
     <div>
       <button onClick={handleClick} disabled={isLoading}>
-        Update Office
+        {isLoading ? "Updating..." : "Update Office"}
       </button>
-      {error && <ErrorMessage error={error} />}
+      {error && (
+        <Alert variant="error">
+          Failed to update: {error.message}
+        </Alert>
+      )}
+      {success && (
+        <Alert variant="success">
+          Office updated successfully!
+        </Alert>
+      )}
     </div>
   );
 }
@@ -571,11 +608,13 @@ function UpdateEmployeeButton({ employee, newOfficeId }: Props) {
 
 **Why this is better**:
 - Automatic loading state management
-- Built-in error handling
+- Built-in error handling (errors available in `error` state)
+- `applyAction` throws on error, enabling try/catch error handling
 - Type-safe action parameters
 - Automatic cache invalidation
 - Optimistic updates support
 - Consistent patterns across the application
+- Success feedback informs users of completed actions
 
 ## Alternative: Direct client usage
 

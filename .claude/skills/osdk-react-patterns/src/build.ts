@@ -23,7 +23,8 @@ interface Rule {
 }
 
 const RULES_DIR = join(__dirname, "../rules");
-const OUTPUT_FILE = join(__dirname, "../AGENTS.md");
+const AGENTS_OUTPUT_FILE = join(__dirname, "../AGENTS.md");
+const SKILL_OUTPUT_FILE = join(__dirname, "../SKILL.md");
 
 function parseRule(filename: string): Rule | null {
   // Skip template and sections files
@@ -57,7 +58,7 @@ function buildAgentsFile() {
 
 Best practices and patterns for building applications with @osdk/react.
 
-**Generated on**: ${new Date().toISOString()}
+**Auto-generated**: This file is generated from individual rule files in \`rules/\`. To regenerate, run \`pnpm build\` in this directory.
 **Total patterns**: ${rules.length}
 
 ---
@@ -90,8 +91,31 @@ Best practices and patterns for building applications with @osdk/react.
     }
   }
 
-  writeFileSync(OUTPUT_FILE, output, "utf-8");
+  writeFileSync(AGENTS_OUTPUT_FILE, output, "utf-8");
   console.log(`✅ Built AGENTS.md with ${rules.length} patterns`);
+
+  // Build SKILL.md with frontmatter
+  const skillOutput = `---
+name: osdk-react-patterns
+description: Reference best practices and patterns for @osdk/react applications. Use when working with React components, hooks, or need guidance on OSDK patterns.
+allowed-tools: Read
+argument-hint: none
+---
+
+# OSDK React Patterns Skill
+
+This skill provides comprehensive best practices for building applications with @osdk/react.
+
+## When This Skill is Invoked
+
+This skill is automatically loaded when you work on React code in the osdk-ts repository. The patterns below should guide all React development involving OSDK.
+
+---
+
+${output}`;
+
+  writeFileSync(SKILL_OUTPUT_FILE, skillOutput, "utf-8");
+  console.log(`✅ Built SKILL.md with ${rules.length} patterns`);
 }
 
 try {

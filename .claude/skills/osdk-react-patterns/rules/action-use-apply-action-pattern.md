@@ -53,23 +53,44 @@ function UpdateEmployeeButton({ employee, newOfficeId }: Props) {
 ```tsx
 import { useOsdkAction } from "@osdk/react/experimental";
 import { modifyEmployee } from "@myapp/sdk";
+import { useState } from "react";
 
 function UpdateEmployeeButton({ employee, newOfficeId }: Props) {
   const { applyAction, isLoading, error } = useOsdkAction(modifyEmployee);
+  const [success, setSuccess] = useState(false);
 
   const handleClick = async () => {
-    await applyAction({
-      employee,
-      primary_office_id: newOfficeId,
-    });
+    try {
+      // applyAction will throw on error
+      await applyAction({
+        employee,
+        primary_office_id: newOfficeId,
+      });
+      // Success - show feedback
+      setSuccess(true);
+      setTimeout(() => setSuccess(false), 3000);
+    } catch (err) {
+      // Error is available in the 'error' state
+      // Additional error handling can be done here if needed
+      console.error("Action failed:", err);
+    }
   };
 
   return (
     <div>
       <button onClick={handleClick} disabled={isLoading}>
-        Update Office
+        {isLoading ? "Updating..." : "Update Office"}
       </button>
-      {error && <ErrorMessage error={error} />}
+      {error && (
+        <Alert variant="error">
+          Failed to update: {error.message}
+        </Alert>
+      )}
+      {success && (
+        <Alert variant="success">
+          Office updated successfully!
+        </Alert>
+      )}
     </div>
   );
 }
@@ -77,11 +98,13 @@ function UpdateEmployeeButton({ employee, newOfficeId }: Props) {
 
 **Why this is better**:
 - Automatic loading state management
-- Built-in error handling
+- Built-in error handling (errors available in `error` state)
+- `applyAction` throws on error, enabling try/catch error handling
 - Type-safe action parameters
 - Automatic cache invalidation
 - Optimistic updates support
 - Consistent patterns across the application
+- Success feedback informs users of completed actions
 
 ## Alternative: Direct client usage
 

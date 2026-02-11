@@ -15,11 +15,11 @@ Document the component/hook/utility specified in: **$ARGUMENTS**
 
 ## Documentation Location
 
-- React hooks: `/Volumes/git/osdk-ts/docs/react/[topic].md`
-- Client APIs: `/Volumes/git/osdk-ts/docs/client/[topic].md`
-- General guides: `/Volumes/git/osdk-ts/docs/guides/[topic].md`
+- React hooks: `docs/react/[topic].md`
+- Client APIs: `docs/client/[topic].md`
+- General guides: `docs/guides/[topic].md`
 
-**Important:** Code examples should demonstrate components using the **doc app** at `/Volumes/git/osdk-ts/examples-extra/docs_example`. This is a living example application that showcases OSDK components in real-world usage.
+**Important:** Code examples should demonstrate components using the **doc app** at `examples-extra/docs_example`. This is a living example application that showcases OSDK components in real-world usage.
 
 ## Process
 
@@ -32,7 +32,7 @@ Document the component/hook/utility specified in: **$ARGUMENTS**
   - Dependencies and context requirements
 
 ### 2. Check for Existing Documentation
-- Look in `/Volumes/git/osdk-ts/docs/` for existing docs on this component
+- Look in `docs/` for existing docs on this component
 - Check if the component is mentioned in other docs
 - Review related documentation for style consistency
 
@@ -135,9 +135,9 @@ Explanation...
 ```
 
 ### 4. Include Real Examples
-- **Prefer examples from the doc app** at `/Volumes/git/osdk-ts/examples-extra/docs_example`
+- **Prefer examples from the doc app** at `examples-extra/docs_example`
 - This app demonstrates OSDK components in a real application context
-- Search for usage in `/Volumes/git/osdk-ts/examples/` or test files as alternatives
+- Search for usage in `examples/` or test files as alternatives
 - Use actual code from the codebase when possible
 - Show both simple and advanced patterns
 
@@ -165,6 +165,24 @@ Explanation...
 - Verify the component/hook actually exports what you document
 - Make sure examples follow React best practices from CLAUDE.md
 
+### 7. Handle Errors and Edge Cases
+If you encounter issues during documentation:
+
+**Source file not found:**
+- Search the codebase with Glob/Grep to locate the file
+- Check if the component was renamed or moved
+- Ask the user for clarification if you cannot locate it
+
+**Missing or incomplete TypeScript types:**
+- Document what you can determine from the source
+- Note in the documentation that types may be incomplete
+- Suggest to the user that types should be improved
+
+**Existing docs conflict with source code:**
+- Prioritize the source code as the source of truth
+- Update existing documentation to match the current implementation
+- Add a note about what changed if it's a significant breaking change
+
 ## Output
 
 ### Documentation File
@@ -172,9 +190,11 @@ Create or update the documentation file in the appropriate location. If updating
 
 ### Component Registry
 After creating/updating documentation, **update or create the component registry** at:
-`/Volumes/git/osdk-ts/docs/component-registry.json`
+`docs/component-registry.json`
 
 This registry allows LLMs to discover and understand all documented components. See [registry-example.json](registry-example.json) for the structure.
+
+**Important:** After updating the registry, validate it against [registry-schema.json](registry-schema.json) to ensure correctness. The registry must be valid JSON that conforms to the schema.
 
 For each documented component, add or update its registry entry with:
 
@@ -225,14 +245,24 @@ For each documented component, add or update its registry entry with:
 - `relatedComponents` - Array of related component names
 - `requires` - Array of dependencies (e.g., ["OsdkProvider2"])
 
-### Doc App Integration (Optional but Recommended)
+### Doc App Integration
 
-Following shadcn/ui's approach, consider adding an **interactive live example** to the doc app at `/Volumes/git/osdk-ts/examples-extra/docs_example/src/App.tsx`.
+Following shadcn/ui's approach, consider adding an **interactive live example** to the doc app at `examples-extra/docs_example/src/App.tsx`.
 
-**When to add to doc app:**
-- Component has visual output (not just a hook)
-- Component benefits from live demonstration
-- Component is stable enough for showcase
+**When doc app integration is REQUIRED:**
+- Visual components (tables, dialogs, forms, etc.) - users need to see them in action
+- Complex components with multiple states or variants
+- Components marked as stable (not experimental)
+
+**When doc app integration is OPTIONAL:**
+- Simple hooks without visual output
+- Utility functions or helpers
+- Low-level APIs that are building blocks for other components
+- Experimental features still under development
+
+**When to skip doc app integration:**
+- Internal/private APIs not meant for external use
+- Deprecated components
 
 **Pattern to follow (inspired by shadcn):**
 

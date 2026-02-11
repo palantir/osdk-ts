@@ -49,23 +49,37 @@ function TodoDetail({ id }: { id: string }) {
 
   return (
     <div>
+      {/* Show loading indicator while fetching */}
       {isLoading && (
         <div className="loading-indicator">
           <Spinner size="small" /> Refreshing...
         </div>
       )}
-      {error && (
+
+      {/* Show error if there's an error and no data */}
+      {error && !data && (
         <Alert variant="error">
           Failed to load: {error.message}
         </Alert>
       )}
+
+      {/* Show error banner if there's an error but we have stale data */}
+      {error && data && (
+        <Alert variant="warning">
+          Failed to refresh: {error.message}
+        </Alert>
+      )}
+
+      {/* Show data if available */}
       {data && (
         <>
           <h1>{data.title}</h1>
           <p>{data.description}</p>
         </>
       )}
-      {!data && !isLoading && (
+
+      {/* Show empty state only when no data, no loading, and no error */}
+      {!data && !isLoading && !error && (
         <EmptyState message="No todo found" />
       )}
     </div>
@@ -77,6 +91,8 @@ function TodoDetail({ id }: { id: string }) {
 - Component stays mounted through all states
 - Shows loading indicator while keeping existing data visible
 - Gracefully handles errors without destroying the UI
+- Distinguishes between fatal errors (no data) and refresh errors (stale data available)
+- Shows warning instead of error when stale data is available
 - Provides better user experience during revalidation
 - Takes advantage of @osdk/react's ability to show stale data while loading fresh data
 
