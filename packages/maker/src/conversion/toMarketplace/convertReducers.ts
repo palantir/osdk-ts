@@ -43,31 +43,6 @@ export function convertReducers(
   } else {
     return mapReducers(apiName, reducers);
   }
-
-  //   return reducers?.map(reducer => {
-  //     switch (reducer.direction) {
-  //       case "ascending":
-  //         return sharedPropertyType ? {
-  //             direction: "ASCENDING_NULLS_LAST",
-  //             structApiName: sharedPropertyType.reducers?.structField ? apiName : undefined,
-  //             fieldApiName: reducer.structField,
-  //         } :
-  //         {
-  //           direction: "ASCENDING_NULLS_LAST",
-  //           structApiName: reducer.structField ? apiName : undefined,
-  //           fieldApiName: reducer.structField,
-  //         };
-  //       case "descending":
-  //         return {
-  //           direction: "DESCENDING_NULLS_LAST",
-  //           structApiName: reducer.structField ? apiName : undefined,
-  //           fieldApiName: reducer.structField,
-  //         };
-  //       default: {
-  //         throw new Error(`Unsupported reducer direction: ${reducer.direction}`);
-  //       }
-  //     }
-  //   }) ?? [];
 }
 
 export function mapReducers(
