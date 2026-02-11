@@ -308,6 +308,7 @@ const archetypeRules = archetypes(
       ...LIBRARY_RULES,
       react: true,
       cssExport: true,
+      extraPublishFiles: ["src/*.css"],
     },
   )
   .addArchetype(
