@@ -80,6 +80,172 @@
   --osdk-table-cell-fontSize: var(--bp-typography-size-body-medium);
   --osdk-table-cell-color: var(--bp-typography-color-default-rest);
 
+  /* Filter List */
+  --osdk-filter-list-bg: var(--bp-surface-background-color-default-rest);
+  --osdk-filter-list-border: var(--bp-surface-border-width) solid
+    var(--bp-surface-border-color-default);
+  --osdk-filter-list-border-radius: var(--bp-surface-border-radius);
+  --osdk-filter-list-padding: calc(var(--bp-surface-spacing) * 3);
+  --osdk-filter-list-gap: calc(var(--bp-surface-spacing) * 3);
+  --osdk-filter-list-content-gap: calc(var(--bp-surface-spacing) * 4);
+  --osdk-filter-list-addButton-padding-top: calc(var(--bp-surface-spacing) * 2);
+  --osdk-filter-list-empty-text-color: var(--bp-typography-color-muted);
+  --osdk-filter-list-empty-font-size: var(--bp-typography-size-body-medium);
+  --osdk-filter-list-empty-action-margin-top: calc(
+    var(--bp-surface-spacing) * 2
+  );
+
+  /* Filter List Header */
+  --osdk-filter-header-padding-bottom: calc(var(--bp-surface-spacing) * 2);
+  --osdk-filter-header-border-bottom: var(--bp-surface-border-width) solid
+    var(--bp-surface-border-color-default);
+  --osdk-filter-header-titleContainer-gap: calc(var(--bp-surface-spacing) * 2);
+  --osdk-filter-header-font-family: var(--bp-typography-font-family);
+  --osdk-filter-header-font-size: var(--bp-typography-size-body-large);
+  --osdk-filter-header-font-weight: var(--bp-typography-weight-bold);
+  --osdk-filter-header-color: var(--bp-typography-color-default-rest);
+  --osdk-filter-header-icon-color: var(--bp-typography-color-muted);
+  --osdk-filter-header-activeCount-font-size: var(
+    --bp-typography-size-body-small
+  );
+  --osdk-filter-header-activeCount-color: var(--bp-typography-color-muted);
+  --osdk-filter-header-button-padding: calc(var(--bp-surface-spacing) * 1);
+  --osdk-filter-header-button-bg: transparent;
+  --osdk-filter-header-button-bg-hover: var(
+    --bp-surface-background-color-default-hover
+  );
+  --osdk-filter-header-button-bg-active: var(
+    --bp-surface-background-color-default-active
+  );
+  --osdk-filter-header-button-border-radius: var(--bp-surface-border-radius);
+  --osdk-filter-header-button-transition: 150ms ease;
+  --osdk-filter-header-collapse-icon-size: 6px;
+  --osdk-filter-header-collapse-icon-border-width: 1.5px;
+  --osdk-filter-header-collapse-icon-color: var(--bp-typography-color-muted);
+  --osdk-filter-header-reset-font-size: var(--bp-typography-size-body-small);
+  --osdk-filter-header-reset-color: var(--bp-intent-primary-rest);
+  --osdk-filter-header-reset-color-disabled: var(--bp-typography-color-muted);
+  --osdk-filter-header-reset-padding: calc(var(--bp-surface-spacing) * 1)
+    calc(var(--bp-surface-spacing) * 2);
+
+  /* Filter List Item */
+  --osdk-filter-item-gap: calc(var(--bp-surface-spacing) * 2);
+  --osdk-filter-item-label-font-family: var(--bp-typography-font-family);
+  --osdk-filter-item-label-font-size: var(--bp-typography-size-body-medium);
+  --osdk-filter-item-label-font-weight: var(--bp-typography-weight-bold);
+  --osdk-filter-item-label-color: var(--bp-typography-color-default-rest);
+
+  /* Filter Input */
+  --osdk-filter-input-padding: calc(var(--bp-surface-spacing) * 1.5)
+    calc(var(--bp-surface-spacing) * 2);
+  --osdk-filter-input-border: var(--bp-surface-border-width) solid
+    var(--bp-surface-border-color-default);
+  --osdk-filter-input-border-radius: var(--bp-surface-border-radius);
+  --osdk-filter-input-bg: var(--bp-surface-background-color-default-rest);
+  --osdk-filter-input-color: var(--bp-typography-color-default-rest);
+  --osdk-filter-input-font-family: var(--bp-typography-font-family);
+  --osdk-filter-input-font-size: var(--bp-typography-size-body-medium);
+  --osdk-filter-input-gap: calc(var(--bp-surface-spacing) * 2);
+  --osdk-filter-input-transition: 150ms ease;
+  --osdk-filter-input-focus-border: var(--bp-intent-primary-rest);
+  --osdk-filter-input-focus-outline-width: var(--bp-emphasis-focus-width);
+  --osdk-filter-input-focus-outline-color: var(--bp-emphasis-focus-color);
+  --osdk-filter-input-focus-outline-offset: var(--bp-emphasis-focus-offset);
+  --osdk-filter-input-icon-color: var(--bp-typography-color-muted);
+  --osdk-filter-input-placeholder-color: var(--bp-typography-color-muted);
+  --osdk-filter-input-clear-padding: calc(var(--bp-surface-spacing) * 1);
+  --osdk-filter-input-clear-bg: transparent;
+  --osdk-filter-input-clear-bg-hover: var(
+    --bp-surface-background-color-default-hover
+  );
+  --osdk-filter-input-clear-bg-active: var(
+    --bp-surface-background-color-default-active
+  );
+  --osdk-filter-input-clear-border-radius: var(--bp-surface-border-radius);
+
+  /* Filter Checkbox List */
+  --osdk-filter-checkbox-list-gap: 0px;
+  --osdk-filter-checkbox-row-padding: calc(var(--bp-surface-spacing) * 1.5) 0;
+  --osdk-filter-checkbox-label-gap: calc(var(--bp-surface-spacing) * 2);
+  --osdk-filter-checkbox-value-font-family: var(--bp-typography-font-family);
+  --osdk-filter-checkbox-value-font-size: var(
+    --bp-typography-size-body-medium
+  );
+  --osdk-filter-checkbox-value-line-height: 1.4;
+  --osdk-filter-checkbox-value-color: var(--bp-typography-color-default-rest);
+
+  /* Filter Select */
+  --osdk-filter-select-container-gap: calc(var(--bp-surface-spacing) * 2);
+  --osdk-filter-select-clear-padding: calc(var(--bp-surface-spacing) * 1);
+  --osdk-filter-select-clear-color: var(--bp-typography-color-muted);
+  --osdk-filter-select-clear-border-radius: var(--bp-surface-border-radius);
+  --osdk-filter-select-clear-transition: 150ms ease;
+  --osdk-filter-select-clear-color-hover: var(
+    --bp-typography-color-default-rest
+  );
+  --osdk-filter-select-clear-bg-hover: var(
+    --bp-surface-background-color-default-hover
+  );
+
+  /* Filter Toggle */
+  --osdk-filter-toggle-label-gap: calc(var(--bp-surface-spacing) * 2);
+  --osdk-filter-toggle-label-font-family: var(--bp-typography-font-family);
+  --osdk-filter-toggle-label-font-size: var(--bp-typography-size-body-medium);
+  --osdk-filter-toggle-label-line-height: 1.4;
+  --osdk-filter-toggle-label-color: var(--bp-typography-color-default-rest);
+
+  /* Filter Tags */
+  --osdk-filter-tag-container-gap: calc(var(--bp-surface-spacing) * 1);
+  --osdk-filter-tag-gap: calc(var(--bp-surface-spacing) * 1);
+  --osdk-filter-tag-padding: calc(var(--bp-surface-spacing) * 0.5)
+    calc(var(--bp-surface-spacing) * 1.5);
+  --osdk-filter-tag-border-radius: var(--bp-surface-border-radius);
+  --osdk-filter-tag-bg: var(--bp-surface-background-color-default-hover);
+  --osdk-filter-tag-font-family: var(--bp-typography-font-family);
+  --osdk-filter-tag-font-size: var(--bp-typography-size-body-small);
+  --osdk-filter-tag-line-height: 1.4;
+  --osdk-filter-tag-color: var(--bp-typography-color-default-rest);
+  --osdk-filter-tag-remove-color: var(--bp-typography-color-muted);
+  --osdk-filter-tag-remove-font-size: 10px;
+  --osdk-filter-tag-remove-transition: 150ms ease;
+  --osdk-filter-tag-remove-color-hover: var(
+    --bp-typography-color-default-rest
+  );
+
+  /* Filter Null Value */
+  --osdk-filter-null-wrapper-gap: 0px;
+  --osdk-filter-null-row-padding: calc(var(--bp-surface-spacing) * 1.5) 0;
+  --osdk-filter-null-row-border-top: var(--bp-surface-border-width) solid
+    var(--bp-surface-border-color-default);
+  --osdk-filter-null-label-gap: calc(var(--bp-surface-spacing) * 2);
+  --osdk-filter-null-label-font-family: var(--bp-typography-font-family);
+  --osdk-filter-null-label-font-size: var(--bp-typography-size-body-medium);
+  --osdk-filter-null-label-line-height: 1.4;
+  --osdk-filter-null-label-color: var(--bp-typography-color-muted);
+
+  /* Filter Multiselect */
+  --osdk-filter-multiselect-gap: calc(var(--bp-surface-spacing) * 2);
+  --osdk-filter-multiselect-inputRow-gap: calc(var(--bp-surface-spacing) * 2);
+
+  /* Filter Text Tags */
+  --osdk-filter-texttags-gap: calc(var(--bp-surface-spacing) * 2);
+
+  /* Filter Add Menu */
+  --osdk-filter-add-menu-max-height: 300px;
+  --osdk-filter-add-menu-search-padding: calc(var(--bp-surface-spacing) * 2);
+  --osdk-filter-add-menu-search-border-bottom: var(--bp-surface-border-width)
+    solid var(--bp-surface-border-color-default);
+  --osdk-filter-add-menu-search-font-size: var(
+    --bp-typography-size-body-medium
+  );
+  --osdk-filter-add-menu-section-font-size: var(
+    --bp-typography-size-body-small
+  );
+  --osdk-filter-add-menu-section-letter-spacing: 0.05em;
+  --osdk-filter-add-menu-section-font-weight: var(
+    --bp-typography-weight-bold
+  );
+
   /* Skeleton loading */
   --osdk-table-skeleton-color-from: oklch(
     from var(--bp-palette-light-gray-1) l c h / 0.4
