@@ -9,10 +9,10 @@ interface LayoutProps {
 function Layout({ children }: LayoutProps) {
   return (
     <>
-      <div className={css.header}>
+      <header className={css.header}>
         <img src={todoAppLogo} className={css.logo} alt="Todo App logo" />
         <div className={css.title}>Ontology SDK Tutorial - Todo App</div>
-      </div>
+      </header>
       {children}
     </>
   );
