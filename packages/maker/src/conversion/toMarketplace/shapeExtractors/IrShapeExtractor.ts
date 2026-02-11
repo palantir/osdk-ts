@@ -18,6 +18,7 @@ import type {
   GroupId,
   KnownMarketplaceIdentifiers,
   LinkTypeRid,
+  MarketplaceInterfaceLinkType,
   MarketplaceInterfaceType,
   ObjectTypeRid,
   OntologyBlockDataV2,
@@ -94,6 +95,7 @@ export async function getShapes(
       ontologyBlockDataV2.knownIdentifiers,
       outputSharedPropertyTypeRids,
       interfaceType.interfaceType,
+      ridGenerator
     );
   }
   // Shared Property Types
@@ -182,6 +184,7 @@ function extractInterfaceType(
   knownMarketplaceIdentifiers: KnownMarketplaceIdentifiers,
   outputSharedPropertyTypeRids: Set<string>,
   interfaceType: MarketplaceInterfaceType,
+  ridGenerator: OntologyRidGenerator,
 ): void {
   // Build interface type output shape
   const interfaceTypeOutputShape: InterfaceTypeOutputShape = {
@@ -235,6 +238,7 @@ function extractInterfaceType(
       knownMarketplaceIdentifiers,
       interfaceType,
       interfaceLinkType,
+      ridGenerator,
     );
     outputShapeMap.set(outputShape.id, outputShape.outputShape);
   }
@@ -251,23 +255,24 @@ function extractInterfaceType(
  * Get interface link type output shape
  */
 function getInterfaceLinkTypeOutputShape(
-  knownMarketplaceIdentifiers: any,
-  interfaceType: any,
-  interfaceLinkType: any,
+  knownMarketplaceIdentifiers: KnownMarketplaceIdentifiers,
+  interfaceType: MarketplaceInterfaceType,
+  interfaceLinkType: MarketplaceInterfaceLinkType,
+  ridGenerator: OntologyRidGenerator
 ): { id: ReadableId; outputShape: OutputShape } {
   // Build linked entity type reference
-  const linkedReference =
+  const interfaceRidOrUndefined =
     interfaceLinkType.linkedEntityTypeId.type === "interfaceType"
       ? interfaceLinkType.linkedEntityTypeId.interfaceType
       : undefined;
 
-  if (!linkedReference) {
+  if (!interfaceRidOrUndefined) {
     throw new Error("Object link references not implemented");
   }
 
+  console.log("INTERFACE LOOKUP", interfaceRidOrUndefined);
   const linkedEntityTypeRef =
-    knownMarketplaceIdentifiers.interfaceTypes?.[linkedReference]
-      ?? linkedReference;
+    ridGenerator.toBlockInternalId(ridGenerator.getInterfaceRids().inverse().get(interfaceRidOrUndefined)!);
 
   // Map cardinality
   const cardinality = interfaceLinkType.cardinality === "SINGLE"

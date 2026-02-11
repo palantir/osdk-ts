@@ -339,14 +339,11 @@ export class LinkTypeShapeExtractor {
     ridGenerator: OntologyRidGenerator,
     objectTypeRid: ObjectTypeRid,
   ): string {
-    for (
-      const [id, rid] of ridGenerator.getObjectTypeRids().inverse().entries()
-    ) {
-      if (rid === objectTypeRid) {
-        return id;
-      }
+    const readableId = ridGenerator.getObjectTypeRids().inverse().get(objectTypeRid);
+    if(!readableId){
+      throw new Error(`Object type RID not found: ${objectTypeRid}`);
     }
-    throw new Error(`Object type RID not found: ${objectTypeRid}`);
+    return ridGenerator.toBlockInternalId(readableId);
   }
 
   /**
@@ -356,14 +353,11 @@ export class LinkTypeShapeExtractor {
     ridGenerator: OntologyRidGenerator,
     linkTypeRid: LinkTypeRid,
   ): string {
-    for (
-      const [id, rid] of ridGenerator.getLinkTypeRids().inverse().entries()
-    ) {
-      if (rid === linkTypeRid) {
-        return id;
-      }
+    const readableId = ridGenerator.getLinkTypeRids().inverse().get(linkTypeRid);
+    if(!readableId){
+      throw new Error(`Object type RID not found: ${linkTypeRid}`);
     }
-    throw new Error(`Link type RID not found: ${linkTypeRid}`);
+    return ridGenerator.toBlockInternalId(readableId);
   }
 
   /**

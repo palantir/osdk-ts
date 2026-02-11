@@ -804,6 +804,11 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
 
   generateObjectTypeId(objectTypeApiName: string): string {
     const readableId = ReadableIdGenerator.getForObjectType(objectTypeApiName);
+    const maybeLastId = this.objectTypeIds.get(readableId);
+    if(maybeLastId){
+      return maybeLastId; 
+    }
+
     const uuid = randomUUID();
     const objectTypeId = `a${uuid}`;
     this.objectTypeIds.put(readableId, objectTypeId);

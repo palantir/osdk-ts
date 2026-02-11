@@ -56,6 +56,14 @@ export function convertInterface(
     // TODO: Convert links to add RIDs
     links: interfaceType.links.map(link => ({
       ...link,
+      linkedEntityTypeId: link.linkedEntityTypeId.type === "interfaceType" ? {
+        type: "interfaceType",
+        interfaceType: ridGenerator.generateRidForInterface(link.linkedEntityTypeId.interfaceType)
+
+      } : {
+        type: "objectType",
+        objectType: ridGenerator.generateObjectTypeId(link.linkedEntityTypeId.objectType)
+      },
       rid: ridGenerator.generateRidForInterfaceLinkType(
         link.metadata.apiName,
         interfaceType.apiName,
