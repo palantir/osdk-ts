@@ -16,83 +16,110 @@
 
 import { useState } from 'react';
 import { OsdkProvider2 } from '@osdk/react/experimental';
-import { ObjectTable } from '@osdk/react-components/experimental';
 import { client } from './foundryClient.js';
-import { Employee } from './generatedNoCheck/index.js';
-import { ObjectTableExamplesPage } from './pages/ObjectTableExamplesPage.js';
+import { ObjectTablePage } from './pages/ObjectTablePage.js';
+import { ThemingPage, type ThemeKey } from './pages/ThemingPage.js';
+import { ThemeSelector } from './components/ThemeSelector.js';
+import { ErrorBoundary } from './components/ErrorBoundary.js';
+import { Callout } from './components/Callout.js';
+
+// Navigation structure
+const navigation = [
+  {
+    category: 'Components',
+    items: [
+      { name: 'Object Table', id: 'object-table' },
+      { name: 'Filter List', id: 'filter-list' },
+    ]
+  },
+  {
+    category: 'Customization',
+    items: [
+      { name: 'Theming', id: 'theming' },
+    ]
+  },
+];
+
+function StubPage({ title, description }: { title: string; description: string }) {
+  return (
+    <div className="space-y-6">
+      <h1 className="text-4xl font-bold text-gray-900">{title}</h1>
+      <p className="text-lg text-gray-600">{description}</p>
+      <Callout type="info">
+        Documentation for this component is coming soon.
+      </Callout>
+    </div>
+  );
+}
 
 function App() {
-  const [showExamples, setShowExamples] = useState(false);
+  const [activePage, setActivePage] = useState('object-table');
+  const [currentTheme, setCurrentTheme] = useState<ThemeKey>('default');
 
-  if (showExamples) {
-    return (
-      <OsdkProvider2 client={client}>
-        <div className="min-h-screen bg-gray-50 p-8">
-          <div className="max-w-6xl mx-auto">
-            <button
-              onClick={() => setShowExamples(false)}
-              className="mb-4 text-blue-600 hover:text-blue-800 flex items-center gap-2"
-            >
-              ← Back to basics
-            </button>
-            <ObjectTableExamplesPage />
-          </div>
-        </div>
-      </OsdkProvider2>
-    );
-  }
+  const renderPage = () => {
+    switch (activePage) {
+      case 'object-table':
+        return <ObjectTablePage />;
+      case 'filter-list':
+        return <StubPage title="Filter List" description="Configurable filter interface for narrowing object sets. This component is currently in development." />;
+      case 'theming':
+        return <ThemingPage currentTheme={currentTheme} onThemeChange={setCurrentTheme} />;
+      default:
+        return <ObjectTablePage />;
+    }
+  };
 
   return (
     <OsdkProvider2 client={client}>
-      <div className="min-h-screen bg-gray-50 p-8">
-        <div className="max-w-6xl mx-auto">
-          <header className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              OSDK Components Demo
-            </h1>
-            <p className="text-gray-600">
-              Explore OSDK React Components with live examples
-            </p>
-          </header>
+      <div className="flex flex-col h-screen bg-white" data-theme={currentTheme}>
+        {/* Top Bar */}
+        <header className="h-14 border-b border-gray-200 bg-white flex-shrink-0 flex items-center justify-between px-6">
+          <div className="flex items-center gap-3">
+            <h1 className="text-lg font-bold text-gray-900">OSDK Components</h1>
+          </div>
 
-          <main className="space-y-6">
-            <section className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                ObjectTable - Basic Example
-              </h2>
-              <p className="text-gray-600 mb-4">
-                A high-performance table component for displaying OSDK objects with
-                built-in sorting, filtering, and pagination.
-              </p>
+          {/* Theme Selector */}
+          <ThemeSelector currentTheme={currentTheme} onThemeChange={setCurrentTheme} />
+        </header>
 
-              <div className="border rounded-lg overflow-hidden" style={{ height: '500px' }}>
-                <ObjectTable objectType={Employee} />
-              </div>
+        <div className="flex flex-1 overflow-hidden">
+          {/* Sidebar */}
+          <aside className="w-64 border-r border-gray-200 bg-white overflow-y-auto flex-shrink-0">
+            <nav className="p-6" aria-label="Main navigation">
+              {navigation.map((section) => (
+                <div key={section.category} className="mb-8">
+                  <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 px-3">
+                    {section.category}
+                  </h2>
+                  <ul className="space-y-1">
+                    {section.items.map((item) => (
+                      <li key={item.id}>
+                        <button
+                          onClick={() => setActivePage(item.id)}
+                          aria-current={activePage === item.id ? 'page' : undefined}
+                          className={`w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
+                            activePage === item.id
+                              ? 'bg-gradient-to-r from-blue-50 to-blue-100 text-blue-700 shadow-sm'
+                              : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
+                          }`}
+                        >
+                          {item.name}
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </nav>
+          </aside>
 
-              <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded">
-                <h3 className="font-semibold text-blue-900 mb-2">Try it out:</h3>
-                <ul className="list-disc list-inside text-sm text-blue-800 space-y-1">
-                  <li>Click column headers to sort</li>
-                  <li>Scroll to load more rows</li>
-                  <li>Drag column edges to resize</li>
-                </ul>
-              </div>
-            </section>
-
-            <section className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-2xl font-bold text-gray-900 mb-3">
-                More Examples
-              </h2>
-              <p className="text-gray-600 mb-4">
-                Explore advanced ObjectTable features with 7 comprehensive examples.
-              </p>
-              <button
-                onClick={() => setShowExamples(true)}
-                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
-              >
-                View All Examples →
-              </button>
-            </section>
+          {/* Main Content */}
+          <main className="flex-1 overflow-y-auto">
+            <div className="max-w-3xl mx-auto px-8 py-12">
+              <ErrorBoundary>
+                {renderPage()}
+              </ErrorBoundary>
+            </div>
           </main>
         </div>
       </div>
