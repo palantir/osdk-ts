@@ -164,8 +164,6 @@ export interface UseOsdkListResult<
   totalCount?: string;
 }
 
-const EMPTY_WHERE = {};
-
 declare const process: {
   env: {
     NODE_ENV: "development" | "production";
@@ -217,12 +215,7 @@ export function useOsdkObjects<
   const canonWhere = observableClient.canonicalizeWhereClause<
     Q,
     RDPs
-  >(where ?? EMPTY_WHERE);
-
-  const stableCanonWhere = React.useMemo(
-    () => canonWhere,
-    [JSON.stringify(canonWhere)],
-  );
+  >(where ?? {});
 
   const stableRids = React.useMemo(
     () => rids,
@@ -264,7 +257,7 @@ export function useOsdkObjects<
           observableClient.observeList({
             type,
             rids: stableRids,
-            where: stableCanonWhere,
+            where: canonWhere,
             dedupeInterval: dedupeIntervalMs ?? 2_000,
             pageSize,
             orderBy: stableOrderBy,
@@ -279,17 +272,16 @@ export function useOsdkObjects<
         process.env.NODE_ENV !== "production"
           ? `list ${type.apiName} ${
             stableRids ? `[${stableRids.length} rids]` : ""
-          } ${JSON.stringify(stableCanonWhere)}`
+          } ${JSON.stringify(canonWhere)}`
           : void 0,
       );
     },
     [
       enabled,
       observableClient,
-      type.apiName,
-      type.type,
+      type,
       stableRids,
-      stableCanonWhere,
+      canonWhere,
       dedupeIntervalMs,
       pageSize,
       stableOrderBy,

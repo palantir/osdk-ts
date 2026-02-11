@@ -1,0 +1,168 @@
+/**
+ * Custom documentation components styles
+ * Uses OSDK design tokens for consistent theming
+ */
+
+/* CodeBlock Component */
+.docs-code-block {
+  position: relative;
+}
+
+.docs-code-block > pre {
+  padding: 20px;
+  overflow-x: auto;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  background-color: var(--osdk-code-block-bg, #1e1e2e);
+  color: var(--osdk-code-block-color, #e5e7eb);
+  font-size: var(--osdk-table-cell-fontSize, 13px);
+  line-height: 1.8;
+  border-radius: var(--osdk-surface-border-radius, 4px);
+  border: var(--osdk-surface-border-width, 1px) solid var(--osdk-surface-border-color-default, transparent);
+}
+
+.docs-code-block-copy-button {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  opacity: 0;
+  transition: opacity 0.2s;
+  cursor: pointer;
+  padding: calc(var(--osdk-surface-spacing, 8px) / 2) var(--osdk-surface-spacing, 8px);
+  font-size: var(--osdk-table-header-fontSize, 12px);
+  background-color: var(--osdk-code-block-button-bg, var(--osdk-surface-background-color-default-hover, #374151));
+  color: var(--osdk-code-block-button-color, var(--osdk-typography-color-default-rest, #d1d5db));
+  border-radius: var(--osdk-surface-border-radius, 4px);
+  border: var(--osdk-surface-border-width, 1px) solid var(--osdk-surface-border-color-default, transparent);
+}
+
+.docs-code-block:hover .docs-code-block-copy-button {
+  opacity: 1;
+}
+
+.docs-code-block-tooltip {
+  padding: calc(var(--osdk-surface-spacing, 8px) / 2) var(--osdk-surface-spacing, 8px);
+  background-color: var(--osdk-surface-background-color-default, #111827);
+  color: var(--osdk-typography-color-default-rest, #ffffff);
+  font-size: var(--osdk-table-header-fontSize, 12px);
+  border-radius: var(--osdk-surface-border-radius, 4px);
+  box-shadow: var(--osdk-surface-shadow-2, 0 4px 6px -1px rgb(0 0 0 / 0.1));
+}
+
+/* Callout Component */
+.docs-callout {
+  display: flex;
+  padding: var(--osdk-surface-spacing, 8px);
+  border-radius: var(--osdk-surface-border-radius, 4px);
+  border-width: var(--osdk-surface-border-width, 1px);
+  border-style: solid;
+  gap: var(--osdk-surface-spacing, 8px);
+}
+
+.docs-callout-info {
+  background-color: oklch(from var(--osdk-intent-primary-rest, #3b82f6) l c h / 0.1);
+  border-color: oklch(from var(--osdk-intent-primary-rest, #3b82f6) l c h / 0.3);
+  color: var(--osdk-intent-primary-active, #1d4ed8);
+}
+
+.docs-callout-warning {
+  background-color: oklch(from var(--osdk-intent-warning-rest, #f59e0b) l c h / 0.1);
+  border-color: oklch(from var(--osdk-intent-warning-rest, #f59e0b) l c h / 0.3);
+  color: var(--osdk-intent-warning-active, #b45309);
+}
+
+/* PropsTable Component */
+.docs-props-table-container {
+  overflow-x: auto;
+  border: var(--osdk-table-border, 1px solid #e5e7eb);
+  border-radius: var(--osdk-surface-border-radius, 4px);
+}
+
+.docs-props-table {
+  min-width: 100%;
+}
+
+.docs-props-table thead {
+  background-color: var(--osdk-table-header-bg, #f9fafb);
+  border-bottom: var(--osdk-table-header-divider, 1px solid #e5e7eb);
+}
+
+.docs-props-table th {
+  text-align: left;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: var(--osdk-table-cell-padding, 12px 16px);
+  font-size: var(--osdk-table-header-fontSize, 12px);
+  font-weight: var(--osdk-table-header-fontWeight, 600);
+  color: var(--osdk-table-header-color, #6b7280);
+  white-space: nowrap;
+}
+
+.docs-props-table th:last-child {
+  white-space: normal;
+}
+
+.docs-props-table tbody {
+  background-color: var(--osdk-table-row-bg-default, #ffffff);
+}
+
+.docs-props-table tr:not(:first-child) {
+  border-top: var(--osdk-table-row-divider, 1px solid #e5e7eb);
+}
+
+.docs-props-table td {
+  padding: var(--osdk-table-cell-padding, 12px 16px);
+  font-size: var(--osdk-table-cell-fontSize, 13px);
+}
+
+.docs-props-table-cell-name {
+  white-space: nowrap;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  color: var(--osdk-intent-primary-rest, #ec4899);
+}
+
+.docs-props-table-cell-type {
+  white-space: nowrap;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  color: var(--osdk-typography-color-muted, #6b7280);
+}
+
+.docs-props-table-cell-default {
+  white-space: nowrap;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  color: var(--osdk-typography-color-muted, #9ca3af);
+}
+
+.docs-props-table-cell-description {
+  color: var(--osdk-table-cell-color, #374151);
+}
+
+.docs-props-table-description-truncated {
+  cursor: help;
+  border-bottom: 1px dotted var(--osdk-surface-border-color-default, #9ca3af);
+}
+
+.docs-props-table-tooltip {
+  max-width: 28rem;
+  padding: var(--osdk-surface-spacing, 8px);
+  background-color: var(--osdk-surface-background-color-default, #111827);
+  color: var(--osdk-typography-color-default-rest, #ffffff);
+  font-size: var(--osdk-table-cell-fontSize, 13px);
+  border-radius: var(--osdk-surface-border-radius, 4px);
+  box-shadow: var(--osdk-surface-shadow-2, 0 4px 6px -1px rgb(0 0 0 / 0.1));
+}
+
+/* Theme Button */
+.docs-theme-button {
+  transition: background-color 0.2s;
+  cursor: pointer;
+  padding: calc(var(--osdk-surface-spacing, 8px) / 2) var(--osdk-surface-spacing, 8px);
+  font-size: var(--osdk-table-cell-fontSize, 13px);
+  background-color: var(--osdk-intent-primary-rest, #3b82f6);
+  color: var(--osdk-intent-primary-foreground, #ffffff);
+  border-radius: var(--osdk-surface-border-radius, 4px);
+  border: none;
+}
+
+.docs-theme-button:hover {
+  background-color: var(--osdk-intent-primary-hover, #2563eb);
+}

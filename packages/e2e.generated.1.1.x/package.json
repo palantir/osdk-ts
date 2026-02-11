@@ -27,7 +27,7 @@
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
     "transpile": "./transpile.sh",
-    "typecheck": "./typecheck.sh both"
+    "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
     "@osdk/api": "^1.9.3",

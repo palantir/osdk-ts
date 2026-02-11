@@ -4,6 +4,7 @@ BACKCOMPAT
 backlink
 Canonicalizer
 Canonicalizers
+checkmarks
 codegen
 commitish
 Cpath
@@ -11,6 +12,8 @@ Csvg
 devx
 Discoverability
 duplicative
+frontmatter
+Frontmatter
 gantt
 geofence
 Geolocatable
@@ -21,6 +24,7 @@ inbetween
 isModifierable
 jsons
 Multimap
+myapp
 objs
 onwarn
 peopleapp
@@ -43,5 +47,5 @@ ungroup
 unioned
 unresolve
 Unsubscribable
+useosdkobjects
 webapi
-ACMR
