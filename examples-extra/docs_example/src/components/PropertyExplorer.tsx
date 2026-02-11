@@ -61,7 +61,12 @@ export function PropertyExplorer({ objectType }: PropertyExplorerProps) {
           <tbody className="bg-white divide-y divide-gray-200">
             {properties.map(([propertyName, propertyDef]) => {
               const isPrimaryKey = propertyName === metadata.primaryKeyApiName;
-              const description = (propertyDef as any).description;
+              const description = typeof propertyDef === 'object' && propertyDef !== null && 'description' in propertyDef
+                ? String(propertyDef.description)
+                : undefined;
+              const type = typeof propertyDef === 'object' && propertyDef !== null && 'type' in propertyDef
+                ? String(propertyDef.type)
+                : 'unknown';
 
               return (
                 <tr key={propertyName} className={isPrimaryKey ? 'bg-blue-50' : ''}>
@@ -77,7 +82,7 @@ export function PropertyExplorer({ objectType }: PropertyExplorerProps) {
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap">
                     <span className="text-sm text-gray-700 font-mono">
-                      {(propertyDef as any).type}
+                      {type}
                     </span>
                   </td>
                   <td className="px-4 py-3 text-sm text-gray-600">

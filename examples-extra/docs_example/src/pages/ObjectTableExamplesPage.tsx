@@ -63,8 +63,29 @@ export function ObjectTableExamplesPage() {
         <div style={{ height: "400px" }} className="rounded-lg overflow-hidden shadow-sm border border-gray-200">
           <CustomColumnsExample />
         </div>
-        <CodeBlock code={`<ObjectTable
+        <CodeBlock code={`const columnDefinitions: Array<ColumnDefinition<Employee>> = [
+  {
+    locator: { type: "property", id: "fullName" },
+    width: 250,
+    pinned: "left",
+  },
+  {
+    locator: { type: "property", id: "class" },
+    width: 100,
+  },
+  {
+    locator: { type: "property", id: "office" },
+    width: 150,
+  },
+  {
+    locator: { type: "property", id: "startDate" },
+    width: 150,
+  },
+];
+
+<ObjectTable
   objectType={Employee}
+  columnDefinitions={columnDefinitions}
 />`} />
       </section>
 
@@ -100,8 +121,29 @@ export function ObjectTableExamplesPage() {
         <div style={{ height: "400px" }} className="rounded-lg overflow-hidden shadow-sm border border-gray-200">
           <CustomCellRenderingExample />
         </div>
-        <CodeBlock code={`<ObjectTable
+        <CodeBlock code={`const columnDefinitions: Array<ColumnDefinition<Employee>> = [
+  {
+    locator: { type: "property", id: "fullName" },
+    pinned: "left",
+    renderHeader: () => (
+      <div style={{ color: "#1e40af", fontWeight: 600 }}>
+        👤 Employee Name
+      </div>
+    ),
+  },
+  {
+    locator: { type: "property", id: "startDate" },
+    renderCell: (object: Osdk.Instance<Employee>) => {
+      if (!object.startDate) return <span>Not available</span>;
+      const date = new Date(object.startDate);
+      return date.toLocaleDateString("en-US");
+    },
+  },
+];
+
+<ObjectTable
   objectType={Employee}
+  columnDefinitions={columnDefinitions}
 />`} />
       </section>
 
@@ -110,7 +152,7 @@ export function ObjectTableExamplesPage() {
         <div>
           <h2 className="text-2xl font-bold text-gray-900">Sorting & Filtering</h2>
           <p className="text-gray-600 mt-1">
-            Enable interactive sorting and filtering capabilities.
+            Click column headers to sort data server-side.
           </p>
         </div>
         <div className="rounded-lg overflow-hidden shadow-sm border border-gray-200 p-4">
@@ -118,8 +160,9 @@ export function ObjectTableExamplesPage() {
         </div>
         <CodeBlock code={`<ObjectTable
   objectType={Employee}
-  filterable={true}
-  orderable={true}
+  defaultOrderBy={[
+    { property: "startDate", direction: "desc" }
+  ]}
 />`} />
       </section>
 
@@ -134,8 +177,29 @@ export function ObjectTableExamplesPage() {
         <div className="rounded-lg overflow-hidden shadow-sm border border-gray-200 p-4">
           <ColumnPinningExample />
         </div>
-        <CodeBlock code={`<ObjectTable
+        <CodeBlock code={`const columnDefinitions: Array<ColumnDefinition<Employee>> = [
+  {
+    locator: { type: "property", id: "fullName" },
+    pinned: "left",
+    width: 200,
+    resizable: true,
+  },
+  {
+    locator: { type: "property", id: "office" },
+    width: 200,
+    resizable: true,
+  },
+  {
+    locator: { type: "property", id: "employeeId" },
+    pinned: "right",
+    width: 150,
+    resizable: true,
+  },
+];
+
+<ObjectTable
   objectType={Employee}
+  columnDefinitions={columnDefinitions}
 />`} />
       </section>
 
@@ -150,8 +214,34 @@ export function ObjectTableExamplesPage() {
         <div className="rounded-lg overflow-hidden shadow-sm border border-gray-200 p-4">
           <DerivedPropertyExample />
         </div>
-        <CodeBlock code={`<ObjectTable
+        <CodeBlock code={`type RDPs = {
+  managerName: "string";
+};
+
+const columnDefinitions: Array<ColumnDefinition<Employee, RDPs>> = [
+  {
+    locator: { type: "property", id: "fullName" },
+  },
+  {
+    locator: {
+      type: "rdp",
+      id: "managerName",
+      creator: (baseObjectSet) =>
+        baseObjectSet.pivotTo("lead").selectProperty("fullName"),
+    },
+    renderHeader: () => "Manager",
+    renderCell: (object) => {
+      if ("managerName" in object) {
+        return object["managerName"] as string;
+      }
+      return "No Manager";
+    },
+  },
+];
+
+<ObjectTable<Employee, RDPs>
   objectType={Employee}
+  columnDefinitions={columnDefinitions}
 />`} />
       </section>
 
@@ -166,8 +256,26 @@ export function ObjectTableExamplesPage() {
         <div className="rounded-lg overflow-hidden shadow-sm border border-gray-200 p-4">
           <ContextMenuExample />
         </div>
-        <CodeBlock code={`<ObjectTable
+        <CodeBlock code={`const renderCellContextMenu = (
+  _employee: Employee.OsdkInstance,
+  cellValue: unknown
+) => {
+  return (
+    <div style={{ background: "white", padding: "8px" }}>
+      <button
+        onClick={() => {
+          navigator.clipboard.writeText(String(cellValue));
+        }}
+      >
+        📋 Copy to clipboard
+      </button>
+    </div>
+  );
+};
+
+<ObjectTable
   objectType={Employee}
+  renderCellContextMenu={renderCellContextMenu}
 />`} />
       </section>
 

@@ -15,12 +15,34 @@
  */
 
 import { ObjectTable } from "@osdk/react-components/experimental";
+import type { ColumnDefinition } from "@osdk/react-components/experimental";
 import { Employee } from "../../generatedNoCheck/index.js";
 
 export function CustomColumnsExample() {
+  const columnDefinitions: Array<ColumnDefinition<Employee>> = [
+    {
+      locator: { type: "property", id: "fullName" },
+      width: 250,
+      pinned: "left",
+    },
+    {
+      locator: { type: "property", id: "class" },
+      width: 100,
+    },
+    {
+      locator: { type: "property", id: "office" },
+      width: 150,
+    },
+    {
+      locator: { type: "property", id: "startDate" },
+      width: 150,
+    },
+  ];
+
   return (
     <ObjectTable
       objectType={Employee}
+      columnDefinitions={columnDefinitions}
     />
   );
 }

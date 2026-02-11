@@ -21,13 +21,14 @@ export function SortingAndFilteringExample() {
   return (
     <div className="space-y-2">
       <div className="px-3 py-2 bg-blue-50 border border-blue-200 rounded text-sm text-blue-800">
-        <strong>Try this:</strong> Click column headers to sort. Use the filter icon to add filters.
+        <strong>Try this:</strong> Click column headers to sort the data. The table uses server-side sorting.
       </div>
       <div style={{ height: "400px" }}>
         <ObjectTable
           objectType={Employee}
-          filterable={true}
-          orderable={true}
+          defaultOrderBy={[
+            { property: "startDate", direction: "desc" },
+          ]}
         />
       </div>
     </div>

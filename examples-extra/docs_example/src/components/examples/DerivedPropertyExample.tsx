@@ -14,10 +14,40 @@
  * limitations under the License.
  */
 
+import type { DerivedProperty, Osdk } from "@osdk/api";
 import { ObjectTable } from "@osdk/react-components/experimental";
+import type { ColumnDefinition } from "@osdk/react-components/experimental";
 import { Employee } from "../../generatedNoCheck/index.js";
 
+type RDPs = {
+  managerName: "string";
+};
+
 export function DerivedPropertyExample() {
+  const columnDefinitions: Array<ColumnDefinition<Employee, RDPs>> = [
+    {
+      locator: { type: "property", id: "fullName" },
+    },
+    {
+      locator: { type: "property", id: "class" },
+    },
+    {
+      locator: {
+        type: "rdp",
+        id: "managerName",
+        creator: (baseObjectSet: DerivedProperty.Builder<Employee, false>) =>
+          baseObjectSet.pivotTo("lead").selectProperty("fullName"),
+      },
+      renderHeader: () => "Manager",
+      renderCell: (object: Osdk.Instance<Employee>) => {
+        if ("managerName" in object) {
+          return object["managerName"] as string;
+        }
+        return <span style={{ color: "#9ca3af", fontStyle: "italic" }}>No Manager</span>;
+      },
+    },
+  ];
+
   return (
     <div className="space-y-3">
       <div className="px-4 py-3 bg-blue-50 border border-blue-200 rounded-lg">
@@ -27,8 +57,9 @@ export function DerivedPropertyExample() {
         </p>
       </div>
       <div style={{ height: "400px" }}>
-        <ObjectTable
+        <ObjectTable<Employee, RDPs>
           objectType={Employee}
+          columnDefinitions={columnDefinitions}
         />
       </div>
     </div>
