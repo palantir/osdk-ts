@@ -1,3 +1,4 @@
+import type { ObservableClient } from "@osdk/client/unstable-do-not-use";
 import type { Point } from "geojson";
 import { useCallback, useState } from "react";
 import { Office } from "../generatedNoCheck2/index.js";
@@ -18,7 +19,11 @@ export const initialFormState: FormState = {
 };
 
 type UseOfficeFormActionOptions = {
-  applyAction: (args: any) => Promise<unknown>;
+  applyAction: (args: {
+    name: string;
+    location: Point;
+    $optimisticUpdate?: ObservableClient.ApplyActionOptions["optimisticUpdate"];
+  }) => Promise<unknown>;
   formRef: React.RefObject<HTMLFormElement>;
   setShowSuccess: React.Dispatch<React.SetStateAction<boolean>>;
 };
@@ -36,9 +41,9 @@ export function useOfficeFormAction({
       const formData = new FormData(e.currentTarget);
 
       // Extract form values
-      const name = formData.get("name") as string;
-      const latitudeStr = formData.get("latitude") as string;
-      const longitudeStr = formData.get("longitude") as string;
+      const name = String(formData.get("name") ?? "");
+      const latitudeStr = String(formData.get("latitude") ?? "");
+      const longitudeStr = String(formData.get("longitude") ?? "");
 
       // Validate form values
       const errors: FormState["errors"] = {};
@@ -74,7 +79,7 @@ export function useOfficeFormAction({
         await applyAction({
           name,
           location,
-          $optimisticUpdate: (b: any) => {
+          $optimisticUpdate: (b) => {
             const id = "TMP_" + window.crypto.randomUUID();
             b.createObject(Office, id, {
               name,
