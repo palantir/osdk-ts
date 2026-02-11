@@ -20,6 +20,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { FilterListContent } from "../base/FilterListContent.js";
 import type { FilterDefinitionUnion } from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
+import { getFilterKey } from "../utils/getFilterKey.js";
 import {
   createPropertyFilterDef,
   createSelectState,
@@ -50,15 +51,12 @@ function createDefinitions() {
 }
 
 function createFilterStates(
-  definitions: FilterDefinitionUnion<typeof MockObjectType>[],
-): Map<FilterDefinitionUnion<typeof MockObjectType>, FilterState> {
-  const map = new Map<
-    FilterDefinitionUnion<typeof MockObjectType>,
-    FilterState
-  >();
+  definitions: ReturnType<typeof createPropertyFilterDef>[],
+): Map<string, FilterState> {
+  const map = new Map<string, FilterState>();
   for (const def of definitions) {
     if (def.filterState) {
-      map.set(def, def.filterState);
+      map.set(getFilterKey(def), def.filterState);
     }
   }
   return map;
@@ -153,7 +151,7 @@ describe("FilterList drag and drop", () => {
 
     await screen.findAllByLabelText(/Reorder/);
 
-    expect(filterStates.get(definitions[0])).toBe(stateRef);
+    expect(filterStates.get(getFilterKey(definitions[0]))).toBe(stateRef);
   });
 
   it("renders empty state when no filter definitions provided", () => {
