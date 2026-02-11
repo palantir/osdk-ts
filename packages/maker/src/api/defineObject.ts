@@ -42,8 +42,7 @@ import type {
 import type { ObjectTypeDefinition } from "./object/ObjectTypeDefinition.js";
 import type { ObjectTypeStatus } from "./object/ObjectTypeStatus.js";
 import type { PropertyTypeType } from "./properties/PropertyTypeType.js";
-import { isExotic } from "./properties/PropertyTypeType.js";
-
+import { isExotic, isStruct } from "./properties/PropertyTypeType.js";
 // From https://stackoverflow.com/a/79288714
 const ISO_8601_DURATION =
   /^P(?!$)(?:(?:((?:\d+Y)|(?:\d+(?:\.|,)\d+Y$))?((?:\d+M)|(?:\d+(?:\.|,)\d+M$))?((?:\d+D)|(?:\d+(?:\.|,)\d+D$))?(T((?:\d+H)|(?:\d+(?:\.|,)\d+H$))?((?:\d+M)|(?:\d+(?:\.|,)\d+M$))?((?:\d+S)|(?:\d+(?:\.|,)\d+S$))?)?)|(?:\d+(?:(?:\.|,)\d+)?W))$/;
@@ -154,8 +153,12 @@ export function defineObject(
       `Deprecated status deadline "${deadline}" on object "${objectDef.apiName}" is not a valid ISO 8601 datetime string`,
     );
   }
+  const titleProp = objectDef.properties?.[objectDef.titlePropertyApiName]
+    ?.type;
   invariant(
-    !isExotic(objectDef.properties?.[objectDef.titlePropertyApiName]?.type),
+    !isExotic(titleProp)
+      || (isStruct(titleProp) && titleProp.mainValue
+        && !isExotic(titleProp.mainValue.type)),
     `Title property ${objectDef.titlePropertyApiName} must be a primitive type`,
   );
   invariant(
