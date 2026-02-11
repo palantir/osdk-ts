@@ -168,14 +168,14 @@ export function MultiColumnSortDialog({
     }));
   }, [selectedSortColumns, handleToggleSortDirection]);
 
-  const footer = (
+  const footer = useMemo(() => (
     <>
       <ActionButton onClick={onClose}>Cancel</ActionButton>
       <ActionButton variant="primary" onClick={handleApply}>
-        Apply Sorts
+        Apply
       </ActionButton>
     </>
-  );
+  ), [handleApply, onClose]);
 
   return (
     <Dialog
