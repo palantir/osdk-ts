@@ -14,8 +14,59 @@
  * limitations under the License.
  */
 
-import type { ObjectSet, ObjectTypeDefinition, WhereClause } from "@osdk/api";
-import type { FilterDefinition } from "./FilterListItemApi.js";
+import type {
+  LinkNames,
+  ObjectSet,
+  ObjectTypeDefinition,
+  WhereClause,
+} from "@osdk/api";
+import type {
+  FilterState as FilterStateType,
+  PropertyFilterDefinition,
+} from "./FilterListItemApi.js";
+import type { FilterTemplate } from "./types/AddFilterMenuTypes.js";
+import type { CustomFilterDefinition } from "./types/CustomRendererTypes.js";
+import type { KeywordSearchFilterDefinition } from "./types/KeywordSearchTypes.js";
+import type {
+  HasLinkFilterDefinition,
+  LinkedPropertyFilterDefinition,
+} from "./types/LinkedFilterTypes.js";
+
+/**
+ * Union type of all filter definition types
+ */
+export type FilterDefinitionUnion<Q extends ObjectTypeDefinition> =
+  | PropertyFilterDefinition<Q>
+  | HasLinkFilterDefinition<Q>
+  | LinkedPropertyFilterDefinition<Q, LinkNames<Q>>
+  | KeywordSearchFilterDefinition<Q>
+  | CustomFilterDefinition<Q>;
+
+/**
+ * Extract the key from a filter definition union
+ */
+export type FilterKey<Q extends ObjectTypeDefinition> =
+  FilterDefinitionUnion<Q> extends infer D ? D extends { key: infer K } ? K
+    : D extends { linkName: infer L } ? L
+    : never
+    : never;
+
+/**
+ * Extract the filter state from a filter definition union
+ */
+export type FilterState<Q extends ObjectTypeDefinition> =
+  FilterDefinitionUnion<Q> extends infer D
+    ? D extends { filterState: infer S } ? S
+    : never
+    : never;
+
+/**
+ * Map from filter keys to their current state.
+ * Uses string keys derived from getFilterKey() for stable lookups
+ * that don't depend on object identity, avoiding re-render issues
+ * when filter definition objects are recreated.
+ */
+export type FilterStatesMap = Map<string, FilterStateType>;
 
 export interface FilterListProps<Q extends ObjectTypeDefinition> {
   /**
@@ -27,7 +78,7 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
    * The definition for all supported filter items in the list
    * If not supplied, all filterable properties will be available
    */
-  filterDefinitions?: Array<FilterDefinition<Q>>;
+  filterDefinitions?: Array<FilterDefinitionUnion<Q>>;
 
   /**
    * The current where clause to filter the objectSet.
@@ -52,14 +103,14 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
   filterOperator?: "and" | "or";
 
   /**
-   * Called when filter state change
+   * Called when filter state changes
    *
    * @param filterKey The key of the updated filter
    * @param newState The updated filter state
    */
   onFilterStateChanged?: (
     filterKey: FilterKey<Q>,
-    newState: FilterState<Q>,
+    newState: FilterStateType,
   ) => void;
 
   /**
@@ -71,7 +122,7 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
    */
   onFilterAdded?: (
     filterKey: FilterKey<Q>,
-    newDefinitions: Array<FilterDefinition<Q>>,
+    newDefinitions: Array<FilterDefinitionUnion<Q>>,
   ) => void;
 
   /**
@@ -83,7 +134,7 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
    */
   onFilterRemoved?: (
     filterKey: FilterKey<Q>,
-    newDefinitions: Array<FilterDefinition<Q>>,
+    newDefinitions: Array<FilterDefinitionUnion<Q>>,
   ) => void;
 
   /**
@@ -92,11 +143,40 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
    *
    * @param newOrder The updated filter definitions in new order
    */
-  onFiltersReordered?: (newOrder: ReadonlyArray<FilterDefinition<Q>>) => void;
+  onFiltersReordered?: (
+    newOrder: ReadonlyArray<FilterDefinitionUnion<Q>>,
+  ) => void;
+
+  /**
+   * Show reset filters button in header
+   */
+  showResetButton?: boolean;
+
+  /**
+   * Called when reset button is clicked
+   */
+  onReset?: () => void;
+
+  /**
+   * Available filter templates for the "Add filter" menu.
+   * When provided along with onFilterAdded, clicking the add button
+   * shows a popover with these templates organized by category.
+   */
+  filterTemplates?: FilterTemplate[];
+
+  /**
+   * Called when a filter template is selected from the add filter menu.
+   * The consumer should create a new filter definition and add it to filterDefinitions.
+   */
+  onFilterTemplateSelected?: (template: FilterTemplate) => void;
+
+  /**
+   * Show count of active filters in header
+   */
+  showActiveFilterCount?: boolean;
+
+  /**
+   * Additional CSS class name
+   */
+  className?: string;
 }
-
-type FilterKey<Q extends ObjectTypeDefinition> = FilterDefinition<Q>["key"];
-
-type FilterState<Q extends ObjectTypeDefinition> = FilterDefinition<
-  Q
->["filterState"];
