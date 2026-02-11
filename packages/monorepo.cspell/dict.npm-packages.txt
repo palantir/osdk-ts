@@ -17,5 +17,6 @@ Momentjs
 monorepolint
 ngeohash
 npmjs
+shadcn
 tsup
 timecode

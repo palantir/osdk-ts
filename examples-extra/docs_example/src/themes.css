@@ -1,0 +1,74 @@
+/* Blueprint-based theme definitions for OSDK components */
+/* Refined, subtle themes with reduced saturation for professional interfaces */
+
+/* Ocean Theme - Subtle cool blue tones */
+[data-theme="ocean"] {
+  --osdk-table-header-bg: oklch(0.96 0.008 238.05);
+  --osdk-table-row-bg-default: oklch(0.99 0.002 238.05);
+  --osdk-table-row-bg-alternate: oklch(0.975 0.005 238.05);
+  --osdk-table-row-bg-hover: oklch(0.94 0.015 238.05);
+  --osdk-table-row-bg-active: oklch(0.92 0.025 238.05);
+  --osdk-intent-primary-rest: oklch(0.52 0.11 237.81);
+  --osdk-intent-primary-hover: oklch(0.45 0.095 237.75);
+  --osdk-intent-primary-active: oklch(0.41 0.086 237.75);
+}
+
+/* Forest Theme - Muted earthy green palette */
+[data-theme="forest"] {
+  --osdk-table-header-bg: oklch(0.96 0.008 144.08);
+  --osdk-table-row-bg-default: oklch(0.99 0.002 144.08);
+  --osdk-table-row-bg-alternate: oklch(0.975 0.005 144.08);
+  --osdk-table-row-bg-hover: oklch(0.94 0.015 144.08);
+  --osdk-table-row-bg-active: oklch(0.92 0.025 144.08);
+  --osdk-intent-primary-rest: oklch(0.52 0.095 151.24);
+  --osdk-intent-primary-hover: oklch(0.45 0.08 152.16);
+  --osdk-intent-primary-active: oklch(0.37 0.097 152.16);
+  --osdk-checkbox-bg-checked: oklch(0.65 0.14 154.17);
+}
+
+/* Sunset Theme - Warm neutral amber tones */
+[data-theme="sunset"] {
+  --osdk-table-header-bg: oklch(0.96 0.012 81.27);
+  --osdk-table-row-bg-default: oklch(0.99 0.003 81.27);
+  --osdk-table-row-bg-alternate: oklch(0.975 0.007 81.27);
+  --osdk-table-row-bg-hover: oklch(0.94 0.02 81.27);
+  --osdk-table-row-bg-active: oklch(0.92 0.035 81.27);
+  --osdk-intent-primary-rest: oklch(0.56 0.095 62.16);
+  --osdk-intent-primary-hover: oklch(0.50 0.085 64.42);
+  --osdk-intent-primary-active: oklch(0.44 0.095 62.22);
+  --osdk-checkbox-bg-checked: oklch(0.65 0.12 81.86);
+}
+
+/* Midnight Theme - Refined dark mode with subtle blue accents */
+[data-theme="midnight"] {
+  --osdk-table-header-bg: oklch(0.28 0.015 244.29);
+  --osdk-table-header-color: oklch(0.92 0.01 227.89);
+  --osdk-table-row-bg-default: oklch(0.25 0.015 238.86);
+  --osdk-table-row-bg-alternate: oklch(0.27 0.015 244.29);
+  --osdk-table-row-bg-hover: oklch(0.32 0.018 240.46);
+  --osdk-table-row-bg-active: oklch(0.38 0.045 254.68);
+  --osdk-table-cell-color: oklch(0.88 0.012 228.82);
+  --osdk-table-border: 1px solid oklch(0.35 0.02 243.49);
+  --osdk-intent-primary-rest: oklch(0.55 0.14 254.86);
+  --osdk-intent-primary-hover: oklch(0.50 0.16 254.68);
+  --osdk-intent-primary-active: oklch(0.45 0.15 261.33);
+  --osdk-checkbox-bg: oklch(0.35 0.02 243.49);
+  --osdk-checkbox-bg-hover: oklch(0.40 0.025 240.38);
+  --osdk-checkbox-bg-checked: oklch(0.55 0.14 254.86);
+  --osdk-checkbox-checked-foreground: var(--bp-palette-white);
+  --osdk-surface-border-color-default: oklch(0.35 0.02 243.49);
+  --osdk-surface-background-color-default: oklch(0.28 0.015 244.29);
+}
+
+/* Violet Theme - Soft purple and indigo accents */
+[data-theme="violet"] {
+  --osdk-table-header-bg: oklch(0.96 0.006 327.64);
+  --osdk-table-row-bg-default: oklch(0.99 0.002 327.64);
+  --osdk-table-row-bg-alternate: oklch(0.975 0.004 327.64);
+  --osdk-table-row-bg-hover: oklch(0.94 0.012 327.64);
+  --osdk-table-row-bg-active: oklch(0.92 0.022 307.72);
+  --osdk-intent-primary-rest: oklch(0.52 0.12 309.63);
+  --osdk-intent-primary-hover: oklch(0.45 0.11 310.26);
+  --osdk-intent-primary-active: oklch(0.49 0.124 310.26);
+  --osdk-checkbox-bg-checked: oklch(0.60 0.13 307.46);
+}
