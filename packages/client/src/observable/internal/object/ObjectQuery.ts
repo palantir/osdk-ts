@@ -199,7 +199,13 @@ export class ObjectQuery extends Query<
 
   registerStreamUpdates(sub: Subscription): void {
     this.#setupStreamUpdates(sub).catch((error: unknown) => {
-      this.logger?.error("Failed to setup stream updates", error);
+      if (process.env.NODE_ENV !== "production") {
+        this.logger?.child({ methodName: "registerStreamUpdates" }).error(
+          "Failed to setup stream updates",
+          error,
+        );
+      }
+      this.onOswError({ subscriptionClosed: true, error });
     });
   }
 
@@ -211,6 +217,16 @@ export class ObjectQuery extends Query<
     }
 
     const objectSet = await this.#createSingleObjectSet();
+
+    if (sub.closed) {
+      if (process.env.NODE_ENV !== "production") {
+        this.logger?.child({ methodName: "registerStreamUpdates" }).info(
+          "Subscription closed during async setup, skipping websocket registration",
+        );
+      }
+      return;
+    }
+
     this.createWebsocketSubscription(objectSet, sub, "observeObject");
   }
 

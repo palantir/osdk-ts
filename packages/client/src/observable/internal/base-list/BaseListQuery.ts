@@ -644,6 +644,17 @@ export abstract class BaseListQuery<
   //
 
   /**
+   * Override onOswOutOfDate to be a no-op for list queries.
+   * List queries should not revalidate on out-of-date since they handle
+   * individual object updates via onOswChange instead.
+   */
+  protected override onOswOutOfDate(): void {
+    if (process.env.NODE_ENV !== "production") {
+      this.logger?.child({ methodName: "onOutOfDate" }).debug("");
+    }
+  }
+
+  /**
    * Handler called when an object in the subscribed set is added or updated.
    * Stores the object with RDP config and handles removal via onOswRemoved.
    *
