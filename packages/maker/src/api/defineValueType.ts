@@ -24,6 +24,7 @@ import type {
   ValueTypeStatus,
 } from "@osdk/client.unstable";
 import invariant from "tiny-invariant";
+import { cloneDefinition } from "./cloneDefinition.js";
 import { OntologyEntityTypeEnum } from "./common/OntologyEntityTypeEnum.js";
 import {
   namespace,
@@ -136,8 +137,9 @@ export type UserValueTypeStatus = "active" | {
 };
 
 export function defineValueType(
-  valueTypeDef: ValueTypeDefinition,
+  valueTypeDefInput: ValueTypeDefinition,
 ): ValueTypeDefinitionVersion {
+  const valueTypeDef = cloneDefinition(valueTypeDefInput);
   const {
     apiName: inputApiName,
     displayName,

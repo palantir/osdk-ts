@@ -21,6 +21,7 @@ import type {
   Visibility,
 } from "@osdk/client.unstable";
 import invariant from "tiny-invariant";
+import { cloneDefinition } from "./cloneDefinition.js";
 import { OntologyEntityTypeEnum } from "./common/OntologyEntityTypeEnum.js";
 import {
   namespace,
@@ -53,8 +54,9 @@ export interface SharedPropertyTypeDefinition {
 }
 
 export function defineSharedPropertyType(
-  sptDef: SharedPropertyTypeDefinition,
+  sptDefInput: SharedPropertyTypeDefinition,
 ): SharedPropertyType {
+  const sptDef = cloneDefinition(sptDefInput);
   const apiName = namespace + sptDef.apiName;
   invariant(
     ontologyDefinition[OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE][apiName]

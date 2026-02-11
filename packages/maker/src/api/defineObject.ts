@@ -16,6 +16,7 @@
 
 import invariant from "tiny-invariant";
 import { getObject } from "../conversion/toMarketplace/convertLink.js";
+import { cloneDefinition } from "./cloneDefinition.js";
 import { OntologyEntityTypeEnum } from "./common/OntologyEntityTypeEnum.js";
 import {
   addNamespaceIfNone,
@@ -54,8 +55,9 @@ const ISO_8601_DATETIME =
 const API_NAME_PATTERN = /^([a-zA-Z][a-zA-Z0-9\\-]*)$/;
 
 export function defineObject(
-  objectDef: ObjectTypeDefinition,
+  objectDefInput: ObjectTypeDefinition,
 ): ObjectTypeDefinition {
+  const objectDef = cloneDefinition(objectDefInput);
   const apiName = namespace + objectDef.apiName;
   const propertyApiNames = objectDef.properties
     ? Object.keys(objectDef.properties)
