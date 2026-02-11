@@ -28,6 +28,7 @@ import {
   queryAcceptsInterfaceObjectSet,
   queryAcceptsObject,
   queryAcceptsObjectSets,
+  queryTypeReturnsArrayOfObjects,
   queryTypeReturnsMap,
   returnsDate,
   returnsTimestamp,
@@ -183,6 +184,22 @@ describe("queries", () => {
     });
 
     expectTypeOf<ObjectSet<Employee>>().toMatchTypeOf<typeof result>();
+  });
+
+  it("returns array of objects", async () => {
+    const result = await client(queryTypeReturnsArrayOfObjects).executeFunction(
+      {
+        people: ["Brad", "George", "Ryan"],
+      },
+    );
+
+    expect(result).toEqual([{
+      $apiName: "Employee",
+      $objectSpecifier: "Employee:50030",
+      $objectType: "Employee",
+      $primaryKey: 50030,
+      $title: undefined,
+    }]);
   });
 
   it("no params work", async () => {
@@ -424,6 +441,7 @@ describe("queries", () => {
       "queryAcceptsObjectSets",
       "queryOutputsInterface",
       "queryTypeReturnsArray",
+      "queryTypeReturnsArrayOfObjects",
       "queryTypeReturnsMap",
       "returnsDate",
       "returnsObject",
