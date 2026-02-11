@@ -3838,7 +3838,7 @@ describe("Object Types", () => {
           prop2: "string",
         },
         mainValue: {
-          fields: ["prop1"],
+          fields: "prop1",
           type: "string",
         },
       },

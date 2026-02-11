@@ -58,7 +58,7 @@ export type PropertyTypeTypeStruct = {
       | Exclude<PropertyTypeTypesWithoutStruct, PropertyTypeTypeMarking>;
   };
   mainValue?: {
-    fields: Array<string>;
+    fields: string | Array<string>;
     // TODO(ethana): we can infer this type from fields
     type: PropertyTypeType;
   };
