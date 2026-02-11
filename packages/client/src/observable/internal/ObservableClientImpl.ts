@@ -350,8 +350,13 @@ function observeMultiLinks(
   const parentSub = new Subscription();
   const totalExpected = objectsArray.length;
   const perObjectResults = new Map<string, SpecificLinkPayload>();
+  let errored = false;
 
   function mergeAndEmit() {
+    if (errored) {
+      return;
+    }
+
     const seen = new Map<string, SpecificLinkPayload["resolvedList"][number]>();
     const fetchMores: Array<() => Promise<void>> = [];
     let latestUpdated = 0;
@@ -411,10 +416,21 @@ function observeMultiLinks(
         },
         {
           next: (payload: SpecificLinkPayload) => {
+            if (errored) {
+              return;
+            }
             perObjectResults.set(objKey, payload);
             mergeAndEmit();
           },
-          error: (err: unknown) => observer.error(err),
+          error: (err: unknown) => {
+            if (errored) {
+              return;
+            }
+            errored = true;
+            parentSub.unsubscribe();
+            observer.error(err);
+          },
+          // store link queries are long-lived and do not complete
           complete: () => {},
         },
       ),
