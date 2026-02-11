@@ -90,11 +90,11 @@
     "access": "public"
   },
   "files": [
+    "src/*.css",
     "build/cjs",
     "build/esm",
     "build/browser",
     "build/types",
-    "src/*.css",
     "CHANGELOG.md",
     "package.json",
     "templates",
