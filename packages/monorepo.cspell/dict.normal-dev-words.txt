@@ -9,6 +9,12 @@ commitish
 Cpath
 Csvg
 devx
+frontmatter
+Frontmatter
+myapp
+numstat
+shadcn
+useosdkobjects
 Discoverability
 duplicative
 gantt
