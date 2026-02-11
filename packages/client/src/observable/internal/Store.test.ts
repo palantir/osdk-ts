@@ -420,6 +420,7 @@ describe(Store, () => {
       const sub1 = cache.links.observe({
         linkName: "peeps",
         srcType: { type: "object", apiName: emp2.$apiName },
+        sourceUnderlyingObjectType: emp2.$objectType,
         pk: emp2.$primaryKey,
         dedupeInterval: 60_000,
       }, linkSubFn1);
@@ -438,6 +439,7 @@ describe(Store, () => {
       defer(cache.links.observe({
         linkName: "peeps",
         srcType: { type: "object", apiName: emp2.$apiName },
+        sourceUnderlyingObjectType: emp2.$objectType,
         pk: emp2.$primaryKey,
         dedupeInterval: 60_000,
       }, linkSubFn2));
@@ -461,6 +463,7 @@ describe(Store, () => {
       defer(cache.links.observe({
         linkName: "peeps",
         srcType: { type: "object", apiName: emp2.$apiName },
+        sourceUnderlyingObjectType: emp2.$objectType,
         pk: emp2.$primaryKey,
         dedupeInterval: 60_000,
       }, linkSubFn));

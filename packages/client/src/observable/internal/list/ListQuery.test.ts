@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import { Employee, Office, Todo } from "@osdk/client.test.ontology";
+import {
+  Employee,
+  FooInterface,
+  Office,
+  Todo,
+} from "@osdk/client.test.ontology";
 import type { SetupServer } from "@osdk/shared.test";
 import {
   FauxFoundry,
@@ -783,4 +788,157 @@ describe("ListQuery pivotTo tests", () => {
     testStage("Verify no additional calls");
     expectNoMoreCalls(listSub);
   });
+
+  it("pivotTo from interface source with where clause constructs correct query", async () => {
+    fauxFoundry.getDefaultDataStore().clear();
+
+    fauxFoundry.getDefaultDataStore().registerObject(Employee, {
+      $apiName: "Employee",
+      employeeId: 1,
+      fullName: "Employee 1",
+    });
+    fauxFoundry.getDefaultDataStore().registerObject(Employee, {
+      $apiName: "Employee",
+      employeeId: 2,
+      fullName: "Employee 2",
+    });
+
+    testStage("Observe with interface type and pivotTo");
+    const listSub = mockListSubCallback();
+    defer(
+      store.lists.observe(
+        {
+          type: FooInterface,
+          where: {},
+          orderBy: {},
+          pivotTo: "toBar",
+        },
+        listSub,
+      ),
+    );
+
+    testStage("Initial loading state verifies query construction succeeded");
+    await waitForCall(listSub.next, 1);
+    expectSingleListCallAndClear(listSub, [], { status: "loading" });
+
+    testStage("Verify no additional calls");
+    expectNoMoreCalls(listSub);
+  });
+
+  it("pivotTo from object source uses correct sourceTypeKind", async () => {
+    fauxFoundry.getDefaultDataStore().clear();
+
+    const office = fauxFoundry.getDefaultDataStore().registerObject(Office, {
+      $apiName: "Office",
+      officeId: "office-1",
+      name: "Test Office",
+    });
+    const emp = fauxFoundry.getDefaultDataStore().registerObject(Employee, {
+      $apiName: "Employee",
+      employeeId: 1,
+      fullName: "Employee 1",
+    });
+    fauxFoundry.getDefaultDataStore().registerLink(
+      emp,
+      "officeLink",
+      office,
+      "occupants",
+    );
+
+    testStage("Observe object type with pivotTo");
+    const listSub = mockListSubCallback();
+    defer(
+      store.lists.observe<typeof Employee>(
+        {
+          type: Employee,
+          where: {},
+          orderBy: {},
+          pivotTo: "officeLink",
+        },
+        listSub,
+      ),
+    );
+
+    await waitForCall(listSub.next, 1);
+    expectSingleListCallAndClear(listSub, [], { status: "loading" });
+
+    await waitForCall(listSub.next, 1);
+    const payload = expectSingleListCallAndClear(listSub, expect.anything(), {
+      status: "loaded",
+    });
+
+    testStage("Verify data loaded successfully");
+    expect(payload?.resolvedList.length).toBe(1);
+
+    expectNoMoreCalls(listSub);
+  });
+
+  it("pivotTo with multiple source objects returns all linked targets", async () => {
+    fauxFoundry.getDefaultDataStore().clear();
+
+    const officeA = fauxFoundry.getDefaultDataStore().registerObject(Office, {
+      $apiName: "Office",
+      officeId: "office-a",
+      name: "Office A",
+    });
+    const officeB = fauxFoundry.getDefaultDataStore().registerObject(Office, {
+      $apiName: "Office",
+      officeId: "office-b",
+      name: "Office B",
+    });
+
+    const emp1 = fauxFoundry.getDefaultDataStore().registerObject(Employee, {
+      $apiName: "Employee",
+      employeeId: 1,
+      fullName: "Employee 1",
+    });
+    const emp2 = fauxFoundry.getDefaultDataStore().registerObject(Employee, {
+      $apiName: "Employee",
+      employeeId: 2,
+      fullName: "Employee 2",
+    });
+
+    fauxFoundry.getDefaultDataStore().registerLink(
+      emp1,
+      "officeLink",
+      officeA,
+      "occupants",
+    );
+    fauxFoundry.getDefaultDataStore().registerLink(
+      emp2,
+      "officeLink",
+      officeB,
+      "occupants",
+    );
+
+    testStage("Observe with pivotTo and no where clause");
+    const listSub = mockListSubCallback();
+    defer(
+      store.lists.observe<typeof Employee>(
+        {
+          type: Employee,
+          where: {},
+          orderBy: {},
+          pivotTo: "officeLink",
+        },
+        listSub,
+      ),
+    );
+
+    await waitForCall(listSub.next, 1);
+    expectSingleListCallAndClear(listSub, [], { status: "loading" });
+
+    await waitForCall(listSub.next, 1);
+    const payload = expectSingleListCallAndClear(listSub, expect.anything(), {
+      status: "loaded",
+    });
+
+    testStage("Verify both linked offices are returned");
+    expect(payload?.resolvedList.length).toBe(2);
+    const officeIds = payload?.resolvedList.map((o) => o.$primaryKey).sort();
+    expect(officeIds).toEqual(["office-a", "office-b"]);
+
+    expectNoMoreCalls(listSub);
+  });
 });
+
