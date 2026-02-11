@@ -63,10 +63,10 @@
     "@osdk/api": "*",
     "@osdk/client": "*",
     "@osdk/react": "*",
-    "@types/react": "^17 || ^18",
+    "@types/react": "^17 || ^18 || ^19",
     "classnames": "^2.0.0",
-    "react": "^17 || ^18",
-    "react-dom": "^17 || ^18"
+    "react": "^17 || ^18 || ^19",
+    "react-dom": "^17 || ^18 || ^19"
   },
   "devDependencies": {
     "@osdk/api": "workspace:*",
