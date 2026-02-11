@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import type { MarketplaceInterfaceType } from "@osdk/client.unstable";
+import type { MarketplaceInterfacePropertyType, MarketplaceInterfaceType } from "@osdk/client.unstable";
 import type { InterfaceType } from "../../api/interface/InterfaceType.js";
 import type { OntologyRidGenerator } from "../../util/generateRid.js";
 import { convertInterfaceProperty } from "./convertInterfacePropertyType.js";
 import { convertSpt } from "./convertSpt.js";
+import { isInterfaceSharedPropertyType } from "../../api/interface/InterfacePropertyType.js";
 
 export function convertInterface(
   interfaceType: InterfaceType,

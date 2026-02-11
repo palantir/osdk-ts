@@ -149,7 +149,7 @@ export function convertObject(
         linksV2: {},
         propertiesV2: Object.fromEntries(impl.propertyMapping
           .map(
-            mappings => [mappings.interfaceProperty, {
+            mappings => [ridGenerator.generateInterfacePropertyTypeRid(mappings.interfaceProperty, impl.implements.apiName), {
               type: "propertyTypeRid",
               propertyTypeRid: ridGenerator.generatePropertyRid(
                 mappings.mapsTo,

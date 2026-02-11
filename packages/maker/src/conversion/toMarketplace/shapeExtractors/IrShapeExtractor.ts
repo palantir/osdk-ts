@@ -46,6 +46,7 @@ import {
 } from "../../../util/generateRid.js";
 import { LinkTypeShapeExtractor } from "./LinkTypeShapeExtractor.js";
 import { ObjectTypeShapeExtractor } from "./ObjectTypeShapeExtractor.js";
+import { typeToMarketplaceBaseType, typeToMarketplaceObjectPropertyType } from "../typeVisitors.js";
 
 export const MIGRATION_SHAPE_READABLE_ID: ReadableId =
   "migration-input" as ReadableId;
@@ -186,6 +187,7 @@ function extractInterfaceType(
   interfaceType: MarketplaceInterfaceType,
   ridGenerator: OntologyRidGenerator,
 ): void {
+    const interfaceReadableId = getReadableIdForInterface(interfaceType.apiName);
   // Build interface type output shape
   const interfaceTypeOutputShape: InterfaceTypeOutputShape = {
     about: createLocalizedAbout(
@@ -210,14 +212,14 @@ function extractInterfaceType(
   };
 
   // Add shared property type input shapes for properties not in output
-  for (const [properyRid, property] of Object.entries(interfaceType.propertiesV3) ?? []) {
+  for (const [propertyRid, property] of Object.entries(interfaceType.propertiesV3) ?? []) {
     if (property.type === "sharedPropertyBasedPropertyType" && 
       !outputSharedPropertyTypeRids.has(property.sharedPropertyBasedPropertyType.sharedPropertyType.rid)) {
         const spt = property.sharedPropertyBasedPropertyType.sharedPropertyType;
       const sptReadableId = getReadableIdForSpt(spt.apiName);
       const sharedPropInputShape: SharedPropertyTypeInputShape = {
         about: getTitleAndDescriptionForSharedPropertyType(spt),
-        type: convertPropertyTypeToMarketplaceType(spt.type),
+        type: {type: "objectPropertyType", objectPropertyType: typeToMarketplaceObjectPropertyType(spt.type)},
       };
       inputShapeMap.set(
         sptReadableId,
@@ -228,7 +230,20 @@ function extractInterfaceType(
       );
     }
     else if(property.type == "interfaceDefinedPropertyType"){
-      //outputShapeMap.set(ReadableIdGenerator.get)
+      outputShapeMap.set(ridGenerator.getInterfacePropertyTypeRids().inverse().get(propertyRid)!, {
+        type: "interfacePropertyType",
+        interfacePropertyType: {
+          type: typeToMarketplaceObjectPropertyType(property.interfaceDefinedPropertyType.type),
+          about: {
+            fallbackTitle: property.interfaceDefinedPropertyType.displayMetadata.displayName, 
+            fallbackDescription: property.interfaceDefinedPropertyType.displayMetadata.description ?? "",
+            localizedDescription: {},
+            localizedTitle: {}
+          },
+          interfaceType: ridGenerator.toBlockInternalId(interfaceReadableId),
+          requireImplementation: property.interfaceDefinedPropertyType.constraints.requireImplementation
+        }
+      })
     }
   }
 
@@ -244,8 +259,7 @@ function extractInterfaceType(
   }
 
   // Add interface type output shape
-  const readableId = getReadableIdForInterface(interfaceType.apiName);
-  outputShapeMap.set(readableId, {
+  outputShapeMap.set(interfaceReadableId, {
     type: "interfaceType",
     interfaceType: interfaceTypeOutputShape,
   });
@@ -318,21 +332,13 @@ function extractSharedPropertyType(
   ridGenerator: OntologyRidGenerator,
 ): void {
   const readableId = getReadableIdForSpt(sharedPropertyType.apiName);
-  const propertyType = convertPropertyTypeToMarketplaceType(
+  const propertyType = typeToMarketplaceObjectPropertyType(
     sharedPropertyType.type,
   );
 
-  // Extract the objectPropertyType from AllowedObjectPropertyType
-  const objectPropertyType = propertyType.type === "objectPropertyType"
-    ? propertyType.objectPropertyType
-    : {
-      type: "string",
-      string: { isLongText: false, supportsExactMatching: true },
-    } as any;
-
   const outputShape: SharedPropertyTypeOutputShape = {
     about: getTitleAndDescriptionForSharedPropertyType(sharedPropertyType),
-    type: objectPropertyType,
+    type: propertyType,
   };
 
   blockShapes.outputShapes.set(readableId, {
@@ -466,28 +472,4 @@ function getReadableIdForInterfaceLink(
     interfaceApiName,
     linkApiName,
   );
-}
-
-// Placeholder type conversion functions
-// These should be implemented to match the Java type visitors
-
-function convertPropertyTypeToMarketplaceType(
-  _type: Type,
-): AllowedObjectPropertyType {
-  // Placeholder - should use TypeToMarketplaceShapeObjectPropertyTypeVisitor
-  return {
-    type: "objectPropertyType",
-    objectPropertyType: {
-      type: "primitive",
-      primitive: {
-        type: "stringType",
-        stringType: { isLongText: false, supportsExactMatching: true },
-      },
-    },
-  };
-}
-
-function typeToMarketplaceBaseType(_type: Type): any {
-  // Placeholder - should use TypeToMarketplaceShapeBaseTypeVisitor
-  return { type: "string", string: {} };
 }

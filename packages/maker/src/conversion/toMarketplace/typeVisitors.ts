@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Type } from "@osdk/client.unstable";
+import type { InterfacePropertyTypeType, Type } from "@osdk/client.unstable";
 import type {
   ArrayBaseType,
   ArrayObjectPropertyType,
@@ -38,7 +38,7 @@ const DEFAULT_DECIMAL_SCALE = 0;
  * TypeScript port of TypeToMarketplaceShapeObjectPropertyTypeVisitor
  */
 export function typeToMarketplaceObjectPropertyType(
-  type: Type,
+  type: Type | InterfacePropertyTypeType,
 ): ObjectPropertyType {
   switch (type.type) {
     case "array":
