@@ -228,7 +228,7 @@ describe("buildWhereClause", () => {
   it("emits no clause for hasLink filter when hasLink is false", () => {
     const def = createHasLinkFilterDef("employees");
     const filterStates = new Map<TestFilterDef, FilterState>([
-      [def, { type: "hasLink", hasLink: false }],
+      [def, { type: "HAS_LINK", hasLink: false }],
     ]);
     const result = buildWhereClause([def], filterStates, "and");
     expect(result).toEqual({});
