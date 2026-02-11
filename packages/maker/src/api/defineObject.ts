@@ -40,6 +40,7 @@ import type {
   ObjectTypeDatasourceDefinition_stream,
 } from "./object/ObjectTypeDatasourceDefinition.js";
 import type { ObjectTypeDefinition } from "./object/ObjectTypeDefinition.js";
+import type { ObjectTypeStatus } from "./object/ObjectTypeStatus.js";
 import type { PropertyTypeType } from "./properties/PropertyTypeType.js";
 import { isExotic } from "./properties/PropertyTypeType.js";
 
@@ -113,20 +114,31 @@ export function defineObject(
     derivedDatasources.forEach(ds => validateDerivedDatasource(objectDef, ds));
   }
 
-  // Validate that if object status is experimental, no property can have a status of active
-  if (objectDef.status === "experimental") {
-    const activeProperties: string[] = [];
+  // Validate property statuses match the object status.
+  // An experimental object can only have experimental properties.
+  // A deprecated object can only have deprecated properties.
+  // An example object can only have example properties.
+  // There is no restriction on property statuses of an active object.
+  const objectStatusType = getStatusType(objectDef.status);
+  if (
+    objectStatusType === "experimental" || objectStatusType === "deprecated"
+    || objectStatusType === "example"
+  ) {
+    const mismatchedProperties: string[] = [];
     Object.entries(objectDef.properties ?? {}).forEach(
       ([apiName, property]) => {
-        if (property.status === "active") {
-          activeProperties.push(apiName);
+        if (property.status !== undefined) {
+          const propertyStatusType = getStatusType(property.status);
+          if (propertyStatusType !== objectStatusType) {
+            mismatchedProperties.push(apiName);
+          }
         }
       },
     );
     invariant(
-      activeProperties.length === 0,
-      `When object "${objectDef.apiName}" has experimental status, no properties can have "active" status, but found active properties: ${
-        activeProperties.join(", ")
+      mismatchedProperties.length === 0,
+      `Object "${objectDef.apiName}" has "${objectStatusType}" status, but the following properties have a different status: ${
+        mismatchedProperties.join(", ")
       }`,
     );
   }
@@ -500,4 +512,14 @@ function isPrimitive(type: PropertyTypeType): boolean {
     "string",
     "timestamp",
   ].includes(typeType);
+}
+
+function getStatusType(status: ObjectTypeStatus | undefined): string {
+  if (status === undefined) {
+    return "active";
+  }
+  if (typeof status === "string") {
+    return status;
+  }
+  return status.type;
 }
