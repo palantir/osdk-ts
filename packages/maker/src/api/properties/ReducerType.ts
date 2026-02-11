@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
 export type ReducerType = {
   direction:
     | "ascending" // first (A -> Z) value, least recent date, etc.

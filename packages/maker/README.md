@@ -124,7 +124,7 @@ const addressProperty = defineSharedPropertyType({
       },
       country: "string",
     },
-    //optionally add a main value
+    // optionally add a main value
     mainValue: {
       fields: "street",
       type: "string",
@@ -447,7 +447,7 @@ const customerObject = defineObject({
           zipCode: "string",
           country: "string",
         },
-        //optionally add a main value
+        // optionally add a main value
         mainValue: {
           fields: "street",
           type: "string",
