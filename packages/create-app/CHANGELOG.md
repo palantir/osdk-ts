@@ -1,5 +1,11 @@
 # @osdk/create-app
 
+## 2.8.0-beta.5
+
+### Minor Changes
+
+- 2d6652c: Change sdkVersion default value to be latest compatible template instead of earliest
+
 ## 2.8.0-beta.4
 
 ## 2.8.0-beta.3

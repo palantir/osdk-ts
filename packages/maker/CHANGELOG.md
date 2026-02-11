@@ -1,5 +1,15 @@
 # @osdk/maker
 
+## 0.16.0-beta.3
+
+### Minor Changes
+
+- 8f92197: update code snippet to have interface dependent properties
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.5
+
 ## 0.16.0-beta.2
 
 ### Minor Changes
