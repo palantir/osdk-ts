@@ -23,7 +23,7 @@ export function getFilterKey<Q extends ObjectTypeDefinition>(
 ): string {
   switch (definition.type) {
     case "PROPERTY":
-      return definition.key;
+      return definition.id ?? definition.key;
     case "HAS_LINK":
       return definition.id ?? `hasLink:${definition.linkName}`;
     case "LINKED_PROPERTY":
