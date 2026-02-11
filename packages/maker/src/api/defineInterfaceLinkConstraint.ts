@@ -15,6 +15,7 @@
  */
 
 import invariant from "tiny-invariant";
+import { cloneDefinition } from "./cloneDefinition.js";
 import { namespace, withoutNamespace } from "./defineOntology.js";
 import type { InterfaceType } from "./interface/InterfaceType.js";
 import { combineApiNamespaceIfMissing } from "./namespace/combineApiNamespaceIfMissing.js";
@@ -42,8 +43,9 @@ type One = {
 };
 
 export function defineInterfaceLinkConstraint(
-  linkDef: One | Many,
+  linkDefInput: One | Many,
 ): void {
+  const linkDef = cloneDefinition(linkDefInput);
   const fromLinkMeta = getLinkMeta(linkDef);
 
   invariant(
