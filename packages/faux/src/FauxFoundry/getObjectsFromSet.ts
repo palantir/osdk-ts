@@ -148,9 +148,14 @@ export function getObjectsFromSet(
       const results = getObjectsFromSet(ds, objectSet.objectSet, methodInput);
       return results.map(obj => {
         const originalObj = ds.getObject(obj.__apiName, obj.__primaryKey);
+        if (!originalObj) {
+          throw new Error(
+            `asBaseObjectTypes: could not find original object ${obj.__apiName}:${obj.__primaryKey}`,
+          );
+        }
         return {
           ...obj,
-          $propsToReturn: originalObj ?? obj,
+          $propsToReturn: originalObj,
         };
       });
     }
