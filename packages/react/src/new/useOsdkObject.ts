@@ -88,8 +88,6 @@ export function useOsdkObject<
 
   const mode = isInstanceSignature ? "offline" : undefined;
 
-  // For type signature, pass full definition to preserve type info (object vs interface)
-  // For instance signature, use $objectType string (always the concrete object type)
   const typeOrApiName = isInstanceSignature
     ? (args[0] as Osdk.Instance<Q>).$objectType
     : (args[0] as Q);
@@ -98,7 +96,6 @@ export function useOsdkObject<
     ? (args[0] as Osdk.Instance<Q>).$primaryKey
     : (args[1] as PrimaryKeyType<Q>);
 
-  // Extract apiName string for display/memoization
   const apiNameString = typeof typeOrApiName === "string"
     ? typeOrApiName
     : typeOrApiName.apiName;

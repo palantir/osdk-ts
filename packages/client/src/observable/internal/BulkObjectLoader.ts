@@ -90,6 +90,13 @@ export class BulkObjectLoader {
 
     if (entry.defType === undefined) {
       entry.defType = defType;
+    } else if (entry.defType !== defType) {
+      deferred.reject(
+        new PalantirApiError(
+          `Conflicting defType for ${apiName}: existing=${entry.defType}, new=${defType}`,
+        ),
+      );
+      return deferred.promise;
     }
 
     if (!entry.timer) {
@@ -164,52 +171,37 @@ export class BulkObjectLoader {
   async #loadInterfaceObjects(apiName: string, arr: InternalValue[]) {
     const pks = arr.map(x => x.primaryKey);
 
-    try {
-      // Query interface
-      const interfaceDef = {
-        type: "interface",
-        apiName,
-      } as InterfaceDefinition;
+    const interfaceDef = {
+      type: "interface",
+      apiName,
+    } as InterfaceDefinition;
 
-      const { data } = await this.#client(interfaceDef)
-        .where(
-          { $primaryKey: { $in: pks } } as Parameters<
-            ObjectSet<ObjectTypeDefinition>["where"]
-          >[0],
-        )
-        .fetchPage({ $pageSize: pks.length });
+    const { data } = await this.#client(interfaceDef)
+      .where(
+        { $primaryKey: { $in: pks } } as Parameters<
+          ObjectSet<ObjectTypeDefinition>["where"]
+        >[0],
+      )
+      .fetchPage({ $pageSize: pks.length });
 
-      // Reload as full objects using the EXACT pattern from InterfaceListQuery
-      const reloadedData = await this.#reloadAsFullObjects(
-        data as Osdk.Instance<ObjectTypeDefinition>[],
-      );
+    const reloadedData = await this.#reloadAsFullObjects(
+      data as Osdk.Instance<ObjectTypeDefinition>[],
+    );
 
-      for (const { primaryKey, deferred } of arr) {
-        const object = reloadedData.get(primaryKey);
-        if (object) {
-          deferred.resolve(object);
-        } else {
-          deferred.reject(
-            new PalantirApiError(
-              `Interface ${apiName} object not found: ${primaryKey}`,
-            ),
-          );
-        }
-      }
-    } catch (e) {
-      // Include original error context for debugging
-      const errorMessage = e instanceof Error ? e.message : String(e);
-      for (const { primaryKey, deferred } of arr) {
+    for (const { primaryKey, deferred } of arr) {
+      const object = reloadedData.get(primaryKey);
+      if (object) {
+        deferred.resolve(object);
+      } else {
         deferred.reject(
           new PalantirApiError(
-            `Failed to load interface ${apiName} with pk ${primaryKey}: ${errorMessage}`,
+            `Interface ${apiName} object not found: ${primaryKey}`,
           ),
         );
       }
     }
   }
 
-  // Reload interface instances as full objects - follows InterfaceListQuery.ts:107-158 pattern
   async #reloadAsFullObjects(
     data: Osdk.Instance<ObjectTypeDefinition>[],
   ): Promise<Map<string | number, ObjectHolder>> {
@@ -220,8 +212,6 @@ export class BulkObjectLoader {
 
     await Promise.all(
       Object.entries(groups).map(async ([, objects]) => {
-        // Get metadata from actual object - this is type-safe
-        // The ObjectDefRef contains the full object definition with primaryKeyApiName
         const objectDef = (objects[0] as ObjectHolder)[UnderlyingOsdkObject][
           ObjectDefRef
         ];
@@ -248,7 +238,6 @@ export class BulkObjectLoader {
       }),
     );
 
-    // Validate all objects were found - use invariant for safety
     for (const obj of data) {
       invariant(
         result.has(obj.$primaryKey),
