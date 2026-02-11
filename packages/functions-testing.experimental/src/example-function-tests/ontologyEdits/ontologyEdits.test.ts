@@ -15,6 +15,7 @@
  */
 
 import { Employee, FooInterface } from "@osdk/client.test.ontology";
+import type { Edits } from "@osdk/functions";
 import type {
   AddLink,
   CreateObject,
@@ -40,7 +41,39 @@ describe("ontologyEdits", () => {
 
     const edits = ontologyEdits(mockClient, emp);
 
-    expect(edits).toHaveLength(6);
+    // Option 1: Type Edits as a union of all possible edit types and check using toMatchObject for partial matching
+    type editsType =
+      | Edits.Object<Employee>
+      | Edits.Link<Employee, "peeps">
+      | Edits.Interface<FooInterface>;
+    const expectedEdits: editsType[] = [{
+      type: "createObject",
+      obj: Employee,
+      properties: { employeeId: 1, fullName: "John Doe" },
+    }, {
+      type: "updateObject",
+      obj: { $apiName: "Employee", $primaryKey: 1 },
+      properties: { favoriteRestaurants: ["McDonald's"] },
+    }, {
+      type: "deleteObject",
+      obj: { $apiName: "Employee", $primaryKey: 1 },
+    }, {
+      type: "addLink",
+      apiName: "peeps",
+      source: { $apiName: "Employee", $primaryKey: 1 },
+      target: { $apiName: "Employee", $primaryKey: 1 },
+    }, {
+      type: "removeLink",
+      apiName: "peeps",
+      source: { $apiName: "Employee", $primaryKey: 1 },
+      target: { $apiName: "Employee", $primaryKey: 1 },
+    }, {
+      type: "createObjectForInterface",
+      int: FooInterface,
+      properties: { $objectType: "Employee", fooIdp: "bar" },
+    }];
+    expect(edits).toMatchObject(expectedEdits);
+    // Option 2: Check that each edit in the edits array matches the expected edit using toMatchObject for partial matching
     expect(edits[0]).toEqual({
       type: "createObject",
       obj: Employee,
