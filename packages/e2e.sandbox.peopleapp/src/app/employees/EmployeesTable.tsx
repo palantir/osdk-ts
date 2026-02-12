@@ -32,11 +32,13 @@ const initialColumnDefinitions: Array<
   {
     locator: { type: "property", id: "jobTitle" },
     isVisible: false,
+    columnName: "Job Title",
   },
   // With renderHeader, renderCell, width prop
   {
     locator: { type: "property", id: "firstFullTimeStartDate" },
     width: 300,
+    columnName: "Start Date",
     renderHeader: () => "Start Date",
     renderCell: (object: Osdk.Instance<Employee>) => {
       return (
@@ -70,6 +72,7 @@ const initialColumnDefinitions: Array<
       type: "custom",
       id: "Custom Column",
     },
+    columnName: "Custom Column",
     renderHeader: () => "Custom",
     renderCell: (object: Osdk.Instance<Employee>) => {
       return (
@@ -104,12 +107,11 @@ export function EmployeesTable() {
       const newColumnDefinitions: Array<ColumnDefinition<Employee, RDPs, {}>> =
         [];
 
-      // Add columns in the order specified, only if visible
       columns.forEach(({ columnId, isVisible }) => {
         if (isVisible) {
           const definition = definitionMap.get(columnId);
           if (definition) {
-            newColumnDefinitions.push(definition);
+            newColumnDefinitions.push({ ...definition, isVisible: true });
           }
         }
       });
@@ -122,48 +124,34 @@ export function EmployeesTable() {
 
   const columnOptions = useMemo(() => {
     return initialColumnDefinitions.map((colDef) => {
-      const id = typeof colDef.locator === "object"
-        ? colDef.locator.id
-        : colDef.locator;
+      const id = colDef.locator.id;
       const name = colDef.columnName
         || colDef.locator.id;
       return { id, name };
     });
   }, []);
 
-  // Helper function to get column ID from definition
-  const getColumnId = (colDef: ColumnDefinition<Employee, RDPs, {}>) => {
-    return typeof colDef.locator === "object"
-      ? colDef.locator.id
-      : colDef.locator;
-  };
-
   // Memoized column configuration for the dialog
   const columnDialogConfig = useMemo(() => {
     // Build visibility map
     const visibility: Record<string, boolean> = {};
 
-    // First, mark all current columns as visible
     columnDefinitions.forEach(colDef => {
-      visibility[getColumnId(colDef)] = true;
+      visibility[colDef.locator.id] = colDef.isVisible !== false;
     });
 
-    // Then, mark any columns not in current definitions as hidden
+    // Mark any columns not in current definitions as hidden
     initialColumnDefinitions.forEach(colDef => {
-      const id = getColumnId(colDef);
+      const id = colDef.locator.id;
       if (!(id in visibility)) {
         visibility[id] = false;
       }
     });
 
     // Build column order
-    const visibleIds = new Set(columnDefinitions.map(getColumnId));
-    const columnOrder = [
-      ...columnDefinitions.map(getColumnId),
-      ...initialColumnDefinitions
-        .filter(def => !visibleIds.has(getColumnId(def)))
-        .map(getColumnId),
-    ];
+    const columnOrder = columnDefinitions.filter(colDef =>
+      colDef.isVisible !== false
+    ).map(colDef => colDef.locator.id);
 
     return {
       currentVisibility: visibility,
