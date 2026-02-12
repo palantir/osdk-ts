@@ -18,7 +18,7 @@ import { Button } from "@base-ui/react/button";
 import { DragHandleVertical, SmallCross, Trash } from "@blueprintjs/icons";
 import {
   closestCenter,
-  DndContext,
+  DndContext as BaseDndContext,
   type DragEndEvent,
   KeyboardSensor,
   PointerSensor,
@@ -156,6 +156,8 @@ export function DraggableList<T extends DraggableItem>({
 
   useKeyboardEvents(containerRef);
 
+  // TODO: Revert when @types/react is fixed
+  const DndContext = BaseDndContext as unknown as React.ReactNode;
   return (
     <div
       ref={containerRef}

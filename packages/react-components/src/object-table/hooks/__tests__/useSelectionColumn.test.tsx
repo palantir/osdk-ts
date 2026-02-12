@@ -150,7 +150,9 @@ describe("useSelectionColumn", () => {
       const onToggleAll = vi.fn();
 
       const { result, rerender } = renderHook(
-        ({ selectionMode }) =>
+        (
+          { selectionMode }: { selectionMode: "single" | "multiple" | "none" },
+        ) =>
           useSelectionColumn<TestObject>({
             selectionMode,
             isAllSelected: false,
