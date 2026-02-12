@@ -24,7 +24,7 @@
     }
   },
   "Worker": {
-    "apiName": "Worker", 
+    "apiName": "Worker",
     "type": "interface",
     "displayName": "Worker",
     "description": "A worker interface",

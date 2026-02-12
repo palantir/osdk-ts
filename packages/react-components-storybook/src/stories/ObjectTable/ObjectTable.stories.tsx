@@ -1,6 +1,12 @@
-import type { DerivedProperty, Osdk } from "@osdk/api";
-import { ColumnConfigDialog, ObjectTable } from "@osdk/react-components/experimental";
-import type { ColumnDefinition, ObjectTableProps } from "@osdk/react-components/experimental";
+import type { Osdk } from "@osdk/api";
+import {
+  ColumnConfigDialog,
+  ObjectTable,
+} from "@osdk/react-components/experimental";
+import type {
+  ColumnDefinition,
+  ObjectTableProps,
+} from "@osdk/react-components/experimental";
 import type { Meta, StoryObj } from "@storybook/react";
 import { useCallback, useMemo, useState } from "react";
 import { fauxFoundry } from "../../mocks/fauxFoundry.js";
@@ -19,9 +25,6 @@ const meta: Meta<EmployeeTableProps> = {
     msw: {
       handlers,
     },
-    docs: {
-      autodocs: true,
-    },
     controls: {
       expanded: true,
     },
@@ -39,7 +42,8 @@ const meta: Meta<EmployeeTableProps> = {
       control: false, // Required prop set in stories
     },
     columnDefinitions: {
-      description: "Ordered list of column definitions to show in the table. If not provided, all of the properties of the object type will be shown in default order.",
+      description:
+        "Ordered list of column definitions to show in the table. If not provided, all of the properties of the object type will be shown in default order.",
       control: "object",
     },
     enableFiltering: {
@@ -51,11 +55,13 @@ const meta: Meta<EmployeeTableProps> = {
       },
     },
     filter: {
-      description: "The current where clause to filter the objects in the table. If provided, the filter is controlled.",
+      description:
+        "The current where clause to filter the objects in the table. If provided, the filter is controlled.",
       control: "object",
     },
     onFilterChanged: {
-      description: "Called when the where clause is changed. Required when filter is controlled.",
+      description:
+        "Called when the where clause is changed. Required when filter is controlled.",
       control: false,
       table: {
         category: "Events",
@@ -86,7 +92,8 @@ const meta: Meta<EmployeeTableProps> = {
       },
     },
     enableColumnConfig: {
-      description: "Whether the column configuration dialog for column visibility and ordering is available to the user.",
+      description:
+        "Whether the column configuration dialog for column visibility and ordering is available to the user.",
       control: "boolean",
       defaultValue: true,
       table: {
@@ -94,36 +101,42 @@ const meta: Meta<EmployeeTableProps> = {
       },
     },
     defaultOrderBy: {
-      description: "The default order by clause to sort the objects in the table. If provided without orderBy prop, the sorting is uncontrolled. If both orderBy and defaultOrderBy are provided, orderBy takes precedence.",
+      description:
+        "The default order by clause to sort the objects in the table. If provided without orderBy prop, the sorting is uncontrolled. If both orderBy and defaultOrderBy are provided, orderBy takes precedence.",
       control: "object",
     },
     orderBy: {
-      description: "The current order by clause to sort the objects in the table. If provided, the sorting is controlled. If both orderBy and defaultOrderBy are provided, orderBy takes precedence.",
+      description:
+        "The current order by clause to sort the objects in the table. If provided, the sorting is controlled. If both orderBy and defaultOrderBy are provided, orderBy takes precedence.",
       control: "object",
     },
     onOrderByChanged: {
-      description: "Called when the order by clause is changed. Required when sorting is controlled.",
+      description:
+        "Called when the order by clause is changed. Required when sorting is controlled.",
       control: false,
       table: {
         category: "Events",
       },
     },
     onColumnVisibilityChanged: {
-      description: "Called when the column visibility or ordering changed. If provided, the table will allow the user to show/hide columns.",
+      description:
+        "Called when the column visibility or ordering changed. If provided, the table will allow the user to show/hide columns.",
       control: false,
       table: {
         category: "Events",
       },
     },
     onColumnsPinnedChanged: {
-      description: "Called when the pinned columns change. If provided, the table will allow the user to pin/unpin columns.",
+      description:
+        "Called when the pinned columns change. If provided, the table will allow the user to pin/unpin columns.",
       control: false,
       table: {
         category: "Events",
       },
     },
     onColumnResize: {
-      description: "Called when a column is resized. Parameters: columnId - The ID of the resized column, newWidth - The new width of the column. When newWidth = null, the column size is reset.",
+      description:
+        "Called when a column is resized. Parameters: columnId - The ID of the resized column, newWidth - The new width of the column. When newWidth = null, the column size is reset.",
       control: false,
       table: {
         category: "Events",
@@ -137,7 +150,8 @@ const meta: Meta<EmployeeTableProps> = {
       },
     },
     selectionMode: {
-      description: "Selection mode for the table rows. If multiple, a checkbox will be shown for each row to allow selecting multiple rows as well as a top-level checkbox in the header to select all rows.",
+      description:
+        "Selection mode for the table rows. If multiple, a checkbox will be shown for each row to allow selecting multiple rows as well as a top-level checkbox in the header to select all rows.",
       control: { type: "select" },
       options: ["single", "multiple", "none"],
       defaultValue: "none",
@@ -146,18 +160,21 @@ const meta: Meta<EmployeeTableProps> = {
       },
     },
     selectedRows: {
-      description: "The currently selected rows in the table. If provided, the row selection is controlled.",
+      description:
+        "The currently selected rows in the table. If provided, the row selection is controlled.",
       control: "object",
     },
     onRowSelection: {
-      description: "Called when the row selection changes. Required when row selection is controlled.",
+      description:
+        "Called when the row selection changes. Required when row selection is controlled.",
       control: false,
       table: {
         category: "Events",
       },
     },
     renderCellContextMenu: {
-      description: "If provided, will render this context menu when right clicking on a cell",
+      description:
+        "If provided, will render this context menu when right clicking on a cell",
       control: false,
       table: {
         category: "Advanced",
@@ -220,6 +237,7 @@ const columnDefinitions: ColumnDefinition<Employee, RDPs, {}>[] = [
       );
     },
   },
+  // TODO: Not working yet, need to fix mock
   // {
   //   locator: {
   //     type: "rdp",
@@ -243,7 +261,7 @@ export const Default: Story = {
   },
   render: (args) => (
     <div className="object-table-container" style={{ height: "600px" }}>
-      <ObjectTable {...args} />
+      <ObjectTable objectType={Employee} {...args} />
     </div>
   ),
 };
@@ -255,7 +273,7 @@ export const WithCustomColumnDefinitions: Story = {
   },
   render: (args) => (
     <div className="object-table-container" style={{ height: "600px" }}>
-      <ObjectTable {...args} />
+      <ObjectTable objectType={Employee} {...args} />
     </div>
   ),
 };
@@ -267,7 +285,7 @@ export const SingleSelection: Story = {
   },
   render: (args) => (
     <div className="object-table-container" style={{ height: "600px" }}>
-      <ObjectTable {...args} />
+      <ObjectTable objectType={Employee} {...args} />
     </div>
   ),
 };
@@ -279,7 +297,7 @@ export const MultipleSelection: Story = {
   },
   render: (args) => (
     <div className="object-table-container" style={{ height: "600px" }}>
-      <ObjectTable {...args} />
+      <ObjectTable objectType={Employee} {...args} />
     </div>
   ),
 };
@@ -307,7 +325,7 @@ export const WithContextMenu: Story = {
   },
   render: (args) => (
     <div className="object-table-container" style={{ height: "600px" }}>
-      <ObjectTable {...args} />
+      <ObjectTable objectType={Employee} {...args} />
     </div>
   ),
 };
@@ -322,7 +340,7 @@ export const CustomColumnWidths: Story = {
   },
   render: (args) => (
     <div className="object-table-container" style={{ height: "600px" }}>
-      <ObjectTable {...args} />
+      <ObjectTable objectType={Employee} {...args} />
     </div>
   ),
 };
@@ -337,7 +355,7 @@ export const WithDefaultSorting: Story = {
   },
   render: (args) => (
     <div className="object-table-container" style={{ height: "600px" }}>
-      <ObjectTable {...args} />
+      <ObjectTable objectType={Employee} {...args} />
     </div>
   ),
 };
@@ -349,7 +367,9 @@ export const WithDefaultColumnPinning: Story = {
       {
         locator: { type: "property", id: "fullName" },
         pinned: "left",
-        renderHeader: () => <div style={{ fontWeight: "bold" }}>Employee Name</div>,
+        renderHeader: () => (
+          <div style={{ fontWeight: "bold" }}>Employee Name</div>
+        ),
       },
       {
         locator: { type: "property", id: "emailPrimaryWork" },
@@ -372,7 +392,7 @@ export const WithDefaultColumnPinning: Story = {
   },
   render: (args) => (
     <div className="object-table-container" style={{ height: "600px" }}>
-      <ObjectTable {...args} />
+      <ObjectTable objectType={Employee} {...args} />
     </div>
   ),
 };
@@ -396,7 +416,7 @@ export const WithHiddenColumns: Story = {
   },
   render: (args) => (
     <div className="object-table-container" style={{ height: "600px" }}>
-      <ObjectTable {...args} />
+      <ObjectTable objectType={Employee} {...args} />
     </div>
   ),
 };
@@ -451,7 +471,7 @@ export const WithCustomColumn: Story = {
   },
   render: (args) => (
     <div className="object-table-container" style={{ height: "600px" }}>
-      <ObjectTable {...args} />
+      <ObjectTable objectType={Employee} {...args} />
     </div>
   ),
 };
@@ -465,7 +485,7 @@ export const WithRowClickHandler: Story = {
   },
   render: (args) => (
     <div className="object-table-container" style={{ height: "600px" }}>
-      <ObjectTable {...args} />
+      <ObjectTable objectType={Employee} {...args} />
     </div>
   ),
 };
@@ -581,7 +601,7 @@ export const DisabledFeatures: Story = {
   },
   render: (args) => (
     <div className="object-table-container" style={{ height: "600px" }}>
-      <ObjectTable {...args} />
+      <ObjectTable objectType={Employee} {...args} />
     </div>
   ),
 };
@@ -593,7 +613,7 @@ export const CustomRowHeight: Story = {
   },
   render: (args) => (
     <div className="object-table-container" style={{ height: "600px" }}>
-      <ObjectTable {...args} />
+      <ObjectTable objectType={Employee} {...args} />
     </div>
   ),
 };
@@ -602,7 +622,8 @@ export const WithColumnConfigDialog: Story = {
   parameters: {
     docs: {
       source: {
-        code: `const [isColumnConfigOpen, setIsColumnConfigOpen] = useState(false);
+        code:
+          `const [isColumnConfigOpen, setIsColumnConfigOpen] = useState(false);
 const [columnDefinitions, setColumnDefinitions] = useState(initialColumnDefinitions);
 
 const handleApplyColumnConfig = useCallback(
@@ -646,58 +667,64 @@ return (
     },
   },
   render: () => {
-    const initialColumnDefinitions: Array<ColumnDefinition<Employee, {}, {}>> = [
-      {
-        locator: { type: "property", id: "fullName" },
-        columnName: "Full Name",
-      },
-      {
-        locator: { type: "property", id: "emailPrimaryWork" },
-        columnName: "Email",
-      },
-      {
-        locator: { type: "property", id: "jobTitle" },
-        columnName: "Job Title",
-      },
-      {
-        locator: { type: "property", id: "department" },
-        columnName: "Department",
-      },
-    ];
+    const initialColumnDefinitions: Array<ColumnDefinition<Employee, {}, {}>> =
+      [
+        {
+          locator: { type: "property", id: "fullName" },
+          columnName: "Full Name",
+        },
+        {
+          locator: { type: "property", id: "emailPrimaryWork" },
+          columnName: "Email",
+        },
+        {
+          locator: { type: "property", id: "jobTitle" },
+          columnName: "Job Title",
+        },
+        {
+          locator: { type: "property", id: "department" },
+          columnName: "Department",
+        },
+      ];
 
     const [isColumnConfigOpen, setIsColumnConfigOpen] = useState(false);
     const [columnDefinitions, setColumnDefinitions] = useState<
       Array<ColumnDefinition<Employee, {}, {}>>
     >(initialColumnDefinitions);
 
-    const columnOptions = useMemo(() => 
-      initialColumnDefinitions.map((colDef) => ({
-        id: colDef.locator.id,
-        name: colDef.columnName || colDef.locator.id,
-      })), []
+    const columnOptions = useMemo(
+      () =>
+        initialColumnDefinitions.map((colDef) => ({
+          id: colDef.locator.id,
+          name: colDef.columnName || colDef.locator.id,
+        })),
+      [],
     );
 
     const currentVisibility = useMemo(() => {
       const visibility: Record<string, boolean> = {};
       initialColumnDefinitions.forEach(colDef => {
         visibility[colDef.locator.id] = columnDefinitions.some(
-          def => def.locator.id === colDef.locator.id
+          def => def.locator.id === colDef.locator.id,
         );
       });
       return visibility;
     }, [columnDefinitions]);
 
-    const currentColumnOrder = useMemo(() => 
-      columnDefinitions.map(colDef => colDef.locator.id), 
-      [columnDefinitions]
+    const currentColumnOrder = useMemo(
+      () => columnDefinitions.map(colDef => colDef.locator.id),
+      [columnDefinitions],
     );
 
     const handleApplyColumnConfig = useCallback(
       (columns: Array<{ columnId: string; isVisible: boolean }>) => {
-        const newColumnDefinitions: Array<ColumnDefinition<Employee, {}, {}>> = [];
+        const newColumnDefinitions: Array<ColumnDefinition<Employee, {}, {}>> =
+          [];
         columns.forEach(({ columnId, isVisible }) => {
           if (isVisible) {
-            const colDef = initialColumnDefinitions.find(def => def.locator.id === columnId);
+            const colDef = initialColumnDefinitions.find(def =>
+              def.locator.id === columnId
+            );
             if (colDef) {
               newColumnDefinitions.push(colDef);
             }
@@ -710,7 +737,9 @@ return (
     );
 
     return (
-      <div style={{ height: "600px", display: "flex", flexDirection: "column" }}>
+      <div
+        style={{ height: "600px", display: "flex", flexDirection: "column" }}
+      >
         <div style={{ padding: "8px 0", marginBottom: 8 }}>
           <button
             onClick={() => setIsColumnConfigOpen(true)}
@@ -743,4 +772,3 @@ return (
     );
   },
 };
-

@@ -1,6 +1,6 @@
 import { FauxFoundry } from "@osdk/faux";
-import * as employeeMetadataJson from "./employee_metadata.json";
 import * as employeeDataJsonFile from "./employee_data.json";
+import * as employeeMetadataJson from "./employee_metadata.json";
 import * as interfaceMetadataJson from "./interface_metadata.json";
 
 const baseUrl = "https://test.palantirfoundry.com";
@@ -36,6 +36,7 @@ employeeDataJson.data.forEach((employee: any) => {
 });
 
 // Log registered objects for debugging
+// eslint-disable-next-line no-console
 console.log(
   `FauxFoundry: Registered ${employeeDataJson.data.length} employees`,
   dataStore.getObjectsOfType("Employee").length,

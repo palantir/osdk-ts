@@ -1,0 +1,165 @@
+/* Light theme (default) - No overrides needed, uses default Blueprint/OSDK tokens */
+[data-theme="light"] {
+  /* Use default values from the design system */
+}
+
+/* Dark theme - Complete OSDK color set */
+[data-theme="dark"] {
+  /* OSDK Semantic Background Colors */
+  --osdk-background-primary: #111827;
+  --osdk-background-secondary: #1f2937;
+  --osdk-background-tertiary: #374151;
+  --osdk-background-skeleton-from: #374151;
+  --osdk-background-skeleton-to: oklch(from #6b7280 l c h / 0.4);
+  --osdk-background-backdrop: oklch(from #000000 l c h / 0.8);
+
+  /* OSDK Custom Colors with opacity for dark mode */
+  --osdk-custom-color-gray-1: oklch(from #ffffff l c h / 0.05);
+  --osdk-custom-color-gray-2: oklch(from #ffffff l c h / 0.08);
+  --osdk-custom-color-gray-3: oklch(from #ffffff l c h / 0.1);
+  --osdk-custom-color-gray-4: oklch(from #ffffff l c h / 0.2);
+  --osdk-custom-color-light-gray-1: oklch(from #e5e7eb l c h / 0.6);
+  --osdk-custom-color-light-gray-2: oklch(from #d1d5db l c h / 0.5);
+  --osdk-custom-color-primary-1: oklch(from #3b82f6 l c h / 0.5);
+
+  /* OSDK Button tokens */
+  --osdk-button-primary-color: #ffffff;
+  --osdk-button-primary-bg: #3b82f6;
+  --osdk-button-primary-bg-hover: #2563eb;
+  --osdk-button-primary-bg-active: #1d4ed8;
+  --osdk-button-secondary-color: #f9fafb;
+  --osdk-button-secondary-bg: #374151;
+  --osdk-button-secondary-bg-hover: #4b5563;
+  --osdk-button-secondary-bg-active: #6b7280;
+
+  /* OSDK Checkbox tokens */
+  --osdk-checkbox-border: 1px solid #6b7280;
+  --osdk-checkbox-bg: transparent;
+  --osdk-checkbox-bg-hover: #374151;
+  --osdk-checkbox-bg-active: #4b5563;
+  --osdk-checkbox-bg-checked: #3b82f6;
+  --osdk-checkbox-bg-checked-hover: #2563eb;
+  --osdk-checkbox-bg-checked-active: #1d4ed8;
+  --osdk-checkbox-checked-foreground: #ffffff;
+
+  /* OSDK Dialog tokens */
+  --osdk-dialog-bg: #1f2937;
+  --osdk-dialog-backdrop-bg: oklch(from #000000 l c h / 0.8);
+
+  /* OSDK Table tokens */
+  --osdk-table-border-color: #374151;
+  --osdk-table-header-bg: #1f2937;
+  --osdk-table-header-color: #d1d5db;
+  --osdk-table-header-fontWeight: 600;
+  --osdk-table-header-fontSize: 12px;
+  --osdk-table-row-bg-default: #111827;
+  --osdk-table-row-bg-alternate: #0f172a;
+  --osdk-table-row-bg-hover: color-mix(in srgb, #3b82f6 10%, #111827);
+  --osdk-table-row-bg-active: color-mix(in srgb, #3b82f6 20%, #111827);
+  --osdk-table-row-border-color-hover: #3b82f6;
+  --osdk-table-row-border-color-active: #3b82f6;
+  --osdk-table-cell-color: #f3f4f6;
+  --osdk-table-cell-fontSize: 13px;
+  --osdk-table-skeleton-color-from: oklch(from #6b7280 l c h / 0.4);
+  --osdk-table-skeleton-color-to: oklch(from #4b5563 l c h / 0.4);
+  --osdk-table-skeleton-border-color: oklch(from #374151 l c h / 0.6);
+  --osdk-table-header-menu-bg: oklch(from #ffffff l c h / 0.08);
+  --osdk-table-header-menu-border: 1px solid oklch(from #ffffff l c h / 0.2);
+  --osdk-table-header-menu-color: #9ca3af;
+  --osdk-table-header-menu-color-active: #f3f4f6;
+  --osdk-table-header-menu-bg-hover: oklch(from #ffffff l c h / 0.1);
+  --osdk-table-header-menu-bg-active: oklch(from #ffffff l c h / 0.15);
+  --osdk-table-resizer-color-hover: oklch(from #3b82f6 l c h / 0.5);
+  --osdk-table-resizer-color-active: #3b82f6;
+  --osdk-table-column-config-visible-columns-bg: #1f2937;
+
+  /* OSDK Draggable tokens */
+  --osdk-draggable-item-bg: #111827;
+  --osdk-draggable-item-border: 1px solid #374151;
+  --osdk-draggable-item-border-radius: 4px;
+  --osdk-draggable-item-drag-icon-color: #9ca3af;
+  --osdk-draggable-item-drag-icon-color-hover: #f3f4f6;
+
+  /* OSDK Focus tokens */
+  --osdk-focus-outline: 2px solid #3b82f6;
+  --osdk-focus-visible-outline-offset: 2px;
+
+  /* Background for the app */
+  background-color: #111827;
+  color: #f9fafb;
+}
+
+/* Modern theme - based on e2e.sandbox.peopleapp theme-overrides.css */
+[data-theme="modern"] {
+  /* Blueprint palette tokens from peopleapp */
+  --bp-palette-black: oklch(0.2827 0.019 238.86);
+  --bp-palette-white: oklch(1 0 89.88);
+
+  /* Gray scale: dark-gray (1-5), gray (1-5), light-gray (1-5) */
+  --bp-palette-dark-gray-1: oklch(0.2519 0.0152 244.29);
+  --bp-palette-dark-gray-2: oklch(0.312 0.0154 240.46);
+  --bp-palette-dark-gray-3: oklch(0.404 0.032 243.49);
+  --bp-palette-dark-gray-4: oklch(0.5926 0.0263 240.38);
+  --bp-palette-dark-gray-5: oklch(0.6109 0.0257 244.46);
+  --bp-palette-gray-1: oklch(0.6792 0.0229 243.66);
+  --bp-palette-gray-2: oklch(0.6792 0.0229 243.66);
+  --bp-palette-gray-3: oklch(0.8562 0.0148 244.74);
+  --bp-palette-gray-4: oklch(0.8562 0.0148 244.74);
+  --bp-palette-gray-5: oklch(0.9178 0.0101 227.89);
+  --bp-palette-light-gray-1: oklch(0.9178 0.0101 227.89);
+  --bp-palette-light-gray-2: oklch(0.9587 0.0051 228.82);
+  --bp-palette-light-gray-3: oklch(0.9587 0.0051 228.82);
+  --bp-palette-light-gray-4: oklch(0.9809 0.0025 228.78);
+  --bp-palette-light-gray-5: oklch(0.9809 0.0025 228.78);
+
+  /* Blue scale */
+  --bp-palette-blue-1: oklch(0.3466 0.153 261.33);
+  --bp-palette-blue-2: oklch(0.4996 0.1637 254.86);
+  --bp-palette-blue-3: oklch(0.51 0.1695 254.68);
+  --bp-palette-blue-4: oklch(0.7307 0.1063 236.4);
+  --bp-palette-blue-5: oklch(0.917 0.0248 254.68);
+
+  /* Green scale */
+  --bp-palette-green-1: oklch(0.3681 0.0965 152.16);
+  --bp-palette-green-2: oklch(0.4717 0.1263 151.24);
+  --bp-palette-green-3: oklch(0.4967 0.1412 150.75);
+  --bp-palette-green-4: oklch(0.6507 0.1428 154.17);
+  --bp-palette-green-5: oklch(0.9272 0.0284 150.75);
+
+  /* Orange scale */
+  --bp-palette-orange-1: oklch(0.4409 0.0946 62.22);
+  --bp-palette-orange-2: oklch(0.5558 0.1209 62.16);
+  --bp-palette-orange-3: oklch(0.599 0.1403 61.84);
+  --bp-palette-orange-4: oklch(0.753 0.1439 65.59);
+  --bp-palette-orange-5: oklch(0.9056 0.0455 61.84);
+
+  /* Red scale */
+  --bp-palette-red-1: oklch(0.4614 0.1643 29.2);
+  --bp-palette-red-2: oklch(0.5378 0.1973 29.19);
+  --bp-palette-red-3: oklch(0.5513 0.2089 29.6);
+  --bp-palette-red-4: oklch(0.6553 0.1748 27.42);
+  --bp-palette-red-5: oklch(0.8913 0.0408 29.6);
+
+  /* OSDK tokens overrides from peopleapp */
+  --osdk-checkbox-border: var(--bp-surface-border-width) solid
+    var(--bp-surface-border-color-strong);
+  --osdk-checkbox-bg-hover: var(--bp-palette-gray-5);
+  --osdk-checkbox-bg-active: var(--bp-palette-gray-4);
+  --osdk-checkbox-bg-checked: var(--bp-palette-white);
+  --osdk-checkbox-bg-checked-hover: var(--bp-palette-light-gray-5);
+  --osdk-checkbox-bg-checked-active: var(--osdk-checkbox-bg-active);
+  --osdk-checkbox-checked-foreground: var(--bp-palette-dark-gray-1);
+
+  --osdk-table-header-color: var(--bp-typography-color-default-rest);
+  --osdk-table-row-bg-default: var(--bp-palette-white);
+  --osdk-table-row-bg-alternate: oklch(
+    from var(--bp-palette-light-gray-5) l c h / 0.5
+  );
+  --osdk-table-row-bg-hover: var(--bp-surface-background-color-default-hover);
+  --osdk-table-row-border-color-hover: var(--osdk-table-border-color);
+  --osdk-table-row-bg-active: var(--bp-palette-blue-5);
+
+  /* Background for the app */
+  background-color: var(--bp-palette-white);
+  color: var(--bp-palette-dark-gray-1);
+}

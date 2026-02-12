@@ -14,7 +14,7 @@
     },
     "build": {
       "dependsOn": [
-        "@osdk/react-components#transpileBrowser", 
+        "@osdk/react-components#transpileBrowser",
         "@osdk/react-components-styles#build"
       ],
       "outputs": [

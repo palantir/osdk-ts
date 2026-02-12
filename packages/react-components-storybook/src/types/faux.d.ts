@@ -6,16 +6,16 @@ declare module "@osdk/faux" {
       description: string;
       rid: string;
     });
-    
+
     get handlers(): any[];
     get baseUrl(): string;
     get defaultOntologyRid(): string;
-    
+
     getDefaultOntology(): {
       registerObjectType(objectType: any): void;
       registerInterfaceType(interfaceType: any): void;
     };
-    
+
     getDefaultDataStore(): {
       registerObject(object: any): void;
       getObjectsOfType(type: string): any[];
