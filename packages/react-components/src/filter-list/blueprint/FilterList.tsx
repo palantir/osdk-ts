@@ -128,7 +128,6 @@ export function FilterList<Q extends ObjectTypeDefinition>(
     isAddFilterOpen,
     activeCounts,
     handleSelectFilter,
-    showAddFilterButton,
   ]);
 
   return (
