@@ -27,7 +27,7 @@ interface FilterListContentProps<Q extends ObjectTypeDefinition> {
   objectType: Q;
   objectSet: ObjectSet<Q>;
   filterDefinitions?: Array<FilterDefinitionUnion<Q>>;
-  filterStates: Map<FilterDefinitionUnion<Q>, FilterState>;
+  filterStates: Map<string, FilterState>;
   onFilterStateChanged: (
     definition: FilterDefinitionUnion<Q>,
     state: FilterState,
@@ -70,7 +70,7 @@ export function FilterListContent<Q extends ObjectTypeDefinition>({
     >
       {filterDefinitions.map((definition, index) => {
         const filterKey = getFilterKey(definition);
-        const state = filterStates.get(definition);
+        const state = filterStates.get(filterKey);
 
         return (
           <FilterListItem
