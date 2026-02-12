@@ -62,7 +62,12 @@ function createDefinition(
     | "CONTAINS_TEXT"
     | "TOGGLE"
     | "NUMBER_RANGE"
-    | "DATE_RANGE",
+    | "DATE_RANGE"
+    | "TIMELINE"
+    | "LISTOGRAM"
+    | "TEXT_TAGS"
+    | "SINGLE_DATE"
+    | "MULTI_DATE",
 ): LinkedPropertyFilterDefinition<
   ObjectTypeDefinition,
   string,
@@ -75,6 +80,10 @@ function createDefinition(
     linkedPropertyKey: "name" as PropertyKeys<ObjectTypeDefinition>,
     linkedFilterComponent,
     linkedFilterState: { type: "SELECT", selectedValues: [] },
+    filterState: {
+      type: "LINKED_PROPERTY",
+      linkedFilterState: { type: "SELECT", selectedValues: [] },
+    },
   } as LinkedPropertyFilterDefinition<
     ObjectTypeDefinition,
     string,
