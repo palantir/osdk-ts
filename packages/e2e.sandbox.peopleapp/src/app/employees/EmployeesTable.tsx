@@ -4,14 +4,14 @@ import {
   ColumnConfigDialog,
   ObjectTable,
 } from "@osdk/react-components/experimental";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Employee } from "../../generatedNoCheck2/index.js";
 
 type RDPs = {
   managerName: "string";
 };
 
-const baseColumnDefinitions: Array<
+const initialColumnDefinitions: Array<
   ColumnDefinition<
     Employee,
     RDPs,
@@ -84,89 +84,92 @@ const baseColumnDefinitions: Array<
 
 export function EmployeesTable() {
   const [isColumnConfigOpen, setIsColumnConfigOpen] = useState(false);
-  const [columnStates, setColumnStates] = useState<
-    Array<{ columnId: string; isVisible: boolean }>
-  >([]);
+  const [columnDefinitions, setColumnDefinitions] = useState<
+    Array<ColumnDefinition<Employee, RDPs, {}>>
+  >(initialColumnDefinitions);
 
-  // Initialize column states from column definitions
-  useEffect(() => {
-    const initialStates = baseColumnDefinitions.map((colDef) => {
-      const id = typeof colDef.locator === "object"
-        ? colDef.locator.id
-        : colDef.locator;
-      return {
-        columnId: id,
-        isVisible: colDef.isVisible !== false, // Default to true if not specified
-      };
+  // Build a map for quick lookup once
+  const definitionMap = useMemo(() => {
+    const map = new Map<string, ColumnDefinition<Employee, RDPs, {}>>();
+    initialColumnDefinitions.forEach(colDef => {
+      const id = colDef.locator.id;
+      map.set(id, colDef);
     });
-    setColumnStates(initialStates);
+    return map;
   }, []);
 
   const handleApplyColumnConfig = useCallback(
     (columns: Array<{ columnId: string; isVisible: boolean }>) => {
-      // Update the column states which will trigger a re-render
-      setColumnStates(columns);
-      setIsColumnConfigOpen(false);
-    },
-    [],
-  );
-
-  // Create modified column definitions based on visibility and order state
-  const visibleColumnDefinitions: Array<ColumnDefinition<Employee, RDPs, {}>> =
-    useMemo(() => {
-      // First, create a map of column definitions by ID for easy lookup
-      const columnDefMap = new Map<
-        string,
-        ColumnDefinition<Employee, RDPs, {}>
-      >();
-      baseColumnDefinitions.forEach((colDef) => {
-        const id = typeof colDef.locator === "object"
-          ? colDef.locator.id
-          : colDef.locator;
-        columnDefMap.set(id, colDef);
-      });
-
-      // Then, create the reordered array based on columnStates order
-      const orderedDefinitions: Array<ColumnDefinition<Employee, RDPs, {}>> =
+      // Transform column states back to column definitions
+      const newColumnDefinitions: Array<ColumnDefinition<Employee, RDPs, {}>> =
         [];
 
-      // Add columns in the order specified by columnStates
-      columnStates.forEach((state) => {
-        const colDef = columnDefMap.get(state.columnId);
-        if (colDef) {
-          orderedDefinitions.push({
-            ...colDef,
-            isVisible: state.isVisible,
-          });
-          columnDefMap.delete(state.columnId); // Remove to track what's been added
+      // Add columns in the order specified, only if visible
+      columns.forEach(({ columnId, isVisible }) => {
+        if (isVisible) {
+          const definition = definitionMap.get(columnId);
+          if (definition) {
+            newColumnDefinitions.push(definition);
+          }
         }
       });
 
-      // Add any remaining columns that weren't in columnStates (shouldn't happen, but just in case)
-      columnDefMap.forEach((colDef) => {
-        orderedDefinitions.push({
-          ...colDef,
-          isVisible: colDef.isVisible !== false,
-        });
-      });
-
-      return orderedDefinitions;
-    }, [columnStates]);
+      setColumnDefinitions(newColumnDefinitions);
+      setIsColumnConfigOpen(false);
+    },
+    [definitionMap],
+  );
 
   const columnOptions = useMemo(() => {
-    return baseColumnDefinitions.map((colDef) => {
+    return initialColumnDefinitions.map((colDef) => {
       const id = typeof colDef.locator === "object"
         ? colDef.locator.id
         : colDef.locator;
       const name = colDef.columnName
-        || (colDef.locator.type === "property"
-          ? colDef.locator.id
-          : colDef.locator.type === "rdp"
-          ? colDef.locator.id
-          : colDef.locator.id);
+        || colDef.locator.id;
       return { id, name };
     });
   }, []);
+
+  // Helper function to get column ID from definition
+  const getColumnId = (colDef: ColumnDefinition<Employee, RDPs, {}>) => {
+    return typeof colDef.locator === "object"
+      ? colDef.locator.id
+      : colDef.locator;
+  };
+
+  // Memoized column configuration for the dialog
+  const columnDialogConfig = useMemo(() => {
+    // Build visibility map
+    const visibility: Record<string, boolean> = {};
+
+    // First, mark all current columns as visible
+    columnDefinitions.forEach(colDef => {
+      visibility[getColumnId(colDef)] = true;
+    });
+
+    // Then, mark any columns not in current definitions as hidden
+    initialColumnDefinitions.forEach(colDef => {
+      const id = getColumnId(colDef);
+      if (!(id in visibility)) {
+        visibility[id] = false;
+      }
+    });
+
+    // Build column order
+    const visibleIds = new Set(columnDefinitions.map(getColumnId));
+    const columnOrder = [
+      ...columnDefinitions.map(getColumnId),
+      ...initialColumnDefinitions
+        .filter(def => !visibleIds.has(getColumnId(def)))
+        .map(getColumnId),
+    ];
+
+    return {
+      currentVisibility: visibility,
+      currentColumnOrder: columnOrder,
+    };
+  }, [columnDefinitions]);
 
   const renderCellContextMenu = useCallback(
     (_: Osdk.Instance<Employee>, cellValue: unknown) => {
@@ -213,7 +216,7 @@ export function EmployeesTable() {
       </div>
       <ObjectTable<Employee, RDPs>
         objectType={Employee}
-        columnDefinitions={visibleColumnDefinitions}
+        columnDefinitions={columnDefinitions}
         selectionMode={"multiple"}
         renderCellContextMenu={renderCellContextMenu}
         defaultOrderBy={[{
@@ -227,11 +230,8 @@ export function EmployeesTable() {
         isOpen={isColumnConfigOpen}
         onClose={() => setIsColumnConfigOpen(false)}
         columnOptions={columnOptions}
-        currentVisibility={columnStates.reduce<Record<string, boolean>>((acc, state) => {
-          acc[state.columnId] = state.isVisible;
-          return acc;
-        }, {})}
-        currentColumnOrder={columnStates.map(s => s.columnId)}
+        currentVisibility={columnDialogConfig.currentVisibility}
+        currentColumnOrder={columnDialogConfig.currentColumnOrder}
         onApply={handleApplyColumnConfig}
       />
     </div>
