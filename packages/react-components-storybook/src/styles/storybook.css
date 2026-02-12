@@ -1,10 +1,13 @@
 /* Global styles for Storybook */
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
+    Arial, sans-serif;
   margin: 0;
   padding: 0;
 }
 
+/* Needed for BaseUI popover - creates stacking context */
 .root {
   isolation: isolate;
 }
