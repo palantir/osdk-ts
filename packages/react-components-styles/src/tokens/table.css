@@ -52,7 +52,7 @@
   --osdk-table-header-menu-bg-active: var(--osdk-custom-color-gray-2);
 
   /* Resizer */
-  --osdk-table-resizer-color-hover: var(--osdk-custom-color-primary-hover);
+  --osdk-table-resizer-color-hover: var(--osdk-custom-color-primary-1);
   --osdk-table-resizer-color-active: var(--osdk-intent-primary-rest);
 
   /* Table Skeleton loading */

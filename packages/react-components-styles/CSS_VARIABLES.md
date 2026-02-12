@@ -234,7 +234,7 @@ Styling for dialog/modal components.
 | Variable                          | Default Value                                                                 | Description              |
 | --------------------------------- | ----------------------------------------------------------------------------- | ------------------------ |
 | `--osdk-dialog-padding`           | `calc(var(--osdk-surface-spacing) * 2) calc(var(--osdk-surface-spacing) * 4)` | Base dialog padding      |
-| `--osdk-dialog-backdrop-bg`       | `var(--osdk-custom-color-backdrop)`                                           | Backdrop overlay color   |
+| `--osdk-dialog-backdrop-bg`       | `var(--osdk-background-backdrop)`                                           | Backdrop overlay color   |
 | `--osdk-dialog-header-padding`    | `var(--osdk-dialog-padding)`                                                  | Header section padding   |
 | `--osdk-dialog-title-font-size`   | `var(--osdk-typography-size-body-medium)`                                     | Dialog title font size   |
 | `--osdk-dialog-title-font-weight` | `var(--osdk-typography-weight-bold)`                                          | Dialog title font weight |
