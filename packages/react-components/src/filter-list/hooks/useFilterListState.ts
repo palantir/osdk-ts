@@ -28,7 +28,7 @@ import { filterHasActiveState } from "../utils/filterValues.js";
 import { getFilterKey } from "../utils/getFilterKey.js";
 
 export interface UseFilterListStateResult<Q extends ObjectTypeDefinition> {
-  filterStates: ReadonlyMap<string, FilterState>;
+  filterStates: Map<string, FilterState>;
   setFilterState: (
     filterKey: string,
     state: FilterState,
