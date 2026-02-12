@@ -15,6 +15,10 @@ const config: StorybookConfig = {
   docs: {
     autodocs: "tag",
   },
+  typescript: {
+    check: false,
+    reactDocgen: false, // Disable since we're defining argTypes manually
+  },
   staticDirs: ["../public"],
   async viteFinal(config) {
     // Ensure proper resolution of workspace packages

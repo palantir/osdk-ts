@@ -5,6 +5,10 @@ body {
   padding: 0;
 }
 
+.root {
+  isolation: isolate;
+}
+
 /* Ensure proper rendering of the ObjectTable */
 .story-container {
   padding: 2rem;
