@@ -13,6 +13,7 @@ declare module "@osdk/faux" {
     
     getDefaultOntology(): {
       registerObjectType(objectType: any): void;
+      registerInterfaceType(interfaceType: any): void;
     };
     
     getDefaultDataStore(): {

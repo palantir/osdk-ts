@@ -1,9 +1,10 @@
+import { createClient } from "@osdk/client";
+import { OsdkProvider2 } from "@osdk/react/experimental";
 import type { Preview } from "@storybook/react";
 import { initialize, mswLoader } from "msw-storybook-addon";
-import { OsdkProvider2 } from "@osdk/react/experimental";
-import { mockClient } from "../src/mocks/mockClient.js";
 import { fauxFoundry } from "../src/mocks/fauxFoundry.js";
-import "@osdk/react-components-styles/styles.css";
+import "@osdk/react-components/styles.css";
+import "@osdk/react-components-styles";
 import "../src/styles/storybook.css";
 
 // Initialize MSW with proper options
@@ -14,6 +15,13 @@ initialize({
   },
 });
 
+// Create client after MSW is initialized
+const mockClient = createClient(
+  fauxFoundry.baseUrl,
+  fauxFoundry.defaultOntologyRid,
+  () => Promise.resolve("myAccessToken"),
+);
+
 const preview: Preview = {
   parameters: {
     controls: {
@@ -21,6 +29,9 @@ const preview: Preview = {
         color: /(background|color)$/i,
         date: /Date$/i,
       },
+    },
+    docs: {
+      codePanel: true,
     },
     // Register FauxFoundry handlers globally
     msw: {
