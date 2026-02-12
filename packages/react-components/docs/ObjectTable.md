@@ -568,6 +568,135 @@ function EmployeesTable() {
 }
 ```
 
+### Example 13: Custom Column Configuration Dialog
+
+Use the `ColumnConfigDialog` component to create a custom column configuration experience:
+
+```typescript
+import {
+  ColumnConfigDialog,
+  type ColumnDefinition,
+  ObjectTable,
+} from "@osdk/react-components/experimental";
+import { Employee } from "@YourApp/sdk";
+import { useCallback, useMemo, useState } from "react";
+
+function EmployeesTable() {
+  const initialColumnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
+    {
+      locator: { type: "property", id: "fullName" },
+      columnName: "Full Name",
+    },
+    {
+      locator: { type: "property", id: "emailPrimaryWork" },
+      columnName: "Email",
+    },
+    {
+      locator: { type: "property", id: "jobTitle" },
+      columnName: "Job Title",
+    },
+    {
+      locator: { type: "property", id: "department" },
+      columnName: "Department",
+    },
+    {
+      locator: { type: "property", id: "businessTitle" },
+      columnName: "Business Title",
+      isVisible: false, // Hidden by default
+    },
+  ];
+
+  const [isColumnConfigOpen, setIsColumnConfigOpen] = useState(false);
+  const [columnDefinitions, setColumnDefinitions] = useState(
+    initialColumnDefinitions,
+  );
+
+  // Build column options for the dialog
+  const columnOptions = useMemo(
+    () =>
+      initialColumnDefinitions.map((colDef) => ({
+        id: colDef.locator.id,
+        name: colDef.columnName || colDef.locator.id,
+      })),
+    [],
+  );
+
+  // Track current visibility state
+  const currentVisibility = useMemo(() => {
+    const visibility: Record<string, boolean> = {};
+    initialColumnDefinitions.forEach((colDef) => {
+      visibility[colDef.locator.id] = columnDefinitions.some(
+        (def) => def.locator.id === colDef.locator.id,
+      );
+    });
+    return visibility;
+  }, [columnDefinitions]);
+
+  // Track current column order
+  const currentColumnOrder = useMemo(
+    () => columnDefinitions.map((colDef) => colDef.locator.id),
+    [columnDefinitions],
+  );
+
+  const handleApplyColumnConfig = useCallback(
+    (columns: Array<{ columnId: string; isVisible: boolean }>) => {
+      const newColumnDefinitions: Array<ColumnDefinition<typeof Employee>> = [];
+
+      // Apply the new visibility and order
+      columns.forEach(({ columnId, isVisible }) => {
+        if (isVisible) {
+          const colDef = initialColumnDefinitions.find(
+            (def) => def.locator.id === columnId,
+          );
+          if (colDef) {
+            newColumnDefinitions.push(colDef);
+          }
+        }
+      });
+
+      setColumnDefinitions(newColumnDefinitions);
+      setIsColumnConfigOpen(false);
+    },
+    [],
+  );
+
+  return (
+    <>
+      <div style={{ marginBottom: "16px" }}>
+        <button
+          onClick={() => setIsColumnConfigOpen(true)}
+        >
+          Configure Columns
+        </button>
+      </div>
+
+      <ObjectTable
+        objectType={Employee}
+        columnDefinitions={columnDefinitions}
+        enableColumnConfig={false} // Disable built-in config since we're using custom
+      />
+
+      <ColumnConfigDialog
+        isOpen={isColumnConfigOpen}
+        onClose={() => setIsColumnConfigOpen(false)}
+        columnOptions={columnOptions}
+        currentVisibility={currentVisibility}
+        currentColumnOrder={currentColumnOrder}
+        onApply={handleApplyColumnConfig}
+      />
+    </>
+  );
+}
+```
+
+This example demonstrates:
+
+- Using the `ColumnConfigDialog` component for custom column management
+- Tracking column visibility and order in component state
+- Providing a custom button to open the dialog
+- Disabling the built-in column configuration to avoid conflicts
+- Managing hidden columns that can be toggled visible by users
+
 ### Column Pinning
 
 Pin columns to the left or right side of the table:
