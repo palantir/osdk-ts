@@ -69,12 +69,12 @@ interface EmployeesWithFilterListProps {
 
 const INITIAL_FILTER_DEFINITIONS: FilterDefinitionUnion<Employee>[] = [
   {
-    type: "property",
+    type: "PROPERTY",
     id: "department",
     key: "department",
     label: "Department",
     filterComponent: "CHECKBOX_LIST",
-    filterState: { type: "CHECKBOX_LIST", selectedValues: [] },
+    filterState: { type: "SELECT", selectedValues: [] },
   } as FilterDefinitionUnion<Employee>,
 ];
 
@@ -126,16 +126,16 @@ export function EmployeesWithFilterList(props: EmployeesWithFilterListProps) {
   const handleFilterTemplateSelected = useCallback(
     (template: FilterTemplate) => {
       const newFilter: FilterDefinitionUnion<Employee> = {
-        type: "property",
+        type: "PROPERTY",
         id: template.id,
         key: template.key as keyof Employee.Props,
         label: template.label,
         filterComponent: template.filterComponent,
         filterState: template.filterComponent === "CHECKBOX_LIST"
-          ? { type: "CHECKBOX_LIST", selectedValues: [] }
+          ? { type: "SELECT", selectedValues: [] }
           : template.filterComponent === "CONTAINS_TEXT"
           ? { type: "CONTAINS_TEXT", value: undefined }
-          : { type: "CHECKBOX_LIST", selectedValues: [] },
+          : { type: "SELECT", selectedValues: [] },
       } as FilterDefinitionUnion<Employee>;
 
       setFilterDefinitions((prev) => [...prev, newFilter]);
