@@ -9,12 +9,7 @@ function getMetaTagContent(tagName: string): string {
     throw new Error(`Meta tag ${tagName} not found or empty`);
   }
   if (value.match(/%.+%/)) {
-    throw new Error(
-      `Meta tag ${tagName} contains placeholder value. Please add ${value.replace(
-        /%/g,
-        ""
-      )} to your .env files`
-    );
+    throw new Error(`Meta tag ${tagName} contains placeholder value. Please add ${value.replace(/%/g, "")} to your .env files`);
   }
   return value;
 }
@@ -23,7 +18,6 @@ const foundryUrl = getMetaTagContent("osdk-foundryUrl");
 const clientId = getMetaTagContent("osdk-clientId");
 const redirectUrl = getMetaTagContent("osdk-redirectUrl");
 const ontologyRid = getMetaTagContent("osdk-ontologyRid");
-
 const scopes = [
   "api:ontologies-read",
   "api:ontologies-write",
@@ -33,12 +27,16 @@ export const auth: PublicOauthClient = createPublicOauthClient(
   clientId,
   foundryUrl,
   redirectUrl,
-  { scopes }
+  { scopes },
 );
 
 /**
- * Initialize the client to interact with the Ontology and Platform SDKs
+ * Initialize the client to interact with the Ontology SDK
  */
-export const client: Client = createClient(foundryUrl, ontologyRid, auth);
+const client: Client = createClient(
+  foundryUrl,
+  ontologyRid,
+  auth,
+);
 
 export default client;

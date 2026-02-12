@@ -1,4 +1,4 @@
-import foundryWidgetPlugin from "@osdk/widget.vite-plugin";
+import foundryWidgetPlugin from "@osdk/widget.vite-plugin.unstable";
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 
