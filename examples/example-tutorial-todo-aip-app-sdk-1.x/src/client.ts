@@ -8,12 +8,7 @@ function getMetaTagContent(tagName: string): string {
     throw new Error(`Meta tag ${tagName} not found or empty`);
   }
   if (value.match(/%.+%/)) {
-    throw new Error(
-      `Meta tag ${tagName} contains placeholder value. Please add ${value.replace(
-        /%/g,
-        ""
-      )} to your .env files`
-    );
+    throw new Error(`Meta tag ${tagName} contains placeholder value. Please add ${value.replace(/%/g, "")} to your .env files`);
   }
   return value;
 }
@@ -21,14 +16,13 @@ function getMetaTagContent(tagName: string): string {
 const url = getMetaTagContent("osdk-foundryUrl");
 const clientId = getMetaTagContent("osdk-clientId");
 const redirectUrl = getMetaTagContent("osdk-redirectUrl");
-
 const scopes = [
   "api:ontologies-read",
   "api:ontologies-write",
 ];
 
 /**
- * Initialize the client to interact with the Ontology and Platform SDKs
+ * Initialize the client to interact with the Ontology SDK
  */
 const client = new FoundryClient({
   url,
