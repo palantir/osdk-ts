@@ -16,6 +16,7 @@
 
 import { convertMappingValue } from "../conversion/toMarketplace/convertMappingValue.js";
 import { type ActionType } from "./action/ActionType.js";
+import { cloneDefinition } from "./cloneDefinition.js";
 import type { ActionTypeUserDefinition } from "./defineAction.js";
 import {
   convertValidationRule,
@@ -30,8 +31,9 @@ import {
 } from "./defineAction.js";
 
 export function defineModifyObjectAction(
-  def: ActionTypeUserDefinition,
+  defInput: ActionTypeUserDefinition,
 ): ActionType {
+  const def = cloneDefinition(defInput);
   validateActionParameters(
     def,
     Object.keys(def.objectType.properties ?? {}),

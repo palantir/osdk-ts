@@ -1,7 +1,9 @@
+blueprintjs
 Cantarell
 Neue
 OKLCH
 oklch
+Resizer
 Segoe
 vermillion
 WCAG

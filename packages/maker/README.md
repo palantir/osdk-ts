@@ -97,6 +97,10 @@ const tagsProperty = defineSharedPropertyType({
   array: true,
   displayName: "Tags",
   description: "List of tags",
+  // optionally add a reducer
+  reducers: [{
+    direction: "descending",
+  }],
 });
 ```
 
@@ -119,6 +123,11 @@ const addressProperty = defineSharedPropertyType({
         },
       },
       country: "string",
+    },
+    // optionally add a main value
+    mainValue: {
+      fields: "street",
+      type: "string",
     },
   },
   displayName: "Address",
@@ -438,6 +447,11 @@ const customerObject = defineObject({
           zipCode: "string",
           country: "string",
         },
+        // optionally add a main value
+        mainValue: {
+          fields: "street",
+          type: "string",
+        },
       },
       displayName: "Address",
     },
@@ -463,6 +477,55 @@ const eventObject = defineObject({
   datasources: [{
     type: "stream",
     retentionPeriod: "P90D", // 90 days retention (ISO 8601 duration format)
+  }],
+});
+```
+
+### Object with Property Security Groups
+
+```typescript
+const object = defineObject({
+  apiName: "person",
+  displayName: "Person",
+  pluralDisplayName: "Persons",
+  titlePropertyApiName: "name",
+  primaryKeyPropertyApiName: "name",
+  properties: {
+    "name": { type: "string", displayName: "Name" },
+    "protectedProperty": { type: "string", displayName: "Event Name" },
+    "markingProperty": {
+      type: {
+        type: "marking",
+        markingType: "MANDATORY",
+        markingInputGroupName: "myMarking",
+      },
+    },
+  },
+  datasources: [{
+    type: "dataset",
+    // you can optionally define an objectSecurityPolicy here as well
+    propertySecurityGroups: [
+      {
+        name: "myPsg",
+        properties: ["protectedProperty"],
+        granularPolicy: {
+          type: "and",
+          conditions: [
+            {
+              type: "markingProperty",
+              property: "markingProperty",
+            },
+            {
+              type: "group",
+              name: "myInputGroup",
+            },
+          ],
+        },
+        additionalMandatoryMarkings: {
+          "myCbacMarking": "CBAC",
+        },
+      },
+    ],
   }],
 });
 ```

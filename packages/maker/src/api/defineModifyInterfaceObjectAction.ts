@@ -19,6 +19,7 @@ import {
   convertMappingValue,
 } from "../conversion/toMarketplace/convertMappingValue.js";
 import { type ActionType } from "./action/ActionType.js";
+import { cloneDefinition } from "./cloneDefinition.js";
 import type { InterfaceActionTypeUserDefinition } from "./defineAction.js";
 import {
   convertValidationRule,
@@ -40,8 +41,9 @@ import {
 } from "./interface/InterfacePropertyType.js";
 
 export function defineModifyInterfaceObjectAction(
-  def: InterfaceActionTypeUserDefinition,
+  defInput: InterfaceActionTypeUserDefinition,
 ): ActionType {
+  const def = cloneDefinition(defInput);
   const allProperties = getFlattenedInterfaceProperties(def.interfaceType);
   validateActionParameters(
     def,

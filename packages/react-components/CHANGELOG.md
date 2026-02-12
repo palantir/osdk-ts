@@ -1,5 +1,58 @@
 # @osdk/react-components
 
+## 0.2.0-beta.2
+
+### Minor Changes
+
+- 5ad3ba1: Fix conflicting dependencies and add docs
+
+### Patch Changes
+
+- Updated dependencies [26cec61]
+- Updated dependencies [0d174a2]
+  - @osdk/client@2.8.0-beta.3
+  - @osdk/react@0.10.0-beta.2
+  - @osdk/api@2.8.0-beta.3
+
+## 0.1.0-beta.6
+
+### Minor Changes
+
+- cac3e9a: Add ActionFormApi
+
+### Patch Changes
+
+- Updated dependencies [db28747]
+  - @osdk/react@0.9.0-beta.10
+
+## 0.1.0-beta.5
+
+### Minor Changes
+
+- 30617fa: Support sorting and column pinning. Export BaseTable
+
+### Patch Changes
+
+- Updated dependencies [43d342e]
+- Updated dependencies [24730c7]
+- Updated dependencies [ecd18e2]
+  - @osdk/react@0.9.0-beta.9
+  - @osdk/client@2.7.0-beta.14
+  - @osdk/api@2.7.0-beta.14
+
+## 0.1.0-beta.4
+
+### Minor Changes
+
+- 476604f: Apply table styling
+
+### Patch Changes
+
+- Updated dependencies [fb83808]
+  - @osdk/client@2.7.0-beta.13
+  - @osdk/api@2.7.0-beta.13
+  - @osdk/react@0.9.0-beta.8
+
 ## 0.1.0-beta.3
 
 ### Minor Changes

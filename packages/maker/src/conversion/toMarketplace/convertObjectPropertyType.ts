@@ -22,9 +22,11 @@ import {
   defaultTypeClasses,
   getPropertyTypeName,
   hasRenderHints,
+  shouldBeIndexedForSearch,
   shouldNotHaveRenderHints,
 } from "../../api/propertyConversionUtils.js";
 import { convertNullabilityToDataConstraint } from "./convertNullabilityToDataConstraint.js";
+import { convertReducers } from "./convertReducers.js";
 import { convertValueType } from "./convertValueType.js";
 import { convertValueTypeDataConstraints } from "./convertValueTypeDataConstraints.js";
 import { propertyTypeTypeToOntologyIrType } from "./propertyTypeTypeToOntologyIrType.js";
@@ -48,18 +50,28 @@ export function convertObjectPropertyType(
       description: property.description,
       visibility: property.visibility ?? "NORMAL",
     },
-    indexedForSearch: property.indexedForSearch ?? true,
+    indexedForSearch: property.indexedForSearch
+      ?? shouldBeIndexedForSearch(property.type),
     ruleSetBinding: undefined,
     baseFormatter: property.baseFormatter,
     type: property.array
       ? {
         type: "array" as const,
         array: {
-          subtype: propertyTypeTypeToOntologyIrType(property.type),
-          reducers: [],
+          subtype: propertyTypeTypeToOntologyIrType(
+            property.type,
+            property.apiName,
+            property.sharedPropertyType,
+          ),
+          reducers: convertReducers(
+            property.type,
+            property.apiName,
+            property.reducers ?? [],
+            property.sharedPropertyType,
+          ),
         },
       }
-      : propertyTypeTypeToOntologyIrType(property.type),
+      : propertyTypeTypeToOntologyIrType(property.type, property.apiName),
     typeClasses: property.typeClasses
       ?? (shouldNotHaveRenderHints(property.type) ? [] : defaultTypeClasses),
     status: convertObjectStatus(property.status),

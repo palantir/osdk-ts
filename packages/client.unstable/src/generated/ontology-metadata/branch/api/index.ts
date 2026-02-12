@@ -152,6 +152,7 @@ export type {
   ObjectTypePropertyIncompatibleDecimalColumnTypeError,
   ObjectTypesHaveNoDatasourcesError,
   ObjectTypesHaveTooManyDatasourcesError,
+  ObjectTypeWithStreamDatasourceCannotHaveMaterializationsError,
   ObjectTypeWithUnmappedTitlePropertyError,
   OntologyBranch,
   OntologyBranchAttribution,

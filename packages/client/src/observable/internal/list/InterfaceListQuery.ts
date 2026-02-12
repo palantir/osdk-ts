@@ -19,11 +19,10 @@ import groupBy from "object.groupby";
 import invariant from "tiny-invariant";
 import type { Client } from "../../../Client.js";
 import type { InterfaceHolder } from "../../../object/convertWireToOsdkObjects/InterfaceHolder.js";
-import {
-  ObjectDefRef,
-  UnderlyingOsdkObject,
-} from "../../../object/convertWireToOsdkObjects/InternalSymbols.js";
+import { ObjectDefRef } from "../../../object/convertWireToOsdkObjects/InternalSymbols.js";
 import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
+import type { ListPayload } from "../../ListPayload.js";
+import type { CollectionConnectableParams } from "../base-list/BaseCollectionQuery.js";
 import type { Changes } from "../Changes.js";
 import type { Rdp } from "../RdpCanonicalizer.js";
 import type { SimpleWhereClause } from "../SimpleWhereClause.js";
@@ -72,6 +71,23 @@ export class InterfaceListQuery extends ListQuery {
     return reloadDataAsFullObjects(this.store.client, data);
   }
 
+  protected createPayload(
+    params: CollectionConnectableParams,
+  ): ListPayload {
+    const resolvedList = params.resolvedData.map((obj: ObjectHolder) =>
+      obj.$as(this.apiName)
+    );
+
+    return {
+      resolvedList,
+      isOptimistic: params.isOptimistic,
+      fetchMore: this.fetchMore,
+      hasMore: this.nextPageToken != null,
+      status: params.status,
+      lastUpdated: params.lastUpdated,
+    };
+  }
+
   protected extractRelevantObjects(
     changes: Changes,
   ): ExtractRelevantObjectsResult {
@@ -108,6 +124,10 @@ async function reloadDataAsFullObjects(
   client: Client,
   data: Osdk.Instance<any>[],
 ) {
+  if (data.length === 0) {
+    return data;
+  }
+
   const groups = groupBy(data, (x) => x.$objectType);
   const objectTypeToPrimaryKeyToObject = Object.fromEntries(
     await Promise.all(
@@ -119,12 +139,11 @@ async function reloadDataAsFullObjects(
           ]
         >
       >(async ([apiName, objects]) => {
-        // to keep InternalSimpleOsdkInstance simple, we make both the `ObjectDefRef` and
-        // the `InterfaceDefRef` optional but we know that the right one is on there
-        // thus we can `!`
-        const objectDef = (objects[0] as ObjectHolder)[UnderlyingOsdkObject][
-          ObjectDefRef
-        ]!;
+        // Interface query results don't have ObjectDefRef, so we fetch metadata to get primaryKeyApiName
+        const objectDef = await client.fetchMetadata({
+          type: "object",
+          apiName,
+        });
         const where: SimpleWhereClause = {
           [objectDef.primaryKeyApiName]: {
             $in: objects.map(x => x.$primaryKey),
@@ -135,7 +154,7 @@ async function reloadDataAsFullObjects(
           objectDef as ObjectTypeDefinition,
         ).where(
           where as Parameters<ObjectSet<ObjectTypeDefinition>["where"]>[0],
-        ).fetchPage();
+        ).fetchPage({ $includeRid: true });
         return [
           apiName,
           Object.fromEntries(result.data.map(
@@ -146,13 +165,13 @@ async function reloadDataAsFullObjects(
     ),
   );
 
-  data = data.map((obj) => {
+  return data.map((obj) => {
+    const fullObject =
+      objectTypeToPrimaryKeyToObject[obj.$objectType][obj.$primaryKey];
     invariant(
-      objectTypeToPrimaryKeyToObject[obj.$objectType][obj.$primaryKey],
+      fullObject,
       `Could not find object ${obj.$objectType} ${obj.$primaryKey}`,
     );
-    return objectTypeToPrimaryKeyToObject[obj.$objectType][obj.$primaryKey];
+    return fullObject;
   });
-
-  return data;
 }

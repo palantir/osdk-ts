@@ -1,0 +1,54 @@
+# Check for changesets on non-main branches
+current_branch="$(git branch --show-current 2>/dev/null)"
+
+if [ "$current_branch" != "main" ] && [ -n "$current_branch" ]; then
+  changeset_files="$(git diff origin/main --diff-filter=A --name-only -- .changeset/ 2>/dev/null | grep '\.md$' | grep -v 'README\.md' | grep -v 'simulatedRelease' || true)"
+
+  if [ -z "$changeset_files" ]; then
+    echo ""
+    echo "No changeset detected on branch '$current_branch'"
+    echo "Run 'pnpm changeset' to create one."
+    echo ""
+    printf "Push anyway? [y/N] "
+    read -r answer < /dev/tty
+    case "$answer" in
+      [yY]|[yY][eE][sS]) ;;
+      *)
+        echo "Push aborted."
+        exit 1
+        ;;
+    esac
+  fi
+fi
+
+# Run cspell check on changed files before pushing
+REMOTE_REF=$(git merge-base HEAD @{upstream} 2>/dev/null || true)
+
+if [ -z "$REMOTE_REF" ]; then
+  REMOTE_REF=$(git merge-base HEAD main 2>/dev/null || true)
+fi
+
+CSPELL_EXIT=0
+if [ -z "$REMOTE_REF" ]; then
+  echo "Could not determine base ref, running full cspell check..."
+  pnpm cspell:all
+  CSPELL_EXIT=$?
+else
+  FILECOUNT=$(git diff --name-only --diff-filter=ACMR "$REMOTE_REF" HEAD | wc -l)
+  if [ "$FILECOUNT" -eq 0 ]; then
+    echo "No changed files to spellcheck."
+    exit 0
+  fi
+  echo "Running cspell on changed files..."
+  git diff --name-only --diff-filter=ACMR -z "$REMOTE_REF" HEAD | xargs -0 pnpm exec cspell
+  CSPELL_EXIT=$?
+fi
+
+if [ "$CSPELL_EXIT" -ne 0 ]; then
+  echo ""
+  echo "cspell found spelling errors. Either:"
+  echo "  1. Fix the typo"
+  echo "  2. Add the word to a dictionary file in packages/monorepo.cspell/"
+  echo "  3. Add a cspell:ignore comment above the line"
+  exit 1
+fi

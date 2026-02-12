@@ -860,6 +860,11 @@ export interface CompassFoldersUsedInCbacEnvironment {
  */
 export interface CompassFoldersUsedInDefaultOntology {
 }
+/**
+ * An updated or created entity type is referencing Shared Property Types that do not exist.
+ */
+export interface CreatedOrUpdatedEntityTypeReferencingNonExistentSharedPropertyTypes {
+}
 export interface EasedPipelineBuilderError {
 }
 /**
@@ -1289,6 +1294,12 @@ export interface ErrorType_interfacePropertyTypeApiNameConflict {
   interfacePropertyTypeApiNameConflict: InterfacePropertyTypeApiNameConflict;
 }
 
+export interface ErrorType_interfacePropertyTypeApiNameIgnoringNamespaceConflict {
+  type: "interfacePropertyTypeApiNameIgnoringNamespaceConflict";
+  interfacePropertyTypeApiNameIgnoringNamespaceConflict:
+    InterfacePropertyTypeApiNameIgnoringNamespaceConflict;
+}
+
 export interface ErrorType_interfaceTypeImplementedTooOften {
   type: "interfaceTypeImplementedTooOften";
   interfaceTypeImplementedTooOften: InterfaceTypeImplementedTooOften;
@@ -1568,6 +1579,18 @@ export interface ErrorType_objectTypePropertySecurityGroupsNotSupportedWithMater
   type: "objectTypePropertySecurityGroupsNotSupportedWithMaterializations";
   objectTypePropertySecurityGroupsNotSupportedWithMaterializations:
     ObjectTypePropertySecurityGroupsNotSupportedWithMaterializations;
+}
+
+export interface ErrorType_objectTypePropertySecurityGroupsNotSupportedWithRvMaterializations {
+  type: "objectTypePropertySecurityGroupsNotSupportedWithRvMaterializations";
+  objectTypePropertySecurityGroupsNotSupportedWithRvMaterializations:
+    ObjectTypePropertySecurityGroupsNotSupportedWithRvMaterializations;
+}
+
+export interface ErrorType_objectTypeWithStreamDatasourceCannotHaveMaterializations {
+  type: "objectTypeWithStreamDatasourceCannotHaveMaterializations";
+  objectTypeWithStreamDatasourceCannotHaveMaterializations:
+    ObjectTypeWithStreamDatasourceCannotHaveMaterializations;
 }
 
 export interface ErrorType_editsOnlyObjectTypeMustHavePropertySecurityGroups {
@@ -2791,6 +2814,61 @@ export interface ErrorType_objectTypeDeletedDatasourceMissingSchemaMigration {
     ObjectTypeDeletedDatasourceMissingSchemaMigration;
 }
 
+export interface ErrorType_objectTypeSchemaMigrationSourceSchemaVersionContainsMultipleTransitions {
+  type:
+    "objectTypeSchemaMigrationSourceSchemaVersionContainsMultipleTransitions";
+  objectTypeSchemaMigrationSourceSchemaVersionContainsMultipleTransitions:
+    ObjectTypeSchemaMigrationSourceSchemaVersionContainsMultipleTransitions;
+}
+
+export interface ErrorType_objectTypeContainsTooManySchemaMigrations {
+  type: "objectTypeContainsTooManySchemaMigrations";
+  objectTypeContainsTooManySchemaMigrations:
+    ObjectTypeContainsTooManySchemaMigrations;
+}
+
+export interface ErrorType_objectTypeReferencedBySchemaMigrationDoesNotExist {
+  type: "objectTypeReferencedBySchemaMigrationDoesNotExist";
+  objectTypeReferencedBySchemaMigrationDoesNotExist:
+    ObjectTypeReferencedBySchemaMigrationDoesNotExist;
+}
+
+export interface ErrorType_objectTypeSchemaMigrationSchemaVersionNewerThanLatest {
+  type: "objectTypeSchemaMigrationSchemaVersionNewerThanLatest";
+  objectTypeSchemaMigrationSchemaVersionNewerThanLatest:
+    ObjectTypeSchemaMigrationSchemaVersionNewerThanLatest;
+}
+
+export interface ErrorType_objectTypeSchemaMigrationSchemaVersionLessThanOne {
+  type: "objectTypeSchemaMigrationSchemaVersionLessThanOne";
+  objectTypeSchemaMigrationSchemaVersionLessThanOne:
+    ObjectTypeSchemaMigrationSchemaVersionLessThanOne;
+}
+
+export interface ErrorType_objectTypeSchemaMigrationSourceSchemaVersionNewerOrEqualToTarget {
+  type: "objectTypeSchemaMigrationSourceSchemaVersionNewerOrEqualToTarget";
+  objectTypeSchemaMigrationSourceSchemaVersionNewerOrEqualToTarget:
+    ObjectTypeSchemaMigrationSourceSchemaVersionNewerOrEqualToTarget;
+}
+
+export interface ErrorType_objectTypeSchemaMigrationModifiesPastTransitionsOnBranch {
+  type: "objectTypeSchemaMigrationModifiesPastTransitionsOnBranch";
+  objectTypeSchemaMigrationModifiesPastTransitionsOnBranch:
+    ObjectTypeSchemaMigrationModifiesPastTransitionsOnBranch;
+}
+
+export interface ErrorType_objectTypeSchemaMigrationDeletesTransitionsOnBranch {
+  type: "objectTypeSchemaMigrationDeletesTransitionsOnBranch";
+  objectTypeSchemaMigrationDeletesTransitionsOnBranch:
+    ObjectTypeSchemaMigrationDeletesTransitionsOnBranch;
+}
+
+export interface ErrorType_objectTypeSchemaMigrationContainsDuplicateSchemaMigrationRids {
+  type: "objectTypeSchemaMigrationContainsDuplicateSchemaMigrationRids";
+  objectTypeSchemaMigrationContainsDuplicateSchemaMigrationRids:
+    ObjectTypeSchemaMigrationContainsDuplicateSchemaMigrationRids;
+}
+
 export interface ErrorType_objectTypePropertySecurityGroupReferencesNonExistentProperty {
   type: "objectTypePropertySecurityGroupReferencesNonExistentProperty";
   objectTypePropertySecurityGroupReferencesNonExistentProperty:
@@ -3011,6 +3089,12 @@ export interface ErrorType_sharedPropertyTypeToDeleteIsReferencedByExistingTypes
   type: "sharedPropertyTypeToDeleteIsReferencedByExistingTypes";
   sharedPropertyTypeToDeleteIsReferencedByExistingTypes:
     SharedPropertyTypeToDeleteIsReferencedByExistingTypes;
+}
+
+export interface ErrorType_createdOrUpdatedEntityTypeReferencingNonExistentSharedPropertyTypes {
+  type: "createdOrUpdatedEntityTypeReferencingNonExistentSharedPropertyTypes";
+  createdOrUpdatedEntityTypeReferencingNonExistentSharedPropertyTypes:
+    CreatedOrUpdatedEntityTypeReferencingNonExistentSharedPropertyTypes;
 }
 
 export interface ErrorType_sharedPropertyTypeMediaReferencePropertyShouldNotHaveRenderHints {
@@ -4193,6 +4277,7 @@ export type ErrorType =
   | ErrorType_interfaceTypeContainsTooManyProperties
   | ErrorType_interfaceLinkTypeApiNameConflict
   | ErrorType_interfacePropertyTypeApiNameConflict
+  | ErrorType_interfacePropertyTypeApiNameIgnoringNamespaceConflict
   | ErrorType_interfaceTypeImplementedTooOften
   | ErrorType_interfaceTypeCountExceeded
   | ErrorType_interfaceTypeDisplayNameTooLong
@@ -4241,6 +4326,8 @@ export type ErrorType =
   | ErrorType_objectTypeInvalidNumberOfPropertyReferencesInPropertySecurityGroup
   | ErrorType_objectTypePropertySecurityGroupsNotSupportedWithMultipleDatasources
   | ErrorType_objectTypePropertySecurityGroupsNotSupportedWithMaterializations
+  | ErrorType_objectTypePropertySecurityGroupsNotSupportedWithRvMaterializations
+  | ErrorType_objectTypeWithStreamDatasourceCannotHaveMaterializations
   | ErrorType_editsOnlyObjectTypeMustHavePropertySecurityGroups
   | ErrorType_objectTypePropertySecurityGroupsNotSupportedOnBranches
   | ErrorType_builderCannotDeletePropertySecurityGroupsSetOnParentBranch
@@ -4448,6 +4535,15 @@ export type ErrorType =
   | ErrorType_objectTypeDeletedPropertyTypeMissingSchemaMigration
   | ErrorType_objectTypePropertyDataTypeChangeMissingSchemaMigration
   | ErrorType_objectTypeDeletedDatasourceMissingSchemaMigration
+  | ErrorType_objectTypeSchemaMigrationSourceSchemaVersionContainsMultipleTransitions
+  | ErrorType_objectTypeContainsTooManySchemaMigrations
+  | ErrorType_objectTypeReferencedBySchemaMigrationDoesNotExist
+  | ErrorType_objectTypeSchemaMigrationSchemaVersionNewerThanLatest
+  | ErrorType_objectTypeSchemaMigrationSchemaVersionLessThanOne
+  | ErrorType_objectTypeSchemaMigrationSourceSchemaVersionNewerOrEqualToTarget
+  | ErrorType_objectTypeSchemaMigrationModifiesPastTransitionsOnBranch
+  | ErrorType_objectTypeSchemaMigrationDeletesTransitionsOnBranch
+  | ErrorType_objectTypeSchemaMigrationContainsDuplicateSchemaMigrationRids
   | ErrorType_objectTypePropertySecurityGroupReferencesNonExistentProperty
   | ErrorType_objectTypeReferencedTypeGroupsDoNotExist
   | ErrorType_objectTypeForbiddenTitleProperty
@@ -4488,6 +4584,7 @@ export type ErrorType =
   | ErrorType_sharedPropertyTypeAttachmentPropertyShouldNotHaveRenderHints
   | ErrorType_sharedPropertyTypeAttachmentPropertyShouldNotBeSearchable
   | ErrorType_sharedPropertyTypeToDeleteIsReferencedByExistingTypes
+  | ErrorType_createdOrUpdatedEntityTypeReferencingNonExistentSharedPropertyTypes
   | ErrorType_sharedPropertyTypeMediaReferencePropertyShouldNotHaveRenderHints
   | ErrorType_sharedPropertyTypeCountExceeded
   | ErrorType_sharedPropertyTypeDisplayNameTooLong
@@ -4697,6 +4794,11 @@ export interface InterfaceLinkTypeDisplayNameTooLong {
  * Two interface properties have the same API name. API Names must be unique within the context of an interface. I.e. across all properties in an interface and its super interfaces.
  */
 export interface InterfacePropertyTypeApiNameConflict {
+}
+/**
+ * Multiple interface properties have the same API name when the namespace is removed. API Names without namespace must be unique within the context of an interface. I.e. across all properties in an interface and its super interfaces.
+ */
+export interface InterfacePropertyTypeApiNameIgnoringNamespaceConflict {
 }
 /**
  * The description of an interface property type exceeds the maximum length.
@@ -5490,6 +5592,11 @@ export interface ObjectTypeColumnMissingFromBackingDatasource {
  * Composite primary keys are not supported.
  */
 export interface ObjectTypeCompositePrimaryKeysNotAllowed {
+}
+/**
+ * Too many migrations in a single transition for the given ObjectType.
+ */
+export interface ObjectTypeContainsTooManySchemaMigrations {
 }
 /**
  * The count of object types exceeds the allowed limit.
@@ -6312,6 +6419,12 @@ export interface ObjectTypePropertySecurityGroupsNotSupportedWithMaterialization
 export interface ObjectTypePropertySecurityGroupsNotSupportedWithMultipleDatasources {
 }
 /**
+ * Property security groups are not supported for Object Types that have Restricted View Materializations.
+ */
+export interface ObjectTypePropertySecurityGroupsNotSupportedWithRvMaterializations {
+  rvMaterializationRids: Array<string>;
+}
+/**
  * The description of an object type property exceeds the maximum length.
  */
 export interface ObjectTypePropertyTypeDescriptionTooLong {
@@ -6372,6 +6485,11 @@ export interface ObjectTypeReadOnlyV1V2NotAllowed {
 export interface ObjectTypeReducerOnStructPropertyMissingSortField {
 }
 /**
+ * At least one schema migration is referencing an ObjectTypeRid that does not exist in the latest ontology.
+ */
+export interface ObjectTypeReferencedBySchemaMigrationDoesNotExist {
+}
+/**
  * The specified datasources do not exist.
  */
 export interface ObjectTypeReferencedDatasourceNotFound {
@@ -6430,6 +6548,41 @@ export interface ObjectTypeRevDbIntegrationHasNoMappedProperties {
  * RuleSetBindings cannot be associated with a derived property type. Derived property types may not always get loaded so they cannot be trusted for conditional formatting.
  */
 export interface ObjectTypeRuleSetBindingAssociatedWithDerivedPropertyType {
+}
+/**
+ * Duplicate schema migration in a single transition for the given ObjectType.
+ */
+export interface ObjectTypeSchemaMigrationContainsDuplicateSchemaMigrationRids {
+}
+/**
+ * Cannot delete transitions on a branch.
+ */
+export interface ObjectTypeSchemaMigrationDeletesTransitionsOnBranch {
+}
+/**
+ * Cannot modify past transitions on a branch.
+ */
+export interface ObjectTypeSchemaMigrationModifiesPastTransitionsOnBranch {
+}
+/**
+ * The schema version provided in the schema migration is less than one which is the lowest possible version.
+ */
+export interface ObjectTypeSchemaMigrationSchemaVersionLessThanOne {
+}
+/**
+ * The schema version provided in the schema migration is newer than the latest.
+ */
+export interface ObjectTypeSchemaMigrationSchemaVersionNewerThanLatest {
+}
+/**
+ * There are at least two transitions from the same source schema version in the request.
+ */
+export interface ObjectTypeSchemaMigrationSourceSchemaVersionContainsMultipleTransitions {
+}
+/**
+ * The source schema version provided in the schema migration is newer or equal to the target.
+ */
+export interface ObjectTypeSchemaMigrationSourceSchemaVersionNewerOrEqualToTarget {
 }
 /**
  * The sensor trait contains a property type id that is not present in the ObjectType's properties.
@@ -6695,6 +6848,11 @@ export interface ObjectTypeWithDerivedPropertiesMappedToGotham {
  * Cannot add unsupported property type to an object type with edits history already enabled.
  */
 export interface ObjectTypeWithEditsHistoryCannotAddUnsupportedPropertyTypes {
+}
+/**
+ * Object types with stream datasources cannot have materializations. If you are switching from a batch to stream datasource, please unlink your materializations first.
+ */
+export interface ObjectTypeWithStreamDatasourceCannotHaveMaterializations {
 }
 /**
  * An error representing when none of an object type's datasources map the title property of the object type.

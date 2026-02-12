@@ -70,6 +70,7 @@ import {
   expectSingleListCallAndClear,
   expectSingleObjectCallAndClear,
   getObject,
+  mockLinkSubCallback,
   mockListSubCallback,
   mockObserver,
   mockSingleSubCallback,
@@ -401,6 +402,89 @@ describe(Store, () => {
       expect(empSubFn.next).not.toHaveBeenCalled();
       expect(officeSubFn.next).not.toHaveBeenCalled();
     });
+
+    it("re-subscribing within dedupeInterval does not refetch", async () => {
+      const { payload: emp1Payload } = await expectStandardObserveObject({
+        cache,
+        type: Employee,
+        primaryKey: 2,
+      });
+      const emp2 = emp1Payload?.object;
+      invariant(emp2);
+
+      const linkSubFn1 = mockLinkSubCallback();
+      const sub1 = cache.links.observe({
+        linkName: "peeps",
+        srcType: { type: "object", apiName: emp2.$apiName },
+        pk: emp2.$primaryKey,
+        dedupeInterval: 60_000,
+      }, linkSubFn1);
+
+      await waitForCall(linkSubFn1);
+      expectSingleLinkCallAndClear(linkSubFn1, [], { status: "loading" });
+
+      await waitForCall(linkSubFn1);
+      expectSingleLinkCallAndClear(linkSubFn1, [], {
+        status: "loaded",
+      });
+
+      sub1.unsubscribe();
+
+      const linkSubFn2 = mockLinkSubCallback();
+      defer(cache.links.observe({
+        linkName: "peeps",
+        srcType: { type: "object", apiName: emp2.$apiName },
+        pk: emp2.$primaryKey,
+        dedupeInterval: 60_000,
+      }, linkSubFn2));
+
+      await waitForCall(linkSubFn2);
+      expectSingleLinkCallAndClear(linkSubFn2, [], {
+        status: "loaded",
+      });
+    });
+
+    it("forced revalidation bypasses dedupeInterval", async () => {
+      const { payload: emp1Payload } = await expectStandardObserveObject({
+        cache,
+        type: Employee,
+        primaryKey: 2,
+      });
+      const emp2 = emp1Payload?.object;
+      invariant(emp2);
+
+      const linkSubFn = mockLinkSubCallback();
+      defer(cache.links.observe({
+        linkName: "peeps",
+        srcType: { type: "object", apiName: emp2.$apiName },
+        pk: emp2.$primaryKey,
+        dedupeInterval: 60_000,
+      }, linkSubFn));
+
+      await waitForCall(linkSubFn);
+      expectSingleLinkCallAndClear(linkSubFn, [], { status: "loading" });
+
+      await waitForCall(linkSubFn);
+      expectSingleLinkCallAndClear(linkSubFn, [], {
+        status: "loaded",
+      });
+
+      const invalidatePromise = cache.invalidateObjectType(
+        "Employee",
+        undefined,
+      );
+
+      await waitForCall(linkSubFn);
+      expectSingleLinkCallAndClear(linkSubFn, [], {
+        status: "loading",
+      });
+
+      await invalidatePromise;
+
+      expectSingleLinkCallAndClear(linkSubFn, [], {
+        status: "loaded",
+      });
+    });
   });
 
   describe("with mock server", () => {
@@ -422,7 +506,9 @@ describe(Store, () => {
       setupOntology(testSetup.fauxFoundry);
       setupSomeEmployees(testSetup.fauxFoundry);
 
-      employeesAsServerReturns = (await client(Employee).fetchPage()).data;
+      employeesAsServerReturns = (await client(Employee).fetchPage({
+        $includeRid: true,
+      })).data;
       mutatedEmployees = [
         employeesAsServerReturns[0],
         employeesAsServerReturns[1].$clone({
@@ -1082,7 +1168,13 @@ describe(Store, () => {
           await waitForCall(ifaceSub);
           expectSingleListCallAndClear(
             ifaceSub,
-            employeesAsServerReturns,
+            employeesAsServerReturns.map(e =>
+              expect.objectContaining({
+                $apiName: "FooInterface",
+                $objectType: "Employee",
+                $primaryKey: e.$primaryKey,
+              })
+            ),
             {
               status: "loaded",
             },
@@ -1095,6 +1187,73 @@ describe(Store, () => {
           expect(listSub1.error).not.toHaveBeenCalled();
           expect(ifaceSub.next).not.toHaveBeenCalled();
           expect(ifaceSub.error).not.toHaveBeenCalled();
+        });
+
+        it("cache stores raw objects when loading via interface", async () => {
+          defer(
+            cache.lists.observe({
+              type: FooInterface,
+              orderBy: {},
+              mode: "force",
+            }, ifaceSub),
+          );
+          await waitForCall(ifaceSub, 2);
+
+          const pk = employeesAsServerReturns[0].$primaryKey as number;
+          const cached = getObject(cache, "Employee", pk);
+          expect(cached?.$apiName).toBe("Employee");
+          expect(cached?.$objectType).toBe("Employee");
+        });
+
+        it("interface queries return interface view while cache stores raw object", async () => {
+          defer(
+            cache.lists.observe({
+              type: FooInterface,
+              orderBy: {},
+              mode: "force",
+            }, ifaceSub),
+          );
+          await waitForCall(ifaceSub, 2);
+
+          const ifacePayload = ifaceSub.next.mock.calls[1][0];
+          expect(ifacePayload?.resolvedList?.[0]?.$apiName).toBe(
+            "FooInterface",
+          );
+          expect(ifacePayload?.resolvedList?.[0]?.$objectType).toBe("Employee");
+
+          const pk = employeesAsServerReturns[0].$primaryKey as number;
+          const cached = getObject(cache, "Employee", pk);
+          expect(cached?.$apiName).toBe("Employee");
+        });
+
+        it("direct query after interface query preserves interface $apiName", async () => {
+          const objSub = mockSingleSubCallback();
+
+          defer(
+            cache.lists.observe({
+              type: FooInterface,
+              orderBy: {},
+              mode: "force",
+            }, ifaceSub),
+          );
+          await waitForCall(ifaceSub, 2);
+
+          expect(ifaceSub.next.mock.calls[1][0]?.resolvedList?.[0]?.$apiName)
+            .toBe("FooInterface");
+
+          defer(
+            cache.objects.observe({
+              apiName: Employee,
+              pk: employeesAsServerReturns[0].$primaryKey,
+              mode: "force",
+            }, objSub),
+          );
+          await waitForCall(objSub, 2);
+
+          expect(
+            ifaceSub.next.mock.calls.at(-1)?.[0]?.resolvedList?.[0]?.$apiName,
+          )
+            .toBe("FooInterface");
         });
 
         it("subsequent load", async () => {
@@ -1549,7 +1708,7 @@ describe(Store, () => {
               text,
             });
 
-            return client(Todo).fetchOne(id);
+            return client(Todo).fetchOne(id, { $includeRid: true });
           }),
         );
       });
@@ -1819,7 +1978,9 @@ describe(Store, () => {
         const pkForD = (await pActionResult).addedObjects?.[0].primaryKey;
         invariant(typeof pkForD === "number");
         // load this without the cache for comparisons
-        const createdObjectD = await client(Todo).fetchOne(pkForD);
+        const createdObjectD = await client(Todo).fetchOne(pkForD, {
+          $includeRid: true,
+        });
 
         await waitForCall(subListUnordered, 1);
         expectSingleListCallAndClear(subListUnordered, [

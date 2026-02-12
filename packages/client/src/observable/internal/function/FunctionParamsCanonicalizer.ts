@@ -142,8 +142,9 @@ export class FunctionParamsCanonicalizer {
     }
 
     if (isObjectSpecifiersObject(value)) {
-      path.push("$:osdk", value.$apiName, value.$primaryKey);
-      return { $apiName: value.$apiName, $primaryKey: value.$primaryKey };
+      const objectType = value.$objectType ?? value.$apiName;
+      path.push("$:osdk", objectType, value.$primaryKey);
+      return { $apiName: objectType, $primaryKey: value.$primaryKey };
     }
 
     if (isObjectSet(value)) {

@@ -47,13 +47,31 @@ import { createCollectionConnectable } from "./createCollectionConnectable.js";
 import { removeDuplicates } from "./removeDuplicates.js";
 
 /**
+ * Base shape for list-like payloads (ListPayload, SpecificLinkPayload, etc.)
+ * Used to constrain PAYLOAD so we can safely access these properties
+ */
+export interface BaseListPayloadShape {
+  resolvedList: readonly unknown[];
+  hasMore: boolean;
+  fetchMore: () => Promise<void>;
+}
+
+/**
+ * Options that include pageSize for list-like queries.
+ * This allows BaseListQuery to access pageSize without type casting.
+ */
+export interface BaseListQueryOptions extends CommonObserveOptions {
+  pageSize?: number;
+}
+
+/**
  * Base class for collection-based queries (lists and links)
  * Provides common functionality for working with collections of objects
  */
 export abstract class BaseListQuery<
   KEY extends CacheKey<any, CollectionStorageData, any, any>,
-  PAYLOAD,
-  O extends CommonObserveOptions,
+  PAYLOAD extends BaseListPayloadShape,
+  O extends BaseListQueryOptions,
 > extends Query<KEY, PAYLOAD, O> {
   /**
    * The sorting strategy to use for this collection
@@ -81,6 +99,14 @@ export abstract class BaseListQuery<
    */
   protected pendingPageFetch?: Promise<void>;
 
+  protected currentTotalCount?: string;
+
+  /**
+   * Per-subscriber page sizes for fetch optimization.
+   * Tracks each view's pageSize so we can recalculate max when views unsubscribe.
+   */
+  #subscriberPageSizes: Map<string, number> = new Map();
+
   //
   // Shared Implementations
   //
@@ -93,6 +119,7 @@ export abstract class BaseListQuery<
    * @param status Status to set for the list
    * @param batch Batch context to use
    * @param append Whether to append to the existing list or replace it
+   * @param totalCount Optional total count from API response
    * @returns The updated entry
    */
   public _updateList<T extends ObjectCacheKey | Osdk.Instance<any>>(
@@ -100,6 +127,7 @@ export abstract class BaseListQuery<
     status: Status,
     batch: BatchContext,
     append: boolean = false,
+    totalCount?: string,
   ): Entry<KEY> {
     if (process.env.NODE_ENV !== "production") {
       this.logger
@@ -130,7 +158,11 @@ export abstract class BaseListQuery<
     objectCacheKeys = this._sortCacheKeys(objectCacheKeys, batch);
     objectCacheKeys = removeDuplicates(objectCacheKeys, batch);
 
-    return this.writeToStore({ data: objectCacheKeys }, status, batch);
+    return this.writeToStore(
+      { data: objectCacheKeys, totalCount },
+      status,
+      batch,
+    );
   }
 
   /**
@@ -255,6 +287,7 @@ export abstract class BaseListQuery<
       hasMore: this.nextPageToken != null,
       status: params.status,
       lastUpdated: params.lastUpdated,
+      totalCount: params.totalCount,
     } as unknown as PAYLOAD; // Type assertion needed since we don't know exact subtype
   }
 
@@ -318,6 +351,60 @@ export abstract class BaseListQuery<
     });
     return this.pendingFetch;
   };
+
+  /**
+   * Register a subscriber's pageSize for fetch optimization.
+   * The query will fetch with the max pageSize across all subscribers.
+   */
+  registerFetchPageSize(viewId: string, pageSize: number): void {
+    this.#subscriberPageSizes.set(viewId, pageSize);
+  }
+
+  /**
+   * Unregister a subscriber's pageSize when they unsubscribe.
+   * Allows the effective pageSize to decrease when high-pageSize subscribers leave.
+   */
+  unregisterFetchPageSize(viewId: string): void {
+    this.#subscriberPageSizes.delete(viewId);
+  }
+
+  /**
+   * Get the effective fetch pageSize (max across all subscribers).
+   * Falls back to options.pageSize or 100 if no subscribers have registered.
+   */
+  getEffectiveFetchPageSize(): number {
+    if (this.#subscriberPageSizes.size > 0) {
+      return Math.max(...this.#subscriberPageSizes.values());
+    }
+    return this.options.pageSize ?? 100;
+  }
+
+  /**
+   * Get the current number of loaded items in the cache.
+   */
+  getLoadedCount(): number {
+    const { retVal } = this.store.batch({}, (batch) => {
+      return batch.read(this.cacheKey)?.value?.data.length ?? 0;
+    });
+    return retVal;
+  }
+
+  /**
+   * Check if there are more pages available on the server.
+   */
+  hasMorePages(): boolean {
+    return this.nextPageToken != null;
+  }
+
+  /**
+   * Notify all subscribers of a change (used when view limits change
+   * but no new data needs to be fetched).
+   */
+  notifySubscribers(): void {
+    this.store.batch({}, (batch) => {
+      this.registerCacheChanges(batch);
+    });
+  }
 
   /**
    * Minimum number of results to load initially
@@ -395,6 +482,8 @@ export abstract class BaseListQuery<
       // Call the subclass-specific implementation to fetch data
       const result = await this.fetchPageData(signal);
 
+      this.currentTotalCount = result.totalCount;
+
       // Check for abort again after fetch
       if (signal?.aborted) {
         return undefined;
@@ -416,6 +505,7 @@ export abstract class BaseListQuery<
           finalStatus,
           batch,
           append,
+          this.currentTotalCount,
         );
       });
 
@@ -466,9 +556,12 @@ export abstract class BaseListQuery<
     _status: Status,
     batch: BatchContext,
   ): Entry<KEY> {
-    // Default implementation writes an empty list with error status
-    // Most subclasses should be able to use this
-    return this.writeToStore({ data: [] }, "error", batch);
+    const existingTotalCount = batch.read(this.cacheKey)?.value?.totalCount;
+    return this.writeToStore(
+      { data: [], totalCount: existingTotalCount },
+      "error",
+      batch,
+    );
   }
 
   /**
@@ -543,7 +636,12 @@ export abstract class BaseListQuery<
     objectCacheKeys = removeDuplicates(objectCacheKeys, batch);
 
     // Step 5: Write to store
-    return this.writeToStore({ data: objectCacheKeys }, options.status, batch);
+    const existingTotalCount = batch.read(this.cacheKey)?.value?.totalCount;
+    return this.writeToStore(
+      { data: objectCacheKeys, totalCount: existingTotalCount },
+      options.status,
+      batch,
+    );
   }
 
   //
@@ -680,7 +778,7 @@ export abstract class BaseListQuery<
     this.store.batch({}, (batch) => {
       const objectCacheKey = this.store.cacheKeys.get(
         "object",
-        object.$apiName,
+        object.$objectType ?? object.$apiName,
         object.$primaryKey,
       );
       batch.delete(objectCacheKey, "loaded");

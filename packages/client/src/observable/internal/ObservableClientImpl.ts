@@ -33,6 +33,12 @@ import type {
 } from "@osdk/api";
 import { Subscription } from "rxjs";
 import type { ActionSignatureFromDef } from "../../actions/applyAction.js";
+import { additionalContext } from "../../Client.js";
+import {
+  getWireObjectSet,
+  isObjectSet,
+} from "../../objectSet/createObjectSet.js";
+import { extractObjectOrInterfaceType } from "../../util/extractObjectOrInterfaceType.js";
 import type { FunctionPayload } from "../FunctionPayload.js";
 import type { SpecificLinkPayload } from "../LinkPayload.js";
 import type { ListPayload } from "../ListPayload.js";
@@ -138,10 +144,40 @@ export class ObservableClientImpl implements ObservableClient {
     const dependsOn = options.dependsOn?.map(dep =>
       typeof dep === "string" ? dep : dep.apiName
     );
-    const dependsOnObjects = options.dependsOnObjects?.map(obj => ({
-      $apiName: obj.$apiName,
-      $primaryKey: obj.$primaryKey,
-    }));
+
+    // Partition dependsOnObjects into instances vs ObjectSets
+    type ObjectDependency = { $apiName: string; $primaryKey: string | number };
+    const instances: ObjectDependency[] = [];
+    const objectSetWires: Array<
+      ReturnType<typeof getWireObjectSet>
+    > = [];
+
+    for (const item of options.dependsOnObjects ?? []) {
+      if (isObjectSet(item)) {
+        objectSetWires.push(getWireObjectSet(item));
+      } else {
+        instances.push({
+          $apiName: item.$objectType ?? item.$apiName,
+          $primaryKey: item.$primaryKey,
+        });
+      }
+    }
+
+    // Start async extraction of ObjectSet types
+    const objectSetTypesPromise = objectSetWires.length > 0
+      ? Promise.all(
+        objectSetWires.map(wire =>
+          extractObjectOrInterfaceType(
+            this.__experimentalStore.client[additionalContext],
+            wire,
+          )
+        ),
+      ).then(types =>
+        types
+          .filter((t): t is NonNullable<typeof t> => t != null)
+          .map(t => t.apiName)
+      )
+      : undefined;
 
     return this.__experimentalStore.functions.observe(
       {
@@ -149,7 +185,8 @@ export class ObservableClientImpl implements ObservableClient {
         queryDef,
         params,
         dependsOn,
-        dependsOnObjects,
+        dependsOnObjects: instances,
+        objectSetTypesPromise,
       },
       subFn as unknown as Observer<FunctionPayload>,
     );
@@ -180,7 +217,7 @@ export class ObservableClientImpl implements ObservableClient {
             ...options,
             srcType: {
               type: "object",
-              apiName: obj.$apiName,
+              apiName: obj.$objectType ?? obj.$apiName,
             },
             linkName,
             pk: obj.$primaryKey,

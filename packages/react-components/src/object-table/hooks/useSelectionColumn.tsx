@@ -15,7 +15,7 @@
  */
 
 import type {
-  ObjectTypeDefinition,
+  ObjectOrInterfaceDefinition,
   Osdk,
   PropertyKeys,
   SimplePropertyDef,
@@ -23,6 +23,7 @@ import type {
 import type { ColumnDef } from "@tanstack/react-table";
 import React, { useMemo } from "react";
 import { SelectionCell, SelectionHeaderCell } from "../SelectionCells.js";
+import { SELECTION_COLUMN_ID } from "../utils/constants.js";
 
 interface UseSelectionColumnProps {
   selectionMode?: "single" | "multiple" | "none";
@@ -32,9 +33,8 @@ interface UseSelectionColumnProps {
   onToggleRow: (id: string, rowIndex: number, isShiftClick: boolean) => void;
 }
 
-export const SELECTION_COLUMN_ID = "__selection__";
 export const useSelectionColumn = <
-  Q extends ObjectTypeDefinition,
+  Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = Record<
     string,
     never
@@ -54,7 +54,9 @@ export const useSelectionColumn = <
   const selectionColumn = useMemo(() => {
     if (selectionMode === "none") return null;
 
-    return {
+    const colDef: ColumnDef<
+      Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
+    > = {
       id: SELECTION_COLUMN_ID,
       header: () => (
         selectionMode === "multiple"
@@ -78,7 +80,10 @@ export const useSelectionColumn = <
       maxSize: 50,
       enableSorting: false,
       enableResizing: false,
+      enablePinning: false,
     };
+
+    return colDef;
   }, [
     selectionMode,
     isAllSelected,

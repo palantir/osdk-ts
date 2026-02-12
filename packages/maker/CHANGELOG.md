@@ -1,5 +1,47 @@
 # @osdk/maker
 
+## 0.16.0-beta.3
+
+### Minor Changes
+
+- 8f92197: update code snippet to have interface dependent properties
+- 6499ff9: Support reducers and struct main values in oac
+- 5b938ef: Enforce OT and prop statuses match
+- e9f9f58: Allow primitive struct main values to be title props
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.5
+
+## 0.16.0-beta.2
+
+### Minor Changes
+
+- e462938: Support PSGs in OAC
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.2
+
+## 0.15.0-beta.9
+
+### Minor Changes
+
+- ace2d68: Allow custom "then" configuration on visibility overrides
+- 044f478: Wire propertiesV2 to implementsInterface
+- 3693275: Add flag to add namespace prefix to value type api names
+
+## 0.15.0-beta.8
+
+### Minor Changes
+
+- c773e8f: Expose more status options on OAC
+
+### Patch Changes
+
+- Updated dependencies [bb9d25c]
+  - @osdk/api@2.7.0-beta.12
+
 ## 0.15.0-beta.7
 
 ### Minor Changes

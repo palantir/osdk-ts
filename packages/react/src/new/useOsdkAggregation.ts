@@ -19,29 +19,29 @@ import type {
   AggregationsResults,
   DerivedProperty,
   ObjectOrInterfaceDefinition,
+  SimplePropertyDef,
   WhereClause,
 } from "@osdk/api";
 import type { ObserveAggregationArgs } from "@osdk/client/unstable-do-not-use";
 import React from "react";
 import { makeExternalStore } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
-import type { InferRdpTypes } from "./types.js";
 
 export interface UseOsdkAggregationOptions<
   T extends ObjectOrInterfaceDefinition,
   A extends AggregateOpts<T>,
-  WithProps extends DerivedProperty.Clause<T> | undefined = undefined,
+  RDPs extends Record<string, SimplePropertyDef> = {},
 > {
   /**
    * Standard OSDK Where clause to filter objects before aggregation
    */
-  where?: WhereClause<T, InferRdpTypes<T, WithProps>>;
+  where?: WhereClause<T, RDPs>;
 
   /**
    * Define derived properties (RDPs) to be computed server-side.
    * The derived properties can be used in the where clause and aggregation groupBy/select.
    */
-  withProperties?: WithProps;
+  withProperties?: { [K in keyof RDPs]: DerivedProperty.Creator<T, RDPs[K]> };
 
   /**
    * Aggregation options including groupBy and select
@@ -66,6 +66,8 @@ export interface UseOsdkAggregationResult<
   error: Error | undefined;
   refetch: () => void;
 }
+
+const EMPTY_WHERE = {};
 
 declare const process: {
   env: {
@@ -100,19 +102,26 @@ declare const process: {
 export function useOsdkAggregation<
   Q extends ObjectOrInterfaceDefinition,
   const A extends AggregateOpts<Q>,
-  WP extends DerivedProperty.Clause<Q> | undefined = undefined,
+  RDPs extends Record<string, SimplePropertyDef> = {},
 >(
   type: Q,
   {
-    where = {},
+    where = EMPTY_WHERE,
     withProperties,
     aggregate,
     dedupeIntervalMs,
-  }: UseOsdkAggregationOptions<Q, A, WP>,
+  }: UseOsdkAggregationOptions<Q, A, RDPs>,
 ): UseOsdkAggregationResult<Q, A> {
   const { observableClient } = React.useContext(OsdkContext2);
 
-  const canonWhere = observableClient.canonicalizeWhereClause<Q>(where ?? {});
+  const canonWhere = observableClient.canonicalizeWhereClause<Q>(
+    where ?? EMPTY_WHERE,
+  );
+
+  const stableCanonWhere = React.useMemo(
+    () => canonWhere,
+    [JSON.stringify(canonWhere)],
+  );
 
   const stableWithProperties = React.useMemo(
     () => withProperties,
@@ -131,7 +140,7 @@ export function useOsdkAggregation<
           observableClient.observeAggregation(
             {
               type: type,
-              where: canonWhere,
+              where: stableCanonWhere,
               withProperties: stableWithProperties,
               aggregate: stableAggregate,
               dedupeInterval: dedupeIntervalMs ?? 2_000,
@@ -139,14 +148,14 @@ export function useOsdkAggregation<
             observer,
           ),
         process.env.NODE_ENV !== "production"
-          ? `aggregation ${type.apiName} ${JSON.stringify(canonWhere)}`
+          ? `aggregation ${type.apiName} ${JSON.stringify(stableCanonWhere)}`
           : void 0,
       ),
     [
       observableClient,
       type.apiName,
       type.type,
-      canonWhere,
+      stableCanonWhere,
       stableWithProperties,
       stableAggregate,
       dedupeIntervalMs,

@@ -152,9 +152,16 @@ export class SpecificLinkQuery extends BaseListQuery<
 
     // Fetch the linked objects with pagination
     // Add orderBy to the query parameters if specified
-    const queryParams: any = {
-      $pageSize: this.options.pageSize || 100,
+    const queryParams: {
+      $pageSize: number;
+      $nextPageToken: string | undefined;
+      $includeRid: true;
+      $orderBy?: Record<string, "asc" | "desc" | undefined>;
+      $where?: Record<string, unknown>;
+    } = {
+      $pageSize: this.getEffectiveFetchPageSize(),
       $nextPageToken: this.nextPageToken,
+      $includeRid: true,
     };
 
     // Include orderBy if it has entries

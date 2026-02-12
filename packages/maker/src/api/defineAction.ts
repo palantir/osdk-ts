@@ -39,6 +39,7 @@ import type { DefaultFormat } from "./action/DefaultFormat.js";
 import type { MappingValue } from "./action/MappingValue.js";
 import type { SubmissionMetadata } from "./action/SubmissionMetadata.js";
 import type { TableConfiguration } from "./action/TableConfiguration.js";
+import { cloneDefinition } from "./cloneDefinition.js";
 import type { BlueprintIcon } from "./common/BlueprintIcons.js";
 import { OntologyEntityTypeEnum } from "./common/OntologyEntityTypeEnum.js";
 import { uppercaseFirstLetter } from "./defineObject.js";
@@ -122,7 +123,8 @@ export type InterfaceActionTypeUserDefinition = {
   icon?: { locator: BlueprintIcon; color: string };
 };
 
-export function defineAction(actionDef: ActionTypeDefinition): ActionType {
+export function defineAction(actionDefInput: ActionTypeDefinition): ActionType {
+  const actionDef = cloneDefinition(actionDefInput);
   const apiName = namespace + actionDef.apiName;
   const parameterIds = (actionDef.parameters ?? []).map(p => p.id);
 
@@ -742,6 +744,8 @@ function extractAllowedValuesFromPropertyType(
       return { type: "mediaReference" };
     case "geotimeSeries":
       return { type: "geotimeSeriesReference" };
+    case "attachment":
+      return { type: "attachment" };
     default:
       switch (type.type) {
         case "marking":

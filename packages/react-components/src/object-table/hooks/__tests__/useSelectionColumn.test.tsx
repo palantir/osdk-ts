@@ -17,10 +17,8 @@
 import type { ObjectTypeDefinition } from "@osdk/api";
 import { renderHook } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
-import {
-  SELECTION_COLUMN_ID,
-  useSelectionColumn,
-} from "../useSelectionColumn.js";
+import { SELECTION_COLUMN_ID } from "../../utils/constants.js";
+import { useSelectionColumn } from "../useSelectionColumn.js";
 
 const TestObjectType = {
   type: "object",

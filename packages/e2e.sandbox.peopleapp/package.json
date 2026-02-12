@@ -1,7 +1,7 @@
 {
   "name": "@osdk/e2e.sandbox.peopleapp",
   "private": true,
-  "version": "3.5.0-beta.1",
+  "version": "3.6.0-beta.1",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -33,19 +33,17 @@
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
     "preview": "vite preview",
+    "transpileAllDeps": "pnpm --filter @osdk/* run transpileBrowser",
     "transpileEsm": "monorepo.tool.transpile -f esm -m normal -t node",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
-    "@base-ui/react": "^1.0.0",
     "@osdk/api": "workspace:~",
     "@osdk/client": "workspace:~",
     "@osdk/oauth": "workspace:~",
     "@osdk/react": "workspace:~",
     "@osdk/react-components": "workspace:~",
     "@osdk/react-components-styles": "workspace:~",
-    "@tanstack/react-table": "^8.21.3",
-    "@tanstack/react-virtual": "^3.13.13",
     "core-js": "^3.45.1",
     "maplibre-gl": "^5.7.1",
     "react": "^19.1.1",

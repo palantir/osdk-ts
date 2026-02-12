@@ -70,6 +70,7 @@ export function createCollectionConnectable<
             isOptimistic: of(listEntry.isOptimistic),
             status: of(listEntry.status),
             lastUpdated: of(listEntry.lastUpdated),
+            totalCount: of(listEntry?.value?.totalCount),
           }).pipe(
             map(params =>
               createPayload({
@@ -79,6 +80,7 @@ export function createCollectionConnectable<
                 isOptimistic: params.isOptimistic,
                 status: params.status,
                 lastUpdated: params.lastUpdated,
+                totalCount: params.totalCount,
               })
             ),
           ),

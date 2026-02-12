@@ -178,7 +178,8 @@ export class ObjectSetQuery extends BaseListQuery<
     // Fetch the data with pagination
     const resp = await this.#composedObjectSet.fetchPage({
       $nextPageToken: this.nextPageToken,
-      $pageSize: this.options.pageSize,
+      $pageSize: this.getEffectiveFetchPageSize(),
+      $includeRid: true,
       // OrderBy is already applied in the composed ObjectSet
       ...(this.#operations.orderBy
           && Object.keys(this.#operations.orderBy).length > 0
@@ -203,7 +204,12 @@ export class ObjectSetQuery extends BaseListQuery<
     this.logger?.error("error", error);
     this.store.subjects.get(this.cacheKey).error(error);
 
-    return this.writeToStore({ data: [] }, "error", batch);
+    const existingTotalCount = batch.read(this.cacheKey)?.value?.totalCount;
+    return this.writeToStore(
+      { data: [], totalCount: existingTotalCount },
+      "error",
+      batch,
+    );
   }
 
   registerStreamUpdates(sub: Subscription): void {
@@ -231,6 +237,7 @@ export class ObjectSetQuery extends BaseListQuery<
       isOptimistic: boolean;
       status: Status;
       lastUpdated: number;
+      totalCount?: string;
     },
   ): ObjectSetPayload {
     return {
@@ -241,6 +248,7 @@ export class ObjectSetQuery extends BaseListQuery<
       status: params.status,
       lastUpdated: params.lastUpdated,
       objectSet: this.#composedObjectSet,
+      totalCount: params.totalCount,
     };
   }
 }

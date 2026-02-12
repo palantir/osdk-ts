@@ -421,6 +421,12 @@ export interface DatasourceModificationConstraintError_objectTypeDatasourceWithI
   objectTypeDatasourceWithInvalidRetentionTargetSize:
     ObjectTypeDatasourceWithInvalidRetentionTargetSizeError;
 }
+
+export interface DatasourceModificationConstraintError_objectTypeWithStreamDatasourceCannotHaveMaterializations {
+  type: "objectTypeWithStreamDatasourceCannotHaveMaterializations";
+  objectTypeWithStreamDatasourceCannotHaveMaterializations:
+    ObjectTypeWithStreamDatasourceCannotHaveMaterializationsError;
+}
 /**
  * A type representing validation errors associated with datasource modifications on a branch.
  */
@@ -448,7 +454,8 @@ export type DatasourceModificationConstraintError =
   | DatasourceModificationConstraintError_gpsPolicyColumnsFromRestrictedViewsAreMapped
   | DatasourceModificationConstraintError_objectTypeDatasourceCannotHaveAssumedMarkingsUpdated
   | DatasourceModificationConstraintError_objectTypeDatasourceCannotHaveDataSecurityUpdatedOnBranch
-  | DatasourceModificationConstraintError_objectTypeDatasourceWithInvalidRetentionTargetSize;
+  | DatasourceModificationConstraintError_objectTypeDatasourceWithInvalidRetentionTargetSize
+  | DatasourceModificationConstraintError_objectTypeWithStreamDatasourceCannotHaveMaterializations;
 
 export interface DefaultOntologyBranchDetails {
 }
@@ -1845,6 +1852,12 @@ export interface ObjectTypesHaveTooManyDatasourcesError {
   maxDatasources: number;
   numberOfDatasources: number;
   objectType: _api_ObjectTypeRid;
+}
+/**
+ * Object types with stream datasources cannot have materializations. If you are switching from a batch to stream datasource, please unlink your materializations first.
+ */
+export interface ObjectTypeWithStreamDatasourceCannotHaveMaterializationsError {
+  objectTypeRid: _api_ObjectTypeRid;
 }
 /**
  * An error representing when none of an object type's datasources map the title property of the object type.

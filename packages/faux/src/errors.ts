@@ -14,8 +14,13 @@
  * limitations under the License.
  */
 
-//
-
+import type {
+  GetCurrentUserPermissionDenied,
+  UserDeleted,
+  UserIsActive,
+  UserNotFound,
+} from "@osdk/foundry.admin";
+import type { InvalidPageToken } from "@osdk/foundry.core";
 import type {
   ActionNotFound,
   ApplyActionFailed,
@@ -136,6 +141,15 @@ export function InvalidRequest(errorName: string): BaseAPIError {
   };
 }
 
+export function InvalidArgument(errorName: string): BaseAPIError {
+  return {
+    errorCode: "INVALID_ARGUMENT",
+    errorName,
+    errorInstanceId,
+    parameters: {},
+  };
+}
+
 export const ApplyActionFailedError: ApplyActionFailed = {
   errorCode: "INVALID_ARGUMENT",
   errorName: "ApplyActionFailed",
@@ -190,3 +204,58 @@ export const AttachmentNotFoundError: AttachmentNotFound = {
       "ri.attachments.main.attachment.86016861-707f-4292-b258-6a7108915a80",
   },
 };
+
+export const CurrentUserPermissionDeniedError: GetCurrentUserPermissionDenied =
+  {
+    errorCode: "PERMISSION_DENIED",
+    errorName: "GetCurrentUserPermissionDenied",
+    errorInstanceId,
+    parameters: {},
+    errorDescription: "Could not getCurrent the User.",
+  };
+
+export const GetUserNotFoundError = (userId: string): UserNotFound => ({
+  errorCode: "NOT_FOUND",
+  errorName: "UserNotFound",
+  errorInstanceId,
+  parameters: {
+    userId: userId,
+  },
+  errorDescription: "The given User could not be found.",
+});
+
+export const GetUserDeletedStatusError = (
+  userId: string,
+): UserDeleted => ({
+  errorCode: "INVALID_ARGUMENT",
+  errorName: "UserDeleted",
+  errorInstanceId,
+  parameters: {
+    principalId: userId,
+  },
+  errorDescription: "The user is deleted.",
+});
+
+export const GetUserActiveStatusError = (
+  userId: string,
+): UserIsActive => ({
+  errorCode: "INVALID_ARGUMENT",
+  errorName: "UserIsActive",
+  errorInstanceId,
+  parameters: {
+    principalId: userId,
+  },
+  errorDescription: "The user is an active user.",
+});
+
+export const GetInvalidPageTokenError = (
+  pageToken: string,
+): InvalidPageToken => ({
+  errorCode: "INVALID_ARGUMENT",
+  errorName: "InvalidPageToken",
+  errorDescription: "The provided page token is invalid.",
+  errorInstanceId: errorInstanceId,
+  parameters: {
+    pageToken,
+  },
+});

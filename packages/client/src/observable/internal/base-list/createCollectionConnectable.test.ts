@@ -742,10 +742,10 @@ describe("createCollectionConnectable", () => {
 
       await waitForCall(observer);
 
-      // Should handle undefined object entry gracefully by filtering it out
+      // Should handle undefined object entry gracefully
       expect(observer.next).toHaveBeenCalledWith(
         expect.objectContaining({
-          data: [undefined], // The function maps the undefined value from the store
+          data: [undefined],
           status: "loaded",
           count: 1,
         }),
