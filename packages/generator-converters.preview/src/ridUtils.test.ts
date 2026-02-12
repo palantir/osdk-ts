@@ -19,11 +19,12 @@ import { toUuid } from "./ridUtils.js";
 
 describe("ridUtils", () => {
   describe("toUuid", () => {
-    it("returns a valid UUID format", () => {
+    it("returns a valid UUID format with correct version and variant bits", () => {
       const result = toUuid("test-string");
-      // UUID format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+      // UUID format: xxxxxxxx-xxxx-Vxxx-Nxxx-xxxxxxxxxxxx // cspell:disable-line
+      // V = version (5), N = variant (8, 9, a, or b for RFC 4122)
       expect(result).toMatch(
-        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/,
+        /^[0-9a-f]{8}-[0-9a-f]{4}-5[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/,
       );
     });
 

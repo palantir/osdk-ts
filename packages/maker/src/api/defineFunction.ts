@@ -14,14 +14,21 @@
  * limitations under the License.
  */
 
-import * as path from "path";
+import * as path from "node:path";
 import * as ts from "typescript";
 import type { FunctionIrBlockData } from "./types.js";
 
 // Type definitions for optional function discovery dependencies
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type IFunctionDiscoverer = new (...args: any[]) => {
-  discover(): { discoveredFunctions: IDiscoveredFunction[]; diagnostics?: unknown };
+type IFunctionDiscoverer = new(
+  program: ts.Program,
+  entryPointPath: string,
+  fullFilePath: string,
+  entityMappings?: IEntityMetadataMapping,
+) => {
+  discover(): {
+    discoveredFunctions: IDiscoveredFunction[];
+    diagnostics?: unknown;
+  };
 };
 
 interface IDiscoveredFunction {
@@ -31,7 +38,7 @@ interface IDiscoveredFunction {
   [key: string]: unknown;
 }
 
-interface IEntityMetadataMapping {
+export interface IEntityMetadataMapping {
   ontologies: Record<
     string,
     {
@@ -53,7 +60,7 @@ interface IEntityMetadataMapping {
 let FunctionDiscoverer: IFunctionDiscoverer | null = null;
 
 async function loadFunctionDiscoverer(): Promise<IFunctionDiscoverer | null> {
-  if (FunctionDiscoverer !== null) {
+  if (FunctionDiscoverer != null) {
     return FunctionDiscoverer;
   }
   try {
@@ -61,48 +68,35 @@ async function loadFunctionDiscoverer(): Promise<IFunctionDiscoverer | null> {
     const module = await import(/* @vite-ignore */ modulePath);
     FunctionDiscoverer = module.FunctionDiscoverer;
     return FunctionDiscoverer;
-  } catch {
+  } catch (e: unknown) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      "Failed to load @foundry/functions-typescript-osdk-discovery:",
+      e instanceof Error ? e.message : e,
+    );
     return null;
   }
 }
 
-export async function defineFunction(
-  dirPath: string,
-): Promise<FunctionIrBlockData> {
-  const FD = await loadFunctionDiscoverer();
-  if (!FD) {
-    throw new Error(
-      "Function discovery requires @foundry/functions-typescript-osdk-discovery to be installed",
-    );
-  }
-
-  const srcDir =
-    "/Volumes/git/osdk-ts/packages/generator-converters.ontologyir/src";
-  const tsConfigFilePath = path.join(srcDir, "tsconfig.json");
-  const program = createProgram(tsConfigFilePath, srcDir);
-  const entryPointPath = path.join(srcDir, "index.ts");
-  const fullFilePath = path.join(srcDir, dirPath);
-
-  // Initialize FunctionDiscoverer with the program
-  const fd = new FD(program, entryPointPath, fullFilePath);
-
-  // Discover functions using the provided filePath as the functionsDirectoryPath
-  const functions = fd.discover();
-  return {
-    functionsBlockDataV1: Object.fromEntries(
-      functions.discoveredFunctions.map((fn: IDiscoveredFunction) =>
-        fn.locator.type === "typescriptOsdk"
-          ? [(fn.locator as { typescriptOsdk: { functionName: string } }).typescriptOsdk.functionName, fn]
-          : (() => {
-            throw new Error("OAC functions must be TypeScript");
-          })()
-      ),
-    ),
-  };
+function extractFunctionEntries(
+  discoveredFunctions: IDiscoveredFunction[],
+): Array<[string, IDiscoveredFunction]> {
+  return discoveredFunctions.map((fn: IDiscoveredFunction) => {
+    if (fn.locator.type !== "typescriptOsdk") {
+      throw new Error(
+        `OAC functions must be TypeScript, got type: ${fn.locator.type}`,
+      );
+    }
+    const locator = fn.locator as {
+      typescriptOsdk: { functionName: string };
+    };
+    return [locator.typescriptOsdk.functionName, fn];
+  });
 }
 
-export async function testDefineFunction(
-  dirPath: string,
+export async function defineFunction(
+  rootDir: string,
+  functionsSubDir?: string,
 ): Promise<FunctionIrBlockData> {
   const FD = await loadFunctionDiscoverer();
   if (!FD) {
@@ -111,53 +105,19 @@ export async function testDefineFunction(
     );
   }
 
-  const srcDir =
-    "/Volumes/git/ethana-ontology-local/test-ontology-ontology-as-code/test-ontology-ontology/src";
-  const tsConfigFilePath = path.join(srcDir, "tsconfig.json");
-  const program = createProgram(tsConfigFilePath, srcDir);
-  const entryPointPath = path.join(srcDir, "index.ts");
-  const fullFilePath = path.join(srcDir, dirPath);
+  const tsConfigFilePath = path.join(rootDir, "tsconfig.json");
+  const program = createProgram(tsConfigFilePath, rootDir);
+  const entryPointPath = path.join(rootDir, "index.ts");
+  const fullFilePath = functionsSubDir
+    ? path.join(rootDir, functionsSubDir)
+    : rootDir;
 
-  // Initialize FunctionDiscoverer with the program
-  const entityMetadataMapping: IEntityMetadataMapping = {
-    ontologies: {
-      ontologyRid: {
-        objectTypes: {
-          "com.palantir.test-group.test-ontology-ontology.employees26": {
-            objectTypeId: "test-id",
-            primaryKey: {
-              propertyId: "id",
-            },
-            propertyTypes: {
-              id: { propertyId: "id" },
-            },
-            linkTypes: {},
-          },
-        },
-        interfaceTypes: {},
-      },
-    },
-  };
-  const fd = new FD(
-    program,
-    entryPointPath,
-    fullFilePath,
-    entityMetadataMapping,
-  );
-
-  // Discover functions using the provided filePath as the functionsDirectoryPath
+  const fd = new FD(program, entryPointPath, fullFilePath);
   const functions = fd.discover();
-  // eslint-disable-next-line no-console
-  console.log(functions.diagnostics);
+
   return {
     functionsBlockDataV1: Object.fromEntries(
-      functions.discoveredFunctions.map((fn: IDiscoveredFunction) =>
-        fn.locator.type === "typescriptOsdk"
-          ? [(fn.locator as { typescriptOsdk: { functionName: string } }).typescriptOsdk.functionName, fn]
-          : (() => {
-            throw new Error("OAC functions must be TypeScript");
-          })()
-      ),
+      extractFunctionEntries(functions.discoveredFunctions),
     ),
   };
 }
@@ -166,9 +126,17 @@ function createProgram(
   tsConfigFilePath: string,
   projectDir: string,
 ): ts.Program {
-  const { config } = ts.readConfigFile(tsConfigFilePath, ts.sys.readFile);
+  const configFile = ts.readConfigFile(tsConfigFilePath, ts.sys.readFile);
+  if (configFile.error) {
+    throw new Error(
+      `Failed to read tsconfig at ${tsConfigFilePath}: ${
+        ts.flattenDiagnosticMessageText(configFile.error.messageText, "\n")
+      }`,
+    );
+  }
+
   const { options, fileNames, errors } = ts.parseJsonConfigFileContent(
-    config,
+    configFile.config,
     ts.sys,
     projectDir,
   );
@@ -191,23 +159,15 @@ export async function generateFunctionsIr(
     );
   }
 
-  const tsConfigPath = configPath ?? "tsconfig.json";
+  const tsConfigPath = configPath ?? path.join(rootDir, "tsconfig.json");
   const program = createProgram(tsConfigPath, rootDir);
-  // eslint-disable-next-line no-console
-  console.log(JSON.stringify(entityMappings, null, 2));
-  const fd = new FD(program, rootDir, rootDir + "/functions", entityMappings);
+  const functionsDir = path.join(rootDir, "functions");
+  const fd = new FD(program, rootDir, functionsDir, entityMappings);
   const functions = fd.discover();
-  // eslint-disable-next-line no-console
-  console.log(functions.diagnostics);
+
   return {
     functionsBlockDataV1: Object.fromEntries(
-      functions.discoveredFunctions.map((fn: IDiscoveredFunction) =>
-        fn.locator.type === "typescriptOsdk"
-          ? [(fn.locator as { typescriptOsdk: { functionName: string } }).typescriptOsdk.functionName, fn]
-          : (() => {
-            throw new Error("OAC functions must be TypeScript");
-          })()
-      ),
+      extractFunctionEntries(functions.discoveredFunctions),
     ),
   };
 }

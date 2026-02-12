@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { OntologyIr } from "@osdk/client.unstable";
 import { OntologyIrToFullMetadataConverter } from "@osdk/generator-converters.ontologyir";
 import { consola } from "consola";
 import { execa } from "execa";
@@ -23,34 +24,28 @@ import * as path from "node:path";
 import invariant from "tiny-invariant";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
+import type { IEntityMetadataMapping } from "../api/defineFunction.js";
 import { defineOntology } from "../api/defineOntology.js";
-import type { OntologyIr } from "@osdk/client.unstable";
 
 // Dynamic imports for optional function discovery dependencies
-let generateFunctionsIr: ((
-  rootDir: string,
-  configPath: string | undefined,
-  entityMappings: IEntityMetadataMapping,
-) => Promise<unknown>) | undefined;
-
-interface IEntityMetadataMapping {
-  ontologies: Record<string, {
-    objectTypes: Record<string, {
-      objectTypeId: string;
-      primaryKey: { propertyId: string };
-      propertyTypes: Record<string, { propertyId: string }>;
-      linkTypes: Record<string, unknown>;
-    }>;
-    interfaceTypes: Record<string, unknown>;
-  }>;
-}
+let generateFunctionsIr:
+  | ((
+    rootDir: string,
+    configPath: string | undefined,
+    entityMappings: IEntityMetadataMapping,
+  ) => Promise<unknown>)
+  | undefined;
 
 async function loadFunctionDiscoveryDeps(): Promise<boolean> {
   try {
     const defineFunctionModule = await import("../api/defineFunction.js");
     generateFunctionsIr = defineFunctionModule.generateFunctionsIr;
     return true;
-  } catch {
+  } catch (e: unknown) {
+    consola.warn(
+      "Failed to load function discovery dependencies:",
+      e instanceof Error ? e.message : e,
+    );
     return false;
   }
 }
@@ -217,8 +212,6 @@ export default async function main(
     commandLineOpts.codeSnippetDir,
     commandLineOpts.randomnessKey,
   );
-  consola.log(JSON.stringify(ontologyIr, null, 2));
-
   consola.info(`Saving ontology to ${commandLineOpts.output}`);
   await fs.writeFile(
     commandLineOpts.output,
@@ -261,7 +254,6 @@ export default async function main(
       commandLineOpts.configPath,
       createEntityMappings(ontologyIr),
     );
-    consola.log(JSON.stringify(functionsIr, null, 2));
     await fs.writeFile(
       commandLineOpts.functionsOutput,
       JSON.stringify(functionsIr, null, 2),
@@ -304,9 +296,7 @@ async function loadOntology(
         debug: false,
         importMeta: import.meta,
       });
-      const module = await jiti.import(input);
-
-      // await import(input);
+      await jiti.import(input);
     },
     outputDir,
     dependencyFile,
@@ -331,7 +321,7 @@ async function fullMetadataToOsdk(
 
   try {
     // Generate the source code for the osdk
-    const { stdout, stderr, exitCode } = await execa("pnpm", [
+    await execa("pnpm", [
       "exec",
       "osdk",
       "unstable",
@@ -366,7 +356,9 @@ function createEntityMappings(ontologyIr: OntologyIr): IEntityMetadataMapping {
   };
 
   for (
-    const [apiName, blockData] of Object.entries(ontologyIr.ontology.objectTypes)
+    const [apiName, blockData] of Object.entries(
+      ontologyIr.ontology.objectTypes,
+    )
   ) {
     const propertyTypesMap: Record<string, { propertyId: string }> = {};
 

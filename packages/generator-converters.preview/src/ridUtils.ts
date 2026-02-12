@@ -17,13 +17,19 @@
 import { createHash } from "node:crypto";
 
 /**
- * Generate a deterministic UUID from a string.
- * Uses SHA-256 hash truncated to UUID format for consistency.
+ * Generate a deterministic UUID v5-like identifier from a string.
+ * Uses SHA-256 hash truncated to UUID format with version (5) and
+ * variant (RFC 4122) bits set for spec compliance.
  */
 export function toUuid(str: string): string {
-  const hashHex = createHash("sha256").update(str).digest("hex");
-  // Format as UUID: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
-  return `${hashHex.slice(0, 8)}-${hashHex.slice(8, 12)}-${
-    hashHex.slice(12, 16)
-  }-${hashHex.slice(16, 20)}-${hashHex.slice(20, 32)}`;
+  const hashBytes = createHash("sha256").update(str).digest();
+  // Set version to 5 (name-based SHA) in byte 6: clear top nibble, set to 0101
+  hashBytes[6] = (hashBytes[6] & 0x0f) | 0x50;
+  // Set variant to RFC 4122 in byte 8: clear top 2 bits, set to 10
+  hashBytes[8] = (hashBytes[8] & 0x3f) | 0x80;
+
+  const hex = hashBytes.subarray(0, 16).toString("hex");
+  return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${
+    hex.slice(16, 20)
+  }-${hex.slice(20, 32)}`;
 }

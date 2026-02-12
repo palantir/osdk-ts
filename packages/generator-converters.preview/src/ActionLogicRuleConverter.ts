@@ -79,7 +79,25 @@ function getObjectReferenceType(
 }
 
 /**
- * Convert OntologyIrLogicRule to ActionLogicRule for use in ActionTypeFullMetadata.
+ * Build lookups once and convert all logic rules for an action.
+ * Avoids rebuilding lookup Maps on every rule.
+ */
+export function convertIrLogicRulesToActionLogicRules(
+  rules: OntologyIrLogicRule[],
+  action: OntologyIrActionTypeBlockDataV2,
+  ir?: OntologyIrOntologyBlockDataV2,
+): Ontologies.ActionLogicRule[] {
+  const objectLookup = buildObjectTypeLookup(ir);
+  const interfaceLookup = buildInterfaceTypeLookup(ir);
+
+  return rules.map(irRule =>
+    convertSingleRule(irRule, action, objectLookup, interfaceLookup)
+  );
+}
+
+/**
+ * Convert a single OntologyIrLogicRule to ActionLogicRule.
+ * Kept as a public API for callers that only need a single rule conversion.
  */
 export function convertIrLogicRuleToActionLogicRule(
   irRule: OntologyIrLogicRule,
@@ -88,7 +106,15 @@ export function convertIrLogicRuleToActionLogicRule(
 ): Ontologies.ActionLogicRule {
   const objectLookup = buildObjectTypeLookup(ir);
   const interfaceLookup = buildInterfaceTypeLookup(ir);
+  return convertSingleRule(irRule, action, objectLookup, interfaceLookup);
+}
 
+function convertSingleRule(
+  irRule: OntologyIrLogicRule,
+  action: OntologyIrActionTypeBlockDataV2,
+  objectLookup: ApiNameLookup | undefined,
+  interfaceLookup: ApiNameLookup | undefined,
+): Ontologies.ActionLogicRule {
   switch (irRule.type) {
     case "addObjectRule": {
       const r = irRule.addObjectRule;
@@ -126,6 +152,7 @@ export function convertIrLogicRuleToActionLogicRule(
 
     case "modifyObjectRule": {
       const r = irRule.modifyObjectRule;
+      // Validate that the parameter is an objectReference (throws if not)
       getObjectReferenceType(action, r.objectToModify);
       const result: Ontologies.ModifyObjectLogicRule & {
         type: "modifyObject";

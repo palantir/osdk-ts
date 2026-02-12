@@ -32,61 +32,71 @@ Arguments:
 
 Options:
   --functions-dir <path>            Path to TypeScript functions source directory (enables TS function discovery)
-  --node-modules-path <path>        Path to node_modules containing @foundry packages (required for TS function discovery)
+  --node-modules-path <path>        Path to node_modules containing @foundry packages (for TS function discovery)
   --python-functions-dir <path>     Path to Python functions source directory (enables Python function discovery)
   --python-root-project-dir <path>  Root project directory for Python functions (defaults to parent of python-functions-dir)
   --python-binary <path>            Path to Python binary (defaults to .maestro/bin/python3 or system python3)`;
 
+interface ParsedOptions {
+  functionsDir?: string;
+  nodeModulesPath?: string;
+  pythonFunctionsDir?: string;
+  pythonRootProjectDir?: string;
+  pythonBinary?: string;
+}
+
+function parseNamedOption(
+  args: string[],
+  flag: string,
+): { value: string | undefined; remaining: string[] } {
+  const idx = args.indexOf(flag);
+  if (idx === -1 || !args[idx + 1]) {
+    return { value: undefined, remaining: args };
+  }
+  const value = args[idx + 1];
+  const remaining = [...args.slice(0, idx), ...args.slice(idx + 2)];
+  return { value: path.resolve(value), remaining };
+}
+
+function parseOptions(
+  argv: string[],
+): { positional: string[]; options: ParsedOptions } {
+  let args = argv;
+  const options: ParsedOptions = {};
+
+  let result = parseNamedOption(args, "--functions-dir");
+  options.functionsDir = result.value;
+  args = result.remaining;
+
+  result = parseNamedOption(args, "--node-modules-path");
+  options.nodeModulesPath = result.value;
+  args = result.remaining;
+
+  result = parseNamedOption(args, "--python-functions-dir");
+  options.pythonFunctionsDir = result.value;
+  args = result.remaining;
+
+  result = parseNamedOption(args, "--python-root-project-dir");
+  options.pythonRootProjectDir = result.value;
+  args = result.remaining;
+
+  result = parseNamedOption(args, "--python-binary");
+  options.pythonBinary = result.value;
+  args = result.remaining;
+
+  return { positional: args, options };
+}
+
 async function main(): Promise<void> {
-  const args = process.argv.slice(2);
+  const { positional, options } = parseOptions(process.argv.slice(2));
 
-  // Parse --functions-dir option
-  let functionsDir: string | undefined;
-  const functionsDirIndex = args.indexOf("--functions-dir");
-  if (functionsDirIndex !== -1 && args[functionsDirIndex + 1]) {
-    functionsDir = path.resolve(args[functionsDirIndex + 1]);
-    args.splice(functionsDirIndex, 2);
-  }
-
-  // Parse --node-modules-path option
-  let nodeModulesPath: string | undefined;
-  const nodeModulesIndex = args.indexOf("--node-modules-path");
-  if (nodeModulesIndex !== -1 && args[nodeModulesIndex + 1]) {
-    nodeModulesPath = path.resolve(args[nodeModulesIndex + 1]);
-    args.splice(nodeModulesIndex, 2);
-  }
-
-  // Parse --python-functions-dir option
-  let pythonFunctionsDir: string | undefined;
-  const pythonFunctionsDirIndex = args.indexOf("--python-functions-dir");
-  if (pythonFunctionsDirIndex !== -1 && args[pythonFunctionsDirIndex + 1]) {
-    pythonFunctionsDir = path.resolve(args[pythonFunctionsDirIndex + 1]);
-    args.splice(pythonFunctionsDirIndex, 2);
-  }
-
-  // Parse --python-root-project-dir option
-  let pythonRootProjectDir: string | undefined;
-  const pythonRootIndex = args.indexOf("--python-root-project-dir");
-  if (pythonRootIndex !== -1 && args[pythonRootIndex + 1]) {
-    pythonRootProjectDir = path.resolve(args[pythonRootIndex + 1]);
-    args.splice(pythonRootIndex, 2);
-  }
-
-  // Parse --python-binary option
-  let pythonBinary: string | undefined;
-  const pythonBinaryIndex = args.indexOf("--python-binary");
-  if (pythonBinaryIndex !== -1 && args[pythonBinaryIndex + 1]) {
-    pythonBinary = path.resolve(args[pythonBinaryIndex + 1]);
-    args.splice(pythonBinaryIndex, 2);
-  }
-
-  if (args.length < 4) {
+  if (positional.length < 4) {
     // eslint-disable-next-line no-console
     console.error(USAGE);
     process.exit(1);
   }
 
-  const [inputArg, packageName, packageVersion, outputArg] = args;
+  const [inputArg, packageName, packageVersion, outputArg] = positional;
   const inputFile = path.resolve(inputArg);
   const outputDir = path.resolve(outputArg);
 
@@ -108,7 +118,7 @@ async function main(): Promise<void> {
     const parsed = JSON.parse(fileContent);
     // Handle both wrapped (ontology.objectTypes) and unwrapped (objectTypes) formats
     irJson = parsed.ontology ?? parsed;
-  } catch (e) {
+  } catch {
     // eslint-disable-next-line no-console
     console.error(`Error: Failed to parse JSON from ${inputFile}`);
     process.exit(1);
@@ -121,44 +131,35 @@ async function main(): Promise<void> {
       >[0],
     );
 
-  if (!functionsDir) {
-     
-    throw new Error(
-      "Error: --functions-dir is required for TypeScript function discovery",
-    );
-  }
-  if (!pythonFunctionsDir) {
-     
-    throw new Error(
-      "Error: --python-functions-dir is required for Python function discovery",
-    );
-  }
+  // Function discovery is optional - only run if at least one functions flag is provided
+  if (options.functionsDir || options.pythonFunctionsDir) {
+    const effectivePythonRootDir = options.pythonRootProjectDir
+      ?? (options.pythonFunctionsDir
+        ? path.dirname(options.pythonFunctionsDir)
+        : undefined);
 
-  // Default pythonRootProjectDir to parent of pythonFunctionsDir if not specified
-  const effectivePythonRootDir = pythonRootProjectDir
-    ?? (pythonFunctionsDir ? path.dirname(pythonFunctionsDir) : undefined);
+    const queryTypes = await OntologyIrToFullMetadataConverter
+      .getOsdkQueryTypes(
+        options.functionsDir ?? "",
+        options.nodeModulesPath,
+        options.pythonFunctionsDir,
+        effectivePythonRootDir,
+        options.pythonBinary,
+      );
 
-  const queryTypes = await OntologyIrToFullMetadataConverter
-    .getOsdkQueryTypes(
-      functionsDir,
-      nodeModulesPath,
-      pythonFunctionsDir,
-      effectivePythonRootDir,
-      pythonBinary,
-    );
-
-  const functionNames = Object.keys(queryTypes);
-  if (functionNames.length > 0) {
-    previewMetadata.queryTypes = queryTypes;
-    // eslint-disable-next-line no-console
-    console.log(
-      `Discovered ${functionNames.length} function(s): ${
-        functionNames.join(", ")
-      }`,
-    );
-  } else {
-    // eslint-disable-next-line no-console
-    console.log("No functions discovered.");
+    const functionNames = Object.keys(queryTypes);
+    if (functionNames.length > 0) {
+      previewMetadata.queryTypes = queryTypes;
+      // eslint-disable-next-line no-console
+      console.log(
+        `Discovered ${functionNames.length} function(s): ${
+          functionNames.join(", ")
+        }`,
+      );
+    } else {
+      // eslint-disable-next-line no-console
+      console.log("No functions discovered.");
+    }
   }
 
   // Convert ActionTypeFullMetadata to ActionTypeV2 for generator compatibility

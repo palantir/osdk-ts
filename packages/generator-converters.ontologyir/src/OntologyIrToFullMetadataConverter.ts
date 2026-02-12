@@ -33,8 +33,8 @@ import { spawnSync } from "node:child_process";
 import { hash } from "node:crypto";
 import { existsSync } from "node:fs";
 import { createRequire } from "node:module";
+import * as path from "node:path";
 import { pathToFileURL } from "node:url";
-import * as path from "path";
 import invariant from "tiny-invariant";
 import * as ts from "typescript";
 import type { ApiName } from "./ApiName.js";
@@ -53,12 +53,8 @@ interface IDiscoveredFunction {
   customTypes: Record<string, unknown>;
 }
 
-interface IDiscoveryResult {
-  discoveredFunctions: IDiscoveredFunction[];
-}
-
 interface IFunctionDiscoverer {
-  discover(): IDiscoveryResult;
+  discover(): { discoveredFunctions: IDiscoveredFunction[] };
 }
 
 interface IFunctionDiscovererConstructor {
@@ -134,12 +130,15 @@ function discoverPythonFunctions(
     {
       cwd: rootProjectDir,
       encoding: "utf-8",
-      maxBuffer: 50 * 1024 * 1024, // 50MB buffer for large outputs
+      maxBuffer: 10 * 1024 * 1024, // 10MB buffer - function discovery can produce large JSON output
     },
   );
 
   if (result.error) {
-    // Python not available or other spawn error
+    // eslint-disable-next-line no-console
+    console.warn(
+      `Python function discovery spawn error: ${result.error.message}`,
+    );
     return null;
   }
 
@@ -153,21 +152,30 @@ function discoverPythonFunctions(
   }
 
   try {
-    // The Python command may output log lines before the JSON
-    // Find the JSON object which starts with {"functions":
+    // The Python command may output log lines before the JSON on stdout.
+    // Find the last occurrence of the JSON start marker to avoid false
+    // matches in log output.
     const stdout = result.stdout;
-    const jsonStart = stdout.indexOf("{\"functions\":");
+    const marker = "{\"functions\":";
+    const jsonStart = stdout.lastIndexOf(marker);
     if (jsonStart === -1) {
       // eslint-disable-next-line no-console
-      console.error(`No JSON found in Python discovery output: ${stdout}`);
+      console.error(
+        `No JSON found in Python discovery output (expected ${marker}): ${
+          stdout.slice(0, 500)
+        }`,
+      );
       return null;
     }
     const jsonStr = stdout.slice(jsonStart);
-    const output = JSON.parse(jsonStr) as IPythonDiscoveryResult;
-    return output;
-  } catch {
+    return JSON.parse(jsonStr) as IPythonDiscoveryResult;
+  } catch (e: unknown) {
     // eslint-disable-next-line no-console
-    console.error(`Failed to parse Python discovery output: ${result.stdout}`);
+    console.error(
+      `Failed to parse Python discovery output: ${
+        e instanceof Error ? e.message : e
+      }`,
+    );
     return null;
   }
 }
@@ -219,7 +227,12 @@ async function loadFunctionDiscoverer(
         typescript: FunctionDiscovererTs,
       };
     }
-  } catch {
+  } catch (e: unknown) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      "Failed to load function discovery modules:",
+      e instanceof Error ? e.message : e,
+    );
     return null;
   }
 }
@@ -272,17 +285,7 @@ export class OntologyIrToFullMetadataConverter {
     pythonRootProjectDir?: string,
     pythonBinary?: string,
   ): Promise<Ontologies.OntologyFullMetadata> {
-    const interfaceTypes = this.getOsdkInterfaceTypes(
-      Object.values(ir.interfaceTypes),
-    );
-    const sharedPropertyTypes = this.getOsdkSharedPropertyTypes(
-      Object.values(ir.sharedPropertyTypes),
-    );
-    const objectTypes = this.getOsdkObjectTypes(
-      Object.values(ir.objectTypes),
-      Object.values(ir.linkTypes),
-    );
-    const actionTypes = this.getOsdkActionTypes(Object.values(ir.actionTypes));
+    const base = this.getFullMetadataFromIr(ir);
     const queryTypes = await this.getOsdkQueryTypes(
       functionsDir,
       nodeModulesPath,
@@ -292,18 +295,8 @@ export class OntologyIrToFullMetadataConverter {
     );
 
     return {
-      interfaceTypes,
-      sharedPropertyTypes,
-      objectTypes,
+      ...base,
       queryTypes,
-      actionTypes,
-      ontology: {
-        apiName: "ontology",
-        rid: `ri.00000`,
-        displayName: "ontology",
-        description: "",
-      },
-      valueTypes: {},
     };
   }
 
@@ -571,13 +564,23 @@ export class OntologyIrToFullMetadataConverter {
     tsConfigFilePath: string,
     projectDir: string,
   ): ts.Program {
-    const { config } = typescript.readConfigFile(
+    const configFile = typescript.readConfigFile(
       tsConfigFilePath,
       typescript.sys.readFile,
     );
+    if (configFile.error) {
+      throw new Error(
+        `Failed to read tsconfig at ${tsConfigFilePath}: ${
+          typescript.flattenDiagnosticMessageText(
+            configFile.error.messageText,
+            "\n",
+          )
+        }`,
+      );
+    }
     const { options, fileNames, errors } = typescript
       .parseJsonConfigFileContent(
-        config,
+        configFile.config,
         typescript.sys,
         projectDir,
       );

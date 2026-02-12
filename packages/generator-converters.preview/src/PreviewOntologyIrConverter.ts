@@ -21,7 +21,7 @@ import type {
 } from "@osdk/client.unstable";
 import type * as Ontologies from "@osdk/foundry.ontologies";
 import { OntologyIrToFullMetadataConverter } from "@osdk/generator-converters.ontologyir";
-import { convertIrLogicRuleToActionLogicRule } from "./ActionLogicRuleConverter.js";
+import { convertIrLogicRulesToActionLogicRules } from "./ActionLogicRuleConverter.js";
 import { toUuid } from "./ridUtils.js";
 
 /**
@@ -131,8 +131,10 @@ export class PreviewOntologyIrConverter {
 
       result[actionType.apiName] = {
         actionType,
-        fullLogicRules: action.actionType.actionTypeLogic.logic.rules.map(
-          rule => convertIrLogicRuleToActionLogicRule(rule, action, ir),
+        fullLogicRules: convertIrLogicRulesToActionLogicRules(
+          action.actionType.actionTypeLogic.logic.rules,
+          action,
+          ir,
         ),
       };
     }
