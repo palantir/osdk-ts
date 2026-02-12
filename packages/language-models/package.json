@@ -42,11 +42,13 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
-    "yaml": "^2.8.1"
+    "cls-hooked": "^4.2.2",
+    "yaml": "^2.8.2"
   },
   "devDependencies": {
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
+    "@types/cls-hooked": "^4.3.9",
     "@types/node": "^18.19.0",
     "typescript": "~5.5.4"
   },

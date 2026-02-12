@@ -14,73 +14,68 @@
  * limitations under the License.
  */
 
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { createNamespace, destroyNamespace } from "cls-hooked";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { createFetch } from "./createFetch.js";
 
+const FUNCTIONS_NAMESPACE = "functions-typescript-runtime";
+
 describe("createFetch", () => {
-  let originalToken: string | undefined;
-
-  beforeEach(() => {
-    originalToken = process.env.FOUNDRY_TOKEN;
-  });
-
   afterEach(() => {
-    if (originalToken !== undefined) {
-      process.env.FOUNDRY_TOKEN = originalToken;
-    } else {
-      delete process.env.FOUNDRY_TOKEN;
-    }
     vi.restoreAllMocks();
+    try {
+      destroyNamespace(FUNCTIONS_NAMESPACE);
+    } catch {
+      // namespace may not exist
+    }
   });
 
   it("returns a fetch function that sets the Authorization header", async () => {
-    process.env.FOUNDRY_TOKEN = "test-token-abc";
+    const ns = createNamespace(FUNCTIONS_NAMESPACE);
+    await ns.runPromise(async () => {
+      ns.set("FOUNDRY_TOKEN", "test-token-abc");
 
-    const mockResponse = new Response("ok", { status: 200 });
-    const mockFetch = vi.spyOn(globalThis, "fetch").mockResolvedValue(
-      mockResponse,
-    );
+      const mockResponse = new Response("ok", { status: 200 });
+      const mockFetch = vi.spyOn(globalThis, "fetch").mockResolvedValue(
+        mockResponse,
+      );
 
-    const wrappedFetch = createFetch({ preview: true });
-    const response = await wrappedFetch("https://example.com/api");
+      const wrappedFetch = createFetch({ preview: true });
+      const response = await wrappedFetch("https://example.com/api");
 
-    expect(response).toBe(mockResponse);
-    expect(mockFetch).toHaveBeenCalledOnce();
+      expect(response).toBe(mockResponse);
+      expect(mockFetch).toHaveBeenCalledOnce();
 
-    const [url, init] = mockFetch.mock.calls[0];
-    expect(url).toBe("https://example.com/api");
-    const headers = init?.headers as Headers;
-    expect(headers.get("Authorization")).toBe("Bearer test-token-abc");
+      const [url, init] = mockFetch.mock.calls[0];
+      expect(url).toBe("https://example.com/api");
+      const headers = init?.headers as Headers;
+      expect(headers.get("Authorization")).toBe("Bearer test-token-abc");
+    });
   });
 
   it("preserves existing headers", async () => {
-    process.env.FOUNDRY_TOKEN = "test-token-abc";
+    const ns = createNamespace(FUNCTIONS_NAMESPACE);
+    await ns.runPromise(async () => {
+      ns.set("FOUNDRY_TOKEN", "test-token-abc");
 
-    const mockResponse = new Response("ok", { status: 200 });
-    const mockFetch = vi.spyOn(globalThis, "fetch").mockResolvedValue(
-      mockResponse,
-    );
+      const mockResponse = new Response("ok", { status: 200 });
+      const mockFetch = vi.spyOn(globalThis, "fetch").mockResolvedValue(
+        mockResponse,
+      );
 
-    const wrappedFetch = createFetch({ preview: true });
-    await wrappedFetch("https://example.com/api", {
-      headers: { "Content-Type": "application/json" },
+      const wrappedFetch = createFetch({ preview: true });
+      await wrappedFetch("https://example.com/api", {
+        headers: { "Content-Type": "application/json" },
+      });
+
+      const [, init] = mockFetch.mock.calls[0];
+      const headers = init?.headers as Headers;
+      expect(headers.get("Authorization")).toBe("Bearer test-token-abc");
+      expect(headers.get("Content-Type")).toBe("application/json");
     });
-
-    const [, init] = mockFetch.mock.calls[0];
-    const headers = init?.headers as Headers;
-    expect(headers.get("Authorization")).toBe("Bearer test-token-abc");
-    expect(headers.get("Content-Type")).toBe("application/json");
-  });
-
-  it("throws when FOUNDRY_TOKEN is not set", () => {
-    delete process.env.FOUNDRY_TOKEN;
-    expect(() => createFetch({ preview: true })).toThrow(
-      "FOUNDRY_TOKEN environment variable is not set",
-    );
   });
 
   it("throws when preview is not true", () => {
-    process.env.FOUNDRY_TOKEN = "test-token-abc";
     expect(() =>
       createFetch({ preview: false } as unknown as { preview: true })
     ).toThrow(

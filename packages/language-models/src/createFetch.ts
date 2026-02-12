@@ -20,14 +20,15 @@ import type { PreviewOptions } from "./PreviewOptions.js";
 
 /**
  * Creates a `fetch` wrapper that automatically injects a Bearer token
- * Authorization header using the Foundry token from the environment.
+ * Authorization header using the Foundry token from the function runtime.
  *
  * The returned function has the same signature as the global `fetch` and
  * can be passed directly to SDK clients (e.g., OpenAI's `fetch` option).
+ * The token is retrieved on each request to ensure it is always fresh.
  *
  * @param options - Must include `{ preview: true }` to acknowledge use of a beta API.
  * @returns A `fetch`-compatible function with Bearer token auth.
- * @throws Error if the `FOUNDRY_TOKEN` environment variable is not set.
+ * @throws Error if the Foundry token is not available in the function runtime.
  *
  * @example
  * ```typescript
@@ -46,9 +47,8 @@ export function createFetch(
 ): typeof globalThis.fetch {
   assertPreview(options);
 
-  const token = getFoundryToken({ preview: true });
-
   return (input, init?) => {
+    const token = getFoundryToken({ preview: true });
     const headers = new Headers(init?.headers);
     headers.set("Authorization", `Bearer ${token}`);
     return fetch(input, { ...init, headers });

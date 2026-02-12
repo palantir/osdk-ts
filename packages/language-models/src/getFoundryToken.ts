@@ -14,19 +14,22 @@
  * limitations under the License.
  */
 
+import { getNamespace } from "cls-hooked";
 import { assertPreview } from "./assertPreview.js";
 import type { PreviewOptions } from "./PreviewOptions.js";
 
-const FOUNDRY_TOKEN_ENV_VAR = "FOUNDRY_TOKEN" as const;
+const FUNCTIONS_NAMESPACE = "functions-typescript-runtime" as const;
+const FOUNDRY_TOKEN_KEY = "FOUNDRY_TOKEN" as const;
 
 /**
- * Retrieves the Foundry authentication token from the environment.
+ * Retrieves the Foundry token from the Function's runtime environment.
  *
- * Reads the `FOUNDRY_TOKEN` environment variable.
+ * This function is intended to be used only from within a function. Usage of this utility elsewhere may result
+ * in errors since the runtime environment may not be properly configured.
  *
  * @param options - Must include `{ preview: true }` to acknowledge use of a beta API.
- * @returns The Foundry authentication token.
- * @throws Error if the `FOUNDRY_TOKEN` environment variable is not set.
+ * @returns The Foundry token.
+ * @throws Error if the token has not been properly configured in the function's runtime environment.
  *
  * @example
  * ```typescript
@@ -36,11 +39,21 @@ const FOUNDRY_TOKEN_ENV_VAR = "FOUNDRY_TOKEN" as const;
 export function getFoundryToken(options: PreviewOptions): string {
   assertPreview(options);
 
-  const token = process.env[FOUNDRY_TOKEN_ENV_VAR];
+  const namespace = getNamespace(FUNCTIONS_NAMESPACE);
 
-  if (!token) {
+  if (!namespace) {
     throw new Error(
-      `${FOUNDRY_TOKEN_ENV_VAR} environment variable is not set`,
+      `Function runtime namespace "${FUNCTIONS_NAMESPACE}" is not available. `
+        + `This utility can only be used from within a Foundry function.`,
+    );
+  }
+
+  const token = namespace.get(FOUNDRY_TOKEN_KEY);
+
+  if (!token || typeof token !== "string") {
+    throw new Error(
+      `${FOUNDRY_TOKEN_KEY} is not available in the function runtime namespace. `
+        + `Ensure the function is running in a properly configured environment.`,
     );
   }
 
