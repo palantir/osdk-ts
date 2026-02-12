@@ -93,7 +93,8 @@ function MultiDateInputInner({
               <button
                 type="button"
                 className={sharedStyles.tagRemove}
-                onClick={() => removeDate(date)}
+                onClick={() =>
+                  removeDate(date)}
                 aria-label={`Remove ${formatDateForDisplay(date)}`}
               >
                 ×
