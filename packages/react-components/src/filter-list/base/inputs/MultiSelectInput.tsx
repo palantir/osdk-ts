@@ -121,7 +121,8 @@ function MultiSelectInputInner<
                   <button
                     type="button"
                     className={sharedStyles.tagRemove}
-                    onClick={() => removeValue(value)}
+                    onClick={() =>
+                      removeValue(value)}
                     aria-label={`Remove ${value}`}
                   >
                     ×
@@ -141,7 +142,7 @@ function MultiSelectInputInner<
               placeholder={selectedValues.length > 0
                 ? `${selectedValues.length} selected`
                 : placeholder}
-              aria-label={`Search ${String(propertyKey)} values`}
+              aria-label={`Search ${propertyKey} values`}
             />
             {showClearAll && selectedValues.length > 0 && (
               <Combobox.Clear
@@ -159,8 +160,7 @@ function MultiSelectInputInner<
                   ? <Combobox.Empty>No options available</Combobox.Empty>
                   : values.map(({ value, count }) => (
                     <Combobox.Item key={value} value={value}>
-                      <span>{value}</span>
-                      {" "}
+                      <span>{value}</span>{" "}
                       <span style={{ fontVariantNumeric: "tabular-nums" }}>
                         ({count.toLocaleString()})
                       </span>

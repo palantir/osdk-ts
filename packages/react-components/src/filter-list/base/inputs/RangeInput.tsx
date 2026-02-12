@@ -126,7 +126,6 @@ function RangeInputInner<
     };
   }, []);
 
-
   const aggregateOptions = useMemo(
     () =>
       ({
