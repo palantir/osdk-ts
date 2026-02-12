@@ -1,0 +1,91 @@
+/*
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.osdkSwitchRoot {
+  --osdk-switch-track-width: var(--osdk-switch-track-width-override, 28px);
+  --osdk-switch-track-height: var(--osdk-switch-track-height-override, 16px);
+  --osdk-switch-thumb-size: var(--osdk-switch-thumb-size-override, 12px);
+  --osdk-switch-thumb-offset: var(--osdk-switch-thumb-offset-override, 2px);
+
+  display: inline-flex;
+  align-items: center;
+  width: var(--osdk-switch-track-width);
+  height: var(--osdk-switch-track-height);
+  padding: 0;
+  box-sizing: border-box;
+  cursor: pointer;
+  border-radius: var(--osdk-switch-border-radius, var(--osdk-surface-border-radius));
+  position: relative;
+  border: none;
+  transition: background-color var(--osdk-switch-transition-duration, var(--bp-emphasis-transitionDuration))
+    var(--osdk-switch-transition-ease, var(--bp-emphasis-ease-default));
+
+  &[data-unchecked] {
+    background-color: var(--osdk-switch-track-bg, var(--bp-intent-default-rest));
+
+    &:hover {
+      background-color: var(--osdk-switch-track-bg-hover, var(--bp-intent-default-hover));
+    }
+
+    &:active {
+      background-color: var(--osdk-switch-track-bg-active, var(--bp-intent-default-active));
+    }
+  }
+
+  &[data-checked] {
+    background-color: var(--osdk-switch-track-bg-checked, var(--bp-intent-primary-rest));
+
+    &:hover {
+      background-color: var(--osdk-switch-track-bg-checked-hover, var(--bp-intent-primary-hover));
+    }
+
+    &:active {
+      background-color: var(--osdk-switch-track-bg-checked-active, var(--bp-intent-primary-active));
+    }
+  }
+
+  &[data-disabled] {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  &:focus-visible {
+    outline: var(--osdk-switch-focus-width, var(--bp-emphasis-focusWidth)) solid
+      var(--osdk-switch-focus-color, var(--bp-emphasis-focusColor));
+    outline-offset: var(--osdk-switch-focus-offset, var(--bp-emphasis-focusOffset));
+  }
+}
+
+.osdkSwitchThumb {
+  display: block;
+  width: var(--osdk-switch-thumb-size);
+  height: var(--osdk-switch-thumb-size);
+  background-color: var(--osdk-switch-thumb-bg, var(--bp-palette-gray-100));
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  transition: left var(--osdk-switch-transition-duration, var(--bp-emphasis-transitionDuration))
+    var(--osdk-switch-transition-ease, var(--bp-emphasis-ease-default));
+
+  &[data-unchecked] {
+    left: var(--osdk-switch-thumb-offset);
+  }
+
+  &[data-checked] {
+    left: calc(var(--osdk-switch-track-width) - var(--osdk-switch-thumb-size) - var(--osdk-switch-thumb-offset));
+  }
+}
