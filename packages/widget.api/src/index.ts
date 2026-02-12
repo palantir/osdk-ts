@@ -49,7 +49,7 @@ export type {
   AllowedObjectSetParameterType,
   ParameterValue,
 } from "./parameters.js";
-export type { BrowserPermission } from "./permissions.js";
+export { BrowserPermission } from "./permissions.js";
 export type {
   AsyncFailedValue,
   AsyncLoadedValue,
