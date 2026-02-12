@@ -27,7 +27,7 @@
   padding: 0;
   box-sizing: border-box;
   cursor: pointer;
-  border-radius: calc(var(--osdk-switch-track-height) / 2);
+  border-radius: var(--osdk-switch-border-radius, var(--osdk-surface-border-radius));
   position: relative;
   border: none;
   transition: background-color var(--osdk-switch-transition-duration, var(--bp-emphasis-transitionDuration))
