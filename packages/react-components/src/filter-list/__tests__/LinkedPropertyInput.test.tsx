@@ -75,6 +75,10 @@ function createDefinition(
     linkedPropertyKey: "name" as PropertyKeys<ObjectTypeDefinition>,
     linkedFilterComponent,
     linkedFilterState: { type: "SELECT", selectedValues: [] },
+    filterState: {
+      type: "LINKED_PROPERTY",
+      linkedFilterState: { type: "SELECT", selectedValues: [] },
+    },
   } as LinkedPropertyFilterDefinition<
     ObjectTypeDefinition,
     string,
