@@ -81,7 +81,7 @@ function createDefinition(
     linkedFilterComponent,
     linkedFilterState: { type: "SELECT", selectedValues: [] },
     filterState: {
-      type: "LINKED_PROPERTY",
+      type: "linkedProperty",
       linkedFilterState: { type: "SELECT", selectedValues: [] },
     },
   } as LinkedPropertyFilterDefinition<
@@ -115,7 +115,7 @@ describe("LinkedPropertyInput", () => {
       toggle.click();
 
       expect(onFilterStateChanged).toHaveBeenCalledWith({
-        type: "LINKED_PROPERTY",
+        type: "linkedProperty",
         linkedFilterState: {
           type: "TOGGLE",
           enabled: true,
@@ -130,7 +130,7 @@ describe("LinkedPropertyInput", () => {
       const onFilterStateChanged = vi.fn();
 
       const filterState: FilterState = {
-        type: "LINKED_PROPERTY",
+        type: "linkedProperty",
         linkedFilterState: {
           type: "TOGGLE",
           enabled: true,
