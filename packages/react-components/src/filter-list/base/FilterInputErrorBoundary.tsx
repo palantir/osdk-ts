@@ -39,8 +39,13 @@ export class FilterInputErrorBoundary extends Component<
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo): void {
+    // eslint-disable-next-line no-console
     console.error("[FilterInputErrorBoundary] Error in filter input:", error);
-    console.error("[FilterInputErrorBoundary] Component stack:", errorInfo.componentStack);
+    // eslint-disable-next-line no-console
+    console.error(
+      "[FilterInputErrorBoundary] Component stack:",
+      errorInfo.componentStack,
+    );
     this.props.onError?.(error);
   }
 
