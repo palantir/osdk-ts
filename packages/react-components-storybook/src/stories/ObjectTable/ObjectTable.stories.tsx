@@ -45,7 +45,7 @@ const columnDefinitions: ColumnDefinition<Employee, RDPs, {}>[] = [
     renderHeader: () => <div style={{ fontWeight: "bold" }}>Employee Name</div>,
   },
   {
-    locator: { type: "property", id: "email" },
+    locator: { type: "property", id: "emailPrimaryWork" },
     renderHeader: () => "Email",
   },
   {
@@ -70,21 +70,21 @@ const columnDefinitions: ColumnDefinition<Employee, RDPs, {}>[] = [
       );
     },
   },
-  {
-    locator: {
-      type: "rdp",
-      id: "managerName",
-      creator: (baseObjectSet: DerivedProperty.Builder<Employee, false>) =>
-        baseObjectSet.pivotTo("lead").selectProperty("fullName"),
-    },
-    renderHeader: () => "Manager",
-    renderCell: (object: Osdk.Instance<Employee>) => {
-      if ("managerName" in object) {
-        return <span>{object["managerName"] as string}</span>;
-      }
-      return <span style={{ color: "#999" }}>No Manager</span>;
-    },
-  },
+  // {
+  //   locator: {
+  //     type: "rdp",
+  //     id: "managerName",
+  //     creator: (baseObjectSet: DerivedProperty.Builder<Employee, false>) =>
+  //       baseObjectSet.pivotTo("lead").selectProperty("fullName"),
+  //   },
+  //   renderHeader: () => "Manager",
+  //   renderCell: (object: Osdk.Instance<Employee>) => {
+  //     if ("managerName" in object) {
+  //       return <span>{object["managerName"] as string}</span>;
+  //     }
+  //     return <span style={{ color: "#999" }}>No Manager</span>;
+  //   },
+  // },
 ];
 
 export const Default: Story = {
