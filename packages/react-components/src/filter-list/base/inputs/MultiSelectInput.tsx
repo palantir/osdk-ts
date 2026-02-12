@@ -18,7 +18,6 @@ import type { ObjectSet, ObjectTypeDefinition, PropertyKeys } from "@osdk/api";
 import classnames from "classnames";
 import React, { memo, useCallback } from "react";
 import { Combobox } from "../../../base-components/combobox/Combobox.js";
-import { useLatestRef } from "../../hooks/useLatestRef.js";
 import { usePropertyAggregation } from "../../hooks/usePropertyAggregation.js";
 import styles from "./MultiSelectInput.module.css";
 import sharedStyles from "./shared.module.css";
@@ -57,10 +56,8 @@ function MultiSelectInputInner<
   const { data: values, isLoading, error } = usePropertyAggregation(
     objectType,
     propertyKey,
-    { objectSet },
+    {},
   );
-
-  const selectedValuesRef = useLatestRef(selectedValues);
 
   const handleValueChange = useCallback(
     (newValues: string[] | null) => {
@@ -71,9 +68,9 @@ function MultiSelectInputInner<
 
   const removeValue = useCallback(
     (value: string) => {
-      onChange(selectedValuesRef.current.filter((v) => v !== value));
+      onChange(selectedValues.filter((v) => v !== value));
     },
-    [onChange],
+    [selectedValues, onChange],
   );
 
   const clearAll = useCallback(() => {

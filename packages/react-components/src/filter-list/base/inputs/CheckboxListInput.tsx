@@ -18,7 +18,6 @@ import type { ObjectSet, ObjectTypeDefinition, PropertyKeys } from "@osdk/api";
 import classnames from "classnames";
 import React, { memo, useCallback, useMemo } from "react";
 import { Checkbox } from "../../../base-components/checkbox/Checkbox.js";
-import { useLatestRef } from "../../hooks/useLatestRef.js";
 import { usePropertyAggregation } from "../../hooks/usePropertyAggregation.js";
 import styles from "./CheckboxListInput.module.css";
 import sharedStyles from "./shared.module.css";
@@ -51,7 +50,7 @@ function CheckboxListInputInner<
   const { data, isLoading, error } = usePropertyAggregation(
     objectType,
     propertyKey,
-    { objectSet },
+    {},
   );
 
   const values = useMemo(
@@ -65,21 +64,15 @@ function CheckboxListInputInner<
     [selectedValues],
   );
 
-  // Use refs to avoid recreating callbacks on every selectedValues change
-  const selectedValuesRef = useLatestRef(selectedValues);
-  const selectedSetRef = useLatestRef(selectedSet);
-
   const toggleValue = useCallback(
     (value: string) => {
-      const currentSet = selectedSetRef.current;
-      const current = selectedValuesRef.current;
-      if (currentSet.has(value)) {
-        onChange(current.filter((v) => v !== value));
+      if (selectedSet.has(value)) {
+        onChange(selectedValues.filter((v) => v !== value));
       } else {
-        onChange([...current, value]);
+        onChange([...selectedValues, value]);
       }
     },
-    [onChange],
+    [selectedValues, selectedSet, onChange],
   );
 
   return (

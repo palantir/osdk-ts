@@ -57,7 +57,7 @@ function SingleSelectInputInner<
   const { data: values, isLoading, error } = usePropertyAggregation(
     objectType,
     propertyKey,
-    { objectSet },
+    {},
   );
 
   const handleValueChange = useCallback(
