@@ -1,0 +1,57 @@
+{
+  "Person": {
+    "apiName": "Person",
+    "type": "interface",
+    "displayName": "Person",
+    "description": "A person interface",
+    "rid": "ri.ontology.main.interface.353734ce-ae2d-4e49-8070-163b2126af5a",
+    "status": "ACTIVE",
+    "properties": {
+      "email": {
+        "apiName": "email",
+        "displayName": "Email",
+        "dataType": {
+          "type": "string"
+        }
+      },
+      "employeeNumber": {
+        "apiName": "employeeNumber",
+        "displayName": "Employee Number",
+        "dataType": {
+          "type": "integer"
+        }
+      }
+    }
+  },
+  "Worker": {
+    "apiName": "Worker", 
+    "type": "interface",
+    "displayName": "Worker",
+    "description": "A worker interface",
+    "rid": "ri.ontology.main.interface.777ffb22-9b3c-4fb6-908f-56d23c3a5198",
+    "status": "ACTIVE",
+    "properties": {
+      "email": {
+        "apiName": "email",
+        "displayName": "Email",
+        "dataType": {
+          "type": "string"
+        }
+      },
+      "name": {
+        "apiName": "name",
+        "displayName": "Name",
+        "dataType": {
+          "type": "string"
+        }
+      },
+      "employeeNumber": {
+        "apiName": "employeeNumber",
+        "displayName": "Employee Number",
+        "dataType": {
+          "type": "integer"
+        }
+      }
+    }
+  }
+}
