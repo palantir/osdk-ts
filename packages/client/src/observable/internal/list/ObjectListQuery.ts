@@ -16,9 +16,12 @@
 
 import type {
   DerivedProperty,
+  InterfaceDefinition,
+  ObjectOrInterfaceDefinition,
   ObjectSet,
   ObjectTypeDefinition,
   Osdk,
+  WhereClause,
 } from "@osdk/api";
 import { additionalContext } from "../../../Client.js";
 import type { InterfaceHolder } from "../../../object/convertWireToOsdkObjects/InterfaceHolder.js";
@@ -54,14 +57,19 @@ export class ObjectListQuery extends ListQuery {
     } as ObjectTypeDefinition;
 
     if (pivotInfo != null) {
-      let sourceSet = store.client({
-        type: "object",
-        apiName: pivotInfo.sourceType,
-      } as ObjectTypeDefinition);
+      const sourceSet = (pivotInfo.sourceTypeKind === "interface"
+        ? store.client({
+          type: "interface",
+          apiName: pivotInfo.sourceType,
+        } as InterfaceDefinition)
+        : store.client({
+          type: "object",
+          apiName: pivotInfo.sourceType,
+        } as ObjectTypeDefinition)) as ObjectSet<ObjectOrInterfaceDefinition>;
 
-      // Filter source objects before pivoting to linked objects
-      sourceSet = sourceSet.where(this.canonicalWhere);
-      let objectSet = sourceSet.pivotTo(pivotInfo.linkName);
+      let objectSet = sourceSet
+        .where(this.canonicalWhere as WhereClause<any>)
+        .pivotTo(pivotInfo.linkName);
 
       if (rdpConfig != null) {
         objectSet = objectSet.withProperties(
@@ -73,7 +81,7 @@ export class ObjectListQuery extends ListQuery {
         const intersectSets = intersectWith.map(whereClause => {
           let intersectSet = store.client({
             type: "object",
-            apiName: pivotInfo.targetType,
+            apiName: this.apiName,
           } as ObjectTypeDefinition);
 
           if (rdpConfig != null) {
@@ -82,7 +90,7 @@ export class ObjectListQuery extends ListQuery {
             );
           }
 
-          return intersectSet.where(whereClause);
+          return intersectSet.where(whereClause as WhereClause<any>);
         });
 
         objectSet = objectSet.intersect(...intersectSets);

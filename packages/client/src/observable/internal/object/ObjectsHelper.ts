@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  InterfaceDefinition,
-  ObjectTypeDefinition,
-  Osdk,
-} from "@osdk/api";
+import type { ObjectOrInterfaceDefinition, Osdk } from "@osdk/api";
 import deepEqual from "fast-deep-equal";
 import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import type { ObjectPayload } from "../../ObjectPayload.js";
@@ -38,14 +34,14 @@ export class ObjectsHelper extends AbstractHelper<
   ObjectQuery,
   ObserveObjectOptions<any>
 > {
-  observe<T extends ObjectTypeDefinition | InterfaceDefinition>(
+  observe<T extends ObjectOrInterfaceDefinition>(
     options: ObserveObjectOptions<T>,
     subFn: Observer<ObjectPayload>,
   ): QuerySubscription<ObjectQuery> {
     return super.observe(options, subFn);
   }
 
-  getQuery<T extends ObjectTypeDefinition | InterfaceDefinition>(
+  getQuery<T extends ObjectOrInterfaceDefinition>(
     options: ObserveObjectOptions<T>,
     rdpConfig?: Canonical<Rdp> | null,
   ): ObjectQuery {

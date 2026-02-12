@@ -127,6 +127,7 @@ export abstract class ListQuery extends BaseListQuery<
     this.#orderBy = cacheKey.otherKeys[ORDER_BY_IDX];
     this.#intersectWith = cacheKey.otherKeys[INTERSECT_IDX];
     this.#pivotInfo = cacheKey.otherKeys[PIVOT_IDX];
+
     this.#objectSet = this.createObjectSet(store);
 
     // Only initialize the sorting strategy here if there's no pivotTo.
@@ -163,9 +164,6 @@ export abstract class ListQuery extends BaseListQuery<
     return this.#pivotInfo;
   }
 
-  /**
-   * Create the ObjectSet for this query.
-   */
   protected abstract createObjectSet(
     store: Store,
   ): ObjectSet<ObjectTypeDefinition>;
