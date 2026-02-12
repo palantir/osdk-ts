@@ -26,3 +26,34 @@ body {
   border-radius: 4px;
   overflow: hidden;
 }
+
+/* Status tag styles */
+.status-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.status-tag.active {
+  background-color: #10b981;
+  color: white;
+}
+
+.status-tag.inactive {
+  background-color: #ef4444;
+  color: white;
+}
+
+/* Header link styles */
+.header-link {
+  color: #3b82f6;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.header-link:hover {
+  color: #2563eb;
+}

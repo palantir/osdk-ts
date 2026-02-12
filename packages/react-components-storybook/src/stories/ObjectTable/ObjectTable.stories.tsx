@@ -1,3 +1,19 @@
+/*
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import type { Osdk } from "@osdk/api";
 import {
   ColumnConfigDialog,
@@ -610,6 +626,130 @@ export const CustomRowHeight: Story = {
   args: {
     objectType: Employee,
     rowHeight: 56,
+  },
+  render: (args) => (
+    <div className="object-table-container" style={{ height: "600px" }}>
+      <ObjectTable objectType={Employee} {...args} />
+    </div>
+  ),
+};
+
+export const WithCustomRenderers: Story = {
+  args: {
+    objectType: Employee,
+    columnDefinitions: [
+      {
+        locator: { type: "property", id: "fullName" },
+        renderHeader: () => (
+          <a
+            href="#"
+            className="header-link"
+            onClick={(e) => {
+              e.preventDefault();
+              alert("Employee Name column clicked!");
+            }}
+          >
+            Employee Name
+          </a>
+        ),
+      },
+      {
+        locator: { type: "property", id: "emailPrimaryWork" },
+      },
+      {
+        locator: { type: "property", id: "jobTitle" },
+        renderHeader: () => "Job Title",
+      },
+      {
+        locator: {
+          type: "custom",
+          id: "status",
+        },
+        renderCell: (employee: any) => {
+          // Determine status based on start date
+          const startDate = employee["firstFullTimeStartDate"];
+          const isActive = startDate && new Date(startDate) <= new Date();
+
+          return (
+            <span className={`status-tag ${isActive ? "active" : "inactive"}`}>
+              {isActive ? "Active" : "Inactive"}
+            </span>
+          );
+        },
+        width: 100,
+        orderable: false,
+      },
+      {
+        locator: { type: "property", id: "department" },
+      },
+    ] as any,
+  },
+  render: (args) => (
+    <div className="object-table-container" style={{ height: "600px" }}>
+      <ObjectTable objectType={Employee} {...args} />
+    </div>
+  ),
+};
+
+export const WithStatusCells: Story = {
+  args: {
+    objectType: Employee,
+    columnDefinitions: [
+      {
+        locator: { type: "property", id: "fullName" },
+        renderHeader: () => "Employee",
+      },
+      {
+        locator: { type: "property", id: "department" },
+        renderHeader: () => "Department",
+      },
+      {
+        locator: {
+          type: "custom",
+          id: "employment-status",
+        },
+        renderHeader: () => "Employment Status",
+        renderCell: (employee: any) => {
+          const startDate = employee["firstFullTimeStartDate"];
+          const isActive = startDate && new Date(startDate) <= new Date();
+
+          return (
+            <span className={`status-tag ${isActive ? "active" : "inactive"}`}>
+              {isActive ? "Active" : "Inactive"}
+            </span>
+          );
+        },
+        width: 140,
+      },
+      {
+        locator: {
+          type: "custom",
+          id: "tenure-status",
+        },
+        renderHeader: () => "Tenure",
+        renderCell: (employee: any) => {
+          const startDate = employee["firstFullTimeStartDate"];
+          if (!startDate) {
+            return <span style={{ color: "#999" }}>Unknown</span>;
+          }
+
+          const years = Math.floor(
+            (new Date().getTime() - new Date(startDate).getTime())
+              / (1000 * 60 * 60 * 24 * 365),
+          );
+
+          const tenureClass = years >= 5 ? "active" : "inactive";
+          const tenureText = years >= 5 ? "Senior" : "Junior";
+
+          return (
+            <span className={`status-tag ${tenureClass}`}>
+              {tenureText} ({years} years)
+            </span>
+          );
+        },
+        width: 120,
+      },
+    ] as any,
   },
   render: (args) => (
     <div className="object-table-container" style={{ height: "600px" }}>
