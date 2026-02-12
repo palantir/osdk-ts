@@ -31,7 +31,6 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { useLatestRef } from "../../hooks/useLatestRef.js";
 import {
   createHistogramBuckets,
   getMaxBucketCount,
@@ -99,9 +98,12 @@ function RangeInputInner<
   );
   const minTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const maxTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const onChangeRef = useLatestRef(onChange);
-  const minValueRef = useLatestRef(minValue);
-  const maxValueRef = useLatestRef(maxValue);
+  const onChangeRef = useRef(onChange);
+  onChangeRef.current = onChange;
+  const minValueRef = useRef(minValue);
+  minValueRef.current = minValue;
+  const maxValueRef = useRef(maxValue);
+  maxValueRef.current = maxValue;
 
   useEffect(() => {
     setLocalMin(config.formatValue(minValue));
@@ -137,7 +139,6 @@ function RangeInputInner<
 
   const { data: aggregateData, isLoading } = useOsdkAggregation(objectType, {
     aggregate: aggregateOptions,
-    ...(objectSet && { objectSet }),
   });
 
   const valueCountPairs = useMemo<Array<{ value: T; count: number }>>(() => {

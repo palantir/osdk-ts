@@ -58,7 +58,7 @@ function TextTagsInputInner<
   const { data: suggestions, isLoading, error } = usePropertyAggregation(
     objectType,
     propertyKey,
-    { objectSet, limit: suggestFromData ? 50 : 0 },
+    { limit: suggestFromData ? 50 : 0 },
   );
 
   const filteredSuggestions = useMemo(() => {

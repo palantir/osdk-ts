@@ -17,7 +17,6 @@
 import type { ObjectSet, ObjectTypeDefinition, PropertyKeys } from "@osdk/api";
 import classnames from "classnames";
 import React, { memo, useCallback, useMemo, useState } from "react";
-import { useLatestRef } from "../../hooks/useLatestRef.js";
 import { usePropertyAggregation } from "../../hooks/usePropertyAggregation.js";
 import styles from "./ListogramInput.module.css";
 import sharedStyles from "./shared.module.css";
@@ -58,21 +57,18 @@ function ListogramInputInner<
   const { data: values, maxCount, isLoading, error } = usePropertyAggregation(
     objectType,
     propertyKey,
-    { objectSet },
+    {},
   );
-
-  const selectedValuesRef = useLatestRef(selectedValues);
 
   const toggleValue = useCallback(
     (value: string) => {
-      const current = selectedValuesRef.current;
-      if (current.includes(value)) {
-        onChange(current.filter((v) => v !== value));
+      if (selectedValues.includes(value)) {
+        onChange(selectedValues.filter((v) => v !== value));
       } else {
-        onChange([...current, value]);
+        onChange([...selectedValues, value]);
       }
     },
-    [onChange],
+    [selectedValues, onChange],
   );
 
   const displayValues = useMemo(() => {
