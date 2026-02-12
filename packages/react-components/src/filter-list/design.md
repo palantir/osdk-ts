@@ -28,6 +28,7 @@ Apply styling tokens to the filter list components following the pattern from `m
    - Location: `e2e.sandbox.peopleapp/src/index.css`, `theme-overrides.css`
 
 ### CSS Layer Pattern (from e2e.sandbox.peopleapp/src/index.css):
+
 ```css
 @layer osdk.tokens, custom.theme;
 
@@ -38,6 +39,7 @@ Apply styling tokens to the filter list components following the pattern from `m
 ```
 
 ### Component Instance Override Pattern (from OfficeTable.module.css):
+
 ```css
 .officeTable {
   --osdk-table-header-bg: var(--bp-palette-blue-100);
@@ -45,6 +47,7 @@ Apply styling tokens to the filter list components following the pattern from `m
 ```
 
 Usage in TSX:
+
 ```tsx
 <ObjectTable className={styles.officeTable} ... />
 ```
@@ -54,6 +57,7 @@ Usage in TSX:
 ## Implementation Steps
 
 ### Step 1: Merge `module-css`
+
 ```bash
 git fetch origin module-css
 git merge origin/module-css --no-gpg-sign
@@ -62,6 +66,7 @@ git merge origin/module-css --no-gpg-sign
 ### Step 2: Add Filter Tokens to `react-components-styles/src/index.css`
 
 Add after existing table tokens in the `:root` block:
+
 ```css
 /* Filter List */
 --osdk-filter-list-bg: var(--bp-surface-colorRest-default);
@@ -96,6 +101,7 @@ Add after existing table tokens in the `:root` block:
 ### Step 3: Create CSS Modules in react-components
 
 **`src/filter-list/base/FilterList.module.css`:**
+
 ```css
 .filterList {
   display: flex;
@@ -109,6 +115,7 @@ Add after existing table tokens in the `:root` block:
 ```
 
 **`src/filter-list/base/FilterListHeader.module.css`:**
+
 ```css
 .header {
   display: flex;
@@ -150,6 +157,7 @@ Add after existing table tokens in the `:root` block:
 ```
 
 **`src/filter-list/base/FilterListItem.module.css`:**
+
 ```css
 .filterItem {
   display: flex;
@@ -171,6 +179,7 @@ Add after existing table tokens in the `:root` block:
 ```
 
 **`src/filter-list/base/inputs/ContainsTextInput.module.css`:**
+
 ```css
 .textInput {
   position: relative;
@@ -237,6 +246,7 @@ Add after existing table tokens in the `:root` block:
 ### Step 4: Update TSX Files to Use CSS Modules
 
 **Pattern from PR (Table.tsx):**
+
 ```tsx
 import classNames from "classnames";
 import styles from "./Table.module.css";
@@ -246,6 +256,7 @@ import styles from "./Table.module.css";
 ```
 
 Apply to:
+
 1. **FilterList.tsx** - Add `className` prop, use `styles.filterList`
 2. **FilterListHeader.tsx** - Use header styles
 3. **FilterListItem.tsx** - Use item styles
@@ -254,6 +265,7 @@ Apply to:
 ### Step 5: Add Example Override in e2e.sandbox.peopleapp
 
 **Create `e2e.sandbox.peopleapp/src/app/employees/EmployeeFilterList.module.css`:**
+
 ```css
 /**
  * Component-specific style overrides for FilterList
@@ -266,6 +278,7 @@ Apply to:
 ```
 
 **Usage in component (following OfficesPage pattern):**
+
 ```tsx
 import styles from "./EmployeeFilterList.module.css";
 
@@ -277,27 +290,30 @@ import styles from "./EmployeeFilterList.module.css";
 ## Files to Create/Modify
 
 ### react-components-styles package
-| File | Action |
-|------|--------|
+
+| File            | Action                                    |
+| --------------- | ----------------------------------------- |
 | `src/index.css` | Add 15 filter tokens inside `:root` block |
 
 ### react-components package
-| File | Action |
-|------|--------|
-| `src/filter-list/base/FilterList.module.css` | Create |
-| `src/filter-list/base/FilterList.tsx` | Add `className` prop, use CSS module |
-| `src/filter-list/base/FilterListHeader.module.css` | Create |
-| `src/filter-list/base/FilterListHeader.tsx` | Use CSS module |
-| `src/filter-list/base/FilterListItem.module.css` | Create |
-| `src/filter-list/base/FilterListItem.tsx` | Use CSS module |
-| `src/filter-list/base/inputs/ContainsTextInput.module.css` | Create |
-| `src/filter-list/base/inputs/ContainsTextInput.tsx` | Replace `bp6-*` classes with CSS module |
+
+| File                                                       | Action                                  |
+| ---------------------------------------------------------- | --------------------------------------- |
+| `src/filter-list/base/FilterList.module.css`               | Create                                  |
+| `src/filter-list/base/FilterList.tsx`                      | Add `className` prop, use CSS module    |
+| `src/filter-list/base/FilterListHeader.module.css`         | Create                                  |
+| `src/filter-list/base/FilterListHeader.tsx`                | Use CSS module                          |
+| `src/filter-list/base/FilterListItem.module.css`           | Create                                  |
+| `src/filter-list/base/FilterListItem.tsx`                  | Use CSS module                          |
+| `src/filter-list/base/inputs/ContainsTextInput.module.css` | Create                                  |
+| `src/filter-list/base/inputs/ContainsTextInput.tsx`        | Replace `bp6-*` classes with CSS module |
 
 ### e2e.sandbox.peopleapp package
-| File | Action |
-|------|--------|
-| `src/app/employees/EmployeeFilterList.module.css` | Create (example override) |
-| Component using FilterList | Pass `className={styles.employeeFilterList}` |
+
+| File                                              | Action                                       |
+| ------------------------------------------------- | -------------------------------------------- |
+| `src/app/employees/EmployeeFilterList.module.css` | Create (example override)                    |
+| Component using FilterList                        | Pass `className={styles.employeeFilterList}` |
 
 ---
 

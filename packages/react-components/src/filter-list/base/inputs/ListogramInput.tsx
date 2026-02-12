@@ -112,7 +112,8 @@ function ListogramInputInner<
             const isSelected = selectedValues.includes(value);
             const percentage = maxCount > 0 ? (count / maxCount) * 100 : 0;
             const fillColor = isSelected
-              ? (selectedBarColor ?? "var(--osdk-filter-listogram-selected-color)")
+              ? (selectedBarColor
+                ?? "var(--osdk-filter-listogram-selected-color)")
               : (barColor ?? "var(--osdk-filter-listogram-bar-color)");
 
             return (

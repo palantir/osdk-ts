@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { ObjectSet, ObjectTypeDefinition, PropertyKeys } from "@osdk/api";
 import { Cross } from "@blueprintjs/icons";
+import type { ObjectSet, ObjectTypeDefinition, PropertyKeys } from "@osdk/api";
 import classnames from "classnames";
 import React, { memo, useCallback, useMemo } from "react";
 import { Select } from "../../../base-components/select/Select.js";
@@ -74,7 +74,9 @@ function SingleSelectInputInner<
   const items = useMemo(() => {
     const result: Record<string, string> = {};
     for (const { value, count } of values) {
-      result[value] = showCounts ? `${value} (${count.toLocaleString()})` : value;
+      result[value] = showCounts
+        ? `${value} (${count.toLocaleString()})`
+        : value;
     }
     return result;
   }, [values, showCounts]);
