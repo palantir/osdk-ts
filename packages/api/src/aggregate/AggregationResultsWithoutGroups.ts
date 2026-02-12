@@ -41,6 +41,6 @@ export type AggregationResultsWithoutGroups<
         MetricName extends "approximateDistinct" | "exactDistinct" ? number
           : OsdkObjectPropertyType<
             CompileTimeMetadata<Q>["properties"][PropName]
-          >;
-    };
+          > | undefined;
+    } | undefined;
 };
