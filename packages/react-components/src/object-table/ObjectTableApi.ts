@@ -55,6 +55,22 @@ export type ColumnDefinition<
     object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
     locator: ColumnDefinitionLocator<Q, RDPs, FunctionColumns>,
   ) => React.ReactNode;
+
+  /**
+   * If provided, this will be used in the column header.
+   * If both columnName and renderHeader are provided, renderHeader will take precedence in the table header.
+   * columnName will still be used in other parts where the column name is displayed.
+   *
+   * If not provided,
+   * for a property column, the property displayName will be used
+   * for other columns, the id will be used.
+   */
+  columnName?: string;
+
+  /**
+   * If provided, this will be used to render the header component.
+   * When both columnName and renderHeader are provided, renderHeader will take precedence in the table header.
+   */
   renderHeader?: () => React.ReactNode;
 };
 
@@ -78,6 +94,10 @@ export type ColumnDefinitionLocator<
     type: "rdp";
     id: keyof RDPs;
     creator: DerivedProperty.Creator<Q, RDPs[keyof RDPs]>;
+  }
+  | {
+    type: "custom";
+    id: string;
   };
 
 export interface ObjectTableProps<
@@ -105,7 +125,7 @@ export interface ObjectTableProps<
    *
    * @default true
    */
-  filterable?: boolean;
+  enableFiltering?: boolean;
 
   /**
    * The current where clause to filter the objects in the table.
@@ -126,7 +146,28 @@ export interface ObjectTableProps<
    *
    * @default true
    */
-  orderable?: boolean;
+  enableOrdering?: boolean;
+
+  /**
+   * Whether columns can be pinned by the user.
+   *
+   * @default true
+   */
+  enableColumnPinning?: boolean;
+
+  /**
+   * Whether columns can be resized by the user.
+   *
+   * @default true
+   */
+  enableColumnResizing?: boolean;
+
+  /**
+   * Whether the column configuration dialog for column visibility and ordering is available to the user.
+   *
+   * @default true
+   */
+  enableColumnConfig?: boolean;
 
   /**
    * The default order by clause to sort the objects in the table.
@@ -162,11 +203,11 @@ export interface ObjectTableProps<
   ) => void;
 
   /**
-   * Called when the visible columns change.
+   * Called when the column visibility or ordering changed.
    *
    * If provided, the table will allow the user to show/hide columns.
    *
-   * @param newStates The new list of column visibility states
+   * @param newStates The columns sorted in their display order in the table and their visibility state.
    */
   onColumnVisibilityChanged?: (
     newStates: Array<{
@@ -193,11 +234,11 @@ export interface ObjectTableProps<
    * Called when a column is resized.
    *
    * @param columnId The ID of the resized column
-   * @param newWidth The new width of the column
+   * @param newWidth The new width of the column. When newWidth = null, the column size is reset.
    */
   onColumnResize?: (
     columnId: PropertyKeys<Q> | keyof RDPs | keyof FunctionColumns,
-    newWidth: number,
+    newWidth: number | null,
   ) => void;
 
   /**

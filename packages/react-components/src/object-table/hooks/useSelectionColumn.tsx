@@ -21,7 +21,7 @@ import type {
   SimplePropertyDef,
 } from "@osdk/api";
 import type { ColumnDef } from "@tanstack/react-table";
-import React, { useMemo } from "react";
+import React, { useMemo, useRef } from "react";
 import { SelectionCell, SelectionHeaderCell } from "../SelectionCells.js";
 import { SELECTION_COLUMN_ID } from "../utils/constants.js";
 
@@ -51,6 +51,19 @@ export const useSelectionColumn = <
   >
   | null =>
 {
+  // TODO: Replace with useLatestRef
+  const isAllSelectedRef = useRef(isAllSelected);
+  isAllSelectedRef.current = isAllSelected;
+
+  const hasSelectionRef = useRef(hasSelection);
+  hasSelectionRef.current = hasSelection;
+
+  const onToggleAllRef = useRef(onToggleAll);
+  onToggleAllRef.current = onToggleAll;
+
+  const onToggleRowRef = useRef(onToggleRow);
+  onToggleRowRef.current = onToggleRow;
+
   const selectionColumn = useMemo(() => {
     if (selectionMode === "none") return null;
 
@@ -62,9 +75,9 @@ export const useSelectionColumn = <
         selectionMode === "multiple"
           ? (
             <SelectionHeaderCell
-              isAllSelected={isAllSelected}
-              hasSelection={hasSelection}
-              onToggleAll={onToggleAll}
+              isAllSelected={isAllSelectedRef.current}
+              hasSelection={hasSelectionRef.current}
+              onToggleAll={onToggleAllRef.current}
             />
           )
           : null
@@ -72,7 +85,7 @@ export const useSelectionColumn = <
       cell: ({ row }: { row: any }) => (
         <SelectionCell
           row={row}
-          onToggleRow={onToggleRow}
+          onToggleRow={onToggleRowRef.current}
         />
       ),
       size: 50,
@@ -86,10 +99,6 @@ export const useSelectionColumn = <
     return colDef;
   }, [
     selectionMode,
-    isAllSelected,
-    hasSelection,
-    onToggleAll,
-    onToggleRow,
   ]);
 
   return selectionColumn;

@@ -14,16 +14,30 @@
  * limitations under the License.
  */
 
-.osdkTableContainer {
-  flex: 1;
-  height: 100%;
-  min-height: 0;
-  overflow: auto;
-  position: relative;
+import { Button } from "@base-ui/react/button";
+import classNames from "classnames";
+import React from "react";
+import styles from "./ActionButton.module.css";
+
+export interface ButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement>
+{
+  variant?: "primary" | "secondary";
 }
 
-.osdkTableContainer table {
-  border-collapse: collapse;
-  display: grid;
-  table-layout: fixed;
+export function ActionButton({
+  variant = "secondary",
+  className,
+  ...rest
+}: ButtonProps): React.ReactElement {
+  return (
+    <Button
+      className={classNames(
+        styles.button,
+        variant === "primary" ? styles.primaryButton : styles.secondaryButton,
+        className,
+      )}
+      {...rest}
+    />
+  );
 }

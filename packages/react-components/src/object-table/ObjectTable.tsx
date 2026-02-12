@@ -21,11 +21,12 @@ import type {
   QueryDefinition,
   SimplePropertyDef,
 } from "@osdk/api";
-import type { Cell, ColumnSizingState } from "@tanstack/react-table";
+import type { Cell } from "@tanstack/react-table";
 import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useMemo } from "react";
 import { useColumnDefs } from "./hooks/useColumnDefs.js";
 import { useColumnPinning } from "./hooks/useColumnPinning.js";
+import { useColumnResize } from "./hooks/useColumnResize.js";
 import { useColumnVisibility } from "./hooks/useColumnVisibility.js";
 import { useObjectTableData } from "./hooks/useObjectTableData.js";
 import { useRowSelection } from "./hooks/useRowSelection.js";
@@ -33,6 +34,7 @@ import { useSelectionColumn } from "./hooks/useSelectionColumn.js";
 import { useTableSorting } from "./hooks/useTableSorting.js";
 import type { ObjectTableProps } from "./ObjectTableApi.js";
 import { BaseTable } from "./Table.js";
+import type { HeaderMenuFeatureFlags } from "./TableHeaderWithPopover.js";
 import { getRowId } from "./utils/getRowId.js";
 
 /**
@@ -62,13 +64,21 @@ export function ObjectTable<
   defaultOrderBy,
   onOrderByChanged,
   onColumnsPinnedChanged,
+  onColumnResize,
   onRowSelection,
   renderCellContextMenu,
   selectionMode = "none",
   selectedRows,
+  onColumnVisibilityChanged,
+  enableOrdering = true,
+  enableColumnPinning = true,
+  enableColumnResizing = true,
+  enableColumnConfig = true,
   ...props
 }: ObjectTableProps<Q, RDPs, FunctionColumns>): React.ReactElement {
-  const [columnSizing, setColumnSizing] = useState<ColumnSizingState>({});
+  const { columnSizing, onColumnSizingChange } = useColumnResize({
+    onColumnResize,
+  });
 
   const { sorting, onSortingChange } = useTableSorting<
     Q,
@@ -102,14 +112,13 @@ export function ObjectTable<
     columnDefinitions,
   );
 
-  const columnVisibility = useColumnVisibility({ columnDefinitions });
-
   const {
     rowSelection,
     isAllSelected,
     hasSelection,
     onToggleAll,
     onToggleRow,
+    enableRowSelection,
   } = useRowSelection<Q, RDPs>({
     selectionMode,
     selectedRows,
@@ -121,15 +130,25 @@ export function ObjectTable<
     { selectionMode, isAllSelected, hasSelection, onToggleAll, onToggleRow },
   );
 
-  const allColumns = useMemo(() => {
-    return selectionColumn ? [selectionColumn, ...columns] : columns;
-  }, [selectionColumn, columns]);
+  const {
+    columnVisibility,
+    onColumnVisibilityChange,
+    columnOrder,
+    onColumnOrderChange,
+  } = useColumnVisibility({
+    allColumns: columns,
+    onColumnVisibilityChanged,
+  });
 
   const { columnPinning, onColumnPinningChange } = useColumnPinning({
     columnDefinitions,
-    hasSelectionColumn: selectionColumn != null,
+    hasSelectionColumn: enableRowSelection,
     onColumnsPinnedChanged,
   });
+
+  const allColumns = useMemo(() => {
+    return selectionColumn ? [selectionColumn, ...columns] : columns;
+  }, [selectionColumn, columns]);
 
   const table = useReactTable<
     Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
@@ -139,15 +158,19 @@ export function ObjectTable<
     getCoreRowModel: getCoreRowModel(),
     state: {
       columnVisibility,
+      columnOrder,
       rowSelection,
       sorting,
       columnSizing,
       columnPinning,
     },
     onSortingChange,
-    onColumnSizingChange: setColumnSizing,
+    onColumnSizingChange,
     onColumnPinningChange,
-    enableRowSelection: selectionMode !== "none",
+    onColumnVisibilityChange,
+    onColumnOrderChange,
+    enableRowSelection,
+    enableSorting: enableOrdering,
     columnResizeMode: "onChange",
     columnResizeDirection: "ltr",
     manualSorting: true, // Enable manual sorting to indicate server-side sorting
@@ -172,8 +195,20 @@ export function ObjectTable<
 
   const isTableLoading = isLoading || isColumnsLoading;
 
+  const headerMenuFeatureFlags: HeaderMenuFeatureFlags = useMemo(() => ({
+    showSortingItems: enableOrdering,
+    showPinningItems: enableColumnPinning,
+    showResizeItem: enableColumnResizing,
+    showConfigItem: enableColumnConfig,
+  }), [
+    enableOrdering,
+    enableColumnPinning,
+    enableColumnResizing,
+    enableColumnConfig,
+  ]);
+
   return (
-    <BaseTable
+    <BaseTable<Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>>
       table={table}
       isLoading={isTableLoading}
       fetchNextPage={fetchMore}
@@ -182,6 +217,7 @@ export function ObjectTable<
       renderCellContextMenu={onRenderCellContextMenu}
       className={props.className}
       error={error}
+      headerMenuFeatureFlags={headerMenuFeatureFlags}
     />
   );
 }

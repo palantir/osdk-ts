@@ -14,16 +14,8 @@
  * limitations under the License.
  */
 
-.osdkTableContainer {
-  flex: 1;
-  height: 100%;
-  min-height: 0;
-  overflow: auto;
-  position: relative;
-}
-
-.osdkTableContainer table {
-  border-collapse: collapse;
-  display: grid;
-  table-layout: fixed;
+export interface ColumnOption {
+  id: string;
+  name: string;
+  canSort: boolean;
 }

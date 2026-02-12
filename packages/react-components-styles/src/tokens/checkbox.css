@@ -1,0 +1,14 @@
+:root {
+  --osdk-checkbox-icon-size: var(--osdk-iconography-size-small);
+  --osdk-checkbox-padding: calc(var(--osdk-surface-spacing) * 0.5);
+  --osdk-checkbox-border: var(--osdk-surface-border);
+  --osdk-checkbox-bg: transparent;
+  --osdk-checkbox-bg-hover: var(--osdk-surface-background-color-default-hover);
+  --osdk-checkbox-bg-active: var(
+    --osdk-surface-background-color-default-active
+  );
+  --osdk-checkbox-bg-checked: var(--osdk-intent-primary-rest);
+  --osdk-checkbox-bg-checked-hover: var(--osdk-intent-primary-hover);
+  --osdk-checkbox-bg-checked-active: var(--osdk-intent-primary-active);
+  --osdk-checkbox-checked-foreground: var(--osdk-intent-primary-foreground);
+}
