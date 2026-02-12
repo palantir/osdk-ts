@@ -69,6 +69,7 @@ export function convertActionValidation(
               validation: {
                 allowedValues: extractAllowedValues(
                   p.validation.allowedValues!,
+                  ridGenerator,
                 ),
                 required: convertParameterRequirementConstraint(
                   p.validation.required!,
@@ -80,6 +81,7 @@ export function convertActionValidation(
                 convertActionParameterConditionalOverride(
                   override,
                   p.validation,
+                  ridGenerator,
                   action.parameters,
                 ),
             ) ?? [],

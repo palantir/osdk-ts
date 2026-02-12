@@ -41,7 +41,7 @@ import type {
   ActionParameterValidation,
 } from "./action/ActionParameter.js";
 import type { BlockShapes, OntologyRidGenerator} from "../util/generateRid.js";
-import { OntologyRidGeneratorImpl } from "../util/generateRid.js";
+import { OntologyRidGeneratorImpl, ReadableIdGenerator } from "../util/generateRid.js";
 import type { ActionParameterAllowedValues } from "./action/ActionParameterAllowedValues.js";
 import type { ActionType } from "./action/ActionType.js";
 import type { OntologyDefinition } from "./common/OntologyDefinition.js";
@@ -328,18 +328,99 @@ export function convertAction(
   const parameterOrdering = action.parameterOrdering
     ?? (action.parameters ?? []).map(p => p.id);
 
-  // TODO: Build parameterIds mapping for ActionTypeBlockDataV2
+  // Build parameterIds mapping: UUID (BlockInternalId) -> ParameterId (API name)
   const parameterIds: Record<string, ParameterId> = {};
   (action.parameters ?? []).forEach(p => {
-    parameterIds[p.id] = p.id;
+    const readableId = ReadableIdGenerator.getForParameter(action.apiName, p.id);
+    const uuid = ridGenerator.toBlockInternalId(readableId);
+    parameterIds[uuid] = p.id;
   });
+
+  // Helper function to convert interface property values from API names to RIDs
+  const convertInterfacePropertyValuesToRids = (
+    interfacePropertyValues: Record<string, any>,
+    interfaceApiName: string,
+  ): Record<string, any> => {
+    const result: Record<string, any> = {};
+    for (const [apiName, value] of Object.entries(interfacePropertyValues)) {
+      const rid = ridGenerator.generateInterfacePropertyTypeRid(
+        apiName,
+        interfaceApiName,
+      );
+      result[rid] = value;
+    }
+    return result;
+  };
+
+  // Helper function to convert shared property values from API names to RIDs
+  const convertSharedPropertyValuesToRids = (
+    sharedPropertyValues: Record<string, any>,
+  ): Record<string, any> => {
+    const result: Record<string, any> = {};
+    for (const [apiName, value] of Object.entries(sharedPropertyValues)) {
+      const rid = ridGenerator.generateSptRid(apiName);
+      result[rid] = value;
+    }
+    return result;
+  };
 
   return {
     actionType: {
       actionTypeLogic: {
         logic: {
-          // TODO: Convert OntologyIrLogicRule[] to LogicRule[] with proper RID mappings
-          rules: action.rules as any,
+          // Convert logic rules with proper RID mappings
+          rules: action.rules.map(rule => {
+            if (rule.type === "addInterfaceRule") {
+              return {
+                type: "addInterfaceRule",
+                addInterfaceRule: {
+                  interfaceTypeRid: ridGenerator.generateRidForInterface(
+                    rule.addInterfaceRule.interfaceApiName,
+                  ),
+                  objectType: rule.addInterfaceRule.objectTypeParameter,
+                  interfacePropertyValues: convertInterfacePropertyValuesToRids(
+                    rule.addInterfaceRule.interfacePropertyValues,
+                    rule.addInterfaceRule.interfaceApiName,
+                  ),
+                  sharedPropertyValues: convertSharedPropertyValuesToRids(
+                    rule.addInterfaceRule.sharedPropertyValues,
+                  ),
+                  structFieldValues: {},
+                  logicRuleRid: rule.addInterfaceRule.logicRuleRid,
+                },
+              };
+            } else if (rule.type === "modifyInterfaceRule") {
+              return {
+                type: "modifyInterfaceRule",
+                modifyInterfaceRule: {
+                  interfaceObjectToModify:
+                    rule.modifyInterfaceRule.interfaceObjectToModifyParameter,
+                  interfacePropertyValues: convertInterfacePropertyValuesToRids(
+                    rule.modifyInterfaceRule.interfacePropertyValues,
+                    rule.modifyInterfaceRule.interfaceApiName,
+                  ),
+                  sharedPropertyValues: convertSharedPropertyValuesToRids(
+                    rule.modifyInterfaceRule.sharedPropertyValues,
+                  ),
+                  structFieldValues: {},
+                },
+              };
+            } else if (rule.type === "addObjectRule") {
+              return {
+                type: "addObjectRule",
+                addObjectRule: {
+                  objectTypeId: ridGenerator.generateObjectTypeId(
+                    rule.addObjectRule.objectTypeId,
+                  ),
+                  propertyValues: rule.addObjectRule.propertyValues,
+                  structFieldValues: rule.addObjectRule.structFieldValues,
+                  logicRuleRid: rule.addObjectRule.logicRuleRid,
+                },
+              };
+            }
+            // Pass through other rule types unchanged
+            return rule as any;
+          }),
         },
         validation: actionValidation,
         notifications: [],
@@ -396,15 +477,51 @@ export function convertAction(
             [action.status]: {},
           } as unknown as ActionTypeStatus
           : action.status,
-        entities: action.entities,
+        entities: action.entities
+          ? {
+            affectedInterfaceTypes: action.entities.affectedInterfaceTypes.map(
+              apiName => ridGenerator.generateRidForInterface(apiName),
+            ),
+            affectedLinkTypes: action.entities.affectedLinkTypes,
+            affectedObjectTypes: action.entities.affectedObjectTypes.map(
+              apiName => ridGenerator.generateObjectTypeId(apiName),
+            ),
+            typeGroups: action.entities.typeGroups,
+          }
+          : {
+            affectedInterfaceTypes: [],
+            affectedLinkTypes: [],
+            affectedObjectTypes: [],
+            typeGroups: [],
+          },
       },
     },
     parameterIds,
   };
 }
 
+// Helper function to convert allowed value option values with ObjectTypeId conversion
+function convertAllowedValueOptionValue(
+  value: any,
+  ridGenerator: OntologyRidGenerator,
+): any {
+  if (value?.type === "objectType") {
+    return {
+      type: "objectType",
+      objectType: {
+        objectTypeId: ridGenerator.generateObjectTypeId(
+          value.objectType.objectTypeId,
+        ),
+      },
+    };
+  }
+  // Pass through other value types unchanged (staticValue, parameterValue, etc.)
+  return value;
+}
+
 export function extractAllowedValues(
   allowedValues: ActionParameterAllowedValues,
+  ridGenerator: OntologyRidGenerator,
 ): OntologyIrAllowedParameterValues {
   switch (allowedValues.type) {
     case "oneOf":
@@ -413,7 +530,10 @@ export function extractAllowedValues(
         oneOf: {
           type: "oneOf",
           oneOf: {
-            labelledValues: allowedValues.oneOf,
+            labelledValues: allowedValues.oneOf.map(option => ({
+              ...option,
+              value: convertAllowedValueOptionValue(option.value, ridGenerator),
+            })),
             otherValueAllowed: {
               allowed: allowedValues.otherValueAllowed
                 ?? false,

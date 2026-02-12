@@ -81,7 +81,7 @@ export function convertOntologyDefinitionToWireBlockData(
       [string, LinkTypeBlockDataV2]
     >(([id, link]) => {
       return [
-        ridGenerator.generateRidForLinkType(id),
+        ridGenerator.generateRidForLinkType(cleanAndValidateLinkTypeId(id)),
         convertLink(link, ridGenerator),
       ];
     }),
@@ -121,7 +121,7 @@ export function convertOntologyDefinitionToWireBlockData(
           .map<
             [string, ActionTypePermissionInformation]
           >(([apiName, action]) => {
-            return [apiName, {
+            return [ridGenerator.generateRidForActionType(apiName), {
               restrictionStatus: {
                 hasRolesApplied: true,
                 ontologyPackageRid: null,
@@ -248,7 +248,7 @@ function buildKnownIdentifiers(
   // Link type IDs: LinkTypeId -> BlockInternalId
   const linkTypeIds = Object.fromEntries(
     Object.keys(ontology[OntologyEntityTypeEnum.LINK_TYPE]).map((
-      linkTypeId,
+      linkTypeId, link
     ) => [
       cleanAndValidateLinkTypeId(linkTypeId),
       ridGenerator.toBlockInternalId(

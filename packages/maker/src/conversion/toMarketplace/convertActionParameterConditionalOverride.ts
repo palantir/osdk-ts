@@ -24,11 +24,13 @@ import type {
 } from "../../api/action/ActionParameter.js";
 import type { ActionParameterConditionalOverride } from "../../api/action/ActionParameterConditionalOverride.js";
 import { extractAllowedValues } from "../../api/defineOntology.js";
+import type { OntologyRidGenerator } from "../../util/generateRid.js";
 import { convertConditionDefinition } from "./convertConditionDefinition.js";
 
 export function convertActionParameterConditionalOverride(
   override: ActionParameterConditionalOverride,
   validation: ActionParameterValidation,
+  ridGenerator: OntologyRidGenerator,
   actionParameters?: ActionParameter[],
 ): OntologyIrConditionalOverride {
   let parameterBlockOverride: OntologyIrParameterValidationBlockOverride;
@@ -109,7 +111,7 @@ export function convertActionParameterConditionalOverride(
       parameterBlockOverride = {
         type: "allowedValues",
         allowedValues: {
-          allowedValues: extractAllowedValues(override.constraint),
+          allowedValues: extractAllowedValues(override.constraint, ridGenerator),
         },
       };
       break;

@@ -59,11 +59,6 @@ function createLocalizedAbout(
  * TypeScript port of Java's LinkTypeShapeExtractor class
  */
 export class LinkTypeShapeExtractor {
-  private readonly randomnessKey?: string;
-
-  constructor(randomnessKey?: string) {
-    this.randomnessKey = randomnessKey;
-  }
 
   /**
    * Extract shapes from a LinkType

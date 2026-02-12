@@ -73,8 +73,6 @@ class BaseParameterTypeConverter {
  * Extracts action type shapes from an ActionTypeBlockDataV2
  */
 export class ActionTypeShapeExtractor {
-  constructor(_randomnessKey?: string) {
-  }
 
   /**
    * Extract action type shapes from block data

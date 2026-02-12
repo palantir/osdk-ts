@@ -149,7 +149,7 @@ describe("ActionTypeShapeExtractor", () => {
     });
 
     it("should create extractor with randomness key", () => {
-      const extractor = new ActionTypeShapeExtractor("test-key");
+      const extractor = new ActionTypeShapeExtractor();
       expect(extractor).toBeDefined();
     });
   });
@@ -617,7 +617,7 @@ describe("ActionTypeShapeExtractor", () => {
         workshopModules: {},
       };
 
-      const extractor = new ActionTypeShapeExtractor("random123");
+      const extractor = new ActionTypeShapeExtractor();
       const result = extractor.extract(actionType, ridGenerator, knownIdentifiers);
 
       const actionShape = result.outputShapes.get(

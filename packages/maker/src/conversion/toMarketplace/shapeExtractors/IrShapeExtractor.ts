@@ -139,22 +139,24 @@ export async function getShapes(
   // Links
   const linkReadableIds = ridGenerator.getLinkTypeRids().inverse();
   for (const [rid, linkType] of Object.entries(ontologyBlockDataV2.linkTypes)) {
-    const readableId = linkReadableIds.get(rid as LinkTypeRid);
+    const readableId = linkReadableIds.get(rid);
     if (readableId) {
-      const linkExtractor = new LinkTypeShapeExtractor(randomnessKey);
+      const linkExtractor = new LinkTypeShapeExtractor();
       const linkShapes = linkExtractor.extract(
         readableId,
         linkType,
         ridGenerator,
       );
       consumeBlockShapes(allBlockShapes, linkShapes);
+      console.log(`Extracted shapes for link type ${linkType.linkType.id}, ${ridGenerator.generateRidForLinkType(rid)},shapes:`, linkShapes);
+
     }
   }
 
   // Actions
   const { ActionTypeShapeExtractor } = await import('./ActionTypeShapeExtractor.js');
   for (const [_rid, actionType] of Object.entries(ontologyBlockDataV2.actionTypes || {})) {
-    const actionExtractor = new ActionTypeShapeExtractor(randomnessKey);
+    const actionExtractor = new ActionTypeShapeExtractor();
     const actionShapes = actionExtractor.extract(
       actionType,
       ridGenerator,
@@ -284,7 +286,6 @@ function getInterfaceLinkTypeOutputShape(
     throw new Error("Object link references not implemented");
   }
 
-  console.log("INTERFACE LOOKUP", interfaceRidOrUndefined);
   const linkedEntityTypeRef =
     ridGenerator.toBlockInternalId(ridGenerator.getInterfaceRids().inverse().get(interfaceRidOrUndefined)!);
 

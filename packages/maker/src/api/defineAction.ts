@@ -588,8 +588,22 @@ function referencedParameterIds(
             rule.addInterfaceRule.sharedPropertyValues[sanitize(k)] = v;
           },
         );
+        Object.entries(rule.addInterfaceRule.interfacePropertyValues ?? {})
+          .forEach(([k, v]) => {
+            if (
+              v.type === "logicRuleValue"
+              && v.logicRuleValue.type === "parameterId"
+            ) {
+              parameterIds.add(v.logicRuleValue.parameterId);
+            }
+            delete rule.addInterfaceRule.interfacePropertyValues[k];
+            rule.addInterfaceRule.interfacePropertyValues[sanitize(k)] = v;
+          });
         break;
       case "modifyInterfaceRule":
+        rule.modifyInterfaceRule.interfaceApiName = sanitize(
+          rule.modifyInterfaceRule.interfaceApiName,
+        );
         parameterIds.add(
           rule.modifyInterfaceRule.interfaceObjectToModifyParameter,
         );
@@ -602,6 +616,17 @@ function referencedParameterIds(
             rule.modifyInterfaceRule.sharedPropertyValues[sanitize(k)] = v;
           },
         );
+        Object.entries(rule.modifyInterfaceRule.interfacePropertyValues ?? {})
+          .forEach(([k, v]) => {
+            if (
+              v.type === "logicRuleValue"
+              && v.logicRuleValue.type === "parameterId"
+            ) {
+              parameterIds.add(v.logicRuleValue.parameterId);
+            }
+            delete rule.modifyInterfaceRule.interfacePropertyValues[k];
+            rule.modifyInterfaceRule.interfacePropertyValues[sanitize(k)] = v;
+          });
         break;
       case "addObjectRule":
         Object.entries(rule.addObjectRule.propertyValues).forEach(([k, v]) => {

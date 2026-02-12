@@ -38,6 +38,7 @@ import { isExotic } from "../../api/properties/PropertyTypeType.js";
 import type { OntologyRidGenerator } from "../../util/generateRid.js";
 import { convertDatasourceDefinition } from "./convertDatasourceDefinition.js";
 import { convertObjectPropertyType } from "./convertObjectPropertyType.js";
+import { InterfaceType } from "../../api/interface/InterfaceType.js";
 
 export function convertObject(
   objectType: ObjectType,
@@ -90,7 +91,6 @@ export function convertObject(
   const objectTypeRid = ridGenerator.generateRidForObjectType(
     objectType.apiName,
   );
-  console.log(`Generated RID for object type ${objectType.apiName}: ${objectTypeRid}`);
 
   // Convert propertyTypes to use RIDs as keys
   const propertyTypesWithRids = Object.fromEntries(
@@ -140,7 +140,9 @@ export function convertObject(
       implementsInterfaces: implementations.map(impl =>
         ridGenerator.generateRidForInterface(impl.implements.apiName)
       ),
-      implementsInterfaces2: implementations.map(impl => ({
+      implementsInterfaces2: implementations.map(impl => {
+        const allParents = flattenInterface(impl.implements, new Set());
+        return ({
         interfaceTypeRid: ridGenerator.generateRidForInterface(
           impl.implements.apiName,
         ),
@@ -149,16 +151,22 @@ export function convertObject(
         linksV2: {},
         propertiesV2: Object.fromEntries(impl.propertyMapping
           .map(
-            mappings => [ridGenerator.generateInterfacePropertyTypeRid(mappings.interfaceProperty, impl.implements.apiName), {
+            mappings => {
+              // TODO(): This probably won't work for importing
+              const sourceInterface = allParents.find((interfaceType, _index) => {
+                return interfaceType.propertiesV3[mappings.interfaceProperty] !== undefined
+              })!;
+              return [ridGenerator.generateInterfacePropertyTypeRid(mappings.interfaceProperty, sourceInterface.apiName), {
               type: "propertyTypeRid",
               propertyTypeRid: ridGenerator.generatePropertyRid(
                 mappings.mapsTo,
                 objectType.apiName,
               ),
-            }],
+            }];
+          },
           )),
         properties: {},
-      })),
+      })}),
       allImplementsInterfaces: {},
       traits: { workflowObjectTypeTraits: {} },
       typeGroups: [],
@@ -392,4 +400,17 @@ function buildAggregation(
     type,
     [type]: innerDef,
   } as unknown as DerivedPropertyAggregationWire;
+}
+
+
+function flattenInterface(interfaceType: InterfaceType, seen: Set<string>): Array<InterfaceType> {
+  if(seen.has(interfaceType.apiName)){
+    return [];
+  }
+  seen.add(interfaceType.apiName);
+  if(interfaceType.extendsInterfaces.length === 0){
+    return [interfaceType];
+  }
+  const parents = interfaceType.extendsInterfaces.flatMap(parent => flattenInterface(parent, seen));
+  return [interfaceType, ...parents];
 }
