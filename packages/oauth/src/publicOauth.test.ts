@@ -610,14 +610,14 @@ describe(createPublicOauthClient, () => {
       expect(scope).toContain("api:read-data");
     });
 
-    it("should pass undefined to common when tokenStorage is not provided", () => {
+    it("should pass localStorage to common when tokenStorage is not provided", () => {
       createPublicOauthClient(
         BASE_CLIENT_ARGS.clientId,
         BASE_CLIENT_ARGS.foundryUrl,
         BASE_CLIENT_ARGS.redirectUrl,
       );
       const lastArg = vi.mocked(commonJs.common).mock.calls[0][7];
-      expect(lastArg).toBeUndefined();
+      expect(lastArg).toBe(mockLocalStorage);
     });
 
     it("should include offline_access scope when tokenStorage is 'localStorage'", async () => {
