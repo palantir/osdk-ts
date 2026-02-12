@@ -148,10 +148,8 @@
   flex: 1;
   color: var(--osdk-typography-color-muted);
   font-size: var(--osdk-typography-size-body-small);
-  font-weight: 600;
-  letter-spacing: 0.5px;
+  font-weight: var(--osdk-typography-weight-bold);
   text-align: left;
-  text-transform: none;
 }
 
 .categoryCount {
