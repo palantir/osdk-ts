@@ -120,7 +120,7 @@ describe("useSelectionColumn", () => {
       expect(columnDef?.cell).toBeDefined();
     });
 
-    it("memoizes column definition based on dependencies", () => {
+    it("when dependencies other than selectionMode changed, the column definition should not update", () => {
       const onToggleRow = vi.fn();
       const onToggleAll = vi.fn();
 
@@ -140,12 +140,33 @@ describe("useSelectionColumn", () => {
 
       const firstResult = result.current;
 
-      // Rerender with same props
-      rerender({ isAllSelected: false, hasSelection: false });
+      // Rerender with different isAllSelected and hasSelection
+      rerender({ isAllSelected: true, hasSelection: true });
       expect(result.current).toBe(firstResult);
+    });
 
-      // Rerender with different hasSelection
-      rerender({ isAllSelected: false, hasSelection: true });
+    it("when selectionMode changed, the column definition should update", () => {
+      const onToggleRow = vi.fn();
+      const onToggleAll = vi.fn();
+
+      const { result, rerender } = renderHook(
+        ({ selectionMode }) =>
+          useSelectionColumn<TestObject>({
+            selectionMode,
+            isAllSelected: false,
+            hasSelection: true,
+            onToggleAll,
+            onToggleRow,
+          }),
+        {
+          initialProps: { selectionMode: "single" },
+        },
+      );
+
+      const firstResult = result.current;
+
+      // Rerender with different selectionMode
+      rerender({ selectionMode: "multiple" });
       expect(result.current).not.toBe(firstResult);
     });
   });
@@ -194,73 +215,6 @@ describe("useSelectionColumn", () => {
         : null;
 
       expect(headerResult).not.toBeNull();
-    });
-
-    it("has cell function defined", () => {
-      const onToggleRow = vi.fn();
-      const { result } = renderHook(() =>
-        useSelectionColumn<TestObject>({
-          selectionMode: "multiple",
-          isAllSelected: false,
-          hasSelection: false,
-          onToggleAll: vi.fn(),
-          onToggleRow,
-        })
-      );
-
-      const columnDef = result.current;
-      expect(columnDef).not.toBeNull();
-      expect(columnDef?.cell).toBeDefined();
-    });
-
-    it("memoizes column when dependencies don't change", () => {
-      const onToggleRow = vi.fn();
-      const onToggleAll = vi.fn();
-
-      const { result, rerender } = renderHook(
-        ({ isAllSelected, hasSelection }) =>
-          useSelectionColumn<TestObject>({
-            selectionMode: "multiple",
-            isAllSelected,
-            hasSelection,
-            onToggleAll,
-            onToggleRow,
-          }),
-        {
-          initialProps: { isAllSelected: false, hasSelection: false },
-        },
-      );
-
-      const firstResult = result.current;
-
-      // Rerender with same props
-      rerender({ isAllSelected: false, hasSelection: false });
-      expect(result.current).toBe(firstResult);
-    });
-
-    it("updates column when dependencies change", () => {
-      const onToggleRow = vi.fn();
-      const onToggleAll = vi.fn();
-
-      const { result, rerender } = renderHook(
-        ({ isAllSelected, hasSelection }) =>
-          useSelectionColumn<TestObject>({
-            selectionMode: "multiple",
-            isAllSelected,
-            hasSelection,
-            onToggleAll,
-            onToggleRow,
-          }),
-        {
-          initialProps: { isAllSelected: false, hasSelection: false },
-        },
-      );
-
-      const firstResult = result.current;
-
-      // Change isAllSelected
-      rerender({ isAllSelected: true, hasSelection: true });
-      expect(result.current).not.toBe(firstResult);
     });
   });
 
