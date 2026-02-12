@@ -16,10 +16,12 @@
 
 import type {
   DerivedProperty,
+  ObjectSet,
   ObjectTypeDefinition,
   PrimaryKeyType,
+  WhereClause,
 } from "@osdk/api";
-import type { Connectable, Observable, Subject } from "rxjs";
+import type { Connectable, Observable, Subject, Subscription } from "rxjs";
 import { BehaviorSubject, connectable, map } from "rxjs";
 import { additionalContext } from "../../../Client.js";
 import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
@@ -36,6 +38,7 @@ import { Query } from "../Query.js";
 import type { Store } from "../Store.js";
 import type { SubjectPayload } from "../SubjectPayload.js";
 import { tombstone } from "../tombstone.js";
+import type { ObjectUpdate } from "../types/ObjectUpdate.js";
 import { type ObjectCacheKey, RDP_CONFIG_IDX } from "./ObjectCacheKey.js";
 
 export class ObjectQuery extends Query<
@@ -193,4 +196,72 @@ export class ObjectQuery extends Query<
     }
     return Promise.resolve();
   };
+
+  registerStreamUpdates(sub: Subscription): void {
+    this.#setupStreamUpdates(sub).catch((error: unknown) => {
+      if (process.env.NODE_ENV !== "production") {
+        this.logger?.child({ methodName: "registerStreamUpdates" }).error(
+          "Failed to setup stream updates",
+          error,
+        );
+      }
+      this.onOswError({ subscriptionClosed: true, error });
+    });
+  }
+
+  async #setupStreamUpdates(sub: Subscription): Promise<void> {
+    if (process.env.NODE_ENV !== "production") {
+      this.logger?.child({ methodName: "registerStreamUpdates" }).info(
+        "Subscribing to websocket for single object",
+      );
+    }
+
+    const objectSet = await this.#createSingleObjectSet();
+
+    if (sub.closed) {
+      if (process.env.NODE_ENV !== "production") {
+        this.logger?.child({ methodName: "registerStreamUpdates" }).info(
+          "Subscription closed during async setup, skipping websocket registration",
+        );
+      }
+      return;
+    }
+
+    this.createWebsocketSubscription(objectSet, sub, "observeObject");
+  }
+
+  async #createSingleObjectSet(): Promise<ObjectSet<ObjectTypeDefinition>> {
+    const objDef = await this.store.client[additionalContext].ontologyProvider
+      .getObjectDefinition(this.#apiName);
+
+    const objectType: ObjectTypeDefinition = {
+      type: "object",
+      apiName: this.#apiName,
+    };
+
+    return this.store.client(objectType).where({
+      [objDef.primaryKeyApiName]: this.#pk,
+    } as WhereClause<ObjectTypeDefinition>);
+  }
+
+  protected override onOswChange(
+    { object, state }: ObjectUpdate<ObjectTypeDefinition, string>,
+  ): void {
+    if (process.env.NODE_ENV !== "production") {
+      this.logger?.child({ methodName: "onOswChange" }).debug(
+        `Got an update of type: ${state}`,
+        object,
+      );
+    }
+
+    if (state === "ADDED_OR_UPDATED") {
+      this.store.batch({}, (batch) => {
+        this.writeToStore(object as ObjectHolder, "loaded", batch);
+      });
+    } else if (state === "REMOVED") {
+      this.store.batch({}, (batch) => {
+        this.deleteFromStore("loaded", batch);
+      });
+    }
+  }
 }
