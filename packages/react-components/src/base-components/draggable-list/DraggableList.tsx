@@ -157,7 +157,8 @@ export function DraggableList<T extends DraggableItem>({
   useKeyboardEvents(containerRef);
 
   // TODO: Revert when @types/react is fixed
-  const DndContext = BaseDndContext as unknown as React.ReactNode;
+  const DndContext = BaseDndContext as any;
+
   return (
     <div
       ref={containerRef}
