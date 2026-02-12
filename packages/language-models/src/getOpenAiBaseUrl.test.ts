@@ -18,7 +18,7 @@ import { mkdtempSync, rmSync, writeFileSync } from "fs";
 import { tmpdir } from "os";
 import { join } from "path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { getOpenAiBaseUrl } from "./getOpenaiBaseUrl.js";
+import { getOpenAiBaseUrl } from "./getOpenAiBaseUrl.js";
 
 describe("getOpenAiBaseUrl", () => {
   let originalEnv: string | undefined;
@@ -51,7 +51,9 @@ describe("getOpenAiBaseUrl", () => {
   });
 
   it("throws when preview is not true", () => {
-    expect(() => get({ preview: false } as unknown as { preview: true }))
+    expect(() =>
+      getOpenAiBaseUrl({ preview: false } as unknown as { preview: true })
+    )
       .toThrow(
         "This API is in preview. You must pass { preview: true } to use it.",
       );

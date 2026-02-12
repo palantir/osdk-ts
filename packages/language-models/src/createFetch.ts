@@ -33,11 +33,11 @@ import type { PreviewOptions } from "./PreviewOptions.js";
  * @example
  * ```typescript
  * import OpenAI from "openai";
- * import { createFetch, getFoundryToken, getOpenaiBaseUrl } from "@osdk/language-models";
+ * import { createFetch, getFoundryToken, getOpenAiBaseUrl } from "@osdk/language-models";
  *
  * const client = new OpenAI({
  *   apiKey: getFoundryToken({ preview: true }),
- *   baseURL: getOpenaiBaseUrl({ preview: true }),
+ *   baseURL: getOpenAiBaseUrl({ preview: true }),
  *   fetch: createFetch({ preview: true }),
  * });
  * ```

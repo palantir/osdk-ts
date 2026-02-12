@@ -18,5 +18,5 @@ export { createFetch } from "./createFetch.js";
 export { getAnthropicBaseUrl } from "./getAnthropicBaseUrl.js";
 export { getApiGatewayBaseUrl } from "./getApiGatewayBaseUrl.js";
 export { getFoundryToken } from "./getFoundryToken.js";
-export { getOpenaiBaseUrl } from "./getOpenaiBaseUrl.js";
+export { getOpenAiBaseUrl } from "./getOpenAiBaseUrl.js";
 export type { PreviewOptions } from "./PreviewOptions.js";

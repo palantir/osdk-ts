@@ -14,24 +14,25 @@
  * limitations under the License.
  */
 
-import { createNamespace, destroyNamespace } from "cls-hooked";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { createNamespace, destroyNamespace, type Namespace } from "cls-hooked";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createFetch } from "./createFetch.js";
 
 const FUNCTIONS_NAMESPACE = "functions-typescript-runtime";
 
 describe("createFetch", () => {
+  let ns: Namespace;
+
+  beforeEach(() => {
+    ns = createNamespace(FUNCTIONS_NAMESPACE);
+  });
+
   afterEach(() => {
     vi.restoreAllMocks();
-    try {
-      destroyNamespace(FUNCTIONS_NAMESPACE);
-    } catch {
-      // namespace may not exist
-    }
+    destroyNamespace(FUNCTIONS_NAMESPACE);
   });
 
   it("returns a fetch function that sets the Authorization header", async () => {
-    const ns = createNamespace(FUNCTIONS_NAMESPACE);
     await ns.runPromise(async () => {
       ns.set("FOUNDRY_TOKEN", "test-token-abc");
 
@@ -54,7 +55,6 @@ describe("createFetch", () => {
   });
 
   it("preserves existing headers", async () => {
-    const ns = createNamespace(FUNCTIONS_NAMESPACE);
     await ns.runPromise(async () => {
       ns.set("FOUNDRY_TOKEN", "test-token-abc");
 

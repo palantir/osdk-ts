@@ -14,40 +14,44 @@
  * limitations under the License.
  */
 
-import { createNamespace, destroyNamespace } from "cls-hooked";
-import { afterEach, describe, expect, it } from "vitest";
+import { createNamespace, destroyNamespace, type Namespace } from "cls-hooked";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { getFoundryToken } from "./getFoundryToken.js";
 
 const FUNCTIONS_NAMESPACE = "functions-typescript-runtime";
 
 describe("getFoundryToken", () => {
-  afterEach(() => {
-    try {
-      destroyNamespace(FUNCTIONS_NAMESPACE);
-    } catch {
-      // namespace may not exist
-    }
-  });
+  describe("with runtime namespace", () => {
+    let ns: Namespace;
 
-  it("returns the token from the runtime namespace", () => {
-    const ns = createNamespace(FUNCTIONS_NAMESPACE);
-    ns.run(() => {
-      ns.set("FOUNDRY_TOKEN", "test-token-123");
-      expect(getFoundryToken({ preview: true })).toBe("test-token-123");
+    beforeEach(() => {
+      ns = createNamespace(FUNCTIONS_NAMESPACE);
+    });
+
+    afterEach(() => {
+      destroyNamespace(FUNCTIONS_NAMESPACE);
+    });
+
+    it("returns the token from the runtime namespace", () => {
+      ns.run(() => {
+        ns.set("FOUNDRY_TOKEN", "test-token-123");
+        expect(getFoundryToken({ preview: true })).toBe("test-token-123");
+      });
+    });
+
+    it("throws when the token is not set in the namespace", () => {
+      ns.run(() => {
+        expect(() => getFoundryToken({ preview: true })).toThrow(
+          "FOUNDRY_TOKEN is not available in the function runtime namespace",
+        );
+      });
     });
   });
 
-  it("throws when the namespace does not exist", () => {
-    expect(() => getFoundryToken({ preview: true })).toThrow(
-      `Function runtime namespace "${FUNCTIONS_NAMESPACE}" is not available`,
-    );
-  });
-
-  it("throws when the token is not set in the namespace", () => {
-    const ns = createNamespace(FUNCTIONS_NAMESPACE);
-    ns.run(() => {
+  describe("without runtime namespace", () => {
+    it("throws when the namespace does not exist", () => {
       expect(() => getFoundryToken({ preview: true })).toThrow(
-        "FOUNDRY_TOKEN is not available in the function runtime namespace",
+        `Function runtime namespace "${FUNCTIONS_NAMESPACE}" is not available`,
       );
     });
   });
