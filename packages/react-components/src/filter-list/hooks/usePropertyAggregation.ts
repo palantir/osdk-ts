@@ -16,7 +16,6 @@
 
 import type {
   AggregateOpts,
-  ObjectSet,
   ObjectTypeDefinition,
   PropertyKeys,
 } from "@osdk/api";
@@ -35,8 +34,7 @@ export interface UsePropertyAggregationResult {
   error: Error | null;
 }
 
-export interface UsePropertyAggregationOptions<Q extends ObjectTypeDefinition> {
-  objectSet?: ObjectSet<Q>;
+export interface UsePropertyAggregationOptions {
   limit?: number;
 }
 
@@ -46,7 +44,7 @@ export function usePropertyAggregation<
 >(
   objectType: Q,
   propertyKey: K,
-  options?: UsePropertyAggregationOptions<Q>,
+  options?: UsePropertyAggregationOptions,
 ): UsePropertyAggregationResult {
   // AggregateOpts requires specific property keys from Q, but we're dynamically
   // using propertyKey. The cast is unavoidable for this dynamic filter pattern.
@@ -61,7 +59,6 @@ export function usePropertyAggregation<
 
   const { data: countData, isLoading, error } = useOsdkAggregation(objectType, {
     aggregate: aggregateOptions,
-    ...(options?.objectSet && { objectSet: options.objectSet }),
   });
 
   const result = useMemo(
@@ -92,10 +89,8 @@ export function usePropertyAggregation<
         }
       }
 
-      // Sort alphabetically by value
       values.sort((a, b) => a.value.localeCompare(b.value));
 
-      // Apply limit if specified
       if (options?.limit && values.length > options.limit) {
         return { data: values.slice(0, options.limit), maxCount };
       }
