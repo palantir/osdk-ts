@@ -109,7 +109,7 @@ function FilterInputContent<Q extends ObjectTypeDefinition>({
           <div data-unsupported="true">Custom filter missing renderInput</div>
         );
       }
-      const customFilterState = filterState?.type === "CUSTOM"
+      const customFilterState = filterState?.type === "custom"
         ? filterState
         : definition.filterState;
       return (
@@ -148,13 +148,13 @@ const HasLinkInput = memo(function HasLinkInput({
   filterState,
   onFilterStateChanged,
 }: HasLinkInputProps): React.ReactElement {
-  const hasLink = filterState?.type === "HAS_LINK"
+  const hasLink = filterState?.type === "hasLink"
     ? filterState.hasLink
     : false;
 
   const handleChange = useCallback(
     (hasLink: boolean) => {
-      onFilterStateChanged({ type: "HAS_LINK", hasLink });
+      onFilterStateChanged({ type: "hasLink", hasLink });
     },
     [onFilterStateChanged],
   );
@@ -173,17 +173,17 @@ const KeywordSearchInput = memo(function KeywordSearchInput({
   onFilterStateChanged,
   placeholder,
 }: KeywordSearchInputProps): React.ReactElement {
-  const searchTerm = filterState?.type === "KEYWORD_SEARCH"
+  const searchTerm = filterState?.type === "keywordSearch"
     ? filterState.searchTerm
     : undefined;
-  const operator = filterState?.type === "KEYWORD_SEARCH"
+  const operator = filterState?.type === "keywordSearch"
     ? filterState.operator
     : "AND";
 
   const handleChange = useCallback(
     (newSearchTerm: string | undefined) => {
       onFilterStateChanged({
-        type: "KEYWORD_SEARCH",
+        type: "keywordSearch",
         searchTerm: newSearchTerm ?? "",
         operator,
       });

@@ -76,14 +76,14 @@ function LinkedPropertyInputInner<
 
   const linkedObjectType = linkedObjectSet.$objectSetInternals.def;
 
-  const innerState = filterState?.type === "LINKED_PROPERTY"
+  const innerState = filterState?.type === "linkedProperty"
     ? filterState.linkedFilterState
     : undefined;
 
   const wrappedOnChange = useCallback(
     (innerFilterState: FilterState) => {
       onFilterStateChanged({
-        type: "LINKED_PROPERTY",
+        type: "linkedProperty",
         linkedFilterState: innerFilterState,
       });
     },
