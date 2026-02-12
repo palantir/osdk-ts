@@ -182,7 +182,6 @@ export default function SortableFilterListContent<
       className={classnames(contentStyles.content, className)}
       style={style}
     >
-      {/* @ts-expect-error dnd-kit types compiled against React 19, project uses React 18 */}
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
@@ -217,7 +216,6 @@ export default function SortableFilterListContent<
           })}
         </SortableContext>
 
-        {/* @ts-expect-error dnd-kit types compiled against React 19, project uses React 18 */}
         <DragOverlay
           dropAnimation={null}
           className={contentStyles.dragOverlay}
