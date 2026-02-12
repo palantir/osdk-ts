@@ -1,11 +1,9 @@
 import type {
   ObjectMetadata as $ObjectMetadata,
-  ObjectTypeDefinition as $ObjectTypeDefinition,
-  PropertyDef as $PropertyDef,
-} from "@osdk/api";
-import type {
   ObjectSet as $ObjectSet,
+  ObjectTypeDefinition as $ObjectTypeDefinition,
   Osdk as $Osdk,
+  PropertyDef as $PropertyDef,
   PropertyValueWireToClient as $PropType,
   SingleLinkAccessor as $SingleLinkAccessor,
 } from "@osdk/api";

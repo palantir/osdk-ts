@@ -6,14 +6,12 @@ const config: StorybookConfig = {
     "@storybook/addon-essentials",
     "@storybook/addon-interactions",
     "@storybook/addon-links",
+    "@storybook/addon-themes",
     "msw-storybook-addon",
   ],
   framework: {
     name: "@storybook/react-vite",
     options: {},
-  },
-  docs: {
-    autodocs: "tag",
   },
   typescript: {
     check: false,

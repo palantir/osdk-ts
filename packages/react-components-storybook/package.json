@@ -2,7 +2,6 @@
   "name": "@osdk/react-components-storybook",
   "private": true,
   "version": "0.1.0",
-  "type": "module",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -33,6 +32,7 @@
     "@storybook/addon-essentials": "^8.5.0",
     "@storybook/addon-interactions": "^8.5.0",
     "@storybook/addon-links": "^8.5.0",
+    "@storybook/addon-themes": "^8.5.0",
     "@storybook/blocks": "^8.5.0",
     "@storybook/react": "^8.5.0",
     "@storybook/react-vite": "^8.5.0",
@@ -53,5 +53,6 @@
       "public"
     ],
     "type": "module"
-  }
+  },
+  "type": "module"
 }

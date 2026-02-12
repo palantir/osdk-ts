@@ -25,6 +25,7 @@ The Storybook will be available at http://localhost:6006
 ### ObjectTable
 
 The ObjectTable component is showcased with the following variations:
+
 - Default multi-selection mode
 - Single selection mode
 - No selection mode
