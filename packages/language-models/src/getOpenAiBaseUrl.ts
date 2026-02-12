@@ -27,11 +27,11 @@ import type { PreviewOptions } from "./PreviewOptions.js";
  *
  * @example
  * ```typescript
- * const baseUrl = getOpenaiBaseUrl({ preview: true });
+ * const baseUrl = getOpenAiBaseUrl({ preview: true });
  * // Returns: "https://example.palantirfoundry.com/api/v1/models/openai"
  * ```
  */
-export function getOpenaiBaseUrl(options: PreviewOptions): string {
+export function getOpenAiBaseUrl(options: PreviewOptions): string {
   assertPreview(options);
 
   const gatewayUrl = getApiGatewayBaseUrl({ preview: true });

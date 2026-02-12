@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { writeFileSync , mkdtempSync, rmSync } from "fs";
+import { mkdtempSync, rmSync, writeFileSync } from "fs";
 import { tmpdir } from "os";
 import { join } from "path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { getOpenaiBaseUrl } from "./getOpenaiBaseUrl.js";
+import { getOpenAiBaseUrl } from "./getOpenaiBaseUrl.js";
 
-describe("getOpenaiBaseUrl", () => {
+describe("getOpenAiBaseUrl", () => {
   let originalEnv: string | undefined;
   let tempDir: string;
 
@@ -45,16 +45,15 @@ describe("getOpenaiBaseUrl", () => {
     writeFileSync(filePath, yamlContent);
     process.env.FOUNDRY_SERVICE_DISCOVERY_V2 = filePath;
 
-    expect(getOpenaiBaseUrl({ preview: true })).toBe(
+    expect(getOpenAiBaseUrl({ preview: true })).toBe(
       "https://example.palantirfoundry.com/api/v1/models/openai",
     );
   });
 
   it("throws when preview is not true", () => {
-    expect(() =>
-      getOpenaiBaseUrl({ preview: false } as unknown as { preview: true })
-    ).toThrow(
-      "This API is in preview. You must pass { preview: true } to use it.",
-    );
+    expect(() => get({ preview: false } as unknown as { preview: true }))
+      .toThrow(
+        "This API is in preview. You must pass { preview: true } to use it.",
+      );
   });
 });
