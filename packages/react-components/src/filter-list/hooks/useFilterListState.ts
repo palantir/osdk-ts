@@ -15,7 +15,7 @@
  */
 
 import type { ObjectTypeDefinition, WhereClause } from "@osdk/api";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type {
   FilterDefinitionUnion,
   FilterListProps,
@@ -28,7 +28,7 @@ import { filterHasActiveState } from "../utils/filterValues.js";
 import { getFilterKey } from "../utils/getFilterKey.js";
 
 export interface UseFilterListStateResult<Q extends ObjectTypeDefinition> {
-  filterStates: Map<string, FilterState>;
+  filterStates: ReadonlyMap<string, FilterState>;
   setFilterState: (
     filterKey: string,
     state: FilterState,
@@ -153,6 +153,15 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
       ),
     [filterDefinitions, filterStates, filterOperator, objectType],
   );
+
+  const isFirstRender = useRef(true);
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    onFilterClauseChanged?.(whereClause);
+  }, [whereClause, onFilterClauseChanged]);
 
   const activeFilterCount = useMemo(() => {
     let count = 0;
