@@ -14,24 +14,25 @@
  * limitations under the License.
  */
 
-.content {
-  display: flex;
-  flex-direction: column;
-  gap: var(--osdk-filter-list-content-gap);
-}
+import type { ObjectTypeDefinition } from "@osdk/api";
+import type { FilterDefinitionUnion } from "../FilterListApi.js";
 
-.emptyMessage {
-  margin: 0;
-  color: var(--osdk-filter-list-empty-text-color);
-  font-size: var(--osdk-filter-list-empty-font-size);
-}
+export function getFilterLabel<Q extends ObjectTypeDefinition>(
+  definition: FilterDefinitionUnion<Q>,
+): string {
+  if ("label" in definition && definition.label) {
+    return definition.label;
+  }
 
-.emptyAction {
-  margin-top: var(--osdk-filter-list-empty-action-margin-top);
-}
-
-.dragOverlay {
-  box-shadow: var(--osdk-filter-item-drag-overlay-shadow, 0 2px 8px rgba(0, 0, 0, 0.15));
-  border-radius: var(--osdk-filter-item-drag-overlay-border-radius, 4px);
-  background: var(--osdk-filter-item-drag-overlay-bg, #fff);
+  switch (definition.type) {
+    case "PROPERTY":
+      return definition.key;
+    case "HAS_LINK":
+    case "LINKED_PROPERTY":
+      return definition.linkName;
+    case "KEYWORD_SEARCH":
+      return "Search";
+    case "CUSTOM":
+      return definition.key;
+  }
 }
