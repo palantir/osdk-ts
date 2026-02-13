@@ -407,15 +407,13 @@ describe("createMockOsdkObject", () => {
       );
     });
 
-    it("throws when $__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata is accessed", () => {
+    it("returns undefined when $__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata is accessed", () => {
       const mockEmployee = createMockOsdkObject(Employee, {
         employeeId: 1,
       });
 
-      expect(
-        () => mockEmployee.$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata,
-      ).toThrow(
-        "$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata is not supported on mock objects.",
+      expect(mockEmployee.$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata).toBe(
+        undefined,
       );
     });
 
