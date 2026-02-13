@@ -17,26 +17,17 @@
 import type {
   InterfaceDefinition,
   Logger,
-  ObjectSet,
   ObjectTypeDefinition,
-  Osdk,
 } from "@osdk/api";
 import { PalantirApiError } from "@osdk/shared.net.errors";
 import { DefaultMap, DefaultWeakMap } from "mnemonist";
-import groupBy from "object.groupby";
 import type { DeferredPromise } from "p-defer";
 import pDefer from "p-defer";
-import invariant from "tiny-invariant";
 import { additionalContext, type Client } from "../../Client.js";
-import {
-  ObjectDefRef,
-  UnderlyingOsdkObject,
-} from "../../object/convertWireToOsdkObjects/InternalSymbols.js";
 import type {
   ObjectHolder,
 } from "../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import type { DefType } from "../../util/interfaceUtils.js";
-import type { SimpleWhereClause } from "./SimpleWhereClause.js";
 
 interface InternalValue {
   primaryKey: string;
@@ -176,20 +167,39 @@ export class BulkObjectLoader {
       apiName,
     } as InterfaceDefinition;
 
-    const { data } = await this.#client(interfaceDef)
-      .where(
-        { $primaryKey: { $in: pks } } as Parameters<
-          ObjectSet<ObjectTypeDefinition>["where"]
-        >[0],
-      )
-      .fetchPage({ $pageSize: pks.length });
+    const interfaceMetadata = await this.#client.fetchMetadata(interfaceDef);
+    const implementingTypes = interfaceMetadata.implementedBy ?? [];
 
-    const reloadedData = await this.#reloadAsFullObjects(
-      data as Osdk.Instance<ObjectTypeDefinition>[],
-    );
+    const foundObjects = new Map<string | number, ObjectHolder>();
+
+    for (const objectTypeName of implementingTypes) {
+      const objectDef = {
+        type: "object",
+        apiName: objectTypeName,
+      } as ObjectTypeDefinition;
+      const objMetadata = await this.#client.fetchMetadata(objectDef);
+
+      const remainingPks = pks.filter(pk => !foundObjects.has(pk));
+      if (remainingPks.length === 0) {
+        break;
+      }
+
+      const whereClause = remainingPks.length === 1
+        ? { [objMetadata.primaryKeyApiName]: { $eq: remainingPks[0] } }
+        : { [objMetadata.primaryKeyApiName]: { $in: remainingPks } };
+
+      const { data } = await this.#client(objectDef)
+        .where(whereClause).fetchPage({
+          $pageSize: remainingPks.length,
+        });
+
+      for (const obj of data) {
+        foundObjects.set(obj.$primaryKey, obj as ObjectHolder);
+      }
+    }
 
     for (const { primaryKey, deferred } of arr) {
-      const object = reloadedData.get(primaryKey);
+      const object = foundObjects.get(primaryKey);
       if (object) {
         deferred.resolve(object);
       } else {
@@ -200,51 +210,5 @@ export class BulkObjectLoader {
         );
       }
     }
-  }
-
-  async #reloadAsFullObjects(
-    data: Osdk.Instance<ObjectTypeDefinition>[],
-  ): Promise<Map<string | number, ObjectHolder>> {
-    const result = new Map<string | number, ObjectHolder>();
-    if (data.length === 0) return result;
-
-    const groups = groupBy(data, (x) => x.$objectType);
-
-    await Promise.all(
-      Object.entries(groups).map(async ([, objects]) => {
-        const objectDef = (objects[0] as ObjectHolder)[UnderlyingOsdkObject][
-          ObjectDefRef
-        ];
-        invariant(
-          objectDef,
-          `ObjectDefRef missing for ${objects[0].$objectType}`,
-        );
-
-        const where = {
-          [objectDef.primaryKeyApiName]: {
-            $in: objects.map(x => x.$primaryKey),
-          },
-        } as SimpleWhereClause;
-
-        const fetchResult = await this.#client(
-          objectDef as ObjectTypeDefinition,
-        ).where(
-          where as Parameters<ObjectSet<ObjectTypeDefinition>["where"]>[0],
-        ).fetchPage({ $pageSize: objects.length });
-
-        for (const obj of fetchResult.data) {
-          result.set(obj.$primaryKey, obj as ObjectHolder);
-        }
-      }),
-    );
-
-    for (const obj of data) {
-      invariant(
-        result.has(obj.$primaryKey),
-        `Could not find object ${obj.$objectType} ${obj.$primaryKey}`,
-      );
-    }
-
-    return result;
   }
 }

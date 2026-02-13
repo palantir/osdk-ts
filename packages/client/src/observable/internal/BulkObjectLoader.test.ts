@@ -15,6 +15,7 @@
  */
 
 import type {
+  InterfaceMetadata,
   ObjectMetadata,
   ObjectSet,
   ObjectTypeDefinition,
@@ -23,10 +24,6 @@ import type {
 import type { Mock } from "vitest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { Client } from "../../Client.js";
-import {
-  ObjectDefRef,
-  UnderlyingOsdkObject,
-} from "../../object/convertWireToOsdkObjects/InternalSymbols.js";
 import { BulkObjectLoader } from "./BulkObjectLoader.js";
 import { createClientMockHelper, type MockClientHelper } from "./testUtils.js";
 
@@ -239,28 +236,34 @@ describe(BulkObjectLoader, () => {
       return os;
     };
 
-    it("loads interface objects when defType='interface' and reloads as full objects", async () => {
+    it("loads interface objects by querying implementing types", async () => {
       const loader = new BulkObjectLoader(client, 25, 100);
       vi.useFakeTimers();
 
-      const interfaceObj = {
-        $apiName: "FooInterface",
-        $objectType: "Employee",
-        $primaryKey: 1,
-        [UnderlyingOsdkObject]: {
-          [ObjectDefRef]: {
-            apiName: "Employee",
-            primaryKeyApiName: "employeeId",
-          },
-        },
-      };
+      // eslint-disable-next-line @typescript-eslint/unbound-method
+      vi.mocked(client.fetchMetadata)
+        .mockResolvedValueOnce(
+          {
+            type: "interface",
+            implementedBy: ["Employee"],
+            links: {},
+            apiName: "FooInterface",
+            displayName: "FooInterface",
+            description: undefined,
+            properties: {},
+            rid: "ri.test",
+          } satisfies InterfaceMetadata,
+        )
+        .mockResolvedValueOnce(
+          { primaryKeyApiName: "employeeId" } as ObjectMetadata,
+        );
+
       const fullObj = {
         $apiName: "Employee",
         $objectType: "Employee",
         $primaryKey: 1,
       };
 
-      client.mockReturnValueOnce(mockObjectSet([interfaceObj]));
       client.mockReturnValueOnce(mockObjectSet([fullObj]));
 
       const loadPromise = loader.fetch("FooInterface", 1, "interface");
@@ -270,9 +273,27 @@ describe(BulkObjectLoader, () => {
       vi.useRealTimers();
     });
 
-    it("rejects when interface object is not found", async () => {
+    it("rejects when interface object is not found in any implementing type", async () => {
       const loader = new BulkObjectLoader(client, 25, 100);
       vi.useFakeTimers();
+
+      // eslint-disable-next-line @typescript-eslint/unbound-method
+      vi.mocked(client.fetchMetadata)
+        .mockResolvedValueOnce(
+          {
+            type: "interface",
+            implementedBy: ["Employee"],
+            links: {},
+            apiName: "FooInterface",
+            displayName: "FooInterface",
+            description: undefined,
+            properties: {},
+            rid: "ri.test",
+          } satisfies InterfaceMetadata,
+        )
+        .mockResolvedValueOnce(
+          { primaryKeyApiName: "employeeId" } as ObjectMetadata,
+        );
 
       client.mockReturnValueOnce(mockObjectSet([]));
 
