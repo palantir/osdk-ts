@@ -354,7 +354,7 @@ describe("ListQuery autoFetchMore tests", () => {
     if (payload?.resolvedList && payload.resolvedList.length > 1) {
       const firstItem = payload.resolvedList[0];
       const lastItem = payload.resolvedList[payload.resolvedList.length - 1];
-      expect(firstItem.id).toBeGreaterThanOrEqual((lastItem as any).id);
+      expect(firstItem.id).toBeGreaterThanOrEqual(lastItem.id as number);
     }
 
     testStage("Verify no additional unexpected calls");
@@ -552,6 +552,233 @@ describe("ListQuery pivotTo tests", () => {
       officeId: "office-a",
       name: "Office A",
     });
+
+    testStage("Verify no additional calls");
+    expectNoMoreCalls(listSub);
+  });
+
+  it("rids + pivotTo returns only linked objects from specified source RIDs", async () => {
+    fauxFoundry.getDefaultDataStore().clear();
+
+    const officeA = fauxFoundry.getDefaultDataStore().registerObject(Office, {
+      $apiName: "Office",
+      officeId: "office-a",
+      name: "Office A",
+    });
+    const officeB = fauxFoundry.getDefaultDataStore().registerObject(Office, {
+      $apiName: "Office",
+      officeId: "office-b",
+      name: "Office B",
+    });
+
+    const emp1 = fauxFoundry.getDefaultDataStore().registerObject(Employee, {
+      $apiName: "Employee",
+      $rid: "ri.phonograph2-objects.main.object.emp-1",
+      employeeId: 1,
+      fullName: "Employee 1",
+    });
+    const emp2 = fauxFoundry.getDefaultDataStore().registerObject(Employee, {
+      $apiName: "Employee",
+      $rid: "ri.phonograph2-objects.main.object.emp-2",
+      employeeId: 2,
+      fullName: "Employee 2",
+    });
+    const emp3 = fauxFoundry.getDefaultDataStore().registerObject(Employee, {
+      $apiName: "Employee",
+      $rid: "ri.phonograph2-objects.main.object.emp-3",
+      employeeId: 3,
+      fullName: "Employee 3",
+    });
+
+    fauxFoundry.getDefaultDataStore().registerLink(
+      emp1,
+      "officeLink",
+      officeA,
+      "occupants",
+    );
+    fauxFoundry.getDefaultDataStore().registerLink(
+      emp2,
+      "officeLink",
+      officeA,
+      "occupants",
+    );
+    fauxFoundry.getDefaultDataStore().registerLink(
+      emp3,
+      "officeLink",
+      officeB,
+      "occupants",
+    );
+
+    testStage("Observe with rids for emp1 and emp3, pivotTo officeLink");
+    const listSub = mockListSubCallback();
+    defer(
+      store.lists.observe<typeof Employee>(
+        {
+          type: Employee,
+          rids: [
+            "ri.phonograph2-objects.main.object.emp-1",
+            "ri.phonograph2-objects.main.object.emp-3",
+          ],
+          orderBy: {},
+          pivotTo: "officeLink",
+        },
+        listSub,
+      ),
+    );
+
+    testStage("Initial loading state");
+    await waitForCall(listSub.next, 1);
+    expectSingleListCallAndClear(listSub, [], { status: "loading" });
+
+    testStage("Data loads");
+    await waitForCall(listSub.next, 1);
+    const payload = expectSingleListCallAndClear(listSub, expect.anything(), {
+      status: "loaded",
+    });
+
+    testStage("Verify offices linked to emp1 and emp3 are returned");
+    expect(payload?.resolvedList.length).toBe(2);
+    expect(payload?.resolvedList).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ officeId: "office-a" }),
+        expect.objectContaining({ officeId: "office-b" }),
+      ]),
+    );
+
+    testStage("Verify no additional calls");
+    expectNoMoreCalls(listSub);
+  });
+
+  it("rids + pivotTo + where filters source objects before pivoting", async () => {
+    fauxFoundry.getDefaultDataStore().clear();
+
+    const officeA = fauxFoundry.getDefaultDataStore().registerObject(Office, {
+      $apiName: "Office",
+      officeId: "office-a",
+      name: "Office A",
+    });
+    const officeB = fauxFoundry.getDefaultDataStore().registerObject(Office, {
+      $apiName: "Office",
+      officeId: "office-b",
+      name: "Office B",
+    });
+
+    const emp1 = fauxFoundry.getDefaultDataStore().registerObject(Employee, {
+      $apiName: "Employee",
+      $rid: "ri.phonograph2-objects.main.object.emp-1",
+      employeeId: 1,
+      fullName: "Employee 1",
+    });
+    const emp2 = fauxFoundry.getDefaultDataStore().registerObject(Employee, {
+      $apiName: "Employee",
+      $rid: "ri.phonograph2-objects.main.object.emp-2",
+      employeeId: 2,
+      fullName: "Employee 2",
+    });
+
+    fauxFoundry.getDefaultDataStore().registerLink(
+      emp1,
+      "officeLink",
+      officeA,
+      "occupants",
+    );
+    fauxFoundry.getDefaultDataStore().registerLink(
+      emp2,
+      "officeLink",
+      officeB,
+      "occupants",
+    );
+
+    testStage(
+      "Observe with rids for both employees, where filters to employeeId 1",
+    );
+    const listSub = mockListSubCallback();
+    defer(
+      store.lists.observe<typeof Employee>(
+        {
+          type: Employee,
+          rids: [
+            "ri.phonograph2-objects.main.object.emp-1",
+            "ri.phonograph2-objects.main.object.emp-2",
+          ],
+          where: { employeeId: 1 },
+          orderBy: {},
+          pivotTo: "officeLink",
+        },
+        listSub,
+      ),
+    );
+
+    testStage("Initial loading state");
+    await waitForCall(listSub.next, 1);
+    expectSingleListCallAndClear(listSub, [], { status: "loading" });
+
+    testStage("Data loads");
+    await waitForCall(listSub.next, 1);
+    const payload = expectSingleListCallAndClear(listSub, expect.anything(), {
+      status: "loaded",
+    });
+
+    testStage("Verify only office linked to employee 1 is returned");
+    expect(payload?.resolvedList.length).toBe(1);
+    expect(payload?.resolvedList[0]).toMatchObject({
+      officeId: "office-a",
+      name: "Office A",
+    });
+
+    testStage("Verify no additional calls");
+    expectNoMoreCalls(listSub);
+  });
+
+  it("empty rids + pivotTo returns no results", async () => {
+    fauxFoundry.getDefaultDataStore().clear();
+
+    const officeA = fauxFoundry.getDefaultDataStore().registerObject(Office, {
+      $apiName: "Office",
+      officeId: "office-a",
+      name: "Office A",
+    });
+
+    const emp1 = fauxFoundry.getDefaultDataStore().registerObject(Employee, {
+      $apiName: "Employee",
+      $rid: "ri.phonograph2-objects.main.object.emp-1",
+      employeeId: 1,
+      fullName: "Employee 1",
+    });
+
+    fauxFoundry.getDefaultDataStore().registerLink(
+      emp1,
+      "officeLink",
+      officeA,
+      "occupants",
+    );
+
+    testStage("Observe with empty rids + pivotTo");
+    const listSub = mockListSubCallback();
+    defer(
+      store.lists.observe<typeof Employee>(
+        {
+          type: Employee,
+          rids: [],
+          orderBy: {},
+          pivotTo: "officeLink",
+        },
+        listSub,
+      ),
+    );
+
+    testStage("Initial loading state");
+    await waitForCall(listSub.next, 1);
+    expectSingleListCallAndClear(listSub, [], { status: "loading" });
+
+    testStage("Data loads");
+    await waitForCall(listSub.next, 1);
+    const payload = expectSingleListCallAndClear(listSub, expect.anything(), {
+      status: "loaded",
+    });
+
+    testStage("Verify empty result");
+    expect(payload?.resolvedList.length).toBe(0);
 
     testStage("Verify no additional calls");
     expectNoMoreCalls(listSub);
