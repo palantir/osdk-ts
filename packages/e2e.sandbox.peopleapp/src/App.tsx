@@ -9,6 +9,8 @@ function PeopleApp() {
   const path = location.pathname;
   const activeTab = path === "/" || path === "/employees"
     ? "employees"
+    : path === "/employees/filter-list"
+    ? "filter-list"
     : "offices";
 
   return (
@@ -22,6 +24,13 @@ function PeopleApp() {
           onClick={() => navigate("/employees")}
         >
           Employees
+        </Button>
+        <Button
+          variant="tab"
+          active={activeTab === "filter-list"}
+          onClick={() => navigate("/employees/filter-list")}
+        >
+          Filter List
         </Button>
         <Button
           variant="tab"
