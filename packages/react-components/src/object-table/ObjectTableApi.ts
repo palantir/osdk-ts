@@ -51,6 +51,8 @@ export type ColumnDefinition<
   resizable?: boolean;
   orderable?: boolean;
   filterable?: boolean;
+  editable?: boolean;
+
   renderCell?: (
     object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
     locator: ColumnDefinitionLocator<Q, RDPs, FunctionColumns>,
@@ -203,6 +205,19 @@ export interface ObjectTableProps<
   ) => void;
 
   /**
+   * Called after the value of a cell is edited and committed by the user.
+   *
+   * @param cellId
+   * @param state The new and old values of the cell
+   */
+  onCellValueChanged?: (cellId: string, state: CellValueState) => void;
+
+  /**
+   * @param edits a map of cellId to the new and old values of the cell
+   */
+  onSubmitEdits?: (edits: Record<string, CellValueState>) => void;
+
+  /**
    * Called when the column visibility or ordering changed.
    *
    * If provided, the table will allow the user to show/hide columns.
@@ -291,4 +306,9 @@ export interface ObjectTableProps<
   rowHeight?: number;
 
   className?: string;
+}
+
+interface CellValueState {
+  newValue?: unknown;
+  oldValue?: unknown;
 }
