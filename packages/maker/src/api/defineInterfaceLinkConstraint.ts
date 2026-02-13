@@ -16,7 +16,12 @@
 
 import invariant from "tiny-invariant";
 import { cloneDefinition } from "./cloneDefinition.js";
-import { namespace, withoutNamespace } from "./defineOntology.js";
+import { OntologyEntityTypeEnum } from "./common/OntologyEntityTypeEnum.js";
+import {
+  importedTypes,
+  namespace,
+  withoutNamespace,
+} from "./defineOntology.js";
 import type { InterfaceType } from "./interface/InterfaceType.js";
 import { combineApiNamespaceIfMissing } from "./namespace/combineApiNamespaceIfMissing.js";
 
@@ -46,6 +51,13 @@ export function defineInterfaceLinkConstraint(
   linkDefInput: One | Many,
 ): void {
   const linkDef = cloneDefinition(linkDefInput);
+
+  invariant(
+    importedTypes[OntologyEntityTypeEnum.INTERFACE_TYPE][linkDef.from.apiName]
+      == null,
+    `Cannot define a link constraint from imported interface ${linkDef.from.apiName}. The "from" side must be a locally defined interface.`,
+  );
+
   const fromLinkMeta = getLinkMeta(linkDef);
 
   invariant(
