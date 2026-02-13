@@ -15,7 +15,7 @@
  */
 
 import { Button, Collapse, Icon, MenuItem, Tag } from "@blueprintjs/core";
-import type { IconName } from "@blueprintjs/icons";
+import type { IconName } from "@blueprintjs/core";
 import React, { useMemo, useState } from "react";
 import type {
   AddFilterMenuProps,
