@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import { writeFileSync , mkdtempSync, rmSync } from "fs";
+import { mkdtempSync, rmSync, writeFileSync } from "fs";
 import { tmpdir } from "os";
 import { join } from "path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { getAnthropicBaseUrl } from "./getAnthropicBaseUrl.js";
+import { clearApiGatewayCache } from "./getApiGatewayBaseUrl.js";
 
 describe("getAnthropicBaseUrl", () => {
   let originalEnv: string | undefined;
@@ -30,6 +31,7 @@ describe("getAnthropicBaseUrl", () => {
   });
 
   afterEach(() => {
+    clearApiGatewayCache();
     if (originalEnv !== undefined) {
       process.env.FOUNDRY_SERVICE_DISCOVERY_V2 = originalEnv;
     } else {

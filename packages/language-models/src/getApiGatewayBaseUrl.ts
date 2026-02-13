@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,8 @@ interface ServiceDiscoveryConfig {
   [serviceName: string]: ServiceConfig;
 }
 
+let cachedBaseUrl: string | undefined;
+
 /**
  * Type guard to check if config is an object with uris property
  */
@@ -49,6 +51,9 @@ function extractUris(config: ServiceConfig): string[] {
 /**
  * Retrieves the API Gateway base URL from the Function's environment.
  *
+ * The result is cached after the first successful read, avoiding
+ * repeated synchronous file I/O and YAML parsing on subsequent calls.
+ *
  * This function is intended to be used only from within a function. Usage of this utility elsewhere may result
  * in errors since the environment may not be properly configured.
  *
@@ -64,6 +69,10 @@ function extractUris(config: ServiceConfig): string[] {
  */
 export function getApiGatewayBaseUrl(options: PreviewOptions): string {
   assertPreview(options);
+
+  if (cachedBaseUrl !== undefined) {
+    return cachedBaseUrl;
+  }
 
   const filePath = process.env[FOUNDRY_SERVICE_DISCOVERY_V2_ENV_VAR];
 
@@ -109,5 +118,14 @@ export function getApiGatewayBaseUrl(options: PreviewOptions): string {
     );
   }
 
-  return uris[0];
+  cachedBaseUrl = uris[0];
+  return cachedBaseUrl;
+}
+
+/**
+ * Clears the cached API Gateway base URL. Intended for testing only.
+ * @internal
+ */
+export function clearApiGatewayCache(): void {
+  cachedBaseUrl = undefined;
 }
