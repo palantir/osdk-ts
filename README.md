@@ -1,5 +1,17 @@
 # TypeScript Ontology SDK
 
+A TypeScript library for interacting with Palantir's Ontology.
+
+## Documentation
+
+- [OSDK TypeScript Documentation](https://palantir.github.io/osdk-ts/)
+- [Ontology SDK Overview](https://www.palantir.com/docs/foundry/ontology-sdk/overview/)
+- [TypeScript OSDK Migration Guide](https://www.palantir.com/docs/foundry/ontology-sdk/typescript-osdk-migration)
+
+[![Node.js Version](https://img.shields.io/badge/node-%3E=18.19.0-brightgreen)](https://nodejs.org/)
+
+## Packages
+
 | Package | Version |
 |---------|---------|
 | @osdk/client | [![npm](https://img.shields.io/npm/v/@osdk/client.svg)](https://www.npmjs.com/package/@osdk/client) |
@@ -7,13 +19,9 @@
 | @osdk/foundry-sdk-generator | [![npm](https://img.shields.io/npm/v/@osdk/foundry-sdk-generator.svg)](https://www.npmjs.com/package/@osdk/foundry-sdk-generator) |
 | @osdk/oauth | [![npm](https://img.shields.io/npm/v/@osdk/oauth.svg)](https://www.npmjs.com/package/@osdk/oauth) |
 
-[![Node.js Version](https://img.shields.io/badge/node-%3E=18.19.0-brightgreen)](https://nodejs.org/)
-
 ## Getting Started
 
-The TypeScript SDK is a library used for interacting with Palantir's Ontology.
-
-To get started, visit the developer console application on your Foundry stack, or visit [our public documentation](https://www.palantir.com/docs/foundry/ontology-sdk/overview/).
+To get started, visit the developer console application on your Foundry stack or see the [documentation](#documentation) above.
 
 Do you only want to hit specific APIs or don't need a generated SDK? Check out the [foundry-platform-typescript](https://github.com/palantir/foundry-platform-typescript) package, which provides standalone APIs to interact with Foundry directly without the need to generate ontology-specific SDKs.
 
