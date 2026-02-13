@@ -212,8 +212,10 @@ describe("aggregate", () => {
     );
     expectType<Array<any>>(grouped);
     expectType<string | undefined>(grouped[0].$group.string);
-    expectType<number>(grouped[0].id.approximateDistinct);
-    expectType<number>(grouped[0].id.exactDistinct);
+    if (grouped[0].id) {
+      expectType<number | undefined>(grouped[0].id.approximateDistinct);
+      expectType<number | undefined>(grouped[0].id.exactDistinct);
+    }
     expectType<number>(grouped[0].$group.id);
     expectType<number>(grouped[0].$count);
     expectType<{ startValue: number; endValue: number }>(
