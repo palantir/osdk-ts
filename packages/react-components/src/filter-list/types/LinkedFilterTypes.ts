@@ -32,7 +32,7 @@ import type {
  * State for "has link" filter
  */
 export interface HasLinkFilterState extends BaseFilterState {
-  type: "HAS_LINK";
+  type: "hasLink";
   hasLink: boolean;
 }
 
@@ -43,7 +43,7 @@ export interface HasLinkFilterState extends BaseFilterState {
 export interface LinkedPropertyFilterState<S extends FilterState = FilterState>
   extends BaseFilterState
 {
-  type: "LINKED_PROPERTY";
+  type: "linkedProperty";
   linkedFilterState: S;
 }
 
@@ -102,4 +102,25 @@ export interface LinkedPropertyFilterDefinition<
    * @default true
    */
   isVisible?: boolean;
+}
+
+/**
+ * Display mode for linked filters
+ *
+ * - "inline": Show alongside non-linked filters in the main list
+ * - "grouped": Group by link type with collapsible sections
+ */
+export type LinkedFilterDisplayMode = "inline" | "grouped";
+
+/**
+ * Configuration for a group of linked filters
+ */
+export interface LinkedFilterGroupConfig<
+  Q extends ObjectTypeDefinition,
+  L extends LinkNames<Q> = LinkNames<Q>,
+> {
+  linkName: L;
+  displayMode: LinkedFilterDisplayMode;
+  collapsedByDefault?: boolean;
+  groupLabel?: string;
 }

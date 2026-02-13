@@ -1,0 +1,55 @@
+/*
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.errorContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--osdk-filter-error-gap, 8px);
+  padding: var(--osdk-filter-error-padding, 8px);
+  border-radius: var(--osdk-filter-error-border-radius, 4px);
+  background-color: var(--osdk-filter-error-bg, rgba(255, 0, 0, 0.05));
+}
+
+.errorMessage {
+  margin: 0;
+  font-size: var(--osdk-filter-error-font-size, 13px);
+  color: var(--osdk-filter-error-text-color, #c23030);
+}
+
+.retryButton {
+  padding: var(--osdk-filter-error-button-padding, 4px 8px);
+  border: 1px solid var(--osdk-filter-error-button-border-color, currentColor);
+  border-radius: var(--osdk-filter-error-button-border-radius, 3px);
+  background: transparent;
+  font-size: var(--osdk-filter-error-button-font-size, 12px);
+  color: var(--osdk-filter-error-button-color, inherit);
+  cursor: pointer;
+  transition: background-color 150ms ease;
+
+  &:hover {
+    background-color: var(--osdk-filter-error-button-hover-bg, rgba(0, 0, 0, 0.05));
+  }
+
+  &:focus-visible {
+    outline: var(--osdk-filter-input-focus-outline-width, 2px) solid var(--osdk-filter-input-focus-outline-color, currentColor);
+    outline-offset: var(--osdk-filter-input-focus-outline-offset, 2px);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}

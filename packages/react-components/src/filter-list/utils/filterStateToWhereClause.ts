@@ -154,10 +154,10 @@ function filterStateToPropertyFilter(
 
     // These filter types are handled separately in buildWhereClause
     // since they need access to the full definition, not just state
-    case "HAS_LINK":
-    case "LINKED_PROPERTY":
-    case "KEYWORD_SEARCH":
-    case "CUSTOM":
+    case "hasLink":
+    case "linkedProperty":
+    case "keywordSearch":
+    case "custom":
       return undefined;
 
     default:
@@ -206,11 +206,11 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
       }
 
       case "HAS_LINK": {
-        if (state.type !== "HAS_LINK") {
+        if (state.type !== "hasLink") {
           if (process.env.NODE_ENV !== "production") {
             // eslint-disable-next-line no-console
             console.warn(
-              `[FilterList] State type mismatch for hasLink filter "${definition.linkName}": expected HAS_LINK, got ${state.type}`,
+              `[FilterList] State type mismatch for hasLink filter "${definition.linkName}": expected hasLink, got ${state.type}`,
             );
           }
           break;
@@ -232,11 +232,11 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
       }
 
       case "KEYWORD_SEARCH": {
-        if (state.type !== "KEYWORD_SEARCH") {
+        if (state.type !== "keywordSearch") {
           if (process.env.NODE_ENV !== "production") {
             // eslint-disable-next-line no-console
             console.warn(
-              `[FilterList] State type mismatch for keywordSearch filter: expected KEYWORD_SEARCH, got ${state.type}`,
+              `[FilterList] State type mismatch for keywordSearch filter: expected keywordSearch, got ${state.type}`,
             );
           }
           break;
@@ -298,11 +298,11 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
       }
 
       case "CUSTOM": {
-        if (state.type !== "CUSTOM") {
+        if (state.type !== "custom") {
           if (process.env.NODE_ENV !== "production") {
             // eslint-disable-next-line no-console
             console.warn(
-              `[FilterList] State type mismatch for custom filter "${definition.key}": expected CUSTOM, got ${state.type}`,
+              `[FilterList] State type mismatch for custom filter "${definition.key}": expected custom, got ${state.type}`,
             );
           }
           break;
