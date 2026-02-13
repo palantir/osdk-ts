@@ -32,6 +32,7 @@ export type {
   TwoDimensionalAggregation,
 } from "@osdk/client";
 
+export * from "./aliases/index.js";
 export { createEditBatch } from "./edits/createEditBatch.js";
 export type { EditBatch } from "./edits/EditBatch.js";
 export type { Edits } from "./edits/types.js";
