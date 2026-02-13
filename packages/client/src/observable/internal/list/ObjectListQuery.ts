@@ -54,10 +54,22 @@ export class ObjectListQuery extends ListQuery {
     } as ObjectTypeDefinition;
 
     if (pivotInfo != null) {
-      let sourceSet = store.client({
-        type: "object",
-        apiName: pivotInfo.sourceType,
-      } as ObjectTypeDefinition);
+      let sourceSet: ObjectSet<ObjectTypeDefinition>;
+      if (rids != null) {
+        sourceSet = clientCtx.objectSetFactory(
+          {
+            type: "object",
+            apiName: pivotInfo.sourceType,
+          } as ObjectTypeDefinition,
+          clientCtx,
+          { type: "static", objects: [...rids] },
+        );
+      } else {
+        sourceSet = store.client({
+          type: "object",
+          apiName: pivotInfo.sourceType,
+        } as ObjectTypeDefinition);
+      }
 
       // Filter source objects before pivoting to linked objects
       sourceSet = sourceSet.where(this.canonicalWhere);
