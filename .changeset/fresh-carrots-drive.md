@@ -3,4 +3,4 @@
 "@osdk/api": minor
 ---
 
-Changing in typing definition of AggregationResultsWithoutGroups
+Change in the typing definition of AggregationResultsWithoutGroups

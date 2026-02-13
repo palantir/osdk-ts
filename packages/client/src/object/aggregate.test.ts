@@ -458,8 +458,8 @@ describe("aggregate", () => {
     >(notGrouped.id);
     if (notGrouped.id) {
       expectType<number>(notGrouped.id.exactDistinct);
-      expectType<number | undefined>(notGrouped.id.avg);
       expectType<number | undefined>(notGrouped.id.max);
+      expectType<number | undefined>(notGrouped.id.avg);
     }
     expectType<number>(notGrouped.$count);
     expectType<
