@@ -206,16 +206,16 @@ export class ObjectSetListenerWebsocket {
 
     if (properties.length === 0) {
       properties = Object.keys(objOrInterfaceDef.properties) as Array<P>;
-    } else {
-      properties = properties.filter((p) => p in objOrInterfaceDef.properties);
     }
 
     objectProperties = properties.filter((p) =>
-      objOrInterfaceDef.properties[p].type !== "geotimeSeriesReference"
+      !(p in objOrInterfaceDef.properties)
+      || objOrInterfaceDef.properties[p].type !== "geotimeSeriesReference"
     );
 
     referenceProperties = properties.filter((p) =>
-      objOrInterfaceDef.properties[p].type === "geotimeSeriesReference"
+      p in objOrInterfaceDef.properties
+      && objOrInterfaceDef.properties[p].type === "geotimeSeriesReference"
     );
 
     const sub: Subscription<Q, P> = {
