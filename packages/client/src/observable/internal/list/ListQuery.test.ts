@@ -628,7 +628,7 @@ describe("ListQuery pivotTo tests", () => {
 
     testStage("Initial loading state");
     await waitForCall(listSub.next, 1);
-    expectSingleListCallAndClear(listSub, [], { status: "loading" });
+    expectSingleListCallAndClear(listSub, undefined, { status: "loading" });
 
     testStage("Data loads");
     await waitForCall(listSub.next, 1);
@@ -637,7 +637,7 @@ describe("ListQuery pivotTo tests", () => {
     });
 
     testStage("Verify offices linked to emp1 and emp3 are returned");
-    expect(payload?.resolvedList.length).toBe(2);
+    expect(payload?.resolvedList?.length).toBe(2);
     expect(payload?.resolvedList).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ officeId: "office-a" }),
@@ -711,7 +711,7 @@ describe("ListQuery pivotTo tests", () => {
 
     testStage("Initial loading state");
     await waitForCall(listSub.next, 1);
-    expectSingleListCallAndClear(listSub, [], { status: "loading" });
+    expectSingleListCallAndClear(listSub, undefined, { status: "loading" });
 
     testStage("Data loads");
     await waitForCall(listSub.next, 1);
@@ -720,8 +720,8 @@ describe("ListQuery pivotTo tests", () => {
     });
 
     testStage("Verify only office linked to employee 1 is returned");
-    expect(payload?.resolvedList.length).toBe(1);
-    expect(payload?.resolvedList[0]).toMatchObject({
+    expect(payload?.resolvedList?.length).toBe(1);
+    expect(payload?.resolvedList?.[0]).toMatchObject({
       officeId: "office-a",
       name: "Office A",
     });
@@ -769,7 +769,7 @@ describe("ListQuery pivotTo tests", () => {
 
     testStage("Initial loading state");
     await waitForCall(listSub.next, 1);
-    expectSingleListCallAndClear(listSub, [], { status: "loading" });
+    expectSingleListCallAndClear(listSub, undefined, { status: "loading" });
 
     testStage("Data loads");
     await waitForCall(listSub.next, 1);
@@ -778,7 +778,7 @@ describe("ListQuery pivotTo tests", () => {
     });
 
     testStage("Verify empty result");
-    expect(payload?.resolvedList.length).toBe(0);
+    expect(payload?.resolvedList?.length).toBe(0);
 
     testStage("Verify no additional calls");
     expectNoMoreCalls(listSub);

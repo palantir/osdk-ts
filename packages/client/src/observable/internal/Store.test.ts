@@ -604,7 +604,7 @@ describe(Store, () => {
           const lastPayload = getLastPayload(linkSubFn);
 
           expect(lastPayload.resolvedList).toHaveLength(1);
-          expect(lastPayload.resolvedList[0].$primaryKey).toBe("101");
+          expect(lastPayload.resolvedList?.[0].$primaryKey).toBe("101");
           expect(lastPayload.totalCount).toBe("1");
         } finally {
           dataStore.unregisterLink(
@@ -702,7 +702,9 @@ describe(Store, () => {
         );
 
         await waitForCall(linkSubFn);
-        expectSingleLinkCallAndClear(linkSubFn, [], { status: "loading" });
+        expectSingleLinkCallAndClear(linkSubFn, undefined, {
+          status: "loading",
+        });
 
         await waitForCall(linkSubFn);
         expectSingleLinkCallAndClear(
@@ -1373,13 +1375,13 @@ describe(Store, () => {
 
           expectSingleListCallAndClear(
             listSub1,
-            [],
+            undefined,
             { status: "loading" },
           );
 
           expectSingleListCallAndClear(
             ifaceSub,
-            [],
+            undefined,
             { status: "loading" },
           );
 
