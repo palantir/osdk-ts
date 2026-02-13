@@ -50,7 +50,7 @@ export namespace ObserveLinks {
   export interface CallbackArgs<
     T extends ObjectTypeDefinition | InterfaceDefinition,
   > {
-    resolvedList: Osdk.Instance<T>[];
+    resolvedList: Osdk.Instance<T>[] | undefined;
     isOptimistic: boolean;
     lastUpdated: number;
     fetchMore: () => Promise<void>;

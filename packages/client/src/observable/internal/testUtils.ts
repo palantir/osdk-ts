@@ -377,7 +377,7 @@ export function expectSingleLinkCallAndClear<T extends ObjectTypeDefinition>(
 
 export function expectSingleListCallAndClear<T extends ObjectTypeDefinition>(
   subFn: MockedObject<Observer<ListPayload | undefined>>,
-  resolvedList: ObjectHolder[] | Osdk.Instance<T>[],
+  resolvedList: ObjectHolder[] | Osdk.Instance<T>[] | undefined,
   payloadOptions: Omit<Partial<ListPayload>, "resolvedList"> = {},
 ): ListPayload | undefined {
   if (vitest.isFakeTimers()) {

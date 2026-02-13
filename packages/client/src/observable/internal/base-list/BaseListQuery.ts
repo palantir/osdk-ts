@@ -51,7 +51,7 @@ import { removeDuplicates } from "./removeDuplicates.js";
  * Used to constrain PAYLOAD so we can safely access these properties
  */
 export interface BaseListPayloadShape {
-  resolvedList: readonly unknown[];
+  resolvedList: readonly unknown[] | undefined;
   hasMore: boolean;
   fetchMore: () => Promise<void>;
 }

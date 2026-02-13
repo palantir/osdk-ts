@@ -233,7 +233,7 @@ export class ObjectSetQuery extends BaseListQuery<
 
   protected createPayload(
     params: {
-      resolvedData: any[];
+      resolvedData: any[] | undefined;
       isOptimistic: boolean;
       status: Status;
       lastUpdated: number;
