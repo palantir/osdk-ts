@@ -10,8 +10,10 @@ import type { LinkNames } from '@osdk/api';
 import type { ObjectTypeDefinition } from '@osdk/api';
 import type { Osdk } from '@osdk/api';
 
+// Warning: (ae-forgotten-export) The symbol "LinkStubs" needs to be exported by the entry point index.d.ts
+//
 // @public
-export function createMockOsdkObject<Q extends ObjectTypeDefinition>(objectType: Q, properties?: Partial<CompileTimeMetadata<Q>["props"]>, links?: { [LINK_NAME in LinkNames<Q>] : CompileTimeMetadata<Q>["links"][LINK_NAME]["multiplicity"] extends true ? never : Osdk.Instance<LinkedType<Q, LINK_NAME>> }, options?: MockOsdkObjectOptions): Osdk.Instance<Q>;
+export function createMockOsdkObject<Q extends ObjectTypeDefinition>(objectType: Q, properties?: Partial<CompileTimeMetadata<Q>["props"]>, links?: LinkStubs<Q>, options?: MockOsdkObjectOptions): Osdk.Instance<Q>;
 
 // @public
 export interface MockOsdkObjectOptions {
