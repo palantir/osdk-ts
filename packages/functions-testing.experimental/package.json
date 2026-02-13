@@ -52,6 +52,7 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
+    "tiny-invariant": "^1.3.3",
     "vitest": "^3.2.4"
   },
   "peerDependencies": {
@@ -64,6 +65,7 @@
     "@microsoft/api-extractor": "^7.52.11",
     "@osdk/api": "workspace:~",
     "@osdk/client": "workspace:~",
+    "@osdk/client.test.ontology": "workspace:~",
     "@osdk/functions": "workspace:~",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",

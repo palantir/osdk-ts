@@ -4,6 +4,24 @@
 
 ```ts
 
+import type { CompileTimeMetadata } from '@osdk/api';
+import type { LinkedType } from '@osdk/api';
+import type { LinkNames } from '@osdk/api';
+import type { ObjectTypeDefinition } from '@osdk/api';
+import type { Osdk } from '@osdk/api';
+
+// Warning: (ae-forgotten-export) The symbol "LinkStubs" needs to be exported by the entry point index.d.ts
+//
+// @public
+export function createMockOsdkObject<Q extends ObjectTypeDefinition>(objectType: Q, properties?: Partial<CompileTimeMetadata<Q>["props"]>, links?: LinkStubs<Q>, options?: MockOsdkObjectOptions): Osdk.Instance<Q>;
+
+// @public
+export interface MockOsdkObjectOptions {
+    	$rid?: string;
+    	primaryKeyApiName?: string;
+    	titlePropertyApiName?: string;
+}
+
 // (No @packageDocumentation comment for this package)
 
 ```
