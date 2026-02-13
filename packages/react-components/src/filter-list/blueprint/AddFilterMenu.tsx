@@ -36,6 +36,16 @@ const SECTION_LABELS: Record<FilterCategory, string> = {
   LINKED_OBJECT: "FILTER ON A LINKED OBJECT",
 };
 
+const KEYWORD_SEARCH_TEMPLATE: FilterTemplate = {
+  id: "keyword-search",
+  label: "Keyword Search",
+  key: "$search",
+  filterComponent: "CONTAINS_TEXT",
+  icon: "search",
+  allowMultiple: false,
+  category: "ALL_PROPERTIES",
+};
+
 export function AddFilterMenu({
   templates,
   activeCounts,
@@ -81,11 +91,11 @@ export function AddFilterMenu({
   };
 
   return (
-    <div className="filter-add-menu">
-      <div className="filter-add-menu__search-container">
+    <div className={styles.menu}>
+      <div className={styles.searchContainer}>
         <input
           type="text"
-          className="filter-add-menu__search-input"
+          className={styles.searchInput}
           placeholder="Search..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
@@ -110,7 +120,7 @@ export function AddFilterMenu({
         />
       </div>
 
-      <div className="filter-add-menu__content">
+      <div className={styles.content}>
         {SECTION_ORDER.map((category) => {
           const items = groupedTemplates[category];
           const count = items.length;
@@ -123,7 +133,7 @@ export function AddFilterMenu({
           return (
             <div key={category}>
               <Button
-                className="filter-add-menu__section-button"
+                className={styles.sectionButton}
                 variant="minimal"
                 fill
                 alignText="left"
@@ -138,7 +148,7 @@ export function AddFilterMenu({
                   />
                 }
               >
-                <span className="filter-add-menu__section-label">
+                <span className={styles.sectionLabel}>
                   {SECTION_LABELS[category]}{" "}
                   {category !== "ALL_PROPERTIES" && `(${count})`}
                 </span>
@@ -150,17 +160,7 @@ export function AddFilterMenu({
                     icon="search"
                     text="Keyword search"
                     labelElement={<Icon icon="small-plus" />}
-                    onClick={() => {
-                      onSelectFilter({
-                        id: "keyword-search",
-                        label: "Keyword Search",
-                        key: "$search",
-                        filterComponent: "CONTAINS_TEXT",
-                        icon: "search",
-                        allowMultiple: false,
-                        category: "ALL_PROPERTIES",
-                      });
-                    }}
+                    onClick={() => onSelectFilter(KEYWORD_SEARCH_TEMPLATE)}
                   />
                 )}
                 {items.map((template) => {
@@ -171,7 +171,7 @@ export function AddFilterMenu({
                     <MenuItem
                       key={template.id}
                       icon={typeof template.icon === "string"
-                        ? template.icon as IconName
+                        ? (template.icon as IconName)
                         : undefined}
                       text={
                         <>

@@ -157,7 +157,7 @@ function MultiSelectInputInner<
                   ? <Combobox.Empty>No options available</Combobox.Empty>
                   : values.map(({ value, count }) => (
                     <Combobox.Item key={value} value={value}>
-                      <span>{value}</span>{" "}
+                      <span>{value}</span>
                       <span style={{ fontVariantNumeric: "tabular-nums" }}>
                         ({count.toLocaleString()})
                       </span>
