@@ -22,13 +22,11 @@ const url = getMetaTagContent("osdk-foundryUrl");
 const clientId = getMetaTagContent("osdk-clientId");
 const redirectUrl = getMetaTagContent("osdk-redirectUrl");
 
-{{#if scopes}}
-const scopes = [
-  {{#each scopes}}
+const scopes: string[] = [
+{{#each scopes}}
   "{{this}}",
-  {{/each}}
+{{/each}}
 ];
-{{/if}}
 
 /**
  * Initialize the client to interact with the Ontology and Platform SDKs
@@ -39,9 +37,7 @@ const client = new FoundryClient({
     clientId,
     url,
     redirectUrl,
-    {{#if scopes}}
     scopes,
-    {{/if}}
   }),
 });
 
