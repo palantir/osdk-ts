@@ -30,6 +30,7 @@ export function loadAliasesFile(): IAliasesFile {
   if (!fs.existsSync(DEFAULT_ALIASES_PATH)) {
     throw new Error(`Aliases file not found at ${DEFAULT_ALIASES_PATH}`);
   }
+
   const data = fs.readFileSync(DEFAULT_ALIASES_PATH, "utf-8");
   cachedAliasesFile = JSON.parse(data) as IAliasesFile;
   return cachedAliasesFile;
