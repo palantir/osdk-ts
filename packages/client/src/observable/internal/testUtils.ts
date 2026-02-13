@@ -377,7 +377,7 @@ export function expectSingleLinkCallAndClear<T extends ObjectTypeDefinition>(
 
 export function expectSingleListCallAndClear<T extends ObjectTypeDefinition>(
   subFn: MockedObject<Observer<ListPayload | undefined>>,
-  resolvedList: ObjectHolder[] | Osdk.Instance<T>[],
+  resolvedList: ObjectHolder[] | Osdk.Instance<T>[] | undefined,
   payloadOptions: Omit<Partial<ListPayload>, "resolvedList"> = {},
 ): ListPayload | undefined {
   if (vitest.isFakeTimers()) {
@@ -583,11 +583,13 @@ export function listPayloadContaining(
   return {
     fetchMore: x.fetchMore ?? expect.any(Function),
     hasMore: x.hasMore ?? expect.any(Boolean),
-    resolvedList: x.resolvedList ?? expect.anything(),
+    resolvedList: "resolvedList" in x
+      ? x.resolvedList
+      : expect.anything(),
     isOptimistic: expect.any(Boolean),
     status: x.status ?? expect.anything(),
     lastUpdated: x.lastUpdated ?? expect.anything(),
-  };
+  } as ListPayload;
 }
 
 export function linkPayloadContaining(
@@ -596,7 +598,9 @@ export function linkPayloadContaining(
   return {
     fetchMore: x.fetchMore ?? expect.any(Function),
     hasMore: x.hasMore ?? expect.any(Boolean),
-    resolvedList: x.resolvedList ?? expect.anything(),
+    resolvedList: "resolvedList" in x
+      ? x.resolvedList
+      : expect.anything(),
     isOptimistic: expect.any(Boolean),
     status: x.status ?? expect.anything(),
     lastUpdated: x.lastUpdated ?? expect.anything(),

@@ -140,9 +140,11 @@ export interface ObserveObjectsCallbackArgs<
     WirePropertyTypes | undefined | Array<WirePropertyTypes>
   > = {},
 > {
-  resolvedList: Array<
-    Osdk.Instance<T, "$allBaseProperties", PropertyKeys<T>, RDPs>
-  >;
+  resolvedList:
+    | Array<
+      Osdk.Instance<T, "$allBaseProperties", PropertyKeys<T>, RDPs>
+    >
+    | undefined;
   isOptimistic: boolean;
   lastUpdated: number;
   fetchMore: () => Promise<void>;
@@ -158,9 +160,11 @@ export interface ObserveObjectSetArgs<
     WirePropertyTypes | undefined | Array<WirePropertyTypes>
   > = {},
 > {
-  resolvedList: Array<
-    Osdk.Instance<T, "$allBaseProperties", PropertyKeys<T>, RDPs>
-  >;
+  resolvedList:
+    | Array<
+      Osdk.Instance<T, "$allBaseProperties", PropertyKeys<T>, RDPs>
+    >
+    | undefined;
   isOptimistic: boolean;
   lastUpdated: number;
   fetchMore: () => Promise<void>;
@@ -229,7 +233,7 @@ export interface ObserveFunctionCallbackArgs<
 export interface ObserveLinkCallbackArgs<
   T extends ObjectTypeDefinition | InterfaceDefinition,
 > {
-  resolvedList: Osdk.Instance<T>[];
+  resolvedList: Osdk.Instance<T>[] | undefined;
   isOptimistic: boolean;
   lastUpdated: number;
   fetchMore: () => Promise<void>;

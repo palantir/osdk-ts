@@ -357,14 +357,17 @@ function observeMultiLinks(
       return;
     }
 
-    const seen = new Map<string, SpecificLinkPayload["resolvedList"][number]>();
+    const seen = new Map<
+      string,
+      NonNullable<SpecificLinkPayload["resolvedList"]>[number]
+    >();
     const fetchMores: Array<() => Promise<void>> = [];
     let latestUpdated = 0;
     let hasMore = false;
     let isOptimistic = false;
 
     for (const payload of perObjectResults.values()) {
-      for (const obj of payload.resolvedList) {
+      for (const obj of payload.resolvedList ?? []) {
         seen.set(`${obj.$objectType}:${obj.$primaryKey}`, obj);
       }
       if (payload.lastUpdated > latestUpdated) {
