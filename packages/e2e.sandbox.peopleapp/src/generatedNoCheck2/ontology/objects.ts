@@ -1,2 +1,10 @@
 export { Employee } from './objects/Employee.js';
+export { ExampleEw03osdkTodoProject } from './objects/ExampleEw03osdkTodoProject.js';
+export { ExampleEw03osdkTodoTask } from './objects/ExampleEw03osdkTodoTask.js';
+export { ExampleObjects } from './objects/ExampleObjects.js';
+export { lowerCaseApiDataset } from './objects/lowerCaseApiDataset.js';
 export { Office } from './objects/Office.js';
+export { ThreadsEmbeddedPdfChunk } from './objects/ThreadsEmbeddedPdfChunk.js';
+export { ThreadsEmbeddedPdfChunk_1 } from './objects/ThreadsEmbeddedPdfChunk_1.js';
+export { Todo } from './objects/Todo.js';
+export { WontDo } from './objects/WontDo.js';

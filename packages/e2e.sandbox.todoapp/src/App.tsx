@@ -3,14 +3,14 @@ import React from "react";
 import "./App.css";
 import CreateTodoForm from "./CreateTodoForm.js";
 import FilterSelector from "./FilterSelector.js";
-import type { TodoLike } from "./generatedNoCheck2/index.js";
+import { Todo } from "./generatedNoCheck2/index.js";
 import { H1 } from "./H2.js";
 import { Section } from "./Section.js";
 import TodoList from "./TodoList.js";
 import ValidateActionDemo from "./ValidateActionDemo.js";
 
 function App() {
-  const [whereClause, setWhereClause] = React.useState<WhereClause<TodoLike>>(
+  const [whereClause, setWhereClause] = React.useState<WhereClause<Todo>>(
     {},
   );
 

@@ -1,0 +1,26 @@
+{{#if osdkPackage}}
+import { OsdkProvider2 } from "@osdk/react/experimental";
+{{/if}}
+import React from "react";
+import ReactDOM from "react-dom/client";
+import App from "./App";
+{{#if osdkPackage}}
+import { client } from "./client";
+{{/if}}
+import "./index.css";
+
+{{#if osdkPackage}}
+ReactDOM.createRoot(document.getElementById("root")!).render(
+  <React.StrictMode>
+    <OsdkProvider2 client={client}>
+      <App />
+    </OsdkProvider2>
+  </React.StrictMode>,
+);
+{{else}}
+ReactDOM.createRoot(document.getElementById("root")!).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>,
+);
+{{/if}}

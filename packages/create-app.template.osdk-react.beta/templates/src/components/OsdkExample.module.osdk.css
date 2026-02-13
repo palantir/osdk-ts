@@ -1,0 +1,72 @@
+.container {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #1a1a1a;
+}
+
+.description {
+  color: #5f6b7c;
+  margin-bottom: 1.5rem;
+}
+
+.code {
+  background: #e9ecef;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 0.875rem;
+}
+
+.codeBlock {
+  background: #1a1a2e;
+  border-radius: 6px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  overflow-x: auto;
+}
+
+.codeTitle {
+  color: #a0a0a0;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 0.75rem;
+}
+
+.pre {
+  color: #e0e0e0;
+  font-family: "Fira Code", "Consolas", monospace;
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  margin: 0;
+  white-space: pre;
+}
+
+.note {
+  font-size: 0.875rem;
+  color: #6c757d;
+  font-style: italic;
+  margin-top: 1rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  .container {
+    background: #2d2d2d;
+  }
+
+  .title {
+    color: #ffffff;
+  }
+
+  .code {
+    background: #3d3d3d;
+    color: #e0e0e0;
+  }
+}

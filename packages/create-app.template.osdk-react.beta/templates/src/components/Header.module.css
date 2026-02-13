@@ -1,0 +1,26 @@
+.header {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  padding: 2rem 0;
+}
+
+.logos {
+  display: flex;
+  gap: 32px;
+}
+
+.logo {
+  height: 48px;
+  transition: filter 200ms;
+}
+
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+
+.heading {
+  font-size: 1.5rem;
+  text-align: center;
+}
