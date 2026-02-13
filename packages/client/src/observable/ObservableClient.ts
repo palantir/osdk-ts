@@ -170,12 +170,37 @@ export interface ObserveObjectSetArgs<
   totalCount?: string;
 }
 
+/**
+ * Options for observeAggregation without an ObjectSet (synchronous).
+ */
 export interface ObserveAggregationOptions<
   T extends ObjectOrInterfaceDefinition,
   A extends AggregateOpts<T>,
   RDPs extends Record<string, SimplePropertyDef> = {},
 > extends CommonObserveOptions, ObserveOptions {
   type: T;
+  objectSet?: undefined;
+  where?: WhereClause<T, RDPs>;
+  withProperties?: DerivedProperty.Clause<T>;
+  intersectWith?: Array<{
+    where: WhereClause<T, RDPs>;
+  }>;
+  aggregate: A;
+}
+
+/**
+ * Options for observeAggregation with an ObjectSet (asynchronous).
+ *
+ * When objectSet is provided, the aggregation is performed on that ObjectSet
+ * instead of the base type, enabling aggregation on pivoted or filtered sets.
+ */
+export interface ObserveAggregationOptionsWithObjectSet<
+  T extends ObjectOrInterfaceDefinition,
+  A extends AggregateOpts<T>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+> extends CommonObserveOptions, ObserveOptions {
+  type: T;
+  objectSet: ObjectSet<T>;
   where?: WhereClause<T, RDPs>;
   withProperties?: DerivedProperty.Clause<T>;
   intersectWith?: Array<{
@@ -320,18 +345,8 @@ export interface ObservableClient extends ObserveLinks {
   ): Unsubscribable;
 
   /**
-   * Observe an aggregation query with automatic updates when underlying data changes.
-   *
-   * @param options - Aggregation configuration including where, aggregate spec, and derived properties
-   * @param subFn - Observer that receives aggregation result updates
-   * @returns Subscription that can be unsubscribed to stop updates
-   *
-   * Supports:
-   * - Filtering with where clauses
-   * - Derived properties (RDPs) via withProperties
-   * - Set intersections
-   * - GroupBy and metric aggregations
-   * - Automatic updates when source data changes
+   * @deprecated Use the async overload with `objectSet` parameter instead.
+   * Pass `objectSet: client(YourType)` to get the base object set.
    */
   observeAggregation<
     T extends ObjectOrInterfaceDefinition,
@@ -341,6 +356,38 @@ export interface ObservableClient extends ObserveLinks {
     options: ObserveAggregationOptions<T, A, RDPs>,
     subFn: Observer<ObserveAggregationArgs<T, A>>,
   ): Unsubscribable;
+
+  /**
+   * Observe an aggregation query on a custom ObjectSet with automatic updates.
+   *
+   * This overload accepts an ObjectSet parameter, enabling aggregation on pivoted,
+   * filtered, or composed ObjectSets. Returns a Promise because invalidation type
+   * computation is async (requires lookups for link targets).
+   *
+   * @param options - Aggregation configuration including objectSet, where, aggregate spec
+   * @param subFn - Observer that receives aggregation result updates
+   * @returns Promise resolving to subscription that can be unsubscribed
+   *
+   * @example
+   * ```typescript
+   * const sub = await observableClient.observeAggregation(
+   *   {
+   *     type: Office,
+   *     objectSet: $(Employee).pivotTo("primaryOffice"),
+   *     aggregate: { $select: { $count: "unordered" } }
+   *   },
+   *   observer
+   * );
+   * ```
+   */
+  observeAggregation<
+    T extends ObjectOrInterfaceDefinition,
+    A extends AggregateOpts<T>,
+    RDPs extends Record<string, SimplePropertyDef> = {},
+  >(
+    options: ObserveAggregationOptionsWithObjectSet<T, A, RDPs>,
+    subFn: Observer<ObserveAggregationArgs<T, A>>,
+  ): Promise<Unsubscribable>;
 
   /**
    * Observe a function execution with automatic updates.
