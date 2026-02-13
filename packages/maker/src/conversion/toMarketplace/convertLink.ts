@@ -302,7 +302,7 @@ export function convertLinkStatus(
       deprecated: {
         message: status.message,
         deadline: status.deadline,
-        replacedBy: status.replacedBy ? ridGenerator.generateRidForLinkType(status.replacedBy) : undefined,
+        replacedBy: status.replacedBy ? ridGenerator.generateRidForLinkType(cleanAndValidateLinkTypeId(status.replacedBy)) : undefined,
       },
     };
   }

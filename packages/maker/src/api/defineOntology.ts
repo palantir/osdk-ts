@@ -48,6 +48,8 @@ import type { OntologyDefinition } from "./common/OntologyDefinition.js";
 import { OntologyEntityTypeEnum } from "./common/OntologyEntityTypeEnum.js";
 import type { OntologyEntityType } from "./common/OntologyEntityTypeMapping.js";
 import { getShapes } from "../conversion/toMarketplace/shapeExtractors/IrShapeExtractor.js";
+import { flattenInterface } from "../conversion/toMarketplace/convertObject.js";
+import { InterfaceType } from "./interface/InterfaceType.js";
 
 // type -> apiName -> entity
 /** @internal */
@@ -339,13 +341,16 @@ export function convertAction(
   // Helper function to convert interface property values from API names to RIDs
   const convertInterfacePropertyValuesToRids = (
     interfacePropertyValues: Record<string, any>,
-    interfaceApiName: string,
+    allParentInterfaces: Array<InterfaceType>,
   ): Record<string, any> => {
     const result: Record<string, any> = {};
     for (const [apiName, value] of Object.entries(interfacePropertyValues)) {
+      console.log(apiName)
+      console.log(allParentInterfaces)
+      const parentInterface = allParentInterfaces.find(maybeSourceParent => maybeSourceParent.propertiesV3[apiName] !== undefined)!;
       const rid = ridGenerator.generateInterfacePropertyTypeRid(
         apiName,
-        interfaceApiName,
+        parentInterface.apiName,
       );
       result[rid] = value;
     }
@@ -363,7 +368,6 @@ export function convertAction(
     }
     return result;
   };
-
   return {
     actionType: {
       actionTypeLogic: {
@@ -371,6 +375,7 @@ export function convertAction(
           // Convert logic rules with proper RID mappings
           rules: action.rules.map(rule => {
             if (rule.type === "addInterfaceRule") {
+              const interfaceAndParents = flattenInterface(ontologyDefinition.INTERFACE_TYPE[rule.addInterfaceRule.interfaceApiName], new Set());
               return {
                 type: "addInterfaceRule",
                 addInterfaceRule: {
@@ -380,7 +385,7 @@ export function convertAction(
                   objectType: rule.addInterfaceRule.objectTypeParameter,
                   interfacePropertyValues: convertInterfacePropertyValuesToRids(
                     rule.addInterfaceRule.interfacePropertyValues,
-                    rule.addInterfaceRule.interfaceApiName,
+                    interfaceAndParents,
                   ),
                   sharedPropertyValues: convertSharedPropertyValuesToRids(
                     rule.addInterfaceRule.sharedPropertyValues,
@@ -390,6 +395,8 @@ export function convertAction(
                 },
               };
             } else if (rule.type === "modifyInterfaceRule") {
+              const interfaceAndParents = flattenInterface(ontologyDefinition.INTERFACE_TYPE[rule.modifyInterfaceRule.interfaceApiName], new Set());
+
               return {
                 type: "modifyInterfaceRule",
                 modifyInterfaceRule: {
@@ -397,7 +404,7 @@ export function convertAction(
                     rule.modifyInterfaceRule.interfaceObjectToModifyParameter,
                   interfacePropertyValues: convertInterfacePropertyValuesToRids(
                     rule.modifyInterfaceRule.interfacePropertyValues,
-                    rule.modifyInterfaceRule.interfaceApiName,
+                    interfaceAndParents,
                   ),
                   sharedPropertyValues: convertSharedPropertyValuesToRids(
                     rule.modifyInterfaceRule.sharedPropertyValues,
@@ -618,6 +625,14 @@ export function extractAllowedValues(
           type: "user",
           user: {
             filter: (allowedValues.fromGroups ?? []).map(group => {
+              // Register static group IDs with ridGenerator
+              if (group.type === "static") {
+                ridGenerator.getGroupIds().put(
+                  ReadableIdGenerator.getForGroup(group.name),
+                  group.name,
+                );
+              }
+
               return {
                 type: "groupFilter",
                 groupFilter: {

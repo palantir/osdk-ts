@@ -27,7 +27,7 @@ import type {
 import invariant from "tiny-invariant";
 import type { ObjectPropertyType } from "../../api/object/ObjectPropertyType.js";
 import type { ObjectType } from "../../api/object/ObjectType.js";
-import type { OntologyRidGenerator } from "../../util/generateRid.js";
+import { ReadableIdGenerator, type OntologyRidGenerator } from "../../util/generateRid.js";
 import type { ObjectTypeDatasourceDefinition_dataset } from "../../api/object/ObjectTypeDatasourceDefinition.js";
 import type { SecurityConditionDefinition } from "../../api/object/SecurityCondition.js";
 
@@ -225,8 +225,8 @@ function convertPropertySecurityGroups(
           // Register group ID with the ridGenerator
           const groupId = condition.name;
           ridGenerator.getGroupIds().put(
-            `group-${groupId}` as any,
-            groupId as any
+            ReadableIdGenerator.getForGroup(groupId),
+            groupId
           );
           break;
         case "and":

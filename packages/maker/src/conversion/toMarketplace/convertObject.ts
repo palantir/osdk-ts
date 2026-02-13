@@ -403,7 +403,7 @@ function buildAggregation(
 }
 
 
-function flattenInterface(interfaceType: InterfaceType, seen: Set<string>): Array<InterfaceType> {
+export function flattenInterface(interfaceType: InterfaceType, seen: Set<string>): Array<InterfaceType> {
   if(seen.has(interfaceType.apiName)){
     return [];
   }
