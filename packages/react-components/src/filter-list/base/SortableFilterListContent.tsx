@@ -58,7 +58,7 @@ export interface SortableFilterListContentProps<
   objectType: Q;
   objectSet: ObjectSet<Q>;
   filterDefinitions: Array<FilterDefinitionUnion<Q>>;
-  filterStates: Map<FilterDefinitionUnion<Q>, FilterState>;
+  filterStates: Map<string, FilterState>;
   onFilterStateChanged: (
     definition: FilterDefinitionUnion<Q>,
     state: FilterState,
@@ -195,7 +195,7 @@ export default function SortableFilterListContent<
         >
           {filterDefinitions.map((definition, index) => {
             const id = sortableIds[index];
-            const state = filterStates.get(definition);
+            const state = filterStates.get(getFilterKey(definition));
 
             return (
               <SortableFilterListItem
@@ -220,7 +220,7 @@ export default function SortableFilterListContent<
               objectType={objectType}
               objectSet={objectSet}
               definition={activeDefinition}
-              filterState={filterStates.get(activeDefinition)}
+              filterState={filterStates.get(getFilterKey(activeDefinition))}
               onFilterStateChanged={onFilterStateChanged}
             />
           )}

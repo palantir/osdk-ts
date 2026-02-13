@@ -87,7 +87,7 @@ export function FilterListContent<Q extends ObjectTypeDefinition>({
       >
         {filterDefinitions.map((definition, index) => {
           const filterKey = getFilterKey(definition);
-          const state = filterStates.get(definition);
+          const state = filterStates.get(filterKey);
 
           return (
             <FilterListItem
