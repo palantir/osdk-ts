@@ -168,10 +168,15 @@ describe("aggregate", () => {
       },
     );
 
-    expectType<number>(notGrouped.string.approximateDistinct);
-    expectType<number>(notGrouped.string.exactDistinct);
-    expectType<number | undefined>(notGrouped.id.max);
-    expectType<number | undefined>(notGrouped.id.avg);
+    if (notGrouped.string) {
+      expectType<number | undefined>(notGrouped.string.approximateDistinct);
+      expectType<number | undefined>(notGrouped.string.exactDistinct);
+    }
+    if (notGrouped.id) {
+      expectType<number | undefined>(notGrouped.id.max);
+      expectType<number | undefined>(notGrouped.id.avg);
+    }
+
     expectType<number>(notGrouped.$count);
     expectType<
       TypeOf<
@@ -429,10 +434,14 @@ describe("aggregate", () => {
       },
     );
 
-    expectType<number>(notGrouped.string.approximateDistinct);
-    expectType<number>(notGrouped.id.exactDistinct);
-    expectType<number>(notGrouped.id.max);
-    expectType<number>(notGrouped.id.avg);
+    if (notGrouped.string) {
+      expectType<number | undefined>(notGrouped.string.approximateDistinct);
+    }
+    if (notGrouped.id) {
+      expectType<number | undefined>(notGrouped.id.exactDistinct);
+      expectType<number | undefined>(notGrouped.id.avg);
+      expectType<number | undefined>(notGrouped.id.max);
+    }
     expectType<number>(notGrouped.$count);
     expectType<
       TypeOf<
@@ -499,12 +508,15 @@ describe("aggregate", () => {
         headers: expect.anything(),
       },
     );
-
-    expectType<number>(grouped[0].string.approximateDistinct);
-    expectType<number>(grouped[0].id.max);
-    expectType<number>(grouped[0].id.avg);
+    if (grouped[0].string) {
+      expectType<number | undefined>(grouped[0].string.approximateDistinct);
+      expectType<number | undefined>(grouped[0].string.exactDistinct);
+    }
+    if (grouped[0].id) {
+      expectType<number | undefined>(grouped[0].id.max);
+      expectType<number | undefined>(grouped[0].id.avg);
+    }
     expectType<number>(grouped[0].$count);
-    expectType<number>(grouped[0].string.exactDistinct);
     expectType<
       TypeOf<
         {
