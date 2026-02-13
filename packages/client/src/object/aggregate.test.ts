@@ -169,8 +169,8 @@ describe("aggregate", () => {
     );
 
     if (notGrouped.string) {
-      expectType<number | undefined>(notGrouped.string.approximateDistinct);
-      expectType<number | undefined>(notGrouped.string.exactDistinct);
+      expectType<number>(notGrouped.string.approximateDistinct);
+      expectType<number>(notGrouped.string.exactDistinct);
     }
     if (notGrouped.id) {
       expectType<number | undefined>(notGrouped.id.max);
@@ -213,8 +213,8 @@ describe("aggregate", () => {
     expectType<Array<any>>(grouped);
     expectType<string | undefined>(grouped[0].$group.string);
     if (grouped[0].id) {
-      expectType<number | undefined>(grouped[0].id.approximateDistinct);
-      expectType<number | undefined>(grouped[0].id.exactDistinct);
+      expectType<number>(grouped[0].id.approximateDistinct);
+      expectType<number>(grouped[0].id.exactDistinct);
     }
     expectType<number>(grouped[0].$group.id);
     expectType<number>(grouped[0].$count);
@@ -437,10 +437,10 @@ describe("aggregate", () => {
     );
 
     if (notGrouped.string) {
-      expectType<number | undefined>(notGrouped.string.approximateDistinct);
+      expectType<number>(notGrouped.string.approximateDistinct);
     }
     if (notGrouped.id) {
-      expectType<number | undefined>(notGrouped.id.exactDistinct);
+      expectType<number>(notGrouped.id.exactDistinct);
       expectType<number | undefined>(notGrouped.id.avg);
       expectType<number | undefined>(notGrouped.id.max);
     }
@@ -511,8 +511,8 @@ describe("aggregate", () => {
       },
     );
     if (grouped[0].string) {
-      expectType<number | undefined>(grouped[0].string.approximateDistinct);
-      expectType<number | undefined>(grouped[0].string.exactDistinct);
+      expectType<number>(grouped[0].string.approximateDistinct);
+      expectType<number>(grouped[0].string.exactDistinct);
     }
     if (grouped[0].id) {
       expectType<number | undefined>(grouped[0].id.max);
