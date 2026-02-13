@@ -15,10 +15,9 @@
  */
 
 import * as fs from "fs";
-import * as path from "path";
 import type { IAliasesFile } from "./types.js";
 
-const DEFAULT_ALIASES_PATH = path.resolve("./var/data/aliases.json");
+const DEFAULT_ALIASES_PATH = "/app/var/data/aliases.json";
 
 // Aliases file will remain unchanged for a given function and version
 let cachedAliasesFile: IAliasesFile | undefined;

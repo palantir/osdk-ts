@@ -15,7 +15,6 @@
  */
 
 import * as fs from "fs";
-import * as path from "path";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { custom } from "./custom.js";
 import { loadAliasesFile, resetAliasesCache } from "./loader.js";
@@ -33,7 +32,6 @@ const testAliasesData = vi.hoisted(() => {
 });
 
 vi.mock("fs");
-vi.mock("path");
 
 describe("aliases", () => {
   beforeEach(() => {
@@ -41,7 +39,6 @@ describe("aliases", () => {
     vi.clearAllMocks();
     vi.mocked(fs.existsSync).mockReturnValue(true);
     vi.mocked(fs.readFileSync).mockReturnValue(testAliasesData);
-    vi.mocked(path.resolve).mockReturnValue("/mock/var/data/aliases.json");
   });
 
   describe("custom", () => {

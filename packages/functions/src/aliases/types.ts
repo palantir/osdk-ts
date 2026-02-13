@@ -23,8 +23,8 @@ export interface IModelValue {
 }
 
 export interface IDefaultAliases {
-  custom: { [key: string]: string };
-  models: { [key: string]: IModelValue };
+  custom: Record<string, string>;
+  models: Record<string, IModelValue>;
 }
 
 export interface IAliasesFile {
