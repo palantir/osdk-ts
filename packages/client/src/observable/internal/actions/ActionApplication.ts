@@ -21,7 +21,6 @@ import type {
 } from "@osdk/api";
 import type { ActionSignatureFromDef } from "../../../actions/applyAction.js";
 import { type Changes } from "../Changes.js";
-import type { ObjectCacheKey } from "../object/ObjectCacheKey.js";
 import type { Store } from "../Store.js";
 import { runOptimisticJob } from "./OptimisticJob.js";
 
@@ -123,14 +122,18 @@ export class ActionApplication {
         }
       }
 
+      // Use the registry to find all RDP variant cache keys for each deleted
+      // object. We can't use cacheKeys.get() here because that would create
+      // and register an orphan key with no subject, which blows up the
+      // invariant in Store.#cleanupCacheKey when GC runs.
       this.store.batch({}, (batch) => {
         for (const { objectType, primaryKey } of deletedObjects ?? []) {
-          const cacheKey = this.store.cacheKeys.peek<ObjectCacheKey>(
-            "object",
-            objectType,
-            primaryKey,
-          );
-          if (cacheKey) {
+          for (
+            const cacheKey of this.store.objectCacheKeyRegistry.getVariants(
+              objectType,
+              primaryKey,
+            )
+          ) {
             this.store.queries.peek(cacheKey)?.deleteFromStore(
               "loaded", // this is probably not the best value to use
               batch,
