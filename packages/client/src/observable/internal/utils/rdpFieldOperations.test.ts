@@ -194,6 +194,60 @@ describe("rdpFieldOperations", () => {
     expect(underlying.rdpField2).toBe(999);
   });
 
+  it("mergeObjectFields preserves target RDP value when source has null for shared field", () => {
+    const source = createTestObject({
+      employeeId: 50030,
+      fullName: "John Doe",
+      rdpField1: null,
+    });
+    const target = createTestObject({
+      employeeId: 50030,
+      rdpField1: "existing-value",
+      rdpField2: 999,
+    });
+
+    const result = mergeObjectFields(
+      source,
+      new Set(["rdpField1"]),
+      new Set(["rdpField1", "rdpField2"]),
+      target,
+    );
+
+    assertValidObjectHolder(result);
+    const underlying = getUnderlyingProps(result);
+    expect(underlying.employeeId).toBe(50030);
+    expect(underlying.fullName).toBe("John Doe");
+    // Target's non-null value should be preserved when source has null
+    expect(underlying.rdpField1).toBe("existing-value");
+    expect(underlying.rdpField2).toBe(999);
+  });
+
+  it("mergeObjectFields uses source RDP value when both source and target have non-null", () => {
+    const source = createTestObject({
+      employeeId: 50030,
+      fullName: "John Doe",
+      rdpField1: "source-value",
+    });
+    const target = createTestObject({
+      employeeId: 50030,
+      rdpField1: "target-value",
+      rdpField2: 999,
+    });
+
+    const result = mergeObjectFields(
+      source,
+      new Set(["rdpField1"]),
+      new Set(["rdpField1", "rdpField2"]),
+      target,
+    );
+
+    assertValidObjectHolder(result);
+    const underlying = getUnderlyingProps(result);
+    // Source's non-null value takes precedence when both are non-null
+    expect(underlying.rdpField1).toBe("source-value");
+    expect(underlying.rdpField2).toBe(999);
+  });
+
   it("mergeObjectFields handles undefined target", () => {
     const source = createTestObject({
       employeeId: 50030,

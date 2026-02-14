@@ -23,6 +23,7 @@ import type { Canonical } from "../Canonical.js";
 import type { KnownCacheKey } from "../KnownCacheKey.js";
 import type { OrderByCanonicalizer } from "../OrderByCanonicalizer.js";
 import type { QuerySubscription } from "../QuerySubscription.js";
+import type { RdpCanonicalizer } from "../RdpCanonicalizer.js";
 import type { Store } from "../Store.js";
 import type { WhereClauseCanonicalizer } from "../WhereClauseCanonicalizer.js";
 import type {
@@ -38,17 +39,20 @@ export class ObjectSetHelper extends AbstractHelper<
 > {
   whereCanonicalizer: WhereClauseCanonicalizer;
   orderByCanonicalizer: OrderByCanonicalizer;
+  rdpCanonicalizer: RdpCanonicalizer;
 
   constructor(
     store: Store,
     cacheKeys: CacheKeys<KnownCacheKey>,
     whereCanonicalizer: WhereClauseCanonicalizer,
     orderByCanonicalizer: OrderByCanonicalizer,
+    rdpCanonicalizer: RdpCanonicalizer,
   ) {
     super(store, cacheKeys);
 
     this.whereCanonicalizer = whereCanonicalizer;
     this.orderByCanonicalizer = orderByCanonicalizer;
+    this.rdpCanonicalizer = rdpCanonicalizer;
   }
 
   observe(
@@ -82,6 +86,7 @@ export class ObjectSetHelper extends AbstractHelper<
         operations,
         objectSetCacheKey,
         options,
+        operations.withProperties,
       );
     });
   }
@@ -96,7 +101,9 @@ export class ObjectSetHelper extends AbstractHelper<
     }
 
     if (options.withProperties) {
-      operations.withProperties = Object.keys(options.withProperties).sort();
+      operations.withProperties = this.rdpCanonicalizer.canonicalize(
+        options.withProperties,
+      );
     }
 
     if (options.union && options.union.length > 0) {

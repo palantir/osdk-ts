@@ -26,6 +26,7 @@ import type { Canonical } from "../Canonical.js";
 import type { Changes } from "../Changes.js";
 import { getObjectTypesThatInvalidate } from "../getObjectTypesThatInvalidate.js";
 import type { Entry } from "../Layer.js";
+import type { Rdp } from "../RdpCanonicalizer.js";
 import { OrderBySortingStrategy } from "../sorting/SortingStrategy.js";
 import type { Store } from "../Store.js";
 import type { SubjectPayload } from "../SubjectPayload.js";
@@ -44,6 +45,7 @@ export class ObjectSetQuery extends BaseListQuery<
   #operations: Canonical<ObjectSetOperations>;
   #composedObjectSet: ObjectSet<any, any>;
   #objectTypes: Set<string>;
+  #canonicalRdp: Canonical<Rdp> | undefined;
 
   constructor(
     store: Store,
@@ -52,6 +54,7 @@ export class ObjectSetQuery extends BaseListQuery<
     operations: Canonical<ObjectSetOperations>,
     cacheKey: ObjectSetCacheKey,
     opts: ObjectSetQueryOptions,
+    canonicalRdp?: Canonical<Rdp>,
   ) {
     super(
       store,
@@ -73,6 +76,7 @@ export class ObjectSetQuery extends BaseListQuery<
     this.#operations = operations;
     this.#composedObjectSet = this.#composeObjectSet(opts);
     this.#objectTypes = this.#extractObjectTypes(opts);
+    this.#canonicalRdp = canonicalRdp;
 
     if (opts.autoFetchMore === true) {
       this.minResultsToLoad = Number.MAX_SAFE_INTEGER;
@@ -81,6 +85,10 @@ export class ObjectSetQuery extends BaseListQuery<
     } else {
       this.minResultsToLoad = opts.pageSize || 0;
     }
+  }
+
+  public override get rdpConfig(): Canonical<Rdp> | null {
+    return this.#canonicalRdp ?? null;
   }
 
   #composeObjectSet(opts: ObjectSetQueryOptions): ObjectSet<any, any> {

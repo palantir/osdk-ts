@@ -144,8 +144,16 @@ export function mergeObjectFields(
     const targetUnderlying =
       targetCurrentValue[UnderlyingOsdkObject] as SimpleOsdkProperties;
     for (const field of targetRdpFields) {
-      if (!sourceRdpFields.has(field) && field in targetUnderlying) {
-        newProps[field] = targetUnderlying[field];
+      if (field in targetUnderlying) {
+        // Preserve target's value when:
+        // 1. Source doesn't have this RDP field at all (original behavior), OR
+        // 2. Source has the field but its value is null/undefined (prefer non-null)
+        if (
+          !sourceRdpFields.has(field)
+          || (newProps[field] == null && targetUnderlying[field] != null)
+        ) {
+          newProps[field] = targetUnderlying[field];
+        }
       }
     }
   }

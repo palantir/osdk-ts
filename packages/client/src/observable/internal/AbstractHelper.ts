@@ -87,7 +87,24 @@ export abstract class AbstractHelper<
     subFn: Observer<PAYLOAD>,
   ): QuerySubscription<TQuery> {
     // the ListQuery represents the shared state of the list
-    this.store.cacheKeys.retain(query.cacheKey);
+    // If there is a deferred release pending for this key (from a prior
+    // unmount), cancel exactly one pending release and avoid an extra retain.
+    // This keeps refcounts balanced during unmount→remount within the same tick
+    // (e.g. React StrictMode effect cleanup + re-run).
+    const pendingCleanupCount = this.store.pendingCleanup.get(query.cacheKey)
+      ?? 0;
+    if (pendingCleanupCount > 0) {
+      if (pendingCleanupCount === 1) {
+        this.store.pendingCleanup.delete(query.cacheKey);
+      } else {
+        this.store.pendingCleanup.set(
+          query.cacheKey,
+          pendingCleanupCount - 1,
+        );
+      }
+    } else {
+      this.store.cacheKeys.retain(query.cacheKey);
+    }
 
     if (options.mode !== "offline") {
       query.revalidate(options.mode === "force").catch((e: unknown) => {
@@ -128,7 +145,27 @@ export abstract class AbstractHelper<
 
     sub.add(() => {
       query.unregisterSubscriptionDedupeInterval(querySub.subscriptionId);
-      this.store.cacheKeys.release(query.cacheKey);
+
+      // Defer the release to the next microtask so React unmount-remount
+      // cycles can re-subscribe before the cache key is released.
+      // This prevents propagateWrite from skipping keys that are
+      // momentarily between subscriptions.
+      this.store.pendingCleanup.set(
+        query.cacheKey,
+        (this.store.pendingCleanup.get(query.cacheKey) ?? 0) + 1,
+      );
+      queueMicrotask(() => {
+        const currentPending = this.store.pendingCleanup.get(query.cacheKey)
+          ?? 0;
+        if (currentPending > 0) {
+          if (currentPending === 1) {
+            this.store.pendingCleanup.delete(query.cacheKey);
+          } else {
+            this.store.pendingCleanup.set(query.cacheKey, currentPending - 1);
+          }
+          this.store.cacheKeys.release(query.cacheKey);
+        }
+      });
     });
 
     return querySub;
