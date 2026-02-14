@@ -18,6 +18,7 @@ import type { DerivedProperty } from "@osdk/api";
 import type { Employee } from "@osdk/client.test.ontology";
 import { describe, expect, it } from "vitest";
 import { RdpCanonicalizer } from "./RdpCanonicalizer.js";
+import { extractRdpFieldNames } from "./utils/rdpFieldOperations.js";
 
 describe("RdpCanonicalizer", () => {
   it("returns same canonical object for functionally identical RDPs with different function references", () => {
@@ -79,5 +80,41 @@ describe("RdpCanonicalizer", () => {
 
     // Same input object should return cached result
     expect(canonical1).toBe(canonical2);
+  });
+
+  it("shared canonicalizer produces identical canonical and field sets for cross-hook usage", () => {
+    // A single RdpCanonicalizer is shared by ListsHelper and ObjectSetHelper
+    // (both receive Store.rdpCanonicalizer). This test verifies that
+    // identical withProperties configs produce the same canonical reference
+    // and the same extracted field names, so objects land in the same cache slot.
+    const sharedCanonicalizer = new RdpCanonicalizer();
+
+    // Simulate ListsHelper calling canonicalize (e.g. from useOsdkObjects)
+    const listWithProperties: DerivedProperty.Clause<typeof Employee> = {
+      derivedAddress: (base) =>
+        base.pivotTo("lead").selectProperty("employeeId"),
+      derivedName: (base) => base.pivotTo("lead").selectProperty("fullName"),
+    };
+    const listCanonical = sharedCanonicalizer.canonicalize(listWithProperties);
+
+    // Simulate ObjectSetHelper calling canonicalize (e.g. from useObjectSet)
+    // with a separate object that has the same structural definition
+    const objectSetWithProperties: DerivedProperty.Clause<typeof Employee> = {
+      derivedAddress: (base) =>
+        base.pivotTo("lead").selectProperty("employeeId"),
+      derivedName: (base) => base.pivotTo("lead").selectProperty("fullName"),
+    };
+    const objectSetCanonical = sharedCanonicalizer.canonicalize(
+      objectSetWithProperties,
+    );
+
+    // Both hooks get the same canonical reference
+    expect(listCanonical).toBe(objectSetCanonical);
+
+    // extractRdpFieldNames produces consistent field sets for both
+    const listFields = extractRdpFieldNames(listCanonical);
+    const objectSetFields = extractRdpFieldNames(objectSetCanonical);
+    expect(listFields).toEqual(objectSetFields);
+    expect(listFields).toEqual(new Set(["derivedAddress", "derivedName"]));
   });
 });
