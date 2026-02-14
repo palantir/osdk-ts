@@ -194,11 +194,11 @@ describe("rdpFieldOperations", () => {
     expect(underlying.rdpField2).toBe(999);
   });
 
-  it("mergeObjectFields preserves target RDP value when source has null for shared field", () => {
+  it("mergeObjectFields preserves target RDP value when source has undefined for shared field", () => {
     const source = createTestObject({
       employeeId: 50030,
       fullName: "John Doe",
-      rdpField1: null,
+      rdpField1: undefined,
     });
     const target = createTestObject({
       employeeId: 50030,
@@ -217,7 +217,7 @@ describe("rdpFieldOperations", () => {
     const underlying = getUnderlyingProps(result);
     expect(underlying.employeeId).toBe(50030);
     expect(underlying.fullName).toBe("John Doe");
-    // Target's non-null value should be preserved when source has null
+    // Target's non-null value should be preserved when source has undefined
     expect(underlying.rdpField1).toBe("existing-value");
     expect(underlying.rdpField2).toBe(999);
   });
