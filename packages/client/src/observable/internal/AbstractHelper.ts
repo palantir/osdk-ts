@@ -150,6 +150,12 @@ export abstract class AbstractHelper<
       // cycles can re-subscribe before the cache key is released.
       // This prevents propagateWrite from skipping keys that are
       // momentarily between subscriptions.
+      //
+      // Note: microtask ordering is only guaranteed within a single
+      // queueMicrotask call, not across separate invocations. If
+      // additional microtasks are introduced that interact with
+      // pendingCleanup or cacheKeys, ensure they don't rely on
+      // running before or after this one.
       this.store.pendingCleanup.set(
         query.cacheKey,
         (this.store.pendingCleanup.get(query.cacheKey) ?? 0) + 1,

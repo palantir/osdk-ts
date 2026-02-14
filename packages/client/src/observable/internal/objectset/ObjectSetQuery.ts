@@ -45,7 +45,6 @@ export class ObjectSetQuery extends BaseListQuery<
   #operations: Canonical<ObjectSetOperations>;
   #composedObjectSet: ObjectSet<any, any>;
   #objectTypes: Set<string>;
-  #canonicalRdp: Canonical<Rdp> | undefined;
 
   constructor(
     store: Store,
@@ -54,7 +53,6 @@ export class ObjectSetQuery extends BaseListQuery<
     operations: Canonical<ObjectSetOperations>,
     cacheKey: ObjectSetCacheKey,
     opts: ObjectSetQueryOptions,
-    canonicalRdp?: Canonical<Rdp>,
   ) {
     super(
       store,
@@ -76,8 +74,6 @@ export class ObjectSetQuery extends BaseListQuery<
     this.#operations = operations;
     this.#composedObjectSet = this.#composeObjectSet(opts);
     this.#objectTypes = this.#extractObjectTypes(opts);
-    this.#canonicalRdp = canonicalRdp;
-
     if (opts.autoFetchMore === true) {
       this.minResultsToLoad = Number.MAX_SAFE_INTEGER;
     } else if (typeof opts.autoFetchMore === "number") {
@@ -88,7 +84,7 @@ export class ObjectSetQuery extends BaseListQuery<
   }
 
   public override get rdpConfig(): Canonical<Rdp> | null {
-    return this.#canonicalRdp ?? null;
+    return this.#operations.withProperties ?? null;
   }
 
   #composeObjectSet(opts: ObjectSetQueryOptions): ObjectSet<any, any> {

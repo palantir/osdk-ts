@@ -435,8 +435,8 @@ export class Store {
         // ObjectSetQuery stores its canonical RDP on the query instance,
         // not in the cache key's otherKeys array.
         const query = this.queries.peek(cacheKey);
-        if (query && "rdpConfig" in query) {
-          return (query as { rdpConfig: Canonical<Rdp> | null }).rdpConfig;
+        if (query) {
+          return query.rdpConfig;
         }
       }
       // Links and other types would also be at LIST_RDP_IDX

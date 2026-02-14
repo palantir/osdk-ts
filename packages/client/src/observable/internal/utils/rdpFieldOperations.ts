@@ -146,8 +146,8 @@ export function mergeObjectFields(
     for (const field of targetRdpFields) {
       if (field in targetUnderlying) {
         // Preserve target's value when:
-        // 1. Source doesn't have this RDP field at all (original behavior), OR
-        // 2. Source has the field but its value is nullish (prefer non-nullish)
+        // 1. Source doesn't have this RDP field at all, OR
+        // 2. Source's value is nullish but target's is not
         if (
           !sourceRdpFields.has(field)
           || (newProps[field] == null && targetUnderlying[field] != null)

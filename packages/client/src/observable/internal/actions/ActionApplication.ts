@@ -125,16 +125,17 @@ export class ActionApplication {
 
       this.store.batch({}, (batch) => {
         for (const { objectType, primaryKey } of deletedObjects ?? []) {
-          const cacheKey = this.store.cacheKeys.get<ObjectCacheKey>(
+          const cacheKey = this.store.cacheKeys.peek<ObjectCacheKey>(
             "object",
             objectType,
             primaryKey,
-            /* rdpConfig */ undefined,
           );
-          this.store.queries.peek(cacheKey)?.deleteFromStore(
-            "loaded", // this is probably not the best value to use
-            batch,
-          );
+          if (cacheKey) {
+            this.store.queries.peek(cacheKey)?.deleteFromStore(
+              "loaded", // this is probably not the best value to use
+              batch,
+            );
+          }
         }
       });
       await Promise.all(promisesToWait);

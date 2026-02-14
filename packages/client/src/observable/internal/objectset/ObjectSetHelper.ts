@@ -86,7 +86,6 @@ export class ObjectSetHelper extends AbstractHelper<
         operations,
         objectSetCacheKey,
         options,
-        operations.withProperties,
       );
     });
   }

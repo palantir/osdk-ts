@@ -776,12 +776,14 @@ export abstract class BaseListQuery<
     }
 
     this.store.batch({}, (batch) => {
-      const objectCacheKey = this.store.cacheKeys.get(
+      const objectCacheKey = this.store.cacheKeys.peek(
         "object",
         object.$objectType ?? object.$apiName,
         object.$primaryKey,
       );
-      batch.delete(objectCacheKey, "loaded");
+      if (objectCacheKey) {
+        batch.delete(objectCacheKey, "loaded");
+      }
     });
   }
 }
