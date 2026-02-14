@@ -248,6 +248,31 @@ describe("rdpFieldOperations", () => {
     expect(underlying.rdpField2).toBe(999);
   });
 
+  it("mergeObjectFields propagates null RDP values from source", () => {
+    const source = createTestObject({
+      employeeId: 50030,
+      fullName: "John Doe",
+      rdpField1: null as unknown as string,
+    });
+    const target = createTestObject({
+      employeeId: 50030,
+      rdpField1: "target-value",
+      rdpField2: 999,
+    });
+
+    const result = mergeObjectFields(
+      source,
+      new Set(["rdpField1"]),
+      new Set(["rdpField1", "rdpField2"]),
+      target,
+    );
+
+    assertValidObjectHolder(result);
+    const underlying = getUnderlyingProps(result);
+    expect(underlying.rdpField1).toBeNull();
+    expect(underlying.rdpField2).toBe(999);
+  });
+
   it("mergeObjectFields handles undefined target", () => {
     const source = createTestObject({
       employeeId: 50030,
