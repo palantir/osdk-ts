@@ -47,9 +47,6 @@
     "resolve-package-path": "^4.0.3",
     "sirv": "^3.0.2"
   },
-  "peerDependencies": {
-    "vite": "^6.3.5"
-  },
   "devDependencies": {
     "@blueprintjs/core": "^5.19.1",
     "@blueprintjs/icons": "^5.23.0",
@@ -63,8 +60,8 @@
     "react-dom": "^18.3.1",
     "ts-expect": "^1.3.0",
     "typescript": "~5.5.4",
-    "vite": "^6.3.6",
-    "vitest": "^3.2.4"
+    "vite": "^7.3.1",
+    "vitest": "^4.0.18"
   },
   "publishConfig": {
     "access": "public"
