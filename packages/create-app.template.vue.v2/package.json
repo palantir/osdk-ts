@@ -41,7 +41,7 @@
     "@osdk/create-app.template-packager": "workspace:~",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
-    "@types/node": "^22.9.0",
+    "@types/node": "^24.13.0",
     "@vitejs/plugin-vue": "^5.2.4",
     "typescript": "~5.5.4",
     "vite": "^6.3.6",

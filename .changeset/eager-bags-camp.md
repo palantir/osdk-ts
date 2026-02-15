@@ -4,4 +4,4 @@
 "@osdk/create-app.template.vue.v2": patch
 ---
 
-Update node types to 22.9.0
+Update node types to `24.13.0`
