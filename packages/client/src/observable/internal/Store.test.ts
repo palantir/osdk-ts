@@ -50,15 +50,19 @@ import { type Client } from "../../Client.js";
 import { createClient } from "../../createClient.js";
 import { TestLogger } from "../../logger/TestLogger.js";
 import type { ObjectHolder } from "../../object/convertWireToOsdkObjects/ObjectHolder.js";
+import type { SpecificLinkPayload } from "../LinkPayload.js";
 import type { ObjectSetPayload } from "../ObjectSetPayload.js";
 import type {
+  ObservableClient,
   ObserveListOptions,
   Unsubscribable,
 } from "../ObservableClient.js";
+import type { Observer } from "../ObservableClient/common.js";
 import { runOptimisticJob } from "./actions/OptimisticJob.js";
 import type { CacheKeys } from "./CacheKeys.js";
 import type { KnownCacheKey } from "./KnownCacheKey.js";
 import type { ObjectCacheKey } from "./object/ObjectCacheKey.js";
+import { ObservableClientImpl } from "./ObservableClientImpl.js";
 import { createOptimisticId } from "./OptimisticId.js";
 import { Store } from "./Store.js";
 import {
@@ -70,6 +74,7 @@ import {
   expectSingleListCallAndClear,
   expectSingleObjectCallAndClear,
   getObject,
+  mockLinkSubCallback,
   mockListSubCallback,
   mockObserver,
   mockSingleSubCallback,
@@ -401,6 +406,308 @@ describe(Store, () => {
       expect(empSubFn.next).not.toHaveBeenCalled();
       expect(officeSubFn.next).not.toHaveBeenCalled();
     });
+
+    it("re-subscribing within dedupeInterval does not refetch", async () => {
+      const { payload: emp1Payload } = await expectStandardObserveObject({
+        cache,
+        type: Employee,
+        primaryKey: 2,
+      });
+      const emp2 = emp1Payload?.object;
+      invariant(emp2);
+
+      const linkSubFn1 = mockLinkSubCallback();
+      const sub1 = cache.links.observe({
+        linkName: "peeps",
+        srcType: { type: "object", apiName: emp2.$apiName },
+        pk: emp2.$primaryKey,
+        dedupeInterval: 60_000,
+      }, linkSubFn1);
+
+      await waitForCall(linkSubFn1);
+      expectSingleLinkCallAndClear(linkSubFn1, [], { status: "loading" });
+
+      await waitForCall(linkSubFn1);
+      expectSingleLinkCallAndClear(linkSubFn1, [], {
+        status: "loaded",
+      });
+
+      sub1.unsubscribe();
+
+      const linkSubFn2 = mockLinkSubCallback();
+      defer(cache.links.observe({
+        linkName: "peeps",
+        srcType: { type: "object", apiName: emp2.$apiName },
+        pk: emp2.$primaryKey,
+        dedupeInterval: 60_000,
+      }, linkSubFn2));
+
+      await waitForCall(linkSubFn2);
+      expectSingleLinkCallAndClear(linkSubFn2, [], {
+        status: "loaded",
+      });
+    });
+
+    it("forced revalidation bypasses dedupeInterval", async () => {
+      const { payload: emp1Payload } = await expectStandardObserveObject({
+        cache,
+        type: Employee,
+        primaryKey: 2,
+      });
+      const emp2 = emp1Payload?.object;
+      invariant(emp2);
+
+      const linkSubFn = mockLinkSubCallback();
+      defer(cache.links.observe({
+        linkName: "peeps",
+        srcType: { type: "object", apiName: emp2.$apiName },
+        pk: emp2.$primaryKey,
+        dedupeInterval: 60_000,
+      }, linkSubFn));
+
+      await waitForCall(linkSubFn);
+      expectSingleLinkCallAndClear(linkSubFn, [], { status: "loading" });
+
+      await waitForCall(linkSubFn);
+      expectSingleLinkCallAndClear(linkSubFn, [], {
+        status: "loaded",
+      });
+
+      const invalidatePromise = cache.invalidateObjectType(
+        "Employee",
+        undefined,
+      );
+
+      await waitForCall(linkSubFn);
+      expectSingleLinkCallAndClear(linkSubFn, [], {
+        status: "loading",
+      });
+
+      await invalidatePromise;
+
+      expectSingleLinkCallAndClear(linkSubFn, [], {
+        status: "loaded",
+      });
+    });
+
+    describe("multi-object observeLinks", () => {
+      function getLastPayload(
+        subFn: ReturnType<typeof mockLinkSubCallback>,
+      ): SpecificLinkPayload {
+        const calls = subFn.next.mock.calls;
+        return calls[calls.length - 1][0] as SpecificLinkPayload;
+      }
+
+      async function waitForLoaded(
+        subFn: ReturnType<typeof mockLinkSubCallback>,
+      ) {
+        await vi.waitFor(() => {
+          expect(getLastPayload(subFn)?.status).toBe("loaded");
+        }, { interval: 0 });
+      }
+
+      it("returns linked objects from all source objects", async () => {
+        const observableClient: ObservableClient = new ObservableClientImpl(
+          cache,
+        );
+
+        const { payload: emp1Payload } = await expectStandardObserveObject({
+          cache,
+          type: Employee,
+          primaryKey: 1,
+        });
+        const emp1 = emp1Payload?.object;
+        invariant(emp1);
+
+        const { payload: emp2Payload } = await expectStandardObserveObject({
+          cache,
+          type: Employee,
+          primaryKey: 2,
+        });
+        const emp2 = emp2Payload?.object;
+        invariant(emp2);
+
+        const linkSubFn = mockLinkSubCallback();
+
+        defer(
+          observableClient.observeLinks(
+            [emp1, emp2],
+            "officeLink",
+            { linkName: "officeLink" },
+            // @ts-expect-error crossing typed/untyped barrier for test
+            linkSubFn as unknown as Observer<SpecificLinkPayload>,
+          ),
+        );
+
+        await waitForLoaded(linkSubFn);
+        const lastPayload = getLastPayload(linkSubFn);
+
+        expect(lastPayload.resolvedList).toHaveLength(2);
+        expect(lastPayload.resolvedList).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({ $primaryKey: "101" }),
+            expect.objectContaining({ $primaryKey: "102" }),
+          ]),
+        );
+        expect(lastPayload.totalCount).toBe("2");
+      });
+
+      it("deduplicates when multiple sources link to the same target", async () => {
+        const dataStore = fauxFoundry.getDefaultDataStore();
+
+        // emp1 already links to office1; add emp3 -> office1 too
+        dataStore.registerLink(
+          { __apiName: "Employee", __primaryKey: 3 },
+          "officeLink",
+          { __apiName: "Office", __primaryKey: "101" },
+          "occupants",
+        );
+
+        try {
+          const observableClient: ObservableClient = new ObservableClientImpl(
+            cache,
+          );
+
+          const { payload: emp1Payload } = await expectStandardObserveObject({
+            cache,
+            type: Employee,
+            primaryKey: 1,
+          });
+          const emp1 = emp1Payload?.object;
+          invariant(emp1);
+
+          const { payload: emp3Payload } = await expectStandardObserveObject({
+            cache,
+            type: Employee,
+            primaryKey: 3,
+          });
+          const emp3 = emp3Payload?.object;
+          invariant(emp3);
+
+          const linkSubFn = mockLinkSubCallback();
+
+          defer(
+            observableClient.observeLinks(
+              [emp1, emp3],
+              "officeLink",
+              { linkName: "officeLink" },
+              // @ts-expect-error crossing typed/untyped barrier for test
+              linkSubFn as unknown as Observer<SpecificLinkPayload>,
+            ),
+          );
+
+          await waitForLoaded(linkSubFn);
+          const lastPayload = getLastPayload(linkSubFn);
+
+          expect(lastPayload.resolvedList).toHaveLength(1);
+          expect(lastPayload.resolvedList[0].$primaryKey).toBe("101");
+          expect(lastPayload.totalCount).toBe("1");
+        } finally {
+          dataStore.unregisterLink(
+            { __apiName: "Employee", __primaryKey: 3 },
+            "officeLink",
+            { __apiName: "Office", __primaryKey: "101" },
+            "occupants",
+          );
+        }
+      });
+
+      it("leaves totalCount undefined when sub-queries are still paginating", async () => {
+        const dataStore = fauxFoundry.getDefaultDataStore();
+
+        // Ensure emp1 has at least 2 peeps links (MANY cardinality).
+        // Prior tests may have removed the original johnDoe peep,
+        // so we register two fresh links to guarantee pagination with pageSize=1.
+        dataStore.registerLink(
+          { __apiName: "Employee", __primaryKey: 1 },
+          "peeps",
+          { __apiName: "Employee", __primaryKey: 3 },
+          "lead",
+        );
+        dataStore.registerLink(
+          { __apiName: "Employee", __primaryKey: 1 },
+          "peeps",
+          { __apiName: "Employee", __primaryKey: 4 },
+          "lead",
+        );
+
+        const observableClient: ObservableClient = new ObservableClientImpl(
+          cache,
+        );
+
+        const { payload: emp1Payload } = await expectStandardObserveObject({
+          cache,
+          type: Employee,
+          primaryKey: 1,
+        });
+        const emp1 = emp1Payload?.object;
+        invariant(emp1);
+
+        const { payload: emp2Payload } = await expectStandardObserveObject({
+          cache,
+          type: Employee,
+          primaryKey: 2,
+        });
+        const emp2 = emp2Payload?.object;
+        invariant(emp2);
+
+        const linkSubFn = mockLinkSubCallback();
+
+        // emp1 has 2 peeps but pageSize=1, so emp1's query has hasMore=true.
+        // emp2 has 0 peeps, so its query finishes immediately.
+        defer(
+          observableClient.observeLinks(
+            [emp1, emp2],
+            "peeps",
+            { linkName: "peeps", pageSize: 1 },
+            // @ts-expect-error crossing typed/untyped barrier for test
+            linkSubFn as unknown as Observer<SpecificLinkPayload>,
+          ),
+        );
+
+        await waitForLoaded(linkSubFn);
+        const lastPayload = getLastPayload(linkSubFn);
+
+        expect(lastPayload.hasMore).toBe(true);
+        expect(lastPayload.totalCount).toBeUndefined();
+      });
+
+      it("single object fast path still works", async () => {
+        const observableClient: ObservableClient = new ObservableClientImpl(
+          cache,
+        );
+
+        const { payload: emp1Payload } = await expectStandardObserveObject({
+          cache,
+          type: Employee,
+          primaryKey: 1,
+        });
+        const emp1 = emp1Payload?.object;
+        invariant(emp1);
+
+        const linkSubFn = mockLinkSubCallback();
+
+        defer(
+          observableClient.observeLinks(
+            emp1,
+            "officeLink",
+            { linkName: "officeLink" },
+            // @ts-expect-error crossing typed/untyped barrier for test
+            linkSubFn as unknown as Observer<SpecificLinkPayload>,
+          ),
+        );
+
+        await waitForCall(linkSubFn);
+        expectSingleLinkCallAndClear(linkSubFn, [], { status: "loading" });
+
+        await waitForCall(linkSubFn);
+        expectSingleLinkCallAndClear(
+          linkSubFn,
+          [expect.objectContaining({ $primaryKey: "101" })],
+          { status: "loaded" },
+        );
+      });
+    });
   });
 
   describe("with mock server", () => {
@@ -422,7 +729,9 @@ describe(Store, () => {
       setupOntology(testSetup.fauxFoundry);
       setupSomeEmployees(testSetup.fauxFoundry);
 
-      employeesAsServerReturns = (await client(Employee).fetchPage()).data;
+      employeesAsServerReturns = (await client(Employee).fetchPage({
+        $includeRid: true,
+      })).data;
       mutatedEmployees = [
         employeesAsServerReturns[0],
         employeesAsServerReturns[1].$clone({
@@ -1622,7 +1931,7 @@ describe(Store, () => {
               text,
             });
 
-            return client(Todo).fetchOne(id);
+            return client(Todo).fetchOne(id, { $includeRid: true });
           }),
         );
       });
@@ -1892,7 +2201,9 @@ describe(Store, () => {
         const pkForD = (await pActionResult).addedObjects?.[0].primaryKey;
         invariant(typeof pkForD === "number");
         // load this without the cache for comparisons
-        const createdObjectD = await client(Todo).fetchOne(pkForD);
+        const createdObjectD = await client(Todo).fetchOne(pkForD, {
+          $includeRid: true,
+        });
 
         await waitForCall(subListUnordered, 1);
         expectSingleListCallAndClear(subListUnordered, [

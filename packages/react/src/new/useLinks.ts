@@ -52,6 +52,14 @@ export interface UseLinksOptions<
   mode?: "force" | "offline";
 
   /**
+   * The number of milliseconds to wait after the last observed link change.
+   *
+   * Two uses of `useLinks` with the same parameters will only trigger one
+   * network request if the second is within `dedupeIntervalMs`.
+   */
+  dedupeIntervalMs?: number;
+
+  /**
    * Enable or disable the query.
    *
    * When `false`, the query will not automatically execute. It will still
@@ -118,6 +126,22 @@ export function useLinks<
 
   const { enabled = true, ...otherOptions } = options;
 
+  const stableWhere = React.useMemo(
+    () => otherOptions.where,
+    [JSON.stringify(otherOptions.where)],
+  );
+
+  const stableOrderBy = React.useMemo(
+    () => otherOptions.orderBy,
+    [JSON.stringify(otherOptions.orderBy)],
+  );
+
+  const objectsKey = React.useMemo(() => {
+    if (objects === undefined) return "";
+    const arr = Array.isArray(objects) ? objects : [objects];
+    return arr.map(obj => `${obj.$apiName}:${obj.$primaryKey}`).join(",");
+  }, [objects]);
+
   // Convert single object to array for consistent handling
   const objectsArray: ReadonlyArray<Osdk.Instance<T>> = React.useMemo(() => {
     return objects === undefined
@@ -125,18 +149,14 @@ export function useLinks<
       : Array.isArray(objects)
       ? objects
       : [objects];
-  }, [objects]);
+  }, [objectsKey, objects]);
 
   const { subscribe, getSnapShot } = React.useMemo(
     () => {
       if (!enabled) {
         return makeExternalStore<ObserveLinks.CallbackArgs<T>>(
           () => ({ unsubscribe: () => {} }),
-          `links ${linkName} for ${
-            objectsArray.map(obj => `${obj.$apiName}:${obj.$primaryKey}`).join(
-              ",",
-            )
-          } [DISABLED]`,
+          `links ${linkName} for ${objectsKey} [DISABLED]`,
         );
       }
       return makeExternalStore<ObserveLinks.CallbackArgs<T>>(
@@ -146,29 +166,28 @@ export function useLinks<
             linkName,
             {
               linkName,
-              where: otherOptions.where,
+              where: stableWhere,
               pageSize: otherOptions.pageSize,
-              orderBy: otherOptions.orderBy,
+              orderBy: stableOrderBy,
               mode: otherOptions.mode,
+              dedupeInterval: otherOptions.dedupeIntervalMs ?? 2_000,
             },
             observer,
           ),
-        `links ${linkName} for ${
-          objectsArray.map(obj => `${obj.$apiName}:${obj.$primaryKey}`).join(
-            ",",
-          )
-        }`,
+        `links ${linkName} for ${objectsKey}`,
       );
     },
     [
       enabled,
       observableClient,
       objectsArray,
+      objectsKey,
       linkName,
-      otherOptions.where,
+      stableWhere,
       otherOptions.pageSize,
-      otherOptions.orderBy,
+      stableOrderBy,
       otherOptions.mode,
+      otherOptions.dedupeIntervalMs,
     ],
   );
 

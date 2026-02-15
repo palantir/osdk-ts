@@ -247,6 +247,7 @@ const { object } = useOsdkObject(Employee, id, false);
 
 - `where`, `pageSize`, `enabled`
 - `mode` - `"force"` | `"offline"`
+- `dedupeIntervalMs` - Request deduplication (default: 2000ms, use `Infinity` to only re-fetch on invalidation)
 
 **useOsdkAction:**
 

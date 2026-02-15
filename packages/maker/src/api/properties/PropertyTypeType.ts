@@ -31,7 +31,8 @@ export type PropertyTypeTypePrimitive =
   | "long"
   | "short"
   | "string"
-  | "timestamp";
+  | "timestamp"
+  | "attachment";
 
 export type PropertyTypeTypeExotic =
   | "geopoint"
@@ -55,6 +56,11 @@ export type PropertyTypeTypeStruct = {
     [api_name: string]:
       | StructPropertyType
       | Exclude<PropertyTypeTypesWithoutStruct, PropertyTypeTypeMarking>;
+  };
+  mainValue?: {
+    fields: string | Array<string>;
+    // TODO(ethana): we can infer this type from fields
+    type: PropertyTypeType;
   };
 };
 

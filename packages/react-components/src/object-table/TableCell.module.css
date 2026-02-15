@@ -17,6 +17,7 @@
 .osdkTableCell {
   display: flex;
   align-items: center;
+  height: 100%;
   text-align: left;
   position: relative;
   padding: var(--osdk-table-cell-padding);
@@ -34,25 +35,26 @@
   }
 }
 
-.osdkTableCell:has([role="checkbox"]) {
-  justify-content: center;
-}
-
-
 .osdkTableCell[data-pinned="left"],
 .osdkTableCell[data-pinned="right"] {
   position: sticky;
-  z-index: var(--bp-surface-zIndex-1);
+  z-index: var(--osdk-surface-z-index-1);
+  background-color: inherit;
 }
 
 /* Last left-pinned column - no left-pinned siblings after it */
 .osdkTableCell[data-pinned="left"]:not(:has(~ [data-pinned="left"])) {
-  border-right: calc(var(--bp-surface-borderWidth) * 2) solid var(--osdk-table-border-color);
+  border-right: var(--osdk-table-pinned-column-border);
 }
 
 /* First right-pinned column - no right-pinned siblings before it */
 .osdkTableCell[data-pinned="right"]:not(:has(~ [data-pinned="right"]):nth-child(n+2)) {
-  border-left: calc(var(--bp-surface-borderWidth) * 2) solid var(--osdk-table-border-color);
+  border-left: var(--osdk-table-pinned-column-border);
+}
+
+.osdkTableCell:has([role="checkbox"]) {
+  justify-content: center;
+  padding: 0;
 }
 
 .osdkTableCellContent:not(:has([role="checkbox"])) {
@@ -60,4 +62,12 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   text-align: left;
+}
+
+.osdkCheckboxContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
 }

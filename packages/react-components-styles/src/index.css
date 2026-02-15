@@ -1,46 +1,9 @@
-/* Import Blueprint Level 1 tokens */
-@import "./blueprint-tokens.css";
+/* Level 1 tokens */
+@import "./tokens/base.css";
 
-:root {
-  /* Checkbox */
-  --osdk-checkbox-icon-size: var(--bp-iconography-size-small);
-  --osdk-checkbox-padding: calc(var(--bp-surface-spacing) / 2);
-  --osdk-checkbox-border: var(--bp-surface-borderWidth) solid
-    var(--bp-surface-borderColor-default);
-  --osdk-checkbox-bg: transparent;
-  --osdk-checkbox-bg-hover: var(--bp-surface-colorHover-default);
-  --osdk-checkbox-bg-active: var(--bp-surface-colorActive-default);
-  --osdk-checkbox-bg-checked: var(--bp-intent-primary-rest);
-  --osdk-checkbox-bg-checked-hover: var(--bp-intent-primary-hover);
-  --osdk-checkbox-bg-checked-active: var(--bp-intent-primary-active);
-  --osdk-checkbox-checked-foreground: var(--bp-intent-primary-foreground);
-
-  /* Table */
-  --osdk-table-border-color: var(--bp-surface-borderColor-default);
-  --osdk-table-border-width: var(--bp-surface-borderWidth);
-
-  --osdk-table-border: var(--osdk-table-border-width) solid
-    var(--osdk-table-border-color);
-  --osdk-table-header-divider: var(--osdk-table-border);
-  --osdk-table-cell-divider: var(--osdk-table-border-width) solid transparent;
-  --osdk-table-row-divider: var(--osdk-table-border);
-  --osdk-table-pinned-column-border: calc(var(--osdk-table-border-width) * 2)
-    solid var(--osdk-table-border-color);
-
-  --osdk-table-header-bg: var(--bp-palette-gray-100);
-  --osdk-table-header-fontWeight: var(--bp-typography-weight-bold);
-  --osdk-table-header-fontSize: var(--bp-typography-size-bodyMedium);
-  --osdk-table-header-color: var(--bp-typography-colorMuted);
-
-  --osdk-table-row-bg-default: var(--bp-palette-gray-100);
-  --osdk-table-row-bg-hover: oklch(from var(--bp-palette-blue-100) l c h / 0.2);
-  --osdk-table-row-bg-active: var(--bp-palette-blue-100);
-  --osdk-table-row-border-color-hover: var(--bp-intent-primary-rest);
-  --osdk-table-row-border-color-active: var(--bp-intent-primary-rest);
-
-  --osdk-table-cell-padding: calc(var(--bp-surface-spacing) * 3)
-    calc(var(--bp-surface-spacing) * 2);
-  --osdk-table-cell-fontSize: var(--bp-typography-size-bodyMedium);
-  --osdk-table-cell-color: var(--bp-typography-colorRest-default);
-}
-
+/* Level 2 tokens */
+@import "./tokens/button.css";
+@import "./tokens/checkbox.css";
+@import "./tokens/dialog.css";
+@import "./tokens/draggable.css";
+@import "./tokens/table.css";

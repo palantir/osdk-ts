@@ -4,6 +4,7 @@ ethana
 forwardslash
 haptics
 mediaset
+multisort
 mwalther
 Nativewind
 nihalb
@@ -17,6 +18,7 @@ Pressable
 psdk
 siteasset
 Tamagui
+themabiltiy
 timecode
 unistyles
 widgetregistry

@@ -79,7 +79,10 @@ function generateInterfaceSnippet(
     "interfaceApiName": interfaceType.apiName,
     "packageName": packageName,
     "objectOrInterfaceApiName": interfaceType.apiName,
-    "propertyNames": Object.keys(interfaceType.propertiesV2),
+    "propertyNames": [
+      ...Object.keys(interfaceType.propertiesV3),
+      ...Object.keys(interfaceType.propertiesV2),
+    ],
     "interfaceName": interfaceType.displayMetadata.displayName,
   };
 

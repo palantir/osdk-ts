@@ -27,6 +27,7 @@ import { type ObjectCacheKey } from "../object/ObjectCacheKey.js";
  */
 export interface CollectionStorageData {
   data: ObjectCacheKey[];
+  totalCount?: string;
 }
 
 /**
@@ -63,6 +64,8 @@ export interface BaseCollectionPayload {
    * Timestamp of when the data was last updated
    */
   lastUpdated: number;
+
+  totalCount?: string;
 }
 
 /**
@@ -88,4 +91,6 @@ export interface CollectionConnectableParams {
    * Timestamp of the last update
    */
   lastUpdated: number;
+
+  totalCount?: string;
 }

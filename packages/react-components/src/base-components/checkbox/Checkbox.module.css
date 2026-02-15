@@ -27,7 +27,7 @@
   padding: var(--osdk-checkbox-padding);
   box-sizing: border-box;
   cursor: pointer;
-  border-radius: var(--bp-surface-borderRadius);
+  border-radius: var(--osdk-surface-border-radius);
   border: var(--osdk-checkbox-border);
 
   &[data-unchecked] {
@@ -55,13 +55,20 @@
     }
   }
 
+  &:focus {
+    outline: none;
+  }
+
   &:focus-visible {
-    outline: var(--bp-emphasis-focusWidth) solid var(--bp-emphasis-focusColor);
-    outline-offset: var(--bp-emphasis-focusOffset);
+    outline: var(--osdk-focus-outline);
+    outline-offset: calc(-1 * var(--osdk-focus-visible-outline-offset));
   }
 }
 
 .osdkCheckboxIndicator {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   color: var(--osdk-checkbox-checked-foreground);
   width: var(--osdk-checkbox-icon-size);
   height: var(--osdk-checkbox-icon-size);

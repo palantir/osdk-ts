@@ -9,29 +9,45 @@ Built on top of [@osdk/react](../react), these components use OSDK hooks interna
 Run the command to install:
 
 - @osdk/react-components - The unstyled components from this package
-- @osdk/react - The react toolkit for data-handling
 - @osdk/react-components-styles - The default styles for the components
 
 ```sh
-npm install @osdk/react-components @osdk/react @osdk/react-components-styles
+npm install @osdk/react-components @osdk/react-components-styles
 ```
+
+**Peer Dependencies:**
+
+The following peer dependencies are required:
+
+```sh
+npm install react react-dom classnames @osdk/react @osdk/client @osdk/api
+```
+
+- `react` and `react-dom` - React 17, 18, or 19
+- `classnames` - Utility for conditionally joining CSS class names
+- `@osdk/react`, `@osdk/api`, `@osdk/client` - The packages required for data-handling
+
+For TypeScript users, also install `@types/react`.
 
 **Prerequisites:**
 
-- React 18
 - A configured OSDK client
 - An OsdkProvider wrapping your application
 
 ## Setup
 
-Add this to your application layout root as we are using Base UI portals. See https://base-ui.com/react/overview/quick-start#portals
+Add this to your application's entry css file (e.g., `index.css` or `index.scss`):
 
 ```css
 /* index.css */
+@import "@osdk/react-components/styles.css";
+
 .root {
   isolation: isolate;
 }
 ```
+
+The `.root` isolation is required for Base UI portals. See https://base-ui.com/react/overview/quick-start#portals
 
 ## Components
 
@@ -54,15 +70,12 @@ See `@osdk/react-components-styles` README on how to apply custom themes and sty
 ### Object Table
 
 ```ts
-import { ObjectTable } from "@osdk/react-components";
+import { ObjectTable } from "@osdk/react-components/experimental";
 import { $, Employee } from "@your-osdk-package";
 
 function EmployeeDirectory() {
-  const employeeObjectSet = $(Employee).where({ department: "Engineering" });
-
   return (
     <ObjectTable
-      objectSet={employeeObjectSet}
       objectType={Employee}
     />
   );

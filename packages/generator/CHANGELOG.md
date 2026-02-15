@@ -1,5 +1,44 @@
 # @osdk/generator
 
+## 2.8.0-beta.5
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.5
+- @osdk/generator-converters@2.8.0-beta.5
+
+## 2.8.0-beta.4
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.4
+- @osdk/generator-converters@2.8.0-beta.4
+
+## 2.8.0-beta.3
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.3
+- @osdk/generator-converters@2.8.0-beta.3
+
+## 2.8.0-beta.2
+
+### Minor Changes
+
+- 1706c79: Relax interface creation validation.
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.2
+- @osdk/generator-converters@2.8.0-beta.2
+
+## 2.7.0-beta.14
+
+### Patch Changes
+
+- @osdk/api@2.7.0-beta.14
+- @osdk/generator-converters@2.7.0-beta.14
+
 ## 2.7.0-beta.13
 
 ### Patch Changes

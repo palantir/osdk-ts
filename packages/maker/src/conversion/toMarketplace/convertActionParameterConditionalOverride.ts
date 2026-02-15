@@ -50,33 +50,49 @@ export function convertActionParameterConditionalOverride(
       };
       break;
     case "visibility":
+      let overrideType = override.then ?? (
+        validation.defaultVisibility === "editable" ? "hidden" : "editable"
+      );
       parameterBlockOverride = {
         type: "visibility",
         visibility: {
-          visibility: validation.defaultVisibility === "editable"
+          visibility: overrideType === "editable"
+            ? {
+              type: "editable",
+              editable: {},
+            }
+            : overrideType === "hidden"
             ? {
               type: "hidden",
               hidden: {},
             }
             : {
-              type: "editable",
-              editable: {},
+              type: "disabled",
+              disabled: {},
             },
         },
       };
       break;
     case "disabled":
+      overrideType = override.then ?? (
+        validation.defaultVisibility === "editable" ? "disabled" : "editable"
+      );
       parameterBlockOverride = {
         type: "visibility",
         visibility: {
-          visibility: validation.defaultVisibility === "editable"
+          visibility: overrideType === "editable"
             ? {
-              type: "disabled",
-              disabled: {},
-            }
-            : {
               type: "editable",
               editable: {},
+            }
+            : overrideType === "hidden"
+            ? {
+              type: "hidden",
+              hidden: {},
+            }
+            : {
+              type: "disabled",
+              disabled: {},
             },
         },
       };

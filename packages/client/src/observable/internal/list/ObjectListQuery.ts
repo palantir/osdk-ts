@@ -20,6 +20,7 @@ import type {
   ObjectTypeDefinition,
   Osdk,
 } from "@osdk/api";
+import { additionalContext } from "../../../Client.js";
 import type { InterfaceHolder } from "../../../object/convertWireToOsdkObjects/InterfaceHolder.js";
 import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import type { Changes } from "../Changes.js";
@@ -30,6 +31,7 @@ import {
   ListQuery,
   PIVOT_IDX,
   RDP_IDX,
+  RIDS_IDX,
 } from "./ListQuery.js";
 
 type ExtractRelevantObjectsResult = Record<"added" | "modified", {
@@ -43,12 +45,31 @@ export class ObjectListQuery extends ListQuery {
     const rdpConfig = this.cacheKey.otherKeys[RDP_IDX];
     const intersectWith = this.cacheKey.otherKeys[INTERSECT_IDX];
     const pivotInfo = this.cacheKey.otherKeys[PIVOT_IDX];
+    const rids = this.cacheKey.otherKeys[RIDS_IDX];
+
+    const clientCtx = store.client[additionalContext];
+    const typeDefinition = {
+      type: "object",
+      apiName: this.apiName,
+    } as ObjectTypeDefinition;
 
     if (pivotInfo != null) {
-      let sourceSet = store.client({
-        type: "object",
-        apiName: pivotInfo.sourceType,
-      } as ObjectTypeDefinition);
+      let sourceSet: ObjectSet<ObjectTypeDefinition>;
+      if (rids != null) {
+        sourceSet = clientCtx.objectSetFactory(
+          {
+            type: "object",
+            apiName: pivotInfo.sourceType,
+          } as ObjectTypeDefinition,
+          clientCtx,
+          { type: "static", objects: [...rids] },
+        );
+      } else {
+        sourceSet = store.client({
+          type: "object",
+          apiName: pivotInfo.sourceType,
+        } as ObjectTypeDefinition);
+      }
 
       // Filter source objects before pivoting to linked objects
       sourceSet = sourceSet.where(this.canonicalWhere);
@@ -82,10 +103,17 @@ export class ObjectListQuery extends ListQuery {
       return objectSet;
     }
 
-    let objectSet = store.client({
-      type: "object",
-      apiName: this.apiName,
-    } as ObjectTypeDefinition);
+    // Start with either a static objectset (for RIDs) or a base objectset
+    let objectSet: ObjectSet<ObjectTypeDefinition>;
+    if (rids != null) {
+      objectSet = clientCtx.objectSetFactory(
+        typeDefinition,
+        clientCtx,
+        { type: "static", objects: [...rids] },
+      );
+    } else {
+      objectSet = store.client(typeDefinition);
+    }
 
     if (rdpConfig != null) {
       objectSet = objectSet.withProperties(

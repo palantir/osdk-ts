@@ -1,5 +1,40 @@
 # @osdk/widget.vite-plugin
 
+## 3.5.0-beta.5
+
+### Patch Changes
+
+- @osdk/widget.api@3.5.0-beta.5
+
+## 3.5.0-beta.4
+
+### Patch Changes
+
+- @osdk/widget.api@3.5.0-beta.4
+
+## 3.5.0-beta.3
+
+### Minor Changes
+
+- b9066dd: Support interfaces in object set parameters
+
+### Patch Changes
+
+- Updated dependencies [b9066dd]
+  - @osdk/widget.api@3.5.0-beta.3
+
+## 3.5.0-beta.2
+
+### Patch Changes
+
+- @osdk/widget.api@3.5.0-beta.2
+
+## 3.4.0-beta.14
+
+### Patch Changes
+
+- @osdk/widget.api@3.4.0-beta.14
+
 ## 3.4.0-beta.13
 
 ### Patch Changes

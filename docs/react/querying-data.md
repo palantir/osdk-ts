@@ -55,6 +55,33 @@ function TodoList() {
 `isOptimistic` refers to whether the **ordered list of objects** (considering only primary keys) is optimistic. To check if individual object contents are optimistic, use `useOsdkObject` on each object.
 :::
 
+### Fetching by RID
+
+Fetch specific objects by their RIDs:
+
+```tsx
+import { Employee } from "@my/osdk";
+import { useOsdkObjects } from "@osdk/react/experimental";
+
+function SelectedEmployees({ selectedRids }: { selectedRids: string[] }) {
+  const { data, isLoading } = useOsdkObjects(Employee, {
+    rids: selectedRids,
+  });
+
+  if (isLoading && !data) {
+    return <div>Loading selected employees...</div>;
+  }
+
+  return (
+    <div>
+      {data?.map(employee => (
+        <div key={employee.$primaryKey}>{employee.fullName}</div>
+      ))}
+    </div>
+  );
+}
+```
+
 ### Filtering with `where`
 
 ```ts
@@ -366,6 +393,7 @@ function ManagerReports() {
 const { data, isLoading, isOptimistic, fetchMore, error } = useOsdkObjects(
   Todo,
   {
+    rids: ["ri.phonograph2-objects.main.object.abc123", "ri.phonograph2-objects.main.object.def456"],
     where: { isComplete: false },
     pageSize: 20,
     orderBy: { createdAt: "desc" },
@@ -532,12 +560,31 @@ function OptionalReportsList({ employee }: { employee: Employee.OsdkInstance }) 
 }
 ```
 
+### Controlling Re-fetch Behavior
+
+By default, `useLinks` deduplicates network requests within a 2-second window. You can customize this with `dedupeIntervalMs`:
+
+```tsx
+const { links } = useLinks(employee, "reports", {
+  dedupeIntervalMs: 10000, // don't re-fetch within 10 seconds
+});
+```
+
+To prevent re-fetching entirely on remount and only refresh when the server data is invalidated (e.g. after an action), use `Infinity`:
+
+```tsx
+const { links } = useLinks(employee, "reports", {
+  dedupeIntervalMs: Infinity,
+});
+```
+
 ### Options
 
 - `where` - Filter linked objects
 - `pageSize` - Number of links per page
 - `orderBy` - Sort order for linked objects
 - `mode` - Fetch mode: `"force"` (always fetch), `"offline"` (cache only), or undefined (default)
+- `dedupeIntervalMs` - Minimum time between re-fetches (default: 2000ms)
 - `enabled` - Enable/disable the query (default: true)
 
 ### Return Values

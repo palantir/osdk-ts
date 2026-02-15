@@ -1,0 +1,13 @@
+:root {
+  --osdk-draggable-item-bg: var(--osdk-background-primary);
+  --osdk-draggable-item-border: var(--osdk-surface-border);
+  --osdk-draggable-item-border-radius: var(--osdk-surface-border-radius);
+  --osdk-draggable-item-padding: calc(var(--osdk-surface-spacing) * 2)
+    calc(var(--osdk-surface-spacing) * 3);
+  --osdk-draggable-item-gap: var(--osdk-surface-spacing);
+  --osdk-draggable-item-drag-icon-color: var(--osdk-typography-color-muted);
+  --osdk-draggable-item-drag-icon-color-hover: var(
+    --osdk-typography-color-default-rest
+  );
+  --osdk-draggable-item-icon-size: var(--osdk-iconography-size-small);
+}

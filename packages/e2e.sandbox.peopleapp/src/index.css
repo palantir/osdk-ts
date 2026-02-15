@@ -1,16 +1,19 @@
 /**
  * CSS Layer setup
  */
-@layer osdk.tokens, custom.theme;
+@layer tailwind, osdk.tokens, osdk.components, custom.theme;
+
+/* Import OSDK components styles */
+@import "@osdk/react-components/styles.css" layer(osdk.components);
 
 /* Import OSDK tokens (Blueprint Level 1 + OSDK Level 2 tokens) */
 @import "@osdk/react-components-styles" layer(osdk.tokens);
 
 /* Import theme overrides (e.g., change primary intent to green) */
-@import "./theme-overrides.css" layer(custom.theme);
+/* @import "./theme-overrides.css" layer(custom.theme); */
 
 /* Tailwind for utility classes */
-@import 'tailwindcss';
+@import "tailwindcss" layer(tailwind);
 
 #root {
   isolation: isolate;

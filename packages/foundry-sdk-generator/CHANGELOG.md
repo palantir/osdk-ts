@@ -1,5 +1,52 @@
 # @osdk/foundry-sdk-generator
 
+## 2.8.0-beta.5
+
+### Patch Changes
+
+- @osdk/client@2.8.0-beta.5
+- @osdk/api@2.8.0-beta.5
+- @osdk/generator@2.8.0-beta.5
+
+## 2.8.0-beta.4
+
+### Patch Changes
+
+- Updated dependencies [73e617e]
+- Updated dependencies [5848e3c]
+  - @osdk/client@2.8.0-beta.4
+  - @osdk/api@2.8.0-beta.4
+  - @osdk/generator@2.8.0-beta.4
+
+## 2.8.0-beta.3
+
+### Patch Changes
+
+- Updated dependencies [26cec61]
+- Updated dependencies [0d174a2]
+  - @osdk/client@2.8.0-beta.3
+  - @osdk/api@2.8.0-beta.3
+  - @osdk/generator@2.8.0-beta.3
+
+## 2.8.0-beta.2
+
+### Patch Changes
+
+- Updated dependencies [1706c79]
+  - @osdk/generator@2.8.0-beta.2
+  - @osdk/client@2.8.0-beta.2
+  - @osdk/api@2.8.0-beta.2
+
+## 2.7.0-beta.14
+
+### Patch Changes
+
+- Updated dependencies [24730c7]
+- Updated dependencies [ecd18e2]
+  - @osdk/client@2.7.0-beta.14
+  - @osdk/api@2.7.0-beta.14
+  - @osdk/generator@2.7.0-beta.14
+
 ## 2.7.0-beta.13
 
 ### Patch Changes

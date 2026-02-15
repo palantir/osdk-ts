@@ -15,64 +15,140 @@
  */
 
 import type {
-  ObjectTypeDefinition,
+  ObjectOrInterfaceDefinition,
+  PropertyKeys,
   QueryDefinition,
   SimplePropertyDef,
 } from "@osdk/api";
-import type { VisibilityState } from "@tanstack/react-table";
-import { useMemo } from "react";
-import type { ObjectTableProps } from "../ObjectTableApi.js";
+import type {
+  ColumnDef,
+  ColumnOrderState,
+  OnChangeFn,
+  VisibilityState,
+} from "@tanstack/react-table";
+import { useCallback, useEffect, useState } from "react";
 
 interface UseColumnVisibilityProps<
-  Q extends ObjectTypeDefinition,
+  Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
     string,
     never
   >,
+  TData = unknown,
 > {
-  columnDefinitions: ObjectTableProps<
-    Q,
-    RDPs,
-    FunctionColumns
-  >["columnDefinitions"];
+  allColumns: ColumnDef<TData>[];
+  onColumnVisibilityChanged?: (
+    newStates: Array<{
+      columnId: PropertyKeys<Q> | keyof RDPs | keyof FunctionColumns;
+      isVisible: boolean;
+    }>,
+  ) => void;
+}
+
+interface UseColumnVisibilityResult {
+  columnVisibility: VisibilityState;
+  onColumnVisibilityChange: OnChangeFn<VisibilityState>;
+  columnOrder: ColumnOrderState;
+  onColumnOrderChange: OnChangeFn<ColumnOrderState>;
 }
 
 export const useColumnVisibility = <
-  Q extends ObjectTypeDefinition,
+  Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
     string,
     never
   >,
+  TData = unknown,
 >(
-  { columnDefinitions }: UseColumnVisibilityProps<
-    Q,
-    RDPs,
-    FunctionColumns
-  >,
-): VisibilityState | undefined => {
-  const columnVisibility = useMemo(() => {
-    if (columnDefinitions) {
-      const colVisibility: VisibilityState = columnDefinitions.reduce(
-        (acc, colDef) => {
-          if (colDef.isVisible !== undefined) {
-            const { locator } = colDef;
-            const colKey = locator.id;
+  {
+    allColumns,
+    onColumnVisibilityChanged,
+  }: UseColumnVisibilityProps<Q, RDPs, FunctionColumns, TData>,
+): UseColumnVisibilityResult => {
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
+    () => getColumnVisibilityState<TData>(allColumns),
+  );
 
-            return {
-              ...acc,
-              [colKey]: colDef.isVisible,
-            };
-          }
-          return acc;
-        },
-        {},
-      );
+  const [columnOrder, setColumnOrder] = useState<ColumnOrderState>(
+    () => getColumnOrder(allColumns),
+  );
 
-      return colVisibility;
-    }
-  }, [columnDefinitions]);
+  // TODO: Explore other ways to respond to props changes for controlled mode
+  useEffect(() => {
+    setColumnVisibility(getColumnVisibilityState<TData>(allColumns));
+  }, [allColumns]);
 
-  return columnVisibility;
+  useEffect(() => {
+    setColumnOrder(getColumnOrder(allColumns));
+  }, [allColumns]);
+
+  const onColumnVisibilityChange: OnChangeFn<VisibilityState> = useCallback(
+    (updaterOrValue) => {
+      setColumnVisibility((prev) => {
+        const newState = typeof updaterOrValue === "function"
+          ? updaterOrValue(prev)
+          : updaterOrValue;
+
+        if (onColumnVisibilityChanged) {
+          const changes = Object.entries(newState).map(
+            ([columnId, isVisible]) => ({
+              columnId,
+              isVisible,
+            }),
+          );
+          onColumnVisibilityChanged(changes);
+        }
+
+        return newState;
+      });
+    },
+    [onColumnVisibilityChanged],
+  );
+
+  const onColumnOrderChange: OnChangeFn<ColumnOrderState> = useCallback(
+    (updaterOrValue) => {
+      setColumnOrder((prev) => {
+        const newState = typeof updaterOrValue === "function"
+          ? updaterOrValue(prev)
+          : updaterOrValue;
+        return newState;
+      });
+    },
+    [],
+  );
+
+  return {
+    columnVisibility,
+    onColumnVisibilityChange,
+    columnOrder,
+    onColumnOrderChange,
+  };
+};
+
+const getColumnVisibilityState = <TData>(
+  allColumns: ColumnDef<TData>[],
+): VisibilityState => {
+  return allColumns.reduce(
+    (acc, col) => {
+      const colId = col.id ?? (col as { accessorKey?: string }).accessorKey;
+      if (colId) {
+        return {
+          ...acc,
+          [colId]: col.meta?.isVisible !== false,
+        };
+      }
+      return acc;
+    },
+    {},
+  );
+};
+
+const getColumnOrder = <TData>(
+  allColumns: ColumnDef<TData>[],
+): ColumnOrderState => {
+  return allColumns
+    .map(col => col.id ?? (col as { accessorKey?: string }).accessorKey)
+    .filter((id): id is string => id != null);
 };

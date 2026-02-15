@@ -2,18 +2,19 @@ import type { DerivedProperty, Osdk } from "@osdk/api";
 import type { ColumnDefinition } from "@osdk/react-components/experimental";
 import { ObjectTable } from "@osdk/react-components/experimental";
 import { useCallback } from "react";
-import { $ } from "../../foundryClient.js";
 import { Employee } from "../../generatedNoCheck2/index.js";
 
 type RDPs = {
   managerName: "string";
 };
 
-const columnDefinitions: ColumnDefinition<
-  Employee,
-  RDPs,
-  {}
->[] = [
+const columnDefinitions: Array<
+  ColumnDefinition<
+    Employee,
+    RDPs,
+    {}
+  >
+> = [
   // With renderHeader prop
   {
     locator: {
@@ -21,6 +22,7 @@ const columnDefinitions: ColumnDefinition<
       id: "fullName",
     },
     pinned: "left",
+    columnName: "My Name",
     renderHeader: () => <div style={{ color: "red" }}>My Name</div>,
   },
   // With isVisible prop
@@ -51,7 +53,7 @@ const columnDefinitions: ColumnDefinition<
       creator: (baseObjectSet: DerivedProperty.Builder<Employee, false>) =>
         baseObjectSet.pivotTo("lead").selectProperty("fullName"),
     },
-    renderHeader: () => "Derived Manager Name",
+    columnName: "Derived Manager Name",
     renderCell: (object: Osdk.Instance<Employee>) => {
       if ("managerName" in object) {
         return object["managerName"] as string;
@@ -59,11 +61,25 @@ const columnDefinitions: ColumnDefinition<
       return "No Value";
     },
   },
+  // Custom
+  {
+    locator: {
+      type: "custom",
+      id: "Custom Column",
+    },
+    renderHeader: () => "Custom",
+    renderCell: (object: Osdk.Instance<Employee>) => {
+      return (
+        <button onClick={() => alert(`Clicked ${object["$title"]}`)}>
+          Click me
+        </button>
+      );
+    },
+    orderable: false,
+  },
 ];
 
 export function EmployeesTable() {
-  const employeesObjectSet = $(Employee);
-
   const renderCellContextMenu = useCallback(
     (_: Osdk.Instance<Employee>, cellValue: unknown) => {
       return (
@@ -87,15 +103,18 @@ export function EmployeesTable() {
     <div
       style={{
         height: "500px",
-        overflow: "auto",
+        overflow: "hidden",
       }}
     >
-      <ObjectTable<Employee, { managerName: "string" }>
-        objectSet={employeesObjectSet}
+      <ObjectTable<Employee, RDPs>
         objectType={Employee}
         columnDefinitions={columnDefinitions}
         selectionMode={"multiple"}
         renderCellContextMenu={renderCellContextMenu}
+        defaultOrderBy={[{
+          property: "firstFullTimeStartDate",
+          direction: "desc",
+        }]}
       />
     </div>
   );

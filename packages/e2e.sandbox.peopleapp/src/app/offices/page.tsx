@@ -1,7 +1,6 @@
 import { ObjectTable } from "@osdk/react-components/experimental";
 import { useState } from "react";
 import { Section } from "../../components/Section.js";
-import { $ } from "../../foundryClient.js";
 import { Office } from "../../generatedNoCheck2/index.js";
 import { OfficeDetails } from "./OfficeDetails.js";
 import { OfficesList } from "./OfficesList.js";
@@ -42,9 +41,8 @@ export function OfficesPage() {
           </Section>
         </div>
       </div>
-      <div className="flex">
+      <div className="flex h-100 w-130">
         <ObjectTable
-          objectSet={$(Office)}
           objectType={Office}
           className={styles.officeTable}
           selectionMode="single"

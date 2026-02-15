@@ -1110,6 +1110,7 @@ describe("Action Types", () => {
                         "indexedForSearch": true,
                         "type": {
                           "struct": {
+                            "mainValue": undefined,
                             "structFields": [
                               {
                                 "aliases": [],
@@ -1197,6 +1198,7 @@ describe("Action Types", () => {
                           "indexedForSearch": true,
                           "type": {
                             "struct": {
+                              "mainValue": undefined,
                               "structFields": [
                                 {
                                   "aliases": [],
@@ -1330,18 +1332,21 @@ describe("Action Types", () => {
                     {
                       "interfaceTypeApiName": "com.palantir.exampleInterface",
                       "linksV2": {},
-                      "properties": {
+                      "properties": {},
+                      "propertiesV2": {
                         "com.palantir.mySpt": {
                           "propertyTypeRid": "bar",
-                        },
-                        "com.palantir.property1": {
-                          "propertyTypeRid": "property1",
+                          "type": "propertyTypeRid",
                         },
                         "com.palantir.property2": {
                           "propertyTypeRid": "property2",
+                          "type": "propertyTypeRid",
+                        },
+                        "property1": {
+                          "propertyTypeRid": "property1",
+                          "type": "propertyTypeRid",
                         },
                       },
-                      "propertiesV2": {},
                     },
                   ],
                   "primaryKeys": [
@@ -1448,6 +1453,7 @@ describe("Action Types", () => {
                       },
                       "type": {
                         "struct": {
+                          "mainValue": undefined,
                           "structFields": [
                             {
                               "aliases": [],
@@ -1482,6 +1488,10 @@ describe("Action Types", () => {
                     "type": "active",
                   },
                   "titlePropertyTypeRid": "bar",
+                },
+                "propertySecurityGroupPackagingVersion": {
+                  "type": "v2",
+                  "v2": {},
                 },
               },
             },
@@ -1537,6 +1547,7 @@ describe("Action Types", () => {
                   "indexedForSearch": true,
                   "type": {
                     "struct": {
+                      "mainValue": undefined,
                       "structFields": [
                         {
                           "aliases": [],
@@ -7420,6 +7431,7 @@ describe("Action Types", () => {
                       },
                       "type": {
                         "struct": {
+                          "mainValue": undefined,
                           "structFields": [
                             {
                               "aliases": [],
@@ -7454,6 +7466,10 @@ describe("Action Types", () => {
                     "type": "active",
                   },
                   "titlePropertyTypeRid": "bar",
+                },
+                "propertySecurityGroupPackagingVersion": {
+                  "type": "v2",
+                  "v2": {},
                 },
               },
             },
@@ -9117,6 +9133,10 @@ describe("Action Types", () => {
                   },
                   "titlePropertyTypeRid": "bar",
                 },
+                "propertySecurityGroupPackagingVersion": {
+                  "type": "v2",
+                  "v2": {},
+                },
               },
             },
             "sharedPropertyTypes": {},
@@ -10314,6 +10334,10 @@ describe("Action Types", () => {
                     "type": "active",
                   },
                   "titlePropertyTypeRid": "bar",
+                },
+                "propertySecurityGroupPackagingVersion": {
+                  "type": "v2",
+                  "v2": {},
                 },
               },
             },
@@ -12117,6 +12141,10 @@ describe("Action Types", () => {
                   },
                   "titlePropertyTypeRid": "id",
                 },
+                "propertySecurityGroupPackagingVersion": {
+                  "type": "v2",
+                  "v2": {},
+                },
               },
             },
             "sharedPropertyTypes": {
@@ -12913,6 +12941,10 @@ describe("Action Types", () => {
                   },
                   "titlePropertyTypeRid": "id",
                 },
+                "propertySecurityGroupPackagingVersion": {
+                  "type": "v2",
+                  "v2": {},
+                },
               },
               "com.palantir.manager": {
                 "datasources": [
@@ -13009,6 +13041,10 @@ describe("Action Types", () => {
                     "type": "active",
                   },
                   "titlePropertyTypeRid": "id",
+                },
+                "propertySecurityGroupPackagingVersion": {
+                  "type": "v2",
+                  "v2": {},
                 },
               },
             },
@@ -13428,6 +13464,10 @@ describe("Action Types", () => {
                     "type": "active",
                   },
                   "titlePropertyTypeRid": "name",
+                },
+                "propertySecurityGroupPackagingVersion": {
+                  "type": "v2",
+                  "v2": {},
                 },
               },
             },
@@ -13878,6 +13918,10 @@ describe("Action Types", () => {
                     "type": "active",
                   },
                   "titlePropertyTypeRid": "name",
+                },
+                "propertySecurityGroupPackagingVersion": {
+                  "type": "v2",
+                  "v2": {},
                 },
               },
             },
@@ -14736,6 +14780,10 @@ describe("Action Types", () => {
                   },
                   "titlePropertyTypeRid": "id",
                 },
+                "propertySecurityGroupPackagingVersion": {
+                  "type": "v2",
+                  "v2": {},
+                },
               },
             },
             "sharedPropertyTypes": {},
@@ -15203,6 +15251,10 @@ describe("Action Types", () => {
                     "type": "active",
                   },
                   "titlePropertyTypeRid": "name",
+                },
+                "propertySecurityGroupPackagingVersion": {
+                  "type": "v2",
+                  "v2": {},
                 },
               },
             },
@@ -15814,6 +15866,10 @@ describe("Action Types", () => {
                     "type": "active",
                   },
                   "titlePropertyTypeRid": "name",
+                },
+                "propertySecurityGroupPackagingVersion": {
+                  "type": "v2",
+                  "v2": {},
                 },
               },
             },
@@ -16428,6 +16484,10 @@ describe("Action Types", () => {
                     "type": "active",
                   },
                   "titlePropertyTypeRid": "bar",
+                },
+                "propertySecurityGroupPackagingVersion": {
+                  "type": "v2",
+                  "v2": {},
                 },
               },
             },

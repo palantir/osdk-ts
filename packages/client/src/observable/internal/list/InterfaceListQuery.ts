@@ -154,7 +154,7 @@ async function reloadDataAsFullObjects(
           objectDef as ObjectTypeDefinition,
         ).where(
           where as Parameters<ObjectSet<ObjectTypeDefinition>["where"]>[0],
-        ).fetchPage();
+        ).fetchPage({ $includeRid: true });
         return [
           apiName,
           Object.fromEntries(result.data.map(

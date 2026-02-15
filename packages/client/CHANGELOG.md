@@ -1,5 +1,62 @@
 # @osdk/client
 
+## 2.8.0-beta.5
+
+### Patch Changes
+
+- Updated dependencies [6499ff9]
+  - @osdk/client.unstable@2.8.0-beta.5
+  - @osdk/api@2.8.0-beta.5
+  - @osdk/generator-converters@2.8.0-beta.5
+
+## 2.8.0-beta.4
+
+### Minor Changes
+
+- 73e617e: expose dedupeInterval on useLinks and fix forced revalidation bypassing dedupeInterval
+- 5848e3c: add a new View abstraction layer to fix a pageSize caching bug where multiple subscribers with different pageSize values would share cached data incorrectly
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.4
+- @osdk/client.unstable@2.8.0-beta.4
+- @osdk/generator-converters@2.8.0-beta.4
+
+## 2.8.0-beta.3
+
+### Minor Changes
+
+- 26cec61: Improves invalid where clause undefined key error message
+- 0d174a2: useOsdkFunction typing updates
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.3
+- @osdk/client.unstable@2.8.0-beta.3
+- @osdk/generator-converters@2.8.0-beta.3
+
+## 2.8.0-beta.2
+
+### Patch Changes
+
+- Updated dependencies [e462938]
+  - @osdk/client.unstable@2.8.0-beta.2
+  - @osdk/api@2.8.0-beta.2
+  - @osdk/generator-converters@2.8.0-beta.2
+
+## 2.7.0-beta.14
+
+### Minor Changes
+
+- 24730c7: fix rdp pivot behavior
+- ecd18e2: fix pivotTo with where usage
+
+### Patch Changes
+
+- @osdk/api@2.7.0-beta.14
+- @osdk/client.unstable@2.7.0-beta.14
+- @osdk/generator-converters@2.7.0-beta.14
+
 ## 2.7.0-beta.13
 
 ### Minor Changes

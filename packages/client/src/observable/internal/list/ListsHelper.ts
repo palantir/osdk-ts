@@ -26,6 +26,7 @@ import type { OrderByCanonicalizer } from "../OrderByCanonicalizer.js";
 import type { PivotCanonicalizer } from "../PivotCanonicalizer.js";
 import type { QuerySubscription } from "../QuerySubscription.js";
 import type { RdpCanonicalizer } from "../RdpCanonicalizer.js";
+import type { RidListCanonicalizer } from "../RidListCanonicalizer.js";
 import type { Store } from "../Store.js";
 import type { WhereClauseCanonicalizer } from "../WhereClauseCanonicalizer.js";
 import { InterfaceListQuery } from "./InterfaceListQuery.js";
@@ -42,6 +43,7 @@ export class ListsHelper extends AbstractHelper<
   rdpCanonicalizer: RdpCanonicalizer;
   intersectCanonicalizer: IntersectCanonicalizer;
   pivotCanonicalizer: PivotCanonicalizer;
+  ridListCanonicalizer: RidListCanonicalizer;
 
   constructor(
     store: Store,
@@ -51,6 +53,7 @@ export class ListsHelper extends AbstractHelper<
     rdpCanonicalizer: RdpCanonicalizer,
     intersectCanonicalizer: IntersectCanonicalizer,
     pivotCanonicalizer: PivotCanonicalizer,
+    ridListCanonicalizer: RidListCanonicalizer,
   ) {
     super(store, cacheKeys);
 
@@ -59,6 +62,7 @@ export class ListsHelper extends AbstractHelper<
     this.rdpCanonicalizer = rdpCanonicalizer;
     this.intersectCanonicalizer = intersectCanonicalizer;
     this.pivotCanonicalizer = pivotCanonicalizer;
+    this.ridListCanonicalizer = ridListCanonicalizer;
   }
 
   observe<T extends ObjectTypeDefinition | InterfaceDefinition>(
@@ -83,6 +87,7 @@ export class ListsHelper extends AbstractHelper<
       withProperties,
       intersectWith,
       pivotTo,
+      rids,
     } = options;
     const { apiName, type } = typeDefinition;
 
@@ -100,6 +105,10 @@ export class ListsHelper extends AbstractHelper<
       ? this.pivotCanonicalizer.canonicalize(apiName, pivotTo)
       : undefined;
 
+    const canonRids = rids != null
+      ? this.ridListCanonicalizer.canonicalize(rids)
+      : undefined;
+
     const listCacheKey = this.cacheKeys.get<ListCacheKey>(
       "list",
       type,
@@ -109,6 +118,7 @@ export class ListsHelper extends AbstractHelper<
       canonRdp,
       canonIntersect,
       canonPivot,
+      canonRids,
     );
 
     return this.store.queries.get(listCacheKey, () => {

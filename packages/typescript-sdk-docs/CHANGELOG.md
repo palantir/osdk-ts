@@ -1,5 +1,11 @@
 # @osdk/typescript-sdk-docs
 
+## 0.6.0-beta.5
+
+### Minor Changes
+
+- 7572644: Bump @osdk/docs-spec-core to 0.6.0
+
 ## 0.6.0-beta.4
 
 ### Minor Changes

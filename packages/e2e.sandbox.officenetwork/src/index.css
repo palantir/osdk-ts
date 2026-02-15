@@ -1,0 +1,200 @@
+@import 'tailwindcss';
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   OFFICENETWORK DESIGN SYSTEM
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* ─────────────────────────────────────────────────────────────────────────
+     BACKGROUNDS - Deep Navy Scale
+     ───────────────────────────────────────────────────────────────────────── */
+  --officenetwork-bg-base: #0d1117;
+  --officenetwork-bg-surface: #161b22;
+  --officenetwork-bg-elevated: #21262d;
+  --officenetwork-bg-overlay: #2d333b;
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     BORDERS
+     ───────────────────────────────────────────────────────────────────────── */
+  --officenetwork-border-default: #30363d;
+  --officenetwork-border-muted: #21262d;
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     TEXT
+     ───────────────────────────────────────────────────────────────────────── */
+  --officenetwork-text-primary: #e6edf3;
+  --officenetwork-text-secondary: #8b949e;
+  --officenetwork-text-muted: #6e7681;
+  --officenetwork-text-link: #58a6ff;
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     ACCENT - Cyan/Teal (Primary)
+     ───────────────────────────────────────────────────────────────────────── */
+  --officenetwork-accent-cyan: #58a6ff;
+  --officenetwork-accent-cyan-muted: #388bfd;
+  --officenetwork-accent-teal: #39c5cf;
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     STATUS COLORS
+     ───────────────────────────────────────────────────────────────────────── */
+  --officenetwork-status-ready: #3fb950;
+  --officenetwork-status-ready-bg: rgba(63, 185, 80, 0.15);
+  --officenetwork-status-error: #f85149;
+  --officenetwork-status-error-bg: rgba(248, 81, 73, 0.15);
+  --officenetwork-status-warning: #d29922;
+  --officenetwork-status-warning-bg: rgba(210, 153, 34, 0.15);
+  --officenetwork-status-info: #58a6ff;
+  --officenetwork-status-info-bg: rgba(88, 166, 255, 0.15);
+  --officenetwork-status-offline: #6e7681;
+  --officenetwork-status-offline-bg: rgba(110, 118, 129, 0.15);
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     HIERARCHY COLORS
+     ───────────────────────────────────────────────────────────────────────── */
+  --officenetwork-hier-ceo: #f0c000;
+  --officenetwork-hier-evp: #a371f7;
+  --officenetwork-hier-vp: #58a6ff;
+  --officenetwork-hier-director: #39c5cf;
+  --officenetwork-hier-manager: #d29922;
+  --officenetwork-hier-ic: #3fb950;
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     TYPOGRAPHY
+     ───────────────────────────────────────────────────────────────────────── */
+  --officenetwork-font-sans: 'IBM Plex Sans', 'SF Pro Text', system-ui, sans-serif;
+  --officenetwork-font-mono: 'IBM Plex Mono', 'JetBrains Mono', monospace;
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     LEGACY VARIABLE MAPPINGS (for gradual migration)
+     ───────────────────────────────────────────────────────────────────────── */
+  --bg-primary: var(--officenetwork-bg-base);
+  --bg-secondary: var(--officenetwork-bg-surface);
+  --bg-tertiary: var(--officenetwork-bg-elevated);
+  --text-primary: var(--officenetwork-text-primary);
+  --text-secondary: var(--officenetwork-text-secondary);
+  --text-muted: var(--officenetwork-text-muted);
+  --accent-cyan: var(--officenetwork-accent-cyan);
+  --accent-violet: var(--officenetwork-hier-evp);
+  --accent-emerald: var(--officenetwork-status-ready);
+  --accent-amber: var(--officenetwork-status-warning);
+  --border-subtle: var(--officenetwork-border-default);
+  --border-accent: var(--officenetwork-border-default);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   BASE STYLES
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--officenetwork-font-sans);
+  font-size: 13px;
+  line-height: 1.5;
+  background: var(--officenetwork-bg-base);
+  color: var(--officenetwork-text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100dvh;
+}
+
+#root {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SCROLLBAR STYLES
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--officenetwork-bg-surface);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--officenetwork-border-default);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--officenetwork-text-muted);
+}
+
+::-webkit-scrollbar-corner {
+  background: var(--officenetwork-bg-surface);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   COMPONENT STYLES
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Status Badges */
+.officenetwork-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 6px;
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  border-radius: 3px;
+}
+
+.officenetwork-badge-ready {
+  background: var(--officenetwork-status-ready-bg);
+  color: var(--officenetwork-status-ready);
+}
+
+.officenetwork-badge-error {
+  background: var(--officenetwork-status-error-bg);
+  color: var(--officenetwork-status-error);
+}
+
+.officenetwork-badge-warning {
+  background: var(--officenetwork-status-warning-bg);
+  color: var(--officenetwork-status-warning);
+}
+
+.officenetwork-badge-info {
+  background: var(--officenetwork-status-info-bg);
+  color: var(--officenetwork-status-info);
+}
+
+.officenetwork-badge-offline {
+  background: var(--officenetwork-status-offline-bg);
+  color: var(--officenetwork-status-offline);
+}
+
+/* Section Headers */
+.officenetwork-section-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--officenetwork-text-muted);
+}
+
+/* Monospace text */
+.officenetwork-mono {
+  font-family: var(--officenetwork-font-mono);
+}
+
+/* Focus styles */
+:focus-visible {
+  outline: 2px solid var(--officenetwork-accent-cyan);
+  outline-offset: 2px;
+}
+
+/* Selection */
+::selection {
+  background: rgba(88, 166, 255, 0.3);
+}

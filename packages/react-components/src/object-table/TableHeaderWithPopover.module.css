@@ -22,7 +22,7 @@
 
 .osdkContentGap {
   display: flex;
-  gap: var(--bp-surface-spacing);
+  gap: var(--osdk-surface-spacing);
 }
 
 .osdkHeaderContainer {
@@ -41,65 +41,101 @@
   flex-shrink: 0;
 }
 
+.osdkHeaderText {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-grow: 1;
+}
+
 .osdkHeaderPopoverTrigger {
+  padding: var(--osdk-table-header-menu-padding);
   flex-shrink: 0;
   flex-grow: 0;
-  border: var(--bp-surface-borderWidth) solid
-    var(--bp-surface-borderColor-default);
-  border-radius: var(--bp-surface-borderRadius);
-  color: var(--bp-intent-default-foreground);
+  background-color: var(--osdk-table-header-menu-bg);
+  border: var(--osdk-table-header-menu-border);
+  border-radius: var(--osdk-surface-border-radius);
+  color: var(--osdk-table-header-menu-color);
+  cursor: pointer;
   user-select: none;
+
   &:hover {
-    background-color: var(--bp-intent-default-hover);
+    background-color: var(--osdk-table-header-menu-bg-hover);
   }
 
   &[data-popup-open] {
-    background-color: var(--bp-intent-primary-rest);
+    background-color: var(--osdk-table-header-menu-bg-active);
+    color: var(--osdk-table-header-menu-color-active);
+  }
+
+  &:focus {
+    outline: none;
   }
 
   &:focus-visible {
-    outline: var(--bp-surface-borderWidth) solid var(--bp-intent-primary-rest);
-    outline-offset: calc(-1 * var(--bp-surface-borderWidth));
+    outline: var(--osdk-focus-outline);
+    outline-offset: var(--osdk-focus-visible-outline-offset);
   }
 }
 
 .osdkHeaderIcon {
-  width: var(--bp-iconography-size-small);
-  height: var(--bp-iconography-size-small);
+  width: var(--osdk-iconography-size-small);
+  height: var(--osdk-iconography-size-small);
 }
 
 .osdkHeaderPopup {
   box-sizing: border-box;
-  padding: var(--bp-surface-spacing);
-  border-radius: var(--bp-surface-borderRadius);
-  border: var(--bp-surface-borderWidth) solid
-    var(--bp-surface-borderColor-default);
-  background-color: var(--bp-palette-gray-100);
-  color: var(--bp-typography-colorRest-default);
-  box-shadow: var(--bp-surface-shadow-2);
-  font-size: var(--bp-typography-size-bodyMedium);
+  padding: var(--osdk-surface-spacing);
+  border-radius: var(--osdk-surface-border-radius);
+  border: var(--osdk-surface-border);
+  background-color: var(--osdk-surface-background-color-default-rest);
+  color: var(--osdk-typography-color-default-rest);
+  box-shadow: var(--osdk-surface-shadow-2);
+  font-size: var(--osdk-typography-size-body-medium);
+
+  &:focus {
+    outline: none;
+  }
 }
 
 .osdkHeaderMenuItem {
   justify-content: flex-start;
-  padding: var(--bp-surface-spacing);
+  padding: var(--osdk-surface-spacing);
   cursor: pointer;
+
+  &:hover {
+    background-color: var(--osdk-surface-background-color-default-hover);
+    border-radius: var(--osdk-surface-border-radius);
+  }
+
+  &:focus {
+    outline: none;
+  }
+
+  &:focus-visible {
+    outline: var(--osdk-focus-outline);
+    outline-offset: var(--osdk-focus-visible-outline-offset);
+  }
 }
 
-.osdkHeaderMenuItem:hover {
-  background-color: var(--bp-surface-colorHover-default);
-  border-radius: var(--bp-surface-borderRadius);
+.osdkHeaderMenuItem .osdkHeaderActiveMenuItem {
+  background-color: var(--osdk-intent-primary-rest);
+  color: var(--osdk-intent-primary-foreground);
+
+  &:hover {
+    background-color: var(--osdk-intent-primary-hover);
+  }
+
+  &:active {
+    background-color: var(--osdk-intent-primary-active);
+  }
 }
 
-.osdkHeaderActiveMenuItem {
-  background-color: var(--bp-intent-primary-rest);
-  color: var(--bp-intent-primary-foreground);
-}
-
-.osdkHeaderActiveMenuItem:hover {
-  background-color: var(--bp-intent-primary-hover);
-}
-
-.osdkHeaderActiveMenuItem:active {
-  background-color: var(--bp-intent-primary-active);
+.sortIndex {
+  font-size: var(--osdk-typography-size-body-x-small);
+  margin-left: var(--osdk-surface-spacing);
+  color: var(--osdk-typography-color-muted);
 }

@@ -16,6 +16,7 @@
 
 import type { InterfaceTypeStatus } from "@osdk/client.unstable";
 import invariant from "tiny-invariant";
+import { cloneDefinition } from "./cloneDefinition.js";
 import type { BlueprintIcon } from "./common/BlueprintIcons.js";
 import { OntologyEntityTypeEnum } from "./common/OntologyEntityTypeEnum.js";
 import {
@@ -64,8 +65,9 @@ export type InterfaceTypeDefinition = {
 };
 
 export function defineInterface(
-  interfaceDef: InterfaceTypeDefinition,
+  interfaceDefInput: InterfaceTypeDefinition,
 ): InterfaceType {
+  const interfaceDef = cloneDefinition(interfaceDefInput);
   const apiName = namespace + interfaceDef.apiName;
   invariant(
     ontologyDefinition[OntologyEntityTypeEnum.INTERFACE_TYPE][apiName]

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+export { checkActionTypeProvenanceStatus } from "./ExperimentalOntologyUsageService/checkActionTypeProvenanceStatus.js";
 export { getActionTypeUsage } from "./ExperimentalOntologyUsageService/getActionTypeUsage.js";
 export { getDeprecationUsage } from "./ExperimentalOntologyUsageService/getDeprecationUsage.js";
 export { getUsage } from "./ExperimentalOntologyUsageService/getUsage.js";

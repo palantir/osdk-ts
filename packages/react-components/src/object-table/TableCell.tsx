@@ -63,9 +63,10 @@ export function TableCell<TData extends RowData>(
         onContextMenu={handleOpenContextMenu}
       >
         <div className={styles.osdkTableCellContent}>
-          {flexRender(cell.column.columnDef.cell, cell.getContext()) as
-            | ReactNode
-            | React.JSX.Element}
+          {flexRender(
+            cell.column.columnDef.cell,
+            cell.getContext(),
+          ) as ReactNode}
         </div>
       </td>
       {shouldRenderContextMenu
