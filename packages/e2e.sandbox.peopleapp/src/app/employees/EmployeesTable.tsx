@@ -1,5 +1,8 @@
 import type { DerivedProperty, Osdk } from "@osdk/api";
-import type { ColumnDefinition } from "@osdk/react-components/experimental";
+import type {
+  CellValueState,
+  ColumnDefinition,
+} from "@osdk/react-components/experimental";
 import { ObjectTable } from "@osdk/react-components/experimental";
 import { useCallback } from "react";
 import { Employee } from "../../generatedNoCheck2/index.js";
@@ -21,9 +24,8 @@ const columnDefinitions: Array<
       type: "property",
       id: "fullName",
     },
-    pinned: "left",
     columnName: "My Name",
-    renderHeader: () => <div style={{ color: "red" }}>My Name</div>,
+    editable: true,
   },
   // With isVisible prop
   {
@@ -115,6 +117,18 @@ export function EmployeesTable() {
           property: "firstFullTimeStartDate",
           direction: "desc",
         }]}
+        onCellValueChanged={(cellId: string, state: CellValueState) => {
+          console.log("Cell value changed:", {
+            cellId: cellId,
+            newValue: state.newValue,
+            oldValue: state.oldValue,
+          });
+          return Promise.resolve();
+        }}
+        onSubmitEdits={(edits) => {
+          console.log("Edits submitted", edits);
+          return Promise.resolve();
+        }}
       />
     </div>
   );

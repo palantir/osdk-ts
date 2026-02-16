@@ -25,6 +25,7 @@ import type {
   WhereClause,
 } from "@osdk/api";
 import type * as React from "react";
+import type { CellIdentifier, CellValueState } from "./utils/types.js";
 
 export type ColumnDefinition<
   Q extends ObjectOrInterfaceDefinition,
@@ -207,15 +208,20 @@ export interface ObjectTableProps<
   /**
    * Called after the value of a cell is edited and committed by the user.
    *
-   * @param cellId
+   * @param cell The cell that was edited, identified by its row and column IDs
    * @param state The new and old values of the cell
    */
-  onCellValueChanged?: (cellId: string, state: CellValueState) => void;
+  onCellValueChanged?: (
+    cell: CellIdentifier,
+    state: CellValueState,
+  ) => Promise<void>;
 
   /**
-   * @param edits a map of cellId to the new and old values of the cell
+   * If provided, the button Submit Edits will be shown in the table
+   *
+   * @param edits a map of cellId (stringified CellIdentifier) to the new and old values of the cell
    */
-  onSubmitEdits?: (edits: Record<string, CellValueState>) => void;
+  onSubmitEdits?: (edits: Record<string, CellValueState>) => Promise<void>;
 
   /**
    * Called when the column visibility or ordering changed.
@@ -306,9 +312,4 @@ export interface ObjectTableProps<
   rowHeight?: number;
 
   className?: string;
-}
-
-interface CellValueState {
-  newValue?: unknown;
-  oldValue?: unknown;
 }

@@ -14,27 +14,12 @@
  * limitations under the License.
  */
 
-.osdkTableContainer {
-  flex: 1;
-  height: 100%;
-  min-height: 0;
-  overflow: auto;
-  position: relative;
+import type { CellIdentifier } from "./types.js";
+
+export function getCellId(cellIdentifier: CellIdentifier): string {
+  return JSON.stringify(cellIdentifier);
 }
 
-.osdkTableContainer table {
-  border-collapse: collapse;
-  display: grid;
-  table-layout: fixed;
-}
-
-.submitButtonContainer {
-  position: sticky;
-  bottom: 0;
-  background-color: var(--osdk-surface-background-color-default-rest);
-  border-top: var(--osdk-table-border);
-  padding: var(--osdk-table-button-container-padding);
-  display: flex;
-  justify-content: flex-end;
-  z-index: var(--osdk-surface-z-index-2);
+export function getCellIdentifier(cellId: string): CellIdentifier {
+  return JSON.parse(cellId);
 }
