@@ -34,6 +34,7 @@ export function renderDefaultCell<TData>(
       <EditableCell
         initialValue={cellContext.getValue()}
         cellId={cellId}
+        dataType={columnMeta?.dataType}
         onCellEdit={meta.onCellEdit}
       />
     );

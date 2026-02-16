@@ -118,6 +118,11 @@ function getColumnsFromColumnDefinitions<
 
     const colKey = locator.id as string;
 
+    const dataType =
+      propertyMetadata?.type && typeof propertyMetadata.type === "string"
+        ? propertyMetadata.type
+        : undefined;
+
     const colDef: AccessorColumnDef<
       Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
     > = {
@@ -128,6 +133,7 @@ function getColumnsFromColumnDefinitions<
         columnName: columnName || propertyMetadata?.displayName,
         isVisible: col.isVisible !== false,
         editable,
+        dataType,
       },
       size: width,
       ...(minWidth ? { minSize: minWidth } : {}),

@@ -39,13 +39,13 @@ npm install react react-dom classnames @osdk/react @osdk/client @osdk/api
 **REQUIRED:** Wrap app with OsdkProvider2:
 
 ```tsx
-import { OsdkProvider2 } from "@osdk/react/experimental";
 import { createClient } from "@osdk/client";
+import { OsdkProvider2 } from "@osdk/react/experimental";
 
 const client = createClient(/* config */);
 
 function App() {
-    return <OsdkProvider2 client={client}>{/* components */}</OsdkProvider2>;
+  return <OsdkProvider2 client={client}>{/* components */}</OsdkProvider2>;
 }
 ```
 
@@ -70,11 +70,11 @@ The `.root` isolation is required for Base UI portals. See https://base-ui.com/r
 
 The components that this package will provide are:
 
-| Component     | Description                                                                        | Documentation |
-| ------------- | ---------------------------------------------------------------------------------- | ------------- |
+| Component     | Description                                                                        | Documentation                  |
+| ------------- | ---------------------------------------------------------------------------------- | ------------------------------ |
 | `ObjectTable` | Displays an Object Set as a sortable, paginated table                              | [Guide](./docs/ObjectTable.md) |
-| `FilterList`  | Visualize a high-level summary of objects data to allow users to filter that data. | - |
-| `ActionForm`  | Auto-generated form for executing Ontology Actions                                 | - |
+| `FilterList`  | Visualize a high-level summary of objects data to allow users to filter that data. | -                              |
+| `ActionForm`  | Auto-generated form for executing Ontology Actions                                 | -                              |
 
 ## Custom Styling
 

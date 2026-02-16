@@ -140,6 +140,8 @@ Each column header has a menu with items for sorting, filtering, pinning, resizi
 
 ### Cell Editing
 
+> **Note:** Editable cells currently support text and number data types.
+
 | Prop                 | Type                                                       | Description                                                                                  |
 | -------------------- | ---------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
 | `onCellValueChanged` | `(cellId: CellIdentifier, state: CellValueState) => void`  | Called when a cell value is edited. Throw error to reject change                             |
@@ -160,12 +162,14 @@ type ColumnDefinition<Q, RDPs, FunctionColumns> = {
   resizable?: boolean; // Allow column resizing
   orderable?: boolean; // Allow column sorting
   filterable?: boolean; // Allow column filtering
-  editable?: boolean; // Allow inline editing for this column
+  editable?: boolean; // Allow inline editing for this column (currently supports text and number types)
   renderCell?: (object, locator) => React.ReactNode; // Custom cell renderer
   columnName?: string; // Custom column name for the header
   renderHeader?: () => React.ReactNode; // Custom header renderer (takes precedence over columnName)
 };
 ```
+
+> **Note:** Editable cells currently support text and number data types. Support for other data types (date, boolean, etc.) will be added in future updates.
 
 #### `columnName` vs `renderHeader`
 
@@ -644,7 +648,7 @@ function EditableEmployeesTable() {
       // Call your action with the edits
       // The exact format depends on your action's parameters
       await applyAction({ edits });
-      
+
       alert("All changes saved successfully!");
     } catch (error) {
       console.error("Failed to save edits:", error);

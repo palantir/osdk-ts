@@ -32,9 +32,9 @@ const columnDefinitions: Array<
   {
     locator: {
       type: "property",
-      id: "preferredNameFirst",
+      id: "employeeNumber",
     },
-    columnName: "First Name",
+    columnName: "Employee Number",
     editable: true,
   },
   // With isVisible prop

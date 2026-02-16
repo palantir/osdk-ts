@@ -15,25 +15,61 @@
  */
 
 import { Input } from "@base-ui/react/input";
+import type { BaseWirePropertyTypes } from "@osdk/api";
 import React, { useCallback, useState } from "react";
 import styles from "./EditableCell.module.css";
 
 export interface EditableCellProps {
   initialValue: unknown;
   cellId: string;
+  dataType?: BaseWirePropertyTypes;
   onCellEdit?: (cellId: string, newValue: unknown, oldValue: unknown) => void;
+}
+
+const NUMBER_TYPES: BaseWirePropertyTypes[] = [
+  "double",
+  "integer",
+  "long",
+  "float",
+  "decimal",
+  "byte",
+  "short",
+];
+
+function parseValueByType(
+  value: string,
+  dataType?: BaseWirePropertyTypes,
+): unknown {
+  if (!dataType || !NUMBER_TYPES.includes(dataType)) {
+    return value;
+  }
+
+  // Handle empty string
+  if (value === "") {
+    return null;
+  }
+
+  const parsedNumber = Number(value);
+
+  if (isNaN(parsedNumber)) {
+    return value;
+  }
+
+  return parsedNumber;
 }
 
 export function EditableCell({
   initialValue,
   cellId,
+  dataType,
   onCellEdit,
 }: EditableCellProps): React.ReactElement {
   const [value, setValue] = useState<string>(String(initialValue ?? ""));
 
   const handleBlur = useCallback(() => {
-    onCellEdit?.(cellId, value, initialValue);
-  }, [value, initialValue, onCellEdit, cellId]);
+    const parsedValue = parseValueByType(value, dataType);
+    onCellEdit?.(cellId, parsedValue, initialValue);
+  }, [value, initialValue, onCellEdit, cellId, dataType]);
 
   const handleChange = useCallback((value: string) => {
     setValue(value);
@@ -52,9 +88,14 @@ export function EditableCell({
     [initialValue],
   );
 
+  const inputType = dataType && NUMBER_TYPES.includes(dataType)
+    ? "number"
+    : "text";
+
   return (
     <Input
       className={styles.osdkEditableInput}
+      type={inputType}
       value={value}
       onValueChange={handleChange}
       onBlur={handleBlur}
