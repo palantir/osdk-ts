@@ -38,6 +38,9 @@
     "transpileTypes": "monorepo.tool.transpile -f esm -m types -t node",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
+  "peerDependencies": {
+    "vite": "^7.3.1"
+  },
   "dependencies": {
     "@osdk/foundry-config-json": "workspace:~",
     "@osdk/widget.api": "workspace:~",
