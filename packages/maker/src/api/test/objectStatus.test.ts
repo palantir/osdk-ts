@@ -40,7 +40,78 @@ describe("Object Status", () => {
             },
           })
         ).toThrowError(
-          /When object "validation-test" has experimental status, no properties can have "active" status/,
+          /Object "validation-test" has "experimental" status, but the following properties have a different status: bar/,
+        );
+      }, "/tmp/");
+    });
+
+    it("does not throw when object status is active and a property is experimental", async () => {
+      await defineOntology("com.palantir.", () => {
+        expect(() =>
+          defineObject({
+            titlePropertyApiName: "bar",
+            displayName: "ActiveExpPropObject",
+            pluralDisplayName: "ActiveExpPropObjects",
+            apiName: "active-exp-prop",
+            primaryKeyPropertyApiName: "bar",
+            status: "active" as ObjectTypeStatus,
+            properties: {
+              "bar": {
+                type: "string",
+                status: "experimental" as ObjectTypeStatus,
+              },
+            },
+          })
+        ).not.toThrow();
+      }, "/tmp/");
+    });
+
+    it("throws an error when object status is example and a property is active", async () => {
+      await defineOntology("com.palantir.", () => {
+        expect(() =>
+          defineObject({
+            titlePropertyApiName: "bar",
+            displayName: "ExampleActivePropObject",
+            pluralDisplayName: "ExampleActivePropObjects",
+            apiName: "example-active-prop",
+            primaryKeyPropertyApiName: "bar",
+            status: "example" as ObjectTypeStatus,
+            properties: {
+              "bar": {
+                type: "string",
+                status: "active" as ObjectTypeStatus,
+              },
+            },
+          })
+        ).toThrowError(
+          /Object "example-active-prop" has "example" status, but the following properties have a different status: bar/,
+        );
+      }, "/tmp/");
+    });
+
+    it("throws an error when object status is deprecated and a property is active", async () => {
+      await defineOntology("com.palantir.", () => {
+        expect(() =>
+          defineObject({
+            titlePropertyApiName: "bar",
+            displayName: "DeprecatedActivePropObject",
+            pluralDisplayName: "DeprecatedActivePropObjects",
+            apiName: "deprecated-active-prop",
+            primaryKeyPropertyApiName: "bar",
+            status: {
+              type: "deprecated",
+              message: "old",
+              deadline: "2023-01-01",
+            } as ObjectTypeStatus,
+            properties: {
+              "bar": {
+                type: "string",
+                status: "active" as ObjectTypeStatus,
+              },
+            },
+          })
+        ).toThrowError(
+          /Object "deprecated-active-prop" has "deprecated" status, but the following properties have a different status: bar/,
         );
       }, "/tmp/");
     });
@@ -60,6 +131,42 @@ describe("Object Status", () => {
                 type: "string",
                 status: "experimental" as ObjectTypeStatus,
               },
+            },
+          })
+        ).not.toThrow();
+      }, "/tmp/");
+    });
+
+    it("does not throw when active object has property with no status", async () => {
+      await defineOntology("com.palantir.", () => {
+        expect(() =>
+          defineObject({
+            titlePropertyApiName: "bar",
+            displayName: "ActiveNoStatusPropObject",
+            pluralDisplayName: "ActiveNoStatusPropObjects",
+            apiName: "active-no-status-prop",
+            primaryKeyPropertyApiName: "bar",
+            status: "active" as ObjectTypeStatus,
+            properties: {
+              "bar": { type: "string" },
+            },
+          })
+        ).not.toThrow();
+      }, "/tmp/");
+    });
+
+    it("does not throw when experimental object has property with no status", async () => {
+      await defineOntology("com.palantir.", () => {
+        expect(() =>
+          defineObject({
+            titlePropertyApiName: "bar",
+            displayName: "ExpNoStatusPropObject",
+            pluralDisplayName: "ExpNoStatusPropObjects",
+            apiName: "exp-no-status-prop",
+            primaryKeyPropertyApiName: "bar",
+            status: "experimental" as ObjectTypeStatus,
+            properties: {
+              "bar": { type: "string" },
             },
           })
         ).not.toThrow();

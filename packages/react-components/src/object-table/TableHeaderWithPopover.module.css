@@ -41,27 +41,42 @@
   flex-shrink: 0;
 }
 
+.osdkHeaderText {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-grow: 1;
+}
+
 .osdkHeaderPopoverTrigger {
-  padding: 0;
+  padding: var(--osdk-table-header-menu-padding);
   flex-shrink: 0;
   flex-grow: 0;
-  border: var(--osdk-surface-border-width) solid
-    var(--osdk-surface-border-color-default);
+  background-color: var(--osdk-table-header-menu-bg);
+  border: var(--osdk-table-header-menu-border);
   border-radius: var(--osdk-surface-border-radius);
-  color: var(--osdk-intent-default-foreground);
+  color: var(--osdk-table-header-menu-color);
+  cursor: pointer;
   user-select: none;
-  outline: none;
 
   &:hover {
-    background-color: var(--osdk-intent-default-hover);
+    background-color: var(--osdk-table-header-menu-bg-hover);
   }
 
   &[data-popup-open] {
-    background-color: var(--osdk-intent-primary-rest);
+    background-color: var(--osdk-table-header-menu-bg-active);
+    color: var(--osdk-table-header-menu-color-active);
+  }
+
+  &:focus {
+    outline: none;
   }
 
   &:focus-visible {
-    outline: var(--osdk-focus-visible-outline);
+    outline: var(--osdk-focus-outline);
     outline-offset: var(--osdk-focus-visible-outline-offset);
   }
 }
@@ -75,36 +90,52 @@
   box-sizing: border-box;
   padding: var(--osdk-surface-spacing);
   border-radius: var(--osdk-surface-border-radius);
-  border: var(--osdk-surface-border-width) solid
-    var(--osdk-surface-border-color-default);
-  background-color: var(--osdk-surface-background-color-default);
+  border: var(--osdk-surface-border);
+  background-color: var(--osdk-surface-background-color-default-rest);
   color: var(--osdk-typography-color-default-rest);
   box-shadow: var(--osdk-surface-shadow-2);
   font-size: var(--osdk-typography-size-body-medium);
-  outline: none;
+
+  &:focus {
+    outline: none;
+  }
 }
 
 .osdkHeaderMenuItem {
   justify-content: flex-start;
   padding: var(--osdk-surface-spacing);
   cursor: pointer;
+
+  &:hover {
+    background-color: var(--osdk-surface-background-color-default-hover);
+    border-radius: var(--osdk-surface-border-radius);
+  }
+
+  &:focus {
+    outline: none;
+  }
+
+  &:focus-visible {
+    outline: var(--osdk-focus-outline);
+    outline-offset: var(--osdk-focus-visible-outline-offset);
+  }
 }
 
-.osdkHeaderMenuItem:hover {
-  outline: none;
-  background-color: var(--osdk-surface-background-color-default-hover);
-  border-radius: var(--osdk-surface-border-radius);
-}
-
-.osdkHeaderActiveMenuItem {
+.osdkHeaderMenuItem .osdkHeaderActiveMenuItem {
   background-color: var(--osdk-intent-primary-rest);
   color: var(--osdk-intent-primary-foreground);
+
+  &:hover {
+    background-color: var(--osdk-intent-primary-hover);
+  }
+
+  &:active {
+    background-color: var(--osdk-intent-primary-active);
+  }
 }
 
-.osdkHeaderActiveMenuItem:hover {
-  background-color: var(--osdk-intent-primary-hover);
-}
-
-.osdkHeaderActiveMenuItem:active {
-  background-color: var(--osdk-intent-primary-active);
+.sortIndex {
+  font-size: var(--osdk-typography-size-body-x-small);
+  margin-left: var(--osdk-surface-spacing);
+  color: var(--osdk-typography-color-muted);
 }

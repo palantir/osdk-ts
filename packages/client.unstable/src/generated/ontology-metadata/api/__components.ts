@@ -743,6 +743,8 @@ export type ActionTypeBranchWebhooksMode =
 
 /**
  * A ActionTypeCreate is used to create ActionTypes.
+ *
+ * Used in OntologyModificationRequest.
  */
 export interface ActionTypeCreate {
   actionApplyClientSettings?: ActionApplyClientPreferences | null | undefined;
@@ -1076,6 +1078,8 @@ export interface ActionTypeModificationRequest {
 }
 /**
  * Request used to modify ActionTypes.
+ *
+ * Deprecated: Use OntologyModificationRequest with ActionTypeCreate and ActionTypeUpdate instead.
  */
 export interface ActionTypeModifyRequest {
   actionsVersion?: ActionsVersion | null | undefined;
@@ -1223,6 +1227,8 @@ export type ActionTypeStatus =
 
 /**
  * Request object to edit existing Action Types.
+ *
+ * Used in OntologyModificationRequest.
  */
 export interface ActionTypeUpdate {
   actionApplyClientSettings?: ActionApplyClientPreferences | null | undefined;
@@ -3493,6 +3499,8 @@ export interface DynamicObjectSetInputUnioned {
 }
 /**
  * Request object to edit existing Action Types.
+ *
+ * Deprecated: Used in deprecated ActionTypeModifyRequest. Use ActionTypeUpdate with OntologyModificationRequest instead.
  */
 export interface EditActionTypeRequest {
   actionLogConfiguration?: ActionLogConfiguration | null | undefined;
@@ -3521,6 +3529,8 @@ export interface EditOnlyPropertyType {
 }
 /**
  * Request to edit an existing parameter
+ *
+ * Deprecated: Used in deprecated ActionTypeModifyRequest. Use EditParameterRequestModification with OntologyModificationRequest instead.
  */
 export interface EditParameterRequest {
   displayMetadata: ParameterDisplayMetadata;
@@ -3545,6 +3555,8 @@ export interface EditsConfiguration {
 }
 /**
  * Request to edit an existing Section
+ *
+ * Deprecated: Used in deprecated ActionTypeModifyRequest. Use EditSectionRequestModification with OntologyModificationRequest instead.
  */
 export interface EditSectionRequest {
   content: Array<SectionContent>;
@@ -3573,6 +3585,10 @@ export type EditsHistoryObjectTypeRid = string;
  * must be a valid Compass project RID. If one is not specified, DatasourceRid will be used.
  */
 export type EditsOnlyRid = string;
+
+/**
+ * Deprecated: Used in deprecated ActionTypeModifyRequest. Use ValidationRuleModification with OntologyModificationRequest instead.
+ */
 export interface EditValidationRuleRequest {
   condition: Condition;
   displayMetadata: ValidationRuleDisplayMetadata;
@@ -6842,6 +6858,10 @@ export interface ObjectTypeGeotimeSeriesDatasource {
  * Please note that this is not safe to log as it is user-inputted and may contain sensitive information.
  */
 export type ObjectTypeId = string;
+export interface ObjectTypeIdAndPropertyTypeId {
+  objectTypeId: ObjectTypeId;
+  propertyTypeId: PropertyTypeId;
+}
 export interface ObjectTypeIdentifier_objectTypeId {
   type: "objectTypeId";
   objectTypeId: ObjectTypeId;
@@ -7017,6 +7037,21 @@ export interface ObjectTypeRestrictedViewDatasourceV2 {
  * ObjectTypeRid will be different.
  */
 export type ObjectTypeRid = string;
+export interface ObjectTypeRidOrInterfaceTypeRidOrIdInRequest_objectType {
+  type: "objectType";
+  objectType: ObjectTypeRid;
+}
+
+export interface ObjectTypeRidOrInterfaceTypeRidOrIdInRequest_interfaceType {
+  type: "interfaceType";
+  interfaceType: InterfaceTypeRidOrIdInRequest;
+}
+/**
+ * Either an ObjectTypeRid or an InterfaceTypeRidOrIdInRequest.
+ */
+export type ObjectTypeRidOrInterfaceTypeRidOrIdInRequest =
+  | ObjectTypeRidOrInterfaceTypeRidOrIdInRequest_objectType
+  | ObjectTypeRidOrInterfaceTypeRidOrIdInRequest_interfaceType;
 
 /**
  * A wrapping of ObjectType rids and InterfaceType rids, used when returning information from API name conflict
@@ -7914,7 +7949,8 @@ export interface OntologyIrArrayPropertyType {
 }
 export interface OntologyIrArrayPropertyTypeReducer {
   direction: ArrayPropertyTypeReducerSortDirection;
-  field?: StructFieldRid | null | undefined;
+  fieldApiName?: ObjectTypeFieldApiName | null | undefined;
+  structApiName?: ObjectTypeFieldApiName | null | undefined;
 }
 export interface OntologyIrAsynchronousPostWritebackWebhook_staticDirectInput {
   type: "staticDirectInput";
@@ -10446,7 +10482,8 @@ export interface OntologyIrStructFieldValidationDisplayMetadata {
   visibility: _api_types_ParameterVisibility;
 }
 export interface OntologyIrStructMainValue {
-  fields: Array<StructFieldRid>;
+  fieldApiNames: Array<ObjectTypeFieldApiName>;
+  structApiName: ObjectTypeFieldApiName;
   type: OntologyIrType;
 }
 export interface OntologyIrStructPropertyType {
@@ -12428,6 +12465,20 @@ export interface PropertySecurityGroup {
   type?: PropertySecurityGroupType | null | undefined;
 }
 /**
+ * Creates a new PSG. A RID will be generated.
+ */
+export interface PropertySecurityGroupCreate {
+  properties: Array<PropertyTypeId>;
+  security: SecurityGroupSecurityDefinitionModification;
+  type: PropertySecurityGroupType;
+}
+/**
+ * Deletes an existing PSG by RID.
+ */
+export interface PropertySecurityGroupDelete {
+  rid: PropertySecurityGroupRid;
+}
+/**
  * Modification of PropertySecurityGroup. A globally unique identifier will be generated for each unique
  * SecurityGroupSecurityDefinitionModification specification.
  *
@@ -12446,6 +12497,37 @@ export interface PropertySecurityGroupModification {
  * A user-defined name that labels a PropertySecurityGroup.
  */
 export type PropertySecurityGroupName = string;
+
+/**
+ * Leaves the specified PSG unchanged.
+ */
+export interface PropertySecurityGroupNoop {
+  rid: PropertySecurityGroupRid;
+}
+export interface PropertySecurityGroupPatch_create {
+  type: "create";
+  create: PropertySecurityGroupCreate;
+}
+
+export interface PropertySecurityGroupPatch_update {
+  type: "update";
+  update: PropertySecurityGroupUpdate;
+}
+
+export interface PropertySecurityGroupPatch_noop {
+  type: "noop";
+  noop: PropertySecurityGroupNoop;
+}
+
+export interface PropertySecurityGroupPatch_delete {
+  type: "delete";
+  delete: PropertySecurityGroupDelete;
+}
+export type PropertySecurityGroupPatch =
+  | PropertySecurityGroupPatch_create
+  | PropertySecurityGroupPatch_update
+  | PropertySecurityGroupPatch_noop
+  | PropertySecurityGroupPatch_delete;
 
 /**
  * A randomly generated rid that identifies a unique PropertySecurityGroup.
@@ -12475,6 +12557,16 @@ export type PropertySecurityGroupType =
   | PropertySecurityGroupType_primaryKey
   | PropertySecurityGroupType_property;
 
+/**
+ * Updates an existing PSG by RID. Note that the rid of a PSG remains stable unless the security definition is
+ * updated, in which case a new rid will be generated.
+ */
+export interface PropertySecurityGroupUpdate {
+  properties: Array<PropertyTypeId>;
+  rid: PropertySecurityGroupRid;
+  security: SecurityGroupSecurityDefinitionModification;
+  type: PropertySecurityGroupType;
+}
 /**
  * A PropertyType is a typed attribute of an ObjectType.
  */
@@ -12802,6 +12894,8 @@ export interface PropertyWithoutRid {
 }
 /**
  * A PutActionTypeRequest is used to create or modify Action Types.
+ *
+ * Deprecated: Used in deprecated ActionTypeModifyRequest. Use ActionTypeCreate with OntologyModificationRequest instead.
  */
 export interface PutActionTypeRequest {
   actionLogConfiguration?: ActionLogConfiguration | null | undefined;
@@ -12821,6 +12915,8 @@ export interface PutActionTypeRequest {
 }
 /**
  * A PutParameterRequest is used to create or modify Parameters.
+ *
+ * Deprecated: Used in deprecated ActionTypeModifyRequest. Use PutParameterRequestModification with OntologyModificationRequest instead.
  */
 export interface PutParameterRequest {
   displayMetadata: ParameterDisplayMetadata;
@@ -12837,6 +12933,8 @@ export interface PutParameterRequestModification {
 }
 /**
  * A PutSectionRequest is used to create or modify Sections.
+ *
+ * Deprecated: Used in deprecated ActionTypeModifyRequest. Use PutSectionRequestModification with OntologyModificationRequest instead.
  */
 export interface PutSectionRequest {
   content: Array<SectionContent>;

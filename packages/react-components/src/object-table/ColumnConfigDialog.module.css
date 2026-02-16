@@ -1,0 +1,247 @@
+/*
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.title {
+  display: flex;
+  align-items: center;
+  gap: var(--osdk-surface-spacing);
+}
+
+/* Override dialog styling */
+.columnConfigDialog {
+  --osdk-dialog-min-width: var(--osdk-table-column-config-dialog-min-width);
+  --osdk-dialog-min-height: var(--osdk-table-column-config-dialog-min-height);
+  --osdk-dialog-body-padding: 0;
+}
+
+.dialogLayout {
+  display: flex;
+  flex-direction: row;
+  gap: 0;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.visibleColumnsContainer {
+  flex: 1.5;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: calc(var(--osdk-surface-spacing) * 5);
+  background: var(--osdk-table-column-config-visible-columns-bg);
+  border-right: 1px solid var(--osdk-surface-border-color-default);
+}
+
+.availableColumnsContainer {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: calc(var(--osdk-surface-spacing) * 5)
+    calc(var(--osdk-surface-spacing) * 3);
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: calc(var(--osdk-surface-spacing) * 5);
+}
+
+.sectionTitle {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  font-size: var(--osdk-typography-size-body-medium);
+  font-weight: var(--osdk-typography-weight-bold);
+  color: var(--osdk-typography-color-muted);
+  flex-shrink: 0;
+  gap: var(--osdk-surface-spacing);
+}
+
+.countTag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--osdk-custom-color-gray-3);
+  padding: calc(var(--osdk-surface-spacing) / 2)
+    calc(var(--osdk-surface-spacing) * 1.5);
+  border-radius: var(--osdk-surface-border-radius);
+  font-size: var(--osdk-typography-size-body-small);
+  font-weight: var(--osdk-typography-weight-default);
+  color: var(--osdk-typography-color-default-rest);
+}
+
+.sectionHint {
+  font-size: var(--osdk-typography-size-body-small);
+  color: var(--osdk-typography-color-muted);
+}
+
+.columnList {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.searchContainer {
+  margin-bottom: calc(var(--osdk-surface-spacing) * 2);
+  flex-shrink: 0;
+}
+
+.propertiesList {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.categoryHeader {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  padding: calc(var(--osdk-surface-spacing) * 2)
+    calc(var(--osdk-surface-spacing) * 3);
+  background: none;
+  border: none;
+  margin: 0;
+  gap: calc(var(--osdk-surface-spacing) * 3);
+  flex-shrink: 0;
+}
+
+.categoryTrigger {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+
+  &:focus {
+    outline: none;
+  }
+
+  &:focus-visible {
+    outline: var(--osdk-focus-outline);
+    outline-offset: var(--osdk-focus-visible-outline-offset);
+  }
+}
+
+.categoryTitle {
+  flex: 1;
+  color: var(--osdk-typography-color-muted);
+  font-size: var(--osdk-typography-size-body-small);
+  font-weight: var(--osdk-typography-weight-bold);
+  text-align: left;
+}
+
+.categoryCount {
+  color: var(--osdk-typography-color-muted);
+  font-size: var(--osdk-typography-size-body-small);
+  margin-left: var(--osdk-surface-spacing);
+}
+
+.caretIcon {
+  color: var(--osdk-typography-color-muted);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.categoryTrigger[data-panel-open] .caretIcon {
+  transform: rotate(180deg);
+}
+
+.checkbox {
+  width: var(--osdk-checkbox-icon-size);
+  height: var(--osdk-checkbox-icon-size);
+}
+
+.propertyList {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.propertyItem {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  width: 100%;
+  gap: calc(var(--osdk-surface-spacing) * 3);
+  padding: calc(var(--osdk-surface-spacing) * 2)
+    calc(var(--osdk-surface-spacing) * 3);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  border-radius: var(--osdk-surface-border-radius);
+
+  &:hover {
+    background-color: var(--osdk-surface-background-color-default-hover);
+  }
+}
+
+.checkboxIndicator {
+  color: var(--osdk-intent-primary-foreground);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.propertyName {
+  text-align: left;
+  flex: 1;
+  font-size: var(--osdk-typography-size-body-medium);
+  font-weight: 400;
+  color: var(--osdk-typography-color-default-rest);
+  padding: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  background: none;
+  border: none;
+
+  &:focus {
+    outline: none;
+  }
+
+  &:focus-visible {
+    outline: var(--osdk-focus-outline);
+    outline-offset: var(--osdk-focus-visible-outline-offset);
+  }
+}
+
+.infoIcon {
+  color: var(--osdk-typography-color-muted);
+  flex-shrink: 0;
+  width: calc(var(--osdk-checkbox-icon-size) * 0.75);
+  height: calc(var(--osdk-checkbox-icon-size) * 0.75);
+}
+
+.emptyState {
+  padding: calc(var(--osdk-surface-spacing) * 5);
+  text-align: center;
+  color: var(--osdk-typography-color-muted);
+  font-style: italic;
+}

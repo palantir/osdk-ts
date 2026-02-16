@@ -16,7 +16,7 @@
 
 import type { Client, ObjectSet } from "@osdk/client";
 import { createAndFetchTempObjectSetRid } from "@osdk/client/internal";
-import type { ObjectType } from "@osdk/widget.api";
+import type { AllowedObjectSetParameterType } from "@osdk/widget.api";
 import { defineConfig } from "@osdk/widget.client";
 import type { Mock } from "vitest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -29,7 +29,9 @@ vi.mock("@osdk/client/internal", () => ({
 describe("transformEmitEventPayload", () => {
   const client = vi.fn() as Mock<Client> & Client;
 
-  const createMockObjectType = (rid = "ri.object-type.123"): ObjectType => ({
+  const createMockObjectType = (
+    rid = "ri.object-type.123",
+  ): AllowedObjectSetParameterType => ({
     apiName: "MyObjectType",
     type: "object",
     internalDoNotUseMetadata: { rid },
@@ -50,7 +52,7 @@ describe("transformEmitEventPayload", () => {
         myObjectSet: {
           displayName: "My Object Set",
           type: "objectSet",
-          objectType: createMockObjectType(),
+          allowedType: createMockObjectType(),
         },
         myString: {
           displayName: "My String",
@@ -95,12 +97,12 @@ describe("transformEmitEventPayload", () => {
         objectSetA: {
           displayName: "Object Set A",
           type: "objectSet",
-          objectType: createMockObjectType(),
+          allowedType: createMockObjectType(),
         },
         objectSetB: {
           displayName: "Object Set B",
           type: "objectSet",
-          objectType: createMockObjectType(),
+          allowedType: createMockObjectType(),
         },
       },
       events: {
@@ -147,7 +149,7 @@ describe("transformEmitEventPayload", () => {
         myObjectSet: {
           displayName: "My Object Set",
           type: "objectSet",
-          objectType: createMockObjectType(),
+          allowedType: createMockObjectType(),
         },
       },
       events: {
@@ -214,7 +216,7 @@ describe("transformEmitEventPayload", () => {
         myObjectSet: {
           displayName: "My Object Set",
           type: "objectSet",
-          objectType: createMockObjectType(),
+          allowedType: createMockObjectType(),
         },
       },
       events: {},

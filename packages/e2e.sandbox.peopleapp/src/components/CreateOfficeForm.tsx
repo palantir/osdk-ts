@@ -22,7 +22,7 @@ export function CreateOfficeForm() {
   const [showSuccess, setShowSuccess] = useState(false);
 
   // Use custom hook for form action
-  const [formState, formAction] = useOfficeFormAction({
+  const [formState, handleSubmit] = useOfficeFormAction({
     applyAction,
     formRef,
     setShowSuccess,
@@ -37,7 +37,7 @@ export function CreateOfficeForm() {
       <div className="flex grow">
         <form
           ref={formRef}
-          action={formAction}
+          onSubmit={handleSubmit}
         >
           {/* Messages */}
           <SuccessMessage

@@ -202,10 +202,16 @@ export interface ObserveFunctionOptions extends CommonObserveOptions {
   dependsOn?: Array<ObjectTypeDefinition | string>;
 
   /**
-   * Specific object instances this function depends on.
+   * Specific object instances or ObjectSets this function depends on.
    * When these objects change, the function will refetch.
+   *
+   * For ObjectSets, the object type is extracted asynchronously and added
+   * to the dependency list. Changes to any object of that type will trigger
+   * a refetch.
    */
-  dependsOnObjects?: Array<Osdk.Instance<ObjectTypeDefinition>>;
+  dependsOnObjects?: Array<
+    Osdk.Instance<ObjectTypeDefinition> | ObjectSet<ObjectTypeDefinition>
+  >;
 }
 
 export interface ObserveFunctionCallbackArgs<

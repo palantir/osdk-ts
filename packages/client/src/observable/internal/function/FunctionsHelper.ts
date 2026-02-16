@@ -34,6 +34,7 @@ type FunctionParams = Record<string, unknown>;
 export interface ObserveFunctionOptions extends FunctionObserveOptions {
   queryDef: QueryDefinition<unknown>;
   params?: FunctionParams;
+  objectSetTypesPromise?: Promise<string[]>;
 }
 
 export class FunctionsHelper extends AbstractHelper<
@@ -55,7 +56,7 @@ export class FunctionsHelper extends AbstractHelper<
   }
 
   getQuery(options: ObserveFunctionOptions): FunctionQuery {
-    const { queryDef, params, ...observeOpts } = options;
+    const { queryDef, params, objectSetTypesPromise, ...observeOpts } = options;
     const apiName = queryDef.apiName;
     const version = queryDef.isFixedVersion ? queryDef.version : undefined;
 
@@ -76,6 +77,7 @@ export class FunctionsHelper extends AbstractHelper<
         params,
         functionCacheKey,
         observeOpts,
+        objectSetTypesPromise,
       ));
   }
 

@@ -36,6 +36,7 @@
     "@osdk/monorepo.tool.transpile": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@types/lint-staged": "^13.3.0",
+    "@typescript-eslint/eslint-plugin": "^8.43.0",
     "@typescript-eslint/parser": "^8.43.0",
     "@vitest/coverage-v8": "^3.2.4",
     "babel-plugin-dev-expression": "^0.2.3",
@@ -56,6 +57,10 @@
     "husky": "^9.1.7",
     "lint-staged": "^15.5.2",
     "micromatch": "^4.0.8",
+    "postcss": "^8.5.6",
+    "postcss-cli": "^11.0.1",
+    "postcss-import": "^16.1.1",
+    "postcss-preset-env": "^11.1.2",
     "semver": "^7.7.2",
     "tsc-absolute": "^1.0.1",
     "tsup": "^8.5.0",
@@ -86,7 +91,12 @@
       "cookie@0.7.1": "0.7.2",
       "esbuild@^0.23.0": "^0.25.0",
       "esbuild@^0.24.0": "^0.25.0",
-      "react-server-dom-webpack": ">=19.2.2"
+      "react-server-dom-webpack": ">=19.2.2",
+      "@types/react": "^18.3.24",
+      "@types/react-dom": "^18.3.7",
+      "@cspell/dict-css": "^4.0.18",
+      "@cspell/dict-html": "^4.0.12",
+      "@cspell/dict-html-symbol-entities": "^4.0.4"
     }
   },
   "engines": {

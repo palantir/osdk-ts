@@ -139,6 +139,9 @@ function convertSingleRule(
     case "addOrModifyObjectRuleV2": {
       const r = irRule.addOrModifyObjectRuleV2;
       const objRef = getObjectReferenceType(action, r.objectToModify);
+      // propertyArguments left empty: the downstream generator resolves
+      // property mappings from the action parameter configuration rather
+      // than from the logic rule itself for createOrModify rules.
       const result: Ontologies.CreateOrModifyObjectLogicRule & {
         type: "createOrModifyObject";
       } = {

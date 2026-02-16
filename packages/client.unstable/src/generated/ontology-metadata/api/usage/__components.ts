@@ -26,6 +26,28 @@ import type {
   PropertyTypeRid as _api_PropertyTypeRid,
   UserId as _api_UserId,
 } from "../__components.js";
+export interface ActionTypeProvenanceStatus_noIncorrectProvenanceRecorded {
+  type: "noIncorrectProvenanceRecorded";
+  noIncorrectProvenanceRecorded: NoIncorrectProvenanceRecorded;
+}
+
+export interface ActionTypeProvenanceStatus_incorrectProvenanceRecorded {
+  type: "incorrectProvenanceRecorded";
+  incorrectProvenanceRecorded: IncorrectProvenanceRecorded;
+}
+
+export interface ActionTypeProvenanceStatus_noFunctionRules {
+  type: "noFunctionRules";
+  noFunctionRules: NoFunctionRules;
+}
+/**
+ * Status of provenance reporting for an action type.
+ */
+export type ActionTypeProvenanceStatus =
+  | ActionTypeProvenanceStatus_noIncorrectProvenanceRecorded
+  | ActionTypeProvenanceStatus_incorrectProvenanceRecorded
+  | ActionTypeProvenanceStatus_noFunctionRules;
+
 export interface ActionTypeUsage {
   authenticationFailures: number;
   functionFailures: number;
@@ -39,6 +61,22 @@ export interface ActionTypeUsage {
  * Reference to the backend service used to query the reported entities.
  */
 export type Backend = "PHONOGRAPH" | "OBJECT_SET_SERVICE" | "ACTIONS";
+
+/**
+ * Request to check provenance reporting status for action types.
+ */
+export interface CheckActionTypeProvenanceStatusRequest {
+  actionTypeRids: Array<_api_ActionTypeRid>;
+}
+/**
+ * Response containing provenance status for action types.
+ */
+export interface CheckActionTypeProvenanceStatusResponse {
+  provenanceStatusByActionType: Record<
+    _api_ActionTypeRid,
+    ActionTypeProvenanceStatus
+  >;
+}
 export interface DeprecationOntologyEntityIdentifier_objectTypeRid {
   type: "objectTypeRid";
   objectTypeRid: _api_ObjectTypeRid;
@@ -179,6 +217,21 @@ export interface GetUsageSettingsByUserRequest {
  */
 export interface GetUsageSettingsByUserResponse {
   enabled: boolean;
+}
+/**
+ * Marker type indicating previously incorrectly reported provenance.
+ */
+export interface IncorrectProvenanceRecorded {
+}
+/**
+ * Marker type indicating no function rules to check.
+ */
+export interface NoFunctionRules {
+}
+/**
+ * Marker type indicating no incorrect provenance was reported so far.
+ */
+export interface NoIncorrectProvenanceRecorded {
 }
 /**
  * An ObjectTypeIdentifier with its PropertyTypeIdentifier(s) to report usage for.

@@ -28,8 +28,18 @@ import { NonIdealState } from "./NonIdealState.js";
 import styles from "./Table.module.css";
 import { TableBody } from "./TableBody.js";
 import { TableHeader } from "./TableHeader.js";
+import type { HeaderMenuFeatureFlags } from "./TableHeaderWithPopover.js";
 
-export interface BaseTableProps<TData extends RowData> {
+declare module "@tanstack/react-table" {
+  interface ColumnMeta<TData extends RowData, TValue> {
+    columnName?: string;
+    isVisible?: boolean;
+  }
+}
+
+export interface BaseTableProps<
+  TData extends RowData,
+> {
   table: Table<TData>;
   isLoading?: boolean;
   fetchNextPage?: () => Promise<void>;
@@ -41,9 +51,12 @@ export interface BaseTableProps<TData extends RowData> {
   ) => React.ReactNode;
   className?: string;
   error?: Error;
+  headerMenuFeatureFlags?: HeaderMenuFeatureFlags;
 }
 
-export function BaseTable<TData extends RowData>(
+export function BaseTable<
+  TData extends RowData,
+>(
   {
     table,
     isLoading,
@@ -53,6 +66,7 @@ export function BaseTable<TData extends RowData>(
     renderCellContextMenu,
     className,
     error,
+    headerMenuFeatureFlags,
   }: BaseTableProps<TData>,
 ): ReactElement {
   const tableContainerRef = useRef<HTMLDivElement>(null);
@@ -117,26 +131,26 @@ export function BaseTable<TData extends RowData>(
           )
           : (
             <>
-              <TableHeader table={table} />
-              {!hasData && error == null
-                ? <NonIdealState message={"No Data"} />
-                : (
-                  <TableBody
-                    rows={rows}
-                    tableContainerRef={tableContainerRef}
-                    onRowClick={onRowClick}
-                    rowHeight={rowHeight}
-                    renderCellContextMenu={renderCellContextMenu}
-                    isLoadingMore={isLoadingMore}
-                    headerGroups={headerGroups}
-                  />
-                )}
+              <TableHeader
+                table={table}
+                headerMenuFeatureFlags={headerMenuFeatureFlags}
+              />
+              <TableBody
+                rows={rows}
+                tableContainerRef={tableContainerRef}
+                onRowClick={onRowClick}
+                rowHeight={rowHeight}
+                renderCellContextMenu={renderCellContextMenu}
+                isLoadingMore={isLoadingMore}
+                headerGroups={headerGroups}
+              />
             </>
           )}
-        {error != null && (
-          <NonIdealState message={`Error Loading Data: ${error.message}`} />
-        )}
       </table>
+      {!hasData && error == null && <NonIdealState message={"No Data"} />}
+      {error != null && (
+        <NonIdealState message={`Error Loading Data: ${error.message}`} />
+      )}
     </div>
   );
 }

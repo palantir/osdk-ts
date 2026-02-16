@@ -108,6 +108,19 @@ export class Store {
 
   readonly cacheKeys: CacheKeys<KnownCacheKey>;
   readonly queries: Queries = new Queries();
+
+  /**
+   * Tracks cache keys with deferred cleanup. During React unmount-remount
+   * cycles, a subscription may be cleaned up and immediately re-created.
+   * By deferring cleanup to a microtask, we prevent propagateWrite from
+   * skipping keys that are momentarily between subscriptions.
+   *
+   * The value is a count (not a boolean) so multiple unsubscribes within the
+   * same tick schedule the correct number of releases.
+   * @internal
+   */
+  readonly pendingCleanup: Map<KnownCacheKey, number> = new Map();
+
   readonly objectCacheKeyRegistry: ObjectCacheKeyRegistry =
     new ObjectCacheKeyRegistry();
 
@@ -164,6 +177,7 @@ export class Store {
       this.cacheKeys,
       this.whereCanonicalizer,
       this.orderByCanonicalizer,
+      this.rdpCanonicalizer,
     );
   }
 
@@ -417,6 +431,11 @@ export class Store {
         return cacheKey.otherKeys[LIST_RDP_IDX];
       } else if (cacheKey.type === "aggregation") {
         return cacheKey.otherKeys[AGGREGATION_RDP_IDX];
+      } else if (cacheKey.type === "objectSet") {
+        const query = this.queries.peek(cacheKey);
+        if (query) {
+          return query.rdpConfig;
+        }
       }
       // Links and other types would also be at LIST_RDP_IDX
     }

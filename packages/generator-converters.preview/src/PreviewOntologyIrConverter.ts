@@ -156,6 +156,10 @@ export class PreviewOntologyIrConverter {
         throw new Error(
           "Example status cannot be mapped to ActionTypeStatus",
         );
+      default:
+        throw new Error(
+          `Unknown action type status: ${(status as { type: string }).type}`,
+        );
     }
   }
 }

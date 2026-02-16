@@ -180,9 +180,9 @@ function discoverPythonFunctions(
   }
 }
 
-// Lazy-loaded function discovery module
-let FunctionDiscovererClass: IFunctionDiscovererConstructor | null = null;
-let FunctionDiscovererTs: typeof ts | null = null;
+// Lazy-loaded function discovery module, keyed by nodeModulesPath
+let cachedDiscoveryModules: FunctionDiscoveryModules | null = null;
+let cachedNodeModulesPath: string | undefined;
 
 interface FunctionDiscoveryModules {
   FunctionDiscoverer: IFunctionDiscovererConstructor;
@@ -192,13 +192,14 @@ interface FunctionDiscoveryModules {
 async function loadFunctionDiscoverer(
   nodeModulesPath?: string,
 ): Promise<FunctionDiscoveryModules | null> {
-  if (FunctionDiscovererClass != null && FunctionDiscovererTs != null) {
-    return {
-      FunctionDiscoverer: FunctionDiscovererClass,
-      typescript: FunctionDiscovererTs,
-    };
+  if (
+    cachedDiscoveryModules != null
+    && cachedNodeModulesPath === nodeModulesPath
+  ) {
+    return cachedDiscoveryModules;
   }
   try {
+    let modules: FunctionDiscoveryModules;
     if (nodeModulesPath) {
       // Use createRequire to load from the specified node_modules path
       // Both FunctionDiscoverer and TypeScript must be from the same node_modules
@@ -210,23 +211,22 @@ async function loadFunctionDiscoverer(
       const module = requireFromPath(
         "@foundry/functions-typescript-osdk-discovery",
       );
-      FunctionDiscovererClass = module.FunctionDiscoverer;
-      FunctionDiscovererTs = requireFromPath("typescript");
-      return {
-        FunctionDiscoverer: FunctionDiscovererClass!,
-        typescript: FunctionDiscovererTs!,
+      modules = {
+        FunctionDiscoverer: module.FunctionDiscoverer,
+        typescript: requireFromPath("typescript"),
       };
     } else {
       // Use dynamic import to avoid compile-time dependency on optional package
       const modulePath = "@foundry/functions-typescript-osdk-discovery";
       const module = await import(/* @vite-ignore */ modulePath);
-      FunctionDiscovererClass = module.FunctionDiscoverer;
-      FunctionDiscovererTs = ts; // Use the bundled TypeScript
-      return {
-        FunctionDiscoverer: FunctionDiscovererClass!,
-        typescript: FunctionDiscovererTs,
+      modules = {
+        FunctionDiscoverer: module.FunctionDiscoverer,
+        typescript: ts, // Use the bundled TypeScript
       };
     }
+    cachedDiscoveryModules = modules;
+    cachedNodeModulesPath = nodeModulesPath;
+    return modules;
   } catch (e: unknown) {
     // eslint-disable-next-line no-console
     console.warn(
@@ -301,7 +301,7 @@ export class OntologyIrToFullMetadataConverter {
   }
 
   static async getOsdkQueryTypes(
-    functionsDir: string,
+    functionsDir?: string,
     nodeModulesPath?: string,
     pythonFunctionsDir?: string,
     pythonRootProjectDir?: string,
@@ -311,9 +311,11 @@ export class OntologyIrToFullMetadataConverter {
   > {
     const queries: Ontologies.QueryTypeV2[] = [];
 
-    // TypeScript function discovery
-    const discoveryModules = await loadFunctionDiscoverer(nodeModulesPath);
-    if (discoveryModules) {
+    // TypeScript function discovery (skip if no functionsDir provided)
+    const discoveryModules = functionsDir
+      ? await loadFunctionDiscoverer(nodeModulesPath)
+      : null;
+    if (discoveryModules && functionsDir) {
       const { FunctionDiscoverer, typescript: discoveryTs } = discoveryModules;
       // Find tsconfig.json - try functionsDir first, then parent directory
       let tsConfigPath = path.join(functionsDir, "tsconfig.json");
@@ -530,10 +532,17 @@ export class OntologyIrToFullMetadataConverter {
     functionId: string,
     customTypes: Record<string, unknown>,
   ): Ontologies.QueryDataType {
-    const customType = customTypes[functionId] as {
-      fieldMetadata: Record<string, { required?: boolean }>;
-      fields: Record<string, IDataType>;
-    };
+    const customType = customTypes[functionId] as
+      | {
+        fieldMetadata: Record<string, { required?: boolean }>;
+        fields: Record<string, IDataType>;
+      }
+      | undefined;
+    if (!customType) {
+      throw new Error(
+        `Unknown function custom type: '${functionId}' not found in customTypes`,
+      );
+    }
     const fieldMetadata = customType.fieldMetadata;
     const fields = customType.fields;
     const structFields = Object.keys(fields).map(key => {

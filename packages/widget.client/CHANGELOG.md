@@ -1,5 +1,24 @@
 # @osdk/widget.client
 
+## 3.5.0-beta.5
+
+### Patch Changes
+
+- @osdk/widget.api@3.5.0-beta.5
+
+## 3.5.0-beta.4
+
+### Patch Changes
+
+- @osdk/widget.api@3.5.0-beta.4
+
+## 3.5.0-beta.3
+
+### Patch Changes
+
+- Updated dependencies [b9066dd]
+  - @osdk/widget.api@3.5.0-beta.3
+
 ## 3.5.0-beta.2
 
 ### Patch Changes

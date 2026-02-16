@@ -124,6 +124,21 @@ async function main(): Promise<void> {
     process.exit(1);
   }
 
+  // Basic structural validation before passing to converter
+  const ir = irJson as Record<string, unknown>;
+  if (
+    !ir
+    || typeof ir !== "object"
+    || !("objectTypes" in ir)
+    || !("actionTypes" in ir)
+  ) {
+    // eslint-disable-next-line no-console
+    console.error(
+      `Error: Invalid OntologyIR structure in ${inputFile}. Expected objectTypes and actionTypes fields.`,
+    );
+    process.exit(1);
+  }
+
   const previewMetadata = PreviewOntologyIrConverter
     .getPreviewFullMetadataFromIr(
       irJson as Parameters<
@@ -140,7 +155,7 @@ async function main(): Promise<void> {
 
     const queryTypes = await OntologyIrToFullMetadataConverter
       .getOsdkQueryTypes(
-        options.functionsDir ?? "",
+        options.functionsDir,
         options.nodeModulesPath,
         options.pythonFunctionsDir,
         effectivePythonRootDir,

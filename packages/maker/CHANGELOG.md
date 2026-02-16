@@ -1,5 +1,18 @@
 # @osdk/maker
 
+## 0.16.0-beta.3
+
+### Minor Changes
+
+- 8f92197: update code snippet to have interface dependent properties
+- 6499ff9: Support reducers and struct main values in oac
+- 5b938ef: Enforce OT and prop statuses match
+- e9f9f58: Allow primitive struct main values to be title props
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.5
+
 ## 0.16.0-beta.2
 
 ### Minor Changes

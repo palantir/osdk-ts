@@ -15,8 +15,15 @@
  */
 
 .osdkTableContainer {
-  position: relative; /* needed for sticky header */
+  flex: 1;
   height: 100%;
-  width: 100%;
+  min-height: 0;
   overflow: auto;
+  position: relative;
+}
+
+.osdkTableContainer table {
+  border-collapse: collapse;
+  display: grid;
+  table-layout: fixed;
 }
