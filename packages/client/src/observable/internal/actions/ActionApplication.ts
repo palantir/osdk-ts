@@ -21,7 +21,6 @@ import type {
 } from "@osdk/api";
 import type { ActionSignatureFromDef } from "../../../actions/applyAction.js";
 import { type Changes } from "../Changes.js";
-import type { ObjectCacheKey } from "../object/ObjectCacheKey.js";
 import type { Store } from "../Store.js";
 import { runOptimisticJob } from "./OptimisticJob.js";
 
@@ -123,18 +122,20 @@ export class ActionApplication {
         }
       }
 
+      // Use the registry to find all RDP variant cache keys for each deleted object.
       this.store.batch({}, (batch) => {
         for (const { objectType, primaryKey } of deletedObjects ?? []) {
-          const cacheKey = this.store.cacheKeys.get<ObjectCacheKey>(
-            "object",
-            objectType,
-            primaryKey,
-            /* rdpConfig */ undefined,
-          );
-          this.store.queries.peek(cacheKey)?.deleteFromStore(
-            "loaded", // this is probably not the best value to use
-            batch,
-          );
+          for (
+            const cacheKey of this.store.objectCacheKeyRegistry.getVariants(
+              objectType,
+              primaryKey,
+            )
+          ) {
+            this.store.queries.peek(cacheKey)?.deleteFromStore(
+              "loaded", // this is probably not the best value to use
+              batch,
+            );
+          }
         }
       });
       await Promise.all(promisesToWait);
