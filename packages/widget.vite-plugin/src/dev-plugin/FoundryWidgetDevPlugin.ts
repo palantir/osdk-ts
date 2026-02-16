@@ -254,6 +254,14 @@ export function FoundryWidgetDevPlugin(): Plugin {
         configFileToEntrypoint[fullSourcePath] = standardizedImporter;
       }
     },
+
+    handleHotUpdate({ file }) {
+      // Swallow HMR updates for widget config files to avoid full page reloads.
+      const standardizedFile = standardizePathAndFileExtension(file);
+      if (configFileToEntrypoint[standardizedFile] != null) {
+        return [];
+      }
+    },
   };
 }
 
