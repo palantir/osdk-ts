@@ -13,4 +13,4 @@
 "@osdk/widget.vite-plugin": patch
 ---
 
-Bump node, vite, and vitest versions
+Bump node and vite versions
