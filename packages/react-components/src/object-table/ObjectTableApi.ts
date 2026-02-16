@@ -214,7 +214,7 @@ export interface ObjectTableProps<
   onCellValueChanged?: (
     cell: CellIdentifier,
     state: CellValueState,
-  ) => Promise<void>;
+  ) => void;
 
   /**
    * If provided, the button Submit Edits will be shown in the table

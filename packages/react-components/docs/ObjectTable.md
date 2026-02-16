@@ -4,7 +4,11 @@ A comprehensive guide for using the ObjectTable component from `@osdk/react-comp
 
 ## Prerequisites
 
-Before using ObjectTable, make sure you have completed the library setup described in the [README](../README.md#installation).
+Before using ObjectTable, make sure you have completed the library setup described in the [README](../README.md#setup), including:
+
+- Installing the required dependencies
+- Wrapping your app with `OsdkProvider2`
+- Adding the CSS imports
 
 ## Table of Contents
 
@@ -134,6 +138,13 @@ Each column header has a menu with items for sorting, filtering, pinning, resizi
 | `onRowClick`            | `(object) => void`              | Called when a row is clicked                 |
 | `renderCellContextMenu` | `(row, cellValue) => ReactNode` | Custom context menu for right-click on cells |
 
+### Cell Editing
+
+| Prop                 | Type                                                       | Description                                                                                  |
+| -------------------- | ---------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| `onCellValueChanged` | `(cellId: CellIdentifier, state: CellValueState) => void`  | Called when a cell value is edited. Throw error to reject change                             |
+| `onSubmitEdits`      | `(edits: Record<string, CellValueState>) => Promise<void>` | When provided, shows a "Submit Edits" button that calls this function with all pending edits |
+
 ## Column Definitions
 
 ### Column Definition Structure
@@ -149,6 +160,7 @@ type ColumnDefinition<Q, RDPs, FunctionColumns> = {
   resizable?: boolean; // Allow column resizing
   orderable?: boolean; // Allow column sorting
   filterable?: boolean; // Allow column filtering
+  editable?: boolean; // Allow inline editing for this column
   renderCell?: (object, locator) => React.ReactNode; // Custom cell renderer
   columnName?: string; // Custom column name for the header
   renderHeader?: () => React.ReactNode; // Custom header renderer (takes precedence over columnName)
@@ -563,6 +575,89 @@ function EmployeesTable() {
     <ObjectTable
       objectType={Employee}
       columnDefinitions={columnDefinitions}
+    />
+  );
+}
+```
+
+### Example 13: Editable Table
+
+Enable inline editing with bulk submission:
+
+```typescript
+import { useOsdkAction } from "@osdk/react";
+import {
+  type CellIdentifier,
+  type CellValueState,
+  type ColumnDefinition,
+  ObjectTable,
+} from "@osdk/react-components/experimental";
+import { Employee, updateMultipleEmployees } from "@YourApp/sdk";
+
+function EditableEmployeesTable() {
+  const { applyAction } = useOsdkAction(updateMultipleEmployees);
+
+  const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
+    {
+      locator: { type: "property", id: "fullName" },
+      editable: true, // Enable editing for this column
+    },
+    {
+      locator: { type: "property", id: "email" },
+      editable: true,
+    },
+    {
+      locator: { type: "property", id: "department" },
+      editable: true,
+    },
+    {
+      locator: { type: "property", id: "jobTitle" },
+      editable: false, // This column is read-only
+    },
+  ];
+
+  const handleCellValueChanged = (
+    cellIdentifier: CellIdentifier,
+    state: CellValueState,
+  ) => {
+    console.log("Cell edited:", {
+      rowId: cellIdentifier.rowId,
+      columnId: cellIdentifier.columnId,
+      oldValue: state.oldValue,
+      newValue: state.newValue,
+    });
+
+    // Validate individual cell changes
+    if (cellIdentifier.columnId === "email") {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(state.newValue as string)) {
+        throw new Error("Invalid email format");
+      }
+    }
+  };
+
+  // When onSubmitEdits is provided, a "Submit Edits" button appears in the table
+  const handleSubmitEdits = async (edits: Record<string, CellValueState>) => {
+    console.log("Submitting edits:", edits);
+
+    try {
+      // Call your action with the edits
+      // The exact format depends on your action's parameters
+      await applyAction({ edits });
+      
+      alert("All changes saved successfully!");
+    } catch (error) {
+      console.error("Failed to save edits:", error);
+      throw error; // Re-throw to let the table handle the error
+    }
+  };
+
+  return (
+    <ObjectTable
+      objectType={Employee}
+      columnDefinitions={columnDefinitions}
+      onCellValueChanged={handleCellValueChanged}
+      onSubmitEdits={handleSubmitEdits} // Shows "Submit Edits" button
     />
   );
 }

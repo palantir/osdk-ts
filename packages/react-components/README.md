@@ -23,18 +23,33 @@ The following peer dependencies are required:
 npm install react react-dom classnames @osdk/react @osdk/client @osdk/api
 ```
 
-- `react` and `react-dom` - React 17, 18, or 19
+- `react`, `@types/react`, `react-dom` - React 17, 18, or 19
 - `classnames` - Utility for conditionally joining CSS class names
 - `@osdk/react`, `@osdk/api`, `@osdk/client` - The packages required for data-handling
-
-For TypeScript users, also install `@types/react`.
 
 **Prerequisites:**
 
 - A configured OSDK client
-- An OsdkProvider wrapping your application
+- An OsdkProvider2 wrapping your application
 
 ## Setup
+
+### App Setup
+
+**REQUIRED:** Wrap app with OsdkProvider2:
+
+```tsx
+import { OsdkProvider2 } from "@osdk/react/experimental";
+import { createClient } from "@osdk/client";
+
+const client = createClient(/* config */);
+
+function App() {
+    return <OsdkProvider2 client={client}>{/* components */}</OsdkProvider2>;
+}
+```
+
+### CSS Setup
 
 Add this to your application's entry css file (e.g., `index.css` or `index.scss`):
 
@@ -55,11 +70,11 @@ The `.root` isolation is required for Base UI portals. See https://base-ui.com/r
 
 The components that this package will provide are:
 
-| Component     | Description                                                                        |
-| ------------- | ---------------------------------------------------------------------------------- |
-| `ObjectTable` | Displays an Object Set as a sortable, paginated table                              |
-| `FilterList`  | Visualize a high-level summary of objects data to allow users to filter that data. |
-| `ActionForm`  | Auto-generated form for executing Ontology Actions                                 |
+| Component     | Description                                                                        | Documentation |
+| ------------- | ---------------------------------------------------------------------------------- | ------------- |
+| `ObjectTable` | Displays an Object Set as a sortable, paginated table                              | [Guide](./docs/ObjectTable.md) |
+| `FilterList`  | Visualize a high-level summary of objects data to allow users to filter that data. | - |
+| `ActionForm`  | Auto-generated form for executing Ontology Actions                                 | - |
 
 ## Custom Styling
 
@@ -82,27 +97,24 @@ function EmployeeDirectory() {
 }
 ```
 
+## Development Workflow
+
+1. In packages/react-components, run `pnpm install` to install the dependencies.
+2. Run `pnpm transpileAllDeps` to transpile all dependencies in this repo.
+3. To run tests, run `pnpm test`
+
 ### Running the Example People App
 
 The examples are added to `packages/e2e.sandbox.peopleapp`, so we need to run the example app.
 
 #### Steps:
 
-1. Create a .env.local file with the content below in packages/e2e.sandbox.peopleapp:
+1. Create a .env.local file based on `.env.local.sample` in packages/e2e.sandbox.peopleapp:
+
+2. Transpile all dependencies of peopleapp
 
 ```
-VITE_FOUNDRY_URL=https://swirl.palantirfoundry.com
-VITE_FOUNDRY_CLIENT_ID=<insert_client_id>
-VITE_FOUNDRY_CLIENT_SECRET=<insert_token>
-VITE_FOUNDRY_REDIRECT_URL=http://localhost:8080/auth/callback
-```
-
-2. Get VITE_FOUNDRY_CLIENT_ID from "https://swirl.palantirfoundry.com/workspace/developer-console/app/ri.third-party-applications.main.application.91b973ac-e504-4322-95b4-4962b60495fe/oauth" under App Credentials > Client ID.
-
-3. Transpile @osdk/react-components and its dependencies
-
-```
-pnpm --filter @osdk/react-components transpileAllDeps && pnpm --filter @osdk/react-components transpileBrowser
+pnpm --filter @osdk/e2e.sandbox.peopleapp transpileAllDeps
 ```
 
 4. Run the people app

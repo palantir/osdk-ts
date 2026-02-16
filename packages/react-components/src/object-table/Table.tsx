@@ -49,7 +49,7 @@ declare module "@tanstack/react-table" {
 }
 
 interface EditableConfig {
-  onSubmitEdits?: () => void;
+  onSubmitEdits?: () => Promise<void>;
   clearEdits?: () => void;
   cellEdits?: Record<string, CellValueState>;
 }
@@ -133,8 +133,8 @@ export function BaseTable<
   const hasData = rows.length > 0;
   const hasEdits = Object.keys(editableConfig?.cellEdits ?? {}).length > 0;
 
-  const handleSubmitEdits = useCallback(() => {
-    editableConfig?.onSubmitEdits?.();
+  const handleSubmitEdits = useCallback(async () => {
+    await editableConfig?.onSubmitEdits?.();
     editableConfig?.clearEdits?.();
   }, [editableConfig]);
 

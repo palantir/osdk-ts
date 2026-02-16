@@ -1,11 +1,13 @@
 import type { DerivedProperty, Osdk } from "@osdk/api";
 import type {
+  CellIdentifier,
   CellValueState,
   ColumnDefinition,
 } from "@osdk/react-components/experimental";
 import { ObjectTable } from "@osdk/react-components/experimental";
+import { useOsdkAction } from "@osdk/react/experimental";
 import { useCallback } from "react";
-import { Employee } from "../../generatedNoCheck2/index.js";
+import { Employee, modifyEmployee } from "../../generatedNoCheck2/index.js";
 
 type RDPs = {
   managerName: "string";
@@ -25,6 +27,14 @@ const columnDefinitions: Array<
       id: "fullName",
     },
     columnName: "My Name",
+    editable: true,
+  },
+  {
+    locator: {
+      type: "property",
+      id: "preferredNameFirst",
+    },
+    columnName: "First Name",
     editable: true,
   },
   // With isVisible prop
@@ -82,6 +92,8 @@ const columnDefinitions: Array<
 ];
 
 export function EmployeesTable() {
+  const { applyAction } = useOsdkAction(modifyEmployee);
+
   const renderCellContextMenu = useCallback(
     (_: Osdk.Instance<Employee>, cellValue: unknown) => {
       return (
@@ -101,6 +113,38 @@ export function EmployeesTable() {
     [],
   );
 
+  const handleSubmitEdits = useCallback(
+    async (edits: Record<string, CellValueState>) => {
+      try {
+        // Process each edit and call modifyEmployee action
+        const editEntries = Object.entries(edits);
+        const rowEditsMap: Record<string, Partial<Employee>> = {};
+        const actionPromises: Promise<any>[] = [];
+        for (const [cellId, state] of editEntries) {
+          const cellIdentifier = JSON.parse(cellId) as CellIdentifier;
+          const { rowId, columnId } = cellIdentifier;
+
+          if (!rowEditsMap[rowId]) {
+            rowEditsMap[rowId] = {};
+          }
+          rowEditsMap[rowId][columnId as keyof Employee] = state
+            .newValue as never;
+        }
+        for (const [rowId, updatedFields] of Object.entries(rowEditsMap)) {
+          actionPromises.push(applyAction({
+            employee: Number(rowId),
+            ...updatedFields,
+          }));
+        }
+        await Promise.all(actionPromises);
+      } catch (error) {
+        console.error("Failed to submit edits:", error);
+        throw error;
+      }
+    },
+    [applyAction],
+  );
+
   return (
     <div
       style={{
@@ -117,18 +161,7 @@ export function EmployeesTable() {
           property: "firstFullTimeStartDate",
           direction: "desc",
         }]}
-        onCellValueChanged={(cellId: string, state: CellValueState) => {
-          console.log("Cell value changed:", {
-            cellId: cellId,
-            newValue: state.newValue,
-            oldValue: state.oldValue,
-          });
-          return Promise.resolve();
-        }}
-        onSubmitEdits={(edits) => {
-          console.log("Edits submitted", edits);
-          return Promise.resolve();
-        }}
+        onSubmitEdits={handleSubmitEdits}
       />
     </div>
   );

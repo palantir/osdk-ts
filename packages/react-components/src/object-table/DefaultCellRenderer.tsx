@@ -28,17 +28,12 @@ export function renderDefaultCell<TData>(
   if (columnMeta?.editable && meta?.onCellEdit) {
     const rowId = cellContext.row.id;
     const columnId = cellContext.column.id;
-    const cellIdentifier = { rowId, columnId };
-    const cellId = getCellId(cellIdentifier);
-    const cellEdits = meta.cellEdits;
-    const editedValue = cellEdits?.[cellId];
-    const currentValue = editedValue?.newValue ?? cellContext.getValue();
+    const cellId = getCellId({ rowId, columnId });
 
     return (
       <EditableCell
-        initialValue={currentValue}
+        initialValue={cellContext.getValue()}
         cellId={cellId}
-        cellIdentifier={cellIdentifier}
         onCellEdit={meta.onCellEdit}
       />
     );

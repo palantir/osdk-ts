@@ -17,16 +17,10 @@
 import { Input } from "@base-ui/react/input";
 import React, { useCallback, useState } from "react";
 import styles from "./EditableCell.module.css";
-import type { CellIdentifier } from "./utils/types.js";
 
 export interface EditableCellProps {
   initialValue: unknown;
   cellId: string;
-  cellIdentifier: CellIdentifier;
-  onCellValueChanged?: (
-    cell: CellIdentifier,
-    state: { newValue: unknown; oldValue: unknown },
-  ) => void;
   onCellEdit?: (cellId: string, newValue: unknown, oldValue: unknown) => void;
 }
 
@@ -36,11 +30,10 @@ export function EditableCell({
   onCellEdit,
 }: EditableCellProps): React.ReactElement {
   const [value, setValue] = useState<string>(String(initialValue ?? ""));
-  const [originalValue] = useState<string>(String(initialValue ?? ""));
 
   const handleBlur = useCallback(() => {
-    onCellEdit?.(cellId, value, originalValue);
-  }, [value, originalValue, onCellEdit, cellId]);
+    onCellEdit?.(cellId, value, initialValue);
+  }, [value, initialValue, onCellEdit, cellId]);
 
   const handleChange = useCallback((value: string) => {
     setValue(value);
@@ -52,11 +45,11 @@ export function EditableCell({
         e.currentTarget.blur();
       }
       if (e.key === "Escape") {
-        setValue(originalValue);
+        setValue(String(initialValue ?? ""));
         e.currentTarget.blur();
       }
     },
-    [originalValue],
+    [initialValue],
   );
 
   return (

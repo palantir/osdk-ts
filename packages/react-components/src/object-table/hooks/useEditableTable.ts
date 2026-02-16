@@ -14,13 +14,38 @@
  * limitations under the License.
  */
 
+import type {
+  ObjectOrInterfaceDefinition,
+  QueryDefinition,
+  SimplePropertyDef,
+} from "@osdk/api";
 import { useCallback, useState } from "react";
+import type { ObjectTableProps } from "../ObjectTableApi.js";
 import { getCellIdentifier } from "../utils/getCellId.js";
-import type { CellIdentifier, CellValueState } from "../utils/types.js";
+import type { CellValueState } from "../utils/types.js";
 
-export interface UseEditableTableProps {
-  onCellValueChanged?: (id: CellIdentifier, state: CellValueState) => void;
-  onSubmitEdits?: (edits: Record<string, CellValueState>) => void;
+export interface UseEditableTableProps<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<
+    string,
+    never
+  >,
+  FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
+    string,
+    never
+  >,
+> {
+  onCellValueChanged?: ObjectTableProps<
+    Q,
+    RDPs,
+    FunctionColumns
+  >["onCellValueChanged"];
+
+  onSubmitEdits?: ObjectTableProps<
+    Q,
+    RDPs,
+    FunctionColumns
+  >["onSubmitEdits"];
 }
 
 export interface UseEditableTableResult {
@@ -30,14 +55,24 @@ export interface UseEditableTableResult {
     newValue: unknown,
     oldValue: unknown,
   ) => void;
-  handleSubmitEdits: () => void;
+  handleSubmitEdits: () => Promise<void>;
   clearEdits: () => void;
 }
 
-export function useEditableTable({
+export function useEditableTable<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<
+    string,
+    never
+  >,
+  FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
+    string,
+    never
+  >,
+>({
   onCellValueChanged,
   onSubmitEdits,
-}: UseEditableTableProps): UseEditableTableResult {
+}: UseEditableTableProps<Q, RDPs, FunctionColumns>): UseEditableTableResult {
   const [cellEdits, setCellEdits] = useState<Record<string, CellValueState>>(
     {},
   );
@@ -46,7 +81,6 @@ export function useEditableTable({
     (cellId: string, newValue: unknown, oldValue: unknown) => {
       const cellIdentifier = getCellIdentifier(cellId);
       const state: CellValueState = { newValue, oldValue };
-      onCellValueChanged?.(cellIdentifier, state);
 
       // If value is changed back to original, remove it from edits
       if (newValue === oldValue) {
@@ -54,13 +88,14 @@ export function useEditableTable({
           const { [cellId]: _, ...rest } = prev;
           return rest;
         });
-        return;
+      } else {
+        setCellEdits(prev => ({
+          ...prev,
+          [cellId]: state,
+        }));
       }
 
-      setCellEdits(prev => ({
-        ...prev,
-        [cellId]: state,
-      }));
+      onCellValueChanged?.(cellIdentifier, state);
     },
     [onCellValueChanged],
   );
@@ -69,8 +104,8 @@ export function useEditableTable({
     setCellEdits({});
   }, []);
 
-  const handleSubmitEdits = useCallback(() => {
-    onSubmitEdits?.(cellEdits);
+  const handleSubmitEdits = useCallback(async () => {
+    await onSubmitEdits?.(cellEdits);
   }, [cellEdits, onSubmitEdits]);
 
   return {
