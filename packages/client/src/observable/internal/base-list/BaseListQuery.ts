@@ -775,10 +775,6 @@ export abstract class BaseListQuery<
       );
     }
 
-    // Use the registry to find all RDP variant cache keys. We can't use
-    // cacheKeys.get() here because that would create and register an orphan
-    // key with no subject, which blows up the invariant in
-    // Store.#cleanupCacheKey when GC runs.
     this.store.batch({}, (batch) => {
       for (
         const objectCacheKey of this.store.objectCacheKeyRegistry.getVariants(

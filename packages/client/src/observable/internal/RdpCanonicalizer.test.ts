@@ -24,25 +24,24 @@ describe("RdpCanonicalizer", () => {
   it("returns same canonical object for functionally identical RDPs with different function references", () => {
     const canonicalizer = new RdpCanonicalizer();
 
-    // Create first RDP with a function
     const rdp1: DerivedProperty.Clause<typeof Employee> = {
       derivedAddress: (base) =>
         base.pivotTo("lead").selectProperty("employeeId"),
       derivedName: (base) => base.pivotTo("lead").selectProperty("fullName"),
     };
 
-    // Create second RDP with new function references but same logic
+    // Same logic, different function references
     const rdp2: DerivedProperty.Clause<typeof Employee> = {
       derivedAddress: (base) =>
         base.pivotTo("lead").selectProperty("employeeId"),
       derivedName: (base) => base.pivotTo("lead").selectProperty("fullName"),
     };
 
-    // The functions should have different references
+    // Different references...
     expect(rdp1.derivedAddress).not.toBe(rdp2.derivedAddress);
     expect(rdp1.derivedName).not.toBe(rdp2.derivedName);
 
-    // But canonicalization should return the same object
+    // ...but same canonical object
     const canonical1 = canonicalizer.canonicalize(rdp1);
     const canonical2 = canonicalizer.canonicalize(rdp2);
 
@@ -78,18 +77,13 @@ describe("RdpCanonicalizer", () => {
     const canonical1 = canonicalizer.canonicalize(rdp);
     const canonical2 = canonicalizer.canonicalize(rdp);
 
-    // Same input object should return cached result
     expect(canonical1).toBe(canonical2);
   });
 
-  it("shared canonicalizer produces identical canonical and field sets for cross-hook usage", () => {
-    // A single RdpCanonicalizer is shared by ListsHelper and ObjectSetHelper
-    // (both receive Store.rdpCanonicalizer). This test verifies that
-    // identical withProperties configs produce the same canonical reference
-    // and the same extracted field names, so objects land in the same cache slot.
+  it("shared canonicalizer produces identical canonical and field sets across callers", () => {
     const sharedCanonicalizer = new RdpCanonicalizer();
 
-    // Simulate ListsHelper calling canonicalize (e.g. from useOsdkObjects)
+    // Two callers (e.g. ListsHelper, ObjectSetHelper) with same RDP definition
     const listWithProperties: DerivedProperty.Clause<typeof Employee> = {
       derivedAddress: (base) =>
         base.pivotTo("lead").selectProperty("employeeId"),
@@ -97,8 +91,6 @@ describe("RdpCanonicalizer", () => {
     };
     const listCanonical = sharedCanonicalizer.canonicalize(listWithProperties);
 
-    // Simulate ObjectSetHelper calling canonicalize (e.g. from useObjectSet)
-    // with a separate object that has the same structural definition
     const objectSetWithProperties: DerivedProperty.Clause<typeof Employee> = {
       derivedAddress: (base) =>
         base.pivotTo("lead").selectProperty("employeeId"),
@@ -108,10 +100,8 @@ describe("RdpCanonicalizer", () => {
       objectSetWithProperties,
     );
 
-    // Both hooks get the same canonical reference
     expect(listCanonical).toBe(objectSetCanonical);
 
-    // extractRdpFieldNames produces consistent field sets for both
     const listFields = extractRdpFieldNames(listCanonical);
     const objectSetFields = extractRdpFieldNames(objectSetCanonical);
     expect(listFields).toEqual(objectSetFields);

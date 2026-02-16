@@ -122,10 +122,7 @@ export class ActionApplication {
         }
       }
 
-      // Use the registry to find all RDP variant cache keys for each deleted
-      // object. We can't use cacheKeys.get() here because that would create
-      // and register an orphan key with no subject, which blows up the
-      // invariant in Store.#cleanupCacheKey when GC runs.
+      // Use the registry to find all RDP variant cache keys for each deleted object.
       this.store.batch({}, (batch) => {
         for (const { objectType, primaryKey } of deletedObjects ?? []) {
           for (

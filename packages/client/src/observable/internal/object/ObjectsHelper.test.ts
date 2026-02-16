@@ -28,6 +28,7 @@ import {
   updateObject,
   waitForCall,
 } from "../testUtils.js";
+
 function createFakeRdpConfig(...fields: string[]): Canonical<Rdp> {
   const rdp: Rdp = {};
   for (const field of fields) {
@@ -73,53 +74,7 @@ describe("ObjectsHelper.isKeyActive", () => {
   it("propagateWrite propagates to a variant key with pending cleanup", () => {
     const rdpConfig = createFakeRdpConfig("derivedAddress");
 
-    // Seed key A (no RDP) with the employee via the standard path
-    updateObject(store, emp);
-
-    // Create key B (with RDP) and seed it with the same employee
-    const queryB = store.objects.getQuery({
-      apiName: Employee,
-      pk: 1,
-    }, rdpConfig);
-    store.batch({}, (batch) => {
-      queryB.writeToStore(
-        emp as any,
-        "loaded",
-        batch,
-      );
-    });
-
-    // Subscribe to key B's subject, then unsubscribe to make it unobserved
-    const subjectB = store.subjects.get(queryB.cacheKey);
-    const subB = subjectB.subscribe(() => {});
-    subB.unsubscribe();
-
-    // Simulate pending cleanup — as AbstractHelper._subscribe would do
-    // when a subscription is torn down before the cleanup microtask runs.
-    // This is the state during a React unmount-remount cycle.
-    store.pendingCleanup.set(queryB.cacheKey, 1);
-
-    // Write updated data through key A (no RDP).
-    // propagateWrite should propagate to key B because isKeyActive
-    // returns true due to the pending cleanup entry.
-    const updated = emp.$clone({ fullName: "Bob" });
-    updateObject(store, updated);
-
-    // Key B should have received the propagated write
-    const valueB = store.getValue(queryB.cacheKey);
-    expect(valueB).toBeDefined();
-    expect(valueB?.value).toEqual(
-      expect.objectContaining({
-        $primaryKey: 1,
-        fullName: "Bob",
-      }),
-    );
-  });
-
-  it("propagateWrite skips variant key that is neither observed nor pending cleanup", () => {
-    const rdpConfig = createFakeRdpConfig("derivedAddress");
-
-    // Seed key A (no RDP) with the employee
+    // Seed key A (no RDP)
     updateObject(store, emp);
 
     // Create key B (with RDP) and seed it
@@ -135,19 +90,58 @@ describe("ObjectsHelper.isKeyActive", () => {
       );
     });
 
-    // Subscribe to key B's subject, then unsubscribe
+    // Subscribe then unsubscribe to make key B unobserved
     const subjectB = store.subjects.get(queryB.cacheKey);
     const subB = subjectB.subscribe(() => {});
     subB.unsubscribe();
-    // Intentionally NOT setting pendingCleanup — simulates the state
-    // after the cleanup microtask has already run
 
-    // Write updated data through key A
+    // Simulate pending cleanup (React unmount-remount cycle)
+    store.pendingCleanup.set(queryB.cacheKey, 1);
+
+    // Write through key A — should propagate to B due to pending cleanup
+    const updated = emp.$clone({ fullName: "Bob" });
+    updateObject(store, updated);
+
+    // Key B should have the propagated write
+    const valueB = store.getValue(queryB.cacheKey);
+    expect(valueB).toBeDefined();
+    expect(valueB?.value).toEqual(
+      expect.objectContaining({
+        $primaryKey: 1,
+        fullName: "Bob",
+      }),
+    );
+  });
+
+  it("propagateWrite skips variant key that is neither observed nor pending cleanup", () => {
+    const rdpConfig = createFakeRdpConfig("derivedAddress");
+
+    // Seed key A (no RDP)
+    updateObject(store, emp);
+
+    // Create key B (with RDP) and seed it
+    const queryB = store.objects.getQuery({
+      apiName: Employee,
+      pk: 1,
+    }, rdpConfig);
+    store.batch({}, (batch) => {
+      queryB.writeToStore(
+        emp as any,
+        "loaded",
+        batch,
+      );
+    });
+
+    // Subscribe then unsubscribe, no pending cleanup (cleanup already ran)
+    const subjectB = store.subjects.get(queryB.cacheKey);
+    const subB = subjectB.subscribe(() => {});
+    subB.unsubscribe();
+
+    // Write through key A
     const updated = emp.$clone({ fullName: "Charlie" });
     updateObject(store, updated);
 
-    // Key B should NOT have received the propagated write because
-    // isKeyActive returns false (no subscribers, no pending cleanup)
+    // Key B should NOT propagate (no subscribers, no pending cleanup)
     const valueB = store.getValue(queryB.cacheKey);
     expect(valueB?.value).toEqual(
       expect.objectContaining({
@@ -169,32 +163,32 @@ describe("ObjectsHelper.isKeyActive", () => {
       queryB.writeToStore(emp as any, "loaded", batch);
     });
 
-    // Subscribe then unsubscribe from key B, with pending cleanup
+    // Subscribe, unsubscribe, mark pending cleanup
     const subjectB = store.subjects.get(queryB.cacheKey);
     const subB = subjectB.subscribe(() => {});
     subB.unsubscribe();
     store.pendingCleanup.set(queryB.cacheKey, 1);
 
-    // First write — should propagate (pending cleanup is active)
+    // Should propagate while pending cleanup is active
     updateObject(store, emp.$clone({ fullName: "Bob" }));
     expect(store.getValue(queryB.cacheKey)?.value).toEqual(
       expect.objectContaining({ fullName: "Bob" }),
     );
 
-    // Simulate the cleanup microtask completing
+    // Simulate cleanup microtask completing
     store.pendingCleanup.delete(queryB.cacheKey);
 
-    // Second write — should NOT propagate (no subscribers, no pending cleanup)
+    // Should NOT propagate after cleanup ran
     updateObject(store, emp.$clone({ fullName: "Charlie" }));
     expect(store.getValue(queryB.cacheKey)?.value).toEqual(
-      expect.objectContaining({ fullName: "Bob" }), // still Bob, not Charlie
+      expect.objectContaining({ fullName: "Bob" }),
     );
   });
 
   it("re-subscribing before microtask flush receives latest data", async () => {
     const rdpConfig = createFakeRdpConfig("derivedAddress");
 
-    // Seed key A and key B
+    // Seed both keys
     updateObject(store, emp);
     const queryB = store.objects.getQuery({
       apiName: Employee,
@@ -204,18 +198,16 @@ describe("ObjectsHelper.isKeyActive", () => {
       queryB.writeToStore(emp as any, "loaded", batch);
     });
 
-    // Subscribe to key B
+    // Subscribe, unsubscribe (unmount), mark pending cleanup
     const subjectB = store.subjects.get(queryB.cacheKey);
     const sub1 = subjectB.subscribe(() => {});
-
-    // Unsubscribe (simulating React unmount)
     sub1.unsubscribe();
     store.pendingCleanup.set(queryB.cacheKey, 1);
 
-    // While pending cleanup is active, write new data through key A
+    // Write new data while pending cleanup is active
     updateObject(store, emp.$clone({ fullName: "Updated" }));
 
-    // Re-subscribe (simulating React remount) — should see updated data
+    // Re-subscribe (remount) — should see updated data
     const subFn = mockSingleSubCallback();
     store.cacheKeys.retain(queryB.cacheKey);
     const sub2 = subjectB.subscribe(

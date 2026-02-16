@@ -432,8 +432,6 @@ export class Store {
       } else if (cacheKey.type === "aggregation") {
         return cacheKey.otherKeys[AGGREGATION_RDP_IDX];
       } else if (cacheKey.type === "objectSet") {
-        // ObjectSetQuery stores its canonical RDP on the query instance,
-        // not in the cache key's otherKeys array.
         const query = this.queries.peek(cacheKey);
         if (query) {
           return query.rdpConfig;
