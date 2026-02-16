@@ -89,25 +89,8 @@ export class ObjectListQuery extends ListQuery {
         );
       }
 
-      if (intersectWith != null && intersectWith.length > 0) {
-        const intersectSets = intersectWith.map(whereClause => {
-          let intersectSet = store.client({
-            type: "object",
-            apiName: this.apiName,
-          } as ObjectTypeDefinition);
-
-          if (rdpConfig != null) {
-            intersectSet = intersectSet.withProperties(
-              rdpConfig as DerivedProperty.Clause<ObjectTypeDefinition>,
-            );
-          }
-
-          return intersectSet.where(whereClause as WhereClause<any>);
-        });
-
-        objectSet = objectSet.intersect(...intersectSets);
-      }
-
+      // intersectWith for pivot queries is deferred to fetchPageData
+      // where the target type can be resolved asynchronously
       return objectSet;
     }
 

@@ -35,7 +35,7 @@ import type { Changes } from "../Changes.js";
 import type { Rdp } from "../RdpCanonicalizer.js";
 import type { SimpleWhereClause } from "../SimpleWhereClause.js";
 import type { Store } from "../Store.js";
-import { INTERSECT_IDX, ListQuery, PIVOT_IDX, RDP_IDX } from "./ListQuery.js";
+import { ListQuery, PIVOT_IDX, RDP_IDX } from "./ListQuery.js";
 
 type ExtractRelevantObjectsResult = Record<"added" | "modified", {
   all: (ObjectHolder | InterfaceHolder)[];
@@ -46,7 +46,6 @@ type ExtractRelevantObjectsResult = Record<"added" | "modified", {
 export class InterfaceListQuery extends ListQuery {
   protected createObjectSet(store: Store): ObjectSet<ObjectTypeDefinition> {
     const rdpConfig = this.cacheKey.otherKeys[RDP_IDX];
-    const intersectWith = this.cacheKey.otherKeys[INTERSECT_IDX];
     const pivotInfo = this.cacheKey.otherKeys[PIVOT_IDX];
 
     if (pivotInfo != null) {
@@ -70,20 +69,8 @@ export class InterfaceListQuery extends ListQuery {
         );
       }
 
-      if (intersectWith != null && intersectWith.length > 0) {
-        const type: string = "interface" as const;
-        const intersectSets = intersectWith.map(whereClause => {
-          const intersectSet = store.client({
-            type,
-            apiName: this.apiName,
-          } as ObjectTypeDefinition);
-
-          return intersectSet.where(whereClause as WhereClause<any>);
-        });
-
-        objectSet = objectSet.intersect(...intersectSets);
-      }
-
+      // intersectWith for pivot queries is deferred to fetchPageData
+      // where the target type can be resolved asynchronously
       return objectSet;
     }
 

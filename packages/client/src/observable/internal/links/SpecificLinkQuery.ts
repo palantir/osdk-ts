@@ -286,52 +286,63 @@ export class SpecificLinkQuery extends BaseListQuery<
     }
 
     return (async () => {
-      const ontologyProvider = this.store.client[additionalContext]
-        .ontologyProvider;
+      try {
+        const ontologyProvider = this.store.client[additionalContext]
+          .ontologyProvider;
 
-      if (this.#sourceTypeKind === "interface") {
-        const objectMetadata = await ontologyProvider.getObjectDefinition(
-          objectType,
-        );
-        if (this.#sourceApiName in objectMetadata.interfaceMap) {
-          changes?.modified.add(this.cacheKey);
-          return this.revalidate(true);
+        if (this.#sourceTypeKind === "interface") {
+          const objectMetadata = await ontologyProvider.getObjectDefinition(
+            objectType,
+          );
+          if (this.#sourceApiName in objectMetadata.interfaceMap) {
+            changes?.modified.add(this.cacheKey);
+            return void await this.revalidate(true);
+          }
         }
-      }
 
-      let targetTypeApiName: string | undefined;
-      let targetTypeKind: "object" | "interface" | undefined;
+        let targetTypeApiName: string | undefined;
+        let targetTypeKind: "object" | "interface" | undefined;
 
-      if (this.#sourceTypeKind === "interface") {
-        const interfaceMetadata = await ontologyProvider
-          .getInterfaceDefinition(this.#sourceApiName);
-        const linkDef = interfaceMetadata.links?.[this.#linkName];
-        targetTypeApiName = linkDef?.targetTypeApiName;
-        targetTypeKind = linkDef?.targetType;
-      } else {
-        const objectMetadata = await ontologyProvider
-          .getObjectDefinition(this.#sourceApiName);
-        const linkDef = objectMetadata.links?.[this.#linkName];
-        // On object link defs, targetType is the target API name (not the kind)
-        targetTypeApiName = linkDef?.targetType;
-        targetTypeKind = "object";
-      }
+        if (this.#sourceTypeKind === "interface") {
+          const interfaceMetadata = await ontologyProvider
+            .getInterfaceDefinition(this.#sourceApiName);
+          const linkDef = interfaceMetadata.links?.[this.#linkName];
+          targetTypeApiName = linkDef?.targetTypeApiName;
+          targetTypeKind = linkDef?.targetType;
+        } else {
+          const objectMetadata = await ontologyProvider
+            .getObjectDefinition(this.#sourceApiName);
+          const linkDef = objectMetadata.links?.[this.#linkName];
+          // On object link defs, targetType is the target API name (not the kind)
+          targetTypeApiName = linkDef?.targetType;
+          targetTypeKind = "object";
+        }
 
-      if (!targetTypeApiName) return;
+        if (!targetTypeApiName) return;
 
-      if (targetTypeApiName === objectType) {
+        if (targetTypeApiName === objectType) {
+          changes?.modified.add(this.cacheKey);
+          return void await this.revalidate(true);
+        }
+
+        if (targetTypeKind === "interface") {
+          const objectMetadata = await ontologyProvider.getObjectDefinition(
+            objectType,
+          );
+          if (targetTypeApiName in objectMetadata.interfaceMap) {
+            changes?.modified.add(this.cacheKey);
+            return void await this.revalidate(true);
+          }
+        }
+      } catch (e) {
+        if (process.env.NODE_ENV !== "production") {
+          this.logger?.error(
+            "Failed to resolve metadata during invalidation",
+            e,
+          );
+        }
         changes?.modified.add(this.cacheKey);
-        return this.revalidate(true);
-      }
-
-      if (targetTypeKind === "interface") {
-        const objectMetadata = await ontologyProvider.getObjectDefinition(
-          objectType,
-        );
-        if (targetTypeApiName in objectMetadata.interfaceMap) {
-          changes?.modified.add(this.cacheKey);
-          return this.revalidate(true);
-        }
+        return void await this.revalidate(true);
       }
     })();
   };
