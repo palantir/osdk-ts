@@ -255,10 +255,14 @@ export function FoundryWidgetDevPlugin(): Plugin {
       }
     },
 
-    handleHotUpdate({ file }) {
-      // Swallow HMR updates for widget config files to avoid full page reloads.
+    handleHotUpdate({ file, server }) {
       const standardizedFile = standardizePathAndFileExtension(file);
       if (configFileToEntrypoint[standardizedFile] != null) {
+        server.config.logger.warn(
+          color.yellow(
+            `Detected a change to widget config file ${file}. Make sure to publish your changes in order to use the changes you've made.`,
+          ),
+        );
         return [];
       }
     },
