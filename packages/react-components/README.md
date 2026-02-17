@@ -65,6 +65,12 @@ The components that this package will provide are:
 
 See `@osdk/react-components-styles` README on how to apply custom themes and styling to the components.
 
+## Documentation
+
+Detailed component documentation is available in the `docs/` folder:
+
+- **[ObjectTable](./docs/ObjectTable.md)** - Complete guide with examples, props reference, theming, and best practices
+
 ## Example Usage
 
 ### Object Table

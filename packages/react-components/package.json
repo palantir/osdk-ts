@@ -97,10 +97,14 @@
     "CHANGELOG.md",
     "package.json",
     "templates",
+    "docs",
     "*.d.ts"
   ],
   "main": "./build/cjs/index.cjs",
   "module": "./build/esm/index.js",
   "types": "./build/cjs/index.d.cts",
+  "documentation": {
+    "ObjectTable": "./docs/ObjectTable.md"
+  },
   "type": "module"
 }
