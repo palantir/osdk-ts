@@ -71,7 +71,7 @@ function buildInitialStates<Q extends ObjectTypeDefinition>(
         const innerState = definition.defaultLinkedFilterState;
         if (innerState) {
           const state: LinkedPropertyFilterState = {
-            type: "LINKED_PROPERTY",
+            type: "linkedProperty",
             linkedFilterState: innerState,
           };
           states.set(key, state);
