@@ -36,6 +36,14 @@ export type ClassificationMarking<T extends string = string> = T & {
 export function createEditBatch<T extends AnyEdit = never>(_client: Client): EditBatch<T>;
 
 // @public (undocumented)
+export type Custom = string & {
+    	readonly __brand: "Custom"
+};
+
+// @public (undocumented)
+export function custom(alias: string): Custom;
+
+// @public (undocumented)
 export type DateISOString<T extends string = string> = T & {
     	__dateBrand?: void
 };
@@ -147,6 +155,15 @@ export type MandatoryMarking<T extends string = string> = T & {
 export { MediaReference }
 
 export { MediaUpload }
+
+// @public (undocumented)
+export interface Model {
+    	// (undocumented)
+    rid: string;
+}
+
+// @public (undocumented)
+export function model(alias: string): Model;
 
 // @public (undocumented)
 interface Notification_2 {
