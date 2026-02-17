@@ -49,7 +49,7 @@ export function usePropertyAggregation<
 >(
   objectType: Q,
   propertyKey: K,
-  options?: UsePropertyAggregationOptions,
+  options?: UsePropertyAggregationOptions<Q>,
 ): UsePropertyAggregationResult {
   // AggregateOpts requires specific property keys from Q, but we're dynamically
   // using propertyKey. The cast is unavoidable for this dynamic filter pattern.
