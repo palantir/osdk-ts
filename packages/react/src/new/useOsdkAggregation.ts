@@ -55,6 +55,11 @@ export interface UseOsdkAggregationOptions<
    * network request if the second is within `dedupeIntervalMs`.
    */
   dedupeIntervalMs?: number;
+
+  /**
+   * Whether the aggregation query is enabled. Defaults to true.
+   */
+  enabled?: boolean;
 }
 
 export interface UseOsdkAggregationResult<
@@ -66,8 +71,6 @@ export interface UseOsdkAggregationResult<
   error: Error | undefined;
   refetch: () => void;
 }
-
-const EMPTY_WHERE = {};
 
 declare const process: {
   env: {
@@ -106,32 +109,20 @@ export function useOsdkAggregation<
 >(
   type: Q,
   {
-    where = EMPTY_WHERE,
+    where = {},
     withProperties,
     aggregate,
     dedupeIntervalMs,
+    enabled = true,
   }: UseOsdkAggregationOptions<Q, A, RDPs>,
 ): UseOsdkAggregationResult<Q, A> {
   const { observableClient } = React.useContext(OsdkContext2);
 
-  const canonWhere = observableClient.canonicalizeWhereClause<Q>(
-    where ?? EMPTY_WHERE,
-  );
-
-  const stableCanonWhere = React.useMemo(
-    () => canonWhere,
-    [JSON.stringify(canonWhere)],
-  );
-
-  const stableWithProperties = React.useMemo(
-    () => withProperties,
-    [JSON.stringify(withProperties)],
-  );
-
-  const stableAggregate = React.useMemo(
-    () => aggregate,
-    [JSON.stringify(aggregate)],
-  );
+  const canonOptions = observableClient.canonicalizeOptions({
+    where,
+    withProperties,
+    aggregate,
+  });
 
   const { subscribe, getSnapShot } = React.useMemo(
     () =>
@@ -140,24 +131,24 @@ export function useOsdkAggregation<
           observableClient.observeAggregation(
             {
               type: type,
-              where: stableCanonWhere,
-              withProperties: stableWithProperties,
-              aggregate: stableAggregate,
+              where: canonOptions.where,
+              withProperties: canonOptions.withProperties,
+              aggregate: canonOptions.aggregate,
               dedupeInterval: dedupeIntervalMs ?? 2_000,
             },
             observer,
           ),
         process.env.NODE_ENV !== "production"
-          ? `aggregation ${type.apiName} ${JSON.stringify(stableCanonWhere)}`
+          ? `aggregation ${type.apiName} ${JSON.stringify(canonOptions.where)}`
           : void 0,
       ),
     [
       observableClient,
       type.apiName,
       type.type,
-      stableCanonWhere,
-      stableWithProperties,
-      stableAggregate,
+      canonOptions.where,
+      canonOptions.withProperties,
+      canonOptions.aggregate,
       dedupeIntervalMs,
     ],
   );

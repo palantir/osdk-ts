@@ -25,10 +25,7 @@ import type {
   WhereClause,
 } from "@osdk/api";
 
-import {
-  computeObjectSetCacheKey,
-  type ObserveObjectSetArgs,
-} from "@osdk/client/unstable-do-not-use";
+import type { ObserveObjectSetArgs } from "@osdk/client/unstable-do-not-use";
 import React from "react";
 import { makeExternalStore, type Snapshot } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
@@ -188,7 +185,20 @@ export function useObjectSet<
 ): UseObjectSetResult<Q, RDPs> {
   const { observableClient } = React.useContext(OsdkContext2);
 
-  const { enabled = true, streamUpdates, ...otherOptions } = options;
+  const {
+    enabled = true,
+    streamUpdates,
+    where,
+    withProperties,
+    orderBy,
+    union,
+    intersect,
+    subtract,
+    pivotTo,
+    pageSize,
+    dedupeIntervalMs,
+    autoFetchMore,
+  } = options;
 
   // Track object type to detect when we switch to a different object type
   const objectTypeKey = baseObjectSet.$objectSetInternals.def.apiName;
@@ -202,17 +212,10 @@ export function useObjectSet<
     previousObjectTypeRef.current = objectTypeKey;
   }
 
-  // Compute a stable cache key for the ObjectSet and options
-  // dedupeIntervalMs and enabled are excluded as they don't affect the data
-  const stableKey = computeObjectSetCacheKey(baseObjectSet, {
-    where: otherOptions.where,
-    withProperties: otherOptions.withProperties,
-    union: otherOptions.union,
-    intersect: otherOptions.intersect,
-    subtract: otherOptions.subtract,
-    pivotTo: otherOptions.pivotTo,
-    pageSize: otherOptions.pageSize,
-    orderBy: otherOptions.orderBy,
+  const canonOptions = observableClient.canonicalizeOptions({
+    where,
+    withProperties,
+    orderBy,
   });
 
   const { subscribe, getSnapShot } = React.useMemo(
@@ -221,7 +224,7 @@ export function useObjectSet<
         return makeExternalStore<ObserveObjectSetArgs<Q, RDPs>>(
           () => ({ unsubscribe: () => {} }),
           process.env.NODE_ENV !== "production"
-            ? `objectSet ${stableKey} [DISABLED]`
+            ? `objectSet [DISABLED]`
             : void 0,
         );
       }
@@ -235,16 +238,16 @@ export function useObjectSet<
           const subscription = observableClient.observeObjectSet(
             baseObjectSet as ObjectSet<Q>,
             {
-              where: otherOptions.where,
-              withProperties: otherOptions.withProperties,
-              union: otherOptions.union,
-              intersect: otherOptions.intersect,
-              subtract: otherOptions.subtract,
-              pivotTo: otherOptions.pivotTo,
-              pageSize: otherOptions.pageSize,
-              orderBy: otherOptions.orderBy,
-              dedupeInterval: otherOptions.dedupeIntervalMs ?? 2_000,
-              autoFetchMore: otherOptions.autoFetchMore,
+              where: canonOptions.where,
+              withProperties: canonOptions.withProperties,
+              union,
+              intersect,
+              subtract,
+              pivotTo,
+              pageSize,
+              orderBy: canonOptions.orderBy,
+              dedupeInterval: dedupeIntervalMs ?? 2_000,
+              autoFetchMore,
               streamUpdates,
             },
             observer,
@@ -252,12 +255,28 @@ export function useObjectSet<
           return subscription;
         },
         process.env.NODE_ENV !== "production"
-          ? `objectSet ${stableKey}`
+          ? `objectSet`
           : void 0,
         initialValue,
       );
     },
-    [enabled, observableClient, stableKey, streamUpdates, objectTypeChanged],
+    [
+      enabled,
+      observableClient,
+      baseObjectSet,
+      canonOptions.where,
+      canonOptions.withProperties,
+      canonOptions.orderBy,
+      union,
+      intersect,
+      subtract,
+      pivotTo,
+      pageSize,
+      dedupeIntervalMs,
+      autoFetchMore,
+      streamUpdates,
+      objectTypeChanged,
+    ],
   );
 
   const payload = React.useSyncExternalStore(subscribe, getSnapShot);

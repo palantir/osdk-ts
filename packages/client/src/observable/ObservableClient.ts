@@ -40,7 +40,6 @@ import { additionalContext, type Client } from "../Client.js";
 import { createClientFromContext } from "../createClient.js";
 import type { QueryReturnType } from "../queries/types.js";
 import { OBSERVABLE_USER_AGENT } from "../util/UserAgent.js";
-import type { Canonical } from "./internal/Canonical.js";
 import type { ObserveObjectSetOptions } from "./internal/objectset/ObjectSetQueryOptions.js";
 import { ObservableClientImpl } from "./internal/ObservableClientImpl.js";
 import { Store } from "./internal/Store.js";
@@ -457,13 +456,42 @@ export interface ObservableClient extends ObserveLinks {
     primaryKey: string | number,
   ): Promise<void>;
 
-  canonicalizeWhereClause: <
-    T extends ObjectTypeDefinition | InterfaceDefinition,
-    RDPs extends Record<string, SimplePropertyDef> = {},
-  >(
-    where: WhereClause<T, RDPs>,
-  ) => Canonical<WhereClause<T, RDPs>>;
+  /**
+   * Canonicalize options object for stable references.
+   *
+   * Different option keys are canonicalized using specialized canonicalizers:
+   * - `where` - WhereClauseCanonicalizer for normalized where clauses
+   * - `withProperties` - RdpCanonicalizer for derived properties (handles functions)
+   * - `orderBy` - OrderByCanonicalizer for sort specifications
+   * - All other object values - GenericCanonicalizer (JSON-based)
+   *
+   * @param options - Object containing options to canonicalize
+   * @returns Object with same shape but all values canonicalized to stable references
+   */
+  canonicalizeOptions: <T extends CanonicalizeOptionsInput>(
+    options: T,
+  ) => CanonicalizedOptions<T>;
 }
+
+export interface CanonicalizeOptionsInput {
+  where?: WhereClause<
+    ObjectOrInterfaceDefinition,
+    Record<string, SimplePropertyDef>
+  >;
+  withProperties?: DerivedProperty.Clause<ObjectOrInterfaceDefinition>;
+  orderBy?: OrderBy<ObjectOrInterfaceDefinition>;
+  aggregate?: AggregateOpts<ObjectOrInterfaceDefinition>;
+  intersectWith?: Array<{
+    where: WhereClause<
+      ObjectOrInterfaceDefinition,
+      Record<string, SimplePropertyDef>
+    >;
+  }>;
+}
+
+export type CanonicalizedOptions<T extends CanonicalizeOptionsInput> = {
+  [K in keyof T]: T[K];
+};
 
 export function createObservableClient(client: Client): ObservableClient {
   // First we need a modified client that adds an extra header so we know its
