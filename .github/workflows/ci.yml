@@ -97,7 +97,7 @@ jobs:
       # These packages use Vite 7+ which requires Node 20+, so exclude them on Node 18
       - name: Transpile, typecheck, Lint and test (excluding Vite 7 packages on Node 18)
         if: matrix.node == 18
-        run: pnpm exec turbo check --filter="!@osdk/create-app.template.*" --filter="!@osdk/create-widget.template.*" --filter="!@osdk/widget.vite-plugin" --filter="!@osdk/examples.*"
+        run: pnpm exec turbo check --filter="!@osdk/create-app.template.*" --filter="!@osdk/create-widget.template.*" --filter="!@osdk/widget.vite-plugin" --filter="!@osdk/examples.*" --filter="!@psdk/examples.*"
 
       - name: Transpile, typecheck, Lint and test
         if: matrix.node != 18
@@ -107,7 +107,7 @@ jobs:
       # These packages use Vite 7+ which requires Node 20+, so exclude them on Node 18
       - name: Build (excluding Vite 7 packages on Node 18)
         if: matrix.node == 18
-        run: pnpm exec turbo build --filter="!@osdk/create-app.template.*" --filter="!@osdk/create-widget.template.*" --filter="!@osdk/widget.vite-plugin" --filter="!@osdk/examples.*"
+        run: pnpm exec turbo build --filter="!@osdk/create-app.template.*" --filter="!@osdk/create-widget.template.*" --filter="!@osdk/widget.vite-plugin" --filter="!@osdk/examples.*" --filter="!@psdk/examples.*"
 
       - name: Build
         if: matrix.node != 18
