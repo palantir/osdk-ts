@@ -19,7 +19,7 @@ import type {
   TimeSeriesPoint,
   TimeSeriesQuery,
 } from "@osdk/api";
-import * as OntologiesV2 from "@osdk/foundry.ontologies";
+import * as TimeSeriesValueBankProperties from "@osdk/foundry.ontologies/TimeSeriesValueBankProperty";
 import type { MinimalClient } from "./MinimalClientContext.js";
 import { asyncIterPointsHelper, getTimeRange } from "./util/timeseriesUtils.js";
 
@@ -45,7 +45,7 @@ export class GeotimeSeriesPropertyImpl<T extends GeoJSON.Point>
   }
 
   public async getLatestValue(): Promise<TimeSeriesPoint<T> | undefined> {
-    const latestPointPromise = OntologiesV2.TimeSeriesValueBankProperties
+    const latestPointPromise = TimeSeriesValueBankProperties
       .getLatestValue(
         this.#client,
         await this.#client.ontologyRid,
@@ -80,8 +80,8 @@ export class GeotimeSeriesPropertyImpl<T extends GeoJSON.Point>
     void,
     unknown
   > {
-    const streamPointsIterator = await OntologiesV2
-      .TimeSeriesValueBankProperties.streamValues(
+    const streamPointsIterator = await TimeSeriesValueBankProperties
+      .streamValues(
         this.#client,
         await this.#client.ontologyRid,
         ...this.#triplet,

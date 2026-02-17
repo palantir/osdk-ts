@@ -16,13 +16,14 @@
 
 import type { Logger, ObjectTypeDefinition } from "@osdk/api";
 import { PalantirApiError } from "@osdk/shared.net.errors";
-import { DefaultMap, DefaultWeakMap } from "mnemonist";
 import type { DeferredPromise } from "p-defer";
 import pDefer from "p-defer";
 import { additionalContext, type Client } from "../../Client.js";
 import type {
   ObjectHolder,
 } from "../../object/convertWireToOsdkObjects/ObjectHolder.js";
+import { DefaultMap } from "./collections/DefaultMap.js";
+import { DefaultWeakMap } from "./collections/DefaultWeakMap.js";
 
 interface InternalValue {
   primaryKey: string;

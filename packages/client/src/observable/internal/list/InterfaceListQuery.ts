@@ -15,7 +15,17 @@
  */
 
 import type { ObjectSet, ObjectTypeDefinition, Osdk } from "@osdk/api";
-import groupBy from "object.groupby";
+function groupBy<T>(
+  arr: T[],
+  fn: (item: T) => string,
+): Record<string, T[]> {
+  const result: Record<string, T[]> = {};
+  for (const item of arr) {
+    const key = fn(item);
+    (result[key] ??= []).push(item);
+  }
+  return result;
+}
 import invariant from "tiny-invariant";
 import type { Client } from "../../../Client.js";
 import type { InterfaceHolder } from "../../../object/convertWireToOsdkObjects/InterfaceHolder.js";
