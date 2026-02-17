@@ -144,7 +144,6 @@ export default async function main(
         type: "string",
         coerce: path.resolve,
       },
-      // Function discovery options
       generateFunctionsOsdk: {
         describe: "Output folder for generated OSDK for functions",
         type: "string",
