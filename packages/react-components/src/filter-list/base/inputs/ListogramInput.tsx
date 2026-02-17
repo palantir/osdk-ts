@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import type { ObjectSet, ObjectTypeDefinition, PropertyKeys } from "@osdk/api";
+import type {
+  ObjectSet,
+  ObjectTypeDefinition,
+  PropertyKeys,
+  WhereClause,
+} from "@osdk/api";
 import classnames from "classnames";
 import React, { memo, useCallback, useMemo, useState } from "react";
 import { usePropertyAggregation } from "../../hooks/usePropertyAggregation.js";
@@ -30,6 +35,7 @@ interface ListogramInputProps<
   selectedValues: string[];
   onChange: (values: string[]) => void;
   objectSet?: ObjectSet<Q>;
+  whereClause?: WhereClause<Q>;
   className?: string;
   style?: React.CSSProperties;
   maxVisibleItems?: number;
@@ -46,6 +52,7 @@ function ListogramInputInner<
   selectedValues,
   onChange,
   objectSet,
+  whereClause,
   className,
   style,
   maxVisibleItems,
@@ -57,7 +64,7 @@ function ListogramInputInner<
   const { data: values, maxCount, isLoading, error } = usePropertyAggregation(
     objectType,
     propertyKey,
-    {},
+    { where: whereClause },
   );
 
   const toggleValue = useCallback(

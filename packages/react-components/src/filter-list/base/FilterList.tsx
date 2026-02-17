@@ -57,6 +57,7 @@ export function FilterList<Q extends ObjectTypeDefinition>(
   const {
     filterStates,
     setFilterState,
+    whereClause,
     activeFilterCount,
     reset,
   } = useFilterListState(props);
@@ -100,6 +101,7 @@ export function FilterList<Q extends ObjectTypeDefinition>(
         filterDefinitions={visibleFilterDefinitions}
         filterStates={filterStates}
         onFilterStateChanged={setFilterState}
+        whereClause={whereClause}
         renderEmptyAction={renderAddFilterButton}
       />
 

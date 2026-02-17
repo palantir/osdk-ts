@@ -15,7 +15,12 @@
  */
 
 import { Cross } from "@blueprintjs/icons";
-import type { ObjectSet, ObjectTypeDefinition, PropertyKeys } from "@osdk/api";
+import type {
+  ObjectSet,
+  ObjectTypeDefinition,
+  PropertyKeys,
+  WhereClause,
+} from "@osdk/api";
 import classnames from "classnames";
 import React, { memo, useCallback, useMemo } from "react";
 import { Select } from "../../../base-components/select/Select.js";
@@ -32,6 +37,7 @@ interface SingleSelectInputProps<
   selectedValue: string | undefined;
   onChange: (value: string | undefined) => void;
   objectSet?: ObjectSet<Q>;
+  whereClause?: WhereClause<Q>;
   className?: string;
   style?: React.CSSProperties;
   placeholder?: string;
@@ -48,6 +54,7 @@ function SingleSelectInputInner<
   selectedValue,
   onChange,
   objectSet,
+  whereClause,
   className,
   style,
   placeholder = "Select a value...",
@@ -57,7 +64,7 @@ function SingleSelectInputInner<
   const { data: values, isLoading, error } = usePropertyAggregation(
     objectType,
     propertyKey,
-    {},
+    { where: whereClause },
   );
 
   const handleValueChange = useCallback(

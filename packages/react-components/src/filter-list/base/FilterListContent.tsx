@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectSet, ObjectTypeDefinition } from "@osdk/api";
+import type { ObjectSet, ObjectTypeDefinition, WhereClause } from "@osdk/api";
 import classnames from "classnames";
 import React from "react";
 import type { FilterDefinitionUnion } from "../FilterListApi.js";
@@ -29,9 +29,10 @@ interface FilterListContentProps<Q extends ObjectTypeDefinition> {
   filterDefinitions?: Array<FilterDefinitionUnion<Q>>;
   filterStates: Map<string, FilterState>;
   onFilterStateChanged: (
-    definition: FilterDefinitionUnion<Q>,
+    filterKey: string,
     state: FilterState,
   ) => void;
+  whereClause: WhereClause<Q>;
   className?: string;
   style?: React.CSSProperties;
   renderEmptyAction?: () => React.ReactNode;
@@ -43,6 +44,7 @@ export function FilterListContent<Q extends ObjectTypeDefinition>({
   filterDefinitions,
   filterStates,
   onFilterStateChanged,
+  whereClause,
   className,
   style,
   renderEmptyAction,
@@ -78,8 +80,10 @@ export function FilterListContent<Q extends ObjectTypeDefinition>({
             objectType={objectType}
             objectSet={objectSet}
             definition={definition}
+            filterKey={filterKey}
             filterState={state}
             onFilterStateChanged={onFilterStateChanged}
+            whereClause={whereClause}
           />
         );
       })}

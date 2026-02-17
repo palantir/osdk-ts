@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import type { ObjectSet, ObjectTypeDefinition, PropertyKeys } from "@osdk/api";
+import type {
+  ObjectSet,
+  ObjectTypeDefinition,
+  PropertyKeys,
+  WhereClause,
+} from "@osdk/api";
 import classnames from "classnames";
 import React, { memo, useCallback, useMemo } from "react";
 import { Checkbox } from "../../../base-components/checkbox/Checkbox.js";
@@ -31,6 +36,7 @@ interface CheckboxListInputProps<
   selectedValues: string[];
   onChange: (selectedValues: string[]) => void;
   objectSet?: ObjectSet<Q>;
+  whereClause?: WhereClause<Q>;
   className?: string;
   style?: React.CSSProperties;
 }
@@ -44,13 +50,14 @@ function CheckboxListInputInner<
   selectedValues,
   onChange,
   objectSet,
+  whereClause,
   className,
   style,
 }: CheckboxListInputProps<Q, K>): React.ReactElement {
   const { data, isLoading, error } = usePropertyAggregation(
     objectType,
     propertyKey,
-    {},
+    { where: whereClause },
   );
 
   const values = useMemo(
