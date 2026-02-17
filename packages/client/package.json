@@ -117,7 +117,6 @@
     "typescript": "~5.5.4",
     "zod": "^3.25.76"
   },
-  "sideEffects": false,
   "publishConfig": {
     "access": "public"
   },
@@ -135,6 +134,7 @@
   "main": "./build/cjs/index.cjs",
   "module": "./build/esm/index.js",
   "types": "./build/cjs/index.d.cts",
+  "sideEffects": false,
   "sls": {
     "dependencies": {
       "com.palantir.object-set-watcher:object-set-watcher": {
