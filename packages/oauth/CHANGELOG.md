@@ -1,5 +1,11 @@
 # @osdk/oauth
 
+## 1.8.0-beta.2
+
+### Minor Changes
+
+- c9d954d: Add `tokenStorage` option to `createPublicOauthClient` to control refresh token storage. Supports `'localStorage'` (default), `'sessionStorage'` (recommended for shared devices), or `'none'` (most secure, re-authenticates on every page load).
+
 ## 1.7.0-beta.2
 
 ### Minor Changes

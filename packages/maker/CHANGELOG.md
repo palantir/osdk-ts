@@ -1,5 +1,17 @@
 # @osdk/maker
 
+## 0.16.0-beta.4
+
+### Minor Changes
+
+- ab50d31: Remove propertiesV2 from code-snippets
+- 2b15836: Disallow ILCs on imported interfaces
+- e0ba9eb: Shallow clone arrays in definition when passed in to defineFoo methods
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.6
+
 ## 0.16.0-beta.3
 
 ### Minor Changes
