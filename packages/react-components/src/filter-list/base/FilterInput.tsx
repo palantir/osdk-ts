@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectSet, ObjectTypeDefinition } from "@osdk/api";
+import type { ObjectSet, ObjectTypeDefinition, WhereClause } from "@osdk/api";
 import React, { memo, useCallback } from "react";
 import type { FilterDefinitionUnion } from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
@@ -44,6 +44,7 @@ interface FilterInputProps<Q extends ObjectTypeDefinition> {
   definition: FilterDefinitionUnion<Q>;
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
+  whereClause: WhereClause<Q>;
 }
 
 function FilterInputInner<Q extends ObjectTypeDefinition>({
@@ -52,6 +53,7 @@ function FilterInputInner<Q extends ObjectTypeDefinition>({
   definition,
   filterState,
   onFilterStateChanged,
+  whereClause,
 }: FilterInputProps<Q>): React.ReactElement {
   const content = (
     <FilterInputContent
@@ -60,6 +62,7 @@ function FilterInputInner<Q extends ObjectTypeDefinition>({
       definition={definition}
       filterState={filterState}
       onFilterStateChanged={onFilterStateChanged}
+      whereClause={whereClause}
     />
   );
 
@@ -74,6 +77,7 @@ function FilterInputContent<Q extends ObjectTypeDefinition>({
   definition,
   filterState,
   onFilterStateChanged,
+  whereClause,
 }: FilterInputProps<Q>): React.ReactElement {
   switch (definition.type) {
     case "HAS_LINK":
@@ -131,6 +135,7 @@ function FilterInputContent<Q extends ObjectTypeDefinition>({
           definition={definition}
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}
+          whereClause={whereClause}
         />
       );
 
@@ -206,6 +211,7 @@ interface PropertyFilterInputProps<Q extends ObjectTypeDefinition> {
   definition: Extract<FilterDefinitionUnion<Q>, { type: "PROPERTY" }>;
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
+  whereClause: WhereClause<Q>;
 }
 
 function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
@@ -214,6 +220,7 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
   definition,
   filterState,
   onFilterStateChanged,
+  whereClause,
 }: PropertyFilterInputProps<Q>): React.ReactElement {
   switch (definition.filterComponent) {
     case "CHECKBOX_LIST":
@@ -224,6 +231,7 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
           propertyKey={definition.key}
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}
+          whereClause={whereClause}
         />
       );
 
@@ -271,6 +279,7 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
           propertyKey={definition.key}
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}
+          whereClause={whereClause}
         />
       );
 
@@ -281,6 +290,7 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
           propertyKey={definition.key}
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}
+          whereClause={whereClause}
         />
       );
 
@@ -307,6 +317,7 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
           propertyKey={definition.key}
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}
+          whereClause={whereClause}
         />
       );
 
@@ -317,6 +328,7 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
           propertyKey={definition.key}
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}
+          whereClause={whereClause}
         />
       );
 
@@ -347,6 +359,7 @@ interface CheckboxListFilterInputProps<Q extends ObjectTypeDefinition> {
   propertyKey: string;
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
+  whereClause: WhereClause<Q>;
 }
 
 function CheckboxListFilterInputInner<Q extends ObjectTypeDefinition>({
@@ -355,6 +368,7 @@ function CheckboxListFilterInputInner<Q extends ObjectTypeDefinition>({
   propertyKey,
   filterState,
   onFilterStateChanged,
+  whereClause,
 }: CheckboxListFilterInputProps<Q>): React.ReactElement {
   const selectedValues = filterState?.type === "SELECT"
     ? filterState.selectedValues as string[]
@@ -379,6 +393,7 @@ function CheckboxListFilterInputInner<Q extends ObjectTypeDefinition>({
       propertyKey={propertyKey}
       selectedValues={selectedValues}
       onChange={handleChange}
+      whereClause={whereClause}
     />
   );
 }
@@ -568,6 +583,7 @@ interface SingleSelectFilterInputProps<Q extends ObjectTypeDefinition> {
   propertyKey: string;
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
+  whereClause: WhereClause<Q>;
 }
 
 function SingleSelectFilterInputInner<Q extends ObjectTypeDefinition>({
@@ -575,6 +591,7 @@ function SingleSelectFilterInputInner<Q extends ObjectTypeDefinition>({
   propertyKey,
   filterState,
   onFilterStateChanged,
+  whereClause,
 }: SingleSelectFilterInputProps<Q>): React.ReactElement {
   const selectedValue = filterState?.type === "SELECT"
     ? coerceToString(
@@ -600,6 +617,7 @@ function SingleSelectFilterInputInner<Q extends ObjectTypeDefinition>({
       propertyKey={propertyKey}
       selectedValue={selectedValue}
       onChange={handleChange}
+      whereClause={whereClause}
     />
   );
 }
@@ -613,6 +631,7 @@ interface MultiSelectFilterInputProps<Q extends ObjectTypeDefinition> {
   propertyKey: string;
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
+  whereClause: WhereClause<Q>;
 }
 
 function MultiSelectFilterInputInner<Q extends ObjectTypeDefinition>({
@@ -620,6 +639,7 @@ function MultiSelectFilterInputInner<Q extends ObjectTypeDefinition>({
   propertyKey,
   filterState,
   onFilterStateChanged,
+  whereClause,
 }: MultiSelectFilterInputProps<Q>): React.ReactElement {
   const selectedValues = filterState?.type === "SELECT"
     ? coerceToStringArray(
@@ -645,6 +665,7 @@ function MultiSelectFilterInputInner<Q extends ObjectTypeDefinition>({
       propertyKey={propertyKey}
       selectedValues={selectedValues}
       onChange={handleChange}
+      whereClause={whereClause}
     />
   );
 }
@@ -720,6 +741,7 @@ interface ListogramFilterInputProps<Q extends ObjectTypeDefinition> {
   propertyKey: string;
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
+  whereClause: WhereClause<Q>;
 }
 
 function ListogramFilterInputInner<Q extends ObjectTypeDefinition>({
@@ -727,6 +749,7 @@ function ListogramFilterInputInner<Q extends ObjectTypeDefinition>({
   propertyKey,
   filterState,
   onFilterStateChanged,
+  whereClause,
 }: ListogramFilterInputProps<Q>): React.ReactElement {
   const selectedValues = filterState?.type === "EXACT_MATCH"
     ? coerceToStringArray(filterState.values)
@@ -750,6 +773,7 @@ function ListogramFilterInputInner<Q extends ObjectTypeDefinition>({
       propertyKey={propertyKey}
       selectedValues={selectedValues}
       onChange={handleChange}
+      whereClause={whereClause}
     />
   );
 }
@@ -763,6 +787,7 @@ interface TextTagsFilterInputProps<Q extends ObjectTypeDefinition> {
   propertyKey: string;
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
+  whereClause: WhereClause<Q>;
 }
 
 function TextTagsFilterInputInner<Q extends ObjectTypeDefinition>({
@@ -770,6 +795,7 @@ function TextTagsFilterInputInner<Q extends ObjectTypeDefinition>({
   propertyKey,
   filterState,
   onFilterStateChanged,
+  whereClause,
 }: TextTagsFilterInputProps<Q>): React.ReactElement {
   const tags = filterState?.type === "EXACT_MATCH"
     ? coerceToStringArray(filterState.values)
@@ -793,6 +819,7 @@ function TextTagsFilterInputInner<Q extends ObjectTypeDefinition>({
       propertyKey={propertyKey}
       tags={tags}
       onChange={handleChange}
+      whereClause={whereClause}
     />
   );
 }

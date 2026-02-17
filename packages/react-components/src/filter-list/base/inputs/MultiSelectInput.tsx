@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import type { ObjectSet, ObjectTypeDefinition, PropertyKeys } from "@osdk/api";
+import type {
+  ObjectSet,
+  ObjectTypeDefinition,
+  PropertyKeys,
+  WhereClause,
+} from "@osdk/api";
 import classnames from "classnames";
 import React, { memo, useCallback } from "react";
 import { Combobox } from "../../../base-components/combobox/Combobox.js";
@@ -31,6 +36,7 @@ interface MultiSelectInputProps<
   selectedValues: string[];
   onChange: (values: string[]) => void;
   objectSet?: ObjectSet<Q>;
+  whereClause?: WhereClause<Q>;
   className?: string;
   style?: React.CSSProperties;
   placeholder?: string;
@@ -47,6 +53,7 @@ function MultiSelectInputInner<
   selectedValues,
   onChange,
   objectSet,
+  whereClause,
   className,
   style,
   placeholder = "Select values...",
@@ -56,7 +63,7 @@ function MultiSelectInputInner<
   const { data: values, isLoading, error } = usePropertyAggregation(
     objectType,
     propertyKey,
-    {},
+    { where: whereClause },
   );
 
   const handleValueChange = useCallback(

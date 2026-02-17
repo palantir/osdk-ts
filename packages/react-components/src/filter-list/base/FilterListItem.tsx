@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectSet, ObjectTypeDefinition } from "@osdk/api";
+import type { ObjectSet, ObjectTypeDefinition, WhereClause } from "@osdk/api";
 import classnames from "classnames";
 import React, { memo, useCallback } from "react";
 import type { FilterDefinitionUnion } from "../FilterListApi.js";
@@ -26,11 +26,13 @@ interface FilterListItemProps<Q extends ObjectTypeDefinition> {
   objectType: Q;
   objectSet: ObjectSet<Q>;
   definition: FilterDefinitionUnion<Q>;
+  filterKey: string;
   filterState: FilterState | undefined;
   onFilterStateChanged: (
-    definition: FilterDefinitionUnion<Q>,
+    filterKey: string,
     state: FilterState,
   ) => void;
+  whereClause: WhereClause<Q>;
   className?: string;
   style?: React.CSSProperties;
 }
@@ -39,8 +41,10 @@ function FilterListItemInner<Q extends ObjectTypeDefinition>({
   objectType,
   objectSet,
   definition,
+  filterKey,
   filterState,
   onFilterStateChanged,
+  whereClause,
   className,
   style,
 }: FilterListItemProps<Q>): React.ReactElement {
@@ -48,9 +52,9 @@ function FilterListItemInner<Q extends ObjectTypeDefinition>({
 
   const handleFilterStateChanged = useCallback(
     (newState: FilterState) => {
-      onFilterStateChanged(definition, newState);
+      onFilterStateChanged(filterKey, newState);
     },
-    [definition, onFilterStateChanged],
+    [filterKey, onFilterStateChanged],
   );
 
   return (
@@ -70,6 +74,7 @@ function FilterListItemInner<Q extends ObjectTypeDefinition>({
           definition={definition}
           filterState={filterState}
           onFilterStateChanged={handleFilterStateChanged}
+          whereClause={whereClause}
         />
       </div>
     </div>
