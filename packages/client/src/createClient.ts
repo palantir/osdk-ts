@@ -226,10 +226,10 @@ export function createClientFromContext(clientCtx: MinimalClient) {
               propertyType: L;
             }) => {
               const { data, fileName, objectType, propertyType } = args;
-              const { MediaReferenceProperties } = await import(
-                "@osdk/foundry.ontologies"
+              const { upload } = await import(
+                "@osdk/foundry.ontologies/MediaReferenceProperty"
               );
-              return await MediaReferenceProperties.upload(
+              return await upload(
                 clientCtx,
                 await clientCtx.ontologyRid,
                 objectType.apiName,
