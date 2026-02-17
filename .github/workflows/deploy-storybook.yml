@@ -1,0 +1,66 @@
+name: Deploy Storybook to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'packages/react-components-storybook/**'
+      - '.github/workflows/deploy-storybook.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build dependencies for Storybook
+        run: |
+          pnpm --filter @osdk/api build || true
+          pnpm --filter @osdk/client build || true
+          pnpm --filter @osdk/react build || true
+          pnpm --filter @osdk/react-components build || true
+          pnpm --filter @osdk/faux build || true
+
+      - name: Build Storybook
+        run: pnpm --filter react-components-storybook build-storybook
+
+      - name: Deploy to gh-pages branch
+        run: |
+          cd packages/react-components-storybook/storybook-static
+          touch .nojekyll
+          git init
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Deploy Storybook"
+          git branch -M storybook-deploy
+          cd -
+          
+          # Clone existing gh-pages
+          git clone --branch gh-pages --single-branch --depth 1 https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git gh-pages-temp
+          
+          # Copy storybook files to subdirectory
+          rm -rf gh-pages-temp/storybook
+          cp -r packages/react-components-storybook/storybook-static gh-pages-temp/storybook
+          
+          # Push changes
+          cd gh-pages-temp
+          git add -A
+          git commit -m "Deploy Storybook" || echo "No changes to commit"
+          git push origin gh-pages
