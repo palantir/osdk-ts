@@ -25,13 +25,9 @@ import type {
 } from "@osdk/api";
 import type { ObjectTypeDefinition } from "@osdk/client";
 import type { ObserveAggregationArgs } from "@osdk/client/unstable-do-not-use";
-import {
-  computeObjectSetCacheKey,
-} from "@osdk/client/unstable-do-not-use";
+import { computeObjectSetCacheKey } from "@osdk/client/unstable-do-not-use";
 import React from "react";
-import {
-  makeExternalStoreAsync,
-} from "./makeExternalStore.js";
+import { makeExternalStoreAsync } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
 
 export interface UseOsdkAggregationOptions<
