@@ -206,6 +206,11 @@ export function useOsdkAggregation<
 
   const canonWhere = observableClient.canonicalizeWhereClause<Q>(where);
 
+  const stableCanonWhere = React.useMemo(
+    () => canonWhere,
+    [JSON.stringify(canonWhere)],
+  );
+
   const objectSetRef = React.useRef(objectSet);
   objectSetRef.current = objectSet;
 
@@ -237,7 +242,7 @@ export function useOsdkAggregation<
               {
                 type: type,
                 objectSet: objectSetRef.current!,
-                where: canonWhere,
+                where: stableCanonWhere,
                 withProperties: stableWithProperties,
                 intersectWith: stableIntersectWith,
                 aggregate: stableAggregate,
@@ -247,7 +252,7 @@ export function useOsdkAggregation<
             ),
           process.env.NODE_ENV !== "production"
             ? `aggregation ${type.apiName} ${objectSetKeyString} ${
-              JSON.stringify(canonWhere)
+              JSON.stringify(stableCanonWhere)
             }`
             : void 0,
         );
@@ -258,7 +263,7 @@ export function useOsdkAggregation<
             {
               type: type,
               objectSet: client(type),
-              where: canonWhere,
+              where: stableCanonWhere,
               withProperties: stableWithProperties,
               intersectWith: stableIntersectWith,
               aggregate: stableAggregate,
@@ -267,7 +272,7 @@ export function useOsdkAggregation<
             observer,
           ),
         process.env.NODE_ENV !== "production"
-          ? `aggregation ${type.apiName} ${JSON.stringify(canonWhere)}`
+          ? `aggregation ${type.apiName} ${JSON.stringify(stableCanonWhere)}`
           : void 0,
       );
     },
@@ -277,7 +282,7 @@ export function useOsdkAggregation<
       type.apiName,
       type.type,
       objectSetKeyString,
-      canonWhere,
+      stableCanonWhere,
       stableWithProperties,
       stableIntersectWith,
       stableAggregate,
