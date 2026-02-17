@@ -1,6 +1,5 @@
 ---
-"@osdk/client": patch
-"@osdk/react": patch
+"@osdk/react-components": patch
 ---
 
-update useOsdkAggregation to support composed object sets, async
+add filter-list base containers and input components
