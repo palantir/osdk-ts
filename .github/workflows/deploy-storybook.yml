@@ -2,7 +2,7 @@ name: Deploy Storybook to GitHub Pages
 
 on:
   push:
-    branches: [main]
+    branches: [main, zpoh/storybook]
     paths:
       - 'packages/react-components-storybook/**'
       - '.github/workflows/deploy-storybook.yml'
