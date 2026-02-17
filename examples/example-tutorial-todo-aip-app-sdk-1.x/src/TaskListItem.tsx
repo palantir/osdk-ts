@@ -37,7 +37,7 @@ function TaskListItem({ task, deleteTask, onTaskDeleted }: TaskListItemProps) {
         onChange={handleClick}
         checked={isDeleting}
         className={css.delete}
-        title="Delete task"
+        aria-label={`Delete ${task.title}`}
       />
       <div className={`${css.task} ${isDeleting ? css.checked : ""}`}>
         <span>{task.title}</span>
@@ -48,6 +48,7 @@ function TaskListItem({ task, deleteTask, onTaskDeleted }: TaskListItemProps) {
             value={task.description}
             className={css.textArea}
             rows={1}
+            aria-label={`Description for ${task.title}`}
           />
         )}
       </div>

@@ -6,7 +6,7 @@ import css from "./Header.module.css";
 
 function Header(): React.ReactElement {
   return (
-    <div className={css.header}>
+    <header className={css.header}>
       <div className={css.logos}>
         <a
           href="https://www.palantir.com/docs/foundry/ontology-sdk/overview/"
@@ -22,7 +22,7 @@ function Header(): React.ReactElement {
       <h2 className={css.heading}>
         Build your React application with Foundry!
       </h2>
-    </div>
+    </header>
   );
 }
 
