@@ -94,7 +94,6 @@ export abstract class AggregationQuery extends Query<
   >;
   protected rdpConfig: Canonical<Rdp> | undefined;
   #invalidationTypes: Set<string>;
-  // Async computation of object types that should trigger invalidation
   #invalidationTypesPromise: Promise<Set<string>> | undefined;
 
   constructor(

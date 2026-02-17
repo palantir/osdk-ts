@@ -27,7 +27,10 @@ import type { ObjectTypeDefinition } from "@osdk/client";
 import type { ObserveAggregationArgs } from "@osdk/client/unstable-do-not-use";
 import { computeObjectSetCacheKey } from "@osdk/client/unstable-do-not-use";
 import React from "react";
-import { makeExternalStoreAsync } from "./makeExternalStore.js";
+import {
+  makeExternalStore,
+  makeExternalStoreAsync,
+} from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
 
 export interface UseOsdkAggregationOptions<
@@ -198,7 +201,7 @@ export function useOsdkAggregation<
   } = options;
   const objectSet = "objectSet" in options ? options.objectSet : undefined;
 
-  const { observableClient, client } = React.useContext(OsdkContext2);
+  const { observableClient } = React.useContext(OsdkContext2);
 
   const canonWhere = observableClient.canonicalizeWhereClause<Q>(where);
 
@@ -253,12 +256,12 @@ export function useOsdkAggregation<
             : void 0,
         );
       }
-      return makeExternalStoreAsync<ObserveAggregationArgs<Q, A>>(
+      return makeExternalStore<ObserveAggregationArgs<Q, A>>(
         (observer) =>
+          // eslint-disable-next-line @typescript-eslint/no-deprecated
           observableClient.observeAggregation(
             {
               type: type,
-              objectSet: client(type),
               where: stableCanonWhere,
               withProperties: stableWithProperties,
               intersectWith: stableIntersectWith,
@@ -273,7 +276,6 @@ export function useOsdkAggregation<
       );
     },
     [
-      client,
       observableClient,
       type.apiName,
       type.type,

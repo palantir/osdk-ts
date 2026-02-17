@@ -18,8 +18,6 @@ import type { DerivedProperty, ObjectTypeDefinition } from "@osdk/api";
 import type { ObjectSet as WireObjectSet } from "@osdk/foundry.ontologies";
 import { additionalContext } from "../../../Client.js";
 import { createObjectSet } from "../../../objectSet/createObjectSet.js";
-import type { Canonical } from "../Canonical.js";
-import type { SimpleWhereClause } from "../SimpleWhereClause.js";
 import {
   type AggregationCacheKey,
   API_NAME_IDX,
@@ -34,9 +32,7 @@ export class ObjectAggregationQuery extends AggregationQuery {
   > {
     const type = this.cacheKey.otherKeys[API_NAME_IDX];
     const serializedObjectSet = this.cacheKey.otherKeys[WIRE_OBJECT_SET_IDX];
-    const intersectWith = this.cacheKey.otherKeys[INTERSECT_IDX] as
-      | Canonical<Array<Canonical<SimpleWhereClause>>>
-      | undefined;
+    const intersectWith = this.cacheKey.otherKeys[INTERSECT_IDX];
     const objectTypeDef = {
       type: "object",
       apiName: type,
