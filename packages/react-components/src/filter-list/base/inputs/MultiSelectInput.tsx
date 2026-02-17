@@ -52,7 +52,6 @@ function MultiSelectInputInner<
   propertyKey,
   selectedValues,
   onChange,
-  objectSet,
   whereClause,
   className,
   style,

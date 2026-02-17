@@ -34,11 +34,7 @@ function ToggleInputInner({
   className,
   style,
 }: ToggleInputProps): React.ReactElement {
-  const rootClassName = classnames(
-    "filter-input--toggle",
-    styles.toggleInput,
-    className,
-  );
+  const rootClassName = classnames(styles.toggleInput, className);
 
   return (
     <div className={rootClassName} style={style} data-enabled={enabled}>

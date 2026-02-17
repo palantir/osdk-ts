@@ -51,7 +51,6 @@ function ListogramInputInner<
   propertyKey,
   selectedValues,
   onChange,
-  objectSet,
   whereClause,
   className,
   style,

@@ -52,7 +52,6 @@ function TextTagsInputInner<
   propertyKey,
   tags,
   onChange,
-  objectSet,
   whereClause,
   className,
   style,
