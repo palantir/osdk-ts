@@ -44,6 +44,7 @@
   "devDependencies": {
     "@osdk/api": "workspace:~",
     "@osdk/cli.cmd.typescript": "workspace:~",
+    "@osdk/functions": "workspace:~",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@osdk/typescript-docs-example-generator": "workspace:~",
