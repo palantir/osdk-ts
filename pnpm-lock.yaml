@@ -1809,21 +1809,9 @@ importers:
       fast-deep-equal:
         specifier: ^3.1.3
         version: 3.1.3
-      fetch-retry:
-        specifier: ^6.0.0
-        version: 6.0.0
-      find-up:
-        specifier: 7.0.0
-        version: 7.0.0
       isomorphic-ws:
         specifier: ^5.0.0
         version: 5.0.0(ws@8.18.3)
-      mnemonist:
-        specifier: ^0.40.3
-        version: 0.40.3
-      object.groupby:
-        specifier: ^1.0.3
-        version: 1.0.3
       p-defer:
         specifier: ^4.0.1
         version: 4.0.1
@@ -1858,9 +1846,6 @@ importers:
       '@osdk/shared.test':
         specifier: workspace:~
         version: link:../shared.test
-      '@types/object.groupby':
-        specifier: ^1.0.4
-        version: 1.0.4
       '@types/ws':
         specifier: ^8.18.1
         version: 8.18.1
@@ -1876,6 +1861,9 @@ importers:
       execa:
         specifier: ^9.6.0
         version: 9.6.0
+      find-up:
+        specifier: 7.0.0
+        version: 7.0.0
       p-locate:
         specifier: ^6.0.0
         version: 6.0.0
@@ -3646,9 +3634,6 @@ importers:
       json-stable-stringify:
         specifier: ^1.3.0
         version: 1.3.0
-      mnemonist:
-        specifier: ^0.40.3
-        version: 0.40.3
       msw:
         specifier: ^2.11.1
         version: 2.11.1(@types/node@20.19.13)(typescript@5.5.4)
@@ -4511,9 +4496,6 @@ importers:
       json-stable-stringify:
         specifier: ^1.3.0
         version: 1.3.0
-      mnemonist:
-        specifier: ^0.40.3
-        version: 0.40.3
       msw:
         specifier: ^2.11.1
         version: 2.11.1(@types/node@24.3.1)(typescript@5.5.4)
@@ -9844,9 +9826,6 @@ packages:
   '@types/node@24.3.1':
     resolution: {integrity: sha512-3vXmQDXy+woz+gnrTvuvNrPzekOi+Ds0ReMxw0LzBiK3a+1k0kQn9f2NWk+lgD4rJehFUmYy2gMhJ2ZI+7YP9g==}
 
-  '@types/object.groupby@1.0.4':
-    resolution: {integrity: sha512-n5gXvoz1nuDLLLMgTl82b5VCkSlqt2zfBkSWxoCmMS/j+hN6W7BuPlpOm68B/RRluy2bYo67KOtMQ28cySqeYw==}
-
   '@types/parse-json@4.0.2':
     resolution: {integrity: sha512-dISoDXWWQwUquiKsyZ4Ng+HX2KsPL7LyHKHQwgGFEA3IaKac4Obd+h2a/a6waisAoepJlBcx9paWqjA8/HVjCw==}
 
@@ -15004,9 +14983,6 @@ packages:
   mlly@1.8.0:
     resolution: {integrity: sha512-l8D9ODSRWLe2KHJSifWGwBqpTZXIXTeo8mlKjY+E2HAakaTeNpqAyBZ8GSqLzHgw4XmHmC8whvpjJNMbFZN7/g==}
 
-  mnemonist@0.40.3:
-    resolution: {integrity: sha512-Vjyr90sJ23CKKH/qPAgUKicw/v6pRoamxIEDFOF8uSgFME7DqPRpHgRTejWVjkdGg5dXj0/NyxZHZ9bcjH+2uQ==}
-
   mri@1.2.0:
     resolution: {integrity: sha512-tzzskb3bG8LvYGFF/mDTpq3jpI6Q9wc3LEmBaghu+DdCssd1FakN7Bc0hVNmEyGq1bq3RgfkCb3cmQLpNPOroA==}
     engines: {node: '>=4'}
@@ -15223,9 +15199,6 @@ packages:
   object.values@1.2.1:
     resolution: {integrity: sha512-gXah6aZrcUxjWg2zR2MwouP2eHlCBzdV4pygudehaKXSGW4v2AsRQUK+lwwXhii6KFZcunEnmSUoYp5CXibxtA==}
     engines: {node: '>= 0.4'}
-
-  obliterator@2.0.5:
-    resolution: {integrity: sha512-42CPE9AhahZRsMNslczq0ctAEtqk8Eka26QofnqC346BZdHDySk3LWka23LI7ULIw11NmltpiLagIq8gBozxTw==}
 
   obuf@1.1.2:
     resolution: {integrity: sha512-PX1wu0AmAdPqOL1mWhqmlOd8kOIZQwGZw6rh7uby9fTc5lhaOWFLX3I6R1hrF9k3zUY40e6igsLGkDXK92LJNg==}
@@ -25489,8 +25462,6 @@ snapshots:
     dependencies:
       undici-types: 7.10.0
 
-  '@types/object.groupby@1.0.4': {}
-
   '@types/parse-json@4.0.2': {}
 
   '@types/prismjs@1.26.5': {}
@@ -32024,10 +31995,6 @@ snapshots:
       pkg-types: 1.3.1
       ufo: 1.6.1
 
-  mnemonist@0.40.3:
-    dependencies:
-      obliterator: 2.0.5
-
   mri@1.2.0: {}
 
   mrmime@2.0.0: {}
@@ -32285,8 +32252,6 @@ snapshots:
       call-bound: 1.0.4
       define-properties: 1.2.1
       es-object-atoms: 1.1.1
-
-  obliterator@2.0.5: {}
 
   obuf@1.1.2: {}
 
