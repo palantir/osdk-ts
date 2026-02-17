@@ -209,8 +209,8 @@ export class ObjectSetListenerWebsocket {
     }
 
     objectProperties = properties.filter((p) =>
-      !(p in objOrInterfaceDef.properties)
-      || objOrInterfaceDef.properties[p].type !== "geotimeSeriesReference"
+      p in objOrInterfaceDef.properties
+      && objOrInterfaceDef.properties[p].type !== "geotimeSeriesReference"
     );
 
     referenceProperties = properties.filter((p) =>
