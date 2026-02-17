@@ -19,86 +19,78 @@ import { generateClientSdkVersionTwoPointZero } from "@osdk/generator";
 import { OntologyIrToFullMetadataConverter } from "@osdk/generator-converters.ontologyir";
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
+import yargs from "yargs";
+import { hideBin } from "yargs/helpers";
 import { PreviewOntologyIrConverter } from "../PreviewOntologyIrConverter.js";
 
-const USAGE =
-  `Usage: generate-sdk <input-ontology-ir.json> <package-name> <package-version> <output-dir> [options]
-
-Arguments:
-  input-ontology-ir.json  Path to the OntologyIR JSON file
-  package-name            Name for the generated SDK package
-  package-version         Version string for the generated SDK
-  output-dir              Directory where the SDK will be generated
-
-Options:
-  --functions-dir <path>            Path to TypeScript functions source directory (enables TS function discovery)
-  --node-modules-path <path>        Path to node_modules containing @foundry packages (for TS function discovery)
-  --python-functions-dir <path>     Path to Python functions source directory (enables Python function discovery)
-  --python-root-project-dir <path>  Root project directory for Python functions (defaults to parent of python-functions-dir)
-  --python-binary <path>            Path to Python binary (defaults to .maestro/bin/python3 or system python3)`;
-
-interface ParsedOptions {
-  functionsDir?: string;
-  nodeModulesPath?: string;
-  pythonFunctionsDir?: string;
-  pythonRootProjectDir?: string;
-  pythonBinary?: string;
-}
-
-function parseNamedOption(
-  args: string[],
-  flag: string,
-): { value: string | undefined; remaining: string[] } {
-  const idx = args.indexOf(flag);
-  if (idx === -1 || !args[idx + 1]) {
-    return { value: undefined, remaining: args };
-  }
-  const value = args[idx + 1];
-  const remaining = [...args.slice(0, idx), ...args.slice(idx + 2)];
-  return { value: path.resolve(value), remaining };
-}
-
-function parseOptions(
-  argv: string[],
-): { positional: string[]; options: ParsedOptions } {
-  let args = argv;
-  const options: ParsedOptions = {};
-
-  let result = parseNamedOption(args, "--functions-dir");
-  options.functionsDir = result.value;
-  args = result.remaining;
-
-  result = parseNamedOption(args, "--node-modules-path");
-  options.nodeModulesPath = result.value;
-  args = result.remaining;
-
-  result = parseNamedOption(args, "--python-functions-dir");
-  options.pythonFunctionsDir = result.value;
-  args = result.remaining;
-
-  result = parseNamedOption(args, "--python-root-project-dir");
-  options.pythonRootProjectDir = result.value;
-  args = result.remaining;
-
-  result = parseNamedOption(args, "--python-binary");
-  options.pythonBinary = result.value;
-  args = result.remaining;
-
-  return { positional: args, options };
-}
-
 async function main(): Promise<void> {
-  const { positional, options } = parseOptions(process.argv.slice(2));
+  const argv = await yargs(hideBin(process.argv))
+    .strict()
+    .help()
+    .usage(
+      "$0 <input> <package-name> <package-version> <output-dir>",
+      "Generate an OSDK package from an OntologyIR JSON file",
+    )
+    .positional("input", {
+      describe: "Path to the OntologyIR JSON file",
+      type: "string",
+      demandOption: true,
+      coerce: path.resolve,
+    })
+    .positional("package-name", {
+      describe: "Name for the generated SDK package",
+      type: "string",
+      demandOption: true,
+    })
+    .positional("package-version", {
+      describe: "Version string for the generated SDK",
+      type: "string",
+      demandOption: true,
+    })
+    .positional("output-dir", {
+      describe: "Directory where the SDK will be generated",
+      type: "string",
+      demandOption: true,
+      coerce: path.resolve,
+    })
+    .options({
+      "functions-dir": {
+        describe:
+          "Path to TypeScript functions source directory (enables TS function discovery)",
+        type: "string",
+        coerce: path.resolve,
+      },
+      "node-modules-path": {
+        describe:
+          "Path to node_modules containing @foundry packages (for TS function discovery)",
+        type: "string",
+        coerce: path.resolve,
+      },
+      "python-functions-dir": {
+        describe:
+          "Path to Python functions source directory (enables Python function discovery)",
+        type: "string",
+        coerce: path.resolve,
+      },
+      "python-root-project-dir": {
+        describe:
+          "Root project directory for Python functions (defaults to parent of python-functions-dir)",
+        type: "string",
+        coerce: path.resolve,
+      },
+      "python-binary": {
+        describe: "Path to Python binary",
+        type: "string",
+        demandOption: true,
+        coerce: path.resolve,
+      },
+    })
+    .parse();
 
-  if (positional.length < 4) {
-    // eslint-disable-next-line no-console
-    console.error(USAGE);
-    process.exit(1);
-  }
-
-  const [inputArg, packageName, packageVersion, outputArg] = positional;
-  const inputFile = path.resolve(inputArg);
-  const outputDir = path.resolve(outputArg);
+  const inputFile = argv.input as string;
+  const packageName = argv["package-name"] as string;
+  const packageVersion = argv["package-version"] as string;
+  const outputDir = argv["output-dir"] as string;
 
   // Validate input file exists
   try {
@@ -147,19 +139,19 @@ async function main(): Promise<void> {
     );
 
   // Function discovery is optional - only run if at least one functions flag is provided
-  if (options.functionsDir || options.pythonFunctionsDir) {
-    const effectivePythonRootDir = options.pythonRootProjectDir
-      ?? (options.pythonFunctionsDir
-        ? path.dirname(options.pythonFunctionsDir)
+  if (argv.functionsDir || argv.pythonFunctionsDir) {
+    const effectivePythonRootDir = argv.pythonRootProjectDir
+      ?? (argv.pythonFunctionsDir
+        ? path.dirname(argv.pythonFunctionsDir)
         : undefined);
 
     const queryTypes = await OntologyIrToFullMetadataConverter
       .getOsdkQueryTypes(
-        options.functionsDir,
-        options.nodeModulesPath,
-        options.pythonFunctionsDir,
+        argv.pythonBinary,
+        argv.functionsDir,
+        argv.nodeModulesPath,
+        argv.pythonFunctionsDir,
         effectivePythonRootDir,
-        options.pythonBinary,
       );
 
     const functionNames = Object.keys(queryTypes);

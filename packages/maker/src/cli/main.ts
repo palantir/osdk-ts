@@ -65,12 +65,10 @@ export default async function main(
     valueTypesOutput: string;
     outputDir?: string;
     dependencies?: string;
-    // Code snippet options (from action logic rules)
     generateCodeSnippets: boolean;
     codeSnippetPackageName: string;
     codeSnippetDir: string;
     randomnessKey?: string;
-    // Function discovery options
     generateFunctionsOsdk?: string;
     functionsRootDir?: string;
     functionsOutput?: string;
@@ -124,7 +122,6 @@ export default async function main(
         type: "string",
         coerce: path.resolve,
       },
-      // Code snippet options
       generateCodeSnippets: {
         describe: "Enable code snippet files creation",
         type: "boolean",
@@ -154,7 +151,6 @@ export default async function main(
         coerce: path.resolve,
       },
       functionsRootDir: {
-        alias: "f",
         describe: "Root folder containing function definitions",
         type: "string",
         coerce: path.resolve,

@@ -98,8 +98,8 @@ export async function defineFunction(
   rootDir: string,
   functionsSubDir?: string,
 ): Promise<FunctionIrBlockData> {
-  const FD = await loadFunctionDiscoverer();
-  if (!FD) {
+  const functionsDiscoverer = await loadFunctionDiscoverer();
+  if (!functionsDiscoverer) {
     throw new Error(
       "Function discovery requires @foundry/functions-typescript-osdk-discovery to be installed",
     );
@@ -112,7 +112,7 @@ export async function defineFunction(
     ? path.join(rootDir, functionsSubDir)
     : rootDir;
 
-  const fd = new FD(program, entryPointPath, fullFilePath);
+  const fd = new functionsDiscoverer(program, entryPointPath, fullFilePath);
   const functions = fd.discover();
 
   return {
@@ -152,8 +152,8 @@ export async function generateFunctionsIr(
   configPath?: string,
   entityMappings?: IEntityMetadataMapping,
 ): Promise<FunctionIrBlockData> {
-  const FD = await loadFunctionDiscoverer();
-  if (!FD) {
+  const functionsDiscoverer = await loadFunctionDiscoverer();
+  if (!functionsDiscoverer) {
     throw new Error(
       "Function discovery requires @foundry/functions-typescript-osdk-discovery to be installed",
     );
@@ -162,7 +162,12 @@ export async function generateFunctionsIr(
   const tsConfigPath = configPath ?? path.join(rootDir, "tsconfig.json");
   const program = createProgram(tsConfigPath, rootDir);
   const functionsDir = path.join(rootDir, "functions");
-  const fd = new FD(program, rootDir, functionsDir, entityMappings);
+  const fd = new functionsDiscoverer(
+    program,
+    rootDir,
+    functionsDir,
+    entityMappings,
+  );
   const functions = fd.discover();
 
   return {
