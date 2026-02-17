@@ -15,7 +15,7 @@
  */
 
 import { Input } from "@base-ui/react/input";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import styles from "./EditableCell.module.css";
 
 export interface EditableCellProps {
@@ -64,6 +64,10 @@ export function EditableCell({
   onCellEdit,
 }: EditableCellProps): React.ReactElement {
   const [value, setValue] = useState<string>(String(initialValue ?? ""));
+
+  useEffect(() => {
+    setValue(String(initialValue ?? ""));
+  }, [initialValue]);
 
   const handleBlur = useCallback(() => {
     const parsedValue = parseValueByType(value, dataType);

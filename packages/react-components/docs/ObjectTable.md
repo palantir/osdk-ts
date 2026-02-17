@@ -234,25 +234,25 @@ import {
 } from "@osdk/react-components/experimental";
 import { Employee } from "@YourApp/sdk";
 
-function EmployeesTable() {
-  const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
-    {
-      locator: { type: "property", id: "fullName" },
-      pinned: "left",
-      width: 200,
-    },
-    {
-      locator: { type: "property", id: "email" },
-      width: 250,
-    },
-    {
-      locator: { type: "property", id: "jobTitle" },
-    },
-    {
-      locator: { type: "property", id: "department" },
-    },
-  ];
+const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
+  {
+    locator: { type: "property", id: "fullName" },
+    pinned: "left",
+    width: 200,
+  },
+  {
+    locator: { type: "property", id: "email" },
+    width: 250,
+  },
+  {
+    locator: { type: "property", id: "jobTitle" },
+  },
+  {
+    locator: { type: "property", id: "department" },
+  },
+];
 
+function EmployeesTable() {
   return (
     <ObjectTable
       objectType={Employee}
@@ -306,25 +306,25 @@ import {
 } from "@osdk/react-components/experimental";
 import { Employee } from "@YourApp/sdk";
 
-function EmployeesTable() {
-  const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
-    {
-      locator: { type: "property", id: "fullName" },
-      renderCell: (employee) => (
-        <strong style={{ color: "blue" }}>
-          {employee.fullName}
-        </strong>
-      ),
+const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
+  {
+    locator: { type: "property", id: "fullName" },
+    renderCell: (employee) => (
+      <strong style={{ color: "blue" }}>
+        {employee.fullName}
+      </strong>
+    ),
+  },
+  {
+    locator: { type: "property", id: "firstFullTimeStartDate" },
+    renderCell: (employee) => {
+      const date = employee.firstFullTimeStartDate;
+      return date ? new Date(date).toLocaleDateString() : "-";
     },
-    {
-      locator: { type: "property", id: "firstFullTimeStartDate" },
-      renderCell: (employee) => {
-        const date = employee.firstFullTimeStartDate;
-        return date ? new Date(date).toLocaleDateString() : "-";
-      },
-    },
-  ];
+  },
+];
 
+function EmployeesTable() {
   return (
     <ObjectTable
       objectType={Employee}
@@ -343,19 +343,19 @@ import {
 } from "@osdk/react-components/experimental";
 import { Employee } from "@YourApp/sdk";
 
-function EmployeesTable() {
-  const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
-    {
-      locator: { type: "property", id: "fullName" },
-      renderHeader: () => (
-        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <span>👤</span>
-          <span>Employee Name</span>
-        </div>
-      ),
-    },
-  ];
+const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
+  {
+    locator: { type: "property", id: "fullName" },
+    renderHeader: () => (
+      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+        <span>👤</span>
+        <span>Employee Name</span>
+      </div>
+    ),
+  },
+];
 
+function EmployeesTable() {
   return (
     <ObjectTable
       objectType={Employee}
@@ -460,27 +460,27 @@ type RDPs = {
   managerName: string | undefined;
 };
 
-function EmployeesWithManagerTable() {
-  const columnDefinitions: Array<ColumnDefinition<typeof Employee, RDPs>> = [
-    {
-      locator: { type: "property", id: "fullName" },
+const columnDefinitions: Array<ColumnDefinition<typeof Employee, RDPs>> = [
+  {
+    locator: { type: "property", id: "fullName" },
+  },
+  {
+    locator: {
+      type: "rdp",
+      id: "managerName",
+      creator: DerivedProperty.creator<typeof Employee, string | undefined>(
+        (base) =>
+          base.lead.select({
+            fullName: true,
+          }),
+        (pivot) => pivot?.fullName,
+      ),
     },
-    {
-      locator: {
-        type: "rdp",
-        id: "managerName",
-        creator: DerivedProperty.creator<typeof Employee, string | undefined>(
-          (base) =>
-            base.lead.select({
-              fullName: true,
-            }),
-          (pivot) => pivot?.fullName,
-        ),
-      },
-      renderHeader: () => <span>Manager</span>,
-    },
-  ];
+    renderHeader: () => <span>Manager</span>,
+  },
+];
 
+function EmployeesWithManagerTable() {
   return (
     <ObjectTable
       objectType={Employee}
@@ -556,25 +556,25 @@ import {
 } from "@osdk/react-components/experimental";
 import { Employee } from "@YourApp/sdk";
 
-function EmployeesTable() {
-  const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
-    {
-      locator: {
-        type: "custom",
-        id: "Custom Column",
-      },
-      renderHeader: () => "Custom",
-      renderCell: (object: Osdk.Instance<Employee>) => {
-        return (
-          <button onClick={() => alert(`Clicked ${object["$title"]}`)}>
-            Click me
-          </button>
-        );
-      },
-      orderable: false,
+const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
+  {
+    locator: {
+      type: "custom",
+      id: "Custom Column",
     },
-  ];
+    renderHeader: () => "Custom",
+    renderCell: (object: Osdk.Instance<Employee>) => {
+      return (
+        <button onClick={() => alert(`Clicked ${object["$title"]}`)}>
+          Click me
+        </button>
+      );
+    },
+    orderable: false,
+  },
+];
 
+function EmployeesTable() {
   return (
     <ObjectTable
       objectType={Employee}
@@ -598,27 +598,27 @@ import {
 } from "@osdk/react-components/experimental";
 import { Employee, updateMultipleEmployees } from "@YourApp/sdk";
 
+const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
+  {
+    locator: { type: "property", id: "fullName" },
+    editable: true, // Enable editing for this column
+  },
+  {
+    locator: { type: "property", id: "email" },
+    editable: true,
+  },
+  {
+    locator: { type: "property", id: "department" },
+    editable: true,
+  },
+  {
+    locator: { type: "property", id: "jobTitle" },
+    editable: false, // This column is read-only
+  },
+];
+
 function EditableEmployeesTable() {
   const { applyAction } = useOsdkAction(updateMultipleEmployees);
-
-  const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
-    {
-      locator: { type: "property", id: "fullName" },
-      editable: true, // Enable editing for this column
-    },
-    {
-      locator: { type: "property", id: "email" },
-      editable: true,
-    },
-    {
-      locator: { type: "property", id: "department" },
-      editable: true,
-    },
-    {
-      locator: { type: "property", id: "jobTitle" },
-      editable: false, // This column is read-only
-    },
-  ];
 
   const handleCellValueChanged = (
     cellIdentifier: CellIdentifier,
@@ -642,8 +642,6 @@ function EditableEmployeesTable() {
 
   // When onSubmitEdits is provided, a "Submit Edits" button appears in the table
   const handleSubmitEdits = async (edits: Record<string, CellValueState>) => {
-    console.log("Submitting edits:", edits);
-
     try {
       // Call your action with the edits
       // The exact format depends on your action's parameters
@@ -858,9 +856,10 @@ The ObjectTable (and all OSDK components) can be themed using CSS custom propert
 Change OSDK component styling without affecting other Blueprint components in your app:
 
 ```css
-@layer osdk.tokens, user.theme;
+@layer osdk.components, osdk.tokens, user.theme;
 
-@import "@osdk/react-components-styles/index.css" layer(osdk.tokens);
+@import "@osdk/react-components/styles.css" layer(osdk.components);
+@import "@osdk/react-components-styles" layer(osdk.tokens);
 
 @layer user.theme {
   :root {
@@ -881,9 +880,10 @@ Change OSDK component styling without affecting other Blueprint components in yo
 Change both Blueprint and OSDK components for consistent theming:
 
 ```css
-@layer osdk.tokens, user.theme;
+@layer osdk.components, osdk.tokens, user.theme;
 
-@import "@osdk/react-components-styles/index.css" layer(osdk.tokens);
+@import "@osdk/react-components/styles.css" layer(osdk.components);
+@import "@osdk/react-components-styles" layer(osdk.tokens);
 
 @layer user.theme {
   :root {

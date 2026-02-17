@@ -25,20 +25,20 @@ export function renderDefaultCell<TData>(
   const meta = cellContext.table.options.meta;
   const columnMeta = cellContext.column.columnDef.meta;
 
-  if (columnMeta?.editable && meta?.onCellEdit) {
-    const rowId = cellContext.row.id;
-    const columnId = cellContext.column.id;
-    const cellId = getCellId({ rowId, columnId });
-
-    return (
-      <EditableCell
-        initialValue={cellContext.getValue()}
-        cellId={cellId}
-        dataType={columnMeta?.dataType}
-        onCellEdit={meta.onCellEdit}
-      />
-    );
+  if (!columnMeta?.editable || !meta?.onCellEdit) {
+    return cellContext.getValue();
   }
 
-  return cellContext.getValue();
+  const rowId = cellContext.row.id;
+  const columnId = cellContext.column.id;
+  const cellId = getCellId({ rowId, columnId });
+
+  return (
+    <EditableCell
+      initialValue={cellContext.getValue()}
+      cellId={cellId}
+      dataType={columnMeta?.dataType}
+      onCellEdit={meta.onCellEdit}
+    />
+  );
 }

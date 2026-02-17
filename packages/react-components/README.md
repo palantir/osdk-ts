@@ -55,7 +55,10 @@ Add this to your application's entry css file (e.g., `index.css` or `index.scss`
 
 ```css
 /* index.css */
-@import "@osdk/react-components/styles.css";
+@layer osdk.components, osdk.tokens;
+
+@import "@osdk/react-components/styles.css" layer(osdk.components);
+@import "@osdk/react-components-styles" layer(osdk.tokens);
 
 .root {
   isolation: isolate;
@@ -63,6 +66,8 @@ Add this to your application's entry css file (e.g., `index.css` or `index.scss`
 ```
 
 The `.root` isolation is required for Base UI portals. See https://base-ui.com/react/overview/quick-start#portals
+
+Using `@layer` ensures proper CSS cascade ordering - component styles are loaded before token styles, allowing tokens to override component defaults when needed.
 
 ## Components
 

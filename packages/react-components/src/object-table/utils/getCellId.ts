@@ -21,5 +21,12 @@ export function getCellId(cellIdentifier: CellIdentifier): string {
 }
 
 export function getCellIdentifier(cellId: string): CellIdentifier {
-  return JSON.parse(cellId);
+  const parsed = JSON.parse(cellId);
+  if (
+    typeof parsed === "object" && parsed != null && "rowId" in parsed
+    && "columnId" in parsed
+  ) {
+    return parsed as CellIdentifier;
+  }
+  throw new Error("Parsed cellId does not have required properties");
 }

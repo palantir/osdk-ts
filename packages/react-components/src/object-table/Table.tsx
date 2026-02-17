@@ -42,8 +42,8 @@ declare module "@tanstack/react-table" {
   interface TableMeta<TData extends RowData = unknown> {
     onCellEdit?: (
       cellId: string,
-      newValue: unknown,
-      oldValue: unknown,
+      newValue: TData,
+      oldValue: TData,
     ) => void;
     cellEdits?: Record<string, CellValueState>;
   }
