@@ -52,11 +52,6 @@
     "ts-node": "^10.9.2",
     "yargs": "^17.7.2"
   },
-  "optionalDependencies": {
-    "@foundry/functions-typescript-discovery-common": ">=0.19.0",
-    "@foundry/functions-typescript-osdk-discovery": ">=0.52.0",
-    "@foundry/functions-typescript-osdk-ontology-code-generator": ">=0.40.0"
-  },
   "devDependencies": {
     "@osdk/client.unstable": "workspace:~",
     "@osdk/monorepo.api-extractor": "workspace:~",
@@ -84,5 +79,10 @@
   "main": "./build/cjs/index.cjs",
   "module": "./build/esm/index.js",
   "types": "./build/cjs/index.d.cts",
+  "optionalDependencies": {
+    "@foundry/functions-typescript-discovery-common": ">=0.19.0",
+    "@foundry/functions-typescript-osdk-discovery": ">=0.52.0",
+    "@foundry/functions-typescript-osdk-ontology-code-generator": ">=0.40.0"
+  },
   "type": "module"
 }
