@@ -37,6 +37,7 @@ declare module "@tanstack/react-table" {
     columnName?: string;
     isVisible?: boolean;
     editable?: boolean;
+    dataType?: string;
   }
   interface TableMeta<TData extends RowData = unknown> {
     onCellEdit?: (

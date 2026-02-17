@@ -15,18 +15,17 @@
  */
 
 import { Input } from "@base-ui/react/input";
-import type { BaseWirePropertyTypes } from "@osdk/api";
 import React, { useCallback, useState } from "react";
 import styles from "./EditableCell.module.css";
 
 export interface EditableCellProps {
   initialValue: unknown;
   cellId: string;
-  dataType?: BaseWirePropertyTypes;
+  dataType?: string;
   onCellEdit?: (cellId: string, newValue: unknown, oldValue: unknown) => void;
 }
 
-const NUMBER_TYPES: BaseWirePropertyTypes[] = [
+const NUMBER_TYPES: string[] = [
   "double",
   "integer",
   "long",
@@ -38,7 +37,7 @@ const NUMBER_TYPES: BaseWirePropertyTypes[] = [
 
 function parseValueByType(
   value: string,
-  dataType?: BaseWirePropertyTypes,
+  dataType?: string,
 ): unknown {
   if (!dataType || !NUMBER_TYPES.includes(dataType)) {
     return value;
