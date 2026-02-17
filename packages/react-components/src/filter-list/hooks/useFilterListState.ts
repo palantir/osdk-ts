@@ -16,10 +16,7 @@
 
 import type { ObjectTypeDefinition, WhereClause } from "@osdk/api";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import type {
-  FilterDefinitionUnion,
-  FilterListProps,
-} from "../FilterListApi.js";
+import type { FilterListProps } from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
 import type { LinkedPropertyFilterState } from "../types/LinkedFilterTypes.js";
 import { assertUnreachable } from "../utils/assertUnreachable.js";
@@ -30,7 +27,7 @@ import { getFilterKey } from "../utils/getFilterKey.js";
 export interface UseFilterListStateResult<Q extends ObjectTypeDefinition> {
   filterStates: Map<string, FilterState>;
   setFilterState: (
-    definition: FilterDefinitionUnion<Q>,
+    filterKey: string,
     state: FilterState,
   ) => void;
   whereClause: WhereClause<Q>;
@@ -107,16 +104,20 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
   >(() => buildInitialStates(filterDefinitions));
 
   const setFilterState = useCallback(
-    (definition: FilterDefinitionUnion<Q>, state: FilterState) => {
-      const key = getFilterKey(definition);
+    (filterKey: string, state: FilterState) => {
       setFilterStates((prev) => {
         const next = new Map(prev);
-        next.set(key, state);
+        next.set(filterKey, state);
         return next;
       });
-      onFilterStateChanged?.(definition, state);
+      const definition = filterDefinitions?.find(
+        (d) => getFilterKey(d) === filterKey,
+      );
+      if (definition) {
+        onFilterStateChanged?.(definition, state);
+      }
     },
-    [onFilterStateChanged],
+    [filterDefinitions, onFilterStateChanged],
   );
 
   const whereClause = useMemo(

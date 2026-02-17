@@ -87,7 +87,7 @@ describe("useFilterListState", () => {
     const { result } = renderHook(() => useFilterListState(props));
     act(() => {
       result.current.setFilterState(
-        nameDef,
+        getFilterKey(nameDef),
         createSelectState(["selected"]),
       );
     });
@@ -110,7 +110,7 @@ describe("useFilterListState", () => {
     const { result } = renderHook(() => useFilterListState(props));
     const newState = createSelectState(["selected"]);
     act(() => {
-      result.current.setFilterState(nameDef, newState);
+      result.current.setFilterState(getFilterKey(nameDef), newState);
     });
     expect(onFilterStateChanged).toHaveBeenCalledWith(nameDef, newState);
   });
@@ -126,7 +126,10 @@ describe("useFilterListState", () => {
     });
     const { result } = renderHook(() => useFilterListState(props));
     act(() => {
-      result.current.setFilterState(nameDef, createSelectState(["John"]));
+      result.current.setFilterState(
+        getFilterKey(nameDef),
+        createSelectState(["John"]),
+      );
     });
     expect(result.current.whereClause).toEqual({ name: "John" });
   });
@@ -147,8 +150,14 @@ describe("useFilterListState", () => {
     });
     const { result } = renderHook(() => useFilterListState(props));
     act(() => {
-      result.current.setFilterState(nameDef, createSelectState(["John"]));
-      result.current.setFilterState(activeDef, createToggleState(true));
+      result.current.setFilterState(
+        getFilterKey(nameDef),
+        createSelectState(["John"]),
+      );
+      result.current.setFilterState(
+        getFilterKey(activeDef),
+        createToggleState(true),
+      );
     });
     expect(result.current.whereClause).toEqual({
       $and: [{ name: "John" }, { active: true }],

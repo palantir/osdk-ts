@@ -18,6 +18,7 @@ import type {
   AggregateOpts,
   ObjectTypeDefinition,
   PropertyKeys,
+  WhereClause,
 } from "@osdk/api";
 import { useOsdkAggregation } from "@osdk/react/experimental";
 import { useMemo } from "react";
@@ -25,6 +26,7 @@ import { useMemo } from "react";
 export interface PropertyAggregationValue {
   value: string;
   count: number;
+  isNull?: boolean;
 }
 
 export interface UsePropertyAggregationResult {
@@ -34,8 +36,11 @@ export interface UsePropertyAggregationResult {
   error: Error | null;
 }
 
-export interface UsePropertyAggregationOptions {
+export interface UsePropertyAggregationOptions<
+  Q extends ObjectTypeDefinition = ObjectTypeDefinition,
+> {
   limit?: number;
+  where?: WhereClause<Q>;
 }
 
 export function usePropertyAggregation<
@@ -44,7 +49,7 @@ export function usePropertyAggregation<
 >(
   objectType: Q,
   propertyKey: K,
-  options?: UsePropertyAggregationOptions,
+  options?: UsePropertyAggregationOptions<Q>,
 ): UsePropertyAggregationResult {
   // AggregateOpts requires specific property keys from Q, but we're dynamically
   // using propertyKey. The cast is unavoidable for this dynamic filter pattern.
@@ -52,13 +57,18 @@ export function usePropertyAggregation<
     () =>
       ({
         $select: { $count: "unordered" as const },
-        $groupBy: { [propertyKey as string]: "exact" as const },
+        $groupBy: {
+          [propertyKey as string]: {
+            $exact: { $includeNullValue: true },
+          },
+        },
       }) as AggregateOpts<Q>,
     [propertyKey],
   );
 
   const { data: countData, isLoading, error } = useOsdkAggregation(objectType, {
     aggregate: aggregateOptions,
+    where: options?.where,
   });
 
   const result = useMemo(
@@ -80,13 +90,14 @@ export function usePropertyAggregation<
 
       for (const item of dataArray) {
         const rawValue = item.$group[propertyKey as string];
-        const value = rawValue != null ? String(rawValue) : "";
         const count = item.$count ?? 0;
 
-        if (value) {
-          values.push({ value, count });
-          maxCount = Math.max(maxCount, count);
+        if (rawValue == null) {
+          values.push({ value: "", count, isNull: true });
+        } else {
+          values.push({ value: String(rawValue), count });
         }
+        maxCount = Math.max(maxCount, count);
       }
 
       values.sort((a, b) => a.value.localeCompare(b.value));

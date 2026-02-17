@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { debounce } from "lodash-es";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 /**
  * A hook that manages a local value with debounced updates to the parent.
@@ -32,42 +33,34 @@ export function useDebouncedValue<T>(
   debounceMs: number = 300,
 ): [T, (value: T) => void] {
   const [localValue, setLocalValue] = useState<T>(externalValue);
-  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const onChangeRef = useRef(onChange);
 
   useEffect(() => {
     onChangeRef.current = onChange;
   }, [onChange]);
 
+  const debouncedOnChange = useMemo(
+    () => debounce((value: T) => onChangeRef.current(value), debounceMs),
+    [debounceMs],
+  );
+
   useEffect(() => {
     setLocalValue(externalValue);
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-      timeoutRef.current = null;
-    }
-  }, [externalValue]);
+    debouncedOnChange.cancel();
+  }, [externalValue, debouncedOnChange]);
 
   useEffect(() => {
     return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
+      debouncedOnChange.cancel();
     };
-  }, []);
+  }, [debouncedOnChange]);
 
   const setDebouncedValue = useCallback(
     (newValue: T) => {
       setLocalValue(newValue);
-
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-
-      timeoutRef.current = setTimeout(() => {
-        onChangeRef.current(newValue);
-      }, debounceMs);
+      debouncedOnChange(newValue);
     },
-    [debounceMs],
+    [debouncedOnChange],
   );
 
   return [localValue, setDebouncedValue];
