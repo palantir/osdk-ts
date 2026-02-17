@@ -52,8 +52,7 @@ export interface UseEditableTableResult {
   cellEdits: Record<string, CellValueState>;
   handleCellEdit: (
     cellId: string,
-    newValue: unknown,
-    oldValue: unknown,
+    state: CellValueState,
   ) => void;
   handleSubmitEdits: () => Promise<void>;
   clearEdits: () => void;
@@ -78,12 +77,11 @@ export function useEditableTable<
   );
 
   const handleCellEdit = useCallback(
-    (cellId: string, newValue: unknown, oldValue: unknown) => {
+    (cellId: string, state: CellValueState) => {
       const cellIdentifier = getCellIdentifier(cellId);
-      const state: CellValueState = { newValue, oldValue };
 
       // If value is changed back to original, remove it from edits
-      if (newValue === oldValue) {
+      if (state.newValue === state.oldValue) {
         setCellEdits(prev => {
           const { [cellId]: _, ...rest } = prev;
           return rest;

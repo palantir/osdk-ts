@@ -42,8 +42,7 @@ declare module "@tanstack/react-table" {
   interface TableMeta<TData extends RowData = unknown> {
     onCellEdit?: (
       cellId: string,
-      newValue: TData,
-      oldValue: TData,
+      state: CellValueState,
     ) => void;
     cellEdits?: Record<string, CellValueState>;
   }
@@ -140,10 +139,13 @@ export function BaseTable<
   }, [editableConfig]);
 
   return (
-    <>
+    <div className={classNames(styles.osdkTableWrapper, className)}>
       <div
         ref={tableContainerRef}
-        className={classNames(styles.osdkTableContainer, className)}
+        className={classNames(
+          styles.osdkTableContainer,
+          editableConfig && styles.osdkTableContainerWithButton,
+        )}
         onScroll={handleScroll}
       >
         <table>
@@ -190,6 +192,6 @@ export function BaseTable<
           </ActionButton>
         </div>
       )}
-    </>
+    </div>
   );
 }

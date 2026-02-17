@@ -21,21 +21,26 @@ import { getCellId } from "./utils/getCellId.js";
 
 export function renderDefaultCell<TData>(
   cellContext: CellContext<TData, unknown>,
-): React.ReactElement | unknown {
+): React.ReactNode {
   const meta = cellContext.table.options.meta;
   const columnMeta = cellContext.column.columnDef.meta;
 
   if (!columnMeta?.editable || !meta?.onCellEdit) {
-    return cellContext.getValue();
+    return cellContext.getValue() as React.ReactNode;
   }
 
   const rowId = cellContext.row.id;
   const columnId = cellContext.column.id;
   const cellId = getCellId({ rowId, columnId });
 
+  const cellEdits = meta.cellEdits;
+  const editedValue = cellEdits?.[cellId];
+  const currentValue = editedValue?.newValue ?? cellContext.getValue();
+
   return (
     <EditableCell
       initialValue={cellContext.getValue()}
+      currentValue={currentValue}
       cellId={cellId}
       dataType={columnMeta?.dataType}
       onCellEdit={meta.onCellEdit}

@@ -35,7 +35,7 @@ const columnDefinitions: Array<
       id: "employeeNumber",
     },
     columnName: "Employee Number",
-    editable: true,
+    editable: false,
   },
   // With isVisible prop
   {
@@ -66,12 +66,6 @@ const columnDefinitions: Array<
         baseObjectSet.pivotTo("lead").selectProperty("fullName"),
     },
     columnName: "Derived Manager Name",
-    renderCell: (object: Osdk.Instance<Employee>) => {
-      if ("managerName" in object) {
-        return object["managerName"] as string;
-      }
-      return "No Value";
-    },
   },
   // Custom
   {
@@ -93,25 +87,6 @@ const columnDefinitions: Array<
 
 export function EmployeesTable() {
   const { applyAction } = useOsdkAction(modifyEmployee);
-
-  const renderCellContextMenu = useCallback(
-    (_: Osdk.Instance<Employee>, cellValue: unknown) => {
-      return (
-        <div
-          style={{
-            background: "white",
-            padding: 8,
-            border: "1px solid #d1d5db",
-            boxShadow: "0 2px 8px 0 rgba(0, 0, 0, 0.1)",
-            fontSize: 13,
-          }}
-        >
-          {cellValue ? cellValue.toString() : "No Value"}
-        </div>
-      );
-    },
-    [],
-  );
 
   const handleSubmitEdits = useCallback(
     async (edits: Record<string, CellValueState>) => {
@@ -156,7 +131,6 @@ export function EmployeesTable() {
         objectType={Employee}
         columnDefinitions={columnDefinitions}
         selectionMode={"multiple"}
-        renderCellContextMenu={renderCellContextMenu}
         defaultOrderBy={[{
           property: "firstFullTimeStartDate",
           direction: "desc",

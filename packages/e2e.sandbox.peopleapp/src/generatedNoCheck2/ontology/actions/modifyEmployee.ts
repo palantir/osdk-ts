@@ -24,12 +24,6 @@ export namespace modifyEmployee {
       nullable: true;
       type: 'string';
     };
-    fullName: {
-      description: undefined;
-      multiplicity: false;
-      nullable: true;
-      type: 'string';
-    };
   };
 
   export interface Params {

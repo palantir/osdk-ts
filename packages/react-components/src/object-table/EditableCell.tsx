@@ -15,14 +15,16 @@
  */
 
 import { Input } from "@base-ui/react/input";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import styles from "./EditableCell.module.css";
+import type { CellValueState } from "./utils/types.js";
 
 export interface EditableCellProps {
   initialValue: unknown;
+  currentValue: unknown;
   cellId: string;
   dataType?: string;
-  onCellEdit?: (cellId: string, newValue: unknown, oldValue: unknown) => void;
+  onCellEdit?: (cellId: string, state: CellValueState) => void;
 }
 
 const NUMBER_TYPES: string[] = [
@@ -35,6 +37,17 @@ const NUMBER_TYPES: string[] = [
   "short",
 ];
 
+function valueToString(value: unknown): string {
+  if (value == null) {
+    return "";
+  }
+  if (typeof value === "object") {
+    return JSON.stringify(value);
+  }
+  // At this point, value is a primitive (string, number, boolean, symbol, bigint)
+  return String(value as string | number | boolean | symbol | bigint);
+}
+
 function parseValueByType(
   value: string,
   dataType?: string,
@@ -43,7 +56,6 @@ function parseValueByType(
     return value;
   }
 
-  // Handle empty string
   if (value === "") {
     return null;
   }
@@ -59,19 +71,26 @@ function parseValueByType(
 
 export function EditableCell({
   initialValue,
+  currentValue,
   cellId,
   dataType,
   onCellEdit,
 }: EditableCellProps): React.ReactElement {
-  const [value, setValue] = useState<string>(String(initialValue ?? ""));
+  const [value, setValue] = useState<string>(valueToString(currentValue));
+  const isCancelled = useRef(false);
 
   useEffect(() => {
-    setValue(String(initialValue ?? ""));
-  }, [initialValue]);
+    setValue(valueToString(currentValue));
+  }, [currentValue]);
 
   const handleBlur = useCallback(() => {
+    // Do not commit the edit if it was cancelled with Escape key
+    if (isCancelled.current) {
+      isCancelled.current = false;
+      return;
+    }
     const parsedValue = parseValueByType(value, dataType);
-    onCellEdit?.(cellId, parsedValue, initialValue);
+    onCellEdit?.(cellId, { newValue: parsedValue, oldValue: initialValue });
   }, [value, initialValue, onCellEdit, cellId, dataType]);
 
   const handleChange = useCallback((value: string) => {
@@ -84,11 +103,12 @@ export function EditableCell({
         e.currentTarget.blur();
       }
       if (e.key === "Escape") {
-        setValue(String(initialValue ?? ""));
+        isCancelled.current = true;
+        setValue(valueToString(currentValue));
         e.currentTarget.blur();
       }
     },
-    [initialValue],
+    [currentValue],
   );
 
   const inputType = dataType && NUMBER_TYPES.includes(dataType)
