@@ -27,6 +27,18 @@ import {
   MockObjectType,
 } from "./testUtils.js";
 
+vi.mock("@osdk/react/experimental", async (importOriginal) => {
+  const original = await importOriginal();
+  return {
+    ...(original as Record<string, unknown>),
+    useOsdkAggregation: () => ({
+      data: [],
+      isLoading: false,
+      error: undefined,
+    }),
+  };
+});
+
 afterEach(cleanup);
 
 const mockObjectSet = {
