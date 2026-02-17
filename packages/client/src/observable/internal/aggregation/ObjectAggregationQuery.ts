@@ -15,14 +15,12 @@
  */
 
 import type { DerivedProperty, ObjectTypeDefinition } from "@osdk/api";
-import type { ObjectSet as WireObjectSet } from "@osdk/foundry.ontologies";
 import { additionalContext } from "../../../Client.js";
 import { createObjectSet } from "../../../objectSet/createObjectSet.js";
 import {
   type AggregationCacheKey,
   API_NAME_IDX,
   INTERSECT_IDX,
-  WIRE_OBJECT_SET_IDX,
 } from "./AggregationCacheKey.js";
 import { AggregationQuery } from "./AggregationQuery.js";
 
@@ -31,7 +29,6 @@ export class ObjectAggregationQuery extends AggregationQuery {
     AggregationCacheKey["__cacheKey"]["value"]
   > {
     const type = this.cacheKey.otherKeys[API_NAME_IDX];
-    const serializedObjectSet = this.cacheKey.otherKeys[WIRE_OBJECT_SET_IDX];
     const intersectWith = this.cacheKey.otherKeys[INTERSECT_IDX];
     const objectTypeDef = {
       type: "object",
@@ -39,12 +36,11 @@ export class ObjectAggregationQuery extends AggregationQuery {
     } as ObjectTypeDefinition;
 
     let objectSet;
-    if (serializedObjectSet) {
-      const wireObjectSet = JSON.parse(serializedObjectSet) as WireObjectSet;
+    if (this.parsedWireObjectSet) {
       objectSet = createObjectSet(
         objectTypeDef,
         this.store.client[additionalContext],
-        wireObjectSet,
+        this.parsedWireObjectSet,
       );
     } else {
       objectSet = this.store.client(objectTypeDef);

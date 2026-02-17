@@ -93,6 +93,7 @@ export abstract class AggregationQuery extends Query<
     AggregateOpts<ObjectOrInterfaceDefinition>
   >;
   protected rdpConfig: Canonical<Rdp> | undefined;
+  protected parsedWireObjectSet: WireObjectSet | undefined;
   #invalidationTypes: Set<string>;
   #invalidationTypesPromise: Promise<Set<string>> | undefined;
 
@@ -123,14 +124,14 @@ export abstract class AggregationQuery extends Query<
     this.canonicalAggregate = cacheKey.otherKeys[AGGREGATE_IDX];
 
     const serializedObjectSet = cacheKey.otherKeys[WIRE_OBJECT_SET_IDX];
+    this.#invalidationTypes = new Set([this.apiName]);
     if (serializedObjectSet) {
-      const wireObjectSet = JSON.parse(serializedObjectSet) as WireObjectSet;
-      this.#invalidationTypes = new Set([this.apiName]);
+      this.parsedWireObjectSet = JSON.parse(
+        serializedObjectSet,
+      ) as WireObjectSet;
       this.#invalidationTypesPromise = this.#computeInvalidationTypes(
-        wireObjectSet,
+        this.parsedWireObjectSet,
       );
-    } else {
-      this.#invalidationTypes = new Set([this.apiName]);
     }
   }
 

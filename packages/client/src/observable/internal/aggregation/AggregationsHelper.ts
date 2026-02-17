@@ -108,44 +108,7 @@ export class AggregationsHelper extends AbstractHelper<
   >(
     options: ObserveAggregationOptions<T, A, RDPs>,
   ): AggregationQuery {
-    const { type, where, withProperties, intersectWith, aggregate } = options;
-    const { apiName } = type;
-    const typeKind = "type" in type ? type.type : "interface";
-
-    const canonWhere = this.whereCanonicalizer.canonicalize(where ?? {});
-    const canonRdp = withProperties
-      ? this.rdpCanonicalizer.canonicalize(withProperties)
-      : undefined;
-    const canonIntersect = intersectWith && intersectWith.length > 0
-      ? this.intersectCanonicalizer.canonicalize(intersectWith)
-      : undefined;
-
-    const canonAggregate = this.canonicalizeAggregate(aggregate);
-
-    const aggregationCacheKey = this.cacheKeys.get<AggregationCacheKey>(
-      "aggregation",
-      typeKind,
-      apiName,
-      /* wireObjectSet */ undefined,
-      canonWhere,
-      canonRdp,
-      canonIntersect,
-      canonAggregate,
-    );
-
-    return this.store.queries.get(aggregationCacheKey, () => {
-      if (typeKind !== "object") {
-        throw new Error(
-          "Only ObjectTypeDefinition is currently supported for aggregations",
-        );
-      }
-      return new ObjectAggregationQuery(
-        this.store,
-        this.store.subjects.get(aggregationCacheKey),
-        aggregationCacheKey,
-        options,
-      );
-    });
+    return this.getOrCreateQuery(options as AggregationOptions, undefined);
   }
 
   getQueryWithObjectSet<
@@ -155,13 +118,22 @@ export class AggregationsHelper extends AbstractHelper<
   >(
     options: ObserveAggregationOptionsWithObjectSet<T, A, RDPs>,
   ): AggregationQuery {
-    const { type, objectSet, where, withProperties, intersectWith, aggregate } =
-      options;
+    const serializedObjectSet = JSON.stringify(
+      getWireObjectSet(options.objectSet),
+    );
+    return this.getOrCreateQuery(
+      options as AggregationOptions,
+      serializedObjectSet,
+    );
+  }
+
+  private getOrCreateQuery(
+    options: AggregationOptions,
+    serializedObjectSet: string | undefined,
+  ): AggregationQuery {
+    const { type, where, withProperties, intersectWith, aggregate } = options;
     const { apiName } = type;
     const typeKind = "type" in type ? type.type : "interface";
-
-    const wireObjectSet = getWireObjectSet(objectSet);
-    const serializedObjectSet = JSON.stringify(wireObjectSet);
 
     const canonWhere = this.whereCanonicalizer.canonicalize(where ?? {});
     const canonRdp = withProperties

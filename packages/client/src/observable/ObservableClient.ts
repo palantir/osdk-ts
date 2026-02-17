@@ -170,6 +170,20 @@ export interface ObserveObjectSetArgs<
   totalCount?: string;
 }
 
+interface ObserveAggregationBaseOptions<
+  T extends ObjectOrInterfaceDefinition,
+  A extends AggregateOpts<T>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+> extends CommonObserveOptions, ObserveOptions {
+  type: T;
+  where?: WhereClause<T, RDPs>;
+  withProperties?: DerivedProperty.Clause<T>;
+  intersectWith?: Array<{
+    where: WhereClause<T, RDPs>;
+  }>;
+  aggregate: A;
+}
+
 /**
  * Options for observeAggregation without an ObjectSet (synchronous).
  */
@@ -177,15 +191,8 @@ export interface ObserveAggregationOptions<
   T extends ObjectOrInterfaceDefinition,
   A extends AggregateOpts<T>,
   RDPs extends Record<string, SimplePropertyDef> = {},
-> extends CommonObserveOptions, ObserveOptions {
-  type: T;
+> extends ObserveAggregationBaseOptions<T, A, RDPs> {
   objectSet?: undefined;
-  where?: WhereClause<T, RDPs>;
-  withProperties?: DerivedProperty.Clause<T>;
-  intersectWith?: Array<{
-    where: WhereClause<T, RDPs>;
-  }>;
-  aggregate: A;
 }
 
 /**
@@ -198,15 +205,8 @@ export interface ObserveAggregationOptionsWithObjectSet<
   T extends ObjectOrInterfaceDefinition,
   A extends AggregateOpts<T>,
   RDPs extends Record<string, SimplePropertyDef> = {},
-> extends CommonObserveOptions, ObserveOptions {
-  type: T;
+> extends ObserveAggregationBaseOptions<T, A, RDPs> {
   objectSet: ObjectSet<T>;
-  where?: WhereClause<T, RDPs>;
-  withProperties?: DerivedProperty.Clause<T>;
-  intersectWith?: Array<{
-    where: WhereClause<T, RDPs>;
-  }>;
-  aggregate: A;
 }
 
 export interface ObserveAggregationArgs<

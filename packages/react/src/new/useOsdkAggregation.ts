@@ -33,7 +33,7 @@ import {
 } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
 
-export interface UseOsdkAggregationOptions<
+interface UseOsdkAggregationBaseOptions<
   T extends ObjectOrInterfaceDefinition,
   A extends AggregateOpts<T>,
   RDPs extends Record<string, SimplePropertyDef> = {},
@@ -72,48 +72,21 @@ export interface UseOsdkAggregationOptions<
   dedupeIntervalMs?: number;
 }
 
+export interface UseOsdkAggregationOptions<
+  T extends ObjectOrInterfaceDefinition,
+  A extends AggregateOpts<T>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+> extends UseOsdkAggregationBaseOptions<T, A, RDPs> {}
+
 export interface UseOsdkAggregationOptionsWithObjectSet<
   T extends ObjectTypeDefinition,
   A extends AggregateOpts<T>,
   RDPs extends Record<string, SimplePropertyDef> = {},
-> {
+> extends UseOsdkAggregationBaseOptions<T, A, RDPs> {
   /**
    * The ObjectSet to aggregate on. Enables aggregation on pivoted, filtered, or composed ObjectSets.
    */
   objectSet: ObjectSet<T>;
-
-  /**
-   * Standard OSDK Where clause to filter objects before aggregation
-   */
-  where?: WhereClause<T, RDPs>;
-
-  /**
-   * Define derived properties (RDPs) to be computed server-side.
-   * The derived properties can be used in the where clause and aggregation groupBy/select.
-   */
-  withProperties?: { [K in keyof RDPs]: DerivedProperty.Creator<T, RDPs[K]> };
-
-  /**
-   * Intersect the main query with additional filtered object sets.
-   * Each entry creates a separate object set with its own where clause,
-   * and the final result is the intersection of all sets.
-   */
-  intersectWith?: Array<{
-    where: WhereClause<T, RDPs>;
-  }>;
-
-  /**
-   * Aggregation options including groupBy and select
-   */
-  aggregate: A;
-
-  /**
-   * The number of milliseconds to wait after the last observed aggregation change.
-   *
-   * Two uses of `useOsdkAggregation` with the same parameters will only trigger one
-   * network request if the second is within `dedupeIntervalMs`.
-   */
-  dedupeIntervalMs?: number;
 }
 
 const EMPTY_WHERE = {};
