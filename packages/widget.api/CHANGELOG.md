@@ -1,5 +1,15 @@
 # @osdk/widget.api
 
+## 3.5.0-beta.6
+
+### Minor Changes
+
+- fad598c: Export BrowserPermission object as well as type
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.6
+
 ## 3.5.0-beta.5
 
 ### Patch Changes

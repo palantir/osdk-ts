@@ -1,5 +1,26 @@
 # @osdk/react-components
 
+## 0.2.0-beta.3
+
+### Minor Changes
+
+- 50bd461: add combobox, select, and switch base components
+- 727fd0e: fix dual @types/react version mismatch
+- 4c7884f: Add custom column, multi column sort and column config
+- 4ffe6f5: add filter list state management and where clause builder
+
+### Patch Changes
+
+- Updated dependencies [8c60682]
+- Updated dependencies [15e1686]
+- Updated dependencies [727fd0e]
+- Updated dependencies [c9d954d]
+- Updated dependencies [044eb80]
+- Updated dependencies [9d234b9]
+  - @osdk/client@2.8.0-beta.6
+  - @osdk/react@0.10.0-beta.4
+  - @osdk/api@2.8.0-beta.6
+
 ## 0.2.0-beta.2
 
 ### Minor Changes
