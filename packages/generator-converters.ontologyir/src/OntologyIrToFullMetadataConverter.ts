@@ -67,7 +67,6 @@ interface IFunctionDiscovererConstructor {
   ): IFunctionDiscoverer;
 }
 
-// Python function discovery types
 // Python discovery output uses the same format as IDataType with type field at top level
 interface IPythonDiscoveredFunction {
   locator: {
@@ -94,15 +93,13 @@ function discoverPythonFunctions(
   rootProjectDir: string,
   pythonBinary: string,
 ): IPythonDiscoveryResult | null {
-  // Resolve Python binary - prefer explicit path, then look for Maestro's python
   const pythonPath = pythonBinary;
   if (!existsSync(pythonPath)) {
     throw new Error(
-      `Python binary not found at ${pythonPath}. Please provide a path to Python 3.10+ binary or install Maestro for automatic discovery.`,
+      `Python binary not found at ${pythonPath}`,
     );
   }
 
-  // Run python3 -m functions.bin parse
   const result = spawnSync(
     pythonPath,
     [
@@ -1274,7 +1271,6 @@ function discoverComponentRoot(
     typescript.sys.readFile,
   );
   if (configResult.error) {
-    // Try parent directory
     tsConfigPath = path.join(path.dirname(functionsDir), "tsconfig.json");
     projectDir = path.dirname(functionsDir);
   }
