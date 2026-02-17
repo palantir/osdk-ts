@@ -47,6 +47,7 @@
     "@osdk/foundry.ontologies": "catalog:foundry-platform-typescript",
     "@osdk/generator": "workspace:~",
     "@osdk/generator-converters.ontologyir": "workspace:~",
+    "consola": "^3.4.2",
     "yargs": "17.7.2"
   },
   "devDependencies": {

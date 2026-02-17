@@ -29,6 +29,7 @@ import type {
 } from "@osdk/client.unstable";
 import type * as Ontologies from "@osdk/foundry.ontologies";
 
+import { consola } from "consola";
 import { spawnSync } from "node:child_process";
 import { hash } from "node:crypto";
 import { existsSync } from "node:fs";
@@ -122,8 +123,7 @@ function discoverPythonFunctions(
   );
 
   if (result.error) {
-    // eslint-disable-next-line no-console
-    console.warn(
+    consola.warn(
       `Python function discovery spawn error: ${result.error.message}`,
     );
     return null;
@@ -131,8 +131,7 @@ function discoverPythonFunctions(
 
   if (result.status !== 0) {
     // Parse error - could log stderr but return null for now
-    // eslint-disable-next-line no-console
-    console.error(
+    consola.error(
       `Python function discovery failed: ${result.stderr || result.stdout}`,
     );
     return null;
@@ -146,8 +145,7 @@ function discoverPythonFunctions(
     const marker = "{\"functions\":";
     const jsonStart = stdout.lastIndexOf(marker);
     if (jsonStart === -1) {
-      // eslint-disable-next-line no-console
-      console.error(
+      consola.error(
         `No JSON found in Python discovery output (expected ${marker}): ${
           stdout.slice(0, 500)
         }`,
@@ -157,8 +155,7 @@ function discoverPythonFunctions(
     const jsonStr = stdout.slice(jsonStart);
     return JSON.parse(jsonStr) as IPythonDiscoveryResult;
   } catch (e: unknown) {
-    // eslint-disable-next-line no-console
-    console.error(
+    consola.error(
       `Failed to parse Python discovery output: ${
         e instanceof Error ? e.message : e
       }`,
@@ -215,8 +212,7 @@ async function loadFunctionDiscoverer(
     cachedNodeModulesPath = nodeModulesPath;
     return modules;
   } catch (e: unknown) {
-    // eslint-disable-next-line no-console
-    console.warn(
+    consola.warn(
       "Failed to load function discovery modules:",
       e instanceof Error ? e.message : e,
     );

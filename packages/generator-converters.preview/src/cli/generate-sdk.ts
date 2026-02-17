@@ -17,6 +17,7 @@
 
 import { generateClientSdkVersionTwoPointZero } from "@osdk/generator";
 import { OntologyIrToFullMetadataConverter } from "@osdk/generator-converters.ontologyir";
+import { consola } from "consola";
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
 import yargs from "yargs";
@@ -27,33 +28,33 @@ async function main(): Promise<void> {
   const argv = await yargs(hideBin(process.argv))
     .strict()
     .help()
+    .version(false) // so that we can use --version argument for the package version
     .usage(
-      "$0 <input> <package-name> <package-version> <output-dir>",
-      "Generate an OSDK package from an OntologyIR JSON file",
+      "$0 --input <path> --package-name <name> --version <ver> --output-dir <dir>",
     )
-    .positional("input", {
-      describe: "Path to the OntologyIR JSON file",
-      type: "string",
-      demandOption: true,
-      coerce: path.resolve,
-    })
-    .positional("package-name", {
-      describe: "Name for the generated SDK package",
-      type: "string",
-      demandOption: true,
-    })
-    .positional("package-version", {
-      describe: "Version string for the generated SDK",
-      type: "string",
-      demandOption: true,
-    })
-    .positional("output-dir", {
-      describe: "Directory where the SDK will be generated",
-      type: "string",
-      demandOption: true,
-      coerce: path.resolve,
-    })
     .options({
+      "input": {
+        describe: "Path to the OntologyIR JSON file",
+        type: "string",
+        demandOption: true,
+        coerce: path.resolve,
+      },
+      "package-name": {
+        describe: "Name for the generated SDK package",
+        type: "string",
+        demandOption: true,
+      },
+      "version": {
+        describe: "Version string for the generated SDK",
+        type: "string",
+        demandOption: true,
+      },
+      "output-dir": {
+        describe: "Directory where the SDK will be generated",
+        type: "string",
+        demandOption: true,
+        coerce: path.resolve,
+      },
       "functions-dir": {
         describe:
           "Path to TypeScript functions source directory (enables TS function discovery)",
@@ -87,22 +88,20 @@ async function main(): Promise<void> {
     })
     .parse();
 
-  const inputFile = argv.input as string;
-  const packageName = argv["package-name"] as string;
-  const packageVersion = argv["package-version"] as string;
-  const outputDir = argv["output-dir"] as string;
+  const inputFile = argv.input;
+  const packageName = argv.packageName;
+  const packageVersion = argv.version;
+  const outputDir = argv.outputDir;
 
   // Validate input file exists
   try {
     await fs.access(inputFile);
   } catch {
-    // eslint-disable-next-line no-console
-    console.error(`Error: Input file does not exist: ${inputFile}`);
+    consola.error(`Input file does not exist: ${inputFile}`);
     process.exit(1);
   }
 
-  // eslint-disable-next-line no-console
-  console.log(`Converting ${inputFile}...`);
+  consola.info(`Converting ${inputFile}...`);
 
   const fileContent = await fs.readFile(inputFile, "utf-8");
   let irJson: unknown;
@@ -111,8 +110,7 @@ async function main(): Promise<void> {
     // Handle both wrapped (ontology.objectTypes) and unwrapped (objectTypes) formats
     irJson = parsed.ontology ?? parsed;
   } catch {
-    // eslint-disable-next-line no-console
-    console.error(`Error: Failed to parse JSON from ${inputFile}`);
+    consola.error(`Failed to parse JSON from ${inputFile}`);
     process.exit(1);
   }
 
@@ -124,9 +122,8 @@ async function main(): Promise<void> {
     || !("objectTypes" in ir)
     || !("actionTypes" in ir)
   ) {
-    // eslint-disable-next-line no-console
-    console.error(
-      `Error: Invalid OntologyIR structure in ${inputFile}. Expected objectTypes and actionTypes fields.`,
+    consola.error(
+      `Invalid OntologyIR structure in ${inputFile}. Expected objectTypes and actionTypes fields.`,
     );
     process.exit(1);
   }
@@ -157,15 +154,13 @@ async function main(): Promise<void> {
     const functionNames = Object.keys(queryTypes);
     if (functionNames.length > 0) {
       previewMetadata.queryTypes = queryTypes;
-      // eslint-disable-next-line no-console
-      console.log(
+      consola.info(
         `Discovered ${functionNames.length} function(s): ${
           functionNames.join(", ")
         }`,
       );
     } else {
-      // eslint-disable-next-line no-console
-      console.log("No functions discovered.");
+      consola.info("No functions discovered.");
     }
   }
 
@@ -202,8 +197,7 @@ async function main(): Promise<void> {
     },
   };
 
-  // eslint-disable-next-line no-console
-  console.log(`Generating SDK to ${fullOutputDir}...`);
+  consola.info(`Generating SDK to ${fullOutputDir}...`);
 
   await generateClientSdkVersionTwoPointZero(
     metadata,
@@ -225,14 +219,11 @@ async function main(): Promise<void> {
     "utf-8",
   );
 
-  // eslint-disable-next-line no-console
-  console.log(`Wrote ${metadataPath}`);
-  // eslint-disable-next-line no-console
-  console.log("Done!");
+  consola.info(`Wrote ${metadataPath}`);
+  consola.success("Done!");
 }
 
 main().catch((err: unknown) => {
-  // eslint-disable-next-line no-console
-  console.error("Error:", err instanceof Error ? err.message : err);
+  consola.error(err instanceof Error ? err.message : err);
   process.exit(1);
 });

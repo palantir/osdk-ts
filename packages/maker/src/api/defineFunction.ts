@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
+import { consola } from "consola";
 import * as path from "node:path";
 import * as ts from "typescript";
-import type { FunctionIrBlockData } from "./types.js";
+
+export interface FunctionIrBlockData {
+  functionsBlockDataV1: Record<string, unknown>;
+}
 
 // Type definitions for optional function discovery dependencies
 type IFunctionDiscoverer = new(
@@ -69,8 +73,7 @@ async function loadFunctionDiscoverer(): Promise<IFunctionDiscoverer | null> {
     FunctionDiscoverer = module.FunctionDiscoverer;
     return FunctionDiscoverer;
   } catch (e: unknown) {
-    // eslint-disable-next-line no-console
-    console.warn(
+    consola.warn(
       "Failed to load @foundry/functions-typescript-osdk-discovery:",
       e instanceof Error ? e.message : e,
     );

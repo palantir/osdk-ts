@@ -45,6 +45,7 @@
   "dependencies": {
     "@osdk/client.unstable": "workspace:~",
     "@osdk/foundry.ontologies": "catalog:foundry-platform-typescript",
+    "consola": "^3.4.2",
     "tiny-invariant": "^1.3.3"
   },
   "optionalDependencies": {
