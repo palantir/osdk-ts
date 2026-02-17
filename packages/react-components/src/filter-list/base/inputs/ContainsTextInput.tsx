@@ -16,8 +16,8 @@
 
 import { Cross, Search } from "@blueprintjs/icons";
 import classnames from "classnames";
-import React, { memo, useCallback } from "react";
-import { useDebouncedValue } from "../../hooks/useDebouncedValue.js";
+import { debounce } from "lodash-es";
+import React, { memo, useCallback, useEffect, useMemo, useState } from "react";
 import styles from "./ContainsTextInput.module.css";
 
 interface ContainsTextInputProps {
@@ -41,30 +41,40 @@ function ContainsTextInputInner({
   renderSearchIcon,
   renderClearIcon,
 }: ContainsTextInputProps): React.ReactElement {
-  const handleChange = useCallback(
-    (newValue: string) => {
-      onChange(newValue.length > 0 ? newValue : undefined);
-    },
-    [onChange],
+  const [localValue, setLocalValue] = useState(value ?? "");
+
+  const debouncedOnChange = useMemo(
+    () =>
+      debounce((newValue: string) => {
+        onChange(newValue.length > 0 ? newValue : undefined);
+      }, debounceMs),
+    [onChange, debounceMs],
   );
 
-  const [localValue, setLocalValue] = useDebouncedValue(
-    value ?? "",
-    handleChange,
-    debounceMs,
-  );
+  useEffect(() => {
+    return () => {
+      debouncedOnChange.cancel();
+    };
+  }, [debouncedOnChange]);
+
+  useEffect(() => {
+    setLocalValue(value ?? "");
+    debouncedOnChange.cancel();
+  }, [value, debouncedOnChange]);
 
   const handleInputChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       setLocalValue(e.target.value);
+      debouncedOnChange(e.target.value);
     },
-    [setLocalValue],
+    [debouncedOnChange],
   );
 
   const handleClear = useCallback(() => {
     setLocalValue("");
+    debouncedOnChange.cancel();
     onChange(undefined);
-  }, [setLocalValue, onChange]);
+  }, [debouncedOnChange, onChange]);
 
   return (
     <div
