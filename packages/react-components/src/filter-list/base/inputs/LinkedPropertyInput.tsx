@@ -20,6 +20,7 @@ import type {
   ObjectTypeDefinition,
   PropertyKeys,
 } from "@osdk/api";
+import classnames from "classnames";
 import React, { memo, useCallback, useMemo } from "react";
 import type { FilterState } from "../../FilterListItemApi.js";
 import type { LinkedPropertyFilterDefinition } from "../../types/LinkedFilterTypes.js";
@@ -31,6 +32,7 @@ import {
 import { CheckboxListInput } from "./CheckboxListInput.js";
 import { ContainsTextInput } from "./ContainsTextInput.js";
 import { DateRangeInput } from "./DateRangeInput.js";
+import styles from "./LinkedPropertyInput.module.css";
 import { ListogramInput } from "./ListogramInput.js";
 import { MultiDateInput } from "./MultiDateInput.js";
 import { MultiSelectInput } from "./MultiSelectInput.js";
@@ -90,15 +92,13 @@ function LinkedPropertyInputInner<
     [onFilterStateChanged],
   );
 
-  const rootClassName = className
-    ? `filter-input--linked-property ${className}`
-    : "filter-input--linked-property";
+  const rootClassName = classnames(styles.linkedProperty, className);
 
   const content = (() => {
     switch (definition.linkedFilterComponent) {
       case "CHECKBOX_LIST": {
         const selectedValues = innerState?.type === "SELECT"
-          ? innerState.selectedValues as string[]
+          ? coerceToStringArray(innerState.selectedValues)
           : [];
         return (
           <CheckboxListInput
@@ -120,9 +120,7 @@ function LinkedPropertyInputInner<
 
       case "MULTI_SELECT": {
         const values = innerState?.type === "SELECT"
-          ? coerceToStringArray(
-            innerState.selectedValues as (string | boolean | number)[],
-          )
+          ? coerceToStringArray(innerState.selectedValues)
           : [];
         return (
           <MultiSelectInput
@@ -144,13 +142,7 @@ function LinkedPropertyInputInner<
 
       case "SINGLE_SELECT": {
         const value = innerState?.type === "SELECT"
-          ? coerceToString(
-            innerState.selectedValues[0] as
-              | string
-              | boolean
-              | number
-              | undefined,
-          )
+          ? coerceToString(innerState.selectedValues[0])
           : undefined;
         return (
           <SingleSelectInput

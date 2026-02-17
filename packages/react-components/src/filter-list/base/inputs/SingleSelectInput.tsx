@@ -53,7 +53,6 @@ function SingleSelectInputInner<
   propertyKey,
   selectedValue,
   onChange,
-  objectSet,
   whereClause,
   className,
   style,

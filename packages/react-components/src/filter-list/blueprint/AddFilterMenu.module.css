@@ -14,6 +14,42 @@
  * limitations under the License.
  */
 
+.menu {
+  display: flex;
+  flex-direction: column;
+}
+
+.searchContainer {
+  display: flex;
+  align-items: center;
+  padding: var(--osdk-filter-add-menu-search-padding, 4px 8px);
+  gap: var(--osdk-filter-add-menu-search-gap, 4px);
+}
+
+.searchInput {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: var(--osdk-filter-add-menu-search-font-size, 14px);
+  padding: var(--osdk-filter-add-menu-search-input-padding, 4px);
+}
+
+.content {
+  overflow-y: auto;
+}
+
+.sectionButton {
+  text-transform: uppercase;
+  font-size: var(--osdk-filter-add-menu-section-font-size, 11px);
+  letter-spacing: var(--osdk-filter-add-menu-section-letter-spacing, 0.5px);
+  color: var(--osdk-filter-add-menu-section-color, inherit);
+}
+
+.sectionLabel {
+  font-weight: var(--osdk-filter-add-menu-section-font-weight, 600);
+}
+
 .chevron {
   transform: rotate(-90deg);
   transition: transform 150ms ease;

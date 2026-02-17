@@ -81,11 +81,11 @@ export function AddFilterMenu({
   };
 
   return (
-    <div className="filter-add-menu">
-      <div className="filter-add-menu__search-container">
+    <div className={styles.menu}>
+      <div className={styles.searchContainer}>
         <input
           type="text"
-          className="filter-add-menu__search-input"
+          className={styles.searchInput}
           placeholder="Search..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
@@ -110,7 +110,7 @@ export function AddFilterMenu({
         />
       </div>
 
-      <div className="filter-add-menu__content">
+      <div className={styles.content}>
         {SECTION_ORDER.map((category) => {
           const items = groupedTemplates[category];
           const count = items.length;
@@ -123,7 +123,7 @@ export function AddFilterMenu({
           return (
             <div key={category}>
               <Button
-                className="filter-add-menu__section-button"
+                className={styles.sectionButton}
                 variant="minimal"
                 fill
                 alignText="left"
@@ -138,7 +138,7 @@ export function AddFilterMenu({
                   />
                 }
               >
-                <span className="filter-add-menu__section-label">
+                <span className={styles.sectionLabel}>
                   {SECTION_LABELS[category]}{" "}
                   {category !== "ALL_PROPERTIES" && `(${count})`}
                 </span>

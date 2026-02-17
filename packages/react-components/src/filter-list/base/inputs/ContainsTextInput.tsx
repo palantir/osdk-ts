@@ -17,7 +17,14 @@
 import { Cross, Search } from "@blueprintjs/icons";
 import classnames from "classnames";
 import { debounce } from "lodash-es";
-import React, { memo, useCallback, useEffect, useMemo, useState } from "react";
+import React, {
+  memo,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import styles from "./ContainsTextInput.module.css";
 
 interface ContainsTextInputProps {
@@ -43,12 +50,15 @@ function ContainsTextInputInner({
 }: ContainsTextInputProps): React.ReactElement {
   const [localValue, setLocalValue] = useState(value ?? "");
 
+  const onChangeRef = useRef(onChange);
+  onChangeRef.current = onChange;
+
   const debouncedOnChange = useMemo(
     () =>
       debounce((newValue: string) => {
-        onChange(newValue.length > 0 ? newValue : undefined);
+        onChangeRef.current(newValue.length > 0 ? newValue : undefined);
       }, debounceMs),
-    [onChange, debounceMs],
+    [debounceMs],
   );
 
   useEffect(() => {
@@ -73,8 +83,8 @@ function ContainsTextInputInner({
   const handleClear = useCallback(() => {
     setLocalValue("");
     debouncedOnChange.cancel();
-    onChange(undefined);
-  }, [debouncedOnChange, onChange]);
+    onChangeRef.current(undefined);
+  }, [debouncedOnChange]);
 
   return (
     <div

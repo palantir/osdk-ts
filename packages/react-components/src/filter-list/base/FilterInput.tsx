@@ -371,7 +371,7 @@ function CheckboxListFilterInputInner<Q extends ObjectTypeDefinition>({
   whereClause,
 }: CheckboxListFilterInputProps<Q>): React.ReactElement {
   const selectedValues = filterState?.type === "SELECT"
-    ? filterState.selectedValues as string[]
+    ? coerceToStringArray(filterState.selectedValues)
     : [];
   const isExcluding = filterState?.isExcluding ?? false;
 
@@ -594,9 +594,7 @@ function SingleSelectFilterInputInner<Q extends ObjectTypeDefinition>({
   whereClause,
 }: SingleSelectFilterInputProps<Q>): React.ReactElement {
   const selectedValue = filterState?.type === "SELECT"
-    ? coerceToString(
-      filterState.selectedValues[0] as string | boolean | number | undefined,
-    )
+    ? coerceToString(filterState.selectedValues[0])
     : undefined;
   const isExcluding = filterState?.isExcluding ?? false;
 
@@ -642,9 +640,7 @@ function MultiSelectFilterInputInner<Q extends ObjectTypeDefinition>({
   whereClause,
 }: MultiSelectFilterInputProps<Q>): React.ReactElement {
   const selectedValues = filterState?.type === "SELECT"
-    ? coerceToStringArray(
-      filterState.selectedValues as (string | boolean | number)[],
-    )
+    ? coerceToStringArray(filterState.selectedValues)
     : [];
   const isExcluding = filterState?.isExcluding ?? false;
 

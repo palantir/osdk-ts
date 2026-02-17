@@ -49,7 +49,6 @@ function CheckboxListInputInner<
   propertyKey,
   selectedValues,
   onChange,
-  objectSet,
   whereClause,
   className,
   style,
