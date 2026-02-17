@@ -17,7 +17,7 @@
 import type { ObjectSet, ObjectTypeDefinition, Osdk } from "@osdk/api";
 import groupBy from "object.groupby";
 import invariant from "tiny-invariant";
-import type { Client } from "../../../Client.js";
+import { additionalContext, type Client } from "../../../Client.js";
 import type { InterfaceHolder } from "../../../object/convertWireToOsdkObjects/InterfaceHolder.js";
 import { ObjectDefRef } from "../../../object/convertWireToOsdkObjects/InternalSymbols.js";
 import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
@@ -27,7 +27,7 @@ import type { Changes } from "../Changes.js";
 import type { Rdp } from "../RdpCanonicalizer.js";
 import type { SimpleWhereClause } from "../SimpleWhereClause.js";
 import type { Store } from "../Store.js";
-import { ListQuery, RDP_IDX } from "./ListQuery.js";
+import { ListQuery, RDP_IDX, RIDS_IDX } from "./ListQuery.js";
 
 type ExtractRelevantObjectsResult = Record<"added" | "modified", {
   all: (ObjectHolder | InterfaceHolder)[];
@@ -38,20 +38,30 @@ type ExtractRelevantObjectsResult = Record<"added" | "modified", {
 export class InterfaceListQuery extends ListQuery {
   protected createObjectSet(store: Store): ObjectSet<ObjectTypeDefinition> {
     const rdpConfig = this.cacheKey.otherKeys[RDP_IDX];
+    const rids = this.cacheKey.otherKeys[RIDS_IDX];
     const type: string = "interface" as const;
     const objectTypeDef = {
       type,
       apiName: this.apiName,
     } as ObjectTypeDefinition;
 
-    if (rdpConfig != null) {
-      return store.client(objectTypeDef)
-        .withProperties(rdpConfig as Rdp)
-        .where(this.canonicalWhere);
+    let objectSet: ObjectSet<ObjectTypeDefinition>;
+    if (rids != null) {
+      const clientCtx = store.client[additionalContext];
+      objectSet = clientCtx.objectSetFactory(
+        objectTypeDef,
+        clientCtx,
+        { type: "static", objects: [...rids] },
+      );
+    } else {
+      objectSet = store.client(objectTypeDef);
     }
 
-    return store.client(objectTypeDef)
-      .where(this.canonicalWhere);
+    if (rdpConfig != null) {
+      objectSet = objectSet.withProperties(rdpConfig as Rdp);
+    }
+
+    return objectSet.where(this.canonicalWhere);
   }
 
   async revalidateObjectType(apiName: string): Promise<void> {
