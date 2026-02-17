@@ -74,6 +74,7 @@ describe("FilterList drag and drop", () => {
         filterDefinitions={definitions}
         filterStates={filterStates}
         onFilterStateChanged={vi.fn()}
+        whereClause={{}}
       />,
     );
 
@@ -93,6 +94,7 @@ describe("FilterList drag and drop", () => {
         filterStates={filterStates}
         onFilterStateChanged={vi.fn()}
         onFiltersReordered={vi.fn()}
+        whereClause={{}}
       />,
     );
 
@@ -126,6 +128,7 @@ describe("FilterList drag and drop", () => {
         filterStates={filterStates}
         onFilterStateChanged={vi.fn()}
         onFiltersReordered={vi.fn()}
+        whereClause={{}}
       />,
     );
 
@@ -146,6 +149,7 @@ describe("FilterList drag and drop", () => {
         filterStates={filterStates}
         onFilterStateChanged={vi.fn()}
         onFiltersReordered={vi.fn()}
+        whereClause={{}}
       />,
     );
 
@@ -163,6 +167,7 @@ describe("FilterList drag and drop", () => {
         filterStates={new Map()}
         onFilterStateChanged={vi.fn()}
         onFiltersReordered={vi.fn()}
+        whereClause={{}}
       />,
     );
 
