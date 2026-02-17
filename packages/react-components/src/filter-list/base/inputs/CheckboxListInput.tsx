@@ -64,7 +64,6 @@ function CheckboxListInputInner<
     [data],
   );
 
-  // Use Set for O(1) membership checks
   const selectedSet = useMemo(
     () => new Set(selectedValues),
     [selectedValues],
