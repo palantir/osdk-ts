@@ -90,6 +90,7 @@
     "access": "public"
   },
   "files": [
+    "docs",
     "build/cjs",
     "build/esm",
     "build/browser",
@@ -97,7 +98,6 @@
     "CHANGELOG.md",
     "package.json",
     "templates",
-    "docs",
     "*.d.ts"
   ],
   "main": "./build/cjs/index.cjs",
