@@ -90,6 +90,7 @@
     "access": "public"
   },
   "files": [
+    "docs",
     "build/cjs",
     "build/esm",
     "build/browser",
@@ -102,5 +103,8 @@
   "main": "./build/cjs/index.cjs",
   "module": "./build/esm/index.js",
   "types": "./build/cjs/index.d.cts",
+  "documentation": {
+    "ObjectTable": "./docs/ObjectTable.md"
+  },
   "type": "module"
 }
