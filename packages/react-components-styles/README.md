@@ -14,23 +14,26 @@ npm install @osdk/react-components-styles
 
 ## Usage
 
-Import the CSS tokens in your application's entry point:
+Import the CSS files in your application's entry point:
 
 ```css
 /* app/index.css */
-@layer osdk.tokens;
+@layer osdk.components, osdk.tokens;
 
-/* Import default OSDK tokens (includes Blueprint tokens) */
-@import "@osdk/react-components-styles/index.css" layer(osdk.tokens);
+/* Import OSDK components structural styles */
+@import "@osdk/react-components/styles.css" layer(osdk.components);
+/* Import OSDK tokens (includes Blueprint tokens) */
+@import "@osdk/react-components-styles" layer(osdk.tokens);
 ```
 
 ### With Custom Theme Overrides
 
 ```css
 /* app/index.css */
-@layer osdk.tokens, user.theme;
+@layer osdk.components, osdk.tokens, user.theme;
 
-@import "@osdk/react-components-styles/index.css" layer(osdk.tokens);
+@import "@osdk/react-components/styles.css" layer(osdk.components);
+@import "@osdk/react-components-styles" layer(osdk.tokens);
 
 /* Override primary intent to green */
 @layer user.theme {

@@ -14,32 +14,19 @@
  * limitations under the License.
  */
 
-.osdkTableWrapper {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  position: relative;
+import type { CellIdentifier } from "./types.js";
+
+export function getCellId(cellIdentifier: CellIdentifier): string {
+  return JSON.stringify(cellIdentifier);
 }
 
-.osdkTableContainer {
-  flex: 1;
-  min-height: 0;
-  overflow: auto;
-  position: relative;
-}
-
-.osdkTableContainer table {
-  border-collapse: collapse;
-  display: grid;
-  table-layout: fixed;
-  width: max-content;
-  min-width: 100%;
-}
-
-.submitButtonContainer {
-  background-color: var(--osdk-surface-background-color-default-rest);
-  border-top: var(--osdk-table-border);
-  padding: var(--osdk-table-button-container-padding);
-  display: flex;
-  justify-content: flex-end;
+export function getCellIdentifier(cellId: string): CellIdentifier {
+  const parsed = JSON.parse(cellId);
+  if (
+    typeof parsed === "object" && parsed != null && "rowId" in parsed
+    && "columnId" in parsed
+  ) {
+    return parsed as CellIdentifier;
+  }
+  throw new Error("Parsed cellId does not have required properties");
 }

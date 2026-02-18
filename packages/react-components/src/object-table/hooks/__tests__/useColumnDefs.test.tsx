@@ -420,8 +420,14 @@ describe(useColumnDefs, () => {
       >;
       const mockGetValue = vitest.fn(() => "John");
       const mockCellContext = {
-        row: { original: mockObject },
+        row: { original: mockObject, id: "row-1" },
         getValue: mockGetValue,
+        column: { id: "name", columnDef: { meta: {} } },
+        table: {
+          options: {
+            meta: {},
+          },
+        },
       };
 
       let cellResult: unknown;

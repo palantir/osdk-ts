@@ -4,7 +4,11 @@ A comprehensive guide for using the ObjectTable component from `@osdk/react-comp
 
 ## Prerequisites
 
-Before using ObjectTable, make sure you have completed the library setup described in the [README](../README.md#installation).
+Before using ObjectTable, make sure you have completed the library setup described in the [README](../README.md#setup), including:
+
+- Installing the required dependencies
+- Wrapping your app with `OsdkProvider2`
+- Adding the CSS imports
 
 ## Table of Contents
 
@@ -134,6 +138,15 @@ Each column header has a menu with items for sorting, filtering, pinning, resizi
 | `onRowClick`            | `(object) => void`              | Called when a row is clicked                 |
 | `renderCellContextMenu` | `(row, cellValue) => ReactNode` | Custom context menu for right-click on cells |
 
+### Cell Editing
+
+> **Note:** Editable cells currently support text and number data types.
+
+| Prop                 | Type                                                       | Description                                                                                  |
+| -------------------- | ---------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| `onCellValueChanged` | `(cellId: CellIdentifier, state: CellValueState) => void`  | Called when a cell value is edited. Throw error to reject change                             |
+| `onSubmitEdits`      | `(edits: Record<string, CellValueState>) => Promise<void>` | When provided, shows a "Submit Edits" button that calls this function with all pending edits |
+
 ## Column Definitions
 
 ### Column Definition Structure
@@ -149,11 +162,14 @@ type ColumnDefinition<Q, RDPs, FunctionColumns> = {
   resizable?: boolean; // Allow column resizing
   orderable?: boolean; // Allow column sorting
   filterable?: boolean; // Allow column filtering
+  editable?: boolean; // Allow inline editing for this column (currently supports text and number types)
   renderCell?: (object, locator) => React.ReactNode; // Custom cell renderer
   columnName?: string; // Custom column name for the header
   renderHeader?: () => React.ReactNode; // Custom header renderer (takes precedence over columnName)
 };
 ```
+
+> **Note:** Editable cells currently support text and number data types. Support for other data types (date, boolean, etc.) will be added in future updates.
 
 #### `columnName` vs `renderHeader`
 
@@ -218,25 +234,25 @@ import {
 } from "@osdk/react-components/experimental";
 import { Employee } from "@YourApp/sdk";
 
-function EmployeesTable() {
-  const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
-    {
-      locator: { type: "property", id: "fullName" },
-      pinned: "left",
-      width: 200,
-    },
-    {
-      locator: { type: "property", id: "email" },
-      width: 250,
-    },
-    {
-      locator: { type: "property", id: "jobTitle" },
-    },
-    {
-      locator: { type: "property", id: "department" },
-    },
-  ];
+const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
+  {
+    locator: { type: "property", id: "fullName" },
+    pinned: "left",
+    width: 200,
+  },
+  {
+    locator: { type: "property", id: "email" },
+    width: 250,
+  },
+  {
+    locator: { type: "property", id: "jobTitle" },
+  },
+  {
+    locator: { type: "property", id: "department" },
+  },
+];
 
+function EmployeesTable() {
   return (
     <ObjectTable
       objectType={Employee}
@@ -290,25 +306,25 @@ import {
 } from "@osdk/react-components/experimental";
 import { Employee } from "@YourApp/sdk";
 
-function EmployeesTable() {
-  const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
-    {
-      locator: { type: "property", id: "fullName" },
-      renderCell: (employee) => (
-        <strong style={{ color: "blue" }}>
-          {employee.fullName}
-        </strong>
-      ),
+const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
+  {
+    locator: { type: "property", id: "fullName" },
+    renderCell: (employee) => (
+      <strong style={{ color: "blue" }}>
+        {employee.fullName}
+      </strong>
+    ),
+  },
+  {
+    locator: { type: "property", id: "firstFullTimeStartDate" },
+    renderCell: (employee) => {
+      const date = employee.firstFullTimeStartDate;
+      return date ? new Date(date).toLocaleDateString() : "-";
     },
-    {
-      locator: { type: "property", id: "firstFullTimeStartDate" },
-      renderCell: (employee) => {
-        const date = employee.firstFullTimeStartDate;
-        return date ? new Date(date).toLocaleDateString() : "-";
-      },
-    },
-  ];
+  },
+];
 
+function EmployeesTable() {
   return (
     <ObjectTable
       objectType={Employee}
@@ -327,19 +343,19 @@ import {
 } from "@osdk/react-components/experimental";
 import { Employee } from "@YourApp/sdk";
 
-function EmployeesTable() {
-  const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
-    {
-      locator: { type: "property", id: "fullName" },
-      renderHeader: () => (
-        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <span>👤</span>
-          <span>Employee Name</span>
-        </div>
-      ),
-    },
-  ];
+const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
+  {
+    locator: { type: "property", id: "fullName" },
+    renderHeader: () => (
+      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+        <span>👤</span>
+        <span>Employee Name</span>
+      </div>
+    ),
+  },
+];
 
+function EmployeesTable() {
   return (
     <ObjectTable
       objectType={Employee}
@@ -444,27 +460,27 @@ type RDPs = {
   managerName: string | undefined;
 };
 
-function EmployeesWithManagerTable() {
-  const columnDefinitions: Array<ColumnDefinition<typeof Employee, RDPs>> = [
-    {
-      locator: { type: "property", id: "fullName" },
+const columnDefinitions: Array<ColumnDefinition<typeof Employee, RDPs>> = [
+  {
+    locator: { type: "property", id: "fullName" },
+  },
+  {
+    locator: {
+      type: "rdp",
+      id: "managerName",
+      creator: DerivedProperty.creator<typeof Employee, string | undefined>(
+        (base) =>
+          base.lead.select({
+            fullName: true,
+          }),
+        (pivot) => pivot?.fullName,
+      ),
     },
-    {
-      locator: {
-        type: "rdp",
-        id: "managerName",
-        creator: DerivedProperty.creator<typeof Employee, string | undefined>(
-          (base) =>
-            base.lead.select({
-              fullName: true,
-            }),
-          (pivot) => pivot?.fullName,
-        ),
-      },
-      renderHeader: () => <span>Manager</span>,
-    },
-  ];
+    renderHeader: () => <span>Manager</span>,
+  },
+];
 
+function EmployeesWithManagerTable() {
   return (
     <ObjectTable
       objectType={Employee}
@@ -540,29 +556,110 @@ import {
 } from "@osdk/react-components/experimental";
 import { Employee } from "@YourApp/sdk";
 
-function EmployeesTable() {
-  const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
-    {
-      locator: {
-        type: "custom",
-        id: "Custom Column",
-      },
-      renderHeader: () => "Custom",
-      renderCell: (object: Osdk.Instance<Employee>) => {
-        return (
-          <button onClick={() => alert(`Clicked ${object["$title"]}`)}>
-            Click me
-          </button>
-        );
-      },
-      orderable: false,
+const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
+  {
+    locator: {
+      type: "custom",
+      id: "Custom Column",
     },
-  ];
+    renderHeader: () => "Custom",
+    renderCell: (object: Osdk.Instance<Employee>) => {
+      return (
+        <button onClick={() => alert(`Clicked ${object["$title"]}`)}>
+          Click me
+        </button>
+      );
+    },
+    orderable: false,
+  },
+];
+
+function EmployeesTable() {
+  return (
+    <ObjectTable
+      objectType={Employee}
+      columnDefinitions={columnDefinitions}
+    />
+  );
+}
+```
+
+### Example 13: Editable Table
+
+Enable inline editing with bulk submission:
+
+```typescript
+import { useOsdkAction } from "@osdk/react";
+import {
+  type CellIdentifier,
+  type CellValueState,
+  type ColumnDefinition,
+  ObjectTable,
+} from "@osdk/react-components/experimental";
+import { Employee, updateMultipleEmployees } from "@YourApp/sdk";
+
+const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
+  {
+    locator: { type: "property", id: "fullName" },
+    editable: true, // Enable editing for this column
+  },
+  {
+    locator: { type: "property", id: "email" },
+    editable: true,
+  },
+  {
+    locator: { type: "property", id: "department" },
+    editable: true,
+  },
+  {
+    locator: { type: "property", id: "jobTitle" },
+    editable: false, // This column is read-only
+  },
+];
+
+function EditableEmployeesTable() {
+  const { applyAction } = useOsdkAction(updateMultipleEmployees);
+
+  const handleCellValueChanged = (
+    cellIdentifier: CellIdentifier,
+    state: CellValueState,
+  ) => {
+    console.log("Cell edited:", {
+      rowId: cellIdentifier.rowId,
+      columnId: cellIdentifier.columnId,
+      oldValue: state.oldValue,
+      newValue: state.newValue,
+    });
+
+    // Validate individual cell changes
+    if (cellIdentifier.columnId === "email") {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(state.newValue as string)) {
+        throw new Error("Invalid email format");
+      }
+    }
+  };
+
+  // When onSubmitEdits is provided, a "Submit Edits" button appears in the table
+  const handleSubmitEdits = async (edits: Record<string, CellValueState>) => {
+    try {
+      // Call your action with the edits
+      // The exact format depends on your action's parameters
+      await applyAction({ edits });
+
+      alert("All changes saved successfully!");
+    } catch (error) {
+      console.error("Failed to save edits:", error);
+      throw error; // Re-throw to let the table handle the error
+    }
+  };
 
   return (
     <ObjectTable
       objectType={Employee}
       columnDefinitions={columnDefinitions}
+      onCellValueChanged={handleCellValueChanged}
+      onSubmitEdits={handleSubmitEdits} // Shows "Submit Edits" button
     />
   );
 }
@@ -759,9 +856,10 @@ The ObjectTable (and all OSDK components) can be themed using CSS custom propert
 Change OSDK component styling without affecting other Blueprint components in your app:
 
 ```css
-@layer osdk.tokens, user.theme;
+@layer osdk.components, osdk.tokens, user.theme;
 
-@import "@osdk/react-components-styles/index.css" layer(osdk.tokens);
+@import "@osdk/react-components/styles.css" layer(osdk.components);
+@import "@osdk/react-components-styles" layer(osdk.tokens);
 
 @layer user.theme {
   :root {
@@ -782,9 +880,10 @@ Change OSDK component styling without affecting other Blueprint components in yo
 Change both Blueprint and OSDK components for consistent theming:
 
 ```css
-@layer osdk.tokens, user.theme;
+@layer osdk.components, osdk.tokens, user.theme;
 
-@import "@osdk/react-components-styles/index.css" layer(osdk.tokens);
+@import "@osdk/react-components/styles.css" layer(osdk.components);
+@import "@osdk/react-components-styles" layer(osdk.tokens);
 
 @layer user.theme {
   :root {

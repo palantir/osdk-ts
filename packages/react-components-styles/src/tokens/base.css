@@ -77,7 +77,6 @@
   --osdk-emphasis-focus-color: var(--bp-emphasis-focus-color);
   --osdk-emphasis-focus-offset: var(--bp-emphasis-focus-offset);
 
-  /* TODO: Try to use semantic tokens */
   /* Blueprint token mappings - Palette tokens */
   --osdk-palette-gray-1: var(--bp-palette-gray-1);
   --osdk-palette-gray-2: var(--bp-palette-gray-2);
