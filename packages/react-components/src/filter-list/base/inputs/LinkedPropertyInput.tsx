@@ -21,7 +21,7 @@ import type {
   PropertyKeys,
 } from "@osdk/api";
 import classnames from "classnames";
-import React, { memo, useCallback, useMemo } from "react";
+import React, { memo, useCallback, useMemo, useRef } from "react";
 import type { FilterState } from "../../FilterListItemApi.js";
 import type { LinkedPropertyFilterDefinition } from "../../types/LinkedFilterTypes.js";
 import { assertUnreachable } from "../../utils/assertUnreachable.js";
@@ -86,6 +86,9 @@ function LinkedPropertyInputInner<
     ? filterState.linkedFilterState
     : undefined;
 
+  const innerStateRef = useRef(innerState);
+  innerStateRef.current = innerState;
+
   const wrappedOnChange = useCallback(
     (innerFilterState: FilterState) => {
       onFilterStateChanged({
@@ -94,6 +97,110 @@ function LinkedPropertyInputInner<
       });
     },
     [onFilterStateChanged],
+  );
+
+  const onSelectChange = useCallback(
+    (selectedValues: string[]) => {
+      wrappedOnChange({
+        type: "SELECT",
+        selectedValues,
+        isExcluding: innerStateRef.current?.isExcluding ?? false,
+      });
+    },
+    [wrappedOnChange],
+  );
+
+  const onSingleSelectChange = useCallback(
+    (selectedValue: string | undefined) => {
+      wrappedOnChange({
+        type: "SELECT",
+        selectedValues: selectedValue !== undefined ? [selectedValue] : [],
+        isExcluding: innerStateRef.current?.isExcluding ?? false,
+      });
+    },
+    [wrappedOnChange],
+  );
+
+  const onContainsTextChange = useCallback(
+    (value: string | undefined) => {
+      wrappedOnChange({ type: "CONTAINS_TEXT", value });
+    },
+    [wrappedOnChange],
+  );
+
+  const onToggleChange = useCallback(
+    (enabled: boolean) => {
+      wrappedOnChange({ type: "TOGGLE", enabled });
+    },
+    [wrappedOnChange],
+  );
+
+  const onNumberRangeChange = useCallback(
+    (minValue: number | undefined, maxValue: number | undefined) => {
+      wrappedOnChange({
+        type: "NUMBER_RANGE",
+        minValue,
+        maxValue,
+        includeNull: innerStateRef.current?.includeNull,
+      });
+    },
+    [wrappedOnChange],
+  );
+
+  const onDateRangeChange = useCallback(
+    (minValue: Date | undefined, maxValue: Date | undefined) => {
+      wrappedOnChange({
+        type: "DATE_RANGE",
+        minValue,
+        maxValue,
+        includeNull: innerStateRef.current?.includeNull,
+      });
+    },
+    [wrappedOnChange],
+  );
+
+  const onExactMatchChange = useCallback(
+    (values: string[]) => {
+      wrappedOnChange({
+        type: "EXACT_MATCH",
+        values,
+        isExcluding: innerStateRef.current?.isExcluding ?? false,
+      });
+    },
+    [wrappedOnChange],
+  );
+
+  const onDateSelectChange = useCallback(
+    (date: Date | undefined) => {
+      wrappedOnChange({
+        type: "SELECT",
+        selectedValues: date !== undefined ? [date] : [],
+        isExcluding: innerStateRef.current?.isExcluding ?? false,
+      });
+    },
+    [wrappedOnChange],
+  );
+
+  const onMultiDateChange = useCallback(
+    (dates: Date[]) => {
+      wrappedOnChange({
+        type: "SELECT",
+        selectedValues: dates,
+      });
+    },
+    [wrappedOnChange],
+  );
+
+  const onTimelineChange = useCallback(
+    (start: Date | undefined, end: Date | undefined) => {
+      wrappedOnChange({
+        type: "TIMELINE",
+        startDate: start,
+        endDate: end,
+        isExcluding: innerStateRef.current?.isExcluding ?? false,
+      });
+    },
+    [wrappedOnChange],
   );
 
   const content = (() => {
@@ -108,12 +215,7 @@ function LinkedPropertyInputInner<
             objectSet={linkedObjectSet}
             propertyKey={linkedPropertyKey}
             selectedValues={selectedValues}
-            onChange={(newSelectedValues) =>
-              wrappedOnChange({
-                type: "SELECT",
-                selectedValues: newSelectedValues,
-                isExcluding: innerState?.isExcluding ?? false,
-              })}
+            onChange={onSelectChange}
           />
         );
       }
@@ -128,12 +230,7 @@ function LinkedPropertyInputInner<
             objectSet={linkedObjectSet}
             propertyKey={linkedPropertyKey}
             selectedValues={values}
-            onChange={(selectedValues) =>
-              wrappedOnChange({
-                type: "SELECT",
-                selectedValues,
-                isExcluding: innerState?.isExcluding ?? false,
-              })}
+            onChange={onSelectChange}
           />
         );
       }
@@ -148,14 +245,7 @@ function LinkedPropertyInputInner<
             objectSet={linkedObjectSet}
             propertyKey={linkedPropertyKey}
             selectedValue={value}
-            onChange={(selectedValue) =>
-              wrappedOnChange({
-                type: "SELECT",
-                selectedValues: selectedValue !== undefined
-                  ? [selectedValue]
-                  : [],
-                isExcluding: innerState?.isExcluding ?? false,
-              })}
+            onChange={onSingleSelectChange}
           />
         );
       }
@@ -167,11 +257,7 @@ function LinkedPropertyInputInner<
         return (
           <ContainsTextInput
             value={value}
-            onChange={(newValue) =>
-              wrappedOnChange({
-                type: "CONTAINS_TEXT",
-                value: newValue,
-              })}
+            onChange={onContainsTextChange}
             placeholder={`Search ${String(definition.linkedPropertyKey)}...`}
           />
         );
@@ -184,11 +270,7 @@ function LinkedPropertyInputInner<
         return (
           <ToggleInput
             enabled={enabled}
-            onChange={(newEnabled) =>
-              wrappedOnChange({
-                type: "TOGGLE",
-                enabled: newEnabled,
-              })}
+            onChange={onToggleChange}
           />
         );
       }
@@ -202,13 +284,7 @@ function LinkedPropertyInputInner<
             propertyKey={linkedPropertyKey}
             minValue={nr?.minValue}
             maxValue={nr?.maxValue}
-            onChange={(minValue, maxValue) =>
-              wrappedOnChange({
-                type: "NUMBER_RANGE",
-                minValue,
-                maxValue,
-                includeNull: innerState?.includeNull,
-              })}
+            onChange={onNumberRangeChange}
           />
         );
       }
@@ -222,13 +298,7 @@ function LinkedPropertyInputInner<
             propertyKey={linkedPropertyKey}
             minValue={dr?.minValue}
             maxValue={dr?.maxValue}
-            onChange={(minValue, maxValue) =>
-              wrappedOnChange({
-                type: "DATE_RANGE",
-                minValue,
-                maxValue,
-                includeNull: innerState?.includeNull,
-              })}
+            onChange={onDateRangeChange}
           />
         );
       }
@@ -246,12 +316,7 @@ function LinkedPropertyInputInner<
             objectSet={linkedObjectSet}
             propertyKey={linkedPropertyKey}
             selectedValues={selectedValues}
-            onChange={(values) =>
-              wrappedOnChange({
-                type: "EXACT_MATCH",
-                values,
-                isExcluding: exactState?.isExcluding ?? false,
-              })}
+            onChange={onExactMatchChange}
           />
         );
       }
@@ -267,12 +332,7 @@ function LinkedPropertyInputInner<
             objectSet={linkedObjectSet}
             propertyKey={linkedPropertyKey}
             tags={tags}
-            onChange={(newTags) =>
-              wrappedOnChange({
-                type: "EXACT_MATCH",
-                values: newTags,
-                isExcluding: exactState?.isExcluding ?? false,
-              })}
+            onChange={onExactMatchChange}
             suggestFromData={true}
           />
         );
@@ -287,12 +347,7 @@ function LinkedPropertyInputInner<
         return (
           <SingleDateInput
             selectedDate={selectedDate}
-            onChange={(date) =>
-              wrappedOnChange({
-                type: "SELECT",
-                selectedValues: date !== undefined ? [date] : [],
-                isExcluding: innerState?.isExcluding ?? false,
-              })}
+            onChange={onDateSelectChange}
             showClearButton={true}
           />
         );
@@ -307,11 +362,7 @@ function LinkedPropertyInputInner<
         return (
           <MultiDateInput
             selectedDates={selectedDates}
-            onChange={(dates) =>
-              wrappedOnChange({
-                type: "SELECT",
-                selectedValues: dates,
-              })}
+            onChange={onMultiDateChange}
             showClearAll={true}
           />
         );
@@ -323,13 +374,7 @@ function LinkedPropertyInputInner<
           <TimelineInput
             startDate={tl?.startDate}
             endDate={tl?.endDate}
-            onChange={(start, end) =>
-              wrappedOnChange({
-                type: "TIMELINE",
-                startDate: start,
-                endDate: end,
-                isExcluding: innerState?.isExcluding ?? false,
-              })}
+            onChange={onTimelineChange}
           />
         );
       }

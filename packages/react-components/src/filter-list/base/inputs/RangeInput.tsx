@@ -172,10 +172,17 @@ function RangeInputInner<
 
   const computedRange = useMemo(() => {
     if (valueCountPairs.length === 0) return { min: undefined, max: undefined };
-    const numbers = valueCountPairs.map((p) => config.toNumber(p.value));
+    const min = valueCountPairs.reduce(
+      (acc, p) => Math.min(acc, config.toNumber(p.value)),
+      Infinity,
+    );
+    const max = valueCountPairs.reduce(
+      (acc, p) => Math.max(acc, config.toNumber(p.value)),
+      -Infinity,
+    );
     return {
-      min: config.fromNumber(Math.min(...numbers)),
-      max: config.fromNumber(Math.max(...numbers)),
+      min: config.fromNumber(min),
+      max: config.fromNumber(max),
     };
   }, [valueCountPairs, config]);
 
