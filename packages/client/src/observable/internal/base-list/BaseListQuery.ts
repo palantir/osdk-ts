@@ -425,7 +425,6 @@ export abstract class BaseListQuery<
       );
     }
 
-    // Keep fetching pages until we have the minimum number of results or no more pages
     while (true) {
       const entry = await this.fetchPageAndUpdate(
         "loading",
@@ -433,24 +432,15 @@ export abstract class BaseListQuery<
       );
 
       if (!entry) {
-        // we were aborted
         return;
       }
 
-      // Check if we have enough results or no more pages
-      const count = entry.value?.data.length || 0;
-      if (count >= this.minResultsToLoad || this.nextPageToken == null) {
+      if (entry.status === "loaded" || entry.status === "error") {
         break;
       }
 
       await Promise.resolve();
     }
-
-    this.store.batch({}, (batch) => {
-      this.setStatus("loaded", batch);
-    });
-
-    return Promise.resolve();
   }
 
   /**
@@ -492,7 +482,18 @@ export abstract class BaseListQuery<
       // Store the fetched data using batch operations
       const { retVal } = this.store.batch({}, (batch) => {
         const append = hadPreviousPage;
-        const finalStatus = result.nextPageToken ? status : "loaded";
+        let finalStatus: Status = result.nextPageToken ? status : "loaded";
+
+        if (finalStatus !== "loaded") {
+          const existingEntry = batch.read(this.cacheKey);
+          const currentCount = existingEntry?.value?.data.length ?? 0;
+          const expectedCount = append
+            ? currentCount + result.data.length
+            : result.data.length;
+          if (expectedCount >= this.minResultsToLoad) {
+            finalStatus = "loaded";
+          }
+        }
 
         const objectKeys = this.store.objects.storeOsdkInstances(
           result.data,
