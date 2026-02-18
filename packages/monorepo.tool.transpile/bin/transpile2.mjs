@@ -180,7 +180,6 @@ async function transpileWithTsup(format, target) {
         "@osdk/foundry.mediasets",
         "@osdk/shared.client",
         "@osdk/shared.client2",
-        "delay",
         "oauth4webapi",
         "p-defer",
       ]
@@ -419,7 +418,9 @@ async function inlineCssModules(outDir) {
       const content = await readFile(fullPath, "utf-8");
 
       // Check if this file imports CSS
-      if (content.includes('.module.css"') || content.includes(".module.css'")) {
+      if (
+        content.includes(".module.css\"") || content.includes(".module.css'")
+      ) {
         jsFiles.push(fullPath);
       }
     }
@@ -456,7 +457,7 @@ export default ${JSON.stringify(classNames)};
 
       // For non-module CSS files, just inject without exporting class names
       build.onLoad({ filter: /\.css$/ }, async (args) => {
-        if (args.path.endsWith('.module.css')) return; // Already handled above
+        if (args.path.endsWith(".module.css")) return; // Already handled above
 
         const css = await readFile(args.path, "utf-8");
         const contents = `
@@ -482,7 +483,15 @@ if (typeof document !== 'undefined') {
         write: false,
         outfile: jsFile,
         plugins: [inlineCssPlugin],
-        external: ["react", "react-dom", "react/jsx-runtime", "classnames", "@base-ui/*", "@blueprintjs/*", "@tanstack/*"],
+        external: [
+          "react",
+          "react-dom",
+          "react/jsx-runtime",
+          "classnames",
+          "@base-ui/*",
+          "@blueprintjs/*",
+          "@tanstack/*",
+        ],
         logLevel: "silent",
         minify: false,
         treeShaking: true,
