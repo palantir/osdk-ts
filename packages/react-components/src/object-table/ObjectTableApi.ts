@@ -25,6 +25,7 @@ import type {
   WhereClause,
 } from "@osdk/api";
 import type * as React from "react";
+import type { CellIdentifier, CellValueState } from "./utils/types.js";
 
 export type ColumnDefinition<
   Q extends ObjectOrInterfaceDefinition,
@@ -51,6 +52,8 @@ export type ColumnDefinition<
   resizable?: boolean;
   orderable?: boolean;
   filterable?: boolean;
+  editable?: boolean;
+
   renderCell?: (
     object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
     locator: ColumnDefinitionLocator<Q, RDPs, FunctionColumns>,
@@ -201,6 +204,24 @@ export interface ObjectTableProps<
       direction: "asc" | "desc";
     }>,
   ) => void;
+
+  /**
+   * Called after the value of a cell is edited and committed by the user.
+   *
+   * @param cell The cell that was edited, identified by its row and column IDs
+   * @param state The new and old values of the cell
+   */
+  onCellValueChanged?: (
+    cell: CellIdentifier,
+    state: CellValueState,
+  ) => void;
+
+  /**
+   * If provided, the button Submit Edits will be shown in the table
+   *
+   * @param edits a map of cellId (stringified CellIdentifier) to the new and old values of the cell
+   */
+  onSubmitEdits?: (edits: Record<string, CellValueState>) => Promise<void>;
 
   /**
    * Called when the column visibility or ordering changed.

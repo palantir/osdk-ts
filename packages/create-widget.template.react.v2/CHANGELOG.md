@@ -1,5 +1,11 @@
 # @osdk/create-widget.template.react.v2
 
+## 3.5.0-beta.6
+
+### Minor Changes
+
+- 9011069: Remove unused react-router-dom dependency from widget templates
+
 ## 3.5.0-beta.5
 
 ## 3.5.0-beta.4

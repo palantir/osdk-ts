@@ -1,5 +1,11 @@
 # @osdk/docs
 
+## 0.1.0-beta.2
+
+### Minor Changes
+
+- 727fd0e: fix dual @types/react version mismatch
+
 ## 0.1.0-beta.1
 
 ### Minor Changes

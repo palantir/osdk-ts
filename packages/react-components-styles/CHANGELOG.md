@@ -1,5 +1,11 @@
 # @osdk/react-components-styles
 
+## 0.2.0-beta.3
+
+### Minor Changes
+
+- 4c7884f: Add custom column, multi column sort and column config
+
 ## 0.2.0-beta.2
 
 ### Minor Changes

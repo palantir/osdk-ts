@@ -1,5 +1,21 @@
 # @osdk/client
 
+## 2.8.0-beta.6
+
+### Minor Changes
+
+- 8c60682: Fix shared ListQuery pageSize not respected for late-joining views
+- 15e1686: support rids with pivotTo in observable list queries
+- c9d954d: Add `tokenStorage` option to `createPublicOauthClient` to control refresh token storage. Supports `'localStorage'` (default), `'sessionStorage'` (recommended for shared devices), or `'none'` (most secure, re-authenticates on every page load).
+- 044eb80: unify RDP canonicalization between useOsdkObjects and useObjectSet
+- 9d234b9: support multi object usage in useLinks
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.6
+- @osdk/client.unstable@2.8.0-beta.6
+- @osdk/generator-converters@2.8.0-beta.6
+
 ## 2.8.0-beta.5
 
 ### Patch Changes

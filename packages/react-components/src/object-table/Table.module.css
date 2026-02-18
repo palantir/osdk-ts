@@ -14,9 +14,15 @@
  * limitations under the License.
  */
 
+.osdkTableWrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  position: relative;
+}
+
 .osdkTableContainer {
   flex: 1;
-  height: 100%;
   min-height: 0;
   overflow: auto;
   position: relative;
@@ -26,4 +32,14 @@
   border-collapse: collapse;
   display: grid;
   table-layout: fixed;
+  width: max-content;
+  min-width: 100%;
+}
+
+.submitButtonContainer {
+  background-color: var(--osdk-surface-background-color-default-rest);
+  border-top: var(--osdk-table-border);
+  padding: var(--osdk-table-button-container-padding);
+  display: flex;
+  justify-content: flex-end;
 }

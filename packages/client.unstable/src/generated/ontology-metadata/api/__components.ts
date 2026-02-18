@@ -6764,6 +6764,7 @@ export interface ObjectTypeDirectDatasource {
   propertyMapping: Record<PropertyTypeRid, PropertyTypeMappingInfo>;
   propertySecurityGroups: PropertySecurityGroups;
   retentionConfig?: RetentionConfig | null | undefined;
+  timeBasedRetentionConfig?: TimeBasedRetentionConfig | null | undefined;
 }
 /**
  * This includes metadata which can be used by front-ends when displaying the ObjectType.
@@ -9384,10 +9385,11 @@ export interface OntologyIrObjectTypeDerivedPropertiesDatasource {
  * This type is only compatible with object storage v2.
  */
 export interface OntologyIrObjectTypeDirectDatasource {
-  directSourceRid: DirectSourceRid;
+  directSourceRid: _api_blockdata_DataSetName;
   propertyMapping: Record<ObjectTypeFieldApiName, PropertyTypeMappingInfo>;
   propertySecurityGroups: OntologyIrPropertySecurityGroups;
   retentionConfig?: RetentionConfig | null | undefined;
+  timeBasedRetentionConfig?: TimeBasedRetentionConfig | null | undefined;
 }
 /**
  * Object type datasource which is not backed by any dataset or restricted view. This type of a "datasource"
@@ -14705,6 +14707,14 @@ export type TextEmbeddingModel =
   | TextEmbeddingModel_foundryLiveDeployment;
 
 export interface TextModality {
+}
+/**
+ * Time-based retention configuration for direct datasources. Objects older than the retention window will be
+ * permanently deleted. The duration should be specified in ISO8601 format, such as `P30D` (30 days) or
+ * `PT720H` (720 hours).
+ */
+export interface TimeBasedRetentionConfig {
+  window: string;
 }
 /**
  * A retention policy where the datasource will contain at least data from the specified time window.

@@ -14,8 +14,20 @@
  * limitations under the License.
  */
 
+import type { RowData } from "@tanstack/react-table";
+
 export interface ColumnOption {
   id: string;
   name: string;
   canSort: boolean;
+}
+
+export interface CellIdentifier {
+  rowId: string;
+  columnId: string;
+}
+
+export interface CellValueState<TData extends RowData = unknown> {
+  newValue?: TData;
+  oldValue?: TData;
 }

@@ -66,4 +66,9 @@
   --osdk-table-column-config-visible-columns-bg: var(
     --osdk-background-secondary
   );
+
+  /* Editable Table */
+  --osdk-table-cell-editable-bg: var(--osdk-background-primary);
+  --osdk-table-button-container-padding: calc(var(--osdk-surface-spacing) * 2)
+    calc(var(--osdk-surface-spacing) * 4);
 }

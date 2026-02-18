@@ -17,4 +17,6 @@
 .osdkTableBody {
   display: grid;
   position: relative;
+  width: max-content;
+  min-width: 100%;
 }
