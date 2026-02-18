@@ -15,7 +15,6 @@
  */
 
 import type { Client, ObjectSet } from "@osdk/client";
-import { createAndFetchTempObjectSetRid } from "@osdk/client/internal";
 import type {
   AsyncValue,
   EventId,
@@ -117,6 +116,8 @@ export async function transformEmitEventPayloadAsync<
         }
         const objectSetRid = await createAndFetchTempObjectSetRid(
           osdkClient,
+          eventId,
+          paramId,
           paramValue as ObjectSet,
         );
         return [paramId, { objectSetRid } satisfies ObjectSetEmitEventPayload];
@@ -130,4 +131,17 @@ export async function transformEmitEventPayloadAsync<
       transformedEntries,
     ) as EventParameterValueMap<C, K>,
   };
+}
+
+async function createAndFetchTempObjectSetRid(
+  osdkClient: Client,
+  eventId: string | number | symbol,
+  paramId: string,
+  objectSet: ObjectSet,
+): Promise<string> {
+  return import("@osdk/client/internal").catch(() => {
+    throw new Error(
+      "@osdk/client is required for ObjectSet parameters. Install it with: npm install @osdk/client",
+    );
+  }).then(mod => mod.createAndFetchTempObjectSetRid(osdkClient, objectSet));
 }

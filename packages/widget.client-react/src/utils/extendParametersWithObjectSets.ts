@@ -15,7 +15,6 @@
  */
 
 import type { Client, ObjectSet } from "@osdk/client";
-import { hydrateObjectSetFromRid } from "@osdk/client/internal";
 import type {
   AllowedObjectSetParameterType,
   AsyncParameterValueMap,
@@ -29,14 +28,14 @@ import type { ExtendedAsyncParameterValueMap } from "../context.js";
  * The cache is used to avoid redundant hydration of the same object set RID, which
  * can cause unnecessary re-renders in React components consuming the parameters.
  */
-export function extendParametersWithObjectSets<
+export async function extendParametersWithObjectSets<
   C extends WidgetConfig<C["parameters"]>,
 >(
   osdkClient: Client | undefined,
   config: C,
   parameters: AsyncParameterValueMap<C>,
   cache: Map<string, { objectSetRid: string; objectSet: ObjectSet }>,
-): ExtendedAsyncParameterValueMap<C> {
+): Promise<ExtendedAsyncParameterValueMap<C>> {
   const extendedParameters = {
     ...parameters,
   } as ExtendedAsyncParameterValueMap<C>;
@@ -55,7 +54,7 @@ export function extendParametersWithObjectSets<
           && typeof parameterValue.objectSetRid === "string"
         ) {
           const objectSetRid = parameterValue.objectSetRid;
-          const objectSet = getOrHydrateObjectSet(
+          const objectSet = await getOrHydrateObjectSet(
             osdkClient,
             cache,
             parameterId,
@@ -77,7 +76,7 @@ export function extendParametersWithObjectSets<
   return extendedParameters;
 }
 
-function getOrHydrateObjectSet<T extends AllowedObjectSetParameterType>(
+async function getOrHydrateObjectSet<T extends AllowedObjectSetParameterType>(
   osdkClient: Client | undefined,
   cache: Map<string, { objectSetRid: string; objectSet: ObjectSet<T> }>,
   paramKey: string,
@@ -91,6 +90,13 @@ function getOrHydrateObjectSet<T extends AllowedObjectSetParameterType>(
   if (cached?.objectSetRid === objectSetRid) {
     return cached.objectSet;
   }
+  const hydrateObjectSetFromRid = await import("@osdk/client/internal").then(
+    mod => mod.hydrateObjectSetFromRid,
+  ).catch(() => {
+    throw new Error(
+      "@osdk/client is required for ObjectSet parameters. Install it with: npm install @osdk/client",
+    );
+  });
   const objectSet = hydrateObjectSetFromRid(
     osdkClient,
     definition,

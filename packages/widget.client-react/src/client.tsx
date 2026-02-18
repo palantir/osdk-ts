@@ -96,6 +96,7 @@ export const FoundryWidget = <C extends WidgetConfig<C["parameters"]>>({
     Map<string, { objectSetRid: string; objectSet: ObjectSet }>
   >(new Map());
 
+  const updateParametersSeqRef = useRef(0);
   const emitEventCallIds = useRef<Map<string, number>>(new Map());
 
   const emitEvent: AugmentedEmitEvent<C> = useCallback(
@@ -145,88 +146,100 @@ export const FoundryWidget = <C extends WidgetConfig<C["parameters"]>>({
     client.hostEventTarget.addEventListener(
       "host.update-parameters",
       (payload) => {
-        const processedParameters = extendParametersWithObjectSets(
-          osdkClient,
-          config,
-          payload.detail.parameters,
-          objectSetCache.current,
-        );
-        setAsyncParameterValues((currentParameters) => ({
-          ...currentParameters,
-          ...processedParameters,
-        }));
-        setAllParameterValues((currentParameters) => {
-          let aggregatedLoadedState: AsyncValue<any>["type"] = "loaded";
-          let firstError: Error | undefined;
-          const newParameterValues: ExtendedParameterValueMap<
-            WidgetConfig<ParameterConfig>
-          > = {};
-          for (const key in processedParameters) {
-            const value = processedParameters[key].value;
-            // If any fails, consider the whole thing failed
-            if (value.type === "failed") {
-              aggregatedLoadedState = "failed";
-              firstError = firstError ?? value.error;
-              newParameterValues[key as any] = value.value as any;
-              continue;
-            }
-            // If any is loading, consider all of it loading unless we have failed somewhere
-            if (
-              value.type === "loading"
-              && aggregatedLoadedState !== "failed"
-            ) {
-              aggregatedLoadedState = "loading";
-              continue;
-            }
-            // If any is reloading, consider it loading unless something is failed or loading for the first time
-            if (
-              value.type === "reloading"
-              && aggregatedLoadedState !== "failed"
-              && aggregatedLoadedState !== "loading"
-            ) {
-              aggregatedLoadedState = "reloading";
-              newParameterValues[key as any] = value.value as any;
-              continue;
-            }
-            if (
-              value.type === "not-started"
-              && aggregatedLoadedState !== "failed"
-              && aggregatedLoadedState !== "loading"
-              && aggregatedLoadedState !== "reloading"
-            ) {
-              aggregatedLoadedState = "not-started";
-            }
+        async function processParameterUpdate() {
+          const seqId = ++updateParametersSeqRef.current;
 
-            if (value.type === "loaded") {
-              newParameterValues[key as any] = value.value as any;
-            }
+          const processedParameters = await extendParametersWithObjectSets(
+            osdkClient,
+            config,
+            payload.detail.parameters,
+            objectSetCache.current,
+          );
+
+          if (seqId !== updateParametersSeqRef.current) {
+            return;
           }
-          const currentParameterValue = currentParameters.type !== "not-started"
-              && currentParameters.type !== "loading"
-            ? currentParameters.value
-            : {};
-          if (
-            aggregatedLoadedState !== "not-started"
-            && aggregatedLoadedState !== "loading"
-          ) {
-            const updatedValue = {
-              ...currentParameterValue,
-              ...newParameterValues,
-            } as ExtendedParameterValueMap<C>;
-            return aggregatedLoadedState === "failed"
-              ? {
-                type: aggregatedLoadedState,
-                value: updatedValue,
-                error: firstError ?? new Error("Failed to load parameters"),
+
+          setAsyncParameterValues((currentParameters) => ({
+            ...currentParameters,
+            ...processedParameters,
+          }));
+          setAllParameterValues((currentParameters) => {
+            let aggregatedLoadedState: AsyncValue<any>["type"] = "loaded";
+            let firstError: Error | undefined;
+            const newParameterValues: ExtendedParameterValueMap<
+              WidgetConfig<ParameterConfig>
+            > = {};
+            for (const key in processedParameters) {
+              const value = processedParameters[key].value;
+              // If any fails, consider the whole thing failed
+              if (value.type === "failed") {
+                aggregatedLoadedState = "failed";
+                firstError = firstError ?? value.error;
+                newParameterValues[key as any] = value.value as any;
+                continue;
               }
-              : {
-                type: aggregatedLoadedState,
-                value: updatedValue,
-              };
-          } else {
-            return { type: aggregatedLoadedState };
-          }
-        });
+              // If any is loading, consider all of it loading unless we have failed somewhere
+              if (
+                value.type === "loading"
+                && aggregatedLoadedState !== "failed"
+              ) {
+                aggregatedLoadedState = "loading";
+                continue;
+              }
+              // If any is reloading, consider it loading unless something is failed or loading for the first time
+              if (
+                value.type === "reloading"
+                && aggregatedLoadedState !== "failed"
+                && aggregatedLoadedState !== "loading"
+              ) {
+                aggregatedLoadedState = "reloading";
+                newParameterValues[key as any] = value.value as any;
+                continue;
+              }
+              if (
+                value.type === "not-started"
+                && aggregatedLoadedState !== "failed"
+                && aggregatedLoadedState !== "loading"
+                && aggregatedLoadedState !== "reloading"
+              ) {
+                aggregatedLoadedState = "not-started";
+              }
+
+              if (value.type === "loaded") {
+                newParameterValues[key as any] = value.value as any;
+              }
+            }
+            const currentParameterValue =
+              currentParameters.type !== "not-started"
+                && currentParameters.type !== "loading"
+                ? currentParameters.value
+                : {};
+            if (
+              aggregatedLoadedState !== "not-started"
+              && aggregatedLoadedState !== "loading"
+            ) {
+              const updatedValue = {
+                ...currentParameterValue,
+                ...newParameterValues,
+              } as ExtendedParameterValueMap<C>;
+              return aggregatedLoadedState === "failed"
+                ? {
+                  type: aggregatedLoadedState,
+                  value: updatedValue,
+                  error: firstError ?? new Error("Failed to load parameters"),
+                }
+                : {
+                  type: aggregatedLoadedState,
+                  value: updatedValue,
+                };
+            } else {
+              return { type: aggregatedLoadedState };
+            }
+          });
+        }
+
+        void processParameterUpdate();
       },
     );
     client.ready();

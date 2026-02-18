@@ -73,7 +73,7 @@ describe("extendParametersWithObjectSets", () => {
     cache.clear();
   });
 
-  it("should hydrate an object set for a valid objectSetRid", () => {
+  it("should hydrate an object set for a valid objectSetRid", async () => {
     const config = defineConfig({
       id: "testWidget",
       name: "Test Widget",
@@ -100,7 +100,7 @@ describe("extendParametersWithObjectSets", () => {
     const mockObjectSet = createMockObjectSet();
     vi.mocked(hydrateObjectSetFromRid).mockReturnValue(mockObjectSet);
 
-    const result = extendParametersWithObjectSets(
+    const result = await extendParametersWithObjectSets(
       client,
       config,
       parameters,
@@ -122,7 +122,7 @@ describe("extendParametersWithObjectSets", () => {
     });
   });
 
-  it("should pass-through a config with no object set parameters", () => {
+  it("should pass-through a config with no object set parameters", async () => {
     const config = defineConfig({
       id: "testWidget",
       name: "Test Widget",
@@ -145,7 +145,7 @@ describe("extendParametersWithObjectSets", () => {
       myNumber: createNumberParam(123),
     };
 
-    const result = extendParametersWithObjectSets(
+    const result = await extendParametersWithObjectSets(
       undefined,
       config,
       parameters,
@@ -156,7 +156,7 @@ describe("extendParametersWithObjectSets", () => {
     expect(hydrateObjectSetFromRid).not.toHaveBeenCalled();
   });
 
-  it("should handle multiple object set parameters independently", () => {
+  it("should handle multiple object set parameters independently", async () => {
     const mockObjectType = createMockObjectType();
     const config = defineConfig({
       id: "testWidget",
@@ -190,7 +190,7 @@ describe("extendParametersWithObjectSets", () => {
       objectsB: createObjectSetParam("ri.object-set.456"),
     };
 
-    const result = extendParametersWithObjectSets(
+    const result = await extendParametersWithObjectSets(
       client,
       config,
       parameters,
@@ -220,7 +220,7 @@ describe("extendParametersWithObjectSets", () => {
       objectsB: createObjectSetParam("ri.object-set.789"),
     };
 
-    const result2 = extendParametersWithObjectSets(
+    const result2 = await extendParametersWithObjectSets(
       client,
       config,
       parameters,
@@ -239,7 +239,7 @@ describe("extendParametersWithObjectSets", () => {
     });
   });
 
-  it("should clear cache and provide no object set when parameter transitions to failed state", () => {
+  it("should clear cache and provide no object set when parameter transitions to failed state", async () => {
     const config = defineConfig({
       id: "testWidget",
       name: "Test Widget",
@@ -267,7 +267,7 @@ describe("extendParametersWithObjectSets", () => {
       myObjectSet: createObjectSetParam("ri.object-set.123"),
     };
 
-    const initialResult = extendParametersWithObjectSets(
+    const initialResult = await extendParametersWithObjectSets(
       client,
       config,
       initialParameters,
@@ -297,7 +297,7 @@ describe("extendParametersWithObjectSets", () => {
       },
     };
 
-    const failedResult = extendParametersWithObjectSets(
+    const failedResult = await extendParametersWithObjectSets(
       client,
       config,
       failedParameters,
@@ -312,7 +312,7 @@ describe("extendParametersWithObjectSets", () => {
     expect(hydrateObjectSetFromRid).toHaveBeenCalledTimes(1);
   });
 
-  it("should throw an error when osdkClient is undefined but object set parameters used", () => {
+  it("should throw an error when osdkClient is undefined but object set parameters used", async () => {
     const config = defineConfig({
       id: "testWidget",
       name: "Test Widget",
@@ -331,17 +331,17 @@ describe("extendParametersWithObjectSets", () => {
       myObjectSet: createObjectSetParam("ri.object-set.123"),
     };
 
-    expect(() =>
+    await expect(
       extendParametersWithObjectSets(
         undefined,
         config,
         parameters,
         cache,
-      )
-    ).toThrow("Not provided an OSDK client");
+      ),
+    ).rejects.toThrow("Not provided an OSDK client");
   });
 
-  it("should pass through loading state without hydration", () => {
+  it("should pass through loading state without hydration", async () => {
     const config = defineConfig({
       id: "testWidget",
       name: "Test Widget",
@@ -366,7 +366,7 @@ describe("extendParametersWithObjectSets", () => {
       },
     };
 
-    const result = extendParametersWithObjectSets(
+    const result = await extendParametersWithObjectSets(
       client,
       config,
       parameters,
@@ -377,7 +377,7 @@ describe("extendParametersWithObjectSets", () => {
     expect(hydrateObjectSetFromRid).not.toHaveBeenCalled();
   });
 
-  it("should handle transition from loaded to reloading to loaded with new rid", () => {
+  it("should handle transition from loaded to reloading to loaded with new rid", async () => {
     const config = defineConfig({
       id: "testWidget",
       name: "Test Widget",
@@ -400,7 +400,7 @@ describe("extendParametersWithObjectSets", () => {
       myObjectSet: createObjectSetParam("ri.object-set.123"),
     };
 
-    const initialResult = extendParametersWithObjectSets(
+    const initialResult = await extendParametersWithObjectSets(
       client,
       config,
       initialParameters,
@@ -436,7 +436,7 @@ describe("extendParametersWithObjectSets", () => {
       },
     };
 
-    const reloadingResult = extendParametersWithObjectSets(
+    const reloadingResult = await extendParametersWithObjectSets(
       client,
       config,
       reloadingParameters,
@@ -462,7 +462,7 @@ describe("extendParametersWithObjectSets", () => {
       myObjectSet: createObjectSetParam("ri.object-set.456"),
     };
 
-    const newLoadedResult = extendParametersWithObjectSets(
+    const newLoadedResult = await extendParametersWithObjectSets(
       client,
       config,
       newLoadedParameters,
