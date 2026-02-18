@@ -941,4 +941,3 @@ describe("ListQuery pivotTo tests", () => {
     expectNoMoreCalls(listSub);
   });
 });
-
