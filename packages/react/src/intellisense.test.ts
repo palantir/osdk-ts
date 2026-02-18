@@ -143,6 +143,29 @@ describe("intellisense", () => {
     expect(typeResp.body?.displayString).toContain("Employee");
   });
 
+  it("useOsdkObjectsWithRids", { timeout: 40_000 }, async () => {
+    expect(ts.sys.fileExists(intellisenseFilePath)).toBeTruthy();
+    invariant(tsServer);
+
+    const { resp: ridsResp } = await tsServer.sendQuickInfoRequest({
+      file: intellisenseFilePath,
+      line: 30,
+      offset: 9,
+    });
+
+    expect(ridsResp.body?.displayString).toBeDefined();
+    expect(ridsResp.body?.displayString).toContain("$rid");
+
+    const { resp: noRidsResp } = await tsServer.sendQuickInfoRequest({
+      file: intellisenseFilePath,
+      line: 34,
+      offset: 9,
+    });
+
+    expect(noRidsResp.body?.displayString).toBeDefined();
+    expect(noRidsResp.body?.displayString).not.toContain("$rid");
+  });
+
   it("useOsdkObjectsWithProperties", { timeout: 40_000 }, async () => {
     expect(ts.sys.fileExists(intellisenseFilePath)).toBeTruthy();
     invariant(tsServer);

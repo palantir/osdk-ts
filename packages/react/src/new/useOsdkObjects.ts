@@ -126,6 +126,7 @@ export interface UseOsdkObjectsOptions<
 export interface UseOsdkListResult<
   T extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
+  EXTRA_OPTIONS extends never | "$rid" = never,
 > {
   /**
    * Function to fetch more pages (undefined if no more pages)
@@ -136,7 +137,12 @@ export interface UseOsdkListResult<
    * The fetched data with derived properties
    */
   data:
-    | Osdk.Instance<T, "$allBaseProperties", PropertyKeys<T>, RDPs>[]
+    | Osdk.Instance<
+      T,
+      "$allBaseProperties" | EXTRA_OPTIONS,
+      PropertyKeys<T>,
+      RDPs
+    >[]
     | undefined;
 
   /**
@@ -185,6 +191,14 @@ export function useOsdkObjects<
   RDPs extends Record<string, SimplePropertyDef> = {},
 >(
   type: Q,
+  options: UseOsdkObjectsOptions<Q, RDPs> & { rids: readonly string[] },
+): UseOsdkListResult<Q, RDPs, "$rid">;
+
+export function useOsdkObjects<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+>(
+  type: Q,
   options?: UseOsdkObjectsOptions<Q, RDPs>,
 ): UseOsdkListResult<Q, RDPs>;
 
@@ -196,6 +210,7 @@ export function useOsdkObjects<
   options?: UseOsdkObjectsOptions<Q, RDPs>,
 ):
   | UseOsdkListResult<Q, RDPs>
+  | UseOsdkListResult<Q, RDPs, "$rid">
   | UseOsdkListResult<LinkedType<Q, LinkNames<Q>>>
 {
   const { observableClient } = React.useContext(OsdkContext2);
