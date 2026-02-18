@@ -856,7 +856,7 @@ The ObjectTable (and all OSDK components) can be themed using CSS custom propert
 Change OSDK component styling without affecting other Blueprint components in your app:
 
 ```css
-@layer osdk.components, osdk.tokens, user.theme;
+@layer osdk.tokens, osdk.components, user.theme;
 
 @import "@osdk/react-components/styles.css" layer(osdk.components);
 @import "@osdk/react-components-styles" layer(osdk.tokens);

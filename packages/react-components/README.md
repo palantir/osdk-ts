@@ -55,10 +55,10 @@ Add this to your application's entry css file (e.g., `index.css` or `index.scss`
 
 ```css
 /* index.css */
-@layer osdk.components, osdk.tokens;
+@layer osdk.tokens, osdk.components;
 
-@import "@osdk/react-components/styles.css" layer(osdk.components);
 @import "@osdk/react-components-styles" layer(osdk.tokens);
+@import "@osdk/react-components/styles.css" layer(osdk.components);
 
 .root {
   isolation: isolate;
