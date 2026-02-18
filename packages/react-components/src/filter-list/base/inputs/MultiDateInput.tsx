@@ -45,9 +45,9 @@ function MultiDateInputInner({
 }: MultiDateInputProps): React.ReactElement {
   const addDate = useCallback(
     (date: Date) => {
-      const dateStr = date.toISOString().split("T")[0];
+      const dateStr = formatDateForInput(date);
       const exists = selectedDates.some(
-        (d) => d.toISOString().split("T")[0] === dateStr,
+        (d) => formatDateForInput(d) === dateStr,
       );
       if (!exists) {
         onChange(
@@ -60,9 +60,9 @@ function MultiDateInputInner({
 
   const removeDate = useCallback(
     (date: Date) => {
-      const dateStr = date.toISOString().split("T")[0];
+      const dateStr = formatDateForInput(date);
       onChange(
-        selectedDates.filter((d) => d.toISOString().split("T")[0] !== dateStr),
+        selectedDates.filter((d) => formatDateForInput(d) !== dateStr),
       );
     },
     [selectedDates, onChange],
