@@ -71,7 +71,7 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
-    "@osdk/api": "workspace:*",
+    "@osdk/api": "workspace:~",
     "@osdk/client.unstable": "workspace:*",
     "@osdk/foundry.core": "catalog:foundry-platform-typescript",
     "@osdk/foundry.mediasets": "catalog:foundry-platform-typescript",
