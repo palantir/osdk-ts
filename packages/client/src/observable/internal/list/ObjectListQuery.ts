@@ -17,7 +17,6 @@
 import type {
   DerivedProperty,
   InterfaceDefinition,
-  ObjectOrInterfaceDefinition,
   ObjectSet,
   ObjectTypeDefinition,
   Osdk,
