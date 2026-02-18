@@ -93,13 +93,14 @@ export function createMockClient(): MockClient {
   ): StubBuilderFor<T> => {
     let captured: { objectType: string; calls: Call[] } | undefined;
 
-    const stubClient: StubClient = ((def: ObjectOrInterfaceDefinition) => {
+    const stubClient: StubClient = (def: ObjectOrInterfaceDefinition) => {
       return createMockObjectSet(def, (calls) => {
         captured = { objectType: def.apiName, calls };
         return { data: [], nextPageToken: undefined };
       });
-    }) as StubClient;
+    };
 
+    // The callback actually runs synchronously but all terminal methods are typed as async.
     void callback(stubClient);
 
     const register = (value: unknown) => {
