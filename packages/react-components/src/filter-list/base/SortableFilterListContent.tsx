@@ -114,6 +114,11 @@ export default function SortableFilterListContent<
     ? filterDefinitions[activeIndex]
     : undefined;
 
+  const activeFilterKey = useMemo(
+    () => activeDefinition ? getFilterKey(activeDefinition) : undefined,
+    [activeDefinition],
+  );
+
   const handleDragStart = useCallback((event: DragStartEvent) => {
     setActiveId(event.active.id);
   }, []);
@@ -220,20 +225,17 @@ export default function SortableFilterListContent<
           dropAnimation={null}
           className={contentStyles.dragOverlay}
         >
-          {activeDefinition && (() => {
-            const activeFilterKey = getFilterKey(activeDefinition);
-            return (
-              <FilterListItem
-                objectType={objectType}
-                objectSet={objectSet}
-                definition={activeDefinition}
-                filterKey={activeFilterKey}
-                filterState={filterStates.get(activeFilterKey)}
-                onFilterStateChanged={onFilterStateChanged}
-                whereClause={whereClause}
-              />
-            );
-          })()}
+          {activeDefinition && activeFilterKey && (
+            <FilterListItem
+              objectType={objectType}
+              objectSet={objectSet}
+              definition={activeDefinition}
+              filterKey={activeFilterKey}
+              filterState={filterStates.get(activeFilterKey)}
+              onFilterStateChanged={onFilterStateChanged}
+              whereClause={whereClause}
+            />
+          )}
         </DragOverlay>
       </DndContext>
     </div>
