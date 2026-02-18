@@ -678,31 +678,31 @@ import {
 import { Employee } from "@YourApp/sdk";
 import { useCallback, useMemo, useState } from "react";
 
-function EmployeesTable() {
-  const initialColumnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
-    {
-      locator: { type: "property", id: "fullName" },
-      columnName: "Full Name",
-    },
-    {
-      locator: { type: "property", id: "emailPrimaryWork" },
-      columnName: "Email",
-    },
-    {
-      locator: { type: "property", id: "jobTitle" },
-      columnName: "Job Title",
-    },
-    {
-      locator: { type: "property", id: "department" },
-      columnName: "Department",
-    },
-    {
-      locator: { type: "property", id: "businessTitle" },
-      columnName: "Business Title",
-      isVisible: false, // Hidden by default
-    },
-  ];
+const initialColumnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
+  {
+    locator: { type: "property", id: "fullName" },
+    columnName: "Full Name",
+  },
+  {
+    locator: { type: "property", id: "emailPrimaryWork" },
+    columnName: "Email",
+  },
+  {
+    locator: { type: "property", id: "jobTitle" },
+    columnName: "Job Title",
+  },
+  {
+    locator: { type: "property", id: "department" },
+    columnName: "Department",
+  },
+  {
+    locator: { type: "property", id: "businessTitle" },
+    columnName: "Business Title",
+    isVisible: false, // Hidden by default
+  },
+];
 
+function EmployeesTable() {
   const [isColumnConfigOpen, setIsColumnConfigOpen] = useState(false);
   const [columnDefinitions, setColumnDefinitions] = useState(
     initialColumnDefinitions,
