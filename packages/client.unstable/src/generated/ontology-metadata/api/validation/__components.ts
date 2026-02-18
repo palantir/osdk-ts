@@ -2909,6 +2909,12 @@ export interface ErrorType_objectTypeDatasourceWithInvalidRetentionTargetSize {
     ObjectTypeDatasourceWithInvalidRetentionTargetSize;
 }
 
+export interface ErrorType_objectTypeDatasourceWithInvalidTimeBasedRetention {
+  type: "objectTypeDatasourceWithInvalidTimeBasedRetention";
+  objectTypeDatasourceWithInvalidTimeBasedRetention:
+    ObjectTypeDatasourceWithInvalidTimeBasedRetention;
+}
+
 export interface ErrorType_reducersNotAllowedOnArraySubtype {
   type: "reducersNotAllowedOnArraySubtype";
   reducersNotAllowedOnArraySubtype: ReducersNotAllowedOnArraySubtype;
@@ -4551,6 +4557,7 @@ export type ErrorType =
   | ErrorType_objectTypeIdClashesAfterRebase
   | ErrorType_objectTypePropertyCannotBeDeletedWhenReferencedInActionNotification
   | ErrorType_objectTypeDatasourceWithInvalidRetentionTargetSize
+  | ErrorType_objectTypeDatasourceWithInvalidTimeBasedRetention
   | ErrorType_reducersNotAllowedOnArraySubtype
   | ErrorType_ruleSetBindingReferencingMissingPropertyTypeIds
   | ErrorType_ruleSetCountExceeded
@@ -5660,6 +5667,12 @@ export interface ObjectTypeDatasourceUpdateModificationCannotChangeAssumedMarkin
  * be less than or equal to the retention trigger size. Only applicable for direct datasources.
  */
 export interface ObjectTypeDatasourceWithInvalidRetentionTargetSize {
+}
+/**
+ * A direct datasource has an invalid time-based retention window. The retention window must be a non-negative
+ * ISO 8601 duration and at most 1000 days.
+ */
+export interface ObjectTypeDatasourceWithInvalidTimeBasedRetention {
 }
 /**
  * An error representing when an object type datasource does not include the primary key property of the corresponding object type.

@@ -196,6 +196,7 @@ export type {
   StructMainValueModification,
   StructPropertyTypeImplementationModification,
   StructPropertyTypeModification,
+  TimeBasedRetentionConfigModification,
   TimeSeriesMetadataModification,
   TypeForModification,
   TypeGroupModification,

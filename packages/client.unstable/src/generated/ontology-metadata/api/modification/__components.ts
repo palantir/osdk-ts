@@ -1482,6 +1482,10 @@ export interface ObjectTypeDirectDatasourceModification {
     | undefined;
   retentionConfig?: _api_RetentionConfig | null | undefined;
   retentionConfigV2?: RetentionConfigModification | null | undefined;
+  timeBasedRetentionConfig?:
+    | TimeBasedRetentionConfigModification
+    | null
+    | undefined;
 }
 export interface ObjectTypeDirectDatasourceModificationInternal {
   directSourceRid: _api_DirectSourceRid;
@@ -1489,6 +1493,10 @@ export interface ObjectTypeDirectDatasourceModificationInternal {
   propertySecurityGroups: _api_PropertySecurityGroupsModification;
   retentionConfig?: _api_RetentionConfig | null | undefined;
   retentionConfigV2?: RetentionConfigModification | null | undefined;
+  timeBasedRetentionConfig?:
+    | TimeBasedRetentionConfigModification
+    | null
+    | undefined;
 }
 export interface ObjectTypeEditsOnlyDatasourceModification {
   editsOnlyRid?: _api_EditsOnlyRid | null | undefined;
@@ -2285,6 +2293,12 @@ export interface StructPropertyTypeImplementationModification {
 export interface StructPropertyTypeModification {
   mainValue?: StructMainValueModification | null | undefined;
   structFields: Array<StructFieldTypeModification>;
+}
+/**
+ * Modification type for time-based retention configuration.
+ */
+export interface TimeBasedRetentionConfigModification {
+  window: string;
 }
 /**
  * Describes how to treat an object of this type as a time series.
