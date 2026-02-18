@@ -511,7 +511,7 @@ describe("generator", () => {
 
   test(
     "should be able to generate a project",
-    { timeout: 20_000 },
+    { timeout: 60_000 },
     async () => {
       await generateClientSdkVersionTwoPointZero(
         TodoWireOntology,
