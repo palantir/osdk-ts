@@ -15,6 +15,7 @@
  */
 
 export { FilterList as BaseFilterList } from "../filter-list/base/FilterList.js";
+export type { FilterListComponentProps as BaseFilterListProps } from "../filter-list/base/FilterList.js";
 export type {
   FilterDefinitionUnion,
   FilterListProps,
