@@ -47,6 +47,8 @@ overrides:
   esbuild@^0.23.0: ^0.25.0
   esbuild@^0.24.0: ^0.25.0
   react-server-dom-webpack: '>=19.2.2'
+  '@types/react': ^18.3.24
+  '@types/react-dom': ^18.3.7
   '@cspell/dict-css': ^4.0.18
   '@cspell/dict-html': ^4.0.12
   '@cspell/dict-html-symbol-entities': ^4.0.4
@@ -4337,6 +4339,9 @@ importers:
       classnames:
         specifier: ^2.0.0
         version: 2.5.1
+      lodash-es:
+        specifier: ^4.17.21
+        version: 4.17.23
     devDependencies:
       '@osdk/api':
         specifier: workspace:*
@@ -6142,7 +6147,7 @@ packages:
     resolution: {integrity: sha512-nvwTzmy6ot6f9vStK9Xe9LLyycCqU48rY0yjpkYEcKFmXGSgckJSpaqsHfhN6EPdzSue+B6iykR9gOxd2yHXgg==}
     hasBin: true
     peerDependencies:
-      '@types/react': '18'
+      '@types/react': ^18.3.24
       react: '18'
       react-dom: '18'
     peerDependenciesMeta:
@@ -6172,7 +6177,7 @@ packages:
   '@blueprintjs/icons@6.5.1':
     resolution: {integrity: sha512-+yu/hPdk0WLfNFJnc6waUm1rmXEbG6wAFOhOoXhvrGOr+3YGht8Zhwc+VNl8JNrer24EVB6U8NOHaOYjPEePcQ==}
     peerDependencies:
-      '@types/react': '18'
+      '@types/react': ^18.3.24
       react: '18'
       react-dom: '18'
     peerDependenciesMeta:
@@ -14756,6 +14761,9 @@ packages:
     resolution: {integrity: sha512-XT9ewWAC43tiAV7xDAPflMkG0qOPn2QjHqlgX8FOqmWa/rxnyYDulF9T0F7tRy1u+TVTmK/M//6VIOye+2zDXg==}
     engines: {node: '>=20'}
 
+  lodash-es@4.17.23:
+    resolution: {integrity: sha512-kVI48u3PZr38HdYz98UmfPnXl2DXrpdctLrFLCd3kOx1xUkOmpFPx7gCWWM5MPkL/fD8zb+Ph0QzjGFs4+hHWg==}
+
   lodash.camelcase@4.3.0:
     resolution: {integrity: sha512-TwuEnCnxbc3rAvhf/LbG7tJUDzhqXyFnv3dtzLOPgCG/hODL7WFnsbwktkD7yUV0RrreP/l1PALq/YSg6VvjlA==}
 
@@ -22932,12 +22940,6 @@ snapshots:
       '@types/react': 18.3.24
       react: 18.3.1
 
-  '@mdx-js/react@3.1.1(@types/react@19.1.12)(react@18.3.1)':
-    dependencies:
-      '@types/mdx': 2.0.13
-      '@types/react': 18.3.24
-      react: 18.3.1
-
   '@microsoft/api-documenter@7.26.32(@types/node@18.19.124)':
     dependencies:
       '@microsoft/api-extractor-model': 7.30.7(@types/node@18.19.124)
@@ -26582,24 +26584,11 @@ snapshots:
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
 
-  '@vis.gl/react-mapbox@8.0.4(react-dom@19.1.1(react@19.1.1))(react@19.1.1)':
-    dependencies:
-      react: 19.1.1
-      react-dom: 19.1.1(react@19.1.1)
-
   '@vis.gl/react-maplibre@8.0.4(maplibre-gl@5.7.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@maplibre/maplibre-gl-style-spec': 19.3.3
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
-    optionalDependencies:
-      maplibre-gl: 5.7.1
-
-  '@vis.gl/react-maplibre@8.0.4(maplibre-gl@5.7.1)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)':
-    dependencies:
-      '@maplibre/maplibre-gl-style-spec': 19.3.3
-      react: 19.1.1
-      react-dom: 19.1.1(react@19.1.1)
     optionalDependencies:
       maplibre-gl: 5.7.1
 
@@ -31833,6 +31822,8 @@ snapshots:
     dependencies:
       p-locate: 6.0.0
 
+  lodash-es@4.17.23: {}
+
   lodash.camelcase@4.3.0: {}
 
   lodash.debounce@4.0.8: {}
@@ -34424,15 +34415,6 @@ snapshots:
       '@vis.gl/react-maplibre': 8.0.4(maplibre-gl@5.7.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
-    optionalDependencies:
-      maplibre-gl: 5.7.1
-
-  react-map-gl@8.0.4(maplibre-gl@5.7.1)(react-dom@19.1.1(react@19.1.1))(react@19.1.1):
-    dependencies:
-      '@vis.gl/react-mapbox': 8.0.4(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
-      '@vis.gl/react-maplibre': 8.0.4(maplibre-gl@5.7.1)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
-      react: 19.1.1
-      react-dom: 19.1.1(react@19.1.1)
     optionalDependencies:
       maplibre-gl: 5.7.1
 
