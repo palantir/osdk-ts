@@ -64,6 +64,8 @@ const cspell = {
     "*.sh",
     "*.snap",
     "typedoc.jsonc",
+    "mockServiceWorker.js",
+    ".storybook/**",
 
     // Dictionary files have words that are only used in certain contexts so they implicitly
     // won't pass the generic case.

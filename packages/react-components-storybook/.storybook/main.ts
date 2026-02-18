@@ -37,8 +37,7 @@ const config: StorybookConfig = {
   async viteFinal(config) {
     // Set base path for GitHub Pages deployment
     if (config.mode === "production") {
-      // Allow overriding base path via environment variable for previews
-      config.base = process.env.STORYBOOK_BASE_PATH || "/osdk-ts/storybook/";
+      config.base = "/osdk-ts/storybook/";
     }
 
     // Ensure proper resolution of workspace packages
