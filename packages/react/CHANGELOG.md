@@ -1,5 +1,32 @@
 # @osdkkit/react
 
+## 0.9.0
+
+### Minor Changes
+
+- 6cfe14a: add new useOsdkFunction hook and supporting client infrastructure
+- 43d342e: Fix fetchMore in useObjectSet and useLinks
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- ddef59f: update docs
+- adca853: fix fetchMore behavior
+- acf6331: Include AGENTS.md and docs directory in published package for improved AI assistant support
+- 74e3ba7: Preserve aggregate option literal types in useOsdkAggregation using const type parameter
+- a6d4d49: fix useLinks stabilization
+- ba3159c: improve loading logic to make loading state consistent / reduce flashing
+- eb3a556: wire totalCount for osdk react hooks
+- a23784c: wire action edit response types through for useOsdkAction
+- ecd18e2: fix pivotTo with where usage
+- 31cd835: Revert beta changes
+- 38d5958: fix order by via key stabilization
+- 56ba08f: support interfaces for osdk react hooks
+- 0dbd0d0: add useOsdkObjects rid querying support
+- 0395d4b: Pins Foundry core and admin packages to monorepo version
+- 0b2cd91: fix SimplePropertyDef issue, wire RDPs through, update names
+- db28747: rdp typing improvements
+
 ## 0.9.0-rc.11
 
 ### Patch Changes

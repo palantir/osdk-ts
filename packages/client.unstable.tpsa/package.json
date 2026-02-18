@@ -1,6 +1,6 @@
 {
   "name": "@osdk/client.unstable.tpsa",
-  "version": "0.9.0-rc.2",
+  "version": "0.9.0",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",

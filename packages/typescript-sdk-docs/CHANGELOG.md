@@ -1,5 +1,16 @@
 # @osdk/typescript-sdk-docs
 
+## 0.6.0
+
+### Patch Changes
+
+- 776ae8a: Simulated release
+- 03db734: Move platform SDK deps to pnpm catalog
+- 579e518: Move new Media upload docs from 2.6 to 2.1
+- 31cd835: Revert beta changes
+- 7572644: Bump @osdk/docs-spec-core to 0.6.0
+- 3bfde5a: Add rendering support for objectSet action parameters
+
 ## 0.6.0-rc.6
 
 ### Patch Changes

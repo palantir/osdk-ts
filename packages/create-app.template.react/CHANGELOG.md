@@ -1,5 +1,17 @@
 # @osdk/create-app.template.react
 
+## 2.7.0
+
+### Minor Changes
+
+- 4e96d14: Update create-app React, Vue, and Expo templates
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- 1c57da8: Fix icon imports
+- 31cd835: Revert beta changes
+
 ## 2.7.0-rc.15
 
 ### Patch Changes

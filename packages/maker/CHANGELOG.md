@@ -1,5 +1,43 @@
 # @osdk/maker
 
+## 0.15.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- 448caa8: Support formatting for SPTs
+- 8381ac2: Alias and render hint overrides for oac
+- c773e8f: Expose more status options on OAC
+- 1cb0862: fix property parameter defaults
+- e462938: Support PSGs in OAC
+- 9088072: Add users from static groups as action parameters in OAC
+- 2fd6f6e: Fix self-referential derived datasources
+- bb8d059: Support customizations for delete object action parameters
+- e743064: Expose icon param in actions
+- ace2d68: Allow custom "then" configuration on visibility overrides
+- 31cd835: Revert beta changes
+- 044f478: Wire propertiesV2 to implementsInterface
+- e6689b3: Attachment properties in oac
+- c95f3bc: Support IDPs in OAC
+- 33e10e3: Implement user and group action parameters
+- 3693275: Add flag to add namespace prefix to value type api names
+- Updated dependencies [322c5bc]
+- Updated dependencies [776ae8a]
+- Updated dependencies [03db734]
+- Updated dependencies [1e3c147]
+- Updated dependencies [fb83808]
+- Updated dependencies [c9ca08d]
+- Updated dependencies [24a1e29]
+- Updated dependencies [448763f]
+- Updated dependencies [579e518]
+- Updated dependencies [bb9d25c]
+- Updated dependencies [31cd835]
+- Updated dependencies [7572644]
+- Updated dependencies [d5cfc38]
+- Updated dependencies [3bfde5a]
+  - @osdk/api@2.7.0
+  - @osdk/typescript-sdk-docs@0.6.0
+
 ## 0.15.0-rc.10
 
 ### Patch Changes

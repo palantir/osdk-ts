@@ -1,5 +1,22 @@
 # @osdk/client.test.ontology
 
+## 2.7.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- 31cd835: Revert beta changes
+- Updated dependencies [322c5bc]
+- Updated dependencies [1e3c147]
+- Updated dependencies [fb83808]
+- Updated dependencies [c9ca08d]
+- Updated dependencies [24a1e29]
+- Updated dependencies [448763f]
+- Updated dependencies [bb9d25c]
+- Updated dependencies [31cd835]
+- Updated dependencies [d5cfc38]
+  - @osdk/api@2.7.0
+
 ## 2.7.0-rc.15
 
 ### Patch Changes

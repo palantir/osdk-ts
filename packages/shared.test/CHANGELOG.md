@@ -1,5 +1,29 @@
 # @osdk/shared.test
 
+## 2.7.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- 03db734: Move platform SDK deps to pnpm catalog
+- 31cd835: Revert beta changes
+- dc33f68: Add Transaction ID to Queries
+- 266b901: Fix queries that return arrays of objects.
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [1e3c147]
+- Updated dependencies [fb83808]
+- Updated dependencies [c9ca08d]
+- Updated dependencies [24a1e29]
+- Updated dependencies [448763f]
+- Updated dependencies [bb9d25c]
+- Updated dependencies [f0a57a5]
+- Updated dependencies [31cd835]
+- Updated dependencies [dc33f68]
+- Updated dependencies [d5cfc38]
+  - @osdk/api@2.7.0
+  - @osdk/generator-converters@2.7.0
+
 ## 2.7.0-rc.5
 
 ### Patch Changes

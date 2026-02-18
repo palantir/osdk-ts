@@ -1,6 +1,6 @@
 {
   "name": "@osdk/foundry-config-json",
-  "version": "1.6.0-rc.2",
+  "version": "1.6.0",
   "access": "public",
   "license": "Apache-2.0",
   "repository": {

@@ -1,5 +1,21 @@
 # @osdk/create-app.template.vue.v2
 
+## 2.7.0
+
+### Minor Changes
+
+- 265b09b: Update generated `.npmrc` file
+- 935b7ac: Allow CLI template bootstrapping without an OSDK
+- 4e96d14: Update create-app React, Vue, and Expo templates
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- 5ba2346: Add `osdk/foundry` to `create-app` templates
+- 968dca0: Add padding and export `client` as a named export
+- 1c57da8: Fix icon imports
+- 31cd835: Revert beta changes
+
 ## 2.7.0-rc.15
 
 ### Patch Changes

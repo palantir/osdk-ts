@@ -1,5 +1,21 @@
 # @osdk/generator-converters.ontologyir
 
+## 2.7.0
+
+### Patch Changes
+
+- 150da1a: Simulated release
+- 03db734: Move platform SDK deps to pnpm catalog
+- 8381ac2: Alias and render hint overrides for oac
+- 31cd835: Revert beta changes
+- dc33f68: Add Transaction ID to Queries
+- Updated dependencies [322c5bc]
+- Updated dependencies [8381ac2]
+- Updated dependencies [e462938]
+- Updated dependencies [31cd835]
+- Updated dependencies [c95f3bc]
+  - @osdk/client.unstable@2.7.0
+
 ## 2.7.0-rc.15
 
 ### Patch Changes

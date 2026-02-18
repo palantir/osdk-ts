@@ -1,5 +1,12 @@
 # @osdk/foundry-config-json
 
+## 1.6.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- 31cd835: Revert beta changes
+
 ## 1.6.0-rc.2
 
 ### Patch Changes

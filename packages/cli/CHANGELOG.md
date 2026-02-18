@@ -1,5 +1,12 @@
 # @osdk/cli
 
+## 0.31.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- 31cd835: Revert beta changes
+
 ## 0.31.0-rc.3
 
 ### Patch Changes

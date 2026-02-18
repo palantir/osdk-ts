@@ -1,7 +1,7 @@
 {
   "name": "@osdk/monorepo.tool.transpile",
   "private": true,
-  "version": "0.6.0-beta.1",
+  "version": "0.6.0",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
