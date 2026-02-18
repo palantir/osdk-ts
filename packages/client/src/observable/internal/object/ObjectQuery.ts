@@ -16,6 +16,7 @@
 
 import type {
   DerivedProperty,
+  InterfaceDefinition,
   ObjectTypeDefinition,
   PrimaryKeyType,
 } from "@osdk/api";
@@ -47,6 +48,7 @@ export class ObjectQuery extends Query<
   #apiName: string;
   #pk: string | number | boolean;
   #defType: DefType;
+  #implementingTypes: Set<string> | undefined;
 
   constructor(
     store: Store,
@@ -185,14 +187,30 @@ export class ObjectQuery extends Query<
     return batch.read(this.cacheKey);
   }
 
-  invalidateObjectType = (
+  invalidateObjectType = async (
     objectType: string,
     changes: Changes | undefined,
   ): Promise<void> => {
-    if (this.#apiName === objectType) {
+    if (this.#defType === "object") {
+      if (this.#apiName === objectType) {
+        changes?.modified.add(this.cacheKey);
+        return this.revalidate(true);
+      }
+      return;
+    }
+
+    if (!this.#implementingTypes) {
+      const interfaceDef = {
+        type: "interface",
+        apiName: this.#apiName,
+      } as InterfaceDefinition;
+      const metadata = await this.store.client.fetchMetadata(interfaceDef);
+      this.#implementingTypes = new Set(metadata.implementedBy ?? []);
+    }
+
+    if (this.#implementingTypes.has(objectType)) {
       changes?.modified.add(this.cacheKey);
       return this.revalidate(true);
     }
-    return Promise.resolve();
   };
 }

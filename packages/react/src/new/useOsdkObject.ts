@@ -15,8 +15,7 @@
  */
 
 import type {
-  InterfaceDefinition,
-  ObjectTypeDefinition,
+  ObjectOrInterfaceDefinition,
   Osdk,
   PrimaryKeyType,
 } from "@osdk/api";
@@ -26,7 +25,7 @@ import { makeExternalStore } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
 
 export interface UseOsdkObjectResult<
-  Q extends ObjectTypeDefinition | InterfaceDefinition,
+  Q extends ObjectOrInterfaceDefinition,
 > {
   object: Osdk.Instance<Q> | undefined;
   isLoading: boolean;
@@ -45,7 +44,7 @@ export interface UseOsdkObjectResult<
  * @param enabled Enable or disable the query (defaults to true)
  */
 export function useOsdkObject<
-  Q extends ObjectTypeDefinition | InterfaceDefinition,
+  Q extends ObjectOrInterfaceDefinition,
 >(
   obj: Osdk.Instance<Q>,
   enabled?: boolean,
@@ -58,7 +57,7 @@ export function useOsdkObject<
  * @param enabled Enable or disable the query (defaults to true)
  */
 export function useOsdkObject<
-  Q extends ObjectTypeDefinition | InterfaceDefinition,
+  Q extends ObjectOrInterfaceDefinition,
 >(
   type: Q,
   primaryKey: PrimaryKeyType<Q>,
@@ -68,7 +67,7 @@ export function useOsdkObject<
     Implementation of useOsdkObject
  */
 export function useOsdkObject<
-  Q extends ObjectTypeDefinition | InterfaceDefinition,
+  Q extends ObjectOrInterfaceDefinition,
 >(
   ...args:
     | [obj: Osdk.Instance<Q>, enabled?: boolean]
