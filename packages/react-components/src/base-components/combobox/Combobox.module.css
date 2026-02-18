@@ -1,0 +1,177 @@
+/*
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.osdkComboboxInputWrapper {
+  display: flex;
+  align-items: center;
+  gap: var(--osdk-combobox-spacing, var(--bp-surface-spacing));
+  width: 100%;
+  min-height: 30px;
+  padding: calc(var(--osdk-combobox-spacing, var(--bp-surface-spacing)) * 1.5)
+    calc(var(--osdk-combobox-spacing, var(--bp-surface-spacing)) * 2);
+  box-sizing: border-box;
+  border-radius: var(--osdk-combobox-border-radius, var(--bp-surface-borderRadius));
+  border: var(--osdk-combobox-border-width, var(--bp-surface-borderWidth)) solid
+    var(--osdk-combobox-border-color, var(--bp-surface-borderColor-default));
+  background-color: var(--osdk-combobox-input-bg, var(--bp-surface-colorRest-default));
+  transition: border-color var(--osdk-combobox-transition-duration, var(--bp-emphasis-transitionDuration))
+    var(--osdk-combobox-transition-ease, var(--bp-emphasis-ease-default));
+
+  &:focus-within {
+    border-color: var(--osdk-combobox-focus-border-color, var(--bp-intent-primary-rest));
+    outline: var(--osdk-combobox-focus-width, var(--bp-emphasis-focusWidth)) solid
+      var(--osdk-combobox-focus-color, var(--bp-emphasis-focusColor));
+    outline-offset: var(--osdk-combobox-focus-offset, var(--bp-emphasis-focusOffset));
+  }
+}
+
+.osdkComboboxSearchIcon {
+  flex-shrink: 0;
+  color: var(--osdk-combobox-icon-color, var(--bp-iconography-colorMuted));
+}
+
+.osdkComboboxInput {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  font-family: var(--osdk-combobox-font-family, var(--bp-typography-family-default));
+  font-size: var(--osdk-combobox-font-size, var(--bp-typography-size-bodyMedium));
+  line-height: var(--osdk-combobox-line-height, var(--bp-typography-lineHeight-default));
+  color: var(--osdk-combobox-input-color, var(--bp-typography-colorRest-default));
+  outline: none;
+
+  &::placeholder {
+    color: var(--osdk-combobox-placeholder-color, var(--bp-typography-colorMuted));
+  }
+}
+
+.osdkComboboxPositioner {
+  z-index: var(--osdk-combobox-z-index, var(--bp-surface-zIndex-3));
+}
+
+.osdkComboboxPopup {
+  display: flex;
+  flex-direction: column;
+  min-width: var(--anchor-width);
+  max-height: var(--available-height);
+  overflow-y: auto;
+  padding: calc(var(--osdk-combobox-spacing, var(--bp-surface-spacing)) * 1.5);
+  box-sizing: border-box;
+  border-radius: var(--osdk-combobox-border-radius, var(--bp-surface-borderRadius));
+  border: var(--osdk-combobox-border-width, var(--bp-surface-borderWidth)) solid
+    var(--osdk-combobox-border-color, var(--bp-surface-borderColor-default));
+  background-color: var(--osdk-combobox-popup-bg, var(--bp-surface-colorRest-default));
+  box-shadow: var(--osdk-combobox-popup-shadow, var(--bp-surface-shadow-2));
+}
+
+.osdkComboboxItem {
+  display: flex;
+  align-items: center;
+  padding: calc(var(--osdk-combobox-spacing, var(--bp-surface-spacing)) * 1.5)
+    calc(var(--osdk-combobox-spacing, var(--bp-surface-spacing)) * 2);
+  border-radius: var(--osdk-combobox-border-radius, var(--bp-surface-borderRadius));
+  cursor: pointer;
+  font-family: var(--osdk-combobox-font-family, var(--bp-typography-family-default));
+  font-size: var(--osdk-combobox-font-size, var(--bp-typography-size-bodyMedium));
+  line-height: var(--osdk-combobox-line-height, var(--bp-typography-lineHeight-default));
+  color: var(--osdk-combobox-item-color, var(--bp-typography-colorRest-default));
+  transition: background-color var(--osdk-combobox-transition-duration, var(--bp-emphasis-transitionDuration))
+    var(--osdk-combobox-transition-ease, var(--bp-emphasis-ease-default));
+
+  &[data-highlighted] {
+    background-color: var(--osdk-combobox-item-bg-highlighted, var(--bp-surface-colorHover-default));
+    outline: none;
+  }
+
+  &[data-selected] {
+    background-color: var(--osdk-combobox-item-bg-selected, var(--bp-surface-depthLayer-primary));
+    color: var(--osdk-combobox-item-color-selected, var(--bp-intent-primary-rest));
+  }
+
+  &[data-disabled] {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+}
+
+.osdkComboboxChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--osdk-combobox-spacing, var(--bp-surface-spacing)) * 1.5);
+  margin-bottom: calc(var(--osdk-combobox-spacing, var(--bp-surface-spacing)) * 2);
+}
+
+.osdkComboboxChip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--osdk-combobox-spacing, var(--bp-surface-spacing));
+  padding: calc(var(--osdk-combobox-spacing, var(--bp-surface-spacing)) * 0.5)
+    calc(var(--osdk-combobox-spacing, var(--bp-surface-spacing)) * 1.5);
+  border-radius: var(--osdk-combobox-border-radius, var(--bp-surface-borderRadius));
+  background-color: var(--osdk-combobox-chip-bg, var(--bp-surface-colorHover-default));
+  font-family: var(--osdk-combobox-font-family, var(--bp-typography-family-default));
+  font-size: var(--osdk-combobox-chip-font-size, var(--bp-typography-size-bodySmall));
+  line-height: var(--osdk-combobox-line-height, var(--bp-typography-lineHeight-default));
+  color: var(--osdk-combobox-chip-color, var(--bp-typography-colorRest-default));
+}
+
+.osdkComboboxChipRemove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: var(--osdk-combobox-chip-remove-color, var(--bp-iconography-colorMuted));
+  transition: color var(--osdk-combobox-transition-duration, var(--bp-emphasis-transitionDuration))
+    var(--osdk-combobox-transition-ease, var(--bp-emphasis-ease-default));
+
+  &:hover {
+    color: var(--osdk-combobox-chip-remove-color-hover, var(--bp-typography-colorRest-default));
+  }
+}
+
+.osdkComboboxClear {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: calc(var(--osdk-combobox-spacing, var(--bp-surface-spacing)) * 0.5);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: var(--osdk-combobox-clear-color, var(--bp-iconography-colorMuted));
+  border-radius: var(--osdk-combobox-border-radius, var(--bp-surface-borderRadius));
+  transition: color var(--osdk-combobox-transition-duration, var(--bp-emphasis-transitionDuration))
+      var(--osdk-combobox-transition-ease, var(--bp-emphasis-ease-default)),
+    background-color var(--osdk-combobox-transition-duration, var(--bp-emphasis-transitionDuration))
+      var(--osdk-combobox-transition-ease, var(--bp-emphasis-ease-default));
+
+  &:hover {
+    color: var(--osdk-combobox-clear-color-hover, var(--bp-typography-colorRest-default));
+    background-color: var(--osdk-combobox-clear-bg-hover, var(--bp-surface-colorHover-default));
+  }
+}
+
+.osdkComboboxEmpty {
+  padding: calc(var(--osdk-combobox-spacing, var(--bp-surface-spacing)) * 3)
+    calc(var(--osdk-combobox-spacing, var(--bp-surface-spacing)) * 2);
+  text-align: center;
+  color: var(--osdk-combobox-empty-color, var(--bp-typography-colorMuted));
+  font-family: var(--osdk-combobox-font-family, var(--bp-typography-family-default));
+  font-size: var(--osdk-combobox-font-size, var(--bp-typography-size-bodyMedium));
+}
