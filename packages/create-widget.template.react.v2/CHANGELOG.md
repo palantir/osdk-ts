@@ -1,5 +1,19 @@
 # @osdk/create-widget.template.react.v2
 
+## 3.4.0
+
+### Minor Changes
+
+- 265b09b: Update generated `.npmrc` file
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- c7bd7c0: Use createFoundryWidgetTokenProvider in widget template
+- cbd0725: Widget template dark mode support
+- 3ab2c66: Provide FoundryWidget#client by default
+- 31cd835: Revert beta changes
+
 ## 3.4.0-rc.15
 
 ### Patch Changes

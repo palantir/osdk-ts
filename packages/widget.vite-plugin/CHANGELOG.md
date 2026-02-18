@@ -1,5 +1,29 @@
 # @osdk/widget.vite-plugin
 
+## 3.4.0
+
+### Minor Changes
+
+- ebca6e6: Support interfaces in object set parameters
+
+### Patch Changes
+
+- 7901ae0: Simulated release
+- 211cb0d: Add internalDoNotUseMetadata.rid to interfaces
+- 9ac627c: Declare requested widget permissions in config/manifest
+- 239a2a8: Show hint for WidgetIdNotFound errors
+- 8e5fdb8: Handle HMR for widget config files
+- 31cd835: Revert beta changes
+- 18a6c93: Link to docs on WidgetIdNotFound error
+- Updated dependencies [322c5bc]
+- Updated dependencies [7901ae0]
+- Updated dependencies [31909c1]
+- Updated dependencies [9ac627c]
+- Updated dependencies [ebca6e6]
+- Updated dependencies [31cd835]
+  - @osdk/foundry-config-json@1.6.0
+  - @osdk/widget.api@3.4.0
+
 ## 3.4.0-rc.15
 
 ### Patch Changes

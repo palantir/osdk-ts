@@ -1,5 +1,25 @@
 # @osdk/cli.cmd.typescript
 
+## 0.31.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- 03db734: Move platform SDK deps to pnpm catalog
+- 31cd835: Revert beta changes
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [03db734]
+- Updated dependencies [211cb0d]
+- Updated dependencies [1706c79]
+- Updated dependencies [31cd835]
+- Updated dependencies [dc33f68]
+- Updated dependencies [d5cfc38]
+  - @osdk/cli.common@0.31.0
+  - @osdk/generator@2.7.0
+  - @osdk/shared.client.impl@1.7.0
+
 ## 0.31.0-rc.3
 
 ### Patch Changes

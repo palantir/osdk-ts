@@ -1,5 +1,19 @@
 # @osdk/widget.client
 
+## 3.4.0
+
+### Patch Changes
+
+- 7901ae0: Simulated release
+- 31cd835: Revert beta changes
+- 907bc6a: Create createFoundryWidgetTokenProvider helper
+- Updated dependencies [7901ae0]
+- Updated dependencies [31909c1]
+- Updated dependencies [9ac627c]
+- Updated dependencies [ebca6e6]
+- Updated dependencies [31cd835]
+  - @osdk/widget.api@3.4.0
+
 ## 3.4.0-rc.15
 
 ### Patch Changes

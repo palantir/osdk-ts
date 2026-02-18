@@ -1,5 +1,19 @@
 # @osdk/api
 
+## 2.7.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- 1e3c147: Add experimental_asyncIterLinks method on object sets
+- fb83808: Allow arrays to use all subtype filters
+- c9ca08d: Add TS docs for in filter
+- 24a1e29: Remove multiplicity tag from query param types
+- 448763f: introduce new token field, note readToken as deprecated
+- bb9d25c: Allow requesting rids for OSW updates
+- 31cd835: Revert beta changes
+- d5cfc38: Add null option to actions to allow clearing data
+
 ## 2.7.0-rc.15
 
 ### Patch Changes

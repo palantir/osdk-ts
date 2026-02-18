@@ -1,5 +1,22 @@
 # @osdk/react-components
 
+## 0.1.0
+
+### Minor Changes
+
+- 476604f: Apply table styling
+- 9cd0b26: Add base UI component and css module
+- 1885d58: Import blueprint tokens. Added loading and non ideal state to ObjectTable. Support interface in ObjectTable.
+- 9c9fb9b: Row selection, column resize, filter clause
+- cac3e9a: Add ActionFormApi
+- 30617fa: Support sorting and column pinning. Export BaseTable
+- 139913d: ObjectTable first impl
+
+### Patch Changes
+
+- 800103e: Update README
+- d03ddbb: Add new @osdk/react-components package with FilterList and ObjectTable APIs
+
 ## 0.1.0-rc.7
 
 ### Minor Changes

@@ -1,5 +1,28 @@
 # @osdk/widget.api
 
+## 3.4.0
+
+### Minor Changes
+
+- ebca6e6: Support interfaces in object set parameters
+
+### Patch Changes
+
+- 7901ae0: Simulated release
+- 31909c1: Include isWidgetResizeMessage type guard
+- 9ac627c: Declare requested widget permissions in config/manifest
+- 31cd835: Revert beta changes
+- Updated dependencies [322c5bc]
+- Updated dependencies [1e3c147]
+- Updated dependencies [fb83808]
+- Updated dependencies [c9ca08d]
+- Updated dependencies [24a1e29]
+- Updated dependencies [448763f]
+- Updated dependencies [bb9d25c]
+- Updated dependencies [31cd835]
+- Updated dependencies [d5cfc38]
+  - @osdk/api@2.7.0
+
 ## 3.4.0-rc.15
 
 ### Patch Changes

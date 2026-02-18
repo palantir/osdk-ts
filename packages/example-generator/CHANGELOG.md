@@ -1,5 +1,26 @@
 # @osdk/example-generator
 
+## 0.15.0
+
+### Minor Changes
+
+- 935b7ac: Allow CLI template bootstrapping without an OSDK
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- 31cd835: Revert beta changes
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [5ba2346]
+- Updated dependencies [265b09b]
+- Updated dependencies [31cd835]
+- Updated dependencies [935b7ac]
+- Updated dependencies [4e96d14]
+- Updated dependencies [b0d44f0]
+  - @osdk/create-app@2.7.0
+  - @osdk/create-widget@3.4.0
+
 ## 0.15.0-rc.3
 
 ### Patch Changes

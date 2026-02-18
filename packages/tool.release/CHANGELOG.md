@@ -1,5 +1,13 @@
 # @osdk/tool.release
 
+## 0.12.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- f908b4d: Match refs/heads/release/_ instead of release/_
+- 31cd835: Revert beta changes
+
 ## 0.12.0-rc.3
 
 ### Patch Changes

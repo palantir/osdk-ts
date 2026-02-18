@@ -1,5 +1,13 @@
 # @osdk/react-components-styles
 
+## 0.1.0
+
+### Minor Changes
+
+- 476604f: Apply table styling
+- 1885d58: Import blueprint tokens. Added loading and non ideal state to ObjectTable. Support interface in ObjectTable.
+- 30617fa: Support sorting and column pinning. Export BaseTable
+
 ## 0.1.0-rc.2
 
 ### Minor Changes

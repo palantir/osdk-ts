@@ -1,5 +1,15 @@
 # @osdk/shared.net.fetch
 
+## 1.7.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- 31cd835: Revert beta changes
+- Updated dependencies [322c5bc]
+- Updated dependencies [31cd835]
+  - @osdk/shared.net.errors@2.7.0
+
 ## 1.7.0-rc.2
 
 ### Patch Changes

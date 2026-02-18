@@ -1,5 +1,33 @@
 # @osdk/shared.test
 
+## 0.5.0
+
+### Minor Changes
+
+- ab1957f: Added FauxAdmin support
+
+### Patch Changes
+
+- 150da1a: Simulated release
+- 03db734: Move platform SDK deps to pnpm catalog
+- 31cd835: Revert beta changes
+- 862910e: Adds support for wider variety of query filters
+- 0dbd0d0: add useOsdkObjects rid querying support
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [1e3c147]
+- Updated dependencies [fb83808]
+- Updated dependencies [c9ca08d]
+- Updated dependencies [24a1e29]
+- Updated dependencies [448763f]
+- Updated dependencies [bb9d25c]
+- Updated dependencies [f0a57a5]
+- Updated dependencies [31cd835]
+- Updated dependencies [dc33f68]
+- Updated dependencies [d5cfc38]
+  - @osdk/api@2.7.0
+  - @osdk/generator-converters@2.7.0
+
 ## 0.5.0-rc.5
 
 ### Patch Changes

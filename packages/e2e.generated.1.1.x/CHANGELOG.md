@@ -1,5 +1,21 @@
 # @osdk/e2e.generated.1.1.x
 
+## 0.9.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- Updated dependencies [322c5bc]
+- Updated dependencies [1e3c147]
+- Updated dependencies [fb83808]
+- Updated dependencies [c9ca08d]
+- Updated dependencies [24a1e29]
+- Updated dependencies [448763f]
+- Updated dependencies [bb9d25c]
+- Updated dependencies [31cd835]
+- Updated dependencies [d5cfc38]
+  - @osdk/api@2.7.0
+
 ## 0.8.0
 
 ### Patch Changes

@@ -1,5 +1,53 @@
 # @osdk/foundry-sdk-generator
 
+## 2.7.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- 03db734: Move platform SDK deps to pnpm catalog
+- ceb5e70: Fix linkType parsing for object types with dots in API names
+- 31cd835: Revert beta changes
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [adca853]
+- Updated dependencies [03db734]
+- Updated dependencies [1e3c147]
+- Updated dependencies [6cfe14a]
+- Updated dependencies [211cb0d]
+- Updated dependencies [fb83808]
+- Updated dependencies [ec6ad57]
+- Updated dependencies [c9ca08d]
+- Updated dependencies [c6124eb]
+- Updated dependencies [1706c79]
+- Updated dependencies [24a1e29]
+- Updated dependencies [6b27d8a]
+- Updated dependencies [0b0be9f]
+- Updated dependencies [24730c7]
+- Updated dependencies [eb3a556]
+- Updated dependencies [c332598]
+- Updated dependencies [448763f]
+- Updated dependencies [3fc5fe6]
+- Updated dependencies [a23784c]
+- Updated dependencies [bb9d25c]
+- Updated dependencies [ecd18e2]
+- Updated dependencies [f0a57a5]
+- Updated dependencies [be74c3c]
+- Updated dependencies [31cd835]
+- Updated dependencies [dc33f68]
+- Updated dependencies [266b901]
+- Updated dependencies [38d5958]
+- Updated dependencies [0dbd0d0]
+- Updated dependencies [d5cfc38]
+- Updated dependencies [0b2cd91]
+- Updated dependencies [c8da6b7]
+  - @osdk/api@2.7.0
+  - @osdk/client@2.7.0
+  - @osdk/generator@2.7.0
+  - @osdk/shared.client.impl@1.7.0
+
 ## 2.7.0-rc.15
 
 ### Patch Changes

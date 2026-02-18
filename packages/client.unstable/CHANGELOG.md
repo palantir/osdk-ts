@@ -1,5 +1,15 @@
 # @osdk/client.unstable
 
+## 2.7.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- 8381ac2: Alias and render hint overrides for oac
+- e462938: Support PSGs in OAC
+- 31cd835: Revert beta changes
+- c95f3bc: Support IDPs in OAC
+
 ## 2.7.0-rc.15
 
 ### Patch Changes

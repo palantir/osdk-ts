@@ -1,5 +1,53 @@
 # @osdk/vite-plugin-oac
 
+## 0.5.0
+
+### Patch Changes
+
+- 150da1a: Simulated release
+- 03db734: Move platform SDK deps to pnpm catalog
+- 31cd835: Revert beta changes
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [150da1a]
+- Updated dependencies [150da1a]
+- Updated dependencies [322c5bc]
+- Updated dependencies [03db734]
+- Updated dependencies [1e3c147]
+- Updated dependencies [448caa8]
+- Updated dependencies [8381ac2]
+- Updated dependencies [c773e8f]
+- Updated dependencies [1cb0862]
+- Updated dependencies [fb83808]
+- Updated dependencies [ab1957f]
+- Updated dependencies [e462938]
+- Updated dependencies [9088072]
+- Updated dependencies [c9ca08d]
+- Updated dependencies [2fd6f6e]
+- Updated dependencies [24a1e29]
+- Updated dependencies [bb8d059]
+- Updated dependencies [e743064]
+- Updated dependencies [448763f]
+- Updated dependencies [bb9d25c]
+- Updated dependencies [ace2d68]
+- Updated dependencies [31cd835]
+- Updated dependencies [044f478]
+- Updated dependencies [dc33f68]
+- Updated dependencies [e6689b3]
+- Updated dependencies [862910e]
+- Updated dependencies [c95f3bc]
+- Updated dependencies [33e10e3]
+- Updated dependencies [0dbd0d0]
+- Updated dependencies [d5cfc38]
+- Updated dependencies [3693275]
+  - @osdk/api@2.7.0
+  - @osdk/cli@0.31.0
+  - @osdk/client.unstable@2.7.0
+  - @osdk/faux@0.5.0
+  - @osdk/generator-converters.ontologyir@2.7.0
+  - @osdk/maker@0.15.0
+
 ## 0.5.0-rc.15
 
 ### Patch Changes

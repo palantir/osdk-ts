@@ -1,5 +1,65 @@
 # @osdk/client
 
+## 2.7.0
+
+### Minor Changes
+
+- 6cfe14a: add new useOsdkFunction hook and supporting client infrastructure
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- adca853: fix fetchMore behavior
+- 03db734: Move platform SDK deps to pnpm catalog
+- 1e3c147: Add experimental_asyncIterLinks method on object sets
+- fb83808: Allow arrays to use all subtype filters
+- ec6ad57: guard against empty ontology edits in actions
+- c6124eb: Add ability to flush edits to transactions
+- 6b27d8a: fix sorting strategy initialization for ListQuery and ObjectSetQuery
+- 0b0be9f: fix object spread related bug by using createOsdkObject
+- 24730c7: fix rdp pivot behavior
+- eb3a556: wire totalCount for osdk react hooks
+- c332598: Adds experimental platform API hooks to fetch Foundry users
+- 3fc5fe6: fix interface loading
+- a23784c: wire action edit response types through for useOsdkAction
+- bb9d25c: Allow requesting rids for OSW updates
+- ecd18e2: fix pivotTo with where usage
+- f0a57a5: Use new interface property fields to include interface property types in codegen
+- be74c3c: Remove delay dependency
+- 31cd835: Revert beta changes
+- dc33f68: Add Transaction ID to Queries
+- 266b901: Fix queries that return arrays of objects.
+- 38d5958: fix order by via key stabilization
+- 0dbd0d0: add useOsdkObjects rid querying support
+- d5cfc38: Add null option to actions to allow clearing data
+- 0b2cd91: fix SimplePropertyDef issue, wire RDPs through, update names
+- c8da6b7: fix useLinks sorting strategy initialization
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [1e3c147]
+- Updated dependencies [8381ac2]
+- Updated dependencies [fb83808]
+- Updated dependencies [e462938]
+- Updated dependencies [c9ca08d]
+- Updated dependencies [24a1e29]
+- Updated dependencies [448763f]
+- Updated dependencies [bb9d25c]
+- Updated dependencies [f0a57a5]
+- Updated dependencies [31cd835]
+- Updated dependencies [dc33f68]
+- Updated dependencies [c95f3bc]
+- Updated dependencies [d5cfc38]
+  - @osdk/api@2.7.0
+  - @osdk/client.unstable@2.7.0
+  - @osdk/generator-converters@2.7.0
+  - @osdk/shared.client.impl@1.7.0
+  - @osdk/shared.net.errors@2.7.0
+  - @osdk/shared.net.fetch@1.7.0
+
 ## 2.7.0-rc.15
 
 ### Patch Changes

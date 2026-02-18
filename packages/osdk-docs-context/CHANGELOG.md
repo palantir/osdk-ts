@@ -1,5 +1,13 @@
 # @osdk/osdk-docs-context
 
+## 0.4.0
+
+### Patch Changes
+
+- a1bc06f: Simulated release
+- 579e518: Move new Media upload docs from 2.6 to 2.1
+- 31cd835: Revert beta changes
+
 ## 0.4.0-rc.3
 
 ### Patch Changes

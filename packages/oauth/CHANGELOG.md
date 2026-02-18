@@ -1,5 +1,14 @@
 # @osdk/oauth
 
+## 1.7.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- be74c3c: Remove delay dependency
+- 31cd835: Revert beta changes
+- cceaedf: Export `ConfidentialOauthClient` from `oauth`
+
 ## 1.7.0-rc.3
 
 ### Patch Changes

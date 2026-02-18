@@ -1,5 +1,21 @@
 # @osdk/widget.client-react
 
+## 3.4.0
+
+### Minor Changes
+
+- ebca6e6: Support interfaces in object set parameters
+
+### Patch Changes
+
+- 7901ae0: Simulated release
+- ee3af16: Improved object set write path
+- 31cd835: Revert beta changes
+- Updated dependencies [7901ae0]
+- Updated dependencies [31cd835]
+- Updated dependencies [907bc6a]
+  - @osdk/widget.client@3.4.0
+
 ## 3.4.0-rc.15
 
 ### Patch Changes

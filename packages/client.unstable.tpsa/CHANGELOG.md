@@ -1,5 +1,12 @@
 # @osdk/client.unstable.tpsa
 
+## 0.9.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- 31cd835: Revert beta changes
+
 ## 0.9.0-rc.2
 
 ### Patch Changes
