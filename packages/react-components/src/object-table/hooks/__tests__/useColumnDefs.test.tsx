@@ -437,7 +437,11 @@ describe(useColumnDefs, () => {
           ctx: typeof mockCellContext,
         ) => unknown)(mockCellContext);
       }
-      expect(cellResult).toBe("John");
+      expect(cellResult).toEqual(
+        <React.Fragment>
+          John
+        </React.Fragment>,
+      );
       expect(mockGetValue).toHaveBeenCalled();
     });
 
