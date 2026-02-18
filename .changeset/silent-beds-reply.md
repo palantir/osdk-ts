@@ -2,4 +2,4 @@
 "@osdk/react-components": patch
 ---
 
-add filter-list base containers and input components
+add filter-list base containers and simple input components

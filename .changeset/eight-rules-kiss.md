@@ -2,4 +2,4 @@
 "@osdk/react-components": patch
 ---
 
-add combobox, select, and switch base components
+add switch base component
