@@ -15,7 +15,6 @@
  */
 
 export { FilterList as BaseFilterList } from "../filter-list/base/FilterList.js";
-export { FilterList } from "../filter-list/blueprint/FilterList.js";
 export type {
   FilterDefinitionUnion,
   FilterListProps,
@@ -26,10 +25,6 @@ export type {
   FilterState,
   PropertyFilterDefinition,
 } from "../filter-list/FilterListItemApi.js";
-export type {
-  FilterCategory,
-  FilterTemplate,
-} from "../filter-list/types/AddFilterMenuTypes.js";
 
 // ObjectTable that loads and displays data for a given objectSet
 export { ObjectTable } from "../object-table/ObjectTable.js";
