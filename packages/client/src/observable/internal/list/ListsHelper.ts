@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { InterfaceDefinition, ObjectTypeDefinition } from "@osdk/api";
+import type { ObjectOrInterfaceDefinition } from "@osdk/api";
 import type { ListPayload } from "../../ListPayload.js";
 import type { ObserveListOptions } from "../../ObservableClient.js";
 import type { Observer } from "../../ObservableClient/common.js";
@@ -36,7 +36,7 @@ import { ObjectListQuery } from "./ObjectListQuery.js";
 
 export class ListsHelper extends AbstractHelper<
   ListQuery,
-  ObserveListOptions<ObjectTypeDefinition | InterfaceDefinition>
+  ObserveListOptions<ObjectOrInterfaceDefinition>
 > {
   whereCanonicalizer: WhereClauseCanonicalizer;
   orderByCanonicalizer: OrderByCanonicalizer;
@@ -65,7 +65,7 @@ export class ListsHelper extends AbstractHelper<
     this.ridListCanonicalizer = ridListCanonicalizer;
   }
 
-  observe<T extends ObjectTypeDefinition | InterfaceDefinition>(
+  observe<T extends ObjectOrInterfaceDefinition>(
     options: ObserveListOptions<T>,
     subFn: Observer<ListPayload>,
   ): QuerySubscription<ListQuery> {
@@ -77,7 +77,7 @@ export class ListsHelper extends AbstractHelper<
     return ret;
   }
 
-  getQuery<T extends ObjectTypeDefinition | InterfaceDefinition>(
+  getQuery<T extends ObjectOrInterfaceDefinition>(
     options: ObserveListOptions<T>,
   ): ListQuery {
     const {
@@ -102,7 +102,7 @@ export class ListsHelper extends AbstractHelper<
       : undefined;
 
     const canonPivot = pivotTo
-      ? this.pivotCanonicalizer.canonicalize(apiName, pivotTo)
+      ? this.pivotCanonicalizer.canonicalize(apiName, type, pivotTo)
       : undefined;
 
     const canonRids = rids != null

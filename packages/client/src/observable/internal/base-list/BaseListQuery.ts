@@ -102,10 +102,6 @@ export abstract class BaseListQuery<
 
   protected currentTotalCount?: string;
 
-  /**
-   * Per-subscriber page sizes for fetch optimization.
-   * Tracks each view's pageSize so we can recalculate max when views unsubscribe.
-   */
   #subscriberPageSizes: Map<string, number> = new Map();
 
   //

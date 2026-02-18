@@ -18,7 +18,6 @@ import type {
   ActionDefinition,
   ActionEditResponse,
   FetchPageArgs,
-  InterfaceDefinition,
   Logger,
   ObjectOrInterfaceDefinition,
   ObjectSet,
@@ -642,9 +641,7 @@ declare module "vitest" {
  * @param param4
  * @param opts
  */
-export function updateList<
-  T extends ObjectTypeDefinition | InterfaceDefinition,
->(
+export function updateList<T extends ObjectOrInterfaceDefinition>(
   store: Store,
   {
     type,

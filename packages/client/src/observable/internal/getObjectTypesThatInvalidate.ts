@@ -110,9 +110,9 @@ async function calcObjectSet(
       for (const [k, v] of Object.entries(srcDef.links)) {
         if (k === os.interfaceLink) {
           if (v.targetType === "object") {
-            return await bumpObject(v.targetType);
+            return await bumpObject(v.targetTypeApiName);
           }
-          return await bumpInterface(v.targetType);
+          return await bumpInterface(v.targetTypeApiName);
         }
       }
 

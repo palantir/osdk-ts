@@ -14,7 +14,15 @@
  * limitations under the License.
  */
 
-import type { ObjectSet, ObjectTypeDefinition, Osdk } from "@osdk/api";
+import type {
+  DerivedProperty,
+  InterfaceDefinition,
+  ObjectOrInterfaceDefinition,
+  ObjectSet,
+  ObjectTypeDefinition,
+  Osdk,
+  WhereClause,
+} from "@osdk/api";
 import groupBy from "object.groupby";
 import invariant from "tiny-invariant";
 import type { Client } from "../../../Client.js";
@@ -27,7 +35,7 @@ import type { Changes } from "../Changes.js";
 import type { Rdp } from "../RdpCanonicalizer.js";
 import type { SimpleWhereClause } from "../SimpleWhereClause.js";
 import type { Store } from "../Store.js";
-import { ListQuery, RDP_IDX } from "./ListQuery.js";
+import { ListQuery, PIVOT_IDX, RDP_IDX } from "./ListQuery.js";
 
 type ExtractRelevantObjectsResult = Record<"added" | "modified", {
   all: (ObjectHolder | InterfaceHolder)[];
@@ -38,6 +46,34 @@ type ExtractRelevantObjectsResult = Record<"added" | "modified", {
 export class InterfaceListQuery extends ListQuery {
   protected createObjectSet(store: Store): ObjectSet<ObjectTypeDefinition> {
     const rdpConfig = this.cacheKey.otherKeys[RDP_IDX];
+    const pivotInfo = this.cacheKey.otherKeys[PIVOT_IDX];
+
+    if (pivotInfo != null) {
+      const sourceSet = (pivotInfo.sourceTypeKind === "interface"
+        ? store.client({
+          type: "interface",
+          apiName: pivotInfo.sourceType,
+        } as InterfaceDefinition)
+        : store.client({
+          type: "object",
+          apiName: pivotInfo.sourceType,
+        } as ObjectTypeDefinition)) as ObjectSet<ObjectOrInterfaceDefinition>;
+
+      let objectSet = sourceSet
+        .where(this.canonicalWhere as WhereClause<any>)
+        .pivotTo(pivotInfo.linkName);
+
+      if (rdpConfig != null) {
+        objectSet = objectSet.withProperties(
+          rdpConfig as DerivedProperty.Clause<ObjectTypeDefinition>,
+        );
+      }
+
+      // intersectWith for pivot queries is deferred to fetchPageData
+      // where the target type can be resolved asynchronously
+      return objectSet;
+    }
+
     const type: string = "interface" as const;
     const objectTypeDef = {
       type,
