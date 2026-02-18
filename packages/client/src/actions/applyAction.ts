@@ -175,7 +175,7 @@ export async function applyAction<
             : "NONE",
         },
       },
-      { branch: client.branch },
+      { branch: client.branch, transactionId: client.transactionId },
     );
 
     if ((options as ApplyActionOptions)?.$validateOnly) {
