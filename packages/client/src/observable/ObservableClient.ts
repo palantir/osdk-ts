@@ -66,6 +66,7 @@ export interface ObserveObjectOptions<
   apiName: T["apiName"] | T;
   pk: PrimaryKeyType<T>;
   select?: PropertyKeys<T>[];
+  streamUpdates?: boolean;
 }
 
 export type OrderBy<Q extends ObjectTypeDefinition | InterfaceDefinition> = {
@@ -267,7 +268,7 @@ export interface ObservableClient extends ObserveLinks {
   observeObject<T extends ObjectTypeDefinition>(
     apiName: T["apiName"] | T,
     pk: PrimaryKeyType<T>,
-    options: ObserveOptions,
+    options: Omit<ObserveObjectOptions<T>, "apiName" | "pk">,
     subFn: Observer<ObserveObjectCallbackArgs<T>>,
   ): Unsubscribable;
 

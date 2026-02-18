@@ -33,33 +33,44 @@ export interface UseOsdkObjectResult<Q extends ObjectTypeDefinition> {
   forceUpdate: () => void;
 }
 
+export interface UseOsdkObjectOptions {
+  /**
+   * Enable or disable the query (defaults to true)
+   */
+  enabled?: boolean;
+  /**
+   * Enable real-time updates via WebSocket subscription (defaults to false)
+   */
+  streamUpdates?: boolean;
+}
+
 /**
  * @param obj an existing `Osdk.Instance` object to get metadata for.
- * @param enabled Enable or disable the query (defaults to true)
+ * @param options Options including enabled and streamUpdates
  */
 export function useOsdkObject<Q extends ObjectTypeDefinition>(
   obj: Osdk.Instance<Q>,
-  enabled?: boolean,
+  options?: UseOsdkObjectOptions,
 ): UseOsdkObjectResult<Q>;
 /**
  * Loads an object by type and primary key.
  *
  * @param type
  * @param primaryKey
- * @param enabled Enable or disable the query (defaults to true)
+ * @param options Options including enabled and streamUpdates
  */
 export function useOsdkObject<Q extends ObjectTypeDefinition>(
   type: Q,
   primaryKey: PrimaryKeyType<Q>,
-  enabled?: boolean,
+  options?: UseOsdkObjectOptions,
 ): UseOsdkObjectResult<Q>;
 /*
     Implementation of useOsdkObject
  */
 export function useOsdkObject<Q extends ObjectTypeDefinition>(
   ...args:
-    | [obj: Osdk.Instance<Q>, enabled?: boolean]
-    | [type: Q, primaryKey: PrimaryKeyType<Q>, enabled?: boolean]
+    | [obj: Osdk.Instance<Q>, options?: UseOsdkObjectOptions]
+    | [type: Q, primaryKey: PrimaryKeyType<Q>, options?: UseOsdkObjectOptions]
 ): UseOsdkObjectResult<Q> {
   const { observableClient } = React.useContext(OsdkContext2);
 
@@ -68,10 +79,18 @@ export function useOsdkObject<Q extends ObjectTypeDefinition>(
   // so we must use type assertions after runtime discrimination
   const isInstanceSignature = "$objectType" in args[0];
 
-  // Extract enabled flag - 2nd param for instance signature, 3rd for type signature
-  const enabled = isInstanceSignature
-    ? (typeof args[1] === "boolean" ? args[1] : true)
-    : (typeof args[2] === "boolean" ? args[2] : true);
+  // Extract options - 2nd param for instance signature, 3rd for type signature
+  // Support both boolean (legacy) and object signatures for backwards compatibility
+  const rawOptions: UseOsdkObjectOptions | boolean | undefined =
+    isInstanceSignature
+      ? (args[1] as UseOsdkObjectOptions | boolean | undefined)
+      : (args[2] as UseOsdkObjectOptions | boolean | undefined);
+  const options: UseOsdkObjectOptions = typeof rawOptions === "boolean"
+    ? { enabled: rawOptions }
+    : rawOptions ?? {};
+
+  const enabled = options.enabled ?? true;
+  const streamUpdates = options.streamUpdates ?? false;
 
   // TODO: Figure out what the correct default behavior is for the various scenarios
   const mode = isInstanceSignature ? "offline" : undefined;
@@ -97,13 +116,14 @@ export function useOsdkObject<Q extends ObjectTypeDefinition>(
             primaryKey,
             {
               mode,
+              streamUpdates,
             },
             observer,
           ),
         `object ${objectType} ${primaryKey}`,
       );
     },
-    [enabled, observableClient, objectType, primaryKey, mode],
+    [enabled, observableClient, objectType, primaryKey, mode, streamUpdates],
   );
 
   const payload = React.useSyncExternalStore(subscribe, getSnapShot);
