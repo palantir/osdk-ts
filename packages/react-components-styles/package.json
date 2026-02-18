@@ -22,7 +22,7 @@
     "access": "public"
   },
   "files": [
-    "src/*.css",
+    "src/**/*.css",
     "CHANGELOG.md",
     "package.json",
     "README.md"
