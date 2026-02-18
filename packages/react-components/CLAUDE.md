@@ -1,3 +1,5 @@
+This documentation provides guidance for developing in `@osdk/react-components` and `@osdk/react-components-styles`.
+
 ## TypeScript Best Practices
 
 - NEVER use `any` without asking the user first. If you think you need `any`, you probably don't understand the problem
