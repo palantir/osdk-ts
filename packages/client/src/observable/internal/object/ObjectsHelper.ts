@@ -21,6 +21,7 @@ import type {
 } from "@osdk/api";
 import deepEqual from "fast-deep-equal";
 import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
+import { getDefType } from "../../../util/interfaceUtils.js";
 import type { ObjectPayload } from "../../ObjectPayload.js";
 import type { ObserveObjectOptions } from "../../ObservableClient.js";
 import type { Observer, Status } from "../../ObservableClient/common.js";
@@ -54,6 +55,8 @@ export class ObjectsHelper extends AbstractHelper<
       : options.apiName.apiName;
     const { pk } = options;
 
+    const defType = getDefType(options.apiName);
+
     const objectCacheKey = this.cacheKeys.get<ObjectCacheKey>(
       "object",
       apiName,
@@ -69,6 +72,7 @@ export class ObjectsHelper extends AbstractHelper<
         pk,
         objectCacheKey,
         { dedupeInterval: 0 },
+        defType,
       ));
   }
 
