@@ -20,6 +20,7 @@ import React, { memo, useCallback } from "react";
 import type { FilterDefinitionUnion } from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
 import { FilterInput } from "./FilterInput.js";
+import { FilterInputErrorBoundary } from "./FilterInputErrorBoundary.js";
 import styles from "./FilterListItem.module.css";
 
 interface FilterListItemProps<Q extends ObjectTypeDefinition> {
@@ -68,14 +69,16 @@ function FilterListItemInner<Q extends ObjectTypeDefinition>({
       </div>
 
       <div className={styles.itemContent}>
-        <FilterInput
-          objectType={objectType}
-          objectSet={objectSet}
-          definition={definition}
-          filterState={filterState}
-          onFilterStateChanged={handleFilterStateChanged}
-          whereClause={whereClause}
-        />
+        <FilterInputErrorBoundary>
+          <FilterInput
+            objectType={objectType}
+            objectSet={objectSet}
+            definition={definition}
+            filterState={filterState}
+            onFilterStateChanged={handleFilterStateChanged}
+            whereClause={whereClause}
+          />
+        </FilterInputErrorBoundary>
       </div>
     </div>
   );
