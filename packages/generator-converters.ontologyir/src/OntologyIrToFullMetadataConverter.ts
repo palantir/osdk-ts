@@ -135,6 +135,7 @@ export class OntologyIrToFullMetadataConverter {
             description: prop.displayMetadata.description ?? undefined,
             visibility: visibilityEnum,
             dataType,
+            typeClasses: [],
           };
         }
       }
@@ -604,6 +605,7 @@ export class OntologyIrToFullMetadataConverter {
         description: irParameter.displayMetadata.description,
         required: isParameterRequired(action, paramKey),
         dataType,
+        typeClasses: [],
       };
     }
 
@@ -639,6 +641,7 @@ export class OntologyIrToFullMetadataConverter {
             description: spt.displayMetadata.description ?? undefined,
             dataType,
             required: false, // Default to false for now - this should come from IR if available
+            typeClasses: [],
           };
         }
       }
@@ -742,6 +745,7 @@ export class OntologyIrToFullMetadataConverter {
           description: spt.sharedPropertyType.displayMetadata.description
             ?? undefined,
           dataType,
+          typeClasses: [],
         };
 
         result[sharedPropertyType.apiName] = sharedPropertyType;
@@ -827,6 +831,7 @@ export class OntologyIrToFullMetadataConverter {
               apiName: field.apiName,
               rid: `${ridBase}.${field.apiName}`,
               dataType: fieldDataType,
+              typeClasses: [],
             };
           }),
         };

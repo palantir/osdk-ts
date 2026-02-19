@@ -511,6 +511,7 @@ describe("matchesOntologyDataType", () => {
     const dataType: OntologyDataType = {
       type: "unsupported",
       unsupportedType: "someCustomType",
+      params: {},
     };
 
     it("should throw an error", () => {
