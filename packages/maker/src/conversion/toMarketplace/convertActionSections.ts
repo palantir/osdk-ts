@@ -14,22 +14,18 @@
  * limitations under the License.
  */
 
-import type { Section, SectionId } from "@osdk/client.unstable";
+import type { OntologyIrSection, SectionId } from "@osdk/client.unstable";
 import type { ActionType } from "../../api/action/ActionType.js";
 import { uppercaseFirstLetter } from "../../api/defineObject.js";
-import type { OntologyRidGenerator } from "../../util/generateRid.js";
 
 export function convertActionSections(
   action: ActionType,
-  ridGenerator: OntologyRidGenerator,
-): Record<SectionId, Section> {
+): Record<SectionId, OntologyIrSection> {
   return Object.fromEntries(
     Object.entries(action.sections ?? {}).map((
       [sectionId, section],
     ) => [sectionId, {
       id: sectionId,
-      // TODO: Generate proper RID for section
-      rid: ridGenerator.generateRid(`section.${action.apiName}.${sectionId}`),
       content: section.parameters.map(p => ({
         type: "parameterId",
         parameterId: p,

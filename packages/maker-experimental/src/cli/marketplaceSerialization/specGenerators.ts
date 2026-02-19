@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { OntologyIr } from "@osdk/client.unstable";
+import type { OntologyIrV2 } from "@osdk/client.unstable";
 import type { SerializedDataLocator } from "@osdk/client.unstable/api";
 import type { UUID } from "crypto";
 import { getShapes } from "../../conversion/toMarketplace/shapeExtractors/IrShapeExtractor.js";
@@ -73,7 +73,7 @@ export function generateStoreManifest(
 
 export async function generateOntologyBlockSpec(
   mavenGroup: string,
-  ontologyBlockDataV2: OntologyIr,
+  ontologyBlockDataV2: OntologyIrV2,
   randomnessKey?: string,
 ): Promise<CodeBlockSpec> {
   const shapes = await getShapes(

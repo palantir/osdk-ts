@@ -15,17 +15,17 @@
  */
 
 import type {
-  ActionTypeBlockDataV2,
   ActionTypeStatus,
-  ObjectTypeDatasource,
-  ObjectTypeDatasourceDefinition,
   OntologyIr,
+  OntologyIrActionTypeBlockDataV2,
   OntologyIrAllowedParameterValues,
+  OntologyIrObjectTypeDatasource,
+  OntologyIrObjectTypeDatasourceDefinition,
+  OntologyIrParameter,
+  OntologyIrSection,
   OntologyIrValueTypeBlockData,
-  Parameter,
   ParameterId,
   ParameterRenderHint,
-  Section,
   SectionId,
 } from "@osdk/client.unstable";
 import * as fs from "fs";
@@ -40,16 +40,12 @@ import type {
   ActionParameter,
   ActionParameterValidation,
 } from "./action/ActionParameter.js";
-import type { BlockShapes, OntologyRidGenerator} from "../util/generateRid.js";
-import { OntologyRidGeneratorImpl, ReadableIdGenerator } from "../util/generateRid.js";
 import type { ActionParameterAllowedValues } from "./action/ActionParameterAllowedValues.js";
 import type { ActionType } from "./action/ActionType.js";
+import { createCodeSnippets } from "./code-snippets/createCodeSnippets.js";
 import type { OntologyDefinition } from "./common/OntologyDefinition.js";
 import { OntologyEntityTypeEnum } from "./common/OntologyEntityTypeEnum.js";
 import type { OntologyEntityType } from "./common/OntologyEntityTypeMapping.js";
-import { getShapes } from "../conversion/toMarketplace/shapeExtractors/IrShapeExtractor.js";
-import { flattenInterface } from "../conversion/toMarketplace/convertObject.js";
-import { InterfaceType } from "./interface/InterfaceType.js";
 
 // type -> apiName -> entity
 /** @internal */
@@ -89,8 +85,13 @@ export function updateOntology<
 export async function defineOntology(
   ns: string,
   body: () => void | Promise<void>,
+  outputDir: string | undefined,
+  dependencyFile?: string,
+  codeSnippetFiles?: boolean,
+  snippetPackageName?: string,
+  snippetFileOutputDir?: string,
   randomnessKey?: string,
-): Promise<[OntologyIr, BlockShapes]> {
+): Promise<OntologyIr> {
   namespace = ns;
   dependencies = {};
   ontologyDefinition = {
@@ -119,16 +120,21 @@ export async function defineOntology(
     );
     throw e;
   }
-  const ridGenerator = new OntologyRidGeneratorImpl();
-  const ontDef = convertOntologyDefinition(ontologyDefinition, ridGenerator, randomnessKey);
-
-  // Extract shapes from the ontology
-    const shapes = await getShapes(
-      ontDef.ontology,
-      ridGenerator,
-      randomnessKey,
+  if (outputDir) {
+    writeStaticObjects(outputDir);
+  }
+  if (dependencyFile) {
+    writeDependencyFile(dependencyFile);
+  }
+  if (codeSnippetFiles) {
+    createCodeSnippets(
+      ontologyDefinition,
+      snippetPackageName,
+      snippetFileOutputDir,
     );
-  return [ontDef, shapes];
+  }
+
+  return convertOntologyDefinition(ontologyDefinition, randomnessKey);
 }
 
 export function writeStaticObjects(outputDir: string): void {
@@ -213,11 +219,10 @@ export const ${entityFileNameBase}: ${entityTypeName} = wrapWithProxy(${entityFi
 
 export function buildDatasource(
   apiName: string,
-  definition: ObjectTypeDatasourceDefinition,
-  ridGenerator: OntologyRidGenerator,
+  definition: OntologyIrObjectTypeDatasourceDefinition,
   classificationMarkingGroupName?: string,
   mandatoryMarkingGroupName?: string,
-): ObjectTypeDatasource {
+): OntologyIrObjectTypeDatasource {
   const needsSecurity = classificationMarkingGroupName !== undefined
     || mandatoryMarkingGroupName !== undefined;
 
@@ -225,19 +230,18 @@ export function buildDatasource(
     ? {
       classificationConstraint: classificationMarkingGroupName
         ? {
-          markings: [classificationMarkingGroupName],
+          markingGroupName: classificationMarkingGroupName,
         }
         : undefined,
       markingConstraint: mandatoryMarkingGroupName
         ? {
-          markingIds: [mandatoryMarkingGroupName],
+          markingGroupName: mandatoryMarkingGroupName,
         }
         : undefined,
     }
     : undefined;
-  // TODO: Generate proper RID for datasource
   return ({
-    rid: ridGenerator.generateRid(`datasource.${apiName}`),
+    datasourceName: apiName,
     datasource: definition,
     editsConfiguration: {
       onlyAllowPrivilegedEdits: false,
@@ -266,7 +270,7 @@ export function cleanAndValidateLinkTypeId(apiName: string): string {
 }
 
 export function dumpOntologyFullMetadata(): OntologyIr {
-  return convertOntologyDefinition(ontologyDefinition, new OntologyRidGeneratorImpl());
+  return convertOntologyDefinition(ontologyDefinition);
 }
 
 export function dumpValueTypeWireType(): OntologyIrValueTypeBlockData {
@@ -318,123 +322,23 @@ export function convertObjectStatus(status: any): any {
 
 export function convertAction(
   action: ActionType,
-  ridGenerator: OntologyRidGenerator,
-): ActionTypeBlockDataV2 {
-  const actionValidation = convertActionValidation(action, ridGenerator);
-  const actionParameters: Record<ParameterId, Parameter> =
-    convertActionParameters(action, ridGenerator);
-  const actionSections: Record<SectionId, Section> = convertActionSections(
-    action,
-    ridGenerator,
-  );
+): OntologyIrActionTypeBlockDataV2 {
+  const actionValidation = convertActionValidation(action);
+  const actionParameters: Record<ParameterId, OntologyIrParameter> =
+    convertActionParameters(action);
+  const actionSections: Record<SectionId, OntologyIrSection> =
+    convertActionSections(action);
   const parameterOrdering = action.parameterOrdering
     ?? (action.parameters ?? []).map(p => p.id);
-
-  // Build parameterIds mapping: UUID (BlockInternalId) -> ParameterId (API name)
-  const parameterIds: Record<string, ParameterId> = {};
-  (action.parameters ?? []).forEach(p => {
-    const readableId = ReadableIdGenerator.getForParameter(action.apiName, p.id);
-    const uuid = ridGenerator.toBlockInternalId(readableId);
-    parameterIds[uuid] = p.id;
-  });
-
-  // Helper function to convert interface property values from API names to RIDs
-  const convertInterfacePropertyValuesToRids = (
-    interfacePropertyValues: Record<string, any>,
-    allParentInterfaces: Array<InterfaceType>,
-  ): Record<string, any> => {
-    const result: Record<string, any> = {};
-    for (const [apiName, value] of Object.entries(interfacePropertyValues)) {
-      console.log(apiName)
-      console.log(allParentInterfaces)
-      const parentInterface = allParentInterfaces.find(maybeSourceParent => maybeSourceParent.propertiesV3[apiName] !== undefined)!;
-      const rid = ridGenerator.generateInterfacePropertyTypeRid(
-        apiName,
-        parentInterface.apiName,
-      );
-      result[rid] = value;
-    }
-    return result;
-  };
-
-  // Helper function to convert shared property values from API names to RIDs
-  const convertSharedPropertyValuesToRids = (
-    sharedPropertyValues: Record<string, any>,
-  ): Record<string, any> => {
-    const result: Record<string, any> = {};
-    for (const [apiName, value] of Object.entries(sharedPropertyValues)) {
-      const rid = ridGenerator.generateSptRid(apiName);
-      result[rid] = value;
-    }
-    return result;
-  };
   return {
     actionType: {
       actionTypeLogic: {
         logic: {
-          // Convert logic rules with proper RID mappings
-          rules: action.rules.map(rule => {
-            if (rule.type === "addInterfaceRule") {
-              const interfaceAndParents = flattenInterface(ontologyDefinition.INTERFACE_TYPE[rule.addInterfaceRule.interfaceApiName], new Set());
-              return {
-                type: "addInterfaceRule",
-                addInterfaceRule: {
-                  interfaceTypeRid: ridGenerator.generateRidForInterface(
-                    rule.addInterfaceRule.interfaceApiName,
-                  ),
-                  objectType: rule.addInterfaceRule.objectTypeParameter,
-                  interfacePropertyValues: convertInterfacePropertyValuesToRids(
-                    rule.addInterfaceRule.interfacePropertyValues,
-                    interfaceAndParents,
-                  ),
-                  sharedPropertyValues: convertSharedPropertyValuesToRids(
-                    rule.addInterfaceRule.sharedPropertyValues,
-                  ),
-                  structFieldValues: {},
-                  logicRuleRid: rule.addInterfaceRule.logicRuleRid,
-                },
-              };
-            } else if (rule.type === "modifyInterfaceRule") {
-              const interfaceAndParents = flattenInterface(ontologyDefinition.INTERFACE_TYPE[rule.modifyInterfaceRule.interfaceApiName], new Set());
-
-              return {
-                type: "modifyInterfaceRule",
-                modifyInterfaceRule: {
-                  interfaceObjectToModify:
-                    rule.modifyInterfaceRule.interfaceObjectToModifyParameter,
-                  interfacePropertyValues: convertInterfacePropertyValuesToRids(
-                    rule.modifyInterfaceRule.interfacePropertyValues,
-                    interfaceAndParents,
-                  ),
-                  sharedPropertyValues: convertSharedPropertyValuesToRids(
-                    rule.modifyInterfaceRule.sharedPropertyValues,
-                  ),
-                  structFieldValues: {},
-                },
-              };
-            } else if (rule.type === "addObjectRule") {
-              return {
-                type: "addObjectRule",
-                addObjectRule: {
-                  objectTypeId: ridGenerator.generateObjectTypeId(
-                    rule.addObjectRule.objectTypeId,
-                  ),
-                  propertyValues: rule.addObjectRule.propertyValues,
-                  structFieldValues: rule.addObjectRule.structFieldValues,
-                  logicRuleRid: rule.addObjectRule.logicRuleRid,
-                },
-              };
-            }
-            // Pass through other rule types unchanged
-            return rule as any;
-          }),
+          rules: action.rules,
         },
         validation: actionValidation,
-        notifications: [],
       },
       metadata: {
-        rid: ridGenerator.generateRid(`action.${action.apiName}`),
-        version: "0.0.1",
         apiName: action.apiName,
         displayMetadata: {
           configuration: {
@@ -484,51 +388,14 @@ export function convertAction(
             [action.status]: {},
           } as unknown as ActionTypeStatus
           : action.status,
-        entities: action.entities
-          ? {
-            affectedInterfaceTypes: action.entities.affectedInterfaceTypes.map(
-              apiName => ridGenerator.generateRidForInterface(apiName),
-            ),
-            affectedLinkTypes: action.entities.affectedLinkTypes,
-            affectedObjectTypes: action.entities.affectedObjectTypes.map(
-              apiName => ridGenerator.generateObjectTypeId(apiName),
-            ),
-            typeGroups: action.entities.typeGroups,
-          }
-          : {
-            affectedInterfaceTypes: [],
-            affectedLinkTypes: [],
-            affectedObjectTypes: [],
-            typeGroups: [],
-          },
+        entities: action.entities,
       },
     },
-    parameterIds,
   };
-}
-
-// Helper function to convert allowed value option values with ObjectTypeId conversion
-function convertAllowedValueOptionValue(
-  value: any,
-  ridGenerator: OntologyRidGenerator,
-): any {
-  if (value?.type === "objectType") {
-    return {
-      type: "objectType",
-      objectType: {
-        objectTypeId: ridGenerator.generateObjectTypeId(
-          value.objectType.objectTypeId,
-        ),
-      },
-    };
-  }
-  // Pass through other value types unchanged (staticValue, parameterValue, etc.)
-  return value;
 }
 
 export function extractAllowedValues(
   allowedValues: ActionParameterAllowedValues,
-  ridGenerator: OntologyRidGenerator,
 ): OntologyIrAllowedParameterValues {
   switch (allowedValues.type) {
     case "oneOf":
@@ -537,10 +404,7 @@ export function extractAllowedValues(
         oneOf: {
           type: "oneOf",
           oneOf: {
-            labelledValues: allowedValues.oneOf.map(option => ({
-              ...option,
-              value: convertAllowedValueOptionValue(option.value, ridGenerator),
-            })),
+            labelledValues: allowedValues.oneOf,
             otherValueAllowed: {
               allowed: allowedValues.otherValueAllowed
                 ?? false,
@@ -625,14 +489,6 @@ export function extractAllowedValues(
           type: "user",
           user: {
             filter: (allowedValues.fromGroups ?? []).map(group => {
-              // Register static group IDs with ridGenerator
-              if (group.type === "static") {
-                ridGenerator.getGroupIds().put(
-                  ReadableIdGenerator.getForGroup(group.name),
-                  group.name,
-                );
-              }
-
               return {
                 type: "groupFilter",
                 groupFilter: {
@@ -801,4 +657,37 @@ addDependency("${namespaceNoDot}", new URL(import.meta.url).pathname);
 
 export function addNamespaceIfNone(apiName: string): string {
   return apiName.includes(".") ? apiName : namespace + apiName;
+}
+
+export function initializeOntologyState(ns: string): void {
+  namespace = ns;
+  dependencies = {};
+  ontologyDefinition = {
+    OBJECT_TYPE: {},
+    ACTION_TYPE: {},
+    LINK_TYPE: {},
+    INTERFACE_TYPE: {},
+    SHARED_PROPERTY_TYPE: {},
+    VALUE_TYPE: {},
+  };
+  importedTypes = {
+    SHARED_PROPERTY_TYPE: {},
+    OBJECT_TYPE: {},
+    ACTION_TYPE: {},
+    LINK_TYPE: {},
+    INTERFACE_TYPE: {},
+    VALUE_TYPE: {},
+  };
+}
+
+export function getOntologyDefinition(): OntologyDefinition {
+  return ontologyDefinition;
+}
+
+export function getImportedTypes(): OntologyDefinition {
+  return importedTypes;
+}
+
+export function getNamespace(): string {
+  return namespace;
 }

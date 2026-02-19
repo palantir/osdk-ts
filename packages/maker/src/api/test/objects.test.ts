@@ -471,6 +471,7 @@ describe("Object Types", () => {
                   },
                   "type": {
                     "struct": {
+                      "mainValue": undefined,
                       "structFields": [
                         {
                           "aliases": [],
@@ -3817,6 +3818,579 @@ describe("Object Types", () => {
             },
           },
           "sharedPropertyTypes": {},
+        },
+        "randomnessKey": undefined,
+        "valueTypes": {
+          "valueTypes": [],
+        },
+      }
+    `);
+  });
+
+  it("Reducers and struct main properties are defined correctly", () => {
+    const spt = defineSharedPropertyType({
+      apiName: "spt",
+      displayName: "Struct Array SPT",
+      type: {
+        type: "struct",
+        structDefinition: {
+          prop1: "string",
+          prop2: "string",
+        },
+        mainValue: {
+          fields: "prop1",
+          type: "string",
+        },
+      },
+      array: true,
+      reducers: [{
+        direction: "descending",
+        structField: "prop1",
+      }, {
+        direction: "ascending",
+        structField: "prop2",
+      }],
+    });
+    const object = defineObject({
+      titlePropertyApiName: "bar",
+      displayName: "Foo",
+      pluralDisplayName: "Foo",
+      apiName: "foo",
+      primaryKeyPropertyApiName: "bar",
+      properties: {
+        "bar": {
+          type: "string",
+        },
+        "spt": {
+          sharedPropertyType: spt,
+          type: {
+            type: "struct",
+            structDefinition: {
+              prop1: "string",
+              prop2: "string",
+            },
+          },
+          array: true,
+        },
+        "prop": {
+          type: {
+            type: "struct",
+            structDefinition: {
+              field1: "string",
+              field2: "string",
+            },
+            mainValue: {
+              fields: ["field1", "field2"],
+              type: {
+                type: "struct",
+                structDefinition: {
+                  field1: "string",
+                  field2: "string",
+                },
+              },
+            },
+          },
+          array: true,
+          reducers: [{
+            direction: "descending",
+            structField: "field1",
+          }, {
+            direction: "ascending",
+            structField: "field2",
+          }],
+        },
+      },
+    });
+    expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
+      {
+        "importedOntology": {
+          "actionTypes": {},
+          "blockPermissionInformation": {
+            "actionTypes": {},
+            "linkTypes": {},
+            "objectTypes": {},
+          },
+          "interfaceTypes": {},
+          "linkTypes": {},
+          "objectTypes": {},
+          "sharedPropertyTypes": {},
+        },
+        "importedValueTypes": {
+          "valueTypes": [],
+        },
+        "ontology": {
+          "actionTypes": {},
+          "blockPermissionInformation": {
+            "actionTypes": {},
+            "linkTypes": {},
+            "objectTypes": {},
+          },
+          "interfaceTypes": {},
+          "linkTypes": {},
+          "objectTypes": {
+            "com.palantir.foo": {
+              "datasources": [
+                {
+                  "datasource": {
+                    "datasetV2": {
+                      "datasetRid": "com.palantir.foo",
+                      "propertyMapping": {
+                        "bar": {
+                          "column": "bar",
+                          "type": "column",
+                        },
+                        "prop": {
+                          "struct": {
+                            "column": "prop",
+                            "mapping": {
+                              "field1": {
+                                "apiName": "field1",
+                                "mappings": {},
+                              },
+                              "field2": {
+                                "apiName": "field2",
+                                "mappings": {},
+                              },
+                            },
+                          },
+                          "type": "struct",
+                        },
+                        "spt": {
+                          "struct": {
+                            "column": "spt",
+                            "mapping": {
+                              "prop1": {
+                                "apiName": "prop1",
+                                "mappings": {},
+                              },
+                              "prop2": {
+                                "apiName": "prop2",
+                                "mappings": {},
+                              },
+                            },
+                          },
+                          "type": "struct",
+                        },
+                      },
+                    },
+                    "type": "datasetV2",
+                  },
+                  "datasourceName": "com.palantir.foo",
+                  "editsConfiguration": {
+                    "onlyAllowPrivilegedEdits": false,
+                  },
+                  "redacted": false,
+                },
+              ],
+              "entityMetadata": {
+                "aliases": [],
+                "arePatchesEnabled": false,
+              },
+              "objectType": {
+                "allImplementsInterfaces": {},
+                "apiName": "com.palantir.foo",
+                "displayMetadata": {
+                  "description": undefined,
+                  "displayName": "Foo",
+                  "groupDisplayName": undefined,
+                  "icon": {
+                    "blueprint": {
+                      "color": "#2D72D2",
+                      "locator": "cube",
+                    },
+                    "type": "blueprint",
+                  },
+                  "pluralDisplayName": "Foo",
+                  "visibility": "NORMAL",
+                },
+                "implementsInterfaces2": [],
+                "primaryKeys": [
+                  "bar",
+                ],
+                "propertyTypes": {
+                  "bar": {
+                    "apiName": "bar",
+                    "baseFormatter": undefined,
+                    "dataConstraints": undefined,
+                    "displayMetadata": {
+                      "description": undefined,
+                      "displayName": "Bar",
+                      "visibility": "NORMAL",
+                    },
+                    "indexedForSearch": true,
+                    "inlineAction": undefined,
+                    "ruleSetBinding": undefined,
+                    "sharedPropertyTypeApiName": undefined,
+                    "sharedPropertyTypeRid": undefined,
+                    "status": {
+                      "active": {},
+                      "type": "active",
+                    },
+                    "type": {
+                      "string": {
+                        "analyzerOverride": undefined,
+                        "enableAsciiFolding": undefined,
+                        "isLongText": false,
+                        "supportsEfficientLeadingWildcard": false,
+                        "supportsExactMatching": true,
+                      },
+                      "type": "string",
+                    },
+                    "typeClasses": [
+                      {
+                        "kind": "render_hint",
+                        "name": "SELECTABLE",
+                      },
+                      {
+                        "kind": "render_hint",
+                        "name": "SORTABLE",
+                      },
+                    ],
+                    "valueType": undefined,
+                  },
+                  "prop": {
+                    "apiName": "prop",
+                    "baseFormatter": undefined,
+                    "dataConstraints": undefined,
+                    "displayMetadata": {
+                      "description": undefined,
+                      "displayName": "Prop",
+                      "visibility": "NORMAL",
+                    },
+                    "indexedForSearch": true,
+                    "inlineAction": undefined,
+                    "ruleSetBinding": undefined,
+                    "sharedPropertyTypeApiName": undefined,
+                    "sharedPropertyTypeRid": undefined,
+                    "status": {
+                      "active": {},
+                      "type": "active",
+                    },
+                    "type": {
+                      "array": {
+                        "reducers": [
+                          {
+                            "direction": "DESCENDING_NULLS_LAST",
+                            "fieldApiName": "field1",
+                            "structApiName": "prop",
+                          },
+                          {
+                            "direction": "ASCENDING_NULLS_LAST",
+                            "fieldApiName": "field2",
+                            "structApiName": "prop",
+                          },
+                        ],
+                        "subtype": {
+                          "struct": {
+                            "mainValue": {
+                              "fields": [
+                                "field1",
+                                "field2",
+                              ],
+                              "type": {
+                                "struct": {
+                                  "mainValue": undefined,
+                                  "structFields": [
+                                    {
+                                      "aliases": [],
+                                      "apiName": "field1",
+                                      "displayMetadata": {
+                                        "description": undefined,
+                                        "displayName": "field1",
+                                      },
+                                      "fieldType": {
+                                        "string": {
+                                          "analyzerOverride": undefined,
+                                          "enableAsciiFolding": undefined,
+                                          "isLongText": false,
+                                          "supportsEfficientLeadingWildcard": false,
+                                          "supportsExactMatching": true,
+                                        },
+                                        "type": "string",
+                                      },
+                                      "typeClasses": [],
+                                    },
+                                    {
+                                      "aliases": [],
+                                      "apiName": "field2",
+                                      "displayMetadata": {
+                                        "description": undefined,
+                                        "displayName": "field2",
+                                      },
+                                      "fieldType": {
+                                        "string": {
+                                          "analyzerOverride": undefined,
+                                          "enableAsciiFolding": undefined,
+                                          "isLongText": false,
+                                          "supportsEfficientLeadingWildcard": false,
+                                          "supportsExactMatching": true,
+                                        },
+                                        "type": "string",
+                                      },
+                                      "typeClasses": [],
+                                    },
+                                  ],
+                                },
+                                "type": "struct",
+                              },
+                            },
+                            "structFields": [
+                              {
+                                "aliases": [],
+                                "apiName": "field1",
+                                "displayMetadata": {
+                                  "description": undefined,
+                                  "displayName": "field1",
+                                },
+                                "fieldType": {
+                                  "string": {
+                                    "analyzerOverride": undefined,
+                                    "enableAsciiFolding": undefined,
+                                    "isLongText": false,
+                                    "supportsEfficientLeadingWildcard": false,
+                                    "supportsExactMatching": true,
+                                  },
+                                  "type": "string",
+                                },
+                                "typeClasses": [],
+                              },
+                              {
+                                "aliases": [],
+                                "apiName": "field2",
+                                "displayMetadata": {
+                                  "description": undefined,
+                                  "displayName": "field2",
+                                },
+                                "fieldType": {
+                                  "string": {
+                                    "analyzerOverride": undefined,
+                                    "enableAsciiFolding": undefined,
+                                    "isLongText": false,
+                                    "supportsEfficientLeadingWildcard": false,
+                                    "supportsExactMatching": true,
+                                  },
+                                  "type": "string",
+                                },
+                                "typeClasses": [],
+                              },
+                            ],
+                          },
+                          "type": "struct",
+                        },
+                      },
+                      "type": "array",
+                    },
+                    "typeClasses": [],
+                    "valueType": undefined,
+                  },
+                  "spt": {
+                    "apiName": "spt",
+                    "baseFormatter": undefined,
+                    "dataConstraints": undefined,
+                    "displayMetadata": {
+                      "description": undefined,
+                      "displayName": "Spt",
+                      "visibility": "NORMAL",
+                    },
+                    "indexedForSearch": true,
+                    "inlineAction": undefined,
+                    "ruleSetBinding": undefined,
+                    "sharedPropertyTypeApiName": "com.palantir.spt",
+                    "sharedPropertyTypeRid": "com.palantir.spt",
+                    "status": {
+                      "active": {},
+                      "type": "active",
+                    },
+                    "type": {
+                      "array": {
+                        "reducers": [
+                          {
+                            "direction": "DESCENDING_NULLS_LAST",
+                            "fieldApiName": "prop1",
+                            "structApiName": "com.palantir.spt",
+                          },
+                          {
+                            "direction": "ASCENDING_NULLS_LAST",
+                            "fieldApiName": "prop2",
+                            "structApiName": "com.palantir.spt",
+                          },
+                        ],
+                        "subtype": {
+                          "struct": {
+                            "mainValue": {
+                              "fields": [
+                                "prop1",
+                              ],
+                              "type": {
+                                "string": {
+                                  "analyzerOverride": undefined,
+                                  "enableAsciiFolding": undefined,
+                                  "isLongText": false,
+                                  "supportsEfficientLeadingWildcard": false,
+                                  "supportsExactMatching": true,
+                                },
+                                "type": "string",
+                              },
+                            },
+                            "structFields": [
+                              {
+                                "aliases": [],
+                                "apiName": "prop1",
+                                "displayMetadata": {
+                                  "description": undefined,
+                                  "displayName": "prop1",
+                                },
+                                "fieldType": {
+                                  "string": {
+                                    "analyzerOverride": undefined,
+                                    "enableAsciiFolding": undefined,
+                                    "isLongText": false,
+                                    "supportsEfficientLeadingWildcard": false,
+                                    "supportsExactMatching": true,
+                                  },
+                                  "type": "string",
+                                },
+                                "typeClasses": [],
+                              },
+                              {
+                                "aliases": [],
+                                "apiName": "prop2",
+                                "displayMetadata": {
+                                  "description": undefined,
+                                  "displayName": "prop2",
+                                },
+                                "fieldType": {
+                                  "string": {
+                                    "analyzerOverride": undefined,
+                                    "enableAsciiFolding": undefined,
+                                    "isLongText": false,
+                                    "supportsEfficientLeadingWildcard": false,
+                                    "supportsExactMatching": true,
+                                  },
+                                  "type": "string",
+                                },
+                                "typeClasses": [],
+                              },
+                            ],
+                          },
+                          "type": "struct",
+                        },
+                      },
+                      "type": "array",
+                    },
+                    "typeClasses": [],
+                    "valueType": undefined,
+                  },
+                },
+                "redacted": false,
+                "status": {
+                  "active": {},
+                  "type": "active",
+                },
+                "titlePropertyTypeRid": "bar",
+              },
+              "propertySecurityGroupPackagingVersion": {
+                "type": "v2",
+                "v2": {},
+              },
+            },
+          },
+          "sharedPropertyTypes": {
+            "com.palantir.spt": {
+              "sharedPropertyType": {
+                "aliases": [],
+                "apiName": "com.palantir.spt",
+                "baseFormatter": undefined,
+                "dataConstraints": undefined,
+                "displayMetadata": {
+                  "description": undefined,
+                  "displayName": "Struct Array SPT",
+                  "visibility": "NORMAL",
+                },
+                "gothamMapping": undefined,
+                "indexedForSearch": true,
+                "type": {
+                  "array": {
+                    "reducers": [
+                      {
+                        "direction": "DESCENDING_NULLS_LAST",
+                        "fieldApiName": "prop1",
+                        "structApiName": "com.palantir.spt",
+                      },
+                      {
+                        "direction": "ASCENDING_NULLS_LAST",
+                        "fieldApiName": "prop2",
+                        "structApiName": "com.palantir.spt",
+                      },
+                    ],
+                    "subtype": {
+                      "struct": {
+                        "mainValue": {
+                          "fields": [
+                            "prop1",
+                          ],
+                          "type": {
+                            "string": {
+                              "analyzerOverride": undefined,
+                              "enableAsciiFolding": undefined,
+                              "isLongText": false,
+                              "supportsEfficientLeadingWildcard": false,
+                              "supportsExactMatching": true,
+                            },
+                            "type": "string",
+                          },
+                        },
+                        "structFields": [
+                          {
+                            "aliases": [],
+                            "apiName": "prop1",
+                            "displayMetadata": {
+                              "description": undefined,
+                              "displayName": "prop1",
+                            },
+                            "fieldType": {
+                              "string": {
+                                "analyzerOverride": undefined,
+                                "enableAsciiFolding": undefined,
+                                "isLongText": false,
+                                "supportsEfficientLeadingWildcard": false,
+                                "supportsExactMatching": true,
+                              },
+                              "type": "string",
+                            },
+                            "typeClasses": [],
+                          },
+                          {
+                            "aliases": [],
+                            "apiName": "prop2",
+                            "displayMetadata": {
+                              "description": undefined,
+                              "displayName": "prop2",
+                            },
+                            "fieldType": {
+                              "string": {
+                                "analyzerOverride": undefined,
+                                "enableAsciiFolding": undefined,
+                                "isLongText": false,
+                                "supportsEfficientLeadingWildcard": false,
+                                "supportsExactMatching": true,
+                              },
+                              "type": "string",
+                            },
+                            "typeClasses": [],
+                          },
+                        ],
+                      },
+                      "type": "struct",
+                    },
+                  },
+                  "type": "array",
+                },
+                "typeClasses": [],
+                "valueType": undefined,
+              },
+            },
+          },
         },
         "randomnessKey": undefined,
         "valueTypes": {

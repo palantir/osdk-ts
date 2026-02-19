@@ -15,14 +15,12 @@
  */
 
 import { consola } from "consola";
-import { createJiti } from "jiti";
-import * as fs from "node:fs";
+import * as fs from "node:fs/promises";
 import * as path from "node:path";
 import invariant from "tiny-invariant";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { defineOntology } from "../api/defineOntology.js";
-import type { BlockGeneratorResult } from "./marketplaceSerialization/BlockGeneratorResult.js";
 
 const apiNamespaceRegex = /^[a-z0-9-]+(\.[a-z0-9-]+)*\.$/;
 const uuidRegex =
@@ -31,13 +29,17 @@ const uuidRegex =
 export default async function main(
   args: string[] = process.argv,
 ): Promise<void> {
-  consola.log("Generating BlockGeneratorResult for ontology...");
-
   const commandLineOpts: {
     input: string;
     output: string;
     apiNamespace: string;
-    buildDir: string;
+    snapshotDir: string;
+    valueTypesOutput: string;
+    outputDir?: string;
+    dependencies?: string;
+    generateCodeSnippets: boolean;
+    codeSnippetPackageName: string;
+    codeSnippetDir: string;
     randomnessKey?: string;
   } = await yargs(hideBin(args))
     .version(process.env.PACKAGE_VERSION ?? "")
@@ -54,9 +56,9 @@ export default async function main(
       },
       output: {
         alias: "o",
-        describe: "Output file for BlockGeneratorResult JSON",
+        describe: "Output file",
         type: "string",
-        default: "build/block_generator_result.json",
+        default: "ontology.json",
         coerce: path.resolve,
       },
       apiNamespace: {
@@ -64,11 +66,45 @@ export default async function main(
         type: "string",
         default: "",
       },
-      buildDir: {
-        alias: "b",
-        describe: "Directory for build files",
+      snapshotDir: {
+        alias: "s",
+        describe: "Snapshot directory",
         type: "string",
-        default: "build/",
+        default: "snapshots",
+        coerce: path.resolve,
+      },
+      outputDir: {
+        alias: "d",
+        describe: "Directory for generated ontology entities",
+        type: "string",
+        coerce: path.resolve,
+      },
+      valueTypesOutput: {
+        describe: "Value Type Output File",
+        type: "string",
+        default: "value-types.json",
+        coerce: path.resolve,
+      },
+      dependencies: {
+        describe: "File to write dependencies to",
+        type: "string",
+        coerce: path.resolve,
+      },
+      generateCodeSnippets: {
+        describe: "Enable code snippet files creation",
+        type: "boolean",
+        default: false,
+      },
+      codeSnippetPackageName: {
+        describe:
+          "The package name that will be displayed in the code snippets",
+        default: "",
+        type: "string",
+      },
+      codeSnippetDir: {
+        describe: "Directory for generated code snippet files",
+        type: "string",
+        default: "./",
         coerce: path.resolve,
       },
       randomnessKey: {
@@ -78,7 +114,6 @@ export default async function main(
       },
     })
     .parseAsync();
-
   let apiNamespace = "";
   if (commandLineOpts.apiNamespace.length !== 0) {
     apiNamespace = (commandLineOpts.apiNamespace.slice(-1) !== ".")
@@ -92,6 +127,16 @@ export default async function main(
   }
   consola.info(`Loading ontology from ${commandLineOpts.input}`);
 
+  if (
+    !commandLineOpts.generateCodeSnippets
+    && (commandLineOpts.codeSnippetPackageName !== ""
+      || commandLineOpts.codeSnippetDir !== path.resolve("./"))
+  ) {
+    consola.info(
+      "Package name and/or directory supplied for code snippets, but code snippet generation is false.",
+    );
+  }
+
   if (commandLineOpts.randomnessKey !== undefined) {
     invariant(
       uuidRegex.test(commandLineOpts.randomnessKey),
@@ -102,75 +147,58 @@ export default async function main(
   const ontologyIr = await loadOntology(
     commandLineOpts.input,
     apiNamespace,
+    commandLineOpts.outputDir,
+    commandLineOpts.dependencies,
+    commandLineOpts.generateCodeSnippets,
+    commandLineOpts.codeSnippetPackageName,
+    commandLineOpts.codeSnippetDir,
     commandLineOpts.randomnessKey,
   );
 
-  // The ontologyIr already contains the converted OntologyBlockDataV2
-  const [ontologyBlockDataV2, shapes] = ontologyIr;
-
-  
-
-  // Create temp directory for block data
-  const blockDataDir = path.join(commandLineOpts.buildDir, "temp_block_data");
-  if (!fs.existsSync(blockDataDir)) {
-    await fs.promises.mkdir(blockDataDir, { recursive: true });
-  }
-
-  // Write ontology.json to the block data directory
-  const ontologyJsonPath = path.join(blockDataDir, "ontology.json");
-  const ontologyJson = JSON.stringify(ontologyBlockDataV2.ontology, null, 2);
-  await fs.promises.writeFile(ontologyJsonPath, ontologyJson);
-  consola.info(`Wrote ontology.json to ${ontologyJsonPath}`);
-
-  // Create BlockGeneratorResult
-  const blockGeneratorResult: BlockGeneratorResult = {
-    block_identifier: "ontology",
-    block_data_directory: blockDataDir,
-    oci_block_data_metadata: undefined,
-    maven_block_data_metadata: undefined,
-    inputs: Object.fromEntries(shapes.inputShapes),
-    outputs: Object.fromEntries(shapes.outputShapes),
-    input_mapping_entries: [],
-    external_recommendations: [],
-    add_on_override: undefined,
-    input_shape_metadata: Object.fromEntries(shapes.inputShapeMetadata),
-    block_type: "ONTOLOGY",
-  };
-
-  // Write BlockGeneratorResult to output file
-  const blockGeneratorResultJson = JSON.stringify(
-    blockGeneratorResult,
-    null,
-    2,
-  );
-  await fs.promises.writeFile(
+  consola.info(`Saving ontology to ${commandLineOpts.output}`);
+  await fs.writeFile(
     commandLineOpts.output,
-    blockGeneratorResultJson,
+    JSON.stringify(
+      ontologyIr,
+      null,
+      2,
+    ),
   );
-  consola.success(
-    `BlockGeneratorResult written to ${commandLineOpts.output}`,
-  );
-  consola.info(
-    `Block data directory: ${blockDataDir}`,
-  );
+  // No point in generating block if there aren't any value types
+  if (
+    ontologyIr.valueTypes.valueTypes.length > 0
+    || ontologyIr.importedValueTypes.valueTypes.length > 0
+  ) {
+    await fs.writeFile(
+      commandLineOpts.valueTypesOutput,
+      JSON.stringify(
+        ontologyIr.valueTypes,
+        null,
+        2,
+      ),
+    );
+  }
 }
 
 async function loadOntology(
   input: string,
   apiNamespace: string,
+  outputDir: string | undefined,
+  dependencyFile: string | undefined,
+  generateCodeSnippets: boolean,
+  snippetPackageName: string,
+  codeSnippetDir: string,
   randomnessKey?: string,
 ) {
-  const ontologyIr = await defineOntology(
+  const q = await defineOntology(
     apiNamespace,
-    async () => {
-      const jiti = createJiti(import.meta.filename, {
-        moduleCache: true,
-        debug: false,
-        importMeta: import.meta,
-      });
-      const module = await jiti.import(input);
-    },
+    async () => await import(input),
+    outputDir,
+    dependencyFile,
+    generateCodeSnippets,
+    snippetPackageName,
+    codeSnippetDir,
     randomnessKey,
   );
-  return ontologyIr;
+  return q;
 }

@@ -1338,7 +1338,7 @@ describe("Miscellaneous Tests", () => {
           });
         },
         generatedDir,
-        // path.join(generatedDir, "dependencies.json"),
+        path.join(generatedDir, "dependencies.json"),
       );
 
       const packageJson = JSON.parse(

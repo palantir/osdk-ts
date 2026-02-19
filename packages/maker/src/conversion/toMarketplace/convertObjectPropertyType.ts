@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { PropertyType } from "@osdk/client.unstable";
+import type { OntologyIrPropertyType } from "@osdk/client.unstable";
 import invariant from "tiny-invariant";
 import { convertObjectStatus, namespace } from "../../api/defineOntology.js";
 import type { ObjectPropertyType } from "../../api/object/ObjectPropertyType.js";
@@ -25,17 +25,15 @@ import {
   shouldBeIndexedForSearch,
   shouldNotHaveRenderHints,
 } from "../../api/propertyConversionUtils.js";
-import type { OntologyRidGenerator } from "../../util/generateRid.js";
 import { convertNullabilityToDataConstraint } from "./convertNullabilityToDataConstraint.js";
+import { convertReducers } from "./convertReducers.js";
 import { convertValueType } from "./convertValueType.js";
 import { convertValueTypeDataConstraints } from "./convertValueTypeDataConstraints.js";
 import { propertyTypeTypeToOntologyIrType } from "./propertyTypeTypeToOntologyIrType.js";
 
 export function convertObjectPropertyType(
   property: ObjectPropertyType,
-  objectTypeApiName: string,
-  ridGenerator: OntologyRidGenerator,
-): PropertyType {
+): OntologyIrPropertyType {
   const apiName = namespace + property.apiName;
   invariant(
     !shouldNotHaveRenderHints(property.type)
@@ -44,15 +42,8 @@ export function convertObjectPropertyType(
       getPropertyTypeName(property.type)
     }' should not have render hints`,
   );
-  // TODO: Generate proper RID and ID based on object type and property API name
-  const propertyRid = ridGenerator.generatePropertyRid(
-    property.apiName,
-    objectTypeApiName,
-  );
-  const output: PropertyType = {
+  const output: OntologyIrPropertyType = {
     apiName: property.apiName,
-    id: property.apiName, // TODO: Should this be different from apiName?
-    rid: propertyRid,
     sharedPropertyTypeApiName: property.sharedPropertyType?.apiName,
     displayMetadata: {
       displayName: property.displayName,
@@ -69,12 +60,18 @@ export function convertObjectPropertyType(
         array: {
           subtype: propertyTypeTypeToOntologyIrType(
             property.type,
-            ridGenerator,
+            property.apiName,
+            property.sharedPropertyType,
           ),
-          reducers: [],
+          reducers: convertReducers(
+            property.type,
+            property.apiName,
+            property.reducers ?? [],
+            property.sharedPropertyType,
+          ),
         },
       }
-      : propertyTypeTypeToOntologyIrType(property.type, ridGenerator),
+      : propertyTypeTypeToOntologyIrType(property.type, property.apiName),
     typeClasses: property.typeClasses
       ?? (shouldNotHaveRenderHints(property.type) ? [] : defaultTypeClasses),
     status: convertObjectStatus(property.status),
@@ -82,12 +79,9 @@ export function convertObjectPropertyType(
     dataConstraints: property.valueType
       ? convertValueTypeDataConstraints(property.valueType.constraints)
       : convertNullabilityToDataConstraint(property),
-    // TODO: Convert sharedPropertyTypeRid from API name to RID
-    sharedPropertyTypeRid: property.sharedPropertyType
-      ? ridGenerator.generateSptRid(property.sharedPropertyType.apiName)
-      : undefined,
+    sharedPropertyTypeRid: property.sharedPropertyType?.apiName,
     valueType: property.valueType
-      ? convertValueType(property.valueType, ridGenerator)
+      ? convertValueType(property.valueType)
       : undefined,
   };
   return output;

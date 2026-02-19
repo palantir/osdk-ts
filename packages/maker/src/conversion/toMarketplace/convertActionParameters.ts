@@ -14,81 +14,25 @@
  * limitations under the License.
  */
 
-import type { Parameter, ParameterId } from "@osdk/client.unstable";
+import type {
+  OntologyIrBaseParameterType,
+  OntologyIrParameter,
+  ParameterId,
+} from "@osdk/client.unstable";
 import type { ActionType } from "../../api/action/ActionType.js";
-import type { OntologyRidGenerator } from "../../util/generateRid.js";
-import { BaseParameterType } from "@osdk/client.unstable/api";
 
 export function convertActionParameters(
   action: ActionType,
-  ridGenerator: OntologyRidGenerator,
-): Record<ParameterId, Parameter> {
-  return Object.fromEntries((action.parameters ?? []).map(parameter => {
-    let convertedType: BaseParameterType;
-
-    if (typeof parameter.type === "string") {
-      // Simple string types like "string", "integer", etc.
-      convertedType = { type: parameter.type, [parameter.type]: {} } as any;
-    } else {
-      // Complex types that need ObjectTypeId conversion
-      switch (parameter.type.type) {
-        case "objectReference":
-          convertedType = {
-            type: "objectReference",
-            objectReference: {
-              ...parameter.type.objectReference,
-              objectTypeId: ridGenerator.generateObjectTypeId(
-                parameter.type.objectReference.objectTypeId,
-              ),
-            },
-          };
-          break;
-
-        case "objectReferenceList":
-          convertedType = {
-            type: "objectReferenceList",
-            objectReferenceList: {
-              ...parameter.type.objectReferenceList,
-              objectTypeId: ridGenerator.generateObjectTypeId(
-                parameter.type.objectReferenceList.objectTypeId,
-              ),
-            },
-          };
-          break;
-
-        case "interfaceReference":
-          convertedType = {
-            type: "interfaceReference",
-            interfaceReference: {
-              interfaceTypeRid: ridGenerator.generateRidForInterface(parameter.type.interfaceReference.interfaceTypeRid)
-            }
-          }
-          break;
-        case "interfaceReferenceList":
-          convertedType = {
-            type: "interfaceReferenceList",
-            interfaceReferenceList: {
-              interfaceTypeRid: ridGenerator.generateRidForInterface(parameter.type.interfaceReferenceList.interfaceTypeRid)
-            }
-          }
-
-        default:
-          // Pass through other types unchanged
-          convertedType = parameter.type;
-      }
-    }
-
-    return [parameter.id, {
-      id: parameter.id,
-      rid: ridGenerator.generateRidForParameter(action.apiName, parameter.id),
-      type: convertedType,
-      displayMetadata: {
-        displayName: parameter.displayName,
-        description: parameter.description ?? "",
-        typeClasses: [],
-        structFields: {},
-        structFieldsV2: [],
-      },
-    }];
-  }));
+): Record<ParameterId, OntologyIrParameter> {
+  return Object.fromEntries((action.parameters ?? []).map(p => [p.id, {
+    id: p.id,
+    type: (typeof p.type === "string"
+      ? { type: p.type, [p.type]: {} }
+      : p.type) as OntologyIrBaseParameterType,
+    displayMetadata: {
+      displayName: p.displayName,
+      description: p.description ?? "",
+      typeClasses: [],
+    },
+  }]));
 }

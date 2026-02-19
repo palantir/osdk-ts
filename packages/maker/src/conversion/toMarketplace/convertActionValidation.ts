@@ -15,7 +15,7 @@
  */
 
 import type {
-  ActionValidation,
+  OntologyIrActionValidation,
   ParameterRequiredConfiguration,
 } from "@osdk/client.unstable";
 import type { ActionParameterRequirementConstraint } from "../../api/action/ActionParameterConfiguration.js";
@@ -24,114 +24,21 @@ import {
   extractAllowedValues,
   renderHintFromBaseType,
 } from "../../api/defineOntology.js";
-import type { OntologyRidGenerator } from "../../util/generateRid.js";
-import { ReadableIdGenerator } from "../../util/generateRid.js";
 import { convertActionParameterConditionalOverride } from "./convertActionParameterConditionalOverride.js";
 import { convertActionVisibility } from "./convertActionVisibility.js";
 import { convertSectionConditionalOverride } from "./convertSectionConditionalOverride.js";
 
-// Helper function to recursively scan conditions and register groups
-function registerGroupsFromCondition(
-  condition: any,
-  ridGenerator: OntologyRidGenerator,
-): void {
-  if (!condition) return;
-
-  switch (condition.type) {
-    case "group":
-      // Original format (parameter/section conditional overrides)
-      if (condition.name) {
-        ridGenerator.getGroupIds().put(
-          ReadableIdGenerator.getForGroup(condition.name),
-          condition.name,
-        );
-      }
-      break;
-
-    case "comparison":
-      // Converted format (action-level validations)
-      // Check if this is a group comparison by looking at the left side
-      if (
-        condition.comparison?.left?.type === "userProperty" &&
-        condition.comparison?.left?.userProperty?.propertyValue?.type === "groupIds"
-      ) {
-        // Extract group names from the right side
-        const strings = condition.comparison?.right?.staticValue?.stringList?.strings;
-        if (Array.isArray(strings)) {
-          strings.forEach((groupName: string) => {
-            ridGenerator.getGroupIds().put(
-              ReadableIdGenerator.getForGroup(groupName),
-              groupName,
-            );
-          });
-        }
-      }
-      break;
-
-    case "and":
-    case "or":
-      // Recursively process nested conditions
-      if (condition.conditions) {
-        condition.conditions.forEach((c: any) =>
-          registerGroupsFromCondition(c, ridGenerator)
-        );
-      }
-      // Handle converted and/or format
-      if (condition.and?.conditions) {
-        condition.and.conditions.forEach((c: any) =>
-          registerGroupsFromCondition(c, ridGenerator)
-        );
-      }
-      if (condition.or?.conditions) {
-        condition.or.conditions.forEach((c: any) =>
-          registerGroupsFromCondition(c, ridGenerator)
-        );
-      }
-      break;
-
-    // Other condition types don't have groups
-  }
-}
-
 export function convertActionValidation(
   action: ActionType,
-  ridGenerator: OntologyRidGenerator,
-): ActionValidation {
-  const validationRules = action.validation
-    ?? [{
-      condition: { type: "true", true: {} },
-      displayMetadata: { failureMessage: "", typeClasses: [] },
-    }];
-
-  const ruleRids = validationRules.map((_, idx) =>
-    ridGenerator.generateRid(`validation.rule.${action.apiName}.${idx}`)
-  );
-
-  // Register groups from action-level validation conditions
-  validationRules.forEach(rule => {
-    registerGroupsFromCondition(rule.condition, ridGenerator);
-  });
-
-  // Register groups from parameter conditional overrides
-  (action.parameters ?? []).forEach(p => {
-    p.validation.conditionalOverrides?.forEach(override => {
-      registerGroupsFromCondition(override.condition, ridGenerator);
-    });
-  });
-
-  // Register groups from section conditional overrides
-  Object.values(action.sections ?? {}).forEach(section => {
-    section.conditionalOverrides?.forEach(override => {
-      registerGroupsFromCondition(override.condition, ridGenerator);
-    });
-  });
-
+): OntologyIrActionValidation {
   return {
     actionTypeLevelValidation: {
-      // TODO: Add proper ordering of validation rule RIDs
-      ordering: ruleRids,
       rules: Object.fromEntries(
-        validationRules.map((rule, idx) => [ruleRids[idx], rule]),
+        (action.validation
+          ?? [{
+            condition: { type: "true", true: {} },
+            displayMetadata: { failureMessage: "", typeClasses: [] },
+          }]).map((rule, idx) => [idx, rule]),
       ),
     },
     parameterValidations: Object.fromEntries(
@@ -152,7 +59,6 @@ export function convertActionValidation(
               validation: {
                 allowedValues: extractAllowedValues(
                   p.validation.allowedValues!,
-                  ridGenerator,
                 ),
                 required: convertParameterRequirementConstraint(
                   p.validation.required!,
@@ -164,11 +70,9 @@ export function convertActionValidation(
                 convertActionParameterConditionalOverride(
                   override,
                   p.validation,
-                  ridGenerator,
                   action.parameters,
                 ),
             ) ?? [],
-            structFieldValidations: {},
           },
         ];
       }),

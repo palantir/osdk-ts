@@ -16,12 +16,18 @@
 
 export { default as default } from "./cli/main.js";
 
-export type { ActionParameterValidation } from "./api/action/ActionParameter.js";
+export type {
+  ActionParameter,
+  ActionParameterValidation,
+} from "./api/action/ActionParameter.js";
 export type {
   ActionParameterAllowedValues,
 } from "./api/action/ActionParameterAllowedValues.js";
 export type { ActionParameterConditionalOverride } from "./api/action/ActionParameterConditionalOverride.js";
-export type { ActionParameterConfiguration } from "./api/action/ActionParameterConfiguration.js";
+export type {
+  ActionParameterConfiguration,
+  ActionParameterRequirementConstraint,
+} from "./api/action/ActionParameterConfiguration.js";
 export type { ActionSection } from "./api/action/ActionSection.js";
 export type { ActionType } from "./api/action/ActionType.js";
 export type { ConditionDefinition } from "./api/action/ConditionDefinition.js";
@@ -57,24 +63,59 @@ export { defineModifyObjectAction } from "./api/defineModifyObjectAction.js";
 export {
   convertToPluralDisplayName,
   defineObject,
+  uppercaseFirstLetter,
   uppercaseFirstLetter as convertToDisplayName,
 } from "./api/defineObject.js";
 export {
   addNamespaceIfNone,
+  cleanAndValidateLinkTypeId,
+  convertObjectStatus,
   defineOntology,
   dumpOntologyFullMetadata,
+  extractNamespace,
+  getImportedTypes,
+  getNamespace,
+  getOntologyDefinition,
+  initializeOntologyState,
+  withoutNamespace,
 } from "./api/defineOntology.js";
+export type { OntologyDefinition } from "./api/common/OntologyDefinition.js";
 export { defineSharedPropertyType } from "./api/defineSpt.js";
 export { defineValueType } from "./api/defineValueType.js";
 export { importOntologyEntity } from "./api/importOntologyEntity.js";
 export { importSharedPropertyType } from "./api/importSharedPropertyType.js";
-export type { InterfaceDefinedProperty } from "./api/interface/InterfacePropertyType.js";
+export type {
+  InterfaceDefinedProperty,
+  InterfacePropertyType,
+} from "./api/interface/InterfacePropertyType.js";
+export { isInterfaceSharedPropertyType } from "./api/interface/InterfacePropertyType.js";
 export type { InterfaceType } from "./api/interface/InterfaceType.js";
-export type { LinkType } from "./api/links/LinkType.js";
+export type {
+  LinkType,
+  OneToManyLinkTypeDefinition,
+  UserLinkTypeStatus,
+} from "./api/links/LinkType.js";
+export type {
+  DerivedPropertyAggregation,
+  ObjectTypeDatasourceDefinition_dataset,
+  ObjectTypeDatasourceDefinition_derived,
+  ObjectTypeDatasourceDefinition_direct,
+} from "./api/object/ObjectTypeDatasourceDefinition.js";
+export type { ObjectTypeDefinition } from "./api/object/ObjectTypeDefinition.js";
 export type { ObjectPropertyType } from "./api/object/ObjectPropertyType.js";
 export type { ObjectType } from "./api/object/ObjectType.js";
+export type { SecurityConditionDefinition } from "./api/object/SecurityCondition.js";
+export type { Nullability } from "./api/properties/Nullability.js";
 export type { PropertyTypeType } from "./api/properties/PropertyTypeType.js";
+export { isExotic } from "./api/properties/PropertyTypeType.js";
 export type { SharedPropertyType } from "./api/properties/SharedPropertyType.js";
 export type { ValueTypeDefinitionVersion } from "./api/values/ValueTypeDefinitionVersion.js";
+export {
+  defaultTypeClasses,
+  getPropertyTypeName,
+  hasRenderHints,
+  shouldBeIndexedForSearch,
+  shouldNotHaveRenderHints,
+} from "./api/propertyConversionUtils.js";
 export { wrapWithProxy } from "./api/wrapWithProxy.js";
 export { propertyTypeTypeToOntologyIrType as convertType } from "./conversion/toMarketplace/propertyTypeTypeToOntologyIrType.js";

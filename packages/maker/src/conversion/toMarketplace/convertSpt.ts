@@ -14,19 +14,17 @@
  * limitations under the License.
  */
 
-import type {
-  OntologyIrSharedPropertyType,
-  SharedPropertyType as SharedPropertyTypeWire,
-} from "@osdk/client.unstable";
+import type { OntologyIrSharedPropertyType } from "@osdk/client.unstable";
 import type { SharedPropertyType } from "../../api/properties/SharedPropertyType.js";
-import type { OntologyRidGenerator } from "../../util/generateRid.js";
 import { convertNullabilityToDataConstraint } from "./convertNullabilityToDataConstraint.js";
+import { convertReducers } from "./convertReducers.js";
 import { propertyTypeTypeToOntologyIrType } from "./propertyTypeTypeToOntologyIrType.js";
 
 export function convertSpt(
   {
     type,
     array,
+    reducers,
     description,
     apiName,
     displayName,
@@ -38,15 +36,12 @@ export function convertSpt(
     nullability,
     baseFormatter,
   }: SharedPropertyType,
-  ridGenerator: OntologyRidGenerator,
-): SharedPropertyTypeWire {
+): OntologyIrSharedPropertyType {
   const dataConstraint:
     | OntologyIrSharedPropertyType["dataConstraints"]
     | undefined = convertNullabilityToDataConstraint({ type, nullability });
   return {
     apiName,
-    // TODO: Generate proper RID based on apiName
-    rid: ridGenerator.generateSptRid(apiName),
     displayMetadata: {
       displayName: displayName ?? apiName,
       visibility: visibility ?? "NORMAL",
@@ -56,22 +51,22 @@ export function convertSpt(
       ? {
         type: "array" as const,
         array: {
-          subtype: propertyTypeTypeToOntologyIrType(type, ridGenerator),
-          reducers: [],
+          subtype: propertyTypeTypeToOntologyIrType(type, apiName),
+          reducers: convertReducers(type, apiName, reducers),
         },
       }
-      : propertyTypeTypeToOntologyIrType(type, ridGenerator),
+      : propertyTypeTypeToOntologyIrType(type, apiName),
     aliases: aliases ?? [],
     baseFormatter,
     dataConstraints: dataConstraint,
     gothamMapping: gothamMapping,
     indexedForSearch: true,
     typeClasses: typeClasses ?? [],
-    valueType: valueType === undefined
-      ? undefined
-      : ridGenerator.generateRidForValueType(
-        valueType.apiName,
-        valueType.version,
-      ),
+    valueType: valueType === undefined ? undefined : {
+      apiName: valueType.apiName,
+      version: valueType.version,
+      packageNamespace: valueType.packageNamespace,
+      displayMetadata: valueType.displayMetadata,
+    },
   };
 }

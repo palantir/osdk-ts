@@ -15,10 +15,10 @@
  */
 
 import type {
-  LinkDefinition,
-  LinkTypeBlockDataV2,
-  LinkTypeStatus,
-  ManyToManyLinkTypeDatasource,
+  OntologyIrLinkDefinition,
+  OntologyIrLinkTypeBlockDataV2,
+  OntologyIrLinkTypeStatus,
+  OntologyIrManyToManyLinkTypeDatasource,
 } from "@osdk/client.unstable";
 import invariant from "tiny-invariant";
 import { OntologyEntityTypeEnum } from "../../api/common/OntologyEntityTypeEnum.js";
@@ -29,16 +29,15 @@ import {
 import type { LinkType, UserLinkTypeStatus } from "../../api/links/LinkType.js";
 import type { ObjectType } from "../../api/object/ObjectType.js";
 import type { ObjectTypeDefinition } from "../../api/object/ObjectTypeDefinition.js";
-import type { OntologyRidGenerator } from "../../util/generateRid.js";
 import { convertCardinality } from "./convertCardinality.js";
 
 export function convertLink(
   linkType: LinkType,
-  ridGenerator: OntologyRidGenerator,
-): LinkTypeBlockDataV2 {
+): OntologyIrLinkTypeBlockDataV2 {
   validateLink(linkType);
-  let definition: LinkDefinition;
-  let datasource: ManyToManyLinkTypeDatasource | undefined = undefined;
+  let definition: OntologyIrLinkDefinition;
+  let datasource: OntologyIrManyToManyLinkTypeDatasource | undefined =
+    undefined;
   if ("one" in linkType) {
     const { apiName: oneObjectApiName, object: oneObject } = getObject(
       linkType.one.object,
@@ -46,33 +45,24 @@ export function convertLink(
     const { apiName: toManyObjectApiName, object: toManyObject } = getObject(
       linkType.toMany.object,
     );
-    const oneObjectRid = ridGenerator.generateRidForObjectType(
-      oneObjectApiName,
-    );
-    const toManyObjectRid = ridGenerator.generateRidForObjectType(
-      toManyObjectApiName,
-    );
-    const onePkRid = ridGenerator.generatePropertyRid(
-      oneObject.primaryKeyPropertyApiName,
-      oneObjectApiName,
-    );
-    const manyFkRid = ridGenerator.generatePropertyRid(
-      linkType.manyForeignKeyProperty,
-      toManyObjectApiName,
-    );
-
     definition = {
       type: "oneToMany",
       oneToMany: {
         cardinalityHint: convertCardinality(linkType.cardinality),
         manyToOneLinkMetadata: linkType.toMany.metadata,
-        objectTypeRidManySide: toManyObjectRid,
-        objectTypeRidOneSide: oneObjectRid,
+        objectTypeRidManySide: toManyObjectApiName,
+        objectTypeRidOneSide: oneObjectApiName,
         oneToManyLinkMetadata: linkType.one.metadata,
-        // TODO: Convert property mappings to use RIDs as keys and values
-        oneSidePrimaryKeyToManySidePropertyMapping: {
-          [onePkRid]: manyFkRid,
-        },
+        oneSidePrimaryKeyToManySidePropertyMapping: [{
+          from: {
+            apiName: oneObject.primaryKeyPropertyApiName,
+            object: oneObjectApiName,
+          },
+          to: {
+            apiName: linkType.manyForeignKeyProperty,
+            object: toManyObjectApiName,
+          },
+        }],
       },
     };
   } else if ("intermediaryObjectType" in linkType) {
@@ -82,30 +72,19 @@ export function convertLink(
     const { apiName: toManyObjectApiName, object: toManyObject } = getObject(
       linkType.toMany.object,
     );
-    const { apiName: intermediaryObjectApiName } = getObject(
-      linkType.intermediaryObjectType,
-    );
     definition = {
       type: "intermediary",
       intermediary: {
         objectTypeAToBLinkMetadata: linkType.many.metadata,
         objectTypeBToALinkMetadata: linkType.toMany.metadata,
-        objectTypeRidA: ridGenerator.generateRidForObjectType(
-          manyObjectApiName,
+        objectTypeRidA: manyObjectApiName,
+        objectTypeRidB: toManyObjectApiName,
+        intermediaryObjectTypeRid: linkType.intermediaryObjectType.apiName,
+        aToIntermediaryLinkTypeRid: cleanAndValidateLinkTypeId(
+          linkType.many.linkToIntermediary.apiName,
         ),
-        objectTypeRidB: ridGenerator.generateRidForObjectType(
-          toManyObjectApiName,
-        ),
-        intermediaryObjectTypeRid: ridGenerator.generateRidForObjectType(
-          intermediaryObjectApiName,
-        ),
-        aToIntermediaryLinkTypeRid: ridGenerator.generateRidForLinkType(
-          cleanAndValidateLinkTypeId(linkType.many.linkToIntermediary.apiName),
-        ),
-        intermediaryToBLinkTypeRid: ridGenerator.generateRidForLinkType(
-          cleanAndValidateLinkTypeId(
-            linkType.toMany.linkToIntermediary.apiName,
-          ),
+        intermediaryToBLinkTypeRid: cleanAndValidateLinkTypeId(
+          linkType.toMany.linkToIntermediary.apiName,
         ),
       },
     };
@@ -116,57 +95,58 @@ export function convertLink(
     const { apiName: toManyObjectApiName, object: toManyObject } = getObject(
       linkType.toMany.object,
     );
-    const manyObjectRidA = ridGenerator.generateRidForObjectType(
-      manyObjectApiName,
-    );
-    const manyObjectRidB = ridGenerator.generateRidForObjectType(
-      toManyObjectApiName,
-    );
-    const manyPkRidA = ridGenerator.generatePropertyRid(
-      manyObject.primaryKeyPropertyApiName,
-      manyObjectApiName,
-    );
-    const manyPkRidB = ridGenerator.generatePropertyRid(
-      toManyObject.primaryKeyPropertyApiName,
-      toManyObjectApiName,
-    );
-
     definition = {
       type: "manyToMany",
       manyToMany: {
         objectTypeAToBLinkMetadata: linkType.many.metadata,
         objectTypeBToALinkMetadata: linkType.toMany.metadata,
-        objectTypeRidA: manyObjectRidA,
-        objectTypeRidB: manyObjectRidB,
+        objectTypeRidA: manyObjectApiName,
+        objectTypeRidB: toManyObjectApiName,
         peeringMetadata: undefined,
-        // TODO: Convert property mappings to use RIDs as keys and values
-        objectTypeAPrimaryKeyPropertyMapping: {
-          [manyPkRidA]: manyPkRidA,
-        },
-        objectTypeBPrimaryKeyPropertyMapping: {
-          [manyPkRidB]: manyPkRidB,
-        },
+        objectTypeAPrimaryKeyPropertyMapping: [{
+          from: {
+            apiName: manyObject.primaryKeyPropertyApiName,
+            object: manyObjectApiName,
+          },
+          to: {
+            apiName: manyObject.primaryKeyPropertyApiName,
+            object: manyObjectApiName,
+          },
+        }],
+        objectTypeBPrimaryKeyPropertyMapping: [{
+          from: {
+            apiName: toManyObject.primaryKeyPropertyApiName,
+            object: toManyObjectApiName,
+          },
+          to: {
+            apiName: toManyObject.primaryKeyPropertyApiName,
+            object: toManyObjectApiName,
+          },
+        }],
       },
     };
 
     datasource = {
-      rid: ridGenerator.generateRid(`datasource.link.${linkType.apiName}`),
+      datasourceName: linkType.apiName,
       datasource: {
         type: "dataset",
         dataset: {
-          // TODO: Add proper branchId from link configuration
-          branchId: "main",
-          datasetRid: ridGenerator.generateRid(
-            `link.dataset.${linkType.apiName}`,
-          ),
+          datasetRid: "link-".concat(linkType.apiName),
           writebackDatasetRid: undefined,
-          // TODO: Convert property mappings to use property RIDs as keys
-          objectTypeAPrimaryKeyMapping: {
-            [manyPkRidA]: manyObject.primaryKeyPropertyApiName,
-          },
-          objectTypeBPrimaryKeyMapping: {
-            [manyPkRidB]: toManyObject.primaryKeyPropertyApiName,
-          },
+          objectTypeAPrimaryKeyMapping: [{
+            property: {
+              apiName: manyObject.primaryKeyPropertyApiName,
+              object: manyObjectApiName,
+            },
+            column: manyObject.primaryKeyPropertyApiName,
+          }],
+          objectTypeBPrimaryKeyMapping: [{
+            property: {
+              apiName: toManyObject.primaryKeyPropertyApiName,
+              object: toManyObjectApiName,
+            },
+            column: toManyObject.primaryKeyPropertyApiName,
+          }],
         },
       },
       editsConfiguration: {
@@ -176,25 +156,16 @@ export function convertLink(
     };
   }
 
-  const linkTypeId = cleanAndValidateLinkTypeId(linkType.apiName);
-
   return {
     linkType: {
       definition: definition,
-      rid: ridGenerator.generateRidForLinkType(linkTypeId),
       id: cleanAndValidateLinkTypeId(linkType.apiName),
-      status: convertLinkStatus(linkType.status, ridGenerator),
+      status: convertLinkStatus(linkType.status),
       redacted: linkType.redacted ?? false,
     },
     datasources: datasource !== undefined ? [datasource] : [],
     entityMetadata: {
       arePatchesEnabled: linkType.editsEnabled ?? false,
-      // TODO: Add entityConfig based on storage configuration
-      entityConfig: {
-        objectDbTypeConfigs: {},
-      },
-      // TODO: Add targetStorageBackend based on link configuration
-      targetStorageBackend: { type: "objectStorageV2", objectStorageV2: {} },
     },
   };
 }
@@ -291,8 +262,7 @@ export function getObject(
 
 export function convertLinkStatus(
   status: UserLinkTypeStatus | undefined,
-  ridGenerator: OntologyRidGenerator,
-): LinkTypeStatus {
+): OntologyIrLinkTypeStatus {
   if (
     typeof status === "object" && "type" in status
     && status.type === "deprecated"
@@ -302,7 +272,6 @@ export function convertLinkStatus(
       deprecated: {
         message: status.message,
         deadline: status.deadline,
-        replacedBy: status.replacedBy ? ridGenerator.generateRidForLinkType(cleanAndValidateLinkTypeId(status.replacedBy)) : undefined,
       },
     };
   }

@@ -556,7 +556,7 @@ describe("Action Types", () => {
                                 },
                                 "type": "logicRuleValue",
                               },
-                              "property1": {
+                              "com.palantir.property1": {
                                 "logicRuleValue": {
                                   "parameterId": "property1",
                                   "type": "parameterId",
@@ -804,7 +804,7 @@ describe("Action Types", () => {
                                 },
                                 "type": "logicRuleValue",
                               },
-                              "property1": {
+                              "com.palantir.property1": {
                                 "logicRuleValue": {
                                   "parameterId": "property1",
                                   "type": "parameterId",
@@ -1110,6 +1110,7 @@ describe("Action Types", () => {
                         "indexedForSearch": true,
                         "type": {
                           "struct": {
+                            "mainValue": undefined,
                             "structFields": [
                               {
                                 "aliases": [],
@@ -1197,6 +1198,7 @@ describe("Action Types", () => {
                           "indexedForSearch": true,
                           "type": {
                             "struct": {
+                              "mainValue": undefined,
                               "structFields": [
                                 {
                                   "aliases": [],
@@ -1451,6 +1453,7 @@ describe("Action Types", () => {
                       },
                       "type": {
                         "struct": {
+                          "mainValue": undefined,
                           "structFields": [
                             {
                               "aliases": [],
@@ -1544,6 +1547,7 @@ describe("Action Types", () => {
                   "indexedForSearch": true,
                   "type": {
                     "struct": {
+                      "mainValue": undefined,
                       "structFields": [
                         {
                           "aliases": [],
@@ -3137,7 +3141,7 @@ describe("Action Types", () => {
                           "addInterfaceRule": {
                             "interfaceApiName": "com.palantir.exampleInterface",
                             "interfacePropertyValues": {
-                              "property1": {
+                              "com.palantir.property1": {
                                 "logicRuleValue": {
                                   "parameterId": "property1",
                                   "type": "parameterId",
@@ -3321,7 +3325,7 @@ describe("Action Types", () => {
                             "interfaceApiName": "com.palantir.exampleInterface",
                             "interfaceObjectToModifyParameter": "interfaceObjectToModifyParameter",
                             "interfacePropertyValues": {
-                              "property1": {
+                              "com.palantir.property1": {
                                 "logicRuleValue": {
                                   "parameterId": "property1",
                                   "type": "parameterId",
@@ -4459,7 +4463,7 @@ describe("Action Types", () => {
                                 },
                                 "type": "logicRuleValue",
                               },
-                              "property3": {
+                              "com.palantir.property3": {
                                 "logicRuleValue": {
                                   "parameterId": "property3",
                                   "type": "parameterId",
@@ -4807,7 +4811,7 @@ describe("Action Types", () => {
                                 },
                                 "type": "logicRuleValue",
                               },
-                              "property3": {
+                              "com.palantir.property3": {
                                 "logicRuleValue": {
                                   "parameterId": "property3",
                                   "type": "parameterId",
@@ -7427,6 +7431,7 @@ describe("Action Types", () => {
                       },
                       "type": {
                         "struct": {
+                          "mainValue": undefined,
                           "structFields": [
                             {
                               "aliases": [],

@@ -14,15 +14,20 @@
  * limitations under the License.
  */
 
-import type { StructFieldType, Type } from "@osdk/client.unstable";
+import type {
+  OntologyIrStructFieldType,
+  OntologyIrType,
+} from "@osdk/client.unstable";
 import type { PropertyTypeType } from "../../api/properties/PropertyTypeType.js";
-import type { OntologyRidGenerator } from "../../util/generateRid.js";
+import type { SharedPropertyType } from "../../api/properties/SharedPropertyType.js";
 import { distributeTypeHelper } from "../toConjure/distributeTypeHelper.js";
+import { convertMainValue } from "./convertMainValue.js";
 
 export function propertyTypeTypeToOntologyIrType(
   type: PropertyTypeType,
-  ridGenerator: OntologyRidGenerator,
-): Type {
+  apiName?: string,
+  sharedPropertyType?: SharedPropertyType,
+): OntologyIrType {
   switch (true) {
     case (typeof type === "object" && type.type === "marking"):
       return {
@@ -31,32 +36,26 @@ export function propertyTypeTypeToOntologyIrType(
       };
 
     case (typeof type === "object" && type.type === "struct"):
-      const structFields: Array<StructFieldType> = new Array();
+      const structFields: Array<OntologyIrStructFieldType> = new Array();
       for (const key in type.structDefinition) {
         const fieldTypeDefinition = type.structDefinition[key];
-        let field: StructFieldType;
+        let field: OntologyIrStructFieldType;
         if (typeof fieldTypeDefinition === "string") {
           field = {
-            structFieldRid: ridGenerator.generateRid(`structfield.${key}`),
             apiName: key,
             displayMetadata: { displayName: key, description: undefined },
             typeClasses: [],
             aliases: [],
-            fieldType: propertyTypeTypeToOntologyIrType(
-              fieldTypeDefinition,
-              ridGenerator,
-            ),
+            fieldType: propertyTypeTypeToOntologyIrType(fieldTypeDefinition),
           };
         } else {
           // If it is a full form type definition then process it as such
           if ("fieldType" in fieldTypeDefinition) {
             field = {
               ...fieldTypeDefinition,
-              structFieldRid: ridGenerator.generateRid(`structfield.${key}`),
               apiName: key,
               fieldType: propertyTypeTypeToOntologyIrType(
                 fieldTypeDefinition.fieldType,
-                ridGenerator,
               ),
               displayMetadata: fieldTypeDefinition.displayMetadata
                 ?? { displayName: key, description: undefined },
@@ -65,15 +64,11 @@ export function propertyTypeTypeToOntologyIrType(
             };
           } else {
             field = {
-              structFieldRid: ridGenerator.generateRid(`structfield.${key}`),
               apiName: key,
               displayMetadata: { displayName: key, description: undefined },
               typeClasses: [],
               aliases: [],
-              fieldType: propertyTypeTypeToOntologyIrType(
-                fieldTypeDefinition,
-                ridGenerator,
-              ),
+              fieldType: propertyTypeTypeToOntologyIrType(fieldTypeDefinition),
             };
           }
         }
@@ -83,7 +78,10 @@ export function propertyTypeTypeToOntologyIrType(
 
       return {
         type: "struct",
-        struct: { structFields },
+        struct: {
+          structFields: structFields,
+          mainValue: convertMainValue(type, apiName, sharedPropertyType),
+        },
       };
 
     case (typeof type === "object" && type.type === "string"):
