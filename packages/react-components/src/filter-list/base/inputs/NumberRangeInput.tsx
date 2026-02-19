@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import type { ObjectSet, ObjectTypeDefinition, PropertyKeys } from "@osdk/api";
 import React, { memo } from "react";
 import { RangeInput, type RangeInputConfig } from "./RangeInput.js";
 
@@ -42,25 +41,20 @@ const numberConfig: RangeInputConfig<number> = {
   inputProps: { step: "any" },
 };
 
-interface NumberRangeInputProps<
-  Q extends ObjectTypeDefinition,
-  K extends PropertyKeys<Q>,
-> {
-  objectType: Q;
-  propertyKey: K;
+interface NumberRangeInputProps {
+  valueCountPairs: Array<{ value: number; count: number }>;
+  isLoading: boolean;
   minValue: number | undefined;
   maxValue: number | undefined;
   onChange: (min: number | undefined, max: number | undefined) => void;
-  objectSet?: ObjectSet<Q>;
   showHistogram?: boolean;
   className?: string;
   style?: React.CSSProperties;
 }
 
-function NumberRangeInputInner<
-  Q extends ObjectTypeDefinition,
-  K extends PropertyKeys<Q>,
->(props: NumberRangeInputProps<Q, K>): React.ReactElement {
+function NumberRangeInputInner(
+  props: NumberRangeInputProps,
+): React.ReactElement {
   return <RangeInput {...props} config={numberConfig} />;
 }
 

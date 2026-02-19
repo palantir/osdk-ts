@@ -14,24 +14,23 @@
  * limitations under the License.
  */
 
+import { Button } from "@base-ui/react/button";
 import type {
   DraggableAttributes,
   DraggableSyntheticListeners,
 } from "@dnd-kit/core";
-import type { ObjectSet, ObjectTypeDefinition, WhereClause } from "@osdk/api";
+import type { ObjectTypeDefinition } from "@osdk/api";
 import classnames from "classnames";
 import React, { memo, useCallback } from "react";
 import { ErrorBoundary } from "../../shared/ErrorBoundary.js";
 import type { FilterDefinitionUnion } from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
 import { getFilterLabel } from "../utils/getFilterLabel.js";
+import type { RenderFilterInput } from "./BaseFilterListApi.js";
 import { DragHandleIcon } from "./DragHandleIcon.js";
-import { FilterInput } from "./FilterInput.js";
 import styles from "./FilterListItem.module.css";
 
 interface FilterListItemProps<Q extends ObjectTypeDefinition> {
-  objectType: Q;
-  objectSet: ObjectSet<Q>;
   definition: FilterDefinitionUnion<Q>;
   filterKey: string;
   filterState: FilterState | undefined;
@@ -39,7 +38,7 @@ interface FilterListItemProps<Q extends ObjectTypeDefinition> {
     filterKey: string,
     state: FilterState,
   ) => void;
-  whereClause: WhereClause<Q>;
+  renderInput: RenderFilterInput<Q>;
   dragHandleAttributes?: DraggableAttributes;
   dragHandleListeners?: DraggableSyntheticListeners;
   className?: string;
@@ -47,13 +46,11 @@ interface FilterListItemProps<Q extends ObjectTypeDefinition> {
 }
 
 function FilterListItemInner<Q extends ObjectTypeDefinition>({
-  objectType,
-  objectSet,
   definition,
   filterKey,
   filterState,
   onFilterStateChanged,
-  whereClause,
+  renderInput,
   dragHandleAttributes,
   dragHandleListeners,
   className,
@@ -76,29 +73,26 @@ function FilterListItemInner<Q extends ObjectTypeDefinition>({
     >
       <div className={styles.itemHeader}>
         {dragHandleAttributes && (
-          <button
-            type="button"
+          <Button
             className={styles.dragHandle}
             aria-label={`Reorder ${label}`}
             {...dragHandleAttributes}
             {...dragHandleListeners}
           >
             <DragHandleIcon />
-          </button>
+          </Button>
         )}
         <span className={styles.itemLabel}>{label}</span>
       </div>
 
       <div className={styles.itemContent}>
         <ErrorBoundary errorMessage="Error loading filter">
-          <FilterInput
-            objectType={objectType}
-            objectSet={objectSet}
-            definition={definition}
-            filterState={filterState}
-            onFilterStateChanged={handleFilterStateChanged}
-            whereClause={whereClause}
-          />
+          {renderInput({
+            definition,
+            filterKey,
+            filterState,
+            onFilterStateChanged: handleFilterStateChanged,
+          })}
         </ErrorBoundary>
       </div>
     </div>

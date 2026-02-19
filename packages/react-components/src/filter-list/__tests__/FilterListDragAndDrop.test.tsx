@@ -14,37 +14,22 @@
  * limitations under the License.
  */
 
-import type { ObjectSet } from "@osdk/api";
 import { cleanup, render, screen } from "@testing-library/react";
+import React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import type { RenderFilterInput } from "../base/BaseFilterListApi.js";
 import { FilterListContent } from "../base/FilterListContent.js";
 import type { FilterDefinitionUnion } from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
 import { getFilterKey } from "../utils/getFilterKey.js";
-import {
-  createPropertyFilterDef,
-  createSelectState,
-  MockObjectType,
-} from "./testUtils.js";
-
-vi.mock("@osdk/react/experimental", async (importOriginal) => {
-  const original = await importOriginal();
-  return {
-    ...(original as Record<string, unknown>),
-    useOsdkAggregation: () => ({
-      data: [],
-      isLoading: false,
-      error: undefined,
-    }),
-  };
-});
+import type { MockObjectType } from "./testUtils.js";
+import { createPropertyFilterDef, createSelectState } from "./testUtils.js";
 
 afterEach(cleanup);
 
-const mockObjectSet = {
-  $objectSetInternals: { def: MockObjectType },
-  where: vi.fn(),
-} as unknown as ObjectSet<typeof MockObjectType>;
+const stubRenderInput: RenderFilterInput<typeof MockObjectType> = ({
+  definition,
+}) => <div data-testid={`filter-input-${definition.type}`} />;
 
 function createDefinitions() {
   return [
@@ -81,12 +66,10 @@ describe("FilterList drag and drop", () => {
 
     render(
       <FilterListContent
-        objectType={MockObjectType}
-        objectSet={mockObjectSet}
         filterDefinitions={definitions}
         filterStates={filterStates}
         onFilterStateChanged={vi.fn()}
-        whereClause={{}}
+        renderInput={stubRenderInput}
       />,
     );
 
@@ -100,13 +83,11 @@ describe("FilterList drag and drop", () => {
 
     render(
       <FilterListContent
-        objectType={MockObjectType}
-        objectSet={mockObjectSet}
         filterDefinitions={definitions}
         filterStates={filterStates}
         onFilterStateChanged={vi.fn()}
         onFiltersReordered={vi.fn()}
-        whereClause={{}}
+        renderInput={stubRenderInput}
       />,
     );
 
@@ -134,13 +115,11 @@ describe("FilterList drag and drop", () => {
 
     render(
       <FilterListContent
-        objectType={MockObjectType}
-        objectSet={mockObjectSet}
         filterDefinitions={definitions}
         filterStates={filterStates}
         onFilterStateChanged={vi.fn()}
         onFiltersReordered={vi.fn()}
-        whereClause={{}}
+        renderInput={stubRenderInput}
       />,
     );
 
@@ -155,13 +134,11 @@ describe("FilterList drag and drop", () => {
 
     render(
       <FilterListContent
-        objectType={MockObjectType}
-        objectSet={mockObjectSet}
         filterDefinitions={definitions}
         filterStates={filterStates}
         onFilterStateChanged={vi.fn()}
         onFiltersReordered={vi.fn()}
-        whereClause={{}}
+        renderInput={stubRenderInput}
       />,
     );
 
@@ -173,13 +150,11 @@ describe("FilterList drag and drop", () => {
   it("renders empty state when no filter definitions provided", () => {
     render(
       <FilterListContent
-        objectType={MockObjectType}
-        objectSet={mockObjectSet}
         filterDefinitions={[]}
         filterStates={new Map()}
         onFilterStateChanged={vi.fn()}
         onFiltersReordered={vi.fn()}
-        whereClause={{}}
+        renderInput={stubRenderInput}
       />,
     );
 
