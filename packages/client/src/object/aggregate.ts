@@ -36,7 +36,6 @@ import type { MinimalClient } from "../MinimalClientContext.js";
 import { addUserAgentHeader } from "../util/addUserAgentHeader.js";
 import type { ArrayElement } from "../util/ArrayElement.js";
 import { normalizeInterfaceLinkSearchArounds } from "../util/normalizeInterfaceLinkSearchArounds.js";
-import { resolveBaseObjectSetType } from "../util/objectSetUtils.js";
 
 /** @internal */
 export async function aggregate<
@@ -48,9 +47,13 @@ export async function aggregate<
   objectSet: ObjectSet,
   req: AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Q, AO>,
 ): Promise<AggregationsResults<Q, AO>> {
-  const resolvedObjectSet = resolveBaseObjectSetType(objectType);
+  const derivedPropertyNames = getDerivedPropertyNames(objectSet);
   const body: AggregateObjectsRequestV2 = {
-    aggregation: modernToLegacyAggregationClause<AO["$select"]>(req.$select),
+    aggregation: modernToLegacyAggregationClause<AO["$select"]>(
+      req.$select,
+      objectType,
+      derivedPropertyNames,
+    ),
     groupBy: [],
     where: undefined,
   };
@@ -118,5 +121,26 @@ function aggregationToCountResult(
     if (aggregateResult.name === "count") {
       return { $count: aggregateResult.value };
     }
+  }
+}
+
+function getDerivedPropertyNames(objectSet: ObjectSet): Set<string> {
+  switch (objectSet.type) {
+    case "withProperties":
+      return new Set([
+        ...getDerivedPropertyNames(objectSet.objectSet),
+        ...Object.keys(objectSet.derivedProperties),
+      ]);
+    case "filter":
+    case "nearestNeighbors":
+      return getDerivedPropertyNames(objectSet.objectSet);
+    case "union":
+    case "intersect":
+    case "subtract":
+      return objectSet.objectSets[0]
+        ? getDerivedPropertyNames(objectSet.objectSets[0])
+        : new Set();
+    default:
+      return new Set();
   }
 }

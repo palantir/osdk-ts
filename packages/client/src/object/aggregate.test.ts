@@ -18,6 +18,7 @@ import type {
   AggregateOpts,
   AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy,
   GroupByClause,
+  InterfaceDefinition,
   ValidAggregationKeys,
 } from "@osdk/api";
 import type { Employee } from "@osdk/client.test.ontology";
@@ -25,7 +26,10 @@ import {
   objectTypeWithAllPropertyTypes,
   Todo,
 } from "@osdk/client.test.ontology";
-import type { AggregateObjectsResponseV2 } from "@osdk/foundry.ontologies";
+import type {
+  AggregateObjectsRequestV2,
+  AggregateObjectsResponseV2,
+} from "@osdk/foundry.ontologies";
 import type { TypeOf } from "ts-expect";
 import { expectType } from "ts-expect";
 import {
@@ -111,6 +115,64 @@ const aggregationResponse: AggregateObjectsResponseV2 = {
 };
 
 describe("aggregate", () => {
+  it("qualifies interface metric fields and preserves requested result keys", async () => {
+    const employeeInterface: InterfaceDefinition = {
+      type: "interface",
+      apiName: "com.acme.Employee",
+    };
+    mockFetch.mockResolvedValueOnce(
+      Response.json({
+        data: [
+          {
+            group: {},
+            metrics: [
+              { name: "salary.max", value: 75000 },
+              { name: "other.compensation.salary.max", value: 80000 },
+              { name: "count", value: 2 },
+            ],
+          },
+        ],
+      }),
+    );
+
+    const result = await aggregate(
+      clientCtx,
+      employeeInterface,
+      { type: "interfaceBase", interfaceType: employeeInterface.apiName },
+      {
+        $select: {
+          "salary:max": "unordered",
+          "other.compensation.salary:max": "unordered",
+          "other.compensation.salary:min": "unordered",
+          $count: "unordered",
+        },
+      },
+    );
+
+    const body: AggregateObjectsRequestV2 = JSON.parse(
+      mockFetch.mock.lastCall![1].body,
+    );
+    expect(body.aggregation).toEqual([
+      { type: "max", name: "salary.max", field: "com.acme.salary" },
+      {
+        type: "max",
+        name: "other.compensation.salary.max",
+        field: "other.compensation.salary",
+      },
+      {
+        type: "min",
+        name: "other.compensation.salary.min",
+        field: "other.compensation.salary",
+      },
+      { type: "count", name: "count" },
+    ]);
+    expect(result).toEqual({
+      salary: { max: 75000 },
+      "other.compensation.salary": { max: 80000, min: undefined },
+      $count: 2,
+    });
+  });
+
   it("works", async () => {
     expectTypeOf<ValidAggregationKeys<Todo>>().toEqualTypeOf<
       | "$count"
