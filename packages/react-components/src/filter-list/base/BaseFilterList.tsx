@@ -28,6 +28,8 @@ export function BaseFilterList<Q extends ObjectTypeDefinition>(
   const {
     title,
     titleIcon,
+    collapsed = false,
+    onCollapsedChange,
     filterDefinitions,
     filterStates,
     onFilterStateChanged,
@@ -44,7 +46,7 @@ export function BaseFilterList<Q extends ObjectTypeDefinition>(
   } = props;
 
   const showHeader = title || titleIcon || showResetButton
-    || showActiveFilterCount;
+    || showActiveFilterCount || onCollapsedChange;
 
   return (
     <div
@@ -56,6 +58,8 @@ export function BaseFilterList<Q extends ObjectTypeDefinition>(
         <FilterListHeader
           title={title}
           titleIcon={titleIcon}
+          collapsed={collapsed}
+          onCollapsedChange={onCollapsedChange}
           showResetButton={showResetButton}
           onReset={onReset}
           showActiveFilterCount={showActiveFilterCount}
@@ -64,26 +68,33 @@ export function BaseFilterList<Q extends ObjectTypeDefinition>(
         />
       )}
 
-      <FilterListContent
-        filterDefinitions={filterDefinitions}
-        filterStates={filterStates}
-        onFilterStateChanged={onFilterStateChanged}
-        renderInput={renderInput}
-        onFiltersReordered={onFiltersReordered}
-        renderEmptyAction={renderAddFilterButton}
-      />
+      <div
+        className={styles.contentWrapper}
+        data-collapsed={collapsed}
+      >
+        <div className={styles.contentInner}>
+          <FilterListContent
+            filterDefinitions={filterDefinitions}
+            filterStates={filterStates}
+            onFilterStateChanged={onFilterStateChanged}
+            renderInput={renderInput}
+            onFiltersReordered={onFiltersReordered}
+            renderEmptyAction={renderAddFilterButton}
+          />
 
-      {renderAddFilterButton
-        && filterDefinitions && filterDefinitions.length > 0 && (
-        <div
-          className={classnames(
-            styles.addButtonContainer,
-            classNames?.addButtonContainer,
+          {renderAddFilterButton
+            && filterDefinitions && filterDefinitions.length > 0 && (
+            <div
+              className={classnames(
+                styles.addButtonContainer,
+                classNames?.addButtonContainer,
+              )}
+            >
+              {renderAddFilterButton()}
+            </div>
           )}
-        >
-          {renderAddFilterButton()}
         </div>
-      )}
+      </div>
     </div>
   );
 }

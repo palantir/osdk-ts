@@ -159,6 +159,23 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
   ) => void;
 
   /**
+   * Whether the filter list panel is collapsed
+   */
+  collapsed?: boolean;
+
+  /**
+   * Called when the collapsed state changes
+   */
+  onCollapsedChange?: (collapsed: boolean) => void;
+
+  /**
+   * Initial filter states for hydrating from external storage.
+   * These states are merged over definition defaults on mount.
+   * Use onFilterStateChanged to persist state changes externally.
+   */
+  initialFilterStates?: Map<string, FilterStateType>;
+
+  /**
    * Show reset filters button in header
    */
   showResetButton?: boolean;

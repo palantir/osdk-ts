@@ -327,6 +327,35 @@
   /* Text Tags Tokens */
   --osdk-filter-texttags-gap: var(--osdk-surface-spacing);
 
+  /* Listogram Selected Color */
+  --osdk-filter-listogram-selected-color: var(--osdk-intent-primary-rest);
+
+  /* Collapse Transition */
+  --osdk-filter-list-collapse-transition: 200ms ease-out;
+
+  /* Exclude Toggle */
+  --osdk-filter-item-exclude-border-color: var(--osdk-intent-danger-rest);
+  --osdk-filter-item-exclude-toggle-color: var(--osdk-typography-color-muted);
+  --osdk-filter-item-exclude-toggle-color-hover: var(
+    --osdk-typography-color-default-rest
+  );
+  --osdk-filter-item-exclude-toggle-color-active: var(
+    --osdk-intent-danger-rest
+  );
+  --osdk-filter-item-exclude-toggle-padding: calc(
+    var(--osdk-surface-spacing) * 0.5
+  );
+  --osdk-filter-item-exclude-toggle-border-radius: var(
+    --osdk-surface-border-radius
+  );
+  --osdk-filter-item-exclude-toggle-bg-hover: var(--osdk-custom-color-gray-1);
+
+  /* Select All Separator */
+  --osdk-filter-checkbox-selectall-border-bottom: var(--osdk-surface-border);
+
+  /* Color Dot */
+  --osdk-filter-checkbox-color-dot-size: 8px;
+
   /* Multi Select Count */
   --osdk-filter-multiselect-count-font-family: var(
     --osdk-typography-family-default

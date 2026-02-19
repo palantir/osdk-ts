@@ -20,6 +20,8 @@ import type { PropertyAggregationValue } from "../../types/AggregationTypes.js";
 import styles from "./ListogramInput.module.css";
 import sharedStyles from "./shared.module.css";
 
+export type ListogramDisplayMode = "full" | "count" | "minimal";
+
 interface ListogramInputProps {
   values: PropertyAggregationValue[];
   maxCount: number;
@@ -27,6 +29,8 @@ interface ListogramInputProps {
   error: Error | null;
   selectedValues: string[];
   onChange: (values: string[]) => void;
+  colorMap?: Record<string, string>;
+  displayMode?: ListogramDisplayMode;
   className?: string;
   style?: React.CSSProperties;
   maxVisibleItems?: number;
@@ -41,6 +45,8 @@ function ListogramInputInner({
   error,
   selectedValues,
   onChange,
+  colorMap,
+  displayMode = "full",
   className,
   style,
   maxVisibleItems,
@@ -49,15 +55,20 @@ function ListogramInputInner({
 }: ListogramInputProps): React.ReactElement {
   const [isExpanded, setIsExpanded] = useState(false);
 
+  const selectedSet = useMemo(
+    () => new Set(selectedValues),
+    [selectedValues],
+  );
+
   const toggleValue = useCallback(
     (value: string) => {
-      if (selectedValues.includes(value)) {
+      if (selectedSet.has(value)) {
         onChange(selectedValues.filter((v) => v !== value));
       } else {
         onChange([...selectedValues, value]);
       }
     },
-    [selectedValues, onChange],
+    [selectedValues, selectedSet, onChange],
   );
 
   const displayValues = useMemo(() => {
@@ -94,12 +105,14 @@ function ListogramInputInner({
       {values.length > 0 && (
         <div className={styles.container}>
           {displayValues.map(({ value, count }) => {
-            const isSelected = selectedValues.includes(value);
+            const isSelected = selectedSet.has(value);
             const percentage = maxCount > 0 ? (count / maxCount) * 100 : 0;
-            const fillColor = isSelected
-              ? (selectedBarColor
-                ?? "var(--osdk-filter-listogram-selected-color)")
-              : (barColor ?? "var(--osdk-filter-listogram-bar-color)");
+            const perRowColor = colorMap?.[value];
+            const fillColor = perRowColor
+              ?? (isSelected
+                ? (selectedBarColor
+                  ?? "var(--osdk-filter-listogram-selected-color)")
+                : (barColor ?? "var(--osdk-filter-listogram-bar-color)"));
 
             return (
               <button
@@ -113,15 +126,19 @@ function ListogramInputInner({
                 } as React.CSSProperties}
               >
                 <span className={styles.label}>{value}</span>
-                <span className={styles.bar}>
-                  <span
-                    className={styles.barFill}
-                    style={{ width: `${percentage}%` }}
-                  />
-                </span>
-                <span className={styles.count}>
-                  {count.toLocaleString()}
-                </span>
+                {displayMode === "full" && (
+                  <span className={styles.bar}>
+                    <span
+                      className={styles.barFill}
+                      style={{ width: `${percentage}%` }}
+                    />
+                  </span>
+                )}
+                {displayMode !== "minimal" && (
+                  <span className={styles.count}>
+                    {count.toLocaleString()}
+                  </span>
+                )}
               </button>
             );
           })}

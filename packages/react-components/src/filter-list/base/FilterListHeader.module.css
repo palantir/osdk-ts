@@ -96,6 +96,30 @@
   transform: rotate(-135deg);
 }
 
+.headerContentWrapper {
+  display: grid;
+  grid-template-columns: 1fr;
+  overflow: hidden;
+  transition: grid-template-columns var(--osdk-filter-list-collapse-transition);
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+.headerContentWrapper[data-collapsed="true"] {
+  grid-template-columns: 0fr;
+}
+
+.headerContentInner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex: 1;
+  overflow: hidden;
+  min-width: 0;
+}
+
 .resetButton {
   font-family: var(--osdk-filter-header-font-family);
   font-size: var(--osdk-filter-header-reset-font-size);

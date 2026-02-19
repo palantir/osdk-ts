@@ -27,6 +27,7 @@ interface CheckboxListInputProps {
   error: Error | null;
   selectedValues: string[];
   onChange: (selectedValues: string[]) => void;
+  colorMap?: Record<string, string>;
   className?: string;
   style?: React.CSSProperties;
 }
@@ -37,6 +38,7 @@ function CheckboxListInputInner({
   error,
   selectedValues,
   onChange,
+  colorMap,
   className,
   style,
 }: CheckboxListInputProps): React.ReactElement {
@@ -59,6 +61,21 @@ function CheckboxListInputInner({
       }
     },
     [selectedValues, selectedSet, onChange],
+  );
+
+  const allSelected = displayValues.length > 0
+    && displayValues.every((v) => selectedSet.has(v));
+  const someSelected = !allSelected && selectedValues.length > 0;
+
+  const handleSelectAll = useCallback(
+    () => {
+      if (allSelected) {
+        onChange([]);
+      } else {
+        onChange([...displayValues]);
+      }
+    },
+    [allSelected, displayValues, onChange],
   );
 
   return (
@@ -86,8 +103,22 @@ function CheckboxListInputInner({
               Updating...
             </div>
           )}
+          <div
+            className={styles.checkboxRow}
+            data-select-all
+          >
+            <label className={styles.checkboxLabel}>
+              <Checkbox
+                checked={allSelected}
+                indeterminate={someSelected}
+                onCheckedChange={handleSelectAll}
+              />
+              <span className={styles.valueText}>Select all</span>
+            </label>
+          </div>
           {displayValues.map((value) => {
             const isSelected = selectedSet.has(value);
+            const color = colorMap?.[value];
 
             return (
               <div
@@ -100,6 +131,12 @@ function CheckboxListInputInner({
                     checked={isSelected}
                     onCheckedChange={() => toggleValue(value)}
                   />
+                  {color && (
+                    <span
+                      className={styles.colorDot}
+                      style={{ backgroundColor: color }}
+                    />
+                  )}
                   <span className={styles.valueText}>
                     {value}
                   </span>

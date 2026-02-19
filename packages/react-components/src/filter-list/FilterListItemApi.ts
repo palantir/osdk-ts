@@ -258,6 +258,23 @@ export interface PropertyFilterDefinition<
   filterState: FilterStateByComponentType[C];
 
   /**
+   * Maps filter values to colors for visual differentiation.
+   * Used by CHECKBOX_LIST (color dots) and LISTOGRAM (per-row bar colors).
+   */
+  colorMap?: Record<string, string>;
+
+  /**
+   * Configuration for LISTOGRAM display mode.
+   * Only applies when filterComponent is "LISTOGRAM".
+   */
+  listogramConfig?: {
+    displayMode?: "full" | "count" | "minimal";
+    maxVisibleItems?: number;
+    barColor?: string;
+    selectedBarColor?: string;
+  };
+
+  /**
    * Controls whether this filter is rendered.
    * When false, the filter is hidden but its state is preserved.
    * @default true
