@@ -14,25 +14,29 @@
  * limitations under the License.
  */
 
-type FilterValue = string | boolean | number | Date;
+import type React from "react";
 
 /**
- * Coerces a filter value to a string for display.
- * Returns undefined if the value is undefined.
+ * Class name overrides for FilterList component elements.
+ * Users can pass custom class names to style any element.
  */
-export function coerceToString(
-  value: FilterValue | undefined,
-): string | undefined {
-  if (value === undefined) return undefined;
-  return String(value);
+export interface FilterListClassNames {
+  root?: string;
+  header?: string;
+  collapseButton?: string;
+  collapseIcon?: string;
+  titleContainer?: string;
+  titleIcon?: string;
+  title?: string;
+  activeCount?: string;
+  resetButton?: string;
+  addButtonContainer?: string;
 }
 
 /**
- * Coerces an array of filter values to string[] for display.
+ * Render props for ContainsTextInput icons.
  */
-export function coerceToStringArray(
-  values: FilterValue[] | undefined,
-): string[] {
-  if (values === undefined) return [];
-  return values.map((v) => String(v));
+export interface ContainsTextInputRenderProps {
+  renderSearchIcon?: () => React.ReactNode;
+  renderClearIcon?: () => React.ReactNode;
 }
