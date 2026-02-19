@@ -33,6 +33,10 @@
     "transpileTypes": "monorepo.tool.transpile -f esm -m types -t node",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
+  "engines": {
+    "node": "^24.13.0",
+    "npm": "^11.6.2"
+  },
   "dependencies": {
     "@babel/runtime": "^7.28.4",
     "@expo/vector-icons": "^14.1.0",

@@ -33,6 +33,10 @@
     "transpileTypes": "monorepo.tool.transpile -f esm -m types -t node",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
+  "engines": {
+    "node": "^24.13.0",
+    "npm": "^11.6.2"
+  },
   "dependencies": {
     "vue": "^3.5.21",
     "vue-router": "^4.5.1"
