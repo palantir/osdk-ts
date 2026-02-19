@@ -35,6 +35,8 @@ export interface BaseFilterListProps<Q extends ObjectTypeDefinition> {
   activeFilterCount: number;
   onReset?: () => void;
 
+  collapsed?: boolean;
+  onCollapsedChange?: (collapsed: boolean) => void;
   title?: string;
   titleIcon?: React.ReactNode;
   showResetButton?: boolean;

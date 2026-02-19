@@ -41,6 +41,8 @@ export function FilterList<Q extends ObjectTypeDefinition>(
     objectSet,
     title,
     titleIcon,
+    collapsed,
+    onCollapsedChange,
     filterDefinitions,
     showResetButton = false,
     onReset,
@@ -97,6 +99,8 @@ export function FilterList<Q extends ObjectTypeDefinition>(
     <BaseFilterList
       title={title}
       titleIcon={titleIcon}
+      collapsed={collapsed}
+      onCollapsedChange={onCollapsedChange}
       filterDefinitions={visibleFilterDefinitions}
       filterStates={filterStates}
       onFilterStateChanged={setFilterState}

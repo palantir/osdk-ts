@@ -240,6 +240,7 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}
           whereClause={whereClause}
+          colorMap={definition.colorMap}
         />
       );
 
@@ -326,6 +327,11 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}
           whereClause={whereClause}
+          colorMap={definition.colorMap}
+          displayMode={definition.listogramConfig?.displayMode}
+          maxVisibleItems={definition.listogramConfig?.maxVisibleItems}
+          barColor={definition.listogramConfig?.barColor}
+          selectedBarColor={definition.listogramConfig?.selectedBarColor}
         />
       );
 
@@ -367,6 +373,7 @@ interface CheckboxListFilterInputProps<Q extends ObjectTypeDefinition> {
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
   whereClause: WhereClause<Q>;
+  colorMap?: Record<string, string>;
 }
 
 function CheckboxListFilterInputInner<Q extends ObjectTypeDefinition>({
@@ -375,6 +382,7 @@ function CheckboxListFilterInputInner<Q extends ObjectTypeDefinition>({
   filterState,
   onFilterStateChanged,
   whereClause,
+  colorMap,
 }: CheckboxListFilterInputProps<Q>): React.ReactElement {
   const selectedValues = filterState?.type === "SELECT"
     ? coerceToStringArray(filterState.selectedValues)
@@ -405,6 +413,7 @@ function CheckboxListFilterInputInner<Q extends ObjectTypeDefinition>({
       error={error}
       selectedValues={selectedValues}
       onChange={handleChange}
+      colorMap={colorMap}
     />
   );
 }
@@ -885,6 +894,11 @@ interface ListogramFilterInputProps<Q extends ObjectTypeDefinition> {
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
   whereClause: WhereClause<Q>;
+  colorMap?: Record<string, string>;
+  displayMode?: "full" | "count" | "minimal";
+  maxVisibleItems?: number;
+  barColor?: string;
+  selectedBarColor?: string;
 }
 
 function ListogramFilterInputInner<Q extends ObjectTypeDefinition>({
@@ -893,6 +907,11 @@ function ListogramFilterInputInner<Q extends ObjectTypeDefinition>({
   filterState,
   onFilterStateChanged,
   whereClause,
+  colorMap,
+  displayMode,
+  maxVisibleItems,
+  barColor,
+  selectedBarColor,
 }: ListogramFilterInputProps<Q>): React.ReactElement {
   const selectedValues = filterState?.type === "EXACT_MATCH"
     ? coerceToStringArray(filterState.values)
@@ -924,6 +943,11 @@ function ListogramFilterInputInner<Q extends ObjectTypeDefinition>({
       error={error}
       selectedValues={selectedValues}
       onChange={handleChange}
+      colorMap={colorMap}
+      displayMode={displayMode}
+      maxVisibleItems={maxVisibleItems}
+      barColor={barColor}
+      selectedBarColor={selectedBarColor}
     />
   );
 }

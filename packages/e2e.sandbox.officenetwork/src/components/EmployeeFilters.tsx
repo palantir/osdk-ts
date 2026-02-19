@@ -22,6 +22,15 @@ import React, { useCallback, useMemo, useState } from "react";
 import { $ } from "../foundryClient.js";
 import { Employee } from "../generatedNoCheck2/index.js";
 
+const DEPARTMENT_COLORS: Record<string, string> = {
+  Engineering: "#58a6ff",
+  Sales: "#3fb950",
+  Marketing: "#d29922",
+  Finance: "#a371f7",
+  "Human Resources": "#39c5cf",
+  Operations: "#f0c000",
+};
+
 const ALL_FILTER_DEFINITIONS: FilterDefinitionUnion<Employee>[] = [
   {
     type: "PROPERTY",
@@ -30,6 +39,7 @@ const ALL_FILTER_DEFINITIONS: FilterDefinitionUnion<Employee>[] = [
     label: "Department",
     filterComponent: "CHECKBOX_LIST",
     filterState: { type: "SELECT", selectedValues: [] },
+    colorMap: DEPARTMENT_COLORS,
   } as FilterDefinitionUnion<Employee>,
   {
     type: "PROPERTY",
@@ -66,7 +76,7 @@ const ALL_FILTER_DEFINITIONS: FilterDefinitionUnion<Employee>[] = [
 ];
 
 const INITIAL_FILTERS = ALL_FILTER_DEFINITIONS.filter((def) =>
-  ["department", "locationCity"].includes(def.id!)
+  ["department", "locationCity"].includes(def.id ?? "")
 );
 
 function AddFilterButton({
@@ -124,17 +134,18 @@ function AddFilterButton({
 }
 
 export function EmployeeFilters() {
+  const [collapsed, setCollapsed] = useState(false);
   const [filterDefinitions, setFilterDefinitions] = useState<
     FilterDefinitionUnion<Employee>[]
   >(INITIAL_FILTERS);
 
   const activeIds = useMemo(
-    () => new Set(filterDefinitions.map((d) => d.id!)),
+    () => new Set(filterDefinitions.map((d) => d.id ?? "")),
     [filterDefinitions],
   );
 
   const availableFilters = useMemo(
-    () => ALL_FILTER_DEFINITIONS.filter((def) => !activeIds.has(def.id!)),
+    () => ALL_FILTER_DEFINITIONS.filter((def) => !activeIds.has(def.id ?? "")),
     [activeIds],
   );
 
@@ -181,6 +192,9 @@ export function EmployeeFilters() {
       renderAddFilterButton={renderAddFilterButton}
       title="Employee Filters"
       showActiveFilterCount={true}
+      showResetButton={true}
+      collapsed={collapsed}
+      onCollapsedChange={setCollapsed}
     />
   );
 }

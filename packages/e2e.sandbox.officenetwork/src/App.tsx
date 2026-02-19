@@ -198,7 +198,6 @@ function App() {
     && lensMode === "offices";
   const showEmployeePanel = selectedEmployee;
   const showReorgWizard = lensMode === "reorg";
-
   return (
     <div className="h-dvh flex flex-col bg-[var(--officenetwork-bg-base)]">
       {/* Top Bar */}

@@ -32,6 +32,10 @@ export type {
   FilterState,
   PropertyFilterDefinition,
 } from "../filter-list/FilterListItemApi.js";
+export {
+  deserializeFilterStates,
+  serializeFilterStates,
+} from "../filter-list/utils/filterStateSerialization.js";
 
 // ObjectTable that loads and displays data for a given objectSet
 export { ObjectTable } from "../object-table/ObjectTable.js";

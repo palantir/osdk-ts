@@ -95,13 +95,22 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
     filterOperator = "and",
     onFilterStateChanged,
     onFilterClauseChanged,
+    initialFilterStates,
   } = props;
 
   const objectType = objectSet.$objectSetInternals.def;
 
   const [filterStates, setFilterStates] = useState<
     Map<string, FilterState>
-  >(() => buildInitialStates(filterDefinitions));
+  >(() => {
+    const states = buildInitialStates(filterDefinitions);
+    if (initialFilterStates) {
+      for (const [key, state] of initialFilterStates) {
+        states.set(key, state);
+      }
+    }
+    return states;
+  });
 
   const setFilterState = useCallback(
     (filterKey: string, state: FilterState) => {
