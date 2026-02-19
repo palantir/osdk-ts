@@ -121,21 +121,21 @@ describe("ListQuery autoFetchMore tests", () => {
 
     testStage("Initial loading state");
     await waitForCall(listSub.next, 1);
-    expectSingleListCallAndClear(listSub, [], { status: "loading" });
+    expectSingleListCallAndClear(listSub, undefined, { status: "loading" });
 
     testStage("Auto-fetch page 1 (20 items)");
     await waitForCall(listSub.next, 1);
     let payload = expectSingleListCallAndClear(listSub, expect.anything(), {
       status: "loading",
     });
-    expect(payload?.resolvedList.length).toBe(20);
+    expect(payload?.resolvedList?.length).toBe(20);
 
     testStage("Auto-fetch page 2 (40 items)");
     await waitForCall(listSub.next, 1);
     payload = expectSingleListCallAndClear(listSub, expect.anything(), {
       status: "loading",
     });
-    expect(payload?.resolvedList.length).toBe(40);
+    expect(payload?.resolvedList?.length).toBe(40);
 
     testStage("Auto-fetch page 3 (60 items) - threshold met");
     await waitForCall(listSub.next, 1);
@@ -144,8 +144,8 @@ describe("ListQuery autoFetchMore tests", () => {
     });
 
     testStage("Verify final state meets threshold");
-    expect(payload?.resolvedList.length).toBeGreaterThanOrEqual(50);
-    expect(payload?.resolvedList.length).toBeLessThanOrEqual(80);
+    expect(payload?.resolvedList?.length).toBeGreaterThanOrEqual(50);
+    expect(payload?.resolvedList?.length).toBeLessThanOrEqual(80);
     expect(payload?.fetchMore).toBeDefined();
 
     testStage("Verify no additional auto-fetches occur");
@@ -172,35 +172,35 @@ describe("ListQuery autoFetchMore tests", () => {
 
     testStage("Initial loading state");
     await waitForCall(listSub.next, 1);
-    expectSingleListCallAndClear(listSub, [], { status: "loading" });
+    expectSingleListCallAndClear(listSub, undefined, { status: "loading" });
 
     testStage("Auto-fetch page 1 (20 items)");
     await waitForCall(listSub.next, 1);
     let payload = expectSingleListCallAndClear(listSub, expect.anything(), {
       status: "loading",
     });
-    expect(payload?.resolvedList.length).toBe(20);
+    expect(payload?.resolvedList?.length).toBe(20);
 
     testStage("Auto-fetch page 2 (40 items)");
     await waitForCall(listSub.next, 1);
     payload = expectSingleListCallAndClear(listSub, expect.anything(), {
       status: "loading",
     });
-    expect(payload?.resolvedList.length).toBe(40);
+    expect(payload?.resolvedList?.length).toBe(40);
 
     testStage("Auto-fetch page 3 (60 items)");
     await waitForCall(listSub.next, 1);
     payload = expectSingleListCallAndClear(listSub, expect.anything(), {
       status: "loading",
     });
-    expect(payload?.resolvedList.length).toBe(60);
+    expect(payload?.resolvedList?.length).toBe(60);
 
     testStage("Auto-fetch page 4 (80 items)");
     await waitForCall(listSub.next, 1);
     payload = expectSingleListCallAndClear(listSub, expect.anything(), {
       status: "loading",
     });
-    expect(payload?.resolvedList.length).toBe(80);
+    expect(payload?.resolvedList?.length).toBe(80);
 
     testStage("Auto-fetch page 5 (100 items) - all data fetched");
     await waitForCall(listSub.next, 1);
@@ -209,7 +209,7 @@ describe("ListQuery autoFetchMore tests", () => {
     });
 
     testStage("Verify all items fetched and no more pages");
-    expect(payload?.resolvedList.length).toBeGreaterThanOrEqual(80);
+    expect(payload?.resolvedList?.length).toBeGreaterThanOrEqual(80);
     expect(payload?.hasMore).toBe(false);
 
     testStage("Verify no additional auto-fetches occur");
@@ -235,7 +235,7 @@ describe("ListQuery autoFetchMore tests", () => {
 
     testStage("Initial loading state");
     await waitForCall(listSub.next, 1);
-    expectSingleListCallAndClear(listSub, [], { status: "loading" });
+    expectSingleListCallAndClear(listSub, undefined, { status: "loading" });
 
     testStage("First page loads (20 items) and stops");
     await waitForCall(listSub.next, 1);
@@ -244,7 +244,7 @@ describe("ListQuery autoFetchMore tests", () => {
     });
 
     testStage("Verify only first page fetched");
-    expect(payload?.resolvedList.length).toBe(20);
+    expect(payload?.resolvedList?.length).toBe(20);
     expect(payload?.fetchMore).toBeDefined();
     expect(payload?.hasMore).toBe(true);
 
@@ -274,35 +274,35 @@ describe("ListQuery autoFetchMore tests", () => {
 
     testStage("Initial loading state");
     await waitForCall(listSub.next, 1);
-    expectSingleListCallAndClear(listSub, [], { status: "loading" });
+    expectSingleListCallAndClear(listSub, undefined, { status: "loading" });
 
     testStage("Auto-fetch page 1 (20 items)");
     await waitForCall(listSub.next, 1);
     let payload = expectSingleListCallAndClear(listSub, expect.anything(), {
       status: "loading",
     });
-    expect(payload?.resolvedList.length).toBe(20);
+    expect(payload?.resolvedList?.length).toBe(20);
 
     testStage("Auto-fetch page 2 (40 items)");
     await waitForCall(listSub.next, 1);
     payload = expectSingleListCallAndClear(listSub, expect.anything(), {
       status: "loading",
     });
-    expect(payload?.resolvedList.length).toBe(40);
+    expect(payload?.resolvedList?.length).toBe(40);
 
     testStage("Auto-fetch page 3 (60 items)");
     await waitForCall(listSub.next, 1);
     payload = expectSingleListCallAndClear(listSub, expect.anything(), {
       status: "loading",
     });
-    expect(payload?.resolvedList.length).toBe(60);
+    expect(payload?.resolvedList?.length).toBe(60);
 
     testStage("Auto-fetch page 4 (80 items)");
     await waitForCall(listSub.next, 1);
     payload = expectSingleListCallAndClear(listSub, expect.anything(), {
       status: "loading",
     });
-    expect(payload?.resolvedList.length).toBe(80);
+    expect(payload?.resolvedList?.length).toBe(80);
 
     testStage(
       "Auto-fetch page 5 (100 items) - all data fetched, stops despite high threshold",
@@ -313,7 +313,7 @@ describe("ListQuery autoFetchMore tests", () => {
     });
 
     testStage("Verify all available items fetched");
-    expect(payload?.resolvedList.length).toBeGreaterThanOrEqual(80);
+    expect(payload?.resolvedList?.length).toBeGreaterThanOrEqual(80);
     expect(payload?.hasMore).toBe(false);
 
     testStage("Verify no additional auto-fetches occur");
@@ -339,7 +339,7 @@ describe("ListQuery autoFetchMore tests", () => {
 
     testStage("Initial loading state");
     await waitForCall(listSub.next, 1);
-    expectSingleListCallAndClear(listSub, [], { status: "loading" });
+    expectSingleListCallAndClear(listSub, undefined, { status: "loading" });
 
     testStage("First page loads (20 items)");
     await waitForCall(listSub.next, 1);
@@ -348,7 +348,7 @@ describe("ListQuery autoFetchMore tests", () => {
     });
 
     testStage("Verify data loaded and sorted descending");
-    expect(payload?.resolvedList.length).toBe(20);
+    expect(payload?.resolvedList?.length).toBe(20);
     expect(payload?.resolvedList).toBeTruthy();
     // Verify items are sorted descending by checking if first item has higher id than last
     if (payload?.resolvedList && payload.resolvedList.length > 1) {
@@ -384,16 +384,16 @@ describe("ListQuery autoFetchMore tests", () => {
 
     testStage("Initial loading state");
     await waitForCall(listSub.next, 1);
-    expectSingleListCallAndClear(listSub, [], { status: "loading" });
+    expectSingleListCallAndClear(listSub, undefined, { status: "loading" });
 
     testStage("First page: 2 even items sorted desc (ids 4, 2)");
     await waitForCall(listSub.next, 1);
     let payload = expectSingleListCallAndClear(listSub, expect.anything(), {
       status: "loaded",
     });
-    expect(payload?.resolvedList.length).toBe(2);
-    expect(payload?.resolvedList[0].id).toBe(4);
-    expect(payload?.resolvedList[1].id).toBe(2);
+    expect(payload?.resolvedList?.length).toBe(2);
+    expect(payload?.resolvedList?.[0].id).toBe(4);
+    expect(payload?.resolvedList?.[1].id).toBe(2);
     expect(payload?.hasMore).toBe(true);
 
     testStage("fetchMore() to get last even item (id 0)");
@@ -406,8 +406,8 @@ describe("ListQuery autoFetchMore tests", () => {
     payload = expectSingleListCallAndClear(listSub, expect.anything(), {
       status: "loaded",
     });
-    expect(payload?.resolvedList.length).toBe(3);
-    expect(payload?.resolvedList[2].id).toBe(0);
+    expect(payload?.resolvedList?.length).toBe(3);
+    expect(payload?.resolvedList?.[2].id).toBe(0);
     expect(payload?.hasMore).toBe(false);
 
     testStage("Verify no additional unexpected calls");
@@ -432,14 +432,14 @@ describe("ListQuery autoFetchMore tests", () => {
 
     testStage("Initial loading state");
     await waitForCall(listSub.next, 1);
-    expectSingleListCallAndClear(listSub, [], { status: "loading" });
+    expectSingleListCallAndClear(listSub, undefined, { status: "loading" });
 
     testStage("Empty result with hasMore: false");
     await waitForCall(listSub.next, 1);
     const payload = expectSingleListCallAndClear(listSub, expect.anything(), {
       status: "loaded",
     });
-    expect(payload?.resolvedList.length).toBe(0);
+    expect(payload?.resolvedList?.length).toBe(0);
     expect(payload?.hasMore).toBe(false);
 
     testStage("Verify no additional unexpected calls");
@@ -538,7 +538,7 @@ describe("ListQuery pivotTo tests", () => {
 
     testStage("Initial loading state");
     await waitForCall(listSub.next, 1);
-    expectSingleListCallAndClear(listSub, [], { status: "loading" });
+    expectSingleListCallAndClear(listSub, undefined, { status: "loading" });
 
     testStage("Data loads");
     await waitForCall(listSub.next, 1);
@@ -547,8 +547,8 @@ describe("ListQuery pivotTo tests", () => {
     });
 
     testStage("Verify only office linked to employee 1 is returned");
-    expect(payload?.resolvedList.length).toBe(1);
-    expect(payload?.resolvedList[0]).toMatchObject({
+    expect(payload?.resolvedList?.length).toBe(1);
+    expect(payload?.resolvedList?.[0]).toMatchObject({
       officeId: "office-a",
       name: "Office A",
     });
@@ -628,7 +628,7 @@ describe("ListQuery pivotTo tests", () => {
 
     testStage("Initial loading state");
     await waitForCall(listSub.next, 1);
-    expectSingleListCallAndClear(listSub, [], { status: "loading" });
+    expectSingleListCallAndClear(listSub, undefined, { status: "loading" });
 
     testStage("Data loads");
     await waitForCall(listSub.next, 1);
@@ -637,7 +637,7 @@ describe("ListQuery pivotTo tests", () => {
     });
 
     testStage("Verify offices linked to emp1 and emp3 are returned");
-    expect(payload?.resolvedList.length).toBe(2);
+    expect(payload?.resolvedList?.length).toBe(2);
     expect(payload?.resolvedList).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ officeId: "office-a" }),
@@ -711,7 +711,7 @@ describe("ListQuery pivotTo tests", () => {
 
     testStage("Initial loading state");
     await waitForCall(listSub.next, 1);
-    expectSingleListCallAndClear(listSub, [], { status: "loading" });
+    expectSingleListCallAndClear(listSub, undefined, { status: "loading" });
 
     testStage("Data loads");
     await waitForCall(listSub.next, 1);
@@ -720,8 +720,8 @@ describe("ListQuery pivotTo tests", () => {
     });
 
     testStage("Verify only office linked to employee 1 is returned");
-    expect(payload?.resolvedList.length).toBe(1);
-    expect(payload?.resolvedList[0]).toMatchObject({
+    expect(payload?.resolvedList?.length).toBe(1);
+    expect(payload?.resolvedList?.[0]).toMatchObject({
       officeId: "office-a",
       name: "Office A",
     });
@@ -769,7 +769,7 @@ describe("ListQuery pivotTo tests", () => {
 
     testStage("Initial loading state");
     await waitForCall(listSub.next, 1);
-    expectSingleListCallAndClear(listSub, [], { status: "loading" });
+    expectSingleListCallAndClear(listSub, undefined, { status: "loading" });
 
     testStage("Data loads");
     await waitForCall(listSub.next, 1);
@@ -778,7 +778,7 @@ describe("ListQuery pivotTo tests", () => {
     });
 
     testStage("Verify empty result");
-    expect(payload?.resolvedList.length).toBe(0);
+    expect(payload?.resolvedList?.length).toBe(0);
 
     testStage("Verify no additional calls");
     expectNoMoreCalls(listSub);

@@ -425,7 +425,9 @@ describe(Store, () => {
       }, linkSubFn1);
 
       await waitForCall(linkSubFn1);
-      expectSingleLinkCallAndClear(linkSubFn1, [], { status: "loading" });
+      expectSingleLinkCallAndClear(linkSubFn1, undefined, {
+        status: "loading",
+      });
 
       await waitForCall(linkSubFn1);
       expectSingleLinkCallAndClear(linkSubFn1, [], {
@@ -466,7 +468,9 @@ describe(Store, () => {
       }, linkSubFn));
 
       await waitForCall(linkSubFn);
-      expectSingleLinkCallAndClear(linkSubFn, [], { status: "loading" });
+      expectSingleLinkCallAndClear(linkSubFn, undefined, {
+        status: "loading",
+      });
 
       await waitForCall(linkSubFn);
       expectSingleLinkCallAndClear(linkSubFn, [], {
@@ -600,7 +604,7 @@ describe(Store, () => {
           const lastPayload = getLastPayload(linkSubFn);
 
           expect(lastPayload.resolvedList).toHaveLength(1);
-          expect(lastPayload.resolvedList[0].$primaryKey).toBe("101");
+          expect(lastPayload.resolvedList?.[0].$primaryKey).toBe("101");
           expect(lastPayload.totalCount).toBe("1");
         } finally {
           dataStore.unregisterLink(
@@ -698,7 +702,9 @@ describe(Store, () => {
         );
 
         await waitForCall(linkSubFn);
-        expectSingleLinkCallAndClear(linkSubFn, [], { status: "loading" });
+        expectSingleLinkCallAndClear(linkSubFn, undefined, {
+          status: "loading",
+        });
 
         await waitForCall(linkSubFn);
         expectSingleLinkCallAndClear(
@@ -1369,13 +1375,13 @@ describe(Store, () => {
 
           expectSingleListCallAndClear(
             listSub1,
-            [],
+            undefined,
             { status: "loading" },
           );
 
           expectSingleListCallAndClear(
             ifaceSub,
-            [],
+            undefined,
             { status: "loading" },
           );
 
@@ -1594,7 +1600,9 @@ describe(Store, () => {
         ));
 
         await waitForCall(listSub, 1);
-        expectSingleListCallAndClear(listSub, [], { status: "loading" });
+        expectSingleListCallAndClear(listSub, undefined, {
+          status: "loading",
+        });
 
         await waitForCall(listSub, 1);
         const { fetchMore } = listSub.next.mock.calls[0][0]!;
@@ -1635,7 +1643,9 @@ describe(Store, () => {
         ));
 
         await waitForCall(listSub, 1);
-        expectSingleListCallAndClear(listSub, [], { status: "loading" });
+        expectSingleListCallAndClear(listSub, undefined, {
+          status: "loading",
+        });
 
         await waitForCall(listSub, 1);
         let { fetchMore } = listSub.next.mock.calls[0][0]!;
@@ -1739,7 +1749,7 @@ describe(Store, () => {
 
       // initial loading state
       expect(sub.next).toHaveBeenCalledOnce();
-      expectSingleListCallAndClear(sub, [], { status: "loading" });
+      expectSingleListCallAndClear(sub, undefined, { status: "loading" });
 
       await waitForCall(sub.error);
       expect(sub.error).toHaveBeenCalledOnce();
@@ -1963,7 +1973,9 @@ describe(Store, () => {
           }, subListUnordered),
         );
         await waitForCall(subListUnordered);
-        expectSingleListCallAndClear(subListUnordered, [], { status: "init" });
+        expectSingleListCallAndClear(subListUnordered, undefined, {
+          status: "init",
+        });
 
         defer(
           store.lists.observe({
@@ -1972,7 +1984,9 @@ describe(Store, () => {
           }, subListOrdered),
         );
         await waitForCall(subListOrdered);
-        expectSingleListCallAndClear(subListOrdered, [], { status: "init" });
+        expectSingleListCallAndClear(subListOrdered, undefined, {
+          status: "init",
+        });
       });
 
       it("invalidates the correct lists", async () => {
