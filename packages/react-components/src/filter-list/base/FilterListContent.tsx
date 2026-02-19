@@ -36,13 +36,14 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import type { ObjectSet, ObjectTypeDefinition, WhereClause } from "@osdk/api";
+import type { ObjectTypeDefinition } from "@osdk/api";
 import classnames from "classnames";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import type { FilterDefinitionUnion } from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
 import { getFilterKey } from "../utils/getFilterKey.js";
 import { getFilterLabel } from "../utils/getFilterLabel.js";
+import type { RenderFilterInput } from "./BaseFilterListApi.js";
 import styles from "./FilterListContent.module.css";
 import { FilterListItem } from "./FilterListItem.js";
 import { SortableFilterListItem } from "./SortableFilterListItem.js";
@@ -56,27 +57,23 @@ const POINTER_ACTIVATION_CONSTRAINT = { distance: 8 } as const;
 const MODIFIERS: Modifier[] = [restrictToVerticalAxis];
 
 interface FilterListContentProps<Q extends ObjectTypeDefinition> {
-  objectType: Q;
-  objectSet: ObjectSet<Q>;
   filterDefinitions?: Array<FilterDefinitionUnion<Q>>;
   filterStates: Map<string, FilterState>;
   onFilterStateChanged: (
     filterKey: string,
     state: FilterState,
   ) => void;
-  whereClause: WhereClause<Q>;
+  renderInput: RenderFilterInput<Q>;
   enableSorting?: boolean;
   className?: string;
   style?: React.CSSProperties;
 }
 
 export function FilterListContent<Q extends ObjectTypeDefinition>({
-  objectType,
-  objectSet,
   filterDefinitions,
   filterStates,
   onFilterStateChanged,
-  whereClause,
+  renderInput,
   enableSorting,
   className,
   style,
@@ -219,13 +216,11 @@ export function FilterListContent<Q extends ObjectTypeDefinition>({
                 <SortableFilterListItem
                   key={id}
                   id={id}
-                  objectType={objectType}
-                  objectSet={objectSet}
                   definition={definition}
                   filterKey={filterKey}
                   filterState={state}
                   onFilterStateChanged={onFilterStateChanged}
-                  whereClause={whereClause}
+                  renderInput={renderInput}
                 />
               );
             })}
@@ -237,13 +232,11 @@ export function FilterListContent<Q extends ObjectTypeDefinition>({
           >
             {activeDefinition && activeFilterKey && (
               <FilterListItem
-                objectType={objectType}
-                objectSet={objectSet}
                 definition={activeDefinition}
                 filterKey={activeFilterKey}
                 filterState={filterStates.get(activeFilterKey)}
                 onFilterStateChanged={onFilterStateChanged}
-                whereClause={whereClause}
+                renderInput={renderInput}
               />
             )}
           </DragOverlay>
@@ -264,13 +257,11 @@ export function FilterListContent<Q extends ObjectTypeDefinition>({
         return (
           <FilterListItem
             key={filterKey}
-            objectType={objectType}
-            objectSet={objectSet}
             definition={definition}
             filterKey={filterKey}
             filterState={state}
             onFilterStateChanged={onFilterStateChanged}
-            whereClause={whereClause}
+            renderInput={renderInput}
           />
         );
       })}

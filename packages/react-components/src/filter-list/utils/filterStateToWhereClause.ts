@@ -22,10 +22,6 @@ import { getFilterKey } from "./getFilterKey.js";
 
 type PropertyFilter = Record<string, unknown> | boolean | string | number;
 
-function isDate(value: unknown): value is Date {
-  return value instanceof Date;
-}
-
 function filterStateToPropertyFilter(
   state: FilterState,
 ): PropertyFilter | undefined {
@@ -182,6 +178,7 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
   filterStates: Map<string, FilterState>,
   operator: "and" | "or",
   objectType?: Q,
+  excludeFilterKey?: string,
 ): WhereClause<Q> {
   if (!definitions || definitions.length === 0) {
     return {} as WhereClause<Q>;
@@ -190,7 +187,11 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
   const clauses: Array<Record<string, unknown>> = [];
 
   for (const definition of definitions) {
-    const state = filterStates.get(getFilterKey(definition));
+    const key = getFilterKey(definition);
+    if (key === excludeFilterKey) {
+      continue;
+    }
+    const state = filterStates.get(key);
 
     if (!state) {
       continue;

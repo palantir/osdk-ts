@@ -154,7 +154,7 @@ export function EmployeeFilters() {
   const handleRemoveFilter = useCallback(
     (filterKey: string) => {
       setFilterDefinitions((prev) =>
-        prev.filter((def) => def.id !== filterKey)
+        prev.filter((d) => (d.id ?? d.key) !== filterKey)
       );
     },
     [],
