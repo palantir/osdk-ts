@@ -40,7 +40,7 @@
   --osdk-typography-size-body-small: var(--bp-typography-size-body-small);
   --osdk-typography-size-body-medium: var(--bp-typography-size-body-medium);
   --osdk-typography-weight-default: var(--bp-typography-weight-default);
-  --osdk-typography-weight-bold: 600; /* No corresponding bp token */
+  --osdk-typography-weight-bold: var(--bp-typography-weight-bold);
 
   /* Blueprint token mappings - Intent tokens */
   --osdk-intent-default-rest: var(--bp-intent-default-rest);
@@ -93,35 +93,57 @@
   --osdk-background-primary: var(--osdk-palette-white);
   --osdk-background-secondary: var(--osdk-palette-light-gray-5);
   --osdk-background-tertiary: var(--osdk-palette-light-gray-4);
-  --osdk-background-skeleton-from: oklch(
-    from var(--osdk-palette-gray-1) l c h / 0.05
+  --osdk-background-skeleton-from: color-mix(
+    in srgb,
+    var(--osdk-palette-gray-1) 5%,
+    transparent
   );
-  --osdk-background-skeleton-to: oklch(
-    from var(--osdk-palette-gray-1) l c h / 0.4
+  --osdk-background-skeleton-to: color-mix(
+    in srgb,
+    var(--osdk-palette-gray-1) 40%,
+    transparent
   );
-  --osdk-background-backdrop: oklch(from var(--osdk-palette-black) l c h / 0.5);
+  --osdk-background-backdrop: color-mix(
+    in srgb,
+    var(--osdk-palette-black) 50%,
+    transparent
+  );
 
   /* Custom colors */
-  --osdk-custom-color-gray-1: oklch(
-    from var(--osdk-palette-gray-1) l c h / 0.05
+  --osdk-custom-color-gray-1: color-mix(
+    in srgb,
+    var(--osdk-palette-gray-1) 5%,
+    transparent
   );
-  --osdk-custom-color-gray-2: oklch(
-    from var(--osdk-palette-gray-1) l c h / 0.08
+  --osdk-custom-color-gray-2: color-mix(
+    in srgb,
+    var(--osdk-palette-gray-1) 8%,
+    transparent
   );
-  --osdk-custom-color-gray-3: oklch(
-    from var(--osdk-palette-gray-1) l c h / 0.1
+  --osdk-custom-color-gray-3: color-mix(
+    in srgb,
+    var(--osdk-palette-gray-1) 10%,
+    transparent
   );
-  --osdk-custom-color-gray-4: oklch(
-    from var(--osdk-palette-gray-1) l c h / 0.2
+  --osdk-custom-color-gray-4: color-mix(
+    in srgb,
+    var(--osdk-palette-gray-1) 20%,
+    transparent
   );
-  --osdk-custom-color-light-gray-1: oklch(
-    from var(--osdk-palette-light-gray-1) l c h / 0.6
+  --osdk-custom-color-light-gray-1: color-mix(
+    in srgb,
+    var(--osdk-palette-light-gray-1) 60%,
+    transparent
   );
-  --osdk-custom-color-light-gray-2: oklch(
-    from var(--osdk-palette-light-gray-5) l c h / 0.5
+  --osdk-custom-color-light-gray-2: color-mix(
+    in srgb,
+    var(--osdk-palette-light-gray-5) 50%,
+    transparent
   );
-  --osdk-custom-color-primary-1: oklch(
-    from var(--osdk-intent-primary-rest) l c h / 0.5
+  --osdk-custom-color-primary-1: color-mix(
+    in srgb,
+    var(--osdk-intent-primary-rest) 50%,
+    transparent
   );
 
   /* Shared Styling */

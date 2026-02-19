@@ -18,7 +18,7 @@ Import the CSS files in your application's entry point:
 
 ```css
 /* app/index.css */
-@layer osdk.components, osdk.tokens;
+@layer osdk.tokens, osdk.components;
 
 /* Import OSDK components structural styles */
 @import "@osdk/react-components/styles.css" layer(osdk.components);
@@ -30,7 +30,7 @@ Import the CSS files in your application's entry point:
 
 ```css
 /* app/index.css */
-@layer osdk.components, osdk.tokens, user.theme;
+@layer osdk.tokens, osdk.components, user.theme;
 
 @import "@osdk/react-components/styles.css" layer(osdk.components);
 @import "@osdk/react-components-styles" layer(osdk.tokens);
