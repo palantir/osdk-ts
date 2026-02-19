@@ -14,17 +14,10 @@
  * limitations under the License.
  */
 
-export {
-  createMockOsdkObject,
-  type MockOsdkObjectOptions,
-} from "./mock/createMockOsdkObject.js";
+import { describe, expect, it } from "vitest";
 
-export {
-  type AggregateStubBuilder,
-  createMockClient,
-  type FetchOneStubBuilder,
-  type FetchPageStubBuilder,
-  type MockClient,
-  type StubBuilderFor,
-  type StubClient,
-} from "./mock/createMockClient.js";
+describe("functions-testing.experimental", () => {
+  it("should run tests", () => {
+    expect(true).toBe(true);
+  });
+});
