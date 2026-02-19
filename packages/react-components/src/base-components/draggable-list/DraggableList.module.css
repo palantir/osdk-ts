@@ -1,0 +1,108 @@
+/*
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.draggableListContainer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--osdk-draggable-item-gap);
+  overflow-y: auto;
+}
+
+.draggableItem {
+  display: flex;
+  align-items: center;
+  gap: var(--osdk-draggable-item-gap);
+  padding: var(--osdk-draggable-item-padding);
+  background-color: var(--osdk-draggable-item-bg);
+  border: var(--osdk-draggable-item-border);
+  border-radius: var(--osdk-draggable-item-border-radius);
+  width: 100%;
+  touch-action: none;
+  user-select: none;
+}
+
+.draggableItem[data-dragging="true"] {
+  opacity: 0.5;
+}
+
+.dragHandle {
+  display: flex;
+  cursor: grab;
+  color: var(--osdk-draggable-item-drag-icon-color);
+
+  &:hover {
+    color: var(--osdk-draggable-item-drag-icon-color-hover);
+  }
+
+  &:active {
+    cursor: grabbing;
+  }
+
+  &:focus {
+    outline: none;
+  }
+
+  &:focus-visible {
+    outline: var(--osdk-focus-outline);
+    outline-offset: var(--osdk-focus-visible-outline-offset);
+  }
+}
+
+.itemContent {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.removeButton {
+  background: none;
+  border: none;
+  padding: var(--osdk-surface-spacing);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--osdk-draggable-item-drag-icon-color);
+  border-radius: var(--osdk-surface-border-radius);
+
+  &:hover {
+    color: var(--osdk-typography-color-danger-rest);
+  }
+
+  &:active {
+    color: var(--osdk-typography-color-danger-rest);
+    background: oklch(
+      from var(--osdk-surface-background-color-danger-hover) l c h / 0.2
+    );
+  }
+
+  &:focus {
+    outline: none;
+  }
+
+  &:focus-visible {
+    outline: var(--osdk-focus-outline);
+    outline-offset: var(--osdk-focus-visible-outline-offset);
+  }
+}
+
+.emptyState {
+  padding: calc(var(--osdk-surface-spacing) * 5);
+  text-align: center;
+  color: var(--osdk-typography-color-muted);
+  font-style: italic;
+}

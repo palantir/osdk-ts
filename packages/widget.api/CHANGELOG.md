@@ -1,5 +1,43 @@
 # @osdk/widget.api
 
+## 3.5.0-beta.7
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.7
+
+## 3.5.0-beta.6
+
+### Minor Changes
+
+- fad598c: Export BrowserPermission object as well as type
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.6
+
+## 3.5.0-beta.5
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.5
+
+## 3.5.0-beta.4
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.4
+
+## 3.5.0-beta.3
+
+### Minor Changes
+
+- b9066dd: Support interfaces in object set parameters
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.3
+
 ## 3.5.0-beta.2
 
 ### Patch Changes

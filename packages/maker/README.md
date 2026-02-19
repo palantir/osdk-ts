@@ -97,6 +97,10 @@ const tagsProperty = defineSharedPropertyType({
   array: true,
   displayName: "Tags",
   description: "List of tags",
+  // optionally add a reducer
+  reducers: [{
+    direction: "descending",
+  }],
 });
 ```
 
@@ -119,6 +123,11 @@ const addressProperty = defineSharedPropertyType({
         },
       },
       country: "string",
+    },
+    // optionally add a main value
+    mainValue: {
+      fields: "street",
+      type: "string",
     },
   },
   displayName: "Address",
@@ -437,6 +446,11 @@ const customerObject = defineObject({
           state: "string",
           zipCode: "string",
           country: "string",
+        },
+        // optionally add a main value
+        mainValue: {
+          fields: "street",
+          type: "string",
         },
       },
       displayName: "Address",

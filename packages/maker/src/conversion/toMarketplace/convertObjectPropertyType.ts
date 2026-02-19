@@ -26,6 +26,7 @@ import {
   shouldNotHaveRenderHints,
 } from "../../api/propertyConversionUtils.js";
 import { convertNullabilityToDataConstraint } from "./convertNullabilityToDataConstraint.js";
+import { convertReducers } from "./convertReducers.js";
 import { convertValueType } from "./convertValueType.js";
 import { convertValueTypeDataConstraints } from "./convertValueTypeDataConstraints.js";
 import { propertyTypeTypeToOntologyIrType } from "./propertyTypeTypeToOntologyIrType.js";
@@ -57,11 +58,20 @@ export function convertObjectPropertyType(
       ? {
         type: "array" as const,
         array: {
-          subtype: propertyTypeTypeToOntologyIrType(property.type),
-          reducers: [],
+          subtype: propertyTypeTypeToOntologyIrType(
+            property.type,
+            property.apiName,
+            property.sharedPropertyType,
+          ),
+          reducers: convertReducers(
+            property.type,
+            property.apiName,
+            property.reducers ?? [],
+            property.sharedPropertyType,
+          ),
         },
       }
-      : propertyTypeTypeToOntologyIrType(property.type),
+      : propertyTypeTypeToOntologyIrType(property.type, property.apiName),
     typeClasses: property.typeClasses
       ?? (shouldNotHaveRenderHints(property.type) ? [] : defaultTypeClasses),
     status: convertObjectStatus(property.status),

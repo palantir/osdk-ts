@@ -860,6 +860,11 @@ export interface CompassFoldersUsedInCbacEnvironment {
  */
 export interface CompassFoldersUsedInDefaultOntology {
 }
+/**
+ * An updated or created entity type is referencing Shared Property Types that do not exist.
+ */
+export interface CreatedOrUpdatedEntityTypeReferencingNonExistentSharedPropertyTypes {
+}
 export interface EasedPipelineBuilderError {
 }
 /**
@@ -1289,6 +1294,12 @@ export interface ErrorType_interfacePropertyTypeApiNameConflict {
   interfacePropertyTypeApiNameConflict: InterfacePropertyTypeApiNameConflict;
 }
 
+export interface ErrorType_interfacePropertyTypeApiNameIgnoringNamespaceConflict {
+  type: "interfacePropertyTypeApiNameIgnoringNamespaceConflict";
+  interfacePropertyTypeApiNameIgnoringNamespaceConflict:
+    InterfacePropertyTypeApiNameIgnoringNamespaceConflict;
+}
+
 export interface ErrorType_interfaceTypeImplementedTooOften {
   type: "interfaceTypeImplementedTooOften";
   interfaceTypeImplementedTooOften: InterfaceTypeImplementedTooOften;
@@ -1574,6 +1585,12 @@ export interface ErrorType_objectTypePropertySecurityGroupsNotSupportedWithRvMat
   type: "objectTypePropertySecurityGroupsNotSupportedWithRvMaterializations";
   objectTypePropertySecurityGroupsNotSupportedWithRvMaterializations:
     ObjectTypePropertySecurityGroupsNotSupportedWithRvMaterializations;
+}
+
+export interface ErrorType_objectTypeWithStreamDatasourceCannotHaveMaterializations {
+  type: "objectTypeWithStreamDatasourceCannotHaveMaterializations";
+  objectTypeWithStreamDatasourceCannotHaveMaterializations:
+    ObjectTypeWithStreamDatasourceCannotHaveMaterializations;
 }
 
 export interface ErrorType_editsOnlyObjectTypeMustHavePropertySecurityGroups {
@@ -2892,6 +2909,12 @@ export interface ErrorType_objectTypeDatasourceWithInvalidRetentionTargetSize {
     ObjectTypeDatasourceWithInvalidRetentionTargetSize;
 }
 
+export interface ErrorType_objectTypeDatasourceWithInvalidTimeBasedRetention {
+  type: "objectTypeDatasourceWithInvalidTimeBasedRetention";
+  objectTypeDatasourceWithInvalidTimeBasedRetention:
+    ObjectTypeDatasourceWithInvalidTimeBasedRetention;
+}
+
 export interface ErrorType_reducersNotAllowedOnArraySubtype {
   type: "reducersNotAllowedOnArraySubtype";
   reducersNotAllowedOnArraySubtype: ReducersNotAllowedOnArraySubtype;
@@ -3072,6 +3095,12 @@ export interface ErrorType_sharedPropertyTypeToDeleteIsReferencedByExistingTypes
   type: "sharedPropertyTypeToDeleteIsReferencedByExistingTypes";
   sharedPropertyTypeToDeleteIsReferencedByExistingTypes:
     SharedPropertyTypeToDeleteIsReferencedByExistingTypes;
+}
+
+export interface ErrorType_createdOrUpdatedEntityTypeReferencingNonExistentSharedPropertyTypes {
+  type: "createdOrUpdatedEntityTypeReferencingNonExistentSharedPropertyTypes";
+  createdOrUpdatedEntityTypeReferencingNonExistentSharedPropertyTypes:
+    CreatedOrUpdatedEntityTypeReferencingNonExistentSharedPropertyTypes;
 }
 
 export interface ErrorType_sharedPropertyTypeMediaReferencePropertyShouldNotHaveRenderHints {
@@ -4254,6 +4283,7 @@ export type ErrorType =
   | ErrorType_interfaceTypeContainsTooManyProperties
   | ErrorType_interfaceLinkTypeApiNameConflict
   | ErrorType_interfacePropertyTypeApiNameConflict
+  | ErrorType_interfacePropertyTypeApiNameIgnoringNamespaceConflict
   | ErrorType_interfaceTypeImplementedTooOften
   | ErrorType_interfaceTypeCountExceeded
   | ErrorType_interfaceTypeDisplayNameTooLong
@@ -4303,6 +4333,7 @@ export type ErrorType =
   | ErrorType_objectTypePropertySecurityGroupsNotSupportedWithMultipleDatasources
   | ErrorType_objectTypePropertySecurityGroupsNotSupportedWithMaterializations
   | ErrorType_objectTypePropertySecurityGroupsNotSupportedWithRvMaterializations
+  | ErrorType_objectTypeWithStreamDatasourceCannotHaveMaterializations
   | ErrorType_editsOnlyObjectTypeMustHavePropertySecurityGroups
   | ErrorType_objectTypePropertySecurityGroupsNotSupportedOnBranches
   | ErrorType_builderCannotDeletePropertySecurityGroupsSetOnParentBranch
@@ -4526,6 +4557,7 @@ export type ErrorType =
   | ErrorType_objectTypeIdClashesAfterRebase
   | ErrorType_objectTypePropertyCannotBeDeletedWhenReferencedInActionNotification
   | ErrorType_objectTypeDatasourceWithInvalidRetentionTargetSize
+  | ErrorType_objectTypeDatasourceWithInvalidTimeBasedRetention
   | ErrorType_reducersNotAllowedOnArraySubtype
   | ErrorType_ruleSetBindingReferencingMissingPropertyTypeIds
   | ErrorType_ruleSetCountExceeded
@@ -4559,6 +4591,7 @@ export type ErrorType =
   | ErrorType_sharedPropertyTypeAttachmentPropertyShouldNotHaveRenderHints
   | ErrorType_sharedPropertyTypeAttachmentPropertyShouldNotBeSearchable
   | ErrorType_sharedPropertyTypeToDeleteIsReferencedByExistingTypes
+  | ErrorType_createdOrUpdatedEntityTypeReferencingNonExistentSharedPropertyTypes
   | ErrorType_sharedPropertyTypeMediaReferencePropertyShouldNotHaveRenderHints
   | ErrorType_sharedPropertyTypeCountExceeded
   | ErrorType_sharedPropertyTypeDisplayNameTooLong
@@ -4768,6 +4801,11 @@ export interface InterfaceLinkTypeDisplayNameTooLong {
  * Two interface properties have the same API name. API Names must be unique within the context of an interface. I.e. across all properties in an interface and its super interfaces.
  */
 export interface InterfacePropertyTypeApiNameConflict {
+}
+/**
+ * Multiple interface properties have the same API name when the namespace is removed. API Names without namespace must be unique within the context of an interface. I.e. across all properties in an interface and its super interfaces.
+ */
+export interface InterfacePropertyTypeApiNameIgnoringNamespaceConflict {
 }
 /**
  * The description of an interface property type exceeds the maximum length.
@@ -5629,6 +5667,12 @@ export interface ObjectTypeDatasourceUpdateModificationCannotChangeAssumedMarkin
  * be less than or equal to the retention trigger size. Only applicable for direct datasources.
  */
 export interface ObjectTypeDatasourceWithInvalidRetentionTargetSize {
+}
+/**
+ * A direct datasource has an invalid time-based retention window. The retention window must be a non-negative
+ * ISO 8601 duration and at most 1000 days.
+ */
+export interface ObjectTypeDatasourceWithInvalidTimeBasedRetention {
 }
 /**
  * An error representing when an object type datasource does not include the primary key property of the corresponding object type.
@@ -6817,6 +6861,11 @@ export interface ObjectTypeWithDerivedPropertiesMappedToGotham {
  * Cannot add unsupported property type to an object type with edits history already enabled.
  */
 export interface ObjectTypeWithEditsHistoryCannotAddUnsupportedPropertyTypes {
+}
+/**
+ * Object types with stream datasources cannot have materializations. If you are switching from a batch to stream datasource, please unlink your materializations first.
+ */
+export interface ObjectTypeWithStreamDatasourceCannotHaveMaterializations {
 }
 /**
  * An error representing when none of an object type's datasources map the title property of the object type.

@@ -1,5 +1,45 @@
 # @osdk/widget.vite-plugin
 
+## 3.5.0-beta.7
+
+### Patch Changes
+
+- @osdk/widget.api@3.5.0-beta.7
+
+## 3.5.0-beta.6
+
+### Minor Changes
+
+- de531ed: Handle HMR for widget config files
+
+### Patch Changes
+
+- Updated dependencies [fad598c]
+  - @osdk/widget.api@3.5.0-beta.6
+
+## 3.5.0-beta.5
+
+### Patch Changes
+
+- @osdk/widget.api@3.5.0-beta.5
+
+## 3.5.0-beta.4
+
+### Patch Changes
+
+- @osdk/widget.api@3.5.0-beta.4
+
+## 3.5.0-beta.3
+
+### Minor Changes
+
+- b9066dd: Support interfaces in object set parameters
+
+### Patch Changes
+
+- Updated dependencies [b9066dd]
+  - @osdk/widget.api@3.5.0-beta.3
+
 ## 3.5.0-beta.2
 
 ### Patch Changes

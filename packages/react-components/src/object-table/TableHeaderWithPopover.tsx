@@ -19,21 +19,19 @@ import {
   ChevronDown,
   Pin,
   Remove,
+  Settings,
+  Sort,
   SortAlphabetical,
   SortAlphabeticalDesc,
   Unpin,
   VerticalDistribution,
 } from "@blueprintjs/icons";
-import type {
-  ColumnPinningState,
-  Header,
-  RowData,
-  SortingState,
-} from "@tanstack/react-table";
+import type { Header, RowData, Table } from "@tanstack/react-table";
 import classNames from "classnames";
 import React, { useCallback, useState } from "react";
 import { TableHeaderContent } from "./TableHeaderContent.js";
 import styles from "./TableHeaderWithPopover.module.css";
+import type { ColumnOption } from "./utils/types.js";
 
 interface HeaderMenuItemProps {
   onClick: () => void;
@@ -65,23 +63,68 @@ function HeaderMenuItem({
   );
 }
 
-interface TableHeaderWithPopoverProps<TData extends RowData> {
-  header: Header<TData, unknown>;
-  isColumnPinned: false | "left" | "right";
-  setColumnPinning: React.Dispatch<React.SetStateAction<ColumnPinningState>>;
-  onSortChange?: (sorting: SortingState) => void;
-  onResetSize?: () => void;
-  onColumnConfig?: () => void;
-  enableColumnPinningRight?: boolean;
+export interface HeaderMenuFeatureFlags {
+  /**
+   * Whether sorting menu items should be shown.
+   * When false, hides "Sort ascending", "Sort descending", "Sort on multiple columns", and "Clear all sorts".
+   */
+  showSortingItems?: boolean;
+  /**
+   * Whether pinning menu items should be shown.
+   * When false, hides "Pin column" and "Unpin Column".
+   */
+  showPinningItems?: boolean;
+  /**
+   * Whether resize menu item should be shown.
+   * When false, hides "Reset Column Size".
+   */
+  showResizeItem?: boolean;
+  /**
+   * Whether column config menu item should be shown.
+   * When false, hides "Configure Columns".
+   */
+  showConfigItem?: boolean;
 }
 
-export function TableHeaderWithPopover<TData extends RowData>({
+interface TableHeaderWithPopoverProps<
+  TData extends RowData,
+> {
+  table: Table<TData>;
+  header: Header<TData, unknown>;
+  isColumnPinned: false | "left" | "right";
+  onResetSize?: () => void;
+  columnOptions?: ColumnOption[];
+  featureFlags?: HeaderMenuFeatureFlags;
+  onOpenColumnConfig?: () => void;
+  onOpenMultiSort?: () => void;
+}
+
+export function TableHeaderWithPopover<
+  TData extends RowData,
+>({
   header,
+  table,
   isColumnPinned,
-  setColumnPinning,
-  onSortChange,
   onResetSize,
+  columnOptions,
+  featureFlags,
+  onOpenColumnConfig,
+  onOpenMultiSort,
 }: TableHeaderWithPopoverProps<TData>): React.ReactElement {
+  const {
+    showSortingItems = false,
+    showPinningItems = false,
+    showResizeItem = false,
+    showConfigItem = false,
+  } = featureFlags ?? {};
+
+  const {
+    setColumnPinning,
+    setSorting,
+  } = table;
+
+  const currentSorting = table.getState().sorting;
+
   const [isOpen, setIsOpen] = useState(false);
 
   const handlePinLeft = useCallback(() => {
@@ -104,18 +147,18 @@ export function TableHeaderWithPopover<TData extends RowData>({
 
   const handleSortAscending = useCallback(() => {
     header.column.toggleSorting(false);
-    onSortChange?.([{ id: header.column.id, desc: false }]);
-  }, [header.column, onSortChange]);
+    setSorting?.([{ id: header.column.id, desc: false }]);
+  }, [header.column, setSorting]);
 
   const handleSortDescending = useCallback(() => {
     header.column.toggleSorting(true);
-    onSortChange?.([{ id: header.column.id, desc: true }]);
-  }, [header.column, onSortChange]);
+    setSorting?.([{ id: header.column.id, desc: true }]);
+  }, [header.column, setSorting]);
 
   const handleClearAllSorts = useCallback(() => {
     header.column.clearSorting();
-    onSortChange?.([]);
-  }, [header.column, onSortChange]);
+    setSorting?.([]);
+  }, [header.column, setSorting]);
 
   const handleResetSize = useCallback(() => {
     header.column.resetSize();
@@ -132,123 +175,161 @@ export function TableHeaderWithPopover<TData extends RowData>({
     [],
   );
 
+  const handleOpenColumnConfig = useCallback(() => {
+    onOpenColumnConfig?.();
+    setIsOpen(false);
+  }, [onOpenColumnConfig]);
+
+  const handleOpenMultiSort = useCallback(() => {
+    onOpenMultiSort?.();
+    setIsOpen(false);
+  }, [onOpenMultiSort]);
+
   const isSorted = header.column.getIsSorted();
   const isSortable = header.column.getCanSort();
+  const sortIndex = currentSorting?.findIndex(s => s.id === header.column.id)
+    ?? -1;
+
+  const hasAnyMenuItems = showPinningItems
+    || (showSortingItems && isSortable)
+    || showResizeItem
+    || showConfigItem;
 
   return (
-    <Menu.Root open={isOpen} onOpenChange={setIsOpen}>
-      <div
-        className={classNames(
-          styles.osdkCenterContainer,
-          styles.osdkContentGap,
-          styles.osdkHeaderContainer,
-        )}
-        onContextMenu={handleInteraction}
-      >
+    <>
+      <Menu.Root open={isOpen} onOpenChange={setIsOpen}>
         <div
           className={classNames(
             styles.osdkCenterContainer,
             styles.osdkContentGap,
-            styles.osdkHeaderContentLeft,
+            styles.osdkHeaderContainer,
           )}
+          onContextMenu={handleInteraction}
         >
-          {isColumnPinned && (
-            <Pin
-              className={styles.osdkHeaderIcon}
-              color={"currentColor"}
-            />
-          )}
-          <TableHeaderContent header={header} />
-        </div>
-        <div
-          className={classNames(
-            styles.osdkCenterContainer,
-            styles.osdkContentGap,
-            styles.osdkHeaderContentRight,
-          )}
-        >
-          {isSorted && (
-            <div className={styles.osdkCenterContainer}>
-              {isSorted === "asc"
-                ? (
-                  <SortAlphabetical
-                    className={styles.osdkHeaderIcon}
-                    color={"currentColor"}
-                  />
-                )
-                : (
-                  <SortAlphabeticalDesc
-                    className={styles.osdkHeaderIcon}
-                    color={"currentColor"}
-                  />
-                )}
-            </div>
-          )}
-          <Menu.Trigger
-            aria-label={`Open header menu for column with id=${header.column.id}`}
+          <div
             className={classNames(
               styles.osdkCenterContainer,
-              styles.osdkHeaderPopoverTrigger,
+              styles.osdkContentGap,
+              styles.osdkHeaderContentLeft,
             )}
           >
-            <ChevronDown
-              className={styles.osdkHeaderIcon}
-            />
-          </Menu.Trigger>
-        </div>
-        <Menu.Portal container={document.body}>
-          <Menu.Positioner sideOffset={4}>
-            <Menu.Popup
-              className={styles.osdkHeaderPopup}
-            >
-              {!isColumnPinned && (
-                <HeaderMenuItem
-                  onClick={handlePinLeft}
-                  icon={Pin}
-                  label="Pin column"
-                />
-              )}
-
-              {isColumnPinned && (
-                <HeaderMenuItem
-                  onClick={handleUnpin}
-                  icon={Unpin}
-                  label="Unpin Column"
-                  active={true}
-                />
-              )}
-              {isSortable && (
-                <>
-                  <HeaderMenuItem
-                    onClick={handleSortAscending}
-                    icon={SortAlphabetical}
-                    label="Sort ascending"
-                    active={isSorted === "asc"}
-                  />
-                  <HeaderMenuItem
-                    onClick={handleSortDescending}
-                    icon={SortAlphabeticalDesc}
-                    label="Sort descending"
-                    active={isSorted === "desc"}
-                  />
-                </>
-              )}
-              {!!isSorted && (
-                <HeaderMenuItem
-                  onClick={handleClearAllSorts}
-                  icon={Remove}
-                  label="Clear all sorts"
-                />
-              )}
-              <HeaderMenuItem
-                onClick={handleResetSize}
-                icon={VerticalDistribution}
-                label="Reset Column Size"
+            {isColumnPinned && (
+              <Pin
+                className={styles.osdkHeaderIcon}
+                color={"currentColor"}
               />
-            </Menu.Popup>
-          </Menu.Positioner>
-        </Menu.Portal>
-      </div>
-    </Menu.Root>
+            )}
+            <TableHeaderContent header={header} />
+          </div>
+          <div
+            className={classNames(
+              styles.osdkCenterContainer,
+              styles.osdkContentGap,
+              styles.osdkHeaderContentRight,
+            )}
+          >
+            {isSorted && (
+              <div className={styles.osdkCenterContainer}>
+                {isSorted === "asc"
+                  ? (
+                    <SortAlphabetical
+                      className={styles.osdkHeaderIcon}
+                    />
+                  )
+                  : (
+                    <SortAlphabeticalDesc
+                      className={styles.osdkHeaderIcon}
+                    />
+                  )}
+                {currentSorting.length > 1 && sortIndex >= 0
+                  && <span className={styles.sortIndex}>{sortIndex + 1}</span>}
+              </div>
+            )}
+            {hasAnyMenuItems && (
+              <Menu.Trigger
+                aria-label={`Open header menu for column with id=${header.column.id}`}
+                className={classNames(
+                  styles.osdkCenterContainer,
+                  styles.osdkHeaderPopoverTrigger,
+                )}
+              >
+                <ChevronDown
+                  className={styles.osdkHeaderIcon}
+                />
+              </Menu.Trigger>
+            )}
+          </div>
+          <Menu.Portal container={document.body}>
+            <Menu.Positioner sideOffset={4}>
+              <Menu.Popup
+                className={styles.osdkHeaderPopup}
+              >
+                {showPinningItems && !isColumnPinned && (
+                  <HeaderMenuItem
+                    onClick={handlePinLeft}
+                    icon={Pin}
+                    label="Pin column"
+                  />
+                )}
+
+                {showPinningItems && isColumnPinned && (
+                  <HeaderMenuItem
+                    onClick={handleUnpin}
+                    icon={Unpin}
+                    label="Unpin Column"
+                    active={true}
+                  />
+                )}
+                {showSortingItems && isSortable && (
+                  <>
+                    <HeaderMenuItem
+                      onClick={handleSortAscending}
+                      icon={SortAlphabetical}
+                      label="Sort ascending"
+                      active={isSorted === "asc"}
+                    />
+                    <HeaderMenuItem
+                      onClick={handleSortDescending}
+                      icon={SortAlphabeticalDesc}
+                      label="Sort descending"
+                      active={isSorted === "desc"}
+                    />
+                    {columnOptions?.some(col => col.canSort) && (
+                      <HeaderMenuItem
+                        onClick={handleOpenMultiSort}
+                        icon={Sort}
+                        label="Sort on multiple columns"
+                      />
+                    )}
+                  </>
+                )}
+                {showSortingItems && !!currentSorting?.length
+                  && (
+                    <HeaderMenuItem
+                      onClick={handleClearAllSorts}
+                      icon={Remove}
+                      label="Clear all sorts"
+                    />
+                  )}
+                {showResizeItem && (
+                  <HeaderMenuItem
+                    onClick={handleResetSize}
+                    icon={VerticalDistribution}
+                    label="Reset Column Size"
+                  />
+                )}
+                {showConfigItem && (
+                  <HeaderMenuItem
+                    onClick={handleOpenColumnConfig}
+                    icon={Settings}
+                    label="Configure Columns"
+                  />
+                )}
+              </Menu.Popup>
+            </Menu.Positioner>
+          </Menu.Portal>
+        </div>
+      </Menu.Root>
+    </>
   );
 }

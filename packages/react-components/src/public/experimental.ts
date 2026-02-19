@@ -24,7 +24,17 @@ export type {
   ColumnDefinitionLocator,
   ObjectTableProps,
 } from "../object-table/ObjectTableApi.js";
+export type {
+  CellIdentifier,
+  CellValueState,
+} from "../object-table/utils/types.js";
 
 // BaseTable that does not handle data fetching
 export type { BaseTableProps } from "../object-table/Table.js";
 export { BaseTable } from "../object-table/Table.js";
+
+export { ColumnConfigDialog } from "../object-table/ColumnConfigDialog.js";
+export type {
+  ColumnConfigDialogProps,
+  ColumnConfigOptions,
+} from "../object-table/ColumnConfigDialog.js";

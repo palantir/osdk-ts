@@ -18,6 +18,9 @@
   display: grid;
   position: sticky;
   top: 0;
+  width: max-content;
+  min-width: 100%;
+  height: var(--osdk-table-header-height);
   z-index: var(--osdk-surface-z-index-1);
   background-color: var(--osdk-table-header-bg);
 }
@@ -29,6 +32,9 @@
 
 .osdkTableHeaderRow {
   display: flex;
+  width: max-content;
+  min-width: 100%;
+  border-bottom: var(--osdk-table-border);
 }
 
 .osdkTableHeaderCell {
@@ -57,6 +63,7 @@
 .osdkTableHeaderCell[data-pinned="right"] {
   position: sticky;
   z-index: var(--osdk-surface-z-index-2);
+  background-color: var(--osdk-table-header-bg);
 }
 
 /* Last left-pinned column - no left-pinned siblings after it */
@@ -87,11 +94,11 @@
   z-index: var(--osdk-surface-z-index-2);
 
   &:hover {
-    background: var(--osdk-intent-primary-hover);
+    background: var(--osdk-table-resizer-color-hover);
   }
 
   &:active {
-    background: var(--osdk-intent-primary-active);
+    background: var(--osdk-table-resizer-color-active);
   }
 }
 

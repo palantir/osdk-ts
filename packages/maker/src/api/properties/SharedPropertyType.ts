@@ -25,6 +25,7 @@ import type { OntologyEntityTypeEnum } from "../common/OntologyEntityTypeEnum.js
 import type { TypeClass } from "../common/TypeClass.js";
 import type { Nullability } from "./Nullability.js";
 import type { PropertyTypeType } from "./PropertyTypeType.js";
+import type { ReducerType } from "./ReducerType.js";
 
 export interface SharedPropertyType extends OntologyEntityBase, PropertyType {
   apiName: string;
@@ -37,6 +38,7 @@ export interface SharedPropertyType extends OntologyEntityBase, PropertyType {
 export interface PropertyType {
   type: PropertyTypeType;
   array?: boolean;
+  reducers?: Array<ReducerType>;
   description?: string;
   displayName?: string;
   valueType?: OntologyIrValueTypeReferenceWithMetadata;

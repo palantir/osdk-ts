@@ -284,8 +284,11 @@ export function createMockOsdkObject<
     mockObject,
     "$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata",
     {
-      get() {
-        return undefined;
+      get(): never {
+        invariant(
+          false,
+          `$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata is not supported on mock objects.`,
+        );
       },
       enumerable: false,
     },

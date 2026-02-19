@@ -4,7 +4,11 @@ A comprehensive guide for using the ObjectTable component from `@osdk/react-comp
 
 ## Prerequisites
 
-Before using ObjectTable, make sure you have completed the library setup described in the [README](../README.md#installation).
+Before using ObjectTable, make sure you have completed the library setup described in the [README](../README.md#setup), including:
+
+- Installing the required dependencies
+- Wrapping your app with `OsdkProvider2`
+- Adding the CSS imports
 
 ## Table of Contents
 
@@ -78,20 +82,46 @@ Add selection mode to enable row selection:
 
 ### Filtering
 
-| Prop              | Type                 | Default | Description                        |
-| ----------------- | -------------------- | ------- | ---------------------------------- |
-| `filterable`      | `boolean`            | `true`  | Whether users can filter the table |
-| `filter`          | `WhereClause<Q>`     | -       | Current filter (controlled mode)   |
-| `onFilterChanged` | `(newWhere) => void` | -       | Required when `filter` is provided |
+> **Note:** The table filtering UI is not yet supported. However, you can still pass a `filter` prop to programmatically filter the objects displayed in the table.
+
+| Prop              | Type                   | Default | Description                                                      |
+| ----------------- | ---------------------- | ------- | ---------------------------------------------------------------- |
+| `enableFiltering` | `boolean`              | `true`  | Whether filtering menu items are shown in the column header menu |
+| `filter`          | `WhereClause<Q, RDPs>` | -       | Current where clause filter (controlled mode)                    |
+| `onFilterChanged` | `(newWhere) => void`   | -       | Required when `filter` is provided                               |
 
 ### Sorting
 
-| Prop               | Type                           | Default | Description                         |
-| ------------------ | ------------------------------ | ------- | ----------------------------------- |
-| `orderable`        | `boolean`                      | `true`  | Whether users can sort columns      |
-| `defaultOrderBy`   | `Array<{property, direction}>` | -       | Initial sort order (uncontrolled)   |
-| `orderBy`          | `Array<{property, direction}>` | -       | Current sort order (controlled)     |
-| `onOrderByChanged` | `(newOrderBy) => void`         | -       | Required when `orderBy` is provided |
+| Prop               | Type                           | Default | Description                          |
+| ------------------ | ------------------------------ | ------- | ------------------------------------ |
+| `enableOrdering`   | `boolean`                      | `true`  | Whether sorting menu items are shown |
+| `defaultOrderBy`   | `Array<{property, direction}>` | -       | Initial sort order (uncontrolled)    |
+| `orderBy`          | `Array<{property, direction}>` | -       | Current sort order (controlled)      |
+| `onOrderByChanged` | `(newOrderBy) => void`         | -       | Required when `orderBy` is provided  |
+
+### Column Features
+
+| Prop                   | Type      | Default | Description                                     |
+| ---------------------- | --------- | ------- | ----------------------------------------------- |
+| `enableOrdering`       | `boolean` | `true`  | Whether sorting menu items are shown            |
+| `enableColumnPinning`  | `boolean` | `true`  | Whether pinning menu items are shown            |
+| `enableColumnResizing` | `boolean` | `true`  | Whether resize menu item is shown               |
+| `enableColumnConfig`   | `boolean` | `true`  | Whether column configuration menu item is shown |
+
+#### Hiding Header Menu Items
+
+Each column header has a menu with items for sorting, filtering, pinning, resizing, and column configuration. You can hide specific menu items by setting the corresponding `enable...` prop to `false`:
+
+```typescript
+<ObjectTable
+  objectType={Employee}
+  enableFiltering={false} // Hides "Filter" menu items from column headers
+  enableOrdering={false} // Hides "Sort" menu items from column headers
+  enableColumnPinning={false} // Hides "Pin" menu items from column headers
+  enableColumnResizing={false} // Hides "Resize" menu item from column headers
+  enableColumnConfig={false} // Hides "Column configuration" menu item from column headers
+/>;
+```
 
 ### Row Selection
 
@@ -108,6 +138,15 @@ Add selection mode to enable row selection:
 | `onRowClick`            | `(object) => void`              | Called when a row is clicked                 |
 | `renderCellContextMenu` | `(row, cellValue) => ReactNode` | Custom context menu for right-click on cells |
 
+### Cell Editing
+
+> **Note:** Editable cells currently support text and number data types.
+
+| Prop                 | Type                                                       | Description                                                                                  |
+| -------------------- | ---------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| `onCellValueChanged` | `(cellId: CellIdentifier, state: CellValueState) => void`  | Called when a cell value is edited. Throw error to reject change                             |
+| `onSubmitEdits`      | `(edits: Record<string, CellValueState>) => Promise<void>` | When provided, shows a "Submit Edits" button that calls this function with all pending edits |
+
 ## Column Definitions
 
 ### Column Definition Structure
@@ -123,10 +162,19 @@ type ColumnDefinition<Q, RDPs, FunctionColumns> = {
   resizable?: boolean; // Allow column resizing
   orderable?: boolean; // Allow column sorting
   filterable?: boolean; // Allow column filtering
+  editable?: boolean; // Allow inline editing for this column (currently supports text and number types)
   renderCell?: (object, locator) => React.ReactNode; // Custom cell renderer
-  renderHeader?: () => React.ReactNode; // Custom header renderer
+  columnName?: string; // Custom column name for the header
+  renderHeader?: () => React.ReactNode; // Custom header renderer (takes precedence over columnName)
 };
 ```
+
+> **Note:** Editable cells currently support text and number data types. Support for other data types (date, boolean, etc.) will be added in future updates.
+
+#### `columnName` vs `renderHeader`
+
+- **`columnName`**: If provided, this string is used as the column header text. If not provided, property columns default to the property's `displayName`, and other column types default to the `id`.
+- **`renderHeader`**: If provided, this function renders the header component. When both `columnName` and `renderHeader` are provided, `renderHeader` takes precedence in the table header, but `columnName` is still used in other places where the column name is displayed (e.g., the column configuration dialog, multi-sort dialog).
 
 ### Column Locator Types
 
@@ -153,20 +201,31 @@ Displays a computed property:
 }
 ```
 
-#### 3. Function Column
+#### 3. Function Column (Not supported yet)
 
 Displays custom computed values:
 
 ```typescript
 {
   type: "function",
-  id: "functionName"  // Must match a key in FunctionColumns type
+  id: "functionName"
+}
+```
+
+#### 4. Custom Column
+
+Displays header and cell with the provided custom renderers.
+
+```typescript
+{
+  type: "custom",
+  id: "columnName" 
 }
 ```
 
 ## Examples
 
-### Example 1: Basic Table with Custom Columns
+### Example 1: Basic Table with Custom Column Definitions
 
 ```typescript
 import {
@@ -175,25 +234,25 @@ import {
 } from "@osdk/react-components/experimental";
 import { Employee } from "@YourApp/sdk";
 
-function EmployeesTable() {
-  const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
-    {
-      locator: { type: "property", id: "fullName" },
-      pinned: "left",
-      width: 200,
-    },
-    {
-      locator: { type: "property", id: "email" },
-      width: 250,
-    },
-    {
-      locator: { type: "property", id: "jobTitle" },
-    },
-    {
-      locator: { type: "property", id: "department" },
-    },
-  ];
+const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
+  {
+    locator: { type: "property", id: "fullName" },
+    pinned: "left",
+    width: 200,
+  },
+  {
+    locator: { type: "property", id: "email" },
+    width: 250,
+  },
+  {
+    locator: { type: "property", id: "jobTitle" },
+  },
+  {
+    locator: { type: "property", id: "department" },
+  },
+];
 
+function EmployeesTable() {
   return (
     <ObjectTable
       objectType={Employee}
@@ -247,25 +306,25 @@ import {
 } from "@osdk/react-components/experimental";
 import { Employee } from "@YourApp/sdk";
 
-function EmployeesTable() {
-  const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
-    {
-      locator: { type: "property", id: "fullName" },
-      renderCell: (employee) => (
-        <strong style={{ color: "blue" }}>
-          {employee.fullName}
-        </strong>
-      ),
+const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
+  {
+    locator: { type: "property", id: "fullName" },
+    renderCell: (employee) => (
+      <strong style={{ color: "blue" }}>
+        {employee.fullName}
+      </strong>
+    ),
+  },
+  {
+    locator: { type: "property", id: "firstFullTimeStartDate" },
+    renderCell: (employee) => {
+      const date = employee.firstFullTimeStartDate;
+      return date ? new Date(date).toLocaleDateString() : "-";
     },
-    {
-      locator: { type: "property", id: "firstFullTimeStartDate" },
-      renderCell: (employee) => {
-        const date = employee.firstFullTimeStartDate;
-        return date ? new Date(date).toLocaleDateString() : "-";
-      },
-    },
-  ];
+  },
+];
 
+function EmployeesTable() {
   return (
     <ObjectTable
       objectType={Employee}
@@ -284,19 +343,19 @@ import {
 } from "@osdk/react-components/experimental";
 import { Employee } from "@YourApp/sdk";
 
-function EmployeesTable() {
-  const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
-    {
-      locator: { type: "property", id: "fullName" },
-      renderHeader: () => (
-        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <span>👤</span>
-          <span>Employee Name</span>
-        </div>
-      ),
-    },
-  ];
+const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
+  {
+    locator: { type: "property", id: "fullName" },
+    renderHeader: () => (
+      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+        <span>👤</span>
+        <span>Employee Name</span>
+      </div>
+    ),
+  },
+];
 
+function EmployeesTable() {
   return (
     <ObjectTable
       objectType={Employee}
@@ -385,7 +444,9 @@ function EmployeesTable() {
 }
 ```
 
-### Example 9: Derived Property (RDP) Column
+### Example 9: Filtering on Object Properties and Derived Properties (RDPs)
+
+You can filter by object properties and derived properties by including them in the `WhereClause`:
 
 ```typescript
 import { DerivedProperty } from "@osdk/client";
@@ -399,31 +460,35 @@ type RDPs = {
   managerName: string | undefined;
 };
 
-function EmployeesTable() {
-  const columnDefinitions: Array<ColumnDefinition<typeof Employee, RDPs>> = [
-    {
-      locator: { type: "property", id: "fullName" },
+const columnDefinitions: Array<ColumnDefinition<typeof Employee, RDPs>> = [
+  {
+    locator: { type: "property", id: "fullName" },
+  },
+  {
+    locator: {
+      type: "rdp",
+      id: "managerName",
+      creator: DerivedProperty.creator<typeof Employee, string | undefined>(
+        (base) =>
+          base.lead.select({
+            fullName: true,
+          }),
+        (pivot) => pivot?.fullName,
+      ),
     },
-    {
-      locator: {
-        type: "rdp",
-        id: "managerName",
-        creator: DerivedProperty.creator<typeof Employee, string | undefined>(
-          (base) =>
-            base.lead.select({
-              fullName: true,
-            }),
-          (pivot) => pivot?.fullName,
-        ),
-      },
-      renderHeader: () => <span>Manager</span>,
-    },
-  ];
+    renderHeader: () => <span>Manager</span>,
+  },
+];
 
+function EmployeesWithManagerTable() {
   return (
     <ObjectTable
       objectType={Employee}
       columnDefinitions={columnDefinitions}
+      filter={{
+        fullName: { $containsAnyTerm: "Paul" },
+        managerName: { $eq: "Jane Smith" },
+      }}
     />
   );
 }
@@ -480,108 +545,125 @@ function EmployeesTable() {
 }
 ```
 
-### Example 12: Complete Example from PeopleApp
+### Example 12: Custom Column Type
 
-This is a real-world example from the OSDK test application:
+In a custom column type, you can render anything in the column by passing in renderHeader and renderCell props.
 
 ```typescript
-import { DerivedProperty } from "@osdk/client";
 import {
   type ColumnDefinition,
   ObjectTable,
 } from "@osdk/react-components/experimental";
 import { Employee } from "@YourApp/sdk";
 
-type RDPs = {
-  managerName: string | undefined;
-};
+const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
+  {
+    locator: {
+      type: "custom",
+      id: "Custom Column",
+    },
+    renderHeader: () => "Custom",
+    renderCell: (object: Osdk.Instance<Employee>) => {
+      return (
+        <button onClick={() => alert(`Clicked ${object["$title"]}`)}>
+          Click me
+        </button>
+      );
+    },
+    orderable: false,
+  },
+];
 
 function EmployeesTable() {
-  const columnDefinitions: Array<ColumnDefinition<typeof Employee, RDPs>> = [
-    {
-      locator: { type: "property", id: "fullName" },
-      renderHeader: () => (
-        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <span>👤</span>
-          <span>Full Name</span>
-        </div>
-      ),
-      pinned: "left",
-    },
-    {
-      locator: { type: "property", id: "jobTitle" },
-      isVisible: false,
-    },
-    {
-      locator: { type: "property", id: "firstFullTimeStartDate" },
-      width: 180,
-      renderCell: (employee) => {
-        const date = employee.firstFullTimeStartDate;
-        if (!date) return "-";
-        return new Date(date).toLocaleDateString("en-US", {
-          year: "numeric",
-          month: "short",
-          day: "numeric",
-        });
-      },
-    },
-    {
-      locator: {
-        type: "rdp",
-        id: "managerName",
-        creator: DerivedProperty.creator<typeof Employee, string | undefined>(
-          (base) =>
-            base.lead.select({
-              fullName: true,
-            }),
-          (pivot) => pivot?.fullName,
-        ),
-      },
-      renderHeader: () => <span>Manager</span>,
-    },
-  ];
-
-  const renderCellContextMenu = (employee: Employee, cellValue: unknown) => (
-    <div
-      style={{
-        background: "white",
-        border: "1px solid #ddd",
-        borderRadius: "4px",
-        padding: "8px",
-        boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
-      }}
-    >
-      <div
-        onClick={() => console.log("View", employee.fullName)}
-        style={{ cursor: "pointer", padding: "4px 8px" }}
-      >
-        View Details
-      </div>
-      <div
-        onClick={() => navigator.clipboard.writeText(String(cellValue))}
-        style={{ cursor: "pointer", padding: "4px 8px" }}
-      >
-        Copy Value
-      </div>
-    </div>
-  );
-
   return (
-    <ObjectTable<typeof Employee, RDPs>
+    <ObjectTable
       objectType={Employee}
       columnDefinitions={columnDefinitions}
-      selectionMode="multiple"
-      renderCellContextMenu={renderCellContextMenu}
-      defaultOrderBy={[{
-        property: "firstFullTimeStartDate",
-        direction: "desc",
-      }]}
     />
   );
 }
 ```
 
-## Advanced Features
+### Example 13: Editable Table
+
+Enable inline editing with bulk submission:
+
+```typescript
+import { useOsdkAction } from "@osdk/react";
+import {
+  type CellIdentifier,
+  type CellValueState,
+  type ColumnDefinition,
+  ObjectTable,
+} from "@osdk/react-components/experimental";
+import { Employee, updateMultipleEmployees } from "@YourApp/sdk";
+
+const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
+  {
+    locator: { type: "property", id: "fullName" },
+    editable: true, // Enable editing for this column
+  },
+  {
+    locator: { type: "property", id: "email" },
+    editable: true,
+  },
+  {
+    locator: { type: "property", id: "department" },
+    editable: true,
+  },
+  {
+    locator: { type: "property", id: "jobTitle" },
+    editable: false, // This column is read-only
+  },
+];
+
+function EditableEmployeesTable() {
+  const { applyAction } = useOsdkAction(updateMultipleEmployees);
+
+  const handleCellValueChanged = (
+    cellIdentifier: CellIdentifier,
+    state: CellValueState,
+  ) => {
+    console.log("Cell edited:", {
+      rowId: cellIdentifier.rowId,
+      columnId: cellIdentifier.columnId,
+      oldValue: state.oldValue,
+      newValue: state.newValue,
+    });
+
+    // Validate individual cell changes
+    if (cellIdentifier.columnId === "email") {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(state.newValue as string)) {
+        throw new Error("Invalid email format");
+      }
+    }
+  };
+
+  // When onSubmitEdits is provided, a "Submit Edits" button appears in the table
+  const handleSubmitEdits = async (edits: Record<string, CellValueState>) => {
+    try {
+      // Call your action with the edits
+      // The exact format depends on your action's parameters
+      await applyAction({ edits });
+
+      alert("All changes saved successfully!");
+    } catch (error) {
+      console.error("Failed to save edits:", error);
+      throw error; // Re-throw to let the table handle the error
+    }
+  };
+
+  return (
+    <ObjectTable
+      objectType={Employee}
+      columnDefinitions={columnDefinitions}
+      onCellValueChanged={handleCellValueChanged}
+      onSubmitEdits={handleSubmitEdits} // Shows "Submit Edits" button
+    />
+  );
+}
+```
 
 ### Column Pinning
 
@@ -633,8 +715,10 @@ Disable filtering or sorting globally:
 ```typescript
 <ObjectTable
   objectType={Employee}
-  filterable={false}
-  orderable={false}
+  enableColumnPinning={false}
+  enableColumnResizing={false}
+  enableColumnConfig={false}
+  enableOrdering={false}
 />;
 ```
 
@@ -673,7 +757,7 @@ No additional configuration needed - these states are built-in!
 
 ### Infinite Scrolling
 
-The ObjectTable automatically implements infinite scroll pagination. As users scroll down, more data is loaded seamlessly. No configuration required!
+The ObjectTable automatically implements infinite scroll pagination, with page size of 50. As users scroll down, more data is loaded seamlessly. No configuration required!
 
 ## TypeScript Tips
 
@@ -715,16 +799,6 @@ import { Employee } from "@YourApp/sdk";
 // PropertyKeys gives you all valid property names
 type EmployeeProps = PropertyKeys<typeof Employee>;
 ```
-
-## Best Practices
-
-1. **Define columns explicitly** - Use `columnDefinitions` to control column order and visibility rather than relying on defaults
-2. **Pin important columns** - Pin key identifier columns (like name or ID) to the left for better UX
-3. **Set reasonable widths** - Define `minWidth` and `maxWidth` to prevent columns from becoming too narrow or wide
-4. **Use controlled state when needed** - Use controlled sorting/filtering when you need to sync with URL params or external state
-5. **Custom cell renderers for formatting** - Use `renderCell` for dates, numbers, or complex content rather than displaying raw values
-6. **Provide context menus** - Enhance UX by providing relevant actions via `renderCellContextMenu`
-7. **Handle row clicks thoughtfully** - Use `onRowClick` for navigation but avoid if you have selection enabled to prevent conflicts
 
 ## Troubleshooting
 
@@ -782,9 +856,10 @@ The ObjectTable (and all OSDK components) can be themed using CSS custom propert
 Change OSDK component styling without affecting other Blueprint components in your app:
 
 ```css
-@layer osdk.tokens, user.theme;
+@layer osdk.tokens, osdk.components, user.theme;
 
-@import "@osdk/react-components-styles/index.css" layer(osdk.tokens);
+@import "@osdk/react-components/styles.css" layer(osdk.components);
+@import "@osdk/react-components-styles" layer(osdk.tokens);
 
 @layer user.theme {
   :root {
@@ -805,9 +880,10 @@ Change OSDK component styling without affecting other Blueprint components in yo
 Change both Blueprint and OSDK components for consistent theming:
 
 ```css
-@layer osdk.tokens, user.theme;
+@layer osdk.components, osdk.tokens, user.theme;
 
-@import "@osdk/react-components-styles/index.css" layer(osdk.tokens);
+@import "@osdk/react-components/styles.css" layer(osdk.components);
+@import "@osdk/react-components-styles" layer(osdk.tokens);
 
 @layer user.theme {
   :root {

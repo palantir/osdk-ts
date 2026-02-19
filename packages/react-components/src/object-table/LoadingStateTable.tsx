@@ -16,7 +16,7 @@
 
 import type { HeaderGroup, RowData, Table } from "@tanstack/react-table";
 import classNames from "classnames";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import loadingStyles from "./LoadingCell.module.css";
 import { LoadingRow } from "./LoadingRow.js";
 import bodyStyles from "./TableBody.module.css";
@@ -41,9 +41,12 @@ export function LoadingStateTable<TData extends RowData>({
   columnWidth = 120,
 }: LoadingStateTableProps<TData>): React.ReactElement {
   // If selection enabled, there will be a header for the selection column
-  const isSelectionEnabled = table.options.enableRowSelection;
-  const minHeaderCount = isSelectionEnabled ? 1 : 0;
-  const headers = headerGroups[0]?.headers ?? [];
+  const enableRowSelection = table.options.enableRowSelection;
+  const minHeaderCount = enableRowSelection ? 1 : 0;
+  const headers = useMemo(
+    () => headerGroups.length > 0 ? headerGroups[0].headers : [],
+    [headerGroups],
+  );
   const hasHeadersLoaded = headers.length > minHeaderCount;
 
   const headerRef = useRef<HTMLTableSectionElement>(null);

@@ -40,9 +40,9 @@ export function createMockObjectSet<Q extends ObjectOrInterfaceDefinition>(
   const terminal = <T>(method: string, args: unknown): T =>
     resolver([...calls, [method, args]]) as T;
 
+  // All methods should execute synchronously even if marked as async
   return {
     where: (clause: WhereClause<Q>) => chain("where", clause),
-    // TODO: Add object set support
     union: () =>
       void invariant(false, "union is not supported in mocks") as any,
     intersect: () =>

@@ -59,6 +59,7 @@ describe("useRowSelection", () => {
       expect(result.current.rowSelection).toEqual({});
       expect(result.current.isAllSelected).toBe(false);
       expect(result.current.hasSelection).toBe(false);
+      expect(result.current.enableRowSelection).toBe(false);
     });
 
     it("does not respond to toggle operations", () => {
@@ -103,6 +104,7 @@ describe("useRowSelection", () => {
           result.current.onToggleRow("item-0", 0);
         });
 
+        expect(result.current.enableRowSelection).toBe(true);
         expect(result.current.rowSelection).toEqual({ "item-0": true });
         expect(result.current.hasSelection).toBe(true);
         expect(onRowSelection).toHaveBeenCalledWith([data[0].$primaryKey]);
@@ -203,6 +205,7 @@ describe("useRowSelection", () => {
           result.current.onToggleRow("item-2", 2);
         });
 
+        expect(result.current.enableRowSelection).toBe(true);
         expect(result.current.rowSelection).toEqual({
           "item-0": true,
           "item-2": true,
