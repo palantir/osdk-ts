@@ -18,7 +18,6 @@ import type { ObjectSet, ObjectTypeDefinition, WhereClause } from "@osdk/api";
 import React, { memo, useCallback } from "react";
 import type { FilterDefinitionUnion } from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
-import { FilterInputErrorBoundary } from "./FilterInputErrorBoundary.js";
 import { ContainsTextInput } from "./inputs/ContainsTextInput.js";
 import { MultiDateInput } from "./inputs/MultiDateInput.js";
 import { SingleDateInput } from "./inputs/SingleDateInput.js";
@@ -41,7 +40,7 @@ function FilterInputInner<Q extends ObjectTypeDefinition>({
   onFilterStateChanged,
   whereClause,
 }: FilterInputProps<Q>): React.ReactElement {
-  const content = (
+  return (
     <FilterInputContent
       objectType={objectType}
       objectSet={objectSet}
@@ -51,8 +50,6 @@ function FilterInputInner<Q extends ObjectTypeDefinition>({
       whereClause={whereClause}
     />
   );
-
-  return <FilterInputErrorBoundary>{content}</FilterInputErrorBoundary>;
 }
 
 export const FilterInput = memo(FilterInputInner) as typeof FilterInputInner;
