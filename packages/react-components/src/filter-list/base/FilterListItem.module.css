@@ -26,6 +26,7 @@
 }
 
 .itemLabel {
+  flex: 1;
   font-family: var(--osdk-filter-item-label-font-family);
   font-size: var(--osdk-filter-item-label-font-size);
   font-weight: var(--osdk-filter-item-label-font-weight);
@@ -63,6 +64,38 @@
     outline: var(--osdk-filter-input-focus-outline-width) solid var(--osdk-filter-item-drag-handle-focus-outline-color);
     outline-offset: var(--osdk-filter-input-focus-outline-offset);
   }
+}
+
+.excludeToggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--osdk-filter-item-exclude-toggle-padding);
+  margin-left: auto;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-radius: var(--osdk-filter-item-exclude-toggle-border-radius);
+  color: var(--osdk-filter-item-exclude-toggle-color);
+
+  &:hover {
+    color: var(--osdk-filter-item-exclude-toggle-color-hover);
+    background: var(--osdk-filter-item-exclude-toggle-bg-hover);
+  }
+
+  &:focus-visible {
+    outline: var(--osdk-filter-input-focus-outline-width) solid var(--osdk-filter-input-focus-outline-color);
+    outline-offset: var(--osdk-filter-input-focus-outline-offset);
+  }
+}
+
+.excludeToggle[aria-pressed="true"] {
+  color: var(--osdk-filter-item-exclude-toggle-color-active);
+}
+
+.filterItem[data-excluding] {
+  border-left: 2px solid var(--osdk-filter-item-exclude-border-color);
+  padding-left: var(--osdk-filter-item-gap);
 }
 
 .dragging {
