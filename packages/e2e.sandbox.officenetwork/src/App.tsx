@@ -2,8 +2,8 @@ import type { DerivedProperty } from "@osdk/api";
 import { useOsdkObjects } from "@osdk/react/experimental";
 import React from "react";
 import { AggregationStatsPanel } from "./components/AggregationStatsPanel.js";
+import { EmployeeFilters } from "./components/EmployeeFilters.js";
 import { EmployeePanel } from "./components/EmployeePanel.js";
-import { LeftSidebar } from "./components/LeftSidebar.js";
 import { OfficeMap } from "./components/OfficeMap.js";
 import { OfficePanel } from "./components/OfficePanel.js";
 import { ReorgWizard } from "./components/ReorgWizard.js";
@@ -93,7 +93,6 @@ function App() {
     HierarchyLevel | null
   >(null);
   const [searchQuery, setSearchQuery] = React.useState("");
-  const [sidebarCollapsed, setSidebarCollapsed] = React.useState(false);
 
   const { data: offices, isLoading: officesLoading, error: officesError } =
     useOsdkObjects(Office, {
@@ -214,19 +213,10 @@ function App() {
 
       {/* Main Content Area */}
       <div className="flex-1 flex overflow-hidden">
-        {/* Left Sidebar */}
-        <LeftSidebar
-          offices={offices ?? []}
-          employees={employees ?? []}
-          selectedOffice={selectedOffice}
-          selectedEmployee={selectedEmployee}
-          onSelectOffice={handleSelectOffice}
-          onSelectEmployee={handleSelectEmployeeWithOffice}
-          isCollapsed={sidebarCollapsed}
-          onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
-          isLoadingOffices={officesLoading}
-          isLoadingEmployees={employeesLoading}
-        />
+        {/* Left Sidebar - Filter List */}
+        <div className="w-64 shrink-0 border-r border-[var(--officenetwork-border-default)] overflow-y-auto bg-[var(--officenetwork-bg-surface)]">
+          <EmployeeFilters />
+        </div>
 
         {/* Map Area */}
         <div className="flex-1 relative">
