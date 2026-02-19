@@ -15,57 +15,40 @@
  */
 
 import { Cross } from "@blueprintjs/icons";
-import type {
-  ObjectSet,
-  ObjectTypeDefinition,
-  PropertyKeys,
-  WhereClause,
-} from "@osdk/api";
 import classnames from "classnames";
 import React, { memo, useCallback, useMemo } from "react";
 import { Select } from "../../../base-components/select/Select.js";
-import { usePropertyAggregation } from "../../hooks/usePropertyAggregation.js";
+import type { PropertyAggregationValue } from "../../types/AggregationTypes.js";
 import sharedStyles from "./shared.module.css";
 import styles from "./SingleSelectInput.module.css";
 
-interface SingleSelectInputProps<
-  Q extends ObjectTypeDefinition,
-  K extends PropertyKeys<Q>,
-> {
-  objectType: Q;
-  propertyKey: K;
+interface SingleSelectInputProps {
+  values: PropertyAggregationValue[];
+  isLoading: boolean;
+  error: Error | null;
   selectedValue: string | undefined;
   onChange: (value: string | undefined) => void;
-  objectSet?: ObjectSet<Q>;
-  whereClause?: WhereClause<Q>;
   className?: string;
   style?: React.CSSProperties;
   placeholder?: string;
   showClearButton?: boolean;
   showCounts?: boolean;
+  ariaLabel?: string;
 }
 
-function SingleSelectInputInner<
-  Q extends ObjectTypeDefinition,
-  K extends PropertyKeys<Q>,
->({
-  objectType,
-  propertyKey,
+function SingleSelectInputInner({
+  values,
+  isLoading,
+  error,
   selectedValue,
   onChange,
-  whereClause,
   className,
   style,
   placeholder = "Select a value...",
   showClearButton = true,
   showCounts = false,
-}: SingleSelectInputProps<Q, K>): React.ReactElement {
-  const { data: values, isLoading, error } = usePropertyAggregation(
-    objectType,
-    propertyKey,
-    { where: whereClause },
-  );
-
+  ariaLabel = "Select value",
+}: SingleSelectInputProps): React.ReactElement {
   const handleValueChange = useCallback(
     (value: string | null) => {
       onChange(value ?? undefined);
@@ -120,7 +103,7 @@ function SingleSelectInputInner<
           >
             <Select.Trigger
               placeholder={placeholder}
-              aria-label={`Select ${propertyKey}`}
+              aria-label={ariaLabel}
             />
             <Select.Portal>
               <Select.Positioner>

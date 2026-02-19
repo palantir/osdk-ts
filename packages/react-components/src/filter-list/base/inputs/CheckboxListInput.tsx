@@ -14,54 +14,35 @@
  * limitations under the License.
  */
 
-import type {
-  ObjectSet,
-  ObjectTypeDefinition,
-  PropertyKeys,
-  WhereClause,
-} from "@osdk/api";
 import classnames from "classnames";
 import React, { memo, useCallback, useMemo } from "react";
 import { Checkbox } from "../../../base-components/checkbox/Checkbox.js";
-import { usePropertyAggregation } from "../../hooks/usePropertyAggregation.js";
+import type { PropertyAggregationValue } from "../../types/AggregationTypes.js";
 import styles from "./CheckboxListInput.module.css";
 import sharedStyles from "./shared.module.css";
 
-interface CheckboxListInputProps<
-  Q extends ObjectTypeDefinition,
-  K extends PropertyKeys<Q>,
-> {
-  objectType: Q;
-  propertyKey: K;
+interface CheckboxListInputProps {
+  values: PropertyAggregationValue[];
+  isLoading: boolean;
+  error: Error | null;
   selectedValues: string[];
   onChange: (selectedValues: string[]) => void;
-  objectSet?: ObjectSet<Q>;
-  whereClause?: WhereClause<Q>;
   className?: string;
   style?: React.CSSProperties;
 }
 
-function CheckboxListInputInner<
-  Q extends ObjectTypeDefinition,
-  K extends PropertyKeys<Q>,
->({
-  objectType,
-  propertyKey,
+function CheckboxListInputInner({
+  values,
+  isLoading,
+  error,
   selectedValues,
   onChange,
-  whereClause,
   className,
   style,
-}: CheckboxListInputProps<Q, K>): React.ReactElement {
-  const { data, isLoading, error } = usePropertyAggregation(
-    objectType,
-    propertyKey,
-    { where: whereClause },
-  );
-
-  const values = useMemo(
-    () => data.map((item) => item.value),
-    [data],
+}: CheckboxListInputProps): React.ReactElement {
+  const displayValues = useMemo(
+    () => values.map((item) => item.value),
+    [values],
   );
 
   const selectedSet = useMemo(
@@ -92,20 +73,20 @@ function CheckboxListInputInner<
         </div>
       )}
 
-      {!error && values.length === 0 && (
+      {!error && displayValues.length === 0 && (
         <div className={sharedStyles.emptyMessage}>
           {isLoading ? "Loading values..." : "No values available"}
         </div>
       )}
 
-      {values.length > 0 && (
+      {displayValues.length > 0 && (
         <>
           {isLoading && (
             <div className={sharedStyles.loadingMessage}>
               Updating...
             </div>
           )}
-          {values.map((value) => {
+          {displayValues.map((value) => {
             const isSelected = selectedSet.has(value);
 
             return (

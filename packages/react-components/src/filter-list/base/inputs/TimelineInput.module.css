@@ -17,50 +17,50 @@
 .timeline {
   display: flex;
   flex-direction: column;
-  gap: var(--osdk-filter-range-gap, calc(var(--bp-surface-spacing) * 2));
+  gap: var(--osdk-filter-range-gap);
 }
 
 .labels {
   display: flex;
   align-items: center;
-  gap: var(--bp-surface-spacing);
-  font-family: var(--bp-typography-family-default);
-  font-size: var(--bp-typography-size-bodySmall);
-  color: var(--bp-typography-colorMuted);
+  gap: var(--osdk-filter-timeline-labels-gap);
+  font-family: var(--osdk-filter-timeline-labels-font-family);
+  font-size: var(--osdk-filter-timeline-labels-font-size);
+  color: var(--osdk-filter-timeline-labels-color);
 }
 
 .labels button {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: calc(var(--bp-surface-spacing) * 0.5);
+  padding: var(--osdk-filter-timeline-button-padding);
   border: none;
   background: transparent;
   cursor: pointer;
-  color: var(--bp-iconography-colorMuted);
-  border-radius: var(--bp-surface-borderRadius);
+  color: var(--osdk-filter-timeline-button-color);
+  border-radius: var(--osdk-filter-timeline-button-border-radius);
   margin-left: auto;
 
   &:hover {
-    background: var(--bp-surface-colorHover-default);
-    color: var(--bp-typography-colorRest-default);
+    background: var(--osdk-filter-timeline-button-bg-hover);
+    color: var(--osdk-filter-timeline-button-color-hover);
   }
 }
 
 .brush {
   display: flex;
   align-items: center;
-  gap: var(--bp-surface-spacing);
+  gap: var(--osdk-filter-timeline-labels-gap);
 }
 
 .brush span {
-  color: var(--bp-typography-colorMuted);
+  color: var(--osdk-filter-timeline-brush-color);
 }
 
 .input {
   flex: 1;
-  font-family: var(--bp-typography-family-default);
-  font-size: var(--bp-typography-size-bodyMedium);
+  font-family: var(--osdk-filter-input-font-family);
+  font-size: var(--osdk-filter-timeline-input-font-size);
   padding: var(--osdk-filter-input-padding);
   border: var(--osdk-filter-input-border);
   border-radius: var(--osdk-filter-input-border-radius);

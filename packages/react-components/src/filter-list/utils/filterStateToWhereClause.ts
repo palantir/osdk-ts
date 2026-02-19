@@ -22,10 +22,6 @@ import { getFilterKey } from "./getFilterKey.js";
 
 type PropertyFilter = Record<string, unknown> | boolean | string | number;
 
-function isDate(value: unknown): value is Date {
-  return value instanceof Date;
-}
-
 function filterStateToPropertyFilter(
   state: FilterState,
 ): PropertyFilter | undefined {

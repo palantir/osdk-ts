@@ -18,18 +18,18 @@
 .loadingMessage,
 .errorMessage,
 .emptyMessage {
-  font-family: var(--bp-typography-family-default);
-  font-size: var(--bp-typography-size-bodySmall);
-  padding: var(--bp-surface-spacing);
+  font-family: var(--osdk-filter-message-font-family);
+  font-size: var(--osdk-filter-message-font-size);
+  padding: var(--osdk-filter-message-padding);
 }
 
 .loadingMessage,
 .emptyMessage {
-  color: var(--bp-typography-colorMuted);
+  color: var(--osdk-filter-message-color-muted);
 }
 
 .errorMessage {
-  color: var(--bp-intent-danger-rest);
+  color: var(--osdk-filter-message-color-danger);
 }
 
 /* Shared tag styles */

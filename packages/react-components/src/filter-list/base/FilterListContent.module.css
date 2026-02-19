@@ -31,7 +31,7 @@
 }
 
 .dragOverlay {
-  box-shadow: var(--osdk-filter-item-drag-overlay-shadow, 0 2px 8px rgba(0, 0, 0, 0.15));
-  border-radius: var(--osdk-filter-item-drag-overlay-border-radius, 4px);
-  background: var(--osdk-filter-item-drag-overlay-bg, #fff);
+  box-shadow: var(--osdk-filter-item-drag-overlay-shadow);
+  border-radius: var(--osdk-filter-item-drag-overlay-border-radius);
+  background: var(--osdk-filter-item-drag-overlay-bg);
 }

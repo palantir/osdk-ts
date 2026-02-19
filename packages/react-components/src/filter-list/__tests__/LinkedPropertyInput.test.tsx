@@ -18,8 +18,8 @@ import type { ObjectSet, ObjectTypeDefinition, PropertyKeys } from "@osdk/api";
 import { cleanup, render, screen } from "@testing-library/react";
 import React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { LinkedPropertyInput } from "../base/inputs/LinkedPropertyInput.js";
 import type { FilterState } from "../FilterListItemApi.js";
+import { LinkedPropertyInput } from "../inputs/LinkedPropertyInput.js";
 import type { LinkedPropertyFilterDefinition } from "../types/LinkedFilterTypes.js";
 
 const MockLinkedObjectType = {

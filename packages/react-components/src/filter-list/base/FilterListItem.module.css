@@ -41,18 +41,18 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--osdk-filter-item-drag-handle-padding, 2px);
-  margin-right: var(--osdk-filter-item-drag-handle-margin-right, 4px);
+  padding: var(--osdk-filter-item-drag-handle-padding);
+  margin-right: var(--osdk-filter-item-drag-handle-margin-right);
   border: none;
-  background: var(--osdk-filter-item-drag-handle-bg, transparent);
+  background: var(--osdk-filter-item-drag-handle-bg);
   cursor: grab;
-  border-radius: var(--osdk-filter-item-drag-handle-border-radius, 4px);
-  color: var(--osdk-filter-item-drag-handle-color, #999);
+  border-radius: var(--osdk-filter-item-drag-handle-border-radius);
+  color: var(--osdk-filter-item-drag-handle-color);
   touch-action: none;
 
   &:hover {
-    color: var(--osdk-filter-item-drag-handle-color-hover, #666);
-    background: var(--osdk-filter-item-drag-handle-bg-hover, rgba(0, 0, 0, 0.05));
+    color: var(--osdk-filter-item-drag-handle-color-hover);
+    background: var(--osdk-filter-item-drag-handle-bg-hover);
   }
 
   &:active {
@@ -60,11 +60,11 @@
   }
 
   &:focus-visible {
-    outline: 2px solid var(--osdk-filter-item-drag-handle-focus-outline-color, #2196f3);
-    outline-offset: 2px;
+    outline: var(--osdk-filter-input-focus-outline-width) solid var(--osdk-filter-item-drag-handle-focus-outline-color);
+    outline-offset: var(--osdk-filter-input-focus-outline-offset);
   }
 }
 
 .dragging {
-  opacity: var(--osdk-filter-item-dragging-opacity, 0.5);
+  opacity: var(--osdk-filter-item-dragging-opacity);
 }

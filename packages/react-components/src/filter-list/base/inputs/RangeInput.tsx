@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import type { ObjectSet, ObjectTypeDefinition, PropertyKeys } from "@osdk/api";
-import { useOsdkAggregation } from "@osdk/react/experimental";
 import classnames from "classnames";
 import React, {
   memo,
@@ -26,7 +24,6 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { createGroupByAggregateOptions } from "../../utils/aggregationHelpers.js";
 import {
   createHistogramBuckets,
   getMaxBucketCount,
@@ -50,39 +47,29 @@ export interface RangeInputConfig<T> {
   inputProps?: React.InputHTMLAttributes<HTMLInputElement>;
 }
 
-export interface RangeInputProps<
-  Q extends ObjectTypeDefinition,
-  K extends PropertyKeys<Q>,
-  T,
-> {
-  objectType: Q;
-  propertyKey: K;
+export interface RangeInputProps<T> {
+  valueCountPairs: Array<{ value: T; count: number }>;
+  isLoading: boolean;
   minValue: T | undefined;
   maxValue: T | undefined;
   onChange: (min: T | undefined, max: T | undefined) => void;
-  objectSet?: ObjectSet<Q>;
   showHistogram?: boolean;
   className?: string;
   style?: React.CSSProperties;
   config: RangeInputConfig<T>;
 }
 
-function RangeInputInner<
-  Q extends ObjectTypeDefinition,
-  K extends PropertyKeys<Q>,
-  T,
->({
-  objectType,
-  propertyKey,
+function RangeInputInner<T>({
+  valueCountPairs,
+  isLoading,
   minValue,
   maxValue,
   onChange,
-  objectSet,
   showHistogram = true,
   className,
   style,
   config,
-}: RangeInputProps<Q, K, T>): React.ReactElement {
+}: RangeInputProps<T>): React.ReactElement {
   const minInputId = useId();
   const maxInputId = useId();
 
@@ -123,37 +110,6 @@ function RangeInputInner<
       if (maxTimeoutRef.current) clearTimeout(maxTimeoutRef.current);
     };
   }, []);
-
-  const aggregateOptions = useMemo(
-    () => createGroupByAggregateOptions<Q>(propertyKey as string),
-    [propertyKey],
-  );
-
-  const { data: aggregateData, isLoading } = useOsdkAggregation(objectType, {
-    aggregate: aggregateOptions,
-  });
-
-  const valueCountPairs = useMemo<Array<{ value: T; count: number }>>(() => {
-    if (!aggregateData) return [];
-
-    const dataArray = aggregateData as Iterable<{
-      $group: Record<string, unknown>;
-      $count?: number;
-    }>;
-
-    const pairs: Array<{ value: T; count: number }> = [];
-    for (const item of dataArray) {
-      const rawValue = item.$group[propertyKey as string];
-      if (rawValue != null) {
-        const parsed = config.parseValue(String(rawValue));
-        if (parsed !== undefined) {
-          pairs.push({ value: parsed, count: item.$count ?? 0 });
-        }
-      }
-    }
-
-    return pairs;
-  }, [aggregateData, propertyKey, config]);
 
   const computedRange = useMemo(() => {
     if (valueCountPairs.length === 0) return { min: undefined, max: undefined };

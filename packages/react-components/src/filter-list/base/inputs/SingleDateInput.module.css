@@ -27,8 +27,8 @@
 
 .input {
   flex: 1;
-  font-family: var(--bp-typography-family-default);
-  font-size: var(--bp-typography-size-bodyMedium);
+  font-family: var(--osdk-filter-input-font-family);
+  font-size: var(--osdk-filter-timeline-input-font-size);
   padding: var(--osdk-filter-input-padding);
   border: var(--osdk-filter-input-border);
   border-radius: var(--osdk-filter-input-border-radius);

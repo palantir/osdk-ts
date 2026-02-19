@@ -36,13 +36,14 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import type { ObjectSet, ObjectTypeDefinition, WhereClause } from "@osdk/api";
+import type { ObjectTypeDefinition } from "@osdk/api";
 import classnames from "classnames";
 import React, { useCallback, useMemo, useState } from "react";
 import type { FilterDefinitionUnion } from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
 import { getFilterKey } from "../utils/getFilterKey.js";
 import { getFilterLabel } from "../utils/getFilterLabel.js";
+import type { RenderFilterInput } from "./BaseFilterListApi.js";
 import contentStyles from "./FilterListContent.module.css";
 import { FilterListItem } from "./FilterListItem.js";
 import { SortableFilterListItem } from "./SortableFilterListItem.js";
@@ -55,15 +56,13 @@ const restrictToVerticalAxis: Modifier = ({ transform }) => ({
 export interface SortableFilterListContentProps<
   Q extends ObjectTypeDefinition,
 > {
-  objectType: Q;
-  objectSet: ObjectSet<Q>;
   filterDefinitions: Array<FilterDefinitionUnion<Q>>;
   filterStates: Map<string, FilterState>;
   onFilterStateChanged: (
     filterKey: string,
     state: FilterState,
   ) => void;
-  whereClause: WhereClause<Q>;
+  renderInput: RenderFilterInput<Q>;
   onFiltersReordered: (
     newOrder: ReadonlyArray<FilterDefinitionUnion<Q>>,
   ) => void;
@@ -81,12 +80,10 @@ function getSortableId<Q extends ObjectTypeDefinition>(
 export default function SortableFilterListContent<
   Q extends ObjectTypeDefinition,
 >({
-  objectType,
-  objectSet,
   filterDefinitions,
   filterStates,
   onFilterStateChanged,
-  whereClause,
+  renderInput,
   onFiltersReordered,
   className,
   style,
@@ -209,13 +206,11 @@ export default function SortableFilterListContent<
               <SortableFilterListItem
                 key={id}
                 id={id}
-                objectType={objectType}
-                objectSet={objectSet}
                 definition={definition}
                 filterKey={filterKey}
                 filterState={state}
                 onFilterStateChanged={onFilterStateChanged}
-                whereClause={whereClause}
+                renderInput={renderInput}
               />
             );
           })}
@@ -227,13 +222,11 @@ export default function SortableFilterListContent<
         >
           {activeDefinition && activeFilterKey && (
             <FilterListItem
-              objectType={objectType}
-              objectSet={objectSet}
               definition={activeDefinition}
               filterKey={activeFilterKey}
               filterState={filterStates.get(activeFilterKey)}
               onFilterStateChanged={onFilterStateChanged}
-              whereClause={whereClause}
+              renderInput={renderInput}
             />
           )}
         </DragOverlay>

@@ -14,25 +14,8 @@
  * limitations under the License.
  */
 
-.multiSelect {
-  display: flex;
-  flex-direction: column;
-  gap: var(--osdk-filter-multiselect-gap);
-}
-
-.inputRow {
-  display: flex;
-  align-items: center;
-  gap: var(--osdk-filter-multiselect-inputRow-gap);
-}
-
-.clearButton {
-  flex-shrink: 0;
-}
-
-.itemCount {
-  font-family: var(--osdk-filter-multiselect-count-font-family);
-  font-size: var(--osdk-filter-multiselect-count-font-size);
-  font-variant-numeric: tabular-nums;
-  color: var(--osdk-filter-multiselect-count-color);
+export interface PropertyAggregationValue {
+  value: string;
+  count: number;
+  isNull?: boolean;
 }

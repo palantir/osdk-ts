@@ -1,0 +1,164 @@
+/*
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { cleanup, render, screen } from "@testing-library/react";
+import React from "react";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import type { RenderFilterInput } from "../base/BaseFilterListApi.js";
+import { FilterListContent } from "../base/FilterListContent.js";
+import type { FilterDefinitionUnion } from "../FilterListApi.js";
+import type { FilterState } from "../FilterListItemApi.js";
+import { getFilterKey } from "../utils/getFilterKey.js";
+import type { MockObjectType } from "./testUtils.js";
+import { createPropertyFilterDef, createSelectState } from "./testUtils.js";
+
+afterEach(cleanup);
+
+const stubRenderInput: RenderFilterInput<typeof MockObjectType> = ({
+  definition,
+}) => <div data-testid={`filter-input-${definition.type}`} />;
+
+function createDefinitions() {
+  return [
+    createPropertyFilterDef("name", "CHECKBOX_LIST", createSelectState([])),
+    createPropertyFilterDef("age", "NUMBER_RANGE", {
+      type: "NUMBER_RANGE",
+      minValue: undefined,
+      maxValue: undefined,
+    }),
+    createPropertyFilterDef(
+      "active",
+      "TOGGLE",
+      { type: "TOGGLE", enabled: false },
+    ),
+  ];
+}
+
+function createFilterStates(
+  definitions: ReturnType<typeof createPropertyFilterDef>[],
+): Map<string, FilterState> {
+  const map = new Map<string, FilterState>();
+  for (const def of definitions) {
+    if (def.filterState) {
+      map.set(getFilterKey(def), def.filterState);
+    }
+  }
+  return map;
+}
+
+describe("FilterList drag and drop", () => {
+  it("does not render drag handles when onFiltersReordered is not provided", () => {
+    const definitions = createDefinitions();
+    const filterStates = createFilterStates(definitions);
+
+    render(
+      <FilterListContent
+        filterDefinitions={definitions}
+        filterStates={filterStates}
+        onFilterStateChanged={vi.fn()}
+        renderInput={stubRenderInput}
+      />,
+    );
+
+    const dragHandles = screen.queryAllByLabelText(/Reorder/);
+    expect(dragHandles).toHaveLength(0);
+  });
+
+  it("renders drag handles when onFiltersReordered is provided", async () => {
+    const definitions = createDefinitions();
+    const filterStates = createFilterStates(definitions);
+
+    render(
+      <FilterListContent
+        filterDefinitions={definitions}
+        filterStates={filterStates}
+        onFilterStateChanged={vi.fn()}
+        onFiltersReordered={vi.fn()}
+        renderInput={stubRenderInput}
+      />,
+    );
+
+    const dragHandles = await screen.findAllByLabelText(/Reorder/);
+    expect(dragHandles).toHaveLength(3);
+  });
+
+  it("renders correct aria labels on drag handles", async () => {
+    const definitions = [
+      {
+        ...createPropertyFilterDef(
+          "name",
+          "CHECKBOX_LIST",
+          createSelectState([]),
+        ),
+        label: "Full Name",
+      } as FilterDefinitionUnion<typeof MockObjectType>,
+      createPropertyFilterDef("age", "NUMBER_RANGE", {
+        type: "NUMBER_RANGE",
+        minValue: undefined,
+        maxValue: undefined,
+      }),
+    ];
+    const filterStates = createFilterStates(definitions);
+
+    render(
+      <FilterListContent
+        filterDefinitions={definitions}
+        filterStates={filterStates}
+        onFilterStateChanged={vi.fn()}
+        onFiltersReordered={vi.fn()}
+        renderInput={stubRenderInput}
+      />,
+    );
+
+    expect(await screen.findByLabelText("Reorder Full Name")).toBeDefined();
+    expect(await screen.findByLabelText("Reorder age")).toBeDefined();
+  });
+
+  it("preserves filter state references after providing reorder callback", async () => {
+    const definitions = createDefinitions();
+    const filterStates = createFilterStates(definitions);
+    const stateRef = definitions[0].filterState;
+
+    render(
+      <FilterListContent
+        filterDefinitions={definitions}
+        filterStates={filterStates}
+        onFilterStateChanged={vi.fn()}
+        onFiltersReordered={vi.fn()}
+        renderInput={stubRenderInput}
+      />,
+    );
+
+    await screen.findAllByLabelText(/Reorder/);
+
+    expect(filterStates.get(getFilterKey(definitions[0]))).toBe(stateRef);
+  });
+
+  it("renders empty state when no filter definitions provided", () => {
+    render(
+      <FilterListContent
+        filterDefinitions={[]}
+        filterStates={new Map()}
+        onFilterStateChanged={vi.fn()}
+        onFiltersReordered={vi.fn()}
+        renderInput={stubRenderInput}
+      />,
+    );
+
+    const dragHandles = screen.queryAllByLabelText(/Reorder/);
+    expect(dragHandles).toHaveLength(0);
+  });
+});

@@ -43,8 +43,8 @@
 }
 
 .count {
-  font-family: var(--bp-typography-family-default);
-  font-size: var(--bp-typography-size-bodySmall);
+  font-family: var(--osdk-filter-null-count-font-family);
+  font-size: var(--osdk-filter-null-count-font-size);
   font-variant-numeric: tabular-nums;
-  color: var(--bp-typography-colorMuted);
+  color: var(--osdk-filter-null-count-color);
 }

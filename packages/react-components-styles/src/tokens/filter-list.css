@@ -1,0 +1,338 @@
+:root {
+  /* Filter List Container */
+  --osdk-filter-list-bg: var(--osdk-background-primary);
+  --osdk-filter-list-border: var(--osdk-surface-border);
+  --osdk-filter-list-border-radius: var(--osdk-surface-border-radius);
+  --osdk-filter-list-padding: calc(var(--osdk-surface-spacing) * 3);
+  --osdk-filter-list-gap: calc(var(--osdk-surface-spacing) * 3);
+  --osdk-filter-list-addButton-padding-top: calc(
+    var(--osdk-surface-spacing) * 2
+  );
+  --osdk-filter-list-addButton-container-bg: var(--osdk-background-primary);
+
+  /* Filter List Content */
+  --osdk-filter-list-content-gap: calc(var(--osdk-surface-spacing) * 3);
+  --osdk-filter-list-empty-text-color: var(--osdk-typography-color-muted);
+  --osdk-filter-list-empty-font-size: var(--osdk-typography-size-body-small);
+  --osdk-filter-list-empty-action-margin-top: calc(
+    var(--osdk-surface-spacing) * 2
+  );
+
+  /* Filter List Header */
+  --osdk-filter-header-padding-bottom: calc(var(--osdk-surface-spacing) * 2);
+  --osdk-filter-header-border-bottom: var(--osdk-surface-border);
+  --osdk-filter-header-titleContainer-gap: var(--osdk-surface-spacing);
+  --osdk-filter-header-font-family: var(--osdk-typography-family-default);
+  --osdk-filter-header-font-size: var(--osdk-typography-size-body-medium);
+  --osdk-filter-header-font-weight: var(--osdk-typography-weight-bold);
+  --osdk-filter-header-color: var(--osdk-typography-color-default-rest);
+  --osdk-filter-header-icon-color: var(--osdk-typography-color-muted);
+  --osdk-filter-header-activeCount-font-size: var(
+    --osdk-typography-size-body-small
+  );
+  --osdk-filter-header-activeCount-color: var(--osdk-typography-color-muted);
+  --osdk-filter-header-button-padding: calc(var(--osdk-surface-spacing) * 1);
+  --osdk-filter-header-button-bg: transparent;
+  --osdk-filter-header-button-border-radius: var(
+    --osdk-surface-border-radius
+  );
+  --osdk-filter-header-button-transition: var(
+    --osdk-emphasis-transition-duration
+  )
+    var(--osdk-emphasis-ease-default);
+  --osdk-filter-header-button-bg-hover: var(--osdk-custom-color-gray-1);
+  --osdk-filter-header-button-bg-active: var(--osdk-custom-color-gray-2);
+  --osdk-filter-header-reset-font-size: var(
+    --osdk-typography-size-body-small
+  );
+  --osdk-filter-header-reset-color: var(--osdk-intent-primary-rest);
+  --osdk-filter-header-reset-color-disabled: var(
+    --osdk-typography-color-muted
+  );
+  --osdk-filter-header-reset-padding: calc(var(--osdk-surface-spacing) * 1)
+    calc(var(--osdk-surface-spacing) * 2);
+  --osdk-filter-header-collapse-icon-size: 6px;
+  --osdk-filter-header-collapse-icon-border-width: var(
+    --osdk-surface-border-width
+  );
+  --osdk-filter-header-collapse-icon-color: var(--osdk-typography-color-muted);
+
+  /* Filter Item */
+  --osdk-filter-item-gap: calc(var(--osdk-surface-spacing) * 1);
+  --osdk-filter-item-label-font-family: var(--osdk-typography-family-default);
+  --osdk-filter-item-label-font-size: var(--osdk-typography-size-body-small);
+  --osdk-filter-item-label-font-weight: var(--osdk-typography-weight-bold);
+  --osdk-filter-item-label-color: var(--osdk-typography-color-default-rest);
+  --osdk-filter-item-drag-handle-padding: calc(
+    var(--osdk-surface-spacing) * 0.5
+  );
+  --osdk-filter-item-drag-handle-margin-right: var(--osdk-surface-spacing);
+  --osdk-filter-item-drag-handle-bg: transparent;
+  --osdk-filter-item-drag-handle-border-radius: var(
+    --osdk-surface-border-radius
+  );
+  --osdk-filter-item-drag-handle-color: var(--osdk-typography-color-muted);
+  --osdk-filter-item-drag-handle-color-hover: var(
+    --osdk-typography-color-default-rest
+  );
+  --osdk-filter-item-drag-handle-bg-hover: var(--osdk-custom-color-gray-1);
+  --osdk-filter-item-drag-handle-focus-outline-color: var(
+    --osdk-emphasis-focus-color
+  );
+  --osdk-filter-item-dragging-opacity: 0.5;
+  --osdk-filter-item-drag-overlay-shadow: var(--osdk-surface-shadow-2);
+  --osdk-filter-item-drag-overlay-border-radius: var(
+    --osdk-surface-border-radius
+  );
+  --osdk-filter-item-drag-overlay-bg: var(--osdk-background-primary);
+
+  /* Shared Input Tokens */
+  --osdk-filter-input-bg: var(--osdk-background-primary);
+  --osdk-filter-input-border: var(--osdk-surface-border);
+  --osdk-filter-input-border-radius: var(--osdk-surface-border-radius);
+  --osdk-filter-input-padding: calc(var(--osdk-surface-spacing) * 1)
+    calc(var(--osdk-surface-spacing) * 2);
+  --osdk-filter-input-gap: var(--osdk-surface-spacing);
+  --osdk-filter-input-transition: var(--osdk-emphasis-transition-duration)
+    var(--osdk-emphasis-ease-default);
+  --osdk-filter-input-focus-border: var(--osdk-intent-primary-rest);
+  --osdk-filter-input-focus-outline-width: var(--osdk-emphasis-focus-width);
+  --osdk-filter-input-focus-outline-color: var(--osdk-emphasis-focus-color);
+  --osdk-filter-input-focus-outline-offset: var(--osdk-emphasis-focus-offset);
+  --osdk-filter-input-icon-color: var(--osdk-typography-color-muted);
+  --osdk-filter-input-font-family: var(--osdk-typography-family-default);
+  --osdk-filter-input-font-size: var(--osdk-typography-size-body-small);
+  --osdk-filter-input-color: var(--osdk-typography-color-default-rest);
+  --osdk-filter-input-placeholder-color: var(--osdk-typography-color-muted);
+  --osdk-filter-input-clear-padding: calc(var(--osdk-surface-spacing) * 0.5);
+  --osdk-filter-input-clear-bg: transparent;
+  --osdk-filter-input-clear-border-radius: var(--osdk-surface-border-radius);
+  --osdk-filter-input-clear-bg-hover: var(--osdk-custom-color-gray-1);
+  --osdk-filter-input-clear-bg-active: var(--osdk-custom-color-gray-2);
+
+  /* Shared Message Tokens */
+  --osdk-filter-message-font-family: var(--osdk-typography-family-default);
+  --osdk-filter-message-font-size: var(--osdk-typography-size-body-small);
+  --osdk-filter-message-padding: var(--osdk-surface-spacing);
+  --osdk-filter-message-color-muted: var(--osdk-typography-color-muted);
+  --osdk-filter-message-color-danger: var(--osdk-intent-danger-rest);
+
+  /* Tag Tokens */
+  --osdk-filter-tag-container-gap: calc(var(--osdk-surface-spacing) * 1);
+  --osdk-filter-tag-gap: calc(var(--osdk-surface-spacing) * 0.5);
+  --osdk-filter-tag-padding: calc(var(--osdk-surface-spacing) * 0.5)
+    calc(var(--osdk-surface-spacing) * 1);
+  --osdk-filter-tag-border-radius: var(--osdk-surface-border-radius);
+  --osdk-filter-tag-bg: var(--osdk-custom-color-gray-1);
+  --osdk-filter-tag-font-family: var(--osdk-typography-family-default);
+  --osdk-filter-tag-font-size: var(--osdk-typography-size-body-small);
+  --osdk-filter-tag-line-height: 1.4;
+  --osdk-filter-tag-color: var(--osdk-typography-color-default-rest);
+  --osdk-filter-tag-remove-color: var(--osdk-typography-color-muted);
+  --osdk-filter-tag-remove-font-size: var(
+    --osdk-typography-size-body-medium
+  );
+  --osdk-filter-tag-remove-transition: var(
+    --osdk-emphasis-transition-duration
+  )
+    var(--osdk-emphasis-ease-default);
+  --osdk-filter-tag-remove-color-hover: var(
+    --osdk-typography-color-default-rest
+  );
+
+  /* Error Boundary Tokens */
+  --osdk-filter-error-gap: calc(var(--osdk-surface-spacing) * 2);
+  --osdk-filter-error-padding: calc(var(--osdk-surface-spacing) * 2);
+  --osdk-filter-error-border-radius: var(--osdk-surface-border-radius);
+  --osdk-filter-error-bg: var(
+    --osdk-surface-background-color-danger-rest
+  );
+  --osdk-filter-error-font-size: var(--osdk-typography-size-body-small);
+  --osdk-filter-error-text-color: var(--osdk-typography-color-danger-rest);
+  --osdk-filter-error-button-padding: calc(var(--osdk-surface-spacing) * 1)
+    calc(var(--osdk-surface-spacing) * 2);
+  --osdk-filter-error-button-border-color: currentColor;
+  --osdk-filter-error-button-border-radius: var(
+    --osdk-surface-border-radius
+  );
+  --osdk-filter-error-button-font-size: var(
+    --osdk-typography-size-body-x-small
+  );
+  --osdk-filter-error-button-color: inherit;
+  --osdk-filter-error-button-hover-bg: var(--osdk-custom-color-gray-1);
+
+  /* Checkbox List Tokens */
+  --osdk-filter-checkbox-list-gap: calc(var(--osdk-surface-spacing) * 0.5);
+  --osdk-filter-checkbox-row-padding: calc(var(--osdk-surface-spacing) * 0.5)
+    0;
+  --osdk-filter-checkbox-label-gap: var(--osdk-surface-spacing);
+  --osdk-filter-checkbox-value-font-family: var(
+    --osdk-typography-family-default
+  );
+  --osdk-filter-checkbox-value-font-size: var(
+    --osdk-typography-size-body-medium
+  );
+  --osdk-filter-checkbox-value-line-height: 1.4;
+  --osdk-filter-checkbox-value-color: var(
+    --osdk-typography-color-default-rest
+  );
+
+  /* Toggle Tokens */
+  --osdk-filter-toggle-label-gap: var(--osdk-surface-spacing);
+  --osdk-filter-toggle-label-font-family: var(
+    --osdk-typography-family-default
+  );
+  --osdk-filter-toggle-label-font-size: var(
+    --osdk-typography-size-body-medium
+  );
+  --osdk-filter-toggle-label-line-height: 1.4;
+  --osdk-filter-toggle-label-color: var(--osdk-typography-color-default-rest);
+
+  /* Listogram Tokens */
+  --osdk-filter-listogram-gap: var(--osdk-surface-spacing);
+  --osdk-filter-listogram-row-gap: calc(var(--osdk-surface-spacing) * 2);
+  --osdk-filter-listogram-row-padding: var(--osdk-surface-spacing);
+  --osdk-filter-listogram-row-border-radius: var(
+    --osdk-surface-border-radius
+  );
+  --osdk-filter-listogram-row-transition: var(
+    --osdk-emphasis-transition-duration
+  )
+    var(--osdk-emphasis-ease-default);
+  --osdk-filter-listogram-row-bg-hover: var(
+    --osdk-surface-color-hover-default
+  );
+  --osdk-filter-listogram-row-bg-active: var(
+    --osdk-surface-color-active-default
+  );
+  --osdk-filter-listogram-row-focus-outline: var(
+    --osdk-emphasis-focus-width
+  )
+    solid var(--osdk-emphasis-focus-color);
+  --osdk-filter-listogram-row-focus-offset: var(--osdk-emphasis-focus-offset);
+  --osdk-filter-listogram-label-font-family: var(
+    --osdk-typography-family-default
+  );
+  --osdk-filter-listogram-label-font-size: var(
+    --osdk-typography-size-body-medium
+  );
+  --osdk-filter-listogram-label-color: var(
+    --osdk-typography-color-default-rest
+  );
+  --osdk-filter-listogram-bar-height: 8px;
+  --osdk-filter-listogram-bar-bg: var(--osdk-palette-gray-100);
+  --osdk-filter-listogram-bar-border-radius: var(
+    --osdk-surface-border-radius
+  );
+  --osdk-filter-listogram-bar-color: var(--osdk-custom-color-gray-3);
+  --osdk-filter-listogram-bar-fill-transition: var(
+    --osdk-emphasis-transition-duration
+  )
+    var(--osdk-emphasis-ease-default);
+  --osdk-filter-listogram-count-font-family: var(
+    --osdk-typography-family-default
+  );
+  --osdk-filter-listogram-count-font-size: var(
+    --osdk-typography-size-body-small
+  );
+  --osdk-filter-listogram-count-color: var(--osdk-typography-color-muted);
+
+  /* Range Input Tokens */
+  --osdk-filter-range-gap: calc(var(--osdk-surface-spacing) * 2);
+  --osdk-filter-range-histogram-height: 60px;
+  --osdk-filter-range-histogram-bar-gap: 2px;
+  --osdk-filter-range-histogram-bar-color: var(--osdk-palette-gray-200);
+  --osdk-filter-range-histogram-bar-active-color: var(
+    --osdk-intent-primary-rest
+  );
+  --osdk-filter-range-histogram-bar-transition: var(
+    --osdk-emphasis-transition-duration
+  )
+    var(--osdk-emphasis-ease-default);
+  --osdk-filter-range-inputs-gap: calc(var(--osdk-surface-spacing) * 2);
+  --osdk-filter-range-input-wrapper-gap: var(--osdk-surface-spacing);
+  --osdk-filter-range-label-font-family: var(
+    --osdk-typography-family-default
+  );
+  --osdk-filter-range-label-font-size: var(--osdk-typography-size-body-small);
+  --osdk-filter-range-label-color: var(--osdk-typography-color-muted);
+  --osdk-filter-range-separator-color: var(--osdk-typography-color-muted);
+
+  /* Timeline Input Tokens */
+  --osdk-filter-timeline-labels-gap: var(--osdk-surface-spacing);
+  --osdk-filter-timeline-labels-font-family: var(
+    --osdk-typography-family-default
+  );
+  --osdk-filter-timeline-labels-font-size: var(
+    --osdk-typography-size-body-small
+  );
+  --osdk-filter-timeline-labels-color: var(--osdk-typography-color-muted);
+  --osdk-filter-timeline-button-padding: calc(
+    var(--osdk-surface-spacing) * 0.5
+  );
+  --osdk-filter-timeline-button-color: var(--osdk-iconography-color-muted);
+  --osdk-filter-timeline-button-border-radius: var(
+    --osdk-surface-border-radius
+  );
+  --osdk-filter-timeline-button-bg-hover: var(
+    --osdk-surface-color-hover-default
+  );
+  --osdk-filter-timeline-button-color-hover: var(
+    --osdk-typography-color-default-rest
+  );
+  --osdk-filter-timeline-brush-color: var(--osdk-typography-color-muted);
+  --osdk-filter-timeline-input-font-size: var(
+    --osdk-typography-size-body-medium
+  );
+
+  /* Null Value Wrapper Tokens */
+  --osdk-filter-null-wrapper-gap: var(--osdk-surface-spacing);
+  --osdk-filter-null-row-padding: calc(var(--osdk-surface-spacing) * 1) 0;
+  --osdk-filter-null-row-border-top: var(--osdk-surface-border);
+  --osdk-filter-null-label-gap: var(--osdk-surface-spacing);
+  --osdk-filter-null-label-font-family: var(--osdk-typography-family-default);
+  --osdk-filter-null-label-font-size: var(--osdk-typography-size-body-medium);
+  --osdk-filter-null-label-line-height: 1.4;
+  --osdk-filter-null-label-color: var(--osdk-typography-color-default-rest);
+  --osdk-filter-null-count-font-family: var(--osdk-typography-family-default);
+  --osdk-filter-null-count-font-size: var(--osdk-typography-size-body-small);
+  --osdk-filter-null-count-color: var(--osdk-typography-color-muted);
+
+  /* Multi-Select Tokens */
+  --osdk-filter-multiselect-gap: calc(var(--osdk-surface-spacing) * 2);
+  --osdk-filter-multiselect-inputRow-gap: var(--osdk-surface-spacing);
+
+  /* Single/Multi Date Tokens */
+  --osdk-filter-select-container-gap: var(--osdk-surface-spacing);
+  --osdk-filter-date-clear-font-family: var(--osdk-typography-family-default);
+  --osdk-filter-date-clear-font-size: var(--osdk-typography-size-body-small);
+  --osdk-filter-date-clear-color: var(--osdk-intent-primary-rest);
+  --osdk-filter-date-clear-padding: calc(var(--osdk-surface-spacing) * 0.5);
+
+  /* Single Select Tokens */
+  --osdk-filter-select-clear-padding: calc(var(--osdk-surface-spacing) * 0.5);
+  --osdk-filter-select-clear-color: var(--osdk-typography-color-muted);
+  --osdk-filter-select-clear-border-radius: var(
+    --osdk-surface-border-radius
+  );
+  --osdk-filter-select-clear-transition: var(
+    --osdk-emphasis-transition-duration
+  )
+    var(--osdk-emphasis-ease-default);
+  --osdk-filter-select-clear-color-hover: var(
+    --osdk-typography-color-default-rest
+  );
+  --osdk-filter-select-clear-bg-hover: var(--osdk-custom-color-gray-1);
+
+  /* Text Tags Tokens */
+  --osdk-filter-texttags-gap: var(--osdk-surface-spacing);
+
+  /* Multi Select Count */
+  --osdk-filter-multiselect-count-font-family: var(
+    --osdk-typography-family-default
+  );
+  --osdk-filter-multiselect-count-font-size: var(
+    --osdk-typography-size-body-small
+  );
+  --osdk-filter-multiselect-count-color: var(--osdk-typography-color-muted);
+}

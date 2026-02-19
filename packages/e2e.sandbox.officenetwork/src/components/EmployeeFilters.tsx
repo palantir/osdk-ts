@@ -15,8 +15,8 @@
  */
 
 import {
-  BaseFilterList,
   type FilterDefinitionUnion,
+  FilterList,
 } from "@osdk/react-components/experimental";
 import React, { useCallback, useMemo, useState } from "react";
 import { $ } from "../foundryClient.js";
@@ -173,7 +173,7 @@ export function EmployeeFilters() {
   );
 
   return (
-    <BaseFilterList
+    <FilterList
       objectSet={$(Employee)}
       filterDefinitions={filterDefinitions}
       onFilterRemoved={handleRemoveFilter}

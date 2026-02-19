@@ -97,7 +97,6 @@ function FilterListHeaderInner({
                   styles.activeCount,
                   classNames?.activeCount,
                 )}
-                style={{ fontVariantNumeric: "tabular-nums" }}
               >
                 ({activeFilterCount})
               </span>
