@@ -41,7 +41,7 @@ const STEPS: INextStep[] = [
 function NextSteps(): React.ReactElement {
   return (
     <div className={css.nextSteps}>
-      <h3 className={css.nextStepsHeader}>Next steps</h3>
+      <h5 className={css.nextStepsHeader}>Next steps</h5>
       {STEPS.map((step) => (
         <NextStep
           key={step.title}
@@ -69,7 +69,7 @@ function NextStep({
     <div className={css.nextStep}>
       <img src={icon} className={css.icon} alt="Next step icon" />
       <div className={css.nextStepContent}>
-        <h4 className={css.title}>{title}</h4>
+        <h6 className={css.title}>{title}</h6>
         <div className={css.subtitle}>{subtitle}</div>
       </div>
     </div>

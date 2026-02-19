@@ -23,11 +23,11 @@ const STEPS: INextStep[] = [
 
 <template>
   <div class="next-steps">
-    <h3 class="next-steps-header">Next steps</h3>
+    <h5 class="next-steps-header">Next steps</h5>
     <div v-for="step in STEPS" :key="step.title" class="next-step">
       <img :src="`/${step.icon}.svg`" class="icon" alt="" />
       <div class="next-step-content">
-        <h4 class="title">{{ step.title }}</h4>
+        <h6 class="title">{{ step.title }}</h6>
         <div class="subtitle" v-html="step.subtitle" />
       </div>
     </div>
