@@ -76,7 +76,7 @@ export function FilterListContent<Q extends ObjectTypeDefinition>({
 
         return (
           <FilterListItem
-            key={`${filterKey}:${index}`}
+            key={filterKey}
             objectType={objectType}
             objectSet={objectSet}
             definition={definition}

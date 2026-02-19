@@ -21,13 +21,13 @@
   gap: var(--osdk-filter-error-gap, 8px);
   padding: var(--osdk-filter-error-padding, 8px);
   border-radius: var(--osdk-filter-error-border-radius, 4px);
-  background-color: var(--osdk-filter-error-bg, rgba(255, 0, 0, 0.05));
+  background-color: var(--osdk-filter-error-bg, color-mix(in srgb, var(--osdk-intent-danger-rest, #c23030) 5%, transparent));
 }
 
 .errorMessage {
   margin: 0;
   font-size: var(--osdk-filter-error-font-size, 13px);
-  color: var(--osdk-filter-error-text-color, #c23030);
+  color: var(--osdk-filter-error-text-color, var(--osdk-intent-danger-rest, #c23030));
 }
 
 .retryButton {
@@ -41,7 +41,7 @@
   transition: background-color 150ms ease;
 
   &:hover {
-    background-color: var(--osdk-filter-error-button-hover-bg, rgba(0, 0, 0, 0.05));
+    background-color: var(--osdk-filter-error-button-hover-bg, color-mix(in srgb, currentColor 5%, transparent));
   }
 
   &:focus-visible {
