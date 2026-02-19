@@ -14,4 +14,7 @@
  * limitations under the License.
  */
 
-export {};
+export {
+  createMockOsdkObject,
+  type MockOsdkObjectOptions,
+} from "./mock/createMockOsdkObject.js";

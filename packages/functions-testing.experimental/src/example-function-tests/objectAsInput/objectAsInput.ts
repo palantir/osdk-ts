@@ -14,10 +14,21 @@
  * limitations under the License.
  */
 
-import { describe, expect, it } from "vitest";
+import type { Osdk } from "@osdk/api";
+import type { Employee } from "@osdk/client.test.ontology";
 
-describe("functions-testing.experimental", () => {
-  it("should run tests", () => {
-    expect(true).toBe(true);
-  });
-});
+export function objectAsInput(
+  object: Osdk.Instance<Employee>,
+): Osdk.Instance<Employee> {
+  if (object.$apiName !== "Employee") {
+    throw new Error(
+      `Expected object of type Employee, but got ${object.$apiName}`,
+    );
+  }
+  if (object.employeeId == null) {
+    throw new Error(
+      `Expected object to have employeeId property, but it was missing`,
+    );
+  }
+  return object;
+}
