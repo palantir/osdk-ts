@@ -14,8 +14,14 @@
  * limitations under the License.
  */
 
-export { FilterList as BaseFilterList } from "../filter-list/base/FilterList.js";
-export type { FilterListComponentProps as BaseFilterListProps } from "../filter-list/base/FilterList.js";
+export { FilterList } from "../filter-list/FilterList.js";
+export type { FilterListComponentProps } from "../filter-list/FilterList.js";
+
+export { BaseFilterList } from "../filter-list/base/BaseFilterList.js";
+export type {
+  BaseFilterListProps,
+  RenderFilterInput,
+} from "../filter-list/base/BaseFilterListApi.js";
 export type {
   FilterDefinitionUnion,
   FilterListProps,

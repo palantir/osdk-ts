@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-export { FilterInput } from "./FilterInput.js";
-export { FilterList } from "./FilterList.js";
-export type { FilterListComponentProps } from "./FilterList.js";
+export { BaseFilterList } from "./BaseFilterList.js";
+export type {
+  BaseFilterListProps,
+  RenderFilterInput,
+} from "./BaseFilterListApi.js";
 export { FilterListContent } from "./FilterListContent.js";
 export { FilterListHeader } from "./FilterListHeader.js";
 export { FilterListItem } from "./FilterListItem.js";

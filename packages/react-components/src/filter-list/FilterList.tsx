@@ -15,17 +15,16 @@
  */
 
 import type { ObjectTypeDefinition } from "@osdk/api";
-import classnames from "classnames";
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useRef } from "react";
+import { BaseFilterList } from "./base/BaseFilterList.js";
+import type { RenderFilterInput } from "./base/BaseFilterListApi.js";
+import { FilterInput } from "./FilterInput.js";
 import type {
   FilterDefinitionUnion,
   FilterListProps,
-} from "../FilterListApi.js";
-import { useFilterListState } from "../hooks/useFilterListState.js";
-import type { FilterListClassNames } from "../types/ClassNameOverrides.js";
-import styles from "./FilterList.module.css";
-import { FilterListContent } from "./FilterListContent.js";
-import { FilterListHeader } from "./FilterListHeader.js";
+} from "./FilterListApi.js";
+import { useFilterListState } from "./hooks/useFilterListState.js";
+import type { FilterListClassNames } from "./types/ClassNameOverrides.js";
 
 export interface FilterListComponentProps<Q extends ObjectTypeDefinition>
   extends FilterListProps<Q>
@@ -69,55 +68,48 @@ export function FilterList<Q extends ObjectTypeDefinition>(
   }, [reset, onReset]);
 
   const visibleFilterDefinitions = useMemo(() => {
-    if (!filterDefinitions) return undefined;
+    if (!filterDefinitions) {
+      return undefined;
+    }
     return filterDefinitions.filter(
       (def: FilterDefinitionUnion<Q>) => def.isVisible !== false,
     );
   }, [filterDefinitions]);
 
-  const showHeader = title || titleIcon || showResetButton
-    || showActiveFilterCount;
+  const whereClauseRef = useRef(whereClause);
+  whereClauseRef.current = whereClause;
 
-  return (
-    <div
-      className={classnames(styles.filterList, classNames?.root, className)}
-      style={style}
-      data-active-count={activeFilterCount}
-    >
-      {showHeader && (
-        <FilterListHeader
-          title={title}
-          titleIcon={titleIcon}
-          showResetButton={showResetButton}
-          onReset={handleReset}
-          showActiveFilterCount={showActiveFilterCount}
-          activeFilterCount={activeFilterCount}
-          classNames={classNames}
-        />
-      )}
-
-      <FilterListContent
+  const renderInput = useCallback<RenderFilterInput<Q>>(
+    ({ definition, filterState, onFilterStateChanged }) => (
+      <FilterInput
         objectType={objectType}
         objectSet={objectSet}
-        filterDefinitions={visibleFilterDefinitions}
-        filterStates={filterStates}
-        onFilterStateChanged={setFilterState}
-        whereClause={whereClause}
-        onFiltersReordered={onFiltersReordered}
-        renderEmptyAction={renderAddFilterButton}
+        definition={definition}
+        filterState={filterState}
+        onFilterStateChanged={onFilterStateChanged}
+        whereClause={whereClauseRef.current}
       />
+    ),
+    [objectType, objectSet],
+  );
 
-      {renderAddFilterButton
-        && visibleFilterDefinitions && visibleFilterDefinitions.length > 0 && (
-        <div
-          className={classnames(
-            styles.addButtonContainer,
-            classNames?.addButtonContainer,
-          )}
-        >
-          {renderAddFilterButton()}
-        </div>
-      )}
-    </div>
+  return (
+    <BaseFilterList
+      title={title}
+      titleIcon={titleIcon}
+      filterDefinitions={visibleFilterDefinitions}
+      filterStates={filterStates}
+      onFilterStateChanged={setFilterState}
+      renderInput={renderInput}
+      activeFilterCount={activeFilterCount}
+      onReset={handleReset}
+      showResetButton={showResetButton}
+      showActiveFilterCount={showActiveFilterCount}
+      onFiltersReordered={onFiltersReordered}
+      className={className}
+      classNames={classNames}
+      renderAddFilterButton={renderAddFilterButton}
+      style={style}
+    />
   );
 }

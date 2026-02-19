@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-import type { ObjectSet, ObjectTypeDefinition, WhereClause } from "@osdk/api";
+import type { ObjectTypeDefinition } from "@osdk/api";
 import classnames from "classnames";
 import React, { Suspense } from "react";
 import type { FilterDefinitionUnion } from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
 import { getFilterKey } from "../utils/getFilterKey.js";
+import type { RenderFilterInput } from "./BaseFilterListApi.js";
 import styles from "./FilterListContent.module.css";
 import { FilterListItem } from "./FilterListItem.js";
 import type { SortableFilterListContentProps } from "./SortableFilterListContent.js";
@@ -36,15 +37,13 @@ function SortableContentBridge<Q extends ObjectTypeDefinition>(
 }
 
 interface FilterListContentProps<Q extends ObjectTypeDefinition> {
-  objectType: Q;
-  objectSet: ObjectSet<Q>;
   filterDefinitions?: Array<FilterDefinitionUnion<Q>>;
   filterStates: Map<string, FilterState>;
   onFilterStateChanged: (
     filterKey: string,
     state: FilterState,
   ) => void;
-  whereClause: WhereClause<Q>;
+  renderInput: RenderFilterInput<Q>;
   onFiltersReordered?: (
     newOrder: ReadonlyArray<FilterDefinitionUnion<Q>>,
   ) => void;
@@ -54,12 +53,10 @@ interface FilterListContentProps<Q extends ObjectTypeDefinition> {
 }
 
 export function FilterListContent<Q extends ObjectTypeDefinition>({
-  objectType,
-  objectSet,
   filterDefinitions,
   filterStates,
   onFilterStateChanged,
-  whereClause,
+  renderInput,
   onFiltersReordered,
   className,
   style,
@@ -87,20 +84,18 @@ export function FilterListContent<Q extends ObjectTypeDefinition>({
         className={classnames(styles.content, className)}
         style={style}
       >
-        {filterDefinitions.map((definition, index) => {
+        {filterDefinitions.map((definition) => {
           const filterKey = getFilterKey(definition);
           const state = filterStates.get(filterKey);
 
           return (
             <FilterListItem
-              key={`${filterKey}:${index}`}
-              objectType={objectType}
-              objectSet={objectSet}
+              key={filterKey}
               definition={definition}
               filterKey={filterKey}
               filterState={state}
               onFilterStateChanged={onFilterStateChanged}
-              whereClause={whereClause}
+              renderInput={renderInput}
             />
           );
         })}
@@ -110,12 +105,10 @@ export function FilterListContent<Q extends ObjectTypeDefinition>({
     return (
       <Suspense fallback={plainFallback}>
         <SortableContentBridge
-          objectType={objectType}
-          objectSet={objectSet}
           filterDefinitions={filterDefinitions}
           filterStates={filterStates}
           onFilterStateChanged={onFilterStateChanged}
-          whereClause={whereClause}
+          renderInput={renderInput}
           onFiltersReordered={onFiltersReordered}
           className={className}
           style={style}
@@ -129,20 +122,18 @@ export function FilterListContent<Q extends ObjectTypeDefinition>({
       className={classnames(styles.content, className)}
       style={style}
     >
-      {filterDefinitions.map((definition, index) => {
+      {filterDefinitions.map((definition) => {
         const filterKey = getFilterKey(definition);
         const state = filterStates.get(filterKey);
 
         return (
           <FilterListItem
             key={filterKey}
-            objectType={objectType}
-            objectSet={objectSet}
             definition={definition}
             filterKey={filterKey}
             filterState={state}
             onFilterStateChanged={onFilterStateChanged}
-            whereClause={whereClause}
+            renderInput={renderInput}
           />
         );
       })}

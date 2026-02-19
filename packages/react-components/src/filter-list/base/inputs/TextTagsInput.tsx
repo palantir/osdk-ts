@@ -14,58 +14,41 @@
  * limitations under the License.
  */
 
-import type {
-  ObjectSet,
-  ObjectTypeDefinition,
-  PropertyKeys,
-  WhereClause,
-} from "@osdk/api";
 import classnames from "classnames";
 import React, { memo, useCallback, useMemo, useState } from "react";
 import { Combobox } from "../../../base-components/combobox/Combobox.js";
-import { usePropertyAggregation } from "../../hooks/usePropertyAggregation.js";
+import type { PropertyAggregationValue } from "../../types/AggregationTypes.js";
 import sharedStyles from "./shared.module.css";
 import styles from "./TextTagsInput.module.css";
 
-interface TextTagsInputProps<
-  Q extends ObjectTypeDefinition,
-  K extends PropertyKeys<Q>,
-> {
-  objectType: Q;
-  propertyKey: K;
+interface TextTagsInputProps {
+  suggestions: PropertyAggregationValue[];
+  isLoading: boolean;
+  error: Error | null;
   tags: string[];
   onChange: (tags: string[]) => void;
-  objectSet?: ObjectSet<Q>;
-  whereClause?: WhereClause<Q>;
   className?: string;
   style?: React.CSSProperties;
   placeholder?: string;
   allowCustomTags?: boolean;
   suggestFromData?: boolean;
+  ariaLabel?: string;
 }
 
-function TextTagsInputInner<
-  Q extends ObjectTypeDefinition,
-  K extends PropertyKeys<Q>,
->({
-  objectType,
-  propertyKey,
+function TextTagsInputInner({
+  suggestions,
+  isLoading,
+  error,
   tags,
   onChange,
-  whereClause,
   className,
   style,
   placeholder = "Add a tag...",
   allowCustomTags = true,
   suggestFromData = true,
-}: TextTagsInputProps<Q, K>): React.ReactElement {
+  ariaLabel = "Add tag",
+}: TextTagsInputProps): React.ReactElement {
   const [inputValue, setInputValue] = useState("");
-
-  const { data: suggestions, isLoading, error } = usePropertyAggregation(
-    objectType,
-    propertyKey,
-    { limit: suggestFromData ? 50 : 0, where: whereClause },
-  );
 
   const filteredSuggestions = useMemo(() => {
     if (!suggestFromData) return [];
@@ -187,7 +170,7 @@ function TextTagsInputInner<
           placeholder={tags.length > 0 ? "" : placeholder}
           onKeyDown={handleKeyDown}
           onPaste={handlePaste}
-          aria-label={`Add ${propertyKey} tag`}
+          aria-label={ariaLabel}
         />
 
         <Combobox.Portal>

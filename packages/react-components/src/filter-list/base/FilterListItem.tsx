@@ -18,20 +18,18 @@ import type {
   DraggableAttributes,
   DraggableSyntheticListeners,
 } from "@dnd-kit/core";
-import type { ObjectSet, ObjectTypeDefinition, WhereClause } from "@osdk/api";
+import type { ObjectTypeDefinition } from "@osdk/api";
 import classnames from "classnames";
 import React, { memo, useCallback } from "react";
 import type { FilterDefinitionUnion } from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
 import { getFilterLabel } from "../utils/getFilterLabel.js";
+import type { RenderFilterInput } from "./BaseFilterListApi.js";
 import { DragHandleIcon } from "./DragHandleIcon.js";
-import { FilterInput } from "./FilterInput.js";
 import { FilterInputErrorBoundary } from "./FilterInputErrorBoundary.js";
 import styles from "./FilterListItem.module.css";
 
 interface FilterListItemProps<Q extends ObjectTypeDefinition> {
-  objectType: Q;
-  objectSet: ObjectSet<Q>;
   definition: FilterDefinitionUnion<Q>;
   filterKey: string;
   filterState: FilterState | undefined;
@@ -39,7 +37,7 @@ interface FilterListItemProps<Q extends ObjectTypeDefinition> {
     filterKey: string,
     state: FilterState,
   ) => void;
-  whereClause: WhereClause<Q>;
+  renderInput: RenderFilterInput<Q>;
   dragHandleAttributes?: DraggableAttributes;
   dragHandleListeners?: DraggableSyntheticListeners;
   className?: string;
@@ -47,13 +45,11 @@ interface FilterListItemProps<Q extends ObjectTypeDefinition> {
 }
 
 function FilterListItemInner<Q extends ObjectTypeDefinition>({
-  objectType,
-  objectSet,
   definition,
   filterKey,
   filterState,
   onFilterStateChanged,
-  whereClause,
+  renderInput,
   dragHandleAttributes,
   dragHandleListeners,
   className,
@@ -91,14 +87,12 @@ function FilterListItemInner<Q extends ObjectTypeDefinition>({
 
       <div className={styles.itemContent}>
         <FilterInputErrorBoundary>
-          <FilterInput
-            objectType={objectType}
-            objectSet={objectSet}
-            definition={definition}
-            filterState={filterState}
-            onFilterStateChanged={handleFilterStateChanged}
-            whereClause={whereClause}
-          />
+          {renderInput({
+            definition,
+            filterKey,
+            filterState,
+            onFilterStateChanged: handleFilterStateChanged,
+          })}
         </FilterInputErrorBoundary>
       </div>
     </div>
