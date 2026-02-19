@@ -28,7 +28,10 @@ import type {
 } from "@osdk/foundry.ontologies";
 import * as OntologiesV2 from "@osdk/foundry.ontologies";
 import invariant from "tiny-invariant";
-import { legacyToModernSingleAggregationResult } from "../internal/conversions/legacyToModernSingleAggregationResult.js";
+import {
+  legacyToModernSingleAggregationResult,
+  unqualifyPropName,
+} from "../internal/conversions/legacyToModernSingleAggregationResult.js";
 import { modernToLegacyAggregationClause } from "../internal/conversions/modernToLegacyAggregationClause.js";
 import { modernToLegacyGroupByClause } from "../internal/conversions/modernToLegacyGroupByClause.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
@@ -50,13 +53,14 @@ export async function aggregate<
   const body: AggregateObjectsRequestV2 = {
     aggregation: modernToLegacyAggregationClause<AO["$select"]>(
       req.$select,
+      objectType,
     ),
     groupBy: [],
     where: undefined,
   };
 
   if (req.$groupBy) {
-    body.groupBy = modernToLegacyGroupByClause(req.$groupBy);
+    body.groupBy = modernToLegacyGroupByClause(req.$groupBy, objectType);
   }
 
   if (clientCtx.flushEdits != null) {
@@ -84,6 +88,7 @@ export async function aggregate<
       ...aggregationToCountResult(result.data[0]),
       ...legacyToModernSingleAggregationResult(
         result.data[0],
+        objectType,
       ),
     } as any;
   }
@@ -91,9 +96,9 @@ export async function aggregate<
   const ret: AggregationResultsWithGroups<Q, AO["$select"], any> = result.data
     .map((entry) => {
       return {
-        $group: entry.group as any,
+        $group: unqualifyGroupKeys(entry.group, objectType),
         ...aggregationToCountResult(entry),
-        ...legacyToModernSingleAggregationResult(entry),
+        ...legacyToModernSingleAggregationResult(entry, objectType),
       };
     }) as any; // fixme
 
@@ -108,4 +113,16 @@ function aggregationToCountResult(
       return { $count: aggregateResult.value };
     }
   }
+}
+
+function unqualifyGroupKeys(
+  group: Record<string, unknown>,
+  objectOrInterface: ObjectOrInterfaceDefinition,
+): Record<string, unknown> {
+  return Object.fromEntries(
+    Object.entries(group).map(([key, value]) => [
+      unqualifyPropName(key, objectOrInterface),
+      value,
+    ]),
+  );
 }

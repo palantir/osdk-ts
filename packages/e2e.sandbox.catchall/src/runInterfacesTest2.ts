@@ -186,6 +186,14 @@ export async function runInterfacesTest2(): Promise<void> {
     myFilteredInterfaceIdpData.data[0].idpAge,
     myFilteredInterfaceIdpData.data[1].mwaltherName,
   );
+
+  // Aggregations
+  const aggResult = await ontologyClient(MwaltherTestIdp).aggregate({
+    $groupBy: { mwaltherName: "exact" },
+    $select: { "idpAge:min": "desc" },
+  });
+
+  console.log(aggResult[0].$group.mwaltherName);
 }
 
 void runInterfacesTest2();
