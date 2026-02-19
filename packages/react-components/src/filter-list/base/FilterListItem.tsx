@@ -25,6 +25,7 @@ import React, { memo, useCallback } from "react";
 import { ErrorBoundary } from "../../shared/ErrorBoundary.js";
 import type { FilterDefinitionUnion } from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
+import { supportsExcluding } from "../utils/filterValues.js";
 import { getFilterLabel } from "../utils/getFilterLabel.js";
 import type { RenderFilterInput } from "./BaseFilterListApi.js";
 import { DragHandleIcon } from "./DragHandleIcon.js";
@@ -65,11 +66,27 @@ function FilterListItemInner<Q extends ObjectTypeDefinition>({
     [filterKey, onFilterStateChanged],
   );
 
+  const handleToggleExclude = useCallback(
+    () => {
+      if (filterState) {
+        onFilterStateChanged(filterKey, {
+          ...filterState,
+          isExcluding: !filterState.isExcluding,
+        });
+      }
+    },
+    [filterKey, filterState, onFilterStateChanged],
+  );
+
+  const isExcluding = filterState?.isExcluding ?? false;
+  const showExcludeToggle = supportsExcluding(filterState);
+
   return (
     <div
       className={classnames(styles.filterItem, className)}
       style={style}
       data-filter-type={definition.type}
+      data-excluding={isExcluding || undefined}
     >
       <div className={styles.itemHeader}>
         {dragHandleAttributes && (
@@ -83,6 +100,18 @@ function FilterListItemInner<Q extends ObjectTypeDefinition>({
           </Button>
         )}
         <span className={styles.itemLabel}>{label}</span>
+        {showExcludeToggle && (
+          <Button
+            className={styles.excludeToggle}
+            onClick={handleToggleExclude}
+            aria-pressed={isExcluding}
+            aria-label={isExcluding
+              ? "Switch to include mode"
+              : "Switch to exclude mode"}
+          >
+            {isExcluding ? <ExcludeIcon /> : <IncludeIcon />}
+          </Button>
+        )}
       </div>
 
       <div className={styles.itemContent}>
@@ -102,3 +131,36 @@ function FilterListItemInner<Q extends ObjectTypeDefinition>({
 export const FilterListItem = memo(
   FilterListItemInner,
 ) as typeof FilterListItemInner;
+
+function IncludeIcon(): React.ReactElement {
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      aria-hidden="true"
+    >
+      <path d="M2 3h12M5 8h6M7 13h2" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function ExcludeIcon(): React.ReactElement {
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      aria-hidden="true"
+    >
+      <path d="M2 3h12M5 8h6M7 13h2" strokeLinecap="round" />
+      <path d="M3 14L13 2" strokeLinecap="round" />
+    </svg>
+  );
+}

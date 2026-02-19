@@ -142,10 +142,16 @@ function filterStateToPropertyFilter(
       if (conditions.length === 0) {
         return undefined;
       }
+      let rangeFilter: PropertyFilter;
       if (conditions.length === 1) {
-        return conditions[0];
+        rangeFilter = conditions[0];
+      } else {
+        rangeFilter = { $and: conditions };
       }
-      return { $and: conditions };
+      if (state.isExcluding) {
+        return { $not: rangeFilter };
+      }
+      return rangeFilter;
     }
 
     // These filter types are handled separately in buildWhereClause
