@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition, WhereClause } from "@osdk/api";
+import type { ObjectSet, ObjectTypeDefinition, WhereClause } from "@osdk/api";
 import React, { memo, useCallback, useMemo } from "react";
 import type { FilterDefinitionUnion } from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
@@ -38,6 +38,8 @@ import { TimelineInput } from "./inputs/TimelineInput.js";
 import { ToggleInput } from "./inputs/ToggleInput.js";
 
 interface FilterInputProps<Q extends ObjectTypeDefinition> {
+  objectType: Q;
+  objectSet: ObjectSet<Q>;
   definition: FilterDefinitionUnion<Q>;
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
@@ -45,6 +47,8 @@ interface FilterInputProps<Q extends ObjectTypeDefinition> {
 }
 
 function FilterInputInner<Q extends ObjectTypeDefinition>({
+  objectType,
+  objectSet,
   definition,
   filterState,
   onFilterStateChanged,
@@ -52,6 +56,8 @@ function FilterInputInner<Q extends ObjectTypeDefinition>({
 }: FilterInputProps<Q>): React.ReactElement {
   return (
     <FilterInputContent
+      objectType={objectType}
+      objectSet={objectSet}
       definition={definition}
       filterState={filterState}
       onFilterStateChanged={onFilterStateChanged}
@@ -63,6 +69,8 @@ function FilterInputInner<Q extends ObjectTypeDefinition>({
 export const FilterInput = memo(FilterInputInner) as typeof FilterInputInner;
 
 function FilterInputContent<Q extends ObjectTypeDefinition>({
+  objectType,
+  objectSet,
   definition,
   filterState,
   onFilterStateChanged,
@@ -108,6 +116,7 @@ function FilterInputContent<Q extends ObjectTypeDefinition>({
       return (
         <>
           {definition.renderInput({
+            objectSet,
             filterState: customFilterState,
             onFilterStateChanged: (state) => onFilterStateChanged(state),
           })}
@@ -118,6 +127,8 @@ function FilterInputContent<Q extends ObjectTypeDefinition>({
     case "PROPERTY":
       return (
         <PropertyFilterInput
+          objectType={objectType}
+          objectSet={objectSet}
           definition={definition}
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}
@@ -192,6 +203,8 @@ const KeywordSearchInput = memo(function KeywordSearchInput({
 });
 
 interface PropertyFilterInputProps<Q extends ObjectTypeDefinition> {
+  objectType: Q;
+  objectSet: ObjectSet<Q>;
   definition: Extract<FilterDefinitionUnion<Q>, { type: "PROPERTY" }>;
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
@@ -199,6 +212,8 @@ interface PropertyFilterInputProps<Q extends ObjectTypeDefinition> {
 }
 
 function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
+  objectType,
+  objectSet,
   definition,
   filterState,
   onFilterStateChanged,

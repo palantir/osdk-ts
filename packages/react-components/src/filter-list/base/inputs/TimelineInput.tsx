@@ -15,7 +15,7 @@
  */
 
 import classnames from "classnames";
-import React, { memo, useCallback } from "react";
+import React, { memo, useCallback, useMemo } from "react";
 import {
   formatDateForDisplay,
   formatDateForInput,
@@ -62,6 +62,15 @@ function TimelineInputInner({
     onChange(undefined, undefined);
   }, [onChange]);
 
+  const startInputMax = useMemo(
+    () => endDate ?? maxDate,
+    [endDate, maxDate],
+  );
+  const endInputMin = useMemo(
+    () => startDate ?? minDate,
+    [startDate, minDate],
+  );
+
   return (
     <div className={classnames(styles.timeline, className)} style={style}>
       <div className={styles.labels}>
@@ -82,11 +91,7 @@ function TimelineInputInner({
           value={formatDateForInput(startDate)}
           onChange={handleStartChange}
           min={minDate ? formatDateForInput(minDate) : undefined}
-          max={endDate
-            ? formatDateForInput(endDate)
-            : maxDate
-            ? formatDateForInput(maxDate)
-            : undefined}
+          max={startInputMax ? formatDateForInput(startInputMax) : undefined}
           aria-label="Start date"
         />
         <span>—</span>
@@ -95,11 +100,7 @@ function TimelineInputInner({
           className={styles.input}
           value={formatDateForInput(endDate)}
           onChange={handleEndChange}
-          min={startDate
-            ? formatDateForInput(startDate)
-            : minDate
-            ? formatDateForInput(minDate)
-            : undefined}
+          min={endInputMin ? formatDateForInput(endInputMin) : undefined}
           max={maxDate ? formatDateForInput(maxDate) : undefined}
           aria-label="End date"
         />
