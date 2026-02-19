@@ -3235,6 +3235,12 @@ importers:
       '@osdk/react':
         specifier: workspace:~
         version: link:../react
+      '@osdk/react-components':
+        specifier: workspace:~
+        version: link:../react-components
+      '@osdk/react-components-styles':
+        specifier: workspace:~
+        version: link:../react-components-styles
       maplibre-gl:
         specifier: ^5.7.1
         version: 5.7.1

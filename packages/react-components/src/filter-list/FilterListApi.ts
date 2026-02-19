@@ -25,7 +25,6 @@ import type {
   FilterState as FilterStateType,
   PropertyFilterDefinition,
 } from "./FilterListItemApi.js";
-import type { FilterTemplate } from "./types/AddFilterMenuTypes.js";
 import type { CustomFilterDefinition } from "./types/CustomRendererTypes.js";
 import type { KeywordSearchFilterDefinition } from "./types/KeywordSearchTypes.js";
 import type {
@@ -168,19 +167,6 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
    * Called when reset button is clicked
    */
   onReset?: () => void;
-
-  /**
-   * Available filter templates for the "Add filter" menu.
-   * When provided along with onFilterAdded, clicking the add button
-   * shows a popover with these templates organized by category.
-   */
-  filterTemplates?: FilterTemplate[];
-
-  /**
-   * Called when a filter template is selected from the add filter menu.
-   * The consumer should create a new filter definition and add it to filterDefinitions.
-   */
-  onFilterTemplateSelected?: (template: FilterTemplate) => void;
 
   /**
    * Show count of active filters in header

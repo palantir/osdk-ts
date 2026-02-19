@@ -1,3 +1,5 @@
+@import "@osdk/react-components-styles";
+@import "@osdk/react-components/styles.css";
 @import 'tailwindcss';
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -79,6 +81,56 @@
   --accent-amber: var(--officenetwork-status-warning);
   --border-subtle: var(--officenetwork-border-default);
   --border-accent: var(--officenetwork-border-default);
+
+  /* ─────────────────────────────────────────────────────────────────────────
+     OSDK COMPONENT DARK THEME OVERRIDES
+     Override Level 1 tokens so all filter-list tokens cascade automatically.
+     ───────────────────────────────────────────────────────────────────────── */
+
+  --osdk-background-primary: var(--officenetwork-bg-surface);
+  --osdk-background-secondary: var(--officenetwork-bg-elevated);
+  --osdk-background-tertiary: var(--officenetwork-bg-overlay);
+  --osdk-background-skeleton-from: rgba(139, 148, 158, 0.05);
+  --osdk-background-skeleton-to: rgba(139, 148, 158, 0.15);
+  --osdk-background-backdrop: rgba(1, 4, 9, 0.7);
+
+  --osdk-surface-border-color-default: var(--officenetwork-border-default);
+  --osdk-surface-background-color-default-rest: transparent;
+  --osdk-surface-background-color-default-hover: var(--officenetwork-bg-elevated);
+  --osdk-surface-background-color-default-active: var(--officenetwork-bg-overlay);
+  --osdk-surface-background-color-danger-rest: var(--officenetwork-status-error-bg);
+  --osdk-surface-background-color-danger-hover: rgba(248, 81, 73, 0.2);
+  --osdk-surface-background-color-danger-active: rgba(248, 81, 73, 0.25);
+  --osdk-surface-color-hover-default: rgba(139, 148, 158, 0.08);
+  --osdk-surface-color-active-default: rgba(139, 148, 158, 0.15);
+
+  --osdk-typography-family-default: var(--officenetwork-font-sans);
+  --osdk-typography-color-default-rest: var(--officenetwork-text-primary);
+  --osdk-typography-color-muted: var(--officenetwork-text-secondary);
+  --osdk-typography-color-danger-rest: var(--officenetwork-status-error);
+  --osdk-typography-color-danger-active: #da3633;
+
+  --osdk-intent-primary-rest: var(--officenetwork-accent-cyan);
+  --osdk-intent-primary-hover: var(--officenetwork-accent-cyan-muted);
+  --osdk-intent-primary-active: #1f6feb;
+  --osdk-intent-primary-foreground: #ffffff;
+  --osdk-intent-danger-rest: var(--officenetwork-status-error);
+  --osdk-intent-success-rest: var(--officenetwork-status-ready);
+  --osdk-intent-warning-rest: var(--officenetwork-status-warning);
+
+  --osdk-iconography-color-muted: var(--officenetwork-text-secondary);
+  --osdk-emphasis-focus-color: var(--officenetwork-accent-cyan);
+
+  --osdk-custom-color-gray-1: rgba(139, 148, 158, 0.08);
+  --osdk-custom-color-gray-2: rgba(139, 148, 158, 0.12);
+  --osdk-custom-color-gray-3: rgba(139, 148, 158, 0.18);
+  --osdk-custom-color-gray-4: rgba(139, 148, 158, 0.25);
+  --osdk-custom-color-light-gray-1: rgba(139, 148, 158, 0.3);
+  --osdk-custom-color-light-gray-2: rgba(139, 148, 158, 0.2);
+  --osdk-custom-color-primary-1: rgba(88, 166, 255, 0.4);
+
+  --osdk-palette-gray-100: #21262d;
+  --osdk-palette-gray-200: #30363d;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
