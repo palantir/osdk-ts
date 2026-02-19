@@ -1,5 +1,11 @@
 # @osdk/react-components-styles
 
+## 0.2.0-beta.4
+
+### Minor Changes
+
+- 9c54ee5: Support editable cell
+
 ## 0.2.0-beta.3
 
 ### Minor Changes

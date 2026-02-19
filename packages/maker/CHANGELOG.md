@@ -1,5 +1,15 @@
 # @osdk/maker
 
+## 0.16.0-beta.5
+
+### Minor Changes
+
+- 034081a: oac direct datasources
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.7
+
 ## 0.16.0-beta.4
 
 ### Minor Changes

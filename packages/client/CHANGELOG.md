@@ -1,5 +1,18 @@
 # @osdk/client
 
+## 2.8.0-beta.7
+
+### Minor Changes
+
+- 4cd7389: Remove delay dependency
+
+### Patch Changes
+
+- Updated dependencies [034081a]
+  - @osdk/client.unstable@2.8.0-beta.7
+  - @osdk/api@2.8.0-beta.7
+  - @osdk/generator-converters@2.8.0-beta.7
+
 ## 2.8.0-beta.6
 
 ### Minor Changes

@@ -1,5 +1,11 @@
 # @osdk/oauth
 
+## 1.8.0-beta.3
+
+### Minor Changes
+
+- 4cd7389: Remove delay dependency
+
 ## 1.8.0-beta.2
 
 ### Minor Changes
