@@ -33,10 +33,6 @@
     "transpileTypes": "monorepo.tool.transpile -f esm -m types -t node",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
-  "engines": {
-    "node": "^24.13.0",
-    "npm": "^11.6.2"
-  },
   "dependencies": {
     "react": "^18",
     "react-dom": "^18",
