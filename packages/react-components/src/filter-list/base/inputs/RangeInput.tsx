@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  AggregateOpts,
-  ObjectSet,
-  ObjectTypeDefinition,
-  PropertyKeys,
-} from "@osdk/api";
+import type { ObjectSet, ObjectTypeDefinition, PropertyKeys } from "@osdk/api";
 import { useOsdkAggregation } from "@osdk/react/experimental";
 import classnames from "classnames";
 import React, {
@@ -31,6 +26,7 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { createGroupByAggregateOptions } from "../../utils/aggregationHelpers.js";
 import {
   createHistogramBuckets,
   getMaxBucketCount,
@@ -40,17 +36,6 @@ import styles from "./RangeInput.module.css";
 import sharedStyles from "./shared.module.css";
 
 const DEBOUNCE_MS = 300;
-
-// Helper function to encapsulate OSDK type cast for group-by aggregation
-function createGroupByAggregateOptions<
-  Q extends ObjectTypeDefinition,
-  K extends PropertyKeys<Q>,
->(propertyKey: K): AggregateOpts<Q> {
-  return {
-    $select: { $count: "unordered" as const },
-    $groupBy: { [propertyKey as string]: "exact" as const },
-  } as AggregateOpts<Q>;
-}
 
 export interface RangeInputConfig<T> {
   inputType: "number" | "date";
@@ -140,7 +125,7 @@ function RangeInputInner<
   }, []);
 
   const aggregateOptions = useMemo(
-    () => createGroupByAggregateOptions<Q, K>(propertyKey),
+    () => createGroupByAggregateOptions<Q>(propertyKey as string),
     [propertyKey],
   );
 

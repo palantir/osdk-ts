@@ -14,33 +14,17 @@
  * limitations under the License.
  */
 
-import type {
-  AggregateOpts,
-  ObjectTypeDefinition,
-  PropertyKeys,
-  WhereClause,
-} from "@osdk/api";
+import type { ObjectTypeDefinition, PropertyKeys } from "@osdk/api";
 import { useOsdkAggregation } from "@osdk/react/experimental";
 import classnames from "classnames";
 import React, { memo, useCallback, useMemo } from "react";
 import { Checkbox } from "../../../base-components/checkbox/Checkbox.js";
+import {
+  createNullCountAggregateOptions,
+  createNullWhereClause,
+} from "../../utils/aggregationHelpers.js";
 import styles from "./NullValueWrapper.module.css";
-
-// Helper functions to encapsulate OSDK type casts
-function createNullCountAggregateOptions<
-  Q extends ObjectTypeDefinition,
->(): AggregateOpts<Q> {
-  return {
-    $select: { $count: "unordered" as const },
-  } as AggregateOpts<Q>;
-}
-
-function createNullWhereClause<
-  Q extends ObjectTypeDefinition,
-  K extends PropertyKeys<Q>,
->(propertyKey: K): WhereClause<Q> {
-  return { [propertyKey as string]: { $isNull: true } } as WhereClause<Q>;
-}
+import sharedStyles from "./shared.module.css";
 
 interface NullValueWrapperProps<
   Q extends ObjectTypeDefinition,
@@ -75,14 +59,17 @@ function NullValueWrapperInner<
   );
 
   const nullWhereClause = useMemo(
-    () => createNullWhereClause<Q, K>(propertyKey),
+    () => createNullWhereClause<Q>(propertyKey as string),
     [propertyKey],
   );
 
-  const { data: nullCountData, isLoading } = useOsdkAggregation(objectType, {
-    where: nullWhereClause,
-    aggregate: nullCountAggregateOptions,
-  });
+  const { data: nullCountData, isLoading, error } = useOsdkAggregation(
+    objectType,
+    {
+      where: nullWhereClause,
+      aggregate: nullCountAggregateOptions,
+    },
+  );
 
   const nullCount = useMemo(() => {
     if (!nullCountData) return 0;
@@ -110,12 +97,17 @@ function NullValueWrapperInner<
           <Checkbox checked={includeNull} onCheckedChange={handleToggle} />
           <span className={styles.nullLabelText}>No value</span>
         </label>
-        {showNullCount && nullCount > 0 && (
+        {showNullCount && !error && nullCount > 0 && (
           <span className={styles.count}>
             {nullCount.toLocaleString()}
           </span>
         )}
       </div>
+      {error && (
+        <div className={sharedStyles.errorMessage}>
+          Failed to load null count
+        </div>
+      )}
     </div>
   );
 }
