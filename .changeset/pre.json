@@ -94,7 +94,8 @@
     "@osdk/react-components": "0.1.0",
     "@osdk/react-components-styles": "0.1.0",
     "@osdk/e2e.sandbox.officenetwork": "0.0.1",
-    "@osdk/generator-converters.preview": "0.1.0-beta.0"
+    "@osdk/generator-converters.preview": "0.1.0-beta.0",
+    "@osdk/functions-testing.experimental": "0.1.0"
   },
   "changesets": [
     "@osdk-api-simulatedRelease",
@@ -178,6 +179,7 @@
     "flat-mammals-arrive",
     "flat-waves-hear",
     "full-dolls-pull",
+    "fuzzy-dogs-serve",
     "good-hoops-sing",
     "hip-sheep-tie",
     "little-candles-poke",
@@ -191,6 +193,7 @@
     "plain-times-change",
     "proud-rules-train",
     "ready-roses-relate",
+    "rotten-cities-arrive",
     "silver-pandas-glow",
     "smart-adults-play",
     "smart-toes-repair",
@@ -198,6 +201,7 @@
     "spotty-jokes-feel",
     "tender-crews-deny",
     "vast-schools-hope",
-    "yummy-groups-carry"
+    "yummy-groups-carry",
+    "yummy-views-teach"
   ]
 }

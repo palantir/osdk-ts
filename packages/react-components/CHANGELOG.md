@@ -1,5 +1,18 @@
 # @osdk/react-components
 
+## 0.2.0-beta.4
+
+### Minor Changes
+
+- 9c54ee5: Support editable cell
+
+### Patch Changes
+
+- Updated dependencies [4cd7389]
+  - @osdk/client@2.8.0-beta.7
+  - @osdk/api@2.8.0-beta.7
+  - @osdk/react@0.10.0-beta.4
+
 ## 0.2.0-beta.3
 
 ### Minor Changes
