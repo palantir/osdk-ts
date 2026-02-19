@@ -106,11 +106,12 @@ export class ListQueryView<PAYLOAD extends BaseListPayloadShape> {
   }
 
   #transformPayload(payload: PAYLOAD): PAYLOAD {
-    const loadedCount = payload.resolvedList?.length ?? 0;
+    const resolvedList = payload.resolvedList;
+    const loadedCount = resolvedList?.length ?? 0;
 
     return {
       ...payload,
-      resolvedList: payload.resolvedList?.slice(0, this.#viewLimit),
+      resolvedList: resolvedList?.slice(0, this.#viewLimit),
       hasMore: this.#viewLimit < loadedCount || payload.hasMore,
       fetchMore: this.#fetchMore,
     };
