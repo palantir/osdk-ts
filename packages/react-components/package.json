@@ -90,7 +90,6 @@
     "access": "public"
   },
   "files": [
-    "src/*.css",
     "build/cjs",
     "build/esm",
     "build/browser",
