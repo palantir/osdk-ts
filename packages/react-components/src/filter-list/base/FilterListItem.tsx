@@ -14,11 +14,17 @@
  * limitations under the License.
  */
 
+import type {
+  DraggableAttributes,
+  DraggableSyntheticListeners,
+} from "@dnd-kit/core";
 import type { ObjectSet, ObjectTypeDefinition, WhereClause } from "@osdk/api";
 import classnames from "classnames";
 import React, { memo, useCallback } from "react";
 import type { FilterDefinitionUnion } from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
+import { getFilterLabel } from "../utils/getFilterLabel.js";
+import { DragHandleIcon } from "./DragHandleIcon.js";
 import { FilterInput } from "./FilterInput.js";
 import { FilterInputErrorBoundary } from "./FilterInputErrorBoundary.js";
 import styles from "./FilterListItem.module.css";
@@ -34,6 +40,8 @@ interface FilterListItemProps<Q extends ObjectTypeDefinition> {
     state: FilterState,
   ) => void;
   whereClause: WhereClause<Q>;
+  dragHandleAttributes?: DraggableAttributes;
+  dragHandleListeners?: DraggableSyntheticListeners;
   className?: string;
   style?: React.CSSProperties;
 }
@@ -46,10 +54,12 @@ function FilterListItemInner<Q extends ObjectTypeDefinition>({
   filterState,
   onFilterStateChanged,
   whereClause,
+  dragHandleAttributes,
+  dragHandleListeners,
   className,
   style,
 }: FilterListItemProps<Q>): React.ReactElement {
-  const label = getLabel(definition);
+  const label = getFilterLabel(definition);
 
   const handleFilterStateChanged = useCallback(
     (newState: FilterState) => {
@@ -65,6 +75,17 @@ function FilterListItemInner<Q extends ObjectTypeDefinition>({
       data-filter-type={definition.type}
     >
       <div className={styles.itemHeader}>
+        {dragHandleAttributes && (
+          <button
+            type="button"
+            className={styles.dragHandle}
+            aria-label={`Reorder ${label}`}
+            {...dragHandleAttributes}
+            {...dragHandleListeners}
+          >
+            <DragHandleIcon />
+          </button>
+        )}
         <span className={styles.itemLabel}>{label}</span>
       </div>
 
@@ -87,23 +108,3 @@ function FilterListItemInner<Q extends ObjectTypeDefinition>({
 export const FilterListItem = memo(
   FilterListItemInner,
 ) as typeof FilterListItemInner;
-
-function getLabel<Q extends ObjectTypeDefinition>(
-  definition: FilterDefinitionUnion<Q>,
-): string {
-  if ("label" in definition && definition.label) {
-    return definition.label;
-  }
-
-  switch (definition.type) {
-    case "PROPERTY":
-      return definition.key;
-    case "HAS_LINK":
-    case "LINKED_PROPERTY":
-      return definition.linkName;
-    case "KEYWORD_SEARCH":
-      return "Search";
-    case "CUSTOM":
-      return definition.key;
-  }
-}
