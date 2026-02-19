@@ -81,28 +81,3 @@ export interface FilterTemplate {
    */
   category: FilterCategory;
 }
-
-/**
- * Props for the add filter menu component
- */
-export interface AddFilterMenuProps {
-  /**
-   * Available filter templates to display
-   */
-  templates: FilterTemplate[];
-
-  /**
-   * Current count of active filters by key
-   */
-  activeCounts: Record<string, number>;
-
-  /**
-   * Called when a filter template is selected
-   */
-  onSelectFilter: (template: FilterTemplate) => void;
-
-  /**
-   * Called when the menu should be closed
-   */
-  onClose: () => void;
-}
