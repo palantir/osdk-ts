@@ -14,25 +14,10 @@
  * limitations under the License.
  */
 
-type FilterValue = string | boolean | number | Date;
-
-/**
- * Coerces a filter value to a string for display.
- * Returns undefined if the value is undefined.
- */
-export function coerceToString(
-  value: FilterValue | undefined,
-): string | undefined {
-  if (value === undefined) return undefined;
-  return String(value);
-}
-
-/**
- * Coerces an array of filter values to string[] for display.
- */
-export function coerceToStringArray(
-  values: FilterValue[] | undefined,
-): string[] {
-  if (values === undefined) return [];
-  return values.map((v) => String(v));
-}
+export { ContainsTextInput } from "./ContainsTextInput.js";
+export {
+  formatDateForDisplay,
+  formatDateForInput,
+  parseDateFromInput,
+} from "./dateUtils.js";
+export { ToggleInput } from "./ToggleInput.js";

@@ -38,6 +38,7 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
+    "@blueprintjs/core": "^5.0.0",
     "@osdk/api": "workspace:~",
     "@osdk/client": "workspace:~",
     "@osdk/oauth": "workspace:~",
