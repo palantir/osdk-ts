@@ -64,6 +64,69 @@ jobs:
           git fetch origin main:main
           pnpm exec changeset status --since=origin/main
 
+  bundle-size:
+    name: Check Bundle Sizes
+    if: ${{ github.event_name == 'pull_request' }}
+    timeout-minutes: 25
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v6
+        with:
+          node-version: 20
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build packages (current)
+        run: pnpm exec turbo transpile
+
+      - name: Capture current bundle sizes
+        run: node scripts/capture-bundle-sizes.mjs
+
+      - name: Fetch baseline from main branch
+        run: |
+          git fetch origin main:main
+          git checkout main
+
+      - name: Install dependencies (baseline)
+        run: pnpm install
+
+      - name: Build packages (baseline)
+        run: pnpm exec turbo transpile
+
+      - name: Capture baseline bundle sizes
+        run: node scripts/capture-bundle-sizes.mjs
+
+      - name: Move baseline file
+        run: mv bundle-sizes.json baseline-bundle-sizes.json
+
+      - name: Checkout PR branch
+        run: git checkout ${{ github.event.pull_request.head.sha }}
+
+      - name: Restore current bundle sizes
+        run: mv baseline-bundle-sizes.json ../baseline-bundle-sizes.json
+
+      - name: Move baseline back
+        run: mv ../baseline-bundle-sizes.json baseline-bundle-sizes.json
+
+      - name: Compare bundle sizes
+        run: node scripts/compare-bundle-sizes.mjs
+
+      - name: Add to GitHub Actions Summary
+        if: always()
+        run: cat bundle-size-report.md >> $GITHUB_STEP_SUMMARY
 
   build:
     name: Build and Test
