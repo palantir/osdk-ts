@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-type FilterValue = string | boolean | number | Date;
+type FilterValue = string | boolean | number;
 
 /**
  * Coerces a filter value to a string for display.

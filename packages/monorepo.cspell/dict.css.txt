@@ -1,12 +1,9 @@
 blueprintjs
-buttonborder
 Cantarell
 Neue
-nums
 OKLCH
 oklch
 Resizer
 Segoe
-unitless
 vermillion
 WCAG

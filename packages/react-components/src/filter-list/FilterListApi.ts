@@ -20,7 +20,6 @@ import type {
   ObjectTypeDefinition,
   WhereClause,
 } from "@osdk/api";
-import type React from "react";
 import type {
   FilterState as FilterStateType,
   PropertyFilterDefinition,
@@ -75,16 +74,6 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
    * The set of objects to be filtered
    */
   objectSet: ObjectSet<Q>;
-
-  /**
-   * Optional title to display in the filter list header
-   */
-  title?: string;
-
-  /**
-   * Optional icon to display next to the title
-   */
-  titleIcon?: React.ReactNode;
 
   /**
    * The definition for all supported filter items in the list

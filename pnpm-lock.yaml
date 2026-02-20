@@ -3287,9 +3287,6 @@ importers:
 
   packages/e2e.sandbox.peopleapp:
     dependencies:
-      '@blueprintjs/core':
-        specifier: ^5.0.0
-        version: 5.19.1(@types/react@18.3.24)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@osdk/api':
         specifier: workspace:~
         version: link:../api
@@ -13368,7 +13365,6 @@ packages:
 
   glob@10.4.5:
     resolution: {integrity: sha512-7Bv8RF0k6xjo7d4A/PxYLbUCfb6c+Vpd2/mB2yRDlew7Jb5hEXiCD9ibfO7wpk8i4sevK6DFny9h7EYbM3/sHg==}
-    deprecated: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
     hasBin: true
 
   glob@13.0.4:
@@ -22831,7 +22827,7 @@ snapshots:
       nopt: 5.0.0
       npmlog: 5.0.1
       rimraf: 3.0.2
-      semver: 7.7.2
+      semver: 7.7.4
       tar: 6.2.1
     transitivePeerDependencies:
       - encoding
@@ -24727,7 +24723,7 @@ snapshots:
   '@radix-ui/react-use-is-hydrated@0.1.0(@types/react@18.3.24)(react@18.3.1)':
     dependencies:
       react: 18.3.1
-      use-sync-external-store: 1.6.0(react@18.3.1)
+      use-sync-external-store: 1.5.0(react@18.3.1)
     optionalDependencies:
       '@types/react': 18.3.24
 
@@ -25049,7 +25045,7 @@ snapshots:
       react: 18.3.1
       react-is: 19.1.0
       use-latest-callback: 0.2.4(react@18.3.1)
-      use-sync-external-store: 1.6.0(react@18.3.1)
+      use-sync-external-store: 1.5.0(react@18.3.1)
 
   '@react-navigation/core@7.12.4(react@19.1.1)':
     dependencies:
@@ -25060,7 +25056,7 @@ snapshots:
       react: 19.1.1
       react-is: 19.1.0
       use-latest-callback: 0.2.4(react@19.1.1)
-      use-sync-external-store: 1.6.0(react@19.1.1)
+      use-sync-external-store: 1.5.0(react@19.1.1)
 
   '@react-navigation/elements@2.6.4(@react-navigation/native@7.1.17(react-native@0.76.3(@babel/core@7.28.4)(@babel/preset-env@7.26.0(@babel/core@7.28.4))(@types/react@18.3.24)(react@18.3.1))(react@18.3.1))(react-native-safe-area-context@4.12.0(react-native@0.76.3(@babel/core@7.28.4)(@babel/preset-env@7.26.0(@babel/core@7.28.4))(@types/react@18.3.24)(react@18.3.1))(react@18.3.1))(react-native@0.76.3(@babel/core@7.28.4)(@babel/preset-env@7.26.0(@babel/core@7.28.4))(@types/react@18.3.24)(react@18.3.1))(react@18.3.1)':
     dependencies:
@@ -36700,6 +36696,10 @@ snapshots:
   use-sync-external-store@1.5.0(react@18.3.1):
     dependencies:
       react: 18.3.1
+
+  use-sync-external-store@1.5.0(react@19.1.1):
+    dependencies:
+      react: 19.1.1
 
   use-sync-external-store@1.6.0(react@18.3.1):
     dependencies:
