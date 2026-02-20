@@ -159,11 +159,18 @@ export class ObjectsHelper extends AbstractHelper<
   }
 
   /**
-   * Check if a cache key is actively observed
+   * Check if a cache key is actively observed or pending cleanup.
+   * During React unmount-remount cycles, a key may be momentarily
+   * unobserved while its cleanup is deferred to a microtask.
+   * We still propagate to such keys to prevent stale data when
+   * the subscription is re-established.
    */
   private isKeyActive(key: ObjectCacheKey): boolean {
     const subject = this.store.subjects.peek(key);
-    return subject?.observed === true;
+    if (subject?.observed === true) {
+      return true;
+    }
+    return (this.store.pendingCleanup.get(key) ?? 0) > 0;
   }
 
   /**

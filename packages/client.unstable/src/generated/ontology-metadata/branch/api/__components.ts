@@ -421,6 +421,18 @@ export interface DatasourceModificationConstraintError_objectTypeDatasourceWithI
   objectTypeDatasourceWithInvalidRetentionTargetSize:
     ObjectTypeDatasourceWithInvalidRetentionTargetSizeError;
 }
+
+export interface DatasourceModificationConstraintError_objectTypeWithStreamDatasourceCannotHaveMaterializations {
+  type: "objectTypeWithStreamDatasourceCannotHaveMaterializations";
+  objectTypeWithStreamDatasourceCannotHaveMaterializations:
+    ObjectTypeWithStreamDatasourceCannotHaveMaterializationsError;
+}
+
+export interface DatasourceModificationConstraintError_objectTypeDatasourceWithInvalidTimeBasedRetention {
+  type: "objectTypeDatasourceWithInvalidTimeBasedRetention";
+  objectTypeDatasourceWithInvalidTimeBasedRetention:
+    ObjectTypeDatasourceWithInvalidTimeBasedRetentionError;
+}
 /**
  * A type representing validation errors associated with datasource modifications on a branch.
  */
@@ -448,7 +460,9 @@ export type DatasourceModificationConstraintError =
   | DatasourceModificationConstraintError_gpsPolicyColumnsFromRestrictedViewsAreMapped
   | DatasourceModificationConstraintError_objectTypeDatasourceCannotHaveAssumedMarkingsUpdated
   | DatasourceModificationConstraintError_objectTypeDatasourceCannotHaveDataSecurityUpdatedOnBranch
-  | DatasourceModificationConstraintError_objectTypeDatasourceWithInvalidRetentionTargetSize;
+  | DatasourceModificationConstraintError_objectTypeDatasourceWithInvalidRetentionTargetSize
+  | DatasourceModificationConstraintError_objectTypeWithStreamDatasourceCannotHaveMaterializations
+  | DatasourceModificationConstraintError_objectTypeDatasourceWithInvalidTimeBasedRetention;
 
 export interface DefaultOntologyBranchDetails {
 }
@@ -1780,6 +1794,15 @@ export interface ObjectTypeDatasourceWithInvalidRetentionTargetSizeError {
   retentionConfig: _api_RetentionConfig;
 }
 /**
+ * A direct datasource has an invalid time-based retention window. The retention window must be a non-negative
+ * ISO 8601 duration and at most 1000 days.
+ */
+export interface ObjectTypeDatasourceWithInvalidTimeBasedRetentionError {
+  datasourceRid: _api_DatasourceRid;
+  objectTypeRid: _api_ObjectTypeRid;
+  window: string;
+}
+/**
  * An error representing when an object type datasource does not include the primary key property of the
  * corresponding object type.
  */
@@ -1845,6 +1868,12 @@ export interface ObjectTypesHaveTooManyDatasourcesError {
   maxDatasources: number;
   numberOfDatasources: number;
   objectType: _api_ObjectTypeRid;
+}
+/**
+ * Object types with stream datasources cannot have materializations. If you are switching from a batch to stream datasource, please unlink your materializations first.
+ */
+export interface ObjectTypeWithStreamDatasourceCannotHaveMaterializationsError {
+  objectTypeRid: _api_ObjectTypeRid;
 }
 /**
  * An error representing when none of an object type's datasources map the title property of the object type.

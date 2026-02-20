@@ -47,13 +47,32 @@ import { createCollectionConnectable } from "./createCollectionConnectable.js";
 import { removeDuplicates } from "./removeDuplicates.js";
 
 /**
+ * Base shape for list-like payloads (ListPayload, SpecificLinkPayload, etc.)
+ * Used to constrain PAYLOAD so we can safely access these properties
+ */
+export interface BaseListPayloadShape {
+  resolvedList: readonly unknown[];
+  hasMore: boolean;
+  fetchMore: () => Promise<void>;
+  status: Status;
+}
+
+/**
+ * Options that include pageSize for list-like queries.
+ * This allows BaseListQuery to access pageSize without type casting.
+ */
+export interface BaseListQueryOptions extends CommonObserveOptions {
+  pageSize?: number;
+}
+
+/**
  * Base class for collection-based queries (lists and links)
  * Provides common functionality for working with collections of objects
  */
 export abstract class BaseListQuery<
   KEY extends CacheKey<any, CollectionStorageData, any, any>,
-  PAYLOAD,
-  O extends CommonObserveOptions,
+  PAYLOAD extends BaseListPayloadShape,
+  O extends BaseListQueryOptions,
 > extends Query<KEY, PAYLOAD, O> {
   /**
    * The sorting strategy to use for this collection
@@ -82,6 +101,12 @@ export abstract class BaseListQuery<
   protected pendingPageFetch?: Promise<void>;
 
   protected currentTotalCount?: string;
+
+  /**
+   * Per-subscriber page sizes for fetch optimization.
+   * Tracks each view's pageSize so we can recalculate max when views unsubscribe.
+   */
+  #subscriberPageSizes: Map<string, number> = new Map();
 
   //
   // Shared Implementations
@@ -302,11 +327,9 @@ export abstract class BaseListQuery<
     }
 
     if (this.pendingFetch) {
-      this.pendingPageFetch = (async () => {
-        await this.pendingFetch;
-        await this.fetchMore();
-      })().finally(() => {
+      this.pendingPageFetch = this.pendingFetch.then(() => {
         this.pendingPageFetch = undefined;
+        return this.fetchMore();
       });
       return this.pendingPageFetch;
     }
@@ -327,6 +350,60 @@ export abstract class BaseListQuery<
     });
     return this.pendingFetch;
   };
+
+  /**
+   * Register a subscriber's pageSize for fetch optimization.
+   * The query will fetch with the max pageSize across all subscribers.
+   */
+  registerFetchPageSize(viewId: string, pageSize: number): void {
+    this.#subscriberPageSizes.set(viewId, pageSize);
+  }
+
+  /**
+   * Unregister a subscriber's pageSize when they unsubscribe.
+   * Allows the effective pageSize to decrease when high-pageSize subscribers leave.
+   */
+  unregisterFetchPageSize(viewId: string): void {
+    this.#subscriberPageSizes.delete(viewId);
+  }
+
+  /**
+   * Get the effective fetch pageSize (max across all subscribers).
+   * Falls back to options.pageSize or 100 if no subscribers have registered.
+   */
+  getEffectiveFetchPageSize(): number {
+    if (this.#subscriberPageSizes.size > 0) {
+      return Math.max(...this.#subscriberPageSizes.values());
+    }
+    return this.options.pageSize ?? 100;
+  }
+
+  /**
+   * Get the current number of loaded items in the cache.
+   */
+  getLoadedCount(): number {
+    const { retVal } = this.store.batch({}, (batch) => {
+      return batch.read(this.cacheKey)?.value?.data.length ?? 0;
+    });
+    return retVal;
+  }
+
+  /**
+   * Check if there are more pages available on the server.
+   */
+  hasMorePages(): boolean {
+    return this.nextPageToken != null;
+  }
+
+  /**
+   * Notify all subscribers of a change (used when view limits change
+   * but no new data needs to be fetched).
+   */
+  notifySubscribers(): void {
+    this.store.batch({}, (batch) => {
+      this.registerCacheChanges(batch);
+    });
+  }
 
   /**
    * Minimum number of results to load initially
@@ -698,12 +775,14 @@ export abstract class BaseListQuery<
     }
 
     this.store.batch({}, (batch) => {
-      const objectCacheKey = this.store.cacheKeys.get(
-        "object",
-        object.$objectType ?? object.$apiName,
-        object.$primaryKey,
-      );
-      batch.delete(objectCacheKey, "loaded");
+      for (
+        const objectCacheKey of this.store.objectCacheKeyRegistry.getVariants(
+          object.$objectType ?? object.$apiName,
+          object.$primaryKey,
+        )
+      ) {
+        batch.delete(objectCacheKey, "loaded");
+      }
     });
   }
 }

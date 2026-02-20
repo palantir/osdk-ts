@@ -64,13 +64,13 @@ function isObjectTypeDefinition(
   return def.type === "object";
 }
 
-/* @internal */
-export function isObjectSet(o: any): o is ObjectSet<any> {
+export function isObjectSet(
+  o: object,
+): o is ObjectSet<ObjectOrInterfaceDefinition> {
   return o != null && typeof o === "object"
     && isWireObjectSet(objectSetDefinitions.get(o));
 }
 
-/** @internal */
 export function getWireObjectSet(
   objectSet: ObjectSet<any> | MinimalObjectSet<any>,
 ): WireObjectSet {

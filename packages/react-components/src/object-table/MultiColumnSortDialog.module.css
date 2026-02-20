@@ -1,0 +1,195 @@
+/*
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.title {
+  display: flex;
+  align-items: center;
+  gap: var(--osdk-surface-spacing);
+}
+
+.sortColumnsList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--osdk-surface-spacing);
+  flex: 1;
+  justify-content: space-between;
+  overflow-x: hidden;
+}
+
+.sortableList {
+  flex: 1;
+}
+
+.selectedColumnsContainer {
+  margin-bottom: calc(var(--osdk-surface-spacing) * 2);
+}
+
+.sortColumnItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 0;
+  width: 100%;
+}
+
+.sortColumnName {
+  min-width: 0;
+  flex-shrink: 1;
+}
+
+.sortDirectionButton {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  padding: var(--osdk-surface-spacing);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--osdk-surface-border-radius);
+
+  &:hover {
+    background-color: var(--osdk-button-secondary-bg-hover);
+  }
+
+  &:focus {
+    outline: none;
+  }
+
+  &:focus-visible {
+    outline: var(--osdk-focus-outline);
+    outline-offset: calc(-1 * var(--osdk-focus-visible-outline-offset));
+  }
+}
+
+.sortIcon {
+  color: var(--osdk-typography-color-muted);
+}
+
+.addColumnButton {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--osdk-surface-spacing) * 2);
+  width: 100%;
+  padding: calc(var(--osdk-surface-spacing) * 2)
+    calc(var(--osdk-surface-spacing) * 3);
+  background-color: var(--osdk-button-secondary-bg);
+  border: var(--osdk-surface-border);
+  border-radius: var(--osdk-surface-border-radius);
+  cursor: pointer;
+  color: var(--osdk-button-secondary-color);
+  margin-top: calc(var(--osdk-surface-spacing) * 2);
+
+  &:hover:not(:disabled) {
+    background-color: var(--osdk-button-secondary-bg-hover);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  &:focus {
+    outline: none;
+  }
+
+  &:focus-visible {
+    outline: var(--osdk-focus-outline);
+    outline-offset: calc(-1 * var(--osdk-focus-visible-outline-offset));
+  }
+}
+
+.addIcon {
+  width: var(--osdk-iconography-size-small);
+  height: var(--osdk-iconography-size-small);
+  color: currentColor;
+}
+
+.addColumnText {
+  flex: 1;
+  text-align: left;
+}
+
+.menuPositioner {
+  z-index: var(--osdk-surface-z-index-2);
+}
+
+.dropdownMenu {
+  background-color: var(--osdk-surface-background-color-default-rest);
+  border: var(--osdk-surface-border);
+  border-radius: var(--osdk-surface-border-radius);
+  box-shadow: var(--osdk-surface-shadow-2);
+  max-height: calc(var(--osdk-dialog-max-height) * 0.5);
+  overflow-y: auto;
+  width: var(--anchor-width);
+
+  &:focus {
+    outline: none;
+  }
+
+  &:focus-visible {
+    outline: var(--osdk-focus-outline);
+    outline-offset: var(--osdk-focus-visible-outline-offset);
+  }
+}
+
+.menuSearchContainer {
+  border: none;
+  border-bottom: var(--osdk-surface-border);
+  border-radius: 0;
+  position: sticky;
+  top: 0;
+  background-color: var(--osdk-surface-background-color-default-rest);
+}
+
+.menuEmptyState {
+  padding: calc(var(--osdk-surface-spacing) * 3);
+  text-align: center;
+  color: var(--osdk-typography-color-muted);
+  font-size: var(--osdk-typography-size-body-medium);
+}
+
+.dropdownItem {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: calc(var(--osdk-surface-spacing) * 2)
+    calc(var(--osdk-surface-spacing) * 3);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: var(--osdk-typography-size-body-medium);
+  color: var(--osdk-typography-color-default-rest);
+
+  &:hover {
+    background-color: var(--osdk-surface-background-color-default-hover);
+  }
+
+  &:focus {
+    outline: none;
+  }
+
+  &:focus-visible {
+    outline: var(--osdk-focus-outline);
+    outline-offset: calc(-1 * var(--osdk-focus-visible-outline-offset));
+  }
+}
+
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

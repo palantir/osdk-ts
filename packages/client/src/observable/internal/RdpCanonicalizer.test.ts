@@ -18,30 +18,30 @@ import type { DerivedProperty } from "@osdk/api";
 import type { Employee } from "@osdk/client.test.ontology";
 import { describe, expect, it } from "vitest";
 import { RdpCanonicalizer } from "./RdpCanonicalizer.js";
+import { extractRdpFieldNames } from "./utils/rdpFieldOperations.js";
 
 describe("RdpCanonicalizer", () => {
   it("returns same canonical object for functionally identical RDPs with different function references", () => {
     const canonicalizer = new RdpCanonicalizer();
 
-    // Create first RDP with a function
     const rdp1: DerivedProperty.Clause<typeof Employee> = {
       derivedAddress: (base) =>
         base.pivotTo("lead").selectProperty("employeeId"),
       derivedName: (base) => base.pivotTo("lead").selectProperty("fullName"),
     };
 
-    // Create second RDP with new function references but same logic
+    // Same logic, different function references
     const rdp2: DerivedProperty.Clause<typeof Employee> = {
       derivedAddress: (base) =>
         base.pivotTo("lead").selectProperty("employeeId"),
       derivedName: (base) => base.pivotTo("lead").selectProperty("fullName"),
     };
 
-    // The functions should have different references
+    // Different references...
     expect(rdp1.derivedAddress).not.toBe(rdp2.derivedAddress);
     expect(rdp1.derivedName).not.toBe(rdp2.derivedName);
 
-    // But canonicalization should return the same object
+    // ...but same canonical object
     const canonical1 = canonicalizer.canonicalize(rdp1);
     const canonical2 = canonicalizer.canonicalize(rdp2);
 
@@ -77,7 +77,34 @@ describe("RdpCanonicalizer", () => {
     const canonical1 = canonicalizer.canonicalize(rdp);
     const canonical2 = canonicalizer.canonicalize(rdp);
 
-    // Same input object should return cached result
     expect(canonical1).toBe(canonical2);
+  });
+
+  it("shared canonicalizer produces identical canonical and field sets across callers", () => {
+    const sharedCanonicalizer = new RdpCanonicalizer();
+
+    // Two callers (e.g. ListsHelper, ObjectSetHelper) with same RDP definition
+    const listWithProperties: DerivedProperty.Clause<typeof Employee> = {
+      derivedAddress: (base) =>
+        base.pivotTo("lead").selectProperty("employeeId"),
+      derivedName: (base) => base.pivotTo("lead").selectProperty("fullName"),
+    };
+    const listCanonical = sharedCanonicalizer.canonicalize(listWithProperties);
+
+    const objectSetWithProperties: DerivedProperty.Clause<typeof Employee> = {
+      derivedAddress: (base) =>
+        base.pivotTo("lead").selectProperty("employeeId"),
+      derivedName: (base) => base.pivotTo("lead").selectProperty("fullName"),
+    };
+    const objectSetCanonical = sharedCanonicalizer.canonicalize(
+      objectSetWithProperties,
+    );
+
+    expect(listCanonical).toBe(objectSetCanonical);
+
+    const listFields = extractRdpFieldNames(listCanonical);
+    const objectSetFields = extractRdpFieldNames(objectSetCanonical);
+    expect(listFields).toEqual(objectSetFields);
+    expect(listFields).toEqual(new Set(["derivedAddress", "derivedName"]));
   });
 });

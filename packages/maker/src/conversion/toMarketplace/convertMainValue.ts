@@ -32,9 +32,10 @@ export function convertMainValue(
     && sharedPropertyType.type.mainValue
   ) {
     return {
-      fields: Array.isArray(sharedPropertyType.type.mainValue.fields)
+      fieldApiNames: Array.isArray(sharedPropertyType.type.mainValue.fields)
         ? sharedPropertyType.type.mainValue.fields
         : [sharedPropertyType.type.mainValue.fields],
+      structApiName: sharedPropertyType.apiName,
       type: propertyTypeTypeToOntologyIrType(
         sharedPropertyType.type.mainValue.type,
       ),
@@ -42,9 +43,10 @@ export function convertMainValue(
   }
   if (isStruct(type) && type.mainValue) {
     return {
-      fields: Array.isArray(type.mainValue.fields)
+      fieldApiNames: Array.isArray(type.mainValue.fields)
         ? type.mainValue.fields
         : [type.mainValue.fields],
+      structApiName: apiName!,
       type: propertyTypeTypeToOntologyIrType(type.mainValue.type),
     };
   }

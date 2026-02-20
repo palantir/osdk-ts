@@ -192,10 +192,10 @@ export abstract class ListQuery extends BaseListQuery<
       );
     }
 
-    // Fetch the data with pagination
+    // Fetch the data with pagination using effective pageSize (max of all subscribers)
     const resp = await this.#objectSet.fetchPage({
       $nextPageToken: this.nextPageToken,
-      $pageSize: this.options.pageSize,
+      $pageSize: this.getEffectiveFetchPageSize(),
       $includeRid: true,
       // For now this keeps the shared test code from falling apart
       // but shouldn't be needed ideally

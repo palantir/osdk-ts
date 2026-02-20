@@ -1,5 +1,48 @@
 # @osdkkit/react
 
+## 0.10.0-beta.4
+
+### Minor Changes
+
+- 727fd0e: fix dual @types/react version mismatch
+
+### Patch Changes
+
+- Updated dependencies [8c60682]
+- Updated dependencies [15e1686]
+- Updated dependencies [c9d954d]
+- Updated dependencies [044eb80]
+- Updated dependencies [9d234b9]
+  - @osdk/client@2.8.0-beta.6
+  - @osdk/api@2.8.0-beta.6
+
+## 0.10.0-beta.3
+
+### Minor Changes
+
+- 73e617e: expose dedupeInterval on useLinks and fix forced revalidation bypassing dedupeInterval
+- a027f3c: stabilize subscription deps in useOsdkObjects and useOsdkAggregation
+
+### Patch Changes
+
+- Updated dependencies [73e617e]
+- Updated dependencies [5848e3c]
+  - @osdk/client@2.8.0-beta.4
+  - @osdk/api@2.8.0-beta.4
+
+## 0.10.0-beta.2
+
+### Minor Changes
+
+- 0d174a2: useOsdkFunction typing updates
+
+### Patch Changes
+
+- Updated dependencies [26cec61]
+- Updated dependencies [0d174a2]
+  - @osdk/client@2.8.0-beta.3
+  - @osdk/api@2.8.0-beta.3
+
 ## 0.9.0-beta.10
 
 ### Minor Changes

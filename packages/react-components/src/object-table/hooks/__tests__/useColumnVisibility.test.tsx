@@ -14,16 +14,11 @@
  * limitations under the License.
  */
 
-import type {
-  DerivedProperty,
-  ObjectTypeDefinition,
-  PropertyKeys,
-  QueryDefinition,
-  SimplePropertyDef,
-} from "@osdk/api";
-import { renderHook, waitFor } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
-import type { ColumnDefinition } from "../../ObjectTableApi.js";
+import type { ObjectTypeDefinition } from "@osdk/api";
+import type { ColumnDef } from "@tanstack/react-table";
+import { act, renderHook } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
+import { SELECTION_COLUMN_ID } from "../../utils/constants.js";
 import { useColumnVisibility } from "../useColumnVisibility.js";
 
 const TestObjectType = {
@@ -32,165 +27,247 @@ const TestObjectType = {
 } as const satisfies ObjectTypeDefinition;
 
 type TestObject = typeof TestObjectType;
-type TestObjectKeys = PropertyKeys<TestObject>;
+
+// Helper to create mock ColumnDef objects that mirror what useColumnDefs would produce
+function createMockColumn<T>(
+  id: string,
+  isVisible?: boolean,
+): ColumnDef<T> {
+  return {
+    id,
+    meta: isVisible !== undefined ? { isVisible } : undefined,
+  } as ColumnDef<T>;
+}
 
 describe(useColumnVisibility, () => {
-  it("returns undefined columnVisibility when no columnDefinitions provided", () => {
-    const { result } = renderHook(() =>
-      useColumnVisibility({
-        columnDefinitions: undefined,
-      })
-    );
+  describe("column visibility", () => {
+    it("returns empty columnVisibility when no columnDefinitions provided", () => {
+      const allColumns: ColumnDef<unknown>[] = [];
+      const { result } = renderHook(() =>
+        useColumnVisibility<TestObject>({
+          allColumns,
+        })
+      );
 
-    expect(result.current).toBeUndefined();
-  });
+      expect(result.current.columnVisibility).toEqual({});
+    });
 
-  it("returns empty columnVisibility when columnDefinitions have no isVisible properties", () => {
-    const columnDefinitions: Array<ColumnDefinition<TestObject, {}, {}>> = [
-      {
-        locator: { type: "property", id: "name" as TestObjectKeys },
-      },
-      {
-        locator: { type: "property", id: "email" as TestObjectKeys },
-      },
-    ];
+    it("initializes all columns as visible by default", () => {
+      const allColumns: ColumnDef<unknown>[] = [
+        createMockColumn("name"),
+        createMockColumn("email"),
+      ];
 
-    const { result } = renderHook(() =>
-      useColumnVisibility({
-        columnDefinitions,
-      })
-    );
+      const { result } = renderHook(() =>
+        useColumnVisibility<TestObject>({
+          allColumns,
+        })
+      );
 
-    expect(result.current).toEqual({});
-  });
+      expect(result.current.columnVisibility).toEqual({
+        name: true,
+        email: true,
+      });
+    });
 
-  it("handles mixed column types with different visibility states", async () => {
-    const mockRdpCreator = (() => ({})) as unknown as DerivedProperty.Creator<
-      TestObject,
-      SimplePropertyDef
-    >;
+    it("handles mixed column types with different visibility states", () => {
+      const allColumns: ColumnDef<unknown>[] = [
+        createMockColumn("name", true),
+        createMockColumn("myFunction", false),
+        createMockColumn("myRdp", true),
+        createMockColumn("email"),
+      ];
 
-    const columnDefinitions: Array<
-      ColumnDefinition<
-        TestObject,
-        { myRdp: SimplePropertyDef },
-        { myFunction: QueryDefinition<{}> }
-      >
-    > = [
-      {
-        locator: { type: "property", id: "name" as TestObjectKeys },
-        isVisible: true,
-      },
-      {
-        locator: { type: "function", id: "myFunction" },
-        isVisible: false,
-      },
-      {
-        locator: { type: "rdp", id: "myRdp", creator: mockRdpCreator },
-        isVisible: true,
-      },
-      {
-        locator: { type: "property", id: "email" as TestObjectKeys },
-      },
-    ];
+      const { result } = renderHook(() =>
+        useColumnVisibility<TestObject>({
+          allColumns,
+        })
+      );
 
-    const { result } = renderHook(() =>
-      useColumnVisibility({
-        columnDefinitions,
-      })
-    );
-
-    await waitFor(() => {
-      expect(result.current).toEqual({
+      expect(result.current.columnVisibility).toEqual({
         name: true,
         myFunction: false,
         myRdp: true,
+        email: true,
       });
     });
-  });
 
-  it("updates columnVisibility when columnDefinitions change", async () => {
-    const initialColumnDefinitions: Array<
-      ColumnDefinition<TestObject, {}, {}>
-    > = [
-      {
-        locator: { type: "property", id: "name" as TestObjectKeys },
-        isVisible: true,
-      },
-    ];
+    it("updates columnVisibility when columnDefinitions change", () => {
+      const initialColumns: ColumnDef<unknown>[] = [
+        createMockColumn("name", true),
+      ];
 
-    const { result, rerender } = renderHook(
-      ({ columnDefinitions }) =>
-        useColumnVisibility({
-          columnDefinitions,
-        }),
-      {
-        initialProps: { columnDefinitions: initialColumnDefinitions },
-      },
-    );
+      const { result, rerender } = renderHook(
+        ({ allColumns }) =>
+          useColumnVisibility<TestObject>({
+            allColumns,
+          }),
+        {
+          initialProps: { allColumns: initialColumns },
+        },
+      );
 
-    await waitFor(() => {
-      expect(result.current).toEqual({
+      expect(result.current.columnVisibility).toEqual({
         name: true,
       });
-    });
 
-    const updatedColumnDefinitions: Array<
-      ColumnDefinition<TestObject, {}, {}>
-    > = [
-      {
-        locator: { type: "property", id: "name" as TestObjectKeys },
-        isVisible: false,
-      },
-      {
-        locator: { type: "property", id: "email" as TestObjectKeys },
-        isVisible: true,
-      },
-    ];
+      const updatedColumns: ColumnDef<unknown>[] = [
+        createMockColumn("name", false),
+        createMockColumn("email", true),
+      ];
 
-    rerender({ columnDefinitions: updatedColumnDefinitions });
+      rerender({ allColumns: updatedColumns });
 
-    await waitFor(() => {
-      expect(result.current).toEqual({
+      expect(result.current.columnVisibility).toEqual({
         name: false,
         email: true,
       });
     });
   });
 
-  it("only includes columns with explicit isVisible in the visibility state", async () => {
-    const columnDefinitions: Array<ColumnDefinition<TestObject, {}, {}>> = [
-      {
-        locator: { type: "property", id: "name" as TestObjectKeys },
-        isVisible: true,
-      },
-      {
-        locator: { type: "property", id: "email" as TestObjectKeys },
-      },
-      {
-        locator: { type: "property", id: "age" as TestObjectKeys },
-        isVisible: false,
-      },
-      {
-        locator: { type: "property", id: "id" as TestObjectKeys },
-      },
-    ];
+  describe("onColumnVisibilityChanged callback", () => {
+    it("calls onColumnVisibilityChanged when visibility changed", () => {
+      const onColumnVisibilityChanged = vi.fn();
+      const allColumns: ColumnDef<unknown>[] = [
+        createMockColumn("name", true),
+        createMockColumn("email", true),
+      ];
 
-    const { result } = renderHook(() =>
-      useColumnVisibility({
-        columnDefinitions,
-      })
-    );
+      const { result } = renderHook(() =>
+        useColumnVisibility<TestObject>({
+          allColumns,
+          onColumnVisibilityChanged,
+        })
+      );
 
-    await waitFor(() => {
-      expect(result.current).toEqual({
-        name: true,
-        age: false,
+      act(() => {
+        result.current.onColumnVisibilityChange((prev) => ({
+          ...prev,
+          email: false,
+        }));
       });
+
+      expect(result.current.columnVisibility).toEqual({
+        name: true,
+        email: false,
+      });
+
+      expect(onColumnVisibilityChanged).toHaveBeenCalledWith([
+        { columnId: "name", isVisible: true },
+        { columnId: "email", isVisible: false },
+      ]);
     });
 
-    // Verify that columns without isVisible are not in the state
-    expect(result.current).not.toHaveProperty("email");
-    expect(result.current).not.toHaveProperty("id");
+    it("does not call callback when callback is not provided", () => {
+      const allColumns: ColumnDef<unknown>[] = [
+        createMockColumn("name", true),
+      ];
+
+      const { result } = renderHook(() =>
+        useColumnVisibility<TestObject>({
+          allColumns,
+        })
+      );
+
+      // Should not throw
+      act(() => {
+        result.current.onColumnVisibilityChange({
+          name: false,
+        });
+      });
+
+      expect(result.current.columnVisibility).toEqual({
+        name: false,
+      });
+    });
+  });
+
+  describe("column ordering", () => {
+    it("initializes column order from column definitions", () => {
+      const allColumns: ColumnDef<unknown>[] = [
+        createMockColumn("name"),
+        createMockColumn("email"),
+        createMockColumn("age"),
+      ];
+
+      const { result } = renderHook(() =>
+        useColumnVisibility<TestObject>({
+          allColumns,
+        })
+      );
+
+      expect(result.current.columnOrder).toEqual(["name", "email", "age"]);
+    });
+
+    it("includes selection column first when hasSelectionColumn is true", () => {
+      const allColumns: ColumnDef<unknown>[] = [
+        createMockColumn(SELECTION_COLUMN_ID),
+        createMockColumn("name"),
+        createMockColumn("email"),
+      ];
+
+      const { result } = renderHook(() =>
+        useColumnVisibility<TestObject>({
+          allColumns,
+        })
+      );
+
+      expect(result.current.columnOrder).toEqual([
+        SELECTION_COLUMN_ID,
+        "name",
+        "email",
+      ]);
+    });
+
+    it("updates column order when onColumnOrderChange is called", () => {
+      const allColumns: ColumnDef<unknown>[] = [
+        createMockColumn("name"),
+        createMockColumn("email"),
+        createMockColumn("age"),
+      ];
+
+      const { result } = renderHook(() =>
+        useColumnVisibility<TestObject>({
+          allColumns,
+        })
+      );
+
+      expect(result.current.columnOrder).toEqual(["name", "email", "age"]);
+
+      act(() => {
+        result.current.onColumnOrderChange(["email", "age", "name"]);
+      });
+
+      expect(result.current.columnOrder).toEqual(["email", "age", "name"]);
+    });
+
+    it("updates column order when columnDefinitions change", () => {
+      const initialColumns: ColumnDef<unknown>[] = [
+        createMockColumn("name"),
+        createMockColumn("email"),
+      ];
+
+      const { result, rerender } = renderHook(
+        ({ allColumns }) =>
+          useColumnVisibility<TestObject>({
+            allColumns,
+          }),
+        {
+          initialProps: { allColumns: initialColumns },
+        },
+      );
+
+      expect(result.current.columnOrder).toEqual(["name", "email"]);
+
+      const updatedColumns: ColumnDef<unknown>[] = [
+        createMockColumn("age"),
+        createMockColumn("name"),
+        createMockColumn("email"),
+      ];
+
+      rerender({ allColumns: updatedColumns });
+
+      expect(result.current.columnOrder).toEqual(["age", "name", "email"]);
+    });
   });
 });

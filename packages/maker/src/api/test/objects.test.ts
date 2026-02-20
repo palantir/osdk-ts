@@ -4083,10 +4083,11 @@ describe("Object Types", () => {
                         "subtype": {
                           "struct": {
                             "mainValue": {
-                              "fields": [
+                              "fieldApiNames": [
                                 "field1",
                                 "field2",
                               ],
+                              "structApiName": "prop",
                               "type": {
                                 "struct": {
                                   "mainValue": undefined,
@@ -4218,9 +4219,10 @@ describe("Object Types", () => {
                         "subtype": {
                           "struct": {
                             "mainValue": {
-                              "fields": [
+                              "fieldApiNames": [
                                 "prop1",
                               ],
+                              "structApiName": "com.palantir.spt",
                               "type": {
                                 "string": {
                                   "analyzerOverride": undefined,
@@ -4326,9 +4328,10 @@ describe("Object Types", () => {
                     "subtype": {
                       "struct": {
                         "mainValue": {
-                          "fields": [
+                          "fieldApiNames": [
                             "prop1",
                           ],
+                          "structApiName": "com.palantir.spt",
                           "type": {
                             "string": {
                               "analyzerOverride": undefined,
