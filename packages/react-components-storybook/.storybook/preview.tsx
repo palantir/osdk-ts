@@ -26,6 +26,8 @@ import "@osdk/react-components-styles";
 import "./themes.css";
 
 // Initialize MSW with proper options
+// This is synchronous, it only configures MSW
+// The actual service worker registration happens in the mswLoader, which runs before each story
 initialize({
   onUnhandledRequest: "warn",
   serviceWorker: {

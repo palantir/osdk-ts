@@ -30,15 +30,10 @@ jobs:
         run: pnpm install
 
       - name: Build dependencies for Storybook
-        run: |
-          pnpm --filter @osdk/api build || true
-          pnpm --filter @osdk/client build || true
-          pnpm --filter @osdk/react build || true
-          pnpm --filter @osdk/react-components build || true
-          pnpm --filter @osdk/faux build || true
+        run: pnpm --filter "@osdk/*" transpileBrowser
 
       - name: Build Storybook
-        run: pnpm --filter react-components-storybook build-storybook
+        run: pnpm --filter react-components-storybook build
 
       - name: Deploy to gh-pages branch
         run: |

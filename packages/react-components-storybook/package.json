@@ -8,8 +8,7 @@
     "url": "https://github.com/palantir/osdk-ts.git"
   },
   "scripts": {
-    "build": "pnpm transpileAllDeps && storybook build",
-    "build-storybook": "pnpm transpileAllDeps && storybook build",
+    "build": "storybook build",
     "dev": "storybook dev -p 6006",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check --config $(find-up dprint.json)",

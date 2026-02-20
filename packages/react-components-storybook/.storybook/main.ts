@@ -46,6 +46,10 @@ const config: StorybookConfig = {
       alias: {
         ...config.resolve?.alias,
         // Polyfill Node.js modules for browser
+        // This is necessary because MSW (Mock Service Worker) and other dependencies
+        // use Node.js built-in modules like crypto.randomUUID() which aren't available
+        // in browser environments. These polyfills provide browser-compatible implementations
+        // to ensure Storybook stories work correctly across all browsers.
         "node:crypto": new URL("./crypto-polyfill.ts", import.meta.url)
           .pathname,
         "node:util": new URL("./util-polyfill.ts", import.meta.url).pathname,
