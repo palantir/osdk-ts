@@ -13,9 +13,12 @@ interface CreateTaskDialogProps {
   onTaskCreated: (taskId: string) => void;
 }
 
-function CreateTaskDialog(
-  { project, isOpen, onClose, onTaskCreated }: CreateTaskDialogProps,
-) {
+function CreateTaskDialog({
+  project,
+  isOpen,
+  onClose,
+  onTaskCreated,
+}: CreateTaskDialogProps) {
   const { createTask, getRecommendedTaskDescription } = useProjectTasks(
     project,
   );
@@ -96,19 +99,20 @@ function CreateTaskDialog(
             <div className={css.task}>
               <label className={css.label}>
                 Task name:{" "}
+                <input
+                  type="text"
+                  value={name}
+                  onChange={handleChangeTaskName}
+                  className={css.input}
+                />
               </label>
-              <input
-                type="text"
-                value={name}
-                onChange={handleChangeTaskName}
-                className={css.input}
-              />
 
-              <label className={css.label}>
+              <label className={css.label} htmlFor="task-description">
                 Task description:{" "}
               </label>
               <div className={css.container}>
                 <textarea
+                  id="task-description"
                   ref={textAreaRef}
                   value={description}
                   onChange={handleChangeTaskDescription}
@@ -122,11 +126,7 @@ function CreateTaskDialog(
                   type="button"
                   onClick={handleTaskDescriptionRecommendation}
                 >
-                  <img
-                    src={aipLogo}
-                    alt="AIP"
-                    className={css.image}
-                  />
+                  <img src={aipLogo} alt="AIP logo" className={css.image} />
                 </button>
               </div>
             </div>
