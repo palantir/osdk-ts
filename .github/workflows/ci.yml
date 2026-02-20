@@ -90,7 +90,7 @@ jobs:
         run: pnpm install
 
       - name: Build packages (current)
-        run: pnpm exec turbo run transpileCjs --force
+        run: pnpm exec turbo transpile
 
       - name: Capture current bundle sizes
         run: node scripts/capture-bundle-sizes.mjs
@@ -104,7 +104,7 @@ jobs:
         run: pnpm install
 
       - name: Build packages (baseline)
-        run: pnpm exec turbo run transpileCjs --force
+        run: pnpm exec turbo transpile
 
       - name: Capture baseline bundle sizes
         run: node scripts/capture-bundle-sizes.mjs
