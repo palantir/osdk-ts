@@ -73,6 +73,9 @@ export default async function main(
     functionsRootDir?: string;
     functionsOutput?: string;
     configPath?: string;
+    pythonFunctionsDir?: string;
+    pythonBinary?: string;
+    pythonRootProjectDir?: string;
   } = await yargs(hideBin(args))
     .version(process.env.PACKAGE_VERSION ?? "")
     .wrap(Math.min(150, yargs().terminalWidth()))
@@ -164,6 +167,24 @@ export default async function main(
         type: "string",
         coerce: path.resolve,
       },
+      pythonFunctionsDir: {
+        describe:
+          "Path to Python functions source directory (enables Python function discovery)",
+        type: "string",
+        coerce: path.resolve,
+      },
+      pythonBinary: {
+        describe:
+          "Path to Python binary (required when using --pythonFunctionsDir)",
+        type: "string",
+        coerce: path.resolve,
+      },
+      pythonRootProjectDir: {
+        describe:
+          "Root project directory for Python functions (defaults to parent of pythonFunctionsDir)",
+        type: "string",
+        coerce: path.resolve,
+      },
     })
     .parseAsync();
   let apiNamespace = "";
@@ -231,6 +252,13 @@ export default async function main(
     );
   }
 
+  if (commandLineOpts.pythonFunctionsDir && !commandLineOpts.pythonBinary) {
+    consola.error(
+      "--pythonBinary is required when using --pythonFunctionsDir",
+    );
+    return;
+  }
+
   // Function discovery feature (requires optional dependencies)
   if (
     commandLineOpts.functionsOutput !== undefined
@@ -260,6 +288,34 @@ export default async function main(
     // Generate full ontology metadata for functions OSDK
     const fullMetadata = OntologyIrToFullMetadataConverter
       .getFullMetadataFromIr(ontologyIr.ontology);
+
+    // Discover Python functions and merge into ontology metadata
+    if (commandLineOpts.pythonFunctionsDir) {
+      const effectivePythonRootDir = commandLineOpts.pythonRootProjectDir
+        ?? path.dirname(commandLineOpts.pythonFunctionsDir);
+
+      const queryTypes = await OntologyIrToFullMetadataConverter
+        .getOsdkQueryTypes(
+          commandLineOpts.pythonBinary,
+          undefined,
+          undefined,
+          commandLineOpts.pythonFunctionsDir,
+          effectivePythonRootDir,
+        );
+
+      const functionNames = Object.keys(queryTypes);
+      if (functionNames.length > 0) {
+        fullMetadata.queryTypes = queryTypes;
+        consola.info(
+          `Discovered ${functionNames.length} Python function(s): ${
+            functionNames.join(", ")
+          }`,
+        );
+      } else {
+        consola.info("No Python functions discovered.");
+      }
+    }
+
     consola.info(
       `Saving full ontology metadata to ${commandLineOpts.generateFunctionsOsdk}`,
     );

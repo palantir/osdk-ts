@@ -32,7 +32,7 @@ import type * as Ontologies from "@osdk/foundry.ontologies";
 import { consola } from "consola";
 import { spawnSync } from "node:child_process";
 import { hash } from "node:crypto";
-import { existsSync } from "node:fs";
+import { accessSync, constants } from "node:fs";
 import { createRequire } from "node:module";
 import * as path from "node:path";
 import { pathToFileURL } from "node:url";
@@ -94,9 +94,11 @@ function discoverPythonFunctions(
   pythonBinary: string,
 ): IPythonDiscoveryResult | null {
   const pythonPath = pythonBinary;
-  if (!existsSync(pythonPath)) {
+  try {
+    accessSync(pythonPath, constants.X_OK);
+  } catch {
     throw new Error(
-      `Python binary not found at ${pythonPath}`,
+      `Python binary not found or not executable at ${pythonPath}`,
     );
   }
 
@@ -136,21 +138,28 @@ function discoverPythonFunctions(
 
   try {
     // The Python command may output log lines before the JSON on stdout.
-    // Find the last occurrence of the JSON start marker to avoid false
-    // matches in log output.
+    // Try parsing JSON from each line boundary starting from the end,
+    // which is more robust than matching a specific marker string.
     const stdout = result.stdout;
-    const marker = "{\"functions\":";
-    const jsonStart = stdout.lastIndexOf(marker);
-    if (jsonStart === -1) {
-      consola.error(
-        `No JSON found in Python discovery output (expected ${marker}): ${
-          stdout.slice(0, 500)
-        }`,
-      );
-      return null;
+    const lines = stdout.split("\n");
+    for (let i = lines.length - 1; i >= 0; i--) {
+      const line = lines[i].trimStart();
+      if (line.startsWith("{")) {
+        const candidate = lines.slice(i).join("\n");
+        try {
+          const parsed = JSON.parse(candidate) as IPythonDiscoveryResult;
+          if ("functions" in parsed) {
+            return parsed;
+          }
+        } catch {
+          // Not valid JSON from this line, try earlier
+        }
+      }
     }
-    const jsonStr = stdout.slice(jsonStart);
-    return JSON.parse(jsonStr) as IPythonDiscoveryResult;
+    consola.error(
+      `No valid JSON found in Python discovery output: ${stdout.slice(0, 500)}`,
+    );
+    return null;
   } catch (e: unknown) {
     consola.error(
       `Failed to parse Python discovery output: ${
@@ -161,23 +170,23 @@ function discoverPythonFunctions(
   }
 }
 
-// Lazy-loaded function discovery module, keyed by nodeModulesPath
-let cachedDiscoveryModules: FunctionDiscoveryModules | null = null;
-let cachedNodeModulesPath: string | undefined;
-
 interface FunctionDiscoveryModules {
   FunctionDiscoverer: IFunctionDiscovererConstructor;
   typescript: typeof ts;
 }
 
+// Lazy-loaded function discovery modules, keyed by nodeModulesPath
+const discoveryModulesCache = new Map<
+  string | undefined,
+  FunctionDiscoveryModules
+>();
+
 async function loadFunctionDiscoverer(
   nodeModulesPath?: string,
 ): Promise<FunctionDiscoveryModules | null> {
-  if (
-    cachedDiscoveryModules != null
-    && cachedNodeModulesPath === nodeModulesPath
-  ) {
-    return cachedDiscoveryModules;
+  const cached = discoveryModulesCache.get(nodeModulesPath);
+  if (cached) {
+    return cached;
   }
   try {
     let modules: FunctionDiscoveryModules;
@@ -205,8 +214,7 @@ async function loadFunctionDiscoverer(
         typescript: ts, // Use the bundled TypeScript
       };
     }
-    cachedDiscoveryModules = modules;
-    cachedNodeModulesPath = nodeModulesPath;
+    discoveryModulesCache.set(nodeModulesPath, modules);
     return modules;
   } catch (e: unknown) {
     consola.warn(
@@ -257,7 +265,7 @@ export class OntologyIrToFullMetadataConverter {
   }
 
   static async getOsdkQueryTypes(
-    pythonBinary: string,
+    pythonBinary?: string,
     functionsDir?: string,
     nodeModulesPath?: string,
     pythonFunctionsDir?: string,
@@ -276,6 +284,11 @@ export class OntologyIrToFullMetadataConverter {
     }
 
     if (pythonFunctionsDir && pythonRootProjectDir) {
+      if (!pythonBinary) {
+        throw new Error(
+          "pythonBinary is required when pythonFunctionsDir is specified",
+        );
+      }
       const pyQueries = this.discoverPythonQueryTypes(
         pythonFunctionsDir,
         pythonRootProjectDir,

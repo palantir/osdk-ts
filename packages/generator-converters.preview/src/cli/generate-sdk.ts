@@ -80,9 +80,9 @@ async function main(): Promise<void> {
         coerce: path.resolve,
       },
       "python-binary": {
-        describe: "Path to Python binary",
+        describe:
+          "Path to Python binary (required when using --python-functions-dir)",
         type: "string",
-        demandOption: true,
         coerce: path.resolve,
       },
     })
@@ -137,6 +137,13 @@ async function main(): Promise<void> {
 
   // Function discovery is optional - only run if at least one functions flag is provided
   if (argv.functionsDir || argv.pythonFunctionsDir) {
+    if (argv.pythonFunctionsDir && !argv.pythonBinary) {
+      consola.error(
+        "--python-binary is required when using --python-functions-dir",
+      );
+      process.exit(1);
+    }
+
     const effectivePythonRootDir = argv.pythonRootProjectDir
       ?? (argv.pythonFunctionsDir
         ? path.dirname(argv.pythonFunctionsDir)

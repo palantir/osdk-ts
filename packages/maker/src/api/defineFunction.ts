@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
+import { OntologyIrToFullMetadataConverter } from "@osdk/generator-converters.ontologyir";
 import { consola } from "consola";
 import * as path from "node:path";
-import * as ts from "typescript";
+import type * as ts from "typescript";
 
 export interface FunctionIrBlockData {
   functionsBlockDataV1: Record<string, unknown>;
@@ -61,17 +62,17 @@ export interface IEntityMetadataMapping {
 }
 
 // Lazy-loaded function discovery module
-let FunctionDiscoverer: IFunctionDiscoverer | null = null;
+let cachedFunctionDiscoverer: IFunctionDiscoverer | null = null;
 
 async function loadFunctionDiscoverer(): Promise<IFunctionDiscoverer | null> {
-  if (FunctionDiscoverer != null) {
-    return FunctionDiscoverer;
+  if (cachedFunctionDiscoverer != null) {
+    return cachedFunctionDiscoverer;
   }
   try {
     const modulePath = "@foundry/functions-typescript-osdk-discovery";
     const module = await import(/* @vite-ignore */ modulePath);
-    FunctionDiscoverer = module.FunctionDiscoverer;
-    return FunctionDiscoverer;
+    cachedFunctionDiscoverer = module.FunctionDiscoverer;
+    return cachedFunctionDiscoverer;
   } catch (e: unknown) {
     consola.warn(
       "Failed to load @foundry/functions-typescript-osdk-discovery:",
@@ -97,59 +98,6 @@ function extractFunctionEntries(
   });
 }
 
-export async function defineFunction(
-  rootDir: string,
-  functionsSubDir?: string,
-): Promise<FunctionIrBlockData> {
-  const functionsDiscoverer = await loadFunctionDiscoverer();
-  if (!functionsDiscoverer) {
-    throw new Error(
-      "Function discovery requires @foundry/functions-typescript-osdk-discovery to be installed",
-    );
-  }
-
-  const tsConfigFilePath = path.join(rootDir, "tsconfig.json");
-  const program = createProgram(tsConfigFilePath, rootDir);
-  const entryPointPath = path.join(rootDir, "index.ts");
-  const fullFilePath = functionsSubDir
-    ? path.join(rootDir, functionsSubDir)
-    : rootDir;
-
-  const fd = new functionsDiscoverer(program, entryPointPath, fullFilePath);
-  const functions = fd.discover();
-
-  return {
-    functionsBlockDataV1: Object.fromEntries(
-      extractFunctionEntries(functions.discoveredFunctions),
-    ),
-  };
-}
-
-function createProgram(
-  tsConfigFilePath: string,
-  projectDir: string,
-): ts.Program {
-  const configFile = ts.readConfigFile(tsConfigFilePath, ts.sys.readFile);
-  if (configFile.error) {
-    throw new Error(
-      `Failed to read tsconfig at ${tsConfigFilePath}: ${
-        ts.flattenDiagnosticMessageText(configFile.error.messageText, "\n")
-      }`,
-    );
-  }
-
-  const { options, fileNames, errors } = ts.parseJsonConfigFileContent(
-    configFile.config,
-    ts.sys,
-    projectDir,
-  );
-  return ts.createProgram({
-    options,
-    rootNames: fileNames,
-    configFileParsingDiagnostics: errors,
-  });
-}
-
 export async function generateFunctionsIr(
   rootDir: string,
   configPath?: string,
@@ -163,7 +111,10 @@ export async function generateFunctionsIr(
   }
 
   const tsConfigPath = configPath ?? path.join(rootDir, "tsconfig.json");
-  const program = createProgram(tsConfigPath, rootDir);
+  const program = OntologyIrToFullMetadataConverter.createProgram(
+    tsConfigPath,
+    rootDir,
+  );
   const functionsDir = path.join(rootDir, "functions");
   const fd = new functionsDiscoverer(
     program,

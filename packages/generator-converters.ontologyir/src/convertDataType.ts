@@ -17,6 +17,36 @@
 import type * as Ontologies from "@osdk/foundry.ontologies";
 import type { IDataType } from "./OntologyIrToFullMetadataConverter.js";
 
+interface IOptionalDataType extends IDataType {
+  type: "optionalType";
+  optionalType: { wrappedType: IDataType };
+}
+
+interface ISetDataType extends IDataType {
+  type: "set";
+  set: { elementsType: IDataType };
+}
+
+interface IObjectSetDataType extends IDataType {
+  type: "objectSet";
+  objectSet: { objectTypeId: string };
+}
+
+interface IListDataType extends IDataType {
+  type: "list";
+  list: { elementsType: IDataType };
+}
+
+interface IFunctionCustomDataType extends IDataType {
+  type: "functionCustomType";
+  functionCustomType: string;
+}
+
+interface IObjectDataType extends IDataType {
+  type: "object";
+  object: { objectTypeId: string };
+}
+
 export function convertDataType(
   dataType: IDataType,
   customTypes: Record<string, unknown>,
@@ -50,10 +80,7 @@ export function convertDataType(
     case "attachment":
       return { type: "attachment" };
     case "optionalType": {
-      const optionalData = dataType as {
-        type: "optionalType";
-        optionalType: { wrappedType: IDataType };
-      };
+      const optionalData = dataType as IOptionalDataType;
       return {
         type: "union",
         unionTypes: [
@@ -66,30 +93,21 @@ export function convertDataType(
       };
     }
     case "set": {
-      const setData = dataType as {
-        type: "set";
-        set: { elementsType: IDataType };
-      };
+      const setData = dataType as ISetDataType;
       return {
         type: "set",
         subType: convertDataType(setData.set.elementsType, customTypes),
       };
     }
     case "objectSet": {
-      const objectSetData = dataType as {
-        type: "objectSet";
-        objectSet: { objectTypeId: string };
-      };
+      const objectSetData = dataType as IObjectSetDataType;
       return {
         type: "objectSet",
         objectApiName: objectSetData.objectSet.objectTypeId,
       };
     }
     case "list": {
-      const listData = dataType as {
-        type: "list";
-        list: { elementsType: IDataType };
-      };
+      const listData = dataType as IListDataType;
       return {
         type: "array",
         subType: convertDataType(
@@ -99,20 +117,14 @@ export function convertDataType(
       };
     }
     case "functionCustomType": {
-      const customTypeData = dataType as {
-        type: "functionCustomType";
-        functionCustomType: string;
-      };
+      const customTypeData = dataType as IFunctionCustomDataType;
       return convertFunctionCustomType(
         customTypeData.functionCustomType,
         customTypes,
       );
     }
     case "object": {
-      const objectData = dataType as {
-        type: "object";
-        object: { objectTypeId: string };
-      };
+      const objectData = dataType as IObjectDataType;
       return {
         type: "object",
         objectApiName: objectData.object.objectTypeId,
@@ -124,23 +136,38 @@ export function convertDataType(
   }
 }
 
+interface ICustomTypeShape {
+  fieldMetadata: Record<string, { required?: boolean }>;
+  fields: Record<string, IDataType>;
+}
+
+function isCustomTypeShape(value: unknown): value is ICustomTypeShape {
+  return (
+    typeof value === "object"
+    && value != null
+    && "fieldMetadata" in value
+    && "fields" in value
+    && typeof (value as Record<string, unknown>).fieldMetadata === "object"
+    && typeof (value as Record<string, unknown>).fields === "object"
+  );
+}
+
 function convertFunctionCustomType(
   functionId: string,
   customTypes: Record<string, unknown>,
 ): Ontologies.QueryDataType {
-  const customType = customTypes[functionId] as
-    | {
-      fieldMetadata: Record<string, { required?: boolean }>;
-      fields: Record<string, IDataType>;
-    }
-    | undefined;
-  if (!customType) {
+  const customTypeRaw = customTypes[functionId];
+  if (customTypeRaw == null) {
     throw new Error(
       `Unknown function custom type: '${functionId}' not found in customTypes`,
     );
   }
-  const fieldMetadata = customType.fieldMetadata;
-  const fields = customType.fields;
+  if (!isCustomTypeShape(customTypeRaw)) {
+    throw new Error(
+      `Invalid custom type structure for '${functionId}': expected 'fieldMetadata' and 'fields' properties`,
+    );
+  }
+  const { fieldMetadata, fields } = customTypeRaw;
   const structFields = Object.keys(fields).map(key => {
     return {
       name: key,
