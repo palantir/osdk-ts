@@ -1,0 +1,54 @@
+{
+  "name": "@osdk/react-components-storybook",
+  "private": true,
+  "version": "0.1.0",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/palantir/osdk-ts.git"
+  },
+  "scripts": {
+    "build": "storybook build",
+    "build-storybook": "storybook build",
+    "dev": "storybook dev -p 6006",
+    "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
+    "lint": "eslint . && dprint check --config $(find-up dprint.json)",
+    "storybook": "storybook dev -p 6006",
+    "transpileAllDeps": "pnpm --filter @osdk/* transpileBrowser",
+    "typecheck": "tsc -p tsconfig.typecheck.json"
+  },
+  "dependencies": {
+    "@osdk/faux": "workspace:*",
+    "msw": "^2.2.1",
+    "msw-storybook-addon": "^2.0.0"
+  },
+  "devDependencies": {
+    "@osdk/api": "workspace:*",
+    "@osdk/client": "workspace:*",
+    "@osdk/monorepo.tsconfig": "workspace:~",
+    "@osdk/react": "workspace:*",
+    "@osdk/react-components": "workspace:*",
+    "@osdk/react-components-styles": "workspace:*",
+    "@storybook/addon-links": "^10.2.10",
+    "@storybook/addon-themes": "^10.2.10",
+    "@storybook/react": "^10.2.10",
+    "@storybook/react-vite": "^10.2.10",
+    "@types/react": "^18.3.24",
+    "@types/react-dom": "^18.3.7",
+    "@vitejs/plugin-react": "^4.3.4",
+    "classnames": "^2.5.1",
+    "eslint-plugin-storybook": "^10.2.10",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "storybook": "^10.2.10",
+    "typescript": "~5.5.4",
+    "vite": "^6.0.6"
+  },
+  "msw": {
+    "workerDirectory": [
+      "public"
+    ],
+    "type": "module"
+  },
+  "type": "module"
+}

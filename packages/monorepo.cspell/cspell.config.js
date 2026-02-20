@@ -72,6 +72,10 @@ const cspell = {
     // spell checking the cspell config is a bit of a chicken and egg problem
     "cspell.config.js",
 
+    // Storybook mock data contains random IDs and auto-generated MSW service worker
+    "packages/react-components-storybook/src/mocks/**",
+    "packages/react-components-storybook/public/mockServiceWorker.js",
+
     // Just too complex right now. We should fix this later.
     "eslint.config.mjs",
     "tsup.config.js",

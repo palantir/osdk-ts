@@ -32,7 +32,7 @@ const PAGE_SIZE = 50;
 
 /**
  * This hook is a wrapper around useOsdkObjects
- * It extracts RDP locators from columnDefinitions and calls useObjectSet + withProperties
+ * It extracts RDP locators from columnDefinitions and calls useOsdkObjects + withProperties
  * to return data containing the derived properties.
  */
 export function useObjectTableData<
