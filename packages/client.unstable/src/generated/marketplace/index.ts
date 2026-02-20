@@ -15,7 +15,3 @@
  */
 
 export * as api from "./api/index.js";
-export * as apolloagent from "./apolloagent/index.js";
-export * as installmanager from "./installmanager/index.js";
-export * as release from "./release/index.js";
-export * as search from "./search/index.js";
