@@ -25,3 +25,5 @@ widgetregistry
 widgetset
 dsmtClient
 sidc
+unqualifies
+unqualify
