@@ -277,7 +277,7 @@ export const Default: Story = {
   },
   render: (args) => (
     <div className="object-table-container" style={{ height: "600px" }}>
-      <ObjectTable objectType={Employee} {...args} />
+      <ObjectTable {...args} />
     </div>
   ),
 };
@@ -289,7 +289,7 @@ export const WithCustomColumnDefinitions: Story = {
   },
   render: (args) => (
     <div className="object-table-container" style={{ height: "600px" }}>
-      <ObjectTable objectType={Employee} {...args} />
+      <ObjectTable {...args} />
     </div>
   ),
 };
@@ -301,7 +301,7 @@ export const SingleSelection: Story = {
   },
   render: (args) => (
     <div className="object-table-container" style={{ height: "600px" }}>
-      <ObjectTable objectType={Employee} {...args} />
+      <ObjectTable {...args} />
     </div>
   ),
 };
@@ -313,7 +313,7 @@ export const MultipleSelection: Story = {
   },
   render: (args) => (
     <div className="object-table-container" style={{ height: "600px" }}>
-      <ObjectTable objectType={Employee} {...args} />
+      <ObjectTable {...args} />
     </div>
   ),
 };
@@ -341,7 +341,7 @@ export const WithContextMenu: Story = {
   },
   render: (args) => (
     <div className="object-table-container" style={{ height: "600px" }}>
-      <ObjectTable objectType={Employee} {...args} />
+      <ObjectTable {...args} />
     </div>
   ),
 };
@@ -356,7 +356,7 @@ export const CustomColumnWidths: Story = {
   },
   render: (args) => (
     <div className="object-table-container" style={{ height: "600px" }}>
-      <ObjectTable objectType={Employee} {...args} />
+      <ObjectTable {...args} />
     </div>
   ),
 };
@@ -371,7 +371,7 @@ export const WithDefaultSorting: Story = {
   },
   render: (args) => (
     <div className="object-table-container" style={{ height: "600px" }}>
-      <ObjectTable objectType={Employee} {...args} />
+      <ObjectTable {...args} />
     </div>
   ),
 };
@@ -408,7 +408,7 @@ export const WithDefaultColumnPinning: Story = {
   },
   render: (args) => (
     <div className="object-table-container" style={{ height: "600px" }}>
-      <ObjectTable objectType={Employee} {...args} />
+      <ObjectTable {...args} />
     </div>
   ),
 };
@@ -432,7 +432,7 @@ export const WithHiddenColumns: Story = {
   },
   render: (args) => (
     <div className="object-table-container" style={{ height: "600px" }}>
-      <ObjectTable objectType={Employee} {...args} />
+      <ObjectTable {...args} />
     </div>
   ),
 };
@@ -487,7 +487,7 @@ export const WithCustomColumn: Story = {
   },
   render: (args) => (
     <div className="object-table-container" style={{ height: "600px" }}>
-      <ObjectTable objectType={Employee} {...args} />
+      <ObjectTable {...args} />
     </div>
   ),
 };
@@ -501,7 +501,7 @@ export const WithRowClickHandler: Story = {
   },
   render: (args) => (
     <div className="object-table-container" style={{ height: "600px" }}>
-      <ObjectTable objectType={Employee} {...args} />
+      <ObjectTable {...args} />
     </div>
   ),
 };
@@ -617,7 +617,7 @@ export const DisabledFeatures: Story = {
   },
   render: (args) => (
     <div className="object-table-container" style={{ height: "600px" }}>
-      <ObjectTable objectType={Employee} {...args} />
+      <ObjectTable {...args} />
     </div>
   ),
 };
@@ -629,7 +629,7 @@ export const CustomRowHeight: Story = {
   },
   render: (args) => (
     <div className="object-table-container" style={{ height: "600px" }}>
-      <ObjectTable objectType={Employee} {...args} />
+      <ObjectTable {...args} />
     </div>
   ),
 };
@@ -686,7 +686,7 @@ export const WithCustomRenderers: Story = {
   },
   render: (args) => (
     <div className="object-table-container" style={{ height: "600px" }}>
-      <ObjectTable objectType={Employee} {...args} />
+      <ObjectTable {...args} />
     </div>
   ),
 };
@@ -753,7 +753,7 @@ export const WithStatusCells: Story = {
   },
   render: (args) => (
     <div className="object-table-container" style={{ height: "600px" }}>
-      <ObjectTable objectType={Employee} {...args} />
+      <ObjectTable {...args} />
     </div>
   ),
 };

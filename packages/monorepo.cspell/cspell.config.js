@@ -64,8 +64,6 @@ const cspell = {
     "*.sh",
     "*.snap",
     "typedoc.jsonc",
-    "mockServiceWorker.js",
-    "**/.storybook/**",
 
     // Dictionary files have words that are only used in certain contexts so they implicitly
     // won't pass the generic case.
@@ -73,6 +71,10 @@ const cspell = {
 
     // spell checking the cspell config is a bit of a chicken and egg problem
     "cspell.config.js",
+
+    // Storybook mock data contains random IDs and auto-generated MSW service worker
+    "packages/react-components-storybook/src/mocks/**",
+    "packages/react-components-storybook/public/mockServiceWorker.js",
 
     // Just too complex right now. We should fix this later.
     "eslint.config.mjs",

@@ -19,15 +19,17 @@ import type { StorybookConfig } from "@storybook/react-vite";
 const config: StorybookConfig = {
   stories: ["../src/**/*.stories.@(js|jsx|ts|tsx|mdx)"],
   addons: [
-    "@storybook/addon-essentials",
-    "@storybook/addon-interactions",
     "@storybook/addon-links",
     "@storybook/addon-themes",
+    "@storybook/addon-mcp",
     "msw-storybook-addon",
   ],
   framework: {
     name: "@storybook/react-vite",
     options: {},
+  },
+  features: {
+    experimentalComponentsManifest: true,
   },
   typescript: {
     check: false,
@@ -35,11 +37,6 @@ const config: StorybookConfig = {
   },
   staticDirs: ["../public"],
   async viteFinal(config) {
-    // Set base path for GitHub Pages deployment
-    if (config.mode === "production") {
-      config.base = "/osdk-ts/storybook/";
-    }
-
     // Ensure proper resolution of workspace packages
     config.resolve = {
       ...config.resolve,
