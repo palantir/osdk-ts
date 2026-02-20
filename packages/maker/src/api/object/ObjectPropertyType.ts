@@ -21,9 +21,9 @@ import type {
 import type { RequiredFields } from "../../util/RequiredFields.js";
 import type { Nullability } from "../properties/Nullability.js";
 import type { PropertyTypeType } from "../properties/PropertyTypeType.js";
-import type { ReducerType } from "../properties/ReducerType.js";
 import type { SharedPropertyType } from "../properties/SharedPropertyType.js";
 import type { ValueTypeDefinitionVersion } from "../values/ValueTypeDefinitionVersion.js";
+import type { ReducerType } from "../properties/ReducerType.js";
 import type { ObjectTypeStatus } from "./ObjectTypeStatus.js";
 
 export type ObjectPropertyType = RequiredFields<

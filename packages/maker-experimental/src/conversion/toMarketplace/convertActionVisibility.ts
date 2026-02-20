@@ -14,13 +14,31 @@
  * limitations under the License.
  */
 
-export { default as default } from "./cli/main.js";
+import type { ParameterVisibility } from "@osdk/client.unstable";
 
-export { defineOntologyV2 } from "./api/defineOntologyV2.js";
-export type { BlockShapes, OntologyRidGenerator } from "./util/generateRid.js";
-
-export { defineImportObject } from "./api/importObjectType.js";
-export type {
-  ImportObjectDefinition,
-  ImportPropertyTypeDefinition,
-} from "./api/types.js";
+export function convertActionVisibility(
+  visibility: "editable" | "disabled" | "hidden" | undefined,
+): ParameterVisibility {
+  switch (visibility) {
+    case "editable":
+      return {
+        type: "editable",
+        editable: {},
+      };
+    case "disabled":
+      return {
+        type: "disabled",
+        disabled: {},
+      };
+    case "hidden":
+      return {
+        type: "hidden",
+        hidden: {},
+      };
+    default:
+      return {
+        type: "editable",
+        editable: {},
+      };
+  }
+}

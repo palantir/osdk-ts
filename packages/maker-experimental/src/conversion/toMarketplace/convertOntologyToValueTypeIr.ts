@@ -14,13 +14,17 @@
  * limitations under the License.
  */
 
-export { default as default } from "./cli/main.js";
+import type { OntologyIrValueTypeBlockData } from "@osdk/client.unstable";
+import type { OntologyDefinition } from "@osdk/maker";
+import { OntologyEntityTypeEnum } from "@osdk/maker";
+import { convertValueTypesToIr } from "./convertValueTypesToIr.js";
 
-export { defineOntologyV2 } from "./api/defineOntologyV2.js";
-export type { BlockShapes, OntologyRidGenerator } from "./util/generateRid.js";
-
-export { defineImportObject } from "./api/importObjectType.js";
-export type {
-  ImportObjectDefinition,
-  ImportPropertyTypeDefinition,
-} from "./api/types.js";
+export function convertOntologyToValueTypeIr(
+  ontology: OntologyDefinition,
+): OntologyIrValueTypeBlockData {
+  return {
+    valueTypes: convertValueTypesToIr(
+      ontology[OntologyEntityTypeEnum.VALUE_TYPE],
+    ),
+  };
+}

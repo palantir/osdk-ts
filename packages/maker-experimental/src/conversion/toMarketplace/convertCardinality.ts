@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-export { default as default } from "./cli/main.js";
+import type { OntologyIrOneToManyLinkDefinition } from "@osdk/client.unstable";
+import type { OneToManyLinkTypeDefinition } from "@osdk/maker";
 
-export { defineOntologyV2 } from "./api/defineOntologyV2.js";
-export type { BlockShapes, OntologyRidGenerator } from "./util/generateRid.js";
-
-export { defineImportObject } from "./api/importObjectType.js";
-export type {
-  ImportObjectDefinition,
-  ImportPropertyTypeDefinition,
-} from "./api/types.js";
+export function convertCardinality(
+  cardinality: OneToManyLinkTypeDefinition["cardinality"],
+): OntologyIrOneToManyLinkDefinition["cardinalityHint"] {
+  if (cardinality === "OneToMany" || cardinality === undefined) {
+    return "ONE_TO_MANY";
+  }
+  return "ONE_TO_ONE";
+}

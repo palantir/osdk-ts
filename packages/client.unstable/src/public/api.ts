@@ -14,13 +14,5 @@
  * limitations under the License.
  */
 
-export { default as default } from "./cli/main.js";
-
-export { defineOntologyV2 } from "./api/defineOntologyV2.js";
-export type { BlockShapes, OntologyRidGenerator } from "./util/generateRid.js";
-
-export { defineImportObject } from "./api/importObjectType.js";
-export type {
-  ImportObjectDefinition,
-  ImportPropertyTypeDefinition,
-} from "./api/types.js";
+// Export all marketplace API types and enums
+export * from "../generated/marketplace/api/__components.js";

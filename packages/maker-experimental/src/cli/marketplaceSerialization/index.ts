@@ -14,13 +14,22 @@
  * limitations under the License.
  */
 
-export { default as default } from "./cli/main.js";
+/**
+ * TypeScript serialization types for Marketplace Code Block specifications.
+ *
+ * These types mirror the Java classes in marketplace-foundry-as-code-api and are
+ * designed to be JSON-serialization compatible for interop between TypeScript and Java.
+ *
+ * @module marketplaceSerialization
+ */
 
-export { defineOntologyV2 } from "./api/defineOntologyV2.js";
-export type { BlockShapes, OntologyRidGenerator } from "./util/generateRid.js";
+// Main spec types
+export type { CodeBlockSetSpec } from "./CodeBlockSetSpec.js";
+export type { CodeBlockSpec } from "./CodeBlockSpec.js";
 
-export { defineImportObject } from "./api/importObjectType.js";
+// Supporting types defined locally
 export type {
-  ImportObjectDefinition,
-  ImportPropertyTypeDefinition,
-} from "./api/types.js";
+  GeneratedBlockExternalRecommendations,
+  InputMappingEntry,
+  ReadableIdMappingPair,
+} from "./supportingTypes.js";

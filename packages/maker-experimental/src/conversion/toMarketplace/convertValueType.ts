@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
-export { default as default } from "./cli/main.js";
+import type { ValueTypeReference } from "@osdk/client.unstable";
+import type { ValueTypeDefinitionVersion } from "@osdk/maker";
+import type { OntologyRidGenerator } from "../../util/generateRid.js";
 
-export { defineOntologyV2 } from "./api/defineOntologyV2.js";
-export type { BlockShapes, OntologyRidGenerator } from "./util/generateRid.js";
-
-export { defineImportObject } from "./api/importObjectType.js";
-export type {
-  ImportObjectDefinition,
-  ImportPropertyTypeDefinition,
-} from "./api/types.js";
+export function convertValueType(
+  valueType: ValueTypeDefinitionVersion,
+  ridGenerator: OntologyRidGenerator,
+): ValueTypeReference {
+  return ridGenerator.generateRidForValueType(
+    valueType.apiName,
+    valueType.version,
+  );
+}

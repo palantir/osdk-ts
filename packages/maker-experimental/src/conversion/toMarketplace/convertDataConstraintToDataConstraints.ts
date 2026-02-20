@@ -14,13 +14,18 @@
  * limitations under the License.
  */
 
-export { default as default } from "./cli/main.js";
+import type { DataConstraint, DataConstraints } from "@osdk/client.unstable";
+import { dataConstraintToPropertyTypeDataConstraint } from "./dataConstraintToPropertyTypeDataConstraint.js";
 
-export { defineOntologyV2 } from "./api/defineOntologyV2.js";
-export type { BlockShapes, OntologyRidGenerator } from "./util/generateRid.js";
-
-export { defineImportObject } from "./api/importObjectType.js";
-export type {
-  ImportObjectDefinition,
-  ImportPropertyTypeDefinition,
-} from "./api/types.js";
+export function convertDataConstraintToDataConstraints(
+  dc: DataConstraint,
+): DataConstraints {
+  return {
+    propertyTypeConstraints: [
+      {
+        constraints: dataConstraintToPropertyTypeDataConstraint(dc),
+        // known limitation: structs don't carry field-level data constraint failure messages
+      },
+    ],
+  };
+}

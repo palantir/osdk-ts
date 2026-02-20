@@ -14,13 +14,20 @@
  * limitations under the License.
  */
 
-export { default as default } from "./cli/main.js";
+import type { UUID } from "crypto";
+import type { SemverVersion } from "./specGenerators.js";
 
-export { defineOntologyV2 } from "./api/defineOntologyV2.js";
-export type { BlockShapes, OntologyRidGenerator } from "./util/generateRid.js";
+export interface MarketplaceBundleManifestEntry {
+  blockSetVersionId: UUID;
 
-export { defineImportObject } from "./api/importObjectType.js";
-export type {
-  ImportObjectDefinition,
-  ImportPropertyTypeDefinition,
-} from "./api/types.js";
+  blockSetVersion: SemverVersion;
+
+  titleAndDescription: {
+    localizedTitle: {};
+    localizedDescription: {};
+    fallbackTitle: string;
+    fallbackDescription: string;
+  };
+
+  mavenProductId: string | undefined;
+}
