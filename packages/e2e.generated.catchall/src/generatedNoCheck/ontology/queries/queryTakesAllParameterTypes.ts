@@ -129,6 +129,9 @@ export namespace queryTakesAllParameterTypes {
   export type ReturnType = QueryResult.PrimitiveType<'string'>;
 }
 
+/**
+ * description of the query that takes all parameter types
+ */
 export interface queryTakesAllParameterTypes
   extends QueryDefinition<queryTakesAllParameterTypes.Signature>,
     VersionBound<$ExpectedClientVersion> {
@@ -379,6 +382,9 @@ export interface queryTakesAllParameterTypes
   osdkMetadata: typeof $osdkMetadata;
 }
 
+/**
+ * description of the query that takes all parameter types
+ */
 export const queryTakesAllParameterTypes: queryTakesAllParameterTypes = {
   apiName: 'queryTakesAllParameterTypes',
   type: 'query',
