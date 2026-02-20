@@ -41,8 +41,10 @@
   },
   "dependencies": {
     "@osdk/api": "workspace:~",
+    "@osdk/generator-converters.ontologyir": "workspace:~",
     "@osdk/typescript-sdk-docs": "^0.2.0",
     "consola": "^3.4.2",
+    "execa": "^9.6.0",
     "jiti": "^2.5.1",
     "mustache": "^4.2.0",
     "semver-ts": "^1.0.3",
@@ -77,5 +79,10 @@
   "main": "./build/cjs/index.cjs",
   "module": "./build/esm/index.js",
   "types": "./build/cjs/index.d.cts",
+  "optionalDependencies": {
+    "@foundry/functions-typescript-discovery-common": ">=0.19.0",
+    "@foundry/functions-typescript-osdk-discovery": ">=0.52.0",
+    "@foundry/functions-typescript-osdk-ontology-code-generator": ">=0.40.0"
+  },
   "type": "module"
 }

@@ -16,12 +16,11 @@
 
 import type {
   OntologyIrActionTypeBlockDataV2,
-  OntologyIrActionTypeStatus,
   OntologyIrOntologyBlockDataV2,
 } from "@osdk/client.unstable";
 import type * as Ontologies from "@osdk/foundry.ontologies";
 import { OntologyIrToFullMetadataConverter } from "@osdk/generator-converters.ontologyir";
-import { convertIrLogicRuleToActionLogicRule } from "./ActionLogicRuleConverter.js";
+import { convertIrLogicRulesToActionLogicRules } from "./ActionLogicRuleConverter.js";
 import { toUuid } from "./ridUtils.js";
 
 /**
@@ -105,55 +104,37 @@ export class PreviewOntologyIrConverter {
 
   /**
    * Convert IR action types to ActionTypeFullMetadata format.
-   * Uses base converter for parameters and operations, adds fullLogicRules.
+   * Reuses base converter for action type conversion, then process
+   * RIDs to use UUID-based format and adds fullLogicRules.
    */
   private static convertActionTypesWithFullLogicRules(
     actions: OntologyIrActionTypeBlockDataV2[],
     ir: OntologyIrOntologyBlockDataV2,
   ): Record<string, Ontologies.ActionTypeFullMetadata> {
+    const baseActionTypes = OntologyIrToFullMetadataConverter
+      .getOsdkActionTypes(actions);
+
+    // Build a lookup from apiName to the original IR action for logic rules
+    const actionsByApiName = new Map(
+      actions.map(a => [a.actionType.metadata.apiName, a]),
+    );
+
     const result: Record<string, Ontologies.ActionTypeFullMetadata> = {};
-
-    for (const action of actions) {
-      const metadata = action.actionType.metadata;
-      const actionType: Ontologies.ActionTypeV2 = {
-        rid: `ri.ontology.main.action-type.${toUuid(metadata.apiName)}`,
-        apiName: metadata.apiName,
-        displayName: metadata.displayMetadata.displayName,
-        description: metadata.displayMetadata.description,
-        parameters: OntologyIrToFullMetadataConverter.getOsdkActionParameters(
+    for (const [apiName, baseActionType] of Object.entries(baseActionTypes)) {
+      const action = actionsByApiName.get(apiName)!;
+      result[apiName] = {
+        actionType: {
+          ...baseActionType,
+          rid: `ri.ontology.main.action-type.${toUuid(apiName)}`,
+        },
+        fullLogicRules: convertIrLogicRulesToActionLogicRules(
+          action.actionType.actionTypeLogic.logic.rules,
           action,
-        ),
-        operations: OntologyIrToFullMetadataConverter.getOsdkActionOperations(
-          action,
-        ),
-        status: this.convertActionTypeStatus(metadata.status),
-      };
-
-      result[actionType.apiName] = {
-        actionType,
-        fullLogicRules: action.actionType.actionTypeLogic.logic.rules.map(
-          rule => convertIrLogicRuleToActionLogicRule(rule, action, ir),
+          ir,
         ),
       };
     }
 
     return result;
-  }
-
-  private static convertActionTypeStatus(
-    status: OntologyIrActionTypeStatus,
-  ): "ACTIVE" | "DEPRECATED" | "EXPERIMENTAL" {
-    switch (status.type) {
-      case "active":
-        return "ACTIVE";
-      case "deprecated":
-        return "DEPRECATED";
-      case "experimental":
-        return "EXPERIMENTAL";
-      case "example":
-        throw new Error(
-          "Example status cannot be mapped to ActionTypeStatus",
-        );
-    }
   }
 }
