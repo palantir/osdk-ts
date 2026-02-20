@@ -28,6 +28,9 @@ const config: StorybookConfig = {
     name: "@storybook/react-vite",
     options: {},
   },
+  features: {
+    experimentalComponentsManifest: true,
+  },
   typescript: {
     check: false,
     reactDocgen: false, // Disable since we're defining argTypes manually
