@@ -26,8 +26,15 @@ function formatBytes(bytes) {
 }
 
 function formatDelta(current, baseline) {
-  if (baseline === null || baseline === undefined || baseline === 0) {
-    return { delta: current, percent: 0, formatted: formatBytes(current) };
+  if (baseline === null || baseline === undefined) {
+    return { delta: current, percent: Infinity, formatted: `+${formatBytes(current)} (new)` };
+  }
+
+  if (baseline === 0) {
+    if (current === 0) {
+      return { delta: 0, percent: 0, formatted: "No change" };
+    }
+    return { delta: current, percent: Infinity, formatted: `+${formatBytes(current)} (new)` };
   }
 
   const delta = current - baseline;
@@ -46,7 +53,9 @@ function formatDelta(current, baseline) {
 }
 
 function getStatusEmoji(percent, threshold) {
-  if (Math.abs(percent) < 0.1) return "⚪"; // No significant change
+  if (percent === Infinity) return "🆕"; // New bundle
+  if (percent === -100) return "❌"; // Removed bundle
+  if (Math.abs(percent) < 0.5) return "⚪"; // No significant change (relaxed from 0.1% to 0.5%)
   if (percent > threshold) return "🔴"; // Significant increase
   if (percent > 0) return "🟡"; // Small increase
   if (percent < -threshold) return "🟢"; // Significant decrease
@@ -91,13 +100,35 @@ function comparePackages(baseline, current) {
     const significantChanges = [];
     for (const [bundlePath, currentBundle] of Object.entries(currentPkg.cjsBundles)) {
       const baselineBundle = baselinePkg.cjsBundles?.[bundlePath];
-      if (!baselineBundle) continue;
+
+      if (!baselineBundle) {
+        // New bundle that didn't exist in baseline
+        significantChanges.push({
+          path: bundlePath,
+          delta: currentBundle.gzipSize,
+          percent: Infinity,
+          formatted: `+${formatBytes(currentBundle.gzipSize)} (new)`,
+        });
+        continue;
+      }
 
       const bundleGzipDelta = formatDelta(currentBundle.gzipSize, baselineBundle.gzipSize);
-      if (Math.abs(bundleGzipDelta.percent) > THRESHOLD_PERCENT) {
+      if (Math.abs(bundleGzipDelta.percent) > THRESHOLD_PERCENT || bundleGzipDelta.percent === Infinity) {
         significantChanges.push({
           path: bundlePath,
           ...bundleGzipDelta,
+        });
+      }
+    }
+
+    // Also check for removed bundles
+    for (const [bundlePath, baselineBundle] of Object.entries(baselinePkg.cjsBundles)) {
+      if (!currentPkg.cjsBundles[bundlePath]) {
+        significantChanges.push({
+          path: bundlePath,
+          delta: -baselineBundle.gzipSize,
+          percent: -100,
+          formatted: `-${formatBytes(baselineBundle.gzipSize)} (removed)`,
         });
       }
     }

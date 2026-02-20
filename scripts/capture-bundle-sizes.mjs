@@ -8,9 +8,11 @@
  */
 
 import fs from "fs";
+import { createReadStream } from "fs";
+import { stat } from "fs/promises";
 import path from "path";
 import { fileURLToPath } from "url";
-import { gzipSync } from "zlib";
+import { createGzip } from "zlib";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -19,34 +21,31 @@ const __dirname = path.dirname(__filename);
 const PACKAGES_TO_TRACK = [
   "api",
   "client",
-  "client.unstable",
-  "react",
-  "cli",
-  "oauth",
-  "functions",
-  "maker",
-  "widget.api",
-  "widget.client",
-  "widget.client-react",
 ];
 
-function getFileSize(filePath) {
+async function getFileSize(filePath) {
   try {
-    const stats = fs.statSync(filePath);
+    const stats = await stat(filePath);
     return stats.size;
   } catch (error) {
     return null;
   }
 }
 
-function getGzippedSize(filePath) {
-  try {
-    const content = fs.readFileSync(filePath);
-    const gzipped = gzipSync(content, { level: 9 });
-    return gzipped.length;
-  } catch (error) {
-    return null;
-  }
+async function getGzippedSize(filePath) {
+  return new Promise((resolve, reject) => {
+    let size = 0;
+    const gzip = createGzip({ level: 9 });
+
+    createReadStream(filePath)
+      .on("error", () => resolve(null))
+      .pipe(gzip)
+      .on("data", (chunk) => {
+        size += chunk.length;
+      })
+      .on("end", () => resolve(size))
+      .on("error", () => resolve(null));
+  });
 }
 
 function formatBytes(bytes) {
@@ -75,7 +74,7 @@ function getAllCjsFiles(dir) {
   return files;
 }
 
-function capturePackageSizes(packageName) {
+async function capturePackageSizes(packageName) {
   const packageDir = path.join(__dirname, "..", "packages", packageName);
   const cjsBuildDir = path.join(packageDir, "build", "cjs");
 
@@ -97,17 +96,30 @@ function capturePackageSizes(packageName) {
     return null;
   }
 
-  for (const { path: relativePath, fullPath } of cjsFiles) {
-    const rawSize = getFileSize(fullPath);
-    const gzipSize = getGzippedSize(fullPath);
+  // Process all files in parallel
+  const fileResults = await Promise.all(
+    cjsFiles.map(async ({ path: relativePath, fullPath }) => {
+      const [rawSize, gzipSize] = await Promise.all([
+        getFileSize(fullPath),
+        getGzippedSize(fullPath),
+      ]);
 
-    if (rawSize !== null && gzipSize !== null) {
-      result.cjsBundles[relativePath] = {
-        rawSize,
-        gzipSize,
+      if (rawSize !== null && gzipSize !== null) {
+        return { relativePath, rawSize, gzipSize };
+      }
+      return null;
+    })
+  );
+
+  // Aggregate results
+  for (const fileResult of fileResults) {
+    if (fileResult) {
+      result.cjsBundles[fileResult.relativePath] = {
+        rawSize: fileResult.rawSize,
+        gzipSize: fileResult.gzipSize,
       };
-      result.totalRaw += rawSize;
-      result.totalGzip += gzipSize;
+      result.totalRaw += fileResult.rawSize;
+      result.totalGzip += fileResult.gzipSize;
     }
   }
 
@@ -126,7 +138,7 @@ function calculateTotals(results) {
   return { totalRaw, totalGzip };
 }
 
-function main() {
+async function main() {
   console.log("📦 Capturing CJS bundle sizes (raw + gzipped)...\n");
 
   const results = {
@@ -136,9 +148,17 @@ function main() {
     packages: {},
   };
 
-  for (const packageName of PACKAGES_TO_TRACK) {
+  // Process all packages in parallel
+  const packageResults = await Promise.all(
+    PACKAGES_TO_TRACK.map(async (packageName) => ({
+      name: packageName,
+      sizes: await capturePackageSizes(packageName),
+    }))
+  );
+
+  // Display results and build final object
+  for (const { name: packageName, sizes: packageSizes } of packageResults) {
     console.log(`  Analyzing @osdk/${packageName}...`);
-    const packageSizes = capturePackageSizes(packageName);
 
     if (packageSizes) {
       results.packages[packageName] = packageSizes;
