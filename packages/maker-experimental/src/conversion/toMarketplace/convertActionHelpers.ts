@@ -111,8 +111,6 @@ export function convertAction(
   ): Record<string, any> => {
     const result: Record<string, any> = {};
     for (const [apiName, value] of Object.entries(interfacePropertyValues)) {
-      console.log(apiName);
-      console.log(allParentInterfaces);
       const parentInterface = allParentInterfaces.find(maybeSourceParent => maybeSourceParent.propertiesV3[apiName] !== undefined)!;
       const rid = ridGenerator.generateInterfacePropertyTypeRid(
         apiName,

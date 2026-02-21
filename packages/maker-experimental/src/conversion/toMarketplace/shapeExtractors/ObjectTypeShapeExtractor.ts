@@ -607,7 +607,7 @@ export class ObjectTypeShapeExtractor {
 
     const datasourceInputShape: TabularDatasourceInputShape = {
       about: createLocalizedAbout(datasourceReadableId, ""),
-      supportedTypes: ["DATASET"],
+      supportedTypes: ["DATASET", "RESTRICTED_VIEW"],
       schema: Array.from(columnShapes.keys()).map(id => ridGenerator.toBlockInternalId(id)),
     };
 

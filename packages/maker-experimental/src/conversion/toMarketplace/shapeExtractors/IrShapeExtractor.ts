@@ -20,8 +20,10 @@ import type {
   LinkTypeRid,
   MarketplaceInterfaceLinkType,
   MarketplaceInterfaceType,
+  ObjectTypeBlockDataV2,
   ObjectTypeRid,
   OntologyBlockDataV2,
+  PropertyTypeRid,
   SharedPropertyType,
   Type,
   ValueTypeReference,
@@ -33,6 +35,7 @@ import type {
   InterfaceLinkTypeOutputShape,
   InterfaceTypeOutputShape,
   LocalizedTitleAndDescription,
+  MarkingsShape,
   MultipassGroupShape,
   OutputShape,
   SharedPropertyTypeInputShape,
@@ -114,11 +117,9 @@ export async function getShapes(
 
   // Objects
   const objectReadableIds = ridGenerator.getObjectTypeRids().inverse();
-  console.log("Readable IDs collected", ridGenerator);
   for (
     const [rid, objectType] of Object.entries(ontologyBlockDataV2.objectTypes)
   ) {
-    console.log(`Processing object type with RID ${rid} and API name ${objectType.objectType.apiName}`);
     const readableId = objectReadableIds.get(rid as ObjectTypeRid);
     if (readableId) {
       const objectExtractor = new ObjectTypeShapeExtractor(randomnessKey);
@@ -127,14 +128,13 @@ export async function getShapes(
         objectType,
         ridGenerator,
       );
-      console.log(`Extracted shapes for object type ${objectType.objectType.apiName}, shapes:`, objectShapes);
       consumeBlockShapes(allBlockShapes, objectShapes);
     }
   }
 
-  // Marking shapes (placeholder - implement if needed)
-  // const markingShapes = getMarkingShapes(ontologyBlockDataV2, randomnessKey);
-  // consumeBlockShapes(allBlockShapes, markingShapes);
+  // Marking shapes
+  const markingShapes = getMarkingShapes(ontologyBlockDataV2, ridGenerator);
+  consumeBlockShapes(allBlockShapes, markingShapes);
 
   // Links
   const linkReadableIds = ridGenerator.getLinkTypeRids().inverse();
@@ -148,8 +148,6 @@ export async function getShapes(
         ridGenerator,
       );
       consumeBlockShapes(allBlockShapes, linkShapes);
-      console.log(`Extracted shapes for link type ${linkType.linkType.id}, ${ridGenerator.generateRidForLinkType(rid)},shapes:`, linkShapes);
-
     }
   }
 
@@ -436,6 +434,187 @@ function getMigrationShape(): BlockShapes {
       isOptional: true,
       isAccessedInReconcile: false,
     }]]),
+  };
+}
+
+const MAX_CLASS_DESC =
+  "The maximum classification for data under mandatory control property types and/or the max classification"
+  + " allowed on an action type classification parameter.";
+
+/**
+ * Get properties for a datasource definition (keys of propertyMapping).
+ */
+function getPropertiesForDatasource(
+  datasourceDef: { type: string; [key: string]: unknown },
+): Set<string> {
+  const dsType = datasourceDef.type;
+  let propertyMapping: Record<string, unknown> | undefined;
+
+  switch (dsType) {
+    case "dataset":
+      propertyMapping = (datasourceDef.dataset as { propertyMapping?: Record<string, unknown> })?.propertyMapping;
+      break;
+    case "datasetV2":
+      propertyMapping = (datasourceDef.datasetV2 as { propertyMapping?: Record<string, unknown> })?.propertyMapping;
+      break;
+    case "datasetV3":
+      propertyMapping = (datasourceDef.datasetV3 as { propertyMapping?: Record<string, unknown> })?.propertyMapping;
+      break;
+    case "restrictedView":
+      propertyMapping = (datasourceDef.restrictedView as { propertyMapping?: Record<string, unknown> })?.propertyMapping;
+      break;
+    case "restrictedViewV2":
+      propertyMapping = (datasourceDef.restrictedViewV2 as { propertyMapping?: Record<string, unknown> })?.propertyMapping;
+      break;
+    case "stream":
+      propertyMapping = (datasourceDef.stream as { propertyMapping?: Record<string, unknown> })?.propertyMapping;
+      break;
+    case "streamV2":
+      propertyMapping = (datasourceDef.streamV2 as { propertyMapping?: Record<string, unknown> })?.propertyMapping;
+      break;
+    case "streamV3":
+      propertyMapping = (datasourceDef.streamV3 as { propertyMapping?: Record<string, unknown> })?.propertyMapping;
+      break;
+    default:
+      return new Set();
+  }
+
+  return new Set(propertyMapping ? Object.keys(propertyMapping) : []);
+}
+
+/**
+ * Extract marking shapes from the ontology block data.
+ * Port of Java's MarkingShapeExtractor.getMarkingShapes().
+ */
+function getMarkingShapes(
+  ontologyBlockDataV2: OntologyBlockDataV2,
+  ridGenerator: OntologyRidGenerator,
+): BlockShapes {
+  // Collect CBAC and mandatory marking constraints across all object types
+  const cbacMarkingsAndAffectedProps = new Map<string, Set<ReadableId>>();
+  const mandatoryMarkingsAndAffectedProps = new Map<string, Set<ReadableId>>();
+
+  for (const objectType of Object.values(ontologyBlockDataV2.objectTypes)) {
+    const objectApiName = objectType.objectType.apiName ?? "";
+
+    // Identify CBAC and mandatory marking properties by PropertyTypeRid
+    const cbacReadableIdsByRid = new Map<string, ReadableId>();
+    const mandatoryReadableIdsByRid = new Map<string, ReadableId>();
+
+    for (
+      const [propertyRid, propertyType] of Object.entries(
+        objectType.objectType.propertyTypes,
+      )
+    ) {
+      if (propertyType.type.type === "marking") {
+        const markingData = (propertyType.type as { marking?: { markingType?: string } }).marking;
+        const markingType = markingData?.markingType;
+        const propertyApiName = propertyType.apiName ?? propertyType.displayMetadata?.displayName;
+        if (propertyApiName) {
+          const readableId = ReadableIdGenerator.getForObjectProperty(
+            objectApiName,
+            propertyApiName,
+          );
+          if (markingType === "CBAC") {
+            cbacReadableIdsByRid.set(propertyRid, readableId);
+          } else if (markingType === "MANDATORY") {
+            mandatoryReadableIdsByRid.set(propertyRid, readableId);
+          }
+        }
+      }
+    }
+
+    // For each datasource, extract marking constraints
+    for (const ds of objectType.datasources) {
+      const propertiesForDs = getPropertiesForDatasource(ds.datasource as unknown as { type: string; [key: string]: unknown });
+
+      // Find CBAC and mandatory props affected by this datasource
+      const cbacPropsAffected = new Set<string>();
+      for (const rid of cbacReadableIdsByRid.keys()) {
+        if (propertiesForDs.has(rid)) {
+          cbacPropsAffected.add(rid);
+        }
+      }
+
+      const mandatoryPropsAffected = new Set<string>();
+      for (const rid of mandatoryReadableIdsByRid.keys()) {
+        if (propertiesForDs.has(rid)) {
+          mandatoryPropsAffected.add(rid);
+        }
+      }
+
+      if (cbacPropsAffected.size === 0 && mandatoryPropsAffected.size === 0) {
+        continue;
+      }
+
+      const dataSecurity = ds.dataSecurity;
+      if (!dataSecurity) continue;
+
+      if (cbacPropsAffected.size > 0 && dataSecurity.classificationConstraint) {
+        const markings = dataSecurity.classificationConstraint.markings ?? [];
+        const markingId = markings[0];
+        if (markingId) {
+          const existing = cbacMarkingsAndAffectedProps.get(markingId) ?? new Set();
+          for (const rid of cbacPropsAffected) {
+            const readableId = cbacReadableIdsByRid.get(rid);
+            if (readableId) existing.add(readableId);
+          }
+          cbacMarkingsAndAffectedProps.set(markingId, existing);
+        }
+      }
+
+      if (mandatoryPropsAffected.size > 0 && dataSecurity.markingConstraint) {
+        const markingIds = dataSecurity.markingConstraint.markingIds ?? [];
+        const markingId = markingIds[0];
+        if (markingId) {
+          const existing = mandatoryMarkingsAndAffectedProps.get(markingId) ?? new Set();
+          for (const rid of mandatoryPropsAffected) {
+            const readableId = mandatoryReadableIdsByRid.get(rid);
+            if (readableId) existing.add(readableId);
+          }
+          mandatoryMarkingsAndAffectedProps.set(markingId, existing);
+        }
+      }
+    }
+  }
+
+  // Build marking shapes
+  const inputShapes = new Map<ReadableId, InputShape>();
+
+  for (const [markingId, props] of cbacMarkingsAndAffectedProps) {
+    const readableId = ReadableIdGenerator.getForMarking(markingId, "CBAC");
+    const shape: MarkingsShape = {
+      about: createLocalizedAbout(
+        `Max Classification ${markingId}`,
+        MAX_CLASS_DESC,
+      ),
+      operation: "USE",
+      affectedShapes: Array.from(props).map(p => ridGenerator.toBlockInternalId(p)),
+      supportedMarkingsType: "CBAC",
+      stableId: markingId,
+    };
+    inputShapes.set(readableId, { type: "markings", markings: shape });
+  }
+
+  for (const [markingId, props] of mandatoryMarkingsAndAffectedProps) {
+    const readableId = ReadableIdGenerator.getForMarking(markingId, "MANDATORY");
+    const shape: MarkingsShape = {
+      about: createLocalizedAbout(
+        `Max Marking ${markingId}`,
+        "Max Marking",
+      ),
+      operation: "USE",
+      affectedShapes: Array.from(props).map(p => ridGenerator.toBlockInternalId(p)),
+      supportedMarkingsType: "MANDATORY",
+      stableId: markingId,
+    };
+    inputShapes.set(readableId, { type: "markings", markings: shape });
+  }
+
+  return {
+    inputShapes,
+    outputShapes: new Map(),
+    inputShapeMetadata: new Map(),
   };
 }
 
