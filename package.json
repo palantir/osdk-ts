@@ -45,7 +45,7 @@
     "cspell": "^8.19.4",
     "dprint": "^0.47.6",
     "esbuild-plugin-babel": "^0.2.3",
-    "eslint": "^9.35.0",
+    "eslint": "^9.26.0",
     "eslint-formatter-autolinkable-stylish": "^1.4.0",
     "eslint-import-resolver-typescript": "^3.10.1",
     "eslint-plugin-header": "^3.1.1",
