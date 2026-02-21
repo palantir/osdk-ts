@@ -92,13 +92,13 @@ fetchAggregationForEmployeesGrouped()
           max: number | undefined;
           avg: number | undefined;
           min: number | undefined;
-        };
+        } | undefined;
         locationCity: {
           approximateDistinct: number;
-        };
+        } | undefined;
         locationName: {
           approximateDistinct: number;
-        };
+        } | undefined;
       }>,
       typeof result
     >
@@ -113,5 +113,7 @@ fetchAggregationForEmployeesGrouped()
       && "locationCity" in result[0],
     "The keys should be the expected ones",
   );
-  invariant(Object.keys(result[0].employeeNumber).length === 3);
+  if (result[0].employeeNumber) {
+    invariant(Object.keys(result[0].employeeNumber).length === 3);
+  }
 }
