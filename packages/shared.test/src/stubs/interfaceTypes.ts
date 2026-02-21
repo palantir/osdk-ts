@@ -31,6 +31,7 @@ const idp: InterfaceDefinedPropertyType = {
     type: "string",
   },
   requireImplementation: true,
+  typeClasses: [],
 };
 
 export const BarInterface: InterfaceType = {

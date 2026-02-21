@@ -40,6 +40,7 @@ function simpleSpt<T extends string>(apiName: T, metadataLevel: 0 | 1 | 2 = 2) {
     rid: `${apiName}Rid`,
     displayName: metadataLevel >= 1 ? `${apiName} property dn` : apiName,
     description: metadataLevel >= 2 ? `${apiName} property desc` : undefined,
+    typeClasses: [],
   } as const satisfies SharedPropertyType;
 }
 

@@ -27,7 +27,7 @@ export const moveOfficeImpl: FauxActionImpl<typeof MoveOffice> = (
   // to gps coord
   batch.modifyObject(
     officeObjectType.apiName,
-    payload.parameters.officeId,
+    payload.parameters.officeId as string,
     {
       capacity: payload.parameters.newCapacity as number,
     } satisfies Partial<TH.JustProps<typeof officeObjectType>>,
