@@ -111,6 +111,12 @@ function handleFetchError(e: unknown): Promise<Response> {
     message =
       `The .zip file contains a file${currentFilePathPart}${currentFileSizePart} that is too large${fileSizeLimitPart}`;
     tip = "Ensure all files in the production build are below the size limit";
+  } else if (e.errorName === "ScanningInProgress") {
+    message =
+      "The website version is being scanned for vulnerabilities and cannot be deployed yet";
+    tip =
+      "If you have a `foundry.config.json` file, set the `site.uploadOnly` property to `true` to disable automatic deployment.\n"
+      + "Website versions can be manually deployed from the Website Hosting page in Developer Console after their scans have completed";
   } else {
     if (e instanceof UnknownError) {
       // Include deep inspect of original error
