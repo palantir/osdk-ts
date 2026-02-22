@@ -32,6 +32,8 @@ interface TableBodyProps<TData extends RowData> {
   ) => React.ReactNode;
   isLoadingMore?: boolean;
   headerGroups?: Array<HeaderGroup<TData>>;
+  focusedRowId?: string | null;
+  setFocusedRowId?: (rowId: string | null) => void;
 }
 
 export function TableBody<TData extends RowData>({
@@ -42,6 +44,8 @@ export function TableBody<TData extends RowData>({
   rowHeight = 40,
   isLoadingMore = false,
   headerGroups = [],
+  focusedRowId,
+  setFocusedRowId,
 }: TableBodyProps<TData>): React.ReactElement {
   // Important: Keep the row virtualizer in the lowest component possible to avoid unnecessary re-renders.
   const rowVirtualizer = useVirtualizer<HTMLDivElement, HTMLTableRowElement>({
@@ -80,6 +84,8 @@ export function TableBody<TData extends RowData>({
             virtualRow={virtualRow}
             onRowClick={onRowClick}
             renderCellContextMenu={renderCellContextMenu}
+            focusedRowId={focusedRowId}
+            setFocusedRowId={setFocusedRowId}
           />
         );
       })}

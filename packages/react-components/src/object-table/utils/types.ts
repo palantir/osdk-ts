@@ -22,12 +22,13 @@ export interface ColumnOption {
   canSort: boolean;
 }
 
-export interface CellIdentifier {
+export interface CellEditEvent<
+  TData extends RowData = unknown,
+  CellValue = unknown,
+> {
   rowId: string;
   columnId: string;
-}
-
-export interface CellValueState<TData extends RowData = unknown> {
-  newValue: TData;
-  oldValue: TData;
+  newValue: CellValue;
+  oldValue: CellValue;
+  rowData: TData;
 }

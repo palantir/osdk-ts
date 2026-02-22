@@ -34,6 +34,7 @@ import { useRowSelection } from "./hooks/useRowSelection.js";
 import { useSelectionColumn } from "./hooks/useSelectionColumn.js";
 import { useTableSorting } from "./hooks/useTableSorting.js";
 import type { ObjectTableProps } from "./ObjectTableApi.js";
+import type { EditableConfig } from "./Table.js";
 import { BaseTable } from "./Table.js";
 import type { HeaderMenuFeatureFlags } from "./TableHeaderWithPopover.js";
 import { getRowId } from "./utils/getRowId.js";
@@ -77,6 +78,7 @@ export function ObjectTable<
   enableColumnPinning = true,
   enableColumnResizing = true,
   enableColumnConfig = true,
+  enableEditModeByDefault = true,
   ...props
 }: ObjectTableProps<Q, RDPs, FunctionColumns>): React.ReactElement {
   const { columnSizing, onColumnSizingChange } = useColumnResize({
@@ -86,9 +88,12 @@ export function ObjectTable<
   const {
     cellEdits,
     clearEdits,
+    isInEditMode,
     handleCellEdit,
+    handleEnableEditMode,
     handleSubmitEdits,
   } = useEditableTable({
+    enableEditModeByDefault,
     onCellValueChanged,
     onSubmitEdits,
   });
@@ -194,6 +199,7 @@ export function ObjectTable<
     meta: {
       onCellEdit: handleCellEdit,
       cellEdits,
+      isInEditMode,
     },
   });
 
@@ -224,17 +230,23 @@ export function ObjectTable<
     enableColumnConfig,
   ]);
 
-  const editableConfig = useMemo(() => {
-    if (!onSubmitEdits) {
-      return;
-    }
-
+  const editableConfig: EditableConfig | undefined = useMemo(() => {
     return {
       onSubmitEdits: handleSubmitEdits,
       clearEdits,
       cellEdits,
+      enableEditModeByDefault,
+      isInEditMode,
+      onEnableEditMode: handleEnableEditMode,
     };
-  }, [onSubmitEdits, handleSubmitEdits, clearEdits, cellEdits]);
+  }, [
+    handleSubmitEdits,
+    clearEdits,
+    cellEdits,
+    enableEditModeByDefault,
+    isInEditMode,
+    handleEnableEditMode,
+  ]);
 
   return (
     <BaseTable<Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>>

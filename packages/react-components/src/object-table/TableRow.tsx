@@ -28,6 +28,8 @@ interface TableRowProps<TData extends RowData> {
     row: TData,
     cell: Cell<TData, unknown>,
   ) => React.ReactNode;
+  focusedRowId?: string | null;
+  setFocusedRowId?: (rowId: string | null) => void;
 }
 
 export function TableRow<TData extends RowData>({
@@ -35,14 +37,18 @@ export function TableRow<TData extends RowData>({
   virtualRow,
   onRowClick,
   renderCellContextMenu,
+  focusedRowId,
+  setFocusedRowId,
 }: TableRowProps<TData>): React.ReactElement {
   const handleClick = useCallback(() => {
+    setFocusedRowId?.(row.id);
     onRowClick?.(row.original);
-  }, [onRowClick, row.original]);
+  }, [onRowClick, row.original, row.id, setFocusedRowId]);
 
   return (
     <tr
       data-selected={row.getIsSelected()}
+      data-focused={focusedRowId === row.id}
       className={styles.osdkTableRow}
       style={{
         height: `${virtualRow.size}px`,

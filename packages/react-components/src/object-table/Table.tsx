@@ -30,7 +30,7 @@ import styles from "./Table.module.css";
 import { TableBody } from "./TableBody.js";
 import { TableHeader } from "./TableHeader.js";
 import type { HeaderMenuFeatureFlags } from "./TableHeaderWithPopover.js";
-import type { CellValueState } from "./utils/types.js";
+import type { CellEditEvent } from "./utils/types.js";
 
 declare module "@tanstack/react-table" {
   interface ColumnMeta<TData extends RowData = unknown, TValue = unknown> {
@@ -42,16 +42,21 @@ declare module "@tanstack/react-table" {
   interface TableMeta<TData extends RowData = unknown> {
     onCellEdit?: (
       cellId: string,
-      state: CellValueState,
+      event: CellEditEvent<TData, unknown>,
     ) => void;
-    cellEdits?: Record<string, CellValueState>;
+    cellEdits?: Record<string, CellEditEvent<TData, unknown>>;
+    isInEditMode?: boolean;
+    focusedRowId?: string | null;
   }
 }
 
-interface EditableConfig {
+export interface EditableConfig {
   onSubmitEdits?: () => Promise<void>;
   clearEdits?: () => void;
-  cellEdits?: Record<string, CellValueState>;
+  cellEdits?: Record<string, CellEditEvent>;
+  enableEditModeByDefault?: boolean;
+  isInEditMode?: boolean;
+  onEnableEditMode?: (value: boolean) => void;
 }
 
 export interface BaseTableProps<
@@ -90,6 +95,8 @@ export function BaseTable<
 ): ReactElement {
   const tableContainerRef = useRef<HTMLDivElement>(null);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [focusedRowId, setFocusedRowId] = useState<string | null>(null);
 
   // Using a ref to prevent duplicate fetches from rapid scroll events while a fetch is in-flight
   const fetchingRef = useRef(false);
@@ -131,21 +138,61 @@ export function BaseTable<
   const rows = table.getRowModel().rows;
   const headerGroups = table.getHeaderGroups();
   const hasData = rows.length > 0;
-  const hasEdits = Object.keys(editableConfig?.cellEdits ?? {}).length > 0;
+
+  const {
+    cellEdits,
+    isInEditMode,
+    onSubmitEdits,
+    onEnableEditMode,
+    clearEdits,
+  } = editableConfig ?? {};
+
+  const hasEdits = Object.keys(cellEdits ?? {}).length > 0;
 
   const handleSubmitEdits = useCallback(async () => {
-    await editableConfig?.onSubmitEdits?.();
-    editableConfig?.clearEdits?.();
-  }, [editableConfig]);
+    setIsSubmitting(true);
+    try {
+      await onSubmitEdits?.();
+      clearEdits?.();
+      onEnableEditMode?.(false);
+    } finally {
+      setIsSubmitting(false);
+    }
+  }, [clearEdits, onEnableEditMode, onSubmitEdits]);
+
+  const handleCancelEdits = useCallback(() => {
+    clearEdits?.();
+    onEnableEditMode?.(false);
+  }, [clearEdits, onEnableEditMode]);
+
+  const handleEnterEditMode = useCallback(() => {
+    onEnableEditMode?.(true);
+  }, [onEnableEditMode]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        tableContainerRef.current
+        && !tableContainerRef.current.contains(event.target as Node)
+      ) {
+        setFocusedRowId(null);
+      }
+    };
+
+    document.addEventListener("click", handleClickOutside);
+    return () => {
+      document.removeEventListener("click", handleClickOutside);
+    };
+  }, []);
+
+  const showEditButtonsContainer = onSubmitEdits != null
+    || onEnableEditMode != null;
 
   return (
     <div className={classNames(styles.osdkTableWrapper, className)}>
       <div
         ref={tableContainerRef}
-        className={classNames(
-          styles.osdkTableContainer,
-          editableConfig && styles.osdkTableContainerWithButton,
-        )}
+        className={styles.osdkTableContainer}
         onScroll={handleScroll}
       >
         <table>
@@ -172,6 +219,8 @@ export function BaseTable<
                   renderCellContextMenu={renderCellContextMenu}
                   isLoadingMore={isLoadingMore}
                   headerGroups={headerGroups}
+                  focusedRowId={focusedRowId}
+                  setFocusedRowId={setFocusedRowId}
                 />
               </>
             )}
@@ -181,15 +230,48 @@ export function BaseTable<
           <NonIdealState message={`Error Loading Data: ${error.message}`} />
         )}
       </div>
-      {editableConfig && (
-        <div className={styles.submitButtonContainer}>
-          <ActionButton
-            variant="primary"
-            onClick={handleSubmitEdits}
-            disabled={!hasEdits}
-          >
-            Submit Edits
-          </ActionButton>
+      {showEditButtonsContainer && (
+        <div className={styles.tableEditContainer}>
+          {hasEdits
+            ? (
+              <div className={styles.modificationCount}>
+                {`${
+                  cellEdits ? Object.keys(cellEdits).length : 0
+                } modifications`}
+              </div>
+            )
+            : (isInEditMode && !focusedRowId && (
+              <div className={styles.placeholder}>
+                Select a row to edit data…
+              </div>
+            ))}
+          <div className={styles.editButtons}>
+            {!isInEditMode && !!onEnableEditMode && (
+              <ActionButton
+                variant="primary"
+                onClick={handleEnterEditMode}
+              >
+                Edit Table
+              </ActionButton>
+            )}
+            {!!isInEditMode && !!onEnableEditMode && (
+              <ActionButton
+                variant="secondary"
+                onClick={handleCancelEdits}
+              >
+                Cancel
+              </ActionButton>
+            )}
+            {!!isInEditMode && !!onSubmitEdits && (
+              <ActionButton
+                variant="primary"
+                onClick={handleSubmitEdits}
+                disabled={!hasEdits || isSubmitting}
+              >
+                Submit Edits
+              </ActionButton>
+            )}
+          </div>
         </div>
       )}
     </div>

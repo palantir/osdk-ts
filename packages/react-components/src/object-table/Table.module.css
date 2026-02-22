@@ -36,10 +36,28 @@
   min-width: 100%;
 }
 
-.submitButtonContainer {
+.tableEditContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   background-color: var(--osdk-surface-background-color-default-rest);
   border-top: var(--osdk-table-border);
   padding: var(--osdk-table-button-container-padding);
+}
+
+.placeholder {
+  color: var(--osdk-typography-color-muted);
+  font-size: var(--osdk-typography-size-body-small);
+}
+
+.modificationCount {
+  color: var(--osdk-intent-primary-rest);
+  font-size: var(--osdk-typography-size-body-small);
+}
+
+.editButtons {
   display: flex;
   justify-content: flex-end;
+  gap: 8px;
+  flex: 1;
 }

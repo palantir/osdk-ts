@@ -15,16 +15,20 @@
  */
 
 import { Input } from "@base-ui/react/input";
+import classNames from "classnames";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import styles from "./EditableCell.module.css";
-import type { CellValueState } from "./utils/types.js";
+import type { CellEditEvent } from "./utils/types.js";
 
-export interface EditableCellProps {
+export interface EditableCellProps<TData = unknown> {
   initialValue: unknown;
   currentValue: unknown;
   cellId: string;
   dataType?: string;
-  onCellEdit?: (cellId: string, state: CellValueState) => void;
+  onCellEdit?: (cellId: string, event: CellEditEvent<TData, unknown>) => void;
+  rowData: TData;
+  rowId: string;
+  columnId: string;
 }
 
 const NUMBER_TYPES: string[] = [
@@ -69,13 +73,16 @@ function parseValueByType(
   return parsedNumber;
 }
 
-export function EditableCell({
+export function EditableCell<TData = unknown>({
   initialValue,
   currentValue,
   cellId,
   dataType,
   onCellEdit,
-}: EditableCellProps): React.ReactElement {
+  rowData,
+  rowId,
+  columnId,
+}: EditableCellProps<TData>): React.ReactElement {
   const [inputValue, setInputValue] = useState<string>(
     valueToString(currentValue),
   );
@@ -92,8 +99,23 @@ export function EditableCell({
       return;
     }
     const parsedValue = parseValueByType(inputValue, dataType);
-    onCellEdit?.(cellId, { newValue: parsedValue, oldValue: initialValue });
-  }, [inputValue, initialValue, onCellEdit, cellId, dataType]);
+    onCellEdit?.(cellId, {
+      rowId,
+      columnId,
+      newValue: parsedValue,
+      oldValue: initialValue,
+      rowData,
+    });
+  }, [
+    inputValue,
+    initialValue,
+    onCellEdit,
+    cellId,
+    dataType,
+    rowId,
+    columnId,
+    rowData,
+  ]);
 
   const handleChange = useCallback((value: string) => {
     setInputValue(value);
@@ -117,9 +139,13 @@ export function EditableCell({
     ? "number"
     : "text";
 
+  const isEdited = currentValue !== initialValue;
+
   return (
     <Input
-      className={styles.osdkEditableInput}
+      className={classNames(styles.osdkEditableInput, {
+        [styles.osdkEditedInput]: isEdited,
+      })}
       type={inputType}
       value={inputValue}
       onValueChange={handleChange}

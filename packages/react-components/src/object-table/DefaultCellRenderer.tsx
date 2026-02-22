@@ -25,7 +25,7 @@ export function renderDefaultCell<TData>(
   const meta = cellContext.table.options.meta;
   const columnMeta = cellContext.column.columnDef.meta;
 
-  if (!columnMeta?.editable || !meta?.onCellEdit) {
+  if (!columnMeta?.editable || !meta?.onCellEdit || !meta?.isInEditMode) {
     return <>{cellContext.getValue()}</>;
   }
 
@@ -44,6 +44,9 @@ export function renderDefaultCell<TData>(
       cellId={cellId}
       dataType={columnMeta?.dataType}
       onCellEdit={meta.onCellEdit}
+      rowData={cellContext.row.original}
+      rowId={rowId}
+      columnId={columnId}
     />
   );
 }

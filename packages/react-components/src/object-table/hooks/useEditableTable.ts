@@ -21,8 +21,7 @@ import type {
 } from "@osdk/api";
 import { useCallback, useState } from "react";
 import type { ObjectTableProps } from "../ObjectTableApi.js";
-import { getCellIdentifier } from "../utils/getCellId.js";
-import type { CellValueState } from "../utils/types.js";
+import type { CellEditEvent } from "../utils/types.js";
 
 export interface UseEditableTableProps<
   Q extends ObjectOrInterfaceDefinition,
@@ -35,6 +34,8 @@ export interface UseEditableTableProps<
     never
   >,
 > {
+  enableEditModeByDefault: boolean;
+
   onCellValueChanged?: ObjectTableProps<
     Q,
     RDPs,
@@ -49,12 +50,14 @@ export interface UseEditableTableProps<
 }
 
 export interface UseEditableTableResult {
-  cellEdits: Record<string, CellValueState>;
+  isInEditMode: boolean;
+  handleEnableEditMode?: (enabled: boolean) => void;
+  cellEdits: Record<string, CellEditEvent<any, unknown>>;
   handleCellEdit: (
     cellId: string,
-    state: CellValueState,
+    event: CellEditEvent<any, unknown>,
   ) => void;
-  handleSubmitEdits: () => Promise<void>;
+  handleSubmitEdits?: () => Promise<void>;
   clearEdits: () => void;
 }
 
@@ -69,19 +72,25 @@ export function useEditableTable<
     never
   >,
 >({
+  enableEditModeByDefault,
   onCellValueChanged,
   onSubmitEdits,
 }: UseEditableTableProps<Q, RDPs, FunctionColumns>): UseEditableTableResult {
-  const [cellEdits, setCellEdits] = useState<Record<string, CellValueState>>(
+  const [isInEditMode, setIsInEditMode] = useState(enableEditModeByDefault);
+  const [cellEdits, setCellEdits] = useState<
+    Record<string, CellEditEvent<any, unknown>>
+  >(
     {},
   );
 
-  const handleCellEdit = useCallback(
-    (cellId: string, state: CellValueState) => {
-      const cellIdentifier = getCellIdentifier(cellId);
+  const handleEnableEditMode = useCallback((enabled: boolean) => {
+    setIsInEditMode(enabled);
+  }, []);
 
+  const handleCellEdit = useCallback(
+    (cellId: string, event: CellEditEvent<any, unknown>) => {
       // If value is changed back to original, remove it from edits
-      if (state.newValue === state.oldValue) {
+      if (event.newValue === event.oldValue) {
         setCellEdits(prev => {
           const { [cellId]: _, ...rest } = prev;
           return rest;
@@ -89,11 +98,11 @@ export function useEditableTable<
       } else {
         setCellEdits(prev => ({
           ...prev,
-          [cellId]: state,
+          [cellId]: event,
         }));
       }
 
-      onCellValueChanged?.(cellIdentifier, state);
+      onCellValueChanged?.(event);
     },
     [onCellValueChanged],
   );
@@ -103,13 +112,18 @@ export function useEditableTable<
   }, []);
 
   const handleSubmitEdits = useCallback(async () => {
-    await onSubmitEdits?.(cellEdits);
+    const edits = Object.values(cellEdits);
+    await onSubmitEdits?.(edits);
   }, [cellEdits, onSubmitEdits]);
 
   return {
+    isInEditMode,
+    handleEnableEditMode: !enableEditModeByDefault
+      ? handleEnableEditMode
+      : undefined,
     cellEdits,
     handleCellEdit,
-    handleSubmitEdits,
+    handleSubmitEdits: onSubmitEdits ? handleSubmitEdits : undefined,
     clearEdits,
   };
 }

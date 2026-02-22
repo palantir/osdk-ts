@@ -1,7 +1,6 @@
 import type { DerivedProperty, Osdk } from "@osdk/api";
 import type {
-  CellIdentifier,
-  CellValueState,
+  CellEditEvent,
   ColumnDefinition,
 } from "@osdk/react-components/experimental";
 import { ObjectTable } from "@osdk/react-components/experimental";
@@ -40,7 +39,7 @@ const columnDefinitions: Array<
   // With isVisible prop
   {
     locator: { type: "property", id: "jobTitle" },
-    isVisible: false,
+    editable: true,
   },
   // With renderHeader, renderCell, width prop
   {
@@ -89,21 +88,26 @@ export function EmployeesTable() {
   const { applyAction } = useOsdkAction(modifyEmployee);
 
   const handleSubmitEdits = useCallback(
-    async (edits: Record<string, CellValueState>) => {
+    async (
+      edits: CellEditEvent<
+        Osdk.Instance<Employee>,
+        unknown
+      >[],
+    ) => {
+      console.log("Edits to submit:", edits);
       try {
         // Process each edit and call modifyEmployee action
-        const editEntries = Object.entries(edits);
         const rowEditsMap: Record<string, Partial<Employee>> = {};
         const actionPromises: Promise<any>[] = [];
-        for (const [cellId, state] of editEntries) {
-          const cellIdentifier = JSON.parse(cellId) as CellIdentifier;
-          const { rowId, columnId } = cellIdentifier;
+        for (const edit of edits) {
+          const { rowId, columnId, newValue, rowData } = edit;
+          // Now we have access to rowData which contains the full employee object
+          console.log("Editing employee:", rowData.$title);
 
           if (!rowEditsMap[rowId]) {
             rowEditsMap[rowId] = {};
           }
-          rowEditsMap[rowId][columnId as keyof Employee] = state
-            .newValue as never;
+          rowEditsMap[rowId][columnId as keyof Employee] = newValue;
         }
         for (const [rowId, updatedFields] of Object.entries(rowEditsMap)) {
           actionPromises.push(applyAction({
@@ -136,6 +140,11 @@ export function EmployeesTable() {
           direction: "desc",
         }]}
         onSubmitEdits={handleSubmitEdits}
+        enableEditModeByDefault={false}
+        onRowClick={() => alert("Row clicked")}
+        onCellValueChanged={(event) => {
+          console.log("Cell edited:", event);
+        }}
       />
     </div>
   );

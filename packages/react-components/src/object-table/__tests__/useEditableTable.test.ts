@@ -23,7 +23,7 @@ describe("useEditableTable", () => {
   it("adds cell to cellEdits when edited", () => {
     const onCellValueChanged = vi.fn();
     const { result } = renderHook(() =>
-      useEditableTable({ onCellValueChanged })
+      useEditableTable({ enableEditModeByDefault: true, onCellValueChanged })
     );
     const cellIdentifier = { rowId: "row-1", columnId: "col-1" };
     const cellId = getCellId(cellIdentifier);
@@ -47,7 +47,7 @@ describe("useEditableTable", () => {
   it("removes cell from cellEdits when edited back to original value", () => {
     const onCellValueChanged = vi.fn();
     const { result } = renderHook(() =>
-      useEditableTable({ onCellValueChanged })
+      useEditableTable({ enableEditModeByDefault: true, onCellValueChanged })
     );
     const cellIdentifier = { rowId: "row-1", columnId: "col-1" };
     const cellId = getCellId(cellIdentifier);
@@ -77,7 +77,9 @@ describe("useEditableTable", () => {
   });
 
   it("handles multiple cell edits", () => {
-    const { result } = renderHook(() => useEditableTable({}));
+    const { result } = renderHook(() =>
+      useEditableTable({ enableEditModeByDefault: true })
+    );
     const cellId1 = getCellId({ rowId: "row-1", columnId: "col-1" });
     const cellId2 = getCellId({ rowId: "row-2", columnId: "col-2" });
     const cellId3 = getCellId({ rowId: "row-3", columnId: "col-3" });
@@ -112,7 +114,9 @@ describe("useEditableTable", () => {
   });
 
   it("clears all edits", () => {
-    const { result } = renderHook(() => useEditableTable({}));
+    const { result } = renderHook(() =>
+      useEditableTable({ enableEditModeByDefault: true })
+    );
     const cellId1 = getCellId({ rowId: "row-1", columnId: "col-1" });
     const cellId2 = getCellId({ rowId: "row-2", columnId: "col-2" });
 
@@ -136,7 +140,9 @@ describe("useEditableTable", () => {
 
   it("handles submit edits", async () => {
     const onSubmitEdits = vi.fn();
-    const { result } = renderHook(() => useEditableTable({ onSubmitEdits }));
+    const { result } = renderHook(() =>
+      useEditableTable({ enableEditModeByDefault: true, onSubmitEdits })
+    );
     const cellId1 = getCellId({ rowId: "row-1", columnId: "col-1" });
     const cellId2 = getCellId({ rowId: "row-2", columnId: "col-2" });
 
@@ -152,12 +158,53 @@ describe("useEditableTable", () => {
     });
 
     await act(async () => {
-      await result.current.handleSubmitEdits();
+      await result.current.handleSubmitEdits?.();
     });
 
     expect(onSubmitEdits).toHaveBeenCalledWith({
       [cellId1]: { newValue: "new1", oldValue: "old1" },
       [cellId2]: { newValue: "new2", oldValue: "old2" },
     });
+  });
+
+  it("when submit edits is undefined, handleSubmitEdits is undefined", async () => {
+    const { result } = renderHook(() =>
+      useEditableTable({
+        enableEditModeByDefault: true,
+        onSubmitEdits: undefined,
+      })
+    );
+
+    expect(result.current.handleSubmitEdits).toBeUndefined();
+  });
+
+  it("when enableEditModeByDefault is false, isInEditMode is false initially", () => {
+    const { result } = renderHook(() =>
+      useEditableTable({ enableEditModeByDefault: false })
+    );
+
+    expect(result.current.isInEditMode).toBe(false);
+    expect(result.current.handleEnableEditMode).toBeDefined();
+
+    act(() => {
+      result.current.handleEnableEditMode?.(true);
+    });
+
+    expect(result.current.isInEditMode).toBe(true);
+
+    act(() => {
+      result.current.handleEnableEditMode?.(false);
+    });
+
+    expect(result.current.isInEditMode).toBe(false);
+  });
+
+  it("when enableEditModeByDefault is true, isInEditMode is always true and handleEnableEditMode is undefined", () => {
+    const { result } = renderHook(() =>
+      useEditableTable({ enableEditModeByDefault: true })
+    );
+
+    expect(result.current.isInEditMode).toBe(true);
+    expect(result.current.handleEnableEditMode).toBeUndefined();
   });
 });
