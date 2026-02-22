@@ -140,7 +140,16 @@ function createMockRidGenerator(
       return readableId;
     },
     getObjectTypeIds: () => new MockBiMap([]) as any,
-    generateObjectTypeId: (objectTypeApiName: string) => `a00000000-0000-0000-0000-000000000000`,
+    generateObjectTypeId: (objectTypeApiName: string) =>
+      objectTypeApiName.replace(/\./g, "-").toLowerCase(),
+    generateDatasourceRid: (datasourceName: string) =>
+      `ri.ontology.main.datasource.${datasourceName}`,
+    generateValidationRuleRid: (actionTypeApiName: string, index: number) =>
+      `validation-rule.${actionTypeApiName}.${index}`,
+    generateSectionRid: (sectionId: string) =>
+      `ri.ontology-metadata.temp.section.${sectionId}`,
+    generatePropertySecurityGroupRid: (groupName: string) =>
+      `ri.ontology-metadata.temp.property-security-group.${groupName}`,
     ...overrides,
   };
 }

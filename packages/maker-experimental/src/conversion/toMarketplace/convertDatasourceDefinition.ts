@@ -15,16 +15,15 @@
  */
 
 import type {
-  ObjectTypeDatasourceDefinition,
   MarkingType,
+  ObjectTypeDatasourceDefinition,
+  PropertySecurityGroup,
+  PropertySecurityGroups,
   PropertyTypeMappingInfo,
   RetentionPolicy,
-  PropertySecurityGroups,
-  PropertySecurityGroup,
-  SecurityGroupGranularSecurityDefinition,
   SecurityGroupGranularCondition,
+  SecurityGroupGranularSecurityDefinition,
 } from "@osdk/client.unstable";
-import invariant from "tiny-invariant";
 import type {
   ObjectPropertyType,
   ObjectType,
@@ -32,7 +31,11 @@ import type {
   ObjectTypeDatasourceDefinition_direct,
   SecurityConditionDefinition,
 } from "@osdk/maker";
-import { ReadableIdGenerator, type OntologyRidGenerator } from "../../util/generateRid.js";
+import invariant from "tiny-invariant";
+import {
+  type OntologyRidGenerator,
+  ReadableIdGenerator,
+} from "../../util/generateRid.js";
 
 export function convertDatasourceDefinition(
   objectType: ObjectType,
@@ -50,7 +53,9 @@ export function convertDatasourceDefinition(
 
   switch (baseDatasource?.type) {
     case "stream":
-      const window = baseDatasource.retentionPeriod;
+      const window = baseDatasource.retentionPeriod
+        ? convertToJavaDurationFormat(baseDatasource.retentionPeriod)
+        : undefined;
       const retentionPolicy: RetentionPolicy = window
         ? { type: "time", time: { window } }
         : { type: "none", none: {} };
@@ -58,7 +63,7 @@ export function convertDatasourceDefinition(
       // Use generateStreamLocator instead of generateRid
       const streamLocator = ridGenerator.generateStreamLocator(
         objectType.apiName,
-        getColumnNames(properties)
+        getColumnNames(properties),
       );
 
       const propertyMapping = Object.fromEntries(
@@ -90,7 +95,7 @@ export function convertDatasourceDefinition(
       // Use generateRestrictedViewLocator instead of generateRid
       const restrictedViewLocator = ridGenerator.generateRestrictedViewLocator(
         objectType.apiName,
-        getColumnNames(properties)
+        getColumnNames(properties),
       );
 
       return {
@@ -109,7 +114,7 @@ export function convertDatasourceDefinition(
       // Use generateLocator for dataset datasources
       const derivedDatasetLocator = ridGenerator.generateLocator(
         objectType.apiName,
-        getColumnNames(properties)
+        getColumnNames(properties),
       );
 
       return {
@@ -130,7 +135,7 @@ export function convertDatasourceDefinition(
       // Use generateLocator for dataset datasources
       const datasetLocator = ridGenerator.generateLocator(
         objectType.apiName,
-        getColumnNames(properties)
+        getColumnNames(properties),
       );
 
       if (
@@ -144,7 +149,11 @@ export function convertDatasourceDefinition(
           type: "datasetV3",
           datasetV3: {
             datasetRid: datasetLocator.rid,
-            propertyMapping: buildPropertyMapping(properties, objectType.apiName, ridGenerator),
+            propertyMapping: buildPropertyMapping(
+              properties,
+              objectType.apiName,
+              ridGenerator,
+            ),
             branchId: datasetLocator.branchId,
             propertySecurityGroups: convertPropertySecurityGroups(
               baseDatasource,
@@ -161,20 +170,26 @@ export function convertDatasourceDefinition(
         datasetV2: {
           datasetRid: datasetLocator.rid,
           branchId: datasetLocator.branchId,
-          propertyMapping: buildPropertyMapping(properties, objectType.apiName, ridGenerator),
+          propertyMapping: buildPropertyMapping(
+            properties,
+            objectType.apiName,
+            ridGenerator,
+          ),
         },
       };
   }
 }
 
 function convertPropertySecurityGroups(
-  ds: ObjectTypeDatasourceDefinition_dataset | ObjectTypeDatasourceDefinition_direct | undefined,
+  ds:
+    | ObjectTypeDatasourceDefinition_dataset
+    | ObjectTypeDatasourceDefinition_direct
+    | undefined,
   properties: ObjectPropertyType[],
   primaryKeyPropertyApiName: string,
   objectTypeApiName: string,
   ridGenerator: OntologyRidGenerator,
 ): PropertySecurityGroups {
-
   if (
     !ds
     || (!("objectSecurityPolicy" in ds) && !("propertySecurityGroups" in ds))
@@ -229,7 +244,7 @@ function convertPropertySecurityGroups(
           const groupId = condition.name;
           ridGenerator.getGroupIds().put(
             ReadableIdGenerator.getForGroup(groupId),
-            groupId
+            groupId,
           );
           break;
         case "and":
@@ -278,17 +293,21 @@ function convertPropertySecurityGroups(
   properties.forEach(prop => {
     propertyApiNameToRid.set(
       prop.apiName,
-      ridGenerator.generatePropertyRid(prop.apiName, objectTypeApiName)
+      ridGenerator.generatePropertyRid(prop.apiName, objectTypeApiName),
     );
   });
 
   const objectSecurityPolicyGroup: PropertySecurityGroup = {
-    rid: ridGenerator.generateRid(ds.objectSecurityPolicy?.name || "defaultObjectSecurityPolicy"),
+    rid: ridGenerator.generatePropertySecurityGroupRid(
+      ds.objectSecurityPolicy?.name || "defaultObjectSecurityPolicy",
+    ),
     security: {
       type: "granular",
       granular: convertGranularPolicy(
         ds.objectSecurityPolicy?.granularPolicy,
         ds.objectSecurityPolicy?.additionalMandatoryMarkings,
+        ridGenerator,
+        objectTypeApiName,
       ),
     },
     type: {
@@ -302,14 +321,15 @@ function convertPropertySecurityGroups(
 
   return {
     groups: [
-      objectSecurityPolicyGroup,
       ...(ds.propertySecurityGroups?.map(psg => ({
-        rid: ridGenerator.generateRid(psg.name),
+        rid: ridGenerator.generatePropertySecurityGroupRid(psg.name),
         security: {
           type: "granular" as const,
           granular: convertGranularPolicy(
             psg.granularPolicy,
             psg.additionalMandatoryMarkings,
+            ridGenerator,
+            objectTypeApiName,
           ),
         },
         type: {
@@ -318,8 +338,11 @@ function convertPropertySecurityGroups(
             name: psg.name,
           },
         },
-        properties: psg.properties.map(apiName => propertyApiNameToRid.get(apiName)!),
+        properties: psg.properties.map(apiName =>
+          propertyApiNameToRid.get(apiName)!
+        ),
       })) ?? []),
+      objectSecurityPolicyGroup,
     ],
   };
 }
@@ -327,11 +350,17 @@ function convertPropertySecurityGroups(
 function convertGranularPolicy(
   granularPolicy?: SecurityConditionDefinition,
   additionalMandatoryMarkings?: Record<string, MarkingType>,
+  ridGenerator?: OntologyRidGenerator,
+  objectTypeApiName?: string,
 ): SecurityGroupGranularSecurityDefinition {
   return {
     viewPolicy: {
       granularPolicyCondition: granularPolicy
-        ? convertSecurityCondition(granularPolicy)
+        ? convertSecurityCondition(
+          granularPolicy,
+          ridGenerator,
+          objectTypeApiName,
+        )
         : {
           type: "and",
           and: {
@@ -348,6 +377,8 @@ function convertGranularPolicy(
 
 function convertSecurityCondition(
   condition: SecurityConditionDefinition,
+  ridGenerator?: OntologyRidGenerator,
+  objectTypeApiName?: string,
 ): SecurityGroupGranularCondition {
   switch (condition.type) {
     case "and":
@@ -356,7 +387,7 @@ function convertSecurityCondition(
           type: "and",
           and: {
             conditions: condition.conditions.map(c =>
-              convertSecurityCondition(c)
+              convertSecurityCondition(c, ridGenerator, objectTypeApiName)
             ),
           },
         };
@@ -369,7 +400,7 @@ function convertSecurityCondition(
           type: "or",
           or: {
             conditions: condition.conditions.map(c =>
-              convertSecurityCondition(c)
+              convertSecurityCondition(c, ridGenerator, objectTypeApiName)
             ),
           },
         };
@@ -380,7 +411,12 @@ function convertSecurityCondition(
       return {
         type: "markings",
         markings: {
-          property: condition.property,
+          property: ridGenerator && objectTypeApiName
+            ? ridGenerator.generatePropertyRid(
+              condition.property,
+              objectTypeApiName,
+            )
+            : condition.property,
         },
       };
     case "groupProperty":
@@ -397,7 +433,12 @@ function convertSecurityCondition(
           },
           right: {
             type: "property",
-            property: condition.property,
+            property: ridGenerator && objectTypeApiName
+              ? ridGenerator.generatePropertyRid(
+                condition.property,
+                objectTypeApiName,
+              )
+              : condition.property,
           },
         },
       };
@@ -428,6 +469,33 @@ function convertSecurityCondition(
     default:
       return condition;
   }
+}
+
+/**
+ * Converts ISO 8601 duration to Java Duration format (hours/minutes/seconds only).
+ * Java's Duration class doesn't support days/weeks/months/years natively,
+ * so P90D becomes PT2160H, P1W becomes PT168H, etc.
+ */
+function convertToJavaDurationFormat(iso8601: string): string {
+  const match = iso8601.match(
+    /^P(?:(\d+)W)?(?:(\d+)D)?(?:T(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?)?$/,
+  );
+  if (!match) return iso8601;
+
+  const weeks = parseInt(match[1] || "0", 10);
+  const days = parseInt(match[2] || "0", 10);
+  const hours = parseInt(match[3] || "0", 10);
+  const minutes = parseInt(match[4] || "0", 10);
+  const seconds = parseInt(match[5] || "0", 10);
+
+  const totalHours = (weeks * 7 + days) * 24 + hours;
+
+  const parts: string[] = [];
+  if (totalHours > 0) parts.push(`${totalHours}H`);
+  if (minutes > 0) parts.push(`${minutes}M`);
+  if (seconds > 0) parts.push(`${seconds}S`);
+
+  return parts.length > 0 ? `PT${parts.join("")}` : "PT0S";
 }
 
 function buildPropertyMapping(

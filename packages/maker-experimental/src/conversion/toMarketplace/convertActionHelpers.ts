@@ -17,6 +17,7 @@
 import type {
   ActionTypeBlockDataV2,
   ActionTypeStatus,
+  MarketplaceActionTypeMetadata,
   ObjectTypeDatasource,
   ObjectTypeDatasourceDefinition,
   OntologyIrAllowedParameterValues,
@@ -32,18 +33,15 @@ import type {
   ActionParameterValidation,
   ActionType,
   InterfaceType,
-  OntologyDefinition,
 } from "@osdk/maker";
-import {
-  getOntologyDefinition,
-} from "@osdk/maker";
+import { getOntologyDefinition } from "@osdk/maker";
 import type { OntologyRidGenerator } from "../../util/generateRid.js";
 import { ReadableIdGenerator } from "../../util/generateRid.js";
 import { convertActionParameters } from "./convertActionParameters.js";
 import { convertActionSections } from "./convertActionSections.js";
 import { convertActionValidation } from "./convertActionValidation.js";
-import { getFormContentOrdering } from "./getFormContentOrdering.js";
 import { flattenInterface } from "./convertObject.js";
+import { getFormContentOrdering } from "./getFormContentOrdering.js";
 
 export function buildDatasource(
   apiName: string,
@@ -70,7 +68,7 @@ export function buildDatasource(
     }
     : undefined;
   return ({
-    rid: ridGenerator.generateRid(`datasource.${apiName}`),
+    rid: ridGenerator.generateDatasourceRid(apiName),
     datasource: definition,
     editsConfiguration: {
       onlyAllowPrivilegedEdits: false,
@@ -97,7 +95,10 @@ export function convertAction(
   // Build parameterIds mapping: UUID (BlockInternalId) -> ParameterId (API name)
   const parameterIds: Record<string, ParameterId> = {};
   (action.parameters ?? []).forEach(p => {
-    const readableId = ReadableIdGenerator.getForParameter(action.apiName, p.id);
+    const readableId = ReadableIdGenerator.getForParameter(
+      action.apiName,
+      p.id,
+    );
     const uuid = ridGenerator.toBlockInternalId(readableId);
     parameterIds[uuid] = p.id;
   });
@@ -111,7 +112,9 @@ export function convertAction(
   ): Record<string, any> => {
     const result: Record<string, any> = {};
     for (const [apiName, value] of Object.entries(interfacePropertyValues)) {
-      const parentInterface = allParentInterfaces.find(maybeSourceParent => maybeSourceParent.propertiesV3[apiName] !== undefined)!;
+      const parentInterface = allParentInterfaces.find(maybeSourceParent =>
+        maybeSourceParent.propertiesV3[apiName] !== undefined
+      )!;
       const rid = ridGenerator.generateInterfacePropertyTypeRid(
         apiName,
         parentInterface.apiName,
@@ -139,7 +142,11 @@ export function convertAction(
           // Convert logic rules with proper RID mappings
           rules: action.rules.map(rule => {
             if (rule.type === "addInterfaceRule") {
-              const interfaceAndParents = flattenInterface(ontologyDefinition.INTERFACE_TYPE[rule.addInterfaceRule.interfaceApiName], new Set());
+              const interfaceAndParents = flattenInterface(
+                ontologyDefinition
+                  .INTERFACE_TYPE[rule.addInterfaceRule.interfaceApiName],
+                new Set(),
+              );
               return {
                 type: "addInterfaceRule",
                 addInterfaceRule: {
@@ -159,7 +166,11 @@ export function convertAction(
                 },
               };
             } else if (rule.type === "modifyInterfaceRule") {
-              const interfaceAndParents = flattenInterface(ontologyDefinition.INTERFACE_TYPE[rule.modifyInterfaceRule.interfaceApiName], new Set());
+              const interfaceAndParents = flattenInterface(
+                ontologyDefinition
+                  .INTERFACE_TYPE[rule.modifyInterfaceRule.interfaceApiName],
+                new Set(),
+              );
 
               return {
                 type: "modifyInterfaceRule",
@@ -196,79 +207,111 @@ export function convertAction(
         validation: actionValidation,
         notifications: [],
       },
-      metadata: {
-        rid: ridGenerator.generateRid(`action.${action.apiName}`),
-        version: "0.0.1",
-        apiName: action.apiName,
-        displayMetadata: {
-          configuration: {
-            defaultLayout: action.defaultFormat ?? "FORM",
-            displayAndFormat: action.displayAndFormat ?? {
-              table: {
-                columnWidthByParameterRid: {},
-                enableFileImport: true,
-                fitHorizontally: false,
-                frozenColumnCount: 0,
-                rowHeightInLines: 1,
-              },
-            },
-            enableLayoutUserSwitch: action.enableLayoutSwitch ?? false,
-          },
-          description: action.description ?? "",
-          displayName: action.displayName,
-          icon: {
-            type: "blueprint",
-            blueprint: action.icon ?? { locator: "edit", color: "#000000" },
-          },
-          successMessage: action.submissionMetadata?.successMessage
-            ? [{
-              type: "message",
-              message: action.submissionMetadata.successMessage,
-            }]
-            : [],
-          typeClasses: action.typeClasses ?? [],
-          ...(action.submissionMetadata?.submitButtonDisplayMetadata
-            && {
-              submitButtonDisplayMetadata:
-                action.submissionMetadata.submitButtonDisplayMetadata,
-            }),
-          ...(action.submissionMetadata?.undoButtonConfiguration
-            && {
-              undoButtonConfiguration:
-                action.submissionMetadata.undoButtonConfiguration,
-            }),
-        },
-        parameterOrdering: parameterOrdering,
-        formContentOrdering: getFormContentOrdering(action, parameterOrdering),
-        parameters: actionParameters,
-        sections: actionSections,
-        status: typeof action.status === "string"
-          ? {
-            type: action.status,
-            [action.status]: {},
-          } as unknown as ActionTypeStatus
-          : action.status,
-        entities: action.entities
-          ? {
-            affectedInterfaceTypes: action.entities.affectedInterfaceTypes.map(
-              apiName => ridGenerator.generateRidForInterface(apiName),
-            ),
-            affectedLinkTypes: action.entities.affectedLinkTypes,
-            affectedObjectTypes: action.entities.affectedObjectTypes.map(
-              apiName => ridGenerator.generateObjectTypeId(apiName),
-            ),
-            typeGroups: action.entities.typeGroups,
-          }
-          : {
-            affectedInterfaceTypes: [],
-            affectedLinkTypes: [],
-            affectedObjectTypes: [],
-            typeGroups: [],
-          },
-      },
+      metadata: buildActionMetadata(
+        action,
+        ridGenerator,
+        parameterOrdering,
+        actionParameters,
+        actionSections,
+      ),
     },
     parameterIds,
   };
+}
+
+/**
+ * Build action type metadata with all fields that Java produces.
+ * Uses an intermediate variable to allow extra fields beyond the TS type definition
+ * (notificationSettings, applyingMessage) without casting to any.
+ */
+function buildActionMetadata(
+  action: ActionType,
+  ridGenerator: OntologyRidGenerator,
+  parameterOrdering: string[],
+  actionParameters: Record<ParameterId, Parameter>,
+  actionSections: Record<SectionId, Section>,
+): MarketplaceActionTypeMetadata {
+  const displayMetadata = {
+    configuration: {
+      defaultLayout: action.defaultFormat ?? "FORM",
+      displayAndFormat: action.displayAndFormat ?? {
+        table: {
+          columnWidthByParameterRid: {},
+          enableFileImport: true,
+          fitHorizontally: false,
+          frozenColumnCount: 0,
+          rowHeightInLines: 1,
+        },
+      },
+      enableLayoutUserSwitch: action.enableLayoutSwitch ?? false,
+    },
+    description: action.description ?? "",
+    displayName: action.displayName,
+    icon: {
+      type: "blueprint" as const,
+      blueprint: action.icon ?? { locator: "edit", color: "#000000" },
+    },
+    applyingMessage: [] as Array<{ type: string; message: string }>,
+    successMessage: action.submissionMetadata?.successMessage
+      ? [{
+        type: "message" as const,
+        message: action.submissionMetadata.successMessage,
+      }]
+      : [],
+    typeClasses: action.typeClasses ?? [],
+    ...(action.submissionMetadata?.submitButtonDisplayMetadata
+      && {
+        submitButtonDisplayMetadata:
+          action.submissionMetadata.submitButtonDisplayMetadata,
+      }),
+    ...(action.submissionMetadata?.undoButtonConfiguration
+      && {
+        undoButtonConfiguration:
+          action.submissionMetadata.undoButtonConfiguration,
+      }),
+  };
+
+  const metadata = {
+    rid: ridGenerator.generateRidForActionType(action.apiName),
+    version: "",
+    apiName: action.apiName,
+    notificationSettings: {
+      renderingSettings: {
+        type: "anyNotificationRenderingCanFail" as const,
+        anyNotificationRenderingCanFail: {},
+      },
+      redactionOverride: null,
+    },
+    displayMetadata,
+    parameterOrdering: parameterOrdering,
+    formContentOrdering: getFormContentOrdering(action, parameterOrdering),
+    parameters: actionParameters,
+    sections: actionSections,
+    status: typeof action.status === "string"
+      ? {
+        type: action.status,
+        [action.status]: {},
+      } as unknown as ActionTypeStatus
+      : action.status,
+    entities: action.entities
+      ? {
+        affectedInterfaceTypes: action.entities.affectedInterfaceTypes.map(
+          apiName => ridGenerator.generateRidForInterface(apiName),
+        ),
+        affectedLinkTypes: action.entities.affectedLinkTypes,
+        affectedObjectTypes: action.entities.affectedObjectTypes.map(
+          apiName => ridGenerator.generateObjectTypeId(apiName),
+        ),
+        typeGroups: action.entities.typeGroups,
+      }
+      : {
+        affectedInterfaceTypes: [],
+        affectedLinkTypes: [],
+        affectedObjectTypes: [],
+        typeGroups: [],
+      },
+  };
+  return metadata as MarketplaceActionTypeMetadata;
 }
 
 // Helper function to convert allowed value option values with ObjectTypeId conversion

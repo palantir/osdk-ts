@@ -15,17 +15,17 @@
  */
 
 import type { PropertyType } from "@osdk/client.unstable";
-import invariant from "tiny-invariant";
 import type { ObjectPropertyType } from "@osdk/maker";
 import {
   convertObjectStatus,
   defaultTypeClasses,
-  getPropertyTypeName,
   getNamespace,
+  getPropertyTypeName,
   hasRenderHints,
   shouldBeIndexedForSearch,
   shouldNotHaveRenderHints,
 } from "@osdk/maker";
+import invariant from "tiny-invariant";
 import type { OntologyRidGenerator } from "../../util/generateRid.js";
 import { convertNullabilityToDataConstraint } from "./convertNullabilityToDataConstraint.js";
 import { convertValueType } from "./convertValueType.js";
@@ -71,11 +71,16 @@ export function convertObjectPropertyType(
           subtype: propertyTypeTypeToOntologyIrType(
             property.type,
             ridGenerator,
+            property.apiName,
           ),
           reducers: [],
         },
       }
-      : propertyTypeTypeToOntologyIrType(property.type, ridGenerator),
+      : propertyTypeTypeToOntologyIrType(
+        property.type,
+        ridGenerator,
+        property.apiName,
+      ),
     typeClasses: property.typeClasses
       ?? (shouldNotHaveRenderHints(property.type) ? [] : defaultTypeClasses),
     status: convertObjectStatus(property.status),

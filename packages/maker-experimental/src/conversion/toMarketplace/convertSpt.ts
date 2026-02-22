@@ -56,11 +56,16 @@ export function convertSpt(
       ? {
         type: "array" as const,
         array: {
-          subtype: propertyTypeTypeToOntologyIrType(type, ridGenerator),
-          reducers: [],
+          subtype: propertyTypeTypeToOntologyIrType(
+            type,
+            ridGenerator,
+            apiName,
+            true,
+          ),
+          reducers: [{ direction: "DESCENDING_NULLS_LAST", field: null }],
         },
       }
-      : propertyTypeTypeToOntologyIrType(type, ridGenerator),
+      : propertyTypeTypeToOntologyIrType(type, ridGenerator, apiName, true),
     aliases: aliases ?? [],
     baseFormatter,
     dataConstraints: dataConstraint,

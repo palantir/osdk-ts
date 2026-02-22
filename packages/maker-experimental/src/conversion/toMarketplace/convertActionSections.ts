@@ -29,7 +29,7 @@ export function convertActionSections(
     ) => [sectionId, {
       id: sectionId,
       // TODO: Generate proper RID for section
-      rid: ridGenerator.generateRid(`section.${action.apiName}.${sectionId}`),
+      rid: ridGenerator.generateSectionRid(sectionId),
       content: section.parameters.map(p => ({
         type: "parameterId",
         parameterId: p,

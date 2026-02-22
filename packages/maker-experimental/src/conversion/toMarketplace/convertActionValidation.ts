@@ -22,12 +22,12 @@ import type {
   ActionParameterRequirementConstraint,
   ActionType,
 } from "@osdk/maker";
+import type { OntologyRidGenerator } from "../../util/generateRid.js";
+import { ReadableIdGenerator } from "../../util/generateRid.js";
 import {
   extractAllowedValues,
   renderHintFromBaseType,
 } from "./convertActionHelpers.js";
-import type { OntologyRidGenerator } from "../../util/generateRid.js";
-import { ReadableIdGenerator } from "../../util/generateRid.js";
 import { convertActionParameterConditionalOverride } from "./convertActionParameterConditionalOverride.js";
 import { convertActionVisibility } from "./convertActionVisibility.js";
 import { convertSectionConditionalOverride } from "./convertSectionConditionalOverride.js";
@@ -54,11 +54,13 @@ function registerGroupsFromCondition(
       // Converted format (action-level validations)
       // Check if this is a group comparison by looking at the left side
       if (
-        condition.comparison?.left?.type === "userProperty" &&
-        condition.comparison?.left?.userProperty?.propertyValue?.type === "groupIds"
+        condition.comparison?.left?.type === "userProperty"
+        && condition.comparison?.left?.userProperty?.propertyValue?.type
+          === "groupIds"
       ) {
         // Extract group names from the right side
-        const strings = condition.comparison?.right?.staticValue?.stringList?.strings;
+        const strings = condition.comparison?.right?.staticValue?.stringList
+          ?.strings;
         if (Array.isArray(strings)) {
           strings.forEach((groupName: string) => {
             ridGenerator.getGroupIds().put(
@@ -91,7 +93,7 @@ function registerGroupsFromCondition(
       }
       break;
 
-    // Other condition types don't have groups
+      // Other condition types don't have groups
   }
 }
 
@@ -106,7 +108,7 @@ export function convertActionValidation(
     }];
 
   const ruleRids = validationRules.map((_, idx) =>
-    ridGenerator.generateRid(`validation.rule.${action.apiName}.${idx}`)
+    ridGenerator.generateValidationRuleRid(action.apiName, idx)
   );
 
   // Register groups from action-level validation conditions

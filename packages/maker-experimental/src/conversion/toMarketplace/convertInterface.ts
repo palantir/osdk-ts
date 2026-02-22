@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import type { MarketplaceInterfacePropertyType, MarketplaceInterfaceType } from "@osdk/client.unstable";
+import type {
+  MarketplaceInterfaceType,
+} from "@osdk/client.unstable";
 import type { InterfaceType } from "@osdk/maker";
-import { isInterfaceSharedPropertyType } from "@osdk/maker";
 import type { OntologyRidGenerator } from "../../util/generateRid.js";
 import { convertInterfaceProperty } from "./convertInterfacePropertyType.js";
 import { convertSpt } from "./convertSpt.js";
@@ -25,9 +26,20 @@ export function convertInterface(
   interfaceType: InterfaceType,
   ridGenerator: OntologyRidGenerator,
 ): MarketplaceInterfaceType {
-  const { __type, ...other } = interfaceType;
+  const { __type, status, ...other } = interfaceType;
+  // Normalize deprecated deadline format to match Java (strip .000 milliseconds)
+  const normalizedStatus = status?.type === "deprecated"
+    ? {
+      ...status,
+      deprecated: {
+        ...status.deprecated,
+        deadline: status.deprecated.deadline?.replace(/\.000Z$/, "Z"),
+      },
+    }
+    : status;
   return {
     ...other,
+    status: normalizedStatus,
     // TODO: Generate proper RID based on apiName
     rid: ridGenerator.generateRidForInterface(interfaceType.apiName),
     propertiesV2: Object.fromEntries(
@@ -57,14 +69,19 @@ export function convertInterface(
     // TODO: Convert links to add RIDs
     links: interfaceType.links.map(link => ({
       ...link,
-      linkedEntityTypeId: link.linkedEntityTypeId.type === "interfaceType" ? {
-        type: "interfaceType",
-        interfaceType: ridGenerator.generateRidForInterface(link.linkedEntityTypeId.interfaceType)
-
-      } : {
-        type: "objectType",
-        objectType: ridGenerator.generateObjectTypeId(link.linkedEntityTypeId.objectType)
-      },
+      linkedEntityTypeId: link.linkedEntityTypeId.type === "interfaceType"
+        ? {
+          type: "interfaceType",
+          interfaceType: ridGenerator.generateRidForInterface(
+            link.linkedEntityTypeId.interfaceType,
+          ),
+        }
+        : {
+          type: "objectType",
+          objectType: ridGenerator.generateObjectTypeId(
+            link.linkedEntityTypeId.objectType,
+          ),
+        },
       rid: ridGenerator.generateRidForInterfaceLinkType(
         link.metadata.apiName,
         interfaceType.apiName,
@@ -74,7 +91,12 @@ export function convertInterface(
     properties: [],
     propertiesV3: Object.fromEntries(
       Object.entries(interfaceType.propertiesV3).map(([apiName, prop]) =>
-        convertInterfaceProperty(prop, apiName, interfaceType.apiName, ridGenerator)
+        convertInterfaceProperty(
+          prop,
+          apiName,
+          interfaceType.apiName,
+          ridGenerator,
+        )
       ),
     ),
   };

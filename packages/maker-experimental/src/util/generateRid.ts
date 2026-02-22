@@ -37,7 +37,7 @@ import type {
 } from "@osdk/client.unstable/api";
 // ParameterRid is defined in ontology-metadata but may not be re-exported through the main API
 type ParameterRid = string;
-import { createHash, randomUUID } from "crypto";
+import { createHash } from "crypto";
 import { toBlockShapeId } from "../cli/marketplaceSerialization/CodeBlockSpec.js";
 
 // Given a unique key generates a rid deterministically (from a lock file eventually)
@@ -96,6 +96,10 @@ export interface OntologyRidGenerator {
   hashString(input: string): string;
   // Generic RID generation for types without specific generators (datasources, sections, etc.)
   generateRid(key: string): string;
+  generateDatasourceRid(datasourceName: string): string;
+  generateValidationRuleRid(actionTypeApiName: string, index: number): string;
+  generateSectionRid(sectionId: string): string;
+  generatePropertySecurityGroupRid(groupName: string): string;
   generateRidForInterface(apiName: string): InterfaceTypeRid;
   generateRidForInterfaceLinkType(
     apiName: string,
@@ -127,9 +131,18 @@ export interface OntologyRidGenerator {
     apiName: string,
   ): StructFieldRid;
   // Datasource locator methods
-  generateLocator(dataSetName: string, columnNames: Set<string>): DatasetDatasourceLocator;
-  generateStreamLocator(streamName: string, columnNames: Set<string>): StreamLocator;
-  generateRestrictedViewLocator(restrictedViewName: string, columnNames: Set<string>): RestrictedViewLocator;
+  generateLocator(
+    dataSetName: string,
+    columnNames: Set<string>,
+  ): DatasetDatasourceLocator;
+  generateStreamLocator(
+    streamName: string,
+    columnNames: Set<string>,
+  ): StreamLocator;
+  generateRestrictedViewLocator(
+    restrictedViewName: string,
+    columnNames: Set<string>,
+  ): RestrictedViewLocator;
   generateMediaSetViewLocator(mediaSetViewName: string): MediaSetViewLocator;
   toBlockInternalId(readableId: ReadableId): string;
   generateObjectTypeId(objectTypeApiName: string): string;
@@ -410,6 +423,32 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
     return `ri.ontology-metadata.temp.${this.hashString(key)}`;
   }
 
+  // Datasource RID matching Java's RidUtils.getDatasourceRidFromName format
+  generateDatasourceRid(datasourceName: string): string {
+    return `ri.ontology.main.datasource.${
+      toBlockShapeId(datasourceName, this.randomnessUuid)
+    }`;
+  }
+
+  // Validation rule RID matching Java's format
+  generateValidationRuleRid(actionTypeApiName: string, index: number): string {
+    return `ri.ontology-metadata.temp.validation-rule.${
+      this.hashString(`${actionTypeApiName}.${index}`)
+    }`;
+  }
+
+  // Section RID matching Java's format: ri.ontology-metadata.temp.section.{hash(sectionId)}
+  generateSectionRid(sectionId: string): string {
+    return `ri.ontology-metadata.temp.section.${this.hashString(sectionId)}`;
+  }
+
+  // Property security group RID matching Java's format
+  generatePropertySecurityGroupRid(groupName: string): string {
+    return `ri.ontology-metadata.temp.property-security-group.${
+      this.hashString(groupName)
+    }`;
+  }
+
   getActionTypeRids(): BiMap<ReadableId, ActionTypeRid> {
     return this.actionTypeRids;
   }
@@ -680,8 +719,13 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
   }
 
   // Datasource locator methods
-  generateLocator(dataSetName: string, columnNames: Set<string>): DatasetDatasourceLocator {
-    const datasetRid = `ri.ontology-metadata.temp.dataset.${this.hashString(dataSetName)}`;
+  generateLocator(
+    dataSetName: string,
+    columnNames: Set<string>,
+  ): DatasetDatasourceLocator {
+    const datasetRid = `ri.ontology-metadata.temp.dataset.${
+      this.hashString(dataSetName)
+    }`;
     const branchId = "main";
 
     // Register column shapes
@@ -691,10 +735,10 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
         {
           datasource: {
             type: "dataset",
-            dataset: { rid: datasetRid, branch: branchId }
+            dataset: { rid: datasetRid, branch: branchId },
           } as DatasourceLocator,
-          name: name
-        } as ResolvedDatasourceColumnShape
+          name: name,
+        } as ResolvedDatasourceColumnShape,
       );
     });
 
@@ -703,28 +747,33 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
       ReadableIdGenerator.getForDataSet(dataSetName),
       {
         type: "dataset",
-        dataset: { rid: datasetRid, branch: branchId }
-      } as DatasourceLocator
+        dataset: { rid: datasetRid, branch: branchId },
+      } as DatasourceLocator,
     );
 
     return { rid: datasetRid, branchId };
   }
 
-  generateStreamLocator(streamName: string, columnNames: Set<string>): StreamLocator {
-    const streamLocatorRid = `ri.ontology-metadata.temp.stream-datasource.${this.hashString(streamName)}`;
+  generateStreamLocator(
+    streamName: string,
+    columnNames: Set<string>,
+  ): StreamLocator {
+    const streamLocatorRid = `ri.ontology-metadata.temp.stream-datasource.${
+      this.hashString(streamName)
+    }`;
     const branchId = "main";
 
     const locator: StreamLocator = {
       streamLocatorRid,
-      branchId
+      branchId,
     };
 
     const marketplaceLocator: DatasourceLocator = {
       type: "stream",
       stream: {
         rid: streamLocatorRid,
-        branch: branchId
-      }
+        branch: branchId,
+      },
     } as DatasourceLocator;
 
     // Register column shapes
@@ -733,34 +782,42 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
         ReadableIdGenerator.getForStreamColumn(streamName, name),
         {
           datasource: marketplaceLocator,
-          name: name
-        } as ResolvedDatasourceColumnShape
+          name: name,
+        } as ResolvedDatasourceColumnShape,
       );
     });
 
     // Register datasource locator
     this.datasourceLocators.put(
       ReadableIdGenerator.getForStream(streamName),
-      marketplaceLocator
+      marketplaceLocator,
     );
 
     return locator;
   }
 
-  generateRestrictedViewLocator(restrictedViewName: string, columnNames: Set<string>): RestrictedViewLocator {
-    const restrictedViewRid = `ri.ontology-metadata.temp.restricted-view.${this.hashString(restrictedViewName)}`;
+  generateRestrictedViewLocator(
+    restrictedViewName: string,
+    columnNames: Set<string>,
+  ): RestrictedViewLocator {
+    const restrictedViewRid = `ri.ontology-metadata.temp.restricted-view.${
+      this.hashString(restrictedViewName)
+    }`;
 
     // Register column shapes
     columnNames.forEach(name => {
       this.columnShapes.put(
-        ReadableIdGenerator.getForRestrictedViewColumn(restrictedViewName, name),
+        ReadableIdGenerator.getForRestrictedViewColumn(
+          restrictedViewName,
+          name,
+        ),
         {
           datasource: {
             type: "restrictedView",
-            restrictedView: { rid: restrictedViewRid }
+            restrictedView: { rid: restrictedViewRid },
           } as DatasourceLocator,
-          name: name
-        } as ResolvedDatasourceColumnShape
+          name: name,
+        } as ResolvedDatasourceColumnShape,
       );
     });
 
@@ -769,17 +826,23 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
       ReadableIdGenerator.getForRestrictedView(restrictedViewName),
       {
         type: "restrictedView",
-        restrictedView: { rid: restrictedViewRid }
-      } as DatasourceLocator
+        restrictedView: { rid: restrictedViewRid },
+      } as DatasourceLocator,
     );
 
     return { rid: restrictedViewRid };
   }
 
   generateMediaSetViewLocator(mediaSetViewName: string): MediaSetViewLocator {
-    const mediaSetRid = `ri.ontology-metadata.temp.media-set.${this.hashString(mediaSetViewName)}`;
-    const mediaSetBranchRid = `ri.ontology-metadata.temp.media-set-branch.${this.hashString(mediaSetViewName)}`;
-    const mediaSetViewRid = `ri.ontology-metadata.temp.media-set-view.${this.hashString(mediaSetViewName)}`;
+    const mediaSetRid = `ri.ontology-metadata.temp.media-set.${
+      this.hashString(mediaSetViewName)
+    }`;
+    const mediaSetBranchRid = `ri.ontology-metadata.temp.media-set-branch.${
+      this.hashString(mediaSetViewName)
+    }`;
+    const mediaSetViewRid = `ri.ontology-metadata.temp.media-set-view.${
+      this.hashString(mediaSetViewName)
+    }`;
 
     // Register files datasource locator
     this.filesDatasourceLocators.put(
@@ -788,15 +851,15 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
         type: "mediaSet",
         mediaSet: {
           rid: mediaSetRid,
-          branch: "master" // matches OntologyMetadataConstants.ONTOLOGY_DATASET_BRANCH_ID
-        }
-      } as FilesDatasourceLocator
+          branch: "master", // matches OntologyMetadataConstants.ONTOLOGY_DATASET_BRANCH_ID
+        },
+      } as FilesDatasourceLocator,
     );
 
     return {
       mediaSetRid,
       mediaSetViewRid,
-      mediaSetBranchRid
+      mediaSetBranchRid,
     };
   }
 
@@ -812,12 +875,12 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
   generateObjectTypeId(objectTypeApiName: string): string {
     const readableId = ReadableIdGenerator.getForObjectType(objectTypeApiName);
     const maybeLastId = this.objectTypeIds.get(readableId);
-    if(maybeLastId){
-      return maybeLastId; 
+    if (maybeLastId) {
+      return maybeLastId;
     }
 
-    const uuid = randomUUID();
-    const objectTypeId = `a${uuid}`;
+    // Match Java: apiName.replace(".", "-").toLowerCase()
+    const objectTypeId = objectTypeApiName.replace(/\./g, "-").toLowerCase();
     this.objectTypeIds.put(readableId, objectTypeId);
     return objectTypeId;
   }

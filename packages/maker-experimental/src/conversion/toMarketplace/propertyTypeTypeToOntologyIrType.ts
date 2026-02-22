@@ -22,6 +22,8 @@ import { distributeTypeHelper } from "../toConjure/distributeTypeHelper.js";
 export function propertyTypeTypeToOntologyIrType(
   type: PropertyTypeType,
   ridGenerator: OntologyRidGenerator,
+  propertyApiName?: string,
+  includeMainValue?: boolean,
 ): Type {
   switch (true) {
     case (typeof type === "object" && type.type === "marking"):
@@ -37,7 +39,9 @@ export function propertyTypeTypeToOntologyIrType(
         let field: StructFieldType;
         if (typeof fieldTypeDefinition === "string") {
           field = {
-            structFieldRid: ridGenerator.generateRid(`structfield.${key}`),
+            structFieldRid: propertyApiName
+              ? ridGenerator.generateStructFieldRid(propertyApiName, key)
+              : ridGenerator.generateRid(`structfield.${key}`),
             apiName: key,
             displayMetadata: { displayName: key, description: undefined },
             typeClasses: [],
@@ -45,6 +49,7 @@ export function propertyTypeTypeToOntologyIrType(
             fieldType: propertyTypeTypeToOntologyIrType(
               fieldTypeDefinition,
               ridGenerator,
+              propertyApiName,
             ),
           };
         } else {
@@ -52,11 +57,14 @@ export function propertyTypeTypeToOntologyIrType(
           if ("fieldType" in fieldTypeDefinition) {
             field = {
               ...fieldTypeDefinition,
-              structFieldRid: ridGenerator.generateRid(`structfield.${key}`),
+              structFieldRid: propertyApiName
+                ? ridGenerator.generateStructFieldRid(propertyApiName, key)
+                : ridGenerator.generateRid(`structfield.${key}`),
               apiName: key,
               fieldType: propertyTypeTypeToOntologyIrType(
                 fieldTypeDefinition.fieldType,
                 ridGenerator,
+                propertyApiName,
               ),
               displayMetadata: fieldTypeDefinition.displayMetadata
                 ?? { displayName: key, description: undefined },
@@ -65,7 +73,9 @@ export function propertyTypeTypeToOntologyIrType(
             };
           } else {
             field = {
-              structFieldRid: ridGenerator.generateRid(`structfield.${key}`),
+              structFieldRid: propertyApiName
+                ? ridGenerator.generateStructFieldRid(propertyApiName, key)
+                : ridGenerator.generateRid(`structfield.${key}`),
               apiName: key,
               displayMetadata: { displayName: key, description: undefined },
               typeClasses: [],
@@ -73,6 +83,7 @@ export function propertyTypeTypeToOntologyIrType(
               fieldType: propertyTypeTypeToOntologyIrType(
                 fieldTypeDefinition,
                 ridGenerator,
+                propertyApiName,
               ),
             };
           }
@@ -81,9 +92,20 @@ export function propertyTypeTypeToOntologyIrType(
         structFields.push(field);
       }
 
+      // Build mainValue from the first struct field (matches Java behavior)
+      // Only SPTs get mainValue populated; object property structs have mainValue: null
+      const mainValue = includeMainValue
+        ? (structFields[0]
+          ? {
+            type: structFields[0].fieldType,
+            fields: [structFields[0].structFieldRid],
+          }
+          : undefined)
+        : undefined;
+
       return {
         type: "struct",
-        struct: { structFields },
+        struct: { structFields, mainValue },
       };
 
     case (typeof type === "object" && type.type === "string"):

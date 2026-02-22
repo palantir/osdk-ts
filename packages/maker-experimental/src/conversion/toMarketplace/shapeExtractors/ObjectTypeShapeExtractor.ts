@@ -33,7 +33,6 @@ import type {
 } from "@osdk/client.unstable";
 import type {
   DatasourceColumnShape,
-  DatasourceColumnType,
   DatasourceLocator,
   FilesDatasourceInputShape,
   FilesDatasourceLocator,
@@ -43,7 +42,6 @@ import type {
   ObjectTypeOutputShape,
   PropertyOutputShape,
   ResolvedDatasourceColumnShape,
-  RestrictedViewLocator,
   StreamLocator,
   TabularDatasourceInputShape,
   TimeSeriesSyncShape,
@@ -55,7 +53,6 @@ import type {
   BlockShapes,
   OntologyRidGenerator,
   ReadableId,
-  ReadableIdGenerator,
 } from "../../../util/generateRid.js";
 import {
   typeToConcreteDataType,
@@ -161,7 +158,9 @@ export class ObjectTypeShapeExtractor {
         ? "EDITS_ENABLED"
         : "EDITS_DISABLED",
       objectsBackendVersion: "V2",
-      propertyTypes: Array.from(propertyOutputShapeMap.keys()).map(val => ridGenerator.toBlockInternalId(val)),
+      propertyTypes: Array.from(propertyOutputShapeMap.keys()).map(val =>
+        ridGenerator.toBlockInternalId(val)
+      ),
     };
 
     const blockShapes: BlockShapes = {
@@ -243,7 +242,9 @@ export class ObjectTypeShapeExtractor {
         propertyType.sharedPropertyTypeRid,
       );
       if (sptReadableId) {
-        shape.sharedPropertyType = ridGenerator.toBlockInternalId(sptReadableId);
+        shape.sharedPropertyType = ridGenerator.toBlockInternalId(
+          sptReadableId,
+        );
       }
     }
 
@@ -420,16 +421,17 @@ export class ObjectTypeShapeExtractor {
     filesDatasourcesByReadableId: BiMap<ReadableId, FilesDatasourceLocator>,
     mediaSetViewLocator: MediaSetViewLocator, // MediaSetViewLocator from OMS types
   ): Map<ReadableId, InputShape> {
-    const filesDatasourceLocator: FilesDatasourceLocator = {
-      type: "mediaSet",
-      mediaSet: {
-        rid: mediaSetViewLocator.mediaSetRid,
-        branch: "master", // Matches OntologyMetadataConstants.ONTOLOGY_DATASET_BRANCH_ID
-      },
-    };
-
-    const readableId: ReadableId | undefined = filesDatasourcesByReadableId
-      .inverse().get(filesDatasourceLocator);
+    // Find the matching files datasource by comparing mediaSetRid
+    let readableId: ReadableId | undefined;
+    for (const [id, locator] of filesDatasourcesByReadableId.entries()) {
+      if (
+        locator.type === "mediaSet"
+        && locator.mediaSet.rid === mediaSetViewLocator.mediaSetRid
+      ) {
+        readableId = id;
+        break;
+      }
+    }
 
     if (!readableId) return new Map();
 
@@ -535,7 +537,9 @@ export class ObjectTypeShapeExtractor {
     const datasourceInputShape: TabularDatasourceInputShape = {
       about: createLocalizedAbout(datasourceReadableId, ""),
       supportedTypes: ["STREAM"],
-      schema: Array.from(columnShapes.keys()).map(id => ridGenerator.toBlockInternalId(id)),
+      schema: Array.from(columnShapes.keys()).map(id =>
+        ridGenerator.toBlockInternalId(id)
+      ),
     };
 
     const result = new Map<ReadableId, InputShape>([
@@ -608,7 +612,9 @@ export class ObjectTypeShapeExtractor {
     const datasourceInputShape: TabularDatasourceInputShape = {
       about: createLocalizedAbout(datasourceReadableId, ""),
       supportedTypes: ["DATASET", "RESTRICTED_VIEW"],
-      schema: Array.from(columnShapes.keys()).map(id => ridGenerator.toBlockInternalId(id)),
+      schema: Array.from(columnShapes.keys()).map(id =>
+        ridGenerator.toBlockInternalId(id)
+      ),
     };
 
     const result = new Map<ReadableId, InputShape>([
@@ -679,7 +685,9 @@ export class ObjectTypeShapeExtractor {
     const datasourceInputShape: TabularDatasourceInputShape = {
       about: createLocalizedAbout(datasourceReadableId, ""),
       supportedTypes: ["RESTRICTED_VIEW"],
-      schema: Array.from(columnShapes.keys()).map(id => ridGenerator.toBlockInternalId(id)),
+      schema: Array.from(columnShapes.keys()).map(id =>
+        ridGenerator.toBlockInternalId(id)
+      ),
     };
 
     const result = new Map<ReadableId, InputShape>([
@@ -727,7 +735,10 @@ export class ObjectTypeShapeExtractor {
       for (const [id, shape] of columnReadableIds.entries()) {
         if (
           shape.name === resolvedShape.name
-          && this.datasourceLocatorsMatch(shape.datasource, resolvedShape.datasource)
+          && this.datasourceLocatorsMatch(
+            shape.datasource,
+            resolvedShape.datasource,
+          )
         ) {
           columnReadableId = id;
           break;

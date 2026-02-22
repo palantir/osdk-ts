@@ -136,7 +136,16 @@ function createMockRidGenerator(
       return readableId;
     },
     getObjectTypeIds: () => new MockBiMap([]) as any,
-    generateObjectTypeId: (objectTypeApiName: string) => `a00000000-0000-0000-0000-000000000000`,
+    generateObjectTypeId: (objectTypeApiName: string) =>
+      objectTypeApiName.replace(/\./g, "-").toLowerCase(),
+    generateDatasourceRid: (datasourceName: string) =>
+      `ri.ontology.main.datasource.${datasourceName}`,
+    generateValidationRuleRid: (actionTypeApiName: string, index: number) =>
+      `validation-rule.${actionTypeApiName}.${index}`,
+    generateSectionRid: (sectionId: string) =>
+      `ri.ontology-metadata.temp.section.${sectionId}`,
+    generatePropertySecurityGroupRid: (groupName: string) =>
+      `ri.ontology-metadata.temp.property-security-group.${groupName}`,
     ...overrides,
   };
 }
@@ -243,13 +252,21 @@ describe("ActionTypeShapeExtractor", () => {
       };
 
       const extractor = new ActionTypeShapeExtractor();
-      const result = extractor.extract(actionType, ridGenerator, knownIdentifiers);
+      const result = extractor.extract(
+        actionType,
+        ridGenerator,
+        knownIdentifiers,
+      );
 
       // Should have output shapes for action type and parameters
       expect(result.outputShapes.size).toBe(3); // action + 2 parameters
-      expect(result.outputShapes.has("action-createTask" as ReadableId)).toBe(true);
+      expect(result.outputShapes.has("action-createTask" as ReadableId)).toBe(
+        true,
+      );
 
-      const actionShape = result.outputShapes.get("action-createTask" as ReadableId);
+      const actionShape = result.outputShapes.get(
+        "action-createTask" as ReadableId,
+      );
       expect(actionShape).toBeDefined();
       expect(actionShape?.type).toBe("action");
       if (actionShape?.type === "action") {
@@ -268,7 +285,9 @@ describe("ActionTypeShapeExtractor", () => {
       expect(titleParamShape).toBeDefined();
       expect(titleParamShape?.type).toBe("actionParameter");
       if (titleParamShape?.type === "actionParameter") {
-        expect(titleParamShape.actionParameter.about.fallbackTitle).toBe("Title");
+        expect(titleParamShape.actionParameter.about.fallbackTitle).toBe(
+          "Title",
+        );
         expect(titleParamShape.actionParameter.about.fallbackDescription).toBe(
           "The task title",
         );
@@ -338,13 +357,21 @@ describe("ActionTypeShapeExtractor", () => {
       };
 
       const extractor = new ActionTypeShapeExtractor();
-      const result = extractor.extract(actionType, ridGenerator, knownIdentifiers);
+      const result = extractor.extract(
+        actionType,
+        ridGenerator,
+        knownIdentifiers,
+      );
 
       // Should have only action type shape, no parameters
       expect(result.outputShapes.size).toBe(1);
-      expect(result.outputShapes.has("action-refresh" as ReadableId)).toBe(true);
+      expect(result.outputShapes.has("action-refresh" as ReadableId)).toBe(
+        true,
+      );
 
-      const actionShape = result.outputShapes.get("action-refresh" as ReadableId);
+      const actionShape = result.outputShapes.get(
+        "action-refresh" as ReadableId,
+      );
       expect(actionShape).toBeDefined();
       expect(actionShape?.type).toBe("action");
       if (actionShape?.type === "action") {
@@ -404,7 +431,11 @@ describe("ActionTypeShapeExtractor", () => {
       };
 
       const extractor = new ActionTypeShapeExtractor();
-      const result = extractor.extract(actionType, ridGenerator, knownIdentifiers);
+      const result = extractor.extract(
+        actionType,
+        ridGenerator,
+        knownIdentifiers,
+      );
 
       // Should return empty shapes
       expect(result.inputShapes.size).toBe(0);
@@ -510,13 +541,18 @@ describe("ActionTypeShapeExtractor", () => {
       };
 
       const extractor = new ActionTypeShapeExtractor();
-      const result = extractor.extract(actionType, ridGenerator, knownIdentifiers);
+      const result = extractor.extract(
+        actionType,
+        ridGenerator,
+        knownIdentifiers,
+      );
 
       // Should have action + 3 parameters
       expect(result.outputShapes.size).toBe(4);
-      expect(result.outputShapes.has("action-complexAction" as ReadableId)).toBe(
-        true,
-      );
+      expect(result.outputShapes.has("action-complexAction" as ReadableId))
+        .toBe(
+          true,
+        );
       expect(
         result.outputShapes.has(
           "action-complexAction-parameter-param1" as ReadableId,
@@ -618,7 +654,11 @@ describe("ActionTypeShapeExtractor", () => {
       };
 
       const extractor = new ActionTypeShapeExtractor();
-      const result = extractor.extract(actionType, ridGenerator, knownIdentifiers);
+      const result = extractor.extract(
+        actionType,
+        ridGenerator,
+        knownIdentifiers,
+      );
 
       const actionShape = result.outputShapes.get(
         "action-testAction" as ReadableId,

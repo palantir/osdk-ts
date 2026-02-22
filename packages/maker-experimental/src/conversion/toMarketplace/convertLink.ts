@@ -20,7 +20,6 @@ import type {
   LinkTypeStatus,
   ManyToManyLinkTypeDatasource,
 } from "@osdk/client.unstable";
-import invariant from "tiny-invariant";
 import type {
   LinkType,
   ObjectType,
@@ -32,6 +31,7 @@ import {
   getOntologyDefinition,
   OntologyEntityTypeEnum,
 } from "@osdk/maker";
+import invariant from "tiny-invariant";
 import type { OntologyRidGenerator } from "../../util/generateRid.js";
 import { convertCardinality } from "./convertCardinality.js";
 
@@ -192,11 +192,15 @@ export function convertLink(
     datasources: datasource !== undefined ? [datasource] : [],
     entityMetadata: {
       arePatchesEnabled: linkType.editsEnabled ?? false,
-      // TODO: Add entityConfig based on storage configuration
       entityConfig: {
-        objectDbTypeConfigs: {},
+        objectDbTypeConfigs: {
+          highbury: {
+            objectDbConfigs: {
+              "ri.highbury.main.cluster.1": { configValue: "{}" },
+            },
+          },
+        },
       },
-      // TODO: Add targetStorageBackend based on link configuration
       targetStorageBackend: { type: "objectStorageV2", objectStorageV2: {} },
     },
   };
@@ -305,7 +309,11 @@ export function convertLinkStatus(
       deprecated: {
         message: status.message,
         deadline: status.deadline,
-        replacedBy: status.replacedBy ? ridGenerator.generateRidForLinkType(cleanAndValidateLinkTypeId(status.replacedBy)) : undefined,
+        replacedBy: status.replacedBy
+          ? ridGenerator.generateRidForLinkType(
+            cleanAndValidateLinkTypeId(status.replacedBy),
+          )
+          : undefined,
       },
     };
   }

@@ -17,12 +17,12 @@
 import type {
   DerivedPropertiesDefinition,
   DerivedPropertyAggregation as DerivedPropertyAggregationWire,
+  MarketplaceObjectTypeEntityMetadata,
   ObjectTypeBlockDataV2,
   ObjectTypeDatasource,
   ObjectTypeDatasourceDefinition,
   PropertyType,
 } from "@osdk/client.unstable";
-import { randomUUID } from "crypto";
 import type {
   DerivedPropertyAggregation,
   InterfaceType,
@@ -35,8 +35,8 @@ import {
   convertObjectStatus,
   isExotic,
 } from "@osdk/maker";
-import { buildDatasource } from "./convertActionHelpers.js";
 import type { OntologyRidGenerator } from "../../util/generateRid.js";
+import { buildDatasource } from "./convertActionHelpers.js";
 import { convertDatasourceDefinition } from "./convertDatasourceDefinition.js";
 import { convertObjectPropertyType } from "./convertObjectPropertyType.js";
 
@@ -143,30 +143,40 @@ export function convertObject(
       implementsInterfaces2: implementations.map(impl => {
         const allParents = flattenInterface(impl.implements, new Set());
         return ({
-        interfaceTypeRid: ridGenerator.generateRidForInterface(
-          impl.implements.apiName,
-        ),
-        interfaceTypeApiName: impl.implements.apiName,
-        links: {},
-        linksV2: {},
-        propertiesV2: Object.fromEntries(impl.propertyMapping
-          .map(
-            mappings => {
-              // TODO(): This probably won't work for importing
-              const sourceInterface = allParents.find((interfaceType, _index) => {
-                return interfaceType.propertiesV3[mappings.interfaceProperty] !== undefined
-              })!;
-              return [ridGenerator.generateInterfacePropertyTypeRid(mappings.interfaceProperty, sourceInterface.apiName), {
-              type: "propertyTypeRid",
-              propertyTypeRid: ridGenerator.generatePropertyRid(
-                mappings.mapsTo,
-                objectType.apiName,
-              ),
-            }];
-          },
-          )),
-        properties: {},
-      })}),
+          interfaceTypeRid: ridGenerator.generateRidForInterface(
+            impl.implements.apiName,
+          ),
+          interfaceTypeApiName: impl.implements.apiName,
+          links: {},
+          linksV2: {},
+          propertiesV2: Object.fromEntries(impl.propertyMapping
+            .map(
+              mappings => {
+                // TODO(): This probably won't work for importing
+                const sourceInterface = allParents.find(
+                  (interfaceType, _index) => {
+                    return interfaceType
+                      .propertiesV3[mappings.interfaceProperty] !== undefined;
+                  },
+                )!;
+                return [
+                  ridGenerator.generateInterfacePropertyTypeRid(
+                    mappings.interfaceProperty,
+                    sourceInterface.apiName,
+                  ),
+                  {
+                    type: "propertyTypeRid",
+                    propertyTypeRid: ridGenerator.generatePropertyRid(
+                      mappings.mapsTo,
+                      objectType.apiName,
+                    ),
+                  },
+                ];
+              },
+            )),
+          properties: {},
+        });
+      }),
       allImplementsInterfaces: {},
       traits: { workflowObjectTypeTraits: {} },
       typeGroups: [],
@@ -176,27 +186,11 @@ export function convertObject(
       ...derivedDatasources,
       objectDatasource,
     ],
-    entityMetadata: {
-      // TODO: Expand entity metadata with all required fields
-      arePatchesEnabled: objectType.editsEnabled ?? false,
-    aliases: objectType.aliases ?? [],
-      diffEdits: false,
-      entityConfig: {
-        // TODO: Add objectDbTypeConfigs based on storage backend configuration
-        objectDbTypeConfigs: {},
-      },
-      targetStorageBackend: { type: "objectStorageV2", objectStorageV2: {} },
-    },
-    
-    // TODO: Add schema migrations support
+    entityMetadata: buildEntityMetadata(objectType),
+    propertySecurityGroupPackagingVersion: { type: "v2", v2: {} },
     schemaMigrations: undefined,
-    // TODO: Add writeback datasets support
     writebackDatasets: [],
-    //propertySecurityGroupPackagingVersion: {
-    //  type: "v2",
-    //  v2: {},
-    //},
-  };
+  } as ObjectTypeBlockDataV2;
 }
 
 /**
@@ -253,12 +247,14 @@ export function extractPropertyDatasource(
         type: "mediaSetView",
         mediaSetView: {
           assumedMarkings: [],
-          mediaSetViewLocator:ridGenerator.generateMediaSetViewLocator(identifier),
+          mediaSetViewLocator: ridGenerator.generateMediaSetViewLocator(
+            identifier,
+          ),
           properties: [ridGenerator.generatePropertyRid(
             property.apiName,
-            objectTypeApiName
+            objectTypeApiName,
           )],
-          uploadProperties: []
+          uploadProperties: [],
         },
       };
       return [
@@ -402,15 +398,46 @@ function buildAggregation(
   } as unknown as DerivedPropertyAggregationWire;
 }
 
+/**
+ * Build entity metadata with fields that match Java's output.
+ * Some fields (highbury, editsResolutionStrategies, propertySecurityGroupPackagingVersion)
+ * aren't in the TS type definitions yet but are required by the Java converter output.
+ */
+function buildEntityMetadata(
+  objectType: ObjectType,
+): MarketplaceObjectTypeEntityMetadata {
+  const metadata = {
+    arePatchesEnabled: objectType.editsEnabled ?? false,
+    aliases: objectType.aliases ?? [],
+    diffEdits: false,
+    entityConfig: {
+      objectDbTypeConfigs: {
+        highbury: {
+          objectDbConfigs: {
+            "ri.highbury.main.cluster.1": { configValue: "{}" },
+          },
+        },
+      },
+    },
+    editsResolutionStrategies: { strategies: {} },
+    targetStorageBackend: { type: "objectStorageV2", objectStorageV2: {} },
+  };
+  return metadata as MarketplaceObjectTypeEntityMetadata;
+}
 
-export function flattenInterface(interfaceType: InterfaceType, seen: Set<string>): Array<InterfaceType> {
-  if(seen.has(interfaceType.apiName)){
+export function flattenInterface(
+  interfaceType: InterfaceType,
+  seen: Set<string>,
+): Array<InterfaceType> {
+  if (seen.has(interfaceType.apiName)) {
     return [];
   }
   seen.add(interfaceType.apiName);
-  if(interfaceType.extendsInterfaces.length === 0){
+  if (interfaceType.extendsInterfaces.length === 0) {
     return [interfaceType];
   }
-  const parents = interfaceType.extendsInterfaces.flatMap(parent => flattenInterface(parent, seen));
+  const parents = interfaceType.extendsInterfaces.flatMap(parent =>
+    flattenInterface(parent, seen)
+  );
   return [interfaceType, ...parents];
 }

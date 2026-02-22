@@ -28,13 +28,14 @@ import {
   cleanAndValidateLinkTypeId,
   OntologyEntityTypeEnum,
 } from "@osdk/maker";
-import { convertAction } from "./convertActionHelpers.js";
 import type { OntologyRidGenerator } from "../../util/generateRid.js";
 import { ReadableIdGenerator } from "../../util/generateRid.js";
+import { convertAction } from "./convertActionHelpers.js";
 import { convertInterface } from "./convertInterface.js";
 import { convertLink } from "./convertLink.js";
 import { convertObject } from "./convertObject.js";
 import { convertSpt } from "./convertSpt.js";
+import { MIGRATION_SHAPE_READABLE_ID } from "./shapeExtractors/IrShapeExtractor.js";
 
 export function convertOntologyDefinitionToWireBlockData(
   ontology: OntologyDefinition,
@@ -125,7 +126,6 @@ export function convertOntologyDefinitionToWireBlockData(
               restrictionStatus: {
                 hasRolesApplied: true,
                 ontologyPackageRid: null,
-                publicProject: false,
               },
             }];
           }),
@@ -188,8 +188,12 @@ function buildKnownIdentifiers(
 
   // Object type IDs: ObjectTypeId -> BlockInternalId
   const objectTypeIds = Object.fromEntries(
-    Object.entries(ontology[OntologyEntityTypeEnum.OBJECT_TYPE]).map(([objectTypeApiName, objectType]) => [
-      ridGenerator.getObjectTypeIds().get(ReadableIdGenerator.getForObjectType(objectTypeApiName)),
+    Object.entries(ontology[OntologyEntityTypeEnum.OBJECT_TYPE]).map((
+      [objectTypeApiName, objectType],
+    ) => [
+      ridGenerator.getObjectTypeIds().get(
+        ReadableIdGenerator.getForObjectType(objectTypeApiName),
+      ),
       ridGenerator.toBlockInternalId(
         ReadableIdGenerator.getForObjectType(objectTypeApiName),
       ),
@@ -210,7 +214,9 @@ function buildKnownIdentifiers(
         ),
       );
     });
-    const objTypeId = ridGenerator.getObjectTypeIds().get(ReadableIdGenerator.getForObjectType(objectTypeApiName))!;
+    const objTypeId = ridGenerator.getObjectTypeIds().get(
+      ReadableIdGenerator.getForObjectType(objectTypeApiName),
+    )!;
     propertyTypeIds[objTypeId] = propMap;
   });
 
@@ -248,7 +254,8 @@ function buildKnownIdentifiers(
   // Link type IDs: LinkTypeId -> BlockInternalId
   const linkTypeIds = Object.fromEntries(
     Object.keys(ontology[OntologyEntityTypeEnum.LINK_TYPE]).map((
-      linkTypeId, link
+      linkTypeId,
+      link,
     ) => [
       cleanAndValidateLinkTypeId(linkTypeId),
       ridGenerator.toBlockInternalId(
@@ -338,6 +345,60 @@ function buildKnownIdentifiers(
       .toBlockInternalId(readableId);
   });
 
+  // Build markings mapping: BlockInternalId -> [markingId]
+  // Collect marking shapes from object type marking properties and additionalMandatoryMarkings
+  const markingEntries: Array<
+    { markingId: string; markingType: "CBAC" | "MANDATORY" }
+  > = [];
+  Object.entries(ontology[OntologyEntityTypeEnum.OBJECT_TYPE]).forEach(
+    ([objectTypeApiName, objectType]) => {
+      // Marking properties
+      (objectType.properties ?? []).forEach((prop) => {
+        if (
+          typeof prop.type === "object" && prop.type.type === "marking"
+          && prop.type.markingInputGroupName
+        ) {
+          markingEntries.push({
+            markingId: prop.type.markingInputGroupName,
+            markingType: prop.type.markingType as "CBAC" | "MANDATORY",
+          });
+        }
+      });
+      // additionalMandatoryMarkings from property security groups
+      (objectType.datasources ?? []).forEach((ds) => {
+        if ("propertySecurityGroups" in ds && ds.propertySecurityGroups) {
+          ds.propertySecurityGroups.forEach((psg) => {
+            if (psg.additionalMandatoryMarkings) {
+              Object.entries(psg.additionalMandatoryMarkings).forEach(
+                ([markingId, markingType]) => {
+                  markingEntries.push({
+                    markingId,
+                    markingType: markingType as "CBAC" | "MANDATORY",
+                  });
+                },
+              );
+            }
+          });
+        }
+      });
+    },
+  );
+
+  // Deduplicate and build mapping
+  const markingsMappings: Record<string, string[]> = {};
+  const seenMarkings = new Set<string>();
+  markingEntries.forEach(({ markingId, markingType }) => {
+    const key = `${markingId}-${markingType}`;
+    if (seenMarkings.has(key)) return;
+    seenMarkings.add(key);
+    const readableId = ReadableIdGenerator.getForMarking(
+      markingId,
+      markingType,
+    );
+    const blockInternalId = ridGenerator.toBlockInternalId(readableId);
+    markingsMappings[blockInternalId] = [markingId];
+  });
+
   return {
     actionParameterIds: actionParameterIdMappings,
     actionParameters: actionParameterMappings,
@@ -353,12 +414,16 @@ function buildKnownIdentifiers(
     interfaceTypes: interfaceMappings,
     linkTypeIds: linkTypeIds,
     linkTypes: linkTypeRids,
-    markings: {},
+    markings: markingsMappings,
     objectTypeIds: objectTypeIds,
     objectTypes: objectTypeRids,
     propertyTypeIds: propertyTypeIds,
     propertyTypes: propertyRids,
     sharedPropertyTypes: sharedPropertyMappings,
+    shapeIdForOntologyAllowSchemaMigrations: ridGenerator.toBlockInternalId(
+      MIGRATION_SHAPE_READABLE_ID,
+    ),
+    shapeIdForInstallPrefix: null,
     timeSeriesSyncs: timeSeriesSyncs,
     valueTypes: valueTypeMappings,
     webhooks: {},
