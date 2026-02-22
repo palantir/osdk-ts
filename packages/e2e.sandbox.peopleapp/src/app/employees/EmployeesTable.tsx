@@ -141,7 +141,6 @@ export function EmployeesTable() {
         }]}
         onSubmitEdits={handleSubmitEdits}
         enableEditModeByDefault={false}
-        onRowClick={() => alert("Row clicked")}
         onCellValueChanged={(event) => {
           console.log("Cell edited:", event);
         }}
