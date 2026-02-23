@@ -1,3 +1,19 @@
+/*
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import type {
   ObjectMetadata as $ObjectMetadata,
   ObjectSet as $ObjectSet,
@@ -54,12 +70,12 @@ export namespace Employee {
     readonly employeeDocuments: $PropType["mediaReference"] | undefined;
     readonly leadEmployeeNumber: $PropType["integer"] | undefined;
     readonly employeeFile: $PropType["attachment"] | undefined;
-    readonly firstFullTimeStartDate: $PropType["datetime"] | undefined;
+    readonly firstFullTimeStartDate: $PropType["timestamp"] | undefined;
     readonly preferredNameLast: $PropType["string"] | undefined;
     readonly latestVenture: { venture?: string; days?: number } | undefined;
     readonly jobTitle: $PropType["string"] | undefined;
     readonly preferredNameFirst: $PropType["string"] | undefined;
-    readonly firstInternStartDate: $PropType["datetime"] | undefined;
+    readonly firstInternStartDate: $PropType["timestamp"] | undefined;
     readonly locationCity: $PropType["string"] | undefined;
     readonly workerType: $PropType["string"] | undefined;
     readonly department: $PropType["string"] | undefined;
@@ -87,12 +103,12 @@ export namespace Employee {
     readonly employeeDocuments: $PropType["mediaReference"] | undefined;
     readonly leadEmployeeNumber: $PropType["integer"] | undefined;
     readonly employeeFile: $PropType["attachment"] | undefined;
-    readonly firstFullTimeStartDate: $PropType["datetime"] | undefined;
+    readonly firstFullTimeStartDate: $PropType["timestamp"] | undefined;
     readonly preferredNameLast: $PropType["string"] | undefined;
     readonly latestVenture: { venture?: string; days?: number } | undefined;
     readonly jobTitle: $PropType["string"] | undefined;
     readonly preferredNameFirst: $PropType["string"] | undefined;
-    readonly firstInternStartDate: $PropType["datetime"] | undefined;
+    readonly firstInternStartDate: $PropType["timestamp"] | undefined;
     readonly locationCity: $PropType["string"] | undefined;
     readonly workerType: $PropType["string"] | undefined;
     readonly department: $PropType["string"] | undefined;
@@ -141,12 +157,12 @@ export interface Employee extends $ObjectTypeDefinition {
       employeeDocuments: $PropertyDef<"mediaReference", "nullable", "single">;
       leadEmployeeNumber: $PropertyDef<"integer", "nullable", "single">;
       employeeFile: $PropertyDef<"attachment", "nullable", "single">;
-      firstFullTimeStartDate: $PropertyDef<"datetime", "nullable", "single">;
+      firstFullTimeStartDate: $PropertyDef<"timestamp", "nullable", "single">;
       preferredNameLast: $PropertyDef<"string", "nullable", "single">;
       // latestVenture is a complex type, not mapped as PropertyDef
       jobTitle: $PropertyDef<"string", "nullable", "single">;
       preferredNameFirst: $PropertyDef<"string", "nullable", "single">;
-      firstInternStartDate: $PropertyDef<"datetime", "nullable", "single">;
+      firstInternStartDate: $PropertyDef<"timestamp", "nullable", "single">;
       locationCity: $PropertyDef<"string", "nullable", "single">;
       workerType: $PropertyDef<"string", "nullable", "single">;
       department: $PropertyDef<"string", "nullable", "single">;

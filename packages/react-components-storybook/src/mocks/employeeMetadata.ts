@@ -41,6 +41,16 @@ export const employeeMetadata: TH_ObjectTypeFullMetadata<Employee> = {
           "type": "experimental",
         },
         "visibility": "NORMAL",
+        "typeClasses": [
+          {
+            "kind": "render_hint",
+            "name": "SELECTABLE",
+          },
+          {
+            "kind": "render_hint",
+            "name": "SORTABLE",
+          },
+        ],
       },
       "mentorEmployeeNumber": {
         "displayName": "Mentor Employee Number",
@@ -52,6 +62,7 @@ export const employeeMetadata: TH_ObjectTypeFullMetadata<Employee> = {
           "type": "experimental",
         },
         "visibility": "NORMAL",
+        "typeClasses": [],
       },
       "locationName": {
         "displayName": "Location Name",
@@ -63,6 +74,16 @@ export const employeeMetadata: TH_ObjectTypeFullMetadata<Employee> = {
           "type": "experimental",
         },
         "visibility": "NORMAL",
+        "typeClasses": [
+          {
+            "kind": "render_hint",
+            "name": "SELECTABLE",
+          },
+          {
+            "kind": "render_hint",
+            "name": "SORTABLE",
+          },
+        ],
       },
       "fullName": {
         "displayName": "Name",
@@ -74,6 +95,16 @@ export const employeeMetadata: TH_ObjectTypeFullMetadata<Employee> = {
           "type": "experimental",
         },
         "visibility": "PROMINENT",
+        "typeClasses": [
+          {
+            "kind": "render_hint",
+            "name": "SELECTABLE",
+          },
+          {
+            "kind": "render_hint",
+            "name": "SORTABLE",
+          },
+        ],
       },
       "favoritePlaceArea": {
         "displayName": "Favorite Place Area",
@@ -85,6 +116,7 @@ export const employeeMetadata: TH_ObjectTypeFullMetadata<Employee> = {
           "type": "experimental",
         },
         "visibility": "NORMAL",
+        "typeClasses": [],
       },
       "employeeDocuments": {
         "displayName": "employeeDocuments",
@@ -96,6 +128,7 @@ export const employeeMetadata: TH_ObjectTypeFullMetadata<Employee> = {
           "type": "experimental",
         },
         "visibility": "NORMAL",
+        "typeClasses": [],
       },
       "leadEmployeeNumber": {
         "displayName": "Lead Employee Number",
@@ -107,6 +140,7 @@ export const employeeMetadata: TH_ObjectTypeFullMetadata<Employee> = {
           "type": "experimental",
         },
         "visibility": "NORMAL",
+        "typeClasses": [],
       },
       "employeeFile": {
         "displayName": "Employee File",
@@ -118,17 +152,19 @@ export const employeeMetadata: TH_ObjectTypeFullMetadata<Employee> = {
           "type": "experimental",
         },
         "visibility": "NORMAL",
+        "typeClasses": [],
       },
       "firstFullTimeStartDate": {
         "displayName": "First Full Time Start Date",
         "dataType": {
-          "type": "date",
+          "type": "timestamp",
         },
         "rid": "ri.ontology.main.property.abab33ff-3906-4857-a471-640ca86aafea",
         "status": {
           "type": "experimental",
         },
         "visibility": "NORMAL",
+        "typeClasses": [],
       },
       "preferredNameLast": {
         "displayName": "Preferred Name Last",
@@ -140,35 +176,16 @@ export const employeeMetadata: TH_ObjectTypeFullMetadata<Employee> = {
           "type": "experimental",
         },
         "visibility": "NORMAL",
-      },
-      "latestVenture": {
-        "displayName": "Latest Venture ",
-        "dataType": {
-          "type": "struct",
-          "structFieldTypes": [
-            {
-              "apiName": "venture",
-              "rid":
-                "ri.ontology.main.struct-field.d53cef37-32c5-45fc-90c2-7b8bf674e0af",
-              "dataType": {
-                "type": "string",
-              },
-            },
-            {
-              "apiName": "days",
-              "rid":
-                "ri.ontology.main.struct-field.fa69e97b-5b11-44fd-b6e9-629b960dd87c",
-              "dataType": {
-                "type": "integer",
-              },
-            },
-          ],
-        },
-        "rid": "ri.ontology.main.property.24b2f036-9125-47c4-8025-54b9a7325df6",
-        "status": {
-          "type": "experimental",
-        },
-        "visibility": "NORMAL",
+        "typeClasses": [
+          {
+            "kind": "render_hint",
+            "name": "SELECTABLE",
+          },
+          {
+            "kind": "render_hint",
+            "name": "SORTABLE",
+          },
+        ],
       },
       "jobTitle": {
         "displayName": "Job Title",
@@ -180,6 +197,16 @@ export const employeeMetadata: TH_ObjectTypeFullMetadata<Employee> = {
           "type": "experimental",
         },
         "visibility": "NORMAL",
+        "typeClasses": [
+          {
+            "kind": "render_hint",
+            "name": "SELECTABLE",
+          },
+          {
+            "kind": "render_hint",
+            "name": "SORTABLE",
+          },
+        ],
       },
       "preferredNameFirst": {
         "displayName": "Preferred Name First",
@@ -191,17 +218,28 @@ export const employeeMetadata: TH_ObjectTypeFullMetadata<Employee> = {
           "type": "experimental",
         },
         "visibility": "NORMAL",
+        "typeClasses": [
+          {
+            "kind": "render_hint",
+            "name": "SELECTABLE",
+          },
+          {
+            "kind": "render_hint",
+            "name": "SORTABLE",
+          },
+        ],
       },
       "firstInternStartDate": {
         "displayName": "First Intern Start Date",
         "dataType": {
-          "type": "date",
+          "type": "timestamp",
         },
         "rid": "ri.ontology.main.property.48aa0c31-f9e6-4bcf-9b94-f32d519987e7",
         "status": {
           "type": "experimental",
         },
         "visibility": "NORMAL",
+        "typeClasses": [],
       },
       "locationCity": {
         "displayName": "Location City",
@@ -213,6 +251,16 @@ export const employeeMetadata: TH_ObjectTypeFullMetadata<Employee> = {
           "type": "experimental",
         },
         "visibility": "NORMAL",
+        "typeClasses": [
+          {
+            "kind": "render_hint",
+            "name": "SELECTABLE",
+          },
+          {
+            "kind": "render_hint",
+            "name": "SORTABLE",
+          },
+        ],
       },
       "workerType": {
         "displayName": "Worker Type",
@@ -224,6 +272,16 @@ export const employeeMetadata: TH_ObjectTypeFullMetadata<Employee> = {
           "type": "experimental",
         },
         "visibility": "NORMAL",
+        "typeClasses": [
+          {
+            "kind": "render_hint",
+            "name": "SELECTABLE",
+          },
+          {
+            "kind": "render_hint",
+            "name": "SORTABLE",
+          },
+        ],
       },
       "department": {
         "displayName": "Department",
@@ -235,6 +293,16 @@ export const employeeMetadata: TH_ObjectTypeFullMetadata<Employee> = {
           "type": "experimental",
         },
         "visibility": "NORMAL",
+        "typeClasses": [
+          {
+            "kind": "render_hint",
+            "name": "SELECTABLE",
+          },
+          {
+            "kind": "render_hint",
+            "name": "SORTABLE",
+          },
+        ],
       },
       "employeeNumber": {
         "displayName": "Employee Number",
@@ -246,6 +314,7 @@ export const employeeMetadata: TH_ObjectTypeFullMetadata<Employee> = {
           "type": "experimental",
         },
         "visibility": "NORMAL",
+        "typeClasses": [],
       },
       "primaryOfficeId": {
         "displayName": "Primary Office ID",
@@ -257,6 +326,16 @@ export const employeeMetadata: TH_ObjectTypeFullMetadata<Employee> = {
           "type": "experimental",
         },
         "visibility": "NORMAL",
+        "typeClasses": [
+          {
+            "kind": "render_hint",
+            "name": "SELECTABLE",
+          },
+          {
+            "kind": "render_hint",
+            "name": "SORTABLE",
+          },
+        ],
       },
       "adUsername": {
         "displayName": "Ad Username",
@@ -268,6 +347,16 @@ export const employeeMetadata: TH_ObjectTypeFullMetadata<Employee> = {
           "type": "experimental",
         },
         "visibility": "NORMAL",
+        "typeClasses": [
+          {
+            "kind": "render_hint",
+            "name": "SELECTABLE",
+          },
+          {
+            "kind": "render_hint",
+            "name": "SORTABLE",
+          },
+        ],
       },
       "businessTitle": {
         "displayName": "Business Title",
@@ -279,6 +368,16 @@ export const employeeMetadata: TH_ObjectTypeFullMetadata<Employee> = {
           "type": "experimental",
         },
         "visibility": "NORMAL",
+        "typeClasses": [
+          {
+            "kind": "render_hint",
+            "name": "SELECTABLE",
+          },
+          {
+            "kind": "render_hint",
+            "name": "SORTABLE",
+          },
+        ],
       },
       "employeeMedia": {
         "displayName": "Media",
@@ -290,6 +389,7 @@ export const employeeMetadata: TH_ObjectTypeFullMetadata<Employee> = {
           "type": "experimental",
         },
         "visibility": "NORMAL",
+        "typeClasses": [],
       },
       "locationCountry": {
         "displayName": "Location Country",
@@ -301,6 +401,16 @@ export const employeeMetadata: TH_ObjectTypeFullMetadata<Employee> = {
           "type": "experimental",
         },
         "visibility": "NORMAL",
+        "typeClasses": [
+          {
+            "kind": "render_hint",
+            "name": "SELECTABLE",
+          },
+          {
+            "kind": "render_hint",
+            "name": "SORTABLE",
+          },
+        ],
       },
       "businessArea": {
         "displayName": "Business Area",
@@ -312,6 +422,16 @@ export const employeeMetadata: TH_ObjectTypeFullMetadata<Employee> = {
           "type": "experimental",
         },
         "visibility": "NORMAL",
+        "typeClasses": [
+          {
+            "kind": "render_hint",
+            "name": "SELECTABLE",
+          },
+          {
+            "kind": "render_hint",
+            "name": "SORTABLE",
+          },
+        ],
       },
       "newProperty1": {
         "displayName": "New property 1",
@@ -323,6 +443,16 @@ export const employeeMetadata: TH_ObjectTypeFullMetadata<Employee> = {
           "type": "experimental",
         },
         "visibility": "NORMAL",
+        "typeClasses": [
+          {
+            "kind": "render_hint",
+            "name": "SELECTABLE",
+          },
+          {
+            "kind": "render_hint",
+            "name": "SORTABLE",
+          },
+        ],
       },
       "emailPrimaryWork": {
         "displayName": "Email",
@@ -334,6 +464,16 @@ export const employeeMetadata: TH_ObjectTypeFullMetadata<Employee> = {
           "type": "experimental",
         },
         "visibility": "NORMAL",
+        "typeClasses": [
+          {
+            "kind": "render_hint",
+            "name": "SELECTABLE",
+          },
+          {
+            "kind": "render_hint",
+            "name": "SORTABLE",
+          },
+        ],
       },
       "locationRegion": {
         "displayName": "Location Region",
@@ -345,6 +485,16 @@ export const employeeMetadata: TH_ObjectTypeFullMetadata<Employee> = {
           "type": "experimental",
         },
         "visibility": "NORMAL",
+        "typeClasses": [
+          {
+            "kind": "render_hint",
+            "name": "SELECTABLE",
+          },
+          {
+            "kind": "render_hint",
+            "name": "SORTABLE",
+          },
+        ],
       },
       "team": {
         "displayName": "Team",
@@ -356,6 +506,16 @@ export const employeeMetadata: TH_ObjectTypeFullMetadata<Employee> = {
           "type": "experimental",
         },
         "visibility": "NORMAL",
+        "typeClasses": [
+          {
+            "kind": "render_hint",
+            "name": "SELECTABLE",
+          },
+          {
+            "kind": "render_hint",
+            "name": "SORTABLE",
+          },
+        ],
       },
       "favPlace": {
         "displayName": "Favorite Place",
@@ -367,6 +527,7 @@ export const employeeMetadata: TH_ObjectTypeFullMetadata<Employee> = {
           "type": "experimental",
         },
         "visibility": "NORMAL",
+        "typeClasses": [],
       },
       "locationType": {
         "displayName": "Location Type",
@@ -378,6 +539,16 @@ export const employeeMetadata: TH_ObjectTypeFullMetadata<Employee> = {
           "type": "experimental",
         },
         "visibility": "NORMAL",
+        "typeClasses": [
+          {
+            "kind": "render_hint",
+            "name": "SELECTABLE",
+          },
+          {
+            "kind": "render_hint",
+            "name": "SORTABLE",
+          },
+        ],
       },
     },
     "rid": "ri.ontology.main.object-type.ade16a88-ecc4-4f96-9751-ca1799247d64",
