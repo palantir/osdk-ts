@@ -95,7 +95,8 @@
     "@osdk/react-components-styles": "0.1.0",
     "@osdk/e2e.sandbox.officenetwork": "0.0.1",
     "@osdk/generator-converters.preview": "0.1.0-beta.0",
-    "@osdk/functions-testing.experimental": "0.1.0"
+    "@osdk/functions-testing.experimental": "0.1.0",
+    "@osdk/react-components-storybook": "0.1.0"
   },
   "changesets": [
     "@osdk-api-simulatedRelease",
@@ -180,11 +181,14 @@
     "five-baboons-check",
     "fix-page-view",
     "flat-mammals-arrive",
+    "flat-news-sleep",
     "flat-waves-hear",
     "full-dolls-pull",
     "fuzzy-dogs-serve",
     "good-hoops-sing",
     "hip-sheep-tie",
+    "large-dodos-relate",
+    "lazy-pants-drive",
     "little-candles-poke",
     "loud-pens-taste",
     "major-spiders-repair",
