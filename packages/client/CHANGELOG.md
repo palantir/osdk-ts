@@ -1,5 +1,19 @@
 # @osdk/client
 
+## 2.8.0-beta.9
+
+### Minor Changes
+
+- abb0e0f: Bump Platform SDK dependencies
+- abb0e0f: Add transactionId to Actions.apply call
+
+### Patch Changes
+
+- Updated dependencies [abb0e0f]
+  - @osdk/generator-converters@2.8.0-beta.9
+  - @osdk/api@2.8.0-beta.9
+  - @osdk/client.unstable@2.8.0-beta.9
+
 ## 2.8.0-beta.8
 
 ### Patch Changes
