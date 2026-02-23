@@ -16,33 +16,28 @@
 
 import { addons } from "@storybook/manager-api";
 
-// Redirect to the first story if we're at the root
+function redirectToObjectTableIfAtRoot() {
+  const url = new URL(window.location.href);
+  if (
+    !url.searchParams.has("path")
+    && window.location.pathname === "/"
+  ) {
+    window.location.href = "/?path=/story/components-objecttable--default";
+  }
+}
+
+// Redirect to the object table story if we're at the root
 addons.register(
   "redirect-to-first-story",
   (api: { on: (arg0: string, arg1: () => void) => void }) => {
     // Check if we're at the root path (no story selected)
     api.on("STORY_RENDERED", () => {
-      const url = new URL(window.location.href);
-
-      // If we're at the root with no story selected,
-      // redirect to the first story
-      if (
-        !url.searchParams.has("path")
-        && window.location.pathname === "/"
-      ) {
-        window.location.href = "/?path=/story/components-objecttable--default";
-      }
+      redirectToObjectTableIfAtRoot();
     });
 
     // Also check immediately when Storybook loads
     setTimeout(() => {
-      const url = new URL(window.location.href);
-      if (
-        !url.searchParams.has("path")
-        && window.location.pathname === "/"
-      ) {
-        window.location.href = "/?path=/story/components-objecttable--default";
-      }
+      redirectToObjectTableIfAtRoot();
     }, 100);
   },
 );

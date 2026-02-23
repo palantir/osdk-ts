@@ -68,6 +68,7 @@ const config: StorybookConfig = {
       ...config.build,
       commonjsOptions: {
         ...config.build?.commonjsOptions,
+        // Enable transformation of dependencies that mix CommonJS and ESM exports.
         transformMixedEsModules: true,
       },
     };

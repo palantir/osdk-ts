@@ -20,7 +20,7 @@ The Storybook will be available at http://localhost:6006
 - Mock data using FauxFoundry for realistic examples
 - MSW (Mock Service Worker) integration for API mocking
 
-## Components.npmrc
+## Components
 
 ### ObjectTable
 
