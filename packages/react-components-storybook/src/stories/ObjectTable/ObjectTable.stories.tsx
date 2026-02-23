@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Osdk } from "@osdk/api";
+import type { DerivedProperty, Osdk } from "@osdk/api";
 import {
   ColumnConfigDialog,
   ObjectTable,
@@ -253,22 +253,21 @@ const columnDefinitions: ColumnDefinition<Employee, RDPs, {}>[] = [
       );
     },
   },
-  // TODO: Not working yet, need to fix mock
-  // {
-  //   locator: {
-  //     type: "rdp",
-  //     id: "managerName",
-  //     creator: (baseObjectSet: DerivedProperty.Builder<Employee, false>) =>
-  //       baseObjectSet.pivotTo("lead").selectProperty("fullName"),
-  //   },
-  //   renderHeader: () => "Manager",
-  //   renderCell: (object: Osdk.Instance<Employee>) => {
-  //     if ("managerName" in object) {
-  //       return <span>{object["managerName"] as string}</span>;
-  //     }
-  //     return <span style={{ color: "#999" }}>No Manager</span>;
-  //   },
-  // },
+  {
+    locator: {
+      type: "rdp",
+      id: "managerName",
+      creator: (baseObjectSet: DerivedProperty.Builder<Employee, false>) =>
+        baseObjectSet.pivotTo("lead").selectProperty("fullName"),
+    },
+    renderHeader: () => "Manager",
+    renderCell: (object: Osdk.Instance<Employee>) => {
+      if ("managerName" in object) {
+        return <span>{object["managerName"] as string}</span>;
+      }
+      return <span style={{ color: "#999" }}>No Manager</span>;
+    },
+  },
 ];
 
 export const Default: Story = {

@@ -1,4 +1,23 @@
-{
+/*
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import type { TH_ObjectTypeFullMetadata } from "@osdk/faux";
+import type { Employee } from "../types/Employee.js";
+
+export const employeeMetadata: TH_ObjectTypeFullMetadata<Employee> = {
   "objectType": {
     "apiName": "Employee",
     "displayName": "Employee",
@@ -8,165 +27,119 @@
     "icon": {
       "type": "blueprint",
       "color": "#EC9A3C",
-      "name": "person"
+      "name": "person",
     },
     "primaryKey": "employeeNumber",
     "properties": {
       "jobProfile": {
         "displayName": "Job Profile",
         "dataType": {
-          "type": "string"
+          "type": "string",
         },
         "rid": "ri.ontology.main.property.7524bfa6-730f-4264-a23e-0f3894b28db8",
         "status": {
-          "type": "experimental"
+          "type": "experimental",
         },
         "visibility": "NORMAL",
-        "typeClasses": [
-          {
-            "kind": "render_hint",
-            "name": "SELECTABLE"
-          },
-          {
-            "kind": "render_hint",
-            "name": "SORTABLE"
-          }
-        ]
       },
       "mentorEmployeeNumber": {
         "displayName": "Mentor Employee Number",
         "dataType": {
-          "type": "integer"
+          "type": "integer",
         },
         "rid": "ri.ontology.main.property.567984e8-5017-49f9-b3e4-0cb6842d56df",
         "status": {
-          "type": "experimental"
+          "type": "experimental",
         },
         "visibility": "NORMAL",
-        "typeClasses": []
       },
       "locationName": {
         "displayName": "Location Name",
         "dataType": {
-          "type": "string"
+          "type": "string",
         },
         "rid": "ri.ontology.main.property.ae4c1137-f978-424a-af97-4f78d76e2a17",
         "status": {
-          "type": "experimental"
+          "type": "experimental",
         },
         "visibility": "NORMAL",
-        "typeClasses": [
-          {
-            "kind": "render_hint",
-            "name": "SELECTABLE"
-          },
-          {
-            "kind": "render_hint",
-            "name": "SORTABLE"
-          }
-        ]
       },
       "fullName": {
         "displayName": "Name",
         "dataType": {
-          "type": "string"
+          "type": "string",
         },
         "rid": "ri.ontology.main.property.540462d2-e23f-4a8a-9d24-a667f40d2cf9",
         "status": {
-          "type": "experimental"
+          "type": "experimental",
         },
         "visibility": "PROMINENT",
-        "typeClasses": [
-          {
-            "kind": "render_hint",
-            "name": "SELECTABLE"
-          },
-          {
-            "kind": "render_hint",
-            "name": "SORTABLE"
-          }
-        ]
       },
       "favoritePlaceArea": {
         "displayName": "Favorite Place Area",
         "dataType": {
-          "type": "geoshape"
+          "type": "geoshape",
         },
         "rid": "ri.ontology.main.property.6164fcb9-9973-498a-996c-69493fc0a21b",
         "status": {
-          "type": "experimental"
+          "type": "experimental",
         },
         "visibility": "NORMAL",
-        "typeClasses": []
       },
       "employeeDocuments": {
         "displayName": "employeeDocuments",
         "dataType": {
-          "type": "mediaReference"
+          "type": "mediaReference",
         },
         "rid": "ri.ontology.main.property.85c5ca7b-62f0-4cc4-8f7f-42e766f9d42d",
         "status": {
-          "type": "experimental"
+          "type": "experimental",
         },
         "visibility": "NORMAL",
-        "typeClasses": []
       },
       "leadEmployeeNumber": {
         "displayName": "Lead Employee Number",
         "dataType": {
-          "type": "integer"
+          "type": "integer",
         },
         "rid": "ri.ontology.main.property.de185c6f-5ec6-42d2-aa54-0d920993fc6e",
         "status": {
-          "type": "experimental"
+          "type": "experimental",
         },
         "visibility": "NORMAL",
-        "typeClasses": []
       },
       "employeeFile": {
         "displayName": "Employee File",
         "dataType": {
-          "type": "attachment"
+          "type": "attachment",
         },
         "rid": "ri.ontology.main.property.36448a21-e6d4-4505-b166-c5d7579fda33",
         "status": {
-          "type": "experimental"
+          "type": "experimental",
         },
         "visibility": "NORMAL",
-        "typeClasses": []
       },
       "firstFullTimeStartDate": {
         "displayName": "First Full Time Start Date",
         "dataType": {
-          "type": "date"
+          "type": "date",
         },
         "rid": "ri.ontology.main.property.abab33ff-3906-4857-a471-640ca86aafea",
         "status": {
-          "type": "experimental"
+          "type": "experimental",
         },
         "visibility": "NORMAL",
-        "typeClasses": []
       },
       "preferredNameLast": {
         "displayName": "Preferred Name Last",
         "dataType": {
-          "type": "string"
+          "type": "string",
         },
         "rid": "ri.ontology.main.property.bdd483cf-9064-49a9-b1b3-a3aeed097466",
         "status": {
-          "type": "experimental"
+          "type": "experimental",
         },
         "visibility": "NORMAL",
-        "typeClasses": [
-          {
-            "kind": "render_hint",
-            "name": "SELECTABLE"
-          },
-          {
-            "kind": "render_hint",
-            "name": "SORTABLE"
-          }
-        ]
       },
       "latestVenture": {
         "displayName": "Latest Venture ",
@@ -175,396 +148,241 @@
           "structFieldTypes": [
             {
               "apiName": "venture",
-              "rid": "ri.ontology.main.struct-field.d53cef37-32c5-45fc-90c2-7b8bf674e0af",
+              "rid":
+                "ri.ontology.main.struct-field.d53cef37-32c5-45fc-90c2-7b8bf674e0af",
               "dataType": {
-                "type": "string"
+                "type": "string",
               },
-              "typeClasses": []
             },
             {
               "apiName": "days",
-              "rid": "ri.ontology.main.struct-field.fa69e97b-5b11-44fd-b6e9-629b960dd87c",
+              "rid":
+                "ri.ontology.main.struct-field.fa69e97b-5b11-44fd-b6e9-629b960dd87c",
               "dataType": {
-                "type": "integer"
+                "type": "integer",
               },
-              "typeClasses": []
-            }
-          ]
+            },
+          ],
         },
         "rid": "ri.ontology.main.property.24b2f036-9125-47c4-8025-54b9a7325df6",
         "status": {
-          "type": "experimental"
+          "type": "experimental",
         },
         "visibility": "NORMAL",
-        "typeClasses": []
       },
       "jobTitle": {
         "displayName": "Job Title",
         "dataType": {
-          "type": "string"
+          "type": "string",
         },
         "rid": "ri.ontology.main.property.06a8a9ef-2152-4e68-b5ec-95df84f43630",
         "status": {
-          "type": "experimental"
+          "type": "experimental",
         },
         "visibility": "NORMAL",
-        "typeClasses": [
-          {
-            "kind": "render_hint",
-            "name": "SELECTABLE"
-          },
-          {
-            "kind": "render_hint",
-            "name": "SORTABLE"
-          }
-        ]
       },
       "preferredNameFirst": {
         "displayName": "Preferred Name First",
         "dataType": {
-          "type": "string"
+          "type": "string",
         },
         "rid": "ri.ontology.main.property.cfb065b0-58d0-47de-afb5-87e2bae07b9b",
         "status": {
-          "type": "experimental"
+          "type": "experimental",
         },
         "visibility": "NORMAL",
-        "typeClasses": [
-          {
-            "kind": "render_hint",
-            "name": "SELECTABLE"
-          },
-          {
-            "kind": "render_hint",
-            "name": "SORTABLE"
-          }
-        ]
       },
       "firstInternStartDate": {
         "displayName": "First Intern Start Date",
         "dataType": {
-          "type": "date"
+          "type": "date",
         },
         "rid": "ri.ontology.main.property.48aa0c31-f9e6-4bcf-9b94-f32d519987e7",
         "status": {
-          "type": "experimental"
+          "type": "experimental",
         },
         "visibility": "NORMAL",
-        "typeClasses": []
       },
       "locationCity": {
         "displayName": "Location City",
         "dataType": {
-          "type": "string"
+          "type": "string",
         },
         "rid": "ri.ontology.main.property.df02d355-a626-468f-a274-cd0157613836",
         "status": {
-          "type": "experimental"
+          "type": "experimental",
         },
         "visibility": "NORMAL",
-        "typeClasses": [
-          {
-            "kind": "render_hint",
-            "name": "SELECTABLE"
-          },
-          {
-            "kind": "render_hint",
-            "name": "SORTABLE"
-          }
-        ]
       },
       "workerType": {
         "displayName": "Worker Type",
         "dataType": {
-          "type": "string"
+          "type": "string",
         },
         "rid": "ri.ontology.main.property.f1f63351-46e2-411f-8ce1-3050e13ec9b6",
         "status": {
-          "type": "experimental"
+          "type": "experimental",
         },
         "visibility": "NORMAL",
-        "typeClasses": [
-          {
-            "kind": "render_hint",
-            "name": "SELECTABLE"
-          },
-          {
-            "kind": "render_hint",
-            "name": "SORTABLE"
-          }
-        ]
       },
       "department": {
         "displayName": "Department",
         "dataType": {
-          "type": "string"
+          "type": "string",
         },
         "rid": "ri.ontology.main.property.07692b78-e555-47df-ba98-ed982ecfb024",
         "status": {
-          "type": "experimental"
+          "type": "experimental",
         },
         "visibility": "NORMAL",
-        "typeClasses": [
-          {
-            "kind": "render_hint",
-            "name": "SELECTABLE"
-          },
-          {
-            "kind": "render_hint",
-            "name": "SORTABLE"
-          }
-        ]
       },
       "employeeNumber": {
         "displayName": "Employee Number",
         "dataType": {
-          "type": "integer"
+          "type": "integer",
         },
         "rid": "ri.ontology.main.property.feb75375-575a-4c8f-8393-2aefdad649b8",
         "status": {
-          "type": "experimental"
+          "type": "experimental",
         },
         "visibility": "NORMAL",
-        "typeClasses": []
       },
       "primaryOfficeId": {
         "displayName": "Primary Office ID",
         "dataType": {
-          "type": "string"
+          "type": "string",
         },
         "rid": "ri.ontology.main.property.4f41c0cc-9879-4b5d-85f5-6acf2616df6d",
         "status": {
-          "type": "experimental"
+          "type": "experimental",
         },
         "visibility": "NORMAL",
-        "typeClasses": [
-          {
-            "kind": "render_hint",
-            "name": "SELECTABLE"
-          },
-          {
-            "kind": "render_hint",
-            "name": "SORTABLE"
-          }
-        ]
       },
       "adUsername": {
         "displayName": "Ad Username",
         "dataType": {
-          "type": "string"
+          "type": "string",
         },
         "rid": "ri.ontology.main.property.155f0acb-1d4b-4e53-b952-e5e693de7773",
         "status": {
-          "type": "experimental"
+          "type": "experimental",
         },
         "visibility": "NORMAL",
-        "typeClasses": [
-          {
-            "kind": "render_hint",
-            "name": "SELECTABLE"
-          },
-          {
-            "kind": "render_hint",
-            "name": "SORTABLE"
-          }
-        ]
       },
       "businessTitle": {
         "displayName": "Business Title",
         "dataType": {
-          "type": "string"
+          "type": "string",
         },
         "rid": "ri.ontology.main.property.88f079c4-0131-4b43-aa9c-2949e96e94bf",
         "status": {
-          "type": "experimental"
+          "type": "experimental",
         },
         "visibility": "NORMAL",
-        "typeClasses": [
-          {
-            "kind": "render_hint",
-            "name": "SELECTABLE"
-          },
-          {
-            "kind": "render_hint",
-            "name": "SORTABLE"
-          }
-        ]
       },
       "employeeMedia": {
         "displayName": "Media",
         "dataType": {
-          "type": "mediaReference"
+          "type": "mediaReference",
         },
         "rid": "ri.ontology.main.property.250e9145-60fa-4385-aa28-95748f1e8c65",
         "status": {
-          "type": "experimental"
+          "type": "experimental",
         },
         "visibility": "NORMAL",
-        "typeClasses": []
       },
       "locationCountry": {
         "displayName": "Location Country",
         "dataType": {
-          "type": "string"
+          "type": "string",
         },
         "rid": "ri.ontology.main.property.a1ba0bca-26d2-4cee-821c-a23d47a181db",
         "status": {
-          "type": "experimental"
+          "type": "experimental",
         },
         "visibility": "NORMAL",
-        "typeClasses": [
-          {
-            "kind": "render_hint",
-            "name": "SELECTABLE"
-          },
-          {
-            "kind": "render_hint",
-            "name": "SORTABLE"
-          }
-        ]
       },
       "businessArea": {
         "displayName": "Business Area",
         "dataType": {
-          "type": "string"
+          "type": "string",
         },
         "rid": "ri.ontology.main.property.b88c1035-10f9-44db-8eca-454571989e0f",
         "status": {
-          "type": "experimental"
+          "type": "experimental",
         },
         "visibility": "NORMAL",
-        "typeClasses": [
-          {
-            "kind": "render_hint",
-            "name": "SELECTABLE"
-          },
-          {
-            "kind": "render_hint",
-            "name": "SORTABLE"
-          }
-        ]
       },
       "newProperty1": {
         "displayName": "New property 1",
         "dataType": {
-          "type": "string"
+          "type": "string",
         },
         "rid": "ri.ontology.main.property.5e8ce4e8-2356-47cc-80c2-406aa198fb01",
         "status": {
-          "type": "experimental"
+          "type": "experimental",
         },
         "visibility": "NORMAL",
-        "typeClasses": [
-          {
-            "kind": "render_hint",
-            "name": "SELECTABLE"
-          },
-          {
-            "kind": "render_hint",
-            "name": "SORTABLE"
-          }
-        ]
       },
       "emailPrimaryWork": {
         "displayName": "Email",
         "dataType": {
-          "type": "string"
+          "type": "string",
         },
         "rid": "ri.ontology.main.property.bcd62f25-7678-4c29-bd9e-88a58d6815e8",
         "status": {
-          "type": "experimental"
+          "type": "experimental",
         },
         "visibility": "NORMAL",
-        "typeClasses": [
-          {
-            "kind": "render_hint",
-            "name": "SELECTABLE"
-          },
-          {
-            "kind": "render_hint",
-            "name": "SORTABLE"
-          }
-        ]
       },
       "locationRegion": {
         "displayName": "Location Region",
         "dataType": {
-          "type": "string"
+          "type": "string",
         },
         "rid": "ri.ontology.main.property.0cb19cfe-dddf-4041-87bb-a4aa89bcd225",
         "status": {
-          "type": "experimental"
+          "type": "experimental",
         },
         "visibility": "NORMAL",
-        "typeClasses": [
-          {
-            "kind": "render_hint",
-            "name": "SELECTABLE"
-          },
-          {
-            "kind": "render_hint",
-            "name": "SORTABLE"
-          }
-        ]
       },
       "team": {
         "displayName": "Team",
         "dataType": {
-          "type": "string"
+          "type": "string",
         },
         "rid": "ri.ontology.main.property.d72f784b-f920-4fa6-8adf-ac54b39e45fe",
         "status": {
-          "type": "experimental"
+          "type": "experimental",
         },
         "visibility": "NORMAL",
-        "typeClasses": [
-          {
-            "kind": "render_hint",
-            "name": "SELECTABLE"
-          },
-          {
-            "kind": "render_hint",
-            "name": "SORTABLE"
-          }
-        ]
       },
       "favPlace": {
         "displayName": "Favorite Place",
         "dataType": {
-          "type": "geopoint"
+          "type": "geopoint",
         },
         "rid": "ri.ontology.main.property.526b2272-927d-4169-a99d-96ce7d46cbc2",
         "status": {
-          "type": "experimental"
+          "type": "experimental",
         },
         "visibility": "NORMAL",
-        "typeClasses": []
       },
       "locationType": {
         "displayName": "Location Type",
         "dataType": {
-          "type": "string"
+          "type": "string",
         },
         "rid": "ri.ontology.main.property.191eecb3-d6e6-430a-a174-1517046b037c",
         "status": {
-          "type": "experimental"
+          "type": "experimental",
         },
         "visibility": "NORMAL",
-        "typeClasses": [
-          {
-            "kind": "render_hint",
-            "name": "SELECTABLE"
-          },
-          {
-            "kind": "render_hint",
-            "name": "SORTABLE"
-          }
-        ]
-      }
+      },
     },
     "rid": "ri.ontology.main.object-type.ade16a88-ecc4-4f96-9751-ca1799247d64",
     "titleProperty": "fullName",
-    "visibility": "NORMAL"
+    "visibility": "NORMAL",
   },
   "linkTypes": [
     {
@@ -574,7 +392,8 @@
       "objectTypeApiName": "Employee",
       "cardinality": "ONE",
       "foreignKeyPropertyApiName": "leadEmployeeNumber",
-      "linkTypeRid": "ri.ontology.main.relation.a5c9bbf2-f26b-40c3-bfbd-e45df4691d88"
+      "linkTypeRid":
+        "ri.ontology.main.relation.a5c9bbf2-f26b-40c3-bfbd-e45df4691d88",
     },
     {
       "apiName": "peeps",
@@ -582,12 +401,13 @@
       "status": "EXPERIMENTAL",
       "objectTypeApiName": "Employee",
       "cardinality": "MANY",
-      "linkTypeRid": "ri.ontology.main.relation.a5c9bbf2-f26b-40c3-bfbd-e45df4691d88"
-    }
+      "linkTypeRid":
+        "ri.ontology.main.relation.a5c9bbf2-f26b-40c3-bfbd-e45df4691d88",
+    },
   ],
   "implementsInterfaces": [
     "Worker",
-    "Person"
+    "Person",
   ],
   "implementsInterfaces2": {
     "Person": {
@@ -595,19 +415,19 @@
       "rid": "ri.ontology.main.interface.353734ce-ae2d-4e49-8070-163b2126af5a",
       "properties": {
         "email": "emailPrimaryWork",
-        "employeeNumber": "employeeNumber"
+        "employeeNumber": "employeeNumber",
       },
       "propertiesV2": {
         "email": {
           "type": "localPropertyImplementation",
-          "propertyApiName": "emailPrimaryWork"
+          "propertyApiName": "emailPrimaryWork",
         },
         "employeeNumber": {
           "type": "localPropertyImplementation",
-          "propertyApiName": "employeeNumber"
-        }
+          "propertyApiName": "employeeNumber",
+        },
       },
-      "links": {}
+      "links": {},
     },
     "Worker": {
       "apiName": "Worker",
@@ -615,29 +435,29 @@
       "properties": {
         "email": "emailPrimaryWork",
         "name": "fullName",
-        "employeeNumber": "employeeNumber"
+        "employeeNumber": "employeeNumber",
       },
       "propertiesV2": {
         "email": {
           "type": "localPropertyImplementation",
-          "propertyApiName": "emailPrimaryWork"
+          "propertyApiName": "emailPrimaryWork",
         },
         "name": {
           "type": "localPropertyImplementation",
-          "propertyApiName": "fullName"
+          "propertyApiName": "fullName",
         },
         "employeeNumber": {
           "type": "localPropertyImplementation",
-          "propertyApiName": "employeeNumber"
-        }
+          "propertyApiName": "employeeNumber",
+        },
       },
-      "links": {}
-    }
+      "links": {},
+    },
   },
   "sharedPropertyTypeMapping": {
     "email": "emailPrimaryWork",
     "name": "fullName",
     "employeeNumber": "employeeNumber",
-    "media": "employeeMedia"
-  }
-}
+    "media": "employeeMedia",
+  },
+};

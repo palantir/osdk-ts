@@ -64,8 +64,11 @@ const cspell = {
     "*.sh",
     "*.snap",
     "typedoc.jsonc",
+
+    // Storybook setup
     "mockServiceWorker.js",
     "**/.storybook/**",
+    "packages/react-components-storybook/src/mocks/**",
 
     // Dictionary files have words that are only used in certain contexts so they implicitly
     // won't pass the generic case.
