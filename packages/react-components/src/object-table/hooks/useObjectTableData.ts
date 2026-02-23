@@ -17,13 +17,14 @@
 import type {
   DerivedProperty,
   ObjectOrInterfaceDefinition,
+  ObjectSet,
   PropertyKeys,
   QueryDefinition,
   SimplePropertyDef,
   WhereClause,
 } from "@osdk/api";
 import type { UseOsdkListResult } from "@osdk/react/experimental";
-import { useOsdkObjects } from "@osdk/react/experimental";
+import { useObjectSet, useOsdkObjects } from "@osdk/react/experimental";
 import type { SortingState } from "@tanstack/react-table";
 import { useMemo } from "react";
 import type { ColumnDefinition } from "../ObjectTableApi.js";
@@ -31,8 +32,9 @@ import type { ColumnDefinition } from "../ObjectTableApi.js";
 const PAGE_SIZE = 50;
 
 /**
- * This hook is a wrapper around useOsdkObjects
- * It extracts RDP locators from columnDefinitions and calls useOsdkObjects + withProperties
+ * This hook is a wrapper that conditionally uses either useObjectSet or useOsdkObjects
+ * based on whether an objectSet prop is provided.
+ * It extracts RDP locators from columnDefinitions and applies withProperties
  * to return data containing the derived properties.
  */
 export function useObjectTableData<
@@ -50,6 +52,7 @@ export function useObjectTableData<
   columnDefinitions?: Array<ColumnDefinition<Q, RDPs, FunctionColumns>>,
   filter?: WhereClause<Q, RDPs>,
   sorting?: SortingState,
+  objectSet?: ObjectSet<Q>,
 ): UseOsdkListResult<Q, RDPs> {
   const orderBy = useMemo(() => {
     if (!sorting || sorting.length === 0) {
@@ -94,7 +97,24 @@ export function useObjectTableData<
     );
   }, [columnDefinitions]);
 
-  return useOsdkObjects<
+  // When objectSet is provided and objectOrInterfaceType is an object type (not interface),
+  // use useObjectSet. Otherwise, use useOsdkObjects.
+  const isObjectType = objectOrInterfaceType.type === "object";
+  const shouldUseObjectSet = !!objectSet && isObjectType;
+
+  // Cast to ObjectTypeDefinition when we know it's safe
+  const objectSetResult = useObjectSet(
+    objectSet as ObjectSet<any>,
+    {
+      withProperties,
+      where: filter,
+      orderBy,
+      pageSize: PAGE_SIZE,
+      enabled: shouldUseObjectSet,
+    },
+  );
+
+  const osdkObjectsResult = useOsdkObjects<
     Q,
     RDPs
   >(
@@ -104,6 +124,21 @@ export function useObjectTableData<
       pageSize: PAGE_SIZE,
       where: filter,
       orderBy,
+      enabled: !shouldUseObjectSet,
     },
   );
+
+  // Convert UseObjectSetResult to UseOsdkListResult format
+  if (shouldUseObjectSet) {
+    return {
+      data: objectSetResult.data,
+      fetchMore: objectSetResult.fetchMore,
+      isLoading: objectSetResult.isLoading,
+      error: objectSetResult.error,
+      isOptimistic: false, // ObjectSet doesn't support optimistic updates
+      totalCount: objectSetResult.totalCount,
+    } as UseOsdkListResult<Q, RDPs>;
+  }
+
+  return osdkObjectsResult;
 }

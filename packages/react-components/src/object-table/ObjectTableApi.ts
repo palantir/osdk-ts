@@ -17,6 +17,7 @@
 import type {
   DerivedProperty,
   ObjectOrInterfaceDefinition,
+  ObjectSet,
   Osdk,
   PrimaryKeyType,
   PropertyKeys,
@@ -115,6 +116,11 @@ export interface ObjectTableProps<
    * The object type of the object
    */
   objectType: Q;
+
+  /**
+   * The set of objects to show in the table.
+   */
+  objectSet?: ObjectSet<Q>;
 
   /**
    * Ordered list of column definitions to show in the table
