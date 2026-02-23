@@ -37,13 +37,22 @@ describe(wireObjectTypeFullMetadataToSdkObjectMetadata, () => {
         icon: { type: "blueprint", name: "blueprint", color: "blue" },
         primaryKey: "primaryKey",
         properties: {
-          primaryKey: { dataType: { type: "string" }, "rid": "rid" },
+          primaryKey: {
+            dataType: { type: "string" },
+            "rid": "rid",
+            typeClasses: [],
+          },
           otherKey: {
             nullable: false,
             dataType: { type: "string" },
             rid: "rid",
+            typeClasses: [],
           },
-          defaulted: { dataType: { type: "string" }, rid: "rid" },
+          defaulted: {
+            dataType: { type: "string" },
+            rid: "rid",
+            typeClasses: [],
+          },
         },
         rid: "rid",
         status: "ACTIVE",
@@ -107,13 +116,22 @@ describe(wireObjectTypeFullMetadataToSdkObjectMetadata, () => {
         } as any,
         primaryKey: "primaryKey",
         properties: {
-          primaryKey: { dataType: { type: "string" }, "rid": "rid" },
+          primaryKey: {
+            dataType: { type: "string" },
+            "rid": "rid",
+            typeClasses: [],
+          },
           otherKey: {
             nullable: false,
             dataType: { type: "string" },
             rid: "rid",
+            typeClasses: [],
           },
-          defaulted: { dataType: { type: "string" }, rid: "rid" },
+          defaulted: {
+            dataType: { type: "string" },
+            rid: "rid",
+            typeClasses: [],
+          },
         },
         rid: "rid",
         status: "INVALID_NOT_IN_API" as any,
@@ -145,7 +163,11 @@ describe(wireObjectTypeFullMetadataToSdkObjectMetadata, () => {
         icon: { type: "blueprint", name: "blueprint", color: "blue" },
         primaryKey: "primaryKey",
         properties: {
-          primaryKey: { dataType: { type: "string" }, "rid": "rid" },
+          primaryKey: {
+            dataType: { type: "string" },
+            "rid": "rid",
+            typeClasses: [],
+          },
         },
         rid: "rid",
         status: "ACTIVE",
@@ -200,7 +222,11 @@ describe(wireObjectTypeFullMetadataToSdkObjectMetadata, () => {
         icon: { type: "blueprint", name: "blueprint", color: "blue" },
         primaryKey: "primaryKey",
         properties: {
-          primaryKey: { dataType: { type: "string" }, "rid": "rid" },
+          primaryKey: {
+            dataType: { type: "string" },
+            "rid": "rid",
+            typeClasses: [],
+          },
         },
         rid: "rid",
         status: "ACTIVE",
@@ -229,7 +255,11 @@ describe(wireObjectTypeFullMetadataToSdkObjectMetadata, () => {
         icon: { type: "blueprint", name: "blueprint", color: "blue" },
         primaryKey: "primaryKey",
         properties: {
-          primaryKey: { dataType: { type: "string" }, "rid": "rid" },
+          primaryKey: {
+            dataType: { type: "string" },
+            "rid": "rid",
+            typeClasses: [],
+          },
         },
         rid: "rid",
         status: "ACTIVE",
