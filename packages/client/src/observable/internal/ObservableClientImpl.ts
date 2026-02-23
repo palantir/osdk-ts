@@ -28,7 +28,6 @@ import type {
   PrimaryKeyType,
   QueryDefinition,
   SimplePropertyDef,
-  WhereClause,
   WirePropertyTypes,
 } from "@osdk/api";
 import { Subscription } from "rxjs";
@@ -45,6 +44,8 @@ import type { ListPayload } from "../ListPayload.js";
 import type { ObjectPayload } from "../ObjectPayload.js";
 import type { ObjectSetPayload } from "../ObjectSetPayload.js";
 import type {
+  CanonicalizedOptions,
+  CanonicalizeOptionsInput,
   ObservableClient,
   ObserveAggregationArgs,
   ObserveAggregationOptions,
@@ -60,7 +61,6 @@ import type {
 import type { Observer } from "../ObservableClient/common.js";
 import type { ObserveLinks } from "../ObservableClient/ObserveLink.js";
 import type { AggregationPayloadBase } from "./aggregation/AggregationQuery.js";
-import type { Canonical } from "./Canonical.js";
 import type { ObserveObjectSetOptions } from "./objectset/ObjectSetQueryOptions.js";
 import type { Store } from "./Store.js";
 import { UnsubscribableWrapper } from "./UnsubscribableWrapper.js";
@@ -289,12 +289,42 @@ export class ObservableClientImpl implements ObservableClient {
     );
   }
 
-  public canonicalizeWhereClause<
-    T extends ObjectTypeDefinition | InterfaceDefinition,
-    RDPs extends Record<string, SimplePropertyDef> = {},
-  >(where: WhereClause<T, RDPs>): Canonical<WhereClause<T, RDPs>> {
-    return this.__experimentalStore.whereCanonicalizer
-      .canonicalize(where) as Canonical<WhereClause<T, RDPs>>;
+  public canonicalizeOptions<T extends CanonicalizeOptionsInput>(
+    options: T,
+  ): CanonicalizedOptions<T> {
+    const result: Partial<CanonicalizedOptions<T>> = {};
+    const store = this.__experimentalStore;
+
+    if ("where" in options) {
+      const where = options.where;
+      result.where = where && store.whereCanonicalizer.canonicalize(where);
+    }
+
+    if ("withProperties" in options) {
+      const withProperties = options.withProperties;
+      result.withProperties = withProperties
+        && store.rdpCanonicalizer.canonicalize(withProperties);
+    }
+
+    if ("orderBy" in options) {
+      const orderBy = options.orderBy;
+      result.orderBy = orderBy
+        && store.orderByCanonicalizer.canonicalize(orderBy);
+    }
+
+    if ("aggregate" in options) {
+      const aggregate = options.aggregate;
+      result.aggregate = aggregate
+        && store.genericCanonicalizer.canonicalize(aggregate);
+    }
+
+    if ("intersectWith" in options) {
+      const intersectWith = options.intersectWith;
+      result.intersectWith = intersectWith
+        && store.genericCanonicalizer.canonicalize(intersectWith);
+    }
+
+    return result as CanonicalizedOptions<T>;
   }
 }
 
