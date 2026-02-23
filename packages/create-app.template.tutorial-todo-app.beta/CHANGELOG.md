@@ -1,5 +1,11 @@
 # @osdk/create-app.template.tutorial-todo-app.beta
 
+## 2.8.0-beta.8
+
+### Minor Changes
+
+- 12dcb6a: Bump node and vite versions
+
 ## 2.8.0-beta.7
 
 ## 2.8.0-beta.6
