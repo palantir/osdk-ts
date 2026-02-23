@@ -18,3 +18,13 @@ export {
   createMockOsdkObject,
   type MockOsdkObjectOptions,
 } from "./mock/createMockOsdkObject.js";
+
+export {
+  type AggregateStubBuilder,
+  createMockClient,
+  type FetchOneStubBuilder,
+  type FetchPageStubBuilder,
+  type MockClient,
+  type StubBuilderFor,
+  type StubClient,
+} from "./mock/createMockClient.js";

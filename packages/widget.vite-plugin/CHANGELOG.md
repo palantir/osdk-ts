@@ -1,5 +1,15 @@
 # @osdk/widget.vite-plugin
 
+## 3.5.0-beta.8
+
+### Minor Changes
+
+- 12dcb6a: Bump node and vite versions
+
+### Patch Changes
+
+- @osdk/widget.api@3.5.0-beta.8
+
 ## 3.5.0-beta.7
 
 ### Patch Changes

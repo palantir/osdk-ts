@@ -41,6 +41,7 @@
 
   /* Table Header Menu */
   --osdk-table-header-menu-padding: calc(var(--osdk-surface-spacing) * 0.25);
+  /* Try to use surface for backgrounds */
   --osdk-table-header-menu-bg: var(--osdk-custom-color-light-gray-2);
   --osdk-table-header-menu-border: var(--osdk-surface-border-width) solid
     var(--osdk-custom-color-gray-4);

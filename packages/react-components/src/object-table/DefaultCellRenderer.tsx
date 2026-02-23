@@ -26,7 +26,7 @@ export function renderDefaultCell<TData>(
   const columnMeta = cellContext.column.columnDef.meta;
 
   if (!columnMeta?.editable || !meta?.onCellEdit) {
-    return cellContext.getValue() as React.ReactNode;
+    return <>{cellContext.getValue()}</>;
   }
 
   const rowId = cellContext.row.id;

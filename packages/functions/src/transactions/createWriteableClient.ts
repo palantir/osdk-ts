@@ -134,6 +134,7 @@ export function createWriteableClient<
         ): Promise<void> {
           const propertyMap: { [propertyName: string]: unknown } = {};
           for (const [key, value] of Object.entries(properties)) {
+            if (key.startsWith("$")) continue;
             propertyMap[key] = toPropertyDataValue(value);
           }
           return editRequestManager.postEdit({
@@ -153,6 +154,7 @@ export function createWriteableClient<
         ): Promise<void> {
           const propertyMap: { [propertyName: string]: unknown } = {};
           for (const [key, value] of Object.entries(properties)) {
+            if (key.startsWith("$")) continue;
             propertyMap[key] = toPropertyDataValue(value);
           }
           return editRequestManager.postEdit({

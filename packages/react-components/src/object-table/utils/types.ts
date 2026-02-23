@@ -28,6 +28,6 @@ export interface CellIdentifier {
 }
 
 export interface CellValueState<TData extends RowData = unknown> {
-  newValue?: TData;
-  oldValue?: TData;
+  newValue: TData;
+  oldValue: TData;
 }

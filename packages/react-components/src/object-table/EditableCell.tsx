@@ -76,11 +76,13 @@ export function EditableCell({
   dataType,
   onCellEdit,
 }: EditableCellProps): React.ReactElement {
-  const [value, setValue] = useState<string>(valueToString(currentValue));
+  const [inputValue, setInputValue] = useState<string>(
+    valueToString(currentValue),
+  );
   const isCancelled = useRef(false);
 
   useEffect(() => {
-    setValue(valueToString(currentValue));
+    setInputValue(valueToString(currentValue));
   }, [currentValue]);
 
   const handleBlur = useCallback(() => {
@@ -89,12 +91,12 @@ export function EditableCell({
       isCancelled.current = false;
       return;
     }
-    const parsedValue = parseValueByType(value, dataType);
+    const parsedValue = parseValueByType(inputValue, dataType);
     onCellEdit?.(cellId, { newValue: parsedValue, oldValue: initialValue });
-  }, [value, initialValue, onCellEdit, cellId, dataType]);
+  }, [inputValue, initialValue, onCellEdit, cellId, dataType]);
 
   const handleChange = useCallback((value: string) => {
-    setValue(value);
+    setInputValue(value);
   }, []);
 
   const handleKeyDown = useCallback(
@@ -104,7 +106,7 @@ export function EditableCell({
       }
       if (e.key === "Escape") {
         isCancelled.current = true;
-        setValue(valueToString(currentValue));
+        setInputValue(valueToString(currentValue));
         e.currentTarget.blur();
       }
     },
@@ -119,7 +121,7 @@ export function EditableCell({
     <Input
       className={styles.osdkEditableInput}
       type={inputType}
-      value={value}
+      value={inputValue}
       onValueChange={handleChange}
       onBlur={handleBlur}
       onKeyDown={handleKeyDown}
