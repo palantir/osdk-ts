@@ -1,5 +1,11 @@
 # @osdk/create-app.template.expo.v2
 
+## 2.6.4
+
+### Patch Changes
+
+- 77a54eb: Bump node and vite versions
+
 ## 2.6.3
 
 ## 2.6.2
