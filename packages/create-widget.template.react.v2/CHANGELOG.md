@@ -1,11 +1,5 @@
 # @osdk/create-widget.template.react.v2
 
-## 3.3.5
-
-### Patch Changes
-
-- 77a54eb: Bump node and vite versions
-
 ## 3.3.4
 
 ## 3.3.3
