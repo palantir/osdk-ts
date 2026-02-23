@@ -9,6 +9,7 @@ export default defineConfig({
   name: "Custom Widget",
   description: "An example custom widget implementation",
   type: "workshop",
+  refreshHostDataOnAction: true,
   parameters: {
     greetingName: {
       displayName: "Greeting name",

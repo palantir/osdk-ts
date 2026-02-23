@@ -65,6 +65,7 @@ function buildWidgetManifest(
     parameters: convertParameters(widgetConfig.parameters),
     events: widgetConfig.events,
     permissions: widgetConfig.permissions,
+    refreshHostDataOnAction: widgetConfig.refreshHostDataOnAction,
   };
 }
 

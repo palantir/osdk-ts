@@ -108,6 +108,14 @@ export interface WidgetManifestConfigV1 {
    * @optional
    */
   permissions?: BrowserPermission[];
+
+  /**
+   * Whether the host should refresh any Ontology data passed in to the widget (currently only applicable to
+   * object set parameters) when the custom widget is thought to have updated the Ontology by applying an
+   * action using Ontology APIs.
+   * @optional
+   */
+  refreshHostDataOnAction?: boolean;
 }
 
 export interface WidgetSetInputSpecV1 {

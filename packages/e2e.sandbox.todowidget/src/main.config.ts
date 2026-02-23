@@ -5,6 +5,7 @@ export default defineConfig({
   name: "Widget One",
   description: "First widget",
   type: "workshop",
+  refreshHostDataOnAction: true,
   parameters: {
     headerText: {
       displayName: "Widget title",
