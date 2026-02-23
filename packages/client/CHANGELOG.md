@@ -1,5 +1,14 @@
 # @osdk/client
 
+## 2.6.4
+
+### Patch Changes
+
+- 235fac1: Fix queries that return arrays of objects.
+  - @osdk/api@2.6.4
+  - @osdk/client.unstable@2.6.4
+  - @osdk/generator-converters@2.6.4
+
 ## 2.6.3
 
 ### Patch Changes

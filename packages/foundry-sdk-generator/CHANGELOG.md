@@ -1,5 +1,14 @@
 # @osdk/foundry-sdk-generator
 
+## 2.6.4
+
+### Patch Changes
+
+- Updated dependencies [235fac1]
+  - @osdk/client@2.6.4
+  - @osdk/api@2.6.4
+  - @osdk/generator@2.6.4
+
 ## 2.6.3
 
 ### Patch Changes
