@@ -1,5 +1,11 @@
 # @osdk/functions-testing.experimental
 
+## 0.2.0-beta.1
+
+### Minor Changes
+
+- 48e1409: Add basic utils for OSDK Testing
+
 ## 0.2.0-beta.0
 
 ### Minor Changes
