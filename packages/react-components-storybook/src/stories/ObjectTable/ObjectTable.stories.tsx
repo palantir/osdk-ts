@@ -28,9 +28,6 @@ import { useCallback, useMemo, useState } from "react";
 import { fauxFoundry } from "../../mocks/fauxFoundry.js";
 import { Employee } from "../../types/Employee.js";
 
-// Setup MSW handlers
-const handlers = [...fauxFoundry.handlers];
-
 // Create a concrete type for Storybook to parse more easily
 type EmployeeTableProps = ObjectTableProps<typeof Employee>;
 
@@ -39,7 +36,7 @@ const meta: Meta<EmployeeTableProps> = {
   component: ObjectTable,
   parameters: {
     msw: {
-      handlers,
+      handlers: [...fauxFoundry.handlers],
     },
     controls: {
       expanded: true,
@@ -437,6 +434,43 @@ export const WithHiddenColumns: Story = {
 };
 
 export const WithCustomColumn: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `const customColumnDefinition = [
+      ...columnDefinitions,
+      {
+        locator: {
+          type: "custom",
+          id: "actions",
+        },
+        renderHeader: () => "Actions",
+        renderCell: (object: any) => {
+          return (
+            <div style={{ display: "flex", gap: "8px" }}>
+              <button
+                onClick={() => {}}
+              >
+                View
+              </button>
+              <button
+                onClick={() => {}}
+              >
+                Edit
+              </button>
+            </div>
+          );
+        },
+        orderable: false,
+        width: 120,
+      },
+    ]
+    
+    return  <ObjectTable objectType={Employee} columnDefinitions={customColumnDefinition} />
+    `,
+      },
+    },
+  },
   args: {
     objectType: Employee,
     columnDefinitions: [
@@ -662,49 +696,6 @@ export const WithCustomRenderers: Story = {
       {
         locator: {
           type: "custom",
-          id: "status",
-        },
-        renderCell: (employee: any) => {
-          // Determine status based on start date
-          const startDate = employee["firstFullTimeStartDate"];
-          const isActive = startDate && new Date(startDate) <= new Date();
-
-          return (
-            <span className={`status-tag ${isActive ? "active" : "inactive"}`}>
-              {isActive ? "Active" : "Inactive"}
-            </span>
-          );
-        },
-        width: 100,
-        orderable: false,
-      },
-      {
-        locator: { type: "property", id: "department" },
-      },
-    ] as any,
-  },
-  render: (args) => (
-    <div className="object-table-container" style={{ height: "600px" }}>
-      <ObjectTable objectType={Employee} {...args} />
-    </div>
-  ),
-};
-
-export const WithStatusCells: Story = {
-  args: {
-    objectType: Employee,
-    columnDefinitions: [
-      {
-        locator: { type: "property", id: "fullName" },
-        renderHeader: () => "Employee",
-      },
-      {
-        locator: { type: "property", id: "department" },
-        renderHeader: () => "Department",
-      },
-      {
-        locator: {
-          type: "custom",
           id: "employment-status",
         },
         renderHeader: () => "Employment Status",
@@ -721,32 +712,7 @@ export const WithStatusCells: Story = {
         width: 140,
       },
       {
-        locator: {
-          type: "custom",
-          id: "tenure-status",
-        },
-        renderHeader: () => "Tenure",
-        renderCell: (employee: any) => {
-          const startDate = employee["firstFullTimeStartDate"];
-          if (!startDate) {
-            return <span style={{ color: "#999" }}>Unknown</span>;
-          }
-
-          const years = Math.floor(
-            (new Date().getTime() - new Date(startDate).getTime())
-              / (1000 * 60 * 60 * 24 * 365),
-          );
-
-          const tenureClass = years >= 5 ? "active" : "inactive";
-          const tenureText = years >= 5 ? "Senior" : "Junior";
-
-          return (
-            <span className={`status-tag ${tenureClass}`}>
-              {tenureText} ({years} years)
-            </span>
-          );
-        },
-        width: 120,
+        locator: { type: "property", id: "department" },
       },
     ] as any,
   },
