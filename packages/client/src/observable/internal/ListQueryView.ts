@@ -89,7 +89,7 @@ export class ListQueryView<PAYLOAD extends BaseListPayloadShape> {
         if (
           !this.#hasAutoFetch
           && payload.status === "loaded"
-          && payload.resolvedList.length < this.#viewLimit
+          && (payload.resolvedList?.length ?? 0) < this.#viewLimit
           && this.#query.hasMorePages()
         ) {
           void this.#query.fetchMore();
