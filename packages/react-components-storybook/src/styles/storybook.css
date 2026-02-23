@@ -1,0 +1,59 @@
+/* Global styles for Storybook */
+body {
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
+    Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+/* Needed for BaseUI popover - creates stacking context */
+.root {
+  isolation: isolate;
+}
+
+/* Ensure proper rendering of the ObjectTable */
+.story-container {
+  padding: 2rem;
+  background: #f5f5f5;
+  min-height: 100vh;
+}
+
+/* ObjectTable container */
+.object-table-container {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+/* Status tag styles */
+.status-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.status-tag.active {
+  background-color: #10b981;
+  color: white;
+}
+
+.status-tag.inactive {
+  background-color: #ef4444;
+  color: white;
+}
+
+/* Header link styles */
+.header-link {
+  color: #3b82f6;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.header-link:hover {
+  color: #2563eb;
+}
