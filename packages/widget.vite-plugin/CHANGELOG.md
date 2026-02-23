@@ -1,5 +1,12 @@
 # @osdk/widget.vite-plugin
 
+## 3.4.1
+
+### Patch Changes
+
+- dd30c58: Bump node and vite versions
+  - @osdk/widget.api@3.4.1
+
 ## 3.4.0
 
 ### Minor Changes

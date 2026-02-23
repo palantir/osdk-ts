@@ -1,5 +1,11 @@
 # @osdk/create-app.template.tutorial-todo-app
 
+## 2.7.1
+
+### Patch Changes
+
+- dd30c58: Bump node and vite versions
+
 ## 2.7.0
 
 ### Minor Changes

@@ -1,5 +1,12 @@
 # @osdk/functions
 
+## 1.5.1
+
+### Patch Changes
+
+- 506927f: Filter out $ prefixed properties when creating or updating objects in writeable client
+  - @osdk/client@2.7.1
+
 ## 1.5.0
 
 ### Patch Changes
