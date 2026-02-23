@@ -1,5 +1,11 @@
 # @osdk/react-components-styles
 
+## 0.2.0-beta.5
+
+### Minor Changes
+
+- dba18e0: Fix css build
+
 ## 0.2.0-beta.4
 
 ### Minor Changes
