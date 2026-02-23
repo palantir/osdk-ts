@@ -1373,6 +1373,7 @@ export type {
   TemplateRidPropertyValue,
   TextEmbeddingModel,
   TextModality,
+  TimeBasedRetentionConfig,
   TimeBasedRetentionPolicy,
   TimeBetweenOperation,
   TimeCodeFormat,

@@ -1,5 +1,18 @@
 # @osdk/widget.client
 
+## 3.5.0-beta.7
+
+### Patch Changes
+
+- @osdk/widget.api@3.5.0-beta.7
+
+## 3.5.0-beta.6
+
+### Patch Changes
+
+- Updated dependencies [fad598c]
+  - @osdk/widget.api@3.5.0-beta.6
+
 ## 3.5.0-beta.5
 
 ### Patch Changes

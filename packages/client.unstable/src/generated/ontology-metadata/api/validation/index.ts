@@ -326,6 +326,7 @@ export type {
   ObjectTypeDatasourceSchemaNotFound,
   ObjectTypeDatasourceUpdateModificationCannotChangeAssumedMarkings,
   ObjectTypeDatasourceWithInvalidRetentionTargetSize,
+  ObjectTypeDatasourceWithInvalidTimeBasedRetention,
   ObjectTypeDatasourceWithoutPrimaryKeyColumn,
   ObjectTypeDeletedDatasourceMissingSchemaMigration,
   ObjectTypeDeletedPropertyTypeMissingSchemaMigration,
