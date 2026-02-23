@@ -17,11 +17,14 @@
 import type {
   TimeSeriesPoint,
   TimeSeriesProperty,
-  TimeSeriesQuery,
+  TimeSeriesQueryWrapper,
 } from "@osdk/api";
 import * as OntologiesV2 from "@osdk/foundry.ontologies";
 import type { MinimalClient } from "./MinimalClientContext.js";
-import { asyncIterPointsHelper, getTimeRange } from "./util/timeseriesUtils.js";
+import {
+  asyncIterPointsHelper,
+  parseTimeSeriesQuery,
+} from "./util/timeseriesUtils.js";
 
 export class TimeSeriesPropertyImpl<T extends number | string>
   implements TimeSeriesProperty<T>
@@ -56,7 +59,7 @@ export class TimeSeriesPropertyImpl<T extends number | string>
   }
 
   public async getAllPoints(
-    query?: TimeSeriesQuery,
+    query?: TimeSeriesQueryWrapper,
   ): Promise<TimeSeriesPoint<T>[]> {
     const allPoints: Array<TimeSeriesPoint<T>> = [];
 
@@ -67,7 +70,7 @@ export class TimeSeriesPropertyImpl<T extends number | string>
   }
 
   public async *asyncIterPoints(
-    query?: TimeSeriesQuery,
+    query?: TimeSeriesQueryWrapper,
   ): AsyncGenerator<
     {
       time: any;
@@ -81,7 +84,7 @@ export class TimeSeriesPropertyImpl<T extends number | string>
         this.#client,
         await this.#client.ontologyRid,
         ...this.#triplet,
-        query ? { range: getTimeRange(query) } : {},
+        query ? parseTimeSeriesQuery(query) : {},
       );
 
     for await (

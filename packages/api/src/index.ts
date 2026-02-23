@@ -206,6 +206,13 @@ export type {
   TimeSeriesPoint,
   TimeSeriesProperty,
   TimeSeriesQuery,
+  TimeSeriesQueryV2,
+  TimeSeriesQueryWrapper,
+  TimeSeriesRange,
 } from "./timeseries/timeseries.js";
+export {
+  isLegacyTimeSeriesQuery,
+  isTimeSeriesQueryV2,
+} from "./timeseries/timeSeriesGuards.js";
 export type { LinkedType, LinkNames } from "./util/LinkUtils.js";
 export {};
