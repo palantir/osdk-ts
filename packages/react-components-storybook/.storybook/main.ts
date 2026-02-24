@@ -31,12 +31,12 @@ const config: StorybookConfig = {
   },
   typescript: {
     check: false,
-    reactDocgen: false, // Disable since we're defining argTypes manually
+    reactDocgen: "react-docgen-typescript",
   },
   staticDirs: ["../public"],
-  async viteFinal(config) {
+  async viteFinal(config, { configType }) {
     // Set base path for GitHub Pages deployment
-    if (config.mode === "production") {
+    if (configType === "PRODUCTION") {
       config.base = "/osdk-ts/storybook/";
     }
 

@@ -40,6 +40,8 @@ import type {
   ActionTypeIdInRequest as _api_ActionTypeIdInRequest,
   ActionTypeProvenanceModification as _api_ActionTypeProvenanceModification,
   ActionTypeRid as _api_ActionTypeRid,
+  ActionTypeScenarioSettingsModification
+    as _api_ActionTypeScenarioSettingsModification,
   ActionTypeStatus as _api_ActionTypeStatus,
   ActionTypeUpdate as _api_ActionTypeUpdate,
   ActionWebhooksModification as _api_ActionWebhooksModification,
@@ -126,6 +128,7 @@ import type {
   PolicyVersion as _api_PolicyVersion,
   PrimaryKeyConstraint as _api_PrimaryKeyConstraint,
   PropertySecurityGroupPatch as _api_PropertySecurityGroupPatch,
+  PropertySecurityGroupRid as _api_PropertySecurityGroupRid,
   PropertySecurityGroupsModification as _api_PropertySecurityGroupsModification,
   PropertyTypeDisplayMetadata as _api_PropertyTypeDisplayMetadata,
   PropertyTypeId as _api_PropertyTypeId,
@@ -174,6 +177,7 @@ import type {
 import type { DerivedPropertiesDefinitionModification as _api_derivedproperties_DerivedPropertiesDefinitionModification } from "../derivedproperties/__components.js";
 import type {
   EditsResolutionStrategy as _api_entitymetadata_EditsResolutionStrategy,
+  InterfaceSettings as _api_entitymetadata_InterfaceSettings,
   ObjectDbType as _api_entitymetadata_ObjectDbType,
   ObjectDbTypeConfig as _api_entitymetadata_ObjectDbTypeConfig,
   ObjectTypeAlias as _api_entitymetadata_ObjectTypeAlias,
@@ -297,6 +301,10 @@ export interface ActionTypeModification {
   >;
   provenance?: _api_ActionTypeProvenanceModification | null | undefined;
   revert?: _api_ActionRevert | null | undefined;
+  scenarioSettings?:
+    | _api_ActionTypeScenarioSettingsModification
+    | null
+    | undefined;
   sectionsToCreate: Record<_api_SectionRid, PutSectionRequestWithId>;
   sectionsToDelete: Array<_api_SectionRid>;
   sectionsToUpdate: Record<_api_SectionRid, _api_EditSectionRequest>;
@@ -934,6 +942,7 @@ export type LinkDefinitionModification =
 
 export interface LinkTypeCreate {
   linkType: LinkTypeModification;
+  markings: Array<_api_MarkingId>;
   packageRid?: _api_OntologyPackageRid | null | undefined;
   projectRid?: _api_CompassFolderRid | null | undefined;
 }
@@ -1186,6 +1195,7 @@ export interface ObjectTypeBranchIndexingConfiguration {
   copyEditsMode: CopyEditsMode;
 }
 export interface ObjectTypeCreate {
+  markings: Array<_api_MarkingId>;
   objectType: ObjectTypeModification;
   packageRid?: _api_OntologyPackageRid | null | undefined;
   projectRid?: _api_CompassFolderRid | null | undefined;
@@ -1226,6 +1236,7 @@ export interface ObjectTypeDatasourceCreate {
 }
 export interface ObjectTypeDatasourceDelete {
   datasourceRid: _api_DatasourceRid;
+  propertySecurityGroupRidsToDelete: Array<_api_PropertySecurityGroupRid>;
 }
 export interface ObjectTypeDatasourceModificationDefinition_dataset {
   type: "dataset";
@@ -1527,6 +1538,7 @@ export interface ObjectTypeEntityMetadataModifyRequest {
     | _api_typemapping_ObjectTypeGothamMappingModification
     | null
     | undefined;
+  interfaceSettings?: _api_entitymetadata_InterfaceSettings | null | undefined;
   objectTypeIndexingSettings?:
     | ObjectTypeIndexingSettingsModification
     | null
@@ -1905,6 +1917,10 @@ export interface OntologyModificationRequest {
     _api_InterfaceTypeIdInRequest,
     _api_CompassFolderRid
   >;
+  interfaceTypesToCreateInProjectMarkings: Record<
+    _api_InterfaceTypeIdInRequest,
+    Array<_api_MarkingId>
+  >;
   interfaceTypesToDelete: Array<_api_InterfaceTypeRid>;
   interfaceTypesToUpdate: Record<
     _api_InterfaceTypeRid,
@@ -1959,6 +1975,10 @@ export interface OntologyModificationRequest {
   sharedPropertyTypesToCreateInProject: Record<
     _api_SharedPropertyTypeIdInRequest,
     _api_CompassFolderRid
+  >;
+  sharedPropertyTypesToCreateInProjectMarkings: Record<
+    _api_SharedPropertyTypeIdInRequest,
+    Array<_api_MarkingId>
   >;
   sharedPropertyTypesToDelete: Array<_api_SharedPropertyTypeRid>;
   sharedPropertyTypesToUpdate: Record<

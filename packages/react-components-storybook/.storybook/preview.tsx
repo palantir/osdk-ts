@@ -28,11 +28,18 @@ import "./themes.css";
 // Initialize MSW with proper options
 // This is synchronous, it only configures MSW
 // The actual service worker registration happens in the mswLoader, which runs before each story
+const basePath = (import.meta as any).env?.BASE_URL ?? "/";
+const serviceWorkerUrl = `${basePath}${
+  basePath.endsWith("/") ? "" : "/"
+}mockServiceWorker.js`;
+
 initialize({
   onUnhandledRequest: "warn",
   serviceWorker: {
-    url: "/mockServiceWorker.js",
+    url: serviceWorkerUrl,
   },
+  // Wait for the service worker to be ready before rendering
+  waitUntilReady: true,
 });
 setupFauxFoundry();
 // Create client after MSW is initialized
@@ -52,6 +59,9 @@ const preview: Preview = {
     },
     docs: {
       codePanel: true,
+      source: {
+        excludeDecorators: true,
+      },
     },
     // Register FauxFoundry handlers globally
     msw: {

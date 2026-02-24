@@ -38,14 +38,16 @@ export interface ObjectTypeDatasourceDefinition_dataset {
 export interface ObjectSecurityPolicy {
   name: string;
   granularPolicy?: SecurityConditionDefinition;
-  additionalMandatoryMarkings?: Record<string, MarkingType>;
+  appliedMarkings?: Record<string, MarkingType>;
+  assumedMarkings?: Record<string, MarkingType>;
 }
 
 export interface PropertySecurityGroup {
   name: string;
   properties: Array<string>;
   granularPolicy?: SecurityConditionDefinition;
-  additionalMandatoryMarkings?: Record<string, MarkingType>;
+  appliedMarkings?: Record<string, MarkingType>;
+  assumedMarkings?: Record<string, MarkingType>;
 }
 
 export interface ObjectTypeDatasourceDefinition_stream {

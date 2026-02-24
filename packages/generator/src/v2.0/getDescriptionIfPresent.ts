@@ -19,8 +19,11 @@ export function getDescriptionIfPresent(
   includeNewline?: boolean,
 ): string {
   if (description) {
+    // Preserve line breaks in multi-line descriptions
+    const lines = description.split("\n");
+    const formattedLines = lines.map(line => ` * ${line}`).join("\n");
     return `/**
- * ${description}
+${formattedLines}
  */${includeNewline ? "\n" : ""}`;
   }
   return "";
