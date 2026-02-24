@@ -1,5 +1,5 @@
 /*
- * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +14,9 @@
  * limitations under the License.
  */
 
-export const inspect = (obj: any, options?: any): string => {
-  // Simple fallback implementation for browser
-  try {
-    return JSON.stringify(obj, null, 2);
-  } catch (e) {
-    return String(obj);
-  }
-};
+function helloWorld(): string {
+  return "Hello World!";
+}
 
-export default {
-  inspect,
-};
+// To test this function in Live Preview and later publish to the platform, make it the default export of the file.
+export default helloWorld;

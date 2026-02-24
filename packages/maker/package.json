@@ -41,8 +41,10 @@
   },
   "dependencies": {
     "@osdk/api": "workspace:~",
+    "@osdk/generator-converters.ontologyir": "workspace:~",
     "@osdk/typescript-sdk-docs": "^0.2.0",
     "consola": "^3.4.2",
+    "execa": "^9.6.0",
     "jiti": "^2.5.1",
     "mustache": "^4.2.0",
     "semver-ts": "^1.0.3",
