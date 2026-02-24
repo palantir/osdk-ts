@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
 /**
  * Mock Service Worker.
  * @see https://github.com/mswjs/msw
