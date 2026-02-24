@@ -1,5 +1,13 @@
 # @osdk/create-widget.template.react.v2
 
+## 3.5.0-beta.9
+
+## 3.5.0-beta.8
+
+### Minor Changes
+
+- 12dcb6a: Bump node and vite versions
+
 ## 3.5.0-beta.7
 
 ## 3.5.0-beta.6

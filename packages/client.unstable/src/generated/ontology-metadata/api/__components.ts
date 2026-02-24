@@ -754,6 +754,7 @@ export interface ActionTypeCreate {
   displayMetadata: ActionTypeDisplayMetadataModification;
   formContentOrdering: Array<FormContent>;
   logic: ActionLogicModification;
+  markings: Array<MarkingId>;
   notifications: Array<ActionNotificationModification>;
   notificationSettings?: ActionNotificationSettings | null | undefined;
   packageRid?: OntologyPackageRid | null | undefined;
@@ -762,6 +763,7 @@ export interface ActionTypeCreate {
   projectRid?: CompassFolderRid | null | undefined;
   provenance?: ActionTypeProvenanceModification | null | undefined;
   revert?: ActionRevert | null | undefined;
+  scenarioSettings?: ActionTypeScenarioSettingsModification | null | undefined;
   sections: Record<SectionId, PutSectionRequestModification>;
   status?: ActionTypeStatus | null | undefined;
   submissionConfiguration?: ActionSubmissionConfiguration | null | undefined;
@@ -787,12 +789,15 @@ export interface ActionTypeDeletedEvent {
  * DisplayMetadata shape used in responses
  */
 export interface ActionTypeDisplayMetadata {
+  applyingMessage: Array<ActionTypeRichTextComponent>;
+  applyingMessageEnabled: boolean;
   configuration: ActionTypeDisplayMetadataConfiguration;
   description: string;
   displayName: string;
   icon?: Icon | null | undefined;
   submitButtonDisplayMetadata?: ButtonDisplayMetadata | null | undefined;
   successMessage: Array<ActionTypeRichTextComponent>;
+  successMessageEnabled: boolean;
   toolDescription?: string | null | undefined;
   typeClasses: Array<TypeClass>;
   undoButtonConfiguration?: boolean | null | undefined;
@@ -809,12 +814,15 @@ export interface ActionTypeDisplayMetadataConfiguration {
  * DisplayMetadata shape used in requests
  */
 export interface ActionTypeDisplayMetadataModification {
+  applyingMessage: Array<ActionTypeRichTextComponent>;
+  applyingMessageEnabled?: boolean | null | undefined;
   configuration?: ActionTypeDisplayMetadataConfiguration | null | undefined;
   description: string;
   displayName: string;
   icon?: Icon | null | undefined;
   submitButtonDisplayMetadata?: ButtonDisplayMetadata | null | undefined;
   successMessage: Array<ActionTypeRichTextComponent>;
+  successMessageEnabled?: boolean | null | undefined;
   toolDescription?: string | null | undefined;
   typeClasses: Array<TypeClass>;
   undoButtonConfiguration?: boolean | null | undefined;
@@ -1038,6 +1046,7 @@ export interface ActionTypeMetadata {
     | null
     | undefined;
   rid: ActionTypeRid;
+  scenarioSettings: ActionTypeScenarioSettings;
   sections: Record<SectionId, Section>;
   stagingMediaSetRid?: MediaSetRid | null | undefined;
   status: ActionTypeStatus;
@@ -1063,6 +1072,7 @@ export interface ActionTypeMetadataModification {
     | null
     | undefined;
   rid: ActionTypeRid;
+  scenarioSettings?: ActionTypeScenarioSettingsModification | null | undefined;
   sections: Record<SectionId, Section>;
   stagingMediaSetRid?: MediaSetRid | null | undefined;
   status: ActionTypeStatus;
@@ -1178,6 +1188,28 @@ export type ActionTypeRid = string;
 export interface ActionTypesAlreadyExistError {
   actionTypeRids: Array<ActionTypeRid>;
 }
+export interface ActionTypeScenarioExecutionOnlyMode_allowExecutionOnlyOnScenario {
+  type: "allowExecutionOnlyOnScenario";
+  allowExecutionOnlyOnScenario: AllowExecutionOnlyOnScenario;
+}
+
+export interface ActionTypeScenarioExecutionOnlyMode_noExecutionRestriction {
+  type: "noExecutionRestriction";
+  noExecutionRestriction: NoExecutionRestriction;
+}
+export type ActionTypeScenarioExecutionOnlyMode =
+  | ActionTypeScenarioExecutionOnlyMode_allowExecutionOnlyOnScenario
+  | ActionTypeScenarioExecutionOnlyMode_noExecutionRestriction;
+
+export interface ActionTypeScenarioSettings {
+  scenarioExecutionOnlyMode: ActionTypeScenarioExecutionOnlyMode;
+}
+export interface ActionTypeScenarioSettingsModification {
+  scenarioExecutionOnlyMode?:
+    | ActionTypeScenarioExecutionOnlyMode
+    | null
+    | undefined;
+}
 /**
  * Request to associate given set of OrganizationRids with the specified ActionTypeRid(s).
  * Users should have permissions to modify the specified ActionTypeRid(s) and also have
@@ -1246,6 +1278,7 @@ export interface ActionTypeUpdate {
   parametersToUpdate: Record<ParameterRid, EditParameterRequestModification>;
   provenance?: ActionTypeProvenanceModification | null | undefined;
   revert?: ActionRevert | null | undefined;
+  scenarioSettings?: ActionTypeScenarioSettingsModification | null | undefined;
   sectionsToCreate: Record<SectionId, PutSectionRequestModification>;
   sectionsToDelete: Array<SectionRid>;
   sectionsToUpdate: Record<SectionRid, EditSectionRequestModification>;
@@ -2074,6 +2107,11 @@ export interface AllowedValuesOverrideModification {
 export interface AllowedValuesOverrideRequest {
   allowedValues: AllowedParameterValuesRequest;
 }
+/**
+ * When set, the action can only be executed within a Scenario context and not directly on the main ontology.
+ */
+export interface AllowExecutionOnlyOnScenario {
+}
 export interface AllowFunctionsWithExternalCallsOnBranches {
 }
 export interface AllowNotificationsOnBranches {
@@ -2448,6 +2486,17 @@ export interface ButtonDisplayMetadata {
 }
 export interface BytePropertyType {
 }
+/**
+ * Specifies the unit of the input byte size value, ensuring that the formatter correctly interprets the number.
+ * All units use binary (base-1024) representation.
+ */
+export type BytesBaseValue =
+  | "BYTES"
+  | "KILOBYTES"
+  | "MEGABYTES"
+  | "GIGABYTES"
+  | "TERABYTES"
+  | "PETABYTES";
 export type ByteTypeDataValue = number;
 export interface CarbonWorkspaceComponentUrlTarget_rid {
   type: "rid";
@@ -3515,6 +3564,7 @@ export interface EditActionTypeRequest {
   parametersToDelete: Array<ParameterRid>;
   parametersToEdit: Record<ParameterRid, EditParameterRequest>;
   revert?: ActionRevert | null | undefined;
+  scenarioSettings?: ActionTypeScenarioSettingsModification | null | undefined;
   status?: ActionTypeStatus | null | undefined;
   submissionConfiguration?: ActionSubmissionConfiguration | null | undefined;
   validationsToAdd: Array<ValidationRule>;
@@ -3833,6 +3883,14 @@ export type FunctionApiName = string;
 export interface FunctionAtVersion {
   functionRid: FunctionRid;
   functionVersion: SemanticFunctionVersion;
+}
+/**
+ * An embedding model backed by a function registered in function-registry
+ * and executed via function-executor.
+ */
+export interface FunctionBackedEmbeddingModel {
+  functionRid: FunctionRid;
+  functionVersion: FunctionVersion;
 }
 export interface FunctionExecutionWithRecipientInput_logicRuleValue {
   type: "logicRuleValue";
@@ -6049,6 +6107,11 @@ export interface NewObjectUrlTargetModification {
   keys: Record<PropertyId, LogicRuleValueModification>;
   objectTypeId: ObjectTypeId;
 }
+/**
+ * When set, no restriction is applied and the action can be executed both on the main ontology and within Scenarios.
+ */
+export interface NoExecutionRestriction {
+}
 export interface NoneEntityProvenance {
 }
 /**
@@ -6190,6 +6253,15 @@ export interface NumberFormatBasisPoint {
  */
 export interface NumberFormatBillions {
   base: NumberFormatBase;
+}
+/**
+ * Render the number as bytes, automatically converting to the appropriate size (KB, MB, GB, etc)
+ * and appending the corresponding suffix. Uses binary units (powers of 1024).
+ */
+export interface NumberFormatBytes {
+  base: NumberFormatBase;
+  baseValue: BytesBaseValue;
+  showFullUnits?: boolean | null | undefined;
 }
 /**
  * Note that non-visual features e.g. sorting & histograms, are not guaranteed to be currency-aware. They can
@@ -6337,6 +6409,11 @@ export interface NumberFormatter_basisPoint {
   type: "basisPoint";
   basisPoint: NumberFormatBasisPoint;
 }
+
+export interface NumberFormatter_bytes {
+  type: "bytes";
+  bytes: NumberFormatBytes;
+}
 export type NumberFormatter =
   | NumberFormatter_base
   | NumberFormatter_percentage
@@ -6350,7 +6427,8 @@ export type NumberFormatter =
   | NumberFormatter_thousands
   | NumberFormatter_millions
   | NumberFormatter_billions
-  | NumberFormatter_basisPoint;
+  | NumberFormatter_basisPoint
+  | NumberFormatter_bytes;
 
 /**
  * Scale the numeric value to thousands and append a suffix. For example, 1500 will be displayed as "1.5K".
@@ -7295,6 +7373,7 @@ export interface OntologyBulkLoadEntitiesRequest {
   includeTypeGroupEntitiesCount?: boolean | null | undefined;
   interfaceTypes: Array<InterfaceTypeLoadRequest>;
   linkTypes: Array<LinkTypeLoadRequest>;
+  loadLinkTypeRelatedObjectTypes?: boolean | null | undefined;
   loadRedacted?: boolean | null | undefined;
   objectTypes: Array<ObjectTypeLoadRequest>;
   sharedPropertyTypes: Array<SharedPropertyTypeLoadRequest>;
@@ -9108,6 +9187,11 @@ export interface OntologyIrNumberFormatter_basisPoint {
   type: "basisPoint";
   basisPoint: NumberFormatBasisPoint;
 }
+
+export interface OntologyIrNumberFormatter_bytes {
+  type: "bytes";
+  bytes: NumberFormatBytes;
+}
 export type OntologyIrNumberFormatter =
   | OntologyIrNumberFormatter_base
   | OntologyIrNumberFormatter_percentage
@@ -9121,7 +9205,8 @@ export type OntologyIrNumberFormatter =
   | OntologyIrNumberFormatter_thousands
   | OntologyIrNumberFormatter_millions
   | OntologyIrNumberFormatter_billions
-  | OntologyIrNumberFormatter_basisPoint;
+  | OntologyIrNumberFormatter_basisPoint
+  | OntologyIrNumberFormatter_bytes;
 
 /**
  * Note that this formatter breaks e.g. sorting features if used in combination with auto-conversion.
@@ -10236,6 +10321,7 @@ export interface OntologyIrSecurityGroupMandatoryOnlySecurityDefinition {
 }
 export interface OntologyIrSecurityGroupMandatoryPolicy {
   assumedMarkings: Array<MarkingId>;
+  assumedMarkingsV2: Record<MarkingId, MarkingType>;
   markings: Record<MarkingId, MarkingType>;
 }
 /**
@@ -14702,9 +14788,15 @@ export interface TextEmbeddingModel_foundryLiveDeployment {
   type: "foundryLiveDeployment";
   foundryLiveDeployment: FoundryLiveDeployment;
 }
+
+export interface TextEmbeddingModel_functionBacked {
+  type: "functionBacked";
+  functionBacked: FunctionBackedEmbeddingModel;
+}
 export type TextEmbeddingModel =
   | TextEmbeddingModel_lms
-  | TextEmbeddingModel_foundryLiveDeployment;
+  | TextEmbeddingModel_foundryLiveDeployment
+  | TextEmbeddingModel_functionBacked;
 
 export interface TextModality {
 }

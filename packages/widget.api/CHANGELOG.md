@@ -1,5 +1,17 @@
 # @osdk/widget.api
 
+## 3.5.0-beta.9
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.9
+
+## 3.5.0-beta.8
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.8
+
 ## 3.5.0-beta.7
 
 ### Patch Changes

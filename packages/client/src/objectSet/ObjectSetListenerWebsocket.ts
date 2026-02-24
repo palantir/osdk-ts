@@ -209,11 +209,13 @@ export class ObjectSetListenerWebsocket {
     }
 
     objectProperties = properties.filter((p) =>
-      objOrInterfaceDef.properties[p].type !== "geotimeSeriesReference"
+      p in objOrInterfaceDef.properties
+      && objOrInterfaceDef.properties[p].type !== "geotimeSeriesReference"
     );
 
     referenceProperties = properties.filter((p) =>
-      objOrInterfaceDef.properties[p].type === "geotimeSeriesReference"
+      p in objOrInterfaceDef.properties
+      && objOrInterfaceDef.properties[p].type === "geotimeSeriesReference"
     );
 
     const sub: Subscription<Q, P> = {

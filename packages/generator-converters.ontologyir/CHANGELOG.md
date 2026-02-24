@@ -1,5 +1,21 @@
 # @osdk/generator-converters.ontologyir
 
+## 2.8.0-beta.9
+
+### Minor Changes
+
+- abb0e0f: Bump Platform SDK dependencies
+
+### Patch Changes
+
+- @osdk/client.unstable@2.8.0-beta.9
+
+## 2.8.0-beta.8
+
+### Patch Changes
+
+- @osdk/client.unstable@2.8.0-beta.8
+
 ## 2.8.0-beta.7
 
 ### Patch Changes

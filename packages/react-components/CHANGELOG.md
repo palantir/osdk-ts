@@ -1,5 +1,23 @@
 # @osdk/react-components
 
+## 0.2.0-beta.6
+
+### Minor Changes
+
+- 9893b41: Add storybook
+
+## 0.2.0-beta.5
+
+### Minor Changes
+
+- dba18e0: Fix css build
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.8
+- @osdk/client@2.8.0-beta.8
+- @osdk/react@0.10.0-beta.4
+
 ## 0.2.0-beta.4
 
 ### Minor Changes

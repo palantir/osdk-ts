@@ -192,8 +192,8 @@ async function generateV2QueryFile(
           `
     }
       }
-    
-            
+
+        ${getDescriptionIfPresent(query.description)}
         export interface ${query.shortApiName} extends QueryDefinition<
           ${query.shortApiName}.Signature
         >, VersionBound<$ExpectedClientVersion>{
@@ -219,7 +219,7 @@ async function generateV2QueryFile(
           osdkMetadata: typeof $osdkMetadata;
               }
 
-
+        ${getDescriptionIfPresent(query.description)}
         export const ${query.shortApiName}: ${query.definitionIdentifier} = {
             ${
       stringify(baseProps, {
