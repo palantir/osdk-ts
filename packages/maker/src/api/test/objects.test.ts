@@ -3412,7 +3412,7 @@ describe("Object Types", () => {
               type: "group",
               name: "objectLevelGroup",
             },
-            additionalMandatoryMarkings: {
+            appliedMarkings: {
               "objectLevelMarking": "CBAC",
             },
           },
@@ -3433,7 +3433,7 @@ describe("Object Types", () => {
                   },
                 ],
               },
-              additionalMandatoryMarkings: {
+              appliedMarkings: {
                 "propertyLevelMarking": "MANDATORY",
               },
             },

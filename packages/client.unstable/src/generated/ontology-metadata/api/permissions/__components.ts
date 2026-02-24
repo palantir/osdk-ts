@@ -22,6 +22,7 @@ import type {
   GroupId as _api_GroupId,
   InterfaceTypeRid as _api_InterfaceTypeRid,
   LinkTypeRid as _api_LinkTypeRid,
+  MarkingId as _api_MarkingId,
   ObjectTypeRid as _api_ObjectTypeRid,
   OntologyBranchRid as _api_OntologyBranchRid,
   OntologyPackageRid as _api_OntologyPackageRid,
@@ -516,11 +517,19 @@ export interface ManyToManyLinkTypeDatasourcePermissions {
 }
 export interface MigrateEntitiesToProjectsRequest {
   entitiesToMove: Record<_api_CompassFolderRid, Array<_api_ProjectEntityRid>>;
+  entitiesToMoveV2: Record<
+    _api_CompassFolderRid,
+    Array<MigrateEntityToProjectRequest>
+  >;
 }
 /**
  * Response to MoveEntitiesToProjectsRequest. Intentionally left empty for future extensibility.
  */
 export interface MigrateEntitiesToProjectsResponse {
+}
+export interface MigrateEntityToProjectRequest {
+  markings: Array<_api_MarkingId>;
+  rid: _api_ProjectEntityRid;
 }
 /**
  * The operations the user has on a datasource.
