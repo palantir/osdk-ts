@@ -183,6 +183,14 @@ export function useOsdkObjects<
   L extends LinkNames<Q>,
 >(
   type: Q,
+  options: UseOsdkObjectsOptions<Q> & { pivotTo: L; rids: readonly string[] },
+): UseOsdkListResult<LinkedType<Q, L>, {}, "$rid">;
+
+export function useOsdkObjects<
+  Q extends ObjectOrInterfaceDefinition,
+  L extends LinkNames<Q>,
+>(
+  type: Q,
   options: UseOsdkObjectsOptions<Q> & { pivotTo: L },
 ): UseOsdkListResult<LinkedType<Q, L>>;
 
@@ -212,6 +220,7 @@ export function useOsdkObjects<
   | UseOsdkListResult<Q, RDPs>
   | UseOsdkListResult<Q, RDPs, "$rid">
   | UseOsdkListResult<LinkedType<Q, LinkNames<Q>>>
+  | UseOsdkListResult<LinkedType<Q, LinkNames<Q>>, {}, "$rid">
 {
   const { observableClient } = React.useContext(OsdkContext2);
 

@@ -45,9 +45,9 @@ export class InterfaceListQuery extends ListQuery {
       apiName: this.apiName,
     } as ObjectTypeDefinition;
 
+    const clientCtx = store.client[additionalContext];
     let objectSet: ObjectSet<ObjectTypeDefinition>;
     if (rids != null) {
-      const clientCtx = store.client[additionalContext];
       objectSet = clientCtx.objectSetFactory(
         objectTypeDef,
         clientCtx,
