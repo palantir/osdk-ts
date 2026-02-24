@@ -329,6 +329,7 @@
   --osdk-filter-list-collapse-transition: 200ms ease-out;
 
   /* Exclude Toggle */
+  --osdk-filter-item-exclude-border-width: 2px;
   --osdk-filter-item-exclude-border-color: var(--osdk-intent-danger-rest);
   --osdk-filter-item-exclude-toggle-color: var(--osdk-typography-color-muted);
   --osdk-filter-item-exclude-toggle-color-hover: var(

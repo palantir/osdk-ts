@@ -94,7 +94,7 @@
 }
 
 .filterItem[data-excluding] {
-  border-left: 2px solid var(--osdk-filter-item-exclude-border-color);
+  border-left: var(--osdk-filter-item-exclude-border-width) solid var(--osdk-filter-item-exclude-border-color);
   padding-left: var(--osdk-filter-item-gap);
 }
 

@@ -82,20 +82,20 @@ export function BaseFilterList<Q extends ObjectTypeDefinition>(
             enableSorting={enableSorting}
             onFiltersReordered={onFiltersReordered}
           />
-
-          {showAddButton && (
-            <div className={styles.addButtonContainer}>
-              {renderAddFilterButton
-                ? renderAddFilterButton()
-                : (
-                  <Button type="button" className={styles.addButton}>
-                    + Add filter
-                  </Button>
-                )}
-            </div>
-          )}
         </div>
       </div>
+
+      {!collapsed && showAddButton && (
+        <div className={styles.addButtonContainer}>
+          {renderAddFilterButton
+            ? renderAddFilterButton()
+            : (
+              <Button type="button" className={styles.addButton}>
+                + Add filter
+              </Button>
+            )}
+        </div>
+      )}
     </div>
   );
 }
