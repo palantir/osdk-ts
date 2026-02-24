@@ -41,6 +41,7 @@ export type {
 export type { SectionConditionalOverride } from "./api/action/SectionConditionalOverride.js";
 export type { SubmissionMetadata } from "./api/action/SubmissionMetadata.js";
 export { addDependency } from "./api/addDependency.js";
+export type { OntologyDefinition } from "./api/common/OntologyDefinition.js";
 export { OntologyEntityTypeEnum } from "./api/common/OntologyEntityTypeEnum.js";
 export {
   CREATE_INTERFACE_OBJECT_PARAMETER,
@@ -79,7 +80,6 @@ export {
   initializeOntologyState,
   withoutNamespace,
 } from "./api/defineOntology.js";
-export type { OntologyDefinition } from "./api/common/OntologyDefinition.js";
 export { defineSharedPropertyType } from "./api/defineSpt.js";
 export { defineValueType } from "./api/defineValueType.js";
 export { importOntologyEntity } from "./api/importOntologyEntity.js";
@@ -95,6 +95,8 @@ export type {
   OneToManyLinkTypeDefinition,
   UserLinkTypeStatus,
 } from "./api/links/LinkType.js";
+export type { ObjectPropertyType } from "./api/object/ObjectPropertyType.js";
+export type { ObjectType } from "./api/object/ObjectType.js";
 export type {
   DerivedPropertyAggregation,
   ObjectTypeDatasourceDefinition_dataset,
@@ -102,14 +104,11 @@ export type {
   ObjectTypeDatasourceDefinition_direct,
 } from "./api/object/ObjectTypeDatasourceDefinition.js";
 export type { ObjectTypeDefinition } from "./api/object/ObjectTypeDefinition.js";
-export type { ObjectPropertyType } from "./api/object/ObjectPropertyType.js";
-export type { ObjectType } from "./api/object/ObjectType.js";
 export type { SecurityConditionDefinition } from "./api/object/SecurityCondition.js";
 export type { Nullability } from "./api/properties/Nullability.js";
 export type { PropertyTypeType } from "./api/properties/PropertyTypeType.js";
 export { isExotic } from "./api/properties/PropertyTypeType.js";
 export type { SharedPropertyType } from "./api/properties/SharedPropertyType.js";
-export type { ValueTypeDefinitionVersion } from "./api/values/ValueTypeDefinitionVersion.js";
 export {
   defaultTypeClasses,
   getPropertyTypeName,
@@ -117,5 +116,6 @@ export {
   shouldBeIndexedForSearch,
   shouldNotHaveRenderHints,
 } from "./api/propertyConversionUtils.js";
+export type { ValueTypeDefinitionVersion } from "./api/values/ValueTypeDefinitionVersion.js";
 export { wrapWithProxy } from "./api/wrapWithProxy.js";
 export { propertyTypeTypeToOntologyIrType as convertType } from "./conversion/toMarketplace/propertyTypeTypeToOntologyIrType.js";
