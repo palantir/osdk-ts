@@ -327,22 +327,24 @@ export function useOsdkObjects<
 
   const listPayload = React.useSyncExternalStore(subscribe, getSnapShot);
 
-  let error: Error | undefined;
-  if (listPayload && "error" in listPayload && listPayload.error) {
-    error = listPayload.error;
-  } else if (listPayload?.status === "error") {
-    error = new Error("Failed to load objects");
-  }
+  return React.useMemo(() => {
+    let error: Error | undefined;
+    if (listPayload && "error" in listPayload && listPayload.error) {
+      error = listPayload.error;
+    } else if (listPayload?.status === "error") {
+      error = new Error("Failed to load objects");
+    }
 
-  return {
-    fetchMore: listPayload?.hasMore ? listPayload.fetchMore : undefined,
-    error,
-    data: listPayload?.resolvedList,
-    isLoading: enabled
-      ? (listPayload?.status === "loading" || listPayload?.status === "init"
-        || !listPayload)
-      : false,
-    isOptimistic: listPayload?.isOptimistic ?? false,
-    totalCount: listPayload?.totalCount,
-  };
+    return {
+      fetchMore: listPayload?.hasMore ? listPayload.fetchMore : undefined,
+      error,
+      data: listPayload?.resolvedList,
+      isLoading: enabled
+        ? (listPayload?.status === "loading" || listPayload?.status === "init"
+          || !listPayload)
+        : false,
+      isOptimistic: listPayload?.isOptimistic ?? false,
+      totalCount: listPayload?.totalCount,
+    };
+  }, [listPayload, enabled]);
 }

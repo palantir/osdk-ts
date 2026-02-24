@@ -14,13 +14,41 @@
  * limitations under the License.
  */
 
+import type { OntologyIr } from "@osdk/client.unstable";
+import { OntologyIrToFullMetadataConverter } from "@osdk/generator-converters.ontologyir";
 import { consola } from "consola";
+import { execa } from "execa";
+import { createJiti } from "jiti";
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
 import invariant from "tiny-invariant";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
+import type { IEntityMetadataMapping } from "../api/defineFunction.js";
 import { defineOntology } from "../api/defineOntology.js";
+
+// Dynamic imports for optional function discovery dependencies
+let generateFunctionsIr:
+  | ((
+    rootDir: string,
+    configPath: string | undefined,
+    entityMappings: IEntityMetadataMapping,
+  ) => Promise<unknown>)
+  | undefined;
+
+async function loadFunctionDiscoveryDeps(): Promise<boolean> {
+  try {
+    const defineFunctionModule = await import("../api/defineFunction.js");
+    generateFunctionsIr = defineFunctionModule.generateFunctionsIr;
+    return true;
+  } catch (e: unknown) {
+    consola.warn(
+      "Failed to load function discovery dependencies:",
+      e instanceof Error ? e.message : e,
+    );
+    return false;
+  }
+}
 
 const apiNamespaceRegex = /^[a-z0-9-]+(\.[a-z0-9-]+)*\.$/;
 const uuidRegex =
@@ -41,6 +69,13 @@ export default async function main(
     codeSnippetPackageName: string;
     codeSnippetDir: string;
     randomnessKey?: string;
+    generateFunctionsOsdk?: string;
+    functionsRootDir?: string;
+    functionsOutput?: string;
+    configPath?: string;
+    pythonFunctionsDir?: string;
+    pythonBinary?: string;
+    pythonRootProjectDir?: string;
   } = await yargs(hideBin(args))
     .version(process.env.PACKAGE_VERSION ?? "")
     .wrap(Math.min(150, yargs().terminalWidth()))
@@ -112,6 +147,44 @@ export default async function main(
         type: "string",
         coerce: path.resolve,
       },
+      generateFunctionsOsdk: {
+        describe: "Output folder for generated OSDK for functions",
+        type: "string",
+        coerce: path.resolve,
+      },
+      functionsRootDir: {
+        describe: "Root folder containing function definitions",
+        type: "string",
+        coerce: path.resolve,
+      },
+      functionsOutput: {
+        describe: "Output folder for function IR",
+        type: "string",
+        coerce: path.resolve,
+      },
+      configPath: {
+        describe: "Path to the TypeScript config file",
+        type: "string",
+        coerce: path.resolve,
+      },
+      pythonFunctionsDir: {
+        describe:
+          "Path to Python functions source directory (enables Python function discovery)",
+        type: "string",
+        coerce: path.resolve,
+      },
+      pythonBinary: {
+        describe:
+          "Path to Python binary (required when using --pythonFunctionsDir)",
+        type: "string",
+        coerce: path.resolve,
+      },
+      pythonRootProjectDir: {
+        describe:
+          "Root project directory for Python functions (defaults to parent of pythonFunctionsDir)",
+        type: "string",
+        coerce: path.resolve,
+      },
     })
     .parseAsync();
   let apiNamespace = "";
@@ -125,6 +198,7 @@ export default async function main(
       "API namespace is invalid! It is expected to conform to ^[a-z0-9-]+(\.[a-z0-9-]+)*\.$",
     );
   }
+
   consola.info(`Loading ontology from ${commandLineOpts.input}`);
 
   if (
@@ -154,7 +228,6 @@ export default async function main(
     commandLineOpts.codeSnippetDir,
     commandLineOpts.randomnessKey,
   );
-
   consola.info(`Saving ontology to ${commandLineOpts.output}`);
   await fs.writeFile(
     commandLineOpts.output,
@@ -178,6 +251,82 @@ export default async function main(
       ),
     );
   }
+
+  if (commandLineOpts.pythonFunctionsDir && !commandLineOpts.pythonBinary) {
+    consola.error(
+      "--pythonBinary is required when using --pythonFunctionsDir",
+    );
+    return;
+  }
+
+  // Function discovery feature (requires optional dependencies)
+  if (
+    commandLineOpts.functionsOutput !== undefined
+    && commandLineOpts.functionsRootDir !== undefined
+  ) {
+    const hasFunctionDeps = await loadFunctionDiscoveryDeps();
+    if (!hasFunctionDeps || !generateFunctionsIr) {
+      consola.error(
+        "Function discovery requires optional dependencies. Install @foundry/functions-typescript-* packages.",
+      );
+      return;
+    }
+    consola.info(`Loading function IR`);
+    const functionsIr = await generateFunctionsIr(
+      commandLineOpts.functionsRootDir,
+      commandLineOpts.configPath,
+      createEntityMappings(ontologyIr),
+    );
+    await fs.writeFile(
+      commandLineOpts.functionsOutput,
+      JSON.stringify(functionsIr, null, 2),
+    );
+    return;
+  }
+
+  if (commandLineOpts.generateFunctionsOsdk !== undefined) {
+    // Generate full ontology metadata for functions OSDK
+    const fullMetadata = OntologyIrToFullMetadataConverter
+      .getFullMetadataFromIr(ontologyIr.ontology);
+
+    // Discover Python functions and merge into ontology metadata
+    if (commandLineOpts.pythonFunctionsDir) {
+      const effectivePythonRootDir = commandLineOpts.pythonRootProjectDir
+        ?? path.dirname(commandLineOpts.pythonFunctionsDir);
+
+      const queryTypes = await OntologyIrToFullMetadataConverter
+        .getOsdkQueryTypes(
+          commandLineOpts.pythonBinary,
+          undefined,
+          undefined,
+          commandLineOpts.pythonFunctionsDir,
+          effectivePythonRootDir,
+        );
+
+      const functionNames = Object.keys(queryTypes);
+      if (functionNames.length > 0) {
+        fullMetadata.queryTypes = queryTypes;
+        consola.info(
+          `Discovered ${functionNames.length} Python function(s): ${
+            functionNames.join(", ")
+          }`,
+        );
+      } else {
+        consola.info("No Python functions discovered.");
+      }
+    }
+
+    consola.info(
+      `Saving full ontology metadata to ${commandLineOpts.generateFunctionsOsdk}`,
+    );
+
+    await fs.writeFile(
+      path.join(commandLineOpts.generateFunctionsOsdk, ".ontology.json"),
+      JSON.stringify(fullMetadata, null, 2),
+    );
+
+    await fullMetadataToOsdk(commandLineOpts.generateFunctionsOsdk);
+  }
 }
 
 async function loadOntology(
@@ -192,7 +341,14 @@ async function loadOntology(
 ) {
   const q = await defineOntology(
     apiNamespace,
-    async () => await import(input),
+    async () => {
+      const jiti = createJiti(import.meta.filename, {
+        moduleCache: true,
+        debug: false,
+        importMeta: import.meta,
+      });
+      await jiti.import(input);
+    },
     outputDir,
     dependencyFile,
     generateCodeSnippets,
@@ -201,4 +357,75 @@ async function loadOntology(
     randomnessKey,
   );
   return q;
+}
+
+async function fullMetadataToOsdk(
+  workDir: string,
+): Promise<void> {
+  // First create a clean temporary directory to generate the SDK into
+  const functionOsdkDir = path.join(
+    workDir,
+    "generated",
+  );
+  await fs.rm(functionOsdkDir, { recursive: true, force: true });
+  await fs.mkdir(functionOsdkDir, { recursive: true });
+
+  try {
+    // Generate the source code for the osdk
+    await execa("pnpm", [
+      "exec",
+      "osdk",
+      "unstable",
+      "typescript",
+      "generate",
+      "--outDir",
+      functionOsdkDir,
+      "--ontologyPath",
+      path.join(workDir, ".ontology.json"),
+      "--beta",
+      "true",
+      "--packageType",
+      "module",
+      "--version",
+      "dev",
+    ]);
+  } catch (error) {
+    await fs.rm(functionOsdkDir, { recursive: true, force: true });
+    throw error;
+  }
+}
+
+function createEntityMappings(ontologyIr: OntologyIr): IEntityMetadataMapping {
+  const entityMappings: IEntityMetadataMapping = {
+    ontologies: {},
+  };
+
+  const ontologyRid = "ontology";
+  entityMappings.ontologies[ontologyRid] = {
+    objectTypes: {},
+    interfaceTypes: {},
+  };
+
+  for (
+    const [apiName, blockData] of Object.entries(
+      ontologyIr.ontology.objectTypes,
+    )
+  ) {
+    const propertyTypesMap: Record<string, { propertyId: string }> = {};
+
+    Object.keys(blockData.objectType.propertyTypes).forEach((propertyName) => {
+      propertyTypesMap[propertyName] = { propertyId: propertyName };
+    });
+
+    entityMappings.ontologies[ontologyRid].objectTypes[apiName] = {
+      objectTypeId: apiName,
+      primaryKey: {
+        propertyId: blockData.objectType.primaryKeys[0],
+      },
+      propertyTypes: propertyTypesMap,
+      linkTypes: {},
+    };
+  }
+
+  return entityMappings;
 }

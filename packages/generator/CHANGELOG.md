@@ -1,5 +1,38 @@
 # @osdk/generator
 
+## 2.8.0-beta.9
+
+### Minor Changes
+
+- abb0e0f: Bump Platform SDK dependencies
+
+### Patch Changes
+
+- Updated dependencies [abb0e0f]
+  - @osdk/generator-converters@2.8.0-beta.9
+  - @osdk/api@2.8.0-beta.9
+
+## 2.8.0-beta.8
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.8
+- @osdk/generator-converters@2.8.0-beta.8
+
+## 2.8.0-beta.7
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.7
+- @osdk/generator-converters@2.8.0-beta.7
+
+## 2.8.0-beta.6
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.6
+- @osdk/generator-converters@2.8.0-beta.6
+
 ## 2.8.0-beta.5
 
 ### Patch Changes

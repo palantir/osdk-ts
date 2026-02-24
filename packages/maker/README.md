@@ -521,8 +521,11 @@ const object = defineObject({
             },
           ],
         },
-        additionalMandatoryMarkings: {
+        appliedMarkings: {
           "myCbacMarking": "CBAC",
+        },
+        assumedMarkings: {
+          "myMandatoryMarking": "MANDATORY",
         },
       },
     ],

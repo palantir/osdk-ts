@@ -20,7 +20,6 @@ import type {
   ActionValidationResponse,
   AggregateOpts,
   CompileTimeMetadata,
-  InterfaceDefinition,
   ObjectOrInterfaceDefinition,
   ObjectSet,
   ObjectTypeDefinition,
@@ -48,6 +47,7 @@ import type {
   ObservableClient,
   ObserveAggregationArgs,
   ObserveAggregationOptions,
+  ObserveAggregationOptionsWithObjectSet,
   ObserveFunctionCallbackArgs,
   ObserveFunctionOptions,
   ObserveListOptions,
@@ -83,7 +83,7 @@ export class ObservableClientImpl implements ObservableClient {
     this.validateAction = store.validateAction.bind(store);
   }
 
-  public observeObject: <T extends ObjectTypeDefinition>(
+  public observeObject: <T extends ObjectOrInterfaceDefinition>(
     apiName: T["apiName"] | T,
     pk: PrimaryKeyType<T>,
     options: Omit<ObserveObjectOptions<T>, "apiName" | "pk">,
@@ -101,7 +101,7 @@ export class ObservableClientImpl implements ObservableClient {
   };
 
   public observeList: <
-    T extends ObjectTypeDefinition | InterfaceDefinition,
+    T extends ObjectOrInterfaceDefinition,
     RDPs extends Record<string, SimplePropertyDef> = {},
   >(
     options: ObserveListOptions<T, RDPs>,
@@ -114,26 +114,43 @@ export class ObservableClientImpl implements ObservableClient {
     );
   };
 
-  public observeAggregation: <
+  public observeAggregation<
     T extends ObjectOrInterfaceDefinition,
     A extends AggregateOpts<T>,
     RDPs extends Record<string, SimplePropertyDef> = {},
   >(
     options: ObserveAggregationOptions<T, A, RDPs>,
     subFn: Observer<ObserveAggregationArgs<T, A>>,
-  ) => Unsubscribable = <
+  ): Unsubscribable;
+  public observeAggregation<
     T extends ObjectOrInterfaceDefinition,
     A extends AggregateOpts<T>,
     RDPs extends Record<string, SimplePropertyDef> = {},
   >(
-    options: ObserveAggregationOptions<T, A, RDPs>,
+    options: ObserveAggregationOptionsWithObjectSet<T, A, RDPs>,
     subFn: Observer<ObserveAggregationArgs<T, A>>,
-  ) => {
+  ): Promise<Unsubscribable>;
+  public observeAggregation<
+    T extends ObjectOrInterfaceDefinition,
+    A extends AggregateOpts<T>,
+    RDPs extends Record<string, SimplePropertyDef> = {},
+  >(
+    options:
+      | ObserveAggregationOptions<T, A, RDPs>
+      | ObserveAggregationOptionsWithObjectSet<T, A, RDPs>,
+    subFn: Observer<ObserveAggregationArgs<T, A>>,
+  ): Unsubscribable | Promise<Unsubscribable> {
+    if (options.objectSet) {
+      return this.__experimentalStore.aggregations.observeAsync(
+        options as ObserveAggregationOptionsWithObjectSet<T, A, RDPs>,
+        subFn as Observer<AggregationPayloadBase>,
+      );
+    }
     return this.__experimentalStore.aggregations.observe(
-      options,
+      options as ObserveAggregationOptions<T, A, RDPs>,
       subFn as Observer<AggregationPayloadBase>,
     );
-  };
+  }
 
   public observeFunction: <Q extends QueryDefinition<unknown>>(
     queryDef: Q,
@@ -290,7 +307,7 @@ export class ObservableClientImpl implements ObservableClient {
   }
 
   public canonicalizeWhereClause<
-    T extends ObjectTypeDefinition | InterfaceDefinition,
+    T extends ObjectOrInterfaceDefinition,
     RDPs extends Record<string, SimplePropertyDef> = {},
   >(where: WhereClause<T, RDPs>): Canonical<WhereClause<T, RDPs>> {
     return this.__experimentalStore.whereCanonicalizer
@@ -321,14 +338,19 @@ function observeSingleLink(
   const parentSub = new Subscription();
 
   for (const obj of objectsArray) {
+    const sourceType: "object" | "interface" = obj.$apiName === obj.$objectType
+      ? "object"
+      : "interface";
+
     parentSub.add(
       store.links.observe(
         {
           ...options,
           srcType: {
-            type: "object",
-            apiName: obj.$objectType ?? obj.$apiName,
+            type: sourceType,
+            apiName: obj.$apiName,
           },
+          sourceUnderlyingObjectType: obj.$objectType,
           linkName,
           pk: obj.$primaryKey,
         },
@@ -403,14 +425,19 @@ function observeMultiLinks(
   for (const obj of objectsArray) {
     const objKey = `${obj.$objectType ?? obj.$apiName}:${obj.$primaryKey}`;
 
+    const sourceType: "object" | "interface" = obj.$apiName === obj.$objectType
+      ? "object"
+      : "interface";
+
     parentSub.add(
       store.links.observe(
         {
           ...options,
           srcType: {
-            type: "object",
-            apiName: obj.$objectType ?? obj.$apiName,
+            type: sourceType,
+            apiName: obj.$apiName,
           },
+          sourceUnderlyingObjectType: obj.$objectType,
           linkName,
           pk: obj.$primaryKey,
         },

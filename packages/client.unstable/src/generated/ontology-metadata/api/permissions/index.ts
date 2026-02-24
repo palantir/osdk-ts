@@ -71,6 +71,7 @@ export type {
   ManyToManyLinkTypeDatasourcePermissions,
   MigrateEntitiesToProjectsRequest,
   MigrateEntitiesToProjectsResponse,
+  MigrateEntityToProjectRequest,
   ObjectTypeDatasourcePermissions,
   ObjectTypePermissionModel,
   OntologyParent,

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import delay from "delay";
 import type { Client, HttpRequestOptions } from "oauth4webapi";
 import {
   authorizationCodeGrantRequest,
@@ -38,6 +37,7 @@ import {
   saveSession,
 } from "./common.js";
 import type { TokenStorageType } from "./common.js";
+import { delay } from "./delay.js";
 import type { PublicOauthClient } from "./PublicOauthClient.js";
 import { throwIfError } from "./throwIfError.js";
 import type { Token } from "./Token.js";

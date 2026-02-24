@@ -1,5 +1,17 @@
 # @osdk/client.unstable
 
+## 2.8.0-beta.9
+
+## 2.8.0-beta.8
+
+## 2.8.0-beta.7
+
+### Minor Changes
+
+- 034081a: oac direct datasources
+
+## 2.8.0-beta.6
+
 ## 2.8.0-beta.5
 
 ### Minor Changes

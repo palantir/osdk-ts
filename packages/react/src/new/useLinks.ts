@@ -196,7 +196,7 @@ export function useLinks<
     getSnapShot,
   );
 
-  return {
+  return React.useMemo(() => ({
     links: payload?.resolvedList,
     isLoading: enabled
       ? (payload?.status === "loading" || payload?.status === "init"
@@ -206,5 +206,5 @@ export function useLinks<
     error: payload?.error,
     fetchMore: payload?.hasMore ? payload?.fetchMore : undefined,
     hasMore: payload?.hasMore ?? false,
-  };
+  }), [payload, enabled]);
 }

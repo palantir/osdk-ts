@@ -37,15 +37,11 @@ const hoistedMocks = vi.hoisted(() => {
   };
 });
 
-vi.mock("delay", async (importOriginal) => {
-  const original = await importOriginal<typeof import("delay")>();
-  return {
-    default: vi.fn<typeof original.default>((ms, opts) => {
-      // speed up the tests
-      return original.default(ms / 100, opts);
-    }),
-  };
-});
+vi.mock("./delay.js", () => ({
+  delay: vi.fn((ms: number) =>
+    new Promise<void>(resolve => setTimeout(resolve, ms / 100))
+  ),
+}));
 
 vi.mock("./common.js", async (importOriginal) => {
   const original = await importOriginal<typeof import("./common.js")>();

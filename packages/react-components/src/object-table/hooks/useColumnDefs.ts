@@ -25,6 +25,7 @@ import type {
 import { useOsdkMetadata } from "@osdk/react";
 import type { AccessorColumnDef } from "@tanstack/react-table";
 import { useMemo } from "react";
+import { renderDefaultCell } from "../DefaultCellRenderer.js";
 import type { ColumnDefinition } from "../ObjectTableApi.js";
 
 interface UseColumnDefsResult<
@@ -105,6 +106,7 @@ function getColumnsFromColumnDefinitions<
       resizable,
       orderable,
       filterable,
+      editable,
       renderCell,
       renderHeader,
       columnName,
@@ -116,6 +118,11 @@ function getColumnsFromColumnDefinitions<
 
     const colKey = locator.id as string;
 
+    const dataType =
+      propertyMetadata?.type && typeof propertyMetadata.type === "string"
+        ? propertyMetadata.type
+        : undefined;
+
     const colDef: AccessorColumnDef<
       Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
     > = {
@@ -125,6 +132,8 @@ function getColumnsFromColumnDefinitions<
       meta: {
         columnName: columnName || propertyMetadata?.displayName,
         isVisible: col.isVisible !== false,
+        editable,
+        dataType,
       },
       size: width,
       ...(minWidth ? { minSize: minWidth } : {}),
@@ -140,9 +149,11 @@ function getColumnsFromColumnDefinitions<
           RDPs
         > = cellContext.row.original;
 
-        return renderCell
-          ? renderCell(object, locator)
-          : cellContext.getValue();
+        if (renderCell) {
+          return renderCell(object, locator);
+        }
+
+        return renderDefaultCell(cellContext);
       },
     };
 

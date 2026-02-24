@@ -266,7 +266,7 @@ export function registerLazyActions(fauxOntology: FauxOntology): void {
     ActionTakesAttachment,
     (_batch, payload, { attachments }) => {
       const attachment = attachments.getAttachmentMetadataByRid(
-        payload.parameters.attachment,
+        payload.parameters.attachment as string,
       );
       invariant(attachment, "expected attachment to be real");
     },
