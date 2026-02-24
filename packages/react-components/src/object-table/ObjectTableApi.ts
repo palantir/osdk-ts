@@ -114,13 +114,17 @@ export interface ObjectTableProps<
 > {
   /**
    * The object type of the object
+   * If objectSet is not provided, objects will be fetched based on this type.
    */
   objectType: Q;
 
   /**
    * The set of objects to show in the table.
+   * If provided, the table will use this object set over fetching objects based on the objectType.
    */
   objectSet?: ObjectSet<Q>;
+
+  objectSetOptions?: ObjectSetOptions<Q>;
 
   /**
    * Ordered list of column definitions to show in the table
@@ -318,4 +322,23 @@ export interface ObjectTableProps<
   rowHeight?: number;
 
   className?: string;
+}
+
+export interface ObjectSetOptions<
+  Q extends ObjectOrInterfaceDefinition,
+> {
+  /**
+   * Object sets to union with
+   */
+  union?: ObjectSet<Q>[];
+
+  /**
+   * Object sets to intersect with
+   */
+  intersect?: ObjectSet<Q>[];
+
+  /**
+   * Object sets to subtract from
+   */
+  subtract?: ObjectSet<Q>[];
 }

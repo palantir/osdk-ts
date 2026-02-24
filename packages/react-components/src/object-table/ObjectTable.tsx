@@ -62,6 +62,7 @@ export function ObjectTable<
   objectSet,
   columnDefinitions,
   filter,
+  objectSetOptions,
   orderBy,
   defaultOrderBy,
   onOrderByChanged,
@@ -116,6 +117,7 @@ export function ObjectTable<
     filter,
     sorting,
     objectSet,
+    objectSetOptions,
   );
 
   const { columns, loading: isColumnsLoading } = useColumnDefs<

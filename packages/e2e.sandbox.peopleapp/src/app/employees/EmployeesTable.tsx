@@ -7,6 +7,7 @@ import type {
 import { ObjectTable } from "@osdk/react-components/experimental";
 import { useOsdkAction } from "@osdk/react/experimental";
 import { useCallback } from "react";
+import { $ } from "../../foundryClient.js";
 import { Employee, modifyEmployee } from "../../generatedNoCheck2/index.js";
 
 type RDPs = {
@@ -120,6 +121,10 @@ export function EmployeesTable() {
     [applyAction],
   );
 
+  const employeeOS = $(Employee).where({
+    fullName: { $eq: "Jane Doe" },
+  });
+
   return (
     <div
       style={{
@@ -128,6 +133,7 @@ export function EmployeesTable() {
       }}
     >
       <ObjectTable<Employee, RDPs>
+        objectSet={employeeOS}
         objectType={Employee}
         columnDefinitions={columnDefinitions}
         selectionMode={"multiple"}
