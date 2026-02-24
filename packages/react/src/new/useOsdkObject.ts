@@ -14,13 +14,19 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition, Osdk, PrimaryKeyType } from "@osdk/api";
+import type {
+  ObjectOrInterfaceDefinition,
+  Osdk,
+  PrimaryKeyType,
+} from "@osdk/api";
 import type { ObserveObjectCallbackArgs } from "@osdk/client/unstable-do-not-use";
 import React from "react";
 import { makeExternalStore } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
 
-export interface UseOsdkObjectResult<Q extends ObjectTypeDefinition> {
+export interface UseOsdkObjectResult<
+  Q extends ObjectOrInterfaceDefinition,
+> {
   object: Osdk.Instance<Q> | undefined;
   isLoading: boolean;
 
@@ -37,18 +43,22 @@ export interface UseOsdkObjectResult<Q extends ObjectTypeDefinition> {
  * @param obj an existing `Osdk.Instance` object to get metadata for.
  * @param enabled Enable or disable the query (defaults to true)
  */
-export function useOsdkObject<Q extends ObjectTypeDefinition>(
+export function useOsdkObject<
+  Q extends ObjectOrInterfaceDefinition,
+>(
   obj: Osdk.Instance<Q>,
   enabled?: boolean,
 ): UseOsdkObjectResult<Q>;
 /**
- * Loads an object by type and primary key.
+ * Loads an object or interface instance by type and primary key.
  *
- * @param type
- * @param primaryKey
+ * @param type The object type or interface definition
+ * @param primaryKey The primary key of the object
  * @param enabled Enable or disable the query (defaults to true)
  */
-export function useOsdkObject<Q extends ObjectTypeDefinition>(
+export function useOsdkObject<
+  Q extends ObjectOrInterfaceDefinition,
+>(
   type: Q,
   primaryKey: PrimaryKeyType<Q>,
   enabled?: boolean,
@@ -56,7 +66,9 @@ export function useOsdkObject<Q extends ObjectTypeDefinition>(
 /*
     Implementation of useOsdkObject
  */
-export function useOsdkObject<Q extends ObjectTypeDefinition>(
+export function useOsdkObject<
+  Q extends ObjectOrInterfaceDefinition,
+>(
   ...args:
     | [obj: Osdk.Instance<Q>, enabled?: boolean]
     | [type: Q, primaryKey: PrimaryKeyType<Q>, enabled?: boolean]
@@ -73,37 +85,42 @@ export function useOsdkObject<Q extends ObjectTypeDefinition>(
     ? (typeof args[1] === "boolean" ? args[1] : true)
     : (typeof args[2] === "boolean" ? args[2] : true);
 
-  // TODO: Figure out what the correct default behavior is for the various scenarios
   const mode = isInstanceSignature ? "offline" : undefined;
-  const objectType = isInstanceSignature
+
+  const typeOrApiName = isInstanceSignature
     ? (args[0] as Osdk.Instance<Q>).$objectType
-    : (args[0] as Q).apiName;
+    : (args[0] as Q);
+
   const primaryKey = isInstanceSignature
     ? (args[0] as Osdk.Instance<Q>).$primaryKey
     : (args[1] as PrimaryKeyType<Q>);
+
+  const apiNameString = typeof typeOrApiName === "string"
+    ? typeOrApiName
+    : typeOrApiName.apiName;
 
   const { subscribe, getSnapShot } = React.useMemo(
     () => {
       if (!enabled) {
         return makeExternalStore<ObserveObjectCallbackArgs<Q>>(
           () => ({ unsubscribe: () => {} }),
-          `object ${objectType} ${primaryKey} [DISABLED]`,
+          `object ${apiNameString} ${primaryKey} [DISABLED]`,
         );
       }
       return makeExternalStore<ObserveObjectCallbackArgs<Q>>(
         (observer) =>
           observableClient.observeObject(
-            objectType,
+            typeOrApiName,
             primaryKey,
             {
               mode,
             },
             observer,
           ),
-        `object ${objectType} ${primaryKey}`,
+        `object ${apiNameString} ${primaryKey}`,
       );
     },
-    [enabled, observableClient, objectType, primaryKey, mode],
+    [enabled, observableClient, typeOrApiName, apiNameString, primaryKey, mode],
   );
 
   const payload = React.useSyncExternalStore(subscribe, getSnapShot);

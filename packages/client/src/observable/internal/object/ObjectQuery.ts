@@ -16,6 +16,7 @@
 
 import type {
   DerivedProperty,
+  InterfaceDefinition,
   ObjectTypeDefinition,
   PrimaryKeyType,
 } from "@osdk/api";
@@ -23,6 +24,7 @@ import type { Connectable, Observable, Subject } from "rxjs";
 import { BehaviorSubject, connectable, map } from "rxjs";
 import { additionalContext } from "../../../Client.js";
 import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
+import type { DefType } from "../../../util/interfaceUtils.js";
 import type { ObjectPayload } from "../../ObjectPayload.js";
 import type {
   CommonObserveOptions,
@@ -45,6 +47,8 @@ export class ObjectQuery extends Query<
 > {
   #apiName: string;
   #pk: string | number | boolean;
+  #defType: DefType;
+  #implementingTypes: Set<string> | undefined;
 
   constructor(
     store: Store,
@@ -53,6 +57,7 @@ export class ObjectQuery extends Query<
     pk: PrimaryKeyType<ObjectTypeDefinition>,
     cacheKey: ObjectCacheKey,
     opts: CommonObserveOptions,
+    defType: DefType = "object",
   ) {
     super(
       store,
@@ -71,6 +76,7 @@ export class ObjectQuery extends Query<
     );
     this.#apiName = type;
     this.#pk = pk;
+    this.#defType = defType;
   }
 
   protected _createConnectable(
@@ -116,7 +122,7 @@ export class ObjectQuery extends Query<
 
     if (rdpConfig) {
       const miniDef = {
-        type: "object" as const,
+        type: this.#defType,
         apiName: this.#apiName,
       } as ObjectTypeDefinition;
 
@@ -132,7 +138,7 @@ export class ObjectQuery extends Query<
     } else {
       // Use batched loader for non-RDP objects (efficient batching)
       obj = await getBulkObjectLoader(this.store.client)
-        .fetch(this.#apiName, this.#pk);
+        .fetch(this.#apiName, this.#pk, this.#defType);
     }
 
     this.store.batch({}, (batch) => {
@@ -183,14 +189,30 @@ export class ObjectQuery extends Query<
     return batch.read(this.cacheKey);
   }
 
-  invalidateObjectType = (
+  invalidateObjectType = async (
     objectType: string,
     changes: Changes | undefined,
   ): Promise<void> => {
-    if (this.#apiName === objectType) {
+    if (this.#defType === "object") {
+      if (this.#apiName === objectType) {
+        changes?.modified.add(this.cacheKey);
+        return this.revalidate(true);
+      }
+      return;
+    }
+
+    if (!this.#implementingTypes) {
+      const interfaceDef = {
+        type: "interface",
+        apiName: this.#apiName,
+      } as InterfaceDefinition;
+      const metadata = await this.store.client.fetchMetadata(interfaceDef);
+      this.#implementingTypes = new Set(metadata.implementedBy ?? []);
+    }
+
+    if (this.#implementingTypes.has(objectType)) {
       changes?.modified.add(this.cacheKey);
       return this.revalidate(true);
     }
-    return Promise.resolve();
   };
 }
