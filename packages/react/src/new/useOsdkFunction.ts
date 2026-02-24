@@ -249,20 +249,22 @@ export function useOsdkFunction<Q extends QueryDefinition<unknown>>(
 
   const payload = React.useSyncExternalStore(subscribe, getSnapShot);
 
-  const error = payload?.error
-    ?? (payload?.status === "error"
-      ? new Error("Failed to execute function")
-      : undefined);
-
   const refetch = React.useCallback(() => {
     void observableClient.invalidateFunction(queryDef, paramsForApi);
   }, [observableClient, queryDef, paramsForApi]);
 
-  return {
-    data: payload?.result as UseOsdkFunctionResult<Q>["data"],
-    isLoading: payload?.status === "loading",
-    error,
-    lastUpdated: payload?.lastUpdated ?? 0,
-    refetch,
-  };
+  return React.useMemo(() => {
+    const error = payload?.error
+      ?? (payload?.status === "error"
+        ? new Error("Failed to execute function")
+        : undefined);
+
+    return {
+      data: payload?.result as UseOsdkFunctionResult<Q>["data"],
+      isLoading: payload?.status === "loading",
+      error,
+      lastUpdated: payload?.lastUpdated ?? 0,
+      refetch,
+    };
+  }, [payload, refetch]);
 }

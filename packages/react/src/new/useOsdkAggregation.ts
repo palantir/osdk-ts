@@ -164,22 +164,24 @@ export function useOsdkAggregation<
 
   const payload = React.useSyncExternalStore(subscribe, getSnapShot);
 
-  let error: Error | undefined;
-  if (payload && "error" in payload && payload.error) {
-    error = payload.error;
-  } else if (payload?.status === "error") {
-    error = new Error("Failed to execute aggregation");
-  }
-
   const refetch = React.useCallback(async () => {
     await observableClient.invalidateObjectType(type.apiName);
   }, [observableClient, type.apiName]);
 
-  return {
-    data: payload?.result as AggregationsResults<Q, A> | undefined,
-    isLoading: payload?.status === "loading" || payload?.status === "init"
-      || !payload,
-    error,
-    refetch,
-  };
+  return React.useMemo(() => {
+    let error: Error | undefined;
+    if (payload && "error" in payload && payload.error) {
+      error = payload.error;
+    } else if (payload?.status === "error") {
+      error = new Error("Failed to execute aggregation");
+    }
+
+    return {
+      data: payload?.result as AggregationsResults<Q, A> | undefined,
+      isLoading: payload?.status === "loading" || payload?.status === "init"
+        || !payload,
+      error,
+      refetch,
+    };
+  }, [payload, refetch]);
 }

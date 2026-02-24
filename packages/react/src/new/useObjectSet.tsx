@@ -267,7 +267,7 @@ export function useObjectSet<
     }
   }, [payload]);
 
-  return {
+  return React.useMemo(() => ({
     data: payload?.resolvedList as Osdk.Instance<
       Q,
       "$allBaseProperties",
@@ -281,5 +281,5 @@ export function useObjectSet<
     fetchMore: payload?.hasMore ? payload.fetchMore : undefined,
     objectSet: payload?.objectSet as ObjectSet<Q, RDPs> || baseObjectSet,
     totalCount: payload?.totalCount,
-  };
+  }), [payload, baseObjectSet]);
 }
