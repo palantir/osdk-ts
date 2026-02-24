@@ -14,6 +14,20 @@
  * limitations under the License.
  */
 
+/**
+ * Date utilities for HTML date inputs.
+ *
+ * These functions operate on local time by design. HTML <input type="date">
+ * returns and expects values in "YYYY-MM-DD" format without timezone info.
+ *
+ * `parseDateFromInput` appends "T00:00:00" (no "Z") so the date is parsed as
+ * local midnight rather than UTC midnight. Without this, negative-offset
+ * timezones (e.g. US timezones) would shift "2024-01-15" to Jan 14 locally.
+ *
+ * Consumers providing dates from an API (typically UTC) should handle
+ * UTC-to-local conversion before passing values to these functions.
+ */
+
 export function formatDateForInput(date: Date | undefined): string {
   if (!date) return "";
   const year = date.getFullYear();

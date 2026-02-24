@@ -14,36 +14,38 @@
  * limitations under the License.
  */
 
+import { Button } from "@base-ui/react/button";
 import React, { Component, type ReactNode } from "react";
-import styles from "./FilterInputErrorBoundary.module.css";
+import styles from "./ErrorBoundary.module.css";
 
-interface FilterInputErrorBoundaryProps {
+interface ErrorBoundaryProps {
   children: ReactNode;
+  errorMessage?: string;
   fallback?: ReactNode;
   onError?: (error: Error) => void;
 }
 
-interface FilterInputErrorBoundaryState {
+interface ErrorBoundaryState {
   hasError: boolean;
   error: Error | null;
 }
 
-export class FilterInputErrorBoundary extends Component<
-  FilterInputErrorBoundaryProps,
-  FilterInputErrorBoundaryState
+export class ErrorBoundary extends Component<
+  ErrorBoundaryProps,
+  ErrorBoundaryState
 > {
-  state: FilterInputErrorBoundaryState = { hasError: false, error: null };
+  state: ErrorBoundaryState = { hasError: false, error: null };
 
-  static getDerivedStateFromError(error: Error): FilterInputErrorBoundaryState {
+  static getDerivedStateFromError(error: Error): ErrorBoundaryState {
     return { hasError: true, error };
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo): void {
     // eslint-disable-next-line no-console
-    console.error("[FilterInputErrorBoundary] Error in filter input:", error);
+    console.error("[ErrorBoundary]", error);
     // eslint-disable-next-line no-console
     console.error(
-      "[FilterInputErrorBoundary] Component stack:",
+      "[ErrorBoundary] Component stack:",
       errorInfo.componentStack,
     );
     this.props.onError?.(error);
@@ -60,16 +62,17 @@ export class FilterInputErrorBoundary extends Component<
       }
 
       return (
-        <div className={styles.errorContainer} data-error="filter-input">
-          <p className={styles.errorMessage}>Error loading filter</p>
-          <button
-            type="button"
+        <div className={styles.errorContainer}>
+          <p className={styles.errorMessage}>
+            {this.props.errorMessage ?? "Something went wrong"}
+          </p>
+          <Button
             className={styles.retryButton}
             onClick={this.handleRetry}
-            aria-label="Retry loading filter"
+            aria-label="Retry"
           >
             Retry
-          </button>
+          </Button>
         </div>
       );
     }

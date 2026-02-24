@@ -17,10 +17,10 @@
 import type { ObjectSet, ObjectTypeDefinition, WhereClause } from "@osdk/api";
 import classnames from "classnames";
 import React, { memo, useCallback } from "react";
+import { ErrorBoundary } from "../../shared/ErrorBoundary.js";
 import type { FilterDefinitionUnion } from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
 import { FilterInput } from "./FilterInput.js";
-import { FilterInputErrorBoundary } from "./FilterInputErrorBoundary.js";
 import styles from "./FilterListItem.module.css";
 
 interface FilterListItemProps<Q extends ObjectTypeDefinition> {
@@ -69,7 +69,7 @@ function FilterListItemInner<Q extends ObjectTypeDefinition>({
       </div>
 
       <div className={styles.itemContent}>
-        <FilterInputErrorBoundary>
+        <ErrorBoundary errorMessage="Error loading filter">
           <FilterInput
             objectType={objectType}
             objectSet={objectSet}
@@ -78,7 +78,7 @@ function FilterListItemInner<Q extends ObjectTypeDefinition>({
             onFilterStateChanged={handleFilterStateChanged}
             whereClause={whereClause}
           />
-        </FilterInputErrorBoundary>
+        </ErrorBoundary>
       </div>
     </div>
   );
