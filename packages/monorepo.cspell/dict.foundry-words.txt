@@ -18,3 +18,8 @@ mediasetview
 objectset
 Rdps
 writeback
+restrictedview
+typeclasses
+structfield
+blockset
+manifest

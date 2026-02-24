@@ -16,6 +16,15 @@
       "require": "./build/cjs/index.cjs",
       "default": "./build/browser/index.js"
     },
+    "./api": {
+      "browser": "./build/browser/public/api.js",
+      "import": {
+        "types": "./build/types/public/api.d.ts",
+        "default": "./build/esm/public/api.js"
+      },
+      "require": "./build/cjs/public/api.cjs",
+      "default": "./build/browser/public/api.js"
+    },
     "./*": {
       "browser": "./build/browser/public/*.js",
       "import": {
