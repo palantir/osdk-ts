@@ -556,7 +556,7 @@ describe("Action Types", () => {
                                 },
                                 "type": "logicRuleValue",
                               },
-                              "com.palantir.property1": {
+                              "property1": {
                                 "logicRuleValue": {
                                   "parameterId": "property1",
                                   "type": "parameterId",
@@ -804,7 +804,7 @@ describe("Action Types", () => {
                                 },
                                 "type": "logicRuleValue",
                               },
-                              "com.palantir.property1": {
+                              "property1": {
                                 "logicRuleValue": {
                                   "parameterId": "property1",
                                   "type": "parameterId",
@@ -3141,7 +3141,7 @@ describe("Action Types", () => {
                           "addInterfaceRule": {
                             "interfaceApiName": "com.palantir.exampleInterface",
                             "interfacePropertyValues": {
-                              "com.palantir.property1": {
+                              "property1": {
                                 "logicRuleValue": {
                                   "parameterId": "property1",
                                   "type": "parameterId",
@@ -3325,7 +3325,7 @@ describe("Action Types", () => {
                             "interfaceApiName": "com.palantir.exampleInterface",
                             "interfaceObjectToModifyParameter": "interfaceObjectToModifyParameter",
                             "interfacePropertyValues": {
-                              "com.palantir.property1": {
+                              "property1": {
                                 "logicRuleValue": {
                                   "parameterId": "property1",
                                   "type": "parameterId",
@@ -4463,7 +4463,7 @@ describe("Action Types", () => {
                                 },
                                 "type": "logicRuleValue",
                               },
-                              "com.palantir.property3": {
+                              "property3": {
                                 "logicRuleValue": {
                                   "parameterId": "property3",
                                   "type": "parameterId",
@@ -4811,7 +4811,7 @@ describe("Action Types", () => {
                                 },
                                 "type": "logicRuleValue",
                               },
-                              "com.palantir.property3": {
+                              "property3": {
                                 "logicRuleValue": {
                                   "parameterId": "property3",
                                   "type": "parameterId",
