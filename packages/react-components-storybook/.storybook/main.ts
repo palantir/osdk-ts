@@ -31,7 +31,7 @@ const config: StorybookConfig = {
   },
   typescript: {
     check: false,
-    reactDocgen: false, // Disable since we're defining argTypes manually
+    reactDocgen: "react-docgen-typescript",
   },
   staticDirs: ["../public"],
   async viteFinal(config, { configType }) {

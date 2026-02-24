@@ -50,5 +50,6 @@ jobs:
           cd gh-pages-temp
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git commit -am "Deploy Storybook" || echo "No changes to commit"
+          git add -A
+          git commit -m "Deploy Storybook" || echo "No changes to commit"
           git push -f https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git gh-pages
