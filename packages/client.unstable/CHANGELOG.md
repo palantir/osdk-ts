@@ -1,5 +1,11 @@
 # @osdk/client.unstable
 
+## 2.8.0-beta.10
+
+### Minor Changes
+
+- 972bda6: Support assumed markings for oac PSGs
+
 ## 2.8.0-beta.9
 
 ## 2.8.0-beta.8
