@@ -25,71 +25,14 @@ import type {
 } from "@osdk/api";
 import type { Client } from "@osdk/client";
 import { OsdkProvider } from "@osdk/react";
+import type { UseOsdkListResult } from "@osdk/react/experimental";
 import { useObjectSet, useOsdkObjects } from "@osdk/react/experimental";
+import type { SortingState } from "@tanstack/react-table";
 import { renderHook } from "@testing-library/react";
 import * as React from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { ColumnDefinition } from "../../ObjectTableApi.js";
 import { useObjectTableData } from "../useObjectTableData.js";
-
-interface MockUseOsdkObjectsReturn {
-  data: [];
-  isLoading: false;
-  error: undefined;
-  fetchNextPage: ReturnType<typeof vi.fn>;
-  hasNextPage: false;
-  isFetchingNextPage: false;
-  isOptimistic: false;
-  _testOptions: {
-    withProperties?: Record<string, unknown>;
-    pageSize: number;
-    where?: WhereClause<any>;
-    enabled?: boolean;
-  };
-}
-
-interface MockUseObjectSetReturn {
-  data: [];
-  isLoading: false;
-  error: undefined;
-  fetchMore: ReturnType<typeof vi.fn>;
-  objectSet: undefined;
-  totalCount: undefined;
-  _testOptions: {
-    withProperties?: Record<string, unknown>;
-    pageSize: number;
-    where?: WhereClause<any>;
-    enabled?: boolean;
-  };
-}
-
-vi.mock("@osdk/react/experimental", () => ({
-  useOsdkObjects: vi.fn((objectType, options): MockUseOsdkObjectsReturn => {
-    return {
-      data: [],
-      isLoading: false,
-      error: undefined,
-      fetchNextPage: vi.fn(),
-      hasNextPage: false,
-      isFetchingNextPage: false,
-      isOptimistic: false,
-      // Return the options to verify they were passed correctly
-      _testOptions: options,
-    };
-  }),
-  useObjectSet: vi.fn((objectSet, options): MockUseObjectSetReturn => {
-    return {
-      data: [],
-      isLoading: false,
-      error: undefined,
-      fetchMore: vi.fn(),
-      objectSet: undefined,
-      totalCount: undefined,
-      // Return the options to verify they were passed correctly
-      _testOptions: options,
-    };
-  }),
-}));
 
 const TestObjectType = {
   type: "object",
@@ -98,6 +41,42 @@ const TestObjectType = {
 
 type TestObject = typeof TestObjectType;
 type TestObjectKeys = PropertyKeys<TestObject>;
+
+interface MockReturnType extends UseOsdkListResult<TestObject> {
+  _testOptions: {
+    withProperties?: Record<string, unknown>;
+    pageSize: number;
+    where?: WhereClause<any>;
+    enabled?: boolean;
+    orderBy?: Record<string, "asc" | "desc">;
+  };
+}
+
+vi.mock("@osdk/react/experimental", () => ({
+  useOsdkObjects: vi.fn((objectType, options): MockReturnType => {
+    return {
+      data: [],
+      isLoading: false,
+      error: undefined,
+      fetchMore: undefined,
+      isOptimistic: false,
+      // Return the options to verify they were passed correctly
+      _testOptions: options,
+    };
+  }),
+  useObjectSet: vi.fn((objectSet, options): MockReturnType => {
+    return {
+      data: [],
+      isLoading: false,
+      error: undefined,
+      fetchMore: vi.fn(),
+      totalCount: undefined,
+      // Return the options to verify they were passed correctly
+      _testOptions: options,
+      isOptimistic: false,
+    };
+  }),
+}));
 
 const TestInterfaceType = {
   type: "interface",
@@ -124,17 +103,25 @@ describe(useObjectTableData, () => {
     },
   } as unknown as ObjectSet<TestObject>;
 
-  it("calls useOsdkObjects with filter clause provided", () => {
+  it("calls useOsdkObjects with filter clause and orderBy provided", () => {
     const filterClause = {
       name: "John",
     } as unknown as WhereClause<TestObject>;
+    const orderBy: SortingState = [{
+      id: "name",
+      desc: false,
+    }];
     const { result } = renderHook(
-      () => useObjectTableData(TestObjectType, undefined, filterClause),
+      () =>
+        useObjectTableData(TestObjectType, undefined, filterClause, orderBy),
       { wrapper },
     );
 
-    const mockResult = result.current as unknown as MockUseOsdkObjectsReturn;
+    const mockResult = result.current as unknown as MockReturnType;
     expect(mockResult._testOptions.where).toEqual(filterClause);
+    expect(mockResult._testOptions.orderBy).toEqual({
+      "name": "asc",
+    });
   });
 
   it("calls useOsdkObjects without withProperties when no columnDefinitions provided", () => {
@@ -143,7 +130,7 @@ describe(useObjectTableData, () => {
       { wrapper },
     );
 
-    const mockResult = result.current as unknown as MockUseOsdkObjectsReturn;
+    const mockResult = result.current as unknown as MockReturnType;
     expect(mockResult._testOptions.withProperties).toBeUndefined();
     expect(mockResult._testOptions.pageSize).toBe(50);
   });
@@ -163,7 +150,7 @@ describe(useObjectTableData, () => {
       { wrapper },
     );
 
-    const mockResult = result.current as unknown as MockUseOsdkObjectsReturn;
+    const mockResult = result.current as unknown as MockReturnType;
     expect(mockResult._testOptions.withProperties).toBeUndefined();
     expect(mockResult._testOptions.pageSize).toBe(50);
   });
@@ -204,7 +191,7 @@ describe(useObjectTableData, () => {
       { wrapper },
     );
 
-    const mockResult = result.current as unknown as MockUseOsdkObjectsReturn;
+    const mockResult = result.current as unknown as MockReturnType;
     expect(mockResult._testOptions.withProperties).toEqual({
       rdp1: mockRdpCreator1,
       rdp2: mockRdpCreator2,
@@ -234,7 +221,7 @@ describe(useObjectTableData, () => {
     );
 
     const firstMockResult = result
-      .current as unknown as MockUseOsdkObjectsReturn;
+      .current as unknown as MockReturnType;
     const firstWithProperties = firstMockResult._testOptions.withProperties;
 
     // Rerender with same columnDefinitions reference
@@ -242,7 +229,7 @@ describe(useObjectTableData, () => {
 
     // Should be the same reference (memoized)
     const secondMockResult = result
-      .current as unknown as MockUseOsdkObjectsReturn;
+      .current as unknown as MockReturnType;
     expect(secondMockResult._testOptions.withProperties).toBe(
       firstWithProperties,
     );
@@ -282,7 +269,7 @@ describe(useObjectTableData, () => {
     );
 
     const firstMockResult = result
-      .current as unknown as MockUseOsdkObjectsReturn;
+      .current as unknown as MockReturnType;
     expect(firstMockResult._testOptions.withProperties).toEqual({
       rdp1: mockRdpCreator1,
     });
@@ -298,7 +285,7 @@ describe(useObjectTableData, () => {
     rerender({ colDefs: updatedColumnDefinitions as ColDefs });
 
     const secondMockResult = result
-      .current as unknown as MockUseOsdkObjectsReturn;
+      .current as unknown as MockReturnType;
     expect(secondMockResult._testOptions.withProperties).toEqual({
       rdp2: mockRdpCreator2,
     });
@@ -313,9 +300,7 @@ describe(useObjectTableData, () => {
     expect(result.current).toHaveProperty("data");
     expect(result.current).toHaveProperty("isLoading");
     expect(result.current).toHaveProperty("error");
-    expect(result.current).toHaveProperty("fetchNextPage");
-    expect(result.current).toHaveProperty("hasNextPage");
-    expect(result.current).toHaveProperty("isFetchingNextPage");
+    expect(result.current).toHaveProperty("fetchMore");
   });
 
   it("when no objectSet provided, only enables useOsdkObjects", () => {
@@ -401,7 +386,16 @@ describe(useObjectTableData, () => {
     );
   });
 
-  it("passes objectSetOptions to useObjectSet", () => {
+  it("passes filter, orderBy and objectSetOptions to useObjectSet", () => {
+    const filterClause = {
+      name: "John",
+    } as unknown as WhereClause<TestObject>;
+    const sorting: SortingState = [
+      {
+        id: "name",
+        desc: false,
+      },
+    ];
     const objectSetOptions = {
       union: [mockObjectSet],
       intersect: [],
@@ -413,8 +407,8 @@ describe(useObjectTableData, () => {
         useObjectTableData(
           TestObjectType,
           undefined,
-          undefined,
-          undefined,
+          filterClause,
+          sorting,
           mockObjectSet,
           objectSetOptions,
         ),
@@ -426,6 +420,8 @@ describe(useObjectTableData, () => {
       expect.objectContaining({
         enabled: true,
         pageSize: 50,
+        where: filterClause,
+        orderBy: { name: "asc" },
         union: objectSetOptions.union,
         intersect: objectSetOptions.intersect,
         subtract: objectSetOptions.subtract,

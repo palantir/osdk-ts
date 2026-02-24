@@ -138,7 +138,11 @@ export function useObjectTableData<
     );
     // Convert UseObjectSetResult to UseOsdkListResult format
     return {
-      ...objectSetResult,
+      data: objectSetResult.data,
+      fetchMore: objectSetResult.fetchMore,
+      isLoading: objectSetResult.isLoading,
+      error: objectSetResult.error,
+      totalCount: objectSetResult.totalCount,
       isOptimistic: false, // ObjectSet doesn't support optimistic updates
     } as UseOsdkListResult<Q, RDPs>;
   }
