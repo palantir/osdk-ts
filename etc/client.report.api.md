@@ -122,9 +122,6 @@ export const createClient: (baseUrl: string, ontologyRid: string | Promise<strin
 } | undefined, fetchFn?: typeof fetch | undefined) => Client;
 
 // @public
-export function createObjectSetFromWire<T extends ObjectOrInterfaceDefinition>(client: Client, definition: T, wireObjectSet: WireObjectSet): ObjectSet<T>;
-
-// @public
 export function createObjectSpecifierFromPrimaryKey<Q extends ObjectTypeDefinition>(objectDef: Q, primaryKey: PrimaryKeyType<Q>): ObjectSpecifier<Q>;
 
 // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen

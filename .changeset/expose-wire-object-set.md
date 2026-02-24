@@ -2,4 +2,4 @@
 "@osdk/client": minor
 ---
 
-Expose getWireObjectSet, isObjectSet, WireObjectSet type, and createObjectSetFromWire for object set serialization and deserialization
+Expose getWireObjectSet, isObjectSet, and WireObjectSet type for reading wire object set definitions
