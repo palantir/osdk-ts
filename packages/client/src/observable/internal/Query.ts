@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Logger } from "@osdk/api";
+import type { Logger, ObjectSet, ObjectTypeDefinition } from "@osdk/api";
 import type {
   Connectable,
   Observable,
@@ -35,6 +35,7 @@ import type { Entry } from "./Layer.js";
 import type { OptimisticId } from "./OptimisticId.js";
 import type { Store } from "./Store.js";
 import type { SubjectPayload } from "./SubjectPayload.js";
+import type { ObjectUpdate } from "./types/ObjectUpdate.js";
 
 export abstract class Query<
   KEY extends KnownCacheKey,
@@ -298,4 +299,98 @@ export abstract class Query<
     objectType: string,
     changes: Changes | undefined,
   ): Promise<void>;
+
+  //
+  // Websocket Subscription Methods
+  //
+
+  /**
+   * Create standard websocket subscription handlers for an ObjectSet.
+   * Subclasses can override individual handlers for custom behavior.
+   *
+   * @param objectSet The ObjectSet to subscribe to
+   * @param sub The parent subscription to add cleanup to
+   * @param methodName The method name for logging purposes
+   */
+  protected createWebsocketSubscription(
+    objectSet: ObjectSet<ObjectTypeDefinition>,
+    sub: Subscription,
+    methodName: string = "registerStreamUpdates",
+  ): void {
+    const logger = process.env.NODE_ENV !== "production"
+      ? this.logger?.child({ methodName })
+      : this.logger;
+
+    if (process.env.NODE_ENV !== "production") {
+      logger?.info("Subscribing to websocket");
+    }
+
+    try {
+      const websocketSubscription = objectSet.subscribe({
+        onChange: this.onOswChange.bind(this),
+        onError: this.onOswError.bind(this),
+        onOutOfDate: this.onOswOutOfDate.bind(this),
+        onSuccessfulSubscription: this.onOswSuccessfulSubscription.bind(this),
+      });
+
+      sub.add(() => {
+        if (process.env.NODE_ENV !== "production") {
+          logger?.info("Unsubscribing from websocket");
+        }
+        websocketSubscription.unsubscribe();
+      });
+    } catch (error) {
+      if (logger) {
+        logger.error("Failed to register stream updates", error);
+      }
+      this.onOswError({ subscriptionClosed: true, error });
+    }
+  }
+
+  /**
+   * Handler called when websocket subscription is successfully established.
+   */
+  protected onOswSuccessfulSubscription(): void {
+    if (process.env.NODE_ENV !== "production") {
+      this.logger?.child({ methodName: "onSuccessfulSubscription" }).debug("");
+    }
+  }
+
+  /**
+   * Handler called when subscribed data becomes out of date.
+   * Default implementation triggers revalidation.
+   */
+  protected onOswOutOfDate(): void {
+    if (process.env.NODE_ENV !== "production") {
+      this.logger?.child({ methodName: "onOutOfDate" }).debug("");
+    }
+    this.revalidate(true).catch((e: unknown) => {
+      if (process.env.NODE_ENV !== "production") {
+        this.logger?.error("Error revalidating after onOutOfDate", e);
+      }
+    });
+  }
+
+  /**
+   * Handler called when websocket subscription encounters an error.
+   */
+  protected onOswError(errors: {
+    subscriptionClosed: boolean;
+    error: unknown;
+  }): void {
+    if (this.logger) {
+      this.logger?.child({ methodName: "onError" }).error(
+        "subscription errors",
+        errors,
+      );
+    }
+  }
+
+  /**
+   * Handler called when an object in the subscribed set changes.
+   * Default implementation does nothing - subclasses should override.
+   */
+  protected onOswChange(
+    _update: ObjectUpdate<ObjectTypeDefinition, string>,
+  ): void {}
 }

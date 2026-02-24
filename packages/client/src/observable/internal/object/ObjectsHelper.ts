@@ -42,7 +42,13 @@ export class ObjectsHelper extends AbstractHelper<
     options: ObserveObjectOptions<T>,
     subFn: Observer<ObjectPayload>,
   ): QuerySubscription<ObjectQuery> {
-    return super.observe(options, subFn);
+    const ret = super.observe(options, subFn);
+
+    if (options.streamUpdates) {
+      ret.query.registerStreamUpdates(ret.subscription);
+    }
+
+    return ret;
   }
 
   getQuery<T extends ObjectTypeDefinition | InterfaceDefinition>(
