@@ -113,14 +113,14 @@ export interface ObjectTableProps<
   >,
 > {
   /**
-   * The object type of the object
+   * The object or interface type of the object
    * If objectSet is not provided, objects will be fetched based on this type.
    */
   objectType: Q;
 
   /**
    * The set of objects to show in the table.
-   * If provided, the table will use this object set over fetching objects based on the objectType.
+   * If provided and the objectType is not an interface, the table will use objectSet to fetch objects instead of fetching based on objectType.
    */
   objectSet?: ObjectSet<Q>;
 
