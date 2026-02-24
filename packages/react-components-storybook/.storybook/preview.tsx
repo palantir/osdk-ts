@@ -31,8 +31,12 @@ import "./themes.css";
 initialize({
   onUnhandledRequest: "warn",
   serviceWorker: {
-    url: "/mockServiceWorker.js",
+    url: process.env.NODE_ENV === "production"
+      ? "/osdk-ts/storybook/mockServiceWorker.js"
+      : "/mockServiceWorker.js",
   },
+  // Wait for the service worker to be ready before rendering
+  waitUntilReady: true,
 });
 setupFauxFoundry();
 // Create client after MSW is initialized
