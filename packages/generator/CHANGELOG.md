@@ -1,5 +1,16 @@
 # @osdk/generator
 
+## 2.8.0-beta.10
+
+### Minor Changes
+
+- 60531c9: Add JS Docs to query const
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.10
+- @osdk/generator-converters@2.8.0-beta.10
+
 ## 2.8.0-beta.9
 
 ### Minor Changes

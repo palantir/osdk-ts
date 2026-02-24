@@ -1,5 +1,17 @@
 # @osdk/maker
 
+## 0.16.0-beta.6
+
+### Minor Changes
+
+- 963626f: Add function discovery support (TypeScript and Python) and generate intermediate OSDK from CLI for use by function definitions
+- 972bda6: Support assumed markings for oac PSGs
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.10
+- @osdk/generator-converters.ontologyir@2.8.0-beta.10
+
 ## 0.16.0-beta.5
 
 ### Minor Changes
