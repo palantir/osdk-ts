@@ -305,7 +305,8 @@ function convertPropertySecurityGroups(
       type: "granular",
       granular: convertGranularPolicy(
         ds.objectSecurityPolicy?.granularPolicy,
-        ds.objectSecurityPolicy?.additionalMandatoryMarkings,
+        ds.objectSecurityPolicy?.appliedMarkings,
+        ds.objectSecurityPolicy?.assumedMarkings,
         ridGenerator,
         objectTypeApiName,
       ),
@@ -327,7 +328,8 @@ function convertPropertySecurityGroups(
           type: "granular" as const,
           granular: convertGranularPolicy(
             psg.granularPolicy,
-            psg.additionalMandatoryMarkings,
+            psg.appliedMarkings,
+            psg.assumedMarkings,
             ridGenerator,
             objectTypeApiName,
           ),
@@ -349,7 +351,8 @@ function convertPropertySecurityGroups(
 
 function convertGranularPolicy(
   granularPolicy?: SecurityConditionDefinition,
-  additionalMandatoryMarkings?: Record<string, MarkingType>,
+  appliedMarkings?: Record<string, MarkingType>,
+  assumedMarkings?: Record<string, MarkingType>,
   ridGenerator?: OntologyRidGenerator,
   objectTypeApiName?: string,
 ): SecurityGroupGranularSecurityDefinition {
@@ -368,8 +371,8 @@ function convertGranularPolicy(
           },
         },
       additionalMandatory: {
-        markings: Object.keys(additionalMandatoryMarkings ?? {}),
-        assumedMarkings: [],
+        markings: Object.keys(appliedMarkings ?? {}),
+        assumedMarkings: Object.keys(assumedMarkings ?? {}),
       },
     },
   };

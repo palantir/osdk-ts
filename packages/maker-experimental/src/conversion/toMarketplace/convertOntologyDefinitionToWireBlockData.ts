@@ -368,8 +368,8 @@ function buildKnownIdentifiers(
       (objectType.datasources ?? []).forEach((ds) => {
         if ("propertySecurityGroups" in ds && ds.propertySecurityGroups) {
           ds.propertySecurityGroups.forEach((psg) => {
-            if (psg.additionalMandatoryMarkings) {
-              Object.entries(psg.additionalMandatoryMarkings).forEach(
+            if (psg.appliedMarkings) {
+              Object.entries(psg.appliedMarkings).forEach(
                 ([markingId, markingType]) => {
                   markingEntries.push({
                     markingId,
