@@ -1,5 +1,17 @@
 # @osdk/create-app.template.vue
 
+## 2.8.0-beta.9
+
+## 2.8.0-beta.8
+
+### Minor Changes
+
+- 12dcb6a: Bump node and vite versions
+
+## 2.8.0-beta.7
+
+## 2.8.0-beta.6
+
 ## 2.8.0-beta.5
 
 ## 2.8.0-beta.4

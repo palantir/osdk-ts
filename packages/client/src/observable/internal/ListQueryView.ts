@@ -51,6 +51,7 @@ export class ListQueryView<PAYLOAD extends BaseListPayloadShape> {
   #viewLimit: number;
   #pageSize: number;
   #viewId: string;
+  #hasAutoFetch: boolean;
   #fetchMore: () => Promise<void>;
   #pendingFetchMore: Promise<void> | undefined;
   #lastPayload: PAYLOAD | undefined;
@@ -67,9 +68,9 @@ export class ListQueryView<PAYLOAD extends BaseListPayloadShape> {
 
     // With autoFetchMore, subscriber sees all loaded data (no view limit)
     // Otherwise, limit to their pageSize
-    const hasAutoFetch = autoFetchMore === true
+    this.#hasAutoFetch = autoFetchMore === true
       || (typeof autoFetchMore === "number" && autoFetchMore > 0);
-    this.#viewLimit = hasAutoFetch ? Number.MAX_SAFE_INTEGER : pageSize;
+    this.#viewLimit = this.#hasAutoFetch ? Number.MAX_SAFE_INTEGER : pageSize;
 
     // Memoize fetchMore to maintain stable function identity
     this.#fetchMore = this.#createFetchMore();
@@ -84,6 +85,15 @@ export class ListQueryView<PAYLOAD extends BaseListPayloadShape> {
       next: (payload) => {
         this.#lastPayload = payload;
         observer.next?.(this.#transformPayload(payload));
+
+        if (
+          !this.#hasAutoFetch
+          && payload.status === "loaded"
+          && payload.resolvedList.length < this.#viewLimit
+          && this.#query.hasMorePages()
+        ) {
+          void this.#query.fetchMore();
+        }
       },
       error: (err) => observer.error?.(err),
       complete: () => observer.complete?.(),
@@ -113,6 +123,9 @@ export class ListQueryView<PAYLOAD extends BaseListPayloadShape> {
       resolvedList: payload.resolvedList.slice(0, this.#viewLimit),
       hasMore: this.#viewLimit < loadedCount || payload.hasMore,
       fetchMore: this.#fetchMore,
+      status: loadedCount >= this.#viewLimit && payload.status === "loading"
+        ? "loaded"
+        : payload.status,
     };
   }
 

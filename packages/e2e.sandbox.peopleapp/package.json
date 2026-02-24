@@ -33,7 +33,7 @@
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
     "preview": "vite preview",
-    "transpileAllDeps": "pnpm --filter @osdk/* run transpileBrowser",
+    "transpileAllDeps": "pnpm --filter @osdk/api --filter @osdk/client --filter @osdk/oauth --filter @osdk/react --filter @osdk/react-components run transpileBrowser",
     "transpileEsm": "monorepo.tool.transpile -f esm -m normal -t node",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },

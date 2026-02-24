@@ -264,18 +264,21 @@ const referencedOntology = {
               "type": "string",
             },
             "rid": "ridForTaskId",
+            typeClasses: [],
           },
           "body": {
             "dataType": {
               "type": "string",
             },
             "rid": "ridForBody",
+            typeClasses: [],
           },
           "shouldBeIgnored": {
             "dataType": {
               "type": "futureUnknownType",
             } as unknown as ObjectPropertyType,
             "rid": "ridForShouldBeIgnored",
+            typeClasses: [],
           },
         },
         "status": "ACTIVE",
@@ -300,6 +303,7 @@ const referencedOntology = {
           displayName: "Some Property",
           rid: "idk",
           required: true,
+          typeClasses: [],
         },
       },
       propertiesV2: {},
@@ -316,6 +320,7 @@ const referencedOntology = {
           displayName: "Some Property",
           rid: "idk",
           required: true,
+          typeClasses: [],
         },
         "com.example.dep.spt2": {
           apiName: "com.example.dep.spt2",
@@ -325,6 +330,7 @@ const referencedOntology = {
           displayName: "Some Property 2",
           rid: "idk",
           required: true,
+          typeClasses: [],
         },
       },
       allPropertiesV2: {},
@@ -338,6 +344,7 @@ const referencedOntology = {
       },
       displayName: "Some Property",
       rid: "idk",
+      typeClasses: [],
     },
   },
   "branch": {
@@ -360,6 +367,7 @@ const referencingOntology: WireOntologyDefinition = {
             "objectTypeApiName": "com.example.dep.Task",
           },
           "required": true,
+          "typeClasses": [],
         },
         "body": {
           "displayName": "body",
@@ -367,6 +375,7 @@ const referencingOntology: WireOntologyDefinition = {
             "type": "string",
           },
           "required": true,
+          "typeClasses": [],
         },
       },
       "status": "ACTIVE",
@@ -408,12 +417,14 @@ const referencingOntology: WireOntologyDefinition = {
               type: "integer",
             },
             rid: "rid",
+            typeClasses: [],
           },
           "body": {
             dataType: {
               type: "string",
             },
             "rid": "rid",
+            typeClasses: [],
           },
         },
         rid: "ridForThing",
@@ -438,12 +449,14 @@ const referencingOntology: WireOntologyDefinition = {
               type: "integer",
             },
             rid: "rid",
+            typeClasses: [],
           },
           "body": {
             dataType: {
               type: "string",
             },
             rid: "rid",
+            typeClasses: [],
           },
         },
         rid: "theRid",

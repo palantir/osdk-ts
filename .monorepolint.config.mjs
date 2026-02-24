@@ -86,6 +86,7 @@ const archetypeRules = archetypes(
       "@osdk/client",
       "@osdk/api",
       "@osdk/functions",
+      "@osdk/functions-testing.experimental",
     ],
     {
       ...LIBRARY_RULES,
@@ -111,6 +112,7 @@ const archetypeRules = archetypes(
       "@osdk/examples.*",
       "@psdk/examples.*",
       "@osdk/monorepo.*",
+      "@osdk/react-components-storybook",
     ],
     {
       ...LIBRARY_RULES,

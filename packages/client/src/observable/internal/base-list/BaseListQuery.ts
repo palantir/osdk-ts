@@ -54,6 +54,7 @@ export interface BaseListPayloadShape {
   resolvedList: readonly unknown[];
   hasMore: boolean;
   fetchMore: () => Promise<void>;
+  status: Status;
 }
 
 /**
@@ -326,11 +327,9 @@ export abstract class BaseListQuery<
     }
 
     if (this.pendingFetch) {
-      this.pendingPageFetch = (async () => {
-        await this.pendingFetch;
-        await this.fetchMore();
-      })().finally(() => {
+      this.pendingPageFetch = this.pendingFetch.then(() => {
         this.pendingPageFetch = undefined;
+        return this.fetchMore();
       });
       return this.pendingPageFetch;
     }

@@ -47,15 +47,15 @@ export function filterHasActiveState(state: FilterState | undefined): boolean {
         || state.includeNull === true;
     case "TOGGLE":
       return state.enabled;
-    case "HAS_LINK":
+    case "hasLink":
       return state.hasLink;
-    case "LINKED_PROPERTY":
+    case "linkedProperty":
       return filterHasActiveState(state.linkedFilterState);
-    case "KEYWORD_SEARCH":
+    case "keywordSearch":
       return state.searchTerm !== undefined && state.searchTerm !== "";
     case "TIMELINE":
       return state.startDate !== undefined || state.endDate !== undefined;
-    case "CUSTOM":
+    case "custom":
       return true;
     default:
       return false;
