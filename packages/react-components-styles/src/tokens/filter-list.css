@@ -238,6 +238,7 @@
   --osdk-filter-range-gap: calc(var(--osdk-surface-spacing) * 2);
   --osdk-filter-range-histogram-height: 60px;
   --osdk-filter-range-histogram-bar-gap: 2px;
+  --osdk-filter-range-histogram-bar-min-width: 4px;
   --osdk-filter-range-histogram-bar-color: var(--osdk-palette-gray-200);
   --osdk-filter-range-histogram-bar-active-color: var(
     --osdk-intent-primary-rest

@@ -30,7 +30,7 @@
 .histogramBar {
   flex: 1;
   background: var(--osdk-filter-range-histogram-bar-color);
-  min-width: 4px;
+  min-width: var(--osdk-filter-range-histogram-bar-min-width);
   transition: background-color var(--osdk-filter-range-histogram-bar-transition);
 }
 
