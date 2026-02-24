@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
 export const inspect = (obj: any, options?: any): string => {
   // Simple fallback implementation for browser
   try {

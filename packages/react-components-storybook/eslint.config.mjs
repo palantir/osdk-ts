@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
 import storybook from "eslint-plugin-storybook";
 import baseConfig from "../../eslint.config.mjs";
 
