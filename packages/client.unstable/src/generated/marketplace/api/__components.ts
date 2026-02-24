@@ -31,7 +31,8 @@ interface _api_eddie_transformations_api_LiteralConstraint_columnName {
   type: "columnName";
   columnName: _api_eddie_transformations_api_ColumnNameLiteralConstraint;
 }
-type _api_eddie_transformations_api_LiteralConstraint = _api_eddie_transformations_api_LiteralConstraint_columnName;
+type _api_eddie_transformations_api_LiteralConstraint =
+  _api_eddie_transformations_api_LiteralConstraint_columnName;
 interface _api_eddie_transformations_api_ColumnNameLiteralConstraint {}
 interface _api_eddie_transformations_api_RegexParameterType {}
 interface _api_eddie_transformations_api_ExplicitType {
@@ -4664,4 +4665,3 @@ export interface WorkshopApplicationSaveLocationInputShape {
 
 export interface XlsxFormat {
 }
-
