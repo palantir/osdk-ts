@@ -6,6 +6,8 @@ import FilterSelector from "./FilterSelector.js";
 import type { TodoLike } from "./generatedNoCheck2/index.js";
 import { H1 } from "./H2.js";
 import { Section } from "./Section.js";
+import { SpecificTodo } from "./SpecificTodo.js";
+import { SpecificTodoViaInterface } from "./SpecificTodoViaInterface.js";
 import TodoList from "./TodoList.js";
 import ValidateActionDemo from "./ValidateActionDemo.js";
 
@@ -28,6 +30,14 @@ function App() {
         <div className="w-64">
           <Section>
             <CreateTodoForm />
+          </Section>
+
+          <Section>
+            <SpecificTodo />
+          </Section>
+
+          <Section>
+            <SpecificTodoViaInterface />
           </Section>
 
           <Section>
