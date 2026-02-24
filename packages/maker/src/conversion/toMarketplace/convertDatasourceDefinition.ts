@@ -151,6 +151,7 @@ function convertPropertySecurityGroups(
                 },
                 additionalMandatory: {
                   markings: {},
+                  assumedMarkingsV2: {},
                   assumedMarkings: [],
                 },
               },
@@ -192,7 +193,8 @@ function convertPropertySecurityGroups(
       type: "granular",
       granular: convertGranularPolicy(
         ds.objectSecurityPolicy?.granularPolicy,
-        ds.objectSecurityPolicy?.additionalMandatoryMarkings,
+        ds.objectSecurityPolicy?.appliedMarkings,
+        ds.objectSecurityPolicy?.assumedMarkings,
       ),
     },
     type: {
@@ -213,7 +215,8 @@ function convertPropertySecurityGroups(
           type: "granular" as const,
           granular: convertGranularPolicy(
             psg.granularPolicy,
-            psg.additionalMandatoryMarkings,
+            psg.appliedMarkings,
+            psg.assumedMarkings,
           ),
         },
         type: {
@@ -230,7 +233,8 @@ function convertPropertySecurityGroups(
 
 function convertGranularPolicy(
   granularPolicy?: SecurityConditionDefinition,
-  additionalMandatoryMarkings?: Record<string, MarkingType>,
+  appliedMarkings?: Record<string, MarkingType>,
+  assumedMarkings?: Record<string, MarkingType>,
 ): OntologyIrSecurityGroupGranularSecurityDefinition {
   return {
     viewPolicy: {
@@ -243,8 +247,9 @@ function convertGranularPolicy(
           },
         },
       additionalMandatory: {
-        markings: additionalMandatoryMarkings ?? {},
+        markings: appliedMarkings ?? {},
         assumedMarkings: [],
+        assumedMarkingsV2: assumedMarkings ?? {},
       },
     },
   };

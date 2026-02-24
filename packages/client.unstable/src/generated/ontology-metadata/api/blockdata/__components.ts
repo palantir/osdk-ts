@@ -27,6 +27,7 @@ import type {
   ActionTypeLogic as _api_ActionTypeLogic,
   ActionTypeRichTextComponent as _api_ActionTypeRichTextComponent,
   ActionTypeRid as _api_ActionTypeRid,
+  ActionTypeScenarioSettings as _api_ActionTypeScenarioSettings,
   ActionTypeStatus as _api_ActionTypeStatus,
   ActionTypeVersion as _api_ActionTypeVersion,
   BaseFormatter as _api_BaseFormatter,
@@ -112,6 +113,7 @@ import type {
   EditsHistory as _api_entitymetadata_EditsHistory,
   EditsResolutionStrategies as _api_entitymetadata_EditsResolutionStrategies,
   EntityConfig as _api_entitymetadata_EntityConfig,
+  InterfaceSettings as _api_entitymetadata_InterfaceSettings,
   LinkTypeEntityMetadata as _api_entitymetadata_LinkTypeEntityMetadata,
   ObjectTypeAlias as _api_entitymetadata_ObjectTypeAlias,
   OntologyIrLinkTypeEntityMetadata
@@ -274,6 +276,8 @@ export interface MarketplaceActionType {
   metadata: MarketplaceActionTypeMetadata;
 }
 export interface MarketplaceActionTypeDisplayMetadata {
+  applyingMessage: Array<_api_ActionTypeRichTextComponent>;
+  applyingMessageEnabled?: boolean | null | undefined;
   configuration?:
     | _api_ActionTypeDisplayMetadataConfiguration
     | null
@@ -283,6 +287,7 @@ export interface MarketplaceActionTypeDisplayMetadata {
   icon?: _api_Icon | null | undefined;
   submitButtonDisplayMetadata?: _api_ButtonDisplayMetadata | null | undefined;
   successMessage: Array<_api_ActionTypeRichTextComponent>;
+  successMessageEnabled?: boolean | null | undefined;
   toolDescription?: string | null | undefined;
   typeClasses: Array<_api_TypeClass>;
   undoButtonConfiguration?: boolean | null | undefined;
@@ -312,6 +317,7 @@ export interface MarketplaceActionTypeMetadata {
     | null
     | undefined;
   rid: _api_ActionTypeRid;
+  scenarioSettings?: _api_ActionTypeScenarioSettings | null | undefined;
   sections: Record<_api_SectionId, _api_Section>;
   stagingMediaSetRid?: _api_MediaSetRid | null | undefined;
   status: _api_ActionTypeStatus;
@@ -447,6 +453,7 @@ export interface MarketplaceObjectTypeEntityMetadata {
     | undefined;
   entityConfig: _api_entitymetadata_EntityConfig;
   gothamMapping?: _api_typemapping_ObjectTypeGothamMapping | null | undefined;
+  interfaceSettings?: _api_entitymetadata_InterfaceSettings | null | undefined;
   patchApplicationStrategy?:
     | _api_entitymetadata_PatchApplicationStrategy
     | null
@@ -609,6 +616,7 @@ export interface OntologyIrMarketplaceActionTypeMetadata {
   formContentOrdering: Array<_api_OntologyIrFormContent>;
   parameterOrdering: Array<_api_ParameterId>;
   parameters: Record<_api_ParameterId, _api_OntologyIrParameter>;
+  scenarioSettings?: _api_ActionTypeScenarioSettings | null | undefined;
   sections: Record<_api_SectionId, _api_OntologyIrSection>;
   stagingMediaSetRid?: _api_MediaSetRid | null | undefined;
   status: _api_OntologyIrActionTypeStatus;
@@ -705,6 +713,7 @@ export type OntologyIrMarketplaceInterfaceTypeStatus =
 export interface OntologyIrMarketplaceObjectTypeEntityMetadata {
   aliases: Array<_api_entitymetadata_ObjectTypeAlias>;
   arePatchesEnabled: boolean;
+  interfaceSettings?: _api_entitymetadata_InterfaceSettings | null | undefined;
 }
 export interface OntologyIrMarketplaceSharedPropertyBasedPropertyType {
   requireImplementation: boolean;

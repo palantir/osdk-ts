@@ -357,6 +357,38 @@ export interface GetStreamingProfileConfigsResponse {
   >;
 }
 /**
+ * Interface actions are disabled for this ObjectType.
+ */
+export interface InterfaceActionDisabled {
+}
+/**
+ * Interface actions are enabled for this ObjectType.
+ */
+export interface InterfaceActionEnabled {
+}
+export interface InterfaceActionSettings_enabled {
+  type: "enabled";
+  enabled: InterfaceActionEnabled;
+}
+
+export interface InterfaceActionSettings_disabled {
+  type: "disabled";
+  disabled: InterfaceActionDisabled;
+}
+/**
+ * Union type to enable or disable interface actions.
+ */
+export type InterfaceActionSettings =
+  | InterfaceActionSettings_enabled
+  | InterfaceActionSettings_disabled;
+
+/**
+ * Settings related to all interfaces for an ObjectType.
+ */
+export interface InterfaceSettings {
+  enableInterfaceActions: InterfaceActionSettings;
+}
+/**
  * Contains additional metadata associated with a LinkType.
  */
 export interface LinkTypeEntityMetadata {
@@ -530,6 +562,7 @@ export interface ObjectTypeEntityMetadata {
   editsResolutionStrategies: EditsResolutionStrategies;
   entityConfig: EntityConfig;
   gothamMapping?: _api_typemapping_ObjectTypeGothamMapping | null | undefined;
+  interfaceSettings: InterfaceSettings;
   objectTypeIndexingSettings?: ObjectTypeIndexingSettings | null | undefined;
   patchApplicationStrategy: PatchApplicationStrategy;
   provenance?:
