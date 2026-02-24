@@ -20,6 +20,7 @@ import {
   ObjectTable,
 } from "@osdk/react-components/experimental";
 import type {
+  CellEditEvent,
   ColumnDefinition,
   ObjectTableProps,
 } from "@osdk/react-components/experimental";
@@ -107,6 +108,14 @@ const meta: Meta<EmployeeTableProps> = {
     enableColumnConfig: {
       description:
         "Whether the column configuration dialog for column visibility and ordering is available to the user.",
+      control: "boolean",
+      defaultValue: true,
+      table: {
+        defaultValue: { summary: "true" },
+      },
+    },
+    enableEditModeByDefault: {
+      description: "Whether the table is in edit mode by default.",
       control: "boolean",
       defaultValue: true,
       table: {
@@ -1047,4 +1056,97 @@ return (
       </div>
     );
   },
+};
+
+export const EditableTable: Story = {
+  args: {
+    objectType: Employee,
+    columnDefinitions: [
+      ...columnDefinitions,
+      {
+        locator: {
+          type: "property",
+          id: "fullName",
+        },
+        editable: true,
+      },
+    ],
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `const columnDefinitions = [
+  ...columnDefinitions,
+  {
+    locator: {
+      type: "property",
+      id: "fullName",
+    },
+    editable: true,
+  },
+  ];
+
+  return (
+    <ObjectTable 
+      objectType={Employee} 
+      columnDefinitions={columnDefinitions} 
+      enableEditModeByDefault={false} 
+    />
+  );`,
+      },
+    },
+  },
+  render: (args) => (
+    <div className="object-table-container" style={{ height: "600px" }}>
+      <ObjectTable objectType={Employee} {...args} />
+    </div>
+  ),
+};
+
+export const WithSubmitEditsButton: Story = {
+  args: {
+    objectType: Employee,
+    columnDefinitions: [
+      ...columnDefinitions,
+      {
+        locator: {
+          type: "property",
+          id: "fullName",
+        },
+        editable: true,
+      },
+    ],
+    onSubmitEdits: (edits: CellEditEvent<Osdk.Instance<Employee>>[]) => {
+      alert("Submitting edits");
+    },
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `const columnDefinitions = [
+  ...columnDefinitions,
+  {
+    locator: {
+      type: "property",
+      id: "fullName",
+    },
+    editable: true,
+  },
+  ];
+
+  return <ObjectTable 
+    objectType={Employee} 
+    columnDefinitions={columnDefinitions} 
+    onSubmitEdits={(edits) => {
+        alert("Submitting edits");
+    }}
+  />`,
+      },
+    },
+  },
+  render: (args) => (
+    <div className="object-table-container" style={{ height: "600px" }}>
+      <ObjectTable objectType={Employee} {...args} />
+    </div>
+  ),
 };

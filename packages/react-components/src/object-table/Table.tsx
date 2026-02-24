@@ -150,15 +150,15 @@ export function BaseTable<
   const hasEdits = Object.keys(cellEdits ?? {}).length > 0;
 
   const handleSubmitEdits = useCallback(async () => {
+    // TODO: Provide user a way to clear edits on submit
     setIsSubmitting(true);
     try {
       await onSubmitEdits?.();
-      clearEdits?.();
       onEnableEditMode?.(false);
     } finally {
       setIsSubmitting(false);
     }
-  }, [clearEdits, onEnableEditMode, onSubmitEdits]);
+  }, [onEnableEditMode, onSubmitEdits]);
 
   const handleCancelEdits = useCallback(() => {
     clearEdits?.();
