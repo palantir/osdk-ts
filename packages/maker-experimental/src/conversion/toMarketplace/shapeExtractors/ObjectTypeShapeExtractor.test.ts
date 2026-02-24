@@ -420,6 +420,7 @@ describe("ObjectTypeShapeExtractor", () => {
       if (datasetShape?.type === "tabularDatasource") {
         expect(datasetShape.tabularDatasource.supportedTypes).toEqual([
           "DATASET",
+          "RESTRICTED_VIEW",
         ]);
         expect(datasetShape.tabularDatasource.about.fallbackTitle).toBe(
           "person-dataset",

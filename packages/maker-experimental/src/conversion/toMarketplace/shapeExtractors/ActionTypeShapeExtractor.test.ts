@@ -218,7 +218,7 @@ describe("ActionTypeShapeExtractor", () => {
         getActionTypeRids: () =>
           new MockBiMap<ReadableId, ActionTypeRid>([
             [
-              "action-createTask" as ReadableId,
+              "action-type-createTask" as ReadableId,
               "ri.ontology.main.action-type.create-task" as ActionTypeRid,
             ],
           ]),
@@ -260,12 +260,13 @@ describe("ActionTypeShapeExtractor", () => {
 
       // Should have output shapes for action type and parameters
       expect(result.outputShapes.size).toBe(3); // action + 2 parameters
-      expect(result.outputShapes.has("action-createTask" as ReadableId)).toBe(
-        true,
-      );
+      expect(result.outputShapes.has("action-type-createTask" as ReadableId))
+        .toBe(
+          true,
+        );
 
       const actionShape = result.outputShapes.get(
-        "action-createTask" as ReadableId,
+        "action-type-createTask" as ReadableId,
       );
       expect(actionShape).toBeDefined();
       expect(actionShape?.type).toBe("action");
@@ -292,7 +293,7 @@ describe("ActionTypeShapeExtractor", () => {
           "The task title",
         );
         expect(titleParamShape.actionParameter.actionType).toBe(
-          "action-createTask",
+          "action-type-createTask",
         );
       }
     });
@@ -323,7 +324,7 @@ describe("ActionTypeShapeExtractor", () => {
         getActionTypeRids: () =>
           new MockBiMap<ReadableId, ActionTypeRid>([
             [
-              "action-refresh" as ReadableId,
+              "action-type-refresh" as ReadableId,
               "ri.ontology.main.action-type.refresh" as ActionTypeRid,
             ],
           ]),
@@ -365,12 +366,12 @@ describe("ActionTypeShapeExtractor", () => {
 
       // Should have only action type shape, no parameters
       expect(result.outputShapes.size).toBe(1);
-      expect(result.outputShapes.has("action-refresh" as ReadableId)).toBe(
+      expect(result.outputShapes.has("action-type-refresh" as ReadableId)).toBe(
         true,
       );
 
       const actionShape = result.outputShapes.get(
-        "action-refresh" as ReadableId,
+        "action-type-refresh" as ReadableId,
       );
       expect(actionShape).toBeDefined();
       expect(actionShape?.type).toBe("action");
@@ -507,7 +508,7 @@ describe("ActionTypeShapeExtractor", () => {
         getActionTypeRids: () =>
           new MockBiMap<ReadableId, ActionTypeRid>([
             [
-              "action-complexAction" as ReadableId,
+              "action-type-complexAction" as ReadableId,
               "ri.ontology.main.action-type.complex" as ActionTypeRid,
             ],
           ]),
@@ -549,7 +550,7 @@ describe("ActionTypeShapeExtractor", () => {
 
       // Should have action + 3 parameters
       expect(result.outputShapes.size).toBe(4);
-      expect(result.outputShapes.has("action-complexAction" as ReadableId))
+      expect(result.outputShapes.has("action-type-complexAction" as ReadableId))
         .toBe(
           true,
         );
@@ -570,7 +571,7 @@ describe("ActionTypeShapeExtractor", () => {
       ).toBe(true);
 
       const actionShape = result.outputShapes.get(
-        "action-complexAction" as ReadableId,
+        "action-type-complexAction" as ReadableId,
       );
       if (actionShape?.type === "action") {
         expect(actionShape.action.parametersV2).toHaveLength(3);
@@ -616,7 +617,7 @@ describe("ActionTypeShapeExtractor", () => {
         getActionTypeRids: () =>
           new MockBiMap<ReadableId, ActionTypeRid>([
             [
-              "action-testAction" as ReadableId,
+              "action-type-testAction" as ReadableId,
               "ri.ontology.main.action-type.test" as ActionTypeRid,
             ],
           ]),
@@ -661,7 +662,7 @@ describe("ActionTypeShapeExtractor", () => {
       );
 
       const actionShape = result.outputShapes.get(
-        "action-testAction" as ReadableId,
+        "action-type-testAction" as ReadableId,
       );
       if (actionShape?.type === "action") {
         // Parameters should have randomness applied
@@ -669,7 +670,7 @@ describe("ActionTypeShapeExtractor", () => {
       }
 
       const paramShape = result.outputShapes.get(
-        "action-testAction-parameter-input" as ReadableId,
+        "action-type-testAction-parameter-input" as ReadableId,
       );
       if (paramShape?.type === "actionParameter") {
         // Action type reference should have randomness applied
