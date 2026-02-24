@@ -14,9 +14,6 @@
   --osdk-filter-list-content-gap: calc(var(--osdk-surface-spacing) * 3);
   --osdk-filter-list-empty-text-color: var(--osdk-typography-color-muted);
   --osdk-filter-list-empty-font-size: var(--osdk-typography-size-body-small);
-  --osdk-filter-list-empty-action-margin-top: calc(
-    var(--osdk-surface-spacing) * 2
-  );
 
   /* Filter List Header */
   --osdk-filter-header-padding-bottom: calc(var(--osdk-surface-spacing) * 2);
@@ -138,25 +135,25 @@
   );
 
   /* Error Boundary Tokens */
-  --osdk-filter-error-gap: calc(var(--osdk-surface-spacing) * 2);
-  --osdk-filter-error-padding: calc(var(--osdk-surface-spacing) * 2);
-  --osdk-filter-error-border-radius: var(--osdk-surface-border-radius);
-  --osdk-filter-error-bg: var(
+  --osdk-error-boundary-gap: calc(var(--osdk-surface-spacing) * 2);
+  --osdk-error-boundary-padding: calc(var(--osdk-surface-spacing) * 2);
+  --osdk-error-boundary-border-radius: var(--osdk-surface-border-radius);
+  --osdk-error-boundary-bg: var(
     --osdk-surface-background-color-danger-rest
   );
-  --osdk-filter-error-font-size: var(--osdk-typography-size-body-small);
-  --osdk-filter-error-text-color: var(--osdk-typography-color-danger-rest);
-  --osdk-filter-error-button-padding: calc(var(--osdk-surface-spacing) * 1)
+  --osdk-error-boundary-font-size: var(--osdk-typography-size-body-small);
+  --osdk-error-boundary-text-color: var(--osdk-typography-color-danger-rest);
+  --osdk-error-boundary-button-padding: calc(var(--osdk-surface-spacing) * 1)
     calc(var(--osdk-surface-spacing) * 2);
-  --osdk-filter-error-button-border-color: currentColor;
-  --osdk-filter-error-button-border-radius: var(
+  --osdk-error-boundary-button-border-color: currentColor;
+  --osdk-error-boundary-button-border-radius: var(
     --osdk-surface-border-radius
   );
-  --osdk-filter-error-button-font-size: var(
+  --osdk-error-boundary-button-font-size: var(
     --osdk-typography-size-body-x-small
   );
-  --osdk-filter-error-button-color: inherit;
-  --osdk-filter-error-button-hover-bg: var(--osdk-custom-color-gray-1);
+  --osdk-error-boundary-button-color: inherit;
+  --osdk-error-boundary-button-hover-bg: var(--osdk-custom-color-gray-1);
 
   /* Checkbox List Tokens */
   --osdk-filter-checkbox-list-gap: calc(var(--osdk-surface-spacing) * 0.5);
