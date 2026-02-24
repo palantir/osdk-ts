@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { Button } from "@base-ui/react/button";
+import { Input } from "@base-ui/react/input";
 import classnames from "classnames";
 import React, { memo, useCallback } from "react";
 import {
@@ -90,32 +92,30 @@ function MultiDateInputInner({
           {selectedDates.map((date) => (
             <span key={date.toISOString()} className={sharedStyles.tag}>
               {formatDateForDisplay(date)}
-              <button
-                type="button"
+              <Button
                 className={sharedStyles.tagRemove}
                 onClick={() =>
                   removeDate(date)}
                 aria-label={`Remove ${formatDateForDisplay(date)}`}
               >
                 ×
-              </button>
+              </Button>
             </span>
           ))}
           {showClearAll && selectedDates.length > 1 && (
-            <button
-              type="button"
+            <Button
               className={styles.clearAll}
               onClick={clearAll}
               aria-label="Clear all dates"
             >
               Clear all
-            </button>
+            </Button>
           )}
         </div>
       )}
 
       <div className={styles.calendarContainer}>
-        <input
+        <Input
           type="date"
           className={styles.input}
           onChange={handleDateChange}

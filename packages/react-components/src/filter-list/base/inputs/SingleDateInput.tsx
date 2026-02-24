@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { Button } from "@base-ui/react/button";
+import { Input } from "@base-ui/react/input";
 import classnames from "classnames";
 import React, { memo, useCallback } from "react";
 import { formatDateForInput, parseDateFromInput } from "./dateUtils.js";
@@ -55,7 +57,7 @@ function SingleDateInputInner({
   return (
     <div className={classnames(styles.singleDate, className)} style={style}>
       <div className={styles.dateContainer}>
-        <input
+        <Input
           type="date"
           className={styles.input}
           value={formatDateForInput(selectedDate)}
@@ -66,14 +68,13 @@ function SingleDateInputInner({
           aria-label="Select date"
         />
         {showClearButton && selectedDate !== undefined && (
-          <button
-            type="button"
+          <Button
             className={styles.clearButton}
             onClick={handleClear}
             aria-label="Clear date"
           >
             ×
-          </button>
+          </Button>
         )}
       </div>
     </div>

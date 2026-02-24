@@ -16,7 +16,6 @@
 
 export { FilterInput } from "./FilterInput.js";
 export { FilterList } from "./FilterList.js";
-export type { FilterListComponentProps } from "./FilterList.js";
 export { FilterListContent } from "./FilterListContent.js";
 export { FilterListHeader } from "./FilterListHeader.js";
 export { FilterListItem } from "./FilterListItem.js";

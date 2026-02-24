@@ -191,4 +191,10 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
    * Additional CSS class name
    */
   className?: string;
+
+  /**
+   * Custom render function for the "Add filter" button.
+   * When not provided, a default button is shown if onFilterAdded is set.
+   */
+  renderAddFilterButton?: () => React.ReactNode;
 }

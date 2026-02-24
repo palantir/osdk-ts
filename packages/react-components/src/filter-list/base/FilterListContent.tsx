@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectSet, ObjectTypeDefinition, WhereClause } from "@osdk/api";
+import type { ObjectTypeDefinition, WhereClause } from "@osdk/api";
 import classnames from "classnames";
 import React from "react";
 import type { FilterDefinitionUnion } from "../FilterListApi.js";
@@ -24,8 +24,6 @@ import styles from "./FilterListContent.module.css";
 import { FilterListItem } from "./FilterListItem.js";
 
 interface FilterListContentProps<Q extends ObjectTypeDefinition> {
-  objectType: Q;
-  objectSet: ObjectSet<Q>;
   filterDefinitions?: Array<FilterDefinitionUnion<Q>>;
   filterStates: Map<string, FilterState>;
   onFilterStateChanged: (
@@ -35,19 +33,15 @@ interface FilterListContentProps<Q extends ObjectTypeDefinition> {
   whereClause: WhereClause<Q>;
   className?: string;
   style?: React.CSSProperties;
-  renderEmptyAction?: () => React.ReactNode;
 }
 
 export function FilterListContent<Q extends ObjectTypeDefinition>({
-  objectType,
-  objectSet,
   filterDefinitions,
   filterStates,
   onFilterStateChanged,
   whereClause,
   className,
   style,
-  renderEmptyAction,
 }: FilterListContentProps<Q>): React.ReactElement {
   if (!filterDefinitions || filterDefinitions.length === 0) {
     return (
@@ -55,13 +49,7 @@ export function FilterListContent<Q extends ObjectTypeDefinition>({
         className={classnames(styles.content, className)}
         style={style}
         data-empty="true"
-      >
-        {renderEmptyAction && (
-          <div className={styles.emptyAction}>
-            {renderEmptyAction()}
-          </div>
-        )}
-      </div>
+      />
     );
   }
 
@@ -77,8 +65,6 @@ export function FilterListContent<Q extends ObjectTypeDefinition>({
         return (
           <FilterListItem
             key={filterKey}
-            objectType={objectType}
-            objectSet={objectSet}
             definition={definition}
             filterKey={filterKey}
             filterState={state}

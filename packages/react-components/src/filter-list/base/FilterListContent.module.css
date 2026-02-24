@@ -25,7 +25,3 @@
   color: var(--osdk-filter-list-empty-text-color);
   font-size: var(--osdk-filter-list-empty-font-size);
 }
-
-.emptyAction {
-  margin-top: var(--osdk-filter-list-empty-action-margin-top);
-}

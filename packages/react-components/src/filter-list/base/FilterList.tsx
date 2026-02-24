@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Button } from "@base-ui/react/button";
 import type { ObjectTypeDefinition } from "@osdk/api";
 import classnames from "classnames";
 import React, { useCallback, useMemo } from "react";
@@ -22,37 +23,24 @@ import type {
   FilterListProps,
 } from "../FilterListApi.js";
 import { useFilterListState } from "../hooks/useFilterListState.js";
-import type { FilterListClassNames } from "../types/ClassNameOverrides.js";
 import styles from "./FilterList.module.css";
 import { FilterListContent } from "./FilterListContent.js";
 import { FilterListHeader } from "./FilterListHeader.js";
 
-export interface FilterListComponentProps<Q extends ObjectTypeDefinition>
-  extends FilterListProps<Q>
-{
-  classNames?: FilterListClassNames;
-  renderAddFilterButton?: () => React.ReactNode;
-  style?: React.CSSProperties;
-}
-
 export function FilterList<Q extends ObjectTypeDefinition>(
-  props: FilterListComponentProps<Q>,
+  props: FilterListProps<Q>,
 ): React.ReactElement {
   const {
-    objectSet,
     title,
     titleIcon,
     filterDefinitions,
     showResetButton = false,
     onReset,
+    onFilterAdded,
     showActiveFilterCount = false,
     className,
-    classNames,
     renderAddFilterButton,
-    style,
   } = props;
-
-  const objectType = objectSet.$objectSetInternals.def;
 
   const {
     filterStates,
@@ -77,10 +65,11 @@ export function FilterList<Q extends ObjectTypeDefinition>(
   const showHeader = title || titleIcon || showResetButton
     || showActiveFilterCount;
 
+  const showAddButton = renderAddFilterButton != null || onFilterAdded != null;
+
   return (
     <div
-      className={classnames(styles.filterList, classNames?.root, className)}
-      style={style}
+      className={classnames(styles.filterList, className)}
       data-active-count={activeFilterCount}
     >
       {showHeader && (
@@ -91,29 +80,25 @@ export function FilterList<Q extends ObjectTypeDefinition>(
           onReset={handleReset}
           showActiveFilterCount={showActiveFilterCount}
           activeFilterCount={activeFilterCount}
-          classNames={classNames}
         />
       )}
 
       <FilterListContent
-        objectType={objectType}
-        objectSet={objectSet}
         filterDefinitions={visibleFilterDefinitions}
         filterStates={filterStates}
         onFilterStateChanged={setFilterState}
         whereClause={whereClause}
-        renderEmptyAction={renderAddFilterButton}
       />
 
-      {renderAddFilterButton
-        && visibleFilterDefinitions && visibleFilterDefinitions.length > 0 && (
-        <div
-          className={classnames(
-            styles.addButtonContainer,
-            classNames?.addButtonContainer,
-          )}
-        >
-          {renderAddFilterButton()}
+      {showAddButton && (
+        <div className={styles.addButtonContainer}>
+          {renderAddFilterButton
+            ? renderAddFilterButton()
+            : (
+              <Button type="button" className={styles.addButton}>
+                + Add filter
+              </Button>
+            )}
         </div>
       )}
     </div>

@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import classnames from "classnames";
+import { Button } from "@base-ui/react/button";
 import React, { memo, type ReactNode, useCallback } from "react";
-import type { FilterListClassNames } from "../types/ClassNameOverrides.js";
 import styles from "./FilterListHeader.module.css";
 
 interface FilterListHeaderProps {
@@ -28,7 +27,6 @@ interface FilterListHeaderProps {
   onReset?: () => void;
   showActiveFilterCount?: boolean;
   activeFilterCount?: number;
-  classNames?: FilterListClassNames;
 }
 
 function FilterListHeaderInner({
@@ -40,7 +38,6 @@ function FilterListHeaderInner({
   onReset,
   showActiveFilterCount,
   activeFilterCount = 0,
-  classNames,
 }: FilterListHeaderProps): React.ReactElement {
   const showCollapseButton = onCollapsedChange != null;
 
@@ -49,73 +46,49 @@ function FilterListHeaderInner({
   }, [onCollapsedChange, collapsed]);
 
   return (
-    <div className={classnames(styles.header, classNames?.header)}>
+    <div className={styles.header}>
       {showCollapseButton && (
-        <button
-          type="button"
-          className={classnames(
-            styles.collapseButton,
-            classNames?.collapseButton,
-          )}
+        <Button
+          className={styles.collapseButton}
           onClick={handleCollapseClick}
           aria-expanded={!collapsed}
           aria-label={collapsed ? "Expand filters" : "Collapse filters"}
         >
           <span
-            className={classnames(
-              styles.collapseIcon,
-              classNames?.collapseIcon,
-            )}
+            className={styles.collapseIcon}
             data-collapsed={collapsed}
           />
-        </button>
+        </Button>
       )}
 
       {!collapsed && (
         <>
-          <div
-            className={classnames(
-              styles.titleContainer,
-              classNames?.titleContainer,
-            )}
-          >
+          <div className={styles.titleContainer}>
             {titleIcon && (
-              <span
-                className={classnames(styles.titleIcon, classNames?.titleIcon)}
-              >
+              <span className={styles.titleIcon}>
                 {titleIcon}
               </span>
             )}
             {title && (
-              <span className={classnames(styles.title, classNames?.title)}>
+              <span className={styles.title}>
                 {title}
               </span>
             )}
             {showActiveFilterCount && activeFilterCount > 0 && (
-              <span
-                className={classnames(
-                  styles.activeCount,
-                  classNames?.activeCount,
-                )}
-                style={{ fontVariantNumeric: "tabular-nums" }}
-              >
+              <span className={styles.activeCount}>
                 ({activeFilterCount})
               </span>
             )}
           </div>
 
           {showResetButton && (
-            <button
-              type="button"
-              className={classnames(
-                styles.resetButton,
-                classNames?.resetButton,
-              )}
+            <Button
+              className={styles.resetButton}
               onClick={onReset}
               disabled={activeFilterCount === 0}
             >
               Reset
-            </button>
+            </Button>
           )}
         </>
       )}

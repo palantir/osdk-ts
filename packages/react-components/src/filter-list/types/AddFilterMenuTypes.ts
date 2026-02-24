@@ -16,7 +16,11 @@
 
 import type { ReactNode } from "react";
 import type { FilterComponentType } from "../FilterListItemApi.js";
-import type { FilterDataIndicator } from "./FilterDisplayTypes.js";
+
+/**
+ * Visual data indicator configuration for filter items
+ */
+export type FilterDataIndicator = "histogram" | "count" | "none";
 
 /**
  * Category for organizing filters in the add filter menu

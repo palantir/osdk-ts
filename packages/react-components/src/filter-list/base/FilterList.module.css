@@ -36,3 +36,32 @@
 .addButtonContainer > * {
   flex: 1;
 }
+
+.addButton {
+  font-family: var(--osdk-filter-header-font-family);
+  font-size: var(--osdk-filter-header-reset-font-size);
+  color: var(--osdk-filter-header-reset-color);
+  background: var(--osdk-filter-header-button-bg);
+  border: none;
+  cursor: pointer;
+  padding: var(--osdk-filter-header-reset-padding);
+  border-radius: var(--osdk-filter-header-button-border-radius);
+  transition: background-color var(--osdk-filter-header-button-transition);
+
+  &:hover {
+    background: var(--osdk-filter-header-button-bg-hover);
+  }
+
+  &:active {
+    background: var(--osdk-filter-header-button-bg-active);
+  }
+
+  &:focus-visible {
+    outline: var(--osdk-filter-input-focus-outline-width) solid var(--osdk-filter-input-focus-outline-color);
+    outline-offset: var(--osdk-filter-input-focus-outline-offset);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
