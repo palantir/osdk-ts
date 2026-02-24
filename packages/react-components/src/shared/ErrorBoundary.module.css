@@ -32,7 +32,7 @@
 
 .retryButton {
   padding: var(--osdk-filter-error-button-padding);
-  border: 1px solid var(--osdk-filter-error-button-border-color);
+  border: var(--osdk-surface-border-width) solid var(--osdk-filter-error-button-border-color);
   border-radius: var(--osdk-filter-error-button-border-radius);
   background: transparent;
   font-size: var(--osdk-filter-error-button-font-size);

@@ -107,7 +107,7 @@ function ListogramInputInner({
                 <span className={styles.bar}>
                   <span
                     className={styles.barFill}
-                    style={{ width: `${percentage}%` }}
+                    style={{ transform: `scaleX(${percentage / 100})` }}
                   />
                 </span>
                 <span className={styles.count}>
