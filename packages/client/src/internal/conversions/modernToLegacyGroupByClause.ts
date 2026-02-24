@@ -14,30 +14,41 @@
  * limitations under the License.
  */
 
-import type { AllGroupByValues, GroupByClause, GroupByRange } from "@osdk/api";
+import type {
+  AllGroupByValues,
+  GroupByClause,
+  GroupByRange,
+  ObjectOrInterfaceDefinition,
+} from "@osdk/api";
 import { DurationMapping } from "@osdk/api";
 import type {
   AggregationGroupByV2,
   AggregationRangeV2,
 } from "@osdk/foundry.ontologies";
+import { fullyQualifyPropName } from "./fullyQualifyPropName.js";
 
 /** @internal */
 export function modernToLegacyGroupByClause(
   groupByClause: GroupByClause<any> | undefined,
+  objectOrInterface?: ObjectOrInterfaceDefinition,
 ) {
   if (!groupByClause) return [];
 
   return Object.entries(
     groupByClause as Record<string, AllGroupByValues>,
   ).flatMap<AggregationGroupByV2>(([field, type]) => {
+    const qualifiedField = objectOrInterface
+      ? fullyQualifyPropName(field, objectOrInterface)
+      : field;
+
     if (type === "exact") {
-      return [{ type, field }];
+      return [{ type, field: qualifiedField }];
     } else if ("$exactWithLimit" in type) {
       {
         return [
           {
             type: "exact",
-            field,
+            field: qualifiedField,
             maxGroupCount: type.$exactWithLimit,
           },
         ];
@@ -46,7 +57,7 @@ export function modernToLegacyGroupByClause(
       return [
         {
           type: "exact",
-          field,
+          field: qualifiedField,
           maxGroupCount: type.$exact?.$limit ?? undefined,
           defaultValue: type.$exact.$defaultValue ?? undefined,
           includeNullValues: type.$exact.$includeNullValue === true
@@ -57,19 +68,19 @@ export function modernToLegacyGroupByClause(
     } else if ("$fixedWidth" in type) {
       return [{
         type: "fixedWidth",
-        field,
+        field: qualifiedField,
         fixedWidth: type.$fixedWidth,
       }];
     } else if ("$ranges" in type) {
       return [{
         type: "ranges",
-        field,
+        field: qualifiedField,
         ranges: type.$ranges.map(range => convertRange(range)),
       }];
     } else if ("$duration" in type) {
       return [{
         type: "duration",
-        field,
+        field: qualifiedField,
         value: type.$duration[0],
         unit: DurationMapping[type.$duration[1]],
       }];
