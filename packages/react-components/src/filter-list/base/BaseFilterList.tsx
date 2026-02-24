@@ -83,20 +83,20 @@ export function BaseFilterList<D>(
             getFilterLabel={getFilterLabel}
             enableSorting={enableSorting}
           />
-
-          {showAddButton && (
-            <div className={styles.addButtonContainer}>
-              {renderAddFilterButton
-                ? renderAddFilterButton()
-                : (
-                  <Button type="button" className={styles.addButton}>
-                    + Add filter
-                  </Button>
-                )}
-            </div>
-          )}
         </div>
       </div>
+
+      {!collapsed && showAddButton && (
+        <div className={styles.addButtonContainer}>
+          {renderAddFilterButton
+            ? renderAddFilterButton()
+            : (
+              <Button type="button" className={styles.addButton}>
+                + Add filter
+              </Button>
+            )}
+        </div>
+      )}
     </div>
   );
 }
