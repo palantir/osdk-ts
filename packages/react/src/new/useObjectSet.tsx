@@ -190,19 +190,10 @@ export function useObjectSet<
 
   const { enabled = true, streamUpdates, ...otherOptions } = options;
 
-  if (!enabled) {
-    return {
-      data: [],
-      isLoading: false,
-      error: undefined,
-      fetchMore: undefined,
-      objectSet: undefined as any, // objectSet is not meaningful when disabled
-      totalCount: undefined,
-    };
-  }
-
   // Track object type to detect when we switch to a different object type
-  const objectTypeKey = baseObjectSet.$objectSetInternals.def.apiName;
+  const objectTypeKey = enabled
+    ? baseObjectSet.$objectSetInternals.def.apiName
+    : "object-type-placeholder";
   const previousObjectTypeRef = React.useRef<string>(objectTypeKey);
   const previousPayloadRef = React.useRef<
     Snapshot<ObserveObjectSetArgs<Q, RDPs>> | undefined
