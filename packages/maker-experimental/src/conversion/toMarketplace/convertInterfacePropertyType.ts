@@ -26,7 +26,7 @@ export function convertInterfaceProperty(
   prop: InterfacePropertyType,
   apiName: string,
   interfaceApiName: string,
-  ridGenerator: OntologyRidGenerator
+  ridGenerator: OntologyRidGenerator,
 ): [string, MarketplaceInterfacePropertyType] {
   if (isInterfaceSharedPropertyType(prop)) {
     return [prop.sharedPropertyType.apiName, {
@@ -37,38 +37,55 @@ export function convertInterfaceProperty(
       },
     }];
   } else {
-    return [ridGenerator.generateInterfacePropertyTypeRid(apiName, interfaceApiName), {
-      type: "interfaceDefinedPropertyType",
-      interfaceDefinedPropertyType: {
-        apiName: apiName,
-        displayMetadata: {
-          displayName: prop.displayName ?? apiName,
-          visibility: prop.visibility ?? "NORMAL",
-          description: prop.description,
+    return [
+      ridGenerator.generateInterfacePropertyTypeRid(apiName, interfaceApiName),
+      {
+        type: "interfaceDefinedPropertyType",
+        interfaceDefinedPropertyType: {
+          apiName: apiName,
+          displayMetadata: {
+            displayName: prop.displayName ?? apiName,
+            visibility: prop.visibility ?? "NORMAL",
+            description: prop.description,
+          },
+          type: prop.array
+            ? {
+              type: "array" as const,
+              array: {
+                subtype: propertyTypeTypeToOntologyIrInterfaceType(
+                  prop.type,
+                  apiName,
+                  ridGenerator,
+                ),
+              },
+            }
+            : propertyTypeTypeToOntologyIrInterfaceType(
+              prop.type,
+              apiName,
+              ridGenerator,
+            ),
+          constraints: {
+            primaryKeyConstraint: prop.primaryKeyConstraint ?? "NO_RESTRICTION",
+            requireImplementation: prop.required ?? true,
+            indexedForSearch: true,
+            typeClasses: prop.typeClasses ?? [],
+            dataConstraints: convertNullabilityToDataConstraint({
+              type: prop.type,
+              nullability: prop.nullability,
+            }),
+            valueType: prop.valueType
+              ? ridGenerator.generateRidForValueType(
+                prop.valueType.apiName,
+                prop.valueType.version,
+              )
+              : undefined,
+          },
+          rid: ridGenerator.generateInterfacePropertyTypeRid(
+            apiName,
+            interfaceApiName,
+          ),
         },
-        type: prop.array
-          ? {
-            type: "array" as const,
-            array: {
-              subtype: propertyTypeTypeToOntologyIrInterfaceType(prop.type, apiName, ridGenerator),
-            },
-          }
-          : propertyTypeTypeToOntologyIrInterfaceType(prop.type, apiName, ridGenerator),
-        constraints: {
-          primaryKeyConstraint: prop.primaryKeyConstraint ?? "NO_RESTRICTION",
-          requireImplementation: prop.required ?? true,
-          indexedForSearch: true,
-          typeClasses: prop.typeClasses ?? [],
-          dataConstraints: convertNullabilityToDataConstraint({
-            type: prop.type,
-            nullability: prop.nullability,
-          }),
-          valueType: prop.valueType
-            ? ridGenerator.generateRidForValueType(prop.valueType.apiName, prop.valueType.version)
-            : undefined,
-        },
-        rid: ridGenerator.generateInterfacePropertyTypeRid(apiName, interfaceApiName),
       },
-    }];
+    ];
   }
 }

@@ -46,7 +46,9 @@ export function typeToMarketplaceObjectPropertyType(
         type.array.subtype,
       );
       if (arraySubtype.type === "array") {
-        throw new Error("Nested array property types are not supported in marketplace");
+        throw new Error(
+          "Nested array property types are not supported in marketplace",
+        );
       }
       if (arraySubtype.type !== "primitive") {
         throw new Error("Array subtype must be primitive");
@@ -159,7 +161,9 @@ export function typeToMarketplaceObjectPropertyType(
         type.cipherText.plainTextType,
       );
       if (plainTextType.type === "array") {
-        throw new Error("Nested array property types are not supported in marketplace");
+        throw new Error(
+          "Nested array property types are not supported in marketplace",
+        );
       }
       if (plainTextType.type !== "primitive") {
         throw new Error("CipherText plaintext type must be primitive");
@@ -399,7 +403,9 @@ export function typeToMarketplaceBaseType(type: Type): BaseType {
     case "array": {
       const itemBaseType = typeToMarketplaceBaseType(type.array.subtype);
       if (itemBaseType.type === "array") {
-        throw new Error("Nested array property types are not supported in marketplace");
+        throw new Error(
+          "Nested array property types are not supported in marketplace",
+        );
       }
       if (itemBaseType.type === "structV2") {
         throw new Error("Invalid base type: array of struct");

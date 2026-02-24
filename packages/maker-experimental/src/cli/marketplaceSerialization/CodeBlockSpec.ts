@@ -107,14 +107,13 @@ function generateUUIDFromStr(input: crypto.BinaryLike): UUID {
   return uuid as UUID;
 }
 
-
 export function toBlockShapeId(readableId: string, salt?: string): string {
-    let toHash = readableId;
-    if (salt) {
-        toHash = readableId + salt;
-    }
-    const digest = createHash('sha256');
-    digest.update(toHash, 'utf8');
-    const encodedHash = digest.digest();
-    return generateUUIDFromStr(encodedHash);
+  let toHash = readableId;
+  if (salt) {
+    toHash = readableId + salt;
+  }
+  const digest = createHash("sha256");
+  digest.update(toHash, "utf8");
+  const encodedHash = digest.digest();
+  return generateUUIDFromStr(encodedHash);
 }

@@ -15,17 +15,17 @@
  */
 
 import type {
+  ActionType,
+  ActionTypeBlockDataV2,
+  KnownMarketplaceIdentifiers,
+} from "@osdk/client.unstable";
+import type {
   ActionTypeParameterShape,
   ActionTypeShape,
   BaseParameterType,
   LocalizedTitleAndDescription,
   OutputShape,
 } from "@osdk/client.unstable/api";
-import type {
-  ActionType,
-  ActionTypeBlockDataV2,
-  KnownMarketplaceIdentifiers,
-} from "@osdk/client.unstable";
 import {
   type BlockShapes,
   type OntologyRidGenerator,
@@ -90,12 +90,22 @@ class BaseParameterTypeConverter {
       case "stringList":
         return { type: "stringList", stringList: {} } as BaseParameterType;
       case "decimal": {
-        const dec = pt.decimal as { precision?: number; scale?: number } | undefined;
-        return { type: "decimal", decimal: { precision: dec?.precision, scale: dec?.scale } } as BaseParameterType;
+        const dec = pt.decimal as
+          | { precision?: number; scale?: number }
+          | undefined;
+        return {
+          type: "decimal",
+          decimal: { precision: dec?.precision, scale: dec?.scale },
+        } as BaseParameterType;
       }
       case "decimalList": {
-        const dec = pt.decimalList as { precision?: number; scale?: number } | undefined;
-        return { type: "decimalList", decimalList: { precision: dec?.precision, scale: dec?.scale } } as BaseParameterType;
+        const dec = pt.decimalList as
+          | { precision?: number; scale?: number }
+          | undefined;
+        return {
+          type: "decimalList",
+          decimalList: { precision: dec?.precision, scale: dec?.scale },
+        } as BaseParameterType;
       }
       case "geohash":
         return { type: "geohash", geohash: {} } as BaseParameterType;
@@ -106,11 +116,17 @@ class BaseParameterTypeConverter {
       case "geoshapeList":
         return { type: "geoshapeList", geoshapeList: {} } as BaseParameterType;
       case "timeSeriesReference":
-        return { type: "timeSeriesReference", timeSeriesReference: {} } as BaseParameterType;
+        return {
+          type: "timeSeriesReference",
+          timeSeriesReference: {},
+        } as BaseParameterType;
       case "timestamp":
         return { type: "timestamp", timestamp: {} } as BaseParameterType;
       case "timestampList":
-        return { type: "timestampList", timestampList: {} } as BaseParameterType;
+        return {
+          type: "timestampList",
+          timestampList: {},
+        } as BaseParameterType;
       case "date":
         return { type: "date", date: {} } as BaseParameterType;
       case "dateList":
@@ -118,32 +134,55 @@ class BaseParameterTypeConverter {
       case "attachment":
         return { type: "attachment", attachment: {} } as BaseParameterType;
       case "attachmentList":
-        return { type: "attachmentList", attachmentList: {} } as BaseParameterType;
+        return {
+          type: "attachmentList",
+          attachmentList: {},
+        } as BaseParameterType;
       case "marking":
         return { type: "marking", marking: {} } as BaseParameterType;
       case "markingList":
         return { type: "markingList", markingList: {} } as BaseParameterType;
       case "mediaReference":
-        return { type: "mediaReference", mediaReference: {} } as BaseParameterType;
+        return {
+          type: "mediaReference",
+          mediaReference: {},
+        } as BaseParameterType;
       case "objectTypeReference":
-        return { type: "objectTypeReference", objectTypeReference: {} } as BaseParameterType;
+        return {
+          type: "objectTypeReference",
+          objectTypeReference: {},
+        } as BaseParameterType;
       case "geotimeSeriesReference":
-        return { type: "geotimeSeriesReference", geotimeSeriesReference: {} } as BaseParameterType;
+        return {
+          type: "geotimeSeriesReference",
+          geotimeSeriesReference: {},
+        } as BaseParameterType;
       case "geotimeSeriesReferenceList":
-        return { type: "geotimeSeriesReferenceList", geotimeSeriesReferenceList: {} } as BaseParameterType;
+        return {
+          type: "geotimeSeriesReferenceList",
+          geotimeSeriesReferenceList: {},
+        } as BaseParameterType;
 
       // Object reference types - need to look up objectTypeId in knownIdentifiers
       case "objectReference": {
-        const objRef = pt.objectReference as { objectTypeId: string } | undefined;
-        const blockId = objRef ? this.objectTypeIds[objRef.objectTypeId] : undefined;
+        const objRef = pt.objectReference as
+          | { objectTypeId: string }
+          | undefined;
+        const blockId = objRef
+          ? this.objectTypeIds[objRef.objectTypeId]
+          : undefined;
         return {
           type: "objectReference",
           objectReference: { objectTypeId: blockId ?? "" },
         } as BaseParameterType;
       }
       case "objectReferenceList": {
-        const objRef = pt.objectReferenceList as { objectTypeId: string } | undefined;
-        const blockId = objRef ? this.objectTypeIds[objRef.objectTypeId] : undefined;
+        const objRef = pt.objectReferenceList as
+          | { objectTypeId: string }
+          | undefined;
+        const blockId = objRef
+          ? this.objectTypeIds[objRef.objectTypeId]
+          : undefined;
         return {
           type: "objectReferenceList",
           objectReferenceList: { objectTypeId: blockId ?? "" },
@@ -151,7 +190,9 @@ class BaseParameterTypeConverter {
       }
       case "objectSetRid": {
         const objRef = pt.objectSetRid as { objectTypeId: string } | undefined;
-        const blockId = objRef ? this.objectTypeIds[objRef.objectTypeId] : undefined;
+        const blockId = objRef
+          ? this.objectTypeIds[objRef.objectTypeId]
+          : undefined;
         return {
           type: "objectSetRid",
           objectSetRid: { objectTypeId: blockId ?? "" },
@@ -160,24 +201,36 @@ class BaseParameterTypeConverter {
 
       // Interface reference types - need to look up interfaceTypeRid in knownIdentifiers
       case "interfaceReference": {
-        const ifRef = pt.interfaceReference as { interfaceTypeRid: string } | undefined;
-        const blockId = ifRef ? this.interfaceTypes[ifRef.interfaceTypeRid] : undefined;
+        const ifRef = pt.interfaceReference as
+          | { interfaceTypeRid: string }
+          | undefined;
+        const blockId = ifRef
+          ? this.interfaceTypes[ifRef.interfaceTypeRid]
+          : undefined;
         return {
           type: "interfaceReference",
           interfaceReference: { interfaceTypeRid: blockId ?? "" },
         } as BaseParameterType;
       }
       case "interfaceReferenceList": {
-        const ifRef = pt.interfaceReferenceList as { interfaceTypeRid: string } | undefined;
-        const blockId = ifRef ? this.interfaceTypes[ifRef.interfaceTypeRid] : undefined;
+        const ifRef = pt.interfaceReferenceList as
+          | { interfaceTypeRid: string }
+          | undefined;
+        const blockId = ifRef
+          ? this.interfaceTypes[ifRef.interfaceTypeRid]
+          : undefined;
         return {
           type: "interfaceReferenceList",
           interfaceReferenceList: { interfaceTypeRid: blockId ?? "" },
         } as BaseParameterType;
       }
       case "interfaceObjectSetRid": {
-        const ifRef = pt.interfaceObjectSetRid as { interfaceTypeRid: string } | undefined;
-        const blockId = ifRef ? this.interfaceTypes[ifRef.interfaceTypeRid] : undefined;
+        const ifRef = pt.interfaceObjectSetRid as
+          | { interfaceTypeRid: string }
+          | undefined;
+        const blockId = ifRef
+          ? this.interfaceTypes[ifRef.interfaceTypeRid]
+          : undefined;
         return {
           type: "interfaceObjectSetRid",
           interfaceObjectSetRid: { interfaceTypeRid: blockId ?? "" },
@@ -186,10 +239,19 @@ class BaseParameterTypeConverter {
 
       // Struct types
       case "struct": {
-        const structType = pt.struct as { structFieldTypes?: Record<string, { type: string; [key: string]: unknown }> } | undefined;
+        const structType = pt.struct as {
+          structFieldTypes?: Record<
+            string,
+            { type: string; [key: string]: unknown }
+          >;
+        } | undefined;
         const convertedFields: Record<string, unknown> = {};
         if (structType?.structFieldTypes) {
-          for (const [fieldName, fieldType] of Object.entries(structType.structFieldTypes)) {
+          for (
+            const [fieldName, fieldType] of Object.entries(
+              structType.structFieldTypes,
+            )
+          ) {
             convertedFields[fieldName] = this.convertStructField(fieldType);
           }
         }
@@ -199,10 +261,19 @@ class BaseParameterTypeConverter {
         } as BaseParameterType;
       }
       case "structList": {
-        const structType = pt.structList as { structFieldTypes?: Record<string, { type: string; [key: string]: unknown }> } | undefined;
+        const structType = pt.structList as {
+          structFieldTypes?: Record<
+            string,
+            { type: string; [key: string]: unknown }
+          >;
+        } | undefined;
         const convertedFields: Record<string, unknown> = {};
         if (structType?.structFieldTypes) {
-          for (const [fieldName, fieldType] of Object.entries(structType.structFieldTypes)) {
+          for (
+            const [fieldName, fieldType] of Object.entries(
+              structType.structFieldTypes,
+            )
+          ) {
             convertedFields[fieldName] = this.convertStructField(fieldType);
           }
         }
@@ -218,7 +289,9 @@ class BaseParameterTypeConverter {
     }
   }
 
-  private convertStructField(fieldType: { type: string; [key: string]: unknown }): unknown {
+  private convertStructField(
+    fieldType: { type: string; [key: string]: unknown },
+  ): unknown {
     const t = fieldType.type;
     switch (t) {
       case "boolean":
@@ -238,8 +311,12 @@ class BaseParameterTypeConverter {
       case "geohash":
         return { type: "geohash", geohash: {} };
       case "objectReference": {
-        const objRef = fieldType.objectReference as { objectTypeId: string } | undefined;
-        const blockId = objRef ? this.objectTypeIds[objRef.objectTypeId] : undefined;
+        const objRef = fieldType.objectReference as
+          | { objectTypeId: string }
+          | undefined;
+        const blockId = objRef
+          ? this.objectTypeIds[objRef.objectTypeId]
+          : undefined;
         return {
           type: "objectReference",
           objectReference: { objectTypeId: blockId ?? "" },
@@ -255,7 +332,6 @@ class BaseParameterTypeConverter {
  * Extracts action type shapes from an ActionTypeBlockDataV2
  */
 export class ActionTypeShapeExtractor {
-
   /**
    * Extract action type shapes from block data
    */
@@ -264,11 +340,16 @@ export class ActionTypeShapeExtractor {
     ridGenerator: OntologyRidGenerator,
     knownIdentifiers: KnownMarketplaceIdentifiers,
   ): BlockShapes {
-    const actionApiName = (actionType.actionType as ActionType).metadata.apiName;
-    const actionReadableId = ReadableIdGenerator.getForActionType(actionApiName);
+    const actionApiName =
+      (actionType.actionType as ActionType).metadata.apiName;
+    const actionReadableId = ReadableIdGenerator.getForActionType(
+      actionApiName,
+    );
 
     // Verify this readable ID exists in the rid generator
-    const actionTypeRid = ridGenerator.getActionTypeRids().get(actionReadableId);
+    const actionTypeRid = ridGenerator.getActionTypeRids().get(
+      actionReadableId,
+    );
     if (!actionTypeRid) {
       return {
         inputShapes: new Map(),
@@ -280,8 +361,10 @@ export class ActionTypeShapeExtractor {
     // Build action type shape
     const actionOutputShape: ActionTypeShape = {
       about: createLocalizedAbout(
-        (actionType.actionType as ActionType).metadata.displayMetadata.displayName,
-        (actionType.actionType as ActionType).metadata.displayMetadata.description,
+        (actionType.actionType as ActionType).metadata.displayMetadata
+          .displayName,
+        (actionType.actionType as ActionType).metadata.displayMetadata
+          .description,
       ),
       parameters: {}, // Legacy field, kept empty
       parametersV2: Object.entries(actionType.parameterIds ?? {}).map(
@@ -304,7 +387,8 @@ export class ActionTypeShapeExtractor {
     const allOutputShapes = new Map<ReadableId, OutputShape>();
 
     // Add parameter shapes
-    const parameters = (actionType.actionType as ActionType).metadata.parameters;
+    const parameters =
+      (actionType.actionType as ActionType).metadata.parameters;
     if (parameters) {
       for (const [parameterId, parameter] of Object.entries(parameters)) {
         const paramReadableId = this.getParameterReadableId(

@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  MarketplaceInterfaceType,
-} from "@osdk/client.unstable";
+import type { MarketplaceInterfaceType } from "@osdk/client.unstable";
 import type { InterfaceType } from "@osdk/maker";
 import type { OntologyRidGenerator } from "../../util/generateRid.js";
 import { convertInterfaceProperty } from "./convertInterfacePropertyType.js";

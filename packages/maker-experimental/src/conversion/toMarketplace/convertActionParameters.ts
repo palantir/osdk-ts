@@ -15,9 +15,9 @@
  */
 
 import type { Parameter, ParameterId } from "@osdk/client.unstable";
+import type { BaseParameterType } from "@osdk/client.unstable/api";
 import type { ActionType } from "@osdk/maker";
 import type { OntologyRidGenerator } from "../../util/generateRid.js";
-import { BaseParameterType } from "@osdk/client.unstable/api";
 
 export function convertActionParameters(
   action: ActionType,
@@ -60,17 +60,21 @@ export function convertActionParameters(
           convertedType = {
             type: "interfaceReference",
             interfaceReference: {
-              interfaceTypeRid: ridGenerator.generateRidForInterface(parameter.type.interfaceReference.interfaceTypeRid)
-            }
-          }
+              interfaceTypeRid: ridGenerator.generateRidForInterface(
+                parameter.type.interfaceReference.interfaceTypeRid,
+              ),
+            },
+          };
           break;
         case "interfaceReferenceList":
           convertedType = {
             type: "interfaceReferenceList",
             interfaceReferenceList: {
-              interfaceTypeRid: ridGenerator.generateRidForInterface(parameter.type.interfaceReferenceList.interfaceTypeRid)
-            }
-          }
+              interfaceTypeRid: ridGenerator.generateRidForInterface(
+                parameter.type.interfaceReferenceList.interfaceTypeRid,
+              ),
+            },
+          };
 
         default:
           // Pass through other types unchanged

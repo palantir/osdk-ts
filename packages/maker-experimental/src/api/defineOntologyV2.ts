@@ -15,15 +15,11 @@
  */
 
 import type { OntologyIrV2 } from "@osdk/client.unstable";
-import {
-  getImportedTypes,
-  getOntologyDefinition,
-  initializeOntologyState,
-} from "@osdk/maker";
-import type { BlockShapes } from "../util/generateRid.js";
-import { OntologyRidGeneratorImpl } from "../util/generateRid.js";
+import { getOntologyDefinition, initializeOntologyState } from "@osdk/maker";
 import { convertOntologyDefinition } from "../conversion/toMarketplace/convertOntologyDefinition.js";
 import { getShapes } from "../conversion/toMarketplace/shapeExtractors/IrShapeExtractor.js";
+import type { BlockShapes } from "../util/generateRid.js";
+import { OntologyRidGeneratorImpl } from "../util/generateRid.js";
 
 export async function defineOntologyV2(
   ns: string,

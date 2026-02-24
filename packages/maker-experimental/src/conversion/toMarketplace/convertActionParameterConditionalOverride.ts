@@ -23,8 +23,8 @@ import type {
   ActionParameterConditionalOverride,
   ActionParameterValidation,
 } from "@osdk/maker";
-import { extractAllowedValues } from "./convertActionHelpers.js";
 import type { OntologyRidGenerator } from "../../util/generateRid.js";
+import { extractAllowedValues } from "./convertActionHelpers.js";
 import { convertConditionDefinition } from "./convertConditionDefinition.js";
 
 export function convertActionParameterConditionalOverride(
@@ -111,7 +111,10 @@ export function convertActionParameterConditionalOverride(
       parameterBlockOverride = {
         type: "allowedValues",
         allowedValues: {
-          allowedValues: extractAllowedValues(override.constraint, ridGenerator),
+          allowedValues: extractAllowedValues(
+            override.constraint,
+            ridGenerator,
+          ),
         },
       };
       break;

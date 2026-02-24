@@ -59,7 +59,6 @@ function createLocalizedAbout(
  * TypeScript port of Java's LinkTypeShapeExtractor class
  */
 export class LinkTypeShapeExtractor {
-
   /**
    * Extract shapes from a LinkType
    */
@@ -334,8 +333,10 @@ export class LinkTypeShapeExtractor {
     ridGenerator: OntologyRidGenerator,
     objectTypeRid: ObjectTypeRid,
   ): string {
-    const readableId = ridGenerator.getObjectTypeRids().inverse().get(objectTypeRid);
-    if(!readableId){
+    const readableId = ridGenerator.getObjectTypeRids().inverse().get(
+      objectTypeRid,
+    );
+    if (!readableId) {
       throw new Error(`Object type RID not found: ${objectTypeRid}`);
     }
     return ridGenerator.toBlockInternalId(readableId);
@@ -348,8 +349,10 @@ export class LinkTypeShapeExtractor {
     ridGenerator: OntologyRidGenerator,
     linkTypeRid: LinkTypeRid,
   ): string {
-    const readableId = ridGenerator.getLinkTypeRids().inverse().get(linkTypeRid);
-    if(!readableId){
+    const readableId = ridGenerator.getLinkTypeRids().inverse().get(
+      linkTypeRid,
+    );
+    if (!readableId) {
       throw new Error(`Object type RID not found: ${linkTypeRid}`);
     }
     return ridGenerator.toBlockInternalId(readableId);

@@ -15,8 +15,8 @@
  */
 
 import type { DataConstraints } from "@osdk/client.unstable";
-import invariant from "tiny-invariant";
 import type { Nullability, PropertyTypeType } from "@osdk/maker";
+import invariant from "tiny-invariant";
 
 export function convertNullabilityToDataConstraint(
   prop: { type: PropertyTypeType; nullability?: Nullability },

@@ -15,8 +15,8 @@
  */
 
 import type { OntologyIrCondition } from "@osdk/client.unstable";
-import invariant from "tiny-invariant";
 import type { ActionParameter, ConditionDefinition } from "@osdk/maker";
+import invariant from "tiny-invariant";
 
 export function convertConditionDefinition(
   condition: ConditionDefinition,

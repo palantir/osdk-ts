@@ -25,7 +25,7 @@ import { distributeTypeHelper } from "../toConjure/distributeTypeHelper.js";
 export function propertyTypeTypeToOntologyIrInterfaceType(
   type: PropertyTypeType,
   propertyApiName: string,
-  ridGenerator: OntologyRidGenerator
+  ridGenerator: OntologyRidGenerator,
 ): InterfacePropertyTypeType {
   switch (true) {
     case (typeof type === "object" && type.type === "marking"):
@@ -35,14 +35,16 @@ export function propertyTypeTypeToOntologyIrInterfaceType(
       };
 
     case (typeof type === "object" && type.type === "struct"):
-      const structFields: Array<InterfaceStructFieldType> =
-        new Array();
+      const structFields: Array<InterfaceStructFieldType> = new Array();
       for (const key in type.structDefinition) {
         const fieldTypeDefinition = type.structDefinition[key];
         let field: InterfaceStructFieldType;
         if (typeof fieldTypeDefinition === "string") {
           field = {
-            structFieldRid: ridGenerator.generateStructFieldRid(propertyApiName, key),
+            structFieldRid: ridGenerator.generateStructFieldRid(
+              propertyApiName,
+              key,
+            ),
             apiName: key,
             displayMetadata: { displayName: key, description: undefined },
             typeClasses: [],
@@ -50,7 +52,7 @@ export function propertyTypeTypeToOntologyIrInterfaceType(
             fieldType: propertyTypeTypeToOntologyIrInterfaceType(
               fieldTypeDefinition,
               propertyApiName,
-              ridGenerator
+              ridGenerator,
             ),
             requireImplementation: true,
           };
@@ -63,11 +65,14 @@ export function propertyTypeTypeToOntologyIrInterfaceType(
             field = {
               ...fieldTypeDefinition,
               apiName: key,
-              structFieldRid: ridGenerator.generateStructFieldRid(propertyApiName, key),
+              structFieldRid: ridGenerator.generateStructFieldRid(
+                propertyApiName,
+                key,
+              ),
               fieldType: propertyTypeTypeToOntologyIrInterfaceType(
                 fieldTypeDefinition.fieldType,
                 propertyApiName,
-                ridGenerator
+                ridGenerator,
               ),
               displayMetadata: fieldTypeDefinition.displayMetadata
                 ?? { displayName: key, description: undefined },
@@ -79,14 +84,17 @@ export function propertyTypeTypeToOntologyIrInterfaceType(
           } else {
             field = {
               apiName: key,
-              structFieldRid: ridGenerator.generateStructFieldRid(propertyApiName, key),
+              structFieldRid: ridGenerator.generateStructFieldRid(
+                propertyApiName,
+                key,
+              ),
               displayMetadata: { displayName: key, description: undefined },
               typeClasses: [],
               aliases: [],
               fieldType: propertyTypeTypeToOntologyIrInterfaceType(
                 fieldTypeDefinition,
                 propertyApiName,
-                ridGenerator
+                ridGenerator,
               ),
               requireImplementation: true,
             };
