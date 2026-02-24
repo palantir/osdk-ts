@@ -3151,6 +3151,7 @@ describe("Object Types", () => {
                                 "viewPolicy": {
                                   "additionalMandatory": {
                                     "assumedMarkings": [],
+                                    "assumedMarkingsV2": {},
                                     "markings": {},
                                   },
                                   "granularPolicyCondition": {
@@ -3178,6 +3179,7 @@ describe("Object Types", () => {
                                 "viewPolicy": {
                                   "additionalMandatory": {
                                     "assumedMarkings": [],
+                                    "assumedMarkingsV2": {},
                                     "markings": {},
                                   },
                                   "granularPolicyCondition": {
@@ -3436,6 +3438,9 @@ describe("Object Types", () => {
               appliedMarkings: {
                 "propertyLevelMarking": "MANDATORY",
               },
+              assumedMarkings: {
+                "propertyLevelAssumedMarking": "MANDATORY",
+              },
             },
           ],
         },
@@ -3513,6 +3518,7 @@ describe("Object Types", () => {
                                 "viewPolicy": {
                                   "additionalMandatory": {
                                     "assumedMarkings": [],
+                                    "assumedMarkingsV2": {},
                                     "markings": {
                                       "objectLevelMarking": "CBAC",
                                     },
@@ -3558,6 +3564,9 @@ describe("Object Types", () => {
                                 "viewPolicy": {
                                   "additionalMandatory": {
                                     "assumedMarkings": [],
+                                    "assumedMarkingsV2": {
+                                      "propertyLevelAssumedMarking": "MANDATORY",
+                                    },
                                     "markings": {
                                       "propertyLevelMarking": "MANDATORY",
                                     },
