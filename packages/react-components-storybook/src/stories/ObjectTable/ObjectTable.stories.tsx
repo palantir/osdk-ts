@@ -222,7 +222,6 @@ const columnDefinitions: ColumnDefinition<Employee, RDPs, {}>[] = [
       type: "property",
       id: "fullName",
     },
-    renderHeader: () => <div style={{ fontWeight: "bold" }}>Employee Name</div>,
   },
   {
     locator: { type: "property", id: "emailPrimaryWork" },
@@ -230,11 +229,10 @@ const columnDefinitions: ColumnDefinition<Employee, RDPs, {}>[] = [
   },
   {
     locator: { type: "property", id: "jobTitle" },
-    renderHeader: () => "Job Title",
+    isVisible: false,
   },
   {
     locator: { type: "property", id: "department" },
-    renderHeader: () => "Department",
   },
   {
     locator: { type: "property", id: "firstFullTimeStartDate" },
@@ -271,6 +269,13 @@ export const Default: Story = {
   args: {
     objectType: Employee,
   },
+  parameters: {
+    docs: {
+      source: {
+        code: `<ObjectTable objectType={Employee} />`,
+      },
+    },
+  },
   render: (args) => (
     <div className="object-table-container" style={{ height: "600px" }}>
       <ObjectTable objectType={Employee} {...args} />
@@ -278,10 +283,63 @@ export const Default: Story = {
   ),
 };
 
-export const WithCustomColumnDefinitions: Story = {
+export const WithColumnDefinitions: Story = {
   args: {
     objectType: Employee,
     columnDefinitions: columnDefinitions as any,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `const columnDefinitions = [
+  {
+    locator: { type: "property", id: "fullName" },
+  },
+  {
+    locator: { type: "property", id: "emailPrimaryWork" },
+    renderHeader: () => "Email",
+  },
+  {
+    locator: { type: "property", id: "jobTitle" },
+    isVisible: false,
+  },
+  {
+    locator: { type: "property", id: "department" },
+  },
+  {
+    locator: { type: "property", id: "firstFullTimeStartDate" },
+    width: 200,
+    renderHeader: () => "Start Date",
+    renderCell: (object) => {
+      return (
+        <div>
+          {object["firstFullTimeStartDate"]
+            ? new Date(object["firstFullTimeStartDate"]).toLocaleDateString()
+            : "No date"}
+        </div>
+      );
+    },
+  },
+  {
+    locator: {
+      type: "rdp",
+      id: "managerName",
+      creator: (baseObjectSet) =>
+        baseObjectSet.pivotTo("lead").selectProperty("fullName"),
+    },
+    renderHeader: () => "Manager",
+    renderCell: (object) => {
+      if ("managerName" in object) {
+        return <span>{object["managerName"]}</span>;
+      }
+      return <span style={{ color: "#999" }}>No Manager</span>;
+    },
+  },
+];
+
+<ObjectTable objectType={Employee} columnDefinitions={columnDefinitions} />`,
+      },
+    },
   },
   render: (args) => (
     <div className="object-table-container" style={{ height: "600px" }}>
@@ -295,6 +353,13 @@ export const SingleSelection: Story = {
     objectType: Employee,
     selectionMode: "single",
   },
+  parameters: {
+    docs: {
+      source: {
+        code: `<ObjectTable objectType={Employee} selectionMode="single" />`,
+      },
+    },
+  },
   render: (args) => (
     <div className="object-table-container" style={{ height: "600px" }}>
       <ObjectTable objectType={Employee} {...args} />
@@ -306,6 +371,13 @@ export const MultipleSelection: Story = {
   args: {
     objectType: Employee,
     selectionMode: "multiple",
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `<ObjectTable objectType={Employee} selectionMode="multiple" />`,
+      },
+    },
   },
   render: (args) => (
     <div className="object-table-container" style={{ height: "600px" }}>
@@ -335,23 +407,35 @@ export const WithContextMenu: Story = {
       );
     },
   },
-  render: (args) => (
-    <div className="object-table-container" style={{ height: "600px" }}>
-      <ObjectTable objectType={Employee} {...args} />
-    </div>
-  ),
-};
-
-export const CustomColumnWidths: Story = {
-  args: {
-    objectType: Employee,
-    columnDefinitions: columnDefinitions.map((col, index) => ({
-      ...col,
-      width: index === 0 ? 250 : index === 1 ? 300 : 150,
-    })) as any,
+  parameters: {
+    docs: {
+      source: {
+        code: `<ObjectTable
+  objectType={Employee}
+  renderCellContextMenu={(_, cellValue) => {
+    return (
+      <div
+        style={{
+          background: "white",
+          padding: 8,
+          border: "1px solid #d1d5db",
+          boxShadow: "0 2px 8px 0 rgba(0, 0, 0, 0.1)",
+          fontSize: 13,
+          borderRadius: 4,
+        }}
+      >
+        <div style={{ fontWeight: "bold", marginBottom: 4 }}>Cell Value:</div>
+        <div>{cellValue ? String(cellValue) : "No Value"}</div>
+      </div>
+    );
+  }}
+/>`,
+      },
+    },
   },
   render: (args) => (
     <div className="object-table-container" style={{ height: "600px" }}>
+      <div style={{ padding: "12px" }}>Right click on any cell</div>
       <ObjectTable objectType={Employee} {...args} />
     </div>
   ),
@@ -361,9 +445,22 @@ export const WithDefaultSorting: Story = {
   args: {
     objectType: Employee,
     defaultOrderBy: [{
-      property: "firstFullTimeStartDate",
+      property: "fullName",
       direction: "desc",
     }],
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `<ObjectTable
+  objectType={Employee}
+  defaultOrderBy={[{
+    property: "fullName",
+    direction: "desc",
+  }]}
+/>`,
+      },
+    },
   },
   render: (args) => (
     <div className="object-table-container" style={{ height: "600px" }}>
@@ -379,52 +476,40 @@ export const WithDefaultColumnPinning: Story = {
       {
         locator: { type: "property", id: "fullName" },
         pinned: "left",
-        renderHeader: () => (
-          <div style={{ fontWeight: "bold" }}>Employee Name</div>
-        ),
       },
       {
         locator: { type: "property", id: "emailPrimaryWork" },
-        renderHeader: () => "Email",
       },
       {
         locator: { type: "property", id: "jobTitle" },
-        renderHeader: () => "Job Title",
       },
       {
         locator: { type: "property", id: "department" },
         pinned: "right",
-        renderHeader: () => "Department",
       },
       {
         locator: { type: "property", id: "firstFullTimeStartDate" },
-        renderHeader: () => "Start Date",
       },
     ] as any,
   },
-  render: (args) => (
-    <div className="object-table-container" style={{ height: "600px" }}>
-      <ObjectTable objectType={Employee} {...args} />
-    </div>
-  ),
-};
+  parameters: {
+    docs: {
+      source: {
+        code: `const columnDefinitions = [
+    ...columnDefinitions,
+   {
+      locator: { type: "property", id: "fullName" },
+      pinned: "left",
+    },
+    {
+      locator: { type: "property", id: "department" },
+      pinned: "right",
+    },
+];
 
-export const WithHiddenColumns: Story = {
-  args: {
-    objectType: Employee,
-    columnDefinitions: [
-      ...columnDefinitions.slice(0, 3),
-      {
-        locator: { type: "property", id: "businessTitle" },
-        isVisible: false,
-        renderHeader: () => "Business Title",
+<ObjectTable objectType={Employee} columnDefinitions={columnDefinitions} />`,
       },
-      {
-        locator: { type: "property", id: "locationCity" },
-        isVisible: false,
-        renderHeader: () => "City",
-      },
-    ] as any,
+    },
   },
   render: (args) => (
     <div className="object-table-container" style={{ height: "600px" }}>
@@ -530,6 +615,18 @@ export const WithRowClickHandler: Story = {
     objectType: Employee,
     onRowClick: (employee: any) => {
       alert(`Clicked on ${employee["fullName"]}`);
+    },
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `<ObjectTable
+  objectType={Employee}
+  onRowClick={(employee) => {
+    alert(\`Clicked on \${employee["fullName"]}\`);
+  }}
+/>`,
+      },
     },
   },
   render: (args) => (
@@ -639,7 +736,7 @@ return (
   },
 };
 
-export const DisabledFeatures: Story = {
+export const DisableAllHeaderMenuFeatures: Story = {
   args: {
     objectType: Employee,
     enableFiltering: false,
@@ -647,6 +744,20 @@ export const DisabledFeatures: Story = {
     enableColumnPinning: false,
     enableColumnResizing: false,
     enableColumnConfig: false,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `<ObjectTable
+  objectType={Employee}
+  enableFiltering={false}
+  enableOrdering={false}
+  enableColumnPinning={false}
+  enableColumnResizing={false}
+  enableColumnConfig={false}
+/>`,
+      },
+    },
   },
   render: (args) => (
     <div className="object-table-container" style={{ height: "600px" }}>
@@ -659,6 +770,13 @@ export const CustomRowHeight: Story = {
   args: {
     objectType: Employee,
     rowHeight: 56,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `<ObjectTable objectType={Employee} rowHeight={56} />`,
+      },
+    },
   },
   render: (args) => (
     <div className="object-table-container" style={{ height: "600px" }}>
@@ -715,6 +833,59 @@ export const WithCustomRenderers: Story = {
         locator: { type: "property", id: "department" },
       },
     ] as any,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `const columnDefinitions = [
+  {
+    locator: { type: "property", id: "fullName" },
+    renderHeader: () => (
+      <a
+        href="#"
+        className="header-link"
+        onClick={(e) => {
+          e.preventDefault();
+          alert("Employee Name column clicked!");
+        }}
+      >
+        Employee Name
+      </a>
+    ),
+  },
+  {
+    locator: { type: "property", id: "emailPrimaryWork" },
+  },
+  {
+    locator: { type: "property", id: "jobTitle" },
+    renderHeader: () => "Job Title",
+  },
+  {
+    locator: {
+      type: "custom",
+      id: "employment-status",
+    },
+    renderHeader: () => "Employment Status",
+    renderCell: (employee) => {
+      const startDate = employee["firstFullTimeStartDate"];
+      const isActive = startDate && new Date(startDate) <= new Date();
+
+      return (
+        <span className={\`status-tag \${isActive ? "active" : "inactive"}\`}>
+          {isActive ? "Active" : "Inactive"}
+        </span>
+      );
+    },
+    width: 140,
+  },
+  {
+    locator: { type: "property", id: "department" },
+  },
+];
+
+<ObjectTable objectType={Employee} columnDefinitions={columnDefinitions} />`,
+      },
+    },
   },
   render: (args) => (
     <div className="object-table-container" style={{ height: "600px" }}>
