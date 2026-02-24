@@ -18,6 +18,7 @@ import { act, renderHook } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { useEditableTable } from "../hooks/useEditableTable.js";
 import { getCellId } from "../utils/getCellId.js";
+import type { CellEditEvent } from "../utils/types.js";
 
 describe("useEditableTable", () => {
   it("adds cell to cellEdits when edited", () => {
@@ -27,21 +28,24 @@ describe("useEditableTable", () => {
     );
     const cellIdentifier = { rowId: "row-1", columnId: "col-1" };
     const cellId = getCellId(cellIdentifier);
+    const mockRowData = { id: "row-1", name: "Test" };
+
+    const editEvent: CellEditEvent = {
+      rowId: "row-1",
+      columnId: "col-1",
+      newValue: "new value",
+      oldValue: "old value",
+      rowData: mockRowData,
+    };
 
     act(() => {
-      result.current.handleCellEdit(cellId, {
-        newValue: "new value",
-        oldValue: "old value",
-      });
+      result.current.handleCellEdit(cellId, editEvent);
     });
 
     expect(result.current.cellEdits).toEqual({
-      [cellId]: { newValue: "new value", oldValue: "old value" },
+      [cellId]: editEvent,
     });
-    expect(onCellValueChanged).toHaveBeenCalledWith(
-      cellIdentifier,
-      { newValue: "new value", oldValue: "old value" },
-    );
+    expect(onCellValueChanged).toHaveBeenCalledWith(editEvent);
   });
 
   it("removes cell from cellEdits when edited back to original value", () => {
@@ -51,25 +55,36 @@ describe("useEditableTable", () => {
     );
     const cellIdentifier = { rowId: "row-1", columnId: "col-1" };
     const cellId = getCellId(cellIdentifier);
+    const mockRowData = { id: "row-1", name: "Test" };
 
     // First edit
+    const firstEdit: CellEditEvent = {
+      rowId: "row-1",
+      columnId: "col-1",
+      newValue: "new value",
+      oldValue: "original",
+      rowData: mockRowData,
+    };
+
     act(() => {
-      result.current.handleCellEdit(cellId, {
-        newValue: "new value",
-        oldValue: "original",
-      });
+      result.current.handleCellEdit(cellId, firstEdit);
     });
 
     expect(result.current.cellEdits).toEqual({
-      [cellId]: { newValue: "new value", oldValue: "original" },
+      [cellId]: firstEdit,
     });
 
     // Edit back to original
+    const revertEdit: CellEditEvent = {
+      rowId: "row-1",
+      columnId: "col-1",
+      newValue: "original",
+      oldValue: "original",
+      rowData: mockRowData,
+    };
+
     act(() => {
-      result.current.handleCellEdit(cellId, {
-        newValue: "original",
-        oldValue: "original",
-      });
+      result.current.handleCellEdit(cellId, revertEdit);
     });
 
     // Should remove the cell from cellEdits
@@ -84,29 +99,49 @@ describe("useEditableTable", () => {
     const cellId2 = getCellId({ rowId: "row-2", columnId: "col-2" });
     const cellId3 = getCellId({ rowId: "row-3", columnId: "col-3" });
 
+    const edit1: CellEditEvent = {
+      rowId: "row-1",
+      columnId: "col-1",
+      newValue: "new1",
+      oldValue: "old1",
+      rowData: { id: "row-1" },
+    };
+
+    const edit2: CellEditEvent = {
+      rowId: "row-2",
+      columnId: "col-2",
+      newValue: "new2",
+      oldValue: "old2",
+      rowData: { id: "row-2" },
+    };
+
+    const edit3: CellEditEvent = {
+      rowId: "row-3",
+      columnId: "col-3",
+      newValue: "new3",
+      oldValue: "old3",
+      rowData: { id: "row-3" },
+    };
+
     act(() => {
-      result.current.handleCellEdit(cellId1, {
-        newValue: "new1",
-        oldValue: "old1",
-      });
-      result.current.handleCellEdit(cellId2, {
-        newValue: "new2",
-        oldValue: "old2",
-      });
-      result.current.handleCellEdit(cellId3, {
-        newValue: "new3",
-        oldValue: "old3",
-      });
+      result.current.handleCellEdit(cellId1, edit1);
+      result.current.handleCellEdit(cellId2, edit2);
+      result.current.handleCellEdit(cellId3, edit3);
     });
 
     expect(Object.keys(result.current.cellEdits).length).toBe(3);
 
     // Edit one back to original
+    const revertEdit2: CellEditEvent = {
+      rowId: "row-2",
+      columnId: "col-2",
+      newValue: "old2",
+      oldValue: "old2",
+      rowData: { id: "row-2" },
+    };
+
     act(() => {
-      result.current.handleCellEdit(cellId2, {
-        newValue: "old2",
-        oldValue: "old2",
-      });
+      result.current.handleCellEdit(cellId2, revertEdit2);
     });
 
     expect(Object.keys(result.current.cellEdits).length).toBe(2);
@@ -120,15 +155,25 @@ describe("useEditableTable", () => {
     const cellId1 = getCellId({ rowId: "row-1", columnId: "col-1" });
     const cellId2 = getCellId({ rowId: "row-2", columnId: "col-2" });
 
+    const edit1: CellEditEvent = {
+      rowId: "row-1",
+      columnId: "col-1",
+      newValue: "new1",
+      oldValue: "old1",
+      rowData: { id: "row-1" },
+    };
+
+    const edit2: CellEditEvent = {
+      rowId: "row-2",
+      columnId: "col-2",
+      newValue: "new2",
+      oldValue: "old2",
+      rowData: { id: "row-2" },
+    };
+
     act(() => {
-      result.current.handleCellEdit(cellId1, {
-        newValue: "new1",
-        oldValue: "old1",
-      });
-      result.current.handleCellEdit(cellId2, {
-        newValue: "new2",
-        oldValue: "old2",
-      });
+      result.current.handleCellEdit(cellId1, edit1);
+      result.current.handleCellEdit(cellId2, edit2);
     });
 
     act(() => {
@@ -146,25 +191,32 @@ describe("useEditableTable", () => {
     const cellId1 = getCellId({ rowId: "row-1", columnId: "col-1" });
     const cellId2 = getCellId({ rowId: "row-2", columnId: "col-2" });
 
+    const edit1: CellEditEvent = {
+      rowId: "row-1",
+      columnId: "col-1",
+      newValue: "new1",
+      oldValue: "old1",
+      rowData: { id: "row-1" },
+    };
+
+    const edit2: CellEditEvent = {
+      rowId: "row-2",
+      columnId: "col-2",
+      newValue: "new2",
+      oldValue: "old2",
+      rowData: { id: "row-2" },
+    };
+
     act(() => {
-      result.current.handleCellEdit(cellId1, {
-        newValue: "new1",
-        oldValue: "old1",
-      });
-      result.current.handleCellEdit(cellId2, {
-        newValue: "new2",
-        oldValue: "old2",
-      });
+      result.current.handleCellEdit(cellId1, edit1);
+      result.current.handleCellEdit(cellId2, edit2);
     });
 
     await act(async () => {
       await result.current.handleSubmitEdits?.();
     });
 
-    expect(onSubmitEdits).toHaveBeenCalledWith({
-      [cellId1]: { newValue: "new1", oldValue: "old1" },
-      [cellId2]: { newValue: "new2", oldValue: "old2" },
-    });
+    expect(onSubmitEdits).toHaveBeenCalledWith([edit1, edit2]);
   });
 
   it("when submit edits is undefined, handleSubmitEdits is undefined", async () => {
