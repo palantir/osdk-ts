@@ -1,3 +1,8 @@
+.editableCellWrapper {
+  width: 100%;
+  display: inline-block;
+}
+
 .osdkEditableInput {
   overflow: hidden;
   text-overflow: ellipsis;
@@ -22,10 +27,37 @@
       border: var(--osdk-emphasis-focus-width) solid
         var(--osdk-emphasis-focus-color);
     }
+
+    &.invalid {
+      border: var(--osdk-emphasis-focus-width) solid
+        var(--osdk-intent-danger-rest);
+    }
+  }
+
+  &.invalid {
+    border: var(--osdk-emphasis-focus-width) solid
+      var(--osdk-intent-danger-rest);
   }
 }
 
 .osdkEditedInput {
   border: var(--osdk-table-cell-edited-border);
   background: var(--osdk-table-cell-editable-bg);
+}
+
+.tooltipPopup {
+  padding: calc(var(--osdk-surface-spacing) * 1.5)
+    calc(var(--osdk-surface-spacing) * 2);
+  background: var(--osdk-palette-gray-2);
+  color: var(--osdk-palette-white);
+  font-size: var(--osdk-typography-size-body-x-small);
+  font-weight: var(--osdk-typography-weight-default);
+  border-radius: var(--osdk-surface-border-radius);
+  white-space: nowrap;
+  box-shadow: var(--osdk-surface-shadow-2);
+  max-width: 300px;
+}
+
+.tooltipArrow {
+  fill: var(--osdk-palette-gray-2);
 }

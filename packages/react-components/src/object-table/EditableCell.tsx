@@ -15,6 +15,7 @@
  */
 
 import { Input } from "@base-ui/react/input";
+import { Tooltip } from "@base-ui/react/tooltip";
 import classNames from "classnames";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import styles from "./EditableCell.module.css";
@@ -29,6 +30,8 @@ export interface EditableCellProps<TData = unknown> {
   rowData: TData;
   rowId: string;
   columnId: string;
+  validate?: (value: unknown) => Promise<boolean>;
+  onValidationError?: (error: { type: string; error: string }) => string;
 }
 
 const NUMBER_TYPES: string[] = [
@@ -82,23 +85,51 @@ export function EditableCell<TData = unknown>({
   rowData,
   rowId,
   columnId,
+  validate,
+  onValidationError,
 }: EditableCellProps<TData>): React.ReactElement {
   const [inputValue, setInputValue] = useState<string>(
     valueToString(currentValue),
   );
+  const [validationError, setValidationError] = useState<string | null>(null);
   const isCancelled = useRef(false);
 
   useEffect(() => {
     setInputValue(valueToString(currentValue));
   }, [currentValue]);
 
-  const handleBlur = useCallback(() => {
+  const handleBlur = useCallback(async () => {
     // Do not commit the edit if it was cancelled with Escape key
     if (isCancelled.current) {
       isCancelled.current = false;
       return;
     }
+
     const parsedValue = parseValueByType(inputValue, dataType);
+
+    // Perform validation if validate function is provided
+    if (validate) {
+      try {
+        const isValid = await validate(parsedValue);
+        if (!isValid) {
+          const error = { type: "validate", error: "Validation failed" };
+          const errorMessage = onValidationError
+            ? onValidationError(error)
+            : error.error;
+          setValidationError(errorMessage);
+          return;
+        }
+      } catch (err) {
+        const error = { type: "validate", error: "Validation error" };
+        const errorMessage = onValidationError
+          ? onValidationError(error)
+          : error.error;
+        setValidationError(errorMessage);
+        return;
+      }
+    }
+
+    setValidationError(null);
     onCellEdit?.(cellId, {
       rowId,
       columnId,
@@ -115,11 +146,17 @@ export function EditableCell<TData = unknown>({
     rowId,
     columnId,
     rowData,
+    validate,
+    onValidationError,
   ]);
 
   const handleChange = useCallback((value: string) => {
     setInputValue(value);
-  }, []);
+    // Clear validation error when user starts typing
+    if (validationError) {
+      setValidationError(null);
+    }
+  }, [validationError]);
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -142,15 +179,31 @@ export function EditableCell<TData = unknown>({
   const isEdited = currentValue !== initialValue;
 
   return (
-    <Input
-      className={classNames(styles.osdkEditableInput, {
-        [styles.osdkEditedInput]: isEdited,
-      })}
-      type={inputType}
-      value={inputValue}
-      onValueChange={handleChange}
-      onBlur={handleBlur}
-      onKeyDown={handleKeyDown}
-    />
+    <Tooltip.Provider>
+      <Tooltip.Root>
+        <Tooltip.Trigger className={styles.editableCellWrapper}>
+          <Input
+            className={classNames(styles.osdkEditableInput, {
+              [styles.invalid]: !!validationError,
+              [styles.osdkEditedInput]: isEdited,
+            })}
+            type={inputType}
+            value={inputValue}
+            onValueChange={handleChange}
+            onBlur={handleBlur}
+            onKeyDown={handleKeyDown}
+            aria-invalid={!!validationError}
+          />
+        </Tooltip.Trigger>
+        <Tooltip.Portal>
+          <Tooltip.Positioner sideOffset={4}>
+            <Tooltip.Popup className={styles.tooltipPopup}>
+              {validationError}
+              <Tooltip.Arrow className={styles.tooltipArrow} />
+            </Tooltip.Popup>
+          </Tooltip.Positioner>
+        </Tooltip.Portal>
+      </Tooltip.Root>
+    </Tooltip.Provider>
   );
 }

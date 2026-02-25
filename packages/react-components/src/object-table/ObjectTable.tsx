@@ -87,7 +87,6 @@ export function ObjectTable<
 
   const {
     cellEdits,
-    clearEdits,
     isInEditMode,
     handleCellEdit,
     handleEnableEditMode,
@@ -233,7 +232,6 @@ export function ObjectTable<
   const editableConfig: EditableConfig | undefined = useMemo(() => {
     return {
       onSubmitEdits: handleSubmitEdits,
-      clearEdits,
       cellEdits,
       enableEditModeByDefault,
       isInEditMode,
@@ -241,7 +239,6 @@ export function ObjectTable<
     };
   }, [
     handleSubmitEdits,
-    clearEdits,
     cellEdits,
     enableEditModeByDefault,
     isInEditMode,

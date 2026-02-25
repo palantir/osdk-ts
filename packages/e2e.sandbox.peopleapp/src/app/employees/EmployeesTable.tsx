@@ -82,6 +82,17 @@ const columnDefinitions: Array<
     },
     orderable: false,
   },
+  {
+    locator: { type: "property", id: "email" },
+    editable: true,
+    validate: async (value) => {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return emailRegex.test(value as string);
+    },
+    onValidationError: (error) => {
+      return "Please enter a valid email address";
+    },
+  },
 ];
 
 export function EmployeesTable() {
@@ -93,6 +104,7 @@ export function EmployeesTable() {
         Osdk.Instance<Employee>,
         unknown
       >[],
+      clearEdits: () => void,
     ) => {
       console.log("Edits to submit:", edits);
       try {
@@ -116,6 +128,7 @@ export function EmployeesTable() {
           }));
         }
         await Promise.all(actionPromises);
+        clearEdits();
       } catch (error) {
         console.error("Failed to submit edits:", error);
         throw error;

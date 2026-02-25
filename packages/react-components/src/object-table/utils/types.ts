@@ -32,3 +32,12 @@ export interface CellEditEvent<
   oldValue: CellValue;
   rowData: TData;
 }
+
+export interface RowEditEvent<TData extends RowData = unknown> {
+  rowId: string;
+  rowData: TData;
+  /*
+   * A record of cell edits within the row, keyed by column ID.
+   */
+  edits: Record<string, CellEditEvent<TData>>;
+}

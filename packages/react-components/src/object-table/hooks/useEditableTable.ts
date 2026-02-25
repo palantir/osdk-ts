@@ -58,7 +58,6 @@ export interface UseEditableTableResult {
     event: CellEditEvent<any, unknown>,
   ) => void;
   handleSubmitEdits?: () => Promise<void>;
-  clearEdits: () => void;
 }
 
 export function useEditableTable<
@@ -113,8 +112,8 @@ export function useEditableTable<
 
   const handleSubmitEdits = useCallback(async () => {
     const edits = Object.values(cellEdits);
-    await onSubmitEdits?.(edits);
-  }, [cellEdits, onSubmitEdits]);
+    await onSubmitEdits?.(edits, clearEdits);
+  }, [cellEdits, onSubmitEdits, clearEdits]);
 
   return {
     isInEditMode,
@@ -124,6 +123,5 @@ export function useEditableTable<
     cellEdits,
     handleCellEdit,
     handleSubmitEdits: onSubmitEdits ? handleSubmitEdits : undefined,
-    clearEdits,
   };
 }

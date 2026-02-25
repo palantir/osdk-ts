@@ -54,6 +54,33 @@ export type ColumnDefinition<
   filterable?: boolean;
   editable?: boolean;
 
+  /**
+   * @param event
+   * @returns
+   */
+  isValidEdit?: (
+    event: CellEditEvent<
+      Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
+      unknown
+    >,
+  ) => boolean;
+
+  /**
+   * Additional function to validate the cell value during edit
+   *
+   * @param value the current cell value
+   * @returns a boolean promise indicating whether the value is valid
+   */
+  validate?: (value: unknown) => Promise<boolean>;
+
+  /**
+   * A callback to return a custom error message if validation failed
+   *
+   * @param validationRule the validation rule that failed with the error message
+   * @returns the error message to display
+   */
+  onValidationError?: (error: { type: string; error: string }) => string;
+
   renderCell?: (
     object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
     locator: ColumnDefinitionLocator<Q, RDPs, FunctionColumns>,
@@ -228,16 +255,24 @@ export interface ObjectTableProps<
     >,
   ) => void;
 
+  onRowValueChanged?: (
+    event: CellEditEvent<
+      Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
+      unknown
+    >,
+  ) => void;
+
   /**
    * If provided, the button Submit Edits will be shown in the table
    *
    * @param edits an array of edit events containing details about the edited cells
    * including the rowId, columnId, new and old values, and the row data before the edit
+   * @param clearEdits a callback to clear all edits
    */
   onSubmitEdits?: (edits: CellEditEvent<
     Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
     unknown
-  >[]) => Promise<void>;
+  >[], clearEdits: () => void) => Promise<void>;
 
   /**
    * Called when the column visibility or ordering changed.
