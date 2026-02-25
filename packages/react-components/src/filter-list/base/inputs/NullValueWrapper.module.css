@@ -43,7 +43,6 @@
 }
 
 .count {
-  font-family: var(--osdk-typography-family-default);
   font-size: var(--osdk-typography-size-body-small);
   font-variant-numeric: tabular-nums;
   color: var(--osdk-typography-color-muted);

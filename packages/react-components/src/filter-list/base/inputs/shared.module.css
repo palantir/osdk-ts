@@ -18,7 +18,6 @@
 .loadingMessage,
 .errorMessage,
 .emptyMessage {
-  font-family: var(--osdk-typography-family-default);
   font-size: var(--osdk-typography-size-body-small);
   padding: var(--osdk-surface-spacing);
 }

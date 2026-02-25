@@ -52,13 +52,11 @@
 }
 
 .inputLabel {
-  font-family: var(--osdk-typography-family-default);
   font-size: var(--osdk-typography-size-body-small);
   color: var(--osdk-typography-color-muted);
 }
 
 .input {
-  font-family: var(--osdk-typography-family-default);
   font-size: var(--osdk-typography-size-body-small);
   padding: var(--osdk-filter-input-padding);
   border: var(--osdk-filter-input-border);

@@ -54,7 +54,6 @@
 
 .label {
   flex: 1;
-  font-family: var(--osdk-typography-family-default);
   font-size: var(--osdk-typography-size-body-medium);
   color: var(--osdk-typography-color-default-rest);
   overflow: hidden;
@@ -81,7 +80,6 @@
 }
 
 .count {
-  font-family: var(--osdk-typography-family-default);
   font-size: var(--osdk-typography-size-body-small);
   font-variant-numeric: tabular-nums;
   color: var(--osdk-typography-color-muted);

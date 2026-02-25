@@ -24,7 +24,6 @@
   display: flex;
   align-items: center;
   gap: var(--osdk-surface-spacing);
-  font-family: var(--osdk-typography-family-default);
   font-size: var(--osdk-typography-size-body-small);
   color: var(--osdk-typography-color-muted);
 }
@@ -59,7 +58,6 @@
 
 .input {
   flex: 1;
-  font-family: var(--osdk-typography-family-default);
   font-size: var(--osdk-typography-size-body-medium);
   padding: var(--osdk-filter-input-padding);
   border: var(--osdk-filter-input-border);

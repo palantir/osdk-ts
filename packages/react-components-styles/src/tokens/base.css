@@ -159,4 +159,6 @@
   --osdk-focus-visible-outline-offset: var(--osdk-emphasis-focus-offset);
   --osdk-surface-border: var(--osdk-surface-border-width) solid
     var(--osdk-surface-border-color-default);
+
+  font-family: var(--osdk-typography-family-default);
 }

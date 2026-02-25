@@ -21,7 +21,6 @@
 }
 
 .clearAll {
-  font-family: var(--osdk-typography-family-default);
   font-size: var(--osdk-typography-size-body-small);
   color: var(--osdk-intent-primary-rest);
   background: transparent;
@@ -40,7 +39,6 @@
 
 .input {
   flex: 1;
-  font-family: var(--osdk-typography-family-default);
   font-size: var(--osdk-typography-size-body-medium);
   padding: var(--osdk-filter-input-padding);
   border: var(--osdk-filter-input-border);
