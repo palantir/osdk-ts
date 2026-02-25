@@ -102,7 +102,7 @@ export class ListsHelper extends AbstractHelper<
       : undefined;
 
     const canonPivot = pivotTo
-      ? this.pivotCanonicalizer.canonicalize(apiName, pivotTo)
+      ? this.pivotCanonicalizer.canonicalize(apiName, type, pivotTo)
       : undefined;
 
     const canonRids = rids != null
