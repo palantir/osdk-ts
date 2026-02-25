@@ -98,7 +98,7 @@ export function usePropertyAggregation<
         maxCount = Math.max(maxCount, count);
       }
 
-      values.sort((a, b) => a.value.localeCompare(b.value));
+      values.sort((a, b) => b.count - a.count);
 
       if (options?.limit && values.length > options.limit) {
         return { data: values.slice(0, options.limit), maxCount };
