@@ -10,6 +10,8 @@ A TypeScript library for interacting with Palantir's Ontology.
 
 [![Node.js Version](https://img.shields.io/badge/node-%3E=18.19.0-brightgreen)](https://nodejs.org/)
 
+> **Note:** Supported Node versions are 18 (>=18.19.0), 20, 22, and 24. Node 25 is not supported.
+
 ## Packages
 
 | Package | Version |
@@ -119,3 +121,8 @@ For more details, refer to the [public docs](https://www.palantir.com/docs/found
 3. `pnpm install`
 4. `./scripts/createReleasePr.sh`
 5. Once your release PR has been merged, run `/scripts/tag-release.sh [COMMIT_SHA]` to tag your release.
+
+### Troubleshooting
+
+- If you run into errors when running `./scripts/createReleasePr.sh`, try running `pnpm install` first.
+- Make sure you are using a supported Node version (18, 20, 22, or 24). Node 22 is recommended. Node 25 is not supported.
