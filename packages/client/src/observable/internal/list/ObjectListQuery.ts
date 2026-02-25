@@ -16,9 +16,11 @@
 
 import type {
   DerivedProperty,
+  InterfaceDefinition,
   ObjectSet,
   ObjectTypeDefinition,
   Osdk,
+  WhereClause,
 } from "@osdk/api";
 import { additionalContext } from "../../../Client.js";
 import type { InterfaceHolder } from "../../../object/convertWireToOsdkObjects/InterfaceHolder.js";
@@ -54,14 +56,31 @@ export class ObjectListQuery extends ListQuery {
     } as ObjectTypeDefinition;
 
     if (pivotInfo != null) {
-      let sourceSet = store.client({
-        type: "object",
-        apiName: pivotInfo.sourceType,
-      } as ObjectTypeDefinition);
+      let sourceSet: ObjectSet<ObjectTypeDefinition>;
+      if (rids != null) {
+        sourceSet = clientCtx.objectSetFactory(
+          {
+            type: "object",
+            apiName: pivotInfo.sourceType,
+          } as ObjectTypeDefinition,
+          clientCtx,
+          { type: "static", objects: [...rids] },
+        );
+      } else {
+        sourceSet = (pivotInfo.sourceTypeKind === "interface"
+          ? store.client({
+            type: "interface",
+            apiName: pivotInfo.sourceType,
+          } as InterfaceDefinition)
+          : store.client({
+            type: "object",
+            apiName: pivotInfo.sourceType,
+          } as ObjectTypeDefinition)) as ObjectSet<ObjectTypeDefinition>;
+      }
 
-      // Filter source objects before pivoting to linked objects
-      sourceSet = sourceSet.where(this.canonicalWhere);
-      let objectSet = sourceSet.pivotTo(pivotInfo.linkName);
+      let objectSet = sourceSet
+        .where(this.canonicalWhere as WhereClause<any>)
+        .pivotTo(pivotInfo.linkName);
 
       if (rdpConfig != null) {
         objectSet = objectSet.withProperties(
@@ -69,25 +88,8 @@ export class ObjectListQuery extends ListQuery {
         );
       }
 
-      if (intersectWith != null && intersectWith.length > 0) {
-        const intersectSets = intersectWith.map(whereClause => {
-          let intersectSet = store.client({
-            type: "object",
-            apiName: pivotInfo.targetType,
-          } as ObjectTypeDefinition);
-
-          if (rdpConfig != null) {
-            intersectSet = intersectSet.withProperties(
-              rdpConfig as DerivedProperty.Clause<ObjectTypeDefinition>,
-            );
-          }
-
-          return intersectSet.where(whereClause);
-        });
-
-        objectSet = objectSet.intersect(...intersectSets);
-      }
-
+      // intersectWith for pivot queries is deferred to fetchPageData
+      // where the target type can be resolved asynchronously
       return objectSet;
     }
 
