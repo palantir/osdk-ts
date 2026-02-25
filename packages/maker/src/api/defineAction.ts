@@ -748,6 +748,8 @@ function extractAllowedValuesFromPropertyType(
       return { type: "attachment" };
     default:
       switch (type.type) {
+        case "decimal":
+          return { type: "range" };
         case "marking":
           return type.markingType === "CBAC"
             ? { type: "cbacMarking" }
@@ -772,6 +774,8 @@ function extractActionParameterType(
   const typeType = pt.type;
   if (typeof typeType === "object") {
     switch (typeType.type) {
+      case "decimal":
+        return maybeAddList("decimal", pt);
       case "marking":
         return maybeAddList("marking", pt);
       case "string":
