@@ -167,7 +167,7 @@ declare const process: {
   };
 };
 
-const $OBJECT__TYPE__PLACEHOLDER = "object-type-placeholder";
+const OBJECT_TYPE_PLACEHOLDER = "$__OBJECT__TYPE__PLACEHOLDER";
 /**
  * React hook for observing and interacting with OSDK object sets.
  *
@@ -194,7 +194,7 @@ export function useObjectSet<
   // Track object type to detect when we switch to a different object type
   const objectTypeKey = enabled
     ? baseObjectSet.$objectSetInternals.def.apiName
-    : $OBJECT__TYPE__PLACEHOLDER;
+    : OBJECT_TYPE_PLACEHOLDER;
 
   const previousObjectTypeRef = React.useRef<string>(objectTypeKey);
   const previousPayloadRef = React.useRef<
