@@ -1,5 +1,22 @@
 # @osdkkit/react
 
+## 0.10.0-beta.5
+
+### Minor Changes
+
+- 525f277: update useOsdkAggregation to support composed object sets, async
+- d80c234: add interface support to useOsdkObject
+- 996d8e4: memoize hook responses
+
+### Patch Changes
+
+- Updated dependencies [642be5f]
+- Updated dependencies [525f277]
+- Updated dependencies [f5f95e2]
+- Updated dependencies [d80c234]
+  - @osdk/client@2.8.0-beta.11
+  - @osdk/api@2.8.0-beta.11
+
 ## 0.10.0-beta.4
 
 ### Minor Changes
