@@ -88,9 +88,8 @@ export function EmployeesWithFilterList(props: EmployeesWithFilterListProps) {
   return (
     <>
       <div style={{ display: "flex", gap: "16px", height: "100%" }}>
-        <div>
+        <div style={{ minWidth: 280, maxWidth: 320 }}>
           <FilterList
-            style={{ minWidth: 280, maxWidth: 320 }}
             objectSet={$(Employee)}
             filterDefinitions={filterDefinitions}
             onFilterClauseChanged={setWhereClause}
