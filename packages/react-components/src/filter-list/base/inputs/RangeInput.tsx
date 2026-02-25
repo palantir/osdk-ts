@@ -121,22 +121,15 @@ function RangeInputInner<
     [config],
   );
 
-  const [prev, setPrev] = useState({ minValue, maxValue, config });
-  const configChanged = config !== prev.config;
-  const minChanged = minValue !== prev.minValue || configChanged;
-  const maxChanged = maxValue !== prev.maxValue || configChanged;
+  useEffect(() => {
+    setLocalMin(config.formatValue(minValue));
+    debouncedMinChange.cancel();
+  }, [minValue, config, debouncedMinChange]);
 
-  if (minChanged || maxChanged) {
-    setPrev({ minValue, maxValue, config });
-    if (minChanged) {
-      setLocalMin(config.formatValue(minValue));
-      debouncedMinChange.cancel();
-    }
-    if (maxChanged) {
-      setLocalMax(config.formatValue(maxValue));
-      debouncedMaxChange.cancel();
-    }
-  }
+  useEffect(() => {
+    setLocalMax(config.formatValue(maxValue));
+    debouncedMaxChange.cancel();
+  }, [maxValue, config, debouncedMaxChange]);
 
   useEffect(() => {
     return () => {
