@@ -49,18 +49,32 @@ export function SelectionCell<TData extends RowData>({
   onToggleRow,
 }: SelectionCellProps<TData>): React.ReactElement {
   const handleClick = useCallback(
-    (event: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
+    (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+      event.stopPropagation();
       const isShiftClick = event.shiftKey;
       onToggleRow(row.id, row.index, isShiftClick);
     },
-    [row, onToggleRow],
+    [onToggleRow, row.id, row.index],
+  );
+
+  const handleKeyDown = useCallback(
+    (event: React.KeyboardEvent<HTMLDivElement>) => {
+      // TODO: support shift + space
+      // It looks like when we handle shift key here, the checkbox gets toggled twice
+      if (event.key === "Enter") {
+        const isShiftClick = event.shiftKey;
+        onToggleRow(row.id, row.index, isShiftClick);
+      }
+    },
+    [onToggleRow, row.id, row.index],
   );
 
   return (
-    <Checkbox
-      checked={row.getIsSelected()}
-      onClick={handleClick}
-      aria-label={`Select row ${row.index + 1}`}
-    />
+    <div onClick={handleClick} onKeyDown={handleKeyDown}>
+      <Checkbox
+        checked={row.getIsSelected()}
+        aria-label={`Select row ${row.index + 1}`}
+      />
+    </div>
   );
 }
