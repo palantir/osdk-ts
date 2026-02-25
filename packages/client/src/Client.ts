@@ -21,7 +21,6 @@ import type {
   InterfaceDefinition,
   InterfaceMetadata,
   ObjectMetadata,
-  ObjectOrInterfaceDefinition,
   ObjectSet,
   ObjectTypeDefinition,
   QueryDefinition,
@@ -52,11 +51,14 @@ export type CheckVersionBound<Q> = Q extends VersionBound<infer V> ? (
   : Q;
 
 export interface Client extends SharedClient, OldSharedClient {
-  <Q extends ObjectOrInterfaceDefinition>(
+  <Q extends ObjectTypeDefinition>(
     o: Q,
-  ): unknown extends CompileTimeMetadata<Q>["objectSet"] ? (
-      Q extends ObjectTypeDefinition ? ObjectSet<Q> : MinimalObjectSet<Q>
-    )
+  ): unknown extends CompileTimeMetadata<Q>["objectSet"] ? ObjectSet<Q>
+    : CompileTimeMetadata<Q>["objectSet"];
+
+  <Q extends (InterfaceDefinition)>(
+    o: Q,
+  ): unknown extends CompileTimeMetadata<Q>["objectSet"] ? MinimalObjectSet<Q>
     : CompileTimeMetadata<Q>["objectSet"];
 
   <Q extends ActionDefinition<any>>(
