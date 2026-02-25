@@ -530,7 +530,7 @@ describe("queries", () => {
       };
 
       const result = await client(queryAcceptsMediaReference).executeFunction({
-        media: { data: new Blob(), fileName: "test.png" },
+        media: mediaRef,
       });
 
       expectTypeOf<typeof result>().toEqualTypeOf<Media>();

@@ -19,9 +19,11 @@ import { MediaSets } from "@osdk/foundry.mediasets";
 import type { MinimalClient } from "./MinimalClientContext.js";
 
 /**
+ * @internal
  * Creates a Media object from a MediaReference for query results.
  * Unlike MediaReferencePropertyImpl, this doesn't require object context
- * and directly accesses the media set APIs.
+ * and directly accesses the media set APIs. This is intended for MediaReferences returned
+ * from query results or to be used by the functions runtime,
  */
 export function createMediaFromReference(
   client: MinimalClient,
@@ -29,10 +31,7 @@ export function createMediaFromReference(
 ): Media {
   const { mediaSetRid, mediaItemRid } =
     mediaReference.reference.mediaSetViewItem;
-  const token = mediaReference.reference.mediaSetViewItem.token
-    // eslint-disable-next-line @typescript-eslint/no-deprecated -- Support legacy readToken for backwards compatibility
-    ?? mediaReference.reference.mediaSetViewItem.readToken;
-
+  const token = mediaReference.reference.mediaSetViewItem.token;
   return {
     async fetchContents(): Promise<Response> {
       return MediaSets.read(
@@ -53,7 +52,6 @@ export function createMediaFromReference(
         token ? { ReadToken: token } : undefined,
       );
 
-      // Extract common info from GetMediaItemInfoResponse
       const info = await MediaSets.info(
         client,
         mediaSetRid,
@@ -62,13 +60,10 @@ export function createMediaFromReference(
         token ? { ReadToken: token } : undefined,
       );
 
-      // All MediaItemMetadata subtypes have sizeBytes
-      const sizeBytes = "sizeBytes" in metadata ? metadata.sizeBytes : 0;
-
       return {
         path: info.path,
-        sizeBytes,
-        mediaType: mediaReference.mimeType,
+        sizeBytes: metadata.sizeBytes,
+        mediaType: undefined as any, // Media type is not currently returned by the API, so we return undefined here. This can be updated when the API returns media type.
       };
     },
 
