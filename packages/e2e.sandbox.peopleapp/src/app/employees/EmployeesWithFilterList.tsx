@@ -16,8 +16,8 @@
 
 import type { WhereClause } from "@osdk/api";
 import {
-  BaseFilterList,
   type FilterDefinitionUnion,
+  FilterList,
 } from "@osdk/react-components/experimental";
 import { useOsdkObjects } from "@osdk/react/experimental";
 import "@osdk/react-components/styles.css";
@@ -89,7 +89,7 @@ export function EmployeesWithFilterList(props: EmployeesWithFilterListProps) {
     <>
       <div style={{ display: "flex", gap: "16px", height: "100%" }}>
         <div>
-          <BaseFilterList
+          <FilterList
             style={{ minWidth: 280, maxWidth: 320 }}
             objectSet={$(Employee)}
             filterDefinitions={filterDefinitions}
