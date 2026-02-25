@@ -48,19 +48,30 @@ export function SelectionCell<TData extends RowData>({
   row,
   onToggleRow,
 }: SelectionCellProps<TData>): React.ReactElement {
+  // Prevents onRowClick from being triggered when clicking the checkbox
   const handleClick = useCallback(
-    (event: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
-      const isShiftClick = event.shiftKey;
+    (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+      event.stopPropagation();
+    },
+    [],
+  );
+
+  const handleCheckedChange = useCallback(
+    (_: boolean, eventDetails: { event: Event }) => {
+      const isShiftClick = eventDetails.event instanceof MouseEvent
+        && eventDetails.event.shiftKey;
       onToggleRow(row.id, row.index, isShiftClick);
     },
-    [row, onToggleRow],
+    [row.id, row.index, onToggleRow],
   );
 
   return (
-    <Checkbox
-      checked={row.getIsSelected()}
-      onClick={handleClick}
-      aria-label={`Select row ${row.index + 1}`}
-    />
+    <div onClick={handleClick}>
+      <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={handleCheckedChange}
+        aria-label={`Select row ${row.index + 1}`}
+      />
+    </div>
   );
 }
