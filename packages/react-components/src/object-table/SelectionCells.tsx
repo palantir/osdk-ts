@@ -48,28 +48,31 @@ export function SelectionCell<TData extends RowData>({
   row,
   onToggleRow,
 }: SelectionCellProps<TData>): React.ReactElement {
-  // Prevents onRowClick from being triggered when clicking the checkbox
   const handleClick = useCallback(
     (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
       event.stopPropagation();
-    },
-    [],
-  );
-
-  const handleCheckedChange = useCallback(
-    (_: boolean, eventDetails: { event: Event }) => {
-      const isShiftClick = eventDetails.event instanceof MouseEvent
-        && eventDetails.event.shiftKey;
+      const isShiftClick = event.shiftKey;
       onToggleRow(row.id, row.index, isShiftClick);
     },
-    [row.id, row.index, onToggleRow],
+    [onToggleRow, row.id, row.index],
+  );
+
+  const handleKeyDown = useCallback(
+    (event: React.KeyboardEvent<HTMLDivElement>) => {
+      // TODO: support shift + space
+      // It looks like when we handle shift key here, the checkbox gets toggled twice
+      if (event.key === "Enter") {
+        const isShiftClick = event.shiftKey;
+        onToggleRow(row.id, row.index, isShiftClick);
+      }
+    },
+    [onToggleRow, row.id, row.index],
   );
 
   return (
-    <div onClick={handleClick}>
+    <div onClick={handleClick} onKeyDown={handleKeyDown}>
       <Checkbox
         checked={row.getIsSelected()}
-        onCheckedChange={handleCheckedChange}
         aria-label={`Select row ${row.index + 1}`}
       />
     </div>
