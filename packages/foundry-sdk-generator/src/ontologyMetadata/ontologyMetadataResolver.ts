@@ -725,6 +725,7 @@ export class OntologyMetadataResolver {
       case "float":
       case "integer":
       case "long":
+      case "mediaReference":
       case "threeDimensionalAggregation":
       case "timestamp":
       case "twoDimensionalAggregation":

@@ -31,6 +31,7 @@ import type {
 import type { DataValue } from "@osdk/foundry.ontologies";
 import * as OntologiesV2 from "@osdk/foundry.ontologies";
 import invariant from "tiny-invariant";
+import { createMediaFromReference } from "../createMediaFromReference.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { createObjectSet } from "../objectSet/createObjectSet.js";
 import { hydrateAttachmentFromRidInternal } from "../public-utils/hydrateAttachmentFromRid.js";
@@ -169,6 +170,15 @@ async function remapQueryResponse<
         client,
         responseValue,
       ) as QueryReturnType<
+        typeof responseDataType
+      >;
+    }
+
+    case "mediaReference": {
+      return createMediaFromReference(
+        client,
+        responseValue,
+      ) as unknown as QueryReturnType<
         typeof responseDataType
       >;
     }
@@ -380,6 +390,7 @@ async function getRequiredDefinitions(
     case "float":
     case "integer":
     case "long":
+    case "mediaReference":
     case "string":
     case "threeDimensionalAggregation":
     case "timestamp":
@@ -416,6 +427,7 @@ function requiresConversion(dataType: QueryDataTypeDefinition) {
       return requiresConversion(dataType.set);
 
     case "attachment":
+    case "mediaReference":
     case "objectSet":
     case "twoDimensionalAggregation":
     case "threeDimensionalAggregation":

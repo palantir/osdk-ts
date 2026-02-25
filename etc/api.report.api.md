@@ -1602,6 +1602,8 @@ export namespace QueryParam {
         		$primaryKey: string | number
         	};
     	// (undocumented)
+    export type MediaType = Media | MediaReference | MediaUpload;
+    	// (undocumented)
     export type ObjectSetType<T extends ObjectOrInterfaceDefinition> = ObjectSet<T>;
     	// (undocumented)
     export type ObjectType<T extends ObjectOrInterfaceDefinition> = ObjectIdentifiers<T> | OsdkObjectPrimaryKeyType<T>;
@@ -1638,6 +1640,8 @@ export type QueryParameterDefinition<T_Target extends ObjectTypeDefinition = any
 export namespace QueryResult {
     	// (undocumented)
     export type InterfaceType<T extends ObjectOrInterfaceDefinition> = OsdkBase<T>;
+    	// (undocumented)
+    export type MediaType = Media;
     	// (undocumented)
     export type ObjectSetType<T extends ObjectOrInterfaceDefinition> = ObjectSet<T>;
     	// (undocumented)

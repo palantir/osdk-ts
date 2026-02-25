@@ -80,7 +80,8 @@ export type WireQueryDataTypes =
   | "string"
   | "date"
   | "timestamp"
-  | "attachment";
+  | "attachment"
+  | "mediaReference";
 
 export type PrimitiveDataType<
   Q extends WireQueryDataTypes = WireQueryDataTypes,

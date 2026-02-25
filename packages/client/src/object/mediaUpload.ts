@@ -14,7 +14,15 @@
  * limitations under the License.
  */
 
-import type { MediaReference, MediaUpload } from "@osdk/api";
+import type { Media, MediaReference, MediaUpload } from "@osdk/api";
+
+export function isMedia(o: any): o is Media {
+  return typeof o === "object"
+    && o != null
+    && typeof o.fetchMetadata === "function"
+    && typeof o.fetchContents === "function"
+    && typeof o.getMediaReference === "function";
+}
 
 export function isMediaReference(o: any): o is MediaReference {
   return typeof o === `object`

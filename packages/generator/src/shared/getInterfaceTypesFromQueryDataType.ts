@@ -54,6 +54,7 @@ export function getInterfaceTypesFromQueryDataType(
     case "float":
     case "integer":
     case "long":
+    case "mediaReference":
     case "null":
     case "string":
     case "threeDimensionalAggregation":

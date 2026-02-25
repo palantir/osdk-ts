@@ -42,6 +42,7 @@ export function wireQueryDataTypeToQueryDataTypeDefinition<
     case "date":
     case "string":
     case "timestamp":
+    case "mediaReference":
       return {
         type: input.type,
         nullable: false,

@@ -310,6 +310,9 @@ export function getQueryParamType(
     case "timestamp":
       paramType = `Query${type}.PrimitiveType<${JSON.stringify(input.type)}>`;
       break;
+    case "mediaReference":
+      paramType = `Query${type}.MediaType`;
+      break;
     case "struct":
       paramType = `{
             ${
