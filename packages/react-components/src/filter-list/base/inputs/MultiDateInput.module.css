@@ -21,13 +21,13 @@
 }
 
 .clearAll {
-  font-family: var(--bp-typography-family-default);
-  font-size: var(--bp-typography-size-bodySmall);
-  color: var(--bp-intent-primary-rest);
+  font-family: var(--osdk-typography-family-default);
+  font-size: var(--osdk-typography-size-body-small);
+  color: var(--osdk-intent-primary-rest);
   background: transparent;
   border: none;
   cursor: pointer;
-  padding: calc(var(--bp-surface-spacing) * 0.5);
+  padding: calc(var(--osdk-surface-spacing) * 0.5);
 
   &:hover {
     text-decoration: underline;
@@ -40,8 +40,8 @@
 
 .input {
   flex: 1;
-  font-family: var(--bp-typography-family-default);
-  font-size: var(--bp-typography-size-bodyMedium);
+  font-family: var(--osdk-typography-family-default);
+  font-size: var(--osdk-typography-size-body-medium);
   padding: var(--osdk-filter-input-padding);
   border: var(--osdk-filter-input-border);
   border-radius: var(--osdk-filter-input-border-radius);

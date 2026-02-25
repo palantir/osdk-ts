@@ -17,7 +17,7 @@
 .rangeInput {
   display: flex;
   flex-direction: column;
-  gap: var(--osdk-filter-range-gap, calc(var(--bp-surface-spacing) * 2));
+  gap: var(--osdk-filter-range-gap, calc(var(--osdk-surface-spacing) * 2));
 }
 
 .histogramContainer {
@@ -29,37 +29,37 @@
 
 .histogramBar {
   flex: 1;
-  background: var(--osdk-filter-range-histogram-bar-color, var(--bp-palette-gray-200));
+  background: var(--osdk-filter-range-histogram-bar-color, var(--osdk-custom-color-gray-3));
   min-width: var(--osdk-filter-range-histogram-bar-min-width, 4px);
-  transition: background-color var(--bp-emphasis-transitionDuration) var(--bp-emphasis-ease-default);
+  transition: background-color var(--osdk-emphasis-transition-duration) var(--osdk-emphasis-ease-default);
 }
 
 .histogramBar[data-in-range="true"] {
-  background: var(--osdk-filter-range-histogram-bar-active-color, var(--bp-intent-primary-rest));
+  background: var(--osdk-filter-range-histogram-bar-active-color, var(--osdk-intent-primary-rest));
 }
 
 .rangeInputs {
   display: flex;
   align-items: flex-end;
-  gap: var(--osdk-filter-range-inputs-gap, calc(var(--bp-surface-spacing) * 2));
+  gap: var(--osdk-filter-range-inputs-gap, calc(var(--osdk-surface-spacing) * 2));
 }
 
 .inputWrapper {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: var(--osdk-filter-range-input-wrapper-gap, calc(var(--bp-surface-spacing) * 1));
+  gap: var(--osdk-filter-range-input-wrapper-gap, calc(var(--osdk-surface-spacing) * 1));
 }
 
 .inputLabel {
-  font-family: var(--bp-typography-family-default);
-  font-size: var(--bp-typography-size-bodySmall);
-  color: var(--bp-typography-colorMuted);
+  font-family: var(--osdk-typography-family-default);
+  font-size: var(--osdk-typography-size-body-small);
+  color: var(--osdk-typography-color-muted);
 }
 
 .input {
-  font-family: var(--bp-typography-family-default);
-  font-size: var(--bp-typography-size-bodySmall);
+  font-family: var(--osdk-typography-family-default);
+  font-size: var(--osdk-typography-size-body-small);
   padding: var(--osdk-filter-input-padding);
   border: var(--osdk-filter-input-border);
   border-radius: var(--osdk-filter-input-border-radius);
@@ -78,6 +78,6 @@
 }
 
 .separator {
-  padding-bottom: calc(var(--bp-surface-spacing) * 1.5);
-  color: var(--bp-typography-colorMuted);
+  padding-bottom: calc(var(--osdk-surface-spacing) * 1.5);
+  color: var(--osdk-typography-color-muted);
 }
