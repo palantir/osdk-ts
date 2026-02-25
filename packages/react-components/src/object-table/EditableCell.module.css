@@ -1,15 +1,10 @@
-.editableCellWrapper {
-  width: 100%;
-  display: inline-block;
-}
+.osdkEditableCell {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--osdk-surface-spacing);
 
-.osdkEditableInput {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  text-align: left;
   padding: var(--osdk-surface-spacing) calc(var(--osdk-surface-spacing) * 3);
-  width: 100%;
   border-radius: var(--osdk-surface-border-radius);
   border: var(--osdk-surface-border-width) solid transparent;
   background: inherit;
@@ -45,19 +40,24 @@
   background: var(--osdk-table-cell-editable-bg);
 }
 
-.tooltipPopup {
-  padding: calc(var(--osdk-surface-spacing) * 1.5)
-    calc(var(--osdk-surface-spacing) * 2);
-  background: var(--osdk-palette-gray-2);
-  color: var(--osdk-palette-white);
-  font-size: var(--osdk-typography-size-body-x-small);
-  font-weight: var(--osdk-typography-weight-default);
-  border-radius: var(--osdk-surface-border-radius);
+.osdkEditableInput {
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
-  box-shadow: var(--osdk-surface-shadow-2);
-  max-width: 300px;
+  text-align: left;
+
+  &:focus {
+    outline: none;
+  }
 }
 
-.tooltipArrow {
-  fill: var(--osdk-palette-gray-2);
+.validationError {
+  display: flex;
+  align-items: center;
+  gap: var(--osdk-surface-spacing);
+}
+
+.errorIcon {
+  color: var(--osdk-intent-danger-rest);
 }

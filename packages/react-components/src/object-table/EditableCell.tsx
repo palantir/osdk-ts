@@ -15,9 +15,10 @@
  */
 
 import { Input } from "@base-ui/react/input";
-import { Tooltip } from "@base-ui/react/tooltip";
+import { Error } from "@blueprintjs/icons";
 import classNames from "classnames";
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import { Tooltip } from "../base-components/tooltip/Tooltip.js";
 import styles from "./EditableCell.module.css";
 import type { CellEditEvent } from "./utils/types.js";
 
@@ -180,26 +181,36 @@ export function EditableCell<TData = unknown>({
 
   return (
     <Tooltip.Provider>
-      <Tooltip.Root>
-        <Tooltip.Trigger className={styles.editableCellWrapper}>
-          <Input
-            className={classNames(styles.osdkEditableInput, {
+      <Tooltip.Root disabled={!validationError}>
+        <Tooltip.Trigger>
+          <div
+            className={classNames(styles.osdkEditableCell, {
               [styles.invalid]: !!validationError,
               [styles.osdkEditedInput]: isEdited,
             })}
-            type={inputType}
-            value={inputValue}
-            onValueChange={handleChange}
-            onBlur={handleBlur}
-            onKeyDown={handleKeyDown}
-            aria-invalid={!!validationError}
-          />
+          >
+            <Input
+              type={inputType}
+              value={inputValue}
+              className={styles.osdkEditableInput}
+              onValueChange={handleChange}
+              onBlur={handleBlur}
+              onKeyDown={handleKeyDown}
+              aria-invalid={!!validationError}
+            />
+            {validationError && <Error className={styles.errorIcon} />}
+          </div>
         </Tooltip.Trigger>
         <Tooltip.Portal>
-          <Tooltip.Positioner sideOffset={4}>
-            <Tooltip.Popup className={styles.tooltipPopup}>
-              {validationError}
-              <Tooltip.Arrow className={styles.tooltipArrow} />
+          <Tooltip.Positioner sideOffset={4} side={"bottom"}>
+            <Tooltip.Popup>
+              {
+                <div className={styles.validationError}>
+                  <Error className={styles.errorIcon} />
+                  {validationError}
+                </div>
+              }
+              <Tooltip.Arrow />
             </Tooltip.Popup>
           </Tooltip.Positioner>
         </Tooltip.Portal>
