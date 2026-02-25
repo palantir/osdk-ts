@@ -1,5 +1,11 @@
 # @osdk/cli
 
+## 0.31.1
+
+### Patch Changes
+
+- 5c265e4: Handle ScanningInProgress error for site deploy command
+
 ## 0.31.0
 
 ### Patch Changes
