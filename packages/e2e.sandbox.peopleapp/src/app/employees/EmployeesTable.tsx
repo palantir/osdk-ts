@@ -97,7 +97,7 @@ export function EmployeesTable() {
       console.log("Edits to submit:", edits);
       try {
         // Process each edit and call modifyEmployee action
-        const rowEditsMap: Record<string, Partial<Employee>> = {};
+        const rowEditsMap: Record<string, Record<string, any>> = {};
         const actionPromises: Promise<any>[] = [];
         for (const edit of edits) {
           const { rowId, columnId, newValue, rowData } = edit;
@@ -107,7 +107,7 @@ export function EmployeesTable() {
           if (!rowEditsMap[rowId]) {
             rowEditsMap[rowId] = {};
           }
-          rowEditsMap[rowId][columnId as keyof Employee] = newValue;
+          rowEditsMap[rowId][columnId] = newValue;
         }
         for (const [rowId, updatedFields] of Object.entries(rowEditsMap)) {
           actionPromises.push(applyAction({
