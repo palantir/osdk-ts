@@ -1,5 +1,21 @@
 # @osdk/client
 
+## 2.8.0-beta.11
+
+### Minor Changes
+
+- 642be5f: fix divide() sending wrong wire type and clean up list query view
+- 525f277: update useOsdkAggregation to support composed object sets, async
+- f5f95e2: support interface link constraints
+- d80c234: add interface support to useOsdkObject
+
+### Patch Changes
+
+- Updated dependencies [f487a6a]
+  - @osdk/client.unstable@2.8.0-beta.11
+  - @osdk/api@2.8.0-beta.11
+  - @osdk/generator-converters@2.8.0-beta.11
+
 ## 2.8.0-beta.10
 
 ### Minor Changes

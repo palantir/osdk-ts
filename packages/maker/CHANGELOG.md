@@ -1,5 +1,17 @@
 # @osdk/maker
 
+## 0.16.0-beta.7
+
+### Minor Changes
+
+- f487a6a: Maker experimental
+- acb4ed6: Support custom decimal types
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.11
+- @osdk/generator-converters.ontologyir@2.8.0-beta.11
+
 ## 0.16.0-beta.6
 
 ### Minor Changes

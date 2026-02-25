@@ -1,5 +1,11 @@
 # @osdk/client.unstable
 
+## 2.8.0-beta.11
+
+### Minor Changes
+
+- f487a6a: Maker experimental
+
 ## 2.8.0-beta.10
 
 ### Minor Changes
