@@ -176,7 +176,7 @@ export interface ObjectTableProps<
    * If true, editable cells are immediately in edit mode when clicked.
    * If false, an Edit Table button will be shown, and cells will only enter edit mode when the user clicks the Edit button.
    *
-   * Note: In edit mode, onRowClick is not supported.
+   * Note: In edit mode, onRowClick will not be called.
    *
    * @default true
    */

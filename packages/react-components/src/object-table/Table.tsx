@@ -221,6 +221,7 @@ export function BaseTable<
                   headerGroups={headerGroups}
                   focusedRowId={focusedRowId}
                   setFocusedRowId={setFocusedRowId}
+                  isInEditMode={isInEditMode}
                 />
               </>
             )}

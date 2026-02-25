@@ -30,6 +30,7 @@ interface TableRowProps<TData extends RowData> {
   ) => React.ReactNode;
   focusedRowId?: string | null;
   setFocusedRowId?: (rowId: string | null) => void;
+  isInEditMode?: boolean;
 }
 
 export function TableRow<TData extends RowData>({
@@ -39,11 +40,15 @@ export function TableRow<TData extends RowData>({
   renderCellContextMenu,
   focusedRowId,
   setFocusedRowId,
+  isInEditMode,
 }: TableRowProps<TData>): React.ReactElement {
   const handleClick = useCallback(() => {
     setFocusedRowId?.(row.id);
-    onRowClick?.(row.original);
-  }, [onRowClick, row.original, row.id, setFocusedRowId]);
+
+    if (!isInEditMode) {
+      onRowClick?.(row.original);
+    }
+  }, [isInEditMode, onRowClick, row.original, row.id, setFocusedRowId]);
 
   return (
     <tr
