@@ -1,5 +1,11 @@
 # @osdkkit/react
 
+## 0.9.1
+
+### Patch Changes
+
+- 17d4115: add interface support to useOsdkObject
+
 ## 0.9.0
 
 ### Minor Changes
