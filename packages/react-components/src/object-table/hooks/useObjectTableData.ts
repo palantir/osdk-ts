@@ -18,6 +18,7 @@ import type {
   DerivedProperty,
   ObjectOrInterfaceDefinition,
   ObjectSet,
+  ObjectTypeDefinition,
   PropertyKeys,
   QueryDefinition,
   SimplePropertyDef,
@@ -31,6 +32,15 @@ import type { ColumnDefinition, ObjectSetOptions } from "../ObjectTableApi.js";
 
 const PAGE_SIZE = 50;
 
+type WithProperties<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<
+    string,
+    never
+  >,
+> = {
+  [K in keyof RDPs]: DerivedProperty.Creator<Q, RDPs[K]>;
+};
 /**
  * This hook is a wrapper that conditionally uses either useObjectSet or useOsdkObjects
  * based on whether an objectSet prop is provided.
@@ -85,16 +95,14 @@ export function useObjectTableData<
       return;
     }
 
-    return rdpColumns.reduce<
-      { [K in keyof RDPs]: DerivedProperty.Creator<Q, RDPs[K]> }
-    >(
+    return rdpColumns.reduce<WithProperties<Q, RDPs>>(
       (acc, cur) => {
         return {
           ...acc,
           [cur.id]: cur.creator,
         };
       },
-      {} as { [K in keyof RDPs]: DerivedProperty.Creator<Q, RDPs[K]> },
+      {} as WithProperties<Q, RDPs>,
     );
   }, [columnDefinitions]);
 
@@ -102,13 +110,16 @@ export function useObjectTableData<
   const isObjectType = objectOrInterfaceType.type === "object";
   const shouldUseObjectSet = !!objectSet && isObjectType;
 
-  // "as any" needed due to generic constraint
-  // useObjectSet requires an ObjectTypeDefinition, but Q can be either ObjectTypeDefinition or InterfaceTypeDefinition
+  // When shouldUseObjectSet is true, we know objectSet is defined
+  // and objectOrInterfaceType is an ObjectTypeDefinition
   const objectSetResult = useObjectSet(
-    objectSet as any,
+    shouldUseObjectSet ? objectSet as ObjectSet<Q> : undefined as any,
     {
-      ...(objectSetOptions as any),
-      withProperties: withProperties as any,
+      ...(objectSetOptions as ObjectSetOptions<ObjectTypeDefinition>),
+      withProperties: withProperties as WithProperties<
+        ObjectTypeDefinition,
+        RDPs
+      >,
       where: filter,
       orderBy,
       pageSize: PAGE_SIZE,

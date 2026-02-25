@@ -378,7 +378,7 @@ describe(useObjectTableData, () => {
     );
 
     expect(useObjectSet).toHaveBeenCalledWith(
-      expect.anything(),
+      undefined,
       expect.objectContaining({
         enabled: false,
         pageSize: 50,
