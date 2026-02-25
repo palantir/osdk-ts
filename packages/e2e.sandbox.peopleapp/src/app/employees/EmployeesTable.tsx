@@ -1,6 +1,5 @@
 import type { DerivedProperty, Osdk } from "@osdk/api";
 import type {
-  CellIdentifier,
   CellValueState,
   ColumnDefinition,
 } from "@osdk/react-components/experimental";
@@ -90,32 +89,8 @@ export function EmployeesTable() {
 
   const handleSubmitEdits = useCallback(
     async (edits: Record<string, CellValueState>) => {
-      try {
-        // Process each edit and call modifyEmployee action
-        const editEntries = Object.entries(edits);
-        const rowEditsMap: Record<string, Partial<Employee>> = {};
-        const actionPromises: Promise<any>[] = [];
-        for (const [cellId, state] of editEntries) {
-          const cellIdentifier = JSON.parse(cellId) as CellIdentifier;
-          const { rowId, columnId } = cellIdentifier;
-
-          if (!rowEditsMap[rowId]) {
-            rowEditsMap[rowId] = {};
-          }
-          rowEditsMap[rowId][columnId as keyof Employee] = state
-            .newValue as never;
-        }
-        for (const [rowId, updatedFields] of Object.entries(rowEditsMap)) {
-          actionPromises.push(applyAction({
-            employee: Number(rowId),
-            ...updatedFields,
-          }));
-        }
-        await Promise.all(actionPromises);
-      } catch (error) {
-        console.error("Failed to submit edits:", error);
-        throw error;
-      }
+      console.log("Submitting edits:", edits);
+      return Promise.resolve();
     },
     [applyAction],
   );
