@@ -29,3 +29,7 @@
 .clearButton {
   flex-shrink: 0;
 }
+
+.count {
+  font-variant-numeric: tabular-nums;
+}

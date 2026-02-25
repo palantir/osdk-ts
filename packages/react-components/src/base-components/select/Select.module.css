@@ -20,7 +20,7 @@
   justify-content: space-between;
   gap: var(--osdk-select-spacing, var(--bp-surface-spacing));
   width: 100%;
-  min-height: 30px;
+  min-height: var(--osdk-select-min-height, 30px);
   padding: calc(var(--osdk-select-spacing, var(--bp-surface-spacing)) * 1.5)
     calc(var(--osdk-select-spacing, var(--bp-surface-spacing)) * 2.5);
   box-sizing: border-box;
@@ -54,7 +54,7 @@
 
   &[data-disabled] {
     cursor: not-allowed;
-    opacity: 0.5;
+    opacity: var(--osdk-disabled-opacity, 0.5);
   }
 
   &[data-popup-open] {
@@ -133,6 +133,6 @@
 
   &[data-disabled] {
     cursor: not-allowed;
-    opacity: 0.5;
+    opacity: var(--osdk-disabled-opacity, 0.5);
   }
 }

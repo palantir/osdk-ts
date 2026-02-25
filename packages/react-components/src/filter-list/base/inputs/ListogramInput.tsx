@@ -21,7 +21,7 @@ import type {
   WhereClause,
 } from "@osdk/api";
 import classnames from "classnames";
-import React, { memo, useCallback, useMemo, useState } from "react";
+import React, { memo, useCallback, useMemo, useRef, useState } from "react";
 import { usePropertyAggregation } from "../../hooks/usePropertyAggregation.js";
 import styles from "./ListogramInput.module.css";
 import sharedStyles from "./shared.module.css";
@@ -39,8 +39,6 @@ interface ListogramInputProps<
   className?: string;
   style?: React.CSSProperties;
   maxVisibleItems?: number;
-  barColor?: string;
-  selectedBarColor?: string;
 }
 
 function ListogramInputInner<
@@ -55,8 +53,6 @@ function ListogramInputInner<
   className,
   style,
   maxVisibleItems,
-  barColor,
-  selectedBarColor,
 }: ListogramInputProps<Q, K>): React.ReactElement {
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -66,15 +62,26 @@ function ListogramInputInner<
     { where: whereClause },
   );
 
+  const selectedSet = useMemo(() => new Set(selectedValues), [selectedValues]);
+
+  const selectedValuesRef = useRef(selectedValues);
+  selectedValuesRef.current = selectedValues;
+  const selectedSetRef = useRef(selectedSet);
+  selectedSetRef.current = selectedSet;
+  const onChangeRef = useRef(onChange);
+  onChangeRef.current = onChange;
+
   const toggleValue = useCallback(
     (value: string) => {
-      if (selectedValues.includes(value)) {
-        onChange(selectedValues.filter((v) => v !== value));
+      if (selectedSetRef.current.has(value)) {
+        onChangeRef.current(
+          selectedValuesRef.current.filter((v) => v !== value),
+        );
       } else {
-        onChange([...selectedValues, value]);
+        onChangeRef.current([...selectedValuesRef.current, value]);
       }
     },
-    [selectedValues, onChange],
+    [],
   );
 
   const displayValues = useMemo(() => {
@@ -108,15 +115,11 @@ function ListogramInputInner<
         </div>
       )}
 
-      {values.length > 0 && (
+      {(values.length > 0 || isLoading) && (
         <div className={styles.container}>
           {displayValues.map(({ value, count }) => {
-            const isSelected = selectedValues.includes(value);
+            const isSelected = selectedSet.has(value);
             const percentage = maxCount > 0 ? (count / maxCount) * 100 : 0;
-            const fillColor = isSelected
-              ? (selectedBarColor
-                ?? "var(--osdk-filter-listogram-selected-color)")
-              : (barColor ?? "var(--osdk-filter-listogram-bar-color)");
 
             return (
               <button
@@ -125,9 +128,6 @@ function ListogramInputInner<
                 className={styles.row}
                 onClick={() => toggleValue(value)}
                 aria-pressed={isSelected}
-                style={{
-                  "--bar-fill-color": fillColor,
-                } as React.CSSProperties}
               >
                 <span className={styles.label}>{value}</span>
                 <span className={styles.bar}>

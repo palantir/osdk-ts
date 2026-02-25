@@ -111,7 +111,7 @@ function SingleSelectInputInner<
         </div>
       )}
 
-      {values.length > 0 && (
+      {(values.length > 0 || isLoading) && (
         <div className={styles.selectContainer}>
           <Select.Root<string>
             value={selectedValue ?? null}

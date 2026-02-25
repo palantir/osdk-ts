@@ -104,7 +104,7 @@ function MultiSelectInputInner<
         </div>
       )}
 
-      {values.length > 0 && (
+      {(values.length > 0 || isLoading) && (
         <Combobox.Root<string, true>
           multiple
           value={selectedValues}
@@ -164,7 +164,7 @@ function MultiSelectInputInner<
                   : values.map(({ value, count }) => (
                     <Combobox.Item key={value} value={value}>
                       <span>{value}</span>
-                      <span style={{ fontVariantNumeric: "tabular-nums" }}>
+                      <span className={styles.count}>
                         ({count.toLocaleString()})
                       </span>
                     </Combobox.Item>

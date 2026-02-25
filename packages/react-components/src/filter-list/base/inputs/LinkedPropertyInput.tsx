@@ -203,147 +203,161 @@ function LinkedPropertyInputInner<
     [wrappedOnChange],
   );
 
+  const selectStringValues = useMemo(
+    () =>
+      innerState?.type === "SELECT"
+        ? coerceToStringArray(innerState.selectedValues)
+        : [],
+    [innerState],
+  );
+
+  const singleSelectValue = useMemo(
+    () =>
+      innerState?.type === "SELECT"
+        ? coerceToString(innerState.selectedValues[0])
+        : undefined,
+    [innerState],
+  );
+
+  const exactMatchValues = useMemo(
+    () =>
+      innerState?.type === "EXACT_MATCH"
+        ? coerceToStringArray(innerState.values)
+        : [],
+    [innerState],
+  );
+
+  const selectedDates = useMemo(
+    () =>
+      innerState?.type === "SELECT"
+        ? innerState.selectedValues.filter(
+          (v): v is Date => v instanceof Date,
+        )
+        : [],
+    [innerState],
+  );
+
+  const selectedDate = useMemo(
+    () =>
+      innerState?.type === "SELECT"
+        && innerState.selectedValues[0] instanceof Date
+        ? innerState.selectedValues[0]
+        : undefined,
+    [innerState],
+  );
+
   const content = (() => {
     switch (definition.linkedFilterComponent) {
-      case "CHECKBOX_LIST": {
-        const selectedValues = innerState?.type === "SELECT"
-          ? coerceToStringArray(innerState.selectedValues)
-          : [];
+      case "CHECKBOX_LIST":
         return (
           <CheckboxListInput
             objectType={linkedObjectType}
             objectSet={linkedObjectSet}
             propertyKey={linkedPropertyKey}
-            selectedValues={selectedValues}
+            selectedValues={selectStringValues}
             onChange={onSelectChange}
           />
         );
-      }
 
-      case "MULTI_SELECT": {
-        const values = innerState?.type === "SELECT"
-          ? coerceToStringArray(innerState.selectedValues)
-          : [];
+      case "MULTI_SELECT":
         return (
           <MultiSelectInput
             objectType={linkedObjectType}
             objectSet={linkedObjectSet}
             propertyKey={linkedPropertyKey}
-            selectedValues={values}
+            selectedValues={selectStringValues}
             onChange={onSelectChange}
           />
         );
-      }
 
-      case "SINGLE_SELECT": {
-        const value = innerState?.type === "SELECT"
-          ? coerceToString(innerState.selectedValues[0])
-          : undefined;
+      case "SINGLE_SELECT":
         return (
           <SingleSelectInput
             objectType={linkedObjectType}
             objectSet={linkedObjectSet}
             propertyKey={linkedPropertyKey}
-            selectedValue={value}
+            selectedValue={singleSelectValue}
             onChange={onSingleSelectChange}
           />
         );
-      }
 
-      case "CONTAINS_TEXT": {
-        const value = innerState?.type === "CONTAINS_TEXT"
-          ? innerState.value
-          : undefined;
+      case "CONTAINS_TEXT":
         return (
           <ContainsTextInput
-            value={value}
+            value={innerState?.type === "CONTAINS_TEXT"
+              ? innerState.value
+              : undefined}
             onChange={onContainsTextChange}
             placeholder={`Search ${String(definition.linkedPropertyKey)}...`}
           />
         );
-      }
 
-      case "TOGGLE": {
-        const enabled = innerState?.type === "TOGGLE"
-          ? innerState.enabled
-          : false;
+      case "TOGGLE":
         return (
           <ToggleInput
-            enabled={enabled}
+            enabled={innerState?.type === "TOGGLE"
+              ? innerState.enabled
+              : false}
             onChange={onToggleChange}
           />
         );
-      }
 
       case "NUMBER_RANGE": {
-        const nr = innerState?.type === "NUMBER_RANGE" ? innerState : undefined;
+        const numberRange = innerState?.type === "NUMBER_RANGE"
+          ? innerState
+          : undefined;
         return (
           <NumberRangeInput
             objectType={linkedObjectType}
             objectSet={linkedObjectSet}
             propertyKey={linkedPropertyKey}
-            minValue={nr?.minValue}
-            maxValue={nr?.maxValue}
+            minValue={numberRange?.minValue}
+            maxValue={numberRange?.maxValue}
             onChange={onNumberRangeChange}
           />
         );
       }
 
       case "DATE_RANGE": {
-        const dr = innerState?.type === "DATE_RANGE" ? innerState : undefined;
+        const dateRange = innerState?.type === "DATE_RANGE"
+          ? innerState
+          : undefined;
         return (
           <DateRangeInput
             objectType={linkedObjectType}
             objectSet={linkedObjectSet}
             propertyKey={linkedPropertyKey}
-            minValue={dr?.minValue}
-            maxValue={dr?.maxValue}
+            minValue={dateRange?.minValue}
+            maxValue={dateRange?.maxValue}
             onChange={onDateRangeChange}
           />
         );
       }
 
-      case "LISTOGRAM": {
-        const exactState = innerState?.type === "EXACT_MATCH"
-          ? innerState
-          : undefined;
-        const selectedValues = exactState
-          ? coerceToStringArray(exactState.values)
-          : [];
+      case "LISTOGRAM":
         return (
           <ListogramInput
             objectType={linkedObjectType}
             objectSet={linkedObjectSet}
             propertyKey={linkedPropertyKey}
-            selectedValues={selectedValues}
+            selectedValues={exactMatchValues}
             onChange={onExactMatchChange}
           />
         );
-      }
 
-      case "TEXT_TAGS": {
-        const exactState = innerState?.type === "EXACT_MATCH"
-          ? innerState
-          : undefined;
-        const tags = exactState ? coerceToStringArray(exactState.values) : [];
+      case "TEXT_TAGS":
         return (
           <TextTagsInput
             objectType={linkedObjectType}
             objectSet={linkedObjectSet}
             propertyKey={linkedPropertyKey}
-            tags={tags}
+            tags={exactMatchValues}
             onChange={onExactMatchChange}
             suggestFromData={true}
           />
         );
-      }
 
-      case "SINGLE_DATE": {
-        const selectedDate = innerState?.type === "SELECT"
-          ? (innerState.selectedValues[0] instanceof Date
-            ? innerState.selectedValues[0]
-            : undefined)
-          : undefined;
+      case "SINGLE_DATE":
         return (
           <SingleDateInput
             selectedDate={selectedDate}
@@ -351,14 +365,8 @@ function LinkedPropertyInputInner<
             showClearButton={true}
           />
         );
-      }
 
-      case "MULTI_DATE": {
-        const selectedDates = innerState?.type === "SELECT"
-          ? innerState.selectedValues.filter(
-            (v): v is Date => v instanceof Date,
-          )
-          : [];
+      case "MULTI_DATE":
         return (
           <MultiDateInput
             selectedDates={selectedDates}
@@ -366,14 +374,15 @@ function LinkedPropertyInputInner<
             showClearAll={true}
           />
         );
-      }
 
       case "TIMELINE": {
-        const tl = innerState?.type === "TIMELINE" ? innerState : undefined;
+        const timeline = innerState?.type === "TIMELINE"
+          ? innerState
+          : undefined;
         return (
           <TimelineInput
-            startDate={tl?.startDate}
-            endDate={tl?.endDate}
+            startDate={timeline?.startDate}
+            endDate={timeline?.endDate}
             onChange={onTimelineChange}
           />
         );

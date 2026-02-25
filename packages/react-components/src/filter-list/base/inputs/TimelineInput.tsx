@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
+import { Button } from "@base-ui/react/button";
+import { Input } from "@base-ui/react/input";
 import classnames from "classnames";
-import React, { memo, useCallback, useMemo } from "react";
+import React, { memo, useCallback, useMemo, useRef } from "react";
 import {
   formatDateForDisplay,
   formatDateForInput,
@@ -28,7 +30,6 @@ interface TimelineInputProps {
   endDate: Date | undefined;
   onChange: (startDate: Date | undefined, endDate: Date | undefined) => void;
   className?: string;
-  style?: React.CSSProperties;
   minDate?: Date;
   maxDate?: Date;
 }
@@ -38,29 +39,35 @@ function TimelineInputInner({
   endDate,
   onChange,
   className,
-  style,
   minDate,
   maxDate,
 }: TimelineInputProps): React.ReactElement {
+  const startDateRef = useRef(startDate);
+  startDateRef.current = startDate;
+  const endDateRef = useRef(endDate);
+  endDateRef.current = endDate;
+  const onChangeRef = useRef(onChange);
+  onChangeRef.current = onChange;
+
   const handleStartChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const date = parseDateFromInput(e.target.value);
-      onChange(date, endDate);
+      onChangeRef.current(date, endDateRef.current);
     },
-    [endDate, onChange],
+    [],
   );
 
   const handleEndChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const date = parseDateFromInput(e.target.value);
-      onChange(startDate, date);
+      onChangeRef.current(startDateRef.current, date);
     },
-    [startDate, onChange],
+    [],
   );
 
   const handleClear = useCallback(() => {
-    onChange(undefined, undefined);
-  }, [onChange]);
+    onChangeRef.current(undefined, undefined);
+  }, []);
 
   const startInputMax = useMemo(
     () => endDate ?? maxDate,
@@ -72,20 +79,25 @@ function TimelineInputInner({
   );
 
   return (
-    <div className={classnames(styles.timeline, className)} style={style}>
+    <div className={classnames(styles.timeline, className)}>
       <div className={styles.labels}>
         <span>{formatDateForDisplay(startDate, "—")}</span>
         <span>to</span>
         <span>{formatDateForDisplay(endDate, "—")}</span>
         {(startDate || endDate) && (
-          <button type="button" onClick={handleClear} aria-label="Clear range">
+          <Button
+            type="button"
+            className={styles.clearButton}
+            onClick={handleClear}
+            aria-label="Clear range"
+          >
             ×
-          </button>
+          </Button>
         )}
       </div>
 
       <div className={styles.brush}>
-        <input
+        <Input
           type="date"
           className={styles.input}
           value={formatDateForInput(startDate)}
@@ -95,7 +107,7 @@ function TimelineInputInner({
           aria-label="Start date"
         />
         <span>—</span>
-        <input
+        <Input
           type="date"
           className={styles.input}
           value={formatDateForInput(endDate)}

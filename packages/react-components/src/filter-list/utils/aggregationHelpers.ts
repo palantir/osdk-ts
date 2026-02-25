@@ -37,6 +37,12 @@ export function createNullCountAggregateOptions<
   } as AggregateOpts<Q>;
 }
 
+/** Shape returned by $groupBy + $count aggregations when iterated. */
+export type AggregationGroupResult = Iterable<{
+  $group: Record<string, unknown>;
+  $count?: number;
+}>;
+
 export function createNullWhereClause<
   Q extends ObjectTypeDefinition,
 >(propertyKey: string): WhereClause<Q> {

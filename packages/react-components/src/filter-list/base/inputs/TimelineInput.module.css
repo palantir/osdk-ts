@@ -29,7 +29,7 @@
   color: var(--bp-typography-colorMuted);
 }
 
-.labels button {
+.clearButton {
   display: flex;
   align-items: center;
   justify-content: center;

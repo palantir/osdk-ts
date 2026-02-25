@@ -22,6 +22,7 @@ import type {
 } from "@osdk/api";
 import { useOsdkAggregation } from "@osdk/react/experimental";
 import { useMemo } from "react";
+import type { AggregationGroupResult } from "../utils/aggregationHelpers.js";
 
 export interface PropertyAggregationValue {
   value: string;
@@ -83,10 +84,7 @@ export function usePropertyAggregation<
       // The aggregation result type varies by query structure. Since we're building
       // the query dynamically based on propertyKey, we cast to a known shape that
       // matches the $groupBy + $count aggregation pattern.
-      const dataArray = countData as Iterable<{
-        $group: Record<string, unknown>;
-        $count?: number;
-      }>;
+      const dataArray = countData as AggregationGroupResult;
 
       for (const item of dataArray) {
         const rawValue = item.$group[propertyKey as string];

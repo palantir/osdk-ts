@@ -17,6 +17,7 @@
 import type { ObjectSet, ObjectTypeDefinition, PropertyKeys } from "@osdk/api";
 import { useOsdkAggregation } from "@osdk/react/experimental";
 import classnames from "classnames";
+import { debounce } from "lodash-es";
 import React, {
   memo,
   useCallback,
@@ -26,7 +27,10 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { createGroupByAggregateOptions } from "../../utils/aggregationHelpers.js";
+import {
+  type AggregationGroupResult,
+  createGroupByAggregateOptions,
+} from "../../utils/aggregationHelpers.js";
 import {
   createHistogramBuckets,
   getMaxBucketCount,
@@ -92,8 +96,6 @@ function RangeInputInner<
   const [localMax, setLocalMax] = useState<string>(
     config.formatValue(maxValue),
   );
-  const minTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const maxTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const onChangeRef = useRef(onChange);
   onChangeRef.current = onChange;
   const minValueRef = useRef(minValue);
@@ -101,28 +103,47 @@ function RangeInputInner<
   const maxValueRef = useRef(maxValue);
   maxValueRef.current = maxValue;
 
-  useEffect(() => {
-    setLocalMin(config.formatValue(minValue));
-    if (minTimeoutRef.current) {
-      clearTimeout(minTimeoutRef.current);
-      minTimeoutRef.current = null;
-    }
-  }, [minValue, config]);
+  const debouncedMinChange = useMemo(
+    () =>
+      debounce((newValue: string) => {
+        const parsed = config.parseValue(newValue);
+        onChangeRef.current(parsed, maxValueRef.current);
+      }, DEBOUNCE_MS),
+    [config],
+  );
 
-  useEffect(() => {
-    setLocalMax(config.formatValue(maxValue));
-    if (maxTimeoutRef.current) {
-      clearTimeout(maxTimeoutRef.current);
-      maxTimeoutRef.current = null;
+  const debouncedMaxChange = useMemo(
+    () =>
+      debounce((newValue: string) => {
+        const parsed = config.parseValue(newValue);
+        onChangeRef.current(minValueRef.current, parsed);
+      }, DEBOUNCE_MS),
+    [config],
+  );
+
+  const [prev, setPrev] = useState({ minValue, maxValue, config });
+  const configChanged = config !== prev.config;
+  const minChanged = minValue !== prev.minValue || configChanged;
+  const maxChanged = maxValue !== prev.maxValue || configChanged;
+
+  if (minChanged || maxChanged) {
+    setPrev({ minValue, maxValue, config });
+    if (minChanged) {
+      setLocalMin(config.formatValue(minValue));
+      debouncedMinChange.cancel();
     }
-  }, [maxValue, config]);
+    if (maxChanged) {
+      setLocalMax(config.formatValue(maxValue));
+      debouncedMaxChange.cancel();
+    }
+  }
 
   useEffect(() => {
     return () => {
-      if (minTimeoutRef.current) clearTimeout(minTimeoutRef.current);
-      if (maxTimeoutRef.current) clearTimeout(maxTimeoutRef.current);
+      debouncedMinChange.cancel();
+      debouncedMaxChange.cancel();
     };
-  }, []);
+  }, [debouncedMinChange, debouncedMaxChange]);
 
   const aggregateOptions = useMemo(
     () => createGroupByAggregateOptions<Q>(propertyKey as string),
@@ -136,10 +157,8 @@ function RangeInputInner<
   const valueCountPairs = useMemo<Array<{ value: T; count: number }>>(() => {
     if (!aggregateData) return [];
 
-    const dataArray = aggregateData as Iterable<{
-      $group: Record<string, unknown>;
-      $count?: number;
-    }>;
+    // Same dynamic $groupBy + $count pattern as usePropertyAggregation
+    const dataArray = aggregateData as AggregationGroupResult;
 
     const pairs: Array<{ value: T; count: number }> = [];
     for (const item of dataArray) {
@@ -200,34 +219,18 @@ function RangeInputInner<
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const newValue = e.target.value;
       setLocalMin(newValue);
-
-      if (minTimeoutRef.current) {
-        clearTimeout(minTimeoutRef.current);
-      }
-
-      minTimeoutRef.current = setTimeout(() => {
-        const parsed = config.parseValue(newValue);
-        onChangeRef.current(parsed, maxValueRef.current);
-      }, DEBOUNCE_MS);
+      debouncedMinChange(newValue);
     },
-    [config],
+    [debouncedMinChange],
   );
 
   const handleMaxChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const newValue = e.target.value;
       setLocalMax(newValue);
-
-      if (maxTimeoutRef.current) {
-        clearTimeout(maxTimeoutRef.current);
-      }
-
-      maxTimeoutRef.current = setTimeout(() => {
-        const parsed = config.parseValue(newValue);
-        onChangeRef.current(minValueRef.current, parsed);
-      }, DEBOUNCE_MS);
+      debouncedMaxChange(newValue);
     },
-    [config],
+    [debouncedMaxChange],
   );
 
   return (

@@ -367,9 +367,13 @@ function CheckboxListFilterInputInner<Q extends ObjectTypeDefinition>({
   onFilterStateChanged,
   whereClause,
 }: CheckboxListFilterInputProps<Q>): React.ReactElement {
-  const selectedValues = filterState?.type === "SELECT"
-    ? coerceToStringArray(filterState.selectedValues)
-    : [];
+  const selectedValues = useMemo(
+    () =>
+      filterState?.type === "SELECT"
+        ? coerceToStringArray(filterState.selectedValues)
+        : [],
+    [filterState],
+  );
   const isExcluding = filterState?.isExcluding ?? false;
 
   const handleChange = useCallback(
@@ -410,9 +414,13 @@ const ContainsTextFilterInput = memo(function ContainsTextFilterInput({
   filterState,
   onFilterStateChanged,
 }: ContainsTextFilterInputProps): React.ReactElement {
-  const value = filterState?.type === "CONTAINS_TEXT"
-    ? filterState.value
-    : undefined;
+  const value = useMemo(
+    () =>
+      filterState?.type === "CONTAINS_TEXT"
+        ? filterState.value
+        : undefined,
+    [filterState],
+  );
 
   const handleChange = useCallback(
     (value: string | undefined) => {
@@ -464,19 +472,26 @@ function NumberRangeFilterInputInner<Q extends ObjectTypeDefinition>({
   filterState,
   onFilterStateChanged,
 }: NumberRangeFilterInputProps<Q>): React.ReactElement {
-  const nr = filterState?.type === "NUMBER_RANGE" ? filterState : undefined;
+  const numberRangeState = useMemo(
+    () => filterState?.type === "NUMBER_RANGE" ? filterState : undefined,
+    [filterState],
+  );
   const includeNull = filterState?.includeNull;
 
   const handleNullChange = useCallback(
     (includeNull: boolean) => {
       onFilterStateChanged({
         type: "NUMBER_RANGE",
-        minValue: nr?.minValue,
-        maxValue: nr?.maxValue,
+        minValue: numberRangeState?.minValue,
+        maxValue: numberRangeState?.maxValue,
         includeNull,
       });
     },
-    [onFilterStateChanged, nr?.minValue, nr?.maxValue],
+    [
+      onFilterStateChanged,
+      numberRangeState?.minValue,
+      numberRangeState?.maxValue,
+    ],
   );
 
   const handleRangeChange = useCallback(
@@ -501,8 +516,8 @@ function NumberRangeFilterInputInner<Q extends ObjectTypeDefinition>({
       <NumberRangeInput
         objectType={objectType}
         propertyKey={propertyKey}
-        minValue={nr?.minValue}
-        maxValue={nr?.maxValue}
+        minValue={numberRangeState?.minValue}
+        maxValue={numberRangeState?.maxValue}
         onChange={handleRangeChange}
       />
     </NullValueWrapper>
@@ -526,19 +541,22 @@ function DateRangeFilterInputInner<Q extends ObjectTypeDefinition>({
   filterState,
   onFilterStateChanged,
 }: DateRangeFilterInputProps<Q>): React.ReactElement {
-  const dr = filterState?.type === "DATE_RANGE" ? filterState : undefined;
+  const dateRangeState = useMemo(
+    () => filterState?.type === "DATE_RANGE" ? filterState : undefined,
+    [filterState],
+  );
   const includeNull = filterState?.includeNull;
 
   const handleNullChange = useCallback(
     (includeNull: boolean) => {
       onFilterStateChanged({
         type: "DATE_RANGE",
-        minValue: dr?.minValue,
-        maxValue: dr?.maxValue,
+        minValue: dateRangeState?.minValue,
+        maxValue: dateRangeState?.maxValue,
         includeNull,
       });
     },
-    [onFilterStateChanged, dr?.minValue, dr?.maxValue],
+    [onFilterStateChanged, dateRangeState?.minValue, dateRangeState?.maxValue],
   );
 
   const handleRangeChange = useCallback(
@@ -563,8 +581,8 @@ function DateRangeFilterInputInner<Q extends ObjectTypeDefinition>({
       <DateRangeInput
         objectType={objectType}
         propertyKey={propertyKey}
-        minValue={dr?.minValue}
-        maxValue={dr?.maxValue}
+        minValue={dateRangeState?.minValue}
+        maxValue={dateRangeState?.maxValue}
         onChange={handleRangeChange}
       />
     </NullValueWrapper>
@@ -590,9 +608,13 @@ function SingleSelectFilterInputInner<Q extends ObjectTypeDefinition>({
   onFilterStateChanged,
   whereClause,
 }: SingleSelectFilterInputProps<Q>): React.ReactElement {
-  const selectedValue = filterState?.type === "SELECT"
-    ? coerceToString(filterState.selectedValues[0])
-    : undefined;
+  const selectedValue = useMemo(
+    () =>
+      filterState?.type === "SELECT"
+        ? coerceToString(filterState.selectedValues[0])
+        : undefined,
+    [filterState],
+  );
   const isExcluding = filterState?.isExcluding ?? false;
 
   const handleChange = useCallback(
@@ -636,9 +658,13 @@ function MultiSelectFilterInputInner<Q extends ObjectTypeDefinition>({
   onFilterStateChanged,
   whereClause,
 }: MultiSelectFilterInputProps<Q>): React.ReactElement {
-  const selectedValues = filterState?.type === "SELECT"
-    ? coerceToStringArray(filterState.selectedValues)
-    : [];
+  const selectedValues = useMemo(
+    () =>
+      filterState?.type === "SELECT"
+        ? coerceToStringArray(filterState.selectedValues)
+        : [],
+    [filterState],
+  );
   const isExcluding = filterState?.isExcluding ?? false;
 
   const handleChange = useCallback(
@@ -676,11 +702,15 @@ const SingleDateFilterInput = memo(function SingleDateFilterInput({
   filterState,
   onFilterStateChanged,
 }: SingleDateFilterInputProps): React.ReactElement {
-  const selectedDate = filterState?.type === "SELECT"
-    ? (filterState.selectedValues[0] instanceof Date
-      ? filterState.selectedValues[0]
-      : undefined)
-    : undefined;
+  const selectedDate = useMemo(
+    () =>
+      filterState?.type === "SELECT"
+        ? (filterState.selectedValues[0] instanceof Date
+          ? filterState.selectedValues[0]
+          : undefined)
+        : undefined,
+    [filterState],
+  );
   const isExcluding = filterState?.isExcluding ?? false;
 
   const handleChange = useCallback(
@@ -748,9 +778,13 @@ function ListogramFilterInputInner<Q extends ObjectTypeDefinition>({
   onFilterStateChanged,
   whereClause,
 }: ListogramFilterInputProps<Q>): React.ReactElement {
-  const selectedValues = filterState?.type === "EXACT_MATCH"
-    ? coerceToStringArray(filterState.values)
-    : [];
+  const selectedValues = useMemo(
+    () =>
+      filterState?.type === "EXACT_MATCH"
+        ? coerceToStringArray(filterState.values)
+        : [],
+    [filterState],
+  );
   const isExcluding = filterState?.isExcluding ?? false;
 
   const handleChange = useCallback(
@@ -794,9 +828,13 @@ function TextTagsFilterInputInner<Q extends ObjectTypeDefinition>({
   onFilterStateChanged,
   whereClause,
 }: TextTagsFilterInputProps<Q>): React.ReactElement {
-  const tags = filterState?.type === "EXACT_MATCH"
-    ? coerceToStringArray(filterState.values)
-    : [];
+  const tags = useMemo(
+    () =>
+      filterState?.type === "EXACT_MATCH"
+        ? coerceToStringArray(filterState.values)
+        : [],
+    [filterState],
+  );
   const isExcluding = filterState?.isExcluding ?? false;
 
   const handleChange = useCallback(
@@ -834,12 +872,13 @@ const TimelineFilterInput = memo(function TimelineFilterInput({
   filterState,
   onFilterStateChanged,
 }: TimelineFilterInputProps): React.ReactElement {
-  const startDate = filterState?.type === "TIMELINE"
-    ? filterState.startDate
-    : undefined;
-  const endDate = filterState?.type === "TIMELINE"
-    ? filterState.endDate
-    : undefined;
+  const { startDate, endDate } = useMemo(
+    () =>
+      filterState?.type === "TIMELINE"
+        ? { startDate: filterState.startDate, endDate: filterState.endDate }
+        : { startDate: undefined, endDate: undefined },
+    [filterState],
+  );
   const isExcluding = filterState?.isExcluding ?? false;
 
   const handleChange = useCallback(

@@ -98,7 +98,7 @@ function CheckboxListInputInner<
         </div>
       )}
 
-      {values.length > 0 && (
+      {(values.length > 0 || isLoading) && (
         <>
           {isLoading && (
             <div className={sharedStyles.loadingMessage}>
