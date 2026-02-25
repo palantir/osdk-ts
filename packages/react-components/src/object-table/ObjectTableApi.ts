@@ -17,6 +17,7 @@
 import type {
   DerivedProperty,
   ObjectOrInterfaceDefinition,
+  ObjectSet,
   Osdk,
   PrimaryKeyType,
   PropertyKeys,
@@ -112,9 +113,18 @@ export interface ObjectTableProps<
   >,
 > {
   /**
-   * The object type of the object
+   * The object or interface type of the object
+   * If objectSet is not provided, objects will be fetched based on this type.
    */
   objectType: Q;
+
+  /**
+   * The set of objects to show in the table.
+   * If provided and the objectType is not an interface, the table will use objectSet to fetch objects instead of fetching based on objectType.
+   */
+  objectSet?: ObjectSet<Q>;
+
+  objectSetOptions?: ObjectSetOptions<Q>;
 
   /**
    * Ordered list of column definitions to show in the table
@@ -312,4 +322,23 @@ export interface ObjectTableProps<
   rowHeight?: number;
 
   className?: string;
+}
+
+export interface ObjectSetOptions<
+  Q extends ObjectOrInterfaceDefinition,
+> {
+  /**
+   * Object sets to union with
+   */
+  union?: ObjectSet<Q>[];
+
+  /**
+   * Object sets to intersect with
+   */
+  intersect?: ObjectSet<Q>[];
+
+  /**
+   * Object sets to subtract from
+   */
+  subtract?: ObjectSet<Q>[];
 }
