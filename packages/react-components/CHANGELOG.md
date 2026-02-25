@@ -1,5 +1,11 @@
 # @osdk/react-components
 
+## 0.2.0-beta.7
+
+### Minor Changes
+
+- 52b70aa: Fix onRowClick triggered on row selection
+
 ## 0.2.0-beta.6
 
 ### Minor Changes
