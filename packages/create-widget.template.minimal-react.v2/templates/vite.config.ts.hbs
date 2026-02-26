@@ -4,7 +4,7 @@ import { defineConfig } from "vite";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react(), foundryWidgetPlugin({ defaults: { refreshHostDataOnAction: true } })],
+  plugins: [react(), foundryWidgetPlugin()],
   server: {
     port: 8080,
     cors: true,
