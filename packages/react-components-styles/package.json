@@ -13,7 +13,7 @@
     "check-spelling": "cspell --quiet ."
   },
   "peerDependencies": {
-    "@blueprintjs/core": "^5.19.1 || ^6.7.0"
+    "@blueprintjs/core": "^6.8.1"
   },
   "devDependencies": {
     "@blueprintjs/core": "^6.8.1"
