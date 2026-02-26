@@ -145,6 +145,15 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
   onFilterRemoved?: (filterKey: FilterKey<Q>) => void;
 
   /**
+   * Called when filters are reordered via drag and drop
+   *
+   * @param newDefinitions The filter definitions in their new order
+   */
+  onFiltersReordered?: (
+    newDefinitions: readonly FilterDefinitionUnion<Q>[],
+  ) => void;
+
+  /**
    * Show reset filters button in header
    */
   showResetButton?: boolean;
