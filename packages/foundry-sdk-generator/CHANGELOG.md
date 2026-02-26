@@ -1,5 +1,18 @@
 # @osdk/foundry-sdk-generator
 
+## 2.8.0-beta.13
+
+### Minor Changes
+
+- 4470c0d: Add support to execute queries on branches.
+
+### Patch Changes
+
+- Updated dependencies [4470c0d]
+  - @osdk/generator@2.8.0-beta.13
+  - @osdk/client@2.8.0-beta.13
+  - @osdk/api@2.8.0-beta.13
+
 ## 2.8.0-beta.12
 
 ### Patch Changes
