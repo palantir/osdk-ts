@@ -47,7 +47,7 @@
     "@rollup/plugin-node-resolve": "15.3.0",
     "consola": "3.4.2",
     "find-up": "7.0.0",
-    "rollup": "3.29.5",
+    "rollup": "3.30.0",
     "rollup-plugin-polyfill-node": "0.13.0",
     "ts-morph": "19.0.0",
     "typescript": "~5.5.4",
