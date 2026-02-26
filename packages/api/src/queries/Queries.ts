@@ -18,7 +18,7 @@ import type {
   DataValueClientToWire,
   DataValueWireToClient,
 } from "../mapping/DataValueMapping.js";
-import type { Media, MediaReference, MediaUpload } from "../object/Media.js";
+import type { Media } from "../object/Media.js";
 import type { ObjectSet } from "../objectSet/ObjectSet.js";
 import type { InterfaceDefinition } from "../ontology/InterfaceDefinition.js";
 import type { ObjectOrInterfaceDefinition } from "../ontology/ObjectOrInterface.js";
@@ -102,11 +102,6 @@ export namespace QueryParam {
     IN extends AggregationKeyTypes ? AggKeyClientToWire<IN> : IN,
     AggValueClientToWire<V>
   >;
-
-  /**
-   * Helper type for media reference query parameters - accepts Media, MediaReference, or MediaUpload
-   */
-  export type MediaType = Media | MediaReference | MediaUpload;
 }
 
 /**

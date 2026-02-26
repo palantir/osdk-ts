@@ -11,7 +11,7 @@ export namespace kbnTsv2MediaReferenceParamOutput {
     /**
      * (no ontology metadata)
      */
-    readonly mediaReference: QueryParam.MediaType;
+    readonly mediaReference: QueryParam.PrimitiveType<'mediaReference'>;
   }
 
   export type ReturnType = QueryResult.MediaType;

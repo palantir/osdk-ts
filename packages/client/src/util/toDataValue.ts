@@ -23,7 +23,11 @@ import {
   isAttachmentFile,
   isAttachmentUpload,
 } from "../object/AttachmentUpload.js";
-import { isMediaReference, isMediaUpload } from "../object/mediaUpload.js";
+import {
+  isMedia,
+  isMediaReference,
+  isMediaUpload,
+} from "../object/mediaUpload.js";
 import { getWireObjectSet, isObjectSet } from "../objectSet/createObjectSet.js";
 import { isInterfaceActionParam } from "./interfaceUtils.js";
 import { isObjectSpecifiersObject } from "./isObjectSpecifiersObject.js";
@@ -93,8 +97,6 @@ export async function toDataValue(
     return await toDataValue(attachment.rid, client, actionMetadata);
   }
 
-  // new media item upload interface, very similar to how attachments work above
-
   if (isMediaUpload(value)) {
     const mediaRef = await MediaSets.uploadMedia(
       client,
@@ -105,6 +107,14 @@ export async function toDataValue(
       },
     );
     return await toDataValue(mediaRef, client, actionMetadata);
+  }
+
+  if (isMedia(value)) {
+    return value.getMediaReference();
+  }
+
+  if (isMediaReference(value)) {
+    return value;
   }
 
   // objects just send the JSON'd primaryKey
@@ -130,10 +140,6 @@ export async function toDataValue(
   }
   if (isObjectSet(value)) {
     return getWireObjectSet(value);
-  }
-
-  if (isMediaReference(value)) {
-    return value;
   }
 
   if (isInterfaceActionParam(value)) {

@@ -311,7 +311,11 @@ export function getQueryParamType(
       paramType = `Query${type}.PrimitiveType<${JSON.stringify(input.type)}>`;
       break;
     case "mediaReference":
-      paramType = `Query${type}.MediaType`;
+      if (type === "Param") {
+        paramType = `Query${type}.PrimitiveType<${JSON.stringify(input.type)}>`;
+      } else {
+        paramType = `Query${type}.MediaType`;
+      }
       break;
     case "struct":
       paramType = `{
