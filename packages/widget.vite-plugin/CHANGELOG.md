@@ -1,5 +1,16 @@
 # @osdk/widget.vite-plugin
 
+## 3.5.0-beta.13
+
+### Minor Changes
+
+- beb2867: Add refreshHostDataOnAction
+
+### Patch Changes
+
+- Updated dependencies [beb2867]
+  - @osdk/widget.api@3.5.0-beta.13
+
 ## 3.5.0-beta.12
 
 ### Patch Changes
