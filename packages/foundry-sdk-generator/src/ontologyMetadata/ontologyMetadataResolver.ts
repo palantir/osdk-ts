@@ -729,7 +729,9 @@ export class OntologyMetadataResolver {
       case "timestamp":
       case "twoDimensionalAggregation":
       case "null":
+      case "void":
         return Result.ok({});
+      case "mediaReference":
       case "unsupported":
         return Result.err([
           `Unable to load query ${queryApiName} because it takes an unsupported parameter type: ${

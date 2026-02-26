@@ -63,6 +63,8 @@ export function getInterfaceTypesFromQueryDataType(
     case "unsupported":
     case "object":
     case "objectSet":
+    case "mediaReference":
+    case "void":
       /* complete no-op */
       return;
 
