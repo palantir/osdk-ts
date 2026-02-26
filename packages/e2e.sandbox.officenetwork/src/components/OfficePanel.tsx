@@ -1,6 +1,13 @@
-import { useLinks, useOsdkAggregation } from "@osdk/react/experimental";
-import { Employee } from "../generatedNoCheck2/index.js";
-import type { Office } from "../generatedNoCheck2/index.js";
+import {
+  useLinks,
+  useObjectSetAggregation,
+  useObjectSetLinks,
+  useOsdkAggregation,
+  useOsdkClient,
+} from "@osdk/react/experimental";
+import React from "react";
+import { Employee, Office } from "../generatedNoCheck2/index.js";
+import type { Office as OfficeType } from "../generatedNoCheck2/index.js";
 import {
   getHierarchyLevel,
   HIERARCHY_COLORS,
@@ -9,7 +16,7 @@ import {
 import { LoadingIndicator } from "./LoadingIndicator.js";
 
 interface OfficePanelProps {
-  office: Office.OsdkInstance;
+  office: OfficeType.OsdkInstance;
   onSelectEmployee: (employee: Employee.OsdkInstance) => void;
   onClose: () => void;
 }
@@ -33,6 +40,32 @@ export function OfficePanel(
   });
 
   const aggregatedCount = occupantAgg?.$count;
+
+  const client = useOsdkClient();
+
+  const employeeSet = React.useMemo(() => client(Employee), [client]);
+  const {
+    data: osAggData,
+    isLoading: osAggLoading,
+    error: osAggError,
+  } = useObjectSetAggregation(employeeSet, {
+    where: { primaryOfficeId: office.primaryKey_ },
+    aggregate: {
+      $select: { $count: "unordered" },
+    },
+  });
+
+  const officeSet = React.useMemo(
+    () => client(Office).where({ primaryKey_: office.primaryKey_ }),
+    [client, office.primaryKey_],
+  );
+  const {
+    data: osLinks,
+    isLoading: osLinksLoading,
+    error: osLinksError,
+  } = useObjectSetLinks(officeSet, "occupants", {
+    orderBy: { fullName: "asc" },
+  });
 
   const coords = office.location
     ? `${office.location.coordinates[1].toFixed(4)}, ${
@@ -93,6 +126,77 @@ export function OfficePanel(
           </div>
           {isLoading && <LoadingIndicator size="sm" />}
           {error && (
+            <span className="officenetwork-badge officenetwork-badge-error">
+              Error
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* useObjectSetAggregation Stats */}
+      <div className="p-4 border-b border-[var(--officenetwork-border-default)]">
+        <div className="flex items-center gap-3">
+          <div className="text-2xl font-semibold tabular-nums text-[var(--officenetwork-accent-cyan)]">
+            {osAggData?.$count ?? 0}
+          </div>
+          <div>
+            <div className="text-xs text-[var(--officenetwork-text-secondary)]">
+              Employees
+            </div>
+            <div className="text-[10px] text-[var(--officenetwork-text-muted)] officenetwork-mono">
+              useObjectSetAggregation
+            </div>
+          </div>
+          {osAggLoading && <LoadingIndicator size="sm" />}
+          {osAggError && (
+            <span className="officenetwork-badge officenetwork-badge-error">
+              Error
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* useObjectSetLinks List */}
+      <div className="flex-1 overflow-auto">
+        <div className="p-2">
+          <div className="officenetwork-section-label px-2 py-2">
+            Occupants (useObjectSetLinks)
+          </div>
+          {osLinks && osLinks.length > 0
+            ? (
+              <div className="space-y-px">
+                {osLinks.map((emp) => {
+                  const level = getHierarchyLevel(emp.jobTitle);
+                  return (
+                    <div
+                      key={emp.employeeNumber}
+                      className="px-3 py-2 rounded flex items-center gap-3"
+                    >
+                      <div
+                        className="size-2 rounded-sm shrink-0"
+                        style={{ backgroundColor: HIERARCHY_COLORS[level] }}
+                      />
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm text-[var(--officenetwork-text-primary)] truncate">
+                          {emp.fullName ?? `Employee #${emp.employeeNumber}`}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )
+            : !osLinksLoading
+            ? (
+              <div className="px-3 py-4 text-center">
+                <div className="text-sm text-[var(--officenetwork-text-muted)]">
+                  No employees
+                </div>
+              </div>
+            )
+            : null}
+          {osLinksLoading && <LoadingIndicator size="sm" />}
+          {osLinksError && (
             <span className="officenetwork-badge officenetwork-badge-error">
               Error
             </span>

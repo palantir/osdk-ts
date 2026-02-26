@@ -15,18 +15,26 @@
  */
 
 import type { ObjectSet, Osdk, PageResult } from "@osdk/api";
+import type { ObjectSet as WireObjectSet } from "@osdk/foundry.ontologies";
 import type { Observable, Subscription } from "rxjs";
 import { additionalContext } from "../../../Client.js";
+import type { InterfaceHolder } from "../../../object/convertWireToOsdkObjects/InterfaceHolder.js";
+import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import { getWireObjectSet } from "../../../objectSet/createObjectSet.js";
 import type { ObjectSetPayload } from "../../ObjectSetPayload.js";
 import type { Status } from "../../ObservableClient/common.js";
 import { BaseListQuery } from "../base-list/BaseListQuery.js";
 import type { BatchContext } from "../BatchContext.js";
+import type { CacheKey } from "../CacheKey.js";
 import type { Canonical } from "../Canonical.js";
-import type { Changes } from "../Changes.js";
+import { type Changes, DEBUG_ONLY__changesToString } from "../Changes.js";
 import { getObjectTypesThatInvalidate } from "../getObjectTypesThatInvalidate.js";
 import type { Entry } from "../Layer.js";
+import type { ObjectCacheKey } from "../object/ObjectCacheKey.js";
+import { objectSortaMatchesWhereClause as objectMatchesWhereClause } from "../objectMatchesWhereClause.js";
+import type { OptimisticId } from "../OptimisticId.js";
 import type { Rdp } from "../RdpCanonicalizer.js";
+import type { SimpleWhereClause } from "../SimpleWhereClause.js";
 import { OrderBySortingStrategy } from "../sorting/SortingStrategy.js";
 import type { Store } from "../Store.js";
 import type { SubjectPayload } from "../SubjectPayload.js";
@@ -45,6 +53,8 @@ export class ObjectSetQuery extends BaseListQuery<
   #operations: Canonical<ObjectSetOperations>;
   #composedObjectSet: ObjectSet<any, any>;
   #objectTypes: Set<string>;
+  #isComplex: boolean;
+  #resultTypeApiName: string;
 
   constructor(
     store: Store,
@@ -74,6 +84,18 @@ export class ObjectSetQuery extends BaseListQuery<
     this.#operations = operations;
     this.#composedObjectSet = this.#composeObjectSet(opts);
     this.#objectTypes = this.#extractObjectTypes(opts);
+
+    this.#isComplex = !!(
+      operations.pivotTo
+      || (operations.union && operations.union.length > 0)
+      || (operations.intersect && operations.intersect.length > 0)
+      || (operations.subtract && operations.subtract.length > 0)
+    );
+
+    const baseWire = JSON.parse(baseObjectSetWire);
+    this.#resultTypeApiName = baseWire.objectType ?? baseWire.interfaceType
+      ?? "";
+
     if (opts.autoFetchMore === true) {
       this.minResultsToLoad = Number.MAX_SAFE_INTEGER;
     } else if (typeof opts.autoFetchMore === "number") {
@@ -81,6 +103,10 @@ export class ObjectSetQuery extends BaseListQuery<
     } else {
       this.minResultsToLoad = opts.pageSize || 0;
     }
+  }
+
+  get objectTypes(): ReadonlySet<string> {
+    return this.#objectTypes;
   }
 
   public override get rdpConfig(): Canonical<Rdp> | null {
@@ -115,38 +141,59 @@ export class ObjectSetQuery extends BaseListQuery<
   #extractObjectTypes(opts: ObjectSetQueryOptions): Set<string> {
     const types = new Set<string>();
     const baseWire = JSON.parse(this.#baseObjectSetWire);
-    if (baseWire.type) {
-      types.add(baseWire.type);
+    const baseTypeName = ObjectSetQuery.#extractTypeFromWireObjectSet(
+      baseWire as WireObjectSet,
+    );
+    if (baseTypeName) {
+      types.add(baseTypeName);
     }
 
     if (opts.union) {
       for (const os of opts.union) {
-        const wire = getWireObjectSet(os);
-        if (wire.type) {
-          types.add(wire.type);
+        const typeName = ObjectSetQuery.#extractTypeFromWireObjectSet(
+          getWireObjectSet(os),
+        );
+        if (typeName) {
+          types.add(typeName);
         }
       }
     }
 
     if (opts.intersect) {
       for (const os of opts.intersect) {
-        const wire = getWireObjectSet(os);
-        if (wire.type) {
-          types.add(wire.type);
+        const typeName = ObjectSetQuery.#extractTypeFromWireObjectSet(
+          getWireObjectSet(os),
+        );
+        if (typeName) {
+          types.add(typeName);
         }
       }
     }
 
     if (opts.subtract) {
       for (const os of opts.subtract) {
-        const wire = getWireObjectSet(os);
-        if (wire.type) {
-          types.add(wire.type);
+        const typeName = ObjectSetQuery.#extractTypeFromWireObjectSet(
+          getWireObjectSet(os),
+        );
+        if (typeName) {
+          types.add(typeName);
         }
       }
     }
 
     return types;
+  }
+
+  static #extractTypeFromWireObjectSet(
+    wire: WireObjectSet,
+  ): string | undefined {
+    if (wire.type === "base") {
+      return wire.objectType;
+    }
+    if (wire.type === "interfaceBase") {
+      return wire.interfaceType;
+    }
+    return undefined;
   }
 
   /**
@@ -221,6 +268,183 @@ export class ObjectSetQuery extends BaseListQuery<
       this.#composedObjectSet,
       sub,
       "observeObjectSet",
+    );
+  }
+
+  maybeUpdateAndRevalidate = (
+    changes: Changes,
+    optimisticId: OptimisticId | undefined,
+  ): Promise<void> | undefined => {
+    if (process.env.NODE_ENV !== "production") {
+      this.logger?.child({ methodName: "maybeUpdateAndRevalidate" }).debug(
+        DEBUG_ONLY__changesToString(changes),
+      );
+      this.logger?.child({ methodName: "maybeUpdateAndRevalidate" }).debug(
+        `Already in changes? ${changes.modified.has(this.cacheKey)}`,
+      );
+    }
+
+    if (changes.modified.has(this.cacheKey)) {
+      return;
+    }
+    changes.modified.add(this.cacheKey);
+
+    try {
+      if (this.#isComplex) {
+        return this.#handleComplexObjectSet(changes);
+      }
+      return this.#handleSimpleObjectSet(changes, optimisticId);
+    } finally {
+      if (process.env.NODE_ENV !== "production") {
+        this.logger?.child({ methodName: "maybeUpdateAndRevalidate" })
+          .debug("in finally");
+      }
+    }
+  };
+
+  #handleComplexObjectSet(changes: Changes): Promise<void> | undefined {
+    for (const objectType of this.#objectTypes) {
+      const added = changes.addedObjects.get(objectType);
+      const modified = changes.modifiedObjects.get(objectType);
+      if ((added && added.length > 0) || (modified && modified.length > 0)) {
+        return this.revalidate(true);
+      }
+    }
+    return undefined;
+  }
+
+  #handleSimpleObjectSet(
+    changes: Changes,
+    optimisticId: OptimisticId | undefined,
+  ): Promise<void> | undefined {
+    const resultApiName = this.#resultTypeApiName;
+    const whereClause = this.#operations.where as
+      | Canonical<SimpleWhereClause>
+      | undefined;
+    const emptyWhere: Canonical<SimpleWhereClause> = {} as Canonical<
+      SimpleWhereClause
+    >;
+    const effectiveWhere = whereClause ?? emptyWhere;
+
+    const addedAll = changes.addedObjects.get(resultApiName) ?? [];
+    const modifiedAll = changes.modifiedObjects.get(resultApiName) ?? [];
+
+    if (addedAll.length === 0 && modifiedAll.length === 0) {
+      return undefined;
+    }
+
+    const addedStrictMatches = new Set<ObjectHolder | InterfaceHolder>();
+    const addedSortaMatches = new Set<ObjectHolder | InterfaceHolder>();
+    const modifiedStrictMatches = new Set<ObjectHolder | InterfaceHolder>();
+    const modifiedSortaMatches = new Set<ObjectHolder | InterfaceHolder>();
+
+    for (const obj of addedAll) {
+      const matchType = this.#matchType(obj, effectiveWhere);
+      if (matchType === "strict") {
+        addedStrictMatches.add(obj);
+      } else if (matchType === "sorta") {
+        addedSortaMatches.add(obj);
+      }
+    }
+
+    for (const obj of modifiedAll) {
+      const matchType = this.#matchType(obj, effectiveWhere);
+      if (matchType === "strict") {
+        modifiedStrictMatches.add(obj);
+      } else if (matchType === "sorta") {
+        modifiedSortaMatches.add(obj);
+      }
+    }
+
+    const status = optimisticId
+        || addedSortaMatches.size > 0
+        || modifiedSortaMatches.size > 0
+      ? "loading"
+      : "loaded";
+
+    const newList: Array<ObjectCacheKey> = [];
+
+    let needsRevalidation = false;
+    this.store.batch({ optimisticId, changes }, (batch) => {
+      const existingList = new Set(
+        batch.read(this.cacheKey)?.value?.data,
+      );
+
+      const toAdd = new Set<ObjectHolder | InterfaceHolder>(
+        addedStrictMatches,
+      );
+
+      const toRemove = new Set<CacheKey>(changes.deleted);
+
+      for (const obj of modifiedAll) {
+        if (modifiedStrictMatches.has(obj)) {
+          const objectCacheKey = this.#getObjectCacheKey(obj);
+
+          if (!existingList.has(objectCacheKey)) {
+            toAdd.add(obj);
+          }
+          continue;
+        } else if (batch.optimisticWrite) {
+          continue;
+        } else {
+          const existingObjectCacheKey = this.#getObjectCacheKey(obj);
+
+          toRemove.add(existingObjectCacheKey);
+
+          if (modifiedSortaMatches.has(obj)) {
+            needsRevalidation = true;
+          }
+        }
+      }
+
+      for (const key of existingList) {
+        if (toRemove.has(key)) {
+          continue;
+        }
+        newList.push(key);
+      }
+      for (const obj of toAdd) {
+        newList.push(this.#getObjectCacheKey(obj));
+      }
+
+      const existingTotalCount = batch.read(this.cacheKey)?.value?.totalCount;
+      this._updateList(
+        newList,
+        status,
+        batch,
+        false,
+        existingTotalCount,
+      );
+    });
+
+    if (needsRevalidation) {
+      return this.revalidate(true);
+    }
+    return undefined;
+  }
+
+  #matchType(
+    obj: ObjectHolder | InterfaceHolder,
+    whereClause: Canonical<SimpleWhereClause>,
+  ): false | "strict" | "sorta" {
+    if (objectMatchesWhereClause(obj, whereClause, true)) {
+      return "strict";
+    }
+    if (objectMatchesWhereClause(obj, whereClause, false)) {
+      return "sorta";
+    }
+    return false;
+  }
+
+  #getObjectCacheKey(
+    obj: { $objectType: string; $primaryKey: string | number | boolean },
+  ): ObjectCacheKey {
+    const pk = obj.$primaryKey as string | number;
+    return this.cacheKeys.get<ObjectCacheKey>(
+      "object",
+      obj.$objectType,
+      pk,
+      this.rdpConfig ?? undefined,
     );
   }
 

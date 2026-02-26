@@ -46,11 +46,13 @@ describe(useObjectSet, () => {
     error: (err: any) => void;
   } | null = null;
   const mockObserveObjectSet = vitest.fn();
+  const mockInvalidateObjectType = vitest.fn();
 
   const createWrapper = () => {
     const observableClient = {
       observeObjectSet: mockObserveObjectSet,
       canonicalizeWhereClause: vitest.fn((w) => w),
+      invalidateObjectType: mockInvalidateObjectType,
     } as any;
 
     return ({ children }: React.PropsWithChildren) => (
@@ -63,6 +65,8 @@ describe(useObjectSet, () => {
   beforeEach(() => {
     capturedObserver = null;
     mockObserveObjectSet.mockClear();
+    mockInvalidateObjectType.mockClear();
+    mockInvalidateObjectType.mockResolvedValue(undefined);
     mockObserveObjectSet.mockImplementation((_os, _opts, observer) => {
       capturedObserver = observer;
       return { unsubscribe: vitest.fn() };
@@ -97,6 +101,17 @@ describe(useObjectSet, () => {
       rerender({ enabled: true });
 
       expect(mockObserveObjectSet).toHaveBeenCalledTimes(1);
+    });
+
+    it("should return isLoading false when enabled is false", () => {
+      const wrapper = createWrapper();
+
+      const { result } = renderHook(
+        () => useObjectSet(mockObjectSet, { enabled: false }),
+        { wrapper },
+      );
+
+      expect(result.current.isLoading).toBe(false);
     });
   });
 
@@ -242,6 +257,99 @@ describe(useObjectSet, () => {
       });
 
       expect(result.current.fetchMore).toBeUndefined();
+    });
+
+    it("should return isOptimistic from payload", () => {
+      const wrapper = createWrapper();
+
+      const { result } = renderHook(
+        () => useObjectSet(mockObjectSet),
+        { wrapper },
+      );
+
+      act(() => {
+        capturedObserver?.next({
+          resolvedList: [{ $primaryKey: "1" }],
+          status: "loaded",
+          isOptimistic: true,
+          hasMore: false,
+        });
+      });
+
+      expect(result.current.isOptimistic).toBe(true);
+    });
+
+    it("should default isOptimistic to false when not in payload", () => {
+      const wrapper = createWrapper();
+
+      const { result } = renderHook(
+        () => useObjectSet(mockObjectSet),
+        { wrapper },
+      );
+
+      act(() => {
+        capturedObserver?.next({
+          resolvedList: [{ $primaryKey: "1" }],
+          status: "loaded",
+        });
+      });
+
+      expect(result.current.isOptimistic).toBe(false);
+    });
+
+    it("should return hasMore from payload", () => {
+      const wrapper = createWrapper();
+
+      const { result } = renderHook(
+        () => useObjectSet(mockObjectSet),
+        { wrapper },
+      );
+
+      act(() => {
+        capturedObserver?.next({
+          resolvedList: [{ $primaryKey: "1" }],
+          status: "loaded",
+          hasMore: true,
+          fetchMore: vitest.fn(),
+        });
+      });
+
+      expect(result.current.hasMore).toBe(true);
+    });
+
+    it("should default hasMore to false when not in payload", () => {
+      const wrapper = createWrapper();
+
+      const { result } = renderHook(
+        () => useObjectSet(mockObjectSet),
+        { wrapper },
+      );
+
+      act(() => {
+        capturedObserver?.next({
+          resolvedList: [{ $primaryKey: "1" }],
+          status: "loaded",
+        });
+      });
+
+      expect(result.current.hasMore).toBe(false);
+    });
+  });
+
+  describe("refetch", () => {
+    it("should call invalidateObjectType on refetch", async () => {
+      const wrapper = createWrapper();
+
+      const { result } = renderHook(
+        () => useObjectSet(mockObjectSet),
+        { wrapper },
+      );
+
+      await act(async () => {
+        result.current.refetch();
+      });
+
+      expect(mockInvalidateObjectType).toHaveBeenCalledWith("MockObject");
     });
   });
 
