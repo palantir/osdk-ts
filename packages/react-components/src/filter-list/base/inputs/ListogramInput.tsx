@@ -32,6 +32,8 @@ interface ListogramInputProps {
   onChange: (values: string[]) => void;
   colorMap?: Record<string, string>;
   displayMode?: ListogramDisplayMode;
+  barColor?: string;
+  selectedBarColor?: string;
   className?: string;
   style?: React.CSSProperties;
   maxVisibleItems?: number;
@@ -46,6 +48,8 @@ function ListogramInputInner({
   onChange,
   colorMap,
   displayMode = "full",
+  barColor,
+  selectedBarColor,
   className,
   style,
   maxVisibleItems,
@@ -102,6 +106,9 @@ function ListogramInputInner({
             const isSelected = selectedSet.has(value);
             const percentage = maxCount > 0 ? (count / maxCount) * 100 : 0;
             const perRowColor = colorMap?.[value];
+            const effectiveBarColor = perRowColor
+              ?? (isSelected ? selectedBarColor : undefined)
+              ?? barColor;
 
             return (
               <Button
@@ -117,9 +124,9 @@ function ListogramInputInner({
                       className={styles.barFill}
                       style={{
                         "--bar-scale": percentage / 100,
-                        ...(perRowColor
+                        ...(effectiveBarColor
                           ? {
-                            "--bar-fill-color": perRowColor,
+                            "--bar-fill-color": effectiveBarColor,
                           } as React.CSSProperties
                           : undefined),
                       } as React.CSSProperties}
