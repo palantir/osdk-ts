@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Error } from "@blueprintjs/icons";
 import type { Cell, RowData, Table } from "@tanstack/react-table";
 import classNames from "classnames";
 import React, {
@@ -39,13 +40,14 @@ declare module "@tanstack/react-table" {
     editable?: boolean;
     dataType?: string;
     validate?: (value: unknown) => Promise<boolean>;
-    onValidationError?: (error: { type: string; error: string }) => string;
+    onValidationError?: () => string;
   }
   interface TableMeta<TData extends RowData = unknown> {
     onCellEdit?: (
       cellId: string,
       event: CellEditEvent<TData, unknown>,
     ) => void;
+    onCellValidationError?: (cellId: string) => void;
     cellEdits?: Record<string, CellEditEvent<TData, unknown>>;
     isInEditMode?: boolean;
     focusedRowId?: string | null;
@@ -56,6 +58,7 @@ export interface EditableConfig {
   onSubmitEdits?: () => Promise<void>;
   clearEdits?: () => void;
   cellEdits?: Record<string, CellEditEvent>;
+  validationErrors?: Set<string>;
   enableEditModeByDefault?: boolean;
   isInEditMode?: boolean;
   onEnableEditMode?: (value: boolean) => void;
@@ -143,6 +146,7 @@ export function BaseTable<
 
   const {
     cellEdits,
+    validationErrors,
     isInEditMode,
     onSubmitEdits,
     onEnableEditMode,
@@ -150,6 +154,7 @@ export function BaseTable<
   } = editableConfig ?? {};
 
   const hasEdits = Object.keys(cellEdits ?? {}).length > 0;
+  const hasValidationError = (validationErrors?.size ?? 0) > 0;
 
   const handleSubmitEdits = useCallback(async () => {
     // TODO: Provide user a way to clear edits on submit
@@ -235,12 +240,25 @@ export function BaseTable<
       </div>
       {showEditButtonsContainer && (
         <div className={styles.tableEditContainer}>
-          {hasEdits
+          {hasEdits || hasValidationError
             ? (
-              <div className={styles.modificationCount}>
-                {`${
-                  cellEdits ? Object.keys(cellEdits).length : 0
-                } modifications`}
+              <div className={styles.editsInfoContainer}>
+                {hasEdits && (
+                  <div className={styles.modificationCount}>
+                    {`${
+                      cellEdits ? Object.keys(cellEdits).length : 0
+                    } modifications`}
+                  </div>
+                )}
+                {hasEdits && hasValidationError && (
+                  <div className={styles.divider} />
+                )}
+                {hasValidationError && (
+                  <div className={styles.validationError}>
+                    <Error className={styles.errorIcon} />
+                    Validation error
+                  </div>
+                )}
               </div>
             )
             : (isInEditMode && !focusedRowId && (
@@ -269,7 +287,7 @@ export function BaseTable<
               <ActionButton
                 variant="primary"
                 onClick={handleSubmitEdits}
-                disabled={!hasEdits || isSubmitting}
+                disabled={!hasEdits || isSubmitting || hasValidationError}
               >
                 Submit Edits
               </ActionButton>

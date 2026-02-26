@@ -55,17 +55,6 @@ export type ColumnDefinition<
   editable?: boolean;
 
   /**
-   * @param event
-   * @returns
-   */
-  isValidEdit?: (
-    event: CellEditEvent<
-      Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
-      unknown
-    >,
-  ) => boolean;
-
-  /**
    * Additional function to validate the cell value during edit
    *
    * @param value the current cell value
@@ -76,10 +65,9 @@ export type ColumnDefinition<
   /**
    * A callback to return a custom error message if validation failed
    *
-   * @param validationRule the validation rule that failed with the error message
    * @returns the error message to display
    */
-  onValidationError?: (error: { type: string; error: string }) => string;
+  onValidationError?: () => string;
 
   renderCell?: (
     object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
@@ -267,12 +255,11 @@ export interface ObjectTableProps<
    *
    * @param edits an array of edit events containing details about the edited cells
    * including the rowId, columnId, new and old values, and the row data before the edit
-   * @param clearEdits a callback to clear all edits
    */
   onSubmitEdits?: (edits: CellEditEvent<
     Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
     unknown
-  >[], clearEdits: () => void) => Promise<void>;
+  >[]) => Promise<void>;
 
   /**
    * Called when the column visibility or ordering changed.

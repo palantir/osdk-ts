@@ -28,11 +28,12 @@ export interface EditableCellProps<TData = unknown> {
   cellId: string;
   dataType?: string;
   onCellEdit?: (cellId: string, event: CellEditEvent<TData, unknown>) => void;
+  onCellValidationError?: (cellId: string) => void;
   rowData: TData;
   rowId: string;
   columnId: string;
   validate?: (value: unknown) => Promise<boolean>;
-  onValidationError?: (error: { type: string; error: string }) => string;
+  onValidationError?: () => string;
 }
 
 const NUMBER_TYPES: string[] = [
@@ -77,12 +78,15 @@ function parseValueByType(
   return parsedNumber;
 }
 
+const VALIDATION_ERROR_MESSAGE = "Validation failed";
+
 export function EditableCell<TData = unknown>({
   initialValue,
   currentValue,
   cellId,
   dataType,
   onCellEdit,
+  onCellValidationError,
   rowData,
   rowId,
   columnId,
@@ -113,19 +117,19 @@ export function EditableCell<TData = unknown>({
       try {
         const isValid = await validate(parsedValue);
         if (!isValid) {
-          const error = { type: "validate", error: "Validation failed" };
           const errorMessage = onValidationError
-            ? onValidationError(error)
-            : error.error;
+            ? onValidationError()
+            : VALIDATION_ERROR_MESSAGE;
           setValidationError(errorMessage);
+          onCellValidationError?.(cellId);
           return;
         }
       } catch (err) {
-        const error = { type: "validate", error: "Validation error" };
         const errorMessage = onValidationError
-          ? onValidationError(error)
-          : error.error;
+          ? onValidationError()
+          : VALIDATION_ERROR_MESSAGE;
         setValidationError(errorMessage);
+        onCellValidationError?.(cellId);
         return;
       }
     }
@@ -142,6 +146,7 @@ export function EditableCell<TData = unknown>({
     inputValue,
     initialValue,
     onCellEdit,
+    onCellValidationError,
     cellId,
     dataType,
     rowId,

@@ -24,8 +24,12 @@
     }
 
     &.error {
-      border: var(--osdk-emphasis-focus-width) solid
-        var(--osdk-intent-danger-rest);
+      border: var(--osdk-table-cell-edited-border-error);
+
+      &:focus-within {
+        border: var(--osdk-emphasis-focus-width) solid
+          var(--osdk-intent-danger-rest);
+      }
     }
   }
 

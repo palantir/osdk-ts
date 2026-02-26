@@ -87,10 +87,13 @@ export function ObjectTable<
 
   const {
     cellEdits,
+    validationErrors,
     isInEditMode,
     handleCellEdit,
     handleEnableEditMode,
     handleSubmitEdits,
+    onCellValidationError,
+    clearEdits,
   } = useEditableTable({
     enableEditModeByDefault,
     onCellValueChanged,
@@ -197,6 +200,7 @@ export function ObjectTable<
     getRowId,
     meta: {
       onCellEdit: handleCellEdit,
+      onCellValidationError,
       cellEdits,
       isInEditMode,
     },
@@ -233,6 +237,8 @@ export function ObjectTable<
     return {
       onSubmitEdits: handleSubmitEdits,
       cellEdits,
+      validationErrors,
+      clearEdits,
       enableEditModeByDefault,
       isInEditMode,
       onEnableEditMode: handleEnableEditMode,
@@ -240,6 +246,8 @@ export function ObjectTable<
   }, [
     handleSubmitEdits,
     cellEdits,
+    validationErrors,
+    clearEdits,
     enableEditModeByDefault,
     isInEditMode,
     handleEnableEditMode,
