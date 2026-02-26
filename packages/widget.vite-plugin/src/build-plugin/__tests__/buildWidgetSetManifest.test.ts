@@ -205,6 +205,41 @@ describe("buildWidgetSetManifest", () => {
     );
   });
 
+  test("uses plugin-level refreshHostDataOnAction as default", () => {
+    const widgetBuild = createMockWidgetBuild("widget");
+    const widgetSetInputSpec: WidgetSetInputSpec = {};
+
+    const manifest = buildWidgetSetManifest(
+      WIDGET_SET_RID,
+      WIDGET_SET_VERSION,
+      [widgetBuild],
+      widgetSetInputSpec,
+      { defaults: { refreshHostDataOnAction: true } },
+    );
+
+    expect(manifest.widgetSet.widgets.widget.refreshHostDataOnAction).toBe(
+      true,
+    );
+  });
+
+  test("widget-level refreshHostDataOnAction overrides plugin-level default", () => {
+    const widgetBuild = createMockWidgetBuild("widget");
+    widgetBuild.widgetConfig.refreshHostDataOnAction = false;
+    const widgetSetInputSpec: WidgetSetInputSpec = {};
+
+    const manifest = buildWidgetSetManifest(
+      WIDGET_SET_RID,
+      WIDGET_SET_VERSION,
+      [widgetBuild],
+      widgetSetInputSpec,
+      { defaults: { refreshHostDataOnAction: true } },
+    );
+
+    expect(manifest.widgetSet.widgets.widget.refreshHostDataOnAction).toBe(
+      false,
+    );
+  });
+
   test("handles paths without leading slashes", () => {
     const widgetBuild = createMockWidgetBuild(
       "widget",
