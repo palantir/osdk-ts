@@ -21,6 +21,7 @@ import type {
   WidgetSetInputSpec,
   WidgetSetManifest,
 } from "@osdk/widget.api";
+import type { FoundryWidgetPluginOptions } from "../index.js";
 import type { WidgetBuildOutputs } from "./getWidgetBuildOutputs.js";
 import { validateWidgetSet } from "./validateWidgetSet.js";
 
@@ -29,6 +30,7 @@ export function buildWidgetSetManifest(
   widgetSetVersion: string,
   widgetBuilds: WidgetBuildOutputs[],
   widgetSetInputSpec: WidgetSetInputSpec,
+  pluginOptions?: FoundryWidgetPluginOptions,
 ): WidgetSetManifest {
   validateWidgetSet(widgetBuilds);
   return {
@@ -38,7 +40,7 @@ export function buildWidgetSetManifest(
       version: widgetSetVersion,
       widgets: Object.fromEntries(
         widgetBuilds
-          .map(buildWidgetManifest)
+          .map((build) => buildWidgetManifest(build, pluginOptions))
           .map((widgetManifest) => [widgetManifest.id, widgetManifest]),
       ),
       inputSpec: widgetSetInputSpec,
@@ -48,6 +50,7 @@ export function buildWidgetSetManifest(
 
 function buildWidgetManifest(
   widgetBuild: WidgetBuildOutputs,
+  pluginOptions?: FoundryWidgetPluginOptions,
 ): WidgetManifestConfig {
   const widgetConfig = widgetBuild.widgetConfig;
   return {
@@ -65,7 +68,8 @@ function buildWidgetManifest(
     parameters: convertParameters(widgetConfig.parameters),
     events: widgetConfig.events,
     permissions: widgetConfig.permissions,
-    refreshHostDataOnAction: widgetConfig.refreshHostDataOnAction,
+    refreshHostDataOnAction: widgetConfig.refreshHostDataOnAction
+      ?? pluginOptions?.defaults?.refreshHostDataOnAction,
   };
 }
 
