@@ -66,7 +66,7 @@ const ALL_FILTER_DEFINITIONS: FilterDefinitionUnion<Employee>[] = [
 ];
 
 const INITIAL_FILTERS = ALL_FILTER_DEFINITIONS.filter((def) =>
-  ["department", "locationCity"].includes(def.id!)
+  def.id != null && ["department", "locationCity"].includes(def.id)
 );
 
 function AddFilterButton({
@@ -129,12 +129,18 @@ export function EmployeeFilters() {
   >(INITIAL_FILTERS);
 
   const activeIds = useMemo(
-    () => new Set(filterDefinitions.map((d) => d.id!)),
+    () =>
+      new Set(
+        filterDefinitions.map((d) => d.id).filter((id) => id != null),
+      ),
     [filterDefinitions],
   );
 
   const availableFilters = useMemo(
-    () => ALL_FILTER_DEFINITIONS.filter((def) => !activeIds.has(def.id!)),
+    () =>
+      ALL_FILTER_DEFINITIONS.filter(
+        (def) => def.id != null && !activeIds.has(def.id),
+      ),
     [activeIds],
   );
 
@@ -146,18 +152,10 @@ export function EmployeeFilters() {
   );
 
   const handleRemoveFilter = useCallback(
-    (
-      _filterKey: string,
-      newDefinitions: Array<FilterDefinitionUnion<Employee>>,
-    ) => {
-      setFilterDefinitions([...newDefinitions]);
-    },
-    [],
-  );
-
-  const handleFiltersReordered = useCallback(
-    (newOrder: ReadonlyArray<FilterDefinitionUnion<Employee>>) => {
-      setFilterDefinitions([...newOrder]);
+    (filterKey: string) => {
+      setFilterDefinitions((prev) =>
+        prev.filter((def) => def.id !== filterKey)
+      );
     },
     [],
   );
@@ -177,7 +175,6 @@ export function EmployeeFilters() {
       objectSet={$(Employee)}
       filterDefinitions={filterDefinitions}
       onFilterRemoved={handleRemoveFilter}
-      onFiltersReordered={handleFiltersReordered}
       renderAddFilterButton={renderAddFilterButton}
       title="Employee Filters"
       showActiveFilterCount={true}
