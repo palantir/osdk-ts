@@ -82,6 +82,17 @@ const columnDefinitions: Array<
     },
     orderable: false,
   },
+  {
+    locator: { type: "property", id: "email" },
+    editable: true,
+    validate: async (value) => {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return emailRegex.test(value as string);
+    },
+    onValidationError: (error) => {
+      return "Please enter a valid email address";
+    },
+  },
 ];
 
 export function EmployeesTable() {
@@ -95,31 +106,6 @@ export function EmployeesTable() {
       >[],
     ) => {
       console.log("Edits to submit:", edits);
-      try {
-        // Process each edit and call modifyEmployee action
-        const rowEditsMap: Record<string, Record<string, any>> = {};
-        const actionPromises: Promise<any>[] = [];
-        for (const edit of edits) {
-          const { rowId, columnId, newValue, rowData } = edit;
-          // Now we have access to rowData which contains the full employee object
-          console.log("Editing employee:", rowData.$title);
-
-          if (!rowEditsMap[rowId]) {
-            rowEditsMap[rowId] = {};
-          }
-          rowEditsMap[rowId][columnId] = newValue;
-        }
-        for (const [rowId, updatedFields] of Object.entries(rowEditsMap)) {
-          actionPromises.push(applyAction({
-            employee: Number(rowId),
-            ...updatedFields,
-          }));
-        }
-        await Promise.all(actionPromises);
-      } catch (error) {
-        console.error("Failed to submit edits:", error);
-        throw error;
-      }
     },
     [applyAction],
   );
@@ -141,7 +127,6 @@ export function EmployeesTable() {
         }]}
         onSubmitEdits={handleSubmitEdits}
         enableEditModeByDefault={false}
-        onRowClick={() => alert("Row clicked")}
         onCellValueChanged={(event) => {
           console.log("Cell edited:", event);
         }}

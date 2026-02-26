@@ -58,6 +58,8 @@ export interface UseEditableTableResult {
     event: CellEditEvent<any, unknown>,
   ) => void;
   handleSubmitEdits?: () => Promise<void>;
+  onCellValidationError: (cellId: string) => void;
+  validationErrors: Set<string>;
   clearEdits: () => void;
 }
 
@@ -82,6 +84,9 @@ export function useEditableTable<
   >(
     {},
   );
+  const [validationErrors, setValidationErrors] = useState<Set<string>>(
+    new Set(),
+  );
 
   const handleEnableEditMode = useCallback((enabled: boolean) => {
     setIsInEditMode(enabled);
@@ -102,6 +107,13 @@ export function useEditableTable<
         }));
       }
 
+      // Clear validation error for this cell when it's successfully edited
+      setValidationErrors(prev => {
+        const newErrors = new Set(prev);
+        newErrors.delete(cellId);
+        return newErrors;
+      });
+
       onCellValueChanged?.(event);
     },
     [onCellValueChanged],
@@ -109,12 +121,21 @@ export function useEditableTable<
 
   const clearEdits = useCallback(() => {
     setCellEdits({});
+    setValidationErrors(new Set());
   }, []);
 
   const handleSubmitEdits = useCallback(async () => {
     const edits = Object.values(cellEdits);
     await onSubmitEdits?.(edits);
   }, [cellEdits, onSubmitEdits]);
+
+  const onCellValidationError = useCallback((cellId: string) => {
+    setValidationErrors(prev => {
+      const newErrors = new Set(prev);
+      newErrors.add(cellId);
+      return newErrors;
+    });
+  }, []);
 
   return {
     isInEditMode,
@@ -124,6 +145,8 @@ export function useEditableTable<
     cellEdits,
     handleCellEdit,
     handleSubmitEdits: onSubmitEdits ? handleSubmitEdits : undefined,
+    onCellValidationError,
+    validationErrors,
     clearEdits,
   };
 }

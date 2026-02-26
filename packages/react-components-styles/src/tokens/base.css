@@ -81,6 +81,7 @@
   /* Blueprint token mappings - Palette tokens */
   --osdk-palette-gray-1: var(--bp-palette-gray-1);
   --osdk-palette-gray-2: var(--bp-palette-gray-2);
+  --osdk-palette-gray-4: var(--bp-palette-gray-4);
   --osdk-palette-light-gray-1: var(--bp-palette-light-gray-1);
   --osdk-palette-light-gray-3: var(--bp-palette-light-gray-3);
   --osdk-palette-light-gray-4: var(--bp-palette-light-gray-4);

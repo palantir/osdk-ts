@@ -87,11 +87,13 @@ export function ObjectTable<
 
   const {
     cellEdits,
-    clearEdits,
+    validationErrors,
     isInEditMode,
     handleCellEdit,
     handleEnableEditMode,
     handleSubmitEdits,
+    onCellValidationError,
+    clearEdits,
   } = useEditableTable({
     enableEditModeByDefault,
     onCellValueChanged,
@@ -198,6 +200,7 @@ export function ObjectTable<
     getRowId,
     meta: {
       onCellEdit: handleCellEdit,
+      onCellValidationError,
       cellEdits,
       isInEditMode,
     },
@@ -233,16 +236,18 @@ export function ObjectTable<
   const editableConfig: EditableConfig | undefined = useMemo(() => {
     return {
       onSubmitEdits: handleSubmitEdits,
-      clearEdits,
       cellEdits,
+      validationErrors,
+      clearEdits,
       enableEditModeByDefault,
       isInEditMode,
       onEnableEditMode: handleEnableEditMode,
     };
   }, [
     handleSubmitEdits,
-    clearEdits,
     cellEdits,
+    validationErrors,
+    clearEdits,
     enableEditModeByDefault,
     isInEditMode,
     handleEnableEditMode,

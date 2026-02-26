@@ -259,4 +259,45 @@ describe("useEditableTable", () => {
     expect(result.current.isInEditMode).toBe(true);
     expect(result.current.handleEnableEditMode).toBeUndefined();
   });
+
+  it("when submit edits is undefined, handleSubmitEdits is undefined", async () => {
+    const { result } = renderHook(() =>
+      useEditableTable({
+        enableEditModeByDefault: true,
+        onSubmitEdits: undefined,
+      })
+    );
+
+    expect(result.current.handleSubmitEdits).toBeUndefined();
+  });
+
+  it("when enableEditModeByDefault is false, isInEditMode is false initially", () => {
+    const { result } = renderHook(() =>
+      useEditableTable({ enableEditModeByDefault: false })
+    );
+
+    expect(result.current.isInEditMode).toBe(false);
+    expect(result.current.handleEnableEditMode).toBeDefined();
+
+    act(() => {
+      result.current.handleEnableEditMode?.(true);
+    });
+
+    expect(result.current.isInEditMode).toBe(true);
+
+    act(() => {
+      result.current.handleEnableEditMode?.(false);
+    });
+
+    expect(result.current.isInEditMode).toBe(false);
+  });
+
+  it("when enableEditModeByDefault is true, isInEditMode is always true and handleEnableEditMode is undefined", () => {
+    const { result } = renderHook(() =>
+      useEditableTable({ enableEditModeByDefault: true })
+    );
+
+    expect(result.current.isInEditMode).toBe(true);
+    expect(result.current.handleEnableEditMode).toBeUndefined();
+  });
 });

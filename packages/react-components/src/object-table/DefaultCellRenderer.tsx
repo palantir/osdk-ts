@@ -44,9 +44,12 @@ export function renderDefaultCell<TData>(
       cellId={cellId}
       dataType={columnMeta?.dataType}
       onCellEdit={meta.onCellEdit}
+      onCellValidationError={meta.onCellValidationError}
       rowData={cellContext.row.original}
       rowId={rowId}
       columnId={columnId}
+      validate={columnMeta?.validate}
+      onValidationError={columnMeta?.onValidationError}
     />
   );
 }
