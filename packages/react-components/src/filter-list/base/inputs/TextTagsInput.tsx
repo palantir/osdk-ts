@@ -28,6 +28,33 @@ import { usePropertyAggregation } from "../../hooks/usePropertyAggregation.js";
 import sharedStyles from "./shared.module.css";
 import styles from "./TextTagsInput.module.css";
 
+const TAG_SEPARATOR_PATTERN = /[,\n]/;
+
+interface TagItemProps {
+  tag: string;
+  onRemove: (tag: string) => void;
+}
+
+const TagItem = memo(function TagItem({ tag, onRemove }: TagItemProps) {
+  const handleRemove = useCallback(() => {
+    onRemove(tag);
+  }, [tag, onRemove]);
+
+  return (
+    <span className={sharedStyles.tag}>
+      {tag}
+      <Button
+        type="button"
+        className={sharedStyles.tagRemove}
+        onClick={handleRemove}
+        aria-label={`Remove ${tag}`}
+      >
+        ×
+      </Button>
+    </span>
+  );
+});
+
 interface TextTagsInputProps<
   Q extends ObjectTypeDefinition,
   K extends PropertyKeys<Q>,
@@ -42,7 +69,7 @@ interface TextTagsInputProps<
   style?: React.CSSProperties;
   placeholder?: string;
   allowCustomTags?: boolean;
-  suggestFromData?: boolean;
+  suggestionLimit?: number;
 }
 
 function TextTagsInputInner<
@@ -58,18 +85,18 @@ function TextTagsInputInner<
   style,
   placeholder = "Add a tag...",
   allowCustomTags = true,
-  suggestFromData = true,
+  suggestionLimit = 50,
 }: TextTagsInputProps<Q, K>): React.ReactElement {
   const [inputValue, setInputValue] = useState("");
 
   const { data: suggestions, isLoading, error } = usePropertyAggregation(
     objectType,
     propertyKey,
-    { limit: suggestFromData ? 50 : 0, where: whereClause },
+    { limit: suggestionLimit ?? 0, where: whereClause },
   );
 
   const filteredSuggestions = useMemo(() => {
-    if (!suggestFromData) return [];
+    if (!suggestionLimit) return [];
     const lowerInput = inputValue.toLowerCase();
     return suggestions
       .filter(
@@ -79,7 +106,7 @@ function TextTagsInputInner<
           && !tags.includes(s.value),
       )
       .slice(0, 10);
-  }, [suggestions, inputValue, tags, suggestFromData]);
+  }, [suggestions, inputValue, tags, suggestionLimit]);
 
   const addTag = useCallback(
     (tag: string) => {
@@ -132,10 +159,10 @@ function TextTagsInputInner<
   const handlePaste = useCallback(
     (e: React.ClipboardEvent<HTMLInputElement>) => {
       const pastedText = e.clipboardData.getData("text");
-      if (pastedText.includes(",") || pastedText.includes("\n")) {
+      if (TAG_SEPARATOR_PATTERN.test(pastedText)) {
         e.preventDefault();
         const newTags = pastedText
-          .split(/[,\n]/)
+          .split(TAG_SEPARATOR_PATTERN)
           .map((t) => t.trim())
           .filter((t) => t && !tags.includes(t));
         if (newTags.length > 0) {
@@ -168,17 +195,7 @@ function TextTagsInputInner<
         {tags.length > 0 && (
           <div className={sharedStyles.tagContainer}>
             {tags.map((tag) => (
-              <span key={tag} className={sharedStyles.tag}>
-                {tag}
-                <Button
-                  type="button"
-                  className={sharedStyles.tagRemove}
-                  onClick={() => removeTag(tag)}
-                  aria-label={`Remove ${tag}`}
-                >
-                  ×
-                </Button>
-              </span>
+              <TagItem key={tag} tag={tag} onRemove={removeTag} />
             ))}
           </div>
         )}
@@ -204,7 +221,7 @@ function TextTagsInputInner<
                     )
                     : (
                       <Combobox.Empty>
-                        {suggestFromData
+                        {suggestionLimit
                           ? "No suggestions"
                           : "Type to add a tag"}
                       </Combobox.Empty>
@@ -220,7 +237,7 @@ function TextTagsInputInner<
         </Combobox.Portal>
       </Combobox.Root>
 
-      {isLoading && suggestFromData && (
+      {isLoading && !!suggestionLimit && (
         <div className={sharedStyles.loadingMessage}>
           Loading suggestions...
         </div>

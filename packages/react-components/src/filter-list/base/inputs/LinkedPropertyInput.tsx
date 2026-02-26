@@ -353,7 +353,7 @@ function LinkedPropertyInputInner<
             propertyKey={linkedPropertyKey}
             tags={exactMatchValues}
             onChange={onExactMatchChange}
-            suggestFromData={true}
+            suggestionLimit={50}
           />
         );
 
