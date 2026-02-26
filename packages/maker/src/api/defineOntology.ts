@@ -658,3 +658,36 @@ addDependency("${namespaceNoDot}", new URL(import.meta.url).pathname);
 export function addNamespaceIfNone(apiName: string): string {
   return apiName.includes(".") ? apiName : namespace + apiName;
 }
+
+export function initializeOntologyState(ns: string): void {
+  namespace = ns;
+  dependencies = {};
+  ontologyDefinition = {
+    OBJECT_TYPE: {},
+    ACTION_TYPE: {},
+    LINK_TYPE: {},
+    INTERFACE_TYPE: {},
+    SHARED_PROPERTY_TYPE: {},
+    VALUE_TYPE: {},
+  };
+  importedTypes = {
+    SHARED_PROPERTY_TYPE: {},
+    OBJECT_TYPE: {},
+    ACTION_TYPE: {},
+    LINK_TYPE: {},
+    INTERFACE_TYPE: {},
+    VALUE_TYPE: {},
+  };
+}
+
+export function getOntologyDefinition(): OntologyDefinition {
+  return ontologyDefinition;
+}
+
+export function getImportedTypes(): OntologyDefinition {
+  return importedTypes;
+}
+
+export function getNamespace(): string {
+  return namespace;
+}

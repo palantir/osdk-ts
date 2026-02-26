@@ -34,6 +34,19 @@ jobs:
 
       - name: Deploy to gh-pages branch
         run: |
+          # Clone existing gh-pages to get storybook content
+          git clone --branch gh-pages --single-branch --depth 1 https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git gh-pages-temp || echo "No existing gh-pages branch"
+          
+          # Copy storybook directory if it exists
+          if [ -d "gh-pages-temp/storybook" ]; then
+            mkdir docs/build/storybook
+            cp -r gh-pages-temp/storybook/* docs/build/storybook
+          fi
+          
+          # Clean up temp directory
+          rm -rf gh-pages-temp
+          
+          # Deploy from docs/build as before
           cd docs/build
           touch .nojekyll
           git init

@@ -161,6 +161,11 @@ export interface ActionTypeApiNameInvalidFormat {
 export interface ActionTypeApiNameMissing {
 }
 /**
+ * The applying message of an action type exceeds the maximum length.
+ */
+export interface ActionTypeApplyingMessageTooLong {
+}
+/**
  * The button text of an action type exceeds the maximum length.
  */
 export interface ActionTypeButtonTextTooLong {
@@ -316,6 +321,21 @@ export interface ActionTypeHasRevertsEnabledForInvalidLinkTypeStorageBackendCate
 export interface ActionTypeHasRevertsEnabledForInvalidObjectTypeStorageBackendCategory {
 }
 /**
+ * There are some properties on the ObjectType for which the ActionType is listed as inline but the ModifyObjectRule does not modify those properties of the ObjectType.
+ */
+export interface ActionTypeInlineActionTypeDoesNotModifyAllPropertyTypesForWhichActionTypeIsInline {
+}
+/**
+ * An Inline ActionType must contain a single ModifyObjectRule
+ */
+export interface ActionTypeInlineActionTypeLogicMustConsistOfOneAndOnlyOneModifyObjectRule {
+}
+/**
+ * An Inline ActionType's logic must consist of a single ModifyObjectRule which modifies the ObjectType for which the ActionType is listed as inline.
+ */
+export interface ActionTypeInlineActionTypeLogicRuleMustModifyObjectTypeWhichReferencesTheActionTypeAsInline {
+}
+/**
  * The user attempted to add a string-cbac-picker typeclass to a parameter but did not have sufficient permissions.
  */
 export interface ActionTypeInsufficientPermissionsToAddStringCbacPickerTypeclass {
@@ -406,9 +426,19 @@ export interface ActionTypeInvalidApiNamePrefixes {
 export interface ActionTypeInvalidLogicRuleForObjectType {
 }
 /**
+ * The logic rule provided for Inline ActionType is not valid. ParameterId which corresponds to ActionType parameter modifying the inlined Property is not present on the ModifyObjectRule.
+ */
+export interface ActionTypeInvalidLogicRuleProvidedForInlineActionTypeProperty {
+}
+/**
  * The parameter specified as the starting object set for an object dropdown is not an object reference or object reference list.
  */
 export interface ActionTypeInvalidObjectDropdownStartingParameter {
+}
+/**
+ * The parameter mapped to the property in the inline ActionType is not equal to the parameter provided in the InlineActionType definition.
+ */
+export interface ActionTypeInvalidParameterIdProvidedForInlineActionType {
 }
 /**
  * Action Type revert duration is invalid.
@@ -2238,6 +2268,24 @@ export interface ErrorType_objectTypeVectorPropertySimilarityFunctionConfigurati
     ObjectTypeVectorPropertySimilarityFunctionConfigurationInvalid;
 }
 
+export interface ErrorType_objectTypeVectorPropertyFunctionBackedEmbeddingModelInvalid {
+  type: "objectTypeVectorPropertyFunctionBackedEmbeddingModelInvalid";
+  objectTypeVectorPropertyFunctionBackedEmbeddingModelInvalid:
+    ObjectTypeVectorPropertyFunctionBackedEmbeddingModelInvalid;
+}
+
+export interface ErrorType_objectTypeVectorPropertyLiveDeploymentInvalid {
+  type: "objectTypeVectorPropertyLiveDeploymentInvalid";
+  objectTypeVectorPropertyLiveDeploymentInvalid:
+    ObjectTypeVectorPropertyLiveDeploymentInvalid;
+}
+
+export interface ErrorType_objectTypeVectorPropertyEmbeddingModelDimensionMismatched {
+  type: "objectTypeVectorPropertyEmbeddingModelDimensionMismatched";
+  objectTypeVectorPropertyEmbeddingModelDimensionMismatched:
+    ObjectTypeVectorPropertyEmbeddingModelDimensionMismatched;
+}
+
 export interface ErrorType_objectTypeDataNullabilityV2NotEnabled {
   type: "objectTypeDataNullabilityV2NotEnabled";
   objectTypeDataNullabilityV2NotEnabled: ObjectTypeDataNullabilityV2NotEnabled;
@@ -2907,6 +2955,12 @@ export interface ErrorType_objectTypeDatasourceWithInvalidRetentionTargetSize {
   type: "objectTypeDatasourceWithInvalidRetentionTargetSize";
   objectTypeDatasourceWithInvalidRetentionTargetSize:
     ObjectTypeDatasourceWithInvalidRetentionTargetSize;
+}
+
+export interface ErrorType_objectTypeDatasourceWithInvalidTimeBasedRetention {
+  type: "objectTypeDatasourceWithInvalidTimeBasedRetention";
+  objectTypeDatasourceWithInvalidTimeBasedRetention:
+    ObjectTypeDatasourceWithInvalidTimeBasedRetention;
 }
 
 export interface ErrorType_reducersNotAllowedOnArraySubtype {
@@ -3628,6 +3682,39 @@ export interface ErrorType_actionTypeInvalidLogicRuleForObjectType {
     ActionTypeInvalidLogicRuleForObjectType;
 }
 
+export interface ErrorType_actionTypeInvalidParameterIdProvidedForInlineActionType {
+  type: "actionTypeInvalidParameterIdProvidedForInlineActionType";
+  actionTypeInvalidParameterIdProvidedForInlineActionType:
+    ActionTypeInvalidParameterIdProvidedForInlineActionType;
+}
+
+export interface ErrorType_actionTypeInvalidLogicRuleProvidedForInlineActionTypeProperty {
+  type: "actionTypeInvalidLogicRuleProvidedForInlineActionTypeProperty";
+  actionTypeInvalidLogicRuleProvidedForInlineActionTypeProperty:
+    ActionTypeInvalidLogicRuleProvidedForInlineActionTypeProperty;
+}
+
+export interface ErrorType_actionTypeInlineActionTypeDoesNotModifyAllPropertyTypesForWhichActionTypeIsInline {
+  type:
+    "actionTypeInlineActionTypeDoesNotModifyAllPropertyTypesForWhichActionTypeIsInline";
+  actionTypeInlineActionTypeDoesNotModifyAllPropertyTypesForWhichActionTypeIsInline:
+    ActionTypeInlineActionTypeDoesNotModifyAllPropertyTypesForWhichActionTypeIsInline;
+}
+
+export interface ErrorType_actionTypeInlineActionTypeLogicRuleMustModifyObjectTypeWhichReferencesTheActionTypeAsInline {
+  type:
+    "actionTypeInlineActionTypeLogicRuleMustModifyObjectTypeWhichReferencesTheActionTypeAsInline";
+  actionTypeInlineActionTypeLogicRuleMustModifyObjectTypeWhichReferencesTheActionTypeAsInline:
+    ActionTypeInlineActionTypeLogicRuleMustModifyObjectTypeWhichReferencesTheActionTypeAsInline;
+}
+
+export interface ErrorType_actionTypeInlineActionTypeLogicMustConsistOfOneAndOnlyOneModifyObjectRule {
+  type:
+    "actionTypeInlineActionTypeLogicMustConsistOfOneAndOnlyOneModifyObjectRule";
+  actionTypeInlineActionTypeLogicMustConsistOfOneAndOnlyOneModifyObjectRule:
+    ActionTypeInlineActionTypeLogicMustConsistOfOneAndOnlyOneModifyObjectRule;
+}
+
 export interface ErrorType_actionTypeConditionsAreNotIndexedCorrectly {
   type: "actionTypeConditionsAreNotIndexedCorrectly";
   actionTypeConditionsAreNotIndexedCorrectly:
@@ -3828,6 +3915,11 @@ export interface ErrorType_actionTypeButtonTextTooLong {
 export interface ErrorType_actionTypeSuccessMessageTooLong {
   type: "actionTypeSuccessMessageTooLong";
   actionTypeSuccessMessageTooLong: ActionTypeSuccessMessageTooLong;
+}
+
+export interface ErrorType_actionTypeApplyingMessageTooLong {
+  type: "actionTypeApplyingMessageTooLong";
+  actionTypeApplyingMessageTooLong: ActionTypeApplyingMessageTooLong;
 }
 
 export interface ErrorType_actionTypeTooManyLogicRules {
@@ -4437,6 +4529,9 @@ export type ErrorType =
   | ErrorType_objectTypeVectorPropertyTypeEmbeddingModelUnknown
   | ErrorType_objectTypeVectorPropertyTypeQuantizationInvalid
   | ErrorType_objectTypeVectorPropertySimilarityFunctionConfigurationInvalid
+  | ErrorType_objectTypeVectorPropertyFunctionBackedEmbeddingModelInvalid
+  | ErrorType_objectTypeVectorPropertyLiveDeploymentInvalid
+  | ErrorType_objectTypeVectorPropertyEmbeddingModelDimensionMismatched
   | ErrorType_objectTypeDataNullabilityV2NotEnabled
   | ErrorType_objectTypeMultipleDataNullabilitiesConfigured
   | ErrorType_objectTypeNoEmptyCollectionsDataConstraintOnlyAllowedForArrayType
@@ -4551,6 +4646,7 @@ export type ErrorType =
   | ErrorType_objectTypeIdClashesAfterRebase
   | ErrorType_objectTypePropertyCannotBeDeletedWhenReferencedInActionNotification
   | ErrorType_objectTypeDatasourceWithInvalidRetentionTargetSize
+  | ErrorType_objectTypeDatasourceWithInvalidTimeBasedRetention
   | ErrorType_reducersNotAllowedOnArraySubtype
   | ErrorType_ruleSetBindingReferencingMissingPropertyTypeIds
   | ErrorType_ruleSetCountExceeded
@@ -4673,6 +4769,11 @@ export type ErrorType =
   | ErrorType_actionTypeStructParameterPrefillReferencesStructPropertyWithIncompatibleCardinality
   | ErrorType_actionTypeStructParameterPrefillsNotReferencingSameProperty
   | ErrorType_actionTypeInvalidLogicRuleForObjectType
+  | ErrorType_actionTypeInvalidParameterIdProvidedForInlineActionType
+  | ErrorType_actionTypeInvalidLogicRuleProvidedForInlineActionTypeProperty
+  | ErrorType_actionTypeInlineActionTypeDoesNotModifyAllPropertyTypesForWhichActionTypeIsInline
+  | ErrorType_actionTypeInlineActionTypeLogicRuleMustModifyObjectTypeWhichReferencesTheActionTypeAsInline
+  | ErrorType_actionTypeInlineActionTypeLogicMustConsistOfOneAndOnlyOneModifyObjectRule
   | ErrorType_actionTypeConditionsAreNotIndexedCorrectly
   | ErrorType_actionTypeApiNameConflict
   | ErrorType_actionTypeObjectParameterPropertyValueCannotReferenceStructProperty
@@ -4707,6 +4808,7 @@ export type ErrorType =
   | ErrorType_actionTypeCountExceeded
   | ErrorType_actionTypeButtonTextTooLong
   | ErrorType_actionTypeSuccessMessageTooLong
+  | ErrorType_actionTypeApplyingMessageTooLong
   | ErrorType_actionTypeTooManyLogicRules
   | ErrorType_actionTypeTooManyParameters
   | ErrorType_actionTypeTooManySections
@@ -5660,6 +5762,12 @@ export interface ObjectTypeDatasourceUpdateModificationCannotChangeAssumedMarkin
  * be less than or equal to the retention trigger size. Only applicable for direct datasources.
  */
 export interface ObjectTypeDatasourceWithInvalidRetentionTargetSize {
+}
+/**
+ * A direct datasource has an invalid time-based retention window. The retention window must be a non-negative
+ * ISO 8601 duration and at most 1000 days.
+ */
+export interface ObjectTypeDatasourceWithInvalidTimeBasedRetention {
 }
 /**
  * An error representing when an object type datasource does not include the primary key property of the corresponding object type.
@@ -6810,9 +6918,24 @@ export interface ObjectTypeUnsupportedSecurityGroupGranularPolicyOperands {
 export interface ObjectTypeValueTypeAssociatedWithDerivedPropertyType {
 }
 /**
+ * Vector property dimension does not match the expected dimension for the embedding model.
+ */
+export interface ObjectTypeVectorPropertyEmbeddingModelDimensionMismatched {
+}
+/**
+ * Vector property uses an invalid function-backed embedding model.
+ */
+export interface ObjectTypeVectorPropertyFunctionBackedEmbeddingModelInvalid {
+}
+/**
  * Vector properties can only be used on ObjectTypes stored in object storage V2.
  */
 export interface ObjectTypeVectorPropertyIsNotOnObjectStorageV2ObjectType {
+}
+/**
+ * Vector property uses an invalid live deployment.
+ */
+export interface ObjectTypeVectorPropertyLiveDeploymentInvalid {
 }
 /**
  * The vector similarity function list must be of size 1.

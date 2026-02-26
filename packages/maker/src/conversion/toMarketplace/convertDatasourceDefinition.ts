@@ -27,7 +27,10 @@ import type {
 import invariant from "tiny-invariant";
 import type { ObjectPropertyType } from "../../api/object/ObjectPropertyType.js";
 import type { ObjectType } from "../../api/object/ObjectType.js";
-import type { ObjectTypeDatasourceDefinition_dataset } from "../../api/object/ObjectTypeDatasourceDefinition.js";
+import type {
+  ObjectTypeDatasourceDefinition_dataset,
+  ObjectTypeDatasourceDefinition_direct,
+} from "../../api/object/ObjectTypeDatasourceDefinition.js";
 import type { SecurityConditionDefinition } from "../../api/object/SecurityCondition.js";
 
 export function convertDatasourceDefinition(
@@ -35,7 +38,7 @@ export function convertDatasourceDefinition(
   properties: ObjectPropertyType[],
 ): OntologyIrObjectTypeDatasourceDefinition {
   const baseDatasource = objectType.datasources?.find(ds =>
-    ["dataset", "stream", "restrictedView"].includes(ds.type)
+    ["dataset", "stream", "restrictedView", "direct"].includes(ds.type)
   );
   switch (baseDatasource?.type) {
     case "stream":
@@ -73,6 +76,19 @@ export function convertDatasourceDefinition(
           propertyMapping: buildPropertyMapping(properties),
         },
       };
+    case "direct":
+      return {
+        type: "direct",
+        direct: {
+          directSourceRid: objectType.apiName,
+          propertyMapping: buildPropertyMapping(properties),
+          propertySecurityGroups: convertPropertySecurityGroups(
+            baseDatasource,
+            properties,
+            objectType.primaryKeyPropertyApiName,
+          ),
+        },
+      };
     case "dataset":
     default:
       if (
@@ -107,7 +123,10 @@ export function convertDatasourceDefinition(
 }
 
 function convertPropertySecurityGroups(
-  ds: ObjectTypeDatasourceDefinition_dataset | undefined,
+  ds:
+    | ObjectTypeDatasourceDefinition_dataset
+    | ObjectTypeDatasourceDefinition_direct
+    | undefined,
   properties: ObjectPropertyType[],
   primaryKeyPropertyApiName: string,
 ): OntologyIrPropertySecurityGroups {
@@ -132,6 +151,7 @@ function convertPropertySecurityGroups(
                 },
                 additionalMandatory: {
                   markings: {},
+                  assumedMarkingsV2: {},
                   assumedMarkings: [],
                 },
               },
@@ -173,7 +193,8 @@ function convertPropertySecurityGroups(
       type: "granular",
       granular: convertGranularPolicy(
         ds.objectSecurityPolicy?.granularPolicy,
-        ds.objectSecurityPolicy?.additionalMandatoryMarkings,
+        ds.objectSecurityPolicy?.appliedMarkings,
+        ds.objectSecurityPolicy?.assumedMarkings,
       ),
     },
     type: {
@@ -194,7 +215,8 @@ function convertPropertySecurityGroups(
           type: "granular" as const,
           granular: convertGranularPolicy(
             psg.granularPolicy,
-            psg.additionalMandatoryMarkings,
+            psg.appliedMarkings,
+            psg.assumedMarkings,
           ),
         },
         type: {
@@ -211,7 +233,8 @@ function convertPropertySecurityGroups(
 
 function convertGranularPolicy(
   granularPolicy?: SecurityConditionDefinition,
-  additionalMandatoryMarkings?: Record<string, MarkingType>,
+  appliedMarkings?: Record<string, MarkingType>,
+  assumedMarkings?: Record<string, MarkingType>,
 ): OntologyIrSecurityGroupGranularSecurityDefinition {
   return {
     viewPolicy: {
@@ -224,8 +247,9 @@ function convertGranularPolicy(
           },
         },
       additionalMandatory: {
-        markings: additionalMandatoryMarkings ?? {},
+        markings: appliedMarkings ?? {},
         assumedMarkings: [],
+        assumedMarkingsV2: assumedMarkings ?? {},
       },
     },
   };

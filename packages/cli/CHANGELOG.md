@@ -1,5 +1,11 @@
 # @osdk/cli
 
+## 0.32.0-beta.2
+
+### Minor Changes
+
+- ef0cd72: Handle ScanningInProgress error for site deploy command
+
 ## 0.31.0-beta.2
 
 ## 0.30.0-beta.5

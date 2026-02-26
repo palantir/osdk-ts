@@ -1,5 +1,50 @@
 # @osdk/widget.vite-plugin
 
+## 3.5.0-beta.11
+
+### Patch Changes
+
+- @osdk/widget.api@3.5.0-beta.11
+
+## 3.5.0-beta.10
+
+### Patch Changes
+
+- @osdk/widget.api@3.5.0-beta.10
+
+## 3.5.0-beta.9
+
+### Patch Changes
+
+- @osdk/widget.api@3.5.0-beta.9
+
+## 3.5.0-beta.8
+
+### Minor Changes
+
+- 12dcb6a: Bump node and vite versions
+
+### Patch Changes
+
+- @osdk/widget.api@3.5.0-beta.8
+
+## 3.5.0-beta.7
+
+### Patch Changes
+
+- @osdk/widget.api@3.5.0-beta.7
+
+## 3.5.0-beta.6
+
+### Minor Changes
+
+- de531ed: Handle HMR for widget config files
+
+### Patch Changes
+
+- Updated dependencies [fad598c]
+  - @osdk/widget.api@3.5.0-beta.6
+
 ## 3.5.0-beta.5
 
 ### Patch Changes

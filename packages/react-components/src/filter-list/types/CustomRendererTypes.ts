@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectSet, ObjectTypeDefinition, WhereClause } from "@osdk/api";
+import type { ObjectTypeDefinition, WhereClause } from "@osdk/api";
 import type { ReactNode } from "react";
 import type { BaseFilterState } from "../FilterListItemApi.js";
 
@@ -24,7 +24,7 @@ import type { BaseFilterState } from "../FilterListItemApi.js";
 export interface CustomFilterState<T = Record<string, unknown>>
   extends BaseFilterState
 {
-  type: "CUSTOM";
+  type: "custom";
   customState: T;
 }
 
@@ -35,7 +35,6 @@ export interface CustomFilterInputRendererProps<
   Q extends ObjectTypeDefinition,
   State extends BaseFilterState,
 > {
-  objectSet: ObjectSet<Q>;
   filterState: State;
   onFilterStateChanged: (newState: State) => void;
 }

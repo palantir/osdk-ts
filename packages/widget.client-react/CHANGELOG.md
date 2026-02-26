@@ -1,5 +1,64 @@
 # @osdk/widget.client-react
 
+## 3.5.0-beta.11
+
+### Patch Changes
+
+- Updated dependencies [642be5f]
+- Updated dependencies [525f277]
+- Updated dependencies [f5f95e2]
+- Updated dependencies [d80c234]
+  - @osdk/client@2.8.0-beta.11
+  - @osdk/widget.client@3.5.0-beta.11
+
+## 3.5.0-beta.10
+
+### Patch Changes
+
+- Updated dependencies [27a5902]
+  - @osdk/client@2.8.0-beta.10
+  - @osdk/widget.client@3.5.0-beta.10
+
+## 3.5.0-beta.9
+
+### Patch Changes
+
+- Updated dependencies [abb0e0f]
+- Updated dependencies [abb0e0f]
+  - @osdk/client@2.8.0-beta.9
+  - @osdk/widget.client@3.5.0-beta.9
+
+## 3.5.0-beta.8
+
+### Patch Changes
+
+- @osdk/client@2.8.0-beta.8
+- @osdk/widget.client@3.5.0-beta.8
+
+## 3.5.0-beta.7
+
+### Patch Changes
+
+- Updated dependencies [4cd7389]
+  - @osdk/client@2.8.0-beta.7
+  - @osdk/widget.client@3.5.0-beta.7
+
+## 3.5.0-beta.6
+
+### Minor Changes
+
+- 727fd0e: fix dual @types/react version mismatch
+
+### Patch Changes
+
+- Updated dependencies [8c60682]
+- Updated dependencies [15e1686]
+- Updated dependencies [c9d954d]
+- Updated dependencies [044eb80]
+- Updated dependencies [9d234b9]
+  - @osdk/client@2.8.0-beta.6
+  - @osdk/widget.client@3.5.0-beta.6
+
 ## 3.5.0-beta.5
 
 ### Patch Changes

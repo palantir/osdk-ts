@@ -26,7 +26,8 @@ export type ObjectTypeDatasourceDefinition =
   | ObjectTypeDatasourceDefinition_stream
   | ObjectTypeDatasourceDefinition_dataset
   | ObjectTypeDatasourceDefinition_restrictedView
-  | ObjectTypeDatasourceDefinition_derived;
+  | ObjectTypeDatasourceDefinition_derived
+  | ObjectTypeDatasourceDefinition_direct;
 
 export interface ObjectTypeDatasourceDefinition_dataset {
   type: "dataset";
@@ -37,14 +38,16 @@ export interface ObjectTypeDatasourceDefinition_dataset {
 export interface ObjectSecurityPolicy {
   name: string;
   granularPolicy?: SecurityConditionDefinition;
-  additionalMandatoryMarkings?: Record<string, MarkingType>;
+  appliedMarkings?: Record<string, MarkingType>;
+  assumedMarkings?: Record<string, MarkingType>;
 }
 
 export interface PropertySecurityGroup {
   name: string;
   properties: Array<string>;
   granularPolicy?: SecurityConditionDefinition;
-  additionalMandatoryMarkings?: Record<string, MarkingType>;
+  appliedMarkings?: Record<string, MarkingType>;
+  assumedMarkings?: Record<string, MarkingType>;
 }
 
 export interface ObjectTypeDatasourceDefinition_stream {
@@ -81,3 +84,9 @@ export type DerivedPropertyAggregation =
   | { type: "exactCardinality"; property: ObjectTypeFieldApiName }
   | { type: "collectList"; property: ObjectTypeFieldApiName; limit: number } // max limit is 100
   | { type: "collectSet"; property: ObjectTypeFieldApiName; limit: number }; // max limit is 100
+
+export interface ObjectTypeDatasourceDefinition_direct {
+  type: "direct";
+  objectSecurityPolicy?: ObjectSecurityPolicy;
+  propertySecurityGroups?: Array<PropertySecurityGroup>;
+}

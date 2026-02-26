@@ -18,6 +18,11 @@ import type { ReactNode } from "react";
 import type { FilterComponentType } from "../FilterListItemApi.js";
 
 /**
+ * Visual data indicator configuration for filter items
+ */
+export type FilterDataIndicator = "histogram" | "count" | "none";
+
+/**
  * Category for organizing filters in the add filter menu
  */
 export type FilterCategory =
@@ -54,6 +59,21 @@ export interface FilterTemplate {
    * Can be a string (icon name) or a ReactNode for custom icons.
    */
   icon: string | ReactNode;
+
+  /**
+   * Type of data indicator to show (histogram, count, none)
+   */
+  dataIndicator?: FilterDataIndicator;
+
+  /**
+   * Whether to show a "Select All" option for checkbox lists
+   */
+  showSelectAll?: boolean;
+
+  /**
+   * Maximum number of visible items before scrolling
+   */
+  maxVisibleItems?: number;
 
   /**
    * Whether multiple instances of this filter can be added

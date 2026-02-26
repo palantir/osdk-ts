@@ -78,8 +78,9 @@ export class ActionApplication {
         if (process.env.NODE_ENV !== "production") {
           if (ACTION_DELAY > 0) {
             logger?.debug("action done, pausing", actionResults);
-            const delay = (await import("delay")).default;
-            await delay(ACTION_DELAY);
+            await new Promise<void>(resolve =>
+              setTimeout(resolve, ACTION_DELAY)
+            );
             logger?.debug("action done, pausing done");
           }
         }

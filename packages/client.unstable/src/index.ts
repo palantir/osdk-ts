@@ -69,11 +69,14 @@ export type { ValueTypeVersion } from "./generated/type-registry/api/ValueTypeVe
 export type {
   OntologyIr,
   OntologyIrOntologyBlockDataV2,
+  OntologyIrV2,
   OntologyIrValueTypeBlockData,
   OntologyIrValueTypeBlockDataEntry,
 } from "./blockDataIr.js";
 
 export type {
+  DerivedPropertiesDefinition,
+  DerivedPropertyAggregation,
   DerivedPropertyLinkTypeSide,
   OntologyIrDerivedPropertiesDefinition,
   OntologyIrDerivedPropertyAggregation,

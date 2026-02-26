@@ -1,6 +1,6 @@
 {
   "name": "@osdk/widget.vite-plugin",
-  "version": "3.5.0-beta.5",
+  "version": "3.5.0-beta.11",
   "description": "A vite plugin that will extract parameter definitions from TS/JS files + entrypoint info into a manifest file to be uploaded to Foundry ",
   "access": "public",
   "license": "Apache-2.0",
@@ -48,7 +48,7 @@
     "sirv": "^3.0.2"
   },
   "peerDependencies": {
-    "vite": "^6.3.5"
+    "vite": "^7.3.1"
   },
   "devDependencies": {
     "@blueprintjs/core": "^5.19.1",
@@ -63,7 +63,7 @@
     "react-dom": "^18.3.1",
     "ts-expect": "^1.3.0",
     "typescript": "~5.5.4",
-    "vite": "^6.3.6",
+    "vite": "^7.3.1",
     "vitest": "^3.2.4"
   },
   "publishConfig": {

@@ -179,7 +179,6 @@ async function transpileWithTsup(format, target) {
     "@osdk/foundry.mediasets",
     "@osdk/shared.client",
     "@osdk/shared.client2",
-    "delay",
     "oauth4webapi",
     "p-defer",
   ];

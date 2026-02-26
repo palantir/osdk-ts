@@ -17,6 +17,7 @@
 import type {
   DerivedProperty,
   ObjectOrInterfaceDefinition,
+  ObjectSet,
   Osdk,
   PrimaryKeyType,
   PropertyKeys,
@@ -25,6 +26,7 @@ import type {
   WhereClause,
 } from "@osdk/api";
 import type * as React from "react";
+import type { CellIdentifier, CellValueState } from "./utils/types.js";
 
 export type ColumnDefinition<
   Q extends ObjectOrInterfaceDefinition,
@@ -51,6 +53,8 @@ export type ColumnDefinition<
   resizable?: boolean;
   orderable?: boolean;
   filterable?: boolean;
+  editable?: boolean;
+
   renderCell?: (
     object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
     locator: ColumnDefinitionLocator<Q, RDPs, FunctionColumns>,
@@ -109,9 +113,18 @@ export interface ObjectTableProps<
   >,
 > {
   /**
-   * The object type of the object
+   * The object or interface type of the object
+   * If objectSet is not provided, objects will be fetched based on this type.
    */
   objectType: Q;
+
+  /**
+   * The set of objects to show in the table.
+   * If provided and the objectType is not an interface, the table will use objectSet to fetch objects instead of fetching based on objectType.
+   */
+  objectSet?: ObjectSet<Q>;
+
+  objectSetOptions?: ObjectSetOptions<Q>;
 
   /**
    * Ordered list of column definitions to show in the table
@@ -203,6 +216,24 @@ export interface ObjectTableProps<
   ) => void;
 
   /**
+   * Called after the value of a cell is edited and committed by the user.
+   *
+   * @param cell The cell that was edited, identified by its row and column IDs
+   * @param state The new and old values of the cell
+   */
+  onCellValueChanged?: (
+    cell: CellIdentifier,
+    state: CellValueState,
+  ) => void;
+
+  /**
+   * If provided, the button Submit Edits will be shown in the table
+   *
+   * @param edits a map of cellId (stringified CellIdentifier) to the new and old values of the cell
+   */
+  onSubmitEdits?: (edits: Record<string, CellValueState>) => Promise<void>;
+
+  /**
    * Called when the column visibility or ordering changed.
    *
    * If provided, the table will allow the user to show/hide columns.
@@ -291,4 +322,23 @@ export interface ObjectTableProps<
   rowHeight?: number;
 
   className?: string;
+}
+
+export interface ObjectSetOptions<
+  Q extends ObjectOrInterfaceDefinition,
+> {
+  /**
+   * Object sets to union with
+   */
+  union?: ObjectSet<Q>[];
+
+  /**
+   * Object sets to intersect with
+   */
+  intersect?: ObjectSet<Q>[];
+
+  /**
+   * Object sets to subtract from
+   */
+  subtract?: ObjectSet<Q>[];
 }

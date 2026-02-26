@@ -14,7 +14,15 @@
  * limitations under the License.
  */
 
-import type { ObjectSet, ObjectTypeDefinition, Osdk } from "@osdk/api";
+import type {
+  DerivedProperty,
+  InterfaceDefinition,
+  ObjectOrInterfaceDefinition,
+  ObjectSet,
+  ObjectTypeDefinition,
+  Osdk,
+  WhereClause,
+} from "@osdk/api";
 function groupBy<T>(
   arr: T[],
   fn: (item: T) => string,
@@ -27,17 +35,18 @@ function groupBy<T>(
   return result;
 }
 import invariant from "tiny-invariant";
-import type { Client } from "../../../Client.js";
+import { additionalContext, type Client } from "../../../Client.js";
 import type { InterfaceHolder } from "../../../object/convertWireToOsdkObjects/InterfaceHolder.js";
 import { ObjectDefRef } from "../../../object/convertWireToOsdkObjects/InternalSymbols.js";
 import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import type { ListPayload } from "../../ListPayload.js";
 import type { CollectionConnectableParams } from "../base-list/BaseCollectionQuery.js";
 import type { Changes } from "../Changes.js";
+import type { PivotInfo } from "../PivotCanonicalizer.js";
 import type { Rdp } from "../RdpCanonicalizer.js";
 import type { SimpleWhereClause } from "../SimpleWhereClause.js";
 import type { Store } from "../Store.js";
-import { ListQuery, RDP_IDX } from "./ListQuery.js";
+import { ListQuery, PIVOT_IDX, RDP_IDX, RIDS_IDX } from "./ListQuery.js";
 
 type ExtractRelevantObjectsResult = Record<"added" | "modified", {
   all: (ObjectHolder | InterfaceHolder)[];
@@ -48,20 +57,50 @@ type ExtractRelevantObjectsResult = Record<"added" | "modified", {
 export class InterfaceListQuery extends ListQuery {
   protected createObjectSet(store: Store): ObjectSet<ObjectTypeDefinition> {
     const rdpConfig = this.cacheKey.otherKeys[RDP_IDX];
+    const pivotInfo = this.cacheKey.otherKeys[PIVOT_IDX];
+    const rids = this.cacheKey.otherKeys[RIDS_IDX];
+
+    if (pivotInfo != null) {
+      const sourceSet = createSourceSetForPivot(store, pivotInfo, rids);
+
+      let objectSet = sourceSet
+        .where(this.canonicalWhere as WhereClause<any>)
+        .pivotTo(pivotInfo.linkName);
+
+      if (rdpConfig != null) {
+        objectSet = objectSet.withProperties(
+          rdpConfig as DerivedProperty.Clause<ObjectTypeDefinition>,
+        );
+      }
+
+      // intersectWith for pivot queries is deferred to fetchPageData
+      // where the target type can be resolved asynchronously
+      return objectSet;
+    }
+
     const type: string = "interface" as const;
     const objectTypeDef = {
       type,
       apiName: this.apiName,
     } as ObjectTypeDefinition;
 
-    if (rdpConfig != null) {
-      return store.client(objectTypeDef)
-        .withProperties(rdpConfig as Rdp)
-        .where(this.canonicalWhere);
+    const clientCtx = store.client[additionalContext];
+    let objectSet: ObjectSet<ObjectTypeDefinition>;
+    if (rids != null) {
+      objectSet = clientCtx.objectSetFactory(
+        objectTypeDef,
+        clientCtx,
+        { type: "static", objects: [...rids] },
+      );
+    } else {
+      objectSet = store.client(objectTypeDef);
     }
 
-    return store.client(objectTypeDef)
-      .where(this.canonicalWhere);
+    if (rdpConfig != null) {
+      objectSet = objectSet.withProperties(rdpConfig as Rdp);
+    }
+
+    return objectSet.where(this.canonicalWhere);
   }
 
   async revalidateObjectType(apiName: string): Promise<void> {
@@ -127,6 +166,37 @@ export class InterfaceListQuery extends ListQuery {
       },
     };
   }
+}
+
+function createSourceSetForPivot(
+  store: Store,
+  pivotInfo: PivotInfo,
+  rids: string[] | undefined,
+): ObjectSet<ObjectOrInterfaceDefinition> {
+  const clientCtx = store.client[additionalContext];
+
+  if (rids != null) {
+    return clientCtx.objectSetFactory(
+      {
+        type: "object",
+        apiName: pivotInfo.sourceType,
+      } as ObjectTypeDefinition,
+      clientCtx,
+      { type: "static", objects: [...rids] },
+    );
+  }
+
+  if (pivotInfo.sourceTypeKind === "interface") {
+    return store.client({
+      type: "interface",
+      apiName: pivotInfo.sourceType,
+    } as InterfaceDefinition) as ObjectSet<ObjectOrInterfaceDefinition>;
+  }
+
+  return store.client({
+    type: "object",
+    apiName: pivotInfo.sourceType,
+  } as ObjectTypeDefinition) as ObjectSet<ObjectOrInterfaceDefinition>;
 }
 
 // Hopefully this can go away when we can just request the full object properties on first load

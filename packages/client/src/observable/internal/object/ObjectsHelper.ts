@@ -14,13 +14,10 @@
  * limitations under the License.
  */
 
-import type {
-  InterfaceDefinition,
-  ObjectTypeDefinition,
-  Osdk,
-} from "@osdk/api";
+import type { ObjectOrInterfaceDefinition, Osdk } from "@osdk/api";
 import deepEqual from "fast-deep-equal";
 import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
+import { getDefType } from "../../../util/interfaceUtils.js";
 import type { ObjectPayload } from "../../ObjectPayload.js";
 import type { ObserveObjectOptions } from "../../ObservableClient.js";
 import type { Observer, Status } from "../../ObservableClient/common.js";
@@ -38,14 +35,14 @@ export class ObjectsHelper extends AbstractHelper<
   ObjectQuery,
   ObserveObjectOptions<any>
 > {
-  observe<T extends ObjectTypeDefinition | InterfaceDefinition>(
+  observe<T extends ObjectOrInterfaceDefinition>(
     options: ObserveObjectOptions<T>,
     subFn: Observer<ObjectPayload>,
   ): QuerySubscription<ObjectQuery> {
     return super.observe(options, subFn);
   }
 
-  getQuery<T extends ObjectTypeDefinition | InterfaceDefinition>(
+  getQuery<T extends ObjectOrInterfaceDefinition>(
     options: ObserveObjectOptions<T>,
     rdpConfig?: Canonical<Rdp> | null,
   ): ObjectQuery {
@@ -53,6 +50,8 @@ export class ObjectsHelper extends AbstractHelper<
       ? options.apiName
       : options.apiName.apiName;
     const { pk } = options;
+
+    const defType = getDefType(options.apiName);
 
     const objectCacheKey = this.cacheKeys.get<ObjectCacheKey>(
       "object",
@@ -69,6 +68,7 @@ export class ObjectsHelper extends AbstractHelper<
         pk,
         objectCacheKey,
         { dedupeInterval: 0 },
+        defType,
       ));
   }
 
