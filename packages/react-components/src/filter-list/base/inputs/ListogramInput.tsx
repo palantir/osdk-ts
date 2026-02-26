@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Button } from "@base-ui/react/button";
 import type {
   ObjectSet,
   ObjectTypeDefinition,
@@ -21,7 +22,7 @@ import type {
   WhereClause,
 } from "@osdk/api";
 import classnames from "classnames";
-import React, { memo, useCallback, useMemo, useRef, useState } from "react";
+import React, { memo, useCallback, useMemo, useState } from "react";
 import { usePropertyAggregation } from "../../hooks/usePropertyAggregation.js";
 import styles from "./ListogramInput.module.css";
 import sharedStyles from "./shared.module.css";
@@ -64,24 +65,15 @@ function ListogramInputInner<
 
   const selectedSet = useMemo(() => new Set(selectedValues), [selectedValues]);
 
-  const selectedValuesRef = useRef(selectedValues);
-  selectedValuesRef.current = selectedValues;
-  const selectedSetRef = useRef(selectedSet);
-  selectedSetRef.current = selectedSet;
-  const onChangeRef = useRef(onChange);
-  onChangeRef.current = onChange;
-
   const toggleValue = useCallback(
     (value: string) => {
-      if (selectedSetRef.current.has(value)) {
-        onChangeRef.current(
-          selectedValuesRef.current.filter((v) => v !== value),
-        );
+      if (selectedSet.has(value)) {
+        onChange(selectedValues.filter((v) => v !== value));
       } else {
-        onChangeRef.current([...selectedValuesRef.current, value]);
+        onChange([...selectedValues, value]);
       }
     },
-    [],
+    [selectedValues, selectedSet, onChange],
   );
 
   const displayValues = useMemo(() => {
@@ -122,7 +114,7 @@ function ListogramInputInner<
             const percentage = maxCount > 0 ? (count / maxCount) * 100 : 0;
 
             return (
-              <button
+              <Button
                 key={value}
                 type="button"
                 className={styles.row}
@@ -139,18 +131,18 @@ function ListogramInputInner<
                 <span className={styles.count}>
                   {count.toLocaleString()}
                 </span>
-              </button>
+              </Button>
             );
           })}
 
           {hasMore && !isExpanded && (
-            <button
+            <Button
               type="button"
               className={styles.row}
               onClick={() => setIsExpanded(true)}
             >
               View all ({values.length})
-            </button>
+            </Button>
           )}
         </div>
       )}

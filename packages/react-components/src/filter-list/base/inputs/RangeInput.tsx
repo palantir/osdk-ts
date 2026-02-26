@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Input } from "@base-ui/react/input";
 import type { ObjectSet, ObjectTypeDefinition, PropertyKeys } from "@osdk/api";
 import { useOsdkAggregation } from "@osdk/react/experimental";
 import classnames from "classnames";
@@ -263,7 +264,7 @@ function RangeInputInner<
           <label htmlFor={minInputId} className={styles.inputLabel}>
             {config.minLabel}
           </label>
-          <input
+          <Input
             id={minInputId}
             type={config.inputType}
             className={styles.input}
@@ -285,7 +286,7 @@ function RangeInputInner<
           <label htmlFor={maxInputId} className={styles.inputLabel}>
             {config.maxLabel}
           </label>
-          <input
+          <Input
             id={maxInputId}
             type={config.inputType}
             className={styles.input}

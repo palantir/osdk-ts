@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Button } from "@base-ui/react/button";
 import type {
   ObjectSet,
   ObjectTypeDefinition,
@@ -169,14 +170,14 @@ function TextTagsInputInner<
             {tags.map((tag) => (
               <span key={tag} className={sharedStyles.tag}>
                 {tag}
-                <button
+                <Button
                   type="button"
                   className={sharedStyles.tagRemove}
                   onClick={() => removeTag(tag)}
                   aria-label={`Remove ${tag}`}
                 >
                   ×
-                </button>
+                </Button>
               </span>
             ))}
           </div>

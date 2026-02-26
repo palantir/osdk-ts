@@ -246,7 +246,7 @@ function LinkedPropertyInputInner<
     [innerState],
   );
 
-  const content = useMemo(() => {
+  const content = (() => {
     switch (definition.linkedFilterComponent) {
       case "CHECKBOX_LIST":
         return (
@@ -391,29 +391,7 @@ function LinkedPropertyInputInner<
       default:
         return assertUnreachable(definition.linkedFilterComponent);
     }
-  }, [
-    definition.linkedFilterComponent,
-    definition.linkedPropertyKey,
-    linkedObjectType,
-    linkedObjectSet,
-    linkedPropertyKey,
-    selectStringValues,
-    onSelectChange,
-    singleSelectValue,
-    onSingleSelectChange,
-    innerState,
-    onContainsTextChange,
-    onToggleChange,
-    onNumberRangeChange,
-    onDateRangeChange,
-    exactMatchValues,
-    onExactMatchChange,
-    selectedDate,
-    onDateSelectChange,
-    selectedDates,
-    onMultiDateChange,
-    onTimelineChange,
-  ]);
+  })();
 
   return (
     <div className={classnames(styles.linkedProperty, className)} style={style}>

@@ -17,7 +17,7 @@
 import { Button } from "@base-ui/react/button";
 import { Input } from "@base-ui/react/input";
 import classnames from "classnames";
-import React, { memo, useCallback, useMemo, useRef } from "react";
+import React, { memo, useCallback, useMemo } from "react";
 import {
   formatDateForDisplay,
   formatDateForInput,
@@ -42,32 +42,25 @@ function TimelineInputInner({
   minDate,
   maxDate,
 }: TimelineInputProps): React.ReactElement {
-  const startDateRef = useRef(startDate);
-  startDateRef.current = startDate;
-  const endDateRef = useRef(endDate);
-  endDateRef.current = endDate;
-  const onChangeRef = useRef(onChange);
-  onChangeRef.current = onChange;
-
   const handleStartChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const date = parseDateFromInput(e.target.value);
-      onChangeRef.current(date, endDateRef.current);
+      onChange(date, endDate);
     },
-    [],
+    [onChange, endDate],
   );
 
   const handleEndChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const date = parseDateFromInput(e.target.value);
-      onChangeRef.current(startDateRef.current, date);
+      onChange(startDate, date);
     },
-    [],
+    [onChange, startDate],
   );
 
   const handleClear = useCallback(() => {
-    onChangeRef.current(undefined, undefined);
-  }, []);
+    onChange(undefined, undefined);
+  }, [onChange]);
 
   const startInputMax = useMemo(
     () => endDate ?? maxDate,

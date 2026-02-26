@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Button } from "@base-ui/react/button";
 import { Cross } from "@blueprintjs/icons";
 import type {
   ObjectSet,
@@ -137,14 +138,14 @@ function SingleSelectInputInner<
             </Select.Portal>
           </Select.Root>
           {showClearButton && selectedValue !== undefined && (
-            <button
+            <Button
               type="button"
               className={styles.clearButton}
               onClick={handleClear}
               aria-label="Clear selection"
             >
               <Cross color="currentColor" />
-            </button>
+            </Button>
           )}
         </div>
       )}

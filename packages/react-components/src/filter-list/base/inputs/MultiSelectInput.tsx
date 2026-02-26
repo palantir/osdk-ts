@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Button } from "@base-ui/react/button";
 import type {
   ObjectSet,
   ObjectTypeDefinition,
@@ -121,7 +122,7 @@ function MultiSelectInputInner<
               {displayedTags.map((value) => (
                 <span key={value} className={sharedStyles.tag}>
                   {value}
-                  <button
+                  <Button
                     type="button"
                     className={sharedStyles.tagRemove}
                     onClick={() =>
@@ -129,7 +130,7 @@ function MultiSelectInputInner<
                     aria-label={`Remove ${value}`}
                   >
                     ×
-                  </button>
+                  </Button>
                 </span>
               ))}
               {remainingCount > 0 && (
