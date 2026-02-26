@@ -1,5 +1,17 @@
 # @osdk/client
 
+## 2.8.0-beta.12
+
+### Minor Changes
+
+- 8825f8c: fix InterfaceListQuery ignoring rids option when creating object sets
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.12
+- @osdk/client.unstable@2.8.0-beta.12
+- @osdk/generator-converters@2.8.0-beta.12
+
 ## 2.8.0-beta.11
 
 ### Minor Changes
