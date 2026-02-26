@@ -17,21 +17,20 @@
       border: var(--osdk-table-cell-edited-border);
     }
 
-    &:focus,
-    &.osdkEditedInput:focus {
+    &:focus-within,
+    &.osdkEditedInput:focus-within {
       border: var(--osdk-emphasis-focus-width) solid
         var(--osdk-emphasis-focus-color);
     }
 
-    &.invalid {
+    &.error {
       border: var(--osdk-emphasis-focus-width) solid
         var(--osdk-intent-danger-rest);
     }
   }
 
-  &.invalid {
-    border: var(--osdk-emphasis-focus-width) solid
-      var(--osdk-intent-danger-rest);
+  &.error {
+    border: var(--osdk-table-cell-edited-border-error);
   }
 }
 

@@ -185,7 +185,7 @@ export function EditableCell<TData = unknown>({
         <Tooltip.Trigger>
           <div
             className={classNames(styles.osdkEditableCell, {
-              [styles.invalid]: !!validationError,
+              [styles.error]: !!validationError,
               [styles.osdkEditedInput]: isEdited,
             })}
           >
