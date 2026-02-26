@@ -23,6 +23,16 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 import { fileURLToPath } from "node:url";
 import * as semver from "semver";
+import { determineMinVersion } from "./determineMinVersion.mjs";
+import { generatePeerRange } from "./generatePeerRange.mjs";
+import { parseChangelog } from "./parseChangelog.mjs";
+
+const PEER_DEP_PACKAGES = [
+  { dir: "react", peers: ["@osdk/client", "@osdk/api"] },
+  { dir: "widget.client-react", peers: ["@osdk/client"] },
+  { dir: "react-components", peers: ["@osdk/client", "@osdk/api"] },
+  { dir: "functions", peers: ["@osdk/client"] },
+];
 
 const workspaceDirPath = getWorkspaceDirPath();
 const clientPackageVersion = getClientPackageVersion();
@@ -51,6 +61,10 @@ updateConstVariable(
   "ExpectedOsdkVersion",
   clientPackageVersion,
 );
+
+for (const pkg of PEER_DEP_PACKAGES) {
+  updatePeerDependencies(pkg.dir, pkg.peers);
+}
 
 /**
  * @param {string} filePath
@@ -136,4 +150,118 @@ function getClientPackageVersion() {
   }
 
   return `${major}.${minor}.${patch}`;
+}
+
+/**
+ * @param {string} packageName - Scoped package name (e.g. "@osdk/client")
+ * @returns {string | undefined}
+ */
+function getPeerPackageVersion(packageName) {
+  const dirName = packageName.replace("@osdk/", "");
+  const pkgJsonPath = path.join(
+    workspaceDirPath,
+    "packages",
+    dirName,
+    "package.json",
+  );
+  if (!fs.existsSync(pkgJsonPath)) {
+    return undefined;
+  }
+  return JSON.parse(fs.readFileSync(pkgJsonPath, "utf8")).version;
+}
+
+/**
+ * @param {string} packageDir - Directory name under packages/ (e.g. "react", "widget.client-react")
+ * @param {string[]} peerNames - Peer dependency package names to update (e.g. ["@osdk/client", "@osdk/api"])
+ */
+function updatePeerDependencies(packageDir, peerNames) {
+  const packageJsonPath = path.join(
+    workspaceDirPath,
+    "packages",
+    packageDir,
+    "package.json",
+  );
+  const changelogPath = path.join(
+    workspaceDirPath,
+    "packages",
+    packageDir,
+    "CHANGELOG.md",
+  );
+
+  if (!fs.existsSync(packageJsonPath)) {
+    consola.warn(
+      `packages/${packageDir}/package.json not found, skipping peer dependency update`,
+    );
+    return;
+  }
+
+  if (!fs.existsSync(changelogPath)) {
+    consola.warn(
+      `packages/${packageDir}/CHANGELOG.md not found, skipping peer dependency update`,
+    );
+    return;
+  }
+
+  const changelog = fs.readFileSync(changelogPath, "utf8");
+  const versionMappings = parseChangelog(changelog, peerNames);
+
+  if (versionMappings.length === 0) {
+    consola.warn(
+      `No version mappings found in packages/${packageDir}/CHANGELOG.md`,
+    );
+    return;
+  }
+
+  const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
+  const currentPackageVersion = packageJson.version;
+
+  if (!packageJson.peerDependencies) {
+    packageJson.peerDependencies = {};
+  }
+
+  let changed = false;
+  for (const peerName of peerNames) {
+    const minVersion = determineMinVersion(
+      versionMappings,
+      currentPackageVersion,
+      peerName,
+    );
+
+    if (!minVersion) {
+      consola.warn(
+        `Could not determine minimum ${peerName} version for ${packageDir}@${currentPackageVersion}`,
+      );
+      continue;
+    }
+
+    const currentPeerVersion = getPeerPackageVersion(peerName);
+    if (!currentPeerVersion) {
+      consola.warn(
+        `Could not read version for ${peerName}, skipping`,
+      );
+      continue;
+    }
+
+    const peerRange = generatePeerRange(minVersion, currentPeerVersion);
+    const currentPeerDep = packageJson.peerDependencies?.[peerName];
+
+    if (currentPeerDep === peerRange) {
+      consola.info(
+        `No changes needed for ${packageDir} ${peerName} peer dep (already ${peerRange})`,
+      );
+    } else {
+      packageJson.peerDependencies[peerName] = peerRange;
+      changed = true;
+      consola.info(
+        `Updated ${packageDir} ${peerName} peer dep to "${peerRange}" (min: ${minVersion})`,
+      );
+    }
+  }
+
+  if (changed) {
+    fs.writeFileSync(
+      packageJsonPath,
+      JSON.stringify(packageJson, null, 2) + "\n",
+    );
+  }
 }
