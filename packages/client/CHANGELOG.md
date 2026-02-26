@@ -1,5 +1,17 @@
 # @osdk/client
 
+## 2.7.2
+
+### Patch Changes
+
+- 17d4115: fix InterfaceListQuery ignoring rids option when creating object sets
+- 17d4115: support rids with pivotTo in observable list queries
+- 996ec4e: support multi object usage in useLinks
+- 17d4115: add interface support to useOsdkObject
+  - @osdk/api@2.7.2
+  - @osdk/client.unstable@2.7.2
+  - @osdk/generator-converters@2.7.2
+
 ## 2.7.1
 
 ### Patch Changes

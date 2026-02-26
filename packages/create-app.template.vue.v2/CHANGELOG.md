@@ -1,5 +1,7 @@
 # @osdk/create-app.template.vue.v2
 
+## 2.7.2
+
 ## 2.7.1
 
 ### Patch Changes
