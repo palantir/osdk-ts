@@ -1,13 +1,5 @@
 {
   "resources": {
-    "ontologies": [],
-    "objects": [],
-    "links": [],
-    "interfaces": [],
-    "actions": [],
-    "valueTypes": [],
-    "queries": [],
-    "osdks": [],
     "models": [
       {
         "identifier": {
@@ -31,14 +23,6 @@
         "alias": null
       }
     ],
-    "mediasets": [],
-    "aipAgents": [],
-    "datasets": [],
-    "connections": [],
-    "filesystem": [],
-    "streams": [],
-    "contracts": [],
-    "orchestration": [],
     "custom": {
       "previewCustomAlias": "previewCustomValue",
       "anotherPreviewCustom": "anotherPreviewValue"
