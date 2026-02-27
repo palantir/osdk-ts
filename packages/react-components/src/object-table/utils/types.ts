@@ -36,14 +36,17 @@ export interface CellEditInfo<
   rowData: TData;
 }
 
-export interface EditableConfig {
+export interface EditableConfig<
+  TData extends RowData = unknown,
+  CellValue = unknown,
+> {
   onCellEdit: (
     cellId: string,
-    info: CellEditInfo<any, unknown>,
+    info: CellEditInfo<TData, CellValue>,
   ) => void;
   onSubmitEdits?: () => Promise<void>;
   clearEdits: () => void;
-  cellEdits: Record<string, CellEditInfo>;
+  cellEdits: Record<string, CellEditInfo<TData, CellValue>>;
   enableEditModeByDefault?: boolean;
   isInEditMode: boolean;
   onEnableEditMode: (value: boolean) => void;

@@ -64,7 +64,7 @@ export interface BaseTableProps<
   className?: string;
   error?: Error;
   headerMenuFeatureFlags?: HeaderMenuFeatureFlags;
-  editableConfig?: EditableConfig;
+  editableConfig?: EditableConfig<TData, unknown>;
 }
 
 export function BaseTable<

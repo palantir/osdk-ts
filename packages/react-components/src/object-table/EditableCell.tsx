@@ -15,17 +15,18 @@
  */
 
 import { Input } from "@base-ui/react/input";
+import type { RowData } from "@tanstack/react-table";
 import classNames from "classnames";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import styles from "./EditableCell.module.css";
 import type { CellEditInfo } from "./utils/types.js";
 
-export interface EditableCellProps<TData = unknown> {
-  initialValue: unknown;
-  currentValue: unknown;
+export interface EditableCellProps<TData extends RowData, CellValue = unknown> {
+  initialValue: CellValue;
+  currentValue: CellValue;
   cellId: string;
   dataType?: string;
-  onCellEdit?: (cellId: string, info: CellEditInfo<TData, unknown>) => void;
+  onCellEdit: (cellId: string, info: CellEditInfo<TData, CellValue>) => void;
   rowData: TData;
   rowId: string;
   columnId: string;
@@ -73,7 +74,7 @@ function parseValueByType(
   return parsedNumber;
 }
 
-function EditableCellInner<TData = unknown>({
+function EditableCellInner<TData extends RowData, CellValue = unknown>({
   initialValue,
   currentValue,
   cellId,
@@ -82,7 +83,7 @@ function EditableCellInner<TData = unknown>({
   rowData,
   rowId,
   columnId,
-}: EditableCellProps<TData>): React.ReactElement {
+}: EditableCellProps<TData, CellValue>): React.ReactElement {
   const [inputValue, setInputValue] = useState<string>(
     valueToString(currentValue),
   );
@@ -102,7 +103,7 @@ function EditableCellInner<TData = unknown>({
     onCellEdit?.(cellId, {
       rowId,
       columnId,
-      newValue: parsedValue,
+      newValue: parsedValue as CellValue,
       oldValue: initialValue,
       rowData,
     });
@@ -155,7 +156,6 @@ function EditableCellInner<TData = unknown>({
   );
 }
 
-export const EditableCell: React.NamedExoticComponent<EditableCellProps> = React
-  .memo(
-    EditableCellInner,
-  );
+export const EditableCell = React.memo(
+  EditableCellInner,
+) as typeof EditableCellInner;

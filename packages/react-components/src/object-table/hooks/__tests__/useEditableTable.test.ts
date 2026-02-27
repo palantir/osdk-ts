@@ -14,11 +14,23 @@
  * limitations under the License.
  */
 
+import type { ObjectOrInterfaceDefinition, Osdk } from "@osdk/api";
 import { act, renderHook } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { getCellId } from "../../utils/getCellId.js";
-import type { CellEditInfo } from "../../utils/types.js";
 import { useEditableTable } from "../useEditableTable.js";
+
+type MockObjectDef = ObjectOrInterfaceDefinition;
+type MockInstance = Osdk.Instance<MockObjectDef, "$allBaseProperties", string>;
+
+function createMockInstance(id: string, additionalProps = {}): MockInstance {
+  return {
+    $apiName: "mock-object" as const,
+    $primaryKey: id,
+    id,
+    ...additionalProps,
+  } as unknown as MockInstance;
+}
 
 describe("useEditableTable", () => {
   it("adds cell to cellEdits when edited", () => {
@@ -28,9 +40,9 @@ describe("useEditableTable", () => {
     );
     const cellIdentifier = { rowId: "row-1", columnId: "col-1" };
     const cellId = getCellId(cellIdentifier);
-    const mockRowData = { id: "row-1", name: "Test" };
+    const mockRowData = createMockInstance("row-1", { name: "Test" });
 
-    const editEvent: CellEditInfo = {
+    const editEvent = {
       rowId: "row-1",
       columnId: "col-1",
       newValue: "new value",
@@ -55,10 +67,10 @@ describe("useEditableTable", () => {
     );
     const cellIdentifier = { rowId: "row-1", columnId: "col-1" };
     const cellId = getCellId(cellIdentifier);
-    const mockRowData = { id: "row-1", name: "Test" };
+    const mockRowData = createMockInstance("row-1", { name: "Test" });
 
     // First edit
-    const firstEdit: CellEditInfo = {
+    const firstEdit = {
       rowId: "row-1",
       columnId: "col-1",
       newValue: "new value",
@@ -75,7 +87,7 @@ describe("useEditableTable", () => {
     });
 
     // Edit back to original
-    const revertEdit: CellEditInfo = {
+    const revertEdit = {
       rowId: "row-1",
       columnId: "col-1",
       newValue: "original",
@@ -99,28 +111,28 @@ describe("useEditableTable", () => {
     const cellId2 = getCellId({ rowId: "row-2", columnId: "col-2" });
     const cellId3 = getCellId({ rowId: "row-3", columnId: "col-3" });
 
-    const edit1: CellEditInfo = {
+    const edit1 = {
       rowId: "row-1",
       columnId: "col-1",
       newValue: "new1",
       oldValue: "old1",
-      rowData: { id: "row-1" },
+      rowData: createMockInstance("row-1"),
     };
 
-    const edit2: CellEditInfo = {
+    const edit2 = {
       rowId: "row-2",
       columnId: "col-2",
       newValue: "new2",
       oldValue: "old2",
-      rowData: { id: "row-2" },
+      rowData: createMockInstance("row-2"),
     };
 
-    const edit3: CellEditInfo = {
+    const edit3 = {
       rowId: "row-3",
       columnId: "col-3",
       newValue: "new3",
       oldValue: "old3",
-      rowData: { id: "row-3" },
+      rowData: createMockInstance("row-3"),
     };
 
     act(() => {
@@ -132,12 +144,12 @@ describe("useEditableTable", () => {
     expect(Object.keys(result.current.cellEdits).length).toBe(3);
 
     // Edit one back to original
-    const revertEdit2: CellEditInfo = {
+    const revertEdit2 = {
       rowId: "row-2",
       columnId: "col-2",
       newValue: "old2",
       oldValue: "old2",
-      rowData: { id: "row-2" },
+      rowData: createMockInstance("row-2"),
     };
 
     act(() => {
@@ -155,20 +167,20 @@ describe("useEditableTable", () => {
     const cellId1 = getCellId({ rowId: "row-1", columnId: "col-1" });
     const cellId2 = getCellId({ rowId: "row-2", columnId: "col-2" });
 
-    const edit1: CellEditInfo = {
+    const edit1 = {
       rowId: "row-1",
       columnId: "col-1",
       newValue: "new1",
       oldValue: "old1",
-      rowData: { id: "row-1" },
+      rowData: createMockInstance("row-1"),
     };
 
-    const edit2: CellEditInfo = {
+    const edit2 = {
       rowId: "row-2",
       columnId: "col-2",
       newValue: "new2",
       oldValue: "old2",
-      rowData: { id: "row-2" },
+      rowData: createMockInstance("row-2"),
     };
 
     act(() => {
@@ -191,20 +203,20 @@ describe("useEditableTable", () => {
     const cellId1 = getCellId({ rowId: "row-1", columnId: "col-1" });
     const cellId2 = getCellId({ rowId: "row-2", columnId: "col-2" });
 
-    const edit1: CellEditInfo = {
+    const edit1 = {
       rowId: "row-1",
       columnId: "col-1",
       newValue: "new1",
       oldValue: "old1",
-      rowData: { id: "row-1" },
+      rowData: createMockInstance("row-1"),
     };
 
-    const edit2: CellEditInfo = {
+    const edit2 = {
       rowId: "row-2",
       columnId: "col-2",
       newValue: "new2",
       oldValue: "old2",
-      rowData: { id: "row-2" },
+      rowData: createMockInstance("row-2"),
     };
 
     act(() => {

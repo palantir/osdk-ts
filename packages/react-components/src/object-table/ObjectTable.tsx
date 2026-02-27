@@ -159,7 +159,10 @@ export function ObjectTable<
     return selectionColumn ? [selectionColumn, ...columns] : columns;
   }, [selectionColumn, columns]);
 
-  const editableConfig: EditableConfig = useEditableTable({
+  const editableConfig: EditableConfig<
+    Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
+    unknown
+  > = useEditableTable({
     enableEditModeByDefault,
     onCellValueChanged,
     onSubmitEdits,

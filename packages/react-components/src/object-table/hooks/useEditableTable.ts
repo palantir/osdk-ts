@@ -65,7 +65,10 @@ export function useEditableTable<
   enableEditModeByDefault,
   onCellValueChanged,
   onSubmitEdits,
-}: UseEditableTableProps<Q, RDPs, FunctionColumns>): EditableConfig {
+}: UseEditableTableProps<Q, RDPs, FunctionColumns>): EditableConfig<
+  Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
+  unknown
+> {
   const [isInEditMode, setIsInEditMode] = useState(enableEditModeByDefault);
   const [cellEdits, setCellEdits] = useState<
     Record<
