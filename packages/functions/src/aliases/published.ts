@@ -16,7 +16,7 @@
 
 import * as fs from "fs";
 import { getAliasesFilePath } from "./environment.js";
-import type { AliasesFile } from "./types.js";
+import type { AliasesFile, ModelValue } from "./types.js";
 
 // Aliases file will remain unchanged for a given function and version
 let cachedAliasesFile: AliasesFile | undefined;
@@ -50,7 +50,7 @@ export function getCustomPublished(alias: string): string {
   return aliasesFile.defaults.custom[alias];
 }
 
-export function getModelRidPublished(alias: string): string {
+export function getModelPublished(alias: string): ModelValue {
   const aliasesFile = loadAliasesFilePublished();
 
   if (!(alias in aliasesFile.defaults.models)) {
@@ -62,7 +62,7 @@ export function getModelRidPublished(alias: string): string {
     );
   }
 
-  return aliasesFile.defaults.models[alias].id.rid;
+  return aliasesFile.defaults.models[alias];
 }
 
 // Used for testing purposes

@@ -15,8 +15,8 @@
  */
 
 import { detectEnvironment } from "./environment.js";
-import { getModelRidPreview } from "./preview.js";
-import { getModelRidPublished } from "./published.js";
+import { getModelPreview } from "./preview.js";
+import { getModelPublished } from "./published.js";
 
 export interface Model {
   rid: string;
@@ -25,9 +25,9 @@ export interface Model {
 export function model(alias: string): Model {
   const environment = detectEnvironment();
 
-  if (environment === "published") {
-    return { rid: getModelRidPublished(alias) };
-  } else {
-    return { rid: getModelRidPreview(alias) };
-  }
+  const modelValue = environment === "published"
+    ? getModelPublished(alias)
+    : getModelPreview(alias);
+
+  return { rid: modelValue.id.rid };
 }

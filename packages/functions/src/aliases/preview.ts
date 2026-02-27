@@ -16,7 +16,7 @@
 
 import * as fs from "fs";
 import { getResourcesFilePath } from "./environment.js";
-import type { ModelResource, ResourcesFile } from "./types.js";
+import type { ModelResource, ModelValue, ResourcesFile } from "./types.js";
 
 function loadResourcesFilePreview(): ResourcesFile {
   const path = getResourcesFilePath();
@@ -30,11 +30,11 @@ function loadResourcesFilePreview(): ResourcesFile {
 
 function buildModelAliasMap(
   models: ModelResource[],
-): Record<string, string> {
-  const map: Record<string, string> = {};
+): Record<string, ModelValue> {
+  const map: Record<string, ModelValue> = {};
   for (const model of models) {
     if (model.alias != null) {
-      map[model.alias] = model.identifier.rid;
+      map[model.alias] = { id: model.identifier };
     }
   }
   return map;
@@ -55,7 +55,7 @@ export function getCustomPreview(alias: string): string {
   return resourcesFile.resources.custom[alias];
 }
 
-export function getModelRidPreview(alias: string): string {
+export function getModelPreview(alias: string): ModelValue {
   const resourcesFile = loadResourcesFilePreview();
   const modelAliasMap = buildModelAliasMap(resourcesFile.resources.models);
 
