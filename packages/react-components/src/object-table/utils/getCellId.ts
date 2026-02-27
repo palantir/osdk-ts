@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-export interface CellIdentifier {
-  rowId: string;
-  columnId: string;
-}
+import type { CellIdentifier } from "./types.js";
 
 export function getCellId(cellIdentifier: CellIdentifier): string {
   return JSON.stringify(cellIdentifier);

@@ -21,7 +21,7 @@ import type {
 } from "@osdk/api";
 import { useCallback, useState } from "react";
 import type { ObjectTableProps } from "../ObjectTableApi.js";
-import type { CellEditEvent } from "../utils/types.js";
+import type { CellEditEvent, EditableConfig } from "../utils/types.js";
 
 export interface UseEditableTableProps<
   Q extends ObjectOrInterfaceDefinition,
@@ -49,18 +49,6 @@ export interface UseEditableTableProps<
   >["onSubmitEdits"];
 }
 
-export interface UseEditableTableResult {
-  isInEditMode: boolean;
-  handleEnableEditMode?: (enabled: boolean) => void;
-  cellEdits: Record<string, CellEditEvent<any, unknown>>;
-  handleCellEdit: (
-    cellId: string,
-    event: CellEditEvent<any, unknown>,
-  ) => void;
-  handleSubmitEdits?: () => Promise<void>;
-  clearEdits: () => void;
-}
-
 export function useEditableTable<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = Record<
@@ -75,7 +63,7 @@ export function useEditableTable<
   enableEditModeByDefault,
   onCellValueChanged,
   onSubmitEdits,
-}: UseEditableTableProps<Q, RDPs, FunctionColumns>): UseEditableTableResult {
+}: UseEditableTableProps<Q, RDPs, FunctionColumns>): EditableConfig {
   const [isInEditMode, setIsInEditMode] = useState(enableEditModeByDefault);
   const [cellEdits, setCellEdits] = useState<
     Record<string, CellEditEvent<any, unknown>>
@@ -118,12 +106,11 @@ export function useEditableTable<
 
   return {
     isInEditMode,
-    handleEnableEditMode: !enableEditModeByDefault
-      ? handleEnableEditMode
-      : undefined,
+    onEnableEditMode: handleEnableEditMode,
     cellEdits,
-    handleCellEdit,
-    handleSubmitEdits: onSubmitEdits ? handleSubmitEdits : undefined,
+    onCellEdit: handleCellEdit,
+    onSubmitEdits: onSubmitEdits ? handleSubmitEdits : undefined,
     clearEdits,
+    enableEditModeByDefault,
   };
 }

@@ -16,9 +16,9 @@
 
 import { act, renderHook } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
-import { useEditableTable } from "../hooks/useEditableTable.js";
-import { getCellId } from "../utils/getCellId.js";
-import type { CellEditEvent } from "../utils/types.js";
+import { getCellId } from "../../utils/getCellId.js";
+import type { CellEditEvent } from "../../utils/types.js";
+import { useEditableTable } from "../useEditableTable.js";
 
 describe("useEditableTable", () => {
   it("adds cell to cellEdits when edited", () => {
@@ -39,7 +39,7 @@ describe("useEditableTable", () => {
     };
 
     act(() => {
-      result.current.handleCellEdit(cellId, editEvent);
+      result.current.onCellEdit(cellId, editEvent);
     });
 
     expect(result.current.cellEdits).toEqual({
@@ -67,7 +67,7 @@ describe("useEditableTable", () => {
     };
 
     act(() => {
-      result.current.handleCellEdit(cellId, firstEdit);
+      result.current.onCellEdit(cellId, firstEdit);
     });
 
     expect(result.current.cellEdits).toEqual({
@@ -84,7 +84,7 @@ describe("useEditableTable", () => {
     };
 
     act(() => {
-      result.current.handleCellEdit(cellId, revertEdit);
+      result.current.onCellEdit(cellId, revertEdit);
     });
 
     // Should remove the cell from cellEdits
@@ -124,9 +124,9 @@ describe("useEditableTable", () => {
     };
 
     act(() => {
-      result.current.handleCellEdit(cellId1, edit1);
-      result.current.handleCellEdit(cellId2, edit2);
-      result.current.handleCellEdit(cellId3, edit3);
+      result.current.onCellEdit(cellId1, edit1);
+      result.current.onCellEdit(cellId2, edit2);
+      result.current.onCellEdit(cellId3, edit3);
     });
 
     expect(Object.keys(result.current.cellEdits).length).toBe(3);
@@ -141,7 +141,7 @@ describe("useEditableTable", () => {
     };
 
     act(() => {
-      result.current.handleCellEdit(cellId2, revertEdit2);
+      result.current.onCellEdit(cellId2, revertEdit2);
     });
 
     expect(Object.keys(result.current.cellEdits).length).toBe(2);
@@ -172,8 +172,8 @@ describe("useEditableTable", () => {
     };
 
     act(() => {
-      result.current.handleCellEdit(cellId1, edit1);
-      result.current.handleCellEdit(cellId2, edit2);
+      result.current.onCellEdit(cellId1, edit1);
+      result.current.onCellEdit(cellId2, edit2);
     });
 
     act(() => {
@@ -208,18 +208,18 @@ describe("useEditableTable", () => {
     };
 
     act(() => {
-      result.current.handleCellEdit(cellId1, edit1);
-      result.current.handleCellEdit(cellId2, edit2);
+      result.current.onCellEdit(cellId1, edit1);
+      result.current.onCellEdit(cellId2, edit2);
     });
 
     await act(async () => {
-      await result.current.handleSubmitEdits?.();
+      await result.current.onSubmitEdits?.();
     });
 
     expect(onSubmitEdits).toHaveBeenCalledWith([edit1, edit2]);
   });
 
-  it("when submit edits is undefined, handleSubmitEdits is undefined", async () => {
+  it("when submit edits is undefined, onSubmitEdits is undefined", async () => {
     const { result } = renderHook(() =>
       useEditableTable({
         enableEditModeByDefault: true,
@@ -227,7 +227,7 @@ describe("useEditableTable", () => {
       })
     );
 
-    expect(result.current.handleSubmitEdits).toBeUndefined();
+    expect(result.current.onSubmitEdits).toBeUndefined();
   });
 
   it("when enableEditModeByDefault is false, isInEditMode is false initially", () => {
@@ -236,27 +236,26 @@ describe("useEditableTable", () => {
     );
 
     expect(result.current.isInEditMode).toBe(false);
-    expect(result.current.handleEnableEditMode).toBeDefined();
+    expect(result.current.onEnableEditMode).toBeDefined();
 
     act(() => {
-      result.current.handleEnableEditMode?.(true);
+      result.current.onEnableEditMode?.(true);
     });
 
     expect(result.current.isInEditMode).toBe(true);
 
     act(() => {
-      result.current.handleEnableEditMode?.(false);
+      result.current.onEnableEditMode?.(false);
     });
 
     expect(result.current.isInEditMode).toBe(false);
   });
 
-  it("when enableEditModeByDefault is true, isInEditMode is always true and handleEnableEditMode is undefined", () => {
+  it("when enableEditModeByDefault is true, isInEditMode is always true", () => {
     const { result } = renderHook(() =>
       useEditableTable({ enableEditModeByDefault: true })
     );
 
     expect(result.current.isInEditMode).toBe(true);
-    expect(result.current.handleEnableEditMode).toBeUndefined();
   });
 });

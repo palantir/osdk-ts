@@ -22,13 +22,29 @@ export interface ColumnOption {
   canSort: boolean;
 }
 
+export interface CellIdentifier {
+  rowId: string;
+  columnId: string;
+}
+
 export interface CellEditEvent<
   TData extends RowData = unknown,
   CellValue = unknown,
-> {
-  rowId: string;
-  columnId: string;
+> extends CellIdentifier {
   newValue: CellValue;
   oldValue: CellValue;
   rowData: TData;
+}
+
+export interface EditableConfig {
+  onCellEdit: (
+    cellId: string,
+    event: CellEditEvent<any, unknown>,
+  ) => void;
+  onSubmitEdits?: () => Promise<void>;
+  clearEdits: () => void;
+  cellEdits: Record<string, CellEditEvent>;
+  enableEditModeByDefault?: boolean;
+  isInEditMode: boolean;
+  onEnableEditMode: (value: boolean) => void;
 }

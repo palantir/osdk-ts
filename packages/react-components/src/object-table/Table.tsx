@@ -30,7 +30,7 @@ import styles from "./Table.module.css";
 import { TableBody } from "./TableBody.js";
 import { TableHeader } from "./TableHeader.js";
 import type { HeaderMenuFeatureFlags } from "./TableHeaderWithPopover.js";
-import type { CellEditEvent } from "./utils/types.js";
+import type { CellEditEvent, EditableConfig } from "./utils/types.js";
 
 declare module "@tanstack/react-table" {
   interface ColumnMeta<TData extends RowData = unknown, TValue = unknown> {
@@ -46,17 +46,7 @@ declare module "@tanstack/react-table" {
     ) => void;
     cellEdits?: Record<string, CellEditEvent<TData, unknown>>;
     isInEditMode?: boolean;
-    focusedRowId?: string | null;
   }
-}
-
-export interface EditableConfig {
-  onSubmitEdits?: () => Promise<void>;
-  clearEdits?: () => void;
-  cellEdits?: Record<string, CellEditEvent>;
-  enableEditModeByDefault?: boolean;
-  isInEditMode?: boolean;
-  onEnableEditMode?: (value: boolean) => void;
 }
 
 export interface BaseTableProps<
@@ -141,11 +131,16 @@ export function BaseTable<
 
   const {
     cellEdits,
+    enableEditModeByDefault,
     isInEditMode,
     onSubmitEdits,
     onEnableEditMode,
     clearEdits,
   } = editableConfig ?? {};
+
+  const hasEditableColumns = table
+    .getAllColumns()
+    .some(column => column.columnDef.meta?.editable === true);
 
   const hasEdits = Object.keys(cellEdits ?? {}).length > 0;
 
@@ -184,9 +179,6 @@ export function BaseTable<
       document.removeEventListener("click", handleClickOutside);
     };
   }, []);
-
-  const showEditButtonsContainer = onSubmitEdits != null
-    || onEnableEditMode != null;
 
   return (
     <div className={classNames(styles.osdkTableWrapper, className)}>
@@ -231,7 +223,7 @@ export function BaseTable<
           <NonIdealState message={`Error Loading Data: ${error.message}`} />
         )}
       </div>
-      {showEditButtonsContainer && (
+      {hasEditableColumns && (
         <div className={styles.tableEditContainer}>
           {hasEdits
             ? (
@@ -243,11 +235,11 @@ export function BaseTable<
             )
             : (isInEditMode && !focusedRowId && (
               <div className={styles.placeholder}>
-                Select a row to edit data…
+                {!focusedRowId ? "Select a row to edit data…" : ""}
               </div>
             ))}
           <div className={styles.editButtons}>
-            {!isInEditMode && !!onEnableEditMode && (
+            {!isInEditMode && !enableEditModeByDefault && (
               <ActionButton
                 variant="primary"
                 onClick={handleEnterEditMode}
@@ -255,7 +247,7 @@ export function BaseTable<
                 Edit Table
               </ActionButton>
             )}
-            {!!isInEditMode && !!onEnableEditMode && (
+            {!!isInEditMode && !enableEditModeByDefault && (
               <ActionButton
                 variant="secondary"
                 onClick={handleCancelEdits}

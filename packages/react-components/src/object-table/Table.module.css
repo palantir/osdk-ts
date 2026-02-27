@@ -42,17 +42,20 @@
   align-items: center;
   background-color: var(--osdk-surface-background-color-default-rest);
   border-top: var(--osdk-table-border);
-  padding: var(--osdk-table-button-container-padding);
+  padding: var(--osdk-table-edit-container-padding);
+  min-height: var(--osdk-table-edit-container-min-height);
 }
 
 .placeholder {
   color: var(--osdk-typography-color-muted);
   font-size: var(--osdk-typography-size-body-small);
+  padding: calc(var(--osdk-surface-spacing) * 2) 0;
 }
 
 .modificationCount {
   color: var(--osdk-intent-primary-rest);
   font-size: var(--osdk-typography-size-body-small);
+  padding: calc(var(--osdk-surface-spacing) * 2) 0;
 }
 
 .editButtons {

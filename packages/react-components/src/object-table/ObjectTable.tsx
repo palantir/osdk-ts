@@ -87,19 +87,6 @@ export function ObjectTable<
     onColumnResize,
   });
 
-  const {
-    cellEdits,
-    clearEdits,
-    isInEditMode,
-    handleCellEdit,
-    handleEnableEditMode,
-    handleSubmitEdits,
-  } = useEditableTable({
-    enableEditModeByDefault,
-    onCellValueChanged,
-    onSubmitEdits,
-  });
-
   const { sorting, onSortingChange } = useTableSorting<
     Q,
     RDPs,
@@ -172,6 +159,30 @@ export function ObjectTable<
     return selectionColumn ? [selectionColumn, ...columns] : columns;
   }, [selectionColumn, columns]);
 
+  const editableConfig: EditableConfig = useEditableTable({
+    enableEditModeByDefault,
+    onCellValueChanged,
+    onSubmitEdits,
+  });
+
+  // const editableConfig: EditableConfig = useMemo(() => {
+  //   return {
+  //     onSubmitEdits: handleSubmitEdits,
+  //     clearEdits,
+  //     cellEdits,
+  //     enableEditModeByDefault,
+  //     isInEditMode,
+  //     onEnableEditMode: handleEnableEditMode,
+  //   };
+  // }, [
+  //   handleSubmitEdits,
+  //   clearEdits,
+  //   cellEdits,
+  //   enableEditModeByDefault,
+  //   isInEditMode,
+  //   handleEnableEditMode,
+  // ]);
+
   const table = useReactTable<
     Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
   >({
@@ -201,9 +212,9 @@ export function ObjectTable<
     },
     getRowId,
     meta: {
-      onCellEdit: handleCellEdit,
-      cellEdits,
-      isInEditMode,
+      onCellEdit: editableConfig.onCellEdit,
+      cellEdits: editableConfig.cellEdits,
+      isInEditMode: editableConfig.isInEditMode,
     },
   });
 
@@ -232,24 +243,6 @@ export function ObjectTable<
     enableColumnPinning,
     enableColumnResizing,
     enableColumnConfig,
-  ]);
-
-  const editableConfig: EditableConfig | undefined = useMemo(() => {
-    return {
-      onSubmitEdits: handleSubmitEdits,
-      clearEdits,
-      cellEdits,
-      enableEditModeByDefault,
-      isInEditMode,
-      onEnableEditMode: handleEnableEditMode,
-    };
-  }, [
-    handleSubmitEdits,
-    clearEdits,
-    cellEdits,
-    enableEditModeByDefault,
-    isInEditMode,
-    handleEnableEditMode,
   ]);
 
   return (
