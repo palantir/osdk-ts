@@ -1,5 +1,17 @@
 # @osdkkit/react
 
+## 0.10.0-beta.6
+
+### Minor Changes
+
+- 993c023: ObjectTable supports objectSet input
+
+### Patch Changes
+
+- Updated dependencies [8825f8c]
+  - @osdk/client@2.8.0-beta.12
+  - @osdk/api@2.8.0-beta.12
+
 ## 0.10.0-beta.5
 
 ### Minor Changes

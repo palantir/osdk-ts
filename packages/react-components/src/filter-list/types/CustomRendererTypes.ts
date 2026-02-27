@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectSet, ObjectTypeDefinition, WhereClause } from "@osdk/api";
+import type { ObjectTypeDefinition, WhereClause } from "@osdk/api";
 import type { ReactNode } from "react";
 import type { BaseFilterState } from "../FilterListItemApi.js";
 
@@ -35,7 +35,6 @@ export interface CustomFilterInputRendererProps<
   Q extends ObjectTypeDefinition,
   State extends BaseFilterState,
 > {
-  objectSet: ObjectSet<Q>;
   filterState: State;
   onFilterStateChanged: (newState: State) => void;
 }

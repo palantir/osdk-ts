@@ -14,8 +14,16 @@
  * limitations under the License.
  */
 
-export type { FilterListProps } from "../filter-list/FilterListApi.js";
-export type { FilterListItemProps } from "../filter-list/FilterListItemApi.js";
+export type {
+  FilterDefinitionUnion,
+  FilterListProps,
+} from "../filter-list/FilterListApi.js";
+export type {
+  FilterComponentType,
+  FilterListItemProps,
+  FilterState,
+  PropertyFilterDefinition,
+} from "../filter-list/FilterListItemApi.js";
 
 // ObjectTable that loads and displays data for a given objectSet
 export { ObjectTable } from "../object-table/ObjectTable.js";

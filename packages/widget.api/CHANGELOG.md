@@ -1,5 +1,21 @@
 # @osdk/widget.api
 
+## 3.5.0-beta.13
+
+### Minor Changes
+
+- beb2867: Add refreshHostDataOnAction
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.13
+
+## 3.5.0-beta.12
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.12
+
 ## 3.5.0-beta.11
 
 ### Patch Changes

@@ -1,5 +1,25 @@
 # @osdk/react-components
 
+## 0.2.0-beta.8
+
+### Minor Changes
+
+- 993c023: ObjectTable supports objectSet input
+
+### Patch Changes
+
+- Updated dependencies [993c023]
+- Updated dependencies [8825f8c]
+  - @osdk/react@0.10.0-beta.6
+  - @osdk/client@2.8.0-beta.12
+  - @osdk/api@2.8.0-beta.12
+
+## 0.2.0-beta.7
+
+### Minor Changes
+
+- 52b70aa: Fix onRowClick triggered on row selection
+
 ## 0.2.0-beta.6
 
 ### Minor Changes

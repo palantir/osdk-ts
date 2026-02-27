@@ -1,11 +1,12 @@
 import type { DerivedProperty, Osdk } from "@osdk/api";
 import type {
-  CellEditEvent,
+  CellValueState,
   ColumnDefinition,
 } from "@osdk/react-components/experimental";
 import { ObjectTable } from "@osdk/react-components/experimental";
 import { useOsdkAction } from "@osdk/react/experimental";
 import { useCallback } from "react";
+import { $ } from "../../foundryClient.js";
 import { Employee, modifyEmployee } from "../../generatedNoCheck2/index.js";
 
 type RDPs = {
@@ -88,39 +89,16 @@ export function EmployeesTable() {
   const { applyAction } = useOsdkAction(modifyEmployee);
 
   const handleSubmitEdits = useCallback(
-    async (
-      edits: CellEditEvent<
-        Osdk.Instance<Employee>,
-        unknown
-      >[],
-    ) => {
-      try {
-        // Process each edit and call modifyEmployee action
-        const rowEditsMap: Record<string, Record<string, any>> = {};
-        const actionPromises: Promise<any>[] = [];
-        for (const edit of edits) {
-          const { rowId, columnId, newValue, rowData } = edit;
-          // Now we have access to rowData which contains the full employee object
-
-          if (!rowEditsMap[rowId]) {
-            rowEditsMap[rowId] = {};
-          }
-          rowEditsMap[rowId][columnId] = newValue;
-        }
-        for (const [rowId, updatedFields] of Object.entries(rowEditsMap)) {
-          actionPromises.push(applyAction({
-            employee: Number(rowId),
-            ...updatedFields,
-          }));
-        }
-        await Promise.all(actionPromises);
-      } catch (error) {
-        console.error("Failed to submit edits:", error);
-        throw error;
-      }
+    async (edits: Record<string, CellValueState>) => {
+      console.log("Submitting edits:", edits);
+      return;
     },
     [applyAction],
   );
+
+  const employeeOS = $(Employee).where({
+    fullName: { $eq: "Jane Doe" },
+  });
 
   return (
     <div
@@ -130,6 +108,7 @@ export function EmployeesTable() {
       }}
     >
       <ObjectTable<Employee, RDPs>
+        objectSet={employeeOS}
         objectType={Employee}
         columnDefinitions={columnDefinitions}
         selectionMode={"multiple"}
