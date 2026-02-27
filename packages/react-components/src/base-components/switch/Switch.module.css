@@ -30,30 +30,30 @@
   border-radius: var(--osdk-switch-border-radius, var(--osdk-surface-border-radius));
   position: relative;
   border: none;
-  transition: background-color var(--osdk-switch-transition-duration, var(--bp-emphasis-transitionDuration))
-    var(--osdk-switch-transition-ease, var(--bp-emphasis-ease-default));
+  transition: background-color var(--osdk-switch-transition-duration, var(--osdk-emphasis-transition-duration))
+    var(--osdk-switch-transition-ease, var(--osdk-emphasis-ease-default));
 
   &[data-unchecked] {
-    background-color: var(--osdk-switch-track-bg, var(--bp-intent-default-rest));
+    background-color: var(--osdk-switch-track-bg, var(--osdk-intent-default-rest));
 
     &:hover {
-      background-color: var(--osdk-switch-track-bg-hover, var(--bp-intent-default-hover));
+      background-color: var(--osdk-switch-track-bg-hover, var(--osdk-intent-default-hover));
     }
 
     &:active {
-      background-color: var(--osdk-switch-track-bg-active, var(--bp-intent-default-active));
+      background-color: var(--osdk-switch-track-bg-active, var(--osdk-intent-default-active));
     }
   }
 
   &[data-checked] {
-    background-color: var(--osdk-switch-track-bg-checked, var(--bp-intent-primary-rest));
+    background-color: var(--osdk-switch-track-bg-checked, var(--osdk-intent-primary-rest));
 
     &:hover {
-      background-color: var(--osdk-switch-track-bg-checked-hover, var(--bp-intent-primary-hover));
+      background-color: var(--osdk-switch-track-bg-checked-hover, var(--osdk-intent-primary-hover));
     }
 
     &:active {
-      background-color: var(--osdk-switch-track-bg-checked-active, var(--bp-intent-primary-active));
+      background-color: var(--osdk-switch-track-bg-checked-active, var(--osdk-intent-primary-active));
     }
   }
 
@@ -63,9 +63,9 @@
   }
 
   &:focus-visible {
-    outline: var(--osdk-switch-focus-width, var(--bp-emphasis-focusWidth)) solid
-      var(--osdk-switch-focus-color, var(--bp-emphasis-focusColor));
-    outline-offset: var(--osdk-switch-focus-offset, var(--bp-emphasis-focusOffset));
+    outline: var(--osdk-switch-focus-width, var(--osdk-emphasis-focus-width)) solid
+      var(--osdk-switch-focus-color, var(--osdk-emphasis-focus-color));
+    outline-offset: var(--osdk-switch-focus-offset, var(--osdk-emphasis-focus-offset));
   }
 }
 
@@ -73,13 +73,13 @@
   display: block;
   width: var(--osdk-switch-thumb-size);
   height: var(--osdk-switch-thumb-size);
-  background-color: var(--osdk-switch-thumb-bg, var(--bp-palette-gray-100));
+  background-color: var(--osdk-switch-thumb-bg, var(--osdk-palette-white));
   border-radius: 50%;
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  transition: left var(--osdk-switch-transition-duration, var(--bp-emphasis-transitionDuration))
-    var(--osdk-switch-transition-ease, var(--bp-emphasis-ease-default));
+  transition: left var(--osdk-switch-transition-duration, var(--osdk-emphasis-transition-duration))
+    var(--osdk-switch-transition-ease, var(--osdk-emphasis-ease-default));
 
   &[data-unchecked] {
     left: var(--osdk-switch-thumb-offset);

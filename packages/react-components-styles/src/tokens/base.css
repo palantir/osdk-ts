@@ -5,7 +5,9 @@
   /* Blueprint token mappings - Surface tokens */
   --osdk-surface-z-index-1: var(--bp-surface-z-index-1);
   --osdk-surface-z-index-2: var(--bp-surface-z-index-2);
+  --osdk-surface-z-index-3: var(--bp-surface-z-index-3);
   --osdk-surface-border-radius: var(--bp-surface-border-radius);
+  --osdk-surface-layer-primary: var(--bp-surface-layer-primary);
   --osdk-surface-border-width: var(--bp-surface-border-width);
   --osdk-surface-border-color-default: var(--bp-surface-border-color-default);
   --osdk-surface-background-color-default-rest: var(
@@ -39,6 +41,8 @@
   --osdk-typography-size-body-x-small: var(--bp-typography-size-body-x-small);
   --osdk-typography-size-body-small: var(--bp-typography-size-body-small);
   --osdk-typography-size-body-medium: var(--bp-typography-size-body-medium);
+  --osdk-typography-family-default: var(--bp-typography-family-default);
+  --osdk-typography-line-height-default: var(--bp-typography-line-height-default);
   --osdk-typography-weight-default: var(--bp-typography-weight-default);
   --osdk-typography-weight-bold: var(--bp-typography-weight-bold);
 
@@ -71,11 +75,14 @@
 
   /* Blueprint token mappings - Iconography tokens */
   --osdk-iconography-size-small: var(--bp-iconography-size-small);
+  --osdk-iconography-color-muted: var(--bp-iconography-color-muted);
 
   /* Blueprint token mappings - Emphasis tokens */
   --osdk-emphasis-focus-width: var(--bp-emphasis-focus-width);
   --osdk-emphasis-focus-color: var(--bp-emphasis-focus-color);
   --osdk-emphasis-focus-offset: var(--bp-emphasis-focus-offset);
+  --osdk-emphasis-transition-duration: var(--bp-emphasis-transition-duration);
+  --osdk-emphasis-ease-default: var(--bp-emphasis-ease-default);
 
   /* Blueprint token mappings - Palette tokens */
   --osdk-palette-gray-1: var(--bp-palette-gray-1);
@@ -152,4 +159,6 @@
   --osdk-focus-visible-outline-offset: var(--osdk-emphasis-focus-offset);
   --osdk-surface-border: var(--osdk-surface-border-width) solid
     var(--osdk-surface-border-color-default);
+
+  font-family: var(--osdk-typography-family-default);
 }

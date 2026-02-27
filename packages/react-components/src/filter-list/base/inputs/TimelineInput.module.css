@@ -14,27 +14,46 @@
  * limitations under the License.
  */
 
-.multiDate {
+.timeline {
   display: flex;
   flex-direction: column;
-  gap: var(--osdk-filter-multiselect-gap);
+  gap: var(--osdk-filter-range-gap, calc(var(--osdk-surface-spacing) * 2));
 }
 
-.clearAll {
+.labels {
+  display: flex;
+  align-items: center;
+  gap: var(--osdk-surface-spacing);
   font-size: var(--osdk-typography-size-body-small);
-  color: var(--osdk-intent-primary-rest);
-  background: transparent;
-  border: none;
-  cursor: pointer;
+  color: var(--osdk-typography-color-muted);
+}
+
+.clearButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   padding: calc(var(--osdk-surface-spacing) * 0.5);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: var(--osdk-iconography-color-muted);
+  border-radius: var(--osdk-surface-border-radius);
+  margin-left: auto;
 
   &:hover {
-    text-decoration: underline;
+    background: var(--osdk-surface-background-color-default-hover);
+    color: var(--osdk-typography-color-default-rest);
   }
 }
 
-.calendarContainer {
+.brush {
   display: flex;
+  align-items: center;
+  gap: var(--osdk-surface-spacing);
+}
+
+.brush span {
+  color: var(--osdk-typography-color-muted);
 }
 
 .input {

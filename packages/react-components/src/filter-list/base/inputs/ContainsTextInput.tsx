@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { Button } from "@base-ui/react/button";
+import { Input } from "@base-ui/react/input";
 import { Cross, Search } from "@blueprintjs/icons";
 import classnames from "classnames";
 import { debounce } from "lodash-es";
@@ -100,7 +102,7 @@ function ContainsTextInputInner({
               <Search color="currentColor" />
             </span>
           )}
-        <input
+        <Input
           type="text"
           className={styles.input}
           value={localValue}
@@ -109,7 +111,7 @@ function ContainsTextInputInner({
           aria-label={placeholder}
         />
         {localValue && (
-          <button
+          <Button
             type="button"
             className={styles.clearButton}
             onClick={handleClear}
@@ -118,7 +120,7 @@ function ContainsTextInputInner({
             {renderClearIcon
               ? renderClearIcon()
               : <Cross color="currentColor" />}
-          </button>
+          </Button>
         )}
       </div>
     </div>

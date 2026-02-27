@@ -142,22 +142,8 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
    * If provided, user will be allowed to remove filters
    *
    * @param filterKey The key of the removed filter
-   * @param newDefinitions The updated filter list with the filter removed
    */
-  onFilterRemoved?: (
-    filterKey: FilterKey<Q>,
-    newDefinitions: Array<FilterDefinitionUnion<Q>>,
-  ) => void;
-
-  /**
-   * Called when filters are reordered
-   * If provided, the filter list becomes sortable
-   *
-   * @param newOrder The updated filter definitions in new order
-   */
-  onFiltersReordered?: (
-    newOrder: ReadonlyArray<FilterDefinitionUnion<Q>>,
-  ) => void;
+  onFilterRemoved?: (filterKey: FilterKey<Q>) => void;
 
   /**
    * Show reset filters button in header

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition, WhereClause } from "@osdk/api";
+import type { ObjectSet, ObjectTypeDefinition, WhereClause } from "@osdk/api";
 import classnames from "classnames";
 import React, { memo, useCallback } from "react";
 import { ErrorBoundary } from "../../shared/ErrorBoundary.js";
@@ -24,6 +24,8 @@ import { FilterInput } from "./FilterInput.js";
 import styles from "./FilterListItem.module.css";
 
 interface FilterListItemProps<Q extends ObjectTypeDefinition> {
+  objectType: Q;
+  objectSet: ObjectSet<Q>;
   definition: FilterDefinitionUnion<Q>;
   filterKey: string;
   filterState: FilterState | undefined;
@@ -37,6 +39,8 @@ interface FilterListItemProps<Q extends ObjectTypeDefinition> {
 }
 
 function FilterListItemInner<Q extends ObjectTypeDefinition>({
+  objectType,
+  objectSet,
   definition,
   filterKey,
   filterState,
@@ -67,6 +71,8 @@ function FilterListItemInner<Q extends ObjectTypeDefinition>({
       <div className={styles.itemContent}>
         <ErrorBoundary errorMessage="Error loading filter">
           <FilterInput
+            objectType={objectType}
+            objectSet={objectSet}
             definition={definition}
             filterState={filterState}
             onFilterStateChanged={handleFilterStateChanged}
