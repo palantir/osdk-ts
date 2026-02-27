@@ -85,7 +85,7 @@ function TextTagsInputInner<
   style,
   placeholder = "Add a tag...",
   allowCustomTags = true,
-  suggestionLimit = 50,
+  suggestionLimit = 10,
 }: TextTagsInputProps<Q, K>): React.ReactElement {
   const [inputValue, setInputValue] = useState("");
 
@@ -105,7 +105,7 @@ function TextTagsInputInner<
             || s.value.toLowerCase().includes(lowerInput))
           && !tags.includes(s.value),
       )
-      .slice(0, 10);
+      .slice(0, suggestionLimit);
   }, [suggestions, inputValue, tags, suggestionLimit]);
 
   const addTag = useCallback(
@@ -143,11 +143,12 @@ function TextTagsInputInner<
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {
       if (e.key === "Enter" && inputValue.trim()) {
+        if (filteredSuggestions.length > 0) {
+          return;
+        }
         e.preventDefault();
         if (allowCustomTags) {
           addTag(inputValue);
-        } else if (filteredSuggestions.length > 0) {
-          addTag(filteredSuggestions[0].value);
         }
       } else if (e.key === "Backspace" && !inputValue && tags.length > 0) {
         removeTag(tags[tags.length - 1]);
