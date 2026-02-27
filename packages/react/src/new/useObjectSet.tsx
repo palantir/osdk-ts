@@ -301,6 +301,10 @@ function isPayloadCompleted(
     return false;
   }
 
+  if ("error" in payload) {
+    return true;
+  }
+
   switch (payload.status) {
     case "loaded":
     case "error":

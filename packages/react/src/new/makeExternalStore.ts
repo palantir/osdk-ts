@@ -20,8 +20,8 @@ import type {
 } from "@osdk/client/unstable-do-not-use";
 
 export type Snapshot<X> =
-  | X & { status?: "error"; error?: Error }
-  | (Partial<X> & { status?: "error"; error?: Error })
+  | X & { error?: Error }
+  | (Partial<X> & { error?: Error })
   | undefined;
 
 export function makeExternalStore<X>(
@@ -47,7 +47,6 @@ export function makeExternalStore<X>(
       error: (error: unknown) => {
         lastResult = {
           ...(lastResult ?? {}),
-          status: "error",
           error: error instanceof Error ? error : new Error(String(error)),
         } as Snapshot<X>;
         notifyUpdate();
@@ -104,7 +103,6 @@ export function makeExternalStoreAsync<X>(
         if (isActive) {
           lastResult = {
             ...(lastResult ?? {}),
-            status: "error",
             error: error instanceof Error ? error : new Error(String(error)),
           } as Snapshot<X>;
           notifyUpdate();
