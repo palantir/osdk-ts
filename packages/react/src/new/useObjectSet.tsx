@@ -197,13 +197,14 @@ export function useObjectSet<
     : OBJECT_TYPE_PLACEHOLDER;
 
   const previousObjectTypeRef = React.useRef<string>(objectTypeKey);
-  const previousPayloadRef = React.useRef<
+  const previousCompletedPayloadRef = React.useRef<
     Snapshot<ObserveObjectSetArgs<Q, RDPs>> | undefined
   >();
 
   const objectTypeChanged = previousObjectTypeRef.current !== objectTypeKey;
   if (objectTypeChanged) {
     previousObjectTypeRef.current = objectTypeKey;
+    previousCompletedPayloadRef.current = undefined;
   }
 
   // Compute a stable cache key for the ObjectSet and options
@@ -232,7 +233,7 @@ export function useObjectSet<
 
       const initialValue = objectTypeChanged
         ? undefined
-        : previousPayloadRef.current;
+        : previousCompletedPayloadRef.current;
 
       return makeExternalStore<ObserveObjectSetArgs<Q, RDPs>>(
         (observer) => {
@@ -267,23 +268,48 @@ export function useObjectSet<
   const payload = React.useSyncExternalStore(subscribe, getSnapShot);
   React.useEffect(() => {
     if (payload) {
-      previousPayloadRef.current = payload;
+      if (isPayloadCompleted(payload)) {
+        previousCompletedPayloadRef.current = payload;
+      }
     }
   }, [payload]);
 
-  return React.useMemo(() => ({
-    data: payload?.resolvedList as Osdk.Instance<
-      Q,
-      "$allBaseProperties",
-      PropertyKeys<Q>,
-      RDPs
-    >[],
-    isLoading: payload?.status === "loading" || (!payload && true) || false,
-    error: payload && "error" in payload
-      ? payload.error
-      : undefined,
-    fetchMore: payload?.hasMore ? payload.fetchMore : undefined,
-    objectSet: payload?.objectSet as ObjectSet<Q, RDPs> || baseObjectSet,
-    totalCount: payload?.totalCount,
-  }), [payload, baseObjectSet]);
+  return React.useMemo(() => {
+    const lastLoaded = isPayloadCompleted(payload)
+      ? payload
+      : previousCompletedPayloadRef.current;
+    return {
+      data: lastLoaded?.resolvedList as Osdk.Instance<
+        Q,
+        "$allBaseProperties",
+        PropertyKeys<Q>,
+        RDPs
+      >[],
+      isLoading: !isPayloadCompleted(payload),
+      error: lastLoaded && "error" in lastLoaded ? lastLoaded.error : undefined,
+      fetchMore: payload?.hasMore ? payload.fetchMore : undefined,
+      objectSet: payload?.objectSet as ObjectSet<Q, RDPs> || baseObjectSet,
+      totalCount: lastLoaded?.totalCount,
+    };
+  }, [payload, baseObjectSet]);
+}
+
+function isPayloadCompleted(
+  payload: Snapshot<ObserveObjectSetArgs<any, any>>,
+): boolean {
+  if (payload?.status == null) {
+    return false;
+  }
+
+  switch (payload.status) {
+    case "loaded":
+    case "error":
+      return true;
+    case "loading":
+    case "init":
+      return false;
+    default:
+      payload.status satisfies never;
+      return false;
+  }
 }
