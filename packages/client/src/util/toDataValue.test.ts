@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ActionMetadata, MediaUpload } from "@osdk/api";
+import type { ActionMetadata, Media, MediaUpload } from "@osdk/api";
 import { Employee, Task } from "@osdk/client.test.ontology";
 import type { MediaReference } from "@osdk/foundry.core";
 import type { SetupServer } from "@osdk/shared.test";
@@ -274,5 +274,37 @@ describe(toDataValue, () => {
       mockActionMetadata,
     );
     expect(converted).toBeNull();
+  });
+
+  it("converts Media type directly to MediaReference", async () => {
+    const expectedMediaReference: MediaReference = {
+      mimeType: "image/png",
+      reference: {
+        type: "mediaSetViewItem",
+        mediaSetViewItem: {
+          mediaItemRid: "test-media-item-rid",
+          mediaSetRid: "test-media-set-rid",
+          mediaSetViewRid: "test-media-set-view-rid",
+        },
+      },
+    };
+
+    const mockMedia: Media = {
+      fetchMetadata: async () => ({
+        sizeBytes: 1024,
+        mediaType: "image/png",
+      }),
+      fetchContents: async () => new Response(),
+      getMediaReference: () => expectedMediaReference,
+    };
+
+    const converted = await toDataValue(
+      mockMedia,
+      clientCtx,
+      mockActionMetadata,
+    );
+
+    expect(converted).toEqual(expectedMediaReference);
+    expect(isMediaReference(converted)).toBe(true);
   });
 });

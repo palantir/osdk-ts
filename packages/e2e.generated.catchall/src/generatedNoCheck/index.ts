@@ -81,6 +81,7 @@ export {
   getNamesOfCustomersFromCountry,
   getTodoCount,
   identity2DArray,
+  kbnTsv2MediaReferenceParamOutput,
   queryTakesAllParameterTypes,
 } from './ontology/queries.js';
 export * as $Queries from './ontology/queries.js';

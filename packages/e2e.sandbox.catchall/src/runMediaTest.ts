@@ -16,9 +16,13 @@
 
 import type { Media, MediaReference, MediaUpload } from "@osdk/api";
 import { __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference } from "@osdk/api/unstable";
-import { $Actions, MnayanOsdkMediaObject } from "@osdk/e2e.generated.catchall";
+import {
+  $Actions,
+  $Queries,
+  MnayanOsdkMediaObject,
+} from "@osdk/e2e.generated.catchall";
 import { uploadMedia } from "@osdk/functions";
-import { client } from "./client.js";
+import { client, mjClient } from "./client.js";
 
 async function runReadMediaTest(ref: Media): Promise<Blob> {
   const mediaMetadata = await ref.fetchMetadata();
@@ -95,6 +99,46 @@ async function runUploadMediaTest(data: Blob): Promise<void> {
     }, { $returnEdits: true });
 }
 
+async function runMediaQueryTest(): Promise<void> {
+  const fs = await import("node:fs/promises");
+  const path = await import("node:path");
+  const { findUp } = await import("find-up");
+
+  const workspaceRoot = path.dirname(
+    (await findUp("pnpm-workspace.yaml")) ?? "",
+  );
+  const imagePath = path.join(
+    workspaceRoot,
+    "packages/e2e.sandbox.catchall/src/images/palantir.png",
+  );
+  const imageBuffer = await fs.readFile(imagePath);
+  const data = new Blob([new Uint8Array(imageBuffer)], { type: "image/png" });
+
+  // Test Direct Upload
+  let output = await mjClient($Queries.kbnTsv2MediaReferenceParamOutput)
+    .executeFunction({
+      mediaReference: { data, fileName: "palantir.png" },
+    });
+  console.log(output.getMediaReference);
+  console.log((await output.fetchMetadata()).sizeBytes);
+
+  // Test Media Reference Upload
+  output = await mjClient($Queries.kbnTsv2MediaReferenceParamOutput)
+    .executeFunction({
+      mediaReference: output.getMediaReference(),
+    });
+  console.log(output.getMediaReference);
+  console.log((await output.fetchMetadata()).sizeBytes);
+
+  // Test Media Upload
+  output = await mjClient($Queries.kbnTsv2MediaReferenceParamOutput)
+    .executeFunction({
+      mediaReference: output,
+    });
+  console.log(output.getMediaReference);
+  console.log((await output.fetchMetadata()).sizeBytes);
+}
+
 export async function runMediaTest(): Promise<void> {
   const result = await client(MnayanOsdkMediaObject).fetchOne(
     "7c2aa4e0-9cd6-48c1-9d09-653249feb4e7",
@@ -133,6 +177,10 @@ export async function runMediaTest(): Promise<void> {
   console.log("Testing Media Upload Type");
   await runUploadMediaTest(testImage);
   console.log("SUCCESS: Testing Media Upload Type");
+
+  console.log("Testing Media Query");
+  await runMediaQueryTest();
+  console.log("SUCCESS: Testing Media Query");
 }
 
 void runMediaTest();

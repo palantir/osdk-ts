@@ -6,4 +6,5 @@ export { getFirstSecondElementOf2DArray } from './queries/getFirstSecondElementO
 export { getNamesOfCustomersFromCountry } from './queries/getNamesOfCustomersFromCountry.js';
 export { getTodoCount } from './queries/getTodoCount.js';
 export { identity2DArray } from './queries/identity2DArray.js';
+export { kbnTsv2MediaReferenceParamOutput } from './queries/kbnTsv2MediaReferenceParamOutput.js';
 export { queryTakesAllParameterTypes } from './queries/queryTakesAllParameterTypes.js';

@@ -58,6 +58,7 @@ export function getObjectTypesFromQueryDataType(
     case "float":
     case "integer":
     case "long":
+    case "mediaReference":
     case "null":
     case "string":
     case "threeDimensionalAggregation":
