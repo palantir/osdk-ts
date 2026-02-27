@@ -94,7 +94,6 @@ export function EmployeesTable() {
         unknown
       >[],
     ) => {
-      console.log("Edits to submit:", edits);
       try {
         // Process each edit and call modifyEmployee action
         const rowEditsMap: Record<string, Record<string, any>> = {};
@@ -102,7 +101,6 @@ export function EmployeesTable() {
         for (const edit of edits) {
           const { rowId, columnId, newValue, rowData } = edit;
           // Now we have access to rowData which contains the full employee object
-          console.log("Editing employee:", rowData.$title);
 
           if (!rowEditsMap[rowId]) {
             rowEditsMap[rowId] = {};
