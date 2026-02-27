@@ -27,7 +27,7 @@ export interface CellIdentifier {
   columnId: string;
 }
 
-export interface CellEditEvent<
+export interface CellEditInfo<
   TData extends RowData = unknown,
   CellValue = unknown,
 > extends CellIdentifier {
@@ -39,11 +39,11 @@ export interface CellEditEvent<
 export interface EditableConfig {
   onCellEdit: (
     cellId: string,
-    event: CellEditEvent<any, unknown>,
+    info: CellEditInfo<any, unknown>,
   ) => void;
   onSubmitEdits?: () => Promise<void>;
   clearEdits: () => void;
-  cellEdits: Record<string, CellEditEvent>;
+  cellEdits: Record<string, CellEditInfo>;
   enableEditModeByDefault?: boolean;
   isInEditMode: boolean;
   onEnableEditMode: (value: boolean) => void;

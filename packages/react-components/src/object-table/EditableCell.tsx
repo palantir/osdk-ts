@@ -18,14 +18,14 @@ import { Input } from "@base-ui/react/input";
 import classNames from "classnames";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import styles from "./EditableCell.module.css";
-import type { CellEditEvent } from "./utils/types.js";
+import type { CellEditInfo } from "./utils/types.js";
 
 export interface EditableCellProps<TData = unknown> {
   initialValue: unknown;
   currentValue: unknown;
   cellId: string;
   dataType?: string;
-  onCellEdit?: (cellId: string, event: CellEditEvent<TData, unknown>) => void;
+  onCellEdit?: (cellId: string, info: CellEditInfo<TData, unknown>) => void;
   rowData: TData;
   rowId: string;
   columnId: string;
@@ -73,7 +73,7 @@ function parseValueByType(
   return parsedNumber;
 }
 
-export function EditableCell<TData = unknown>({
+function EditableCellInner<TData = unknown>({
   initialValue,
   currentValue,
   cellId,
@@ -154,3 +154,8 @@ export function EditableCell<TData = unknown>({
     />
   );
 }
+
+export const EditableCell: React.NamedExoticComponent<EditableCellProps> = React
+  .memo(
+    EditableCellInner,
+  );

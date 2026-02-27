@@ -16,12 +16,14 @@
 
 import type {
   ObjectOrInterfaceDefinition,
+  Osdk,
+  PropertyKeys,
   QueryDefinition,
   SimplePropertyDef,
 } from "@osdk/api";
 import { useCallback, useState } from "react";
 import type { ObjectTableProps } from "../ObjectTableApi.js";
-import type { CellEditEvent, EditableConfig } from "../utils/types.js";
+import type { CellEditInfo, EditableConfig } from "../utils/types.js";
 
 export interface UseEditableTableProps<
   Q extends ObjectOrInterfaceDefinition,
@@ -66,19 +68,27 @@ export function useEditableTable<
 }: UseEditableTableProps<Q, RDPs, FunctionColumns>): EditableConfig {
   const [isInEditMode, setIsInEditMode] = useState(enableEditModeByDefault);
   const [cellEdits, setCellEdits] = useState<
-    Record<string, CellEditEvent<any, unknown>>
+    Record<
+      string,
+      CellEditInfo<
+        Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
+        unknown
+      >
+    >
   >(
     {},
   );
 
-  const handleEnableEditMode = useCallback((enabled: boolean) => {
-    setIsInEditMode(enabled);
-  }, []);
-
   const handleCellEdit = useCallback(
-    (cellId: string, event: CellEditEvent<any, unknown>) => {
+    (
+      cellId: string,
+      info: CellEditInfo<
+        Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
+        unknown
+      >,
+    ) => {
       // If value is changed back to original, remove it from edits
-      if (event.newValue === event.oldValue) {
+      if (info.newValue === info.oldValue) {
         setCellEdits(prev => {
           const { [cellId]: _, ...rest } = prev;
           return rest;
@@ -86,11 +96,11 @@ export function useEditableTable<
       } else {
         setCellEdits(prev => ({
           ...prev,
-          [cellId]: event,
+          [cellId]: info,
         }));
       }
 
-      onCellValueChanged?.(event);
+      onCellValueChanged?.(info);
     },
     [onCellValueChanged],
   );
@@ -106,7 +116,7 @@ export function useEditableTable<
 
   return {
     isInEditMode,
-    onEnableEditMode: handleEnableEditMode,
+    onEnableEditMode: setIsInEditMode,
     cellEdits,
     onCellEdit: handleCellEdit,
     onSubmitEdits: onSubmitEdits ? handleSubmitEdits : undefined,

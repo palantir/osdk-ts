@@ -1,8 +1,5 @@
 import type { DerivedProperty, Osdk } from "@osdk/api";
-import type {
-  CellValueState,
-  ColumnDefinition,
-} from "@osdk/react-components/experimental";
+import type { ColumnDefinition } from "@osdk/react-components/experimental";
 import { ObjectTable } from "@osdk/react-components/experimental";
 import { useOsdkAction } from "@osdk/react/experimental";
 import { useCallback } from "react";
@@ -89,8 +86,8 @@ export function EmployeesTable() {
   const { applyAction } = useOsdkAction(modifyEmployee);
 
   const handleSubmitEdits = useCallback(
-    async (edits: Record<string, CellValueState>) => {
-      console.log("Submitting edits:", edits);
+    async () => {
+      alert(`Submitting edits...`);
       return;
     },
     [applyAction],
@@ -118,10 +115,6 @@ export function EmployeesTable() {
         }]}
         onSubmitEdits={handleSubmitEdits}
         enableEditModeByDefault={false}
-        onRowClick={() => alert("Row clicked")}
-        onCellValueChanged={(event) => {
-          console.log("Cell edited:", event);
-        }}
       />
     </div>
   );

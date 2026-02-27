@@ -26,7 +26,7 @@ import type {
   WhereClause,
 } from "@osdk/api";
 import type * as React from "react";
-import type { CellEditEvent } from "./utils/types.js";
+import type { CellEditInfo } from "./utils/types.js";
 
 export type ColumnDefinition<
   Q extends ObjectOrInterfaceDefinition,
@@ -228,11 +228,11 @@ export interface ObjectTableProps<
   /**
    * Called after the value of a cell is edited and committed by the user.
    *
-   * @param event An object containing details about the cell that was edited,
+   * @param info An object containing details about the cell that was edited,
    * including the rowId, columnId, new and old values, and the row data before the edit
    */
   onCellValueChanged?: (
-    event: CellEditEvent<
+    info: CellEditInfo<
       Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
       unknown
     >,
@@ -241,10 +241,10 @@ export interface ObjectTableProps<
   /**
    * If provided, the button Submit Edits will be shown in the table
    *
-   * @param edits an array of edit events containing details about the edited cells
+   * @param edits an array of edit info containing details about the edited cells
    * including the rowId, columnId, new and old values, and the row data before the edit
    */
-  onSubmitEdits?: (edits: CellEditEvent<
+  onSubmitEdits?: (edits: CellEditInfo<
     Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
     unknown
   >[]) => Promise<void>;

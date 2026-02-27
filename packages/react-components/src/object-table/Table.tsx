@@ -30,7 +30,7 @@ import styles from "./Table.module.css";
 import { TableBody } from "./TableBody.js";
 import { TableHeader } from "./TableHeader.js";
 import type { HeaderMenuFeatureFlags } from "./TableHeaderWithPopover.js";
-import type { CellEditEvent, EditableConfig } from "./utils/types.js";
+import type { CellEditInfo, EditableConfig } from "./utils/types.js";
 
 declare module "@tanstack/react-table" {
   interface ColumnMeta<TData extends RowData = unknown, TValue = unknown> {
@@ -42,9 +42,9 @@ declare module "@tanstack/react-table" {
   interface TableMeta<TData extends RowData = unknown> {
     onCellEdit?: (
       cellId: string,
-      event: CellEditEvent<TData, unknown>,
+      info: CellEditInfo<TData, unknown>,
     ) => void;
-    cellEdits?: Record<string, CellEditEvent<TData, unknown>>;
+    cellEdits?: Record<string, CellEditInfo<TData, unknown>>;
     isInEditMode?: boolean;
   }
 }

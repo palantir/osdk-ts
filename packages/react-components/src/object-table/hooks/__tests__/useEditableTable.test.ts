@@ -17,7 +17,7 @@
 import { act, renderHook } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { getCellId } from "../../utils/getCellId.js";
-import type { CellEditEvent } from "../../utils/types.js";
+import type { CellEditInfo } from "../../utils/types.js";
 import { useEditableTable } from "../useEditableTable.js";
 
 describe("useEditableTable", () => {
@@ -30,7 +30,7 @@ describe("useEditableTable", () => {
     const cellId = getCellId(cellIdentifier);
     const mockRowData = { id: "row-1", name: "Test" };
 
-    const editEvent: CellEditEvent = {
+    const editEvent: CellEditInfo = {
       rowId: "row-1",
       columnId: "col-1",
       newValue: "new value",
@@ -58,7 +58,7 @@ describe("useEditableTable", () => {
     const mockRowData = { id: "row-1", name: "Test" };
 
     // First edit
-    const firstEdit: CellEditEvent = {
+    const firstEdit: CellEditInfo = {
       rowId: "row-1",
       columnId: "col-1",
       newValue: "new value",
@@ -75,7 +75,7 @@ describe("useEditableTable", () => {
     });
 
     // Edit back to original
-    const revertEdit: CellEditEvent = {
+    const revertEdit: CellEditInfo = {
       rowId: "row-1",
       columnId: "col-1",
       newValue: "original",
@@ -99,7 +99,7 @@ describe("useEditableTable", () => {
     const cellId2 = getCellId({ rowId: "row-2", columnId: "col-2" });
     const cellId3 = getCellId({ rowId: "row-3", columnId: "col-3" });
 
-    const edit1: CellEditEvent = {
+    const edit1: CellEditInfo = {
       rowId: "row-1",
       columnId: "col-1",
       newValue: "new1",
@@ -107,7 +107,7 @@ describe("useEditableTable", () => {
       rowData: { id: "row-1" },
     };
 
-    const edit2: CellEditEvent = {
+    const edit2: CellEditInfo = {
       rowId: "row-2",
       columnId: "col-2",
       newValue: "new2",
@@ -115,7 +115,7 @@ describe("useEditableTable", () => {
       rowData: { id: "row-2" },
     };
 
-    const edit3: CellEditEvent = {
+    const edit3: CellEditInfo = {
       rowId: "row-3",
       columnId: "col-3",
       newValue: "new3",
@@ -132,7 +132,7 @@ describe("useEditableTable", () => {
     expect(Object.keys(result.current.cellEdits).length).toBe(3);
 
     // Edit one back to original
-    const revertEdit2: CellEditEvent = {
+    const revertEdit2: CellEditInfo = {
       rowId: "row-2",
       columnId: "col-2",
       newValue: "old2",
@@ -155,7 +155,7 @@ describe("useEditableTable", () => {
     const cellId1 = getCellId({ rowId: "row-1", columnId: "col-1" });
     const cellId2 = getCellId({ rowId: "row-2", columnId: "col-2" });
 
-    const edit1: CellEditEvent = {
+    const edit1: CellEditInfo = {
       rowId: "row-1",
       columnId: "col-1",
       newValue: "new1",
@@ -163,7 +163,7 @@ describe("useEditableTable", () => {
       rowData: { id: "row-1" },
     };
 
-    const edit2: CellEditEvent = {
+    const edit2: CellEditInfo = {
       rowId: "row-2",
       columnId: "col-2",
       newValue: "new2",
@@ -191,7 +191,7 @@ describe("useEditableTable", () => {
     const cellId1 = getCellId({ rowId: "row-1", columnId: "col-1" });
     const cellId2 = getCellId({ rowId: "row-2", columnId: "col-2" });
 
-    const edit1: CellEditEvent = {
+    const edit1: CellEditInfo = {
       rowId: "row-1",
       columnId: "col-1",
       newValue: "new1",
@@ -199,7 +199,7 @@ describe("useEditableTable", () => {
       rowData: { id: "row-1" },
     };
 
-    const edit2: CellEditEvent = {
+    const edit2: CellEditInfo = {
       rowId: "row-2",
       columnId: "col-2",
       newValue: "new2",

@@ -20,7 +20,7 @@ import {
   ObjectTable,
 } from "@osdk/react-components/experimental";
 import type {
-  CellEditEvent,
+  CellEditInfo,
   ColumnDefinition,
   ObjectTableProps,
 } from "@osdk/react-components/experimental";
@@ -1116,7 +1116,7 @@ export const WithSubmitEditsButton: Story = {
         editable: true,
       },
     ],
-    onSubmitEdits: (edits: CellEditEvent<Osdk.Instance<Employee>>[]) => {
+    onSubmitEdits: (edits: CellEditInfo<Osdk.Instance<Employee>>[]) => {
       alert("Submitting edits");
     },
   },

@@ -34,10 +34,10 @@ import { useRowSelection } from "./hooks/useRowSelection.js";
 import { useSelectionColumn } from "./hooks/useSelectionColumn.js";
 import { useTableSorting } from "./hooks/useTableSorting.js";
 import type { ObjectTableProps } from "./ObjectTableApi.js";
-import type { EditableConfig } from "./Table.js";
 import { BaseTable } from "./Table.js";
 import type { HeaderMenuFeatureFlags } from "./TableHeaderWithPopover.js";
 import { getRowId } from "./utils/getRowId.js";
+import type { EditableConfig } from "./utils/types.js";
 
 /**
  * ObjectTable - A headless table component for displaying OSDK object sets
@@ -164,24 +164,6 @@ export function ObjectTable<
     onCellValueChanged,
     onSubmitEdits,
   });
-
-  // const editableConfig: EditableConfig = useMemo(() => {
-  //   return {
-  //     onSubmitEdits: handleSubmitEdits,
-  //     clearEdits,
-  //     cellEdits,
-  //     enableEditModeByDefault,
-  //     isInEditMode,
-  //     onEnableEditMode: handleEnableEditMode,
-  //   };
-  // }, [
-  //   handleSubmitEdits,
-  //   clearEdits,
-  //   cellEdits,
-  //   enableEditModeByDefault,
-  //   isInEditMode,
-  //   handleEnableEditMode,
-  // ]);
 
   const table = useReactTable<
     Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
