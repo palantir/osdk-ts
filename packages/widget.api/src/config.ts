@@ -75,6 +75,7 @@ export interface WidgetConfig<P extends ParameterConfig> {
   parameters: ParameterConfig;
   events: { [eventId: string]: EventDefinition<NoInfer<P>> };
   permissions?: BrowserPermission[];
+  refreshHostDataOnAction?: boolean;
 }
 
 /**

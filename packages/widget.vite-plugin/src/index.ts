@@ -18,6 +18,21 @@ import type { PluginOption } from "vite";
 import { FoundryWidgetBuildPlugin } from "./build-plugin/FoundryWidgetBuildPlugin.js";
 import { FoundryWidgetDevPlugin } from "./dev-plugin/FoundryWidgetDevPlugin.js";
 
-export default function FoundryWidgetPlugin(): PluginOption {
-  return [FoundryWidgetDevPlugin(), FoundryWidgetBuildPlugin()];
+export interface FoundryWidgetPluginOptions {
+  /**
+   * Default values for widget configuration. Individual widget configs can override these values.
+   */
+  defaults?: {
+    /**
+     * When set to `true`, the host will refresh any Ontology data passed to the widget
+     * when the widget is thought to have updated the Ontology by applying an action.
+     */
+    refreshHostDataOnAction?: boolean;
+  };
+}
+
+export default function FoundryWidgetPlugin(
+  options?: FoundryWidgetPluginOptions,
+): PluginOption {
+  return [FoundryWidgetDevPlugin(), FoundryWidgetBuildPlugin(options)];
 }
