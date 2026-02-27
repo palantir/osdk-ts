@@ -352,7 +352,7 @@ export interface DataValueClientToWire {
     	// (undocumented)
     marking: string;
     	// (undocumented)
-    mediaReference: MediaReference | MediaUpload;
+    mediaReference: MediaReference | MediaUpload | Media;
     	// (undocumented)
     null: null;
     	// (undocumented)
@@ -1601,8 +1601,6 @@ export namespace QueryParam {
         		$objectType: string
         		$primaryKey: string | number
         	};
-    	// (undocumented)
-    export type MediaType = Media | MediaReference | MediaUpload;
     	// (undocumented)
     export type ObjectSetType<T extends ObjectOrInterfaceDefinition> = ObjectSet<T>;
     	// (undocumented)
