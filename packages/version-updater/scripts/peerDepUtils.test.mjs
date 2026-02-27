@@ -279,4 +279,10 @@ describe("generatePeerRange", () => {
       "Invalid currentPeerVersion",
     );
   });
+
+  it("throws for invalid min version when peer is prerelease", () => {
+    expect(() => generatePeerRange("not-a-version", "2.8.0-beta.12")).toThrow(
+      "Invalid minVersion",
+    );
+  });
 });

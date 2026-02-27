@@ -21,10 +21,15 @@ import * as semver from "semver";
 /**
  * Generates an appropriate semver peer dependency range.
  *
- * For prerelease peer versions, uses `>=major.minor.patch-beta.0` so that
- * npm accepts all betas on the same tuple (npm semver only matches
- * prereleases against ranges that include a prerelease on the same
- * major.minor.patch).
+ * For prerelease peer versions where the min is on the same
+ * major.minor.patch tuple, uses `>=major.minor.patch-beta.0`.
+ *
+ * For prerelease peer versions where the min is on a different tuple,
+ * produces `^minClean || >=major.minor.patch-beta.0` so that both
+ * stable releases from the min series AND betas on the current tuple
+ * are accepted. This is necessary because npm semver does not match
+ * prereleases against ranges without a prerelease on the same
+ * major.minor.patch.
  *
  * For stable peer versions, uses `^minVersion` (with any prerelease tag
  * stripped from the min so the range is clean).
@@ -44,9 +49,10 @@ export function generatePeerRange(minVersion, currentPeerVersion) {
     const betaRange =
       `>=${peerParsed.major}.${peerParsed.minor}.${peerParsed.patch}-beta.0`;
     const minParsed = semver.parse(minVersion);
-    const minClean = minParsed
-      ? `${minParsed.major}.${minParsed.minor}.${minParsed.patch}`
-      : minVersion;
+    if (!minParsed) {
+      throw new Error(`Invalid minVersion: ${minVersion}`);
+    }
+    const minClean = `${minParsed.major}.${minParsed.minor}.${minParsed.patch}`;
     const peerClean =
       `${peerParsed.major}.${peerParsed.minor}.${peerParsed.patch}`;
 

@@ -61,8 +61,8 @@
     "lodash-es": "^4.17.21"
   },
   "peerDependencies": {
-    "@osdk/api": ">=2.8.0-beta.0",
-    "@osdk/client": ">=2.8.0-beta.0",
+    "@osdk/api": "*",
+    "@osdk/client": "*",
     "@osdk/react": "*",
     "@types/react": "^17 || ^18 || ^19",
     "classnames": "^2.0.0",

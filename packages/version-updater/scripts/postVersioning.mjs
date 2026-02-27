@@ -44,8 +44,8 @@ const PEER_DEP_PACKAGES = [
   {
     dir: "react-components",
     peers: {
-      "@osdk/client": { strategy: "loose", range: "*" },
-      "@osdk/api": { strategy: "loose", range: "*" },
+      "@osdk/client": { strategy: "changelog" },
+      "@osdk/api": { strategy: "changelog" },
     },
   },
   {
@@ -245,6 +245,9 @@ function updatePeerDependencies(packageDir, peersConfig) {
     .filter(([, cfg]) => cfg.strategy === "changelog")
     .map(([name]) => name);
 
+  // loose peers must be applied before changelog peers because
+  // applyLoosePeerDep writes package.json independently, while the
+  // changelog path reads it fresh and writes once at the end
   for (const [peerName, cfg] of loosePeers) {
     applyLoosePeerDep(packageDir, peerName, cfg.range ?? "*");
   }

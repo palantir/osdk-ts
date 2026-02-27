@@ -77,7 +77,7 @@
     "yaml": "^2.8.1"
   },
   "peerDependencies": {
-    "@osdk/client": ">=2.8.0-beta.0"
+    "@osdk/client": "workspace:^"
   },
   "devDependencies": {
     "@microsoft/api-documenter": "^7.26.32",
