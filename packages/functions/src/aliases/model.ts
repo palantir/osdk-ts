@@ -14,23 +14,20 @@
  * limitations under the License.
  */
 
-import { loadAliasesFile } from "./loader.js";
+import { detectEnvironment } from "./environment.js";
+import { getModelRidPreview } from "./preview.js";
+import { getModelRidPublished } from "./published.js";
 
 export interface Model {
   rid: string;
 }
 
 export function model(alias: string): Model {
-  const aliasesFile = loadAliasesFile();
+  const environment = detectEnvironment();
 
-  if (!(alias in aliasesFile.defaults.models)) {
-    const available = Object.keys(aliasesFile.defaults.models);
-    throw new Error(
-      `Model alias '${alias}' not found. Available aliases: [${
-        available.join(", ")
-      }]`,
-    );
+  if (environment === "published") {
+    return { rid: getModelRidPublished(alias) };
+  } else {
+    return { rid: getModelRidPreview(alias) };
   }
-
-  return { rid: aliasesFile.defaults.models[alias].id.rid };
 }

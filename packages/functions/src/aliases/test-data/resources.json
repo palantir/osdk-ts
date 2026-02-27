@@ -1,0 +1,50 @@
+{
+  "resources": {
+    "ontologies": [],
+    "objects": [],
+    "links": [],
+    "interfaces": [],
+    "actions": [],
+    "valueTypes": [],
+    "queries": [],
+    "osdks": [],
+    "models": [
+      {
+        "identifier": {
+          "rid": "ri.foundry-ml.main.model.aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
+        },
+        "verbs": [],
+        "alias": "previewModelAlias"
+      },
+      {
+        "identifier": {
+          "rid": "ri.foundry-ml.main.model.bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"
+        },
+        "verbs": [],
+        "alias": "anotherPreviewModel"
+      },
+      {
+        "identifier": {
+          "rid": "ri.foundry-ml.main.model.cccccccc-cccc-cccc-cccc-cccccccccccc"
+        },
+        "verbs": [],
+        "alias": null
+      }
+    ],
+    "mediasets": [],
+    "aipAgents": [],
+    "datasets": [],
+    "connections": [],
+    "filesystem": [],
+    "streams": [],
+    "contracts": [],
+    "orchestration": [],
+    "custom": {
+      "previewCustomAlias": "previewCustomValue",
+      "anotherPreviewCustom": "anotherPreviewValue"
+    }
+  },
+  "egress": {
+    "connections": []
+  }
+}

@@ -14,21 +14,18 @@
  * limitations under the License.
  */
 
-import { loadAliasesFile } from "./loader.js";
+import { detectEnvironment } from "./environment.js";
+import { getCustomPreview } from "./preview.js";
+import { getCustomPublished } from "./published.js";
 
 export type Custom = string & { readonly __brand: "Custom" };
 
 export function custom(alias: string): Custom {
-  const aliasesFile = loadAliasesFile();
+  const environment = detectEnvironment();
 
-  if (!(alias in aliasesFile.defaults.custom)) {
-    const available = Object.keys(aliasesFile.defaults.custom);
-    throw new Error(
-      `Custom alias '${alias}' not found. Available aliases: [${
-        available.join(", ")
-      }]`,
-    );
+  if (environment === "published") {
+    return getCustomPublished(alias) as Custom;
+  } else {
+    return getCustomPreview(alias) as Custom;
   }
-
-  return aliasesFile.defaults.custom[alias] as Custom;
 }

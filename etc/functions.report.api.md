@@ -23,6 +23,15 @@ import { ThreeDimensionalAggregation } from '@osdk/client';
 import { TwoDimensionalAggregation } from '@osdk/client';
 import type { UserId as UserId_2 } from '@osdk/foundry.core';
 
+declare namespace Aliases {
+    export {
+        custom,
+        Custom,
+        model,
+        Model
+    }
+}
+
 export { Attachment }
 
 // @public (undocumented)
@@ -36,12 +45,12 @@ export type ClassificationMarking<T extends string = string> = T & {
 export function createEditBatch<T extends AnyEdit = never>(_client: Client): EditBatch<T>;
 
 // @public (undocumented)
-export type Custom = string & {
+type Custom = string & {
     	readonly __brand: "Custom"
 };
 
 // @public (undocumented)
-export function custom(alias: string): Custom;
+function custom(alias: string): Custom;
 
 // @public (undocumented)
 export type DateISOString<T extends string = string> = T & {
@@ -157,13 +166,13 @@ export { MediaReference }
 export { MediaUpload }
 
 // @public (undocumented)
-export interface Model {
+interface Model {
     	// (undocumented)
     rid: string;
 }
 
 // @public (undocumented)
-export function model(alias: string): Model;
+function model(alias: string): Model;
 
 // @public (undocumented)
 interface Notification_2 {

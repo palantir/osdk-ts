@@ -14,20 +14,39 @@
  * limitations under the License.
  */
 
-export interface IModelIdentifier {
+// Published mode types (aliases.json)
+
+export interface ModelIdentifier {
   rid: string;
 }
 
-export interface IModelValue {
-  id: IModelIdentifier;
+export interface ModelValue {
+  id: ModelIdentifier;
 }
 
-export interface IDefaultAliases {
+export interface DefaultAliases {
   custom: Record<string, string>;
-  models: Record<string, IModelValue>;
+  models: Record<string, ModelValue>;
 }
 
-export interface IAliasesFile {
-  defaults: IDefaultAliases;
+export interface AliasesFile {
+  defaults: DefaultAliases;
   version: number;
+}
+
+// Live preview mode types (resources.json)
+
+export interface ModelResource {
+  identifier: ModelIdentifier;
+  verbs: string[];
+  alias: string | null;
+}
+
+export interface Resources {
+  custom: Record<string, string>;
+  models: ModelResource[];
+}
+
+export interface ResourcesFile {
+  resources: Resources;
 }
