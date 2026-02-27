@@ -1,5 +1,11 @@
 # @osdk/functions-testing.experimental
 
+## 0.2.0-beta.2
+
+### Minor Changes
+
+- 0b3ce80: Query Stubbing and Exports
+
 ## 0.2.0-beta.1
 
 ### Minor Changes

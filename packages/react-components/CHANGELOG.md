@@ -1,5 +1,11 @@
 # @osdk/react-components
 
+## 0.2.0-beta.9
+
+### Minor Changes
+
+- 4187b2b: Fix shift click to select from last selected and header menu styles
+
 ## 0.2.0-beta.8
 
 ### Minor Changes
