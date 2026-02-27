@@ -14,12 +14,20 @@
  * limitations under the License.
  */
 
-export { createMockClient } from "../mock/createMockClient.js";
-export type {
-  AggregateStubBuilder,
-  FetchOneStubBuilder,
-  FetchPageStubBuilder,
-  QueryStubBuilder,
-  StubBuilderFor,
-} from "../mock/createMockClient.js";
-export { createMockOsdkObject } from "../mock/createMockOsdkObject.js";
+import type { Client } from "@osdk/client";
+import { queryTypeReturnsArray } from "@osdk/client.test.ontology";
+
+export async function queryWithArrayParams(
+  client: Client,
+  people: readonly string[],
+): Promise<string[]> {
+  const result = await client(queryTypeReturnsArray).executeFunction({
+    people,
+  });
+
+  if (!Array.isArray(result)) {
+    throw new Error("Expected array result");
+  }
+
+  return result;
+}
