@@ -297,12 +297,12 @@ export function useObjectSet<
 function isPayloadCompleted(
   payload: Snapshot<ObserveObjectSetArgs<any, any>>,
 ): boolean {
-  if (payload?.status == null) {
-    return false;
+  if (payload != null && "error" in payload) {
+    return true;
   }
 
-  if ("error" in payload) {
-    return true;
+  if (payload?.status == null) {
+    return false;
   }
 
   switch (payload.status) {
