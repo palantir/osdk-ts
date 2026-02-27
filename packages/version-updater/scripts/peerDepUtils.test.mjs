@@ -242,15 +242,27 @@ describe("determineMinVersion", () => {
 });
 
 describe("generatePeerRange", () => {
-  it("uses >=major.minor.patch-beta.0 when peer is prerelease", () => {
-    expect(generatePeerRange("2.3.0-beta.5", "2.8.0-beta.12")).toBe(
+  it("uses beta-only range when min and peer are on the same tuple", () => {
+    expect(generatePeerRange("2.8.0-beta.3", "2.8.0-beta.12")).toBe(
       ">=2.8.0-beta.0",
     );
   });
 
-  it("uses peer version tuple, not min version, for prerelease range", () => {
+  it("produces OR range when min is on a different tuple than peer", () => {
+    expect(generatePeerRange("2.7.0-beta.5", "2.8.0-beta.12")).toBe(
+      "^2.7.0 || >=2.8.0-beta.0",
+    );
+  });
+
+  it("produces OR range when min is stable and peer is prerelease", () => {
+    expect(generatePeerRange("2.5.0", "2.8.0-beta.12")).toBe(
+      "^2.5.0 || >=2.8.0-beta.0",
+    );
+  });
+
+  it("strips prerelease from min in OR range", () => {
     expect(generatePeerRange("2.2.0-beta.18", "2.8.0-beta.11")).toBe(
-      ">=2.8.0-beta.0",
+      "^2.2.0 || >=2.8.0-beta.0",
     );
   });
 

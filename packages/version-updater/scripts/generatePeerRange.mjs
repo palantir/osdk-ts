@@ -41,7 +41,19 @@ export function generatePeerRange(minVersion, currentPeerVersion) {
   }
 
   if (peerParsed.prerelease && peerParsed.prerelease.length > 0) {
-    return `>=${peerParsed.major}.${peerParsed.minor}.${peerParsed.patch}-beta.0`;
+    const betaRange =
+      `>=${peerParsed.major}.${peerParsed.minor}.${peerParsed.patch}-beta.0`;
+    const minParsed = semver.parse(minVersion);
+    const minClean = minParsed
+      ? `${minParsed.major}.${minParsed.minor}.${minParsed.patch}`
+      : minVersion;
+    const peerClean =
+      `${peerParsed.major}.${peerParsed.minor}.${peerParsed.patch}`;
+
+    if (minClean === peerClean) {
+      return betaRange;
+    }
+    return `^${minClean} || ${betaRange}`;
   }
 
   const minParsed = semver.parse(minVersion);

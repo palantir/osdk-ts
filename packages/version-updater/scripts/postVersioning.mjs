@@ -28,10 +28,32 @@ import { generatePeerRange } from "./generatePeerRange.mjs";
 import { parseChangelog } from "./parseChangelog.mjs";
 
 const PEER_DEP_PACKAGES = [
-  { dir: "react", peers: ["@osdk/client", "@osdk/api"] },
-  { dir: "widget.client-react", peers: ["@osdk/client"] },
-  { dir: "react-components", peers: ["@osdk/client", "@osdk/api"] },
-  { dir: "functions", peers: ["@osdk/client"] },
+  {
+    dir: "react",
+    peers: {
+      "@osdk/client": { strategy: "changelog" },
+      "@osdk/api": { strategy: "changelog" },
+    },
+  },
+  {
+    dir: "widget.client-react",
+    peers: {
+      "@osdk/client": { strategy: "changelog" },
+    },
+  },
+  {
+    dir: "react-components",
+    peers: {
+      "@osdk/client": { strategy: "loose", range: "*" },
+      "@osdk/api": { strategy: "loose", range: "*" },
+    },
+  },
+  {
+    dir: "functions",
+    peers: {
+      "@osdk/client": { strategy: "changelog" },
+    },
+  },
 ];
 
 const workspaceDirPath = getWorkspaceDirPath();
@@ -64,6 +86,48 @@ updateConstVariable(
 
 for (const pkg of PEER_DEP_PACKAGES) {
   updatePeerDependencies(pkg.dir, pkg.peers);
+}
+
+/**
+ * @param {string} packageDir
+ * @param {string} peerName
+ * @param {string} range
+ */
+function applyLoosePeerDep(packageDir, peerName, range) {
+  const packageJsonPath = path.join(
+    workspaceDirPath,
+    "packages",
+    packageDir,
+    "package.json",
+  );
+
+  if (!fs.existsSync(packageJsonPath)) {
+    consola.warn(
+      `packages/${packageDir}/package.json not found, skipping loose peer dep`,
+    );
+    return;
+  }
+
+  const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
+  if (!packageJson.peerDependencies) {
+    packageJson.peerDependencies = {};
+  }
+
+  if (packageJson.peerDependencies[peerName] === range) {
+    consola.info(
+      `No changes needed for ${packageDir} ${peerName} peer dep (already ${range})`,
+    );
+    return;
+  }
+
+  packageJson.peerDependencies[peerName] = range;
+  fs.writeFileSync(
+    packageJsonPath,
+    JSON.stringify(packageJson, null, 2) + "\n",
+  );
+  consola.info(
+    `Updated ${packageDir} ${peerName} peer dep to "${range}" (loose)`,
+  );
 }
 
 /**
@@ -172,9 +236,23 @@ function getPeerPackageVersion(packageName) {
 
 /**
  * @param {string} packageDir - Directory name under packages/ (e.g. "react", "widget.client-react")
- * @param {string[]} peerNames - Peer dependency package names to update (e.g. ["@osdk/client", "@osdk/api"])
+ * @param {Record<string, { strategy: string, range?: string }>} peersConfig - Per-peer strategy config
  */
-function updatePeerDependencies(packageDir, peerNames) {
+function updatePeerDependencies(packageDir, peersConfig) {
+  const loosePeers = Object.entries(peersConfig)
+    .filter(([, cfg]) => cfg.strategy === "loose");
+  const changelogPeers = Object.entries(peersConfig)
+    .filter(([, cfg]) => cfg.strategy === "changelog")
+    .map(([name]) => name);
+
+  for (const [peerName, cfg] of loosePeers) {
+    applyLoosePeerDep(packageDir, peerName, cfg.range ?? "*");
+  }
+
+  if (changelogPeers.length === 0) {
+    return;
+  }
+
   const packageJsonPath = path.join(
     workspaceDirPath,
     "packages",
@@ -203,7 +281,7 @@ function updatePeerDependencies(packageDir, peerNames) {
   }
 
   const changelog = fs.readFileSync(changelogPath, "utf8");
-  const versionMappings = parseChangelog(changelog, peerNames);
+  const versionMappings = parseChangelog(changelog, changelogPeers);
 
   if (versionMappings.length === 0) {
     consola.warn(
@@ -220,7 +298,7 @@ function updatePeerDependencies(packageDir, peerNames) {
   }
 
   let changed = false;
-  for (const peerName of peerNames) {
+  for (const peerName of changelogPeers) {
     const minVersion = determineMinVersion(
       versionMappings,
       currentPackageVersion,
