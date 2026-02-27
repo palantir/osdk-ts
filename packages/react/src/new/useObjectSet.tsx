@@ -266,13 +266,9 @@ export function useObjectSet<
   );
 
   const payload = React.useSyncExternalStore(subscribe, getSnapShot);
-  React.useEffect(() => {
-    if (payload) {
-      if (isPayloadCompleted(payload)) {
-        previousCompletedPayloadRef.current = payload;
-      }
-    }
-  }, [payload]);
+  if (payload && isPayloadCompleted(payload)) {
+    previousCompletedPayloadRef.current = payload;
+  }
 
   return React.useMemo(() => {
     const lastLoaded = isPayloadCompleted(payload)
