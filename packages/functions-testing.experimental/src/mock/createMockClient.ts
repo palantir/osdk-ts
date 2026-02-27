@@ -15,17 +15,21 @@
  */
 
 import type {
+  CompileTimeMetadata,
   InterfaceDefinition,
   ObjectOrInterfaceDefinition,
   ObjectSet,
   ObjectTypeDefinition,
   PageResult,
+  QueryDefinition,
 } from "@osdk/api";
 import type { Client } from "@osdk/client";
 import invariant from "tiny-invariant";
 import { type Call, createMockObjectSet, deepEqual } from "./MockObjectSet.js";
 
 type Stub = { objectType: string; calls: Call[]; value: unknown };
+
+type QueryStub = { queryApiName: string; params: unknown; value: unknown };
 
 type IsOsdkObject<T> = T extends { $apiName: string } ? true : false;
 
@@ -41,10 +45,22 @@ export interface AggregateStubBuilder<T> {
   thenReturnAggregation(result: T): void;
 }
 
+export interface QueryStubBuilder<T> {
+  thenReturn(result: T): void;
+}
+
 export type StubBuilderFor<T> = T extends PageResult<infer U>
   ? FetchPageStubBuilder<U>
   : IsOsdkObject<T> extends true ? FetchOneStubBuilder<T>
   : AggregateStubBuilder<T>;
+
+type QueryReturnTypeFromDef<Q extends QueryDefinition> = ReturnType<
+  CompileTimeMetadata<Q>["signature"]
+> extends Promise<infer R> ? R : never;
+
+type QueryParamsFromDef<Q extends QueryDefinition> =
+  Parameters<CompileTimeMetadata<Q>["signature"]> extends [infer P] ? P
+    : undefined;
 
 export type StubClient = {
   <Q extends ObjectTypeDefinition>(o: Q): ObjectSet<Q>;
@@ -55,11 +71,16 @@ export type StubPatternCallback<T> = (client: StubClient) => Promise<T>;
 
 export interface MockClient extends Client {
   when<T>(callback: StubPatternCallback<T>): StubBuilderFor<T>;
+  whenQuery<Q extends QueryDefinition>(
+    query: Q,
+    params?: QueryParamsFromDef<Q>,
+  ): QueryStubBuilder<QueryReturnTypeFromDef<Q>>;
   clearStubs(): void;
 }
 
 export function createMockClient(): MockClient {
   const stubs: Stub[] = [];
+  const queryStubs: QueryStub[] = [];
 
   const resolve = (objectType: string, calls: Call[]): unknown => {
     for (const stub of stubs) {
@@ -83,8 +104,35 @@ export function createMockClient(): MockClient {
     throw new Error(msg);
   };
 
-  const mockClient = ((def: ObjectOrInterfaceDefinition) => {
-    invariant("apiName" in def, "Expected ObjectType or Interface");
+  const resolveQuery = (queryApiName: string, params: unknown): unknown => {
+    for (const stub of queryStubs) {
+      if (stub.queryApiName !== queryApiName) continue;
+      if (deepEqual(stub.params, params)) {
+        return stub.value;
+      }
+    }
+
+    const msg = `No stub for query '${queryApiName}'`;
+    throw new Error(msg);
+  };
+
+  const mockClient = ((
+    def: ObjectOrInterfaceDefinition | QueryDefinition,
+  ) => {
+    invariant("apiName" in def, "Expected ObjectType, Interface, or Query");
+
+    if (def.type === "query") {
+      return {
+        executeFunction: (params?: unknown) => {
+          try {
+            return Promise.resolve(resolveQuery(def.apiName, params));
+          } catch (e) {
+            return Promise.reject(e);
+          }
+        },
+      };
+    }
+
     return createMockObjectSet(def, (calls) => resolve(def.apiName, calls));
   }) as MockClient;
 
@@ -114,8 +162,24 @@ export function createMockClient(): MockClient {
     } as unknown as StubBuilderFor<T>;
   };
 
+  mockClient.whenQuery = <Q extends QueryDefinition>(
+    query: Q,
+    params?: QueryParamsFromDef<Q>,
+  ): QueryStubBuilder<QueryReturnTypeFromDef<Q>> => {
+    return {
+      thenReturn: (result: QueryReturnTypeFromDef<Q>) => {
+        queryStubs.push({
+          queryApiName: query.apiName,
+          params,
+          value: result,
+        });
+      },
+    };
+  };
+
   mockClient.clearStubs = () => {
     stubs.length = 0;
+    queryStubs.length = 0;
   };
 
   mockClient.fetchMetadata = async () => {

@@ -14,12 +14,17 @@
  * limitations under the License.
  */
 
-export { createMockClient } from "../mock/createMockClient.js";
-export type {
-  AggregateStubBuilder,
-  FetchOneStubBuilder,
-  FetchPageStubBuilder,
-  QueryStubBuilder,
-  StubBuilderFor,
-} from "../mock/createMockClient.js";
-export { createMockOsdkObject } from "../mock/createMockOsdkObject.js";
+import type { Client } from "@osdk/client";
+import { addOne } from "@osdk/client.test.ontology";
+import type { Integer } from "@osdk/functions";
+
+export async function basicQuery(
+  client: Client,
+  n: Integer,
+): Promise<Integer> {
+  const result = await client(addOne).executeFunction({ n });
+  if (result !== n + 1) {
+    throw new Error(`Expected ${n + 1}, but got ${result}`);
+  }
+  return result;
+}

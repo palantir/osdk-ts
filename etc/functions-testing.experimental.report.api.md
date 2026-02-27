@@ -13,6 +13,7 @@ import type { ObjectSet } from '@osdk/api';
 import type { ObjectTypeDefinition } from '@osdk/api';
 import type { Osdk } from '@osdk/api';
 import type { PageResult } from '@osdk/api';
+import type { QueryDefinition } from '@osdk/api';
 
 // @public (undocumented)
 export interface AggregateStubBuilder<T> {
@@ -48,6 +49,11 @@ export interface MockClient extends Client {
     //
     // (undocumented)
     when<T>(callback: StubPatternCallback<T>): StubBuilderFor<T>;
+    	// Warning: (ae-forgotten-export) The symbol "QueryParamsFromDef" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "QueryReturnTypeFromDef" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    whenQuery<Q extends QueryDefinition>(query: Q, params?: QueryParamsFromDef<Q>): QueryStubBuilder<QueryReturnTypeFromDef<Q>>;
 }
 
 // @public
@@ -55,6 +61,12 @@ export interface MockOsdkObjectOptions {
     	$rid?: string;
     	primaryKeyApiName?: string;
     	titlePropertyApiName?: string;
+}
+
+// @public (undocumented)
+export interface QueryStubBuilder<T> {
+    	// (undocumented)
+    thenReturn(result: T): void;
 }
 
 // Warning: (ae-forgotten-export) The symbol "IsOsdkObject" needs to be exported by the entry point index.d.ts

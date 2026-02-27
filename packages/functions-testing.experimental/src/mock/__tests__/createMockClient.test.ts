@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import { Employee, Office } from "@osdk/client.test.ontology";
+import {
+  addOne,
+  Employee,
+  Office,
+  queryTypeReturnsArray,
+} from "@osdk/client.test.ontology";
 import { describe, expect, it } from "vitest";
 import { createMockClient } from "../createMockClient.js";
 import { createMockOsdkObject } from "../createMockOsdkObject.js";
@@ -221,6 +226,75 @@ describe("createMockClient", () => {
       expect(() => mockClient(Employee).subscribe({})).toThrow(
         "subscribe is not supported",
       );
+    });
+  });
+
+  describe("query stubbing", () => {
+    it("returns stubbed query result with parameters", async () => {
+      const mockClient = createMockClient();
+
+      mockClient.whenQuery(addOne, { n: 5 }).thenReturn(6);
+
+      const result = await mockClient(addOne).executeFunction({ n: 5 });
+
+      expect(result).toBe(6);
+    });
+
+    it("returns stubbed array result", async () => {
+      const mockClient = createMockClient();
+
+      mockClient
+        .whenQuery(queryTypeReturnsArray, { people: ["Alice", "Bob"] })
+        .thenReturn(["Alice - processed", "Bob - processed"]);
+
+      const result = await mockClient(queryTypeReturnsArray).executeFunction({
+        people: ["Alice", "Bob"],
+      });
+
+      expect(result).toEqual(["Alice - processed", "Bob - processed"]);
+    });
+
+    it("matches query parameters exactly", async () => {
+      const mockClient = createMockClient();
+
+      mockClient.whenQuery(addOne, { n: 5 }).thenReturn(6);
+      mockClient.whenQuery(addOne, { n: 10 }).thenReturn(11);
+
+      const result1 = await mockClient(addOne).executeFunction({ n: 5 });
+      const result2 = await mockClient(addOne).executeFunction({ n: 10 });
+
+      expect(result1).toBe(6);
+      expect(result2).toBe(11);
+    });
+
+    it("throws when no stub registered for query", async () => {
+      const mockClient = createMockClient();
+
+      await expect(
+        mockClient(addOne).executeFunction({ n: 5 }),
+      ).rejects.toThrow("No stub for query 'addOne'");
+    });
+
+    it("throws when parameters don't match", async () => {
+      const mockClient = createMockClient();
+
+      mockClient.whenQuery(addOne, { n: 5 }).thenReturn(6);
+
+      await expect(
+        mockClient(addOne).executeFunction({ n: 10 }),
+      ).rejects.toThrow("No stub for query 'addOne'");
+    });
+
+    it("clears query stubs with clearStubs", async () => {
+      const mockClient = createMockClient();
+
+      mockClient.whenQuery(addOne, { n: 5 }).thenReturn(6);
+
+      mockClient.clearStubs();
+
+      await expect(
+        mockClient(addOne).executeFunction({ n: 5 }),
+      ).rejects.toThrow("No stub for query 'addOne'");
     });
   });
 });
