@@ -294,8 +294,11 @@ export function useObjectSet<
   }, [payload, baseObjectSet]);
 }
 
-function isPayloadCompleted(
-  payload: Snapshot<ObserveObjectSetArgs<any, any>>,
+function isPayloadCompleted<
+  Q extends ObjectTypeDefinition,
+  RDPs extends Record<string, SimplePropertyDef>,
+>(
+  payload: Snapshot<ObserveObjectSetArgs<Q, RDPs>>,
 ): boolean {
   if (payload != null && "error" in payload) {
     return true;
