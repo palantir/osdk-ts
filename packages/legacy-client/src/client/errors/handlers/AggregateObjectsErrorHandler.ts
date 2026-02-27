@@ -18,10 +18,12 @@
 import type { ValueType } from "@osdk/gateway/types";
 import type {
   AggregationGroupCountExceededLimit,
+  AggregationMetricNotSupported,
   DuplicateOrderBy,
   InvalidAggregationRange,
   InvalidAggregationRangePropertyType,
   InvalidAggregationRangeValue,
+  InvalidDurationGroupByPropertyType,
   InvalidFields,
   InvalidPropertyFiltersCombination,
   InvalidPropertyFilterValue,
@@ -370,6 +372,46 @@ export class AggregateObjectsErrorHandler extends DefaultErrorHandler {
       statusCode: error.statusCode,
       property,
       objectType: objectTypeApiName,
+      propertyBaseType,
+    };
+  }
+
+  handleAggregationMetricNotSupported(
+    error: PalantirApiError,
+    aggregationMetricName: string,
+    objectType: string,
+    property: string,
+    propertyBaseType: ValueType,
+  ): AggregationMetricNotSupported {
+    return {
+      name: error.errorName,
+      message: error.message,
+      errorName: "AggregationMetricNotSupported",
+      errorType: "INVALID_ARGUMENT",
+      errorInstanceId: error.errorInstanceId,
+      statusCode: error.statusCode,
+      aggregationMetricName,
+      objectType,
+      property,
+      propertyBaseType,
+    };
+  }
+
+  handleInvalidDurationGroupByPropertyType(
+    error: PalantirApiError,
+    property: string,
+    objectType: string,
+    propertyBaseType: ValueType,
+  ): InvalidDurationGroupByPropertyType {
+    return {
+      name: error.errorName,
+      message: error.message,
+      errorName: "InvalidDurationGroupByPropertyType",
+      errorType: "INVALID_ARGUMENT",
+      errorInstanceId: error.errorInstanceId,
+      statusCode: error.statusCode,
+      property,
+      objectType,
       propertyBaseType,
     };
   }
