@@ -67,6 +67,9 @@ export type { PlatformClient } from "./createPlatformClient.js";
 export { createAttachmentUpload } from "./object/AttachmentUpload.js";
 export type { ResultOrError } from "./ResultOrError.js";
 
+export type { ObjectSet as WireObjectSet } from "@osdk/foundry.ontologies";
+export { getWireObjectSet, isObjectSet } from "./objectSet/createObjectSet.js";
+
 export {
   extractDate,
   extractDateInLocalTime,
