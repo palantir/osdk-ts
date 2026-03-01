@@ -103,6 +103,7 @@
   "files": [
     "AGENTS.md",
     "docs",
+    "experimental",
     "build/cjs",
     "build/esm",
     "build/browser",
@@ -110,8 +111,7 @@
     "CHANGELOG.md",
     "package.json",
     "templates",
-    "*.d.ts",
-    "experimental"
+    "*.d.ts"
   ],
   "main": "./build/cjs/index.cjs",
   "module": "./build/esm/index.js",

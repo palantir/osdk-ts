@@ -320,7 +320,7 @@ const archetypeRules = archetypes(
     {
       ...LIBRARY_RULES,
       react: true,
-      extraPublishFiles: ["AGENTS.md", "docs"],
+      extraPublishFiles: ["AGENTS.md", "docs", "experimental"],
     },
   )
   .addArchetype(
@@ -564,12 +564,15 @@ const ourExportsConvention = createRuleFactory({
         const q of await fs.readdir(publicPath, {
           withFileTypes: true,
           encoding: "utf8",
+          recursive: true,
         })
       ) {
         if (!q.isFile()) continue;
         if (!q.name.endsWith(".ts")) continue;
 
-        const b = path.basename(q.name, ".ts");
+        const fullPath = path.join(q.parentPath, q.name);
+        const rel = path.relative(publicPath, fullPath);
+        const b = rel.replace(/\.ts$/, "");
         expectedExports.exports["./" + b] = makeExport(b);
       }
     }
