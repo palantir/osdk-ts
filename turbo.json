@@ -27,7 +27,7 @@
         "tsconfig.json"
       ],
       "outputs": [],
-      "dependsOn": ["//#global-eslint-config", "//#dprint", "typecheck"]
+      "dependsOn": ["//#global-eslint-config", "//#dprint", "codegen", "^transpileTypes"]
     },
 
     /* Psuedo task to let us depend on dprint config */
