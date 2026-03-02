@@ -30,7 +30,7 @@
     "codegen": "rm -rf src/generatedNoCheck/* && osdk-unstable-typescript generate --outDir src/generatedNoCheck --ontologyPath ontology.json --version dev --internal --packageType module",
     "dev": "vite",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
-    "lint": "eslint . && dprint check --config $(find-up dprint.json)",
+    "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
     "preview": "vite preview",
     "transpileEsm": "monorepo.tool.transpile -f esm -m normal -t node",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
