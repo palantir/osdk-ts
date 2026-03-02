@@ -1,5 +1,11 @@
 # @osdk/create-widget.template.react.v2
 
+## 3.4.3
+
+### Patch Changes
+
+- 2d32b77: Revert node bump
+
 ## 3.4.2
 
 ## 3.4.1

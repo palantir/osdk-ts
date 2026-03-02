@@ -1,5 +1,11 @@
 # @osdkkit/react
 
+## 0.9.2
+
+### Patch Changes
+
+- 16c9987: Preserve object set data between loads
+
 ## 0.9.1
 
 ### Patch Changes
