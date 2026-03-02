@@ -171,7 +171,12 @@ export async function runVersion({
       : undefined,
   );
 
-  mutateReleasePlan(cwd, releasePlan, isMainBranch ? "main" : "release branch");
+  mutateReleasePlan(
+    cwd,
+    releasePlan,
+    isMainBranch ? "main" : "release branch",
+    config.ignore,
+  );
 
   for (const release of releasePlan.releases) {
     const versions = await packageVersionsOrEmptySet(release.name);
