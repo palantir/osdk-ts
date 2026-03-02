@@ -53,7 +53,8 @@ export function createCollectionConnectable<
     subject.pipe(
       switchMap(listEntry => {
         const resolvedData = listEntry?.value?.data == null
-            || listEntry.value.data.length === 0
+          ? of(undefined)
+          : listEntry.value.data.length === 0
           ? of([])
           : combineLatest(
             listEntry.value.data.map((cacheKey: ObjectCacheKey) =>
@@ -74,7 +75,9 @@ export function createCollectionConnectable<
           }).pipe(
             map(params =>
               createPayload({
-                resolvedData: Array.isArray(params.resolvedData)
+                resolvedData: params.resolvedData === undefined
+                  ? undefined
+                  : Array.isArray(params.resolvedData)
                   ? params.resolvedData
                   : [],
                 isOptimistic: params.isOptimistic,
