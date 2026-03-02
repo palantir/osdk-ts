@@ -1,11 +1,11 @@
 {
-  "$schema": "https://turbo.build/schema.json",
+  // WARNING: GENERATED FILE. DO NOT EDIT DIRECTLY. See .monorepolint.config.mjs
   "extends": ["//"],
   "tasks": {
     "codegen": {
       "inputs": ["templates/**/*"],
       "outputs": ["src/generatedNoCheck/**/*"],
-      "cache": false
+      "dependsOn": ["@osdk/create-app.template-packager#transpileEsm"]
     }
   }
 }
