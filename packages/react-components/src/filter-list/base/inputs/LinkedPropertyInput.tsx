@@ -21,7 +21,7 @@ import type {
   PropertyKeys,
 } from "@osdk/api";
 import classnames from "classnames";
-import React, { memo, useCallback, useMemo, useRef } from "react";
+import React, { memo, useCallback, useMemo } from "react";
 import type { FilterState } from "../../FilterListItemApi.js";
 import type { LinkedPropertyFilterDefinition } from "../../types/LinkedFilterTypes.js";
 import { assertUnreachable } from "../../utils/assertUnreachable.js";
@@ -86,8 +86,8 @@ function LinkedPropertyInputInner<
     ? filterState.linkedFilterState
     : undefined;
 
-  const innerStateRef = useRef(innerState);
-  innerStateRef.current = innerState;
+  const isExcluding = innerState?.isExcluding ?? false;
+  const includeNull = innerState?.includeNull;
 
   const wrappedOnChange = useCallback(
     (innerFilterState: FilterState) => {
@@ -104,10 +104,10 @@ function LinkedPropertyInputInner<
       wrappedOnChange({
         type: "SELECT",
         selectedValues,
-        isExcluding: innerStateRef.current?.isExcluding ?? false,
+        isExcluding,
       });
     },
-    [wrappedOnChange],
+    [wrappedOnChange, isExcluding],
   );
 
   const onSingleSelectChange = useCallback(
@@ -115,10 +115,10 @@ function LinkedPropertyInputInner<
       wrappedOnChange({
         type: "SELECT",
         selectedValues: selectedValue !== undefined ? [selectedValue] : [],
-        isExcluding: innerStateRef.current?.isExcluding ?? false,
+        isExcluding,
       });
     },
-    [wrappedOnChange],
+    [wrappedOnChange, isExcluding],
   );
 
   const onContainsTextChange = useCallback(
@@ -141,10 +141,10 @@ function LinkedPropertyInputInner<
         type: "NUMBER_RANGE",
         minValue,
         maxValue,
-        includeNull: innerStateRef.current?.includeNull,
+        includeNull,
       });
     },
-    [wrappedOnChange],
+    [wrappedOnChange, includeNull],
   );
 
   const onDateRangeChange = useCallback(
@@ -153,10 +153,10 @@ function LinkedPropertyInputInner<
         type: "DATE_RANGE",
         minValue,
         maxValue,
-        includeNull: innerStateRef.current?.includeNull,
+        includeNull,
       });
     },
-    [wrappedOnChange],
+    [wrappedOnChange, includeNull],
   );
 
   const onExactMatchChange = useCallback(
@@ -164,10 +164,10 @@ function LinkedPropertyInputInner<
       wrappedOnChange({
         type: "EXACT_MATCH",
         values,
-        isExcluding: innerStateRef.current?.isExcluding ?? false,
+        isExcluding,
       });
     },
-    [wrappedOnChange],
+    [wrappedOnChange, isExcluding],
   );
 
   const onDateSelectChange = useCallback(
@@ -175,10 +175,10 @@ function LinkedPropertyInputInner<
       wrappedOnChange({
         type: "SELECT",
         selectedValues: date !== undefined ? [date] : [],
-        isExcluding: innerStateRef.current?.isExcluding ?? false,
+        isExcluding,
       });
     },
-    [wrappedOnChange],
+    [wrappedOnChange, isExcluding],
   );
 
   const onMultiDateChange = useCallback(
@@ -197,10 +197,10 @@ function LinkedPropertyInputInner<
         type: "TIMELINE",
         startDate: start,
         endDate: end,
-        isExcluding: innerStateRef.current?.isExcluding ?? false,
+        isExcluding,
       });
     },
-    [wrappedOnChange],
+    [wrappedOnChange, isExcluding],
   );
 
   const selectStringValues = useMemo(
@@ -353,7 +353,6 @@ function LinkedPropertyInputInner<
             propertyKey={linkedPropertyKey}
             tags={exactMatchValues}
             onChange={onExactMatchChange}
-            suggestionLimit={50}
           />
         );
 
