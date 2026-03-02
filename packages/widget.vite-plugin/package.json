@@ -48,7 +48,7 @@
     "sirv": "^3.0.2"
   },
   "peerDependencies": {
-    "vite": "^6.3.5"
+    "vite": "^6.3.6"
   },
   "devDependencies": {
     "@blueprintjs/core": "^5.19.1",
