@@ -1,5 +1,12 @@
 # @osdk/widget.vite-plugin
 
+## 3.4.4
+
+### Patch Changes
+
+- 4e75da2: Bump @types/node to 24.10.13
+  - @osdk/widget.api@3.4.4
+
 ## 3.4.3
 
 ### Patch Changes

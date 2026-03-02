@@ -1,5 +1,7 @@
 # @osdk/create-app.template.react
 
+## 2.7.4
+
 ## 2.7.3
 
 ### Patch Changes
