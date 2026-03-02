@@ -14,69 +14,212 @@
  * limitations under the License.
  */
 
+import type { BaseTableProps } from "@osdk/react-components/experimental";
 import { BaseTable } from "@osdk/react-components/experimental";
 import type { Meta, StoryObj } from "@storybook/react";
+import type {
+  ColumnPinningState,
+  ColumnSizingState,
+  SortingState,
+  VisibilityState,
+} from "@tanstack/react-table";
 import {
-  createColumnHelper,
   getCoreRowModel,
+  getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { useMemo } from "react";
+import { useState } from "react";
 import { fauxFoundry } from "../../mocks/fauxFoundry.js";
 
-const meta: Meta<typeof BaseTable> = {
+type Person = {
+  id: number;
+  name: string;
+  email: string;
+  department: string;
+  startDate: string;
+};
+
+const mockData: Person[] = [
+  {
+    id: 1,
+    name: "John Smith",
+    email: "john.smith@example.com",
+    department: "Engineering",
+    startDate: "2020-01-15",
+  },
+  {
+    id: 2,
+    name: "Sarah Johnson",
+    email: "sarah.johnson@example.com",
+    department: "Product",
+    startDate: "2019-06-22",
+  },
+  {
+    id: 3,
+    name: "Michael Chen",
+    email: "michael.chen@example.com",
+    department: "Engineering",
+    startDate: "2021-03-01",
+  },
+  {
+    id: 4,
+    name: "Emily Davis",
+    email: "emily.davis@example.com",
+    department: "Design",
+    startDate: "2020-11-30",
+  },
+  {
+    id: 5,
+    name: "Robert Wilson",
+    email: "robert.wilson@example.com",
+    department: "Sales",
+    startDate: "2018-09-15",
+  },
+];
+
+const meta: Meta<BaseTableProps<Person>> = {
   title: "Components/BaseTable",
   component: BaseTable,
   parameters: {
     msw: {
       handlers: [...fauxFoundry.handlers],
     },
-    docs: {
-      description: {
-        component:
-          `BaseTable is a low-level table component that integrates with TanStack Table (React Table) for maximum flexibility. Use this component when you need full control over table behavior.
-
-**Note:** BaseTable requires a table instance from @tanstack/react-table. In most cases, you should use a higher-level table component that handles table instance creation automatically. BaseTable is exposed for advanced use cases where you need direct control over the table configuration.`,
+    controls: {
+      expanded: true,
+    },
+  },
+  argTypes: {
+    table: {
+      description: "An instance of tanstack react-table",
+      control: false,
+    },
+    isLoading: {
+      description: "Whether the table is fetching data",
+      control: "boolean",
+      defaultValue: false,
+      table: {
+        defaultValue: { summary: "false" },
       },
+    },
+    fetchNextPage: {
+      description: "A promise to fetch next page",
+      control: false,
+    },
+    error: {
+      description: "Error to show in the table",
+      control: false,
+    },
+    rowHeight: {
+      description: "The height of each row in pixels",
+      control: "number",
+      defaultValue: 40,
+      table: {
+        defaultValue: { summary: "40" },
+      },
+    },
+    headerMenuFeatureFlags: {
+      description:
+        "Configuration to show sorting, pinning, resizing, and column config menu in the header",
+      control: "object",
+      defaultValue: {
+        showSortingItems: false,
+        showPinningItems: false,
+        showResizeItem: false,
+        showConfigItem: false,
+      },
+      table: {
+        defaultValue: {
+          summary: JSON.stringify({
+            showSortingItems: false,
+            showPinningItems: false,
+            showResizeItem: false,
+            showConfigItem: false,
+          }),
+        },
+      },
+    },
+    editableConfig: {
+      description: "Configuration for editable table",
+      control: "object",
+    },
+    onRowClick: {
+      description: "Called when a row is clicked.",
+      control: false,
+      table: {
+        category: "Events",
+      },
+    },
+    renderCellContextMenu: {
+      description:
+        "If provided, will render this context menu when right clicking on a cell",
+      control: false,
+      table: {
+        category: "Advanced",
+      },
+    },
+    className: {
+      description: "Additional CSS class name for the table",
+      control: "text",
     },
   },
 };
 
+const columns = [
+  {
+    accessorKey: "name",
+    header: "Name",
+  },
+
+  {
+    accessorKey: "email",
+    header: "Email",
+  },
+  {
+    accessorKey: "department",
+    header: "Department",
+  },
+  { accessorKey: "startDate", header: "Start Date" },
+];
+
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Overview: Story = {
+export const Default: Story = {
   parameters: {
     docs: {
       source: {
-        code: `// BaseTable requires a table instance from @tanstack/react-table
-// Here's a basic example:
-
+        code: `
 import { BaseTable } from "@osdk/react-components/experimental";
 import { 
-  createColumnHelper,
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
 
 function MyCustomTable({ data }) {
-  const columnHelper = createColumnHelper();
-  
+ 
   const columns = [
-    columnHelper.accessor("name", {
+    {
+      accessorKey: "name",
       header: "Name",
-      cell: info => info.getValue(),
-    }),
-    columnHelper.accessor("email", {
+    },
+    {
+      accessorKey: "email",
       header: "Email",
-      cell: info => info.getValue(),
-    }),
+    },
+    {
+      accessorKey: "department",
+      header: "Department",
+    },
+    { accessorKey: "startDate", header: "Start Date" },
   ];
+
   
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    columnResizeMode: "onChange",
+    columnResizeDirection: "ltr",
   });
   
   return <BaseTable table={table} />;
@@ -84,110 +227,388 @@ function MyCustomTable({ data }) {
       },
     },
   },
-  render: () => {
-    const ExampleTable = () => {
-      type Person = {
-        id: number;
-        name: string;
-        email: string;
-        department: string;
-        startDate: string;
-      };
-      const columnHelper = createColumnHelper<Person>();
+  render: (args) => {
+    const table = useReactTable({
+      data: mockData,
+      columns,
+      getCoreRowModel: getCoreRowModel(),
+      columnResizeMode: "onChange",
+      columnResizeDirection: "ltr",
+    });
 
-      const data = useMemo(() => [
-        {
-          id: 1,
-          name: "John Smith",
-          email: "john.smith@example.com",
-          department: "Engineering",
-          startDate: "2020-01-15",
-        },
-        {
-          id: 2,
-          name: "Sarah Johnson",
-          email: "sarah.johnson@example.com",
-          department: "Product",
-          startDate: "2019-06-22",
-        },
-        {
-          id: 3,
-          name: "Michael Chen",
-          email: "michael.chen@example.com",
-          department: "Engineering",
-          startDate: "2021-03-01",
-        },
-        {
-          id: 4,
-          name: "Emily Davis",
-          email: "emily.davis@example.com",
-          department: "Design",
-          startDate: "2020-11-30",
-        },
-        {
-          id: 5,
-          name: "Robert Wilson",
-          email: "robert.wilson@example.com",
-          department: "Sales",
-          startDate: "2018-09-15",
-        },
-      ], []);
+    return <BaseTable table={table} {...args} />;
+  },
+};
 
-      const columns = useMemo(() => [
-        columnHelper.accessor("name", {
-          header: "Name",
-          cell: info => info.getValue(),
-        }),
-        columnHelper.accessor("email", {
-          header: "Email",
-          cell: info => info.getValue(),
-        }),
-        columnHelper.accessor("department", {
-          header: "Department",
-          cell: info => info.getValue(),
-        }),
-        columnHelper.accessor("startDate", {
-          header: "Start Date",
-          cell: info => new Date(info.getValue()).toLocaleDateString(),
-        }),
-      ], [columnHelper]);
+export const WithSorting: Story = {
+  args: {
+    headerMenuFeatureFlags: {
+      showSortingItems: true,
+    },
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `
+import { BaseTable } from "@osdk/react-components/experimental";
+import {
+  getCoreRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
+import type {
+  SortingState,
+} from "@tanstack/react-table";
 
-      const table = useReactTable({
-        data,
-        columns,
-        getCoreRowModel: getCoreRowModel(),
-      });
+const headerMenuFeatureFlags = {
+  showSortingItems: true,
+};
+const [sorting, setSorting] = useState<SortingState>();
 
-      return <BaseTable table={table} />;
-    };
+const table = useReactTable({
+  data: mockData,
+  columns,
+  getCoreRowModel: getCoreRowModel(),
+  getSortedRowModel: getSortedRowModel(),
+  state: {
+    sorting,
+  },
+  enableSorting: true,
+  onSortingChange: setSorting,
+});
+
+
+return <BaseTable table={table} headerMenuFeatureFlags={headerMenuFeatureFlags} />;
+`,
+      },
+    },
+  },
+  render: (args) => {
+    const [sorting, setSorting] = useState<SortingState>([]);
+
+    const table = useReactTable({
+      data: mockData,
+      columns,
+      getCoreRowModel: getCoreRowModel(),
+      getSortedRowModel: getSortedRowModel(),
+      state: {
+        sorting,
+      },
+      enableSorting: true,
+      onSortingChange: setSorting,
+    });
 
     return (
-      <div>
-        <div
-          style={{
-            padding: "20px",
-            backgroundColor: "#f3f4f6",
-            borderRadius: "8px",
-            marginBottom: "20px",
-          }}
-        >
-          <h3 style={{ marginTop: 0 }}>BaseTable Component</h3>
-          <p>
-            BaseTable is a low-level component that requires a table instance
-            from @tanstack/react-table.
-          </p>
-          <p>
-            For most use cases, we recommend using a higher-level table
-            component that handles table instance creation automatically.
-          </p>
-          <p>
-            Use BaseTable only when you need full control over the table
-            configuration and behavior.
-          </p>
-        </div>
-        <div style={{ height: "400px" }}>
-          <ExampleTable />
-        </div>
+      <div style={{ height: "400px" }}>
+        <BaseTable
+          table={table}
+          {...args}
+        />
+      </div>
+    );
+  },
+};
+
+export const WithColumnPinning: Story = {
+  args: {
+    headerMenuFeatureFlags: {
+      showPinningItems: true,
+    },
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `
+import { BaseTable } from "@osdk/react-components/experimental";
+import {
+  getCoreRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
+import type {
+  ColumnPinningState,
+} from "@tanstack/react-table";
+ 
+const headerMenuFeatureFlags = {
+  showPinningItems: true,
+};
+const [columnPinning, setColumnPinning] = useState<ColumnPinningState>({
+  left: [],
+  right: [],
+});
+
+const table = useReactTable({
+  data: mockData,
+  columns,
+  getCoreRowModel: getCoreRowModel(),
+  state: {
+    columnPinning,
+  },
+  onColumnPinningChange: setColumnPinning,
+});
+
+return <BaseTable table={table} headerMenuFeatureFlags={headerMenuFeatureFlags} />;
+`,
+      },
+    },
+  },
+  render: (args) => {
+    const [columnPinning, setColumnPinning] = useState<ColumnPinningState>({
+      left: [],
+      right: [],
+    });
+
+    const table = useReactTable({
+      data: mockData,
+      columns,
+      getCoreRowModel: getCoreRowModel(),
+      state: {
+        columnPinning,
+      },
+      enableColumnResizing: false,
+      onColumnPinningChange: setColumnPinning,
+    });
+
+    return (
+      <div style={{ height: "400px" }}>
+        <BaseTable
+          table={table}
+          {...args}
+        />
+      </div>
+    );
+  },
+};
+
+export const WithColumnResizing: Story = {
+  args: {
+    headerMenuFeatureFlags: {
+      showResizeItem: true,
+    },
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `
+import { BaseTable } from "@osdk/react-components/experimental";
+import {
+  getCoreRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
+import type {
+  ColumnSizingState,
+} from "@tanstack/react-table";
+ 
+const headerMenuFeatureFlags = {
+  showResizeItem: true,
+};
+const [columnSizing, setColumnSizing] = useState<ColumnSizingState>({});
+
+const table = useReactTable({
+  data: mockData,
+  columns,
+  getCoreRowModel: getCoreRowModel(),
+  state: {
+    columnSizing,
+  },
+  columnResizeMode: "onChange",
+  columnResizeDirection: "ltr",
+  onColumnSizingChange: setColumnSizing,
+});
+
+
+return <BaseTable table={table} headerMenuFeatureFlags={headerMenuFeatureFlags} />;
+`,
+      },
+    },
+  },
+  render: (args) => {
+    const [columnSizing, setColumnSizing] = useState<ColumnSizingState>({});
+
+    const table = useReactTable({
+      data: mockData,
+      columns,
+      getCoreRowModel: getCoreRowModel(),
+      state: {
+        columnSizing,
+      },
+      columnResizeMode: "onChange",
+      columnResizeDirection: "ltr",
+      onColumnSizingChange: setColumnSizing,
+    });
+
+    return (
+      <div style={{ height: "400px" }}>
+        <BaseTable
+          table={table}
+          {...args}
+        />
+      </div>
+    );
+  },
+};
+
+export const WithColumnConfig: Story = {
+  args: {
+    headerMenuFeatureFlags: {
+      showConfigItem: true,
+    },
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `
+import { BaseTable } from "@osdk/react-components/experimental";
+import {
+  getCoreRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
+import type {
+  SortingState,
+} from "@tanstack/react-table";
+
+const headerMenuFeatureFlags = {
+  showSortingItems: true,
+};
+const [sorting, setSorting] = useState<SortingState>();
+
+const table = useReactTable({
+  data: mockData,
+  columns,
+  getCoreRowModel: getCoreRowModel(),
+  getSortedRowModel: getSortedRowModel(),
+  state: {
+    sorting,
+  },
+  enableSorting: true,
+  onSortingChange: setSorting,
+});
+
+
+return <BaseTable table={table} headerMenuFeatureFlags={headerMenuFeatureFlags} />;
+`,
+      },
+    },
+  },
+  render: (args) => {
+    const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
+      columns.reduce((acc, col) => {
+        return {
+          ...acc,
+          [col.accessorKey]: true,
+        };
+      }, {}),
+    );
+
+    const table = useReactTable({
+      data: mockData,
+      columns,
+      getCoreRowModel: getCoreRowModel(),
+      getSortedRowModel: getSortedRowModel(),
+      state: {
+        columnVisibility,
+      },
+      onColumnVisibilityChange: setColumnVisibility,
+    });
+
+    return (
+      <div style={{ height: "400px" }}>
+        <BaseTable
+          table={table}
+          {...args}
+        />
+      </div>
+    );
+  },
+};
+
+export const LoadingState: Story = {
+  args: {
+    isLoading: true,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `
+const table = useReactTable({
+  data: [], // No data
+  columns,
+  getCoreRowModel: getCoreRowModel(),
+});
+
+return <BaseTable table={table} isLoading={true} />;
+}`,
+      },
+    },
+  },
+  render: (args) => {
+    const table = useReactTable({
+      data: [],
+      columns,
+      getCoreRowModel: getCoreRowModel(),
+    });
+
+    return (
+      <div style={{ height: "400px" }}>
+        <BaseTable table={table} {...args} />
+      </div>
+    );
+  },
+};
+
+export const EmptyState: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      source: {
+        code: `
+const table = useReactTable({
+  data: [], // No data
+  columns,
+  getCoreRowModel: getCoreRowModel(),
+});
+
+return <BaseTable table={table} />;
+`,
+      },
+    },
+  },
+  render: (args) => {
+    const table = useReactTable({
+      data: [],
+      columns,
+      getCoreRowModel: getCoreRowModel(),
+    });
+
+    return (
+      <div style={{ height: "400px" }}>
+        <BaseTable table={table} {...args} />
+      </div>
+    );
+  },
+};
+
+export const ErrorState: Story = {
+  args: {
+    error: new Error("Example error"),
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `<BaseTable table={table} error={new Error("Example error")} />`,
+      },
+    },
+  },
+  render: (args) => {
+    const table = useReactTable({
+      data: [],
+      columns,
+      getCoreRowModel: getCoreRowModel(),
+    });
+
+    return (
+      <div style={{ height: "400px" }}>
+        <BaseTable table={table} {...args} />
       </div>
     );
   },
