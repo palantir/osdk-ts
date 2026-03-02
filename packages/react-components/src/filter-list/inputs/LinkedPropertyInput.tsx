@@ -549,10 +549,11 @@ function LinkedTextTagsInput<Q extends ObjectTypeDefinition>({
   tags,
   onChange,
 }: LinkedTextTagsInputProps<Q>): React.ReactElement {
+  const aggregationOptions = useMemo(() => ({ limit: 50 }), []);
   const { data, isLoading, error } = usePropertyAggregation(
     objectType,
     propertyKey,
-    { limit: 50 },
+    aggregationOptions,
   );
   return (
     <TextTagsInput
@@ -582,9 +583,13 @@ function useLinkedRangeData<Q extends ObjectTypeDefinition>(
     [propertyKey],
   );
 
+  const histogramArgs = useMemo(
+    () => ({ aggregate: aggregateOptions }),
+    [aggregateOptions],
+  );
   const { data: aggregateData, isLoading: histLoading } = useOsdkAggregation(
     objectType,
-    { aggregate: aggregateOptions },
+    histogramArgs,
   );
 
   const nullCountAggregateOptions = useMemo(
@@ -597,9 +602,13 @@ function useLinkedRangeData<Q extends ObjectTypeDefinition>(
     [propertyKey],
   );
 
+  const nullCountArgs = useMemo(
+    () => ({ where: nullWhereClause, aggregate: nullCountAggregateOptions }),
+    [nullWhereClause, nullCountAggregateOptions],
+  );
   const { data: nullCountData, isLoading: nullLoading } = useOsdkAggregation(
     objectType,
-    { where: nullWhereClause, aggregate: nullCountAggregateOptions },
+    nullCountArgs,
   );
 
   const nullCount = useMemo(() => {
