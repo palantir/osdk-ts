@@ -19,7 +19,6 @@ import { describe, expect, it, vi } from "vitest";
 import {
   createFetch,
   getAnthropicBaseUrl,
-  getApiGatewayBaseUrl,
   getFoundryToken,
   getOpenAiBaseUrl,
 } from "./utils.js";
@@ -52,18 +51,6 @@ describe("getFoundryToken", () => {
 
     const token = await getFoundryToken(client);
     expect(token).toBe("my-foundry-token");
-  });
-});
-
-describe("getApiGatewayBaseUrl", () => {
-  it("returns the base URL from the client", () => {
-    const client = createMockClient({
-      baseUrl: "https://my-stack.palantirfoundry.com",
-    });
-
-    expect(getApiGatewayBaseUrl(client)).toBe(
-      "https://my-stack.palantirfoundry.com",
-    );
   });
 });
 

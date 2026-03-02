@@ -62,22 +62,6 @@ export async function getFoundryToken(
 }
 
 /**
- * Retrieves the API Gateway base URL from the PlatformClient.
- *
- * @param client - A PlatformClient instance.
- * @returns The API Gateway base URL (e.g., "https://example.palantirfoundry.com")
- *
- * @example
- * ```typescript
- * const baseUrl = getApiGatewayBaseUrl(platformClient);
- * // Returns: "https://example.palantirfoundry.com"
- * ```
- */
-export function getApiGatewayBaseUrl(client: PlatformClient): string {
-  return client.baseUrl;
-}
-
-/**
  * Constructs the Anthropic proxy base URL from the PlatformClient's base URL.
  *
  * @param client - A PlatformClient instance.
