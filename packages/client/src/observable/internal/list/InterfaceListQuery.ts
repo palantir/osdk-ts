@@ -113,7 +113,7 @@ export class InterfaceListQuery extends ListQuery {
   protected createPayload(
     params: CollectionConnectableParams,
   ): ListPayload {
-    const resolvedList = params.resolvedData.map((obj: ObjectHolder) =>
+    const resolvedList = params.resolvedData?.map((obj: ObjectHolder) =>
       obj.$as(this.apiName)
     );
 

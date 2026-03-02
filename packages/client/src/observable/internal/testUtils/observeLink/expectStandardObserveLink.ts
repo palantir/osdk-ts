@@ -92,7 +92,7 @@ export async function expectStandardObserveLink<
   );
 
   await waitForCall(linkSubFn);
-  expectSingleLinkCallAndClear(linkSubFn, [], { status: "loading" });
+  expectSingleLinkCallAndClear(linkSubFn, undefined, { status: "loading" });
 
   await waitForCall(linkSubFn);
 
