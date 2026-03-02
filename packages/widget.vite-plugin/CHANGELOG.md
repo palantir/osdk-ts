@@ -1,5 +1,14 @@
 # @osdk/widget.vite-plugin
 
+## 3.4.3
+
+### Patch Changes
+
+- 58e5708: Add refreshHostDataOnAction
+- 2d32b77: Revert node bump
+- Updated dependencies [58e5708]
+  - @osdk/widget.api@3.4.3
+
 ## 3.4.2
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @osdk/create-app.template.tutorial-todo-aip-app.beta
 
+## 2.7.3
+
+### Patch Changes
+
+- 2d32b77: Revert node bump
+
 ## 2.7.2
 
 ## 2.7.1

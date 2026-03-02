@@ -1,5 +1,12 @@
 # @osdk/widget.api
 
+## 3.4.3
+
+### Patch Changes
+
+- 58e5708: Add refreshHostDataOnAction
+  - @osdk/api@2.7.3
+
 ## 3.4.2
 
 ### Patch Changes
