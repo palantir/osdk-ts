@@ -191,10 +191,13 @@ versions:
             function {{objectType}}Detail({ primaryKey }: { primaryKey: string }) {
               const { data, isLoading, error } = useOsdkObject({{objectType}}, primaryKey);
 
-              if (error) return <div>Error: {error.message}</div>;
-              if (isLoading && !data) return <div>Loading...</div>;
-
-              return <div>{data?.{{titleProperty}}}</div>;
+              return (
+                <div>
+                  {error && <div>Error: {error.message}</div>}
+                  {isLoading && !data && <div>Loading...</div>}
+                  {data && <div>{data.{{titleProperty}}}</div>}
+                </div>
+              );
             }
       loadObjectPageGuide:
         - template: |-
@@ -206,11 +209,10 @@ versions:
                 pageSize: 30
               });
 
-              if (error) return <div>Error: {error.message}</div>;
-              if (isLoading && !data) return <div>Loading...</div>;
-
               return (
                 <div>
+                  {error && <div>Error: {error.message}</div>}
+                  {isLoading && !data && <div>Loading...</div>}
                   <ul>
                     {data?.map(obj => <li key={obj.$primaryKey}>{obj.{{titleProperty}}}</li>)}
                   </ul>
@@ -228,13 +230,14 @@ versions:
                 orderBy: { {{titleProperty}}: "asc" }
               });
 
-              if (error) return <div>Error: {error.message}</div>;
-              if (isLoading && !data) return <div>Loading...</div>;
-
               return (
-                <ul>
-                  {data?.map(obj => <li key={obj.$primaryKey}>{obj.{{titleProperty}}}</li>)}
-                </ul>
+                <div>
+                  {error && <div>Error: {error.message}</div>}
+                  {isLoading && !data && <div>Loading...</div>}
+                  <ul>
+                    {data?.map(obj => <li key={obj.$primaryKey}>{obj.{{titleProperty}}}</li>)}
+                  </ul>
+                </div>
               );
             }
       searchObjectsGuide:
@@ -249,13 +252,14 @@ versions:
                 }
               });
 
-              if (error) return <div>Error: {error.message}</div>;
-              if (isLoading && !data) return <div>Loading...</div>;
-
               return (
-                <ul>
-                  {data?.map(obj => <li key={obj.$primaryKey}>{obj.{{titleProperty}}}</li>)}
-                </ul>
+                <div>
+                  {error && <div>Error: {error.message}</div>}
+                  {isLoading && !data && <div>Loading...</div>}
+                  <ul>
+                    {data?.map(obj => <li key={obj.$primaryKey}>{obj.{{titleProperty}}}</li>)}
+                  </ul>
+                </div>
               );
             }
       loadSingleObjectReference:
