@@ -232,6 +232,17 @@ describe("queries", () => {
     });
   });
 
+  it("returns and accepts structs property with nulls in response", async () => {
+    const result = await client(incrementPersonAge).executeFunction({
+      person: { firstName: "Joe", lastName: "Joseph", age: 54 },
+    });
+    expect(result).toEqual({
+      firstName: "Joe",
+      lastName: "Joseph",
+      age: undefined,
+    });
+  });
+
   it("returns and accepts complex structs property", async () => {
     const employee = await client(Employee).fetchOne(
       50030,
