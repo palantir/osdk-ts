@@ -1,6 +1,6 @@
 {
   "name": "@osdk/language-models",
-  "version": "0.1.0-beta.0",
+  "version": "0.1.0",
   "description": "Utility methods for calling language models through the Foundry proxy endpoint",
   "access": "public",
   "license": "Apache-2.0",
@@ -41,7 +41,7 @@
     "transpileTypes": "monorepo.tool.transpile -f esm -m types -t node",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
-  "dependencies": {
+  "peerDependencies": {
     "@osdk/client": "workspace:~"
   },
   "devDependencies": {
