@@ -394,6 +394,18 @@ export class Store {
     cacheKey: KnownCacheKey,
     changes: Changes,
   ): boolean {
+    if (cacheKey.type === "objectSet") {
+      const query = this.queries.peek(cacheKey);
+      if (query) {
+        for (const objectType of query.objectTypes) {
+          if (this.#changesAffectObjectType(changes, objectType)) {
+            return true;
+          }
+        }
+      }
+      return false;
+    }
+
     const queryObjectType = this.#getQueryObjectType(cacheKey);
     if (!queryObjectType) {
       return false;

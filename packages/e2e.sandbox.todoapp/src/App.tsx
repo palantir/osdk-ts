@@ -9,6 +9,7 @@ import { Section } from "./Section.js";
 import { SpecificTodo } from "./SpecificTodo.js";
 import { SpecificTodoViaInterface } from "./SpecificTodoViaInterface.js";
 import TodoList from "./TodoList.js";
+import { TodoStats } from "./TodoStats.js";
 import ValidateActionDemo from "./ValidateActionDemo.js";
 
 function App() {
@@ -19,6 +20,10 @@ function App() {
   return (
     <main className="flex min-h-screen flex-col items-center p-24">
       <H1>Todos App</H1>
+
+      <Section>
+        <TodoStats />
+      </Section>
 
       <div className="flex flex-row items-start text-left">
         <div className="min-w-80 mr-8">

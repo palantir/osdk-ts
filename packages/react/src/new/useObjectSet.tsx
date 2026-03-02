@@ -146,9 +146,19 @@ export interface UseObjectSetResult<
   error: Error | undefined;
 
   /**
+   * Whether the current data reflects an optimistic update
+   */
+  isOptimistic: boolean;
+
+  /**
    * Function to fetch more pages (undefined if no more pages)
    */
   fetchMore: (() => Promise<void>) | undefined;
+
+  /**
+   * Whether there are more pages available to fetch
+   */
+  hasMore: boolean;
 
   /**
    * The final ObjectSet after all transformations
@@ -159,6 +169,11 @@ export interface UseObjectSetResult<
    * The total count of objects matching the query (if available from the API)
    */
   totalCount?: string;
+
+  /**
+   * Refetch data by invalidating the object type cache
+   */
+  refetch: () => void;
 }
 
 declare const process: {
@@ -271,6 +286,12 @@ export function useObjectSet<
     }
   }, [payload]);
 
+  const type = baseObjectSet.$objectSetInternals.def as Q;
+
+  const refetch = React.useCallback(async () => {
+    await observableClient.invalidateObjectType(type.apiName);
+  }, [observableClient, type.apiName]);
+
   return React.useMemo(() => ({
     data: payload?.resolvedList as Osdk.Instance<
       Q,
@@ -278,12 +299,18 @@ export function useObjectSet<
       PropertyKeys<Q>,
       RDPs
     >[],
-    isLoading: payload?.status === "loading" || (!payload && true) || false,
+    isLoading: enabled
+      ? (payload?.status === "loading" || payload?.status === "init"
+        || !payload)
+      : false,
     error: payload && "error" in payload
       ? payload.error
       : undefined,
+    isOptimistic: payload?.isOptimistic ?? false,
     fetchMore: payload?.hasMore ? payload.fetchMore : undefined,
+    hasMore: payload?.hasMore ?? false,
     objectSet: payload?.objectSet as ObjectSet<Q, RDPs> || baseObjectSet,
     totalCount: payload?.totalCount,
-  }), [payload, baseObjectSet]);
+    refetch,
+  }), [payload, baseObjectSet, refetch, enabled]);
 }
