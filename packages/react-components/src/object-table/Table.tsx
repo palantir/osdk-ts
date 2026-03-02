@@ -235,7 +235,7 @@ export function BaseTable<
             )
             : (isInEditMode && !focusedRowId && (
               <div className={styles.placeholder}>
-                {!focusedRowId ? "Select a row to edit data…" : ""}
+                Select a row to edit data…
               </div>
             ))}
           <div className={styles.editButtons}>

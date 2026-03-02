@@ -117,9 +117,9 @@ const meta: Meta<EmployeeTableProps> = {
     enableEditModeByDefault: {
       description: "Whether the table is in edit mode by default.",
       control: "boolean",
-      defaultValue: true,
+      defaultValue: false,
       table: {
-        defaultValue: { summary: "true" },
+        defaultValue: { summary: "false" },
       },
     },
     defaultOrderBy: {

@@ -33,7 +33,7 @@ export interface CellEditInfo<
 > extends CellIdentifier {
   newValue: CellValue;
   oldValue: CellValue;
-  rowData: TData;
+  originalRowData: TData;
 }
 
 export interface EditableConfig<

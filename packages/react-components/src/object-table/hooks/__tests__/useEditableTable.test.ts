@@ -23,7 +23,10 @@ import { useEditableTable } from "../useEditableTable.js";
 type MockObjectDef = ObjectOrInterfaceDefinition;
 type MockInstance = Osdk.Instance<MockObjectDef, "$allBaseProperties", string>;
 
-function createMockInstance(id: string, additionalProps = {}): MockInstance {
+function createMockObjectInstance(
+  id: string,
+  additionalProps = {},
+): MockInstance {
   return {
     $apiName: "mock-object" as const,
     $primaryKey: id,
@@ -40,14 +43,14 @@ describe("useEditableTable", () => {
     );
     const cellIdentifier = { rowId: "row-1", columnId: "col-1" };
     const cellId = getCellId(cellIdentifier);
-    const mockRowData = createMockInstance("row-1", { name: "Test" });
+    const mockRowData = createMockObjectInstance("row-1", { name: "Test" });
 
     const editEvent = {
       rowId: "row-1",
       columnId: "col-1",
       newValue: "new value",
       oldValue: "old value",
-      rowData: mockRowData,
+      originalRowData: mockRowData,
     };
 
     act(() => {
@@ -67,7 +70,7 @@ describe("useEditableTable", () => {
     );
     const cellIdentifier = { rowId: "row-1", columnId: "col-1" };
     const cellId = getCellId(cellIdentifier);
-    const mockRowData = createMockInstance("row-1", { name: "Test" });
+    const mockRowData = createMockObjectInstance("row-1", { name: "Test" });
 
     // First edit
     const firstEdit = {
@@ -75,7 +78,7 @@ describe("useEditableTable", () => {
       columnId: "col-1",
       newValue: "new value",
       oldValue: "original",
-      rowData: mockRowData,
+      originalRowData: mockRowData,
     };
 
     act(() => {
@@ -92,7 +95,7 @@ describe("useEditableTable", () => {
       columnId: "col-1",
       newValue: "original",
       oldValue: "original",
-      rowData: mockRowData,
+      originalRowData: mockRowData,
     };
 
     act(() => {
@@ -116,7 +119,7 @@ describe("useEditableTable", () => {
       columnId: "col-1",
       newValue: "new1",
       oldValue: "old1",
-      rowData: createMockInstance("row-1"),
+      originalRowData: createMockObjectInstance("row-1"),
     };
 
     const edit2 = {
@@ -124,7 +127,7 @@ describe("useEditableTable", () => {
       columnId: "col-2",
       newValue: "new2",
       oldValue: "old2",
-      rowData: createMockInstance("row-2"),
+      originalRowData: createMockObjectInstance("row-2"),
     };
 
     const edit3 = {
@@ -132,7 +135,7 @@ describe("useEditableTable", () => {
       columnId: "col-3",
       newValue: "new3",
       oldValue: "old3",
-      rowData: createMockInstance("row-3"),
+      originalRowData: createMockObjectInstance("row-3"),
     };
 
     act(() => {
@@ -149,7 +152,7 @@ describe("useEditableTable", () => {
       columnId: "col-2",
       newValue: "old2",
       oldValue: "old2",
-      rowData: createMockInstance("row-2"),
+      originalRowData: createMockObjectInstance("row-2"),
     };
 
     act(() => {
@@ -172,7 +175,7 @@ describe("useEditableTable", () => {
       columnId: "col-1",
       newValue: "new1",
       oldValue: "old1",
-      rowData: createMockInstance("row-1"),
+      originalRowData: createMockObjectInstance("row-1"),
     };
 
     const edit2 = {
@@ -180,7 +183,7 @@ describe("useEditableTable", () => {
       columnId: "col-2",
       newValue: "new2",
       oldValue: "old2",
-      rowData: createMockInstance("row-2"),
+      originalRowData: createMockObjectInstance("row-2"),
     };
 
     act(() => {
@@ -208,7 +211,7 @@ describe("useEditableTable", () => {
       columnId: "col-1",
       newValue: "new1",
       oldValue: "old1",
-      rowData: createMockInstance("row-1"),
+      originalRowData: createMockObjectInstance("row-1"),
     };
 
     const edit2 = {
@@ -216,7 +219,7 @@ describe("useEditableTable", () => {
       columnId: "col-2",
       newValue: "new2",
       oldValue: "old2",
-      rowData: createMockInstance("row-2"),
+      originalRowData: createMockObjectInstance("row-2"),
     };
 
     act(() => {

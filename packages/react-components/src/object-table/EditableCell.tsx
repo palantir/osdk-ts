@@ -27,7 +27,7 @@ export interface EditableCellProps<TData extends RowData, CellValue = unknown> {
   cellId: string;
   dataType?: string;
   onCellEdit: (cellId: string, info: CellEditInfo<TData, CellValue>) => void;
-  rowData: TData;
+  originalRowData: TData;
   rowId: string;
   columnId: string;
 }
@@ -80,7 +80,7 @@ function EditableCellInner<TData extends RowData, CellValue = unknown>({
   cellId,
   dataType,
   onCellEdit,
-  rowData,
+  originalRowData,
   rowId,
   columnId,
 }: EditableCellProps<TData, CellValue>): React.ReactElement {
@@ -105,7 +105,7 @@ function EditableCellInner<TData extends RowData, CellValue = unknown>({
       columnId,
       newValue: parsedValue as CellValue,
       oldValue: initialValue,
-      rowData,
+      originalRowData,
     });
   }, [
     inputValue,
@@ -115,7 +115,7 @@ function EditableCellInner<TData extends RowData, CellValue = unknown>({
     dataType,
     rowId,
     columnId,
-    rowData,
+    originalRowData,
   ]);
 
   const handleChange = useCallback((value: string) => {

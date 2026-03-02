@@ -80,7 +80,7 @@ export function ObjectTable<
   enableColumnPinning = true,
   enableColumnResizing = true,
   enableColumnConfig = true,
-  enableEditModeByDefault = true,
+  enableEditModeByDefault = false,
   ...props
 }: ObjectTableProps<Q, RDPs, FunctionColumns>): React.ReactElement {
   const { columnSizing, onColumnSizingChange } = useColumnResize({

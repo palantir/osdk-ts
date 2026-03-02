@@ -90,7 +90,7 @@ export function EmployeesTable() {
       alert(`Submitting edits...`);
       return;
     },
-    [applyAction],
+    [],
   );
 
   const employeeOS = $(Employee).where({
