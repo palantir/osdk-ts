@@ -395,6 +395,30 @@ export const WithContextMenu: Story = {
       );
     },
   },
+  parameters: {
+    docs: {
+      source: {
+        code: `<ObjectTable
+  objectType={Employee}
+  renderCellContextMenu={(_, cellValue) => (
+    <div
+      style={{
+        background: "white",
+        padding: 8,
+        border: "1px solid #d1d5db",
+        boxShadow: "0 2px 8px 0 rgba(0, 0, 0, 0.1)",
+        fontSize: 13,
+        borderRadius: 4,
+      }}
+    >
+      <div style={{ fontWeight: "bold", marginBottom: 4 }}>Cell Value:</div>
+      <div>{cellValue ? String(cellValue) : "No Value"}</div>
+    </div>
+  )}
+/>`,
+      },
+    },
+  },
   render: (args) => (
     <div className="object-table-container" style={{ height: "600px" }}>
       <div style={{ padding: "12px" }}>Right click on any cell</div>
