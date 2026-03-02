@@ -2,7 +2,10 @@
   "extends": "@osdk/monorepo.tsconfig/base.json",
   "compilerOptions": {
     "rootDir": "src",
-    "outDir": "build/types"
+    "outDir": "build/esm"
   },
-  "include": ["src"]
+  "include": [
+    "./src/**/*"
+  ],
+  "references": []
 }

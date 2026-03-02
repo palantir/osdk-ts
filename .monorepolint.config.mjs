@@ -137,6 +137,7 @@ const archetypeRules = archetypes(
       "@osdk/shared.net.errors",
       "@osdk/shared.net.fetch",
       "@osdk/shared.net",
+      "@osdk/react-sdk-docs",
       "@osdk/typescript-sdk-docs",
       "@osdk/widget.api",
       "@osdk/widget.client",
@@ -249,6 +250,7 @@ const archetypeRules = archetypes(
       "@osdk/e2e.sandbox.todoapp",
       "@osdk/e2e.sandbox.peopleapp",
       "@osdk/e2e.sandbox.oauth.public.react-router",
+      "@osdk/e2e.sandbox.osdk-react",
     ],
     {
       ...INTERNAL_LIBRARY_RULES,
