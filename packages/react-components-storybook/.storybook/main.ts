@@ -19,24 +19,27 @@ import type { StorybookConfig } from "@storybook/react-vite";
 const config: StorybookConfig = {
   stories: ["../src/**/*.stories.@(js|jsx|ts|tsx|mdx)"],
   addons: [
-    "@storybook/addon-essentials",
-    "@storybook/addon-interactions",
     "@storybook/addon-links",
     "@storybook/addon-themes",
+    "@storybook/addon-mcp",
     "msw-storybook-addon",
   ],
   framework: {
     name: "@storybook/react-vite",
     options: {},
   },
+  features: {
+    // Required for @storybook/addon-mcp to expose component metadata to AI tools
+    experimentalComponentsManifest: true,
+  },
   typescript: {
     check: false,
     reactDocgen: "react-docgen-typescript",
   },
   staticDirs: ["../public"],
-  async viteFinal(config, { configType }) {
+  async viteFinal(config) {
     // Set base path for GitHub Pages deployment
-    if (configType === "PRODUCTION") {
+    if (config.mode === "production") {
       config.base = "/osdk-ts/storybook/";
     }
 
