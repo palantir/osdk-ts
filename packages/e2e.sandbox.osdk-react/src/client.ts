@@ -1,5 +1,5 @@
-// NOTE: URLs are hardcoded for this sandbox package.
-// The template version uses environment variables.
+// NOTE: The Foundry base URL points at localhost because vite proxies to the real stack.
+// Client ID and Foundry URL come from env vars. The template version is fully env-driven.
 import { createClient } from "@osdk/client";
 import { createPublicOauthClient } from "@osdk/oauth";
 import invariant from "tiny-invariant";

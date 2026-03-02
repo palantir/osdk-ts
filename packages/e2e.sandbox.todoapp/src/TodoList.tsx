@@ -25,10 +25,6 @@ function TodoList({ where, heading }: TodoListProps) {
     },
   );
 
-  if (!data && isLoading) {
-    return "Loading";
-  }
-
   return (
     <>
       <H2>
@@ -42,11 +38,13 @@ function TodoList({ where, heading }: TodoListProps) {
         </SmallTextDiv>
       </H2>
 
+      {!data && isLoading && "Loading"}
+
       {data
         && data.map((todo) => (
           <TodoView
             todo={todo}
-            key={String(todo.$primaryKey)}
+            key={todo.$primaryKey}
           />
         ))}
     </>

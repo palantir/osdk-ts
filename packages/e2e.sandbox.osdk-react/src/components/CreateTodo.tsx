@@ -55,7 +55,8 @@ export function CreateTodo(): React.ReactElement {
 
       {error && (
         <span className="text-red-600 text-sm self-center">
-          {error.unknown?.toString() ?? "Error creating todo"}
+          {error.actionValidation?.message
+            ?? String(error.unknown ?? "Error creating todo")}
         </span>
       )}
     </form>
