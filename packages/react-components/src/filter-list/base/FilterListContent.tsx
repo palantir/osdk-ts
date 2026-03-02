@@ -16,24 +16,13 @@
 
 import type { ObjectSet, ObjectTypeDefinition, WhereClause } from "@osdk/api";
 import classnames from "classnames";
-import React, { Suspense } from "react";
+import React from "react";
 import type { FilterDefinitionUnion } from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
 import { getFilterKey } from "../utils/getFilterKey.js";
 import styles from "./FilterListContent.module.css";
 import { FilterListItem } from "./FilterListItem.js";
-import type { SortableFilterListContentProps } from "./SortableFilterListContent.js";
-
-const LazySortableFilterListContent = React.lazy(
-  () => import("./SortableFilterListContent.js"),
-);
-
-function SortableContentBridge<Q extends ObjectTypeDefinition>(
-  props: SortableFilterListContentProps<Q>,
-): React.ReactElement {
-  // @ts-expect-error React.lazy erases generic type parameters; runtime types are correct
-  return <LazySortableFilterListContent {...props} />;
-}
+import SortableFilterListContent from "./SortableFilterListContent.js";
 
 interface FilterListContentProps<Q extends ObjectTypeDefinition> {
   objectType: Q;
@@ -74,45 +63,18 @@ export function FilterListContent<Q extends ObjectTypeDefinition>({
   }
 
   if (onFiltersReordered) {
-    const plainFallback = (
-      <div
-        className={classnames(styles.content, className)}
-        style={style}
-      >
-        {filterDefinitions.map((definition, index) => {
-          const filterKey = getFilterKey(definition);
-          const state = filterStates.get(filterKey);
-
-          return (
-            <FilterListItem
-              key={`${filterKey}:${index}`}
-              objectType={objectType}
-              objectSet={objectSet}
-              definition={definition}
-              filterKey={filterKey}
-              filterState={state}
-              onFilterStateChanged={onFilterStateChanged}
-              whereClause={whereClause}
-            />
-          );
-        })}
-      </div>
-    );
-
     return (
-      <Suspense fallback={plainFallback}>
-        <SortableContentBridge
-          objectType={objectType}
-          objectSet={objectSet}
-          filterDefinitions={filterDefinitions}
-          filterStates={filterStates}
-          onFilterStateChanged={onFilterStateChanged}
-          whereClause={whereClause}
-          onFiltersReordered={onFiltersReordered}
-          className={className}
-          style={style}
-        />
-      </Suspense>
+      <SortableFilterListContent
+        objectType={objectType}
+        objectSet={objectSet}
+        filterDefinitions={filterDefinitions}
+        filterStates={filterStates}
+        onFilterStateChanged={onFilterStateChanged}
+        whereClause={whereClause}
+        onFiltersReordered={onFiltersReordered}
+        className={className}
+        style={style}
+      />
     );
   }
 
