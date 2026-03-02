@@ -20,11 +20,11 @@ import type {
   ObjectTypeDefinition,
   WhereClause,
 } from "@osdk/api";
+import type React from "react";
 import type {
   FilterState as FilterStateType,
   PropertyFilterDefinition,
 } from "./FilterListItemApi.js";
-import type { FilterTemplate } from "./types/AddFilterMenuTypes.js";
 import type { CustomFilterDefinition } from "./types/CustomRendererTypes.js";
 import type { KeywordSearchFilterDefinition } from "./types/KeywordSearchTypes.js";
 import type {
@@ -76,6 +76,16 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
   objectSet: ObjectSet<Q>;
 
   /**
+   * Optional title to display in the filter list header
+   */
+  title?: string;
+
+  /**
+   * Optional icon to display next to the title
+   */
+  titleIcon?: React.ReactNode;
+
+  /**
    * The definition for all supported filter items in the list
    * If not supplied, all filterable properties will be available
    */
@@ -106,11 +116,11 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
   /**
    * Called when filter state changes
    *
-   * @param filterKey The key of the updated filter
+   * @param definition The filter definition whose state changed
    * @param newState The updated filter state
    */
   onFilterStateChanged?: (
-    filterKey: FilterKey<Q>,
+    definition: FilterDefinitionUnion<Q>,
     newState: FilterStateType,
   ) => void;
 
@@ -131,22 +141,8 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
    * If provided, user will be allowed to remove filters
    *
    * @param filterKey The key of the removed filter
-   * @param newDefinitions The updated filter list with the filter removed
    */
-  onFilterRemoved?: (
-    filterKey: FilterKey<Q>,
-    newDefinitions: Array<FilterDefinitionUnion<Q>>,
-  ) => void;
-
-  /**
-   * Called when filters are reordered
-   * If provided, the filter list becomes sortable
-   *
-   * @param newOrder The updated filter definitions in new order
-   */
-  onFiltersReordered?: (
-    newOrder: ReadonlyArray<FilterDefinitionUnion<Q>>,
-  ) => void;
+  onFilterRemoved?: (filterKey: FilterKey<Q>) => void;
 
   /**
    * Show reset filters button in header
@@ -159,19 +155,6 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
   onReset?: () => void;
 
   /**
-   * Available filter templates for the "Add filter" menu.
-   * When provided along with onFilterAdded, clicking the add button
-   * shows a popover with these templates organized by category.
-   */
-  filterTemplates?: FilterTemplate[];
-
-  /**
-   * Called when a filter template is selected from the add filter menu.
-   * The consumer should create a new filter definition and add it to filterDefinitions.
-   */
-  onFilterTemplateSelected?: (template: FilterTemplate) => void;
-
-  /**
    * Show count of active filters in header
    */
   showActiveFilterCount?: boolean;
@@ -180,4 +163,10 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
    * Additional CSS class name
    */
   className?: string;
+
+  /**
+   * Custom render function for the "Add filter" button.
+   * When not provided, a default button is shown if onFilterAdded is set.
+   */
+  renderAddFilterButton?: () => React.ReactNode;
 }

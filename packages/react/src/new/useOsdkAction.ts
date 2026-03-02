@@ -191,7 +191,7 @@ export function useOsdkAction<Q extends ActionDefinition<any>>(
     };
   }, []);
 
-  return {
+  return React.useMemo(() => ({
     applyAction,
     validateAction,
     error,
@@ -199,5 +199,13 @@ export function useOsdkAction<Q extends ActionDefinition<any>>(
     isPending,
     isValidating,
     validationResult,
-  };
+  }), [
+    applyAction,
+    validateAction,
+    error,
+    data,
+    isPending,
+    isValidating,
+    validationResult,
+  ]);
 }

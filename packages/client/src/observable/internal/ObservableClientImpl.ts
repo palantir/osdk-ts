@@ -20,7 +20,6 @@ import type {
   ActionValidationResponse,
   AggregateOpts,
   CompileTimeMetadata,
-  InterfaceDefinition,
   ObjectOrInterfaceDefinition,
   ObjectSet,
   ObjectTypeDefinition,
@@ -48,6 +47,7 @@ import type {
   ObservableClient,
   ObserveAggregationArgs,
   ObserveAggregationOptions,
+  ObserveAggregationOptionsWithObjectSet,
   ObserveFunctionCallbackArgs,
   ObserveFunctionOptions,
   ObserveListOptions,
@@ -83,7 +83,7 @@ export class ObservableClientImpl implements ObservableClient {
     this.validateAction = store.validateAction.bind(store);
   }
 
-  public observeObject: <T extends ObjectTypeDefinition>(
+  public observeObject: <T extends ObjectOrInterfaceDefinition>(
     apiName: T["apiName"] | T,
     pk: PrimaryKeyType<T>,
     options: Omit<ObserveObjectOptions<T>, "apiName" | "pk">,
@@ -101,7 +101,7 @@ export class ObservableClientImpl implements ObservableClient {
   };
 
   public observeList: <
-    T extends ObjectTypeDefinition | InterfaceDefinition,
+    T extends ObjectOrInterfaceDefinition,
     RDPs extends Record<string, SimplePropertyDef> = {},
   >(
     options: ObserveListOptions<T, RDPs>,
@@ -114,26 +114,43 @@ export class ObservableClientImpl implements ObservableClient {
     );
   };
 
-  public observeAggregation: <
+  public observeAggregation<
     T extends ObjectOrInterfaceDefinition,
     A extends AggregateOpts<T>,
     RDPs extends Record<string, SimplePropertyDef> = {},
   >(
     options: ObserveAggregationOptions<T, A, RDPs>,
     subFn: Observer<ObserveAggregationArgs<T, A>>,
-  ) => Unsubscribable = <
+  ): Unsubscribable;
+  public observeAggregation<
     T extends ObjectOrInterfaceDefinition,
     A extends AggregateOpts<T>,
     RDPs extends Record<string, SimplePropertyDef> = {},
   >(
-    options: ObserveAggregationOptions<T, A, RDPs>,
+    options: ObserveAggregationOptionsWithObjectSet<T, A, RDPs>,
     subFn: Observer<ObserveAggregationArgs<T, A>>,
-  ) => {
+  ): Promise<Unsubscribable>;
+  public observeAggregation<
+    T extends ObjectOrInterfaceDefinition,
+    A extends AggregateOpts<T>,
+    RDPs extends Record<string, SimplePropertyDef> = {},
+  >(
+    options:
+      | ObserveAggregationOptions<T, A, RDPs>
+      | ObserveAggregationOptionsWithObjectSet<T, A, RDPs>,
+    subFn: Observer<ObserveAggregationArgs<T, A>>,
+  ): Unsubscribable | Promise<Unsubscribable> {
+    if (options.objectSet) {
+      return this.__experimentalStore.aggregations.observeAsync(
+        options as ObserveAggregationOptionsWithObjectSet<T, A, RDPs>,
+        subFn as Observer<AggregationPayloadBase>,
+      );
+    }
     return this.__experimentalStore.aggregations.observe(
-      options,
+      options as ObserveAggregationOptions<T, A, RDPs>,
       subFn as Observer<AggregationPayloadBase>,
     );
-  };
+  }
 
   public observeFunction: <Q extends QueryDefinition<unknown>>(
     queryDef: Q,
@@ -193,7 +210,7 @@ export class ObservableClientImpl implements ObservableClient {
   };
 
   public observeLinks: <
-    T extends ObjectTypeDefinition | InterfaceDefinition,
+    T extends ObjectOrInterfaceDefinition,
     L extends keyof CompileTimeMetadata<T>["links"] & string,
   >(
     objects: Osdk.Instance<T> | Array<Osdk.Instance<T>>,
@@ -205,31 +222,24 @@ export class ObservableClientImpl implements ObservableClient {
       >
     >,
   ) => Unsubscribable = (objects, linkName, options, subFn) => {
-    // Convert to array if single object provided
     const objectsArray = Array.isArray(objects) ? objects : [objects];
+    const observer = subFn as unknown as Observer<SpecificLinkPayload>;
 
-    const parentSub = new Subscription();
-
-    for (const obj of objectsArray) {
-      const querySubscription = this.__experimentalStore.links
-        .observe(
-          {
-            ...options,
-            srcType: {
-              type: "object",
-              apiName: obj.$objectType ?? obj.$apiName,
-            },
-            linkName,
-            pk: obj.$primaryKey,
-          },
-          // cast to cross typed to untyped barrier
-          subFn as unknown as Observer<SpecificLinkPayload>,
-        );
-
-      parentSub.add(querySubscription);
-    }
-
-    return new UnsubscribableWrapper(parentSub);
+    return objectsArray.length <= 1
+      ? observeSingleLink(
+        this.__experimentalStore,
+        objectsArray,
+        linkName,
+        options,
+        observer,
+      )
+      : observeMultiLinks(
+        this.__experimentalStore,
+        objectsArray,
+        linkName,
+        options,
+        observer,
+      );
   };
 
   public applyAction: <Q extends ActionDefinition<any>>(
@@ -297,10 +307,162 @@ export class ObservableClientImpl implements ObservableClient {
   }
 
   public canonicalizeWhereClause<
-    T extends ObjectTypeDefinition | InterfaceDefinition,
+    T extends ObjectOrInterfaceDefinition,
     RDPs extends Record<string, SimplePropertyDef> = {},
   >(where: WhereClause<T, RDPs>): Canonical<WhereClause<T, RDPs>> {
     return this.__experimentalStore.whereCanonicalizer
       .canonicalize(where) as Canonical<WhereClause<T, RDPs>>;
   }
+}
+
+function observeSingleLink(
+  store: Store,
+  objectsArray: ReadonlyArray<Osdk.Instance<ObjectOrInterfaceDefinition>>,
+  linkName: string,
+  options: ObserveLinks.Options<ObjectOrInterfaceDefinition, string>,
+  observer: Observer<SpecificLinkPayload>,
+): Unsubscribable {
+  if (objectsArray.length === 0) {
+    observer.next({
+      resolvedList: [],
+      isOptimistic: false,
+      lastUpdated: 0,
+      fetchMore: () => Promise.resolve(),
+      hasMore: false,
+      status: "loaded",
+      totalCount: "0",
+    });
+    return new UnsubscribableWrapper(new Subscription());
+  }
+
+  const parentSub = new Subscription();
+
+  for (const obj of objectsArray) {
+    const sourceType: "object" | "interface" = obj.$apiName === obj.$objectType
+      ? "object"
+      : "interface";
+
+    parentSub.add(
+      store.links.observe(
+        {
+          ...options,
+          srcType: {
+            type: sourceType,
+            apiName: obj.$apiName,
+          },
+          sourceUnderlyingObjectType: obj.$objectType,
+          linkName,
+          pk: obj.$primaryKey,
+        },
+        observer,
+      ),
+    );
+  }
+
+  return new UnsubscribableWrapper(parentSub);
+}
+
+function observeMultiLinks(
+  store: Store,
+  objectsArray: ReadonlyArray<Osdk.Instance<ObjectOrInterfaceDefinition>>,
+  linkName: string,
+  options: ObserveLinks.Options<ObjectOrInterfaceDefinition, string>,
+  observer: Observer<SpecificLinkPayload>,
+): Unsubscribable {
+  const parentSub = new Subscription();
+  const totalExpected = objectsArray.length;
+  const perObjectResults = new Map<string, SpecificLinkPayload>();
+  let errored = false;
+
+  function mergeAndEmit() {
+    if (errored) {
+      return;
+    }
+
+    const seen = new Map<string, SpecificLinkPayload["resolvedList"][number]>();
+    const fetchMores: Array<() => Promise<void>> = [];
+    let latestUpdated = 0;
+    let hasMore = false;
+    let isOptimistic = false;
+
+    for (const payload of perObjectResults.values()) {
+      for (const obj of payload.resolvedList) {
+        seen.set(`${obj.$objectType}:${obj.$primaryKey}`, obj);
+      }
+      if (payload.lastUpdated > latestUpdated) {
+        latestUpdated = payload.lastUpdated;
+      }
+      if (payload.isOptimistic) {
+        isOptimistic = true;
+      }
+      if (payload.hasMore) {
+        hasMore = true;
+        fetchMores.push(payload.fetchMore);
+      }
+    }
+
+    const payloads = [...perObjectResults.values()];
+    const loading = perObjectResults.size < totalExpected
+      || payloads.some(p => p.status === "init" || p.status === "loading");
+
+    observer.next({
+      resolvedList: Array.from(seen.values()),
+      isOptimistic,
+      lastUpdated: latestUpdated,
+      fetchMore: hasMore
+        ? () => Promise.all(fetchMores.map(fn => fn())).then(() => {})
+        : () => Promise.resolve(),
+      hasMore,
+      status: loading
+        ? "loading"
+        : payloads.some(p => p.status === "error")
+        ? "error"
+        : "loaded",
+      ...(!hasMore ? { totalCount: String(seen.size) } : {}),
+    });
+  }
+
+  for (const obj of objectsArray) {
+    const objKey = `${obj.$objectType ?? obj.$apiName}:${obj.$primaryKey}`;
+
+    const sourceType: "object" | "interface" = obj.$apiName === obj.$objectType
+      ? "object"
+      : "interface";
+
+    parentSub.add(
+      store.links.observe(
+        {
+          ...options,
+          srcType: {
+            type: sourceType,
+            apiName: obj.$apiName,
+          },
+          sourceUnderlyingObjectType: obj.$objectType,
+          linkName,
+          pk: obj.$primaryKey,
+        },
+        {
+          next: (payload: SpecificLinkPayload) => {
+            if (errored) {
+              return;
+            }
+            perObjectResults.set(objKey, payload);
+            mergeAndEmit();
+          },
+          error: (err: unknown) => {
+            if (errored) {
+              return;
+            }
+            errored = true;
+            parentSub.unsubscribe();
+            observer.error(err);
+          },
+          // store link queries are long-lived and do not complete
+          complete: () => {},
+        },
+      ),
+    );
+  }
+
+  return new UnsubscribableWrapper(parentSub);
 }

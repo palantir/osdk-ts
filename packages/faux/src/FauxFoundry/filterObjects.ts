@@ -260,6 +260,7 @@ export function filterObjects(
     case "withinBoundingBox":
     case "withinPolygon":
     case "withinDistanceOf":
+    case "geoShapeV2":
       throw new Error(
         `Unhandled where type: ${where.type} in ${JSON.stringify(where)}`,
       );

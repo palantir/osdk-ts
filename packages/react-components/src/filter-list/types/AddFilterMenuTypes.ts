@@ -18,6 +18,11 @@ import type { ReactNode } from "react";
 import type { FilterComponentType } from "../FilterListItemApi.js";
 
 /**
+ * Visual data indicator configuration for filter items
+ */
+export type FilterDataIndicator = "histogram" | "count" | "none";
+
+/**
  * Category for organizing filters in the add filter menu
  */
 export type FilterCategory =
@@ -56,6 +61,21 @@ export interface FilterTemplate {
   icon: string | ReactNode;
 
   /**
+   * Type of data indicator to show (histogram, count, none)
+   */
+  dataIndicator?: FilterDataIndicator;
+
+  /**
+   * Whether to show a "Select All" option for checkbox lists
+   */
+  showSelectAll?: boolean;
+
+  /**
+   * Maximum number of visible items before scrolling
+   */
+  maxVisibleItems?: number;
+
+  /**
    * Whether multiple instances of this filter can be added
    */
   allowMultiple: boolean;
@@ -64,29 +84,4 @@ export interface FilterTemplate {
    * Category for grouping in the add filter menu
    */
   category: FilterCategory;
-}
-
-/**
- * Props for the add filter menu component
- */
-export interface AddFilterMenuProps {
-  /**
-   * Available filter templates to display
-   */
-  templates: FilterTemplate[];
-
-  /**
-   * Current count of active filters by key
-   */
-  activeCounts: Record<string, number>;
-
-  /**
-   * Called when a filter template is selected
-   */
-  onSelectFilter: (template: FilterTemplate) => void;
-
-  /**
-   * Called when the menu should be closed
-   */
-  onClose: () => void;
 }

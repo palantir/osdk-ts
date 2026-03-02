@@ -54,6 +54,7 @@ export interface BaseListPayloadShape {
   resolvedList: readonly unknown[];
   hasMore: boolean;
   fetchMore: () => Promise<void>;
+  status: Status;
 }
 
 /**
@@ -101,10 +102,6 @@ export abstract class BaseListQuery<
 
   protected currentTotalCount?: string;
 
-  /**
-   * Per-subscriber page sizes for fetch optimization.
-   * Tracks each view's pageSize so we can recalculate max when views unsubscribe.
-   */
   #subscriberPageSizes: Map<string, number> = new Map();
 
   //
@@ -326,11 +323,9 @@ export abstract class BaseListQuery<
     }
 
     if (this.pendingFetch) {
-      this.pendingPageFetch = (async () => {
-        await this.pendingFetch;
-        await this.fetchMore();
-      })().finally(() => {
+      this.pendingPageFetch = this.pendingFetch.then(() => {
         this.pendingPageFetch = undefined;
+        return this.fetchMore();
       });
       return this.pendingPageFetch;
     }
@@ -776,12 +771,14 @@ export abstract class BaseListQuery<
     }
 
     this.store.batch({}, (batch) => {
-      const objectCacheKey = this.store.cacheKeys.get(
-        "object",
-        object.$objectType ?? object.$apiName,
-        object.$primaryKey,
-      );
-      batch.delete(objectCacheKey, "loaded");
+      for (
+        const objectCacheKey of this.store.objectCacheKeyRegistry.getVariants(
+          object.$objectType ?? object.$apiName,
+          object.$primaryKey,
+        )
+      ) {
+        batch.delete(objectCacheKey, "loaded");
+      }
     });
   }
 }

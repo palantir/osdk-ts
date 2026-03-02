@@ -1,5 +1,51 @@
 # @osdk/maker
 
+## 0.16.0-beta.7
+
+### Minor Changes
+
+- f487a6a: Maker experimental
+- acb4ed6: Support custom decimal types
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.11
+- @osdk/generator-converters.ontologyir@2.8.0-beta.11
+
+## 0.16.0-beta.6
+
+### Minor Changes
+
+- 963626f: Add function discovery support (TypeScript and Python) and generate intermediate OSDK from CLI for use by function definitions
+- 972bda6: Support assumed markings for oac PSGs
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.10
+- @osdk/generator-converters.ontologyir@2.8.0-beta.10
+
+## 0.16.0-beta.5
+
+### Minor Changes
+
+- 034081a: oac direct datasources
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.7
+
+## 0.16.0-beta.4
+
+### Minor Changes
+
+- ab50d31: Remove propertiesV2 from code-snippets
+- 2b15836: Disallow ILCs on imported interfaces
+- e0ba9eb: Shallow clone arrays in definition when passed in to defineFoo methods
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.6
+
 ## 0.16.0-beta.3
 
 ### Minor Changes

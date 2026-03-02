@@ -1,5 +1,50 @@
 # @osdkkit/react
 
+## 0.10.0-beta.6
+
+### Minor Changes
+
+- 993c023: ObjectTable supports objectSet input
+
+### Patch Changes
+
+- Updated dependencies [8825f8c]
+  - @osdk/client@2.8.0-beta.12
+  - @osdk/api@2.8.0-beta.12
+
+## 0.10.0-beta.5
+
+### Minor Changes
+
+- 525f277: update useOsdkAggregation to support composed object sets, async
+- d80c234: add interface support to useOsdkObject
+- 996d8e4: memoize hook responses
+
+### Patch Changes
+
+- Updated dependencies [642be5f]
+- Updated dependencies [525f277]
+- Updated dependencies [f5f95e2]
+- Updated dependencies [d80c234]
+  - @osdk/client@2.8.0-beta.11
+  - @osdk/api@2.8.0-beta.11
+
+## 0.10.0-beta.4
+
+### Minor Changes
+
+- 727fd0e: fix dual @types/react version mismatch
+
+### Patch Changes
+
+- Updated dependencies [8c60682]
+- Updated dependencies [15e1686]
+- Updated dependencies [c9d954d]
+- Updated dependencies [044eb80]
+- Updated dependencies [9d234b9]
+  - @osdk/client@2.8.0-beta.6
+  - @osdk/api@2.8.0-beta.6
+
 ## 0.10.0-beta.3
 
 ### Minor Changes

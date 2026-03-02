@@ -16,6 +16,8 @@
 
 import type {
   DerivedProperty,
+  InterfaceDefinition,
+  ObjectSet,
   ObjectTypeDefinition,
   PropertyKeys,
   SimplePropertyDef,
@@ -23,40 +25,14 @@ import type {
 } from "@osdk/api";
 import type { Client } from "@osdk/client";
 import { OsdkProvider } from "@osdk/react";
+import type { UseOsdkListResult } from "@osdk/react/experimental";
+import { useObjectSet, useOsdkObjects } from "@osdk/react/experimental";
+import type { SortingState } from "@tanstack/react-table";
 import { renderHook } from "@testing-library/react";
 import * as React from "react";
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { ColumnDefinition } from "../../ObjectTableApi.js";
 import { useObjectTableData } from "../useObjectTableData.js";
-
-interface MockUseOsdkObjectsReturn {
-  data: [];
-  isLoading: false;
-  error: undefined;
-  fetchNextPage: ReturnType<typeof vi.fn>;
-  hasNextPage: false;
-  isFetchingNextPage: false;
-  _testOptions: {
-    withProperties?: Record<string, unknown>;
-    pageSize: number;
-    where?: WhereClause<any>;
-  };
-}
-
-vi.mock("@osdk/react/experimental", () => ({
-  useOsdkObjects: vi.fn((objectType, options): MockUseOsdkObjectsReturn => {
-    return {
-      data: [],
-      isLoading: false,
-      error: undefined,
-      fetchNextPage: vi.fn(),
-      hasNextPage: false,
-      isFetchingNextPage: false,
-      // Return the options to verify they were passed correctly
-      _testOptions: options,
-    };
-  }),
-}));
 
 const TestObjectType = {
   type: "object",
@@ -66,7 +42,52 @@ const TestObjectType = {
 type TestObject = typeof TestObjectType;
 type TestObjectKeys = PropertyKeys<TestObject>;
 
+interface MockReturnType extends UseOsdkListResult<TestObject> {
+  _testOptions: {
+    withProperties?: Record<string, unknown>;
+    pageSize: number;
+    where?: WhereClause<any>;
+    enabled?: boolean;
+    orderBy?: Record<string, "asc" | "desc">;
+  };
+}
+
+vi.mock("@osdk/react/experimental", () => ({
+  useOsdkObjects: vi.fn((objectType, options): MockReturnType => {
+    return {
+      data: [],
+      isLoading: false,
+      error: undefined,
+      fetchMore: undefined,
+      isOptimistic: false,
+      // Return the options to verify they were passed correctly
+      _testOptions: options,
+    };
+  }),
+  useObjectSet: vi.fn((objectSet, options): MockReturnType => {
+    return {
+      data: [],
+      isLoading: false,
+      error: undefined,
+      fetchMore: vi.fn(),
+      totalCount: undefined,
+      // Return the options to verify they were passed correctly
+      _testOptions: options,
+      isOptimistic: false,
+    };
+  }),
+}));
+
+const TestInterfaceType = {
+  type: "interface",
+  apiName: "TestInterface",
+} as const satisfies InterfaceDefinition;
+
 describe(useObjectTableData, () => {
+  beforeEach(() => {
+    vi.mocked(useOsdkObjects).mockClear();
+    vi.mocked(useObjectSet).mockClear();
+  });
   const createWrapper = (client: Client) => {
     return ({ children }: React.PropsWithChildren) => {
       return <OsdkProvider client={client}>{children}</OsdkProvider>;
@@ -76,31 +97,31 @@ describe(useObjectTableData, () => {
   const fakeClient = {} as unknown as Client;
   const wrapper = createWrapper(fakeClient);
 
-  it("calls useOsdkObjects with pageSize of 50", () => {
-    const { result } = renderHook(
-      () => useObjectTableData(TestObjectType),
-      { wrapper },
-    );
+  const mockObjectSet = {
+    $objectSetInternals: {
+      def: TestObjectType,
+    },
+  } as unknown as ObjectSet<TestObject>;
 
-    const mockResult = result.current as unknown as MockUseOsdkObjectsReturn;
-    expect(mockResult._testOptions).toEqual({
-      withProperties: undefined,
-      pageSize: 50,
-      orderBy: undefined,
-    });
-  });
-
-  it("calls useOsdkObjects with filter clause provided", () => {
+  it("calls useOsdkObjects with filter clause and orderBy provided", () => {
     const filterClause = {
       name: "John",
     } as unknown as WhereClause<TestObject>;
+    const orderBy: SortingState = [{
+      id: "name",
+      desc: false,
+    }];
     const { result } = renderHook(
-      () => useObjectTableData(TestObjectType, undefined, filterClause),
+      () =>
+        useObjectTableData(TestObjectType, undefined, filterClause, orderBy),
       { wrapper },
     );
 
-    const mockResult = result.current as unknown as MockUseOsdkObjectsReturn;
+    const mockResult = result.current as unknown as MockReturnType;
     expect(mockResult._testOptions.where).toEqual(filterClause);
+    expect(mockResult._testOptions.orderBy).toEqual({
+      "name": "asc",
+    });
   });
 
   it("calls useOsdkObjects without withProperties when no columnDefinitions provided", () => {
@@ -109,7 +130,7 @@ describe(useObjectTableData, () => {
       { wrapper },
     );
 
-    const mockResult = result.current as unknown as MockUseOsdkObjectsReturn;
+    const mockResult = result.current as unknown as MockReturnType;
     expect(mockResult._testOptions.withProperties).toBeUndefined();
     expect(mockResult._testOptions.pageSize).toBe(50);
   });
@@ -129,7 +150,7 @@ describe(useObjectTableData, () => {
       { wrapper },
     );
 
-    const mockResult = result.current as unknown as MockUseOsdkObjectsReturn;
+    const mockResult = result.current as unknown as MockReturnType;
     expect(mockResult._testOptions.withProperties).toBeUndefined();
     expect(mockResult._testOptions.pageSize).toBe(50);
   });
@@ -170,7 +191,7 @@ describe(useObjectTableData, () => {
       { wrapper },
     );
 
-    const mockResult = result.current as unknown as MockUseOsdkObjectsReturn;
+    const mockResult = result.current as unknown as MockReturnType;
     expect(mockResult._testOptions.withProperties).toEqual({
       rdp1: mockRdpCreator1,
       rdp2: mockRdpCreator2,
@@ -200,7 +221,7 @@ describe(useObjectTableData, () => {
     );
 
     const firstMockResult = result
-      .current as unknown as MockUseOsdkObjectsReturn;
+      .current as unknown as MockReturnType;
     const firstWithProperties = firstMockResult._testOptions.withProperties;
 
     // Rerender with same columnDefinitions reference
@@ -208,7 +229,7 @@ describe(useObjectTableData, () => {
 
     // Should be the same reference (memoized)
     const secondMockResult = result
-      .current as unknown as MockUseOsdkObjectsReturn;
+      .current as unknown as MockReturnType;
     expect(secondMockResult._testOptions.withProperties).toBe(
       firstWithProperties,
     );
@@ -248,7 +269,7 @@ describe(useObjectTableData, () => {
     );
 
     const firstMockResult = result
-      .current as unknown as MockUseOsdkObjectsReturn;
+      .current as unknown as MockReturnType;
     expect(firstMockResult._testOptions.withProperties).toEqual({
       rdp1: mockRdpCreator1,
     });
@@ -264,7 +285,7 @@ describe(useObjectTableData, () => {
     rerender({ colDefs: updatedColumnDefinitions as ColDefs });
 
     const secondMockResult = result
-      .current as unknown as MockUseOsdkObjectsReturn;
+      .current as unknown as MockReturnType;
     expect(secondMockResult._testOptions.withProperties).toEqual({
       rdp2: mockRdpCreator2,
     });
@@ -279,8 +300,132 @@ describe(useObjectTableData, () => {
     expect(result.current).toHaveProperty("data");
     expect(result.current).toHaveProperty("isLoading");
     expect(result.current).toHaveProperty("error");
-    expect(result.current).toHaveProperty("fetchNextPage");
-    expect(result.current).toHaveProperty("hasNextPage");
-    expect(result.current).toHaveProperty("isFetchingNextPage");
+    expect(result.current).toHaveProperty("fetchMore");
+  });
+
+  it("when no objectSet provided, only enables useOsdkObjects", () => {
+    const { result } = renderHook(
+      () => useObjectTableData(TestObjectType),
+      { wrapper },
+    );
+
+    expect(useOsdkObjects).toHaveBeenCalledWith(
+      TestObjectType,
+      expect.objectContaining({
+        enabled: true,
+        pageSize: 50,
+      }),
+    );
+
+    expect(useObjectSet).toHaveBeenCalledWith(
+      undefined,
+      expect.objectContaining({
+        enabled: false,
+        pageSize: 50,
+      }),
+    );
+  });
+
+  it(" when objectSet is provided, only enables useObjectSet", () => {
+    const { result } = renderHook(
+      () =>
+        useObjectTableData(
+          TestObjectType,
+          undefined,
+          undefined,
+          undefined,
+          mockObjectSet,
+        ),
+      { wrapper },
+    );
+
+    expect(useOsdkObjects).toHaveBeenCalledWith(
+      TestObjectType,
+      expect.objectContaining({
+        enabled: false,
+        pageSize: 50,
+      }),
+    );
+
+    expect(useObjectSet).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({
+        enabled: true,
+        pageSize: 50,
+      }),
+    );
+  });
+
+  it("when objectSet is provided but type is interface, only enables useOsdkObjects ", () => {
+    renderHook(
+      () =>
+        useObjectTableData(
+          TestInterfaceType,
+          undefined,
+          undefined,
+          undefined,
+          mockObjectSet as any,
+        ),
+      { wrapper },
+    );
+
+    expect(useOsdkObjects).toHaveBeenCalledWith(
+      TestInterfaceType,
+      expect.objectContaining({
+        enabled: true,
+        pageSize: 50,
+      }),
+    );
+
+    expect(useObjectSet).toHaveBeenCalledWith(
+      undefined,
+      expect.objectContaining({
+        enabled: false,
+        pageSize: 50,
+      }),
+    );
+  });
+
+  it("passes filter, orderBy and objectSetOptions to useObjectSet", () => {
+    const filterClause = {
+      name: "John",
+    } as unknown as WhereClause<TestObject>;
+    const sorting: SortingState = [
+      {
+        id: "name",
+        desc: false,
+      },
+    ];
+    const objectSetOptions = {
+      union: [mockObjectSet],
+      intersect: [],
+      subtract: [],
+    };
+
+    renderHook(
+      () =>
+        useObjectTableData(
+          TestObjectType,
+          undefined,
+          filterClause,
+          sorting,
+          mockObjectSet,
+          objectSetOptions,
+        ),
+      { wrapper },
+    );
+
+    expect(useObjectSet).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({
+        enabled: true,
+        pageSize: 50,
+        where: filterClause,
+        orderBy: { name: "asc" },
+        union: objectSetOptions.union,
+        intersect: objectSetOptions.intersect,
+        subtract: objectSetOptions.subtract,
+      }),
+    );
   });
 });

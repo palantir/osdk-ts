@@ -355,6 +355,52 @@ describe("useRowSelection", () => {
         });
       });
 
+      it("shift-click after deselection should select from the last selected row", () => {
+        const data = createMockData(7);
+        const { result } = renderHook(() =>
+          useRowSelection({
+            selectionMode: "multiple",
+            data,
+          })
+        );
+
+        // Select rows 0, 1, 2
+        act(() => {
+          result.current.onToggleRow("item-0", 0);
+        });
+        act(() => {
+          result.current.onToggleRow("item-1", 1);
+        });
+        act(() => {
+          result.current.onToggleRow("item-2", 2);
+        });
+        expect(result.current.rowSelection).toEqual({
+          "item-0": true,
+          "item-1": true,
+          "item-2": true,
+        });
+
+        // Deselect row 1 (clears lastSelectedRowIndex)
+        act(() => {
+          result.current.onToggleRow("item-1", 1);
+        });
+        expect(result.current.rowSelection).toEqual({
+          "item-0": true,
+          "item-2": true,
+        });
+
+        // Shift-click row 4 - should select from row 2 to row 4
+        act(() => {
+          result.current.onToggleRow("item-4", 4, true);
+        });
+        expect(result.current.rowSelection).toEqual({
+          "item-0": true,
+          "item-2": true,
+          "item-3": true,
+          "item-4": true,
+        });
+      });
+
       it("toggles all rows", () => {
         const data = createMockData(3);
         const onRowSelection = vi.fn();
