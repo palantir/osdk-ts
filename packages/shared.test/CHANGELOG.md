@@ -1,5 +1,13 @@
 # @osdk/shared.test
 
+## 2.6.2
+
+### Patch Changes
+
+- 7c71595: Fix queries that return arrays of objects.
+  - @osdk/api@2.6.4
+  - @osdk/generator-converters@2.6.4
+
 ## 2.6.1
 
 ### Patch Changes
