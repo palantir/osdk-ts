@@ -1,5 +1,11 @@
 # @osdk/create-app.template.react
 
+## 2.7.4
+
+### Patch Changes
+
+- 4e75da2: Bump @types/node to 24.10.13
+
 ## 2.7.3
 
 ### Patch Changes
