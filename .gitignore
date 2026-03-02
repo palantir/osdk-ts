@@ -42,3 +42,8 @@ vitest.config.mts.timestamp-*
 vitest.workspace.ts
 
 .memory/
+
+# Bundle size tracking artifacts
+bundle-sizes.json
+baseline-bundle-sizes.json
+bundle-size-report.md
