@@ -52,6 +52,8 @@ const restrictToVerticalAxis: Modifier = ({ transform }) => ({
   x: 0,
 });
 
+const POINTER_ACTIVATION_CONSTRAINT = { distance: 8 } as const;
+
 export interface SortableFilterListContentProps<
   Q extends ObjectTypeDefinition,
 > {
@@ -71,11 +73,21 @@ export interface SortableFilterListContentProps<
   style?: React.CSSProperties;
 }
 
-function getSortableId<Q extends ObjectTypeDefinition>(
+const stableIdMap = new WeakMap<object, string>();
+let nextStableId = 0;
+
+function getStableSortableId<Q extends ObjectTypeDefinition>(
   definition: FilterDefinitionUnion<Q>,
-  index: number,
 ): string {
-  return definition.id ?? `${getFilterKey(definition)}:${index}`;
+  if (definition.id != null) {
+    return definition.id;
+  }
+  let id = stableIdMap.get(definition);
+  if (id == null) {
+    id = `__sortable_${nextStableId++}`;
+    stableIdMap.set(definition, id);
+  }
+  return id;
 }
 
 export default function SortableFilterListContent<
@@ -94,13 +106,13 @@ export default function SortableFilterListContent<
   const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
 
   const sortableIds = useMemo(
-    () => filterDefinitions.map((def, i) => getSortableId(def, i)),
+    () => filterDefinitions.map((def) => getStableSortableId(def)),
     [filterDefinitions],
   );
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
-      activationConstraint: { distance: 8 },
+      activationConstraint: POINTER_ACTIVATION_CONSTRAINT,
     }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
@@ -153,7 +165,7 @@ export default function SortableFilterListContent<
         const label = def ? getFilterLabel(def) : "filter";
         return `Picked up ${label} filter`;
       },
-      onDragOver({ active, over }) {
+      onDragOver({ over }) {
         if (!over) {
           return "Not over a droppable area";
         }

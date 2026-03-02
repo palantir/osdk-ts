@@ -16,6 +16,7 @@
 
 import type { ObjectTypeDefinition } from "@osdk/api";
 import type { FilterDefinitionUnion } from "../FilterListApi.js";
+import { assertUnreachable } from "./assertUnreachable.js";
 
 export function getFilterLabel<Q extends ObjectTypeDefinition>(
   definition: FilterDefinitionUnion<Q>,
@@ -34,5 +35,7 @@ export function getFilterLabel<Q extends ObjectTypeDefinition>(
       return "Search";
     case "CUSTOM":
       return definition.key;
+    default:
+      return assertUnreachable(definition);
   }
 }

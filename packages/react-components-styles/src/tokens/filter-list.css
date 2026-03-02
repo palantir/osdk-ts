@@ -1,0 +1,24 @@
+:root {
+  --osdk-filter-item-drag-handle-padding: calc(
+    var(--osdk-surface-spacing) * 0.5
+  );
+  --osdk-filter-item-drag-handle-margin-right: var(--osdk-surface-spacing);
+  --osdk-filter-item-drag-handle-bg: transparent;
+  --osdk-filter-item-drag-handle-border-radius: var(
+    --osdk-surface-border-radius
+  );
+  --osdk-filter-item-drag-handle-color: var(--osdk-typography-color-muted);
+  --osdk-filter-item-drag-handle-color-hover: var(
+    --osdk-typography-color-default-rest
+  );
+  --osdk-filter-item-drag-handle-bg-hover: var(--osdk-custom-color-gray-1);
+  --osdk-filter-item-drag-handle-focus-outline-color: var(
+    --osdk-emphasis-focus-color
+  );
+  --osdk-filter-item-dragging-opacity: 0.5;
+  --osdk-filter-item-drag-overlay-shadow: var(--osdk-surface-shadow-2);
+  --osdk-filter-item-drag-overlay-border-radius: var(
+    --osdk-surface-border-radius
+  );
+  --osdk-filter-item-drag-overlay-bg: var(--osdk-background-primary);
+}
