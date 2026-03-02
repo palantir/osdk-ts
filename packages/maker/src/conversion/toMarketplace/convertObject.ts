@@ -23,6 +23,7 @@ import type {
   OntologyIrPropertyType,
 } from "@osdk/client.unstable";
 import {
+  addNamespaceIfNone,
   buildDatasource,
   cleanAndValidateLinkTypeId,
   convertObjectStatus,
@@ -103,18 +104,40 @@ export function convertObject(
       apiName: objectType.apiName,
       status: convertObjectStatus(objectType.status),
       redacted: false,
-      implementsInterfaces2: implementations.map(impl => ({
-        interfaceTypeApiName: impl.implements.apiName,
-        linksV2: {},
-        propertiesV2: Object.fromEntries(impl.propertyMapping
+      implementsInterfaces2: implementations.map(impl => {
+        // Extract the interface's namespace from its fully-qualified apiName
+        // e.g., "com.palantir.ontology.defense-types.functionalAssessment" -> "com.palantir.ontology.defense-types."
+        const lastDotIndex = impl.implements.apiName.lastIndexOf(".");
+        const interfaceNamespace = lastDotIndex >= 0
+          ? impl.implements.apiName.substring(0, lastDotIndex + 1)
+          : "";
+
+        const mappedProps = Object.fromEntries(impl.propertyMapping
           .map(
-            mappings => [mappings.interfaceProperty, {
-              type: "propertyTypeRid",
-              propertyTypeRid: mappings.mapsTo,
-            }],
-          )),
-        properties: {},
-      })),
+            mappings => {
+              // If the property is already fully-qualified (contains a dot), use it as-is.
+              // Otherwise, prefix it with the interface's namespace (not the current package's namespace).
+              // This handles:
+              // - SPTs from any package (already fully-qualified, e.g., "com.palantir.core.ontology.types.sourceSystemMetadataList")
+              // - IDPs from the interface's package (short, e.g., "functionalEffectLevel")
+              const propertyName = mappings.interfaceProperty.includes(".")
+                ? mappings.interfaceProperty
+                : interfaceNamespace + mappings.interfaceProperty;
+
+              return [propertyName, {
+                type: "propertyTypeRid",
+                propertyTypeRid: mappings.mapsTo,
+              }];
+            },
+          ));
+        return {
+          interfaceTypeApiName: impl.implements.apiName,
+          linksV2: {},
+          propertiesV2: {},
+          propertiesV3: mappedProps,
+          properties: {},
+        };
+      }),
       allImplementsInterfaces: {},
     },
     datasources: [
