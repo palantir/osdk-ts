@@ -243,7 +243,7 @@ async function remapQueryResponse<
     case "struct": {
       // figure out what keys need to be fixed up
       for (const [key, subtype] of Object.entries(responseDataType.struct)) {
-        if (requiresConversion(subtype)) {
+        if (requiresConversion(subtype) || responseValue[key] == null) {
           responseValue[key] = await remapQueryResponse(
             client,
             subtype,

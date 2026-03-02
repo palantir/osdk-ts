@@ -89,6 +89,25 @@ export const queryTypeReturnsStructResponse: ExecuteQueryResponse = {
   },
 };
 
+export const queryTypeReturnsStructRequestReturnNull: ExecuteQueryRequest = {
+  parameters: {
+    person: {
+      firstName: "Joe",
+      lastName: "Joseph",
+      age: 54,
+    },
+  },
+};
+
+export const queryTypeReturnsStructRequestReturnNullResponse:
+  ExecuteQueryResponse = {
+    value: {
+      firstName: "Joe",
+      lastName: "Joseph",
+      age: null,
+    },
+  };
+
 export const queryTypeReturnsComplexStructRequest: ExecuteQueryRequest = {
   parameters: {
     person: {
@@ -389,6 +408,8 @@ const queryRequestHandlers: {
     [queryTypeReturnsStruct.version]: {
       [JSON.stringify(queryTypeReturnsStructRequest)]:
         queryTypeReturnsStructResponse,
+      [JSON.stringify(queryTypeReturnsStructRequestReturnNull)]:
+        queryTypeReturnsStructRequestReturnNullResponse,
     },
   },
   [queryTypeReturnsComplexStruct.apiName]: {
