@@ -22,7 +22,7 @@
 
 .osdkContentGap {
   display: flex;
-  gap: var(--osdk-surface-spacing);
+  gap: calc(var(--osdk-surface-spacing) * 2);
 }
 
 .osdkHeaderContainer {
@@ -103,7 +103,7 @@
 
 .osdkHeaderMenuItem {
   justify-content: flex-start;
-  padding: var(--osdk-surface-spacing);
+  padding: var(--osdk-surface-spacing) calc(var(--osdk-surface-spacing) * 2);
   cursor: pointer;
 
   &:hover {

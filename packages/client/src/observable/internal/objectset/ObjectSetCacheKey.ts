@@ -17,13 +17,14 @@
 import type { CollectionStorageData } from "../base-list/BaseCollectionQuery.js";
 import type { CacheKey } from "../CacheKey.js";
 import type { Canonical } from "../Canonical.js";
+import type { Rdp } from "../RdpCanonicalizer.js";
 import type { ObjectSetQuery } from "./ObjectSetQuery.js";
 
 export interface ObjectSetStorageData extends CollectionStorageData {}
 
 export interface ObjectSetOperations {
   where?: Canonical<any>;
-  withProperties?: string[];
+  withProperties?: Canonical<Rdp>;
   union?: string[];
   intersect?: string[];
   subtract?: string[];

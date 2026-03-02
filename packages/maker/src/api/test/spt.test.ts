@@ -15,7 +15,9 @@
  */
 
 import { beforeEach, describe, expect, it } from "vitest";
+import { defineCreateObjectAction } from "../defineCreateObjectAction.js";
 import { defineInterface } from "../defineInterface.js";
+import { defineObject } from "../defineObject.js";
 import { defineOntology, dumpOntologyFullMetadata } from "../defineOntology.js";
 import { defineSharedPropertyType } from "../defineSpt.js";
 describe("SPTs", () => {
@@ -574,6 +576,24 @@ describe("SPTs", () => {
         },
       }
     `);
+  });
+  it("Object decimal property with precision/scale works in actions", () => {
+    const obj = defineObject({
+      apiName: "decimal-test",
+      displayName: "Decimal Test",
+      pluralDisplayName: "Decimal Tests",
+      primaryKeyPropertyApiName: "id",
+      titlePropertyApiName: "id",
+      properties: {
+        id: { type: "string" },
+        price: {
+          type: { type: "decimal", precision: 10, scale: 2 },
+        },
+      },
+    });
+    const action = defineCreateObjectAction({ objectType: obj });
+    const priceParam = action.parameters?.find(p => p.id === "price");
+    expect(priceParam?.type).toBe("decimal");
   });
   it("Number formatting works", () => {
     const spt = defineSharedPropertyType({

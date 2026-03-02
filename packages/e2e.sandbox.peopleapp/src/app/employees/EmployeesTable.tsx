@@ -1,8 +1,13 @@
 import type { DerivedProperty, Osdk } from "@osdk/api";
-import type { ColumnDefinition } from "@osdk/react-components/experimental";
+import type {
+  CellValueState,
+  ColumnDefinition,
+} from "@osdk/react-components/experimental";
 import { ObjectTable } from "@osdk/react-components/experimental";
+import { useOsdkAction } from "@osdk/react/experimental";
 import { useCallback } from "react";
-import { Employee } from "../../generatedNoCheck2/index.js";
+import { $ } from "../../foundryClient.js";
+import { Employee, modifyEmployee } from "../../generatedNoCheck2/index.js";
 
 type RDPs = {
   managerName: "string";
@@ -21,9 +26,16 @@ const columnDefinitions: Array<
       type: "property",
       id: "fullName",
     },
-    pinned: "left",
     columnName: "My Name",
-    renderHeader: () => <div style={{ color: "red" }}>My Name</div>,
+    editable: true,
+  },
+  {
+    locator: {
+      type: "property",
+      id: "employeeNumber",
+    },
+    columnName: "Employee Number",
+    editable: false,
   },
   // With isVisible prop
   {
@@ -54,12 +66,6 @@ const columnDefinitions: Array<
         baseObjectSet.pivotTo("lead").selectProperty("fullName"),
     },
     columnName: "Derived Manager Name",
-    renderCell: (object: Osdk.Instance<Employee>) => {
-      if ("managerName" in object) {
-        return object["managerName"] as string;
-      }
-      return "No Value";
-    },
   },
   // Custom
   {
@@ -80,24 +86,19 @@ const columnDefinitions: Array<
 ];
 
 export function EmployeesTable() {
-  const renderCellContextMenu = useCallback(
-    (_: Osdk.Instance<Employee>, cellValue: unknown) => {
-      return (
-        <div
-          style={{
-            background: "white",
-            padding: 8,
-            border: "1px solid #d1d5db",
-            boxShadow: "0 2px 8px 0 rgba(0, 0, 0, 0.1)",
-            fontSize: 13,
-          }}
-        >
-          {cellValue ? cellValue.toString() : "No Value"}
-        </div>
-      );
+  const { applyAction } = useOsdkAction(modifyEmployee);
+
+  const handleSubmitEdits = useCallback(
+    async (edits: Record<string, CellValueState>) => {
+      console.log("Submitting edits:", edits);
+      return Promise.resolve();
     },
-    [],
+    [applyAction],
   );
+
+  const employeeOS = $(Employee).where({
+    fullName: { $eq: "Jane Doe" },
+  });
 
   return (
     <div
@@ -107,14 +108,15 @@ export function EmployeesTable() {
       }}
     >
       <ObjectTable<Employee, RDPs>
+        objectSet={employeeOS}
         objectType={Employee}
         columnDefinitions={columnDefinitions}
         selectionMode={"multiple"}
-        renderCellContextMenu={renderCellContextMenu}
         defaultOrderBy={[{
           property: "firstFullTimeStartDate",
           direction: "desc",
         }]}
+        onSubmitEdits={handleSubmitEdits}
       />
     </div>
   );

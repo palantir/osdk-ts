@@ -28,6 +28,7 @@ import { useColumnDefs } from "./hooks/useColumnDefs.js";
 import { useColumnPinning } from "./hooks/useColumnPinning.js";
 import { useColumnResize } from "./hooks/useColumnResize.js";
 import { useColumnVisibility } from "./hooks/useColumnVisibility.js";
+import { useEditableTable } from "./hooks/useEditableTable.js";
 import { useObjectTableData } from "./hooks/useObjectTableData.js";
 import { useRowSelection } from "./hooks/useRowSelection.js";
 import { useSelectionColumn } from "./hooks/useSelectionColumn.js";
@@ -58,8 +59,10 @@ export function ObjectTable<
   >,
 >({
   objectType,
+  objectSet,
   columnDefinitions,
   filter,
+  objectSetOptions,
   orderBy,
   defaultOrderBy,
   onOrderByChanged,
@@ -70,6 +73,8 @@ export function ObjectTable<
   selectionMode = "none",
   selectedRows,
   onColumnVisibilityChanged,
+  onCellValueChanged,
+  onSubmitEdits,
   enableOrdering = true,
   enableColumnPinning = true,
   enableColumnResizing = true,
@@ -78,6 +83,16 @@ export function ObjectTable<
 }: ObjectTableProps<Q, RDPs, FunctionColumns>): React.ReactElement {
   const { columnSizing, onColumnSizingChange } = useColumnResize({
     onColumnResize,
+  });
+
+  const {
+    cellEdits,
+    clearEdits,
+    handleCellEdit,
+    handleSubmitEdits,
+  } = useEditableTable({
+    onCellValueChanged,
+    onSubmitEdits,
   });
 
   const { sorting, onSortingChange } = useTableSorting<
@@ -101,6 +116,8 @@ export function ObjectTable<
     columnDefinitions,
     filter,
     sorting,
+    objectSet,
+    objectSetOptions,
   );
 
   const { columns, loading: isColumnsLoading } = useColumnDefs<
@@ -178,6 +195,10 @@ export function ObjectTable<
       minSize: 80,
     },
     getRowId,
+    meta: {
+      onCellEdit: handleCellEdit,
+      cellEdits,
+    },
   });
 
   const onRenderCellContextMenu = useCallback(
@@ -207,6 +228,18 @@ export function ObjectTable<
     enableColumnConfig,
   ]);
 
+  const editableConfig = useMemo(() => {
+    if (!onSubmitEdits) {
+      return;
+    }
+
+    return {
+      onSubmitEdits: handleSubmitEdits,
+      clearEdits,
+      cellEdits,
+    };
+  }, [onSubmitEdits, handleSubmitEdits, clearEdits, cellEdits]);
+
   return (
     <BaseTable<Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>>
       table={table}
@@ -218,6 +251,7 @@ export function ObjectTable<
       className={props.className}
       error={error}
       headerMenuFeatureFlags={headerMenuFeatureFlags}
+      editableConfig={editableConfig}
     />
   );
 }

@@ -29,6 +29,7 @@ import { MediaReference } from '@osdk/api';
 import { MediaUpload } from '@osdk/api';
 import type { MinimalObjectSet } from '@osdk/api/unstable';
 import { ObjectMetadata } from '@osdk/api';
+import type { ObjectOrInterfaceDefinition } from '@osdk/api';
 import type { ObjectQueryDataType } from '@osdk/api';
 import { ObjectSet } from '@osdk/api';
 import type { ObjectSetQueryDataType } from '@osdk/api';
@@ -60,6 +61,7 @@ import { TwoDimensionalAggregation } from '@osdk/api';
 import type { ValidateActionResponseV2 } from '@osdk/foundry.ontologies';
 import { VersionBound } from '@osdk/api';
 import { WhereClause } from '@osdk/api';
+import { ObjectSet as WireObjectSet } from '@osdk/foundry.ontologies';
 
 export { ActionDefinition }
 
@@ -152,9 +154,15 @@ export const extractDateInUTC: (date: Date) => string;
 // @public
 export function extractPrimaryKeyFromObjectSpecifier(ObjectSpecifier: ObjectSpecifier<any>): string;
 
+// @public (undocumented)
+export function getWireObjectSet(objectSet: ObjectSet<any> | MinimalObjectSet<any>): WireObjectSet;
+
 export { InterfaceDefinition }
 
 export { InterfaceMetadata }
+
+// @public (undocumented)
+export function isObjectSet(o: object): o is ObjectSet<ObjectOrInterfaceDefinition>;
 
 export { isOk }
 
@@ -222,6 +230,8 @@ export { TwoDimensionalAggregation }
 export { VersionBound }
 
 export { WhereClause }
+
+export { WireObjectSet }
 
 // (No @packageDocumentation comment for this package)
 

@@ -15,6 +15,7 @@
  */
 
 import type { QueryDataTypeDefinition } from "@osdk/api";
+import { MediaSets } from "@osdk/foundry.mediasets";
 import { type DataValue } from "@osdk/foundry.ontologies";
 import * as OntologiesV2 from "@osdk/foundry.ontologies";
 import type { MinimalClient } from "../MinimalClientContext.js";
@@ -22,6 +23,11 @@ import {
   isAttachmentFile,
   isAttachmentUpload,
 } from "../object/AttachmentUpload.js";
+import {
+  isMedia,
+  isMediaReference,
+  isMediaUpload,
+} from "../object/mediaUpload.js";
 import { getWireObjectSet, isObjectSet } from "../objectSet/createObjectSet.js";
 import {
   isInterfaceQueryParam,
@@ -105,6 +111,32 @@ export async function toDataValueQueries(
       return {
         groups: value,
       };
+    }
+
+    case "mediaReference": {
+      if (isMediaUpload(value)) {
+        const mediaRef = await MediaSets.uploadMedia(
+          client,
+          value.data,
+          {
+            filename: value.fileName,
+            preview: true,
+          },
+        );
+        return mediaRef;
+      }
+
+      if (isMedia(value)) {
+        return value.getMediaReference();
+      }
+
+      if (isMediaReference(value)) {
+        return value;
+      }
+
+      throw new Error(
+        "Expected media reference type but got value that is not a MediaReference or MediaUpload",
+      );
     }
 
     case "set": {

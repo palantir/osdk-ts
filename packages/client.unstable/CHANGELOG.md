@@ -1,5 +1,33 @@
 # @osdk/client.unstable
 
+## 2.8.0-beta.13
+
+## 2.8.0-beta.12
+
+## 2.8.0-beta.11
+
+### Minor Changes
+
+- f487a6a: Maker experimental
+
+## 2.8.0-beta.10
+
+### Minor Changes
+
+- 972bda6: Support assumed markings for oac PSGs
+
+## 2.8.0-beta.9
+
+## 2.8.0-beta.8
+
+## 2.8.0-beta.7
+
+### Minor Changes
+
+- 034081a: oac direct datasources
+
+## 2.8.0-beta.6
+
 ## 2.8.0-beta.5
 
 ### Minor Changes

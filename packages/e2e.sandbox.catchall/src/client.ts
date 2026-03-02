@@ -65,6 +65,14 @@ export const ontologyClient: Client = createClient(
   loggingFetch,
 );
 
+export const mjClient: Client = createClient(
+  process.env.TERTIARY_FOUNDRY_STACK ?? "",
+  "ri.ontology.main.ontology.2050a743-3d09-4fdc-b0ba-6377bebe3709",
+  async () => process.env.TERTIARY_FOUNDRY_USER_TOKEN ?? "",
+  { logger },
+  loggingFetch,
+);
+
 /**
  * Generally consumers wont need this and will use their createClient() but
  * I want to use this to be sure everything works.

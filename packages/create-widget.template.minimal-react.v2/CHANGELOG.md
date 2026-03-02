@@ -1,5 +1,29 @@
 # @osdk/create-widget.template.react.v2
 
+## 3.5.0-beta.13
+
+## 3.5.0-beta.12
+
+## 3.5.0-beta.11
+
+## 3.5.0-beta.10
+
+## 3.5.0-beta.9
+
+## 3.5.0-beta.8
+
+### Minor Changes
+
+- 12dcb6a: Bump node and vite versions
+
+## 3.5.0-beta.7
+
+## 3.5.0-beta.6
+
+### Minor Changes
+
+- 9011069: Remove unused react-router-dom dependency from widget templates
+
 ## 3.5.0-beta.5
 
 ## 3.5.0-beta.4

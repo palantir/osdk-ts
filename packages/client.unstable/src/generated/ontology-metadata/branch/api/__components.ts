@@ -427,6 +427,12 @@ export interface DatasourceModificationConstraintError_objectTypeWithStreamDatas
   objectTypeWithStreamDatasourceCannotHaveMaterializations:
     ObjectTypeWithStreamDatasourceCannotHaveMaterializationsError;
 }
+
+export interface DatasourceModificationConstraintError_objectTypeDatasourceWithInvalidTimeBasedRetention {
+  type: "objectTypeDatasourceWithInvalidTimeBasedRetention";
+  objectTypeDatasourceWithInvalidTimeBasedRetention:
+    ObjectTypeDatasourceWithInvalidTimeBasedRetentionError;
+}
 /**
  * A type representing validation errors associated with datasource modifications on a branch.
  */
@@ -455,7 +461,8 @@ export type DatasourceModificationConstraintError =
   | DatasourceModificationConstraintError_objectTypeDatasourceCannotHaveAssumedMarkingsUpdated
   | DatasourceModificationConstraintError_objectTypeDatasourceCannotHaveDataSecurityUpdatedOnBranch
   | DatasourceModificationConstraintError_objectTypeDatasourceWithInvalidRetentionTargetSize
-  | DatasourceModificationConstraintError_objectTypeWithStreamDatasourceCannotHaveMaterializations;
+  | DatasourceModificationConstraintError_objectTypeWithStreamDatasourceCannotHaveMaterializations
+  | DatasourceModificationConstraintError_objectTypeDatasourceWithInvalidTimeBasedRetention;
 
 export interface DefaultOntologyBranchDetails {
 }
@@ -1785,6 +1792,15 @@ export interface ObjectTypeDatasourceWithInvalidRetentionTargetSizeError {
   directSourceRid: _api_DatasourceRid;
   objectTypeRid: _api_ObjectTypeRid;
   retentionConfig: _api_RetentionConfig;
+}
+/**
+ * A direct datasource has an invalid time-based retention window. The retention window must be a non-negative
+ * ISO 8601 duration and at most 1000 days.
+ */
+export interface ObjectTypeDatasourceWithInvalidTimeBasedRetentionError {
+  datasourceRid: _api_DatasourceRid;
+  objectTypeRid: _api_ObjectTypeRid;
+  window: string;
 }
 /**
  * An error representing when an object type datasource does not include the primary key property of the

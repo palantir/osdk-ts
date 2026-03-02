@@ -38,6 +38,7 @@ export namespace ObserveLinks {
     L extends keyof CompileTimeMetadata<Q>["links"] & string,
   > extends CommonObserveOptions, ObserveOptions {
     srcType: Pick<Q, "type" | "apiName">;
+    sourceUnderlyingObjectType: string;
     pk: PrimaryKeyType<Q>;
     linkName: L;
     where?: WhereClause<CompileTimeMetadata<Q>["links"][L]["targetType"]>;
@@ -66,7 +67,10 @@ export interface ObserveLinks {
   >(
     objects: Osdk.Instance<T> | ReadonlyArray<Osdk.Instance<T>>,
     linkName: L,
-    options: Omit<ObserveLinks.Options<T, L>, "srcType" | "pk">,
+    options: Omit<
+      ObserveLinks.Options<T, L>,
+      "srcType" | "pk" | "sourceUnderlyingObjectType"
+    >,
     subFn: Observer<
       ObserveLinks.CallbackArgs<
         CompileTimeMetadata<T>["links"][L]["targetType"]

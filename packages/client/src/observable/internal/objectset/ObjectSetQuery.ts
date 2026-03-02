@@ -26,6 +26,7 @@ import type { Canonical } from "../Canonical.js";
 import type { Changes } from "../Changes.js";
 import { getObjectTypesThatInvalidate } from "../getObjectTypesThatInvalidate.js";
 import type { Entry } from "../Layer.js";
+import type { Rdp } from "../RdpCanonicalizer.js";
 import { OrderBySortingStrategy } from "../sorting/SortingStrategy.js";
 import type { Store } from "../Store.js";
 import type { SubjectPayload } from "../SubjectPayload.js";
@@ -73,7 +74,6 @@ export class ObjectSetQuery extends BaseListQuery<
     this.#operations = operations;
     this.#composedObjectSet = this.#composeObjectSet(opts);
     this.#objectTypes = this.#extractObjectTypes(opts);
-
     if (opts.autoFetchMore === true) {
       this.minResultsToLoad = Number.MAX_SAFE_INTEGER;
     } else if (typeof opts.autoFetchMore === "number") {
@@ -81,6 +81,10 @@ export class ObjectSetQuery extends BaseListQuery<
     } else {
       this.minResultsToLoad = opts.pageSize || 0;
     }
+  }
+
+  public override get rdpConfig(): Canonical<Rdp> | null {
+    return this.#operations.withProperties ?? null;
   }
 
   #composeObjectSet(opts: ObjectSetQueryOptions): ObjectSet<any, any> {

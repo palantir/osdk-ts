@@ -1,0 +1,138 @@
+/*
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.osdkSelectTrigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--osdk-select-spacing, var(--osdk-surface-spacing));
+  width: 100%;
+  min-height: var(--osdk-select-min-height, 30px);
+  padding: calc(var(--osdk-select-spacing, var(--osdk-surface-spacing)) * 1.5)
+    calc(var(--osdk-select-spacing, var(--osdk-surface-spacing)) * 2.5);
+  box-sizing: border-box;
+  cursor: pointer;
+  border-radius: var(--osdk-select-border-radius, var(--osdk-surface-border-radius));
+  border: var(--osdk-select-border-width, var(--osdk-surface-border-width)) solid
+    var(--osdk-select-border-color, var(--osdk-surface-border-color-default));
+  background-color: var(--osdk-select-trigger-bg, var(--osdk-surface-background-color-default-rest));
+  color: var(--osdk-select-trigger-color, var(--osdk-typography-color-default-rest));
+  font-family: var(--osdk-select-font-family, var(--osdk-typography-family-default));
+  font-size: var(--osdk-select-font-size, var(--osdk-typography-size-body-medium));
+  line-height: var(--osdk-select-line-height, var(--osdk-typography-line-height-default));
+  transition: background-color var(--osdk-select-transition-duration, var(--osdk-emphasis-transition-duration))
+      var(--osdk-select-transition-ease, var(--osdk-emphasis-ease-default)),
+    border-color var(--osdk-select-transition-duration, var(--osdk-emphasis-transition-duration))
+      var(--osdk-select-transition-ease, var(--osdk-emphasis-ease-default));
+
+  &:hover {
+    background-color: var(--osdk-select-trigger-bg-hover, var(--osdk-surface-background-color-default-hover));
+  }
+
+  &:active {
+    background-color: var(--osdk-select-trigger-bg-active, var(--osdk-surface-background-color-default-active));
+  }
+
+  &:focus-visible {
+    outline: var(--osdk-select-focus-width, var(--osdk-emphasis-focus-width)) solid
+      var(--osdk-select-focus-color, var(--osdk-emphasis-focus-color));
+    outline-offset: var(--osdk-select-focus-offset, var(--osdk-emphasis-focus-offset));
+  }
+
+  &[data-disabled] {
+    cursor: not-allowed;
+    opacity: var(--osdk-disabled-opacity, 0.5);
+  }
+
+  &[data-popup-open] {
+    border-color: var(--osdk-select-border-color-active, var(--osdk-intent-primary-rest));
+  }
+}
+
+.osdkSelectValue {
+  flex: 1;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  &[data-placeholder] {
+    color: var(--osdk-select-placeholder-color, var(--osdk-typography-color-muted));
+  }
+}
+
+.osdkSelectIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--osdk-select-icon-color, var(--osdk-iconography-color-muted));
+  flex-shrink: 0;
+  transition: transform var(--osdk-select-transition-duration, var(--osdk-emphasis-transition-duration))
+    var(--osdk-select-transition-ease, var(--osdk-emphasis-ease-default));
+
+  [data-popup-open] > & {
+    transform: rotate(180deg);
+  }
+}
+
+.osdkSelectPositioner {
+  z-index: var(--osdk-select-z-index, var(--osdk-surface-z-index-3));
+}
+
+.osdkSelectPopup {
+  display: flex;
+  flex-direction: column;
+  min-width: var(--anchor-width);
+  max-height: var(--available-height);
+  overflow-y: auto;
+  padding: calc(var(--osdk-select-spacing, var(--osdk-surface-spacing)) * 1.5);
+  box-sizing: border-box;
+  border-radius: var(--osdk-select-border-radius, var(--osdk-surface-border-radius));
+  border: var(--osdk-select-border-width, var(--osdk-surface-border-width)) solid
+    var(--osdk-select-border-color, var(--osdk-surface-border-color-default));
+  background-color: var(--osdk-select-popup-bg, var(--osdk-surface-background-color-default-rest));
+  box-shadow: var(--osdk-select-popup-shadow, var(--osdk-surface-shadow-2));
+}
+
+.osdkSelectItem {
+  display: flex;
+  align-items: center;
+  padding: calc(var(--osdk-select-spacing, var(--osdk-surface-spacing)) * 1.5)
+    calc(var(--osdk-select-spacing, var(--osdk-surface-spacing)) * 2);
+  border-radius: var(--osdk-select-border-radius, var(--osdk-surface-border-radius));
+  cursor: pointer;
+  font-family: var(--osdk-select-font-family, var(--osdk-typography-family-default));
+  font-size: var(--osdk-select-font-size, var(--osdk-typography-size-body-medium));
+  line-height: var(--osdk-select-line-height, var(--osdk-typography-line-height-default));
+  color: var(--osdk-select-item-color, var(--osdk-typography-color-default-rest));
+  transition: background-color var(--osdk-select-transition-duration, var(--osdk-emphasis-transition-duration))
+    var(--osdk-select-transition-ease, var(--osdk-emphasis-ease-default));
+
+  &[data-highlighted] {
+    background-color: var(--osdk-select-item-bg-highlighted, var(--osdk-surface-background-color-default-hover));
+    outline: none;
+  }
+
+  &[data-selected] {
+    background-color: var(--osdk-select-item-bg-selected, var(--osdk-surface-layer-primary));
+    color: var(--osdk-select-item-color-selected, var(--osdk-intent-primary-rest));
+  }
+
+  &[data-disabled] {
+    cursor: not-allowed;
+    opacity: var(--osdk-disabled-opacity, 0.5);
+  }
+}

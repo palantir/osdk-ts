@@ -15,12 +15,15 @@
  */
 
 import type {
+  DerivedProperty,
+  InterfaceDefinition,
   ObjectOrInterfaceDefinition,
   ObjectSet,
   ObjectTypeDefinition,
   Osdk,
   PageResult,
   PropertyKeys,
+  WhereClause,
 } from "@osdk/api";
 import type { Observable, Subscription } from "rxjs";
 import invariant from "tiny-invariant";
@@ -52,6 +55,7 @@ import {
   type ListCacheKey,
   ORDER_BY_IDX,
   PIVOT_IDX,
+  RDP_IDX,
   WHERE_IDX,
 } from "./ListCacheKey.js";
 export {
@@ -91,6 +95,7 @@ export abstract class ListQuery extends BaseListQuery<
   #intersectWith: Canonical<Array<Canonical<SimpleWhereClause>>> | undefined;
   #pivotInfo: Canonical<PivotInfo> | undefined;
   #objectSet: ObjectSet<ObjectTypeDefinition>;
+  #pivotIntersectApplied = false;
 
   /**
    * Register changes to the cache specific to ListQuery
@@ -127,6 +132,7 @@ export abstract class ListQuery extends BaseListQuery<
     this.#orderBy = cacheKey.otherKeys[ORDER_BY_IDX];
     this.#intersectWith = cacheKey.otherKeys[INTERSECT_IDX];
     this.#pivotInfo = cacheKey.otherKeys[PIVOT_IDX];
+
     this.#objectSet = this.createObjectSet(store);
 
     // Only initialize the sorting strategy here if there's no pivotTo.
@@ -163,9 +169,6 @@ export abstract class ListQuery extends BaseListQuery<
     return this.#pivotInfo;
   }
 
-  /**
-   * Create the ObjectSet for this query.
-   */
   protected abstract createObjectSet(
     store: Store,
   ): ObjectSet<ObjectTypeDefinition>;
@@ -177,19 +180,62 @@ export abstract class ListQuery extends BaseListQuery<
   protected async fetchPageData(
     signal: AbortSignal | undefined,
   ): Promise<PageResult<Osdk.Instance<any>>> {
-    if (
-      Object.keys(this.#orderBy).length > 0
-      && !(this.sortingStrategy instanceof OrderBySortingStrategy)
-    ) {
+    const needsResultType = (Object.keys(this.#orderBy).length > 0
+      && !(this.sortingStrategy instanceof OrderBySortingStrategy))
+      || (this.#pivotInfo != null && this.#intersectWith != null
+        && this.#intersectWith.length > 0 && !this.#pivotIntersectApplied);
+
+    if (needsResultType) {
       const wireObjectSet = getWireObjectSet(this.#objectSet);
       const { resultType } = await getObjectTypesThatInvalidate(
         this.store.client[additionalContext],
         wireObjectSet,
       );
-      this.sortingStrategy = new OrderBySortingStrategy(
-        resultType.apiName,
-        this.#orderBy,
-      );
+
+      if (
+        Object.keys(this.#orderBy).length > 0
+        && !(this.sortingStrategy instanceof OrderBySortingStrategy)
+      ) {
+        this.sortingStrategy = new OrderBySortingStrategy(
+          resultType.apiName,
+          this.#orderBy,
+        );
+      }
+
+      if (
+        this.#pivotInfo != null && this.#intersectWith != null
+        && this.#intersectWith.length > 0 && !this.#pivotIntersectApplied
+      ) {
+        const rdpConfig = this.cacheKey.otherKeys[RDP_IDX];
+        const intersectSets = this.#intersectWith.map(whereClause => {
+          if (resultType.type === "object") {
+            let objectSet = this.store.client({
+              type: "object",
+              apiName: resultType.apiName,
+            } as ObjectTypeDefinition);
+
+            if (rdpConfig != null) {
+              objectSet = objectSet.withProperties(
+                rdpConfig as DerivedProperty.Clause<ObjectTypeDefinition>,
+              );
+            }
+
+            return objectSet.where(whereClause as WhereClause<any>);
+          }
+
+          return this.store.client({
+            type: "interface",
+            apiName: resultType.apiName,
+          } as InterfaceDefinition).where(
+            whereClause as WhereClause<any>,
+          );
+        });
+
+        this.#objectSet = this.#objectSet.intersect(
+          ...intersectSets,
+        );
+        this.#pivotIntersectApplied = true;
+      }
     }
 
     // Fetch the data with pagination using effective pageSize (max of all subscribers)

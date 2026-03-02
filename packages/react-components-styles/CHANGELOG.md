@@ -1,5 +1,29 @@
 # @osdk/react-components-styles
 
+## 0.2.0-beta.6
+
+### Minor Changes
+
+- 9893b41: Add storybook
+
+## 0.2.0-beta.5
+
+### Minor Changes
+
+- dba18e0: Fix css build
+
+## 0.2.0-beta.4
+
+### Minor Changes
+
+- 9c54ee5: Support editable cell
+
+## 0.2.0-beta.3
+
+### Minor Changes
+
+- 4c7884f: Add custom column, multi column sort and column config
+
 ## 0.2.0-beta.2
 
 ### Minor Changes

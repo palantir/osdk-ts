@@ -126,6 +126,7 @@ export interface UseOsdkObjectsOptions<
 export interface UseOsdkListResult<
   T extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
+  EXTRA_OPTIONS extends never | "$rid" = never,
 > {
   /**
    * Function to fetch more pages (undefined if no more pages)
@@ -136,7 +137,12 @@ export interface UseOsdkListResult<
    * The fetched data with derived properties
    */
   data:
-    | Osdk.Instance<T, "$allBaseProperties", PropertyKeys<T>, RDPs>[]
+    | Osdk.Instance<
+      T,
+      "$allBaseProperties" | EXTRA_OPTIONS,
+      PropertyKeys<T>,
+      RDPs
+    >[]
     | undefined;
 
   /**
@@ -177,8 +183,24 @@ export function useOsdkObjects<
   L extends LinkNames<Q>,
 >(
   type: Q,
+  options: UseOsdkObjectsOptions<Q> & { pivotTo: L; rids: readonly string[] },
+): UseOsdkListResult<LinkedType<Q, L>, {}, "$rid">;
+
+export function useOsdkObjects<
+  Q extends ObjectOrInterfaceDefinition,
+  L extends LinkNames<Q>,
+>(
+  type: Q,
   options: UseOsdkObjectsOptions<Q> & { pivotTo: L },
 ): UseOsdkListResult<LinkedType<Q, L>>;
+
+export function useOsdkObjects<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+>(
+  type: Q,
+  options: UseOsdkObjectsOptions<Q, RDPs> & { rids: readonly string[] },
+): UseOsdkListResult<Q, RDPs, "$rid">;
 
 export function useOsdkObjects<
   Q extends ObjectOrInterfaceDefinition,
@@ -196,7 +218,9 @@ export function useOsdkObjects<
   options?: UseOsdkObjectsOptions<Q, RDPs>,
 ):
   | UseOsdkListResult<Q, RDPs>
+  | UseOsdkListResult<Q, RDPs, "$rid">
   | UseOsdkListResult<LinkedType<Q, LinkNames<Q>>>
+  | UseOsdkListResult<LinkedType<Q, LinkNames<Q>>, {}, "$rid">
 {
   const { observableClient } = React.useContext(OsdkContext2);
 
@@ -303,22 +327,24 @@ export function useOsdkObjects<
 
   const listPayload = React.useSyncExternalStore(subscribe, getSnapShot);
 
-  let error: Error | undefined;
-  if (listPayload && "error" in listPayload && listPayload.error) {
-    error = listPayload.error;
-  } else if (listPayload?.status === "error") {
-    error = new Error("Failed to load objects");
-  }
+  return React.useMemo(() => {
+    let error: Error | undefined;
+    if (listPayload && "error" in listPayload && listPayload.error) {
+      error = listPayload.error;
+    } else if (listPayload?.status === "error") {
+      error = new Error("Failed to load objects");
+    }
 
-  return {
-    fetchMore: listPayload?.hasMore ? listPayload.fetchMore : undefined,
-    error,
-    data: listPayload?.resolvedList,
-    isLoading: enabled
-      ? (listPayload?.status === "loading" || listPayload?.status === "init"
-        || !listPayload)
-      : false,
-    isOptimistic: listPayload?.isOptimistic ?? false,
-    totalCount: listPayload?.totalCount,
-  };
+    return {
+      fetchMore: listPayload?.hasMore ? listPayload.fetchMore : undefined,
+      error,
+      data: listPayload?.resolvedList,
+      isLoading: enabled
+        ? (listPayload?.status === "loading" || listPayload?.status === "init"
+          || !listPayload)
+        : false,
+      isOptimistic: listPayload?.isOptimistic ?? false,
+      totalCount: listPayload?.totalCount,
+    };
+  }, [listPayload, enabled]);
 }

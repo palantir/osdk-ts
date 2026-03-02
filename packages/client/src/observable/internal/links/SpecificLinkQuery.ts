@@ -15,6 +15,9 @@
  */
 
 import type {
+  InterfaceDefinition,
+  ObjectOrInterfaceDefinition,
+  ObjectSet,
   ObjectTypeDefinition,
   Osdk,
   PageResult,
@@ -51,9 +54,11 @@ import type { SpecificLinkCacheKey } from "./SpecificLinkCacheKey.js";
 export class SpecificLinkQuery extends BaseListQuery<
   SpecificLinkCacheKey,
   SpecificLinkPayload,
-  ObserveLinks.Options<ObjectTypeDefinition, string>
+  ObserveLinks.Options<ObjectOrInterfaceDefinition, string>
 > {
   #sourceApiName: string;
+  #sourceTypeKind: "object" | "interface";
+  #sourceUnderlyingObjectType: string;
   #sourcePk: PrimaryKeyType<ObjectTypeDefinition>;
   #linkName: string;
   #whereClause: Canonical<SimpleWhereClause>;
@@ -70,10 +75,7 @@ export class SpecificLinkQuery extends BaseListQuery<
     store: Store,
     subject: Subject<SubjectPayload<SpecificLinkCacheKey>>,
     cacheKey: SpecificLinkCacheKey,
-    opts: ObserveLinks.Options<
-      ObjectTypeDefinition,
-      string
-    >,
+    opts: ObserveLinks.Options<ObjectOrInterfaceDefinition, string>,
   ) {
     super(
       store,
@@ -94,6 +96,8 @@ export class SpecificLinkQuery extends BaseListQuery<
     // Extract the necessary parameters from the cache key
     [
       this.#sourceApiName,
+      this.#sourceTypeKind,
+      this.#sourceUnderlyingObjectType,
       this.#sourcePk,
       this.#linkName,
       this.#whereClause,
@@ -101,57 +105,92 @@ export class SpecificLinkQuery extends BaseListQuery<
     ] = cacheKey.otherKeys;
   }
 
-  // _fetchAndStore is now implemented in BaseCollectionQuery
-
   /**
    * Implements fetchPageData from the BaseCollectionQuery template method pattern
-   * Fetches a page of linked objects
    */
   protected async fetchPageData(
     signal: AbortSignal | undefined,
   ): Promise<PageResult<Osdk.Instance<any>>> {
-    // Use the client API to create a query that pivots to linked objects
     const client = this.store.client;
+    const ontologyProvider = client[additionalContext].ontologyProvider;
+    const isInterface = this.#sourceTypeKind === "interface";
 
-    // First, get metadata for the source object to know the primary key field name
-    const sourceObjectDef = {
-      type: "object",
-      apiName: this.#sourceApiName,
-    } as ObjectTypeDefinition;
-
-    // Use the client's ontologyProvider to get metadata, which has built-in caching
-    const sourceMetadata = await client[additionalContext].ontologyProvider
-      .getObjectDefinition(this.#sourceApiName);
-
-    // Initialize sorting strategy with the link's target object type
     if (this.#orderBy && Object.keys(this.#orderBy).length > 0) {
-      const linkDef = sourceMetadata.links?.[this.#linkName];
-      if (!linkDef?.targetType) {
-        throw new Error(
-          `Missing link definition or targetType for link '${this.#linkName}' on object type '${this.#sourceApiName}'`,
+      let targetTypeApiName: string;
+
+      if (isInterface) {
+        const interfaceMetadata = await ontologyProvider.getInterfaceDefinition(
+          this.#sourceApiName,
         );
+        const linkDef = interfaceMetadata.links?.[this.#linkName];
+        if (!linkDef) {
+          throw new Error(
+            `Missing link definition for link '${this.#linkName}' on interface '${this.#sourceApiName}'`,
+          );
+        }
+        targetTypeApiName = linkDef.targetTypeApiName;
+      } else {
+        const objectMetadata = await ontologyProvider.getObjectDefinition(
+          this.#sourceApiName,
+        );
+        const linkDef = objectMetadata.links?.[this.#linkName];
+        if (!linkDef?.targetType) {
+          throw new Error(
+            `Missing link definition or targetType for link '${this.#linkName}' on object type '${this.#sourceApiName}'`,
+          );
+        }
+        targetTypeApiName = linkDef.targetType;
       }
+
       this.sortingStrategy = new OrderBySortingStrategy(
-        linkDef.targetType,
+        targetTypeApiName,
         this.#orderBy,
       );
     }
 
-    // Query for the specific source object
-    const sourceQuery = client(sourceObjectDef).where({
-      [sourceMetadata.primaryKeyApiName]: this.#sourcePk,
-    } as WhereClause<any>);
+    let linkQuery: ObjectSet<ObjectOrInterfaceDefinition>;
 
-    // Pivot to the linked objects
-    const linkQuery = sourceQuery.pivotTo(this.#linkName);
+    if (isInterface) {
+      const objectMetadata = await ontologyProvider.getObjectDefinition(
+        this.#sourceUnderlyingObjectType,
+      );
 
-    // Check for abort signal again before fetching
+      const interfaceSet = client({
+        type: "interface",
+        apiName: this.#sourceApiName,
+      } as InterfaceDefinition) as ObjectSet<ObjectOrInterfaceDefinition>;
+
+      const objectFilteredByPk = client({
+        type: "object",
+        apiName: this.#sourceUnderlyingObjectType,
+      } as ObjectTypeDefinition).where({
+        [objectMetadata.primaryKeyApiName]: this.#sourcePk,
+      } as WhereClause<any>);
+
+      const filteredSource = interfaceSet.intersect(objectFilteredByPk);
+
+      linkQuery = filteredSource.pivotTo(this.#linkName);
+    } else {
+      const objectMetadata = await ontologyProvider.getObjectDefinition(
+        this.#sourceApiName,
+      );
+
+      const sourceSet = client({
+        type: "object",
+        apiName: this.#sourceApiName,
+      } as ObjectTypeDefinition);
+
+      const sourceQuery = sourceSet.where({
+        [objectMetadata.primaryKeyApiName]: this.#sourcePk,
+      } as WhereClause<any>);
+
+      linkQuery = sourceQuery.pivotTo(this.#linkName);
+    }
+
     if (signal?.aborted) {
       throw new Error("Aborted");
     }
 
-    // Fetch the linked objects with pagination
-    // Add orderBy to the query parameters if specified
     const queryParams: {
       $pageSize: number;
       $nextPageToken: string | undefined;
@@ -164,12 +203,10 @@ export class SpecificLinkQuery extends BaseListQuery<
       $includeRid: true,
     };
 
-    // Include orderBy if it has entries
     if (this.#orderBy && Object.keys(this.#orderBy).length > 0) {
       queryParams.$orderBy = this.#orderBy;
     }
 
-    // Include whereClause if it has entries
     if (this.#whereClause && Object.keys(this.#whereClause).length > 0) {
       queryParams.$where = this.#whereClause;
     }
@@ -224,16 +261,10 @@ export class SpecificLinkQuery extends BaseListQuery<
     changes: Changes,
     _optimisticId: OptimisticId | undefined,
   ): Promise<void> => {
-    // TODO: Implement proper invalidation logic for linked objects
-    // This would check if any of the linked objects have changed,
-    // or if the source object's links might have changed
-
-    // For now, simply check if this specific link cache key was modified
     if (changes.modified.has(this.cacheKey)) {
       return this.revalidate(true);
     }
 
-    // No relevant changes were detected
     return Promise.resolve();
   };
 
@@ -241,32 +272,79 @@ export class SpecificLinkQuery extends BaseListQuery<
     objectType: string,
     changes: Changes | undefined,
   ): Promise<void> => {
-    // We need to invalidate links in two cases:
+    // We need to invalidate links in multiple cases:
     // 1. When the source object type matches the apiName (direct invalidation)
-    // 2. When the target object type might be the invalidated type (affected by target changes)
+    // 2. When the source is an interface and the invalidated type implements it
+    // 3. When the target type matches the invalidated type
+    // 4. When the target is an interface and the invalidated type implements it
 
-    // For case 1 - direct source object type match
-    if (this.#sourceApiName === objectType) {
+    if (
+      this.#sourceTypeKind === "object" && this.#sourceApiName === objectType
+    ) {
       changes?.modified.add(this.cacheKey);
       return this.revalidate(true);
-    } else {
-      // For case 2 - check if the link's target type matches the invalidated type
-      // We need to use the ontology provider to get the link metadata
-      // Since this is async, we'll collect all the metadata check promises
-      return (async () => {
-        // Get the source object metadata to determine link target type
-        const sourceMetadata = await this.store.client[additionalContext]
-          .ontologyProvider
-          .getObjectDefinition(this.#sourceApiName);
-
-        const linkDef = sourceMetadata.links?.[this.#linkName];
-        if (!linkDef || linkDef.targetType !== objectType) return;
-
-        const promise = this.revalidate(true);
-        changes?.modified.add(this.cacheKey);
-        return promise;
-      })();
     }
+
+    return (async () => {
+      try {
+        const ontologyProvider = this.store.client[additionalContext]
+          .ontologyProvider;
+
+        if (this.#sourceTypeKind === "interface") {
+          const objectMetadata = await ontologyProvider.getObjectDefinition(
+            objectType,
+          );
+          if (this.#sourceApiName in objectMetadata.interfaceMap) {
+            changes?.modified.add(this.cacheKey);
+            return void await this.revalidate(true);
+          }
+        }
+
+        let targetTypeApiName: string | undefined;
+        let targetTypeKind: "object" | "interface" | undefined;
+
+        if (this.#sourceTypeKind === "interface") {
+          const interfaceMetadata = await ontologyProvider
+            .getInterfaceDefinition(this.#sourceApiName);
+          const linkDef = interfaceMetadata.links?.[this.#linkName];
+          targetTypeApiName = linkDef?.targetTypeApiName;
+          targetTypeKind = linkDef?.targetType;
+        } else {
+          const objectMetadata = await ontologyProvider
+            .getObjectDefinition(this.#sourceApiName);
+          const linkDef = objectMetadata.links?.[this.#linkName];
+          // On object link defs, targetType is the target API name (not the kind)
+          targetTypeApiName = linkDef?.targetType;
+          targetTypeKind = "object";
+        }
+
+        if (!targetTypeApiName) return;
+
+        if (targetTypeApiName === objectType) {
+          changes?.modified.add(this.cacheKey);
+          return void await this.revalidate(true);
+        }
+
+        if (targetTypeKind === "interface") {
+          const objectMetadata = await ontologyProvider.getObjectDefinition(
+            objectType,
+          );
+          if (targetTypeApiName in objectMetadata.interfaceMap) {
+            changes?.modified.add(this.cacheKey);
+            return void await this.revalidate(true);
+          }
+        }
+      } catch (e) {
+        if (process.env.NODE_ENV !== "production") {
+          this.logger?.error(
+            "Failed to resolve metadata during invalidation",
+            e,
+          );
+        }
+        changes?.modified.add(this.cacheKey);
+        return void await this.revalidate(true);
+      }
+    })();
   };
 }
 

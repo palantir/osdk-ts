@@ -124,9 +124,10 @@ function filterStateToPropertyFilter(
       if (state.selectedValues.length === 0) {
         return undefined;
       }
-      const values: (string | number | boolean)[] = state.selectedValues.map(
-        (v) => isDate(v) ? v.toISOString() : v as string | number | boolean,
-      );
+      const isDateValue = state.selectedValues[0] instanceof Date;
+      const values: (string | number | boolean)[] = isDateValue
+        ? state.selectedValues.map((v) => (v as Date).toISOString())
+        : state.selectedValues as (string | number | boolean)[];
       const filter = values.length === 1 ? values[0] : { $in: values };
       if (state.isExcluding) {
         return { $not: filter };
@@ -153,10 +154,10 @@ function filterStateToPropertyFilter(
 
     // These filter types are handled separately in buildWhereClause
     // since they need access to the full definition, not just state
-    case "HAS_LINK":
-    case "LINKED_PROPERTY":
-    case "KEYWORD_SEARCH":
-    case "CUSTOM":
+    case "hasLink":
+    case "linkedProperty":
+    case "keywordSearch":
+    case "custom":
       return undefined;
 
     default:
@@ -167,9 +168,9 @@ function filterStateToPropertyFilter(
 /**
  * Builds a WhereClause from filter definitions and their current states.
  *
- * The filterStates map uses string keys derived from getFilterKey().
- * This avoids dependence on object identity, so filter definition objects
- * can be safely recreated across renders without breaking state lookups.
+ * The filterStates map uses string keys derived from filter definitions via
+ * getFilterKey(). This ensures stable state lookups even when filters are
+ * reordered or definition object references change.
  *
  * Note: The `as WhereClause<Q>` casts are necessary because we're building
  * clauses dynamically from property keys determined at runtime. TypeScript
@@ -205,11 +206,11 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
       }
 
       case "HAS_LINK": {
-        if (state.type !== "HAS_LINK") {
+        if (state.type !== "hasLink") {
           if (process.env.NODE_ENV !== "production") {
             // eslint-disable-next-line no-console
             console.warn(
-              `[FilterList] State type mismatch for hasLink filter "${definition.linkName}": expected HAS_LINK, got ${state.type}`,
+              `[FilterList] State type mismatch for hasLink filter "${definition.linkName}": expected hasLink, got ${state.type}`,
             );
           }
           break;
@@ -231,11 +232,11 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
       }
 
       case "KEYWORD_SEARCH": {
-        if (state.type !== "KEYWORD_SEARCH") {
+        if (state.type !== "keywordSearch") {
           if (process.env.NODE_ENV !== "production") {
             // eslint-disable-next-line no-console
             console.warn(
-              `[FilterList] State type mismatch for keywordSearch filter: expected KEYWORD_SEARCH, got ${state.type}`,
+              `[FilterList] State type mismatch for keywordSearch filter: expected keywordSearch, got ${state.type}`,
             );
           }
           break;
@@ -297,11 +298,11 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
       }
 
       case "CUSTOM": {
-        if (state.type !== "CUSTOM") {
+        if (state.type !== "custom") {
           if (process.env.NODE_ENV !== "production") {
             // eslint-disable-next-line no-console
             console.warn(
-              `[FilterList] State type mismatch for custom filter "${definition.key}": expected CUSTOM, got ${state.type}`,
+              `[FilterList] State type mismatch for custom filter "${definition.key}": expected custom, got ${state.type}`,
             );
           }
           break;

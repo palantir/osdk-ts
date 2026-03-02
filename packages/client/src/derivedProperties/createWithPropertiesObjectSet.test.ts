@@ -191,6 +191,140 @@ describe(createWithPropertiesObjectSet, () => {
       `);
     });
 
+    it("subtract produces correct wire format", () => {
+      const map = new Map<any, DerivedPropertyDefinition>();
+      const deriveObjectSet = createWithPropertiesObjectSet(
+        Employee,
+        { type: "methodInput" },
+        map,
+        true,
+      );
+
+      const clause: DerivedProperty.Clause<Employee> = {
+        "derivedPropertyName": (base) =>
+          base.pivotTo("lead").selectProperty("employeeId").subtract(
+            base.selectProperty("employeeId"),
+          ),
+      };
+
+      const result = clause["derivedPropertyName"](deriveObjectSet);
+      const definition = map.get(result);
+
+      expect(definition).toMatchInlineSnapshot(`
+        {
+          "left": {
+            "objectSet": {
+              "link": "lead",
+              "objectSet": {
+                "type": "methodInput",
+              },
+              "type": "searchAround",
+            },
+            "operation": {
+              "selectedPropertyApiName": "employeeId",
+              "type": "get",
+            },
+            "type": "selection",
+          },
+          "right": {
+            "apiName": "employeeId",
+            "type": "property",
+          },
+          "type": "subtract",
+        }
+      `);
+    });
+
+    it("divide produces correct wire format", () => {
+      const map = new Map<any, DerivedPropertyDefinition>();
+      const deriveObjectSet = createWithPropertiesObjectSet(
+        Employee,
+        { type: "methodInput" },
+        map,
+        true,
+      );
+
+      const clause: DerivedProperty.Clause<Employee> = {
+        "derivedPropertyName": (base) =>
+          base.pivotTo("lead").selectProperty("employeeId").divide(
+            base.selectProperty("employeeId"),
+          ),
+      };
+
+      const result = clause["derivedPropertyName"](deriveObjectSet);
+      const definition = map.get(result);
+
+      expect(definition).toMatchInlineSnapshot(`
+        {
+          "left": {
+            "objectSet": {
+              "link": "lead",
+              "objectSet": {
+                "type": "methodInput",
+              },
+              "type": "searchAround",
+            },
+            "operation": {
+              "selectedPropertyApiName": "employeeId",
+              "type": "get",
+            },
+            "type": "selection",
+          },
+          "right": {
+            "apiName": "employeeId",
+            "type": "property",
+          },
+          "type": "divide",
+        }
+      `);
+    });
+
+    it("multiply produces correct wire format", () => {
+      const map = new Map<any, DerivedPropertyDefinition>();
+      const deriveObjectSet = createWithPropertiesObjectSet(
+        Employee,
+        { type: "methodInput" },
+        map,
+        true,
+      );
+
+      const clause: DerivedProperty.Clause<Employee> = {
+        "derivedPropertyName": (base) =>
+          base.pivotTo("lead").selectProperty("employeeId").multiply(
+            base.selectProperty("employeeId"),
+          ),
+      };
+
+      const result = clause["derivedPropertyName"](deriveObjectSet);
+      const definition = map.get(result);
+
+      expect(definition).toMatchInlineSnapshot(`
+        {
+          "properties": [
+            {
+              "objectSet": {
+                "link": "lead",
+                "objectSet": {
+                  "type": "methodInput",
+                },
+                "type": "searchAround",
+              },
+              "operation": {
+                "selectedPropertyApiName": "employeeId",
+                "type": "get",
+              },
+              "type": "selection",
+            },
+            {
+              "apiName": "employeeId",
+              "type": "property",
+            },
+          ],
+          "type": "multiply",
+        }
+      `);
+    });
+
     // TODO: Add test for literal
     it("can handle nested definitions in an expression", () => {
       const map = new Map<any, DerivedPropertyDefinition>();

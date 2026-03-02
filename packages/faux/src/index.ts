@@ -26,6 +26,7 @@ export { FauxDataStore } from "./FauxFoundry/FauxDataStore.js";
 export type { FauxDataStoreBatch } from "./FauxFoundry/FauxDataStoreBatch.js";
 export { FauxFoundry } from "./FauxFoundry/FauxFoundry.js";
 export { FauxOntology } from "./FauxFoundry/FauxOntology.js";
+export type { TH_ObjectTypeFullMetadata } from "./FauxFoundry/typeHelpers/TH_ObjectTypeFullMetadata.js";
 export { authHandlerMiddleware } from "./handlers/authHandlerMiddleware.js";
 export { OpenApiCallError } from "./handlers/util/handleOpenApiCall.js";
 export { OntologiesV2 as MockOntologiesV2 } from "./mock/index.js";

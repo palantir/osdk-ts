@@ -1,5 +1,11 @@
 # @osdk/cli.cmd.typescript
 
+## 0.32.0-beta.2
+
+### Patch Changes
+
+- @osdk/cli.common@0.32.0-beta.2
+
 ## 0.31.0-beta.2
 
 ### Minor Changes
