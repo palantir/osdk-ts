@@ -270,8 +270,6 @@ export interface PropertyFilterDefinition<
   listogramConfig?: {
     displayMode?: "full" | "count" | "minimal";
     maxVisibleItems?: number;
-    barColor?: string;
-    selectedBarColor?: string;
   };
 
   /**

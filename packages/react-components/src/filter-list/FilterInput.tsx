@@ -330,8 +330,6 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
           colorMap={definition.colorMap}
           displayMode={definition.listogramConfig?.displayMode}
           maxVisibleItems={definition.listogramConfig?.maxVisibleItems}
-          barColor={definition.listogramConfig?.barColor}
-          selectedBarColor={definition.listogramConfig?.selectedBarColor}
         />
       );
 
@@ -964,8 +962,6 @@ interface ListogramFilterInputProps<Q extends ObjectTypeDefinition> {
   colorMap?: Record<string, string>;
   displayMode?: "full" | "count" | "minimal";
   maxVisibleItems?: number;
-  barColor?: string;
-  selectedBarColor?: string;
 }
 
 function ListogramFilterInputInner<Q extends ObjectTypeDefinition>({
@@ -977,8 +973,6 @@ function ListogramFilterInputInner<Q extends ObjectTypeDefinition>({
   colorMap,
   displayMode,
   maxVisibleItems,
-  barColor,
-  selectedBarColor,
 }: ListogramFilterInputProps<Q>): React.ReactElement {
   const selectedValues = useMemo(
     () =>
@@ -1022,8 +1016,6 @@ function ListogramFilterInputInner<Q extends ObjectTypeDefinition>({
       colorMap={colorMap}
       displayMode={displayMode}
       maxVisibleItems={maxVisibleItems}
-      barColor={barColor}
-      selectedBarColor={selectedBarColor}
     />
   );
 }
