@@ -819,7 +819,7 @@ describe("ListQuery pivotTo tests", () => {
 
     testStage("Initial loading state verifies query construction succeeded");
     await waitForCall(listSub.next, 1);
-    expectSingleListCallAndClear(listSub, [], { status: "loading" });
+    expectSingleListCallAndClear(listSub, undefined, { status: "loading" });
 
     testStage("Verify no additional calls");
     expectNoMoreCalls(listSub);
@@ -860,7 +860,7 @@ describe("ListQuery pivotTo tests", () => {
     );
 
     await waitForCall(listSub.next, 1);
-    expectSingleListCallAndClear(listSub, [], { status: "loading" });
+    expectSingleListCallAndClear(listSub, undefined, { status: "loading" });
 
     await waitForCall(listSub.next, 1);
     const payload = expectSingleListCallAndClear(listSub, expect.anything(), {
@@ -926,7 +926,7 @@ describe("ListQuery pivotTo tests", () => {
     );
 
     await waitForCall(listSub.next, 1);
-    expectSingleListCallAndClear(listSub, [], { status: "loading" });
+    expectSingleListCallAndClear(listSub, undefined, { status: "loading" });
 
     await waitForCall(listSub.next, 1);
     const payload = expectSingleListCallAndClear(listSub, expect.anything(), {
