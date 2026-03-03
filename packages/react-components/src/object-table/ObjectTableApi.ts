@@ -184,10 +184,10 @@ export interface ObjectTableProps<
 
   /**
    * Only applies if there is any editable column
-   * If true, editable cells are immediately in edit mode when clicked.
-   * If false, an Edit Table button will be shown, and cells will only enter edit mode when the user clicks the Edit button.
+   * If true, editable cells are immediately in edit mode on row clicked.
+   * If false, an Edit Table button will be shown to enter edit mode.
    *
-   * Note: In edit mode, onRowClick will not be called.
+   * Note: In edit mode, onRowClick will not be called as it would conflict with editing.
    *
    * @default false
    */
@@ -244,11 +244,12 @@ export interface ObjectTableProps<
    *
    * @param edits an array of edit info containing details about the edited cells
    * including the rowId, columnId, new and old values, and the row data before the edit
+   * @return a promise that resolves to true if the edits were successfully submitted
    */
   onSubmitEdits?: (edits: CellEditInfo<
     Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
     unknown
-  >[]) => Promise<void>;
+  >[]) => Promise<boolean>;
 
   /**
    * Called when the column visibility or ordering changed.

@@ -23,11 +23,11 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { ActionButton } from "../base-components/action-button/ActionButton.js";
 import { LoadingStateTable } from "./LoadingStateTable.js";
 import { NonIdealState } from "./NonIdealState.js";
 import styles from "./Table.module.css";
 import { TableBody } from "./TableBody.js";
+import { TableEditContainer } from "./TableEditContainer.js";
 import { TableHeader } from "./TableHeader.js";
 import type { HeaderMenuFeatureFlags } from "./TableHeaderWithPopover.js";
 import type { CellEditInfo, EditableConfig } from "./utils/types.js";
@@ -85,7 +85,6 @@ export function BaseTable<
 ): ReactElement {
   const tableContainerRef = useRef<HTMLDivElement>(null);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [focusedRowId, setFocusedRowId] = useState<string | null>(null);
 
   // Using a ref to prevent duplicate fetches from rapid scroll events while a fetch is in-flight
@@ -129,40 +128,9 @@ export function BaseTable<
   const headerGroups = table.getHeaderGroups();
   const hasData = rows.length > 0;
 
-  const {
-    cellEdits,
-    enableEditModeByDefault,
-    isInEditMode,
-    onSubmitEdits,
-    onEnableEditMode,
-    clearEdits,
-  } = editableConfig ?? {};
-
   const hasEditableColumns = table
     .getAllColumns()
     .some(column => column.columnDef.meta?.editable === true);
-
-  const hasEdits = Object.keys(cellEdits ?? {}).length > 0;
-
-  const handleSubmitEdits = useCallback(async () => {
-    // TODO: Provide user a way to clear edits on submit
-    setIsSubmitting(true);
-    try {
-      await onSubmitEdits?.();
-      onEnableEditMode?.(false);
-    } finally {
-      setIsSubmitting(false);
-    }
-  }, [onEnableEditMode, onSubmitEdits]);
-
-  const handleCancelEdits = useCallback(() => {
-    clearEdits?.();
-    onEnableEditMode?.(false);
-  }, [clearEdits, onEnableEditMode]);
-
-  const handleEnterEditMode = useCallback(() => {
-    onEnableEditMode?.(true);
-  }, [onEnableEditMode]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -213,7 +181,7 @@ export function BaseTable<
                   headerGroups={headerGroups}
                   focusedRowId={focusedRowId}
                   setFocusedRowId={setFocusedRowId}
-                  isInEditMode={isInEditMode}
+                  isInEditMode={editableConfig?.isInEditMode}
                 />
               </>
             )}
@@ -224,48 +192,10 @@ export function BaseTable<
         )}
       </div>
       {hasEditableColumns && (
-        <div className={styles.tableEditContainer}>
-          {hasEdits
-            ? (
-              <div className={styles.modificationCount}>
-                {`${
-                  cellEdits ? Object.keys(cellEdits).length : 0
-                } modifications`}
-              </div>
-            )
-            : (isInEditMode && !focusedRowId && (
-              <div className={styles.placeholder}>
-                Select a row to edit data…
-              </div>
-            ))}
-          <div className={styles.editButtons}>
-            {!isInEditMode && !enableEditModeByDefault && (
-              <ActionButton
-                variant="primary"
-                onClick={handleEnterEditMode}
-              >
-                Edit Table
-              </ActionButton>
-            )}
-            {!!isInEditMode && !enableEditModeByDefault && (
-              <ActionButton
-                variant="secondary"
-                onClick={handleCancelEdits}
-              >
-                Cancel
-              </ActionButton>
-            )}
-            {!!isInEditMode && !!onSubmitEdits && (
-              <ActionButton
-                variant="primary"
-                onClick={handleSubmitEdits}
-                disabled={!hasEdits || isSubmitting}
-              >
-                Submit Edits
-              </ActionButton>
-            )}
-          </div>
-        </div>
+        <TableEditContainer
+          editableConfig={editableConfig}
+          focusedRowId={focusedRowId}
+        />
       )}
     </div>
   );

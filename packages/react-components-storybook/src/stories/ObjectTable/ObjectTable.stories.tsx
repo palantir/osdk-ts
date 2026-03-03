@@ -115,7 +115,8 @@ const meta: Meta<EmployeeTableProps> = {
       },
     },
     enableEditModeByDefault: {
-      description: "Whether the table is in edit mode by default.",
+      description:
+        "Whether the table is in edit mode by default. If false, user needs to click on Edit Table to enter edit mode.",
       control: "boolean",
       defaultValue: false,
       table: {
@@ -1062,7 +1063,6 @@ export const EditableTable: Story = {
   args: {
     objectType: Employee,
     columnDefinitions: [
-      ...columnDefinitions,
       {
         locator: {
           type: "property",
@@ -1070,7 +1070,9 @@ export const EditableTable: Story = {
         },
         editable: true,
       },
+      ...columnDefinitions.slice(1),
     ],
+    enableEditModeByDefault: false,
   },
   parameters: {
     docs: {

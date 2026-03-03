@@ -44,7 +44,7 @@ export interface EditableConfig<
     cellId: string,
     info: CellEditInfo<TData, CellValue>,
   ) => void;
-  onSubmitEdits?: () => Promise<void>;
+  onSubmitEdits?: () => Promise<boolean>;
   clearEdits: () => void;
   cellEdits: Record<string, CellEditInfo<TData, CellValue>>;
   enableEditModeByDefault?: boolean;

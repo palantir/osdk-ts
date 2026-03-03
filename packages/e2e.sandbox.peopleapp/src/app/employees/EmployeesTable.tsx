@@ -1,10 +1,9 @@
 import type { DerivedProperty, Osdk } from "@osdk/api";
 import type { ColumnDefinition } from "@osdk/react-components/experimental";
 import { ObjectTable } from "@osdk/react-components/experimental";
-import { useOsdkAction } from "@osdk/react/experimental";
 import { useCallback } from "react";
 import { $ } from "../../foundryClient.js";
-import { Employee, modifyEmployee } from "../../generatedNoCheck2/index.js";
+import { Employee } from "../../generatedNoCheck2/index.js";
 
 type RDPs = {
   managerName: "string";
@@ -83,12 +82,10 @@ const columnDefinitions: Array<
 ];
 
 export function EmployeesTable() {
-  const { applyAction } = useOsdkAction(modifyEmployee);
-
   const handleSubmitEdits = useCallback(
     async () => {
       alert(`Submitting edits...`);
-      return;
+      return true;
     },
     [],
   );
@@ -114,7 +111,6 @@ export function EmployeesTable() {
           direction: "desc",
         }]}
         onSubmitEdits={handleSubmitEdits}
-        enableEditModeByDefault={false}
       />
     </div>
   );

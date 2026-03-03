@@ -114,7 +114,7 @@ export function useEditableTable<
 
   const handleSubmitEdits = useCallback(async () => {
     const edits = Object.values(cellEdits);
-    await onSubmitEdits?.(edits);
+    return onSubmitEdits ? onSubmitEdits(edits) : false;
   }, [cellEdits, onSubmitEdits]);
 
   return {
