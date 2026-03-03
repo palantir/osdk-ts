@@ -29,6 +29,7 @@ import { supportsExcluding } from "../utils/filterValues.js";
 import { getFilterLabel } from "../utils/getFilterLabel.js";
 import type { RenderFilterInput } from "./BaseFilterListApi.js";
 import { DragHandleIcon } from "./DragHandleIcon.js";
+import { ExcludeIcon, IncludeIcon } from "./FilterIcons.js";
 import styles from "./FilterListItem.module.css";
 
 interface FilterListItemProps<Q extends ObjectTypeDefinition> {
@@ -131,36 +132,3 @@ function FilterListItemInner<Q extends ObjectTypeDefinition>({
 export const FilterListItem = memo(
   FilterListItemInner,
 ) as typeof FilterListItemInner;
-
-function IncludeIcon(): React.ReactElement {
-  return (
-    <svg
-      width="14"
-      height="14"
-      viewBox="0 0 16 16"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      aria-hidden="true"
-    >
-      <path d="M2 3h12M5 8h6M7 13h2" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-function ExcludeIcon(): React.ReactElement {
-  return (
-    <svg
-      width="14"
-      height="14"
-      viewBox="0 0 16 16"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      aria-hidden="true"
-    >
-      <path d="M2 3h12M5 8h6M7 13h2" strokeLinecap="round" />
-      <path d="M3 14L13 2" strokeLinecap="round" />
-    </svg>
-  );
-}

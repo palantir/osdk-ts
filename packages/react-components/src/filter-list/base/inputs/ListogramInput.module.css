@@ -73,13 +73,14 @@
 .barFill {
   height: 100%;
   width: 100%;
-  background: var(--bar-fill-color, var(--osdk-filter-listogram-bar-color));
+  background: var(--osdk-filter-listogram-row-bar-color, var(--osdk-filter-listogram-bar-color));
   transform-origin: left;
+  transform: scaleX(var(--osdk-filter-listogram-bar-fill-scale, 0));
   transition: transform var(--osdk-filter-listogram-bar-fill-transition);
 }
 
 .row[aria-pressed="true"] .barFill {
-  background: var(--osdk-filter-listogram-selected-color);
+  background: var(--osdk-filter-listogram-row-bar-color, var(--osdk-filter-listogram-selected-color));
 }
 
 .count {

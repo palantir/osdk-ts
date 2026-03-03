@@ -32,8 +32,6 @@ interface ListogramInputProps {
   onChange: (values: string[]) => void;
   colorMap?: Record<string, string>;
   displayMode?: ListogramDisplayMode;
-  barColor?: string;
-  selectedBarColor?: string;
   className?: string;
   style?: React.CSSProperties;
   maxVisibleItems?: number;
@@ -48,8 +46,6 @@ function ListogramInputInner({
   onChange,
   colorMap,
   displayMode = "full",
-  barColor,
-  selectedBarColor,
   className,
   style,
   maxVisibleItems,
@@ -103,34 +99,30 @@ function ListogramInputInner({
       {(values.length > 0 || isLoading) && (
         <div className={styles.container}>
           {displayValues.map(({ value, count }) => {
-            const isSelected = selectedSet.has(value);
             const percentage = maxCount > 0 ? (count / maxCount) * 100 : 0;
             const perRowColor = colorMap?.[value];
-            const effectiveBarColor = perRowColor
-              ?? (isSelected ? selectedBarColor : undefined)
-              ?? barColor;
 
             return (
               <Button
                 key={value}
                 className={styles.row}
                 onClick={() => toggleValue(value)}
-                aria-pressed={isSelected}
+                aria-pressed={selectedSet.has(value)}
+                style={perRowColor || percentage > 0
+                  ? {
+                    "--osdk-filter-listogram-bar-fill-scale": percentage / 100,
+                    ...(perRowColor
+                      ? {
+                        "--osdk-filter-listogram-row-bar-color": perRowColor,
+                      }
+                      : undefined),
+                  } as React.CSSProperties
+                  : undefined}
               >
                 <span className={styles.label}>{value}</span>
                 {displayMode === "full" && (
                   <span className={styles.bar}>
-                    <span
-                      className={styles.barFill}
-                      style={{
-                        transform: `scaleX(${percentage / 100})`,
-                        ...(effectiveBarColor
-                          ? {
-                            "--bar-fill-color": effectiveBarColor,
-                          } as React.CSSProperties
-                          : undefined),
-                      }}
-                    />
+                    <span className={styles.barFill} />
                   </span>
                 )}
                 {displayMode !== "minimal" && (
