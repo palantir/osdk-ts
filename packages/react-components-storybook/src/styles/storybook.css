@@ -12,10 +12,6 @@ body {
   isolation: isolate;
 }
 
-/* Ensure proper rendering of the ObjectTable */
-.story-container {
-}
-
 /* Status tag styles */
 .status-tag {
   display: inline-flex;

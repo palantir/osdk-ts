@@ -42,13 +42,6 @@ const meta: Meta<EmployeeTableProps> = {
       expanded: true,
     },
   },
-  decorators: [
-    (Story) => (
-      <div className="story-container">
-        <Story />
-      </div>
-    ),
-  ],
   argTypes: {
     objectType: {
       description: "The object or interface type of the object",
