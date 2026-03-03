@@ -1,5 +1,11 @@
 # @osdkkit/react
 
+## 0.9.3
+
+### Patch Changes
+
+- 679ac34: Allow interface object sets in useObjectSet
+
 ## 0.9.2
 
 ### Patch Changes
