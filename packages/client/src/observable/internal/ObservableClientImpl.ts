@@ -200,7 +200,7 @@ export class ObservableClientImpl implements ObservableClient {
   ) => Promise<ActionValidationResponse>;
 
   public observeObjectSet<
-    T extends ObjectTypeDefinition,
+    T extends ObjectOrInterfaceDefinition,
     RDPs extends Record<
       string,
       WirePropertyTypes | undefined | Array<WirePropertyTypes>
