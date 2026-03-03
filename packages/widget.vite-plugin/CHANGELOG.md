@@ -1,5 +1,11 @@
 # @osdk/widget.vite-plugin
 
+## 3.4.5
+
+### Patch Changes
+
+- @osdk/widget.api@3.4.5
+
 ## 3.4.4
 
 ### Patch Changes

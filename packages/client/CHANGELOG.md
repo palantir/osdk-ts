@@ -1,5 +1,14 @@
 # @osdk/client
 
+## 2.7.5
+
+### Patch Changes
+
+- 679ac34: Allow interface object sets in useObjectSet
+  - @osdk/api@2.7.5
+  - @osdk/client.unstable@2.7.5
+  - @osdk/generator-converters@2.7.5
+
 ## 2.7.4
 
 ### Patch Changes
