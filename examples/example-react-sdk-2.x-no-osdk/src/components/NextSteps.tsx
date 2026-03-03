@@ -1,12 +1,11 @@
-import cube from "/cube.svg";
-import tag from "/tag.svg";
-
+import { Code, H5, H6, Icon, Link, Text } from "@blueprintjs/core";
+import { type IconName } from "@blueprintjs/icons";
 import React from "react";
 import css from "./NextSteps.module.css";
 
 const STEPS: INextStep[] = [
   {
-    icon: cube,
+    icon: "cube",
     title: "Configure your Ontology and Platform SDKs",
     subtitle: (
       <span>
@@ -18,21 +17,20 @@ const STEPS: INextStep[] = [
     ),
   },
   {
-    icon: tag,
+    icon: "tag",
     title: "Deploy your application",
     subtitle: (
       <span>
         To deploy a new version of your application, tag a new version of your
         repository or use the command line to run{" "}
-        <code className={css.code}>npx @osdk/cli@latest site deploy</code>.{" "}
-        <a
-          className={css.learnMore}
+        <Code>npx @osdk/cli@latest site deploy</Code>.{" "}
+        <Link
           href="https://www.npmjs.com/package/@osdk/cli"
           target="_blank"
           rel="noreferrer"
         >
           Learn more.
-        </a>
+        </Link>
       </span>
     ),
   },
@@ -41,7 +39,7 @@ const STEPS: INextStep[] = [
 function NextSteps(): React.ReactElement {
   return (
     <div className={css.nextSteps}>
-      <h5 className={css.nextStepsHeader}>Next steps</h5>
+      <H5 className={css.nextStepsHeader}>Next steps</H5>
       {STEPS.map((step) => (
         <NextStep
           key={step.title}
@@ -55,22 +53,20 @@ function NextSteps(): React.ReactElement {
 }
 
 interface INextStep {
-  icon: string;
+  icon: IconName;
   title: string;
   subtitle: React.ReactElement;
 }
 
-function NextStep({
-  icon,
-  title,
-  subtitle,
-}: INextStep): React.ReactElement {
+function NextStep({ icon, title, subtitle }: INextStep): React.ReactElement {
   return (
     <div className={css.nextStep}>
-      <img src={icon} className={css.icon} alt={icon} />
+      <div className={css.icon}>
+        <Icon icon={icon} aria-label={icon} />
+      </div>
       <div className={css.nextStepContent}>
-        <h6 className={css.title}>{title}</h6>
-        <div className={css.subtitle}>{subtitle}</div>
+        <H6 className={css.title}>{title}</H6>
+        <Text className={css.subtitle}>{subtitle}</Text>
       </div>
     </div>
   );

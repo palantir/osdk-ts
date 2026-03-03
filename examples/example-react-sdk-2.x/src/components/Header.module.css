@@ -1,13 +1,17 @@
-.header {
+.headerContainer {
   align-items: center;
   display: flex;
   flex-direction: column;
-  gap: 40px;
+  gap: calc(var(--bp-surface-spacing) * 10);
+}
+
+.header {
+  margin: 0;
 }
 
 .logos {
   display: flex;
-  gap: 32px;
+  gap: calc(var(--bp-surface-spacing) * 8);
 }
 
 .logo {

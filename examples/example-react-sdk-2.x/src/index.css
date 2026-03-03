@@ -1,8 +1,15 @@
+/* BlueprintJS */
+@import "normalize.css";
+@import "@blueprintjs/core/lib/css/blueprint.css";
+@import "@blueprintjs/icons/lib/css/blueprint-icons.css";
+@import "@blueprintjs/datetime/lib/css/blueprint-datetime.css";
+@import "@blueprintjs/select/lib/css/blueprint-select.css";
+@import "@blueprintjs/table/lib/css/table.css";
+
 :root {
   color: #1c2127;
-  font-family: 'Source Sans Pro', system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 18px;
-  font-size: 14px;
+  font-family:
+    "Source Sans Pro", system-ui, Avenir, Helvetica, Arial, sans-serif;
   font-synthesis: none;
   font-weight: 400;
   text-rendering: optimizeLegibility;
@@ -27,11 +34,4 @@ body {
   flex-direction: column;
   margin: 0;
   min-height: 100vh;
-}
-
-h2,
-h5,
-h6 {
-  font-size: 14px;
-  margin: 0;
 }
