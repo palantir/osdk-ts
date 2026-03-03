@@ -338,7 +338,7 @@ export interface ObservableClient extends ObserveLinks {
    * - Sorting and pagination
    */
   observeObjectSet<
-    T extends ObjectTypeDefinition,
+    T extends ObjectOrInterfaceDefinition,
     RDPs extends Record<
       string,
       WirePropertyTypes | undefined | Array<WirePropertyTypes>
