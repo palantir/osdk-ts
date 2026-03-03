@@ -18,7 +18,6 @@ import type {
   DerivedProperty,
   ObjectOrInterfaceDefinition,
   ObjectSet,
-  ObjectTypeDefinition,
   PropertyKeys,
   QueryDefinition,
   SimplePropertyDef,
@@ -115,9 +114,9 @@ export function useObjectTableData<
   const objectSetResult = useObjectSet(
     shouldUseObjectSet ? objectSet as ObjectSet<Q> : undefined as any,
     {
-      ...(objectSetOptions as ObjectSetOptions<ObjectTypeDefinition>),
+      ...(objectSetOptions as ObjectSetOptions<Q>),
       withProperties: withProperties as WithProperties<
-        ObjectTypeDefinition,
+        Q,
         RDPs
       >,
       where: filter,
