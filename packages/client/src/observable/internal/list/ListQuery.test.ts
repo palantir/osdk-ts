@@ -819,7 +819,7 @@ describe("ListQuery pivotTo tests", () => {
 
     testStage("Initial loading state verifies query construction succeeded");
     await waitForCall(listSub.next, 1);
-    expectSingleListCallAndClear(listSub, [], { status: "loading" });
+    expectSingleListCallAndClear(listSub, undefined, { status: "loading" });
 
     testStage("Verify no additional calls");
     expectNoMoreCalls(listSub);
@@ -860,7 +860,7 @@ describe("ListQuery pivotTo tests", () => {
     );
 
     await waitForCall(listSub.next, 1);
-    expectSingleListCallAndClear(listSub, [], { status: "loading" });
+    expectSingleListCallAndClear(listSub, undefined, { status: "loading" });
 
     await waitForCall(listSub.next, 1);
     const payload = expectSingleListCallAndClear(listSub, expect.anything(), {
@@ -868,7 +868,7 @@ describe("ListQuery pivotTo tests", () => {
     });
 
     testStage("Verify data loaded successfully");
-    expect(payload?.resolvedList?.length).toBe(1);
+    expect(payload?.resolvedList).toHaveLength(1);
 
     expectNoMoreCalls(listSub);
   });
@@ -926,7 +926,7 @@ describe("ListQuery pivotTo tests", () => {
     );
 
     await waitForCall(listSub.next, 1);
-    expectSingleListCallAndClear(listSub, [], { status: "loading" });
+    expectSingleListCallAndClear(listSub, undefined, { status: "loading" });
 
     await waitForCall(listSub.next, 1);
     const payload = expectSingleListCallAndClear(listSub, expect.anything(), {
@@ -934,9 +934,10 @@ describe("ListQuery pivotTo tests", () => {
     });
 
     testStage("Verify both linked offices are returned");
-    expect(payload?.resolvedList?.length).toBe(2);
-    const officeIds = payload?.resolvedList?.map((o) => o.$primaryKey).sort();
-    expect(officeIds).toEqual(["office-a", "office-b"]);
+    expect(payload?.resolvedList).toHaveLength(2);
+    expect(
+      payload?.resolvedList?.map((o) => o.$primaryKey).sort(),
+    ).toEqual(["office-a", "office-b"]);
 
     expectNoMoreCalls(listSub);
   });
