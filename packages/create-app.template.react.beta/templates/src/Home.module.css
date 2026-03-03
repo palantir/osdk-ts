@@ -1,6 +1,6 @@
 .home {
   display: flex;
   flex-direction: column;
-  gap: 60px;
+  gap: calc(var(--bp-surface-spacing) * 15);
   width: 800px;
 }
