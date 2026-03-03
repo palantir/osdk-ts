@@ -1,24 +1,24 @@
-import book from "/book.svg";
-
+import { Button, Icon, Tag } from "@blueprintjs/core";
 import React from "react";
 import css from "./Osdk.module.css";
+
+const DOCUMENTATION_URL =
+  "https://fake.palantirfoundry.com/workspace/developer-console/app/ri.third-party-applications.main.application.fake/docs/guide/loading-data?language=typescript";
 
 function Osdk(): React.ReactElement {
   return (
     <div className={css.osdk}>
       <div>
         <span>OSDK: </span>
-        <span className={css.tag}>@osdk/e2e.generated.catchall</span>
+        <Tag minimal={true}>@salfhaily/sdk</Tag>
       </div>
-      <a
-        href="https://fake.palantirfoundry.com/workspace/developer-console/app/ri.third-party-applications.main.application.fake/docs/guide/loading-data?language=typescript"
-        className={css.docs}
-        target="_blank"
-        rel="noreferrer"
+      <Button
+        onClick={() => window.open(DOCUMENTATION_URL, "_blank", "noreferrer")}
+        variant="minimal"
+        icon={<Icon icon="book" aria-label="Book icon"></Icon>}
       >
-        <img src={book} width={16} height={16} alt="Book icon"></img>
-        <span>View documentation</span>
-      </a>
+        View documentation
+      </Button>
     </div>
   );
 }

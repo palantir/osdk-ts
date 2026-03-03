@@ -1,55 +1,49 @@
 .nextSteps {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: calc(var(--bp-surface-spacing) * 4);
 }
 
 .nextStepsHeader {
   align-self: baseline;
-  font-size: 16px;
   font-weight: 600;
+  margin: 0;
 }
 
 .nextStep {
   border: 1px solid #11141826;
-  border-radius: 4px;
+  border-radius: var(--bp-surface-border-radius);
   display: flex;
-  gap: 15px;
-  padding: 16px;
+  gap: calc(var(--bp-surface-spacing) * 3);
+  padding: calc(var(--bp-surface-spacing) * 4);
 }
 
 .nextStepContent {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: var(--bp-surface-spacing);
   text-align: left;
 }
 
 .title {
   font-weight: 600;
+  margin: 0;
 }
 
 .subtitle {
-  color: #5f6b7c;
+  color: var(--bp-typography-color-muted);
   line-height: 20px;
 }
 
 .icon {
+  background-color: color-mix(
+    in srgb,
+    var(--bp-palette-gray-3) 15%,
+    transparent
+  );
+  border: 1px solid color-mix(in srgb, var(--bp-palette-black) 10%, transparent);
+  border-radius: 30px;
+  color: var(--bp-palette-gray-1);
   height: 34px;
-}
-
-.code {
-  background: #8f99a826;
-  padding: 2px;
-  white-space: nowrap;
-  border-radius: 2px;
-}
-
-.learnMore {
-  color: #215db0;
-  text-decoration: none;
-}
-
-.learnMore:hover {
-  text-decoration: underline;
+  padding: calc(var(--bp-surface-spacing) * 2);
 }
