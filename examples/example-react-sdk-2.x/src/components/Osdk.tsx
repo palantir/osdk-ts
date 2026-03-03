@@ -10,7 +10,7 @@ function Osdk(): React.ReactElement {
     <div className={css.osdk}>
       <div>
         <span>OSDK: </span>
-        <Tag minimal={true}>@salfhaily/sdk</Tag>
+        <Tag minimal={true}>@osdk/e2e.generated.catchall</Tag>
       </div>
       <Button
         onClick={() => window.open(DOCUMENTATION_URL, "_blank", "noreferrer")}
