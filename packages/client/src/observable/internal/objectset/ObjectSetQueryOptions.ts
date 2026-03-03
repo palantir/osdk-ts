@@ -17,8 +17,8 @@
 import type {
   DerivedProperty,
   LinkNames,
+  ObjectOrInterfaceDefinition,
   ObjectSet,
-  ObjectTypeDefinition,
   PropertyKeys,
   WhereClause,
   WirePropertyTypes,
@@ -26,7 +26,7 @@ import type {
 import type { CommonObserveOptions } from "../../ObservableClient/common.js";
 
 export interface ObserveObjectSetOptions<
-  Q extends ObjectTypeDefinition,
+  Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<
     string,
     WirePropertyTypes | undefined | Array<WirePropertyTypes>

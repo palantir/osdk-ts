@@ -16,8 +16,8 @@
 
 import type {
   BaseObjectSet,
+  ObjectOrInterfaceDefinition,
   ObjectSet,
-  ObjectTypeDefinition,
   WirePropertyTypes,
 } from "@osdk/api";
 import { getWireObjectSet } from "../objectSet/createObjectSet.js";
@@ -38,7 +38,7 @@ const orderByCanonicalizer = new OrderByCanonicalizer();
  * @returns A stable string key representing the ObjectSet and options
  */
 export function computeObjectSetCacheKey<
-  T extends ObjectTypeDefinition,
+  T extends ObjectOrInterfaceDefinition,
   BaseRDPs extends
     | Record<string, WirePropertyTypes | undefined | Array<WirePropertyTypes>>
     | BaseObjectSet<T> = never,
