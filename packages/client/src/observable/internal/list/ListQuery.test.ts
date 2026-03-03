@@ -868,7 +868,7 @@ describe("ListQuery pivotTo tests", () => {
     });
 
     testStage("Verify data loaded successfully");
-    expect(payload?.resolvedList.length).toBe(1);
+    expect(payload?.resolvedList?.length).toBe(1);
 
     expectNoMoreCalls(listSub);
   });
@@ -934,8 +934,8 @@ describe("ListQuery pivotTo tests", () => {
     });
 
     testStage("Verify both linked offices are returned");
-    expect(payload?.resolvedList.length).toBe(2);
-    const officeIds = payload?.resolvedList.map((o) => o.$primaryKey).sort();
+    expect(payload?.resolvedList?.length).toBe(2);
+    const officeIds = payload?.resolvedList?.map((o) => o.$primaryKey).sort();
     expect(officeIds).toEqual(["office-a", "office-b"]);
 
     expectNoMoreCalls(listSub);
