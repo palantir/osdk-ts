@@ -1,0 +1,9 @@
+{
+  "extends": ["//"],
+  "tasks": {
+    "codegen": {
+      "inputs": ["codegen.mjs", "src/documentation.yml"],
+      "outputs": ["src/generatedNoCheck/**/*"]
+    }
+  }
+}

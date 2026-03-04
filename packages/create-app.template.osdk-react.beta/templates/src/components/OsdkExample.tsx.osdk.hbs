@@ -1,0 +1,72 @@
+import React from "react";
+import css from "./OsdkExample.module.css";
+
+export function OsdkExample(): React.ReactElement {
+  return (
+    <div className={css.container}>
+      <h3 className={css.title}>OSDK React Hooks</h3>
+      <p className={css.description}>
+        This template uses the modern OSDK React hooks pattern with{" "}
+        <code className={css.code}>OsdkProvider2</code>.
+      </p>
+
+      <div className={css.codeBlock}>
+        <h4 className={css.codeTitle}>Fetching Objects with useOsdkObjects</h4>
+        <pre className={css.pre}>
+{`import { useOsdkObjects } from "@osdk/react/experimental";
+import { Employee } from "{{osdkPackage}}";
+
+function EmployeeList() {
+  const { data, isLoading, error, fetchMore } = useOsdkObjects(Employee, {
+    where: { department: "Engineering" },
+    orderBy: { hireDate: "desc" },
+    pageSize: 25,
+  });
+
+  return (
+    <div>
+      {isLoading && <Spinner />}
+      {error && <ErrorMessage error={error} />}
+      {data?.map(emp => <EmployeeCard key={emp.$primaryKey} employee={emp} />)}
+      {fetchMore && <button onClick={fetchMore}>Load More</button>}
+    </div>
+  );
+}`}
+        </pre>
+      </div>
+
+      <div className={css.codeBlock}>
+        <h4 className={css.codeTitle}>Actions with useOsdkAction</h4>
+        <pre className={css.pre}>
+{`import { useOsdkAction } from "@osdk/react/experimental";
+import { $Actions } from "{{osdkPackage}}";
+
+function PromoteButton({ employee }) {
+  const { applyAction, isPending, error } = useOsdkAction($Actions.promoteEmployee);
+
+  const handlePromote = async () => {
+    await applyAction({
+      employee,
+      newLevel: employee.level + 1,
+      $optimisticUpdate: (ctx) => {
+        ctx.updateObject(employee.$clone({ level: employee.level + 1 }));
+      },
+    });
+  };
+
+  return (
+    <button onClick={handlePromote} disabled={isPending}>
+      {isPending ? "Promoting..." : "Promote"}
+    </button>
+  );
+}`}
+        </pre>
+      </div>
+
+      <p className={css.note}>
+        Replace the example code above with your own object types and actions from{" "}
+        <code className={css.code}>{{osdkPackage}}</code>.
+      </p>
+    </div>
+  );
+}
