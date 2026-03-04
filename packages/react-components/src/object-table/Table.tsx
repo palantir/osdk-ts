@@ -181,7 +181,7 @@ export function BaseTable<
                   headerGroups={headerGroups}
                   focusedRowId={focusedRowId}
                   setFocusedRowId={setFocusedRowId}
-                  isInEditMode={editableConfig?.isInEditMode}
+                  isInEditMode={editableConfig?.editMode.isActive}
                 />
               </>
             )}

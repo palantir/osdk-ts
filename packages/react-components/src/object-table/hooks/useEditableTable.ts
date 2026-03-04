@@ -23,7 +23,7 @@ import type {
 } from "@osdk/api";
 import { useCallback, useState } from "react";
 import type { ObjectTableProps } from "../ObjectTableApi.js";
-import type { CellEditInfo, EditableConfig } from "../utils/types.js";
+import type { CellEditInfo, EditableConfig, EditMode } from "../utils/types.js";
 
 export interface UseEditableTableProps<
   Q extends ObjectOrInterfaceDefinition,
@@ -36,7 +36,7 @@ export interface UseEditableTableProps<
     never
   >,
 > {
-  enableEditModeByDefault: boolean;
+  editMode?: "always" | "manual";
 
   onCellValueChanged?: ObjectTableProps<
     Q,
@@ -62,14 +62,14 @@ export function useEditableTable<
     never
   >,
 >({
-  enableEditModeByDefault,
+  editMode = "manual",
   onCellValueChanged,
   onSubmitEdits,
 }: UseEditableTableProps<Q, RDPs, FunctionColumns>): EditableConfig<
   Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
   unknown
 > {
-  const [isInEditMode, setIsInEditMode] = useState(enableEditModeByDefault);
+  const [isActive, setActive] = useState(editMode === "always");
   const [cellEdits, setCellEdits] = useState<
     Record<
       string,
@@ -117,13 +117,15 @@ export function useEditableTable<
     return onSubmitEdits ? onSubmitEdits(edits) : false;
   }, [cellEdits, onSubmitEdits]);
 
+  const editModeConfig: EditMode = editMode === "always"
+    ? { type: "always", isActive: true }
+    : { type: "manual", isActive, setActive };
+
   return {
-    isInEditMode,
-    onEnableEditMode: setIsInEditMode,
     cellEdits,
     onCellEdit: handleCellEdit,
     onSubmitEdits: onSubmitEdits ? handleSubmitEdits : undefined,
     clearEdits,
-    enableEditModeByDefault,
+    editMode: editModeConfig,
   };
 }

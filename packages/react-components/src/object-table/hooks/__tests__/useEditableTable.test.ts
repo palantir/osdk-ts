@@ -39,7 +39,7 @@ describe("useEditableTable", () => {
   it("adds cell to cellEdits when edited", () => {
     const onCellValueChanged = vi.fn();
     const { result } = renderHook(() =>
-      useEditableTable({ enableEditModeByDefault: true, onCellValueChanged })
+      useEditableTable({ editMode: "always", onCellValueChanged })
     );
     const cellIdentifier = { rowId: "row-1", columnId: "col-1" };
     const cellId = getCellId(cellIdentifier);
@@ -66,7 +66,7 @@ describe("useEditableTable", () => {
   it("removes cell from cellEdits when edited back to original value", () => {
     const onCellValueChanged = vi.fn();
     const { result } = renderHook(() =>
-      useEditableTable({ enableEditModeByDefault: true, onCellValueChanged })
+      useEditableTable({ editMode: "always", onCellValueChanged })
     );
     const cellIdentifier = { rowId: "row-1", columnId: "col-1" };
     const cellId = getCellId(cellIdentifier);
@@ -108,7 +108,7 @@ describe("useEditableTable", () => {
 
   it("handles multiple cell edits", () => {
     const { result } = renderHook(() =>
-      useEditableTable({ enableEditModeByDefault: true })
+      useEditableTable({ editMode: "always" })
     );
     const cellId1 = getCellId({ rowId: "row-1", columnId: "col-1" });
     const cellId2 = getCellId({ rowId: "row-2", columnId: "col-2" });
@@ -165,7 +165,7 @@ describe("useEditableTable", () => {
 
   it("clears all edits", () => {
     const { result } = renderHook(() =>
-      useEditableTable({ enableEditModeByDefault: true })
+      useEditableTable({ editMode: "always" })
     );
     const cellId1 = getCellId({ rowId: "row-1", columnId: "col-1" });
     const cellId2 = getCellId({ rowId: "row-2", columnId: "col-2" });
@@ -201,7 +201,7 @@ describe("useEditableTable", () => {
   it("handles submit edits", async () => {
     const onSubmitEdits = vi.fn();
     const { result } = renderHook(() =>
-      useEditableTable({ enableEditModeByDefault: true, onSubmitEdits })
+      useEditableTable({ editMode: "always", onSubmitEdits })
     );
     const cellId1 = getCellId({ rowId: "row-1", columnId: "col-1" });
     const cellId2 = getCellId({ rowId: "row-2", columnId: "col-2" });
@@ -237,7 +237,7 @@ describe("useEditableTable", () => {
   it("when submit edits is undefined, onSubmitEdits is undefined", async () => {
     const { result } = renderHook(() =>
       useEditableTable({
-        enableEditModeByDefault: true,
+        editMode: "always",
         onSubmitEdits: undefined,
       })
     );
@@ -245,32 +245,55 @@ describe("useEditableTable", () => {
     expect(result.current.onSubmitEdits).toBeUndefined();
   });
 
-  it("when enableEditModeByDefault is false, isInEditMode is false initially", () => {
+  it("when editMode is manual, isActive is false initially", () => {
     const { result } = renderHook(() =>
-      useEditableTable({ enableEditModeByDefault: false })
+      useEditableTable({ editMode: "manual" })
     );
 
-    expect(result.current.isInEditMode).toBe(false);
-    expect(result.current.onEnableEditMode).toBeDefined();
+    expect(result.current.editMode.type).toBe("manual");
+    if (result.current.editMode.type === "manual") {
+      expect(result.current.editMode.isActive).toBe(false);
+      expect(result.current.editMode.setActive).toBeDefined();
 
-    act(() => {
-      result.current.onEnableEditMode?.(true);
-    });
+      act(() => {
+        result.current.editMode.type === "manual"
+          && result.current.editMode.setActive(true);
+      });
 
-    expect(result.current.isInEditMode).toBe(true);
+      expect(
+        result.current.editMode.type === "manual"
+          && result.current.editMode.isActive,
+      ).toBe(true);
 
-    act(() => {
-      result.current.onEnableEditMode?.(false);
-    });
+      act(() => {
+        result.current.editMode.type === "manual"
+          && result.current.editMode.setActive(false);
+      });
 
-    expect(result.current.isInEditMode).toBe(false);
+      expect(
+        result.current.editMode.type === "manual"
+          && result.current.editMode.isActive,
+      ).toBe(false);
+    }
   });
 
-  it("when enableEditModeByDefault is true, isInEditMode is always true", () => {
+  it("when editMode is always, the type is always and isActive is true", () => {
     const { result } = renderHook(() =>
-      useEditableTable({ enableEditModeByDefault: true })
+      useEditableTable({ editMode: "always" })
     );
 
-    expect(result.current.isInEditMode).toBe(true);
+    expect(result.current.editMode.type).toBe("always");
+    expect(result.current.editMode.isActive).toBe(true);
+  });
+
+  it("when editMode is manual with default settings, it starts as inactive", () => {
+    const { result } = renderHook(() =>
+      useEditableTable({ editMode: "manual" })
+    );
+
+    expect(result.current.editMode.type).toBe("manual");
+    if (result.current.editMode.type === "manual") {
+      expect(result.current.editMode.isActive).toBe(false);
+    }
   });
 });

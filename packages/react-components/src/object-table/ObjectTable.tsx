@@ -80,7 +80,7 @@ export function ObjectTable<
   enableColumnPinning = true,
   enableColumnResizing = true,
   enableColumnConfig = true,
-  enableEditModeByDefault = false,
+  editMode = "manual",
   ...props
 }: ObjectTableProps<Q, RDPs, FunctionColumns>): React.ReactElement {
   const { columnSizing, onColumnSizingChange } = useColumnResize({
@@ -163,7 +163,7 @@ export function ObjectTable<
     Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
     unknown
   > = useEditableTable({
-    enableEditModeByDefault,
+    editMode,
     onCellValueChanged,
     onSubmitEdits,
   });
@@ -199,7 +199,7 @@ export function ObjectTable<
     meta: {
       onCellEdit: editableConfig.onCellEdit,
       cellEdits: editableConfig.cellEdits,
-      isInEditMode: editableConfig.isInEditMode,
+      isInEditMode: editableConfig.editMode.isActive,
     },
   });
 

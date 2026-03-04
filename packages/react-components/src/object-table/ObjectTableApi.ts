@@ -183,15 +183,13 @@ export interface ObjectTableProps<
   enableColumnConfig?: boolean;
 
   /**
-   * Only applies if there is any editable column
-   * If true, editable cells are immediately in edit mode on row clicked.
-   * If false, an Edit Table button will be shown to enter edit mode.
+   * Controls the edit mode behavior of the table.
+   * - "always": Editable cells are immediately in edit mode on row clicked.
+   * - "manual": User can toggle edit mode on/off via the Edit Table button.
    *
-   * Note: In edit mode, onRowClick will not be called as it would conflict with editing.
-   *
-   * @default false
+   * @default "manual"
    */
-  enableEditModeByDefault?: boolean;
+  editMode?: "always" | "manual";
 
   /**
    * The default order by clause to sort the objects in the table.

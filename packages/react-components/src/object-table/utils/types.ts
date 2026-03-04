@@ -36,18 +36,20 @@ export interface CellEditInfo<
   originalRowData: TData;
 }
 
+export type EditMode =
+  | { type: "always"; isActive: true }
+  | { type: "manual"; isActive: boolean; setActive: (value: boolean) => void };
+
 export interface EditableConfig<
   TData extends RowData = unknown,
   CellValue = unknown,
 > {
+  cellEdits: Record<string, CellEditInfo<TData, CellValue>>;
   onCellEdit: (
     cellId: string,
     info: CellEditInfo<TData, CellValue>,
   ) => void;
   onSubmitEdits?: () => Promise<boolean>;
   clearEdits: () => void;
-  cellEdits: Record<string, CellEditInfo<TData, CellValue>>;
-  enableEditModeByDefault?: boolean;
-  isInEditMode: boolean;
-  onEnableEditMode: (value: boolean) => void;
+  editMode: EditMode;
 }

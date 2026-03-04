@@ -114,13 +114,14 @@ const meta: Meta<EmployeeTableProps> = {
         defaultValue: { summary: "true" },
       },
     },
-    enableEditModeByDefault: {
+    editMode: {
       description:
-        "Whether the table is in edit mode by default. If false, user needs to click on Edit Table to enter edit mode.",
-      control: "boolean",
-      defaultValue: false,
+        "Controls the edit mode behavior of the table. 'always': Table is always in edit mode. 'manual': User can toggle edit mode on/off.",
+      control: "select",
+      options: ["manual", "always"],
+      defaultValue: "manual",
       table: {
-        defaultValue: { summary: "false" },
+        defaultValue: { summary: "manual" },
       },
     },
     defaultOrderBy: {
@@ -1072,7 +1073,7 @@ export const EditableTable: Story = {
       },
       ...columnDefinitions.slice(1),
     ],
-    enableEditModeByDefault: false,
+    editMode: "manual",
   },
   parameters: {
     docs: {
@@ -1092,7 +1093,7 @@ export const EditableTable: Story = {
     <ObjectTable 
       objectType={Employee} 
       columnDefinitions={columnDefinitions} 
-      enableEditModeByDefault={false} 
+      editMode="manual" 
     />
   );`,
       },

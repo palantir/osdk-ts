@@ -35,15 +35,16 @@ export function TableEditContainer<
 }: TableEditContainerProps<TData>): ReactElement {
   const {
     cellEdits,
-    enableEditModeByDefault,
-    isInEditMode,
     onSubmitEdits,
-    onEnableEditMode,
     clearEdits,
+    editMode,
   } = editableConfig ?? {};
 
   const hasEdits = Object.keys(cellEdits ?? {}).length > 0;
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const isInEditMode = editMode?.isActive;
+  const canToggleEditMode = editMode?.type === "manual";
 
   const handleSubmitEdits = useCallback(async () => {
     setIsSubmitting(true);
@@ -51,21 +52,27 @@ export function TableEditContainer<
       const success = await onSubmitEdits?.();
       if (success) {
         clearEdits?.();
-        onEnableEditMode?.(false);
+        if (editMode?.type === "manual") {
+          editMode.setActive(false);
+        }
       }
     } finally {
       setIsSubmitting(false);
     }
-  }, [onEnableEditMode, onSubmitEdits, clearEdits]);
+  }, [editMode, onSubmitEdits, clearEdits]);
 
   const handleCancelEdits = useCallback(() => {
     clearEdits?.();
-    onEnableEditMode?.(false);
-  }, [clearEdits, onEnableEditMode]);
+    if (editMode?.type === "manual") {
+      editMode.setActive(false);
+    }
+  }, [clearEdits, editMode]);
 
   const handleEnterEditMode = useCallback(() => {
-    onEnableEditMode?.(true);
-  }, [onEnableEditMode]);
+    if (editMode?.type === "manual") {
+      editMode.setActive(true);
+    }
+  }, [editMode]);
 
   return (
     <div className={styles.tableEditContainer}>
@@ -81,7 +88,7 @@ export function TableEditContainer<
           </div>
         ))}
       <div className={styles.editButtons}>
-        {!isInEditMode && !enableEditModeByDefault && (
+        {!isInEditMode && canToggleEditMode && (
           <ActionButton
             variant="primary"
             onClick={handleEnterEditMode}
@@ -89,7 +96,7 @@ export function TableEditContainer<
             Edit Table
           </ActionButton>
         )}
-        {isInEditMode && !enableEditModeByDefault && (
+        {isInEditMode && canToggleEditMode && (
           <ActionButton
             variant="secondary"
             onClick={handleCancelEdits}
