@@ -1,5 +1,17 @@
 # @osdk/client
 
+## 2.8.0-beta.15
+
+### Minor Changes
+
+- dfc8019: Preserve derived property values when subscription updates write to RDP cache keys
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.15
+- @osdk/client.unstable@2.8.0-beta.15
+- @osdk/generator-converters@2.8.0-beta.15
+
 ## 2.8.0-beta.14
 
 ### Minor Changes
