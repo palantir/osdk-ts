@@ -22,6 +22,7 @@ import { exit } from "node:process";
 import { parse } from "node:url";
 import open from "open";
 import type { LoginArgs } from "./LoginArgs.js";
+import { successTemplate } from "./successTemplate.js";
 import type { TokenResponse, TokenSuccessResponse } from "./token.js";
 import { isTokenErrorResponse } from "./token.js";
 
@@ -40,7 +41,8 @@ export async function invokeLoginFlow(
 
   const server = createServer((req, res) => {
     const query = parse(req.url!, true).query;
-    res.end("Authenticated");
+    res.writeHead(200, { "Content-Type": "text/html" });
+    res.end(successTemplate);
     resolve(query["code"] as string);
   });
 
