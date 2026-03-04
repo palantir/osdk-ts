@@ -139,12 +139,14 @@ export class ObjectsHelper extends AbstractHelper<
           }
         }
 
-        valueToWrite = mergeObjectFields(
-          valueToWrite,
-          actualRdpFields,
-          expectedRdpFields,
-          existing.value,
-        );
+        if (actualRdpFields.size !== expectedRdpFields.size) {
+          valueToWrite = mergeObjectFields(
+            valueToWrite,
+            actualRdpFields,
+            expectedRdpFields,
+            existing.value,
+          );
+        }
       }
     }
 
