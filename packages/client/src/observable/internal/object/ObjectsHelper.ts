@@ -16,6 +16,7 @@
 
 import type { ObjectOrInterfaceDefinition, Osdk } from "@osdk/api";
 import deepEqual from "fast-deep-equal";
+import { UnderlyingOsdkObject } from "../../../object/convertWireToOsdkObjects/InternalSymbols.js";
 import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import { getDefType } from "../../../util/interfaceUtils.js";
 import type { ObjectPayload } from "../../ObjectPayload.js";
@@ -116,7 +117,39 @@ export class ObjectsHelper extends AbstractHelper<
       return;
     }
 
-    const valueToWrite = !dataChanged && existing ? existing.value : value;
+    let valueToWrite = !dataChanged && existing ? existing.value : value;
+
+    // When an object (e.g. from a subscription update) is written to a cache
+    // key that has RDP configuration, the incoming value may lack derived
+    // property values. Merge with the existing cached value so that RDP fields
+    // not present in the incoming object are preserved.
+    if (
+      valueToWrite !== tombstone
+      && existing?.value
+      && this.isObjectHolder(existing.value)
+    ) {
+      const expectedRdpFields = this.store.objectCacheKeyRegistry
+        .getRdpFieldSet(sourceCacheKey);
+      if (expectedRdpFields.size > 0) {
+        const underlying = valueToWrite[UnderlyingOsdkObject];
+        const actualRdpFields = new Set<string>();
+        for (const field of expectedRdpFields) {
+          if (underlying && field in underlying) {
+            actualRdpFields.add(field);
+          }
+        }
+
+        if (actualRdpFields.size !== expectedRdpFields.size) {
+          valueToWrite = mergeObjectFields(
+            valueToWrite,
+            actualRdpFields,
+            expectedRdpFields,
+            existing.value,
+          );
+        }
+      }
+    }
+
     batch.write(sourceCacheKey, valueToWrite, status);
 
     if (value !== tombstone) {
