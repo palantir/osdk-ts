@@ -44,7 +44,9 @@ export class ObjectSetQuery extends BaseListQuery<
   #baseObjectSetWire: string;
   #operations: Canonical<ObjectSetOperations>;
   #composedObjectSet: ObjectSet<any, any>;
-  #objectTypes: Set<string>;
+  #invalidationTypes: Set<string>;
+  #invalidationTypesPromise: Promise<Set<string>> | undefined;
+  #resultTypeApiName: string | undefined;
 
   constructor(
     store: Store,
@@ -73,7 +75,8 @@ export class ObjectSetQuery extends BaseListQuery<
     this.#baseObjectSetWire = baseObjectSetWire;
     this.#operations = operations;
     this.#composedObjectSet = this.#composeObjectSet(opts);
-    this.#objectTypes = this.#extractObjectTypes(opts);
+    this.#invalidationTypes = this.#extractBaseTypes();
+    this.#invalidationTypesPromise = this.#computeInvalidationTypes();
     if (opts.autoFetchMore === true) {
       this.minResultsToLoad = Number.MAX_SAFE_INTEGER;
     } else if (typeof opts.autoFetchMore === "number") {
@@ -112,41 +115,59 @@ export class ObjectSetQuery extends BaseListQuery<
     return result;
   }
 
-  #extractObjectTypes(opts: ObjectSetQueryOptions): Set<string> {
+  #extractBaseTypes(): Set<string> {
     const types = new Set<string>();
-    const baseWire = JSON.parse(this.#baseObjectSetWire);
-    if (baseWire.type) {
-      types.add(baseWire.type);
-    }
-
-    if (opts.union) {
-      for (const os of opts.union) {
-        const wire = getWireObjectSet(os);
-        if (wire.type) {
-          types.add(wire.type);
-        }
+    const stack: unknown[] = [JSON.parse(this.#baseObjectSetWire)];
+    while (stack.length > 0) {
+      const node = stack.pop();
+      if (node == null || typeof node !== "object") {
+        continue;
+      }
+      const obj = node as Record<string, unknown>;
+      if (obj.type === "base" && typeof obj.objectType === "string") {
+        types.add(obj.objectType);
+      }
+      if (
+        obj.type === "interfaceBase" && typeof obj.interfaceType === "string"
+      ) {
+        types.add(obj.interfaceType);
+      }
+      if (obj.objectSet != null) {
+        stack.push(obj.objectSet);
+      }
+      if (Array.isArray(obj.objectSets)) {
+        stack.push(...obj.objectSets);
       }
     }
-
-    if (opts.intersect) {
-      for (const os of opts.intersect) {
-        const wire = getWireObjectSet(os);
-        if (wire.type) {
-          types.add(wire.type);
-        }
-      }
-    }
-
-    if (opts.subtract) {
-      for (const os of opts.subtract) {
-        const wire = getWireObjectSet(os);
-        if (wire.type) {
-          types.add(wire.type);
-        }
-      }
-    }
-
     return types;
+  }
+
+  async #computeInvalidationTypes(): Promise<Set<string>> {
+    try {
+      const wireObjectSet = getWireObjectSet(this.#composedObjectSet);
+      const { resultType, invalidationSet } =
+        await getObjectTypesThatInvalidate(
+          this.store.client[additionalContext],
+          wireObjectSet,
+        );
+      this.#resultTypeApiName = resultType.apiName;
+      return new Set([resultType.apiName, ...invalidationSet]);
+    } catch (error) {
+      if (process.env.NODE_ENV !== "production") {
+        this.logger?.error(
+          "Failed to compute invalidation types, falling back to base types",
+          error,
+        );
+      }
+      return this.#invalidationTypes;
+    }
+  }
+
+  async ensureInvalidationTypesReady(): Promise<void> {
+    if (this.#invalidationTypesPromise) {
+      this.#invalidationTypes = await this.#invalidationTypesPromise;
+      this.#invalidationTypesPromise = undefined;
+    }
   }
 
   /**
@@ -163,18 +184,24 @@ export class ObjectSetQuery extends BaseListQuery<
   protected async fetchPageData(
     signal: AbortSignal | undefined,
   ): Promise<PageResult<Osdk.Instance<any>>> {
+    await this.ensureInvalidationTypesReady();
+
     if (
       this.#operations.orderBy
       && Object.keys(this.#operations.orderBy).length > 0
       && !(this.sortingStrategy instanceof OrderBySortingStrategy)
     ) {
-      const wireObjectSet = getWireObjectSet(this.#composedObjectSet);
-      const { resultType } = await getObjectTypesThatInvalidate(
-        this.store.client[additionalContext],
-        wireObjectSet,
-      );
+      let apiName = this.#resultTypeApiName;
+      if (!apiName) {
+        const wireObjectSet = getWireObjectSet(this.#composedObjectSet);
+        const { resultType } = await getObjectTypesThatInvalidate(
+          this.store.client[additionalContext],
+          wireObjectSet,
+        );
+        apiName = resultType.apiName;
+      }
       this.sortingStrategy = new OrderBySortingStrategy(
-        resultType.apiName,
+        apiName,
         this.#operations.orderBy,
       );
     }
@@ -228,7 +255,7 @@ export class ObjectSetQuery extends BaseListQuery<
     objectType: string,
     changes: Changes | undefined,
   ): Promise<void> => {
-    if (this.#objectTypes.has(objectType)) {
+    if (this.#invalidationTypes.has(objectType)) {
       changes?.modified.add(this.cacheKey);
       return this.revalidate(true);
     }
