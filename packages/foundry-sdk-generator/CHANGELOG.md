@@ -1,5 +1,14 @@
 # @osdk/foundry-sdk-generator
 
+## 2.8.0-beta.15
+
+### Patch Changes
+
+- Updated dependencies [dfc8019]
+  - @osdk/client@2.8.0-beta.15
+  - @osdk/api@2.8.0-beta.15
+  - @osdk/generator@2.8.0-beta.15
+
 ## 2.8.0-beta.14
 
 ### Minor Changes
