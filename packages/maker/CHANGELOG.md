@@ -1,5 +1,18 @@
 # @osdk/maker
 
+## 0.16.0-beta.8
+
+### Minor Changes
+
+- 35f2f1a: Add Media inputs/outputs for Queries
+
+### Patch Changes
+
+- Updated dependencies [35f2f1a]
+  - @osdk/api@2.8.0-beta.14
+  - @osdk/generator-converters.ontologyir@2.8.0-beta.14
+  - @osdk/typescript-sdk-docs@0.7.0-beta.2
+
 ## 0.16.0-beta.7
 
 ### Minor Changes

@@ -1,5 +1,12 @@
 # @osdk/create-app.template.tutorial-todo-aip-app.beta
 
+## 2.8.0-beta.14
+
+### Minor Changes
+
+- 35f2f1a: Add Media inputs/outputs for Queries
+- 6260835: Revert node bump
+
 ## 2.8.0-beta.13
 
 ## 2.8.0-beta.12
