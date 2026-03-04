@@ -310,6 +310,7 @@ const archetypeRules = archetypes(
       ...LIBRARY_RULES,
       react: true,
       cssExport: true,
+      extraPublishFiles: ["AGENTS.md"],
     },
   )
   .addArchetype(
