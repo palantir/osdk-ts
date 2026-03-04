@@ -256,6 +256,10 @@ export interface ObserveLinkCallbackArgs<
   T extends ObjectOrInterfaceDefinition,
 > {
   resolvedList: Osdk.Instance<T>[];
+  associationMap: ReadonlyMap<
+    string | number,
+    ReadonlyArray<Osdk.Instance<T>>
+  >;
   isOptimistic: boolean;
   lastUpdated: number;
   fetchMore: () => Promise<void>;

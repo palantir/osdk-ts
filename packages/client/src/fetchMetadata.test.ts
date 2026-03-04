@@ -64,10 +64,24 @@ describe("FetchMetadata", () => {
         "implements": [
           "FooInterface",
         ],
+        "interfaceLinkMap": {
+          "FooInterface": {
+            "fooLink": [
+              "peeps",
+            ],
+          },
+        },
         "interfaceMap": {
           "FooInterface": {
             "fooIdp": "office",
             "fooSpt": "fullName",
+          },
+        },
+        "inverseInterfaceLinkMap": {
+          "FooInterface": {
+            "peeps": [
+              "fooLink",
+            ],
           },
         },
         "inverseInterfaceMap": {
