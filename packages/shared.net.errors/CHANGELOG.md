@@ -1,5 +1,11 @@
 # @osdk/shared.net.errors
 
+## 2.8.0-beta.2
+
+### Minor Changes
+
+- 35f2f1a: Add Media inputs/outputs for Queries
+
 ## 2.5.0
 
 ### Patch Changes

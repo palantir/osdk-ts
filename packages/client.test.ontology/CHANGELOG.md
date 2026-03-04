@@ -1,5 +1,16 @@
 # @osdk/client.test.ontology
 
+## 2.8.0-beta.14
+
+### Minor Changes
+
+- 35f2f1a: Add Media inputs/outputs for Queries
+
+### Patch Changes
+
+- Updated dependencies [35f2f1a]
+  - @osdk/api@2.8.0-beta.14
+
 ## 2.8.0-beta.13
 
 ### Patch Changes

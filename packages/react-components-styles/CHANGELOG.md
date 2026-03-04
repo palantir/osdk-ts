@@ -1,5 +1,11 @@
 # @osdk/react-components-styles
 
+## 0.2.0-beta.7
+
+### Minor Changes
+
+- 35f2f1a: Add Media inputs/outputs for Queries
+
 ## 0.2.0-beta.6
 
 ### Minor Changes

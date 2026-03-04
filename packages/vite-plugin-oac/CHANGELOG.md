@@ -1,5 +1,21 @@
 # @osdk/vite-plugin-oac
 
+## 0.6.0-beta.15
+
+### Minor Changes
+
+- 35f2f1a: Add Media inputs/outputs for Queries
+
+### Patch Changes
+
+- Updated dependencies [35f2f1a]
+  - @osdk/api@2.8.0-beta.14
+  - @osdk/cli@0.32.0-beta.3
+  - @osdk/client.unstable@2.8.0-beta.14
+  - @osdk/faux@0.6.0-beta.4
+  - @osdk/generator-converters.ontologyir@2.8.0-beta.14
+  - @osdk/maker@0.16.0-beta.8
+
 ## 0.6.0-beta.14
 
 ### Patch Changes
