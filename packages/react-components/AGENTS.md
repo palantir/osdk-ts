@@ -31,28 +31,29 @@ function EmployeeDirectory() {
 
 ### Key Props
 
-| Prop | Type | Description |
-|------|------|-------------|
-| `objectType` | ObjectType | **Required.** The OSDK object type to display. |
-| `columnDefinitions` | `ColumnDefinition[]` | Column config: visibility, order, custom renderers, pinning, width. |
-| `enableFiltering` | boolean | Allow user filtering (default: true) |
-| `enableOrdering` | boolean | Allow user sorting (default: true) |
-| `enableColumnPinning` | boolean | Allow column pinning (default: true) |
-| `enableColumnResizing` | boolean | Allow column resizing (default: true) |
-| `enableColumnConfig` | boolean | Show column config dialog (default: true) |
-| `selectionMode` | `"single"` / `"multiple"` / `"none"` | Row selection mode (default: "none") |
-| `orderBy` / `defaultOrderBy` | OrderByClause[] | Controlled/uncontrolled sorting |
-| `filter` | WhereClause | Controlled filtering |
-| `rowHeight` | number | Row height in pixels (default: 40) |
-| `renderCellContextMenu` | function | Custom right-click menu |
+| Prop                         | Type                                 | Description                                                         |
+| ---------------------------- | ------------------------------------ | ------------------------------------------------------------------- |
+| `objectType`                 | ObjectType                           | **Required.** The OSDK object type to display.                      |
+| `columnDefinitions`          | `ColumnDefinition[]`                 | Column config: visibility, order, custom renderers, pinning, width. |
+| `enableFiltering`            | boolean                              | Allow user filtering (default: true)                                |
+| `enableOrdering`             | boolean                              | Allow user sorting (default: true)                                  |
+| `enableColumnPinning`        | boolean                              | Allow column pinning (default: true)                                |
+| `enableColumnResizing`       | boolean                              | Allow column resizing (default: true)                               |
+| `enableColumnConfig`         | boolean                              | Show column config dialog (default: true)                           |
+| `selectionMode`              | `"single"` / `"multiple"` / `"none"` | Row selection mode (default: "none")                                |
+| `orderBy` / `defaultOrderBy` | OrderByClause[]                      | Controlled/uncontrolled sorting                                     |
+| `filter`                     | WhereClause                          | Controlled filtering                                                |
+| `rowHeight`                  | number                               | Row height in pixels (default: 40)                                  |
+| `renderCellContextMenu`      | function                             | Custom right-click menu                                             |
 
 ### Column Definition
 
 ```ts
 type ColumnDefinition = {
-  locator: { type: "property", id: string }   // object property
-         | { type: "rdp", id: string, creator: fn }  // derived property
-         | { type: "custom", id: string };     // custom column
+  locator:
+    | { type: "property"; id: string } // object property
+    | { type: "rdp"; id: string; creator: fn } // derived property
+    | { type: "custom"; id: string }; // custom column
   renderHeader?: () => ReactNode;
   renderCell?: (object) => ReactNode;
   width?: number;
@@ -76,6 +77,6 @@ import { ColumnConfigDialog } from "@osdk/react-components/experimental";
   columnOptions={[{ id: "fullName", name: "Full Name" }]}
   currentVisibility={{ fullName: true }}
   currentColumnOrder={["fullName"]}
-  onApply={(columns) => { /* [{ columnId, isVisible }] */ }}
-/>
+  onApply={(columns) => {/* [{ columnId, isVisible }] */}}
+/>;
 ```
