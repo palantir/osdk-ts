@@ -92,6 +92,17 @@ export interface UseLinksResult<
   Q extends ObjectOrInterfaceDefinition,
 > {
   links: Osdk.Instance<Q>[] | undefined;
+
+  /**
+   * Maps each source object's primary key to its linked object instances.
+   * Useful when observing links from multiple source objects to determine
+   * which source links to which targets.
+   */
+  associationMap: ReadonlyMap<
+    string | number,
+    ReadonlyArray<Osdk.Instance<Q>>
+  >;
+
   isLoading: boolean;
   error: Error | undefined;
 
@@ -112,6 +123,7 @@ export interface UseLinksResult<
 }
 
 const emptyArray = Object.freeze([]);
+const emptyMap: ReadonlyMap<string | number, ReadonlyArray<never>> = new Map();
 
 /**
  * Hook to observe links from an object or array of objects.
@@ -212,6 +224,7 @@ export function useLinks<
 
   return React.useMemo(() => ({
     links: payload?.resolvedList,
+    associationMap: payload?.associationMap ?? emptyMap,
     isLoading: enabled
       ? (payload?.status === "loading" || payload?.status === "init"
         || !payload)

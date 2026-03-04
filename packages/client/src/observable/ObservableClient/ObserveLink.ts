@@ -53,6 +53,10 @@ export namespace ObserveLinks {
     T extends ObjectTypeDefinition | InterfaceDefinition,
   > {
     resolvedList: Osdk.Instance<T>[] | undefined;
+    associationMap: ReadonlyMap<
+      string | number,
+      ReadonlyArray<Osdk.Instance<T>>
+    >;
     isOptimistic: boolean;
     lastUpdated: number;
     fetchMore: () => Promise<void>;
