@@ -131,8 +131,7 @@ export class ObjectsHelper extends AbstractHelper<
       const expectedRdpFields = this.store.objectCacheKeyRegistry
         .getRdpFieldSet(sourceCacheKey);
       if (expectedRdpFields.size > 0) {
-        // Determine which RDP fields the incoming value actually carries
-        const underlying = (valueToWrite as ObjectHolder)[UnderlyingOsdkObject];
+        const underlying = valueToWrite[UnderlyingOsdkObject];
         const actualRdpFields = new Set<string>();
         for (const field of expectedRdpFields) {
           if (underlying && field in underlying) {
@@ -141,7 +140,7 @@ export class ObjectsHelper extends AbstractHelper<
         }
 
         valueToWrite = mergeObjectFields(
-          valueToWrite as ObjectHolder,
+          valueToWrite,
           actualRdpFields,
           expectedRdpFields,
           existing.value,
