@@ -18,13 +18,13 @@ import * as fs from "fs";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { custom } from "./custom.js";
 import {
-  AliasEnvironment,
   ALIASES_JSON_FILE_ENV_VAR,
   detectEnvironment,
   RESOURCES_JSON_FILE_ENV_VAR,
 } from "./environment.js";
 import { resetPublishedCache } from "./loaders.js";
 import { model } from "./model.js";
+import { AliasEnvironment } from "./types.js";
 
 // Read test data before mocking fs - use node:fs which is not affected by vi.mock("fs")
 const { testAliasesData, testResourcesData } = vi.hoisted(() => {

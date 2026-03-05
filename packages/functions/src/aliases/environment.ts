@@ -14,13 +14,10 @@
  * limitations under the License.
  */
 
+import { AliasEnvironment } from "./types.js";
+
 export const ALIASES_JSON_FILE_ENV_VAR = "ALIASES_JSON_FILE";
 export const RESOURCES_JSON_FILE_ENV_VAR = "RESOURCES_JSON_FILE";
-
-export enum AliasEnvironment {
-  PUBLISHED = "PUBLISHED",
-  LIVE_PREVIEW = "LIVE_PREVIEW",
-}
 
 export function detectEnvironment(): AliasEnvironment {
   const aliasesFileSet = ALIASES_JSON_FILE_ENV_VAR in process.env;

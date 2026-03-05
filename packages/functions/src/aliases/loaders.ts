@@ -16,11 +16,11 @@
 
 import * as fs from "fs";
 import {
-  AliasEnvironment,
   detectEnvironment,
   getAliasesFilePath,
   getResourcesFilePath,
 } from "./environment.js";
+import { AliasEnvironment } from "./types.js";
 import type {
   AliasesFile,
   Model,

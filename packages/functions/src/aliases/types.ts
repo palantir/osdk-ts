@@ -27,6 +27,13 @@ export interface ResolvedAliases {
   models: Record<string, Model>;
 }
 
+// Environment
+
+export enum AliasEnvironment {
+  PUBLISHED = "PUBLISHED",
+  LIVE_PREVIEW = "LIVE_PREVIEW",
+}
+
 // Published mode types (aliases.json)
 
 export interface ModelIdentifier {
