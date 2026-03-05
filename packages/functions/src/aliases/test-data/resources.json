@@ -21,6 +21,12 @@
         },
         "verbs": [],
         "alias": null
+      },
+      {
+        "identifier": {
+          "rid": "ri.foundry-ml.main.model.dddddddd-dddd-dddd-dddd-dddddddddddd"
+        },
+        "verbs": []
       }
     ],
     "custom": {

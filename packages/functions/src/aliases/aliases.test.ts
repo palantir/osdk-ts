@@ -228,7 +228,7 @@ describe("live preview mode aliases", () => {
       );
     });
 
-    it("excludes models without aliases", () => {
+    it("excludes models with null or missing alias", () => {
       expect(() => model("some-random-lookup")).toThrow(
         "Available aliases: [previewModelAlias, anotherPreviewModel]",
       );

@@ -52,14 +52,14 @@ export interface AliasesFile {
 export interface ModelResource {
   identifier: ModelIdentifier;
   verbs: string[];
-  alias: string | null;
+  alias?: string | null;
 }
 
-export interface Resources {
+export interface ResourceScopes {
   custom: Record<string, string>;
   models: ModelResource[];
 }
 
 export interface ResourcesFile {
-  resources: Resources;
+  resources: ResourceScopes;
 }
