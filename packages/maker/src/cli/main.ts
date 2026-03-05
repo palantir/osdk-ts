@@ -17,8 +17,7 @@
 import type { OntologyIr } from "@osdk/client.unstable";
 import { OntologyIrToFullMetadataConverter } from "@osdk/generator-converters.ontologyir";
 import { consola } from "consola";
-import { execa } from "execa";
-import { createJiti } from "jiti";
+import { spawn } from "node:child_process";
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
 import invariant from "tiny-invariant";
@@ -341,14 +340,7 @@ async function loadOntology(
 ) {
   const q = await defineOntology(
     apiNamespace,
-    async () => {
-      const jiti = createJiti(import.meta.filename, {
-        moduleCache: true,
-        debug: false,
-        importMeta: import.meta,
-      });
-      await jiti.import(input);
-    },
+    async () => await import(input),
     outputDir,
     dependencyFile,
     generateCodeSnippets,
@@ -372,23 +364,39 @@ async function fullMetadataToOsdk(
 
   try {
     // Generate the source code for the osdk
-    await execa("pnpm", [
-      "exec",
-      "osdk",
-      "unstable",
-      "typescript",
-      "generate",
-      "--outDir",
-      functionOsdkDir,
-      "--ontologyPath",
-      path.join(workDir, ".ontology.json"),
-      "--beta",
-      "true",
-      "--packageType",
-      "module",
-      "--version",
-      "dev",
-    ]);
+    await new Promise<void>((resolve, reject) => {
+      const child = spawn("pnpm", [
+        "exec",
+        "osdk",
+        "unstable",
+        "typescript",
+        "generate",
+        "--outDir",
+        functionOsdkDir,
+        "--ontologyPath",
+        path.join(workDir, ".ontology.json"),
+        "--beta",
+        "true",
+        "--packageType",
+        "module",
+        "--version",
+        "dev",
+      ], {
+        stdio: "inherit",
+      });
+
+      child.on("close", (code) => {
+        if (code === 0) {
+          resolve();
+        } else {
+          reject(new Error(`pnpm command exited with code ${code}`));
+        }
+      });
+
+      child.on("error", (err) => {
+        reject(err);
+      });
+    });
   } catch (error) {
     await fs.rm(functionOsdkDir, { recursive: true, force: true });
     throw error;
