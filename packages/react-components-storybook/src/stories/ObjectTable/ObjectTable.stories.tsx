@@ -42,43 +42,20 @@ const meta: Meta<EmployeeTableProps> = {
       expanded: true,
     },
   },
-  decorators: [
-    (Story) => (
-      <div className="story-container">
-        <Story />
-      </div>
-    ),
-  ],
   argTypes: {
     objectType: {
-      description: "The object type of the object",
-      control: false, // Required prop set in stories
+      description: "The object or interface type of the object",
+      control: false,
     },
     columnDefinitions: {
       description:
         "Ordered list of column definitions to show in the table. If not provided, all of the properties of the object type will be shown in default order.",
       control: "object",
     },
-    enableFiltering: {
-      description: "Whether the table is filterable by the user.",
-      control: "boolean",
-      defaultValue: true,
-      table: {
-        defaultValue: { summary: "true" },
-      },
-    },
     filter: {
       description:
         "The current where clause to filter the objects in the table. If provided, the filter is controlled.",
       control: "object",
-    },
-    onFilterChanged: {
-      description:
-        "Called when the where clause is changed. Required when filter is controlled.",
-      control: false,
-      table: {
-        category: "Events",
-      },
     },
     enableOrdering: {
       description: "Whether the table is sortable by the user.",
@@ -739,7 +716,6 @@ return (
 export const DisableAllHeaderMenuFeatures: Story = {
   args: {
     objectType: Employee,
-    enableFiltering: false,
     enableOrdering: false,
     enableColumnPinning: false,
     enableColumnResizing: false,
@@ -750,7 +726,6 @@ export const DisableAllHeaderMenuFeatures: Story = {
       source: {
         code: `<ObjectTable
   objectType={Employee}
-  enableFiltering={false}
   enableOrdering={false}
   enableColumnPinning={false}
   enableColumnResizing={false}

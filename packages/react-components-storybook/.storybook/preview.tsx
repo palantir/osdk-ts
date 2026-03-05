@@ -81,6 +81,7 @@ const preview: Preview = {
       themes: {
         light: "light",
         modern: "modern",
+        devcon: "devcon",
       },
       defaultTheme: "light",
       attributeName: "data-theme",
