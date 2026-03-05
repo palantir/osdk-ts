@@ -152,7 +152,9 @@ export abstract class BaseListQuery<
     }
 
     objectCacheKeys = this.#retainReleaseAppend(batch, append, objectCacheKeys);
-    objectCacheKeys = this._sortCacheKeys(objectCacheKeys, batch);
+    if (!append) {
+      objectCacheKeys = this._sortCacheKeys(objectCacheKeys, batch);
+    }
     objectCacheKeys = removeDuplicates(objectCacheKeys, batch);
 
     return this.writeToStore(
@@ -625,8 +627,11 @@ export abstract class BaseListQuery<
       objectCacheKeys,
     );
 
-    // Step 3: Sort using the configured sorting strategy
-    objectCacheKeys = this._sortCacheKeys(objectCacheKeys, batch);
+    // Step 3: Sort using the configured sorting strategy (skip on append —
+    // server cursor pagination guarantees order)
+    if (!(options.append ?? false)) {
+      objectCacheKeys = this._sortCacheKeys(objectCacheKeys, batch);
+    }
 
     // Step 4: Remove duplicates
     objectCacheKeys = removeDuplicates(objectCacheKeys, batch);

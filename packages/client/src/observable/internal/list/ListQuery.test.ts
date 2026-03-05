@@ -28,10 +28,19 @@ import {
   stubData,
 } from "@osdk/shared.test";
 import chalk from "chalk";
-import { beforeAll, beforeEach, describe, expect, it } from "vitest";
+import {
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest";
 import type { Client } from "../../../Client.js";
 import { createClient } from "../../../createClient.js";
 import { TestLogger } from "../../../logger/TestLogger.js";
+import { BaseListQuery } from "../base-list/BaseListQuery.js";
 import { Store } from "../Store.js";
 import {
   createDefer,
@@ -938,6 +947,137 @@ describe("ListQuery pivotTo tests", () => {
     expect(
       payload?.resolvedList?.map((o) => o.$primaryKey).sort(),
     ).toEqual(["office-a", "office-b"]);
+
+    expectNoMoreCalls(listSub);
+  });
+});
+
+describe("ListQuery skip sort on append", () => {
+  let client: Client;
+  let apiServer: SetupServer;
+  let fauxFoundry: FauxFoundry;
+  let store: Store;
+  let sortSpy: ReturnType<typeof vi.spyOn>;
+
+  beforeAll(() => {
+    const testSetup = startNodeApiServer(
+      new FauxFoundry("https://stack.palantir.com/", undefined, { logger }),
+      createClient,
+      { logger },
+    );
+    ({ client, apiServer, fauxFoundry } = testSetup);
+
+    setupOntology(testSetup.fauxFoundry);
+
+    return () => {
+      testSetup.apiServer.close();
+    };
+  });
+
+  beforeEach(() => {
+    apiServer.resetHandlers();
+    store = new Store(client);
+    sortSpy = vi.spyOn(
+      BaseListQuery.prototype as any,
+      "_sortCacheKeys",
+    );
+  });
+
+  afterEach(() => {
+    sortSpy.mockRestore();
+  });
+
+  it("sorts on initial page load but skips sort when appending via fetchMore", async () => {
+    setupTodos(fauxFoundry, 10);
+
+    testStage("Observe with orderBy and small pageSize to force pagination");
+    const listSub = mockListSubCallback();
+    defer(
+      store.lists.observe(
+        {
+          type: Todo,
+          where: {},
+          orderBy: { id: "desc" },
+          pageSize: 5,
+        },
+        listSub,
+      ),
+    );
+
+    testStage("Initial loading state");
+    await waitForCall(listSub.next, 1);
+    expectSingleListCallAndClear(listSub, undefined, { status: "loading" });
+
+    testStage("First page loads — _sortCacheKeys should be called");
+    await waitForCall(listSub.next, 1);
+    const payload = expectSingleListCallAndClear(listSub, expect.anything(), {
+      status: "loaded",
+    });
+    expect(payload?.resolvedList?.length).toBe(5);
+
+    const callsAfterFirstPage = sortSpy.mock.calls.length;
+    expect(callsAfterFirstPage).toBeGreaterThan(0);
+
+    testStage("fetchMore — _sortCacheKeys should NOT be called again");
+    sortSpy.mockClear();
+    void payload!.fetchMore();
+
+    await waitForCall(listSub.next, 1);
+    expectSingleListCallAndClear(listSub, expect.anything(), {
+      status: "loading",
+    });
+    await waitForCall(listSub.next, 1);
+    const appendedPayload = expectSingleListCallAndClear(
+      listSub,
+      expect.anything(),
+      { status: "loaded" },
+    );
+    expect(appendedPayload?.resolvedList?.length).toBe(10);
+
+    // _sortCacheKeys should not have been called during the append
+    expect(sortSpy).not.toHaveBeenCalled();
+
+    testStage("Verify appended order preserves server pagination order");
+    const ids = appendedPayload?.resolvedList?.map((item) => item.id) ?? [];
+    // First page items should come before second page items
+    for (let i = 1; i < ids.length; i++) {
+      expect(ids[i - 1]).toBeGreaterThan(ids[i] as number);
+    }
+
+    expectNoMoreCalls(listSub);
+  });
+
+  it("sorts on initial load without fetchMore (non-append path)", async () => {
+    setupTodos(fauxFoundry, 3);
+
+    const listSub = mockListSubCallback();
+    defer(
+      store.lists.observe(
+        {
+          type: Todo,
+          where: {},
+          orderBy: { id: "desc" },
+          pageSize: 10,
+        },
+        listSub,
+      ),
+    );
+
+    await waitForCall(listSub.next, 1);
+    expectSingleListCallAndClear(listSub, undefined, { status: "loading" });
+
+    await waitForCall(listSub.next, 1);
+    const payload = expectSingleListCallAndClear(listSub, expect.anything(), {
+      status: "loaded",
+    });
+    expect(payload?.resolvedList?.length).toBe(3);
+
+    // Sort should have been called for the non-append initial load
+    expect(sortSpy).toHaveBeenCalled();
+
+    // Verify items are sorted descending
+    const ids = payload?.resolvedList?.map((item) => item.id) ?? [];
+    expect(ids).toEqual([2, 1, 0]);
 
     expectNoMoreCalls(listSub);
   });
