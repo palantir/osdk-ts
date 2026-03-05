@@ -33,7 +33,6 @@ const columnDefinitions: Array<
     columnName: "Employee Number",
     editable: false,
   },
-  // With isVisible prop
   {
     locator: { type: "property", id: "jobTitle" },
     editable: true,

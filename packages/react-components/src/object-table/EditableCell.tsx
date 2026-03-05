@@ -100,7 +100,7 @@ function EditableCellInner<TData extends RowData, CellValue = unknown>({
       return;
     }
     const parsedValue = parseValueByType(inputValue, dataType);
-    onCellEdit?.(cellId, {
+    onCellEdit(cellId, {
       rowId,
       columnId,
       newValue: parsedValue as CellValue,

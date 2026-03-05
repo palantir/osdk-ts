@@ -1121,6 +1121,7 @@ export const WithSubmitEditsButton: Story = {
     ],
     onSubmitEdits: (edits: CellEditInfo<Osdk.Instance<Employee>>[]) => {
       alert("Submitting edits");
+      return true;
     },
   },
   parameters: {
@@ -1142,6 +1143,8 @@ export const WithSubmitEditsButton: Story = {
     columnDefinitions={columnDefinitions} 
     onSubmitEdits={(edits) => {
         alert("Submitting edits");
+        // Return true to indicate edits were successfully submitted and can be cleared from the table's edit state
+        return true;
     }}
   />`,
       },
