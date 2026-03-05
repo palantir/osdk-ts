@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,21 @@
  * limitations under the License.
  */
 
-import { detectEnvironment } from "./environment.js";
-import { getCustomPreview } from "./preview.js";
-import { getCustomPublished } from "./published.js";
-
-export type Custom = string & { readonly __brand: "Custom" };
+import { loadResolvedAliases } from "./loaders.js";
+import type { Custom } from "./types.js";
+export type { Custom } from "./types.js";
 
 export function custom(alias: string): Custom {
-  const environment = detectEnvironment();
+  const resolvedAliases = loadResolvedAliases();
 
-  if (environment === "published") {
-    return getCustomPublished(alias) as Custom;
-  } else {
-    return getCustomPreview(alias) as Custom;
+  if (!(alias in resolvedAliases.custom)) {
+    const available = Object.keys(resolvedAliases.custom);
+    throw new Error(
+      `Custom alias '${alias}' not found. Available aliases: [${
+        available.join(", ")
+      }]`,
+    );
   }
+
+  return resolvedAliases.custom[alias] as Custom;
 }

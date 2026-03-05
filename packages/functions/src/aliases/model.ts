@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,20 +14,21 @@
  * limitations under the License.
  */
 
-import { detectEnvironment } from "./environment.js";
-import { getModelPreview } from "./preview.js";
-import { getModelPublished } from "./published.js";
-
-export interface Model {
-  rid: string;
-}
+import { loadResolvedAliases } from "./loaders.js";
+import type { Model } from "./types.js";
+export type { Model } from "./types.js";
 
 export function model(alias: string): Model {
-  const environment = detectEnvironment();
+  const resolvedAliases = loadResolvedAliases();
 
-  const modelValue = environment === "published"
-    ? getModelPublished(alias)
-    : getModelPreview(alias);
+  if (!(alias in resolvedAliases.models)) {
+    const available = Object.keys(resolvedAliases.models);
+    throw new Error(
+      `Model alias '${alias}' not found. Available aliases: [${
+        available.join(", ")
+      }]`,
+    );
+  }
 
-  return { rid: modelValue.id.rid };
+  return resolvedAliases.models[alias];
 }

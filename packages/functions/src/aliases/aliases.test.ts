@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,12 +18,13 @@ import * as fs from "fs";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { custom } from "./custom.js";
 import {
+  AliasEnvironment,
   ALIASES_JSON_FILE_ENV_VAR,
   detectEnvironment,
   RESOURCES_JSON_FILE_ENV_VAR,
 } from "./environment.js";
+import { resetPublishedCache } from "./loaders.js";
 import { model } from "./model.js";
-import { resetPublishedCache } from "./published.js";
 
 // Read test data before mocking fs - use node:fs which is not affected by vi.mock("fs")
 const { testAliasesData, testResourcesData } = vi.hoisted(() => {
@@ -58,12 +59,12 @@ describe("environment detection", () => {
 
   it("detects published environment", () => {
     process.env[ALIASES_JSON_FILE_ENV_VAR] = "/some/path/aliases.json";
-    expect(detectEnvironment()).toBe("published");
+    expect(detectEnvironment()).toBe(AliasEnvironment.PUBLISHED);
   });
 
   it("detects live preview environment", () => {
     process.env[RESOURCES_JSON_FILE_ENV_VAR] = "/some/path/resources.json";
-    expect(detectEnvironment()).toBe("live_preview");
+    expect(detectEnvironment()).toBe(AliasEnvironment.LIVE_PREVIEW);
   });
 
   it("throws when both env vars are set", () => {

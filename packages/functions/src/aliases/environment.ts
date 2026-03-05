@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,10 @@
 export const ALIASES_JSON_FILE_ENV_VAR = "ALIASES_JSON_FILE";
 export const RESOURCES_JSON_FILE_ENV_VAR = "RESOURCES_JSON_FILE";
 
-export type AliasEnvironment = "published" | "live_preview";
+export enum AliasEnvironment {
+  PUBLISHED = "PUBLISHED",
+  LIVE_PREVIEW = "LIVE_PREVIEW",
+}
 
 export function detectEnvironment(): AliasEnvironment {
   const aliasesFileSet = ALIASES_JSON_FILE_ENV_VAR in process.env;
@@ -31,11 +34,10 @@ export function detectEnvironment(): AliasEnvironment {
   }
 
   if (aliasesFileSet) {
-    return "published";
+    return AliasEnvironment.PUBLISHED;
   }
-
   if (resourcesFileSet) {
-    return "live_preview";
+    return AliasEnvironment.LIVE_PREVIEW;
   }
 
   throw new Error(

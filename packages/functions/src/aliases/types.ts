@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+// Types relevant to OSDK APIs
+
+export type Custom = string & { readonly __brand: "Custom" };
+
+export interface Model {
+  rid: string;
+}
+
+export interface ResolvedAliases {
+  custom: Record<string, string>;
+  models: Record<string, Model>;
+}
 
 // Published mode types (aliases.json)
 
