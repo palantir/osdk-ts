@@ -34,6 +34,23 @@ export enum AliasEnvironment {
   LIVE_PREVIEW = "LIVE_PREVIEW",
 }
 
+// Live preview mode types (resources.json)
+
+export interface ModelResource {
+  identifier: ModelIdentifier;
+  verbs: string[];
+  alias?: string | null;
+}
+
+export interface ResourceScopes {
+  custom: Record<string, string>;
+  models: ModelResource[];
+}
+
+export interface ResourcesFile {
+  resources: ResourceScopes;
+}
+
 // Published mode types (aliases.json)
 
 export interface ModelIdentifier {
@@ -52,21 +69,4 @@ export interface DefaultAliases {
 export interface AliasesFile {
   defaults: DefaultAliases;
   version: number;
-}
-
-// Live preview mode types (resources.json)
-
-export interface ModelResource {
-  identifier: ModelIdentifier;
-  verbs: string[];
-  alias?: string | null;
-}
-
-export interface ResourceScopes {
-  custom: Record<string, string>;
-  models: ModelResource[];
-}
-
-export interface ResourcesFile {
-  resources: ResourceScopes;
 }
