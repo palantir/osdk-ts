@@ -15,16 +15,21 @@
  */
 
 import { Input } from "@base-ui/react/input";
+import type { RowData } from "@tanstack/react-table";
+import classNames from "classnames";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import styles from "./EditableCell.module.css";
-import type { CellValueState } from "./utils/types.js";
+import type { CellEditInfo } from "./utils/types.js";
 
-export interface EditableCellProps {
-  initialValue: unknown;
-  currentValue: unknown;
+export interface EditableCellProps<TData extends RowData, CellValue = unknown> {
+  initialValue: CellValue;
+  currentValue: CellValue;
   cellId: string;
   dataType?: string;
-  onCellEdit?: (cellId: string, state: CellValueState) => void;
+  onCellEdit: (cellId: string, info: CellEditInfo<TData, CellValue>) => void;
+  originalRowData: TData;
+  rowId: string;
+  columnId: string;
 }
 
 const NUMBER_TYPES: string[] = [
@@ -69,13 +74,16 @@ function parseValueByType(
   return parsedNumber;
 }
 
-export function EditableCell({
+function EditableCellInner<TData extends RowData, CellValue = unknown>({
   initialValue,
   currentValue,
   cellId,
   dataType,
   onCellEdit,
-}: EditableCellProps): React.ReactElement {
+  originalRowData,
+  rowId,
+  columnId,
+}: EditableCellProps<TData, CellValue>): React.ReactElement {
   const [inputValue, setInputValue] = useState<string>(
     valueToString(currentValue),
   );
@@ -92,8 +100,23 @@ export function EditableCell({
       return;
     }
     const parsedValue = parseValueByType(inputValue, dataType);
-    onCellEdit?.(cellId, { newValue: parsedValue, oldValue: initialValue });
-  }, [inputValue, initialValue, onCellEdit, cellId, dataType]);
+    onCellEdit(cellId, {
+      rowId,
+      columnId,
+      newValue: parsedValue as CellValue,
+      oldValue: initialValue,
+      originalRowData,
+    });
+  }, [
+    inputValue,
+    initialValue,
+    onCellEdit,
+    cellId,
+    dataType,
+    rowId,
+    columnId,
+    originalRowData,
+  ]);
 
   const handleChange = useCallback((value: string) => {
     setInputValue(value);
@@ -117,9 +140,13 @@ export function EditableCell({
     ? "number"
     : "text";
 
+  const isEdited = currentValue !== initialValue;
+
   return (
     <Input
-      className={styles.osdkEditableInput}
+      className={classNames(styles.osdkEditableInput, {
+        [styles.osdkEditedInput]: isEdited,
+      })}
       type={inputType}
       value={inputValue}
       onValueChange={handleChange}
@@ -128,3 +155,7 @@ export function EditableCell({
     />
   );
 }
+
+export const EditableCell = React.memo(
+  EditableCellInner,
+) as typeof EditableCellInner;

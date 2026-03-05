@@ -59,14 +59,6 @@
   padding: 0;
 }
 
-/* Show focus state for editable cells */
-.osdkTableCell:not(:has([role="checkbox"])):has(input):focus-within {
-  border: var(--osdk-emphasis-focus-width) solid
-    var(--osdk-emphasis-focus-color);
-  border-radius: var(--osdk-surface-border-radius);
-  background-color: var(--osdk-table-cell-editable-bg);
-}
-
 .osdkTableCellContent:not(:has([role="checkbox"])) {
   overflow: hidden;
   text-overflow: ellipsis;
