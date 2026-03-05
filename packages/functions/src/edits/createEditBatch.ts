@@ -135,7 +135,7 @@ class InMemoryEditBatch<X extends AnyEdit = never> implements EditBatch<X> {
   ): void {
     if (isInterfaceLocator(obj)) {
       this.edits.push({
-        type: "updateObjectForInterface", //
+        type: "updateObjectForInterface",
         obj,
         properties,
       } as unknown as X);
