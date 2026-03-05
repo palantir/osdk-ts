@@ -37,6 +37,10 @@ import type {
   ObjectMetadata,
   ObjectTypeDefinition,
 } from "./ontology/ObjectTypeDefinition.js";
+import type {
+  ApplyModifiersArg,
+  ApplyModifiersToProps,
+} from "./ontology/PropertyModifiers.js";
 import type { SimplePropertyDef } from "./ontology/SimplePropertyDef.js";
 import type { OsdkBase } from "./OsdkBase.js";
 
@@ -220,10 +224,12 @@ export namespace Osdk {
       | "$propertySecurities" = never,
     P extends PropertyKeys<Q> = PropertyKeys<Q>,
     R extends Record<string, SimplePropertyDef> = {},
+    M extends ApplyModifiersArg<Q, PropertyKeys<Q>> = {},
   > =
     & OsdkBase<Q>
     & Pick<
-      CompileTimeMetadata<Q>["props"],
+      HasKeys<M> extends true ? ApplyModifiersToProps<Q, M>
+        : CompileTimeMetadata<Q>["props"],
       // If there aren't any additional properties, then we want GetPropsKeys to default to PropertyKeys<Q>
       GetPropsKeys<Q, P, [R] extends [{}] ? false : true>
     >
@@ -287,6 +293,8 @@ export namespace Osdk {
       : "$rid" extends OPTIONS ? { readonly $rid: string }
       : {});
 }
+
+type HasKeys<T> = keyof T extends never ? false : true;
 
 /**
  * NOT EXPORTED FROM PACKAGE

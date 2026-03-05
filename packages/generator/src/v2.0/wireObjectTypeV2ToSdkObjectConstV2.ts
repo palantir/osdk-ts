@@ -334,8 +334,15 @@ export function createDefinition(
       properties: (_value) => (`{
         ${
         stringify(definition.properties, {
-          "*": (propertyDefinition, _, apiName) =>
-            [
+          "*": (propertyDefinition, _, apiName) => {
+            const mainValueParam = propertyDefinition.mainValue?.fields
+              ? JSON.stringify(propertyDefinition.mainValue.fields)
+              : "undefined";
+            const hasReducersParam = propertyDefinition.hasReducers === true
+              ? "true"
+              : "false";
+
+            return [
               `${
                 propertyJsdoc(
                   propertyDefinition,
@@ -349,8 +356,11 @@ export function createDefinition(
               }"${maybeStripNamespace(object, apiName)}"`,
               `$PropertyDef<${JSON.stringify(propertyDefinition.type)}, "${
                 propertyDefinition.nullable ? "nullable" : "non-nullable"
-              }", "${propertyDefinition.multiplicity ? "array" : "single"}">`,
-            ] as [string, string],
+              }", "${
+                propertyDefinition.multiplicity ? "array" : "single"
+              }", ${mainValueParam}, ${hasReducersParam}>`,
+            ] as [string, string];
+          },
         })
       }
       }`),

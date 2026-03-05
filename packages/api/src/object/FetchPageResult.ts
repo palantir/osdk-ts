@@ -18,6 +18,7 @@ import type {
   ObjectOrInterfaceDefinition,
   PropertyKeys,
 } from "../ontology/ObjectOrInterface.js";
+import type { ApplyModifiersArg } from "../ontology/PropertyModifiers.js";
 import type { SimplePropertyDef } from "../ontology/SimplePropertyDef.js";
 import type {
   ExtractOptions,
@@ -58,12 +59,15 @@ export type FetchPageResult<
   S extends NullabilityAdherence,
   T extends boolean = false,
   ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<L> = {},
+  MODIFIERS extends ApplyModifiersArg<Q, PropertyKeys<Q>> = {},
 > = PageResult<
   MaybeScore<
     Osdk.Instance<
       Q,
       ExtractOptions<R, S, T>,
-      PropertyKeys<Q> extends L ? never : L
+      PropertyKeys<Q> extends L ? never : L,
+      {},
+      MODIFIERS
     >,
     ORDER_BY_OPTIONS
   >

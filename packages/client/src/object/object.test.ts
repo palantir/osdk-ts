@@ -22,8 +22,10 @@ import type {
   PropertySecurity,
 } from "@osdk/api";
 import { $Objects, Employee, FooInterface } from "@osdk/client.test.ontology";
+import type { SetupServer } from "@osdk/shared.test";
 import {
   LegacyFauxFoundry,
+  MockOntologiesV2,
   startNodeApiServer,
   stubData,
   withoutRid,
@@ -54,10 +56,9 @@ describe.each([
   "https://stack.palantirCustom.com/foo/first/someStuff",
 ])("OsdkObject for %s", (baseUrl) => {
   let client: Client;
+  let apiServer: SetupServer;
 
   beforeAll(async () => {
-    let apiServer;
-
     ({ client, apiServer } = startNodeApiServer(
       new LegacyFauxFoundry(baseUrl),
       createClient,
@@ -713,6 +714,132 @@ describe.each([
           "startDate": "2003-01-01",
         }
       `);
+    });
+  });
+
+  describe("$applyModifiers", () => {
+    it("applyMainValue", async () => {
+      await apiServer.boundary(async () => {
+        let capturedRequest: unknown;
+
+        apiServer.use(
+          MockOntologiesV2.OntologyObjectSets.load(
+            baseUrl,
+            async ({ request }) => {
+              capturedRequest = await request.json();
+              return {
+                data: [
+                  {
+                    __rid:
+                      "ri.phonograph2-objects.main.object.88a6fccb-f333-46d6-a07e-7725c5f18b61",
+                    __primaryKey: 50030,
+                    __apiName: "Employee",
+                    employeeId: 50030,
+                    fullName: "John Doe",
+                    employeeProfile:
+                      "Senior engineer with expertise in distributed systems",
+                  },
+                ],
+                nextPageToken: undefined,
+                totalCount: "UNKNOWN",
+                propertySecurities: [],
+              };
+            },
+          ),
+        );
+
+        const result = await client(Employee).fetchPage({
+          $select: ["employeeId", "fullName", "employeeProfile"],
+          $applyModifiers: {
+            employeeProfile: "applyMainValue",
+          },
+        });
+
+        expect(result.data).toHaveLength(1);
+        expect(capturedRequest).toMatchObject({
+          selectV2: expect.arrayContaining([
+            {
+              type: "propertyWithLoadLevel",
+              propertyIdentifier: {
+                type: "property",
+                apiName: "employeeProfile",
+              },
+              loadLevel: {
+                type: "extractMainValue",
+              },
+            },
+          ]),
+        });
+        expect(result.data[0].employeeProfile).toBe(
+          "Senior engineer with expertise in distributed systems",
+        );
+
+        type ResultEmployeeProfile = (typeof result.data)[0]["employeeProfile"];
+        expectTypeOf<ResultEmployeeProfile>().toEqualTypeOf<
+          { bio: string } | undefined
+        >();
+      })();
+    });
+
+    it("applyReducers", async () => {
+      await apiServer.boundary(async () => {
+        let capturedRequest: unknown;
+
+        apiServer.use(
+          MockOntologiesV2.OntologyObjectSets.load(
+            baseUrl,
+            async ({ request }) => {
+              capturedRequest = await request.json();
+              return {
+                data: [
+                  {
+                    __rid:
+                      "ri.phonograph2-objects.main.object.88a6fccb-f333-46d6-a07e-7725c5f18b61",
+                    __primaryKey: 50030,
+                    __apiName: "Employee",
+                    employeeId: 50030,
+                    fullName: "John Doe",
+                    performanceScores: 95.5,
+                  },
+                ],
+                nextPageToken: undefined,
+                totalCount: "UNKNOWN",
+                propertySecurities: [],
+              };
+            },
+          ),
+        );
+
+        const result = await client(Employee).fetchPage({
+          $select: ["employeeId", "fullName", "performanceScores"],
+          $applyModifiers: {
+            performanceScores: "applyReducers",
+          },
+        });
+
+        expect(result.data).toHaveLength(1);
+        expect(capturedRequest).toMatchObject({
+          selectV2: expect.arrayContaining([
+            {
+              type: "propertyWithLoadLevel",
+              propertyIdentifier: {
+                type: "property",
+                apiName: "performanceScores",
+              },
+              loadLevel: {
+                type: "applyReducers",
+              },
+            },
+          ]),
+        });
+        expect(result.data[0].performanceScores).toBe(95.5);
+
+        type ResultPerformanceScores =
+          (typeof result.data)[0]["performanceScores"];
+        expectTypeOf<ResultPerformanceScores>().toEqualTypeOf<
+          number | undefined
+        >();
+      })();
     });
   });
 });
