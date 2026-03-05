@@ -26,13 +26,18 @@ export async function verifyOutDir(
   outDir: string,
   fs: MinimalFs,
 ): Promise<void> {
-  // if outDir exists and is not empty, we cannot proceed with the generation
+  // Clean the directory if it exists and is not empty. The output dir may
+  // contain a previous SDK build that was needed during function discovery
+  // (so TypeScript functions can resolve @ontology/sdk imports).
   try {
     const contents = await fs.readdir(outDir);
     if (contents.length !== 0) {
-      throw new Error(
-        `outDir ${outDir} is not empty, please delete its contents and try again`,
-      );
+      const nativeFsP = await import("node:fs/promises");
+      const nativePath = await import("node:path");
+      for (const entry of contents) {
+        const fullPath = nativePath.default.join(outDir, entry);
+        await nativeFsP.default.rm(fullPath, { recursive: true, force: true });
+      }
     }
   } catch (e) {
     if ((e as { code: string }).code === "ENOENT") {

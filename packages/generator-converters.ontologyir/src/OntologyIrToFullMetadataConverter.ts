@@ -64,6 +64,7 @@ interface IFunctionDiscovererConstructor {
     program: ts.Program,
     entryPointPath: string,
     fullFilePath: string,
+    entityMetadataMapping?: unknown,
   ): IFunctionDiscoverer;
 }
 
@@ -270,6 +271,7 @@ export class OntologyIrToFullMetadataConverter {
     nodeModulesPath?: string,
     pythonFunctionsDir?: string,
     pythonRootProjectDir?: string,
+    previewMetadata?: Ontologies.OntologyFullMetadata,
   ): Promise<
     Record<Ontologies.VersionedQueryTypeApiName, Ontologies.QueryTypeV2>
   > {
@@ -279,6 +281,7 @@ export class OntologyIrToFullMetadataConverter {
       const tsQueries = await this.discoverTypeScriptFunctions(
         functionsDir,
         nodeModulesPath,
+        previewMetadata,
       );
       queries.push(...tsQueries);
     }
@@ -314,6 +317,7 @@ export class OntologyIrToFullMetadataConverter {
   private static async discoverTypeScriptFunctions(
     functionsDir: string,
     nodeModulesPath?: string,
+    previewMetadata?: Ontologies.OntologyFullMetadata,
   ): Promise<Ontologies.QueryTypeV2[]> {
     const discoveryModules = await loadFunctionDiscoverer(nodeModulesPath);
     if (!discoveryModules) {
@@ -332,7 +336,42 @@ export class OntologyIrToFullMetadataConverter {
       discoveryTs,
     );
 
-    const fd = new FunctionDiscoverer(program, projectDir, functionsDir);
+    // Construct entity metadata mapping from preview metadata so FunctionDiscoverer
+    // can resolve ontology types (Client, Osdk.Instance, ontology edits, etc.)
+    let entityMetadataMapping: unknown;
+    if (previewMetadata) {
+      const ontologyRid = previewMetadata.ontology?.rid ?? "ri.00000";
+      const objectTypesMap: Record<string, { objectTypeId: string }> = {};
+      if (previewMetadata.objectTypes) {
+        for (const apiName of Object.keys(previewMetadata.objectTypes)) {
+          objectTypesMap[apiName] = { objectTypeId: apiName };
+        }
+      }
+      const interfaceTypesMap: Record<
+        string,
+        { interfaceTypeRid: string }
+      > = {};
+      if (previewMetadata.interfaceTypes) {
+        for (const apiName of Object.keys(previewMetadata.interfaceTypes)) {
+          interfaceTypesMap[apiName] = { interfaceTypeRid: apiName };
+        }
+      }
+      entityMetadataMapping = {
+        ontologies: {
+          [ontologyRid]: {
+            objectTypes: objectTypesMap,
+            interfaceTypes: interfaceTypesMap,
+          },
+        },
+      };
+    }
+
+    const fd = new FunctionDiscoverer(
+      program,
+      projectDir,
+      functionsDir,
+      entityMetadataMapping,
+    );
     const functions = fd.discover();
 
     const queries: Ontologies.QueryTypeV2[] = [];

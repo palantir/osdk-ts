@@ -131,6 +131,9 @@ export function convertDataType(
         objectTypeApiName: objectData.object.objectTypeId,
       };
     }
+    case "ontologyEdit": {
+      return { type: "string" };
+    }
     default:
       throw new Error(`Unsupported data type: ${dataType.type}`);
   }

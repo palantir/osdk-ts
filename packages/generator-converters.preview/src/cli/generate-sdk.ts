@@ -156,6 +156,9 @@ async function main(): Promise<void> {
         argv.nodeModulesPath,
         argv.pythonFunctionsDir,
         effectivePythonRootDir,
+        previewMetadata as unknown as Parameters<
+          typeof OntologyIrToFullMetadataConverter.getOsdkQueryTypes
+        >[5],
       );
 
     const functionNames = Object.keys(queryTypes);
@@ -227,6 +230,74 @@ async function main(): Promise<void> {
   );
 
   consola.info(`Wrote ${metadataPath}`);
+
+  // Write runtime metadata.json for the TypeScript functions runtime.
+  // The runtime needs entity metadata to resolve ontology types during
+  // function discovery. Without this, functions using Client/Osdk.Instance
+  // produce diagnostics that block ALL function discovery.
+  if (argv.functionsDir) {
+    const functionsProjectRoot = path.resolve(argv.functionsDir, "..", "..");
+    const runtimeMetadataDir = path.join(
+      functionsProjectRoot,
+      ".dev-server",
+      "var",
+      "conf",
+    );
+    const runtimeMetadataPath = path.join(runtimeMetadataDir, "metadata.json");
+
+    const ontologyRid =
+      (previewMetadata as unknown as Record<string, unknown>).ontology
+          != null
+        ? ((previewMetadata as unknown as Record<string, unknown>)
+          .ontology as Record<string, string>).rid
+      : "ri.ontology.main.ontology.00000000-0000-0000-0000-000000000000";
+
+    const objectTypeMetadata: Record<string, unknown> = {};
+    if (previewMetadata.objectTypes) {
+      for (
+        const [apiName, objData] of Object.entries(previewMetadata.objectTypes)
+      ) {
+        const objType = objData.objectType;
+        const propertyTypeMetadata: Record<
+          string,
+          { propertyTypeApiName: string }
+        > = {};
+        if (objType.properties) {
+          for (const propApiName of Object.keys(objType.properties)) {
+            propertyTypeMetadata[propApiName] = {
+              propertyTypeApiName: propApiName,
+            };
+          }
+        }
+        objectTypeMetadata[apiName] = {
+          objectTypeApiName: apiName,
+          primaryKeyPropertyTypeId: objType.primaryKey ?? "",
+          propertyTypeMetadata,
+          linkTypeMetadata: {},
+        };
+      }
+    }
+
+    const runtimeMetadata = {
+      ontologyRid,
+      objectTypeMetadata,
+      interfaceTypeMetadata: {},
+      magritteSourceMetadata: {},
+    };
+
+    try {
+      await fs.mkdir(runtimeMetadataDir, { recursive: true });
+      await fs.writeFile(
+        runtimeMetadataPath,
+        JSON.stringify(runtimeMetadata),
+        "utf-8",
+      );
+      consola.info(`Wrote runtime metadata to ${runtimeMetadataPath}`);
+    } catch (e) {
+      consola.warn(`Could not write runtime metadata: ${e}`);
+    }
+  }
+
   consola.success("Done!");
 }
 
