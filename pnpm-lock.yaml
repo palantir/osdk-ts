@@ -4095,9 +4095,6 @@ importers:
       consola:
         specifier: ^3.4.2
         version: 3.4.2
-      execa:
-        specifier: ^9.6.0
-        version: 9.6.0
       jiti:
         specifier: ^2.5.1
         version: 2.5.1
