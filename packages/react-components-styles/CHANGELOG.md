@@ -1,5 +1,11 @@
 # @osdk/react-components-styles
 
+## 0.2.0-beta.8
+
+### Minor Changes
+
+- 447e29d: Update editable table UX and API to pass the entire row data on edit
+
 ## 0.2.0-beta.7
 
 ### Minor Changes

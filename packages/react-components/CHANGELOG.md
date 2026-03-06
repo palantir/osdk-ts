@@ -1,5 +1,11 @@
 # @osdk/react-components
 
+## 0.2.0-beta.11
+
+### Minor Changes
+
+- 447e29d: Update editable table UX and API to pass the entire row data on edit
+
 ## 0.2.0-beta.10
 
 ### Minor Changes

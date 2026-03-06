@@ -1,5 +1,11 @@
 # @osdk/maker
 
+## 0.16.0-beta.9
+
+### Minor Changes
+
+- 7fa6de3: Revert breaking change
+
 ## 0.16.0-beta.8
 
 ### Minor Changes
