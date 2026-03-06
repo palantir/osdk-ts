@@ -412,7 +412,7 @@ export abstract class ListQuery extends BaseListQuery<
           newList,
           status,
           batch,
-          /* append */ false,
+          { type: "clientOrdered" },
           existingTotalCount,
         );
       });
