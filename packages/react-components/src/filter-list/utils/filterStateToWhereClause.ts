@@ -120,10 +120,10 @@ function filterStateToPropertyFilter(
       if (state.selectedValues.length === 0) {
         return undefined;
       }
-      const isDateValue = state.selectedValues[0] instanceof Date;
-      const values: (string | number | boolean)[] = isDateValue
-        ? state.selectedValues.map((v) => (v as Date).toISOString())
-        : state.selectedValues as (string | number | boolean)[];
+      const values: (string | number | boolean)[] = state.selectedValues.map(
+        (v) =>
+          v instanceof Date ? v.toISOString() : v as string | number | boolean,
+      );
       const filter = values.length === 1 ? values[0] : { $in: values };
       if (state.isExcluding) {
         return { $not: filter };
