@@ -33,7 +33,7 @@ export interface BaseFilterListProps<Q extends ObjectTypeDefinition> {
   renderInput: RenderFilterInput<Q>;
   activeFilterCount: number;
   onReset?: () => void;
-  onFilterAdded?: (...args: Array<unknown>) => void;
+  onFilterAdded?: () => void;
 
   collapsed?: boolean;
   onCollapsedChange?: (collapsed: boolean) => void;
