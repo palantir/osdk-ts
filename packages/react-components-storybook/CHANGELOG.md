@@ -1,5 +1,11 @@
 # @osdk/react-components-storybook
 
+## 0.2.0-beta.4
+
+### Minor Changes
+
+- 9ddf564: Add BaseTable stories and theme
+
 ## 0.2.0-beta.3
 
 ### Minor Changes
