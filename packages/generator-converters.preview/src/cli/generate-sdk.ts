@@ -32,14 +32,13 @@ const PYTHON_SDK_PACKAGE_NAME = "ontology_sdk";
 /**
  * Generates the Python SDK package into the conda environment's site-packages
  * so that Python function discovery can resolve ontology type imports.
- * Returns the installed package path for cleanup, or undefined if nothing was installed.
  */
 function generatePythonSdk(
   previewMetadata: ReturnType<
     typeof PreviewOntologyIrConverter.getPreviewFullMetadataFromIr
   >,
   pythonBinary: string,
-): string | undefined {
+): void {
   // Build the Python-compatible metadata: unwrap actionTypes and add globalFunctions
   const pythonMetadata = {
     ...previewMetadata,
@@ -55,7 +54,7 @@ function generatePythonSdk(
   const objectTypes = Object.keys(previewMetadata.objectTypes ?? {});
   if (objectTypes.length === 0) {
     consola.info("No object types found, skipping Python SDK generation.");
-    return undefined;
+    return;
   }
 
   const ontologyApiName = previewMetadata.ontology?.apiName ?? "ontology";
@@ -72,7 +71,7 @@ function generatePythonSdk(
         siteResult.stderr || siteResult.error
       }`,
     );
-    return undefined;
+    return;
   }
   const sitePackages = siteResult.stdout.trim();
   consola.info(`Python site-packages: ${sitePackages}`);
@@ -121,7 +120,7 @@ function generatePythonSdk(
       }`,
     );
     fsSync.rmSync(tmpDir, { recursive: true, force: true });
-    return undefined;
+    return;
   }
 
   // The generator creates <tmpDir>/ontology_sdk/ontology_sdk/ (the importable
@@ -138,7 +137,6 @@ function generatePythonSdk(
   fsSync.rmSync(tmpDir, { recursive: true, force: true });
 
   consola.info(`Python SDK installed to ${destPackage}`);
-  return destPackage;
 }
 
 async function main(): Promise<void> {
@@ -255,18 +253,11 @@ async function main(): Promise<void> {
   // Generate the Python SDK before function discovery so that Python functions
   // that import ontology types (e.g. `from ontology_sdk.ontology.objects import X`)
   // can be successfully parsed during discovery.
-  let installedPythonSdkPath: string | undefined;
   if (argv.pythonBinary && argv.pythonFunctionsDir) {
-    installedPythonSdkPath = generatePythonSdk(
+    generatePythonSdk(
       previewMetadata,
       argv.pythonBinary,
     );
-    if (installedPythonSdkPath) {
-      const sdkPath = installedPythonSdkPath;
-      process.on("exit", () => {
-        fsSync.rmSync(sdkPath, { recursive: true, force: true });
-      });
-    }
   }
 
   // Function discovery is optional - only run if at least one functions flag is provided
