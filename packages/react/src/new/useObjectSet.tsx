@@ -17,8 +17,8 @@
 import type {
   DerivedProperty,
   LinkNames,
+  ObjectOrInterfaceDefinition,
   ObjectSet,
-  ObjectTypeDefinition,
   Osdk,
   PropertyKeys,
   SimplePropertyDef,
@@ -34,7 +34,7 @@ import { makeExternalStore, type Snapshot } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
 
 export interface UseObjectSetOptions<
-  Q extends ObjectTypeDefinition,
+  Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
 > {
   /**
@@ -125,7 +125,7 @@ export interface UseObjectSetOptions<
 }
 
 export interface UseObjectSetResult<
-  Q extends ObjectTypeDefinition,
+  Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
 > {
   /**
@@ -180,7 +180,7 @@ const OBJECT_TYPE_PLACEHOLDER = "$__OBJECT__TYPE__PLACEHOLDER";
  * @returns Object set data with both existing and new derived properties
  */
 export function useObjectSet<
-  Q extends ObjectTypeDefinition,
+  Q extends ObjectOrInterfaceDefinition,
   BaseRDPs extends Record<string, SimplePropertyDef> = never,
   RDPs extends Record<string, SimplePropertyDef> = {},
 >(
@@ -204,6 +204,7 @@ export function useObjectSet<
   const objectTypeChanged = previousObjectTypeRef.current !== objectTypeKey;
   if (objectTypeChanged) {
     previousObjectTypeRef.current = objectTypeKey;
+    previousPayloadRef.current = undefined;
   }
 
   // Compute a stable cache key for the ObjectSet and options
@@ -265,25 +266,30 @@ export function useObjectSet<
   );
 
   const payload = React.useSyncExternalStore(subscribe, getSnapShot);
-  React.useEffect(() => {
-    if (payload) {
-      previousPayloadRef.current = payload;
-    }
-  }, [payload]);
+
+  if (payload?.status === "loaded") {
+    previousPayloadRef.current = payload;
+  }
+  const displayPayload = payload?.status === "loaded"
+    ? payload
+    : previousPayloadRef.current;
 
   return React.useMemo(() => ({
-    data: payload?.resolvedList as Osdk.Instance<
+    data: displayPayload?.resolvedList as Osdk.Instance<
       Q,
       "$allBaseProperties",
       PropertyKeys<Q>,
       RDPs
     >[],
-    isLoading: payload?.status === "loading" || (!payload && true) || false,
+    isLoading: enabled
+      ? (payload?.status === "loading" || payload?.status === "init"
+        || !payload)
+      : false,
     error: payload && "error" in payload
       ? payload.error
       : undefined,
     fetchMore: payload?.hasMore ? payload.fetchMore : undefined,
     objectSet: payload?.objectSet as ObjectSet<Q, RDPs> || baseObjectSet,
-    totalCount: payload?.totalCount,
-  }), [payload, baseObjectSet]);
+    totalCount: displayPayload?.totalCount,
+  }), [displayPayload, payload, baseObjectSet, enabled]);
 }

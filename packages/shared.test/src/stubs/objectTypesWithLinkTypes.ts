@@ -54,7 +54,9 @@ export const employeeObjectWithLinkTypes: ObjectTypeFullMetadata = {
           propertyApiName: "office",
         },
       },
-      links: {},
+      links: {
+        fooLink: ["peeps"],
+      },
     },
   },
   sharedPropertyTypeMapping: {

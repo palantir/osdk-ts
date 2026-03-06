@@ -148,7 +148,9 @@ export interface ExampleEw03osdkTodoTask extends $ObjectTypeDefinition {
       name: 'form';
     };
     implements: [];
+    interfaceLinkMap: {};
     interfaceMap: {};
+    inverseInterfaceLinkMap: {};
     inverseInterfaceMap: {};
     links: {
       exampleEw03OsdkTodoProject: $ObjectMetadata.Link<ExampleEw03osdkTodoProject, false>;

@@ -145,7 +145,9 @@ export interface ThreadsEmbeddedPdfChunk extends $ObjectTypeDefinition {
       name: 'document';
     };
     implements: [];
+    interfaceLinkMap: {};
     interfaceMap: {};
+    inverseInterfaceLinkMap: {};
     inverseInterfaceMap: {};
     links: {};
     pluralDisplayName: '[Threads] Embedded PDF Chunks';

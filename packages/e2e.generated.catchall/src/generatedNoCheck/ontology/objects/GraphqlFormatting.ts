@@ -776,7 +776,9 @@ export interface GraphqlFormatting extends $ObjectTypeDefinition {
       name: 'cube';
     };
     implements: [];
+    interfaceLinkMap: {};
     interfaceMap: {};
+    inverseInterfaceLinkMap: {};
     inverseInterfaceMap: {};
     links: {};
     pluralDisplayName: 'Graphql Formatting';

@@ -85,6 +85,10 @@ export interface OsdkTestObject extends $ObjectTypeDefinition {
       name: 'cube';
     };
     implements: ['FooInterface', 'OsdkTestInterface'];
+    interfaceLinkMap: {
+      FooInterface: {};
+      OsdkTestInterface: {};
+    };
     interfaceMap: {
       FooInterface: {
         name: 'osdkObjectName';
@@ -93,6 +97,10 @@ export interface OsdkTestObject extends $ObjectTypeDefinition {
       OsdkTestInterface: {
         objectDescription: 'description';
       };
+    };
+    inverseInterfaceLinkMap: {
+      FooInterface: {};
+      OsdkTestInterface: {};
     };
     inverseInterfaceMap: {
       FooInterface: {

@@ -420,7 +420,6 @@ export abstract class BaseListQuery<
       );
     }
 
-    // Keep fetching pages until we have the minimum number of results or no more pages
     while (true) {
       const entry = await this.fetchPageAndUpdate(
         "loading",
@@ -428,11 +427,9 @@ export abstract class BaseListQuery<
       );
 
       if (!entry) {
-        // we were aborted
         return;
       }
 
-      // Check if we have enough results or no more pages
       const count = entry.value?.data.length || 0;
       if (count >= this.minResultsToLoad || this.nextPageToken == null) {
         break;
@@ -444,8 +441,6 @@ export abstract class BaseListQuery<
     this.store.batch({}, (batch) => {
       this.setStatus("loaded", batch);
     });
-
-    return Promise.resolve();
   }
 
   /**

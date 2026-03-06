@@ -90,7 +90,9 @@ export interface ExampleEw03osdkTodoProject extends $ObjectTypeDefinition {
       name: 'gantt-chart';
     };
     implements: [];
+    interfaceLinkMap: {};
     interfaceMap: {};
+    inverseInterfaceLinkMap: {};
     inverseInterfaceMap: {};
     links: {
       exampleEw03OsdkTodoTasks: $ObjectMetadata.Link<ExampleEw03osdkTodoTask, true>;

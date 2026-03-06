@@ -242,6 +242,116 @@ describe(wireObjectTypeFullMetadataToSdkObjectMetadata, () => {
     expect(linkKeys).toEqual(["linkA", "linkC", "linkZ"]);
   });
 
+  it("extracts interfaceLinkMap from implementsInterfaces2", () => {
+    const result = wireObjectTypeFullMetadataToSdkObjectMetadata({
+      implementsInterfaces: ["IFoo"],
+      implementsInterfaces2: {
+        IFoo: {
+          properties: { fooProp: "myProp" },
+          propertiesV2: {},
+          links: { fooLink: ["peeps"], barLink: ["lead", "officeLink"] },
+        },
+      },
+      linkTypes: [],
+      objectType: {
+        apiName: "apiName",
+        description: "description",
+        displayName: "displayName",
+        pluralDisplayName: "displayNames",
+        icon: { type: "blueprint", name: "blueprint", color: "blue" },
+        primaryKey: "primaryKey",
+        properties: {
+          primaryKey: {
+            dataType: { type: "string" },
+            rid: "rid",
+            typeClasses: [],
+          },
+        },
+        rid: "rid",
+        status: "ACTIVE",
+        titleProperty: "primaryKey",
+      },
+      sharedPropertyTypeMapping: {},
+    }, true);
+
+    expect(result.interfaceLinkMap).toEqual({
+      IFoo: { fooLink: ["peeps"], barLink: ["lead", "officeLink"] },
+    });
+
+    expect(result.inverseInterfaceLinkMap).toEqual({
+      IFoo: {
+        peeps: ["fooLink"],
+        lead: ["barLink"],
+        officeLink: ["barLink"],
+      },
+    });
+  });
+
+  it("returns empty interfaceLinkMap when no interfaces", () => {
+    const result = wireObjectTypeFullMetadataToSdkObjectMetadata({
+      implementsInterfaces: [],
+      implementsInterfaces2: {},
+      linkTypes: [],
+      objectType: {
+        apiName: "apiName",
+        description: "description",
+        displayName: "displayName",
+        pluralDisplayName: "displayNames",
+        icon: { type: "blueprint", name: "blueprint", color: "blue" },
+        primaryKey: "primaryKey",
+        properties: {
+          primaryKey: {
+            dataType: { type: "string" },
+            rid: "rid",
+            typeClasses: [],
+          },
+        },
+        rid: "rid",
+        status: "ACTIVE",
+        titleProperty: "primaryKey",
+      },
+      sharedPropertyTypeMapping: {},
+    }, true);
+
+    expect(result.interfaceLinkMap).toEqual({});
+    expect(result.inverseInterfaceLinkMap).toEqual({});
+  });
+
+  it("handles missing links field gracefully", () => {
+    const result = wireObjectTypeFullMetadataToSdkObjectMetadata({
+      implementsInterfaces: ["IFoo"],
+      implementsInterfaces2: {
+        IFoo: {
+          properties: { fooProp: "myProp" },
+          propertiesV2: {},
+        },
+      } as any,
+      linkTypes: [],
+      objectType: {
+        apiName: "apiName",
+        description: "description",
+        displayName: "displayName",
+        pluralDisplayName: "displayNames",
+        icon: { type: "blueprint", name: "blueprint", color: "blue" },
+        primaryKey: "primaryKey",
+        properties: {
+          primaryKey: {
+            dataType: { type: "string" },
+            rid: "rid",
+            typeClasses: [],
+          },
+        },
+        rid: "rid",
+        status: "ACTIVE",
+        titleProperty: "primaryKey",
+      },
+      sharedPropertyTypeMapping: {},
+    }, true);
+
+    expect(result.interfaceLinkMap).toEqual({ IFoo: {} });
+    expect(result.inverseInterfaceLinkMap).toEqual({ IFoo: {} });
+  });
+
   it("preserves empty arrays", () => {
     const result = wireObjectTypeFullMetadataToSdkObjectMetadata({
       implementsInterfaces: [],
