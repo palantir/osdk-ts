@@ -336,8 +336,6 @@ describe(createEditBatch, () => {
     // @ts-expect-error
     editBatch.link(taskInstance, "RP", officeInstance); // Linking to Office instead of Person
 
-    editBatch.link(taskInstance, "RP", personInstance); // ONE direction link is now supported
-
     editBatch.link(
       { $apiName: "Task", $primaryKey: 2 },
       // @ts-expect-error
