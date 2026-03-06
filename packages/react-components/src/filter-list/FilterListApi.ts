@@ -191,13 +191,6 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
   className?: string;
 
   /**
-   * Called when filter definitions are reordered (e.g. via drag-and-drop)
-   */
-  onFiltersReordered?: (
-    newOrder: ReadonlyArray<FilterDefinitionUnion<Q>>,
-  ) => void;
-
-  /**
    * Custom render function for the "Add filter" button.
    * When not provided, a default button is shown if onFilterAdded is set.
    */
