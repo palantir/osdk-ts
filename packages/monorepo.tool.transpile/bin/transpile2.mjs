@@ -168,6 +168,8 @@ async function transpileWithTsup(format, target) {
       "src/index.ts",
       "src/public/*.ts",
       "src/public/*.mts",
+      "src/public/**/*.ts",
+      "src/public/**/*.mts",
     ],
 
     // don't try to load config files from disk

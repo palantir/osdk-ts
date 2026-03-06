@@ -24,8 +24,11 @@
 - `useLinks` - Navigate object relationships
 - `useObjectSet` - Advanced set operations (union, intersect, subtract, pivot)
 - `useOsdkAggregation` - Server-side aggregations with groupBy/select
-- `useCurrentFoundryUser`, `useFoundryUser`, `useFoundryUsersList` - Platform APIs
 - `useOsdkClient`, `useOsdkMetadata` - Also available from experimental
+
+**Experimental Admin** (`@osdk/react/experimental/admin`):
+
+- `useCurrentFoundryUser`, `useFoundryUser`, `useFoundryUsersList` - Platform APIs (requires `@osdk/foundry.admin`)
 
 ## Correct Patterns
 
