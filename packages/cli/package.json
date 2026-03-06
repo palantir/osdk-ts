@@ -38,7 +38,7 @@
   },
   "dependencies": {
     "@arethetypeswrong/cli": "0.17.3",
-    "ajv": "8.13.0",
+    "ajv": "8.18.0",
     "archiver": "7.0.1",
     "consola": "3.4.2",
     "open": "10.1.2",
