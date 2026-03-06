@@ -20,10 +20,7 @@ import { withThemeByDataAttribute } from "@storybook/addon-themes";
 import type { Preview } from "@storybook/react";
 import { initialize, mswLoader } from "msw-storybook-addon";
 import { fauxFoundry, setupFauxFoundry } from "../src/mocks/fauxFoundry.js";
-import "../src/styles/storybook.css";
-import "@osdk/react-components/styles.css";
-import "@osdk/react-components-styles";
-import "./themes.css";
+import "./styles.css";
 
 // Initialize MSW with proper options
 // This is synchronous, it only configures MSW
@@ -81,6 +78,7 @@ const preview: Preview = {
       themes: {
         light: "light",
         modern: "modern",
+        devcon: "devcon",
       },
       defaultTheme: "light",
       attributeName: "data-theme",

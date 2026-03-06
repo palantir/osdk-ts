@@ -142,10 +142,6 @@ export function useObjectTableData<
 
   // Return the appropriate result based on which hook is enabled
   if (shouldUseObjectSet) {
-    // eslint-disable-next-line no-console
-    console.debug(
-      "Using useObjectSet for data fetching in ObjectTable because objectSet is provided and objectType is an object.",
-    );
     // Convert UseObjectSetResult to UseOsdkListResult format
     return {
       data: objectSetResult.data,
@@ -157,9 +153,5 @@ export function useObjectTableData<
     } as UseOsdkListResult<Q, RDPs>;
   }
 
-  // eslint-disable-next-line no-console
-  console.debug(
-    "Using useOsdkObjects for data fetching in ObjectTable because objectSet is not provided or objectType is an interface.",
-  );
   return osdkObjectsResult;
 }

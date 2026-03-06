@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-import type { CellContext } from "@tanstack/react-table";
+import type { CellContext, RowData } from "@tanstack/react-table";
 import React from "react";
 import { EditableCell } from "./EditableCell.js";
 import { getCellId } from "./utils/getCellId.js";
 
-export function renderDefaultCell<TData>(
+export function renderDefaultCell<TData extends RowData>(
   cellContext: CellContext<TData, unknown>,
 ): React.ReactNode {
   const meta = cellContext.table.options.meta;
   const columnMeta = cellContext.column.columnDef.meta;
 
-  if (!columnMeta?.editable || !meta?.onCellEdit) {
+  if (!columnMeta?.editable || !meta?.onCellEdit || !meta?.isInEditMode) {
     return <>{cellContext.getValue()}</>;
   }
 
@@ -38,12 +38,15 @@ export function renderDefaultCell<TData>(
   const currentValue = editedValue?.newValue ?? cellContext.getValue();
 
   return (
-    <EditableCell
+    <EditableCell<TData>
       initialValue={cellContext.getValue()}
       currentValue={currentValue}
       cellId={cellId}
       dataType={columnMeta?.dataType}
       onCellEdit={meta.onCellEdit}
+      originalRowData={cellContext.row.original}
+      rowId={rowId}
+      columnId={columnId}
     />
   );
 }
