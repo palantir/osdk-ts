@@ -63,7 +63,7 @@ function createFilterStates(
 }
 
 describe("FilterList drag and drop", () => {
-  it("does not render drag handles when enableSorting is not provided", () => {
+  it("does not render drag handles when enableSorting is not set", () => {
     const definitions = createDefinitions();
     const filterStates = createFilterStates(definitions);
 
@@ -95,6 +95,24 @@ describe("FilterList drag and drop", () => {
         renderInput={stubRenderInput}
         getFilterKey={getFilterKey}
         getFilterLabel={getFilterLabel}
+      />,
+    );
+
+    const dragHandles = await screen.findAllByLabelText(/Reorder/);
+    expect(dragHandles).toHaveLength(3);
+  });
+
+  it("renders drag handles with enableSorting but no onFiltersReordered", async () => {
+    const definitions = createDefinitions();
+    const filterStates = createFilterStates(definitions);
+
+    render(
+      <FilterListContent
+        filterDefinitions={definitions}
+        filterStates={filterStates}
+        onFilterStateChanged={vi.fn()}
+        enableSorting={true}
+        renderInput={stubRenderInput}
       />,
     );
 
