@@ -19,28 +19,6 @@ import type { InterfaceType } from "../../api/interface/InterfaceType.js";
 import { convertInterfaceProperty } from "./convertInterfacePropertyType.js";
 import { convertSpt } from "./convertSpt.js";
 
-// function collectAllPropertiesOwnership(
-//   interfaceType: InterfaceType,
-// ): Record<string, string> {
-//   const allProperties: Record<string, string> = {};
-
-//   // Recursively collect properties and track which interface owns each one
-//   function collectFromInterface(iface: InterfaceType): void {
-//     // First, recursively collect from parent interfaces
-//     for (const parentInterface of iface.extendsInterfaces) {
-//       collectFromInterface(parentInterface);
-//     }
-
-//     // Then add properties from this interface (overrides parent properties)
-//     for (const propertyApiName of Object.keys(iface.propertiesV3)) {
-//       allProperties[propertyApiName] = iface.apiName;
-//     }
-//   }
-
-//   collectFromInterface(interfaceType);
-//   return allProperties;
-// }
-
 export function convertInterface(
   interfaceType: InterfaceType,
 ): OntologyIrMarketplaceInterfaceType {
