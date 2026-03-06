@@ -1,10 +1,25 @@
 # @osdk/react-components
 
-Pre-built UI components for OSDK data. Requires `@osdk/react` (see `packages/react/AGENTS.md` for hooks and provider setup).
+Pre-built UI components for OSDK data. Requires `@osdk/react` (see the `@osdk/react` package's `AGENTS.md` for hooks and provider setup).
 
 ## Setup
 
 All components import from `@osdk/react-components/experimental`. Requires `OsdkProvider2` from `@osdk/react/experimental`.
+
+### Provider (required)
+
+```tsx
+import { OsdkProvider2 } from "@osdk/react/experimental";
+import { client } from "./client";
+
+function App() {
+  return (
+    <OsdkProvider2 client={client}>
+      <MyApp />
+    </OsdkProvider2>
+  );
+}
+```
 
 ### CSS (required)
 
@@ -41,7 +56,7 @@ function EmployeeDirectory() {
 | `enableColumnResizing`       | boolean                              | Allow column resizing (default: true)                               |
 | `enableColumnConfig`         | boolean                              | Show column config dialog (default: true)                           |
 | `selectionMode`              | `"single"` / `"multiple"` / `"none"` | Row selection mode (default: "none")                                |
-| `orderBy` / `defaultOrderBy` | OrderByClause[]                      | Controlled/uncontrolled sorting                                     |
+| `orderBy` / `defaultOrderBy` | `OrderBy<Q>[]`                       | Controlled/uncontrolled sorting                                     |
 | `filter`                     | WhereClause                          | Controlled filtering                                                |
 | `rowHeight`                  | number                               | Row height in pixels (default: 40)                                  |
 | `renderCellContextMenu`      | function                             | Custom right-click menu                                             |
@@ -51,13 +66,21 @@ function EmployeeDirectory() {
 ```ts
 type ColumnDefinition = {
   locator:
-    | { type: "property"; id: string } // object property
-    | { type: "rdp"; id: string; creator: fn } // derived property
-    | { type: "custom"; id: string }; // custom column
-  renderHeader?: () => ReactNode;
-  renderCell?: (object) => ReactNode;
+    | { type: "property"; id: PropertyKeys<Q> }
+    | {
+      type: "rdp";
+      id: keyof RDPs;
+      creator: DerivedProperty.Creator<Q, RDPs[keyof RDPs]>;
+    }
+    | { type: "function"; id: keyof FunctionColumns }
+    | { type: "custom"; id: string };
+  renderCell?: (
+    object: Osdk.Instance<Q>,
+    locator: ColumnDefinitionLocator<Q>,
+  ) => React.ReactNode;
+  renderHeader?: () => React.ReactNode;
   width?: number;
-  pinned?: "left" | "right";
+  pinned?: "left" | "right" | "none";
   isVisible?: boolean;
   orderable?: boolean;
   columnName?: string;
