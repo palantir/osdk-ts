@@ -17,7 +17,7 @@
 import type { QueryDataTypeDefinition } from "@osdk/api";
 import { MediaSets } from "@osdk/foundry.mediasets";
 import { type DataValue } from "@osdk/foundry.ontologies";
-import * as OntologiesV2 from "@osdk/foundry.ontologies";
+import * as Attachments from "@osdk/foundry.ontologies/Attachment";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import {
   isAttachmentFile,
@@ -76,7 +76,7 @@ export async function toDataValueQueries(
   switch (desiredType.type) {
     case "attachment": {
       if (isAttachmentUpload(value)) {
-        const attachment = await OntologiesV2.Attachments.upload(
+        const attachment = await Attachments.upload(
           client,
           value.data,
           {
@@ -89,7 +89,7 @@ export async function toDataValueQueries(
       if (
         isAttachmentFile(value)
       ) {
-        const attachment = await OntologiesV2.Attachments.upload(
+        const attachment = await Attachments.upload(
           client,
           value,
           {

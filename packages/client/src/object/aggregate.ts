@@ -26,7 +26,7 @@ import type {
   AggregateObjectsResponseV2,
   ObjectSet,
 } from "@osdk/foundry.ontologies";
-import * as OntologiesV2 from "@osdk/foundry.ontologies";
+import * as OntologyObjectSets from "@osdk/foundry.ontologies/OntologyObjectSet";
 import invariant from "tiny-invariant";
 import { legacyToModernSingleAggregationResult } from "../internal/conversions/legacyToModernSingleAggregationResult.js";
 import { modernToLegacyAggregationClause } from "../internal/conversions/modernToLegacyAggregationClause.js";
@@ -63,7 +63,7 @@ export async function aggregate<
     await clientCtx.flushEdits();
   }
 
-  const result = await OntologiesV2.OntologyObjectSets.aggregate(
+  const result = await OntologyObjectSets.aggregate(
     addUserAgentAndRequestContextHeaders(clientCtx, objectType),
     await clientCtx.ontologyRid,
     {
