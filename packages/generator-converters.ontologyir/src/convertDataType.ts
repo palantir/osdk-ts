@@ -132,6 +132,9 @@ export function convertDataType(
       };
     }
     case "ontologyEdit": {
+      // ontologyEdit represents a function's side-effect declaration (e.g. edits to
+      // objects). There is no QueryDataType equivalent, so we map it to string as a
+      // placeholder — the value is not used at query execution time.
       return { type: "string" };
     }
     default:

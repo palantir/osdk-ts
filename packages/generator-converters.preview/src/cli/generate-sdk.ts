@@ -27,16 +27,19 @@ import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { PreviewOntologyIrConverter } from "../PreviewOntologyIrConverter.js";
 
+const PYTHON_SDK_PACKAGE_NAME = "ontology_sdk";
+
 /**
  * Generates the Python SDK package into the conda environment's site-packages
  * so that Python function discovery can resolve ontology type imports.
+ * Returns the installed package path for cleanup, or undefined if nothing was installed.
  */
 function generatePythonSdk(
   previewMetadata: ReturnType<
     typeof PreviewOntologyIrConverter.getPreviewFullMetadataFromIr
   >,
   pythonBinary: string,
-): void {
+): string | undefined {
   // Build the Python-compatible metadata: unwrap actionTypes and add globalFunctions
   const pythonMetadata = {
     ...previewMetadata,
@@ -52,7 +55,7 @@ function generatePythonSdk(
   const objectTypes = Object.keys(previewMetadata.objectTypes ?? {});
   if (objectTypes.length === 0) {
     consola.info("No object types found, skipping Python SDK generation.");
-    return;
+    return undefined;
   }
 
   const ontologyApiName = previewMetadata.ontology?.apiName ?? "ontology";
@@ -69,7 +72,7 @@ function generatePythonSdk(
         siteResult.stderr || siteResult.error
       }`,
     );
-    return;
+    return undefined;
   }
   const sitePackages = siteResult.stdout.trim();
   consola.info(`Python site-packages: ${sitePackages}`);
@@ -87,7 +90,7 @@ function generatePythonSdk(
   // The generator creates <output-dir>/ontology_sdk/ which is a project
   // directory containing ontology_sdk/ (the actual Python package), setup.py, etc.
   consola.info("Generating Python SDK...");
-  const packageName = "ontology_sdk";
+  const packageName = PYTHON_SDK_PACKAGE_NAME;
   const genResult = spawnSync(
     pythonBinary,
     [
@@ -118,7 +121,7 @@ function generatePythonSdk(
       }`,
     );
     fsSync.rmSync(tmpDir, { recursive: true, force: true });
-    return;
+    return undefined;
   }
 
   // The generator creates <tmpDir>/ontology_sdk/ontology_sdk/ (the importable
@@ -135,6 +138,7 @@ function generatePythonSdk(
   fsSync.rmSync(tmpDir, { recursive: true, force: true });
 
   consola.info(`Python SDK installed to ${destPackage}`);
+  return destPackage;
 }
 
 async function main(): Promise<void> {
@@ -251,8 +255,18 @@ async function main(): Promise<void> {
   // Generate the Python SDK before function discovery so that Python functions
   // that import ontology types (e.g. `from ontology_sdk.ontology.objects import X`)
   // can be successfully parsed during discovery.
+  let installedPythonSdkPath: string | undefined;
   if (argv.pythonBinary && argv.pythonFunctionsDir) {
-    generatePythonSdk(previewMetadata, argv.pythonBinary);
+    installedPythonSdkPath = generatePythonSdk(
+      previewMetadata,
+      argv.pythonBinary,
+    );
+    if (installedPythonSdkPath) {
+      const sdkPath = installedPythonSdkPath;
+      process.on("exit", () => {
+        fsSync.rmSync(sdkPath, { recursive: true, force: true });
+      });
+    }
   }
 
   // Function discovery is optional - only run if at least one functions flag is provided
@@ -276,9 +290,7 @@ async function main(): Promise<void> {
         argv.nodeModulesPath,
         argv.pythonFunctionsDir,
         effectivePythonRootDir,
-        previewMetadata as unknown as Parameters<
-          typeof OntologyIrToFullMetadataConverter.getOsdkQueryTypes
-        >[5],
+        previewMetadata,
       );
 
     const functionNames = Object.keys(queryTypes);
@@ -365,20 +377,22 @@ async function main(): Promise<void> {
   // Write Python-compatible metadata that the foundry-sdk-generator expects.
   // This uses the unwrapped actionTypes (ActionTypeV2 instead of
   // ActionTypeFullMetadata) and adds the globalFunctions key.
-  const pythonMetadataPath = path.join(
-    fullOutputDir,
-    "python-ontology-metadata.json",
-  );
-  await fs.writeFile(
-    pythonMetadataPath,
-    JSON.stringify(
-      { ...metadata, globalFunctions: { queryTypes: {}, valueTypes: {} } },
-      null,
-      2,
-    ),
-    "utf-8",
-  );
-  consola.info(`Wrote ${pythonMetadataPath}`);
+  if (argv.pythonFunctionsDir) {
+    const pythonMetadataPath = path.join(
+      fullOutputDir,
+      "python-ontology-metadata.json",
+    );
+    await fs.writeFile(
+      pythonMetadataPath,
+      JSON.stringify(
+        { ...metadata, globalFunctions: { queryTypes: {}, valueTypes: {} } },
+        null,
+        2,
+      ),
+      "utf-8",
+    );
+    consola.info(`Wrote ${pythonMetadataPath}`);
+  }
 
   // Write runtime metadata.json for the TypeScript functions runtime.
   // The runtime needs entity metadata to resolve ontology types during
@@ -412,7 +426,7 @@ async function main(): Promise<void> {
           ) {
             propertyTypeMetadata[propApiName] = {
               propertyTypeApiName: propApiName,
-              type: (propDef as any).dataType,
+              type: propDef.dataType,
             };
           }
         }

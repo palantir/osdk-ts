@@ -77,6 +77,7 @@ interface IPythonDiscoveredFunction {
   inputs: Array<{ name: string; dataType: IDataType; required?: boolean }>;
   output: { type: "single"; single: { dataType: IDataType } };
   customTypes?: Record<string, IPythonCustomType>;
+  objectTypes?: Record<string, { objectApiName: string }>;
 }
 
 interface IPythonCustomType {
@@ -271,7 +272,10 @@ export class OntologyIrToFullMetadataConverter {
     nodeModulesPath?: string,
     pythonFunctionsDir?: string,
     pythonRootProjectDir?: string,
-    previewMetadata?: Ontologies.OntologyFullMetadata,
+    previewMetadata?: Pick<
+      Ontologies.OntologyFullMetadata,
+      "ontology" | "objectTypes" | "interfaceTypes"
+    >,
   ): Promise<
     Record<Ontologies.VersionedQueryTypeApiName, Ontologies.QueryTypeV2>
   > {
@@ -317,7 +321,10 @@ export class OntologyIrToFullMetadataConverter {
   private static async discoverTypeScriptFunctions(
     functionsDir: string,
     nodeModulesPath?: string,
-    previewMetadata?: Ontologies.OntologyFullMetadata,
+    previewMetadata?: Pick<
+      Ontologies.OntologyFullMetadata,
+      "ontology" | "objectTypes" | "interfaceTypes"
+    >,
   ): Promise<Ontologies.QueryTypeV2[]> {
     const discoveryModules = await loadFunctionDiscoverer(nodeModulesPath);
     if (!discoveryModules) {
@@ -424,10 +431,7 @@ export class OntologyIrToFullMetadataConverter {
     for (const func of pythonResult.functions) {
       const functionName = func.locator.python3.functionName;
       const customTypes = func.customTypes ?? {};
-      const objectTypes = (func as unknown as Record<string, unknown>)
-        .objectTypes as
-          | Record<string, { objectApiName: string }>
-          | undefined;
+      const objectTypes = func.objectTypes;
 
       // Resolve object type references: Python discovery returns object
       // parameters as {type: "object", object: "<uuid>"} where the UUID maps
