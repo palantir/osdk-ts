@@ -42,7 +42,7 @@
   align-items: center;
   justify-content: center;
   padding: var(--osdk-filter-item-drag-handle-padding);
-  margin-right: var(--osdk-filter-item-drag-handle-margin-right);
+  margin-right: var(--osdk-surface-spacing);
   border: none;
   background: var(--osdk-filter-item-drag-handle-bg);
   cursor: grab;
