@@ -90,6 +90,7 @@ export function EmployeesWithFilterList(props: EmployeesWithFilterListProps) {
             objectSet={$(Employee)}
             filterDefinitions={INITIAL_FILTER_DEFINITIONS}
             onFilterClauseChanged={setWhereClause}
+            enableSorting={true}
             title="Filters"
             showActiveFilterCount={true}
           />
