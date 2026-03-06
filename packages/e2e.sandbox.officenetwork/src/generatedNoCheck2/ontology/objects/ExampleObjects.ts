@@ -69,11 +69,17 @@ export interface ExampleObjects extends $ObjectTypeDefinition {
       name: 'cube';
     };
     implements: ['ExampleInterface'];
+    interfaceLinkMap: {
+      ExampleInterface: {};
+    };
     interfaceMap: {
       ExampleInterface: {
         id: 'primaryKey_';
         type: 'type';
       };
+    };
+    inverseInterfaceLinkMap: {
+      ExampleInterface: {};
     };
     inverseInterfaceMap: {
       ExampleInterface: {

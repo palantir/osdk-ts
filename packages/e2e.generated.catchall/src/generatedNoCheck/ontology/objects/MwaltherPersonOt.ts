@@ -84,6 +84,12 @@ export interface MwaltherPersonOt extends $ObjectTypeDefinition {
       'MwaltherPersonV2',
       'MwaltherTestUpgrade',
     ];
+    interfaceLinkMap: {
+      'com.palantirfoundry.swirl.esong.MwaltherTest': {};
+      'com.palantirfoundry.swirl.esong.MwaltherTestIdp': {};
+      MwaltherPersonV2: {};
+      MwaltherTestUpgrade: {};
+    };
     interfaceMap: {
       'com.palantirfoundry.swirl.esong.MwaltherTest': {
         mwaltherVtInputTest: 'name';
@@ -101,6 +107,12 @@ export interface MwaltherPersonOt extends $ObjectTypeDefinition {
       MwaltherTestUpgrade: {
         'com.palantirfoundry.swirl.esong.mwaltherName': 'name';
       };
+    };
+    inverseInterfaceLinkMap: {
+      'com.palantirfoundry.swirl.esong.MwaltherTest': {};
+      'com.palantirfoundry.swirl.esong.MwaltherTestIdp': {};
+      MwaltherPersonV2: {};
+      MwaltherTestUpgrade: {};
     };
     inverseInterfaceMap: {
       'com.palantirfoundry.swirl.esong.MwaltherTest': {

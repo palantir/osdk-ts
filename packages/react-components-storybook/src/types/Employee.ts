@@ -197,6 +197,14 @@ export interface Employee extends $ObjectTypeDefinition {
       };
     };
     inverseInterfaceMap: {};
+    interfaceLinkMap: {
+      Worker: {};
+      Person: {};
+    };
+    inverseInterfaceLinkMap: {
+      Worker: {};
+      Person: {};
+    };
     pluralDisplayName: "Employees";
     titleProperty: "fullName";
     status: "EXPERIMENTAL";

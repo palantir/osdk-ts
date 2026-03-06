@@ -63,7 +63,9 @@ export interface Task extends $ObjectTypeDefinition {
       color: '#000000';
     };
     implements: [];
+    interfaceLinkMap: {};
     interfaceMap: {};
+    inverseInterfaceLinkMap: {};
     inverseInterfaceMap: {};
     links: {};
     pluralDisplayName: 'Tasks';

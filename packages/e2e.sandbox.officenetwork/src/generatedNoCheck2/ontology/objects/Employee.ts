@@ -330,6 +330,10 @@ export interface Employee extends $ObjectTypeDefinition {
       name: 'person';
     };
     implements: ['Person', 'Worker'];
+    interfaceLinkMap: {
+      Person: {};
+      Worker: {};
+    };
     interfaceMap: {
       Person: {
         email: 'emailPrimaryWork';
@@ -340,6 +344,10 @@ export interface Employee extends $ObjectTypeDefinition {
         name: 'fullName';
         employeeNumber: 'employeeNumber';
       };
+    };
+    inverseInterfaceLinkMap: {
+      Person: {};
+      Worker: {};
     };
     inverseInterfaceMap: {
       Person: {

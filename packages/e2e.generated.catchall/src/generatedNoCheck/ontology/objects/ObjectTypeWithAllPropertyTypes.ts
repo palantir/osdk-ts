@@ -211,7 +211,9 @@ export interface ObjectTypeWithAllPropertyTypes extends $ObjectTypeDefinition {
       color: 'color';
     };
     implements: undefined;
+    interfaceLinkMap: {};
     interfaceMap: {};
+    inverseInterfaceLinkMap: {};
     inverseInterfaceMap: {};
     links: {};
     pluralDisplayName: 'ObjectTypeWithAllPropertyTypes';

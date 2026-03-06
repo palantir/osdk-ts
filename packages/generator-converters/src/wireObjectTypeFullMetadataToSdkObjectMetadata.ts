@@ -79,6 +79,17 @@ export function wireObjectTypeFullMetadataToSdkObjectMetadata(
     )
     : {};
 
+  const interfaceLinkMap = objectTypeWithLink.implementsInterfaces2
+    ? Object.fromEntries(
+      Object.entries(objectTypeWithLink.implementsInterfaces2).map(
+        ([interfaceApiName, impl]) => [
+          interfaceApiName,
+          impl.links ?? {},
+        ],
+      ),
+    )
+    : {};
+
   return {
     type: "object",
     apiName: objectTypeWithLink.objectType.apiName,
@@ -121,6 +132,12 @@ export function wireObjectTypeFullMetadataToSdkObjectMetadata(
         [interfaceApiName, props],
       ) => [interfaceApiName, invertProps(props)]),
     ),
+    interfaceLinkMap,
+    inverseInterfaceLinkMap: Object.fromEntries(
+      Object.entries(interfaceLinkMap).map((
+        [interfaceApiName, linkMap],
+      ) => [interfaceApiName, invertLinkMap(linkMap)]),
+    ),
     icon: supportedIconTypes.includes(objectTypeWithLink.objectType.icon.type)
       ? objectTypeWithLink.objectType.icon
       : undefined,
@@ -146,6 +163,21 @@ function invertProps(
     ? Object.fromEntries(Object.entries(a).map(([k, v]) => [v, k]))
     : undefined) as typeof a extends undefined ? typeof a
       : Record<string, string>;
+}
+
+function invertLinkMap(
+  linkMap: Record<string, string[]>,
+): Record<string, string[]> {
+  const result: Record<string, string[]> = {};
+  for (const [interfaceLinkName, otLinkNames] of Object.entries(linkMap)) {
+    for (const otLinkName of otLinkNames) {
+      if (!result[otLinkName]) {
+        result[otLinkName] = [];
+      }
+      result[otLinkName].push(interfaceLinkName);
+    }
+  }
+  return result;
 }
 
 export const supportedIconTypes = ["blueprint"] as const;

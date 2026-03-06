@@ -290,13 +290,13 @@ export function useObjectSet<
         PropertyKeys<Q>,
         RDPs
       >[],
-      isLoading: !isPayloadCompleted(payload),
+      isLoading: enabled ? !isPayloadCompleted(payload) : false,
       error: lastLoaded && "error" in lastLoaded ? lastLoaded.error : undefined,
       fetchMore: payload?.hasMore ? payload.fetchMore : undefined,
       objectSet: payload?.objectSet as ObjectSet<Q, RDPs> || baseObjectSet,
       totalCount: lastLoaded?.totalCount,
     };
-  }, [payload, baseObjectSet]);
+  }, [payload, baseObjectSet, enabled]);
 }
 
 function isPayloadCompleted<
