@@ -74,6 +74,12 @@ export async function aggregate<
     { branch: clientCtx.branch, transactionId: clientCtx.transactionId },
   );
 
+  if (!result.data || !Array.isArray(result.data)) {
+    throw new Error(
+      `Aggregation request failed: ${JSON.stringify(result)}`,
+    );
+  }
+
   if (!req.$groupBy) {
     invariant(
       result.data.length === 1,
