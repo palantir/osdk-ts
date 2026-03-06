@@ -24,11 +24,9 @@ import { useOsdkAggregation } from "@osdk/react/experimental";
 import { useMemo } from "react";
 import type { AggregationGroupResult } from "../utils/aggregationHelpers.js";
 
-export interface PropertyAggregationValue {
-  value: string;
-  count: number;
-  isNull?: boolean;
-}
+export type { PropertyAggregationValue } from "../types/AggregationTypes.js";
+
+import type { PropertyAggregationValue } from "../types/AggregationTypes.js";
 
 export interface UsePropertyAggregationResult {
   data: PropertyAggregationValue[];

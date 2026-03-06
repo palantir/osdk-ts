@@ -14,25 +14,21 @@
  * limitations under the License.
  */
 
-.multiSelect {
-  display: flex;
-  flex-direction: column;
-  gap: var(--osdk-filter-multiselect-gap);
-}
+import { useState } from "react";
+import type { Employee } from "../../generatedNoCheck2/index.js";
+import { EmployeesWithFilterList } from "./EmployeesWithFilterList.js";
 
-.inputRow {
-  display: flex;
-  align-items: center;
-  gap: var(--osdk-filter-multiselect-inputRow-gap);
-}
+export function EmployeesFilterListPage() {
+  const [selectedEmployee, setSelectedEmployee] = useState<
+    Employee.OsdkInstance | undefined
+  >(undefined);
 
-.clearButton {
-  flex-shrink: 0;
-}
-
-.itemCount {
-  font-family: var(--osdk-filter-multiselect-count-font-family);
-  font-size: var(--osdk-filter-multiselect-count-font-size);
-  font-variant-numeric: tabular-nums;
-  color: var(--osdk-filter-multiselect-count-color);
+  return (
+    <div style={{ height: "calc(100vh - 60px)", padding: 16 }}>
+      <EmployeesWithFilterList
+        selected={selectedEmployee}
+        onSelect={setSelectedEmployee}
+      />
+    </div>
+  );
 }

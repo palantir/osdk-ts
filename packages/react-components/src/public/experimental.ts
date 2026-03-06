@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-export { FilterList } from "../filter-list/base/FilterList.js";
+export { FilterList } from "../filter-list/FilterList.js";
+
 export type {
   FilterDefinitionUnion,
   FilterListProps,

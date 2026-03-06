@@ -14,28 +14,40 @@
  * limitations under the License.
  */
 
-import type { ObjectSet, ObjectTypeDefinition, WhereClause } from "@osdk/api";
+import type {
+  ObjectSet,
+  ObjectTypeDefinition,
+  PropertyKeys,
+  WhereClause,
+} from "@osdk/api";
+import { useOsdkAggregation } from "@osdk/react/experimental";
 import React, { memo, useCallback, useMemo } from "react";
-import type { FilterDefinitionUnion } from "../FilterListApi.js";
-import type { FilterState } from "../FilterListItemApi.js";
+import { CheckboxListInput } from "./base/inputs/CheckboxListInput.js";
+import { ContainsTextInput } from "./base/inputs/ContainsTextInput.js";
+import { DateRangeInput } from "./base/inputs/DateRangeInput.js";
+import { ListogramInput } from "./base/inputs/ListogramInput.js";
+import { MultiDateInput } from "./base/inputs/MultiDateInput.js";
+import { MultiSelectInput } from "./base/inputs/MultiSelectInput.js";
+import { NullValueWrapper } from "./base/inputs/NullValueWrapper.js";
+import { NumberRangeInput } from "./base/inputs/NumberRangeInput.js";
+import { SingleDateInput } from "./base/inputs/SingleDateInput.js";
+import { SingleSelectInput } from "./base/inputs/SingleSelectInput.js";
+import { TextTagsInput } from "./base/inputs/TextTagsInput.js";
+import { TimelineInput } from "./base/inputs/TimelineInput.js";
+import { ToggleInput } from "./base/inputs/ToggleInput.js";
+import type { FilterDefinitionUnion } from "./FilterListApi.js";
+import type { FilterState } from "./FilterListItemApi.js";
+import { usePropertyAggregation } from "./hooks/usePropertyAggregation.js";
+import { LinkedPropertyInput } from "./inputs/LinkedPropertyInput.js";
+import {
+  createGroupByAggregateOptions,
+  createNullCountAggregateOptions,
+  createNullWhereClause,
+} from "./utils/aggregationHelpers.js";
 import {
   coerceToString,
   coerceToStringArray,
-} from "../utils/coerceFilterValue.js";
-import { CheckboxListInput } from "./inputs/CheckboxListInput.js";
-import { ContainsTextInput } from "./inputs/ContainsTextInput.js";
-import { DateRangeInput } from "./inputs/DateRangeInput.js";
-import { LinkedPropertyInput } from "./inputs/LinkedPropertyInput.js";
-import { ListogramInput } from "./inputs/ListogramInput.js";
-import { MultiDateInput } from "./inputs/MultiDateInput.js";
-import { MultiSelectInput } from "./inputs/MultiSelectInput.js";
-import { NullValueWrapper } from "./inputs/NullValueWrapper.js";
-import { NumberRangeInput } from "./inputs/NumberRangeInput.js";
-import { SingleDateInput } from "./inputs/SingleDateInput.js";
-import { SingleSelectInput } from "./inputs/SingleSelectInput.js";
-import { TextTagsInput } from "./inputs/TextTagsInput.js";
-import { TimelineInput } from "./inputs/TimelineInput.js";
-import { ToggleInput } from "./inputs/ToggleInput.js";
+} from "./utils/coerceFilterValue.js";
 
 interface FilterInputProps<Q extends ObjectTypeDefinition> {
   objectType: Q;
@@ -224,7 +236,6 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
       return (
         <CheckboxListFilterInput
           objectType={objectType}
-          objectSet={objectSet}
           propertyKey={definition.key}
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}
@@ -352,7 +363,6 @@ const PropertyFilterInput = memo(
 
 interface CheckboxListFilterInputProps<Q extends ObjectTypeDefinition> {
   objectType: Q;
-  objectSet: ObjectSet<Q>;
   propertyKey: string;
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
@@ -361,7 +371,6 @@ interface CheckboxListFilterInputProps<Q extends ObjectTypeDefinition> {
 
 function CheckboxListFilterInputInner<Q extends ObjectTypeDefinition>({
   objectType,
-  objectSet,
   propertyKey,
   filterState,
   onFilterStateChanged,
@@ -387,14 +396,24 @@ function CheckboxListFilterInputInner<Q extends ObjectTypeDefinition>({
     [onFilterStateChanged, isExcluding],
   );
 
+  const aggregationOptions = useMemo(
+    () => ({ where: whereClause }),
+    [whereClause],
+  );
+
+  const { data, isLoading, error } = usePropertyAggregation(
+    objectType,
+    propertyKey as PropertyKeys<Q>,
+    aggregationOptions,
+  );
+
   return (
     <CheckboxListInput
-      objectType={objectType}
-      objectSet={objectSet}
-      propertyKey={propertyKey}
+      values={data}
+      isLoading={isLoading}
+      error={error}
       selectedValues={selectedValues}
       onChange={handleChange}
-      whereClause={whereClause}
     />
   );
 }
@@ -472,10 +491,9 @@ function NumberRangeFilterInputInner<Q extends ObjectTypeDefinition>({
   filterState,
   onFilterStateChanged,
 }: NumberRangeFilterInputProps<Q>): React.ReactElement {
-  const numberRangeState = useMemo(
-    () => filterState?.type === "NUMBER_RANGE" ? filterState : undefined,
-    [filterState],
-  );
+  const numberRangeState = filterState?.type === "NUMBER_RANGE"
+    ? filterState
+    : undefined;
   const includeNull = filterState?.includeNull;
 
   const handleNullChange = useCallback(
@@ -506,16 +524,87 @@ function NumberRangeFilterInputInner<Q extends ObjectTypeDefinition>({
     [onFilterStateChanged, includeNull],
   );
 
+  const aggregateOptions = useMemo(
+    () => createGroupByAggregateOptions<Q>(propertyKey),
+    [propertyKey],
+  );
+
+  const histogramArgs = useMemo(
+    () => ({ aggregate: aggregateOptions }),
+    [aggregateOptions],
+  );
+
+  const { data: aggregateData, isLoading: histLoading } = useOsdkAggregation(
+    objectType,
+    histogramArgs,
+  );
+
+  const valueCountPairs = useMemo<Array<{ value: number; count: number }>>(
+    () => {
+      if (!aggregateData) return [];
+      const dataArray = aggregateData as Iterable<{
+        $group: Record<string, unknown>;
+        $count?: number;
+      }>;
+      const pairs: Array<{ value: number; count: number }> = [];
+      for (const item of dataArray) {
+        const rawValue = item.$group[propertyKey];
+        if (rawValue != null) {
+          const parsed = parseFloat(String(rawValue));
+          if (!isNaN(parsed)) {
+            pairs.push({ value: parsed, count: item.$count ?? 0 });
+          }
+        }
+      }
+      return pairs;
+    },
+    [aggregateData, propertyKey],
+  );
+
+  const nullCountAggregateOptions = useMemo(
+    () => createNullCountAggregateOptions<Q>(),
+    [],
+  );
+
+  const nullWhereClause = useMemo(
+    () => createNullWhereClause<Q>(propertyKey),
+    [propertyKey],
+  );
+
+  const nullCountArgs = useMemo(
+    () => ({ where: nullWhereClause, aggregate: nullCountAggregateOptions }),
+    [nullWhereClause, nullCountAggregateOptions],
+  );
+
+  const {
+    data: nullCountData,
+    isLoading: nullLoading,
+    error: nullError,
+  } = useOsdkAggregation(
+    objectType,
+    nullCountArgs,
+  );
+
+  const nullCount = useMemo(() => {
+    if (!nullCountData) return 0;
+    const result = nullCountData as { $count?: number } | Iterable<unknown>;
+    if ("$count" in result && typeof result.$count === "number") {
+      return result.$count;
+    }
+    return 0;
+  }, [nullCountData]);
+
   return (
     <NullValueWrapper
-      objectType={objectType}
-      propertyKey={propertyKey}
+      nullCount={nullCount}
+      isLoading={nullLoading}
+      error={nullError}
       includeNull={includeNull}
       onIncludeNullChange={handleNullChange}
     >
       <NumberRangeInput
-        objectType={objectType}
-        propertyKey={propertyKey}
+        valueCountPairs={valueCountPairs}
+        isLoading={histLoading}
         minValue={numberRangeState?.minValue}
         maxValue={numberRangeState?.maxValue}
         onChange={handleRangeChange}
@@ -541,10 +630,9 @@ function DateRangeFilterInputInner<Q extends ObjectTypeDefinition>({
   filterState,
   onFilterStateChanged,
 }: DateRangeFilterInputProps<Q>): React.ReactElement {
-  const dateRangeState = useMemo(
-    () => filterState?.type === "DATE_RANGE" ? filterState : undefined,
-    [filterState],
-  );
+  const dateRangeState = filterState?.type === "DATE_RANGE"
+    ? filterState
+    : undefined;
   const includeNull = filterState?.includeNull;
 
   const handleNullChange = useCallback(
@@ -571,16 +659,87 @@ function DateRangeFilterInputInner<Q extends ObjectTypeDefinition>({
     [onFilterStateChanged, includeNull],
   );
 
+  const aggregateOptions = useMemo(
+    () => createGroupByAggregateOptions<Q>(propertyKey),
+    [propertyKey],
+  );
+
+  const histogramArgs = useMemo(
+    () => ({ aggregate: aggregateOptions }),
+    [aggregateOptions],
+  );
+
+  const { data: aggregateData, isLoading: histLoading } = useOsdkAggregation(
+    objectType,
+    histogramArgs,
+  );
+
+  const valueCountPairs = useMemo<Array<{ value: Date; count: number }>>(
+    () => {
+      if (!aggregateData) return [];
+      const dataArray = aggregateData as Iterable<{
+        $group: Record<string, unknown>;
+        $count?: number;
+      }>;
+      const pairs: Array<{ value: Date; count: number }> = [];
+      for (const item of dataArray) {
+        const rawValue = item.$group[propertyKey];
+        if (rawValue != null) {
+          const date = new Date(String(rawValue));
+          if (!isNaN(date.getTime())) {
+            pairs.push({ value: date, count: item.$count ?? 0 });
+          }
+        }
+      }
+      return pairs;
+    },
+    [aggregateData, propertyKey],
+  );
+
+  const nullCountAggregateOptions = useMemo(
+    () => createNullCountAggregateOptions<Q>(),
+    [],
+  );
+
+  const nullWhereClause = useMemo(
+    () => createNullWhereClause<Q>(propertyKey),
+    [propertyKey],
+  );
+
+  const nullCountArgs = useMemo(
+    () => ({ where: nullWhereClause, aggregate: nullCountAggregateOptions }),
+    [nullWhereClause, nullCountAggregateOptions],
+  );
+
+  const {
+    data: nullCountData,
+    isLoading: nullLoading,
+    error: nullError,
+  } = useOsdkAggregation(
+    objectType,
+    nullCountArgs,
+  );
+
+  const nullCount = useMemo(() => {
+    if (!nullCountData) return 0;
+    const result = nullCountData as { $count?: number } | Iterable<unknown>;
+    if ("$count" in result && typeof result.$count === "number") {
+      return result.$count;
+    }
+    return 0;
+  }, [nullCountData]);
+
   return (
     <NullValueWrapper
-      objectType={objectType}
-      propertyKey={propertyKey}
+      nullCount={nullCount}
+      isLoading={nullLoading}
+      error={nullError}
       includeNull={includeNull}
       onIncludeNullChange={handleNullChange}
     >
       <DateRangeInput
-        objectType={objectType}
-        propertyKey={propertyKey}
+        valueCountPairs={valueCountPairs}
+        isLoading={histLoading}
         minValue={dateRangeState?.minValue}
         maxValue={dateRangeState?.maxValue}
         onChange={handleRangeChange}
@@ -628,13 +787,25 @@ function SingleSelectFilterInputInner<Q extends ObjectTypeDefinition>({
     [onFilterStateChanged, isExcluding],
   );
 
+  const aggregationOptions = useMemo(
+    () => ({ where: whereClause }),
+    [whereClause],
+  );
+
+  const { data, isLoading, error } = usePropertyAggregation(
+    objectType,
+    propertyKey as PropertyKeys<Q>,
+    aggregationOptions,
+  );
+
   return (
     <SingleSelectInput
-      objectType={objectType}
-      propertyKey={propertyKey}
+      values={data}
+      isLoading={isLoading}
+      error={error}
       selectedValue={selectedValue}
       onChange={handleChange}
-      whereClause={whereClause}
+      ariaLabel={`Select ${propertyKey}`}
     />
   );
 }
@@ -678,13 +849,25 @@ function MultiSelectFilterInputInner<Q extends ObjectTypeDefinition>({
     [onFilterStateChanged, isExcluding],
   );
 
+  const aggregationOptions = useMemo(
+    () => ({ where: whereClause }),
+    [whereClause],
+  );
+
+  const { data, isLoading, error } = usePropertyAggregation(
+    objectType,
+    propertyKey as PropertyKeys<Q>,
+    aggregationOptions,
+  );
+
   return (
     <MultiSelectInput
-      objectType={objectType}
-      propertyKey={propertyKey}
+      values={data}
+      isLoading={isLoading}
+      error={error}
       selectedValues={selectedValues}
       onChange={handleChange}
-      whereClause={whereClause}
+      ariaLabel={`Search ${propertyKey} values`}
     />
   );
 }
@@ -798,13 +981,25 @@ function ListogramFilterInputInner<Q extends ObjectTypeDefinition>({
     [onFilterStateChanged, isExcluding],
   );
 
+  const aggregationOptions = useMemo(
+    () => ({ where: whereClause }),
+    [whereClause],
+  );
+
+  const { data, maxCount, isLoading, error } = usePropertyAggregation(
+    objectType,
+    propertyKey as PropertyKeys<Q>,
+    aggregationOptions,
+  );
+
   return (
     <ListogramInput
-      objectType={objectType}
-      propertyKey={propertyKey}
+      values={data}
+      maxCount={maxCount}
+      isLoading={isLoading}
+      error={error}
       selectedValues={selectedValues}
       onChange={handleChange}
-      whereClause={whereClause}
     />
   );
 }
@@ -848,13 +1043,24 @@ function TextTagsFilterInputInner<Q extends ObjectTypeDefinition>({
     [onFilterStateChanged, isExcluding],
   );
 
+  const aggregationOptions = useMemo(
+    () => ({ where: whereClause }),
+    [whereClause],
+  );
+
+  const { data, isLoading, error } = usePropertyAggregation(
+    objectType,
+    propertyKey as PropertyKeys<Q>,
+    aggregationOptions,
+  );
+
   return (
     <TextTagsInput
-      objectType={objectType}
-      propertyKey={propertyKey}
+      suggestions={data}
+      isLoading={isLoading}
+      error={error}
       tags={tags}
       onChange={handleChange}
-      whereClause={whereClause}
     />
   );
 }
