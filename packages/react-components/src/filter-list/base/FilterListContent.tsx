@@ -14,14 +14,62 @@
  * limitations under the License.
  */
 
+import type {
+  Announcements,
+  DragEndEvent,
+  DragStartEvent,
+  Modifier,
+  UniqueIdentifier,
+} from "@dnd-kit/core";
+import {
+  closestCenter,
+  DndContext,
+  DragOverlay,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 import type { ObjectSet, ObjectTypeDefinition, WhereClause } from "@osdk/api";
 import classnames from "classnames";
-import React from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import type { FilterDefinitionUnion } from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
 import { getFilterKey } from "../utils/getFilterKey.js";
+import { getFilterLabel } from "../utils/getFilterLabel.js";
 import styles from "./FilterListContent.module.css";
 import { FilterListItem } from "./FilterListItem.js";
+import { SortableFilterListItem } from "./SortableFilterListItem.js";
+
+const restrictToVerticalAxis: Modifier = ({ transform }) => ({
+  ...transform,
+  x: 0,
+});
+
+const POINTER_ACTIVATION_CONSTRAINT = { distance: 8 } as const;
+
+const stableIdMap = new WeakMap<object, string>();
+let nextStableId = 0;
+
+function getStableSortableId<Q extends ObjectTypeDefinition>(
+  definition: FilterDefinitionUnion<Q>,
+): string {
+  if (definition.id != null) {
+    return definition.id;
+  }
+  let id = stableIdMap.get(definition);
+  if (id == null) {
+    id = `__sortable_${nextStableId++}`;
+    stableIdMap.set(definition, id);
+  }
+  return id;
+}
 
 interface FilterListContentProps<Q extends ObjectTypeDefinition> {
   objectType: Q;
@@ -33,6 +81,10 @@ interface FilterListContentProps<Q extends ObjectTypeDefinition> {
     state: FilterState,
   ) => void;
   whereClause: WhereClause<Q>;
+  enableSorting?: boolean;
+  onFiltersReordered?: (
+    newOrder: ReadonlyArray<FilterDefinitionUnion<Q>>,
+  ) => void;
   className?: string;
   style?: React.CSSProperties;
 }
@@ -44,10 +96,119 @@ export function FilterListContent<Q extends ObjectTypeDefinition>({
   filterStates,
   onFilterStateChanged,
   whereClause,
+  enableSorting,
+  onFiltersReordered,
   className,
   style,
 }: FilterListContentProps<Q>): React.ReactElement {
-  if (!filterDefinitions || filterDefinitions.length === 0) {
+  const [internalOrder, setInternalOrder] = useState<
+    Array<FilterDefinitionUnion<Q>>
+  >(() => filterDefinitions ?? []);
+
+  useEffect(() => {
+    if (filterDefinitions) {
+      setInternalOrder(filterDefinitions);
+    }
+  }, [filterDefinitions]);
+
+  const renderDefinitions = enableSorting ? internalOrder : filterDefinitions;
+
+  const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
+
+  const sortableIds = useMemo(
+    () =>
+      enableSorting
+        ? internalOrder.map((def) => getStableSortableId(def))
+        : [],
+    [enableSorting, internalOrder],
+  );
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: POINTER_ACTIVATION_CONSTRAINT,
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    }),
+  );
+
+  const activeIndex = activeId != null
+    ? sortableIds.indexOf(String(activeId))
+    : -1;
+  const activeDefinition = activeIndex >= 0
+    ? internalOrder[activeIndex]
+    : undefined;
+
+  const activeFilterKey = useMemo(
+    () => activeDefinition ? getFilterKey(activeDefinition) : undefined,
+    [activeDefinition],
+  );
+
+  const handleDragStart = useCallback((event: DragStartEvent) => {
+    setActiveId(event.active.id);
+  }, []);
+
+  const handleDragEnd = useCallback(
+    (event: DragEndEvent) => {
+      setActiveId(null);
+      const { active, over } = event;
+
+      if (over && active.id !== over.id) {
+        const oldIndex = sortableIds.indexOf(String(active.id));
+        const newIndex = sortableIds.indexOf(String(over.id));
+
+        if (oldIndex !== -1 && newIndex !== -1) {
+          const reordered = arrayMove(internalOrder, oldIndex, newIndex);
+          setInternalOrder(reordered);
+          onFiltersReordered?.(reordered);
+        }
+      }
+    },
+    [internalOrder, sortableIds, onFiltersReordered],
+  );
+
+  const handleDragCancel = useCallback(() => {
+    setActiveId(null);
+  }, []);
+
+  const announcements = useMemo<Announcements>(
+    () => ({
+      onDragStart({ active }) {
+        const idx = sortableIds.indexOf(String(active.id));
+        const def = idx >= 0 ? internalOrder[idx] : undefined;
+        const label = def ? getFilterLabel(def) : "filter";
+        return `Picked up ${label} filter`;
+      },
+      onDragOver({ over }) {
+        if (!over) {
+          return "Not over a droppable area";
+        }
+        const overIdx = sortableIds.indexOf(String(over.id));
+        return `Moved to position ${overIdx + 1} of ${sortableIds.length}`;
+      },
+      onDragEnd({ active, over }) {
+        const idx = sortableIds.indexOf(String(active.id));
+        const def = idx >= 0 ? internalOrder[idx] : undefined;
+        const label = def ? getFilterLabel(def) : "filter";
+        if (over && active.id !== over.id) {
+          const overIdx = sortableIds.indexOf(String(over.id));
+          return `Dropped ${label} filter at position ${overIdx + 1}`;
+        }
+        return `Dropped ${label} filter back in its original position`;
+      },
+      onDragCancel({ active }) {
+        const idx = sortableIds.indexOf(String(active.id));
+        const def = idx >= 0 ? internalOrder[idx] : undefined;
+        const label = def ? getFilterLabel(def) : "filter";
+        return `Cancelled dragging ${label} filter`;
+      },
+    }),
+    [internalOrder, sortableIds],
+  );
+
+  const modifiers = useMemo(() => [restrictToVerticalAxis], []);
+
+  if (!renderDefinitions || renderDefinitions.length === 0) {
     return (
       <div
         className={classnames(styles.content, className)}
@@ -57,12 +218,73 @@ export function FilterListContent<Q extends ObjectTypeDefinition>({
     );
   }
 
+  if (enableSorting) {
+    return (
+      <div
+        className={classnames(styles.content, className)}
+        style={style}
+      >
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          modifiers={modifiers}
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEnd}
+          onDragCancel={handleDragCancel}
+          accessibility={{ announcements }}
+        >
+          <SortableContext
+            items={sortableIds}
+            strategy={verticalListSortingStrategy}
+          >
+            {internalOrder.map((definition, index) => {
+              const id = sortableIds[index];
+              const filterKey = getFilterKey(definition);
+              const state = filterStates.get(filterKey);
+
+              return (
+                <SortableFilterListItem
+                  key={id}
+                  id={id}
+                  objectType={objectType}
+                  objectSet={objectSet}
+                  definition={definition}
+                  filterKey={filterKey}
+                  filterState={state}
+                  onFilterStateChanged={onFilterStateChanged}
+                  whereClause={whereClause}
+                />
+              );
+            })}
+          </SortableContext>
+
+          <DragOverlay
+            dropAnimation={null}
+            className={styles.dragOverlay}
+          >
+            {activeDefinition && activeFilterKey && (
+              <FilterListItem
+                objectType={objectType}
+                objectSet={objectSet}
+                definition={activeDefinition}
+                filterKey={activeFilterKey}
+                filterState={filterStates.get(activeFilterKey)}
+                onFilterStateChanged={onFilterStateChanged}
+                whereClause={whereClause}
+              />
+            )}
+          </DragOverlay>
+        </DndContext>
+      </div>
+    );
+  }
+
   return (
     <div
       className={classnames(styles.content, className)}
       style={style}
     >
-      {filterDefinitions.map((definition, index) => {
+      {renderDefinitions.map((definition) => {
         const filterKey = getFilterKey(definition);
         const state = filterStates.get(filterKey);
 
