@@ -69,16 +69,23 @@ export function BaseFilterList<Q extends ObjectTypeDefinition>(
         />
       )}
 
-      <FilterListContent
-        filterDefinitions={filterDefinitions}
-        filterStates={filterStates}
-        onFilterStateChanged={onFilterStateChanged}
-        renderInput={renderInput}
-        enableSorting={enableSorting}
-        onFiltersReordered={onFiltersReordered}
-      />
+      <div
+        className={styles.contentWrapper}
+        data-collapsed={collapsed}
+      >
+        <div className={styles.contentInner}>
+          <FilterListContent
+            filterDefinitions={filterDefinitions}
+            filterStates={filterStates}
+            onFilterStateChanged={onFilterStateChanged}
+            renderInput={renderInput}
+            enableSorting={enableSorting}
+            onFiltersReordered={onFiltersReordered}
+          />
+        </div>
+      </div>
 
-      {showAddButton && (
+      {!collapsed && showAddButton && (
         <div className={styles.addButtonContainer}>
           {renderAddFilterButton
             ? renderAddFilterButton()

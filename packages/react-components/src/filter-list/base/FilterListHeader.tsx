@@ -61,8 +61,11 @@ function FilterListHeaderInner({
         </Button>
       )}
 
-      {!collapsed && (
-        <>
+      <div
+        className={styles.headerContentWrapper}
+        data-collapsed={collapsed}
+      >
+        <div className={styles.headerContentInner}>
           <div className={styles.titleContainer}>
             {titleIcon && (
               <span className={styles.titleIcon}>
@@ -90,8 +93,8 @@ function FilterListHeaderInner({
               Reset
             </Button>
           )}
-        </>
-      )}
+        </div>
+      </div>
     </div>
   );
 }

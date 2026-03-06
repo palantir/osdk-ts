@@ -25,9 +25,11 @@ import React, { memo, useCallback } from "react";
 import { ErrorBoundary } from "../../shared/ErrorBoundary.js";
 import type { FilterDefinitionUnion } from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
+import { supportsExcluding } from "../utils/filterValues.js";
 import { getFilterLabel } from "../utils/getFilterLabel.js";
 import type { RenderFilterInput } from "./BaseFilterListApi.js";
 import { DragHandleIcon } from "./DragHandleIcon.js";
+import { ExcludeIcon, IncludeIcon } from "./FilterIcons.js";
 import styles from "./FilterListItem.module.css";
 
 interface FilterListItemProps<Q extends ObjectTypeDefinition> {
@@ -65,11 +67,27 @@ function FilterListItemInner<Q extends ObjectTypeDefinition>({
     [filterKey, onFilterStateChanged],
   );
 
+  const handleToggleExclude = useCallback(
+    () => {
+      if (filterState) {
+        onFilterStateChanged(filterKey, {
+          ...filterState,
+          isExcluding: !filterState.isExcluding,
+        });
+      }
+    },
+    [filterKey, filterState, onFilterStateChanged],
+  );
+
+  const isExcluding = filterState?.isExcluding ?? false;
+  const showExcludeToggle = supportsExcluding(filterState);
+
   return (
     <div
       className={classnames(styles.filterItem, className)}
       style={style}
       data-filter-type={definition.type}
+      data-excluding={isExcluding || undefined}
     >
       <div className={styles.itemHeader}>
         {dragHandleAttributes && (
@@ -83,6 +101,18 @@ function FilterListItemInner<Q extends ObjectTypeDefinition>({
           </Button>
         )}
         <span className={styles.itemLabel}>{label}</span>
+        {showExcludeToggle && (
+          <Button
+            className={styles.excludeToggle}
+            onClick={handleToggleExclude}
+            aria-pressed={isExcluding}
+            aria-label={isExcluding
+              ? "Switch to include mode"
+              : "Switch to exclude mode"}
+          >
+            {isExcluding ? <ExcludeIcon /> : <IncludeIcon />}
+          </Button>
+        )}
       </div>
 
       <div className={styles.itemContent}>

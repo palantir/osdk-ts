@@ -101,6 +101,7 @@ export function EmployeesWithFilterList(props: EmployeesWithFilterListProps) {
             filterDefinitions={filterDefinitions}
             onFilterClauseChanged={setWhereClause}
             onFiltersReordered={handleFiltersReordered}
+            enableSorting={true}
             title="Filters"
             showActiveFilterCount={true}
           />
