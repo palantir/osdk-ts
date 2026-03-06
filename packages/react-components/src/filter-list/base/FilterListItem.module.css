@@ -45,7 +45,7 @@
   margin-right: var(--osdk-surface-spacing);
   border: none;
   background: var(--osdk-filter-item-drag-handle-bg);
-  cursor: grab;
+  cursor: var(--osdk-drag-handle-cursor);
   border-radius: var(--osdk-filter-item-drag-handle-border-radius);
   color: var(--osdk-filter-item-drag-handle-color);
   touch-action: none;
@@ -56,7 +56,7 @@
   }
 
   &:active {
-    cursor: grabbing;
+    cursor: var(--osdk-drag-handle-cursor-active);
   }
 
   &:focus-visible {
