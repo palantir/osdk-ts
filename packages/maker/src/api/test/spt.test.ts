@@ -80,6 +80,7 @@ describe("SPTs", () => {
                 },
               },
               "extendsInterfaces": [],
+              "extendsInterfacesMetadata": [],
               "links": [],
               "properties": [],
               "propertiesV2": {
@@ -341,6 +342,7 @@ describe("SPTs", () => {
                 },
               },
               "extendsInterfaces": [],
+              "extendsInterfacesMetadata": [],
               "links": [],
               "properties": [],
               "propertiesV2": {
