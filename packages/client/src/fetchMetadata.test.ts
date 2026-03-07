@@ -125,6 +125,21 @@ describe("FetchMetadata", () => {
             "valueFormatting": undefined,
             "valueTypeApiName": undefined,
           },
+          "employeeProfile": {
+            "description": "Employee profile with main value being the bio",
+            "displayName": undefined,
+            "mainValue": {
+              "type": "string",
+            },
+            "multiplicity": false,
+            "nullable": true,
+            "type": {
+              "bio": "string",
+              "yearsExperience": "integer",
+            },
+            "valueFormatting": undefined,
+            "valueTypeApiName": undefined,
+          },
           "employeeSensor": {
             "description": "TimeSeries sensor of the status of the employee",
             "displayName": undefined,
@@ -148,6 +163,7 @@ describe("FetchMetadata", () => {
             "displayName": undefined,
             "multiplicity": true,
             "nullable": true,
+            "reducers": undefined,
             "type": "string",
             "valueFormatting": undefined,
             "valueTypeApiName": undefined,
@@ -168,6 +184,21 @@ describe("FetchMetadata", () => {
             "multiplicity": false,
             "nullable": true,
             "type": "string",
+            "valueFormatting": undefined,
+            "valueTypeApiName": undefined,
+          },
+          "performanceScores": {
+            "description": "Array of performance scores with reducers",
+            "displayName": undefined,
+            "multiplicity": true,
+            "nullable": true,
+            "reducers": [
+              {
+                "direction": "DESCENDING_NULLS_LAST",
+                "field": undefined,
+              },
+            ],
+            "type": "double",
             "valueFormatting": undefined,
             "valueTypeApiName": undefined,
           },

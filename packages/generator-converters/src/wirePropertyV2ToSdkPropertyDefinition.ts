@@ -27,6 +27,32 @@ import type {
 } from "@osdk/foundry.ontologies";
 import { wirePropertyFormattingToSdkFormatting } from "./wirePropertyFormattingToSdkFormatting.js";
 
+/**
+ * Extracts main value metadata from a struct property type.
+ * Returns the fields array that comprise the main value.
+ */
+function extractMainValue(
+  dataType: ObjectPropertyType,
+): { fields: readonly string[] } | undefined {
+  if (dataType.type === "struct" && dataType.mainValue) {
+    const fields = dataType.mainValue.fields;
+    if (fields && fields.length > 0) {
+      return { fields };
+    }
+  }
+  return undefined;
+}
+
+/**
+ * Checks if an array property type has reducers.
+ */
+function hasReducers(
+  dataType: ObjectPropertyType,
+): boolean {
+  return dataType.type === "array" && dataType.reducers != null
+    && dataType.reducers.length > 0;
+}
+
 export function wirePropertyV2ToSdkPropertyDefinition(
   input: (PropertyV2 | SharedPropertyType | ResolvedInterfacePropertyType) & {
     nullable?: boolean;
@@ -60,7 +86,6 @@ export function wirePropertyV2ToSdkPropertyDefinition(
     case "timeseries":
     case "marking":
     case "geotimeSeriesReference":
-    case "struct":
     case "vector":
       return {
         displayName: input.displayName,
@@ -73,6 +98,21 @@ export function wirePropertyV2ToSdkPropertyDefinition(
           ? wirePropertyFormattingToSdkFormatting(input.valueFormatting, log)
           : undefined,
       };
+    case "struct": {
+      const mainValue = extractMainValue(input.dataType);
+      return {
+        displayName: input.displayName,
+        multiplicity: false,
+        description: input.description,
+        type: sdkPropDefinition,
+        nullable: input.nullable == null ? isNullable : input.nullable,
+        valueTypeApiName: input.valueTypeApiName,
+        valueFormatting: input.valueFormatting != null
+          ? wirePropertyFormattingToSdkFormatting(input.valueFormatting, log)
+          : undefined,
+        mainValue,
+      };
+    }
     case "array": {
       return {
         displayName: input.displayName,
@@ -84,6 +124,7 @@ export function wirePropertyV2ToSdkPropertyDefinition(
         valueFormatting: input.valueFormatting != null
           ? wirePropertyFormattingToSdkFormatting(input.valueFormatting, log)
           : undefined,
+        hasReducers: hasReducers(input.dataType),
       };
     }
     case "cipherText": {
