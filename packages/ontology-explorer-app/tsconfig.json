@@ -1,0 +1,22 @@
+{
+  "extends": "@osdk/monorepo.tsconfig/base.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "build/esm",
+    "isolatedDeclarations": false,
+    "plugins": [
+      {
+        "name": "typescript-plugin-css-modules"
+      }
+    ],
+    "rootDirs": [
+      "./src",
+      "./build/scss-types"
+    ],
+    "allowArbitraryExtensions": true
+  },
+  "include": [
+    "./src/**/*"
+  ],
+  "references": []
+}
