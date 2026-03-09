@@ -14,13 +14,65 @@
  * limitations under the License.
  */
 
-import type { ActionDefinition } from "@osdk/api";
+import type { ActionDefinition, ActionMetadata } from "@osdk/api";
 import React from "react";
 import type { ActionFormProps } from "./ActionFormApi.js";
+import { useActionMetadata } from "./useActionMetadata.js";
 
 export function ActionForm<T, Q extends ActionDefinition<T>>({
   actionDefinition,
   ...props
 }: ActionFormProps<Q>): React.ReactElement {
-  return <div>This is my empty form</div>;
+  const { isLoading, metadata, error } = useActionMetadata(actionDefinition);
+
+  return (
+    <div>
+      <h3>{props.formTitle ?? metadata?.displayName ?? metadata?.apiName}</h3>
+      {error != null && <div>Failed to load action metadata: {error}</div>}
+      {isLoading && <div>Loading...</div>}
+      {metadata != null && <ActionFormFields metadata={metadata} />}
+    </div>
+  );
+}
+
+interface ActionFormFieldsProps {
+  metadata: ActionMetadata;
+}
+
+function ActionFormFields({
+  metadata,
+}: ActionFormFieldsProps): React.ReactElement {
+  return (
+    <form>
+      {Object.entries(metadata.parameters).map(([key, param]) => (
+        <ActionFormField key={key} paramKey={key} param={param} />
+      ))}
+    </form>
+  );
+}
+
+interface ActionFormFieldProps {
+  paramKey: string;
+  param: ActionMetadata.Parameter;
+}
+
+function ActionFormField({
+  paramKey,
+  param,
+}: ActionFormFieldProps): React.ReactElement {
+  const paramType = typeof param.type === "string"
+    ? param.type
+    : param.type.type;
+  const isRequired = param.nullable === false;
+
+  return (
+    <div>
+      <label>
+        {paramKey}
+        {isRequired && " *"}
+      </label>
+      {param.description != null && <span>{param.description}</span>}
+      <div>{paramType}</div>
+    </div>
+  );
 }
