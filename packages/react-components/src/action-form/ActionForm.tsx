@@ -14,65 +14,83 @@
  * limitations under the License.
  */
 
-import type { ActionDefinition, ActionMetadata } from "@osdk/api";
+import type { ActionDefinition } from "@osdk/api";
+import { useOsdkAction } from "@osdk/react/experimental";
 import React from "react";
 import type { ActionFormProps } from "./ActionFormApi.js";
+import type { BaseFormFieldConfig } from "./BaseActionForm.js";
+import { BaseActionForm } from "./BaseActionForm.js";
 import { useActionMetadata } from "./useActionMetadata.js";
 
 export function ActionForm<T, Q extends ActionDefinition<T>>({
   actionDefinition,
-  ...props
+  formTitle,
+  onSuccess,
+  onError,
+  isSubmitDisabled,
 }: ActionFormProps<Q>): React.ReactElement {
-  const { isLoading, metadata, error } = useActionMetadata(actionDefinition);
-
-  return (
-    <div>
-      <h3>{props.formTitle ?? metadata?.displayName ?? metadata?.apiName}</h3>
-      {error != null && <div>Failed to load action metadata: {error}</div>}
-      {isLoading && <div>Loading...</div>}
-      {metadata != null && <ActionFormFields metadata={metadata} />}
-    </div>
+  const { isLoading, metadata, error: metadataError } = useActionMetadata(
+    actionDefinition,
   );
-}
+  const { applyAction, isPending } = useOsdkAction(actionDefinition);
+  const [formValues, setFormValues] = React.useState<
+    Record<string, unknown>
+  >({});
+  const [submitError, setSubmitError] = React.useState<string | undefined>();
 
-interface ActionFormFieldsProps {
-  metadata: ActionMetadata;
-}
+  const fields = React.useMemo<BaseFormFieldConfig[]>(() => {
+    if (metadata == null) {
+      return [];
+    }
+    return Object.entries(metadata.parameters).map(([key, param]) => ({
+      key,
+      label: key,
+      type: typeof param.type === "string" ? param.type : param.type.type,
+      isRequired: param.nullable === false,
+      description: param.description,
+    }));
+  }, [metadata]);
 
-function ActionFormFields({
-  metadata,
-}: ActionFormFieldsProps): React.ReactElement {
-  return (
-    <form>
-      {Object.entries(metadata.parameters).map(([key, param]) => (
-        <ActionFormField key={key} paramKey={key} param={param} />
-      ))}
-    </form>
+  const title = formTitle ?? metadata?.displayName ?? metadata?.apiName;
+
+  const handleFieldChange = React.useCallback(
+    (key: string, value: unknown) => {
+      setFormValues((prev) => ({ ...prev, [key]: value }));
+    },
+    [],
   );
-}
 
-interface ActionFormFieldProps {
-  paramKey: string;
-  param: ActionMetadata.Parameter;
-}
+  const handleSubmit = React.useCallback(async () => {
+    setSubmitError(undefined);
+    try {
+      const result = await applyAction(formValues);
+      if (result != null) {
+        onSuccess?.(result);
+      }
+    } catch (e: unknown) {
+      const errorMessage = e instanceof Error ? e.message : String(e);
+      setSubmitError(errorMessage);
+      onError?.({
+        type: "submission",
+        error: e instanceof Error ? e : new Error(errorMessage),
+      });
+    }
+  }, [applyAction, formValues, onSuccess, onError]);
 
-function ActionFormField({
-  paramKey,
-  param,
-}: ActionFormFieldProps): React.ReactElement {
-  const paramType = typeof param.type === "string"
-    ? param.type
-    : param.type.type;
-  const isRequired = param.nullable === false;
+  const displayError = metadataError != null
+    ? `Failed to load action metadata: ${metadataError}`
+    : submitError;
 
   return (
-    <div>
-      <label>
-        {paramKey}
-        {isRequired && " *"}
-      </label>
-      {param.description != null && <span>{param.description}</span>}
-      <div>{paramType}</div>
-    </div>
+    <BaseActionForm
+      title={title}
+      fields={fields}
+      values={formValues}
+      onFieldChange={handleFieldChange}
+      onSubmit={handleSubmit}
+      isSubmitting={isLoading || isPending}
+      isSubmitDisabled={isSubmitDisabled ?? fields.length === 0}
+      error={displayError}
+    />
   );
 }
