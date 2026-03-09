@@ -1,5 +1,11 @@
 # @osdk/create-widget.template.react.v2
 
+## 3.4.5
+
+### Patch Changes
+
+- 2e66744: Bump vite to ^7.3.1
+
 ## 3.4.4
 
 ## 3.4.3

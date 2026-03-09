@@ -1,5 +1,11 @@
 # @osdk/create-app.template.react
 
+## 2.7.5
+
+### Patch Changes
+
+- 2e66744: Bump vite to ^7.3.1
+
 ## 2.7.4
 
 ### Patch Changes
