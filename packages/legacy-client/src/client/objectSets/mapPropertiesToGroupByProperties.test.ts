@@ -50,4 +50,19 @@ describe(mapPropertiesToGroupByProperties, () => {
       maxGroupCount: 10,
     });
   });
+
+  it("maps timestamp properties to TimestampGroupBy, not NumericGroupBy", () => {
+    const aggregatableProperties = mapPropertiesToGroupByProperties(
+      MockOntology,
+      "ObjectTypeWithAllPropertyTypes",
+    );
+
+    expect(aggregatableProperties.dateTime.byYear).toBeDefined();
+    expect(aggregatableProperties.dateTime.byYear()).toMatchObject({
+      type: "Bucketing",
+      kind: "DurationBucketing",
+      keyDataType: GroupKeyType.TIMESTAMP,
+      propertyApiName: "dateTime",
+    });
+  });
 });
