@@ -16,7 +16,7 @@
 
 import type { BaseTableProps } from "@osdk/react-components/experimental";
 import { BaseTable } from "@osdk/react-components/experimental";
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 import type {
   ColumnPinningState,
   ColumnSizingState,
