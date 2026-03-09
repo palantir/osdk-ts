@@ -9,6 +9,8 @@ function PeopleApp() {
   const path = location.pathname;
   const activeTab = path === "/" || path === "/employees"
     ? "employees"
+    : path === "/action-form"
+    ? "action-form"
     : "offices";
 
   return (
@@ -29,6 +31,13 @@ function PeopleApp() {
           onClick={() => navigate("/offices")}
         >
           Offices
+        </Button>
+        <Button
+          variant="tab"
+          active={activeTab === "action-form"}
+          onClick={() => navigate("/action-form")}
+        >
+          Action Form
         </Button>
       </div>
 
