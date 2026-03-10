@@ -42,6 +42,10 @@ export function serializeFilterStates(
 export function deserializeFilterStates(
   json: string,
 ): Map<string, FilterState> {
-  const entries: Array<[string, FilterState]> = JSON.parse(json, reviver);
-  return new Map(entries);
+  try {
+    const entries: Array<[string, FilterState]> = JSON.parse(json, reviver);
+    return new Map(entries);
+  } catch {
+    return new Map();
+  }
 }

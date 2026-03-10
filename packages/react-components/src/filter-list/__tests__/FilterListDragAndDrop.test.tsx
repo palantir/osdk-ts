@@ -113,6 +113,8 @@ describe("FilterList drag and drop", () => {
         onFilterStateChanged={vi.fn()}
         enableSorting={true}
         renderInput={stubRenderInput}
+        getFilterKey={getFilterKey}
+        getFilterLabel={getFilterLabel}
       />,
     );
 

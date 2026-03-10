@@ -27,8 +27,18 @@ export function supportsExcluding(state: FilterState | undefined): boolean {
     case "CONTAINS_TEXT":
     case "TIMELINE":
       return true;
-    default:
+    case "NUMBER_RANGE":
+    case "DATE_RANGE":
+    case "TOGGLE":
+    case "hasLink":
+    case "linkedProperty":
+    case "keywordSearch":
+    case "custom":
       return false;
+    default: {
+      const _exhaustive: never = state;
+      return false;
+    }
   }
 }
 

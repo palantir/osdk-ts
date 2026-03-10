@@ -63,9 +63,16 @@ function CheckboxListInputInner({
     [selectedValues, selectedSet, onChange],
   );
 
-  const allSelected = displayValues.length > 0
-    && displayValues.every((v) => selectedSet.has(v));
-  const someSelected = !allSelected && selectedValues.length > 0;
+  const allSelected = useMemo(
+    () =>
+      displayValues.length > 0
+      && displayValues.every((v) => selectedSet.has(v)),
+    [displayValues, selectedSet],
+  );
+  const areSomeValuesSelected = useMemo(
+    () => !allSelected && selectedValues.some((v) => selectedSet.has(v)),
+    [allSelected, selectedValues, selectedSet],
+  );
 
   const handleSelectAll = useCallback(
     () => {
@@ -110,7 +117,7 @@ function CheckboxListInputInner({
             <label className={styles.checkboxLabel}>
               <Checkbox
                 checked={allSelected}
-                indeterminate={someSelected}
+                indeterminate={areSomeValuesSelected}
                 onCheckedChange={handleSelectAll}
               />
               <span className={styles.valueText}>Select all</span>
