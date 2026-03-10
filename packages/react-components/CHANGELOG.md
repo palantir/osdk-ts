@@ -1,5 +1,21 @@
 # @osdk/react-components
 
+## 0.2.0-beta.12
+
+### Minor Changes
+
+- 9720083: Add AGENTS.md files for AI IDE context
+
+### Patch Changes
+
+- Updated dependencies [9720083]
+- Updated dependencies [09e5659]
+- Updated dependencies [8a82492]
+- Updated dependencies [2ebe62c]
+  - @osdk/react@0.10.0-beta.8
+  - @osdk/client@2.8.0-beta.16
+  - @osdk/api@2.8.0-beta.16
+
 ## 0.2.0-beta.11
 
 ### Minor Changes
