@@ -149,6 +149,8 @@ export type AggregateObjectsError =
   | MultipleGroupByOnFieldNotSupported
   | InvalidPropertyFilterValue
   | InvalidAggregationRangePropertyType
+  | AggregationMetricNotSupported
+  | InvalidDurationGroupByPropertyType
   | CommonApiError;
 export type QueryError =
   | ParameterObjectSetRidNotFound
@@ -544,4 +546,19 @@ export interface MissingParameter extends FoundryApiError {
   errorType: "INVALID_ARGUMENT";
   errorName: "MissingParameter";
   parameters: string[];
+}
+export interface AggregationMetricNotSupported extends FoundryApiError {
+  errorType: "INVALID_ARGUMENT";
+  errorName: "AggregationMetricNotSupported";
+  aggregationMetricName: string;
+  objectType: string;
+  property: string;
+  propertyBaseType: ValueType;
+}
+export interface InvalidDurationGroupByPropertyType extends FoundryApiError {
+  errorType: "INVALID_ARGUMENT";
+  errorName: "InvalidDurationGroupByPropertyType";
+  property: string;
+  objectType: string;
+  propertyBaseType: ValueType;
 }

@@ -382,6 +382,21 @@ export function handleAggregateObjectsError(
         parameters.objectType,
         parameters.propertyBaseType,
       );
+    case "AggregationMetricNotSupported":
+      return handler.handleAggregationMetricNotSupported(
+        error,
+        parameters.aggregationMetricName,
+        parameters.objectType,
+        parameters.property,
+        parameters.propertyBaseType,
+      );
+    case "InvalidDurationGroupByPropertyType":
+      return handler.handleInvalidDurationGroupByPropertyType(
+        error,
+        parameters.property,
+        parameters.objectType,
+        parameters.propertyBaseType,
+      );
     case "PermissionDenied":
       return handler.handlePermissionDenied(error);
     case "Unauthorized":
