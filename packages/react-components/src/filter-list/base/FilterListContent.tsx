@@ -54,23 +54,6 @@ const restrictToVerticalAxis: Modifier = ({ transform }) => ({
 
 const POINTER_ACTIVATION_CONSTRAINT = { distance: 8 } as const;
 
-const stableIdMap = new WeakMap<object, string>();
-let nextStableId = 0;
-
-function getStableSortableId<Q extends ObjectTypeDefinition>(
-  definition: FilterDefinitionUnion<Q>,
-): string {
-  if (definition.id != null) {
-    return definition.id;
-  }
-  let id = stableIdMap.get(definition);
-  if (id == null) {
-    id = `__sortable_${nextStableId++}`;
-    stableIdMap.set(definition, id);
-  }
-  return id;
-}
-
 interface FilterListContentProps<Q extends ObjectTypeDefinition> {
   objectType: Q;
   objectSet: ObjectSet<Q>;
@@ -104,6 +87,7 @@ export function FilterListContent<Q extends ObjectTypeDefinition>({
   const [internalOrder, setInternalOrder] = useState<
     Array<FilterDefinitionUnion<Q>>
   >(() => filterDefinitions ?? []);
+  const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
 
   useEffect(() => {
     if (filterDefinitions) {
@@ -113,12 +97,10 @@ export function FilterListContent<Q extends ObjectTypeDefinition>({
 
   const renderDefinitions = enableSorting ? internalOrder : filterDefinitions;
 
-  const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
-
   const sortableIds = useMemo(
     () =>
       enableSorting
-        ? internalOrder.map((def) => getStableSortableId(def))
+        ? internalOrder.map((def) => getFilterKey(def))
         : [],
     [enableSorting, internalOrder],
   );
@@ -152,16 +134,15 @@ export function FilterListContent<Q extends ObjectTypeDefinition>({
     (event: DragEndEvent) => {
       setActiveId(null);
       const { active, over } = event;
-
-      if (over && active.id !== over.id) {
-        const oldIndex = sortableIds.indexOf(String(active.id));
-        const newIndex = sortableIds.indexOf(String(over.id));
-
-        if (oldIndex !== -1 && newIndex !== -1) {
-          const reordered = arrayMove(internalOrder, oldIndex, newIndex);
-          setInternalOrder(reordered);
-          onFiltersReordered?.(reordered);
-        }
+      if (!over || active.id === over.id) {
+        return;
+      }
+      const oldIndex = sortableIds.indexOf(String(active.id));
+      const newIndex = sortableIds.indexOf(String(over.id));
+      if (oldIndex !== -1 && newIndex !== -1) {
+        const reordered = arrayMove(internalOrder, oldIndex, newIndex);
+        setInternalOrder(reordered);
+        onFiltersReordered?.(reordered);
       }
     },
     [internalOrder, sortableIds, onFiltersReordered],
