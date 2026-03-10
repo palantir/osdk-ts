@@ -67,17 +67,11 @@ export interface WontDo extends $ObjectTypeDefinition {
       name: 'cube';
     };
     implements: ['TodoLike'];
-    interfaceLinkMap: {
-      TodoLike: {};
-    };
     interfaceMap: {
       TodoLike: {
         name: 'wontDoName';
         isComplete: 'isComplete';
       };
-    };
-    inverseInterfaceLinkMap: {
-      TodoLike: {};
     };
     inverseInterfaceMap: {
       TodoLike: {

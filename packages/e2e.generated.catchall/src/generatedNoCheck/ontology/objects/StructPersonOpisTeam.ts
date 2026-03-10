@@ -73,9 +73,7 @@ export interface StructPersonOpisTeam extends $ObjectTypeDefinition {
       color: 'color';
     };
     implements: undefined;
-    interfaceLinkMap: {};
     interfaceMap: {};
-    inverseInterfaceLinkMap: {};
     inverseInterfaceMap: {};
     links: {};
     pluralDisplayName: 'StructPeople';

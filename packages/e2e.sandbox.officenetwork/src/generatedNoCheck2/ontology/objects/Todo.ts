@@ -85,17 +85,11 @@ export interface Todo extends $ObjectTypeDefinition {
       name: 'confirm';
     };
     implements: ['TodoLike'];
-    interfaceLinkMap: {
-      TodoLike: {};
-    };
     interfaceMap: {
       TodoLike: {
         name: 'title';
         isComplete: 'isComplete';
       };
-    };
-    inverseInterfaceLinkMap: {
-      TodoLike: {};
     };
     inverseInterfaceMap: {
       TodoLike: {

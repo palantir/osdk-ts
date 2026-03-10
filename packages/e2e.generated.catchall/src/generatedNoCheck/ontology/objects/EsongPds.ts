@@ -107,9 +107,7 @@ export interface EsongPds extends $ObjectTypeDefinition {
       name: 'cube';
     };
     implements: [];
-    interfaceLinkMap: {};
     interfaceMap: {};
-    inverseInterfaceLinkMap: {};
     inverseInterfaceMap: {};
     links: {
       esongIssues: $ObjectMetadata.Link<EsongIssues, false>;

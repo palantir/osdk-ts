@@ -67,9 +67,7 @@ export interface BuilderDeploymentState extends $ObjectTypeDefinition {
       color: 'color';
     };
     implements: undefined;
-    interfaceLinkMap: {};
     interfaceMap: {};
-    inverseInterfaceLinkMap: {};
     inverseInterfaceMap: {};
     links: {};
     pluralDisplayName: 'Builder Deployment States';

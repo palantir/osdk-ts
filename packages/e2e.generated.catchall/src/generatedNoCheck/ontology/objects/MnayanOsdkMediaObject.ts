@@ -67,9 +67,7 @@ export interface MnayanOsdkMediaObject extends $ObjectTypeDefinition {
       color: 'color';
     };
     implements: undefined;
-    interfaceLinkMap: {};
     interfaceMap: {};
-    inverseInterfaceLinkMap: {};
     inverseInterfaceMap: {};
     links: {};
     pluralDisplayName: 'Mnayan OSDKMedia Objects';

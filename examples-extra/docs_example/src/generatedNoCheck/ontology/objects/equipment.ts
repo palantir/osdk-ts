@@ -63,9 +63,7 @@ export interface equipment extends $ObjectTypeDefinition {
       color: 'blue';
     };
     implements: undefined;
-    interfaceLinkMap: {};
     interfaceMap: {};
-    inverseInterfaceLinkMap: {};
     inverseInterfaceMap: {};
     links: {};
     pluralDisplayName: 'Equipment';

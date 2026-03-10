@@ -85,9 +85,7 @@ export interface Todo extends $ObjectTypeDefinition {
       name: 'confirm';
     };
     implements: [];
-    interfaceLinkMap: {};
     interfaceMap: {};
-    inverseInterfaceLinkMap: {};
     inverseInterfaceMap: {};
     links: {};
     pluralDisplayName: 'Todos';

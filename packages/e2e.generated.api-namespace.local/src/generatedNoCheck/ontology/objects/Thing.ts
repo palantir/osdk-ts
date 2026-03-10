@@ -63,16 +63,10 @@ export interface Thing extends $ObjectTypeDefinition {
       color: 'green';
     };
     implements: ['com.example.dep.SomeInterface'];
-    interfaceLinkMap: {
-      'com.example.dep.SomeInterface': {};
-    };
     interfaceMap: {
       'com.example.dep.SomeInterface': {
         'com.example.dep.spt': 'body';
       };
-    };
-    inverseInterfaceLinkMap: {
-      'com.example.dep.SomeInterface': {};
     };
     inverseInterfaceMap: {
       'com.example.dep.SomeInterface': {

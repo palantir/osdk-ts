@@ -489,9 +489,7 @@ export interface MasonHeavyEquipment extends $ObjectTypeDefinition {
       name: 'cube';
     };
     implements: [];
-    interfaceLinkMap: {};
     interfaceMap: {};
-    inverseInterfaceLinkMap: {};
     inverseInterfaceMap: {};
     links: {
       masonHeavyEquipment: $ObjectMetadata.Link<MasonHeavyEquipment, false>;

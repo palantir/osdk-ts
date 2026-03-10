@@ -65,9 +65,7 @@ export interface WeatherStation extends $ObjectTypeDefinition {
       color: 'color';
     };
     implements: undefined;
-    interfaceLinkMap: {};
     interfaceMap: {};
-    inverseInterfaceLinkMap: {};
     inverseInterfaceMap: {};
     links: {};
     pluralDisplayName: 'Weather Stations';

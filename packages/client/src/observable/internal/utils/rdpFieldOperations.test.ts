@@ -49,8 +49,6 @@ const employeeObjectDef = {
   status: "ACTIVE",
   interfaceMap: {},
   inverseInterfaceMap: {},
-  interfaceLinkMap: {},
-  inverseInterfaceLinkMap: {},
   links: {},
   implements: [],
   [InterfaceDefinitions]: {},

@@ -74,19 +74,9 @@ export interface NihalbCastingObjectTypeC extends $ObjectTypeDefinition {
       name: 'cube';
     };
     implements: ['NihalbCastingInterfaceB'];
-    interfaceLinkMap: {
-      NihalbCastingInterfaceB: {
-        nihalbCastingLinkedObjectTypeA: ['nihalbCastingLinkedObjectTypeAs'];
-      };
-    };
     interfaceMap: {
       NihalbCastingInterfaceB: {
         interfaceProperty: 'primaryKey_';
-      };
-    };
-    inverseInterfaceLinkMap: {
-      NihalbCastingInterfaceB: {
-        nihalbCastingLinkedObjectTypeAs: ['nihalbCastingLinkedObjectTypeA'];
       };
     };
     inverseInterfaceMap: {

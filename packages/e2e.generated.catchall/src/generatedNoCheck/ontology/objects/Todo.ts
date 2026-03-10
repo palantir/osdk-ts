@@ -80,9 +80,7 @@ export interface Todo extends $ObjectTypeDefinition {
       color: 'color';
     };
     implements: undefined;
-    interfaceLinkMap: {};
     interfaceMap: {};
-    inverseInterfaceLinkMap: {};
     inverseInterfaceMap: {};
     links: {
       Assignee: $ObjectMetadata.Link<Person, false>;

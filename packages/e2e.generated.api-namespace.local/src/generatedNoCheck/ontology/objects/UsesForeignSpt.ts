@@ -63,9 +63,7 @@ export interface UsesForeignSpt extends $ObjectTypeDefinition {
       color: 'red';
     };
     implements: [];
-    interfaceLinkMap: {};
     interfaceMap: {};
-    inverseInterfaceLinkMap: {};
     inverseInterfaceMap: {};
     links: {};
     pluralDisplayName: 'Uses Foreign Spts';
