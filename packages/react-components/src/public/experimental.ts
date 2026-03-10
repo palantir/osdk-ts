@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+export { FilterList } from "../filter-list/base/FilterList.js";
 export type {
   FilterDefinitionUnion,
   FilterListProps,
@@ -32,10 +33,7 @@ export type {
   ColumnDefinitionLocator,
   ObjectTableProps,
 } from "../object-table/ObjectTableApi.js";
-export type {
-  CellIdentifier,
-  CellValueState,
-} from "../object-table/utils/types.js";
+export type { CellEditInfo } from "../object-table/utils/types.js";
 
 // BaseTable that does not handle data fetching
 export type { BaseTableProps } from "../object-table/Table.js";

@@ -19,7 +19,7 @@ const STEPS: INextStep[] = [
   <div class="next-steps">
     <h5 class="next-steps-header">Next steps</h5>
     <div v-for="step in STEPS" :key="step.title" class="next-step">
-      <img :src="`/${step.icon}.svg`" class="icon" :alt="step.icon" />
+      <img :src="`/${step.icon}.svg`" class="icon" alt="" />
       <div class="next-step-content">
         <h6 class="title">{{ step.title }}</h6>
         <div class="subtitle" v-html="step.subtitle" />

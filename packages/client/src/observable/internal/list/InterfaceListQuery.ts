@@ -23,7 +23,17 @@ import type {
   Osdk,
   WhereClause,
 } from "@osdk/api";
-import groupBy from "object.groupby";
+function groupBy<T>(
+  arr: T[],
+  fn: (item: T) => string,
+): Record<string, T[]> {
+  const result: Record<string, T[]> = {};
+  for (const item of arr) {
+    const key = fn(item);
+    (result[key] ??= []).push(item);
+  }
+  return result;
+}
 import invariant from "tiny-invariant";
 import { additionalContext, type Client } from "../../../Client.js";
 import type { InterfaceHolder } from "../../../object/convertWireToOsdkObjects/InterfaceHolder.js";
@@ -113,7 +123,7 @@ export class InterfaceListQuery extends ListQuery {
   protected createPayload(
     params: CollectionConnectableParams,
   ): ListPayload {
-    const resolvedList = params.resolvedData.map((obj: ObjectHolder) =>
+    const resolvedList = params.resolvedData?.map((obj: ObjectHolder) =>
       obj.$as(this.apiName)
     );
 

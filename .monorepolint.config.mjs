@@ -125,6 +125,7 @@ const archetypeRules = archetypes(
     [
       "@osdk/foundry-config-json",
       "@osdk/generator-converters",
+      "@osdk/language-models",
       "@osdk/generator-converters.ontologyir",
       "@osdk/generator-converters.preview",
       "@osdk/generator-utils",
@@ -310,6 +311,7 @@ const archetypeRules = archetypes(
       ...LIBRARY_RULES,
       react: true,
       cssExport: true,
+      extraPublishFiles: ["AGENTS.md"],
     },
   )
   .addArchetype(

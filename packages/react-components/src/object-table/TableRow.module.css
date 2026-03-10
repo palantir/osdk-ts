@@ -45,7 +45,8 @@
     border-bottom-color: var(--osdk-table-row-border-color-hover);
   }
 
-  &[data-selected="true"] {
+  &[data-selected="true"],
+  &[data-focused="true"] {
     z-index: 2;
     background-color: var(--osdk-table-row-bg-active);
     border-top-color: var(--osdk-table-row-border-color-active);

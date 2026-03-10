@@ -1,5 +1,23 @@
 # @osdkkit/react
 
+## 0.10.0-beta.7
+
+### Minor Changes
+
+- 9156827: Preserve object set data between loads
+- 35f2f1a: Add Media inputs/outputs for Queries
+- 71e28ef: Allow interface object sets in useObjectSet
+
+### Patch Changes
+
+- Updated dependencies [e64bf0b]
+- Updated dependencies [baba327]
+- Updated dependencies [d1ad4d1]
+- Updated dependencies [35f2f1a]
+- Updated dependencies [71e28ef]
+  - @osdk/client@2.8.0-beta.14
+  - @osdk/api@2.8.0-beta.14
+
 ## 0.10.0-beta.6
 
 ### Minor Changes

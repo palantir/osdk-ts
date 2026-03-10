@@ -54,7 +54,7 @@ function NextStep({
 }: INextStep): React.ReactElement {
   return (
     <div className={css.nextStep}>
-      <img src={icon} className={css.icon} alt={icon} />
+      <img src={icon} className={css.icon} alt="Next step icon" />
       <div className={css.nextStepContent}>
         <h6 className={css.title}>{title}</h6>
         <div className={css.subtitle}>{subtitle}</div>

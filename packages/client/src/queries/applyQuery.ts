@@ -29,7 +29,7 @@ import type {
   QueryParameterDefinition,
 } from "@osdk/api";
 import type { DataValue } from "@osdk/foundry.ontologies";
-import * as OntologiesV2 from "@osdk/foundry.ontologies";
+import * as Queries from "@osdk/foundry.ontologies/Query";
 import invariant from "tiny-invariant";
 import { createMediaFromReference } from "../createMediaFromReference.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
@@ -64,7 +64,7 @@ export async function applyQuery<
     await client.flushEdits();
   }
 
-  const response = await OntologiesV2.Queries.execute(
+  const response = await Queries.execute(
     addUserAgentAndRequestContextHeaders(
       augmentRequestContext(client, _ => ({ finalMethodCall: "applyQuery" })),
       query,
@@ -243,7 +243,7 @@ async function remapQueryResponse<
     case "struct": {
       // figure out what keys need to be fixed up
       for (const [key, subtype] of Object.entries(responseDataType.struct)) {
-        if (requiresConversion(subtype)) {
+        if (requiresConversion(subtype) || responseValue[key] == null) {
           responseValue[key] = await remapQueryResponse(
             client,
             subtype,

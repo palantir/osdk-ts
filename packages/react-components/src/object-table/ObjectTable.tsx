@@ -37,6 +37,7 @@ import type { ObjectTableProps } from "./ObjectTableApi.js";
 import { BaseTable } from "./Table.js";
 import type { HeaderMenuFeatureFlags } from "./TableHeaderWithPopover.js";
 import { getRowId } from "./utils/getRowId.js";
+import type { EditableConfig } from "./utils/types.js";
 
 /**
  * ObjectTable - A headless table component for displaying OSDK object sets
@@ -79,20 +80,11 @@ export function ObjectTable<
   enableColumnPinning = true,
   enableColumnResizing = true,
   enableColumnConfig = true,
+  editMode = "manual",
   ...props
 }: ObjectTableProps<Q, RDPs, FunctionColumns>): React.ReactElement {
   const { columnSizing, onColumnSizingChange } = useColumnResize({
     onColumnResize,
-  });
-
-  const {
-    cellEdits,
-    clearEdits,
-    handleCellEdit,
-    handleSubmitEdits,
-  } = useEditableTable({
-    onCellValueChanged,
-    onSubmitEdits,
   });
 
   const { sorting, onSortingChange } = useTableSorting<
@@ -167,6 +159,15 @@ export function ObjectTable<
     return selectionColumn ? [selectionColumn, ...columns] : columns;
   }, [selectionColumn, columns]);
 
+  const editableConfig: EditableConfig<
+    Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
+    unknown
+  > = useEditableTable({
+    editMode,
+    onCellValueChanged,
+    onSubmitEdits,
+  });
+
   const table = useReactTable<
     Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
   >({
@@ -196,8 +197,9 @@ export function ObjectTable<
     },
     getRowId,
     meta: {
-      onCellEdit: handleCellEdit,
-      cellEdits,
+      onCellEdit: editableConfig.onCellEdit,
+      cellEdits: editableConfig.cellEdits,
+      isInEditMode: editableConfig.editMode.isActive,
     },
   });
 
@@ -227,18 +229,6 @@ export function ObjectTable<
     enableColumnResizing,
     enableColumnConfig,
   ]);
-
-  const editableConfig = useMemo(() => {
-    if (!onSubmitEdits) {
-      return;
-    }
-
-    return {
-      onSubmitEdits: handleSubmitEdits,
-      clearEdits,
-      cellEdits,
-    };
-  }, [onSubmitEdits, handleSubmitEdits, clearEdits, cellEdits]);
 
   return (
     <BaseTable<Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>>

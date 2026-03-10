@@ -1,5 +1,17 @@
 # @osdk/example-generator
 
+## 0.16.0-beta.2
+
+### Minor Changes
+
+- 35f2f1a: Add Media inputs/outputs for Queries
+
+### Patch Changes
+
+- Updated dependencies [35f2f1a]
+  - @osdk/create-app@2.8.0-beta.14
+  - @osdk/create-widget@3.5.0-beta.14
+
 ## 0.15.0-beta.2
 
 ### Minor Changes

@@ -16,13 +16,14 @@
 
 import type {
   ObjectOrInterfaceDefinition,
+  Osdk,
+  PropertyKeys,
   QueryDefinition,
   SimplePropertyDef,
 } from "@osdk/api";
 import { useCallback, useState } from "react";
 import type { ObjectTableProps } from "../ObjectTableApi.js";
-import { getCellIdentifier } from "../utils/getCellId.js";
-import type { CellValueState } from "../utils/types.js";
+import type { CellEditInfo, EditableConfig, EditMode } from "../utils/types.js";
 
 export interface UseEditableTableProps<
   Q extends ObjectOrInterfaceDefinition,
@@ -35,6 +36,8 @@ export interface UseEditableTableProps<
     never
   >,
 > {
+  editMode?: "always" | "manual";
+
   onCellValueChanged?: ObjectTableProps<
     Q,
     RDPs,
@@ -48,16 +51,6 @@ export interface UseEditableTableProps<
   >["onSubmitEdits"];
 }
 
-export interface UseEditableTableResult {
-  cellEdits: Record<string, CellValueState>;
-  handleCellEdit: (
-    cellId: string,
-    state: CellValueState,
-  ) => void;
-  handleSubmitEdits: () => Promise<void>;
-  clearEdits: () => void;
-}
-
 export function useEditableTable<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = Record<
@@ -69,19 +62,36 @@ export function useEditableTable<
     never
   >,
 >({
+  editMode = "manual",
   onCellValueChanged,
   onSubmitEdits,
-}: UseEditableTableProps<Q, RDPs, FunctionColumns>): UseEditableTableResult {
-  const [cellEdits, setCellEdits] = useState<Record<string, CellValueState>>(
+}: UseEditableTableProps<Q, RDPs, FunctionColumns>): EditableConfig<
+  Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
+  unknown
+> {
+  const [isActive, setActive] = useState(editMode === "always");
+  const [cellEdits, setCellEdits] = useState<
+    Record<
+      string,
+      CellEditInfo<
+        Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
+        unknown
+      >
+    >
+  >(
     {},
   );
 
   const handleCellEdit = useCallback(
-    (cellId: string, state: CellValueState) => {
-      const cellIdentifier = getCellIdentifier(cellId);
-
+    (
+      cellId: string,
+      info: CellEditInfo<
+        Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
+        unknown
+      >,
+    ) => {
       // If value is changed back to original, remove it from edits
-      if (state.newValue === state.oldValue) {
+      if (info.newValue === info.oldValue) {
         setCellEdits(prev => {
           const { [cellId]: _, ...rest } = prev;
           return rest;
@@ -89,11 +99,11 @@ export function useEditableTable<
       } else {
         setCellEdits(prev => ({
           ...prev,
-          [cellId]: state,
+          [cellId]: info,
         }));
       }
 
-      onCellValueChanged?.(cellIdentifier, state);
+      onCellValueChanged?.(info);
     },
     [onCellValueChanged],
   );
@@ -103,13 +113,19 @@ export function useEditableTable<
   }, []);
 
   const handleSubmitEdits = useCallback(async () => {
-    await onSubmitEdits?.(cellEdits);
+    const edits = Object.values(cellEdits);
+    return onSubmitEdits ? onSubmitEdits(edits) : false;
   }, [cellEdits, onSubmitEdits]);
+
+  const editModeConfig: EditMode = editMode === "always"
+    ? { type: "always", isActive: true }
+    : { type: "manual", isActive, setActive };
 
   return {
     cellEdits,
-    handleCellEdit,
-    handleSubmitEdits,
+    onCellEdit: handleCellEdit,
+    onSubmitEdits: onSubmitEdits ? handleSubmitEdits : undefined,
     clearEdits,
+    editMode: editModeConfig,
   };
 }

@@ -1,5 +1,37 @@
 # @osdk/client
 
+## 2.8.0-beta.15
+
+### Minor Changes
+
+- dfc8019: Preserve derived property values when subscription updates write to RDP cache keys
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.15
+- @osdk/client.unstable@2.8.0-beta.15
+- @osdk/generator-converters@2.8.0-beta.15
+
+## 2.8.0-beta.14
+
+### Minor Changes
+
+- e64bf0b: Expose getWireObjectSet, isObjectSet, and WireObjectSet type for reading wire object set definitions
+- baba327: return data=undefined during initial loading instead of data=[] to distinguish no data loaded yet from empty results
+- d1ad4d1: Fix remapping query responses with structs that have null fields.
+- 35f2f1a: Add Media inputs/outputs for Queries
+- 71e28ef: Allow interface object sets in useObjectSet
+
+### Patch Changes
+
+- Updated dependencies [35f2f1a]
+  - @osdk/api@2.8.0-beta.14
+  - @osdk/client.unstable@2.8.0-beta.14
+  - @osdk/generator-converters@2.8.0-beta.14
+  - @osdk/shared.client.impl@1.8.0-beta.2
+  - @osdk/shared.net.errors@2.8.0-beta.2
+  - @osdk/shared.net.fetch@1.8.0-beta.2
+
 ## 2.8.0-beta.13
 
 ### Minor Changes

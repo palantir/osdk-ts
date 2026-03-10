@@ -141,9 +141,11 @@ export interface ObserveObjectsCallbackArgs<
     WirePropertyTypes | undefined | Array<WirePropertyTypes>
   > = {},
 > {
-  resolvedList: Array<
-    Osdk.Instance<T, "$allBaseProperties", PropertyKeys<T>, RDPs>
-  >;
+  resolvedList:
+    | Array<
+      Osdk.Instance<T, "$allBaseProperties", PropertyKeys<T>, RDPs>
+    >
+    | undefined;
   isOptimistic: boolean;
   lastUpdated: number;
   fetchMore: () => Promise<void>;
@@ -159,9 +161,11 @@ export interface ObserveObjectSetArgs<
     WirePropertyTypes | undefined | Array<WirePropertyTypes>
   > = {},
 > {
-  resolvedList: Array<
-    Osdk.Instance<T, "$allBaseProperties", PropertyKeys<T>, RDPs>
-  >;
+  resolvedList:
+    | Array<
+      Osdk.Instance<T, "$allBaseProperties", PropertyKeys<T>, RDPs>
+    >
+    | undefined;
   isOptimistic: boolean;
   lastUpdated: number;
   fetchMore: () => Promise<void>;
@@ -255,7 +259,7 @@ export interface ObserveFunctionCallbackArgs<
 export interface ObserveLinkCallbackArgs<
   T extends ObjectOrInterfaceDefinition,
 > {
-  resolvedList: Osdk.Instance<T>[];
+  resolvedList: Osdk.Instance<T>[] | undefined;
   isOptimistic: boolean;
   lastUpdated: number;
   fetchMore: () => Promise<void>;
@@ -334,7 +338,7 @@ export interface ObservableClient extends ObserveLinks {
    * - Sorting and pagination
    */
   observeObjectSet<
-    T extends ObjectTypeDefinition,
+    T extends ObjectOrInterfaceDefinition,
     RDPs extends Record<
       string,
       WirePropertyTypes | undefined | Array<WirePropertyTypes>

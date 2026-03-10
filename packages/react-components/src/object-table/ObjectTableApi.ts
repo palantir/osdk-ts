@@ -26,7 +26,7 @@ import type {
   WhereClause,
 } from "@osdk/api";
 import type * as React from "react";
-import type { CellIdentifier, CellValueState } from "./utils/types.js";
+import type { CellEditInfo } from "./utils/types.js";
 
 export type ColumnDefinition<
   Q extends ObjectOrInterfaceDefinition,
@@ -183,6 +183,15 @@ export interface ObjectTableProps<
   enableColumnConfig?: boolean;
 
   /**
+   * Controls the edit mode behavior of the table.
+   * - "always": Editable cells are immediately in edit mode on row clicked.
+   * - "manual": User can toggle edit mode on/off via the Edit Table button.
+   *
+   * @default "manual"
+   */
+  editMode?: "always" | "manual";
+
+  /**
    * The default order by clause to sort the objects in the table.
    * If provided without orderBy prop, the sorting is uncontrolled.
    * If both orderBy and defaultOrderBy are provided, orderBy takes precedence.
@@ -218,20 +227,27 @@ export interface ObjectTableProps<
   /**
    * Called after the value of a cell is edited and committed by the user.
    *
-   * @param cell The cell that was edited, identified by its row and column IDs
-   * @param state The new and old values of the cell
+   * @param info An object containing details about the cell that was edited,
+   * including the rowId, columnId, new and old values, and the row data before the edit
    */
   onCellValueChanged?: (
-    cell: CellIdentifier,
-    state: CellValueState,
+    info: CellEditInfo<
+      Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
+      unknown
+    >,
   ) => void;
 
   /**
    * If provided, the button Submit Edits will be shown in the table
    *
-   * @param edits a map of cellId (stringified CellIdentifier) to the new and old values of the cell
+   * @param edits an array of edit info containing details about the edited cells
+   * including the rowId, columnId, new and old values, and the row data before the edit
+   * @return a promise that resolves to true if the edits were successfully submitted
    */
-  onSubmitEdits?: (edits: Record<string, CellValueState>) => Promise<void>;
+  onSubmitEdits?: (edits: CellEditInfo<
+    Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
+    unknown
+  >[]) => Promise<boolean>;
 
   /**
    * Called when the column visibility or ordering changed.

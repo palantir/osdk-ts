@@ -39,6 +39,8 @@
     "@osdk/client": "workspace:~",
     "@osdk/oauth": "workspace:~",
     "@osdk/react": "workspace:~",
+    "@osdk/react-components": "workspace:~",
+    "@osdk/react-components-styles": "workspace:~",
     "maplibre-gl": "^5.7.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",

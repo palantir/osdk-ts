@@ -36,9 +36,9 @@ export interface CollectionStorageData {
  */
 export interface BaseCollectionPayload {
   /**
-   * The resolved collection of objects
+   * The resolved collection of objects, or undefined if no data has been loaded yet
    */
-  resolvedList: Array<ObjectHolder | InterfaceHolder>;
+  resolvedList: Array<ObjectHolder | InterfaceHolder> | undefined;
 
   /**
    * Whether the data is from an optimistic update
@@ -73,9 +73,9 @@ export interface BaseCollectionPayload {
  */
 export interface CollectionConnectableParams {
   /**
-   * Array of resolved objects
+   * Array of resolved objects, or undefined if no data has been loaded yet
    */
-  resolvedData: any[];
+  resolvedData: any[] | undefined;
 
   /**
    * Whether the data is from an optimistic update

@@ -1,13 +1,9 @@
 import type { DerivedProperty, Osdk } from "@osdk/api";
-import type {
-  CellValueState,
-  ColumnDefinition,
-} from "@osdk/react-components/experimental";
+import type { ColumnDefinition } from "@osdk/react-components/experimental";
 import { ObjectTable } from "@osdk/react-components/experimental";
-import { useOsdkAction } from "@osdk/react/experimental";
 import { useCallback } from "react";
 import { $ } from "../../foundryClient.js";
-import { Employee, modifyEmployee } from "../../generatedNoCheck2/index.js";
+import { Employee } from "../../generatedNoCheck2/index.js";
 
 type RDPs = {
   managerName: "string";
@@ -37,10 +33,9 @@ const columnDefinitions: Array<
     columnName: "Employee Number",
     editable: false,
   },
-  // With isVisible prop
   {
     locator: { type: "property", id: "jobTitle" },
-    isVisible: false,
+    editable: true,
   },
   // With renderHeader, renderCell, width prop
   {
@@ -86,14 +81,12 @@ const columnDefinitions: Array<
 ];
 
 export function EmployeesTable() {
-  const { applyAction } = useOsdkAction(modifyEmployee);
-
   const handleSubmitEdits = useCallback(
-    async (edits: Record<string, CellValueState>) => {
-      console.log("Submitting edits:", edits);
-      return Promise.resolve();
+    async () => {
+      alert(`Submitting edits...`);
+      return true;
     },
-    [applyAction],
+    [],
   );
 
   const employeeOS = $(Employee).where({

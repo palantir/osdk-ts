@@ -89,7 +89,7 @@ export class ListQueryView<PAYLOAD extends BaseListPayloadShape> {
         if (
           !this.#hasAutoFetch
           && payload.status === "loaded"
-          && payload.resolvedList.length < this.#viewLimit
+          && (payload.resolvedList?.length ?? 0) < this.#viewLimit
           && this.#query.hasMorePages()
         ) {
           void this.#query.fetchMore();
@@ -116,11 +116,12 @@ export class ListQueryView<PAYLOAD extends BaseListPayloadShape> {
   }
 
   #transformPayload(payload: PAYLOAD): PAYLOAD {
-    const loadedCount = payload.resolvedList.length;
+    const resolvedList = payload.resolvedList;
+    const loadedCount = resolvedList?.length ?? 0;
 
     return {
       ...payload,
-      resolvedList: payload.resolvedList.slice(0, this.#viewLimit),
+      resolvedList: resolvedList?.slice(0, this.#viewLimit),
       hasMore: this.#viewLimit < loadedCount || payload.hasMore,
       fetchMore: this.#fetchMore,
       status: loadedCount >= this.#viewLimit && payload.status === "loading"

@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { MultiMap } from "mnemonist";
 import type { ObjectHolder } from "../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import type { AggregationCacheKey } from "./aggregation/AggregationCacheKey.js";
 import type { CacheKey } from "./CacheKey.js";
 import { DEBUG_ONLY__cacheKeyToString } from "./CacheKey.js";
+import { MultiMap } from "./collections/MultiMap.js";
 import type { FunctionCacheKey } from "./function/FunctionCacheKey.js";
 import type { SpecificLinkCacheKey } from "./links/SpecificLinkCacheKey.js";
 import type { ListCacheKey } from "./list/ListCacheKey.js";

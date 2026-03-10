@@ -1,5 +1,11 @@
 # @osdk/typescript-sdk-docs
 
+## 0.7.0-beta.2
+
+### Minor Changes
+
+- 35f2f1a: Add Media inputs/outputs for Queries
+
 ## 0.6.0-beta.5
 
 ### Minor Changes

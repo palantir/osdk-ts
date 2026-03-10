@@ -10,6 +10,7 @@
   --osdk-surface-layer-primary: var(--bp-surface-layer-primary);
   --osdk-surface-border-width: var(--bp-surface-border-width);
   --osdk-surface-border-color-default: var(--bp-surface-border-color-default);
+  --osdk-surface-border-color-strong: var(--bp-surface-border-color-strong);
   --osdk-surface-background-color-default-rest: var(
     --bp-surface-background-color-default-rest
   );

@@ -1,7 +1,7 @@
 {
   "name": "@osdk/react-components-storybook",
   "private": true,
-  "version": "0.2.0-beta.2",
+  "version": "0.2.0-beta.4",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -36,6 +36,7 @@
     "@storybook/react": "^8.5.0",
     "@storybook/react-vite": "^8.5.0",
     "@storybook/test": "^8.5.0",
+    "@tanstack/react-table": "^8.21.3",
     "@types/node": "^20.19.13",
     "@types/react": "^18.3.24",
     "@types/react-dom": "^18.3.7",
