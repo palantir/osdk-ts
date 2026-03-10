@@ -53,6 +53,7 @@ const restrictToVerticalAxis: Modifier = ({ transform }) => ({
 });
 
 const POINTER_ACTIVATION_CONSTRAINT = { distance: 8 } as const;
+const MODIFIERS: Modifier[] = [restrictToVerticalAxis];
 
 interface FilterListContentProps<Q extends ObjectTypeDefinition> {
   objectType: Q;
@@ -180,8 +181,6 @@ export function FilterListContent<Q extends ObjectTypeDefinition>({
     [internalOrder, sortableIds],
   );
 
-  const modifiers = useMemo(() => [restrictToVerticalAxis], []);
-
   if (!renderDefinitions || renderDefinitions.length === 0) {
     return (
       <div
@@ -201,7 +200,7 @@ export function FilterListContent<Q extends ObjectTypeDefinition>({
         <DndContext
           sensors={sensors}
           collisionDetection={closestCenter}
-          modifiers={modifiers}
+          modifiers={MODIFIERS}
           onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}
           onDragCancel={handleDragCancel}
