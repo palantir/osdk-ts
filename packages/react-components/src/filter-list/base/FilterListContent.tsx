@@ -181,6 +181,11 @@ export function FilterListContent<Q extends ObjectTypeDefinition>({
     [internalOrder, sortableIds],
   );
 
+  const accessibility = useMemo(
+    () => ({ announcements }),
+    [announcements],
+  );
+
   if (!renderDefinitions || renderDefinitions.length === 0) {
     return (
       <div
@@ -204,7 +209,7 @@ export function FilterListContent<Q extends ObjectTypeDefinition>({
           onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}
           onDragCancel={handleDragCancel}
-          accessibility={{ announcements }}
+          accessibility={accessibility}
         >
           <SortableContext
             items={sortableIds}
