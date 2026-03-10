@@ -35,6 +35,7 @@ export interface InterfaceType extends
     | "propertiesV2"
     | "propertiesV3"
     | "extendsInterfaces"
+    | "extendsInterfacesMetadata"
   >
 {
   propertiesV2: Record<string, InterfaceSharedPropertyType>;
