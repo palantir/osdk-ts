@@ -30,7 +30,7 @@
 - `useCurrentFoundryUser`, `useFoundryUser`, `useFoundryUsersList` - Platform APIs (requires `@osdk/foundry.admin`)
 
 ## Correct Patterns
-=======
+
 | Hook                 | Key Options                                                                                                                                   |
 | -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
 | `useOsdkObjects`     | `where`, `orderBy`, `pageSize`, `withProperties`, `enabled`, `autoFetchMore`, `dedupeIntervalMs`, `streamUpdates`, `intersectWith`, `pivotTo` |
