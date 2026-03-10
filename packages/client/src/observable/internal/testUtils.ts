@@ -606,7 +606,8 @@ export function linkPayloadContaining(
     ...("totalCount" in x
       ? { totalCount: x.totalCount }
       : {}),
-    associationMap: x.associationMap ?? expect.anything(),
+    linkedObjectsBySourcePrimaryKey: x.linkedObjectsBySourcePrimaryKey
+      ?? expect.anything(),
   };
 }
 

@@ -129,7 +129,7 @@ describe("useLinks enabled option", () => {
     expect(options.dedupeInterval).toBe(5000);
   });
 
-  it("should default associationMap to empty map before payload", () => {
+  it("should default linkedObjectsBySourcePrimaryKey to empty map before payload", () => {
     const wrapper = createWrapper();
 
     const { result } = renderHook(
@@ -137,11 +137,11 @@ describe("useLinks enabled option", () => {
       { wrapper },
     );
 
-    expect(result.current.associationMap).toBeDefined();
-    expect(result.current.associationMap.size).toBe(0);
+    expect(result.current.linkedObjectsBySourcePrimaryKey).toBeDefined();
+    expect(result.current.linkedObjectsBySourcePrimaryKey.size).toBe(0);
   });
 
-  it("should return associationMap from observer payload", () => {
+  it("should return linkedObjectsBySourcePrimaryKey from observer payload", () => {
     const wrapper = createWrapper();
 
     const { result } = renderHook(
@@ -160,13 +160,14 @@ describe("useLinks enabled option", () => {
     act(() => {
       observer.next({
         resolvedList: [linkedObj],
-        associationMap: new Map([["obj-123", [linkedObj]]]),
+        linkedObjectsBySourcePrimaryKey: new Map([["obj-123", [linkedObj]]]),
         status: "loaded",
         isOptimistic: false,
         hasMore: false,
       });
     });
 
-    expect(result.current.associationMap.get("obj-123")).toEqual([linkedObj]);
+    expect(result.current.linkedObjectsBySourcePrimaryKey.get("obj-123"))
+      .toEqual([linkedObj]);
   });
 });

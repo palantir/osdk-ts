@@ -3,4 +3,4 @@
 "@osdk/react": patch
 ---
 
-Add associationMap to link observation responses
+Add linkedObjectsBySourcePrimaryKey to link observation responses

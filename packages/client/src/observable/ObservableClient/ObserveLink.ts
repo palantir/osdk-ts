@@ -53,7 +53,7 @@ export namespace ObserveLinks {
     T extends ObjectTypeDefinition | InterfaceDefinition,
   > {
     resolvedList: Osdk.Instance<T>[] | undefined;
-    associationMap: ReadonlyMap<
+    linkedObjectsBySourcePrimaryKey: ReadonlyMap<
       string | number,
       ReadonlyArray<Osdk.Instance<T>>
     >;

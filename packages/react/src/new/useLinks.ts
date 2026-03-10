@@ -98,7 +98,7 @@ export interface UseLinksResult<
    * Useful when observing links from multiple source objects to determine
    * which source links to which targets.
    */
-  associationMap: ReadonlyMap<
+  linkedObjectsBySourcePrimaryKey: ReadonlyMap<
     string | number,
     ReadonlyArray<Osdk.Instance<Q>>
   >;
@@ -224,7 +224,8 @@ export function useLinks<
 
   return React.useMemo(() => ({
     links: payload?.resolvedList,
-    associationMap: payload?.associationMap ?? emptyMap,
+    linkedObjectsBySourcePrimaryKey: payload?.linkedObjectsBySourcePrimaryKey
+      ?? emptyMap,
     isLoading: enabled
       ? (payload?.status === "loading" || payload?.status === "init"
         || !payload)

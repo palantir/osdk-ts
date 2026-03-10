@@ -267,7 +267,7 @@ export interface ObserveLinkCallbackArgs<
   T extends ObjectOrInterfaceDefinition,
 > {
   resolvedList: Osdk.Instance<T>[] | undefined;
-  associationMap: ReadonlyMap<
+  linkedObjectsBySourcePrimaryKey: ReadonlyMap<
     string | number,
     ReadonlyArray<Osdk.Instance<T>>
   >;

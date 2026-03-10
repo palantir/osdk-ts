@@ -325,7 +325,7 @@ function observeSingleLink(
   if (objectsArray.length === 0) {
     observer.next({
       resolvedList: [],
-      associationMap: new Map(),
+      linkedObjectsBySourcePrimaryKey: new Map(),
       isOptimistic: false,
       lastUpdated: 0,
       fetchMore: () => Promise.resolve(),
@@ -356,20 +356,7 @@ function observeSingleLink(
           linkName,
           pk,
         },
-        {
-          next: (payload: SpecificLinkPayload) => {
-            observer.next({
-              ...payload,
-              associationMap: new Map([[pk, payload.resolvedList ?? []]]),
-            });
-          },
-          error: (err: unknown) => {
-            observer.error(err);
-          },
-          complete: () => {
-            observer.complete();
-          },
-        },
+        observer,
       ),
     );
   }
@@ -401,7 +388,7 @@ function observeMultiLinks(
       string,
       NonNullable<SpecificLinkPayload["resolvedList"]>[number]
     >();
-    const associationMap = new Map<
+    const linkedObjectsBySourcePrimaryKey = new Map<
       string | number,
       ReadonlyArray<NonNullable<SpecificLinkPayload["resolvedList"]>[number]>
     >();
@@ -411,7 +398,7 @@ function observeMultiLinks(
     let isOptimistic = false;
 
     for (const { payload, pk } of perObjectData.values()) {
-      associationMap.set(pk, payload.resolvedList ?? []);
+      linkedObjectsBySourcePrimaryKey.set(pk, payload.resolvedList ?? []);
 
       for (const obj of payload.resolvedList ?? []) {
         seen.set(`${obj.$objectType}:${obj.$primaryKey}`, obj);
@@ -434,7 +421,7 @@ function observeMultiLinks(
 
     observer.next({
       resolvedList: Array.from(seen.values()),
-      associationMap,
+      linkedObjectsBySourcePrimaryKey,
       isOptimistic,
       lastUpdated: latestUpdated,
       fetchMore: hasMore

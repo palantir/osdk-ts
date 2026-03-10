@@ -15,7 +15,6 @@ import {
   LENS_PANEL_TITLE,
   type LensMode,
 } from "../utils/lensTheme.js";
-import { LinkMetadataPanel } from "./LinkMetadataPanel.js";
 import { LoadingIndicator } from "./LoadingIndicator.js";
 import { PersonListSection } from "./PersonListSection.js";
 
@@ -620,19 +619,6 @@ export function EmployeePanel({
                   </div>
                 </div>
               )}
-          </div>
-        )}
-
-        {/* Link Metadata */}
-        {lensMode === "employees" && (
-          <div className="p-4 border-b border-[var(--officenetwork-border-default)]">
-            <div
-              className="officenetwork-section-label mb-3"
-              style={{ color: "var(--officenetwork-accent-teal)" }}
-            >
-              Link Metadata
-            </div>
-            <LinkMetadataPanel objectType={Employee} />
           </div>
         )}
       </div>

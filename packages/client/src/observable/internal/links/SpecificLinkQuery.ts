@@ -74,7 +74,10 @@ export class SpecificLinkQuery extends BaseListQuery<
   ): SpecificLinkPayload {
     return {
       ...super.createPayload(params),
-      associationMap: new Map([[this.#sourcePk, params.resolvedData ?? []]]),
+      linkedObjectsBySourcePrimaryKey: new Map([[
+        this.#sourcePk,
+        params.resolvedData ?? [],
+      ]]),
     };
   }
 
