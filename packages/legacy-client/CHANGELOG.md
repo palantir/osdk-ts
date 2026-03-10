@@ -1,5 +1,11 @@
 # @osdk/legacy-client
 
+## 2.5.7
+
+### Patch Changes
+
+- 876008e: Ensure .byYear() is available on timestamp properties
+
 ## 2.5.6
 
 ### Patch Changes
