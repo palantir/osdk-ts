@@ -31,6 +31,7 @@ export const RDP_IDX = 4;
 export const INTERSECT_IDX = 5;
 export const PIVOT_IDX = 6;
 export const RIDS_IDX = 7;
+export const SELECT_IDX = 8;
 
 export interface ListStorageData extends CollectionStorageData {}
 
@@ -50,6 +51,7 @@ export interface ListCacheKey extends
         | undefined,
       pivotInfo?: Canonical<PivotInfo> | undefined,
       rids?: Canonical<string[]> | undefined,
+      select?: Canonical<string[]> | undefined,
     ]
   >
 {

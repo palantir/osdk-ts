@@ -45,6 +45,7 @@ export class ObjectSetQuery extends BaseListQuery<
   #operations: Canonical<ObjectSetOperations>;
   #composedObjectSet: ObjectSet<any, any>;
   #objectTypes: Set<string>;
+  #selectFieldSetMemo: ReadonlySet<string> | undefined;
 
   constructor(
     store: Store,
@@ -85,6 +86,17 @@ export class ObjectSetQuery extends BaseListQuery<
 
   public override get rdpConfig(): Canonical<Rdp> | null {
     return this.#operations.withProperties ?? null;
+  }
+
+  public get selectFields(): Canonical<string[]> | undefined {
+    return this.#operations.select;
+  }
+
+  public override get selectFieldSet(): ReadonlySet<string> | undefined {
+    if (this.#operations.select && !this.#selectFieldSetMemo) {
+      this.#selectFieldSetMemo = new Set(this.#operations.select);
+    }
+    return this.#selectFieldSetMemo;
   }
 
   #composeObjectSet(opts: ObjectSetQueryOptions): ObjectSet<any, any> {
@@ -184,6 +196,9 @@ export class ObjectSetQuery extends BaseListQuery<
       $nextPageToken: this.nextPageToken,
       $pageSize: this.getEffectiveFetchPageSize(),
       $includeRid: true,
+      ...(this.#operations.select && this.#operations.select.length > 0
+        ? { $select: this.#operations.select as readonly string[] }
+        : {}),
       // OrderBy is already applied in the composed ObjectSet
       ...(this.#operations.orderBy
           && Object.keys(this.#operations.orderBy).length > 0

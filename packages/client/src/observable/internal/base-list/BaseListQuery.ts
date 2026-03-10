@@ -87,6 +87,10 @@ export abstract class BaseListQuery<
     return this.cacheKey.otherKeys[RDP_IDX];
   }
 
+  public get selectFieldSet(): ReadonlySet<string> | undefined {
+    return undefined;
+  }
+
   // Collection-specific behavior is implemented by subclasses
   /**
    * Token for the next page of results
@@ -145,6 +149,7 @@ export abstract class BaseListQuery<
         items as Array<Osdk.Instance<any>>,
         batch,
         this.rdpConfig,
+        this.selectFieldSet,
       );
     } else {
       // Items are already cache keys
@@ -494,6 +499,7 @@ export abstract class BaseListQuery<
           result.data,
           batch,
           this.rdpConfig,
+          this.selectFieldSet,
         );
 
         return this._updateList(
@@ -612,6 +618,7 @@ export abstract class BaseListQuery<
         items as Array<Osdk.Instance<any>>,
         batch,
         this.rdpConfig,
+        this.selectFieldSet,
       );
     } else {
       // Items are already cache keys

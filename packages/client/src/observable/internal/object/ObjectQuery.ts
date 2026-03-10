@@ -48,6 +48,7 @@ export class ObjectQuery extends Query<
   #apiName: string;
   #pk: string | number | boolean;
   #defType: DefType;
+  #select: readonly string[] | undefined;
   #implementingTypes: Set<string> | undefined;
 
   constructor(
@@ -58,6 +59,7 @@ export class ObjectQuery extends Query<
     cacheKey: ObjectCacheKey,
     opts: CommonObserveOptions,
     defType: DefType = "object",
+    select?: readonly string[],
   ) {
     super(
       store,
@@ -77,6 +79,7 @@ export class ObjectQuery extends Query<
     this.#apiName = type;
     this.#pk = pk;
     this.#defType = defType;
+    this.#select = select;
   }
 
   protected _createConnectable(
@@ -132,17 +135,27 @@ export class ObjectQuery extends Query<
         )
         .fetchOne(
           this.#pk as PrimaryKeyType<ObjectTypeDefinition>,
-          { $includeRid: true },
+          {
+            $includeRid: true,
+            ...(this.#select && this.#select.length > 0
+              ? { $select: this.#select as readonly string[] }
+              : {}),
+          },
         );
       obj = fetched as ObjectHolder;
     } else {
       // Use batched loader for non-RDP objects (efficient batching)
       obj = await getBulkObjectLoader(this.store.client)
-        .fetch(this.#apiName, this.#pk, this.#defType);
+        .fetch(this.#apiName, this.#pk, this.#defType, this.#select);
     }
 
     this.store.batch({}, (batch) => {
-      this.writeToStore(obj, "loaded", batch);
+      this.writeToStore(
+        obj,
+        "loaded",
+        batch,
+        this.#select ? new Set(this.#select) : undefined,
+      );
     });
   }
 
@@ -150,6 +163,7 @@ export class ObjectQuery extends Query<
     data: ObjectHolder,
     status: Status,
     batch: BatchContext,
+    selectFields?: ReadonlySet<string>,
   ): Entry<ObjectCacheKey> {
     const entry = batch.read(this.cacheKey);
     const rdpConfig = this.cacheKey.otherKeys[RDP_CONFIG_IDX];
@@ -161,7 +175,13 @@ export class ObjectQuery extends Query<
       rdpConfig,
     );
 
-    this.store.objects.propagateWrite(this.cacheKey, data, status, batch);
+    this.store.objects.propagateWrite(
+      this.cacheKey,
+      data,
+      status,
+      batch,
+      selectFields,
+    );
 
     return batch.read(this.cacheKey)!;
   }

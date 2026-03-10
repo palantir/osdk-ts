@@ -29,6 +29,7 @@ export const SOURCE_PK_IDX = 3;
 export const LINK_NAME_IDX = 4;
 export const WHERE_CLAUSE_IDX = 5;
 export const ORDER_BY_CLAUSE_IDX = 6;
+export const SELECT_IDX = 7;
 
 /**
  * Storage data format for link query cache entries, similar to ListStorageData
@@ -55,6 +56,7 @@ export interface SpecificLinkCacheKey extends
       linkName: string,
       whereClause: Canonical<SimpleWhereClause>,
       orderByClause: Canonical<Record<string, "asc" | "desc" | undefined>>,
+      select?: Canonical<string[]> | undefined,
     ]
   >
 {

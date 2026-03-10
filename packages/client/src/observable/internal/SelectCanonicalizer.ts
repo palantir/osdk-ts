@@ -14,25 +14,20 @@
  * limitations under the License.
  */
 
-import type {
-  ObjectOrInterfaceDefinition,
-  SimplePropertyDef,
-  WhereClause,
-} from "@osdk/api";
-import type { CommonObserveOptions } from "../../ObservableClient/common.js";
+import type { Canonical } from "./Canonical.js";
 
-export interface ListQueryOptions<
-  Q extends ObjectOrInterfaceDefinition = ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<
-    string,
-    SimplePropertyDef
-  >,
-> extends CommonObserveOptions {
-  pageSize?: number;
-  select?: readonly string[];
-  autoFetchMore?: boolean | number;
-  intersectWith?: Array<{
-    where: WhereClause<Q, RDPs>;
-  }>;
-  pivotTo?: string;
+export class SelectCanonicalizer {
+  private cache = new Map<string, Canonical<string[]>>();
+
+  canonicalize(select: readonly string[]): Canonical<string[]> {
+    const sorted = [...new Set(select)].sort();
+    const key = sorted.join("\0");
+
+    let canonical = this.cache.get(key);
+    if (!canonical) {
+      canonical = sorted as Canonical<string[]>;
+      this.cache.set(key, canonical);
+    }
+    return canonical;
+  }
 }
