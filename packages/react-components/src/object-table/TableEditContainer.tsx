@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Error } from "@blueprintjs/icons";
 import type { RowData } from "@tanstack/react-table";
 import React, { type ReactElement, useCallback, useState } from "react";
 import { ActionButton } from "../base-components/action-button/ActionButton.js";
@@ -38,9 +39,11 @@ export function TableEditContainer<
     onSubmitEdits,
     clearEdits,
     editMode,
+    validationErrors,
   } = editableConfig ?? {};
 
   const hasEdits = Object.keys(cellEdits ?? {}).length > 0;
+  const hasValidationError = (validationErrors?.size ?? 0) > 0;
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const isInEditMode = editMode?.isActive;
@@ -76,10 +79,25 @@ export function TableEditContainer<
 
   return (
     <div className={styles.tableEditContainer}>
-      {hasEdits
+      {hasEdits || hasValidationError
         ? (
-          <div className={styles.modificationCount}>
-            {`${cellEdits ? Object.keys(cellEdits).length : 0} modifications`}
+          <div className={styles.editsInfoContainer}>
+            {hasEdits && (
+              <div className={styles.modificationCount}>
+                {`${
+                  cellEdits ? Object.keys(cellEdits).length : 0
+                } modifications`}
+              </div>
+            )}
+            {hasEdits && hasValidationError && (
+              <div className={styles.divider} />
+            )}
+            {hasValidationError && (
+              <div className={styles.validationError}>
+                <Error className={styles.errorIcon} />
+                Validation error
+              </div>
+            )}
           </div>
         )
         : (isInEditMode && !focusedRowId && (
