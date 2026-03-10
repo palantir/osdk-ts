@@ -22,12 +22,15 @@ import { FilterListContent } from "../base/FilterListContent.js";
 import type { FilterDefinitionUnion } from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
 import { getFilterKey } from "../utils/getFilterKey.js";
+import { getFilterLabel } from "../utils/getFilterLabel.js";
 import type { MockObjectType } from "./testUtils.js";
 import { createPropertyFilterDef, createSelectState } from "./testUtils.js";
 
 afterEach(cleanup);
 
-const stubRenderInput: RenderFilterInput<typeof MockObjectType> = ({
+type TestDef = FilterDefinitionUnion<typeof MockObjectType>;
+
+const stubRenderInput: RenderFilterInput<TestDef> = ({
   definition,
 }) => <div data-testid={`filter-input-${definition.type}`} />;
 
@@ -70,6 +73,8 @@ describe("FilterList drag and drop", () => {
         filterStates={filterStates}
         onFilterStateChanged={vi.fn()}
         renderInput={stubRenderInput}
+        getFilterKey={getFilterKey}
+        getFilterLabel={getFilterLabel}
       />,
     );
 
@@ -89,6 +94,8 @@ describe("FilterList drag and drop", () => {
         enableSorting={true}
         onFiltersReordered={vi.fn()}
         renderInput={stubRenderInput}
+        getFilterKey={getFilterKey}
+        getFilterLabel={getFilterLabel}
       />,
     );
 
@@ -122,6 +129,8 @@ describe("FilterList drag and drop", () => {
         enableSorting={true}
         onFiltersReordered={vi.fn()}
         renderInput={stubRenderInput}
+        getFilterKey={getFilterKey}
+        getFilterLabel={getFilterLabel}
       />,
     );
 
@@ -142,6 +151,8 @@ describe("FilterList drag and drop", () => {
         enableSorting={true}
         onFiltersReordered={vi.fn()}
         renderInput={stubRenderInput}
+        getFilterKey={getFilterKey}
+        getFilterLabel={getFilterLabel}
       />,
     );
 
@@ -159,6 +170,8 @@ describe("FilterList drag and drop", () => {
         enableSorting={true}
         onFiltersReordered={vi.fn()}
         renderInput={stubRenderInput}
+        getFilterKey={getFilterKey}
+        getFilterLabel={getFilterLabel}
       />,
     );
 

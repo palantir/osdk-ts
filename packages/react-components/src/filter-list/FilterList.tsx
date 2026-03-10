@@ -15,7 +15,7 @@
  */
 
 import type { ObjectTypeDefinition, WhereClause } from "@osdk/api";
-import React, { useCallback, useMemo, useRef } from "react";
+import React, { useCallback, useMemo } from "react";
 import { BaseFilterList } from "./base/BaseFilterList.js";
 import type { RenderFilterInput } from "./base/BaseFilterListApi.js";
 import { FilterInput } from "./FilterInput.js";
@@ -24,6 +24,8 @@ import type {
   FilterListProps,
 } from "./FilterListApi.js";
 import { useFilterListState } from "./hooks/useFilterListState.js";
+import { getFilterKey } from "./utils/getFilterKey.js";
+import { getFilterLabel } from "./utils/getFilterLabel.js";
 
 export function FilterList<Q extends ObjectTypeDefinition>(
   props: FilterListProps<Q>,
@@ -67,10 +69,7 @@ export function FilterList<Q extends ObjectTypeDefinition>(
     );
   }, [filterDefinitions]);
 
-  const perFilterWhereClausesRef = useRef(perFilterWhereClauses);
-  perFilterWhereClausesRef.current = perFilterWhereClauses;
-
-  const renderInput = useCallback<RenderFilterInput<Q>>(
+  const renderInput = useCallback<RenderFilterInput<FilterDefinitionUnion<Q>>>(
     ({ definition, filterKey, filterState, onFilterStateChanged }) => (
       <FilterInput
         objectType={objectType}
@@ -78,11 +77,11 @@ export function FilterList<Q extends ObjectTypeDefinition>(
         definition={definition}
         filterState={filterState}
         onFilterStateChanged={onFilterStateChanged}
-        whereClause={perFilterWhereClausesRef.current.get(filterKey)
+        whereClause={perFilterWhereClauses.get(filterKey)
           ?? ({} as WhereClause<Q>)}
       />
     ),
-    [objectType, objectSet],
+    [objectType, objectSet, perFilterWhereClauses],
   );
 
   return (
@@ -95,6 +94,8 @@ export function FilterList<Q extends ObjectTypeDefinition>(
       filterStates={filterStates}
       onFilterStateChanged={setFilterState}
       renderInput={renderInput}
+      getFilterKey={getFilterKey}
+      getFilterLabel={getFilterLabel}
       activeFilterCount={activeFilterCount}
       onReset={handleReset}
       showResetButton={showResetButton}

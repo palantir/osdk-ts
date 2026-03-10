@@ -15,7 +15,6 @@
  */
 
 import { Button } from "@base-ui/react/button";
-import type { ObjectTypeDefinition } from "@osdk/api";
 import classnames from "classnames";
 import React from "react";
 import type { BaseFilterListProps } from "./BaseFilterListApi.js";
@@ -23,8 +22,8 @@ import styles from "./FilterList.module.css";
 import { FilterListContent } from "./FilterListContent.js";
 import { FilterListHeader } from "./FilterListHeader.js";
 
-export function BaseFilterList<Q extends ObjectTypeDefinition>(
-  props: BaseFilterListProps<Q>,
+export function BaseFilterList<D>(
+  props: BaseFilterListProps<D>,
 ): React.ReactElement {
   const {
     title,
@@ -35,6 +34,8 @@ export function BaseFilterList<Q extends ObjectTypeDefinition>(
     filterStates,
     onFilterStateChanged,
     renderInput,
+    getFilterKey,
+    getFilterLabel,
     activeFilterCount,
     onReset,
     onFilterAdded,
@@ -73,6 +74,8 @@ export function BaseFilterList<Q extends ObjectTypeDefinition>(
         filterStates={filterStates}
         onFilterStateChanged={onFilterStateChanged}
         renderInput={renderInput}
+        getFilterKey={getFilterKey}
+        getFilterLabel={getFilterLabel}
         enableSorting={enableSorting}
       />
 

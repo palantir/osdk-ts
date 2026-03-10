@@ -19,35 +19,34 @@ import type {
   DraggableAttributes,
   DraggableSyntheticListeners,
 } from "@dnd-kit/core";
-import type { ObjectTypeDefinition } from "@osdk/api";
 import classnames from "classnames";
 import React, { memo, useCallback } from "react";
 import { ErrorBoundary } from "../../shared/ErrorBoundary.js";
-import type { FilterDefinitionUnion } from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
-import { getFilterLabel } from "../utils/getFilterLabel.js";
 import type { RenderFilterInput } from "./BaseFilterListApi.js";
 import { DragHandleIcon } from "./DragHandleIcon.js";
 import styles from "./FilterListItem.module.css";
 
-interface FilterListItemProps<Q extends ObjectTypeDefinition> {
-  definition: FilterDefinitionUnion<Q>;
+interface FilterListItemProps<D> {
+  definition: D;
   filterKey: string;
+  label: string;
   filterState: FilterState | undefined;
   onFilterStateChanged: (
     filterKey: string,
     state: FilterState,
   ) => void;
-  renderInput: RenderFilterInput<Q>;
+  renderInput: RenderFilterInput<D>;
   dragHandleAttributes?: DraggableAttributes;
   dragHandleListeners?: DraggableSyntheticListeners;
   className?: string;
   style?: React.CSSProperties;
 }
 
-function FilterListItemInner<Q extends ObjectTypeDefinition>({
+function FilterListItemInner<D>({
   definition,
   filterKey,
+  label,
   filterState,
   onFilterStateChanged,
   renderInput,
@@ -55,9 +54,7 @@ function FilterListItemInner<Q extends ObjectTypeDefinition>({
   dragHandleListeners,
   className,
   style,
-}: FilterListItemProps<Q>): React.ReactElement {
-  const label = getFilterLabel(definition);
-
+}: FilterListItemProps<D>): React.ReactElement {
   const handleFilterStateChanged = useCallback(
     (newState: FilterState) => {
       onFilterStateChanged(filterKey, newState);
@@ -69,7 +66,6 @@ function FilterListItemInner<Q extends ObjectTypeDefinition>({
     <div
       className={classnames(styles.filterItem, className)}
       style={style}
-      data-filter-type={definition.type}
     >
       <div className={styles.itemHeader}>
         {dragHandleAttributes && (

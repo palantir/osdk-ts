@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
+export { BaseFilterList } from "../filter-list/base/BaseFilterList.js";
+export type {
+  BaseFilterListProps,
+  RenderFilterInput,
+} from "../filter-list/base/BaseFilterListApi.js";
 export { FilterList } from "../filter-list/FilterList.js";
 
 export type {

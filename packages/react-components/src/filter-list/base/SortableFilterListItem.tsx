@@ -16,35 +16,35 @@
 
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import type { ObjectTypeDefinition } from "@osdk/api";
 import classnames from "classnames";
 import React, { useMemo } from "react";
-import type { FilterDefinitionUnion } from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
 import type { RenderFilterInput } from "./BaseFilterListApi.js";
 import { FilterListItem } from "./FilterListItem.js";
 import styles from "./FilterListItem.module.css";
 
-interface SortableFilterListItemProps<Q extends ObjectTypeDefinition> {
+interface SortableFilterListItemProps<D> {
   id: string;
-  definition: FilterDefinitionUnion<Q>;
+  definition: D;
   filterKey: string;
+  label: string;
   filterState: FilterState | undefined;
   onFilterStateChanged: (
     filterKey: string,
     state: FilterState,
   ) => void;
-  renderInput: RenderFilterInput<Q>;
+  renderInput: RenderFilterInput<D>;
 }
 
-export function SortableFilterListItem<Q extends ObjectTypeDefinition>({
+export function SortableFilterListItem<D>({
   id,
   definition,
   filterKey,
+  label,
   filterState,
   onFilterStateChanged,
   renderInput,
-}: SortableFilterListItemProps<Q>): React.ReactElement {
+}: SortableFilterListItemProps<D>): React.ReactElement {
   const {
     attributes,
     listeners,
@@ -68,6 +68,7 @@ export function SortableFilterListItem<Q extends ObjectTypeDefinition>({
       <FilterListItem
         definition={definition}
         filterKey={filterKey}
+        label={label}
         filterState={filterState}
         onFilterStateChanged={onFilterStateChanged}
         renderInput={renderInput}

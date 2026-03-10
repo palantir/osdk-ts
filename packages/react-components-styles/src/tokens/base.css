@@ -5,7 +5,9 @@
   /* Blueprint token mappings - Surface tokens */
   --osdk-surface-z-index-1: var(--bp-surface-z-index-1);
   --osdk-surface-z-index-2: var(--bp-surface-z-index-2);
+  --osdk-surface-z-index-3: var(--bp-surface-z-index-3);
   --osdk-surface-border-radius: var(--bp-surface-border-radius);
+  --osdk-surface-layer-primary: var(--bp-surface-layer-primary);
   --osdk-surface-border-width: var(--bp-surface-border-width);
   --osdk-surface-border-color-default: var(--bp-surface-border-color-default);
   --osdk-surface-border-color-strong: var(--bp-surface-border-color-strong);
@@ -43,6 +45,7 @@
   --osdk-typography-size-body-x-small: var(--bp-typography-size-body-x-small);
   --osdk-typography-size-body-small: var(--bp-typography-size-body-small);
   --osdk-typography-size-body-medium: var(--bp-typography-size-body-medium);
+  --osdk-typography-line-height-default: var(--bp-typography-line-height-default);
   --osdk-typography-weight-default: var(--bp-typography-weight-default);
   --osdk-typography-weight-bold: var(--bp-typography-weight-bold);
 

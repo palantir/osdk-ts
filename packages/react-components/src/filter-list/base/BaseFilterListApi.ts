@@ -14,23 +14,23 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition } from "@osdk/api";
 import type React from "react";
-import type { FilterDefinitionUnion } from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
 
-export type RenderFilterInput<Q extends ObjectTypeDefinition> = (props: {
-  definition: FilterDefinitionUnion<Q>;
+export type RenderFilterInput<D> = (props: {
+  definition: D;
   filterKey: string;
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
 }) => React.ReactNode;
 
-export interface BaseFilterListProps<Q extends ObjectTypeDefinition> {
-  filterDefinitions?: Array<FilterDefinitionUnion<Q>>;
+export interface BaseFilterListProps<D> {
+  filterDefinitions?: Array<D>;
   filterStates: Map<string, FilterState>;
   onFilterStateChanged: (filterKey: string, state: FilterState) => void;
-  renderInput: RenderFilterInput<Q>;
+  renderInput: RenderFilterInput<D>;
+  getFilterKey: (definition: D) => string;
+  getFilterLabel: (definition: D) => string;
   activeFilterCount: number;
   onReset?: () => void;
   onFilterAdded?: () => void;
@@ -43,7 +43,7 @@ export interface BaseFilterListProps<Q extends ObjectTypeDefinition> {
   showActiveFilterCount?: boolean;
   enableSorting?: boolean;
   onFiltersReordered?: (
-    newOrder: ReadonlyArray<FilterDefinitionUnion<Q>>,
+    newOrder: ReadonlyArray<D>,
   ) => void;
   className?: string;
   renderAddFilterButton?: () => React.ReactNode;
