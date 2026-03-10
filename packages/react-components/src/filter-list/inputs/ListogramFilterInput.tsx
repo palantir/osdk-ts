@@ -1,0 +1,97 @@
+/*
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import type {
+  ObjectTypeDefinition,
+  PropertyKeys,
+  WhereClause,
+} from "@osdk/api";
+import React, { memo, useCallback, useMemo } from "react";
+import { ListogramInput } from "../base/inputs/ListogramInput.js";
+import type { FilterState } from "../FilterListItemApi.js";
+import { usePropertyAggregation } from "../hooks/usePropertyAggregation.js";
+import { coerceToStringArray } from "../utils/coerceFilterValue.js";
+
+interface ListogramFilterInputProps<Q extends ObjectTypeDefinition> {
+  objectType: Q;
+  propertyKey: string;
+  filterState: FilterState | undefined;
+  onFilterStateChanged: (state: FilterState) => void;
+  whereClause: WhereClause<Q>;
+  colorMap?: Record<string, string>;
+  displayMode?: "full" | "count" | "minimal";
+  maxVisibleItems?: number;
+}
+
+function ListogramFilterInputInner<Q extends ObjectTypeDefinition>({
+  objectType,
+  propertyKey,
+  filterState,
+  onFilterStateChanged,
+  whereClause,
+  colorMap,
+  displayMode,
+  maxVisibleItems,
+}: ListogramFilterInputProps<Q>): React.ReactElement {
+  const selectedValues = useMemo(
+    () =>
+      filterState?.type === "EXACT_MATCH"
+        ? coerceToStringArray(filterState.values)
+        : [],
+    [filterState],
+  );
+  const isExcluding = filterState?.isExcluding ?? false;
+
+  const handleChange = useCallback(
+    (values: string[]) => {
+      onFilterStateChanged({
+        type: "EXACT_MATCH",
+        values,
+        isExcluding,
+      });
+    },
+    [onFilterStateChanged, isExcluding],
+  );
+
+  const aggregationOptions = useMemo(
+    () => ({ where: whereClause }),
+    [whereClause],
+  );
+
+  const { data, maxCount, isLoading, error } = usePropertyAggregation(
+    objectType,
+    propertyKey as PropertyKeys<Q>,
+    aggregationOptions,
+  );
+
+  return (
+    <ListogramInput
+      values={data}
+      maxCount={maxCount}
+      isLoading={isLoading}
+      error={error}
+      selectedValues={selectedValues}
+      onChange={handleChange}
+      colorMap={colorMap}
+      displayMode={displayMode}
+      maxVisibleItems={maxVisibleItems}
+    />
+  );
+}
+
+export const ListogramFilterInput = memo(
+  ListogramFilterInputInner,
+) as typeof ListogramFilterInputInner;
