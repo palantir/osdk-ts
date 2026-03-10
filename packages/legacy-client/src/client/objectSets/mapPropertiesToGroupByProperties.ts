@@ -41,6 +41,7 @@ export function mapPropertiesToGroupByProperties<
           break;
         case "timestamp":
           acc[property] = TimestampGroupBy(property);
+          break;
         case "short":
         case "long":
         case "float":
