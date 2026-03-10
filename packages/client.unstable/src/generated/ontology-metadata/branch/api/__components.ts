@@ -433,6 +433,12 @@ export interface DatasourceModificationConstraintError_objectTypeDatasourceWithI
   objectTypeDatasourceWithInvalidTimeBasedRetention:
     ObjectTypeDatasourceWithInvalidTimeBasedRetentionError;
 }
+
+export interface DatasourceModificationConstraintError_objectTypeCannotBeMdoWithStreamingDatasource {
+  type: "objectTypeCannotBeMdoWithStreamingDatasource";
+  objectTypeCannotBeMdoWithStreamingDatasource:
+    ObjectTypeCannotBeMdoWithStreamingDatasourceError;
+}
 /**
  * A type representing validation errors associated with datasource modifications on a branch.
  */
@@ -462,7 +468,8 @@ export type DatasourceModificationConstraintError =
   | DatasourceModificationConstraintError_objectTypeDatasourceCannotHaveDataSecurityUpdatedOnBranch
   | DatasourceModificationConstraintError_objectTypeDatasourceWithInvalidRetentionTargetSize
   | DatasourceModificationConstraintError_objectTypeWithStreamDatasourceCannotHaveMaterializations
-  | DatasourceModificationConstraintError_objectTypeDatasourceWithInvalidTimeBasedRetention;
+  | DatasourceModificationConstraintError_objectTypeDatasourceWithInvalidTimeBasedRetention
+  | DatasourceModificationConstraintError_objectTypeCannotBeMdoWithStreamingDatasource;
 
 export interface DefaultOntologyBranchDetails {
 }
@@ -609,6 +616,14 @@ export type DiscardChangesResponseV2 =
 export interface DiscardChangesSuccessStatus {
   ontologyVersion: _api_OntologyVersion;
 }
+/**
+ * An error representing when two or more datasource struct fields map to the same property type struct field API name on an object type.
+ */
+export interface DuplicateStructDatasourceMappingForObjectTypeError {
+  duplicateApiNames: Array<_api_ObjectTypeFieldApiName>;
+  objectType: _api_ObjectTypeRid;
+  propertyType: _api_PropertyTypeRid;
+}
 export interface EntityIndexingConfiguration {
   manyToManyLinkTypes: Record<
     _api_LinkTypeRid,
@@ -695,6 +710,12 @@ export interface FoundrySchemaConstraintError_structColumnFieldMissingFromBackin
     StructColumnFieldMissingFromBackingDatasourceForObjectTypeError;
 }
 
+export interface FoundrySchemaConstraintError_duplicateStructDatasourceMappingForObjectType {
+  type: "duplicateStructDatasourceMappingForObjectType";
+  duplicateStructDatasourceMappingForObjectType:
+    DuplicateStructDatasourceMappingForObjectTypeError;
+}
+
 export interface FoundrySchemaConstraintError_objectTypePropertyIncompatibleBackingColumnType {
   type: "objectTypePropertyIncompatibleBackingColumnType";
   objectTypePropertyIncompatibleBackingColumnType:
@@ -736,6 +757,7 @@ export type FoundrySchemaConstraintError =
   | FoundrySchemaConstraintError_columnMissingFromBackingDatasourceForObjectType
   | FoundrySchemaConstraintError_columnMissingFromBackingDatasourceForLinkType
   | FoundrySchemaConstraintError_structColumnFieldMissingFromBackingDatasourceForObjectType
+  | FoundrySchemaConstraintError_duplicateStructDatasourceMappingForObjectType
   | FoundrySchemaConstraintError_objectTypePropertyIncompatibleBackingColumnType
   | FoundrySchemaConstraintError_objectTypePropertyIncompatibleDecimalColumnType
   | FoundrySchemaConstraintError_linkTypePropertyIncompatibleBackingColumnType
@@ -1759,6 +1781,13 @@ export interface ObjectAndInterfacePropertyTypesConflictingApiNamesError {
   objectTypeId?: _api_ObjectTypeId | null | undefined;
   propertyTypeId?: _api_PropertyTypeId | null | undefined;
   propertyTypeRid: _api_PropertyTypeRid;
+}
+/**
+ * MDOs (Multi-Datasource Object Types) cannot be backed by a streaming datasource.
+ */
+export interface ObjectTypeCannotBeMdoWithStreamingDatasourceError {
+  objectType: _api_ObjectTypeRid;
+  streamDatasourceType: string;
 }
 /**
  * Object type datasources cannot have their assumed markings updated. Datasource needs to recreated with

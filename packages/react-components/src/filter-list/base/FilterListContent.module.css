@@ -25,3 +25,9 @@
   color: var(--osdk-filter-list-empty-text-color);
   font-size: var(--osdk-filter-list-empty-font-size);
 }
+
+.dragOverlay {
+  box-shadow: var(--osdk-filter-item-drag-overlay-shadow);
+  border-radius: var(--osdk-filter-item-drag-overlay-border-radius);
+  background: var(--osdk-filter-item-drag-overlay-bg);
+}

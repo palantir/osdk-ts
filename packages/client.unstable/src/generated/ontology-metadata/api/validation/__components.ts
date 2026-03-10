@@ -1659,6 +1659,12 @@ export interface ErrorType_objectTypeStructColumnFieldMissingFromBackingDatasour
     ObjectTypeStructColumnFieldMissingFromBackingDatasource;
 }
 
+export interface ErrorType_objectTypeDuplicateStructDatasourceMapping {
+  type: "objectTypeDuplicateStructDatasourceMapping";
+  objectTypeDuplicateStructDatasourceMapping:
+    ObjectTypeDuplicateStructDatasourceMapping;
+}
+
 export interface ErrorType_objectTypeDatasourceSchemaNotFound {
   type: "objectTypeDatasourceSchemaNotFound";
   objectTypeDatasourceSchemaNotFound: ObjectTypeDatasourceSchemaNotFound;
@@ -2961,6 +2967,12 @@ export interface ErrorType_objectTypeDatasourceWithInvalidTimeBasedRetention {
   type: "objectTypeDatasourceWithInvalidTimeBasedRetention";
   objectTypeDatasourceWithInvalidTimeBasedRetention:
     ObjectTypeDatasourceWithInvalidTimeBasedRetention;
+}
+
+export interface ErrorType_objectTypeCannotBeMdoWithStreamingDatasource {
+  type: "objectTypeCannotBeMdoWithStreamingDatasource";
+  objectTypeCannotBeMdoWithStreamingDatasource:
+    ObjectTypeCannotBeMdoWithStreamingDatasource;
 }
 
 export interface ErrorType_reducersNotAllowedOnArraySubtype {
@@ -4291,6 +4303,12 @@ export interface ErrorType_actionLogStructFieldMappedToIncompatibleBaseType {
   actionLogStructFieldMappedToIncompatibleBaseType:
     ActionLogStructFieldMappedToIncompatibleBaseType;
 }
+
+export interface ErrorType_maxClassificationConstraintMustBeNonEmptyIfAllowEmptyMarkingsIsFalse {
+  type: "maxClassificationConstraintMustBeNonEmptyIfAllowEmptyMarkingsIsFalse";
+  maxClassificationConstraintMustBeNonEmptyIfAllowEmptyMarkingsIsFalse:
+    MaxClassificationConstraintMustBeNonEmptyIfAllowEmptyMarkingsIsFalse;
+}
 /**
  * A union that represents all possible ontology modification validation errors.
  */
@@ -4426,6 +4444,7 @@ export type ErrorType =
   | ErrorType_objectTypePropertyIncompatibleBackingColumnType
   | ErrorType_objectTypePropertyIncompatibleDecimalColumnType
   | ErrorType_objectTypeStructColumnFieldMissingFromBackingDatasource
+  | ErrorType_objectTypeDuplicateStructDatasourceMapping
   | ErrorType_objectTypeDatasourceSchemaNotFound
   | ErrorType_objectTypeColumnMissingFromBackingDatasource
   | ErrorType_objectTypeDerivedPropertyTypeIsTitle
@@ -4647,6 +4666,7 @@ export type ErrorType =
   | ErrorType_objectTypePropertyCannotBeDeletedWhenReferencedInActionNotification
   | ErrorType_objectTypeDatasourceWithInvalidRetentionTargetSize
   | ErrorType_objectTypeDatasourceWithInvalidTimeBasedRetention
+  | ErrorType_objectTypeCannotBeMdoWithStreamingDatasource
   | ErrorType_reducersNotAllowedOnArraySubtype
   | ErrorType_ruleSetBindingReferencingMissingPropertyTypeIds
   | ErrorType_ruleSetCountExceeded
@@ -4873,7 +4893,8 @@ export type ErrorType =
   | ErrorType_actionLogStructFieldMappingIncomplete
   | ErrorType_actionLogStructFieldMappingHasInconsistentCardinality
   | ErrorType_actionLogStructFieldMappingHasIncompatibleCardinality
-  | ErrorType_actionLogStructFieldMappedToIncompatibleBaseType;
+  | ErrorType_actionLogStructFieldMappedToIncompatibleBaseType
+  | ErrorType_maxClassificationConstraintMustBeNonEmptyIfAllowEmptyMarkingsIsFalse;
 
 export interface IndeterminateErrorCategory {
 }
@@ -5575,6 +5596,11 @@ export interface LinkTypeTypeClassValueTooLong {
 export interface LinkTypeV1WithOsv2ObjectDbsEnabled {
 }
 /**
+ * MaxClassificationConstraint must be nonempty if allowEmptyMarkings is set to false.
+ */
+export interface MaxClassificationConstraintMustBeNonEmptyIfAllowEmptyMarkingsIsFalse {
+}
+/**
  * Property security groups must have types.
  */
 export interface MissingPropertySecurityGroupTypes {
@@ -5664,6 +5690,11 @@ export interface ObjectTypeBothDerivedPropertyTypeAndObjectStorageV1MappedToGoth
  * Object type branch indexing config can only be set on non-default branches.
  */
 export interface ObjectTypeBranchIndexingConfigCanOnlyBeSetOnNonDefaultBranches {
+}
+/**
+ * MDOs (Multi-Datasource Object Types) cannot be backed by a streaming datasource.
+ */
+export interface ObjectTypeCannotBeMdoWithStreamingDatasource {
 }
 /**
  * The user does not have permissions to edit privileged provenance on ontology entities metadata.
@@ -5843,6 +5874,11 @@ export interface ObjectTypeDescriptionTooLong {
  * The display name of an object type exceeds the maximum length.
  */
 export interface ObjectTypeDisplayNameTooLong {
+}
+/**
+ * Two or more datasource struct fields map to the same property type struct field API name on an object type.
+ */
+export interface ObjectTypeDuplicateStructDatasourceMapping {
 }
 /**
  * Attempted to change editability of an ObjectType during the migration to ObjectStorageV2. Wait until the migration has completed before changing value of `arePatchesEnabled`.
@@ -7003,6 +7039,8 @@ export interface OntologyValidationError {
   errorTags: Array<ErrorTag>;
   errorType: ErrorType;
   invalidEntities: Array<InvalidEntity>;
+  primaryInvalidEntities: Array<InvalidEntity>;
+  referencedInvalidEntities: Array<InvalidEntity>;
 }
 /**
  * Parent link type branch indexing config can only be set for link types present on the parent branch.

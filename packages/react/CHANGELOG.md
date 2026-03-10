@@ -1,5 +1,21 @@
 # @osdkkit/react
 
+## 0.10.0-beta.8
+
+### Minor Changes
+
+- 9720083: Add AGENTS.md files for AI IDE context
+- 09e5659: add $select support to observable client and react hooks
+- 8a82492: Move admin hooks to @osdk/react/experimental/admin subpath to avoid bundler crash when @osdk/foundry.admin is not installed
+- 2ebe62c: package and bundle size optimizations
+
+### Patch Changes
+
+- Updated dependencies [09e5659]
+- Updated dependencies [2ebe62c]
+  - @osdk/client@2.8.0-beta.16
+  - @osdk/api@2.8.0-beta.16
+
 ## 0.10.0-beta.7
 
 ### Minor Changes

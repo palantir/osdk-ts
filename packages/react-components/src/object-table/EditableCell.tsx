@@ -81,7 +81,7 @@ function parseValueByType(
 
 const VALIDATION_ERROR_MESSAGE = "Validation failed";
 
-function EditableCellInner<TData extends RowData, CellValue = unknown>({
+export function EditableCell<TData extends RowData, CellValue = unknown>({
   initialValue,
   currentValue,
   cellId,
@@ -224,7 +224,3 @@ function EditableCellInner<TData extends RowData, CellValue = unknown>({
     </Tooltip.Provider>
   );
 }
-
-export const EditableCell = React.memo(
-  EditableCellInner,
-) as typeof EditableCellInner;

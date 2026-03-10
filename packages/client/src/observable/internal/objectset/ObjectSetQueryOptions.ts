@@ -42,6 +42,13 @@ export interface ObserveObjectSetOptions<
   orderBy?: { [K in PropertyKeys<Q>]?: "asc" | "desc" };
 
   /**
+   * Restrict which properties are returned for each object.
+   * When provided, only the specified properties will be fetched,
+   * reducing payload sizes for list views.
+   */
+  select?: readonly PropertyKeys<Q>[];
+
+  /**
    * Automatically fetch additional pages on initial load.
    *
    * - `true`: Fetch all available pages automatically

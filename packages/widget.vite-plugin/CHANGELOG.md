@@ -1,5 +1,15 @@
 # @osdk/widget.vite-plugin
 
+## 3.5.0-beta.16
+
+### Minor Changes
+
+- 0ff602a: Bump vite to ^7.3.1
+
+### Patch Changes
+
+- @osdk/widget.api@3.5.0-beta.16
+
 ## 3.5.0-beta.15
 
 ### Patch Changes

@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import { InterfaceDefinitions } from "../../../ontology/OntologyProvider.js";
 import {
   extractRdpFieldNames,
   mergeObjectFields,
+  mergeSelectFields,
 } from "./rdpFieldOperations.js";
 
 const mockClient = {} as MinimalClient;
@@ -292,5 +293,31 @@ describe("rdpFieldOperations", () => {
     expect(underlying.employeeId).toBe(50030);
     expect(underlying.rdpField1).toBe("source-rdp1");
     expect(underlying.rdpField2).toBeUndefined();
+  });
+});
+
+describe("mergeSelectFields", () => {
+  it("merges selected fields from source, preserves existing for unselected", () => {
+    const source = createTestObject({
+      employeeId: 50030,
+      fullName: "Updated Name",
+      office: "SF",
+    });
+    const existing = createTestObject({
+      employeeId: 50030,
+      fullName: "Old Name",
+      office: "NYC",
+      rdpField1: "existing-rdp",
+    });
+
+    const selectFields = new Set(["fullName", "office"]);
+    const result = mergeSelectFields(source, selectFields, existing);
+
+    assertValidObjectHolder(result);
+    const underlying = getUnderlyingProps(result);
+    expect(underlying.fullName).toBe("Updated Name");
+    expect(underlying.office).toBe("SF");
+    expect(underlying.rdpField1).toBe("existing-rdp");
+    expect(underlying.employeeId).toBe(50030);
   });
 });
