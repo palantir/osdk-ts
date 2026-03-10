@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ export const RDP_IDX = 4;
 export const INTERSECT_IDX = 5;
 export const PIVOT_IDX = 6;
 export const RIDS_IDX = 7;
+export const SELECT_IDX = 8;
 
 export interface ListStorageData extends CollectionStorageData {}
 
@@ -50,6 +51,7 @@ export interface ListCacheKey extends
         | undefined,
       pivotInfo?: Canonical<PivotInfo> | undefined,
       rids?: Canonical<string[]> | undefined,
+      select?: Canonical<readonly string[]> | undefined,
     ]
   >
 {

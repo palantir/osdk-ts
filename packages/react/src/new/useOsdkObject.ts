@@ -18,6 +18,7 @@ import type {
   ObjectOrInterfaceDefinition,
   Osdk,
   PrimaryKeyType,
+  PropertyKeys,
 } from "@osdk/api";
 import type { ObserveObjectCallbackArgs } from "@osdk/client/unstable-do-not-use";
 import React from "react";
@@ -63,6 +64,20 @@ export function useOsdkObject<
   primaryKey: PrimaryKeyType<Q>,
   enabled?: boolean,
 ): UseOsdkObjectResult<Q>;
+/**
+ * Loads an object or interface instance by type and primary key with options.
+ *
+ * @param type The object type or interface definition
+ * @param primaryKey The primary key of the object
+ * @param options Options including $select and enabled
+ */
+export function useOsdkObject<
+  Q extends ObjectOrInterfaceDefinition,
+>(
+  type: Q,
+  primaryKey: PrimaryKeyType<Q>,
+  options?: { $select?: readonly PropertyKeys<Q>[]; enabled?: boolean },
+): UseOsdkObjectResult<Q>;
 /*
     Implementation of useOsdkObject
  */
@@ -72,6 +87,11 @@ export function useOsdkObject<
   ...args:
     | [obj: Osdk.Instance<Q>, enabled?: boolean]
     | [type: Q, primaryKey: PrimaryKeyType<Q>, enabled?: boolean]
+    | [
+      type: Q,
+      primaryKey: PrimaryKeyType<Q>,
+      options?: { $select?: readonly PropertyKeys<Q>[]; enabled?: boolean },
+    ]
 ): UseOsdkObjectResult<Q> {
   const { observableClient } = React.useContext(OsdkContext2);
 
@@ -80,10 +100,21 @@ export function useOsdkObject<
   // so we must use type assertions after runtime discrimination
   const isInstanceSignature = "$objectType" in args[0];
 
+  // Extract options object if provided (3rd arg is an object with $select or enabled)
+  const optionsArg = !isInstanceSignature
+      && args[2] != null
+      && typeof args[2] === "object"
+    ? args[2] as { $select?: readonly string[]; enabled?: boolean }
+    : undefined;
+
   // Extract enabled flag - 2nd param for instance signature, 3rd for type signature
   const enabled = isInstanceSignature
     ? (typeof args[1] === "boolean" ? args[1] : true)
+    : optionsArg
+    ? (optionsArg.enabled ?? true)
     : (typeof args[2] === "boolean" ? args[2] : true);
+
+  const selectArg = optionsArg?.$select;
 
   const mode = isInstanceSignature ? "offline" : undefined;
 
@@ -98,6 +129,11 @@ export function useOsdkObject<
   const apiNameString = typeof typeOrApiName === "string"
     ? typeOrApiName
     : typeOrApiName.apiName;
+
+  const stableSelect = React.useMemo(
+    () => selectArg,
+    [JSON.stringify(selectArg)],
+  );
 
   const { subscribe, getSnapShot } = React.useMemo(
     () => {
@@ -114,13 +150,22 @@ export function useOsdkObject<
             primaryKey,
             {
               mode,
+              ...(stableSelect ? { select: stableSelect } : {}),
             },
             observer,
           ),
         `object ${apiNameString} ${primaryKey}`,
       );
     },
-    [enabled, observableClient, typeOrApiName, apiNameString, primaryKey, mode],
+    [
+      enabled,
+      observableClient,
+      typeOrApiName,
+      apiNameString,
+      primaryKey,
+      mode,
+      stableSelect,
+    ],
   );
 
   const payload = React.useSyncExternalStore(subscribe, getSnapShot);
