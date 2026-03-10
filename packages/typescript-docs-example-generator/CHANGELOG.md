@@ -1,5 +1,16 @@
 # @osdk/typescript-docs-example-generator
 
+## 0.5.0-beta.2
+
+### Minor Changes
+
+- 35f2f1a: Add Media inputs/outputs for Queries
+
+### Patch Changes
+
+- Updated dependencies [35f2f1a]
+  - @osdk/typescript-sdk-docs@0.7.0-beta.2
+
 ## 0.3.0-beta.2
 
 ### Minor Changes

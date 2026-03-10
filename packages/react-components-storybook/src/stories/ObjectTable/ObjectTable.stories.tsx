@@ -21,6 +21,7 @@ import {
 } from "@osdk/react-components/experimental";
 import type {
   CellEditEvent,
+  CellEditInfo,
   ColumnDefinition,
   ObjectTableProps,
 } from "@osdk/react-components/experimental";
@@ -43,43 +44,20 @@ const meta: Meta<EmployeeTableProps> = {
       expanded: true,
     },
   },
-  decorators: [
-    (Story) => (
-      <div className="story-container">
-        <Story />
-      </div>
-    ),
-  ],
   argTypes: {
     objectType: {
-      description: "The object type of the object",
-      control: false, // Required prop set in stories
+      description: "The object or interface type of the object",
+      control: false,
     },
     columnDefinitions: {
       description:
         "Ordered list of column definitions to show in the table. If not provided, all of the properties of the object type will be shown in default order.",
       control: "object",
     },
-    enableFiltering: {
-      description: "Whether the table is filterable by the user.",
-      control: "boolean",
-      defaultValue: true,
-      table: {
-        defaultValue: { summary: "true" },
-      },
-    },
     filter: {
       description:
         "The current where clause to filter the objects in the table. If provided, the filter is controlled.",
       control: "object",
-    },
-    onFilterChanged: {
-      description:
-        "Called when the where clause is changed. Required when filter is controlled.",
-      control: false,
-      table: {
-        category: "Events",
-      },
     },
     enableOrdering: {
       description: "Whether the table is sortable by the user.",
@@ -112,6 +90,16 @@ const meta: Meta<EmployeeTableProps> = {
       defaultValue: true,
       table: {
         defaultValue: { summary: "true" },
+      },
+    },
+    editMode: {
+      description:
+        "Controls the edit mode behavior of the table. 'always': Table is always in edit mode. 'manual': User can toggle edit mode on/off.",
+      control: "select",
+      options: ["manual", "always"],
+      defaultValue: "manual",
+      table: {
+        defaultValue: { summary: "manual" },
       },
     },
     enableEditModeByDefault: {
@@ -748,7 +736,6 @@ return (
 export const DisableAllHeaderMenuFeatures: Story = {
   args: {
     objectType: Employee,
-    enableFiltering: false,
     enableOrdering: false,
     enableColumnPinning: false,
     enableColumnResizing: false,
@@ -759,7 +746,6 @@ export const DisableAllHeaderMenuFeatures: Story = {
       source: {
         code: `<ObjectTable
   objectType={Employee}
-  enableFiltering={false}
   enableOrdering={false}
   enableColumnPinning={false}
   enableColumnResizing={false}
@@ -1062,7 +1048,6 @@ export const EditableTable: Story = {
   args: {
     objectType: Employee,
     columnDefinitions: [
-      ...columnDefinitions,
       {
         locator: {
           type: "property",
@@ -1070,7 +1055,9 @@ export const EditableTable: Story = {
         },
         editable: true,
       },
+      ...columnDefinitions.slice(1),
     ],
+    editMode: "manual",
   },
   parameters: {
     docs: {
@@ -1090,7 +1077,7 @@ export const EditableTable: Story = {
     <ObjectTable 
       objectType={Employee} 
       columnDefinitions={columnDefinitions} 
-      enableEditModeByDefault={false} 
+      editMode="manual" 
     />
   );`,
       },
@@ -1116,8 +1103,9 @@ export const WithSubmitEditsButton: Story = {
         editable: true,
       },
     ],
-    onSubmitEdits: (edits: CellEditEvent<Osdk.Instance<Employee>>[]) => {
+    onSubmitEdits: (edits: CellEditInfo<Osdk.Instance<Employee>>[]) => {
       alert("Submitting edits");
+      return true;
     },
   },
   parameters: {
@@ -1139,6 +1127,8 @@ export const WithSubmitEditsButton: Story = {
     columnDefinitions={columnDefinitions} 
     onSubmitEdits={(edits) => {
         alert("Submitting edits");
+        // Return true to indicate edits were successfully submitted and can be cleared from the table's edit state
+        return true;
     }}
   />`,
       },

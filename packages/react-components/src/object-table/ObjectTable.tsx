@@ -34,7 +34,6 @@ import { useRowSelection } from "./hooks/useRowSelection.js";
 import { useSelectionColumn } from "./hooks/useSelectionColumn.js";
 import { useTableSorting } from "./hooks/useTableSorting.js";
 import type { ObjectTableProps } from "./ObjectTableApi.js";
-import type { EditableConfig } from "./Table.js";
 import { BaseTable } from "./Table.js";
 import type { HeaderMenuFeatureFlags } from "./TableHeaderWithPopover.js";
 import { getRowId } from "./utils/getRowId.js";
@@ -60,8 +59,10 @@ export function ObjectTable<
   >,
 >({
   objectType,
+  objectSet,
   columnDefinitions,
   filter,
+  objectSetOptions,
   orderBy,
   defaultOrderBy,
   onOrderByChanged,
@@ -78,6 +79,7 @@ export function ObjectTable<
   enableColumnPinning = true,
   enableColumnResizing = true,
   enableColumnConfig = true,
+  editMode = "manual",
   enableEditModeByDefault = true,
   ...props
 }: ObjectTableProps<Q, RDPs, FunctionColumns>): React.ReactElement {
@@ -85,16 +87,8 @@ export function ObjectTable<
     onColumnResize,
   });
 
-  const {
-    cellEdits,
-    validationErrors,
-    isInEditMode,
-    handleCellEdit,
-    handleEnableEditMode,
-    handleSubmitEdits,
-    onCellValidationError,
-    clearEdits,
-  } = useEditableTable({
+  const editableConfig = useEditableTable({
+    editMode,
     enableEditModeByDefault,
     onCellValueChanged,
     onSubmitEdits,
@@ -121,6 +115,8 @@ export function ObjectTable<
     columnDefinitions,
     filter,
     sorting,
+    objectSet,
+    objectSetOptions,
   );
 
   const { columns, loading: isColumnsLoading } = useColumnDefs<
@@ -199,10 +195,10 @@ export function ObjectTable<
     },
     getRowId,
     meta: {
-      onCellEdit: handleCellEdit,
-      onCellValidationError,
-      cellEdits,
-      isInEditMode,
+      onCellEdit: editableConfig.onCellEdit,
+      onCellValidationError: editableConfig.onCellValidationError,
+      cellEdits: editableConfig.cellEdits,
+      isInEditMode: editableConfig.editMode.isActive,
     },
   });
 
@@ -231,26 +227,6 @@ export function ObjectTable<
     enableColumnPinning,
     enableColumnResizing,
     enableColumnConfig,
-  ]);
-
-  const editableConfig: EditableConfig | undefined = useMemo(() => {
-    return {
-      onSubmitEdits: handleSubmitEdits,
-      cellEdits,
-      validationErrors,
-      clearEdits,
-      enableEditModeByDefault,
-      isInEditMode,
-      onEnableEditMode: handleEnableEditMode,
-    };
-  }, [
-    handleSubmitEdits,
-    cellEdits,
-    validationErrors,
-    clearEdits,
-    enableEditModeByDefault,
-    isInEditMode,
-    handleEnableEditMode,
   ]);
 
   return (

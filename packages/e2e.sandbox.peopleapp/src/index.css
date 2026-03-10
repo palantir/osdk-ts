@@ -3,7 +3,7 @@
  */
 @layer tailwind, osdk.tokens, osdk.components, custom.theme;
 
-/* Import OSDK tokens (Blueprint Level 1 + OSDK Level 2 tokens) */
+/* OSDK token defaults (references --bp-* tokens set by Blueprint) */
 @import "@osdk/react-components-styles" layer(osdk.tokens);
 
 /* Import OSDK components styles */

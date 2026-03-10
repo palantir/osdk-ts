@@ -17,22 +17,33 @@
 import type {
   DerivedProperty,
   ObjectOrInterfaceDefinition,
+  ObjectSet,
   PropertyKeys,
   QueryDefinition,
   SimplePropertyDef,
   WhereClause,
 } from "@osdk/api";
 import type { UseOsdkListResult } from "@osdk/react/experimental";
-import { useOsdkObjects } from "@osdk/react/experimental";
+import { useObjectSet, useOsdkObjects } from "@osdk/react/experimental";
 import type { SortingState } from "@tanstack/react-table";
 import { useMemo } from "react";
-import type { ColumnDefinition } from "../ObjectTableApi.js";
+import type { ColumnDefinition, ObjectSetOptions } from "../ObjectTableApi.js";
 
 const PAGE_SIZE = 50;
 
+type WithProperties<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<
+    string,
+    never
+  >,
+> = {
+  [K in keyof RDPs]: DerivedProperty.Creator<Q, RDPs[K]>;
+};
 /**
- * This hook is a wrapper around useOsdkObjects
- * It extracts RDP locators from columnDefinitions and calls useOsdkObjects + withProperties
+ * This hook is a wrapper that conditionally uses either useObjectSet or useOsdkObjects
+ * based on whether an objectSet prop is provided.
+ * It extracts RDP locators from columnDefinitions and applies withProperties
  * to return data containing the derived properties.
  */
 export function useObjectTableData<
@@ -50,6 +61,8 @@ export function useObjectTableData<
   columnDefinitions?: Array<ColumnDefinition<Q, RDPs, FunctionColumns>>,
   filter?: WhereClause<Q, RDPs>,
   sorting?: SortingState,
+  objectSet?: ObjectSet<Q>,
+  objectSetOptions?: ObjectSetOptions<Q>,
 ): UseOsdkListResult<Q, RDPs> {
   const orderBy = useMemo(() => {
     if (!sorting || sorting.length === 0) {
@@ -81,20 +94,39 @@ export function useObjectTableData<
       return;
     }
 
-    return rdpColumns.reduce<
-      { [K in keyof RDPs]: DerivedProperty.Creator<Q, RDPs[K]> }
-    >(
+    return rdpColumns.reduce<WithProperties<Q, RDPs>>(
       (acc, cur) => {
         return {
           ...acc,
           [cur.id]: cur.creator,
         };
       },
-      {} as { [K in keyof RDPs]: DerivedProperty.Creator<Q, RDPs[K]> },
+      {} as WithProperties<Q, RDPs>,
     );
   }, [columnDefinitions]);
 
-  return useOsdkObjects<
+  // When objectSet is provided and it's an object type, use useObjectSet. Otherwise, use useOsdkObjects.
+  const isObjectType = objectOrInterfaceType.type === "object";
+  const shouldUseObjectSet = !!objectSet && isObjectType;
+
+  // When shouldUseObjectSet is true, we know objectSet is defined
+  // and objectOrInterfaceType is an ObjectTypeDefinition
+  const objectSetResult = useObjectSet(
+    shouldUseObjectSet ? objectSet as ObjectSet<Q> : undefined as any,
+    {
+      ...(objectSetOptions as ObjectSetOptions<Q>),
+      withProperties: withProperties as WithProperties<
+        Q,
+        RDPs
+      >,
+      where: filter,
+      orderBy,
+      pageSize: PAGE_SIZE,
+      enabled: shouldUseObjectSet,
+    },
+  );
+
+  const osdkObjectsResult = useOsdkObjects<
     Q,
     RDPs
   >(
@@ -104,6 +136,22 @@ export function useObjectTableData<
       pageSize: PAGE_SIZE,
       where: filter,
       orderBy,
+      enabled: !shouldUseObjectSet,
     },
   );
+
+  // Return the appropriate result based on which hook is enabled
+  if (shouldUseObjectSet) {
+    // Convert UseObjectSetResult to UseOsdkListResult format
+    return {
+      data: objectSetResult.data,
+      fetchMore: objectSetResult.fetchMore,
+      isLoading: objectSetResult.isLoading,
+      error: objectSetResult.error,
+      totalCount: objectSetResult.totalCount,
+      isOptimistic: false, // ObjectSet doesn't support optimistic updates
+    } as UseOsdkListResult<Q, RDPs>;
+  }
+
+  return osdkObjectsResult;
 }

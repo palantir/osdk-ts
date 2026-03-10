@@ -24,5 +24,5 @@ import type { ObserveLinkCallbackArgs } from "./ObservableClient.js";
 export interface SpecificLinkPayload
   extends Omit<ObserveLinkCallbackArgs<any>, "resolvedList">
 {
-  resolvedList: Array<ObjectHolder | InterfaceHolder>;
+  resolvedList: Array<ObjectHolder | InterfaceHolder> | undefined;
 }

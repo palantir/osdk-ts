@@ -1,5 +1,29 @@
 # @osdk/shared.test
 
+## 0.6.0-beta.4
+
+### Minor Changes
+
+- 35f2f1a: Add Media inputs/outputs for Queries
+
+### Patch Changes
+
+- Updated dependencies [35f2f1a]
+  - @osdk/api@2.8.0-beta.14
+  - @osdk/generator-converters@2.8.0-beta.14
+
+## 0.6.0-beta.3
+
+### Minor Changes
+
+- 4470c0d: Add support to execute queries on branches.
+
+### Patch Changes
+
+- Updated dependencies [4470c0d]
+  - @osdk/generator-converters@2.8.0-beta.13
+  - @osdk/api@2.8.0-beta.13
+
 ## 0.6.0-beta.2
 
 ### Minor Changes

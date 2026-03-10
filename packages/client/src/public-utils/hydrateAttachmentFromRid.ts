@@ -15,7 +15,7 @@
  */
 
 import type { Attachment } from "@osdk/api";
-import * as OntologiesV2 from "@osdk/foundry.ontologies";
+import * as Attachments from "@osdk/foundry.ontologies/Attachment";
 import { additionalContext, type Client } from "../Client.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 
@@ -40,10 +40,10 @@ export function hydrateAttachmentFromRidInternal(
   return {
     rid,
     async fetchContents() {
-      return OntologiesV2.Attachments.read(client, rid);
+      return Attachments.read(client, rid);
     },
     async fetchMetadata() {
-      const r = await OntologiesV2.Attachments.get(client, rid);
+      const r = await Attachments.get(client, rid);
       return {
         ...r,
         sizeBytes: Number(r.sizeBytes),

@@ -17,6 +17,7 @@
 import type {
   DerivedProperty,
   ObjectOrInterfaceDefinition,
+  ObjectSet,
   Osdk,
   PrimaryKeyType,
   PropertyKeys,
@@ -25,7 +26,7 @@ import type {
   WhereClause,
 } from "@osdk/api";
 import type * as React from "react";
-import type { CellEditEvent } from "./utils/types.js";
+import type { CellEditInfo } from "./utils/types.js";
 
 export type ColumnDefinition<
   Q extends ObjectOrInterfaceDefinition,
@@ -127,9 +128,18 @@ export interface ObjectTableProps<
   >,
 > {
   /**
-   * The object type of the object
+   * The object or interface type of the object
+   * If objectSet is not provided, objects will be fetched based on this type.
    */
   objectType: Q;
+
+  /**
+   * The set of objects to show in the table.
+   * If provided and the objectType is not an interface, the table will use objectSet to fetch objects instead of fetching based on objectType.
+   */
+  objectSet?: ObjectSet<Q>;
+
+  objectSetOptions?: ObjectSetOptions<Q>;
 
   /**
    * Ordered list of column definitions to show in the table
@@ -188,10 +198,16 @@ export interface ObjectTableProps<
   enableColumnConfig?: boolean;
 
   /**
-   * If true, editable cells are immediately in edit mode when clicked.
-   * If false, an Edit Table button will be shown, and cells will only enter edit mode when the user clicks the Edit button.
+   * Controls the edit mode behavior of the table.
+   * - "always": Editable cells are immediately in edit mode on row clicked.
+   * - "manual": User can toggle edit mode on/off via the Edit Table button.
    *
-   * Note: In edit mode, onRowClick will not be called.
+   * @default "manual"
+   */
+  editMode?: "always" | "manual";
+
+  /**
+   * If true, and editMode is "manual", the table starts in edit mode by default.
    *
    * @default true
    */
@@ -233,18 +249,11 @@ export interface ObjectTableProps<
   /**
    * Called after the value of a cell is edited and committed by the user.
    *
-   * @param event An object containing details about the cell that was edited,
+   * @param info An object containing details about the cell that was edited,
    * including the rowId, columnId, new and old values, and the row data before the edit
    */
   onCellValueChanged?: (
-    event: CellEditEvent<
-      Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
-      unknown
-    >,
-  ) => void;
-
-  onRowValueChanged?: (
-    event: CellEditEvent<
+    info: CellEditInfo<
       Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
       unknown
     >,
@@ -253,13 +262,14 @@ export interface ObjectTableProps<
   /**
    * If provided, the button Submit Edits will be shown in the table
    *
-   * @param edits an array of edit events containing details about the edited cells
+   * @param edits an array of edit info containing details about the edited cells
    * including the rowId, columnId, new and old values, and the row data before the edit
+   * @return a promise that resolves to true if the edits were successfully submitted
    */
-  onSubmitEdits?: (edits: CellEditEvent<
+  onSubmitEdits?: (edits: CellEditInfo<
     Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
     unknown
-  >[]) => Promise<void>;
+  >[]) => Promise<boolean>;
 
   /**
    * Called when the column visibility or ordering changed.
@@ -350,4 +360,23 @@ export interface ObjectTableProps<
   rowHeight?: number;
 
   className?: string;
+}
+
+export interface ObjectSetOptions<
+  Q extends ObjectOrInterfaceDefinition,
+> {
+  /**
+   * Object sets to union with
+   */
+  union?: ObjectSet<Q>[];
+
+  /**
+   * Object sets to intersect with
+   */
+  intersect?: ObjectSet<Q>[];
+
+  /**
+   * Object sets to subtract from
+   */
+  subtract?: ObjectSet<Q>[];
 }

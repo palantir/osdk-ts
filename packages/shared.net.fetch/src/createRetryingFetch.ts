@@ -45,6 +45,7 @@ export function createRetryingFetch(
         !(status >= 200 && status < 300)
         && isRetryable(error)
         && attempt < MAX_RETRIES
+        && response?.headers.get(QOS_RETRY_HINT_HEADER) !== DO_NOT_RETRY_HINT
       );
     },
   });
@@ -64,3 +65,5 @@ function isRetryable(e: any): boolean {
 
 const SERVICE_UNAVAILABLE = 503;
 const TOO_MANY_REQUESTS = 429;
+const QOS_RETRY_HINT_HEADER = "QoS-Retry-Hint";
+const DO_NOT_RETRY_HINT = "do-not-retry";

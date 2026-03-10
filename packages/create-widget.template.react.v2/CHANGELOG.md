@@ -1,5 +1,18 @@
 # @osdk/create-widget.template.react.v2
 
+## 3.5.0-beta.15
+
+## 3.5.0-beta.14
+
+### Minor Changes
+
+- 35f2f1a: Add Media inputs/outputs for Queries
+- 6260835: Revert node bump
+
+## 3.5.0-beta.13
+
+## 3.5.0-beta.12
+
 ## 3.5.0-beta.11
 
 ## 3.5.0-beta.10

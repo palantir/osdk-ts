@@ -1,5 +1,11 @@
 # @osdk/docs
 
+## 0.1.0-beta.3
+
+### Minor Changes
+
+- 35f2f1a: Add Media inputs/outputs for Queries
+
 ## 0.1.0-beta.2
 
 ### Minor Changes

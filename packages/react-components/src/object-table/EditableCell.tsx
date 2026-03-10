@@ -16,20 +16,21 @@
 
 import { Input } from "@base-ui/react/input";
 import { Error } from "@blueprintjs/icons";
+import type { RowData } from "@tanstack/react-table";
 import classNames from "classnames";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Tooltip } from "../base-components/tooltip/Tooltip.js";
 import styles from "./EditableCell.module.css";
-import type { CellEditEvent } from "./utils/types.js";
+import type { CellEditInfo } from "./utils/types.js";
 
-export interface EditableCellProps<TData = unknown> {
-  initialValue: unknown;
-  currentValue: unknown;
+export interface EditableCellProps<TData extends RowData, CellValue = unknown> {
+  initialValue: CellValue;
+  currentValue: CellValue;
   cellId: string;
   dataType?: string;
-  onCellEdit?: (cellId: string, event: CellEditEvent<TData, unknown>) => void;
+  onCellEdit: (cellId: string, info: CellEditInfo<TData, CellValue>) => void;
   onCellValidationError?: (cellId: string) => void;
-  rowData: TData;
+  originalRowData: TData;
   rowId: string;
   columnId: string;
   validate?: (value: unknown) => Promise<boolean>;
@@ -80,19 +81,19 @@ function parseValueByType(
 
 const VALIDATION_ERROR_MESSAGE = "Validation failed";
 
-export function EditableCell<TData = unknown>({
+function EditableCellInner<TData extends RowData, CellValue = unknown>({
   initialValue,
   currentValue,
   cellId,
   dataType,
   onCellEdit,
   onCellValidationError,
-  rowData,
+  originalRowData,
   rowId,
   columnId,
   validate,
   onValidationError,
-}: EditableCellProps<TData>): React.ReactElement {
+}: EditableCellProps<TData, CellValue>): React.ReactElement {
   const [inputValue, setInputValue] = useState<string>(
     valueToString(currentValue),
   );
@@ -135,12 +136,12 @@ export function EditableCell<TData = unknown>({
     }
 
     setValidationError(null);
-    onCellEdit?.(cellId, {
+    onCellEdit(cellId, {
       rowId,
       columnId,
-      newValue: parsedValue,
+      newValue: parsedValue as CellValue,
       oldValue: initialValue,
-      rowData,
+      originalRowData,
     });
   }, [
     inputValue,
@@ -151,7 +152,7 @@ export function EditableCell<TData = unknown>({
     dataType,
     rowId,
     columnId,
-    rowData,
+    originalRowData,
     validate,
     onValidationError,
   ]);
@@ -223,3 +224,7 @@ export function EditableCell<TData = unknown>({
     </Tooltip.Provider>
   );
 }
+
+export const EditableCell = React.memo(
+  EditableCellInner,
+) as typeof EditableCellInner;

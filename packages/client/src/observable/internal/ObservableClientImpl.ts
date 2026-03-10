@@ -254,7 +254,7 @@ export class ObservableClientImpl implements ObservableClient {
   ) => Promise<ActionValidationResponse>;
 
   public observeObjectSet<
-    T extends ObjectTypeDefinition,
+    T extends ObjectOrInterfaceDefinition,
     RDPs extends Record<
       string,
       WirePropertyTypes | undefined | Array<WirePropertyTypes>
@@ -379,14 +379,17 @@ function observeMultiLinks(
       return;
     }
 
-    const seen = new Map<string, SpecificLinkPayload["resolvedList"][number]>();
+    const seen = new Map<
+      string,
+      NonNullable<SpecificLinkPayload["resolvedList"]>[number]
+    >();
     const fetchMores: Array<() => Promise<void>> = [];
     let latestUpdated = 0;
     let hasMore = false;
     let isOptimistic = false;
 
     for (const payload of perObjectResults.values()) {
-      for (const obj of payload.resolvedList) {
+      for (const obj of payload.resolvedList ?? []) {
         seen.set(`${obj.$objectType}:${obj.$primaryKey}`, obj);
       }
       if (payload.lastUpdated > latestUpdated) {

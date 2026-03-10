@@ -42,6 +42,7 @@ export function wireQueryDataTypeToQueryDataTypeDefinition<
     case "date":
     case "string":
     case "timestamp":
+    case "mediaReference":
       return {
         type: input.type,
         nullable: false,
@@ -161,6 +162,8 @@ export function wireQueryDataTypeToQueryDataTypeDefinition<
 
     case "null":
     case "unsupported":
+    case "mediaReference":
+    case "void":
       throw new Error(
         `Unable to process query because the server indicated an unsupported QueryDataType.type: ${input.type}. Please check that your query is using supported types.`,
       );

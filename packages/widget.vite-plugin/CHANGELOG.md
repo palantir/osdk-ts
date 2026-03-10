@@ -1,5 +1,42 @@
 # @osdk/widget.vite-plugin
 
+## 3.5.0-beta.15
+
+### Patch Changes
+
+- @osdk/widget.api@3.5.0-beta.15
+
+## 3.5.0-beta.14
+
+### Minor Changes
+
+- c22dcac: Bump @types/node to 24.10.13
+- 35f2f1a: Add Media inputs/outputs for Queries
+- 6260835: Revert node bump
+
+### Patch Changes
+
+- Updated dependencies [35f2f1a]
+  - @osdk/foundry-config-json@1.7.0-beta.2
+  - @osdk/widget.api@3.5.0-beta.14
+
+## 3.5.0-beta.13
+
+### Minor Changes
+
+- beb2867: Add refreshHostDataOnAction
+
+### Patch Changes
+
+- Updated dependencies [beb2867]
+  - @osdk/widget.api@3.5.0-beta.13
+
+## 3.5.0-beta.12
+
+### Patch Changes
+
+- @osdk/widget.api@3.5.0-beta.12
+
 ## 3.5.0-beta.11
 
 ### Patch Changes

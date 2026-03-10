@@ -1,5 +1,11 @@
 # @osdk/oauth
 
+## 1.8.0-beta.4
+
+### Minor Changes
+
+- 35f2f1a: Add Media inputs/outputs for Queries
+
 ## 1.8.0-beta.3
 
 ### Minor Changes

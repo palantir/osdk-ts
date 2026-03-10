@@ -1,5 +1,35 @@
 # @osdk/widget.client
 
+## 3.5.0-beta.15
+
+### Patch Changes
+
+- @osdk/widget.api@3.5.0-beta.15
+
+## 3.5.0-beta.14
+
+### Minor Changes
+
+- 35f2f1a: Add Media inputs/outputs for Queries
+
+### Patch Changes
+
+- Updated dependencies [35f2f1a]
+  - @osdk/widget.api@3.5.0-beta.14
+
+## 3.5.0-beta.13
+
+### Patch Changes
+
+- Updated dependencies [beb2867]
+  - @osdk/widget.api@3.5.0-beta.13
+
+## 3.5.0-beta.12
+
+### Patch Changes
+
+- @osdk/widget.api@3.5.0-beta.12
+
 ## 3.5.0-beta.11
 
 ### Patch Changes

@@ -4,9 +4,9 @@ import type {
   ColumnDefinition,
 } from "@osdk/react-components/experimental";
 import { ObjectTable } from "@osdk/react-components/experimental";
-import { useOsdkAction } from "@osdk/react/experimental";
 import { useCallback } from "react";
-import { Employee, modifyEmployee } from "../../generatedNoCheck2/index.js";
+import { $ } from "../../foundryClient.js";
+import { Employee } from "../../generatedNoCheck2/index.js";
 
 type RDPs = {
   managerName: "string";
@@ -36,7 +36,6 @@ const columnDefinitions: Array<
     columnName: "Employee Number",
     editable: false,
   },
-  // With isVisible prop
   {
     locator: { type: "property", id: "jobTitle" },
     editable: true,
@@ -96,8 +95,6 @@ const columnDefinitions: Array<
 ];
 
 export function EmployeesTable() {
-  const { applyAction } = useOsdkAction(modifyEmployee);
-
   const handleSubmitEdits = useCallback(
     async (
       edits: CellEditEvent<
@@ -106,9 +103,15 @@ export function EmployeesTable() {
       >[],
     ) => {
       console.log("Edits to submit:", edits);
+      alert(`Submitting edits...`);
+      return true;
     },
-    [applyAction],
+    [],
   );
+
+  const employeeOS = $(Employee).where({
+    fullName: { $eq: "Jane Doe" },
+  });
 
   return (
     <div
@@ -118,6 +121,7 @@ export function EmployeesTable() {
       }}
     >
       <ObjectTable<Employee, RDPs>
+        objectSet={employeeOS}
         objectType={Employee}
         columnDefinitions={columnDefinitions}
         selectionMode={"multiple"}

@@ -119,7 +119,6 @@ export function useRowSelection<
           data,
           rowSelectionState,
         });
-        setLastSelectedRowIndex(rowIndex);
       } else {
         // Multiple selection mode
 
@@ -129,12 +128,18 @@ export function useRowSelection<
           newSelectedRows = getRangeSelectionRows(
             { rowId, rowIndex, data, lastSelectedRowIndex, rowSelectionState },
           );
+          setLastSelectedRowIndex(rowIndex);
         } else {
           newSelectedRows = getMultipleSelectionRows(
             { rowId, rowIndex, data, rowSelectionState },
           );
+          // Only update lastSelectedRowIndex if we're selecting (not deselecting)
+          if (
+            !isCurrentlySelected<Q, RDPs>({ rowIndex, data, rowSelectionState })
+          ) {
+            setLastSelectedRowIndex(rowIndex);
+          }
         }
-        setLastSelectedRowIndex(rowIndex);
       }
       if (!isControlled) {
         setInternalRowSelection(getRowSelectionState(newSelectedRows));
@@ -212,6 +217,20 @@ function getRangeSelectionRows<
   return [];
 }
 
+function isCurrentlySelected<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+>(
+  { rowIndex, data, rowSelectionState }: Pick<
+    GetSelectedRowsProps<Q, RDPs>,
+    "rowIndex" | "data" | "rowSelectionState"
+  >,
+): boolean {
+  const primaryKey = data[rowIndex].$primaryKey;
+  const currentlySelected = getSelectedPrimaryKeys(rowSelectionState, data);
+  return currentlySelected.includes(primaryKey);
+}
+
 function getMultipleSelectionRows<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
@@ -221,9 +240,10 @@ function getMultipleSelectionRows<
   const primaryKey = data[rowIndex].$primaryKey;
   const currentlySelected = getSelectedPrimaryKeys(rowSelectionState, data);
   // Handles single row toggle in multiple selection mode
-  const newSelectedRows = currentlySelected.includes(primaryKey)
-    ? currentlySelected.filter(i => i !== primaryKey)
-    : [...currentlySelected, primaryKey];
+  const newSelectedRows =
+    isCurrentlySelected<Q, RDPs>({ rowIndex, data, rowSelectionState })
+      ? currentlySelected.filter(i => i !== primaryKey)
+      : [...currentlySelected, primaryKey];
   return newSelectedRows;
 }
 

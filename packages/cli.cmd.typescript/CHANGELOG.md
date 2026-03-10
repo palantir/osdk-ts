@@ -1,5 +1,18 @@
 # @osdk/cli.cmd.typescript
 
+## 0.32.0-beta.3
+
+### Minor Changes
+
+- 35f2f1a: Add Media inputs/outputs for Queries
+
+### Patch Changes
+
+- Updated dependencies [35f2f1a]
+  - @osdk/cli.common@0.32.0-beta.3
+  - @osdk/generator@2.8.0-beta.14
+  - @osdk/shared.client.impl@1.8.0-beta.2
+
 ## 0.32.0-beta.2
 
 ### Patch Changes

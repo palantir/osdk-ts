@@ -1,5 +1,18 @@
 # @osdk/shared.test
 
+## 2.8.0-beta.3
+
+### Minor Changes
+
+- d1ad4d1: Fix remapping query responses with structs that have null fields.
+- 35f2f1a: Add Media inputs/outputs for Queries
+
+### Patch Changes
+
+- Updated dependencies [35f2f1a]
+  - @osdk/api@2.8.0-beta.14
+  - @osdk/generator-converters@2.8.0-beta.14
+
 ## 2.8.0-beta.2
 
 ### Minor Changes

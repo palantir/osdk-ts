@@ -24,14 +24,14 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { ActionButton } from "../base-components/action-button/ActionButton.js";
 import { LoadingStateTable } from "./LoadingStateTable.js";
 import { NonIdealState } from "./NonIdealState.js";
 import styles from "./Table.module.css";
 import { TableBody } from "./TableBody.js";
+import { TableEditContainer } from "./TableEditContainer.js";
 import { TableHeader } from "./TableHeader.js";
 import type { HeaderMenuFeatureFlags } from "./TableHeaderWithPopover.js";
-import type { CellEditEvent } from "./utils/types.js";
+import type { CellEditInfo, EditableConfig } from "./utils/types.js";
 
 declare module "@tanstack/react-table" {
   interface ColumnMeta<TData extends RowData = unknown, TValue = unknown> {
@@ -45,23 +45,13 @@ declare module "@tanstack/react-table" {
   interface TableMeta<TData extends RowData = unknown> {
     onCellEdit?: (
       cellId: string,
-      event: CellEditEvent<TData, unknown>,
+      info: CellEditInfo<TData, unknown>,
     ) => void;
     onCellValidationError?: (cellId: string) => void;
-    cellEdits?: Record<string, CellEditEvent<TData, unknown>>;
+    cellEdits?: Record<string, CellEditInfo<TData, unknown>>;
     isInEditMode?: boolean;
     focusedRowId?: string | null;
   }
-}
-
-export interface EditableConfig {
-  onSubmitEdits?: () => Promise<void>;
-  clearEdits?: () => void;
-  cellEdits?: Record<string, CellEditEvent>;
-  validationErrors?: Set<string>;
-  enableEditModeByDefault?: boolean;
-  isInEditMode?: boolean;
-  onEnableEditMode?: (value: boolean) => void;
 }
 
 export interface BaseTableProps<
@@ -79,7 +69,7 @@ export interface BaseTableProps<
   className?: string;
   error?: Error;
   headerMenuFeatureFlags?: HeaderMenuFeatureFlags;
-  editableConfig?: EditableConfig;
+  editableConfig?: EditableConfig<TData, unknown>;
 }
 
 export function BaseTable<
@@ -144,37 +134,46 @@ export function BaseTable<
   const headerGroups = table.getHeaderGroups();
   const hasData = rows.length > 0;
 
-  const {
-    cellEdits,
-    validationErrors,
-    isInEditMode,
-    onSubmitEdits,
-    onEnableEditMode,
-    clearEdits,
-  } = editableConfig ?? {};
+  const hasEditableColumns = table
+    .getAllColumns()
+    .some(column => column.columnDef.meta?.editable === true);
 
-  const hasEdits = Object.keys(cellEdits ?? {}).length > 0;
-  const hasValidationError = (validationErrors?.size ?? 0) > 0;
+  const hasEdits = editableConfig
+    ? Object.keys(editableConfig.cellEdits ?? {}).length > 0
+    : false;
+  const hasValidationError = editableConfig
+    ? (editableConfig.validationErrors?.size ?? 0) > 0
+    : false;
 
   const handleSubmitEdits = useCallback(async () => {
-    // TODO: Provide user a way to clear edits on submit
+    if (!editableConfig?.onSubmitEdits) return;
     setIsSubmitting(true);
     try {
-      await onSubmitEdits?.();
-      onEnableEditMode?.(false);
+      const success = await editableConfig.onSubmitEdits();
+      if (success) {
+        editableConfig.clearEdits();
+        if (editableConfig.editMode.type === "manual") {
+          editableConfig.editMode.setActive(false);
+        }
+      }
     } finally {
       setIsSubmitting(false);
     }
-  }, [onEnableEditMode, onSubmitEdits]);
+  }, [editableConfig]);
 
   const handleCancelEdits = useCallback(() => {
-    clearEdits?.();
-    onEnableEditMode?.(false);
-  }, [clearEdits, onEnableEditMode]);
+    if (!editableConfig) return;
+    editableConfig.clearEdits();
+    if (editableConfig.editMode.type === "manual") {
+      editableConfig.editMode.setActive(false);
+    }
+  }, [editableConfig]);
 
   const handleEnterEditMode = useCallback(() => {
-    onEnableEditMode?.(true);
-  }, [onEnableEditMode]);
+    if (editableConfig?.editMode.type === "manual") {
+      editableConfig.editMode.setActive(true);
+    }
+  }, [editableConfig]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -191,9 +190,6 @@ export function BaseTable<
       document.removeEventListener("click", handleClickOutside);
     };
   }, []);
-
-  const showEditButtonsContainer = onSubmitEdits != null
-    || onEnableEditMode != null;
 
   return (
     <div className={classNames(styles.osdkTableWrapper, className)}>
@@ -228,7 +224,7 @@ export function BaseTable<
                   headerGroups={headerGroups}
                   focusedRowId={focusedRowId}
                   setFocusedRowId={setFocusedRowId}
-                  isInEditMode={isInEditMode}
+                  isInEditMode={editableConfig?.editMode.isActive}
                 />
               </>
             )}
@@ -238,62 +234,15 @@ export function BaseTable<
           <NonIdealState message={`Error Loading Data: ${error.message}`} />
         )}
       </div>
-      {showEditButtonsContainer && (
-        <div className={styles.tableEditContainer}>
-          {hasEdits || hasValidationError
-            ? (
-              <div className={styles.editsInfoContainer}>
-                {hasEdits && (
-                  <div className={styles.modificationCount}>
-                    {`${
-                      cellEdits ? Object.keys(cellEdits).length : 0
-                    } modifications`}
-                  </div>
-                )}
-                {hasEdits && hasValidationError && (
-                  <div className={styles.divider} />
-                )}
-                {hasValidationError && (
-                  <div className={styles.validationError}>
-                    <Error className={styles.errorIcon} />
-                    Validation error
-                  </div>
-                )}
-              </div>
-            )
-            : (isInEditMode && !focusedRowId && (
-              <div className={styles.placeholder}>
-                Select a row to edit data…
-              </div>
-            ))}
-          <div className={styles.editButtons}>
-            {!isInEditMode && !!onEnableEditMode && (
-              <ActionButton
-                variant="primary"
-                onClick={handleEnterEditMode}
-              >
-                Edit Table
-              </ActionButton>
-            )}
-            {!!isInEditMode && !!onEnableEditMode && (
-              <ActionButton
-                variant="secondary"
-                onClick={handleCancelEdits}
-              >
-                Cancel
-              </ActionButton>
-            )}
-            {!!isInEditMode && !!onSubmitEdits && (
-              <ActionButton
-                variant="primary"
-                onClick={handleSubmitEdits}
-                disabled={!hasEdits || isSubmitting || hasValidationError}
-              >
-                Submit Edits
-              </ActionButton>
-            )}
-          </div>
-        </div>
+      {hasEditableColumns && (
+        <TableEditContainer
+          editableConfig={editableConfig}
+          focusedRowId={focusedRowId}
+          onEnterEditMode={handleEnterEditMode}
+          onCancelEdits={handleCancelEdits}
+          onSubmitEdits={handleSubmitEdits}
+          isSubmitting={isSubmitting}
+        />
       )}
     </div>
   );

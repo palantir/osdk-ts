@@ -58,6 +58,7 @@ export function getObjectTypesFromQueryDataType(
     case "float":
     case "integer":
     case "long":
+    case "mediaReference":
     case "null":
     case "string":
     case "threeDimensionalAggregation":
@@ -67,6 +68,8 @@ export function getObjectTypesFromQueryDataType(
     case "unsupported":
     case "interfaceObject":
     case "interfaceObjectSet":
+    case "mediaReference":
+    case "void":
       /* complete no-op */
       return;
 

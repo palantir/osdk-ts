@@ -26,6 +26,7 @@ import {
   addOneQueryTypeOlderVersion,
   queryTypeAcceptsInterfaceObjectSet,
   queryTypeAcceptsInterfaces,
+  queryTypeAcceptsMediaReference,
   queryTypeAcceptsObjects,
   queryTypeAcceptsObjectSets,
   queryTypeAcceptsThreeDimensionalAggregation,
@@ -36,6 +37,7 @@ import {
   queryTypeReturnsComplexStruct,
   queryTypeReturnsDate,
   queryTypeReturnsMap,
+  queryTypeReturnsMediaReference,
   queryTypeReturnsObject,
   queryTypeReturnsStruct,
   queryTypeReturnsTimestamp,
@@ -86,6 +88,25 @@ export const queryTypeReturnsStructResponse: ExecuteQueryResponse = {
     age: 43,
   },
 };
+
+export const queryTypeReturnsStructRequestReturnNull: ExecuteQueryRequest = {
+  parameters: {
+    person: {
+      firstName: "Joe",
+      lastName: "Joseph",
+      age: 54,
+    },
+  },
+};
+
+export const queryTypeReturnsStructRequestReturnNullResponse:
+  ExecuteQueryResponse = {
+    value: {
+      firstName: "Joe",
+      lastName: "Joseph",
+      age: null,
+    },
+  };
 
 export const queryTypeReturnsComplexStructRequest: ExecuteQueryRequest = {
   parameters: {
@@ -339,6 +360,33 @@ export const emptyBody: string = JSON.stringify({
   parameters: {},
 });
 
+export const testMediaReference = {
+  mimeType: "image/png",
+  reference: {
+    type: "mediaSetViewItem" as const,
+    mediaSetViewItem: {
+      mediaItemRid: "ri.mio.main.media-item.test-item-rid",
+      mediaSetRid: "ri.mio.main.media-set.test-set-rid",
+      mediaSetViewRid: "ri.mio.main.media-set-view.test-view-rid",
+      token: "test-token",
+    },
+  },
+};
+
+export const queryTypeReturnsMediaReferenceResponse: ExecuteQueryResponse = {
+  value: testMediaReference,
+};
+
+export const queryTypeAcceptsMediaReferenceRequest: ExecuteQueryRequest = {
+  parameters: {
+    media: testMediaReference,
+  },
+};
+
+export const queryTypeAcceptsMediaReferenceResponse: ExecuteQueryResponse = {
+  value: testMediaReference,
+};
+
 const queryRequestHandlers: {
   [queryApiName: string]: {
     [queryVersion: string]: {
@@ -360,6 +408,8 @@ const queryRequestHandlers: {
     [queryTypeReturnsStruct.version]: {
       [JSON.stringify(queryTypeReturnsStructRequest)]:
         queryTypeReturnsStructResponse,
+      [JSON.stringify(queryTypeReturnsStructRequestReturnNull)]:
+        queryTypeReturnsStructRequestReturnNullResponse,
     },
   },
   [queryTypeReturnsComplexStruct.apiName]: {
@@ -452,6 +502,17 @@ const queryRequestHandlers: {
         queryTypeOutputsInterfaceObjectSetResponse,
     },
   },
+  [queryTypeReturnsMediaReference.apiName]: {
+    [queryTypeReturnsMediaReference.version]: {
+      [emptyBody]: queryTypeReturnsMediaReferenceResponse,
+    },
+  },
+  [queryTypeAcceptsMediaReference.apiName]: {
+    [queryTypeAcceptsMediaReference.version]: {
+      [JSON.stringify(queryTypeAcceptsMediaReferenceRequest)]:
+        queryTypeAcceptsMediaReferenceResponse,
+    },
+  },
 };
 
 export function registerLazyQueries(fauxOntology: FauxOntology): void {
@@ -475,6 +536,8 @@ export function registerLazyQueries(fauxOntology: FauxOntology): void {
     queryTypeAcceptsInterfaceObjectSet,
     queryTypeOutputsInterfaceObjectSet,
     queryTypeReturnsArrayOfObjects,
+    queryTypeReturnsMediaReference,
+    queryTypeAcceptsMediaReference,
   ];
 
   for (const queryType of Object.values(queryTypes)) {

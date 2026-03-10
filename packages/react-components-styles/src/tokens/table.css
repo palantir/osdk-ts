@@ -76,8 +76,9 @@
   --osdk-table-cell-edited-border-error: var(--osdk-surface-border-width) solid
     var(--osdk-intent-danger-rest);
   --osdk-table-cell-editable-bg: var(--osdk-background-primary);
-  --osdk-table-button-container-padding: calc(var(--osdk-surface-spacing) * 2)
+  --osdk-table-edit-container-padding: calc(var(--osdk-surface-spacing) * 2)
     calc(var(--osdk-surface-spacing) * 4);
-  --osdk-table-cell-editable-border: var(--osdk-surface-border-width) solid
-    var(--osdk-surface-border-color-strong);
+  --osdk-table-edit-container-min-height: calc(
+    var(--osdk-surface-spacing) * 12
+  );
 }

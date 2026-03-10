@@ -21,7 +21,6 @@ import type {
   MediaType,
 } from "@osdk/foundry.core";
 import type * as OntologiesV2 from "@osdk/foundry.ontologies";
-import { DefaultMap, MultiMap } from "mnemonist";
 import * as crypto from "node:crypto";
 import { randomUUID } from "node:crypto";
 import { inspect } from "node:util";
@@ -37,6 +36,8 @@ import {
   type BaseServerObject,
   isBaseServerObject,
 } from "./BaseServerObject.js";
+import { DefaultMap } from "./collections/DefaultMap.js";
+import { SetMultiMap } from "./collections/SetMultiMap.js";
 import type { FauxAttachmentStore } from "./FauxAttachmentStore.js";
 import { FauxDataStoreBatch } from "./FauxDataStoreBatch.js";
 import type { FauxOntology } from "./FauxOntology.js";
@@ -116,7 +117,7 @@ export class FauxDataStore {
   );
 
   #manyLinks = new DefaultMap(
-    (_objectLocator: ObjectLocator) => new MultiMap<string, ObjectLocator>(Set),
+    (_objectLocator: ObjectLocator) => new SetMultiMap<string, ObjectLocator>(),
   );
 
   #fauxOntology: FauxOntology;

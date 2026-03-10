@@ -1,5 +1,18 @@
 # @osdk/shared.net
 
+## 2.8.0-beta.2
+
+### Minor Changes
+
+- 35f2f1a: Add Media inputs/outputs for Queries
+
+### Patch Changes
+
+- Updated dependencies [35f2f1a]
+  - @osdk/shared.client.impl@1.8.0-beta.2
+  - @osdk/shared.net.errors@2.8.0-beta.2
+  - @osdk/shared.net.fetch@1.8.0-beta.2
+
 ## 2.5.0
 
 ### Patch Changes

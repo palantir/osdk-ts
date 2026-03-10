@@ -352,7 +352,7 @@ export interface DataValueClientToWire {
     	// (undocumented)
     marking: string;
     	// (undocumented)
-    mediaReference: MediaReference | MediaUpload;
+    mediaReference: MediaReference | MediaUpload | Media;
     	// (undocumented)
     null: null;
     	// (undocumented)
@@ -1638,6 +1638,8 @@ export type QueryParameterDefinition<T_Target extends ObjectTypeDefinition = any
 export namespace QueryResult {
     	// (undocumented)
     export type InterfaceType<T extends ObjectOrInterfaceDefinition> = OsdkBase<T>;
+    	// (undocumented)
+    export type MediaType = Media;
     	// (undocumented)
     export type ObjectSetType<T extends ObjectOrInterfaceDefinition> = ObjectSet<T>;
     	// (undocumented)

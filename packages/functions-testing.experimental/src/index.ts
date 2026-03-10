@@ -25,6 +25,7 @@ export {
   type FetchOneStubBuilder,
   type FetchPageStubBuilder,
   type MockClient,
+  type QueryStubBuilder,
   type StubBuilderFor,
   type StubClient,
 } from "./mock/createMockClient.js";

@@ -1,5 +1,57 @@
 # @osdk/react-components
 
+## 0.2.0-beta.11
+
+### Minor Changes
+
+- 447e29d: Update editable table UX and API to pass the entire row data on edit
+
+## 0.2.0-beta.10
+
+### Minor Changes
+
+- b4bf087: add complex and aggregation filter input components
+- 0bf4c53: add e2e sandbox filter list demos and remove unused filter types
+- 35f2f1a: Add Media inputs/outputs for Queries
+
+### Patch Changes
+
+- Updated dependencies [9156827]
+- Updated dependencies [e64bf0b]
+- Updated dependencies [baba327]
+- Updated dependencies [d1ad4d1]
+- Updated dependencies [35f2f1a]
+- Updated dependencies [71e28ef]
+  - @osdk/react@0.10.0-beta.7
+  - @osdk/client@2.8.0-beta.14
+  - @osdk/api@2.8.0-beta.14
+
+## 0.2.0-beta.9
+
+### Minor Changes
+
+- 4187b2b: Fix shift click to select from last selected and header menu styles
+
+## 0.2.0-beta.8
+
+### Minor Changes
+
+- 993c023: ObjectTable supports objectSet input
+
+### Patch Changes
+
+- Updated dependencies [993c023]
+- Updated dependencies [8825f8c]
+  - @osdk/react@0.10.0-beta.6
+  - @osdk/client@2.8.0-beta.12
+  - @osdk/api@2.8.0-beta.12
+
+## 0.2.0-beta.7
+
+### Minor Changes
+
+- 52b70aa: Fix onRowClick triggered on row selection
+
 ## 0.2.0-beta.6
 
 ### Minor Changes

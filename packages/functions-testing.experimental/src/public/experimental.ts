@@ -14,4 +14,12 @@
  * limitations under the License.
  */
 
-export {};
+export { createMockClient } from "../mock/createMockClient.js";
+export type {
+  AggregateStubBuilder,
+  FetchOneStubBuilder,
+  FetchPageStubBuilder,
+  QueryStubBuilder,
+  StubBuilderFor,
+} from "../mock/createMockClient.js";
+export { createMockOsdkObject } from "../mock/createMockOsdkObject.js";

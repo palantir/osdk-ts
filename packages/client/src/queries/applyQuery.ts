@@ -29,8 +29,9 @@ import type {
   QueryParameterDefinition,
 } from "@osdk/api";
 import type { DataValue } from "@osdk/foundry.ontologies";
-import * as OntologiesV2 from "@osdk/foundry.ontologies";
+import * as Queries from "@osdk/foundry.ontologies/Query";
 import invariant from "tiny-invariant";
+import { createMediaFromReference } from "../createMediaFromReference.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { createObjectSet } from "../objectSet/createObjectSet.js";
 import { hydrateAttachmentFromRidInternal } from "../public-utils/hydrateAttachmentFromRid.js";
@@ -63,7 +64,7 @@ export async function applyQuery<
     await client.flushEdits();
   }
 
-  const response = await OntologiesV2.Queries.execute(
+  const response = await Queries.execute(
     addUserAgentAndRequestContextHeaders(
       augmentRequestContext(client, _ => ({ finalMethodCall: "applyQuery" })),
       query,
@@ -82,6 +83,7 @@ export async function applyQuery<
     {
       version: query.isFixedVersion ? query.version : undefined,
       transactionId: client.transactionId,
+      branch: client.branch,
     },
   );
 
@@ -172,6 +174,15 @@ async function remapQueryResponse<
       >;
     }
 
+    case "mediaReference": {
+      return createMediaFromReference(
+        client,
+        responseValue,
+      ) as unknown as QueryReturnType<
+        typeof responseDataType
+      >;
+    }
+
     case "object": {
       const def = definitions.get(responseDataType.object);
       if (!def || def.type !== "object") {
@@ -232,7 +243,7 @@ async function remapQueryResponse<
     case "struct": {
       // figure out what keys need to be fixed up
       for (const [key, subtype] of Object.entries(responseDataType.struct)) {
-        if (requiresConversion(subtype)) {
+        if (requiresConversion(subtype) || responseValue[key] == null) {
           responseValue[key] = await remapQueryResponse(
             client,
             subtype,
@@ -379,6 +390,7 @@ async function getRequiredDefinitions(
     case "float":
     case "integer":
     case "long":
+    case "mediaReference":
     case "string":
     case "threeDimensionalAggregation":
     case "timestamp":
@@ -415,6 +427,7 @@ function requiresConversion(dataType: QueryDataTypeDefinition) {
       return requiresConversion(dataType.set);
 
     case "attachment":
+    case "mediaReference":
     case "objectSet":
     case "twoDimensionalAggregation":
     case "threeDimensionalAggregation":

@@ -56,7 +56,6 @@ import { augmentRequestContext } from "../util/augmentRequestContext.js";
 import { resolveBaseObjectSetType } from "../util/objectSetUtils.js";
 import { isWireObjectSet } from "../util/WireObjectSet.js";
 import { fetchLinksPage } from "./fetchLinksPage.js";
-import { ObjectSetListenerWebsocket } from "./ObjectSetListenerWebsocket.js";
 
 function isObjectTypeDefinition(
   def: ObjectOrInterfaceDefinition,
@@ -266,15 +265,17 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       listener,
       opts,
     ) => {
-      const pendingSubscribe = ObjectSetListenerWebsocket.getInstance(
-        clientCtx,
-      ).subscribe(
-        objectType,
-        objectSet,
-        listener as ObjectSetSubscription.Listener<Q, any>,
-        opts?.properties,
-        opts?.includeRid,
-      );
+      const pendingSubscribe = import("./ObjectSetListenerWebsocket.js")
+        .then(({ ObjectSetListenerWebsocket }) =>
+          ObjectSetListenerWebsocket.getInstance(clientCtx)
+            .subscribe(
+              objectType,
+              objectSet,
+              listener as ObjectSetSubscription.Listener<Q, any>,
+              opts?.properties,
+              opts?.includeRid,
+            )
+        );
 
       return { unsubscribe: async () => (await pendingSubscribe)() };
     },

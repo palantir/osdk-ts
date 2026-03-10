@@ -1,5 +1,54 @@
 # @osdk/foundry-sdk-generator
 
+## 2.8.0-beta.15
+
+### Patch Changes
+
+- Updated dependencies [dfc8019]
+  - @osdk/client@2.8.0-beta.15
+  - @osdk/api@2.8.0-beta.15
+  - @osdk/generator@2.8.0-beta.15
+
+## 2.8.0-beta.14
+
+### Minor Changes
+
+- 35f2f1a: Add Media inputs/outputs for Queries
+
+### Patch Changes
+
+- Updated dependencies [e64bf0b]
+- Updated dependencies [baba327]
+- Updated dependencies [d1ad4d1]
+- Updated dependencies [35f2f1a]
+- Updated dependencies [71e28ef]
+  - @osdk/client@2.8.0-beta.14
+  - @osdk/api@2.8.0-beta.14
+  - @osdk/generator@2.8.0-beta.14
+  - @osdk/shared.client.impl@1.8.0-beta.2
+
+## 2.8.0-beta.13
+
+### Minor Changes
+
+- 4470c0d: Add support to execute queries on branches.
+
+### Patch Changes
+
+- Updated dependencies [4470c0d]
+  - @osdk/generator@2.8.0-beta.13
+  - @osdk/client@2.8.0-beta.13
+  - @osdk/api@2.8.0-beta.13
+
+## 2.8.0-beta.12
+
+### Patch Changes
+
+- Updated dependencies [8825f8c]
+  - @osdk/client@2.8.0-beta.12
+  - @osdk/api@2.8.0-beta.12
+  - @osdk/generator@2.8.0-beta.12
+
 ## 2.8.0-beta.11
 
 ### Patch Changes
