@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,7 +67,6 @@ export class SpecificLinkQuery extends BaseListQuery<
   #whereClause: Canonical<SimpleWhereClause>;
   #orderBy: Canonical<Record<string, "asc" | "desc" | undefined>>;
   #select: Canonical<readonly string[]> | undefined;
-  #selectFieldSetMemo: ReadonlySet<string> | undefined;
 
   /**
    * Register changes to the cache specific to SpecificLinkQuery
@@ -111,11 +110,8 @@ export class SpecificLinkQuery extends BaseListQuery<
     this.#select = cacheKey.otherKeys[LINK_SELECT_IDX];
   }
 
-  public override get selectFieldSet(): ReadonlySet<string> | undefined {
-    if (this.#select && !this.#selectFieldSetMemo) {
-      this.#selectFieldSetMemo = new Set(this.#select);
-    }
-    return this.#selectFieldSetMemo;
+  protected get rawSelect(): Canonical<readonly string[]> | undefined {
+    return this.#select;
   }
 
   /**

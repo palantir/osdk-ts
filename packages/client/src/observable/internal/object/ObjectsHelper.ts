@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -128,18 +128,18 @@ export class ObjectsHelper extends AbstractHelper<
 
     // When a $select-filtered fetch returns partial objects, merge with
     // existing cached data to preserve fields not in the select set.
-    if (
-      dataChanged
+    const existingHolder = existing?.value;
+    const canMergeSelectFields = dataChanged
       && selectFields
       && selectFields.size > 0
-      && valueToWrite !== tombstone
-      && existing?.value
-      && this.isObjectHolder(existing.value)
-    ) {
+      && existingHolder
+      && this.isObjectHolder(existingHolder);
+
+    if (canMergeSelectFields && valueToWrite !== tombstone) {
       valueToWrite = mergeSelectFields(
         valueToWrite,
         selectFields,
-        existing.value,
+        existingHolder,
       );
     }
 

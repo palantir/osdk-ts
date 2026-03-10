@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -95,7 +95,6 @@ export abstract class ListQuery extends BaseListQuery<
   // Using base class minResultsToLoad instead of a private property
   #orderBy: Canonical<Record<string, "asc" | "desc" | undefined>>;
   #select: Canonical<readonly string[]> | undefined;
-  #selectFieldSetMemo: ReadonlySet<string> | undefined;
   #intersectWith: Canonical<Array<Canonical<SimpleWhereClause>>> | undefined;
   #pivotInfo: Canonical<PivotInfo> | undefined;
   #objectSet: ObjectSet<ObjectTypeDefinition>;
@@ -167,11 +166,8 @@ export abstract class ListQuery extends BaseListQuery<
     return this.#select;
   }
 
-  public override get selectFieldSet(): ReadonlySet<string> | undefined {
-    if (this.#select && !this.#selectFieldSetMemo) {
-      this.#selectFieldSetMemo = new Set(this.#select);
-    }
-    return this.#selectFieldSetMemo;
+  protected get rawSelect(): Canonical<readonly string[]> | undefined {
+    return this.#select;
   }
 
   get canonicalIntersectWith():
