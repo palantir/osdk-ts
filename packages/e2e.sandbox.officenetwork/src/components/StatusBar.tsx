@@ -9,6 +9,8 @@ interface StatusBarProps {
   lensMode: LensMode;
   selectedOffice: string | null;
   selectedEmployee: string | null;
+  showSelectDemo: boolean;
+  onToggleSelectDemo: () => void;
 }
 
 const LENS_LABELS: Record<LensMode, string> = {
@@ -28,6 +30,8 @@ export function StatusBar({
   lensMode,
   selectedOffice,
   selectedEmployee,
+  showSelectDemo,
+  onToggleSelectDemo,
 }: StatusBarProps) {
   const [currentTime, setCurrentTime] = React.useState(new Date());
 
@@ -126,6 +130,18 @@ export function StatusBar({
             </span>
           </div>
         </div>
+
+        {/* Select Demo Toggle */}
+        <button
+          onClick={onToggleSelectDemo}
+          className={`flex items-center gap-1 px-1.5 py-0.5 rounded transition-colors ${
+            showSelectDemo
+              ? "bg-[var(--officenetwork-accent-teal)]/20 text-[var(--officenetwork-accent-teal)]"
+              : "text-[var(--officenetwork-text-muted)] hover:text-[var(--officenetwork-text-secondary)]"
+          }`}
+        >
+          <span className="uppercase tracking-wider">$select</span>
+        </button>
 
         {/* Divider */}
         <div className="w-px h-3 bg-[var(--officenetwork-border-default)]" />

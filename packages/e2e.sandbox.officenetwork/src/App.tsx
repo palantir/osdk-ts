@@ -7,6 +7,7 @@ import { EmployeePanel } from "./components/EmployeePanel.js";
 import { OfficeMap } from "./components/OfficeMap.js";
 import { OfficePanel } from "./components/OfficePanel.js";
 import { ReorgWizard } from "./components/ReorgWizard.js";
+import { SelectDemo } from "./components/SelectDemo.js";
 import { StatusBar } from "./components/StatusBar.js";
 import { TopBar } from "./components/TopBar.js";
 import { Employee, Office } from "./generatedNoCheck2/index.js";
@@ -93,6 +94,7 @@ function App() {
     HierarchyLevel | null
   >(null);
   const [searchQuery, setSearchQuery] = React.useState("");
+  const [showSelectDemo, setShowSelectDemo] = React.useState(false);
 
   const { data: offices, isLoading: officesLoading, error: officesError } =
     useOsdkObjects(Office, {
@@ -108,6 +110,13 @@ function App() {
   } = useOsdkObjects(Employee, {
     pageSize: 200,
     orderBy: { fullName: "asc" },
+    $select: [
+      "fullName",
+      "employeeNumber",
+      "jobTitle",
+      "primaryOfficeId",
+      "leadEmployeeNumber",
+    ],
   });
 
   if (officesError) {
@@ -317,6 +326,12 @@ function App() {
           </div>
         )}
 
+        {showSelectDemo && (
+          <div className="w-[480px] shrink-0 h-full border-l border-[var(--officenetwork-border-default)]">
+            <SelectDemo onClose={() => setShowSelectDemo(false)} />
+          </div>
+        )}
+
         {showReorgWizard && offices && employees && (
           <div className="w-[480px] shrink-0 h-full border-l border-[var(--officenetwork-border-default)]">
             <ReorgWizard
@@ -337,6 +352,8 @@ function App() {
         lensMode={lensMode}
         selectedOffice={selectedOffice?.name ?? null}
         selectedEmployee={selectedEmployee?.fullName ?? null}
+        showSelectDemo={showSelectDemo}
+        onToggleSelectDemo={() => setShowSelectDemo((v) => !v)}
       />
     </div>
   );
