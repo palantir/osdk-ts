@@ -65,9 +65,6 @@ interface FilterListContentProps<Q extends ObjectTypeDefinition> {
   ) => void;
   whereClause: WhereClause<Q>;
   enableSorting?: boolean;
-  onFiltersReordered?: (
-    newOrder: ReadonlyArray<FilterDefinitionUnion<Q>>,
-  ) => void;
   className?: string;
   style?: React.CSSProperties;
 }
@@ -80,7 +77,6 @@ export function FilterListContent<Q extends ObjectTypeDefinition>({
   onFilterStateChanged,
   whereClause,
   enableSorting,
-  onFiltersReordered,
   className,
   style,
 }: FilterListContentProps<Q>): React.ReactElement {
@@ -105,14 +101,13 @@ export function FilterListContent<Q extends ObjectTypeDefinition>({
     [enableSorting, internalOrder],
   );
 
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: POINTER_ACTIVATION_CONSTRAINT,
-    }),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    }),
-  );
+  const pointerSensor = useSensor(PointerSensor, {
+    activationConstraint: POINTER_ACTIVATION_CONSTRAINT,
+  });
+  const keyboardSensor = useSensor(KeyboardSensor, {
+    coordinateGetter: sortableKeyboardCoordinates,
+  });
+  const sensors = useSensors(pointerSensor, keyboardSensor);
 
   const activeIndex = activeId != null
     ? sortableIds.indexOf(String(activeId))
@@ -140,12 +135,10 @@ export function FilterListContent<Q extends ObjectTypeDefinition>({
       const oldIndex = sortableIds.indexOf(String(active.id));
       const newIndex = sortableIds.indexOf(String(over.id));
       if (oldIndex !== -1 && newIndex !== -1) {
-        const reordered = arrayMove(internalOrder, oldIndex, newIndex);
-        setInternalOrder(reordered);
-        onFiltersReordered?.(reordered);
+        setInternalOrder(arrayMove(internalOrder, oldIndex, newIndex));
       }
     },
-    [internalOrder, sortableIds, onFiltersReordered],
+    [internalOrder, sortableIds],
   );
 
   const handleDragCancel = useCallback(() => {

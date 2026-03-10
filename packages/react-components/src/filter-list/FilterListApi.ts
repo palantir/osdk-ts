@@ -147,18 +147,10 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
   /**
    * Enable drag-and-drop reordering of filters.
    * When true, drag handles are rendered and filters can be reordered.
-   * Reorder state is managed internally; use onFiltersReordered to observe changes.
+   * Reorder state is managed internally; consumers who need to track order
+   * should use controlled filterDefinitions.
    */
   enableSorting?: boolean;
-
-  /**
-   * Called when filters are reordered via drag and drop
-   *
-   * @param newDefinitions The filter definitions in their new order
-   */
-  onFiltersReordered?: (
-    newDefinitions: readonly FilterDefinitionUnion<Q>[],
-  ) => void;
 
   /**
    * Show reset filters button in header
