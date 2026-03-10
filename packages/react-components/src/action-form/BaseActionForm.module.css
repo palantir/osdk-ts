@@ -14,6 +14,14 @@
  * limitations under the License.
  */
 
+.container {
+  background-color: var(--osdk-form-container-bg);
+  border: var(--osdk-form-container-border);
+  border-radius: var(--osdk-form-container-border-radius);
+  box-shadow: var(--osdk-form-container-shadow);
+  padding: var(--osdk-form-container-padding);
+}
+
 .form {
   display: flex;
   flex-direction: column;
@@ -57,6 +65,29 @@
   font-family: var(--osdk-typography-family-default);
   color: var(--osdk-typography-color-default-rest);
   background-color: var(--osdk-background-primary);
+
+  &:focus {
+    outline: none;
+    border-color: var(--osdk-form-input-border-color-focus);
+  }
+
+  &:focus-visible {
+    outline: var(--osdk-focus-outline);
+    outline-offset: var(--osdk-focus-visible-outline-offset);
+  }
+}
+
+.textarea {
+  padding: calc(var(--osdk-form-input-padding) * 2);
+  border: var(--osdk-surface-border-width) solid
+    var(--osdk-form-input-border-color);
+  border-radius: var(--osdk-form-input-border-radius);
+  font-size: var(--osdk-typography-size-body-medium);
+  font-family: var(--osdk-typography-family-default);
+  color: var(--osdk-typography-color-default-rest);
+  background-color: var(--osdk-background-primary);
+  min-height: var(--osdk-form-textarea-min-height);
+  resize: vertical;
 
   &:focus {
     outline: none;

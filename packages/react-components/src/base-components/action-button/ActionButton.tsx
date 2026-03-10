@@ -22,8 +22,17 @@ import styles from "./ActionButton.module.css";
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>
 {
-  variant?: "primary" | "secondary";
+  variant?: "primary" | "secondary" | "success";
 }
+
+const VARIANT_STYLES: Record<
+  NonNullable<ButtonProps["variant"]>,
+  string | undefined
+> = {
+  primary: styles.primaryButton,
+  secondary: styles.secondaryButton,
+  success: styles.successButton,
+};
 
 export function ActionButton({
   variant = "secondary",
@@ -34,7 +43,7 @@ export function ActionButton({
     <Button
       className={classNames(
         styles.button,
-        variant === "primary" ? styles.primaryButton : styles.secondaryButton,
+        VARIANT_STYLES[variant],
         className,
       )}
       {...rest}

@@ -5,6 +5,12 @@
   --osdk-button-primary-bg-hover: var(--osdk-intent-primary-hover);
   --osdk-button-primary-bg-active: var(--osdk-intent-primary-active);
 
+  /* Success Button */
+  --osdk-button-success-color: var(--osdk-intent-success-foreground);
+  --osdk-button-success-bg: var(--osdk-intent-success-rest);
+  --osdk-button-success-bg-hover: var(--osdk-intent-success-hover);
+  --osdk-button-success-bg-active: var(--osdk-intent-success-active);
+
   /* Secondary Button */
   --osdk-button-secondary-color: var(--osdk-typography-color-default-rest);
   --osdk-button-secondary-bg: var(--osdk-background-secondary);

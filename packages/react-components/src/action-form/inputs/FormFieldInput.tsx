@@ -18,7 +18,9 @@ import React from "react";
 import type { BaseFormFieldConfig } from "../BaseActionForm.js";
 import { BooleanInput } from "./BooleanInput.js";
 import { NumericInput } from "./NumericInput.js";
+import { SelectInput } from "./SelectInput.js";
 import { StringInput } from "./StringInput.js";
+import { TextAreaInput } from "./TextAreaInput.js";
 
 const NUMERIC_TYPES = new Set([
   "integer",
@@ -52,6 +54,29 @@ export function FormFieldInput({
     );
   }
 
+  if (field.type === "select" && field.options != null) {
+    return (
+      <SelectInput
+        value={value as string | undefined}
+        onChange={onChange as (value: string) => void}
+        options={field.options}
+        placeholder={field.placeholder}
+      />
+    );
+  }
+
+  if (field.type === "textarea") {
+    return (
+      <TextAreaInput
+        value={value as string ?? ""}
+        onChange={onChange as (value: string) => void}
+        isRequired={field.isRequired}
+        placeholder={field.placeholder}
+        className={className}
+      />
+    );
+  }
+
   if (NUMERIC_TYPES.has(field.type)) {
     return (
       <NumericInput
@@ -66,8 +91,9 @@ export function FormFieldInput({
   return (
     <StringInput
       value={value as string ?? ""}
-      onChange={onChange}
+      onChange={onChange as (value: string) => void}
       isRequired={field.isRequired}
+      placeholder={field.placeholder}
       className={className}
     />
   );

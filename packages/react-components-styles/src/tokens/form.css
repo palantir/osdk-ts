@@ -9,4 +9,14 @@
   --osdk-form-required-color: var(--osdk-typography-color-danger-rest);
   --osdk-form-description-color: var(--osdk-typography-color-muted);
   --osdk-form-footer-gap: var(--osdk-surface-spacing);
+
+  /* Form Container */
+  --osdk-form-container-bg: var(--osdk-background-primary);
+  --osdk-form-container-border: var(--osdk-surface-border);
+  --osdk-form-container-border-radius: var(--osdk-surface-border-radius);
+  --osdk-form-container-shadow: var(--osdk-surface-shadow-2);
+  --osdk-form-container-padding: calc(var(--osdk-surface-spacing) * 6);
+
+  /* Textarea */
+  --osdk-form-textarea-min-height: calc(var(--osdk-surface-spacing) * 20);
 }

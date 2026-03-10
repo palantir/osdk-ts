@@ -33,9 +33,13 @@ export interface BaseFormFieldConfig {
     | "boolean"
     | "datetime"
     | "timestamp"
+    | "select"
+    | "textarea"
     | string;
   isRequired: boolean;
   description?: string;
+  placeholder?: string;
+  options?: Array<{ label: string; value: string }>;
 }
 
 export interface BaseActionFormProps {
@@ -72,35 +76,37 @@ export function BaseActionForm({
   );
 
   return (
-    <Form
-      onSubmit={handleSubmit}
-      className={classnames(styles.form, className)}
-    >
-      {title != null && <h3 className={styles.title}>{title}</h3>}
-      {fields.map((field) => (
-        <FormField
-          key={field.key}
-          field={field}
-          value={values[field.key]}
-          onFieldChange={onFieldChange}
-        />
-      ))}
-      {error != null && <div className={styles.error}>{error}</div>}
-      <div className={styles.footer}>
-        {onCancel != null && (
-          <ActionButton variant="secondary" onClick={onCancel} type="button">
-            Cancel
+    <div className={classnames(styles.container, className)}>
+      <Form
+        onSubmit={handleSubmit}
+        className={styles.form}
+      >
+        {title != null && <h3 className={styles.title}>{title}</h3>}
+        {fields.map((field) => (
+          <FormField
+            key={field.key}
+            field={field}
+            value={values[field.key]}
+            onFieldChange={onFieldChange}
+          />
+        ))}
+        {error != null && <div className={styles.error}>{error}</div>}
+        <div className={styles.footer}>
+          {onCancel != null && (
+            <ActionButton variant="secondary" onClick={onCancel} type="button">
+              Cancel
+            </ActionButton>
+          )}
+          <ActionButton
+            variant="success"
+            type="submit"
+            disabled={isSubmitDisabled || isSubmitting}
+          >
+            {isSubmitting ? "Submitting..." : "Submit"}
           </ActionButton>
-        )}
-        <ActionButton
-          variant="primary"
-          type="submit"
-          disabled={isSubmitDisabled || isSubmitting}
-        >
-          {isSubmitting ? "Submitting..." : "Submit"}
-        </ActionButton>
-      </div>
-    </Form>
+        </div>
+      </Form>
+    </div>
   );
 }
 
@@ -137,7 +143,7 @@ function FormField({
         field={field}
         value={value}
         onChange={handleChange}
-        className={styles.input}
+        className={field.type === "textarea" ? styles.textarea : styles.input}
       />
       <Field.Error className={styles.fieldError} />
     </Field.Root>

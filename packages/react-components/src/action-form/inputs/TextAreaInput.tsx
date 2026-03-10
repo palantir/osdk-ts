@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-import { Field } from "@base-ui/react/field";
-import { Input } from "@base-ui/react/input";
 import React from "react";
 
-interface StringInputProps {
+interface TextAreaInputProps {
   value: string;
   onChange: (value: string) => void;
   isRequired: boolean;
@@ -26,23 +24,24 @@ interface StringInputProps {
   className?: string;
 }
 
-export function StringInput({
+export function TextAreaInput({
   value,
   onChange,
   isRequired,
   placeholder,
   className,
-}: StringInputProps): React.ReactElement {
+}: TextAreaInputProps): React.ReactElement {
   const handleChange = React.useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
+    (event: React.ChangeEvent<HTMLTextAreaElement>) => {
       onChange(event.target.value);
     },
     [onChange],
   );
 
   return (
-    <Field.Control
-      render={<Input className={className} placeholder={placeholder} />}
+    <textarea
+      className={className}
+      placeholder={placeholder}
       value={value}
       onChange={handleChange}
       required={isRequired}
