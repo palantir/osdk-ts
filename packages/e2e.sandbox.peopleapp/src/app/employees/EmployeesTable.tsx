@@ -1,8 +1,5 @@
 import type { DerivedProperty, Osdk } from "@osdk/api";
-import type {
-  CellEditEvent,
-  ColumnDefinition,
-} from "@osdk/react-components/experimental";
+import type { ColumnDefinition } from "@osdk/react-components/experimental";
 import { ObjectTable } from "@osdk/react-components/experimental";
 import { useCallback } from "react";
 import { $ } from "../../foundryClient.js";
@@ -96,13 +93,7 @@ const columnDefinitions: Array<
 
 export function EmployeesTable() {
   const handleSubmitEdits = useCallback(
-    async (
-      edits: CellEditEvent<
-        Osdk.Instance<Employee>,
-        unknown
-      >[],
-    ) => {
-      console.log("Edits to submit:", edits);
+    async () => {
       alert(`Submitting edits...`);
       return true;
     },
@@ -121,7 +112,7 @@ export function EmployeesTable() {
       }}
     >
       <ObjectTable<Employee, RDPs>
-        // objectSet={employeeOS}
+        objectSet={employeeOS}
         objectType={Employee}
         columnDefinitions={columnDefinitions}
         selectionMode={"multiple"}

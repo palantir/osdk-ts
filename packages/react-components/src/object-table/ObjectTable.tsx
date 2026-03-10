@@ -37,6 +37,7 @@ import type { ObjectTableProps } from "./ObjectTableApi.js";
 import { BaseTable } from "./Table.js";
 import type { HeaderMenuFeatureFlags } from "./TableHeaderWithPopover.js";
 import { getRowId } from "./utils/getRowId.js";
+import type { EditableConfig } from "./utils/types.js";
 
 /**
  * ObjectTable - A headless table component for displaying OSDK object sets
@@ -84,12 +85,6 @@ export function ObjectTable<
 }: ObjectTableProps<Q, RDPs, FunctionColumns>): React.ReactElement {
   const { columnSizing, onColumnSizingChange } = useColumnResize({
     onColumnResize,
-  });
-
-  const editableConfig = useEditableTable({
-    editMode,
-    onCellValueChanged,
-    onSubmitEdits,
   });
 
   const { sorting, onSortingChange } = useTableSorting<
@@ -163,6 +158,15 @@ export function ObjectTable<
   const allColumns = useMemo(() => {
     return selectionColumn ? [selectionColumn, ...columns] : columns;
   }, [selectionColumn, columns]);
+
+  const editableConfig: EditableConfig<
+    Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
+    unknown
+  > = useEditableTable({
+    editMode,
+    onCellValueChanged,
+    onSubmitEdits,
+  });
 
   const table = useReactTable<
     Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>

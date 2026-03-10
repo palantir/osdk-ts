@@ -20,7 +20,6 @@ import {
   ObjectTable,
 } from "@osdk/react-components/experimental";
 import type {
-  CellEditEvent,
   CellEditInfo,
   ColumnDefinition,
   ObjectTableProps,
