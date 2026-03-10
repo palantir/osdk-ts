@@ -16,13 +16,11 @@
 
 import { Field } from "@base-ui/react/field";
 import { Form } from "@base-ui/react/form";
-import { Input } from "@base-ui/react/input";
-import { NumberField } from "@base-ui/react/number-field";
 import classnames from "classnames";
 import React from "react";
 import { ActionButton } from "../base-components/action-button/ActionButton.js";
-import { Checkbox } from "../base-components/checkbox/Checkbox.js";
 import styles from "./BaseActionForm.module.css";
+import { FormFieldInput } from "./inputs/FormFieldInput.js";
 
 export interface BaseFormFieldConfig {
   key: string;
@@ -52,16 +50,6 @@ export interface BaseActionFormProps {
   error?: string;
   className?: string;
 }
-
-const NUMERIC_TYPES = new Set([
-  "integer",
-  "long",
-  "double",
-  "float",
-  "short",
-  "byte",
-  "decimal",
-]);
 
 export function BaseActionForm({
   title,
@@ -127,23 +115,9 @@ function FormField({
   value,
   onFieldChange,
 }: FormFieldProps): React.ReactElement {
-  const handleTextChange = React.useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      onFieldChange(field.key, event.target.value);
-    },
-    [onFieldChange, field.key],
-  );
-
-  const handleNumberChange = React.useCallback(
-    (val: number | null) => {
-      onFieldChange(field.key, val);
-    },
-    [onFieldChange, field.key],
-  );
-
-  const handleBooleanChange = React.useCallback(
-    (checked: boolean) => {
-      onFieldChange(field.key, checked);
+  const handleChange = React.useCallback(
+    (newValue: unknown) => {
+      onFieldChange(field.key, newValue);
     },
     [onFieldChange, field.key],
   );
@@ -159,54 +133,13 @@ function FormField({
           {field.description}
         </Field.Description>
       )}
-      {renderFieldInput(field, value, {
-        onTextChange: handleTextChange,
-        onNumberChange: handleNumberChange,
-        onBooleanChange: handleBooleanChange,
-      })}
+      <FormFieldInput
+        field={field}
+        value={value}
+        onChange={handleChange}
+        className={styles.input}
+      />
       <Field.Error className={styles.fieldError} />
     </Field.Root>
-  );
-}
-
-interface FieldHandlers {
-  onTextChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  onNumberChange: (value: number | null) => void;
-  onBooleanChange: (checked: boolean) => void;
-}
-
-function renderFieldInput(
-  field: BaseFormFieldConfig,
-  value: unknown,
-  handlers: FieldHandlers,
-): React.ReactElement {
-  if (field.type === "boolean") {
-    return (
-      <Checkbox
-        checked={value === true}
-        onCheckedChange={handlers.onBooleanChange}
-      />
-    );
-  }
-
-  if (NUMERIC_TYPES.has(field.type)) {
-    return (
-      <NumberField.Root
-        value={value as number | null ?? null}
-        onValueChange={handlers.onNumberChange}
-      >
-        <NumberField.Input className={styles.input} />
-      </NumberField.Root>
-    );
-  }
-
-  // string, geohash, datetime, timestamp, and all other types fall back to text input
-  return (
-    <Field.Control
-      render={<Input className={styles.input} />}
-      value={value as string ?? ""}
-      onChange={handlers.onTextChange}
-      required={field.isRequired}
-    />
   );
 }

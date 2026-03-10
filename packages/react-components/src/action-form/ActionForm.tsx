@@ -29,13 +29,17 @@ export function ActionForm<T, Q extends ActionDefinition<T>>({
   onError,
   isSubmitDisabled,
 }: ActionFormProps<Q>): React.ReactElement {
-  const { isLoading, metadata, error: metadataError } = useActionMetadata(
+  const {
+    isLoading,
+    metadata,
+    error: metadataError,
+  } = useActionMetadata(actionDefinition);
+  const { applyAction, isPending, validateAction } = useOsdkAction(
     actionDefinition,
   );
-  const { applyAction, isPending } = useOsdkAction(actionDefinition);
-  const [formValues, setFormValues] = React.useState<
-    Record<string, unknown>
-  >({});
+  const [formValues, setFormValues] = React.useState<Record<string, unknown>>(
+    {},
+  );
   const [submitError, setSubmitError] = React.useState<string | undefined>();
 
   const fields = React.useMemo<BaseFormFieldConfig[]>(() => {
@@ -53,12 +57,9 @@ export function ActionForm<T, Q extends ActionDefinition<T>>({
 
   const title = formTitle ?? metadata?.displayName ?? metadata?.apiName;
 
-  const handleFieldChange = React.useCallback(
-    (key: string, value: unknown) => {
-      setFormValues((prev) => ({ ...prev, [key]: value }));
-    },
-    [],
-  );
+  const handleFieldChange = React.useCallback((key: string, value: unknown) => {
+    setFormValues((prev) => ({ ...prev, [key]: value }));
+  }, []);
 
   const handleSubmit = React.useCallback(async () => {
     setSubmitError(undefined);
