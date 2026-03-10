@@ -183,7 +183,7 @@ export function EditableCell<TData extends RowData, CellValue = unknown>({
     ? "number"
     : "text";
 
-  const isEdited = inputValue !== valueToString(initialValue);
+  const isEdited = currentValue !== initialValue;
 
   return (
     <Tooltip.Provider>
