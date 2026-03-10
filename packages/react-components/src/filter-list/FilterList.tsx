@@ -41,7 +41,7 @@ export function FilterList<Q extends ObjectTypeDefinition>(
     onReset,
     showActiveFilterCount = false,
     className,
-    onFiltersReordered,
+    enableSorting,
     renderAddFilterButton,
   } = props;
 
@@ -100,7 +100,7 @@ export function FilterList<Q extends ObjectTypeDefinition>(
       onReset={handleReset}
       showResetButton={showResetButton}
       showActiveFilterCount={showActiveFilterCount}
-      onFiltersReordered={onFiltersReordered}
+      enableSorting={enableSorting}
       className={className}
       renderAddFilterButton={renderAddFilterButton}
     />

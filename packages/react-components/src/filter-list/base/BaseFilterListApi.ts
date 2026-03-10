@@ -42,9 +42,6 @@ export interface BaseFilterListProps<D> {
   showResetButton?: boolean;
   showActiveFilterCount?: boolean;
   enableSorting?: boolean;
-  onFiltersReordered?: (
-    newOrder: ReadonlyArray<D>,
-  ) => void;
   className?: string;
   renderAddFilterButton?: () => React.ReactNode;
 }

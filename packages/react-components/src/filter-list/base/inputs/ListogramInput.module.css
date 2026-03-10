@@ -74,6 +74,7 @@
   height: 100%;
   width: 100%;
   background: var(--bar-fill-color, var(--osdk-filter-listogram-bar-color));
+  transform: scaleX(var(--bar-scale, 0));
   transform-origin: left;
   transition: transform var(--osdk-filter-listogram-bar-fill-transition);
 }

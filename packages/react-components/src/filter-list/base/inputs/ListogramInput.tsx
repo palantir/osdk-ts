@@ -107,7 +107,9 @@ function ListogramInputInner({
                 <span className={styles.bar}>
                   <span
                     className={styles.barFill}
-                    style={{ transform: `scaleX(${percentage / 100})` }}
+                    style={{
+                      "--bar-scale": percentage / 100,
+                    } as React.CSSProperties}
                   />
                 </span>
                 <span className={styles.count}>

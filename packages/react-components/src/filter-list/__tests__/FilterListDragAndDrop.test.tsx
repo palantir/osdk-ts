@@ -63,7 +63,7 @@ function createFilterStates(
 }
 
 describe("FilterList drag and drop", () => {
-  it("does not render drag handles when onFiltersReordered is not provided", () => {
+  it("does not render drag handles when enableSorting is not provided", () => {
     const definitions = createDefinitions();
     const filterStates = createFilterStates(definitions);
 
@@ -82,7 +82,7 @@ describe("FilterList drag and drop", () => {
     expect(dragHandles).toHaveLength(0);
   });
 
-  it("renders drag handles when onFiltersReordered is provided", async () => {
+  it("renders drag handles when enableSorting is true", async () => {
     const definitions = createDefinitions();
     const filterStates = createFilterStates(definitions);
 
@@ -92,7 +92,6 @@ describe("FilterList drag and drop", () => {
         filterStates={filterStates}
         onFilterStateChanged={vi.fn()}
         enableSorting={true}
-        onFiltersReordered={vi.fn()}
         renderInput={stubRenderInput}
         getFilterKey={getFilterKey}
         getFilterLabel={getFilterLabel}
@@ -127,7 +126,6 @@ describe("FilterList drag and drop", () => {
         filterStates={filterStates}
         onFilterStateChanged={vi.fn()}
         enableSorting={true}
-        onFiltersReordered={vi.fn()}
         renderInput={stubRenderInput}
         getFilterKey={getFilterKey}
         getFilterLabel={getFilterLabel}
@@ -149,7 +147,6 @@ describe("FilterList drag and drop", () => {
         filterStates={filterStates}
         onFilterStateChanged={vi.fn()}
         enableSorting={true}
-        onFiltersReordered={vi.fn()}
         renderInput={stubRenderInput}
         getFilterKey={getFilterKey}
         getFilterLabel={getFilterLabel}
@@ -168,7 +165,6 @@ describe("FilterList drag and drop", () => {
         filterStates={new Map()}
         onFilterStateChanged={vi.fn()}
         enableSorting={true}
-        onFiltersReordered={vi.fn()}
         renderInput={stubRenderInput}
         getFilterKey={getFilterKey}
         getFilterLabel={getFilterLabel}
