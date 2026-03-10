@@ -21,7 +21,7 @@ import {
 } from "@osdk/react-components/experimental";
 import "@osdk/react-components/styles.css";
 import { useOsdkObjects } from "@osdk/react/experimental";
-import { useCallback, useState } from "react";
+import { useState } from "react";
 
 import { List } from "../../components/List.js";
 import { ListItem } from "../../components/ListItem.js";
@@ -75,16 +75,6 @@ const INITIAL_FILTER_DEFINITIONS: FilterDefinitionUnion<Employee>[] = [
 
 export function EmployeesWithFilterList(props: EmployeesWithFilterListProps) {
   const [whereClause, setWhereClause] = useState<WhereClause<Employee>>({});
-  const [filterDefinitions, setFilterDefinitions] = useState<
-    FilterDefinitionUnion<Employee>[]
-  >(INITIAL_FILTER_DEFINITIONS);
-
-  const handleFiltersReordered = useCallback(
-    (newOrder: ReadonlyArray<FilterDefinitionUnion<Employee>>) => {
-      setFilterDefinitions([...newOrder]);
-    },
-    [],
-  );
 
   const employees = useOsdkObjects(Employee, {
     where: whereClause,
@@ -98,9 +88,8 @@ export function EmployeesWithFilterList(props: EmployeesWithFilterListProps) {
         <div style={{ minWidth: 280, maxWidth: 320 }}>
           <FilterList
             objectSet={$(Employee)}
-            filterDefinitions={filterDefinitions}
+            filterDefinitions={INITIAL_FILTER_DEFINITIONS}
             onFilterClauseChanged={setWhereClause}
-            onFiltersReordered={handleFiltersReordered}
             title="Filters"
             showActiveFilterCount={true}
           />
