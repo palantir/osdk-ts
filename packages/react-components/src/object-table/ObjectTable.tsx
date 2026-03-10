@@ -80,7 +80,6 @@ export function ObjectTable<
   enableColumnResizing = true,
   enableColumnConfig = true,
   editMode = "manual",
-  enableEditModeByDefault = true,
   ...props
 }: ObjectTableProps<Q, RDPs, FunctionColumns>): React.ReactElement {
   const { columnSizing, onColumnSizingChange } = useColumnResize({
@@ -89,7 +88,6 @@ export function ObjectTable<
 
   const editableConfig = useEditableTable({
     editMode,
-    enableEditModeByDefault,
     onCellValueChanged,
     onSubmitEdits,
   });

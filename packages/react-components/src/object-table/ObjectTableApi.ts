@@ -207,13 +207,6 @@ export interface ObjectTableProps<
   editMode?: "always" | "manual";
 
   /**
-   * If true, and editMode is "manual", the table starts in edit mode by default.
-   *
-   * @default true
-   */
-  enableEditModeByDefault?: boolean;
-
-  /**
    * The default order by clause to sort the objects in the table.
    * If provided without orderBy prop, the sorting is uncontrolled.
    * If both orderBy and defaultOrderBy are provided, orderBy takes precedence.

@@ -37,7 +37,6 @@ export interface UseEditableTableProps<
   >,
 > {
   editMode?: "always" | "manual";
-  enableEditModeByDefault?: boolean;
 
   onCellValueChanged?: ObjectTableProps<
     Q,
@@ -58,10 +57,12 @@ export interface UseEditableTableResult<
     string,
     never
   >,
-> extends EditableConfig<
+> extends
+  EditableConfig<
     Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
     unknown
-  > {
+  >
+{
   onCellValidationError: (cellId: string) => void;
   validationErrors: Set<string>;
 }
@@ -77,15 +78,14 @@ export function useEditableTable<
   >,
 >({
   editMode = "manual",
-  enableEditModeByDefault,
   onCellValueChanged,
   onSubmitEdits,
 }: UseEditableTableProps<Q, RDPs, FunctionColumns>): UseEditableTableResult<
   Q,
   RDPs
 > {
-  const [isActive, setActive] = useState(
-    editMode === "always" || (enableEditModeByDefault && editMode === "manual")
+  const [isActive, setActive] = useState<boolean>(
+    editMode === "always",
   );
   const [cellEdits, setCellEdits] = useState<
     Record<

@@ -102,14 +102,6 @@ const meta: Meta<EmployeeTableProps> = {
         defaultValue: { summary: "manual" },
       },
     },
-    enableEditModeByDefault: {
-      description: "Whether the table is in edit mode by default.",
-      control: "boolean",
-      defaultValue: true,
-      table: {
-        defaultValue: { summary: "true" },
-      },
-    },
     defaultOrderBy: {
       description:
         "The default order by clause to sort the objects in the table. If provided without orderBy prop, the sorting is uncontrolled. If both orderBy and defaultOrderBy are provided, orderBy takes precedence.",

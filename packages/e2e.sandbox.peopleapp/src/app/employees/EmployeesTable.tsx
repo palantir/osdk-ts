@@ -121,7 +121,7 @@ export function EmployeesTable() {
       }}
     >
       <ObjectTable<Employee, RDPs>
-        objectSet={employeeOS}
+        // objectSet={employeeOS}
         objectType={Employee}
         columnDefinitions={columnDefinitions}
         selectionMode={"multiple"}
@@ -130,7 +130,7 @@ export function EmployeesTable() {
           direction: "desc",
         }]}
         onSubmitEdits={handleSubmitEdits}
-        enableEditModeByDefault={false}
+        editMode="manual"
         onCellValueChanged={(event) => {
           console.log("Cell edited:", event);
         }}
