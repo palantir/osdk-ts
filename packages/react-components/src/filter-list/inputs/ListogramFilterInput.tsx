@@ -92,6 +92,6 @@ function ListogramFilterInputInner<Q extends ObjectTypeDefinition>({
   );
 }
 
-export const ListogramFilterInput = memo(
+export const ListogramFilterInput: typeof ListogramFilterInputInner = memo(
   ListogramFilterInputInner,
 ) as typeof ListogramFilterInputInner;

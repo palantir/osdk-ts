@@ -85,6 +85,5 @@ function CheckboxListFilterInputInner<Q extends ObjectTypeDefinition>({
   );
 }
 
-export const CheckboxListFilterInput = memo(
-  CheckboxListFilterInputInner,
-) as typeof CheckboxListFilterInputInner;
+export const CheckboxListFilterInput: typeof CheckboxListFilterInputInner =
+  memo(CheckboxListFilterInputInner) as typeof CheckboxListFilterInputInner;

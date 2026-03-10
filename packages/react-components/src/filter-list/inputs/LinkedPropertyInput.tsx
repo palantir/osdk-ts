@@ -413,7 +413,7 @@ function LinkedPropertyInputInner<
   );
 }
 
-export const LinkedPropertyInput = memo(
+export const LinkedPropertyInput: typeof LinkedPropertyInputInner = memo(
   LinkedPropertyInputInner,
 ) as typeof LinkedPropertyInputInner;
 

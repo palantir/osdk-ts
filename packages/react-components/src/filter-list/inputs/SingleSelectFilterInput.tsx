@@ -83,6 +83,7 @@ function SingleSelectFilterInputInner<Q extends ObjectTypeDefinition>({
   );
 }
 
-export const SingleSelectFilterInput = memo(
-  SingleSelectFilterInputInner,
-) as typeof SingleSelectFilterInputInner;
+export const SingleSelectFilterInput: typeof SingleSelectFilterInputInner =
+  memo(
+    SingleSelectFilterInputInner,
+  ) as typeof SingleSelectFilterInputInner;

@@ -23,7 +23,7 @@ interface ToggleFilterInputProps {
   onFilterStateChanged: (state: FilterState) => void;
 }
 
-export const ToggleFilterInput = memo(function ToggleFilterInput({
+function ToggleFilterInputInner({
   filterState,
   onFilterStateChanged,
 }: ToggleFilterInputProps): React.ReactElement {
@@ -37,4 +37,8 @@ export const ToggleFilterInput = memo(function ToggleFilterInput({
   );
 
   return <ToggleInput enabled={enabled} onChange={handleChange} />;
-});
+}
+
+export const ToggleFilterInput: React.MemoExoticComponent<
+  typeof ToggleFilterInputInner
+> = memo(ToggleFilterInputInner);

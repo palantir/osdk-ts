@@ -82,6 +82,6 @@ function TextTagsFilterInputInner<Q extends ObjectTypeDefinition>({
   );
 }
 
-export const TextTagsFilterInput = memo(
+export const TextTagsFilterInput: typeof TextTagsFilterInputInner = memo(
   TextTagsFilterInputInner,
 ) as typeof TextTagsFilterInputInner;

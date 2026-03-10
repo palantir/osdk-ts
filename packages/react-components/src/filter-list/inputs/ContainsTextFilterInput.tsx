@@ -24,7 +24,7 @@ interface ContainsTextFilterInputProps {
   onFilterStateChanged: (state: FilterState) => void;
 }
 
-export const ContainsTextFilterInput = memo(function ContainsTextFilterInput({
+function ContainsTextFilterInputInner({
   propertyKey,
   filterState,
   onFilterStateChanged,
@@ -51,4 +51,8 @@ export const ContainsTextFilterInput = memo(function ContainsTextFilterInput({
       placeholder={`Search ${propertyKey}...`}
     />
   );
-});
+}
+
+export const ContainsTextFilterInput: React.MemoExoticComponent<
+  typeof ContainsTextFilterInputInner
+> = memo(ContainsTextFilterInputInner);

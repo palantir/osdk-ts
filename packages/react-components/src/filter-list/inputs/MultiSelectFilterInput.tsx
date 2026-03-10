@@ -83,6 +83,6 @@ function MultiSelectFilterInputInner<Q extends ObjectTypeDefinition>({
   );
 }
 
-export const MultiSelectFilterInput = memo(
+export const MultiSelectFilterInput: typeof MultiSelectFilterInputInner = memo(
   MultiSelectFilterInputInner,
 ) as typeof MultiSelectFilterInputInner;

@@ -157,6 +157,6 @@ function DateRangeFilterInputInner<Q extends ObjectTypeDefinition>({
   );
 }
 
-export const DateRangeFilterInput = memo(
+export const DateRangeFilterInput: typeof DateRangeFilterInputInner = memo(
   DateRangeFilterInputInner,
 ) as typeof DateRangeFilterInputInner;

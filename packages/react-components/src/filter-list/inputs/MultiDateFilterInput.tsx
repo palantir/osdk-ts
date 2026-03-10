@@ -23,7 +23,7 @@ interface MultiDateFilterInputProps {
   onFilterStateChanged: (state: FilterState) => void;
 }
 
-export const MultiDateFilterInput = memo(function MultiDateFilterInput({
+function MultiDateFilterInputInner({
   filterState,
   onFilterStateChanged,
 }: MultiDateFilterInputProps): React.ReactElement {
@@ -50,4 +50,8 @@ export const MultiDateFilterInput = memo(function MultiDateFilterInput({
   return (
     <MultiDateInput selectedDates={selectedDates} onChange={handleChange} />
   );
-});
+}
+
+export const MultiDateFilterInput: React.MemoExoticComponent<
+  typeof MultiDateFilterInputInner
+> = memo(MultiDateFilterInputInner);

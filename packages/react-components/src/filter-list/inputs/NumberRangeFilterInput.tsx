@@ -161,6 +161,6 @@ function NumberRangeFilterInputInner<Q extends ObjectTypeDefinition>({
   );
 }
 
-export const NumberRangeFilterInput = memo(
+export const NumberRangeFilterInput: typeof NumberRangeFilterInputInner = memo(
   NumberRangeFilterInputInner,
 ) as typeof NumberRangeFilterInputInner;

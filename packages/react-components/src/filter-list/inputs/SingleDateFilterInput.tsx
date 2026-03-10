@@ -23,7 +23,7 @@ interface SingleDateFilterInputProps {
   onFilterStateChanged: (state: FilterState) => void;
 }
 
-export const SingleDateFilterInput = memo(function SingleDateFilterInput({
+function SingleDateFilterInputInner({
   filterState,
   onFilterStateChanged,
 }: SingleDateFilterInputProps): React.ReactElement {
@@ -50,6 +50,13 @@ export const SingleDateFilterInput = memo(function SingleDateFilterInput({
   );
 
   return (
-    <SingleDateInput selectedDate={selectedDate} onChange={handleChange} />
+    <SingleDateInput
+      selectedDate={selectedDate}
+      onChange={handleChange}
+    />
   );
-});
+}
+
+export const SingleDateFilterInput: React.MemoExoticComponent<
+  typeof SingleDateFilterInputInner
+> = memo(SingleDateFilterInputInner);

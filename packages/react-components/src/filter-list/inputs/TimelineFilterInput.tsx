@@ -23,7 +23,7 @@ interface TimelineFilterInputProps {
   onFilterStateChanged: (state: FilterState) => void;
 }
 
-export const TimelineFilterInput = memo(function TimelineFilterInput({
+function TimelineFilterInputInner({
   filterState,
   onFilterStateChanged,
 }: TimelineFilterInputProps): React.ReactElement {
@@ -55,4 +55,8 @@ export const TimelineFilterInput = memo(function TimelineFilterInput({
       onChange={handleChange}
     />
   );
-});
+}
+
+export const TimelineFilterInput: React.MemoExoticComponent<
+  typeof TimelineFilterInputInner
+> = memo(TimelineFilterInputInner);

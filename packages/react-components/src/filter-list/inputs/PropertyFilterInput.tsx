@@ -177,6 +177,6 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
   }
 }
 
-export const PropertyFilterInput = memo(
+export const PropertyFilterInput: typeof PropertyFilterInputInner = memo(
   PropertyFilterInputInner,
 ) as typeof PropertyFilterInputInner;
