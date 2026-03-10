@@ -59,7 +59,9 @@ export interface BaseActionFormProps<
   ) => void;
   onSubmit: () => void;
   onCancel?: () => void;
+  fieldErrors?: Record<string, string | string[]>;
   isSubmitting?: boolean;
+  isValidating?: boolean;
   isSubmitDisabled?: boolean;
   error?: string;
   className?: string;
@@ -74,7 +76,9 @@ export function BaseActionForm<
   onFieldChange,
   onSubmit,
   onCancel,
+  fieldErrors,
   isSubmitting = false,
+  isValidating = false,
   isSubmitDisabled = false,
   error,
   className,
@@ -89,7 +93,11 @@ export function BaseActionForm<
 
   return (
     <div className={classnames(styles.container, className)}>
-      <Form onSubmit={handleSubmit} className={styles.form}>
+      <Form
+        onSubmit={handleSubmit}
+        errors={fieldErrors}
+        className={styles.form}
+      >
         {title != null && <h3 className={styles.title}>{title}</h3>}
         {fields.map((field) => (
           <FormField<TData>
@@ -109,9 +117,13 @@ export function BaseActionForm<
           <ActionButton
             variant="success"
             type="submit"
-            disabled={isSubmitDisabled || isSubmitting}
+            disabled={isSubmitDisabled || isSubmitting || isValidating}
           >
-            {isSubmitting ? "Submitting..." : "Submit"}
+            {isSubmitting
+              ? "Submitting..."
+              : isValidating
+              ? "Validating..."
+              : "Submit"}
           </ActionButton>
         </div>
       </Form>
@@ -141,7 +153,7 @@ function FormField<
   );
 
   return (
-    <Field.Root className={styles.fieldRoot}>
+    <Field.Root name={field.key} className={styles.fieldRoot}>
       <Field.Label className={styles.label}>
         {field.label}
         {field.isRequired && <span className={styles.required}>*</span>}
