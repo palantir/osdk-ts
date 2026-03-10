@@ -83,7 +83,7 @@ function FilterListItemInner<D>({
     <div
       className={classnames(styles.filterItem, className)}
       style={style}
-      data-excluding={isExcluding || undefined}
+      data-excluding={isExcluding}
     >
       <div className={styles.itemHeader}>
         {dragHandleAttributes && (
