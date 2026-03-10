@@ -29,7 +29,11 @@ body {
   min-height: 100vh;
 }
 
-h2,
+h2 {
+  font-size: 28px;
+  margin: 0;
+}
+
 h5,
 h6 {
   font-size: 14px;

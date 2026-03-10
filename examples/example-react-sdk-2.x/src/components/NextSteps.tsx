@@ -1,11 +1,11 @@
-import tag from "/tag.svg";
+import rocket from "/rocket.svg";
 
 import React from "react";
 import css from "./NextSteps.module.css";
 
 const STEPS: INextStep[] = [
   {
-    icon: tag,
+    icon: rocket,
     title: "Deploy your application",
     subtitle: (
       <span>
