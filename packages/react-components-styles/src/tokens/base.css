@@ -29,8 +29,6 @@
   --osdk-surface-background-color-danger-active: var(
     --bp-surface-background-color-danger-active
   );
-  --osdk-surface-color-hover-default: var(--bp-surface-colorHover-default);
-  --osdk-surface-color-active-default: var(--bp-surface-colorActive-default);
   --osdk-surface-spacing: var(--bp-surface-spacing);
   --osdk-surface-shadow-2: var(--bp-surface-shadow-2);
 
@@ -78,13 +76,13 @@
 
   /* Blueprint token mappings - Iconography tokens */
   --osdk-iconography-size-small: var(--bp-iconography-size-small);
-  --osdk-iconography-color-muted: var(--bp-iconography-colorMuted);
+  --osdk-iconography-color-muted: var(--bp-iconography-color-muted);
 
   /* Blueprint token mappings - Emphasis tokens */
   --osdk-emphasis-focus-width: var(--bp-emphasis-focus-width);
   --osdk-emphasis-focus-color: var(--bp-emphasis-focus-color);
   --osdk-emphasis-focus-offset: var(--bp-emphasis-focus-offset);
-  --osdk-emphasis-transition-duration: var(--bp-emphasis-transitionDuration);
+  --osdk-emphasis-transition-duration: var(--bp-emphasis-transition-duration);
   --osdk-emphasis-ease-default: var(--bp-emphasis-ease-default);
 
   /* Blueprint token mappings - Palette tokens */

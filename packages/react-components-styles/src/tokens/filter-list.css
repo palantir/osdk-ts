@@ -194,10 +194,10 @@
   )
     var(--osdk-emphasis-ease-default);
   --osdk-filter-listogram-row-bg-hover: var(
-    --osdk-surface-color-hover-default
+    --osdk-surface-background-color-default-hover
   );
   --osdk-filter-listogram-row-bg-active: var(
-    --osdk-surface-color-active-default
+    --osdk-surface-background-color-default-active
   );
   --osdk-filter-listogram-row-focus-outline: var(
     --osdk-emphasis-focus-width
@@ -270,7 +270,7 @@
     --osdk-surface-border-radius
   );
   --osdk-filter-timeline-button-bg-hover: var(
-    --osdk-surface-color-hover-default
+    --osdk-surface-background-color-default-hover
   );
   --osdk-filter-timeline-button-color-hover: var(
     --osdk-typography-color-default-rest
