@@ -38,6 +38,7 @@ import {
   expectNoMoreCalls,
   expectSingleListCallAndClear,
   mockListSubCallback,
+  updateList,
   waitForCall,
 } from "../testUtils.js";
 
@@ -449,6 +450,217 @@ describe("ListQuery autoFetchMore tests", () => {
 
     testStage("Verify no additional unexpected calls");
     expectNoMoreCalls(listSub);
+  });
+});
+
+describe("ListQuery sort stability across pages", () => {
+  let client: Client;
+  let apiServer: SetupServer;
+  let fauxFoundry: FauxFoundry;
+  let store: Store;
+
+  beforeAll(() => {
+    const testSetup = startNodeApiServer(
+      new FauxFoundry("https://stack.palantir.com/", undefined, { logger }),
+      createClient,
+      { logger },
+    );
+    ({ client, apiServer, fauxFoundry } = testSetup);
+
+    setupOntology(testSetup.fauxFoundry);
+
+    return () => {
+      testSetup.apiServer.close();
+    };
+  });
+
+  beforeEach(() => {
+    apiServer.resetHandlers();
+    store = new Store(client);
+  });
+
+  it("fetchMore preserves server order for items with equal sort keys", async () => {
+    // Regression test: fetchMore with equal sort keys must not shuffle items
+    const dataStore = fauxFoundry.getDefaultDataStore();
+    dataStore.clear();
+
+    for (let i = 0; i < 10; i++) {
+      dataStore.registerObject(Todo, {
+        $apiName: "Todo",
+        id: i,
+        text: "same",
+      });
+    }
+
+    const listSub = mockListSubCallback();
+    defer(
+      store.lists.observe(
+        {
+          type: Todo,
+          where: {},
+          orderBy: { text: "asc" },
+          pageSize: 5,
+        },
+        listSub,
+      ),
+    );
+
+    await waitForCall(listSub.next, 1);
+    expectSingleListCallAndClear(listSub, undefined, { status: "loading" });
+
+    await waitForCall(listSub.next, 1);
+    let payload = expectSingleListCallAndClear(listSub, expect.anything(), {
+      status: "loaded",
+    });
+
+    expect(payload?.resolvedList?.length).toBe(5);
+    expect(payload!.resolvedList!.map((t) => t.id)).toEqual([0, 1, 2, 3, 4]);
+
+    void payload!.fetchMore();
+    await waitForCall(listSub.next, 1);
+    payload = expectSingleListCallAndClear(listSub, expect.anything(), {
+      status: "loading",
+    });
+    await waitForCall(listSub.next, 1);
+    payload = expectSingleListCallAndClear(listSub, expect.anything(), {
+      status: "loaded",
+    });
+
+    // serverOrdered skips client re-sort, preserving page order
+    expect(payload?.resolvedList?.length).toBe(10);
+    expect(payload!.resolvedList!.map((t) => t.id)).toEqual([
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+    ]);
+  });
+
+  it("fetchMore preserves page boundaries when pages have overlapping sort keys", async () => {
+    // Overlapping sort keys across pages must not interleave after fetchMore
+    const dataStore = fauxFoundry.getDefaultDataStore();
+    dataStore.clear();
+
+    // ids: 0("a"), 1("b"), 2("a"), 3("b"), 4("a"), 5("b"), 6("a"), 7("b")
+    // Server sorts by text asc: [0,2,4,6,1,3,5,7]
+    for (let i = 0; i < 8; i++) {
+      dataStore.registerObject(Todo, {
+        $apiName: "Todo",
+        id: i,
+        text: i % 2 === 0 ? "a" : "b",
+      });
+    }
+
+    const listSub = mockListSubCallback();
+    defer(
+      store.lists.observe(
+        {
+          type: Todo,
+          where: {},
+          orderBy: { text: "asc" },
+          pageSize: 4,
+        },
+        listSub,
+      ),
+    );
+
+    await waitForCall(listSub.next, 1);
+    expectSingleListCallAndClear(listSub, undefined, { status: "loading" });
+
+    await waitForCall(listSub.next, 1);
+    let payload = expectSingleListCallAndClear(listSub, expect.anything(), {
+      status: "loaded",
+    });
+
+    expect(payload?.resolvedList?.length).toBe(4);
+    expect(payload!.resolvedList!.map((t) => t.id)).toEqual([0, 2, 4, 6]);
+
+    void payload!.fetchMore();
+    await waitForCall(listSub.next, 1);
+    payload = expectSingleListCallAndClear(listSub, expect.anything(), {
+      status: "loading",
+    });
+    await waitForCall(listSub.next, 1);
+    payload = expectSingleListCallAndClear(listSub, expect.anything(), {
+      status: "loaded",
+    });
+
+    // Page 1 items stay before page 2 items with no interleaving
+    expect(payload?.resolvedList?.length).toBe(8);
+    expect(payload!.resolvedList!.map((t) => t.id)).toEqual([
+      0,
+      2,
+      4,
+      6,
+      1,
+      3,
+      5,
+      7,
+    ]);
+  });
+
+  it("clientOrdered sorts unsorted objects by orderBy with PK tiebreaker", async () => {
+    // Exercise the clientOrdered sort path directly via updateList helper
+    const dataStore = fauxFoundry.getDefaultDataStore();
+    dataStore.clear();
+
+    // Create 4 todos: two share text "b" to test PK tiebreaker
+    dataStore.registerObject(Todo, { $apiName: "Todo", id: 20, text: "c" });
+    dataStore.registerObject(Todo, { $apiName: "Todo", id: 10, text: "a" });
+    dataStore.registerObject(Todo, { $apiName: "Todo", id: 31, text: "b" });
+    dataStore.registerObject(Todo, { $apiName: "Todo", id: 30, text: "b" });
+
+    // Fetch real Osdk.Instance objects
+    const [objC, objA, objB2, objB1] = await Promise.all([
+      client(Todo).fetchOne(20),
+      client(Todo).fetchOne(10),
+      client(Todo).fetchOne(31),
+      client(Todo).fetchOne(30),
+    ]);
+
+    const listSub = mockListSubCallback();
+    defer(
+      store.lists.observe(
+        {
+          type: Todo,
+          where: {},
+          orderBy: { text: "asc" },
+          pageSize: 10,
+        },
+        listSub,
+      ),
+    );
+
+    // Wait for server load to complete
+    await waitForCall(listSub.next, 1);
+    expectSingleListCallAndClear(listSub, undefined, { status: "loading" });
+    await waitForCall(listSub.next, 1);
+    expectSingleListCallAndClear(listSub, expect.anything(), {
+      status: "loaded",
+    });
+
+    // Push objects in unsorted order through clientOrdered path
+    updateList(store, { type: Todo, where: {}, orderBy: { text: "asc" } }, [
+      objC,
+      objA,
+      objB2,
+      objB1,
+    ]);
+
+    await waitForCall(listSub.next, 1);
+    const payload = expectSingleListCallAndClear(listSub, expect.anything(), {
+      status: "loaded",
+    });
+
+    // clientOrdered sorts by text asc, then PK tiebreaker for equal keys
+    const ids = payload!.resolvedList!.map((t) => t.id);
+    expect(ids).toEqual([10, 30, 31, 20]);
   });
 });
 
