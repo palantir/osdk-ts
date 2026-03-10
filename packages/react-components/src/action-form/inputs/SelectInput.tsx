@@ -22,6 +22,7 @@ interface SelectInputProps {
   onChange: (value: string) => void;
   options: Array<{ label: string; value: string }>;
   placeholder?: string;
+  className?: string;
 }
 
 export function SelectInput({
@@ -29,6 +30,7 @@ export function SelectInput({
   onChange,
   options,
   placeholder,
+  className,
 }: SelectInputProps): React.ReactElement {
   const handleValueChange = React.useCallback(
     (newValue: string | null) => {
@@ -41,7 +43,7 @@ export function SelectInput({
 
   return (
     <Select.Root<string> value={value} onValueChange={handleValueChange}>
-      <Select.Trigger placeholder={placeholder} />
+      <Select.Trigger className={className} placeholder={placeholder} />
       <Select.Portal>
         <Select.Positioner>
           <Select.Popup>

@@ -77,10 +77,7 @@ export function BaseActionForm({
 
   return (
     <div className={classnames(styles.container, className)}>
-      <Form
-        onSubmit={handleSubmit}
-        className={styles.form}
-      >
+      <Form onSubmit={handleSubmit} className={styles.form}>
         {title != null && <h3 className={styles.title}>{title}</h3>}
         {fields.map((field) => (
           <FormField

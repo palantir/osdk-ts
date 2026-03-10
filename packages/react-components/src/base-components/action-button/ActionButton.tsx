@@ -25,10 +25,7 @@ export interface ButtonProps
   variant?: "primary" | "secondary" | "success";
 }
 
-const VARIANT_STYLES: Record<
-  NonNullable<ButtonProps["variant"]>,
-  string | undefined
-> = {
+const VARIANT_STYLES: Record<NonNullable<ButtonProps["variant"]>, string> = {
   primary: styles.primaryButton,
   secondary: styles.secondaryButton,
   success: styles.successButton,

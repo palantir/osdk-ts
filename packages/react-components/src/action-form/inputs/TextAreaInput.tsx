@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Field } from "@base-ui/react/field";
 import React from "react";
 
 interface TextAreaInputProps {
@@ -32,16 +33,15 @@ export function TextAreaInput({
   className,
 }: TextAreaInputProps): React.ReactElement {
   const handleChange = React.useCallback(
-    (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    (event: React.ChangeEvent<HTMLInputElement>) => {
       onChange(event.target.value);
     },
     [onChange],
   );
 
   return (
-    <textarea
-      className={className}
-      placeholder={placeholder}
+    <Field.Control
+      render={<textarea className={className} placeholder={placeholder} />}
       value={value}
       onChange={handleChange}
       required={isRequired}

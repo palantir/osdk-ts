@@ -34,9 +34,7 @@ export function ActionForm<T, Q extends ActionDefinition<T>>({
     metadata,
     error: metadataError,
   } = useActionMetadata(actionDefinition);
-  const { applyAction, isPending, validateAction } = useOsdkAction(
-    actionDefinition,
-  );
+  const { applyAction, isPending } = useOsdkAction(actionDefinition);
   const [formValues, setFormValues] = React.useState<Record<string, unknown>>(
     {},
   );

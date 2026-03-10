@@ -57,7 +57,7 @@ export function FormFieldInput({
   if (field.type === "select" && field.options != null) {
     return (
       <SelectInput
-        value={value as string | undefined}
+        value={typeof value === "string" ? value : undefined}
         onChange={onChange as (value: string) => void}
         options={field.options}
         placeholder={field.placeholder}
@@ -68,7 +68,7 @@ export function FormFieldInput({
   if (field.type === "textarea") {
     return (
       <TextAreaInput
-        value={value as string ?? ""}
+        value={typeof value === "string" ? value : ""}
         onChange={onChange as (value: string) => void}
         isRequired={field.isRequired}
         placeholder={field.placeholder}
@@ -80,7 +80,7 @@ export function FormFieldInput({
   if (NUMERIC_TYPES.has(field.type)) {
     return (
       <NumericInput
-        value={value as number | null ?? null}
+        value={typeof value === "number" ? value : null}
         onChange={onChange}
         className={className}
       />
