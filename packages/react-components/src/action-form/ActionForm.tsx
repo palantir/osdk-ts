@@ -20,6 +20,8 @@ import React from "react";
 import type { ActionFormProps } from "./ActionFormApi.js";
 import type { BaseFormFieldConfig } from "./BaseActionForm.js";
 import { BaseActionForm } from "./BaseActionForm.js";
+import { convertToActionValue } from "./convertValue.js";
+import type { ActionFormValues } from "./FormFieldApi.js";
 import { useActionMetadata } from "./useActionMetadata.js";
 
 export function ActionForm<T, Q extends ActionDefinition<T>>({
@@ -35,8 +37,8 @@ export function ActionForm<T, Q extends ActionDefinition<T>>({
     error: metadataError,
   } = useActionMetadata(actionDefinition);
   const { applyAction, isPending } = useOsdkAction(actionDefinition);
-  const [formValues, setFormValues] = React.useState<Record<string, unknown>>(
-    {},
+  const [formValues, setFormValues] = React.useState<ActionFormValues<Q>>(
+    {} as ActionFormValues<Q>,
   );
   const [submitError, setSubmitError] = React.useState<string | undefined>();
 
@@ -55,9 +57,23 @@ export function ActionForm<T, Q extends ActionDefinition<T>>({
 
   const title = formTitle ?? metadata?.displayName ?? metadata?.apiName;
 
-  const handleFieldChange = React.useCallback((key: string, value: unknown) => {
-    setFormValues((prev) => ({ ...prev, [key]: value }));
-  }, []);
+  const handleFieldChange = React.useCallback(
+    <K extends keyof ActionFormValues<Q> & string>(
+      key: K,
+      rawValue: ActionFormValues<Q>[K],
+    ) => {
+      const field = fields.find(f => f.key === key);
+      const converted = field != null
+        ? convertToActionValue(rawValue, field.type)
+        : rawValue;
+      setFormValues((prev) => {
+        const next: ActionFormValues<Q> = { ...prev };
+        Object.assign(next, { [key]: converted });
+        return next;
+      });
+    },
+    [fields],
+  );
 
   const handleSubmit = React.useCallback(async () => {
     setSubmitError(undefined);
@@ -81,7 +97,7 @@ export function ActionForm<T, Q extends ActionDefinition<T>>({
     : submitError;
 
   return (
-    <BaseActionForm
+    <BaseActionForm<ActionFormValues<Q>>
       title={title}
       fields={fields}
       values={formValues}

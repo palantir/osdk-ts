@@ -16,21 +16,12 @@
 
 import React from "react";
 import type { BaseFormFieldConfig } from "../BaseActionForm.js";
+import { convertToFieldValue } from "../convertValue.js";
 import { BooleanInput } from "./BooleanInput.js";
 import { NumericInput } from "./NumericInput.js";
 import { SelectInput } from "./SelectInput.js";
 import { StringInput } from "./StringInput.js";
 import { TextAreaInput } from "./TextAreaInput.js";
-
-const NUMERIC_TYPES = new Set([
-  "integer",
-  "long",
-  "double",
-  "float",
-  "short",
-  "byte",
-  "decimal",
-]);
 
 interface FormFieldInputProps {
   field: BaseFormFieldConfig;
@@ -45,56 +36,89 @@ export function FormFieldInput({
   onChange,
   className,
 }: FormFieldInputProps): React.ReactElement {
-  if (field.type === "boolean") {
-    return (
-      <BooleanInput
-        value={value === true}
-        onChange={onChange}
-      />
-    );
-  }
-
-  if (field.type === "select" && field.options != null) {
-    return (
-      <SelectInput
-        value={typeof value === "string" ? value : undefined}
-        onChange={onChange as (value: string) => void}
-        options={field.options}
-        placeholder={field.placeholder}
-      />
-    );
-  }
-
-  if (field.type === "textarea") {
-    return (
-      <TextAreaInput
-        value={typeof value === "string" ? value : ""}
-        onChange={onChange as (value: string) => void}
-        isRequired={field.isRequired}
-        placeholder={field.placeholder}
-        className={className}
-      />
-    );
-  }
-
-  if (NUMERIC_TYPES.has(field.type)) {
-    return (
-      <NumericInput
-        value={typeof value === "number" ? value : null}
-        onChange={onChange}
-        className={className}
-      />
-    );
-  }
-
-  // string, geohash, datetime, timestamp, and all other types fall back to text input
-  return (
-    <StringInput
-      value={value as string ?? ""}
-      onChange={onChange as (value: string) => void}
-      isRequired={field.isRequired}
-      placeholder={field.placeholder}
-      className={className}
-    />
+  const stringOnChange = React.useCallback(
+    (newValue: string) => {
+      onChange(newValue);
+    },
+    [onChange],
   );
+
+  const numericOnChange = React.useCallback(
+    (newValue: number | null) => {
+      onChange(newValue ?? undefined);
+    },
+    [onChange],
+  );
+
+  const booleanOnChange = React.useCallback(
+    (newValue: boolean) => {
+      onChange(newValue);
+    },
+    [onChange],
+  );
+
+  switch (field.type) {
+    case "boolean":
+      return (
+        <BooleanInput
+          value={convertToFieldValue(value, "boolean")}
+          onChange={booleanOnChange}
+        />
+      );
+    case "select":
+      return (
+        <SelectInput
+          value={convertToFieldValue(value, "select")}
+          onChange={stringOnChange}
+          options={field.options ?? []}
+          placeholder={field.placeholder}
+        />
+      );
+    case "textarea":
+      return (
+        <TextAreaInput
+          value={convertToFieldValue(value, "textarea")}
+          onChange={stringOnChange}
+          isRequired={field.isRequired}
+          placeholder={field.placeholder}
+          className={className}
+        />
+      );
+    case "integer":
+    case "long":
+    case "double":
+    case "float":
+    case "short":
+    case "byte":
+    case "decimal":
+      return (
+        <NumericInput
+          value={convertToFieldValue(value, field.type)}
+          onChange={numericOnChange}
+          className={className}
+        />
+      );
+    case "string":
+    case "datetime":
+    case "timestamp":
+    case "attachment":
+    case "marking":
+    case "mediaReference":
+    case "objectType":
+    case "geoshape":
+    case "geohash":
+    case "object":
+    case "objectSet":
+    case "interface":
+    case "struct":
+      return (
+        <StringInput
+          value={convertToFieldValue(value, field.type)}
+          onChange={stringOnChange}
+          isRequired={field.isRequired}
+          placeholder={field.placeholder}
+          className={className}
+        />
+      );
+  }
 }

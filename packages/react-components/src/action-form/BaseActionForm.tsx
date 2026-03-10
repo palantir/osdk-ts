@@ -16,37 +16,47 @@
 
 import { Field } from "@base-ui/react/field";
 import { Form } from "@base-ui/react/form";
+import type { ActionMetadata } from "@osdk/api"; // TODO: we need to drop this too
 import classnames from "classnames";
 import React from "react";
 import { ActionButton } from "../base-components/action-button/ActionButton.js";
 import styles from "./BaseActionForm.module.css";
 import { FormFieldInput } from "./inputs/FormFieldInput.js";
 
+/** All supported form field types — no string catch-all */
+export type FormFieldType =
+  | ActionMetadata.DataType.BaseActionParameterTypes
+  | "object"
+  | "objectSet"
+  | "interface"
+  | "struct"
+  | "decimal"
+  | "float"
+  | "short"
+  | "byte"
+  | "textarea"
+  | "select";
+
 export interface BaseFormFieldConfig {
   key: string;
   label: string;
-  type:
-    | "string"
-    | "integer"
-    | "long"
-    | "double"
-    | "boolean"
-    | "datetime"
-    | "timestamp"
-    | "select"
-    | "textarea"
-    | string;
+  type: FormFieldType;
   isRequired: boolean;
   description?: string;
   placeholder?: string;
   options?: Array<{ label: string; value: string }>;
 }
 
-export interface BaseActionFormProps {
+export interface BaseActionFormProps<
+  TData extends Record<string, unknown> = Record<string, unknown>,
+> {
   title?: string;
   fields: BaseFormFieldConfig[];
-  values: Record<string, unknown>;
-  onFieldChange: (key: string, value: unknown) => void;
+  values: TData;
+  onFieldChange: <K extends keyof TData & string>(
+    key: K,
+    value: TData[K],
+  ) => void;
   onSubmit: () => void;
   onCancel?: () => void;
   isSubmitting?: boolean;
@@ -55,7 +65,9 @@ export interface BaseActionFormProps {
   className?: string;
 }
 
-export function BaseActionForm({
+export function BaseActionForm<
+  TData extends Record<string, unknown> = Record<string, unknown>,
+>({
   title,
   fields,
   values,
@@ -66,7 +78,7 @@ export function BaseActionForm({
   isSubmitDisabled = false,
   error,
   className,
-}: BaseActionFormProps): React.ReactElement {
+}: BaseActionFormProps<TData>): React.ReactElement {
   const handleSubmit = React.useCallback(
     (event: React.FormEvent) => {
       event.preventDefault();
@@ -80,7 +92,7 @@ export function BaseActionForm({
       <Form onSubmit={handleSubmit} className={styles.form}>
         {title != null && <h3 className={styles.title}>{title}</h3>}
         {fields.map((field) => (
-          <FormField
+          <FormField<TData>
             key={field.key}
             field={field}
             value={values[field.key]}
@@ -107,20 +119,23 @@ export function BaseActionForm({
   );
 }
 
-interface FormFieldProps {
+interface FormFieldProps<
+  TData extends Record<string, unknown> = Record<string, unknown>,
+> {
   field: BaseFormFieldConfig;
   value: unknown;
-  onFieldChange: (key: string, value: unknown) => void;
+  onFieldChange: <K extends keyof TData & string>(
+    key: K,
+    value: TData[K],
+  ) => void;
 }
 
-function FormField({
-  field,
-  value,
-  onFieldChange,
-}: FormFieldProps): React.ReactElement {
+function FormField<
+  TData extends Record<string, unknown> = Record<string, unknown>,
+>({ field, value, onFieldChange }: FormFieldProps<TData>): React.ReactElement {
   const handleChange = React.useCallback(
     (newValue: unknown) => {
-      onFieldChange(field.key, newValue);
+      onFieldChange(field.key, newValue as TData[string]);
     },
     [onFieldChange, field.key],
   );
