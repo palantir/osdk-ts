@@ -94,7 +94,7 @@ export abstract class ListQuery extends BaseListQuery<
 
   // Using base class minResultsToLoad instead of a private property
   #orderBy: Canonical<Record<string, "asc" | "desc" | undefined>>;
-  #select: Canonical<string[]> | undefined;
+  #select: Canonical<readonly string[]> | undefined;
   #selectFieldSetMemo: ReadonlySet<string> | undefined;
   #intersectWith: Canonical<Array<Canonical<SimpleWhereClause>>> | undefined;
   #pivotInfo: Canonical<PivotInfo> | undefined;
@@ -163,7 +163,7 @@ export abstract class ListQuery extends BaseListQuery<
     return this.#whereClause;
   }
 
-  get canonicalSelect(): Canonical<string[]> | undefined {
+  get canonicalSelect(): Canonical<readonly string[]> | undefined {
     return this.#select;
   }
 
@@ -260,7 +260,7 @@ export abstract class ListQuery extends BaseListQuery<
       $pageSize: this.getEffectiveFetchPageSize(),
       $includeRid: true,
       ...(this.#select && this.#select.length > 0
-        ? { $select: this.#select as readonly string[] }
+        ? { $select: this.#select }
         : {}),
       // For now this keeps the shared test code from falling apart
       // but shouldn't be needed ideally

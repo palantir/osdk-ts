@@ -88,7 +88,7 @@ export class ObjectSetQuery extends BaseListQuery<
     return this.#operations.withProperties ?? null;
   }
 
-  public get selectFields(): Canonical<string[]> | undefined {
+  public get selectFields(): Canonical<readonly string[]> | undefined {
     return this.#operations.select;
   }
 
@@ -197,7 +197,7 @@ export class ObjectSetQuery extends BaseListQuery<
       $pageSize: this.getEffectiveFetchPageSize(),
       $includeRid: true,
       ...(this.#operations.select && this.#operations.select.length > 0
-        ? { $select: this.#operations.select as readonly string[] }
+        ? { $select: this.#operations.select }
         : {}),
       // OrderBy is already applied in the composed ObjectSet
       ...(this.#operations.orderBy

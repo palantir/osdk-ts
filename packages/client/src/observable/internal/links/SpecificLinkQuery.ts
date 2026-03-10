@@ -66,7 +66,7 @@ export class SpecificLinkQuery extends BaseListQuery<
   #linkName: string;
   #whereClause: Canonical<SimpleWhereClause>;
   #orderBy: Canonical<Record<string, "asc" | "desc" | undefined>>;
-  #select: Canonical<string[]> | undefined;
+  #select: Canonical<readonly string[]> | undefined;
   #selectFieldSetMemo: ReadonlySet<string> | undefined;
 
   /**

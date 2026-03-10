@@ -138,7 +138,7 @@ export class ObjectQuery extends Query<
           {
             $includeRid: true,
             ...(this.#select && this.#select.length > 0
-              ? { $select: this.#select as readonly string[] }
+              ? { $select: this.#select }
               : {}),
           },
         );

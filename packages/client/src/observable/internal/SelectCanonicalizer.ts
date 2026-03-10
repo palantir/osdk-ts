@@ -17,15 +17,15 @@
 import type { Canonical } from "./Canonical.js";
 
 export class SelectCanonicalizer {
-  private cache = new Map<string, Canonical<string[]>>();
+  private cache = new Map<string, Canonical<readonly string[]>>();
 
-  canonicalize(select: readonly string[]): Canonical<string[]> {
+  canonicalize(select: readonly string[]): Canonical<readonly string[]> {
     const sorted = [...new Set(select)].sort();
     const key = sorted.join("\0");
 
     let canonical = this.cache.get(key);
     if (!canonical) {
-      canonical = sorted as Canonical<string[]>;
+      canonical = sorted as readonly string[] as Canonical<readonly string[]>;
       this.cache.set(key, canonical);
     }
     return canonical;

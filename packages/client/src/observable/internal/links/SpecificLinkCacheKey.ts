@@ -56,7 +56,7 @@ export interface SpecificLinkCacheKey extends
       linkName: string,
       whereClause: Canonical<SimpleWhereClause>,
       orderByClause: Canonical<Record<string, "asc" | "desc" | undefined>>,
-      select?: Canonical<string[]> | undefined,
+      select?: Canonical<readonly string[]> | undefined,
     ]
   >
 {

@@ -170,7 +170,7 @@ export class BulkObjectLoader {
         $pageSize: pks.length,
         $includeRid: true,
         ...(select && select.length > 0
-          ? { $select: select as readonly string[] }
+          ? { $select: select }
           : {}),
       });
 
@@ -225,7 +225,7 @@ export class BulkObjectLoader {
         .where(whereClause).fetchPage({
           $pageSize: remainingPks.length,
           ...(select && select.length > 0
-            ? { $select: select as readonly string[] }
+            ? { $select: select }
             : {}),
         });
 

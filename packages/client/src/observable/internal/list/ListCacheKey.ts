@@ -51,7 +51,7 @@ export interface ListCacheKey extends
         | undefined,
       pivotInfo?: Canonical<PivotInfo> | undefined,
       rids?: Canonical<string[]> | undefined,
-      select?: Canonical<string[]> | undefined,
+      select?: Canonical<readonly string[]> | undefined,
     ]
   >
 {

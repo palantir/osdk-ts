@@ -30,7 +30,7 @@ export interface ObjectSetOperations {
   subtract?: string[];
   pivotTo?: string;
   orderBy?: Canonical<Record<string, "asc" | "desc" | undefined>>;
-  select?: Canonical<string[]>;
+  select?: Canonical<readonly string[]>;
   pageSize?: number;
 }
 
