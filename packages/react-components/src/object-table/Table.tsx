@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { Error } from "@blueprintjs/icons";
 import type { Cell, RowData, Table } from "@tanstack/react-table";
 import classNames from "classnames";
 import React, {
@@ -138,43 +137,6 @@ export function BaseTable<
     .getAllColumns()
     .some(column => column.columnDef.meta?.editable === true);
 
-  const hasEdits = editableConfig
-    ? Object.keys(editableConfig.cellEdits ?? {}).length > 0
-    : false;
-  const hasValidationError = editableConfig
-    ? (editableConfig.validationErrors?.size ?? 0) > 0
-    : false;
-
-  const handleSubmitEdits = useCallback(async () => {
-    if (!editableConfig?.onSubmitEdits) return;
-    setIsSubmitting(true);
-    try {
-      const success = await editableConfig.onSubmitEdits();
-      if (success) {
-        editableConfig.clearEdits();
-        if (editableConfig.editMode.type === "manual") {
-          editableConfig.editMode.setActive(false);
-        }
-      }
-    } finally {
-      setIsSubmitting(false);
-    }
-  }, [editableConfig]);
-
-  const handleCancelEdits = useCallback(() => {
-    if (!editableConfig) return;
-    editableConfig.clearEdits();
-    if (editableConfig.editMode.type === "manual") {
-      editableConfig.editMode.setActive(false);
-    }
-  }, [editableConfig]);
-
-  const handleEnterEditMode = useCallback(() => {
-    if (editableConfig?.editMode.type === "manual") {
-      editableConfig.editMode.setActive(true);
-    }
-  }, [editableConfig]);
-
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -238,10 +200,6 @@ export function BaseTable<
         <TableEditContainer
           editableConfig={editableConfig}
           focusedRowId={focusedRowId}
-          onEnterEditMode={handleEnterEditMode}
-          onCancelEdits={handleCancelEdits}
-          onSubmitEdits={handleSubmitEdits}
-          isSubmitting={isSubmitting}
         />
       )}
     </div>
