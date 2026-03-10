@@ -102,7 +102,7 @@ describe("FilterList drag and drop", () => {
     expect(dragHandles).toHaveLength(3);
   });
 
-  it("renders drag handles with enableSorting but no onFiltersReordered", async () => {
+  it("renders drag handles with enableSorting alone", async () => {
     const definitions = createDefinitions();
     const filterStates = createFilterStates(definitions);
 
