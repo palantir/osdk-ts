@@ -15,7 +15,6 @@
  */
 
 import type { RowData } from "@tanstack/react-table";
-import type { CellIdentifier } from "./getCellId.js";
 
 export interface ColumnOption {
   id: string;
@@ -23,15 +22,9 @@ export interface ColumnOption {
   canSort: boolean;
 }
 
-export interface CellEditEvent<
-  TData extends RowData = unknown,
-  CellValue = unknown,
-> {
+export interface CellIdentifier {
   rowId: string;
   columnId: string;
-  newValue: CellValue;
-  oldValue: CellValue;
-  rowData: TData;
 }
 
 export interface CellEditInfo<
@@ -41,15 +34,6 @@ export interface CellEditInfo<
   newValue: CellValue;
   oldValue: CellValue;
   originalRowData: TData;
-}
-
-export interface RowEditEvent<TData extends RowData = unknown> {
-  rowId: string;
-  rowData: TData;
-  /*
-   * A record of cell edits within the row, keyed by column ID.
-   */
-  edits: Record<string, CellEditEvent<TData>>;
 }
 
 export type EditMode =
@@ -68,4 +52,6 @@ export interface EditableConfig<
   onSubmitEdits?: () => Promise<boolean>;
   clearEdits: () => void;
   editMode: EditMode;
+  onCellValidationError: (cellId: string) => void;
+  validationErrors: Set<string>;
 }

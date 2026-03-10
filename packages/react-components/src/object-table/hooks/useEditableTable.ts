@@ -51,21 +51,6 @@ export interface UseEditableTableProps<
   >["onSubmitEdits"];
 }
 
-export interface UseEditableTableResult<
-  Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<
-    string,
-    never
-  >,
-> extends
-  EditableConfig<
-    Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
-    unknown
-  >
-{
-  onCellValidationError: (cellId: string) => void;
-  validationErrors: Set<string>;
-}
 export function useEditableTable<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = Record<
@@ -80,9 +65,9 @@ export function useEditableTable<
   editMode = "manual",
   onCellValueChanged,
   onSubmitEdits,
-}: UseEditableTableProps<Q, RDPs, FunctionColumns>): UseEditableTableResult<
-  Q,
-  RDPs
+}: UseEditableTableProps<Q, RDPs, FunctionColumns>): EditableConfig<
+  Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
+  unknown
 > {
   const [isActive, setActive] = useState<boolean>(
     editMode === "always",

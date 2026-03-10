@@ -6,6 +6,7 @@
   --osdk-surface-z-index-1: var(--bp-surface-z-index-1);
   --osdk-surface-z-index-2: var(--bp-surface-z-index-2);
   --osdk-surface-z-index-3: var(--bp-surface-z-index-3);
+  --osdk-surface-z-index-4: var(--bp-surface-z-index-4);
   --osdk-surface-border-radius: var(--bp-surface-border-radius);
   --osdk-surface-layer-primary: var(--bp-surface-layer-primary);
   --osdk-surface-border-width: var(--bp-surface-border-width);

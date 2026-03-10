@@ -122,9 +122,6 @@ export function EmployeesTable() {
         }]}
         onSubmitEdits={handleSubmitEdits}
         editMode="manual"
-        onCellValueChanged={(event) => {
-          console.log("Cell edited:", event);
-        }}
       />
     </div>
   );

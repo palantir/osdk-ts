@@ -1,5 +1,5 @@
 :root {
-  --osdk-tooltip-z-index: var(--bp-surface-zIndex-4);
+  --osdk-tooltip-z-index: var(--osdk-surface-z-index-4);
   --osdk-tooltip-padding: calc(var(--osdk-surface-spacing) * 2)
     calc(var(--osdk-surface-spacing) * 4);
   --osdk-tooltip-bg: var(--osdk-background-primary);

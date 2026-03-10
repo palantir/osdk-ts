@@ -33,10 +33,7 @@ export type {
   ColumnDefinitionLocator,
   ObjectTableProps,
 } from "../object-table/ObjectTableApi.js";
-export type {
-  CellEditEvent,
-  CellEditInfo,
-} from "../object-table/utils/types.js";
+export type { CellEditInfo } from "../object-table/utils/types.js";
 
 // BaseTable that does not handle data fetching
 export type { BaseTableProps } from "../object-table/Table.js";

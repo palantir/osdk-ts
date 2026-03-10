@@ -49,7 +49,6 @@ declare module "@tanstack/react-table" {
     onCellValidationError?: (cellId: string) => void;
     cellEdits?: Record<string, CellEditInfo<TData, unknown>>;
     isInEditMode?: boolean;
-    focusedRowId?: string | null;
   }
 }
 
@@ -89,7 +88,6 @@ export function BaseTable<
 ): ReactElement {
   const tableContainerRef = useRef<HTMLDivElement>(null);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [focusedRowId, setFocusedRowId] = useState<string | null>(null);
 
   // Using a ref to prevent duplicate fetches from rapid scroll events while a fetch is in-flight
