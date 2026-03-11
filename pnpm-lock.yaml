@@ -4895,13 +4895,6 @@ importers:
         version: 2.8.1
 
   packages/typescript-sdk-docs-examples:
-    dependencies:
-      '@osdk/client':
-        specifier: workspace:~
-        version: link:../client
-      '@osdk/functions':
-        specifier: workspace:~
-        version: link:../functions
     devDependencies:
       '@osdk/api':
         specifier: workspace:~
@@ -4909,6 +4902,12 @@ importers:
       '@osdk/cli.cmd.typescript':
         specifier: workspace:~
         version: link:../cli.cmd.typescript
+      '@osdk/client':
+        specifier: workspace:~
+        version: link:../client
+      '@osdk/functions':
+        specifier: workspace:~
+        version: link:../functions
       '@osdk/monorepo.api-extractor':
         specifier: workspace:~
         version: link:../monorepo.api-extractor
