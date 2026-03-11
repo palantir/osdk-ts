@@ -1,5 +1,11 @@
 # @osdk/create-app.template.vue.v2
 
+## 2.8.0-beta.17
+
+### Minor Changes
+
+- 5562739: React/Vue templates UI polish
+
 ## 2.8.0-beta.16
 
 ### Minor Changes
