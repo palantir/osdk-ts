@@ -14,22 +14,33 @@
  * limitations under the License.
  */
 
+import type { WirePropertyTypes } from "@osdk/api";
 import type { RowData } from "@tanstack/react-table";
 import React, { useCallback } from "react";
 import { InputComponent } from "../base-components/input/InputComponent.js";
 import type { CellEditInfo } from "./utils/types.js";
 
+const NUMBER_TYPES: WirePropertyTypes[] = [
+  "double",
+  "integer",
+  "long",
+  "float",
+  "decimal",
+  "byte",
+  "short",
+];
+
 export interface EditableCellProps<TData extends RowData, CellValue = unknown> {
   initialValue: CellValue;
   currentValue: CellValue;
   cellId: string;
-  dataType?: string;
+  dataType?: WirePropertyTypes;
   onCellEdit: (cellId: string, info: CellEditInfo<TData, CellValue>) => void;
   onCellValidationError?: (cellId: string) => void;
   originalRowData: TData;
   rowId: string;
   columnId: string;
-  validate?: (value: unknown) => Promise<boolean>;
+  validate?: (value: CellValue | null) => Promise<boolean>;
   onValidationError?: () => string;
 }
 
@@ -71,11 +82,15 @@ function EditableCellInner<TData extends RowData, CellValue = unknown>({
     });
   }, [onCellEdit, cellId, rowId, columnId, originalRowData]);
 
+  const inputType = dataType && NUMBER_TYPES.includes(dataType)
+    ? "number"
+    : "text";
+
   return (
     <InputComponent
       initialValue={initialValue}
       currentValue={currentValue}
-      dataType={dataType}
+      inputType={inputType}
       onBlur={handleBlur}
       validate={validate}
       onValidationError={handleValidationError}

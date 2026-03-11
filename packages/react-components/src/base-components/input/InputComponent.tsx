@@ -17,6 +17,7 @@
 import { Input } from "@base-ui/react/input";
 import { Error } from "@blueprintjs/icons";
 import classNames from "classnames";
+import type { HTMLInputTypeAttribute } from "react";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Tooltip } from "../tooltip/Tooltip.js";
 import styles from "./InputComponent.module.css";
@@ -24,23 +25,13 @@ import styles from "./InputComponent.module.css";
 export interface InputComponentProps<ValueType = unknown> {
   initialValue: ValueType;
   currentValue: ValueType;
-  dataType?: string;
+  inputType?: HTMLInputTypeAttribute;
   onBlur?: (
     info: { newValue: ValueType | null; oldValue: ValueType | null },
   ) => void;
-  validate?: (value: unknown) => Promise<boolean>;
+  validate?: (value: ValueType | null) => Promise<boolean>;
   onValidationError?: () => string;
 }
-
-const NUMBER_TYPES: string[] = [
-  "double",
-  "integer",
-  "long",
-  "float",
-  "decimal",
-  "byte",
-  "short",
-];
 
 function valueToString(value: unknown): string {
   if (value == null) {
@@ -55,9 +46,9 @@ function valueToString(value: unknown): string {
 
 function parseValueByType<ValueType = unknown>(
   value: string,
-  dataType?: string,
+  inputType: HTMLInputTypeAttribute,
 ): ValueType | null {
-  if (!dataType || !NUMBER_TYPES.includes(dataType)) {
+  if (inputType === "text") {
     return value as unknown as ValueType;
   }
 
@@ -79,7 +70,7 @@ const VALIDATION_ERROR_MESSAGE = "Validation failed";
 function InputComponentInner<ValueType = unknown>({
   initialValue,
   currentValue,
-  dataType,
+  inputType = "text",
   onBlur,
   validate,
   onValidationError,
@@ -101,7 +92,7 @@ function InputComponentInner<ValueType = unknown>({
       return;
     }
 
-    const parsedValue = parseValueByType<ValueType>(inputValue, dataType);
+    const parsedValue = parseValueByType<ValueType>(inputValue, inputType);
 
     // Perform validation if validate function is provided
     if (validate) {
@@ -125,7 +116,14 @@ function InputComponentInner<ValueType = unknown>({
 
     setValidationError(null);
     onBlur?.({ newValue: parsedValue, oldValue: initialValue });
-  }, [inputValue, initialValue, onBlur, dataType, validate, onValidationError]);
+  }, [
+    inputValue,
+    inputType,
+    validate,
+    onBlur,
+    initialValue,
+    onValidationError,
+  ]);
 
   const handleChange = useCallback((value: string) => {
     setInputValue(value);
@@ -148,10 +146,6 @@ function InputComponentInner<ValueType = unknown>({
     },
     [currentValue],
   );
-
-  const inputType = dataType && NUMBER_TYPES.includes(dataType)
-    ? "number"
-    : "text";
 
   const isEdited = currentValue !== initialValue;
 
