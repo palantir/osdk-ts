@@ -1,5 +1,11 @@
 # @osdk/api
 
+## 2.8.0-beta.17
+
+### Minor Changes
+
+- 8c30908: Add support for lt and gt strings.
+
 ## 2.8.0-beta.16
 
 ## 2.8.0-beta.15
