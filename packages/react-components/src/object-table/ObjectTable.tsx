@@ -73,6 +73,7 @@ export function ObjectTable<
   renderCellContextMenu,
   selectionMode = "none",
   selectedRows,
+  isAllSelected: isAllSelectedProp,
   onColumnVisibilityChanged,
   onCellValueChanged,
   onSubmitEdits,
@@ -131,12 +132,19 @@ export function ObjectTable<
   } = useRowSelection<Q, RDPs>({
     selectionMode,
     selectedRows,
+    isAllSelected: isAllSelectedProp,
     onRowSelection,
     data,
   });
 
   const selectionColumn = useSelectionColumn<Q, RDPs>(
-    { selectionMode, isAllSelected, hasSelection, onToggleAll, onToggleRow },
+    {
+      selectionMode,
+      isAllSelected,
+      hasSelection,
+      onToggleAll,
+      onToggleRow,
+    },
   );
 
   const {

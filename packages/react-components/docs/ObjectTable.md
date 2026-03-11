@@ -129,7 +129,8 @@ Each column header has a menu with items for sorting, filtering, pinning, resizi
 | ---------------- | ---------------------------------- | -------- | ------------------------------------------- |
 | `selectionMode`  | `"single" \| "multiple" \| "none"` | `"none"` | Selection mode. "multiple" shows checkboxes |
 | `selectedRows`   | `PrimaryKeyType<Q>[]`              | -        | Selected rows (controlled mode)             |
-| `onRowSelection` | `(selectedRowIds) => void`         | -        | Required when `selectedRows` is provided    |
+| `isAllSelected`  | `boolean`                          | -        | Indicates all rows are selected (controlled mode only) |
+| `onRowSelection` | `(selectedRowIds, isSelectAll?) => void` | -  | Required when `selectedRows` is provided    |
 
 ### Interactions
 
@@ -544,6 +545,86 @@ function EmployeesTable() {
   );
 }
 ```
+
+#### Select All in Controlled Mode
+
+When using controlled row selection with large datasets, you may want to implement "select all" functionality without loading all row IDs into memory. The `isAllSelected` prop allows you to indicate that all rows are selected:
+
+```typescript
+import { ObjectTable } from "@osdk/react-components/experimental";
+import { Employee } from "@YourApp/sdk";
+import { useState } from "react";
+
+function EmployeesTableWithSelectAll() {
+  const [selectedRows, setSelectedRows] = useState<string[]>([]);
+  const [isAllSelected, setIsAllSelected] = useState(false);
+
+  const handleRowSelection = (
+    selectedRowIds: string[],
+    isSelectAll?: boolean
+  ) => {
+    if (isSelectAll) {
+      // User clicked the "select all" checkbox
+      if (selectedRowIds.length === 0) {
+        // Deselecting all
+        setIsAllSelected(false);
+        setSelectedRows([]);
+      } else {
+        // Selecting all - don't need to store all IDs
+        setIsAllSelected(true);
+        setSelectedRows([]); // Can keep this empty when all are selected
+      }
+    } else {
+      // Individual row selection
+      setIsAllSelected(false);
+      setSelectedRows(selectedRowIds);
+    }
+  };
+
+  // Calculate actual selection count
+  const selectedCount = isAllSelected ? "all" : selectedRows.length;
+
+  return (
+    <div>
+      <div>Selected: {selectedCount} employees</div>
+      <ObjectTable
+        objectType={Employee}
+        selectionMode="multiple"
+        selectedRows={selectedRows}
+        isAllSelected={isAllSelected}
+        onRowSelection={handleRowSelection}
+      />
+      {(isAllSelected || selectedRows.length > 0) && (
+        <button onClick={() => performBulkAction(isAllSelected, selectedRows)}>
+          Perform Bulk Action
+        </button>
+      )}
+    </div>
+  );
+}
+
+// Example bulk action function
+async function performBulkAction(
+  isAllSelected: boolean,
+  selectedRows: string[]
+) {
+  if (isAllSelected) {
+    // Perform action on all employees
+    console.log("Performing action on all employees");
+    // Use server-side logic or OSDK queries to process all
+  } else {
+    // Perform action on specific employees
+    console.log("Performing action on employees:", selectedRows);
+  }
+}
+```
+
+**Key points about select all behavior:**
+
+- The `isSelectAll` parameter in `onRowSelection` indicates whether the change was triggered by the "select all" checkbox
+- When `isAllSelected` is `true`, the table shows all rows as selected regardless of the `selectedRows` array content
+- This allows efficient handling of "select all" without loading all object IDs
+- Individual row selections automatically set `isAllSelected` to `false`
 
 ### Example 12: Custom Column Type
 

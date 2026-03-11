@@ -689,11 +689,23 @@ return (
   },
   render: () => {
     const [selectedRows, setSelectedRows] = useState<any[]>([]);
+    const [isSelectAll, setIsSelectAll] = useState<boolean>(false);
+    const handleRowSelection = useCallback(
+      (
+        selectedRows: any[],
+        isSelectAll: boolean | ((prevState: boolean) => boolean),
+      ) => {
+        setSelectedRows(selectedRows);
+        setIsSelectAll(isSelectAll);
+      },
+      [],
+    );
 
     return (
       <div>
         <div style={{ marginBottom: "16px" }}>
-          <strong>Selected:</strong> {selectedRows.length} employees
+          <strong>Selected:</strong>{" "}
+          {isSelectAll ? "All Employees" : `${selectedRows.length} employees`}
           {selectedRows.length > 0 && (
             <button
               style={{
@@ -705,7 +717,10 @@ return (
                 background: "white",
                 cursor: "pointer",
               }}
-              onClick={() => setSelectedRows([])}
+              onClick={() => {
+                setSelectedRows([]);
+                setIsSelectAll(false);
+              }}
             >
               Clear Selection
             </button>
@@ -716,7 +731,7 @@ return (
             objectType={Employee}
             selectionMode="multiple"
             selectedRows={selectedRows}
-            onRowSelection={setSelectedRows}
+            onRowSelection={handleRowSelection}
           />
         </div>
       </div>
