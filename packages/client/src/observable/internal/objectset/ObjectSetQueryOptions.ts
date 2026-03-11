@@ -17,8 +17,8 @@
 import type {
   DerivedProperty,
   LinkNames,
+  ObjectOrInterfaceDefinition,
   ObjectSet,
-  ObjectTypeDefinition,
   PropertyKeys,
   WhereClause,
   WirePropertyTypes,
@@ -26,7 +26,7 @@ import type {
 import type { CommonObserveOptions } from "../../ObservableClient/common.js";
 
 export interface ObserveObjectSetOptions<
-  Q extends ObjectTypeDefinition,
+  Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<
     string,
     WirePropertyTypes | undefined | Array<WirePropertyTypes>
@@ -40,6 +40,13 @@ export interface ObserveObjectSetOptions<
   pivotTo?: LinkNames<Q>;
   pageSize?: number;
   orderBy?: { [K in PropertyKeys<Q>]?: "asc" | "desc" };
+
+  /**
+   * Restrict which properties are returned for each object.
+   * When provided, only the specified properties will be fetched,
+   * reducing payload sizes for list views.
+   */
+  select?: readonly PropertyKeys<Q>[];
 
   /**
    * Automatically fetch additional pages on initial load.

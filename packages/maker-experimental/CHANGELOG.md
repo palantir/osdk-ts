@@ -1,5 +1,18 @@
 # @osdk/maker-experimental
 
+## 0.6.0-beta.4
+
+### Minor Changes
+
+- 35f2f1a: Add Media inputs/outputs for Queries
+
+### Patch Changes
+
+- Updated dependencies [35f2f1a]
+  - @osdk/api@2.8.0-beta.14
+  - @osdk/client.unstable@2.8.0-beta.14
+  - @osdk/maker@0.16.0-beta.8
+
 ## 0.6.0-beta.3
 
 ### Minor Changes

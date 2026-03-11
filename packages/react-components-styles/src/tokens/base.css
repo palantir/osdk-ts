@@ -10,6 +10,7 @@
   --osdk-surface-layer-primary: var(--bp-surface-layer-primary);
   --osdk-surface-border-width: var(--bp-surface-border-width);
   --osdk-surface-border-color-default: var(--bp-surface-border-color-default);
+  --osdk-surface-border-color-strong: var(--bp-surface-border-color-strong);
   --osdk-surface-background-color-default-rest: var(
     --bp-surface-background-color-default-rest
   );
@@ -159,6 +160,12 @@
   --osdk-focus-visible-outline-offset: var(--osdk-emphasis-focus-offset);
   --osdk-surface-border: var(--osdk-surface-border-width) solid
     var(--osdk-surface-border-color-default);
+
+  /* Shared drag handle tokens */
+  --osdk-drag-handle-color: var(--osdk-typography-color-muted);
+  --osdk-drag-handle-color-hover: var(--osdk-typography-color-default-rest);
+  --osdk-drag-handle-cursor: grab;
+  --osdk-drag-handle-cursor-active: grabbing;
 
   font-family: var(--osdk-typography-family-default);
 }

@@ -20,6 +20,7 @@ import {
   ObjectTable,
 } from "@osdk/react-components/experimental";
 import type {
+  CellEditInfo,
   ColumnDefinition,
   ObjectTableProps,
 } from "@osdk/react-components/experimental";
@@ -88,6 +89,16 @@ const meta: Meta<EmployeeTableProps> = {
       defaultValue: true,
       table: {
         defaultValue: { summary: "true" },
+      },
+    },
+    editMode: {
+      description:
+        "Controls the edit mode behavior of the table. 'always': Table is always in edit mode. 'manual': User can toggle edit mode on/off.",
+      control: "select",
+      options: ["manual", "always"],
+      defaultValue: "manual",
+      table: {
+        defaultValue: { summary: "manual" },
       },
     },
     defaultOrderBy: {
@@ -1022,4 +1033,101 @@ return (
       </div>
     );
   },
+};
+
+export const EditableTable: Story = {
+  args: {
+    objectType: Employee,
+    columnDefinitions: [
+      {
+        locator: {
+          type: "property",
+          id: "fullName",
+        },
+        editable: true,
+      },
+      ...columnDefinitions.slice(1),
+    ],
+    editMode: "manual",
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `const columnDefinitions = [
+  ...columnDefinitions,
+  {
+    locator: {
+      type: "property",
+      id: "fullName",
+    },
+    editable: true,
+  },
+  ];
+
+  return (
+    <ObjectTable 
+      objectType={Employee} 
+      columnDefinitions={columnDefinitions} 
+      editMode="manual" 
+    />
+  );`,
+      },
+    },
+  },
+  render: (args) => (
+    <div className="object-table-container" style={{ height: "600px" }}>
+      <ObjectTable objectType={Employee} {...args} />
+    </div>
+  ),
+};
+
+export const WithSubmitEditsButton: Story = {
+  args: {
+    objectType: Employee,
+    columnDefinitions: [
+      ...columnDefinitions,
+      {
+        locator: {
+          type: "property",
+          id: "fullName",
+        },
+        editable: true,
+      },
+    ],
+    onSubmitEdits: (edits: CellEditInfo<Osdk.Instance<Employee>>[]) => {
+      alert("Submitting edits");
+      return true;
+    },
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `const columnDefinitions = [
+  ...columnDefinitions,
+  {
+    locator: {
+      type: "property",
+      id: "fullName",
+    },
+    editable: true,
+  },
+  ];
+
+  return <ObjectTable 
+    objectType={Employee} 
+    columnDefinitions={columnDefinitions} 
+    onSubmitEdits={(edits) => {
+        alert("Submitting edits");
+        // Return true to indicate edits were successfully submitted and can be cleared from the table's edit state
+        return true;
+    }}
+  />`,
+      },
+    },
+  },
+  render: (args) => (
+    <div className="object-table-container" style={{ height: "600px" }}>
+      <ObjectTable objectType={Employee} {...args} />
+    </div>
+  ),
 };

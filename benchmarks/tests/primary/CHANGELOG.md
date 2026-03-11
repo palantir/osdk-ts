@@ -1,5 +1,35 @@
 # @osdk/benchmarks.primary
 
+## 0.1.0-beta.115
+
+### Patch Changes
+
+- Updated dependencies [09e5659]
+- Updated dependencies [2ebe62c]
+  - @osdk/client@2.8.0-beta.16
+
+## 0.1.0-beta.114
+
+### Patch Changes
+
+- Updated dependencies [dfc8019]
+  - @osdk/client@2.8.0-beta.15
+
+## 0.1.0-beta.113
+
+### Minor Changes
+
+- 35f2f1a: Add Media inputs/outputs for Queries
+
+### Patch Changes
+
+- Updated dependencies [e64bf0b]
+- Updated dependencies [baba327]
+- Updated dependencies [d1ad4d1]
+- Updated dependencies [35f2f1a]
+- Updated dependencies [71e28ef]
+  - @osdk/client@2.8.0-beta.14
+
 ## 0.1.0-beta.112
 
 ### Patch Changes

@@ -17,8 +17,8 @@
 import type {
   DerivedProperty,
   LinkNames,
+  ObjectOrInterfaceDefinition,
   ObjectSet,
-  ObjectTypeDefinition,
   Osdk,
   PropertyKeys,
   SimplePropertyDef,
@@ -34,7 +34,7 @@ import { makeExternalStore, type Snapshot } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
 
 export interface UseObjectSetOptions<
-  Q extends ObjectTypeDefinition,
+  Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
 > {
   /**
@@ -103,6 +103,13 @@ export interface UseObjectSetOptions<
   streamUpdates?: boolean;
 
   /**
+   * Restrict which properties are returned for each object.
+   * When provided, only the specified properties will be fetched,
+   * reducing payload sizes for list views.
+   */
+  $select?: readonly PropertyKeys<Q>[];
+
+  /**
    * Enable or disable the query.
    *
    * When `false`, the query will not automatically execute. It will still
@@ -125,7 +132,7 @@ export interface UseObjectSetOptions<
 }
 
 export interface UseObjectSetResult<
-  Q extends ObjectTypeDefinition,
+  Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
 > {
   /**
@@ -180,7 +187,7 @@ const OBJECT_TYPE_PLACEHOLDER = "$__OBJECT__TYPE__PLACEHOLDER";
  * @returns Object set data with both existing and new derived properties
  */
 export function useObjectSet<
-  Q extends ObjectTypeDefinition,
+  Q extends ObjectOrInterfaceDefinition,
   BaseRDPs extends Record<string, SimplePropertyDef> = never,
   RDPs extends Record<string, SimplePropertyDef> = {},
 >(
@@ -218,6 +225,7 @@ export function useObjectSet<
     pivotTo: otherOptions.pivotTo,
     pageSize: otherOptions.pageSize,
     orderBy: otherOptions.orderBy,
+    select: otherOptions.$select,
   });
 
   const { subscribe, getSnapShot } = React.useMemo(
@@ -251,6 +259,7 @@ export function useObjectSet<
               dedupeInterval: otherOptions.dedupeIntervalMs ?? 2_000,
               autoFetchMore: otherOptions.autoFetchMore,
               streamUpdates,
+              select: otherOptions.$select,
             },
             observer,
           );
@@ -291,7 +300,7 @@ export function useObjectSet<
 }
 
 function isPayloadCompleted<
-  Q extends ObjectTypeDefinition,
+  Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef>,
 >(
   payload: Snapshot<ObserveObjectSetArgs<Q, RDPs>>,

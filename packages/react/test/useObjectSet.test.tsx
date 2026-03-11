@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import type { ObjectSet, ObjectTypeDefinition } from "@osdk/api";
+import type {
+  InterfaceDefinition,
+  ObjectSet,
+  ObjectTypeDefinition,
+} from "@osdk/api";
 import { act, renderHook } from "@testing-library/react";
 import * as React from "react";
 import { beforeEach, describe, expect, it, vitest } from "vitest";
@@ -31,7 +35,19 @@ const MockObjectType2 = {
   primaryKeyType: "string",
 } as unknown as ObjectTypeDefinition;
 
+const MockInterfaceType = {
+  apiName: "MockInterface",
+  type: "interface",
+} as unknown as InterfaceDefinition;
+
 const createMockObjectSet = (type: ObjectTypeDefinition) =>
+  ({
+    $__EXPERIMENTAL_objectSet: true,
+    type,
+    $objectSetInternals: { def: type },
+  }) as unknown as ObjectSet<typeof type>;
+
+const createMockInterfaceObjectSet = (type: InterfaceDefinition) =>
   ({
     $__EXPERIMENTAL_objectSet: true,
     type,
@@ -278,6 +294,24 @@ describe(useObjectSet, () => {
       });
 
       expect(result.current.isLoading).toBe(false);
+    });
+  });
+
+  describe("interface-based object sets", () => {
+    it("should accept an InterfaceDefinition-typed object set", () => {
+      const wrapper = createWrapper();
+      const interfaceObjectSet = createMockInterfaceObjectSet(
+        MockInterfaceType,
+      );
+
+      const { result } = renderHook(
+        () => useObjectSet(interfaceObjectSet),
+        { wrapper },
+      );
+
+      expect(mockObserveObjectSet).toHaveBeenCalledTimes(1);
+      expect(result.current.data).toBeUndefined();
+      expect(result.current.isLoading).toBe(true);
     });
   });
 });

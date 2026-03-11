@@ -1,5 +1,15 @@
 # @osdk/api
 
+## 2.8.0-beta.16
+
+## 2.8.0-beta.15
+
+## 2.8.0-beta.14
+
+### Minor Changes
+
+- 35f2f1a: Add Media inputs/outputs for Queries
+
 ## 2.8.0-beta.13
 
 ## 2.8.0-beta.12

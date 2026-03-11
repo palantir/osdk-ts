@@ -22,6 +22,7 @@ import type {
 } from "../../workflow/api/__components.js";
 import type {
   ActionApplyClientPreferences as _api_ActionApplyClientPreferences,
+  ActionEffectsModification as _api_ActionEffectsModification,
   ActionLogConfiguration as _api_ActionLogConfiguration,
   ActionLogicModification as _api_ActionLogicModification,
   ActionNotificationModification as _api_ActionNotificationModification,
@@ -80,9 +81,17 @@ import type {
   Icon as _api_Icon,
   InlineActionDisplayOptions as _api_InlineActionDisplayOptions,
   IntegerPropertyType as _api_IntegerPropertyType,
+  InterfaceActionTypeConstraintMetadata
+    as _api_InterfaceActionTypeConstraintMetadata,
+  InterfaceActionTypeConstraintRidOrIdInRequest
+    as _api_InterfaceActionTypeConstraintRidOrIdInRequest,
   InterfaceLinkTypeCardinality as _api_InterfaceLinkTypeCardinality,
   InterfaceLinkTypeMetadata as _api_InterfaceLinkTypeMetadata,
   InterfaceLinkTypeRidOrIdInRequest as _api_InterfaceLinkTypeRidOrIdInRequest,
+  InterfaceParameterConstraintDisplayMetadata
+    as _api_InterfaceParameterConstraintDisplayMetadata,
+  InterfaceParameterConstraintRidOrIdInRequest
+    as _api_InterfaceParameterConstraintRidOrIdInRequest,
   InterfacePropertyTypeApiName as _api_InterfacePropertyTypeApiName,
   InterfacePropertyTypeDisplayMetadata
     as _api_InterfacePropertyTypeDisplayMetadata,
@@ -231,7 +240,10 @@ import type {
   SharedPropertyTypeGothamMappingModification
     as _api_typemapping_SharedPropertyTypeGothamMappingModification,
 } from "../typemapping/__components.js";
-import type { LinkTypeSide as _api_types_LinkTypeSide } from "../types/__components.js";
+import type {
+  BaseParameterTypeModification as _api_types_BaseParameterTypeModification,
+  LinkTypeSide as _api_types_LinkTypeSide,
+} from "../types/__components.js";
 import type { OntologyValidationError as _api_validation_OntologyValidationError } from "../validation/__components.js";
 
 /**
@@ -283,6 +295,7 @@ export interface ActionTypeModification {
   apiName: _api_ActionTypeApiName;
   branchSettings?: _api_ActionTypeBranchSettingsModification | null | undefined;
   displayMetadata: _api_ActionTypeDisplayMetadataModification;
+  effects?: _api_ActionEffectsModification | null | undefined;
   entities?: _api_ActionTypeEntities | null | undefined;
   formContentOrdering?: Array<_api_FormContent> | null | undefined;
   logic: _api_ActionLogicModification;
@@ -639,6 +652,12 @@ export interface InlineActionTypeModification {
   displayOptions: _api_InlineActionDisplayOptions;
   parameterId?: _api_ParameterId | null | undefined;
 }
+export interface InterfaceActionTypeConstraintModification {
+  id: _api_InterfaceActionTypeConstraintRidOrIdInRequest;
+  metadata: _api_InterfaceActionTypeConstraintMetadata;
+  parameters: Array<InterfaceParameterConstraintModification>;
+  requireImplementation: boolean;
+}
 export interface InterfaceAndObjectPropertyStructField {
   interfaceStructPropertyTypeField: _api_StructFieldApiNameOrRid;
   objectStructPropertyTypeField: _api_StructFieldApiNameOrRid;
@@ -679,6 +698,12 @@ export interface InterfaceLinkTypeModification {
   linkedEntityTypeRidOrIdInRequest: _api_LinkedEntityTypeRidOrIdInRequest;
   metadata: _api_InterfaceLinkTypeMetadata;
   required: boolean;
+}
+export interface InterfaceParameterConstraintModification {
+  id: _api_InterfaceParameterConstraintRidOrIdInRequest;
+  metadata: _api_InterfaceParameterConstraintDisplayMetadata;
+  requireImplementation: boolean;
+  type: _api_types_BaseParameterTypeModification;
 }
 export interface InterfacePropertyImplementationModification {
   propertyTypeId: _api_PropertyTypeId;
@@ -895,6 +920,7 @@ export interface InterfaceTypeDisplayMetadataModification {
   icon?: _api_Icon | null | undefined;
 }
 export interface InterfaceTypeModification {
+  actionTypeConstraints: Array<InterfaceActionTypeConstraintModification>;
   apiName: _api_InterfaceTypeApiName;
   displayMetadata: InterfaceTypeDisplayMetadataModification;
   extendsInterfaces: Array<_api_InterfaceTypeRidOrIdInRequest>;

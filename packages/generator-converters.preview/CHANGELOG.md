@@ -1,5 +1,32 @@
 # @osdk/generator-converters.preview
 
+## 0.1.0-beta.3
+
+### Minor Changes
+
+- 6af21a5: Support python OSDK generation and edit functions discovery
+
+### Patch Changes
+
+- Updated dependencies [6941b4f]
+  - @osdk/client.unstable@2.8.0-beta.16
+  - @osdk/generator-converters.ontologyir@2.8.0-beta.16
+  - @osdk/generator@2.8.0-beta.16
+
+## 0.1.0-beta.2
+
+### Minor Changes
+
+- a29ed88: Add functions support
+- 35f2f1a: Add Media inputs/outputs for Queries
+
+### Patch Changes
+
+- Updated dependencies [35f2f1a]
+  - @osdk/client.unstable@2.8.0-beta.14
+  - @osdk/generator@2.8.0-beta.14
+  - @osdk/generator-converters.ontologyir@2.8.0-beta.14
+
 ## 0.1.0-beta.1
 
 ### Minor Changes

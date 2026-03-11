@@ -24,6 +24,7 @@ import type { KnownCacheKey } from "../KnownCacheKey.js";
 import type { OrderByCanonicalizer } from "../OrderByCanonicalizer.js";
 import type { QuerySubscription } from "../QuerySubscription.js";
 import type { RdpCanonicalizer } from "../RdpCanonicalizer.js";
+import type { SelectCanonicalizer } from "../SelectCanonicalizer.js";
 import type { Store } from "../Store.js";
 import type { WhereClauseCanonicalizer } from "../WhereClauseCanonicalizer.js";
 import type {
@@ -40,6 +41,7 @@ export class ObjectSetHelper extends AbstractHelper<
   whereCanonicalizer: WhereClauseCanonicalizer;
   orderByCanonicalizer: OrderByCanonicalizer;
   rdpCanonicalizer: RdpCanonicalizer;
+  selectCanonicalizer: SelectCanonicalizer;
 
   constructor(
     store: Store,
@@ -47,12 +49,14 @@ export class ObjectSetHelper extends AbstractHelper<
     whereCanonicalizer: WhereClauseCanonicalizer,
     orderByCanonicalizer: OrderByCanonicalizer,
     rdpCanonicalizer: RdpCanonicalizer,
+    selectCanonicalizer: SelectCanonicalizer,
   ) {
     super(store, cacheKeys);
 
     this.whereCanonicalizer = whereCanonicalizer;
     this.orderByCanonicalizer = orderByCanonicalizer;
     this.rdpCanonicalizer = rdpCanonicalizer;
+    this.selectCanonicalizer = selectCanonicalizer;
   }
 
   observe(
@@ -131,6 +135,10 @@ export class ObjectSetHelper extends AbstractHelper<
       operations.orderBy = this.orderByCanonicalizer.canonicalize(
         options.orderBy,
       );
+    }
+
+    if (options.select && options.select.length > 0) {
+      operations.select = this.selectCanonicalizer.canonicalize(options.select);
     }
 
     if (options.pageSize) {

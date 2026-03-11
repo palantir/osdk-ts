@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -85,6 +85,14 @@ export class ObjectSetQuery extends BaseListQuery<
 
   public override get rdpConfig(): Canonical<Rdp> | null {
     return this.#operations.withProperties ?? null;
+  }
+
+  public get selectFields(): Canonical<readonly string[]> | undefined {
+    return this.#operations.select;
+  }
+
+  protected get rawSelect(): Canonical<readonly string[]> | undefined {
+    return this.#operations.select;
   }
 
   #composeObjectSet(opts: ObjectSetQueryOptions): ObjectSet<any, any> {
@@ -184,6 +192,9 @@ export class ObjectSetQuery extends BaseListQuery<
       $nextPageToken: this.nextPageToken,
       $pageSize: this.getEffectiveFetchPageSize(),
       $includeRid: true,
+      ...(this.#operations.select && this.#operations.select.length > 0
+        ? { $select: this.#operations.select }
+        : {}),
       // OrderBy is already applied in the composed ObjectSet
       ...(this.#operations.orderBy
           && Object.keys(this.#operations.orderBy).length > 0

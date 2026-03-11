@@ -27,7 +27,29 @@ export interface CellIdentifier {
   columnId: string;
 }
 
-export interface CellValueState<TData extends RowData = unknown> {
-  newValue: TData;
-  oldValue: TData;
+export interface CellEditInfo<
+  TData extends RowData = unknown,
+  CellValue = unknown,
+> extends CellIdentifier {
+  newValue: CellValue;
+  oldValue: CellValue;
+  originalRowData: TData;
+}
+
+export type EditMode =
+  | { type: "always"; isActive: true }
+  | { type: "manual"; isActive: boolean; setActive: (value: boolean) => void };
+
+export interface EditableConfig<
+  TData extends RowData = unknown,
+  CellValue = unknown,
+> {
+  cellEdits: Record<string, CellEditInfo<TData, CellValue>>;
+  onCellEdit: (
+    cellId: string,
+    info: CellEditInfo<TData, CellValue>,
+  ) => void;
+  onSubmitEdits?: () => Promise<boolean>;
+  clearEdits: () => void;
+  editMode: EditMode;
 }

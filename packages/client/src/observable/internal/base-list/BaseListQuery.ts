@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -87,6 +87,18 @@ export abstract class BaseListQuery<
     return this.cacheKey.otherKeys[RDP_IDX];
   }
 
+  private _selectFieldSetMemo: ReadonlySet<string> | undefined;
+
+  protected abstract get rawSelect(): Canonical<readonly string[]> | undefined;
+
+  public get selectFieldSet(): ReadonlySet<string> | undefined {
+    const select = this.rawSelect;
+    if (select && !this._selectFieldSetMemo) {
+      this._selectFieldSetMemo = new Set(select);
+    }
+    return this._selectFieldSetMemo;
+  }
+
   // Collection-specific behavior is implemented by subclasses
   /**
    * Token for the next page of results
@@ -145,6 +157,7 @@ export abstract class BaseListQuery<
         items as Array<Osdk.Instance<any>>,
         batch,
         this.rdpConfig,
+        this.selectFieldSet,
       );
     } else {
       // Items are already cache keys
@@ -494,6 +507,7 @@ export abstract class BaseListQuery<
           result.data,
           batch,
           this.rdpConfig,
+          this.selectFieldSet,
         );
 
         return this._updateList(
@@ -612,6 +626,7 @@ export abstract class BaseListQuery<
         items as Array<Osdk.Instance<any>>,
         batch,
         this.rdpConfig,
+        this.selectFieldSet,
       );
     } else {
       // Items are already cache keys

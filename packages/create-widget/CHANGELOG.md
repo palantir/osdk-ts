@@ -1,5 +1,15 @@
 # @osdk/create-widget
 
+## 3.5.0-beta.16
+
+## 3.5.0-beta.15
+
+## 3.5.0-beta.14
+
+### Minor Changes
+
+- 35f2f1a: Add Media inputs/outputs for Queries
+
 ## 3.5.0-beta.13
 
 ## 3.5.0-beta.12

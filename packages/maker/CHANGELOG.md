@@ -1,5 +1,35 @@
 # @osdk/maker
 
+## 0.16.0-beta.10
+
+### Minor Changes
+
+- 6941b4f: extendsInterfaceMetadata on the IR to fix interface impl
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.16
+- @osdk/generator-converters.ontologyir@2.8.0-beta.16
+
+## 0.16.0-beta.9
+
+### Minor Changes
+
+- 7fa6de3: Revert breaking change
+
+## 0.16.0-beta.8
+
+### Minor Changes
+
+- 35f2f1a: Add Media inputs/outputs for Queries
+
+### Patch Changes
+
+- Updated dependencies [35f2f1a]
+  - @osdk/api@2.8.0-beta.14
+  - @osdk/generator-converters.ontologyir@2.8.0-beta.14
+  - @osdk/typescript-sdk-docs@0.7.0-beta.2
+
 ## 0.16.0-beta.7
 
 ### Minor Changes

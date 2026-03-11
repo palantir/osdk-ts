@@ -26,6 +26,7 @@ geopoint
 geoshape
 geoshapes
 geospacial
+getsitepackages
 Geospatial
 Geotime
 geotimeseriesrequests

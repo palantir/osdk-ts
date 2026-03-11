@@ -1,5 +1,22 @@
 # @osdk/react-components-storybook
 
+## 0.2.0-beta.4
+
+### Minor Changes
+
+- 9ddf564: Add BaseTable stories and theme
+
+## 0.2.0-beta.3
+
+### Minor Changes
+
+- 35f2f1a: Add Media inputs/outputs for Queries
+
+### Patch Changes
+
+- Updated dependencies [35f2f1a]
+  - @osdk/faux@0.6.0-beta.4
+
 ## 0.2.0-beta.2
 
 ### Patch Changes

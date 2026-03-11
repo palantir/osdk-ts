@@ -35,11 +35,3 @@
   width: max-content;
   min-width: 100%;
 }
-
-.submitButtonContainer {
-  background-color: var(--osdk-surface-background-color-default-rest);
-  border-top: var(--osdk-table-border);
-  padding: var(--osdk-table-button-container-padding);
-  display: flex;
-  justify-content: flex-end;
-}

@@ -145,6 +145,14 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
   onFilterRemoved?: (filterKey: FilterKey<Q>) => void;
 
   /**
+   * Enable drag-and-drop reordering of filters.
+   * When true, drag handles are rendered and filters can be reordered.
+   * Reorder state is managed internally; consumers who need to track order
+   * should use controlled filterDefinitions.
+   */
+  enableSorting?: boolean;
+
+  /**
    * Show reset filters button in header
    */
   showResetButton?: boolean;

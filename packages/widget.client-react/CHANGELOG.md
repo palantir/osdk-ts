@@ -1,5 +1,38 @@
 # @osdk/widget.client-react
 
+## 3.5.0-beta.16
+
+### Patch Changes
+
+- Updated dependencies [09e5659]
+- Updated dependencies [2ebe62c]
+  - @osdk/client@2.8.0-beta.16
+  - @osdk/widget.client@3.5.0-beta.16
+
+## 3.5.0-beta.15
+
+### Patch Changes
+
+- Updated dependencies [dfc8019]
+  - @osdk/client@2.8.0-beta.15
+  - @osdk/widget.client@3.5.0-beta.15
+
+## 3.5.0-beta.14
+
+### Minor Changes
+
+- 35f2f1a: Add Media inputs/outputs for Queries
+
+### Patch Changes
+
+- Updated dependencies [e64bf0b]
+- Updated dependencies [baba327]
+- Updated dependencies [d1ad4d1]
+- Updated dependencies [35f2f1a]
+- Updated dependencies [71e28ef]
+  - @osdk/client@2.8.0-beta.14
+  - @osdk/widget.client@3.5.0-beta.14
+
 ## 3.5.0-beta.13
 
 ### Patch Changes

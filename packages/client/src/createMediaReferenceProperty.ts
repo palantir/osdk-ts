@@ -16,7 +16,7 @@
 
 import type { Media, MediaMetadata, MediaReference } from "@osdk/api";
 import type { MediaReference as CoreMediaReference } from "@osdk/foundry.core";
-import * as OntologiesV2 from "@osdk/foundry.ontologies";
+import * as MediaReferenceProperties from "@osdk/foundry.ontologies/MediaReferenceProperty";
 import type { MinimalClient } from "./MinimalClientContext.js";
 
 export class MediaReferencePropertyImpl implements Media {
@@ -44,7 +44,7 @@ export class MediaReferencePropertyImpl implements Media {
   }
 
   public async fetchContents(): Promise<Response> {
-    return OntologiesV2.MediaReferenceProperties.getMediaContent(
+    return MediaReferenceProperties.getMediaContent(
       this.#client,
       await this.#client.ontologyRid,
       ...this.#triplet,
@@ -55,7 +55,7 @@ export class MediaReferencePropertyImpl implements Media {
   }
 
   public async fetchMetadata(): Promise<MediaMetadata> {
-    const r = await OntologiesV2.MediaReferenceProperties.getMediaMetadata(
+    const r = await MediaReferenceProperties.getMediaMetadata(
       this.#client,
       await this.#client.ontologyRid,
       ...this.#triplet,

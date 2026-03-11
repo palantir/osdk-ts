@@ -104,6 +104,13 @@ export interface ObserveListOptions<
   rids?: readonly string[];
 
   /**
+   * Restrict which properties are returned for each object.
+   * When provided, only the specified properties will be fetched,
+   * reducing payload sizes for list views.
+   */
+  select?: readonly PropertyKeys<Q>[];
+
+  /**
    * Automatically fetch additional pages on initial load.
    *
    * - `true`: Fetch all available pages automatically
@@ -338,7 +345,7 @@ export interface ObservableClient extends ObserveLinks {
    * - Sorting and pagination
    */
   observeObjectSet<
-    T extends ObjectTypeDefinition,
+    T extends ObjectOrInterfaceDefinition,
     RDPs extends Record<
       string,
       WirePropertyTypes | undefined | Array<WirePropertyTypes>
