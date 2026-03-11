@@ -17,9 +17,10 @@
 import type { DerivedProperty, ObjectSet } from "@osdk/api";
 import { Employee } from "@osdk/client.test.ontology";
 import { FauxFoundry, ontologies, startNodeApiServer } from "@osdk/shared.test";
-import { beforeAll, beforeEach, describe, expect, it } from "vitest";
+import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import type { Client } from "../../../Client.js";
 import { createClient } from "../../../createClient.js";
+import * as getObjTypesModule from "../getObjectTypesThatInvalidate.js";
 import { Store } from "../Store.js";
 
 describe("ObjectSetHelper RDP canonicalization", () => {
@@ -110,5 +111,126 @@ describe("ObjectSetHelper RDP canonicalization", () => {
     });
 
     expect(query.rdpConfig).toBeNull();
+  });
+});
+
+describe("ObjectSetQuery invalidation types", () => {
+  let client: Client;
+  let store: Store;
+
+  beforeAll(() => {
+    const testSetup = startNodeApiServer(
+      new FauxFoundry("https://stack.palantir.com/"),
+      createClient,
+    );
+    client = testSetup.client;
+
+    const fauxOntology = testSetup.fauxFoundry.getDefaultOntology();
+    ontologies.addEmployeeOntology(fauxOntology);
+
+    return () => {
+      testSetup.apiServer.close();
+    };
+  });
+
+  beforeEach(() => {
+    store = new Store(client);
+    return () => {
+      store = undefined!;
+    };
+  });
+
+  it("base type revalidates on matching object type", async () => {
+    const query = store.objectSets.getQuery({
+      baseObjectSet: client(Employee) as ObjectSet<any>,
+      mode: "offline",
+    });
+    const revalidateSpy = vi.spyOn(query, "revalidate")
+      .mockResolvedValue(undefined);
+
+    await query.invalidateObjectType("Employee", undefined);
+    expect(revalidateSpy).toHaveBeenCalledWith(true);
+  });
+
+  it("base type ignores unrelated object type", async () => {
+    const query = store.objectSets.getQuery({
+      baseObjectSet: client(Employee) as ObjectSet<any>,
+      mode: "offline",
+    });
+    const revalidateSpy = vi.spyOn(query, "revalidate")
+      .mockResolvedValue(undefined);
+
+    await query.invalidateObjectType("Office", undefined);
+    expect(revalidateSpy).not.toHaveBeenCalled();
+  });
+
+  it("pivotTo revalidates on source type", async () => {
+    const query = store.objectSets.getQuery({
+      baseObjectSet: client(Employee) as ObjectSet<any>,
+      pivotTo: "officeLink",
+      mode: "offline",
+    });
+    const revalidateSpy = vi.spyOn(query, "revalidate")
+      .mockResolvedValue(undefined);
+
+    await query.invalidateObjectType("Employee", undefined);
+    expect(revalidateSpy).toHaveBeenCalledWith(true);
+  });
+
+  it("pivotTo revalidates on target type after async resolution", async () => {
+    const query = store.objectSets.getQuery({
+      baseObjectSet: client(Employee) as ObjectSet<any>,
+      pivotTo: "officeLink",
+      mode: "offline",
+    });
+    const revalidateSpy = vi.spyOn(query, "revalidate")
+      .mockResolvedValue(undefined);
+
+    await query.ensureInvalidationTypesReady();
+
+    await query.invalidateObjectType("Office", undefined);
+    expect(revalidateSpy).toHaveBeenCalledWith(true);
+  });
+
+  it("pivotTo ignores unrelated type", async () => {
+    const query = store.objectSets.getQuery({
+      baseObjectSet: client(Employee) as ObjectSet<any>,
+      pivotTo: "officeLink",
+      mode: "offline",
+    });
+    const revalidateSpy = vi.spyOn(query, "revalidate")
+      .mockResolvedValue(undefined);
+
+    await query.ensureInvalidationTypesReady();
+
+    await query.invalidateObjectType("Todo", undefined);
+    expect(revalidateSpy).not.toHaveBeenCalled();
+  });
+
+  it("falls back to base types when async resolution fails", async () => {
+    const spy = vi.spyOn(getObjTypesModule, "getObjectTypesThatInvalidate")
+      .mockRejectedValue(new Error("mock failure"));
+
+    const query = store.objectSets.getQuery({
+      baseObjectSet: client(Employee) as ObjectSet<any>,
+      pivotTo: "officeLink",
+      mode: "offline",
+    });
+    const revalidateSpy = vi.spyOn(query, "revalidate")
+      .mockResolvedValue(undefined);
+
+    await query.ensureInvalidationTypesReady();
+
+    // Source type still works (from sync #extractBaseTypes)
+    await query.invalidateObjectType("Employee", undefined);
+    expect(revalidateSpy).toHaveBeenCalledWith(true);
+
+    revalidateSpy.mockClear();
+
+    // Target type missing because async resolution failed
+    await query.invalidateObjectType("Office", undefined);
+    expect(revalidateSpy).not.toHaveBeenCalled();
+
+    spy.mockRestore();
   });
 });
