@@ -23,7 +23,11 @@ import type {
 } from "@osdk/api";
 import { useCallback, useState } from "react";
 import type { ObjectTableProps } from "../ObjectTableApi.js";
-import type { CellEditInfo, EditableConfig, EditMode } from "../utils/types.js";
+import type {
+  CellEditInfo,
+  EditableConfig,
+  EditModeState,
+} from "../utils/types.js";
 
 export interface UseEditableTableProps<
   Q extends ObjectOrInterfaceDefinition,
@@ -69,7 +73,9 @@ export function useEditableTable<
   Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
   unknown
 > {
-  const [isActive, setActive] = useState(editMode === "always");
+  const [isActive, setActive] = useState<boolean>(
+    editMode === "always",
+  );
   const [cellEdits, setCellEdits] = useState<
     Record<
       string,
@@ -80,6 +86,9 @@ export function useEditableTable<
     >
   >(
     {},
+  );
+  const [validationErrors, setValidationErrors] = useState<Set<string>>(
+    new Set(),
   );
 
   const handleCellEdit = useCallback(
@@ -103,6 +112,13 @@ export function useEditableTable<
         }));
       }
 
+      // Clear validation error for this cell when it's successfully edited
+      setValidationErrors(prev => {
+        const newErrors = new Set(prev);
+        newErrors.delete(cellId);
+        return newErrors;
+      });
+
       onCellValueChanged?.(info);
     },
     [onCellValueChanged],
@@ -110,6 +126,7 @@ export function useEditableTable<
 
   const clearEdits = useCallback(() => {
     setCellEdits({});
+    setValidationErrors(new Set());
   }, []);
 
   const handleSubmitEdits = useCallback(async () => {
@@ -117,7 +134,15 @@ export function useEditableTable<
     return onSubmitEdits ? onSubmitEdits(edits) : false;
   }, [cellEdits, onSubmitEdits]);
 
-  const editModeConfig: EditMode = editMode === "always"
+  const onCellValidationError = useCallback((cellId: string) => {
+    setValidationErrors(prev => {
+      const newErrors = new Set(prev);
+      newErrors.add(cellId);
+      return newErrors;
+    });
+  }, []);
+
+  const editModeState: EditModeState = editMode === "always"
     ? { type: "always", isActive: true }
     : { type: "manual", isActive, setActive };
 
@@ -126,6 +151,8 @@ export function useEditableTable<
     onCellEdit: handleCellEdit,
     onSubmitEdits: onSubmitEdits ? handleSubmitEdits : undefined,
     clearEdits,
-    editMode: editModeConfig,
+    editModeState,
+    onCellValidationError,
+    validationErrors,
   };
 }

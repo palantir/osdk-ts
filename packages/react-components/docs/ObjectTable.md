@@ -140,12 +140,13 @@ Each column header has a menu with items for sorting, filtering, pinning, resizi
 
 ### Cell Editing
 
-> **Note:** Editable cells currently support text and number data types.
+> **Note:** Editable cells currently support text and number data types. The editable feature allows inline editing with validation and bulk submission capabilities.
 
-| Prop                 | Type                                                       | Description                                                                                  |
-| -------------------- | ---------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
-| `onCellValueChanged` | `(cellId: CellIdentifier, state: CellValueState) => void`  | Called when a cell value is edited. Throw error to reject change                             |
-| `onSubmitEdits`      | `(edits: Record<string, CellValueState>) => Promise<void>` | When provided, shows a "Submit Edits" button that calls this function with all pending edits |
+| Prop                 | Type                                          | Description                                                                                                                     |
+| -------------------- | --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `editMode`           | `"always" \| "manual"`                        | Controls edit mode behavior. "always": Table is always in edit mode. "manual": User toggles edit mode on/off. Default: "manual" |
+| `onCellValueChanged` | `(info: CellEditInfo) => void`                | Called when a cell value is edited. The info object contains rowId, columnId, newValue, oldValue, and originalRowData           |
+| `onSubmitEdits`      | `(edits: CellEditInfo[]) => Promise<boolean>` | When provided, shows a "Submit Edits" button that calls this function with all pending edits. Return true on success            |
 
 ## Column Definitions
 
@@ -163,6 +164,8 @@ type ColumnDefinition<Q, RDPs, FunctionColumns> = {
   orderable?: boolean; // Allow column sorting
   filterable?: boolean; // Allow column filtering
   editable?: boolean; // Allow inline editing for this column (currently supports text and number types)
+  validate?: (value: unknown) => Promise<boolean>; // Custom validation function for cell values
+  onValidationError?: () => string; // Custom error message when validation fails
   renderCell?: (object, locator) => React.ReactNode; // Custom cell renderer
   columnName?: string; // Custom column name for the header
   renderHeader?: () => React.ReactNode; // Custom header renderer (takes precedence over columnName)
@@ -586,13 +589,12 @@ function EmployeesTable() {
 
 ### Example 13: Editable Table
 
-Enable inline editing with bulk submission:
+Enable inline editing with validation and bulk submission:
 
 ```typescript
 import { useOsdkAction } from "@osdk/react";
 import {
-  type CellIdentifier,
-  type CellValueState,
+  type CellEditInfo,
   type ColumnDefinition,
   ObjectTable,
 } from "@osdk/react-components/experimental";
@@ -606,6 +608,12 @@ const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
   {
     locator: { type: "property", id: "email" },
     editable: true,
+    validate: async (value) => {
+      // Custom validation function
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return emailRegex.test(value as string);
+    },
+    onValidationError: () => "Please enter a valid email address", // Custom error message
   },
   {
     locator: { type: "property", id: "department" },
@@ -621,36 +629,35 @@ function EditableEmployeesTable() {
   const { applyAction } = useOsdkAction(updateMultipleEmployees);
 
   const handleCellValueChanged = (
-    cellIdentifier: CellIdentifier,
-    state: CellValueState,
+    info: CellEditInfo<Employee>,
   ) => {
     console.log("Cell edited:", {
-      rowId: cellIdentifier.rowId,
-      columnId: cellIdentifier.columnId,
-      oldValue: state.oldValue,
-      newValue: state.newValue,
+      rowId: info.rowId,
+      columnId: info.columnId,
+      oldValue: info.oldValue,
+      newValue: info.newValue,
+      originalRowData: info.originalRowData,
     });
-
-    // Validate individual cell changes
-    if (cellIdentifier.columnId === "email") {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(state.newValue as string)) {
-        throw new Error("Invalid email format");
-      }
-    }
   };
 
   // When onSubmitEdits is provided, a "Submit Edits" button appears in the table
-  const handleSubmitEdits = async (edits: Record<string, CellValueState>) => {
+  const handleSubmitEdits = async (edits: CellEditInfo<Employee>[]) => {
     try {
-      // Call your action with the edits
-      // The exact format depends on your action's parameters
-      await applyAction({ edits });
+      // Transform edits array into format expected by your action
+      const updates = edits.map(edit => ({
+        employeeId: edit.rowId,
+        field: edit.columnId,
+        value: edit.newValue,
+      }));
 
-      alert("All changes saved successfully!");
+      await applyAction({ updates });
+
+      // Return true to indicate successful submission
+      return true;
     } catch (error) {
       console.error("Failed to save edits:", error);
-      throw error; // Re-throw to let the table handle the error
+      // Return false or throw to indicate failure
+      return false;
     }
   };
 
@@ -658,6 +665,7 @@ function EditableEmployeesTable() {
     <ObjectTable
       objectType={Employee}
       columnDefinitions={columnDefinitions}
+      editMode="manual" // User can toggle edit mode on/off
       onCellValueChanged={handleCellValueChanged}
       onSubmitEdits={handleSubmitEdits} // Shows "Submit Edits" button
     />
@@ -665,7 +673,32 @@ function EditableEmployeesTable() {
 }
 ```
 
-### Example 13: Custom Column Configuration Dialog
+#### Key features of editable tables:
+
+1. **Edit Modes**:
+   - `manual` (default): User clicks "Edit Table" button to enter edit mode
+   - `always`: Table is always in edit mode
+
+2. **Validation**:
+   - Use `validate` prop on columns for async validation
+   - Use `onValidationError` for custom error messages
+   - Validation errors are shown with an error icon and tooltip
+
+3. **Edit State Management**:
+   - Edits are tracked locally until submitted
+   - Modified cells are visually highlighted
+   - "Cancel" button discards all pending edits
+
+4. **Bulk Submission**:
+   - When `onSubmitEdits` is provided, a "Submit Edits" button appears
+   - All edits are submitted together
+   - Return `true` from `onSubmitEdits` to clear edits after successful submission
+
+5. **Data Types**:
+   - Currently supports text and number input types
+   - Number types are automatically detected from the property type
+
+### Example 14: Custom Column Configuration Dialog
 
 Use the `ColumnConfigDialog` component to create a custom column configuration experience:
 

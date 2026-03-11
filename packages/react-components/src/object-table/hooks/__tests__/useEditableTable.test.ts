@@ -250,29 +250,29 @@ describe("useEditableTable", () => {
       useEditableTable({ editMode: "manual" })
     );
 
-    expect(result.current.editMode.type).toBe("manual");
-    if (result.current.editMode.type === "manual") {
-      expect(result.current.editMode.isActive).toBe(false);
-      expect(result.current.editMode.setActive).toBeDefined();
+    expect(result.current.editModeState.type).toBe("manual");
+    if (result.current.editModeState.type === "manual") {
+      expect(result.current.editModeState.isActive).toBe(false);
+      expect(result.current.editModeState.setActive).toBeDefined();
 
       act(() => {
-        result.current.editMode.type === "manual"
-          && result.current.editMode.setActive(true);
+        result.current.editModeState.type === "manual"
+          && result.current.editModeState.setActive(true);
       });
 
       expect(
-        result.current.editMode.type === "manual"
-          && result.current.editMode.isActive,
+        result.current.editModeState.type === "manual"
+          && result.current.editModeState.isActive,
       ).toBe(true);
 
       act(() => {
-        result.current.editMode.type === "manual"
-          && result.current.editMode.setActive(false);
+        result.current.editModeState.type === "manual"
+          && result.current.editModeState.setActive(false);
       });
 
       expect(
-        result.current.editMode.type === "manual"
-          && result.current.editMode.isActive,
+        result.current.editModeState.type === "manual"
+          && result.current.editModeState.isActive,
       ).toBe(false);
     }
   });
@@ -282,8 +282,8 @@ describe("useEditableTable", () => {
       useEditableTable({ editMode: "always" })
     );
 
-    expect(result.current.editMode.type).toBe("always");
-    expect(result.current.editMode.isActive).toBe(true);
+    expect(result.current.editModeState.type).toBe("always");
+    expect(result.current.editModeState.isActive).toBe(true);
   });
 
   it("when editMode is manual with default settings, it starts as inactive", () => {
@@ -291,9 +291,9 @@ describe("useEditableTable", () => {
       useEditableTable({ editMode: "manual" })
     );
 
-    expect(result.current.editMode.type).toBe("manual");
-    if (result.current.editMode.type === "manual") {
-      expect(result.current.editMode.isActive).toBe(false);
+    expect(result.current.editModeState.type).toBe("manual");
+    if (result.current.editModeState.type === "manual") {
+      expect(result.current.editModeState.isActive).toBe(false);
     }
   });
 });

@@ -177,6 +177,13 @@ export function MultiColumnSortDialog({
     </>
   ), [handleApply, onClose]);
 
+  const handleKeyDown = useCallback(
+    (event: React.KeyboardEvent<HTMLInputElement>) => {
+      event.stopPropagation();
+    },
+    [],
+  );
+
   return (
     <Dialog
       isOpen={isOpen}
@@ -212,7 +219,7 @@ export function MultiColumnSortDialog({
                   placeholder="Search columns"
                   aria-label="Search columns to sort"
                   className={styles.menuSearchContainer}
-                  onKeyDown={(e) => e.stopPropagation()}
+                  onKeyDown={handleKeyDown}
                 />
                 {filteredAvailableColumns.map((column) => (
                   <AvailableColumnMenuItem

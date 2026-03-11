@@ -36,7 +36,7 @@ export interface CellEditInfo<
   originalRowData: TData;
 }
 
-export type EditMode =
+export type EditModeState =
   | { type: "always"; isActive: true }
   | { type: "manual"; isActive: boolean; setActive: (value: boolean) => void };
 
@@ -51,5 +51,7 @@ export interface EditableConfig<
   ) => void;
   onSubmitEdits?: () => Promise<boolean>;
   clearEdits: () => void;
-  editMode: EditMode;
+  editModeState: EditModeState;
+  onCellValidationError: (cellId: string) => void;
+  validationErrors: Set<string>;
 }
