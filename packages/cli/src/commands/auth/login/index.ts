@@ -34,7 +34,11 @@ export const command: CommandModule<
   },
   handler: async (args) => {
     const command = await import("@osdk/cli.common/loginFlow");
-    await command.default(args);
+    const tokenResponse = await command.default(args);
+
+    // Print access token to stdout for capturing in scripts
+    // eslint-disable-next-line no-console
+    console.log(tokenResponse.access_token);
   },
 };
 
