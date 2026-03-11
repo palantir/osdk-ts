@@ -1,5 +1,18 @@
 # @osdk/client
 
+## 2.8.0-beta.17
+
+### Minor Changes
+
+- 8c30908: Add support for lt and gt strings.
+
+### Patch Changes
+
+- Updated dependencies [8c30908]
+  - @osdk/api@2.8.0-beta.17
+  - @osdk/client.unstable@2.8.0-beta.17
+  - @osdk/generator-converters@2.8.0-beta.17
+
 ## 2.8.0-beta.16
 
 ### Minor Changes
