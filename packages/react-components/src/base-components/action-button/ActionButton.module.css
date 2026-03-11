@@ -29,6 +29,11 @@
     outline: var(--osdk-focus-outline);
     outline-offset: var(--osdk-focus-visible-outline-offset);
   }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 }
 
 .secondaryButton {
@@ -42,11 +47,6 @@
 
   &:active:not(:disabled) {
     background-color: var(--osdk-button-secondary-bg-active);
-  }
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
   }
 }
 
@@ -62,9 +62,18 @@
   &:active:not(:disabled) {
     background-color: var(--osdk-button-primary-bg-active);
   }
+}
 
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
+.successButton {
+  background-color: var(--osdk-button-success-bg);
+  border: none;
+  color: var(--osdk-button-success-color);
+
+  &:hover:not(:disabled) {
+    background-color: var(--osdk-button-success-bg-hover);
+  }
+
+  &:active:not(:disabled) {
+    background-color: var(--osdk-button-success-bg-active);
   }
 }

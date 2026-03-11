@@ -42,3 +42,7 @@ vitest.config.mts.timestamp-*
 vitest.workspace.ts
 
 .memory/
+
+# Claude local files
+*.local.json
+*.local.md

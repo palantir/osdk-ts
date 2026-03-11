@@ -44,3 +44,9 @@ export type {
   ColumnConfigDialogProps,
   ColumnConfigOptions,
 } from "../object-table/ColumnConfigDialog.js";
+
+export { BaseActionForm } from "../action-form/BaseActionForm.js";
+export type {
+  BaseActionFormProps,
+  BaseFormFieldConfig,
+} from "../action-form/BaseActionForm.js";
