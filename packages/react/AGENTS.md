@@ -16,6 +16,21 @@
 
 ## Hook Options
 
+- `OsdkProvider2` - Modern provider (use this)
+- `useOsdkObjects` - Query lists of objects
+- `useOsdkObject` - Query single object by type+key or instance
+- `useOsdkAction` - Execute and validate actions
+- `useLinks` - Navigate object relationships
+- `useObjectSet` - Advanced set operations (union, intersect, subtract, pivot)
+- `useOsdkAggregation` - Server-side aggregations with groupBy/select
+- `useOsdkClient`, `useOsdkMetadata` - Also available from experimental
+
+**Experimental Admin** (`@osdk/react/experimental/admin`):
+
+- `useCurrentFoundryUser`, `useFoundryUser`, `useFoundryUsersList` - Platform APIs (requires `@osdk/foundry.admin`)
+
+## Correct Patterns
+
 | Hook                 | Key Options                                                                                                                                   |
 | -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
 | `useOsdkObjects`     | `where`, `orderBy`, `pageSize`, `withProperties`, `enabled`, `autoFetchMore`, `dedupeIntervalMs`, `streamUpdates`, `intersectWith`, `pivotTo` |

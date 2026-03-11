@@ -5,7 +5,7 @@ import css from "./NextSteps.module.css";
 
 const STEPS: INextStep[] = [
   {
-    icon: "tag",
+    icon: "rocket-slant",
     title: "Deploy your application",
     subtitle: (
       <span>

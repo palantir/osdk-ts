@@ -287,6 +287,77 @@ describe(fetchPage, () => {
     });
   });
 
+  it("supports string comparison filters (gt, gte, lt, lte) on string properties", () => {
+    const client = createMinimalClient(
+      metadata,
+      "https://foo",
+      async () => "",
+    );
+    const objectSet = createObjectSet(Todo, client);
+
+    // String properties should support all comparison operators
+    expectTypeOf(objectSet.where).toBeCallableWith({
+      text: { $gt: "a" },
+    });
+    expectTypeOf(objectSet.where).toBeCallableWith({
+      text: { $gte: "a" },
+    });
+    expectTypeOf(objectSet.where).toBeCallableWith({
+      text: { $lt: "z" },
+    });
+    expectTypeOf(objectSet.where).toBeCallableWith({
+      text: { $lte: "z" },
+    });
+
+    // Can combine with other string filters
+    expectTypeOf(objectSet.where).toBeCallableWith({
+      $and: [{ text: { $gt: "a" } }, { text: { $lt: "z" } }],
+    });
+
+    // Cannot combine multiple filters in the same object
+    expectTypeOf(objectSet.where).toBeCallableWith({
+      // @ts-expect-error
+      text: { $gt: "a", $lt: "z" },
+    });
+  });
+
+  it("does not expose string comparison filters on non-string properties", () => {
+    const client = createMinimalClient(
+      metadata,
+      "https://foo",
+      async () => "",
+    );
+    const objectSetWithSpecialPropertyTypes = createObjectSet(Employee, client);
+
+    // geotimeSeriesReference should NOT support string comparison operators
+    expectTypeOf(objectSetWithSpecialPropertyTypes.where).toBeCallableWith({
+      $and: [
+        // @ts-expect-error - $gt should not be available
+        { employeeLocation: { $gt: "test" } },
+        // @ts-expect-error - $gte should not be available
+        { employeeLocation: { $gte: "test" } },
+        // @ts-expect-error - $lt should not be available
+        { employeeLocation: { $lt: "test" } },
+        // @ts-expect-error - $lte should not be available
+        { employeeLocation: { $lte: "test" } },
+      ],
+    });
+
+    // stringTimeseries should NOT support string comparison operators
+    expectTypeOf(objectSetWithSpecialPropertyTypes.where).toBeCallableWith({
+      $and: [
+        // @ts-expect-error - $gt should not be available
+        { employeeStatus: { $gt: "test" } },
+        // @ts-expect-error - $gte should not be available
+        { employeeStatus: { $gte: "test" } },
+        // @ts-expect-error - $lt should not be available
+        { employeeStatus: { $lt: "test" } },
+        // @ts-expect-error - $lte should not be available
+        { employeeStatus: { $lte: "test" } },
+      ],
+    });
+  });
+
   describe("includeRid", () => {
     it("properly returns the correct string for includeRid", () => {
       expectTypeOf<

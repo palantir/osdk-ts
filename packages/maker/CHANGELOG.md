@@ -1,5 +1,16 @@
 # @osdk/maker
 
+## 0.16.0-beta.10
+
+### Minor Changes
+
+- 6941b4f: extendsInterfaceMetadata on the IR to fix interface impl
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.16
+- @osdk/generator-converters.ontologyir@2.8.0-beta.16
+
 ## 0.16.0-beta.9
 
 ### Minor Changes

@@ -44,6 +44,13 @@ export interface UseLinksOptions<
   };
 
   /**
+   * Restrict which properties are returned for each linked object.
+   * When provided, only the specified properties will be fetched,
+   * reducing payload sizes for list views.
+   */
+  $select?: readonly PropertyKeys<T>[];
+
+  /**
    * The mode to use for fetching data.
    * - undefined: Fetch data if not already in cache
    * - "force": Always fetch fresh data
@@ -136,6 +143,11 @@ export function useLinks<
     [JSON.stringify(otherOptions.orderBy)],
   );
 
+  const stableSelect = React.useMemo(
+    () => otherOptions.$select,
+    [JSON.stringify(otherOptions.$select)],
+  );
+
   const objectsKey = React.useMemo(() => {
     if (objects === undefined) return "";
     const arr = Array.isArray(objects) ? objects : [objects];
@@ -171,6 +183,7 @@ export function useLinks<
               orderBy: stableOrderBy,
               mode: otherOptions.mode,
               dedupeInterval: otherOptions.dedupeIntervalMs ?? 2_000,
+              ...(stableSelect ? { select: stableSelect } : {}),
             },
             observer,
           ),
@@ -188,6 +201,7 @@ export function useLinks<
       stableOrderBy,
       otherOptions.mode,
       otherOptions.dedupeIntervalMs,
+      stableSelect,
     ],
   );
 

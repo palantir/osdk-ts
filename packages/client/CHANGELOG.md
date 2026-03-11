@@ -1,5 +1,19 @@
 # @osdk/client
 
+## 2.8.0-beta.16
+
+### Minor Changes
+
+- 09e5659: add $select support to observable client and react hooks
+- 2ebe62c: package and bundle size optimizations
+
+### Patch Changes
+
+- Updated dependencies [6941b4f]
+  - @osdk/client.unstable@2.8.0-beta.16
+  - @osdk/api@2.8.0-beta.16
+  - @osdk/generator-converters@2.8.0-beta.16
+
 ## 2.8.0-beta.15
 
 ### Minor Changes

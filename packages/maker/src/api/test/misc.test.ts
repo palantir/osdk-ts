@@ -114,6 +114,7 @@ describe("Miscellaneous Tests", () => {
                     },
                   },
                   "extendsInterfaces": [],
+                  "extendsInterfacesMetadata": [],
                   "links": [],
                   "properties": [],
                   "propertiesV2": {
@@ -282,6 +283,7 @@ describe("Miscellaneous Tests", () => {
                     },
                   },
                   "extendsInterfaces": [],
+                  "extendsInterfacesMetadata": [],
                   "links": [],
                   "properties": [],
                   "propertiesV2": {
@@ -874,6 +876,112 @@ describe("Miscellaneous Tests", () => {
                   "extendsInterfaces": [
                     "com.palantir.parentInterface",
                   ],
+                  "extendsInterfacesMetadata": [
+                    {
+                      "apiName": "com.palantir.parentInterface",
+                      "displayMetadata": {
+                        "description": "parentInterface",
+                        "displayName": "parentInterface",
+                        "icon": {
+                          "blueprint": {
+                            "color": "#4C90F0",
+                            "locator": "layout-hierarchy",
+                          },
+                          "type": "blueprint",
+                        },
+                      },
+                      "extendsInterfaces": [],
+                      "extendsInterfacesMetadata": [],
+                      "links": [],
+                      "properties": [],
+                      "propertiesV2": {
+                        "com.palantir.iProperty1": {
+                          "required": true,
+                          "sharedPropertyType": {
+                            "aliases": [],
+                            "apiName": "com.palantir.iProperty1",
+                            "baseFormatter": undefined,
+                            "dataConstraints": undefined,
+                            "displayMetadata": {
+                              "description": undefined,
+                              "displayName": "iProperty1",
+                              "visibility": "NORMAL",
+                            },
+                            "gothamMapping": undefined,
+                            "indexedForSearch": true,
+                            "type": {
+                              "string": {
+                                "analyzerOverride": undefined,
+                                "enableAsciiFolding": undefined,
+                                "isLongText": false,
+                                "supportsEfficientLeadingWildcard": false,
+                                "supportsExactMatching": true,
+                              },
+                              "type": "string",
+                            },
+                            "typeClasses": [
+                              {
+                                "kind": "render_hint",
+                                "name": "SELECTABLE",
+                              },
+                              {
+                                "kind": "render_hint",
+                                "name": "SORTABLE",
+                              },
+                            ],
+                            "valueType": undefined,
+                          },
+                        },
+                      },
+                      "propertiesV3": {
+                        "com.palantir.iProperty1": {
+                          "sharedPropertyBasedPropertyType": {
+                            "requireImplementation": true,
+                            "sharedPropertyType": {
+                              "aliases": [],
+                              "apiName": "com.palantir.iProperty1",
+                              "baseFormatter": undefined,
+                              "dataConstraints": undefined,
+                              "displayMetadata": {
+                                "description": undefined,
+                                "displayName": "iProperty1",
+                                "visibility": "NORMAL",
+                              },
+                              "gothamMapping": undefined,
+                              "indexedForSearch": true,
+                              "type": {
+                                "string": {
+                                  "analyzerOverride": undefined,
+                                  "enableAsciiFolding": undefined,
+                                  "isLongText": false,
+                                  "supportsEfficientLeadingWildcard": false,
+                                  "supportsExactMatching": true,
+                                },
+                                "type": "string",
+                              },
+                              "typeClasses": [
+                                {
+                                  "kind": "render_hint",
+                                  "name": "SELECTABLE",
+                                },
+                                {
+                                  "kind": "render_hint",
+                                  "name": "SORTABLE",
+                                },
+                              ],
+                              "valueType": undefined,
+                            },
+                          },
+                          "type": "sharedPropertyBasedPropertyType",
+                        },
+                      },
+                      "searchable": true,
+                      "status": {
+                        "active": {},
+                        "type": "active",
+                      },
+                    },
+                  ],
                   "links": [],
                   "properties": [],
                   "propertiesV2": {
@@ -979,6 +1087,7 @@ describe("Miscellaneous Tests", () => {
                     },
                   },
                   "extendsInterfaces": [],
+                  "extendsInterfacesMetadata": [],
                   "links": [],
                   "properties": [],
                   "propertiesV2": {

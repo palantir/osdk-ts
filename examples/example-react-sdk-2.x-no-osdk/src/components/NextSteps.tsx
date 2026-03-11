@@ -17,7 +17,7 @@ const STEPS: INextStep[] = [
     ),
   },
   {
-    icon: "tag",
+    icon: "rocket-slant",
     title: "Deploy your application",
     subtitle: (
       <span>

@@ -1,5 +1,11 @@
 # @osdk/create-app.template.react
 
+## 2.8.0-beta.16
+
+### Minor Changes
+
+- 0ff602a: Bump vite to ^7.3.1
+
 ## 2.8.0-beta.15
 
 ## 2.8.0-beta.14
