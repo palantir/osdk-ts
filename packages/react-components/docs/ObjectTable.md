@@ -142,11 +142,11 @@ Each column header has a menu with items for sorting, filtering, pinning, resizi
 
 > **Note:** Editable cells currently support text and number data types. The editable feature allows inline editing with validation and bulk submission capabilities.
 
-| Prop                 | Type                                                       | Description                                                                                  |
-| -------------------- | ---------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
-| `editMode`           | `"always" \| "manual"`                                     | Controls edit mode behavior. "always": Table is always in edit mode. "manual": User toggles edit mode on/off. Default: "manual" |
-| `onCellValueChanged` | `(info: CellEditInfo) => void`                            | Called when a cell value is edited. The info object contains rowId, columnId, newValue, oldValue, and originalRowData |
-| `onSubmitEdits`      | `(edits: CellEditInfo[]) => Promise<boolean>`             | When provided, shows a "Submit Edits" button that calls this function with all pending edits. Return true on success |
+| Prop                 | Type                                          | Description                                                                                                                     |
+| -------------------- | --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `editMode`           | `"always" \| "manual"`                        | Controls edit mode behavior. "always": Table is always in edit mode. "manual": User toggles edit mode on/off. Default: "manual" |
+| `onCellValueChanged` | `(info: CellEditInfo) => void`                | Called when a cell value is edited. The info object contains rowId, columnId, newValue, oldValue, and originalRowData           |
+| `onSubmitEdits`      | `(edits: CellEditInfo[]) => Promise<boolean>` | When provided, shows a "Submit Edits" button that calls this function with all pending edits. Return true on success            |
 
 ## Column Definitions
 
@@ -675,26 +675,26 @@ function EditableEmployeesTable() {
 
 #### Key features of editable tables:
 
-1. **Edit Modes**: 
+1. **Edit Modes**:
    - `manual` (default): User clicks "Edit Table" button to enter edit mode
    - `always`: Table is always in edit mode
 
-2. **Validation**: 
+2. **Validation**:
    - Use `validate` prop on columns for async validation
    - Use `onValidationError` for custom error messages
    - Validation errors are shown with an error icon and tooltip
 
-3. **Edit State Management**: 
+3. **Edit State Management**:
    - Edits are tracked locally until submitted
    - Modified cells are visually highlighted
    - "Cancel" button discards all pending edits
 
-4. **Bulk Submission**: 
+4. **Bulk Submission**:
    - When `onSubmitEdits` is provided, a "Submit Edits" button appears
    - All edits are submitted together
    - Return `true` from `onSubmitEdits` to clear edits after successful submission
 
-5. **Data Types**: 
+5. **Data Types**:
    - Currently supports text and number input types
    - Number types are automatically detected from the property type
 
