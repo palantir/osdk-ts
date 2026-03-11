@@ -49,6 +49,11 @@
     "react": "^18 || ^19",
     "react-dom": "^18 || ^19"
   },
+  "peerDependenciesMeta": {
+    "@osdk/client": {
+      "optional": true
+    }
+  },
   "devDependencies": {
     "@osdk/client": "workspace:~",
     "@osdk/monorepo.api-extractor": "workspace:~",
