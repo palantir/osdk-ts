@@ -1,0 +1,40 @@
+{
+  "resources": {
+    "models": [
+      {
+        "identifier": {
+          "rid": "ri.foundry-ml.main.model.aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
+        },
+        "verbs": [],
+        "alias": "previewModelAlias"
+      },
+      {
+        "identifier": {
+          "rid": "ri.foundry-ml.main.model.bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"
+        },
+        "verbs": [],
+        "alias": "anotherPreviewModel"
+      },
+      {
+        "identifier": {
+          "rid": "ri.foundry-ml.main.model.cccccccc-cccc-cccc-cccc-cccccccccccc"
+        },
+        "verbs": [],
+        "alias": null
+      },
+      {
+        "identifier": {
+          "rid": "ri.foundry-ml.main.model.dddddddd-dddd-dddd-dddd-dddddddddddd"
+        },
+        "verbs": []
+      }
+    ],
+    "custom": {
+      "previewCustomAlias": "previewCustomValue",
+      "anotherPreviewCustom": "anotherPreviewValue"
+    }
+  },
+  "egress": {
+    "connections": []
+  }
+}
