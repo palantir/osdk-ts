@@ -25,6 +25,7 @@ import type {
   ObjectSetArgs,
   ObjectTypeDefinition,
   PropertyKeys,
+  PropertyModifierValue,
   Result,
 } from "@osdk/api";
 import type { PageSize, PageToken } from "@osdk/foundry.core";
@@ -45,6 +46,66 @@ import { addUserAgentAndRequestContextHeaders } from "../util/addUserAgentAndReq
 import { extractObjectOrInterfaceType } from "../util/extractObjectOrInterfaceType.js";
 import { extractRdpDefinition } from "../util/extractRdpDefinition.js";
 import { resolveBaseObjectSetType } from "../util/objectSetUtils.js";
+
+/**
+ * Converts a PropertyModifierValue to the corresponding wire format loadLevel type.
+ */
+function modifierToLoadLevelType(
+  modifier: PropertyModifierValue,
+): "extractMainValue" | "applyReducers" | "applyReducersAndExtractMainValue" {
+  switch (modifier) {
+    case "applyMainValue":
+      return "extractMainValue";
+    case "applyReducers":
+      return "applyReducers";
+    case "applyReducersAndExtractMainValue":
+      return "applyReducersAndExtractMainValue";
+    default: {
+      // This ensures TypeScript knows the switch is exhaustive
+      const _exhaustiveCheck: never = modifier;
+      throw new Error(`Unknown modifier: ${_exhaustiveCheck}`);
+    }
+  }
+}
+
+/** Type alias for the loadLevel options */
+type LoadLevelType =
+  | "extractMainValue"
+  | "applyReducers"
+  | "applyReducersAndExtractMainValue";
+
+/** Type for a selectV2 entry with property load level */
+interface SelectV2PropertyWithLoadLevel {
+  type: "propertyWithLoadLevel";
+  propertyIdentifier: { type: "property"; apiName: string };
+  loadLevel: { type: LoadLevelType };
+}
+
+/**
+ * Builds selectV2 entries from $applyModifiers argument.
+ * This converts the user-facing modifier syntax to the wire format PropertyIdentifier.
+ * @internal
+ */
+export function buildSelectV2FromModifiers(
+  modifiers: Record<string, PropertyModifierValue> | undefined,
+): SelectV2PropertyWithLoadLevel[] {
+  if (!modifiers || Object.keys(modifiers).length === 0) {
+    return [];
+  }
+
+  return Object.entries(modifiers).map(
+    ([property, modifier]): SelectV2PropertyWithLoadLevel => ({
+      type: "propertyWithLoadLevel",
+      propertyIdentifier: {
+        type: "property",
+        apiName: property,
+      },
+      loadLevel: {
+        type: modifierToLoadLevelType(modifier),
+      },
+    }),
+  );
+}
 
 export function augment<
   Q extends ObjectOrInterfaceDefinition,
@@ -273,12 +334,19 @@ async function fetchInterfacePage<
   );
   const shouldLoadPropertySecurities = args.$loadPropertySecurityMetadata
     ?? false;
+
+  // Build selectV2 from $applyModifiers if provided
+  const selectV2 = buildSelectV2FromModifiers(
+    (args as { $applyModifiers?: Record<string, PropertyModifierValue> })
+      .$applyModifiers,
+  );
+
   const requestBody = await buildAndRemapRequestBody(
     args,
     {
       objectSet: resolvedInterfaceObjectSet,
       select: args?.$select ? [...args.$select] : [],
-      selectV2: [],
+      selectV2,
       loadPropertySecurities: shouldLoadPropertySecurities,
       excludeRid: !args?.$includeRid,
       snapshot: useSnapshot,
@@ -590,12 +658,19 @@ export async function fetchObjectPage<
   const shouldLoadPropertySecurities = args.$loadPropertySecurityMetadata
     ?? false;
 
+  // Build selectV2 from $applyModifiers if provided
+  // Note: $applyModifiers is defined on FetchPageArgs but may not be visible due to type constraints
+  const selectV2 = buildSelectV2FromModifiers(
+    (args as { $applyModifiers?: Record<string, PropertyModifierValue> })
+      .$applyModifiers,
+  );
+
   const requestBody = await buildAndRemapRequestBody(
     args,
     {
       objectSet,
       select: args?.$select ? [...args.$select] : [],
-      selectV2: [],
+      selectV2,
       loadPropertySecurities: shouldLoadPropertySecurities,
       excludeRid: !args?.$includeRid,
       snapshot: useSnapshot,

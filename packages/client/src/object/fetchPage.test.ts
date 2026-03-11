@@ -28,6 +28,7 @@ import type { SearchJsonQueryV2 } from "@osdk/foundry.ontologies";
 import { describe, expect, expectTypeOf, it } from "vitest";
 import { createMinimalClient } from "../createMinimalClient.js";
 import {
+  buildSelectV2FromModifiers,
   fetchPage,
   objectSetToSearchJsonV2,
   remapPropertyNames,
@@ -519,6 +520,73 @@ describe(fetchPage, () => {
       );
 
       expect(result).toEqual(["firstName", "lastName"]);
+    });
+  });
+
+  describe("buildSelectV2FromModifiers", () => {
+    it("returns empty array when modifiers is undefined", () => {
+      const result = buildSelectV2FromModifiers(undefined);
+      expect(result).toEqual([]);
+    });
+
+    it("returns empty array when modifiers is empty object", () => {
+      const result = buildSelectV2FromModifiers({});
+      expect(result).toEqual([]);
+    });
+
+    it("builds selectV2 entry for applyMainValue modifier", () => {
+      const result = buildSelectV2FromModifiers({
+        myStruct: "applyMainValue",
+      });
+
+      expect(result).toEqual([{
+        type: "propertyWithLoadLevel",
+        propertyIdentifier: { type: "property", apiName: "myStruct" },
+        loadLevel: { type: "extractMainValue" },
+      }]);
+    });
+
+    it("builds selectV2 entry for applyReducers modifier", () => {
+      const result = buildSelectV2FromModifiers({
+        scores: "applyReducers",
+      });
+
+      expect(result).toEqual([{
+        type: "propertyWithLoadLevel",
+        propertyIdentifier: { type: "property", apiName: "scores" },
+        loadLevel: { type: "applyReducers" },
+      }]);
+    });
+
+    it("builds selectV2 entry for applyReducersAndExtractMainValue modifier", () => {
+      const result = buildSelectV2FromModifiers({
+        items: "applyReducersAndExtractMainValue",
+      });
+
+      expect(result).toEqual([{
+        type: "propertyWithLoadLevel",
+        propertyIdentifier: { type: "property", apiName: "items" },
+        loadLevel: { type: "applyReducersAndExtractMainValue" },
+      }]);
+    });
+
+    it("builds selectV2 entries for multiple properties", () => {
+      const result = buildSelectV2FromModifiers({
+        myStruct: "applyMainValue",
+        scores: "applyReducers",
+      });
+
+      expect(result).toHaveLength(2);
+      expect(result).toContainEqual({
+        type: "propertyWithLoadLevel",
+        propertyIdentifier: { type: "property", apiName: "myStruct" },
+        loadLevel: { type: "extractMainValue" },
+      });
+      expect(result).toContainEqual({
+        type: "propertyWithLoadLevel",
+        propertyIdentifier: { type: "property", apiName: "scores" },
+        loadLevel: { type: "applyReducers" },
+      });
     });
   });
 });
