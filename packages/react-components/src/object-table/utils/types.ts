@@ -31,8 +31,8 @@ export interface CellEditInfo<
   TData extends RowData = unknown,
   CellValue = unknown,
 > extends CellIdentifier {
-  newValue: CellValue;
-  oldValue: CellValue;
+  newValue: CellValue | null;
+  oldValue: CellValue | null;
   originalRowData: TData;
 }
 
