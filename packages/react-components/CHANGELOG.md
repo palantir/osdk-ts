@@ -1,5 +1,11 @@
 # @osdk/react-components
 
+## 0.2.0-beta.14
+
+### Minor Changes
+
+- fb9383c: Fix table crashes on remount
+
 ## 0.2.0-beta.13
 
 ### Minor Changes
