@@ -158,8 +158,10 @@ export class GeneratePackageCommand
         type: "string",
         demandOption: false,
         description:
-          `The branch rid of the ontology to generate from. Example Usage: --branch ri.branch..branch.0000000-0000-0000-0000-0000000000`,
+          `The branch rid of the ontology to generate from.This is still an experimental feature and only has beta support, use with caution. Example Usage: --branch ri.branch..branch.0000000-0000-0000-0000-0000000000`,
         default: undefined,
+        // experimental for now
+        hidden: true,
         defaultDescription:
           `By default, no arguments will load data from the main branch of the ontology you selected`,
       })

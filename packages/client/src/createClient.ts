@@ -105,7 +105,9 @@ export function createClientInternal(
   baseUrl: string,
   ontologyRid: string | Promise<string>,
   tokenProvider: () => Promise<string>,
-  options: { logger?: Logger; branch?: string } | undefined = undefined,
+  options:
+    | { logger?: Logger; UNSTABLE_DO_NOT_USE_BRANCH?: string }
+    | undefined = undefined,
   fetchFn: typeof globalThis.fetch = fetch,
 ): Client {
   if (typeof ontologyRid === "string") {
@@ -131,7 +133,7 @@ export function createClientInternal(
       logger: options?.logger ?? new MinimalLogger(),
       transactionId: transactionRid,
       flushEdits,
-      branch: options?.branch,
+      branch: options?.UNSTABLE_DO_NOT_USE_BRANCH,
     },
     fetchFn,
     objectSetFactory,
@@ -326,7 +328,7 @@ export const createClient: (
   tokenProvider: () => Promise<string>,
   options?: {
     logger?: Logger;
-    branch?: string;
+    UNSTABLE_DO_NOT_USE_BRANCH?: string;
   } | undefined,
   fetchFn?: typeof fetch | undefined,
 ) => Client = createClientInternal.bind(
