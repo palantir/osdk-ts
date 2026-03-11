@@ -210,12 +210,10 @@ function EditableCellInner<TData extends RowData, CellValue = unknown>({
         <Tooltip.Portal>
           <Tooltip.Positioner sideOffset={4} side={"bottom"}>
             <Tooltip.Popup>
-              {
-                <div className={styles.validationError}>
-                  <Error className={styles.errorIcon} />
-                  {validationError}
-                </div>
-              }
+              <div className={styles.validationError}>
+                <Error className={styles.errorIcon} />
+                {validationError}
+              </div>
               <Tooltip.Arrow />
             </Tooltip.Popup>
           </Tooltip.Positioner>

@@ -35,6 +35,7 @@
   }
 
   &.error {
+    background: var(--osdk-table-cell-editable-bg);
     border: var(--osdk-table-cell-edited-border-error);
   }
 }
@@ -46,6 +47,7 @@
   white-space: nowrap;
   text-align: left;
   background: inherit;
+  border: none;
 
   &:focus {
     outline: none;

@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
+.osdkTooltipTrigger {
+  border: none;
+  background: inherit;
+}
+
 .osdkTooltipPositioner {
   z-index: var(--osdk-tooltip-z-index);
 }
@@ -27,6 +32,11 @@
   font-size: var(--osdk-tooltip-font-size);
 }
 
+/* 
+ * Hardcoded values are copied from base ui example 
+ * https://base-ui.com/react/components/tooltip 
+ *
+ * */
 .osdkTooltipArrow {
   display: flex;
 
