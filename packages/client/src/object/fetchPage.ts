@@ -25,6 +25,7 @@ import type {
   ObjectSetArgs,
   ObjectTypeDefinition,
   PropertyKeys,
+  PropertyModifierValue,
   Result,
 } from "@osdk/api";
 import type { PageSize, PageToken } from "@osdk/foundry.core";
@@ -44,6 +45,95 @@ import { addUserAgentAndRequestContextHeaders } from "../util/addUserAgentAndReq
 import { extractObjectOrInterfaceType } from "../util/extractObjectOrInterfaceType.js";
 import { extractRdpDefinition } from "../util/extractRdpDefinition.js";
 import { resolveBaseObjectSetType } from "../util/objectSetUtils.js";
+
+/**
+ * Converts a PropertyModifierValue to the corresponding wire format loadLevel type.
+ */
+function modifierToLoadLevelType(
+  modifier: PropertyModifierValue,
+): "extractMainValue" | "applyReducers" | "applyReducersAndExtractMainValue" {
+  switch (modifier) {
+    case "applyMainValue":
+      return "extractMainValue";
+    case "applyReducers":
+      return "applyReducers";
+    case "applyReducersAndExtractMainValue":
+      return "applyReducersAndExtractMainValue";
+    default: {
+      // This ensures TypeScript knows the switch is exhaustive
+      const _exhaustiveCheck: never = modifier;
+      throw new Error(`Unknown modifier: ${_exhaustiveCheck}`);
+    }
+  }
+}
+
+type LoadLevelType =
+  | "extractMainValue"
+  | "applyReducers"
+  | "applyReducersAndExtractMainValue";
+
+interface SelectV2SimpleProperty {
+  type: "property";
+  apiName: string;
+}
+
+interface SelectV2PropertyWithLoadLevel {
+  type: "propertyWithLoadLevel";
+  propertyIdentifier: SelectV2SimpleProperty;
+  loadLevel: { type: LoadLevelType };
+}
+
+type SelectV2Entry = SelectV2SimpleProperty | SelectV2PropertyWithLoadLevel;
+
+export function buildSelectV2(
+  select: readonly string[] | undefined,
+  modifiers: Record<string, PropertyModifierValue> | undefined,
+  allProperties: readonly string[] | undefined,
+): SelectV2Entry[] {
+  const modifiersMap = modifiers ?? {};
+  const modifierProps = new Set(Object.keys(modifiersMap));
+  const hasModifiers = modifierProps.size > 0;
+
+  const entries: SelectV2Entry[] = [];
+
+  if (select && select.length > 0) {
+    for (const prop of select) {
+      if (modifierProps.has(prop)) {
+        entries.push({
+          type: "propertyWithLoadLevel",
+          propertyIdentifier: { type: "property", apiName: prop },
+          loadLevel: { type: modifierToLoadLevelType(modifiersMap[prop]) },
+        });
+      } else {
+        entries.push({ type: "property", apiName: prop });
+      }
+    }
+
+    for (const [prop, modifier] of Object.entries(modifiersMap)) {
+      if (!select.includes(prop)) {
+        entries.push({
+          type: "propertyWithLoadLevel",
+          propertyIdentifier: { type: "property", apiName: prop },
+          loadLevel: { type: modifierToLoadLevelType(modifier) },
+        });
+      }
+    }
+  } else if (hasModifiers && allProperties && allProperties.length > 0) {
+    for (const prop of allProperties) {
+      if (modifierProps.has(prop)) {
+        entries.push({
+          type: "propertyWithLoadLevel",
+          propertyIdentifier: { type: "property", apiName: prop },
+          loadLevel: { type: modifierToLoadLevelType(modifiersMap[prop]) },
+        });
+      } else {
+        entries.push({ type: "property", apiName: prop });
+      }
+    }
+  }
+
+  return entries;
+}
 
 export function augment<
   Q extends ObjectOrInterfaceDefinition,
@@ -272,12 +362,33 @@ async function fetchInterfacePage<
   );
   const shouldLoadPropertySecurities = args.$loadPropertySecurityMetadata
     ?? false;
+
+  const modifiers =
+    (args as { $applyModifiers?: Record<string, PropertyModifierValue> })
+      .$applyModifiers;
+  const hasModifiers = modifiers && Object.keys(modifiers).length > 0;
+  const hasSelect = args?.$select && args.$select.length > 0;
+
+  let allProperties: string[] | undefined;
+  if (!hasSelect && hasModifiers) {
+    const ifaceDef = await client.ontologyProvider.getInterfaceDefinition(
+      interfaceType.apiName,
+    );
+    allProperties = ifaceDef ? Object.keys(ifaceDef.properties) : undefined;
+  }
+
+  const selectV2 = buildSelectV2(
+    args?.$select ? [...args.$select] : undefined,
+    modifiers,
+    allProperties,
+  );
+
   const requestBody = await buildAndRemapRequestBody(
     args,
     {
       objectSet: resolvedInterfaceObjectSet,
-      select: args?.$select ? [...args.$select] : [],
-      selectV2: [],
+      select: [],
+      selectV2,
       loadPropertySecurities: shouldLoadPropertySecurities,
       excludeRid: !args?.$includeRid,
       snapshot: useSnapshot,
@@ -436,7 +547,6 @@ export async function fetchPageWithErrors<
   return fetchPageWithErrorsInternal(client, objectType, objectSet, args);
 }
 
-/** @internal */
 async function buildAndRemapRequestBody<
   Q extends ObjectOrInterfaceDefinition,
   L extends PropertyKeys<Q>,
@@ -448,7 +558,7 @@ async function buildAndRemapRequestBody<
     orderBy?: SearchOrderByV2;
     pageToken?: PageToken;
     pageSize?: PageSize;
-    select?: readonly string[];
+    selectV2?: SelectV2Entry[];
     selectedSharedPropertyTypes?: readonly string[];
     loadPropertySecurity?: boolean;
   },
@@ -465,15 +575,59 @@ async function buildAndRemapRequestBody<
     objectType,
   );
 
-  if (requestBody.select != null && requestBody.select.length > 0) {
-    const remapped = remapPropertyNames(
-      objectType,
-      requestBody.select,
-    );
-    return { ...requestBody, select: remapped };
+  if (requestBody.selectV2 != null && requestBody.selectV2.length > 0) {
+    const remapped = remapSelectV2(objectType, requestBody.selectV2);
+    return { ...requestBody, selectV2: remapped };
   }
 
   return requestBody;
+}
+
+function remapSelectV2(
+  objectOrInterface: ObjectOrInterfaceDefinition | undefined,
+  selectV2: SelectV2Entry[],
+): SelectV2Entry[] {
+  if (objectOrInterface == null) {
+    return selectV2;
+  }
+
+  if (objectOrInterface.type !== "interface") {
+    return selectV2;
+  }
+
+  const [objApiNamespace] = extractNamespace(objectOrInterface.apiName);
+  if (objApiNamespace == null) {
+    return selectV2;
+  }
+
+  return selectV2.map((entry): SelectV2Entry => {
+    if (entry.type === "property") {
+      const [fieldApiNamespace, fieldShortName] = extractNamespace(
+        entry.apiName,
+      );
+      if (fieldApiNamespace == null) {
+        return {
+          type: "property",
+          apiName: `${objApiNamespace}.${fieldShortName}`,
+        };
+      }
+      return entry;
+    } else {
+      const [fieldApiNamespace, fieldShortName] = extractNamespace(
+        entry.propertyIdentifier.apiName,
+      );
+      if (fieldApiNamespace == null) {
+        return {
+          ...entry,
+          propertyIdentifier: {
+            type: "property",
+            apiName: `${objApiNamespace}.${fieldShortName}`,
+          },
+        };
+      }
+      return entry;
+    }
+  });
 }
 
 /** @internal */
@@ -580,21 +734,39 @@ export async function fetchObjectPage<
   // For simple object fetches, since we know the object type up front
   // we can parallelize network requests for loading metadata and loading the actual objects
   // In our object factory we await and block on loading the metadata, which if this call finishes, should already be cached on the client
-  // We have an empty catch here so that if this call errors before we await later, we won't have an unhandled promise rejection that would crash the process
-  // Swallowing the error is ok because we await the metadata load in the objectFactory later anyways which eventually bubbles up the error to the user
-  void client.ontologyProvider.getObjectDefinition(objectType.apiName).catch(
-    () => {},
-  );
+  const modifiers =
+    (args as { $applyModifiers?: Record<string, PropertyModifierValue> })
+      .$applyModifiers;
+  const hasModifiers = modifiers && Object.keys(modifiers).length > 0;
+  const hasSelect = args?.$select && args.$select.length > 0;
+
+  let allProperties: string[] | undefined;
+  if (!hasSelect && hasModifiers) {
+    const objDef = await client.ontologyProvider.getObjectDefinition(
+      objectType.apiName,
+    );
+    allProperties = objDef ? Object.keys(objDef.properties) : undefined;
+  } else {
+    void client.ontologyProvider.getObjectDefinition(objectType.apiName).catch(
+      () => {},
+    );
+  }
 
   const shouldLoadPropertySecurities = args.$loadPropertySecurityMetadata
     ?? false;
+
+  const selectV2 = buildSelectV2(
+    args?.$select ? [...args.$select] : undefined,
+    modifiers,
+    allProperties,
+  );
 
   const requestBody = await buildAndRemapRequestBody(
     args,
     {
       objectSet,
-      select: args?.$select ? [...args.$select] : [],
-      selectV2: [],
+      select: [],
+      selectV2,
       loadPropertySecurities: shouldLoadPropertySecurities,
       excludeRid: !args?.$includeRid,
       snapshot: useSnapshot,
