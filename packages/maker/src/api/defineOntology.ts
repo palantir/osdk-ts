@@ -419,12 +419,12 @@ export function extractAllowedValues(
         range: {
           type: "range",
           range: {
-            ...(min === undefined
-              ? {}
-              : { minimum: { inclusive: true, value: min } }),
-            ...(max === undefined
-              ? {}
-              : { maximum: { inclusive: true, value: max } }),
+            minimum: min === undefined
+              ? undefined
+              : { inclusive: true, value: min },
+            maximum: max === undefined
+              ? undefined
+              : { inclusive: true, value: max },
           },
         },
       };
@@ -435,12 +435,8 @@ export function extractAllowedValues(
         text: {
           type: "text",
           text: {
-            ...(minLength === undefined
-              ? {}
-              : { minLength: minLength }),
-            ...(maxLength === undefined
-              ? {}
-              : { maxLength: maxLength }),
+            minLength: minLength === undefined ? undefined : minLength,
+            maxLength: maxLength === undefined ? undefined : maxLength,
             ...(regex === undefined
               ? {}
               : { regex: { regex: regex, failureMessage: "Invalid input" } }),
