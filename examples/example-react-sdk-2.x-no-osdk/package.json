@@ -17,10 +17,7 @@
   },
   "dependencies": {
     "@blueprintjs/core": "^6.9.1",
-    "@blueprintjs/datetime": "^6.0.18",
     "@blueprintjs/icons": "^6.6.0",
-    "@blueprintjs/select": "^6.1.3",
-    "@blueprintjs/table": "^6.0.18",
     "@osdk/client": "workspace:*",
     "@osdk/foundry": "latest",
     "@osdk/oauth": "workspace:*",
