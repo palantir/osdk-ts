@@ -328,6 +328,7 @@ export const createClient: (
   tokenProvider: () => Promise<string>,
   options?: {
     logger?: Logger;
+    /** @beta This is an experimental feature subject to change */
     UNSTABLE_DO_NOT_USE_BRANCH?: string;
   } | undefined,
   fetchFn?: typeof fetch | undefined,
