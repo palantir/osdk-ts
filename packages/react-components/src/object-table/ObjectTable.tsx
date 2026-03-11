@@ -200,7 +200,7 @@ export function ObjectTable<
       onCellEdit: editableConfig.onCellEdit,
       onCellValidationError: editableConfig.onCellValidationError,
       cellEdits: editableConfig.cellEdits,
-      isInEditMode: editableConfig.editMode.isActive,
+      isInEditMode: editableConfig.editModeState.isActive,
     },
   });
 

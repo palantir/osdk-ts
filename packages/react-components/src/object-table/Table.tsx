@@ -184,7 +184,7 @@ export function BaseTable<
                   headerGroups={headerGroups}
                   focusedRowId={focusedRowId}
                   setFocusedRowId={setFocusedRowId}
-                  isInEditMode={editableConfig?.editMode.isActive}
+                  isInEditMode={editableConfig?.editModeState.isActive}
                 />
               </>
             )}
@@ -194,7 +194,7 @@ export function BaseTable<
           <NonIdealState message={`Error Loading Data: ${error.message}`} />
         )}
       </div>
-      {hasEditableColumns && (
+      {hasEditableColumns && editableConfig && (
         <TableEditContainer
           editableConfig={editableConfig}
           focusedRowId={focusedRowId}

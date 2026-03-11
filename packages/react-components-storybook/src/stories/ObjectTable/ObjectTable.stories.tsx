@@ -24,6 +24,7 @@ import type {
   ColumnDefinition,
   ObjectTableProps,
 } from "@osdk/react-components/experimental";
+import { useOsdkClient } from "@osdk/react/experimental";
 import type { Meta, StoryObj } from "@storybook/react";
 import { useCallback, useMemo, useState } from "react";
 import { fauxFoundry } from "../../mocks/fauxFoundry.js";
@@ -269,6 +270,40 @@ export const Default: Story = {
       <ObjectTable objectType={Employee} {...args} />
     </div>
   ),
+};
+
+export const WithObjectSet: Story = {
+  args: {
+    objectType: Employee,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `
+const client = useOsdkClient();
+const employeeObjectSet = client(Employee).where({
+  jobProfile: "Marketing Manager",
+});
+return <ObjectTable objectType={Employee} objectSet={employeeObjectSet} />`,
+      },
+    },
+  },
+  render: (args) => {
+    const client = useOsdkClient();
+    const employeeObjectSet = client(Employee).where({
+      jobProfile: "Marketing Manager",
+    });
+
+    return (
+      <div className="object-table-container" style={{ height: "600px" }}>
+        <ObjectTable
+          objectType={Employee}
+          objectSet={employeeObjectSet}
+          {...args}
+        />
+      </div>
+    );
+  },
 };
 
 export const WithColumnDefinitions: Story = {

@@ -2,7 +2,6 @@ import type { DerivedProperty, Osdk } from "@osdk/api";
 import type { ColumnDefinition } from "@osdk/react-components/experimental";
 import { ObjectTable } from "@osdk/react-components/experimental";
 import { useCallback } from "react";
-import { $ } from "../../foundryClient.js";
 import { Employee } from "../../generatedNoCheck2/index.js";
 
 type RDPs = {
@@ -16,7 +15,6 @@ const columnDefinitions: Array<
     {}
   >
 > = [
-  // With renderHeader prop
   {
     locator: {
       type: "property",
@@ -37,7 +35,6 @@ const columnDefinitions: Array<
     locator: { type: "property", id: "jobTitle" },
     editable: true,
   },
-  // With renderHeader, renderCell, width prop
   {
     locator: { type: "property", id: "firstFullTimeStartDate" },
     width: 300,
@@ -100,10 +97,6 @@ export function EmployeesTable() {
     [],
   );
 
-  const employeeOS = $(Employee).where({
-    fullName: { $eq: "Jane Doe" },
-  });
-
   return (
     <div
       style={{
@@ -112,7 +105,6 @@ export function EmployeesTable() {
       }}
     >
       <ObjectTable<Employee, RDPs>
-        objectSet={employeeOS}
         objectType={Employee}
         columnDefinitions={columnDefinitions}
         selectionMode={"multiple"}

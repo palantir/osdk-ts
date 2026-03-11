@@ -24,7 +24,7 @@ import type { EditableConfig } from "./utils/types.js";
 interface TableEditContainerProps<
   TData extends RowData,
 > {
-  editableConfig?: EditableConfig<TData, unknown>;
+  editableConfig: EditableConfig<TData, unknown>;
   focusedRowId?: string | null;
 }
 
@@ -38,16 +38,16 @@ export function TableEditContainer<
     cellEdits,
     onSubmitEdits,
     clearEdits,
-    editMode,
+    editModeState,
     validationErrors,
-  } = editableConfig ?? {};
+  } = editableConfig;
 
   const hasEdits = Object.keys(cellEdits ?? {}).length > 0;
   const hasValidationError = (validationErrors?.size ?? 0) > 0;
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const isInEditMode = editMode?.isActive;
-  const canToggleEditMode = editMode?.type === "manual";
+  const isInEditMode = editModeState.isActive;
+  const canToggleEditMode = editModeState.type === "manual";
 
   const handleSubmitEdits = useCallback(async () => {
     setIsSubmitting(true);
@@ -55,27 +55,27 @@ export function TableEditContainer<
       const success = await onSubmitEdits?.();
       if (success) {
         clearEdits?.();
-        if (editMode?.type === "manual") {
-          editMode.setActive(false);
+        if (editModeState?.type === "manual") {
+          editModeState.setActive(false);
         }
       }
     } finally {
       setIsSubmitting(false);
     }
-  }, [editMode, onSubmitEdits, clearEdits]);
+  }, [editModeState, onSubmitEdits, clearEdits]);
 
   const handleCancelEdits = useCallback(() => {
     clearEdits?.();
-    if (editMode?.type === "manual") {
-      editMode.setActive(false);
+    if (editModeState?.type === "manual") {
+      editModeState.setActive(false);
     }
-  }, [clearEdits, editMode]);
+  }, [clearEdits, editModeState]);
 
   const handleEnterEditMode = useCallback(() => {
-    if (editMode?.type === "manual") {
-      editMode.setActive(true);
+    if (editModeState?.type === "manual") {
+      editModeState.setActive(true);
     }
-  }, [editMode]);
+  }, [editModeState]);
 
   return (
     <div className={styles.tableEditContainer}>
@@ -126,7 +126,7 @@ export function TableEditContainer<
           <ActionButton
             variant="primary"
             onClick={handleSubmitEdits}
-            disabled={!hasEdits || isSubmitting}
+            disabled={!hasEdits || isSubmitting || hasValidationError}
           >
             Submit Edits
           </ActionButton>

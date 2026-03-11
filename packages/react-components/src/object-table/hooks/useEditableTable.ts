@@ -23,7 +23,11 @@ import type {
 } from "@osdk/api";
 import { useCallback, useState } from "react";
 import type { ObjectTableProps } from "../ObjectTableApi.js";
-import type { CellEditInfo, EditableConfig, EditMode } from "../utils/types.js";
+import type {
+  CellEditInfo,
+  EditableConfig,
+  EditModeState,
+} from "../utils/types.js";
 
 export interface UseEditableTableProps<
   Q extends ObjectOrInterfaceDefinition,
@@ -138,7 +142,7 @@ export function useEditableTable<
     });
   }, []);
 
-  const editModeConfig: EditMode = editMode === "always"
+  const editModeState: EditModeState = editMode === "always"
     ? { type: "always", isActive: true }
     : { type: "manual", isActive, setActive };
 
@@ -147,7 +151,7 @@ export function useEditableTable<
     onCellEdit: handleCellEdit,
     onSubmitEdits: onSubmitEdits ? handleSubmitEdits : undefined,
     clearEdits,
-    editMode: editModeConfig,
+    editModeState,
     onCellValidationError,
     validationErrors,
   };
