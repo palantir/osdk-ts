@@ -1,5 +1,5 @@
 ---
-"@osdk/language-models": minor
+"@osdk/language-models": patch
 ---
 
 Add @osdk/language-models package with utilities for calling language models through the Foundry proxy endpoint
