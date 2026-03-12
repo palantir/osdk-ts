@@ -1,5 +1,18 @@
 # @osdk/foundry-sdk-generator
 
+## 2.8.0-beta.18
+
+### Minor Changes
+
+- c8384de: Add experimental branch param.
+
+### Patch Changes
+
+- Updated dependencies [c8384de]
+  - @osdk/client@2.8.0-beta.18
+  - @osdk/api@2.8.0-beta.18
+  - @osdk/generator@2.8.0-beta.18
+
 ## 2.8.0-beta.17
 
 ### Patch Changes
