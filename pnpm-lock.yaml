@@ -3895,6 +3895,25 @@ importers:
         specifier: ~5.5.4
         version: 5.5.4
 
+  packages/language-models:
+    dependencies:
+      '@osdk/client':
+        specifier: workspace:~
+        version: link:../client
+    devDependencies:
+      '@osdk/monorepo.api-extractor':
+        specifier: workspace:~
+        version: link:../monorepo.api-extractor
+      '@osdk/monorepo.tsconfig':
+        specifier: workspace:~
+        version: link:../monorepo.tsconfig
+      '@types/node':
+        specifier: ^18.19.0
+        version: 18.19.124
+      typescript:
+        specifier: ~5.5.4
+        version: 5.5.4
+
   packages/maker:
     dependencies:
       '@osdk/api':
