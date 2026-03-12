@@ -23,8 +23,10 @@ import classnames from "classnames";
 import React, { memo, useCallback } from "react";
 import { ErrorBoundary } from "../../shared/ErrorBoundary.js";
 import type { FilterState } from "../FilterListItemApi.js";
+import { supportsExcluding } from "../utils/filterValues.js";
 import type { RenderFilterInput } from "./BaseFilterListApi.js";
 import { DragHandleIcon } from "./DragHandleIcon.js";
+import { ExcludeIcon, IncludeIcon } from "./FilterIcons.js";
 import styles from "./FilterListItem.module.css";
 
 interface FilterListItemProps<D> {
@@ -62,10 +64,26 @@ function FilterListItemInner<D>({
     [filterKey, onFilterStateChanged],
   );
 
+  const handleToggleExclude = useCallback(
+    () => {
+      if (filterState) {
+        onFilterStateChanged(filterKey, {
+          ...filterState,
+          isExcluding: !filterState.isExcluding,
+        });
+      }
+    },
+    [filterKey, filterState, onFilterStateChanged],
+  );
+
+  const isExcluding = filterState?.isExcluding ?? false;
+  const showExcludeToggle = supportsExcluding(filterState);
+
   return (
     <div
       className={classnames(styles.filterItem, className)}
       style={style}
+      data-excluding={isExcluding}
     >
       <div className={styles.itemHeader}>
         {dragHandleAttributes && (
@@ -79,6 +97,18 @@ function FilterListItemInner<D>({
           </Button>
         )}
         <span className={styles.itemLabel}>{label}</span>
+        {showExcludeToggle && (
+          <Button
+            className={styles.excludeToggle}
+            onClick={handleToggleExclude}
+            aria-pressed={isExcluding}
+            aria-label={isExcluding
+              ? "Switch to include mode"
+              : "Switch to exclude mode"}
+          >
+            {isExcluding ? <ExcludeIcon /> : <IncludeIcon />}
+          </Button>
+        )}
       </div>
 
       <div className={styles.itemContent}>

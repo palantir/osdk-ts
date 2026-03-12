@@ -16,6 +16,32 @@
 
 import type { FilterState } from "../FilterListItemApi.js";
 
+/** Returns true for filter state types that support isExcluding. */
+export function supportsExcluding(state: FilterState | undefined): boolean {
+  if (!state) {
+    return false;
+  }
+  switch (state.type) {
+    case "SELECT":
+    case "EXACT_MATCH":
+    case "CONTAINS_TEXT":
+    case "TIMELINE":
+      return true;
+    case "NUMBER_RANGE":
+    case "DATE_RANGE":
+    case "TOGGLE":
+    case "hasLink":
+    case "linkedProperty":
+    case "keywordSearch":
+    case "custom":
+      return false;
+    default: {
+      const _exhaustive: never = state;
+      return false;
+    }
+  }
+}
+
 /** Case-insensitive substring filter for search functionality. */
 export function filterValuesBySearch<T>(
   values: T[],

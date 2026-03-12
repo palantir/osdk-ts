@@ -21,6 +21,8 @@ import type { PropertyAggregationValue } from "../../types/AggregationTypes.js";
 import styles from "./ListogramInput.module.css";
 import sharedStyles from "./shared.module.css";
 
+export type ListogramDisplayMode = "full" | "count" | "minimal";
+
 interface ListogramInputProps {
   values: PropertyAggregationValue[];
   maxCount: number;
@@ -28,6 +30,8 @@ interface ListogramInputProps {
   error: Error | null;
   selectedValues: string[];
   onChange: (values: string[]) => void;
+  colorMap?: Record<string, string>;
+  displayMode?: ListogramDisplayMode;
   className?: string;
   style?: React.CSSProperties;
   maxVisibleItems?: number;
@@ -40,6 +44,8 @@ function ListogramInputInner({
   error,
   selectedValues,
   onChange,
+  colorMap,
+  displayMode = "full",
   className,
   style,
   maxVisibleItems,
@@ -93,28 +99,37 @@ function ListogramInputInner({
       {(values.length > 0 || isLoading) && (
         <div className={styles.container}>
           {displayValues.map(({ value, count }) => {
-            const isSelected = selectedSet.has(value);
             const percentage = maxCount > 0 ? (count / maxCount) * 100 : 0;
+            const perRowColor = colorMap?.[value];
 
             return (
               <Button
                 key={value}
                 className={styles.row}
                 onClick={() => toggleValue(value)}
-                aria-pressed={isSelected}
+                aria-pressed={selectedSet.has(value)}
+                style={perRowColor || percentage > 0
+                  ? {
+                    "--osdk-filter-listogram-bar-fill-scale": percentage / 100,
+                    ...(perRowColor
+                      ? {
+                        "--osdk-filter-listogram-row-bar-color": perRowColor,
+                      }
+                      : undefined),
+                  } as React.CSSProperties
+                  : undefined}
               >
                 <span className={styles.label}>{value}</span>
-                <span className={styles.bar}>
-                  <span
-                    className={styles.barFill}
-                    style={{
-                      "--bar-scale": percentage / 100,
-                    } as React.CSSProperties}
-                  />
-                </span>
-                <span className={styles.count}>
-                  {count.toLocaleString()}
-                </span>
+                {displayMode === "full" && (
+                  <span className={styles.bar}>
+                    <span className={styles.barFill} />
+                  </span>
+                )}
+                {displayMode !== "minimal" && (
+                  <span className={styles.count}>
+                    {count.toLocaleString()}
+                  </span>
+                )}
               </Button>
             );
           })}

@@ -69,17 +69,24 @@ export function BaseFilterList<D>(
         />
       )}
 
-      <FilterListContent
-        filterDefinitions={filterDefinitions}
-        filterStates={filterStates}
-        onFilterStateChanged={onFilterStateChanged}
-        renderInput={renderInput}
-        getFilterKey={getFilterKey}
-        getFilterLabel={getFilterLabel}
-        enableSorting={enableSorting}
-      />
+      <div
+        className={styles.contentWrapper}
+        data-collapsed={collapsed}
+      >
+        <div className={styles.contentInner}>
+          <FilterListContent
+            filterDefinitions={filterDefinitions}
+            filterStates={filterStates}
+            onFilterStateChanged={onFilterStateChanged}
+            renderInput={renderInput}
+            getFilterKey={getFilterKey}
+            getFilterLabel={getFilterLabel}
+            enableSorting={enableSorting}
+          />
+        </div>
+      </div>
 
-      {showAddButton && (
+      {!collapsed && showAddButton && (
         <div className={styles.addButtonContainer}>
           {renderAddFilterButton
             ? renderAddFilterButton()

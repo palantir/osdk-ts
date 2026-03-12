@@ -24,6 +24,12 @@
   padding: var(--osdk-filter-checkbox-row-padding);
 }
 
+.checkboxRow[data-select-all] {
+  border-bottom: var(--osdk-filter-checkbox-selectall-border-bottom);
+  padding-bottom: calc(var(--osdk-filter-checkbox-row-padding) + 2px);
+  margin-bottom: 2px;
+}
+
 .checkboxLabel {
   display: flex;
   align-items: center;
@@ -39,4 +45,11 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.colorDot {
+  width: var(--osdk-filter-checkbox-color-dot-size);
+  height: var(--osdk-filter-checkbox-color-dot-size);
+  border-radius: 50%;
+  flex-shrink: 0;
 }
