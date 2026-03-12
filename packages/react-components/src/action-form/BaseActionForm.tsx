@@ -59,9 +59,7 @@ export interface BaseActionFormProps<
   ) => void;
   onSubmit: () => void;
   onCancel?: () => void;
-  fieldErrors?: Record<string, string | string[]>;
   isSubmitting?: boolean;
-  isValidating?: boolean;
   isSubmitDisabled?: boolean;
   error?: string;
   className?: string;
@@ -76,9 +74,7 @@ export function BaseActionForm<
   onFieldChange,
   onSubmit,
   onCancel,
-  fieldErrors,
   isSubmitting = false,
-  isValidating = false,
   isSubmitDisabled = false,
   error,
   className,
@@ -95,7 +91,6 @@ export function BaseActionForm<
     <div className={classnames(styles.container, className)}>
       <Form
         onSubmit={handleSubmit}
-        errors={fieldErrors}
         className={styles.form}
       >
         {title != null && <h3 className={styles.title}>{title}</h3>}
@@ -117,12 +112,10 @@ export function BaseActionForm<
           <ActionButton
             variant="primary"
             type="submit"
-            disabled={isSubmitDisabled || isSubmitting || isValidating}
+            disabled={isSubmitDisabled || isSubmitting}
           >
             {isSubmitting
               ? "Submitting..."
-              : isValidating
-              ? "Validating..."
               : "Submit"}
           </ActionButton>
         </div>

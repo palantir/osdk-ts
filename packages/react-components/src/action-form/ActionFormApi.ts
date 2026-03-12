@@ -18,9 +18,8 @@ import type {
   ActionDefinition,
   ActionEditResponse,
   ActionReturnTypeForOptions,
-  ActionValidationResponse,
 } from "@osdk/api";
-import type { ActionValidationError, ApplyActionOptions } from "@osdk/client";
+import type { ApplyActionOptions } from "@osdk/client";
 import type {
   ActionParameters,
   FieldKey,
@@ -58,7 +57,7 @@ export interface ActionFormProps<Q extends ActionDefinition<unknown>> {
 
   /**
    * Override to disable submit button
-   * If not provided, button is disabled when form is submitting or has validation errors
+   * If not provided, button is disabled when form is submitting
    *
    * @default false
    */
@@ -66,10 +65,10 @@ export interface ActionFormProps<Q extends ActionDefinition<unknown>> {
 
   /**
    * If supplied, this will override the default submit action
-   * By default, the action's applyAction will be called with $validateOnly: false
+   * By default, the action's applyAction will be called
    *
    * @param formState all field values when onSubmit is called
-   * @param applyAction the function to execute the action. Call it with $validateOnly: true options to run validation mode onSubmit.
+   * @param applyAction the function to execute the action
    * @returns a promise of the submission response
    */
   onSubmit?: <OP extends ApplyActionOptions>(
@@ -79,13 +78,6 @@ export interface ActionFormProps<Q extends ActionDefinition<unknown>> {
       options?: OP,
     ) => Promise<ActionReturnTypeForOptions<OP>>,
   ) => Promise<ActionReturnTypeForOptions<OP>> | void;
-
-  /**
-   * Called when the validation response is returned from a validateOnly submission
-   *
-   * @param results the validation response
-   */
-  onValidationResponse?: (results: ActionValidationResponse) => void;
 
   /**
    * Called when the action is successfully executed from a non-validateOnly submission
@@ -113,6 +105,5 @@ export type FormState<Q extends ActionDefinition<unknown>> = {
  * Form error discriminated union
  */
 export type FormError =
-  | { type: "validation"; error: ActionValidationError }
   | { type: "submission"; error: Error }
   | { type: "unknown"; error: unknown };
