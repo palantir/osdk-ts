@@ -16,11 +16,34 @@
 
 import type {
   ActionDefinition,
+  ActionMetadata,
   CompileTimeMetadata,
+  DataValueClientToWire,
   ObjectSet,
   ObjectTypeDefinition,
 } from "@osdk/api";
 import type React from "react";
+
+/**
+ * Extracts the runtime TS type for a single action parameter's metadata type.
+ *
+ * When the parameter's `type` is a key of `DataValueClientToWire` (e.g. "string",
+ * "integer", "boolean"), the corresponding TypeScript type is returned.
+ * Otherwise falls back to `unknown`.
+ */
+export type ParamRuntimeValue<P extends ActionMetadata.Parameter> =
+  P["type"] extends keyof DataValueClientToWire
+    ? DataValueClientToWire[P["type"]]
+    : unknown;
+
+/**
+ * Maps all action params to their runtime value types.
+ * All properties are optional since the form fills incrementally.
+ * Values use ParamRuntimeValue directly — no narrowing to primitives.
+ */
+export type ActionFormValues<Q extends ActionDefinition<unknown>> = {
+  [K in FieldKey<Q>]?: ParamRuntimeValue<ActionParameters<Q>[K]>;
+};
 
 /**
  * A form field definition specifies configuration for a single field

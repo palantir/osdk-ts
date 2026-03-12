@@ -25,6 +25,11 @@ export interface ButtonProps
   variant?: "primary" | "secondary";
 }
 
+const VARIANT_STYLES: Record<NonNullable<ButtonProps["variant"]>, string> = {
+  primary: styles.primaryButton,
+  secondary: styles.secondaryButton,
+};
+
 export function ActionButton({
   variant = "secondary",
   className,
@@ -34,7 +39,7 @@ export function ActionButton({
     <Button
       className={classNames(
         styles.button,
-        variant === "primary" ? styles.primaryButton : styles.secondaryButton,
+        VARIANT_STYLES[variant],
         className,
       )}
       {...rest}

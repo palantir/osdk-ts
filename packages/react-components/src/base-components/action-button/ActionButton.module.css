@@ -29,6 +29,11 @@
     outline: var(--osdk-focus-outline);
     outline-offset: var(--osdk-focus-visible-outline-offset);
   }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 }
 
 .secondaryButton {
@@ -43,11 +48,6 @@
   &:active:not(:disabled) {
     background-color: var(--osdk-button-secondary-bg-active);
   }
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
 }
 
 .primaryButton {
@@ -61,10 +61,5 @@
 
   &:active:not(:disabled) {
     background-color: var(--osdk-button-primary-bg-active);
-  }
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
   }
 }
