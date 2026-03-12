@@ -1,5 +1,11 @@
 # @osdk/functions
 
+## 1.5.2
+
+### Patch Changes
+
+- b2d94c9: Add helper functions for resolving custom and model aliases in functions
+
 ## 1.5.1
 
 ### Patch Changes
