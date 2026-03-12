@@ -15,14 +15,13 @@
  */
 
 import type { ActionDefinition } from "@osdk/api";
-import { useOsdkAction } from "@osdk/react/experimental";
+import { useOsdkAction, useOsdkMetadata } from "@osdk/react/experimental";
 import React from "react";
 import type { ActionFormProps } from "./ActionFormApi.js";
 import type { BaseFormFieldConfig } from "./BaseActionForm.js";
 import { BaseActionForm } from "./BaseActionForm.js";
 import { convertToActionValue } from "./convertValue.js";
 import type { ActionFormValues } from "./FormFieldApi.js";
-import { useActionMetadata } from "./useActionMetadata.js";
 
 export function ActionForm<T, Q extends ActionDefinition<T>>({
   actionDefinition,
@@ -32,20 +31,16 @@ export function ActionForm<T, Q extends ActionDefinition<T>>({
   isSubmitDisabled,
 }: ActionFormProps<Q>): React.ReactElement {
   const {
-    isLoading,
+    loading,
     metadata,
     error: metadataError,
-  } = useActionMetadata(actionDefinition);
-  const {
-    applyAction,
-    isPending,
-  } = useOsdkAction(actionDefinition);
+  } = useOsdkMetadata(actionDefinition);
+  // console.log("This is the metadata", metadata);
+  const { applyAction, isPending } = useOsdkAction(actionDefinition);
   const [formValues, setFormValues] = React.useState<ActionFormValues<Q>>(
     {} as ActionFormValues<Q>,
   );
   const [submitError, setSubmitError] = React.useState<string | undefined>();
-  const formValuesRef = React.useRef(formValues);
-  formValuesRef.current = formValues;
 
   const fields = React.useMemo<BaseFormFieldConfig[]>(() => {
     if (metadata == null) {
@@ -67,16 +62,14 @@ export function ActionForm<T, Q extends ActionDefinition<T>>({
       key: K,
       rawValue: ActionFormValues<Q>[K],
     ) => {
-      const field = fields.find(f => f.key === key);
+      const field = fields.find((f) => f.key === key);
       const converted = field != null
         ? convertToActionValue(rawValue, field.type)
         : rawValue;
-      const nextValues = {
-        ...formValuesRef.current,
+      setFormValues((prev) => ({
+        ...prev,
         [key]: converted,
-      } as ActionFormValues<Q>;
-      formValuesRef.current = nextValues;
-      setFormValues(nextValues);
+      }));
     },
     [fields],
   );
@@ -97,12 +90,7 @@ export function ActionForm<T, Q extends ActionDefinition<T>>({
         error: e instanceof Error ? e : new Error(errorMessage),
       });
     }
-  }, [
-    applyAction,
-    formValues,
-    onSuccess,
-    onError,
-  ]);
+  }, [applyAction, formValues, onSuccess, onError]);
 
   const displayError = metadataError != null
     ? `Failed to load action metadata: ${metadataError}`
@@ -115,7 +103,7 @@ export function ActionForm<T, Q extends ActionDefinition<T>>({
       values={formValues}
       onFieldChange={handleFieldChange}
       onSubmit={handleSubmit}
-      isSubmitting={isLoading || isPending}
+      isSubmitting={loading || isPending}
       isSubmitDisabled={isSubmitDisabled ?? fields.length === 0}
       error={displayError}
     />
