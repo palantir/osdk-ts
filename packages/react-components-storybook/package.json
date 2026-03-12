@@ -27,6 +27,7 @@
     "@osdk/react": "workspace:*",
     "@osdk/react-components": "workspace:*",
     "@osdk/react-components-styles": "workspace:*",
+    "@storybook/addon-docs": "^10.2.10",
     "@storybook/addon-links": "^10.2.10",
     "@storybook/addon-mcp": "^0.2.3",
     "@storybook/addon-themes": "^10.2.10",

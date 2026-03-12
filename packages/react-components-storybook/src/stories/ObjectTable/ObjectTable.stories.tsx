@@ -493,6 +493,25 @@ export const WithDefaultColumnPinning: Story = {
       },
     ] as any,
   },
+  parameters: {
+    docs: {
+      source: {
+        code: `const columnDefinitions = [
+    ...columnDefinitions,
+   {
+      locator: { type: "property", id: "fullName" },
+      pinned: "left",
+    },
+    {
+      locator: { type: "property", id: "department" },
+      pinned: "right",
+    },
+];
+
+<ObjectTable objectType={Employee} columnDefinitions={columnDefinitions} />`,
+      },
+    },
+  },
   render: (args) => (
     <div className="object-table-container" style={{ height: "600px" }}>
       <ObjectTable {...args} />
