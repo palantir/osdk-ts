@@ -82,15 +82,20 @@ export function useRowSelection<
   // If uncontrolled, return the internalRowSelection state
   const rowSelectionState: RowSelectionState = useMemo(() => {
     if (!enableRowSelection) return {};
-    if (isControlled && selectedRows) {
-      return getRowSelectionState(selectedRows);
+    if (isControlled) {
+      const selectedRowIds = isAllSelectedProp
+        ? (data ?? []).map(item => item.$primaryKey)
+        : selectedRows;
+      return getRowSelectionState(selectedRowIds);
     }
     return internalRowSelection;
   }, [
     enableRowSelection,
     isControlled,
     selectedRows,
+    isAllSelectedProp,
     internalRowSelection,
+    data,
   ]);
 
   const selectedCount = Object.values(rowSelectionState).filter(Boolean).length;
