@@ -351,10 +351,31 @@ export class OntologyIrToFullMetadataConverter {
         throw new Error("previewMetadata.ontology.rid is required");
       }
       const ontologyRid = previewMetadata.ontology.rid;
-      const objectTypesMap: Record<string, { objectTypeId: string }> = {};
+      const objectTypesMap: Record<
+        string,
+        {
+          objectTypeId: string;
+          linkTypes: Record<string, { linkTypeId: string }>;
+        }
+      > = {};
       if (previewMetadata.objectTypes) {
-        for (const apiName of Object.keys(previewMetadata.objectTypes)) {
-          objectTypesMap[apiName] = { objectTypeId: apiName };
+        for (
+          const [apiName, objData] of Object.entries(
+            previewMetadata.objectTypes,
+          )
+        ) {
+          const linkTypesMap: Record<string, { linkTypeId: string }> = {};
+          if (objData.linkTypes) {
+            for (const lt of objData.linkTypes) {
+              linkTypesMap[lt.apiName] = {
+                linkTypeId: lt.linkTypeRid ?? lt.apiName,
+              };
+            }
+          }
+          objectTypesMap[apiName] = {
+            objectTypeId: apiName,
+            linkTypes: linkTypesMap,
+          };
         }
       }
       const interfaceTypesMap: Record<
