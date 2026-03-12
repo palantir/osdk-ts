@@ -125,11 +125,12 @@ Each column header has a menu with items for sorting, filtering, pinning, resizi
 
 ### Row Selection
 
-| Prop             | Type                               | Default  | Description                                 |
-| ---------------- | ---------------------------------- | -------- | ------------------------------------------- |
-| `selectionMode`  | `"single" \| "multiple" \| "none"` | `"none"` | Selection mode. "multiple" shows checkboxes |
-| `selectedRows`   | `PrimaryKeyType<Q>[]`              | -        | Selected rows (controlled mode)             |
-| `onRowSelection` | `(selectedRowIds) => void`         | -        | Required when `selectedRows` is provided    |
+| Prop             | Type                                     | Default  | Description                                            |
+| ---------------- | ---------------------------------------- | -------- | ------------------------------------------------------ |
+| `selectionMode`  | `"single" \| "multiple" \| "none"`       | `"none"` | Selection mode. "multiple" shows checkboxes            |
+| `selectedRows`   | `PrimaryKeyType<Q>[]`                    | -        | Selected rows (controlled mode)                        |
+| `isAllSelected`  | `boolean`                                | -        | Indicates all rows are selected (controlled mode only) |
+| `onRowSelection` | `(selectedRowIds, isSelectAll?) => void` | -        | Required when `selectedRows` is provided               |
 
 ### Interactions
 
@@ -530,6 +531,25 @@ import { useState } from "react";
 
 function EmployeesTable() {
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
+  const [isAllSelected, setIsAllSelected] = useState(false);
+
+  const handleRowSelection = (
+    selectedRowIds: string[],
+    isSelectAll?: boolean,
+  ) => {
+    if (isSelectAll) {
+      if (selectedRowIds.length === 0) {
+        setIsAllSelected(false);
+        setSelectedRows([]);
+      } else {
+        setIsAllSelected(true);
+        setSelectedRows([]);
+      }
+    } else {
+      setIsAllSelected(false);
+      setSelectedRows(selectedRowIds);
+    }
+  };
 
   return (
     <div>
@@ -538,12 +558,20 @@ function EmployeesTable() {
         objectType={Employee}
         selectionMode="multiple"
         selectedRows={selectedRows}
-        onRowSelection={setSelectedRows}
+        isAllSelected={isAllSelected}
+        onRowSelection={handleRowSelection}
       />
     </div>
   );
 }
 ```
+
+**Key points about select all behavior:**
+
+- The `isSelectAll` parameter in `onRowSelection` indicates whether the change was triggered by the "select all" checkbox
+- When `isAllSelected` is `true`, the table shows all rows as selected regardless of the `selectedRows` array content
+- This allows efficient handling of "select all" without loading all object IDs
+- Individual row selections automatically set `isAllSelected` to `false`
 
 ### Example 12: Custom Column Type
 
