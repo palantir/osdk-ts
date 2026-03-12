@@ -115,7 +115,7 @@ export function BaseActionForm<
             </ActionButton>
           )}
           <ActionButton
-            variant="success"
+            variant="primary"
             type="submit"
             disabled={isSubmitDisabled || isSubmitting || isValidating}
           >
