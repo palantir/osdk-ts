@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ export const SOURCE_PK_IDX = 3;
 export const LINK_NAME_IDX = 4;
 export const WHERE_CLAUSE_IDX = 5;
 export const ORDER_BY_CLAUSE_IDX = 6;
+export const SELECT_IDX = 7;
 
 /**
  * Storage data format for link query cache entries, similar to ListStorageData
@@ -55,6 +56,7 @@ export interface SpecificLinkCacheKey extends
       linkName: string,
       whereClause: Canonical<SimpleWhereClause>,
       orderByClause: Canonical<Record<string, "asc" | "desc" | undefined>>,
+      select?: Canonical<readonly string[]> | undefined,
     ]
   >
 {

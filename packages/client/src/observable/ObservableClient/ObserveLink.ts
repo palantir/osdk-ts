@@ -42,6 +42,7 @@ export namespace ObserveLinks {
     pk: PrimaryKeyType<Q>;
     linkName: L;
     where?: WhereClause<CompileTimeMetadata<Q>["links"][L]["targetType"]>;
+    select?: readonly string[];
     pageSize?: number;
     orderBy?: OrderBy<CompileTimeMetadata<Q>["links"][L]["targetType"]>;
     invalidationMode?: InvalidationMode;

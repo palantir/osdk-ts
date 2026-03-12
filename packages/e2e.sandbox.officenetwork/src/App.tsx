@@ -108,6 +108,13 @@ function App() {
   } = useOsdkObjects(Employee, {
     pageSize: 200,
     orderBy: { fullName: "asc" },
+    $select: [
+      "fullName",
+      "employeeNumber",
+      "jobTitle",
+      "primaryOfficeId",
+      "leadEmployeeNumber",
+    ],
   });
 
   if (officesError) {
