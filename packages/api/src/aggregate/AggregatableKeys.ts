@@ -29,7 +29,10 @@ import type {
   PropertyKeys,
 } from "../ontology/ObjectOrInterface.js";
 import type { CompileTimeMetadata } from "../ontology/ObjectTypeDefinition.js";
-import type { WirePropertyTypes } from "../ontology/WirePropertyTypes.js";
+import type {
+  BaseWirePropertyTypes,
+  WirePropertyTypes,
+} from "../ontology/WirePropertyTypes.js";
 
 export type BaseAggregateOptions = "approximateDistinct" | "exactDistinct";
 
@@ -46,10 +49,21 @@ export type NumericAggregateOption =
   | "exactDistinct"
   | MinMaxAggregateOption;
 
-type AGG_FOR_TYPE<WIRE_TYPE extends WirePropertyTypes> = number extends
+export type AGG_FOR_TYPE<WIRE_TYPE extends WirePropertyTypes> = number extends
   GetWirePropertyValueFromClient<WIRE_TYPE> ? NumericAggregateOption
   : WIRE_TYPE extends "datetime" | "timestamp" ? DatetimeAggregateOption
   : BaseAggregateOptions;
+
+type IsStructType<T> = T extends Record<string, BaseWirePropertyTypes>
+  ? T extends BaseWirePropertyTypes ? false : true
+  : false;
+
+export type StructPropertyKeys<Q extends ObjectOrInterfaceDefinition> = {
+  [P in PropertyKeys<Q>]:
+    IsStructType<CompileTimeMetadata<Q>["properties"][P]["type"]> extends true
+      ? P
+      : never;
+}[PropertyKeys<Q>];
 
 type WITH_PROPERTIES_AGG_FOR_TYPE<WIRE_TYPE extends WirePropertyTypes> =
   number extends GetWirePropertyValueFromClient<WIRE_TYPE>
@@ -65,14 +79,19 @@ type WITH_PROPERTIES_AGG_FOR_SPECIAL_WIRE_TYPE<
   ? BaseWithPropAggregations
   : DistinctWithPropAggregateOption;
 
+type NonStructAggregatableKeys<Q extends ObjectOrInterfaceDefinition> = Exclude<
+  AggregatableKeys<Q>,
+  StructPropertyKeys<Q>
+>;
+
 export type ValidAggregationKeys<
   Q extends ObjectOrInterfaceDefinition,
   R extends "aggregate" | "withPropertiesAggregate" = "aggregate",
 > = keyof (
   & {
     [
-      KK in AggregatableKeys<Q> as `${KK & string}:${R extends "aggregate"
-        ? AGG_FOR_TYPE<
+      KK in NonStructAggregatableKeys<Q> as `${KK & string}:${R extends
+        "aggregate" ? AGG_FOR_TYPE<
           CompileTimeMetadata<Q>["properties"][KK]["type"]
         >
         : WITH_PROPERTIES_AGG_FOR_TYPE<
@@ -82,6 +101,11 @@ export type ValidAggregationKeys<
   }
   & { $count?: any }
 );
+
+export type ValidAggregationKeysWithStructs<
+  Q extends ObjectOrInterfaceDefinition,
+  R extends "aggregate" | "withPropertiesAggregate" = "aggregate",
+> = ValidAggregationKeys<Q, R> | StructPropertyKeys<Q>;
 
 export type AggregatableKeys<
   Q extends ObjectOrInterfaceDefinition,

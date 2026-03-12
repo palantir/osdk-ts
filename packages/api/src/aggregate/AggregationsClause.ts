@@ -15,15 +15,74 @@
  */
 
 import type { ObjectOrInterfaceDefinition } from "../ontology/ObjectOrInterface.js";
-import type { ValidAggregationKeys } from "./AggregatableKeys.js";
+import type { CompileTimeMetadata } from "../ontology/ObjectTypeDefinition.js";
+import type { BaseWirePropertyTypes } from "../ontology/WirePropertyTypes.js";
+import type {
+  AGG_FOR_TYPE,
+  StructPropertyKeys,
+  ValidAggregationKeys,
+} from "./AggregatableKeys.js";
+
+type StructAggregationClauseEntry<
+  StructType,
+  Order extends "unordered" | "asc" | "desc",
+> = StructType extends Record<string, BaseWirePropertyTypes> ? {
+    [
+      SF in keyof StructType & string as `${SF}:${AGG_FOR_TYPE<StructType[SF]>}`
+    ]?: Order;
+  }
+  : never;
+
+type StructAggregationClauseProperties<
+  Q extends ObjectOrInterfaceDefinition,
+  Order extends "unordered" | "asc" | "desc",
+> = {
+  [P in StructPropertyKeys<Q>]?: StructAggregationClauseEntry<
+    CompileTimeMetadata<Q>["properties"][P]["type"],
+    Order
+  >;
+};
+
+type UnorderedAggregationClauseNonStruct<
+  Q extends ObjectOrInterfaceDefinition,
+> = { [AK in ValidAggregationKeys<Q>]?: "unordered" };
+
+type OrderedAggregationClauseNonStruct<Q extends ObjectOrInterfaceDefinition> =
+  {
+    [AK in ValidAggregationKeys<Q>]?: "unordered" | "asc" | "desc";
+  };
 
 export type UnorderedAggregationClause<Q extends ObjectOrInterfaceDefinition> =
-  { [AK in ValidAggregationKeys<Q>]?: "unordered" };
+  [StructPropertyKeys<Q>] extends [never]
+    ? UnorderedAggregationClauseNonStruct<Q>
+    :
+      & UnorderedAggregationClauseNonStruct<Q>
+      & StructAggregationClauseProperties<Q, "unordered">;
 
-export type OrderedAggregationClause<Q extends ObjectOrInterfaceDefinition> = {
-  [AK in ValidAggregationKeys<Q>]?: "unordered" | "asc" | "desc";
-};
+export type OrderedAggregationClause<Q extends ObjectOrInterfaceDefinition> =
+  [StructPropertyKeys<Q>] extends [never] ? OrderedAggregationClauseNonStruct<Q>
+    :
+      & OrderedAggregationClauseNonStruct<Q>
+      & StructAggregationClauseProperties<Q, "unordered" | "asc" | "desc">;
+
+export type UnorderedAggregationClauseWithStructs<
+  Q extends ObjectOrInterfaceDefinition,
+> =
+  & UnorderedAggregationClause<Q>
+  & StructAggregationClauseProperties<Q, "unordered">;
+
+export type OrderedAggregationClauseWithStructs<
+  Q extends ObjectOrInterfaceDefinition,
+> =
+  & OrderedAggregationClause<Q>
+  & StructAggregationClauseProperties<Q, "unordered" | "asc" | "desc">;
 
 export type AggregationClause<Q extends ObjectOrInterfaceDefinition> =
   | UnorderedAggregationClause<Q>
   | OrderedAggregationClause<Q>;
+
+export type AggregationClauseWithStructs<
+  Q extends ObjectOrInterfaceDefinition,
+> =
+  | UnorderedAggregationClauseWithStructs<Q>
+  | OrderedAggregationClauseWithStructs<Q>;

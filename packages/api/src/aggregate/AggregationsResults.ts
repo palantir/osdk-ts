@@ -17,7 +17,7 @@
 import type { ObjectOrInterfaceDefinition } from "../ontology/ObjectOrInterface.js";
 import type {
   AggregatableKeys,
-  ValidAggregationKeys,
+  ValidAggregationKeysWithStructs,
 } from "./AggregatableKeys.js";
 import type { AggregateOpts } from "./AggregateOpts.js";
 import type { AggregationResultsWithGroups } from "./AggregationResultsWithGroups.js";
@@ -26,8 +26,8 @@ import type { AggregationResultsWithoutGroups } from "./AggregationResultsWithou
 export type AggregationsResults<
   Q extends ObjectOrInterfaceDefinition,
   AO extends AggregateOpts<Q>,
-> = Exclude<keyof AO["$select"], ValidAggregationKeys<Q>> extends never
-  ? unknown extends AO["$groupBy"] // groupBy is missing
+> = Exclude<keyof AO["$select"], ValidAggregationKeysWithStructs<Q>> extends
+  never ? unknown extends AO["$groupBy"] // groupBy is missing
     ? AggregationResultsWithoutGroups<Q, AO["$select"]>
   : Exclude<AO["$groupBy"], undefined> extends never // groupBy is explicitly undefined
     ? AggregationResultsWithoutGroups<Q, AO["$select"]>
@@ -39,5 +39,5 @@ export type AggregationsResults<
   >}`
   : `Sorry, the following are not valid selectors for an aggregation: ${Exclude<
     keyof AO["$select"] & string,
-    ValidAggregationKeys<Q>
+    ValidAggregationKeysWithStructs<Q>
   >}`;

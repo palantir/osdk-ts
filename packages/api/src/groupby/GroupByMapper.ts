@@ -30,6 +30,7 @@ export interface GroupByMapper {
   byte: NumericGroupByValue;
   double: NumericGroupByValue;
   integer: NumericGroupByValue;
+  long: NumericGroupByValue;
   timestamp: TimestampGroupByValue;
   datetime: DateGroupByValue;
   boolean: BooleanGroupByValue;

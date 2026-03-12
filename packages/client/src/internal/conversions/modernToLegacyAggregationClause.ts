@@ -15,10 +15,39 @@
  */
 
 import type { AggregationClause } from "@osdk/api";
-import type { AggregationV2 } from "@osdk/foundry.ontologies";
+import type {
+  AggregationV2,
+  PropertyIdentifier,
+} from "@osdk/foundry.ontologies";
 
-const directionFieldMap = (dir?: "asc" | "desc" | "unordered") =>
+type AggregationDirection = "asc" | "desc" | "unordered";
+
+const directionFieldMap = (dir?: AggregationDirection) =>
   dir === "asc" ? "ASC" : dir === "desc" ? "DESC" : undefined;
+
+function isAggregationDirection(value: unknown): value is AggregationDirection {
+  return value === "asc" || value === "desc" || value === "unordered";
+}
+
+function convertAggregationEntry(
+  property: PropertyIdentifier,
+  aggregationName: string,
+  metric: string,
+  direction: AggregationDirection,
+): AggregationV2 {
+  return {
+    type: metric as
+      | "approximateDistinct"
+      | "exactDistinct"
+      | "min"
+      | "max"
+      | "sum"
+      | "avg",
+    name: `${aggregationName}.${metric}`,
+    direction: directionFieldMap(direction),
+    propertyIdentifier: property,
+  };
+}
 
 /** @internal */
 export function modernToLegacyAggregationClause<
@@ -34,25 +63,41 @@ export function modernToLegacyAggregationClause<
         };
       }
 
+      if (
+        typeof aggregationType === "object"
+        && aggregationType != null
+        && !isAggregationDirection(aggregationType)
+      ) {
+        return Object.entries(
+          aggregationType as Record<string, AggregationDirection>,
+        ).map(([fieldAndMetric, direction]) => {
+          const colonPos = fieldAndMetric.lastIndexOf(":");
+          const structField = fieldAndMetric.slice(0, colonPos);
+          const metric = fieldAndMetric.slice(colonPos + 1);
+          return convertAggregationEntry(
+            {
+              type: "structField",
+              propertyApiName: propAndMetric,
+              structFieldApiName: structField,
+            },
+            `${propAndMetric}.${structField}`,
+            metric,
+            direction,
+          );
+        });
+      }
+
       const colonPos = propAndMetric.lastIndexOf(":");
       const property = propAndMetric.slice(0, colonPos);
       const metric = propAndMetric.slice(colonPos + 1);
 
       return [
-        {
-          type: metric as
-            | "approximateDistinct"
-            | "exactDistinct"
-            | "min"
-            | "max"
-            | "sum"
-            | "avg"
-            | "approximateDistinct"
-            | "exactDistinct",
-          name: `${property}.${metric}`,
-          direction: directionFieldMap(aggregationType),
-          field: property,
-        },
+        convertAggregationEntry(
+          { type: "property", apiName: property },
+          property,
+          metric,
+          aggregationType ?? "unordered",
+        ),
       ];
     },
   );
