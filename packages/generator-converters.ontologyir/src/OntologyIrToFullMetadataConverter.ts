@@ -368,7 +368,7 @@ export class OntologyIrToFullMetadataConverter {
           if (objData.linkTypes) {
             for (const lt of objData.linkTypes) {
               linkTypesMap[lt.apiName] = {
-                linkTypeId: lt.linkTypeRid ?? lt.apiName,
+                linkTypeId: lt.linkTypeRid || lt.apiName,
               };
             }
           }
