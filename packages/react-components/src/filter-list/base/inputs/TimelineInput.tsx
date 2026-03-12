@@ -80,9 +80,9 @@ function TimelineInputInner({
         {(startDate || endDate) && (
           <Button
             type="button"
-            className={styles.clearButton}
             onClick={handleClear}
             aria-label="Clear range"
+            className={styles.clearButton}
           >
             ×
           </Button>

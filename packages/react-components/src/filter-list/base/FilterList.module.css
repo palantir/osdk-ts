@@ -30,7 +30,7 @@
   position: sticky;
   bottom: 0;
   padding-top: var(--osdk-filter-list-addButton-padding-top);
-  background: var(--osdk-filter-list-addButton-container-bg, var(--osdk-filter-list-bg));
+  background: var(--osdk-filter-list-addButton-container-bg);
 }
 
 .addButtonContainer > * {

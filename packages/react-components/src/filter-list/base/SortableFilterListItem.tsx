@@ -16,38 +16,35 @@
 
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import type { ObjectSet, ObjectTypeDefinition, WhereClause } from "@osdk/api";
 import classnames from "classnames";
 import React, { useMemo } from "react";
-import type { FilterDefinitionUnion } from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
+import type { RenderFilterInput } from "./BaseFilterListApi.js";
 import { FilterListItem } from "./FilterListItem.js";
 import styles from "./FilterListItem.module.css";
 
-interface SortableFilterListItemProps<Q extends ObjectTypeDefinition> {
+interface SortableFilterListItemProps<D> {
   id: string;
-  objectType: Q;
-  objectSet: ObjectSet<Q>;
-  definition: FilterDefinitionUnion<Q>;
+  definition: D;
   filterKey: string;
+  label: string;
   filterState: FilterState | undefined;
   onFilterStateChanged: (
     filterKey: string,
     state: FilterState,
   ) => void;
-  whereClause: WhereClause<Q>;
+  renderInput: RenderFilterInput<D>;
 }
 
-export function SortableFilterListItem<Q extends ObjectTypeDefinition>({
+export function SortableFilterListItem<D>({
   id,
-  objectType,
-  objectSet,
   definition,
   filterKey,
+  label,
   filterState,
   onFilterStateChanged,
-  whereClause,
-}: SortableFilterListItemProps<Q>): React.ReactElement {
+  renderInput,
+}: SortableFilterListItemProps<D>): React.ReactElement {
   const {
     attributes,
     listeners,
@@ -69,13 +66,12 @@ export function SortableFilterListItem<Q extends ObjectTypeDefinition>({
       className={classnames(isDragging && styles.dragging)}
     >
       <FilterListItem
-        objectType={objectType}
-        objectSet={objectSet}
         definition={definition}
         filterKey={filterKey}
+        label={label}
         filterState={filterState}
         onFilterStateChanged={onFilterStateChanged}
-        whereClause={whereClause}
+        renderInput={renderInput}
         dragHandleAttributes={attributes}
         dragHandleListeners={listeners}
       />

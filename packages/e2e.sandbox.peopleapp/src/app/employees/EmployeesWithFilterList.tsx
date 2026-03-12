@@ -19,8 +19,8 @@ import {
   type FilterDefinitionUnion,
   FilterList,
 } from "@osdk/react-components/experimental";
-import { useOsdkObjects } from "@osdk/react/experimental";
 import "@osdk/react-components/styles.css";
+import { useOsdkObjects } from "@osdk/react/experimental";
 import { useState } from "react";
 
 import { List } from "../../components/List.js";
@@ -75,9 +75,6 @@ const INITIAL_FILTER_DEFINITIONS: FilterDefinitionUnion<Employee>[] = [
 
 export function EmployeesWithFilterList(props: EmployeesWithFilterListProps) {
   const [whereClause, setWhereClause] = useState<WhereClause<Employee>>({});
-  const [filterDefinitions] = useState<
-    FilterDefinitionUnion<Employee>[]
-  >(INITIAL_FILTER_DEFINITIONS);
 
   const employees = useOsdkObjects(Employee, {
     where: whereClause,
@@ -91,7 +88,7 @@ export function EmployeesWithFilterList(props: EmployeesWithFilterListProps) {
         <div style={{ minWidth: 280, maxWidth: 320 }}>
           <FilterList
             objectSet={$(Employee)}
-            filterDefinitions={filterDefinitions}
+            filterDefinitions={INITIAL_FILTER_DEFINITIONS}
             onFilterClauseChanged={setWhereClause}
             title="Filters"
             showActiveFilterCount={true}

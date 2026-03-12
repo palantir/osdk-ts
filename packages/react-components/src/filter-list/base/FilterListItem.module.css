@@ -60,8 +60,8 @@
   }
 
   &:focus-visible {
-    outline: 2px solid var(--osdk-filter-item-drag-handle-focus-outline-color);
-    outline-offset: 2px;
+    outline: var(--osdk-filter-input-focus-outline-width) solid var(--osdk-filter-item-drag-handle-focus-outline-color);
+    outline-offset: var(--osdk-filter-input-focus-outline-offset);
   }
 }
 

@@ -92,7 +92,7 @@
   }
 }
 
-.collapseIcon[data-collapsed="true"] {
+.collapsed {
   transform: rotate(-135deg);
 }
 

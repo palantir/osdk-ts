@@ -15,53 +15,36 @@
  */
 
 import { Button } from "@base-ui/react/button";
-import type {
-  ObjectSet,
-  ObjectTypeDefinition,
-  PropertyKeys,
-  WhereClause,
-} from "@osdk/api";
 import classnames from "classnames";
 import React, { memo, useCallback, useMemo, useState } from "react";
-import { usePropertyAggregation } from "../../hooks/usePropertyAggregation.js";
+import type { PropertyAggregationValue } from "../../types/AggregationTypes.js";
 import styles from "./ListogramInput.module.css";
 import sharedStyles from "./shared.module.css";
 
-interface ListogramInputProps<
-  Q extends ObjectTypeDefinition,
-  K extends PropertyKeys<Q>,
-> {
-  objectType: Q;
-  propertyKey: K;
+interface ListogramInputProps {
+  values: PropertyAggregationValue[];
+  maxCount: number;
+  isLoading: boolean;
+  error: Error | null;
   selectedValues: string[];
   onChange: (values: string[]) => void;
-  objectSet?: ObjectSet<Q>;
-  whereClause?: WhereClause<Q>;
   className?: string;
   style?: React.CSSProperties;
   maxVisibleItems?: number;
 }
 
-function ListogramInputInner<
-  Q extends ObjectTypeDefinition,
-  K extends PropertyKeys<Q>,
->({
-  objectType,
-  propertyKey,
+function ListogramInputInner({
+  values,
+  maxCount,
+  isLoading,
+  error,
   selectedValues,
   onChange,
-  whereClause,
   className,
   style,
   maxVisibleItems,
-}: ListogramInputProps<Q, K>): React.ReactElement {
+}: ListogramInputProps): React.ReactElement {
   const [isExpanded, setIsExpanded] = useState(false);
-
-  const { data: values, maxCount, isLoading, error } = usePropertyAggregation(
-    objectType,
-    propertyKey,
-    { where: whereClause },
-  );
 
   const selectedSet = useMemo(() => new Set(selectedValues), [selectedValues]);
 
@@ -116,7 +99,6 @@ function ListogramInputInner<
             return (
               <Button
                 key={value}
-                type="button"
                 className={styles.row}
                 onClick={() => toggleValue(value)}
                 aria-pressed={isSelected}
@@ -125,7 +107,9 @@ function ListogramInputInner<
                 <span className={styles.bar}>
                   <span
                     className={styles.barFill}
-                    style={{ width: `${percentage}%` }}
+                    style={{
+                      "--bar-scale": percentage / 100,
+                    } as React.CSSProperties}
                   />
                 </span>
                 <span className={styles.count}>

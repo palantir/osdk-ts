@@ -153,6 +153,16 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
   enableSorting?: boolean;
 
   /**
+   * Whether the filter list panel is collapsed
+   */
+  collapsed?: boolean;
+
+  /**
+   * Called when the collapsed state changes
+   */
+  onCollapsedChange?: (collapsed: boolean) => void;
+
+  /**
    * Show reset filters button in header
    */
   showResetButton?: boolean;

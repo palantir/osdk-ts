@@ -15,6 +15,7 @@
  */
 
 import { Button } from "@base-ui/react/button";
+import classnames from "classnames";
 import React, { memo, type ReactNode, useCallback } from "react";
 import styles from "./FilterListHeader.module.css";
 
@@ -55,8 +56,10 @@ function FilterListHeaderInner({
           aria-label={collapsed ? "Expand filters" : "Collapse filters"}
         >
           <span
-            className={styles.collapseIcon}
-            data-collapsed={collapsed}
+            className={classnames(
+              styles.collapseIcon,
+              collapsed && styles.collapsed,
+            )}
           />
         </Button>
       )}
