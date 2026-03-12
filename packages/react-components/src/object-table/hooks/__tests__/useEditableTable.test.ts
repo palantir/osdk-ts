@@ -296,4 +296,111 @@ describe("useEditableTable", () => {
       expect(result.current.editModeState.isActive).toBe(false);
     }
   });
+
+  it("adds validation error when onCellValidationError is called", () => {
+    const { result } = renderHook(() =>
+      useEditableTable({ editMode: "always" })
+    );
+    const cellId = getCellId({ rowId: "row-1", columnId: "col-1" });
+    const errorMessage = "Value must be positive";
+
+    act(() => {
+      result.current.onCellValidationError(cellId, errorMessage);
+    });
+
+    expect(result.current.validationErrors.get(cellId)).toBe(errorMessage);
+  });
+
+  it("clears validation error when cell is edited with valid value", () => {
+    const { result } = renderHook(() =>
+      useEditableTable({ editMode: "always" })
+    );
+    const cellId = getCellId({ rowId: "row-1", columnId: "col-1" });
+    const errorMessage = "Value must be positive";
+    const mockRowData = createMockObjectInstance("row-1");
+
+    // First add a validation error
+    act(() => {
+      result.current.onCellValidationError(cellId, errorMessage);
+    });
+
+    expect(result.current.validationErrors.has(cellId)).toBe(true);
+
+    // Then edit the cell with a valid value
+    const edit = {
+      rowId: "row-1",
+      columnId: "col-1",
+      newValue: "valid value",
+      oldValue: "old value",
+      originalRowData: mockRowData,
+    };
+
+    act(() => {
+      result.current.onCellEdit(cellId, edit);
+    });
+
+    // Validation error should be cleared
+    expect(result.current.validationErrors.has(cellId)).toBe(false);
+  });
+
+  it("maintains validation errors for multiple cells", () => {
+    const { result } = renderHook(() =>
+      useEditableTable({ editMode: "always" })
+    );
+    const cellId1 = getCellId({ rowId: "row-1", columnId: "col-1" });
+    const cellId2 = getCellId({ rowId: "row-2", columnId: "col-2" });
+    const cellId3 = getCellId({ rowId: "row-3", columnId: "col-3" });
+
+    act(() => {
+      result.current.onCellValidationError(cellId1, "Error 1");
+      result.current.onCellValidationError(cellId2, "Error 2");
+      result.current.onCellValidationError(cellId3, "Error 3");
+    });
+
+    expect(result.current.validationErrors.size).toBe(3);
+    expect(result.current.validationErrors.get(cellId1)).toBe("Error 1");
+    expect(result.current.validationErrors.get(cellId2)).toBe("Error 2");
+    expect(result.current.validationErrors.get(cellId3)).toBe("Error 3");
+  });
+
+  it("clears all validation errors when clearEdits is called", () => {
+    const { result } = renderHook(() =>
+      useEditableTable({ editMode: "always" })
+    );
+    const cellId1 = getCellId({ rowId: "row-1", columnId: "col-1" });
+    const cellId2 = getCellId({ rowId: "row-2", columnId: "col-2" });
+
+    act(() => {
+      result.current.onCellValidationError(cellId1, "Error 1");
+      result.current.onCellValidationError(cellId2, "Error 2");
+    });
+
+    expect(result.current.validationErrors.size).toBe(2);
+
+    act(() => {
+      result.current.clearEdits();
+    });
+
+    expect(result.current.validationErrors.size).toBe(0);
+  });
+
+  it("replaces previous validation error with new one for same cell", () => {
+    const { result } = renderHook(() =>
+      useEditableTable({ editMode: "always" })
+    );
+    const cellId = getCellId({ rowId: "row-1", columnId: "col-1" });
+
+    act(() => {
+      result.current.onCellValidationError(cellId, "First error");
+    });
+
+    expect(result.current.validationErrors.get(cellId)).toBe("First error");
+
+    act(() => {
+      result.current.onCellValidationError(cellId, "Second error");
+    });
+
+    expect(result.current.validationErrors.get(cellId)).toBe("Second error");
+    expect(result.current.validationErrors.size).toBe(1);
+  });
 });

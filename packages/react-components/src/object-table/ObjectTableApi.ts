@@ -59,16 +59,9 @@ export type ColumnDefinition<
    * Additional function to validate the cell value during edit
    *
    * @param value the current cell value
-   * @returns a boolean promise indicating whether the value is valid
+   * @returns a promise that resolves to an error message string if validation fails, or undefined if validation succeeds
    */
-  validate?: (value: unknown) => Promise<boolean>;
-
-  /**
-   * A callback to return a custom error message if validation failed
-   *
-   * @returns the error message to display
-   */
-  onValidationError?: () => string;
+  validateEdit?: (value: unknown) => Promise<string | undefined>;
 
   renderCell?: (
     object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,

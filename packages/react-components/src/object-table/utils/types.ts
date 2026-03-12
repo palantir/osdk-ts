@@ -52,6 +52,6 @@ export interface EditableConfig<
   onSubmitEdits?: () => Promise<boolean>;
   clearEdits: () => void;
   editModeState: EditModeState;
-  onCellValidationError: (cellId: string) => void;
-  validationErrors: Set<string>;
+  onCellValidationError: (cellId: string, errorMessage: string) => void;
+  validationErrors: Map<string, string>;
 }

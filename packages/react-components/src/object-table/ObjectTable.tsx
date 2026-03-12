@@ -201,6 +201,7 @@ export function ObjectTable<
       onCellValidationError: editableConfig.onCellValidationError,
       cellEdits: editableConfig.cellEdits,
       isInEditMode: editableConfig.editModeState.isActive,
+      validationErrors: editableConfig.validationErrors,
     },
   });
 

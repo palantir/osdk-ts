@@ -78,12 +78,11 @@ const columnDefinitions: Array<
   {
     locator: { type: "property", id: "email" },
     editable: true,
-    validate: async (value) => {
+    validateEdit: async (value) => {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      return emailRegex.test(value as string);
-    },
-    onValidationError: (error) => {
-      return "Please enter a valid email address";
+      return emailRegex.test(value as string)
+        ? undefined
+        : "Please enter a valid email address";
     },
   },
 ];

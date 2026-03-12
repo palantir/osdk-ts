@@ -1218,25 +1218,27 @@ export const EditableWithValidation: Story = {
       {
         locator: { type: "property", id: "fullName" },
         editable: true,
-        validate: async (value: string) => {
-          return value.trim().length >= 2;
+        validateEdit: async (value: string) => {
+          return value.trim().length >= 2
+            ? undefined
+            : "Name must be at least 2 characters long";
         },
-        onValidationError: () => "Name must be at least 2 characters long",
       },
       {
         locator: { type: "property", id: "emailPrimaryWork" },
         editable: true,
-        validate: async (value: string) => {
+        validateEdit: async (value: string) => {
           const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-          return emailRegex.test(value);
+          return emailRegex.test(value)
+            ? undefined
+            : "Please enter a valid email address";
         },
-        onValidationError: () => "Please enter a valid email address",
       },
       {
         locator: { type: "property", id: "employeeNumber" },
         editable: true,
-        validate: async (value: number) => {
-          return value > 0;
+        validateEdit: async (value: number) => {
+          return value > 0 ? undefined : "Employee number must be positive";
         },
       },
     ],
@@ -1252,27 +1254,24 @@ export const EditableWithValidation: Story = {
   {
     locator: { type: "property", id: "fullName" },
     editable: true,
-    validate: async (value: string) => {
-      return value.trim().length >= 2;
+    validateEdit: async (value: string) => {
+      return value.trim().length >= 2 ? undefined : "Name must be at least 2 characters long";
     },
-    onValidationError: () => "Name must be at least 2 characters long",
   },
   {
     locator: { type: "property", id: "emailPrimaryWork" },
     editable: true,
-    validate: async (value: string) => {
+    validateEdit: async (value: string) => {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      return emailRegex.test(value);
+      return emailRegex.test(value) ? undefined : "Please enter a valid email address";
     },
-    onValidationError: () => "Please enter a valid email address",
   },
   {
     locator: { type: "property", id: "employeeNumber" },
     editable: true,
-    validate: async (value: number) => {
-      return value > 0;
+    validateEdit: async (value: number) => {
+      return value > 0 ? undefined : "Employee number must be positive";
     },
-    // Use default error message if onValidationError is not provided
 ];
 
 return (

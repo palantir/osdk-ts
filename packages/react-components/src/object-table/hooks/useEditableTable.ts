@@ -87,9 +87,17 @@ export function useEditableTable<
   >(
     {},
   );
-  const [validationErrors, setValidationErrors] = useState<Set<string>>(
-    new Set(),
+  const [validationErrors, setValidationErrors] = useState<Map<string, string>>(
+    new Map(),
   );
+
+  const clearValidationError = useCallback((cellId: string) => {
+    setValidationErrors(prev => {
+      const newErrors = new Map(prev);
+      newErrors.delete(cellId);
+      return newErrors;
+    });
+  }, []);
 
   const handleCellEdit = useCallback(
     (
@@ -113,20 +121,16 @@ export function useEditableTable<
       }
 
       // Clear validation error for this cell when it's successfully edited
-      setValidationErrors(prev => {
-        const newErrors = new Set(prev);
-        newErrors.delete(cellId);
-        return newErrors;
-      });
+      clearValidationError(cellId);
 
       onCellValueChanged?.(info);
     },
-    [onCellValueChanged],
+    [onCellValueChanged, clearValidationError],
   );
 
   const clearEdits = useCallback(() => {
     setCellEdits({});
-    setValidationErrors(new Set());
+    setValidationErrors(new Map());
   }, []);
 
   const handleSubmitEdits = useCallback(async () => {
@@ -134,13 +138,16 @@ export function useEditableTable<
     return onSubmitEdits ? onSubmitEdits(edits) : false;
   }, [cellEdits, onSubmitEdits]);
 
-  const onCellValidationError = useCallback((cellId: string) => {
-    setValidationErrors(prev => {
-      const newErrors = new Set(prev);
-      newErrors.add(cellId);
-      return newErrors;
-    });
-  }, []);
+  const onCellValidationError = useCallback(
+    (cellId: string, errorMessage: string) => {
+      setValidationErrors(prev => {
+        const newErrors = new Map(prev);
+        newErrors.set(cellId, errorMessage);
+        return newErrors;
+      });
+    },
+    [],
+  );
 
   const editModeState: EditModeState = editMode === "always"
     ? { type: "always", isActive: true }

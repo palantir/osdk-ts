@@ -29,12 +29,12 @@ export interface EditableCellProps<TData extends RowData, CellValue = unknown> {
   cellId: string;
   dataType?: string;
   onCellEdit: (cellId: string, info: CellEditInfo<TData, CellValue>) => void;
-  onCellValidationError?: (cellId: string) => void;
+  onCellValidationError?: (cellId: string, errorMessage: string) => void;
+  validationError?: string;
   originalRowData: TData;
   rowId: string;
   columnId: string;
-  validate?: (value: unknown) => Promise<boolean>;
-  onValidationError?: () => string;
+  validateEdit?: (value: unknown) => Promise<string | undefined>;
 }
 
 const NUMBER_TYPES: string[] = [
@@ -79,7 +79,7 @@ function parseValueByType(
   return parsedNumber;
 }
 
-const VALIDATION_ERROR_MESSAGE = "Validation failed";
+const VALIDATION_ERROR_MESSAGE = "Validation error";
 
 function EditableCellInner<TData extends RowData, CellValue = unknown>({
   initialValue,
@@ -91,60 +91,61 @@ function EditableCellInner<TData extends RowData, CellValue = unknown>({
   originalRowData,
   rowId,
   columnId,
-  validate,
-  onValidationError,
+  validateEdit,
+  validationError,
 }: EditableCellProps<TData, CellValue>): React.ReactElement {
   const [inputValue, setInputValue] = useState<string>(
     valueToString(currentValue),
   );
-  const [validationError, setValidationError] = useState<string | null>(null);
   const isCancelled = useRef(false);
+  const hasValidationError = validationError != null;
+  const isEdited = currentValue !== initialValue;
 
   useEffect(() => {
     setInputValue(valueToString(currentValue));
   }, [currentValue]);
 
-  const handleBlur = useCallback(async () => {
+  const validateAndCommit = useCallback((value: string) => {
     // Do not commit the edit if it was cancelled with Escape key
     if (isCancelled.current) {
       isCancelled.current = false;
       return;
     }
 
-    const parsedValue = parseValueByType(inputValue, dataType);
+    const parsedValue = parseValueByType(value, dataType);
 
-    // Perform validation if validate function is provided
-    if (validate) {
-      try {
-        const isValid = await validate(parsedValue);
-        if (!isValid) {
-          const errorMessage = onValidationError
-            ? onValidationError()
-            : VALIDATION_ERROR_MESSAGE;
-          setValidationError(errorMessage);
-          onCellValidationError?.(cellId);
-          return;
-        }
-      } catch (err) {
-        const errorMessage = onValidationError
-          ? onValidationError()
-          : VALIDATION_ERROR_MESSAGE;
-        setValidationError(errorMessage);
-        onCellValidationError?.(cellId);
-        return;
-      }
+    // If no validation function, commit immediately
+    if (!validateEdit) {
+      onCellEdit(cellId, {
+        rowId,
+        columnId,
+        newValue: parsedValue as CellValue,
+        oldValue: initialValue,
+        originalRowData,
+      });
+      return;
     }
 
-    setValidationError(null);
-    onCellEdit(cellId, {
-      rowId,
-      columnId,
-      newValue: parsedValue as CellValue,
-      oldValue: initialValue,
-      originalRowData,
-    });
+    // Perform async validation
+    validateEdit(parsedValue).then(
+      (errorMessage) => {
+        if (errorMessage) {
+          onCellValidationError?.(cellId, errorMessage);
+        } else {
+          onCellEdit(cellId, {
+            rowId,
+            columnId,
+            newValue: parsedValue as CellValue,
+            oldValue: initialValue,
+            originalRowData,
+          });
+        }
+      },
+      () => {
+        onCellValidationError?.(cellId, VALIDATION_ERROR_MESSAGE);
+      },
+    );
   }, [
-    inputValue,
     initialValue,
     onCellEdit,
     onCellValidationError,
@@ -153,17 +154,22 @@ function EditableCellInner<TData extends RowData, CellValue = unknown>({
     rowId,
     columnId,
     originalRowData,
-    validate,
-    onValidationError,
+    validateEdit,
   ]);
+
+  const handleBlur = useCallback(() => {
+    // Do not commit the edit if it was cancelled with Escape key
+    if (isCancelled.current) {
+      isCancelled.current = false;
+      return;
+    }
+
+    validateAndCommit(inputValue);
+  }, [inputValue, validateAndCommit]);
 
   const handleChange = useCallback((value: string) => {
     setInputValue(value);
-    // Clear validation error when user starts typing
-    if (validationError) {
-      setValidationError(null);
-    }
-  }, [validationError]);
+  }, []);
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -183,15 +189,13 @@ function EditableCellInner<TData extends RowData, CellValue = unknown>({
     ? "number"
     : "text";
 
-  const isEdited = currentValue !== initialValue;
-
   return (
     <Tooltip.Provider>
-      <Tooltip.Root disabled={!validationError}>
+      <Tooltip.Root disabled={!hasValidationError}>
         <Tooltip.Trigger>
           <div
             className={classNames(styles.osdkEditableCell, {
-              [styles.error]: !!validationError,
+              [styles.error]: hasValidationError,
               [styles.osdkEditedInput]: isEdited,
             })}
           >
@@ -202,9 +206,9 @@ function EditableCellInner<TData extends RowData, CellValue = unknown>({
               onValueChange={handleChange}
               onBlur={handleBlur}
               onKeyDown={handleKeyDown}
-              aria-invalid={!!validationError}
+              aria-invalid={hasValidationError}
             />
-            {validationError && <Error className={styles.errorIcon} />}
+            {hasValidationError && <Error className={styles.errorIcon} />}
           </div>
         </Tooltip.Trigger>
         <Tooltip.Portal>

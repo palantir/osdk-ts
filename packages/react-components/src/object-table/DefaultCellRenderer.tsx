@@ -36,6 +36,7 @@ export function renderDefaultCell<TData extends RowData>(
   const cellEdits = meta.cellEdits;
   const editedValue = cellEdits?.[cellId];
   const currentValue = editedValue?.newValue ?? cellContext.getValue();
+  const validationError = meta.validationErrors?.get(cellId);
 
   return (
     <EditableCell<TData>
@@ -48,8 +49,8 @@ export function renderDefaultCell<TData extends RowData>(
       originalRowData={cellContext.row.original}
       rowId={rowId}
       columnId={columnId}
-      validate={columnMeta?.validate}
-      onValidationError={columnMeta?.onValidationError}
+      validateEdit={columnMeta?.validateEdit}
+      validationError={validationError}
     />
   );
 }

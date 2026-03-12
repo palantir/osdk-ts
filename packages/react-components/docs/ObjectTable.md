@@ -164,8 +164,7 @@ type ColumnDefinition<Q, RDPs, FunctionColumns> = {
   orderable?: boolean; // Allow column sorting
   filterable?: boolean; // Allow column filtering
   editable?: boolean; // Allow inline editing for this column (currently supports text and number types)
-  validate?: (value: unknown) => Promise<boolean>; // Custom validation function for cell values
-  onValidationError?: () => string; // Custom error message when validation fails
+  validateEdit?: (value: unknown) => Promise<string | undefined>; // Custom validation function for cell edits
   renderCell?: (object, locator) => React.ReactNode; // Custom cell renderer
   columnName?: string; // Custom column name for the header
   renderHeader?: () => React.ReactNode; // Custom header renderer (takes precedence over columnName)
@@ -608,12 +607,13 @@ const columnDefinitions: Array<ColumnDefinition<typeof Employee>> = [
   {
     locator: { type: "property", id: "email" },
     editable: true,
-    validate: async (value) => {
+    validateEdit: async (value) => {
       // Custom validation function
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      return emailRegex.test(value as string);
+      return emailRegex.test(value as string)
+        ? undefined
+        : "Please enter a valid email address";
     },
-    onValidationError: () => "Please enter a valid email address", // Custom error message
   },
   {
     locator: { type: "property", id: "department" },
