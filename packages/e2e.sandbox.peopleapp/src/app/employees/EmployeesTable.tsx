@@ -75,16 +75,6 @@ const columnDefinitions: Array<
     },
     orderable: false,
   },
-  {
-    locator: { type: "property", id: "email" },
-    editable: true,
-    validateEdit: async (value) => {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      return emailRegex.test(value as string)
-        ? undefined
-        : "Please enter a valid email address";
-    },
-  },
 ];
 
 export function EmployeesTable() {
