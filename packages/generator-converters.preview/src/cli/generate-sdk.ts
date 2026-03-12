@@ -176,6 +176,11 @@ async function main(): Promise<void> {
         type: "string",
         coerce: path.resolve,
       },
+      "functions-ir-output-file": {
+        describe: "Output file for discovered function IR",
+        type: "string",
+        coerce: path.resolve,
+      },
       "node-modules-path": {
         describe:
           "Path to node_modules containing @foundry packages (for TS function discovery)",
@@ -281,6 +286,7 @@ async function main(): Promise<void> {
         argv.nodeModulesPath,
         argv.pythonFunctionsDir,
         effectivePythonRootDir,
+        argv.functionsIrOutputFile,
         previewMetadata,
       );
 
