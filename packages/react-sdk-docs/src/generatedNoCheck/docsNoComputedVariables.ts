@@ -27,12 +27,12 @@ export const snippets: SdkSnippets<typeof OSDK_SNIPPETS_SPEC> = {
         ],
         "reactUseOsdkObjectByPrimaryKey": [
           {
-            "template": "import { {{objectType}} } from \"{{{packageName}}}\";\nimport { useOsdkObject } from \"@osdk/react/experimental\";\n\nfunction {{objectType}}Detail({ primaryKey }: { primaryKey: string }) {\n  const { data, isLoading, error } = useOsdkObject({{objectType}}, primaryKey);\n\n  return (\n    <div>\n      {error && <div className=\"error-banner\">Error: {error.message}</div>}\n      {isLoading && !data && <div className=\"skeleton\">Loading...</div>}\n      {data && (\n        <div>\n          <h2>{data.{{titleProperty}}}</h2>\n        </div>\n      )}\n    </div>\n  );\n}"
+            "template": "import { {{objectType}} } from \"{{{packageName}}}\";\nimport { useOsdkObject } from \"@osdk/react/experimental\";\n\nfunction {{objectType}}Detail({ primaryKey }: { primaryKey: string }) {\n  const { object, isLoading, error } = useOsdkObject({{objectType}}, primaryKey);\n\n  return (\n    <div>\n      {error && <div className=\"error-banner\">Error: {error.message}</div>}\n      {isLoading && !object && <div className=\"skeleton\">Loading...</div>}\n      {object && (\n        <div>\n          <h2>{object.{{titleProperty}}}</h2>\n        </div>\n      )}\n    </div>\n  );\n}"
           }
         ],
         "reactUseLinksBasic": [
           {
-            "template": "import { {{sourceObjectType}} } from \"{{{packageName}}}\";\nimport { useLinks } from \"@osdk/react/experimental\";\n\nfunction Linked{{linkedObjectType}}({ source }: { source: {{sourceObjectType}}.OsdkInstance }) {\n  const { data, isLoading, error } = useLinks(source, \"{{linkApiName}}\");\n\n  return (\n    <div>\n      {error && <div className=\"error-banner\">Error: {error.message}</div>}\n      {isLoading && !data && <div className=\"skeleton\">Loading...</div>}\n      <ul>\n        {data?.map(linked => (\n          <li key={linked.$primaryKey}>{linked.$primaryKey}</li>\n        ))}\n      </ul>\n    </div>\n  );\n}"
+            "template": "import { {{sourceObjectType}} } from \"{{{packageName}}}\";\nimport { useLinks } from \"@osdk/react/experimental\";\n\nfunction Linked{{linkedObjectType}}({ source }: { source: {{sourceObjectType}}.OsdkInstance }) {\n  const { links, isLoading, error } = useLinks(source, \"{{linkApiName}}\");\n\n  return (\n    <div>\n      {error && <div className=\"error-banner\">Error: {error.message}</div>}\n      {isLoading && !links && <div className=\"skeleton\">Loading...</div>}\n      <ul>\n        {links?.map(linked => (\n          <li key={linked.$primaryKey}>{linked.$primaryKey}</li>\n        ))}\n      </ul>\n    </div>\n  );\n}"
           }
         ],
         "reactUseOsdkActionBasic": [
@@ -55,7 +55,7 @@ export const snippets: SdkSnippets<typeof OSDK_SNIPPETS_SPEC> = {
         ],
         "loadSingleObjectGuide": [
           {
-            "template": "import { {{objectType}} } from \"{{{packageName}}}\";\nimport { useOsdkObject } from \"@osdk/react/experimental\";\n\nfunction {{objectType}}Detail({ primaryKey }: { primaryKey: string }) {\n  const { data, isLoading, error } = useOsdkObject({{objectType}}, primaryKey);\n\n  return (\n    <div>\n      {error && <div>Error: {error.message}</div>}\n      {isLoading && !data && <div>Loading...</div>}\n      {data && <div>{data.{{titleProperty}}}</div>}\n    </div>\n  );\n}"
+            "template": "import { {{objectType}} } from \"{{{packageName}}}\";\nimport { useOsdkObject } from \"@osdk/react/experimental\";\n\nfunction {{objectType}}Detail({ primaryKey }: { primaryKey: string }) {\n  const { object, isLoading, error } = useOsdkObject({{objectType}}, primaryKey);\n\n  return (\n    <div>\n      {error && <div>Error: {error.message}</div>}\n      {isLoading && !object && <div>Loading...</div>}\n      {object && <div>{object.{{titleProperty}}}</div>}\n    </div>\n  );\n}"
           }
         ],
         "loadObjectPageGuide": [
@@ -75,7 +75,7 @@ export const snippets: SdkSnippets<typeof OSDK_SNIPPETS_SPEC> = {
         ],
         "loadSingleObjectReference": [
           {
-            "template": "import { {{objectType}} } from \"{{{packageName}}}\";\nimport { useOsdkObject } from \"@osdk/react/experimental\";\n\nfunction {{objectType}}Detail({ primaryKey }: { primaryKey: string }) {\n  const { data, isLoading, error } = useOsdkObject({{objectType}}, primaryKey);\n\n  return (\n    <div>\n      {error && <div>Error: {error.message}</div>}\n      {isLoading && !data && <div>Loading...</div>}\n      {data && <div>{data.{{titleProperty}}}</div>}\n    </div>\n  );\n}"
+            "template": "import { {{objectType}} } from \"{{{packageName}}}\";\nimport { useOsdkObject } from \"@osdk/react/experimental\";\n\nfunction {{objectType}}Detail({ primaryKey }: { primaryKey: string }) {\n  const { object, isLoading, error } = useOsdkObject({{objectType}}, primaryKey);\n\n  return (\n    <div>\n      {error && <div>Error: {error.message}</div>}\n      {isLoading && !object && <div>Loading...</div>}\n      {object && <div>{object.{{titleProperty}}}</div>}\n    </div>\n  );\n}"
           }
         ],
         "loadObjectsReference": [
@@ -90,12 +90,12 @@ export const snippets: SdkSnippets<typeof OSDK_SNIPPETS_SPEC> = {
         ],
         "loadLinkedObjectReference": [
           {
-            "template": "import { {{sourceObjectType}} } from \"{{{packageName}}}\";\nimport { useLinks } from \"@osdk/react/experimental\";\n\nfunction {{linkedObjectType}}Detail({ source }: { source: {{sourceObjectType}}.OsdkInstance }) {\n  const { data, isLoading, error } = useLinks(source, \"{{linkApiName}}\");\n  const linkedObject = data?.[0];\n\n  return (\n    <div>\n      {error && <div>Error: {error.message}</div>}\n      {isLoading && !data && <div>Loading...</div>}\n      {linkedObject && <div>{linkedObject.$primaryKey}</div>}\n    </div>\n  );\n}"
+            "template": "import { {{sourceObjectType}} } from \"{{{packageName}}}\";\nimport { useLinks } from \"@osdk/react/experimental\";\n\nfunction {{linkedObjectType}}Detail({ source }: { source: {{sourceObjectType}}.OsdkInstance }) {\n  const { links, isLoading, error } = useLinks(source, \"{{linkApiName}}\");\n  const linkedObject = links?.[0];\n\n  return (\n    <div>\n      {error && <div>Error: {error.message}</div>}\n      {isLoading && !links && <div>Loading...</div>}\n      {linkedObject && <div>{linkedObject.$primaryKey}</div>}\n    </div>\n  );\n}"
           }
         ],
         "loadLinkedObjectsReference": [
           {
-            "template": "import { {{sourceObjectType}} } from \"{{{packageName}}}\";\nimport { useLinks } from \"@osdk/react/experimental\";\n\nfunction Linked{{linkedObjectType}}List({ source }: { source: {{sourceObjectType}}.OsdkInstance }) {\n  const { data, isLoading, error, fetchMore } = useLinks(source, \"{{linkApiName}}\");\n\n  return (\n    <div>\n      {error && <div>Error: {error.message}</div>}\n      {isLoading && !data && <div>Loading...</div>}\n      <ul>\n        {data?.map(obj => <li key={obj.$primaryKey}>{obj.$primaryKey}</li>)}\n      </ul>\n      {fetchMore && <button onClick={fetchMore}>Load more</button>}\n    </div>\n  );\n}"
+            "template": "import { {{sourceObjectType}} } from \"{{{packageName}}}\";\nimport { useLinks } from \"@osdk/react/experimental\";\n\nfunction Linked{{linkedObjectType}}List({ source }: { source: {{sourceObjectType}}.OsdkInstance }) {\n  const { links, isLoading, error, fetchMore } = useLinks(source, \"{{linkApiName}}\");\n\n  return (\n    <div>\n      {error && <div>Error: {error.message}</div>}\n      {isLoading && !links && <div>Loading...</div>}\n      <ul>\n        {links?.map(obj => <li key={obj.$primaryKey}>{obj.$primaryKey}</li>)}\n      </ul>\n      {fetchMore && <button onClick={fetchMore}>Load more</button>}\n    </div>\n  );\n}"
           }
         ],
         "aggregationTemplate": [
@@ -156,12 +156,12 @@ export const snippets: SdkSnippets<typeof OSDK_SNIPPETS_SPEC> = {
         ],
         "applyActionResponse": [
           {
-            "template": "// React hooks handle response state automatically\n// Access the result via the hook's return value\nimport { {{actionApiName}} } from \"{{{packageName}}}\";\nimport { useOsdkAction } from \"@osdk/react/experimental\";\n\nfunction {{actionApiName}}WithResult() {\n  const { applyAction, isPending, error, result } = useOsdkAction({{actionApiName}});\n\n  // result contains the action result after successful execution\n  return (\n    <div>\n      {result && <div>Action completed successfully</div>}\n    </div>\n  );\n}"
+            "template": "import { {{actionApiName}} } from \"{{{packageName}}}\";\nimport { useOsdkAction } from \"@osdk/react/experimental\";\n\nfunction {{actionApiName}}WithResult() {\n  const { applyAction, isPending, error, data } = useOsdkAction({{actionApiName}});\n\n  return (\n    <div>\n      {data && <div>Action completed successfully</div>}\n    </div>\n  );\n}"
           }
         ],
         "validateAction": [
           {
-            "template": "import { {{actionApiName}} } from \"{{{packageName}}}\";\nimport { useOsdkAction } from \"@osdk/react/experimental\";\nimport { useState, useEffect } from \"react\";\n\nfunction {{actionApiName}}WithValidation() {\n  const { validateAction, applyAction, isPending, validationResult } = useOsdkAction({{actionApiName}});\n  const [params, setParams] = useState({});\n\n  useEffect(() => {\n    validateAction(params);\n  }, [params, validateAction]);\n\n  return (\n    <div>\n      {validationResult?.isValid === false && (\n        <div>Validation errors present</div>\n      )}\n      <button\n        onClick={() => applyAction(params)}\n        disabled={isPending || validationResult?.isValid === false}\n      >\n        {isPending ? \"Applying...\" : \"Apply\"}\n      </button>\n    </div>\n  );\n}"
+            "template": "import { {{actionApiName}} } from \"{{{packageName}}}\";\nimport { useOsdkAction } from \"@osdk/react/experimental\";\nimport { useState, useEffect } from \"react\";\n\nfunction {{actionApiName}}WithValidation() {\n  const { validateAction, applyAction, isPending, validationResult } = useOsdkAction({{actionApiName}});\n  const [params, setParams] = useState({});\n\n  useEffect(() => {\n    validateAction(params);\n  }, [params, validateAction]);\n\n  return (\n    <div>\n      {validationResult?.result === \"INVALID\" && (\n        <div>Validation errors present</div>\n      )}\n      <button\n        onClick={() => applyAction(params)}\n        disabled={isPending || validationResult?.result === \"INVALID\"}\n      >\n        {isPending ? \"Applying...\" : \"Apply\"}\n      </button>\n    </div>\n  );\n}"
           }
         ],
         "batchApplyAction": [
@@ -176,12 +176,12 @@ export const snippets: SdkSnippets<typeof OSDK_SNIPPETS_SPEC> = {
         ],
         "callFunction": [
           {
-            "template": "import { {{funcApiName}} } from \"{{{packageName}}}\";\nimport { useOsdkFunction } from \"@osdk/react/experimental\";\n\nfunction {{funcApiName}}Caller() {\n  const { execute, data, isLoading, error } = useOsdkFunction({{funcApiName}});\n\n  return (\n    <div>\n      {error && <div>Error: {error.message}</div>}\n      <button onClick={() => execute({ /* params */ })} disabled={isLoading}>\n        {isLoading ? \"Running...\" : \"Run Function\"}\n      </button>\n      {data && <pre>{JSON.stringify(data, null, 2)}</pre>}\n    </div>\n  );\n}"
+            "template": "import { {{funcApiName}} } from \"{{{packageName}}}\";\nimport { useOsdkFunction } from \"@osdk/react/experimental\";\n\nfunction {{funcApiName}}Caller() {\n  const { data, isLoading, error, refetch } = useOsdkFunction({{funcApiName}}, {\n    params: { /* function parameters */ }\n  });\n\n  return (\n    <div>\n      {error && <div>Error: {error.message}</div>}\n      {isLoading && !data && <div>Loading...</div>}\n      {data && <pre>{JSON.stringify(data, null, 2)}</pre>}\n      <button onClick={refetch}>Refresh</button>\n    </div>\n  );\n}"
           }
         ],
         "executeFunction": [
           {
-            "template": "import { {{funcApiName}} } from \"{{{packageName}}}\";\nimport { useOsdkFunction } from \"@osdk/react/experimental\";\n\nfunction {{funcApiName}}Executor() {\n  const { execute, data, isLoading, error } = useOsdkFunction({{funcApiName}});\n\n  return (\n    <div>\n      {error && <div>Error: {error.message}</div>}\n      <button onClick={() => execute({ /* params */ })} disabled={isLoading}>\n        {isLoading ? \"Executing...\" : \"Execute Function\"}\n      </button>\n      {data && <pre>{JSON.stringify(data, null, 2)}</pre>}\n    </div>\n  );\n}"
+            "template": "import { {{funcApiName}} } from \"{{{packageName}}}\";\nimport { useOsdkFunction } from \"@osdk/react/experimental\";\n\nfunction {{funcApiName}}Executor() {\n  const { data, isLoading, error, refetch } = useOsdkFunction({{funcApiName}}, {\n    params: { /* function parameters */ }\n  });\n\n  return (\n    <div>\n      {error && <div>Error: {error.message}</div>}\n      {isLoading && !data && <div>Loading...</div>}\n      {data && <pre>{JSON.stringify(data, null, 2)}</pre>}\n      <button onClick={refetch}>Refresh</button>\n    </div>\n  );\n}"
           }
         ],
         "stringStartsWithTemplate": [
@@ -396,47 +396,47 @@ export const snippets: SdkSnippets<typeof OSDK_SNIPPETS_SPEC> = {
         ],
         "loadTimeSeriesPointsSnippet": [
           {
-            "template": "import { {{objectType}} } from \"{{{packageName}}}\";\nimport { useOsdkObject } from \"@osdk/react/experimental\";\nimport { useEffect, useState } from \"react\";\n\nfunction {{objectType}}TimeSeries({ primaryKey }: { primaryKey: string }) {\n  const { data: obj } = useOsdkObject({{objectType}}, primaryKey);\n  const [points, setPoints] = useState<Array<{ time: string; value: number }>>([]);\n\n  useEffect(() => {\n    obj?.{{property}}?.getAllPoints().then(setPoints);\n  }, [obj]);\n\n  return (\n    <div>\n      {points.length > 0 && <pre>{JSON.stringify(points, null, 2)}</pre>}\n    </div>\n  );\n}"
+            "template": "import { {{objectType}} } from \"{{{packageName}}}\";\nimport { useOsdkObject } from \"@osdk/react/experimental\";\nimport { useEffect, useState } from \"react\";\n\nfunction {{objectType}}TimeSeries({ primaryKey }: { primaryKey: string }) {\n  const { object: obj } = useOsdkObject({{objectType}}, primaryKey);\n  const [points, setPoints] = useState<Array<{ time: string; value: number }>>([]);\n\n  useEffect(() => {\n    obj?.{{property}}?.getAllPoints().then(setPoints);\n  }, [obj]);\n\n  return (\n    <div>\n      {points.length > 0 && <pre>{JSON.stringify(points, null, 2)}</pre>}\n    </div>\n  );\n}"
           }
         ],
         "loadTimeSeriesFirstPointSnippet": [
           {
-            "template": "import { {{objectType}} } from \"{{{packageName}}}\";\nimport { useOsdkObject } from \"@osdk/react/experimental\";\nimport { useEffect, useState } from \"react\";\n\nfunction {{objectType}}FirstPoint({ primaryKey }: { primaryKey: string }) {\n  const { data: obj } = useOsdkObject({{objectType}}, primaryKey);\n  const [point, setPoint] = useState(null);\n\n  useEffect(() => {\n    obj?.{{property}}?.getFirstPoint().then(setPoint);\n  }, [obj]);\n\n  return (\n    <div>\n      {point && <pre>{JSON.stringify(point, null, 2)}</pre>}\n    </div>\n  );\n}"
+            "template": "import { {{objectType}} } from \"{{{packageName}}}\";\nimport { useOsdkObject } from \"@osdk/react/experimental\";\nimport { useEffect, useState } from \"react\";\n\nfunction {{objectType}}FirstPoint({ primaryKey }: { primaryKey: string }) {\n  const { object: obj } = useOsdkObject({{objectType}}, primaryKey);\n  const [point, setPoint] = useState(null);\n\n  useEffect(() => {\n    obj?.{{property}}?.getFirstPoint().then(setPoint);\n  }, [obj]);\n\n  return (\n    <div>\n      {point && <pre>{JSON.stringify(point, null, 2)}</pre>}\n    </div>\n  );\n}"
           }
         ],
         "loadTimeSeriesLastPointSnippet": [
           {
-            "template": "import { {{objectType}} } from \"{{{packageName}}}\";\nimport { useOsdkObject } from \"@osdk/react/experimental\";\nimport { useEffect, useState } from \"react\";\n\nfunction {{objectType}}LastPoint({ primaryKey }: { primaryKey: string }) {\n  const { data: obj } = useOsdkObject({{objectType}}, primaryKey);\n  const [point, setPoint] = useState(null);\n\n  useEffect(() => {\n    obj?.{{property}}?.getLastPoint().then(setPoint);\n  }, [obj]);\n\n  return (\n    <div>\n      {point && <pre>{JSON.stringify(point, null, 2)}</pre>}\n    </div>\n  );\n}"
+            "template": "import { {{objectType}} } from \"{{{packageName}}}\";\nimport { useOsdkObject } from \"@osdk/react/experimental\";\nimport { useEffect, useState } from \"react\";\n\nfunction {{objectType}}LastPoint({ primaryKey }: { primaryKey: string }) {\n  const { object: obj } = useOsdkObject({{objectType}}, primaryKey);\n  const [point, setPoint] = useState(null);\n\n  useEffect(() => {\n    obj?.{{property}}?.getLastPoint().then(setPoint);\n  }, [obj]);\n\n  return (\n    <div>\n      {point && <pre>{JSON.stringify(point, null, 2)}</pre>}\n    </div>\n  );\n}"
           }
         ],
         "loadAbsoluteTimeSeriesPointsSnippet": [
           {
-            "template": "import { {{objectType}} } from \"{{{packageName}}}\";\nimport { useOsdkObject } from \"@osdk/react/experimental\";\nimport { useEffect, useState } from \"react\";\n\nfunction {{objectType}}AbsoluteTimeSeries({ primaryKey }: { primaryKey: string }) {\n  const { data: obj } = useOsdkObject({{objectType}}, primaryKey);\n  const [points, setPoints] = useState<Array<{ time: string; value: number }>>([]);\n\n  useEffect(() => {\n    obj?.{{property}}?.getAllPoints({\n      $startTime: \"2022-08-13T12:34:56Z\",\n      $endTime: \"2022-08-14T12:34:56Z\",\n    }).then(setPoints);\n  }, [obj]);\n\n  return (\n    <div>\n      {points.length > 0 && <pre>{JSON.stringify(points, null, 2)}</pre>}\n    </div>\n  );\n}"
+            "template": "import { {{objectType}} } from \"{{{packageName}}}\";\nimport { useOsdkObject } from \"@osdk/react/experimental\";\nimport { useEffect, useState } from \"react\";\n\nfunction {{objectType}}AbsoluteTimeSeries({ primaryKey }: { primaryKey: string }) {\n  const { object: obj } = useOsdkObject({{objectType}}, primaryKey);\n  const [points, setPoints] = useState<Array<{ time: string; value: number }>>([]);\n\n  useEffect(() => {\n    obj?.{{property}}?.getAllPoints({\n      $startTime: \"2022-08-13T12:34:56Z\",\n      $endTime: \"2022-08-14T12:34:56Z\",\n    }).then(setPoints);\n  }, [obj]);\n\n  return (\n    <div>\n      {points.length > 0 && <pre>{JSON.stringify(points, null, 2)}</pre>}\n    </div>\n  );\n}"
           }
         ],
         "loadRelativeTimeSeriesPointsSnippet": [
           {
-            "template": "import { {{objectType}} } from \"{{{packageName}}}\";\nimport { useOsdkObject } from \"@osdk/react/experimental\";\nimport { useEffect, useState } from \"react\";\n\nfunction {{objectType}}RelativeTimeSeries({ primaryKey }: { primaryKey: string }) {\n  const { data: obj } = useOsdkObject({{objectType}}, primaryKey);\n  const [points, setPoints] = useState<Array<{ time: string; value: number }>>([]);\n\n  useEffect(() => {\n    obj?.{{property}}?.getAllPoints({\n      $before: 1,\n      $unit: \"{{timeUnit}}\",\n    }).then(setPoints);\n  }, [obj]);\n\n  return (\n    <div>\n      {points.length > 0 && <pre>{JSON.stringify(points, null, 2)}</pre>}\n    </div>\n  );\n}"
+            "template": "import { {{objectType}} } from \"{{{packageName}}}\";\nimport { useOsdkObject } from \"@osdk/react/experimental\";\nimport { useEffect, useState } from \"react\";\n\nfunction {{objectType}}RelativeTimeSeries({ primaryKey }: { primaryKey: string }) {\n  const { object: obj } = useOsdkObject({{objectType}}, primaryKey);\n  const [points, setPoints] = useState<Array<{ time: string; value: number }>>([]);\n\n  useEffect(() => {\n    obj?.{{property}}?.getAllPoints({\n      $before: 1,\n      $unit: \"{{timeUnit}}\",\n    }).then(setPoints);\n  }, [obj]);\n\n  return (\n    <div>\n      {points.length > 0 && <pre>{JSON.stringify(points, null, 2)}</pre>}\n    </div>\n  );\n}"
           }
         ],
         "loadGeotimeSeriesPointsSnippet": [
           {
-            "template": "import { {{objectType}} } from \"{{{packageName}}}\";\nimport { useOsdkObject } from \"@osdk/react/experimental\";\nimport { useEffect, useState } from \"react\";\n\nfunction {{objectType}}GeotimeSeries({ primaryKey }: { primaryKey: string }) {\n  const { data: obj } = useOsdkObject({{objectType}}, primaryKey);\n  const [points, setPoints] = useState([]);\n\n  useEffect(() => {\n    obj?.{{property}}?.getAllValues().then(setPoints);\n  }, [obj]);\n\n  return (\n    <div>\n      {points.length > 0 && <pre>{JSON.stringify(points, null, 2)}</pre>}\n    </div>\n  );\n}"
+            "template": "import { {{objectType}} } from \"{{{packageName}}}\";\nimport { useOsdkObject } from \"@osdk/react/experimental\";\nimport { useEffect, useState } from \"react\";\n\nfunction {{objectType}}GeotimeSeries({ primaryKey }: { primaryKey: string }) {\n  const { object: obj } = useOsdkObject({{objectType}}, primaryKey);\n  const [points, setPoints] = useState([]);\n\n  useEffect(() => {\n    obj?.{{property}}?.getAllValues().then(setPoints);\n  }, [obj]);\n\n  return (\n    <div>\n      {points.length > 0 && <pre>{JSON.stringify(points, null, 2)}</pre>}\n    </div>\n  );\n}"
           }
         ],
         "loadGeotimeSeriesLastPointSnippet": [
           {
-            "template": "import { {{objectType}} } from \"{{{packageName}}}\";\nimport { useOsdkObject } from \"@osdk/react/experimental\";\nimport { useEffect, useState } from \"react\";\n\nfunction {{objectType}}GeotimeSeriesLatest({ primaryKey }: { primaryKey: string }) {\n  const { data: obj } = useOsdkObject({{objectType}}, primaryKey);\n  const [point, setPoint] = useState(null);\n\n  useEffect(() => {\n    obj?.{{property}}?.getLatestValue().then(setPoint);\n  }, [obj]);\n\n  return (\n    <div>\n      {point && <pre>{JSON.stringify(point, null, 2)}</pre>}\n    </div>\n  );\n}"
+            "template": "import { {{objectType}} } from \"{{{packageName}}}\";\nimport { useOsdkObject } from \"@osdk/react/experimental\";\nimport { useEffect, useState } from \"react\";\n\nfunction {{objectType}}GeotimeSeriesLatest({ primaryKey }: { primaryKey: string }) {\n  const { object: obj } = useOsdkObject({{objectType}}, primaryKey);\n  const [point, setPoint] = useState(null);\n\n  useEffect(() => {\n    obj?.{{property}}?.getLatestValue().then(setPoint);\n  }, [obj]);\n\n  return (\n    <div>\n      {point && <pre>{JSON.stringify(point, null, 2)}</pre>}\n    </div>\n  );\n}"
           }
         ],
         "loadAbsoluteGeotimeSeriesPointsSnippet": [
           {
-            "template": "import { {{objectType}} } from \"{{{packageName}}}\";\nimport { useOsdkObject } from \"@osdk/react/experimental\";\nimport { useEffect, useState } from \"react\";\n\nfunction {{objectType}}AbsoluteGeotimeSeries({ primaryKey }: { primaryKey: string }) {\n  const { data: obj } = useOsdkObject({{objectType}}, primaryKey);\n  const [points, setPoints] = useState([]);\n\n  useEffect(() => {\n    obj?.{{property}}?.getAllValues({\n      $startTime: \"2022-08-13T12:34:56Z\",\n      $endTime: \"2022-08-14T12:34:56Z\",\n    }).then(setPoints);\n  }, [obj]);\n\n  return (\n    <div>\n      {points.length > 0 && <pre>{JSON.stringify(points, null, 2)}</pre>}\n    </div>\n  );\n}"
+            "template": "import { {{objectType}} } from \"{{{packageName}}}\";\nimport { useOsdkObject } from \"@osdk/react/experimental\";\nimport { useEffect, useState } from \"react\";\n\nfunction {{objectType}}AbsoluteGeotimeSeries({ primaryKey }: { primaryKey: string }) {\n  const { object: obj } = useOsdkObject({{objectType}}, primaryKey);\n  const [points, setPoints] = useState([]);\n\n  useEffect(() => {\n    obj?.{{property}}?.getAllValues({\n      $startTime: \"2022-08-13T12:34:56Z\",\n      $endTime: \"2022-08-14T12:34:56Z\",\n    }).then(setPoints);\n  }, [obj]);\n\n  return (\n    <div>\n      {points.length > 0 && <pre>{JSON.stringify(points, null, 2)}</pre>}\n    </div>\n  );\n}"
           }
         ],
         "loadRelativeGeotimeSeriesPointsSnippet": [
           {
-            "template": "import { {{objectType}} } from \"{{{packageName}}}\";\nimport { useOsdkObject } from \"@osdk/react/experimental\";\nimport { useEffect, useState } from \"react\";\n\nfunction {{objectType}}RelativeGeotimeSeries({ primaryKey }: { primaryKey: string }) {\n  const { data: obj } = useOsdkObject({{objectType}}, primaryKey);\n  const [points, setPoints] = useState([]);\n\n  useEffect(() => {\n    obj?.{{property}}?.getAllValues({\n      $before: 1,\n      $unit: \"{{timeUnit}}\",\n    }).then(setPoints);\n  }, [obj]);\n\n  return (\n    <div>\n      {points.length > 0 && <pre>{JSON.stringify(points, null, 2)}</pre>}\n    </div>\n  );\n}"
+            "template": "import { {{objectType}} } from \"{{{packageName}}}\";\nimport { useOsdkObject } from \"@osdk/react/experimental\";\nimport { useEffect, useState } from \"react\";\n\nfunction {{objectType}}RelativeGeotimeSeries({ primaryKey }: { primaryKey: string }) {\n  const { object: obj } = useOsdkObject({{objectType}}, primaryKey);\n  const [points, setPoints] = useState([]);\n\n  useEffect(() => {\n    obj?.{{property}}?.getAllValues({\n      $before: 1,\n      $unit: \"{{timeUnit}}\",\n    }).then(setPoints);\n  }, [obj]);\n\n  return (\n    <div>\n      {points.length > 0 && <pre>{JSON.stringify(points, null, 2)}</pre>}\n    </div>\n  );\n}"
           }
         ],
         "uploadAttachment": [
@@ -450,21 +450,22 @@ export const snippets: SdkSnippets<typeof OSDK_SNIPPETS_SPEC> = {
         ],
         "readMedia": [
           {
-            "template": "import { {{objectType}} } from \"{{{packageName}}}\";\nimport { useOsdkObject } from \"@osdk/react/experimental\";\nimport { useEffect, useState } from \"react\";\n\nfunction {{objectType}}Media({ primaryKey }: { primaryKey: string }) {\n  const { data: obj } = useOsdkObject({{objectType}}, primaryKey);\n  const [mediaUrl, setMediaUrl] = useState<string | null>(null);\n\n  useEffect(() => {\n    let url: string | undefined;\n    const loadMedia = async () => {\n      const contents = await obj?.{{property}}?.fetchContents();\n      if (contents?.ok) {\n        const blob = await contents.blob();\n        url = URL.createObjectURL(blob);\n        setMediaUrl(url);\n      }\n    };\n    if (obj) {\n      loadMedia();\n    }\n    return () => { if (url) { URL.revokeObjectURL(url); } };\n  }, [obj]);\n\n  return (\n    <div>\n      {mediaUrl && <a href={mediaUrl} download>Download media</a>}\n    </div>\n  );\n}"
+            "template": "import { {{objectType}} } from \"{{{packageName}}}\";\nimport { useOsdkObject } from \"@osdk/react/experimental\";\nimport { useEffect, useState } from \"react\";\n\nfunction {{objectType}}Media({ primaryKey }: { primaryKey: string }) {\n  const { object: obj } = useOsdkObject({{objectType}}, primaryKey);\n  const [mediaUrl, setMediaUrl] = useState<string | null>(null);\n\n  useEffect(() => {\n    let url: string | undefined;\n    const loadMedia = async () => {\n      const contents = await obj?.{{property}}?.fetchContents();\n      if (contents?.ok) {\n        const blob = await contents.blob();\n        url = URL.createObjectURL(blob);\n        setMediaUrl(url);\n      }\n    };\n    if (obj) {\n      loadMedia();\n    }\n    return () => { if (url) { URL.revokeObjectURL(url); } };\n  }, [obj]);\n\n  return (\n    <div>\n      {mediaUrl && <a href={mediaUrl} download>Download media</a>}\n    </div>\n  );\n}"
           }
         ],
         "uploadMedia": [
           {
-            "template": "import { useOsdkClient } from \"@osdk/react/experimental\";\nimport { __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference } from \"@osdk/api/unstable\";\nimport type { MediaReference } from \"@osdk/api\";\nimport { {{actionApiName}}, {{objectType}} } from \"{{{packageName}}}\";\n\nfunction MediaUploader() {\n  const client = useOsdkClient();\n\n  const handleUpload = async (file: File) => {\n    const mediaReference: MediaReference = await client(\n      __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference,\n    ).createMediaReference({\n      data: file,\n      fileName: file.name,\n      objectType: {{objectType}},\n      propertyType: \"{{property}}\",\n    });\n    await client({{actionApiName}}).applyAction({\n      {{primaryKeyPropertyV2.apiName}}: {{{propertyValueV2}}},\n      {{mediaParameter}}: mediaReference\n    });\n  };\n\n  return (\n    <input type=\"file\" onChange={e => {\n      const file = e.target.files?.[0];\n      if (file) {\n        handleUpload(file);\n      }\n    }} />\n  );\n}",
-            "computedVariables": [
-              "propertyValueV2",
-              "primaryKeyPropertyV2"
-            ]
+            "template": "import { useOsdkClient } from \"@osdk/react/experimental\";\nimport { __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference } from \"@osdk/api/unstable\";\nimport type { MediaReference } from \"@osdk/api\";\nimport { {{actionApiName}}, {{objectType}} } from \"{{{packageName}}}\";\n\nfunction MediaUploader() {\n  const client = useOsdkClient();\n\n  const handleUpload = async (file: File) => {\n    const mediaReference: MediaReference = await client(\n      __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference,\n    ).createMediaReference({\n      data: file,\n      fileName: file.name,\n      objectType: {{objectType}},\n      propertyType: \"{{property}}\",\n    });\n    await client({{actionApiName}}).applyAction({\n      // Pass the required action parameters including the primary key\n      {{mediaParameter}}: mediaReference\n    });\n  };\n\n  return (\n    <input type=\"file\" onChange={e => {\n      const file = e.target.files?.[0];\n      if (file) {\n        handleUpload(file);\n      }\n    }} />\n  );\n}"
           }
         ],
         "uploadMediaOntologyEdits": [
           {
-            "template": "import { useOsdkClient } from \"@osdk/react/experimental\";\nimport { {{objectType}} } from \"{{{packageName}}}\";\nimport { createEditBatch, uploadMedia } from \"@osdk/functions\";\n\nfunction MediaOntologyEditsUploader() {\n  const client = useOsdkClient();\n\n  const handleUpload = async (file: File) => {\n    const batch = createEditBatch(client);\n    const mediaReference = await uploadMedia(client, { data: file, fileName: file.name });\n    // @ts-ignore\n    batch.create({{objectType}}, { myMediaProperty: mediaReference });\n    return batch.getEdits();\n  };\n\n  return (\n    <input type=\"file\" onChange={e => {\n      const file = e.target.files?.[0];\n      if (file) {\n        handleUpload(file);\n      }\n    }} />\n  );\n}"
+            "template": "import { useOsdkClient } from \"@osdk/react/experimental\";\nimport { {{objectType}} } from \"{{{packageName}}}\";\nimport { createEditBatch, uploadMedia } from \"@osdk/functions\";\n\nfunction MediaOntologyEditsUploader() {\n  const client = useOsdkClient();\n\n  const handleUpload = async (file: File) => {\n    const batch = createEditBatch(client);\n    const mediaReference = await uploadMedia(client, { data: file, fileName: file.name });\n    // @ts-ignore\n    batch.create({{objectType}}, { {{property}}: mediaReference });\n    return batch.getEdits();\n  };\n\n  return (\n    <input type=\"file\" onChange={e => {\n      const file = e.target.files?.[0];\n      if (file) {\n        handleUpload(file);\n      }\n    }} />\n  );\n}"
+          }
+        ],
+        "uploadMediaEphemeral": [
+          {
+            "template": "// Ephemeral media upload is not yet supported in the React SDK"
           }
         ],
         "derivedPropertyNumericExpression": [

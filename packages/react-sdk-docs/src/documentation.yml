@@ -75,15 +75,15 @@ versions:
             import { useOsdkObject } from "@osdk/react/experimental";
 
             function {{objectType}}Detail({ primaryKey }: { primaryKey: string }) {
-              const { data, isLoading, error } = useOsdkObject({{objectType}}, primaryKey);
+              const { object, isLoading, error } = useOsdkObject({{objectType}}, primaryKey);
 
               return (
                 <div>
                   {error && <div className="error-banner">Error: {error.message}</div>}
-                  {isLoading && !data && <div className="skeleton">Loading...</div>}
-                  {data && (
+                  {isLoading && !object && <div className="skeleton">Loading...</div>}
+                  {object && (
                     <div>
-                      <h2>{data.{{titleProperty}}}</h2>
+                      <h2>{object.{{titleProperty}}}</h2>
                     </div>
                   )}
                 </div>
@@ -96,14 +96,14 @@ versions:
             import { useLinks } from "@osdk/react/experimental";
 
             function Linked{{linkedObjectType}}({ source }: { source: {{sourceObjectType}}.OsdkInstance }) {
-              const { data, isLoading, error } = useLinks(source, "{{linkApiName}}");
+              const { links, isLoading, error } = useLinks(source, "{{linkApiName}}");
 
               return (
                 <div>
                   {error && <div className="error-banner">Error: {error.message}</div>}
-                  {isLoading && !data && <div className="skeleton">Loading...</div>}
+                  {isLoading && !links && <div className="skeleton">Loading...</div>}
                   <ul>
-                    {data?.map(linked => (
+                    {links?.map(linked => (
                       <li key={linked.$primaryKey}>{linked.$primaryKey}</li>
                     ))}
                   </ul>
@@ -191,13 +191,13 @@ versions:
             import { useOsdkObject } from "@osdk/react/experimental";
 
             function {{objectType}}Detail({ primaryKey }: { primaryKey: string }) {
-              const { data, isLoading, error } = useOsdkObject({{objectType}}, primaryKey);
+              const { object, isLoading, error } = useOsdkObject({{objectType}}, primaryKey);
 
               return (
                 <div>
                   {error && <div>Error: {error.message}</div>}
-                  {isLoading && !data && <div>Loading...</div>}
-                  {data && <div>{data.{{titleProperty}}}</div>}
+                  {isLoading && !object && <div>Loading...</div>}
+                  {object && <div>{object.{{titleProperty}}}</div>}
                 </div>
               );
             }
@@ -270,13 +270,13 @@ versions:
             import { useOsdkObject } from "@osdk/react/experimental";
 
             function {{objectType}}Detail({ primaryKey }: { primaryKey: string }) {
-              const { data, isLoading, error } = useOsdkObject({{objectType}}, primaryKey);
+              const { object, isLoading, error } = useOsdkObject({{objectType}}, primaryKey);
 
               return (
                 <div>
                   {error && <div>Error: {error.message}</div>}
-                  {isLoading && !data && <div>Loading...</div>}
-                  {data && <div>{data.{{titleProperty}}}</div>}
+                  {isLoading && !object && <div>Loading...</div>}
+                  {object && <div>{object.{{titleProperty}}}</div>}
                 </div>
               );
             }
@@ -327,13 +327,13 @@ versions:
             import { useLinks } from "@osdk/react/experimental";
 
             function {{linkedObjectType}}Detail({ source }: { source: {{sourceObjectType}}.OsdkInstance }) {
-              const { data, isLoading, error } = useLinks(source, "{{linkApiName}}");
-              const linkedObject = data?.[0];
+              const { links, isLoading, error } = useLinks(source, "{{linkApiName}}");
+              const linkedObject = links?.[0];
 
               return (
                 <div>
                   {error && <div>Error: {error.message}</div>}
-                  {isLoading && !data && <div>Loading...</div>}
+                  {isLoading && !links && <div>Loading...</div>}
                   {linkedObject && <div>{linkedObject.$primaryKey}</div>}
                 </div>
               );
@@ -344,14 +344,14 @@ versions:
             import { useLinks } from "@osdk/react/experimental";
 
             function Linked{{linkedObjectType}}List({ source }: { source: {{sourceObjectType}}.OsdkInstance }) {
-              const { data, isLoading, error, fetchMore } = useLinks(source, "{{linkApiName}}");
+              const { links, isLoading, error, fetchMore } = useLinks(source, "{{linkApiName}}");
 
               return (
                 <div>
                   {error && <div>Error: {error.message}</div>}
-                  {isLoading && !data && <div>Loading...</div>}
+                  {isLoading && !links && <div>Loading...</div>}
                   <ul>
-                    {data?.map(obj => <li key={obj.$primaryKey}>{obj.$primaryKey}</li>)}
+                    {links?.map(obj => <li key={obj.$primaryKey}>{obj.$primaryKey}</li>)}
                   </ul>
                   {fetchMore && <button onClick={fetchMore}>Load more</button>}
                 </div>
@@ -566,18 +566,15 @@ versions:
             - actionParameterSampleValuesV2
       applyActionResponse:
         - template: |-
-            // React hooks handle response state automatically
-            // Access the result via the hook's return value
             import { {{actionApiName}} } from "{{{packageName}}}";
             import { useOsdkAction } from "@osdk/react/experimental";
 
             function {{actionApiName}}WithResult() {
-              const { applyAction, isPending, error, result } = useOsdkAction({{actionApiName}});
+              const { applyAction, isPending, error, data } = useOsdkAction({{actionApiName}});
 
-              // result contains the action result after successful execution
               return (
                 <div>
-                  {result && <div>Action completed successfully</div>}
+                  {data && <div>Action completed successfully</div>}
                 </div>
               );
             }
@@ -597,12 +594,12 @@ versions:
 
               return (
                 <div>
-                  {validationResult?.isValid === false && (
+                  {validationResult?.result === "INVALID" && (
                     <div>Validation errors present</div>
                   )}
                   <button
                     onClick={() => applyAction(params)}
-                    disabled={isPending || validationResult?.isValid === false}
+                    disabled={isPending || validationResult?.result === "INVALID"}
                   >
                     {isPending ? "Applying..." : "Apply"}
                   </button>
@@ -653,15 +650,16 @@ versions:
             import { useOsdkFunction } from "@osdk/react/experimental";
 
             function {{funcApiName}}Caller() {
-              const { execute, data, isLoading, error } = useOsdkFunction({{funcApiName}});
+              const { data, isLoading, error, refetch } = useOsdkFunction({{funcApiName}}, {
+                params: { /* function parameters */ }
+              });
 
               return (
                 <div>
                   {error && <div>Error: {error.message}</div>}
-                  <button onClick={() => execute({ /* params */ })} disabled={isLoading}>
-                    {isLoading ? "Running..." : "Run Function"}
-                  </button>
+                  {isLoading && !data && <div>Loading...</div>}
                   {data && <pre>{JSON.stringify(data, null, 2)}</pre>}
+                  <button onClick={refetch}>Refresh</button>
                 </div>
               );
             }
@@ -671,15 +669,16 @@ versions:
             import { useOsdkFunction } from "@osdk/react/experimental";
 
             function {{funcApiName}}Executor() {
-              const { execute, data, isLoading, error } = useOsdkFunction({{funcApiName}});
+              const { data, isLoading, error, refetch } = useOsdkFunction({{funcApiName}}, {
+                params: { /* function parameters */ }
+              });
 
               return (
                 <div>
                   {error && <div>Error: {error.message}</div>}
-                  <button onClick={() => execute({ /* params */ })} disabled={isLoading}>
-                    {isLoading ? "Executing..." : "Execute Function"}
-                  </button>
+                  {isLoading && !data && <div>Loading...</div>}
                   {data && <pre>{JSON.stringify(data, null, 2)}</pre>}
+                  <button onClick={refetch}>Refresh</button>
                 </div>
               );
             }
@@ -1605,7 +1604,7 @@ versions:
             import { useEffect, useState } from "react";
 
             function {{objectType}}TimeSeries({ primaryKey }: { primaryKey: string }) {
-              const { data: obj } = useOsdkObject({{objectType}}, primaryKey);
+              const { object: obj } = useOsdkObject({{objectType}}, primaryKey);
               const [points, setPoints] = useState<Array<{ time: string; value: number }>>([]);
 
               useEffect(() => {
@@ -1625,7 +1624,7 @@ versions:
             import { useEffect, useState } from "react";
 
             function {{objectType}}FirstPoint({ primaryKey }: { primaryKey: string }) {
-              const { data: obj } = useOsdkObject({{objectType}}, primaryKey);
+              const { object: obj } = useOsdkObject({{objectType}}, primaryKey);
               const [point, setPoint] = useState(null);
 
               useEffect(() => {
@@ -1645,7 +1644,7 @@ versions:
             import { useEffect, useState } from "react";
 
             function {{objectType}}LastPoint({ primaryKey }: { primaryKey: string }) {
-              const { data: obj } = useOsdkObject({{objectType}}, primaryKey);
+              const { object: obj } = useOsdkObject({{objectType}}, primaryKey);
               const [point, setPoint] = useState(null);
 
               useEffect(() => {
@@ -1665,7 +1664,7 @@ versions:
             import { useEffect, useState } from "react";
 
             function {{objectType}}AbsoluteTimeSeries({ primaryKey }: { primaryKey: string }) {
-              const { data: obj } = useOsdkObject({{objectType}}, primaryKey);
+              const { object: obj } = useOsdkObject({{objectType}}, primaryKey);
               const [points, setPoints] = useState<Array<{ time: string; value: number }>>([]);
 
               useEffect(() => {
@@ -1688,7 +1687,7 @@ versions:
             import { useEffect, useState } from "react";
 
             function {{objectType}}RelativeTimeSeries({ primaryKey }: { primaryKey: string }) {
-              const { data: obj } = useOsdkObject({{objectType}}, primaryKey);
+              const { object: obj } = useOsdkObject({{objectType}}, primaryKey);
               const [points, setPoints] = useState<Array<{ time: string; value: number }>>([]);
 
               useEffect(() => {
@@ -1711,7 +1710,7 @@ versions:
             import { useEffect, useState } from "react";
 
             function {{objectType}}GeotimeSeries({ primaryKey }: { primaryKey: string }) {
-              const { data: obj } = useOsdkObject({{objectType}}, primaryKey);
+              const { object: obj } = useOsdkObject({{objectType}}, primaryKey);
               const [points, setPoints] = useState([]);
 
               useEffect(() => {
@@ -1731,7 +1730,7 @@ versions:
             import { useEffect, useState } from "react";
 
             function {{objectType}}GeotimeSeriesLatest({ primaryKey }: { primaryKey: string }) {
-              const { data: obj } = useOsdkObject({{objectType}}, primaryKey);
+              const { object: obj } = useOsdkObject({{objectType}}, primaryKey);
               const [point, setPoint] = useState(null);
 
               useEffect(() => {
@@ -1751,7 +1750,7 @@ versions:
             import { useEffect, useState } from "react";
 
             function {{objectType}}AbsoluteGeotimeSeries({ primaryKey }: { primaryKey: string }) {
-              const { data: obj } = useOsdkObject({{objectType}}, primaryKey);
+              const { object: obj } = useOsdkObject({{objectType}}, primaryKey);
               const [points, setPoints] = useState([]);
 
               useEffect(() => {
@@ -1774,7 +1773,7 @@ versions:
             import { useEffect, useState } from "react";
 
             function {{objectType}}RelativeGeotimeSeries({ primaryKey }: { primaryKey: string }) {
-              const { data: obj } = useOsdkObject({{objectType}}, primaryKey);
+              const { object: obj } = useOsdkObject({{objectType}}, primaryKey);
               const [points, setPoints] = useState([]);
 
               useEffect(() => {
@@ -1826,7 +1825,7 @@ versions:
             import { useEffect, useState } from "react";
 
             function {{objectType}}Media({ primaryKey }: { primaryKey: string }) {
-              const { data: obj } = useOsdkObject({{objectType}}, primaryKey);
+              const { object: obj } = useOsdkObject({{objectType}}, primaryKey);
               const [mediaUrl, setMediaUrl] = useState<string | null>(null);
 
               useEffect(() => {
@@ -1871,7 +1870,7 @@ versions:
                   propertyType: "{{property}}",
                 });
                 await client({{actionApiName}}).applyAction({
-                  {{primaryKeyPropertyV2.apiName}}: {{{propertyValueV2}}},
+                  // Pass the required action parameters including the primary key
                   {{mediaParameter}}: mediaReference
                 });
               };
@@ -1885,9 +1884,6 @@ versions:
                 }} />
               );
             }
-          computedVariables:
-            - propertyValueV2
-            - primaryKeyPropertyV2
       uploadMediaOntologyEdits:
         - template: |-
             import { useOsdkClient } from "@osdk/react/experimental";
@@ -1901,7 +1897,7 @@ versions:
                 const batch = createEditBatch(client);
                 const mediaReference = await uploadMedia(client, { data: file, fileName: file.name });
                 // @ts-ignore
-                batch.create({{objectType}}, { myMediaProperty: mediaReference });
+                batch.create({{objectType}}, { {{property}}: mediaReference });
                 return batch.getEdits();
               };
 
@@ -1914,6 +1910,9 @@ versions:
                 }} />
               );
             }
+      uploadMediaEphemeral:
+        - template: |-
+            // Ephemeral media upload is not yet supported in the React SDK
       derivedPropertyNumericExpression:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
