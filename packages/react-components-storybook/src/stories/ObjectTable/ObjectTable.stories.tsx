@@ -693,10 +693,12 @@ return (
     const handleRowSelection = useCallback(
       (
         selectedRows: any[],
-        isSelectAll: boolean | ((prevState: boolean) => boolean),
+        isSelectAll?: boolean,
       ) => {
         setSelectedRows(selectedRows);
-        setIsSelectAll(isSelectAll);
+        if (isSelectAll !== undefined) {
+          setIsSelectAll(isSelectAll);
+        }
       },
       [],
     );
