@@ -236,7 +236,7 @@ function MyCustomTable({ data }) {
       columnResizeDirection: "ltr",
     });
 
-    return <BaseTable table={table} {...args} />;
+    return <BaseTable {...args} table={table} />;
   },
 };
 
@@ -301,8 +301,8 @@ return <BaseTable table={table} headerMenuFeatureFlags={headerMenuFeatureFlags} 
     return (
       <div style={{ height: "400px" }}>
         <BaseTable
-          table={table}
           {...args}
+          table={table}
         />
       </div>
     );
@@ -371,8 +371,8 @@ return <BaseTable table={table} headerMenuFeatureFlags={headerMenuFeatureFlags} 
     return (
       <div style={{ height: "400px" }}>
         <BaseTable
-          table={table}
           {...args}
+          table={table}
         />
       </div>
     );
@@ -439,8 +439,8 @@ return <BaseTable table={table} headerMenuFeatureFlags={headerMenuFeatureFlags} 
     return (
       <div style={{ height: "400px" }}>
         <BaseTable
-          table={table}
           {...args}
+          table={table}
         />
       </div>
     );
@@ -514,8 +514,8 @@ return <BaseTable table={table} headerMenuFeatureFlags={headerMenuFeatureFlags} 
     return (
       <div style={{ height: "400px" }}>
         <BaseTable
-          table={table}
           {...args}
+          table={table}
         />
       </div>
     );
@@ -543,14 +543,14 @@ return <BaseTable table={table} isLoading={true} />;
   },
   render: (args) => {
     const table = useReactTable({
-      data: [],
+      data: [] as Person[],
       columns,
       getCoreRowModel: getCoreRowModel(),
     });
 
     return (
       <div style={{ height: "400px" }}>
-        <BaseTable table={table} {...args} />
+        <BaseTable {...args} table={table} />
       </div>
     );
   },
@@ -575,14 +575,14 @@ return <BaseTable table={table} />;
   },
   render: (args) => {
     const table = useReactTable({
-      data: [],
+      data: [] as Person[],
       columns,
       getCoreRowModel: getCoreRowModel(),
     });
 
     return (
       <div style={{ height: "400px" }}>
-        <BaseTable table={table} {...args} />
+        <BaseTable {...args} table={table} />
       </div>
     );
   },
@@ -601,14 +601,14 @@ export const ErrorState: Story = {
   },
   render: (args) => {
     const table = useReactTable({
-      data: [],
+      data: [] as Person[],
       columns,
       getCoreRowModel: getCoreRowModel(),
     });
 
     return (
       <div style={{ height: "400px" }}>
-        <BaseTable table={table} {...args} />
+        <BaseTable {...args} table={table} />
       </div>
     );
   },

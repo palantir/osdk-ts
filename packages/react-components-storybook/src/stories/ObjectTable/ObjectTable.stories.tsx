@@ -20,7 +20,6 @@ import {
   ObjectTable,
 } from "@osdk/react-components/experimental";
 import type {
-  CellEditInfo,
   ColumnDefinition,
   ObjectTableProps,
 } from "@osdk/react-components/experimental";
@@ -193,7 +192,7 @@ const meta: Meta<EmployeeTableProps> = {
       description: "Additional CSS class name for the table",
       control: "text",
     },
-  },
+  } as Meta<EmployeeTableProps>["argTypes"],
 };
 
 export default meta;
@@ -1062,7 +1061,7 @@ export const EditableTable: Story = {
       ...columnDefinitions.slice(1),
     ],
     editMode: "manual",
-  },
+  } as any,
   parameters: {
     docs: {
       source: {
@@ -1089,7 +1088,7 @@ export const EditableTable: Story = {
   },
   render: (args) => (
     <div className="object-table-container" style={{ height: "600px" }}>
-      <ObjectTable objectType={Employee} {...args} />
+      <ObjectTable {...args} objectType={Employee} />
     </div>
   ),
 };
@@ -1107,11 +1106,10 @@ export const WithSubmitEditsButton: Story = {
         editable: true,
       },
     ],
-    onSubmitEdits: (edits: CellEditInfo<Osdk.Instance<Employee>>[]) => {
+    onSubmitEdits: async () => {
       alert("Submitting edits");
-      return true;
     },
-  },
+  } as any,
   parameters: {
     docs: {
       source: {
@@ -1140,7 +1138,7 @@ export const WithSubmitEditsButton: Story = {
   },
   render: (args) => (
     <div className="object-table-container" style={{ height: "600px" }}>
-      <ObjectTable objectType={Employee} {...args} />
+      <ObjectTable {...args} objectType={Employee} />
     </div>
   ),
 };
