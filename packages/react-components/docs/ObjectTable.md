@@ -125,12 +125,12 @@ Each column header has a menu with items for sorting, filtering, pinning, resizi
 
 ### Row Selection
 
-| Prop             | Type                               | Default  | Description                                 |
-| ---------------- | ---------------------------------- | -------- | ------------------------------------------- |
-| `selectionMode`  | `"single" \| "multiple" \| "none"` | `"none"` | Selection mode. "multiple" shows checkboxes |
-| `selectedRows`   | `PrimaryKeyType<Q>[]`              | -        | Selected rows (controlled mode)             |
-| `isAllSelected`  | `boolean`                          | -        | Indicates all rows are selected (controlled mode only) |
-| `onRowSelection` | `(selectedRowIds, isSelectAll?) => void` | -  | Required when `selectedRows` is provided    |
+| Prop             | Type                                     | Default  | Description                                            |
+| ---------------- | ---------------------------------------- | -------- | ------------------------------------------------------ |
+| `selectionMode`  | `"single" \| "multiple" \| "none"`       | `"none"` | Selection mode. "multiple" shows checkboxes            |
+| `selectedRows`   | `PrimaryKeyType<Q>[]`                    | -        | Selected rows (controlled mode)                        |
+| `isAllSelected`  | `boolean`                                | -        | Indicates all rows are selected (controlled mode only) |
+| `onRowSelection` | `(selectedRowIds, isSelectAll?) => void` | -        | Required when `selectedRows` is provided               |
 
 ### Interactions
 
@@ -531,6 +531,25 @@ import { useState } from "react";
 
 function EmployeesTable() {
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
+  const [isAllSelected, setIsAllSelected] = useState(false);
+
+  const handleRowSelection = (
+    selectedRowIds: string[],
+    isSelectAll?: boolean,
+  ) => {
+    if (isSelectAll) {
+      if (selectedRowIds.length === 0) {
+        setIsAllSelected(false);
+        setSelectedRows([]);
+      } else {
+        setIsAllSelected(true);
+        setSelectedRows([]);
+      }
+    } else {
+      setIsAllSelected(false);
+      setSelectedRows(selectedRowIds);
+    }
+  };
 
   return (
     <div>
@@ -539,83 +558,11 @@ function EmployeesTable() {
         objectType={Employee}
         selectionMode="multiple"
         selectedRows={selectedRows}
-        onRowSelection={setSelectedRows}
-      />
-    </div>
-  );
-}
-```
-
-#### Select All in Controlled Mode
-
-When using controlled row selection with large datasets, you may want to implement "select all" functionality without loading all row IDs into memory. The `isAllSelected` prop allows you to indicate that all rows are selected:
-
-```typescript
-import { ObjectTable } from "@osdk/react-components/experimental";
-import { Employee } from "@YourApp/sdk";
-import { useState } from "react";
-
-function EmployeesTableWithSelectAll() {
-  const [selectedRows, setSelectedRows] = useState<string[]>([]);
-  const [isAllSelected, setIsAllSelected] = useState(false);
-
-  const handleRowSelection = (
-    selectedRowIds: string[],
-    isSelectAll?: boolean
-  ) => {
-    if (isSelectAll) {
-      // User clicked the "select all" checkbox
-      if (selectedRowIds.length === 0) {
-        // Deselecting all
-        setIsAllSelected(false);
-        setSelectedRows([]);
-      } else {
-        // Selecting all - don't need to store all IDs
-        setIsAllSelected(true);
-        setSelectedRows([]); // Can keep this empty when all are selected
-      }
-    } else {
-      // Individual row selection
-      setIsAllSelected(false);
-      setSelectedRows(selectedRowIds);
-    }
-  };
-
-  // Calculate actual selection count
-  const selectedCount = isAllSelected ? "all" : selectedRows.length;
-
-  return (
-    <div>
-      <div>Selected: {selectedCount} employees</div>
-      <ObjectTable
-        objectType={Employee}
-        selectionMode="multiple"
-        selectedRows={selectedRows}
         isAllSelected={isAllSelected}
         onRowSelection={handleRowSelection}
       />
-      {(isAllSelected || selectedRows.length > 0) && (
-        <button onClick={() => performBulkAction(isAllSelected, selectedRows)}>
-          Perform Bulk Action
-        </button>
-      )}
     </div>
   );
-}
-
-// Example bulk action function
-async function performBulkAction(
-  isAllSelected: boolean,
-  selectedRows: string[]
-) {
-  if (isAllSelected) {
-    // Perform action on all employees
-    console.log("Performing action on all employees");
-    // Use server-side logic or OSDK queries to process all
-  } else {
-    // Perform action on specific employees
-    console.log("Performing action on employees:", selectedRows);
-  }
 }
 ```
 
