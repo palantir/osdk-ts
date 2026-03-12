@@ -13,6 +13,7 @@ This documentation provides guidance for developing in `@osdk/react-components` 
 - ALWAYS keep components rendering during loading/error states. Don't use early returns like `if (isLoading) return <LoadingMessage />`. Show loading/error indicators while rendering existing data to prevent UI flashing
 - ALWAYS memoize non-primitive values passed to component props with useCallback or useMemo
 - ALWAYS combine classnames with the classnames function. NEVER use string literal.
+- NEVER use empty arrays `[]` or empty objects `{}` directly in component bodies as they create new references on every render, causing infinite re-renders. Always extract them as constants outside the component or memoize them. For example, instead of `const defaultValue = []`, use `const EMPTY_ARRAY: [] = []` outside the component or `const defaultValue = useMemo(() => [], [])`.
 
 ## OSDK Component Architecture
 

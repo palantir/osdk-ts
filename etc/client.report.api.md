@@ -118,7 +118,7 @@ export function createAttachmentUpload(data: Blob, name: string): AttachmentUplo
 // @public (undocumented)
 export const createClient: (baseUrl: string, ontologyRid: string | Promise<string>, tokenProvider: () => Promise<string>, options?: {
     	logger?: Logger
-    	branch?: string
+    	UNSTABLE_DO_NOT_USE_BRANCH?: string
 } | undefined, fetchFn?: typeof fetch | undefined) => Client;
 
 // @public

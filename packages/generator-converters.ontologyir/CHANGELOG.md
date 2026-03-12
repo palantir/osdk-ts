@@ -1,5 +1,21 @@
 # @osdk/generator-converters.ontologyir
 
+## 2.8.0-beta.18
+
+### Minor Changes
+
+- 4762f4b: Rewrite link rids for preview compatibility
+
+### Patch Changes
+
+- @osdk/client.unstable@2.8.0-beta.18
+
+## 2.8.0-beta.17
+
+### Patch Changes
+
+- @osdk/client.unstable@2.8.0-beta.17
+
 ## 2.8.0-beta.16
 
 ### Patch Changes

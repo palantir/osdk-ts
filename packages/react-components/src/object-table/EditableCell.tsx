@@ -74,7 +74,7 @@ function parseValueByType(
   return parsedNumber;
 }
 
-function EditableCellInner<TData extends RowData, CellValue = unknown>({
+export function EditableCell<TData extends RowData, CellValue = unknown>({
   initialValue,
   currentValue,
   cellId,
@@ -155,7 +155,3 @@ function EditableCellInner<TData extends RowData, CellValue = unknown>({
     />
   );
 }
-
-export const EditableCell = React.memo(
-  EditableCellInner,
-) as typeof EditableCellInner;

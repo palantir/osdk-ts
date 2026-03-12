@@ -71,7 +71,7 @@ export class PreviewOntologyIrConverter {
   }
 
   /**
-   * Post-process object types to use UUID-based RIDs for properties.
+   * Post-process object types to use UUID-based RIDs for properties and link types.
    */
   private static convertObjectTypesWithUuidRids(
     objectTypes: Record<string, Ontologies.ObjectTypeFullMetadata>,
@@ -89,8 +89,16 @@ export class PreviewOntologyIrConverter {
         };
       }
 
+      const linkTypes = fullMetadata.linkTypes.map(lt => ({
+        ...lt,
+        linkTypeRid: `ri.ontology.main.link-type.${
+          toUuid(lt.linkTypeRid || lt.apiName)
+        }` as Ontologies.LinkTypeRid,
+      }));
+
       result[apiName] = {
         ...fullMetadata,
+        linkTypes,
         objectType: {
           ...objectType,
           rid: `ri.ontology.main.object-type.${toUuid(apiName)}`,

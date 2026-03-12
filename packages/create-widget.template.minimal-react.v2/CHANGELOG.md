@@ -1,5 +1,9 @@
 # @osdk/create-widget.template.react.v2
 
+## 3.5.0-beta.18
+
+## 3.5.0-beta.17
+
 ## 3.5.0-beta.16
 
 ### Minor Changes
