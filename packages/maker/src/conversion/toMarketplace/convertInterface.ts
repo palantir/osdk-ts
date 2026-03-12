@@ -50,5 +50,8 @@ export function convertInterface(
         convertInterfaceProperty(prop, apiName)
       ),
     ),
+    extendsInterfacesMetadata: interfaceType.extendsInterfaces.map(i =>
+      convertInterface(i)
+    ),
   };
 }

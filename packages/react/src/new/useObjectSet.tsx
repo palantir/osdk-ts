@@ -103,6 +103,13 @@ export interface UseObjectSetOptions<
   streamUpdates?: boolean;
 
   /**
+   * Restrict which properties are returned for each object.
+   * When provided, only the specified properties will be fetched,
+   * reducing payload sizes for list views.
+   */
+  $select?: readonly PropertyKeys<Q>[];
+
+  /**
    * Enable or disable the query.
    *
    * When `false`, the query will not automatically execute. It will still
@@ -218,6 +225,7 @@ export function useObjectSet<
     pivotTo: otherOptions.pivotTo,
     pageSize: otherOptions.pageSize,
     orderBy: otherOptions.orderBy,
+    select: otherOptions.$select,
   });
 
   const { subscribe, getSnapShot } = React.useMemo(
@@ -251,6 +259,7 @@ export function useObjectSet<
               dedupeInterval: otherOptions.dedupeIntervalMs ?? 2_000,
               autoFetchMore: otherOptions.autoFetchMore,
               streamUpdates,
+              select: otherOptions.$select,
             },
             observer,
           );

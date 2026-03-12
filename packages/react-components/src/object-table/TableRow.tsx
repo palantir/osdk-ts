@@ -33,7 +33,7 @@ interface TableRowProps<TData extends RowData> {
   isInEditMode?: boolean;
 }
 
-function TableRowInner<TData extends RowData>({
+export function TableRow<TData extends RowData>({
   row,
   virtualRow,
   onRowClick,
@@ -71,7 +71,3 @@ function TableRowInner<TData extends RowData>({
     </tr>
   );
 }
-
-export const TableRow = React.memo(
-  TableRowInner,
-) as typeof TableRowInner;

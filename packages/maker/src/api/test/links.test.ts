@@ -1816,86 +1816,88 @@ describe("Link Types", () => {
       });
 
       expect(dumpOntologyFullMetadata().ontology).toMatchInlineSnapshot(`
-            {
-              "actionTypes": {},
-              "blockPermissionInformation": {
-                "actionTypes": {},
-                "linkTypes": {},
-                "objectTypes": {},
-              },
-              "interfaceTypes": {
-                "com.palantir.A": {
-                  "interfaceType": {
-                    "apiName": "com.palantir.A",
-                    "displayMetadata": {
-                      "description": "A",
-                      "displayName": "A",
-                      "icon": {
-                        "blueprint": {
-                          "color": "#4C90F0",
-                          "locator": "layout-hierarchy",
-                        },
-                        "type": "blueprint",
-                      },
+        {
+          "actionTypes": {},
+          "blockPermissionInformation": {
+            "actionTypes": {},
+            "linkTypes": {},
+            "objectTypes": {},
+          },
+          "interfaceTypes": {
+            "com.palantir.A": {
+              "interfaceType": {
+                "apiName": "com.palantir.A",
+                "displayMetadata": {
+                  "description": "A",
+                  "displayName": "A",
+                  "icon": {
+                    "blueprint": {
+                      "color": "#4C90F0",
+                      "locator": "layout-hierarchy",
                     },
-                    "extendsInterfaces": [],
-                    "links": [
-                      {
-                        "cardinality": "SINGLE",
-                        "linkedEntityTypeId": {
-                          "interfaceType": "com.palantir.B",
-                          "type": "interfaceType",
-                        },
-                        "metadata": {
-                          "apiName": "com.palantir.singleLink",
-                          "description": "singleLink",
-                          "displayName": "singleLink",
-                        },
-                        "required": true,
-                      },
-                    ],
-                    "properties": [],
-                    "propertiesV2": {},
-                    "propertiesV3": {},
-                    "searchable": true,
-                    "status": {
-                      "active": {},
-                      "type": "active",
-                    },
+                    "type": "blueprint",
                   },
                 },
-                "com.palantir.B": {
-                  "interfaceType": {
-                    "apiName": "com.palantir.B",
-                    "displayMetadata": {
-                      "description": "B",
-                      "displayName": "B",
-                      "icon": {
-                        "blueprint": {
-                          "color": "#4C90F0",
-                          "locator": "layout-hierarchy",
-                        },
-                        "type": "blueprint",
-                      },
+                "extendsInterfaces": [],
+                "extendsInterfacesMetadata": [],
+                "links": [
+                  {
+                    "cardinality": "SINGLE",
+                    "linkedEntityTypeId": {
+                      "interfaceType": "com.palantir.B",
+                      "type": "interfaceType",
                     },
-                    "extendsInterfaces": [],
-                    "links": [],
-                    "properties": [],
-                    "propertiesV2": {},
-                    "propertiesV3": {},
-                    "searchable": true,
-                    "status": {
-                      "active": {},
-                      "type": "active",
+                    "metadata": {
+                      "apiName": "com.palantir.singleLink",
+                      "description": "singleLink",
+                      "displayName": "singleLink",
                     },
+                    "required": true,
                   },
+                ],
+                "properties": [],
+                "propertiesV2": {},
+                "propertiesV3": {},
+                "searchable": true,
+                "status": {
+                  "active": {},
+                  "type": "active",
                 },
               },
-              "linkTypes": {},
-              "objectTypes": {},
-              "sharedPropertyTypes": {},
-            }
-          `);
+            },
+            "com.palantir.B": {
+              "interfaceType": {
+                "apiName": "com.palantir.B",
+                "displayMetadata": {
+                  "description": "B",
+                  "displayName": "B",
+                  "icon": {
+                    "blueprint": {
+                      "color": "#4C90F0",
+                      "locator": "layout-hierarchy",
+                    },
+                    "type": "blueprint",
+                  },
+                },
+                "extendsInterfaces": [],
+                "extendsInterfacesMetadata": [],
+                "links": [],
+                "properties": [],
+                "propertiesV2": {},
+                "propertiesV3": {},
+                "searchable": true,
+                "status": {
+                  "active": {},
+                  "type": "active",
+                },
+              },
+            },
+          },
+          "linkTypes": {},
+          "objectTypes": {},
+          "sharedPropertyTypes": {},
+        }
+      `);
     });
 
     it("many link works", () => {
@@ -1906,86 +1908,88 @@ describe("Link Types", () => {
       });
 
       expect(dumpOntologyFullMetadata().ontology).toMatchInlineSnapshot(`
-            {
-              "actionTypes": {},
-              "blockPermissionInformation": {
-                "actionTypes": {},
-                "linkTypes": {},
-                "objectTypes": {},
-              },
-              "interfaceTypes": {
-                "com.palantir.A": {
-                  "interfaceType": {
-                    "apiName": "com.palantir.A",
-                    "displayMetadata": {
-                      "description": "A",
-                      "displayName": "A",
-                      "icon": {
-                        "blueprint": {
-                          "color": "#4C90F0",
-                          "locator": "layout-hierarchy",
-                        },
-                        "type": "blueprint",
-                      },
+        {
+          "actionTypes": {},
+          "blockPermissionInformation": {
+            "actionTypes": {},
+            "linkTypes": {},
+            "objectTypes": {},
+          },
+          "interfaceTypes": {
+            "com.palantir.A": {
+              "interfaceType": {
+                "apiName": "com.palantir.A",
+                "displayMetadata": {
+                  "description": "A",
+                  "displayName": "A",
+                  "icon": {
+                    "blueprint": {
+                      "color": "#4C90F0",
+                      "locator": "layout-hierarchy",
                     },
-                    "extendsInterfaces": [],
-                    "links": [
-                      {
-                        "cardinality": "MANY",
-                        "linkedEntityTypeId": {
-                          "interfaceType": "com.palantir.B",
-                          "type": "interfaceType",
-                        },
-                        "metadata": {
-                          "apiName": "com.palantir.manyLink",
-                          "description": "manyLink",
-                          "displayName": "manyLink",
-                        },
-                        "required": true,
-                      },
-                    ],
-                    "properties": [],
-                    "propertiesV2": {},
-                    "propertiesV3": {},
-                    "searchable": true,
-                    "status": {
-                      "active": {},
-                      "type": "active",
-                    },
+                    "type": "blueprint",
                   },
                 },
-                "com.palantir.B": {
-                  "interfaceType": {
-                    "apiName": "com.palantir.B",
-                    "displayMetadata": {
-                      "description": "B",
-                      "displayName": "B",
-                      "icon": {
-                        "blueprint": {
-                          "color": "#4C90F0",
-                          "locator": "layout-hierarchy",
-                        },
-                        "type": "blueprint",
-                      },
+                "extendsInterfaces": [],
+                "extendsInterfacesMetadata": [],
+                "links": [
+                  {
+                    "cardinality": "MANY",
+                    "linkedEntityTypeId": {
+                      "interfaceType": "com.palantir.B",
+                      "type": "interfaceType",
                     },
-                    "extendsInterfaces": [],
-                    "links": [],
-                    "properties": [],
-                    "propertiesV2": {},
-                    "propertiesV3": {},
-                    "searchable": true,
-                    "status": {
-                      "active": {},
-                      "type": "active",
+                    "metadata": {
+                      "apiName": "com.palantir.manyLink",
+                      "description": "manyLink",
+                      "displayName": "manyLink",
                     },
+                    "required": true,
                   },
+                ],
+                "properties": [],
+                "propertiesV2": {},
+                "propertiesV3": {},
+                "searchable": true,
+                "status": {
+                  "active": {},
+                  "type": "active",
                 },
               },
-              "linkTypes": {},
-              "objectTypes": {},
-              "sharedPropertyTypes": {},
-            }
-          `);
+            },
+            "com.palantir.B": {
+              "interfaceType": {
+                "apiName": "com.palantir.B",
+                "displayMetadata": {
+                  "description": "B",
+                  "displayName": "B",
+                  "icon": {
+                    "blueprint": {
+                      "color": "#4C90F0",
+                      "locator": "layout-hierarchy",
+                    },
+                    "type": "blueprint",
+                  },
+                },
+                "extendsInterfaces": [],
+                "extendsInterfacesMetadata": [],
+                "links": [],
+                "properties": [],
+                "propertiesV2": {},
+                "propertiesV3": {},
+                "searchable": true,
+                "status": {
+                  "active": {},
+                  "type": "active",
+                },
+              },
+            },
+          },
+          "linkTypes": {},
+          "objectTypes": {},
+          "sharedPropertyTypes": {},
+        }
+      `);
     });
   });
 });

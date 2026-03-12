@@ -48,6 +48,8 @@ import type { EditableConfig } from "./utils/types.js";
  * ```
  */
 
+const EMPTY_ARRAY: [] = [];
+
 export function ObjectTable<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = Record<
@@ -171,7 +173,7 @@ export function ObjectTable<
   const table = useReactTable<
     Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
   >({
-    data: data ?? [],
+    data: data ?? EMPTY_ARRAY,
     columns: allColumns,
     getCoreRowModel: getCoreRowModel(),
     state: {
