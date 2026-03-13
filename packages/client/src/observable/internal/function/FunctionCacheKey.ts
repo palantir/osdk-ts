@@ -20,6 +20,8 @@ import type { CanonicalFunctionParams } from "./FunctionParamsCanonicalizer.js";
 import type { FunctionQuery } from "./FunctionQuery.js";
 
 // Index constants for accessing otherKeys array elements
+export const API_NAME_IDX = 0;
+export const VERSION_IDX = 1;
 export const PARAMS_IDX = 2;
 
 /**

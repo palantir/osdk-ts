@@ -65,6 +65,7 @@ export {
   PIVOT_IDX,
   RDP_IDX,
   RIDS_IDX,
+  SELECT_IDX,
 } from "./ListCacheKey.js";
 import type { ListQueryOptions } from "./ListQueryOptions.js";
 
@@ -591,6 +592,12 @@ export abstract class ListQuery extends BaseListQuery<
       this.rdpConfig ?? undefined,
     );
   }
+}
+
+export function isListCacheKey(
+  cacheKey: CacheKey,
+): cacheKey is ListCacheKey {
+  return cacheKey.type === "list";
 }
 
 /**

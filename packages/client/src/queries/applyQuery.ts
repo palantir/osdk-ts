@@ -456,7 +456,7 @@ function getObjectSpecifier(
   );
 }
 
-function createQueryObjectResponse<
+export function createQueryObjectResponse<
   Q extends ObjectTypeDefinition,
 >(
   primaryKey: PrimaryKeyType<Q>,
@@ -474,7 +474,7 @@ function createQueryObjectResponse<
   };
 }
 
-function createQueryInterfaceResponse<
+export function createQueryInterfaceResponse<
   Q extends InterfaceDefinition,
 >(
   interfaceSpecifier: {

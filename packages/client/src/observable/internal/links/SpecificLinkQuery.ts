@@ -32,6 +32,7 @@ import type { Status } from "../../ObservableClient/common.js";
 import type { ObserveLinks } from "../../ObservableClient/ObserveLink.js";
 import { BaseListQuery } from "../base-list/BaseListQuery.js";
 import type { BatchContext } from "../BatchContext.js";
+import type { CacheKey } from "../CacheKey.js";
 import type { Canonical } from "../Canonical.js";
 import type { Changes } from "../Changes.js";
 import type { Entry } from "../Layer.js";
@@ -359,4 +360,13 @@ export class SpecificLinkQuery extends BaseListQuery<
       }
     })();
   };
+}
+
+/**
+ * Type guard to check if a cache key is a SpecificLinkCacheKey
+ */
+export function isSpecificLinkCacheKey(
+  key: CacheKey,
+): key is SpecificLinkCacheKey {
+  return key.type === "specificLink";
 }

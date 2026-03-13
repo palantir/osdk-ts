@@ -70,7 +70,7 @@ const strongMemoAsync = <K, V>(fn: (entry: K) => Promise<V>) =>
 const weakMemoAsync = <K, V>(fn: (entry: K) => Promise<V>) =>
   createSimpleAsyncCache<K, V>("weak", fn).get;
 
-class MetadataClient {
+export class MetadataClient {
   #client: MinimalClient;
   #ctx: ConjureContext;
   #logger: any;

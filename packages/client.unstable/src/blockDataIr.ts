@@ -26,6 +26,9 @@ import type { ValueTypeDisplayMetadata } from "./generated/type-registry/api/Val
 import type { ValueTypeStatus } from "./generated/type-registry/api/ValueTypeStatus.js";
 import type { ValueTypeVersion } from "./generated/type-registry/api/ValueTypeVersion.js";
 
+export type InterfaceTypeApiName = string;
+export type ObjectTypeFieldApiName = string;
+export type InterfaceLinkTypeApiName = string;
 export type { OntologyIrOntologyBlockDataV2 } from "./generated/ontology-metadata/api/blockdata/index.js";
 
 export interface OntologyIr {

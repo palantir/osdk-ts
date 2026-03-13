@@ -16,7 +16,7 @@
 
 import type { Logger } from "@osdk/api";
 
-function noop(): any {
+export function noop(): any {
 }
 
 interface LoggerConstructor {

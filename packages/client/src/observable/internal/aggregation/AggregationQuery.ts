@@ -17,7 +17,10 @@
 import type {
   AggregateOpts,
   AggregationsResults,
+  DerivedProperty,
   ObjectOrInterfaceDefinition,
+  SimplePropertyDef,
+  WhereClause,
 } from "@osdk/api";
 import type { ObjectSet as WireObjectSet } from "@osdk/foundry.ontologies";
 import type { Connectable, Observable, Subject } from "rxjs";
@@ -45,6 +48,27 @@ import {
   WHERE_IDX,
   WIRE_OBJECT_SET_IDX,
 } from "./AggregationCacheKey.js";
+
+export interface AggregationPayload<
+  Q extends ObjectOrInterfaceDefinition,
+  A extends AggregateOpts<Q>,
+> {
+  result: AggregationsResults<Q, A> | undefined;
+  status: Status;
+  lastUpdated: number;
+  error?: Error;
+}
+
+export interface AggregationQueryOptions<
+  Q extends ObjectOrInterfaceDefinition,
+  A extends AggregateOpts<Q>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+> extends CommonObserveOptions {
+  type: Q;
+  where?: WhereClause<Q, RDPs>;
+  withProperties?: DerivedProperty.Clause<Q>;
+  aggregate: A;
+}
 
 export interface AggregationPayloadBase {
   result:

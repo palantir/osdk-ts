@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-export type ResultOrError<T extends object> =
-  | ({ type: "ok"; err?: never } & T)
-  | { type: "err"; data?: never; err?: unknown };
-
-export function isOk(result: ResultOrError<any>): result is { type: "ok" } {
-  return result.type === "ok";
-}
+/** Helper object to make sure property descriptors are declared correctly */
+export type PropertyDescriptorRecord<X> = {
+  [K in keyof X]: PropertyDescriptor & { get?: () => X[K]; value?: X[K] };
+};
