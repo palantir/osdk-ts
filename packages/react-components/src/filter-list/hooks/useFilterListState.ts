@@ -15,7 +15,7 @@
  */
 
 import type { ObjectTypeDefinition, WhereClause } from "@osdk/api";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import type { FilterListProps } from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
 import type { LinkedPropertyFilterState } from "../types/LinkedFilterTypes.js";
@@ -115,25 +115,12 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
 
   const setFilterState = useCallback(
     (filterKey: string, state: FilterState) => {
-      let newWhereClause: WhereClause<Q> | undefined;
-
       setFilterStates((prev) => {
         const next = new Map(prev);
         next.set(filterKey, state);
-
-        newWhereClause = buildWhereClause(
-          filterDefinitions,
-          next,
-          filterOperator,
-          objectType,
-        );
-
         return next;
       });
 
-      if (newWhereClause !== undefined) {
-        onFilterClauseChanged?.(newWhereClause);
-      }
       const definition = filterDefinitions?.find(
         (d) => getFilterKey(d) === filterKey,
       );
@@ -143,9 +130,6 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
     },
     [
       filterDefinitions,
-      filterOperator,
-      objectType,
-      onFilterClauseChanged,
       onFilterStateChanged,
     ],
   );
@@ -160,6 +144,10 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
       ),
     [filterDefinitions, filterStates, filterOperator, objectType],
   );
+
+  useEffect(() => {
+    onFilterClauseChanged?.(whereClause);
+  }, [whereClause, onFilterClauseChanged]);
 
   const perFilterWhereClauses = useMemo(() => {
     const map = new Map<string, WhereClause<Q>>();
@@ -193,17 +181,8 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
   }, [filterStates]);
 
   const reset = useCallback(() => {
-    const initialStates = buildInitialStates(filterDefinitions);
-    setFilterStates(initialStates);
-
-    const newWhereClause = buildWhereClause(
-      filterDefinitions,
-      initialStates,
-      filterOperator,
-      objectType,
-    );
-    onFilterClauseChanged?.(newWhereClause);
-  }, [filterDefinitions, filterOperator, objectType, onFilterClauseChanged]);
+    setFilterStates(buildInitialStates(filterDefinitions));
+  }, [filterDefinitions]);
 
   return useMemo(() => ({
     filterStates,
