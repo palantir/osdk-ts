@@ -17,48 +17,50 @@
 .timeline {
   display: flex;
   flex-direction: column;
-  gap: var(--osdk-filter-range-gap, calc(var(--osdk-surface-spacing) * 2));
+  gap: var(--osdk-filter-range-gap);
 }
 
 .labels {
   display: flex;
   align-items: center;
-  gap: var(--osdk-surface-spacing);
-  font-size: var(--osdk-typography-size-body-small);
-  color: var(--osdk-typography-color-muted);
+  gap: var(--osdk-filter-timeline-labels-gap);
+  font-family: var(--osdk-filter-timeline-labels-font-family);
+  font-size: var(--osdk-filter-timeline-labels-font-size);
+  color: var(--osdk-filter-timeline-labels-color);
 }
 
 .clearButton {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: calc(var(--osdk-surface-spacing) * 0.5);
+  padding: var(--osdk-filter-timeline-button-padding);
   border: none;
   background: transparent;
   cursor: pointer;
-  color: var(--osdk-iconography-color-muted);
-  border-radius: var(--osdk-surface-border-radius);
+  color: var(--osdk-filter-timeline-button-color);
+  border-radius: var(--osdk-filter-timeline-button-border-radius);
   margin-left: auto;
 
   &:hover {
-    background: var(--osdk-surface-background-color-default-hover);
-    color: var(--osdk-typography-color-default-rest);
+    background: var(--osdk-filter-timeline-button-bg-hover);
+    color: var(--osdk-filter-timeline-button-color-hover);
   }
 }
 
 .brush {
   display: flex;
   align-items: center;
-  gap: var(--osdk-surface-spacing);
+  gap: var(--osdk-filter-timeline-labels-gap);
 }
 
 .brush span {
-  color: var(--osdk-typography-color-muted);
+  color: var(--osdk-filter-timeline-brush-color);
 }
 
 .input {
   flex: 1;
-  font-size: var(--osdk-typography-size-body-medium);
+  font-family: var(--osdk-filter-input-font-family);
+  font-size: var(--osdk-filter-timeline-input-font-size);
   padding: var(--osdk-filter-input-padding);
   border: var(--osdk-filter-input-border);
   border-radius: var(--osdk-filter-input-border-radius);

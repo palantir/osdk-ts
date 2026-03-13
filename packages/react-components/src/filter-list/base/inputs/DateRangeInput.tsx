@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import type { ObjectSet, ObjectTypeDefinition, PropertyKeys } from "@osdk/api";
 import React, { memo } from "react";
 import { formatDateForInput, parseDateFromInput } from "./dateUtils.js";
 import { RangeInput, type RangeInputConfig } from "./RangeInput.js";
@@ -33,25 +32,20 @@ const dateConfig: RangeInputConfig<Date> = {
     }: ${count.toLocaleString()}`,
 };
 
-interface DateRangeInputProps<
-  Q extends ObjectTypeDefinition,
-  K extends PropertyKeys<Q>,
-> {
-  objectType: Q;
-  propertyKey: K;
+interface DateRangeInputProps {
+  valueCountPairs: Array<{ value: Date; count: number }>;
+  isLoading: boolean;
   minValue: Date | undefined;
   maxValue: Date | undefined;
   onChange: (min: Date | undefined, max: Date | undefined) => void;
-  objectSet?: ObjectSet<Q>;
   showHistogram?: boolean;
   className?: string;
   style?: React.CSSProperties;
 }
 
-function DateRangeInputInner<
-  Q extends ObjectTypeDefinition,
-  K extends PropertyKeys<Q>,
->(props: DateRangeInputProps<Q, K>): React.ReactElement {
+function DateRangeInputInner(
+  props: DateRangeInputProps,
+): React.ReactElement {
   return <RangeInput {...props} config={dateConfig} />;
 }
 

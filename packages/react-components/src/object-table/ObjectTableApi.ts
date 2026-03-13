@@ -322,14 +322,22 @@ export interface ObjectTableProps<
   selectedRows?: PrimaryKeyType<Q>[];
 
   /**
+   * Indicates whether all rows are selected in controlled mode.
+   * When true, the table will show all rows as selected regardless of the selectedRows array.
+   */
+  isAllSelected?: boolean;
+
+  /**
    * Called when the row selection changes.
    * Required when row selection is controlled.
    *
    * @param selectedRowIds The primary keys of currently selected rows
+   * @param isSelectAll Whether the change was triggered by a "select all" action. Defaults to false
    */
-
-  onRowSelection?: (selectedRowIds: PrimaryKeyType<Q>[]) => void;
-
+  onRowSelection?: (
+    selectedRowIds: PrimaryKeyType<Q>[],
+    isSelectAll?: boolean,
+  ) => void;
   /**
    * If provided, will render this context menu when right clicking on a cell
    */

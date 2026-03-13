@@ -124,6 +124,7 @@ function AddFilterButton({
 }
 
 export function EmployeeFilters() {
+  const [collapsed, setCollapsed] = useState(false);
   const [filterDefinitions, setFilterDefinitions] = useState<
     FilterDefinitionUnion<Employee>[]
   >(INITIAL_FILTERS);
@@ -153,9 +154,7 @@ export function EmployeeFilters() {
 
   const handleRemoveFilter = useCallback(
     (filterKey: string) => {
-      setFilterDefinitions((prev) =>
-        prev.filter((def) => def.id !== filterKey)
-      );
+      setFilterDefinitions((prev) => prev.filter((d) => d.id !== filterKey));
     },
     [],
   );
@@ -178,6 +177,9 @@ export function EmployeeFilters() {
       renderAddFilterButton={renderAddFilterButton}
       title="Employee Filters"
       showActiveFilterCount={true}
+      showResetButton={true}
+      collapsed={collapsed}
+      onCollapsedChange={setCollapsed}
     />
   );
 }
