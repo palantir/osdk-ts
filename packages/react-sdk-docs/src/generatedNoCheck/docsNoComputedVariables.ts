@@ -50,7 +50,7 @@ export const snippets: SdkSnippets<typeof OSDK_SNIPPETS_SPEC> = {
         ],
         "reactUseOsdkObjectsEnabled": [
           {
-            "template": "import { {{objectType}} } from \"{{{packageName}}}\";\nimport { useOsdkObjects } from \"@osdk/react/experimental\";\n\nfunction Conditional{{objectType}}List({ shouldFetch }: { shouldFetch: boolean }) {\n  const { data, isLoading, error } = useOsdkObjects({{objectType}}, {\n    enabled: shouldFetch\n  });\n\n  if (!shouldFetch) {\n    return <div>Select criteria to load data</div>;\n  }\n\n  return (\n    <div>\n      {error && <div className=\"error-banner\">Error: {error.message}</div>}\n      {isLoading && !data && <div className=\"skeleton\">Loading...</div>}\n      <ul>\n        {data?.map(obj => (\n          <li key={obj.$primaryKey}>{obj.{{titleProperty}}}</li>\n        ))}\n      </ul>\n    </div>\n  );\n}"
+            "template": "import { {{objectType}} } from \"{{{packageName}}}\";\nimport { useOsdkObjects } from \"@osdk/react/experimental\";\n\nfunction Conditional{{objectType}}List({ shouldFetch }: { shouldFetch: boolean }) {\n  const { data, isLoading, error } = useOsdkObjects({{objectType}}, {\n    enabled: shouldFetch\n  });\n\n  return (\n    <div>\n      {!shouldFetch && <div>Select criteria to load data</div>}\n      {error && <div className=\"error-banner\">Error: {error.message}</div>}\n      {isLoading && !data && <div className=\"skeleton\">Loading...</div>}\n      <ul>\n        {data?.map(obj => (\n          <li key={obj.$primaryKey}>{obj.{{titleProperty}}}</li>\n        ))}\n      </ul>\n    </div>\n  );\n}"
           }
         ],
         "loadSingleObjectGuide": [

@@ -168,12 +168,9 @@ versions:
                 enabled: shouldFetch
               });
 
-              if (!shouldFetch) {
-                return <div>Select criteria to load data</div>;
-              }
-
               return (
                 <div>
+                  {!shouldFetch && <div>Select criteria to load data</div>}
                   {error && <div className="error-banner">Error: {error.message}</div>}
                   {isLoading && !data && <div className="skeleton">Loading...</div>}
                   <ul>
