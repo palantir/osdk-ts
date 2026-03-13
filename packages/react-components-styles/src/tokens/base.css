@@ -6,6 +6,7 @@
   --osdk-surface-z-index-1: var(--bp-surface-z-index-1);
   --osdk-surface-z-index-2: var(--bp-surface-z-index-2);
   --osdk-surface-z-index-3: var(--bp-surface-z-index-3);
+  --osdk-surface-z-index-4: var(--bp-surface-z-index-4);
   --osdk-surface-border-radius: var(--bp-surface-border-radius);
   --osdk-surface-layer-primary: var(--bp-surface-layer-primary);
   --osdk-surface-border-width: var(--bp-surface-border-width);
@@ -87,8 +88,9 @@
   /* Blueprint token mappings - Palette tokens */
   --osdk-palette-gray-1: var(--bp-palette-gray-1);
   --osdk-palette-gray-2: var(--bp-palette-gray-2);
-  --osdk-palette-gray-100: var(--bp-palette-gray-100);
-  --osdk-palette-gray-200: var(--bp-palette-gray-200);
+  --osdk-palette-gray-4: var(--bp-palette-gray-4);
+  --osdk-palette-dark-gray-2: var(--bp-palette-dark-gray-2);
+  --osdk-palette-dark-gray-3: var(--bp-palette-dark-gray-3);
   --osdk-palette-light-gray-1: var(--bp-palette-light-gray-1);
   --osdk-palette-light-gray-3: var(--bp-palette-light-gray-3);
   --osdk-palette-light-gray-4: var(--bp-palette-light-gray-4);
