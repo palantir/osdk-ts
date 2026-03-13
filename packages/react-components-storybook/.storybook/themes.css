@@ -1,4 +1,4 @@
-/* Light theme (default) - Provides Blueprint palette tokens needed by OSDK components */
+/* Light theme (default) - No overrides needed, uses default Blueprint/OSDK tokens */
 [data-theme="light"] {
   --bp-palette-black: oklch(0.2827 0.019 238.86);
   --bp-palette-white: oklch(1 0 89.88);
