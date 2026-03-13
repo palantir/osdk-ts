@@ -30,6 +30,7 @@ import type {
 import type * as Ontologies from "@osdk/foundry.ontologies";
 
 import { consola } from "consola";
+import * as fs from "fs";
 import { spawnSync } from "node:child_process";
 import { hash } from "node:crypto";
 import { accessSync, constants } from "node:fs";
@@ -272,6 +273,7 @@ export class OntologyIrToFullMetadataConverter {
     nodeModulesPath?: string,
     pythonFunctionsDir?: string,
     pythonRootProjectDir?: string,
+    irOutputFile?: string,
     previewMetadata?: Pick<
       Ontologies.OntologyFullMetadata,
       "ontology" | "objectTypes" | "interfaceTypes"
@@ -285,6 +287,7 @@ export class OntologyIrToFullMetadataConverter {
       const tsQueries = await this.discoverTypeScriptFunctions(
         functionsDir,
         nodeModulesPath,
+        irOutputFile,
         previewMetadata,
       );
       queries.push(...tsQueries);
@@ -321,6 +324,7 @@ export class OntologyIrToFullMetadataConverter {
   private static async discoverTypeScriptFunctions(
     functionsDir: string,
     nodeModulesPath?: string,
+    irOutputFile?: string,
     previewMetadata?: Pick<
       Ontologies.OntologyFullMetadata,
       "ontology" | "objectTypes" | "interfaceTypes"
@@ -404,6 +408,10 @@ export class OntologyIrToFullMetadataConverter {
       entityMetadataMapping,
     );
     const functions = fd.discover();
+
+    if (irOutputFile) {
+      fs.writeFileSync(irOutputFile, JSON.stringify(functions));
+    }
 
     const queries: Ontologies.QueryTypeV2[] = [];
     functions.discoveredFunctions.forEach((func: IDiscoveredFunction) => {
