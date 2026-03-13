@@ -71,6 +71,7 @@
 }
 
 .barFill {
+  display: block;
   height: 100%;
   width: 100%;
   background: var(--osdk-filter-listogram-row-bar-color, var(--osdk-filter-listogram-bar-color));

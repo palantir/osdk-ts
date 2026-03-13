@@ -1,6 +1,23 @@
-/* Light theme (default) - No overrides needed, uses default Blueprint/OSDK tokens */
+/* Light theme (default) - Provides Blueprint palette tokens needed by OSDK components */
 [data-theme="light"] {
-  /* Use default values from the design system */
+  --bp-palette-black: oklch(0.2827 0.019 238.86);
+  --bp-palette-white: oklch(1 0 89.88);
+
+  --bp-palette-gray-1: oklch(0.6792 0.0229 243.66);
+  --bp-palette-gray-2: oklch(0.6792 0.0229 243.66);
+  --bp-palette-gray-3: oklch(0.8562 0.0148 244.74);
+  --bp-palette-gray-4: oklch(0.8562 0.0148 244.74);
+  --bp-palette-gray-5: oklch(0.9178 0.0101 227.89);
+  --bp-palette-gray-100: oklch(0.93 0.008 240);
+  --bp-palette-gray-200: oklch(0.88 0.012 240);
+
+  --bp-palette-light-gray-1: oklch(0.9178 0.0101 227.89);
+  --bp-palette-light-gray-2: oklch(0.9587 0.0051 228.82);
+  --bp-palette-light-gray-3: oklch(0.9587 0.0051 228.82);
+  --bp-palette-light-gray-4: oklch(0.9809 0.0025 228.78);
+  --bp-palette-light-gray-5: oklch(0.9809 0.0025 228.78);
+
+  --osdk-filter-listogram-bar-color: oklch(0.65 0.02 240);
 }
 
 /* Modern theme - based on e2e.sandbox.peopleapp theme-overrides.css */
@@ -20,6 +37,8 @@
   --bp-palette-gray-3: oklch(0.8562 0.0148 244.74);
   --bp-palette-gray-4: oklch(0.8562 0.0148 244.74);
   --bp-palette-gray-5: oklch(0.9178 0.0101 227.89);
+  --bp-palette-gray-100: oklch(0.93 0.008 240);
+  --bp-palette-gray-200: oklch(0.88 0.012 240);
   --bp-palette-light-gray-1: oklch(0.9178 0.0101 227.89);
   --bp-palette-light-gray-2: oklch(0.9587 0.0051 228.82);
   --bp-palette-light-gray-3: oklch(0.9587 0.0051 228.82);
