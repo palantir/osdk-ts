@@ -18,7 +18,7 @@ export function OfficePanel(
   { office, onSelectEmployee, onClose }: OfficePanelProps,
 ) {
   const { links: occupants, isLoading, error } = useLinks(office, "occupants", {
-    $select: ["fullName", "employeeNumber", "jobTitle"],
+    $select: ["fullName", "employeeNumber", "jobTitle", "primaryOfficeId"],
   });
 
   const {
