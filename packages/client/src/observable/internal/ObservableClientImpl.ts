@@ -44,6 +44,7 @@ import type { ListPayload } from "../ListPayload.js";
 import type { ObjectPayload } from "../ObjectPayload.js";
 import type { ObjectSetPayload } from "../ObjectSetPayload.js";
 import type {
+  CacheSnapshot,
   ObservableClient,
   ObserveAggregationArgs,
   ObserveAggregationOptions,
@@ -253,6 +254,9 @@ export class ObservableClientImpl implements ObservableClient {
     args: Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0],
   ) => Promise<ActionValidationResponse>;
 
+  public registerActionHook<Q extends ActionDefinition<any>>(action: Q): void {
+  }
+
   public observeObjectSet<
     T extends ObjectOrInterfaceDefinition,
     RDPs extends Record<
@@ -312,6 +316,10 @@ export class ObservableClientImpl implements ObservableClient {
   >(where: WhereClause<T, RDPs>): Canonical<WhereClause<T, RDPs>> {
     return this.__experimentalStore.whereCanonicalizer
       .canonicalize(where) as Canonical<WhereClause<T, RDPs>>;
+  }
+
+  public getCacheSnapshot(): Promise<CacheSnapshot> {
+    return Promise.resolve(this.__experimentalStore.getCacheSnapshot());
   }
 }
 

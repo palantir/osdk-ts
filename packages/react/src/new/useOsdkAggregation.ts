@@ -28,6 +28,11 @@ import type { ObserveAggregationArgs } from "@osdk/client/unstable-do-not-use";
 import { computeObjectSetCacheKey } from "@osdk/client/unstable-do-not-use";
 import React from "react";
 import {
+  getDevToolsOverrideStore,
+  OSDK_HOOK_METADATA,
+  type OsdkAggregationMetadata,
+} from "./devtools-metadata.js";
+import {
   makeExternalStore,
   makeExternalStoreAsync,
 } from "./makeExternalStore.js";
@@ -205,6 +210,56 @@ export function useOsdkAggregation<
     [JSON.stringify(intersectWith)],
   );
 
+  const __devtoolsMetadata = React.useRef<OsdkAggregationMetadata | null>(null);
+  if (process.env.NODE_ENV !== "production") {
+    __devtoolsMetadata.current = {
+      [OSDK_HOOK_METADATA]: true,
+      hookType: "useOsdkAggregation",
+      objectType: type.apiName,
+      where: canonWhere,
+      aggregate: stableAggregate,
+    };
+  }
+
+  const overrideStore = getDevToolsOverrideStore();
+
+  const querySignature = React.useMemo(() => {
+    return `useOsdkAggregation:${type.apiName}:${JSON.stringify(canonWhere)}:${
+      JSON.stringify(stableAggregate ?? {})
+    }`;
+  }, [type.apiName, canonWhere, stableAggregate]);
+
+  const override = React.useSyncExternalStore(
+    React.useCallback(
+      (notify: () => void) => overrideStore?.subscribe(notify) ?? (() => {}),
+      [overrideStore],
+    ),
+    React.useCallback(
+      () => overrideStore?.getOverrideBySignature(querySignature),
+      [overrideStore, querySignature],
+    ),
+    () => undefined,
+  );
+
+  const effectiveAggregate = React.useMemo(() => {
+    if (!override?.enabled) {
+      return stableAggregate;
+    }
+    try {
+      return {
+        ...stableAggregate,
+        ...(override.overrideParams.groupBy !== undefined
+          ? { groupBy: override.overrideParams.groupBy }
+          : {}),
+        ...(override.overrideParams.select !== undefined
+          ? { select: override.overrideParams.select }
+          : {}),
+      } as typeof stableAggregate;
+    } catch {
+      return stableAggregate;
+    }
+  }, [override, stableAggregate]);
+
   const { subscribe, getSnapShot } = React.useMemo(
     () => {
       if (objectSetKeyString && objectSetRef.current) {
@@ -217,8 +272,9 @@ export function useOsdkAggregation<
                 where: stableCanonWhere,
                 withProperties: stableWithProperties,
                 intersectWith: stableIntersectWith,
-                aggregate: stableAggregate,
+                aggregate: effectiveAggregate,
                 dedupeInterval: dedupeIntervalMs ?? 2_000,
+                __devtoolsSignature: querySignature,
               },
               observer,
             ),
@@ -231,15 +287,16 @@ export function useOsdkAggregation<
       }
       return makeExternalStore<ObserveAggregationArgs<Q, A>>(
         (observer) =>
-          // eslint-disable-next-line @typescript-eslint/no-deprecated
+           
           observableClient.observeAggregation(
             {
               type: type,
               where: stableCanonWhere,
               withProperties: stableWithProperties,
               intersectWith: stableIntersectWith,
-              aggregate: stableAggregate,
+              aggregate: effectiveAggregate,
               dedupeInterval: dedupeIntervalMs ?? 2_000,
+              __devtoolsSignature: querySignature,
             },
             observer,
           ),
@@ -256,8 +313,9 @@ export function useOsdkAggregation<
       stableCanonWhere,
       stableWithProperties,
       stableIntersectWith,
-      stableAggregate,
+      effectiveAggregate,
       dedupeIntervalMs,
+      querySignature,
     ],
   );
 

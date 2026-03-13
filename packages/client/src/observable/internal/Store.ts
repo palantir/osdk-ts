@@ -28,6 +28,7 @@ import invariant from "tiny-invariant";
 import type { ActionSignatureFromDef } from "../../actions/applyAction.js";
 import { additionalContext, type Client } from "../../Client.js";
 import { DEBUG_REFCOUNTS } from "../DebugFlags.js";
+import type { CacheEntry, CacheSnapshot } from "../ObservableClient.js";
 import type { OptimisticBuilder } from "../OptimisticBuilder.js";
 import { ActionApplication } from "./actions/ActionApplication.js";
 import {
@@ -50,6 +51,9 @@ import type { KnownCacheKey } from "./KnownCacheKey.js";
 import type { Entry } from "./Layer.js";
 import { Layers } from "./Layers.js";
 import { LinksHelper } from "./links/LinksHelper.js";
+import {
+  SOURCE_API_NAME_IDX as LINK_API_NAME_IDX,
+} from "./links/SpecificLinkCacheKey.js";
 import {
   API_NAME_IDX as LIST_API_NAME_IDX,
   RDP_IDX as LIST_RDP_IDX,
@@ -571,5 +575,73 @@ export class Store {
     primaryKey: string | number,
   ): Promise<void> {
     return this.functions.invalidateFunctionsByObject(apiName, primaryKey);
+  }
+
+  public getCacheSnapshot(): CacheSnapshot {
+    if (process.env.NODE_ENV !== "production") {
+      const entries: CacheEntry[] = [];
+      let totalSize = 0;
+
+      for (const cacheKey of this.layers.truth.keys()) {
+        const entry = this.layers.top.get(cacheKey);
+        if (!entry) {
+          continue;
+        }
+
+        let entryType: CacheEntry["type"] | undefined;
+        let objectType = "";
+
+        if (cacheKey.type === "object") {
+          entryType = "object";
+          objectType = cacheKey.otherKeys[OBJECT_API_NAME_IDX];
+        } else if (cacheKey.type === "list") {
+          entryType = "list";
+          objectType = cacheKey.otherKeys[LIST_API_NAME_IDX];
+        } else if (cacheKey.type === "specificLink") {
+          entryType = "link";
+          objectType = cacheKey.otherKeys[LINK_API_NAME_IDX];
+        } else if (cacheKey.type === "objectSet") {
+          entryType = "objectSet";
+          objectType = "";
+        }
+
+        if (!entryType) {
+          continue;
+        }
+
+        const estimatedSize = entry.value != null
+          ? JSON.stringify(entry.value).length * 2
+          : 0;
+        totalSize += estimatedSize;
+
+        entries.push({
+          key: DEBUG_ONLY__cacheKeyToString(cacheKey),
+          type: entryType,
+          objectType,
+          metadata: {
+            timestamp: entry.lastUpdated,
+            status: entry.status,
+            hitCount: 0,
+            size: estimatedSize,
+            isOptimistic: false,
+          },
+          data: entry.value,
+        });
+      }
+
+      return {
+        entries,
+        stats: {
+          totalEntries: entries.length,
+          totalSize,
+          totalHits: 0,
+        },
+      };
+    }
+
+    return {
+      entries: [],
+      stats: { totalEntries: 0, totalSize: 0, totalHits: 0 },
+    };
   }
 }

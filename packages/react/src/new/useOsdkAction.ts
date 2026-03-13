@@ -25,6 +25,10 @@ import type {
   ObservableClient,
 } from "@osdk/client/unstable-do-not-use";
 import React from "react";
+import {
+  OSDK_HOOK_METADATA,
+  type OsdkActionMetadata,
+} from "./devtools-metadata.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
 
 type ApplyActionParams<Q extends ActionDefinition<any>> =
@@ -68,6 +72,16 @@ export function useOsdkAction<Q extends ActionDefinition<any>>(
   actionDef: Q,
 ): UseOsdkActionResult<Q> {
   const { observableClient } = React.useContext(OsdkContext2);
+
+  const __devtoolsMetadata = React.useRef<OsdkActionMetadata | null>(null);
+  if (__devtoolsMetadata.current == null) {
+    __devtoolsMetadata.current = {
+      [OSDK_HOOK_METADATA]: true,
+      hookType: "useOsdkAction",
+      actionName: actionDef.apiName,
+    };
+  }
+
   const [error, setError] = React.useState<UseOsdkActionResult<Q>["error"]>();
   const [data, setData] = React.useState<ActionEditResponse | undefined>();
   const [isPending, setPending] = React.useState(false);
@@ -76,6 +90,10 @@ export function useOsdkAction<Q extends ActionDefinition<any>>(
     ActionValidationResponse | undefined
   >();
   const abortControllerRef = React.useRef<AbortController | null>(null);
+
+  React.useEffect(() => {
+    observableClient.registerActionHook?.(actionDef);
+  }, [observableClient, actionDef]);
 
   const applyAction = React.useCallback(async function applyAction(
     hookArgs: ApplyActionParams<Q> | Array<ApplyActionParams<Q>>,

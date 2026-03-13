@@ -56,7 +56,47 @@ import type { OptimisticBuilder } from "./OptimisticBuilder.js";
 export namespace ObservableClient {
   export interface ApplyActionOptions {
     optimisticUpdate?: (ctx: OptimisticBuilder) => void;
+    __debugListeners?: {
+      onLayerCreated?(id: unknown): void;
+      onLayerCleared?(id: unknown): void;
+      onServerObjectsModified?(
+        objects: Array<{
+          objectType: string;
+          primaryKey: string;
+          operation: "update" | "create" | "delete";
+        }>,
+      ): void;
+    };
   }
+}
+
+export interface CacheSnapshot {
+  entries: CacheEntry[];
+  stats: {
+    totalEntries: number;
+    totalSize: number;
+    totalHits: number;
+  };
+}
+
+export interface CacheEntry {
+  key: string;
+  type: "object" | "list" | "link" | "objectSet";
+  objectType: string;
+  queryParams?: {
+    where?: any;
+    orderBy?: any;
+    pageSize?: number;
+    linkName?: string;
+  };
+  metadata: {
+    timestamp: number;
+    status: "init" | "loading" | "loaded" | "error";
+    hitCount: number;
+    size: number;
+    isOptimistic: boolean;
+  };
+  data?: any;
 }
 
 export interface ObserveObjectOptions<
@@ -130,6 +170,8 @@ export interface ObserveListOptions<
     where: WhereClause<Q, RDPs>;
   }>;
   pivotTo?: string;
+
+  __devtoolsSignature?: string;
 }
 
 export interface ObserveObjectCallbackArgs<
@@ -139,6 +181,9 @@ export interface ObserveObjectCallbackArgs<
   isOptimistic: boolean;
   status: Status;
   lastUpdated: number;
+  __debugMetadata?: {
+    servedFromCache: boolean;
+  };
 }
 
 export interface ObserveObjectsCallbackArgs<
@@ -159,6 +204,9 @@ export interface ObserveObjectsCallbackArgs<
   hasMore: boolean;
   status: Status;
   totalCount?: string;
+  __debugMetadata?: {
+    servedFromCache: boolean;
+  };
 }
 
 export interface ObserveObjectSetArgs<
@@ -205,6 +253,7 @@ export interface ObserveAggregationOptions<
   RDPs extends Record<string, SimplePropertyDef> = {},
 > extends ObserveAggregationBaseOptions<T, A, RDPs> {
   objectSet?: undefined;
+  __devtoolsSignature?: string;
 }
 
 /**
@@ -219,6 +268,7 @@ export interface ObserveAggregationOptionsWithObjectSet<
   RDPs extends Record<string, SimplePropertyDef> = {},
 > extends ObserveAggregationBaseOptions<T, A, RDPs> {
   objectSet: ObjectSet<T>;
+  __devtoolsSignature?: string;
 }
 
 export interface ObserveAggregationArgs<
@@ -515,6 +565,31 @@ export interface ObservableClient extends ObserveLinks {
     apiName: string,
     primaryKey: string | number,
   ): Promise<void>;
+
+  registerActionHook?: <Q extends ActionDefinition<any>>(action: Q) => void;
+
+  registerObjectHook?: (
+    objectType: string | ObjectOrInterfaceDefinition,
+    primaryKey?: string | number,
+  ) => void;
+
+  registerListHook?: <Q extends ObjectOrInterfaceDefinition>(
+    objectType: Q["apiName"] | Q,
+    options?: {
+      where?: WhereClause<Q>;
+      orderBy?: OrderBy<Q>;
+      pageSize?: number;
+    },
+  ) => void;
+
+  registerLinkHook?: <Q extends ObjectTypeDefinition>(
+    sourceObject: Osdk.Instance<Q> | Osdk.Instance<Q>[],
+    linkName: string,
+  ) => void;
+
+  registerObjectSetHook?: (
+    objectSet: ObjectSet<ObjectOrInterfaceDefinition>,
+  ) => void;
 
   canonicalizeWhereClause: <
     T extends ObjectOrInterfaceDefinition,

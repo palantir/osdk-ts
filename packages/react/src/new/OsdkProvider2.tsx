@@ -19,29 +19,88 @@ import {
   createObservableClient,
   type ObservableClient,
 } from "@osdk/client/unstable-do-not-use";
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { OsdkContext } from "../OsdkContext.js";
+import { getRegisteredDevTools } from "../public/devtools-registry.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
 
 interface OsdkProviderOptions {
   children: React.ReactNode;
   client: Client;
   observableClient?: ObservableClient;
+  enableDevTools?: boolean;
 }
 
 export function OsdkProvider2({
   children,
   client,
   observableClient,
+  enableDevTools,
 }: OsdkProviderOptions): React.JSX.Element {
-  observableClient = useMemo(
+  // If enableDevTools not specified, auto-detect based on whether devtools are registered
+  // (devtools only get registered when the vite plugin is active in dev mode)
+  const effectiveEnableDevTools = enableDevTools
+    ?? (getRegisteredDevTools() != null);
+  const baseObservableClient = useMemo(
     () => observableClient ?? createObservableClient(client),
     [client, observableClient],
   );
+
+  const [wrappedClient, setWrappedClient] = useState<ObservableClient>(
+    baseObservableClient,
+  );
+
+  // Track devtools state to wrap children
+  const devToolsRef = useRef<ReturnType<typeof getRegisteredDevTools>>(null);
+  const monitoredClientRef = useRef<ObservableClient | null>(null);
+
+  useEffect(() => {
+    let mounted = true;
+    const devTools = getRegisteredDevTools();
+    devToolsRef.current = devTools;
+
+    if (!effectiveEnableDevTools || !devTools) {
+      if (mounted) {
+        setWrappedClient(baseObservableClient);
+        monitoredClientRef.current = null;
+      }
+      return;
+    }
+
+    const monitoredClient = devTools.wrapClient(
+      baseObservableClient,
+    ) as ObservableClient;
+    monitoredClientRef.current = monitoredClient;
+
+    if (mounted) {
+      setWrappedClient(monitoredClient);
+    }
+
+    return () => {
+      mounted = false;
+      devTools.dispose?.(monitoredClient);
+      monitoredClientRef.current = null;
+    };
+  }, [effectiveEnableDevTools, baseObservableClient]);
+
+  // Wrap children using refs to avoid unnecessary re-wrapping
+  const wrappedChildren = useMemo(() => {
+    const devTools = devToolsRef.current;
+    const monitoredClient = monitoredClientRef.current;
+
+    if (!effectiveEnableDevTools || !devTools || !monitoredClient) {
+      return children;
+    }
+
+    return devTools.wrapChildren(children, monitoredClient);
+  }, [children, effectiveEnableDevTools, wrappedClient]);
+
   return (
-    <OsdkContext2.Provider value={{ client, observableClient }}>
+    <OsdkContext2.Provider
+      value={{ client, observableClient: wrappedClient }}
+    >
       <OsdkContext.Provider value={{ client }}>
-        {children}
+        {wrappedChildren}
       </OsdkContext.Provider>
     </OsdkContext2.Provider>
   );

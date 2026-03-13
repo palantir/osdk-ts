@@ -22,6 +22,10 @@ import type {
 } from "@osdk/api";
 import type { ObserveObjectCallbackArgs } from "@osdk/client/unstable-do-not-use";
 import React from "react";
+import {
+  OSDK_HOOK_METADATA,
+  type OsdkObjectMetadata,
+} from "./devtools-metadata.js";
 import { makeExternalStore } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
 
@@ -129,6 +133,20 @@ export function useOsdkObject<
   const apiNameString = typeof typeOrApiName === "string"
     ? typeOrApiName
     : typeOrApiName.apiName;
+
+  const __devtoolsMetadata = React.useRef<OsdkObjectMetadata | null>(null);
+  if (__devtoolsMetadata.current == null) {
+    __devtoolsMetadata.current = {
+      [OSDK_HOOK_METADATA]: true,
+      hookType: "useOsdkObject",
+      objectType: apiNameString,
+      primaryKey: String(primaryKey),
+    };
+  }
+
+  React.useEffect(() => {
+    observableClient.registerObjectHook?.(apiNameString, primaryKey);
+  }, [observableClient, apiNameString, primaryKey]);
 
   const stableSelect = React.useMemo(
     () => selectArg,
