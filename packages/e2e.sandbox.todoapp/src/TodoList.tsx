@@ -2,31 +2,28 @@ import type { WhereClause } from "@osdk/client";
 import { useOsdkObjects } from "@osdk/react/experimental";
 import * as React from "react";
 import "./App.css";
-import { $Interfaces, Todo } from "./generatedNoCheck2/index.js";
+import { Todo } from "./generatedNoCheck2/index.js";
 import { H2 } from "./H2.js";
 import { InlineSpinner } from "./InlineSpinner.js";
 import { SmallTextDiv, TodoView } from "./TodoView.js";
 
 interface TodoListProps {
-  where: WhereClause<$Interfaces.TodoLike>;
+  where: WhereClause<Todo>;
   heading?: string;
 }
 
 function TodoList({ where, heading }: TodoListProps) {
   const { data, isLoading, isOptimistic } = useOsdkObjects(
-    $Interfaces.TodoLike,
+    Todo,
     {
       where,
       orderBy: {
-        name: "asc",
+        title: "asc",
       },
       streamUpdates: true,
+      pageSize: 5,
     },
   );
-
-  if (!data && isLoading) {
-    return "Loading";
-  }
 
   return (
     <>
@@ -41,11 +38,13 @@ function TodoList({ where, heading }: TodoListProps) {
         </SmallTextDiv>
       </H2>
 
+      {!data && isLoading && "Loading"}
+
       {data
         && data.map((todo) => (
           <TodoView
-            todo={todo.$as(Todo)}
-            key={String(todo.$primaryKey)}
+            todo={todo}
+            key={todo.$primaryKey}
           />
         ))}
     </>

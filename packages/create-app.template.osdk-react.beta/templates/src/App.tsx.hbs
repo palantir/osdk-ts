@@ -1,0 +1,22 @@
+import { Header } from "./components/Header";
+import { NextSteps } from "./components/NextSteps";
+{{#if osdkPackage}}
+import { OsdkExample } from "./components/OsdkExample";
+{{/if}}
+import styles from "./App.module.css";
+
+function App() {
+  return (
+    <div className={styles.container}>
+      <Header />
+      <main className={styles.main}>
+        {{#if osdkPackage}}
+        <OsdkExample />
+        {{/if}}
+        <NextSteps />
+      </main>
+    </div>
+  );
+}
+
+export default App;
