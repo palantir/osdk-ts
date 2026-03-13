@@ -39,6 +39,8 @@
   "dependencies": {
     "@osdk/api": "workspace:*",
     "@osdk/client": "workspace:*",
+    "@osdk/client.unstable": "workspace:*",
+    "@osdk/client.unstable.tpsa": "workspace:*",
     "@osdk/foundry.ontologies": "catalog:foundry-platform-typescript",
     "@osdk/foundry.thirdpartyapplications": "catalog:foundry-platform-typescript",
     "@osdk/generator": "workspace:*",
@@ -54,8 +56,6 @@
     "yargs": "17.7.2"
   },
   "devDependencies": {
-    "@osdk/client.unstable": "workspace:~",
-    "@osdk/client.unstable.tpsa": "workspace:~",
     "@osdk/generator-utils": "workspace:*",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
