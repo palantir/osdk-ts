@@ -1,5 +1,12 @@
 # @osdk/generator
 
+## 2.8.0-beta.20
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.20
+- @osdk/generator-converters@2.8.0-beta.20
+
 ## 2.8.0-beta.19
 
 ### Patch Changes

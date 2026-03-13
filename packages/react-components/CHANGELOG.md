@@ -1,5 +1,18 @@
 # @osdk/react-components
 
+## 0.2.0-beta.17
+
+### Minor Changes
+
+- 7542c11: add remove button to filter list items and memoize dnd accessibility props
+- 05618c3: Add validation state to editable cell
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.20
+- @osdk/client@2.8.0-beta.20
+- @osdk/react@0.10.0-beta.8
+
 ## 0.2.0-beta.16
 
 ### Minor Changes
