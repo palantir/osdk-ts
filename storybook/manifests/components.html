@@ -1,0 +1,5792 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Components Manifest</title>
+  <style>
+      :root {
+          --bg: #0b0c10;
+          --panel: #121318;
+          --muted: #9aa0a6;
+          --fg: #e8eaed;
+          --ok: #22c55e;
+          --info: #1e88e5;
+          --err: #c62828;
+          --ok-bg: #0c1a13;
+          --info-bg: #0c1624;
+          --err-bg: #1a0e0e;
+          --chip: #1f2330;
+          --border: #2b2f3a;
+          --link: #8ab4f8;
+          --active-ring: 1px; /* 1px active ring for pills and toggles */
+      }
+
+      * {
+          box-sizing: border-box;
+      }
+
+      html,
+      body {
+          margin: 0;
+          background: var(--bg);
+          color: var(--fg);
+          font: 14px/1.5 system-ui,
+          -apple-system,
+          Segoe UI,
+          Roboto,
+          Ubuntu,
+          Cantarell,
+          'Helvetica Neue',
+          Arial,
+          'Noto Sans';
+      }
+
+      .wrap {
+          max-width: 1100px;
+          margin: 0 auto;
+          padding: 16px 20px;
+      }
+
+      header {
+          position: sticky;
+          top: 0;
+          backdrop-filter: blur(6px);
+          background: color-mix(in srgb, var(--bg) 84%, transparent);
+          border-bottom: 1px solid var(--border);
+          z-index: 10;
+      }
+
+      h1 {
+          font-size: 20px;
+          margin: 0 0 6px;
+      }
+
+      .summary {
+          display: flex;
+          gap: 12px;
+          flex-wrap: wrap;
+          align-items: center;
+      }
+
+      /* Top filter pills */
+      .filter-pill {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          padding: 6px 12px;
+          border: 1px solid var(--border);
+          border-radius: 999px;
+          background: var(--panel);
+          text-decoration: none;
+          cursor: pointer;
+          user-select: none;
+          color: var(--fg);
+      }
+
+      .filter-pill.ok {
+          color: #b9f6ca;
+          border-color: color-mix(in srgb, var(--ok) 55%, var(--border));
+          background: color-mix(in srgb, var(--ok) 18%, #000);
+      }
+
+      .filter-pill.info {
+          color: #b3d9ff;
+          border-color: color-mix(in srgb, var(--info) 55%, var(--border));
+          background: var(--info-bg);
+      }
+
+      .filter-pill.err {
+          color: #ff9aa0;
+          border-color: color-mix(in srgb, var(--err) 55%, var(--border));
+          background: var(--err-bg);
+      }
+
+      .filter-pill.all {
+          color: #d7dbe0;
+          border-color: var(--border);
+          background: var(--panel);
+      }
+
+      .filter-pill[aria-disabled='true'] {
+          cursor: default;
+          text-decoration: none;
+      }
+
+      .filter-pill:focus,
+      .filter-pill:active {
+          outline: none;
+          box-shadow: none;
+      }
+
+      /* Selected top pill ring via :target */
+      #filter-all:target ~ header .filter-pill[data-k='all'],
+      #filter-errors:target ~ header .filter-pill[data-k='errors'],
+      #filter-infos:target ~ header .filter-pill[data-k='infos'],
+      #filter-story-errors:target ~ header .filter-pill[data-k='story-errors'] {
+          box-shadow: 0 0 0 var(--active-ring) currentColor;
+          border-color: currentColor;
+      }
+
+      /* Hidden targets for filtering */
+      #filter-all,
+      #filter-errors,
+      #filter-infos,
+      #filter-story-errors {
+          display: none;
+      }
+
+      main {
+          padding: 36px 0 40px;
+      }
+
+      .grid {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 18px;
+      }
+
+      /* one card per row */
+
+      .card {
+          border: 1px solid var(--border);
+          background: var(--panel);
+          border-radius: 14px;
+          padding: 14px;
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+      }
+
+      .head {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+      }
+
+      .title {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 10px;
+      }
+
+      .title h2 {
+          font-size: 16px;
+          margin: 0;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+      }
+
+      .meta {
+          font-size: 12px;
+          color: var(--muted);
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+      }
+
+      .kv {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 6px;
+      }
+
+      .chip {
+          font-size: 12px;
+          padding: 4px 8px;
+          border-radius: 999px;
+          background: var(--chip);
+          border: 1px solid var(--border);
+      }
+
+      .hint {
+          color: var(--muted);
+          font-size: 12px;
+      }
+
+      .badges {
+          display: flex;
+          gap: 8px;
+          flex-wrap: wrap;
+      }
+
+      /* Per-card badges: labels become toggles when clickable */
+      .badge {
+          font-size: 12px;
+          padding: 3px 8px;
+          border-radius: 999px;
+          border: 1px solid var(--border);
+          background: var(--chip);
+          color: #d7dbe0;
+      }
+
+      .badge.ok {
+          color: #b9f6ca;
+          border-color: color-mix(in srgb, var(--ok) 55%, var(--border));
+      }
+
+      .badge.info {
+          color: #b3d9ff;
+          border-color: color-mix(in srgb, var(--info) 55%, var(--border));
+      }
+
+      .badge.err {
+          color: #ff9aa0;
+          border-color: color-mix(in srgb, var(--err) 55%, var(--border));
+      }
+
+      .as-toggle {
+          cursor: pointer;
+      }
+
+      /* 1px ring on active toggle */
+      .tg-err:checked + label.as-toggle,
+      .tg-info:checked + label.as-toggle,
+      .tg-stories:checked + label.as-toggle,
+      .tg-props:checked + label.as-toggle {
+          box-shadow: 0 0 0 var(--active-ring) currentColor;
+          border-color: currentColor;
+      }
+
+      /* Panels: hidden by default, shown when respective toggle checked */
+      .panels {
+          display: grid;
+          gap: 10px;
+      }
+
+      .panel {
+          display: none;
+      }
+
+      .tg-err:checked ~ .panels .panel-err {
+          display: grid;
+      }
+
+      .tg-info:checked ~ .panels .panel-info {
+          display: grid;
+          gap: 8px;
+      }
+
+      .tg-stories:checked ~ .panels .panel-stories {
+          display: grid;
+          gap: 8px;
+      }
+
+      .tg-props:checked ~ .panels .panel-props {
+          display: grid;
+      }
+
+      /* Colored notes for prop type error + info */
+      .note {
+          padding: 12px;
+          border: 1px solid var(--border);
+          border-radius: 10px;
+      }
+
+      .note.err {
+          border-color: color-mix(in srgb, var(--err) 55%, var(--border));
+          background: var(--err-bg);
+          color: #ffd1d4;
+      }
+
+      .note.info {
+          border-color: color-mix(in srgb, var(--info) 55%, var(--border));
+          background: var(--info-bg);
+          color: #d6e8ff;
+      }
+
+      .note.ok {
+          border-color: color-mix(in srgb, var(--ok) 55%, var(--border));
+          background: var(--ok-bg);
+          color: var(--fg);
+      }
+
+      .note-title {
+          font-weight: 600;
+          margin-bottom: 6px;
+      }
+
+      .note-body {
+          white-space: normal;
+      }
+
+      /* Story error cards */
+      .ex {
+          padding: 10px;
+          border: 1px solid var(--border);
+          border-radius: 10px;
+          background: #0f131b;
+      }
+
+      .ex.err {
+          border-color: color-mix(in srgb, var(--err) 55%, var(--border));
+      }
+
+      .row {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          flex-wrap: wrap;
+      }
+
+      .status-dot {
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          display: inline-block;
+      }
+
+      .dot-ok {
+          background: var(--ok);
+      }
+
+      .dot-err {
+          background: var(--err);
+      }
+
+      .ex-name {
+          font-weight: 600;
+      }
+
+      /* Error groups (visible in errors filter) */
+      .error-groups {
+          display: none;
+          margin-bottom: 16px;
+      }
+
+      .group {
+          border: 1px solid var(--border);
+          background: var(--panel);
+          border-radius: 14px;
+          overflow: hidden;
+      }
+
+      .group + .group {
+          margin-top: 12px;
+      }
+
+      .group-header {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          padding: 12px 14px;
+          cursor: pointer;
+          border-bottom: 1px solid var(--border);
+      }
+
+      .group-header:hover {
+          background: #141722;
+      }
+
+      .group-title {
+          font-weight: 600;
+          flex: 1;
+      }
+
+      .group-count {
+          font-size: 12px;
+          color: var(--muted);
+      }
+
+      .group-cards {
+          display: none;
+          padding: 12px;
+      }
+
+      .group .card {
+          margin: 12px 0;
+      }
+
+      .group .card:first-child {
+          margin-top: 0;
+      }
+
+      .group .card:last-child {
+          margin-bottom: 0;
+      }
+
+      /* caret rotation */
+      .group-tg:checked + label .caret {
+          transform: rotate(90deg);
+      }
+
+      .caret {
+          transition: transform 0.15s ease;
+      }
+
+      /* toggle body */
+      .group-tg:checked ~ .group-cards {
+          display: block;
+      }
+
+      /* CSS-only filtering of cards via top pills */
+      #filter-errors:target ~ main .card:not(.has-error):not(.has-story-error) {
+          display: none;
+      }
+
+      #filter-infos:target ~ main .card:not(.has-info) {
+          display: none;
+      }
+
+      #filter-story-errors:target ~ main .card:not(.has-story-error) {
+          display: none;
+      }
+
+      #filter-all:target ~ main .card {
+          display: block;
+      }
+
+      /* In errors view, hide standalone component-error cards in the regular grid (they will appear in groups) */
+      #filter-errors:target ~ main .grid .card.has-error {
+          display: none;
+      }
+
+      /* Show grouped section only in errors view */
+      #filter-errors:target ~ main .error-groups {
+          display: block;
+      }
+
+      /* When a toggle is checked, show the corresponding panel */
+      .card > .tg-err:checked ~ .panels .panel-err {
+          display: grid;
+      }
+      
+      .card > .tg-info:checked ~ .panels .panel-info {
+          display: grid;
+      }
+      
+      .card > .tg-stories:checked ~ .panels .panel-stories {
+          display: grid;
+      }
+
+      /* Add vertical spacing around panels only when any panel is visible */
+      .card > .tg-err:checked ~ .panels,
+      .card > .tg-info:checked ~ .panels,
+      .card > .tg-stories:checked ~ .panels,
+      .card > .tg-props:checked ~ .panels {
+          margin: 10px 0;
+      }
+
+      /* Optional: a subtle 1px ring on the active badge, using :has() if available */
+      @supports selector(.card:has(.tg-err:checked)) {
+          .card:has(.tg-err:checked) label[for$='-err'],
+          .card:has(.tg-info:checked) label[for$='-info'],
+          .card:has(.tg-stories:checked) label[for$='-stories'],
+          .card:has(.tg-props:checked) label[for$='-props'] {
+              box-shadow: 0 0 0 1px currentColor;
+              border-color: currentColor;
+          }
+      }
+
+      /* Wrap long lines in code blocks at ~120 characters */
+      pre, code {
+          font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      }
+      pre {
+          white-space: pre-wrap;
+          overflow-wrap: anywhere;
+          word-break: break-word;
+          overflow-x: auto; /* fallback for extremely long tokens */
+          margin: 8px 0 0;
+      }
+      pre > code {
+          display: block;
+          white-space: inherit;
+          overflow-wrap: inherit;
+          word-break: inherit;
+          inline-size: min(100%, 120ch);
+      }
+  </style>
+</head>
+<body>
+<!-- Hidden targets for the top-level filters -->
+<span id="filter-all"></span>
+<span id="filter-errors"></span>
+<span id="filter-infos"></span>
+<span id="filter-story-errors"></span>
+<header>
+  <div class="wrap">
+    <h1>Components Manifest</h1>
+    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><a class="filter-pill err" data-k="errors" href="#filter-errors">2/2 prop type errors</a><a class="filter-pill info" data-k="infos" href="#filter-infos">2/2 infos</a><span class="filter-pill ok" aria-disabled="true">26 stories ok</span></div>
+  </div>
+</header>
+<main>
+  <div class="wrap">
+    <div class="grid" role="list">
+      
+<article
+  class="card 
+  has-error 
+  has-info 
+  no-story-error"
+  role="listitem"
+  aria-label="BaseTable">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-err"></span> BaseTable</h2>
+      <div class="badges">
+        <label for="c-0-components-basetable-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-0-components-basetable-info" class="badge info as-toggle">1 info</label>
+        <label for="c-0-components-basetable-stories" class="badge ok as-toggle">8 stories</label>
+      </div>
+    </div>
+    <div class="meta" title="./src/stories/BaseTable/BaseTable.stories.tsx">components-basetable · ./src/stories/BaseTable/BaseTable.stories.tsx</div>
+    
+    
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  <input id="c-0-components-basetable-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-0-components-basetable-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-0-components-basetable-stories" class="tg tg-stories" type="checkbox" hidden />
+  
+
+  <div class="panels">
+    
+        <div class="panel panel-err">
+          
+    <div class="note err">
+      <div class="note-title">Prop type error</div>
+      <div class="note-body"><pre><code>No component file found for the &quot;BaseTable&quot; component.
+  78 | ];
+  79 |
+&gt; 80 | const meta: Meta&lt;BaseTableProps&lt;Person&gt;&gt; = {
+     | ^
+  81 |   title: &quot;Components/BaseTable&quot;,
+  82 |   component: BaseTable,
+  83 |   parameters: {
+
+./src/stories/BaseTable/BaseTable.stories.tsx:
+/*
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import type { BaseTableProps } from &quot;@osdk/react-components/experimental&quot;;
+import { BaseTable } from &quot;@osdk/react-components/experimental&quot;;
+import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
+import type {
+  ColumnPinningState,
+  ColumnSizingState,
+  SortingState,
+  VisibilityState,
+} from &quot;@tanstack/react-table&quot;;
+import {
+  getCoreRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from &quot;@tanstack/react-table&quot;;
+import { useState } from &quot;react&quot;;
+import { fauxFoundry } from &quot;../../mocks/fauxFoundry.js&quot;;
+
+type Person = {
+  id: number;
+  name: string;
+  email: string;
+  department: string;
+  startDate: string;
+};
+
+const mockData: Person[] = [
+  {
+    id: 1,
+    name: &quot;John Smith&quot;,
+    email: &quot;john.smith@example.com&quot;,
+    department: &quot;Engineering&quot;,
+    startDate: &quot;2020-01-15&quot;,
+  },
+  {
+    id: 2,
+    name: &quot;Sarah Johnson&quot;,
+    email: &quot;sarah.johnson@example.com&quot;,
+    department: &quot;Product&quot;,
+    startDate: &quot;2019-06-22&quot;,
+  },
+  {
+    id: 3,
+    name: &quot;Michael Chen&quot;,
+    email: &quot;michael.chen@example.com&quot;,
+    department: &quot;Engineering&quot;,
+    startDate: &quot;2021-03-01&quot;,
+  },
+  {
+    id: 4,
+    name: &quot;Emily Davis&quot;,
+    email: &quot;emily.davis@example.com&quot;,
+    department: &quot;Design&quot;,
+    startDate: &quot;2020-11-30&quot;,
+  },
+  {
+    id: 5,
+    name: &quot;Robert Wilson&quot;,
+    email: &quot;robert.wilson@example.com&quot;,
+    department: &quot;Sales&quot;,
+    startDate: &quot;2018-09-15&quot;,
+  },
+];
+
+const meta: Meta&lt;BaseTableProps&lt;Person&gt;&gt; = {
+  title: &quot;Components/BaseTable&quot;,
+  component: BaseTable,
+  parameters: {
+    msw: {
+      handlers: [...fauxFoundry.handlers],
+    },
+    controls: {
+      expanded: true,
+    },
+  },
+  argTypes: {
+    table: {
+      description: &quot;An instance of tanstack react-table&quot;,
+      control: false,
+    },
+    isLoading: {
+      description: &quot;Whether the table is fetching data&quot;,
+      control: &quot;boolean&quot;,
+      defaultValue: false,
+      table: {
+        defaultValue: { summary: &quot;false&quot; },
+      },
+    },
+    fetchNextPage: {
+      description: &quot;A promise to fetch next page&quot;,
+      control: false,
+    },
+    error: {
+      description: &quot;Error to show in the table&quot;,
+      control: false,
+    },
+    rowHeight: {
+      description: &quot;The height of each row in pixels&quot;,
+      control: &quot;number&quot;,
+      defaultValue: 40,
+      table: {
+        defaultValue: { summary: &quot;40&quot; },
+      },
+    },
+    headerMenuFeatureFlags: {
+      description:
+        &quot;Configuration to show sorting, pinning, resizing, and column config menu in the header&quot;,
+      control: &quot;object&quot;,
+      defaultValue: {
+        showSortingItems: false,
+        showPinningItems: false,
+        showResizeItem: false,
+        showConfigItem: false,
+      },
+      table: {
+        defaultValue: {
+          summary: JSON.stringify({
+            showSortingItems: false,
+            showPinningItems: false,
+            showResizeItem: false,
+            showConfigItem: false,
+          }),
+        },
+      },
+    },
+    editableConfig: {
+      description: &quot;Configuration for editable table&quot;,
+      control: &quot;object&quot;,
+    },
+    onRowClick: {
+      description: &quot;Called when a row is clicked.&quot;,
+      control: false,
+      table: {
+        category: &quot;Events&quot;,
+      },
+    },
+    renderCellContextMenu: {
+      description:
+        &quot;If provided, will render this context menu when right clicking on a cell&quot;,
+      control: false,
+      table: {
+        category: &quot;Advanced&quot;,
+      },
+    },
+    className: {
+      description: &quot;Additional CSS class name for the table&quot;,
+      control: &quot;text&quot;,
+    },
+  },
+};
+
+const columns = [
+  {
+    accessorKey: &quot;name&quot;,
+    header: &quot;Name&quot;,
+  },
+
+  {
+    accessorKey: &quot;email&quot;,
+    header: &quot;Email&quot;,
+  },
+  {
+    accessorKey: &quot;department&quot;,
+    header: &quot;Department&quot;,
+  },
+  { accessorKey: &quot;startDate&quot;, header: &quot;Start Date&quot; },
+];
+
+export default meta;
+type Story = StoryObj&lt;typeof meta&gt;;
+
+export const Default: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `
+import { BaseTable } from &quot;@osdk/react-components/experimental&quot;;
+import { 
+  getCoreRowModel,
+  useReactTable,
+} from &quot;@tanstack/react-table&quot;;
+
+function MyCustomTable({ data }) {
+ 
+  const columns = [
+    {
+      accessorKey: &quot;name&quot;,
+      header: &quot;Name&quot;,
+    },
+    {
+      accessorKey: &quot;email&quot;,
+      header: &quot;Email&quot;,
+    },
+    {
+      accessorKey: &quot;department&quot;,
+      header: &quot;Department&quot;,
+    },
+    { accessorKey: &quot;startDate&quot;, header: &quot;Start Date&quot; },
+  ];
+
+  
+  const table = useReactTable({
+    data,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    columnResizeMode: &quot;onChange&quot;,
+    columnResizeDirection: &quot;ltr&quot;,
+  });
+  
+  return &lt;BaseTable table={table} /&gt;;
+}`,
+      },
+    },
+  },
+  render: (args) =&gt; {
+    const table = useReactTable({
+      data: mockData,
+      columns,
+      getCoreRowModel: getCoreRowModel(),
+      columnResizeMode: &quot;onChange&quot;,
+      columnResizeDirection: &quot;ltr&quot;,
+    });
+
+    return &lt;BaseTable {...args} table={table} /&gt;;
+  },
+};
+
+export const WithSorting: Story = {
+  args: {
+    headerMenuFeatureFlags: {
+      showSortingItems: true,
+    },
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `
+import { BaseTable } from &quot;@osdk/react-components/experimental&quot;;
+import {
+  getCoreRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from &quot;@tanstack/react-table&quot;;
+import type {
+  SortingState,
+} from &quot;@tanstack/react-table&quot;;
+
+const headerMenuFeatureFlags = {
+  showSortingItems: true,
+};
+const [sorting, setSorting] = useState&lt;SortingState&gt;();
+
+const table = useReactTable({
+  data: mockData,
+  columns,
+  getCoreRowModel: getCoreRowModel(),
+  getSortedRowModel: getSortedRowModel(),
+  state: {
+    sorting,
+  },
+  enableSorting: true,
+  onSortingChange: setSorting,
+});
+
+
+return &lt;BaseTable table={table} headerMenuFeatureFlags={headerMenuFeatureFlags} /&gt;;
+`,
+      },
+    },
+  },
+  render: (args) =&gt; {
+    const [sorting, setSorting] = useState&lt;SortingState&gt;([]);
+
+    const table = useReactTable({
+      data: mockData,
+      columns,
+      getCoreRowModel: getCoreRowModel(),
+      getSortedRowModel: getSortedRowModel(),
+      state: {
+        sorting,
+      },
+      enableSorting: true,
+      onSortingChange: setSorting,
+    });
+
+    return (
+      &lt;div style={{ height: &quot;400px&quot; }}&gt;
+        &lt;BaseTable
+          {...args}
+          table={table}
+        /&gt;
+      &lt;/div&gt;
+    );
+  },
+};
+
+export const WithColumnPinning: Story = {
+  args: {
+    headerMenuFeatureFlags: {
+      showPinningItems: true,
+    },
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `
+import { BaseTable } from &quot;@osdk/react-components/experimental&quot;;
+import {
+  getCoreRowModel,
+  useReactTable,
+} from &quot;@tanstack/react-table&quot;;
+import type {
+  ColumnPinningState,
+} from &quot;@tanstack/react-table&quot;;
+ 
+const headerMenuFeatureFlags = {
+  showPinningItems: true,
+};
+const [columnPinning, setColumnPinning] = useState&lt;ColumnPinningState&gt;({
+  left: [],
+  right: [],
+});
+
+const table = useReactTable({
+  data: mockData,
+  columns,
+  getCoreRowModel: getCoreRowModel(),
+  state: {
+    columnPinning,
+  },
+  onColumnPinningChange: setColumnPinning,
+});
+
+return &lt;BaseTable table={table} headerMenuFeatureFlags={headerMenuFeatureFlags} /&gt;;
+`,
+      },
+    },
+  },
+  render: (args) =&gt; {
+    const [columnPinning, setColumnPinning] = useState&lt;ColumnPinningState&gt;({
+      left: [],
+      right: [],
+    });
+
+    const table = useReactTable({
+      data: mockData,
+      columns,
+      getCoreRowModel: getCoreRowModel(),
+      state: {
+        columnPinning,
+      },
+      enableColumnResizing: false,
+      onColumnPinningChange: setColumnPinning,
+    });
+
+    return (
+      &lt;div style={{ height: &quot;400px&quot; }}&gt;
+        &lt;BaseTable
+          {...args}
+          table={table}
+        /&gt;
+      &lt;/div&gt;
+    );
+  },
+};
+
+export const WithColumnResizing: Story = {
+  args: {
+    headerMenuFeatureFlags: {
+      showResizeItem: true,
+    },
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `
+import { BaseTable } from &quot;@osdk/react-components/experimental&quot;;
+import {
+  getCoreRowModel,
+  useReactTable,
+} from &quot;@tanstack/react-table&quot;;
+import type {
+  ColumnSizingState,
+} from &quot;@tanstack/react-table&quot;;
+ 
+const headerMenuFeatureFlags = {
+  showResizeItem: true,
+};
+const [columnSizing, setColumnSizing] = useState&lt;ColumnSizingState&gt;({});
+
+const table = useReactTable({
+  data: mockData,
+  columns,
+  getCoreRowModel: getCoreRowModel(),
+  state: {
+    columnSizing,
+  },
+  columnResizeMode: &quot;onChange&quot;,
+  columnResizeDirection: &quot;ltr&quot;,
+  onColumnSizingChange: setColumnSizing,
+});
+
+
+return &lt;BaseTable table={table} headerMenuFeatureFlags={headerMenuFeatureFlags} /&gt;;
+`,
+      },
+    },
+  },
+  render: (args) =&gt; {
+    const [columnSizing, setColumnSizing] = useState&lt;ColumnSizingState&gt;({});
+
+    const table = useReactTable({
+      data: mockData,
+      columns,
+      getCoreRowModel: getCoreRowModel(),
+      state: {
+        columnSizing,
+      },
+      columnResizeMode: &quot;onChange&quot;,
+      columnResizeDirection: &quot;ltr&quot;,
+      onColumnSizingChange: setColumnSizing,
+    });
+
+    return (
+      &lt;div style={{ height: &quot;400px&quot; }}&gt;
+        &lt;BaseTable
+          {...args}
+          table={table}
+        /&gt;
+      &lt;/div&gt;
+    );
+  },
+};
+
+export const WithColumnConfig: Story = {
+  args: {
+    headerMenuFeatureFlags: {
+      showConfigItem: true,
+    },
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `
+import { BaseTable } from &quot;@osdk/react-components/experimental&quot;;
+import {
+  getCoreRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from &quot;@tanstack/react-table&quot;;
+import type {
+  SortingState,
+} from &quot;@tanstack/react-table&quot;;
+
+const headerMenuFeatureFlags = {
+  showSortingItems: true,
+};
+const [sorting, setSorting] = useState&lt;SortingState&gt;();
+
+const table = useReactTable({
+  data: mockData,
+  columns,
+  getCoreRowModel: getCoreRowModel(),
+  getSortedRowModel: getSortedRowModel(),
+  state: {
+    sorting,
+  },
+  enableSorting: true,
+  onSortingChange: setSorting,
+});
+
+
+return &lt;BaseTable table={table} headerMenuFeatureFlags={headerMenuFeatureFlags} /&gt;;
+`,
+      },
+    },
+  },
+  render: (args) =&gt; {
+    const [columnVisibility, setColumnVisibility] = useState&lt;VisibilityState&gt;(
+      columns.reduce((acc, col) =&gt; {
+        return {
+          ...acc,
+          [col.accessorKey]: true,
+        };
+      }, {}),
+    );
+
+    const table = useReactTable({
+      data: mockData,
+      columns,
+      getCoreRowModel: getCoreRowModel(),
+      getSortedRowModel: getSortedRowModel(),
+      state: {
+        columnVisibility,
+      },
+      onColumnVisibilityChange: setColumnVisibility,
+    });
+
+    return (
+      &lt;div style={{ height: &quot;400px&quot; }}&gt;
+        &lt;BaseTable
+          {...args}
+          table={table}
+        /&gt;
+      &lt;/div&gt;
+    );
+  },
+};
+
+export const LoadingState: Story = {
+  args: {
+    isLoading: true,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `
+const table = useReactTable({
+  data: [], // No data
+  columns,
+  getCoreRowModel: getCoreRowModel(),
+});
+
+return &lt;BaseTable table={table} isLoading={true} /&gt;;
+}`,
+      },
+    },
+  },
+  render: (args) =&gt; {
+    const table = useReactTable({
+      data: [] as Person[],
+      columns,
+      getCoreRowModel: getCoreRowModel(),
+    });
+
+    return (
+      &lt;div style={{ height: &quot;400px&quot; }}&gt;
+        &lt;BaseTable {...args} table={table} /&gt;
+      &lt;/div&gt;
+    );
+  },
+};
+
+export const EmptyState: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      source: {
+        code: `
+const table = useReactTable({
+  data: [], // No data
+  columns,
+  getCoreRowModel: getCoreRowModel(),
+});
+
+return &lt;BaseTable table={table} /&gt;;
+`,
+      },
+    },
+  },
+  render: (args) =&gt; {
+    const table = useReactTable({
+      data: [] as Person[],
+      columns,
+      getCoreRowModel: getCoreRowModel(),
+    });
+
+    return (
+      &lt;div style={{ height: &quot;400px&quot; }}&gt;
+        &lt;BaseTable {...args} table={table} /&gt;
+      &lt;/div&gt;
+    );
+  },
+};
+
+export const ErrorState: Story = {
+  args: {
+    error: new Error(&quot;Example error&quot;),
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `&lt;BaseTable table={table} error={new Error(&quot;Example error&quot;)} /&gt;`,
+      },
+    },
+  },
+  render: (args) =&gt; {
+    const table = useReactTable({
+      data: [] as Person[],
+      columns,
+      getCoreRowModel: getCoreRowModel(),
+    });
+
+    return (
+      &lt;div style={{ height: &quot;400px&quot; }}&gt;
+        &lt;BaseTable {...args} table={table} /&gt;
+      &lt;/div&gt;
+    );
+  },
+};
+</code></pre></div>
+    </div>
+        </div>
+    
+        <div class="panel panel-info">
+          
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
+    </div>
+        </div>
+    
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { BaseTable } from "@osdk/react-components-storybook";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Default</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Default = () =&gt; {
+    const table = useReactTable({
+      data: mockData,
+      columns,
+      getCoreRowModel: getCoreRowModel(),
+      columnResizeMode: &quot;onChange&quot;,
+      columnResizeDirection: &quot;ltr&quot;,
+    });
+
+    return &lt;BaseTable table={table} /&gt;;
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Sorting</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithSorting = () =&gt; {
+    const [sorting, setSorting] = useState&lt;SortingState&gt;([]);
+
+    const table = useReactTable({
+      data: mockData,
+      columns,
+      getCoreRowModel: getCoreRowModel(),
+      getSortedRowModel: getSortedRowModel(),
+      state: {
+        sorting,
+      },
+      enableSorting: true,
+      onSortingChange: setSorting,
+    });
+
+    return (
+        &lt;div style={{ height: &quot;400px&quot; }}&gt;
+            &lt;BaseTable
+                headerMenuFeatureFlags={{
+                  showSortingItems: true,
+                }}
+                table={table} /&gt;
+        &lt;/div&gt;
+    );
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Column Pinning</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithColumnPinning = () =&gt; {
+    const [columnPinning, setColumnPinning] = useState&lt;ColumnPinningState&gt;({
+      left: [],
+      right: [],
+    });
+
+    const table = useReactTable({
+      data: mockData,
+      columns,
+      getCoreRowModel: getCoreRowModel(),
+      state: {
+        columnPinning,
+      },
+      enableColumnResizing: false,
+      onColumnPinningChange: setColumnPinning,
+    });
+
+    return (
+        &lt;div style={{ height: &quot;400px&quot; }}&gt;
+            &lt;BaseTable
+                headerMenuFeatureFlags={{
+                  showPinningItems: true,
+                }}
+                table={table} /&gt;
+        &lt;/div&gt;
+    );
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Column Resizing</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithColumnResizing = () =&gt; {
+    const [columnSizing, setColumnSizing] = useState&lt;ColumnSizingState&gt;({});
+
+    const table = useReactTable({
+      data: mockData,
+      columns,
+      getCoreRowModel: getCoreRowModel(),
+      state: {
+        columnSizing,
+      },
+      columnResizeMode: &quot;onChange&quot;,
+      columnResizeDirection: &quot;ltr&quot;,
+      onColumnSizingChange: setColumnSizing,
+    });
+
+    return (
+        &lt;div style={{ height: &quot;400px&quot; }}&gt;
+            &lt;BaseTable
+                headerMenuFeatureFlags={{
+                  showResizeItem: true,
+                }}
+                table={table} /&gt;
+        &lt;/div&gt;
+    );
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Column Config</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithColumnConfig = () =&gt; {
+    const [columnVisibility, setColumnVisibility] = useState&lt;VisibilityState&gt;(
+      columns.reduce((acc, col) =&gt; {
+        return {
+          ...acc,
+          [col.accessorKey]: true,
+        };
+      }, {}),
+    );
+
+    const table = useReactTable({
+      data: mockData,
+      columns,
+      getCoreRowModel: getCoreRowModel(),
+      getSortedRowModel: getSortedRowModel(),
+      state: {
+        columnVisibility,
+      },
+      onColumnVisibilityChange: setColumnVisibility,
+    });
+
+    return (
+        &lt;div style={{ height: &quot;400px&quot; }}&gt;
+            &lt;BaseTable
+                headerMenuFeatureFlags={{
+                  showConfigItem: true,
+                }}
+                table={table} /&gt;
+        &lt;/div&gt;
+    );
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Loading State</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const LoadingState = () =&gt; {
+    const table = useReactTable({
+      data: [] as Person[],
+      columns,
+      getCoreRowModel: getCoreRowModel(),
+    });
+
+    return (
+        &lt;div style={{ height: &quot;400px&quot; }}&gt;
+            &lt;BaseTable isLoading table={table} /&gt;
+        &lt;/div&gt;
+    );
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Empty State</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const EmptyState = () =&gt; {
+    const table = useReactTable({
+      data: [] as Person[],
+      columns,
+      getCoreRowModel: getCoreRowModel(),
+    });
+
+    return (
+        &lt;div style={{ height: &quot;400px&quot; }}&gt;
+            &lt;BaseTable table={table} /&gt;
+        &lt;/div&gt;
+    );
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Error State</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const ErrorState = () =&gt; {
+    const table = useReactTable({
+      data: [] as Person[],
+      columns,
+      getCoreRowModel: getCoreRowModel(),
+    });
+
+    return (
+        &lt;div style={{ height: &quot;400px&quot; }}&gt;
+            &lt;BaseTable error={new Error(&quot;Example error&quot;)} table={table} /&gt;
+        &lt;/div&gt;
+    );
+};</code></pre>
+            </div>
+        </div>
+  </div>
+</article>
+<article
+  class="card 
+  has-error 
+  has-info 
+  no-story-error"
+  role="listitem"
+  aria-label="ObjectTable">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-err"></span> ObjectTable</h2>
+      <div class="badges">
+        <label for="c-1-components-objecttable-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-1-components-objecttable-info" class="badge info as-toggle">1 info</label>
+        <label for="c-1-components-objecttable-stories" class="badge ok as-toggle">18 stories</label>
+      </div>
+    </div>
+    <div class="meta" title="./src/stories/ObjectTable/ObjectTable.stories.tsx">components-objecttable · ./src/stories/ObjectTable/ObjectTable.stories.tsx</div>
+    
+    
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  <input id="c-1-components-objecttable-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-1-components-objecttable-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-1-components-objecttable-stories" class="tg tg-stories" type="checkbox" hidden />
+  
+
+  <div class="panels">
+    
+        <div class="panel panel-err">
+          
+    <div class="note err">
+      <div class="note-title">Prop type error</div>
+      <div class="note-body"><pre><code>No component file found for the &quot;ObjectTable&quot; component.
+  32 | type EmployeeTableProps = ObjectTableProps&lt;typeof Employee&gt;;
+  33 |
+&gt; 34 | const meta: Meta&lt;EmployeeTableProps&gt; = {
+     | ^
+  35 |   title: &quot;Components/ObjectTable&quot;,
+  36 |   component: ObjectTable,
+  37 |   parameters: {
+
+./src/stories/ObjectTable/ObjectTable.stories.tsx:
+/*
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import type { DerivedProperty, Osdk } from &quot;@osdk/api&quot;;
+import {
+  ColumnConfigDialog,
+  ObjectTable,
+} from &quot;@osdk/react-components/experimental&quot;;
+import type {
+  ColumnDefinition,
+  ObjectTableProps,
+} from &quot;@osdk/react-components/experimental&quot;;
+import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
+import { useCallback, useMemo, useState } from &quot;react&quot;;
+import { fauxFoundry } from &quot;../../mocks/fauxFoundry.js&quot;;
+import { Employee } from &quot;../../types/Employee.js&quot;;
+
+// Create a concrete type for Storybook to parse more easily
+type EmployeeTableProps = ObjectTableProps&lt;typeof Employee&gt;;
+
+const meta: Meta&lt;EmployeeTableProps&gt; = {
+  title: &quot;Components/ObjectTable&quot;,
+  component: ObjectTable,
+  parameters: {
+    msw: {
+      handlers: [...fauxFoundry.handlers],
+    },
+    controls: {
+      expanded: true,
+    },
+  },
+  argTypes: {
+    objectType: {
+      description: &quot;The object or interface type of the object&quot;,
+      control: false,
+    },
+    columnDefinitions: {
+      description:
+        &quot;Ordered list of column definitions to show in the table. If not provided, all of the properties of the object type will be shown in default order.&quot;,
+      control: &quot;object&quot;,
+    },
+    filter: {
+      description:
+        &quot;The current where clause to filter the objects in the table. If provided, the filter is controlled.&quot;,
+      control: &quot;object&quot;,
+    },
+    enableOrdering: {
+      description: &quot;Whether the table is sortable by the user.&quot;,
+      control: &quot;boolean&quot;,
+      defaultValue: true,
+      table: {
+        defaultValue: { summary: &quot;true&quot; },
+      },
+    },
+    enableColumnPinning: {
+      description: &quot;Whether columns can be pinned by the user.&quot;,
+      control: &quot;boolean&quot;,
+      defaultValue: true,
+      table: {
+        defaultValue: { summary: &quot;true&quot; },
+      },
+    },
+    enableColumnResizing: {
+      description: &quot;Whether columns can be resized by the user.&quot;,
+      control: &quot;boolean&quot;,
+      defaultValue: true,
+      table: {
+        defaultValue: { summary: &quot;true&quot; },
+      },
+    },
+    enableColumnConfig: {
+      description:
+        &quot;Whether the column configuration dialog for column visibility and ordering is available to the user.&quot;,
+      control: &quot;boolean&quot;,
+      defaultValue: true,
+      table: {
+        defaultValue: { summary: &quot;true&quot; },
+      },
+    },
+    editMode: {
+      description:
+        &quot;Controls the edit mode behavior of the table. &#39;always&#39;: Table is always in edit mode. &#39;manual&#39;: User can toggle edit mode on/off.&quot;,
+      control: &quot;select&quot;,
+      options: [&quot;manual&quot;, &quot;always&quot;],
+      defaultValue: &quot;manual&quot;,
+      table: {
+        defaultValue: { summary: &quot;manual&quot; },
+      },
+    },
+    defaultOrderBy: {
+      description:
+        &quot;The default order by clause to sort the objects in the table. If provided without orderBy prop, the sorting is uncontrolled. If both orderBy and defaultOrderBy are provided, orderBy takes precedence.&quot;,
+      control: &quot;object&quot;,
+    },
+    orderBy: {
+      description:
+        &quot;The current order by clause to sort the objects in the table. If provided, the sorting is controlled. If both orderBy and defaultOrderBy are provided, orderBy takes precedence.&quot;,
+      control: &quot;object&quot;,
+    },
+    onOrderByChanged: {
+      description:
+        &quot;Called when the order by clause is changed. Required when sorting is controlled.&quot;,
+      control: false,
+      table: {
+        category: &quot;Events&quot;,
+      },
+    },
+    onColumnVisibilityChanged: {
+      description:
+        &quot;Called when the column visibility or ordering changed. If provided, the table will allow the user to show/hide columns.&quot;,
+      control: false,
+      table: {
+        category: &quot;Events&quot;,
+      },
+    },
+    onColumnsPinnedChanged: {
+      description:
+        &quot;Called when the pinned columns change. If provided, the table will allow the user to pin/unpin columns.&quot;,
+      control: false,
+      table: {
+        category: &quot;Events&quot;,
+      },
+    },
+    onColumnResize: {
+      description:
+        &quot;Called when a column is resized. Parameters: columnId - The ID of the resized column, newWidth - The new width of the column. When newWidth = null, the column size is reset.&quot;,
+      control: false,
+      table: {
+        category: &quot;Events&quot;,
+      },
+    },
+    onRowClick: {
+      description: &quot;Called when a row is clicked.&quot;,
+      control: false,
+      table: {
+        category: &quot;Events&quot;,
+      },
+    },
+    selectionMode: {
+      description:
+        &quot;Selection mode for the table rows. If multiple, a checkbox will be shown for each row to allow selecting multiple rows as well as a top-level checkbox in the header to select all rows.&quot;,
+      control: { type: &quot;select&quot; },
+      options: [&quot;single&quot;, &quot;multiple&quot;, &quot;none&quot;],
+      defaultValue: &quot;none&quot;,
+      table: {
+        defaultValue: { summary: &quot;none&quot; },
+      },
+    },
+    selectedRows: {
+      description:
+        &quot;The currently selected rows in the table. If provided, the row selection is controlled.&quot;,
+      control: &quot;object&quot;,
+    },
+    onRowSelection: {
+      description:
+        &quot;Called when the row selection changes. Required when row selection is controlled.&quot;,
+      control: false,
+      table: {
+        category: &quot;Events&quot;,
+      },
+    },
+    renderCellContextMenu: {
+      description:
+        &quot;If provided, will render this context menu when right clicking on a cell&quot;,
+      control: false,
+      table: {
+        category: &quot;Advanced&quot;,
+      },
+    },
+    rowHeight: {
+      description: &quot;The height of each row in pixels.&quot;,
+      control: &quot;number&quot;,
+      defaultValue: 40,
+      table: {
+        defaultValue: { summary: &quot;40&quot; },
+      },
+    },
+    className: {
+      description: &quot;Additional CSS class name for the table&quot;,
+      control: &quot;text&quot;,
+    },
+  } as Meta&lt;EmployeeTableProps&gt;[&quot;argTypes&quot;],
+};
+
+export default meta;
+type Story = StoryObj&lt;typeof meta&gt;;
+
+// Define column definitions similar to the e2e example
+type RDPs = {
+  managerName: &quot;string&quot;;
+};
+
+const columnDefinitions: ColumnDefinition&lt;Employee, RDPs, {}&gt;[] = [
+  {
+    locator: {
+      type: &quot;property&quot;,
+      id: &quot;fullName&quot;,
+    },
+  },
+  {
+    locator: { type: &quot;property&quot;, id: &quot;emailPrimaryWork&quot; },
+    renderHeader: () =&gt; &quot;Email&quot;,
+  },
+  {
+    locator: { type: &quot;property&quot;, id: &quot;jobTitle&quot; },
+    isVisible: false,
+  },
+  {
+    locator: { type: &quot;property&quot;, id: &quot;department&quot; },
+  },
+  {
+    locator: { type: &quot;property&quot;, id: &quot;firstFullTimeStartDate&quot; },
+    width: 200,
+    renderHeader: () =&gt; &quot;Start Date&quot;,
+    renderCell: (object: Osdk.Instance&lt;Employee&gt;) =&gt; {
+      return (
+        &lt;div&gt;
+          {object[&quot;firstFullTimeStartDate&quot;]
+            ? new Date(object[&quot;firstFullTimeStartDate&quot;]).toLocaleDateString()
+            : &quot;No date&quot;}
+        &lt;/div&gt;
+      );
+    },
+  },
+  {
+    locator: {
+      type: &quot;rdp&quot;,
+      id: &quot;managerName&quot;,
+      creator: (baseObjectSet: DerivedProperty.Builder&lt;Employee, false&gt;) =&gt;
+        baseObjectSet.pivotTo(&quot;lead&quot;).selectProperty(&quot;fullName&quot;),
+    },
+    renderHeader: () =&gt; &quot;Manager&quot;,
+    renderCell: (object: Osdk.Instance&lt;Employee&gt;) =&gt; {
+      if (&quot;managerName&quot; in object) {
+        return &lt;span&gt;{object[&quot;managerName&quot;] as string}&lt;/span&gt;;
+      }
+      return &lt;span style={{ color: &quot;#999&quot; }}&gt;No Manager&lt;/span&gt;;
+    },
+  },
+];
+
+export const Default: Story = {
+  args: {
+    objectType: Employee,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `&lt;ObjectTable objectType={Employee} /&gt;`,
+      },
+    },
+  },
+  render: (args) =&gt; (
+    &lt;div className=&quot;object-table-container&quot; style={{ height: &quot;600px&quot; }}&gt;
+      &lt;ObjectTable {...args} /&gt;
+    &lt;/div&gt;
+  ),
+};
+
+export const WithColumnDefinitions: Story = {
+  args: {
+    objectType: Employee,
+    columnDefinitions: columnDefinitions as any,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `const columnDefinitions = [
+  {
+    locator: { type: &quot;property&quot;, id: &quot;fullName&quot; },
+  },
+  {
+    locator: { type: &quot;property&quot;, id: &quot;emailPrimaryWork&quot; },
+    renderHeader: () =&gt; &quot;Email&quot;,
+  },
+  {
+    locator: { type: &quot;property&quot;, id: &quot;jobTitle&quot; },
+    isVisible: false,
+  },
+  {
+    locator: { type: &quot;property&quot;, id: &quot;department&quot; },
+  },
+  {
+    locator: { type: &quot;property&quot;, id: &quot;firstFullTimeStartDate&quot; },
+    width: 200,
+    renderHeader: () =&gt; &quot;Start Date&quot;,
+    renderCell: (object) =&gt; {
+      return (
+        &lt;div&gt;
+          {object[&quot;firstFullTimeStartDate&quot;]
+            ? new Date(object[&quot;firstFullTimeStartDate&quot;]).toLocaleDateString()
+            : &quot;No date&quot;}
+        &lt;/div&gt;
+      );
+    },
+  },
+  {
+    locator: {
+      type: &quot;rdp&quot;,
+      id: &quot;managerName&quot;,
+      creator: (baseObjectSet) =&gt;
+        baseObjectSet.pivotTo(&quot;lead&quot;).selectProperty(&quot;fullName&quot;),
+    },
+    renderHeader: () =&gt; &quot;Manager&quot;,
+    renderCell: (object) =&gt; {
+      if (&quot;managerName&quot; in object) {
+        return &lt;span&gt;{object[&quot;managerName&quot;]}&lt;/span&gt;;
+      }
+      return &lt;span style={{ color: &quot;#999&quot; }}&gt;No Manager&lt;/span&gt;;
+    },
+  },
+];
+
+&lt;ObjectTable objectType={Employee} columnDefinitions={columnDefinitions} /&gt;`,
+      },
+    },
+  },
+  render: (args) =&gt; (
+    &lt;div className=&quot;object-table-container&quot; style={{ height: &quot;600px&quot; }}&gt;
+      &lt;ObjectTable {...args} /&gt;
+    &lt;/div&gt;
+  ),
+};
+
+export const SingleSelection: Story = {
+  args: {
+    objectType: Employee,
+    selectionMode: &quot;single&quot;,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `&lt;ObjectTable objectType={Employee} selectionMode=&quot;single&quot; /&gt;`,
+      },
+    },
+  },
+  render: (args) =&gt; (
+    &lt;div className=&quot;object-table-container&quot; style={{ height: &quot;600px&quot; }}&gt;
+      &lt;ObjectTable {...args} /&gt;
+    &lt;/div&gt;
+  ),
+};
+
+export const MultipleSelection: Story = {
+  args: {
+    objectType: Employee,
+    selectionMode: &quot;multiple&quot;,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `&lt;ObjectTable objectType={Employee} selectionMode=&quot;multiple&quot; /&gt;`,
+      },
+    },
+  },
+  render: (args) =&gt; (
+    &lt;div className=&quot;object-table-container&quot; style={{ height: &quot;600px&quot; }}&gt;
+      &lt;ObjectTable {...args} /&gt;
+    &lt;/div&gt;
+  ),
+};
+
+export const WithContextMenu: Story = {
+  args: {
+    objectType: Employee,
+    renderCellContextMenu: (_: any, cellValue: unknown) =&gt; {
+      return (
+        &lt;div
+          style={{
+            background: &quot;white&quot;,
+            padding: 8,
+            border: &quot;1px solid #d1d5db&quot;,
+            boxShadow: &quot;0 2px 8px 0 rgba(0, 0, 0, 0.1)&quot;,
+            fontSize: 13,
+            borderRadius: 4,
+          }}
+        &gt;
+          &lt;div style={{ fontWeight: &quot;bold&quot;, marginBottom: 4 }}&gt;Cell Value:&lt;/div&gt;
+          &lt;div&gt;{cellValue ? String(cellValue) : &quot;No Value&quot;}&lt;/div&gt;
+        &lt;/div&gt;
+      );
+    },
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `&lt;ObjectTable
+  objectType={Employee}
+  renderCellContextMenu={(_, cellValue) =&gt; (
+    &lt;div
+      style={{
+        background: &quot;white&quot;,
+        padding: 8,
+        border: &quot;1px solid #d1d5db&quot;,
+        boxShadow: &quot;0 2px 8px 0 rgba(0, 0, 0, 0.1)&quot;,
+        fontSize: 13,
+        borderRadius: 4,
+      }}
+    &gt;
+      &lt;div style={{ fontWeight: &quot;bold&quot;, marginBottom: 4 }}&gt;Cell Value:&lt;/div&gt;
+      &lt;div&gt;{cellValue ? String(cellValue) : &quot;No Value&quot;}&lt;/div&gt;
+    &lt;/div&gt;
+  )}
+/&gt;`,
+      },
+    },
+  },
+  render: (args) =&gt; (
+    &lt;div className=&quot;object-table-container&quot; style={{ height: &quot;600px&quot; }}&gt;
+      &lt;div style={{ padding: &quot;12px&quot; }}&gt;Right click on any cell&lt;/div&gt;
+      &lt;ObjectTable {...args} /&gt;
+    &lt;/div&gt;
+  ),
+};
+
+export const CustomColumnWidths: Story = {
+  args: {
+    objectType: Employee,
+    columnDefinitions: columnDefinitions.map((col, index) =&gt; ({
+      ...col,
+      width: index === 0 ? 250 : index === 1 ? 300 : 150,
+    })) as any,
+  },
+  render: (args) =&gt; (
+    &lt;div className=&quot;object-table-container&quot; style={{ height: &quot;600px&quot; }}&gt;
+      &lt;ObjectTable {...args} /&gt;
+    &lt;/div&gt;
+  ),
+};
+
+export const WithDefaultSorting: Story = {
+  args: {
+    objectType: Employee,
+    defaultOrderBy: [{
+      property: &quot;fullName&quot;,
+      direction: &quot;desc&quot;,
+    }],
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `&lt;ObjectTable
+  objectType={Employee}
+  defaultOrderBy={[{
+    property: &quot;fullName&quot;,
+    direction: &quot;desc&quot;,
+  }]}
+/&gt;`,
+      },
+    },
+  },
+  render: (args) =&gt; (
+    &lt;div className=&quot;object-table-container&quot; style={{ height: &quot;600px&quot; }}&gt;
+      &lt;ObjectTable {...args} /&gt;
+    &lt;/div&gt;
+  ),
+};
+
+export const WithDefaultColumnPinning: Story = {
+  args: {
+    objectType: Employee,
+    columnDefinitions: [
+      {
+        locator: { type: &quot;property&quot;, id: &quot;fullName&quot; },
+        pinned: &quot;left&quot;,
+      },
+      {
+        locator: { type: &quot;property&quot;, id: &quot;emailPrimaryWork&quot; },
+      },
+      {
+        locator: { type: &quot;property&quot;, id: &quot;jobTitle&quot; },
+      },
+      {
+        locator: { type: &quot;property&quot;, id: &quot;department&quot; },
+        pinned: &quot;right&quot;,
+      },
+      {
+        locator: { type: &quot;property&quot;, id: &quot;firstFullTimeStartDate&quot; },
+      },
+    ] as any,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `const columnDefinitions = [
+    ...columnDefinitions,
+   {
+      locator: { type: &quot;property&quot;, id: &quot;fullName&quot; },
+      pinned: &quot;left&quot;,
+    },
+    {
+      locator: { type: &quot;property&quot;, id: &quot;department&quot; },
+      pinned: &quot;right&quot;,
+    },
+];
+
+&lt;ObjectTable objectType={Employee} columnDefinitions={columnDefinitions} /&gt;`,
+      },
+    },
+  },
+  render: (args) =&gt; (
+    &lt;div className=&quot;object-table-container&quot; style={{ height: &quot;600px&quot; }}&gt;
+      &lt;ObjectTable {...args} /&gt;
+    &lt;/div&gt;
+  ),
+};
+
+export const WithCustomColumn: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `const customColumnDefinition = [
+      ...columnDefinitions,
+      {
+        locator: {
+          type: &quot;custom&quot;,
+          id: &quot;actions&quot;,
+        },
+        renderHeader: () =&gt; &quot;Actions&quot;,
+        renderCell: (object: any) =&gt; {
+          return (
+            &lt;div style={{ display: &quot;flex&quot;, gap: &quot;8px&quot; }}&gt;
+              &lt;button
+                onClick={() =&gt; {}}
+              &gt;
+                View
+              &lt;/button&gt;
+              &lt;button
+                onClick={() =&gt; {}}
+              &gt;
+                Edit
+              &lt;/button&gt;
+            &lt;/div&gt;
+          );
+        },
+        orderable: false,
+        width: 120,
+      },
+    ]
+    
+    return  &lt;ObjectTable objectType={Employee} columnDefinitions={customColumnDefinition} /&gt;
+    `,
+      },
+    },
+  },
+  args: {
+    objectType: Employee,
+    columnDefinitions: [
+      ...columnDefinitions.slice(0, 3),
+      {
+        locator: {
+          type: &quot;custom&quot;,
+          id: &quot;actions&quot;,
+        },
+        renderHeader: () =&gt; &quot;Actions&quot;,
+        renderCell: (object: any) =&gt; {
+          return (
+            &lt;div style={{ display: &quot;flex&quot;, gap: &quot;8px&quot; }}&gt;
+              &lt;button
+                style={{
+                  padding: &quot;4px 8px&quot;,
+                  fontSize: &quot;12px&quot;,
+                  border: &quot;1px solid #d1d5db&quot;,
+                  borderRadius: &quot;4px&quot;,
+                  background: &quot;white&quot;,
+                  cursor: &quot;pointer&quot;,
+                }}
+                onClick={() =&gt; alert(`View ${object[&quot;fullName&quot;]}`)}
+              &gt;
+                View
+              &lt;/button&gt;
+              &lt;button
+                style={{
+                  padding: &quot;4px 8px&quot;,
+                  fontSize: &quot;12px&quot;,
+                  border: &quot;1px solid #d1d5db&quot;,
+                  borderRadius: &quot;4px&quot;,
+                  background: &quot;white&quot;,
+                  cursor: &quot;pointer&quot;,
+                }}
+                onClick={() =&gt; alert(`Edit ${object[&quot;fullName&quot;]}`)}
+              &gt;
+                Edit
+              &lt;/button&gt;
+            &lt;/div&gt;
+          );
+        },
+        orderable: false,
+        width: 120,
+      },
+    ] as any,
+  },
+  render: (args) =&gt; (
+    &lt;div className=&quot;object-table-container&quot; style={{ height: &quot;600px&quot; }}&gt;
+      &lt;ObjectTable {...args} /&gt;
+    &lt;/div&gt;
+  ),
+};
+
+export const WithRowClickHandler: Story = {
+  args: {
+    objectType: Employee,
+    onRowClick: (employee: any) =&gt; {
+      alert(`Clicked on ${employee[&quot;fullName&quot;]}`);
+    },
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `&lt;ObjectTable
+  objectType={Employee}
+  onRowClick={(employee) =&gt; {
+    alert(\`Clicked on \${employee[&quot;fullName&quot;]}\`);
+  }}
+/&gt;`,
+      },
+    },
+  },
+  render: (args) =&gt; (
+    &lt;div className=&quot;object-table-container&quot; style={{ height: &quot;600px&quot; }}&gt;
+      &lt;ObjectTable {...args} /&gt;
+    &lt;/div&gt;
+  ),
+};
+
+export const ControlledSorting: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `const [orderBy, setOrderBy] = useState&lt;any&gt;([
+  { property: &quot;fullName&quot;, direction: &quot;asc&quot; },
+]);
+
+return (
+  &lt;ObjectTable
+    objectType={Employee}
+    orderBy={orderBy}
+    onOrderByChanged={setOrderBy}
+  /&gt;
+);`,
+      },
+    },
+  },
+  render: () =&gt; {
+    const [orderBy, setOrderBy] = useState&lt;any&gt;([
+      { property: &quot;fullName&quot;, direction: &quot;asc&quot; },
+    ]);
+
+    return (
+      &lt;div&gt;
+        &lt;div style={{ marginBottom: &quot;16px&quot; }}&gt;
+          &lt;strong&gt;Current Sort:&lt;/strong&gt;{&quot; &quot;}
+          {orderBy.map((o: any, i: number) =&gt; (
+            &lt;span key={i}&gt;
+              {o.property} ({o.direction})
+              {i &lt; orderBy.length - 1 &amp;&amp; &quot;, &quot;}
+            &lt;/span&gt;
+          ))}
+        &lt;/div&gt;
+        &lt;div className=&quot;object-table-container&quot; style={{ height: &quot;600px&quot; }}&gt;
+          &lt;ObjectTable
+            objectType={Employee}
+            orderBy={orderBy}
+            onOrderByChanged={setOrderBy}
+          /&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    );
+  },
+};
+
+export const ControlledSelection: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `const [selectedRows, setSelectedRows] = useState&lt;any[]&gt;([]);
+
+return (
+  &lt;ObjectTable
+    objectType={Employee}
+    selectionMode=&quot;multiple&quot;
+    selectedRows={selectedRows}
+    onRowSelection={setSelectedRows}
+  /&gt;
+);`,
+      },
+    },
+  },
+  render: () =&gt; {
+    const [selectedRows, setSelectedRows] = useState&lt;any[]&gt;([]);
+
+    return (
+      &lt;div&gt;
+        &lt;div style={{ marginBottom: &quot;16px&quot; }}&gt;
+          &lt;strong&gt;Selected:&lt;/strong&gt; {selectedRows.length} employees
+          {selectedRows.length &gt; 0 &amp;&amp; (
+            &lt;button
+              style={{
+                marginLeft: &quot;16px&quot;,
+                padding: &quot;4px 8px&quot;,
+                fontSize: &quot;12px&quot;,
+                border: &quot;1px solid #d1d5db&quot;,
+                borderRadius: &quot;4px&quot;,
+                background: &quot;white&quot;,
+                cursor: &quot;pointer&quot;,
+              }}
+              onClick={() =&gt; setSelectedRows([])}
+            &gt;
+              Clear Selection
+            &lt;/button&gt;
+          )}
+        &lt;/div&gt;
+        &lt;div className=&quot;object-table-container&quot; style={{ height: &quot;600px&quot; }}&gt;
+          &lt;ObjectTable
+            objectType={Employee}
+            selectionMode=&quot;multiple&quot;
+            selectedRows={selectedRows}
+            onRowSelection={setSelectedRows}
+          /&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    );
+  },
+};
+
+export const DisableAllHeaderMenuFeatures: Story = {
+  args: {
+    objectType: Employee,
+    enableOrdering: false,
+    enableColumnPinning: false,
+    enableColumnResizing: false,
+    enableColumnConfig: false,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `&lt;ObjectTable
+  objectType={Employee}
+  enableOrdering={false}
+  enableColumnPinning={false}
+  enableColumnResizing={false}
+  enableColumnConfig={false}
+/&gt;`,
+      },
+    },
+  },
+  render: (args) =&gt; (
+    &lt;div className=&quot;object-table-container&quot; style={{ height: &quot;600px&quot; }}&gt;
+      &lt;ObjectTable {...args} /&gt;
+    &lt;/div&gt;
+  ),
+};
+
+export const CustomRowHeight: Story = {
+  args: {
+    objectType: Employee,
+    rowHeight: 56,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `&lt;ObjectTable objectType={Employee} rowHeight={56} /&gt;`,
+      },
+    },
+  },
+  render: (args) =&gt; (
+    &lt;div className=&quot;object-table-container&quot; style={{ height: &quot;600px&quot; }}&gt;
+      &lt;ObjectTable {...args} /&gt;
+    &lt;/div&gt;
+  ),
+};
+
+export const WithCustomRenderers: Story = {
+  args: {
+    objectType: Employee,
+    columnDefinitions: [
+      {
+        locator: { type: &quot;property&quot;, id: &quot;fullName&quot; },
+        renderHeader: () =&gt; (
+          &lt;a
+            href=&quot;#&quot;
+            className=&quot;header-link&quot;
+            onClick={(e) =&gt; {
+              e.preventDefault();
+              alert(&quot;Employee Name column clicked!&quot;);
+            }}
+          &gt;
+            Employee Name
+          &lt;/a&gt;
+        ),
+      },
+      {
+        locator: { type: &quot;property&quot;, id: &quot;emailPrimaryWork&quot; },
+      },
+      {
+        locator: { type: &quot;property&quot;, id: &quot;jobTitle&quot; },
+        renderHeader: () =&gt; &quot;Job Title&quot;,
+      },
+      {
+        locator: {
+          type: &quot;custom&quot;,
+          id: &quot;employment-status&quot;,
+        },
+        renderHeader: () =&gt; &quot;Employment Status&quot;,
+        renderCell: (employee: any) =&gt; {
+          const startDate = employee[&quot;firstFullTimeStartDate&quot;];
+          const isActive = startDate &amp;&amp; new Date(startDate) &lt;= new Date();
+
+          return (
+            &lt;span className={`status-tag ${isActive ? &quot;active&quot; : &quot;inactive&quot;}`}&gt;
+              {isActive ? &quot;Active&quot; : &quot;Inactive&quot;}
+            &lt;/span&gt;
+          );
+        },
+        width: 140,
+      },
+      {
+        locator: { type: &quot;property&quot;, id: &quot;department&quot; },
+      },
+    ] as any,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `const columnDefinitions = [
+  {
+    locator: { type: &quot;property&quot;, id: &quot;fullName&quot; },
+    renderHeader: () =&gt; (
+      &lt;a
+        href=&quot;#&quot;
+        className=&quot;header-link&quot;
+        onClick={(e) =&gt; {
+          e.preventDefault();
+          alert(&quot;Employee Name column clicked!&quot;);
+        }}
+      &gt;
+        Employee Name
+      &lt;/a&gt;
+    ),
+  },
+  {
+    locator: { type: &quot;property&quot;, id: &quot;emailPrimaryWork&quot; },
+  },
+  {
+    locator: { type: &quot;property&quot;, id: &quot;jobTitle&quot; },
+    renderHeader: () =&gt; &quot;Job Title&quot;,
+  },
+  {
+    locator: {
+      type: &quot;custom&quot;,
+      id: &quot;employment-status&quot;,
+    },
+    renderHeader: () =&gt; &quot;Employment Status&quot;,
+    renderCell: (employee) =&gt; {
+      const startDate = employee[&quot;firstFullTimeStartDate&quot;];
+      const isActive = startDate &amp;&amp; new Date(startDate) &lt;= new Date();
+
+      return (
+        &lt;span className={\`status-tag \${isActive ? &quot;active&quot; : &quot;inactive&quot;}\`}&gt;
+          {isActive ? &quot;Active&quot; : &quot;Inactive&quot;}
+        &lt;/span&gt;
+      );
+    },
+    width: 140,
+  },
+  {
+    locator: { type: &quot;property&quot;, id: &quot;department&quot; },
+  },
+];
+
+&lt;ObjectTable objectType={Employee} columnDefinitions={columnDefinitions} /&gt;`,
+      },
+    },
+  },
+  render: (args) =&gt; (
+    &lt;div className=&quot;object-table-container&quot; style={{ height: &quot;600px&quot; }}&gt;
+      &lt;ObjectTable {...args} /&gt;
+    &lt;/div&gt;
+  ),
+};
+
+export const WithColumnConfigDialog: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code:
+          `const [isColumnConfigOpen, setIsColumnConfigOpen] = useState(false);
+const [columnDefinitions, setColumnDefinitions] = useState(initialColumnDefinitions);
+
+const handleApplyColumnConfig = useCallback(
+  (columns: Array&lt;{ columnId: string; isVisible: boolean }&gt;) =&gt; {
+    const newColumnDefinitions = [];
+    columns.forEach(({ columnId, isVisible }) =&gt; {
+      if (isVisible) {
+        const colDef = initialColumnDefinitions.find(def =&gt; def.locator.id === columnId);
+        if (colDef) {
+          newColumnDefinitions.push(colDef);
+        }
+      }
+    });
+    setColumnDefinitions(newColumnDefinitions);
+    setIsColumnConfigOpen(false);
+  },
+  [],
+);
+
+return (
+  &lt;&gt;
+    &lt;button onClick={() =&gt; setIsColumnConfigOpen(true)}&gt;
+      Configure Columns
+    &lt;/button&gt;
+    &lt;ObjectTable
+      objectType={Employee}
+      columnDefinitions={columnDefinitions}
+      enableColumnConfig={false}
+    /&gt;
+    &lt;ColumnConfigDialog
+      isOpen={isColumnConfigOpen}
+      onClose={() =&gt; setIsColumnConfigOpen(false)}
+      columnOptions={columnOptions}
+      currentVisibility={currentVisibility}
+      currentColumnOrder={currentColumnOrder}
+      onApply={handleApplyColumnConfig}
+    /&gt;
+  &lt;/&gt;
+);`,
+      },
+    },
+  },
+  render: () =&gt; {
+    const initialColumnDefinitions: Array&lt;ColumnDefinition&lt;Employee, {}, {}&gt;&gt; =
+      [
+        {
+          locator: { type: &quot;property&quot;, id: &quot;fullName&quot; },
+          columnName: &quot;Full Name&quot;,
+        },
+        {
+          locator: { type: &quot;property&quot;, id: &quot;emailPrimaryWork&quot; },
+          columnName: &quot;Email&quot;,
+        },
+        {
+          locator: { type: &quot;property&quot;, id: &quot;jobTitle&quot; },
+          columnName: &quot;Job Title&quot;,
+        },
+        {
+          locator: { type: &quot;property&quot;, id: &quot;department&quot; },
+          columnName: &quot;Department&quot;,
+        },
+      ];
+
+    const [isColumnConfigOpen, setIsColumnConfigOpen] = useState(false);
+    const [columnDefinitions, setColumnDefinitions] = useState&lt;
+      Array&lt;ColumnDefinition&lt;Employee, {}, {}&gt;&gt;
+    &gt;(initialColumnDefinitions);
+
+    const columnOptions = useMemo(
+      () =&gt;
+        initialColumnDefinitions.map((colDef) =&gt; ({
+          id: colDef.locator.id,
+          name: colDef.columnName || colDef.locator.id,
+        })),
+      [],
+    );
+
+    const currentVisibility = useMemo(() =&gt; {
+      const visibility: Record&lt;string, boolean&gt; = {};
+      initialColumnDefinitions.forEach(colDef =&gt; {
+        visibility[colDef.locator.id] = columnDefinitions.some(
+          def =&gt; def.locator.id === colDef.locator.id,
+        );
+      });
+      return visibility;
+    }, [columnDefinitions]);
+
+    const currentColumnOrder = useMemo(
+      () =&gt; columnDefinitions.map(colDef =&gt; colDef.locator.id),
+      [columnDefinitions],
+    );
+
+    const handleApplyColumnConfig = useCallback(
+      (columns: Array&lt;{ columnId: string; isVisible: boolean }&gt;) =&gt; {
+        const newColumnDefinitions: Array&lt;ColumnDefinition&lt;Employee, {}, {}&gt;&gt; =
+          [];
+        columns.forEach(({ columnId, isVisible }) =&gt; {
+          if (isVisible) {
+            const colDef = initialColumnDefinitions.find(def =&gt;
+              def.locator.id === columnId
+            );
+            if (colDef) {
+              newColumnDefinitions.push(colDef);
+            }
+          }
+        });
+        setColumnDefinitions(newColumnDefinitions);
+        setIsColumnConfigOpen(false);
+      },
+      [],
+    );
+
+    return (
+      &lt;div
+        style={{ height: &quot;600px&quot;, display: &quot;flex&quot;, flexDirection: &quot;column&quot; }}
+      &gt;
+        &lt;div style={{ padding: &quot;8px 0&quot;, marginBottom: 8 }}&gt;
+          &lt;button
+            onClick={() =&gt; setIsColumnConfigOpen(true)}
+            style={{
+              padding: &quot;8px 16px&quot;,
+              backgroundColor: &quot;#3b82f6&quot;,
+              color: &quot;white&quot;,
+              border: &quot;none&quot;,
+              borderRadius: &quot;4px&quot;,
+              cursor: &quot;pointer&quot;,
+            }}
+          &gt;
+            Configure Columns
+          &lt;/button&gt;
+        &lt;/div&gt;
+        &lt;ObjectTable
+          objectType={Employee}
+          columnDefinitions={columnDefinitions as any}
+          enableColumnConfig={false}
+        /&gt;
+        &lt;ColumnConfigDialog
+          isOpen={isColumnConfigOpen}
+          onClose={() =&gt; setIsColumnConfigOpen(false)}
+          columnOptions={columnOptions}
+          currentVisibility={currentVisibility}
+          currentColumnOrder={currentColumnOrder}
+          onApply={handleApplyColumnConfig}
+        /&gt;
+      &lt;/div&gt;
+    );
+  },
+};
+
+export const EditableTable: Story = {
+  args: {
+    objectType: Employee,
+    columnDefinitions: [
+      {
+        locator: {
+          type: &quot;property&quot;,
+          id: &quot;fullName&quot;,
+        },
+        editable: true,
+      },
+      ...columnDefinitions.slice(1),
+    ],
+    editMode: &quot;manual&quot;,
+  } as any,
+  parameters: {
+    docs: {
+      source: {
+        code: `const columnDefinitions = [
+  ...columnDefinitions,
+  {
+    locator: {
+      type: &quot;property&quot;,
+      id: &quot;fullName&quot;,
+    },
+    editable: true,
+  },
+  ];
+
+  return (
+    &lt;ObjectTable 
+      objectType={Employee} 
+      columnDefinitions={columnDefinitions} 
+      editMode=&quot;manual&quot; 
+    /&gt;
+  );`,
+      },
+    },
+  },
+  render: (args) =&gt; (
+    &lt;div className=&quot;object-table-container&quot; style={{ height: &quot;600px&quot; }}&gt;
+      &lt;ObjectTable {...args} objectType={Employee} /&gt;
+    &lt;/div&gt;
+  ),
+};
+
+export const WithSubmitEditsButton: Story = {
+  args: {
+    objectType: Employee,
+    columnDefinitions: [
+      ...columnDefinitions,
+      {
+        locator: {
+          type: &quot;property&quot;,
+          id: &quot;fullName&quot;,
+        },
+        editable: true,
+      },
+    ],
+    onSubmitEdits: async () =&gt; {
+      alert(&quot;Submitting edits&quot;);
+    },
+  } as any,
+  parameters: {
+    docs: {
+      source: {
+        code: `const columnDefinitions = [
+  ...columnDefinitions,
+  {
+    locator: {
+      type: &quot;property&quot;,
+      id: &quot;fullName&quot;,
+    },
+    editable: true,
+  },
+  ];
+
+  return &lt;ObjectTable 
+    objectType={Employee} 
+    columnDefinitions={columnDefinitions} 
+    onSubmitEdits={(edits) =&gt; {
+        alert(&quot;Submitting edits&quot;);
+        // Return true to indicate edits were successfully submitted and can be cleared from the table&#39;s edit state
+        return true;
+    }}
+  /&gt;`,
+      },
+    },
+  },
+  render: (args) =&gt; (
+    &lt;div className=&quot;object-table-container&quot; style={{ height: &quot;600px&quot; }}&gt;
+      &lt;ObjectTable {...args} objectType={Employee} /&gt;
+    &lt;/div&gt;
+  ),
+};
+</code></pre></div>
+    </div>
+        </div>
+    
+        <div class="panel panel-info">
+          
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
+    </div>
+        </div>
+    
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { ColumnConfigDialog, ObjectTable } from "@osdk/react-components-storybook";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Default</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Default = () =&gt; &lt;div className=&quot;object-table-container&quot; style={{ height: &quot;600px&quot; }}&gt;
+    &lt;ObjectTable objectType={Employee} /&gt;
+&lt;/div&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Column Definitions</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithColumnDefinitions = () =&gt; &lt;div className=&quot;object-table-container&quot; style={{ height: &quot;600px&quot; }}&gt;
+    &lt;ObjectTable objectType={Employee} columnDefinitions={columnDefinitions as any} /&gt;
+&lt;/div&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Single Selection</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const SingleSelection = () =&gt; &lt;div className=&quot;object-table-container&quot; style={{ height: &quot;600px&quot; }}&gt;
+    &lt;ObjectTable objectType={Employee} selectionMode=&quot;single&quot; /&gt;
+&lt;/div&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Multiple Selection</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const MultipleSelection = () =&gt; &lt;div className=&quot;object-table-container&quot; style={{ height: &quot;600px&quot; }}&gt;
+    &lt;ObjectTable objectType={Employee} selectionMode=&quot;multiple&quot; /&gt;
+&lt;/div&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Context Menu</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithContextMenu = () =&gt; &lt;div className=&quot;object-table-container&quot; style={{ height: &quot;600px&quot; }}&gt;
+    &lt;div style={{ padding: &quot;12px&quot; }}&gt;Right click on any cell&lt;/div&gt;
+    &lt;ObjectTable
+        objectType={Employee}
+        renderCellContextMenu={(_: any, cellValue: unknown) =&gt; {
+          return (
+            &lt;div
+              style={{
+                background: &quot;white&quot;,
+                padding: 8,
+                border: &quot;1px solid #d1d5db&quot;,
+                boxShadow: &quot;0 2px 8px 0 rgba(0, 0, 0, 0.1)&quot;,
+                fontSize: 13,
+                borderRadius: 4,
+              }}
+            &gt;
+              &lt;div style={{ fontWeight: &quot;bold&quot;, marginBottom: 4 }}&gt;Cell Value:&lt;/div&gt;
+              &lt;div&gt;{cellValue ? String(cellValue) : &quot;No Value&quot;}&lt;/div&gt;
+            &lt;/div&gt;
+          );
+        }} /&gt;
+&lt;/div&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Custom Column Widths</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const CustomColumnWidths = () =&gt; &lt;div className=&quot;object-table-container&quot; style={{ height: &quot;600px&quot; }}&gt;
+    &lt;ObjectTable
+        objectType={Employee}
+        columnDefinitions={columnDefinitions.map((col, index) =&gt; ({
+          ...col,
+          width: index === 0 ? 250 : index === 1 ? 300 : 150,
+        })) as any} /&gt;
+&lt;/div&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Default Sorting</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithDefaultSorting = () =&gt; &lt;div className=&quot;object-table-container&quot; style={{ height: &quot;600px&quot; }}&gt;
+    &lt;ObjectTable
+        objectType={Employee}
+        defaultOrderBy={[{
+          property: &quot;fullName&quot;,
+          direction: &quot;desc&quot;,
+        }]} /&gt;
+&lt;/div&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Default Column Pinning</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithDefaultColumnPinning = () =&gt; &lt;div className=&quot;object-table-container&quot; style={{ height: &quot;600px&quot; }}&gt;
+    &lt;ObjectTable
+        objectType={Employee}
+        columnDefinitions={[
+          {
+            locator: { type: &quot;property&quot;, id: &quot;fullName&quot; },
+            pinned: &quot;left&quot;,
+          },
+          {
+            locator: { type: &quot;property&quot;, id: &quot;emailPrimaryWork&quot; },
+          },
+          {
+            locator: { type: &quot;property&quot;, id: &quot;jobTitle&quot; },
+          },
+          {
+            locator: { type: &quot;property&quot;, id: &quot;department&quot; },
+            pinned: &quot;right&quot;,
+          },
+          {
+            locator: { type: &quot;property&quot;, id: &quot;firstFullTimeStartDate&quot; },
+          },
+        ] as any} /&gt;
+&lt;/div&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Custom Column</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithCustomColumn = () =&gt; &lt;div className=&quot;object-table-container&quot; style={{ height: &quot;600px&quot; }}&gt;
+    &lt;ObjectTable
+        objectType={Employee}
+        columnDefinitions={[
+          ...columnDefinitions.slice(0, 3),
+          {
+            locator: {
+              type: &quot;custom&quot;,
+              id: &quot;actions&quot;,
+            },
+            renderHeader: () =&gt; &quot;Actions&quot;,
+            renderCell: (object: any) =&gt; {
+              return (
+                &lt;div style={{ display: &quot;flex&quot;, gap: &quot;8px&quot; }}&gt;
+                  &lt;button
+                    style={{
+                      padding: &quot;4px 8px&quot;,
+                      fontSize: &quot;12px&quot;,
+                      border: &quot;1px solid #d1d5db&quot;,
+                      borderRadius: &quot;4px&quot;,
+                      background: &quot;white&quot;,
+                      cursor: &quot;pointer&quot;,
+                    }}
+                    onClick={() =&gt; alert(`View ${object[&quot;fullName&quot;]}`)}
+                  &gt;
+                    View
+                  &lt;/button&gt;
+                  &lt;button
+                    style={{
+                      padding: &quot;4px 8px&quot;,
+                      fontSize: &quot;12px&quot;,
+                      border: &quot;1px solid #d1d5db&quot;,
+                      borderRadius: &quot;4px&quot;,
+                      background: &quot;white&quot;,
+                      cursor: &quot;pointer&quot;,
+                    }}
+                    onClick={() =&gt; alert(`Edit ${object[&quot;fullName&quot;]}`)}
+                  &gt;
+                    Edit
+                  &lt;/button&gt;
+                &lt;/div&gt;
+              );
+            },
+            orderable: false,
+            width: 120,
+          },
+        ] as any} /&gt;
+&lt;/div&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Row Click Handler</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithRowClickHandler = () =&gt; &lt;div className=&quot;object-table-container&quot; style={{ height: &quot;600px&quot; }}&gt;
+    &lt;ObjectTable
+        objectType={Employee}
+        onRowClick={(employee: any) =&gt; {
+          alert(`Clicked on ${employee[&quot;fullName&quot;]}`);
+        }} /&gt;
+&lt;/div&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Controlled Sorting</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const ControlledSorting = () =&gt; {
+  const [orderBy, setOrderBy] = useState&lt;any&gt;([
+    { property: &quot;fullName&quot;, direction: &quot;asc&quot; },
+  ]);
+
+  return (
+    &lt;div&gt;
+      &lt;div style={{ marginBottom: &quot;16px&quot; }}&gt;
+        &lt;strong&gt;Current Sort:&lt;/strong&gt;{&quot; &quot;}
+        {orderBy.map((o: any, i: number) =&gt; (
+          &lt;span key={i}&gt;
+            {o.property} ({o.direction})
+            {i &lt; orderBy.length - 1 &amp;&amp; &quot;, &quot;}
+          &lt;/span&gt;
+        ))}
+      &lt;/div&gt;
+      &lt;div className=&quot;object-table-container&quot; style={{ height: &quot;600px&quot; }}&gt;
+        &lt;ObjectTable
+          objectType={Employee}
+          orderBy={orderBy}
+          onOrderByChanged={setOrderBy}
+        /&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  );
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Controlled Selection</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const ControlledSelection = () =&gt; {
+  const [selectedRows, setSelectedRows] = useState&lt;any[]&gt;([]);
+
+  return (
+    &lt;div&gt;
+      &lt;div style={{ marginBottom: &quot;16px&quot; }}&gt;
+        &lt;strong&gt;Selected:&lt;/strong&gt; {selectedRows.length} employees
+        {selectedRows.length &gt; 0 &amp;&amp; (
+          &lt;button
+            style={{
+              marginLeft: &quot;16px&quot;,
+              padding: &quot;4px 8px&quot;,
+              fontSize: &quot;12px&quot;,
+              border: &quot;1px solid #d1d5db&quot;,
+              borderRadius: &quot;4px&quot;,
+              background: &quot;white&quot;,
+              cursor: &quot;pointer&quot;,
+            }}
+            onClick={() =&gt; setSelectedRows([])}
+          &gt;
+            Clear Selection
+          &lt;/button&gt;
+        )}
+      &lt;/div&gt;
+      &lt;div className=&quot;object-table-container&quot; style={{ height: &quot;600px&quot; }}&gt;
+        &lt;ObjectTable
+          objectType={Employee}
+          selectionMode=&quot;multiple&quot;
+          selectedRows={selectedRows}
+          onRowSelection={setSelectedRows}
+        /&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  );
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Disable All Header Menu Features</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const DisableAllHeaderMenuFeatures = () =&gt; &lt;div className=&quot;object-table-container&quot; style={{ height: &quot;600px&quot; }}&gt;
+    &lt;ObjectTable
+        objectType={Employee}
+        enableOrdering={false}
+        enableColumnPinning={false}
+        enableColumnResizing={false}
+        enableColumnConfig={false} /&gt;
+&lt;/div&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Custom Row Height</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const CustomRowHeight = () =&gt; &lt;div className=&quot;object-table-container&quot; style={{ height: &quot;600px&quot; }}&gt;
+    &lt;ObjectTable objectType={Employee} rowHeight={56} /&gt;
+&lt;/div&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Custom Renderers</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithCustomRenderers = () =&gt; &lt;div className=&quot;object-table-container&quot; style={{ height: &quot;600px&quot; }}&gt;
+    &lt;ObjectTable
+        objectType={Employee}
+        columnDefinitions={[
+          {
+            locator: { type: &quot;property&quot;, id: &quot;fullName&quot; },
+            renderHeader: () =&gt; (
+              &lt;a
+                href=&quot;#&quot;
+                className=&quot;header-link&quot;
+                onClick={(e) =&gt; {
+                  e.preventDefault();
+                  alert(&quot;Employee Name column clicked!&quot;);
+                }}
+              &gt;
+                Employee Name
+              &lt;/a&gt;
+            ),
+          },
+          {
+            locator: { type: &quot;property&quot;, id: &quot;emailPrimaryWork&quot; },
+          },
+          {
+            locator: { type: &quot;property&quot;, id: &quot;jobTitle&quot; },
+            renderHeader: () =&gt; &quot;Job Title&quot;,
+          },
+          {
+            locator: {
+              type: &quot;custom&quot;,
+              id: &quot;employment-status&quot;,
+            },
+            renderHeader: () =&gt; &quot;Employment Status&quot;,
+            renderCell: (employee: any) =&gt; {
+              const startDate = employee[&quot;firstFullTimeStartDate&quot;];
+              const isActive = startDate &amp;&amp; new Date(startDate) &lt;= new Date();
+
+              return (
+                &lt;span className={`status-tag ${isActive ? &quot;active&quot; : &quot;inactive&quot;}`}&gt;
+                  {isActive ? &quot;Active&quot; : &quot;Inactive&quot;}
+                &lt;/span&gt;
+              );
+            },
+            width: 140,
+          },
+          {
+            locator: { type: &quot;property&quot;, id: &quot;department&quot; },
+          },
+        ] as any} /&gt;
+&lt;/div&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Column Config Dialog</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithColumnConfigDialog = () =&gt; {
+  const initialColumnDefinitions: Array&lt;ColumnDefinition&lt;Employee, {}, {}&gt;&gt; =
+    [
+      {
+        locator: { type: &quot;property&quot;, id: &quot;fullName&quot; },
+        columnName: &quot;Full Name&quot;,
+      },
+      {
+        locator: { type: &quot;property&quot;, id: &quot;emailPrimaryWork&quot; },
+        columnName: &quot;Email&quot;,
+      },
+      {
+        locator: { type: &quot;property&quot;, id: &quot;jobTitle&quot; },
+        columnName: &quot;Job Title&quot;,
+      },
+      {
+        locator: { type: &quot;property&quot;, id: &quot;department&quot; },
+        columnName: &quot;Department&quot;,
+      },
+    ];
+
+  const [isColumnConfigOpen, setIsColumnConfigOpen] = useState(false);
+  const [columnDefinitions, setColumnDefinitions] = useState&lt;
+    Array&lt;ColumnDefinition&lt;Employee, {}, {}&gt;&gt;
+  &gt;(initialColumnDefinitions);
+
+  const columnOptions = useMemo(
+    () =&gt;
+      initialColumnDefinitions.map((colDef) =&gt; ({
+        id: colDef.locator.id,
+        name: colDef.columnName || colDef.locator.id,
+      })),
+    [],
+  );
+
+  const currentVisibility = useMemo(() =&gt; {
+    const visibility: Record&lt;string, boolean&gt; = {};
+    initialColumnDefinitions.forEach(colDef =&gt; {
+      visibility[colDef.locator.id] = columnDefinitions.some(
+        def =&gt; def.locator.id === colDef.locator.id,
+      );
+    });
+    return visibility;
+  }, [columnDefinitions]);
+
+  const currentColumnOrder = useMemo(
+    () =&gt; columnDefinitions.map(colDef =&gt; colDef.locator.id),
+    [columnDefinitions],
+  );
+
+  const handleApplyColumnConfig = useCallback(
+    (columns: Array&lt;{ columnId: string; isVisible: boolean }&gt;) =&gt; {
+      const newColumnDefinitions: Array&lt;ColumnDefinition&lt;Employee, {}, {}&gt;&gt; =
+        [];
+      columns.forEach(({ columnId, isVisible }) =&gt; {
+        if (isVisible) {
+          const colDef = initialColumnDefinitions.find(def =&gt;
+            def.locator.id === columnId
+          );
+          if (colDef) {
+            newColumnDefinitions.push(colDef);
+          }
+        }
+      });
+      setColumnDefinitions(newColumnDefinitions);
+      setIsColumnConfigOpen(false);
+    },
+    [],
+  );
+
+  return (
+    &lt;div
+      style={{ height: &quot;600px&quot;, display: &quot;flex&quot;, flexDirection: &quot;column&quot; }}
+    &gt;
+      &lt;div style={{ padding: &quot;8px 0&quot;, marginBottom: 8 }}&gt;
+        &lt;button
+          onClick={() =&gt; setIsColumnConfigOpen(true)}
+          style={{
+            padding: &quot;8px 16px&quot;,
+            backgroundColor: &quot;#3b82f6&quot;,
+            color: &quot;white&quot;,
+            border: &quot;none&quot;,
+            borderRadius: &quot;4px&quot;,
+            cursor: &quot;pointer&quot;,
+          }}
+        &gt;
+          Configure Columns
+        &lt;/button&gt;
+      &lt;/div&gt;
+      &lt;ObjectTable
+        objectType={Employee}
+        columnDefinitions={columnDefinitions as any}
+        enableColumnConfig={false}
+      /&gt;
+      &lt;ColumnConfigDialog
+        isOpen={isColumnConfigOpen}
+        onClose={() =&gt; setIsColumnConfigOpen(false)}
+        columnOptions={columnOptions}
+        currentVisibility={currentVisibility}
+        currentColumnOrder={currentColumnOrder}
+        onApply={handleApplyColumnConfig}
+      /&gt;
+    &lt;/div&gt;
+  );
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Editable Table</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const EditableTable = () =&gt; &lt;div className=&quot;object-table-container&quot; style={{ height: &quot;600px&quot; }}&gt;
+    &lt;ObjectTable objectType={Employee} /&gt;
+&lt;/div&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Submit Edits Button</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithSubmitEditsButton = () =&gt; &lt;div className=&quot;object-table-container&quot; style={{ height: &quot;600px&quot; }}&gt;
+    &lt;ObjectTable objectType={Employee} /&gt;
+&lt;/div&gt;;</code></pre>
+            </div>
+        </div>
+  </div>
+</article>
+    </div>
+    <div class="error-groups" role="region" aria-label="Prop type error groups">
+        <section class="group">
+          <input id="no-component-import-found-toggle" class="group-tg" type="checkbox" hidden />
+          <label for="no-component-import-found-toggle" class="group-header">
+            <span class="caret">▸</span>
+            <span class="group-title">No component import found</span>
+            <span class="group-count">2</span>
+          </label>
+          <div class="group-cards">
+<article
+  class="card 
+  has-error 
+  has-info 
+  no-story-error"
+  role="listitem"
+  aria-label="BaseTable">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-err"></span> BaseTable</h2>
+      <div class="badges">
+        <label for="c-error-0-components-basetable-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-error-0-components-basetable-info" class="badge info as-toggle">1 info</label>
+        <label for="c-error-0-components-basetable-stories" class="badge ok as-toggle">8 stories</label>
+      </div>
+    </div>
+    <div class="meta" title="./src/stories/BaseTable/BaseTable.stories.tsx">components-basetable · ./src/stories/BaseTable/BaseTable.stories.tsx</div>
+    
+    
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  <input id="c-error-0-components-basetable-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-error-0-components-basetable-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-error-0-components-basetable-stories" class="tg tg-stories" type="checkbox" hidden />
+  
+
+  <div class="panels">
+    
+        <div class="panel panel-err">
+          
+    <div class="note err">
+      <div class="note-title">Prop type error</div>
+      <div class="note-body"><pre><code>No component file found for the &quot;BaseTable&quot; component.
+  78 | ];
+  79 |
+&gt; 80 | const meta: Meta&lt;BaseTableProps&lt;Person&gt;&gt; = {
+     | ^
+  81 |   title: &quot;Components/BaseTable&quot;,
+  82 |   component: BaseTable,
+  83 |   parameters: {
+
+./src/stories/BaseTable/BaseTable.stories.tsx:
+/*
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import type { BaseTableProps } from &quot;@osdk/react-components/experimental&quot;;
+import { BaseTable } from &quot;@osdk/react-components/experimental&quot;;
+import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
+import type {
+  ColumnPinningState,
+  ColumnSizingState,
+  SortingState,
+  VisibilityState,
+} from &quot;@tanstack/react-table&quot;;
+import {
+  getCoreRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from &quot;@tanstack/react-table&quot;;
+import { useState } from &quot;react&quot;;
+import { fauxFoundry } from &quot;../../mocks/fauxFoundry.js&quot;;
+
+type Person = {
+  id: number;
+  name: string;
+  email: string;
+  department: string;
+  startDate: string;
+};
+
+const mockData: Person[] = [
+  {
+    id: 1,
+    name: &quot;John Smith&quot;,
+    email: &quot;john.smith@example.com&quot;,
+    department: &quot;Engineering&quot;,
+    startDate: &quot;2020-01-15&quot;,
+  },
+  {
+    id: 2,
+    name: &quot;Sarah Johnson&quot;,
+    email: &quot;sarah.johnson@example.com&quot;,
+    department: &quot;Product&quot;,
+    startDate: &quot;2019-06-22&quot;,
+  },
+  {
+    id: 3,
+    name: &quot;Michael Chen&quot;,
+    email: &quot;michael.chen@example.com&quot;,
+    department: &quot;Engineering&quot;,
+    startDate: &quot;2021-03-01&quot;,
+  },
+  {
+    id: 4,
+    name: &quot;Emily Davis&quot;,
+    email: &quot;emily.davis@example.com&quot;,
+    department: &quot;Design&quot;,
+    startDate: &quot;2020-11-30&quot;,
+  },
+  {
+    id: 5,
+    name: &quot;Robert Wilson&quot;,
+    email: &quot;robert.wilson@example.com&quot;,
+    department: &quot;Sales&quot;,
+    startDate: &quot;2018-09-15&quot;,
+  },
+];
+
+const meta: Meta&lt;BaseTableProps&lt;Person&gt;&gt; = {
+  title: &quot;Components/BaseTable&quot;,
+  component: BaseTable,
+  parameters: {
+    msw: {
+      handlers: [...fauxFoundry.handlers],
+    },
+    controls: {
+      expanded: true,
+    },
+  },
+  argTypes: {
+    table: {
+      description: &quot;An instance of tanstack react-table&quot;,
+      control: false,
+    },
+    isLoading: {
+      description: &quot;Whether the table is fetching data&quot;,
+      control: &quot;boolean&quot;,
+      defaultValue: false,
+      table: {
+        defaultValue: { summary: &quot;false&quot; },
+      },
+    },
+    fetchNextPage: {
+      description: &quot;A promise to fetch next page&quot;,
+      control: false,
+    },
+    error: {
+      description: &quot;Error to show in the table&quot;,
+      control: false,
+    },
+    rowHeight: {
+      description: &quot;The height of each row in pixels&quot;,
+      control: &quot;number&quot;,
+      defaultValue: 40,
+      table: {
+        defaultValue: { summary: &quot;40&quot; },
+      },
+    },
+    headerMenuFeatureFlags: {
+      description:
+        &quot;Configuration to show sorting, pinning, resizing, and column config menu in the header&quot;,
+      control: &quot;object&quot;,
+      defaultValue: {
+        showSortingItems: false,
+        showPinningItems: false,
+        showResizeItem: false,
+        showConfigItem: false,
+      },
+      table: {
+        defaultValue: {
+          summary: JSON.stringify({
+            showSortingItems: false,
+            showPinningItems: false,
+            showResizeItem: false,
+            showConfigItem: false,
+          }),
+        },
+      },
+    },
+    editableConfig: {
+      description: &quot;Configuration for editable table&quot;,
+      control: &quot;object&quot;,
+    },
+    onRowClick: {
+      description: &quot;Called when a row is clicked.&quot;,
+      control: false,
+      table: {
+        category: &quot;Events&quot;,
+      },
+    },
+    renderCellContextMenu: {
+      description:
+        &quot;If provided, will render this context menu when right clicking on a cell&quot;,
+      control: false,
+      table: {
+        category: &quot;Advanced&quot;,
+      },
+    },
+    className: {
+      description: &quot;Additional CSS class name for the table&quot;,
+      control: &quot;text&quot;,
+    },
+  },
+};
+
+const columns = [
+  {
+    accessorKey: &quot;name&quot;,
+    header: &quot;Name&quot;,
+  },
+
+  {
+    accessorKey: &quot;email&quot;,
+    header: &quot;Email&quot;,
+  },
+  {
+    accessorKey: &quot;department&quot;,
+    header: &quot;Department&quot;,
+  },
+  { accessorKey: &quot;startDate&quot;, header: &quot;Start Date&quot; },
+];
+
+export default meta;
+type Story = StoryObj&lt;typeof meta&gt;;
+
+export const Default: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `
+import { BaseTable } from &quot;@osdk/react-components/experimental&quot;;
+import { 
+  getCoreRowModel,
+  useReactTable,
+} from &quot;@tanstack/react-table&quot;;
+
+function MyCustomTable({ data }) {
+ 
+  const columns = [
+    {
+      accessorKey: &quot;name&quot;,
+      header: &quot;Name&quot;,
+    },
+    {
+      accessorKey: &quot;email&quot;,
+      header: &quot;Email&quot;,
+    },
+    {
+      accessorKey: &quot;department&quot;,
+      header: &quot;Department&quot;,
+    },
+    { accessorKey: &quot;startDate&quot;, header: &quot;Start Date&quot; },
+  ];
+
+  
+  const table = useReactTable({
+    data,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    columnResizeMode: &quot;onChange&quot;,
+    columnResizeDirection: &quot;ltr&quot;,
+  });
+  
+  return &lt;BaseTable table={table} /&gt;;
+}`,
+      },
+    },
+  },
+  render: (args) =&gt; {
+    const table = useReactTable({
+      data: mockData,
+      columns,
+      getCoreRowModel: getCoreRowModel(),
+      columnResizeMode: &quot;onChange&quot;,
+      columnResizeDirection: &quot;ltr&quot;,
+    });
+
+    return &lt;BaseTable {...args} table={table} /&gt;;
+  },
+};
+
+export const WithSorting: Story = {
+  args: {
+    headerMenuFeatureFlags: {
+      showSortingItems: true,
+    },
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `
+import { BaseTable } from &quot;@osdk/react-components/experimental&quot;;
+import {
+  getCoreRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from &quot;@tanstack/react-table&quot;;
+import type {
+  SortingState,
+} from &quot;@tanstack/react-table&quot;;
+
+const headerMenuFeatureFlags = {
+  showSortingItems: true,
+};
+const [sorting, setSorting] = useState&lt;SortingState&gt;();
+
+const table = useReactTable({
+  data: mockData,
+  columns,
+  getCoreRowModel: getCoreRowModel(),
+  getSortedRowModel: getSortedRowModel(),
+  state: {
+    sorting,
+  },
+  enableSorting: true,
+  onSortingChange: setSorting,
+});
+
+
+return &lt;BaseTable table={table} headerMenuFeatureFlags={headerMenuFeatureFlags} /&gt;;
+`,
+      },
+    },
+  },
+  render: (args) =&gt; {
+    const [sorting, setSorting] = useState&lt;SortingState&gt;([]);
+
+    const table = useReactTable({
+      data: mockData,
+      columns,
+      getCoreRowModel: getCoreRowModel(),
+      getSortedRowModel: getSortedRowModel(),
+      state: {
+        sorting,
+      },
+      enableSorting: true,
+      onSortingChange: setSorting,
+    });
+
+    return (
+      &lt;div style={{ height: &quot;400px&quot; }}&gt;
+        &lt;BaseTable
+          {...args}
+          table={table}
+        /&gt;
+      &lt;/div&gt;
+    );
+  },
+};
+
+export const WithColumnPinning: Story = {
+  args: {
+    headerMenuFeatureFlags: {
+      showPinningItems: true,
+    },
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `
+import { BaseTable } from &quot;@osdk/react-components/experimental&quot;;
+import {
+  getCoreRowModel,
+  useReactTable,
+} from &quot;@tanstack/react-table&quot;;
+import type {
+  ColumnPinningState,
+} from &quot;@tanstack/react-table&quot;;
+ 
+const headerMenuFeatureFlags = {
+  showPinningItems: true,
+};
+const [columnPinning, setColumnPinning] = useState&lt;ColumnPinningState&gt;({
+  left: [],
+  right: [],
+});
+
+const table = useReactTable({
+  data: mockData,
+  columns,
+  getCoreRowModel: getCoreRowModel(),
+  state: {
+    columnPinning,
+  },
+  onColumnPinningChange: setColumnPinning,
+});
+
+return &lt;BaseTable table={table} headerMenuFeatureFlags={headerMenuFeatureFlags} /&gt;;
+`,
+      },
+    },
+  },
+  render: (args) =&gt; {
+    const [columnPinning, setColumnPinning] = useState&lt;ColumnPinningState&gt;({
+      left: [],
+      right: [],
+    });
+
+    const table = useReactTable({
+      data: mockData,
+      columns,
+      getCoreRowModel: getCoreRowModel(),
+      state: {
+        columnPinning,
+      },
+      enableColumnResizing: false,
+      onColumnPinningChange: setColumnPinning,
+    });
+
+    return (
+      &lt;div style={{ height: &quot;400px&quot; }}&gt;
+        &lt;BaseTable
+          {...args}
+          table={table}
+        /&gt;
+      &lt;/div&gt;
+    );
+  },
+};
+
+export const WithColumnResizing: Story = {
+  args: {
+    headerMenuFeatureFlags: {
+      showResizeItem: true,
+    },
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `
+import { BaseTable } from &quot;@osdk/react-components/experimental&quot;;
+import {
+  getCoreRowModel,
+  useReactTable,
+} from &quot;@tanstack/react-table&quot;;
+import type {
+  ColumnSizingState,
+} from &quot;@tanstack/react-table&quot;;
+ 
+const headerMenuFeatureFlags = {
+  showResizeItem: true,
+};
+const [columnSizing, setColumnSizing] = useState&lt;ColumnSizingState&gt;({});
+
+const table = useReactTable({
+  data: mockData,
+  columns,
+  getCoreRowModel: getCoreRowModel(),
+  state: {
+    columnSizing,
+  },
+  columnResizeMode: &quot;onChange&quot;,
+  columnResizeDirection: &quot;ltr&quot;,
+  onColumnSizingChange: setColumnSizing,
+});
+
+
+return &lt;BaseTable table={table} headerMenuFeatureFlags={headerMenuFeatureFlags} /&gt;;
+`,
+      },
+    },
+  },
+  render: (args) =&gt; {
+    const [columnSizing, setColumnSizing] = useState&lt;ColumnSizingState&gt;({});
+
+    const table = useReactTable({
+      data: mockData,
+      columns,
+      getCoreRowModel: getCoreRowModel(),
+      state: {
+        columnSizing,
+      },
+      columnResizeMode: &quot;onChange&quot;,
+      columnResizeDirection: &quot;ltr&quot;,
+      onColumnSizingChange: setColumnSizing,
+    });
+
+    return (
+      &lt;div style={{ height: &quot;400px&quot; }}&gt;
+        &lt;BaseTable
+          {...args}
+          table={table}
+        /&gt;
+      &lt;/div&gt;
+    );
+  },
+};
+
+export const WithColumnConfig: Story = {
+  args: {
+    headerMenuFeatureFlags: {
+      showConfigItem: true,
+    },
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `
+import { BaseTable } from &quot;@osdk/react-components/experimental&quot;;
+import {
+  getCoreRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from &quot;@tanstack/react-table&quot;;
+import type {
+  SortingState,
+} from &quot;@tanstack/react-table&quot;;
+
+const headerMenuFeatureFlags = {
+  showSortingItems: true,
+};
+const [sorting, setSorting] = useState&lt;SortingState&gt;();
+
+const table = useReactTable({
+  data: mockData,
+  columns,
+  getCoreRowModel: getCoreRowModel(),
+  getSortedRowModel: getSortedRowModel(),
+  state: {
+    sorting,
+  },
+  enableSorting: true,
+  onSortingChange: setSorting,
+});
+
+
+return &lt;BaseTable table={table} headerMenuFeatureFlags={headerMenuFeatureFlags} /&gt;;
+`,
+      },
+    },
+  },
+  render: (args) =&gt; {
+    const [columnVisibility, setColumnVisibility] = useState&lt;VisibilityState&gt;(
+      columns.reduce((acc, col) =&gt; {
+        return {
+          ...acc,
+          [col.accessorKey]: true,
+        };
+      }, {}),
+    );
+
+    const table = useReactTable({
+      data: mockData,
+      columns,
+      getCoreRowModel: getCoreRowModel(),
+      getSortedRowModel: getSortedRowModel(),
+      state: {
+        columnVisibility,
+      },
+      onColumnVisibilityChange: setColumnVisibility,
+    });
+
+    return (
+      &lt;div style={{ height: &quot;400px&quot; }}&gt;
+        &lt;BaseTable
+          {...args}
+          table={table}
+        /&gt;
+      &lt;/div&gt;
+    );
+  },
+};
+
+export const LoadingState: Story = {
+  args: {
+    isLoading: true,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `
+const table = useReactTable({
+  data: [], // No data
+  columns,
+  getCoreRowModel: getCoreRowModel(),
+});
+
+return &lt;BaseTable table={table} isLoading={true} /&gt;;
+}`,
+      },
+    },
+  },
+  render: (args) =&gt; {
+    const table = useReactTable({
+      data: [] as Person[],
+      columns,
+      getCoreRowModel: getCoreRowModel(),
+    });
+
+    return (
+      &lt;div style={{ height: &quot;400px&quot; }}&gt;
+        &lt;BaseTable {...args} table={table} /&gt;
+      &lt;/div&gt;
+    );
+  },
+};
+
+export const EmptyState: Story = {
+  args: {},
+  parameters: {
+    docs: {
+      source: {
+        code: `
+const table = useReactTable({
+  data: [], // No data
+  columns,
+  getCoreRowModel: getCoreRowModel(),
+});
+
+return &lt;BaseTable table={table} /&gt;;
+`,
+      },
+    },
+  },
+  render: (args) =&gt; {
+    const table = useReactTable({
+      data: [] as Person[],
+      columns,
+      getCoreRowModel: getCoreRowModel(),
+    });
+
+    return (
+      &lt;div style={{ height: &quot;400px&quot; }}&gt;
+        &lt;BaseTable {...args} table={table} /&gt;
+      &lt;/div&gt;
+    );
+  },
+};
+
+export const ErrorState: Story = {
+  args: {
+    error: new Error(&quot;Example error&quot;),
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `&lt;BaseTable table={table} error={new Error(&quot;Example error&quot;)} /&gt;`,
+      },
+    },
+  },
+  render: (args) =&gt; {
+    const table = useReactTable({
+      data: [] as Person[],
+      columns,
+      getCoreRowModel: getCoreRowModel(),
+    });
+
+    return (
+      &lt;div style={{ height: &quot;400px&quot; }}&gt;
+        &lt;BaseTable {...args} table={table} /&gt;
+      &lt;/div&gt;
+    );
+  },
+};
+</code></pre></div>
+    </div>
+        </div>
+    
+        <div class="panel panel-info">
+          
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
+    </div>
+        </div>
+    
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { BaseTable } from "@osdk/react-components-storybook";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Default</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Default = () =&gt; {
+    const table = useReactTable({
+      data: mockData,
+      columns,
+      getCoreRowModel: getCoreRowModel(),
+      columnResizeMode: &quot;onChange&quot;,
+      columnResizeDirection: &quot;ltr&quot;,
+    });
+
+    return &lt;BaseTable table={table} /&gt;;
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Sorting</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithSorting = () =&gt; {
+    const [sorting, setSorting] = useState&lt;SortingState&gt;([]);
+
+    const table = useReactTable({
+      data: mockData,
+      columns,
+      getCoreRowModel: getCoreRowModel(),
+      getSortedRowModel: getSortedRowModel(),
+      state: {
+        sorting,
+      },
+      enableSorting: true,
+      onSortingChange: setSorting,
+    });
+
+    return (
+        &lt;div style={{ height: &quot;400px&quot; }}&gt;
+            &lt;BaseTable
+                headerMenuFeatureFlags={{
+                  showSortingItems: true,
+                }}
+                table={table} /&gt;
+        &lt;/div&gt;
+    );
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Column Pinning</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithColumnPinning = () =&gt; {
+    const [columnPinning, setColumnPinning] = useState&lt;ColumnPinningState&gt;({
+      left: [],
+      right: [],
+    });
+
+    const table = useReactTable({
+      data: mockData,
+      columns,
+      getCoreRowModel: getCoreRowModel(),
+      state: {
+        columnPinning,
+      },
+      enableColumnResizing: false,
+      onColumnPinningChange: setColumnPinning,
+    });
+
+    return (
+        &lt;div style={{ height: &quot;400px&quot; }}&gt;
+            &lt;BaseTable
+                headerMenuFeatureFlags={{
+                  showPinningItems: true,
+                }}
+                table={table} /&gt;
+        &lt;/div&gt;
+    );
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Column Resizing</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithColumnResizing = () =&gt; {
+    const [columnSizing, setColumnSizing] = useState&lt;ColumnSizingState&gt;({});
+
+    const table = useReactTable({
+      data: mockData,
+      columns,
+      getCoreRowModel: getCoreRowModel(),
+      state: {
+        columnSizing,
+      },
+      columnResizeMode: &quot;onChange&quot;,
+      columnResizeDirection: &quot;ltr&quot;,
+      onColumnSizingChange: setColumnSizing,
+    });
+
+    return (
+        &lt;div style={{ height: &quot;400px&quot; }}&gt;
+            &lt;BaseTable
+                headerMenuFeatureFlags={{
+                  showResizeItem: true,
+                }}
+                table={table} /&gt;
+        &lt;/div&gt;
+    );
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Column Config</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithColumnConfig = () =&gt; {
+    const [columnVisibility, setColumnVisibility] = useState&lt;VisibilityState&gt;(
+      columns.reduce((acc, col) =&gt; {
+        return {
+          ...acc,
+          [col.accessorKey]: true,
+        };
+      }, {}),
+    );
+
+    const table = useReactTable({
+      data: mockData,
+      columns,
+      getCoreRowModel: getCoreRowModel(),
+      getSortedRowModel: getSortedRowModel(),
+      state: {
+        columnVisibility,
+      },
+      onColumnVisibilityChange: setColumnVisibility,
+    });
+
+    return (
+        &lt;div style={{ height: &quot;400px&quot; }}&gt;
+            &lt;BaseTable
+                headerMenuFeatureFlags={{
+                  showConfigItem: true,
+                }}
+                table={table} /&gt;
+        &lt;/div&gt;
+    );
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Loading State</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const LoadingState = () =&gt; {
+    const table = useReactTable({
+      data: [] as Person[],
+      columns,
+      getCoreRowModel: getCoreRowModel(),
+    });
+
+    return (
+        &lt;div style={{ height: &quot;400px&quot; }}&gt;
+            &lt;BaseTable isLoading table={table} /&gt;
+        &lt;/div&gt;
+    );
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Empty State</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const EmptyState = () =&gt; {
+    const table = useReactTable({
+      data: [] as Person[],
+      columns,
+      getCoreRowModel: getCoreRowModel(),
+    });
+
+    return (
+        &lt;div style={{ height: &quot;400px&quot; }}&gt;
+            &lt;BaseTable table={table} /&gt;
+        &lt;/div&gt;
+    );
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Error State</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const ErrorState = () =&gt; {
+    const table = useReactTable({
+      data: [] as Person[],
+      columns,
+      getCoreRowModel: getCoreRowModel(),
+    });
+
+    return (
+        &lt;div style={{ height: &quot;400px&quot; }}&gt;
+            &lt;BaseTable error={new Error(&quot;Example error&quot;)} table={table} /&gt;
+        &lt;/div&gt;
+    );
+};</code></pre>
+            </div>
+        </div>
+  </div>
+</article>
+<article
+  class="card 
+  has-error 
+  has-info 
+  no-story-error"
+  role="listitem"
+  aria-label="ObjectTable">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-err"></span> ObjectTable</h2>
+      <div class="badges">
+        <label for="c-error-1-components-objecttable-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-error-1-components-objecttable-info" class="badge info as-toggle">1 info</label>
+        <label for="c-error-1-components-objecttable-stories" class="badge ok as-toggle">18 stories</label>
+      </div>
+    </div>
+    <div class="meta" title="./src/stories/ObjectTable/ObjectTable.stories.tsx">components-objecttable · ./src/stories/ObjectTable/ObjectTable.stories.tsx</div>
+    
+    
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  <input id="c-error-1-components-objecttable-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-error-1-components-objecttable-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-error-1-components-objecttable-stories" class="tg tg-stories" type="checkbox" hidden />
+  
+
+  <div class="panels">
+    
+        <div class="panel panel-err">
+          
+    <div class="note err">
+      <div class="note-title">Prop type error</div>
+      <div class="note-body"><pre><code>No component file found for the &quot;ObjectTable&quot; component.
+  32 | type EmployeeTableProps = ObjectTableProps&lt;typeof Employee&gt;;
+  33 |
+&gt; 34 | const meta: Meta&lt;EmployeeTableProps&gt; = {
+     | ^
+  35 |   title: &quot;Components/ObjectTable&quot;,
+  36 |   component: ObjectTable,
+  37 |   parameters: {
+
+./src/stories/ObjectTable/ObjectTable.stories.tsx:
+/*
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import type { DerivedProperty, Osdk } from &quot;@osdk/api&quot;;
+import {
+  ColumnConfigDialog,
+  ObjectTable,
+} from &quot;@osdk/react-components/experimental&quot;;
+import type {
+  ColumnDefinition,
+  ObjectTableProps,
+} from &quot;@osdk/react-components/experimental&quot;;
+import type { Meta, StoryObj } from &quot;@storybook/react-vite&quot;;
+import { useCallback, useMemo, useState } from &quot;react&quot;;
+import { fauxFoundry } from &quot;../../mocks/fauxFoundry.js&quot;;
+import { Employee } from &quot;../../types/Employee.js&quot;;
+
+// Create a concrete type for Storybook to parse more easily
+type EmployeeTableProps = ObjectTableProps&lt;typeof Employee&gt;;
+
+const meta: Meta&lt;EmployeeTableProps&gt; = {
+  title: &quot;Components/ObjectTable&quot;,
+  component: ObjectTable,
+  parameters: {
+    msw: {
+      handlers: [...fauxFoundry.handlers],
+    },
+    controls: {
+      expanded: true,
+    },
+  },
+  argTypes: {
+    objectType: {
+      description: &quot;The object or interface type of the object&quot;,
+      control: false,
+    },
+    columnDefinitions: {
+      description:
+        &quot;Ordered list of column definitions to show in the table. If not provided, all of the properties of the object type will be shown in default order.&quot;,
+      control: &quot;object&quot;,
+    },
+    filter: {
+      description:
+        &quot;The current where clause to filter the objects in the table. If provided, the filter is controlled.&quot;,
+      control: &quot;object&quot;,
+    },
+    enableOrdering: {
+      description: &quot;Whether the table is sortable by the user.&quot;,
+      control: &quot;boolean&quot;,
+      defaultValue: true,
+      table: {
+        defaultValue: { summary: &quot;true&quot; },
+      },
+    },
+    enableColumnPinning: {
+      description: &quot;Whether columns can be pinned by the user.&quot;,
+      control: &quot;boolean&quot;,
+      defaultValue: true,
+      table: {
+        defaultValue: { summary: &quot;true&quot; },
+      },
+    },
+    enableColumnResizing: {
+      description: &quot;Whether columns can be resized by the user.&quot;,
+      control: &quot;boolean&quot;,
+      defaultValue: true,
+      table: {
+        defaultValue: { summary: &quot;true&quot; },
+      },
+    },
+    enableColumnConfig: {
+      description:
+        &quot;Whether the column configuration dialog for column visibility and ordering is available to the user.&quot;,
+      control: &quot;boolean&quot;,
+      defaultValue: true,
+      table: {
+        defaultValue: { summary: &quot;true&quot; },
+      },
+    },
+    editMode: {
+      description:
+        &quot;Controls the edit mode behavior of the table. &#39;always&#39;: Table is always in edit mode. &#39;manual&#39;: User can toggle edit mode on/off.&quot;,
+      control: &quot;select&quot;,
+      options: [&quot;manual&quot;, &quot;always&quot;],
+      defaultValue: &quot;manual&quot;,
+      table: {
+        defaultValue: { summary: &quot;manual&quot; },
+      },
+    },
+    defaultOrderBy: {
+      description:
+        &quot;The default order by clause to sort the objects in the table. If provided without orderBy prop, the sorting is uncontrolled. If both orderBy and defaultOrderBy are provided, orderBy takes precedence.&quot;,
+      control: &quot;object&quot;,
+    },
+    orderBy: {
+      description:
+        &quot;The current order by clause to sort the objects in the table. If provided, the sorting is controlled. If both orderBy and defaultOrderBy are provided, orderBy takes precedence.&quot;,
+      control: &quot;object&quot;,
+    },
+    onOrderByChanged: {
+      description:
+        &quot;Called when the order by clause is changed. Required when sorting is controlled.&quot;,
+      control: false,
+      table: {
+        category: &quot;Events&quot;,
+      },
+    },
+    onColumnVisibilityChanged: {
+      description:
+        &quot;Called when the column visibility or ordering changed. If provided, the table will allow the user to show/hide columns.&quot;,
+      control: false,
+      table: {
+        category: &quot;Events&quot;,
+      },
+    },
+    onColumnsPinnedChanged: {
+      description:
+        &quot;Called when the pinned columns change. If provided, the table will allow the user to pin/unpin columns.&quot;,
+      control: false,
+      table: {
+        category: &quot;Events&quot;,
+      },
+    },
+    onColumnResize: {
+      description:
+        &quot;Called when a column is resized. Parameters: columnId - The ID of the resized column, newWidth - The new width of the column. When newWidth = null, the column size is reset.&quot;,
+      control: false,
+      table: {
+        category: &quot;Events&quot;,
+      },
+    },
+    onRowClick: {
+      description: &quot;Called when a row is clicked.&quot;,
+      control: false,
+      table: {
+        category: &quot;Events&quot;,
+      },
+    },
+    selectionMode: {
+      description:
+        &quot;Selection mode for the table rows. If multiple, a checkbox will be shown for each row to allow selecting multiple rows as well as a top-level checkbox in the header to select all rows.&quot;,
+      control: { type: &quot;select&quot; },
+      options: [&quot;single&quot;, &quot;multiple&quot;, &quot;none&quot;],
+      defaultValue: &quot;none&quot;,
+      table: {
+        defaultValue: { summary: &quot;none&quot; },
+      },
+    },
+    selectedRows: {
+      description:
+        &quot;The currently selected rows in the table. If provided, the row selection is controlled.&quot;,
+      control: &quot;object&quot;,
+    },
+    onRowSelection: {
+      description:
+        &quot;Called when the row selection changes. Required when row selection is controlled.&quot;,
+      control: false,
+      table: {
+        category: &quot;Events&quot;,
+      },
+    },
+    renderCellContextMenu: {
+      description:
+        &quot;If provided, will render this context menu when right clicking on a cell&quot;,
+      control: false,
+      table: {
+        category: &quot;Advanced&quot;,
+      },
+    },
+    rowHeight: {
+      description: &quot;The height of each row in pixels.&quot;,
+      control: &quot;number&quot;,
+      defaultValue: 40,
+      table: {
+        defaultValue: { summary: &quot;40&quot; },
+      },
+    },
+    className: {
+      description: &quot;Additional CSS class name for the table&quot;,
+      control: &quot;text&quot;,
+    },
+  } as Meta&lt;EmployeeTableProps&gt;[&quot;argTypes&quot;],
+};
+
+export default meta;
+type Story = StoryObj&lt;typeof meta&gt;;
+
+// Define column definitions similar to the e2e example
+type RDPs = {
+  managerName: &quot;string&quot;;
+};
+
+const columnDefinitions: ColumnDefinition&lt;Employee, RDPs, {}&gt;[] = [
+  {
+    locator: {
+      type: &quot;property&quot;,
+      id: &quot;fullName&quot;,
+    },
+  },
+  {
+    locator: { type: &quot;property&quot;, id: &quot;emailPrimaryWork&quot; },
+    renderHeader: () =&gt; &quot;Email&quot;,
+  },
+  {
+    locator: { type: &quot;property&quot;, id: &quot;jobTitle&quot; },
+    isVisible: false,
+  },
+  {
+    locator: { type: &quot;property&quot;, id: &quot;department&quot; },
+  },
+  {
+    locator: { type: &quot;property&quot;, id: &quot;firstFullTimeStartDate&quot; },
+    width: 200,
+    renderHeader: () =&gt; &quot;Start Date&quot;,
+    renderCell: (object: Osdk.Instance&lt;Employee&gt;) =&gt; {
+      return (
+        &lt;div&gt;
+          {object[&quot;firstFullTimeStartDate&quot;]
+            ? new Date(object[&quot;firstFullTimeStartDate&quot;]).toLocaleDateString()
+            : &quot;No date&quot;}
+        &lt;/div&gt;
+      );
+    },
+  },
+  {
+    locator: {
+      type: &quot;rdp&quot;,
+      id: &quot;managerName&quot;,
+      creator: (baseObjectSet: DerivedProperty.Builder&lt;Employee, false&gt;) =&gt;
+        baseObjectSet.pivotTo(&quot;lead&quot;).selectProperty(&quot;fullName&quot;),
+    },
+    renderHeader: () =&gt; &quot;Manager&quot;,
+    renderCell: (object: Osdk.Instance&lt;Employee&gt;) =&gt; {
+      if (&quot;managerName&quot; in object) {
+        return &lt;span&gt;{object[&quot;managerName&quot;] as string}&lt;/span&gt;;
+      }
+      return &lt;span style={{ color: &quot;#999&quot; }}&gt;No Manager&lt;/span&gt;;
+    },
+  },
+];
+
+export const Default: Story = {
+  args: {
+    objectType: Employee,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `&lt;ObjectTable objectType={Employee} /&gt;`,
+      },
+    },
+  },
+  render: (args) =&gt; (
+    &lt;div className=&quot;object-table-container&quot; style={{ height: &quot;600px&quot; }}&gt;
+      &lt;ObjectTable {...args} /&gt;
+    &lt;/div&gt;
+  ),
+};
+
+export const WithColumnDefinitions: Story = {
+  args: {
+    objectType: Employee,
+    columnDefinitions: columnDefinitions as any,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `const columnDefinitions = [
+  {
+    locator: { type: &quot;property&quot;, id: &quot;fullName&quot; },
+  },
+  {
+    locator: { type: &quot;property&quot;, id: &quot;emailPrimaryWork&quot; },
+    renderHeader: () =&gt; &quot;Email&quot;,
+  },
+  {
+    locator: { type: &quot;property&quot;, id: &quot;jobTitle&quot; },
+    isVisible: false,
+  },
+  {
+    locator: { type: &quot;property&quot;, id: &quot;department&quot; },
+  },
+  {
+    locator: { type: &quot;property&quot;, id: &quot;firstFullTimeStartDate&quot; },
+    width: 200,
+    renderHeader: () =&gt; &quot;Start Date&quot;,
+    renderCell: (object) =&gt; {
+      return (
+        &lt;div&gt;
+          {object[&quot;firstFullTimeStartDate&quot;]
+            ? new Date(object[&quot;firstFullTimeStartDate&quot;]).toLocaleDateString()
+            : &quot;No date&quot;}
+        &lt;/div&gt;
+      );
+    },
+  },
+  {
+    locator: {
+      type: &quot;rdp&quot;,
+      id: &quot;managerName&quot;,
+      creator: (baseObjectSet) =&gt;
+        baseObjectSet.pivotTo(&quot;lead&quot;).selectProperty(&quot;fullName&quot;),
+    },
+    renderHeader: () =&gt; &quot;Manager&quot;,
+    renderCell: (object) =&gt; {
+      if (&quot;managerName&quot; in object) {
+        return &lt;span&gt;{object[&quot;managerName&quot;]}&lt;/span&gt;;
+      }
+      return &lt;span style={{ color: &quot;#999&quot; }}&gt;No Manager&lt;/span&gt;;
+    },
+  },
+];
+
+&lt;ObjectTable objectType={Employee} columnDefinitions={columnDefinitions} /&gt;`,
+      },
+    },
+  },
+  render: (args) =&gt; (
+    &lt;div className=&quot;object-table-container&quot; style={{ height: &quot;600px&quot; }}&gt;
+      &lt;ObjectTable {...args} /&gt;
+    &lt;/div&gt;
+  ),
+};
+
+export const SingleSelection: Story = {
+  args: {
+    objectType: Employee,
+    selectionMode: &quot;single&quot;,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `&lt;ObjectTable objectType={Employee} selectionMode=&quot;single&quot; /&gt;`,
+      },
+    },
+  },
+  render: (args) =&gt; (
+    &lt;div className=&quot;object-table-container&quot; style={{ height: &quot;600px&quot; }}&gt;
+      &lt;ObjectTable {...args} /&gt;
+    &lt;/div&gt;
+  ),
+};
+
+export const MultipleSelection: Story = {
+  args: {
+    objectType: Employee,
+    selectionMode: &quot;multiple&quot;,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `&lt;ObjectTable objectType={Employee} selectionMode=&quot;multiple&quot; /&gt;`,
+      },
+    },
+  },
+  render: (args) =&gt; (
+    &lt;div className=&quot;object-table-container&quot; style={{ height: &quot;600px&quot; }}&gt;
+      &lt;ObjectTable {...args} /&gt;
+    &lt;/div&gt;
+  ),
+};
+
+export const WithContextMenu: Story = {
+  args: {
+    objectType: Employee,
+    renderCellContextMenu: (_: any, cellValue: unknown) =&gt; {
+      return (
+        &lt;div
+          style={{
+            background: &quot;white&quot;,
+            padding: 8,
+            border: &quot;1px solid #d1d5db&quot;,
+            boxShadow: &quot;0 2px 8px 0 rgba(0, 0, 0, 0.1)&quot;,
+            fontSize: 13,
+            borderRadius: 4,
+          }}
+        &gt;
+          &lt;div style={{ fontWeight: &quot;bold&quot;, marginBottom: 4 }}&gt;Cell Value:&lt;/div&gt;
+          &lt;div&gt;{cellValue ? String(cellValue) : &quot;No Value&quot;}&lt;/div&gt;
+        &lt;/div&gt;
+      );
+    },
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `&lt;ObjectTable
+  objectType={Employee}
+  renderCellContextMenu={(_, cellValue) =&gt; (
+    &lt;div
+      style={{
+        background: &quot;white&quot;,
+        padding: 8,
+        border: &quot;1px solid #d1d5db&quot;,
+        boxShadow: &quot;0 2px 8px 0 rgba(0, 0, 0, 0.1)&quot;,
+        fontSize: 13,
+        borderRadius: 4,
+      }}
+    &gt;
+      &lt;div style={{ fontWeight: &quot;bold&quot;, marginBottom: 4 }}&gt;Cell Value:&lt;/div&gt;
+      &lt;div&gt;{cellValue ? String(cellValue) : &quot;No Value&quot;}&lt;/div&gt;
+    &lt;/div&gt;
+  )}
+/&gt;`,
+      },
+    },
+  },
+  render: (args) =&gt; (
+    &lt;div className=&quot;object-table-container&quot; style={{ height: &quot;600px&quot; }}&gt;
+      &lt;div style={{ padding: &quot;12px&quot; }}&gt;Right click on any cell&lt;/div&gt;
+      &lt;ObjectTable {...args} /&gt;
+    &lt;/div&gt;
+  ),
+};
+
+export const CustomColumnWidths: Story = {
+  args: {
+    objectType: Employee,
+    columnDefinitions: columnDefinitions.map((col, index) =&gt; ({
+      ...col,
+      width: index === 0 ? 250 : index === 1 ? 300 : 150,
+    })) as any,
+  },
+  render: (args) =&gt; (
+    &lt;div className=&quot;object-table-container&quot; style={{ height: &quot;600px&quot; }}&gt;
+      &lt;ObjectTable {...args} /&gt;
+    &lt;/div&gt;
+  ),
+};
+
+export const WithDefaultSorting: Story = {
+  args: {
+    objectType: Employee,
+    defaultOrderBy: [{
+      property: &quot;fullName&quot;,
+      direction: &quot;desc&quot;,
+    }],
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `&lt;ObjectTable
+  objectType={Employee}
+  defaultOrderBy={[{
+    property: &quot;fullName&quot;,
+    direction: &quot;desc&quot;,
+  }]}
+/&gt;`,
+      },
+    },
+  },
+  render: (args) =&gt; (
+    &lt;div className=&quot;object-table-container&quot; style={{ height: &quot;600px&quot; }}&gt;
+      &lt;ObjectTable {...args} /&gt;
+    &lt;/div&gt;
+  ),
+};
+
+export const WithDefaultColumnPinning: Story = {
+  args: {
+    objectType: Employee,
+    columnDefinitions: [
+      {
+        locator: { type: &quot;property&quot;, id: &quot;fullName&quot; },
+        pinned: &quot;left&quot;,
+      },
+      {
+        locator: { type: &quot;property&quot;, id: &quot;emailPrimaryWork&quot; },
+      },
+      {
+        locator: { type: &quot;property&quot;, id: &quot;jobTitle&quot; },
+      },
+      {
+        locator: { type: &quot;property&quot;, id: &quot;department&quot; },
+        pinned: &quot;right&quot;,
+      },
+      {
+        locator: { type: &quot;property&quot;, id: &quot;firstFullTimeStartDate&quot; },
+      },
+    ] as any,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `const columnDefinitions = [
+    ...columnDefinitions,
+   {
+      locator: { type: &quot;property&quot;, id: &quot;fullName&quot; },
+      pinned: &quot;left&quot;,
+    },
+    {
+      locator: { type: &quot;property&quot;, id: &quot;department&quot; },
+      pinned: &quot;right&quot;,
+    },
+];
+
+&lt;ObjectTable objectType={Employee} columnDefinitions={columnDefinitions} /&gt;`,
+      },
+    },
+  },
+  render: (args) =&gt; (
+    &lt;div className=&quot;object-table-container&quot; style={{ height: &quot;600px&quot; }}&gt;
+      &lt;ObjectTable {...args} /&gt;
+    &lt;/div&gt;
+  ),
+};
+
+export const WithCustomColumn: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `const customColumnDefinition = [
+      ...columnDefinitions,
+      {
+        locator: {
+          type: &quot;custom&quot;,
+          id: &quot;actions&quot;,
+        },
+        renderHeader: () =&gt; &quot;Actions&quot;,
+        renderCell: (object: any) =&gt; {
+          return (
+            &lt;div style={{ display: &quot;flex&quot;, gap: &quot;8px&quot; }}&gt;
+              &lt;button
+                onClick={() =&gt; {}}
+              &gt;
+                View
+              &lt;/button&gt;
+              &lt;button
+                onClick={() =&gt; {}}
+              &gt;
+                Edit
+              &lt;/button&gt;
+            &lt;/div&gt;
+          );
+        },
+        orderable: false,
+        width: 120,
+      },
+    ]
+    
+    return  &lt;ObjectTable objectType={Employee} columnDefinitions={customColumnDefinition} /&gt;
+    `,
+      },
+    },
+  },
+  args: {
+    objectType: Employee,
+    columnDefinitions: [
+      ...columnDefinitions.slice(0, 3),
+      {
+        locator: {
+          type: &quot;custom&quot;,
+          id: &quot;actions&quot;,
+        },
+        renderHeader: () =&gt; &quot;Actions&quot;,
+        renderCell: (object: any) =&gt; {
+          return (
+            &lt;div style={{ display: &quot;flex&quot;, gap: &quot;8px&quot; }}&gt;
+              &lt;button
+                style={{
+                  padding: &quot;4px 8px&quot;,
+                  fontSize: &quot;12px&quot;,
+                  border: &quot;1px solid #d1d5db&quot;,
+                  borderRadius: &quot;4px&quot;,
+                  background: &quot;white&quot;,
+                  cursor: &quot;pointer&quot;,
+                }}
+                onClick={() =&gt; alert(`View ${object[&quot;fullName&quot;]}`)}
+              &gt;
+                View
+              &lt;/button&gt;
+              &lt;button
+                style={{
+                  padding: &quot;4px 8px&quot;,
+                  fontSize: &quot;12px&quot;,
+                  border: &quot;1px solid #d1d5db&quot;,
+                  borderRadius: &quot;4px&quot;,
+                  background: &quot;white&quot;,
+                  cursor: &quot;pointer&quot;,
+                }}
+                onClick={() =&gt; alert(`Edit ${object[&quot;fullName&quot;]}`)}
+              &gt;
+                Edit
+              &lt;/button&gt;
+            &lt;/div&gt;
+          );
+        },
+        orderable: false,
+        width: 120,
+      },
+    ] as any,
+  },
+  render: (args) =&gt; (
+    &lt;div className=&quot;object-table-container&quot; style={{ height: &quot;600px&quot; }}&gt;
+      &lt;ObjectTable {...args} /&gt;
+    &lt;/div&gt;
+  ),
+};
+
+export const WithRowClickHandler: Story = {
+  args: {
+    objectType: Employee,
+    onRowClick: (employee: any) =&gt; {
+      alert(`Clicked on ${employee[&quot;fullName&quot;]}`);
+    },
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `&lt;ObjectTable
+  objectType={Employee}
+  onRowClick={(employee) =&gt; {
+    alert(\`Clicked on \${employee[&quot;fullName&quot;]}\`);
+  }}
+/&gt;`,
+      },
+    },
+  },
+  render: (args) =&gt; (
+    &lt;div className=&quot;object-table-container&quot; style={{ height: &quot;600px&quot; }}&gt;
+      &lt;ObjectTable {...args} /&gt;
+    &lt;/div&gt;
+  ),
+};
+
+export const ControlledSorting: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `const [orderBy, setOrderBy] = useState&lt;any&gt;([
+  { property: &quot;fullName&quot;, direction: &quot;asc&quot; },
+]);
+
+return (
+  &lt;ObjectTable
+    objectType={Employee}
+    orderBy={orderBy}
+    onOrderByChanged={setOrderBy}
+  /&gt;
+);`,
+      },
+    },
+  },
+  render: () =&gt; {
+    const [orderBy, setOrderBy] = useState&lt;any&gt;([
+      { property: &quot;fullName&quot;, direction: &quot;asc&quot; },
+    ]);
+
+    return (
+      &lt;div&gt;
+        &lt;div style={{ marginBottom: &quot;16px&quot; }}&gt;
+          &lt;strong&gt;Current Sort:&lt;/strong&gt;{&quot; &quot;}
+          {orderBy.map((o: any, i: number) =&gt; (
+            &lt;span key={i}&gt;
+              {o.property} ({o.direction})
+              {i &lt; orderBy.length - 1 &amp;&amp; &quot;, &quot;}
+            &lt;/span&gt;
+          ))}
+        &lt;/div&gt;
+        &lt;div className=&quot;object-table-container&quot; style={{ height: &quot;600px&quot; }}&gt;
+          &lt;ObjectTable
+            objectType={Employee}
+            orderBy={orderBy}
+            onOrderByChanged={setOrderBy}
+          /&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    );
+  },
+};
+
+export const ControlledSelection: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `const [selectedRows, setSelectedRows] = useState&lt;any[]&gt;([]);
+
+return (
+  &lt;ObjectTable
+    objectType={Employee}
+    selectionMode=&quot;multiple&quot;
+    selectedRows={selectedRows}
+    onRowSelection={setSelectedRows}
+  /&gt;
+);`,
+      },
+    },
+  },
+  render: () =&gt; {
+    const [selectedRows, setSelectedRows] = useState&lt;any[]&gt;([]);
+
+    return (
+      &lt;div&gt;
+        &lt;div style={{ marginBottom: &quot;16px&quot; }}&gt;
+          &lt;strong&gt;Selected:&lt;/strong&gt; {selectedRows.length} employees
+          {selectedRows.length &gt; 0 &amp;&amp; (
+            &lt;button
+              style={{
+                marginLeft: &quot;16px&quot;,
+                padding: &quot;4px 8px&quot;,
+                fontSize: &quot;12px&quot;,
+                border: &quot;1px solid #d1d5db&quot;,
+                borderRadius: &quot;4px&quot;,
+                background: &quot;white&quot;,
+                cursor: &quot;pointer&quot;,
+              }}
+              onClick={() =&gt; setSelectedRows([])}
+            &gt;
+              Clear Selection
+            &lt;/button&gt;
+          )}
+        &lt;/div&gt;
+        &lt;div className=&quot;object-table-container&quot; style={{ height: &quot;600px&quot; }}&gt;
+          &lt;ObjectTable
+            objectType={Employee}
+            selectionMode=&quot;multiple&quot;
+            selectedRows={selectedRows}
+            onRowSelection={setSelectedRows}
+          /&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    );
+  },
+};
+
+export const DisableAllHeaderMenuFeatures: Story = {
+  args: {
+    objectType: Employee,
+    enableOrdering: false,
+    enableColumnPinning: false,
+    enableColumnResizing: false,
+    enableColumnConfig: false,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `&lt;ObjectTable
+  objectType={Employee}
+  enableOrdering={false}
+  enableColumnPinning={false}
+  enableColumnResizing={false}
+  enableColumnConfig={false}
+/&gt;`,
+      },
+    },
+  },
+  render: (args) =&gt; (
+    &lt;div className=&quot;object-table-container&quot; style={{ height: &quot;600px&quot; }}&gt;
+      &lt;ObjectTable {...args} /&gt;
+    &lt;/div&gt;
+  ),
+};
+
+export const CustomRowHeight: Story = {
+  args: {
+    objectType: Employee,
+    rowHeight: 56,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `&lt;ObjectTable objectType={Employee} rowHeight={56} /&gt;`,
+      },
+    },
+  },
+  render: (args) =&gt; (
+    &lt;div className=&quot;object-table-container&quot; style={{ height: &quot;600px&quot; }}&gt;
+      &lt;ObjectTable {...args} /&gt;
+    &lt;/div&gt;
+  ),
+};
+
+export const WithCustomRenderers: Story = {
+  args: {
+    objectType: Employee,
+    columnDefinitions: [
+      {
+        locator: { type: &quot;property&quot;, id: &quot;fullName&quot; },
+        renderHeader: () =&gt; (
+          &lt;a
+            href=&quot;#&quot;
+            className=&quot;header-link&quot;
+            onClick={(e) =&gt; {
+              e.preventDefault();
+              alert(&quot;Employee Name column clicked!&quot;);
+            }}
+          &gt;
+            Employee Name
+          &lt;/a&gt;
+        ),
+      },
+      {
+        locator: { type: &quot;property&quot;, id: &quot;emailPrimaryWork&quot; },
+      },
+      {
+        locator: { type: &quot;property&quot;, id: &quot;jobTitle&quot; },
+        renderHeader: () =&gt; &quot;Job Title&quot;,
+      },
+      {
+        locator: {
+          type: &quot;custom&quot;,
+          id: &quot;employment-status&quot;,
+        },
+        renderHeader: () =&gt; &quot;Employment Status&quot;,
+        renderCell: (employee: any) =&gt; {
+          const startDate = employee[&quot;firstFullTimeStartDate&quot;];
+          const isActive = startDate &amp;&amp; new Date(startDate) &lt;= new Date();
+
+          return (
+            &lt;span className={`status-tag ${isActive ? &quot;active&quot; : &quot;inactive&quot;}`}&gt;
+              {isActive ? &quot;Active&quot; : &quot;Inactive&quot;}
+            &lt;/span&gt;
+          );
+        },
+        width: 140,
+      },
+      {
+        locator: { type: &quot;property&quot;, id: &quot;department&quot; },
+      },
+    ] as any,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `const columnDefinitions = [
+  {
+    locator: { type: &quot;property&quot;, id: &quot;fullName&quot; },
+    renderHeader: () =&gt; (
+      &lt;a
+        href=&quot;#&quot;
+        className=&quot;header-link&quot;
+        onClick={(e) =&gt; {
+          e.preventDefault();
+          alert(&quot;Employee Name column clicked!&quot;);
+        }}
+      &gt;
+        Employee Name
+      &lt;/a&gt;
+    ),
+  },
+  {
+    locator: { type: &quot;property&quot;, id: &quot;emailPrimaryWork&quot; },
+  },
+  {
+    locator: { type: &quot;property&quot;, id: &quot;jobTitle&quot; },
+    renderHeader: () =&gt; &quot;Job Title&quot;,
+  },
+  {
+    locator: {
+      type: &quot;custom&quot;,
+      id: &quot;employment-status&quot;,
+    },
+    renderHeader: () =&gt; &quot;Employment Status&quot;,
+    renderCell: (employee) =&gt; {
+      const startDate = employee[&quot;firstFullTimeStartDate&quot;];
+      const isActive = startDate &amp;&amp; new Date(startDate) &lt;= new Date();
+
+      return (
+        &lt;span className={\`status-tag \${isActive ? &quot;active&quot; : &quot;inactive&quot;}\`}&gt;
+          {isActive ? &quot;Active&quot; : &quot;Inactive&quot;}
+        &lt;/span&gt;
+      );
+    },
+    width: 140,
+  },
+  {
+    locator: { type: &quot;property&quot;, id: &quot;department&quot; },
+  },
+];
+
+&lt;ObjectTable objectType={Employee} columnDefinitions={columnDefinitions} /&gt;`,
+      },
+    },
+  },
+  render: (args) =&gt; (
+    &lt;div className=&quot;object-table-container&quot; style={{ height: &quot;600px&quot; }}&gt;
+      &lt;ObjectTable {...args} /&gt;
+    &lt;/div&gt;
+  ),
+};
+
+export const WithColumnConfigDialog: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code:
+          `const [isColumnConfigOpen, setIsColumnConfigOpen] = useState(false);
+const [columnDefinitions, setColumnDefinitions] = useState(initialColumnDefinitions);
+
+const handleApplyColumnConfig = useCallback(
+  (columns: Array&lt;{ columnId: string; isVisible: boolean }&gt;) =&gt; {
+    const newColumnDefinitions = [];
+    columns.forEach(({ columnId, isVisible }) =&gt; {
+      if (isVisible) {
+        const colDef = initialColumnDefinitions.find(def =&gt; def.locator.id === columnId);
+        if (colDef) {
+          newColumnDefinitions.push(colDef);
+        }
+      }
+    });
+    setColumnDefinitions(newColumnDefinitions);
+    setIsColumnConfigOpen(false);
+  },
+  [],
+);
+
+return (
+  &lt;&gt;
+    &lt;button onClick={() =&gt; setIsColumnConfigOpen(true)}&gt;
+      Configure Columns
+    &lt;/button&gt;
+    &lt;ObjectTable
+      objectType={Employee}
+      columnDefinitions={columnDefinitions}
+      enableColumnConfig={false}
+    /&gt;
+    &lt;ColumnConfigDialog
+      isOpen={isColumnConfigOpen}
+      onClose={() =&gt; setIsColumnConfigOpen(false)}
+      columnOptions={columnOptions}
+      currentVisibility={currentVisibility}
+      currentColumnOrder={currentColumnOrder}
+      onApply={handleApplyColumnConfig}
+    /&gt;
+  &lt;/&gt;
+);`,
+      },
+    },
+  },
+  render: () =&gt; {
+    const initialColumnDefinitions: Array&lt;ColumnDefinition&lt;Employee, {}, {}&gt;&gt; =
+      [
+        {
+          locator: { type: &quot;property&quot;, id: &quot;fullName&quot; },
+          columnName: &quot;Full Name&quot;,
+        },
+        {
+          locator: { type: &quot;property&quot;, id: &quot;emailPrimaryWork&quot; },
+          columnName: &quot;Email&quot;,
+        },
+        {
+          locator: { type: &quot;property&quot;, id: &quot;jobTitle&quot; },
+          columnName: &quot;Job Title&quot;,
+        },
+        {
+          locator: { type: &quot;property&quot;, id: &quot;department&quot; },
+          columnName: &quot;Department&quot;,
+        },
+      ];
+
+    const [isColumnConfigOpen, setIsColumnConfigOpen] = useState(false);
+    const [columnDefinitions, setColumnDefinitions] = useState&lt;
+      Array&lt;ColumnDefinition&lt;Employee, {}, {}&gt;&gt;
+    &gt;(initialColumnDefinitions);
+
+    const columnOptions = useMemo(
+      () =&gt;
+        initialColumnDefinitions.map((colDef) =&gt; ({
+          id: colDef.locator.id,
+          name: colDef.columnName || colDef.locator.id,
+        })),
+      [],
+    );
+
+    const currentVisibility = useMemo(() =&gt; {
+      const visibility: Record&lt;string, boolean&gt; = {};
+      initialColumnDefinitions.forEach(colDef =&gt; {
+        visibility[colDef.locator.id] = columnDefinitions.some(
+          def =&gt; def.locator.id === colDef.locator.id,
+        );
+      });
+      return visibility;
+    }, [columnDefinitions]);
+
+    const currentColumnOrder = useMemo(
+      () =&gt; columnDefinitions.map(colDef =&gt; colDef.locator.id),
+      [columnDefinitions],
+    );
+
+    const handleApplyColumnConfig = useCallback(
+      (columns: Array&lt;{ columnId: string; isVisible: boolean }&gt;) =&gt; {
+        const newColumnDefinitions: Array&lt;ColumnDefinition&lt;Employee, {}, {}&gt;&gt; =
+          [];
+        columns.forEach(({ columnId, isVisible }) =&gt; {
+          if (isVisible) {
+            const colDef = initialColumnDefinitions.find(def =&gt;
+              def.locator.id === columnId
+            );
+            if (colDef) {
+              newColumnDefinitions.push(colDef);
+            }
+          }
+        });
+        setColumnDefinitions(newColumnDefinitions);
+        setIsColumnConfigOpen(false);
+      },
+      [],
+    );
+
+    return (
+      &lt;div
+        style={{ height: &quot;600px&quot;, display: &quot;flex&quot;, flexDirection: &quot;column&quot; }}
+      &gt;
+        &lt;div style={{ padding: &quot;8px 0&quot;, marginBottom: 8 }}&gt;
+          &lt;button
+            onClick={() =&gt; setIsColumnConfigOpen(true)}
+            style={{
+              padding: &quot;8px 16px&quot;,
+              backgroundColor: &quot;#3b82f6&quot;,
+              color: &quot;white&quot;,
+              border: &quot;none&quot;,
+              borderRadius: &quot;4px&quot;,
+              cursor: &quot;pointer&quot;,
+            }}
+          &gt;
+            Configure Columns
+          &lt;/button&gt;
+        &lt;/div&gt;
+        &lt;ObjectTable
+          objectType={Employee}
+          columnDefinitions={columnDefinitions as any}
+          enableColumnConfig={false}
+        /&gt;
+        &lt;ColumnConfigDialog
+          isOpen={isColumnConfigOpen}
+          onClose={() =&gt; setIsColumnConfigOpen(false)}
+          columnOptions={columnOptions}
+          currentVisibility={currentVisibility}
+          currentColumnOrder={currentColumnOrder}
+          onApply={handleApplyColumnConfig}
+        /&gt;
+      &lt;/div&gt;
+    );
+  },
+};
+
+export const EditableTable: Story = {
+  args: {
+    objectType: Employee,
+    columnDefinitions: [
+      {
+        locator: {
+          type: &quot;property&quot;,
+          id: &quot;fullName&quot;,
+        },
+        editable: true,
+      },
+      ...columnDefinitions.slice(1),
+    ],
+    editMode: &quot;manual&quot;,
+  } as any,
+  parameters: {
+    docs: {
+      source: {
+        code: `const columnDefinitions = [
+  ...columnDefinitions,
+  {
+    locator: {
+      type: &quot;property&quot;,
+      id: &quot;fullName&quot;,
+    },
+    editable: true,
+  },
+  ];
+
+  return (
+    &lt;ObjectTable 
+      objectType={Employee} 
+      columnDefinitions={columnDefinitions} 
+      editMode=&quot;manual&quot; 
+    /&gt;
+  );`,
+      },
+    },
+  },
+  render: (args) =&gt; (
+    &lt;div className=&quot;object-table-container&quot; style={{ height: &quot;600px&quot; }}&gt;
+      &lt;ObjectTable {...args} objectType={Employee} /&gt;
+    &lt;/div&gt;
+  ),
+};
+
+export const WithSubmitEditsButton: Story = {
+  args: {
+    objectType: Employee,
+    columnDefinitions: [
+      ...columnDefinitions,
+      {
+        locator: {
+          type: &quot;property&quot;,
+          id: &quot;fullName&quot;,
+        },
+        editable: true,
+      },
+    ],
+    onSubmitEdits: async () =&gt; {
+      alert(&quot;Submitting edits&quot;);
+    },
+  } as any,
+  parameters: {
+    docs: {
+      source: {
+        code: `const columnDefinitions = [
+  ...columnDefinitions,
+  {
+    locator: {
+      type: &quot;property&quot;,
+      id: &quot;fullName&quot;,
+    },
+    editable: true,
+  },
+  ];
+
+  return &lt;ObjectTable 
+    objectType={Employee} 
+    columnDefinitions={columnDefinitions} 
+    onSubmitEdits={(edits) =&gt; {
+        alert(&quot;Submitting edits&quot;);
+        // Return true to indicate edits were successfully submitted and can be cleared from the table&#39;s edit state
+        return true;
+    }}
+  /&gt;`,
+      },
+    },
+  },
+  render: (args) =&gt; (
+    &lt;div className=&quot;object-table-container&quot; style={{ height: &quot;600px&quot; }}&gt;
+      &lt;ObjectTable {...args} objectType={Employee} /&gt;
+    &lt;/div&gt;
+  ),
+};
+</code></pre></div>
+    </div>
+        </div>
+    
+        <div class="panel panel-info">
+          
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
+    </div>
+        </div>
+    
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { ColumnConfigDialog, ObjectTable } from "@osdk/react-components-storybook";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Default</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Default = () =&gt; &lt;div className=&quot;object-table-container&quot; style={{ height: &quot;600px&quot; }}&gt;
+    &lt;ObjectTable objectType={Employee} /&gt;
+&lt;/div&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Column Definitions</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithColumnDefinitions = () =&gt; &lt;div className=&quot;object-table-container&quot; style={{ height: &quot;600px&quot; }}&gt;
+    &lt;ObjectTable objectType={Employee} columnDefinitions={columnDefinitions as any} /&gt;
+&lt;/div&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Single Selection</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const SingleSelection = () =&gt; &lt;div className=&quot;object-table-container&quot; style={{ height: &quot;600px&quot; }}&gt;
+    &lt;ObjectTable objectType={Employee} selectionMode=&quot;single&quot; /&gt;
+&lt;/div&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Multiple Selection</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const MultipleSelection = () =&gt; &lt;div className=&quot;object-table-container&quot; style={{ height: &quot;600px&quot; }}&gt;
+    &lt;ObjectTable objectType={Employee} selectionMode=&quot;multiple&quot; /&gt;
+&lt;/div&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Context Menu</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithContextMenu = () =&gt; &lt;div className=&quot;object-table-container&quot; style={{ height: &quot;600px&quot; }}&gt;
+    &lt;div style={{ padding: &quot;12px&quot; }}&gt;Right click on any cell&lt;/div&gt;
+    &lt;ObjectTable
+        objectType={Employee}
+        renderCellContextMenu={(_: any, cellValue: unknown) =&gt; {
+          return (
+            &lt;div
+              style={{
+                background: &quot;white&quot;,
+                padding: 8,
+                border: &quot;1px solid #d1d5db&quot;,
+                boxShadow: &quot;0 2px 8px 0 rgba(0, 0, 0, 0.1)&quot;,
+                fontSize: 13,
+                borderRadius: 4,
+              }}
+            &gt;
+              &lt;div style={{ fontWeight: &quot;bold&quot;, marginBottom: 4 }}&gt;Cell Value:&lt;/div&gt;
+              &lt;div&gt;{cellValue ? String(cellValue) : &quot;No Value&quot;}&lt;/div&gt;
+            &lt;/div&gt;
+          );
+        }} /&gt;
+&lt;/div&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Custom Column Widths</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const CustomColumnWidths = () =&gt; &lt;div className=&quot;object-table-container&quot; style={{ height: &quot;600px&quot; }}&gt;
+    &lt;ObjectTable
+        objectType={Employee}
+        columnDefinitions={columnDefinitions.map((col, index) =&gt; ({
+          ...col,
+          width: index === 0 ? 250 : index === 1 ? 300 : 150,
+        })) as any} /&gt;
+&lt;/div&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Default Sorting</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithDefaultSorting = () =&gt; &lt;div className=&quot;object-table-container&quot; style={{ height: &quot;600px&quot; }}&gt;
+    &lt;ObjectTable
+        objectType={Employee}
+        defaultOrderBy={[{
+          property: &quot;fullName&quot;,
+          direction: &quot;desc&quot;,
+        }]} /&gt;
+&lt;/div&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Default Column Pinning</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithDefaultColumnPinning = () =&gt; &lt;div className=&quot;object-table-container&quot; style={{ height: &quot;600px&quot; }}&gt;
+    &lt;ObjectTable
+        objectType={Employee}
+        columnDefinitions={[
+          {
+            locator: { type: &quot;property&quot;, id: &quot;fullName&quot; },
+            pinned: &quot;left&quot;,
+          },
+          {
+            locator: { type: &quot;property&quot;, id: &quot;emailPrimaryWork&quot; },
+          },
+          {
+            locator: { type: &quot;property&quot;, id: &quot;jobTitle&quot; },
+          },
+          {
+            locator: { type: &quot;property&quot;, id: &quot;department&quot; },
+            pinned: &quot;right&quot;,
+          },
+          {
+            locator: { type: &quot;property&quot;, id: &quot;firstFullTimeStartDate&quot; },
+          },
+        ] as any} /&gt;
+&lt;/div&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Custom Column</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithCustomColumn = () =&gt; &lt;div className=&quot;object-table-container&quot; style={{ height: &quot;600px&quot; }}&gt;
+    &lt;ObjectTable
+        objectType={Employee}
+        columnDefinitions={[
+          ...columnDefinitions.slice(0, 3),
+          {
+            locator: {
+              type: &quot;custom&quot;,
+              id: &quot;actions&quot;,
+            },
+            renderHeader: () =&gt; &quot;Actions&quot;,
+            renderCell: (object: any) =&gt; {
+              return (
+                &lt;div style={{ display: &quot;flex&quot;, gap: &quot;8px&quot; }}&gt;
+                  &lt;button
+                    style={{
+                      padding: &quot;4px 8px&quot;,
+                      fontSize: &quot;12px&quot;,
+                      border: &quot;1px solid #d1d5db&quot;,
+                      borderRadius: &quot;4px&quot;,
+                      background: &quot;white&quot;,
+                      cursor: &quot;pointer&quot;,
+                    }}
+                    onClick={() =&gt; alert(`View ${object[&quot;fullName&quot;]}`)}
+                  &gt;
+                    View
+                  &lt;/button&gt;
+                  &lt;button
+                    style={{
+                      padding: &quot;4px 8px&quot;,
+                      fontSize: &quot;12px&quot;,
+                      border: &quot;1px solid #d1d5db&quot;,
+                      borderRadius: &quot;4px&quot;,
+                      background: &quot;white&quot;,
+                      cursor: &quot;pointer&quot;,
+                    }}
+                    onClick={() =&gt; alert(`Edit ${object[&quot;fullName&quot;]}`)}
+                  &gt;
+                    Edit
+                  &lt;/button&gt;
+                &lt;/div&gt;
+              );
+            },
+            orderable: false,
+            width: 120,
+          },
+        ] as any} /&gt;
+&lt;/div&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Row Click Handler</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithRowClickHandler = () =&gt; &lt;div className=&quot;object-table-container&quot; style={{ height: &quot;600px&quot; }}&gt;
+    &lt;ObjectTable
+        objectType={Employee}
+        onRowClick={(employee: any) =&gt; {
+          alert(`Clicked on ${employee[&quot;fullName&quot;]}`);
+        }} /&gt;
+&lt;/div&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Controlled Sorting</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const ControlledSorting = () =&gt; {
+  const [orderBy, setOrderBy] = useState&lt;any&gt;([
+    { property: &quot;fullName&quot;, direction: &quot;asc&quot; },
+  ]);
+
+  return (
+    &lt;div&gt;
+      &lt;div style={{ marginBottom: &quot;16px&quot; }}&gt;
+        &lt;strong&gt;Current Sort:&lt;/strong&gt;{&quot; &quot;}
+        {orderBy.map((o: any, i: number) =&gt; (
+          &lt;span key={i}&gt;
+            {o.property} ({o.direction})
+            {i &lt; orderBy.length - 1 &amp;&amp; &quot;, &quot;}
+          &lt;/span&gt;
+        ))}
+      &lt;/div&gt;
+      &lt;div className=&quot;object-table-container&quot; style={{ height: &quot;600px&quot; }}&gt;
+        &lt;ObjectTable
+          objectType={Employee}
+          orderBy={orderBy}
+          onOrderByChanged={setOrderBy}
+        /&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  );
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Controlled Selection</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const ControlledSelection = () =&gt; {
+  const [selectedRows, setSelectedRows] = useState&lt;any[]&gt;([]);
+
+  return (
+    &lt;div&gt;
+      &lt;div style={{ marginBottom: &quot;16px&quot; }}&gt;
+        &lt;strong&gt;Selected:&lt;/strong&gt; {selectedRows.length} employees
+        {selectedRows.length &gt; 0 &amp;&amp; (
+          &lt;button
+            style={{
+              marginLeft: &quot;16px&quot;,
+              padding: &quot;4px 8px&quot;,
+              fontSize: &quot;12px&quot;,
+              border: &quot;1px solid #d1d5db&quot;,
+              borderRadius: &quot;4px&quot;,
+              background: &quot;white&quot;,
+              cursor: &quot;pointer&quot;,
+            }}
+            onClick={() =&gt; setSelectedRows([])}
+          &gt;
+            Clear Selection
+          &lt;/button&gt;
+        )}
+      &lt;/div&gt;
+      &lt;div className=&quot;object-table-container&quot; style={{ height: &quot;600px&quot; }}&gt;
+        &lt;ObjectTable
+          objectType={Employee}
+          selectionMode=&quot;multiple&quot;
+          selectedRows={selectedRows}
+          onRowSelection={setSelectedRows}
+        /&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  );
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Disable All Header Menu Features</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const DisableAllHeaderMenuFeatures = () =&gt; &lt;div className=&quot;object-table-container&quot; style={{ height: &quot;600px&quot; }}&gt;
+    &lt;ObjectTable
+        objectType={Employee}
+        enableOrdering={false}
+        enableColumnPinning={false}
+        enableColumnResizing={false}
+        enableColumnConfig={false} /&gt;
+&lt;/div&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Custom Row Height</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const CustomRowHeight = () =&gt; &lt;div className=&quot;object-table-container&quot; style={{ height: &quot;600px&quot; }}&gt;
+    &lt;ObjectTable objectType={Employee} rowHeight={56} /&gt;
+&lt;/div&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Custom Renderers</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithCustomRenderers = () =&gt; &lt;div className=&quot;object-table-container&quot; style={{ height: &quot;600px&quot; }}&gt;
+    &lt;ObjectTable
+        objectType={Employee}
+        columnDefinitions={[
+          {
+            locator: { type: &quot;property&quot;, id: &quot;fullName&quot; },
+            renderHeader: () =&gt; (
+              &lt;a
+                href=&quot;#&quot;
+                className=&quot;header-link&quot;
+                onClick={(e) =&gt; {
+                  e.preventDefault();
+                  alert(&quot;Employee Name column clicked!&quot;);
+                }}
+              &gt;
+                Employee Name
+              &lt;/a&gt;
+            ),
+          },
+          {
+            locator: { type: &quot;property&quot;, id: &quot;emailPrimaryWork&quot; },
+          },
+          {
+            locator: { type: &quot;property&quot;, id: &quot;jobTitle&quot; },
+            renderHeader: () =&gt; &quot;Job Title&quot;,
+          },
+          {
+            locator: {
+              type: &quot;custom&quot;,
+              id: &quot;employment-status&quot;,
+            },
+            renderHeader: () =&gt; &quot;Employment Status&quot;,
+            renderCell: (employee: any) =&gt; {
+              const startDate = employee[&quot;firstFullTimeStartDate&quot;];
+              const isActive = startDate &amp;&amp; new Date(startDate) &lt;= new Date();
+
+              return (
+                &lt;span className={`status-tag ${isActive ? &quot;active&quot; : &quot;inactive&quot;}`}&gt;
+                  {isActive ? &quot;Active&quot; : &quot;Inactive&quot;}
+                &lt;/span&gt;
+              );
+            },
+            width: 140,
+          },
+          {
+            locator: { type: &quot;property&quot;, id: &quot;department&quot; },
+          },
+        ] as any} /&gt;
+&lt;/div&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Column Config Dialog</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithColumnConfigDialog = () =&gt; {
+  const initialColumnDefinitions: Array&lt;ColumnDefinition&lt;Employee, {}, {}&gt;&gt; =
+    [
+      {
+        locator: { type: &quot;property&quot;, id: &quot;fullName&quot; },
+        columnName: &quot;Full Name&quot;,
+      },
+      {
+        locator: { type: &quot;property&quot;, id: &quot;emailPrimaryWork&quot; },
+        columnName: &quot;Email&quot;,
+      },
+      {
+        locator: { type: &quot;property&quot;, id: &quot;jobTitle&quot; },
+        columnName: &quot;Job Title&quot;,
+      },
+      {
+        locator: { type: &quot;property&quot;, id: &quot;department&quot; },
+        columnName: &quot;Department&quot;,
+      },
+    ];
+
+  const [isColumnConfigOpen, setIsColumnConfigOpen] = useState(false);
+  const [columnDefinitions, setColumnDefinitions] = useState&lt;
+    Array&lt;ColumnDefinition&lt;Employee, {}, {}&gt;&gt;
+  &gt;(initialColumnDefinitions);
+
+  const columnOptions = useMemo(
+    () =&gt;
+      initialColumnDefinitions.map((colDef) =&gt; ({
+        id: colDef.locator.id,
+        name: colDef.columnName || colDef.locator.id,
+      })),
+    [],
+  );
+
+  const currentVisibility = useMemo(() =&gt; {
+    const visibility: Record&lt;string, boolean&gt; = {};
+    initialColumnDefinitions.forEach(colDef =&gt; {
+      visibility[colDef.locator.id] = columnDefinitions.some(
+        def =&gt; def.locator.id === colDef.locator.id,
+      );
+    });
+    return visibility;
+  }, [columnDefinitions]);
+
+  const currentColumnOrder = useMemo(
+    () =&gt; columnDefinitions.map(colDef =&gt; colDef.locator.id),
+    [columnDefinitions],
+  );
+
+  const handleApplyColumnConfig = useCallback(
+    (columns: Array&lt;{ columnId: string; isVisible: boolean }&gt;) =&gt; {
+      const newColumnDefinitions: Array&lt;ColumnDefinition&lt;Employee, {}, {}&gt;&gt; =
+        [];
+      columns.forEach(({ columnId, isVisible }) =&gt; {
+        if (isVisible) {
+          const colDef = initialColumnDefinitions.find(def =&gt;
+            def.locator.id === columnId
+          );
+          if (colDef) {
+            newColumnDefinitions.push(colDef);
+          }
+        }
+      });
+      setColumnDefinitions(newColumnDefinitions);
+      setIsColumnConfigOpen(false);
+    },
+    [],
+  );
+
+  return (
+    &lt;div
+      style={{ height: &quot;600px&quot;, display: &quot;flex&quot;, flexDirection: &quot;column&quot; }}
+    &gt;
+      &lt;div style={{ padding: &quot;8px 0&quot;, marginBottom: 8 }}&gt;
+        &lt;button
+          onClick={() =&gt; setIsColumnConfigOpen(true)}
+          style={{
+            padding: &quot;8px 16px&quot;,
+            backgroundColor: &quot;#3b82f6&quot;,
+            color: &quot;white&quot;,
+            border: &quot;none&quot;,
+            borderRadius: &quot;4px&quot;,
+            cursor: &quot;pointer&quot;,
+          }}
+        &gt;
+          Configure Columns
+        &lt;/button&gt;
+      &lt;/div&gt;
+      &lt;ObjectTable
+        objectType={Employee}
+        columnDefinitions={columnDefinitions as any}
+        enableColumnConfig={false}
+      /&gt;
+      &lt;ColumnConfigDialog
+        isOpen={isColumnConfigOpen}
+        onClose={() =&gt; setIsColumnConfigOpen(false)}
+        columnOptions={columnOptions}
+        currentVisibility={currentVisibility}
+        currentColumnOrder={currentColumnOrder}
+        onApply={handleApplyColumnConfig}
+      /&gt;
+    &lt;/div&gt;
+  );
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Editable Table</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const EditableTable = () =&gt; &lt;div className=&quot;object-table-container&quot; style={{ height: &quot;600px&quot; }}&gt;
+    &lt;ObjectTable objectType={Employee} /&gt;
+&lt;/div&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">With Submit Edits Button</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithSubmitEditsButton = () =&gt; &lt;div className=&quot;object-table-container&quot; style={{ height: &quot;600px&quot; }}&gt;
+    &lt;ObjectTable objectType={Employee} /&gt;
+&lt;/div&gt;;</code></pre>
+            </div>
+        </div>
+  </div>
+</article></div>
+        </section>
+      </div>
+  </div>
+</main>
+</body>
+</html>  
