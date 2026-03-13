@@ -846,6 +846,9 @@ importers:
       '@osdk/react':
         specifier: workspace:*
         version: link:../../packages/react
+      normalize.css:
+        specifier: ^8.0.1
+        version: 8.0.1
       react:
         specifier: ^18
         version: 18.3.1
@@ -940,6 +943,9 @@ importers:
       '@osdk/react':
         specifier: workspace:*
         version: link:../../packages/react
+      normalize.css:
+        specifier: ^8.0.1
+        version: 8.0.1
       react:
         specifier: ^18
         version: 18.3.1
@@ -2339,6 +2345,9 @@ importers:
       '@blueprintjs/icons':
         specifier: ^6.6.0
         version: 6.6.0(@types/react@18.3.24)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      normalize.css:
+        specifier: ^8.0.1
+        version: 8.0.1
       react:
         specifier: ^18
         version: 18.3.1

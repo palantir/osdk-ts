@@ -36,6 +36,7 @@
   "dependencies": {
     "@blueprintjs/core": "^6.9.1",
     "@blueprintjs/icons": "^6.6.0",
+    "normalize.css": "^8.0.1",
     "react": "^18",
     "react-dom": "^18",
     "react-router-dom": "^6.30.1"
