@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { Field } from "@base-ui/react/field";
 import { Form } from "@base-ui/react/form";
 import { mapValues } from "lodash-es";
 import React from "react";
@@ -22,8 +21,7 @@ import { ActionButton } from "../base-components/action-button/ActionButton.js";
 import { useControllableState } from "../shared/hooks/useControllableState.js";
 import type { BaseActionFormProps } from "./ActionFormApi.js";
 import styles from "./BaseActionForm.module.css";
-import type { BaseFormFieldDefinition } from "./FormFieldApi.js";
-import { FormFieldInput } from "./inputs/FormFieldInput.js";
+import { FormField } from "./FormField.js";
 
 export function BaseActionForm<S extends Record<string, unknown>>({
   formTitle,
@@ -48,6 +46,7 @@ export function BaseActionForm<S extends Record<string, unknown>>({
   });
 
   const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [submitError, setSubmitError] = React.useState<string>();
 
   const handleFieldChange = React.useCallback(
     (fieldKey: string, value: unknown) => {
@@ -62,9 +61,16 @@ export function BaseActionForm<S extends Record<string, unknown>>({
       if (onSubmit == null) {
         return;
       }
+      setSubmitError(undefined);
       setIsSubmitting(true);
       try {
         await onSubmit(formState);
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error("BaseActionForm submission failed", error);
+        setSubmitError(
+          error instanceof Error ? error.message : String(error),
+        );
       } finally {
         setIsSubmitting(false);
       }
@@ -86,6 +92,7 @@ export function BaseActionForm<S extends Record<string, unknown>>({
           />
         );
       })}
+      {submitError != null && <div className={styles.error}>{submitError}</div>}
       <div className={styles.footer}>
         <ActionButton
           variant="primary"
@@ -96,46 +103,5 @@ export function BaseActionForm<S extends Record<string, unknown>>({
         </ActionButton>
       </div>
     </Form>
-  );
-}
-
-interface FormFieldProps {
-  fieldKey: string;
-  field: BaseFormFieldDefinition;
-  value: unknown;
-  onFieldChange: (fieldKey: string, value: unknown) => void;
-}
-
-function FormField({
-  fieldKey,
-  field,
-  value,
-  onFieldChange,
-}: FormFieldProps): React.ReactElement {
-  const handleChange = React.useCallback(
-    (newValue: unknown) => {
-      onFieldChange(fieldKey, newValue);
-    },
-    [onFieldChange, fieldKey],
-  );
-
-  return (
-    <Field.Root name={fieldKey} className={styles.fieldRoot}>
-      {field.label != null && (
-        <Field.Label className={styles.label}>
-          {field.label}
-          {field.isRequired === true && (
-            <span className={styles.required}>*</span>
-          )}
-        </Field.Label>
-      )}
-      {field.helperText != null && (
-        <Field.Description className={styles.description}>
-          {field.helperText}
-        </Field.Description>
-      )}
-      <FormFieldInput field={field} value={value} onChange={handleChange} />
-      <Field.Error className={styles.fieldError} />
-    </Field.Root>
   );
 }

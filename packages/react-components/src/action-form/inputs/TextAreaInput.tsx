@@ -16,14 +16,17 @@
 
 import { Field } from "@base-ui/react/field";
 import React from "react";
+import type { TextAreaFieldProps } from "../FormFieldApi.js";
 
-interface TextAreaInputProps {
-  value: string;
-  onChange: (value: string) => void;
-  isRequired: boolean;
-  placeholder?: string;
-  className?: string;
-}
+type TextAreaInputProps =
+  & Omit<TextAreaFieldProps, "fieldComponent" | "onChange">
+  & {
+    value: string;
+    onChange: (value: string) => void;
+    isRequired: boolean;
+    placeholder?: string;
+    className?: string;
+  };
 
 export function TextAreaInput({
   value,
@@ -31,6 +34,10 @@ export function TextAreaInput({
   isRequired,
   placeholder,
   className,
+  rows,
+  wrap,
+  minLength,
+  maxLength,
 }: TextAreaInputProps): React.ReactElement {
   const handleChange = React.useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -41,7 +48,16 @@ export function TextAreaInput({
 
   return (
     <Field.Control
-      render={<textarea className={className} placeholder={placeholder} />}
+      render={
+        <textarea
+          className={className}
+          placeholder={placeholder}
+          rows={rows}
+          wrap={wrap}
+          minLength={minLength}
+          maxLength={maxLength}
+        />
+      }
       value={value}
       onChange={handleChange}
       required={isRequired}

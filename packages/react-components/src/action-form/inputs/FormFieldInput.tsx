@@ -16,12 +16,22 @@
 
 import React from "react";
 import { convertToFieldValue } from "../convertValue.js";
-import type { BaseFormFieldDefinition } from "../FormFieldApi.js";
+import type {
+  BaseFormFieldDefinition,
+  FormFieldPropsByType,
+} from "../FormFieldApi.js";
 import { BooleanInput } from "./BooleanInput.js";
-import { NumericInput } from "./NumericInput.js";
-import { SelectInput } from "./SelectInput.js";
-import { StringInput } from "./StringInput.js";
+import { DropdownInput } from "./DropdownInput.js";
+import { NumberInput } from "./NumberInput.js";
 import { TextAreaInput } from "./TextAreaInput.js";
+import { TextInput } from "./TextInput.js";
+
+function isFieldOfType<C extends keyof FormFieldPropsByType>(
+  field: BaseFormFieldDefinition,
+  component: C,
+): field is BaseFormFieldDefinition<unknown, C> {
+  return field.fieldComponent === component;
+}
 
 interface FormFieldInputProps {
   field: BaseFormFieldDefinition;
@@ -57,56 +67,70 @@ export function FormFieldInput({
     [onChange],
   );
 
-  const fieldComponent = field.fieldComponent ?? "TEXT_INPUT";
-
-  switch (fieldComponent) {
-    case "RADIO_BUTTONS":
-      return (
-        <BooleanInput
-          value={convertToFieldValue(value, "RADIO_BUTTONS")}
-          onChange={booleanOnChange}
-        />
-      );
-    case "DROPDOWN":
-      return (
-        <SelectInput
-          value={convertToFieldValue(value, "DROPDOWN")}
-          onChange={stringOnChange}
-          options={[]}
-          placeholder={field.placeholder}
-        />
-      );
-    case "TEXT_AREA":
-      return (
-        <TextAreaInput
-          value={convertToFieldValue(value, "TEXT_AREA")}
-          onChange={stringOnChange}
-          isRequired={field.isRequired === true}
-          placeholder={field.placeholder}
-          className={className}
-        />
-      );
-    case "NUMBER_INPUT":
-      return (
-        <NumericInput
-          value={convertToFieldValue(value, "NUMBER_INPUT")}
-          onChange={numericOnChange}
-          className={className}
-        />
-      );
-    case "TEXT_INPUT":
-    case "DATETIME_PICKER":
-    case "OBJECT_SET":
-    case "FILE_PICKER":
-    case "CUSTOM":
-      return (
-        <StringInput
-          value={convertToFieldValue(value, "TEXT_INPUT")}
-          onChange={stringOnChange}
-          isRequired={field.isRequired === true}
-          placeholder={field.placeholder}
-          className={className}
-        />
-      );
+  if (isFieldOfType(field, "RADIO_BUTTONS")) {
+    return (
+      <BooleanInput
+        value={convertToFieldValue(value, "RADIO_BUTTONS")}
+        onChange={booleanOnChange}
+      />
+    );
+  } else if (isFieldOfType(field, "DROPDOWN")) {
+    return (
+      <DropdownInput
+        value={convertToFieldValue(value, "DROPDOWN")}
+        onChange={stringOnChange}
+        options={field.fieldComponentProps?.options}
+        placeholder={field.placeholder}
+      />
+    );
+  } else if (isFieldOfType(field, "TEXT_AREA")) {
+    return (
+      <TextAreaInput
+        value={convertToFieldValue(value, "TEXT_AREA")}
+        onChange={stringOnChange}
+        isRequired={field.isRequired === true}
+        placeholder={field.placeholder}
+        className={className}
+        rows={field.fieldComponentProps?.rows}
+        wrap={field.fieldComponentProps?.wrap}
+        minLength={field.fieldComponentProps?.minLength}
+        maxLength={field.fieldComponentProps?.maxLength}
+      />
+    );
+  } else if (isFieldOfType(field, "NUMBER_INPUT")) {
+    return (
+      <NumberInput
+        value={convertToFieldValue(value, "NUMBER_INPUT")}
+        onChange={numericOnChange}
+        className={className}
+        min={field.fieldComponentProps?.min}
+        max={field.fieldComponentProps?.max}
+        step={field.fieldComponentProps?.step}
+      />
+    );
+  } else if (isFieldOfType(field, "TEXT_INPUT")) {
+    return (
+      <TextInput
+        value={convertToFieldValue(value, "TEXT_INPUT")}
+        onChange={stringOnChange}
+        isRequired={field.isRequired === true}
+        placeholder={field.placeholder}
+        className={className}
+        minLength={field.fieldComponentProps?.minLength}
+        maxLength={field.fieldComponentProps?.maxLength}
+      />
+    );
+  } else {
+    // DATETIME_PICKER, OBJECT_SET, FILE_PICKER, CUSTOM
+    // TODO: Implement the correct components
+    return (
+      <TextInput
+        value={convertToFieldValue(value, "TEXT_INPUT")}
+        onChange={stringOnChange}
+        isRequired={field.isRequired === true}
+        placeholder={field.placeholder}
+        className={className}
+      />
+    );
   }
 }

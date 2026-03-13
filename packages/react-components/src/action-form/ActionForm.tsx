@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  ActionDefinition,
-  ActionMetadata,
-  CompileTimeMetadata,
-} from "@osdk/api";
+import type { ActionDefinition, ActionMetadata } from "@osdk/api";
 import { useOsdkAction, useOsdkMetadata } from "@osdk/react/experimental";
 import React, { type ReactElement, useCallback, useMemo } from "react";
 import type {
@@ -47,16 +43,13 @@ export function ActionForm<T, Q extends ActionDefinition<T>>(
   } else if (metadataError != null || metadata == null) {
     return <>TODO: Fill me</>;
   }
-  return (
-    // TODO: Fix me later
-    <ActionFormWithActionMetadata {...props} actionMetadata={metadata as any} />
-  );
+  return <ActionFormWithActionMetadata {...props} actionMetadata={metadata} />;
 }
 
 interface ActionFormWithActionMetadataProps<T, Q extends ActionDefinition<T>>
   extends ActionFormProps<Q>
 {
-  actionMetadata: CompileTimeMetadata<Q>;
+  actionMetadata: ActionMetadata;
 }
 
 function ActionFormWithActionMetadata<T, Q extends ActionDefinition<T>>({
@@ -108,6 +101,8 @@ function ActionFormWithActionMetadata<T, Q extends ActionDefinition<T>>({
           }
         }
       } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error("ActionForm submission failed", error);
         onError?.({
           type: "submission",
           error: error instanceof Error ? error : new Error(String(error)),
@@ -117,18 +112,14 @@ function ActionFormWithActionMetadata<T, Q extends ActionDefinition<T>>({
     [applyAction, onSuccess, onError, onSubmit],
   );
 
-  const fieldCount = useMemo(
-    () => Object.keys(formFieldDefinitionMap).length,
-    [formFieldDefinitionMap],
-  );
-
   return (
     <BaseActionForm<FormState<Q>>
       formTitle={title}
       formFieldDefinitionMap={formFieldDefinitionMap}
       onFormStateChange={onFormStateChange}
       onSubmit={handleSubmit}
-      isSubmitDisabled={isSubmitDisabled ?? (isPending || fieldCount === 0)}
+      isSubmitDisabled={isSubmitDisabled
+        ?? (isPending || Object.keys(formFieldDefinitionMap).length === 0)}
     />
   );
 }

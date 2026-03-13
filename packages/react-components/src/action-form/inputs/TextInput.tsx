@@ -17,22 +17,27 @@
 import { Field } from "@base-ui/react/field";
 import { Input } from "@base-ui/react/input";
 import React from "react";
+import type { TextInputFieldProps } from "../FormFieldApi.js";
 
-interface StringInputProps {
-  value: string;
-  onChange: (value: string) => void;
-  isRequired: boolean;
-  placeholder?: string;
-  className?: string;
-}
+type TextInputProps =
+  & Omit<TextInputFieldProps, "fieldComponent" | "onChange">
+  & {
+    value: string;
+    onChange: (value: string) => void;
+    isRequired: boolean;
+    placeholder?: string;
+    className?: string;
+  };
 
-export function StringInput({
+export function TextInput({
   value,
   onChange,
   isRequired,
   placeholder,
   className,
-}: StringInputProps): React.ReactElement {
+  minLength,
+  maxLength,
+}: TextInputProps): React.ReactElement {
   const handleChange = React.useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       onChange(event.target.value);
@@ -42,7 +47,14 @@ export function StringInput({
 
   return (
     <Field.Control
-      render={<Input className={className} placeholder={placeholder} />}
+      render={
+        <Input
+          className={className}
+          placeholder={placeholder}
+          minLength={minLength}
+          maxLength={maxLength}
+        />
+      }
       value={value}
       onChange={handleChange}
       required={isRequired}

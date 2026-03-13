@@ -56,12 +56,6 @@ export interface BaseFormFieldDefinition<
   label?: string;
 
   /**
-   * Current value of the field
-   * If provided, the field operates in controlled mode
-   */
-  // value?: V;
-
-  /**
    * Default value of the field
    */
   defaultValue?: V;
@@ -393,9 +387,6 @@ export type FieldComponent =
   | "TEXT_INPUT"
   | "CUSTOM";
 
-/**
- * Gets valid form field types for a given property type
- */
 export type ValidFormFieldForPropertyType<P extends FieldDescriptorType> =
   P extends "objectSet" ? "OBJECT_SET"
     : P extends "object" ? "DROPDOWN"

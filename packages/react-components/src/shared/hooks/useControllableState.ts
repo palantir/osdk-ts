@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 
 export interface UseControllableStateProps<T> {
   value?: T;
@@ -40,10 +40,15 @@ export function useControllableState<T>(
   const controlled = valueProp !== undefined;
   const value = controlled ? valueProp : uncontrolledState;
 
+  const valueRef = useRef(value);
+  valueRef.current = value;
+
   const setValue = useCallback(
     (next: React.SetStateAction<T>) => {
       const setter = next as (prevState?: T) => T;
-      const nextValue = typeof next === "function" ? setter(value) : next;
+      const nextValue = typeof next === "function"
+        ? setter(valueRef.current)
+        : next;
 
       if (!controlled) {
         setUncontrolledState(nextValue);
@@ -51,7 +56,7 @@ export function useControllableState<T>(
 
       onChange?.(nextValue);
     },
-    [controlled, onChange, value],
+    [controlled, onChange],
   );
 
   return [value, setValue] as const;

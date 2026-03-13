@@ -16,22 +16,31 @@
 
 import { NumberField } from "@base-ui/react/number-field";
 import React from "react";
+import type { NumberInputFieldProps } from "../FormFieldApi.js";
 
-interface NumericInputProps {
-  value: number | null;
-  onChange: (value: number | null) => void;
-  className?: string;
-}
+type NumberInputProps =
+  & Omit<NumberInputFieldProps, "fieldComponent" | "onChange">
+  & {
+    value: number | null;
+    onChange: (value: number | null) => void;
+    className?: string;
+  };
 
-export function NumericInput({
+export function NumberInput({
   value,
   onChange,
   className,
-}: NumericInputProps): React.ReactElement {
+  min,
+  max,
+  step,
+}: NumberInputProps): React.ReactElement {
   return (
     <NumberField.Root
       value={value}
       onValueChange={onChange}
+      min={typeof min === "number" ? min : undefined}
+      max={typeof max === "number" ? max : undefined}
+      step={typeof step === "number" ? step : undefined}
     >
       <NumberField.Input className={className} />
     </NumberField.Root>
