@@ -41,7 +41,8 @@ export namespace EmployeeApiTest {
     | "dateOfJoining"
     | "lastUpdated"
     | "skillSet"
-    | "skillSetEmbedding";
+    | "skillSetEmbedding"
+    | "addressStruct";
 
   export interface Links {
     readonly lead: $SingleLinkAccessor<EmployeeApiTest>;
@@ -68,6 +69,13 @@ export namespace EmployeeApiTest {
     readonly lastUpdated: $PropType["timestamp"] | undefined;
     readonly skillSet: $PropType["string"] | undefined;
     readonly skillSetEmbedding: $PropType["vector"] | undefined;
+    readonly addressStruct:
+      | {
+        city: $PropType["string"] | undefined;
+        zipCode: $PropType["string"] | undefined;
+        yearsAtAddress: $PropType["integer"] | undefined;
+      }
+      | undefined;
   }
   export type StrictProps = Props;
 
@@ -132,6 +140,11 @@ export interface EmployeeApiTest extends $ObjectTypeDefinition {
       lastUpdated: $PropertyDef<"timestamp", "nullable", "single">;
       skillSet: $PropertyDef<"string", "nullable", "single">;
       skillSetEmbedding: $PropertyDef<"vector", "nullable", "single">;
+      addressStruct: $PropertyDef<
+        { city: "string"; zipCode: "string"; yearsAtAddress: "integer" },
+        "nullable",
+        "single"
+      >;
     };
     rid: "ri.ontology.main.object-type.401ac022-89eb-4591-8b7e-0a912b9efb44";
     status: "ACTIVE";

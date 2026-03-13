@@ -22,7 +22,10 @@ export type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from "./actions/Actions.js";
-export type { ValidAggregationKeys } from "./aggregate/AggregatableKeys.js";
+export type {
+  ValidAggregationKeys,
+  ValidAggregationKeysWithStructs,
+} from "./aggregate/AggregatableKeys.js";
 export type { AggregateOpts } from "./aggregate/AggregateOpts.js";
 export type { AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy } from "./aggregate/AggregateOptsThatErrors.js";
 export type { AggregationResultsWithGroups } from "./aggregate/AggregationResultsWithGroups.js";

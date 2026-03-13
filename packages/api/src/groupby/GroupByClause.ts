@@ -14,17 +14,47 @@
  * limitations under the License.
  */
 
-import type { AggregatableKeys } from "../aggregate/AggregatableKeys.js";
+import type {
+  AggregatableKeys,
+  StructPropertyKeys,
+} from "../aggregate/AggregatableKeys.js";
 import { TimeDurationMapping } from "../mapping/DurationMapping.js";
-import type { ObjectOrInterfaceDefinition } from "../ontology/ObjectOrInterface.js";
+import type {
+  ObjectOrInterfaceDefinition,
+} from "../ontology/ObjectOrInterface.js";
 import type { CompileTimeMetadata } from "../ontology/ObjectTypeDefinition.js";
+import type { BaseWirePropertyTypes } from "../ontology/WirePropertyTypes.js";
 import type { GroupByMapper } from "./GroupByMapper.js";
 
-export type GroupByClause<
-  Q extends ObjectOrInterfaceDefinition,
-> = {
-  [P in AggregatableKeys<Q>]?: GroupByEntry<Q, P>;
+type StructGroupByEntry<StructType> = StructType extends
+  Record<string, BaseWirePropertyTypes> ? {
+    [SF in keyof StructType & string]?: StructType[SF] extends
+      keyof GroupByMapper ? GroupByMapper[StructType[SF]]
+      : never;
+  }
+  : never;
+
+type NonStructAggregatableKeys<Q extends ObjectOrInterfaceDefinition> = Exclude<
+  AggregatableKeys<Q>,
+  StructPropertyKeys<Q>
+>;
+
+type StructGroupByClauseProperties<Q extends ObjectOrInterfaceDefinition> = {
+  [P in StructPropertyKeys<Q>]?: StructGroupByEntry<
+    CompileTimeMetadata<Q>["properties"][P]["type"]
+  >;
 };
+
+type NonStructGroupByClauseProperties<Q extends ObjectOrInterfaceDefinition> = {
+  [P in NonStructAggregatableKeys<Q>]?: GroupByEntry<
+    Q,
+    P & AggregatableKeys<Q>
+  >;
+};
+
+export type GroupByClause<Q extends ObjectOrInterfaceDefinition> =
+  & NonStructGroupByClauseProperties<Q>
+  & StructGroupByClauseProperties<Q>;
 
 type BaseGroupByValue =
   | "exact"

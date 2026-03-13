@@ -36,6 +36,29 @@ import { addUserAgentAndRequestContextHeaders } from "../util/addUserAgentAndReq
 import type { ArrayElement } from "../util/ArrayElement.js";
 import { resolveBaseObjectSetType } from "../util/objectSetUtils.js";
 
+function convertFlatGroupToNested(
+  flatGroup: Record<string, unknown>,
+): Record<string, unknown> {
+  const result: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(flatGroup)) {
+    const parts = key.split(".");
+    if (parts.length === 1) {
+      result[key] = value;
+    } else {
+      let current = result;
+      for (let i = 0; i < parts.length - 1; i++) {
+        const part = parts[i];
+        if (!(part in current)) {
+          current[part] = {};
+        }
+        current = current[part] as Record<string, unknown>;
+      }
+      current[parts[parts.length - 1]] = value;
+    }
+  }
+  return result;
+}
+
 /** @internal */
 export async function aggregate<
   Q extends ObjectOrInterfaceDefinition,
@@ -91,11 +114,11 @@ export async function aggregate<
   const ret: AggregationResultsWithGroups<Q, AO["$select"], any> = result.data
     .map((entry) => {
       return {
-        $group: entry.group as any,
+        $group: convertFlatGroupToNested(entry.group) as any,
         ...aggregationToCountResult(entry),
         ...legacyToModernSingleAggregationResult(entry),
       };
-    }) as any; // fixme
+    }) as any;
 
   return ret as any; // FIXME
 }

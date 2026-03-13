@@ -17,6 +17,7 @@
 import type { OsdkObjectPropertyType } from "../Definitions.js";
 import type { ObjectOrInterfaceDefinition } from "../ontology/ObjectOrInterface.js";
 import type { CompileTimeMetadata } from "../ontology/ObjectTypeDefinition.js";
+import type { StructPropertyKeys } from "./AggregatableKeys.js";
 import type {
   OrderedAggregationClause,
   UnorderedAggregationClause,
@@ -30,9 +31,30 @@ type ExtractPropName<T extends string> = T extends `${infer PropName}:${string}`
 type ExtractMetricNameForPropName<T, PropName extends string> = T extends
   `${PropName}:${infer MetricName}` ? MetricName : never;
 
-export type AggregationResultsWithoutGroups<
+type ExtractStructFieldName<T extends string> = T extends
+  `${infer FieldName}:${string}` ? FieldName
+  : never;
+
+type ExtractStructMetricName<T extends string, FieldName extends string> =
+  T extends `${FieldName}:${infer MetricName}` ? MetricName : never;
+
+type StructAggregationResult<StructEntry> = StructEntry extends
+  Record<string, string> ? {
+    [FieldName in ExtractStructFieldName<keyof StructEntry & string>]: {
+      [
+        MetricName in ExtractStructMetricName<
+          keyof StructEntry & string,
+          FieldName
+        >
+      ]: MetricName extends "approximateDistinct" | "exactDistinct" ? number
+        : number | undefined;
+    };
+  }
+  : never;
+
+type NonStructAggregationResults<
   Q extends ObjectOrInterfaceDefinition,
-  AC extends UnorderedAggregationClause<Q> | OrderedAggregationClause<Q>,
+  AC,
 > = {
   [PropName in ExtractPropName<keyof AC & string>]: PropName extends "$count"
     ? number
@@ -44,3 +66,17 @@ export type AggregationResultsWithoutGroups<
           >;
     };
 };
+
+type StructAggregationResults<
+  Q extends ObjectOrInterfaceDefinition,
+  AC,
+> = {
+  [P in StructPropertyKeys<Q> & keyof AC]: AC[P] extends Record<string, string>
+    ? StructAggregationResult<AC[P]>
+    : never;
+};
+
+export type AggregationResultsWithoutGroups<
+  Q extends ObjectOrInterfaceDefinition,
+  AC extends UnorderedAggregationClause<Q> | OrderedAggregationClause<Q>,
+> = NonStructAggregationResults<Q, AC> & StructAggregationResults<Q, AC>;

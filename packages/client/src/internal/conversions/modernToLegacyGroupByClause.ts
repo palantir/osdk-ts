@@ -19,7 +19,71 @@ import { DurationMapping } from "@osdk/api";
 import type {
   AggregationGroupByV2,
   AggregationRangeV2,
+  PropertyIdentifier,
 } from "@osdk/foundry.ontologies";
+
+function isGroupByValue(value: unknown): value is AllGroupByValues {
+  if (typeof value === "string" && value === "exact") {
+    return true;
+  }
+  if (typeof value === "object" && value != null) {
+    return "$exactWithLimit" in value
+      || "$exact" in value
+      || "$fixedWidth" in value
+      || "$ranges" in value
+      || "$duration" in value;
+  }
+  return false;
+}
+
+function convertGroupByValue(
+  propertyIdentifier: PropertyIdentifier,
+  type: AllGroupByValues,
+): AggregationGroupByV2[] {
+  if (type === "exact") {
+    return [{ type, propertyIdentifier }];
+  } else if ("$exactWithLimit" in type) {
+    return [
+      {
+        type: "exact",
+        propertyIdentifier,
+        maxGroupCount: type.$exactWithLimit,
+      },
+    ];
+  } else if ("$exact" in type) {
+    return [
+      {
+        type: "exact",
+        propertyIdentifier,
+        maxGroupCount: type.$exact?.$limit ?? undefined,
+        defaultValue: type.$exact.$defaultValue ?? undefined,
+        includeNullValues: type.$exact.$includeNullValue === true
+          ? true
+          : undefined,
+      },
+    ];
+  } else if ("$fixedWidth" in type) {
+    return [{
+      type: "fixedWidth",
+      propertyIdentifier,
+      fixedWidth: type.$fixedWidth,
+    }];
+  } else if ("$ranges" in type) {
+    return [{
+      type: "ranges",
+      propertyIdentifier,
+      ranges: type.$ranges.map(range => convertRange(range)),
+    }];
+  } else if ("$duration" in type) {
+    return [{
+      type: "duration",
+      propertyIdentifier,
+      value: type.$duration[0],
+      unit: DurationMapping[type.$duration[1]],
+    }];
+  }
+  return [];
+}
 
 /** @internal */
 export function modernToLegacyGroupByClause(
@@ -28,52 +92,23 @@ export function modernToLegacyGroupByClause(
   if (!groupByClause) return [];
 
   return Object.entries(
-    groupByClause as Record<string, AllGroupByValues>,
+    groupByClause as Record<
+      string,
+      AllGroupByValues | Record<string, AllGroupByValues>
+    >,
   ).flatMap<AggregationGroupByV2>(([field, type]) => {
-    if (type === "exact") {
-      return [{ type, field }];
-    } else if ("$exactWithLimit" in type) {
-      {
-        return [
-          {
-            type: "exact",
-            field,
-            maxGroupCount: type.$exactWithLimit,
-          },
-        ];
-      }
-    } else if ("$exact" in type) {
-      return [
-        {
-          type: "exact",
-          field,
-          maxGroupCount: type.$exact?.$limit ?? undefined,
-          defaultValue: type.$exact.$defaultValue ?? undefined,
-          includeNullValues: type.$exact.$includeNullValue === true
-            ? true
-            : undefined,
-        },
-      ];
-    } else if ("$fixedWidth" in type) {
-      return [{
-        type: "fixedWidth",
-        field,
-        fixedWidth: type.$fixedWidth,
-      }];
-    } else if ("$ranges" in type) {
-      return [{
-        type: "ranges",
-        field,
-        ranges: type.$ranges.map(range => convertRange(range)),
-      }];
-    } else if ("$duration" in type) {
-      return [{
-        type: "duration",
-        field,
-        value: type.$duration[0],
-        unit: DurationMapping[type.$duration[1]],
-      }];
-    } else return [];
+    if (isGroupByValue(type)) {
+      return convertGroupByValue({ type: "property", apiName: "field" }, type);
+    }
+
+    return Object.entries(type as Record<string, AllGroupByValues>).flatMap(
+      ([structField, structType]) =>
+        convertGroupByValue({
+          type: "structField",
+          propertyApiName: field,
+          structFieldApiName: structField,
+        }, structType),
+    );
   });
 }
 

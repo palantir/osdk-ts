@@ -23,6 +23,22 @@ import type { AggregateObjectsResponseV2 } from "@osdk/foundry.ontologies";
 import invariant from "tiny-invariant";
 import type { ArrayElement } from "../../util/ArrayElement.js";
 
+function setNestedValue(
+  obj: Record<string, unknown>,
+  keys: string[],
+  value: unknown,
+): void {
+  let current = obj;
+  for (let i = 0; i < keys.length - 1; i++) {
+    const key = keys[i];
+    if (!(key in current)) {
+      current[key] = {};
+    }
+    current = current[key] as Record<string, unknown>;
+  }
+  current[keys[keys.length - 1]] = value;
+}
+
 /** @internal */
 export function legacyToModernSingleAggregationResult<
   Q extends ObjectOrInterfaceDefinition,
@@ -37,16 +53,14 @@ export function legacyToModernSingleAggregationResult<
         return accumulator;
       }
       invariant(
-        parts.length === 2,
-        "assumed we were getting a `${key}.${type}`",
+        parts.length >= 2,
+        "expected metric name to be at least `${key}.${type}`",
       );
-      const property = parts[0] as keyof AggregationResultsWithoutGroups<Q, AC>;
-      const metricType = parts[1];
-      if (!(property in accumulator)) {
-        accumulator[property] = {} as any; // fixme?
-      }
-      (accumulator[property] as any)[metricType] = curValue.value; // fixme?
-
+      setNestedValue(
+        accumulator as Record<string, unknown>,
+        parts,
+        curValue.value,
+      );
       return accumulator;
     },
     {} as AggregationResultsWithoutGroups<Q, AC>,

@@ -21,11 +21,34 @@ import type {
   PropertyKeys,
 } from "../ontology/ObjectOrInterface.js";
 import type { CompileTimeMetadata } from "../ontology/ObjectTypeDefinition.js";
+import type { StructPropertyKeys } from "./AggregatableKeys.js";
 import type { AggregationResultsWithoutGroups } from "./AggregationResultsWithoutGroups.js";
 import type {
   OrderedAggregationClause,
   UnorderedAggregationClause,
 } from "./AggregationsClause.js";
+
+type NonStructPropertyKeys<Q extends ObjectOrInterfaceDefinition> = Exclude<
+  PropertyKeys<Q>,
+  StructPropertyKeys<Q>
+>;
+
+type StructGroupResult<
+  StructGroupEntry,
+  Q extends ObjectOrInterfaceDefinition,
+  P extends PropertyKeys<Q>,
+> = StructGroupEntry extends Record<string, any> ? {
+    [FieldName in keyof StructGroupEntry & string]:
+      StructGroupEntry[FieldName] extends { $ranges: GroupByRange<infer T>[] }
+        ? { startValue: T; endValue: T }
+        : MaybeNullable<
+          StructGroupEntry[FieldName],
+          CompileTimeMetadata<Q>["properties"][P]["type"] extends
+            Record<string, infer V> ? V extends string ? string : V
+            : never
+        >;
+  }
+  : never;
 
 export type AggregationResultsWithGroups<
   Q extends ObjectOrInterfaceDefinition,
@@ -33,16 +56,20 @@ export type AggregationResultsWithGroups<
   G extends GroupByClause<Q> | undefined,
 > = (
   & {
-    $group: {
-      [P in keyof G & PropertyKeys<Q>]: G[P] extends
-        { $ranges: GroupByRange<infer T>[] } ? { startValue: T; endValue: T }
-        : MaybeNullable<
-          G[P],
-          OsdkObjectPropertyTypeNotUndefined<
-            CompileTimeMetadata<Q>["properties"][P]
-          >
-        >;
-    };
+    $group:
+      & {
+        [P in keyof G & NonStructPropertyKeys<Q>]: G[P] extends
+          { $ranges: GroupByRange<infer T>[] } ? { startValue: T; endValue: T }
+          : MaybeNullable<
+            G[P],
+            OsdkObjectPropertyTypeNotUndefined<
+              CompileTimeMetadata<Q>["properties"][P]
+            >
+          >;
+      }
+      & {
+        [P in keyof G & StructPropertyKeys<Q>]: StructGroupResult<G[P], Q, P>;
+      };
   }
   & AggregationResultsWithoutGroups<Q, A>
 )[];
