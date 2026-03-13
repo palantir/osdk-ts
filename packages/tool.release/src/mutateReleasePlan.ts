@@ -16,9 +16,19 @@
 
 import type { Release, ReleasePlan } from "@changesets/types";
 import chalk from "chalk";
+import micromatch from "micromatch";
 import path from "path";
 import { inc, parse } from "semver";
 import { FailedWithUserMessage } from "./FailedWithUserMessage.js";
+
+function isPackageIgnored(
+  packageName: string,
+  ignorePatterns: readonly string[],
+): boolean {
+  return ignorePatterns.some(pattern =>
+    micromatch.isMatch(packageName, pattern)
+  );
+}
 
 function isFirstMinorRelease(oldVersion: string, newVersion: string): boolean {
   const oldSemver = parse(oldVersion);
@@ -81,11 +91,17 @@ export function mutateReleasePlan(
   cwd: string,
   releasePlan: ReleasePlan,
   releaseType: "release branch" | "main",
+  ignorePatterns: readonly string[] = [],
 ): void {
   let bulkErrorMsg = "";
   for (const changeSet of releasePlan.changesets) {
     let errorStarted = false;
     for (const release of changeSet.releases) {
+      // Skip ignored packages
+      if (isPackageIgnored(release.name, ignorePatterns)) {
+        continue;
+      }
+
       if (releaseType === "main" && release.type === "patch") {
         release.type = "minor";
       } else if (
@@ -126,7 +142,19 @@ export function mutateReleasePlan(
     );
   }
 
-  for (const q of releasePlan.releases) {
+  const ignoredIndexes = new Set<number>();
+  for (let i = 0; i < releasePlan.releases.length; i++) {
+    if (isPackageIgnored(releasePlan.releases[i].name, ignorePatterns)) {
+      ignoredIndexes.add(i);
+    }
+  }
+
+  for (let i = 0; i < releasePlan.releases.length; i++) {
+    if (ignoredIndexes.has(i)) {
+      continue;
+    }
+
+    const q = releasePlan.releases[i];
     if (releaseType === "main" && q.type === "patch") {
       q.type = "minor";
       const suffix = q.newVersion.split("-")[1];
@@ -137,4 +165,8 @@ export function mutateReleasePlan(
       }
     }
   }
+
+  releasePlan.releases = releasePlan.releases.filter((_, index) =>
+    !ignoredIndexes.has(index)
+  );
 }
