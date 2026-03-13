@@ -1,5 +1,11 @@
 # @osdk/react-components-styles
 
+## 0.2.0-beta.10
+
+### Minor Changes
+
+- 05618c3: Add validation state to editable cell
+
 ## 0.2.0-beta.9
 
 ### Minor Changes
