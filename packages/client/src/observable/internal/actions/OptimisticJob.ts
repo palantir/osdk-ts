@@ -21,7 +21,7 @@ import { type Changes } from "../Changes.js";
 import { createOptimisticId, type OptimisticId } from "../OptimisticId.js";
 import type { Store } from "../Store.js";
 
-export class OptimisticJob {
+class OptimisticJob {
   context: OptimisticBuilder;
   getResult: () => Promise<Changes>;
   #result!: Promise<Changes>;

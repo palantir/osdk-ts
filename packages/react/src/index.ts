@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+// wipe-track ./intellisense.test.helpers/useOsdkObjectsWithPivot
+// wipe-track ./intellisense.test.helpers/useOsdkObjectsWithProperties
+// wipe-track ./intellisense.test.helpers/useOsdkObjectsWithRids
+
 /**
  * @module @osdk/react
  */

@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import type { CompileTimeMetadata, QueryDefinition } from "@osdk/api";
-import type { QueryReturnType } from "../queries/types.js";
 import type { Status } from "./ObservableClient/common.js";
 
 export interface FunctionPayload<T = unknown> {
@@ -24,7 +22,3 @@ export interface FunctionPayload<T = unknown> {
   lastUpdated: number;
   error?: Error;
 }
-
-export interface TypedFunctionPayload<Q extends QueryDefinition<any>>
-  extends FunctionPayload<QueryReturnType<CompileTimeMetadata<Q>["output"]>>
-{}

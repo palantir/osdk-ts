@@ -91,7 +91,7 @@ export function modernToLegacyWhereClause<
 }
 
 /** @internal */
-export function modernToLegacyWhereClauseInner<
+function modernToLegacyWhereClauseInner<
   T extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
 >(

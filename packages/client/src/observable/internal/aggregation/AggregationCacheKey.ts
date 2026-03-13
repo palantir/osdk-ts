@@ -25,7 +25,6 @@ import type { Rdp } from "../RdpCanonicalizer.js";
 import type { SimpleWhereClause } from "../SimpleWhereClause.js";
 import type { AggregationQuery } from "./AggregationQuery.js";
 
-export const TYPE_IDX = 0;
 export const API_NAME_IDX = 1;
 export const WIRE_OBJECT_SET_IDX = 2;
 export const WHERE_IDX = 3;

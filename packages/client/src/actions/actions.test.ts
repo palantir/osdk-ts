@@ -770,11 +770,3 @@ describe("ActionResponse remapping", () => {
     ]);
   });
 });
-
-function wrapper<R>(fn: () => R): typeof fn {
-  return () => fn();
-}
-
-async function example() {
-  await wrapper(async () => Promise.resolve("hi"))();
-}

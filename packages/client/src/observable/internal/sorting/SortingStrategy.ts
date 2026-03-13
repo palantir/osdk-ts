@@ -96,7 +96,7 @@ export class OrderBySortingStrategy implements SortingStrategy {
  * @param orderBy - The order by clause
  * @returns Array of sort functions
  */
-export function createOrderBySortFns(
+function createOrderBySortFns(
   orderBy: Canonical<Record<string, "asc" | "desc" | undefined>>,
 ): ObjectInterfaceComparer[] {
   return Object.entries(orderBy).map(([key, order]) => {

@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+// wipe-track ./intellisense.test.helpers/callsQueryAcceptsObject
+// wipe-track ./intellisense.test.helpers/orderBySuggestionIsRight
+// wipe-track ./intellisense.test.helpers/showsObjectPropertyJsdoc
+
 /* eslint-disable @typescript-eslint/no-deprecated */
 
 export { isOk } from "@osdk/api";

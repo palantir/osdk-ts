@@ -194,27 +194,12 @@ async function getTsServerPath() {
   return tsServerPath;
 }
 
-export function isEvent(m: unknown): m is s.protocol.Event {
-  return !!(m && typeof m === "object" && "type" in m
-    && m.type === "event");
-}
-
-export function isResponse(m: unknown): m is s.protocol.Response {
+function isResponse(m: unknown): m is s.protocol.Response {
   return !!(m && typeof m === "object" && "type" in m
     && m.type === "response");
 }
 
-export function isProjectLoadingStart(
-  m: unknown,
-): m is s.protocol.ProjectLoadingStartEvent {
-  return isEvent(m) && m.event === "projectLoadingStart";
-}
-export function isProjectLoadingEnd(
-  m: unknown,
-): m is s.protocol.ProjectLoadingStartEvent {
-  return isEvent(m) && m.event === "projectLoadingFinish";
-}
-export function isQuickInfoResponse(
+function isQuickInfoResponse(
   m: unknown,
   requestSeq?: number,
 ): m is s.protocol.QuickInfoResponse {

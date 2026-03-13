@@ -14,6 +14,13 @@
  * limitations under the License.
  */
 
+// wipe-track ./OsdkObjectFrom
+// wipe-track ./aggregate/BaseFilter
+// wipe-track ./aggregate/Just
+// wipe-track ./object/FetchPageResult
+// wipe-track ./object/Result
+// wipe-track ./ontology/ObjectTypeDefinition
+
 export type { ActionReturnTypeForOptions } from "./actions/ActionReturnTypeForOptions.js";
 export type {
   ActionEditResponse,

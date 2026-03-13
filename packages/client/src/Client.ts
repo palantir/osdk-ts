@@ -25,7 +25,6 @@ import type {
   ObjectTypeDefinition,
   QueryDefinition,
   QueryMetadata,
-  VersionBound,
 } from "@osdk/api";
 import type {
   Experiment,
@@ -36,19 +35,9 @@ import type { SharedClient } from "@osdk/shared.client2";
 import type { ActionSignatureFromDef } from "./actions/applyAction.js";
 import type { MinimalClient } from "./MinimalClientContext.js";
 import type { QuerySignatureFromDef } from "./queries/types.js";
-import type { SatisfiesSemver } from "./SatisfiesSemver.js";
 
 // eslint-disable-next-line @typescript-eslint/consistent-type-imports
 type OldSharedClient = import("@osdk/shared.client").SharedClient;
-
-export type CheckVersionBound<Q> = Q extends VersionBound<infer V> ? (
-    SatisfiesSemver<V, MaxOsdkVersion> extends true ? Q
-      : Q & {
-        [ErrorMessage]:
-          `Your SDK requires a semver compatible version with ${V}. You have ${MaxOsdkVersion}. Update your package.json`;
-      }
-  )
-  : Q;
 
 export interface Client extends SharedClient, OldSharedClient {
   <Q extends ObjectTypeDefinition>(
@@ -95,9 +84,3 @@ export interface Client extends SharedClient, OldSharedClient {
 // DO NOT EXPORT FROM PACKAGE
 /** @internal */
 export const additionalContext: unique symbol = Symbol("additionalContext");
-
-// BEGIN: THIS IS GENERATED CODE. DO NOT EDIT.
-const MaxOsdkVersion = "2.8.0";
-// END: THIS IS GENERATED CODE. DO NOT EDIT.
-export type MaxOsdkVersion = typeof MaxOsdkVersion;
-const ErrorMessage: unique symbol = Symbol("ErrorMessage");

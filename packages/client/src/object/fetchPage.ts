@@ -422,22 +422,6 @@ export async function fetchPage<
 }
 
 /** @internal */
-export async function fetchPageWithErrors<
-  Q extends ObjectOrInterfaceDefinition,
-  L extends PropertyKeys<Q>,
-  R extends boolean,
-  S extends NullabilityAdherence,
-  T extends boolean,
->(
-  client: MinimalClient,
-  objectType: Q,
-  args: FetchPageArgs<Q, L, R, any, S, T>,
-  objectSet: ObjectSet = resolveBaseObjectSetType(objectType),
-): Promise<Result<FetchPageResult<Q, L, R, S, T>>> {
-  return fetchPageWithErrorsInternal(client, objectType, objectSet, args);
-}
-
-/** @internal */
 async function buildAndRemapRequestBody<
   Q extends ObjectOrInterfaceDefinition,
   L extends PropertyKeys<Q>,
@@ -564,7 +548,7 @@ async function applyFetchArgs<
 }
 
 /** @internal */
-export async function fetchObjectPage<
+async function fetchObjectPage<
   Q extends ObjectTypeDefinition,
   L extends PropertyKeys<Q>,
   R extends boolean,

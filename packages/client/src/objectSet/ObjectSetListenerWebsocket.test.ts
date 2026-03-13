@@ -45,7 +45,6 @@ import {
   it,
   vi,
 } from "vitest";
-import { z } from "zod";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 import { createMinimalClient } from "../createMinimalClient.js";
@@ -775,15 +774,6 @@ function addLoggerToApiServer(apiServer: SetupServer, logger: Logger) {
     apiServer.events.on(c as typeof eventNames[number], z.bind(undefined, c));
   }
 }
-
-const SubscribeMessage = z.object({
-  id: z.string(),
-  requests: z.array(z.object({
-    objectSet: z.object({ id: z.string() }),
-    propertySet: z.array(z.string()),
-    referenceSet: z.array(z.string()),
-  })),
-});
 
 class MessageEvent extends Event {
   data: string;

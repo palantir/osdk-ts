@@ -29,10 +29,7 @@ import {
 import type { ConjureContext } from "conjure-lite";
 import invariant from "tiny-invariant";
 import type { MinimalClient } from "../MinimalClientContext.js";
-import {
-  createSimpleAsyncCache,
-  createSimpleCache,
-} from "../object/SimpleCache.js";
+import { createSimpleAsyncCache } from "../object/SimpleCache.js";
 import { makeConjureContext } from "../ontology/makeConjureContext.js";
 
 export interface ObjectPropertyMapping {
@@ -67,19 +64,13 @@ async function getOntologyVersionForRid(
   return cachedAllOntologies.ontologies[ontologyRid].currentOntologyVersion;
 }
 
-const strongMemoSync = <K, V>(fn: (entry: K) => V) =>
-  createSimpleCache<K, V>(new Map(), fn).get;
-
-const weakMemoSync = <K extends object, V>(fn: (entry: K) => V) =>
-  createSimpleCache<K, V>(new WeakMap() as any, fn).get; // FIXME
-
 const strongMemoAsync = <K, V>(fn: (entry: K) => Promise<V>) =>
   createSimpleAsyncCache<K, V>("strong", fn).get;
 
 const weakMemoAsync = <K, V>(fn: (entry: K) => Promise<V>) =>
   createSimpleAsyncCache<K, V>("weak", fn).get;
 
-export class MetadataClient {
+class MetadataClient {
   #client: MinimalClient;
   #ctx: ConjureContext;
   #logger: any;

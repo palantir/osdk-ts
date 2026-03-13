@@ -98,7 +98,7 @@ class QueryInvoker<Q extends QueryDefinition<any>>
 }
 
 /** @internal */
-export function createClientInternal(
+function createClientInternal(
   objectSetFactory: ObjectSetFactory<any, any>,
   transactionRid: string | undefined,
   flushEdits: (() => Promise<void>) | undefined,
