@@ -59,6 +59,7 @@ interface FilterListContentProps<D> {
     filterKey: string,
     state: FilterState,
   ) => void;
+  onFilterRemoved?: (filterKey: string) => void;
   renderInput: RenderFilterInput<D>;
   getFilterKey: (definition: D) => string;
   getFilterLabel: (definition: D) => string;
@@ -71,6 +72,7 @@ export function FilterListContent<D>({
   filterDefinitions,
   filterStates,
   onFilterStateChanged,
+  onFilterRemoved,
   renderInput,
   getFilterKey,
   getFilterLabel,
@@ -178,6 +180,11 @@ export function FilterListContent<D>({
     [internalOrder, sortableIds, getFilterLabel],
   );
 
+  const accessibility = useMemo(
+    () => ({ announcements }),
+    [announcements],
+  );
+
   if (!renderDefinitions || renderDefinitions.length === 0) {
     return (
       <div
@@ -201,7 +208,7 @@ export function FilterListContent<D>({
           onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}
           onDragCancel={handleDragCancel}
-          accessibility={{ announcements }}
+          accessibility={accessibility}
         >
           <SortableContext
             items={sortableIds}
@@ -222,6 +229,7 @@ export function FilterListContent<D>({
                   label={label}
                   filterState={state}
                   onFilterStateChanged={onFilterStateChanged}
+                  onFilterRemoved={onFilterRemoved}
                   renderInput={renderInput}
                 />
               );
@@ -239,6 +247,7 @@ export function FilterListContent<D>({
                 label={getFilterLabel(activeDefinition)}
                 filterState={filterStates.get(activeFilterKey)}
                 onFilterStateChanged={onFilterStateChanged}
+                onFilterRemoved={onFilterRemoved}
                 renderInput={renderInput}
               />
             )}
@@ -265,6 +274,7 @@ export function FilterListContent<D>({
             label={getFilterLabel(definition)}
             filterState={state}
             onFilterStateChanged={onFilterStateChanged}
+            onFilterRemoved={onFilterRemoved}
             renderInput={renderInput}
           />
         );
