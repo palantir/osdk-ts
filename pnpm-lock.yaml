@@ -3726,6 +3726,9 @@ importers:
       '@osdk/generator':
         specifier: workspace:*
         version: link:../generator
+      '@osdk/generator-utils':
+        specifier: workspace:*
+        version: link:../generator-utils
       '@osdk/shared.client.impl':
         specifier: workspace:*
         version: link:../shared.client.impl
@@ -3757,9 +3760,6 @@ importers:
         specifier: 17.7.2
         version: 17.7.2
     devDependencies:
-      '@osdk/generator-utils':
-        specifier: workspace:*
-        version: link:../generator-utils
       '@osdk/monorepo.api-extractor':
         specifier: workspace:~
         version: link:../monorepo.api-extractor
