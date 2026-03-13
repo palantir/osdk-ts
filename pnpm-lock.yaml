@@ -3712,10 +3712,10 @@ importers:
         specifier: workspace:*
         version: link:../client
       '@osdk/client.unstable':
-        specifier: workspace:~
+        specifier: workspace:*
         version: link:../client.unstable
       '@osdk/client.unstable.tpsa':
-        specifier: workspace:~
+        specifier: workspace:*
         version: link:../client.unstable.tpsa
       '@osdk/foundry.ontologies':
         specifier: catalog:foundry-platform-typescript
