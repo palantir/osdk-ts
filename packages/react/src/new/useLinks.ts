@@ -18,10 +18,15 @@ import type {
   LinkedType,
   LinkNames,
   ObjectOrInterfaceDefinition,
+  ObjectTypeDefinition,
 } from "@osdk/api";
 import type { Osdk, PropertyKeys, WhereClause } from "@osdk/client";
 import type { ObserveLinks } from "@osdk/client/unstable-do-not-use";
 import React from "react";
+import {
+  OSDK_HOOK_METADATA,
+  type OsdkLinksMetadata,
+} from "./devtools-metadata.js";
 import { makeExternalStore } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
 
@@ -162,6 +167,25 @@ export function useLinks<
       ? objects
       : [objects];
   }, [objectsKey, objects]);
+
+  const __devtoolsMetadata = React.useRef<OsdkLinksMetadata | null>(null);
+  if (__devtoolsMetadata.current == null && objectsArray.length > 0) {
+    __devtoolsMetadata.current = {
+      [OSDK_HOOK_METADATA]: true,
+      hookType: "useLinks",
+      sourceObjectType: objectsArray[0].$objectType,
+      linkName: linkName as string,
+    };
+  }
+
+  React.useEffect(() => {
+    if (objectsArray.length > 0) {
+      observableClient.registerLinkHook?.(
+        [...objectsArray] as Osdk.Instance<ObjectTypeDefinition>[],
+        linkName,
+      );
+    }
+  }, [observableClient, objectsArray, linkName]);
 
   const { subscribe, getSnapShot } = React.useMemo(
     () => {

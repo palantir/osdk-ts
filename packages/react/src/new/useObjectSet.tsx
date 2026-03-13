@@ -19,6 +19,7 @@ import type {
   LinkNames,
   ObjectOrInterfaceDefinition,
   ObjectSet,
+  ObjectTypeDefinition,
   Osdk,
   PropertyKeys,
   SimplePropertyDef,
@@ -227,6 +228,12 @@ export function useObjectSet<
     orderBy: otherOptions.orderBy,
     select: otherOptions.$select,
   });
+
+  React.useEffect(() => {
+    observableClient.registerObjectSetHook?.(
+      baseObjectSet as ObjectSet<ObjectTypeDefinition>,
+    );
+  }, [observableClient, baseObjectSet]);
 
   const { subscribe, getSnapShot } = React.useMemo(
     () => {

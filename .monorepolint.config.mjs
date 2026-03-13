@@ -113,6 +113,7 @@ const archetypeRules = archetypes(
       "@psdk/examples.*",
       "@osdk/monorepo.*",
       "@osdk/react-components-storybook",
+      "@osdk/react-devtools",
     ],
     {
       ...LIBRARY_RULES,
