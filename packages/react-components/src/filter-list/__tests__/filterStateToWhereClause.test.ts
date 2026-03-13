@@ -125,7 +125,9 @@ describe("buildWhereClause", () => {
       [def, createNumberRangeState(18, 65)],
     );
     const result = buildWhereClause([def], filterStates, "and");
-    expect(result).toEqual({ age: { $and: [{ $gte: 18 }, { $lte: 65 }] } });
+    expect(result).toEqual({
+      $and: [{ age: { $gte: 18 } }, { age: { $lte: 65 } }],
+    });
   });
 
   it("includes $isNull with $or when includeNull", () => {
@@ -138,7 +140,27 @@ describe("buildWhereClause", () => {
       [def, createNumberRangeState(18, undefined, { includeNull: true })],
     );
     const result = buildWhereClause([def], filterStates, "and");
-    expect(result).toEqual({ age: { $or: [{ $gte: 18 }, { $isNull: true }] } });
+    expect(result).toEqual({
+      $or: [{ age: { $gte: 18 } }, { age: { $isNull: true } }],
+    });
+  });
+
+  it("builds $or with $and for NUMBER_RANGE min+max+includeNull", () => {
+    const def = createPropertyFilterDef(
+      "age",
+      "NUMBER_RANGE",
+      createNumberRangeState(18, 65, { includeNull: true }),
+    );
+    const filterStates = stateMap(
+      [def, createNumberRangeState(18, 65, { includeNull: true })],
+    );
+    const result = buildWhereClause([def], filterStates, "and");
+    expect(result).toEqual({
+      $or: [
+        { $and: [{ age: { $gte: 18 } }, { age: { $lte: 65 } }] },
+        { age: { $isNull: true } },
+      ],
+    });
   });
 
   it("builds date comparison for DATE_RANGE", () => {
@@ -154,12 +176,10 @@ describe("buildWhereClause", () => {
     );
     const result = buildWhereClause([def], filterStates, "and");
     expect(result).toEqual({
-      createdAt: {
-        $and: [
-          { $gte: minDate.toISOString() },
-          { $lte: maxDate.toISOString() },
-        ],
-      },
+      $and: [
+        { createdAt: { $gte: minDate.toISOString() } },
+        { createdAt: { $lte: maxDate.toISOString() } },
+      ],
     });
   });
 

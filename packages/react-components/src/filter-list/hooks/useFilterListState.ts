@@ -115,25 +115,24 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
 
   const setFilterState = useCallback(
     (filterKey: string, state: FilterState) => {
-      let newWhereClause: WhereClause<Q> | undefined;
+      let computedClause: WhereClause<Q> | undefined;
 
       setFilterStates((prev) => {
         const next = new Map(prev);
         next.set(filterKey, state);
-
-        newWhereClause = buildWhereClause(
+        computedClause = buildWhereClause(
           filterDefinitions,
           next,
           filterOperator,
           objectType,
         );
-
         return next;
       });
 
-      if (newWhereClause !== undefined) {
-        onFilterClauseChanged?.(newWhereClause);
+      if (computedClause !== undefined) {
+        onFilterClauseChanged?.(computedClause);
       }
+
       const definition = filterDefinitions?.find(
         (d) => getFilterKey(d) === filterKey,
       );
@@ -195,14 +194,14 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
   const reset = useCallback(() => {
     const initialStates = buildInitialStates(filterDefinitions);
     setFilterStates(initialStates);
-
-    const newWhereClause = buildWhereClause(
-      filterDefinitions,
-      initialStates,
-      filterOperator,
-      objectType,
+    onFilterClauseChanged?.(
+      buildWhereClause(
+        filterDefinitions,
+        initialStates,
+        filterOperator,
+        objectType,
+      ),
     );
-    onFilterClauseChanged?.(newWhereClause);
   }, [filterDefinitions, filterOperator, objectType, onFilterClauseChanged]);
 
   return useMemo(() => ({
