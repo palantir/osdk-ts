@@ -51,10 +51,6 @@
     cursor: var(--osdk-drag-handle-cursor-active);
   }
 
-  &:focus {
-    outline: none;
-  }
-
   &:focus-visible {
     outline: var(--osdk-focus-outline);
     outline-offset: var(--osdk-focus-visible-outline-offset);
@@ -88,10 +84,6 @@
     background: oklch(
       from var(--osdk-surface-background-color-danger-hover) l c h / 0.2
     );
-  }
-
-  &:focus {
-    outline: none;
   }
 
   &:focus-visible {
