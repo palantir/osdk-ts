@@ -30,6 +30,9 @@
   flex-shrink: 0;
 }
 
-.count {
+.itemCount {
+  font-family: var(--osdk-filter-multiselect-count-font-family);
+  font-size: var(--osdk-filter-multiselect-count-font-size);
   font-variant-numeric: tabular-nums;
+  color: var(--osdk-filter-multiselect-count-color);
 }

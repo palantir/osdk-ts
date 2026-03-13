@@ -15,57 +15,40 @@
  */
 
 import { Button } from "@base-ui/react/button";
-import type {
-  ObjectSet,
-  ObjectTypeDefinition,
-  PropertyKeys,
-  WhereClause,
-} from "@osdk/api";
 import classnames from "classnames";
 import React, { memo, useCallback } from "react";
 import { Combobox } from "../../../base-components/combobox/Combobox.js";
-import { usePropertyAggregation } from "../../hooks/usePropertyAggregation.js";
+import type { PropertyAggregationValue } from "../../types/AggregationTypes.js";
 import styles from "./MultiSelectInput.module.css";
 import sharedStyles from "./shared.module.css";
 
-interface MultiSelectInputProps<
-  Q extends ObjectTypeDefinition,
-  K extends PropertyKeys<Q>,
-> {
-  objectType: Q;
-  propertyKey: K;
+interface MultiSelectInputProps {
+  values: PropertyAggregationValue[];
+  isLoading: boolean;
+  error: Error | null;
   selectedValues: string[];
   onChange: (values: string[]) => void;
-  objectSet?: ObjectSet<Q>;
-  whereClause?: WhereClause<Q>;
   className?: string;
   style?: React.CSSProperties;
   placeholder?: string;
   maxDisplayedTags?: number;
   showClearAll?: boolean;
+  ariaLabel?: string;
 }
 
-function MultiSelectInputInner<
-  Q extends ObjectTypeDefinition,
-  K extends PropertyKeys<Q>,
->({
-  objectType,
-  propertyKey,
+function MultiSelectInputInner({
+  values,
+  isLoading,
+  error,
   selectedValues,
   onChange,
-  whereClause,
   className,
   style,
   placeholder = "Select values...",
   maxDisplayedTags = 3,
   showClearAll = true,
-}: MultiSelectInputProps<Q, K>): React.ReactElement {
-  const { data: values, isLoading, error } = usePropertyAggregation(
-    objectType,
-    propertyKey,
-    { where: whereClause },
-  );
-
+  ariaLabel = "Search values",
+}: MultiSelectInputProps): React.ReactElement {
   const handleValueChange = useCallback(
     (newValues: string[] | null) => {
       onChange(newValues ?? []);
@@ -146,7 +129,7 @@ function MultiSelectInputInner<
               placeholder={selectedValues.length > 0
                 ? `${selectedValues.length} selected`
                 : placeholder}
-              aria-label={`Search ${propertyKey} values`}
+              aria-label={ariaLabel}
             />
             {showClearAll && selectedValues.length > 0 && (
               <Combobox.Clear
@@ -165,7 +148,7 @@ function MultiSelectInputInner<
                   : values.map(({ value, count }) => (
                     <Combobox.Item key={value} value={value}>
                       <span>{value}</span>
-                      <span className={styles.count}>
+                      <span className={styles.itemCount}>
                         ({count.toLocaleString()})
                       </span>
                     </Combobox.Item>

@@ -1,5 +1,38 @@
 # @osdk/react-components
 
+## 0.2.0-beta.15
+
+### Minor Changes
+
+- 02a095b: Support select all in controlled mode
+
+### Patch Changes
+
+- Updated dependencies [c8384de]
+  - @osdk/client@2.8.0-beta.18
+  - @osdk/api@2.8.0-beta.18
+  - @osdk/react@0.10.0-beta.8
+
+## 0.2.0-beta.14
+
+### Minor Changes
+
+- fb9383c: Fix table crashes on remount
+
+## 0.2.0-beta.13
+
+### Minor Changes
+
+- 76ee40a: Fix column resize and value change ux
+- edbe438: FilterList base components with drag-and-drop sorting and tokenized styling
+
+### Patch Changes
+
+- Updated dependencies [8c30908]
+  - @osdk/client@2.8.0-beta.17
+  - @osdk/api@2.8.0-beta.17
+  - @osdk/react@0.10.0-beta.8
+
 ## 0.2.0-beta.12
 
 ### Minor Changes
