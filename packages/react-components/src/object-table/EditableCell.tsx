@@ -29,7 +29,11 @@ export interface EditableCellProps<TData extends RowData, CellValue = unknown> {
   cellId: string;
   dataType?: string;
   onCellEdit: (cellId: string, info: CellEditInfo<TData, CellValue>) => void;
-  onCellValidationError?: (cellId: string, errorMessage: string) => void;
+  onCellValidationError?: (
+    cellId: string,
+    error: string,
+  ) => void;
+  clearCellValidationError?: (cellId: string) => void;
   validationError?: string;
   originalRowData: TData;
   rowId: string;
@@ -58,12 +62,12 @@ function valueToString(value: unknown): string {
   return String(value as string | number | boolean | symbol | bigint);
 }
 
-function parseValueByType(
+function parseValueByType<CellValue = unknown>(
   value: string,
   dataType?: string,
-): unknown {
+): CellValue | null {
   if (!dataType || !NUMBER_TYPES.includes(dataType)) {
-    return value;
+    return value as unknown as CellValue;
   }
 
   if (value === "") {
@@ -73,10 +77,10 @@ function parseValueByType(
   const parsedNumber = Number(value);
 
   if (isNaN(parsedNumber)) {
-    return value;
+    return value as unknown as CellValue;
   }
 
-  return parsedNumber;
+  return parsedNumber as unknown as CellValue;
 }
 
 const VALIDATION_ERROR_MESSAGE = "Validation error";
@@ -88,6 +92,7 @@ function EditableCellInner<TData extends RowData, CellValue = unknown>({
   dataType,
   onCellEdit,
   onCellValidationError,
+  clearCellValidationError,
   originalRowData,
   rowId,
   columnId,
@@ -98,6 +103,15 @@ function EditableCellInner<TData extends RowData, CellValue = unknown>({
     valueToString(currentValue),
   );
   const isCancelled = useRef(false);
+  const validationAbortControllerRef = useRef<AbortController | null>(null);
+
+  const abortController = useCallback(() => {
+    if (validationAbortControllerRef.current) {
+      validationAbortControllerRef.current.abort();
+      validationAbortControllerRef.current = null;
+    }
+  }, []);
+
   const hasValidationError = validationError != null;
   const isEdited = currentValue !== initialValue;
 
@@ -105,57 +119,12 @@ function EditableCellInner<TData extends RowData, CellValue = unknown>({
     setInputValue(valueToString(currentValue));
   }, [currentValue]);
 
-  const validateAndCommit = useCallback((value: string) => {
-    // Do not commit the edit if it was cancelled with Escape key
-    if (isCancelled.current) {
-      isCancelled.current = false;
-      return;
-    }
-
-    const parsedValue = parseValueByType(value, dataType);
-
-    // If no validation function, commit immediately
-    if (!validateEdit) {
-      onCellEdit(cellId, {
-        rowId,
-        columnId,
-        newValue: parsedValue as CellValue,
-        oldValue: initialValue,
-        originalRowData,
-      });
-      return;
-    }
-
-    // Perform async validation
-    validateEdit(parsedValue).then(
-      (errorMessage) => {
-        if (errorMessage) {
-          onCellValidationError?.(cellId, errorMessage);
-        } else {
-          onCellEdit(cellId, {
-            rowId,
-            columnId,
-            newValue: parsedValue as CellValue,
-            oldValue: initialValue,
-            originalRowData,
-          });
-        }
-      },
-      () => {
-        onCellValidationError?.(cellId, VALIDATION_ERROR_MESSAGE);
-      },
-    );
-  }, [
-    initialValue,
-    onCellEdit,
-    onCellValidationError,
-    cellId,
-    dataType,
-    rowId,
-    columnId,
-    originalRowData,
-    validateEdit,
-  ]);
+  useEffect(() => {
+    // Cleanup abort controller on unmount
+    return () => {
+      abortController();
+    };
+  }, [abortController]);
 
   const handleBlur = useCallback(() => {
     // Do not commit the edit if it was cancelled with Escape key
@@ -164,12 +133,71 @@ function EditableCellInner<TData extends RowData, CellValue = unknown>({
       return;
     }
 
-    validateAndCommit(inputValue);
-  }, [inputValue, validateAndCommit]);
+    // Cancel any in-flight validation
+    abortController();
+
+    const parsedValue = parseValueByType<CellValue>(inputValue, dataType);
+
+    onCellEdit(cellId, {
+      rowId,
+      columnId,
+      newValue: parsedValue,
+      oldValue: initialValue,
+      originalRowData,
+    });
+
+    if (validateEdit) {
+      // Create new AbortController for this validation
+      const abortController = new AbortController();
+      validationAbortControllerRef.current = abortController;
+
+      const validationPromise = validateEdit(parsedValue);
+
+      // Race between validation and abort
+      Promise.race([
+        validationPromise,
+        new Promise<string | undefined>((_, reject) => {
+          abortController.signal.addEventListener("abort", () => {
+            reject(new DOMException("Aborted", "AbortError"));
+          });
+        }),
+      ]).then(
+        (errorMessage) => {
+          if (!abortController.signal.aborted) {
+            if (errorMessage) {
+              onCellValidationError?.(cellId, errorMessage);
+            } else {
+              clearCellValidationError?.(cellId);
+            }
+          }
+        },
+        (error) => {
+          if (!abortController.signal.aborted && error.name !== "AbortError") {
+            onCellValidationError?.(cellId, VALIDATION_ERROR_MESSAGE);
+          }
+        },
+      );
+    }
+  }, [
+    abortController,
+    inputValue,
+    dataType,
+    onCellEdit,
+    cellId,
+    rowId,
+    columnId,
+    initialValue,
+    originalRowData,
+    validateEdit,
+    onCellValidationError,
+    clearCellValidationError,
+  ]);
 
   const handleChange = useCallback((value: string) => {
+    // Cancel any in-flight validation
+    abortController();
     setInputValue(value);
-  }, []);
+  }, [abortController]);
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {

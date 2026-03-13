@@ -61,7 +61,9 @@ export type ColumnDefinition<
    * @param value the current cell value
    * @returns a promise that resolves to an error message string if validation fails, or undefined if validation succeeds
    */
-  validateEdit?: (value: unknown) => Promise<string | undefined>;
+  validateEdit?: (
+    value: unknown,
+  ) => Promise<string | undefined>;
 
   renderCell?: (
     object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,

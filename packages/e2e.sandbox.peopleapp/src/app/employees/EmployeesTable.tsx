@@ -22,6 +22,12 @@ const columnDefinitions: Array<
     },
     columnName: "My Name",
     editable: true,
+    validateEdit: async (value: unknown) => {
+      if (typeof value !== "string" || !value.trim()) {
+        return "Name cannot be empty";
+      }
+      return undefined;
+    },
   },
   {
     locator: {

@@ -311,38 +311,6 @@ describe("useEditableTable", () => {
     expect(result.current.validationErrors.get(cellId)).toBe(errorMessage);
   });
 
-  it("clears validation error when cell is edited with valid value", () => {
-    const { result } = renderHook(() =>
-      useEditableTable({ editMode: "always" })
-    );
-    const cellId = getCellId({ rowId: "row-1", columnId: "col-1" });
-    const errorMessage = "Value must be positive";
-    const mockRowData = createMockObjectInstance("row-1");
-
-    // First add a validation error
-    act(() => {
-      result.current.onCellValidationError(cellId, errorMessage);
-    });
-
-    expect(result.current.validationErrors.has(cellId)).toBe(true);
-
-    // Then edit the cell with a valid value
-    const edit = {
-      rowId: "row-1",
-      columnId: "col-1",
-      newValue: "valid value",
-      oldValue: "old value",
-      originalRowData: mockRowData,
-    };
-
-    act(() => {
-      result.current.onCellEdit(cellId, edit);
-    });
-
-    // Validation error should be cleared
-    expect(result.current.validationErrors.has(cellId)).toBe(false);
-  });
-
   it("maintains validation errors for multiple cells", () => {
     const { result } = renderHook(() =>
       useEditableTable({ editMode: "always" })
@@ -402,5 +370,30 @@ describe("useEditableTable", () => {
 
     expect(result.current.validationErrors.get(cellId)).toBe("Second error");
     expect(result.current.validationErrors.size).toBe(1);
+  });
+
+  it("clears specific validation error when clearCellValidationError is called", () => {
+    const { result } = renderHook(() =>
+      useEditableTable({ editMode: "always" })
+    );
+    const cellId1 = getCellId({ rowId: "row-1", columnId: "col-1" });
+    const cellId2 = getCellId({ rowId: "row-2", columnId: "col-2" });
+
+    // Add validation errors
+    act(() => {
+      result.current.onCellValidationError(cellId1, "Error 1");
+      result.current.onCellValidationError(cellId2, "Error 2");
+    });
+
+    expect(result.current.validationErrors.size).toBe(2);
+
+    // Clear specific error
+    act(() => {
+      result.current.clearCellValidationError(cellId1);
+    });
+
+    expect(result.current.validationErrors.size).toBe(1);
+    expect(result.current.validationErrors.has(cellId1)).toBe(false);
+    expect(result.current.validationErrors.has(cellId2)).toBe(true);
   });
 });

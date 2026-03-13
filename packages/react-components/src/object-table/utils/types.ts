@@ -31,8 +31,8 @@ export interface CellEditInfo<
   TData extends RowData = unknown,
   CellValue = unknown,
 > extends CellIdentifier {
-  newValue: CellValue;
-  oldValue: CellValue;
+  newValue: CellValue | null;
+  oldValue: CellValue | null;
   originalRowData: TData;
 }
 
@@ -52,6 +52,10 @@ export interface EditableConfig<
   onSubmitEdits?: () => Promise<boolean>;
   clearEdits: () => void;
   editModeState: EditModeState;
-  onCellValidationError: (cellId: string, errorMessage: string) => void;
+  onCellValidationError: (
+    cellId: string,
+    error: string,
+  ) => void;
   validationErrors: Map<string, string>;
+  clearCellValidationError: (cellId: string) => void;
 }

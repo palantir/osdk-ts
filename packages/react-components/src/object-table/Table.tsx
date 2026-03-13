@@ -45,7 +45,11 @@ declare module "@tanstack/react-table" {
       cellId: string,
       info: CellEditInfo<TData, unknown>,
     ) => void;
-    onCellValidationError?: (cellId: string, errorMessage: string) => void;
+    onCellValidationError?: (
+      cellId: string,
+      error: string,
+    ) => void;
+    clearCellValidationError?: (cellId: string) => void;
     cellEdits?: Record<string, CellEditInfo<TData, unknown>>;
     isInEditMode?: boolean;
     validationErrors?: Map<string, string>;

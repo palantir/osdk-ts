@@ -87,11 +87,13 @@ export function useEditableTable<
   >(
     {},
   );
-  const [validationErrors, setValidationErrors] = useState<Map<string, string>>(
+  const [validationErrors, setValidationErrors] = useState<
+    Map<string, string>
+  >(
     new Map(),
   );
 
-  const clearValidationError = useCallback((cellId: string) => {
+  const clearCellValidationError = useCallback((cellId: string) => {
     setValidationErrors(prev => {
       const newErrors = new Map(prev);
       newErrors.delete(cellId);
@@ -120,12 +122,9 @@ export function useEditableTable<
         }));
       }
 
-      // Clear validation error for this cell when it's successfully edited
-      clearValidationError(cellId);
-
       onCellValueChanged?.(info);
     },
-    [onCellValueChanged, clearValidationError],
+    [onCellValueChanged],
   );
 
   const clearEdits = useCallback(() => {
@@ -139,10 +138,10 @@ export function useEditableTable<
   }, [cellEdits, onSubmitEdits]);
 
   const onCellValidationError = useCallback(
-    (cellId: string, errorMessage: string) => {
+    (cellId: string, error: string) => {
       setValidationErrors(prev => {
         const newErrors = new Map(prev);
-        newErrors.set(cellId, errorMessage);
+        newErrors.set(cellId, error);
         return newErrors;
       });
     },
@@ -161,5 +160,6 @@ export function useEditableTable<
     editModeState,
     onCellValidationError,
     validationErrors,
+    clearCellValidationError,
   };
 }
