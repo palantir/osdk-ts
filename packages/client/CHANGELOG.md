@@ -1,5 +1,13 @@
 # @osdk/client
 
+## 2.8.0-beta.19
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.19
+- @osdk/client.unstable@2.8.0-beta.19
+- @osdk/generator-converters@2.8.0-beta.19
+
 ## 2.8.0-beta.18
 
 ### Minor Changes

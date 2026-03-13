@@ -1,5 +1,11 @@
 # @osdk/react-components-styles
 
+## 0.2.0-beta.9
+
+### Minor Changes
+
+- 1135a27: Update Blueprint css import
+
 ## 0.2.0-beta.8
 
 ### Minor Changes
