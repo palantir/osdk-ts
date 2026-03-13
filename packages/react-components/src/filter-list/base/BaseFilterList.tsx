@@ -15,59 +15,40 @@
  */
 
 import { Button } from "@base-ui/react/button";
-import type { ObjectTypeDefinition } from "@osdk/api";
 import classnames from "classnames";
-import React, { useCallback, useMemo } from "react";
-import type {
-  FilterDefinitionUnion,
-  FilterListProps,
-} from "../FilterListApi.js";
-import { useFilterListState } from "../hooks/useFilterListState.js";
+import React from "react";
+import type { BaseFilterListProps } from "./BaseFilterListApi.js";
 import styles from "./FilterList.module.css";
 import { FilterListContent } from "./FilterListContent.js";
 import { FilterListHeader } from "./FilterListHeader.js";
 
-export function FilterList<Q extends ObjectTypeDefinition>(
-  props: FilterListProps<Q>,
+export function BaseFilterList<D>(
+  props: BaseFilterListProps<D>,
 ): React.ReactElement {
   const {
-    objectSet,
     title,
     titleIcon,
+    collapsed = false,
+    onCollapsedChange,
     filterDefinitions,
-    showResetButton = false,
+    filterStates,
+    onFilterStateChanged,
+    renderInput,
+    getFilterKey,
+    getFilterLabel,
+    activeFilterCount,
     onReset,
     onFilterAdded,
+    onFilterRemoved,
+    showResetButton = false,
     showActiveFilterCount = false,
     enableSorting,
     className,
     renderAddFilterButton,
   } = props;
 
-  const objectType = objectSet.$objectSetInternals.def;
-
-  const {
-    filterStates,
-    setFilterState,
-    whereClause,
-    activeFilterCount,
-    reset,
-  } = useFilterListState(props);
-
-  const handleReset = useCallback(() => {
-    reset();
-    onReset?.();
-  }, [reset, onReset]);
-
-  const visibleFilterDefinitions = useMemo(() => {
-    if (!filterDefinitions) return undefined;
-    return filterDefinitions.filter(
-      (def: FilterDefinitionUnion<Q>) => def.isVisible !== false,
-    );
-  }, [filterDefinitions]);
-
   const showHeader = title || titleIcon || showResetButton
-    || showActiveFilterCount;
+    || showActiveFilterCount || onCollapsedChange;
 
   const showAddButton = renderAddFilterButton != null || onFilterAdded != null;
 
@@ -80,24 +61,34 @@ export function FilterList<Q extends ObjectTypeDefinition>(
         <FilterListHeader
           title={title}
           titleIcon={titleIcon}
+          collapsed={collapsed}
+          onCollapsedChange={onCollapsedChange}
           showResetButton={showResetButton}
-          onReset={handleReset}
+          onReset={onReset}
           showActiveFilterCount={showActiveFilterCount}
           activeFilterCount={activeFilterCount}
         />
       )}
 
-      <FilterListContent
-        objectType={objectType}
-        objectSet={objectSet}
-        filterDefinitions={visibleFilterDefinitions}
-        filterStates={filterStates}
-        onFilterStateChanged={setFilterState}
-        whereClause={whereClause}
-        enableSorting={enableSorting}
-      />
+      <div
+        className={styles.contentWrapper}
+        data-collapsed={collapsed}
+      >
+        <div className={styles.contentInner}>
+          <FilterListContent
+            filterDefinitions={filterDefinitions}
+            filterStates={filterStates}
+            onFilterStateChanged={onFilterStateChanged}
+            onFilterRemoved={onFilterRemoved}
+            renderInput={renderInput}
+            getFilterKey={getFilterKey}
+            getFilterLabel={getFilterLabel}
+            enableSorting={enableSorting}
+          />
+        </div>
+      </div>
 
-      {showAddButton && (
+      {!collapsed && showAddButton && (
         <div className={styles.addButtonContainer}>
           {renderAddFilterButton
             ? renderAddFilterButton()

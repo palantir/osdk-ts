@@ -1,5 +1,18 @@
 # @osdk/react-components-storybook
 
+## 0.2.0-beta.6
+
+### Patch Changes
+
+- Updated dependencies [4da867d]
+  - @osdk/faux@0.6.0-beta.5
+
+## 0.2.0-beta.5
+
+### Minor Changes
+
+- 02a095b: Support select all in controlled mode
+
 ## 0.2.0-beta.4
 
 ### Minor Changes

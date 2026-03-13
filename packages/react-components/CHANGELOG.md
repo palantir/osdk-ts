@@ -1,5 +1,32 @@
 # @osdk/react-components
 
+## 0.2.0-beta.16
+
+### Minor Changes
+
+- 06095fa: Restructure FilterList into base and osdk layers
+- f6649a5: add collapsible panel, select all, include/exclude toggle, per-item colors, histogram display modes, and session persistence support to filter list
+- 1135a27: Update Blueprint css import
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.19
+- @osdk/client@2.8.0-beta.19
+- @osdk/react@0.10.0-beta.8
+
+## 0.2.0-beta.15
+
+### Minor Changes
+
+- 02a095b: Support select all in controlled mode
+
+### Patch Changes
+
+- Updated dependencies [c8384de]
+  - @osdk/client@2.8.0-beta.18
+  - @osdk/api@2.8.0-beta.18
+  - @osdk/react@0.10.0-beta.8
+
 ## 0.2.0-beta.14
 
 ### Minor Changes

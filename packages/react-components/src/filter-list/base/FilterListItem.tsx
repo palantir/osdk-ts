@@ -14,53 +14,51 @@
  * limitations under the License.
  */
 
+import { Button } from "@base-ui/react/button";
 import type {
   DraggableAttributes,
   DraggableSyntheticListeners,
 } from "@dnd-kit/core";
-import type { ObjectSet, ObjectTypeDefinition, WhereClause } from "@osdk/api";
 import classnames from "classnames";
 import React, { memo, useCallback } from "react";
 import { ErrorBoundary } from "../../shared/ErrorBoundary.js";
-import type { FilterDefinitionUnion } from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
-import { getFilterLabel } from "../utils/getFilterLabel.js";
+import { supportsExcluding } from "../utils/filterValues.js";
+import type { RenderFilterInput } from "./BaseFilterListApi.js";
 import { DragHandleIcon } from "./DragHandleIcon.js";
-import { FilterInput } from "./FilterInput.js";
+import { ExcludeIcon, IncludeIcon, RemoveIcon } from "./FilterIcons.js";
 import styles from "./FilterListItem.module.css";
 
-interface FilterListItemProps<Q extends ObjectTypeDefinition> {
-  objectType: Q;
-  objectSet: ObjectSet<Q>;
-  definition: FilterDefinitionUnion<Q>;
+interface FilterListItemProps<D> {
+  definition: D;
   filterKey: string;
+  label: string;
   filterState: FilterState | undefined;
   onFilterStateChanged: (
     filterKey: string,
     state: FilterState,
   ) => void;
-  whereClause: WhereClause<Q>;
+  onFilterRemoved?: (filterKey: string) => void;
+  renderInput: RenderFilterInput<D>;
   dragHandleAttributes?: DraggableAttributes;
   dragHandleListeners?: DraggableSyntheticListeners;
   className?: string;
   style?: React.CSSProperties;
 }
 
-function FilterListItemInner<Q extends ObjectTypeDefinition>({
-  objectType,
-  objectSet,
+function FilterListItemInner<D>({
   definition,
   filterKey,
+  label,
   filterState,
   onFilterStateChanged,
-  whereClause,
+  onFilterRemoved,
+  renderInput,
   dragHandleAttributes,
   dragHandleListeners,
   className,
   style,
-}: FilterListItemProps<Q>): React.ReactElement {
-  const label = getFilterLabel(definition);
-
+}: FilterListItemProps<D>): React.ReactElement {
   const handleFilterStateChanged = useCallback(
     (newState: FilterState) => {
       onFilterStateChanged(filterKey, newState);
@@ -68,37 +66,77 @@ function FilterListItemInner<Q extends ObjectTypeDefinition>({
     [filterKey, onFilterStateChanged],
   );
 
+  const handleToggleExclude = useCallback(
+    () => {
+      if (filterState) {
+        onFilterStateChanged(filterKey, {
+          ...filterState,
+          isExcluding: !filterState.isExcluding,
+        });
+      }
+    },
+    [filterKey, filterState, onFilterStateChanged],
+  );
+
+  const handleRemove = useCallback(
+    () => {
+      onFilterRemoved?.(filterKey);
+    },
+    [filterKey, onFilterRemoved],
+  );
+
+  const isExcluding = filterState?.isExcluding ?? false;
+  const showExcludeToggle = supportsExcluding(filterState);
+
   return (
     <div
       className={classnames(styles.filterItem, className)}
       style={style}
-      data-filter-type={definition.type}
+      data-excluding={isExcluding || undefined}
     >
       <div className={styles.itemHeader}>
         {dragHandleAttributes && (
-          <button
-            type="button"
+          <Button
             className={styles.dragHandle}
             aria-label={`Reorder ${label}`}
             {...dragHandleAttributes}
             {...dragHandleListeners}
           >
             <DragHandleIcon />
-          </button>
+          </Button>
         )}
         <span className={styles.itemLabel}>{label}</span>
+        {showExcludeToggle && (
+          <Button
+            className={styles.excludeToggle}
+            onClick={handleToggleExclude}
+            aria-pressed={isExcluding}
+            aria-label={isExcluding
+              ? "Switch to include mode"
+              : "Switch to exclude mode"}
+          >
+            {isExcluding ? <ExcludeIcon /> : <IncludeIcon />}
+          </Button>
+        )}
+        {onFilterRemoved && (
+          <Button
+            className={styles.removeButton}
+            onClick={handleRemove}
+            aria-label={`Remove ${label} filter`}
+          >
+            <RemoveIcon />
+          </Button>
+        )}
       </div>
 
       <div className={styles.itemContent}>
         <ErrorBoundary errorMessage="Error loading filter">
-          <FilterInput
-            objectType={objectType}
-            objectSet={objectSet}
-            definition={definition}
-            filterState={filterState}
-            onFilterStateChanged={handleFilterStateChanged}
-            whereClause={whereClause}
-          />
+          {renderInput({
+            definition,
+            filterKey,
+            filterState,
+            onFilterStateChanged: handleFilterStateChanged,
+          })}
         </ErrorBoundary>
       </div>
     </div>

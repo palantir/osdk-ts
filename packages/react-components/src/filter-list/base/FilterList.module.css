@@ -24,13 +24,34 @@
   gap: var(--osdk-filter-list-gap);
 }
 
+.contentWrapper {
+  display: grid;
+  grid-template-rows: 1fr;
+  transition: grid-template-rows var(--osdk-filter-list-collapse-transition);
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+.contentWrapper[data-collapsed="true"] {
+  grid-template-rows: 0fr;
+}
+
+.contentInner {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: var(--osdk-filter-list-gap);
+}
+
 .addButtonContainer {
   display: flex;
   justify-content: center;
   position: sticky;
   bottom: 0;
   padding-top: var(--osdk-filter-list-addButton-padding-top);
-  background: var(--osdk-filter-list-addButton-container-bg, var(--osdk-filter-list-bg));
+  background: var(--osdk-filter-list-addButton-container-bg);
 }
 
 .addButtonContainer > * {

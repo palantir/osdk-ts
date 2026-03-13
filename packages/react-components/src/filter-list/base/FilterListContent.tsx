@@ -36,13 +36,10 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import type { ObjectSet, ObjectTypeDefinition, WhereClause } from "@osdk/api";
 import classnames from "classnames";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import type { FilterDefinitionUnion } from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
-import { getFilterKey } from "../utils/getFilterKey.js";
-import { getFilterLabel } from "../utils/getFilterLabel.js";
+import type { RenderFilterInput } from "./BaseFilterListApi.js";
 import styles from "./FilterListContent.module.css";
 import { FilterListItem } from "./FilterListItem.js";
 import { SortableFilterListItem } from "./SortableFilterListItem.js";
@@ -55,35 +52,37 @@ const restrictToVerticalAxis: Modifier = ({ transform }) => ({
 const POINTER_ACTIVATION_CONSTRAINT = { distance: 8 } as const;
 const MODIFIERS: Modifier[] = [restrictToVerticalAxis];
 
-interface FilterListContentProps<Q extends ObjectTypeDefinition> {
-  objectType: Q;
-  objectSet: ObjectSet<Q>;
-  filterDefinitions?: Array<FilterDefinitionUnion<Q>>;
+interface FilterListContentProps<D> {
+  filterDefinitions?: Array<D>;
   filterStates: Map<string, FilterState>;
   onFilterStateChanged: (
     filterKey: string,
     state: FilterState,
   ) => void;
-  whereClause: WhereClause<Q>;
+  onFilterRemoved?: (filterKey: string) => void;
+  renderInput: RenderFilterInput<D>;
+  getFilterKey: (definition: D) => string;
+  getFilterLabel: (definition: D) => string;
   enableSorting?: boolean;
   className?: string;
   style?: React.CSSProperties;
 }
 
-export function FilterListContent<Q extends ObjectTypeDefinition>({
-  objectType,
-  objectSet,
+export function FilterListContent<D>({
   filterDefinitions,
   filterStates,
   onFilterStateChanged,
-  whereClause,
+  onFilterRemoved,
+  renderInput,
+  getFilterKey,
+  getFilterLabel,
   enableSorting,
   className,
   style,
-}: FilterListContentProps<Q>): React.ReactElement {
-  const [internalOrder, setInternalOrder] = useState<
-    Array<FilterDefinitionUnion<Q>>
-  >(() => filterDefinitions ?? []);
+}: FilterListContentProps<D>): React.ReactElement {
+  const [internalOrder, setInternalOrder] = useState<Array<D>>(
+    () => filterDefinitions ?? [],
+  );
   const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
 
   useEffect(() => {
@@ -99,7 +98,7 @@ export function FilterListContent<Q extends ObjectTypeDefinition>({
       enableSorting
         ? internalOrder.map((def) => getFilterKey(def))
         : [],
-    [enableSorting, internalOrder],
+    [enableSorting, internalOrder, getFilterKey],
   );
 
   const pointerSensor = useSensor(PointerSensor, {
@@ -119,7 +118,7 @@ export function FilterListContent<Q extends ObjectTypeDefinition>({
 
   const activeFilterKey = useMemo(
     () => activeDefinition ? getFilterKey(activeDefinition) : undefined,
-    [activeDefinition],
+    [activeDefinition, getFilterKey],
   );
 
   const handleDragStart = useCallback((event: DragStartEvent) => {
@@ -178,7 +177,12 @@ export function FilterListContent<Q extends ObjectTypeDefinition>({
         return `Cancelled dragging ${label} filter`;
       },
     }),
-    [internalOrder, sortableIds],
+    [internalOrder, sortableIds, getFilterLabel],
+  );
+
+  const accessibility = useMemo(
+    () => ({ announcements }),
+    [announcements],
   );
 
   if (!renderDefinitions || renderDefinitions.length === 0) {
@@ -204,7 +208,7 @@ export function FilterListContent<Q extends ObjectTypeDefinition>({
           onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}
           onDragCancel={handleDragCancel}
-          accessibility={{ announcements }}
+          accessibility={accessibility}
         >
           <SortableContext
             items={sortableIds}
@@ -213,19 +217,20 @@ export function FilterListContent<Q extends ObjectTypeDefinition>({
             {internalOrder.map((definition, index) => {
               const id = sortableIds[index];
               const filterKey = getFilterKey(definition);
+              const label = getFilterLabel(definition);
               const state = filterStates.get(filterKey);
 
               return (
                 <SortableFilterListItem
                   key={id}
                   id={id}
-                  objectType={objectType}
-                  objectSet={objectSet}
                   definition={definition}
                   filterKey={filterKey}
+                  label={label}
                   filterState={state}
                   onFilterStateChanged={onFilterStateChanged}
-                  whereClause={whereClause}
+                  onFilterRemoved={onFilterRemoved}
+                  renderInput={renderInput}
                 />
               );
             })}
@@ -237,13 +242,13 @@ export function FilterListContent<Q extends ObjectTypeDefinition>({
           >
             {activeDefinition && activeFilterKey && (
               <FilterListItem
-                objectType={objectType}
-                objectSet={objectSet}
                 definition={activeDefinition}
                 filterKey={activeFilterKey}
+                label={getFilterLabel(activeDefinition)}
                 filterState={filterStates.get(activeFilterKey)}
                 onFilterStateChanged={onFilterStateChanged}
-                whereClause={whereClause}
+                onFilterRemoved={onFilterRemoved}
+                renderInput={renderInput}
               />
             )}
           </DragOverlay>
@@ -264,13 +269,13 @@ export function FilterListContent<Q extends ObjectTypeDefinition>({
         return (
           <FilterListItem
             key={filterKey}
-            objectType={objectType}
-            objectSet={objectSet}
             definition={definition}
             filterKey={filterKey}
+            label={getFilterLabel(definition)}
             filterState={state}
             onFilterStateChanged={onFilterStateChanged}
-            whereClause={whereClause}
+            onFilterRemoved={onFilterRemoved}
+            renderInput={renderInput}
           />
         );
       })}

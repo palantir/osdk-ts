@@ -15,53 +15,42 @@
  */
 
 import { Button } from "@base-ui/react/button";
-import type {
-  ObjectSet,
-  ObjectTypeDefinition,
-  PropertyKeys,
-  WhereClause,
-} from "@osdk/api";
 import classnames from "classnames";
 import React, { memo, useCallback, useMemo, useState } from "react";
-import { usePropertyAggregation } from "../../hooks/usePropertyAggregation.js";
+import type { PropertyAggregationValue } from "../../types/AggregationTypes.js";
 import styles from "./ListogramInput.module.css";
 import sharedStyles from "./shared.module.css";
 
-interface ListogramInputProps<
-  Q extends ObjectTypeDefinition,
-  K extends PropertyKeys<Q>,
-> {
-  objectType: Q;
-  propertyKey: K;
+export type ListogramDisplayMode = "full" | "count" | "minimal";
+
+interface ListogramInputProps {
+  values: PropertyAggregationValue[];
+  maxCount: number;
+  isLoading: boolean;
+  error: Error | null;
   selectedValues: string[];
   onChange: (values: string[]) => void;
-  objectSet?: ObjectSet<Q>;
-  whereClause?: WhereClause<Q>;
+  colorMap?: Record<string, string>;
+  displayMode?: ListogramDisplayMode;
   className?: string;
   style?: React.CSSProperties;
   maxVisibleItems?: number;
 }
 
-function ListogramInputInner<
-  Q extends ObjectTypeDefinition,
-  K extends PropertyKeys<Q>,
->({
-  objectType,
-  propertyKey,
+function ListogramInputInner({
+  values,
+  maxCount,
+  isLoading,
+  error,
   selectedValues,
   onChange,
-  whereClause,
+  colorMap,
+  displayMode = "full",
   className,
   style,
   maxVisibleItems,
-}: ListogramInputProps<Q, K>): React.ReactElement {
+}: ListogramInputProps): React.ReactElement {
   const [isExpanded, setIsExpanded] = useState(false);
-
-  const { data: values, maxCount, isLoading, error } = usePropertyAggregation(
-    objectType,
-    propertyKey,
-    { where: whereClause },
-  );
 
   const selectedSet = useMemo(() => new Set(selectedValues), [selectedValues]);
 
@@ -110,27 +99,37 @@ function ListogramInputInner<
       {(values.length > 0 || isLoading) && (
         <div className={styles.container}>
           {displayValues.map(({ value, count }) => {
-            const isSelected = selectedSet.has(value);
             const percentage = maxCount > 0 ? (count / maxCount) * 100 : 0;
+            const perRowColor = colorMap?.[value];
 
             return (
               <Button
                 key={value}
-                type="button"
                 className={styles.row}
                 onClick={() => toggleValue(value)}
-                aria-pressed={isSelected}
+                aria-pressed={selectedSet.has(value)}
+                style={perRowColor || percentage > 0
+                  ? {
+                    "--osdk-filter-listogram-bar-fill-scale": percentage / 100,
+                    ...(perRowColor
+                      ? {
+                        "--osdk-filter-listogram-row-bar-color": perRowColor,
+                      }
+                      : undefined),
+                  } as React.CSSProperties
+                  : undefined}
               >
                 <span className={styles.label}>{value}</span>
-                <span className={styles.bar}>
-                  <span
-                    className={styles.barFill}
-                    style={{ width: `${percentage}%` }}
-                  />
-                </span>
-                <span className={styles.count}>
-                  {count.toLocaleString()}
-                </span>
+                {displayMode === "full" && (
+                  <span className={styles.bar}>
+                    <span className={styles.barFill} />
+                  </span>
+                )}
+                {displayMode !== "minimal" && (
+                  <span className={styles.count}>
+                    {count.toLocaleString()}
+                  </span>
+                )}
               </Button>
             );
           })}

@@ -1,6 +1,6 @@
 @import "@osdk/react-components-styles";
 @import "@osdk/react-components/styles.css";
-@import 'tailwindcss';
+@import "tailwindcss";
 
 /* ═══════════════════════════════════════════════════════════════════════════
    OFFICENETWORK DESIGN SYSTEM
@@ -63,8 +63,9 @@
   /* ─────────────────────────────────────────────────────────────────────────
      TYPOGRAPHY
      ───────────────────────────────────────────────────────────────────────── */
-  --officenetwork-font-sans: 'IBM Plex Sans', 'SF Pro Text', system-ui, sans-serif;
-  --officenetwork-font-mono: 'IBM Plex Mono', 'JetBrains Mono', monospace;
+  --officenetwork-font-sans:
+    "IBM Plex Sans", "SF Pro Text", system-ui, sans-serif;
+  --officenetwork-font-mono: "IBM Plex Mono", "JetBrains Mono", monospace;
 
   /* ─────────────────────────────────────────────────────────────────────────
      LEGACY VARIABLE MAPPINGS (for gradual migration)
@@ -96,9 +97,15 @@
 
   --osdk-surface-border-color-default: var(--officenetwork-border-default);
   --osdk-surface-background-color-default-rest: transparent;
-  --osdk-surface-background-color-default-hover: var(--officenetwork-bg-elevated);
-  --osdk-surface-background-color-default-active: var(--officenetwork-bg-overlay);
-  --osdk-surface-background-color-danger-rest: var(--officenetwork-status-error-bg);
+  --osdk-surface-background-color-default-hover: var(
+    --officenetwork-bg-elevated
+  );
+  --osdk-surface-background-color-default-active: var(
+    --officenetwork-bg-overlay
+  );
+  --osdk-surface-background-color-danger-rest: var(
+    --officenetwork-status-error-bg
+  );
   --osdk-surface-background-color-danger-hover: rgba(248, 81, 73, 0.2);
   --osdk-surface-background-color-danger-active: rgba(248, 81, 73, 0.25);
   --osdk-surface-color-hover-default: rgba(139, 148, 158, 0.08);
@@ -129,8 +136,8 @@
   --osdk-custom-color-light-gray-2: rgba(139, 148, 158, 0.2);
   --osdk-custom-color-primary-1: rgba(88, 166, 255, 0.4);
 
-  --osdk-palette-gray-100: #21262d;
-  --osdk-palette-gray-200: #30363d;
+  --osdk-palette-dark-gray-2: #21262d;
+  --osdk-palette-dark-gray-3: #30363d;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════

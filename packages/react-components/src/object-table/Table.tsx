@@ -38,14 +38,21 @@ declare module "@tanstack/react-table" {
     isVisible?: boolean;
     editable?: boolean;
     dataType?: string;
+    validateEdit?: (value: unknown) => Promise<string | undefined>;
   }
   interface TableMeta<TData extends RowData = unknown> {
     onCellEdit?: (
       cellId: string,
       info: CellEditInfo<TData, unknown>,
     ) => void;
+    onCellValidationError?: (
+      cellId: string,
+      error: string,
+    ) => void;
+    clearCellValidationError?: (cellId: string) => void;
     cellEdits?: Record<string, CellEditInfo<TData, unknown>>;
     isInEditMode?: boolean;
+    validationErrors?: Map<string, string>;
   }
 }
 
@@ -181,7 +188,7 @@ export function BaseTable<
                   headerGroups={headerGroups}
                   focusedRowId={focusedRowId}
                   setFocusedRowId={setFocusedRowId}
-                  isInEditMode={editableConfig?.editMode.isActive}
+                  isInEditMode={editableConfig?.editModeState.isActive}
                 />
               </>
             )}
@@ -191,7 +198,7 @@ export function BaseTable<
           <NonIdealState message={`Error Loading Data: ${error.message}`} />
         )}
       </div>
-      {hasEditableColumns && (
+      {hasEditableColumns && editableConfig && (
         <TableEditContainer
           editableConfig={editableConfig}
           focusedRowId={focusedRowId}
