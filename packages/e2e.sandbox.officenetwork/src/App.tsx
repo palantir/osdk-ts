@@ -152,7 +152,7 @@ function App() {
         setFilteredLevel(filteredLevel ? null : level);
       } else {
         setSelectedEmployee(employee);
-        setFilteredLevel(level);
+        setFilteredLevel(null);
         const employeeOfficeId = employee.primaryOfficeId;
         if (employeeOfficeId && offices) {
           const office = offices.find((o) =>
