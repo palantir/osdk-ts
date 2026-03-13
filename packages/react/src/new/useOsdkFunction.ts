@@ -130,12 +130,6 @@ export interface UseOsdkFunctionResult<Q extends QueryDefinition<unknown>> {
   refetch: () => void;
 }
 
-declare const process: {
-  env: {
-    NODE_ENV: "development" | "production";
-  };
-};
-
 /**
  * React hook for executing and observing OSDK functions.
  *

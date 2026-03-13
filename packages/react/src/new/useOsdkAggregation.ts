@@ -58,6 +58,7 @@ interface UseOsdkAggregationBaseOptions<
     where: WhereClause<T, RDPs>;
   }>;
 
+
   /**
    * Aggregation options including groupBy and select
    */
@@ -100,12 +101,6 @@ export interface UseOsdkAggregationResult<
   error: Error | undefined;
   refetch: () => void;
 }
-
-declare const process: {
-  env: {
-    NODE_ENV: "development" | "production";
-  };
-};
 
 /**
  * React hook for performing aggregations on OSDK object sets.
