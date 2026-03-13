@@ -43,9 +43,9 @@ export async function runAggregationsTest(): Promise<void> {
   // Should be 51 because it includes DC
   console.log(
     testAggregateCountNoGroup.$count,
-    testAggregateCountNoGroup.latitude.avg,
-    testAggregateCountNoGroup.latitude.max,
-    testAggregateCountNoGroup.latitude.min,
+    testAggregateCountNoGroup.latitude?.avg,
+    testAggregateCountNoGroup.latitude?.max,
+    testAggregateCountNoGroup.latitude?.min,
   );
   const testAggregateCountWithGroups = await client(BoundariesUsState)
     .aggregate({
@@ -116,9 +116,9 @@ export async function runAggregationsTest(): Promise<void> {
   console.log(
     testAggregateCountWithGroups[0].$group.usState,
     testAggregateCountWithGroups[0].$count,
-    testAggregateCountWithGroups[0].latitude.avg,
-    testAggregateCountWithGroups[0].latitude.max,
-    testAggregateCountWithGroups[0].latitude.min,
+    testAggregateCountWithGroups[0].latitude?.avg,
+    testAggregateCountWithGroups[0].latitude?.max,
+    testAggregateCountWithGroups[0].latitude?.min,
   );
 
   console.log(testAggregateCountWithGroups[0].$group.longitude);

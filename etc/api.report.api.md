@@ -199,7 +199,7 @@ export type AggregationResultsWithGroups<
 export type AggregationResultsWithoutGroups<
 	Q extends ObjectOrInterfaceDefinition,
 	AC extends UnorderedAggregationClause<Q> | OrderedAggregationClause<Q>
-> = { [PropName in ExtractPropName<keyof AC & string>] : PropName extends "$count" ? number : { [MetricName in ExtractMetricNameForPropName<keyof AC & string, PropName>] : MetricName extends "approximateDistinct" | "exactDistinct" ? number : OsdkObjectPropertyType<CompileTimeMetadata<Q>["properties"][PropName]> } };
+> = { [PropName in ExtractPropName<keyof AC & string>] : PropName extends "$count" ? number : { [MetricName in ExtractMetricNameForPropName<keyof AC & string, PropName>] : MetricName extends "approximateDistinct" | "exactDistinct" ? number : OsdkObjectPropertyType<CompileTimeMetadata<Q>["properties"][PropName]> | undefined } | undefined };
 
 // Warning: (ae-forgotten-export) The symbol "AggregatableKeys" needs to be exported by the entry point index.d.ts
 //

@@ -36,11 +36,19 @@ export type AggregationResultsWithoutGroups<
 > = {
   [PropName in ExtractPropName<keyof AC & string>]: PropName extends "$count"
     ? number
-    : {
-      [MetricName in ExtractMetricNameForPropName<keyof AC & string, PropName>]:
-        MetricName extends "approximateDistinct" | "exactDistinct" ? number
-          : OsdkObjectPropertyType<
-            CompileTimeMetadata<Q>["properties"][PropName]
-          >;
-    };
+    :
+      | {
+        [
+          MetricName in ExtractMetricNameForPropName<
+            keyof AC & string,
+            PropName
+          >
+        ]: MetricName extends "approximateDistinct" | "exactDistinct" ? number
+          :
+            | OsdkObjectPropertyType<
+              CompileTimeMetadata<Q>["properties"][PropName]
+            >
+            | undefined;
+      }
+      | undefined;
 };
