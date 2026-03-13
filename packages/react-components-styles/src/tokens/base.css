@@ -1,4 +1,4 @@
-@import "@blueprintjs/core/lib/css/blueprint.css";
+@import "@blueprintjs/core/lib/css/blueprint-design-tokens.css";
 
 /* Level 1 - Blueprint Tokens */
 :root {
@@ -44,6 +44,7 @@
   --osdk-typography-size-body-x-small: var(--bp-typography-size-body-x-small);
   --osdk-typography-size-body-small: var(--bp-typography-size-body-small);
   --osdk-typography-size-body-medium: var(--bp-typography-size-body-medium);
+  --osdk-typography-size-body-large: var(--bp-typography-size-body-large);
   --osdk-typography-line-height-default: var(
     --bp-typography-line-height-default
   );
@@ -76,10 +77,6 @@
   --osdk-intent-danger-active: var(--bp-intent-danger-active);
   --osdk-intent-danger-disabled: var(--bp-intent-danger-disabled);
   --osdk-intent-danger-foreground: var(--bp-intent-danger-foreground);
-
-  /* Blueprint token mappings - Iconography tokens */
-  --osdk-iconography-size-small: var(--bp-iconography-size-small);
-  --osdk-iconography-color-muted: var(--bp-iconography-color-muted);
 
   /* Blueprint token mappings - Emphasis tokens */
   --osdk-emphasis-focus-width: var(--bp-emphasis-focus-width);
@@ -173,5 +170,11 @@
   --osdk-drag-handle-cursor: grab;
   --osdk-drag-handle-cursor-active: grabbing;
 
+  /* Shared icon styling */
+  --osdk-iconography-size-small: var(--osdk-typography-size-body-large);
+  --osdk-iconography-color-muted: var(--osdk-intent-default-rest);
+
   font-family: var(--osdk-typography-family-default);
+  color: var(--osdk-typography-color-default-rest);
+  font-size: var(--osdk-typography-size-body-medium);
 }
