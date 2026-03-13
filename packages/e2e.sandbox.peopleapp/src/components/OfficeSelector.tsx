@@ -42,7 +42,6 @@ export function OfficeSelector({
       await $(modifyEmployee).applyAction({
         employee,
         primary_office_id,
-        emailPrimaryWork: employee.emailPrimaryWork ?? "",
       });
 
       setAssignSuccess(true);
