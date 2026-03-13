@@ -39,8 +39,8 @@
   "dependencies": {
     "@osdk/api": "workspace:*",
     "@osdk/client": "workspace:*",
-    "@osdk/client.unstable": "workspace:~",
-    "@osdk/client.unstable.tpsa": "workspace:~",
+    "@osdk/client.unstable": "workspace:*",
+    "@osdk/client.unstable.tpsa": "workspace:*",
     "@osdk/foundry.ontologies": "catalog:foundry-platform-typescript",
     "@osdk/foundry.thirdpartyapplications": "catalog:foundry-platform-typescript",
     "@osdk/generator": "workspace:*",
