@@ -250,7 +250,6 @@ const archetypeRules = archetypes(
       "@osdk/e2e.sandbox.todoapp",
       "@osdk/e2e.sandbox.peopleapp",
       "@osdk/e2e.sandbox.oauth.public.react-router",
-      "@osdk/e2e.sandbox.osdk-react",
     ],
     {
       ...INTERNAL_LIBRARY_RULES,
