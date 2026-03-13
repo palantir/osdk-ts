@@ -59,6 +59,7 @@ interface FilterListContentProps<D> {
     filterKey: string,
     state: FilterState,
   ) => void;
+  onFilterRemoved?: (filterKey: string) => void;
   renderInput: RenderFilterInput<D>;
   getFilterKey: (definition: D) => string;
   getFilterLabel: (definition: D) => string;
@@ -71,6 +72,7 @@ export function FilterListContent<D>({
   filterDefinitions,
   filterStates,
   onFilterStateChanged,
+  onFilterRemoved,
   renderInput,
   getFilterKey,
   getFilterLabel,
@@ -227,6 +229,7 @@ export function FilterListContent<D>({
                   label={label}
                   filterState={state}
                   onFilterStateChanged={onFilterStateChanged}
+                  onFilterRemoved={onFilterRemoved}
                   renderInput={renderInput}
                 />
               );
@@ -244,6 +247,7 @@ export function FilterListContent<D>({
                 label={getFilterLabel(activeDefinition)}
                 filterState={filterStates.get(activeFilterKey)}
                 onFilterStateChanged={onFilterStateChanged}
+                onFilterRemoved={onFilterRemoved}
                 renderInput={renderInput}
               />
             )}
@@ -270,6 +274,7 @@ export function FilterListContent<D>({
             label={getFilterLabel(definition)}
             filterState={state}
             onFilterStateChanged={onFilterStateChanged}
+            onFilterRemoved={onFilterRemoved}
             renderInput={renderInput}
           />
         );

@@ -34,6 +34,7 @@ export interface BaseFilterListProps<D> {
   activeFilterCount: number;
   onReset?: () => void;
   onFilterAdded?: () => void;
+  onFilterRemoved?: (filterKey: string) => void;
 
   collapsed?: boolean;
   onCollapsedChange?: (collapsed: boolean) => void;

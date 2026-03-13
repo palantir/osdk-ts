@@ -22,6 +22,29 @@ import { getFilterKey } from "./getFilterKey.js";
 
 type PropertyFilter = Record<string, unknown> | boolean | string | number;
 
+function liftCompoundPropertyFilter(
+  propertyKey: string,
+  filter: PropertyFilter,
+): Record<string, unknown> {
+  if (typeof filter === "object" && !Array.isArray(filter)) {
+    if ("$and" in filter && Array.isArray(filter.$and)) {
+      return {
+        $and: (filter.$and as PropertyFilter[]).map((f) =>
+          liftCompoundPropertyFilter(propertyKey, f)
+        ),
+      };
+    }
+    if ("$or" in filter && Array.isArray(filter.$or)) {
+      return {
+        $or: (filter.$or as PropertyFilter[]).map((f) =>
+          liftCompoundPropertyFilter(propertyKey, f)
+        ),
+      };
+    }
+  }
+  return { [propertyKey]: filter };
+}
+
 function filterStateToPropertyFilter(
   state: FilterState,
 ): PropertyFilter | undefined {
@@ -207,7 +230,9 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
       case "PROPERTY": {
         const filter = filterStateToPropertyFilter(state);
         if (filter !== undefined) {
-          clauses.push({ [definition.key]: filter });
+          clauses.push(
+            liftCompoundPropertyFilter(definition.key as string, filter),
+          );
         }
         break;
       }
