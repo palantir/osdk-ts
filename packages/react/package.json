@@ -25,6 +25,15 @@
       "require": "./build/cjs/public/experimental.cjs",
       "default": "./build/browser/public/experimental.js"
     },
+    "./shapes": {
+      "browser": "./build/browser/public/shapes.js",
+      "import": {
+        "types": "./build/types/public/shapes.d.ts",
+        "default": "./build/esm/public/shapes.js"
+      },
+      "require": "./build/cjs/public/shapes.cjs",
+      "default": "./build/browser/public/shapes.js"
+    },
     "./experimental/admin": {
       "browser": "./build/browser/public/experimental/admin.js",
       "import": {

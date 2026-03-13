@@ -175,6 +175,8 @@ export class BulkObjectLoader {
       });
 
     for (const { primaryKey, deferred } of arr) {
+      // fetchPage returns Osdk.Instance[] but ObjectHolder is the internal proxy type
+      // that wraps them - at runtime they are the same object
       const object = data.find(x => x.$primaryKey === primaryKey) as
         | ObjectHolder
         | undefined;
