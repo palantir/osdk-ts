@@ -16,6 +16,7 @@
 
 import type { RequestHandler } from "msw";
 import type { FauxFoundry } from "../FauxFoundry/FauxFoundry.js";
+import { getObjectsFromSet } from "../FauxFoundry/getObjectsFromSet.js";
 import { OntologiesV2 } from "../mock/index.js";
 
 export const createObjectSetHandlers = (
@@ -40,8 +41,59 @@ export const createObjectSetHandlers = (
    */
   OntologiesV2.OntologyObjectSets.aggregate(
     baseUrl,
-    async ({ request }) => {
-      throw new Error("Not implemented");
+    async ({ request, params }) => {
+      const body = await request.json();
+      const ds = fauxFoundry.getDataStore(params.ontologyApiName);
+      const objects = getObjectsFromSet(ds, body.objectSet, undefined);
+
+      const exactGroupBys = body.groupBy.filter(
+        (g): g is Extract<typeof g, { type: "exact" }> => g.type === "exact",
+      );
+
+      if (exactGroupBys.length !== body.groupBy.length) {
+        throw new Error(
+          "FauxFoundry aggregate: only 'exact' groupBy type is supported",
+        );
+      }
+
+      if (exactGroupBys.length === 0) {
+        return {
+          accuracy: "ACCURATE",
+          data: [{
+            group: {},
+            metrics: [{ name: "count", value: objects.length }],
+          }],
+        };
+      }
+
+      if (exactGroupBys.length > 1) {
+        throw new Error(
+          `FauxFoundry aggregate: multi-dimensional groupBy not yet implemented (got ${exactGroupBys.length} fields)`,
+        );
+      }
+
+      const { field, includeNullValues } = exactGroupBys[0];
+      const groups = new Map<string | null, number>();
+
+      for (const obj of objects) {
+        const rawValue = obj[field];
+        const key = rawValue == null ? null : String(rawValue);
+
+        if (key == null && !includeNullValues) {
+          continue;
+        }
+
+        groups.set(key, (groups.get(key) ?? 0) + 1);
+      }
+
+      const data = Array.from(groups.entries()).map(
+        ([key, count]: [string | null, number]) => ({
+          group: { [field]: key },
+          metrics: [{ name: "count", value: count }],
+        }),
+      );
+
+      return { accuracy: "ACCURATE", data };
     },
   ),
 
