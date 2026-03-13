@@ -1,0 +1,22 @@
+:root {
+  --osdk-form-field-gap: var(--osdk-surface-spacing);
+  --osdk-form-input-border-color: var(--osdk-surface-border-color-default);
+  --osdk-form-input-border-color-focus: var(--osdk-emphasis-focus-color);
+  --osdk-form-input-padding: var(--osdk-surface-spacing);
+  --osdk-form-input-border-radius: var(--osdk-surface-border-radius);
+  --osdk-form-label-color: var(--osdk-typography-color-default-rest);
+  --osdk-form-label-font-size: var(--osdk-typography-size-body-small);
+  --osdk-form-required-color: var(--osdk-typography-color-danger-rest);
+  --osdk-form-description-color: var(--osdk-typography-color-muted);
+  --osdk-form-footer-gap: var(--osdk-surface-spacing);
+
+  /* Form Container */
+  --osdk-form-container-bg: var(--osdk-background-primary);
+  --osdk-form-container-border: var(--osdk-surface-border);
+  --osdk-form-container-border-radius: var(--osdk-surface-border-radius);
+  --osdk-form-container-shadow: var(--osdk-surface-shadow-2);
+  --osdk-form-container-padding: calc(var(--osdk-surface-spacing) * 6);
+
+  /* Textarea */
+  --osdk-form-textarea-min-height: calc(var(--osdk-surface-spacing) * 20);
+}
