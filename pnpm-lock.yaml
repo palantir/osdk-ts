@@ -3711,6 +3711,12 @@ importers:
       '@osdk/client':
         specifier: workspace:*
         version: link:../client
+      '@osdk/client.unstable':
+        specifier: workspace:~
+        version: link:../client.unstable
+      '@osdk/client.unstable.tpsa':
+        specifier: workspace:~
+        version: link:../client.unstable.tpsa
       '@osdk/foundry.ontologies':
         specifier: catalog:foundry-platform-typescript
         version: 2.50.0
@@ -3751,12 +3757,6 @@ importers:
         specifier: 17.7.2
         version: 17.7.2
     devDependencies:
-      '@osdk/client.unstable':
-        specifier: workspace:~
-        version: link:../client.unstable
-      '@osdk/client.unstable.tpsa':
-        specifier: workspace:~
-        version: link:../client.unstable.tpsa
       '@osdk/generator-utils':
         specifier: workspace:*
         version: link:../generator-utils
