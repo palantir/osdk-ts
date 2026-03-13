@@ -26,7 +26,7 @@ import type { FilterState } from "../FilterListItemApi.js";
 import { supportsExcluding } from "../utils/filterValues.js";
 import type { RenderFilterInput } from "./BaseFilterListApi.js";
 import { DragHandleIcon } from "./DragHandleIcon.js";
-import { ExcludeIcon, IncludeIcon } from "./FilterIcons.js";
+import { ExcludeIcon, IncludeIcon, RemoveIcon } from "./FilterIcons.js";
 import styles from "./FilterListItem.module.css";
 
 interface FilterListItemProps<D> {
@@ -38,6 +38,7 @@ interface FilterListItemProps<D> {
     filterKey: string,
     state: FilterState,
   ) => void;
+  onFilterRemoved?: (filterKey: string) => void;
   renderInput: RenderFilterInput<D>;
   dragHandleAttributes?: DraggableAttributes;
   dragHandleListeners?: DraggableSyntheticListeners;
@@ -51,6 +52,7 @@ function FilterListItemInner<D>({
   label,
   filterState,
   onFilterStateChanged,
+  onFilterRemoved,
   renderInput,
   dragHandleAttributes,
   dragHandleListeners,
@@ -76,6 +78,13 @@ function FilterListItemInner<D>({
     [filterKey, filterState, onFilterStateChanged],
   );
 
+  const handleRemove = useCallback(
+    () => {
+      onFilterRemoved?.(filterKey);
+    },
+    [filterKey, onFilterRemoved],
+  );
+
   const isExcluding = filterState?.isExcluding ?? false;
   const showExcludeToggle = supportsExcluding(filterState);
 
@@ -83,7 +92,7 @@ function FilterListItemInner<D>({
     <div
       className={classnames(styles.filterItem, className)}
       style={style}
-      data-excluding={isExcluding}
+      data-excluding={isExcluding || undefined}
     >
       <div className={styles.itemHeader}>
         {dragHandleAttributes && (
@@ -107,6 +116,15 @@ function FilterListItemInner<D>({
               : "Switch to exclude mode"}
           >
             {isExcluding ? <ExcludeIcon /> : <IncludeIcon />}
+          </Button>
+        )}
+        {onFilterRemoved && (
+          <Button
+            className={styles.removeButton}
+            onClick={handleRemove}
+            aria-label={`Remove ${label} filter`}
+          >
+            <RemoveIcon />
           </Button>
         )}
       </div>

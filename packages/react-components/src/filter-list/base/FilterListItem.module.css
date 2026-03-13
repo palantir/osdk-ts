@@ -93,6 +93,29 @@
   color: var(--osdk-filter-item-exclude-toggle-color-active);
 }
 
+.removeButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--osdk-filter-item-exclude-toggle-padding);
+  margin-left: var(--osdk-surface-spacing);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-radius: var(--osdk-filter-item-exclude-toggle-border-radius);
+  color: var(--osdk-filter-item-exclude-toggle-color);
+
+  &:hover {
+    color: var(--osdk-filter-item-exclude-toggle-color-hover);
+    background: var(--osdk-filter-item-exclude-toggle-bg-hover);
+  }
+
+  &:focus-visible {
+    outline: var(--osdk-filter-input-focus-outline-width) solid var(--osdk-filter-input-focus-outline-color);
+    outline-offset: var(--osdk-filter-input-focus-outline-offset);
+  }
+}
+
 .filterItem[data-excluding] {
   border-left: var(--osdk-filter-item-exclude-border-width) solid var(--osdk-filter-item-exclude-border-color);
   padding-left: var(--osdk-filter-item-gap);
