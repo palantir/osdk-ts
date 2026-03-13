@@ -16,152 +16,125 @@
 
 import { Field } from "@base-ui/react/field";
 import { Form } from "@base-ui/react/form";
-import type { ActionMetadata } from "@osdk/api"; // TODO: we need to drop this too
-import classnames from "classnames";
+import { mapValues } from "lodash-es";
 import React from "react";
 import { ActionButton } from "../base-components/action-button/ActionButton.js";
+import { useControllableState } from "../shared/hooks/useControllableState.js";
+import type { BaseActionFormProps } from "./ActionFormApi.js";
 import styles from "./BaseActionForm.module.css";
+import type { BaseFormFieldDefinition } from "./FormFieldApi.js";
 import { FormFieldInput } from "./inputs/FormFieldInput.js";
 
-/** All supported form field types — no string catch-all */
-export type FormFieldType =
-  | ActionMetadata.DataType.BaseActionParameterTypes
-  | "object"
-  | "objectSet"
-  | "interface"
-  | "struct"
-  | "decimal"
-  | "float"
-  | "short"
-  | "byte"
-  | "textarea"
-  | "select";
-
-export interface BaseFormFieldConfig {
-  key: string;
-  label: string;
-  type: FormFieldType;
-  isRequired: boolean;
-  description?: string;
-  placeholder?: string;
-  options?: Array<{ label: string; value: string }>;
-}
-
-export interface BaseActionFormProps<
-  TData extends Record<string, unknown> = Record<string, unknown>,
-> {
-  title?: string;
-  fields: BaseFormFieldConfig[];
-  values: TData;
-  onFieldChange: <K extends keyof TData & string>(
-    key: K,
-    value: TData[K],
-  ) => void;
-  onSubmit: () => void;
-  onCancel?: () => void;
-  isSubmitting?: boolean;
-  isSubmitDisabled?: boolean;
-  error?: string;
-  className?: string;
-}
-
-export function BaseActionForm<
-  TData extends Record<string, unknown> = Record<string, unknown>,
->({
-  title,
-  fields,
-  values,
-  onFieldChange,
+export function BaseActionForm<S extends Record<string, unknown>>({
+  formTitle,
+  isSubmitDisabled,
+  formFieldDefinitionMap,
+  formState: maybeControlledFormState,
+  onFormStateChange: onControlledFormStateChange,
   onSubmit,
-  onCancel,
-  isSubmitting = false,
-  isSubmitDisabled = false,
-  error,
-  className,
-}: BaseActionFormProps<TData>): React.ReactElement {
-  const handleSubmit = React.useCallback(
-    (event: React.FormEvent) => {
-      event.preventDefault();
-      onSubmit();
+}: BaseActionFormProps<S>): React.ReactElement {
+  // mapValues loses per-key type correlation, but the shape is correct:
+  // each key gets the defaultValue from its own field definition
+  const defaultValues = React.useMemo(
+    () =>
+      mapValues(formFieldDefinitionMap, (v) => v?.defaultValue) as Partial<S>,
+    [formFieldDefinitionMap],
+  );
+
+  const [formState, setFormState] = useControllableState<Partial<S>>({
+    value: maybeControlledFormState,
+    defaultValue: defaultValues,
+    onChange: onControlledFormStateChange,
+  });
+
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+
+  const handleFieldChange = React.useCallback(
+    (fieldKey: string, value: unknown) => {
+      setFormState((prev) => ({ ...prev, [fieldKey]: value }));
     },
-    [onSubmit],
+    [setFormState],
+  );
+
+  const handleSubmit = React.useCallback(
+    async (event: React.FormEvent) => {
+      event.preventDefault();
+      if (onSubmit == null) {
+        return;
+      }
+      setIsSubmitting(true);
+      try {
+        await onSubmit(formState);
+      } finally {
+        setIsSubmitting(false);
+      }
+    },
+    [onSubmit, formState],
   );
 
   return (
-    <div className={classnames(styles.container, className)}>
-      <Form
-        onSubmit={handleSubmit}
-        className={styles.form}
-      >
-        {title != null && <h3 className={styles.title}>{title}</h3>}
-        {fields.map((field) => (
-          <FormField<TData>
-            key={field.key}
+    <Form onSubmit={handleSubmit} className={styles.form}>
+      {formTitle != null && <h3 className={styles.title}>{formTitle}</h3>}
+      {Object.entries(formFieldDefinitionMap).map(([key, field]) => {
+        return (
+          <FormField
+            key={key}
+            fieldKey={key}
             field={field}
-            value={values[field.key]}
-            onFieldChange={onFieldChange}
+            value={formState[key]}
+            onFieldChange={handleFieldChange}
           />
-        ))}
-        {error != null && <div className={styles.error}>{error}</div>}
-        <div className={styles.footer}>
-          {onCancel != null && (
-            <ActionButton variant="secondary" onClick={onCancel} type="button">
-              Cancel
-            </ActionButton>
-          )}
-          <ActionButton
-            variant="primary"
-            type="submit"
-            disabled={isSubmitDisabled || isSubmitting}
-          >
-            {isSubmitting
-              ? "Submitting..."
-              : "Submit"}
-          </ActionButton>
-        </div>
-      </Form>
-    </div>
+        );
+      })}
+      <div className={styles.footer}>
+        <ActionButton
+          variant="primary"
+          type="submit"
+          disabled={isSubmitDisabled || isSubmitting}
+        >
+          {isSubmitting ? "Submitting..." : "Submit"}
+        </ActionButton>
+      </div>
+    </Form>
   );
 }
 
-interface FormFieldProps<
-  TData extends Record<string, unknown> = Record<string, unknown>,
-> {
-  field: BaseFormFieldConfig;
+interface FormFieldProps {
+  fieldKey: string;
+  field: BaseFormFieldDefinition;
   value: unknown;
-  onFieldChange: <K extends keyof TData & string>(
-    key: K,
-    value: TData[K],
-  ) => void;
+  onFieldChange: (fieldKey: string, value: unknown) => void;
 }
 
-function FormField<
-  TData extends Record<string, unknown> = Record<string, unknown>,
->({ field, value, onFieldChange }: FormFieldProps<TData>): React.ReactElement {
+function FormField({
+  fieldKey,
+  field,
+  value,
+  onFieldChange,
+}: FormFieldProps): React.ReactElement {
   const handleChange = React.useCallback(
     (newValue: unknown) => {
-      onFieldChange(field.key, newValue as TData[string]);
+      onFieldChange(fieldKey, newValue);
     },
-    [onFieldChange, field.key],
+    [onFieldChange, fieldKey],
   );
 
   return (
-    <Field.Root name={field.key} className={styles.fieldRoot}>
-      <Field.Label className={styles.label}>
-        {field.label}
-        {field.isRequired && <span className={styles.required}>*</span>}
-      </Field.Label>
-      {field.description != null && (
+    <Field.Root name={fieldKey} className={styles.fieldRoot}>
+      {field.label != null && (
+        <Field.Label className={styles.label}>
+          {field.label}
+          {field.isRequired === true && (
+            <span className={styles.required}>*</span>
+          )}
+        </Field.Label>
+      )}
+      {field.helperText != null && (
         <Field.Description className={styles.description}>
-          {field.description}
+          {field.helperText}
         </Field.Description>
       )}
-      <FormFieldInput
-        field={field}
-        value={value}
-        onChange={handleChange}
-        className={field.type === "textarea" ? styles.textarea : styles.input}
-      />
+      <FormFieldInput field={field} value={value} onChange={handleChange} />
       <Field.Error className={styles.fieldError} />
     </Field.Root>
   );

@@ -14,76 +14,83 @@
  * limitations under the License.
  */
 
-import type { FormFieldType } from "./BaseActionForm.js";
+import type { FieldComponent } from "./FormFieldApi.js";
 
 /**
- * Converts a raw form value to the expected display type for a given field type.
+ * Converts a raw form value to the expected display type for a given field component.
  *
  * Overloads ensure TypeScript infers the exact return type — no `typeof`
  * narrowing needed after calling.
  */
 export function convertToFieldValue(
   value: unknown,
-  fieldType: "boolean",
+  fieldComponent: "RADIO_BUTTONS",
 ): boolean;
 export function convertToFieldValue(
   value: unknown,
-  fieldType:
-    | "integer"
-    | "long"
-    | "double"
-    | "float"
-    | "short"
-    | "byte"
-    | "decimal",
+  fieldComponent: "NUMBER_INPUT",
 ): number | null;
 export function convertToFieldValue(
   value: unknown,
-  fieldType: "select",
+  fieldComponent: "DROPDOWN",
 ): string | undefined;
 export function convertToFieldValue(
   value: unknown,
-  fieldType: "string" | "datetime" | "timestamp" | "textarea",
+  fieldComponent: "TEXT_INPUT" | "TEXT_AREA" | "DATETIME_PICKER",
 ): string;
 export function convertToFieldValue(
   value: unknown,
-  fieldType: FormFieldType,
+  fieldComponent: FieldComponent,
 ): string;
 export function convertToFieldValue(
   value: unknown,
-  fieldType: FormFieldType,
+  fieldComponent: FieldComponent,
 ): string | number | boolean | null | undefined {
-  switch (fieldType) {
-    case "boolean":
+  switch (fieldComponent) {
+    case "RADIO_BUTTONS":
       return value === true;
-    case "select":
+    case "DROPDOWN":
       return typeof value === "string" ? value : undefined;
-    case "string":
-    case "datetime":
-    case "timestamp":
-    case "textarea":
+    case "TEXT_INPUT":
+    case "TEXT_AREA":
+    case "DATETIME_PICKER":
       return typeof value === "string" ? value : "";
-    case "integer":
-    case "long":
-    case "double":
-    case "float":
-    case "short":
-    case "byte":
-    case "decimal":
+    case "NUMBER_INPUT":
       return typeof value === "number" ? value : null;
-    case "attachment":
-    case "marking":
-    case "mediaReference":
-    case "objectType":
-    case "geoshape":
-    case "geohash":
-    case "object":
-    case "objectSet":
-    case "interface":
-    case "struct":
+    case "OBJECT_SET":
+    case "FILE_PICKER":
+    case "CUSTOM":
       return typeof value === "string" ? value : "";
   }
 }
+
+/**
+ * All OSDK action parameter data types used by convertToActionValue.
+ */
+type ActionDataType =
+  | "boolean"
+  | "string"
+  | "integer"
+  | "long"
+  | "double"
+  | "float"
+  | "short"
+  | "byte"
+  | "decimal"
+  | "datetime"
+  | "timestamp"
+  | "attachment"
+  | "marking"
+  | "mediaReference"
+  | "objectType"
+  | "geoshape"
+  | "geohash"
+  | "object"
+  | "objectSet"
+  | "interface"
+  | "struct"
+  | "textarea"
+  | "select";
 
 /**
  * Converts a form field input value back to what `applyAction` expects.
@@ -121,11 +128,11 @@ export function convertToActionValue(
 ): string | undefined;
 export function convertToActionValue(
   value: unknown,
-  fieldType: FormFieldType,
+  fieldType: ActionDataType,
 ): unknown;
 export function convertToActionValue(
   value: unknown,
-  fieldType: FormFieldType,
+  fieldType: ActionDataType,
 ): unknown {
   switch (fieldType) {
     case "boolean":

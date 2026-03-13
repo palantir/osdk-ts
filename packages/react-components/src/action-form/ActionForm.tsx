@@ -14,98 +14,155 @@
  * limitations under the License.
  */
 
-import type { ActionDefinition } from "@osdk/api";
+import type {
+  ActionDefinition,
+  ActionMetadata,
+  CompileTimeMetadata,
+} from "@osdk/api";
 import { useOsdkAction, useOsdkMetadata } from "@osdk/react/experimental";
-import React from "react";
-import type { ActionFormProps } from "./ActionFormApi.js";
-import type { BaseFormFieldConfig } from "./BaseActionForm.js";
+import React, { type ReactElement, useCallback, useMemo } from "react";
+import type {
+  ActionFormProps,
+  BaseActionFormProps,
+  FormState,
+} from "./ActionFormApi.js";
 import { BaseActionForm } from "./BaseActionForm.js";
-import { convertToActionValue } from "./convertValue.js";
-import type { ActionFormValues } from "./FormFieldApi.js";
+import type {
+  BaseFormFieldDefinition,
+  FieldComponent,
+  FieldKey,
+} from "./FormFieldApi.js";
 
-export function ActionForm<T, Q extends ActionDefinition<T>>({
-  actionDefinition,
-  formTitle,
-  onSuccess,
-  onError,
-  isSubmitDisabled,
-}: ActionFormProps<Q>): React.ReactElement {
+export function ActionForm<T, Q extends ActionDefinition<T>>(
+  props: ActionFormProps<Q>,
+): ReactElement {
   const {
     loading,
     metadata,
     error: metadataError,
-  } = useOsdkMetadata(actionDefinition);
-  // console.log("This is the metadata", metadata);
+  } = useOsdkMetadata(props.actionDefinition);
+
+  if (loading) {
+    return <>TODO: Fill me</>;
+  } else if (metadataError != null || metadata == null) {
+    return <>TODO: Fill me</>;
+  }
+  return (
+    // TODO: Fix me later
+    <ActionFormWithActionMetadata {...props} actionMetadata={metadata as any} />
+  );
+}
+
+interface ActionFormWithActionMetadataProps<T, Q extends ActionDefinition<T>>
+  extends ActionFormProps<Q>
+{
+  actionMetadata: CompileTimeMetadata<Q>;
+}
+
+function ActionFormWithActionMetadata<T, Q extends ActionDefinition<T>>({
+  actionDefinition,
+  formTitle,
+  isSubmitDisabled,
+  actionMetadata,
+  formFieldDefinitionMap: suppliedFormFieldDefinitionMap,
+  onFormStateChange,
+  onSubmit,
+  onSuccess,
+  onError,
+}: ActionFormWithActionMetadataProps<T, Q>): ReactElement {
+  // Ok: here we want some internal components for loading state
   const { applyAction, isPending } = useOsdkAction(actionDefinition);
-  const [formValues, setFormValues] = React.useState<ActionFormValues<Q>>(
-    {} as ActionFormValues<Q>,
-  );
-  const [submitError, setSubmitError] = React.useState<string | undefined>();
 
-  const fields = React.useMemo<BaseFormFieldConfig[]>(() => {
-    if (metadata == null) {
-      return [];
+  const formFieldDefinitionMap = useMemo(() => {
+    const result: Record<string, BaseFormFieldDefinition> = {};
+    for (const [key, param] of Object.entries(actionMetadata.parameters)) {
+      const override = suppliedFormFieldDefinitionMap?.[key as FieldKey<Q>];
+      result[key] = {
+        ...override,
+        fieldComponent: override?.fieldComponent
+          ?? deriveDefaultFieldComponent(param),
+        label: override?.label ?? key,
+        isRequired: override?.isRequired ?? param.nullable === false,
+        helperText: override?.helperText ?? param.description,
+        placeholder: override?.placeholder,
+        isDisabled: override?.isDisabled,
+      } as BaseFormFieldDefinition;
     }
-    return Object.entries(metadata.parameters).map(([key, param]) => ({
-      key,
-      label: key,
-      type: typeof param.type === "string" ? param.type : param.type.type,
-      isRequired: param.nullable === false,
-      description: param.description,
-    }));
-  }, [metadata]);
+    return result as BaseActionFormProps<
+      FormState<Q>
+    >["formFieldDefinitionMap"];
+  }, [actionMetadata.parameters, suppliedFormFieldDefinitionMap]);
 
-  const title = formTitle ?? metadata?.displayName ?? metadata?.apiName;
+  const title = formTitle ?? actionMetadata.displayName
+    ?? actionMetadata.apiName;
 
-  const handleFieldChange = React.useCallback(
-    <K extends keyof ActionFormValues<Q> & string>(
-      key: K,
-      rawValue: ActionFormValues<Q>[K],
-    ) => {
-      const field = fields.find((f) => f.key === key);
-      const converted = field != null
-        ? convertToActionValue(rawValue, field.type)
-        : rawValue;
-      setFormValues((prev) => ({
-        ...prev,
-        [key]: converted,
-      }));
-    },
-    [fields],
-  );
-
-  const handleSubmit = React.useCallback(async () => {
-    setSubmitError(undefined);
-
-    try {
-      const result = await applyAction(formValues);
-      if (result != null) {
-        onSuccess?.(result);
+  const handleSubmit = useCallback(
+    async (formState: Partial<FormState<Q>>) => {
+      try {
+        if (onSubmit != null) {
+          await onSubmit(formState, (args) => applyAction(args));
+        } else {
+          const result = await applyAction(formState as FormState<Q>);
+          if (result != null) {
+            onSuccess?.(result);
+          }
+        }
+      } catch (error) {
+        onError?.({
+          type: "submission",
+          error: error instanceof Error ? error : new Error(String(error)),
+        });
       }
-    } catch (e: unknown) {
-      const errorMessage = e instanceof Error ? e.message : String(e);
-      setSubmitError(errorMessage);
-      onError?.({
-        type: "submission",
-        error: e instanceof Error ? e : new Error(errorMessage),
-      });
-    }
-  }, [applyAction, formValues, onSuccess, onError]);
+    },
+    [applyAction, onSuccess, onError, onSubmit],
+  );
 
-  const displayError = metadataError != null
-    ? `Failed to load action metadata: ${metadataError}`
-    : submitError;
+  const fieldCount = useMemo(
+    () => Object.keys(formFieldDefinitionMap).length,
+    [formFieldDefinitionMap],
+  );
 
   return (
-    <BaseActionForm<ActionFormValues<Q>>
-      title={title}
-      fields={fields}
-      values={formValues}
-      onFieldChange={handleFieldChange}
+    <BaseActionForm<FormState<Q>>
+      formTitle={title}
+      formFieldDefinitionMap={formFieldDefinitionMap}
+      onFormStateChange={onFormStateChange}
       onSubmit={handleSubmit}
-      isSubmitting={loading || isPending}
-      isSubmitDisabled={isSubmitDisabled ?? fields.length === 0}
-      error={displayError}
+      isSubmitDisabled={isSubmitDisabled ?? (isPending || fieldCount === 0)}
     />
   );
+}
+function deriveDefaultFieldComponent(
+  param: ActionMetadata.Parameter,
+): FieldComponent {
+  const paramType = typeof param.type === "string"
+    ? param.type
+    : param.type.type;
+  switch (paramType) {
+    case "boolean":
+      return "RADIO_BUTTONS";
+    case "string":
+      return "TEXT_INPUT";
+    case "datetime":
+    case "timestamp":
+      return "DATETIME_PICKER";
+    case "integer":
+    case "long":
+    case "double":
+      return "NUMBER_INPUT";
+    case "objectSet":
+      return "OBJECT_SET";
+    case "object":
+    case "interface":
+      return "DROPDOWN";
+    case "attachment":
+    case "mediaReference":
+      return "FILE_PICKER";
+    case "marking":
+    case "objectType":
+    case "geoshape":
+    case "geohash":
+    case "struct":
+      return "TEXT_INPUT";
+  }
 }

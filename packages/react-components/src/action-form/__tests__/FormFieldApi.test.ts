@@ -14,53 +14,107 @@
  * limitations under the License.
  */
 
-import type { ActionMetadata } from "@osdk/api";
+import type { ActionDefinition, ActionMetadata, ActionParam } from "@osdk/api";
 import { describe, expect, expectTypeOf, test } from "vitest";
 import { convertToActionValue } from "../convertValue.js";
-import type { ParamRuntimeValue } from "../FormFieldApi.js";
+import type { FieldValueType } from "../FormFieldApi.js";
 
-describe("ParamRuntimeValue", () => {
+interface MockAction extends ActionDefinition<never> {
+  __DefinitionMetadata: {
+    signatures: never;
+    type: "action";
+    apiName: "mockAction";
+    rid: "";
+    status: undefined;
+    modifiedEntities: {};
+    parameters: {
+      stringParam: {
+        type: "string";
+        nullable: false;
+        multiplicity: false;
+        description: undefined;
+      };
+      intParam: {
+        type: "integer";
+        nullable: false;
+        multiplicity: false;
+        description: undefined;
+      };
+      doubleParam: {
+        type: "double";
+        nullable: false;
+        multiplicity: false;
+        description: undefined;
+      };
+      boolParam: {
+        type: "boolean";
+        nullable: false;
+        multiplicity: false;
+        description: undefined;
+      };
+      datetimeParam: {
+        type: "datetime";
+        nullable: false;
+        multiplicity: false;
+        description: undefined;
+      };
+      timestampParam: {
+        type: "timestamp";
+        nullable: false;
+        multiplicity: false;
+        description: undefined;
+      };
+      objectParam: {
+        type: ActionMetadata.DataType.Object;
+        nullable: false;
+        multiplicity: false;
+        description: undefined;
+      };
+    };
+  };
+}
+
+describe("FieldValueType", () => {
   test("string → string", () => {
     expectTypeOf<
-      ParamRuntimeValue<{ type: "string"; nullable: false }>
+      FieldValueType<MockAction, "stringParam">
     >().toEqualTypeOf<string>();
   });
 
   test("integer → number", () => {
     expectTypeOf<
-      ParamRuntimeValue<{ type: "integer"; nullable: false }>
+      FieldValueType<MockAction, "intParam">
     >().toEqualTypeOf<number>();
   });
 
   test("double → number", () => {
     expectTypeOf<
-      ParamRuntimeValue<{ type: "double"; nullable: false }>
+      FieldValueType<MockAction, "doubleParam">
     >().toEqualTypeOf<number>();
   });
 
   test("boolean → boolean", () => {
     expectTypeOf<
-      ParamRuntimeValue<{ type: "boolean"; nullable: false }>
+      FieldValueType<MockAction, "boolParam">
     >().toEqualTypeOf<boolean>();
   });
 
   test("datetime → string", () => {
     expectTypeOf<
-      ParamRuntimeValue<{ type: "datetime"; nullable: false }>
+      FieldValueType<MockAction, "datetimeParam">
     >().toEqualTypeOf<string>();
   });
 
   test("timestamp → string", () => {
     expectTypeOf<
-      ParamRuntimeValue<{ type: "timestamp"; nullable: false }>
+      FieldValueType<MockAction, "timestampParam">
     >().toEqualTypeOf<string>();
   });
 
-  test("object type → unknown", () => {
-    type ObjectParam = ActionMetadata.DataType.Object;
+  test("object type → ActionParam.ObjectType", () => {
     expectTypeOf<
-      ParamRuntimeValue<{ type: ObjectParam; nullable: false }>
-    >().toEqualTypeOf<unknown>();
+      FieldValueType<MockAction, "objectParam">
+    >().toEqualTypeOf<ActionParam.ObjectType<never>>();
   });
 });
 

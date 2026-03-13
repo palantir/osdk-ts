@@ -51,9 +51,9 @@ export type {
   FormError,
   FormState,
 } from "../action-form/ActionFormApi.js";
+export type { BaseActionFormProps } from "../action-form/ActionFormApi.js";
 export { BaseActionForm } from "../action-form/BaseActionForm.js";
 export type {
-  BaseActionFormProps,
-  BaseFormFieldConfig,
-} from "../action-form/BaseActionForm.js";
-export type { FormFieldDefinition } from "../action-form/FormFieldApi.js";
+  BaseFormFieldDefinition,
+  FormFieldDefinition,
+} from "../action-form/FormFieldApi.js";

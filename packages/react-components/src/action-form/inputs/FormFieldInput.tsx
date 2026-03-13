@@ -15,8 +15,8 @@
  */
 
 import React from "react";
-import type { BaseFormFieldConfig } from "../BaseActionForm.js";
 import { convertToFieldValue } from "../convertValue.js";
+import type { BaseFormFieldDefinition } from "../FormFieldApi.js";
 import { BooleanInput } from "./BooleanInput.js";
 import { NumericInput } from "./NumericInput.js";
 import { SelectInput } from "./SelectInput.js";
@@ -24,7 +24,7 @@ import { StringInput } from "./StringInput.js";
 import { TextAreaInput } from "./TextAreaInput.js";
 
 interface FormFieldInputProps {
-  field: BaseFormFieldConfig;
+  field: BaseFormFieldDefinition;
   value: unknown;
   onChange: (value: unknown) => void;
   className?: string;
@@ -57,65 +57,53 @@ export function FormFieldInput({
     [onChange],
   );
 
-  switch (field.type) {
-    case "boolean":
+  const fieldComponent = field.fieldComponent ?? "TEXT_INPUT";
+
+  switch (fieldComponent) {
+    case "RADIO_BUTTONS":
       return (
         <BooleanInput
-          value={convertToFieldValue(value, "boolean")}
+          value={convertToFieldValue(value, "RADIO_BUTTONS")}
           onChange={booleanOnChange}
         />
       );
-    case "select":
+    case "DROPDOWN":
       return (
         <SelectInput
-          value={convertToFieldValue(value, "select")}
+          value={convertToFieldValue(value, "DROPDOWN")}
           onChange={stringOnChange}
-          options={field.options ?? []}
+          options={[]}
           placeholder={field.placeholder}
         />
       );
-    case "textarea":
+    case "TEXT_AREA":
       return (
         <TextAreaInput
-          value={convertToFieldValue(value, "textarea")}
+          value={convertToFieldValue(value, "TEXT_AREA")}
           onChange={stringOnChange}
-          isRequired={field.isRequired}
+          isRequired={field.isRequired === true}
           placeholder={field.placeholder}
           className={className}
         />
       );
-    case "integer":
-    case "long":
-    case "double":
-    case "float":
-    case "short":
-    case "byte":
-    case "decimal":
+    case "NUMBER_INPUT":
       return (
         <NumericInput
-          value={convertToFieldValue(value, field.type)}
+          value={convertToFieldValue(value, "NUMBER_INPUT")}
           onChange={numericOnChange}
           className={className}
         />
       );
-    case "string":
-    case "datetime":
-    case "timestamp":
-    case "attachment":
-    case "marking":
-    case "mediaReference":
-    case "objectType":
-    case "geoshape":
-    case "geohash":
-    case "object":
-    case "objectSet":
-    case "interface":
-    case "struct":
+    case "TEXT_INPUT":
+    case "DATETIME_PICKER":
+    case "OBJECT_SET":
+    case "FILE_PICKER":
+    case "CUSTOM":
       return (
         <StringInput
-          value={convertToFieldValue(value, field.type)}
+          value={convertToFieldValue(value, "TEXT_INPUT")}
           onChange={stringOnChange}
-          isRequired={field.isRequired}
+          isRequired={field.isRequired === true}
           placeholder={field.placeholder}
           className={className}
         />

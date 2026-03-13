@@ -14,54 +14,31 @@
  * limitations under the License.
  */
 
-import type {
-  ActionDefinition,
-  ActionEditResponse,
-  ActionReturnTypeForOptions,
-} from "@osdk/api";
-import type { ApplyActionOptions } from "@osdk/client";
+import type { ActionDefinition, ActionEditResponse } from "@osdk/api";
 import type {
   ActionParameters,
+  BaseFormFieldDefinition,
   FieldKey,
   FieldValueType,
-  FormFieldDefinition,
+  FormFieldDefinitionMap,
 } from "./FormFieldApi.js";
 
 /**
  * Props for the ActionForm component
  */
-export interface ActionFormProps<Q extends ActionDefinition<unknown>> {
+export interface ActionFormProps<Q extends ActionDefinition<unknown>>
+  extends
+    Omit<
+      BaseActionFormProps<FormState<Q>>,
+      "onSubmit" | "formFieldDefinitionMap"
+    >
+{
   actionDefinition: Q;
-
-  /**
-   * If not supplied, defaults to actionDef.displayName
-   */
-  formTitle?: string;
 
   /**
    * If not supplied, this will be constructed from ActionParameters
    */
-  formFieldDefinition?: Array<FormFieldDefinition<Q>>;
-
-  /**
-   * Called when a field value changed.
-   * Required when a field is in controlled mode, i.e. value is provided via formFieldDefinition.
-   *
-   * @param fieldKey The key of the changed field
-   * @param value the updated value of the field
-   */
-  onFieldValueChanged?: <K extends FieldKey<Q>>(
-    fieldKey: K,
-    value: FieldValueType<Q, K>,
-  ) => void;
-
-  /**
-   * Override to disable submit button
-   * If not provided, button is disabled when form is submitting
-   *
-   * @default false
-   */
-  isSubmitDisabled?: boolean;
+  formFieldDefinitionMap?: FormFieldDefinitionMap<Q>;
 
   /**
    * If supplied, this will override the default submit action
@@ -71,13 +48,12 @@ export interface ActionFormProps<Q extends ActionDefinition<unknown>> {
    * @param applyAction the function to execute the action
    * @returns a promise of the submission response
    */
-  onSubmit?: <OP extends ApplyActionOptions>(
-    formState: FormState<Q>,
+  onSubmit?: (
+    formState: Partial<FormState<Q>>,
     applyAction: (
       args: ActionParameters<Q>,
-      options?: OP,
-    ) => Promise<ActionReturnTypeForOptions<OP>>,
-  ) => Promise<ActionReturnTypeForOptions<OP>> | void;
+    ) => Promise<ActionEditResponse | undefined>,
+  ) => Promise<void> | void;
 
   /**
    * Called when the action is successfully executed from a non-validateOnly submission
@@ -92,6 +68,52 @@ export interface ActionFormProps<Q extends ActionDefinition<unknown>> {
    * @param error the error that occurred
    */
   onError?: (error: FormError) => void;
+}
+
+/**
+ * Props for the BaseActionForm component
+ */
+export interface BaseActionFormProps<
+  S extends Record<string, unknown> = Record<string, unknown>,
+> {
+  /**
+   * The form title
+   */
+  formTitle?: string;
+
+  /**
+   * Field definitions for each key in the form state
+   */
+  formFieldDefinitionMap: { [K in keyof S]: BaseFormFieldDefinition<S[K]> };
+
+  /**
+   * If provided, the form will operate in controlled mode
+   */
+  formState?: Partial<S>;
+
+  /**
+   * Called when the form state changes
+   * TODO: Maybe pass the prevState
+   *
+   * @param formState the updated form state
+   */
+  onFormStateChange?: (formState: Partial<S>) => void;
+
+  /**
+   * Override to disable submit button
+   * If not provided, button is disabled when form is submitting
+   *
+   * @default false
+   */
+  isSubmitDisabled?: boolean;
+
+  /**
+   * Called when the form is submitted
+   *
+   * @param formState all field values when onSubmit is called
+   * @returns a promise of the submission response
+   */
+  onSubmit?: (formState: Partial<S>) => Promise<void> | void;
 }
 
 /**

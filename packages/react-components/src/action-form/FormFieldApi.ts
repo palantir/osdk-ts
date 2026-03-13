@@ -17,6 +17,7 @@
 import type {
   ActionDefinition,
   ActionMetadata,
+  ActionParam,
   CompileTimeMetadata,
   DataValueClientToWire,
   ObjectSet,
@@ -25,40 +26,29 @@ import type {
 import type React from "react";
 
 /**
- * Extracts the runtime TS type for a single action parameter's metadata type.
- *
- * When the parameter's `type` is a key of `DataValueClientToWire` (e.g. "string",
- * "integer", "boolean"), the corresponding TypeScript type is returned.
- * Otherwise falls back to `unknown`.
- */
-export type ParamRuntimeValue<P extends ActionMetadata.Parameter> =
-  P["type"] extends keyof DataValueClientToWire
-    ? DataValueClientToWire[P["type"]]
-    : unknown;
-
-/**
  * Maps all action params to their runtime value types.
  * All properties are optional since the form fills incrementally.
  * Values use ParamRuntimeValue directly — no narrowing to primitives.
  */
 export type ActionFormValues<Q extends ActionDefinition<unknown>> = {
-  [K in FieldKey<Q>]?: ParamRuntimeValue<ActionParameters<Q>[K]>;
+  [K in FieldKey<Q>]?: FieldValueType<Q, K>;
 };
 
 /**
  * A form field definition specifies configuration for a single field
  */
-export interface FormFieldDefinition<
+export type FormFieldDefinition<
   Q extends ActionDefinition<unknown>,
   K extends FieldKey<Q> = FieldKey<Q>,
   V extends FieldValueType<Q, K> = FieldValueType<Q, K>,
-  C extends ValidFormFieldForPropertyType<V> = ValidFormFieldForPropertyType<V>,
-> {
-  /**
-   * The field's unique key
-   */
-  fieldKey: K;
+  D extends FieldDescriptorType<Q, K> = FieldDescriptorType<Q, K>,
+  C extends ValidFormFieldForPropertyType<D> = ValidFormFieldForPropertyType<D>,
+> = BaseFormFieldDefinition<V, C>;
 
+export interface BaseFormFieldDefinition<
+  V = unknown,
+  C extends keyof FormFieldPropsByType = keyof FormFieldPropsByType,
+> {
   /**
    * Display label for the field
    * If not provided, the form field will not show any label.
@@ -69,7 +59,7 @@ export interface FormFieldDefinition<
    * Current value of the field
    * If provided, the field operates in controlled mode
    */
-  value?: V;
+  // value?: V;
 
   /**
    * Default value of the field
@@ -131,6 +121,10 @@ export interface FormFieldDefinition<
    */
   fieldComponentProps?: Omit<FormFieldPropsByType[C], "key" | "onChange">;
 }
+
+export type FormFieldDefinitionMap<Q extends ActionDefinition<unknown>> = {
+  [K in FieldKey<Q>]?: FormFieldDefinition<Q, K>;
+};
 
 type ValidationError = { type: ValidationRule; error: string };
 
@@ -361,8 +355,26 @@ export type ActionParameters<Q extends ActionDefinition<unknown>> =
 
 /**
  * Extracts the value type for a specific parameter
+ *
+ * TODO: Re-use `BaseType`
  */
 export type FieldValueType<
+  Q extends ActionDefinition<unknown>,
+  K extends keyof ActionParameters<Q> = keyof ActionParameters<Q>,
+> = ActionParameters<Q>[K]["type"] extends
+  ActionMetadata.DataType.Object<infer T> ? ActionParam.ObjectType<T>
+  : ActionParameters<Q>[K]["type"] extends
+    ActionMetadata.DataType.ObjectSet<infer T> ? ActionParam.ObjectSetType<T>
+  : ActionParameters<Q>[K]["type"] extends
+    ActionMetadata.DataType.Struct<infer T> ? ActionParam.StructType<T>
+  : ActionParameters<Q>[K]["type"] extends keyof DataValueClientToWire
+    ? DataValueClientToWire[ActionParameters<Q>[K]["type"]]
+  : never;
+
+/**
+ * Extracts the parameter type descriptor for a specific action parameter.
+ */
+export type FieldDescriptorType<
   Q extends ActionDefinition<unknown> = ActionDefinition<unknown>,
   K extends keyof ActionParameters<Q> = keyof ActionParameters<Q>,
 > = ActionParameters<Q>[K]["type"];
@@ -384,19 +396,19 @@ export type FieldComponent =
 /**
  * Gets valid form field types for a given property type
  */
-export type ValidFormFieldForPropertyType<P extends FieldValueType> = P extends
-  "objectSet" ? "OBJECT_SET"
-  : P extends "object" ? "DROPDOWN"
-  : P extends "mediaReference" | "attachment" ? "FILE_PICKER"
-  : P extends "boolean" ? "RADIO_BUTTONS" | "DROPDOWN"
-  : P extends "string" ? "TEXT_INPUT" | "TEXT_AREA"
-  : P extends "datetime" | "timestamp" ? "DATETIME_PICKER"
-  : P extends
-    | "double"
-    | "integer"
-    | "long"
-    | "float"
-    | "short"
-    | "byte"
-    | "decimal" ? "NUMBER_INPUT"
-  : never;
+export type ValidFormFieldForPropertyType<P extends FieldDescriptorType> =
+  P extends "objectSet" ? "OBJECT_SET"
+    : P extends "object" ? "DROPDOWN"
+    : P extends "mediaReference" | "attachment" ? "FILE_PICKER"
+    : P extends "boolean" ? "RADIO_BUTTONS" | "DROPDOWN"
+    : P extends "string" ? "TEXT_INPUT" | "TEXT_AREA"
+    : P extends "datetime" | "timestamp" ? "DATETIME_PICKER"
+    : P extends
+      | "double"
+      | "integer"
+      | "long"
+      | "float"
+      | "short"
+      | "byte"
+      | "decimal" ? "NUMBER_INPUT"
+    : never;
