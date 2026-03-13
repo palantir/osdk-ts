@@ -168,12 +168,6 @@ export interface UseObjectSetResult<
   totalCount?: string;
 }
 
-declare const process: {
-  env: {
-    NODE_ENV: "development" | "production";
-  };
-};
-
 const OBJECT_TYPE_PLACEHOLDER = "$__OBJECT__TYPE__PLACEHOLDER";
 /**
  * React hook for observing and interacting with OSDK object sets.

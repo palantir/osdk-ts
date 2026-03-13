@@ -332,7 +332,9 @@ export class SpecificLinkQuery extends BaseListQuery<
           targetTypeKind = "object";
         }
 
-        if (!targetTypeApiName) return;
+        if (!targetTypeApiName) {
+          return;
+        }
 
         if (targetTypeApiName === objectType) {
           changes?.modified.add(this.cacheKey);
