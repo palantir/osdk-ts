@@ -606,7 +606,9 @@ export function linkPayloadContaining(
     ...("totalCount" in x
       ? { totalCount: x.totalCount }
       : {}),
-  } as SpecificLinkPayload;
+    linkedObjectsBySourcePrimaryKey: x.linkedObjectsBySourcePrimaryKey
+      ?? expect.anything(),
+  };
 }
 
 export function applyCustomMatchers(): void {
