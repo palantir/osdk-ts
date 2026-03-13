@@ -421,11 +421,23 @@ async function main(): Promise<void> {
             };
           }
         }
+        // linkTypeMetadata uses the nested format expected by the TS runtime:
+        // { [linkTypeId]: { [linkApiName]: {} } }
+        const linkTypeMetadata: Record<string, Record<string, object>> = {};
+        if (objData.linkTypes) {
+          for (const lt of objData.linkTypes) {
+            const linkTypeId = lt.linkTypeRid;
+            if (!linkTypeMetadata[linkTypeId]) {
+              linkTypeMetadata[linkTypeId] = {};
+            }
+            linkTypeMetadata[linkTypeId][lt.apiName] = {};
+          }
+        }
         objectTypeMetadata[apiName] = {
           objectTypeApiName: apiName,
           primaryKeyPropertyTypeId: objType.primaryKey,
           propertyTypeMetadata,
-          linkTypeMetadata: {},
+          linkTypeMetadata,
         };
       }
     }
