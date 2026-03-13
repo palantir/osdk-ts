@@ -115,13 +115,6 @@ afterAll(() => {
   vi.resetConfig();
 });
 
-const ANY_INIT_ENTRY = {
-  // cacheKey: expect.any(Object),
-  object: undefined,
-  lastUpdated: 0,
-  status: "init",
-};
-
 // eslint-disable-next-line @typescript-eslint/no-deprecated
 function fullTaskName(task?: Task): string {
   return task ? `${fullTaskName(task.suite)} > ${task.name}` : "";

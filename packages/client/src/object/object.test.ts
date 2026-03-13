@@ -26,7 +26,6 @@ import {
   LegacyFauxFoundry,
   startNodeApiServer,
   stubData,
-  withoutRid,
 } from "@osdk/shared.test";
 import { beforeAll, describe, expect, expectTypeOf, it } from "vitest";
 import { additionalContext, type Client } from "../Client.js";
@@ -36,18 +35,6 @@ import type {
 } from "../ontology/OntologyProvider.js";
 import { InterfaceDefinitions } from "../ontology/OntologyProvider.js";
 import { createOsdkObject } from "./convertWireToOsdkObjects/createOsdkObject.js";
-
-function asV2Object(o: any, includeRid?: boolean) {
-  o = includeRid ? { ...o } : withoutRid(o);
-  o.$apiName = o.__apiName;
-  o.$objectType = o.__apiName;
-  o.$primaryKey = o.__primaryKey;
-  o.$title = o.__title;
-  delete o.__apiName;
-  delete o.__primaryKey;
-  delete o.__title;
-  return o;
-}
 
 describe.each([
   "https://stack.palantir.com",

@@ -457,9 +457,6 @@ export function expectNoMoreCalls(
   expect(observer.error).not.toHaveBeenCalled();
 }
 
-function createSubscriptionHelper() {
-}
-
 export type MockedSingleSubCallback =
   & MockedObject<Observer<ObjectPayload | undefined>>
   & {

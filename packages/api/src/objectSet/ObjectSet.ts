@@ -70,11 +70,6 @@ type ExtractRdp<
   : D extends Record<string, SimplePropertyDef> ? D
   : {};
 
-type MaybeSimplifyPropertyKeys<
-  Q extends ObjectOrInterfaceDefinition,
-  L extends PropertyKeys<Q>,
-> = PropertyKeys<Q> extends L ? PropertyKeys<Q> : L & PropertyKeys<Q>;
-
 type SubSelectKeysHelper<
   Q extends ObjectOrInterfaceDefinition,
   L extends string,
