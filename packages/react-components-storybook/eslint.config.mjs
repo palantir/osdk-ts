@@ -22,11 +22,5 @@ export default [
   {
     ignores: ["build/**", "storybook-static/**", "public/**"],
   },
-  {
-    files: ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.mjs"],
-    rules: {
-      "header/header": "off",
-    },
-  },
   ...storybook.configs["flat/recommended"],
 ];

@@ -17,7 +17,7 @@
 // @ts-check
 
 import * as typescriptEslintParser from "@typescript-eslint/parser";
-import originalHeaderPlugin from "eslint-plugin-header";
+import headerPlugin from "@tony.ganchev/eslint-plugin-header";
 import * as importPlugin from "eslint-plugin-import";
 import unusedImports from "eslint-plugin-unused-imports";
 import * as tseslint from "typescript-eslint";
@@ -33,7 +33,7 @@ export default tseslint.config(
   tseslint.configs.base,
   {
     plugins: {
-      header: getHeaderPlugin(),
+      header: headerPlugin,
       import: importPlugin,
       "unused-imports": unusedImports,
     },
@@ -249,109 +249,3 @@ export default tseslint.config(
     ],
   },
 );
-
-// the header plugin is missing metadata that lets it work in 9 so we augment it here
-function getHeaderPlugin() {
-  return {
-    ...originalHeaderPlugin,
-    rules: {
-      "header": {
-        ...originalHeaderPlugin.rules.header,
-        meta: {
-          ...originalHeaderPlugin.rules.header.meta,
-          fixable: "whitespace",
-          schema: {
-            $ref: "#/definitions/options",
-            definitions: {
-              commentType: {
-                type: "string",
-                enum: ["block", "line"],
-              },
-              line: {
-                anyOf: [
-                  {
-                    type: "string",
-                  },
-                  {
-                    type: "object",
-                    properties: {
-                      pattern: {
-                        type: "string",
-                      },
-                      template: {
-                        type: "string",
-                      },
-                    },
-                    required: ["pattern"],
-                    additionalProperties: false,
-                  },
-                ],
-              },
-              headerLines: {
-                anyOf: [
-                  {
-                    $ref: "#/definitions/line",
-                  },
-                  {
-                    type: "array",
-                    items: {
-                      $ref: "#/definitions/line",
-                    },
-                  },
-                ],
-              },
-              numNewlines: {
-                type: "integer",
-                minimum: 0,
-              },
-              settings: {
-                type: "object",
-                properties: {
-                  lineEndings: {
-                    type: "string",
-                    enum: ["unix", "windows"],
-                  },
-                },
-                additionalProperties: false,
-              },
-              options: {
-                anyOf: [
-                  {
-                    type: "array",
-                    minItems: 1,
-                    maxItems: 2,
-                    items: [
-                      { type: "string" },
-                      { $ref: "#/definitions/settings" },
-                    ],
-                  },
-                  {
-                    type: "array",
-                    minItems: 2,
-                    maxItems: 3,
-                    items: [
-                      { $ref: "#/definitions/commentType" },
-                      { $ref: "#/definitions/headerLines" },
-                      { $ref: "#/definitions/settings" },
-                    ],
-                  },
-                  {
-                    type: "array",
-                    minItems: 3,
-                    maxItems: 4,
-                    items: [
-                      { $ref: "#/definitions/commentType" },
-                      { $ref: "#/definitions/headerLines" },
-                      { $ref: "#/definitions/numNewlines" },
-                      { $ref: "#/definitions/settings" },
-                    ],
-                  },
-                ],
-              },
-            },
-          },
-        },
-      },
-    },
-  };
-}
