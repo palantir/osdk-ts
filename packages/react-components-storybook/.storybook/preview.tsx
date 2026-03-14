@@ -17,7 +17,7 @@
 import { createClient } from "@osdk/client";
 import { OsdkProvider2 } from "@osdk/react/experimental";
 import { withThemeByDataAttribute } from "@storybook/addon-themes";
-import type { Preview } from "@storybook/react";
+import type { Preview } from "@storybook/react-vite";
 import { initialize, mswLoader } from "msw-storybook-addon";
 import { fauxFoundry, setupFauxFoundry } from "../src/mocks/fauxFoundry.js";
 import "./styles.css";
