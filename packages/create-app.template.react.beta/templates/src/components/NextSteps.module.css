@@ -35,14 +35,10 @@
 }
 
 .icon {
-  background-color: color-mix(
-    in srgb,
-    var(--bp-palette-gray-3) 15%,
-    transparent
-  );
-  border: 1px solid color-mix(in srgb, var(--bp-palette-black) 10%, transparent);
+  background-color: oklch(from var(--bp-palette-gray-3) l c h / 15%);
+  border: 1px solid oklch(from var(--bp-palette-black) l c h / 10%);
   border-radius: 30px;
-  color: var(--bp-palette-gray-1);
+  color: var(--bp-typography-color-muted);
   height: 34px;
   padding: calc(var(--bp-surface-spacing) * 2);
 }
