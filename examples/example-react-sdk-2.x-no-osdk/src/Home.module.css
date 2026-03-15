@@ -2,7 +2,6 @@
   display: flex;
   flex-direction: column;
   gap: calc(var(--bp-surface-spacing) * 15);
-  width: 800px;
   max-width: 800px;
   width: 100%;
 }

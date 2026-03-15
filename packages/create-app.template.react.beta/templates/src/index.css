@@ -4,11 +4,9 @@
 @import "@blueprintjs/icons/lib/css/blueprint-icons.css";
 
 :root {
-  color: #1c2127;
   font-family:
     "Source Sans Pro", system-ui, Avenir, Helvetica, Arial, sans-serif;
   font-synthesis: none;
-  font-weight: 400;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -23,7 +21,7 @@
 #root {
   margin: 0 auto;
   max-width: 1280px;
-  padding: 2rem;
+  padding: calc(var(--bp-surface-spacing) * 8);
 }
 
 body {
