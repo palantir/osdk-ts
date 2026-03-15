@@ -1,5 +1,7 @@
 # @osdk/react-components
 
+> **⚠️ Beta Release**: This package is currently in beta. Please use the latest beta version for the most up-to-date features and fixes.
+
 React components for building Foundry applications. These components are Ontology-aware — pass in OSDK entities, and they handle data loading, caching, and state management automatically.
 
 Built on top of [@osdk/react](../react), these components use OSDK hooks internally to provide ready-to-use UI elements. While @osdk/react gives you low-level hooks for data fetching, @osdk/react-components provides UI widgets for common patterns like tables and forms.
@@ -12,7 +14,7 @@ Run the command to install:
 - @osdk/react-components-styles - The default styles for the components
 
 ```sh
-npm install @osdk/react-components @osdk/react-components-styles
+npm install @osdk/react-components@beta @osdk/react-components-styles@beta
 ```
 
 **Peer Dependencies:**
@@ -77,7 +79,7 @@ The components that this package will provide are:
 
 | Component     | Description                                                                        | Documentation                  |
 | ------------- | ---------------------------------------------------------------------------------- | ------------------------------ |
-| `ObjectTable` | Displays an Object Set as a sortable, paginated table                              | [Guide](./docs/ObjectTable.md) |
+| `ObjectTable` | Displays an Object Set as a sortable, paginated table with inline editing support  | [Guide](./docs/ObjectTable.md) |
 | `FilterList`  | Visualize a high-level summary of objects data to allow users to filter that data. | -                              |
 | `ActionForm`  | Auto-generated form for executing Ontology Actions                                 | -                              |
 
@@ -91,7 +93,7 @@ See `@osdk/react-components-styles` README on how to apply custom themes and sty
 
 ```ts
 import { ObjectTable } from "@osdk/react-components/experimental";
-import { $, Employee } from "@your-osdk-package";
+import { Employee } from "@your-osdk-package";
 
 function EmployeeDirectory() {
   return (

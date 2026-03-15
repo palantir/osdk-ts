@@ -171,7 +171,7 @@ export function EmployeePanel({
     "peeps",
     {
       orderBy: { fullName: "asc" },
-      $select: ["fullName", "employeeNumber", "jobTitle"],
+      $select: ["fullName", "employeeNumber", "jobTitle", "primaryOfficeId"],
     },
   );
 
@@ -205,7 +205,7 @@ export function EmployeePanel({
     {
       enabled: !!employeeOfficeObj,
       orderBy: { fullName: "asc" },
-      $select: ["fullName", "employeeNumber", "jobTitle"],
+      $select: ["fullName", "employeeNumber", "jobTitle", "primaryOfficeId"],
     },
   );
   const colleaguesExcludingSelf = React.useMemo(
@@ -220,7 +220,7 @@ export function EmployeePanel({
     {
       enabled: !!managerObj,
       orderBy: { fullName: "asc" },
-      $select: ["fullName", "employeeNumber", "jobTitle"],
+      $select: ["fullName", "employeeNumber", "jobTitle", "primaryOfficeId"],
     },
   );
   const peersExcludingSelf = React.useMemo(

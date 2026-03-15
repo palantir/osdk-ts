@@ -15,9 +15,11 @@
  */
 
 import { Input } from "@base-ui/react/input";
+import { Error } from "@blueprintjs/icons";
 import type { RowData } from "@tanstack/react-table";
 import classNames from "classnames";
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import { Tooltip } from "../base-components/tooltip/Tooltip.js";
 import styles from "./EditableCell.module.css";
 import type { CellEditInfo } from "./utils/types.js";
 
@@ -27,9 +29,16 @@ export interface EditableCellProps<TData extends RowData, CellValue = unknown> {
   cellId: string;
   dataType?: string;
   onCellEdit: (cellId: string, info: CellEditInfo<TData, CellValue>) => void;
+  onCellValidationError?: (
+    cellId: string,
+    error: string,
+  ) => void;
+  clearCellValidationError?: (cellId: string) => void;
+  validationError?: string;
   originalRowData: TData;
   rowId: string;
   columnId: string;
+  validateEdit?: (value: unknown) => Promise<string | undefined>;
 }
 
 const NUMBER_TYPES: string[] = [
@@ -53,12 +62,12 @@ function valueToString(value: unknown): string {
   return String(value as string | number | boolean | symbol | bigint);
 }
 
-function parseValueByType(
+function parseValueByType<CellValue = unknown>(
   value: string,
   dataType?: string,
-): unknown {
+): CellValue | null {
   if (!dataType || !NUMBER_TYPES.includes(dataType)) {
-    return value;
+    return value as unknown as CellValue;
   }
 
   if (value === "") {
@@ -68,30 +77,54 @@ function parseValueByType(
   const parsedNumber = Number(value);
 
   if (isNaN(parsedNumber)) {
-    return value;
+    return value as unknown as CellValue;
   }
 
-  return parsedNumber;
+  return parsedNumber as unknown as CellValue;
 }
 
-export function EditableCell<TData extends RowData, CellValue = unknown>({
+const VALIDATION_ERROR_MESSAGE = "Validation error";
+
+function EditableCellInner<TData extends RowData, CellValue = unknown>({
   initialValue,
   currentValue,
   cellId,
   dataType,
   onCellEdit,
+  onCellValidationError,
+  clearCellValidationError,
   originalRowData,
   rowId,
   columnId,
+  validateEdit,
+  validationError,
 }: EditableCellProps<TData, CellValue>): React.ReactElement {
   const [inputValue, setInputValue] = useState<string>(
     valueToString(currentValue),
   );
   const isCancelled = useRef(false);
+  const validationAbortControllerRef = useRef<AbortController | null>(null);
+
+  const abortController = useCallback(() => {
+    if (validationAbortControllerRef.current) {
+      validationAbortControllerRef.current.abort();
+      validationAbortControllerRef.current = null;
+    }
+  }, []);
+
+  const hasValidationError = validationError != null;
+  const isEdited = currentValue !== initialValue;
 
   useEffect(() => {
     setInputValue(valueToString(currentValue));
   }, [currentValue]);
+
+  useEffect(() => {
+    // Cleanup abort controller on unmount
+    return () => {
+      abortController();
+    };
+  }, [abortController]);
 
   const handleBlur = useCallback(() => {
     // Do not commit the edit if it was cancelled with Escape key
@@ -99,28 +132,72 @@ export function EditableCell<TData extends RowData, CellValue = unknown>({
       isCancelled.current = false;
       return;
     }
-    const parsedValue = parseValueByType(inputValue, dataType);
+
+    // Cancel any in-flight validation
+    abortController();
+
+    const parsedValue = parseValueByType<CellValue>(inputValue, dataType);
+
     onCellEdit(cellId, {
       rowId,
       columnId,
-      newValue: parsedValue as CellValue,
+      newValue: parsedValue,
       oldValue: initialValue,
       originalRowData,
     });
+
+    if (validateEdit) {
+      // Create new AbortController for this validation
+      const abortController = new AbortController();
+      validationAbortControllerRef.current = abortController;
+
+      const validationPromise = validateEdit(parsedValue);
+
+      // Race between validation and abort
+      Promise.race([
+        validationPromise,
+        new Promise<string | undefined>((_, reject) => {
+          abortController.signal.addEventListener("abort", () => {
+            reject(new DOMException("Aborted", "AbortError"));
+          });
+        }),
+      ]).then(
+        (errorMessage) => {
+          if (!abortController.signal.aborted) {
+            if (errorMessage) {
+              onCellValidationError?.(cellId, errorMessage);
+            } else {
+              clearCellValidationError?.(cellId);
+            }
+          }
+        },
+        (error) => {
+          if (!abortController.signal.aborted && error.name !== "AbortError") {
+            onCellValidationError?.(cellId, VALIDATION_ERROR_MESSAGE);
+          }
+        },
+      );
+    }
   }, [
+    abortController,
     inputValue,
-    initialValue,
+    dataType,
     onCellEdit,
     cellId,
-    dataType,
     rowId,
     columnId,
+    initialValue,
     originalRowData,
+    validateEdit,
+    onCellValidationError,
+    clearCellValidationError,
   ]);
 
   const handleChange = useCallback((value: string) => {
+    // Cancel any in-flight validation
+    abortController();
     setInputValue(value);
-  }, []);
+  }, [abortController]);
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -140,18 +217,44 @@ export function EditableCell<TData extends RowData, CellValue = unknown>({
     ? "number"
     : "text";
 
-  const isEdited = currentValue !== initialValue;
-
   return (
-    <Input
-      className={classNames(styles.osdkEditableInput, {
-        [styles.osdkEditedInput]: isEdited,
-      })}
-      type={inputType}
-      value={inputValue}
-      onValueChange={handleChange}
-      onBlur={handleBlur}
-      onKeyDown={handleKeyDown}
-    />
+    <Tooltip.Provider>
+      <Tooltip.Root disabled={!hasValidationError}>
+        <Tooltip.Trigger>
+          <div
+            className={classNames(styles.osdkEditableCell, {
+              [styles.error]: hasValidationError,
+              [styles.osdkEditedInput]: isEdited,
+            })}
+          >
+            <Input
+              type={inputType}
+              value={inputValue}
+              className={styles.osdkEditableInput}
+              onValueChange={handleChange}
+              onBlur={handleBlur}
+              onKeyDown={handleKeyDown}
+              aria-invalid={hasValidationError}
+            />
+            {hasValidationError && <Error className={styles.errorIcon} />}
+          </div>
+        </Tooltip.Trigger>
+        <Tooltip.Portal>
+          <Tooltip.Positioner sideOffset={4} side={"bottom"}>
+            <Tooltip.Popup>
+              <div className={styles.validationError}>
+                <Error className={styles.errorIcon} />
+                {validationError}
+              </div>
+              <Tooltip.Arrow />
+            </Tooltip.Popup>
+          </Tooltip.Positioner>
+        </Tooltip.Portal>
+      </Tooltip.Root>
+    </Tooltip.Provider>
   );
 }
+
+export const EditableCell = React.memo(
+  EditableCellInner,
+) as typeof EditableCellInner;

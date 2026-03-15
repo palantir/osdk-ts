@@ -208,8 +208,11 @@ export function ObjectTable<
     getRowId,
     meta: {
       onCellEdit: editableConfig.onCellEdit,
+      onCellValidationError: editableConfig.onCellValidationError,
+      clearCellValidationError: editableConfig.clearCellValidationError,
       cellEdits: editableConfig.cellEdits,
-      isInEditMode: editableConfig.editMode.isActive,
+      isInEditMode: editableConfig.editModeState.isActive,
+      validationErrors: editableConfig.validationErrors,
     },
   });
 

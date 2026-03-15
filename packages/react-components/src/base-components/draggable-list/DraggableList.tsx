@@ -90,7 +90,7 @@ function DraggableListItem<T extends DraggableItem>({
         {...attributes}
         {...listeners}
       >
-        <DragHandleVertical className={styles.icon} />
+        <DragHandleVertical className={styles.icon} color={"currentColor"} />
       </div>
       <div className={styles.itemContent}>
         {renderContent ? renderContent(item) : item.label}
@@ -101,7 +101,7 @@ function DraggableListItem<T extends DraggableItem>({
           onClick={handleRemove}
           aria-label={`Remove ${item.label}`}
         >
-          <RemoveIcon className={styles.icon} />
+          <RemoveIcon className={styles.icon} color={"currentColor"} />
         </Button>
       )}
     </div>

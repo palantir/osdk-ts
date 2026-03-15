@@ -1,5 +1,18 @@
 # @osdk/react-components-storybook
 
+## 0.2.0-beta.7
+
+### Minor Changes
+
+- 05618c3: Add validation state to editable cell
+
+## 0.2.0-beta.6
+
+### Patch Changes
+
+- Updated dependencies [4da867d]
+  - @osdk/faux@0.6.0-beta.5
+
 ## 0.2.0-beta.5
 
 ### Minor Changes
