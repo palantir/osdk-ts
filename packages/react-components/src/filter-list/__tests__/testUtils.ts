@@ -24,6 +24,7 @@ import type {
   FilterState,
   NumberRangeFilterState,
   SelectFilterState,
+  TimelineFilterState,
   ToggleFilterState,
 } from "../FilterListItemApi.js";
 
@@ -39,6 +40,7 @@ export const MockObjectType = {
       age: { type: "integer", multiplicity: false },
       active: { type: "boolean", multiplicity: false },
       createdAt: { type: "timestamp", multiplicity: false },
+      birthDate: { type: "datetime", multiplicity: false },
       score: { type: "double", multiplicity: false },
     },
   },
@@ -213,5 +215,19 @@ export function createExactMatchState(
     type: "EXACT_MATCH",
     values,
     isExcluding: options?.isExcluding,
+  };
+}
+
+/**
+ * Helper to create a TimelineFilterState
+ */
+export function createTimelineState(
+  startDate?: Date,
+  endDate?: Date,
+): TimelineFilterState {
+  return {
+    type: "TIMELINE",
+    startDate,
+    endDate,
   };
 }

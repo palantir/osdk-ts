@@ -15,6 +15,7 @@
  */
 
 import type { ObjectTypeDefinition, WhereClause } from "@osdk/api";
+import { formatDateForInput } from "../base/inputs/dateUtils.js";
 import type { FilterDefinitionUnion } from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
 import { assertUnreachable } from "./assertUnreachable.js";
@@ -22,42 +23,59 @@ import { getFilterKey } from "./getFilterKey.js";
 
 type PropertyFilter = Record<string, unknown> | boolean | string | number;
 
-function liftCompoundPropertyFilter(
-  propertyKey: string,
-  filter: PropertyFilter,
-): Record<string, unknown> {
-  if (typeof filter === "object" && !Array.isArray(filter)) {
-    if ("$and" in filter && Array.isArray(filter.$and)) {
-      return {
-        $and: (filter.$and as PropertyFilter[]).map((f) =>
-          liftCompoundPropertyFilter(propertyKey, f)
-        ),
-      };
-    }
-    if ("$or" in filter && Array.isArray(filter.$or)) {
-      return {
-        $or: (filter.$or as PropertyFilter[]).map((f) =>
-          liftCompoundPropertyFilter(propertyKey, f)
-        ),
-      };
-    }
+interface CompoundFilter {
+  __compound: true;
+  conditions: PropertyFilter[];
+  includeNull: boolean;
+}
+
+function isCompoundFilter(
+  f: PropertyFilter | CompoundFilter,
+): f is CompoundFilter {
+  return typeof f === "object" && f != null && "__compound" in f;
+}
+
+const NUMERIC_BOUNDS: Record<string, { min: number; max: number }> = {
+  byte: { min: -128, max: 127 },
+  short: { min: -32_768, max: 32_767 },
+  integer: { min: -2_147_483_648, max: 2_147_483_647 },
+  long: { min: Number.MIN_SAFE_INTEGER, max: Number.MAX_SAFE_INTEGER },
+};
+
+function clampToPropertyBounds(
+  value: number,
+  propertyType: string | undefined,
+): number {
+  if (propertyType === undefined) {
+    return value;
   }
-  return { [propertyKey]: filter };
+  const bounds = NUMERIC_BOUNDS[propertyType];
+  if (bounds === undefined) {
+    return value;
+  }
+  return Math.max(bounds.min, Math.min(bounds.max, value));
+}
+
+function formatDateValue(
+  date: Date,
+  propertyType: string | undefined,
+): string {
+  if (propertyType === "datetime") {
+    return formatDateForInput(date);
+  }
+  return date.toISOString();
 }
 
 function filterStateToPropertyFilter(
   state: FilterState,
-): PropertyFilter | undefined {
+  propertyType?: string,
+): PropertyFilter | CompoundFilter | undefined {
   switch (state.type) {
     case "CONTAINS_TEXT": {
       if (!state.value) {
         return undefined;
       }
-      const filter = { $containsAnyTerm: state.value };
-      if (state.isExcluding) {
-        return { $not: filter };
-      }
-      return filter;
+      return { $containsAnyTerm: state.value };
     }
 
     case "TOGGLE": {
@@ -68,75 +86,75 @@ function filterStateToPropertyFilter(
       const conditions: PropertyFilter[] = [];
 
       if (state.minValue !== undefined) {
-        conditions.push({ $gte: state.minValue.toISOString() });
+        conditions.push({
+          $gte: formatDateValue(state.minValue, propertyType),
+        });
       }
       if (state.maxValue !== undefined) {
-        conditions.push({ $lte: state.maxValue.toISOString() });
+        conditions.push({
+          $lte: formatDateValue(state.maxValue, propertyType),
+        });
       }
 
       if (conditions.length === 0 && !state.includeNull) {
         return undefined;
       }
 
-      let rangeFilter: PropertyFilter | undefined;
-      if (conditions.length === 1) {
-        rangeFilter = conditions[0];
-      } else if (conditions.length > 1) {
-        rangeFilter = { $and: conditions };
-      }
-
-      if (state.includeNull) {
-        if (rangeFilter) {
-          return { $or: [rangeFilter, { $isNull: true }] };
-        }
+      if (conditions.length === 0 && state.includeNull) {
         return { $isNull: true };
       }
 
-      return rangeFilter;
+      if (conditions.length === 1 && !state.includeNull) {
+        return conditions[0];
+      }
+
+      return {
+        __compound: true,
+        conditions,
+        includeNull: state.includeNull ?? false,
+      };
     }
 
     case "NUMBER_RANGE": {
       const conditions: PropertyFilter[] = [];
 
       if (state.minValue !== undefined) {
-        conditions.push({ $gte: state.minValue });
+        conditions.push({
+          $gte: clampToPropertyBounds(state.minValue, propertyType),
+        });
       }
       if (state.maxValue !== undefined) {
-        conditions.push({ $lte: state.maxValue });
+        conditions.push({
+          $lte: clampToPropertyBounds(state.maxValue, propertyType),
+        });
       }
 
       if (conditions.length === 0 && !state.includeNull) {
         return undefined;
       }
 
-      let rangeFilter: PropertyFilter | undefined;
-      if (conditions.length === 1) {
-        rangeFilter = conditions[0];
-      } else if (conditions.length > 1) {
-        rangeFilter = { $and: conditions };
-      }
-
-      if (state.includeNull) {
-        if (rangeFilter) {
-          return { $or: [rangeFilter, { $isNull: true }] };
-        }
+      if (conditions.length === 0 && state.includeNull) {
         return { $isNull: true };
       }
 
-      return rangeFilter;
+      if (conditions.length === 1 && !state.includeNull) {
+        return conditions[0];
+      }
+
+      return {
+        __compound: true,
+        conditions,
+        includeNull: state.includeNull ?? false,
+      };
     }
 
     case "EXACT_MATCH": {
       if (state.values.length === 0) {
         return undefined;
       }
-      const filter = state.values.length === 1
+      return state.values.length === 1
         ? state.values[0]
         : { $in: state.values };
-      if (state.isExcluding) {
-        return { $not: filter };
-      }
-      return filter;
     }
 
     case "SELECT": {
@@ -145,36 +163,36 @@ function filterStateToPropertyFilter(
       }
       const values: (string | number | boolean)[] = state.selectedValues.map(
         (v) =>
-          v instanceof Date ? v.toISOString() : v as string | number | boolean,
+          v instanceof Date
+            ? formatDateValue(v, propertyType)
+            : v as string | number | boolean,
       );
-      const filter = values.length === 1 ? values[0] : { $in: values };
-      if (state.isExcluding) {
-        return { $not: filter };
-      }
-      return filter;
+      return values.length === 1 ? values[0] : { $in: values };
     }
 
     case "TIMELINE": {
       const conditions: PropertyFilter[] = [];
       if (state.startDate !== undefined) {
-        conditions.push({ $gte: state.startDate.toISOString() });
+        conditions.push({
+          $gte: formatDateValue(state.startDate, propertyType),
+        });
       }
       if (state.endDate !== undefined) {
-        conditions.push({ $lte: state.endDate.toISOString() });
+        conditions.push({
+          $lte: formatDateValue(state.endDate, propertyType),
+        });
       }
       if (conditions.length === 0) {
         return undefined;
       }
-      let rangeFilter: PropertyFilter;
       if (conditions.length === 1) {
-        rangeFilter = conditions[0];
-      } else {
-        rangeFilter = { $and: conditions };
+        return conditions[0];
       }
-      if (state.isExcluding) {
-        return { $not: rangeFilter };
-      }
-      return rangeFilter;
+      return {
+        __compound: true,
+        conditions,
+        includeNull: false,
+      };
     }
 
     // These filter types are handled separately in buildWhereClause
@@ -202,11 +220,16 @@ function filterStateToPropertyFilter(
  * cannot verify that the constructed clause structure matches the generic Q's
  * expected shape, but the structure is guaranteed to be valid by construction.
  */
+export interface PropertyTypeInfo {
+  type: string;
+  multiplicity: boolean;
+}
+
 export function buildWhereClause<Q extends ObjectTypeDefinition>(
   definitions: Array<FilterDefinitionUnion<Q>> | undefined,
   filterStates: Map<string, FilterState>,
   operator: "and" | "or",
-  objectType?: Q,
+  propertyTypes?: Map<string, PropertyTypeInfo>,
   excludeFilterKey?: string,
 ): WhereClause<Q> {
   if (!definitions || definitions.length === 0) {
@@ -228,11 +251,28 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
 
     switch (definition.type) {
       case "PROPERTY": {
-        const filter = filterStateToPropertyFilter(state);
+        const propertyType = propertyTypes?.get(definition.key as string)
+          ?.type;
+        const filter = filterStateToPropertyFilter(state, propertyType);
         if (filter !== undefined) {
-          clauses.push(
-            liftCompoundPropertyFilter(definition.key as string, filter),
-          );
+          const isExcluding = "isExcluding" in state && state.isExcluding;
+          if (isCompoundFilter(filter)) {
+            const fieldClauses = filter.conditions.map(c => ({
+              [definition.key]: c,
+            }));
+            let rangeClause: Record<string, unknown> = fieldClauses.length === 1
+              ? fieldClauses[0]
+              : { $and: fieldClauses };
+            if (filter.includeNull) {
+              rangeClause = {
+                $or: [rangeClause, { [definition.key]: { $isNull: true } }],
+              };
+            }
+            clauses.push(isExcluding ? { $not: rangeClause } : rangeClause);
+          } else {
+            const clause = { [definition.key]: filter };
+            clauses.push(isExcluding ? { $not: clause } : clause);
+          }
         }
         break;
       }
@@ -286,19 +326,18 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
         let propertiesToSearch: string[];
 
         if (properties === "all") {
-          if (objectType?.__DefinitionMetadata?.properties) {
-            propertiesToSearch = Object.entries(
-              objectType.__DefinitionMetadata.properties,
-            )
-              .filter(([, prop]) =>
-                prop.type === "string" && !prop.multiplicity
-              )
-              .map(([key]) => key);
+          if (propertyTypes && propertyTypes.size > 0) {
+            propertiesToSearch = [];
+            for (const [key, info] of propertyTypes) {
+              if (info.type === "string" && !info.multiplicity) {
+                propertiesToSearch.push(key);
+              }
+            }
           } else {
             if (process.env.NODE_ENV !== "production") {
               // eslint-disable-next-line no-console
               console.warn(
-                "[FilterList] Keyword search with properties: 'all' requires objectType to be provided. Filter will be skipped.",
+                "[FilterList] Keyword search with properties: 'all' requires propertyTypes to be provided. Filter will be skipped.",
               );
             }
             break;
@@ -316,16 +355,18 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
           : "$containsAnyTerm";
 
         const propertySearches = propertiesToSearch.map((prop) => ({
-          [prop]: state.isExcluding
-            ? { $not: { [containsOp]: searchTerm } }
-            : { [containsOp]: searchTerm },
+          [prop]: { [containsOp]: searchTerm },
         }));
 
+        let searchClause: Record<string, unknown>;
         if (propertySearches.length === 1) {
-          clauses.push(propertySearches[0]);
+          searchClause = propertySearches[0];
         } else {
-          clauses.push({ $or: propertySearches });
+          searchClause = { $or: propertySearches };
         }
+        clauses.push(
+          state.isExcluding ? { $not: searchClause } : searchClause,
+        );
         break;
       }
 
