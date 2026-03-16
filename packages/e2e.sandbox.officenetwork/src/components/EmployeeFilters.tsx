@@ -181,19 +181,29 @@ export function EmployeeFilters({
     [availableFilters, handleAddFilter],
   );
 
+  const containerStyle = useMemo(
+    () => ({
+      width: collapsed ? undefined : 256,
+      height: "100%" as const,
+    }),
+    [collapsed],
+  );
+
   return (
-    <FilterList
-      objectSet={$(Employee)}
-      filterDefinitions={filterDefinitions}
-      onFilterClauseChanged={onFilterClauseChanged}
-      onFilterRemoved={handleRemoveFilter}
-      enableSorting={true}
-      renderAddFilterButton={renderAddFilterButton}
-      title="Employee Filters"
-      showActiveFilterCount={true}
-      showResetButton={true}
-      collapsed={collapsed}
-      onCollapsedChange={setCollapsed}
-    />
+    <div style={containerStyle}>
+      <FilterList
+        objectSet={$(Employee)}
+        filterDefinitions={filterDefinitions}
+        onFilterClauseChanged={onFilterClauseChanged}
+        onFilterRemoved={handleRemoveFilter}
+        enableSorting={true}
+        renderAddFilterButton={renderAddFilterButton}
+        title="Employee Filters"
+        showActiveFilterCount={true}
+        showResetButton={true}
+        collapsed={collapsed}
+        onCollapsedChange={setCollapsed}
+      />
+    </div>
   );
 }

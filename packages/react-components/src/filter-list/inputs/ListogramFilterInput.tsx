@@ -34,6 +34,7 @@ interface ListogramFilterInputProps<Q extends ObjectTypeDefinition> {
   colorMap?: Record<string, string>;
   displayMode?: "full" | "count" | "minimal";
   maxVisibleItems?: number;
+  searchQuery?: string;
 }
 
 function ListogramFilterInputInner<Q extends ObjectTypeDefinition>({
@@ -45,6 +46,7 @@ function ListogramFilterInputInner<Q extends ObjectTypeDefinition>({
   colorMap,
   displayMode,
   maxVisibleItems,
+  searchQuery,
 }: ListogramFilterInputProps<Q>): React.ReactElement {
   const selectedValues = useMemo(
     () =>
@@ -88,6 +90,7 @@ function ListogramFilterInputInner<Q extends ObjectTypeDefinition>({
       colorMap={colorMap}
       displayMode={displayMode}
       maxVisibleItems={maxVisibleItems}
+      searchQuery={searchQuery}
     />
   );
 }

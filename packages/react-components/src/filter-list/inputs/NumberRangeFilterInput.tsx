@@ -142,17 +142,19 @@ function NumberRangeFilterInputInner<Q extends ObjectTypeDefinition>({
     return 0;
   }, [nullCountData]);
 
+  const isLoading = histLoading || nullLoading;
+
   return (
     <NullValueWrapper
       nullCount={nullCount}
-      isLoading={nullLoading}
+      isLoading={isLoading}
       error={nullError}
       includeNull={includeNull}
       onIncludeNullChange={handleNullChange}
     >
       <NumberRangeInput
         valueCountPairs={valueCountPairs}
-        isLoading={histLoading}
+        isLoading={isLoading}
         minValue={numberRangeState?.minValue}
         maxValue={numberRangeState?.maxValue}
         onChange={handleRangeChange}

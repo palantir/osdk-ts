@@ -42,6 +42,48 @@ export function supportsExcluding(state: FilterState | undefined): boolean {
   }
 }
 
+/** Returns a cleared version of the filter state, or undefined if the type doesn't support clearing. */
+export function clearFilterState(
+  state: FilterState,
+): FilterState | undefined {
+  switch (state.type) {
+    case "SELECT":
+      return { ...state, selectedValues: [] };
+    case "EXACT_MATCH":
+      return { ...state, values: [] };
+    case "CONTAINS_TEXT":
+      return { ...state, value: undefined };
+    case "NUMBER_RANGE":
+      return {
+        ...state,
+        minValue: undefined,
+        maxValue: undefined,
+        includeNull: false,
+      };
+    case "DATE_RANGE":
+      return {
+        ...state,
+        minValue: undefined,
+        maxValue: undefined,
+        includeNull: false,
+      };
+    case "TIMELINE":
+      return { ...state, startDate: undefined, endDate: undefined };
+    case "TOGGLE":
+      return { ...state, enabled: false };
+    case "hasLink":
+    case "linkedProperty":
+    case "keywordSearch":
+    case "custom":
+      return undefined;
+    default: {
+      const _exhaustive: never = state;
+      void _exhaustive;
+      return undefined;
+    }
+  }
+}
+
 /** Case-insensitive substring filter for search functionality. */
 export function filterValuesBySearch<T>(
   values: T[],
@@ -83,7 +125,9 @@ export function filterHasActiveState(state: FilterState | undefined): boolean {
       return state.startDate !== undefined || state.endDate !== undefined;
     case "custom":
       return true;
-    default:
+    default: {
+      const _exhaustive: never = state;
       return false;
+    }
   }
 }

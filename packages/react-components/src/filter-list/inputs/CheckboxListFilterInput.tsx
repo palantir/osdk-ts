@@ -32,6 +32,7 @@ interface CheckboxListFilterInputProps<Q extends ObjectTypeDefinition> {
   onFilterStateChanged: (state: FilterState) => void;
   whereClause: WhereClause<Q>;
   colorMap?: Record<string, string>;
+  searchQuery?: string;
 }
 
 function CheckboxListFilterInputInner<Q extends ObjectTypeDefinition>({
@@ -41,6 +42,7 @@ function CheckboxListFilterInputInner<Q extends ObjectTypeDefinition>({
   onFilterStateChanged,
   whereClause,
   colorMap,
+  searchQuery,
 }: CheckboxListFilterInputProps<Q>): React.ReactElement {
   const selectedValues = useMemo(
     () =>
@@ -81,6 +83,7 @@ function CheckboxListFilterInputInner<Q extends ObjectTypeDefinition>({
       selectedValues={selectedValues}
       onChange={handleChange}
       colorMap={colorMap}
+      searchQuery={searchQuery}
     />
   );
 }
