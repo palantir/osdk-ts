@@ -43,7 +43,7 @@ interface TestActionDef extends ActionDefinition<unknown> {
     signatures: unknown;
     parameters: {
       name: { type: "string" };
-      age: { type: "integer" };
+      email: { type: "string" };
     };
     type: "action";
     apiName: "TestAction";
@@ -82,8 +82,8 @@ const mockMetadata: ActionMetadata = {
       type: "string",
       nullable: false,
     },
-    age: {
-      type: "integer",
+    email: {
+      type: "string",
       nullable: true,
     },
   },
@@ -142,27 +142,27 @@ describe("ActionForm", () => {
       render(<ActionForm actionDefinition={TestAction} />);
 
       expect(screen.getByTestId("form-field-name")).toBeDefined();
-      expect(screen.getByTestId("form-field-age")).toBeDefined();
+      expect(screen.getByTestId("form-field-email")).toBeDefined();
     });
 
     it("renders default field labels from parameter keys", () => {
       render(<ActionForm actionDefinition={TestAction} />);
 
       const nameField = screen.getByTestId("form-field-name");
-      const ageField = screen.getByTestId("form-field-age");
+      const emailField = screen.getByTestId("form-field-email");
 
       expect(nameField.querySelector("label")?.textContent).toContain("name");
-      expect(ageField.querySelector("label")?.textContent).toContain("age");
+      expect(emailField.querySelector("label")?.textContent).toContain("email");
     });
 
     it("renders required indicator for non-nullable fields", () => {
       render(<ActionForm actionDefinition={TestAction} />);
 
       const nameField = screen.getByTestId("form-field-name");
-      const ageField = screen.getByTestId("form-field-age");
+      const emailField = screen.getByTestId("form-field-email");
 
       expect(nameField.querySelector("[aria-label='required']")).not.toBeNull();
-      expect(ageField.querySelector("[aria-label='required']")).toBeNull();
+      expect(emailField.querySelector("[aria-label='required']")).toBeNull();
     });
 
     it("renders custom field definitions instead of defaults", () => {
@@ -182,7 +182,7 @@ describe("ActionForm", () => {
       );
 
       expect(screen.getByTestId("form-field-name")).toBeDefined();
-      expect(screen.queryByTestId("form-field-age")).toBeNull();
+      expect(screen.queryByTestId("form-field-email")).toBeNull();
     });
 
     it("renders custom labels from field definitions", () => {
@@ -193,9 +193,9 @@ describe("ActionForm", () => {
           fieldComponent: "TEXT_INPUT",
         },
         {
-          fieldKey: "age",
-          label: "Your Age",
-          fieldComponent: "NUMBER_INPUT",
+          fieldKey: "email",
+          label: "Your Email",
+          fieldComponent: "TEXT_INPUT",
         },
       ];
 
@@ -211,9 +211,9 @@ describe("ActionForm", () => {
           ?.textContent,
       ).toContain("Full Name");
       expect(
-        screen.getByTestId("form-field-age").querySelector("label")
+        screen.getByTestId("form-field-email").querySelector("label")
           ?.textContent,
-      ).toContain("Your Age");
+      ).toContain("Your Email");
     });
   });
 
@@ -280,7 +280,7 @@ describe("ActionForm", () => {
 
       await vi.waitFor(() => {
         expect(mockApplyAction).toHaveBeenCalledWith(
-          expect.objectContaining({ name: undefined, age: undefined }),
+          expect.objectContaining({ name: undefined, email: undefined }),
         );
       });
     });
@@ -347,7 +347,7 @@ describe("ActionForm", () => {
       render(
         <ActionForm
           actionDefinition={TestAction}
-          formState={{ name: "Alice", age: 30 }}
+          formState={{ name: "Alice", email: "alice@test.com" }}
           onFormStateChange={vi.fn()}
         />,
       );
@@ -356,7 +356,7 @@ describe("ActionForm", () => {
 
       await vi.waitFor(() => {
         expect(mockApplyAction).toHaveBeenCalledWith(
-          expect.objectContaining({ name: "Alice", age: 30 }),
+          expect.objectContaining({ name: "Alice", email: "alice@test.com" }),
         );
       });
     });
@@ -367,7 +367,7 @@ describe("ActionForm", () => {
       render(
         <ActionForm
           actionDefinition={TestAction}
-          formState={{ name: "Initial", age: 25 }}
+          formState={{ name: "Initial", email: "initial@test.com" }}
           onFormStateChange={onFormStateChange}
         />,
       );
@@ -381,7 +381,7 @@ describe("ActionForm", () => {
       }
 
       expect(onFormStateChange).toHaveBeenCalledWith(
-        expect.objectContaining({ name: "Updated", age: 25 }),
+        expect.objectContaining({ name: "Updated", email: "initial@test.com" }),
       );
     });
 
@@ -389,7 +389,7 @@ describe("ActionForm", () => {
       render(
         <ActionForm
           actionDefinition={TestAction}
-          formState={{ name: "Parent", age: 10 }}
+          formState={{ name: "Parent", email: "parent@test.com" }}
           onFormStateChange={vi.fn()}
         />,
       );
@@ -417,7 +417,7 @@ describe("ActionForm", () => {
       render(
         <ActionForm
           actionDefinition={TestAction}
-          formState={{ name: "Initial", age: 25 }}
+          formState={{ name: "Initial", email: "initial@test.com" }}
           onFormStateChange={onFormStateChange}
         />,
       );
@@ -439,7 +439,7 @@ describe("ActionForm", () => {
       const { rerender } = render(
         <ActionForm
           actionDefinition={TestAction}
-          formState={{ name: "V1", age: 1 }}
+          formState={{ name: "V1", email: "v1@test.com" }}
           onFormStateChange={vi.fn()}
         />,
       );
@@ -447,7 +447,7 @@ describe("ActionForm", () => {
       rerender(
         <ActionForm
           actionDefinition={TestAction}
-          formState={{ name: "V2", age: 2 }}
+          formState={{ name: "V2", email: "v2@test.com" }}
           onFormStateChange={vi.fn()}
         />,
       );
@@ -456,7 +456,7 @@ describe("ActionForm", () => {
 
       await vi.waitFor(() => {
         expect(mockApplyAction).toHaveBeenCalledWith(
-          expect.objectContaining({ name: "V2", age: 2 }),
+          expect.objectContaining({ name: "V2", email: "v2@test.com" }),
         );
       });
     });

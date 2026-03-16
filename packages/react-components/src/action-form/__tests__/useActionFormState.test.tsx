@@ -23,7 +23,7 @@ import { useActionFormState } from "../hooks/useActionFormState.js";
 
 /**
  * Test action type with compile-time metadata so FieldKey resolves
- * to "name" | "age".
+ * to "name" | "email".
  *
  * Uses `interface extends` (not `type &`) so that __DefinitionMetadata
  * replaces rather than intersects the base type. This prevents
@@ -35,7 +35,7 @@ interface TestActionDef extends ActionDefinition<unknown> {
     signatures: unknown;
     parameters: {
       name: { type: "string" };
-      age: { type: "integer" };
+      email: { type: "string" };
     };
     type: "action";
     apiName: "TestAction";
@@ -45,9 +45,9 @@ interface TestActionDef extends ActionDefinition<unknown> {
 }
 
 interface MakeFieldDefOptions {
-  fieldKey: "name" | "age";
-  fieldComponent?: "TEXT_INPUT" | "TEXT_AREA" | "NUMBER_INPUT";
-  parameterType?: "string" | "integer";
+  fieldKey: "name" | "email";
+  fieldComponent?: "TEXT_INPUT";
+  parameterType?: "string";
   label?: string;
   defaultValue?: unknown;
   isRequired?: boolean;
@@ -58,7 +58,7 @@ function makeFieldDef(
 ): FormFieldDefinition<TestActionDef> {
   return {
     fieldComponent: "TEXT_INPUT",
-    parameterType: options.fieldKey === "age" ? "integer" : "string",
+    parameterType: "string",
     ...options,
   } as FormFieldDefinition<TestActionDef>;
 }
@@ -66,7 +66,7 @@ function makeFieldDef(
 /** Widens setFieldValue for test assertions where actual values differ from metadata type literals */
 function setField(
   result: UseActionFormStateResult<TestActionDef>,
-  key: "name" | "age",
+  key: "name" | "email",
   value: unknown,
 ): void {
   (result.setFieldValue as (k: string, v: unknown) => void)(key, value);
@@ -78,9 +78,9 @@ describe("useActionFormState", () => {
       const defs = [
         makeFieldDef({ fieldKey: "name", defaultValue: "Alice" }),
         makeFieldDef({
-          fieldKey: "age",
-          fieldComponent: "NUMBER_INPUT",
-          defaultValue: 30,
+          fieldKey: "email",
+          fieldComponent: "TEXT_INPUT",
+          defaultValue: "alice@test.com",
         }),
       ];
 
@@ -90,7 +90,7 @@ describe("useActionFormState", () => {
 
       expect(result.current.formState).toEqual({
         name: "Alice",
-        age: 30,
+        email: "alice@test.com",
       });
     });
 

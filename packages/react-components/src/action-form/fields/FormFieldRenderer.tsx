@@ -16,16 +16,7 @@
 
 import type { ActionDefinition } from "@osdk/api";
 import React from "react";
-import { assertUnreachable } from "../../shared/assertUnreachable.js";
 import type { FieldComponent, FormFieldDefinition } from "../FormFieldApi.js";
-import { CustomField } from "./CustomField.js";
-import { DatetimePickerField } from "./DatetimePickerField.js";
-import { DropdownField } from "./DropdownField.js";
-import { FilePickerField } from "./FilePickerField.js";
-import { NumberInputField } from "./NumberInputField.js";
-import { ObjectSetField } from "./ObjectSetField.js";
-import { RadioButtonsField } from "./RadioButtonsField.js";
-import { TextAreaField } from "./TextAreaField.js";
 import { TextInputField } from "./TextInputField.js";
 
 export interface FormFieldRendererProps<
@@ -75,6 +66,7 @@ function renderFieldComponent<Q extends ActionDefinition<unknown>>(
 
   switch (fieldComponent) {
     case "TEXT_INPUT":
+    default:
       return (
         <TextInputField
           fieldComponent="TEXT_INPUT"
@@ -84,74 +76,5 @@ function renderFieldComponent<Q extends ActionDefinition<unknown>>(
           {...componentProps}
         />
       );
-    case "TEXT_AREA":
-      return (
-        <TextAreaField
-          fieldComponent="TEXT_AREA"
-          onChange={onChange}
-          {...componentProps}
-        />
-      );
-    case "NUMBER_INPUT":
-      return (
-        <NumberInputField
-          fieldComponent="NUMBER_INPUT"
-          onChange={onChange}
-          {...componentProps}
-        />
-      );
-    case "DATETIME_PICKER":
-      return (
-        <DatetimePickerField
-          fieldComponent="DATETIME_PICKER"
-          onChange={onChange}
-          {...componentProps}
-        />
-      );
-    case "DROPDOWN":
-      return (
-        <DropdownField
-          fieldComponent="DROPDOWN"
-          onChange={onChange}
-          options={[]}
-          {...componentProps}
-        />
-      );
-    case "RADIO_BUTTONS":
-      return (
-        <RadioButtonsField
-          fieldComponent="RADIO_BUTTONS"
-          onChange={onChange}
-          options={[]}
-          {...componentProps}
-        />
-      );
-    case "FILE_PICKER":
-      return (
-        <FilePickerField
-          fieldComponent="FILE_PICKER"
-          onChange={onChange}
-          {...componentProps}
-        />
-      );
-    case "OBJECT_SET":
-      return (
-        <ObjectSetField
-          fieldComponent="OBJECT_SET"
-          onChange={onChange}
-          {...componentProps}
-        />
-      );
-    case "CUSTOM":
-      return (
-        <CustomField
-          fieldComponent="CUSTOM"
-          onChange={onChange}
-          customRenderer={() => null}
-          {...componentProps}
-        />
-      );
-    default:
-      return assertUnreachable(fieldComponent);
   }
 }
