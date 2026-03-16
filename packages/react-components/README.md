@@ -127,6 +127,7 @@ This package follows a 2-layer architecture pattern to maximize flexibility and 
 ### Implementation Guidelines
 
 When building new components:
+
 1. Start with the Base component focusing on interactions and styling
 2. Create the OSDK wrapper that handles data fetching and type conversion
 3. Keep the Base component API simple using primitive types
