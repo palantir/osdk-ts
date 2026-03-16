@@ -168,6 +168,22 @@ const archetypeRules = archetypes(
     },
   )
   .addArchetype(
+    "consumerCliWithSite",
+    [
+      "@osdk/ontology-explorer-server",
+    ],
+    {
+      ...LIBRARY_RULES,
+      output: {
+        browser: undefined,
+        cjs: undefined,
+        esm: "bundle",
+      },
+      fixedDepsOnly: true,
+      extraPublishFiles: ["build/site"],
+    },
+  )
+  .addArchetype(
     "forceBundle",
     [
       "@osdk/client.unstable",
@@ -257,6 +273,23 @@ const archetypeRules = archetypes(
       react: true,
       extraTsConfigCompilerOptions: {
         "isolatedDeclarations": false,
+      },
+    },
+  )
+  .addArchetype(
+    "viteReactAppsWithScss",
+    [
+      "@osdk/ontology-explorer-app",
+    ],
+    {
+      ...INTERNAL_LIBRARY_RULES,
+      skipTypes: true,
+      react: true,
+      extraTsConfigCompilerOptions: {
+        "isolatedDeclarations": false,
+        "plugins": [{ "name": "typescript-plugin-css-modules" }],
+        "rootDirs": ["./src", "./build/scss-types"],
+        "allowArbitraryExtensions": true,
       },
     },
   )

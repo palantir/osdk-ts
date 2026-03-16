@@ -97,7 +97,7 @@ jobs:
       # These packages use Vite 7+ or Storybook which require Node 20+, so exclude them on Node 18
       - name: Transpile, typecheck, Lint and test (excluding Vite 7/Storybook packages on Node 18)
         if: matrix.node == 18
-        run: pnpm exec turbo check --filter="!@osdk/create-app.template.*" --filter="!@osdk/create-widget.template.*" --filter="!@osdk/widget.vite-plugin" --filter="!@osdk/examples.*" --filter="!@psdk/examples.*" --filter="!@osdk/e2e.sandbox.todowidget" --filter="!@osdk/react-components-storybook"
+        run: pnpm exec turbo check --filter="!@osdk/create-app.template.*" --filter="!@osdk/create-widget.template.*" --filter="!@osdk/widget.vite-plugin" --filter="!@osdk/examples.*" --filter="!@psdk/examples.*" --filter="!@osdk/e2e.sandbox.todowidget" --filter="!@osdk/ontology-explorer-app" --filter="!@osdk/react-components-storybook"
 
       - name: Transpile, typecheck, Lint and test
         if: matrix.node != 18
@@ -107,7 +107,7 @@ jobs:
       # These packages use Vite 7+ or Storybook which require Node 20+, so exclude them on Node 18
       - name: Build (excluding Vite 7/Storybook packages on Node 18)
         if: matrix.node == 18
-        run: pnpm exec turbo build --filter="!@osdk/create-app.template.*" --filter="!@osdk/create-widget.template.*" --filter="!@osdk/widget.vite-plugin" --filter="!@osdk/examples.*" --filter="!@psdk/examples.*" --filter="!@osdk/e2e.sandbox.todowidget" --filter="!@osdk/react-components-storybook"
+        run: pnpm exec turbo build --filter="!@osdk/create-app.template.*" --filter="!@osdk/create-widget.template.*" --filter="!@osdk/widget.vite-plugin" --filter="!@osdk/examples.*" --filter="!@psdk/examples.*" --filter="!@osdk/e2e.sandbox.todowidget" --filter="!@osdk/ontology-explorer-app" --filter="!@osdk/react-components-storybook"
 
       - name: Build
         if: matrix.node != 18
