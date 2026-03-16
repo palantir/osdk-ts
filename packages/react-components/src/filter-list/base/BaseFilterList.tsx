@@ -16,8 +16,9 @@
 
 import { Button } from "@base-ui/react/button";
 import classnames from "classnames";
-import React from "react";
+import React, { useCallback } from "react";
 import type { BaseFilterListProps } from "./BaseFilterListApi.js";
+import { ExpandIcon } from "./FilterIcons.js";
 import styles from "./FilterList.module.css";
 import { FilterListContent } from "./FilterListContent.js";
 import { FilterListHeader } from "./FilterListHeader.js";
@@ -52,6 +53,28 @@ export function BaseFilterList<D>(
 
   const showAddButton = renderAddFilterButton != null || onFilterAdded != null;
 
+  const handleExpand = useCallback(() => {
+    onCollapsedChange?.(false);
+  }, [onCollapsedChange]);
+
+  if (collapsed && onCollapsedChange) {
+    return (
+      <div
+        className={classnames(styles.filterListCollapsed, className)}
+        data-collapsed="true"
+      >
+        <Button
+          className={styles.expandButton}
+          onClick={handleExpand}
+          aria-label="Expand filters"
+        >
+          <ExpandIcon />
+        </Button>
+        <span className={styles.collapsedLabel}>{title ?? "Filters"}</span>
+      </div>
+    );
+  }
+
   return (
     <div
       className={classnames(styles.filterList, className)}
@@ -70,30 +93,27 @@ export function BaseFilterList<D>(
         />
       )}
 
-      <div
-        className={styles.contentWrapper}
-        data-collapsed={collapsed}
-      >
-        <div className={styles.contentInner}>
-          <FilterListContent
-            filterDefinitions={filterDefinitions}
-            filterStates={filterStates}
-            onFilterStateChanged={onFilterStateChanged}
-            onFilterRemoved={onFilterRemoved}
-            renderInput={renderInput}
-            getFilterKey={getFilterKey}
-            getFilterLabel={getFilterLabel}
-            enableSorting={enableSorting}
-          />
-        </div>
-      </div>
+      <FilterListContent
+        filterDefinitions={filterDefinitions}
+        filterStates={filterStates}
+        onFilterStateChanged={onFilterStateChanged}
+        onFilterRemoved={onFilterRemoved}
+        renderInput={renderInput}
+        getFilterKey={getFilterKey}
+        getFilterLabel={getFilterLabel}
+        enableSorting={enableSorting}
+      />
 
-      {!collapsed && showAddButton && (
+      {showAddButton && (
         <div className={styles.addButtonContainer}>
           {renderAddFilterButton
             ? renderAddFilterButton()
             : (
-              <Button type="button" className={styles.addButton}>
+              <Button
+                type="button"
+                className={styles.addButton}
+                onClick={onFilterAdded}
+              >
                 + Add filter
               </Button>
             )}

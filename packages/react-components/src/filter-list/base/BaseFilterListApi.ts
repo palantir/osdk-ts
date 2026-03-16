@@ -22,6 +22,7 @@ export type RenderFilterInput<D> = (props: {
   filterKey: string;
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
+  searchQuery?: string;
 }) => React.ReactNode;
 
 export interface BaseFilterListProps<D> {

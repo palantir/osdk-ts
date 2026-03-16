@@ -17,6 +17,8 @@
 .filterList {
   display: flex;
   flex-direction: column;
+  height: 100%;
+  overflow-y: auto;
   background: var(--osdk-filter-list-bg);
   border: var(--osdk-filter-list-border);
   border-radius: var(--osdk-filter-list-border-radius);
@@ -24,25 +26,57 @@
   gap: var(--osdk-filter-list-gap);
 }
 
-.contentWrapper {
-  display: grid;
-  grid-template-rows: 1fr;
-  transition: grid-template-rows var(--osdk-filter-list-collapse-transition);
+.filterListCollapsed {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: var(--osdk-filter-list-collapsed-width);
+  height: 100%;
+  background: var(--osdk-filter-list-bg);
+  border: var(--osdk-filter-list-border);
+  border-radius: var(--osdk-filter-list-border-radius);
+  padding: var(--osdk-surface-spacing) 0;
+  gap: var(--osdk-surface-spacing);
+}
+
+.expandButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--osdk-filter-header-button-padding);
+  border: none;
+  background: var(--osdk-filter-header-button-bg);
+  cursor: pointer;
+  border-radius: var(--osdk-filter-header-button-border-radius);
+  color: var(--osdk-filter-header-collapse-icon-color);
+  transition: background-color var(--osdk-filter-header-button-transition);
+
+  &:hover {
+    background: var(--osdk-filter-header-button-bg-hover);
+  }
+
+  &:active {
+    background: var(--osdk-filter-header-button-bg-active);
+  }
+
+  &:focus-visible {
+    outline: var(--osdk-filter-input-focus-outline-width) solid var(--osdk-filter-input-focus-outline-color);
+    outline-offset: var(--osdk-filter-input-focus-outline-offset);
+  }
 
   @media (prefers-reduced-motion: reduce) {
     transition: none;
   }
 }
 
-.contentWrapper[data-collapsed="true"] {
-  grid-template-rows: 0fr;
-}
-
-.contentInner {
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  gap: var(--osdk-filter-list-gap);
+.collapsedLabel {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-family: var(--osdk-filter-list-collapsed-label-font-family);
+  font-size: var(--osdk-filter-list-collapsed-label-font-size);
+  color: var(--osdk-filter-list-collapsed-label-color);
+  font-weight: var(--osdk-filter-header-font-weight);
+  user-select: none;
 }
 
 .addButtonContainer {
