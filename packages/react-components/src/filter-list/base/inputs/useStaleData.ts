@@ -29,6 +29,8 @@ export function useStaleData<T>(
 
   if (!isEmpty(data)) {
     staleRef.current = data;
+  } else if (!isLoading) {
+    staleRef.current = data;
   }
 
   const isStale = isEmpty(data) && isLoading && !isEmpty(staleRef.current);
