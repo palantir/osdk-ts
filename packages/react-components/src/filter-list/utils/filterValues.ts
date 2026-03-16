@@ -72,8 +72,10 @@ export function clearFilterState(
     case "TOGGLE":
       return { ...state, enabled: false };
     case "hasLink":
-    case "linkedProperty":
+      return { ...state, hasLink: false };
     case "keywordSearch":
+      return { ...state, searchTerm: "" };
+    case "linkedProperty":
     case "custom":
       return undefined;
     default: {

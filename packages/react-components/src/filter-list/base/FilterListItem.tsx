@@ -193,16 +193,14 @@ function FilterListItemInner<D>({
 
       {excludeRowOpen && (
         <div className={styles.excludeRow}>
-          {showExcludeDropdown
-            ? (
-              <ExcludeDropdown
-                isExcluding={isExcluding}
-                onToggleExclude={handleToggleExclude}
-                selectedValueCount={selectedValueCount}
-                totalValueCount={totalValueCount}
-              />
-            )
-            : <span />}
+          {showExcludeDropdown && (
+            <ExcludeDropdown
+              isExcluding={isExcluding}
+              onToggleExclude={handleToggleExclude}
+              selectedValueCount={selectedValueCount}
+              totalValueCount={totalValueCount}
+            />
+          )}
           <Button
             className={styles.clearAllButton}
             onClick={handleClearFilter}

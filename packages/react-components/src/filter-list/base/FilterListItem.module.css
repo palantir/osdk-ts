@@ -167,10 +167,10 @@
 .excludeRow {
   display: flex;
   align-items: center;
-  justify-content: space-between;
 }
 
 .clearAllButton {
+  margin-left: auto;
   border: none;
   background: transparent;
   cursor: pointer;
