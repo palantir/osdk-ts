@@ -36,7 +36,7 @@ export function coerceFieldValue(
     return rawValue;
   }
 
-  // Complex object types — pass through
+  // TODO: Handle complex object types later
   if (typeof parameterType === "object") {
     return rawValue;
   }

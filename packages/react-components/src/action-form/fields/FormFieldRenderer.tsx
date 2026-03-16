@@ -19,9 +19,7 @@ import React from "react";
 import type { FieldComponent, FormFieldDefinition } from "../FormFieldApi.js";
 import { TextInputField } from "./TextInputField.js";
 
-export interface FormFieldRendererProps<
-  Q extends ActionDefinition<unknown>,
-> {
+export interface FormFieldRendererProps<Q extends ActionDefinition<unknown>> {
   fieldDefinition: FormFieldDefinition<Q>;
   value: unknown;
   onFieldValueChange: (value: unknown) => void;
@@ -66,11 +64,21 @@ function renderFieldComponent<Q extends ActionDefinition<unknown>>(
 
   switch (fieldComponent) {
     case "TEXT_INPUT":
+      return (
+        <TextInputField
+          fieldComponent="TEXT_INPUT"
+          value={value != null ? String(value) : ""}
+          onChange={onChange}
+          placeholder={fieldDefinition.placeholder}
+          {...componentProps}
+        />
+      );
+    // TODO: Handle other field component types (DROPDOWN, NUMBER_INPUT, etc.)
     default:
       return (
         <TextInputField
           fieldComponent="TEXT_INPUT"
-          value={value != null ? String(value) : undefined}
+          value={value != null ? String(value) : ""}
           onChange={onChange}
           placeholder={fieldDefinition.placeholder}
           {...componentProps}

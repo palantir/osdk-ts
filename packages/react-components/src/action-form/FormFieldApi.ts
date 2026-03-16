@@ -249,6 +249,7 @@ export interface TextInputFieldProps extends
   >
 {
   fieldComponent: "TEXT_INPUT";
+  placeholder?: string;
 }
 
 /**
@@ -314,6 +315,10 @@ export interface CustomFieldProps<V> extends BaseFormFieldProps<V> {
 }
 
 export interface BaseFormFieldProps<V> {
+  /**
+   * The value of the form field
+   */
+  value: V;
   /**
    * Called when the field value changed.
    *

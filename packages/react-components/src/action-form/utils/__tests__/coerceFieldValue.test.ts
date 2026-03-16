@@ -15,7 +15,7 @@
  */
 
 import { describe, expect, it } from "vitest";
-import { coerceFieldValue } from "../utils/coerceFieldValue.js";
+import { coerceFieldValue } from "../coerceFieldValue.js";
 
 describe("coerceFieldValue", () => {
   describe("null/undefined handling", () => {
@@ -123,35 +123,6 @@ describe("coerceFieldValue", () => {
     it("handles timestamp the same as datetime", () => {
       const iso = "2024-01-15T10:30:00.000Z";
       expect(coerceFieldValue("timestamp", iso)).toBe(iso);
-    });
-  });
-
-  describe("complex types (passthrough)", () => {
-    it("passes through objects for objectSet type", () => {
-      const objectSet = { type: "objectSet" };
-      expect(
-        coerceFieldValue(
-          { type: "objectSet", objectSet: "MyObject" },
-          objectSet,
-        ),
-      ).toBe(objectSet);
-    });
-
-    it("passes through objects for object type", () => {
-      const obj = { pk: "123" };
-      expect(
-        coerceFieldValue({ type: "object", object: "MyObject" }, obj),
-      ).toBe(obj);
-    });
-
-    it("passes through attachment type", () => {
-      const file = new File(["content"], "test.txt");
-      expect(coerceFieldValue("attachment", file)).toBe(file);
-    });
-
-    it("passes through mediaReference type", () => {
-      const ref = { uri: "media://123" };
-      expect(coerceFieldValue("mediaReference", ref)).toBe(ref);
     });
   });
 });

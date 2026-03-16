@@ -44,17 +44,10 @@ interface TestActionDef extends ActionDefinition<unknown> {
   };
 }
 
-interface MakeFieldDefOptions {
-  fieldKey: "name" | "email";
-  fieldComponent?: "TEXT_INPUT";
-  parameterType?: "string";
-  label?: string;
-  defaultValue?: unknown;
-  isRequired?: boolean;
-}
-
 function makeFieldDef(
-  options: MakeFieldDefOptions,
+  options:
+    & Partial<FormFieldDefinition<TestActionDef>>
+    & Pick<FormFieldDefinition<TestActionDef>, "fieldKey">,
 ): FormFieldDefinition<TestActionDef> {
   return {
     fieldComponent: "TEXT_INPUT",

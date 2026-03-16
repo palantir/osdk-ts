@@ -17,18 +17,13 @@
 import React, { useCallback } from "react";
 import type { TextInputFieldProps } from "../FormFieldApi.js";
 
-export interface TextInputFieldRenderProps extends TextInputFieldProps {
-  value?: string;
-  placeholder?: string;
-}
-
 export function TextInputField({
   value,
   onChange,
   placeholder,
   minLength,
   maxLength,
-}: TextInputFieldRenderProps): React.ReactElement {
+}: TextInputFieldProps): React.ReactElement {
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       onChange?.(e.target.value);
@@ -39,7 +34,7 @@ export function TextInputField({
   return (
     <input
       type="text"
-      value={value ?? ""}
+      value={value}
       onChange={handleChange}
       placeholder={placeholder}
       minLength={minLength}

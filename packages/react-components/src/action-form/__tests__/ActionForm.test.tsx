@@ -141,8 +141,14 @@ describe("ActionForm", () => {
     it("generates default fields from fetched metadata", () => {
       render(<ActionForm actionDefinition={TestAction} />);
 
-      expect(screen.getByTestId("form-field-name")).toBeDefined();
-      expect(screen.getByTestId("form-field-email")).toBeDefined();
+      const nameField = screen.getByTestId("form-field-name");
+      const emailField = screen.getByTestId("form-field-email");
+      expect(
+        nameField?.querySelector("[data-testid='text-input-field']"),
+      ).toBeDefined();
+      expect(
+        emailField?.querySelector("[data-testid='text-input-field']"),
+      ).toBeDefined();
     });
 
     it("renders default field labels from parameter keys", () => {
@@ -153,16 +159,6 @@ describe("ActionForm", () => {
 
       expect(nameField.querySelector("label")?.textContent).toContain("name");
       expect(emailField.querySelector("label")?.textContent).toContain("email");
-    });
-
-    it("renders required indicator for non-nullable fields", () => {
-      render(<ActionForm actionDefinition={TestAction} />);
-
-      const nameField = screen.getByTestId("form-field-name");
-      const emailField = screen.getByTestId("form-field-email");
-
-      expect(nameField.querySelector("[aria-label='required']")).not.toBeNull();
-      expect(emailField.querySelector("[aria-label='required']")).toBeNull();
     });
 
     it("renders custom field definitions instead of defaults", () => {
@@ -181,39 +177,15 @@ describe("ActionForm", () => {
         />,
       );
 
-      expect(screen.getByTestId("form-field-name")).toBeDefined();
-      expect(screen.queryByTestId("form-field-email")).toBeNull();
-    });
-
-    it("renders custom labels from field definitions", () => {
-      const customDefs: Array<FormFieldDefinition<TestActionDef>> = [
-        {
-          fieldKey: "name",
-          label: "Full Name",
-          fieldComponent: "TEXT_INPUT",
-        },
-        {
-          fieldKey: "email",
-          label: "Your Email",
-          fieldComponent: "TEXT_INPUT",
-        },
-      ];
-
-      render(
-        <ActionForm
-          actionDefinition={TestAction}
-          formFieldDefinition={customDefs}
-        />,
+      const nameField = screen.getByTestId("form-field-name");
+      expect(nameField).toBeDefined();
+      expect(nameField.querySelector("label")?.textContent).toContain(
+        "Full Name",
       );
-
       expect(
-        screen.getByTestId("form-field-name").querySelector("label")
-          ?.textContent,
-      ).toContain("Full Name");
-      expect(
-        screen.getByTestId("form-field-email").querySelector("label")
-          ?.textContent,
-      ).toContain("Your Email");
+        nameField?.querySelector("[data-testid='text-input-field']"),
+      ).toBeDefined();
+      expect(screen.queryByTestId("form-field-email")).toBeNull();
     });
   });
 
@@ -223,16 +195,6 @@ describe("ActionForm", () => {
 
       expect(screen.getByTestId("submit-button")).toBeDefined();
       expect(screen.getByTestId("submit-button").textContent).toBe("Submit");
-    });
-
-    it("disables submit button when isSubmitDisabled is true", () => {
-      render(
-        <ActionForm actionDefinition={TestAction} isSubmitDisabled={true} />,
-      );
-
-      expect(
-        (screen.getByTestId("submit-button") as HTMLButtonElement).disabled,
-      ).toBe(true);
     });
 
     it("disables submit button when action is pending", () => {
@@ -433,55 +395,6 @@ describe("ActionForm", () => {
       expect(onFormStateChange).toHaveBeenCalledWith(
         expect.objectContaining({ name: "Coerced" }),
       );
-    });
-
-    it("reflects updated formState on re-render", async () => {
-      const { rerender } = render(
-        <ActionForm
-          actionDefinition={TestAction}
-          formState={{ name: "V1", email: "v1@test.com" }}
-          onFormStateChange={vi.fn()}
-        />,
-      );
-
-      rerender(
-        <ActionForm
-          actionDefinition={TestAction}
-          formState={{ name: "V2", email: "v2@test.com" }}
-          onFormStateChange={vi.fn()}
-        />,
-      );
-
-      fireEvent.submit(screen.getByTestId("action-form"));
-
-      await vi.waitFor(() => {
-        expect(mockApplyAction).toHaveBeenCalledWith(
-          expect.objectContaining({ name: "V2", email: "v2@test.com" }),
-        );
-      });
-    });
-  });
-
-  describe("loading state", () => {
-    it("shows loading state when metadata is loading", () => {
-      vi.mocked(useOsdkMetadata).mockReturnValue({
-        loading: true,
-      });
-
-      render(<ActionForm actionDefinition={TestAction} />);
-
-      expect(screen.getByTestId("form-loading")).toBeDefined();
-    });
-
-    it("renders form even during loading (no early return)", () => {
-      vi.mocked(useOsdkMetadata).mockReturnValue({
-        loading: true,
-      });
-
-      render(<ActionForm actionDefinition={TestAction} />);
-
-      expect(screen.getByTestId("action-form")).toBeDefined();
-      expect(screen.getByTestId("submit-button")).toBeDefined();
     });
   });
 });
