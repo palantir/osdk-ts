@@ -15,7 +15,7 @@
  */
 
 import type { ObjectTypeDefinition } from "@osdk/api";
-import { renderHook } from "@testing-library/react";
+import { act, renderHook } from "@testing-library/react";
 import * as React from "react";
 import { beforeEach, describe, expect, it, vitest } from "vitest";
 import { OsdkContext2 } from "../src/new/OsdkContext2.js";
@@ -28,10 +28,12 @@ const MockObjectType = {
 
 describe("useOsdkObjects enabled option", () => {
   const mockObserveList = vitest.fn();
+  const mockInvalidateObjectType = vitest.fn().mockResolvedValue(undefined);
 
   const createWrapper = () => {
     const observableClient = {
       observeList: mockObserveList,
+      invalidateObjectType: mockInvalidateObjectType,
       canonicalizeWhereClause: vitest.fn((w) => w),
     } as any;
 
@@ -44,6 +46,7 @@ describe("useOsdkObjects enabled option", () => {
 
   beforeEach(() => {
     mockObserveList.mockClear();
+    mockInvalidateObjectType.mockClear();
     mockObserveList.mockReturnValue({ unsubscribe: vitest.fn() });
   });
 
@@ -149,5 +152,54 @@ describe("useOsdkObjects enabled option", () => {
       }),
       expect.any(Object),
     );
+  });
+
+  it("should return hasMore as false before data loads", () => {
+    const wrapper = createWrapper();
+
+    const { result } = renderHook(
+      () => useOsdkObjects(MockObjectType),
+      { wrapper },
+    );
+
+    expect(result.current.hasMore).toBe(false);
+  });
+
+  it("should return objectSet as undefined before data loads", () => {
+    const wrapper = createWrapper();
+
+    const { result } = renderHook(
+      () => useOsdkObjects(MockObjectType),
+      { wrapper },
+    );
+
+    expect(result.current.objectSet).toBeUndefined();
+  });
+
+  it("should return refetch as a function", () => {
+    const wrapper = createWrapper();
+
+    const { result } = renderHook(
+      () => useOsdkObjects(MockObjectType),
+      { wrapper },
+    );
+
+    expect(typeof result.current.refetch).toBe("function");
+  });
+
+  it("should call invalidateObjectType when refetch is invoked", async () => {
+    const wrapper = createWrapper();
+
+    const { result } = renderHook(
+      () => useOsdkObjects(MockObjectType),
+      { wrapper },
+    );
+
+    await act(async () => {
+      result.current.refetch();
+    });
+
+    expect(mockInvalidateObjectType).toHaveBeenCalledTimes(1);
+    expect(mockInvalidateObjectType).toHaveBeenCalledWith("MockObject");
   });
 });

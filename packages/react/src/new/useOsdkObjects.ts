@@ -19,6 +19,7 @@ import type {
   LinkedType,
   LinkNames,
   ObjectOrInterfaceDefinition,
+  ObjectSet,
   Osdk,
   PropertyKeys,
   SimplePropertyDef,
@@ -168,6 +169,21 @@ export interface UseOsdkListResult<
    * The total count of objects matching the query (if available from the API)
    */
   totalCount?: string;
+
+  /**
+   * Whether there are more pages available to fetch
+   */
+  hasMore: boolean;
+
+  /**
+   * The underlying ObjectSet for composition with useObjectSetLinks or useObjectSetAggregation
+   */
+  objectSet: ObjectSet<T, RDPs> | undefined;
+
+  /**
+   * Refetch data by invalidating the object type cache
+   */
+  refetch: () => void;
 }
 
 const EMPTY_WHERE = {};
@@ -327,6 +343,10 @@ export function useOsdkObjects<
 
   const listPayload = React.useSyncExternalStore(subscribe, getSnapShot);
 
+  const refetch = React.useCallback(async () => {
+    await observableClient.invalidateObjectType(type.apiName);
+  }, [observableClient, type.apiName]);
+
   return React.useMemo(() => {
     let error: Error | undefined;
     if (listPayload && "error" in listPayload && listPayload.error) {
@@ -345,6 +365,9 @@ export function useOsdkObjects<
         : false,
       isOptimistic: listPayload?.isOptimistic ?? false,
       totalCount: listPayload?.totalCount,
+      hasMore: listPayload?.hasMore ?? false,
+      objectSet: listPayload?.objectSet,
+      refetch,
     };
-  }, [listPayload, enabled]);
+  }, [listPayload, enabled, refetch]);
 }

@@ -118,12 +118,8 @@ export class InterfaceListQuery extends ListQuery {
     );
 
     return {
+      ...super.createPayload(params),
       resolvedList,
-      isOptimistic: params.isOptimistic,
-      fetchMore: this.fetchMore,
-      hasMore: this.nextPageToken != null,
-      status: params.status,
-      lastUpdated: params.lastUpdated,
     };
   }
 

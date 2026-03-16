@@ -150,6 +150,7 @@ export interface ObserveObjectsCallbackArgs<
   hasMore: boolean;
   status: Status;
   totalCount?: string;
+  objectSet: ObjectSet<T>;
 }
 
 export interface ObserveObjectSetArgs<
