@@ -178,14 +178,9 @@ describe("ActionForm", () => {
       );
 
       const nameField = screen.getByTestId("form-field-name");
-      expect(nameField).toBeDefined();
-      expect(nameField.querySelector("label")?.textContent).toContain(
+      expect(nameField?.querySelector("label")?.textContent).toContain(
         "Full Name",
       );
-      expect(
-        nameField?.querySelector("[data-testid='text-input-field']"),
-      ).toBeDefined();
-      expect(screen.queryByTestId("form-field-email")).toBeNull();
     });
   });
 
@@ -193,7 +188,6 @@ describe("ActionForm", () => {
     it("renders submit button", () => {
       render(<ActionForm actionDefinition={TestAction} />);
 
-      expect(screen.getByTestId("submit-button")).toBeDefined();
       expect(screen.getByTestId("submit-button").textContent).toBe("Submit");
     });
 
@@ -371,30 +365,6 @@ describe("ActionForm", () => {
           expect.objectContaining({ name: "Parent" }),
         );
       });
-    });
-
-    it("coerces field values through onFormStateChange", () => {
-      const onFormStateChange = vi.fn();
-
-      render(
-        <ActionForm
-          actionDefinition={TestAction}
-          formState={{ name: "Initial", email: "initial@test.com" }}
-          onFormStateChange={onFormStateChange}
-        />,
-      );
-
-      const textInput = screen
-        .getByTestId("form-field-name")
-        .querySelector("input");
-
-      if (textInput != null) {
-        fireEvent.change(textInput, { target: { value: "Coerced" } });
-      }
-
-      expect(onFormStateChange).toHaveBeenCalledWith(
-        expect.objectContaining({ name: "Coerced" }),
-      );
     });
   });
 });

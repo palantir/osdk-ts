@@ -86,12 +86,12 @@ export function ActionForm<Q extends ActionDefinition<unknown>>({
       onError?.({ type: "submission", error: e });
     }
   }, [
-    effectiveFormState,
     onSubmit,
+    effectiveFormState,
     osdkApplyAction,
     onSuccess,
-    onError,
     resetForm,
+    onError,
   ]);
 
   const handleFieldValueChange = useCallback(

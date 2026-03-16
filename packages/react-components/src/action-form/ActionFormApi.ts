@@ -19,7 +19,7 @@ import type {
   ActionEditResponse,
   ActionValidationResponse,
 } from "@osdk/api";
-import type { ActionValidationError, ApplyActionOptions } from "@osdk/client";
+import type { ActionValidationError } from "@osdk/client";
 import type {
   ActionParameters,
   FieldKey,
@@ -66,18 +66,17 @@ interface BaseActionFormInputProps<Q extends ActionDefinition<unknown>> {
 
   /**
    * If supplied, this will override the default submit action
-   * By default, the action's applyAction will be called with $validateOnly: false
+   * By default, the action's applyAction will be called
    *
    * @param formState all field values when onSubmit is called
-   * @param applyAction the function to execute the action. Call it with $validateOnly: true options to run validation mode onSubmit.
+   * @param applyAction the function to execute the action
    * @returns a promise of the submission response
    */
   onSubmit?: (
     formState: FormState<Q>,
     applyAction: (
       args: ActionParameters<Q>,
-      options?: ApplyActionOptions,
-    ) => Promise<ActionEditResponse | ActionValidationResponse | undefined>,
+    ) => Promise<ActionEditResponse | undefined>,
   ) => Promise<unknown> | void;
 
   /**
