@@ -83,6 +83,91 @@ The components that this package will provide are:
 | `FilterList`  | Visualize a high-level summary of objects data to allow users to filter that data. | -                              |
 | `ActionForm`  | Auto-generated form for executing Ontology Actions                                 | -                              |
 
+## Component Architecture
+
+This package follows a 2-layer architecture pattern to maximize flexibility and reusability:
+
+### Architecture Overview
+
+1. **OSDK Component Layer** (e.g., `ObjectTable`)
+   - Handles data fetching and processing using @osdk/react hooks
+   - Converts OSDK types to primitive data structures
+   - Manages OSDK-specific operations like filtering and actions
+   - No styling or component interactions
+
+2. **Base Component Layer** (e.g., `BaseTable`)
+   - Pure component layer with no OSDK imports
+   - Contains all component interactions and styling
+   - Accepts primitive props like `string[]`, arrays, and objects
+   - Can be reused with custom data fetching layers
+
+### Example: ObjectTable and BaseTable
+
+```tsx
+// ObjectTable - Data layer
+- Fetches OSDK object data using useOsdkObjects
+- Handles OSDK-specific operations (filtering, sorting, actions)
+- Converts OSDK objects to table row data
+- Manages object property metadata
+- Passes primitive data to BaseTable
+
+// BaseTable - Component layer  
+- Pure table component with no OSDK imports
+- Handles all UI interactions (sorting, selection, editing)
+- Manages component state
+```
+
+### Benefits
+
+- **Flexibility**: Users can build custom components using the Base layer with their own data sources
+- **Separation of Concerns**: Data fetching logic is cleanly separated from UI logic
+- **Reusability**: Base components can be exported and used independently
+- **Testing**: Base components can be tested without OSDK dependencies
+
+### Implementation Guidelines
+
+When building new components:
+1. Start with the Base component focusing on interactions and styling
+2. Create the OSDK wrapper that handles data fetching and type conversion
+3. Keep the Base component API simple using primitive types
+4. Document both layers for users who want to customize
+
+## Folder Structure
+
+The codebase is organized to support the 2-layer architecture:
+
+```
+src/
+├── base-components/         # Reusable UI primitives (internal use only)
+│   ├── select/
+│   ├── checkbox/
+│   ├── dialog/
+│   └── ...
+├── object-table/           # OSDK component folder
+│   ├── ObjectTable.tsx     # OSDK data layer component
+│   ├── Table.tsx           # Base component (exported as BaseTable)
+│   ├── hooks/              # React hooks for table functionality
+│   ├── utils/              # Helper utilities and types
+│   └── components/         # Supporting React components
+└── public/
+    └── experimental.ts     # Public API exports
+```
+
+### Export Strategy
+
+- **OSDK Components**: Exported through `experimental.ts` (e.g., `ObjectTable`, `FilterList`)
+- **Base Components**: Select base components are exported for advanced use cases (e.g., `BaseTable`, `BaseFilterList`)
+- **UI Primitives**: The `base-components/` folder contains internal UI primitives that are **NOT exported**
+
+### Why Not Export UI Primitives?
+
+This package focuses on complex, Ontology-aware components with built-in data fetching. For simple UI components (buttons, inputs, dialogs), users should use established component libraries like Blueprint.js or their preferred design system. This approach:
+
+- Keeps the package focused on its core value proposition
+- Avoids duplicating well-solved UI problems
+- Reduces maintenance burden
+- Encourages consistent use of existing design systems
+
 ## Custom Styling
 
 See `@osdk/react-components-styles` README on how to apply custom themes and styling to the components.
