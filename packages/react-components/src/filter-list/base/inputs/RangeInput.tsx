@@ -32,7 +32,7 @@ import {
   type HistogramBucket,
 } from "./createHistogramBuckets.js";
 import styles from "./RangeInput.module.css";
-import sharedStyles from "./shared.module.css";
+import { isEmptyArray, useStaleData } from "./useStaleData.js";
 
 const DEBOUNCE_MS = 300;
 
@@ -123,13 +123,19 @@ function RangeInputInner<T>({
     };
   }, [debouncedMinChange, debouncedMaxChange]);
 
+  const { displayData: displayPairs } = useStaleData(
+    valueCountPairs,
+    isEmptyArray,
+    isLoading,
+  );
+
   const computedRange = useMemo(() => {
-    if (valueCountPairs.length === 0) return { min: undefined, max: undefined };
-    const min = valueCountPairs.reduce(
+    if (displayPairs.length === 0) return { min: undefined, max: undefined };
+    const min = displayPairs.reduce(
       (acc, p) => Math.min(acc, config.toNumber(p.value)),
       Infinity,
     );
-    const max = valueCountPairs.reduce(
+    const max = displayPairs.reduce(
       (acc, p) => Math.max(acc, config.toNumber(p.value)),
       -Infinity,
     );
@@ -137,7 +143,7 @@ function RangeInputInner<T>({
       min: config.fromNumber(min),
       max: config.fromNumber(max),
     };
-  }, [valueCountPairs, config]);
+  }, [displayPairs, config]);
 
   const dataRange = useMemo(() => ({
     dataMin: computedRange.min,
@@ -147,7 +153,7 @@ function RangeInputInner<T>({
   const buckets = useMemo<Array<HistogramBucket<T>>>(() => {
     if (
       !showHistogram
-      || valueCountPairs.length === 0
+      || displayPairs.length === 0
       || computedRange.min === undefined
       || computedRange.max === undefined
     ) {
@@ -155,12 +161,12 @@ function RangeInputInner<T>({
     }
 
     return createHistogramBuckets(
-      valueCountPairs,
+      displayPairs,
       { min: computedRange.min, max: computedRange.max },
       config.toNumber,
       config.fromNumber,
     );
-  }, [showHistogram, valueCountPairs, computedRange, config]);
+  }, [showHistogram, displayPairs, computedRange, config]);
 
   const maxBucketCount = useMemo(() => getMaxBucketCount(buckets), [buckets]);
 
@@ -188,8 +194,11 @@ function RangeInputInner<T>({
       style={style}
       data-loading={isLoading}
     >
-      {showHistogram && buckets.length > 0 && (
-        <div className={styles.histogramContainer}>
+      {showHistogram && (
+        <div
+          className={styles.histogramContainer}
+          data-empty={buckets.length === 0}
+        >
           {buckets.map((bucket, index) => {
             const height = (bucket.count / maxBucketCount) * 100;
             const isInRange = (minValue === undefined
@@ -255,12 +264,6 @@ function RangeInputInner<T>({
           />
         </div>
       </div>
-
-      {isLoading && (
-        <div className={sharedStyles.loadingMessage}>
-          Loading...
-        </div>
-      )}
     </div>
   );
 }

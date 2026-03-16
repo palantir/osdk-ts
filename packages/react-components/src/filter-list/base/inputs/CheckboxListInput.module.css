@@ -18,16 +18,26 @@
   display: flex;
   flex-direction: column;
   gap: var(--osdk-filter-checkbox-list-gap);
+  transition: opacity var(--osdk-filter-content-fade-duration);
+}
+
+.checkboxList[data-loading="true"] {
+  opacity: 0.5;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .checkboxList {
+    transition: none;
+  }
 }
 
 .checkboxRow {
   padding: var(--osdk-filter-checkbox-row-padding);
-}
+  border-radius: var(--osdk-filter-checkbox-row-border-radius);
 
-.checkboxRow[data-select-all] {
-  border-bottom: var(--osdk-filter-checkbox-selectall-border-bottom);
-  padding-bottom: calc(var(--osdk-filter-checkbox-row-padding) + 2px);
-  margin-bottom: 2px;
+  &:hover {
+    background: var(--osdk-filter-checkbox-row-bg-hover);
+  }
 }
 
 .checkboxLabel {

@@ -18,8 +18,11 @@ import { Button } from "@base-ui/react/button";
 import classnames from "classnames";
 import React, { memo, useCallback, useMemo, useState } from "react";
 import type { PropertyAggregationValue } from "../../types/AggregationTypes.js";
+import { filterValuesBySearch } from "../../utils/filterValues.js";
 import styles from "./ListogramInput.module.css";
+import { ListogramSkeleton } from "./ListogramSkeleton.js";
 import sharedStyles from "./shared.module.css";
+import { isEmptyArray, useStaleData } from "./useStaleData.js";
 
 export type ListogramDisplayMode = "full" | "count" | "minimal";
 
@@ -35,6 +38,7 @@ interface ListogramInputProps {
   className?: string;
   style?: React.CSSProperties;
   maxVisibleItems?: number;
+  searchQuery?: string;
 }
 
 function ListogramInputInner({
@@ -49,8 +53,15 @@ function ListogramInputInner({
   className,
   style,
   maxVisibleItems,
+  searchQuery,
 }: ListogramInputProps): React.ReactElement {
   const [isExpanded, setIsExpanded] = useState(false);
+
+  const { displayData: stableValues } = useStaleData(
+    values,
+    isEmptyArray,
+    isLoading,
+  );
 
   const selectedSet = useMemo(() => new Set(selectedValues), [selectedValues]);
 
@@ -65,38 +76,43 @@ function ListogramInputInner({
     [selectedValues, selectedSet, onChange],
   );
 
-  const displayValues = useMemo(() => {
-    if (isExpanded || !maxVisibleItems) return values;
-    return values.slice(0, maxVisibleItems);
-  }, [values, maxVisibleItems, isExpanded]);
+  const filteredValues = useMemo(() => {
+    if (searchQuery) {
+      return filterValuesBySearch(stableValues, searchQuery, (v) => v.value);
+    }
+    return stableValues;
+  }, [stableValues, searchQuery]);
 
-  const hasMore = maxVisibleItems != null && values.length > maxVisibleItems;
+  const displayValues = useMemo(() => {
+    if (isExpanded || !maxVisibleItems) return filteredValues;
+    return filteredValues.slice(0, maxVisibleItems);
+  }, [filteredValues, maxVisibleItems, isExpanded]);
+
+  const hasMore = maxVisibleItems != null
+    && filteredValues.length > maxVisibleItems;
 
   return (
     <div
       className={classnames(styles.listogram, className)}
       style={style}
-      data-loading={isLoading}
+      data-loading={isLoading && filteredValues.length > 0}
     >
-      {isLoading && (
-        <div className={sharedStyles.loadingMessage}>
-          Loading values...
-        </div>
-      )}
-
       {error && (
         <div className={sharedStyles.errorMessage}>
           Error loading values: {error.message}
         </div>
       )}
 
-      {!isLoading && !error && values.length === 0 && (
+      {!error && filteredValues.length === 0 && isLoading && (
+        <ListogramSkeleton />
+      )}
+      {!error && filteredValues.length === 0 && !isLoading && (
         <div className={sharedStyles.emptyMessage}>
           No values available
         </div>
       )}
 
-      {(values.length > 0 || isLoading) && (
+      {filteredValues.length > 0 && (
         <div className={styles.container}>
           {displayValues.map(({ value, count }) => {
             const percentage = maxCount > 0 ? (count / maxCount) * 100 : 0;
@@ -140,7 +156,7 @@ function ListogramInputInner({
               className={styles.row}
               onClick={() => setIsExpanded(true)}
             >
-              View all ({values.length})
+              View all ({filteredValues.length})
             </Button>
           )}
         </div>
