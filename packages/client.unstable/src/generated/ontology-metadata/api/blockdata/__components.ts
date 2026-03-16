@@ -666,6 +666,7 @@ export interface OntologyIrMarketplaceInterfaceType {
   apiName: _api_InterfaceTypeApiName;
   displayMetadata: MarketplaceInterfaceTypeDisplayMetadata;
   extendsInterfaces: Array<_api_InterfaceTypeApiName>;
+  extendsInterfacesMetadata: Array<OntologyIrMarketplaceInterfaceType>;
   links: Array<OntologyIrMarketplaceInterfaceLinkType>;
   properties: Array<_api_OntologyIrSharedPropertyType>;
   propertiesV2: Record<

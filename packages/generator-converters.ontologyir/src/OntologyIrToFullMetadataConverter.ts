@@ -30,6 +30,7 @@ import type {
 import type * as Ontologies from "@osdk/foundry.ontologies";
 
 import { consola } from "consola";
+import * as fs from "fs";
 import { spawnSync } from "node:child_process";
 import { hash } from "node:crypto";
 import { accessSync, constants } from "node:fs";
@@ -64,6 +65,7 @@ interface IFunctionDiscovererConstructor {
     program: ts.Program,
     entryPointPath: string,
     fullFilePath: string,
+    entityMetadataMapping?: unknown,
   ): IFunctionDiscoverer;
 }
 
@@ -76,6 +78,7 @@ interface IPythonDiscoveredFunction {
   inputs: Array<{ name: string; dataType: IDataType; required?: boolean }>;
   output: { type: "single"; single: { dataType: IDataType } };
   customTypes?: Record<string, IPythonCustomType>;
+  objectTypes?: Record<string, { objectApiName: string }>;
 }
 
 interface IPythonCustomType {
@@ -270,6 +273,11 @@ export class OntologyIrToFullMetadataConverter {
     nodeModulesPath?: string,
     pythonFunctionsDir?: string,
     pythonRootProjectDir?: string,
+    irOutputFile?: string,
+    previewMetadata?: Pick<
+      Ontologies.OntologyFullMetadata,
+      "ontology" | "objectTypes" | "interfaceTypes"
+    >,
   ): Promise<
     Record<Ontologies.VersionedQueryTypeApiName, Ontologies.QueryTypeV2>
   > {
@@ -279,6 +287,8 @@ export class OntologyIrToFullMetadataConverter {
       const tsQueries = await this.discoverTypeScriptFunctions(
         functionsDir,
         nodeModulesPath,
+        irOutputFile,
+        previewMetadata,
       );
       queries.push(...tsQueries);
     }
@@ -314,6 +324,11 @@ export class OntologyIrToFullMetadataConverter {
   private static async discoverTypeScriptFunctions(
     functionsDir: string,
     nodeModulesPath?: string,
+    irOutputFile?: string,
+    previewMetadata?: Pick<
+      Ontologies.OntologyFullMetadata,
+      "ontology" | "objectTypes" | "interfaceTypes"
+    >,
   ): Promise<Ontologies.QueryTypeV2[]> {
     const discoveryModules = await loadFunctionDiscoverer(nodeModulesPath);
     if (!discoveryModules) {
@@ -332,8 +347,71 @@ export class OntologyIrToFullMetadataConverter {
       discoveryTs,
     );
 
-    const fd = new FunctionDiscoverer(program, projectDir, functionsDir);
+    // Construct entity metadata mapping from preview metadata so FunctionDiscoverer
+    // can resolve ontology types (Client, Osdk.Instance, ontology edits, etc.)
+    let entityMetadataMapping: unknown;
+    if (previewMetadata) {
+      if (!previewMetadata.ontology?.rid) {
+        throw new Error("previewMetadata.ontology.rid is required");
+      }
+      const ontologyRid = previewMetadata.ontology.rid;
+      const objectTypesMap: Record<
+        string,
+        {
+          objectTypeId: string;
+          linkTypes: Record<string, { linkTypeId: string }>;
+        }
+      > = {};
+      if (previewMetadata.objectTypes) {
+        for (
+          const [apiName, objData] of Object.entries(
+            previewMetadata.objectTypes,
+          )
+        ) {
+          const linkTypesMap: Record<string, { linkTypeId: string }> = {};
+          if (objData.linkTypes) {
+            for (const lt of objData.linkTypes) {
+              linkTypesMap[lt.apiName] = {
+                linkTypeId: lt.linkTypeRid || lt.apiName,
+              };
+            }
+          }
+          objectTypesMap[apiName] = {
+            objectTypeId: apiName,
+            linkTypes: linkTypesMap,
+          };
+        }
+      }
+      const interfaceTypesMap: Record<
+        string,
+        { interfaceTypeRid: string }
+      > = {};
+      if (previewMetadata.interfaceTypes) {
+        for (const apiName of Object.keys(previewMetadata.interfaceTypes)) {
+          interfaceTypesMap[apiName] = { interfaceTypeRid: apiName };
+        }
+      }
+      entityMetadataMapping = {
+        ontologies: {
+          [ontologyRid]: {
+            objectTypes: objectTypesMap,
+            interfaceTypes: interfaceTypesMap,
+          },
+        },
+      };
+    }
+
+    const fd = new FunctionDiscoverer(
+      program,
+      projectDir,
+      functionsDir,
+      entityMetadataMapping,
+    );
     const functions = fd.discover();
+
+    if (irOutputFile) {
+      fs.writeFileSync(irOutputFile, JSON.stringify(functions));
+    }
 
     const queries: Ontologies.QueryTypeV2[] = [];
     functions.discoveredFunctions.forEach((func: IDiscoveredFunction) => {
@@ -382,11 +460,36 @@ export class OntologyIrToFullMetadataConverter {
     for (const func of pythonResult.functions) {
       const functionName = func.locator.python3.functionName;
       const customTypes = func.customTypes ?? {};
+      const objectTypes = func.objectTypes;
+
+      // Resolve object type references: Python discovery returns object
+      // parameters as {type: "object", object: "<uuid>"} where the UUID maps
+      // to the function's objectTypes field. Convert these to the format
+      // expected by convertDataType: {type: "object", object: {objectTypeId: "<apiName>"}}.
+      const resolvedInputs = func.inputs.map((input) => {
+        if (
+          input.dataType.type === "object"
+          && typeof input.dataType.object === "string"
+          && objectTypes?.[input.dataType.object]
+        ) {
+          return {
+            ...input,
+            dataType: {
+              ...input.dataType,
+              object: {
+                objectTypeId: objectTypes[input.dataType.object].objectApiName,
+              },
+            },
+          };
+        }
+        return input;
+      });
+
       const queryType: Ontologies.QueryTypeV2 = {
         apiName: functionName,
         rid: `ri.function-registry.main.function.${functionName}`,
         version: "0.0.0",
-        parameters: func.inputs.reduce<
+        parameters: resolvedInputs.reduce<
           Record<ApiName, Ontologies.QueryParameterV2>
         >((acc, input) => {
           acc[input.name] = {

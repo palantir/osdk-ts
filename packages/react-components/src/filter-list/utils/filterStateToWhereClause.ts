@@ -22,8 +22,27 @@ import { getFilterKey } from "./getFilterKey.js";
 
 type PropertyFilter = Record<string, unknown> | boolean | string | number;
 
-function isDate(value: unknown): value is Date {
-  return value instanceof Date;
+function liftCompoundPropertyFilter(
+  propertyKey: string,
+  filter: PropertyFilter,
+): Record<string, unknown> {
+  if (typeof filter === "object" && !Array.isArray(filter)) {
+    if ("$and" in filter && Array.isArray(filter.$and)) {
+      return {
+        $and: (filter.$and as PropertyFilter[]).map((f) =>
+          liftCompoundPropertyFilter(propertyKey, f)
+        ),
+      };
+    }
+    if ("$or" in filter && Array.isArray(filter.$or)) {
+      return {
+        $or: (filter.$or as PropertyFilter[]).map((f) =>
+          liftCompoundPropertyFilter(propertyKey, f)
+        ),
+      };
+    }
+  }
+  return { [propertyKey]: filter };
 }
 
 function filterStateToPropertyFilter(
@@ -124,10 +143,10 @@ function filterStateToPropertyFilter(
       if (state.selectedValues.length === 0) {
         return undefined;
       }
-      const isDateValue = state.selectedValues[0] instanceof Date;
-      const values: (string | number | boolean)[] = isDateValue
-        ? state.selectedValues.map((v) => (v as Date).toISOString())
-        : state.selectedValues as (string | number | boolean)[];
+      const values: (string | number | boolean)[] = state.selectedValues.map(
+        (v) =>
+          v instanceof Date ? v.toISOString() : v as string | number | boolean,
+      );
       const filter = values.length === 1 ? values[0] : { $in: values };
       if (state.isExcluding) {
         return { $not: filter };
@@ -146,10 +165,16 @@ function filterStateToPropertyFilter(
       if (conditions.length === 0) {
         return undefined;
       }
+      let rangeFilter: PropertyFilter;
       if (conditions.length === 1) {
-        return conditions[0];
+        rangeFilter = conditions[0];
+      } else {
+        rangeFilter = { $and: conditions };
       }
-      return { $and: conditions };
+      if (state.isExcluding) {
+        return { $not: rangeFilter };
+      }
+      return rangeFilter;
     }
 
     // These filter types are handled separately in buildWhereClause
@@ -182,6 +207,7 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
   filterStates: Map<string, FilterState>,
   operator: "and" | "or",
   objectType?: Q,
+  excludeFilterKey?: string,
 ): WhereClause<Q> {
   if (!definitions || definitions.length === 0) {
     return {} as WhereClause<Q>;
@@ -190,7 +216,11 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
   const clauses: Array<Record<string, unknown>> = [];
 
   for (const definition of definitions) {
-    const state = filterStates.get(getFilterKey(definition));
+    const key = getFilterKey(definition);
+    if (key === excludeFilterKey) {
+      continue;
+    }
+    const state = filterStates.get(key);
 
     if (!state) {
       continue;
@@ -200,7 +230,9 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
       case "PROPERTY": {
         const filter = filterStateToPropertyFilter(state);
         if (filter !== undefined) {
-          clauses.push({ [definition.key]: filter });
+          clauses.push(
+            liftCompoundPropertyFilter(definition.key as string, filter),
+          );
         }
         break;
       }

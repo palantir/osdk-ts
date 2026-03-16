@@ -169,10 +169,21 @@ export function EmployeePanel({
   const { links: directReports, isLoading: reportsLoading } = useLinks(
     employee,
     "peeps",
-    { orderBy: { fullName: "asc" } },
+    {
+      orderBy: { fullName: "asc" },
+      $select: ["fullName", "employeeNumber", "jobTitle", "primaryOfficeId"],
+    },
   );
 
-  const { links: manager } = useLinks(employee, "lead");
+  const { links: manager } = useLinks(employee, "lead", {
+    $select: [
+      "fullName",
+      "employeeNumber",
+      "jobTitle",
+      "leadEmployeeNumber",
+      "primaryOfficeId",
+    ],
+  });
   const managerObj = manager?.[0];
 
   const { links: employeeOffice, isLoading: officeLoading } = useLinks(
@@ -191,7 +202,11 @@ export function EmployeePanel({
   const { links: colleagues, isLoading: colleaguesLoading } = useLinks(
     employeeOfficeObj,
     "occupants",
-    { enabled: !!employeeOfficeObj, orderBy: { fullName: "asc" } },
+    {
+      enabled: !!employeeOfficeObj,
+      orderBy: { fullName: "asc" },
+      $select: ["fullName", "employeeNumber", "jobTitle", "primaryOfficeId"],
+    },
   );
   const colleaguesExcludingSelf = React.useMemo(
     () =>
@@ -202,7 +217,11 @@ export function EmployeePanel({
   const { links: peerReports, isLoading: peersLoading } = useLinks(
     managerObj,
     "peeps",
-    { enabled: !!managerObj, orderBy: { fullName: "asc" } },
+    {
+      enabled: !!managerObj,
+      orderBy: { fullName: "asc" },
+      $select: ["fullName", "employeeNumber", "jobTitle", "primaryOfficeId"],
+    },
   );
   const peersExcludingSelf = React.useMemo(
     () =>
@@ -213,7 +232,15 @@ export function EmployeePanel({
   const { links: skipLevelManager, isLoading: skipLevelLoading } = useLinks(
     managerObj,
     "lead",
-    { enabled: !!managerObj },
+    {
+      enabled: !!managerObj,
+      $select: [
+        "fullName",
+        "employeeNumber",
+        "jobTitle",
+        "primaryOfficeId",
+      ],
+    },
   );
   const skipLevelManagerObj = skipLevelManager?.[0];
 

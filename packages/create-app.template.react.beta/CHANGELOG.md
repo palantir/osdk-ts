@@ -1,5 +1,24 @@
 # @osdk/create-app.template.react
 
+## 2.8.0-beta.20
+
+## 2.8.0-beta.19
+
+## 2.8.0-beta.18
+
+## 2.8.0-beta.17
+
+### Minor Changes
+
+- 5562739: React/Vue templates UI polish
+
+## 2.8.0-beta.16
+
+### Minor Changes
+
+- 0ff602a: Bump vite to ^7.3.1
+- e22f91c: Make template a11y compatible
+
 ## 2.8.0-beta.15
 
 ## 2.8.0-beta.14

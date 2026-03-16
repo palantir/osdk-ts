@@ -1,5 +1,11 @@
 # @osdk/shared.net.fetch
 
+## 1.8.0-beta.3
+
+### Minor Changes
+
+- 4a79eb1: Support QoS-Retry-Hint response header
+
 ## 1.8.0-beta.2
 
 ### Minor Changes

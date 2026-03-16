@@ -15,19 +15,21 @@
  */
 
 import type { ObjectMetadata } from "@osdk/api";
-import * as OntologiesV2 from "@osdk/foundry.ontologies";
-import { wireObjectTypeFullMetadataToSdkObjectMetadata } from "@osdk/generator-converters";
+import * as ObjectTypesV2 from "@osdk/foundry.ontologies/ObjectTypeV2";
 import type { MinimalClient } from "../MinimalClientContext.js";
 
 export async function loadFullObjectMetadata(
   client: MinimalClient,
   objectType: string,
 ): Promise<ObjectMetadata & { rid: string }> {
-  const full = await OntologiesV2.ObjectTypesV2.getFullMetadata(
+  const full = await ObjectTypesV2.getFullMetadata(
     client,
     await client.ontologyRid,
     objectType,
     { preview: true, branch: client.branch },
+  );
+  const { wireObjectTypeFullMetadataToSdkObjectMetadata } = await import(
+    "@osdk/generator-converters"
   );
   const ret = wireObjectTypeFullMetadataToSdkObjectMetadata(full, true);
   return { ...ret };

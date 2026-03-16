@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,10 @@ import type { Canonical } from "../Canonical.js";
 import type { QuerySubscription } from "../QuerySubscription.js";
 import type { Rdp } from "../RdpCanonicalizer.js";
 import { tombstone } from "../tombstone.js";
-import { mergeObjectFields } from "../utils/rdpFieldOperations.js";
+import {
+  mergeObjectFields,
+  mergeSelectFields,
+} from "../utils/rdpFieldOperations.js";
 import { type ObjectCacheKey } from "./ObjectCacheKey.js";
 import { ObjectQuery } from "./ObjectQuery.js";
 
@@ -50,7 +53,7 @@ export class ObjectsHelper extends AbstractHelper<
     const apiName = typeof options.apiName === "string"
       ? options.apiName
       : options.apiName.apiName;
-    const { pk } = options;
+    const { pk, select } = options;
 
     const defType = getDefType(options.apiName);
 
@@ -70,6 +73,7 @@ export class ObjectsHelper extends AbstractHelper<
         objectCacheKey,
         { dedupeInterval: 0 },
         defType,
+        select,
       ));
   }
 
@@ -83,6 +87,7 @@ export class ObjectsHelper extends AbstractHelper<
     values: Array<ObjectHolder> | Array<Osdk.Instance<any, any, any>>,
     batch: BatchContext,
     rdpConfig?: Canonical<Rdp> | null,
+    selectFields?: ReadonlySet<string>,
   ): ObjectCacheKey[] {
     return values.map(v =>
       this.getQuery({
@@ -92,6 +97,7 @@ export class ObjectsHelper extends AbstractHelper<
         v as ObjectHolder,
         "loaded",
         batch,
+        selectFields,
       ).cacheKey
     );
   }
@@ -105,6 +111,7 @@ export class ObjectsHelper extends AbstractHelper<
     value: ObjectHolder | typeof tombstone,
     status: Status,
     batch: BatchContext,
+    selectFields?: ReadonlySet<string>,
   ): void {
     const existing = batch.read(sourceCacheKey);
     const dataChanged = !existing
@@ -118,6 +125,23 @@ export class ObjectsHelper extends AbstractHelper<
     }
 
     let valueToWrite = !dataChanged && existing ? existing.value : value;
+
+    // When a $select-filtered fetch returns partial objects, merge with
+    // existing cached data to preserve fields not in the select set.
+    const existingHolder = existing?.value;
+    const canMergeSelectFields = dataChanged
+      && selectFields
+      && selectFields.size > 0
+      && existingHolder
+      && this.isObjectHolder(existingHolder);
+
+    if (canMergeSelectFields && valueToWrite !== tombstone) {
+      valueToWrite = mergeSelectFields(
+        valueToWrite,
+        selectFields,
+        existingHolder,
+      );
+    }
 
     // When an object (e.g. from a subscription update) is written to a cache
     // key that has RDP configuration, the incoming value may lack derived

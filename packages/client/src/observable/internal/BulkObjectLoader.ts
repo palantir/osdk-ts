@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import type {
   ObjectTypeDefinition,
 } from "@osdk/api";
 import { PalantirApiError } from "@osdk/shared.net.errors";
-import { DefaultMap, DefaultWeakMap } from "mnemonist";
 import type { DeferredPromise } from "p-defer";
 import pDefer from "p-defer";
 import { additionalContext, type Client } from "../../Client.js";
@@ -28,6 +27,8 @@ import type {
   ObjectHolder,
 } from "../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import type { DefType } from "../../util/interfaceUtils.js";
+import { DefaultMap } from "./collections/DefaultMap.js";
+import { DefaultWeakMap } from "./collections/DefaultWeakMap.js";
 
 interface InternalValue {
   primaryKey: string;
@@ -38,6 +39,7 @@ interface Accumulator {
   data: InternalValue[];
   timer?: ReturnType<typeof setTimeout>;
   defType?: DefType;
+  select?: readonly string[];
 }
 
 const weakCache = new DefaultWeakMap<Client, BulkObjectLoader>(c =>
@@ -70,10 +72,14 @@ export class BulkObjectLoader {
     apiName: string,
     primaryKey: string | number | boolean,
     defType: DefType = "object",
+    select?: readonly string[],
   ): Promise<ObjectHolder> {
     const deferred = pDefer<ObjectHolder>();
 
-    const entry = this.#m.get(apiName);
+    const selectKey = select && select.length > 0
+      ? `${apiName}\0${[...select].sort().join(",")}`
+      : apiName;
+    const entry = this.#m.get(selectKey);
     entry.data.push({
       primaryKey: primaryKey as string,
       deferred,
@@ -81,6 +87,7 @@ export class BulkObjectLoader {
 
     if (entry.defType === undefined) {
       entry.defType = defType;
+      entry.select = select;
     } else if (entry.defType !== defType) {
       deferred.reject(
         new PalantirApiError(
@@ -92,13 +99,23 @@ export class BulkObjectLoader {
 
     if (!entry.timer) {
       entry.timer = setTimeout(() => {
-        this.#loadObjects(apiName, entry.data, entry.defType ?? "object");
+        this.#loadObjects(
+          apiName,
+          entry.data,
+          entry.defType ?? "object",
+          entry.select,
+        );
       }, this.#maxWait);
     }
 
     if (entry.data.length >= this.#maxEntries) {
       clearTimeout(entry.timer);
-      this.#loadObjects(apiName, entry.data, entry.defType ?? "object");
+      this.#loadObjects(
+        apiName,
+        entry.data,
+        entry.defType ?? "object",
+        entry.select,
+      );
     }
 
     return await deferred.promise;
@@ -108,12 +125,16 @@ export class BulkObjectLoader {
     apiName: string,
     arr: InternalValue[],
     defType: DefType,
+    select?: readonly string[],
   ) {
-    this.#m.delete(apiName);
+    const selectKey = select && select.length > 0
+      ? `${apiName}\0${[...select].sort().join(",")}`
+      : apiName;
+    this.#m.delete(selectKey);
 
     const loadFn = defType === "interface"
-      ? this.#loadInterfaceObjects(apiName, arr)
-      : this.#loadObjectTypeObjects(apiName, arr);
+      ? this.#loadInterfaceObjects(apiName, arr, select)
+      : this.#loadObjectTypeObjects(apiName, arr, select);
 
     loadFn.catch((e: unknown) => {
       this.#logger?.error("Unhandled exception", e);
@@ -128,7 +149,11 @@ export class BulkObjectLoader {
     });
   }
 
-  async #loadObjectTypeObjects(apiName: string, arr: InternalValue[]) {
+  async #loadObjectTypeObjects(
+    apiName: string,
+    arr: InternalValue[],
+    select?: readonly string[],
+  ) {
     const objectDef = { type: "object", apiName } as ObjectTypeDefinition;
     const objMetadata = await this.#client.fetchMetadata(objectDef);
 
@@ -144,6 +169,9 @@ export class BulkObjectLoader {
       .where(whereClause).fetchPage({
         $pageSize: pks.length,
         $includeRid: true,
+        ...(select && select.length > 0
+          ? { $select: select }
+          : {}),
       });
 
     for (const { primaryKey, deferred } of arr) {
@@ -160,7 +188,11 @@ export class BulkObjectLoader {
     }
   }
 
-  async #loadInterfaceObjects(apiName: string, arr: InternalValue[]) {
+  async #loadInterfaceObjects(
+    apiName: string,
+    arr: InternalValue[],
+    select?: readonly string[],
+  ) {
     const pks = arr.map(x => x.primaryKey);
 
     const interfaceDef = {
@@ -192,6 +224,9 @@ export class BulkObjectLoader {
       const { data } = await this.#client(objectDef)
         .where(whereClause).fetchPage({
           $pageSize: remainingPks.length,
+          ...(select && select.length > 0
+            ? { $select: select }
+            : {}),
         });
 
       for (const obj of data) {

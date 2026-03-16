@@ -24,6 +24,7 @@ import type {
   ObjectSet,
   ObjectTypeDefinition,
   Osdk,
+  OsdkBase,
   PropertyKeys,
   QueryDefinition,
   SelectArg,
@@ -40,9 +41,7 @@ import {
   __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks,
 } from "@osdk/api/unstable";
 import type { ObjectSet as WireObjectSet } from "@osdk/foundry.ontologies";
-import * as OntologiesV2 from "@osdk/foundry.ontologies";
 import { symbolClientContext as oldSymbolClientContext } from "@osdk/shared.client";
-import { createBulkLinksAsyncIterFactory } from "./__unstable/createBulkLinksAsyncIterFactory.js";
 import type { ActionSignatureFromDef } from "./actions/applyAction.js";
 import { applyAction } from "./actions/applyAction.js";
 import { additionalContext, type Client } from "./Client.js";
@@ -106,7 +105,9 @@ export function createClientInternal(
   baseUrl: string,
   ontologyRid: string | Promise<string>,
   tokenProvider: () => Promise<string>,
-  options: { logger?: Logger; branch?: string } | undefined = undefined,
+  options:
+    | { logger?: Logger; UNSTABLE_DO_NOT_USE_BRANCH?: string }
+    | undefined = undefined,
   fetchFn: typeof globalThis.fetch = fetch,
 ): Client {
   if (typeof ontologyRid === "string") {
@@ -132,7 +133,7 @@ export function createClientInternal(
       logger: options?.logger ?? new MinimalLogger(),
       transactionId: transactionRid,
       flushEdits,
-      branch: options?.branch,
+      branch: options?.UNSTABLE_DO_NOT_USE_BRANCH,
     },
     fetchFn,
     objectSetFactory,
@@ -180,9 +181,18 @@ export function createClientFromContext(clientCtx: MinimalClient) {
       switch (o.name) {
         case __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks.name:
           return {
-            getBulkLinks: createBulkLinksAsyncIterFactory(
-              clientCtx,
-            ),
+            getBulkLinks: async function*(
+              objs: Array<OsdkBase<any>>,
+              linkTypes: string[],
+            ) {
+              const { createBulkLinksAsyncIterFactory } = await import(
+                "./__unstable/createBulkLinksAsyncIterFactory.js"
+              );
+              yield* createBulkLinksAsyncIterFactory(clientCtx)(
+                objs,
+                linkTypes,
+              );
+            },
           } as any;
         case __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchOneByRid.name:
           return {
@@ -218,7 +228,10 @@ export function createClientFromContext(clientCtx: MinimalClient) {
               propertyType: L;
             }) => {
               const { data, fileName, objectType, propertyType } = args;
-              return await OntologiesV2.MediaReferenceProperties.upload(
+              const { upload } = await import(
+                "@osdk/foundry.ontologies/MediaReferenceProperty"
+              );
+              return await upload(
                 clientCtx,
                 await clientCtx.ontologyRid,
                 objectType.apiName,
@@ -315,7 +328,8 @@ export const createClient: (
   tokenProvider: () => Promise<string>,
   options?: {
     logger?: Logger;
-    branch?: string;
+    /** @beta This is an experimental feature subject to change */
+    UNSTABLE_DO_NOT_USE_BRANCH?: string;
   } | undefined,
   fetchFn?: typeof fetch | undefined,
 ) => Client = createClientInternal.bind(

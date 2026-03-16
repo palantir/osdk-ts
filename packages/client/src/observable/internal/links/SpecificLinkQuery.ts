@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,10 @@ import { OrderBySortingStrategy } from "../sorting/SortingStrategy.js";
 import type { Store } from "../Store.js";
 import type { SubjectPayload } from "../SubjectPayload.js";
 import { tombstone } from "../tombstone.js";
-import type { SpecificLinkCacheKey } from "./SpecificLinkCacheKey.js";
+import {
+  SELECT_IDX as LINK_SELECT_IDX,
+  type SpecificLinkCacheKey,
+} from "./SpecificLinkCacheKey.js";
 
 /**
  * Query implementation for retrieving linked objects from a specific object.
@@ -63,6 +66,7 @@ export class SpecificLinkQuery extends BaseListQuery<
   #linkName: string;
   #whereClause: Canonical<SimpleWhereClause>;
   #orderBy: Canonical<Record<string, "asc" | "desc" | undefined>>;
+  #select: Canonical<readonly string[]> | undefined;
 
   /**
    * Register changes to the cache specific to SpecificLinkQuery
@@ -103,6 +107,11 @@ export class SpecificLinkQuery extends BaseListQuery<
       this.#whereClause,
       this.#orderBy,
     ] = cacheKey.otherKeys;
+    this.#select = cacheKey.otherKeys[LINK_SELECT_IDX];
+  }
+
+  protected get rawSelect(): Canonical<readonly string[]> | undefined {
+    return this.#select;
   }
 
   /**
@@ -197,11 +206,16 @@ export class SpecificLinkQuery extends BaseListQuery<
       $includeRid: true;
       $orderBy?: Record<string, "asc" | "desc" | undefined>;
       $where?: Record<string, unknown>;
+      $select?: readonly string[];
     } = {
       $pageSize: this.getEffectiveFetchPageSize(),
       $nextPageToken: this.nextPageToken,
       $includeRid: true,
     };
+
+    if (this.#select && this.#select.length > 0) {
+      queryParams.$select = this.#select;
+    }
 
     if (this.#orderBy && Object.keys(this.#orderBy).length > 0) {
       queryParams.$orderBy = this.#orderBy;

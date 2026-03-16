@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { addons } from "@storybook/manager-api";
+import { addons } from "storybook/manager-api";
 
 function redirectToObjectTableIfAtRoot() {
   const url = new URL(window.location.href);

@@ -28,17 +28,17 @@ interface TableRowProps<TData extends RowData> {
     row: TData,
     cell: Cell<TData, unknown>,
   ) => React.ReactNode;
-  focusedRowId?: string | null;
+  isFocused: boolean;
   setFocusedRowId?: (rowId: string | null) => void;
   isInEditMode?: boolean;
 }
 
-function TableRowInner<TData extends RowData>({
+export function TableRow<TData extends RowData>({
   row,
   virtualRow,
   onRowClick,
   renderCellContextMenu,
-  focusedRowId,
+  isFocused,
   setFocusedRowId,
   isInEditMode,
 }: TableRowProps<TData>): React.ReactElement {
@@ -53,7 +53,7 @@ function TableRowInner<TData extends RowData>({
   return (
     <tr
       data-selected={row.getIsSelected()}
-      data-focused={focusedRowId === row.id}
+      data-focused={isFocused}
       className={styles.osdkTableRow}
       style={{
         height: `${virtualRow.size}px`,
@@ -71,7 +71,3 @@ function TableRowInner<TData extends RowData>({
     </tr>
   );
 }
-
-export const TableRow = React.memo(
-  TableRowInner,
-) as typeof TableRowInner;

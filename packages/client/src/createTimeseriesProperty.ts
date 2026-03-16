@@ -19,7 +19,7 @@ import type {
   TimeSeriesProperty,
   TimeSeriesQuery,
 } from "@osdk/api";
-import * as OntologiesV2 from "@osdk/foundry.ontologies";
+import * as TimeSeriesPropertiesV2 from "@osdk/foundry.ontologies/TimeSeriesPropertyV2";
 import type { MinimalClient } from "./MinimalClientContext.js";
 import { asyncIterPointsHelper, getTimeRange } from "./util/timeseriesUtils.js";
 
@@ -40,7 +40,7 @@ export class TimeSeriesPropertyImpl<T extends number | string>
   }
 
   public async getFirstPoint(): Promise<TimeSeriesPoint<T>> {
-    return OntologiesV2.TimeSeriesPropertiesV2.getFirstPoint(
+    return TimeSeriesPropertiesV2.getFirstPoint(
       this.#client,
       await this.#client.ontologyRid,
       ...this.#triplet,
@@ -48,7 +48,7 @@ export class TimeSeriesPropertyImpl<T extends number | string>
   }
 
   public async getLastPoint(): Promise<TimeSeriesPoint<T>> {
-    return OntologiesV2.TimeSeriesPropertiesV2.getLastPoint(
+    return TimeSeriesPropertiesV2.getLastPoint(
       this.#client,
       await this.#client.ontologyRid,
       ...this.#triplet,
@@ -76,7 +76,7 @@ export class TimeSeriesPropertyImpl<T extends number | string>
     void,
     unknown
   > {
-    const streamPointsIterator = await OntologiesV2.TimeSeriesPropertiesV2
+    const streamPointsIterator = await TimeSeriesPropertiesV2
       .streamPoints(
         this.#client,
         await this.#client.ontologyRid,

@@ -32,6 +32,7 @@ interface OfficeMapProps {
   filteredLevel: HierarchyLevel | null;
   onFilterLevelChange: (level: HierarchyLevel | null) => void;
   freezeMap?: boolean;
+  hasActiveFilters?: boolean;
 }
 
 // Custom navy-tinted dark map style
@@ -116,6 +117,7 @@ export function OfficeMap({
   filteredLevel,
   onFilterLevelChange,
   freezeMap = false,
+  hasActiveFilters = false,
 }: OfficeMapProps) {
   const mapRef = React.useRef<MapRef>(null);
 
@@ -240,6 +242,11 @@ export function OfficeMap({
         {showsOfficeMarkers(lensMode) && officesWithLocation.map((office) => {
           const [longitude, latitude] = office.location.coordinates;
           const isSelected = selectedOffice?.primaryKey_ === office.primaryKey_;
+          const hasMatchingEmployees = employeesByOffice.has(
+            office.primaryKey_,
+          );
+          const isDimmed = hasActiveFilters && !hasMatchingEmployees
+            && !isSelected;
 
           return (
             <Marker
@@ -265,6 +272,10 @@ export function OfficeMap({
                 className={`cursor-pointer transition-transform ${
                   isSelected ? "scale-125" : "hover:scale-110"
                 } focus:outline-none focus:ring-2 focus:ring-[var(--officenetwork-accent-cyan)] focus:ring-offset-2 focus:ring-offset-[var(--officenetwork-bg-base)]`}
+                style={{
+                  opacity: isDimmed ? 0.2 : 1,
+                  transition: "opacity 0.3s ease",
+                }}
               >
                 <div
                   className="size-8 rounded flex items-center justify-center text-xs font-semibold"

@@ -68,6 +68,7 @@ import { PivotCanonicalizer } from "./PivotCanonicalizer.js";
 import { Queries } from "./Queries.js";
 import { type Rdp, RdpCanonicalizer } from "./RdpCanonicalizer.js";
 import { RidListCanonicalizer } from "./RidListCanonicalizer.js";
+import { SelectCanonicalizer } from "./SelectCanonicalizer.js";
 import type { Subjects } from "./Subjects.js";
 import { WhereClauseCanonicalizer } from "./WhereClauseCanonicalizer.js";
 
@@ -100,6 +101,7 @@ export class Store {
   readonly pivotCanonicalizer: PivotCanonicalizer = new PivotCanonicalizer();
   readonly ridListCanonicalizer: RidListCanonicalizer =
     new RidListCanonicalizer();
+  readonly selectCanonicalizer: SelectCanonicalizer = new SelectCanonicalizer();
 
   readonly client: Client;
 
@@ -165,6 +167,7 @@ export class Store {
       this.intersectCanonicalizer,
       this.pivotCanonicalizer,
       this.ridListCanonicalizer,
+      this.selectCanonicalizer,
     );
     this.objects = new ObjectsHelper(this, this.cacheKeys);
     this.links = new LinksHelper(
@@ -172,6 +175,7 @@ export class Store {
       this.cacheKeys,
       this.whereCanonicalizer,
       this.orderByCanonicalizer,
+      this.selectCanonicalizer,
     );
     this.objectSets = new ObjectSetHelper(
       this,
@@ -179,6 +183,7 @@ export class Store {
       this.whereCanonicalizer,
       this.orderByCanonicalizer,
       this.rdpCanonicalizer,
+      this.selectCanonicalizer,
     );
   }
 

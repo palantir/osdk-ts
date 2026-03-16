@@ -1,5 +1,60 @@
 # @osdk/client
 
+## 2.8.0-beta.20
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.20
+- @osdk/client.unstable@2.8.0-beta.20
+- @osdk/generator-converters@2.8.0-beta.20
+
+## 2.8.0-beta.19
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.19
+- @osdk/client.unstable@2.8.0-beta.19
+- @osdk/generator-converters@2.8.0-beta.19
+
+## 2.8.0-beta.18
+
+### Minor Changes
+
+- c8384de: Add experimental branch param.
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.18
+- @osdk/client.unstable@2.8.0-beta.18
+- @osdk/generator-converters@2.8.0-beta.18
+
+## 2.8.0-beta.17
+
+### Minor Changes
+
+- 8c30908: Add support for lt and gt strings.
+
+### Patch Changes
+
+- Updated dependencies [8c30908]
+  - @osdk/api@2.8.0-beta.17
+  - @osdk/client.unstable@2.8.0-beta.17
+  - @osdk/generator-converters@2.8.0-beta.17
+
+## 2.8.0-beta.16
+
+### Minor Changes
+
+- 09e5659: add $select support to observable client and react hooks
+- 2ebe62c: package and bundle size optimizations
+
+### Patch Changes
+
+- Updated dependencies [6941b4f]
+  - @osdk/client.unstable@2.8.0-beta.16
+  - @osdk/api@2.8.0-beta.16
+  - @osdk/generator-converters@2.8.0-beta.16
+
 ## 2.8.0-beta.15
 
 ### Minor Changes

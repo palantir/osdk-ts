@@ -102,6 +102,40 @@ function filterToRdpFields(
   return createOsdkObject(value[ClientRef], objectDef, newProps);
 }
 
+export function mergeSelectFields(
+  sourceValue: ObjectHolder,
+  selectFields: ReadonlySet<string>,
+  existingValue: ObjectHolder,
+): ObjectHolder {
+  const sourceUnderlying =
+    sourceValue[UnderlyingOsdkObject] as SimpleOsdkProperties;
+  const existingUnderlying =
+    existingValue[UnderlyingOsdkObject] as SimpleOsdkProperties;
+  const objectDef = sourceValue[ObjectDefRef];
+
+  const newProps: SimpleOsdkProperties = {
+    $apiName: sourceUnderlying.$apiName,
+    $objectType: sourceUnderlying.$objectType,
+    $primaryKey: sourceUnderlying.$primaryKey,
+    $title: sourceUnderlying.$title,
+    $rid: sourceUnderlying.$rid ?? existingUnderlying.$rid,
+  };
+
+  for (const key of Object.keys(existingUnderlying)) {
+    if (key in objectDef.properties) {
+      newProps[key] = existingUnderlying[key];
+    }
+  }
+
+  for (const key of Object.keys(sourceUnderlying)) {
+    if (key in objectDef.properties && selectFields.has(key)) {
+      newProps[key] = sourceUnderlying[key];
+    }
+  }
+
+  return createOsdkObject(sourceValue[ClientRef], objectDef, newProps);
+}
+
 export function mergeObjectFields(
   sourceValue: ObjectHolder,
   sourceRdpFields: ReadonlySet<string>,

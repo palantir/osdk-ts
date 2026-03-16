@@ -1,0 +1,70 @@
+/*
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.osdkTooltipTrigger {
+  border: none;
+  background: inherit;
+}
+
+.osdkTooltipPositioner {
+  z-index: var(--osdk-tooltip-z-index);
+}
+
+.osdkTooltipPopup {
+  padding: var(--osdk-tooltip-padding);
+  background-color: var(--osdk-tooltip-bg);
+  border-radius: var(--osdk-surface-border-radius);
+  box-shadow: var(--osdk-tooltip-shadow);
+  max-width: var(--osdk-tooltip-max-width);
+  font-size: var(--osdk-tooltip-font-size);
+}
+
+/* 
+ * Hardcoded values are copied from base ui example 
+ * https://base-ui.com/react/components/tooltip 
+ *
+ * */
+.osdkTooltipArrow {
+  display: flex;
+
+  &[data-side="top"] {
+    bottom: -8px;
+    rotate: 180deg;
+  }
+
+  &[data-side="bottom"] {
+    top: -8px;
+    rotate: 0deg;
+  }
+
+  &[data-side="left"] {
+    right: -13px;
+    rotate: 90deg;
+  }
+
+  &[data-side="right"] {
+    left: -13px;
+    rotate: -90deg;
+  }
+}
+
+.tooltipArrowFill {
+  fill: var(--osdk-tooltip-bg);
+}
+
+.tooltipArrowOuterStroke {
+  fill: var(--osdk-tooltip-border-color);
+}

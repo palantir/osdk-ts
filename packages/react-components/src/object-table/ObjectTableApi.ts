@@ -55,6 +55,16 @@ export type ColumnDefinition<
   filterable?: boolean;
   editable?: boolean;
 
+  /**
+   * Additional function to validate the cell value during edit
+   *
+   * @param value the current cell value
+   * @returns a promise that resolves to an error message string if validation fails, or undefined if validation succeeds
+   */
+  validateEdit?: (
+    value: unknown,
+  ) => Promise<string | undefined>;
+
   renderCell?: (
     object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
     locator: ColumnDefinitionLocator<Q, RDPs, FunctionColumns>,
@@ -314,14 +324,22 @@ export interface ObjectTableProps<
   selectedRows?: PrimaryKeyType<Q>[];
 
   /**
+   * Indicates whether all rows are selected in controlled mode.
+   * When true, the table will show all rows as selected regardless of the selectedRows array.
+   */
+  isAllSelected?: boolean;
+
+  /**
    * Called when the row selection changes.
    * Required when row selection is controlled.
    *
    * @param selectedRowIds The primary keys of currently selected rows
+   * @param isSelectAll Whether the change was triggered by a "select all" action. Defaults to false
    */
-
-  onRowSelection?: (selectedRowIds: PrimaryKeyType<Q>[]) => void;
-
+  onRowSelection?: (
+    selectedRowIds: PrimaryKeyType<Q>[],
+    isSelectAll?: boolean,
+  ) => void;
   /**
    * If provided, will render this context menu when right clicking on a cell
    */

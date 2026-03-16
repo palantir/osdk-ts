@@ -36,7 +36,8 @@ import type {
   SearchObjectsForInterfaceRequest,
   SearchOrderByV2,
 } from "@osdk/foundry.ontologies";
-import * as OntologiesV2 from "@osdk/foundry.ontologies";
+import * as OntologyInterfaces from "@osdk/foundry.ontologies/OntologyInterface";
+import * as OntologyObjectSets from "@osdk/foundry.ontologies/OntologyObjectSet";
 import invariant from "tiny-invariant";
 import { extractNamespace } from "../internal/conversions/extractNamespace.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
@@ -159,7 +160,7 @@ export async function fetchStaticRidPage<
     await client.flushEdits();
   }
 
-  const result = await OntologiesV2.OntologyObjectSets.loadMultipleObjectTypes(
+  const result = await OntologyObjectSets.loadMultipleObjectTypes(
     addUserAgentAndRequestContextHeaders(client, { osdkMetadata: undefined }),
     await client.ontologyRid,
     requestBody,
@@ -241,7 +242,7 @@ async function fetchInterfacePage<
       await client.flushEdits();
     }
 
-    const result = await OntologiesV2.OntologyInterfaces
+    const result = await OntologyInterfaces
       .search(
         addUserAgentAndRequestContextHeaders(client, interfaceType),
         await client.ontologyRid,
@@ -290,7 +291,7 @@ async function fetchInterfacePage<
     await client.flushEdits();
   }
 
-  const result = await OntologiesV2.OntologyObjectSets.loadMultipleObjectTypes(
+  const result = await OntologyObjectSets.loadMultipleObjectTypes(
     addUserAgentAndRequestContextHeaders(client, interfaceType),
     await client.ontologyRid,
     requestBody,
@@ -607,7 +608,7 @@ export async function fetchObjectPage<
     await client.flushEdits();
   }
 
-  const r = await OntologiesV2.OntologyObjectSets.load(
+  const r = await OntologyObjectSets.load(
     addUserAgentAndRequestContextHeaders(client, objectType),
     await client.ontologyRid,
     requestBody,

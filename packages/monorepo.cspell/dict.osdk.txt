@@ -18,6 +18,7 @@ Pivotable
 Pressable
 psdk
 siteasset
+superrepo
 Tamagui
 themabiltiy
 timecode

@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -91,6 +91,18 @@ export abstract class BaseListQuery<
     return this.cacheKey.otherKeys[RDP_IDX];
   }
 
+  private _selectFieldSetMemo: ReadonlySet<string> | undefined;
+
+  protected abstract get rawSelect(): Canonical<readonly string[]> | undefined;
+
+  public get selectFieldSet(): ReadonlySet<string> | undefined {
+    const select = this.rawSelect;
+    if (select && !this._selectFieldSetMemo) {
+      this._selectFieldSetMemo = new Set(select);
+    }
+    return this._selectFieldSetMemo;
+  }
+
   // Collection-specific behavior is implemented by subclasses
   /**
    * Token for the next page of results
@@ -149,6 +161,7 @@ export abstract class BaseListQuery<
         items as Array<Osdk.Instance<any>>,
         batch,
         this.rdpConfig,
+        this.selectFieldSet,
       );
     } else {
       // Items are already cache keys
@@ -501,6 +514,7 @@ export abstract class BaseListQuery<
           result.data,
           batch,
           this.rdpConfig,
+          this.selectFieldSet,
         );
 
         return this._updateList(
@@ -578,6 +592,74 @@ export abstract class BaseListQuery<
     batch: BatchContext,
   ): ObjectCacheKey[] {
     return this.sortingStrategy.sortCacheKeys(objectCacheKeys, batch);
+  }
+
+  /**
+   * Unified method for updating collection data in the store
+   * Handles storing, sorting, deduplication, and reference counting
+   *
+   * @param items - Either object cache keys or object instances to update
+   * @param options - Configuration options for the update
+   * @param batch - The batch context to use
+   * @returns The updated entry
+   */
+  protected updateCollection<T extends ObjectCacheKey | Osdk.Instance<any>>(
+    items: T[],
+    options: {
+      append?: boolean;
+      status: Status;
+    },
+    batch: BatchContext,
+  ): Entry<KEY> {
+    if (process.env.NODE_ENV !== "production") {
+      const logger = process.env.NODE_ENV !== "production"
+        ? this.logger?.child({ methodName: "updateCollection" })
+        : this.logger;
+
+      logger?.debug(
+        `{status: ${options.status}, append: ${options.append}}`,
+        JSON.stringify(items, null, 2),
+      );
+    }
+
+    // Step 1: Convert items to object cache keys if needed
+    let objectCacheKeys: ObjectCacheKey[];
+
+    if (items.length === 0) {
+      objectCacheKeys = [];
+    } else if (isObjectInstance(items[0])) {
+      // Items are object instances, need to store them first
+      objectCacheKeys = this.store.objects.storeOsdkInstances(
+        items as Array<Osdk.Instance<any>>,
+        batch,
+        this.rdpConfig,
+        this.selectFieldSet,
+      );
+    } else {
+      // Items are already cache keys
+      objectCacheKeys = items as ObjectCacheKey[];
+    }
+
+    // Step 2: Handle retain/release/append logic
+    objectCacheKeys = this.#retainReleaseAppend(
+      batch,
+      options.append ?? false,
+      objectCacheKeys,
+    );
+
+    // Step 3: Sort using the configured sorting strategy
+    objectCacheKeys = this._sortCacheKeys(objectCacheKeys, batch);
+
+    // Step 4: Remove duplicates
+    objectCacheKeys = removeDuplicates(objectCacheKeys, batch);
+
+    // Step 5: Write to store
+    const existingTotalCount = batch.read(this.cacheKey)?.value?.totalCount;
+    return this.writeToStore(
+      { data: objectCacheKeys, totalCount: existingTotalCount },
+      options.status,
+      batch,
+    );
   }
 
   //

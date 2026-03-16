@@ -157,12 +157,19 @@ function convertSingleRule(
       const r = irRule.modifyObjectRule;
       // Validate that the parameter is an objectReference (throws if not)
       getObjectReferenceType(action, r.objectToModify);
+      const modifyPropertyArguments: Record<
+        Ontologies.PropertyApiName,
+        Ontologies.LogicRuleArgument
+      > = {};
+      for (const [k, v] of Object.entries(r.propertyValues)) {
+        modifyPropertyArguments[k] = v as Ontologies.LogicRuleArgument;
+      }
       const result: Ontologies.ModifyObjectLogicRule & {
         type: "modifyObject";
       } = {
         type: "modifyObject",
         objectToModify: r.objectToModify,
-        propertyArguments: {},
+        propertyArguments: modifyPropertyArguments,
         structPropertyArguments: {},
       };
       return result;

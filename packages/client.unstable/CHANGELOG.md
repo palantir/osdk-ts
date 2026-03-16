@@ -1,5 +1,19 @@
 # @osdk/client.unstable
 
+## 2.8.0-beta.20
+
+## 2.8.0-beta.19
+
+## 2.8.0-beta.18
+
+## 2.8.0-beta.17
+
+## 2.8.0-beta.16
+
+### Minor Changes
+
+- 6941b4f: extendsInterfaceMetadata on the IR to fix interface impl
+
 ## 2.8.0-beta.15
 
 ## 2.8.0-beta.14

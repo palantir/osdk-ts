@@ -40,7 +40,7 @@
 
 .dragHandle {
   display: flex;
-  cursor: grab;
+  cursor: var(--osdk-drag-handle-cursor);
   color: var(--osdk-draggable-item-drag-icon-color);
 
   &:hover {
@@ -48,11 +48,7 @@
   }
 
   &:active {
-    cursor: grabbing;
-  }
-
-  &:focus {
-    outline: none;
+    cursor: var(--osdk-drag-handle-cursor-active);
   }
 
   &:focus-visible {
@@ -88,10 +84,6 @@
     background: oklch(
       from var(--osdk-surface-background-color-danger-hover) l c h / 0.2
     );
-  }
-
-  &:focus {
-    outline: none;
   }
 
   &:focus-visible {

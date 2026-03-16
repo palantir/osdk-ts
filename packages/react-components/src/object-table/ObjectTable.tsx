@@ -48,6 +48,8 @@ import type { EditableConfig } from "./utils/types.js";
  * ```
  */
 
+const EMPTY_ARRAY: [] = [];
+
 export function ObjectTable<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = Record<
@@ -73,6 +75,7 @@ export function ObjectTable<
   renderCellContextMenu,
   selectionMode = "none",
   selectedRows,
+  isAllSelected: isAllSelectedProp,
   onColumnVisibilityChanged,
   onCellValueChanged,
   onSubmitEdits,
@@ -131,12 +134,19 @@ export function ObjectTable<
   } = useRowSelection<Q, RDPs>({
     selectionMode,
     selectedRows,
+    isAllSelected: isAllSelectedProp,
     onRowSelection,
     data,
   });
 
   const selectionColumn = useSelectionColumn<Q, RDPs>(
-    { selectionMode, isAllSelected, hasSelection, onToggleAll, onToggleRow },
+    {
+      selectionMode,
+      isAllSelected,
+      hasSelection,
+      onToggleAll,
+      onToggleRow,
+    },
   );
 
   const {
@@ -171,7 +181,7 @@ export function ObjectTable<
   const table = useReactTable<
     Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
   >({
-    data: data ?? [],
+    data: data ?? EMPTY_ARRAY,
     columns: allColumns,
     getCoreRowModel: getCoreRowModel(),
     state: {
@@ -198,8 +208,11 @@ export function ObjectTable<
     getRowId,
     meta: {
       onCellEdit: editableConfig.onCellEdit,
+      onCellValidationError: editableConfig.onCellValidationError,
+      clearCellValidationError: editableConfig.clearCellValidationError,
       cellEdits: editableConfig.cellEdits,
-      isInEditMode: editableConfig.editMode.isActive,
+      isInEditMode: editableConfig.editModeState.isActive,
+      validationErrors: editableConfig.validationErrors,
     },
   });
 

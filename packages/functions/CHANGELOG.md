@@ -1,5 +1,18 @@
 # @osdk/functions
 
+## 1.6.0-beta.4
+
+### Minor Changes
+
+- 7538b79: Allow link/unlink edits for ONE direction links
+- 34a5ad2: Add helper functions for resolving custom and model aliases in functions
+
+### Patch Changes
+
+- Updated dependencies [09e5659]
+- Updated dependencies [2ebe62c]
+  - @osdk/client@2.8.0-beta.16
+
 ## 1.6.0-beta.3
 
 ### Minor Changes
