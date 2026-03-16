@@ -297,9 +297,9 @@ return <ObjectTable objectType={Employee} objectSet={employeeObjectSet} />`,
     return (
       <div className="object-table-container" style={{ height: "600px" }}>
         <ObjectTable
+          {...args}
           objectType={Employee}
           objectSet={employeeObjectSet}
-          {...args}
         />
       </div>
     );
@@ -309,7 +309,7 @@ return <ObjectTable objectType={Employee} objectSet={employeeObjectSet} />`,
 export const WithColumnDefinitions: Story = {
   args: {
     objectType: Employee,
-    columnDefinitions: columnDefinitions,
+    columnDefinitions: columnDefinitions as ColumnDefinition<Employee>[],
   },
   parameters: {
     docs: {
@@ -595,7 +595,7 @@ export const WithCustomColumn: Story = {
   args: {
     objectType: Employee,
     columnDefinitions: [
-      ...columnDefinitions.slice(0, 3),
+      ...(columnDefinitions.slice(0, 3) as ColumnDefinition<Employee>[]),
       {
         locator: {
           type: "custom",
@@ -1168,7 +1168,7 @@ return (
         Try changing edit mode to "always" to enable inline editing without
         needing to toggle edit mode on.
       </div>
-      <ObjectTable objectType={Employee} {...args} />
+      <ObjectTable {...args} objectType={Employee} />
     </div>
   ),
 };
@@ -1248,8 +1248,9 @@ export const EditableWithValidation: Story = {
       {
         locator: { type: "property", id: "fullName" },
         editable: true,
-        validateEdit: async (value: string) => {
-          return value.trim().length >= 2
+        validateEdit: async (value: unknown) => {
+          const str = String(value ?? "");
+          return str.trim().length >= 2
             ? undefined
             : "Name must be at least 2 characters long";
         },
@@ -1257,9 +1258,9 @@ export const EditableWithValidation: Story = {
       {
         locator: { type: "property", id: "emailPrimaryWork" },
         editable: true,
-        validateEdit: async (value: string) => {
+        validateEdit: async (value: unknown) => {
           const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-          return emailRegex.test(value)
+          return emailRegex.test(String(value ?? ""))
             ? undefined
             : "Please enter a valid email address";
         },
@@ -1267,8 +1268,10 @@ export const EditableWithValidation: Story = {
       {
         locator: { type: "property", id: "employeeNumber" },
         editable: true,
-        validateEdit: async (value: number) => {
-          return value > 0 ? undefined : "Employee number must be positive";
+        validateEdit: async (value: unknown) => {
+          return Number(value) > 0
+            ? undefined
+            : "Employee number must be positive";
         },
       },
     ],
@@ -1335,7 +1338,7 @@ return (
           <li>Employee number must be positive</li>
         </ul>
       </div>
-      <ObjectTable objectType={Employee} {...args} />
+      <ObjectTable {...args} objectType={Employee} />
     </div>
   ),
 };
