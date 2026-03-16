@@ -143,7 +143,14 @@ export function FilterList<Q extends ObjectTypeDefinition>(
 
   const renderInput = useCallback<RenderFilterInput<FilterDefinitionUnion<Q>>>(
     (
-      { definition, filterKey, filterState, onFilterStateChanged, searchQuery },
+      {
+        definition,
+        filterKey,
+        filterState,
+        onFilterStateChanged,
+        searchQuery,
+        onTotalValueCount,
+      },
     ) => (
       <FilterInput
         objectType={objectType}
@@ -154,6 +161,7 @@ export function FilterList<Q extends ObjectTypeDefinition>(
         whereClause={perFilterWhereClauses.get(filterKey)
           ?? ({} as WhereClause<Q>)}
         searchQuery={searchQuery}
+        onTotalValueCount={onTotalValueCount}
       />
     ),
     [objectType, objectSet, perFilterWhereClauses],

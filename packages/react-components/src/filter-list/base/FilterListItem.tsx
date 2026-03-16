@@ -27,7 +27,9 @@ import type { FilterState } from "../FilterListItemApi.js";
 import {
   clearFilterState,
   filterHasActiveState,
+  getSelectedValueCount,
   supportsExcluding,
+  supportsSearch,
 } from "../utils/filterValues.js";
 import type { RenderFilterInput } from "./BaseFilterListApi.js";
 import { DragHandleIcon } from "./DragHandleIcon.js";
@@ -48,8 +50,6 @@ interface FilterListItemProps<D> {
   renderInput: RenderFilterInput<D>;
   dragHandleAttributes?: DraggableAttributes;
   dragHandleListeners?: DraggableSyntheticListeners;
-  selectedValueCount?: number;
-  totalValueCount?: number;
   className?: string;
   style?: React.CSSProperties;
 }
@@ -64,14 +64,15 @@ function FilterListItemInner<D>({
   renderInput,
   dragHandleAttributes,
   dragHandleListeners,
-  selectedValueCount,
-  totalValueCount,
   className,
   style,
 }: FilterListItemProps<D>): React.ReactElement {
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [excludeRowOpen, setExcludeRowOpen] = useState(false);
+  const [totalValueCount, setTotalValueCount] = useState<number | undefined>();
+
+  const selectedValueCount = getSelectedValueCount(filterState);
 
   const handleFilterStateChanged = useCallback(
     (newState: FilterState) => {
@@ -122,12 +123,17 @@ function FilterListItemInner<D>({
     setSearchQuery("");
   }, []);
 
+  const handleRemove = useCallback(() => {
+    onFilterRemoved?.(filterKey);
+  }, [filterKey, onFilterRemoved]);
+
   const handleToggleExcludeRow = useCallback(() => {
     setExcludeRowOpen((prev) => !prev);
   }, []);
 
   const isExcluding = filterState?.isExcluding ?? false;
   const showExcludeDropdown = supportsExcluding(filterState);
+  const showSearch = supportsSearch(filterState);
   const hasActive = filterHasActiveState(filterState);
 
   const searchQueryForInput = searchOpen ? searchQuery : undefined;
@@ -149,14 +155,16 @@ function FilterListItemInner<D>({
           </Button>
         )}
         <span className={styles.itemLabel}>{label}</span>
-        <Button
-          className={styles.headerActionButton}
-          onClick={handleToggleSearch}
-          aria-label="Search values"
-          aria-pressed={searchOpen}
-        >
-          <SearchIcon />
-        </Button>
+        {showSearch && (
+          <Button
+            className={styles.headerActionButton}
+            onClick={handleToggleSearch}
+            aria-label="Search values"
+            aria-pressed={searchOpen}
+          >
+            <SearchIcon />
+          </Button>
+        )}
         <Button
           className={styles.headerActionButton}
           onClick={handleToggleExcludeRow}
@@ -208,6 +216,15 @@ function FilterListItemInner<D>({
           >
             Clear all
           </Button>
+          {onFilterRemoved && (
+            <Button
+              className={styles.clearAllButton}
+              onClick={handleRemove}
+              aria-label={`Remove ${label} filter`}
+            >
+              Remove
+            </Button>
+          )}
         </div>
       )}
 
@@ -219,6 +236,7 @@ function FilterListItemInner<D>({
             filterState,
             onFilterStateChanged: handleFilterStateChanged,
             searchQuery: searchQueryForInput,
+            onTotalValueCount: setTotalValueCount,
           })}
         </ErrorBoundary>
       </div>

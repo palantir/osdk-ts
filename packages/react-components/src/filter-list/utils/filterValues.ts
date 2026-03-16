@@ -16,6 +16,49 @@
 
 import type { FilterState } from "../FilterListItemApi.js";
 
+/** Returns true for filter state types that support in-filter search. */
+export function supportsSearch(state: FilterState | undefined): boolean {
+  if (!state) {
+    return false;
+  }
+  switch (state.type) {
+    case "SELECT":
+    case "EXACT_MATCH":
+      return true;
+    case "CONTAINS_TEXT":
+    case "NUMBER_RANGE":
+    case "DATE_RANGE":
+    case "TOGGLE":
+    case "hasLink":
+    case "linkedProperty":
+    case "keywordSearch":
+    case "TIMELINE":
+    case "custom":
+      return false;
+    default: {
+      const _exhaustive: never = state;
+      return false;
+    }
+  }
+}
+
+/** Returns the count of selected values for the given filter state. */
+export function getSelectedValueCount(state: FilterState | undefined): number {
+  if (!state) {
+    return 0;
+  }
+  switch (state.type) {
+    case "SELECT":
+      return state.selectedValues.length;
+    case "EXACT_MATCH":
+      return state.values.length;
+    case "CONTAINS_TEXT":
+      return state.value ? 1 : 0;
+    default:
+      return 0;
+  }
+}
+
 /** Returns true for filter state types that support isExcluding. */
 export function supportsExcluding(state: FilterState | undefined): boolean {
   if (!state) {

@@ -19,7 +19,7 @@ import type {
   PropertyKeys,
   WhereClause,
 } from "@osdk/api";
-import React, { memo, useCallback, useMemo } from "react";
+import React, { memo, useCallback, useMemo, useState } from "react";
 import { ListogramInput } from "../base/inputs/ListogramInput.js";
 import type { FilterState } from "../FilterListItemApi.js";
 import { usePropertyAggregation } from "../hooks/usePropertyAggregation.js";
@@ -35,6 +35,7 @@ interface ListogramFilterInputProps<Q extends ObjectTypeDefinition> {
   displayMode?: "full" | "count" | "minimal";
   maxVisibleItems?: number;
   searchQuery?: string;
+  onTotalValueCount?: (count: number) => void;
 }
 
 function ListogramFilterInputInner<Q extends ObjectTypeDefinition>({
@@ -47,6 +48,7 @@ function ListogramFilterInputInner<Q extends ObjectTypeDefinition>({
   displayMode,
   maxVisibleItems,
   searchQuery,
+  onTotalValueCount,
 }: ListogramFilterInputProps<Q>): React.ReactElement {
   const selectedValues = useMemo(
     () =>
@@ -78,6 +80,13 @@ function ListogramFilterInputInner<Q extends ObjectTypeDefinition>({
     propertyKey as PropertyKeys<Q>,
     aggregationOptions,
   );
+
+  const totalCount = data.length;
+  const [prevTotalCount, setPrevTotalCount] = useState(0);
+  if (totalCount !== prevTotalCount) {
+    setPrevTotalCount(totalCount);
+    onTotalValueCount?.(totalCount);
+  }
 
   return (
     <ListogramInput

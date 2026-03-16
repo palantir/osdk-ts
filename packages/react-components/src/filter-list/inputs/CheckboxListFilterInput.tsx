@@ -19,7 +19,7 @@ import type {
   PropertyKeys,
   WhereClause,
 } from "@osdk/api";
-import React, { memo, useCallback, useMemo } from "react";
+import React, { memo, useCallback, useMemo, useState } from "react";
 import { CheckboxListInput } from "../base/inputs/CheckboxListInput.js";
 import type { FilterState } from "../FilterListItemApi.js";
 import { usePropertyAggregation } from "../hooks/usePropertyAggregation.js";
@@ -33,6 +33,7 @@ interface CheckboxListFilterInputProps<Q extends ObjectTypeDefinition> {
   whereClause: WhereClause<Q>;
   colorMap?: Record<string, string>;
   searchQuery?: string;
+  onTotalValueCount?: (count: number) => void;
 }
 
 function CheckboxListFilterInputInner<Q extends ObjectTypeDefinition>({
@@ -43,6 +44,7 @@ function CheckboxListFilterInputInner<Q extends ObjectTypeDefinition>({
   whereClause,
   colorMap,
   searchQuery,
+  onTotalValueCount,
 }: CheckboxListFilterInputProps<Q>): React.ReactElement {
   const selectedValues = useMemo(
     () =>
@@ -74,6 +76,13 @@ function CheckboxListFilterInputInner<Q extends ObjectTypeDefinition>({
     propertyKey as PropertyKeys<Q>,
     aggregationOptions,
   );
+
+  const totalCount = data.length;
+  const [prevTotalCount, setPrevTotalCount] = useState(0);
+  if (totalCount !== prevTotalCount) {
+    setPrevTotalCount(totalCount);
+    onTotalValueCount?.(totalCount);
+  }
 
   return (
     <CheckboxListInput

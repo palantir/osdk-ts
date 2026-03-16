@@ -39,6 +39,7 @@ interface PropertyFilterInputProps<Q extends ObjectTypeDefinition> {
   onFilterStateChanged: (state: FilterState) => void;
   whereClause: WhereClause<Q>;
   searchQuery?: string;
+  onTotalValueCount?: (count: number) => void;
 }
 
 function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
@@ -48,6 +49,7 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
   onFilterStateChanged,
   whereClause,
   searchQuery,
+  onTotalValueCount,
 }: PropertyFilterInputProps<Q>): React.ReactElement {
   switch (definition.filterComponent) {
     case "CHECKBOX_LIST":
@@ -60,6 +62,7 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
           whereClause={whereClause}
           colorMap={definition.colorMap}
           searchQuery={searchQuery}
+          onTotalValueCount={onTotalValueCount}
         />
       );
 
@@ -150,6 +153,7 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
           displayMode={definition.listogramConfig?.displayMode}
           maxVisibleItems={definition.listogramConfig?.maxVisibleItems}
           searchQuery={searchQuery}
+          onTotalValueCount={onTotalValueCount}
         />
       );
 
