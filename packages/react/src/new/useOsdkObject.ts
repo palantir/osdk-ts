@@ -20,10 +20,38 @@ import type {
   PrimaryKeyType,
   PropertyKeys,
 } from "@osdk/api";
-import type { ObserveObjectCallbackArgs } from "@osdk/client/unstable-do-not-use";
+import type {
+  ObservableClient,
+  ObserveObjectCallbackArgs,
+  Observer,
+  Unsubscribable,
+} from "@osdk/client/unstable-do-not-use";
 import React from "react";
 import { makeExternalStore } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
+
+/** @internal */
+export function _createObjectObservation<
+  Q extends ObjectOrInterfaceDefinition,
+>(
+  observableClient: ObservableClient,
+  typeOrApiName: Q["apiName"] | Q,
+  primaryKey: PrimaryKeyType<Q>,
+  options: { mode?: "offline" | "force"; select?: readonly PropertyKeys<Q>[] },
+): (
+  observer: Observer<ObserveObjectCallbackArgs<Q> | undefined>,
+) => Unsubscribable {
+  return (observer) =>
+    observableClient.observeObject(
+      typeOrApiName,
+      primaryKey,
+      {
+        mode: options.mode,
+        ...(options.select ? { select: options.select } : {}),
+      },
+      observer,
+    );
+}
 
 export interface UseOsdkObjectResult<
   Q extends ObjectOrInterfaceDefinition,
@@ -144,16 +172,15 @@ export function useOsdkObject<
         );
       }
       return makeExternalStore<ObserveObjectCallbackArgs<Q>>(
-        (observer) =>
-          observableClient.observeObject(
-            typeOrApiName,
-            primaryKey,
-            {
-              mode,
-              ...(stableSelect ? { select: stableSelect } : {}),
-            },
-            observer,
-          ),
+        _createObjectObservation<Q>(
+          observableClient,
+          typeOrApiName,
+          primaryKey,
+          {
+            mode,
+            select: stableSelect,
+          },
+        ),
         `object ${apiNameString} ${primaryKey}`,
       );
     },

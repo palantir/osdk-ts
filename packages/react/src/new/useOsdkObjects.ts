@@ -24,10 +24,63 @@ import type {
   SimplePropertyDef,
   WhereClause,
 } from "@osdk/api";
-import type { ObserveObjectsCallbackArgs } from "@osdk/client/unstable-do-not-use";
+import type {
+  ObservableClient,
+  ObserveObjectsCallbackArgs,
+  Observer,
+  Unsubscribable,
+} from "@osdk/client/unstable-do-not-use";
 import React from "react";
 import { makeExternalStore } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
+
+/** @internal */
+export interface _CreateListObservationOptions<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+> {
+  type: Pick<Q, "apiName" | "type">;
+  rids?: readonly string[];
+  where?: WhereClause<Q, RDPs>;
+  dedupeInterval: number;
+  pageSize?: number;
+  orderBy?: { [K in PropertyKeys<Q>]?: "asc" | "desc" };
+  streamUpdates?: boolean;
+  withProperties?: DerivedProperty.Clause<Q>;
+  autoFetchMore?: boolean | number;
+  intersectWith?: Array<{ where: WhereClause<Q, RDPs> }>;
+  pivotTo?: LinkNames<Q>;
+  select?: readonly PropertyKeys<Q>[];
+}
+
+/** @internal */
+export function _createListObservation<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+>(
+  observableClient: ObservableClient,
+  options: _CreateListObservationOptions<Q, RDPs>,
+): (
+  observer: Observer<ObserveObjectsCallbackArgs<Q, RDPs> | undefined>,
+) => Unsubscribable {
+  return (observer) =>
+    observableClient.observeList({
+      type: options.type,
+      rids: options.rids,
+      where: options.where,
+      dedupeInterval: options.dedupeInterval,
+      pageSize: options.pageSize,
+      orderBy: options.orderBy,
+      streamUpdates: options.streamUpdates,
+      withProperties: options.withProperties,
+      autoFetchMore: options.autoFetchMore,
+      ...(options.intersectWith
+        ? { intersectWith: options.intersectWith }
+        : {}),
+      ...(options.pivotTo ? { pivotTo: options.pivotTo } : {}),
+      ...(options.select ? { select: options.select } : {}),
+    }, observer);
+}
 
 export interface UseOsdkObjectsOptions<
   T extends ObjectOrInterfaceDefinition,
@@ -301,23 +354,20 @@ export function useOsdkObjects<
       return makeExternalStore<
         ObserveObjectsCallbackArgs<Q, RDPs>
       >(
-        (observer) =>
-          observableClient.observeList({
-            type,
-            rids: stableRids,
-            where: stableCanonWhere,
-            dedupeInterval: dedupeIntervalMs ?? 2_000,
-            pageSize,
-            orderBy: stableOrderBy,
-            streamUpdates,
-            withProperties: stableWithProperties,
-            autoFetchMore,
-            ...(stableIntersectWith
-              ? { intersectWith: stableIntersectWith }
-              : {}),
-            ...(pivotTo ? { pivotTo } : {}),
-            ...(stableSelect ? { select: stableSelect } : {}),
-          }, observer),
+        _createListObservation(observableClient, {
+          type,
+          rids: stableRids,
+          where: stableCanonWhere,
+          dedupeInterval: dedupeIntervalMs ?? 2_000,
+          pageSize,
+          orderBy: stableOrderBy,
+          streamUpdates,
+          withProperties: stableWithProperties,
+          autoFetchMore,
+          intersectWith: stableIntersectWith,
+          pivotTo,
+          select: stableSelect,
+        }),
         process.env.NODE_ENV !== "production"
           ? `list ${type.apiName} ${
             stableRids ? `[${stableRids.length} rids]` : ""

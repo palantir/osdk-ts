@@ -20,14 +20,16 @@ import type { ObserveListOptions } from "../../ObservableClient.js";
 import type { Observer } from "../../ObservableClient/common.js";
 import { AbstractHelper } from "../AbstractHelper.js";
 import type { CacheKeys } from "../CacheKeys.js";
+import type { Canonical } from "../Canonical.js";
 import type { IntersectCanonicalizer } from "../IntersectCanonicalizer.js";
 import type { KnownCacheKey } from "../KnownCacheKey.js";
 import type { OrderByCanonicalizer } from "../OrderByCanonicalizer.js";
-import type { PivotCanonicalizer } from "../PivotCanonicalizer.js";
+import type { PivotCanonicalizer, PivotInfo } from "../PivotCanonicalizer.js";
 import type { QuerySubscription } from "../QuerySubscription.js";
-import type { RdpCanonicalizer } from "../RdpCanonicalizer.js";
+import type { Rdp, RdpCanonicalizer } from "../RdpCanonicalizer.js";
 import type { RidListCanonicalizer } from "../RidListCanonicalizer.js";
 import type { SelectCanonicalizer } from "../SelectCanonicalizer.js";
+import type { SimpleWhereClause } from "../SimpleWhereClause.js";
 import type { Store } from "../Store.js";
 import type { WhereClauseCanonicalizer } from "../WhereClauseCanonicalizer.js";
 import { InterfaceListQuery } from "./InterfaceListQuery.js";
@@ -81,9 +83,19 @@ export class ListsHelper extends AbstractHelper<
     return ret;
   }
 
-  getQuery<T extends ObjectOrInterfaceDefinition>(
+  canonicalizeListParams<T extends ObjectOrInterfaceDefinition>(
     options: ObserveListOptions<T>,
-  ): ListQuery {
+  ): {
+    type: "object" | "interface";
+    apiName: string;
+    canonWhere: Canonical<SimpleWhereClause>;
+    canonOrderBy: Canonical<Record<string, "asc" | "desc" | undefined>>;
+    canonRdp: Canonical<Rdp> | undefined;
+    canonIntersect: Canonical<Array<Canonical<SimpleWhereClause>>> | undefined;
+    canonPivot: Canonical<PivotInfo> | undefined;
+    canonRids: Canonical<string[]> | undefined;
+    canonSelect: Canonical<readonly string[]> | undefined;
+  } {
     const {
       type: typeDefinition,
       where,
@@ -117,6 +129,34 @@ export class ListsHelper extends AbstractHelper<
     const canonSelect = select && select.length > 0
       ? this.selectCanonicalizer.canonicalize(select)
       : undefined;
+
+    return {
+      type,
+      apiName,
+      canonWhere,
+      canonOrderBy,
+      canonRdp,
+      canonIntersect,
+      canonPivot,
+      canonRids,
+      canonSelect,
+    };
+  }
+
+  getQuery<T extends ObjectOrInterfaceDefinition>(
+    options: ObserveListOptions<T>,
+  ): ListQuery {
+    const {
+      type,
+      apiName,
+      canonWhere,
+      canonOrderBy,
+      canonRdp,
+      canonIntersect,
+      canonPivot,
+      canonRids,
+      canonSelect,
+    } = this.canonicalizeListParams(options);
 
     const listCacheKey = this.cacheKeys.get<ListCacheKey>(
       "list",
