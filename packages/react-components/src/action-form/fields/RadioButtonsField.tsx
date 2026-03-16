@@ -14,4 +14,15 @@
  * limitations under the License.
  */
 
-export { assertUnreachable } from "../../shared/assertUnreachable.js";
+import type React from "react";
+import type { RadioButtonsFieldProps } from "../FormFieldApi.js";
+
+export function RadioButtonsField(
+  _props: RadioButtonsFieldProps<unknown>,
+): React.ReactElement {
+  return (
+    <div data-testid="radio-buttons-field">
+      [RadioButtonsField placeholder]
+    </div>
+  );
+}

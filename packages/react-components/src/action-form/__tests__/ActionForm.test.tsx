@@ -1,0 +1,487 @@
+/*
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import type { ActionDefinition, ActionMetadata } from "@osdk/api";
+import { useOsdkMetadata } from "@osdk/react";
+import { useOsdkAction } from "@osdk/react/experimental";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { ActionForm } from "../ActionForm.js";
+import type { FormFieldDefinition } from "../FormFieldApi.js";
+
+vi.mock("@osdk/react/experimental", () => ({
+  useOsdkAction: vi.fn(),
+}));
+
+vi.mock("@osdk/react", () => ({
+  useOsdkMetadata: vi.fn(),
+}));
+
+/**
+ * Test action type with compile-time metadata so FieldKey resolves properly.
+ *
+ * Uses `interface extends` (not `type &`) so that __DefinitionMetadata
+ * replaces rather than intersects the base type. This prevents
+ * Record<any, Parameter<any>> from polluting keyof, which would cause
+ * FieldValueType to resolve to `never`.
+ */
+interface TestActionDef extends ActionDefinition<unknown> {
+  __DefinitionMetadata: {
+    signatures: unknown;
+    parameters: {
+      name: { type: "string" };
+      age: { type: "integer" };
+    };
+    type: "action";
+    apiName: "TestAction";
+    status: "ACTIVE";
+    rid: string;
+  };
+}
+
+const TestAction: TestActionDef = {
+  type: "action",
+  apiName: "TestAction",
+} as TestActionDef;
+
+const mockApplyAction = vi.fn().mockResolvedValue({
+  editedObjectTypes: [],
+});
+
+function defaultMockActionResult() {
+  return {
+    applyAction: mockApplyAction,
+    validateAction: vi.fn(),
+    error: undefined,
+    data: undefined,
+    isPending: false,
+    isValidating: false,
+    validationResult: undefined,
+  };
+}
+
+const mockMetadata: ActionMetadata = {
+  type: "action",
+  apiName: "TestAction",
+  displayName: "Test Action",
+  parameters: {
+    name: {
+      type: "string",
+      nullable: false,
+    },
+    age: {
+      type: "integer",
+      nullable: true,
+    },
+  },
+  status: "ACTIVE",
+  rid: "ri.ontology.main.action-type.test",
+};
+
+function defaultMockMetadataResult() {
+  return {
+    loading: false,
+    metadata: mockMetadata,
+  };
+}
+
+describe("ActionForm", () => {
+  afterEach(cleanup);
+
+  beforeEach(() => {
+    vi.mocked(useOsdkAction).mockReturnValue(defaultMockActionResult());
+    vi.mocked(useOsdkMetadata).mockReturnValue(defaultMockMetadataResult());
+    mockApplyAction.mockClear();
+  });
+
+  describe("form title", () => {
+    it("renders form title from metadata displayName", () => {
+      render(<ActionForm actionDefinition={TestAction} />);
+
+      expect(screen.getByTestId("form-title").textContent).toBe("Test Action");
+    });
+
+    it("renders custom form title when provided", () => {
+      render(
+        <ActionForm actionDefinition={TestAction} formTitle="Custom Title" />,
+      );
+
+      expect(screen.getByTestId("form-title").textContent).toBe("Custom Title");
+    });
+
+    it("falls back to apiName when metadata has no displayName", () => {
+      vi.mocked(useOsdkMetadata).mockReturnValue({
+        loading: false,
+        metadata: {
+          ...mockMetadata,
+          displayName: undefined,
+        },
+      });
+
+      render(<ActionForm actionDefinition={TestAction} />);
+
+      expect(screen.getByTestId("form-title").textContent).toBe("TestAction");
+    });
+  });
+
+  describe("field rendering", () => {
+    it("generates default fields from fetched metadata", () => {
+      render(<ActionForm actionDefinition={TestAction} />);
+
+      expect(screen.getByTestId("form-field-name")).toBeDefined();
+      expect(screen.getByTestId("form-field-age")).toBeDefined();
+    });
+
+    it("renders default field labels from parameter keys", () => {
+      render(<ActionForm actionDefinition={TestAction} />);
+
+      const nameField = screen.getByTestId("form-field-name");
+      const ageField = screen.getByTestId("form-field-age");
+
+      expect(nameField.querySelector("label")?.textContent).toContain("name");
+      expect(ageField.querySelector("label")?.textContent).toContain("age");
+    });
+
+    it("renders required indicator for non-nullable fields", () => {
+      render(<ActionForm actionDefinition={TestAction} />);
+
+      const nameField = screen.getByTestId("form-field-name");
+      const ageField = screen.getByTestId("form-field-age");
+
+      expect(nameField.querySelector("[aria-label='required']")).not.toBeNull();
+      expect(ageField.querySelector("[aria-label='required']")).toBeNull();
+    });
+
+    it("renders custom field definitions instead of defaults", () => {
+      const customDefs: Array<FormFieldDefinition<TestActionDef>> = [
+        {
+          fieldKey: "name",
+          label: "Full Name",
+          fieldComponent: "TEXT_INPUT",
+        },
+      ];
+
+      render(
+        <ActionForm
+          actionDefinition={TestAction}
+          formFieldDefinition={customDefs}
+        />,
+      );
+
+      expect(screen.getByTestId("form-field-name")).toBeDefined();
+      expect(screen.queryByTestId("form-field-age")).toBeNull();
+    });
+
+    it("renders custom labels from field definitions", () => {
+      const customDefs: Array<FormFieldDefinition<TestActionDef>> = [
+        {
+          fieldKey: "name",
+          label: "Full Name",
+          fieldComponent: "TEXT_INPUT",
+        },
+        {
+          fieldKey: "age",
+          label: "Your Age",
+          fieldComponent: "NUMBER_INPUT",
+        },
+      ];
+
+      render(
+        <ActionForm
+          actionDefinition={TestAction}
+          formFieldDefinition={customDefs}
+        />,
+      );
+
+      expect(
+        screen.getByTestId("form-field-name").querySelector("label")
+          ?.textContent,
+      ).toContain("Full Name");
+      expect(
+        screen.getByTestId("form-field-age").querySelector("label")
+          ?.textContent,
+      ).toContain("Your Age");
+    });
+  });
+
+  describe("submit button", () => {
+    it("renders submit button", () => {
+      render(<ActionForm actionDefinition={TestAction} />);
+
+      expect(screen.getByTestId("submit-button")).toBeDefined();
+      expect(screen.getByTestId("submit-button").textContent).toBe("Submit");
+    });
+
+    it("disables submit button when isSubmitDisabled is true", () => {
+      render(
+        <ActionForm actionDefinition={TestAction} isSubmitDisabled={true} />,
+      );
+
+      expect(
+        (screen.getByTestId("submit-button") as HTMLButtonElement).disabled,
+      ).toBe(true);
+    });
+
+    it("disables submit button when action is pending", () => {
+      vi.mocked(useOsdkAction).mockReturnValue({
+        ...defaultMockActionResult(),
+        isPending: true,
+      });
+
+      render(<ActionForm actionDefinition={TestAction} />);
+
+      expect(
+        (screen.getByTestId("submit-button") as HTMLButtonElement).disabled,
+      ).toBe(true);
+      expect(screen.getByTestId("submit-button").textContent).toBe(
+        "Submitting...",
+      );
+    });
+  });
+
+  describe("form submission", () => {
+    it("calls applyAction with entered field values on submit", async () => {
+      render(<ActionForm actionDefinition={TestAction} />);
+
+      const textInput = screen
+        .getByTestId("form-field-name")
+        .querySelector("input");
+
+      if (textInput != null) {
+        fireEvent.change(textInput, { target: { value: "Alice" } });
+      }
+
+      fireEvent.submit(screen.getByTestId("action-form"));
+
+      await vi.waitFor(() => {
+        expect(mockApplyAction).toHaveBeenCalledWith(
+          expect.objectContaining({ name: "Alice" }),
+        );
+      });
+    });
+
+    it("passes undefined for fields the user did not fill", async () => {
+      render(<ActionForm actionDefinition={TestAction} />);
+
+      fireEvent.submit(screen.getByTestId("action-form"));
+
+      await vi.waitFor(() => {
+        expect(mockApplyAction).toHaveBeenCalledWith(
+          expect.objectContaining({ name: undefined, age: undefined }),
+        );
+      });
+    });
+
+    it("passes defaultValue for fields with a default", async () => {
+      const defs: Array<FormFieldDefinition<TestActionDef>> = [
+        {
+          fieldKey: "name",
+          label: "Name",
+          fieldComponent: "TEXT_INPUT",
+          defaultValue: "Bob",
+        },
+      ];
+
+      render(
+        <ActionForm actionDefinition={TestAction} formFieldDefinition={defs} />,
+      );
+
+      fireEvent.submit(screen.getByTestId("action-form"));
+
+      await vi.waitFor(() => {
+        expect(mockApplyAction).toHaveBeenCalledWith(
+          expect.objectContaining({ name: "Bob" }),
+        );
+      });
+    });
+
+    it("calls onSuccess after successful submission", async () => {
+      const onSuccess = vi.fn();
+      const result = { editedObjectTypes: ["TestObject"] };
+      mockApplyAction.mockResolvedValue(result);
+
+      render(
+        <ActionForm actionDefinition={TestAction} onSuccess={onSuccess} />,
+      );
+
+      fireEvent.submit(screen.getByTestId("action-form"));
+
+      await vi.waitFor(() => {
+        expect(onSuccess).toHaveBeenCalledWith(result);
+      });
+    });
+
+    it("calls onError when submission fails", async () => {
+      const onError = vi.fn();
+      const error = new Error("Submit failed");
+      mockApplyAction.mockRejectedValue(error);
+
+      render(<ActionForm actionDefinition={TestAction} onError={onError} />);
+
+      fireEvent.submit(screen.getByTestId("action-form"));
+
+      await vi.waitFor(() => {
+        expect(onError).toHaveBeenCalledWith({
+          type: "submission",
+          error,
+        });
+      });
+    });
+  });
+
+  describe("controlled mode", () => {
+    it("uses controlled formState on submit", async () => {
+      render(
+        <ActionForm
+          actionDefinition={TestAction}
+          formState={{ name: "Alice", age: 30 }}
+          onFormStateChange={vi.fn()}
+        />,
+      );
+
+      fireEvent.submit(screen.getByTestId("action-form"));
+
+      await vi.waitFor(() => {
+        expect(mockApplyAction).toHaveBeenCalledWith(
+          expect.objectContaining({ name: "Alice", age: 30 }),
+        );
+      });
+    });
+
+    it("calls onFormStateChange when a field is edited", () => {
+      const onFormStateChange = vi.fn();
+
+      render(
+        <ActionForm
+          actionDefinition={TestAction}
+          formState={{ name: "Initial", age: 25 }}
+          onFormStateChange={onFormStateChange}
+        />,
+      );
+
+      const textInput = screen
+        .getByTestId("form-field-name")
+        .querySelector("input");
+
+      if (textInput != null) {
+        fireEvent.change(textInput, { target: { value: "Updated" } });
+      }
+
+      expect(onFormStateChange).toHaveBeenCalledWith(
+        expect.objectContaining({ name: "Updated", age: 25 }),
+      );
+    });
+
+    it("submits parent-controlled formState even after user edits", async () => {
+      render(
+        <ActionForm
+          actionDefinition={TestAction}
+          formState={{ name: "Parent", age: 10 }}
+          onFormStateChange={vi.fn()}
+        />,
+      );
+
+      const textInput = screen
+        .getByTestId("form-field-name")
+        .querySelector("input");
+
+      if (textInput != null) {
+        fireEvent.change(textInput, { target: { value: "User Typed This" } });
+      }
+
+      fireEvent.submit(screen.getByTestId("action-form"));
+
+      await vi.waitFor(() => {
+        expect(mockApplyAction).toHaveBeenCalledWith(
+          expect.objectContaining({ name: "Parent" }),
+        );
+      });
+    });
+
+    it("coerces field values through onFormStateChange", () => {
+      const onFormStateChange = vi.fn();
+
+      render(
+        <ActionForm
+          actionDefinition={TestAction}
+          formState={{ name: "Initial", age: 25 }}
+          onFormStateChange={onFormStateChange}
+        />,
+      );
+
+      const textInput = screen
+        .getByTestId("form-field-name")
+        .querySelector("input");
+
+      if (textInput != null) {
+        fireEvent.change(textInput, { target: { value: "Coerced" } });
+      }
+
+      expect(onFormStateChange).toHaveBeenCalledWith(
+        expect.objectContaining({ name: "Coerced" }),
+      );
+    });
+
+    it("reflects updated formState on re-render", async () => {
+      const { rerender } = render(
+        <ActionForm
+          actionDefinition={TestAction}
+          formState={{ name: "V1", age: 1 }}
+          onFormStateChange={vi.fn()}
+        />,
+      );
+
+      rerender(
+        <ActionForm
+          actionDefinition={TestAction}
+          formState={{ name: "V2", age: 2 }}
+          onFormStateChange={vi.fn()}
+        />,
+      );
+
+      fireEvent.submit(screen.getByTestId("action-form"));
+
+      await vi.waitFor(() => {
+        expect(mockApplyAction).toHaveBeenCalledWith(
+          expect.objectContaining({ name: "V2", age: 2 }),
+        );
+      });
+    });
+  });
+
+  describe("loading state", () => {
+    it("shows loading state when metadata is loading", () => {
+      vi.mocked(useOsdkMetadata).mockReturnValue({
+        loading: true,
+      });
+
+      render(<ActionForm actionDefinition={TestAction} />);
+
+      expect(screen.getByTestId("form-loading")).toBeDefined();
+    });
+
+    it("renders form even during loading (no early return)", () => {
+      vi.mocked(useOsdkMetadata).mockReturnValue({
+        loading: true,
+      });
+
+      render(<ActionForm actionDefinition={TestAction} />);
+
+      expect(screen.getByTestId("action-form")).toBeDefined();
+      expect(screen.getByTestId("submit-button")).toBeDefined();
+    });
+  });
+});

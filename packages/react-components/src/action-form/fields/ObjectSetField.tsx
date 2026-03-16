@@ -14,4 +14,12 @@
  * limitations under the License.
  */
 
-export { assertUnreachable } from "../../shared/assertUnreachable.js";
+import type { ObjectTypeDefinition } from "@osdk/api";
+import type React from "react";
+import type { ObjectSetFieldProps } from "../FormFieldApi.js";
+
+export function ObjectSetField(
+  _props: ObjectSetFieldProps<ObjectTypeDefinition>,
+): React.ReactElement {
+  return <div data-testid="object-set-field">[ObjectSetField placeholder]</div>;
+}

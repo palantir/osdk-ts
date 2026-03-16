@@ -14,4 +14,11 @@
  * limitations under the License.
  */
 
-export { assertUnreachable } from "../../shared/assertUnreachable.js";
+import type React from "react";
+import type { TextAreaFieldProps } from "../FormFieldApi.js";
+
+export function TextAreaField(
+  _props: TextAreaFieldProps,
+): React.ReactElement {
+  return <div data-testid="text-area-field">[TextAreaField placeholder]</div>;
+}

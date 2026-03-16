@@ -17,7 +17,6 @@
 import type {
   ActionDefinition,
   ActionEditResponse,
-  ActionReturnTypeForOptions,
   ActionValidationResponse,
 } from "@osdk/api";
 import type { ActionValidationError, ApplyActionOptions } from "@osdk/client";
@@ -29,9 +28,22 @@ import type {
 } from "./FormFieldApi.js";
 
 /**
- * Props for the ActionForm component
+ * Props for the ActionForm component.
+ *
+ * A discriminated union ensures that controlled mode (formState provided)
+ * always requires onFormStateChange, and uncontrolled mode omits both.
  */
-export interface ActionFormProps<Q extends ActionDefinition<unknown>> {
+export type ActionFormProps<Q extends ActionDefinition<unknown>> =
+  | (BaseActionFormInputProps<Q> & {
+    formState: FormState<Q>;
+    onFormStateChange: (state: FormState<Q>) => void;
+  })
+  | (BaseActionFormInputProps<Q> & {
+    formState?: undefined;
+    onFormStateChange?: undefined;
+  });
+
+interface BaseActionFormInputProps<Q extends ActionDefinition<unknown>> {
   actionDefinition: Q;
 
   /**
@@ -42,19 +54,7 @@ export interface ActionFormProps<Q extends ActionDefinition<unknown>> {
   /**
    * If not supplied, this will be constructed from ActionParameters
    */
-  formFieldDefinition?: Array<FormFieldDefinition<Q>>;
-
-  /**
-   * Called when a field value changed.
-   * Required when a field is in controlled mode, i.e. value is provided via formFieldDefinition.
-   *
-   * @param fieldKey The key of the changed field
-   * @param value the updated value of the field
-   */
-  onFieldValueChanged?: <K extends FieldKey<Q>>(
-    fieldKey: K,
-    value: FieldValueType<Q, K>,
-  ) => void;
+  formFieldDefinition?: ReadonlyArray<FormFieldDefinition<Q>>;
 
   /**
    * Override to disable submit button
@@ -72,13 +72,13 @@ export interface ActionFormProps<Q extends ActionDefinition<unknown>> {
    * @param applyAction the function to execute the action. Call it with $validateOnly: true options to run validation mode onSubmit.
    * @returns a promise of the submission response
    */
-  onSubmit?: <OP extends ApplyActionOptions>(
+  onSubmit?: (
     formState: FormState<Q>,
     applyAction: (
       args: ActionParameters<Q>,
-      options?: OP,
-    ) => Promise<ActionReturnTypeForOptions<OP>>,
-  ) => Promise<ActionReturnTypeForOptions<OP>> | void;
+      options?: ApplyActionOptions,
+    ) => Promise<ActionEditResponse | ActionValidationResponse | undefined>,
+  ) => Promise<unknown> | void;
 
   /**
    * Called when the validation response is returned from a validateOnly submission
@@ -106,7 +106,7 @@ export interface ActionFormProps<Q extends ActionDefinition<unknown>> {
  * Form values mapping parameter names to their values
  */
 export type FormState<Q extends ActionDefinition<unknown>> = {
-  [K in FieldKey<Q>]: FieldValueType<Q, K>;
+  [K in FieldKey<Q>]?: FieldValueType<Q, K>;
 };
 
 /**
@@ -114,5 +114,5 @@ export type FormState<Q extends ActionDefinition<unknown>> = {
  */
 export type FormError =
   | { type: "validation"; error: ActionValidationError }
-  | { type: "submission"; error: Error }
+  | { type: "submission"; error: unknown }
   | { type: "unknown"; error: unknown };

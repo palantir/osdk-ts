@@ -14,4 +14,13 @@
  * limitations under the License.
  */
 
-export { assertUnreachable } from "../../shared/assertUnreachable.js";
+import type React from "react";
+import type { FilePickerProps } from "../FormFieldApi.js";
+
+export function FilePickerField(
+  _props: FilePickerProps,
+): React.ReactElement {
+  return (
+    <div data-testid="file-picker-field">[FilePickerField placeholder]</div>
+  );
+}

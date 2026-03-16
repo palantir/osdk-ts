@@ -54,3 +54,16 @@ export type {
   ColumnConfigDialogProps,
   ColumnConfigOptions,
 } from "../object-table/ColumnConfigDialog.js";
+
+// ActionForm that renders a form from an OSDK ActionDefinition
+export { ActionForm } from "../action-form/ActionForm.js";
+export type {
+  ActionFormProps,
+  FormError,
+  FormState,
+} from "../action-form/ActionFormApi.js";
+export type { FormFieldDefinition } from "../action-form/FormFieldApi.js";
+
+// BaseActionForm that does not handle data fetching
+export { BaseActionForm } from "../action-form/BaseActionForm.js";
+export type { BaseActionFormProps } from "../action-form/BaseActionForm.js";

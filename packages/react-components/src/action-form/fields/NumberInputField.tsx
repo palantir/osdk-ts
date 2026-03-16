@@ -14,4 +14,13 @@
  * limitations under the License.
  */
 
-export { assertUnreachable } from "../../shared/assertUnreachable.js";
+import type React from "react";
+import type { NumberInputFieldProps } from "../FormFieldApi.js";
+
+export function NumberInputField(
+  _props: NumberInputFieldProps,
+): React.ReactElement {
+  return (
+    <div data-testid="number-input-field">[NumberInputField placeholder]</div>
+  );
+}

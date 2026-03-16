@@ -14,4 +14,15 @@
  * limitations under the License.
  */
 
-export { assertUnreachable } from "../../shared/assertUnreachable.js";
+import type React from "react";
+import type { DatetimePickerFieldProps } from "../FormFieldApi.js";
+
+export function DatetimePickerField(
+  _props: DatetimePickerFieldProps,
+): React.ReactElement {
+  return (
+    <div data-testid="datetime-picker-field">
+      [DatetimePickerField placeholder]
+    </div>
+  );
+}

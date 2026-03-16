@@ -14,4 +14,11 @@
  * limitations under the License.
  */
 
-export { assertUnreachable } from "../../shared/assertUnreachable.js";
+import type React from "react";
+import type { DropdownFieldProps } from "../FormFieldApi.js";
+
+export function DropdownField(
+  _props: DropdownFieldProps<unknown>,
+): React.ReactElement {
+  return <div data-testid="dropdown-field">[DropdownField placeholder]</div>;
+}
