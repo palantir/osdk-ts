@@ -25,6 +25,7 @@ import type {
   FieldKey,
   FieldValueType,
   FormFieldDefinition,
+  RendererFieldDefinition,
 } from "./FormFieldApi.js";
 
 /**
@@ -34,35 +35,24 @@ import type {
  * always requires onFormStateChange, and uncontrolled mode omits both.
  */
 export type ActionFormProps<Q extends ActionDefinition<unknown>> =
-  | (BaseActionFormInputProps<Q> & {
+  | (ActionFormConfigProps<Q> & {
     formState: FormState<Q>;
     onFormStateChange: (state: FormState<Q>) => void;
   })
-  | (BaseActionFormInputProps<Q> & {
+  | (ActionFormConfigProps<Q> & {
     formState?: undefined;
     onFormStateChange?: undefined;
   });
 
-interface BaseActionFormInputProps<Q extends ActionDefinition<unknown>> {
+interface ActionFormConfigProps<Q extends ActionDefinition<unknown>>
+  extends Pick<BaseActionFormProps, "formTitle" | "isSubmitDisabled">
+{
   actionDefinition: Q;
-
-  /**
-   * If not supplied, defaults to actionDef.displayName
-   */
-  formTitle?: string;
 
   /**
    * If not supplied, this will be constructed from ActionParameters
    */
   formFieldDefinition?: ReadonlyArray<FormFieldDefinition<Q>>;
-
-  /**
-   * Override to disable submit button
-   * If not provided, button is disabled when form is submitting or has validation errors
-   *
-   * @default false
-   */
-  isSubmitDisabled?: boolean;
 
   /**
    * If supplied, this will override the default submit action
@@ -115,3 +105,19 @@ export type FormError =
   | { type: "validation"; error: ActionValidationError }
   | { type: "submission"; error: unknown }
   | { type: "unknown"; error: unknown };
+
+/**
+ * Props for the BaseActionForm component, which renders a form without
+ * OSDK data fetching. Consumers supply pre-resolved field definitions
+ * and manage form state externally.
+ */
+export interface BaseActionFormProps {
+  formTitle?: string;
+  fieldDefinitions: ReadonlyArray<RendererFieldDefinition>;
+  formState: Record<string, unknown>;
+  onFieldValueChange: (fieldKey: string, value: unknown) => void;
+  onSubmit: () => void;
+  isSubmitDisabled?: boolean;
+  isPending?: boolean;
+  isLoading?: boolean;
+}
