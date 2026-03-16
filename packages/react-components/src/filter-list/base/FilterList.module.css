@@ -18,12 +18,6 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  overflow-y: auto;
-  background: var(--osdk-filter-list-bg);
-  border: var(--osdk-filter-list-border);
-  border-radius: var(--osdk-filter-list-border-radius);
-  padding: var(--osdk-filter-list-padding);
-  gap: var(--osdk-filter-list-gap);
 }
 
 .filterListCollapsed {
@@ -37,6 +31,22 @@
   border-radius: var(--osdk-filter-list-border-radius);
   padding: var(--osdk-surface-spacing) 0;
   gap: var(--osdk-surface-spacing);
+}
+
+.expandedContent {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow-y: auto;
+  background: var(--osdk-filter-list-bg);
+  border: var(--osdk-filter-list-border);
+  border-radius: var(--osdk-filter-list-border-radius);
+  padding: var(--osdk-filter-list-padding);
+  gap: var(--osdk-filter-list-gap);
+}
+
+.hiddenContent {
+  display: none;
 }
 
 .expandButton {
