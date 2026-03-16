@@ -561,6 +561,65 @@ describe("buildWhereClause", () => {
     });
   });
 
+  it("wraps with $not for NUMBER_RANGE min+max with isExcluding", () => {
+    const def = createPropertyFilterDef(
+      "age",
+      "NUMBER_RANGE",
+      createNumberRangeState(18, 65, { isExcluding: true }),
+    );
+    const filterStates = stateMap(
+      [def, createNumberRangeState(18, 65, { isExcluding: true })],
+    );
+    const result = buildWhereClause([def], filterStates, "and");
+    expect(result).toEqual({
+      $not: { $and: [{ age: { $gte: 18 } }, { age: { $lte: 65 } }] },
+    });
+  });
+
+  it("wraps with $not for DATE_RANGE min+max with isExcluding", () => {
+    const minDate = new Date("2024-01-01T00:00:00.000Z");
+    const maxDate = new Date("2024-12-31T23:59:59.999Z");
+    const def = createPropertyFilterDef(
+      "createdAt",
+      "DATE_RANGE",
+      createDateRangeState(minDate, maxDate, { isExcluding: true }),
+    );
+    const filterStates = stateMap(
+      [def, createDateRangeState(minDate, maxDate, { isExcluding: true })],
+    );
+    const result = buildWhereClause([def], filterStates, "and");
+    expect(result).toEqual({
+      $not: {
+        $and: [
+          { createdAt: { $gte: minDate.toISOString() } },
+          { createdAt: { $lte: maxDate.toISOString() } },
+        ],
+      },
+    });
+  });
+
+  it("wraps with $not for TIMELINE start+end with isExcluding", () => {
+    const start = new Date("2024-01-01T00:00:00.000Z");
+    const end = new Date("2024-12-31T23:59:59.999Z");
+    const def = createPropertyFilterDef(
+      "createdAt",
+      "TIMELINE",
+      createTimelineState(start, end, { isExcluding: true }),
+    );
+    const filterStates = stateMap(
+      [def, createTimelineState(start, end, { isExcluding: true })],
+    );
+    const result = buildWhereClause([def], filterStates, "and");
+    expect(result).toEqual({
+      $not: {
+        $and: [
+          { createdAt: { $gte: start.toISOString() } },
+          { createdAt: { $lte: end.toISOString() } },
+        ],
+      },
+    });
+  });
+
   it("preserves state when filters are reordered", () => {
     const nameDef = createPropertyFilterDef(
       "name",
