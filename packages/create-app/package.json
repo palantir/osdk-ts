@@ -45,7 +45,6 @@
   },
   "devDependencies": {
     "@osdk/create-app.template.expo.v2": "workspace:*",
-    "@osdk/create-app.template.osdk-react.beta": "workspace:*",
     "@osdk/create-app.template.react": "workspace:*",
     "@osdk/create-app.template.react.beta": "workspace:*",
     "@osdk/create-app.template.tutorial-todo-aip-app": "workspace:*",
