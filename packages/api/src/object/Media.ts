@@ -27,6 +27,39 @@ export interface Media {
    * Returns the media reference
    */
   getMediaReference(): MediaReference;
+  /**
+   * Submits a transformation job for the media item, polls until completion,
+   * and returns the transformed content.
+   *
+   * @beta
+   * @param transformation - The transformation request to apply
+   * @param options - Polling options (interval and timeout)
+   * @returns The transformed media content as a Response
+   * @throws {@link MediaTransformationTimeoutError} if polling exceeds the timeout
+   * @throws {@link MediaTransformationFailedError} if the transformation job fails
+   */
+  transformAndWait(
+    transformation: TransformMediaItemRequest,
+    options?: TransformOptions,
+  ): Promise<Response>;
+}
+
+/**
+ * Request to transform a media item.
+ * The `transformation` field accepts a Transformation object from `@osdk/foundry.mediasets`.
+ */
+export interface TransformMediaItemRequest {
+  transformation: { type: string; [key: string]: unknown };
+}
+
+/**
+ * Options for polling a media transformation job.
+ */
+export interface TransformOptions {
+  /** Milliseconds between status polls. Defaults to 3000. */
+  pollIntervalMs?: number;
+  /** Maximum milliseconds to wait before timing out. Defaults to 30000. */
+  pollTimeoutMs?: number;
 }
 
 /**

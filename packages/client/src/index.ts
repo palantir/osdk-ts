@@ -17,6 +17,11 @@
 /* eslint-disable @typescript-eslint/no-deprecated */
 
 export { isOk } from "@osdk/api";
+export {
+  MediaTransformationError,
+  MediaTransformationFailedError,
+  MediaTransformationTimeoutError,
+} from "@osdk/api";
 export type {
   ActionDefinition,
   ActionEditResponse,
@@ -53,6 +58,7 @@ export type {
   Result,
   SingleLinkAccessor,
   ThreeDimensionalAggregation,
+  TransformOptions,
   TwoDimensionalAggregation,
   VersionBound,
   WhereClause,

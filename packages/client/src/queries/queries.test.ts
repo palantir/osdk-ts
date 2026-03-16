@@ -570,6 +570,7 @@ describe("queries", () => {
           mediaType: "image/png",
         }),
         getMediaReference: () => mediaRef,
+        transformAndWait: async () => new Response(),
       };
 
       const result = await client(queryAcceptsMediaReference).executeFunction({

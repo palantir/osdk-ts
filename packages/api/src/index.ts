@@ -85,7 +85,14 @@ export type {
   MediaMetadata,
   MediaReference,
   MediaUpload,
+  TransformMediaItemRequest,
+  TransformOptions,
 } from "./object/Media.js";
+export {
+  MediaTransformationError,
+  MediaTransformationFailedError,
+  MediaTransformationTimeoutError,
+} from "./object/MediaTransformationErrors.js";
 export type {
   PropertyMarkings,
   PropertySecurity,

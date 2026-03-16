@@ -14,8 +14,19 @@
  * limitations under the License.
  */
 
-import type { Media, MediaMetadata, MediaReference } from "@osdk/api";
+import type {
+  Media,
+  MediaMetadata,
+  MediaReference,
+  TransformMediaItemRequest,
+  TransformOptions,
+} from "@osdk/api";
+import {
+  MediaTransformationFailedError,
+  MediaTransformationTimeoutError,
+} from "@osdk/api";
 import { MediaSets } from "@osdk/foundry.mediasets";
+import type { TransformMediaItemRequest as FoundryTransformRequest } from "@osdk/foundry.mediasets";
 import type { MinimalClient } from "./MinimalClientContext.js";
 
 /**
@@ -69,6 +80,57 @@ export function createMediaFromReference(
 
     getMediaReference(): MediaReference {
       return mediaReference;
+    },
+
+    async transformAndWait(
+      transformation: TransformMediaItemRequest,
+      options?: TransformOptions,
+    ): Promise<Response> {
+      const pollIntervalMs = options?.pollIntervalMs ?? 3000;
+      const pollTimeoutMs = options?.pollTimeoutMs ?? 30000;
+
+      const job = await MediaSets.transform(
+        client,
+        mediaSetRid,
+        mediaItemRid,
+        transformation as FoundryTransformRequest,
+        { preview: true },
+        token ? { Token: token } : undefined,
+      );
+
+      let status = job.status;
+      const jobId = job.jobId;
+      const deadline = Date.now() + pollTimeoutMs;
+
+      while (status !== "SUCCESSFUL") {
+        if (Date.now() >= deadline) {
+          throw new MediaTransformationTimeoutError(jobId);
+        }
+        const statusResponse = await MediaSets.getStatus(
+          client,
+          mediaSetRid,
+          mediaItemRid,
+          jobId,
+          { preview: true },
+          token ? { Token: token } : undefined,
+        );
+        status = statusResponse.status;
+        if (status === "FAILED") {
+          throw new MediaTransformationFailedError(jobId);
+        }
+        if (status !== "SUCCESSFUL") {
+          await new Promise(resolve => setTimeout(resolve, pollIntervalMs));
+        }
+      }
+
+      return MediaSets.getResult(
+        client,
+        mediaSetRid,
+        mediaItemRid,
+        jobId,
+        { preview: true },
+        token ? { Token: token } : undefined,
+      );
     },
   };
 }
