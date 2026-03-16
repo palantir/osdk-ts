@@ -301,14 +301,14 @@ export function useOsdkObjects<
   }
 
   if (hasShape) {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
+    // eslint-disable-next-line
     return useOsdkObjectsWithShape(
       type,
       options as UseOsdkObjectsOptions<Q> & { shape: C },
     );
   }
 
-  // eslint-disable-next-line react-hooks/rules-of-hooks
+  // eslint-disable-next-line
   return useOsdkObjectsBase(type, options);
 }
 
@@ -469,7 +469,7 @@ function useOsdkObjectsWithShape<
   type S = InferShapeDefinition<Q, C>;
 
   if (process.env.NODE_ENV !== "production") {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
+    // eslint-disable-next-line
     const prevConfig = React.useRef(options.shape);
     if (prevConfig.current !== options.shape) {
       // eslint-disable-next-line no-console
@@ -483,7 +483,7 @@ function useOsdkObjectsWithShape<
   const configRef = React.useRef(options.shape);
   const shapeDef = React.useMemo(
     () => configToShapeDefinition(type, configRef.current),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line
     [type],
   ) as S;
 

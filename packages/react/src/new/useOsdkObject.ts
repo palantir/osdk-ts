@@ -159,7 +159,11 @@ export function useOsdkObject<
   primaryKey: PrimaryKeyType<
     S extends ShapeDefinition<infer Q> ? Q : ObjectTypeDefinition
   >,
-  options: { shape: S; enabled?: boolean; links?: Partial<Record<string, LinkLoadConfig>> },
+  options: {
+    shape: S;
+    enabled?: boolean;
+    links?: Partial<Record<string, LinkLoadConfig>>;
+  },
 ): UseShapeResult<S>;
 /*
     Implementation of useOsdkObject
@@ -179,7 +183,10 @@ export function useOsdkObject<
     | [
       type: Q,
       primaryKey: PrimaryKeyType<Q>,
-      options: UseOsdkObjectShapeOptions<Q & ObjectTypeDefinition, C & InlineShapeConfig<Q & ObjectTypeDefinition>>,
+      options: UseOsdkObjectShapeOptions<
+        Q & ObjectTypeDefinition,
+        C & InlineShapeConfig<Q & ObjectTypeDefinition>
+      >,
     ]
     | [
       type: Q,
@@ -190,13 +197,20 @@ export function useOsdkObject<
         links?: Partial<Record<string, LinkLoadConfig>>;
       },
     ]
-): UseOsdkObjectResult<Q> | UseOsdkObjectShapeResult<Q & ObjectTypeDefinition, C & InlineShapeConfig<Q & ObjectTypeDefinition>> | UseShapeResult<ShapeDefinition<Q>> {
+):
+  | UseOsdkObjectResult<Q>
+  | UseOsdkObjectShapeResult<
+    Q & ObjectTypeDefinition,
+    C & InlineShapeConfig<Q & ObjectTypeDefinition>
+  >
+  | UseShapeResult<ShapeDefinition<Q>>
+{
   const isInstanceSignature = "$objectType" in args[0];
 
   const hasShapeOptions = !isInstanceSignature
     && args.length >= 3
     && typeof args[2] === "object"
-    && args[2] !== null
+    && args[2] != null
     && "shape" in args[2];
 
   const modeRef = React.useRef(hasShapeOptions);
@@ -218,7 +232,7 @@ export function useOsdkObject<
     };
 
     if (process.env.NODE_ENV !== "production") {
-      // eslint-disable-next-line react-hooks/rules-of-hooks
+      // eslint-disable-next-line
       const prevConfig = React.useRef(rawShape);
       if (prevConfig.current !== rawShape) {
         // eslint-disable-next-line no-console
@@ -229,22 +243,22 @@ export function useOsdkObject<
       }
     }
 
-    const isPreBuilt = typeof rawShape === "object" && rawShape !== null
+    const isPreBuilt = typeof rawShape === "object" && rawShape != null
       && "__shapeId" in rawShape;
 
-    // eslint-disable-next-line react-hooks/rules-of-hooks
+    // eslint-disable-next-line
     const configRef = React.useRef(rawShape);
-    // eslint-disable-next-line react-hooks/rules-of-hooks
+    // eslint-disable-next-line
     const shapeDef = React.useMemo(() => {
       const c = configRef.current;
-      if (typeof c === "object" && c !== null && "__shapeId" in c) {
+      if (typeof c === "object" && c != null && "__shapeId" in c) {
         return c as ShapeDefinition<Q>;
       }
       return configToShapeDefinition(type, c as InlineShapeConfig<Q>);
-      // eslint-disable-next-line react-hooks/exhaustive-deps
+      // eslint-disable-next-line
     }, [type]);
 
-    // eslint-disable-next-line react-hooks/rules-of-hooks
+    // eslint-disable-next-line
     const result = useShapeSingleInternal(
       shapeDef,
       primaryKey,
@@ -288,7 +302,7 @@ export function useOsdkObject<
   }
 
   // Original overloads (instance or type+pk)
-  // eslint-disable-next-line react-hooks/rules-of-hooks
+  // eslint-disable-next-line
   return useOsdkObjectBase(
     args as
       | [obj: Osdk.Instance<Q>, enabled?: boolean]
@@ -407,4 +421,3 @@ function useOsdkObjectBase<Q extends ObjectOrInterfaceDefinition>(
     };
   }, [payload, enabled, forceUpdate]);
 }
-

@@ -29,7 +29,9 @@ import type {
 /**
  * Configuration for a single mock object.
  */
-export interface MockObjectConfig<T extends ObjectTypeDefinition = ObjectTypeDefinition> {
+export interface MockObjectConfig<
+  T extends ObjectTypeDefinition = ObjectTypeDefinition,
+> {
   /** The object type (e.g., Player, Team) */
   objectType: T;
   /** The primary key */
@@ -375,7 +377,10 @@ export function createMockObservableClient(
     },
 
     // Observe aggregation - stub (supports both sync and async overloads)
-    observeAggregation(_options: unknown, subFn: unknown): Unsubscribable & Promise<Unsubscribable> {
+    observeAggregation(
+      _options: unknown,
+      subFn: unknown,
+    ): Unsubscribable & Promise<Unsubscribable> {
       setTimeout(() => {
         (subFn as Observer<unknown>).next({
           data: {},
@@ -386,7 +391,9 @@ export function createMockObservableClient(
       }, delay);
       const unsub: Unsubscribable = { unsubscribe: () => {} };
       const promise = Promise.resolve(unsub);
-      return Object.assign(promise, unsub) as Unsubscribable & Promise<Unsubscribable>;
+      return Object.assign(promise, unsub) as
+        & Unsubscribable
+        & Promise<Unsubscribable>;
     },
 
     // Observe function - stub
@@ -433,19 +440,23 @@ export function createMockObservableClient(
     }) as ObservableClient["canonicalizeWhereClause"],
 
     // Invalidate object type - stub
-    invalidateObjectType: (async () => {}) as ObservableClient["invalidateObjectType"],
+    invalidateObjectType:
+      (async () => {}) as ObservableClient["invalidateObjectType"],
 
     // Invalidate objects - stub
-    invalidateObjects: (async () => {}) as ObservableClient["invalidateObjects"],
+    invalidateObjects:
+      (async () => {}) as ObservableClient["invalidateObjects"],
 
     // Invalidate all - stub
     invalidateAll: (async () => {}) as ObservableClient["invalidateAll"],
 
     // Invalidate function - stub
-    invalidateFunction: (async () => {}) as ObservableClient["invalidateFunction"],
+    invalidateFunction:
+      (async () => {}) as ObservableClient["invalidateFunction"],
 
     // Invalidate functions by object - stub
-    invalidateFunctionsByObject: (async () => {}) as ObservableClient["invalidateFunctionsByObject"],
+    invalidateFunctionsByObject:
+      (async () => {}) as ObservableClient["invalidateFunctionsByObject"],
   };
 
   return mockClient;

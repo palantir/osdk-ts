@@ -27,7 +27,9 @@ vi.mock("../../__unstable/createBulkLinksAsyncIterFactory.js", () => ({
 import { createBulkLinksAsyncIterFactory } from "../../__unstable/createBulkLinksAsyncIterFactory.js";
 import { BulkLinksLoader } from "./BulkLinksLoader.js";
 
-function makeSourceObject(pk: string | number): OsdkBase<ObjectOrInterfaceDefinition> {
+function makeSourceObject(
+  pk: string | number,
+): OsdkBase<ObjectOrInterfaceDefinition> {
   return {
     $apiName: "Player",
     $objectType: "Player",
@@ -72,7 +74,12 @@ describe(BulkLinksLoader, () => {
       linkTypes: string[],
     ) {
       for (const obj of objs) {
-        yield makeBulkLinkResult(obj, linkTypes[0], "SeasonStats", `target-${obj.$primaryKey}`);
+        yield makeBulkLinkResult(
+          obj,
+          linkTypes[0],
+          "SeasonStats",
+          `target-${obj.$primaryKey}`,
+        );
       }
     });
 
@@ -85,7 +92,11 @@ describe(BulkLinksLoader, () => {
 
     vi.advanceTimersByTime(26);
 
-    const [resultA, resultB, resultC] = await Promise.all([loadA, loadB, loadC]);
+    const [resultA, resultB, resultC] = await Promise.all([
+      loadA,
+      loadB,
+      loadC,
+    ]);
 
     expect(createBulkLinksAsyncIterFactory).toHaveBeenCalledOnce();
     expect(mockIterFn).toHaveBeenCalledOnce();
@@ -94,9 +105,18 @@ describe(BulkLinksLoader, () => {
       ["seasonStats"],
     );
 
-    expect(resultA).toEqual({ targetPks: ["target-pk-A"], targetApiName: "SeasonStats" });
-    expect(resultB).toEqual({ targetPks: ["target-pk-B"], targetApiName: "SeasonStats" });
-    expect(resultC).toEqual({ targetPks: ["target-pk-C"], targetApiName: "SeasonStats" });
+    expect(resultA).toEqual({
+      targetPks: ["target-pk-A"],
+      targetApiName: "SeasonStats",
+    });
+    expect(resultB).toEqual({
+      targetPks: ["target-pk-B"],
+      targetApiName: "SeasonStats",
+    });
+    expect(resultC).toEqual({
+      targetPks: ["target-pk-C"],
+      targetApiName: "SeasonStats",
+    });
 
     vi.useRealTimers();
   });
@@ -111,7 +131,12 @@ describe(BulkLinksLoader, () => {
       linkTypes: string[],
     ) {
       for (const obj of objs) {
-        yield makeBulkLinkResult(obj, linkTypes[0], "Target", `t-${obj.$primaryKey}`);
+        yield makeBulkLinkResult(
+          obj,
+          linkTypes[0],
+          "Target",
+          `t-${obj.$primaryKey}`,
+        );
       }
     });
 
@@ -168,10 +193,20 @@ describe(BulkLinksLoader, () => {
 
     vi.advanceTimersByTime(26);
 
-    const [resultA, resultB, resultC] = await Promise.all([loadA, loadB, loadC]);
+    const [resultA, resultB, resultC] = await Promise.all([
+      loadA,
+      loadB,
+      loadC,
+    ]);
 
-    expect(resultA).toEqual({ targetPks: ["target-X", "target-Y"], targetApiName: "SeasonStats" });
-    expect(resultB).toEqual({ targetPks: ["target-Z"], targetApiName: "SeasonStats" });
+    expect(resultA).toEqual({
+      targetPks: ["target-X", "target-Y"],
+      targetApiName: "SeasonStats",
+    });
+    expect(resultB).toEqual({
+      targetPks: ["target-Z"],
+      targetApiName: "SeasonStats",
+    });
     expect(resultC).toEqual({ targetPks: [], targetApiName: "" });
 
     vi.useRealTimers();
@@ -204,7 +239,9 @@ describe(BulkLinksLoader, () => {
     const objA = makeSourceObject("pk-A");
     const objB = makeSourceObject("pk-B");
 
-    const calls: Array<{ objs: OsdkBase<ObjectOrInterfaceDefinition>[]; linkTypes: string[] }> = [];
+    const calls: Array<
+      { objs: OsdkBase<ObjectOrInterfaceDefinition>[]; linkTypes: string[] }
+    > = [];
 
     mockIterFn.mockImplementation(async function*(
       objs: OsdkBase<ObjectOrInterfaceDefinition>[],
@@ -212,7 +249,12 @@ describe(BulkLinksLoader, () => {
     ) {
       calls.push({ objs, linkTypes });
       for (const obj of objs) {
-        yield makeBulkLinkResult(obj, linkTypes[0], "Target", `t-${obj.$primaryKey}-${linkTypes[0]}`);
+        yield makeBulkLinkResult(
+          obj,
+          linkTypes[0],
+          "Target",
+          `t-${obj.$primaryKey}-${linkTypes[0]}`,
+        );
       }
     });
 
@@ -230,8 +272,14 @@ describe(BulkLinksLoader, () => {
     expect(calls[0]).toEqual({ objs: [objA], linkTypes: ["linkType1"] });
     expect(calls[1]).toEqual({ objs: [objB], linkTypes: ["linkType2"] });
 
-    expect(resultA).toEqual({ targetPks: ["t-pk-A-linkType1"], targetApiName: "Target" });
-    expect(resultB).toEqual({ targetPks: ["t-pk-B-linkType2"], targetApiName: "Target" });
+    expect(resultA).toEqual({
+      targetPks: ["t-pk-A-linkType1"],
+      targetApiName: "Target",
+    });
+    expect(resultB).toEqual({
+      targetPks: ["t-pk-B-linkType2"],
+      targetApiName: "Target",
+    });
 
     vi.useRealTimers();
   });

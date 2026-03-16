@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { ObjectOrInterfaceDefinition, Osdk } from "@osdk/api";
 import type {
   NullabilityViolation,
   ShapeBaseType,
@@ -21,7 +22,6 @@ import type {
   ShapeInstance,
   ShapePropertyConfig,
 } from "@osdk/api/shapes";
-import type { ObjectOrInterfaceDefinition, Osdk } from "@osdk/api";
 
 /**
  * Result of applying shape transformations to an object.
@@ -70,7 +70,9 @@ function getObjectProperty<T extends ObjectOrInterfaceDefinition>(
  *
  * @internal
  */
-function toShapeInstance<S extends ShapeDefinition<ObjectOrInterfaceDefinition>>(
+function toShapeInstance<
+  S extends ShapeDefinition<ObjectOrInterfaceDefinition>,
+>(
   obj: Osdk.Instance<ShapeBaseType<S>>,
 ): ShapeInstance<S> {
   // ShapeInstance<S> extends the base OSDK instance with type narrowing
@@ -127,7 +129,7 @@ export function applyShapeTransformations<
 
     switch (op.type) {
       case "dropIfNull": {
-        if (originalValue === null || originalValue === undefined) {
+        if (originalValue == null) {
           return {
             data: undefined,
             dropped: true,
@@ -151,6 +153,7 @@ export function applyShapeTransformations<
           transformedProps[prop] = op.transform(originalValue);
         } catch (e) {
           if (process.env.NODE_ENV !== "production") {
+            // eslint-disable-next-line no-console
             console.error(`Shape transform error for property "${prop}":`, e);
           }
           return {
@@ -178,7 +181,9 @@ export function applyShapeTransformations<
 
   // Clone the object with transformed properties if any were modified
   const clonedObject = Object.keys(transformedProps).length > 0
-    ? rawObject.$clone(transformedProps as Partial<Osdk.Instance<ShapeBaseType<S>>>)
+    ? rawObject.$clone(
+      transformedProps as Partial<Osdk.Instance<ShapeBaseType<S>>>,
+    )
     : rawObject;
 
   // Phase 4: Check require constraints on the TRANSFORMED object
@@ -186,7 +191,7 @@ export function applyShapeTransformations<
   const violations: NullabilityViolation[] = [];
   for (const prop of requireProps) {
     const value = getObjectProperty(clonedObject, prop);
-    if (value === null || value === undefined) {
+    if (value == null) {
       violations.push({
         property: prop,
         primaryKey,

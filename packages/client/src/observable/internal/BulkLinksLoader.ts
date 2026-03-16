@@ -14,12 +14,17 @@
  * limitations under the License.
  */
 
-import type { Logger, ObjectOrInterfaceDefinition, ObjectTypeDefinition, OsdkBase, Osdk } from "@osdk/api";
-import { DefaultMap, DefaultWeakMap } from "mnemonist";
+import type {
+  Logger,
+  ObjectOrInterfaceDefinition,
+  ObjectTypeDefinition,
+  Osdk,
+  OsdkBase,
+} from "@osdk/api";
 import type { DeferredPromise } from "p-defer";
 import pDefer from "p-defer";
-import { additionalContext, type Client } from "../../Client.js";
 import { createBulkLinksAsyncIterFactory } from "../../__unstable/createBulkLinksAsyncIterFactory.js";
+import { additionalContext, type Client } from "../../Client.js";
 
 export interface BulkLinkFetchResult {
   targetPks: unknown[];
@@ -36,21 +41,20 @@ interface Accumulator {
   timer?: ReturnType<typeof setTimeout>;
 }
 
-const weakCache = new DefaultWeakMap<Client, BulkLinksLoader>(c =>
-  new BulkLinksLoader(c)
-);
+const weakCache = new WeakMap<Client, BulkLinksLoader>();
 
 export function getBulkLinksLoader(client: Client): BulkLinksLoader {
-  return weakCache.get(client);
+  let loader = weakCache.get(client);
+  if (!loader) {
+    loader = new BulkLinksLoader(client);
+    weakCache.set(client, loader);
+  }
+  return loader;
 }
 
 export class BulkLinksLoader {
   #client: Client;
-
-  #m = new DefaultMap<string, Accumulator>(() => ({
-    data: [],
-    timer: undefined,
-  }));
+  #m = new Map<string, Accumulator>();
   #logger: Logger | undefined;
   #maxWait: number;
   #maxEntries: number;
@@ -68,7 +72,11 @@ export class BulkLinksLoader {
   ): Promise<BulkLinkFetchResult> {
     const deferred = pDefer<BulkLinkFetchResult>();
 
-    const entry = this.#m.get(linkApiName);
+    let entry = this.#m.get(linkApiName);
+    if (!entry) {
+      entry = { data: [], timer: undefined };
+      this.#m.set(linkApiName, entry);
+    }
     entry.data.push({
       sourceObject,
       deferred,
@@ -105,7 +113,10 @@ export class BulkLinksLoader {
     const bulkLinksIter = createBulkLinksAsyncIterFactory(minimalClient);
 
     // Group results by source PK
-    const resultsBySourcePk = new Map<unknown, { targetPks: unknown[]; targetApiName: string }>();
+    const resultsBySourcePk = new Map<
+      unknown,
+      { targetPks: unknown[]; targetApiName: string }
+    >();
 
     for await (const item of bulkLinksIter(sourceObjects, [linkApiName])) {
       const sourcePk = item.object.$primaryKey;

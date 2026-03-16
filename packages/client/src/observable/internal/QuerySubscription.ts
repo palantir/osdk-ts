@@ -42,7 +42,11 @@ export class QuerySubscription<
   /** @internal */
   subscriptionId: string;
 
-  constructor(query: TQuery, subscription: Subscription, subscriptionId?: string) {
+  constructor(
+    query: TQuery,
+    subscription: Subscription,
+    subscriptionId?: string,
+  ) {
     super(subscription);
     this.query = query;
     this.subscription = subscription;

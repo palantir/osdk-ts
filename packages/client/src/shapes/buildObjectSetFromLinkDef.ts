@@ -20,9 +20,9 @@ import type {
   Osdk,
   WhereClause,
 } from "@osdk/api";
+import type { ObjectTypeDefinition } from "@osdk/api";
 import { isSourcePkSymbol } from "@osdk/api/shapes";
 import type { ShapeLinkObjectSetDef, ShapeLinkOrderBy } from "@osdk/api/shapes";
-import type { ObjectTypeDefinition } from "@osdk/api";
 import { additionalContext, type Client } from "../Client.js";
 
 /**
@@ -87,7 +87,9 @@ export async function buildObjectSetFromLinkDefByType(
 
   let objectSet: ObjectSet<ObjectOrInterfaceDefinition> = client(
     sourceType as ObjectTypeDefinition,
-  ).where({ [pkFieldName]: sourcePrimaryKey } as WhereClause<ObjectTypeDefinition>);
+  ).where(
+    { [pkFieldName]: sourcePrimaryKey } as WhereClause<ObjectTypeDefinition>,
+  );
 
   for (const segment of linkDef.segments) {
     if (segment.type === "pivotTo") {
@@ -140,7 +142,7 @@ function resolveSymbolBindings(
   if (Array.isArray(value)) {
     return value.map((item) => resolveSymbolBindings(item, sourcePrimaryKey));
   }
-  if (value !== null && typeof value === "object") {
+  if (value != null && typeof value === "object") {
     const result: Record<string, unknown> = {};
     for (const [key, val] of Object.entries(value)) {
       result[key] = resolveSymbolBindings(val, sourcePrimaryKey);

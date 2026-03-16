@@ -47,7 +47,7 @@
 
 export {
   createMockObservableClient,
+  type MockObjectConfig,
   type MockObservableClient,
   type MockObservableClientConfig,
-  type MockObjectConfig,
 } from "./createMockObservableClient.js";

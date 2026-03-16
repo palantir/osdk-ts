@@ -58,7 +58,6 @@ interface UseOsdkAggregationBaseOptions<
     where: WhereClause<T, RDPs>;
   }>;
 
-
   /**
    * Aggregation options including groupBy and select
    */

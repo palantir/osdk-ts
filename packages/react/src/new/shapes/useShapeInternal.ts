@@ -174,7 +174,6 @@ export function useShapeSingleInternal<
       client,
       stableLinkConfig,
     );
-     
   }, [
     enabled,
     basePayload?.object?.$primaryKey,
@@ -353,7 +352,6 @@ export function useShapeListInternal<
   const { batchable: batchableLinks, nonBatchable: nonBatchableLinks } = React
     .useMemo(
       () => classifyLinks(shape.__derivedLinks),
-       
       [shape.__shapeId],
     );
 
@@ -387,7 +385,6 @@ export function useShapeListInternal<
       store.destroy();
       batchedStoreRef.current = null;
     };
-     
   }, [
     enabled,
     shape.__shapeId,
@@ -413,7 +410,6 @@ export function useShapeListInternal<
       ...shape,
       __derivedLinks: nonBatchableLinks,
     } as S;
-     
   }, [shape.__shapeId, hasNonBatchableLinks]);
 
   const linksStoresRef = React.useRef<
@@ -557,7 +553,6 @@ export function useShapeListInternal<
     }
 
     return payloads;
-     
   }, [transformResult.data, linksVersion, batchedLinksVersion]);
 
   const dataWithLinks = React.useMemo(() => {
@@ -632,7 +627,6 @@ export function useShapeListInternal<
       };
     }
     return aggregated;
-     
   }, [itemLinksPayloads, shape.__shapeId, batchedLinksVersion]);
 
   const anyLinksLoading = React.useMemo(() => {

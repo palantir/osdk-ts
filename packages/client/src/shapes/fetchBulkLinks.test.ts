@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import type { ObjectOrInterfaceDefinition, ObjectTypeDefinition, Osdk, OsdkBase } from "@osdk/api";
+import type {
+  ObjectOrInterfaceDefinition,
+  ObjectTypeDefinition,
+  Osdk,
+  OsdkBase,
+} from "@osdk/api";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("../observable/internal/BulkLinksLoader.js", () => ({
@@ -25,18 +30,20 @@ vi.mock("../observable/internal/BulkObjectLoader.js", () => ({
   getBulkObjectLoader: vi.fn(),
 }));
 
+import type { Client } from "../Client.js";
 import type { BulkLinksLoader } from "../observable/internal/BulkLinksLoader.js";
 import { getBulkLinksLoader } from "../observable/internal/BulkLinksLoader.js";
 import type { BulkObjectLoader } from "../observable/internal/BulkObjectLoader.js";
 import { getBulkObjectLoader } from "../observable/internal/BulkObjectLoader.js";
-import type { Client } from "../Client.js";
 import {
   fetchBulkDerivedLinkObjects,
   fetchBulkDerivedLinkObjectsWithMapping,
   fetchBulkDerivedLinks,
 } from "./fetchBulkLinks.js";
 
-function makeSourceObject(pk: string | number): OsdkBase<ObjectOrInterfaceDefinition> {
+function makeSourceObject(
+  pk: string | number,
+): OsdkBase<ObjectOrInterfaceDefinition> {
   return {
     $apiName: "Player",
     $objectType: "Player",
@@ -77,10 +84,16 @@ describe(fetchBulkDerivedLinkObjects, () => {
     mockLinksFetch.mockReset();
     mockObjectFetch.mockReset();
     vi.mocked(getBulkLinksLoader).mockReturnValue(
-      { fetch: mockLinksFetch } as Pick<BulkLinksLoader, "fetch"> as BulkLinksLoader,
+      { fetch: mockLinksFetch } as Pick<
+        BulkLinksLoader,
+        "fetch"
+      > as BulkLinksLoader,
     );
     vi.mocked(getBulkObjectLoader).mockReturnValue(
-      { fetch: mockObjectFetch } as Pick<BulkObjectLoader, "fetch"> as BulkObjectLoader,
+      { fetch: mockObjectFetch } as Pick<
+        BulkObjectLoader,
+        "fetch"
+      > as BulkObjectLoader,
     );
   });
 
@@ -88,7 +101,11 @@ describe(fetchBulkDerivedLinkObjects, () => {
     const source = makeSourceObject("pk-1");
     mockLinksFetch.mockResolvedValue({ targetPks: [], targetApiName: "" });
 
-    const result = await fetchBulkDerivedLinkObjects(mockClient, source, "myLink");
+    const result = await fetchBulkDerivedLinkObjects(
+      mockClient,
+      source,
+      "myLink",
+    );
 
     expect(result).toEqual([]);
     expect(mockObjectFetch).not.toHaveBeenCalled();
@@ -119,7 +136,11 @@ describe(fetchBulkDerivedLinkObjects, () => {
       .mockResolvedValueOnce(objHolder1)
       .mockResolvedValueOnce(objHolder2);
 
-    const result = await fetchBulkDerivedLinkObjects(mockClient, source, "stats");
+    const result = await fetchBulkDerivedLinkObjects(
+      mockClient,
+      source,
+      "stats",
+    );
 
     expect(getBulkObjectLoader).toHaveBeenCalledWith(mockClient);
     expect(mockObjectFetch).toHaveBeenCalledTimes(2);
@@ -141,7 +162,11 @@ describe(fetchBulkDerivedLinkObjects, () => {
       .mockResolvedValueOnce(obj1)
       .mockResolvedValueOnce(obj2);
 
-    const result = await fetchBulkDerivedLinkObjects(mockClient, source, "link");
+    const result = await fetchBulkDerivedLinkObjects(
+      mockClient,
+      source,
+      "link",
+    );
 
     expect(mockObjectFetch).toHaveBeenCalledWith("Target", 42);
     expect(mockObjectFetch).toHaveBeenCalledWith("Target", 99);
@@ -158,15 +183,25 @@ describe(fetchBulkDerivedLinkObjectsWithMapping, () => {
     mockLinksFetch.mockReset();
     mockObjectFetch.mockReset();
     vi.mocked(getBulkLinksLoader).mockReturnValue(
-      { fetch: mockLinksFetch } as Pick<BulkLinksLoader, "fetch"> as BulkLinksLoader,
+      { fetch: mockLinksFetch } as Pick<
+        BulkLinksLoader,
+        "fetch"
+      > as BulkLinksLoader,
     );
     vi.mocked(getBulkObjectLoader).mockReturnValue(
-      { fetch: mockObjectFetch } as Pick<BulkObjectLoader, "fetch"> as BulkObjectLoader,
+      { fetch: mockObjectFetch } as Pick<
+        BulkObjectLoader,
+        "fetch"
+      > as BulkObjectLoader,
     );
   });
 
   it("returns empty map for empty source array", async () => {
-    const result = await fetchBulkDerivedLinkObjectsWithMapping(mockClient, [], "link");
+    const result = await fetchBulkDerivedLinkObjectsWithMapping(
+      mockClient,
+      [],
+      "link",
+    );
 
     expect(result.objectsBySourcePk.size).toBe(0);
     expect(result.targetApiName).toBe("");
@@ -203,8 +238,14 @@ describe(fetchBulkDerivedLinkObjectsWithMapping, () => {
     const s2 = makeSourceObject("s2");
 
     mockLinksFetch
-      .mockResolvedValueOnce({ targetPks: ["t1", "t2"], targetApiName: "Target" })
-      .mockResolvedValueOnce({ targetPks: ["t2", "t3"], targetApiName: "Target" });
+      .mockResolvedValueOnce({
+        targetPks: ["t1", "t2"],
+        targetApiName: "Target",
+      })
+      .mockResolvedValueOnce({
+        targetPks: ["t2", "t3"],
+        targetApiName: "Target",
+      });
 
     const obj1 = { $primaryKey: "t1", $apiName: "Target" };
     const obj2 = { $primaryKey: "t2", $apiName: "Target" };

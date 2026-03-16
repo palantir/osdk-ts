@@ -141,10 +141,10 @@ function canonicalizeWhereClause(
 
   for (const key of sortedKeys) {
     const value = clause[key];
-    if (value !== null && typeof value === "object") {
+    if (value != null && typeof value === "object") {
       if (Array.isArray(value)) {
         result[key] = value.map((item) =>
-          typeof item === "object" && item !== null
+          typeof item === "object" && item != null
             ? canonicalizeWhereClause(item as Record<string, unknown>)
             : item
         );

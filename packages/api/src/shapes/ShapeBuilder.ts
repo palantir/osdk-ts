@@ -19,9 +19,9 @@ import type {
   ObjectOrInterfaceDefinition,
   PropertyKeys,
 } from "../ontology/ObjectOrInterface.js";
-import { SourcePrimaryKeySymbol } from "./ShapeDefinition.js";
 import type { LinkedType, LinkNames } from "../util/LinkUtils.js";
 import { computeShapeId } from "./computeShapeId.js";
+import { SourcePrimaryKeySymbol } from "./ShapeDefinition.js";
 import type {
   DerivedLinkConfig,
   NullabilityOp,
