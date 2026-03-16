@@ -14,27 +14,27 @@
  * limitations under the License.
  */
 
-import type { ActionDefinition } from "@osdk/api";
 import React from "react";
-import type { FieldComponent, FormFieldDefinition } from "../FormFieldApi.js";
+import type { RendererFieldDefinition } from "../FormFieldApi.js";
+import { coerceFieldValue } from "../utils/coerceFieldValue.js";
 import { TextInputField } from "./TextInputField.js";
 
-export interface FormFieldRendererProps<Q extends ActionDefinition<unknown>> {
-  fieldDefinition: FormFieldDefinition<Q>;
+export interface FormFieldRendererProps {
+  fieldDefinition: RendererFieldDefinition;
   value: unknown;
   onFieldValueChange: (value: unknown) => void;
 }
 
-export function FormFieldRenderer<Q extends ActionDefinition<unknown>>({
+export function FormFieldRenderer({
   fieldDefinition,
   value,
   onFieldValueChange,
-}: FormFieldRendererProps<Q>): React.ReactElement {
-  const { fieldComponent, label, isRequired, helperText, helperTextPlacement } =
+}: FormFieldRendererProps): React.ReactElement {
+  const { label, isRequired, helperText, helperTextPlacement } =
     fieldDefinition;
 
   return (
-    <div data-testid={`form-field-${String(fieldDefinition.fieldKey)}`}>
+    <div data-testid={`form-field-${fieldDefinition.fieldKey}`}>
       {label != null && (
         <label>
           {label}
@@ -42,10 +42,9 @@ export function FormFieldRenderer<Q extends ActionDefinition<unknown>>({
         </label>
       )}
       {renderFieldComponent(
-        fieldComponent,
+        fieldDefinition,
         value,
         onFieldValueChange,
-        fieldDefinition,
       )}
       {helperText != null && helperTextPlacement !== "tooltip" && (
         <div data-testid="helper-text">{helperText}</div>
@@ -54,35 +53,21 @@ export function FormFieldRenderer<Q extends ActionDefinition<unknown>>({
   );
 }
 
-function renderFieldComponent<Q extends ActionDefinition<unknown>>(
-  fieldComponent: FieldComponent,
+function renderFieldComponent(
+  fieldDefinition: RendererFieldDefinition,
   value: unknown,
   onChange: (value: unknown) => void,
-  fieldDefinition: FormFieldDefinition<Q>,
 ): React.ReactElement {
-  const componentProps = fieldDefinition.fieldComponentProps ?? {};
+  const coerced = coerceFieldValue(fieldDefinition.fieldType, value);
 
-  switch (fieldComponent) {
-    case "TEXT_INPUT":
-      return (
-        <TextInputField
-          fieldComponent="TEXT_INPUT"
-          value={value != null ? String(value) : ""}
-          onChange={onChange}
-          placeholder={fieldDefinition.placeholder}
-          {...componentProps}
-        />
-      );
-    // TODO: Handle other field component types (DROPDOWN, NUMBER_INPUT, etc.)
-    default:
-      return (
-        <TextInputField
-          fieldComponent="TEXT_INPUT"
-          value={value != null ? String(value) : ""}
-          onChange={onChange}
-          placeholder={fieldDefinition.placeholder}
-          {...componentProps}
-        />
-      );
-  }
+  // TODO: Handle other field component types (DROPDOWN, NUMBER_INPUT, etc.)
+  return (
+    <TextInputField
+      fieldComponent="TEXT_INPUT"
+      value={coerced != null ? String(coerced) : ""}
+      onChange={onChange}
+      placeholder={fieldDefinition.placeholder}
+      {...fieldDefinition.fieldComponentProps}
+    />
+  );
 }

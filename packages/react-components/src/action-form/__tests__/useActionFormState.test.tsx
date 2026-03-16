@@ -51,7 +51,6 @@ function makeFieldDef(
 ): FormFieldDefinition<TestActionDef> {
   return {
     fieldComponent: "TEXT_INPUT",
-    parameterType: "string",
     ...options,
   } as FormFieldDefinition<TestActionDef>;
 }

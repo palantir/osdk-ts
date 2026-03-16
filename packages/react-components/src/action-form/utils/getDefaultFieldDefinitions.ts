@@ -31,7 +31,6 @@ export function getDefaultFieldDefinitions<
     // getDefaultFieldComponent returns FieldComponent (full union); TS can't verify
     // it matches ValidFormFieldForPropertyType for a deferred generic Q
     fieldComponent: getDefaultFieldComponent(param.type),
-    parameterType: param.type,
     isRequired: !param.nullable,
   } as FormFieldDefinition<Q>));
 }

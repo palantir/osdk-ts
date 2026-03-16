@@ -20,6 +20,7 @@ import { useOsdkAction } from "@osdk/react/experimental";
 import React, { useCallback, useMemo } from "react";
 import type { ActionFormProps, FormState } from "./ActionFormApi.js";
 import { BaseActionForm } from "./BaseActionForm.js";
+import type { RendererFieldDefinition } from "./FormFieldApi.js";
 import { useActionFormState } from "./hooks/useActionFormState.js";
 import { coerceFieldValue } from "./utils/coerceFieldValue.js";
 import { getDefaultFieldDefinitions } from "./utils/getDefaultFieldDefinitions.js";
@@ -41,11 +42,9 @@ export function ActionForm<Q extends ActionDefinition<unknown>>({
   const { applyAction: osdkApplyAction, isPending } = useOsdkAction(
     actionDefinition,
   );
-  const {
-    metadata,
-    loading: metadataLoading,
-    error: metadataError,
-  } = useOsdkMetadata(actionDefinition);
+  const { metadata, loading: metadataLoading } = useOsdkMetadata(
+    actionDefinition,
+  );
 
   const resolvedFieldDefinitions = useMemo(
     () =>
@@ -55,6 +54,17 @@ export function ActionForm<Q extends ActionDefinition<unknown>>({
           : EMPTY_FIELD_DEFINITIONS),
     [formFieldDefinition, metadata],
   );
+
+  const rendererFieldDefinitions: ReadonlyArray<RendererFieldDefinition> =
+    useMemo(
+      () =>
+        resolvedFieldDefinitions.map((def) => ({
+          ...def,
+          fieldKey: String(def.fieldKey),
+          fieldType: metadata?.parameters[String(def.fieldKey)]?.type,
+        })),
+      [resolvedFieldDefinitions, metadata],
+    );
 
   const {
     formState: internalFormState,
@@ -96,10 +106,8 @@ export function ActionForm<Q extends ActionDefinition<unknown>>({
 
   const handleFieldValueChange = useCallback(
     (fieldKey: string, value: unknown) => {
-      const fieldDef = resolvedFieldDefinitions.find(
-        (def) => String(def.fieldKey) === fieldKey,
-      );
-      const coerced = coerceFieldValue(fieldDef?.parameterType, value);
+      const parameterType = metadata?.parameters[fieldKey]?.type;
+      const coerced = coerceFieldValue(parameterType, value);
       setFieldValue(fieldKey, coerced);
       if (onFormStateChange != null) {
         const updatedState = {
@@ -109,21 +117,16 @@ export function ActionForm<Q extends ActionDefinition<unknown>>({
         onFormStateChange(updatedState);
       }
     },
-    [
-      resolvedFieldDefinitions,
-      setFieldValue,
-      onFormStateChange,
-      effectiveFormState,
-    ],
+    [metadata, setFieldValue, onFormStateChange, effectiveFormState],
   );
 
   const resolvedTitle = formTitle ?? metadata?.displayName
     ?? actionDefinition.apiName;
 
   return (
-    <BaseActionForm<Q>
+    <BaseActionForm
       formTitle={resolvedTitle}
-      fieldDefinitions={resolvedFieldDefinitions}
+      fieldDefinitions={rendererFieldDefinitions}
       formState={effectiveFormState}
       onFieldValueChange={handleFieldValueChange}
       onSubmit={handleSubmit}

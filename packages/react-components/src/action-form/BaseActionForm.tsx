@@ -14,25 +14,14 @@
  * limitations under the License.
  */
 
-import type { ActionDefinition } from "@osdk/api";
 import React, { useCallback } from "react";
+import type { BaseActionFormProps } from "./ActionFormApi.js";
 import { FormFieldRenderer } from "./fields/FormFieldRenderer.js";
-import type { FormFieldDefinition } from "./FormFieldApi.js";
-
-export interface BaseActionFormProps<Q extends ActionDefinition<unknown>> {
-  formTitle?: string;
-  fieldDefinitions: ReadonlyArray<FormFieldDefinition<Q>>;
-  formState: Record<string, unknown>;
-  onFieldValueChange: (fieldKey: string, value: unknown) => void;
-  onSubmit: () => void;
-  isSubmitDisabled?: boolean;
-  isPending?: boolean;
-  isLoading?: boolean;
-}
+import type { RendererFieldDefinition } from "./FormFieldApi.js";
 
 const EMPTY_ARRAY: readonly [] = [];
 
-export function BaseActionForm<Q extends ActionDefinition<unknown>>({
+export function BaseActionForm({
   formTitle,
   fieldDefinitions,
   formState,
@@ -41,7 +30,7 @@ export function BaseActionForm<Q extends ActionDefinition<unknown>>({
   isSubmitDisabled = false,
   isPending = false,
   isLoading = false,
-}: BaseActionFormProps<Q>): React.ReactElement {
+}: BaseActionFormProps): React.ReactElement {
   const handleSubmit = useCallback(
     (e: React.FormEvent) => {
       e.preventDefault();
@@ -58,17 +47,14 @@ export function BaseActionForm<Q extends ActionDefinition<unknown>>({
       {isLoading && defs.length === 0 && (
         <div data-testid="form-loading">Loading...</div>
       )}
-      {defs.map((fieldDef) => {
-        const key = String(fieldDef.fieldKey);
-        return (
-          <FormFieldRendererWrapper
-            key={key}
-            fieldDef={fieldDef}
-            value={formState[key]}
-            onFieldValueChange={onFieldValueChange}
-          />
-        );
-      })}
+      {defs.map((fieldDef) => (
+        <FormFieldRendererWrapper
+          key={fieldDef.fieldKey}
+          fieldDef={fieldDef}
+          value={formState[fieldDef.fieldKey]}
+          onFieldValueChange={onFieldValueChange}
+        />
+      ))}
       <button
         type="submit"
         disabled={isSubmitDisabled || isPending}
@@ -80,29 +66,28 @@ export function BaseActionForm<Q extends ActionDefinition<unknown>>({
   );
 }
 
-interface FormFieldRendererWrapperProps<Q extends ActionDefinition<unknown>> {
-  fieldDef: FormFieldDefinition<Q>;
+interface FormFieldRendererWrapperProps {
+  fieldDef: RendererFieldDefinition;
   value: unknown;
   onFieldValueChange: (fieldKey: string, value: unknown) => void;
 }
 
-function FormFieldRendererWrapper<Q extends ActionDefinition<unknown>>({
+function FormFieldRendererWrapper({
   fieldDef,
   value,
   onFieldValueChange,
-}: FormFieldRendererWrapperProps<Q>): React.ReactElement {
-  const fieldKey = String(fieldDef.fieldKey);
+}: FormFieldRendererWrapperProps): React.ReactElement {
   const handleChange = useCallback(
     (newValue: unknown) => {
-      onFieldValueChange(fieldKey, newValue);
+      onFieldValueChange(fieldDef.fieldKey, newValue);
     },
-    [fieldKey, onFieldValueChange],
+    [fieldDef.fieldKey, onFieldValueChange],
   );
 
   return (
     <FormFieldRenderer
-      fieldDefinition={fieldDef}
       value={value}
+      fieldDefinition={fieldDef}
       onFieldValueChange={handleChange}
     />
   );

@@ -54,11 +54,6 @@ export interface FormFieldDefinition<
   fieldComponent: ValidFormFieldForPropertyType<FieldDescriptorType<Q, K>>;
 
   /**
-   * The parameter type from ActionMetadata, used for runtime value coercion.
-   */
-  parameterType?: ActionMetadata.Parameter["type"];
-
-  /**
    * Whether the field is required
    */
   isRequired?: boolean;
@@ -383,6 +378,46 @@ export type FieldComponent =
   | "TEXT_AREA"
   | "TEXT_INPUT"
   | "CUSTOM";
+
+/**
+ * Describes the data type of a form field, independent of OSDK.
+ * Mirrors ActionMetadata.DataType to keep the rendering layer OSDK-agnostic.
+ */
+export type FieldType =
+  | "boolean"
+  | "string"
+  | "integer"
+  | "long"
+  | "double"
+  | "datetime"
+  | "timestamp"
+  | "attachment"
+  | "marking"
+  | "mediaReference"
+  | "objectType"
+  | "geoshape"
+  | "geohash"
+  | { type: "object"; object: string }
+  | { type: "objectSet"; objectSet: string }
+  | { type: "interface"; interface: string }
+  | { type: "struct"; struct: Record<string, string> };
+
+/**
+ * An OSDK-agnostic field definition used by BaseActionForm and FormFieldRenderer.
+ * Contains only the information needed to render a single field — no generics,
+ * no compile-time parameter constraints.
+ */
+export interface RendererFieldDefinition {
+  fieldKey: string;
+  fieldComponent: FieldComponent;
+  fieldType?: FieldType;
+  label?: string;
+  isRequired?: boolean;
+  placeholder?: string;
+  helperText?: string;
+  helperTextPlacement?: "bottom" | "tooltip";
+  fieldComponentProps?: Record<string, unknown>;
+}
 
 /**
  * Gets valid form field types for a given property type
