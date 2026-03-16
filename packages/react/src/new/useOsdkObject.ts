@@ -29,6 +29,7 @@ import type {
 import React from "react";
 import { makeExternalStore } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
+import { parseObjectArgs } from "./parseObjectArgs.js";
 
 /** @internal */
 export function _createObjectObservation<
@@ -123,40 +124,20 @@ export function useOsdkObject<
 ): UseOsdkObjectResult<Q> {
   const { observableClient } = React.useContext(OsdkContext2);
 
-  // Check if first arg is an instance to discriminate signatures
-  // TypeScript cannot narrow rest parameter unions with optional parameters,
-  // so we must use type assertions after runtime discrimination
-  const isInstanceSignature = "$objectType" in args[0];
+  const { typeOrApiName, primaryKey, mode, selectArg, apiNameString } =
+    parseObjectArgs<Q>(args);
 
-  // Extract options object if provided (3rd arg is an object with $select or enabled)
+  const isInstanceSignature = "$objectType" in args[0];
   const optionsArg = !isInstanceSignature
       && args[2] != null
       && typeof args[2] === "object"
-    ? args[2] as { $select?: readonly string[]; enabled?: boolean }
+    ? args[2] as { enabled?: boolean }
     : undefined;
-
-  // Extract enabled flag - 2nd param for instance signature, 3rd for type signature
   const enabled = isInstanceSignature
     ? (typeof args[1] === "boolean" ? args[1] : true)
     : optionsArg
     ? (optionsArg.enabled ?? true)
     : (typeof args[2] === "boolean" ? args[2] : true);
-
-  const selectArg = optionsArg?.$select;
-
-  const mode = isInstanceSignature ? "offline" : undefined;
-
-  const typeOrApiName = isInstanceSignature
-    ? (args[0] as Osdk.Instance<Q>).$objectType
-    : (args[0] as Q);
-
-  const primaryKey = isInstanceSignature
-    ? (args[0] as Osdk.Instance<Q>).$primaryKey
-    : (args[1] as PrimaryKeyType<Q>);
-
-  const apiNameString = typeof typeOrApiName === "string"
-    ? typeOrApiName
-    : typeOrApiName.apiName;
 
   const stableSelect = React.useMemo(
     () => selectArg,

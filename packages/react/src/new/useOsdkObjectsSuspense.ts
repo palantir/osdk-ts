@@ -26,12 +26,9 @@ import type {
 } from "@osdk/api";
 import type { ObserveObjectsCallbackArgs } from "@osdk/client/unstable-do-not-use";
 import React from "react";
-import {
-  getSuspenseExternalStore,
-  throwIfSuspenseNeeded,
-} from "./makeSuspenseExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
 import { _createListObservation } from "./useOsdkObjects.js";
+import { useSuspenseObservation } from "./useSuspenseObservation.js";
 
 const EMPTY_WHERE = {};
 
@@ -152,7 +149,6 @@ export function useOsdkObjectsSuspense<
     + `:${JSON.stringify(intersectWith ?? null)}`
     + `:${pivotTo ?? ""}:${JSON.stringify($select ?? null)}`;
 
-  // Check Store for already-loaded data (read-only, no side effects)
   const peekResult = observableClient.peekListData({
     type,
     rids,
@@ -165,7 +161,9 @@ export function useOsdkObjectsSuspense<
     select: $select,
   });
 
-  const store = getSuspenseExternalStore<ObserveObjectsCallbackArgs<Q, RDPs>>(
+  const listPayload = useSuspenseObservation<
+    ObserveObjectsCallbackArgs<Q, RDPs>
+  >(
     cacheKey,
     _createListObservation(observableClient, {
       type,
@@ -192,19 +190,7 @@ export function useOsdkObjectsSuspense<
         totalCount: peekResult.totalCount,
       }
       : undefined,
-  );
-
-  // Throw BEFORE hooks - React resets hook state on Suspense retry
-  throwIfSuspenseNeeded<ObserveObjectsCallbackArgs<Q, RDPs>>(
-    store,
     (p) => p?.resolvedList != null,
-    store.getSnapShot,
-  );
-
-  // Data is available, set up subscription for live updates
-  const listPayload = React.useSyncExternalStore(
-    store.subscribe,
-    store.getSnapShot,
   );
 
   return React.useMemo(() => ({
