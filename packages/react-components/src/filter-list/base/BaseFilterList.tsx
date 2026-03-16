@@ -39,6 +39,7 @@ export function BaseFilterList<D>(
     activeFilterCount,
     onReset,
     onFilterAdded,
+    onFilterRemoved,
     showResetButton = false,
     showActiveFilterCount = false,
     enableSorting,
@@ -78,6 +79,7 @@ export function BaseFilterList<D>(
             filterDefinitions={filterDefinitions}
             filterStates={filterStates}
             onFilterStateChanged={onFilterStateChanged}
+            onFilterRemoved={onFilterRemoved}
             renderInput={renderInput}
             getFilterKey={getFilterKey}
             getFilterLabel={getFilterLabel}

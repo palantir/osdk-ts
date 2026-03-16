@@ -55,6 +55,16 @@ export type ColumnDefinition<
   filterable?: boolean;
   editable?: boolean;
 
+  /**
+   * Additional function to validate the cell value during edit
+   *
+   * @param value the current cell value
+   * @returns a promise that resolves to an error message string if validation fails, or undefined if validation succeeds
+   */
+  validateEdit?: (
+    value: unknown,
+  ) => Promise<string | undefined>;
+
   renderCell?: (
     object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
     locator: ColumnDefinitionLocator<Q, RDPs, FunctionColumns>,
