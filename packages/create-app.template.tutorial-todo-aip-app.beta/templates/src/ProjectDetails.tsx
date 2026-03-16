@@ -58,6 +58,7 @@ export function ProjectDetails({ project }: ProjectDetailsProps) {
             readOnly
             value={project.description}
             className={css.textArea}
+            aria-label="Project description"
           />
           <button
             disabled={isProcessing}
@@ -67,21 +68,14 @@ export function ProjectDetails({ project }: ProjectDetailsProps) {
             onClick={handleProjectDescriptionRecommendation}
           >
             <div className={css.aipText}>
-              <img
-                src={aipLogo}
-                alt="AIP"
-                className={css.image}
-              />
+              <img src={aipLogo} alt="AIP logo" className={css.image} />
               Get description recommendation
             </div>
           </button>
         </div>
       )}
       <TaskList project={project} onTaskDeleted={handleOnTaskDeleted} />
-      <CreateTaskButton
-        project={project}
-        onTaskCreated={handleOnTaskCreated}
-      />
+      <CreateTaskButton project={project} onTaskCreated={handleOnTaskCreated} />
     </div>
   );
 }

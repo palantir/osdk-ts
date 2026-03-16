@@ -1,0 +1,11 @@
+# @osdk/vite-plugin-superrepo
+
+## 0.2.0-beta.0
+
+### Minor Changes
+
+- 3bc5ff7: Implement superrepo plugin
+
+### Patch Changes
+
+- @osdk/client@2.8.0-beta.20

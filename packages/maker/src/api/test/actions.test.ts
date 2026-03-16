@@ -428,6 +428,7 @@ describe("Action Types", () => {
                     },
                   },
                   "extendsInterfaces": [],
+                  "extendsInterfacesMetadata": [],
                   "links": [],
                   "properties": [],
                   "propertiesV2": {},
@@ -1054,6 +1055,7 @@ describe("Action Types", () => {
                     },
                   },
                   "extendsInterfaces": [],
+                  "extendsInterfacesMetadata": [],
                   "links": [],
                   "properties": [],
                   "propertiesV2": {
@@ -2846,6 +2848,7 @@ describe("Action Types", () => {
                     },
                   },
                   "extendsInterfaces": [],
+                  "extendsInterfacesMetadata": [],
                   "links": [],
                   "properties": [],
                   "propertiesV2": {
@@ -3514,6 +3517,7 @@ describe("Action Types", () => {
                     },
                   },
                   "extendsInterfaces": [],
+                  "extendsInterfacesMetadata": [],
                   "links": [],
                   "properties": [],
                   "propertiesV2": {},
@@ -3745,6 +3749,7 @@ describe("Action Types", () => {
                     },
                   },
                   "extendsInterfaces": [],
+                  "extendsInterfacesMetadata": [],
                   "links": [],
                   "properties": [],
                   "propertiesV2": {},
@@ -3979,6 +3984,7 @@ describe("Action Types", () => {
                     },
                   },
                   "extendsInterfaces": [],
+                  "extendsInterfacesMetadata": [],
                   "links": [],
                   "properties": [],
                   "propertiesV2": {},
@@ -4216,6 +4222,7 @@ describe("Action Types", () => {
                     },
                   },
                   "extendsInterfaces": [],
+                  "extendsInterfacesMetadata": [],
                   "links": [],
                   "properties": [],
                   "propertiesV2": {},
@@ -5172,6 +5179,7 @@ describe("Action Types", () => {
                     },
                   },
                   "extendsInterfaces": [],
+                  "extendsInterfacesMetadata": [],
                   "links": [],
                   "properties": [],
                   "propertiesV2": {
@@ -6393,6 +6401,7 @@ describe("Action Types", () => {
                     },
                   },
                   "extendsInterfaces": [],
+                  "extendsInterfacesMetadata": [],
                   "links": [],
                   "properties": [],
                   "propertiesV2": {
@@ -9987,6 +9996,7 @@ describe("Action Types", () => {
                     },
                   },
                   "extendsInterfaces": [],
+                  "extendsInterfacesMetadata": [],
                   "links": [],
                   "properties": [],
                   "propertiesV2": {
@@ -11908,6 +11918,7 @@ describe("Action Types", () => {
                     },
                   },
                   "extendsInterfaces": [],
+                  "extendsInterfacesMetadata": [],
                   "links": [],
                   "properties": [],
                   "propertiesV2": {

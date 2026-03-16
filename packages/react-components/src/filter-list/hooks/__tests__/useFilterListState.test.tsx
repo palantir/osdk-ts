@@ -134,6 +134,69 @@ describe("useFilterListState", () => {
     expect(result.current.whereClause).toEqual({ name: "John" });
   });
 
+  it("does not call onFilterClauseChanged on mount", () => {
+    const onFilterClauseChanged = vi.fn();
+    const nameDef = createPropertyFilterDef(
+      "name",
+      "CHECKBOX_LIST",
+      createSelectState([]),
+    );
+    const props = createProps({
+      filterDefinitions: [nameDef],
+      onFilterClauseChanged,
+    });
+    renderHook(() => useFilterListState(props));
+    expect(onFilterClauseChanged).not.toHaveBeenCalled();
+  });
+
+  it("calls onFilterClauseChanged synchronously on setFilterState", () => {
+    const onFilterClauseChanged = vi.fn();
+    const nameDef = createPropertyFilterDef(
+      "name",
+      "CHECKBOX_LIST",
+      createSelectState([]),
+    );
+    const props = createProps({
+      filterDefinitions: [nameDef],
+      onFilterClauseChanged,
+    });
+    const { result } = renderHook(() => useFilterListState(props));
+    act(() => {
+      result.current.setFilterState(
+        getFilterKey(nameDef),
+        createSelectState(["John"]),
+      );
+    });
+    expect(onFilterClauseChanged).toHaveBeenCalledTimes(1);
+    expect(onFilterClauseChanged).toHaveBeenCalledWith({ name: "John" });
+  });
+
+  it("calls onFilterClauseChanged on reset", () => {
+    const onFilterClauseChanged = vi.fn();
+    const nameDef = createPropertyFilterDef(
+      "name",
+      "CHECKBOX_LIST",
+      createSelectState([]),
+    );
+    const props = createProps({
+      filterDefinitions: [nameDef],
+      onFilterClauseChanged,
+    });
+    const { result } = renderHook(() => useFilterListState(props));
+    act(() => {
+      result.current.setFilterState(
+        getFilterKey(nameDef),
+        createSelectState(["John"]),
+      );
+    });
+    onFilterClauseChanged.mockClear();
+    act(() => {
+      result.current.reset();
+    });
+    expect(onFilterClauseChanged).toHaveBeenCalledTimes(1);
+    expect(onFilterClauseChanged).toHaveBeenCalledWith({});
+  });
+
   it("handles multiple filter definitions", () => {
     const nameDef = createPropertyFilterDef(
       "name",

@@ -1,5 +1,64 @@
 # @osdk/foundry-sdk-generator
 
+## 2.8.0-beta.20
+
+### Minor Changes
+
+- 16e5112: Update package lock
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.20
+- @osdk/client.unstable@2.8.0-beta.20
+- @osdk/client@2.8.0-beta.20
+- @osdk/generator-utils@2.8.0-beta.20
+- @osdk/generator@2.8.0-beta.20
+
+## 2.8.0-beta.19
+
+### Minor Changes
+
+- ad0bf7d: Fix generator
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.19
+- @osdk/client.unstable@2.8.0-beta.19
+- @osdk/client@2.8.0-beta.19
+- @osdk/generator@2.8.0-beta.19
+
+## 2.8.0-beta.18
+
+### Minor Changes
+
+- c8384de: Add experimental branch param.
+
+### Patch Changes
+
+- Updated dependencies [c8384de]
+  - @osdk/client@2.8.0-beta.18
+  - @osdk/api@2.8.0-beta.18
+  - @osdk/generator@2.8.0-beta.18
+
+## 2.8.0-beta.17
+
+### Patch Changes
+
+- Updated dependencies [8c30908]
+  - @osdk/client@2.8.0-beta.17
+  - @osdk/api@2.8.0-beta.17
+  - @osdk/generator@2.8.0-beta.17
+
+## 2.8.0-beta.16
+
+### Patch Changes
+
+- Updated dependencies [09e5659]
+- Updated dependencies [2ebe62c]
+  - @osdk/client@2.8.0-beta.16
+  - @osdk/api@2.8.0-beta.16
+  - @osdk/generator@2.8.0-beta.16
+
 ## 2.8.0-beta.15
 
 ### Patch Changes

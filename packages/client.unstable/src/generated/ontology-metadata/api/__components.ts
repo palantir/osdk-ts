@@ -115,6 +115,24 @@ export type ActionApplyClientPreferences =
 export interface ActionApplyDisallowedClients {
   disallowedFrontendConsumer: Array<ActionTypeFrontendConsumer>;
 }
+/**
+ * Contains the definition for platform effects that are executed as part of running an Action.
+ */
+export interface ActionEffects {
+  synchronousPreWritebackEffect?:
+    | SynchronousPreWritebackEffect
+    | null
+    | undefined;
+}
+/**
+ * See ActionEffects docs.
+ */
+export interface ActionEffectsModification {
+  synchronousPreWritebackEffect?:
+    | SynchronousPreWritebackEffectModification
+    | null
+    | undefined;
+}
 export interface ActionLogConfiguration {
   actionLogSummary: Array<ActionLogSummaryPart>;
 }
@@ -752,6 +770,7 @@ export interface ActionTypeCreate {
   apiName: ActionTypeApiName;
   branchSettings?: ActionTypeBranchSettingsModification | null | undefined;
   displayMetadata: ActionTypeDisplayMetadataModification;
+  effects?: ActionEffectsModification | null | undefined;
   formContentOrdering: Array<FormContent>;
   logic: ActionLogicModification;
   markings: Array<MarkingId>;
@@ -1014,6 +1033,7 @@ export interface ActionTypeLoadVersionedResponse {
   actionTypes: Array<ActionType>;
 }
 export interface ActionTypeLogic {
+  effects?: ActionEffects | null | undefined;
   logic: ActionLogic;
   notifications: Array<ActionNotification>;
   revert?: ActionRevert | null | undefined;
@@ -1021,6 +1041,7 @@ export interface ActionTypeLogic {
   webhooks?: ActionWebhooks | null | undefined;
 }
 export interface ActionTypeLogicRequest {
+  effects?: ActionEffects | null | undefined;
   logic: ActionLogic;
   notifications: Array<ActionNotification>;
   revert?: ActionRevert | null | undefined;
@@ -1268,6 +1289,7 @@ export interface ActionTypeUpdate {
   apiName: ActionTypeApiName;
   branchSettings?: ActionTypeBranchSettingsModification | null | undefined;
   displayMetadata: ActionTypeDisplayMetadataModification;
+  effects?: ActionEffectsModification | null | undefined;
   formContentOrdering?: Array<FormContent> | null | undefined;
   logic: ActionLogicModification;
   notifications: Array<ActionNotificationModification>;
@@ -2531,6 +2553,11 @@ export interface CarbonWorkspaceUrlTargetModification {
   resource?: CarbonWorkspaceComponentUrlTargetModification | null | undefined;
 }
 /**
+ * Display name for a marking category.
+ */
+export type CategoryDisplayName = string | null | undefined;
+
+/**
  * Id for a category (group of markings)
  */
 export type CategoryId = string;
@@ -3556,6 +3583,7 @@ export interface EditActionTypeRequest {
   apiName: ActionTypeApiName;
   branchSettings?: ActionTypeBranchSettingsModification | null | undefined;
   displayMetadata: ActionTypeDisplayMetadataModification;
+  effects?: ActionEffects | null | undefined;
   logic: ActionLogic;
   notifications: Array<ActionNotification>;
   notificationSettings?: ActionNotificationSettings | null | undefined;
@@ -4305,6 +4333,49 @@ export interface IntegerTypeRangeConstraint {
   max?: IntegerTypeDataValue | null | undefined;
   min?: IntegerTypeDataValue | null | undefined;
 }
+export interface InterfaceActionTypeConstraint {
+  metadata: InterfaceActionTypeConstraintMetadata;
+  parameters: Record<
+    InterfaceParameterConstraintRid,
+    InterfaceParameterConstraint
+  >;
+  requireImplementation: boolean;
+  rid: InterfaceActionTypeConstraintRid;
+}
+/**
+ * A string indicating the API name to use for the interface action type constraint. This API name will be used to
+ * reference the interface action type constraint in programming languages. The name should be given in
+ * lowerCamelCase and should be unique across the interface and the superset of its parent interfaces.
+ */
+export type InterfaceActionTypeConstraintApiName = string;
+
+/**
+ * Reference to an InterfaceActionTypeConstraint. Used to reference an InterfaceActionTypeConstraint in the same
+ * request it is created in.
+ */
+export type InterfaceActionTypeConstraintIdInRequest = string;
+export interface InterfaceActionTypeConstraintMetadata {
+  apiName: InterfaceActionTypeConstraintApiName;
+  description: string;
+  displayName: string;
+}
+/**
+ * ResourceIdentifier for an InterfaceActionTypeConstraint.
+ */
+export type InterfaceActionTypeConstraintRid = string;
+export interface InterfaceActionTypeConstraintRidOrIdInRequest_rid {
+  type: "rid";
+  rid: InterfaceActionTypeConstraintRid;
+}
+
+export interface InterfaceActionTypeConstraintRidOrIdInRequest_idInRequest {
+  type: "idInRequest";
+  idInRequest: InterfaceActionTypeConstraintIdInRequest;
+}
+export type InterfaceActionTypeConstraintRidOrIdInRequest =
+  | InterfaceActionTypeConstraintRidOrIdInRequest_rid
+  | InterfaceActionTypeConstraintRidOrIdInRequest_idInRequest;
+
 export interface InterfaceArrayPropertyType {
   subtype: InterfacePropertyTypeType;
 }
@@ -4401,6 +4472,32 @@ export interface InterfaceObjectParameterStructListFieldValueModification {
   parameterId: ParameterId;
   structFieldApiNameOrRid: StructFieldApiNameOrRid;
 }
+/**
+ * Parameter constraint of an InterfaceActionTypeConstraint
+ */
+export interface InterfaceParameterConstraint {
+  displayMetadata: InterfaceParameterConstraintDisplayMetadata;
+  requireImplementation: boolean;
+  type: _api_types_BaseParameterType;
+}
+export interface InterfaceParameterConstraintDisplayMetadata {
+  displayName: string;
+}
+export type InterfaceParameterConstraintIdInRequest = string;
+export type InterfaceParameterConstraintRid = string;
+export interface InterfaceParameterConstraintRidOrIdInRequest_rid {
+  type: "rid";
+  rid: InterfaceParameterConstraintRid;
+}
+
+export interface InterfaceParameterConstraintRidOrIdInRequest_idInRequest {
+  type: "idInRequest";
+  idInRequest: InterfaceParameterConstraintIdInRequest;
+}
+export type InterfaceParameterConstraintRidOrIdInRequest =
+  | InterfaceParameterConstraintRidOrIdInRequest_rid
+  | InterfaceParameterConstraintRidOrIdInRequest_idInRequest;
+
 export interface InterfaceParameterPropertyValue {
   parameterId: ParameterId;
   sharedPropertyTypeRid: SharedPropertyTypeRid;
@@ -4670,6 +4767,7 @@ export interface InterfaceStructPropertyType {
  * interface, it is guaranteed to have the conform to the interface shape.
  */
 export interface InterfaceType {
+  actionTypeConstraints: Array<InterfaceActionTypeConstraint>;
   allExtendsInterfaces: Array<InterfaceTypeRid>;
   allLinks: Array<InterfaceLinkType>;
   allProperties: Array<SharedPropertyType>;
@@ -5675,6 +5773,11 @@ export interface LogicRuleValue_synchronousWebhookOutput {
   type: "synchronousWebhookOutput";
   synchronousWebhookOutput: WebhookOutputParamName;
 }
+
+export interface LogicRuleValue_scheduleRunRid {
+  type: "scheduleRunRid";
+  scheduleRunRid: ScheduleRunRidValue;
+}
 /**
  * These are the possible values that can be passed into LogicRules as well as Notification and Webhook side
  * effects.
@@ -5688,7 +5791,8 @@ export type LogicRuleValue =
   | LogicRuleValue_currentUser
   | LogicRuleValue_currentTime
   | LogicRuleValue_uniqueIdentifier
-  | LogicRuleValue_synchronousWebhookOutput;
+  | LogicRuleValue_synchronousWebhookOutput
+  | LogicRuleValue_scheduleRunRid;
 
 export interface LogicRuleValueModification_parameterId {
   type: "parameterId";
@@ -5735,6 +5839,11 @@ export interface LogicRuleValueModification_synchronousWebhookOutput {
   type: "synchronousWebhookOutput";
   synchronousWebhookOutput: WebhookOutputParamName;
 }
+
+export interface LogicRuleValueModification_scheduleRunRid {
+  type: "scheduleRunRid";
+  scheduleRunRid: ScheduleRunRidValue;
+}
 /**
  * These are the possible values that can be passed into LogicRules as well as Notification and Webhook side
  * effects.
@@ -5748,7 +5857,8 @@ export type LogicRuleValueModification =
   | LogicRuleValueModification_currentUser
   | LogicRuleValueModification_currentTime
   | LogicRuleValueModification_uniqueIdentifier
-  | LogicRuleValueModification_synchronousWebhookOutput;
+  | LogicRuleValueModification_synchronousWebhookOutput
+  | LogicRuleValueModification_scheduleRunRid;
 
 export interface LongPropertyType {
 }
@@ -5863,9 +5973,11 @@ export type MarkingFilter = MarkingFilter_markingTypes;
 export type MarkingId = string;
 
 /**
- * Combined information about a marking including its type and optional display name.
+ * Combined information about a marking including its type, optional display name,
+ * and optional category display name.
  */
 export interface MarkingInfo {
+  categoryDisplayName: CategoryDisplayName;
   displayName: MarkingDisplayName;
   markingType: MarkingType;
 }
@@ -7419,6 +7531,15 @@ export interface OntologyInformation {
   displayName: string;
 }
 /**
+ * Contains the definition for platform effects that are executed as part of running an Action.
+ */
+export interface OntologyIrActionEffects {
+  synchronousPreWritebackEffect?:
+    | OntologyIrSynchronousPreWritebackEffect
+    | null
+    | undefined;
+}
+/**
  * The ActionLogic in an ActionType map the Parameters to what edits should be made in Phonograph. It employs
  * LogicRules for the core Action logic and, optionally, an ActionLogRule for capturing a record of the Action
  * execution. We don't allow the mixing of FunctionRule with other LogicRules in the same ActionType.
@@ -8890,6 +9011,11 @@ export interface OntologyIrLogicRuleValue_synchronousWebhookOutput {
   type: "synchronousWebhookOutput";
   synchronousWebhookOutput: WebhookOutputParamName;
 }
+
+export interface OntologyIrLogicRuleValue_scheduleRunRid {
+  type: "scheduleRunRid";
+  scheduleRunRid: ScheduleRunRidValue;
+}
 /**
  * These are the possible values that can be passed into LogicRules as well as Notification and Webhook side
  * effects.
@@ -8902,7 +9028,8 @@ export type OntologyIrLogicRuleValue =
   | OntologyIrLogicRuleValue_currentUser
   | OntologyIrLogicRuleValue_currentTime
   | OntologyIrLogicRuleValue_uniqueIdentifier
-  | OntologyIrLogicRuleValue_synchronousWebhookOutput;
+  | OntologyIrLogicRuleValue_synchronousWebhookOutput
+  | OntologyIrLogicRuleValue_scheduleRunRid;
 
 /**
  * Contains a set of markings that represent the mandatory security of this datasource.
@@ -10188,6 +10315,16 @@ export interface OntologyIrRuleSetBinding {
   ruleSetRid: RuleSetRid;
 }
 /**
+ * This effect calls SchedulerDeploymentsService.upsertAndRunDeployment endpoint which upserts a schedule
+ * deployment and runs it. See the Scheduler API docs for more details.
+ * The synchronous effect doesn't wait for the actual schedule run to complete, it only waits for a successful
+ * kick-off of the schedule run.
+ */
+export interface OntologyIrRunScheduleDeploymentEffect {
+  parameterValues: Record<ScheduleParamName, OntologyIrLogicRuleValue>;
+  scheduleRid: ScheduleRid;
+}
+/**
  * Applies the edits from a specified Scenario instance to the main branch
  */
 export interface OntologyIrScenarioRule {
@@ -10600,6 +10737,16 @@ export interface OntologyIrSubtractionOperation {
   leftOperand: OntologyIrParameterTransformPrefillValue;
   rightOperand: OntologyIrParameterTransformPrefillValue;
 }
+export interface OntologyIrSynchronousPreWritebackEffect_runScheduleDeployment {
+  type: "runScheduleDeployment";
+  runScheduleDeployment: OntologyIrRunScheduleDeploymentEffect;
+}
+/**
+ * Union wrapping the various options available for configuring a platform effect which will be executed synchronously.
+ */
+export type OntologyIrSynchronousPreWritebackEffect =
+  OntologyIrSynchronousPreWritebackEffect_runScheduleDeployment;
+
 export interface OntologyIrSynchronousPreWritebackWebhook_staticDirectInput {
   type: "staticDirectInput";
   staticDirectInput: OntologyIrStaticWebhookWithDirectInput;
@@ -12990,6 +13137,7 @@ export interface PutActionTypeRequest {
   apiName: ActionTypeApiName;
   branchSettings?: ActionTypeBranchSettingsModification | null | undefined;
   displayMetadata: ActionTypeDisplayMetadataModification;
+  effects?: ActionEffects | null | undefined;
   logic: ActionLogic;
   notifications: Array<ActionNotification>;
   notificationSettings?: ActionNotificationSettings | null | undefined;
@@ -13314,6 +13462,23 @@ export interface RuleSetsAlreadyExistError {
 export interface RuleSetsNotFoundError {
   ruleSetRids: Array<RuleSetRid>;
 }
+/**
+ * This effect calls SchedulerDeploymentsService.upsertAndRunDeployment endpoint which upserts a schedule
+ * deployment and runs it. See the Scheduler API docs for more details.
+ * The synchronous effect doesn't wait for the actual schedule run to complete, it only waits for a successful
+ * kick-off of the schedule run.
+ */
+export interface RunScheduleDeploymentEffect {
+  parameterValues: Record<ScheduleParamName, LogicRuleValue>;
+  scheduleRid: ScheduleRid;
+}
+/**
+ * See RunScheduleDeploymentEffect docs.
+ */
+export interface RunScheduleDeploymentEffectModification {
+  parameterValues: Record<ScheduleParamName, LogicRuleValue>;
+  scheduleRid: ScheduleRid;
+}
 export interface SafeArg {
   name: string;
   value: string;
@@ -13421,6 +13586,21 @@ export interface ScenarioRuleModification {
 export interface ScenarioScope {
   linkTypes: Array<LinkTypeId>;
   objectTypes: Array<ObjectTypeId>;
+}
+/**
+ * Name of a schedule parameter. Not safe to log.
+ */
+export type ScheduleParamName = string;
+
+/**
+ * The rid for a Schedule, generated and owned by Scheduler service.
+ */
+export type ScheduleRid = string;
+
+/**
+ * The resulting schedule run RID of a synchronous RunScheduleDeploymentEffect on the Action type.
+ */
+export interface ScheduleRunRidValue {
 }
 /**
  * Identifier for a schema migration.
@@ -14695,6 +14875,26 @@ export interface SubtractionOperation {
   leftOperand: ParameterTransformPrefillValue;
   rightOperand: ParameterTransformPrefillValue;
 }
+export interface SynchronousPreWritebackEffect_runScheduleDeployment {
+  type: "runScheduleDeployment";
+  runScheduleDeployment: RunScheduleDeploymentEffect;
+}
+/**
+ * Union wrapping the various options available for configuring a platform effect which will be executed synchronously.
+ */
+export type SynchronousPreWritebackEffect =
+  SynchronousPreWritebackEffect_runScheduleDeployment;
+
+export interface SynchronousPreWritebackEffectModification_runScheduleDeployment {
+  type: "runScheduleDeployment";
+  runScheduleDeployment: RunScheduleDeploymentEffectModification;
+}
+/**
+ * See SynchronousPreWritebackEffect docs.
+ */
+export type SynchronousPreWritebackEffectModification =
+  SynchronousPreWritebackEffectModification_runScheduleDeployment;
+
 export interface SynchronousPreWritebackWebhook_staticDirectInput {
   type: "staticDirectInput";
   staticDirectInput: StaticWebhookWithDirectInput;

@@ -31,7 +31,11 @@ export interface UseRowSelectionProps<
 > {
   selectionMode?: "single" | "multiple" | "none";
   selectedRows?: PrimaryKeyType<Q>[];
-  onRowSelection?: (selectedRowIds: PrimaryKeyType<Q>[]) => void;
+  isAllSelected?: boolean;
+  onRowSelection?: (
+    selectedRowIds: PrimaryKeyType<Q>[],
+    isSelectAll: boolean,
+  ) => void;
   data:
     | Array<Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>>
     | undefined;
@@ -56,6 +60,7 @@ export function useRowSelection<
 >({
   selectionMode = "none",
   selectedRows,
+  isAllSelected: isAllSelectedProp,
   onRowSelection,
   data,
 }: UseRowSelectionProps<Q, RDPs>): UseRowSelectionResult {
@@ -77,21 +82,29 @@ export function useRowSelection<
   // If uncontrolled, return the internalRowSelection state
   const rowSelectionState: RowSelectionState = useMemo(() => {
     if (!enableRowSelection) return {};
-    if (isControlled && selectedRows) {
-      return getRowSelectionState(selectedRows);
+    if (isControlled) {
+      const selectedRowIds = isAllSelectedProp
+        ? (data ?? []).map(item => item.$primaryKey)
+        : selectedRows;
+      return getRowSelectionState(selectedRowIds);
     }
     return internalRowSelection;
   }, [
     enableRowSelection,
     isControlled,
     selectedRows,
+    isAllSelectedProp,
     internalRowSelection,
+    data,
   ]);
 
   const selectedCount = Object.values(rowSelectionState).filter(Boolean).length;
   const totalCount = data?.length ?? 0;
-  const isAllSelected = totalCount > 0 && selectedCount === totalCount;
-  const hasSelection = selectedCount > 0;
+  // In controlled mode, use the prop if provided, otherwise calculate based on selected count
+  const isAllSelected = isControlled && isAllSelectedProp !== undefined
+    ? isAllSelectedProp
+    : totalCount > 0 && selectedCount === totalCount;
+  const hasSelection = isAllSelected || selectedCount > 0;
 
   const onToggleAll = useCallback(() => {
     if (!enableRowSelection || !data) return;
@@ -103,7 +116,7 @@ export function useRowSelection<
     if (!isControlled) {
       setInternalRowSelection(getRowSelectionState(newSelectedRows));
     }
-    onRowSelection?.(newSelectedRows);
+    onRowSelection?.(newSelectedRows, true);
   }, [enableRowSelection, data, isAllSelected, isControlled, onRowSelection]);
 
   const onToggleRow = useCallback(
@@ -144,16 +157,16 @@ export function useRowSelection<
       if (!isControlled) {
         setInternalRowSelection(getRowSelectionState(newSelectedRows));
       }
-      onRowSelection?.(newSelectedRows);
+      onRowSelection?.(newSelectedRows, false);
     },
     [
       enableRowSelection,
       data,
       selectionMode,
-      lastSelectedRowIndex,
       isControlled,
-      rowSelectionState,
       onRowSelection,
+      rowSelectionState,
+      lastSelectedRowIndex,
     ],
   );
 

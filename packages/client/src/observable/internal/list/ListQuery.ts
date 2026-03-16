@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,6 +56,7 @@ import {
   ORDER_BY_IDX,
   PIVOT_IDX,
   RDP_IDX,
+  SELECT_IDX,
   WHERE_IDX,
 } from "./ListCacheKey.js";
 export {
@@ -64,6 +65,7 @@ export {
   PIVOT_IDX,
   RDP_IDX,
   RIDS_IDX,
+  SELECT_IDX,
 } from "./ListCacheKey.js";
 import type { ListQueryOptions } from "./ListQueryOptions.js";
 
@@ -92,6 +94,7 @@ export abstract class ListQuery extends BaseListQuery<
 
   // Using base class minResultsToLoad instead of a private property
   #orderBy: Canonical<Record<string, "asc" | "desc" | undefined>>;
+  #select: Canonical<readonly string[]> | undefined;
   #intersectWith: Canonical<Array<Canonical<SimpleWhereClause>>> | undefined;
   #pivotInfo: Canonical<PivotInfo> | undefined;
   #objectSet: ObjectSet<ObjectTypeDefinition>;
@@ -130,6 +133,7 @@ export abstract class ListQuery extends BaseListQuery<
     this.apiName = apiName;
     this.#whereClause = cacheKey.otherKeys[WHERE_IDX];
     this.#orderBy = cacheKey.otherKeys[ORDER_BY_IDX];
+    this.#select = cacheKey.otherKeys[SELECT_IDX];
     this.#intersectWith = cacheKey.otherKeys[INTERSECT_IDX];
     this.#pivotInfo = cacheKey.otherKeys[PIVOT_IDX];
 
@@ -156,6 +160,14 @@ export abstract class ListQuery extends BaseListQuery<
 
   get canonicalWhere(): Canonical<SimpleWhereClause> {
     return this.#whereClause;
+  }
+
+  get canonicalSelect(): Canonical<readonly string[]> | undefined {
+    return this.#select;
+  }
+
+  protected get rawSelect(): Canonical<readonly string[]> | undefined {
+    return this.#select;
   }
 
   get canonicalIntersectWith():
@@ -243,6 +255,9 @@ export abstract class ListQuery extends BaseListQuery<
       $nextPageToken: this.nextPageToken,
       $pageSize: this.getEffectiveFetchPageSize(),
       $includeRid: true,
+      ...(this.#select && this.#select.length > 0
+        ? { $select: this.#select }
+        : {}),
       // For now this keeps the shared test code from falling apart
       // but shouldn't be needed ideally
       ...(Object.keys(this.#orderBy).length > 0

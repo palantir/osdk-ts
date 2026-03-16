@@ -86,7 +86,7 @@ export function TableBody<TData extends RowData>({
             virtualRow={virtualRow}
             onRowClick={onRowClick}
             renderCellContextMenu={renderCellContextMenu}
-            focusedRowId={focusedRowId}
+            isFocused={focusedRowId === row.id}
             setFocusedRowId={setFocusedRowId}
             isInEditMode={isInEditMode}
           />

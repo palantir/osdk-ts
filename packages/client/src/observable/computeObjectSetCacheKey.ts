@@ -106,6 +106,10 @@ export function computeObjectSetCacheKey<
     );
   }
 
+  if (options.select && options.select.length > 0) {
+    keyParts.push("select", [...options.select].sort());
+  }
+
   if (options.pageSize) {
     keyParts.push("pageSize", options.pageSize);
   }

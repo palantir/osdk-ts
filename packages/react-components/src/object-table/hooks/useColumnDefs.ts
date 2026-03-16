@@ -134,6 +134,7 @@ function getColumnsFromColumnDefinitions<
         isVisible: col.isVisible !== false,
         editable,
         dataType,
+        validateEdit: col.validateEdit,
       },
       size: width,
       ...(minWidth ? { minSize: minWidth } : {}),

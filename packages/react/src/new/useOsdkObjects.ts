@@ -121,6 +121,17 @@ export interface UseOsdkObjectsOptions<
   autoFetchMore?: boolean | number;
 
   streamUpdates?: boolean;
+
+  /**
+   * Restrict which properties are returned for each object.
+   * When provided, only the specified properties will be fetched,
+   * reducing payload sizes for list views.
+   *
+   * @example
+   * // Only fetch name and status properties
+   * useOsdkObjects(Employee, { $select: ["name", "status"] })
+   */
+  $select?: readonly PropertyKeys<T>[];
 }
 
 export interface UseOsdkListResult<
@@ -236,6 +247,7 @@ export function useOsdkObjects<
     autoFetchMore,
     intersectWith,
     pivotTo,
+    $select,
   } = options ?? {};
 
   const canonWhere = observableClient.canonicalizeWhereClause<
@@ -266,6 +278,11 @@ export function useOsdkObjects<
   const stableOrderBy = React.useMemo(
     () => orderBy,
     [JSON.stringify(orderBy)],
+  );
+
+  const stableSelect = React.useMemo(
+    () => $select,
+    [JSON.stringify($select)],
   );
 
   const { subscribe, getSnapShot } = React.useMemo(
@@ -299,6 +316,7 @@ export function useOsdkObjects<
               ? { intersectWith: stableIntersectWith }
               : {}),
             ...(pivotTo ? { pivotTo } : {}),
+            ...(stableSelect ? { select: stableSelect } : {}),
           }, observer),
         process.env.NODE_ENV !== "production"
           ? `list ${type.apiName} ${
@@ -322,6 +340,7 @@ export function useOsdkObjects<
       autoFetchMore,
       stableIntersectWith,
       pivotTo,
+      stableSelect,
     ],
   );
 

@@ -71,10 +71,6 @@
     color: var(--osdk-table-header-menu-color-active);
   }
 
-  &:focus {
-    outline: none;
-  }
-
   &:focus-visible {
     outline: var(--osdk-focus-outline);
     outline-offset: var(--osdk-focus-visible-outline-offset);
@@ -95,10 +91,6 @@
   color: var(--osdk-typography-color-default-rest);
   box-shadow: var(--osdk-surface-shadow-2);
   font-size: var(--osdk-typography-size-body-medium);
-
-  &:focus {
-    outline: none;
-  }
 }
 
 .osdkHeaderMenuItem {
@@ -109,10 +101,6 @@
   &:hover {
     background-color: var(--osdk-surface-background-color-default-hover);
     border-radius: var(--osdk-surface-border-radius);
-  }
-
-  &:focus {
-    outline: none;
   }
 
   &:focus-visible {

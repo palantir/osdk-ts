@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-export { FilterList } from "../filter-list/base/FilterList.js";
+export { BaseFilterList } from "../filter-list/base/BaseFilterList.js";
+export type {
+  BaseFilterListProps,
+  RenderFilterInput,
+} from "../filter-list/base/BaseFilterListApi.js";
+export { FilterList } from "../filter-list/FilterList.js";
+
 export type {
   FilterDefinitionUnion,
   FilterListProps,
@@ -25,6 +31,10 @@ export type {
   FilterState,
   PropertyFilterDefinition,
 } from "../filter-list/FilterListItemApi.js";
+export {
+  deserializeFilterStates,
+  serializeFilterStates,
+} from "../filter-list/utils/filterStateSerialization.js";
 
 // ObjectTable that loads and displays data for a given objectSet
 export { ObjectTable } from "../object-table/ObjectTable.js";

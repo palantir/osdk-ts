@@ -18,7 +18,16 @@ function useChainLevel(
   employee: Employee.OsdkInstance | undefined,
   enabled: boolean,
 ): { manager: Employee.OsdkInstance | undefined; isLoading: boolean } {
-  const { links, isLoading } = useLinks(employee, "lead", { enabled });
+  const { links, isLoading } = useLinks(employee, "lead", {
+    enabled,
+    $select: [
+      "fullName",
+      "employeeNumber",
+      "jobTitle",
+      "leadEmployeeNumber",
+      "primaryOfficeId",
+    ],
+  });
   return { manager: links?.[0], isLoading };
 }
 
