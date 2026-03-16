@@ -22,6 +22,7 @@ import type {
   PrimaryKeyType,
   PropertyKeys,
   QueryDefinition,
+  QueryMetadata,
   SimplePropertyDef,
   WhereClause,
 } from "@osdk/api";
@@ -101,8 +102,43 @@ export type ColumnDefinitionLocator<
     id: PropertyKeys<Q>;
   }
   | {
+    /**
+     * This is equivalent to workshop's function-backed columns.
+     * The function needs to meet the specifications stated in https://www.palantir.com/docs/foundry/workshop/widgets-object-table/#function-backed-columns
+     */
+
     type: "function";
     id: keyof FunctionColumns;
+    queryDefinition: FunctionColumns[keyof FunctionColumns];
+
+    /**
+     * The function will be called with the current object set to get the input parameters for the function query.
+     * @param objectSet - The current object set.
+     * @returns - The function’s input parameters including the object set.
+     */
+    getParams: (
+      objectSet: ObjectSet<Q>,
+    ) => FunctionColumns[keyof FunctionColumns] extends QueryDefinition
+      ? FunctionColumns[keyof FunctionColumns]["__DefinitionMetadata"] extends
+        QueryMetadata
+        ? FunctionColumns[keyof FunctionColumns]["__DefinitionMetadata"][
+          "parameters"
+        ]
+      : never
+      : never;
+
+    /**
+     * For functions that return custom types with multiple properties,
+     * specify which property to extract for this column
+     */
+    propertyKey?: string;
+
+    /**
+     * Function to generate keys for looking up results in the FunctionsMap.
+     * @param object - The object instance
+     * @returns - The key to use for looking up this object's result in the FunctionsMap
+     */
+    getKey: (object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>) => string;
   }
   | {
     type: "rdp";

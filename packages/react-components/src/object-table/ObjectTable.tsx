@@ -29,6 +29,7 @@ import { useColumnPinning } from "./hooks/useColumnPinning.js";
 import { useColumnResize } from "./hooks/useColumnResize.js";
 import { useColumnVisibility } from "./hooks/useColumnVisibility.js";
 import { useEditableTable } from "./hooks/useEditableTable.js";
+import { useFunctionColumnsData } from "./hooks/useFunctionColumnsData.js";
 import { useObjectTableData } from "./hooks/useObjectTableData.js";
 import { useRowSelection } from "./hooks/useRowSelection.js";
 import { useSelectionColumn } from "./hooks/useSelectionColumn.js";
@@ -102,17 +103,25 @@ export function ObjectTable<
     },
   );
 
-  const { data, fetchMore, isLoading, error } = useObjectTableData<
-    Q,
-    RDPs,
-    FunctionColumns
-  >(
-    objectType,
+  const { data, fetchMore, isLoading, error, objectSet: objectSetResult } =
+    useObjectTableData<
+      Q,
+      RDPs,
+      FunctionColumns
+    >(
+      objectType,
+      columnDefinitions,
+      filter,
+      sorting,
+      objectSet,
+      objectSetOptions,
+    );
+
+  // Fetch function column data for all visible objects
+  const functionColumnsData = useFunctionColumnsData<Q, RDPs, FunctionColumns>(
+    objectSetResult,
+    data,
     columnDefinitions,
-    filter,
-    sorting,
-    objectSet,
-    objectSetOptions,
   );
 
   const { columns, loading: isColumnsLoading } = useColumnDefs<

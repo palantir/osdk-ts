@@ -16,6 +16,7 @@
 
 import type { CellContext, RowData } from "@tanstack/react-table";
 import React from "react";
+import { FunctionColumnCell } from "./components/FunctionColumnCell.js";
 import { EditableCell } from "./EditableCell.js";
 import { getCellId } from "./utils/getCellId.js";
 
@@ -24,6 +25,24 @@ export function renderDefaultCell<TData extends RowData>(
 ): React.ReactNode {
   const meta = cellContext.table.options.meta;
   const columnMeta = cellContext.column.columnDef.meta;
+
+  // Handle function columns
+  if (columnMeta?.locatorType === "function" && meta?.functionColumnsData) {
+    const functionColumnId = columnMeta.functionColumnId;
+    const rowData = cellContext.row.original as any;
+    const rowKey = rowData.$primaryKey ? String(rowData.$primaryKey) : cellContext.row.id;
+    
+    const columnData = meta.functionColumnsData[functionColumnId]?.[rowKey];
+    
+    return (
+      <FunctionColumnCell
+        data={columnData?.data}
+        loading={columnData?.loading || false}
+        error={columnData?.error}
+        renderCell={cellContext.column.columnDef.meta?.renderCell}
+      />
+    );
+  }
 
   if (!columnMeta?.editable || !meta?.onCellEdit || !meta?.isInEditMode) {
     return <>{cellContext.getValue()}</>;
