@@ -326,9 +326,6 @@
   /* Listogram Selected Color */
   --osdk-filter-listogram-selected-color: var(--osdk-intent-primary-rest);
 
-  /* Collapse Transition */
-  --osdk-filter-list-collapse-transition: 200ms ease-out;
-
   /* Filter Item */
   --osdk-filter-item-border-radius: var(--osdk-surface-border-radius);
   --osdk-filter-item-padding: calc(var(--osdk-surface-spacing) * 1.5);
