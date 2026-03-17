@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ import styles from "./SkeletonBar.module.css";
 interface SkeletonBarProps {
   width?: string | number;
   height?: string | number;
-  borderRadius?: string | number;
   className?: string;
   style?: React.CSSProperties;
 }
@@ -29,7 +28,6 @@ interface SkeletonBarProps {
 export function SkeletonBar({
   width,
   height,
-  borderRadius,
   className,
   style,
 }: SkeletonBarProps): React.ReactElement {
@@ -37,7 +35,7 @@ export function SkeletonBar({
     <div
       aria-hidden="true"
       className={classnames(styles.skeletonBar, className)}
-      style={{ width, height, borderRadius, ...style }}
+      style={{ width, height, ...style }}
     />
   );
 }

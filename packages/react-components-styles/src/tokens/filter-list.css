@@ -415,6 +415,6 @@
   --osdk-filter-content-fade-duration: var(--osdk-emphasis-transition-duration);
 
   /* Skeleton Loading */
-  --osdk-filter-skeleton-text-height: 12px;
-  --osdk-filter-skeleton-count-width: 20px;
+  --osdk-filter-skeleton-text-height: calc(var(--osdk-surface-spacing) * 1.5);
+  --osdk-filter-skeleton-count-width: calc(var(--osdk-surface-spacing) * 2.5);
 }

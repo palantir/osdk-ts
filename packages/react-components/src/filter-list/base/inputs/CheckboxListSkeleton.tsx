@@ -35,7 +35,6 @@ export function CheckboxListSkeleton(): React.ReactElement {
           <SkeletonBar
             width={CHECKBOX_SIZE}
             height={CHECKBOX_SIZE}
-            borderRadius="var(--osdk-surface-border-radius)"
           />
           <SkeletonBar
             height="var(--osdk-filter-skeleton-text-height)"
