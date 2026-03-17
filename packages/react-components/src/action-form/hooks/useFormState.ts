@@ -17,20 +17,20 @@
 import { useCallback, useMemo, useState } from "react";
 import type { RendererFieldDefinition } from "../FormFieldApi.js";
 
-export interface UseActionFormStateOptions {
+export interface UseFormStateOptions {
   fieldDefinitions: ReadonlyArray<RendererFieldDefinition>;
   formState?: Record<string, unknown>;
   onFieldValueChange?: (fieldKey: string, value: unknown) => void;
 }
 
-export interface UseActionFormStateResult {
+export interface UseFormStateResult {
   formState: Record<string, unknown>;
   setFieldValue: (fieldKey: string, value: unknown) => void;
   resetForm: () => void;
 }
 
 /**
- * Manages form state for BaseActionForm.
+ * Manages form state for BaseForm.
  *
  * **Uncontrolled mode** (no `formState` provided):
  * Internal state is maintained via useState. For each field, the derived
@@ -42,9 +42,9 @@ export interface UseActionFormStateResult {
  * `onFieldValueChange`. `resetForm` calls `onFieldValueChange` for each
  * field with its defaultValue.
  */
-export function useActionFormState(
-  options: UseActionFormStateOptions,
-): UseActionFormStateResult {
+export function useFormState(
+  options: UseFormStateOptions,
+): UseFormStateResult {
   const {
     fieldDefinitions,
     formState: controlledFormState,
@@ -63,9 +63,7 @@ export function useActionFormState(
     }
     const state: Record<string, unknown> = {};
     for (const def of fieldDefinitions) {
-      state[def.fieldKey] = def.fieldKey in internalValues
-        ? internalValues[def.fieldKey]
-        : def.defaultValue;
+      state[def.fieldKey] = internalValues[def.fieldKey] ?? def.defaultValue;
     }
     return state;
   }, [isControlled, controlledFormState, fieldDefinitions, internalValues]);

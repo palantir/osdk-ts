@@ -34,8 +34,6 @@ export function getDefaultFieldComponent(
       case "struct":
         return "TEXT_INPUT";
     }
-    // All 4 DataType object variants handled above; if a new one is
-    // added the outer switch's assertUnreachable will catch it.
   }
 
   switch (paramType) {

@@ -47,7 +47,7 @@ export type ActionFormProps<Q extends ActionDefinition<unknown>> =
   });
 
 interface ActionFormConfigProps<Q extends ActionDefinition<unknown>>
-  extends Pick<BaseActionFormProps, "formTitle" | "isSubmitDisabled">
+  extends Pick<BaseFormProps, "formTitle" | "isSubmitDisabled">
 {
   actionDefinition: Q;
 
@@ -109,7 +109,7 @@ export type FormError =
   | { type: "unknown"; error: unknown };
 
 /**
- * Props for the BaseActionForm component, which renders a form without
+ * Props for the BaseForm component, which renders a form without
  * OSDK data fetching.
  *
  * Uses a discriminated union so that controlled mode (formState provided)
@@ -117,8 +117,8 @@ export type FormError =
  * onSubmit receives the current form state so callers can access values
  * even in uncontrolled mode.
  */
-export type BaseActionFormProps =
-  & BaseActionFormCommonProps
+export type BaseFormProps =
+  & BaseFormCommonProps
   & (
     | {
       formState: Record<string, unknown>;
@@ -127,7 +127,7 @@ export type BaseActionFormProps =
     | { formState?: undefined; onFieldValueChange?: undefined }
   );
 
-interface BaseActionFormCommonProps {
+interface BaseFormCommonProps {
   formTitle?: string;
   fieldDefinitions: ReadonlyArray<RendererFieldDefinition>;
   onSubmit: (formState: Record<string, unknown>) => void;

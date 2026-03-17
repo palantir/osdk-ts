@@ -15,14 +15,14 @@
  */
 
 import React, { useCallback } from "react";
-import type { BaseActionFormProps } from "./ActionFormApi.js";
+import type { BaseFormProps } from "./ActionFormApi.js";
 import { FormFieldRenderer } from "./fields/FormFieldRenderer.js";
 import type { RendererFieldDefinition } from "./FormFieldApi.js";
-import { useActionFormState } from "./hooks/useActionFormState.js";
+import { useFormState } from "./hooks/useFormState.js";
 
 const EMPTY_ARRAY: readonly [] = [];
 
-export function BaseActionForm({
+export function BaseForm({
   formTitle,
   fieldDefinitions,
   formState: controlledFormState,
@@ -31,13 +31,16 @@ export function BaseActionForm({
   isSubmitDisabled = false,
   isPending = false,
   isLoading = false,
-}: BaseActionFormProps): React.ReactElement {
-  const { formState, setFieldValue, resetForm: _resetForm } =
-    useActionFormState({
-      fieldDefinitions,
-      formState: controlledFormState,
-      onFieldValueChange,
-    });
+}: BaseFormProps): React.ReactElement {
+  const {
+    formState,
+    setFieldValue,
+    resetForm: _resetForm,
+  } = useFormState({
+    fieldDefinitions,
+    formState: controlledFormState,
+    onFieldValueChange,
+  });
 
   const handleSubmit = useCallback(
     (e: React.FormEvent) => {

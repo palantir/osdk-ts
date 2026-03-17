@@ -64,7 +64,7 @@ export type {
 } from "../action-form/ActionFormApi.js";
 export type { FormFieldDefinition } from "../action-form/FormFieldApi.js";
 
-// BaseActionForm that does not handle data fetching
-export type { BaseActionFormProps } from "../action-form/ActionFormApi.js";
-export { BaseActionForm } from "../action-form/BaseActionForm.js";
+// BaseForm that does not handle data fetching
+export type { BaseFormProps } from "../action-form/ActionFormApi.js";
+export { BaseForm } from "../action-form/BaseForm.js";
 export type { RendererFieldDefinition } from "../action-form/FormFieldApi.js";

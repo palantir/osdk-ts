@@ -59,6 +59,7 @@ function renderFieldComponent(
       return (
         <TextInputField
           fieldComponent="TEXT_INPUT"
+          // TODO: Use coerceFieldValue
           value={value != null ? String(value) : ""}
           onChange={onChange}
           placeholder={fieldDefinition.placeholder}

@@ -19,7 +19,7 @@ import { useOsdkMetadata } from "@osdk/react";
 import { useOsdkAction } from "@osdk/react/experimental";
 import React, { useCallback, useMemo } from "react";
 import type { ActionFormProps, FormState } from "./ActionFormApi.js";
-import { BaseActionForm } from "./BaseActionForm.js";
+import { BaseForm } from "./BaseForm.js";
 import type { RendererFieldDefinition } from "./FormFieldApi.js";
 import { coerceFieldValue } from "./utils/coerceFieldValue.js";
 import { getDefaultFieldDefinitions } from "./utils/getDefaultFieldDefinitions.js";
@@ -41,6 +41,7 @@ export function ActionForm<Q extends ActionDefinition<unknown>>({
   const { applyAction: osdkApplyAction, isPending } = useOsdkAction(
     actionDefinition,
   );
+  // TODO: Handle metadata error
   const { metadata, loading: metadataLoading } = useOsdkMetadata(
     actionDefinition,
   );
@@ -101,10 +102,13 @@ export function ActionForm<Q extends ActionDefinition<unknown>>({
   const handleFieldValueChange = useCallback(
     (fieldKey: string, value: unknown) => {
       const coerced = coerceFieldValue(parameters?.[fieldKey]?.type, value);
-      onFormStateChange?.((prev) => ({
-        ...prev,
-        [fieldKey]: coerced,
-      } as FormState<Q>));
+      onFormStateChange?.(
+        (prev) =>
+          ({
+            ...prev,
+            [fieldKey]: coerced,
+          }) as FormState<Q>,
+      );
     },
     [parameters, onFormStateChange],
   );
@@ -116,7 +120,7 @@ export function ActionForm<Q extends ActionDefinition<unknown>>({
 
   if (isControlled) {
     return (
-      <BaseActionForm
+      <BaseForm
         formTitle={resolvedTitle}
         fieldDefinitions={rendererFieldDefinitions}
         formState={controlledFormState as Record<string, unknown>}
@@ -130,7 +134,7 @@ export function ActionForm<Q extends ActionDefinition<unknown>>({
   }
 
   return (
-    <BaseActionForm
+    <BaseForm
       formTitle={resolvedTitle}
       fieldDefinitions={rendererFieldDefinitions}
       onSubmit={handleSubmit}

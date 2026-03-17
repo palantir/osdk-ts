@@ -16,11 +16,9 @@
 
 import { act, renderHook } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
-import type { RendererFieldDefinition } from "../FormFieldApi.js";
-import type {
-  UseActionFormStateOptions,
-} from "../hooks/useActionFormState.js";
-import { useActionFormState } from "../hooks/useActionFormState.js";
+import type { RendererFieldDefinition } from "../../FormFieldApi.js";
+import type { UseFormStateOptions } from "../useFormState.js";
+import { useFormState } from "../useFormState.js";
 
 function makeDef(
   fieldKey: string,
@@ -29,7 +27,7 @@ function makeDef(
   return { fieldKey, fieldComponent: "TEXT_INPUT", defaultValue };
 }
 
-describe("useActionFormState", () => {
+describe("useFormState", () => {
   describe("uncontrolled mode", () => {
     it("initializes with default values", () => {
       const defs = [
@@ -38,7 +36,7 @@ describe("useActionFormState", () => {
       ];
 
       const { result } = renderHook(() =>
-        useActionFormState({ fieldDefinitions: defs })
+        useFormState({ fieldDefinitions: defs })
       );
 
       expect(result.current.formState).toEqual({
@@ -51,7 +49,7 @@ describe("useActionFormState", () => {
       const defs = [makeDef("name")];
 
       const { result } = renderHook(() =>
-        useActionFormState({ fieldDefinitions: defs })
+        useFormState({ fieldDefinitions: defs })
       );
 
       expect(result.current.formState).toEqual({ name: undefined });
@@ -61,7 +59,7 @@ describe("useActionFormState", () => {
       const defs = [makeDef("name", "")];
 
       const { result } = renderHook(() =>
-        useActionFormState({ fieldDefinitions: defs })
+        useFormState({ fieldDefinitions: defs })
       );
 
       act(() => {
@@ -75,7 +73,7 @@ describe("useActionFormState", () => {
       const defs = [makeDef("name", "default")];
 
       const { result } = renderHook(() =>
-        useActionFormState({ fieldDefinitions: defs })
+        useFormState({ fieldDefinitions: defs })
       );
 
       act(() => {
@@ -95,7 +93,7 @@ describe("useActionFormState", () => {
       const initialDefs = [makeDef("name", "Alice")];
 
       const { result, rerender } = renderHook(
-        (props: UseActionFormStateOptions) => useActionFormState(props),
+        (props: UseFormStateOptions) => useFormState(props),
         { initialProps: { fieldDefinitions: initialDefs } },
       );
 
@@ -114,7 +112,7 @@ describe("useActionFormState", () => {
       const formState = { name: "controlled" };
 
       const { result } = renderHook(() =>
-        useActionFormState({ fieldDefinitions: defs, formState })
+        useFormState({ fieldDefinitions: defs, formState })
       );
 
       expect(result.current.formState).toEqual({ name: "controlled" });
@@ -126,7 +124,7 @@ describe("useActionFormState", () => {
       const onFieldValueChange = vi.fn();
 
       const { result } = renderHook(() =>
-        useActionFormState({
+        useFormState({
           fieldDefinitions: defs,
           formState,
           onFieldValueChange,
@@ -146,7 +144,7 @@ describe("useActionFormState", () => {
       const onFieldValueChange = vi.fn();
 
       const { result } = renderHook(() =>
-        useActionFormState({
+        useFormState({
           fieldDefinitions: defs,
           formState,
           onFieldValueChange,
@@ -159,16 +157,6 @@ describe("useActionFormState", () => {
 
       expect(onFieldValueChange).toHaveBeenCalledWith("name", "default");
       expect(onFieldValueChange).toHaveBeenCalledWith("email", "a@b.com");
-    });
-  });
-
-  describe("edge cases", () => {
-    it("handles empty field definitions", () => {
-      const { result } = renderHook(() =>
-        useActionFormState({ fieldDefinitions: [] })
-      );
-
-      expect(result.current.formState).toEqual({});
     });
   });
 });

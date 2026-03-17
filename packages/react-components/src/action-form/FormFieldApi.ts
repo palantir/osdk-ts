@@ -403,7 +403,7 @@ export type FieldType =
   | { type: "struct"; struct: Record<string, string> };
 
 /**
- * An OSDK-agnostic field definition used by BaseActionForm and FormFieldRenderer.
+ * An OSDK-agnostic field definition used by BaseForm and FormFieldRenderer.
  * Contains only the information needed to render a single field — no generics,
  * no compile-time parameter constraints.
  */
