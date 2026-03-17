@@ -1,5 +1,17 @@
 # @osdk/foundry-sdk-generator
 
+## 2.8.0-beta.21
+
+### Patch Changes
+
+- Updated dependencies [c40444b]
+- Updated dependencies [dda14be]
+  - @osdk/client@2.8.0-beta.21
+  - @osdk/api@2.8.0-beta.21
+  - @osdk/client.unstable@2.8.0-beta.21
+  - @osdk/generator-utils@2.8.0-beta.21
+  - @osdk/generator@2.8.0-beta.21
+
 ## 2.8.0-beta.20
 
 ### Minor Changes
