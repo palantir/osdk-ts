@@ -118,29 +118,24 @@ export function ActionForm<Q extends ActionDefinition<unknown>>({
 
   const isControlled = controlledFormState != null;
 
+  const commonProps = {
+    formTitle: resolvedTitle,
+    fieldDefinitions: rendererFieldDefinitions,
+    onSubmit: handleSubmit,
+    isSubmitDisabled,
+    isPending,
+    isLoading: metadataLoading,
+  };
+
   if (isControlled) {
     return (
       <BaseForm
-        formTitle={resolvedTitle}
-        fieldDefinitions={rendererFieldDefinitions}
-        formState={controlledFormState as Record<string, unknown>}
+        {...commonProps}
+        formState={controlledFormState}
         onFieldValueChange={handleFieldValueChange}
-        onSubmit={handleSubmit}
-        isSubmitDisabled={isSubmitDisabled}
-        isPending={isPending}
-        isLoading={metadataLoading}
       />
     );
   }
 
-  return (
-    <BaseForm
-      formTitle={resolvedTitle}
-      fieldDefinitions={rendererFieldDefinitions}
-      onSubmit={handleSubmit}
-      isSubmitDisabled={isSubmitDisabled}
-      isPending={isPending}
-      isLoading={metadataLoading}
-    />
-  );
+  return <BaseForm {...commonProps} />;
 }

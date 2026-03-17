@@ -15,7 +15,13 @@
  */
 
 import type { ActionDefinition, ActionMetadata } from "@osdk/api";
-import type { FieldKey, FormFieldDefinition } from "../FormFieldApi.js";
+import type {
+  ActionParameters,
+  FieldDescriptorType,
+  FieldKey,
+  FormFieldDefinition,
+  ValidFormFieldForPropertyType,
+} from "../FormFieldApi.js";
 import { getDefaultFieldComponent } from "./getDefaultFieldComponent.js";
 
 /**
@@ -30,7 +36,11 @@ export function getDefaultFieldDefinitions<
     label: key,
     // getDefaultFieldComponent returns FieldComponent (full union); TS can't verify
     // it matches ValidFormFieldForPropertyType for a deferred generic Q
-    fieldComponent: getDefaultFieldComponent(param.type),
+    fieldComponent: getDefaultFieldComponent(
+      param.type,
+    ) as ValidFormFieldForPropertyType<
+      FieldDescriptorType<Q, keyof ActionParameters<Q>>
+    >,
     isRequired: !param.nullable,
-  } as FormFieldDefinition<Q>));
+  }));
 }
