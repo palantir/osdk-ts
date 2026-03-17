@@ -179,7 +179,7 @@ describe("useOsdkObject with { suspense: true }", () => {
       expect(screen.getByTestId("loading")).toBeDefined();
     });
 
-    act(() => {
+    await act(async () => {
       secondObserver?.next({
         object: {
           name: "Object 2",

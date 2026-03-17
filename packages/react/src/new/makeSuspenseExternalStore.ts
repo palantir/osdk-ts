@@ -35,6 +35,18 @@ interface SuspenseCacheEntry<X> {
 
 const suspenseCache = new Map<string, SuspenseCacheEntry<unknown>>();
 
+let clientIdCounter = 0;
+const clientIds = new WeakMap<object, number>();
+
+export function getClientId(client: object): number {
+  let id = clientIds.get(client);
+  if (id === undefined) {
+    id = clientIdCounter++;
+    clientIds.set(client, id);
+  }
+  return id;
+}
+
 const ORPHAN_CLEANUP_INTERVAL_MS = 60_000;
 const ORPHAN_MAX_AGE_MS = 60_000;
 
@@ -47,7 +59,7 @@ function ensureOrphanCleanup(): void {
   cleanupTimerId = setInterval(() => {
     const now = Date.now();
     for (const [key, entry] of suspenseCache) {
-      if (!entry.transferred && now - entry.createdAt > ORPHAN_MAX_AGE_MS) {
+      if (!entry.transferred && now - entry.createdAt >= ORPHAN_MAX_AGE_MS) {
         entry.observation?.unsubscribe();
         suspenseCache.delete(key);
       }
@@ -208,8 +220,8 @@ export function getSuspenseExternalStore<X>(
 /**
  * Check the suspense store and throw if the component should suspend or error.
  *
- * Call BEFORE any React hooks so that the throw happens before hook state is
- * created (preventing hook ordering issues on retry).
+ * Safe to call after hooks — React's Suspense retry discards all hook state
+ * and re-renders from scratch.
  */
 export function throwIfSuspenseNeeded<X>(
   store: {

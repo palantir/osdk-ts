@@ -33,6 +33,7 @@ import type {
 import React from "react";
 import { makeExternalStore } from "./makeExternalStore.js";
 import {
+  getClientId,
   isSuspenseOption,
   setupSuspenseStore,
 } from "./makeSuspenseExternalStore.js";
@@ -469,7 +470,10 @@ export function useOsdkObjects<
 
   let { subscribe, getSnapShot } = baseStore;
   if (isSuspense) {
-    const cacheKey = `list:${type.apiName}:${JSON.stringify(stableCanonWhere)}`
+    const cacheKey =
+      `${getClientId(observableClient)}:list:${type.apiName}:${
+        JSON.stringify(stableCanonWhere)
+      }`
       + `:${JSON.stringify(stableRids ?? null)}`
       + `:${pageSize ?? ""}:${dedupeIntervalMs ?? ""}`
       + `:${JSON.stringify(stableOrderBy ?? null)}`
@@ -477,30 +481,6 @@ export function useOsdkObjects<
       + `:${JSON.stringify(stableWithProperties ?? null)}`
       + `:${JSON.stringify(stableIntersectWith ?? null)}`
       + `:${pivotTo ?? ""}:${JSON.stringify(stableSelect ?? null)}`;
-
-    const peekResult = observableClient.peekListData({
-      type,
-      rids: stableRids,
-      where: stableCanonWhere,
-      pageSize,
-      orderBy: stableOrderBy,
-      withProperties: stableWithProperties,
-      intersectWith: stableIntersectWith,
-      pivotTo,
-      select: stableSelect,
-    });
-
-    const peekSnapshot = peekResult
-      ? {
-        status: peekResult.status,
-        isOptimistic: peekResult.isOptimistic,
-        resolvedList: undefined,
-        fetchMore: () => Promise.resolve(),
-        hasMore: false,
-        lastUpdated: 0,
-        totalCount: peekResult.totalCount,
-      }
-      : undefined;
 
     ({ subscribe, getSnapShot } = setupSuspenseStore<
       ObserveObjectsCallbackArgs<Q, RDPs>
@@ -520,7 +500,7 @@ export function useOsdkObjects<
         pivotTo,
         select: stableSelect,
       }),
-      peekSnapshot,
+      undefined,
       (p) => p?.resolvedList != null,
     ));
   }

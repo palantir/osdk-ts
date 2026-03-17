@@ -256,10 +256,10 @@ describe("getSuspenseExternalStore", () => {
         },
       );
 
-      vitest.advanceTimersByTime(61_000);
+      vitest.advanceTimersByTime(59_000);
       expect(mockUnsubscribe).not.toHaveBeenCalled();
 
-      vitest.advanceTimersByTime(60_000);
+      vitest.advanceTimersByTime(1_000);
 
       expect(mockUnsubscribe).toHaveBeenCalledTimes(1);
 

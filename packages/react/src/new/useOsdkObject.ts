@@ -29,6 +29,7 @@ import type {
 import React from "react";
 import { makeExternalStore } from "./makeExternalStore.js";
 import {
+  getClientId,
   isSuspenseOption,
   setupSuspenseStore,
 } from "./makeSuspenseExternalStore.js";
@@ -78,7 +79,6 @@ export interface UseOsdkObjectSuspenseResult<
 > {
   object: Osdk.Instance<Q>;
   isOptimistic: boolean;
-  forceUpdate: () => void;
 }
 
 /**
@@ -230,9 +230,9 @@ export function useOsdkObject<
   let { subscribe, getSnapShot } = baseStore;
   if (isSuspense) {
     const selectKey = stableSelect ? JSON.stringify(stableSelect) : "";
-    const cacheKey = `obj:${apiNameString}:${primaryKey}:${
-      mode ?? ""
-    }:${selectKey}`;
+    const cacheKey = `${
+      getClientId(observableClient)
+    }:obj:${apiNameString}:${primaryKey}:${mode ?? ""}:${selectKey}`;
     ({ subscribe, getSnapShot } = setupSuspenseStore<
       ObserveObjectCallbackArgs<Q>
     >(
@@ -263,7 +263,6 @@ export function useOsdkObject<
       return {
         object: obj as Osdk.Instance<Q>,
         isOptimistic: !!payload?.isOptimistic,
-        forceUpdate,
       };
     }
 

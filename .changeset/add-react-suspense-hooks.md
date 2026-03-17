@@ -3,4 +3,4 @@
 "@osdk/react": patch
 ---
 
-add react suspense support with useOsdkObjectSuspense and useOsdkObjectsSuspense hooks
+add suspense support to useOsdkObject and useOsdkObjects via { suspense: true } option
