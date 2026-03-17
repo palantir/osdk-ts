@@ -69,6 +69,8 @@ const INITIAL_FILTERS = ALL_FILTER_DEFINITIONS.filter((def) =>
   def.id != null && ["department", "locationCity"].includes(def.id)
 );
 
+const FILTER_SIDEBAR_WIDTH = 256;
+
 function AddFilterButton({
   availableFilters,
   onAdd,
@@ -183,7 +185,7 @@ export function EmployeeFilters({
 
   const containerStyle = useMemo(
     () => ({
-      width: collapsed ? undefined : 256,
+      width: collapsed ? undefined : FILTER_SIDEBAR_WIDTH,
       height: "100%" as const,
     }),
     [collapsed],

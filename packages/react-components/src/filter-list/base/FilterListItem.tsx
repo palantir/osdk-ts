@@ -67,8 +67,9 @@ function FilterListItemInner<D>({
   className,
   style,
 }: FilterListItemProps<D>): React.ReactElement {
-  const [searchOpen, setSearchOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchState, setSearchState] = useState<
+    { type: "closed" } | { type: "open"; query: string }
+  >({ type: "closed" });
   const [excludeRowOpen, setExcludeRowOpen] = useState(false);
   const [totalValueCount, setTotalValueCount] = useState<number | undefined>();
 
@@ -96,8 +97,8 @@ function FilterListItemInner<D>({
   const handleClearFilter = useCallback(
     () => {
       if (filterState) {
-        setSearchOpen(false);
-        setSearchQuery("");
+        setSearchState({ type: "closed" });
+        setExcludeRowOpen(false);
         const cleared = clearFilterState(filterState);
         if (cleared) {
           onFilterStateChanged(filterKey, cleared);
@@ -108,19 +109,20 @@ function FilterListItemInner<D>({
   );
 
   const handleToggleSearch = useCallback(() => {
-    setSearchOpen((prev) => !prev);
-    setSearchQuery("");
+    setSearchState((prev) =>
+      prev.type === "closed" ? { type: "open", query: "" } : { type: "closed" }
+    );
   }, []);
 
   const handleSearchChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      setSearchQuery(e.target.value);
+      setSearchState({ type: "open", query: e.target.value });
     },
     [],
   );
 
   const handleSearchClear = useCallback(() => {
-    setSearchQuery("");
+    setSearchState({ type: "open", query: "" });
   }, []);
 
   const handleRemove = useCallback(() => {
@@ -131,12 +133,20 @@ function FilterListItemInner<D>({
     setExcludeRowOpen((prev) => !prev);
   }, []);
 
+  const searchInputRef = useCallback((element: HTMLInputElement | null) => {
+    element?.focus({ preventScroll: true });
+  }, []);
+
   const isExcluding = filterState?.isExcluding ?? false;
   const showExcludeDropdown = supportsExcluding(filterState);
   const showSearch = supportsSearch(filterState);
   const hasActive = filterHasActiveState(filterState);
 
-  const searchQueryForInput = searchOpen ? searchQuery : undefined;
+  const searchOpen = searchState.type === "open";
+  const searchQuery = searchState.type === "open" ? searchState.query : "";
+  const searchQueryForInput = searchState.type === "open"
+    ? searchState.query
+    : undefined;
 
   return (
     <div
@@ -184,7 +194,7 @@ function FilterListItemInner<D>({
             onChange={handleSearchChange}
             placeholder="Search property values..."
             aria-label="Search property values"
-            autoFocus
+            ref={searchInputRef}
           />
           {searchQuery && (
             <Button
