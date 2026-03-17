@@ -54,8 +54,19 @@ export function getSelectedValueCount(state: FilterState | undefined): number {
       return state.values.length;
     case "CONTAINS_TEXT":
       return state.value ? 1 : 0;
-    default:
+    case "NUMBER_RANGE":
+    case "DATE_RANGE":
+    case "TOGGLE":
+    case "hasLink":
+    case "linkedProperty":
+    case "keywordSearch":
+    case "TIMELINE":
+    case "custom":
       return 0;
+    default: {
+      const _exhaustive: never = state;
+      return 0;
+    }
   }
 }
 
@@ -123,7 +134,6 @@ export function clearFilterState(
       return undefined;
     default: {
       const _exhaustive: never = state;
-      void _exhaustive;
       return undefined;
     }
   }
