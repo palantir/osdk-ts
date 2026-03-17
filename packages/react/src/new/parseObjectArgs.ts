@@ -22,13 +22,14 @@ import type {
 } from "@osdk/api";
 
 export type ObjectHookArgs<Q extends ObjectOrInterfaceDefinition> =
-  | [Osdk.Instance<Q>, (boolean | undefined)?]
+  | [Osdk.Instance<Q>, (boolean | { suspense: true } | undefined)?]
   | [
     Q,
     PrimaryKeyType<Q>,
     (
       | boolean
       | { $select?: readonly PropertyKeys<Q>[]; enabled?: boolean }
+      | { $select?: readonly PropertyKeys<Q>[]; suspense: true }
       | undefined
     )?,
   ];

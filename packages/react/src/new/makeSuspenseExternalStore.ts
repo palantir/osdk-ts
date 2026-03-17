@@ -232,6 +232,33 @@ export function throwIfSuspenseNeeded<X>(
   }
 }
 
+export function isSuspenseOption(value: unknown): boolean {
+  return typeof value === "object" && value != null
+    && "suspense" in value && value.suspense === true;
+}
+
+export function setupSuspenseStore<X>(
+  cacheKey: string,
+  createObservation: (callback: Observer<X | undefined>) => Unsubscribable,
+  peekResult: Snapshot<X>,
+  hasDataCheck: (p: Snapshot<X>) => boolean,
+): {
+  subscribe: (notifyUpdate: () => void) => () => void;
+  getSnapShot: () => Snapshot<X>;
+} {
+  const suspenseStore = getSuspenseExternalStore<X>(
+    cacheKey,
+    createObservation,
+    peekResult,
+  );
+  throwIfSuspenseNeeded<X>(
+    suspenseStore,
+    hasDataCheck,
+    suspenseStore.getSnapShot,
+  );
+  return suspenseStore;
+}
+
 /** @internal - exported for testing */
 export function _clearSuspenseCache(): void {
   for (const entry of suspenseCache.values()) {

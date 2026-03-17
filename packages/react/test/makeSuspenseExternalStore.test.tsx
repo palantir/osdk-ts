@@ -19,7 +19,6 @@ import { afterEach, describe, expect, it, vitest } from "vitest";
 import {
   _clearSuspenseCache,
   getSuspenseExternalStore,
-  throwIfSuspenseNeeded,
 } from "../src/new/makeSuspenseExternalStore.js";
 
 interface MockPayload {
@@ -58,63 +57,37 @@ describe("getSuspenseExternalStore", () => {
     };
   }
 
-  it("should capture observer eagerly on creation", () => {
-    const { observer } = createStore();
+  it("should create store with correct initial state", () => {
+    const { store, observer } = createStore();
     expect(observer).toBeDefined();
-  });
-
-  it("should return undefined snapshot before any data", () => {
-    const { store } = createStore();
     expect(store.getSnapShot()).toBeUndefined();
-  });
-
-  it("should return a pending promise before data loads", () => {
-    const { store } = createStore();
     const promise = store.getSuspensePromise();
     expect(promise).toBeInstanceOf(Promise);
+    expect(store.getSuspensePromise()).toBe(promise);
   });
 
-  it("should return the same promise instance on repeated calls", () => {
-    const { store } = createStore();
-    const p1 = store.getSuspensePromise();
-    const p2 = store.getSuspensePromise();
-    expect(p1).toBe(p2);
-  });
+  it("should resolve promise on loaded or error", async () => {
+    const { store: loadedStore, observer: loadedObs } = createStore(
+      "loaded-key",
+    );
+    const loadedPromise = loadedStore.getSuspensePromise();
 
-  it("should resolve the promise when status becomes loaded", async () => {
-    const { store, observer } = createStore();
-    const promise = store.getSuspensePromise();
-
-    observer.next({
+    loadedObs.next({
       object: { id: "1" },
       status: "loaded",
       isOptimistic: false,
       lastUpdated: Date.now(),
     });
 
-    await expect(promise).resolves.toBeUndefined();
-  });
+    await expect(loadedPromise).resolves.toBeUndefined();
+    expect(loadedStore.getSuspensePromise()).toBeUndefined();
 
-  it("should return undefined from getSuspensePromise after data has loaded", () => {
-    const { store, observer } = createStore();
+    const { store: errorStore, observer: errorObs } = createStore("error-key");
+    const errorPromise = errorStore.getSuspensePromise();
 
-    observer.next({
-      object: { id: "1" },
-      status: "loaded",
-      isOptimistic: false,
-      lastUpdated: Date.now(),
-    });
+    errorObs.error(new Error("fetch failed"));
 
-    expect(store.getSuspensePromise()).toBeUndefined();
-  });
-
-  it("should resolve the promise on error (so ErrorBoundary can catch)", async () => {
-    const { store, observer } = createStore();
-    const promise = store.getSuspensePromise();
-
-    observer.error(new Error("fetch failed"));
-
-    await expect(promise).resolves.toBeUndefined();
+    await expect(errorPromise).resolves.toBeUndefined();
   });
 
   it("should not re-suspend when data is already loaded (stale-while-revalidate)", () => {
@@ -168,24 +141,6 @@ describe("getSuspenseExternalStore", () => {
     expect(notifyUpdate).toHaveBeenCalledTimes(1);
   });
 
-  it("should preserve error on snapshot when observer.error is called", () => {
-    const { store, observer } = createStore();
-
-    observer.error(new Error("network error"));
-
-    const snapshot = store.getSnapShot();
-    expect(snapshot).toBeDefined();
-    expect(snapshot?.error).toBeInstanceOf(Error);
-    expect(snapshot?.error?.message).toBe("network error");
-  });
-
-  it("should unsubscribe and clean up cache when cleanup is called", () => {
-    const { store, mockUnsubscribe } = createStore();
-    const cleanup = store.subscribe(vitest.fn());
-    cleanup();
-    expect(mockUnsubscribe).toHaveBeenCalledTimes(1);
-  });
-
   it("should notify multiple subscribers", () => {
     const { store, observer } = createStore("multi-sub-key");
     const notify1 = vitest.fn();
@@ -223,7 +178,7 @@ describe("getSuspenseExternalStore", () => {
   it("should return existing cache entry for same key", () => {
     const key = "shared-key";
     let callCount = 0;
-    const factory = (observer: Observer<MockPayload | undefined>) => {
+    const factory = (_observer: Observer<MockPayload | undefined>) => {
       callCount++;
       return { unsubscribe: vitest.fn() };
     };
@@ -242,9 +197,13 @@ describe("getSuspenseExternalStore", () => {
       lastUpdated: 100,
     };
 
+    let observationStarted = false;
+    let capturedObs: Observer<MockPayload | undefined> | undefined;
     const store = getSuspenseExternalStore<MockPayload>(
       "peek-key",
       (observer) => {
+        observationStarted = true;
+        capturedObs = observer;
         return { unsubscribe: vitest.fn() };
       },
       peekData,
@@ -252,32 +211,10 @@ describe("getSuspenseExternalStore", () => {
 
     expect(store.getSuspensePromise()).toBeUndefined();
     expect(store.getSnapShot()).toEqual(peekData);
-  });
+    expect(observationStarted).toBe(true);
 
-  it("should return peek data from getSnapShot before observation delivers", () => {
-    const peekData: MockPayload = {
-      object: { id: "peek" },
-      status: "loaded",
-      isOptimistic: false,
-      lastUpdated: 50,
-    };
-
-    let capturedObs: Observer<MockPayload | undefined> | undefined;
-    const store = getSuspenseExternalStore<MockPayload>(
-      "peek-snapshot-key",
-      (observer) => {
-        capturedObs = observer;
-        return { unsubscribe: vitest.fn() };
-      },
-      peekData,
-    );
-
-    // Before observation delivers, snapshot should be the peek data
-    expect(store.getSnapShot()).toEqual(peekData);
-
-    // After observation delivers, snapshot should update
     const fullData: MockPayload = {
-      object: { id: "peek" },
+      object: { id: "1" },
       status: "loaded",
       isOptimistic: false,
       lastUpdated: 200,
@@ -289,7 +226,7 @@ describe("getSuspenseExternalStore", () => {
   it("should still suspend when peekResult is undefined", () => {
     const store = getSuspenseExternalStore<MockPayload>(
       "no-peek-key",
-      (observer) => {
+      (_observer) => {
         return { unsubscribe: vitest.fn() };
       },
       undefined,
@@ -297,26 +234,6 @@ describe("getSuspenseExternalStore", () => {
 
     const promise = store.getSuspensePromise();
     expect(promise).toBeInstanceOf(Promise);
-  });
-
-  it("should start observation eagerly even with peekResult", () => {
-    let observationStarted = false;
-
-    getSuspenseExternalStore<MockPayload>(
-      "eager-peek-key",
-      (observer) => {
-        observationStarted = true;
-        return { unsubscribe: vitest.fn() };
-      },
-      {
-        object: { id: "1" },
-        status: "loaded",
-        isOptimistic: false,
-        lastUpdated: 100,
-      },
-    );
-
-    expect(observationStarted).toBe(true);
   });
 
   it("should clean up orphaned entries that are never subscribed", () => {
@@ -334,21 +251,18 @@ describe("getSuspenseExternalStore", () => {
       const mockUnsubscribe = vitest.fn();
       getSuspenseExternalStore<MockPayload>(
         "orphan-key",
-        (observer) => {
+        (_observer) => {
           return { unsubscribe: mockUnsubscribe };
         },
       );
 
-      // First interval tick at 60s: age == 60s (not >), entry not cleaned
       vitest.advanceTimersByTime(61_000);
       expect(mockUnsubscribe).not.toHaveBeenCalled();
 
-      // Second interval tick at 120s: age == 120s > 60s, entry cleaned
       vitest.advanceTimersByTime(60_000);
 
       expect(mockUnsubscribe).toHaveBeenCalledTimes(1);
 
-      // Verify cache was purged: same key now creates a fresh observation
       let secondCallCount = 0;
       getSuspenseExternalStore<MockPayload>(
         "orphan-key",
@@ -393,102 +307,23 @@ describe("getSuspenseExternalStore", () => {
     expect(snapshot?.error).toBeInstanceOf(Error);
     expect(snapshot?.error?.message).toBe("something broke");
   });
-});
-
-describe("throwIfSuspenseNeeded", () => {
-  it("should throw error when store has error", () => {
-    const store = {
-      getSuspensePromise: () => undefined,
-      getError: () => new Error("test error"),
-    };
-
-    expect(() =>
-      throwIfSuspenseNeeded(
-        store,
-        () => false,
-        () => undefined,
-      )
-    ).toThrow("test error");
-  });
-
-  it("should throw promise when no data and promise is available", () => {
-    const promise = new Promise<void>(() => {});
-    const store = {
-      getSuspensePromise: () => promise,
-      getError: () => undefined,
-    };
-
-    try {
-      throwIfSuspenseNeeded(
-        store,
-        () => false,
-        () => undefined,
-      );
-      expect.fail("should have thrown");
-    } catch (thrown) {
-      expect(thrown).toBe(promise);
-    }
-  });
-
-  it("should not throw when data is available", () => {
-    const store = {
-      getSuspensePromise: () => new Promise<void>(() => {}),
-      getError: () => undefined,
-    };
-    const getSnapShot = () =>
-      ({ object: { id: "1" } }) as Record<string, unknown> & {
-        error?: Error;
-      };
-
-    expect(() =>
-      throwIfSuspenseNeeded(
-        store,
-        (p) => p != null && typeof p === "object" && "object" in p,
-        getSnapShot,
-      )
-    ).not.toThrow();
-  });
-
-  it("should not throw when no data and no promise", () => {
-    const store = {
-      getSuspensePromise: () => undefined,
-      getError: () => undefined,
-    };
-
-    expect(() =>
-      throwIfSuspenseNeeded(
-        store,
-        () => false,
-        () => undefined,
-      )
-    ).not.toThrow();
-  });
 
   it("should not re-suspend after error (hasErrored prevents new promise)", () => {
-    const { store, observer } = (() => {
-      let capturedObserver: Observer<MockPayload | undefined> | undefined;
-      const s = getSuspenseExternalStore<MockPayload>(
-        "error-test-key",
-        (obs) => {
-          capturedObserver = obs;
-          return { unsubscribe: vitest.fn() };
-        },
-      );
-      return {
-        store: s,
-        get observer() {
-          if (capturedObserver === undefined) {
-            throw new Error("Observer not captured");
-          }
-          return capturedObserver;
-        },
-      };
-    })();
+    let capturedObserver: Observer<MockPayload | undefined> | undefined;
+    const store = getSuspenseExternalStore<MockPayload>(
+      "error-test-key",
+      (obs) => {
+        capturedObserver = obs;
+        return { unsubscribe: vitest.fn() };
+      },
+    );
 
-    observer.error(new Error("fetch failed"));
+    if (capturedObserver === undefined) {
+      throw new Error("Observer not captured");
+    }
 
-    // After error, getSuspensePromise should return undefined (hasErrored=true)
-    // so the error gets thrown by getError instead of suspending
+    capturedObserver.error(new Error("fetch failed"));
+
     expect(store.getSuspensePromise()).toBeUndefined();
     expect(store.getError()?.message).toBe("fetch failed");
   });

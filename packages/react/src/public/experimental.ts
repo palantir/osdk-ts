@@ -29,19 +29,14 @@ export type {
   UseOsdkFunctionResult,
 } from "../new/useOsdkFunction.js";
 export { useOsdkFunction } from "../new/useOsdkFunction.js";
+export type { UseOsdkObjectSuspenseResult } from "../new/useOsdkObject.js";
 export { useOsdkObject } from "../new/useOsdkObject.js";
 export type {
   UseOsdkListResult,
+  UseOsdkListSuspenseResult,
   UseOsdkObjectsOptions,
 } from "../new/useOsdkObjects.js";
 export { useOsdkObjects } from "../new/useOsdkObjects.js";
-export type {
-  UseOsdkListSuspenseResult,
-  UseOsdkObjectsSuspenseOptions,
-} from "../new/useOsdkObjectsSuspense.js";
-export { useOsdkObjectsSuspense } from "../new/useOsdkObjectsSuspense.js";
-export type { UseOsdkObjectSuspenseResult } from "../new/useOsdkObjectSuspense.js";
-export { useOsdkObjectSuspense } from "../new/useOsdkObjectSuspense.js";
 export { useOsdkClient } from "../useOsdkClient.js";
 export { useOsdkMetadata } from "../useOsdkMetadata.js";
 export type { UseOsdkMetadataResult } from "../useOsdkMetadata.js";

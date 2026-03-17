@@ -32,6 +32,10 @@ import type {
 } from "@osdk/client/unstable-do-not-use";
 import React from "react";
 import { makeExternalStore } from "./makeExternalStore.js";
+import {
+  isSuspenseOption,
+  setupSuspenseStore,
+} from "./makeSuspenseExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
 
 /** @internal */
@@ -234,6 +238,22 @@ export interface UseOsdkListResult<
   totalCount?: string;
 }
 
+export interface UseOsdkListSuspenseResult<
+  T extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+  EXTRA_OPTIONS extends never | "$rid" = never,
+> {
+  data: Osdk.Instance<
+    T,
+    "$allBaseProperties" | EXTRA_OPTIONS,
+    PropertyKeys<T>,
+    RDPs
+  >[];
+  fetchMore: (() => Promise<void>) | undefined;
+  isOptimistic: boolean;
+  totalCount?: string;
+}
+
 const EMPTY_WHERE = {};
 
 declare const process: {
@@ -241,6 +261,46 @@ declare const process: {
     NODE_ENV: "development" | "production";
   };
 };
+
+export function useOsdkObjects<
+  Q extends ObjectOrInterfaceDefinition,
+  L extends LinkNames<Q>,
+>(
+  type: Q,
+  options:
+    & Omit<UseOsdkObjectsOptions<Q>, "enabled">
+    & { suspense: true; pivotTo: L; rids: readonly string[] },
+): UseOsdkListSuspenseResult<LinkedType<Q, L>, {}, "$rid">;
+
+export function useOsdkObjects<
+  Q extends ObjectOrInterfaceDefinition,
+  L extends LinkNames<Q>,
+>(
+  type: Q,
+  options:
+    & Omit<UseOsdkObjectsOptions<Q>, "enabled">
+    & { suspense: true; pivotTo: L },
+): UseOsdkListSuspenseResult<LinkedType<Q, L>>;
+
+export function useOsdkObjects<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+>(
+  type: Q,
+  options:
+    & Omit<UseOsdkObjectsOptions<Q, RDPs>, "enabled">
+    & { suspense: true; rids: readonly string[] },
+): UseOsdkListSuspenseResult<Q, RDPs, "$rid">;
+
+export function useOsdkObjects<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+>(
+  type: Q,
+  options:
+    & Omit<UseOsdkObjectsOptions<Q, RDPs>, "enabled">
+    & { suspense: true },
+): UseOsdkListSuspenseResult<Q, RDPs>;
 
 export function useOsdkObjects<
   Q extends ObjectOrInterfaceDefinition,
@@ -279,20 +339,27 @@ export function useOsdkObjects<
   RDPs extends Record<string, SimplePropertyDef> = {},
 >(
   type: Q,
-  options?: UseOsdkObjectsOptions<Q, RDPs>,
+  options?:
+    | UseOsdkObjectsOptions<Q, RDPs>
+    | (Omit<UseOsdkObjectsOptions<Q, RDPs>, "enabled"> & { suspense: true }),
 ):
   | UseOsdkListResult<Q, RDPs>
   | UseOsdkListResult<Q, RDPs, "$rid">
   | UseOsdkListResult<LinkedType<Q, LinkNames<Q>>>
   | UseOsdkListResult<LinkedType<Q, LinkNames<Q>>, {}, "$rid">
+  | UseOsdkListSuspenseResult<Q, RDPs>
+  | UseOsdkListSuspenseResult<Q, RDPs, "$rid">
+  | UseOsdkListSuspenseResult<LinkedType<Q, LinkNames<Q>>>
+  | UseOsdkListSuspenseResult<LinkedType<Q, LinkNames<Q>>, {}, "$rid">
 {
   const { observableClient } = React.useContext(OsdkContext2);
+
+  const isSuspense = isSuspenseOption(options);
 
   const {
     pageSize,
     dedupeIntervalMs,
     withProperties,
-    enabled = true,
     rids,
     where,
     orderBy,
@@ -302,6 +369,12 @@ export function useOsdkObjects<
     pivotTo,
     $select,
   } = options ?? {};
+
+  const enabled = isSuspense
+    ? true
+    : (options != null && "enabled" in options
+      ? options.enabled ?? true
+      : true);
 
   const canonWhere = observableClient.canonicalizeWhereClause<
     Q,
@@ -338,7 +411,7 @@ export function useOsdkObjects<
     [JSON.stringify($select)],
   );
 
-  const { subscribe, getSnapShot } = React.useMemo(
+  const baseStore = React.useMemo(
     () => {
       if (!enabled) {
         return makeExternalStore<
@@ -394,9 +467,76 @@ export function useOsdkObjects<
     ],
   );
 
+  let { subscribe, getSnapShot } = baseStore;
+  if (isSuspense) {
+    const cacheKey = `list:${type.apiName}:${JSON.stringify(stableCanonWhere)}`
+      + `:${JSON.stringify(stableRids ?? null)}`
+      + `:${pageSize ?? ""}:${dedupeIntervalMs ?? ""}`
+      + `:${JSON.stringify(stableOrderBy ?? null)}`
+      + `:${streamUpdates ?? ""}:${JSON.stringify(autoFetchMore ?? null)}`
+      + `:${JSON.stringify(stableWithProperties ?? null)}`
+      + `:${JSON.stringify(stableIntersectWith ?? null)}`
+      + `:${pivotTo ?? ""}:${JSON.stringify(stableSelect ?? null)}`;
+
+    const peekResult = observableClient.peekListData({
+      type,
+      rids: stableRids,
+      where: stableCanonWhere,
+      pageSize,
+      orderBy: stableOrderBy,
+      withProperties: stableWithProperties,
+      intersectWith: stableIntersectWith,
+      pivotTo,
+      select: stableSelect,
+    });
+
+    const peekSnapshot = peekResult
+      ? {
+        status: peekResult.status,
+        isOptimistic: peekResult.isOptimistic,
+        resolvedList: undefined,
+        fetchMore: () => Promise.resolve(),
+        hasMore: false,
+        lastUpdated: 0,
+        totalCount: peekResult.totalCount,
+      }
+      : undefined;
+
+    ({ subscribe, getSnapShot } = setupSuspenseStore<
+      ObserveObjectsCallbackArgs<Q, RDPs>
+    >(
+      cacheKey,
+      _createListObservation(observableClient, {
+        type,
+        rids: stableRids,
+        where: stableCanonWhere,
+        dedupeInterval: dedupeIntervalMs ?? 2_000,
+        pageSize,
+        orderBy: stableOrderBy,
+        streamUpdates,
+        withProperties: stableWithProperties,
+        autoFetchMore,
+        intersectWith: stableIntersectWith,
+        pivotTo,
+        select: stableSelect,
+      }),
+      peekSnapshot,
+      (p) => p?.resolvedList != null,
+    ));
+  }
+
   const listPayload = React.useSyncExternalStore(subscribe, getSnapShot);
 
   return React.useMemo(() => {
+    if (isSuspense) {
+      return {
+        fetchMore: listPayload?.hasMore ? listPayload.fetchMore : undefined,
+        data: listPayload?.resolvedList ?? [],
+        isOptimistic: listPayload?.isOptimistic ?? false,
+        totalCount: listPayload?.totalCount,
+      };
+    }
+
     let error: Error | undefined;
     if (listPayload && "error" in listPayload && listPayload.error) {
       error = listPayload.error;
@@ -415,5 +555,5 @@ export function useOsdkObjects<
       isOptimistic: listPayload?.isOptimistic ?? false,
       totalCount: listPayload?.totalCount,
     };
-  }, [listPayload, enabled]);
+  }, [listPayload, enabled, isSuspense]);
 }
