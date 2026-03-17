@@ -4528,9 +4528,6 @@ importers:
       '@osdk/docs-spec-sdk':
         specifier: catalog:foundry-platform-typescript
         version: 0.16.0
-      outdent:
-        specifier: ^0.8.0
-        version: 0.8.0
     devDependencies:
       '@osdk/monorepo.api-extractor':
         specifier: workspace:~
