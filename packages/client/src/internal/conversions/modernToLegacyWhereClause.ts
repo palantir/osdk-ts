@@ -275,6 +275,15 @@ function handleWherePair(
     };
   }
 
+  if (firstKey === "$interval") {
+    return {
+      type: "interval",
+      ...(propertyIdentifier != null && { propertyIdentifier }),
+      field,
+      rule: filter[firstKey],
+    };
+  }
+
   return {
     type: firstKey.substring(1) as DropDollarSign<typeof firstKey>,
     ...(propertyIdentifier != null && { propertyIdentifier }),

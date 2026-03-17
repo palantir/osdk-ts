@@ -17,11 +17,49 @@
 import type { BaseFilterOptions, CatchThemAll } from "./BaseFilter.js";
 import type { Just } from "./Just.js";
 
+interface IntervalMatchRule {
+  type: "match";
+  query: string;
+  maxGaps?: number;
+  ordered: boolean;
+}
+
+interface IntervalPrefixOnLastTokenRule {
+  type: "prefixOnLastToken";
+  query: string;
+}
+
+interface IntervalAllOfRule {
+  type: "allOf";
+  rules?: ReadonlyArray<IntervalQueryRule>;
+  maxGaps?: number;
+  ordered: boolean;
+}
+
+interface IntervalAnyOfRule {
+  type: "anyOf";
+  rules?: ReadonlyArray<IntervalQueryRule>;
+}
+
+interface IntervalFuzzyRule {
+  type: "fuzzy";
+  term: string;
+  fuzziness?: number;
+}
+
+export type IntervalQueryRule =
+  | IntervalMatchRule
+  | IntervalPrefixOnLastTokenRule
+  | IntervalAllOfRule
+  | IntervalAnyOfRule
+  | IntervalFuzzyRule;
+
 interface StringFilterOptions extends BaseFilterOptions<string> {
   "$startsWith": string;
   "$containsAllTermsInOrder": string;
   "$containsAnyTerm": string | { term: string; fuzzySearch?: boolean };
   "$containsAllTerms": string | { term: string; fuzzySearch?: boolean };
+  "$interval": IntervalQueryRule;
   /**
    * Matches any of the provided values. If an empty array is provided, the filter will match all objects.
    */
@@ -52,6 +90,7 @@ export namespace StringFilter {
     extends Just<"$containsAllTerms", StringFilterOptions>
   {
   }
+  export interface $interval extends Just<"$interval", StringFilterOptions> {}
   export interface $in extends Just<"$in", StringFilterOptions> {}
   export interface $gt extends Just<"$gt", StringFilterOptions> {}
   export interface $gte extends Just<"$gte", StringFilterOptions> {}
@@ -69,6 +108,7 @@ export type StringFilter =
   | StringFilter.$containsAllTermsInOrder
   | StringFilter.$containsAnyTerm
   | StringFilter.$containsAllTerms
+  | StringFilter.$interval
   | StringFilter.$gt
   | StringFilter.$gte
   | StringFilter.$lt

@@ -500,6 +500,79 @@ describe("ObjectSet", () => {
     });
   });
 
+  it("type checking interval rules", () => {
+    client(Employee).where({
+      fullName: {
+        $interval: {
+          type: "match",
+          query: "John Smith",
+          ordered: true,
+        },
+      },
+    });
+
+    client(Employee).where({
+      fullName: {
+        $interval: {
+          type: "prefixOnLastToken",
+          query: "John Smi",
+        },
+      },
+    });
+
+    client(Employee).where({
+      fullName: {
+        $interval: {
+          type: "allOf",
+          ordered: true,
+          rules: [{
+            type: "match",
+            query: "John",
+            ordered: true,
+          }, {
+            type: "match",
+            query: "Smith",
+            ordered: true,
+          }],
+        },
+      },
+    });
+
+    client(Employee).where({
+      fullName: {
+        $interval: {
+          type: "anyOf",
+          rules: [{
+            type: "match",
+            query: "John",
+            ordered: true,
+          }, {
+            type: "match",
+            query: "Jane",
+            ordered: true,
+          }],
+        },
+      },
+    });
+
+    client(Employee).where({
+      fullName: {
+        $interval: {
+          type: "fuzzy",
+          term: "Smith",
+          fuzziness: 1,
+        },
+      },
+    });
+
+    client(Employee).where({
+      fullName: {
+        // @ts-expect-error
+        $interval: { type: "match", query: "John Smith" },
+      },
+    });
+  });
+
   it("type checking struct where clauses", () => {
     expectTypeOf(client(BgaoNflPlayer).where).toBeCallableWith({
       $and: [{ address: { city: { $eq: "NYC" } } }, {

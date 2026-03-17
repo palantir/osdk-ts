@@ -131,5 +131,19 @@ describe("evaluateFilter", () => {
     it("$intersects returns true in loose mode", () => {
       expect(evaluateFilter("$intersects", {}, {}, false)).toBe(true);
     });
+
+    it("$interval returns false in strict mode", () => {
+      const rule = { type: "match", query: "hello world", ordered: true };
+      expect(evaluateFilter("$interval", "hello world", rule, true)).toBe(
+        false,
+      );
+    });
+
+    it("$interval returns true in loose mode", () => {
+      const rule = { type: "match", query: "hello world", ordered: true };
+      expect(evaluateFilter("$interval", "hello world", rule, false)).toBe(
+        true,
+      );
+    });
   });
 });
