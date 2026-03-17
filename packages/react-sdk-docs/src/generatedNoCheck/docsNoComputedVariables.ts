@@ -424,22 +424,22 @@ export const snippets: SdkSnippets<typeof OSDK_SNIPPETS_SPEC> = {
         ],
         "loadGeotimeSeriesPointsSnippet": [
           {
-            "template": "// Geotimeseries does not have a dedicated React hook yet.\n// Use the client API directly with a loaded OSDK object.\nimport type { Osdk } from \"@osdk/client\";\nimport type { {{objectType}} } from \"{{{packageName}}}\";\n\nasync function getAllGeotimeSeriesPoints(obj: Osdk.Instance<typeof {{objectType}}>) {\n  return obj.{{property}}?.getAllValues();\n}"
+            "template": "// Geo-time series does not have a dedicated React hook yet.\n// Use the client API directly with a loaded OSDK object.\nimport type { Osdk } from \"@osdk/client\";\nimport type { {{objectType}} } from \"{{{packageName}}}\";\n\nasync function getAllGeotimeSeriesPoints(obj: Osdk.Instance<typeof {{objectType}}>) {\n  return obj.{{property}}?.getAllValues();\n}"
           }
         ],
         "loadGeotimeSeriesLastPointSnippet": [
           {
-            "template": "// Geotimeseries does not have a dedicated React hook yet.\n// Use the client API directly with a loaded OSDK object.\nimport type { Osdk } from \"@osdk/client\";\nimport type { {{objectType}} } from \"{{{packageName}}}\";\n\nasync function getLatestGeotimeSeriesPoint(obj: Osdk.Instance<typeof {{objectType}}>) {\n  return obj.{{property}}?.getLatestValue();\n}"
+            "template": "// Geo-time series does not have a dedicated React hook yet.\n// Use the client API directly with a loaded OSDK object.\nimport type { Osdk } from \"@osdk/client\";\nimport type { {{objectType}} } from \"{{{packageName}}}\";\n\nasync function getLatestGeotimeSeriesPoint(obj: Osdk.Instance<typeof {{objectType}}>) {\n  return obj.{{property}}?.getLatestValue();\n}"
           }
         ],
         "loadAbsoluteGeotimeSeriesPointsSnippet": [
           {
-            "template": "// Geotimeseries does not have a dedicated React hook yet.\n// Use the client API directly with a loaded OSDK object.\nimport type { Osdk } from \"@osdk/client\";\nimport type { {{objectType}} } from \"{{{packageName}}}\";\n\nasync function getAbsoluteGeotimeSeriesPoints(obj: Osdk.Instance<typeof {{objectType}}>) {\n  return obj.{{property}}?.getAllValues({\n    $startTime: \"2022-08-13T12:34:56Z\",\n    $endTime: \"2022-08-14T12:34:56Z\",\n  });\n}"
+            "template": "// Geo-time series does not have a dedicated React hook yet.\n// Use the client API directly with a loaded OSDK object.\nimport type { Osdk } from \"@osdk/client\";\nimport type { {{objectType}} } from \"{{{packageName}}}\";\n\nasync function getAbsoluteGeotimeSeriesPoints(obj: Osdk.Instance<typeof {{objectType}}>) {\n  return obj.{{property}}?.getAllValues({\n    $startTime: \"2022-08-13T12:34:56Z\",\n    $endTime: \"2022-08-14T12:34:56Z\",\n  });\n}"
           }
         ],
         "loadRelativeGeotimeSeriesPointsSnippet": [
           {
-            "template": "// Geotimeseries does not have a dedicated React hook yet.\n// Use the client API directly with a loaded OSDK object.\nimport type { Osdk } from \"@osdk/client\";\nimport type { {{objectType}} } from \"{{{packageName}}}\";\n\nasync function getRelativeGeotimeSeriesPoints(obj: Osdk.Instance<typeof {{objectType}}>) {\n  return obj.{{property}}?.getAllValues({\n    $before: 1,\n    $unit: \"{{timeUnit}}\",\n  });\n}"
+            "template": "// Geo-time series does not have a dedicated React hook yet.\n// Use the client API directly with a loaded OSDK object.\nimport type { Osdk } from \"@osdk/client\";\nimport type { {{objectType}} } from \"{{{packageName}}}\";\n\nasync function getRelativeGeotimeSeriesPoints(obj: Osdk.Instance<typeof {{objectType}}>) {\n  return obj.{{property}}?.getAllValues({\n    $before: 1,\n    $unit: \"{{timeUnit}}\",\n  });\n}"
           }
         ],
         "uploadAttachment": [
