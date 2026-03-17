@@ -55,6 +55,7 @@ function renderFieldComponent(
 ): React.ReactElement {
   switch (fieldDefinition.fieldComponent) {
     case "TEXT_INPUT":
+    // TODO: Render a <textarea> for TEXT_AREA instead of falling through
     case "TEXT_AREA":
       return (
         <TextInputField
@@ -65,11 +66,23 @@ function renderFieldComponent(
           placeholder={fieldDefinition.placeholder}
         />
       );
-    default:
+    case "NUMBER_INPUT":
+    case "DROPDOWN":
+    case "RADIO_BUTTONS":
+    case "DATETIME_PICKER":
+    case "FILE_PICKER":
+    case "OBJECT_SET":
+    case "CUSTOM":
       return (
         <div data-testid="unsupported-field">
           Unsupported field type: {fieldDefinition.fieldComponent}
         </div>
       );
+    default:
+      return assertUnreachableFieldComponent(fieldDefinition.fieldComponent);
   }
+}
+
+function assertUnreachableFieldComponent(value: never): never {
+  throw new Error(`Unhandled field component: ${String(value)}`);
 }

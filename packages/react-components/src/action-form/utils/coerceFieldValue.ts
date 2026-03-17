@@ -50,13 +50,31 @@ export function coerceFieldValue(
       return typeof rawValue === "string" ? rawValue : String(rawValue);
 
     case "integer":
-    case "long":
+    case "long": {
+      if (typeof rawValue === "number") {
+        return Math.trunc(rawValue);
+      }
+      if (typeof rawValue === "string") {
+        const trimmed = rawValue.trim();
+        if (trimmed === "") return undefined;
+        const parsed = Number(trimmed);
+        if (Number.isNaN(parsed)) return undefined;
+        return Math.trunc(parsed);
+      }
+      return undefined;
+    }
+
     case "double": {
       if (typeof rawValue === "number") {
         return rawValue;
       }
-      const parsed = Number(rawValue);
-      return Number.isNaN(parsed) ? undefined : parsed;
+      if (typeof rawValue === "string") {
+        const trimmed = rawValue.trim();
+        if (trimmed === "") return undefined;
+        const parsed = Number(trimmed);
+        return Number.isNaN(parsed) ? undefined : parsed;
+      }
+      return undefined;
     }
 
     case "boolean": {

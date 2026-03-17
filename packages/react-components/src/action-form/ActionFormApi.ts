@@ -52,9 +52,9 @@ interface ActionFormConfigProps<Q extends ActionDefinition<unknown>>
   actionDefinition: Q;
 
   /**
-   * If not supplied, this will be constructed from ActionParameters
+   * If not supplied, field definitions are constructed from `ActionParameters`.
    */
-  formFieldDefinition?: ReadonlyArray<FormFieldDefinition<Q>>;
+  formFieldDefinitions?: ReadonlyArray<FormFieldDefinition<Q>>;
 
   /**
    * If supplied, this will override the default submit action
@@ -83,7 +83,7 @@ interface ActionFormConfigProps<Q extends ActionDefinition<unknown>>
    *
    * @param results the submission response
    */
-  onSuccess?: (results: ActionEditResponse) => void;
+  onSuccess?: (results: ActionEditResponse | undefined) => void;
 
   /**
    * Called when there is an error in form submission
@@ -109,12 +109,12 @@ export type FormError =
   | { type: "unknown"; error: unknown };
 
 /**
- * Props for the BaseForm component, which renders a form without
+ * Props for the `BaseForm` component, which renders a form without
  * OSDK data fetching.
  *
- * Uses a discriminated union so that controlled mode (formState provided)
- * always requires onFieldValueChange, and uncontrolled mode omits both.
- * onSubmit receives the current form state so callers can access values
+ * Uses a discriminated union so that controlled mode (`formState` provided)
+ * always requires `onFieldValueChange`, and uncontrolled mode omits both.
+ * `onSubmit` receives the current form state so callers can access values
  * even in uncontrolled mode.
  */
 export type BaseFormProps =
@@ -130,7 +130,7 @@ export type BaseFormProps =
 interface BaseFormCommonProps {
   formTitle?: string;
   fieldDefinitions: ReadonlyArray<RendererFieldDefinition>;
-  onSubmit: (formState: Record<string, unknown>) => void;
+  onSubmit: (formState: Record<string, unknown>) => Promise<void> | void;
   isSubmitDisabled?: boolean;
   isPending?: boolean;
   isLoading?: boolean;

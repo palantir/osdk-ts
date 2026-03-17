@@ -16,11 +16,8 @@
 
 import React, { useCallback } from "react";
 import type { BaseFormProps } from "./ActionFormApi.js";
-import { FormFieldRenderer } from "./fields/FormFieldRenderer.js";
-import type { RendererFieldDefinition } from "./FormFieldApi.js";
+import { FormFieldRendererWrapper } from "./fields/FormFieldRendererWrapper.js";
 import { useFormState } from "./hooks/useFormState.js";
-
-const EMPTY_ARRAY: readonly [] = [];
 
 export function BaseForm({
   formTitle,
@@ -45,20 +42,18 @@ export function BaseForm({
   const handleSubmit = useCallback(
     (e: React.FormEvent) => {
       e.preventDefault();
-      onSubmit(formState);
+      void onSubmit(formState);
     },
-    [onSubmit, formState],
+    [formState, onSubmit],
   );
-
-  const defs = fieldDefinitions.length > 0 ? fieldDefinitions : EMPTY_ARRAY;
 
   return (
     <form onSubmit={handleSubmit} data-testid="action-form">
       {formTitle != null && <h2 data-testid="form-title">{formTitle}</h2>}
-      {isLoading && defs.length === 0 && (
-        <div data-testid="form-loading">Loading...</div>
+      {isLoading && fieldDefinitions.length === 0 && (
+        <div data-testid="form-loading">Loading form fields...</div>
       )}
-      {defs.map((fieldDef) => (
+      {fieldDefinitions.map((fieldDef) => (
         <FormFieldRendererWrapper
           key={fieldDef.fieldKey}
           fieldDef={fieldDef}
@@ -74,32 +69,5 @@ export function BaseForm({
         {isPending ? "Submitting..." : "Submit"}
       </button>
     </form>
-  );
-}
-
-interface FormFieldRendererWrapperProps {
-  fieldDef: RendererFieldDefinition;
-  value: unknown;
-  onFieldValueChange: (fieldKey: string, value: unknown) => void;
-}
-
-function FormFieldRendererWrapper({
-  fieldDef,
-  value,
-  onFieldValueChange,
-}: FormFieldRendererWrapperProps): React.ReactElement {
-  const handleChange = useCallback(
-    (newValue: unknown) => {
-      onFieldValueChange(fieldDef.fieldKey, newValue);
-    },
-    [fieldDef.fieldKey, onFieldValueChange],
-  );
-
-  return (
-    <FormFieldRenderer
-      value={value}
-      fieldDefinition={fieldDef}
-      onFieldValueChange={handleChange}
-    />
   );
 }

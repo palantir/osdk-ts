@@ -104,7 +104,7 @@ describe("ActionForm", () => {
   beforeEach(() => {
     vi.mocked(useOsdkAction).mockReturnValue(defaultMockActionResult());
     vi.mocked(useOsdkMetadata).mockReturnValue(defaultMockMetadataResult());
-    mockApplyAction.mockClear();
+    mockApplyAction.mockReset().mockResolvedValue({ editedObjectTypes: [] });
   });
 
   describe("form title", () => {
@@ -144,11 +144,11 @@ describe("ActionForm", () => {
       const nameField = screen.getByTestId("form-field-name");
       const emailField = screen.getByTestId("form-field-email");
       expect(
-        nameField?.querySelector("[data-testid='text-input-field']"),
-      ).toBeDefined();
+        nameField.querySelector("[data-testid='text-input-field']"),
+      ).not.toBeNull();
       expect(
-        emailField?.querySelector("[data-testid='text-input-field']"),
-      ).toBeDefined();
+        emailField.querySelector("[data-testid='text-input-field']"),
+      ).not.toBeNull();
     });
 
     it("renders default field labels from parameter keys", () => {
@@ -173,7 +173,7 @@ describe("ActionForm", () => {
       render(
         <ActionForm
           actionDefinition={TestAction}
-          formFieldDefinition={customDefs}
+          formFieldDefinitions={customDefs}
         />,
       );
 
@@ -215,10 +215,9 @@ describe("ActionForm", () => {
       const textInput = screen
         .getByTestId("form-field-name")
         .querySelector("input");
+      expect(textInput).not.toBeNull();
 
-      if (textInput != null) {
-        fireEvent.change(textInput, { target: { value: "Alice" } });
-      }
+      fireEvent.change(textInput!, { target: { value: "Alice" } });
 
       fireEvent.submit(screen.getByTestId("action-form"));
 
@@ -252,7 +251,10 @@ describe("ActionForm", () => {
       ];
 
       render(
-        <ActionForm actionDefinition={TestAction} formFieldDefinition={defs} />,
+        <ActionForm
+          actionDefinition={TestAction}
+          formFieldDefinitions={defs}
+        />,
       );
 
       fireEvent.submit(screen.getByTestId("action-form"));
@@ -331,10 +333,9 @@ describe("ActionForm", () => {
       const textInput = screen
         .getByTestId("form-field-name")
         .querySelector("input");
+      expect(textInput).not.toBeNull();
 
-      if (textInput != null) {
-        fireEvent.change(textInput, { target: { value: "Updated" } });
-      }
+      fireEvent.change(textInput!, { target: { value: "Updated" } });
 
       expect(onFormStateChange).toHaveBeenCalledWith(expect.any(Function));
 
@@ -362,10 +363,9 @@ describe("ActionForm", () => {
       const textInput = screen
         .getByTestId("form-field-name")
         .querySelector("input");
+      expect(textInput).not.toBeNull();
 
-      if (textInput != null) {
-        fireEvent.change(textInput, { target: { value: "User Typed This" } });
-      }
+      fireEvent.change(textInput!, { target: { value: "User Typed This" } });
 
       fireEvent.submit(screen.getByTestId("action-form"));
 

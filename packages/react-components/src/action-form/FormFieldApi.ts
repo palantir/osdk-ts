@@ -315,13 +315,13 @@ export interface BaseFormFieldProps<V> {
    */
   value: V;
   /**
-   * Called when the field value changed.
+   * Called when the field value changes.
    *
-   * ActionForm internally wraps this to pass the key to onFieldValueChanged:
+   * ActionForm internally wraps this to pass the key to `onFieldValueChange`:
    * ```
    * <DropdownField
    *   {...fieldDef}
-   *   onChange={(value) => onFieldValueChanged(fieldDef.key, value)}
+   *   onChange={(value) => onFieldValueChange(fieldDef.key, value)}
    * />
    * ```
    *

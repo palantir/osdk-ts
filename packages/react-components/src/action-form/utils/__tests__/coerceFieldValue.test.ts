@@ -77,6 +77,27 @@ describe("coerceFieldValue", () => {
       expect(coerceFieldValue("long", 1000000)).toBe(1000000);
       expect(coerceFieldValue("long", "1000000")).toBe(1000000);
     });
+
+    it("returns undefined for empty string", () => {
+      expect(coerceFieldValue("integer", "")).toBe(undefined);
+      expect(coerceFieldValue("double", "")).toBe(undefined);
+      expect(coerceFieldValue("long", "  ")).toBe(undefined);
+    });
+
+    it("truncates floats for integer types", () => {
+      expect(coerceFieldValue("integer", 3.14)).toBe(3);
+      expect(coerceFieldValue("integer", "3.14")).toBe(3);
+      expect(coerceFieldValue("long", 9.99)).toBe(9);
+    });
+
+    it("preserves floats for double type", () => {
+      expect(coerceFieldValue("double", 3.14)).toBe(3.14);
+    });
+
+    it("returns undefined for non-string non-number values", () => {
+      expect(coerceFieldValue("integer", true)).toBe(undefined);
+      expect(coerceFieldValue("double", true)).toBe(undefined);
+    });
   });
 
   describe("boolean type", () => {

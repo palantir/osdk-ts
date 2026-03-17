@@ -29,7 +29,7 @@ const EMPTY_FIELD_DEFINITIONS: readonly [] = [];
 export function ActionForm<Q extends ActionDefinition<unknown>>({
   actionDefinition,
   formTitle,
-  formFieldDefinition,
+  formFieldDefinitions,
   formState: controlledFormState,
   onFormStateChange,
   isSubmitDisabled,
@@ -41,20 +41,25 @@ export function ActionForm<Q extends ActionDefinition<unknown>>({
   const { applyAction: osdkApplyAction, isPending } = useOsdkAction(
     actionDefinition,
   );
-  // TODO: Handle metadata error
-  const { metadata, loading: metadataLoading } = useOsdkMetadata(
-    actionDefinition,
-  );
+  const {
+    metadata,
+    loading: metadataLoading,
+    error: metadataError,
+  } = useOsdkMetadata(actionDefinition);
+
+  if (metadataError != null) {
+    onError?.({ type: "unknown", error: metadataError });
+  }
 
   const parameters = metadata?.parameters;
 
   const resolvedFieldDefinitions = useMemo(
     () =>
-      formFieldDefinition
+      formFieldDefinitions
         ?? (metadata != null
           ? getDefaultFieldDefinitions<Q>(metadata)
           : EMPTY_FIELD_DEFINITIONS),
-    [formFieldDefinition, metadata],
+    [formFieldDefinitions, metadata],
   );
 
   const rendererFieldDefinitions: ReadonlyArray<RendererFieldDefinition> =
@@ -88,9 +93,7 @@ export function ActionForm<Q extends ActionDefinition<unknown>>({
           await onSubmit(formState, osdkApplyAction);
         } else {
           const result = await osdkApplyAction(formState);
-          if (result != null) {
-            onSuccess?.(result);
-          }
+          onSuccess?.(result);
         }
       } catch (e) {
         onError?.({ type: "submission", error: e });
@@ -101,16 +104,15 @@ export function ActionForm<Q extends ActionDefinition<unknown>>({
 
   const handleFieldValueChange = useCallback(
     (fieldKey: string, value: unknown) => {
-      const coerced = coerceFieldValue(parameters?.[fieldKey]?.type, value);
       onFormStateChange?.(
         (prev) =>
           ({
             ...prev,
-            [fieldKey]: coerced,
+            [fieldKey]: value,
           }) as FormState<Q>,
       );
     },
-    [parameters, onFormStateChange],
+    [onFormStateChange],
   );
 
   const resolvedTitle = formTitle ?? metadata?.displayName

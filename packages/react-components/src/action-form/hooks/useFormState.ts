@@ -63,7 +63,9 @@ export function useFormState(
     }
     const state: Record<string, unknown> = {};
     for (const def of fieldDefinitions) {
-      state[def.fieldKey] = internalValues[def.fieldKey] ?? def.defaultValue;
+      state[def.fieldKey] = Object.hasOwn(internalValues, def.fieldKey)
+        ? internalValues[def.fieldKey]
+        : def.defaultValue;
     }
     return state;
   }, [isControlled, controlledFormState, fieldDefinitions, internalValues]);
@@ -89,8 +91,5 @@ export function useFormState(
     }
   }, [isControlled, fieldDefinitions, onFieldValueChange]);
 
-  return useMemo(
-    () => ({ formState: derivedFormState, setFieldValue, resetForm }),
-    [derivedFormState, setFieldValue, resetForm],
-  );
+  return { formState: derivedFormState, setFieldValue, resetForm };
 }
