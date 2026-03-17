@@ -500,7 +500,7 @@ describe("ObjectSet", () => {
     });
   });
 
-  it("type checking interval rules", () => {
+  it("type checking interval", () => {
     client(Employee).where({
       fullName: {
         $interval: {
