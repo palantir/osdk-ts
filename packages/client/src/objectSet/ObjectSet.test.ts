@@ -506,6 +506,7 @@ describe("ObjectSet", () => {
         $interval: {
           type: "match",
           query: "John Smith",
+          maxGaps: 1,
           ordered: true,
         },
       },
@@ -524,6 +525,7 @@ describe("ObjectSet", () => {
       fullName: {
         $interval: {
           type: "allOf",
+          maxGaps: 0,
           ordered: true,
           rules: [{
             type: "match",

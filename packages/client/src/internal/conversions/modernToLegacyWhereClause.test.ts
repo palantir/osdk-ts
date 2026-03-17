@@ -771,6 +771,7 @@ describe(modernToLegacyWhereClause, () => {
             $interval: {
               type: "match",
               query: "test phrase",
+              maxGaps: 1,
               ordered: true,
             },
           },
@@ -778,6 +779,7 @@ describe(modernToLegacyWhereClause, () => {
         {
           "field": "string",
           "rule": {
+            "maxGaps": 1,
             "ordered": true,
             "query": "test phrase",
             "type": "match",
@@ -810,6 +812,7 @@ describe(modernToLegacyWhereClause, () => {
           string: {
             $interval: {
               type: "allOf",
+              maxGaps: 0,
               ordered: true,
               rules: [{
                 type: "match",
@@ -826,6 +829,7 @@ describe(modernToLegacyWhereClause, () => {
         {
           "field": "string",
           "rule": {
+            "maxGaps": 0,
             "ordered": true,
             "rules": [
               {
