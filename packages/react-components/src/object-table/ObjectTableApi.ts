@@ -138,7 +138,9 @@ export type ColumnDefinitionLocator<
      * @param object - The object instance
      * @returns - The key to use for looking up this object's result in the FunctionsMap
      */
-    getKey: (object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>) => string;
+    getKey: (
+      object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
+    ) => string;
   }
   | {
     type: "rdp";

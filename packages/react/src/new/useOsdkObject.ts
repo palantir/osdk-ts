@@ -183,7 +183,7 @@ export function useOsdkObject<
     }
 
     return {
-      object: payload?.object as Osdk.Instance<Q> | undefined,
+      object: payload?.object,
       isLoading: enabled
         ? (payload?.status === "loading" || payload?.status === "init"
           || !payload)

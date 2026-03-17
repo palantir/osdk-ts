@@ -130,14 +130,11 @@ function getColumnsFromColumnDefinitions<
       accessorKey: colKey,
       header: renderHeader ?? (columnName || propertyMetadata?.displayName),
       meta: {
-        columnName: columnName || propertyMetadata?.displayName || colKey,
+        columnName: columnName || propertyMetadata?.displayName,
         isVisible: col.isVisible !== false,
-        editable: locator.type === "function" ? false : editable, // Function columns are not editable
+        editable,
         dataType,
         validateEdit: col.validateEdit,
-        locatorType: locator.type,
-        functionColumnId: locator.type === "function" ? colKey : undefined,
-        functionPropertyKey: locator.type === "function" ? locator.propertyKey : undefined,
       },
       size: width,
       ...(minWidth ? { minSize: minWidth } : {}),
