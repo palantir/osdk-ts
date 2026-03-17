@@ -14,70 +14,31 @@
  * limitations under the License.
  */
 
-import type { ActionDefinition } from "@osdk/api";
 import { act, renderHook } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
-import type { FormFieldDefinition } from "../FormFieldApi.js";
-import type { UseActionFormStateResult } from "../hooks/useActionFormState.js";
+import { describe, expect, it, vi } from "vitest";
+import type { RendererFieldDefinition } from "../FormFieldApi.js";
+import type {
+  UseActionFormStateOptions,
+} from "../hooks/useActionFormState.js";
 import { useActionFormState } from "../hooks/useActionFormState.js";
 
-/**
- * Test action type with compile-time metadata so FieldKey resolves
- * to "name" | "email".
- *
- * Uses `interface extends` (not `type &`) so that __DefinitionMetadata
- * replaces rather than intersects the base type. This prevents
- * Record<any, Parameter<any>> from polluting keyof, which would cause
- * FieldValueType to resolve to `never`.
- */
-interface TestActionDef extends ActionDefinition<unknown> {
-  __DefinitionMetadata: {
-    signatures: unknown;
-    parameters: {
-      name: { type: "string" };
-      email: { type: "string" };
-    };
-    type: "action";
-    apiName: "TestAction";
-    status: "ACTIVE";
-    rid: string;
-  };
-}
-
-function makeFieldDef(
-  options:
-    & Partial<FormFieldDefinition<TestActionDef>>
-    & Pick<FormFieldDefinition<TestActionDef>, "fieldKey">,
-): FormFieldDefinition<TestActionDef> {
-  return {
-    fieldComponent: "TEXT_INPUT",
-    ...options,
-  } as FormFieldDefinition<TestActionDef>;
-}
-
-/** Widens setFieldValue for test assertions where actual values differ from metadata type literals */
-function setField(
-  result: UseActionFormStateResult<TestActionDef>,
-  key: "name" | "email",
-  value: unknown,
-): void {
-  (result.setFieldValue as (k: string, v: unknown) => void)(key, value);
+function makeDef(
+  fieldKey: string,
+  defaultValue?: unknown,
+): RendererFieldDefinition {
+  return { fieldKey, fieldComponent: "TEXT_INPUT", defaultValue };
 }
 
 describe("useActionFormState", () => {
-  describe("uncontrolled fields", () => {
+  describe("uncontrolled mode", () => {
     it("initializes with default values", () => {
       const defs = [
-        makeFieldDef({ fieldKey: "name", defaultValue: "Alice" }),
-        makeFieldDef({
-          fieldKey: "email",
-          fieldComponent: "TEXT_INPUT",
-          defaultValue: "alice@test.com",
-        }),
+        makeDef("name", "Alice"),
+        makeDef("email", "alice@test.com"),
       ];
 
       const { result } = renderHook(() =>
-        useActionFormState<TestActionDef>(defs)
+        useActionFormState({ fieldDefinitions: defs })
       );
 
       expect(result.current.formState).toEqual({
@@ -87,40 +48,38 @@ describe("useActionFormState", () => {
     });
 
     it("initializes with undefined when no defaultValue", () => {
-      const defs = [makeFieldDef({ fieldKey: "name" })];
+      const defs = [makeDef("name")];
 
       const { result } = renderHook(() =>
-        useActionFormState<TestActionDef>(defs)
+        useActionFormState({ fieldDefinitions: defs })
       );
 
       expect(result.current.formState).toEqual({ name: undefined });
     });
 
     it("updates value via setFieldValue", () => {
-      const defs = [makeFieldDef({ fieldKey: "name", defaultValue: "" })];
+      const defs = [makeDef("name", "")];
 
       const { result } = renderHook(() =>
-        useActionFormState<TestActionDef>(defs)
+        useActionFormState({ fieldDefinitions: defs })
       );
 
       act(() => {
-        setField(result.current, "name", "Bob");
+        result.current.setFieldValue("name", "Bob");
       });
 
       expect(result.current.formState).toEqual({ name: "Bob" });
     });
 
     it("resets form to default values", () => {
-      const defs = [
-        makeFieldDef({ fieldKey: "name", defaultValue: "default" }),
-      ];
+      const defs = [makeDef("name", "default")];
 
       const { result } = renderHook(() =>
-        useActionFormState<TestActionDef>(defs)
+        useActionFormState({ fieldDefinitions: defs })
       );
 
       act(() => {
-        setField(result.current, "name", "changed");
+        result.current.setFieldValue("name", "changed");
       });
 
       expect(result.current.formState).toEqual({ name: "changed" });
@@ -131,12 +90,82 @@ describe("useActionFormState", () => {
 
       expect(result.current.formState).toEqual({ name: "default" });
     });
+
+    it("picks up new field defaults when definitions change", () => {
+      const initialDefs = [makeDef("name", "Alice")];
+
+      const { result, rerender } = renderHook(
+        (props: UseActionFormStateOptions) => useActionFormState(props),
+        { initialProps: { fieldDefinitions: initialDefs } },
+      );
+
+      expect(result.current.formState).toEqual({ name: "Alice" });
+
+      const updatedDefs = [makeDef("name", "Alice"), makeDef("age", 30)];
+      rerender({ fieldDefinitions: updatedDefs });
+
+      expect(result.current.formState).toEqual({ name: "Alice", age: 30 });
+    });
+  });
+
+  describe("controlled mode", () => {
+    it("uses provided formState", () => {
+      const defs = [makeDef("name", "default")];
+      const formState = { name: "controlled" };
+
+      const { result } = renderHook(() =>
+        useActionFormState({ fieldDefinitions: defs, formState })
+      );
+
+      expect(result.current.formState).toEqual({ name: "controlled" });
+    });
+
+    it("delegates setFieldValue to onFieldValueChange", () => {
+      const defs = [makeDef("name")];
+      const formState = { name: "" };
+      const onFieldValueChange = vi.fn();
+
+      const { result } = renderHook(() =>
+        useActionFormState({
+          fieldDefinitions: defs,
+          formState,
+          onFieldValueChange,
+        })
+      );
+
+      act(() => {
+        result.current.setFieldValue("name", "Bob");
+      });
+
+      expect(onFieldValueChange).toHaveBeenCalledWith("name", "Bob");
+    });
+
+    it("resetForm calls onFieldValueChange with defaults", () => {
+      const defs = [makeDef("name", "default"), makeDef("email", "a@b.com")];
+      const formState = { name: "changed", email: "x@y.com" };
+      const onFieldValueChange = vi.fn();
+
+      const { result } = renderHook(() =>
+        useActionFormState({
+          fieldDefinitions: defs,
+          formState,
+          onFieldValueChange,
+        })
+      );
+
+      act(() => {
+        result.current.resetForm();
+      });
+
+      expect(onFieldValueChange).toHaveBeenCalledWith("name", "default");
+      expect(onFieldValueChange).toHaveBeenCalledWith("email", "a@b.com");
+    });
   });
 
   describe("edge cases", () => {
     it("handles empty field definitions", () => {
       const { result } = renderHook(() =>
-        useActionFormState<TestActionDef>([])
+        useActionFormState({ fieldDefinitions: [] })
       );
 
       expect(result.current.formState).toEqual({});

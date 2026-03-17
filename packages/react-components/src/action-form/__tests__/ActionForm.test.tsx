@@ -317,7 +317,7 @@ describe("ActionForm", () => {
       });
     });
 
-    it("calls onFormStateChange when a field is edited", () => {
+    it("calls onFormStateChange with updater when a field is edited", () => {
       const onFormStateChange = vi.fn();
 
       render(
@@ -336,7 +336,16 @@ describe("ActionForm", () => {
         fireEvent.change(textInput, { target: { value: "Updated" } });
       }
 
-      expect(onFormStateChange).toHaveBeenCalledWith(
+      expect(onFormStateChange).toHaveBeenCalledWith(expect.any(Function));
+
+      const updater = onFormStateChange.mock.calls[0][0] as (
+        prev: Record<string, unknown>,
+      ) => Record<string, unknown>;
+      const result = updater({
+        name: "Initial",
+        email: "initial@test.com",
+      });
+      expect(result).toEqual(
         expect.objectContaining({ name: "Updated", email: "initial@test.com" }),
       );
     });

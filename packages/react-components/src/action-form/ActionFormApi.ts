@@ -37,7 +37,9 @@ import type {
 export type ActionFormProps<Q extends ActionDefinition<unknown>> =
   | (ActionFormConfigProps<Q> & {
     formState: FormState<Q>;
-    onFormStateChange: (state: FormState<Q>) => void;
+    onFormStateChange: (
+      updater: (prevState: FormState<Q>) => FormState<Q>,
+    ) => void;
   })
   | (ActionFormConfigProps<Q> & {
     formState?: undefined;
@@ -108,15 +110,27 @@ export type FormError =
 
 /**
  * Props for the BaseActionForm component, which renders a form without
- * OSDK data fetching. Consumers supply pre-resolved field definitions
- * and manage form state externally.
+ * OSDK data fetching.
+ *
+ * Uses a discriminated union so that controlled mode (formState provided)
+ * always requires onFieldValueChange, and uncontrolled mode omits both.
+ * onSubmit receives the current form state so callers can access values
+ * even in uncontrolled mode.
  */
-export interface BaseActionFormProps {
+export type BaseActionFormProps =
+  & BaseActionFormCommonProps
+  & (
+    | {
+      formState: Record<string, unknown>;
+      onFieldValueChange: (fieldKey: string, value: unknown) => void;
+    }
+    | { formState?: undefined; onFieldValueChange?: undefined }
+  );
+
+interface BaseActionFormCommonProps {
   formTitle?: string;
   fieldDefinitions: ReadonlyArray<RendererFieldDefinition>;
-  formState: Record<string, unknown>;
-  onFieldValueChange: (fieldKey: string, value: unknown) => void;
-  onSubmit: () => void;
+  onSubmit: (formState: Record<string, unknown>) => void;
   isSubmitDisabled?: boolean;
   isPending?: boolean;
   isLoading?: boolean;

@@ -16,7 +16,6 @@
 
 import React from "react";
 import type { RendererFieldDefinition } from "../FormFieldApi.js";
-import { coerceFieldValue } from "../utils/coerceFieldValue.js";
 import { TextInputField } from "./TextInputField.js";
 
 export interface FormFieldRendererProps {
@@ -41,11 +40,7 @@ export function FormFieldRenderer({
           {isRequired === true && <span aria-label="required">*</span>}
         </label>
       )}
-      {renderFieldComponent(
-        fieldDefinition,
-        value,
-        onFieldValueChange,
-      )}
+      {renderFieldComponent(fieldDefinition, value, onFieldValueChange)}
       {helperText != null && helperTextPlacement !== "tooltip" && (
         <div data-testid="helper-text">{helperText}</div>
       )}
@@ -58,16 +53,22 @@ function renderFieldComponent(
   value: unknown,
   onChange: (value: unknown) => void,
 ): React.ReactElement {
-  const coerced = coerceFieldValue(fieldDefinition.fieldType, value);
-
-  // TODO: Handle other field component types (DROPDOWN, NUMBER_INPUT, etc.)
-  return (
-    <TextInputField
-      fieldComponent="TEXT_INPUT"
-      value={coerced != null ? String(coerced) : ""}
-      onChange={onChange}
-      placeholder={fieldDefinition.placeholder}
-      {...fieldDefinition.fieldComponentProps}
-    />
-  );
+  switch (fieldDefinition.fieldComponent) {
+    case "TEXT_INPUT":
+    case "TEXT_AREA":
+      return (
+        <TextInputField
+          fieldComponent="TEXT_INPUT"
+          value={value != null ? String(value) : ""}
+          onChange={onChange}
+          placeholder={fieldDefinition.placeholder}
+        />
+      );
+    default:
+      return (
+        <div data-testid="unsupported-field">
+          Unsupported field type: {fieldDefinition.fieldComponent}
+        </div>
+      );
+  }
 }

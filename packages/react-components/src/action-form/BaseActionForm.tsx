@@ -18,25 +18,33 @@ import React, { useCallback } from "react";
 import type { BaseActionFormProps } from "./ActionFormApi.js";
 import { FormFieldRenderer } from "./fields/FormFieldRenderer.js";
 import type { RendererFieldDefinition } from "./FormFieldApi.js";
+import { useActionFormState } from "./hooks/useActionFormState.js";
 
 const EMPTY_ARRAY: readonly [] = [];
 
 export function BaseActionForm({
   formTitle,
   fieldDefinitions,
-  formState,
+  formState: controlledFormState,
   onFieldValueChange,
   onSubmit,
   isSubmitDisabled = false,
   isPending = false,
   isLoading = false,
 }: BaseActionFormProps): React.ReactElement {
+  const { formState, setFieldValue, resetForm: _resetForm } =
+    useActionFormState({
+      fieldDefinitions,
+      formState: controlledFormState,
+      onFieldValueChange,
+    });
+
   const handleSubmit = useCallback(
     (e: React.FormEvent) => {
       e.preventDefault();
-      onSubmit();
+      onSubmit(formState);
     },
-    [onSubmit],
+    [onSubmit, formState],
   );
 
   const defs = fieldDefinitions.length > 0 ? fieldDefinitions : EMPTY_ARRAY;
@@ -52,7 +60,7 @@ export function BaseActionForm({
           key={fieldDef.fieldKey}
           fieldDef={fieldDef}
           value={formState[fieldDef.fieldKey]}
-          onFieldValueChange={onFieldValueChange}
+          onFieldValueChange={setFieldValue}
         />
       ))}
       <button

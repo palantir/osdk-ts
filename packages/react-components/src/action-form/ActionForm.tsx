@@ -21,7 +21,6 @@ import React, { useCallback, useMemo } from "react";
 import type { ActionFormProps, FormState } from "./ActionFormApi.js";
 import { BaseActionForm } from "./BaseActionForm.js";
 import type { RendererFieldDefinition } from "./FormFieldApi.js";
-import { useActionFormState } from "./hooks/useActionFormState.js";
 import { coerceFieldValue } from "./utils/coerceFieldValue.js";
 import { getDefaultFieldDefinitions } from "./utils/getDefaultFieldDefinitions.js";
 
@@ -46,6 +45,8 @@ export function ActionForm<Q extends ActionDefinition<unknown>>({
     actionDefinition,
   );
 
+  const parameters = metadata?.parameters;
+
   const resolvedFieldDefinitions = useMemo(
     () =>
       formFieldDefinition
@@ -61,74 +62,77 @@ export function ActionForm<Q extends ActionDefinition<unknown>>({
         resolvedFieldDefinitions.map((def) => ({
           ...def,
           fieldKey: String(def.fieldKey),
-          fieldType: metadata?.parameters[String(def.fieldKey)]?.type,
+          fieldType: parameters?.[String(def.fieldKey)]?.type,
+          defaultValue: def.defaultValue,
         })),
-      [resolvedFieldDefinitions, metadata],
+      [resolvedFieldDefinitions, parameters],
     );
 
-  const {
-    formState: internalFormState,
-    setFieldValue: typedSetFieldValue,
-    resetForm,
-  } = useActionFormState<Q>(resolvedFieldDefinitions);
-
-  // Widen to (string, unknown) for the internal onChange handler which receives
-  // untyped values from field components
-  const setFieldValue = typedSetFieldValue as (
-    fieldKey: string,
-    value: unknown,
-  ) => void;
-
-  const effectiveFormState = controlledFormState ?? internalFormState;
-
-  const handleSubmit = useCallback(async () => {
-    try {
-      if (onSubmit != null) {
-        await onSubmit(effectiveFormState, osdkApplyAction);
-      } else {
-        const result = await osdkApplyAction(effectiveFormState);
-        if (result != null) {
-          onSuccess?.(result);
-          resetForm();
-        }
+  const coerceFormState = useCallback(
+    (rawState: Record<string, unknown>): Record<string, unknown> => {
+      const coerced: Record<string, unknown> = {};
+      for (const [key, value] of Object.entries(rawState)) {
+        coerced[key] = coerceFieldValue(parameters?.[key]?.type, value);
       }
-    } catch (e) {
-      onError?.({ type: "submission", error: e });
-    }
-  }, [
-    onSubmit,
-    effectiveFormState,
-    osdkApplyAction,
-    onSuccess,
-    resetForm,
-    onError,
-  ]);
+      return coerced;
+    },
+    [parameters],
+  );
+
+  const handleSubmit = useCallback(
+    async (rawFormState: Record<string, unknown>) => {
+      const formState = coerceFormState(rawFormState) as FormState<Q>;
+      try {
+        if (onSubmit != null) {
+          await onSubmit(formState, osdkApplyAction);
+        } else {
+          const result = await osdkApplyAction(formState);
+          if (result != null) {
+            onSuccess?.(result);
+          }
+        }
+      } catch (e) {
+        onError?.({ type: "submission", error: e });
+      }
+    },
+    [coerceFormState, onSubmit, osdkApplyAction, onSuccess, onError],
+  );
 
   const handleFieldValueChange = useCallback(
     (fieldKey: string, value: unknown) => {
-      const parameterType = metadata?.parameters[fieldKey]?.type;
-      const coerced = coerceFieldValue(parameterType, value);
-      setFieldValue(fieldKey, coerced);
-      if (onFormStateChange != null) {
-        const updatedState = {
-          ...effectiveFormState,
-          [fieldKey]: coerced,
-        } as FormState<Q>; // TS can't preserve mapped types through computed-key spread
-        onFormStateChange(updatedState);
-      }
+      const coerced = coerceFieldValue(parameters?.[fieldKey]?.type, value);
+      onFormStateChange?.((prev) => ({
+        ...prev,
+        [fieldKey]: coerced,
+      } as FormState<Q>));
     },
-    [metadata, setFieldValue, onFormStateChange, effectiveFormState],
+    [parameters, onFormStateChange],
   );
 
   const resolvedTitle = formTitle ?? metadata?.displayName
     ?? actionDefinition.apiName;
 
+  const isControlled = controlledFormState != null;
+
+  if (isControlled) {
+    return (
+      <BaseActionForm
+        formTitle={resolvedTitle}
+        fieldDefinitions={rendererFieldDefinitions}
+        formState={controlledFormState as Record<string, unknown>}
+        onFieldValueChange={handleFieldValueChange}
+        onSubmit={handleSubmit}
+        isSubmitDisabled={isSubmitDisabled}
+        isPending={isPending}
+        isLoading={metadataLoading}
+      />
+    );
+  }
+
   return (
     <BaseActionForm
       formTitle={resolvedTitle}
       fieldDefinitions={rendererFieldDefinitions}
-      formState={effectiveFormState}
-      onFieldValueChange={handleFieldValueChange}
       onSubmit={handleSubmit}
       isSubmitDisabled={isSubmitDisabled}
       isPending={isPending}

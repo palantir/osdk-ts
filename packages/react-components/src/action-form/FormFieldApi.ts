@@ -412,6 +412,7 @@ export interface RendererFieldDefinition {
   fieldComponent: FieldComponent;
   fieldType?: FieldType;
   label?: string;
+  defaultValue?: unknown;
   isRequired?: boolean;
   placeholder?: string;
   helperText?: string;

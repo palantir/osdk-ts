@@ -14,97 +14,85 @@
  * limitations under the License.
  */
 
-import type { ActionDefinition } from "@osdk/api";
-import { useCallback, useMemo, useRef, useState } from "react";
-import type { FormState } from "../ActionFormApi.js";
-import type {
-  FieldKey,
-  FieldValueType,
-  FormFieldDefinition,
-} from "../FormFieldApi.js";
+import { useCallback, useMemo, useState } from "react";
+import type { RendererFieldDefinition } from "../FormFieldApi.js";
 
-export interface UseActionFormStateResult<
-  Q extends ActionDefinition<unknown>,
-> {
-  formState: FormState<Q>;
-  setFieldValue: <K extends FieldKey<Q>>(
-    fieldKey: K,
-    value: FieldValueType<Q, K>,
-  ) => void;
+export interface UseActionFormStateOptions {
+  fieldDefinitions: ReadonlyArray<RendererFieldDefinition>;
+  formState?: Record<string, unknown>;
+  onFieldValueChange?: (fieldKey: string, value: unknown) => void;
+}
+
+export interface UseActionFormStateResult {
+  formState: Record<string, unknown>;
+  setFieldValue: (fieldKey: string, value: unknown) => void;
   resetForm: () => void;
 }
 
 /**
- * Manages internal form state for uncontrolled mode.
+ * Manages form state for BaseActionForm.
  *
- * Internally operates on Record<string, unknown> and bridges to the caller's
- * generic Q via assertions, since TypeScript cannot verify that runtime
- * metadata keys satisfy deferred generic FieldKey<Q>.
+ * **Uncontrolled mode** (no `formState` provided):
+ * Internal state is maintained via useState. For each field, the derived
+ * formState uses the stored value if present, otherwise falls back to
+ * the field's defaultValue.
+ *
+ * **Controlled mode** (`formState` provided):
+ * The provided formState is used directly. `setFieldValue` delegates to
+ * `onFieldValueChange`. `resetForm` calls `onFieldValueChange` for each
+ * field with its defaultValue.
  */
-export function useActionFormState<Q extends ActionDefinition<unknown>>(
-  fieldDefinitions: ReadonlyArray<FormFieldDefinition<Q>>,
-): UseActionFormStateResult<Q> {
+export function useActionFormState(
+  options: UseActionFormStateOptions,
+): UseActionFormStateResult {
+  const {
+    fieldDefinitions,
+    formState: controlledFormState,
+    onFieldValueChange,
+  } = options;
+
+  const isControlled = controlledFormState != null;
+
   const [internalValues, setInternalValues] = useState<
     Record<string, unknown>
-  >(() => buildDefaultValues(fieldDefinitions));
+  >({});
 
-  const prevDefsRef = useRef(fieldDefinitions);
-  if (prevDefsRef.current !== fieldDefinitions) {
-    prevDefsRef.current = fieldDefinitions;
-    const newDefaults = buildDefaultValues(fieldDefinitions);
-    const currentKeys = new Set(
-      fieldDefinitions.map((d) => String(d.fieldKey)),
-    );
-    setInternalValues((prev) => {
-      const merged: Record<string, unknown> = {};
-      for (const key of currentKeys) {
-        merged[key] = key in prev ? prev[key] : newDefaults[key];
-      }
-      return merged;
-    });
-  }
-
-  const formState = useMemo(() => {
+  const derivedFormState = useMemo(() => {
+    if (isControlled) {
+      return controlledFormState;
+    }
     const state: Record<string, unknown> = {};
     for (const def of fieldDefinitions) {
-      const key = String(def.fieldKey);
-      state[key] = internalValues[key];
+      state[def.fieldKey] = def.fieldKey in internalValues
+        ? internalValues[def.fieldKey]
+        : def.defaultValue;
     }
-    // Runtime-built Record can't be verified against the mapped FormState<Q> type
-    return state as FormState<Q>;
-  }, [fieldDefinitions, internalValues]);
+    return state;
+  }, [isControlled, controlledFormState, fieldDefinitions, internalValues]);
 
   const setFieldValue = useCallback(
     (fieldKey: string, value: unknown) => {
-      setInternalValues((prev) => ({ ...prev, [fieldKey]: value }));
+      if (isControlled) {
+        onFieldValueChange?.(fieldKey, value);
+      } else {
+        setInternalValues((prev) => ({ ...prev, [fieldKey]: value }));
+      }
     },
-    [],
+    [isControlled, onFieldValueChange],
   );
 
   const resetForm = useCallback(() => {
-    setInternalValues(buildDefaultValues(fieldDefinitions));
-  }, [fieldDefinitions]);
+    if (isControlled) {
+      for (const def of fieldDefinitions) {
+        onFieldValueChange?.(def.fieldKey, def.defaultValue);
+      }
+    } else {
+      setInternalValues({});
+    }
+  }, [isControlled, fieldDefinitions, onFieldValueChange]);
 
   return useMemo(
-    () => ({
-      formState,
-      // Internal (string, unknown) signature is intentionally wider than
-      // the public <K extends FieldKey<Q>> contract for implementation simplicity
-      setFieldValue: setFieldValue as UseActionFormStateResult<
-        Q
-      >["setFieldValue"],
-      resetForm,
-    }),
-    [formState, setFieldValue, resetForm],
+    () => ({ formState: derivedFormState, setFieldValue, resetForm }),
+    [derivedFormState, setFieldValue, resetForm],
   );
-}
-
-function buildDefaultValues<Q extends ActionDefinition<unknown>>(
-  fieldDefinitions: ReadonlyArray<FormFieldDefinition<Q>>,
-): Record<string, unknown> {
-  const defaults: Record<string, unknown> = {};
-  for (const def of fieldDefinitions) {
-    defaults[String(def.fieldKey)] = def.defaultValue;
-  }
-  return defaults;
 }
