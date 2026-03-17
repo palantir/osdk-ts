@@ -569,28 +569,53 @@ versions:
             function {{actionApiName}}WithResult() {
               const { applyAction, isPending, error, data } = useOsdkAction({{actionApiName}});
 
+              const handleClick = async () => {
+                await applyAction({
+                  {{#actionParameterSampleValuesV2}}
+                  {{key}}: {{value}}{{^last}},{{/last}}
+                  {{/actionParameterSampleValuesV2}}
+                });
+              };
+
               return (
                 <div>
+                  {error && <div className="error-banner">Error: {String(error.unknown ?? error.actionValidation)}</div>}
                   {data && <div>Action completed successfully</div>}
+                  <button onClick={handleClick} disabled={isPending}>
+                    {isPending ? "Applying..." : "Apply {{actionApiName}}"}
+                  </button>
                 </div>
               );
             }
+          computedVariables:
+            - actionParameterSampleValuesV2
       validateAction:
         - template: |-
             import { {{actionApiName}} } from "{{{packageName}}}";
-            import { useOsdkAction } from "@osdk/react/experimental";
-            import { useState, useEffect } from "react";
+            import { useOsdkAction, useDebouncedCallback } from "@osdk/react/experimental";
+            import { useState } from "react";
 
             function {{actionApiName}}WithValidation() {
               const { validateAction, applyAction, isPending, validationResult } = useOsdkAction({{actionApiName}});
-              const [params, setParams] = useState({});
+              const [params, setParams] = useState<Record<string, string>>({});
 
-              useEffect(() => {
-                validateAction(params);
-              }, [params, validateAction]);
+              const debouncedValidate = useDebouncedCallback(
+                (nextParams: Record<string, string>) => { validateAction(nextParams); },
+                300
+              );
+
+              const handleParamChange = (key: string, value: string) => {
+                const nextParams = { ...params, [key]: value };
+                setParams(nextParams);
+                debouncedValidate(nextParams);
+              };
 
               return (
                 <div>
+                  <input
+                    placeholder="Parameter value"
+                    onChange={(e) => handleParamChange("paramName", e.target.value)}
+                  />
                   {validationResult?.result === "INVALID" && (
                     <div>Validation errors present</div>
                   )}
@@ -613,7 +638,7 @@ versions:
             function Batch{{actionApiName}}() {
               const { applyAction, isPending } = useOsdkAction({{actionApiName}});
 
-              const handleBatchApply = async (items: Array<{ /* params */ }>) => {
+              const handleBatchApply = async (items: Array<Parameters<typeof applyAction>[0]>) => {
                 await Promise.all(items.map(item => applyAction(item)));
               };
 
@@ -1420,19 +1445,15 @@ versions:
       loadObjectMetadataSnippet:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
-            import { useOsdkClient } from "@osdk/react/experimental";
-            import { useEffect, useState } from "react";
+            import { useOsdkMetadata } from "@osdk/react/experimental";
 
             function {{objectType}}Metadata() {
-              const client = useOsdkClient();
-              const [metadata, setMetadata] = useState<{ description?: string; visibility?: string } | null>(null);
-
-              useEffect(() => {
-                client.fetchMetadata({{objectType}}).then(setMetadata);
-              }, [client]);
+              const { loading, metadata, error } = useOsdkMetadata({{objectType}});
 
               return (
                 <div>
+                  {error && <div className="error-banner">Error: {error}</div>}
+                  {loading && !metadata && <div className="skeleton">Loading...</div>}
                   {metadata && (
                     <div>
                       <div>Description: {metadata.description}</div>
@@ -1445,19 +1466,15 @@ versions:
       loadInterfaceMetadataSnippet:
         - template: |-
             import { {{interfaceApiName}} } from "{{{packageName}}}";
-            import { useOsdkClient } from "@osdk/react/experimental";
-            import { useEffect, useState } from "react";
+            import { useOsdkMetadata } from "@osdk/react/experimental";
 
             function {{interfaceApiName}}Metadata() {
-              const client = useOsdkClient();
-              const [metadata, setMetadata] = useState<{ rid?: string; implementedBy?: string[] } | null>(null);
-
-              useEffect(() => {
-                client.fetchMetadata({{interfaceApiName}}).then(setMetadata);
-              }, [client]);
+              const { loading, metadata, error } = useOsdkMetadata({{interfaceApiName}});
 
               return (
                 <div>
+                  {error && <div className="error-banner">Error: {error}</div>}
+                  {loading && !metadata && <div className="skeleton">Loading...</div>}
                   {metadata && (
                     <div>
                       <div>RID: {metadata.rid}</div>
@@ -1596,195 +1613,105 @@ versions:
             }
       loadTimeSeriesPointsSnippet:
         - template: |-
-            import { {{objectType}} } from "{{{packageName}}}";
-            import { useOsdkObject } from "@osdk/react/experimental";
-            import { useEffect, useState } from "react";
+            // Timeseries does not have a dedicated React hook yet.
+            // Use the client API directly with a loaded OSDK object.
+            import type { Osdk } from "@osdk/client";
+            import type { {{objectType}} } from "{{{packageName}}}";
 
-            function {{objectType}}TimeSeries({ primaryKey }: { primaryKey: string }) {
-              const { object: obj } = useOsdkObject({{objectType}}, primaryKey);
-              const [points, setPoints] = useState<Array<{ time: string; value: number }>>([]);
-
-              useEffect(() => {
-                obj?.{{property}}?.getAllPoints().then(setPoints);
-              }, [obj]);
-
-              return (
-                <div>
-                  {points.length > 0 && <pre>{JSON.stringify(points, null, 2)}</pre>}
-                </div>
-              );
+            async function getAllTimeSeriesPoints(obj: Osdk.Instance<typeof {{objectType}}>) {
+              return obj.{{property}}?.getAllPoints();
             }
       loadTimeSeriesFirstPointSnippet:
         - template: |-
-            import { {{objectType}} } from "{{{packageName}}}";
-            import { useOsdkObject } from "@osdk/react/experimental";
-            import { useEffect, useState } from "react";
+            // Timeseries does not have a dedicated React hook yet.
+            // Use the client API directly with a loaded OSDK object.
+            import type { Osdk } from "@osdk/client";
+            import type { {{objectType}} } from "{{{packageName}}}";
 
-            function {{objectType}}FirstPoint({ primaryKey }: { primaryKey: string }) {
-              const { object: obj } = useOsdkObject({{objectType}}, primaryKey);
-              const [point, setPoint] = useState(null);
-
-              useEffect(() => {
-                obj?.{{property}}?.getFirstPoint().then(setPoint);
-              }, [obj]);
-
-              return (
-                <div>
-                  {point && <pre>{JSON.stringify(point, null, 2)}</pre>}
-                </div>
-              );
+            async function getFirstTimeSeriesPoint(obj: Osdk.Instance<typeof {{objectType}}>) {
+              return obj.{{property}}?.getFirstPoint();
             }
       loadTimeSeriesLastPointSnippet:
         - template: |-
-            import { {{objectType}} } from "{{{packageName}}}";
-            import { useOsdkObject } from "@osdk/react/experimental";
-            import { useEffect, useState } from "react";
+            // Timeseries does not have a dedicated React hook yet.
+            // Use the client API directly with a loaded OSDK object.
+            import type { Osdk } from "@osdk/client";
+            import type { {{objectType}} } from "{{{packageName}}}";
 
-            function {{objectType}}LastPoint({ primaryKey }: { primaryKey: string }) {
-              const { object: obj } = useOsdkObject({{objectType}}, primaryKey);
-              const [point, setPoint] = useState(null);
-
-              useEffect(() => {
-                obj?.{{property}}?.getLastPoint().then(setPoint);
-              }, [obj]);
-
-              return (
-                <div>
-                  {point && <pre>{JSON.stringify(point, null, 2)}</pre>}
-                </div>
-              );
+            async function getLastTimeSeriesPoint(obj: Osdk.Instance<typeof {{objectType}}>) {
+              return obj.{{property}}?.getLastPoint();
             }
       loadAbsoluteTimeSeriesPointsSnippet:
         - template: |-
-            import { {{objectType}} } from "{{{packageName}}}";
-            import { useOsdkObject } from "@osdk/react/experimental";
-            import { useEffect, useState } from "react";
+            // Timeseries does not have a dedicated React hook yet.
+            // Use the client API directly with a loaded OSDK object.
+            import type { Osdk } from "@osdk/client";
+            import type { {{objectType}} } from "{{{packageName}}}";
 
-            function {{objectType}}AbsoluteTimeSeries({ primaryKey }: { primaryKey: string }) {
-              const { object: obj } = useOsdkObject({{objectType}}, primaryKey);
-              const [points, setPoints] = useState<Array<{ time: string; value: number }>>([]);
-
-              useEffect(() => {
-                obj?.{{property}}?.getAllPoints({
-                  $startTime: "2022-08-13T12:34:56Z",
-                  $endTime: "2022-08-14T12:34:56Z",
-                }).then(setPoints);
-              }, [obj]);
-
-              return (
-                <div>
-                  {points.length > 0 && <pre>{JSON.stringify(points, null, 2)}</pre>}
-                </div>
-              );
+            async function getAbsoluteTimeSeriesPoints(obj: Osdk.Instance<typeof {{objectType}}>) {
+              return obj.{{property}}?.getAllPoints({
+                $startTime: "2022-08-13T12:34:56Z",
+                $endTime: "2022-08-14T12:34:56Z",
+              });
             }
       loadRelativeTimeSeriesPointsSnippet:
         - template: |-
-            import { {{objectType}} } from "{{{packageName}}}";
-            import { useOsdkObject } from "@osdk/react/experimental";
-            import { useEffect, useState } from "react";
+            // Timeseries does not have a dedicated React hook yet.
+            // Use the client API directly with a loaded OSDK object.
+            import type { Osdk } from "@osdk/client";
+            import type { {{objectType}} } from "{{{packageName}}}";
 
-            function {{objectType}}RelativeTimeSeries({ primaryKey }: { primaryKey: string }) {
-              const { object: obj } = useOsdkObject({{objectType}}, primaryKey);
-              const [points, setPoints] = useState<Array<{ time: string; value: number }>>([]);
-
-              useEffect(() => {
-                obj?.{{property}}?.getAllPoints({
-                  $before: 1,
-                  $unit: "{{timeUnit}}",
-                }).then(setPoints);
-              }, [obj]);
-
-              return (
-                <div>
-                  {points.length > 0 && <pre>{JSON.stringify(points, null, 2)}</pre>}
-                </div>
-              );
+            async function getRelativeTimeSeriesPoints(obj: Osdk.Instance<typeof {{objectType}}>) {
+              return obj.{{property}}?.getAllPoints({
+                $before: 1,
+                $unit: "{{timeUnit}}",
+              });
             }
       loadGeotimeSeriesPointsSnippet:
         - template: |-
-            import { {{objectType}} } from "{{{packageName}}}";
-            import { useOsdkObject } from "@osdk/react/experimental";
-            import { useEffect, useState } from "react";
+            // Geotimeseries does not have a dedicated React hook yet.
+            // Use the client API directly with a loaded OSDK object.
+            import type { Osdk } from "@osdk/client";
+            import type { {{objectType}} } from "{{{packageName}}}";
 
-            function {{objectType}}GeotimeSeries({ primaryKey }: { primaryKey: string }) {
-              const { object: obj } = useOsdkObject({{objectType}}, primaryKey);
-              const [points, setPoints] = useState([]);
-
-              useEffect(() => {
-                obj?.{{property}}?.getAllValues().then(setPoints);
-              }, [obj]);
-
-              return (
-                <div>
-                  {points.length > 0 && <pre>{JSON.stringify(points, null, 2)}</pre>}
-                </div>
-              );
+            async function getAllGeotimeSeriesPoints(obj: Osdk.Instance<typeof {{objectType}}>) {
+              return obj.{{property}}?.getAllValues();
             }
       loadGeotimeSeriesLastPointSnippet:
         - template: |-
-            import { {{objectType}} } from "{{{packageName}}}";
-            import { useOsdkObject } from "@osdk/react/experimental";
-            import { useEffect, useState } from "react";
+            // Geotimeseries does not have a dedicated React hook yet.
+            // Use the client API directly with a loaded OSDK object.
+            import type { Osdk } from "@osdk/client";
+            import type { {{objectType}} } from "{{{packageName}}}";
 
-            function {{objectType}}GeotimeSeriesLatest({ primaryKey }: { primaryKey: string }) {
-              const { object: obj } = useOsdkObject({{objectType}}, primaryKey);
-              const [point, setPoint] = useState(null);
-
-              useEffect(() => {
-                obj?.{{property}}?.getLatestValue().then(setPoint);
-              }, [obj]);
-
-              return (
-                <div>
-                  {point && <pre>{JSON.stringify(point, null, 2)}</pre>}
-                </div>
-              );
+            async function getLatestGeotimeSeriesPoint(obj: Osdk.Instance<typeof {{objectType}}>) {
+              return obj.{{property}}?.getLatestValue();
             }
       loadAbsoluteGeotimeSeriesPointsSnippet:
         - template: |-
-            import { {{objectType}} } from "{{{packageName}}}";
-            import { useOsdkObject } from "@osdk/react/experimental";
-            import { useEffect, useState } from "react";
+            // Geotimeseries does not have a dedicated React hook yet.
+            // Use the client API directly with a loaded OSDK object.
+            import type { Osdk } from "@osdk/client";
+            import type { {{objectType}} } from "{{{packageName}}}";
 
-            function {{objectType}}AbsoluteGeotimeSeries({ primaryKey }: { primaryKey: string }) {
-              const { object: obj } = useOsdkObject({{objectType}}, primaryKey);
-              const [points, setPoints] = useState([]);
-
-              useEffect(() => {
-                obj?.{{property}}?.getAllValues({
-                  $startTime: "2022-08-13T12:34:56Z",
-                  $endTime: "2022-08-14T12:34:56Z",
-                }).then(setPoints);
-              }, [obj]);
-
-              return (
-                <div>
-                  {points.length > 0 && <pre>{JSON.stringify(points, null, 2)}</pre>}
-                </div>
-              );
+            async function getAbsoluteGeotimeSeriesPoints(obj: Osdk.Instance<typeof {{objectType}}>) {
+              return obj.{{property}}?.getAllValues({
+                $startTime: "2022-08-13T12:34:56Z",
+                $endTime: "2022-08-14T12:34:56Z",
+              });
             }
       loadRelativeGeotimeSeriesPointsSnippet:
         - template: |-
-            import { {{objectType}} } from "{{{packageName}}}";
-            import { useOsdkObject } from "@osdk/react/experimental";
-            import { useEffect, useState } from "react";
+            // Geotimeseries does not have a dedicated React hook yet.
+            // Use the client API directly with a loaded OSDK object.
+            import type { Osdk } from "@osdk/client";
+            import type { {{objectType}} } from "{{{packageName}}}";
 
-            function {{objectType}}RelativeGeotimeSeries({ primaryKey }: { primaryKey: string }) {
-              const { object: obj } = useOsdkObject({{objectType}}, primaryKey);
-              const [points, setPoints] = useState([]);
-
-              useEffect(() => {
-                obj?.{{property}}?.getAllValues({
-                  $before: 1,
-                  $unit: "{{timeUnit}}",
-                }).then(setPoints);
-              }, [obj]);
-
-              return (
-                <div>
-                  {points.length > 0 && <pre>{JSON.stringify(points, null, 2)}</pre>}
-                </div>
-              );
+            async function getRelativeGeotimeSeriesPoints(obj: Osdk.Instance<typeof {{objectType}}>) {
+              return obj.{{property}}?.getAllValues({
+                $before: 1,
+                $unit: "{{timeUnit}}",
+              });
             }
       uploadAttachment:
         - template: |-
@@ -1817,35 +1744,16 @@ versions:
             - primaryKeyPropertyV2
       readMedia:
         - template: |-
-            import { {{objectType}} } from "{{{packageName}}}";
-            import { useOsdkObject } from "@osdk/react/experimental";
-            import { useEffect, useState } from "react";
+            // Media does not have a dedicated React hook yet.
+            // Use the client API directly with a loaded OSDK object.
+            import type { Osdk } from "@osdk/client";
+            import type { {{objectType}} } from "{{{packageName}}}";
 
-            function {{objectType}}Media({ primaryKey }: { primaryKey: string }) {
-              const { object: obj } = useOsdkObject({{objectType}}, primaryKey);
-              const [mediaUrl, setMediaUrl] = useState<string | null>(null);
-
-              useEffect(() => {
-                let url: string | undefined;
-                const loadMedia = async () => {
-                  const contents = await obj?.{{property}}?.fetchContents();
-                  if (contents?.ok) {
-                    const blob = await contents.blob();
-                    url = URL.createObjectURL(blob);
-                    setMediaUrl(url);
-                  }
-                };
-                if (obj) {
-                  loadMedia();
-                }
-                return () => { if (url) { URL.revokeObjectURL(url); } };
-              }, [obj]);
-
-              return (
-                <div>
-                  {mediaUrl && <a href={mediaUrl} download>Download media</a>}
-                </div>
-              );
+            async function readMediaContent(obj: Osdk.Instance<typeof {{objectType}}>) {
+              const contents = await obj.{{property}}?.fetchContents();
+              if (contents?.ok) {
+                return contents.blob();
+              }
             }
       uploadMedia:
         - template: |-
@@ -1893,7 +1801,7 @@ versions:
               const handleUpload = async (file: File) => {
                 const batch = createEditBatch(client);
                 const mediaReference = await uploadMedia(client, { data: file, fileName: file.name });
-                // @ts-ignore
+                // @ts-expect-error - batch.create types don't support media references yet
                 batch.create({{objectType}}, { {{property}}: mediaReference });
                 return batch.getEdits();
               };

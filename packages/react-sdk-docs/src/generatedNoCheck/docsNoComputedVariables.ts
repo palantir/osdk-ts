@@ -156,17 +156,20 @@ export const snippets: SdkSnippets<typeof OSDK_SNIPPETS_SPEC> = {
         ],
         "applyActionResponse": [
           {
-            "template": "import { {{actionApiName}} } from \"{{{packageName}}}\";\nimport { useOsdkAction } from \"@osdk/react/experimental\";\n\nfunction {{actionApiName}}WithResult() {\n  const { applyAction, isPending, error, data } = useOsdkAction({{actionApiName}});\n\n  return (\n    <div>\n      {data && <div>Action completed successfully</div>}\n    </div>\n  );\n}"
+            "template": "import { {{actionApiName}} } from \"{{{packageName}}}\";\nimport { useOsdkAction } from \"@osdk/react/experimental\";\n\nfunction {{actionApiName}}WithResult() {\n  const { applyAction, isPending, error, data } = useOsdkAction({{actionApiName}});\n\n  const handleClick = async () => {\n    await applyAction({\n      {{#actionParameterSampleValuesV2}}\n      {{key}}: {{value}}{{^last}},{{/last}}\n      {{/actionParameterSampleValuesV2}}\n    });\n  };\n\n  return (\n    <div>\n      {error && <div className=\"error-banner\">Error: {String(error.unknown ?? error.actionValidation)}</div>}\n      {data && <div>Action completed successfully</div>}\n      <button onClick={handleClick} disabled={isPending}>\n        {isPending ? \"Applying...\" : \"Apply {{actionApiName}}\"}\n      </button>\n    </div>\n  );\n}",
+            "computedVariables": [
+              "actionParameterSampleValuesV2"
+            ]
           }
         ],
         "validateAction": [
           {
-            "template": "import { {{actionApiName}} } from \"{{{packageName}}}\";\nimport { useOsdkAction } from \"@osdk/react/experimental\";\nimport { useState, useEffect } from \"react\";\n\nfunction {{actionApiName}}WithValidation() {\n  const { validateAction, applyAction, isPending, validationResult } = useOsdkAction({{actionApiName}});\n  const [params, setParams] = useState({});\n\n  useEffect(() => {\n    validateAction(params);\n  }, [params, validateAction]);\n\n  return (\n    <div>\n      {validationResult?.result === \"INVALID\" && (\n        <div>Validation errors present</div>\n      )}\n      <button\n        onClick={() => applyAction(params)}\n        disabled={isPending || validationResult?.result === \"INVALID\"}\n      >\n        {isPending ? \"Applying...\" : \"Apply\"}\n      </button>\n    </div>\n  );\n}"
+            "template": "import { {{actionApiName}} } from \"{{{packageName}}}\";\nimport { useOsdkAction, useDebouncedCallback } from \"@osdk/react/experimental\";\nimport { useState } from \"react\";\n\nfunction {{actionApiName}}WithValidation() {\n  const { validateAction, applyAction, isPending, validationResult } = useOsdkAction({{actionApiName}});\n  const [params, setParams] = useState<Record<string, string>>({});\n\n  const debouncedValidate = useDebouncedCallback(\n    (nextParams: Record<string, string>) => { validateAction(nextParams); },\n    300\n  );\n\n  const handleParamChange = (key: string, value: string) => {\n    const nextParams = { ...params, [key]: value };\n    setParams(nextParams);\n    debouncedValidate(nextParams);\n  };\n\n  return (\n    <div>\n      <input\n        placeholder=\"Parameter value\"\n        onChange={(e) => handleParamChange(\"paramName\", e.target.value)}\n      />\n      {validationResult?.result === \"INVALID\" && (\n        <div>Validation errors present</div>\n      )}\n      <button\n        onClick={() => applyAction(params)}\n        disabled={isPending || validationResult?.result === \"INVALID\"}\n      >\n        {isPending ? \"Applying...\" : \"Apply\"}\n      </button>\n    </div>\n  );\n}"
           }
         ],
         "batchApplyAction": [
           {
-            "template": "// Batch actions in React should be handled with multiple hook calls\n// or by using the client directly for batch operations\nimport { {{actionApiName}} } from \"{{{packageName}}}\";\nimport { useOsdkAction } from \"@osdk/react/experimental\";\n\nfunction Batch{{actionApiName}}() {\n  const { applyAction, isPending } = useOsdkAction({{actionApiName}});\n\n  const handleBatchApply = async (items: Array<{ /* params */ }>) => {\n    await Promise.all(items.map(item => applyAction(item)));\n  };\n\n  return (\n    <button onClick={() => handleBatchApply([])} disabled={isPending}>\n      Apply Batch\n    </button>\n  );\n}"
+            "template": "// Batch actions in React should be handled with multiple hook calls\n// or by using the client directly for batch operations\nimport { {{actionApiName}} } from \"{{{packageName}}}\";\nimport { useOsdkAction } from \"@osdk/react/experimental\";\n\nfunction Batch{{actionApiName}}() {\n  const { applyAction, isPending } = useOsdkAction({{actionApiName}});\n\n  const handleBatchApply = async (items: Array<Parameters<typeof applyAction>[0]>) => {\n    await Promise.all(items.map(item => applyAction(item)));\n  };\n\n  return (\n    <button onClick={() => handleBatchApply([])} disabled={isPending}>\n      Apply Batch\n    </button>\n  );\n}"
           }
         ],
         "clientSetup": [
@@ -356,12 +359,12 @@ export const snippets: SdkSnippets<typeof OSDK_SNIPPETS_SPEC> = {
         ],
         "loadObjectMetadataSnippet": [
           {
-            "template": "import { {{objectType}} } from \"{{{packageName}}}\";\nimport { useOsdkClient } from \"@osdk/react/experimental\";\nimport { useEffect, useState } from \"react\";\n\nfunction {{objectType}}Metadata() {\n  const client = useOsdkClient();\n  const [metadata, setMetadata] = useState<{ description?: string; visibility?: string } | null>(null);\n\n  useEffect(() => {\n    client.fetchMetadata({{objectType}}).then(setMetadata);\n  }, [client]);\n\n  return (\n    <div>\n      {metadata && (\n        <div>\n          <div>Description: {metadata.description}</div>\n          <div>Visibility: {metadata.visibility}</div>\n        </div>\n      )}\n    </div>\n  );\n}"
+            "template": "import { {{objectType}} } from \"{{{packageName}}}\";\nimport { useOsdkMetadata } from \"@osdk/react/experimental\";\n\nfunction {{objectType}}Metadata() {\n  const { loading, metadata, error } = useOsdkMetadata({{objectType}});\n\n  return (\n    <div>\n      {error && <div className=\"error-banner\">Error: {error}</div>}\n      {loading && !metadata && <div className=\"skeleton\">Loading...</div>}\n      {metadata && (\n        <div>\n          <div>Description: {metadata.description}</div>\n          <div>Visibility: {metadata.visibility}</div>\n        </div>\n      )}\n    </div>\n  );\n}"
           }
         ],
         "loadInterfaceMetadataSnippet": [
           {
-            "template": "import { {{interfaceApiName}} } from \"{{{packageName}}}\";\nimport { useOsdkClient } from \"@osdk/react/experimental\";\nimport { useEffect, useState } from \"react\";\n\nfunction {{interfaceApiName}}Metadata() {\n  const client = useOsdkClient();\n  const [metadata, setMetadata] = useState<{ rid?: string; implementedBy?: string[] } | null>(null);\n\n  useEffect(() => {\n    client.fetchMetadata({{interfaceApiName}}).then(setMetadata);\n  }, [client]);\n\n  return (\n    <div>\n      {metadata && (\n        <div>\n          <div>RID: {metadata.rid}</div>\n          <div>Implemented by: {metadata.implementedBy?.join(\", \")}</div>\n        </div>\n      )}\n    </div>\n  );\n}"
+            "template": "import { {{interfaceApiName}} } from \"{{{packageName}}}\";\nimport { useOsdkMetadata } from \"@osdk/react/experimental\";\n\nfunction {{interfaceApiName}}Metadata() {\n  const { loading, metadata, error } = useOsdkMetadata({{interfaceApiName}});\n\n  return (\n    <div>\n      {error && <div className=\"error-banner\">Error: {error}</div>}\n      {loading && !metadata && <div className=\"skeleton\">Loading...</div>}\n      {metadata && (\n        <div>\n          <div>RID: {metadata.rid}</div>\n          <div>Implemented by: {metadata.implementedBy?.join(\", \")}</div>\n        </div>\n      )}\n    </div>\n  );\n}"
           }
         ],
         "loadInterfacesReference": [
@@ -396,47 +399,47 @@ export const snippets: SdkSnippets<typeof OSDK_SNIPPETS_SPEC> = {
         ],
         "loadTimeSeriesPointsSnippet": [
           {
-            "template": "import { {{objectType}} } from \"{{{packageName}}}\";\nimport { useOsdkObject } from \"@osdk/react/experimental\";\nimport { useEffect, useState } from \"react\";\n\nfunction {{objectType}}TimeSeries({ primaryKey }: { primaryKey: string }) {\n  const { object: obj } = useOsdkObject({{objectType}}, primaryKey);\n  const [points, setPoints] = useState<Array<{ time: string; value: number }>>([]);\n\n  useEffect(() => {\n    obj?.{{property}}?.getAllPoints().then(setPoints);\n  }, [obj]);\n\n  return (\n    <div>\n      {points.length > 0 && <pre>{JSON.stringify(points, null, 2)}</pre>}\n    </div>\n  );\n}"
+            "template": "// Timeseries does not have a dedicated React hook yet.\n// Use the client API directly with a loaded OSDK object.\nimport type { Osdk } from \"@osdk/client\";\nimport type { {{objectType}} } from \"{{{packageName}}}\";\n\nasync function getAllTimeSeriesPoints(obj: Osdk.Instance<typeof {{objectType}}>) {\n  return obj.{{property}}?.getAllPoints();\n}"
           }
         ],
         "loadTimeSeriesFirstPointSnippet": [
           {
-            "template": "import { {{objectType}} } from \"{{{packageName}}}\";\nimport { useOsdkObject } from \"@osdk/react/experimental\";\nimport { useEffect, useState } from \"react\";\n\nfunction {{objectType}}FirstPoint({ primaryKey }: { primaryKey: string }) {\n  const { object: obj } = useOsdkObject({{objectType}}, primaryKey);\n  const [point, setPoint] = useState(null);\n\n  useEffect(() => {\n    obj?.{{property}}?.getFirstPoint().then(setPoint);\n  }, [obj]);\n\n  return (\n    <div>\n      {point && <pre>{JSON.stringify(point, null, 2)}</pre>}\n    </div>\n  );\n}"
+            "template": "// Timeseries does not have a dedicated React hook yet.\n// Use the client API directly with a loaded OSDK object.\nimport type { Osdk } from \"@osdk/client\";\nimport type { {{objectType}} } from \"{{{packageName}}}\";\n\nasync function getFirstTimeSeriesPoint(obj: Osdk.Instance<typeof {{objectType}}>) {\n  return obj.{{property}}?.getFirstPoint();\n}"
           }
         ],
         "loadTimeSeriesLastPointSnippet": [
           {
-            "template": "import { {{objectType}} } from \"{{{packageName}}}\";\nimport { useOsdkObject } from \"@osdk/react/experimental\";\nimport { useEffect, useState } from \"react\";\n\nfunction {{objectType}}LastPoint({ primaryKey }: { primaryKey: string }) {\n  const { object: obj } = useOsdkObject({{objectType}}, primaryKey);\n  const [point, setPoint] = useState(null);\n\n  useEffect(() => {\n    obj?.{{property}}?.getLastPoint().then(setPoint);\n  }, [obj]);\n\n  return (\n    <div>\n      {point && <pre>{JSON.stringify(point, null, 2)}</pre>}\n    </div>\n  );\n}"
+            "template": "// Timeseries does not have a dedicated React hook yet.\n// Use the client API directly with a loaded OSDK object.\nimport type { Osdk } from \"@osdk/client\";\nimport type { {{objectType}} } from \"{{{packageName}}}\";\n\nasync function getLastTimeSeriesPoint(obj: Osdk.Instance<typeof {{objectType}}>) {\n  return obj.{{property}}?.getLastPoint();\n}"
           }
         ],
         "loadAbsoluteTimeSeriesPointsSnippet": [
           {
-            "template": "import { {{objectType}} } from \"{{{packageName}}}\";\nimport { useOsdkObject } from \"@osdk/react/experimental\";\nimport { useEffect, useState } from \"react\";\n\nfunction {{objectType}}AbsoluteTimeSeries({ primaryKey }: { primaryKey: string }) {\n  const { object: obj } = useOsdkObject({{objectType}}, primaryKey);\n  const [points, setPoints] = useState<Array<{ time: string; value: number }>>([]);\n\n  useEffect(() => {\n    obj?.{{property}}?.getAllPoints({\n      $startTime: \"2022-08-13T12:34:56Z\",\n      $endTime: \"2022-08-14T12:34:56Z\",\n    }).then(setPoints);\n  }, [obj]);\n\n  return (\n    <div>\n      {points.length > 0 && <pre>{JSON.stringify(points, null, 2)}</pre>}\n    </div>\n  );\n}"
+            "template": "// Timeseries does not have a dedicated React hook yet.\n// Use the client API directly with a loaded OSDK object.\nimport type { Osdk } from \"@osdk/client\";\nimport type { {{objectType}} } from \"{{{packageName}}}\";\n\nasync function getAbsoluteTimeSeriesPoints(obj: Osdk.Instance<typeof {{objectType}}>) {\n  return obj.{{property}}?.getAllPoints({\n    $startTime: \"2022-08-13T12:34:56Z\",\n    $endTime: \"2022-08-14T12:34:56Z\",\n  });\n}"
           }
         ],
         "loadRelativeTimeSeriesPointsSnippet": [
           {
-            "template": "import { {{objectType}} } from \"{{{packageName}}}\";\nimport { useOsdkObject } from \"@osdk/react/experimental\";\nimport { useEffect, useState } from \"react\";\n\nfunction {{objectType}}RelativeTimeSeries({ primaryKey }: { primaryKey: string }) {\n  const { object: obj } = useOsdkObject({{objectType}}, primaryKey);\n  const [points, setPoints] = useState<Array<{ time: string; value: number }>>([]);\n\n  useEffect(() => {\n    obj?.{{property}}?.getAllPoints({\n      $before: 1,\n      $unit: \"{{timeUnit}}\",\n    }).then(setPoints);\n  }, [obj]);\n\n  return (\n    <div>\n      {points.length > 0 && <pre>{JSON.stringify(points, null, 2)}</pre>}\n    </div>\n  );\n}"
+            "template": "// Timeseries does not have a dedicated React hook yet.\n// Use the client API directly with a loaded OSDK object.\nimport type { Osdk } from \"@osdk/client\";\nimport type { {{objectType}} } from \"{{{packageName}}}\";\n\nasync function getRelativeTimeSeriesPoints(obj: Osdk.Instance<typeof {{objectType}}>) {\n  return obj.{{property}}?.getAllPoints({\n    $before: 1,\n    $unit: \"{{timeUnit}}\",\n  });\n}"
           }
         ],
         "loadGeotimeSeriesPointsSnippet": [
           {
-            "template": "import { {{objectType}} } from \"{{{packageName}}}\";\nimport { useOsdkObject } from \"@osdk/react/experimental\";\nimport { useEffect, useState } from \"react\";\n\nfunction {{objectType}}GeotimeSeries({ primaryKey }: { primaryKey: string }) {\n  const { object: obj } = useOsdkObject({{objectType}}, primaryKey);\n  const [points, setPoints] = useState([]);\n\n  useEffect(() => {\n    obj?.{{property}}?.getAllValues().then(setPoints);\n  }, [obj]);\n\n  return (\n    <div>\n      {points.length > 0 && <pre>{JSON.stringify(points, null, 2)}</pre>}\n    </div>\n  );\n}"
+            "template": "// Geotimeseries does not have a dedicated React hook yet.\n// Use the client API directly with a loaded OSDK object.\nimport type { Osdk } from \"@osdk/client\";\nimport type { {{objectType}} } from \"{{{packageName}}}\";\n\nasync function getAllGeotimeSeriesPoints(obj: Osdk.Instance<typeof {{objectType}}>) {\n  return obj.{{property}}?.getAllValues();\n}"
           }
         ],
         "loadGeotimeSeriesLastPointSnippet": [
           {
-            "template": "import { {{objectType}} } from \"{{{packageName}}}\";\nimport { useOsdkObject } from \"@osdk/react/experimental\";\nimport { useEffect, useState } from \"react\";\n\nfunction {{objectType}}GeotimeSeriesLatest({ primaryKey }: { primaryKey: string }) {\n  const { object: obj } = useOsdkObject({{objectType}}, primaryKey);\n  const [point, setPoint] = useState(null);\n\n  useEffect(() => {\n    obj?.{{property}}?.getLatestValue().then(setPoint);\n  }, [obj]);\n\n  return (\n    <div>\n      {point && <pre>{JSON.stringify(point, null, 2)}</pre>}\n    </div>\n  );\n}"
+            "template": "// Geotimeseries does not have a dedicated React hook yet.\n// Use the client API directly with a loaded OSDK object.\nimport type { Osdk } from \"@osdk/client\";\nimport type { {{objectType}} } from \"{{{packageName}}}\";\n\nasync function getLatestGeotimeSeriesPoint(obj: Osdk.Instance<typeof {{objectType}}>) {\n  return obj.{{property}}?.getLatestValue();\n}"
           }
         ],
         "loadAbsoluteGeotimeSeriesPointsSnippet": [
           {
-            "template": "import { {{objectType}} } from \"{{{packageName}}}\";\nimport { useOsdkObject } from \"@osdk/react/experimental\";\nimport { useEffect, useState } from \"react\";\n\nfunction {{objectType}}AbsoluteGeotimeSeries({ primaryKey }: { primaryKey: string }) {\n  const { object: obj } = useOsdkObject({{objectType}}, primaryKey);\n  const [points, setPoints] = useState([]);\n\n  useEffect(() => {\n    obj?.{{property}}?.getAllValues({\n      $startTime: \"2022-08-13T12:34:56Z\",\n      $endTime: \"2022-08-14T12:34:56Z\",\n    }).then(setPoints);\n  }, [obj]);\n\n  return (\n    <div>\n      {points.length > 0 && <pre>{JSON.stringify(points, null, 2)}</pre>}\n    </div>\n  );\n}"
+            "template": "// Geotimeseries does not have a dedicated React hook yet.\n// Use the client API directly with a loaded OSDK object.\nimport type { Osdk } from \"@osdk/client\";\nimport type { {{objectType}} } from \"{{{packageName}}}\";\n\nasync function getAbsoluteGeotimeSeriesPoints(obj: Osdk.Instance<typeof {{objectType}}>) {\n  return obj.{{property}}?.getAllValues({\n    $startTime: \"2022-08-13T12:34:56Z\",\n    $endTime: \"2022-08-14T12:34:56Z\",\n  });\n}"
           }
         ],
         "loadRelativeGeotimeSeriesPointsSnippet": [
           {
-            "template": "import { {{objectType}} } from \"{{{packageName}}}\";\nimport { useOsdkObject } from \"@osdk/react/experimental\";\nimport { useEffect, useState } from \"react\";\n\nfunction {{objectType}}RelativeGeotimeSeries({ primaryKey }: { primaryKey: string }) {\n  const { object: obj } = useOsdkObject({{objectType}}, primaryKey);\n  const [points, setPoints] = useState([]);\n\n  useEffect(() => {\n    obj?.{{property}}?.getAllValues({\n      $before: 1,\n      $unit: \"{{timeUnit}}\",\n    }).then(setPoints);\n  }, [obj]);\n\n  return (\n    <div>\n      {points.length > 0 && <pre>{JSON.stringify(points, null, 2)}</pre>}\n    </div>\n  );\n}"
+            "template": "// Geotimeseries does not have a dedicated React hook yet.\n// Use the client API directly with a loaded OSDK object.\nimport type { Osdk } from \"@osdk/client\";\nimport type { {{objectType}} } from \"{{{packageName}}}\";\n\nasync function getRelativeGeotimeSeriesPoints(obj: Osdk.Instance<typeof {{objectType}}>) {\n  return obj.{{property}}?.getAllValues({\n    $before: 1,\n    $unit: \"{{timeUnit}}\",\n  });\n}"
           }
         ],
         "uploadAttachment": [
@@ -450,7 +453,7 @@ export const snippets: SdkSnippets<typeof OSDK_SNIPPETS_SPEC> = {
         ],
         "readMedia": [
           {
-            "template": "import { {{objectType}} } from \"{{{packageName}}}\";\nimport { useOsdkObject } from \"@osdk/react/experimental\";\nimport { useEffect, useState } from \"react\";\n\nfunction {{objectType}}Media({ primaryKey }: { primaryKey: string }) {\n  const { object: obj } = useOsdkObject({{objectType}}, primaryKey);\n  const [mediaUrl, setMediaUrl] = useState<string | null>(null);\n\n  useEffect(() => {\n    let url: string | undefined;\n    const loadMedia = async () => {\n      const contents = await obj?.{{property}}?.fetchContents();\n      if (contents?.ok) {\n        const blob = await contents.blob();\n        url = URL.createObjectURL(blob);\n        setMediaUrl(url);\n      }\n    };\n    if (obj) {\n      loadMedia();\n    }\n    return () => { if (url) { URL.revokeObjectURL(url); } };\n  }, [obj]);\n\n  return (\n    <div>\n      {mediaUrl && <a href={mediaUrl} download>Download media</a>}\n    </div>\n  );\n}"
+            "template": "// Media does not have a dedicated React hook yet.\n// Use the client API directly with a loaded OSDK object.\nimport type { Osdk } from \"@osdk/client\";\nimport type { {{objectType}} } from \"{{{packageName}}}\";\n\nasync function readMediaContent(obj: Osdk.Instance<typeof {{objectType}}>) {\n  const contents = await obj.{{property}}?.fetchContents();\n  if (contents?.ok) {\n    return contents.blob();\n  }\n}"
           }
         ],
         "uploadMedia": [
@@ -460,7 +463,7 @@ export const snippets: SdkSnippets<typeof OSDK_SNIPPETS_SPEC> = {
         ],
         "uploadMediaOntologyEdits": [
           {
-            "template": "import { useOsdkClient } from \"@osdk/react/experimental\";\nimport { {{objectType}} } from \"{{{packageName}}}\";\nimport { createEditBatch, uploadMedia } from \"@osdk/functions\";\n\nfunction MediaOntologyEditsUploader() {\n  const client = useOsdkClient();\n\n  const handleUpload = async (file: File) => {\n    const batch = createEditBatch(client);\n    const mediaReference = await uploadMedia(client, { data: file, fileName: file.name });\n    // @ts-ignore\n    batch.create({{objectType}}, { {{property}}: mediaReference });\n    return batch.getEdits();\n  };\n\n  return (\n    <input type=\"file\" onChange={e => {\n      const file = e.target.files?.[0];\n      if (file) {\n        handleUpload(file);\n      }\n    }} />\n  );\n}"
+            "template": "import { useOsdkClient } from \"@osdk/react/experimental\";\nimport { {{objectType}} } from \"{{{packageName}}}\";\nimport { createEditBatch, uploadMedia } from \"@osdk/functions\";\n\nfunction MediaOntologyEditsUploader() {\n  const client = useOsdkClient();\n\n  const handleUpload = async (file: File) => {\n    const batch = createEditBatch(client);\n    const mediaReference = await uploadMedia(client, { data: file, fileName: file.name });\n    // @ts-expect-error - batch.create types don't support media references yet\n    batch.create({{objectType}}, { {{property}}: mediaReference });\n    return batch.getEdits();\n  };\n\n  return (\n    <input type=\"file\" onChange={e => {\n      const file = e.target.files?.[0];\n      if (file) {\n        handleUpload(file);\n      }\n    }} />\n  );\n}"
           }
         ],
         "uploadMediaEphemeral": [
