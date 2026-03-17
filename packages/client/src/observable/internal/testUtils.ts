@@ -683,7 +683,9 @@ export function updateList<T extends ObjectOrInterfaceDefinition>(
       batch,
       rdpConfig,
     );
-    query._updateList(objectCacheKeys, "loaded", batch, false);
+    query._updateList(objectCacheKeys, "loaded", batch, {
+      type: "clientOrdered",
+    });
   });
 }
 
