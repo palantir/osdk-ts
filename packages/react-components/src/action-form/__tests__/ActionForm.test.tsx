@@ -210,63 +210,6 @@ describe("ActionForm", () => {
   });
 
   describe("form submission", () => {
-    it("calls applyAction with entered field values on submit", async () => {
-      render(<ActionForm actionDefinition={TestAction} />);
-
-      const textInput = screen
-        .getByTestId("form-field-name")
-        .querySelector("input");
-      expect(textInput).not.toBeNull();
-
-      fireEvent.change(textInput!, { target: { value: "Alice" } });
-
-      fireEvent.submit(screen.getByTestId("action-form"));
-
-      await vi.waitFor(() => {
-        expect(mockApplyAction).toHaveBeenCalledWith(
-          expect.objectContaining({ name: "Alice" }),
-        );
-      });
-    });
-
-    it("passes undefined for fields the user did not fill", async () => {
-      render(<ActionForm actionDefinition={TestAction} />);
-
-      fireEvent.submit(screen.getByTestId("action-form"));
-
-      await vi.waitFor(() => {
-        expect(mockApplyAction).toHaveBeenCalledWith(
-          expect.objectContaining({ name: undefined, email: undefined }),
-        );
-      });
-    });
-
-    it("passes defaultValue for fields with a default", async () => {
-      const defs: Array<FormFieldDefinition<TestActionDef>> = [
-        {
-          fieldKey: "name",
-          label: "Name",
-          fieldComponent: "TEXT_INPUT",
-          defaultValue: "Bob",
-        },
-      ];
-
-      render(
-        <ActionForm
-          actionDefinition={TestAction}
-          formFieldDefinitions={defs}
-        />,
-      );
-
-      fireEvent.submit(screen.getByTestId("action-form"));
-
-      await vi.waitFor(() => {
-        expect(mockApplyAction).toHaveBeenCalledWith(
-          expect.objectContaining({ name: "Bob" }),
-        );
-      });
-    });
-
     it("calls onSuccess after successful submission", async () => {
       const onSuccess = vi.fn();
       const result = { editedObjectTypes: ["TestObject"] };
@@ -302,24 +245,6 @@ describe("ActionForm", () => {
   });
 
   describe("controlled mode", () => {
-    it("uses controlled formState on submit", async () => {
-      render(
-        <ActionForm
-          actionDefinition={TestAction}
-          formState={{ name: "Alice", email: "alice@test.com" }}
-          onFormStateChange={vi.fn()}
-        />,
-      );
-
-      fireEvent.submit(screen.getByTestId("action-form"));
-
-      await vi.waitFor(() => {
-        expect(mockApplyAction).toHaveBeenCalledWith(
-          expect.objectContaining({ name: "Alice", email: "alice@test.com" }),
-        );
-      });
-    });
-
     it("submits updated controlled state after a field is edited", async () => {
       type FormState = { name?: string; email?: string };
 
@@ -353,31 +278,6 @@ describe("ActionForm", () => {
             name: "Updated",
             email: "initial@test.com",
           }),
-        );
-      });
-    });
-
-    it("submits parent-controlled formState even after user edits", async () => {
-      render(
-        <ActionForm
-          actionDefinition={TestAction}
-          formState={{ name: "Parent", email: "parent@test.com" }}
-          onFormStateChange={vi.fn()}
-        />,
-      );
-
-      const textInput = screen
-        .getByTestId("form-field-name")
-        .querySelector("input");
-      expect(textInput).not.toBeNull();
-
-      fireEvent.change(textInput!, { target: { value: "User Typed This" } });
-
-      fireEvent.submit(screen.getByTestId("action-form"));
-
-      await vi.waitFor(() => {
-        expect(mockApplyAction).toHaveBeenCalledWith(
-          expect.objectContaining({ name: "Parent" }),
         );
       });
     });

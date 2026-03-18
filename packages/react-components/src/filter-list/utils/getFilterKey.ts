@@ -15,8 +15,8 @@
  */
 
 import type { ObjectTypeDefinition } from "@osdk/api";
+import { assertUnreachable } from "../../shared/assertUnreachable.js";
 import type { FilterDefinitionUnion } from "../FilterListApi.js";
-import { assertUnreachable } from "./assertUnreachable.js";
 
 export function getFilterKey<Q extends ObjectTypeDefinition>(
   definition: FilterDefinitionUnion<Q>,
