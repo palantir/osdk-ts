@@ -20,8 +20,8 @@ import type {
   ObjectOrInterfaceDefinition,
 } from "@osdk/api";
 import type { AggregateObjectsResponseV2 } from "@osdk/foundry.ontologies";
-import invariant from "tiny-invariant";
 import type { ArrayElement } from "../../util/ArrayElement.js";
+import { splitAggregationKey } from "./modernToLegacyAggregationClause.js";
 
 /** @internal */
 export function legacyToModernSingleAggregationResult<
@@ -29,26 +29,30 @@ export function legacyToModernSingleAggregationResult<
   AC extends AggregationClause<Q>,
 >(
   entry: ArrayElement<AggregateObjectsResponseV2["data"]>,
+  select: AC,
 ): AggregationResultsWithoutGroups<Q, AC> {
-  return entry.metrics.reduce(
-    (accumulator: AggregationResultsWithoutGroups<Q, AC>, curValue) => {
-      const parts = curValue.name.split(".");
-      if (parts[0] === "count") {
-        return accumulator;
-      }
-      invariant(
-        parts.length === 2,
-        "assumed we were getting a `${key}.${type}`",
-      );
-      const property = parts[0] as keyof AggregationResultsWithoutGroups<Q, AC>;
-      const metricType = parts[1];
-      if (!(property in accumulator)) {
-        accumulator[property] = {} as any; // fixme?
-      }
-      (accumulator[property] as any)[metricType] = curValue.value; // fixme?
+  const result: Record<string, Record<string, any>> = {};
 
-      return accumulator;
-    },
-    {} as AggregationResultsWithoutGroups<Q, AC>,
-  );
+  // Seed the result with undefined for every selected metric so that
+  // properties are always present, even when the server returns no metrics
+  // (e.g. aggregating over 0 objects).
+  for (const selectKey of Object.keys(select)) {
+    if (selectKey === "$count") {
+      continue;
+    }
+    const { property, metric } = splitAggregationKey(selectKey);
+    (result[property] ??= {})[metric] = undefined;
+  }
+
+  for (const { name, value } of entry.metrics) {
+    if (name === "count") {
+      continue;
+    }
+    const [property, metricType] = name.split(".");
+    if (result[property]) { // guard against an unknown metric name
+      result[property][metricType] = value;
+    }
+  }
+
+  return result as AggregationResultsWithoutGroups<Q, AC>;
 }
