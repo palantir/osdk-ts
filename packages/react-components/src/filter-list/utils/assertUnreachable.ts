@@ -14,11 +14,4 @@
  * limitations under the License.
  */
 
-/**
- * Exhaustive type checking helper.
- * Use in default cases of switch statements to ensure all cases are handled.
- * TypeScript will error if a case is missing.
- */
-export function assertUnreachable(value: never): never {
-  throw new Error(`Unhandled value: ${String(value)}`);
-}
+export { assertUnreachable } from "../../shared/assertUnreachable.js";

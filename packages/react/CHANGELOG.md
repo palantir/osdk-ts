@@ -1,5 +1,18 @@
 # @osdkkit/react
 
+## 0.10.0-beta.9
+
+### Minor Changes
+
+- c40444b: Add linkedObjectsBySourcePrimaryKey to link observation responses
+
+### Patch Changes
+
+- Updated dependencies [c40444b]
+- Updated dependencies [dda14be]
+  - @osdk/client@2.8.0-beta.21
+  - @osdk/api@2.8.0-beta.21
+
 ## 0.10.0-beta.8
 
 ### Minor Changes

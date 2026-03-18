@@ -1,5 +1,23 @@
 # @osdk/react-components
 
+## 0.2.0-beta.18
+
+### Minor Changes
+
+- fcc4971: Refactor filter list where clause generation for consistent exclude wrapping and integer clamping
+- 29095f5: fix where clause generation for compound property filters and remove useEffect in useFilterListState
+- 7347abe: Update README
+- a198fc5: Fix header cell not aligned
+- 00677eb: Upgrade Storybook to v10 and add MCP addon.
+
+### Patch Changes
+
+- Updated dependencies [c40444b]
+- Updated dependencies [dda14be]
+  - @osdk/client@2.8.0-beta.21
+  - @osdk/react@0.10.0-beta.9
+  - @osdk/api@2.8.0-beta.21
+
 ## 0.2.0-beta.17
 
 ### Minor Changes
