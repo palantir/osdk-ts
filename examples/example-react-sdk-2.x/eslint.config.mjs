@@ -53,6 +53,12 @@ export default tseslint.config({
       allowConstantExport: true,
     }],
 
+    "eqeqeq": ["error", "always"],
+    "no-console": "warn",
+    "curly": ["error", "all"],
+    "@typescript-eslint/no-unused-vars": ["error", {
+      "argsIgnorePattern": "^_",
+    }],
     "import/named": "error",
     "import/default": "error",
     "import/namespace": "error",
