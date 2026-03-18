@@ -1,5 +1,6 @@
 .osdk {
   align-self: baseline;
+  align-items: center;
   display: flex;
   justify-content: space-between;
   width: 800px;
