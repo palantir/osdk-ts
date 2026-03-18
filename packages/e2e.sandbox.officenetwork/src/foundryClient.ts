@@ -14,16 +14,18 @@ invariant(
   "VITE_FOUNDRY_REDIRECT_URL is required",
 );
 
+const logger = new BrowserLogger({}, { level: "debug" });
+
 export const auth = createPublicOauthClient(
   import.meta.env.VITE_FOUNDRY_CLIENT_ID,
   import.meta.env.VITE_FOUNDRY_URL,
   import.meta.env.VITE_FOUNDRY_REDIRECT_URL,
-  { useHistory: true },
+  { useHistory: true, logger },
 );
 
 export const $ = createClient(
   import.meta.env.VITE_FOUNDRY_URL,
   $ontologyRid,
   auth,
-  { logger: new BrowserLogger({}, { level: "debug" }) },
+  { logger },
 );
