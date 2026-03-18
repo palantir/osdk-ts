@@ -135,7 +135,7 @@ export type BaseFormProps =
 interface BaseFormCommonProps {
   formTitle?: string;
   fieldDefinitions: ReadonlyArray<RendererFieldDefinition>;
-  onSubmit: (formState: Record<string, unknown>) => Promise<void> | void;
+  onSubmit: (formState: Record<string, unknown>) => void;
   isSubmitDisabled?: boolean;
   isPending?: boolean;
   isLoading?: boolean;

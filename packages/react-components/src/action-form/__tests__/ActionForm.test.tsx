@@ -18,6 +18,7 @@ import type { ActionDefinition, ActionMetadata } from "@osdk/api";
 import { useOsdkMetadata } from "@osdk/react";
 import { useOsdkAction } from "@osdk/react/experimental";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { useState } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ActionForm } from "../ActionForm.js";
 import type { FormFieldDefinition } from "../FormFieldApi.js";
@@ -319,36 +320,41 @@ describe("ActionForm", () => {
       });
     });
 
-    it("calls onFormStateChange with updater when a field is edited", () => {
-      const onFormStateChange = vi.fn();
+    it("submits updated controlled state after a field is edited", async () => {
+      type FormState = { name?: string; email?: string };
 
-      render(
-        <ActionForm
-          actionDefinition={TestAction}
-          formState={{ name: "Initial", email: "initial@test.com" }}
-          onFormStateChange={onFormStateChange}
-        />,
-      );
+      function ControlledWrapper() {
+        const [formState, setFormState] = useState<FormState>({
+          name: "Initial",
+          email: "initial@test.com",
+        });
+
+        return (
+          <ActionForm
+            actionDefinition={TestAction}
+            formState={formState}
+            onFormStateChange={setFormState}
+          />
+        );
+      }
+
+      render(<ControlledWrapper />);
 
       const textInput = screen
         .getByTestId("form-field-name")
-        .querySelector("input");
-      expect(textInput).not.toBeNull();
+        .querySelector("input")!;
+      fireEvent.change(textInput, { target: { value: "Updated" } });
 
-      fireEvent.change(textInput!, { target: { value: "Updated" } });
+      fireEvent.submit(screen.getByTestId("action-form"));
 
-      expect(onFormStateChange).toHaveBeenCalledWith(expect.any(Function));
-
-      const updater = onFormStateChange.mock.calls[0][0] as (
-        prev: Record<string, unknown>,
-      ) => Record<string, unknown>;
-      const result = updater({
-        name: "Initial",
-        email: "initial@test.com",
+      await vi.waitFor(() => {
+        expect(mockApplyAction).toHaveBeenCalledWith(
+          expect.objectContaining({
+            name: "Updated",
+            email: "initial@test.com",
+          }),
+        );
       });
-      expect(result).toEqual(
-        expect.objectContaining({ name: "Updated", email: "initial@test.com" }),
-      );
     });
 
     it("submits parent-controlled formState even after user edits", async () => {

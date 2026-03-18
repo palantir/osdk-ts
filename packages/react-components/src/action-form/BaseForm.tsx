@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo } from "react";
+import { useForm } from "react-hook-form";
 import type { BaseFormProps } from "./ActionFormApi.js";
-import { FormFieldRendererWrapper } from "./fields/FormFieldRendererWrapper.js";
-import { useFormState } from "./hooks/useFormState.js";
+import { FieldBridge } from "./fields/FieldBridge.js";
+import type { RendererFieldDefinition } from "./FormFieldApi.js";
 
 export function BaseForm({
   formTitle,
@@ -29,36 +30,43 @@ export function BaseForm({
   isPending = false,
   isLoading = false,
 }: BaseFormProps): React.ReactElement {
-  const {
-    formState,
-    setFieldValue,
-    resetForm: _resetForm,
-  } = useFormState({
-    fieldDefinitions,
-    formState: controlledFormState,
-    onFieldValueChange,
+  const isControlled = controlledFormState != null;
+
+  const defaultValues = useMemo(
+    () => buildDefaultValues(fieldDefinitions),
+    [fieldDefinitions],
+  );
+
+  const { control, handleSubmit: rhfHandleSubmit } = useForm<
+    Record<string, unknown>
+  >({
+    ...(isControlled ? { values: controlledFormState } : { defaultValues }),
   });
 
-  const handleSubmit = useCallback(
-    (e: React.FormEvent) => {
-      e.preventDefault();
-      void onSubmit(formState);
+  const onFormSubmit = useCallback(
+    (rhfValues: Record<string, unknown>) => {
+      // In controlled mode, always submit the controlled state, not RHF's
+      // internal state. Between a user keystroke and the parent re-rendering,
+      // RHF's store may hold the user-typed value rather than the parent's
+      // value. Using controlledFormState directly preserves the existing
+      // guarantee that controlled mode submits the parent's state.
+      onSubmit(controlledFormState ?? rhfValues);
     },
-    [formState, onSubmit],
+    [onSubmit, controlledFormState],
   );
 
   return (
-    <form onSubmit={handleSubmit} data-testid="action-form">
+    <form onSubmit={rhfHandleSubmit(onFormSubmit)} data-testid="action-form">
       {formTitle != null && <h2 data-testid="form-title">{formTitle}</h2>}
       {isLoading && fieldDefinitions.length === 0 && (
         <div data-testid="form-loading">Loading form fields...</div>
       )}
       {fieldDefinitions.map((fieldDef) => (
-        <FormFieldRendererWrapper
+        <FieldBridge
           key={fieldDef.fieldKey}
           fieldDef={fieldDef}
-          value={formState[fieldDef.fieldKey]}
-          onFieldValueChange={setFieldValue}
+          control={control}
+          onExternalChange={onFieldValueChange}
         />
       ))}
       <button
@@ -70,4 +78,14 @@ export function BaseForm({
       </button>
     </form>
   );
+}
+
+function buildDefaultValues(
+  fieldDefinitions: ReadonlyArray<RendererFieldDefinition>,
+): Record<string, unknown> {
+  const values: Record<string, unknown> = {};
+  for (const def of fieldDefinitions) {
+    values[def.fieldKey] = def.defaultValue;
+  }
+  return values;
 }

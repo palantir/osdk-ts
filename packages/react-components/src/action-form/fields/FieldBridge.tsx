@@ -15,25 +15,36 @@
  */
 
 import React, { useCallback } from "react";
+import type { Control } from "react-hook-form";
+import { useController } from "react-hook-form";
 import type { RendererFieldDefinition } from "../FormFieldApi.js";
 import { FormFieldRenderer } from "./FormFieldRenderer.js";
 
-export interface FormFieldRendererWrapperProps {
+export interface FieldBridgeProps {
   fieldDef: RendererFieldDefinition;
-  value: unknown;
-  onFieldValueChange: (fieldKey: string, value: unknown) => void;
+  control: Control<Record<string, unknown>>;
+  onExternalChange?: (fieldKey: string, value: unknown) => void;
 }
 
-export function FormFieldRendererWrapper({
+export function FieldBridge({
   fieldDef,
-  value,
-  onFieldValueChange,
-}: FormFieldRendererWrapperProps): React.ReactElement {
+  control,
+  onExternalChange,
+}: FieldBridgeProps): React.ReactElement {
+  const {
+    field: { onChange, value },
+  } = useController({
+    name: fieldDef.fieldKey,
+    control,
+    defaultValue: fieldDef.defaultValue,
+  });
+
   const handleChange = useCallback(
     (newValue: unknown) => {
-      onFieldValueChange(fieldDef.fieldKey, newValue);
+      onChange(newValue);
+      onExternalChange?.(fieldDef.fieldKey, newValue);
     },
-    [fieldDef.fieldKey, onFieldValueChange],
+    [onChange, onExternalChange, fieldDef.fieldKey],
   );
 
   return (
