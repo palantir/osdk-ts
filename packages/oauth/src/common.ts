@@ -167,6 +167,15 @@ export function readSession(client: Client): SessionStorageState {
   );
 }
 
+/** Fraction of token lifetime at which to schedule a background refresh (public clients) */
+const BACKGROUND_REFRESH_LIFETIME_FRACTION = 0.75;
+
+/** Time before expiry to schedule a background re-sign-in (confidential clients) */
+const BACKGROUND_RESIGN_IN_LEAD_MS = 60 * 1000;
+
+/** Time before expiry at which getToken() considers the token stale and blocks on renewal */
+const TOKEN_STALE_THRESHOLD_MS = 5 * 1000;
+
 export function common<
   R extends undefined | (() => Promise<Token | undefined>),
 >(
@@ -187,6 +196,11 @@ export function common<
 } {
   let token: Token | undefined;
   const eventTarget = new TypedEventTarget<Events>();
+
+  function tokenExpiresSoon(): boolean {
+    return token != null
+      && Date.now() >= token.expires_at - TOKEN_STALE_THRESHOLD_MS;
+  }
 
   function makeTokenAndSaveRefresh(
     resp: OAuth2TokenEndpointResponse,
@@ -221,13 +235,34 @@ export function common<
     if (refreshTimeout) clearTimeout(refreshTimeout);
   }
   function restartRefreshTimer(evt: CustomEvent<Token>) {
-    if (refresh) {
-      rmTimeout();
-      refreshTimeout = setTimeout(
-        refresh,
-        evt.detail.expires_in * 1000 - 60 * 1000,
-      );
+    const refreshFn = refresh ?? signIn;
+    const lifetimeMs = evt.detail.expires_in * 1000;
+    const delay = refresh
+      ? lifetimeMs * BACKGROUND_REFRESH_LIFETIME_FRACTION
+      : lifetimeMs - BACKGROUND_RESIGN_IN_LEAD_MS;
+
+    if (delay <= TOKEN_STALE_THRESHOLD_MS) {
+      if (process.env.NODE_ENV !== "production") {
+        // eslint-disable-next-line no-console
+        console.warn(
+          "Token lifetime too short for proactive refresh, skipping timer",
+        );
+      }
+      return;
     }
+
+    rmTimeout();
+    refreshTimeout = setTimeout(() => {
+      if (token && !tokenExpiresSoon()) {
+        return;
+      }
+      refreshFn().catch((e) => {
+        if (process.env.NODE_ENV !== "production") {
+          // eslint-disable-next-line no-console
+          console.warn("Proactive token refresh failed", e);
+        }
+      });
+    }, delay);
   }
 
   async function signOut() {
@@ -268,17 +303,17 @@ export function common<
   eventTarget.addEventListener("refresh", restartRefreshTimer);
 
   function getTokenOrUndefined() {
-    if (!token || Date.now() >= token.expires_at) {
+    if (!token || tokenExpiresSoon()) {
       return undefined;
     }
-    return token?.access_token;
+    return token.access_token;
   }
 
   const getToken = Object.assign(async function getToken() {
-    if (!token || Date.now() >= token.expires_at) {
+    if (!token || tokenExpiresSoon()) {
       token = await signIn();
     }
-    return token?.access_token;
+    return token.access_token;
   }, {
     signIn,
     refresh,
