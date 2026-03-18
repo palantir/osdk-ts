@@ -1,0 +1,172 @@
+/*
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import {
+  ChevronLeft,
+  ChevronRight,
+  Minus,
+  Plus,
+  Search,
+} from "@blueprintjs/icons";
+import React, { useCallback, useState } from "react";
+import styles from "./PdfViewerToolbar.module.css";
+
+interface PdfViewerToolbarProps {
+  currentPage: number;
+  numPages: number;
+  scale: number;
+  onPageChange: (page: number) => void;
+  onScaleChange: (scale: number) => void;
+  onSearchOpen: () => void;
+}
+
+const SCALE_STEP = 0.25;
+const MIN_SCALE = 0.25;
+const MAX_SCALE = 5.0;
+
+export function PdfViewerToolbar({
+  currentPage,
+  numPages,
+  scale,
+  onPageChange,
+  onScaleChange,
+  onSearchOpen,
+}: PdfViewerToolbarProps): React.ReactElement {
+  const [pageInputValue, setPageInputValue] = useState(String(currentPage));
+
+  const handlePrevPage = useCallback(() => {
+    if (currentPage > 1) {
+      const newPage = currentPage - 1;
+      onPageChange(newPage);
+      setPageInputValue(String(newPage));
+    }
+  }, [currentPage, onPageChange]);
+
+  const handleNextPage = useCallback(() => {
+    if (currentPage < numPages) {
+      const newPage = currentPage + 1;
+      onPageChange(newPage);
+      setPageInputValue(String(newPage));
+    }
+  }, [currentPage, numPages, onPageChange]);
+
+  const handlePageInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setPageInputValue(e.target.value);
+    },
+    [],
+  );
+
+  const handlePageInputKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === "Enter") {
+        const page = parseInt(pageInputValue, 10);
+        if (!isNaN(page) && page >= 1 && page <= numPages) {
+          onPageChange(page);
+        } else {
+          setPageInputValue(String(currentPage));
+        }
+      }
+    },
+    [pageInputValue, numPages, onPageChange, currentPage],
+  );
+
+  const handlePageInputBlur = useCallback(() => {
+    setPageInputValue(String(currentPage));
+  }, [currentPage]);
+
+  const handleZoomIn = useCallback(() => {
+    const newScale = Math.min(scale + SCALE_STEP, MAX_SCALE);
+    onScaleChange(newScale);
+  }, [scale, onScaleChange]);
+
+  const handleZoomOut = useCallback(() => {
+    const newScale = Math.max(scale - SCALE_STEP, MIN_SCALE);
+    onScaleChange(newScale);
+  }, [scale, onScaleChange]);
+
+  const scalePercent = `${Math.round(scale * 100)}%`;
+
+  return (
+    <div className={styles.toolbar}>
+      <div className={styles.toolbarGroup}>
+        <button
+          className={styles.toolbarButton}
+          onClick={handlePrevPage}
+          disabled={currentPage <= 1}
+          aria-label="Previous page"
+          type="button"
+        >
+          <ChevronLeft size={16} />
+        </button>
+        <input
+          className={styles.pageInput}
+          type="text"
+          value={pageInputValue}
+          onChange={handlePageInputChange}
+          onKeyDown={handlePageInputKeyDown}
+          onBlur={handlePageInputBlur}
+          aria-label="Page number"
+        />
+        <span className={styles.pageCount}>of {numPages}</span>
+        <button
+          className={styles.toolbarButton}
+          onClick={handleNextPage}
+          disabled={currentPage >= numPages}
+          aria-label="Next page"
+          type="button"
+        >
+          <ChevronRight size={16} />
+        </button>
+      </div>
+
+      <div className={styles.separator} />
+
+      <div className={styles.toolbarGroup}>
+        <button
+          className={styles.toolbarButton}
+          onClick={handleZoomOut}
+          disabled={scale <= MIN_SCALE}
+          aria-label="Zoom out"
+          type="button"
+        >
+          <Minus size={16} />
+        </button>
+        <span className={styles.scaleDisplay}>{scalePercent}</span>
+        <button
+          className={styles.toolbarButton}
+          onClick={handleZoomIn}
+          disabled={scale >= MAX_SCALE}
+          aria-label="Zoom in"
+          type="button"
+        >
+          <Plus size={16} />
+        </button>
+      </div>
+
+      <div className={styles.separator} />
+
+      <button
+        className={styles.toolbarButton}
+        onClick={onSearchOpen}
+        aria-label="Search"
+        type="button"
+      >
+        <Search size={16} />
+      </button>
+    </div>
+  );
+}

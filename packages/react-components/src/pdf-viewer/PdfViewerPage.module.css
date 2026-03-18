@@ -1,0 +1,43 @@
+.pageContainer {
+  position: relative;
+  margin: 0 auto;
+  box-shadow: var(--osdk-pdf-viewer-page-shadow);
+  background-color: var(--osdk-palette-white);
+}
+
+.canvasLayer {
+  display: block;
+}
+
+.textLayer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  opacity: 0.25;
+  line-height: 1;
+  z-index: 2;
+}
+
+.textLayer > span {
+  position: absolute;
+  white-space: pre;
+  color: transparent;
+  pointer-events: all;
+}
+
+.textLayer > span::selection {
+  background: var(--osdk-intent-primary-rest);
+  color: transparent;
+}
+
+.textLayer .highlight {
+  background-color: var(--osdk-pdf-viewer-search-highlight);
+  border-radius: 1px;
+}
+
+.textLayer .highlight.selected {
+  background-color: var(--osdk-pdf-viewer-search-active);
+}

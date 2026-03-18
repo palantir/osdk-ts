@@ -1,0 +1,65 @@
+.searchBar {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: var(--osdk-surface-z-index-3);
+  display: flex;
+  align-items: center;
+  gap: var(--osdk-pdf-viewer-toolbar-gap);
+  padding: var(--osdk-surface-spacing);
+  background-color: var(--osdk-pdf-viewer-search-bar-bg);
+  border: var(--osdk-surface-border);
+  border-radius: var(--osdk-surface-border-radius);
+  box-shadow: var(--osdk-surface-shadow-2);
+  margin: var(--osdk-surface-spacing);
+}
+
+.searchInput {
+  border: var(--osdk-surface-border);
+  border-radius: var(--osdk-surface-border-radius);
+  padding: 4px 8px;
+  font-family: var(--osdk-typography-family-default);
+  font-size: var(--osdk-typography-size-body-small);
+  color: var(--osdk-typography-color-default-rest);
+  background-color: var(--osdk-background-primary);
+  outline: none;
+  min-width: 200px;
+}
+
+.searchInput:focus {
+  outline: var(--osdk-focus-outline);
+  outline-offset: var(--osdk-focus-visible-outline-offset);
+}
+
+.matchCount {
+  font-size: var(--osdk-typography-size-body-x-small);
+  color: var(--osdk-typography-color-muted);
+  white-space: nowrap;
+}
+
+.navButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: none;
+  color: var(--osdk-typography-color-default-rest);
+  cursor: pointer;
+  border-radius: var(--osdk-surface-border-radius);
+  padding: 0;
+}
+
+.navButton:hover {
+  background-color: var(--osdk-surface-background-color-default-hover);
+}
+
+.navButton:focus-visible {
+  outline: var(--osdk-focus-outline);
+  outline-offset: var(--osdk-focus-visible-outline-offset);
+}
+
+.closeButton {
+  composes: navButton;
+}

@@ -16,3 +16,10 @@
 
 // Export your components here
 // Example: export { MyComponent } from "./MyComponent";
+
+export { PdfViewer } from "./pdf-viewer/PdfViewer.js";
+export type {
+  AnnotationType,
+  PdfAnnotation,
+  PdfViewerProps,
+} from "./pdf-viewer/types.js";

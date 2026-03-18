@@ -1,0 +1,54 @@
+.pdfViewer {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  background-color: var(--osdk-pdf-viewer-bg);
+  border: var(--osdk-pdf-viewer-border);
+  border-radius: var(--osdk-surface-border-radius);
+  overflow: hidden;
+  position: relative;
+}
+
+.scrollContainer {
+  flex: 1;
+  overflow: auto;
+  position: relative;
+}
+
+.pagesContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--osdk-pdf-viewer-page-gap);
+  padding: var(--osdk-pdf-viewer-page-gap);
+  position: relative;
+}
+
+.pageWrapper {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.loadingContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  font-family: var(--osdk-typography-family-default);
+  font-size: var(--osdk-typography-size-body-medium);
+  color: var(--osdk-typography-color-muted);
+}
+
+.errorContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  font-family: var(--osdk-typography-family-default);
+  font-size: var(--osdk-typography-size-body-medium);
+  color: var(--osdk-typography-color-danger-rest);
+}
