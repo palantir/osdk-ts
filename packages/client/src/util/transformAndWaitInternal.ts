@@ -14,51 +14,48 @@
  * limitations under the License.
  */
 
-import type { Client, MediaReference, TransformOptions } from "@osdk/client";
+import type { TransformOptions } from "@osdk/api";
 import {
   MediaTransformationFailedError,
   MediaTransformationTimeoutError,
-} from "@osdk/client";
+} from "@osdk/api";
 import { MediaSets } from "@osdk/foundry.mediasets";
-import type { Transformation } from "@osdk/foundry.mediasets";
+import type { TransformMediaItemRequest as FoundryTransformRequest } from "@osdk/foundry.mediasets";
+import type { MinimalClient } from "../MinimalClientContext.js";
 
 /**
- * Submits a transformation job for a media item, polls until completion,
- * and returns the transformed content.
- *
- * @beta
- * @param client - The OSDK client
- * @param mediaReference - A reference to the media item to transform
- * @param transformation - The transformation to apply
- * @param options - Polling options (interval and timeout)
- * @returns The transformed media content as a Response
- * @throws {@link MediaTransformationTimeoutError} if polling exceeds the timeout
- * @throws {@link MediaTransformationFailedError} if the transformation job fails
+ * @internal
+ * Submits a media transformation job, polls until completion, and returns the result.
  */
-export async function transformAndWait(
-  client: Client,
-  mediaReference: MediaReference,
-  transformation: Transformation,
+export async function transformAndWaitInternal(
+  client: MinimalClient,
+  mediaSetRid: string,
+  mediaItemRid: string,
+  transformation: { type: string; [key: string]: unknown },
+  token: string | undefined,
   options?: TransformOptions,
 ): Promise<Response> {
   const pollIntervalMs = options?.pollIntervalMs ?? 3000;
   const pollTimeoutMs = options?.pollTimeoutMs ?? 30000;
 
-  const { mediaSetRid, mediaItemRid } =
-    mediaReference.reference.mediaSetViewItem;
-  const token = mediaReference.reference.mediaSetViewItem.token;
+  const headerParams = token ? { Token: token } : undefined;
 
   const job = await MediaSets.transform(
     client,
     mediaSetRid,
     mediaItemRid,
-    { transformation },
+    { transformation } as unknown as FoundryTransformRequest,
     { preview: true },
-    token ? { Token: token } : undefined,
+    headerParams,
   );
 
   let status = job.status;
   const jobId = job.jobId;
+
+  if (status === "FAILED") {
+    throw new MediaTransformationFailedError(jobId);
+  }
+
   const deadline = Date.now() + pollTimeoutMs;
 
   while (status !== "SUCCESSFUL") {
@@ -71,7 +68,7 @@ export async function transformAndWait(
       mediaItemRid,
       jobId,
       { preview: true },
-      token ? { Token: token } : undefined,
+      headerParams,
     );
     status = statusResponse.status;
     if (status === "FAILED") {
@@ -88,6 +85,6 @@ export async function transformAndWait(
     mediaItemRid,
     jobId,
     { preview: true },
-    token ? { Token: token } : undefined,
+    headerParams,
   );
 }

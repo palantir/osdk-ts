@@ -85,7 +85,6 @@ export type {
   MediaMetadata,
   MediaReference,
   MediaUpload,
-  TransformMediaItemRequest,
   TransformOptions,
 } from "./object/Media.js";
 export {

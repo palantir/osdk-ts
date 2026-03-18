@@ -69,9 +69,9 @@ describe("createMediaFromReference.transformAndWait", () => {
     const mockResponse = new Response("transformed-data");
     mockedGetResult.mockResolvedValue(mockResponse);
 
-    const result = await media.transformAndWait({
-      transformation: { type: "ImageTransformation" },
-    });
+    const result = await media.transformAndWait(
+      { type: "ImageTransformation" },
+    );
 
     expect(result).toBe(mockResponse);
     expect(mockedTransform).toHaveBeenCalledOnce();
@@ -99,7 +99,7 @@ describe("createMediaFromReference.transformAndWait", () => {
     mockedGetResult.mockResolvedValue(mockResponse);
 
     const result = await media.transformAndWait(
-      { transformation: { type: "ImageTransformation" } },
+      { type: "ImageTransformation" },
       { pollIntervalMs: 10, pollTimeoutMs: 5000 },
     );
 
@@ -122,7 +122,7 @@ describe("createMediaFromReference.transformAndWait", () => {
 
     await expect(
       media.transformAndWait(
-        { transformation: { type: "ImageTransformation" } },
+        { type: "ImageTransformation" },
         { pollIntervalMs: 10, pollTimeoutMs: 5000 },
       ),
     ).rejects.toThrow(MediaTransformationFailedError);
@@ -143,7 +143,7 @@ describe("createMediaFromReference.transformAndWait", () => {
 
     await expect(
       media.transformAndWait(
-        { transformation: { type: "ImageTransformation" } },
+        { type: "ImageTransformation" },
         { pollIntervalMs: 10, pollTimeoutMs: 50 },
       ),
     ).rejects.toThrow(MediaTransformationTimeoutError);
@@ -168,9 +168,7 @@ describe("createMediaFromReference.transformAndWait", () => {
     });
     mockedGetResult.mockResolvedValue(new Response("result"));
 
-    await media.transformAndWait({
-      transformation: { type: "ImageTransformation" },
-    });
+    await media.transformAndWait({ type: "ImageTransformation" });
 
     expect(mockedTransform).toHaveBeenCalledWith(
       mockClient,

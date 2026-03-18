@@ -39,14 +39,12 @@ export {
   MediaTransformationTimeoutError,
 } from "@osdk/client";
 
-export type { Transformation } from "@osdk/foundry.mediasets";
-
 export * as Aliases from "./aliases/index.js";
 export { createEditBatch } from "./edits/createEditBatch.js";
 export type { EditBatch } from "./edits/EditBatch.js";
 export type { Edits } from "./edits/types.js";
 export { UserFacingError } from "./errors/UserFacingError.js";
-export { transformAndWait } from "./helpers/transformMedia.js";
+export { createMediaFromReference } from "./helpers/createMediaFromReference.js";
 export { uploadMedia } from "./helpers/uploadMedia.js";
 
 export type {

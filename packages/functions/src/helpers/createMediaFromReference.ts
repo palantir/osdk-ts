@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,29 +15,35 @@
  */
 
 import type {
+  Client,
   Media,
   MediaMetadata,
   MediaReference,
   TransformOptions,
-} from "@osdk/api";
+} from "@osdk/client";
+import {
+  MediaTransformationFailedError,
+  MediaTransformationTimeoutError,
+} from "@osdk/client";
 import { MediaSets } from "@osdk/foundry.mediasets";
-import type { MinimalClient } from "./MinimalClientContext.js";
-import { transformAndWaitInternal } from "./util/transformAndWaitInternal.js";
+import type { TransformMediaItemRequest as FoundryTransformRequest } from "@osdk/foundry.mediasets";
 
 /**
- * @internal
- * Creates a Media object from a MediaReference for query results.
- * Unlike MediaReferencePropertyImpl, this doesn't require object context
- * and directly accesses the media set APIs. This is intended for MediaReferences returned
- * from query results or to be used by the functions runtime,
+ * Creates a `Media` object from a `MediaReference`.
+ *
+ * @beta
+ * @param client - The OSDK client
+ * @param mediaReference - A reference to the media item
+ * @returns A Media object with methods for fetching content, metadata, and transformations
  */
 export function createMediaFromReference(
-  client: MinimalClient,
+  client: Client,
   mediaReference: MediaReference,
 ): Media {
   const { mediaSetRid, mediaItemRid } =
     mediaReference.reference.mediaSetViewItem;
   const token = mediaReference.reference.mediaSetViewItem.token;
+
   return {
     async fetchContents(): Promise<Response> {
       return MediaSets.read(
@@ -69,7 +75,7 @@ export function createMediaFromReference(
       return {
         path: info.path,
         sizeBytes: metadata.sizeBytes,
-        mediaType: undefined as any, // Media type is not currently returned by the API, so we return undefined here. This can be updated when the API returns media type.
+        mediaType: undefined as any, // Media type is not currently returned by the API
       };
     },
 
@@ -81,13 +87,57 @@ export function createMediaFromReference(
       transformation: { type: string; [key: string]: unknown },
       options?: TransformOptions,
     ): Promise<Response> {
-      return transformAndWaitInternal(
+      const pollIntervalMs = options?.pollIntervalMs ?? 3000;
+      const pollTimeoutMs = options?.pollTimeoutMs ?? 30000;
+
+      const headerParams = token ? { Token: token } : undefined;
+
+      const job = await MediaSets.transform(
         client,
         mediaSetRid,
         mediaItemRid,
-        transformation,
-        token,
-        options,
+        { transformation } as unknown as FoundryTransformRequest,
+        { preview: true },
+        headerParams,
+      );
+
+      let status = job.status;
+      const jobId = job.jobId;
+
+      if (status === "FAILED") {
+        throw new MediaTransformationFailedError(jobId);
+      }
+
+      const deadline = Date.now() + pollTimeoutMs;
+
+      while (status !== "SUCCESSFUL") {
+        if (Date.now() >= deadline) {
+          throw new MediaTransformationTimeoutError(jobId);
+        }
+        const statusResponse = await MediaSets.getStatus(
+          client,
+          mediaSetRid,
+          mediaItemRid,
+          jobId,
+          { preview: true },
+          headerParams,
+        );
+        status = statusResponse.status;
+        if (status === "FAILED") {
+          throw new MediaTransformationFailedError(jobId);
+        }
+        if (status !== "SUCCESSFUL") {
+          await new Promise(resolve => setTimeout(resolve, pollIntervalMs));
+        }
+      }
+
+      return MediaSets.getResult(
+        client,
+        mediaSetRid,
+        mediaItemRid,
+        jobId,
+        { preview: true },
+        headerParams,
       );
     },
   };
