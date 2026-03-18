@@ -90,6 +90,7 @@ export async function aggregate<
       ...aggregationToCountResult(result.data[0]),
       ...legacyToModernSingleAggregationResult(
         result.data[0],
+        req.$select,
       ),
     } as any;
   }
@@ -99,7 +100,7 @@ export async function aggregate<
       return {
         $group: entry.group as any,
         ...aggregationToCountResult(entry),
-        ...legacyToModernSingleAggregationResult(entry),
+        ...legacyToModernSingleAggregationResult(entry, req.$select),
       };
     }) as any; // fixme
 
