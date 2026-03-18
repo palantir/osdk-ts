@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,20 +16,10 @@
 
 import { useRef } from "react";
 
-export function useStaleData<T extends { length: number }>(
-  data: T,
-  isLoading: boolean,
-): { displayData: T; isStale: boolean } {
-  const staleRef = useRef(data);
-
-  if (data.length > 0) {
-    staleRef.current = data;
-  } else if (!isLoading) {
-    staleRef.current = data;
+export function useStaleData<T>(data: T, isLoading: boolean): T {
+  const ref = useRef(data);
+  if (!isLoading) {
+    ref.current = data;
   }
-
-  const isStale = data.length === 0 && isLoading && staleRef.current.length > 0;
-  const displayData = isStale ? staleRef.current : data;
-
-  return { displayData, isStale };
+  return isLoading ? ref.current : data;
 }

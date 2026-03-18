@@ -47,10 +47,7 @@ function CheckboxListInputInner({
   className,
   style,
 }: CheckboxListInputProps): React.ReactElement {
-  const { displayData: stableValues } = useStaleData(
-    values,
-    isLoading,
-  );
+  const stableValues = useStaleData(values, isLoading);
 
   const displayValues = useMemo(
     () => {

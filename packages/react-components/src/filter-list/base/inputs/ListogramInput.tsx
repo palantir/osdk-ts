@@ -57,10 +57,7 @@ function ListogramInputInner({
 }: ListogramInputProps): React.ReactElement {
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const { displayData: stableValues } = useStaleData(
-    values,
-    isLoading,
-  );
+  const stableValues = useStaleData(values, isLoading);
 
   const selectedSet = useMemo(() => new Set(selectedValues), [selectedValues]);
 

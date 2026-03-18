@@ -803,3 +803,273 @@ export const CombinedWithObjectTable: Story = {
   },
   render: () => <CombinedWithObjectTableStory />,
 };
+
+function WithRemovableFiltersStory() {
+  const objectSet = useEmployeeObjectSet();
+
+  const filterDefinitions = useMemo(
+    (): FilterDefinitionUnion<Employee>[] => [
+      departmentFilter,
+      teamFilter,
+      fullNameFilter,
+      { ...employeeNumberFilter, isVisible: false } as FilterDefinitionUnion<
+        Employee
+      >,
+      { ...locationCityFilter, isVisible: false } as FilterDefinitionUnion<
+        Employee
+      >,
+    ],
+    [],
+  );
+
+  return (
+    <div style={SIDEBAR_STYLE}>
+      <FilterList
+        objectSet={objectSet}
+        filterDefinitions={filterDefinitions}
+        title="Removable Filters"
+        showActiveFilterCount={true}
+      />
+    </div>
+  );
+}
+
+export const WithRemovableFilters: Story = {
+  name: "Removable Filters",
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "When any filter definition has `isVisible: false`, FilterList manages filter visibility "
+          + "internally. Each visible filter shows a remove button (X) on hover, and an \"Add filter\" "
+          + "popover lets users bring back hidden filters. No consumer state management needed.",
+      },
+      source: {
+        code: `const filterDefinitions = [
+  { type: "PROPERTY", key: "department", label: "Department", ... },
+  { type: "PROPERTY", key: "team", label: "Team", ... },
+  { type: "PROPERTY", key: "employeeNumber", label: "Employee Number", ..., isVisible: false },
+  { type: "PROPERTY", key: "locationCity", label: "Location City", ..., isVisible: false },
+];
+
+<FilterList
+  objectSet={client(Employee)}
+  filterDefinitions={filterDefinitions}
+  title="Removable Filters"
+/>`,
+      },
+    },
+  },
+  render: () => <WithRemovableFiltersStory />,
+};
+
+function WithPerFilterSearchStory() {
+  const objectSet = useEmployeeObjectSet();
+
+  const filterDefinitions = useMemo(
+    (): FilterDefinitionUnion<Employee>[] => [
+      departmentFilter,
+      teamFilter,
+      locationCityFilter,
+    ],
+    [],
+  );
+
+  return (
+    <div style={SIDEBAR_STYLE}>
+      <FilterList
+        objectSet={objectSet}
+        filterDefinitions={filterDefinitions}
+        title="Searchable Filters"
+      />
+    </div>
+  );
+}
+
+export const WithPerFilterSearch: Story = {
+  name: "Per-Filter Value Search",
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Hover over a LISTOGRAM or CHECKBOX_LIST filter to reveal the search icon. "
+          + "Click it to open an inline search input that filters the displayed values. "
+          + "Search is supported for SELECT and EXACT_MATCH filter state types.",
+      },
+      source: {
+        code: `// Hover a filter to reveal the search icon in the header.
+// Click the search icon to open inline value search.
+// Supported by LISTOGRAM and CHECKBOX_LIST filters.
+
+<FilterList
+  objectSet={client(Employee)}
+  filterDefinitions={[
+    { type: "PROPERTY", key: "department", filterComponent: "LISTOGRAM", filterState: { type: "EXACT_MATCH", values: [] } },
+    { type: "PROPERTY", key: "team", filterComponent: "CHECKBOX_LIST", filterState: { type: "SELECT", selectedValues: [] } },
+  ]}
+/>`,
+      },
+    },
+  },
+  render: () => <WithPerFilterSearchStory />,
+};
+
+function ExcludeWithWhereClauseStory() {
+  const objectSet = useEmployeeObjectSet();
+  const [filterClause, setFilterClause] = useState<
+    WhereClause<Employee> | undefined
+  >(undefined);
+
+  const filterDefinitions = useMemo(
+    (): FilterDefinitionUnion<Employee>[] => [
+      departmentFilter,
+      teamFilter,
+      fullNameFilter,
+      startDateFilter,
+      employeeNumberFilter,
+    ],
+    [],
+  );
+
+  return (
+    <div style={FLEX_ROW_STYLE}>
+      <div style={SIDEBAR_STYLE}>
+        <FilterList
+          objectSet={objectSet}
+          filterDefinitions={filterDefinitions}
+          filterClause={filterClause}
+          onFilterClauseChanged={setFilterClause}
+        />
+      </div>
+      <div style={FLEX_FILL_STYLE}>
+        <strong>Where Clause:</strong>
+        <p style={{ fontSize: 12, color: "#666" }}>
+          Select values, then toggle the exclude dropdown to see the where
+          clause update with negation. DATE_RANGE and NUMBER_RANGE filters do
+          not show the exclude toggle.
+        </p>
+        <pre style={PRE_STYLE}>
+          {filterClause
+            ? JSON.stringify(filterClause, null, 2)
+            : "(no active filters)"}
+        </pre>
+      </div>
+    </div>
+  );
+}
+
+export const ExcludeWithWhereClause: Story = {
+  name: "Exclude Mode with Where Clause",
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Shows how the exclude toggle affects the generated where clause. Select values in a filter, "
+          + "then use the overflow menu to switch to \"Excluding\" mode. The where clause wraps the "
+          + "filter condition in a `$not` operator. "
+          + "Note: NUMBER_RANGE and DATE_RANGE filters do not support exclude mode.",
+      },
+      source: {
+        code:
+          `// Select values, then toggle to "Excluding" via the overflow menu.
+// The where clause wraps the condition in $not.
+
+const [filterClause, setFilterClause] = useState(undefined);
+
+<FilterList
+  objectSet={client(Employee)}
+  filterDefinitions={filterDefinitions}
+  filterClause={filterClause}
+  onFilterClauseChanged={setFilterClause}
+/>
+
+<pre>{JSON.stringify(filterClause, null, 2)}</pre>`,
+      },
+    },
+  },
+  render: () => <ExcludeWithWhereClauseStory />,
+};
+
+function FullFeaturedStory() {
+  const objectSet = useEmployeeObjectSet();
+  const [collapsed, setCollapsed] = useState(false);
+  const [filterClause, setFilterClause] = useState<
+    WhereClause<Employee> | undefined
+  >(undefined);
+
+  const filterDefinitions = useMemo(
+    (): FilterDefinitionUnion<Employee>[] => [
+      departmentFilter,
+      teamFilter,
+      fullNameFilter,
+      startDateFilter,
+      employeeNumberFilter,
+      { ...locationCityFilter, isVisible: false } as FilterDefinitionUnion<
+        Employee
+      >,
+    ],
+    [],
+  );
+
+  return (
+    <div style={COMBINED_LAYOUT_STYLE}>
+      <div style={SIDEBAR_FIXED_STYLE}>
+        <FilterList
+          objectSet={objectSet}
+          filterDefinitions={filterDefinitions}
+          title="Employee Filters"
+          titleIcon={FILTER_ICON}
+          collapsed={collapsed}
+          onCollapsedChange={setCollapsed}
+          showResetButton={true}
+          showActiveFilterCount={true}
+          enableSorting={true}
+          filterClause={filterClause}
+          onFilterClauseChanged={setFilterClause}
+        />
+      </div>
+      <div style={FLEX_FILL_STYLE}>
+        <ObjectTable objectType={Employee} filter={filterClause} />
+      </div>
+    </div>
+  );
+}
+
+export const FullFeatured: Story = {
+  name: "Full Featured",
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Demonstrates all filter list features together: collapse, reset, active count, sorting, "
+          + "add/remove filters (via isVisible), per-filter search, exclude toggle, and controlled "
+          + "where clause driving an ObjectTable.",
+      },
+      source: {
+        code:
+          `// All features combined: collapse, sort, search, exclude, add/remove, reset
+// Set isVisible: false on definitions to start them hidden
+
+const filterDefinitions = [
+  { type: "PROPERTY", key: "department", ... },
+  { type: "PROPERTY", key: "locationCity", ..., isVisible: false },
+];
+
+<FilterList
+  objectSet={client(Employee)}
+  filterDefinitions={filterDefinitions}
+  title="Employee Filters"
+  titleIcon={<FilterIcon />}
+  collapsed={collapsed}
+  onCollapsedChange={setCollapsed}
+  showResetButton={true}
+  showActiveFilterCount={true}
+  enableSorting={true}
+  filterClause={filterClause}
+  onFilterClauseChanged={setFilterClause}
+/>`,
+      },
+    },
+  },
+  render: () => <FullFeaturedStory />,
+};

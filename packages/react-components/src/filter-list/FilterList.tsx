@@ -16,6 +16,7 @@
 
 import type { ObjectTypeDefinition, WhereClause } from "@osdk/api";
 import React, { useCallback, useMemo } from "react";
+import { AddFilterPopover } from "./base/AddFilterPopover.js";
 import { BaseFilterList } from "./base/BaseFilterList.js";
 import type { RenderFilterInput } from "./base/BaseFilterListApi.js";
 import { FilterInput } from "./FilterInput.js";
@@ -24,6 +25,7 @@ import type {
   FilterListProps,
 } from "./FilterListApi.js";
 import { useFilterListState } from "./hooks/useFilterListState.js";
+import { useFilterVisibility } from "./hooks/useFilterVisibility.js";
 import { getFilterKey } from "./utils/getFilterKey.js";
 import { getFilterLabel } from "./utils/getFilterLabel.js";
 
@@ -61,14 +63,85 @@ export function FilterList<Q extends ObjectTypeDefinition>(
     onReset?.();
   }, [reset, onReset]);
 
-  const visibleFilterDefinitions = useMemo(() => {
-    if (!filterDefinitions) {
+  const visibilityMode = useMemo(
+    () =>
+      filterDefinitions?.some((d) => d.isVisible === false) === true
+      && renderAddFilterButton == null,
+    [filterDefinitions, renderAddFilterButton],
+  );
+
+  const getIsVisible = useCallback(
+    (def: FilterDefinitionUnion<Q>) => def.isVisible !== false,
+    [],
+  );
+
+  const {
+    visibleDefinitions: managedVisibleDefinitions,
+    hiddenDefinitions: managedHiddenDefinitions,
+    showFilter,
+    hideFilter,
+  } = useFilterVisibility(filterDefinitions, getFilterKey, getIsVisible);
+
+  const simpleVisibleDefinitions = useMemo(() => {
+    if (filterDefinitions == null) {
       return undefined;
     }
     return filterDefinitions.filter(
       (def: FilterDefinitionUnion<Q>) => def.isVisible !== false,
     );
   }, [filterDefinitions]);
+
+  const effectiveVisibleDefinitions = visibilityMode
+    ? managedVisibleDefinitions
+    : simpleVisibleDefinitions;
+
+  const handleFilterRemoved = useCallback(
+    (filterKey: string) => {
+      if (visibilityMode) {
+        hideFilter(filterKey);
+      }
+      onFilterRemoved?.(filterKey);
+    },
+    [visibilityMode, hideFilter, onFilterRemoved],
+  );
+
+  const handleFilterShown = useCallback(
+    (filterKey: string) => {
+      showFilter(filterKey);
+    },
+    [showFilter],
+  );
+
+  const hiddenFilterItems = useMemo(
+    () =>
+      managedHiddenDefinitions.map((def) => ({
+        key: getFilterKey(def),
+        label: getFilterLabel(def),
+      })),
+    [managedHiddenDefinitions],
+  );
+
+  const effectiveRenderAddFilterButton = useMemo(() => {
+    if (visibilityMode && managedHiddenDefinitions.length > 0) {
+      return () => (
+        <AddFilterPopover
+          hiddenDefinitions={hiddenFilterItems}
+          onShowFilter={handleFilterShown}
+        />
+      );
+    }
+    return renderAddFilterButton;
+  }, [
+    visibilityMode,
+    managedHiddenDefinitions.length,
+    hiddenFilterItems,
+    handleFilterShown,
+    renderAddFilterButton,
+  ]);
+
+  const effectiveOnFilterRemoved = visibilityMode
+    ? handleFilterRemoved
+    : onFilterRemoved;
 
   const renderInput = useCallback<RenderFilterInput<FilterDefinitionUnion<Q>>>(
     ({ definition, filterKey, filterState, onFilterStateChanged }) => (
@@ -91,7 +164,7 @@ export function FilterList<Q extends ObjectTypeDefinition>(
       titleIcon={titleIcon}
       collapsed={collapsed}
       onCollapsedChange={onCollapsedChange}
-      filterDefinitions={visibleFilterDefinitions}
+      filterDefinitions={effectiveVisibleDefinitions}
       filterStates={filterStates}
       onFilterStateChanged={setFilterState}
       renderInput={renderInput}
@@ -102,9 +175,9 @@ export function FilterList<Q extends ObjectTypeDefinition>(
       showResetButton={showResetButton}
       showActiveFilterCount={showActiveFilterCount}
       enableSorting={enableSorting}
-      onFilterRemoved={onFilterRemoved}
+      onFilterRemoved={effectiveOnFilterRemoved}
       className={className}
-      renderAddFilterButton={renderAddFilterButton}
+      renderAddFilterButton={effectiveRenderAddFilterButton}
     />
   );
 }

@@ -125,11 +125,16 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
   ) => void;
 
   /**
-   * Called when a filter is added
-   * If provided, user will be allowed to add filters
+   * Called when a filter is added.
+   *
+   * When any filter definition has `isVisible: false` and no custom
+   * `renderAddFilterButton` is provided, FilterList manages visibility
+   * internally. In that mode, an "Add filter" popover is rendered
+   * automatically and this callback serves as a notification that a
+   * hidden filter was shown.
    *
    * @param filterKey The key of the added filter
-   * @param newDefinitions The filter list with the new filter added
+   * @param newDefinitions The current filter definitions array
    */
   onFilterAdded?: (
     filterKey: FilterKey<Q>,
@@ -137,8 +142,13 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
   ) => void;
 
   /**
-   * Called when a filter is removed
-   * If provided, user will be allowed to remove filters
+   * Called when a filter is removed.
+   *
+   * When any filter definition has `isVisible: false` and no custom
+   * `renderAddFilterButton` is provided, FilterList manages visibility
+   * internally. In that mode, each visible filter shows a remove button
+   * and this callback serves as a notification that a filter was hidden
+   * (not permanently removed).
    *
    * @param filterKey The key of the removed filter
    */

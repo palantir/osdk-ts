@@ -123,10 +123,7 @@ function RangeInputInner<T>({
     };
   }, [debouncedMinChange, debouncedMaxChange]);
 
-  const { displayData: displayPairs } = useStaleData(
-    valueCountPairs,
-    isLoading,
-  );
+  const displayPairs = useStaleData(valueCountPairs, isLoading);
 
   const computedRange = useMemo(() => {
     if (displayPairs.length === 0) return { min: undefined, max: undefined };
