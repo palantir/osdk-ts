@@ -6,13 +6,13 @@ Pre-built, Ontology-aware React components. Pass in OSDK entities and they handl
 
 All components import from `@osdk/react-components/experimental`.
 
-| Component | Description |
-| --- | --- |
-| **ObjectTable** | Table for displaying OSDK object sets with sorting, filtering, inline editing, column pinning/resizing, row selection, and infinite scroll. |
-| **BaseTable** | OSDK-agnostic base table — use when building custom data fetching on top of the table UI. |
-| **FilterList** | Aggregation-based filter UI for object sets with draggable reordering. |
-| **BaseFilterList** | OSDK-agnostic base filter list — use for custom filter implementations. |
-| **ColumnConfigDialog** | Dialog for managing column visibility and drag-and-drop reordering. |
+| Component              | Description                                                                                                                                 |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| **ObjectTable**        | Table for displaying OSDK object sets with sorting, filtering, inline editing, column pinning/resizing, row selection, and infinite scroll. |
+| **BaseTable**          | OSDK-agnostic base table — use when building custom data fetching on top of the table UI.                                                   |
+| **FilterList**         | Aggregation-based filter UI for object sets with draggable reordering.                                                                      |
+| **BaseFilterList**     | OSDK-agnostic base filter list — use for custom filter implementations.                                                                     |
+| **ColumnConfigDialog** | Dialog for managing column visibility and drag-and-drop reordering.                                                                         |
 
 ## Documentation
 
