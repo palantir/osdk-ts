@@ -22,27 +22,13 @@ import { CheckIcon, ChevronDownIcon } from "./FilterIcons.js";
 interface ExcludeDropdownProps {
   isExcluding: boolean;
   onToggleExclude: () => void;
-  selectedValueCount?: number;
-  totalValueCount?: number;
 }
 
 function ExcludeDropdownInner({
   isExcluding,
   onToggleExclude,
-  selectedValueCount,
-  totalValueCount,
 }: ExcludeDropdownProps): React.ReactElement {
   const label = isExcluding ? "Excluding" : "Keeping";
-
-  const selectedPart = selectedValueCount != null && selectedValueCount > 0
-    ? ` ${selectedValueCount.toLocaleString()}`
-    : "";
-  const totalPart = totalValueCount != null && totalValueCount > 0
-    ? ` of ${totalValueCount.toLocaleString()}`
-    : "";
-  const countLabel = selectedPart
-    ? `${selectedPart}${totalPart} values`
-    : "";
 
   const handleSelectKeeping = useCallback(() => {
     if (isExcluding) {
@@ -61,11 +47,10 @@ function ExcludeDropdownInner({
       <Menu.Root>
         <Menu.Trigger
           className={styles.trigger}
-          aria-label={`${label}${countLabel}`}
+          aria-label={label}
         >
           <span className={styles.triggerLabel}>
             {label}
-            {countLabel}
           </span>
           <ChevronDownIcon />
         </Menu.Trigger>

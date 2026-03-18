@@ -24,13 +24,7 @@ import classnames from "classnames";
 import React, { memo, useCallback, useState } from "react";
 import { ErrorBoundary } from "../../shared/ErrorBoundary.js";
 import type { FilterState } from "../FilterListItemApi.js";
-import {
-  clearFilterState,
-  filterHasActiveState,
-  getSelectedValueCount,
-  supportsExcluding,
-  supportsSearch,
-} from "../utils/filterValues.js";
+import { supportsExcluding, supportsSearch } from "../utils/filterValues.js";
 import type { RenderFilterInput } from "./BaseFilterListApi.js";
 import { DragHandleIcon } from "./DragHandleIcon.js";
 import { ExcludeDropdown } from "./ExcludeDropdown.js";
@@ -73,8 +67,6 @@ function FilterListItemInner<D>({
   const [excludeRowOpen, setExcludeRowOpen] = useState(false);
   const [totalValueCount, setTotalValueCount] = useState<number | undefined>();
 
-  const selectedValueCount = getSelectedValueCount(filterState);
-
   const handleFilterStateChanged = useCallback(
     (newState: FilterState) => {
       onFilterStateChanged(filterKey, newState);
@@ -89,20 +81,6 @@ function FilterListItemInner<D>({
           ...filterState,
           isExcluding: !filterState.isExcluding,
         });
-      }
-    },
-    [filterKey, filterState, onFilterStateChanged],
-  );
-
-  const handleClearFilter = useCallback(
-    () => {
-      if (filterState) {
-        setSearchState({ type: "closed" });
-        setExcludeRowOpen(false);
-        const cleared = clearFilterState(filterState);
-        if (cleared) {
-          onFilterStateChanged(filterKey, cleared);
-        }
       }
     },
     [filterKey, filterState, onFilterStateChanged],
@@ -140,7 +118,8 @@ function FilterListItemInner<D>({
   const isExcluding = filterState?.isExcluding ?? false;
   const showExcludeDropdown = supportsExcluding(filterState);
   const showSearch = supportsSearch(filterState);
-  const hasActive = filterHasActiveState(filterState);
+  const isRangeFilter = filterState?.type === "NUMBER_RANGE"
+    || filterState?.type === "DATE_RANGE";
 
   const searchOpen = searchState.type === "open";
   const searchQuery = searchState.type === "open" ? searchState.query : "";
@@ -173,6 +152,15 @@ function FilterListItemInner<D>({
             aria-pressed={searchOpen}
           >
             <SearchIcon />
+          </Button>
+        )}
+        {onFilterRemoved && (
+          <Button
+            className={styles.headerActionButton}
+            onClick={handleRemove}
+            aria-label={`Remove ${label} filter`}
+          >
+            <RemoveIcon />
           </Button>
         )}
         <Button
@@ -209,32 +197,26 @@ function FilterListItemInner<D>({
         </div>
       )}
 
-      {excludeRowOpen && (
-        <div className={styles.excludeRow}>
-          {showExcludeDropdown && (
-            <ExcludeDropdown
-              isExcluding={isExcluding}
-              onToggleExclude={handleToggleExclude}
-              selectedValueCount={selectedValueCount}
-              totalValueCount={totalValueCount}
-            />
-          )}
-          <Button
-            className={styles.clearAllButton}
-            onClick={handleClearFilter}
-            disabled={!hasActive}
-          >
-            Clear all
-          </Button>
-          {onFilterRemoved && (
-            <Button
-              className={styles.clearAllButton}
-              onClick={handleRemove}
-              aria-label={`Remove ${label} filter`}
-            >
-              Remove
-            </Button>
-          )}
+      {showExcludeDropdown && (
+        <div
+          className={classnames(styles.excludeRow, {
+            [styles.excludeRowVisible]: excludeRowOpen,
+          })}
+        >
+          <ExcludeDropdown
+            isExcluding={isExcluding}
+            onToggleExclude={handleToggleExclude}
+          />
+          {isRangeFilter
+            ? <span className={styles.excludeRangeLabel}>values between</span>
+            : totalValueCount != null && totalValueCount > 0 && (
+              <span
+                className={styles.excludeCountLabel}
+                title="Approximate count of unique values"
+              >
+                {totalValueCount.toLocaleString()} values
+              </span>
+            )}
         </div>
       )}
 

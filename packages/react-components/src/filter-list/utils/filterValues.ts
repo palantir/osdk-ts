@@ -42,34 +42,6 @@ export function supportsSearch(state: FilterState | undefined): boolean {
   }
 }
 
-/** Returns the count of selected values for the given filter state. */
-export function getSelectedValueCount(state: FilterState | undefined): number {
-  if (!state) {
-    return 0;
-  }
-  switch (state.type) {
-    case "SELECT":
-      return state.selectedValues.length;
-    case "EXACT_MATCH":
-      return state.values.length;
-    case "CONTAINS_TEXT":
-      return state.value ? 1 : 0;
-    case "NUMBER_RANGE":
-    case "DATE_RANGE":
-    case "TOGGLE":
-    case "hasLink":
-    case "linkedProperty":
-    case "keywordSearch":
-    case "TIMELINE":
-    case "custom":
-      return 0;
-    default: {
-      const _exhaustive: never = state;
-      return 0;
-    }
-  }
-}
-
 /** Returns true for filter state types that support isExcluding. */
 export function supportsExcluding(state: FilterState | undefined): boolean {
   if (!state) {
@@ -92,49 +64,6 @@ export function supportsExcluding(state: FilterState | undefined): boolean {
     default: {
       const _exhaustive: never = state;
       return false;
-    }
-  }
-}
-
-/** Returns a cleared version of the filter state, or undefined if the type doesn't support clearing. */
-export function clearFilterState(
-  state: FilterState,
-): FilterState | undefined {
-  switch (state.type) {
-    case "SELECT":
-      return { ...state, selectedValues: [] };
-    case "EXACT_MATCH":
-      return { ...state, values: [] };
-    case "CONTAINS_TEXT":
-      return { ...state, value: undefined };
-    case "NUMBER_RANGE":
-      return {
-        ...state,
-        minValue: undefined,
-        maxValue: undefined,
-        includeNull: false,
-      };
-    case "DATE_RANGE":
-      return {
-        ...state,
-        minValue: undefined,
-        maxValue: undefined,
-        includeNull: false,
-      };
-    case "TIMELINE":
-      return { ...state, startDate: undefined, endDate: undefined };
-    case "TOGGLE":
-      return { ...state, enabled: false };
-    case "hasLink":
-      return { ...state, hasLink: false };
-    case "keywordSearch":
-      return { ...state, searchTerm: "" };
-    case "linkedProperty":
-    case "custom":
-      return undefined;
-    default: {
-      const _exhaustive: never = state;
-      return undefined;
     }
   }
 }

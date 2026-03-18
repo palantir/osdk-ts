@@ -167,35 +167,30 @@
 .excludeRow {
   display: flex;
   align-items: center;
+  opacity: 0;
+  height: 0;
+  overflow: hidden;
+  transition: opacity var(--osdk-filter-header-button-transition),
+    height var(--osdk-filter-header-button-transition);
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
 }
 
-.clearAllButton {
-  margin-left: auto;
-  border: none;
-  background: transparent;
-  cursor: pointer;
+.filterItem:hover .excludeRow,
+.excludeRowVisible {
+  opacity: 1;
+  height: auto;
+  overflow: visible;
+}
+
+.excludeRangeLabel,
+.excludeCountLabel {
   font-family: var(--osdk-filter-item-exclude-dropdown-font-family);
   font-size: var(--osdk-filter-item-exclude-dropdown-font-size);
-  color: var(--osdk-typography-color-muted);
-  padding: calc(var(--osdk-surface-spacing) * 0.5)
-    calc(var(--osdk-surface-spacing) * 1);
-  border-radius: var(--osdk-filter-item-header-action-border-radius);
-
-  &:hover {
-    color: var(--osdk-typography-color-default-rest);
-    text-decoration: underline;
-  }
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    text-decoration: none;
-  }
-
-  &:focus-visible {
-    outline: var(--osdk-filter-input-focus-outline-width) solid var(--osdk-filter-input-focus-outline-color);
-    outline-offset: var(--osdk-filter-input-focus-outline-offset);
-  }
+  color: var(--osdk-filter-item-exclude-dropdown-color);
+  margin-left: calc(var(--osdk-surface-spacing) * 0.5);
 }
 
 .dragging {
