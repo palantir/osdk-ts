@@ -118,6 +118,7 @@ function FilterListItemInner<D>({
   const isExcluding = filterState?.isExcluding ?? false;
   const showExcludeDropdown = supportsExcluding(filterState);
   const showSearch = supportsSearch(filterState);
+  const hasOverflowActions = showExcludeDropdown;
   const isRangeFilter = filterState?.type === "NUMBER_RANGE"
     || filterState?.type === "DATE_RANGE";
 
@@ -163,14 +164,16 @@ function FilterListItemInner<D>({
             <RemoveIcon />
           </Button>
         )}
-        <Button
-          className={styles.headerActionButton}
-          onClick={handleToggleExcludeRow}
-          aria-label="More actions"
-          aria-pressed={excludeRowOpen}
-        >
-          <OverflowMenuIcon />
-        </Button>
+        {hasOverflowActions && (
+          <Button
+            className={styles.headerActionButton}
+            onClick={handleToggleExcludeRow}
+            aria-label="More actions"
+            aria-pressed={excludeRowOpen}
+          >
+            <OverflowMenuIcon />
+          </Button>
+        )}
       </div>
 
       {searchOpen && (
