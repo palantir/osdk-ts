@@ -137,17 +137,12 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
     isSubmitDisabled,
     isPending,
     isLoading: metadataLoading,
+    onFieldValueChange: handleFieldValueChange,
   };
 
-  if (isControlled) {
-    return (
-      <BaseForm
-        {...commonProps}
-        formState={controlledFormState}
-        onFieldValueChange={handleFieldValueChange}
-      />
-    );
+  if (!isControlled) {
+    return <BaseForm {...commonProps} />;
   }
 
-  return <BaseForm {...commonProps} />;
+  return <BaseForm {...commonProps} formState={controlledFormState} />;
 });
