@@ -1,24 +1,30 @@
-import book from "/book.svg";
-
+// TODO: Import your object type from "{{osdkPackage}}" and replace null below.
+// Example: import { Employee } from "{{osdkPackage}}";
+import { useOsdkObjects } from "@osdk/react/experimental";
 import React from "react";
 import css from "./Osdk.module.css";
 
-function Osdk(): React.ReactElement {
+export function Osdk(): React.ReactElement {
+  // @ts-expect-error Replace null with your object type from "{{osdkPackage}}"
+  const { data, isLoading, error, fetchMore } = useOsdkObjects(null);
+
   return (
-    <div className={css.osdk}>
-      <div>
-        <span>OSDK: </span>
-        <span className={css.tag}>{{osdkPackage}}</span>
-      </div>
-      <a
-        href="{{foundryUrl}}/workspace/developer-console/app/{{application}}/docs/guide/loading-data?language=typescript"
-        className={css.docs}
-        target="_blank"
-        rel="noreferrer"
-      >
-        <img src={book} width={16} height={16} alt="Book icon"></img>
-        <span>View documentation</span>
-      </a>
+    <div className={css.container}>
+      {error && <div className={css.error}>Error: {error.message}</div>}
+      {isLoading && !data && <div className={css.loading}>Loading...</div>}
+      <ul className={css.list}>
+        {data?.map((obj) => (
+          <li key={obj.$primaryKey} className={css.item}>
+            {String(obj.$primaryKey)}
+          </li>
+        ))}
+      </ul>
+      {isLoading && data && <span className={css.refreshing}>Refreshing...</span>}
+      {fetchMore && (
+        <button className={css.loadMore} onClick={fetchMore}>
+          Load more
+        </button>
+      )}
     </div>
   );
 }

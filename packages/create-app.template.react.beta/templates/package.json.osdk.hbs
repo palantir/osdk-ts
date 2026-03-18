@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "format": "prettier --write src/",
     "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
     "lint:fix": "eslint --report-unused-disable-directives --max-warnings 0 --fix",
     "test": "vitest run",
@@ -16,6 +17,12 @@
     "@osdk/client": "{{clientVersion}}",
     "@osdk/foundry": "latest",
     "@osdk/oauth": "^1.1.0",
-    "@osdk/react": "^0.7.0"
+    "@osdk/react": "latest",
+    "@osdk/react-components": "latest",
+    "@blueprintjs/core": "^6.8.1",
+    "classnames": "^2.0.0"
+  },
+  "devDependencies": {
+    "prettier": "^3.0.0"
   }
 }

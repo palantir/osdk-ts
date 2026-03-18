@@ -1,5 +1,5 @@
 {{#if osdkPackage}}
-import { OsdkProvider } from "@osdk/react";
+import { OsdkProvider2 } from "@osdk/react/experimental";
 {{/if}}
 import ReactDOM from "react-dom/client";
 import { RouterProvider } from "react-router-dom";
@@ -11,9 +11,9 @@ import { router } from "./router";
 
 {{#if osdkPackage}}
 ReactDOM.createRoot(document.getElementById("root")!).render(
-  <OsdkProvider client={client}>
+  <OsdkProvider2 client={client}>
     <RouterProvider router={router} />
-  </OsdkProvider>,
+  </OsdkProvider2>,
 );
 {{else}}
 ReactDOM.createRoot(document.getElementById("root")!).render(
