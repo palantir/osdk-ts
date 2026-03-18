@@ -274,11 +274,6 @@ function WithAllFilterTypesStory() {
     WhereClause<Employee> | undefined
   >(undefined);
 
-  const handleFilterRemoved = useCallback((filterKey: string) => {
-    // eslint-disable-next-line no-console
-    console.log("Removed filter:", filterKey);
-  }, []);
-
   return (
     <div style={FLEX_ROW_STYLE}>
       <div style={SIDEBAR_STYLE}>
@@ -287,7 +282,6 @@ function WithAllFilterTypesStory() {
           filterDefinitions={sharedFilterDefinitions}
           filterClause={filterClause}
           onFilterClauseChanged={setFilterClause}
-          onFilterRemoved={handleFilterRemoved}
         />
       </div>
       <div style={FLEX_FILL_STYLE}>
@@ -306,8 +300,8 @@ export const WithAllFilterTypes: Story = {
   parameters: {
     docs: {
       description: {
-        story: "All filter component types with interactive features enabled. "
-          + "Hover filter items to reveal search, remove, and exclude actions.",
+        story: "All filter component types with a controlled where clause. "
+          + "Hover filter items to reveal search and exclude actions.",
       },
       source: {
         code: `<FilterList
@@ -315,7 +309,6 @@ export const WithAllFilterTypes: Story = {
   filterDefinitions={filterDefinitions}
   filterClause={filterClause}
   onFilterClauseChanged={setFilterClause}
-  onFilterRemoved={handleFilterRemoved}
 />`,
       },
     },
@@ -450,6 +443,7 @@ function CollapsiblePanelStory() {
         title="Employee Filters"
         collapsed={collapsed}
         onCollapsedChange={setCollapsed}
+        showActiveFilterCount={true}
       />
     </div>
   );
@@ -458,6 +452,10 @@ function CollapsiblePanelStory() {
 export const CollapsiblePanel: Story = {
   parameters: {
     docs: {
+      description: {
+        story: "Click the collapse button to minimize the filter panel. "
+          + "Active filter count is shown in the collapsed state.",
+      },
       source: {
         code: `const [collapsed, setCollapsed] = useState(false);
 
@@ -467,6 +465,7 @@ export const CollapsiblePanel: Story = {
   title="Employee Filters"
   collapsed={collapsed}
   onCollapsedChange={setCollapsed}
+  showActiveFilterCount={true}
 />`,
       },
     },
@@ -668,54 +667,6 @@ const filterDefinitions = [
     },
   },
   render: () => <WithListogramDisplayModesStory />,
-};
-
-function ControlledFilterClauseStory() {
-  const objectSet = useEmployeeObjectSet();
-  const [filterClause, setFilterClause] = useState<
-    WhereClause<Employee> | undefined
-  >(undefined);
-
-  return (
-    <div style={FLEX_ROW_STYLE}>
-      <div style={SIDEBAR_STYLE}>
-        <FilterList
-          objectSet={objectSet}
-          filterDefinitions={sharedFilterDefinitions}
-          filterClause={filterClause}
-          onFilterClauseChanged={setFilterClause}
-        />
-      </div>
-      <div style={FLEX_FILL_STYLE}>
-        <strong>Filter Clause (JSON):</strong>
-        <pre style={PRE_STYLE}>
-          {filterClause
-            ? JSON.stringify(filterClause, null, 2)
-            : "(no active filters)"}
-        </pre>
-      </div>
-    </div>
-  );
-}
-
-export const ControlledFilterClause: Story = {
-  parameters: {
-    docs: {
-      source: {
-        code: `const [filterClause, setFilterClause] = useState(undefined);
-
-<FilterList
-  objectSet={client(Employee)}
-  filterDefinitions={filterDefinitions}
-  filterClause={filterClause}
-  onFilterClauseChanged={setFilterClause}
-/>
-
-<pre>{JSON.stringify(filterClause, null, 2)}</pre>`,
-      },
-    },
-  },
-  render: () => <ControlledFilterClauseStory />,
 };
 
 function FilterOperatorOrStory() {
@@ -959,6 +910,7 @@ function ExcludeWithWhereClauseStory() {
       departmentFilter,
       teamFilter,
       fullNameFilter,
+      startDateFilter,
       employeeNumberFilter,
     ],
     [],
@@ -977,8 +929,9 @@ function ExcludeWithWhereClauseStory() {
       <div style={FLEX_FILL_STYLE}>
         <strong>Where Clause:</strong>
         <p style={{ fontSize: 12, color: "#666" }}>
-          Select some values, then toggle the exclude dropdown to see the{" "}
-          where clause update with negation.
+          Select values, then toggle the exclude dropdown to see the where
+          clause update with negation. DATE_RANGE and NUMBER_RANGE filters do
+          not show the exclude toggle.
         </p>
         <pre style={PRE_STYLE}>
           {filterClause
