@@ -65,17 +65,21 @@ type FunctionColumnDef = {
 
 const mockObjectSet = {} as ObjectSet<TestObject>;
 
+const mockObject1 = {
+  $objectType: "TestObject",
+  $apiName: "TestObject",
+  $primaryKey: "obj1",
+};
+
+const mockObject2 = {
+  $objectType: "TestObject",
+  $apiName: "TestObject",
+  $primaryKey: "obj2",
+};
+
 const mockObjects = [
-  {
-    $objectType: "TestObject",
-    $apiName: "TestObject",
-    $primaryKey: "obj1",
-  },
-  {
-    $objectType: "TestObject",
-    $apiName: "TestObject",
-    $primaryKey: "obj2",
-  },
+  mockObject1,
+  mockObject2,
 ] as Osdk.Instance<TestObject, "$allBaseProperties", TestObjectKeys, {}>[];
 
 const columnDefinitions: ColumnDefinition<
@@ -162,14 +166,15 @@ describe("useFunctionColumnsData", () => {
   });
 
   it("should extract value using getValue function when specified", async () => {
-    const singleObject = mockObjects.slice(0, 1);
-
     const mockResult = {
       "TestObject:obj1": {
         status: "active",
         timestamp: "2024-01-01",
       },
     };
+    const mockOneObject = [
+      mockObject1,
+    ] as Osdk.Instance<TestObject, "$allBaseProperties", TestObjectKeys, {}>[];
 
     mockExecuteFunction.mockResolvedValue(mockResult);
 
@@ -194,7 +199,7 @@ describe("useFunctionColumnsData", () => {
 
     const { result } = renderHook(
       () =>
-        useFunctionColumnsData(mockObjectSet, singleObject, columnDefinitions),
+        useFunctionColumnsData(mockObjectSet, mockOneObject, columnDefinitions),
     );
 
     await waitFor(() => {
@@ -209,7 +214,9 @@ describe("useFunctionColumnsData", () => {
   });
 
   it("should group columns by unique query definition", async () => {
-    const singleObject = mockObjects.slice(0, 1);
+    const mockOneObject = [
+      mockObject1,
+    ] as Osdk.Instance<TestObject, "$allBaseProperties", TestObjectKeys, {}>[];
 
     const mockResult = {
       "TestObject:obj1": {
@@ -259,7 +266,7 @@ describe("useFunctionColumnsData", () => {
 
     const { result } = renderHook(
       () =>
-        useFunctionColumnsData(mockObjectSet, mockObjects, columnDefinitions),
+        useFunctionColumnsData(mockObjectSet, mockOneObject, columnDefinitions),
     );
 
     await waitFor(() => {
