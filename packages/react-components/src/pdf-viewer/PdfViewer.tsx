@@ -23,14 +23,14 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { usePdfDocument } from "./hooks/usePdfDocument.js";
+import { usePdfSearch } from "./hooks/usePdfSearch.js";
 import styles from "./PdfViewer.module.css";
 import { PdfViewerPage } from "./PdfViewerPage.js";
 import { PdfViewerSearchBar } from "./PdfViewerSearchBar.js";
 import { PdfViewerSidebar } from "./PdfViewerSidebar.js";
 import { PdfViewerToolbar } from "./PdfViewerToolbar.js";
 import type { PdfAnnotation, PdfViewerProps } from "./types.js";
-import { usePdfDocument } from "./usePdfDocument.js";
-import { usePdfSearch } from "./usePdfSearch.js";
 
 const EMPTY_ANNOTATIONS: Record<number, PdfAnnotation[]> = {};
 const EMPTY_ANNOTATION_ARRAY: PdfAnnotation[] = [];
