@@ -32,7 +32,7 @@ import type {
  * Props for the ActionForm component.
  *
  * A discriminated union ensures that controlled mode (formState provided)
- * always requires onFormStateChange, and uncontrolled mode omits both.
+ * always requires onFormStateChange, and uncontrolled mode makes `onFormStateChange` optional
  */
 export type ActionFormProps<Q extends ActionDefinition<unknown>> =
   | (ActionFormConfigProps<Q> & {
@@ -43,7 +43,9 @@ export type ActionFormProps<Q extends ActionDefinition<unknown>> =
   })
   | (ActionFormConfigProps<Q> & {
     formState?: undefined;
-    onFormStateChange?: undefined;
+    onFormStateChange?: (
+      updater: (prevState: FormState<Q>) => FormState<Q>,
+    ) => void;
   });
 
 interface ActionFormConfigProps<Q extends ActionDefinition<unknown>>
@@ -124,7 +126,10 @@ export type BaseFormProps =
       formState: Record<string, unknown>;
       onFieldValueChange: (fieldKey: string, value: unknown) => void;
     }
-    | { formState?: undefined; onFieldValueChange?: undefined }
+    | {
+      formState?: undefined;
+      onFieldValueChange?: (fieldKey: string, value: unknown) => void;
+    }
   );
 
 interface BaseFormCommonProps {
