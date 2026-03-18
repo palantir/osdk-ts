@@ -15,7 +15,7 @@
  */
 
 import { ChevronDown, ChevronUp, Cross } from "@blueprintjs/icons";
-import React, { useCallback, useEffect, useRef } from "react";
+import React, { useCallback } from "react";
 import styles from "./PdfViewerSearchBar.module.css";
 
 interface PdfViewerSearchBarProps {
@@ -37,12 +37,6 @@ export function PdfViewerSearchBar({
   onPrev,
   onClose,
 }: PdfViewerSearchBarProps): React.ReactElement {
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    inputRef.current?.focus();
-  }, []);
-
   const handleInputChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       onQueryChange(e.target.value);
@@ -76,7 +70,7 @@ export function PdfViewerSearchBar({
   return (
     <div className={styles.searchBar}>
       <input
-        ref={inputRef}
+        autoFocus
         className={styles.searchInput}
         type="text"
         value={query}

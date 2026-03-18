@@ -10,6 +10,12 @@
   position: relative;
 }
 
+.contentArea {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
 .scrollContainer {
   flex: 1;
   overflow: auto;

@@ -17,6 +17,7 @@
 import {
   ChevronLeft,
   ChevronRight,
+  Menu,
   Minus,
   Plus,
   Search,
@@ -28,9 +29,11 @@ interface PdfViewerToolbarProps {
   currentPage: number;
   numPages: number;
   scale: number;
+  sidebarOpen: boolean;
   onPageChange: (page: number) => void;
   onScaleChange: (scale: number) => void;
   onSearchOpen: () => void;
+  onSidebarToggle: () => void;
 }
 
 const SCALE_STEP = 0.25;
@@ -41,9 +44,11 @@ export function PdfViewerToolbar({
   currentPage,
   numPages,
   scale,
+  sidebarOpen,
   onPageChange,
   onScaleChange,
   onSearchOpen,
+  onSidebarToggle,
 }: PdfViewerToolbarProps): React.ReactElement {
   const [pageInputValue, setPageInputValue] = useState(String(currentPage));
 
@@ -102,6 +107,18 @@ export function PdfViewerToolbar({
 
   return (
     <div className={styles.toolbar}>
+      <button
+        className={styles.toolbarButton}
+        onClick={onSidebarToggle}
+        aria-label={sidebarOpen ? "Close sidebar" : "Open sidebar"}
+        aria-pressed={sidebarOpen}
+        type="button"
+      >
+        <Menu size={16} />
+      </button>
+
+      <div className={styles.separator} />
+
       <div className={styles.toolbarGroup}>
         <button
           className={styles.toolbarButton}

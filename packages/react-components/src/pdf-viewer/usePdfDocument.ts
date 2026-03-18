@@ -16,10 +16,10 @@
 
 import type { PDFDocumentProxy } from "pdfjs-dist";
 import { getDocument, GlobalWorkerOptions } from "pdfjs-dist";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 const WORKER_CDN_URL =
-  "https://cdn.jsdelivr.net/npm/pdfjs-dist/build/pdf.worker.min.mjs";
+  "https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/pdf.worker.min.mjs";
 
 let workerInitialized = false;
 function ensureWorker(): void {
@@ -45,14 +45,8 @@ export function usePdfDocument(
   const [numPages, setNumPages] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | undefined>(undefined);
-  const prevSrcRef = useRef<string | ArrayBuffer | null>(null);
 
   useEffect(() => {
-    if (prevSrcRef.current === src) {
-      return;
-    }
-    prevSrcRef.current = src;
-
     ensureWorker();
     setLoading(true);
     setError(undefined);

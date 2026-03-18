@@ -103,7 +103,7 @@ export function usePdfSearch(): UsePdfSearchResult {
           });
 
           // Create highlight wrapper
-          const textNode = findTextNode(div, matchIndex, searchQuery.length);
+          const textNode = findTextNode(div, matchIndex);
           if (textNode != null) {
             const highlightSpan = document.createElement("span");
             highlightSpan.className = HIGHLIGHT_CLASS;
@@ -221,7 +221,6 @@ export function usePdfSearch(): UsePdfSearchResult {
 function findTextNode(
   element: HTMLElement,
   offset: number,
-  _length: number,
 ): { node: Text; offset: number } | undefined {
   const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
   let currentOffset = 0;

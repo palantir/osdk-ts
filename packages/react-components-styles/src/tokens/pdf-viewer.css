@@ -35,4 +35,11 @@
   /* PDF Viewer - Page */
   --osdk-pdf-viewer-page-shadow: var(--osdk-surface-shadow-2);
   --osdk-pdf-viewer-page-gap: var(--osdk-surface-spacing);
+
+  /* PDF Viewer - Sidebar */
+  --osdk-pdf-viewer-sidebar-width: 200px;
+  --osdk-pdf-viewer-sidebar-bg: var(--osdk-background-secondary);
+  --osdk-pdf-viewer-sidebar-border: var(--osdk-surface-border);
+  --osdk-pdf-viewer-sidebar-active-border: var(--osdk-intent-primary-rest);
+  --osdk-pdf-viewer-sidebar-thumbnail-gap: var(--osdk-surface-spacing);
 }

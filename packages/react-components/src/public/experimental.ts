@@ -54,3 +54,11 @@ export type {
   ColumnConfigDialogProps,
   ColumnConfigOptions,
 } from "../object-table/ColumnConfigDialog.js";
+
+// PdfViewer
+export { PdfViewer } from "../pdf-viewer/PdfViewer.js";
+export type {
+  AnnotationType,
+  PdfAnnotation,
+  PdfViewerProps,
+} from "../pdf-viewer/types.js";

@@ -26,6 +26,7 @@ import React, {
 import styles from "./PdfViewer.module.css";
 import { PdfViewerPage } from "./PdfViewerPage.js";
 import { PdfViewerSearchBar } from "./PdfViewerSearchBar.js";
+import { PdfViewerSidebar } from "./PdfViewerSidebar.js";
 import { PdfViewerToolbar } from "./PdfViewerToolbar.js";
 import type { PdfAnnotation, PdfViewerProps } from "./types.js";
 import { usePdfDocument } from "./usePdfDocument.js";
@@ -42,11 +43,12 @@ export function PdfViewer({
   onAnnotationClick,
   initialPage = 1,
   initialScale = 1.0,
+  initialSidebarOpen = false,
   className,
 }: PdfViewerProps): React.ReactElement {
   const { document, numPages, loading, error } = usePdfDocument(src);
   const [scale, setScale] = useState(initialScale);
-  const [currentPage, setCurrentPage] = useState(initialPage);
+  const [sidebarOpen, setSidebarOpen] = useState(initialSidebarOpen);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const search = usePdfSearch();
@@ -57,11 +59,6 @@ export function PdfViewer({
     [scale],
   );
 
-  const pageIndices = useMemo(
-    () => Array.from({ length: numPages }, (_, i) => i),
-    [numPages],
-  );
-
   const virtualizer = useVirtualizer({
     count: numPages,
     getScrollElement: () => scrollContainerRef.current,
@@ -69,7 +66,13 @@ export function PdfViewer({
     overscan: 2,
   });
 
-  // Ctrl+F handler
+  // Derive current page from virtualizer — no scroll listener needed
+  const virtualItems = virtualizer.getVirtualItems();
+  const currentPage = virtualItems.length > 0
+    ? virtualItems[0].index + 1
+    : initialPage;
+
+  // Ctrl+F handler — useEffect necessary for global DOM event listener
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key === "f") {
@@ -83,28 +86,12 @@ export function PdfViewer({
     };
   }, [search.openSearch]);
 
-  // Track current page from scroll position
-  useEffect(() => {
-    const container = scrollContainerRef.current;
-    if (container == null) {
-      return;
-    }
-    const handleScroll = () => {
-      const virtualItems = virtualizer.getVirtualItems();
-      if (virtualItems.length > 0) {
-        // The first visible item's index + 1 is the current page
-        setCurrentPage(virtualItems[0].index + 1);
-      }
-    };
-    container.addEventListener("scroll", handleScroll, { passive: true });
-    return () => {
-      container.removeEventListener("scroll", handleScroll);
-    };
-  }, [virtualizer]);
+  const handleSidebarToggle = useCallback(() => {
+    setSidebarOpen((prev) => !prev);
+  }, []);
 
   const handlePageChange = useCallback(
     (page: number) => {
-      setCurrentPage(page);
       virtualizer.scrollToIndex(page - 1, { align: "start" });
     },
     [virtualizer],
@@ -151,9 +138,11 @@ export function PdfViewer({
         currentPage={currentPage}
         numPages={numPages}
         scale={scale}
+        sidebarOpen={sidebarOpen}
         onPageChange={handlePageChange}
         onScaleChange={setScale}
         onSearchOpen={search.openSearch}
+        onSidebarToggle={handleSidebarToggle}
       />
       {search.isSearchOpen && (
         <PdfViewerSearchBar
@@ -166,36 +155,46 @@ export function PdfViewer({
           onClose={search.closeSearch}
         />
       )}
-      <div ref={scrollContainerRef} className={styles.scrollContainer}>
-        <div
-          className={styles.pagesContainer}
-          style={{ height: virtualizer.getTotalSize() }}
-        >
-          {virtualizer.getVirtualItems().map((virtualItem) => {
-            const pageNumber = virtualItem.index + 1;
-            const pageAnnotations = annotations[pageNumber]
-              ?? EMPTY_ANNOTATION_ARRAY;
+      <div className={styles.contentArea}>
+        {sidebarOpen && (
+          <PdfViewerSidebar
+            document={document}
+            numPages={numPages}
+            currentPage={currentPage}
+            onPageClick={handlePageChange}
+          />
+        )}
+        <div ref={scrollContainerRef} className={styles.scrollContainer}>
+          <div
+            className={styles.pagesContainer}
+            style={{ height: virtualizer.getTotalSize() }}
+          >
+            {virtualizer.getVirtualItems().map((virtualItem) => {
+              const pageNumber = virtualItem.index + 1;
+              const pageAnnotations = annotations[pageNumber]
+                ?? EMPTY_ANNOTATION_ARRAY;
 
-            return (
-              <div
-                key={virtualItem.key}
-                className={styles.pageWrapper}
-                style={{
-                  top: virtualItem.start,
-                  height: virtualItem.size,
-                }}
-              >
-                <PdfViewerPage
-                  document={document}
-                  pageNumber={pageNumber}
-                  scale={scale}
-                  annotations={pageAnnotations}
-                  onAnnotationClick={onAnnotationClick}
-                  onTextLayerRendered={handleTextLayerRendered}
-                />
-              </div>
-            );
-          })}
+              return (
+                <div
+                  key={virtualItem.key}
+                  className={styles.pageWrapper}
+                  style={{
+                    top: virtualItem.start,
+                    height: virtualItem.size,
+                  }}
+                >
+                  <PdfViewerPage
+                    document={document}
+                    pageNumber={pageNumber}
+                    scale={scale}
+                    annotations={pageAnnotations}
+                    onAnnotationClick={onAnnotationClick}
+                    onTextLayerRendered={handleTextLayerRendered}
+                  />
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
     </div>

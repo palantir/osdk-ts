@@ -16,6 +16,7 @@
 
 import type { PDFDocumentProxy, PDFPageProxy } from "pdfjs-dist";
 import { TextLayer } from "pdfjs-dist";
+import "pdfjs-dist/web/pdf_viewer.css";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { PdfViewerAnnotationLayer } from "./PdfViewerAnnotationLayer.js";
 import styles from "./PdfViewerPage.module.css";
@@ -87,6 +88,12 @@ export function PdfViewerPage({
     canvas.style.height = `${Math.floor(viewport.height)}px`;
 
     setPageHeight(viewport.height / scale);
+
+    // Set --scale-factor for pdf.js text layer positioning (CSS pixels, not device pixels)
+    textLayerRef.current.style.setProperty(
+      "--scale-factor",
+      String(viewport.scale),
+    );
 
     // Cancel previous render
     if (renderTaskRef.current != null) {
@@ -167,7 +174,7 @@ export function PdfViewerPage({
       data-page-number={pageNumber}
     >
       <canvas ref={canvasRef} className={styles.canvasLayer} />
-      <div ref={textLayerRef} className={styles.textLayer} />
+      <div ref={textLayerRef} className="textLayer" />
       {annotations.length > 0 && (
         <PdfViewerAnnotationLayer
           annotations={annotations}

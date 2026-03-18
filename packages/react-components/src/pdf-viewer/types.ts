@@ -42,6 +42,8 @@ export interface PdfViewerProps {
   initialPage?: number;
   /** Initial zoom scale (default 1.0) */
   initialScale?: number;
+  /** Whether the sidebar is initially open (default false) */
+  initialSidebarOpen?: boolean;
   /** Additional CSS class name for the root element */
   className?: string;
 }
