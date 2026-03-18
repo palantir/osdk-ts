@@ -40,6 +40,13 @@ type WithProperties<
 > = {
   [K in keyof RDPs]: DerivedProperty.Creator<Q, RDPs[K]>;
 };
+
+interface UseObjectTableDataResult<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+> extends Omit<UseOsdkListResult<Q, RDPs>, "isOptimistic"> {
+  objectSet?: ObjectSet<Q>;
+}
 /**
  * This hook is a wrapper that conditionally uses either useObjectSet or useOsdkObjects
  * based on whether an objectSet prop is provided.
@@ -63,7 +70,7 @@ export function useObjectTableData<
   sorting?: SortingState,
   objectSet?: ObjectSet<Q>,
   objectSetOptions?: ObjectSetOptions<Q>,
-): UseOsdkListResult<Q, RDPs> {
+): UseObjectTableDataResult<Q, RDPs> {
   const orderBy = useMemo(() => {
     if (!sorting || sorting.length === 0) {
       return undefined;
@@ -142,15 +149,7 @@ export function useObjectTableData<
 
   // Return the appropriate result based on which hook is enabled
   if (shouldUseObjectSet) {
-    // Convert UseObjectSetResult to UseOsdkListResult format
-    return {
-      data: objectSetResult.data,
-      fetchMore: objectSetResult.fetchMore,
-      isLoading: objectSetResult.isLoading,
-      error: objectSetResult.error,
-      totalCount: objectSetResult.totalCount,
-      isOptimistic: false, // ObjectSet doesn't support optimistic updates
-    } as UseOsdkListResult<Q, RDPs>;
+    return objectSetResult as UseObjectTableDataResult<Q, RDPs>;
   }
 
   return osdkObjectsResult;
