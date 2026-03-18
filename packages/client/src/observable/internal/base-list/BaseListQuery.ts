@@ -46,6 +46,10 @@ import type {
 import { createCollectionConnectable } from "./createCollectionConnectable.js";
 import { removeDuplicates } from "./removeDuplicates.js";
 
+export type ListUpdateMode =
+  | { type: "serverOrdered"; append: boolean }
+  | { type: "clientOrdered" };
+
 /**
  * Base shape for list-like payloads (ListPayload, SpecificLinkPayload, etc.)
  * Used to constrain PAYLOAD so we can safely access these properties
@@ -127,7 +131,7 @@ export abstract class BaseListQuery<
    * @param items Objects or cache keys to add to the list
    * @param status Status to set for the list
    * @param batch Batch context to use
-   * @param append Whether to append to the existing list or replace it
+   * @param mode Controls ordering responsibility and append behavior
    * @param totalCount Optional total count from API response
    * @returns The updated entry
    */
@@ -135,14 +139,14 @@ export abstract class BaseListQuery<
     items: T[],
     status: Status,
     batch: BatchContext,
-    append: boolean = false,
+    mode: ListUpdateMode = { type: "clientOrdered" },
     totalCount?: string,
   ): Entry<KEY> {
     if (process.env.NODE_ENV !== "production") {
       this.logger
         ?.child({ methodName: "updateList" })
         .debug(
-          `{status: ${status}, append: ${append}}`,
+          `{status: ${status}, mode: ${JSON.stringify(mode)}}`,
           JSON.stringify(items, null, 2),
         );
     }
@@ -164,8 +168,11 @@ export abstract class BaseListQuery<
       objectCacheKeys = items as ObjectCacheKey[];
     }
 
+    const append = mode.type === "serverOrdered" && mode.append;
     objectCacheKeys = this.#retainReleaseAppend(batch, append, objectCacheKeys);
-    objectCacheKeys = this._sortCacheKeys(objectCacheKeys, batch);
+    if (mode.type === "clientOrdered") {
+      objectCacheKeys = this._sortCacheKeys(objectCacheKeys, batch);
+    }
     objectCacheKeys = removeDuplicates(objectCacheKeys, batch);
 
     return this.writeToStore(
@@ -514,7 +521,7 @@ export abstract class BaseListQuery<
           objectKeys,
           finalStatus,
           batch,
-          append,
+          { type: "serverOrdered", append },
           this.currentTotalCount,
         );
       });

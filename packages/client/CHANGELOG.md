@@ -1,5 +1,18 @@
 # @osdk/client
 
+## 2.8.0-beta.21
+
+### Minor Changes
+
+- c40444b: Add linkedObjectsBySourcePrimaryKey to link observation responses
+- dda14be: Fix pagination sort shuffling by using declarative update types
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.21
+- @osdk/client.unstable@2.8.0-beta.21
+- @osdk/generator-converters@2.8.0-beta.21
+
 ## 2.8.0-beta.20
 
 ### Patch Changes

@@ -17,6 +17,10 @@
 import type { ObjectSet } from "@osdk/api";
 import { act, renderHook } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
+vi.mock("@osdk/react", () => ({
+  useOsdkMetadata: vi.fn(() => ({ loading: false, metadata: undefined })),
+}));
 import {
   createPropertyFilterDef,
   createSelectState,
