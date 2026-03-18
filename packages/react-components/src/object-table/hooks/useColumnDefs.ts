@@ -131,6 +131,7 @@ function getColumnsFromColumnDefinitions<
       header: renderHeader ?? (columnName || propertyMetadata?.displayName),
       meta: {
         columnName: columnName || propertyMetadata?.displayName,
+        isAsyncColumn: locator.type === "function",
         isVisible: col.isVisible !== false,
         editable,
         dataType,

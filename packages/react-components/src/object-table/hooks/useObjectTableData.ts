@@ -28,6 +28,7 @@ import { useObjectSet, useOsdkObjects } from "@osdk/react/experimental";
 import type { SortingState } from "@tanstack/react-table";
 import { useMemo } from "react";
 import type { ColumnDefinition, ObjectSetOptions } from "../ObjectTableApi.js";
+import { useFunctionColumnsData } from "./useFunctionColumnsData.js";
 
 const PAGE_SIZE = 50;
 
@@ -147,10 +148,42 @@ export function useObjectTableData<
     },
   );
 
-  // Return the appropriate result based on which hook is enabled
-  if (shouldUseObjectSet) {
-    return objectSetResult as UseObjectTableDataResult<Q, RDPs>;
-  }
+  // Get the result from the appropriate hook
+  const baseResult = shouldUseObjectSet ? objectSetResult : osdkObjectsResult;
 
-  return osdkObjectsResult;
+  // Call useFunctionColumnsData to get function column data
+  const functionColumnData = useFunctionColumnsData<Q, RDPs, FunctionColumns>(
+    objectSet,
+    baseResult.data,
+    columnDefinitions,
+  );
+
+  // Merge function column data into each object
+  const mergedData = useMemo(() => {
+    if (!baseResult.data) return baseResult.data;
+
+    return baseResult.data.map(obj => {
+      const objKey = String(obj.$primaryKey);
+      const functionData: Record<string, any> = {};
+
+      // Collect all function column data for this object
+      Object.entries(functionColumnData).forEach(([columnId, columnData]) => {
+        if (columnData[objKey]) {
+          functionData[columnId] = columnData[objKey];
+        }
+      });
+
+      // Return object with function data merged in
+      return {
+        ...obj,
+        ...functionData,
+      };
+    });
+  }, [baseResult.data, functionColumnData]);
+
+  // Return the result with merged data
+  return {
+    ...baseResult,
+    data: mergedData,
+  } as UseObjectTableDataResult<Q, RDPs>;
 }

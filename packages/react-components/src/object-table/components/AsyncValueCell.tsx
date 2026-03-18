@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,30 @@
  * limitations under the License.
  */
 
-export const SELECTION_COLUMN_ID = "__selection__";
+import React from "react";
+import { LoadingCellContent } from "../LoadingCell.js";
 
-export const DEFAULT_COLUMN_WIDTH = 80;
+interface AsyncValueCellProps {
+  data?: unknown;
+  isLoading: boolean;
+  error?: Error;
+}
+
+export function AsyncValueCell({
+  data,
+  isLoading,
+  error,
+}: AsyncValueCellProps): React.ReactNode {
+  if (error) {
+    return "Error";
+  }
+  if (data != null) {
+    return <>{data}</>;
+  }
+  if (!isLoading) {
+    return "No value";
+  }
+  if (isLoading) {
+    return <LoadingCellContent />;
+  }
+}

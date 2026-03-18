@@ -16,8 +16,10 @@
 
 import type { CellContext, RowData } from "@tanstack/react-table";
 import React from "react";
+import { AsyncValueCell } from "./components/AsyncValueCell.js";
 import { EditableCell } from "./EditableCell.js";
 import { getCellId } from "./utils/getCellId.js";
+import type { AsyncCellData } from "./utils/types.js";
 
 export function renderDefaultCell<TData extends RowData>(
   cellContext: CellContext<TData, unknown>,
@@ -25,8 +27,25 @@ export function renderDefaultCell<TData extends RowData>(
   const meta = cellContext.table.options.meta;
   const columnMeta = cellContext.column.columnDef.meta;
 
+  const cellValue = cellContext.getValue();
+
+  const asyncCellData = isAsyncCellData(cellValue)
+    ? cellValue
+    : undefined;
+
+  if (columnMeta?.isAsyncColumn && asyncCellData) {
+    const { data, isLoading, error } = asyncCellData;
+    return (
+      <AsyncValueCell
+        data={data}
+        isLoading={isLoading}
+        error={error}
+      />
+    );
+  }
+
   if (!columnMeta?.editable || !meta?.onCellEdit || !meta?.isInEditMode) {
-    return <>{cellContext.getValue()}</>;
+    return <>{cellValue}</>;
   }
 
   const rowId = cellContext.row.id;
@@ -35,12 +54,12 @@ export function renderDefaultCell<TData extends RowData>(
 
   const cellEdits = meta.cellEdits;
   const editedValue = cellEdits?.[cellId];
-  const currentValue = editedValue?.newValue ?? cellContext.getValue();
+  const currentValue = editedValue?.newValue ?? cellValue;
   const validationError = meta.validationErrors?.get(cellId);
 
   return (
     <EditableCell<TData>
-      initialValue={cellContext.getValue()}
+      initialValue={cellValue}
       currentValue={currentValue}
       cellId={cellId}
       dataType={columnMeta?.dataType}
@@ -55,3 +74,11 @@ export function renderDefaultCell<TData extends RowData>(
     />
   );
 }
+
+const isAsyncCellData = (value: unknown): value is AsyncCellData => {
+  return (
+    value != null
+    && typeof value === "object"
+    && "isLoading" in value
+  );
+};
