@@ -1,6 +1,6 @@
 {
   "name": "@osdk/react-components",
-  "version": "0.2.0-beta.17",
+  "version": "0.2.0-beta.19",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -58,7 +58,8 @@
     "@dnd-kit/utilities": "^3.2.2",
     "@tanstack/react-table": "^8.21.3",
     "@tanstack/react-virtual": "^3.13.13",
-    "lodash-es": "^4.17.21"
+    "lodash-es": "^4.17.21",
+    "react-hook-form": "^7.54.0"
   },
   "peerDependencies": {
     "@osdk/api": "*",

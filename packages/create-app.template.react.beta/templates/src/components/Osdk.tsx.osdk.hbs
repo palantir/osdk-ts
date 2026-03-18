@@ -1,30 +1,26 @@
-// TODO: Import your object type from "{{osdkPackage}}" and replace null below.
-// Example: import { Employee } from "{{osdkPackage}}";
-import { useOsdkObjects } from "@osdk/react/experimental";
+import { AnchorButton, Icon, Tag } from "@blueprintjs/core";
 import React from "react";
 import css from "./Osdk.module.css";
 
-export function Osdk(): React.ReactElement {
-  // @ts-expect-error Replace null with your object type from "{{osdkPackage}}"
-  const { data, isLoading, error, fetchMore } = useOsdkObjects(null);
+const DOCUMENTATION_URL =
+  "{{foundryUrl}}/workspace/developer-console/app/{{application}}/docs/guide/loading-data?language=typescript";
 
+function Osdk(): React.ReactElement {
   return (
-    <div className={css.container}>
-      {error && <div className={css.error}>Error: {error.message}</div>}
-      {isLoading && !data && <div className={css.loading}>Loading...</div>}
-      <ul className={css.list}>
-        {data?.map((obj) => (
-          <li key={obj.$primaryKey} className={css.item}>
-            {String(obj.$primaryKey)}
-          </li>
-        ))}
-      </ul>
-      {isLoading && data && <span className={css.refreshing}>Refreshing...</span>}
-      {fetchMore && (
-        <button className={css.loadMore} onClick={fetchMore}>
-          Load more
-        </button>
-      )}
+    <div className={css.osdk}>
+      <div>
+        <span>OSDK: </span>
+        <Tag minimal={true}>{{osdkPackage}}</Tag>
+      </div>
+      <AnchorButton
+        href={DOCUMENTATION_URL}
+        target="_blank"
+        rel="noreferrer"
+        variant="minimal"
+        icon={<Icon icon="book" aria-label="Book icon"></Icon>}
+      >
+        View documentation
+      </AnchorButton>
     </div>
   );
 }

@@ -1,48 +1,6 @@
-.container {
+.osdk {
   align-self: baseline;
+  display: flex;
+  justify-content: space-between;
   width: 800px;
-}
-
-.error {
-  color: #c23030;
-  margin-bottom: 8px;
-}
-
-.loading {
-  color: #5f6b7c;
-  padding: 8px 0;
-}
-
-.list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.item {
-  border-bottom: 1px solid #e1e4e8;
-  padding: 8px 0;
-}
-
-.item:last-child {
-  border-bottom: none;
-}
-
-.refreshing {
-  color: #5f6b7c;
-  font-size: 0.875rem;
-  margin-top: 8px;
-}
-
-.loadMore {
-  margin-top: 12px;
-  padding: 6px 12px;
-  border: 1px solid #e1e4e8;
-  border-radius: 4px;
-  background: #fff;
-  cursor: pointer;
-}
-
-.loadMore:hover {
-  background: #f6f8fa;
 }

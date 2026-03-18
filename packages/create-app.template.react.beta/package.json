@@ -1,7 +1,7 @@
 {
   "name": "@osdk/create-app.template.react.beta",
   "private": true,
-  "version": "2.8.0-beta.20",
+  "version": "2.8.0-beta.22",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -34,6 +34,9 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
+    "@blueprintjs/core": "^6.9.1",
+    "@blueprintjs/icons": "^6.6.0",
+    "normalize.css": "^8.0.1",
     "react": "^18",
     "react-dom": "^18",
     "react-router-dom": "^6.30.1"

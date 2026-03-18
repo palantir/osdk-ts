@@ -30,6 +30,7 @@ import { additionalContext } from "../../../Client.js";
 import type { SpecificLinkPayload } from "../../LinkPayload.js";
 import type { Status } from "../../ObservableClient/common.js";
 import type { ObserveLinks } from "../../ObservableClient/ObserveLink.js";
+import type { CollectionConnectableParams } from "../base-list/BaseCollectionQuery.js";
 import { BaseListQuery } from "../base-list/BaseListQuery.js";
 import type { BatchContext } from "../BatchContext.js";
 import type { CacheKey } from "../CacheKey.js";
@@ -67,6 +68,18 @@ export class SpecificLinkQuery extends BaseListQuery<
   #whereClause: Canonical<SimpleWhereClause>;
   #orderBy: Canonical<Record<string, "asc" | "desc" | undefined>>;
   #select: Canonical<readonly string[]> | undefined;
+
+  protected override createPayload(
+    params: CollectionConnectableParams,
+  ): SpecificLinkPayload {
+    return {
+      ...super.createPayload(params),
+      linkedObjectsBySourcePrimaryKey: new Map([[
+        this.#sourcePk,
+        params.resolvedData ?? [],
+      ]]),
+    };
+  }
 
   /**
    * Register changes to the cache specific to SpecificLinkQuery

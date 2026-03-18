@@ -41,7 +41,11 @@ export { ObjectTable } from "../object-table/ObjectTable.js";
 export type {
   ColumnDefinition,
   ColumnDefinitionLocator,
+  CustomColumnLocator,
+  FunctionColumnLocator,
   ObjectTableProps,
+  PropertyColumnLocator,
+  RdpColumnLocator,
 } from "../object-table/ObjectTableApi.js";
 export type { CellEditInfo } from "../object-table/utils/types.js";
 

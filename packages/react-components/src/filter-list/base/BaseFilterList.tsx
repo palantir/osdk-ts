@@ -16,8 +16,9 @@
 
 import { Button } from "@base-ui/react/button";
 import classnames from "classnames";
-import React from "react";
+import React, { useCallback } from "react";
 import type { BaseFilterListProps } from "./BaseFilterListApi.js";
+import { ExpandIcon } from "./FilterIcons.js";
 import styles from "./FilterList.module.css";
 import { FilterListContent } from "./FilterListContent.js";
 import { FilterListHeader } from "./FilterListHeader.js";
@@ -52,53 +53,76 @@ export function BaseFilterList<D>(
 
   const showAddButton = renderAddFilterButton != null || onFilterAdded != null;
 
+  const handleExpand = useCallback(() => {
+    onCollapsedChange?.(false);
+  }, [onCollapsedChange]);
+
+  const isCollapsed = collapsed && onCollapsedChange != null;
+
   return (
-    <div
-      className={classnames(styles.filterList, className)}
-      data-active-count={activeFilterCount}
-    >
-      {showHeader && (
-        <FilterListHeader
-          title={title}
-          titleIcon={titleIcon}
-          collapsed={collapsed}
-          onCollapsedChange={onCollapsedChange}
-          showResetButton={showResetButton}
-          onReset={onReset}
-          showActiveFilterCount={showActiveFilterCount}
-          activeFilterCount={activeFilterCount}
-        />
+    <div className={classnames(styles.filterList, className)}>
+      {isCollapsed && (
+        <div
+          className={styles.filterListCollapsed}
+          data-collapsed="true"
+        >
+          <Button
+            className={styles.expandButton}
+            onClick={handleExpand}
+            aria-label="Expand filters"
+          >
+            <ExpandIcon />
+          </Button>
+          <span className={styles.collapsedLabel}>{title ?? "Filters"}</span>
+        </div>
       )}
-
       <div
-        className={styles.contentWrapper}
-        data-collapsed={collapsed}
+        className={classnames(
+          styles.expandedContent,
+          isCollapsed && styles.hiddenContent,
+        )}
+        data-active-count={activeFilterCount}
       >
-        <div className={styles.contentInner}>
-          <FilterListContent
-            filterDefinitions={filterDefinitions}
-            filterStates={filterStates}
-            onFilterStateChanged={onFilterStateChanged}
-            onFilterRemoved={onFilterRemoved}
-            renderInput={renderInput}
-            getFilterKey={getFilterKey}
-            getFilterLabel={getFilterLabel}
-            enableSorting={enableSorting}
+        {showHeader && (
+          <FilterListHeader
+            title={title}
+            titleIcon={titleIcon}
+            collapsed={collapsed}
+            onCollapsedChange={onCollapsedChange}
+            showResetButton={showResetButton}
+            onReset={onReset}
+            showActiveFilterCount={showActiveFilterCount}
+            activeFilterCount={activeFilterCount}
           />
-        </div>
-      </div>
+        )}
 
-      {!collapsed && showAddButton && (
-        <div className={styles.addButtonContainer}>
-          {renderAddFilterButton
-            ? renderAddFilterButton()
-            : (
-              <Button type="button" className={styles.addButton}>
-                + Add filter
-              </Button>
-            )}
-        </div>
-      )}
+        <FilterListContent
+          filterDefinitions={filterDefinitions}
+          filterStates={filterStates}
+          onFilterStateChanged={onFilterStateChanged}
+          onFilterRemoved={onFilterRemoved}
+          renderInput={renderInput}
+          getFilterKey={getFilterKey}
+          getFilterLabel={getFilterLabel}
+          enableSorting={enableSorting}
+        />
+
+        {showAddButton && (
+          <div className={styles.addButtonContainer}>
+            {renderAddFilterButton
+              ? renderAddFilterButton()
+              : (
+                <Button
+                  type="button"
+                  className={styles.addButton}
+                  onClick={onFilterAdded}
+                >
+                  + Add filter
+                </Button>
+              )}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
