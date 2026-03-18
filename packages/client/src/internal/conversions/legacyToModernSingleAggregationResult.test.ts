@@ -16,6 +16,7 @@
 
 import { describe, expect, it } from "vitest";
 import { legacyToModernSingleAggregationResult } from "./legacyToModernSingleAggregationResult.js";
+import { modernToLegacyAggregationClause } from "./modernToLegacyAggregationClause.js";
 
 describe("legacyToModernSingleAggregationResult", () => {
   it("returns undefined metric values when metrics array is empty (aggregating over 0 objects)", () => {
@@ -27,5 +28,41 @@ describe("legacyToModernSingleAggregationResult", () => {
       { "priority:max": "unordered" },
     );
     expect(result).toEqual({ priority: { max: undefined } });
+  });
+
+  it("returns populated metric values when metrics are present", () => {
+    const result = legacyToModernSingleAggregationResult(
+      {
+        group: {},
+        metrics: [
+          { name: "priority.max", value: 5 },
+          { name: "priority.avg", value: 3 },
+        ],
+      },
+      { "priority:max": "unordered", "priority:avg": "unordered" },
+    );
+    expect(result).toEqual({ priority: { max: 5, avg: 3 } });
+  });
+
+  it("modernToLegacyAggregationClause output can be used as metrics input", () => {
+    const select = {
+      "salary:avg": "unordered",
+      "salary:max": "unordered",
+      "age:min": "unordered",
+    } as const;
+
+    const wireMetrics = modernToLegacyAggregationClause(select).map(
+      (agg) => ({ name: agg.name!, value: 42 }),
+    );
+
+    const result = legacyToModernSingleAggregationResult(
+      { group: {}, metrics: wireMetrics },
+      select,
+    );
+
+    expect(result).toEqual({
+      salary: { avg: 42, max: 42 },
+      age: { min: 42 },
+    });
   });
 });
