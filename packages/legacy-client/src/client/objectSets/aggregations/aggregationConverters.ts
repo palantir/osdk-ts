@@ -49,6 +49,12 @@ export function convertToAggregationResult<
   aggregationResponse: AggregateObjectsResponseV2,
   aggregationRequest: InternalAggregationRequest,
 ): AggregationResult<TBucketGroup, TMetrics> {
+  if (!aggregationResponse.data || !Array.isArray(aggregationResponse.data)) {
+    throw new Error(
+      `Aggregation request failed: ${JSON.stringify(aggregationResponse)}`,
+    );
+  }
+
   if (
     aggregationRequest.groupBy
     && aggregationRequest.groupBy.length === 0
