@@ -16,7 +16,7 @@ All components import from `@osdk/react-components/experimental`.
 
 ## Documentation
 
-Read progressively — start with what you need, go deeper as required:
+Before using any component, read the relevant doc:
 
-1. **Setup & installation**: [README.md](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/README.md) — provider, CSS layers, peer dependencies
-2. **ObjectTable deep dive**: [docs/ObjectTable.md](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/ObjectTable.md) — full props reference, column definitions, 14+ examples, theming, troubleshooting
+- **Setup & installation**: Read [README.md](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/README.md) for provider, CSS layers, and peer dependencies
+- **ObjectTable**: Read [docs/ObjectTable.md](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/ObjectTable.md) for props, column definitions, examples, theming, and troubleshooting
