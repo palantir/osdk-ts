@@ -239,7 +239,7 @@ export function common<
 
   function tryBackgroundRefresh() {
     const refreshFn = refresh ?? signIn;
-    refreshFn().catch((e) => {
+    refreshFn().catch((e: unknown) => {
       if (process.env.NODE_ENV !== "production") {
         // eslint-disable-next-line no-console
         console.warn("Background token refresh failed", e);
