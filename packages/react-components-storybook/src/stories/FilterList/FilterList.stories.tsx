@@ -268,34 +268,59 @@ export const Default: Story = {
   },
 };
 
-export const WithAllFilterTypes: Story = {
-  parameters: {
-    docs: {
-      source: {
-        code: `const filterDefinitions = [
-  { type: "PROPERTY", key: "department", label: "Department", filterComponent: "LISTOGRAM", filterState: { type: "EXACT_MATCH", values: [] } },
-  { type: "PROPERTY", key: "team", label: "Team", filterComponent: "CHECKBOX_LIST", filterState: { type: "SELECT", selectedValues: [] } },
-  { type: "PROPERTY", key: "fullName", label: "Full Name", filterComponent: "CONTAINS_TEXT", filterState: { type: "CONTAINS_TEXT" } },
-  { type: "PROPERTY", key: "firstFullTimeStartDate", label: "Start Date", filterComponent: "DATE_RANGE", filterState: { type: "DATE_RANGE" } },
-  { type: "PROPERTY", key: "employeeNumber", label: "Employee Number", filterComponent: "NUMBER_RANGE", filterState: { type: "NUMBER_RANGE" } },
-  { type: "PROPERTY", key: "locationCity", label: "Location City", filterComponent: "CHECKBOX_LIST", filterState: { type: "SELECT", selectedValues: [] } },
-];
+function WithAllFilterTypesStory() {
+  const objectSet = useEmployeeObjectSet();
+  const [filterClause, setFilterClause] = useState<
+    WhereClause<Employee> | undefined
+  >(undefined);
 
-<FilterList objectSet={client(Employee)} filterDefinitions={filterDefinitions} />`,
-      },
-    },
-  },
-  render: () => {
-    const objectSet = useEmployeeObjectSet();
-    return (
+  const handleFilterRemoved = useCallback((filterKey: string) => {
+    // eslint-disable-next-line no-console
+    console.log("Removed filter:", filterKey);
+  }, []);
+
+  return (
+    <div style={FLEX_ROW_STYLE}>
       <div style={SIDEBAR_STYLE}>
         <FilterList
           objectSet={objectSet}
           filterDefinitions={sharedFilterDefinitions}
+          filterClause={filterClause}
+          onFilterClauseChanged={setFilterClause}
+          onFilterRemoved={handleFilterRemoved}
         />
       </div>
-    );
+      <div style={FLEX_FILL_STYLE}>
+        <strong>Filter Clause (JSON):</strong>
+        <pre style={PRE_STYLE}>
+          {filterClause
+            ? JSON.stringify(filterClause, null, 2)
+            : "(no active filters)"}
+        </pre>
+      </div>
+    </div>
+  );
+}
+
+export const WithAllFilterTypes: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story: "All filter component types with interactive features enabled. "
+          + "Hover filter items to reveal search, remove, and exclude actions.",
+      },
+      source: {
+        code: `<FilterList
+  objectSet={client(Employee)}
+  filterDefinitions={filterDefinitions}
+  filterClause={filterClause}
+  onFilterClauseChanged={setFilterClause}
+  onFilterRemoved={handleFilterRemoved}
+/>`,
+      },
+    },
   },
+  render: () => <WithAllFilterTypesStory />,
 };
 
 export const WithTitleAndIcon: Story = {
@@ -756,6 +781,11 @@ function CombinedWithObjectTableStory() {
     WhereClause<Employee> | undefined
   >(undefined);
 
+  const handleFilterRemoved = useCallback((filterKey: string) => {
+    // eslint-disable-next-line no-console
+    console.log("Removed filter:", filterKey);
+  }, []);
+
   return (
     <div style={COMBINED_LAYOUT_STYLE}>
       <div style={SIDEBAR_FIXED_STYLE}>
@@ -765,6 +795,8 @@ function CombinedWithObjectTableStory() {
           title="Employee Filters"
           showResetButton={true}
           showActiveFilterCount={true}
+          enableSorting={true}
+          onFilterRemoved={handleFilterRemoved}
           filterClause={filterClause}
           onFilterClauseChanged={setFilterClause}
         />
@@ -790,6 +822,8 @@ export const CombinedWithObjectTable: Story = {
       title="Employee Filters"
       showResetButton={true}
       showActiveFilterCount={true}
+      enableSorting={true}
+      onFilterRemoved={handleFilterRemoved}
       filterClause={filterClause}
       onFilterClauseChanged={setFilterClause}
     />
@@ -802,77 +836,6 @@ export const CombinedWithObjectTable: Story = {
     },
   },
   render: () => <CombinedWithObjectTableStory />,
-};
-
-// --- New stories for features from #2749-#2752 ---
-
-function WithExcludeToggleStory() {
-  const objectSet = useEmployeeObjectSet();
-  const [filterClause, setFilterClause] = useState<
-    WhereClause<Employee> | undefined
-  >(undefined);
-
-  const filterDefinitions = useMemo(
-    (): FilterDefinitionUnion<Employee>[] => [
-      departmentFilter,
-      teamFilter,
-      fullNameFilter,
-    ],
-    [],
-  );
-
-  return (
-    <div style={FLEX_ROW_STYLE}>
-      <div style={SIDEBAR_STYLE}>
-        <FilterList
-          objectSet={objectSet}
-          filterDefinitions={filterDefinitions}
-          filterClause={filterClause}
-          onFilterClauseChanged={setFilterClause}
-        />
-      </div>
-      <div style={FLEX_FILL_STYLE}>
-        <strong>Filter Clause (with exclude support):</strong>
-        <pre style={PRE_STYLE}>
-          {filterClause
-            ? JSON.stringify(filterClause, null, 2)
-            : "(no active filters)"}
-        </pre>
-      </div>
-    </div>
-  );
-}
-
-export const WithExcludeToggle: Story = {
-  name: "Exclude / Include Toggle",
-  parameters: {
-    docs: {
-      description: {
-        story:
-          "Hover over a filter item to reveal the overflow menu (three dots). "
-          + "Click it to show the exclude row, where you can toggle between "
-          + "\"Keeping\" and \"Excluding\" matching values. "
-          + "Supported by LISTOGRAM, CHECKBOX_LIST, CONTAINS_TEXT, and TIMELINE filters.",
-      },
-      source: {
-        code: `// Hover a filter item to reveal the overflow menu button.
-// Click the overflow menu to show the exclude row.
-// The exclude dropdown toggles between "Keeping" and "Excluding".
-
-<FilterList
-  objectSet={client(Employee)}
-  filterDefinitions={[
-    { type: "PROPERTY", key: "department", filterComponent: "LISTOGRAM", filterState: { type: "EXACT_MATCH", values: [] } },
-    { type: "PROPERTY", key: "team", filterComponent: "CHECKBOX_LIST", filterState: { type: "SELECT", selectedValues: [] } },
-    { type: "PROPERTY", key: "fullName", filterComponent: "CONTAINS_TEXT", filterState: { type: "CONTAINS_TEXT" } },
-  ]}
-  filterClause={filterClause}
-  onFilterClauseChanged={setFilterClause}
-/>`,
-      },
-    },
-  },
-  render: () => <WithExcludeToggleStory />,
 };
 
 function WithRemovableFiltersStory() {
@@ -916,7 +879,7 @@ export const WithRemovableFilters: Story = {
       },
       source: {
         code:
-          `const [definitions, setDefinitions] = useState(allFilterDefinitions);
+          `const [definitions, setDefinitions] = useState(filterDefinitions);
 
 const handleFilterRemoved = (filterKey) => {
   setDefinitions(prev => prev.filter(def => def.key !== filterKey));
@@ -939,30 +902,9 @@ function WithPerFilterSearchStory() {
 
   const filterDefinitions = useMemo(
     (): FilterDefinitionUnion<Employee>[] => [
-      {
-        type: "PROPERTY",
-        id: "department-search",
-        key: "department",
-        label: "Department",
-        filterComponent: "LISTOGRAM",
-        filterState: { type: "EXACT_MATCH", values: [] },
-      } as FilterDefinitionUnion<Employee>,
-      {
-        type: "PROPERTY",
-        id: "team-search",
-        key: "team",
-        label: "Team",
-        filterComponent: "CHECKBOX_LIST",
-        filterState: { type: "SELECT", selectedValues: [] },
-      } as FilterDefinitionUnion<Employee>,
-      {
-        type: "PROPERTY",
-        id: "location-search",
-        key: "locationCity",
-        label: "Location City",
-        filterComponent: "CHECKBOX_LIST",
-        filterState: { type: "SELECT", selectedValues: [] },
-      } as FilterDefinitionUnion<Employee>,
+      departmentFilter,
+      teamFilter,
+      locationCityFilter,
     ],
     [],
   );
@@ -1006,66 +948,6 @@ export const WithPerFilterSearch: Story = {
   render: () => <WithPerFilterSearchStory />,
 };
 
-function HoverRevealActionsStory() {
-  const objectSet = useEmployeeObjectSet();
-
-  const filterDefinitions = useMemo(
-    (): FilterDefinitionUnion<Employee>[] => [
-      departmentFilter,
-      teamFilter,
-      fullNameFilter,
-      employeeNumberFilter,
-    ],
-    [],
-  );
-
-  const handleFilterRemoved = useCallback((_filterKey: string) => {
-    // eslint-disable-next-line no-console
-    console.log("Remove filter:", _filterKey);
-  }, []);
-
-  return (
-    <div style={SIDEBAR_STYLE}>
-      <FilterList
-        objectSet={objectSet}
-        filterDefinitions={filterDefinitions}
-        onFilterRemoved={handleFilterRemoved}
-        title="Hover to Reveal Actions"
-      />
-    </div>
-  );
-}
-
-export const HoverRevealActions: Story = {
-  name: "Hover-Reveal Action Buttons",
-  parameters: {
-    docs: {
-      description: {
-        story:
-          "Filter item headers show action buttons that are hidden by default and revealed on hover or focus. "
-          + "Available actions depend on the filter type:\n"
-          + "- **Search** (magnifying glass): LISTOGRAM, CHECKBOX_LIST\n"
-          + "- **Remove** (X): shown when `onFilterRemoved` is provided\n"
-          + "- **Overflow menu** (three dots): filters that support exclude mode",
-      },
-      source: {
-        code: `// Action buttons are hidden by default and appear on hover.
-// Available buttons depend on filter type and props:
-// - Search: LISTOGRAM, CHECKBOX_LIST
-// - Remove: when onFilterRemoved is provided
-// - Overflow: filters supporting exclude mode
-
-<FilterList
-  objectSet={client(Employee)}
-  filterDefinitions={filterDefinitions}
-  onFilterRemoved={handleFilterRemoved}
-/>`,
-      },
-    },
-  },
-  render: () => <HoverRevealActionsStory />,
-};
-
 function ExcludeWithWhereClauseStory() {
   const objectSet = useEmployeeObjectSet();
   const [filterClause, setFilterClause] = useState<
@@ -1076,6 +958,7 @@ function ExcludeWithWhereClauseStory() {
     (): FilterDefinitionUnion<Employee>[] => [
       departmentFilter,
       teamFilter,
+      fullNameFilter,
       employeeNumberFilter,
     ],
     [],
