@@ -87,7 +87,7 @@ const columnDefinitions: ColumnDefinition<
       type: "function",
       id: "testColumn",
       queryDefinition: mockQueryDefinition,
-      getParams: ((objectSet: ObjectSet<TestObject>) => ({
+      getFunctionParams: ((objectSet: ObjectSet<TestObject>) => ({
         [OBJ_SET_KEY]: objectSet,
       })) as any,
       getKey: (obj) => `${obj.$objectType}:${obj.$primaryKey}`,
@@ -136,22 +136,22 @@ describe("useFunctionColumnsData", () => {
         useFunctionColumnsData(mockObjectSet, mockObjects, columnDefinitions),
     );
 
-    // Initially shows loading state
+    // Initially shows isLoading state
     expect(result.current).toEqual({
       testColumn: {
-        obj1: { loading: true },
-        obj2: { loading: true },
+        obj1: { isLoading: true },
+        obj2: { isLoading: true },
       },
     });
 
     await waitFor(() => {
-      expect(result.current.testColumn.obj1.loading).toBe(false);
+      expect(result.current.testColumn.obj1.isLoading).toBe(false);
     });
 
     expect(result.current).toEqual({
       testColumn: {
-        obj1: { data: { value: "result1" }, loading: false },
-        obj2: { data: { value: "result2" }, loading: false },
+        obj1: { data: { value: "result1" }, isLoading: false },
+        obj2: { data: { value: "result2" }, isLoading: false },
       },
     });
 
@@ -160,7 +160,7 @@ describe("useFunctionColumnsData", () => {
     });
   });
 
-  it("should extract propertyKey from result when specified", async () => {
+  it("should extract value using getValue function when specified", async () => {
     const mockObjects = [
       {
         $objectType: "TestObject",
@@ -190,10 +190,10 @@ describe("useFunctionColumnsData", () => {
           type: "function",
           id: "testColumn",
           queryDefinition: mockQueryDefinition,
-          getParams: ((objectSet: ObjectSet<TestObject>) => ({
+          getFunctionParams: ((objectSet: ObjectSet<TestObject>) => ({
             [OBJ_SET_KEY]: objectSet,
           })) as any,
-          propertyKey: "status",
+          getValue: (cellData) => (cellData as { status: string })?.status,
           getKey: (obj) => `${obj.$objectType}:${obj.$primaryKey}`,
         },
       },
@@ -205,12 +205,12 @@ describe("useFunctionColumnsData", () => {
     );
 
     await waitFor(() => {
-      expect(result.current.testColumn.obj1.loading).toBe(false);
+      expect(result.current.testColumn.obj1.isLoading).toBe(false);
     });
 
     expect(result.current).toEqual({
       testColumn: {
-        obj1: { data: "active", loading: false },
+        obj1: { data: "active", isLoading: false },
       },
     });
   });
@@ -250,10 +250,10 @@ describe("useFunctionColumnsData", () => {
           type: "function",
           id: "statusColumn",
           queryDefinition: mockQueryDefinition as any,
-          getParams: ((objectSet: ObjectSet<TestObject>) => ({
+          getFunctionParams: ((objectSet: ObjectSet<TestObject>) => ({
             [OBJ_SET_KEY]: objectSet,
           })) as any,
-          propertyKey: "status",
+          getValue: (cellData) => (cellData as any)?.status,
           getKey: (obj) => `${obj.$objectType}:${obj.$primaryKey}`,
         },
       },
@@ -262,10 +262,10 @@ describe("useFunctionColumnsData", () => {
           type: "function",
           id: "timestampColumn",
           queryDefinition: mockQueryDefinition as any,
-          getParams: ((objectSet: ObjectSet<TestObject>) => ({
+          getFunctionParams: ((objectSet: ObjectSet<TestObject>) => ({
             [OBJ_SET_KEY]: objectSet,
           })) as any,
-          propertyKey: "timestamp",
+          getValue: (cellData) => (cellData as any)?.timestamp,
           getKey: (obj) => `${obj.$objectType}:${obj.$primaryKey}`,
         },
       },
@@ -277,15 +277,15 @@ describe("useFunctionColumnsData", () => {
     );
 
     await waitFor(() => {
-      expect(result.current.statusColumn.obj1.loading).toBe(false);
+      expect(result.current.statusColumn.obj1.isLoading).toBe(false);
     });
 
     expect(result.current).toEqual({
       statusColumn: {
-        obj1: { data: "active", loading: false },
+        obj1: { data: "active", isLoading: false },
       },
       timestampColumn: {
-        obj1: { data: "2024-01-01", loading: false },
+        obj1: { data: "2024-01-01", isLoading: false },
       },
     });
 
@@ -334,10 +334,10 @@ describe("useFunctionColumnsData", () => {
           type: "function",
           id: "statusColumn",
           queryDefinition: mockQueryDefinition as any,
-          getParams: ((objectSet: ObjectSet<TestObject>) => ({
+          getFunctionParams: ((objectSet: ObjectSet<TestObject>) => ({
             [OBJ_SET_KEY]: objectSet,
           })) as any,
-          propertyKey: "status",
+          getValue: (cellData) => (cellData as any)?.status,
           getKey: (obj) => `${obj.$objectType}:${obj.$primaryKey}`,
         },
       },
@@ -346,10 +346,10 @@ describe("useFunctionColumnsData", () => {
           type: "function",
           id: "timestampColumn",
           queryDefinition: mockQueryDefinition2 as any,
-          getParams: ((objectSet: ObjectSet<TestObject>) => ({
+          getFunctionParams: ((objectSet: ObjectSet<TestObject>) => ({
             [OBJ_SET_KEY]: objectSet,
           })) as any,
-          propertyKey: "timestamp",
+          getValue: (cellData) => (cellData as any)?.timestamp,
           getKey: (obj) => `${obj.$objectType}:${obj.$primaryKey}`,
         },
       },
@@ -361,15 +361,15 @@ describe("useFunctionColumnsData", () => {
     );
 
     await waitFor(() => {
-      expect(result.current.statusColumn.obj1.loading).toBe(false);
+      expect(result.current.statusColumn.obj1.isLoading).toBe(false);
     });
 
     expect(result.current).toEqual({
       statusColumn: {
-        obj1: { data: "active", loading: false },
+        obj1: { data: "active", isLoading: false },
       },
       timestampColumn: {
-        obj1: { data: "2024-01-01", loading: false },
+        obj1: { data: "2024-01-01", isLoading: false },
       },
     });
 
@@ -405,19 +405,19 @@ describe("useFunctionColumnsData", () => {
 
     expect(result.current).toEqual({
       testColumn: {
-        obj1: { loading: true },
-        obj2: { loading: true },
+        obj1: { isLoading: true },
+        obj2: { isLoading: true },
       },
     });
 
     await waitFor(() => {
-      expect(result.current.testColumn.obj1.loading).toBe(false);
+      expect(result.current.testColumn.obj1.isLoading).toBe(false);
     });
 
     expect(result.current).toEqual({
       testColumn: {
-        obj1: { data: { value: "result1" }, loading: false },
-        obj2: { data: undefined, loading: false },
+        obj1: { data: { value: "result1" }, isLoading: false },
+        obj2: { data: undefined, isLoading: false },
       },
     });
 
@@ -436,13 +436,13 @@ describe("useFunctionColumnsData", () => {
     );
 
     await waitFor(() => {
-      expect(result.current.testColumn.obj1.loading).toBe(false);
+      expect(result.current.testColumn.obj1.isLoading).toBe(false);
     });
 
     expect(result.current).toEqual({
       testColumn: {
-        obj1: { error: mockError, loading: false },
-        obj2: { error: mockError, loading: false },
+        obj1: { error: mockError, isLoading: false },
+        obj2: { error: mockError, isLoading: false },
       },
     });
   });
@@ -470,7 +470,7 @@ describe("useFunctionColumnsData", () => {
           type: "function",
           id: "testColumn",
           queryDefinition: mockQueryDefinition as any,
-          getParams: ((objectSet: ObjectSet<TestObject>) => ({
+          getFunctionParams: ((objectSet: ObjectSet<TestObject>) => ({
             [OBJ_SET_KEY]: objectSet,
           })) as any,
           getKey: (obj) => `${obj.$objectType}:${obj.$primaryKey}`,
@@ -486,5 +486,96 @@ describe("useFunctionColumnsData", () => {
     unmount();
 
     expect(abortSpy).toHaveBeenCalled();
+  });
+
+  it("should execute queries in parallel and update results incrementally", async () => {
+    const mockObjects = [
+      {
+        $objectType: "TestObject",
+        $apiName: "TestObject",
+        $primaryKey: "obj1",
+      },
+    ] as Osdk.Instance<TestObject, "$allBaseProperties", TestObjectKeys, {}>[];
+
+    // Create promises that we can control the resolution of
+    let resolveQuery1: (value: any) => void;
+    let resolveQuery2: (value: any) => void;
+
+    const query1Promise = new Promise((resolve) => {
+      resolveQuery1 = resolve;
+    });
+
+    const query2Promise = new Promise((resolve) => {
+      resolveQuery2 = resolve;
+    });
+
+    // Mock the executeFunction to return controlled promises
+    mockExecuteFunction
+      .mockImplementationOnce(() => query1Promise)
+      .mockImplementationOnce(() => query2Promise);
+
+    const columnDefinitions: ColumnDefinition<
+      TestObject,
+      {},
+      {
+        column1: MockQueryDef;
+        column2: MockQueryDef;
+      }
+    >[] = [
+      {
+        locator: {
+          type: "function",
+          id: "column1",
+          queryDefinition: mockQueryDefinition as any,
+          getFunctionParams: ((objectSet: ObjectSet<TestObject>) => ({
+            [OBJ_SET_KEY]: objectSet,
+          })) as any,
+          getValue: (cellData) => (cellData as any)?.status,
+          getKey: (obj) => `${obj.$objectType}:${obj.$primaryKey}`,
+        },
+      },
+      {
+        locator: {
+          type: "function",
+          id: "column2",
+          queryDefinition: mockQueryDefinition2 as any, // Different query
+          getFunctionParams: ((objectSet: ObjectSet<TestObject>) => ({
+            [OBJ_SET_KEY]: objectSet,
+          })) as any,
+          getValue: (cellData) => (cellData as any)?.timestamp,
+          getKey: (obj) => `${obj.$objectType}:${obj.$primaryKey}`,
+        },
+      },
+    ];
+
+    const { result } = renderHook(
+      () =>
+        useFunctionColumnsData(mockObjectSet, mockObjects, columnDefinitions),
+    );
+
+    // Both should initialize with isLoading
+    expect(result.current.column1?.obj1?.isLoading).toBe(true);
+    expect(result.current.column2?.obj1?.isLoading).toBe(true);
+
+    // Resolve the first query
+    resolveQuery1!({
+      "TestObject:obj1": { status: "active" },
+    });
+
+    await waitFor(() => {
+      // With generator, we would expect column1 to have updated while column2 is still isLoading.
+      expect(result.current.column1?.obj1?.isLoading).toBe(false);
+      expect(result.current.column2?.obj1?.isLoading).toBe(true);
+    });
+
+    // Now resolve the second query
+    resolveQuery2!({
+      "TestObject:obj1": { timestamp: "2024-01-01" },
+    });
+
+    await waitFor(() => {
+      expect(result.current.column1?.obj1?.isLoading).toBe(false);
+      expect(result.current.column2?.obj1?.isLoading).toBe(false);
+    });
   });
 });

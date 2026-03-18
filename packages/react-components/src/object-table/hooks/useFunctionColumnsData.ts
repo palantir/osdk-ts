@@ -20,23 +20,20 @@ import type {
   Osdk,
   PropertyKeys,
   QueryDefinition,
-  QueryMetadata,
   SimplePropertyDef,
 } from "@osdk/api";
 import { useOsdkClient } from "@osdk/react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type {
   ColumnDefinition,
-  ColumnDefinitionLocator,
+  ExtractQueryParameters,
+  FunctionColumnLocator,
 } from "../ObjectTableApi.js";
+import type { AsyncCellData } from "../utils/types.js";
 
 export interface FunctionColumnData {
   [columnId: string]: {
-    [objectPrimaryKey: string]: {
-      data?: any;
-      loading: boolean;
-      error?: Error;
-    };
+    [objectPrimaryKey: string]: AsyncCellData;
   };
 }
 
@@ -51,21 +48,28 @@ type FunctionColumnConfig<
   queryDefinition: QueryDefinition<any>;
   getParams: (
     objectSet: ObjectSet<Q>,
-  ) => FunctionColumns[keyof FunctionColumns] extends QueryDefinition
-    ? FunctionColumns[keyof FunctionColumns]["__DefinitionMetadata"] extends
-      QueryMetadata
-      ? FunctionColumns[keyof FunctionColumns]["__DefinitionMetadata"][
-        "parameters"
-      ]
-    : never
-    : never;
+  ) => ExtractQueryParameters<FunctionColumns[keyof FunctionColumns]>;
   columnIds: Array<{
     columnId: string;
-    propertyKey?: string;
+    getValue?: (cellData: unknown) => unknown;
     getKey: (
       object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
     ) => string;
   }>;
+};
+
+type QueryResult<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
+    string,
+    never
+  >,
+> = {
+  config: FunctionColumnConfig<Q, RDPs, FunctionColumns>;
+  result: Record<string, unknown> | null;
+  error: Error | null;
+  aborted?: boolean;
 };
 
 export function useFunctionColumnsData<
@@ -86,55 +90,21 @@ export function useFunctionColumnsData<
   const [data, setData] = useState<FunctionColumnData>({});
   const abortControllerRef = useRef<AbortController | null>(null);
 
-  // Extract function column configurations and group by unique query definition
-  const functionColumnConfigs = useMemo(() => {
-    if (!columnDefinitions) return [];
+  // Function column configurations grouped by unique query definition
+  const functionColumnConfigs = useMemo(
+    () => getFunctionColumnConfigs(columnDefinitions),
+    [columnDefinitions],
+  );
 
-    // Group columns by their query definition apiName
-    const configsByApiName = new Map<
-      string,
-      FunctionColumnConfig<Q, RDPs, FunctionColumns>
-    >();
+  const stableObjects = useStableObjects(objects);
 
-    columnDefinitions.forEach((colDef) => {
-      if (colDef.locator.type === "function") {
-        const locator = colDef.locator as
-          & ColumnDefinitionLocator<Q, RDPs, FunctionColumns>
-          & { type: "function" };
-
-        const apiName = locator.queryDefinition.apiName;
-        const existingConfig = configsByApiName.get(apiName);
-
-        if (existingConfig) {
-          // Add this column to the existing config
-          existingConfig.columnIds.push({
-            columnId: String(locator.id),
-            propertyKey: locator.propertyKey,
-            getKey: locator.getKey,
-          });
-        } else {
-          // Create new config
-          configsByApiName.set(apiName, {
-            queryDefinition: locator.queryDefinition,
-            getParams: locator.getParams,
-            columnIds: [{
-              columnId: String(locator.id),
-              propertyKey: locator.propertyKey,
-              getKey: locator.getKey,
-            }],
-          });
-        }
-      }
-    });
-
-    return Array.from(configsByApiName.values());
-  }, [columnDefinitions]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const stableObjectSet = useMemo(() => objectSet, [JSON.stringify(objectSet)]);
 
   useEffect(() => {
     if (
-      !objects || objects.length === 0
-      || functionColumnConfigs.length === 0
-      || !objectSet
+      !stableObjects || stableObjects.length === 0
+      || functionColumnConfigs.length === 0 || !stableObjectSet
     ) {
       return;
     }
@@ -147,112 +117,134 @@ export function useFunctionColumnsData<
     const abortController = new AbortController();
     abortControllerRef.current = abortController;
 
-    const fetchAllFunctionColumns = async () => {
-      const newData: FunctionColumnData = {};
+    const executeQueries = async () => {
+      if (!stableObjectSet) {
+        return;
+      }
 
-      // Initialize loading state for all columns and objects
-      functionColumnConfigs.forEach(config => {
-        config.columnIds.forEach(({ columnId }) => {
-          newData[columnId] = {};
-          objects.forEach(obj => {
-            const key = String(obj.$primaryKey);
-            newData[columnId][key] = { loading: true };
-          });
-        });
-      });
-
-      setData(newData);
+      initializeFunctionColumnData(
+        functionColumnConfigs,
+        stableObjects,
+        setData,
+      );
 
       // Process query results as they complete
       for await (
-        const queryResult of executeQueries(
+        const queryResult of executeQueriesGenerator(
           functionColumnConfigs,
-          objectSet!,
+          stableObjectSet,
           client,
+          abortController.signal,
         )
       ) {
-        const { config, result, error } = queryResult;
-
         if (abortController.signal.aborted) {
           break;
         }
 
-        if (error) {
-          // Set error for all objects in all columns that use this query
-          config.columnIds.forEach(({ columnId }) => {
-            objects.forEach(obj => {
-              const key = String(obj.$primaryKey);
-              setData(prev => ({
-                ...prev,
-                [columnId]: {
-                  ...prev[columnId],
-                  [key]: {
-                    error: error instanceof Error
-                      ? error
-                      : new Error(String(error)),
-                    loading: false,
-                  },
-                },
-              }));
-            });
-          });
-        } else if (result) {
-          // Process the FunctionsMap result
-          // The result should be a map of object -> value or object -> custom type
-          objects.forEach(obj => {
-            const key = String(obj.$primaryKey);
-
-            // Process each column that uses this query result
-            config.columnIds.forEach(
-              ({ columnId, propertyKey, getKey: columnGetKey }) => {
-                // Use column-specific getKey function
-                const customKey = columnGetKey(obj);
-                const rawData = result[customKey];
-
-                let cellData = rawData;
-
-                // If propertyKey is specified, extract that property from custom type
-                if (
-                  propertyKey && cellData && typeof cellData === "object"
-                ) {
-                  cellData = cellData[propertyKey];
-                }
-
-                setData(prev => ({
-                  ...prev,
-                  [columnId]: {
-                    ...prev[columnId],
-                    [key]: {
-                      data: cellData,
-                      loading: false,
-                    },
-                  },
-                }));
-              },
-            );
-          });
+        const { config, result, error, aborted } = queryResult;
+        if (!aborted) {
+          processQueryResult(config, result, error, stableObjects, setData);
         }
       }
     };
 
-    fetchAllFunctionColumns();
+    void executeQueries();
 
     return () => {
       abortController.abort();
+      abortControllerRef.current = null;
     };
-  }, [objects, functionColumnConfigs, client, objectSet]);
+  }, [functionColumnConfigs, stableObjects, stableObjectSet, client]);
 
   return data;
 }
 
+function getFunctionColumnConfigs<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
+    string,
+    never
+  >,
+>(
+  columnDefinitions?: Array<ColumnDefinition<Q, RDPs, FunctionColumns>>,
+): Array<FunctionColumnConfig<Q, RDPs, FunctionColumns>> {
+  if (!columnDefinitions) return [];
+
+  // Group columns by their query definition apiName
+  const configsByApiName = new Map<
+    string,
+    FunctionColumnConfig<Q, RDPs, FunctionColumns>
+  >();
+
+  columnDefinitions.forEach((colDef) => {
+    if (colDef.locator.type === "function") {
+      const locator = colDef.locator as FunctionColumnLocator<
+        Q,
+        RDPs,
+        FunctionColumns
+      >;
+
+      const apiName = locator.queryDefinition.apiName;
+      const existingConfig = configsByApiName.get(apiName);
+
+      if (existingConfig) {
+        // Add this column to the existing config
+        existingConfig.columnIds.push({
+          columnId: String(locator.id),
+          getValue: locator.getValue,
+          getKey: locator.getKey,
+        });
+      } else {
+        // Create new config
+        configsByApiName.set(apiName, {
+          queryDefinition: locator.queryDefinition,
+          getParams: locator.getFunctionParams,
+          columnIds: [{
+            columnId: String(locator.id),
+            getValue: locator.getValue,
+            getKey: locator.getKey,
+          }],
+        });
+      }
+    }
+  });
+
+  return Array.from(configsByApiName.values());
+}
+
+const useStableObjects = <
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+>(
+  objects:
+    | Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>[]
+    | undefined,
+):
+  | Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>[]
+  | undefined =>
+{
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  return useMemo(() => objects, [
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    JSON.stringify(
+      (objects ?? []).map(item => ({
+        $apiName: item.$apiName,
+        $primaryKey: item.$primaryKey,
+      })).sort((a, b) => {
+        if (a.$apiName !== b.$apiName) {
+          return a.$apiName.localeCompare(b.$apiName);
+        }
+        return String(a.$primaryKey).localeCompare(String(b.$primaryKey));
+      }),
+    ),
+  ]);
+};
+
 /**
- * Generator function that executes function column queries
- * @param functionColumnConfigs - Array of function column configurations
- * @param objectSet - The object set to query
- * @param client - The OSDK client instance
- * @yields Promise with query result
+ * Generator that yields query results as they complete while maintaining parallel execution
  */
-async function* executeQueries<
+async function* executeQueriesGenerator<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
@@ -263,22 +255,178 @@ async function* executeQueries<
   functionColumnConfigs: Array<FunctionColumnConfig<Q, RDPs, FunctionColumns>>,
   objectSet: ObjectSet<Q>,
   client: ReturnType<typeof useOsdkClient>,
-) {
-  for (const config of functionColumnConfigs) {
-    const queryPromise = (async () => {
-      try {
-        const params = config.getParams(objectSet);
+  signal?: AbortSignal,
+): AsyncGenerator<QueryResult<Q, RDPs, FunctionColumns>, void, unknown> {
+  // Start all queries in parallel
+  const queryPromises = functionColumnConfigs.map(config =>
+    createQueryPromise(config, objectSet, client, signal)
+  ) as Array<Promise<QueryResult<Q, RDPs, FunctionColumns>>>;
 
-        const result = await client(config.queryDefinition).executeFunction(
-          params,
-        );
+  // Create a copy of promises array that we can mutate
+  const pendingPromises = [...queryPromises];
 
-        return { config, result, error: null };
-      } catch (error) {
-        return { config, result: null, error };
-      }
-    })();
+  // Yield results as they complete using Promise.race
+  while (pendingPromises.length > 0) {
+    const result = await Promise.race(
+      pendingPromises.map((promise, index) =>
+        promise.then(result => ({ result, index }))
+      ),
+    );
 
-    yield queryPromise;
+    // Yield the completed result
+    yield result.result;
+
+    // Remove the completed promise from the pending list
+    pendingPromises.splice(result.index, 1);
+  }
+}
+
+/**
+ * Create a promise that executes a function column query
+ */
+function createQueryPromise<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
+    string,
+    never
+  >,
+>(
+  config: FunctionColumnConfig<Q, RDPs, FunctionColumns>,
+  objectSet: ObjectSet<Q>,
+  client: ReturnType<typeof useOsdkClient>,
+  signal?: AbortSignal,
+): Promise<QueryResult<Q, RDPs, FunctionColumns>> {
+  return new Promise((resolve) => {
+    if (signal?.aborted) {
+      resolve({ config, result: null, error: null, aborted: true });
+      return;
+    }
+
+    const params = config.getParams(objectSet);
+
+    client(config.queryDefinition)
+      .executeFunction(params)
+      .then((result: Record<string, unknown>) => {
+        // Check if aborted during execution
+        if (signal?.aborted) {
+          resolve({ config, result: null, error: null, aborted: true });
+        } else {
+          resolve({ config, result, error: null });
+        }
+      })
+      .catch((error: unknown) => {
+        // Check if aborted during error handling
+        if (signal?.aborted) {
+          resolve({ config, result: null, error: null, aborted: true });
+        } else {
+          resolve({
+            config,
+            result: null,
+            error: error instanceof Error ? error : new Error(String(error)),
+          });
+        }
+      });
+  });
+}
+
+/**
+ * Initialize function column data with isLoading state for all columns and objects
+ */
+function initializeFunctionColumnData<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
+    string,
+    never
+  >,
+>(
+  functionColumnConfigs: Array<FunctionColumnConfig<Q, RDPs, FunctionColumns>>,
+  objects: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>[],
+  setData: React.Dispatch<React.SetStateAction<FunctionColumnData>>,
+): void {
+  setData(prev => {
+    const newData = { ...prev };
+
+    functionColumnConfigs.forEach(config => {
+      config.columnIds.forEach(({ columnId }) => {
+        // Initialize column if it doesn't exist
+        if (!newData[columnId]) {
+          newData[columnId] = {};
+        }
+
+        objects.forEach(obj => {
+          const key = String(obj.$primaryKey);
+          // Only set isLoading state if this object's data doesn't already exist
+          if (!newData[columnId][key]) {
+            newData[columnId][key] = { isLoading: true };
+          }
+        });
+      });
+    });
+
+    return newData;
+  });
+}
+
+function processQueryResult<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
+    string,
+    never
+  >,
+>(
+  config: FunctionColumnConfig<Q, RDPs, FunctionColumns>,
+  result: Record<string, unknown> | null,
+  error: Error | null,
+  objects: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>[],
+  setData: React.Dispatch<React.SetStateAction<FunctionColumnData>>,
+): void {
+  if (error) {
+    // Set error for all objects in all columns that use this query
+    config.columnIds.forEach(({ columnId }) => {
+      objects.forEach(obj => {
+        const key = String(obj.$primaryKey);
+        setData(prev => ({
+          ...prev,
+          [columnId]: {
+            ...prev[columnId],
+            [key]: {
+              error: error instanceof Error
+                ? error
+                : new Error(String(error)),
+              isLoading: false,
+            },
+          },
+        }));
+      });
+    });
+  } else if (result) {
+    // Process the FunctionsMap result
+    objects.forEach(obj => {
+      const key = String(obj.$primaryKey);
+
+      // Process each column that uses this query result
+      config.columnIds.forEach(
+        ({ columnId, getValue, getKey: columnGetKey }) => {
+          const customKey = columnGetKey(obj);
+          const rawData = result[customKey];
+
+          const cellData = getValue ? getValue(rawData) : rawData;
+
+          setData(prev => ({
+            ...prev,
+            [columnId]: {
+              ...prev[columnId],
+              [key]: {
+                data: cellData,
+                isLoading: false,
+              },
+            },
+          }));
+        },
+      );
+    });
   }
 }

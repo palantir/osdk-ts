@@ -461,7 +461,7 @@ describe(useColumnDefs, () => {
             type: "function",
             id: "myFunction",
             queryDefinition: {} as any,
-            getParams: () => ({}),
+            getFunctionParams: () => ({}),
             getKey: (object) => String(object.$primaryKey),
           },
           width: 150,

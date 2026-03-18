@@ -186,7 +186,7 @@ describe(useObjectTableData, () => {
           type: "function",
           id: "myFunction",
           queryDefinition: {} as any,
-          getParams: () => ({}),
+          getFunctionParams: () => ({}),
           getKey: (object) => String(object.$primaryKey),
         },
       },
