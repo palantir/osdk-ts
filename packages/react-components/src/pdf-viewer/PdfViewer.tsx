@@ -49,6 +49,7 @@ export function PdfViewer({
   const { document, numPages, loading, error } = usePdfDocument(src);
   const [scale, setScale] = useState(initialScale);
   const [sidebarOpen, setSidebarOpen] = useState(initialSidebarOpen);
+  const [currentPage, setCurrentPage] = useState(initialPage);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const search = usePdfSearch();
@@ -66,11 +67,28 @@ export function PdfViewer({
     overscan: 2,
   });
 
-  // Derive current page from virtualizer — no scroll listener needed
-  const virtualItems = virtualizer.getVirtualItems();
-  const currentPage = virtualItems.length > 0
-    ? virtualItems[0].index + 1
-    : initialPage;
+  // Track current page from scroll position
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (container == null) {
+      return;
+    }
+    const handleScroll = () => {
+      const scrollTop = container.scrollTop;
+      const items = virtualizer.getVirtualItems();
+      // Find the first item whose bottom edge is past the scroll top
+      for (const item of items) {
+        if (item.start + item.size > scrollTop) {
+          setCurrentPage(item.index + 1);
+          return;
+        }
+      }
+    };
+    container.addEventListener("scroll", handleScroll, { passive: true });
+    return () => {
+      container.removeEventListener("scroll", handleScroll);
+    };
+  }, [virtualizer]);
 
   // Ctrl+F handler — useEffect necessary for global DOM event listener
   useEffect(() => {
@@ -92,6 +110,7 @@ export function PdfViewer({
 
   const handlePageChange = useCallback(
     (page: number) => {
+      setCurrentPage(page);
       virtualizer.scrollToIndex(page - 1, { align: "start" });
     },
     [virtualizer],

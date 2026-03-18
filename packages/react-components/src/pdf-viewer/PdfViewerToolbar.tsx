@@ -22,7 +22,7 @@ import {
   Plus,
   Search,
 } from "@blueprintjs/icons";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import styles from "./PdfViewerToolbar.module.css";
 
 interface PdfViewerToolbarProps {
@@ -51,6 +51,11 @@ export function PdfViewerToolbar({
   onSidebarToggle,
 }: PdfViewerToolbarProps): React.ReactElement {
   const [pageInputValue, setPageInputValue] = useState(String(currentPage));
+
+  // Sync input display when currentPage changes from scrolling
+  useEffect(() => {
+    setPageInputValue(String(currentPage));
+  }, [currentPage]);
 
   const handlePrevPage = useCallback(() => {
     if (currentPage > 1) {
