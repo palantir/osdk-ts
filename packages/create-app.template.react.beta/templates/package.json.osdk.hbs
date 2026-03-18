@@ -10,6 +10,7 @@
     "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
     "lint:fix": "eslint --report-unused-disable-directives --max-warnings 0 --fix",
     "test": "vitest run",
+    "check": "tsc --noEmit && eslint . --report-unused-disable-directives --max-warnings 0 && vitest run",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -23,6 +24,7 @@
     "classnames": "^2.0.0"
   },
   "devDependencies": {
+    "@trivago/prettier-plugin-sort-imports": "^5.0.0",
     "prettier": "^3.0.0"
   }
 }
