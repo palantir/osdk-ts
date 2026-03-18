@@ -2,4 +2,4 @@
 "@osdk/create-app.template.react.beta": patch
 ---
 
-update react.beta template to use OsdkProvider2 and modern @osdk/react hooks
+add dx improvements to react.beta template: path aliases, error boundary, stricter eslint, prettier import sorting, editorconfig, vscode settings
