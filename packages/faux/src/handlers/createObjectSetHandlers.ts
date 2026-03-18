@@ -73,6 +73,11 @@ export const createObjectSetHandlers = (
       }
 
       const { field, includeNullValues } = exactGroupBys[0];
+      if (field == null) {
+        throw new Error(
+          "FauxFoundry aggregate: groupBy field cannot be null",
+        );
+      }
       const groups = new Map<string | null, number>();
 
       for (const obj of objects) {
