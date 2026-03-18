@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from "react";
+import React, { memo } from "react";
 import type { RendererFieldDefinition } from "../FormFieldApi.js";
 import { TextInputField } from "./TextInputField.js";
 
@@ -24,29 +24,31 @@ export interface FormFieldRendererProps {
   onFieldValueChange: (value: unknown) => void;
 }
 
-export function FormFieldRenderer({
-  fieldDefinition,
-  value,
-  onFieldValueChange,
-}: FormFieldRendererProps): React.ReactElement {
-  const { label, isRequired, helperText, helperTextPlacement } =
-    fieldDefinition;
+export const FormFieldRenderer: React.FC<FormFieldRendererProps> = memo(
+  function FormFieldRendererFn({
+    fieldDefinition,
+    value,
+    onFieldValueChange,
+  }: FormFieldRendererProps): React.ReactElement {
+    const { label, isRequired, helperText, helperTextPlacement } =
+      fieldDefinition;
 
-  return (
-    <div data-testid={`form-field-${fieldDefinition.fieldKey}`}>
-      {label != null && (
-        <label>
-          {label}
-          {isRequired === true && <span aria-label="required">*</span>}
-        </label>
-      )}
-      {renderFieldComponent(fieldDefinition, value, onFieldValueChange)}
-      {helperText != null && helperTextPlacement !== "tooltip" && (
-        <div data-testid="helper-text">{helperText}</div>
-      )}
-    </div>
-  );
-}
+    return (
+      <div data-testid={`form-field-${fieldDefinition.fieldKey}`}>
+        {label != null && (
+          <label>
+            {label}
+            {isRequired === true && <span aria-label="required">*</span>}
+          </label>
+        )}
+        {renderFieldComponent(fieldDefinition, value, onFieldValueChange)}
+        {helperText != null && helperTextPlacement !== "tooltip" && (
+          <div data-testid="helper-text">{helperText}</div>
+        )}
+      </div>
+    );
+  },
+);
 
 function renderFieldComponent(
   fieldDefinition: RendererFieldDefinition,

@@ -18,6 +18,7 @@ import type { ActionDefinition } from "@osdk/api";
 import { useOsdkMetadata } from "@osdk/react";
 import { useOsdkAction } from "@osdk/react/experimental";
 import React, { useCallback, useEffect, useMemo } from "react";
+import { typedReactMemo } from "../shared/typedMemo.js";
 import type { ActionFormProps, FormState } from "./ActionFormApi.js";
 import { BaseForm } from "./BaseForm.js";
 import type { RendererFieldDefinition } from "./FormFieldApi.js";
@@ -26,7 +27,11 @@ import { getDefaultFieldDefinitions } from "./utils/getDefaultFieldDefinitions.j
 
 const EMPTY_FIELD_DEFINITIONS: readonly [] = [];
 
-export function ActionForm<Q extends ActionDefinition<unknown>>({
+export const ActionForm: <Q extends ActionDefinition<unknown>>(
+  props: ActionFormProps<Q>,
+) => React.ReactElement = typedReactMemo(function ActionFormFn<
+  Q extends ActionDefinition<unknown>,
+>({
   actionDefinition,
   formTitle,
   formFieldDefinitions,
@@ -145,4 +150,4 @@ export function ActionForm<Q extends ActionDefinition<unknown>>({
   }
 
   return <BaseForm {...commonProps} />;
-}
+});

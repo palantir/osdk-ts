@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import React, { useCallback, useMemo } from "react";
+import React, { memo, useCallback, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import type { BaseFormProps } from "./ActionFormApi.js";
 import { FieldBridge } from "./fields/FieldBridge.js";
 import type { RendererFieldDefinition } from "./FormFieldApi.js";
 
-export function BaseForm({
+export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
   formTitle,
   fieldDefinitions,
   formState: controlledFormState,
@@ -78,7 +78,7 @@ export function BaseForm({
       </button>
     </form>
   );
-}
+});
 
 function buildDefaultValues(
   fieldDefinitions: ReadonlyArray<RendererFieldDefinition>,

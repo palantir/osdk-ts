@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useCallback } from "react";
+import React, { memo, useCallback } from "react";
 import type { Control } from "react-hook-form";
 import { useController } from "react-hook-form";
 import type { RendererFieldDefinition } from "../FormFieldApi.js";
@@ -25,33 +25,34 @@ export interface FieldBridgeProps {
   control: Control<Record<string, unknown>>;
   onExternalChange?: (fieldKey: string, value: unknown) => void;
 }
-
-export function FieldBridge({
-  fieldDef,
-  control,
-  onExternalChange,
-}: FieldBridgeProps): React.ReactElement {
-  const {
-    field: { onChange, value },
-  } = useController({
-    name: fieldDef.fieldKey,
+export const FieldBridge: React.FC<FieldBridgeProps> = memo(
+  function FieldBridgeFn({
+    fieldDef,
     control,
-    defaultValue: fieldDef.defaultValue,
-  });
+    onExternalChange,
+  }: FieldBridgeProps): React.ReactElement {
+    const {
+      field: { onChange, value },
+    } = useController({
+      name: fieldDef.fieldKey,
+      control,
+      defaultValue: fieldDef.defaultValue,
+    });
 
-  const handleChange = useCallback(
-    (newValue: unknown) => {
-      onChange(newValue);
-      onExternalChange?.(fieldDef.fieldKey, newValue);
-    },
-    [onChange, onExternalChange, fieldDef.fieldKey],
-  );
+    const handleChange = useCallback(
+      (newValue: unknown) => {
+        onChange(newValue);
+        onExternalChange?.(fieldDef.fieldKey, newValue);
+      },
+      [onChange, onExternalChange, fieldDef.fieldKey],
+    );
 
-  return (
-    <FormFieldRenderer
-      value={value}
-      fieldDefinition={fieldDef}
-      onFieldValueChange={handleChange}
-    />
-  );
-}
+    return (
+      <FormFieldRenderer
+        value={value}
+        fieldDefinition={fieldDef}
+        onFieldValueChange={handleChange}
+      />
+    );
+  },
+);
