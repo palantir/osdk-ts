@@ -17,7 +17,7 @@
 import type { ActionDefinition } from "@osdk/api";
 import { useOsdkMetadata } from "@osdk/react";
 import { useOsdkAction } from "@osdk/react/experimental";
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import type { ActionFormProps, FormState } from "./ActionFormApi.js";
 import { BaseForm } from "./BaseForm.js";
 import type { RendererFieldDefinition } from "./FormFieldApi.js";
@@ -47,9 +47,14 @@ export function ActionForm<Q extends ActionDefinition<unknown>>({
     error: metadataError,
   } = useOsdkMetadata(actionDefinition);
 
-  if (metadataError != null) {
-    onError?.({ type: "unknown", error: metadataError });
-  }
+  useEffect(
+    function saveMetadataError() {
+      if (metadataError != null) {
+        onError?.({ type: "unknown", error: metadataError });
+      }
+    },
+    [metadataError, onError],
+  );
 
   const parameters = metadata?.parameters;
 

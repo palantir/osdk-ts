@@ -51,30 +51,12 @@ export function coerceFieldValue(
 
     case "integer":
     case "long": {
-      if (typeof rawValue === "number") {
-        return Math.trunc(rawValue);
-      }
-      if (typeof rawValue === "string") {
-        const trimmed = rawValue.trim();
-        if (trimmed === "") return undefined;
-        const parsed = Number(trimmed);
-        if (Number.isNaN(parsed)) return undefined;
-        return Math.trunc(parsed);
-      }
-      return undefined;
+      const maybeNumber = extractNumber(rawValue);
+      return maybeNumber != null ? Math.trunc(maybeNumber) : undefined;
     }
 
     case "double": {
-      if (typeof rawValue === "number") {
-        return rawValue;
-      }
-      if (typeof rawValue === "string") {
-        const trimmed = rawValue.trim();
-        if (trimmed === "") return undefined;
-        const parsed = Number(trimmed);
-        return Number.isNaN(parsed) ? undefined : parsed;
-      }
-      return undefined;
+      return extractNumber(rawValue);
     }
 
     case "boolean": {
@@ -104,4 +86,17 @@ export function coerceFieldValue(
     default:
       return rawValue;
   }
+}
+
+function extractNumber(rawValue: unknown): number | undefined {
+  if (typeof rawValue === "number") {
+    return rawValue;
+  }
+  if (typeof rawValue === "string") {
+    const trimmed = rawValue.trim();
+    if (trimmed === "") return undefined;
+    const parsed = Number(trimmed);
+    return Number.isNaN(parsed) ? undefined : parsed;
+  }
+  return undefined;
 }
