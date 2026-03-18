@@ -1,5 +1,18 @@
 # @osdkkit/react
 
+## 0.10.0-beta.10
+
+### Minor Changes
+
+- dbbfb6f: Add experimental ActionForm component with field renderers, form state hook, and tests
+
+### Patch Changes
+
+- Updated dependencies [cbfa135]
+- Updated dependencies [f4604c2]
+  - @osdk/client@2.8.0-beta.22
+  - @osdk/api@2.8.0-beta.22
+
 ## 0.10.0-beta.9
 
 ### Minor Changes
