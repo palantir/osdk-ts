@@ -89,9 +89,9 @@ export function defineObject(
   );
 
   invariant(
-    !(objectDef.includeEmptyBackingDataset
+    !(objectDef.includeEmptyBackingDatasource
       && objectDef.datasources && objectDef.datasources.length > 0),
-    `Cannot specify both includeEmptyBackingDataset and datasources on object ${objectDef.apiName}`,
+    `Cannot specify both includeEmptyBackingDatasource and datasources on object ${objectDef.apiName}`,
   );
 
   const retentionPeriods =

@@ -102,7 +102,7 @@ describe("generateBackingDatasetBlockResult", () => {
     await expect(
       generateBackingDatasetBlockResult(obj, buildDir),
     ).rejects.toThrow(
-      /non-dataset datasources \(stream\).*cannot use includeEmptyBackingDataset/,
+      /non-dataset datasources \(stream\).*cannot use includeEmptyBackingDatasource/,
     );
   });
 

@@ -63,7 +63,7 @@ export function propertyTypeToSchemaType(
 }
 
 /**
- * Generate a backing dataset BlockGeneratorResult for an object type.
+ * Generate a backing datasource BlockGeneratorResult for an object type.
  */
 export async function generateBackingDatasetBlockResult(
   objectType: ObjectType,
@@ -79,7 +79,7 @@ export async function generateBackingDatasetBlockResult(
   if (nonDatasetDatasources.length > 0) {
     const types = nonDatasetDatasources.map((ds) => ds.type).join(", ");
     throw new Error(
-      `Object type "${apiName}" has non-dataset datasources (${types}) and cannot use includeEmptyBackingDataset. `
+      `Object type "${apiName}" has non-dataset datasources (${types}) and cannot use includeEmptyBackingDatasource. `
         + `Empty backing datasources are only supported for object types with dataset datasources.`,
     );
   }

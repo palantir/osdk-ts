@@ -123,14 +123,14 @@ export default async function main(
   consola.info(`Wrote ontology.json to ${ontologyJsonPath}`);
 
   // Collect input_mapping_entries for the ontology block
-  // These map ontology inputs to dataset block outputs for objects with includeEmptyBackingDataset
+  // These map ontology inputs to dataset block outputs for objects with includeEmptyBackingDatasource
   const ontologyDef = getOntologyDefinition();
   const objectTypes = ontologyDef[OntologyEntityTypeEnum.OBJECT_TYPE];
   const ontologyInputMappingEntries: InputMappingEntry[] = [];
 
   for (const [apiName, objectType] of Object.entries(objectTypes)) {
     const obj = objectType as ObjectType;
-    if (!obj.includeEmptyBackingDataset) continue;
+    if (!obj.includeEmptyBackingDatasource) continue;
 
     const nonEditOnlyProps = (obj.properties ?? []).filter((p) => !p.editOnly);
 
@@ -190,13 +190,13 @@ export default async function main(
     `Block data directory: ${blockDataDir}`,
   );
 
-  // Generate backing dataset BlockGeneratorResults for objects with includeEmptyBackingDataset
+  // Generate backing datasource BlockGeneratorResults for objects with includeEmptyBackingDatasource
   for (const [apiName, objectType] of Object.entries(objectTypes)) {
     const obj = objectType as ObjectType;
-    if (!obj.includeEmptyBackingDataset) continue;
+    if (!obj.includeEmptyBackingDatasource) continue;
 
     consola.info(
-      `Generating backing dataset BlockGeneratorResult for ${apiName}...`,
+      `Generating backing datasource BlockGeneratorResult for ${apiName}...`,
     );
 
     const dsResult = await generateBackingDatasetBlockResult(
@@ -214,7 +214,7 @@ export default async function main(
       JSON.stringify(dsResult, null, 2),
     );
     consola.success(
-      `Backing dataset BlockGeneratorResult written to ${dsOutputPath}`,
+      `Backing datasource BlockGeneratorResult written to ${dsOutputPath}`,
     );
   }
 }

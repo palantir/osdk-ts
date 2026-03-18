@@ -36,5 +36,5 @@ export type ObjectTypeDefinition = {
   status?: ObjectTypeStatus;
   datasources?: Array<ObjectTypeDatasourceDefinition>;
   aliases?: Array<string>;
-  includeEmptyBackingDataset?: boolean;
+  includeEmptyBackingDatasource?: boolean;
 };
