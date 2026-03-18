@@ -167,14 +167,21 @@ export function readSession(client: Client): SessionStorageState {
   );
 }
 
-/** Fraction of token lifetime at which to schedule a background refresh (public clients) */
-const BACKGROUND_REFRESH_LIFETIME_FRACTION = 0.75;
+/**
+ * Fraction of token lifetime at which to schedule a background refresh.
+ * Example: A token with a one hour lifetime and fraction 0.75 should refresh after 45 minutes.
+ * For public clients, we try to refresh these tokens early because browser tabs may be closed intermittently and
+ * transparently refreshing is a nicer experience than requiring a new sign-in.
+ * This is less important for confidential clients with client secrets and without refresh tokens, but we use the same
+ * process for all tokens for simplicity.
+ */
+const REFRESH_LIFETIME_FRACTION = 0.75;
 
-/** Time before expiry to schedule a background re-sign-in (confidential clients) */
-const BACKGROUND_RESIGN_IN_LEAD_MS = 60 * 1000;
-
-/** Time before expiry at which getToken() considers the token stale and blocks on renewal */
-const TOKEN_STALE_THRESHOLD_MS = 5 * 1000;
+/**
+ * Time before expiry at which tokenExpired() reports expired. Accounts for clock drift, slow networks, and slow
+ * requests on the server. After this point, getToken() considers the token stale and blocks on renewal.
+ */
+const TOKEN_EXPIRED_PADDING_MS = 60 * 1000;
 
 export function common<
   R extends undefined | (() => Promise<Token | undefined>),
@@ -196,11 +203,6 @@ export function common<
 } {
   let token: Token | undefined;
   const eventTarget = new TypedEventTarget<Events>();
-
-  function tokenExpiresSoon(): boolean {
-    return token != null
-      && Date.now() >= token.expires_at - TOKEN_STALE_THRESHOLD_MS;
-  }
 
   function makeTokenAndSaveRefresh(
     resp: OAuth2TokenEndpointResponse,
@@ -234,35 +236,32 @@ export function common<
   function rmTimeout() {
     if (refreshTimeout) clearTimeout(refreshTimeout);
   }
-  function restartRefreshTimer(evt: CustomEvent<Token>) {
-    const refreshFn = refresh ?? signIn;
-    const lifetimeMs = evt.detail.expires_in * 1000;
-    const delay = refresh
-      ? lifetimeMs * BACKGROUND_REFRESH_LIFETIME_FRACTION
-      : lifetimeMs - BACKGROUND_RESIGN_IN_LEAD_MS;
 
-    if (delay <= TOKEN_STALE_THRESHOLD_MS) {
+  function doBackgroundRefresh() {
+    const refreshFn = refresh ?? signIn;
+    refreshFn().catch((e) => {
+      if (process.env.NODE_ENV !== "production") {
+        // eslint-disable-next-line no-console
+        console.warn("Background token refresh failed", e);
+      }
+    });
+  }
+
+  function restartRefreshTimer(evt: CustomEvent<Token>) {
+    const delay = evt.detail.expires_in * 1000 * REFRESH_LIFETIME_FRACTION;
+
+    if (delay <= 0) {
       if (process.env.NODE_ENV !== "production") {
         // eslint-disable-next-line no-console
         console.warn(
-          "Token lifetime too short for proactive refresh, skipping timer",
+          "Token lifetime too short for background refresh, skipping timer",
         );
       }
       return;
     }
 
     rmTimeout();
-    refreshTimeout = setTimeout(() => {
-      if (token && !tokenExpiresSoon()) {
-        return;
-      }
-      refreshFn().catch((e) => {
-        if (process.env.NODE_ENV !== "production") {
-          // eslint-disable-next-line no-console
-          console.warn("Proactive token refresh failed", e);
-        }
-      });
-    }, delay);
+    refreshTimeout = setTimeout(doBackgroundRefresh, delay);
   }
 
   async function signOut() {
@@ -303,15 +302,18 @@ export function common<
   eventTarget.addEventListener("refresh", restartRefreshTimer);
 
   function getTokenOrUndefined() {
-    if (!token || tokenExpiresSoon()) {
+    if (!token || tokenExpired(token)) {
       return undefined;
     }
     return token.access_token;
   }
 
   const getToken = Object.assign(async function getToken() {
-    if (!token || tokenExpiresSoon()) {
+    if (!token || tokenExpired(token)) {
       token = await signIn();
+    } else if (tokenShouldRefresh(token)) {
+      rmTimeout();
+      doBackgroundRefresh();
     }
     return token.access_token;
   }, {
@@ -329,6 +331,15 @@ export function common<
   });
 
   return { getToken, makeTokenAndSaveRefresh };
+}
+
+function tokenShouldRefresh(t: Token): boolean {
+  return Date.now() >= t.expires_at - t.expires_in * 1000
+        * (1 - REFRESH_LIFETIME_FRACTION);
+}
+
+function tokenExpired(t: Token): boolean {
+  return Date.now() >= t.expires_at - TOKEN_EXPIRED_PADDING_MS;
 }
 
 export function createAuthorizationServer(
