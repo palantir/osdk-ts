@@ -14,4 +14,32 @@
  * limitations under the License.
  */
 
-export { assertUnreachable } from "../../shared/assertUnreachable.js";
+import React, { useCallback } from "react";
+import type { TextInputFieldProps } from "../FormFieldApi.js";
+
+export function TextInputField({
+  value,
+  onChange,
+  placeholder,
+  minLength,
+  maxLength,
+}: TextInputFieldProps): React.ReactElement {
+  const handleChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      onChange?.(e.target.value);
+    },
+    [onChange],
+  );
+
+  return (
+    <input
+      type="text"
+      value={value}
+      onChange={handleChange}
+      placeholder={placeholder}
+      minLength={minLength}
+      maxLength={maxLength}
+      data-testid="text-input-field"
+    />
+  );
+}

@@ -16,7 +16,10 @@
 
 import type {
   ActionDefinition,
+  ActionMetadata,
+  ActionParam,
   CompileTimeMetadata,
+  DataValueClientToWire,
   ObjectSet,
   ObjectTypeDefinition,
 } from "@osdk/api";
@@ -28,8 +31,6 @@ import type React from "react";
 export interface FormFieldDefinition<
   Q extends ActionDefinition<unknown>,
   K extends FieldKey<Q> = FieldKey<Q>,
-  V extends FieldValueType<Q, K> = FieldValueType<Q, K>,
-  C extends ValidFormFieldForPropertyType<V> = ValidFormFieldForPropertyType<V>,
 > {
   /**
    * The field's unique key
@@ -43,20 +44,14 @@ export interface FormFieldDefinition<
   label?: string;
 
   /**
-   * Current value of the field
-   * If provided, the field operates in controlled mode
-   */
-  value?: V;
-
-  /**
    * Default value of the field
    */
-  defaultValue?: V;
+  defaultValue?: FieldValueType<Q, K>;
 
   /**
    * The form field component type to render
    */
-  fieldComponent: C;
+  fieldComponent: ValidFormFieldForPropertyType<FieldDescriptorType<Q, K>>;
 
   /**
    * Whether the field is required
@@ -100,13 +95,18 @@ export interface FormFieldDefinition<
    * @param value the current field value
    * @returns a boolean promise indicating whether the value is valid
    */
-  validate?: (value: V) => Promise<boolean>;
+  validate?: (value: FieldValueType<Q, K>) => Promise<boolean>;
 
   /**
    * The component props for the form field
    * Excludes runtime props (key, onChange) which are managed by ActionForm
    */
-  fieldComponentProps?: Omit<FormFieldPropsByType[C], "key" | "onChange">;
+  fieldComponentProps?: Omit<
+    FormFieldPropsByType[
+      ValidFormFieldForPropertyType<FieldDescriptorType<Q, K>>
+    ],
+    "key" | "onChange"
+  >;
 }
 
 type ValidationError = { type: ValidationRule; error: string };
@@ -244,6 +244,7 @@ export interface TextInputFieldProps extends
   >
 {
   fieldComponent: "TEXT_INPUT";
+  placeholder?: string;
 }
 
 /**
@@ -309,16 +310,18 @@ export interface CustomFieldProps<V> extends BaseFormFieldProps<V> {
 }
 
 export interface BaseFormFieldProps<V> {
-  fieldComponent: FieldComponent;
-
   /**
-   * Called when the field value changed.
+   * The value of the form field
+   */
+  value: V;
+  /**
+   * Called when the field value changes.
    *
-   * ActionForm internally wraps this to pass the key to onFieldValueChanged:
+   * ActionForm internally wraps this to pass the key to `onFieldValueChange`:
    * ```
    * <DropdownField
    *   {...fieldDef}
-   *   onChange={(value) => onFieldValueChanged(fieldDef.key, value)}
+   *   onChange={(value) => onFieldValueChange(fieldDef.key, value)}
    * />
    * ```
    *
@@ -338,8 +341,26 @@ export type ActionParameters<Q extends ActionDefinition<unknown>> =
 
 /**
  * Extracts the value type for a specific parameter
+ *
+ * TODO: Re-use `BaseType`
  */
 export type FieldValueType<
+  Q extends ActionDefinition<unknown>,
+  K extends keyof ActionParameters<Q> = keyof ActionParameters<Q>,
+> = ActionParameters<Q>[K]["type"] extends
+  ActionMetadata.DataType.Object<infer T> ? ActionParam.ObjectType<T>
+  : ActionParameters<Q>[K]["type"] extends
+    ActionMetadata.DataType.ObjectSet<infer T> ? ActionParam.ObjectSetType<T>
+  : ActionParameters<Q>[K]["type"] extends
+    ActionMetadata.DataType.Struct<infer T> ? ActionParam.StructType<T>
+  : ActionParameters<Q>[K]["type"] extends keyof DataValueClientToWire
+    ? DataValueClientToWire[ActionParameters<Q>[K]["type"]]
+  : never;
+
+/**
+ * Extracts the parameter type descriptor for a specific action parameter.
+ */
+export type FieldDescriptorType<
   Q extends ActionDefinition<unknown> = ActionDefinition<unknown>,
   K extends keyof ActionParameters<Q> = keyof ActionParameters<Q>,
 > = ActionParameters<Q>[K]["type"];
@@ -359,21 +380,62 @@ export type FieldComponent =
   | "CUSTOM";
 
 /**
+ * Describes the data type of a form field, independent of OSDK.
+ * Mirrors ActionMetadata.DataType to keep the rendering layer OSDK-agnostic.
+ */
+export type FieldType =
+  | "boolean"
+  | "string"
+  | "integer"
+  | "long"
+  | "double"
+  | "datetime"
+  | "timestamp"
+  | "attachment"
+  | "marking"
+  | "mediaReference"
+  | "objectType"
+  | "geoshape"
+  | "geohash"
+  | { type: "object"; object: string }
+  | { type: "objectSet"; objectSet: string }
+  | { type: "interface"; interface: string }
+  | { type: "struct"; struct: Record<string, string> };
+
+/**
+ * An OSDK-agnostic field definition used by BaseForm and FormFieldRenderer.
+ * Contains only the information needed to render a single field — no generics,
+ * no compile-time parameter constraints.
+ */
+export interface RendererFieldDefinition {
+  fieldKey: string;
+  fieldComponent: FieldComponent;
+  fieldType?: FieldType;
+  label?: string;
+  defaultValue?: unknown;
+  isRequired?: boolean;
+  placeholder?: string;
+  helperText?: string;
+  helperTextPlacement?: "bottom" | "tooltip";
+  fieldComponentProps?: Record<string, unknown>;
+}
+
+/**
  * Gets valid form field types for a given property type
  */
-export type ValidFormFieldForPropertyType<P extends FieldValueType> = P extends
-  "objectSet" ? "OBJECT_SET"
-  : P extends "object" ? "DROPDOWN"
-  : P extends "mediaReference" | "attachment" ? "FILE_PICKER"
-  : P extends "boolean" ? "RADIO_BUTTONS" | "DROPDOWN"
-  : P extends "string" ? "TEXT_INPUT" | "TEXT_AREA"
-  : P extends "datetime" | "timestamp" ? "DATETIME_PICKER"
-  : P extends
-    | "double"
-    | "integer"
-    | "long"
-    | "float"
-    | "short"
-    | "byte"
-    | "decimal" ? "NUMBER_INPUT"
-  : never;
+export type ValidFormFieldForPropertyType<P extends FieldDescriptorType> =
+  P extends "objectSet" ? "OBJECT_SET"
+    : P extends "object" ? "DROPDOWN"
+    : P extends "mediaReference" | "attachment" ? "FILE_PICKER"
+    : P extends "boolean" ? "RADIO_BUTTONS" | "DROPDOWN"
+    : P extends "string" ? "TEXT_INPUT" | "TEXT_AREA"
+    : P extends "datetime" | "timestamp" ? "DATETIME_PICKER"
+    : P extends
+      | "double"
+      | "integer"
+      | "long"
+      | "float"
+      | "short"
+      | "byte"
+      | "decimal" ? "NUMBER_INPUT"
+    : never;
