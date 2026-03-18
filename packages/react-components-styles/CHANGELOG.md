@@ -1,5 +1,11 @@
 # @osdk/react-components-styles
 
+## 0.2.0-beta.11
+
+### Minor Changes
+
+- aa908e4: Redesign filter list collapse into separate render tree and simplify header layout
+
 ## 0.2.0-beta.10
 
 ### Minor Changes
