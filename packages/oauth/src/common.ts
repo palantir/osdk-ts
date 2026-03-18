@@ -237,7 +237,7 @@ export function common<
     if (refreshTimeout) clearTimeout(refreshTimeout);
   }
 
-  function doBackgroundRefresh() {
+  function tryBackgroundRefresh() {
     const refreshFn = refresh ?? signIn;
     refreshFn().catch((e) => {
       if (process.env.NODE_ENV !== "production") {
@@ -248,20 +248,9 @@ export function common<
   }
 
   function restartRefreshTimer(evt: CustomEvent<Token>) {
-    const delay = evt.detail.expires_in * 1000 * REFRESH_LIFETIME_FRACTION;
-
-    if (delay <= 0) {
-      if (process.env.NODE_ENV !== "production") {
-        // eslint-disable-next-line no-console
-        console.warn(
-          "Token lifetime too short for background refresh, skipping timer",
-        );
-      }
-      return;
-    }
-
     rmTimeout();
-    refreshTimeout = setTimeout(doBackgroundRefresh, delay);
+    const delay = evt.detail.expires_in * 1000 * REFRESH_LIFETIME_FRACTION;
+    refreshTimeout = setTimeout(tryBackgroundRefresh, delay);
   }
 
   async function signOut() {
@@ -313,7 +302,7 @@ export function common<
       token = await signIn();
     } else if (tokenShouldRefresh(token)) {
       rmTimeout();
-      doBackgroundRefresh();
+      tryBackgroundRefresh();
     }
     return token.access_token;
   }, {
