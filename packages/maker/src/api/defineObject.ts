@@ -88,6 +88,12 @@ export function defineObject(
     `Primary key property ${objectDef.primaryKeyPropertyApiName} on object ${objectDef.apiName} cannot be edit-only`,
   );
 
+  invariant(
+    !(objectDef.includeEmptyBackingDataset
+      && objectDef.datasources && objectDef.datasources.length > 0),
+    `Cannot specify both includeEmptyBackingDataset and datasources on object ${objectDef.apiName}`,
+  );
+
   const retentionPeriods =
     ((objectDef.datasources ?? []).filter(ds =>
       ds.type === "stream"

@@ -36,6 +36,7 @@ export type ObjectType =
   >
   & {
     datasources?: Array<ObjectTypeDatasourceDefinition>;
+    includeEmptyBackingDataset?: boolean;
     __type: OntologyEntityTypeEnum.OBJECT_TYPE;
   };
 
