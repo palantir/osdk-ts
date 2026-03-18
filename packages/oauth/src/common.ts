@@ -305,7 +305,7 @@ export function common<
       rmTimeout();
       tryBackgroundRefresh();
     }
-    return token.access_token;
+    return token?.access_token;
   }, {
     signIn,
     refresh,
