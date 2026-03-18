@@ -21,6 +21,7 @@ import type {
   PropertyKeys,
   QueryDefinition,
 } from "@osdk/api";
+import type { Client } from "@osdk/client";
 import { useOsdkClient } from "@osdk/react";
 import { renderHook, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -99,7 +100,7 @@ const mockExecuteFunction = vi.fn();
 
 const mockClient = vi.fn(() => ({
   executeFunction: mockExecuteFunction,
-})) as any;
+})) as unknown as Client;
 
 describe("useFunctionColumnsData", () => {
   beforeEach(() => {
@@ -161,15 +162,7 @@ describe("useFunctionColumnsData", () => {
   });
 
   it("should extract value using getValue function when specified", async () => {
-    const mockObjects = [
-      {
-        $objectType: "TestObject",
-        $apiName: "TestObject",
-        $primaryKey: "obj1",
-      },
-    ] as Osdk.Instance<TestObject, "$allBaseProperties", TestObjectKeys, {}>[];
-
-    const mockObjectSet = {} as ObjectSet<TestObject>;
+    const singleObject = mockObjects.slice(0, 1);
 
     const mockResult = {
       "TestObject:obj1": {
@@ -201,7 +194,7 @@ describe("useFunctionColumnsData", () => {
 
     const { result } = renderHook(
       () =>
-        useFunctionColumnsData(mockObjectSet, mockObjects, columnDefinitions),
+        useFunctionColumnsData(mockObjectSet, singleObject, columnDefinitions),
     );
 
     await waitFor(() => {
@@ -216,15 +209,7 @@ describe("useFunctionColumnsData", () => {
   });
 
   it("should group columns by unique query definition", async () => {
-    const mockObjects = [
-      {
-        $objectType: "TestObject",
-        $apiName: "TestObject",
-        $primaryKey: "obj1",
-      },
-    ] as Osdk.Instance<TestObject, "$allBaseProperties", TestObjectKeys, {}>[];
-
-    const mockObjectSet = {} as ObjectSet<TestObject>;
+    const singleObject = mockObjects.slice(0, 1);
 
     const mockResult = {
       "TestObject:obj1": {
@@ -249,11 +234,11 @@ describe("useFunctionColumnsData", () => {
         locator: {
           type: "function",
           id: "statusColumn",
-          queryDefinition: mockQueryDefinition as any,
+          queryDefinition: mockQueryDefinition,
           getFunctionParams: ((objectSet: ObjectSet<TestObject>) => ({
             [OBJ_SET_KEY]: objectSet,
           })) as any,
-          getValue: (cellData) => (cellData as any)?.status,
+          getValue: (cellData) => (cellData as { status: string })?.status,
           getKey: (obj) => `${obj.$objectType}:${obj.$primaryKey}`,
         },
       },
@@ -261,11 +246,12 @@ describe("useFunctionColumnsData", () => {
         locator: {
           type: "function",
           id: "timestampColumn",
-          queryDefinition: mockQueryDefinition as any,
+          queryDefinition: mockQueryDefinition,
           getFunctionParams: ((objectSet: ObjectSet<TestObject>) => ({
             [OBJ_SET_KEY]: objectSet,
           })) as any,
-          getValue: (cellData) => (cellData as any)?.timestamp,
+          getValue: (cellData) =>
+            (cellData as { timestamp: string })?.timestamp,
           getKey: (obj) => `${obj.$objectType}:${obj.$primaryKey}`,
         },
       },
@@ -333,11 +319,11 @@ describe("useFunctionColumnsData", () => {
         locator: {
           type: "function",
           id: "statusColumn",
-          queryDefinition: mockQueryDefinition as any,
+          queryDefinition: mockQueryDefinition,
           getFunctionParams: ((objectSet: ObjectSet<TestObject>) => ({
             [OBJ_SET_KEY]: objectSet,
           })) as any,
-          getValue: (cellData) => (cellData as any)?.status,
+          getValue: (cellData) => (cellData as { status: string })?.status,
           getKey: (obj) => `${obj.$objectType}:${obj.$primaryKey}`,
         },
       },
@@ -345,11 +331,12 @@ describe("useFunctionColumnsData", () => {
         locator: {
           type: "function",
           id: "timestampColumn",
-          queryDefinition: mockQueryDefinition2 as any,
+          queryDefinition: mockQueryDefinition2,
           getFunctionParams: ((objectSet: ObjectSet<TestObject>) => ({
             [OBJ_SET_KEY]: objectSet,
           })) as any,
-          getValue: (cellData) => (cellData as any)?.timestamp,
+          getValue: (cellData) =>
+            (cellData as { timestamp: string })?.timestamp,
           getKey: (obj) => `${obj.$objectType}:${obj.$primaryKey}`,
         },
       },
@@ -469,7 +456,7 @@ describe("useFunctionColumnsData", () => {
         locator: {
           type: "function",
           id: "testColumn",
-          queryDefinition: mockQueryDefinition as any,
+          queryDefinition: mockQueryDefinition,
           getFunctionParams: ((objectSet: ObjectSet<TestObject>) => ({
             [OBJ_SET_KEY]: objectSet,
           })) as any,
@@ -526,11 +513,11 @@ describe("useFunctionColumnsData", () => {
         locator: {
           type: "function",
           id: "column1",
-          queryDefinition: mockQueryDefinition as any,
+          queryDefinition: mockQueryDefinition,
           getFunctionParams: ((objectSet: ObjectSet<TestObject>) => ({
             [OBJ_SET_KEY]: objectSet,
           })) as any,
-          getValue: (cellData) => (cellData as any)?.status,
+          getValue: (cellData) => (cellData as { status: string })?.status,
           getKey: (obj) => `${obj.$objectType}:${obj.$primaryKey}`,
         },
       },
@@ -538,11 +525,12 @@ describe("useFunctionColumnsData", () => {
         locator: {
           type: "function",
           id: "column2",
-          queryDefinition: mockQueryDefinition2 as any, // Different query
+          queryDefinition: mockQueryDefinition2, // Different query
           getFunctionParams: ((objectSet: ObjectSet<TestObject>) => ({
             [OBJ_SET_KEY]: objectSet,
           })) as any,
-          getValue: (cellData) => (cellData as any)?.timestamp,
+          getValue: (cellData) =>
+            (cellData as { timestamp: string })?.timestamp,
           getKey: (obj) => `${obj.$objectType}:${obj.$primaryKey}`,
         },
       },
