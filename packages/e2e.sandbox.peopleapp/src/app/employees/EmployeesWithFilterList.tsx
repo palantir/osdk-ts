@@ -85,7 +85,7 @@ export function EmployeesWithFilterList(props: EmployeesWithFilterListProps) {
   return (
     <>
       <div style={{ display: "flex", gap: "16px", height: "100%" }}>
-        <div style={{ minWidth: 280, maxWidth: 320 }}>
+        <div>
           <FilterList
             objectSet={$(Employee)}
             filterDefinitions={INITIAL_FILTER_DEFINITIONS}
