@@ -92,7 +92,7 @@ const cspell = {
     "packages/client.unstable/src/generated/**",
 
     "packages/e2e.test.foundry-sdk-generator/src/generatedNoCheck/**/*",
-    "packages/create-app.template.*/src/generatedNoCheck/**/*",
+    "packages/create-app.*/src/generatedNoCheck/**/*",
     "CHANGELOG.md",
   ],
   dictionaryDefinitions: [

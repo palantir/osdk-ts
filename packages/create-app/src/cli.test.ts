@@ -92,6 +92,94 @@ describe.each(TEMPLATES.filter(template => !template.hidden))(
   },
 );
 
+const TEMPLATES_WITH_ADDONS = TEMPLATES.filter(
+  (t) => t.styleAddons != null && t.styleAddons.length > 0,
+);
+
+describe.each(TEMPLATES_WITH_ADDONS)(
+  "template $id style addons",
+  (template) => {
+    test(`CLI creates ${template.id} with --style blueprint`, async () => {
+      const project = `expected-${template.id}-blueprint`;
+      await runTest({
+        project,
+        template,
+        corsProxy: false,
+        sdkVersion: "2.x",
+        style: "blueprint",
+        skipOsdk: false,
+        ontology: "ri.ontology.main.ontology.fake",
+        osdkPackage: "@fake/sdk",
+        osdkRegistryUrl:
+          "https://example.palantirfoundry.com/artifacts/api/repositories/ri.artifacts.main.repository.fake/contents/release/npm",
+      });
+
+      const root = path.join(process.cwd(), project);
+
+      // Blueprint dependencies should be in output package.json
+      const packageJson = JSON.parse(
+        fs.readFileSync(path.join(root, "package.json"), "utf-8"),
+      );
+      expect(packageJson.dependencies["@blueprintjs/core"]).toBe("^6.9.1");
+      expect(packageJson.dependencies["@blueprintjs/icons"]).toBe("^6.6.0");
+      expect(packageJson.dependencies["normalize.css"]).toBe("^8.0.1");
+
+      // Blueprint-specific CSS imports should be in index.css
+      const indexCss = fs.readFileSync(
+        path.join(root, "src", "index.css"),
+        "utf-8",
+      );
+      expect(indexCss).toContain(
+        "@import \"@blueprintjs/core/lib/css/blueprint.css\"",
+      );
+
+      // Deleted files should be absent
+      expect(fs.existsSync(path.join(root, "public", "book.svg"))).toBe(
+        false,
+      );
+      expect(fs.existsSync(path.join(root, "public", "rocket.svg"))).toBe(
+        false,
+      );
+    });
+
+    test(`CLI creates ${template.id} with --style vanilla (unchanged)`, async () => {
+      const project = `expected-${template.id}-vanilla`;
+      await runTest({
+        project,
+        template,
+        corsProxy: false,
+        sdkVersion: "2.x",
+        style: "vanilla",
+        skipOsdk: false,
+        ontology: "ri.ontology.main.ontology.fake",
+        osdkPackage: "@fake/sdk",
+        osdkRegistryUrl:
+          "https://example.palantirfoundry.com/artifacts/api/repositories/ri.artifacts.main.repository.fake/contents/release/npm",
+      });
+
+      const root = path.join(process.cwd(), project);
+
+      // Blueprint dependencies should NOT be in output package.json
+      const packageJson = JSON.parse(
+        fs.readFileSync(path.join(root, "package.json"), "utf-8"),
+      );
+      expect(packageJson.dependencies["@blueprintjs/core"]).toBeUndefined();
+
+      // Base SVG files should still exist
+      expect(fs.existsSync(path.join(root, "public", "book.svg"))).toBe(
+        true,
+      );
+
+      // Base index.css should not have Blueprint imports
+      const indexCss = fs.readFileSync(
+        path.join(root, "src", "index.css"),
+        "utf-8",
+      );
+      expect(indexCss).not.toContain("@blueprintjs");
+    });
+  },
+);
+
 const VISIBLE_TEMPLATE = TEMPLATES.filter(template => !template.hidden)[0];
 
 test(`CLI rejects no OSDK with 1.x`, async () => {
@@ -110,6 +198,7 @@ async function runTest(
     template,
     corsProxy,
     sdkVersion,
+    style,
     skipOsdk,
     ontology,
     osdkPackage,
@@ -120,6 +209,7 @@ async function runTest(
       template: Template;
       corsProxy: boolean;
       sdkVersion: string;
+      style?: string;
     }
     & (
       | {
@@ -143,6 +233,8 @@ async function runTest(
     "--overwrite",
     "--template",
     template.id,
+    "--style",
+    style ?? "vanilla",
     "--foundryUrl",
     "https://example.palantirfoundry.com",
     "--applicationUrl",

@@ -27,6 +27,14 @@ export type ModuleImportFiles = Map<
   }
 >;
 
+export interface StyleAddon {
+  id: string;
+  label: string;
+  files: () => Promise<ModuleImportFiles>;
+  deleteFiles: readonly string[];
+  dependencies: Record<string, string>;
+}
+
 export interface Template {
   id: string;
   label: string;
@@ -39,6 +47,7 @@ export interface Template {
       ModuleImportFiles
     >;
   };
+  styleAddons?: StyleAddon[];
 }
 
 export interface TemplateContext {

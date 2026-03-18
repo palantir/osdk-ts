@@ -44,6 +44,7 @@
     "yargs": "17.7.2"
   },
   "devDependencies": {
+    "@osdk/create-app.addon.react.blueprint": "workspace:*",
     "@osdk/create-app.template.expo.v2": "workspace:*",
     "@osdk/create-app.template.react": "workspace:*",
     "@osdk/create-app.template.react.beta": "workspace:*",

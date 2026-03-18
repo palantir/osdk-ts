@@ -27,6 +27,9 @@ export const TEMPLATES = [
     label: "React",
     envPrefix: "VITE_",
     buildDirectory: "./dist",
+    addons: [
+      { id: "blueprint", label: "BlueprintJS" },
+    ],
   },
   {
     id: "expo",
@@ -82,6 +85,9 @@ fs.writeFileSync(
         `@osdk/create-app.template.${template.id}.beta`,
         `@osdk/create-app.template.${template.id}`,
       ]);
+
+      const styleAddonsCode = generateStyleAddonsCode(template);
+
       return dedent`
           // ${template.label}
           {
@@ -93,7 +99,7 @@ fs.writeFileSync(
             files: {
               ${v1Name ? `"1.x": getPackageFiles(import("${v1Name}")),` : ""}
               ${v2Name ? `"2.x": getPackageFiles(import("${v2Name}")),` : ""}
-            },
+            },${styleAddonsCode}
           },`;
     }).join("\n")
   }
@@ -103,10 +109,71 @@ fs.writeFileSync(
 
 /**
  * @param {string[]} names
- * @returns
+ * @returns {string | undefined}
  */
 function findPackageName(names) {
   return names.find((name) => {
     return fs.existsSync(path.join(packagesDir, `${name.split("/")[1]}`));
   });
+}
+
+/**
+ * @param {{ id: string, addons?: Array<{ id: string, label: string }> }} template
+ * @returns {string}
+ */
+function generateStyleAddonsCode(template) {
+  if (!template.addons || template.addons.length === 0) {
+    return "";
+  }
+
+  const addonEntries = [];
+  for (const addon of template.addons) {
+    const addonPackageName = findAddonPackageName(template.id, addon.id);
+    if (addonPackageName == null) {
+      continue;
+    }
+
+    const addonPackageDir = path.join(
+      packagesDir,
+      addonPackageName.split("/")[1],
+    );
+    const addonPackageJson = JSON.parse(
+      fs.readFileSync(path.join(addonPackageDir, "package.json"), "utf-8"),
+    );
+
+    const dependencies = addonPackageJson.dependencies ?? {};
+    const deleteFiles = addonPackageJson.addonConfig?.deleteFiles ?? [];
+
+    addonEntries.push(dedent`
+      {
+            id: "${addon.id}",
+            label: "${addon.label}",
+            files: getPackageFiles(import("${addonPackageName}")),
+            deleteFiles: ${JSON.stringify(deleteFiles)},
+            dependencies: ${JSON.stringify(dependencies)},
+          }`);
+  }
+
+  if (addonEntries.length === 0) {
+    return "";
+  }
+
+  return `
+            styleAddons: [
+          ${addonEntries.join(",\n")},
+            ],`;
+}
+
+/**
+ * @param {string} templateId
+ * @param {string} addonId
+ * @returns {string | undefined}
+ */
+function findAddonPackageName(templateId, addonId) {
+  const name = `@osdk/create-app.addon.${templateId}.${addonId}`;
+  const dirName = name.split("/")[1];
+  if (fs.existsSync(path.join(packagesDir, dirName))) {
+    return name;
+  }
+  return undefined;
 }

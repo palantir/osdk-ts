@@ -1,0 +1,30 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git merge:*)",
+      "Bash(git fetch:*)",
+      "Bash(pnpm install:*)",
+      "Bash(git push:*)",
+      "Bash(pnpm turbo:*)",
+      "Bash(git config:*)",
+      "Bash(grep -h \"^\\\\s*--osdk-[a-zA-Z0-9\\\\-]*:\" tokens/*.css)",
+      "Bash(grep:*)",
+      "Bash(gh pr:*)",
+      "WebSearch",
+      "WebFetch(domain:effectivetypescript.com)",
+      "WebFetch(domain:typescript-eslint.io)",
+      "Bash(pnpm vitest:*)",
+      "Bash(wc:*)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:yeoman.io)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(ls:*)",
+      "WebFetch(domain:create.t3.gg)",
+      "WebFetch(domain:vitejs.dev)",
+      "WebFetch(domain:vite.dev)",
+      "WebFetch(domain:plopjs.com)",
+      "WebFetch(domain:docs.astro.build)",
+      "Bash(node:*)"
+    ]
+  }
+}

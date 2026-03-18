@@ -28,15 +28,17 @@ import { promptOverwrite } from "./prompts/promptOverwrite.js";
 import { promptProject } from "./prompts/promptProject.js";
 import { promptScopes } from "./prompts/promptScopes.js";
 import { promptSdkVersion } from "./prompts/promptSdkVersion.js";
+import { promptStyle } from "./prompts/promptStyle.js";
 import { promptTemplate } from "./prompts/promptTemplate.js";
 import { run } from "./run.js";
-import type { SdkVersion, Template } from "./templates.js";
+import type { SdkVersion, StyleAddon, Template } from "./templates.js";
 
 interface CliArgs {
   project?: string;
   overwrite?: boolean;
   beta?: boolean;
   template?: string;
+  style?: string;
   sdkVersion?: string;
   foundryUrl?: string;
   applicationUrl?: string;
@@ -77,6 +79,10 @@ export async function cli(args: string[] = process.argv): Promise<void> {
           .option("template", {
             type: "string",
             describe: "Template name to use",
+          })
+          .option("style", {
+            type: "string",
+            describe: "UI style framework (e.g. vanilla, blueprint)",
           })
           .option("sdkVersion", {
             type: "string",
@@ -150,6 +156,10 @@ export async function cli(args: string[] = process.argv): Promise<void> {
   const project: string = await promptProject(parsed);
   const overwrite: boolean = await promptOverwrite({ ...parsed, project });
   const template: Template = await promptTemplate(parsed);
+  const styleAddon: StyleAddon | undefined = await promptStyle(
+    parsed,
+    template,
+  );
   const sdkVersion: SdkVersion = await promptSdkVersion({
     ...parsed,
     template,
@@ -169,6 +179,7 @@ export async function cli(args: string[] = process.argv): Promise<void> {
     project,
     overwrite,
     template,
+    styleAddon,
     sdkVersion,
     foundryUrl,
     applicationUrl,

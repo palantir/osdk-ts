@@ -28,12 +28,18 @@ import {
 import { generateFoundryConfigJson } from "./generate/generateFoundryConfigJson.js";
 import { generateNpmRc } from "./generate/generateNpmRc.js";
 import { green } from "./highlight.js";
-import type { SdkVersion, Template, TemplateContext } from "./templates.js";
+import type {
+  SdkVersion,
+  StyleAddon,
+  Template,
+  TemplateContext,
+} from "./templates.js";
 
 interface RunArgs {
   project: string;
   overwrite: boolean;
   template: Template;
+  styleAddon: StyleAddon | undefined;
   sdkVersion: SdkVersion;
   foundryUrl: string;
   applicationUrl: string | undefined;
@@ -51,6 +57,7 @@ export async function run(
     project,
     overwrite,
     template,
+    styleAddon,
     sdkVersion,
     foundryUrl,
     applicationUrl,
@@ -108,6 +115,33 @@ export async function run(
         contents.type === "raw" ? "utf-8" : "base64",
       ),
     );
+  }
+
+  if (styleAddon != null) {
+    consola.info(`Applying style addon: ${green(styleAddon.label)}`);
+
+    for (const deleteFile of styleAddon.deleteFiles) {
+      const deletePath = path.join(root, deleteFile);
+      if (fs.existsSync(deletePath)) {
+        fs.rmSync(deletePath);
+      }
+    }
+
+    const addonFiles = await styleAddon.files();
+    for (const [filePath, contents] of addonFiles) {
+      const finalPath = path.join(root, filePath);
+      const dirPath = path.dirname(finalPath);
+      await fs.promises.mkdir(dirPath, { recursive: true });
+      await fs.promises.writeFile(
+        finalPath,
+        Buffer.from(
+          contents.body,
+          contents.type === "raw" ? "utf-8" : "base64",
+        ),
+      );
+    }
+
+    mergeAddonDependencies(root, styleAddon.dependencies);
   }
 
   const ourPackageJsonPath = findUpSync("package.json", {
@@ -226,4 +260,33 @@ export async function run(
       borderStyle: "rounded",
     },
   });
+}
+
+const PACKAGE_JSON_HBS_FILES = [
+  "package.json.hbs",
+  "package.json.osdk.hbs",
+  "package.json.psdk.hbs",
+];
+
+function mergeAddonDependencies(
+  root: string,
+  dependencies: Record<string, string>,
+): void {
+  if (Object.keys(dependencies).length === 0) {
+    return;
+  }
+
+  for (const filename of PACKAGE_JSON_HBS_FILES) {
+    const filePath = path.join(root, filename);
+    if (!fs.existsSync(filePath)) {
+      continue;
+    }
+    const content = fs.readFileSync(filePath, "utf-8");
+    const packageJson = JSON.parse(content);
+    packageJson.dependencies = {
+      ...packageJson.dependencies,
+      ...dependencies,
+    };
+    fs.writeFileSync(filePath, JSON.stringify(packageJson, undefined, 2));
+  }
 }
