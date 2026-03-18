@@ -322,12 +322,12 @@ export function common<
   return { getToken, makeTokenAndSaveRefresh };
 }
 
-function tokenShouldRefresh(t: Token): boolean {
-  return Date.now() >= t.expires_at - t.expires_in * 1000
-        * (1 - REFRESH_LIFETIME_FRACTION);
+export function tokenShouldRefresh(t: Token): boolean {
+  return Date.now()
+    >= t.expires_at - (t.expires_in * 1000 * (1 - REFRESH_LIFETIME_FRACTION));
 }
 
-function tokenExpired(t: Token): boolean {
+export function tokenExpired(t: Token): boolean {
   return Date.now() >= t.expires_at - TOKEN_EXPIRED_PADDING_MS;
 }
 
