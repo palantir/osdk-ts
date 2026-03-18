@@ -242,7 +242,7 @@ const useStableObjects = <
 };
 
 /**
- * Generator that yields query results as they complete while maintaining parallel execution
+ * Generator that yields query results as they complete
  */
 async function* executeQueriesGenerator<
   Q extends ObjectOrInterfaceDefinition,
