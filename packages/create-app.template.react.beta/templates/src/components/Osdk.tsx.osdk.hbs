@@ -1,4 +1,4 @@
-import { Button, Icon, Tag } from "@blueprintjs/core";
+import { AnchorButton, Icon, Tag } from "@blueprintjs/core";
 import React from "react";
 import css from "./Osdk.module.css";
 
@@ -12,13 +12,15 @@ function Osdk(): React.ReactElement {
         <span>OSDK: </span>
         <Tag minimal={true}>{{osdkPackage}}</Tag>
       </div>
-      <Button
-        onClick={() => window.open(DOCUMENTATION_URL, "_blank", "noreferrer")}
+      <AnchorButton
+        href={DOCUMENTATION_URL}
+        target="_blank"
+        rel="noreferrer"
         variant="minimal"
         icon={<Icon icon="book" aria-label="Book icon"></Icon>}
       >
         View documentation
-      </Button>
+      </AnchorButton>
     </div>
   );
 }
