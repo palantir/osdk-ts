@@ -16,15 +16,14 @@
 
 import type { PDFDocumentProxy } from "pdfjs-dist";
 import { getDocument, GlobalWorkerOptions } from "pdfjs-dist";
+// @ts-expect-error -- Vite ?url import resolves to a string path at build time
+import pdfWorkerUrl from "pdfjs-dist/build/pdf.worker.min.mjs?url";
 import { useEffect, useState } from "react";
-
-const WORKER_CDN_URL =
-  "https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/pdf.worker.min.mjs";
 
 let workerInitialized = false;
 function ensureWorker(): void {
   if (!workerInitialized) {
-    GlobalWorkerOptions.workerSrc = WORKER_CDN_URL;
+    GlobalWorkerOptions.workerSrc = pdfWorkerUrl as string;
     workerInitialized = true;
   }
 }
