@@ -22,7 +22,7 @@ import { filterValuesBySearch } from "../../utils/filterValues.js";
 import styles from "./ListogramInput.module.css";
 import { ListogramSkeleton } from "./ListogramSkeleton.js";
 import sharedStyles from "./shared.module.css";
-import { isEmptyArray, useStaleData } from "./useStaleData.js";
+import { useStaleData } from "./useStaleData.js";
 
 export type ListogramDisplayMode = "full" | "count" | "minimal";
 
@@ -59,7 +59,6 @@ function ListogramInputInner({
 
   const { displayData: stableValues } = useStaleData(
     values,
-    isEmptyArray,
     isLoading,
   );
 

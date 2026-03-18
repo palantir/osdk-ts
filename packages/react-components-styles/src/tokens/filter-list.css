@@ -213,7 +213,7 @@
   --osdk-filter-listogram-label-color: var(
     --osdk-typography-color-default-rest
   );
-  --osdk-filter-listogram-bar-height: 8px;
+  --osdk-filter-listogram-bar-height: var(--osdk-surface-spacing);
   --osdk-filter-listogram-bar-width: 50px;
   --osdk-filter-listogram-bar-bg: var(--osdk-palette-gray-100);
   --osdk-filter-listogram-bar-border-radius: var(
@@ -235,8 +235,8 @@
   /* Range Input Tokens */
   --osdk-filter-range-gap: calc(var(--osdk-surface-spacing) * 2);
   --osdk-filter-range-histogram-height: 60px;
-  --osdk-filter-range-histogram-bar-gap: 2px;
-  --osdk-filter-range-histogram-bar-min-width: 4px;
+  --osdk-filter-range-histogram-bar-gap: calc(var(--osdk-surface-spacing) * 0.25);
+  --osdk-filter-range-histogram-bar-min-width: calc(var(--osdk-surface-spacing) * 0.5);
   --osdk-filter-range-histogram-bar-color: var(--osdk-palette-gray-200);
   --osdk-filter-range-histogram-bar-active-color: var(
     --osdk-intent-primary-rest
@@ -361,7 +361,7 @@
   );
 
   /* Exclude Dropdown Popup */
-  --osdk-filter-item-exclude-dropdown-min-width: 120px;
+  --osdk-filter-item-exclude-dropdown-min-width: calc(var(--osdk-surface-spacing) * 15);
 
   /* Overflow / Dropdown Menu */
   --osdk-filter-item-menu-bg: var(--osdk-background-primary);
@@ -385,10 +385,10 @@
     --osdk-surface-border-radius
   );
   --osdk-filter-item-menu-separator-color: var(--osdk-surface-border-color);
-  --osdk-filter-item-menu-check-size: 12px;
+  --osdk-filter-item-menu-check-size: calc(var(--osdk-surface-spacing) * 1.5);
 
   /* Collapsed Filter List */
-  --osdk-filter-list-collapsed-width: 40px;
+  --osdk-filter-list-collapsed-width: calc(var(--osdk-surface-spacing) * 5);
   --osdk-filter-list-collapsed-label-font-family: var(
     --osdk-typography-family-default
   );
@@ -400,7 +400,7 @@
   );
 
   /* Color Dot */
-  --osdk-filter-checkbox-color-dot-size: 8px;
+  --osdk-filter-checkbox-color-dot-size: var(--osdk-surface-spacing);
 
   /* Multi Select Count */
   --osdk-filter-multiselect-count-font-family: var(

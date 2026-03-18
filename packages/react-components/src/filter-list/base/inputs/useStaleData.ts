@@ -16,24 +16,19 @@
 
 import { useRef } from "react";
 
-export function isEmptyArray(d: { length: number }): boolean {
-  return d.length === 0;
-}
-
-export function useStaleData<T>(
+export function useStaleData<T extends { length: number }>(
   data: T,
-  isEmpty: (d: T) => boolean,
   isLoading: boolean,
 ): { displayData: T; isStale: boolean } {
   const staleRef = useRef(data);
 
-  if (!isEmpty(data)) {
+  if (data.length > 0) {
     staleRef.current = data;
   } else if (!isLoading) {
     staleRef.current = data;
   }
 
-  const isStale = isEmpty(data) && isLoading && !isEmpty(staleRef.current);
+  const isStale = data.length === 0 && isLoading && staleRef.current.length > 0;
   const displayData = isStale ? staleRef.current : data;
 
   return { displayData, isStale };

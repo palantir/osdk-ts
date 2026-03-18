@@ -32,7 +32,7 @@ import {
   type HistogramBucket,
 } from "./createHistogramBuckets.js";
 import styles from "./RangeInput.module.css";
-import { isEmptyArray, useStaleData } from "./useStaleData.js";
+import { useStaleData } from "./useStaleData.js";
 
 const DEBOUNCE_MS = 300;
 
@@ -125,7 +125,6 @@ function RangeInputInner<T>({
 
   const { displayData: displayPairs } = useStaleData(
     valueCountPairs,
-    isEmptyArray,
     isLoading,
   );
 
