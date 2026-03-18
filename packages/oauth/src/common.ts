@@ -301,6 +301,7 @@ export function common<
     if (!token || tokenExpired(token)) {
       token = await signIn();
     } else if (tokenShouldRefresh(token)) {
+      // Background refresh hasn't updated token, so trigger it here but do not block
       rmTimeout();
       tryBackgroundRefresh();
     }
