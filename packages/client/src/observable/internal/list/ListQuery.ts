@@ -35,6 +35,7 @@ import type {
 import { getWireObjectSet } from "../../../objectSet/createObjectSet.js";
 import type { ListPayload } from "../../ListPayload.js";
 import type { Status } from "../../ObservableClient/common.js";
+import type { CollectionConnectableParams } from "../base-list/BaseCollectionQuery.js";
 import { BaseListQuery } from "../base-list/BaseListQuery.js";
 import type { BatchContext } from "../BatchContext.js";
 import { type CacheKey } from "../CacheKey.js";
@@ -179,6 +180,15 @@ export abstract class ListQuery extends BaseListQuery<
 
   get canonicalPivotInfo(): Canonical<PivotInfo> | undefined {
     return this.#pivotInfo;
+  }
+
+  protected createPayload(
+    params: CollectionConnectableParams,
+  ): ListPayload {
+    return {
+      ...super.createPayload(params),
+      objectSet: this.#objectSet,
+    } as ListPayload;
   }
 
   protected abstract createObjectSet(

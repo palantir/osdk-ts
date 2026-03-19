@@ -167,6 +167,7 @@ export interface ObserveObjectsCallbackArgs<
   hasMore: boolean;
   status: Status;
   totalCount?: string;
+  objectSet: ObjectSet<T>;
 }
 
 export interface ObserveObjectSetArgs<
@@ -534,7 +535,23 @@ export interface ObservableClient extends ObserveLinks {
   >(
     where: WhereClause<T, RDPs>,
   ) => Canonical<WhereClause<T, RDPs>>;
+
+  canonicalizeOptions: <T extends CanonicalizeOptionsInput>(
+    options: T,
+  ) => CanonicalizedOptions<T>;
 }
+
+export interface CanonicalizeOptionsInput {
+  where?: object;
+  withProperties?: object;
+  orderBy?: Record<string, "asc" | "desc" | undefined>;
+  aggregate?: object;
+  intersectWith?: Array<{ where: object }>;
+}
+
+export type CanonicalizedOptions<T extends CanonicalizeOptionsInput> = {
+  [K in keyof T]: T[K];
+};
 
 export function createObservableClient(client: Client): ObservableClient {
   // First we need a modified client that adds an extra header so we know its

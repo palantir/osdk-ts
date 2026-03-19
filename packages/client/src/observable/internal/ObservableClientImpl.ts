@@ -44,6 +44,8 @@ import type { ListPayload } from "../ListPayload.js";
 import type { ObjectPayload } from "../ObjectPayload.js";
 import type { ObjectSetPayload } from "../ObjectSetPayload.js";
 import type {
+  CanonicalizedOptions,
+  CanonicalizeOptionsInput,
   ObservableClient,
   ObserveAggregationArgs,
   ObserveAggregationOptions,
@@ -312,6 +314,41 @@ export class ObservableClientImpl implements ObservableClient {
   >(where: WhereClause<T, RDPs>): Canonical<WhereClause<T, RDPs>> {
     return this.__experimentalStore.whereCanonicalizer
       .canonicalize(where) as Canonical<WhereClause<T, RDPs>>;
+  }
+
+  public canonicalizeOptions<T extends CanonicalizeOptionsInput>(
+    options: T,
+  ): CanonicalizedOptions<T> {
+    const store = this.__experimentalStore;
+    const result = { ...options };
+
+    if (result.where) {
+      result.where = store.whereCanonicalizer.canonicalize(result.where);
+    }
+
+    if (result.withProperties) {
+      result.withProperties = store.genericCanonicalizer.canonicalize(
+        result.withProperties,
+      );
+    }
+
+    if (result.orderBy) {
+      result.orderBy = store.orderByCanonicalizer.canonicalize(result.orderBy);
+    }
+
+    if (result.aggregate) {
+      result.aggregate = store.genericCanonicalizer.canonicalize(
+        result.aggregate,
+      );
+    }
+
+    if (result.intersectWith) {
+      result.intersectWith = store.genericCanonicalizer.canonicalize(
+        result.intersectWith,
+      );
+    }
+
+    return result as CanonicalizedOptions<T>;
   }
 }
 
