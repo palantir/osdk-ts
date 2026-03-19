@@ -47,3 +47,15 @@ vitest.workspace.ts
 # Claude local files
 *.local.json
 *.local.md
+
+# IDE
+.idea/
+.project
+.settings
+.classpath
+*.iml
+*.ipr
+*.iws
+
+# Files with local extensions
+*.local
