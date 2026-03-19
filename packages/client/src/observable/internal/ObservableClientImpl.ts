@@ -78,6 +78,10 @@ import { UnsubscribableWrapper } from "./UnsubscribableWrapper.js";
 export class ObservableClientImpl implements ObservableClient {
   __experimentalStore: Store;
 
+  #unionCache = new WeakMap<Canonical<string[]>, ObjectSet<any, any>[]>();
+  #intersectCache = new WeakMap<Canonical<string[]>, ObjectSet<any, any>[]>();
+  #subtractCache = new WeakMap<Canonical<string[]>, ObjectSet<any, any>[]>();
+
   constructor(store: Store) {
     this.__experimentalStore = store;
 
@@ -346,6 +350,55 @@ export class ObservableClientImpl implements ObservableClient {
       result.intersectWith = store.genericCanonicalizer.canonicalize(
         result.intersectWith,
       );
+    }
+
+    if (result.union && result.union.length > 0) {
+      const wireStrings = result.union.map(os =>
+        JSON.stringify(getWireObjectSet(os))
+      );
+      const canonKey = store.objectSetArrayCanonicalizer.canonicalizeUnion(
+        wireStrings,
+      );
+      let cached = this.#unionCache.get(canonKey);
+      if (!cached) {
+        cached = result.union;
+        this.#unionCache.set(canonKey, cached);
+      }
+      result.union = cached;
+    }
+
+    if (result.intersect && result.intersect.length > 0) {
+      const wireStrings = result.intersect.map(os =>
+        JSON.stringify(getWireObjectSet(os))
+      );
+      const canonKey = store.objectSetArrayCanonicalizer.canonicalizeIntersect(
+        wireStrings,
+      );
+      let cached = this.#intersectCache.get(canonKey);
+      if (!cached) {
+        cached = result.intersect;
+        this.#intersectCache.set(canonKey, cached);
+      }
+      result.intersect = cached;
+    }
+
+    if (result.subtract && result.subtract.length > 0) {
+      const wireStrings = result.subtract.map(os =>
+        JSON.stringify(getWireObjectSet(os))
+      );
+      const canonKey = store.objectSetArrayCanonicalizer.canonicalizeSubtract(
+        wireStrings,
+      );
+      let cached = this.#subtractCache.get(canonKey);
+      if (!cached) {
+        cached = result.subtract;
+        this.#subtractCache.set(canonKey, cached);
+      }
+      result.subtract = cached;
+    }
+
+    if (result.$select && result.$select.length > 0) {
+      result.$select = store.selectCanonicalizer.canonicalize(result.$select);
     }
 
     return result as CanonicalizedOptions<T>;

@@ -547,6 +547,10 @@ export interface CanonicalizeOptionsInput {
   orderBy?: Record<string, "asc" | "desc" | undefined>;
   aggregate?: object;
   intersectWith?: Array<{ where: object }>;
+  union?: Array<ObjectSet<any, any>>;
+  intersect?: Array<ObjectSet<any, any>>;
+  subtract?: Array<ObjectSet<any, any>>;
+  $select?: ReadonlyArray<string>;
 }
 
 export type CanonicalizedOptions<T extends CanonicalizeOptionsInput> = {
