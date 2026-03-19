@@ -198,6 +198,27 @@ describe(useObjectSetAggregation, () => {
 
       expect(result.current.error).toBe(testError);
     });
+
+    it("should return synthetic error for status 'error'", () => {
+      const wrapper = createWrapper();
+
+      const { result } = renderHook(
+        () =>
+          useObjectSetAggregation(mockObjectSet, {
+            aggregate: defaultAggregate,
+          }),
+        { wrapper },
+      );
+
+      act(() => {
+        capturedObserver?.next({ status: "error" });
+      });
+
+      expect(result.current.error).toBeInstanceOf(Error);
+      expect(result.current.error?.message).toBe(
+        "Failed to execute aggregation",
+      );
+    });
   });
 
   describe("refetch", () => {
