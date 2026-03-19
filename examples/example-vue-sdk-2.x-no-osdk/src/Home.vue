@@ -15,6 +15,7 @@ import NextSteps from "./components/NextSteps.vue";
   display: flex;
   flex-direction: column;
   gap: 60px;
-  width: 800px;
+  max-width: 800px;
+  width: 100%;
 }
 </style>
