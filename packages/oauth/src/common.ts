@@ -237,13 +237,18 @@ export function common<
     if (refreshTimeout) clearTimeout(refreshTimeout);
   }
 
+  let pendingRefresh: Promise<Token | undefined> | undefined;
   function tryBackgroundRefresh() {
     if (!refresh) return;
-    refresh().catch((e: unknown) => {
+    if (pendingRefresh) return;
+    pendingRefresh = refresh().catch((e: unknown) => {
       if (process.env.NODE_ENV !== "production") {
         // eslint-disable-next-line no-console
         console.warn("Background token refresh failed", e);
       }
+      return undefined;
+    }).finally(() => {
+      pendingRefresh = undefined;
     });
   }
 
@@ -300,8 +305,8 @@ export function common<
   const getToken = Object.assign(async function getToken() {
     if (!token || tokenExpired(token)) {
       token = await signIn();
-    } else if (tokenShouldRefresh(token)) {
-      // Background refresh hasn't updated token, so trigger it here but do not block
+    } else if (tokenShouldRefresh(token) && !pendingRefresh) {
+      // Background refresh hasn't started yet, so trigger it here but do not block
       rmTimeout();
       tryBackgroundRefresh();
     }
