@@ -209,7 +209,7 @@ describe("generateBackingDatasetBlockResult", () => {
     expect(result.input_mapping_entries).toEqual([]);
 
     // tabularDatasource output
-    const dsKey = ReadableIdGenerator.getForDataSet("TestObject");
+    const dsKey = ReadableIdGenerator.getForDatasetOutput("TestObject");
     expect(result.outputs[dsKey]).toBeDefined();
     expect(result.outputs[dsKey].type).toBe("tabularDatasource");
     const dsOutput = result.outputs[dsKey] as unknown as Record<
@@ -227,11 +227,11 @@ describe("generateBackingDatasetBlockResult", () => {
     expect(dsShape.schema).toHaveLength(2);
 
     // datasourceColumn outputs
-    const idColKey = ReadableIdGenerator.getForDataSetColumn(
+    const idColKey = ReadableIdGenerator.getForDatasetColumnOutput(
       "TestObject",
       "id",
     );
-    const countColKey = ReadableIdGenerator.getForDataSetColumn(
+    const countColKey = ReadableIdGenerator.getForDatasetColumnOutput(
       "TestObject",
       "count",
     );
@@ -326,7 +326,7 @@ describe("generateBackingDatasetBlockResult", () => {
 
     // Outputs: tabularDatasource + 2 columns (id and count), not 3
     expect(Object.keys(result.outputs)).toHaveLength(3);
-    const secretKey = ReadableIdGenerator.getForDataSetColumn(
+    const secretKey = ReadableIdGenerator.getForDatasetColumnOutput(
       "TestObject",
       "secret",
     );

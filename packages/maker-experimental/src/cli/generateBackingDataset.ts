@@ -124,12 +124,12 @@ export async function generateBackingDatasetBlockResult(
   const outputs: Record<string, OutputShape> = {};
 
   // Readable IDs for dataset outputs (must match what the ontology block uses as inputs)
-  const datasourceReadableId = ReadableIdGenerator.getForDataSet(apiName);
+  const datasourceReadableId = ReadableIdGenerator.getForDatasetOutput(apiName);
 
   // tabularDatasource output shape
   const columnReadableIds: ReadableId[] = [];
   for (const prop of nonEditOnlyProps) {
-    const colReadableId = ReadableIdGenerator.getForDataSetColumn(
+    const colReadableId = ReadableIdGenerator.getForDatasetColumnOutput(
       apiName,
       prop.apiName!,
     );

@@ -151,23 +151,28 @@ export default async function main(
 
     // The ontology block has inputs with these readable IDs (from shape extraction)
     // Map them to the datasource block's outputs (which use the same readable IDs)
-    const datasourceReadableId = ReadableIdGenerator.getForDataSet(apiName);
-    if (shapes.inputShapes.has(datasourceReadableId)) {
+    const inputDatasetReadableId = ReadableIdGenerator.getForDataset(apiName);
+    const outputDatasetReadableId = ReadableIdGenerator.getForDatasetOutput(
+      apiName,
+    );
+    if (shapes.inputShapes.has(inputDatasetReadableId)) {
       ontologyInputMappingEntries.push({
-        input: datasourceReadableId,
-        output: datasourceReadableId,
+        input: inputDatasetReadableId,
+        output: outputDatasetReadableId,
       });
     }
 
     for (const prop of nonEditOnlyProps) {
-      const colReadableId = ReadableIdGenerator.getForDataSetColumn(
+      const colInputReadableId = ReadableIdGenerator.getForDatasetColumn(
         apiName,
         prop.apiName!,
       );
-      if (shapes.inputShapes.has(colReadableId)) {
+      const getForDatasetColumnOutput = ReadableIdGenerator
+        .getForDatasetColumnOutput(apiName, prop.apiName!);
+      if (shapes.inputShapes.has(colInputReadableId)) {
         ontologyInputMappingEntries.push({
-          input: colReadableId,
-          output: colReadableId,
+          input: colInputReadableId,
+          output: getForDatasetColumnOutput,
         });
       }
     }
