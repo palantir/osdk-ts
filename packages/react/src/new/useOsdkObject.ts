@@ -27,7 +27,7 @@ import type {
   Unsubscribable,
 } from "@osdk/client/unstable-do-not-use";
 import React from "react";
-import { makeExternalStore } from "./makeExternalStore.js";
+import { extractPayloadError, makeExternalStore } from "./makeExternalStore.js";
 import {
   getClientId,
   isSuspenseOption,
@@ -195,35 +195,36 @@ export function useOsdkObject<
     [JSON.stringify(selectArg)],
   );
 
+  const observationFactory = React.useMemo(
+    () =>
+      _createObjectObservation<Q>(
+        observableClient,
+        typeOrApiName,
+        primaryKey,
+        { mode, select: stableSelect },
+      ),
+    [observableClient, typeOrApiName, primaryKey, mode, stableSelect],
+  );
+
   const baseStore = React.useMemo(
     () => {
-      if (!enabled) {
+      if (isSuspense || !enabled) {
         return makeExternalStore<ObserveObjectCallbackArgs<Q>>(
           () => ({ unsubscribe: () => {} }),
-          `object ${apiNameString} ${primaryKey} [DISABLED]`,
+          `object ${apiNameString} ${primaryKey} [INACTIVE]`,
         );
       }
       return makeExternalStore<ObserveObjectCallbackArgs<Q>>(
-        _createObjectObservation<Q>(
-          observableClient,
-          typeOrApiName,
-          primaryKey,
-          {
-            mode,
-            select: stableSelect,
-          },
-        ),
+        observationFactory,
         `object ${apiNameString} ${primaryKey}`,
       );
     },
     [
+      isSuspense,
       enabled,
-      observableClient,
-      typeOrApiName,
+      observationFactory,
       apiNameString,
       primaryKey,
-      mode,
-      stableSelect,
     ],
   );
 
@@ -237,10 +238,7 @@ export function useOsdkObject<
       ObserveObjectCallbackArgs<Q>
     >(
       cacheKey,
-      _createObjectObservation<Q>(observableClient, typeOrApiName, primaryKey, {
-        mode,
-        select: stableSelect,
-      }),
+      observationFactory,
       observableClient.peekObjectData<Q>(typeOrApiName, primaryKey),
       (p) => p?.object != null,
     ));
@@ -266,13 +264,6 @@ export function useOsdkObject<
       };
     }
 
-    let error: Error | undefined;
-    if (payload && "error" in payload && payload.error) {
-      error = payload.error;
-    } else if (payload?.status === "error") {
-      error = new Error("Failed to load object");
-    }
-
     return {
       object: payload?.object as Osdk.Instance<Q> | undefined,
       isLoading: enabled
@@ -280,7 +271,7 @@ export function useOsdkObject<
           || !payload)
         : false,
       isOptimistic: !!payload?.isOptimistic,
-      error,
+      error: extractPayloadError(payload, "Failed to load object"),
       forceUpdate,
     };
   }, [payload, enabled, forceUpdate, isSuspense]);

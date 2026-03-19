@@ -29,7 +29,8 @@ export function TestSuspenseWrapper(
 ) {
   return React.createElement(
     OsdkContext2.Provider,
-    { value: { observableClient } as never },
+    // @ts-expect-error - test mock provides only observableClient, not client
+    { value: { observableClient } },
     React.createElement(
       OsdkErrorBoundary,
       {
@@ -66,7 +67,6 @@ export function createMockObservableClient(
     observeObject: vitest.fn(() => ({ unsubscribe: vitest.fn() })),
     observeList: vitest.fn(() => ({ unsubscribe: vitest.fn() })),
     peekObjectData: vitest.fn(() => undefined),
-    peekListData: vitest.fn(() => undefined),
     canonicalizeWhereClause: vitest.fn((w: unknown) => w),
     ...overrides,
   };

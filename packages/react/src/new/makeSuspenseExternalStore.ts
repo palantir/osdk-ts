@@ -69,11 +69,14 @@ function ensureOrphanCleanup(): void {
       cleanupTimerId = undefined;
     }
   }, ORPHAN_CLEANUP_INTERVAL_MS);
+  // Prevent timer from blocking Node.js process exit (tests, SSR)
+  (cleanupTimerId as unknown as { unref?(): void }).unref?.();
 }
 
 function getOrCreateEntry<X>(
   cacheKey: string,
   createObservation: (callback: Observer<X | undefined>) => Unsubscribable,
+  hasDataCheck: (p: Snapshot<X>) => boolean,
   peekResult: Snapshot<X>,
 ): SuspenseCacheEntry<X> {
   const existing = suspenseCache.get(cacheKey);
@@ -110,10 +113,7 @@ function getOrCreateEntry<X>(
   entry.observation = createObservation({
     next: (payload) => {
       entry.lastResult = payload as Snapshot<X>;
-      const typedPayload = payload as
-        | (Record<string, unknown> & { status?: string })
-        | undefined;
-      if (typedPayload?.status === "loaded") {
+      if (hasDataCheck(entry.lastResult)) {
         entry.hasLoadedOnce = true;
         entry.hasErrored = false;
         resolveIfPending();
@@ -164,6 +164,7 @@ function getOrCreateEntry<X>(
 export function getSuspenseExternalStore<X>(
   cacheKey: string,
   createObservation: (callback: Observer<X | undefined>) => Unsubscribable,
+  hasDataCheck: (p: Snapshot<X>) => boolean,
   peekResult?: Snapshot<X>,
 ): {
   subscribe: (notifyUpdate: () => void) => () => void;
@@ -171,7 +172,12 @@ export function getSuspenseExternalStore<X>(
   getSuspensePromise: () => Promise<void> | undefined;
   getError: () => Error | undefined;
 } {
-  const entry = getOrCreateEntry<X>(cacheKey, createObservation, peekResult);
+  const entry = getOrCreateEntry<X>(
+    cacheKey,
+    createObservation,
+    hasDataCheck,
+    peekResult,
+  );
 
   return {
     subscribe(notifyUpdate: () => void) {
@@ -203,14 +209,8 @@ export function getSuspenseExternalStore<X>(
     },
     getError() {
       const result = entry.lastResult;
-      if (result && "error" in result && result.error) {
+      if (result != null && "error" in result && result.error) {
         return result.error;
-      }
-      const typedResult = result as
-        | (Record<string, unknown> & { status?: string })
-        | undefined;
-      if (typedResult?.status === "error") {
-        return new Error("Failed to load data");
       }
       return undefined;
     },
@@ -227,16 +227,16 @@ export function throwIfSuspenseNeeded<X>(
   store: {
     getSuspensePromise: () => Promise<void> | undefined;
     getError: () => Error | undefined;
+    getSnapShot: () => Snapshot<X>;
   },
   hasDataCheck: (p: Snapshot<X>) => boolean,
-  getSnapShot: () => Snapshot<X>,
 ): void {
   const error = store.getError();
   if (error) {
     throw error;
   }
 
-  if (!hasDataCheck(getSnapShot())) {
+  if (!hasDataCheck(store.getSnapShot())) {
     const promise = store.getSuspensePromise();
     if (promise) {
       throw promise;
@@ -244,7 +244,9 @@ export function throwIfSuspenseNeeded<X>(
   }
 }
 
-export function isSuspenseOption(value: unknown): boolean {
+export function isSuspenseOption(
+  value: unknown,
+): value is { suspense: true } {
   return typeof value === "object" && value != null
     && "suspense" in value && value.suspense === true;
 }
@@ -261,12 +263,12 @@ export function setupSuspenseStore<X>(
   const suspenseStore = getSuspenseExternalStore<X>(
     cacheKey,
     createObservation,
+    hasDataCheck,
     peekResult,
   );
   throwIfSuspenseNeeded<X>(
     suspenseStore,
     hasDataCheck,
-    suspenseStore.getSnapShot,
   );
   return suspenseStore;
 }

@@ -57,11 +57,10 @@ import type {
   ObserveObjectSetArgs,
   Unsubscribable,
 } from "../ObservableClient.js";
-import type { Observer, Status } from "../ObservableClient/common.js";
+import type { Observer } from "../ObservableClient/common.js";
 import type { ObserveLinks } from "../ObservableClient/ObserveLink.js";
 import type { AggregationPayloadBase } from "./aggregation/AggregationQuery.js";
 import type { Canonical } from "./Canonical.js";
-import type { ListCacheKey } from "./list/ListCacheKey.js";
 import type { ObjectCacheKey } from "./object/ObjectCacheKey.js";
 import type { ObserveObjectSetOptions } from "./objectset/ObjectSetQueryOptions.js";
 import type { Store } from "./Store.js";
@@ -341,60 +340,6 @@ export class ObservableClientImpl implements ObservableClient {
       status: payload.status,
       lastUpdated: payload.lastUpdated,
       isOptimistic: payload.isOptimistic,
-    };
-  }
-
-  public peekListData<
-    T extends ObjectOrInterfaceDefinition,
-    RDPs extends Record<string, SimplePropertyDef> = {},
-  >(
-    options: ObserveListOptions<T, RDPs>,
-  ):
-    | { status: Status; isOptimistic: boolean; totalCount?: string }
-    | undefined
-  {
-    const {
-      type,
-      apiName,
-      canonWhere,
-      canonOrderBy,
-      canonRdp,
-      canonIntersect,
-      canonPivot,
-      canonRids,
-      canonSelect,
-    } = this.__experimentalStore.lists.canonicalizeListParams(options);
-
-    const cacheKey = this.__experimentalStore.cacheKeys.peek<ListCacheKey>(
-      "list",
-      type,
-      apiName,
-      canonWhere,
-      canonOrderBy,
-      canonRdp,
-      canonIntersect,
-      canonPivot,
-      canonRids,
-      canonSelect,
-    );
-    if (!cacheKey) {
-      return undefined;
-    }
-
-    const subject = this.__experimentalStore.subjects.peek(cacheKey);
-    if (!subject) {
-      return undefined;
-    }
-
-    const payload = subject.value;
-    if (payload.status !== "loaded" || !payload.value?.data) {
-      return undefined;
-    }
-
-    return {
-      status: payload.status,
-      isOptimistic: payload.isOptimistic,
-      totalCount: payload.value.totalCount,
     };
   }
 

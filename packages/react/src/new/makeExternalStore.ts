@@ -24,6 +24,22 @@ export type Snapshot<X> =
   | (Partial<X> & { error?: Error })
   | undefined;
 
+export function extractPayloadError(
+  payload: { error?: Error; status?: string } | undefined,
+  fallbackMessage = "Failed to load data",
+): Error | undefined {
+  if (payload == null) {
+    return undefined;
+  }
+  if (payload.error) {
+    return payload.error;
+  }
+  if (payload.status === "error") {
+    return new Error(fallbackMessage);
+  }
+  return undefined;
+}
+
 export function makeExternalStore<X>(
   createObservation: (callback: Observer<X | undefined>) => Unsubscribable,
   _name?: string,

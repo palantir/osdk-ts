@@ -31,7 +31,7 @@ import type {
   Unsubscribable,
 } from "@osdk/client/unstable-do-not-use";
 import React from "react";
-import { makeExternalStore } from "./makeExternalStore.js";
+import { extractPayloadError, makeExternalStore } from "./makeExternalStore.js";
 import {
   getClientId,
   isSuspenseOption,
@@ -412,48 +412,25 @@ export function useOsdkObjects<
     [JSON.stringify($select)],
   );
 
-  const baseStore = React.useMemo(
-    () => {
-      if (!enabled) {
-        return makeExternalStore<
-          ObserveObjectsCallbackArgs<Q, RDPs>
-        >(
-          () => ({ unsubscribe: () => {} }),
-          process.env.NODE_ENV !== "production"
-            ? `list ${type.apiName} [DISABLED]`
-            : void 0,
-        );
-      }
-
-      return makeExternalStore<
-        ObserveObjectsCallbackArgs<Q, RDPs>
-      >(
-        _createListObservation(observableClient, {
-          type,
-          rids: stableRids,
-          where: stableCanonWhere,
-          dedupeInterval: dedupeIntervalMs ?? 2_000,
-          pageSize,
-          orderBy: stableOrderBy,
-          streamUpdates,
-          withProperties: stableWithProperties,
-          autoFetchMore,
-          intersectWith: stableIntersectWith,
-          pivotTo,
-          select: stableSelect,
-        }),
-        process.env.NODE_ENV !== "production"
-          ? `list ${type.apiName} ${
-            stableRids ? `[${stableRids.length} rids]` : ""
-          } ${JSON.stringify(stableCanonWhere)}`
-          : void 0,
-      );
-    },
+  const observationFactory = React.useMemo(
+    () =>
+      _createListObservation<Q, RDPs>(observableClient, {
+        type,
+        rids: stableRids,
+        where: stableCanonWhere,
+        dedupeInterval: dedupeIntervalMs ?? 2_000,
+        pageSize,
+        orderBy: stableOrderBy,
+        streamUpdates,
+        withProperties: stableWithProperties,
+        autoFetchMore,
+        intersectWith: stableIntersectWith,
+        pivotTo,
+        select: stableSelect,
+      }),
     [
-      enabled,
       observableClient,
-      type.apiName,
-      type.type,
+      type,
       stableRids,
       stableCanonWhere,
       dedupeIntervalMs,
@@ -465,6 +442,40 @@ export function useOsdkObjects<
       stableIntersectWith,
       pivotTo,
       stableSelect,
+    ],
+  );
+
+  const baseStore = React.useMemo(
+    () => {
+      if (isSuspense || !enabled) {
+        return makeExternalStore<
+          ObserveObjectsCallbackArgs<Q, RDPs>
+        >(
+          () => ({ unsubscribe: () => {} }),
+          process.env.NODE_ENV !== "production"
+            ? `list ${type.apiName} [INACTIVE]`
+            : void 0,
+        );
+      }
+
+      return makeExternalStore<
+        ObserveObjectsCallbackArgs<Q, RDPs>
+      >(
+        observationFactory,
+        process.env.NODE_ENV !== "production"
+          ? `list ${type.apiName} ${
+            stableRids ? `[${stableRids.length} rids]` : ""
+          } ${JSON.stringify(stableCanonWhere)}`
+          : void 0,
+      );
+    },
+    [
+      isSuspense,
+      enabled,
+      observationFactory,
+      type.apiName,
+      stableRids,
+      stableCanonWhere,
     ],
   );
 
@@ -486,20 +497,7 @@ export function useOsdkObjects<
       ObserveObjectsCallbackArgs<Q, RDPs>
     >(
       cacheKey,
-      _createListObservation(observableClient, {
-        type,
-        rids: stableRids,
-        where: stableCanonWhere,
-        dedupeInterval: dedupeIntervalMs ?? 2_000,
-        pageSize,
-        orderBy: stableOrderBy,
-        streamUpdates,
-        withProperties: stableWithProperties,
-        autoFetchMore,
-        intersectWith: stableIntersectWith,
-        pivotTo,
-        select: stableSelect,
-      }),
+      observationFactory,
       undefined,
       (p) => p?.resolvedList != null,
     ));
@@ -517,16 +515,9 @@ export function useOsdkObjects<
       };
     }
 
-    let error: Error | undefined;
-    if (listPayload && "error" in listPayload && listPayload.error) {
-      error = listPayload.error;
-    } else if (listPayload?.status === "error") {
-      error = new Error("Failed to load objects");
-    }
-
     return {
       fetchMore: listPayload?.hasMore ? listPayload.fetchMore : undefined,
-      error,
+      error: extractPayloadError(listPayload, "Failed to load objects"),
       data: listPayload?.resolvedList,
       isLoading: enabled
         ? (listPayload?.status === "loading" || listPayload?.status === "init"

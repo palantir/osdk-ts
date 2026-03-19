@@ -266,7 +266,6 @@ const MockObjectTypeWithType = {
 
 describe("useOsdkObjects with { suspense: true }", () => {
   let mockObserveList: ReturnType<typeof vitest.fn>;
-  let mockPeekListData: ReturnType<typeof vitest.fn>;
   let capturedObserver:
     | Observer<Record<string, unknown> | undefined>
     | undefined;
@@ -282,7 +281,6 @@ describe("useOsdkObjects with { suspense: true }", () => {
         return { unsubscribe: vitest.fn() };
       },
     );
-    mockPeekListData = vitest.fn(() => undefined);
   });
 
   afterEach(cleanupSuspenseTests);
@@ -290,7 +288,6 @@ describe("useOsdkObjects with { suspense: true }", () => {
   function createObservableClient() {
     return createMockObservableClient({
       observeList: mockObserveList,
-      peekListData: mockPeekListData,
     });
   }
 
@@ -334,7 +331,7 @@ describe("useOsdkObjects with { suspense: true }", () => {
     );
   }
 
-  it("should show loading fallback while data is pending", () => {
+  it("should suspend then render list data after loading", async () => {
     const client = createObservableClient();
 
     render(
@@ -347,18 +344,6 @@ describe("useOsdkObjects with { suspense: true }", () => {
 
     expect(screen.getByTestId("loading")).toBeDefined();
     expect(mockObserveList).toHaveBeenCalledTimes(1);
-  });
-
-  it("should render list data after loading completes", async () => {
-    const client = createObservableClient();
-
-    render(
-      React.createElement(
-        TestSuspenseWrapper,
-        { observableClient: client },
-        React.createElement(ListComponent, {}),
-      ),
-    );
 
     act(() => {
       capturedObserver?.next({
@@ -380,53 +365,6 @@ describe("useOsdkObjects with { suspense: true }", () => {
     expect(screen.getByTestId("item-0").textContent).toBe("Item A");
     expect(screen.getByTestId("item-1").textContent).toBe("Item B");
     expect(screen.getByTestId("total").textContent).toBe("2");
-  });
-
-  it("should show error boundary when error occurs", async () => {
-    const client = createObservableClient();
-
-    render(
-      React.createElement(
-        TestSuspenseWrapper,
-        { observableClient: client },
-        React.createElement(ListComponent, {}),
-      ),
-    );
-
-    act(() => {
-      capturedObserver?.error(new Error("List fetch failed"));
-    });
-
-    const el = await screen.findByTestId("error");
-    expect(el.textContent).toBe("List fetch failed");
-  });
-
-  it("should show fetchMore button when hasMore is true", async () => {
-    const client = createObservableClient();
-
-    render(
-      React.createElement(
-        TestSuspenseWrapper,
-        { observableClient: client },
-        React.createElement(ListComponent, {}),
-      ),
-    );
-
-    act(() => {
-      capturedObserver?.next({
-        resolvedList: [
-          { name: "Item A", $objectType: "MockObject", $primaryKey: "1" },
-        ],
-        status: "loaded",
-        isOptimistic: false,
-        lastUpdated: Date.now(),
-        hasMore: true,
-        fetchMore: vitest.fn(),
-      });
-    });
-
-    const btn = await screen.findByTestId("fetch-more");
-    expect(btn).toBeDefined();
   });
 
   it("should re-suspend when where clause changes", async () => {

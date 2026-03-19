@@ -17,8 +17,6 @@
 export { OsdkErrorBoundary } from "../new/OsdkErrorBoundary.js";
 export type { OsdkErrorBoundaryProps } from "../new/OsdkErrorBoundary.js";
 export { OsdkProvider2 } from "../new/OsdkProvider2.js";
-export { OsdkSuspense } from "../new/OsdkSuspense.js";
-export type { OsdkSuspenseProps } from "../new/OsdkSuspense.js";
 export { useLinks } from "../new/useLinks.js";
 export { useObjectSet } from "../new/useObjectSet.js";
 export { useOsdkAction } from "../new/useOsdkAction.js";
