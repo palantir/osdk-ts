@@ -43,10 +43,6 @@ vitest.workspace.ts
 
 .memory/
 
-# Claude local files
-*.local.json
-*.local.md
-
 # IDE
 .idea/
 .project
@@ -57,4 +53,4 @@ vitest.workspace.ts
 *.iws
 
 # Files with local extensions
-*.local
+*.local*
