@@ -26,6 +26,7 @@ import type {
 } from "@osdk/api";
 import type { ObserveObjectSetArgs } from "@osdk/client/unstable-do-not-use";
 import React from "react";
+import { extractPayloadError, isPayloadLoading } from "./hookUtils.js";
 import { makeExternalStore } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
 
@@ -82,9 +83,6 @@ export function useObjectSetLinks<
 
   const enabled = enabledOption && objectSet != null;
 
-  const objectSetRef = React.useRef<ObjectSet<Q> | undefined>(objectSet);
-  objectSetRef.current = objectSet;
-
   const canonOptions = observableClient.canonicalizeOptions({
     where: otherOptions.where,
     orderBy: otherOptions.orderBy,
@@ -103,12 +101,11 @@ export function useObjectSetLinks<
 
       return makeExternalStore<ObserveObjectSetArgs<Q>>(
         (observer) => {
-          const currentObjectSet = objectSetRef.current;
-          if (!currentObjectSet) {
+          if (!objectSet) {
             return { unsubscribe: () => {} };
           }
           return observableClient.observeObjectSet(
-            currentObjectSet,
+            objectSet,
             {
               pivotTo: linkName,
               where: canonOptions.where,
@@ -150,29 +147,17 @@ export function useObjectSetLinks<
     }
   }, [observableClient, typeApiName]);
 
-  return React.useMemo(() => {
-    let error: Error | undefined;
-    if (payload && "error" in payload && payload.error) {
-      error = payload.error;
-    } else if (payload?.status === "error") {
-      error = new Error("Failed to fetch linked objects");
-    }
-
-    return {
-      data: payload?.resolvedList as
-        | Osdk.Instance<LinkedType<Q, L>>[]
-        | undefined,
-      isLoading: enabled
-        ? (payload?.status === "loading" || payload?.status === "init"
-          || !payload)
-        : false,
-      error,
-      isOptimistic: payload?.isOptimistic ?? false,
-      fetchMore: payload?.hasMore ? payload.fetchMore : undefined,
-      hasMore: payload?.hasMore ?? false,
-      objectSet: payload?.objectSet as ObjectSet<LinkedType<Q, L>> | undefined,
-      totalCount: payload?.totalCount,
-      refetch,
-    };
-  }, [payload, enabled, refetch]);
+  return React.useMemo(() => ({
+    data: payload?.resolvedList as
+      | Osdk.Instance<LinkedType<Q, L>>[]
+      | undefined,
+    isLoading: isPayloadLoading(payload, enabled),
+    error: extractPayloadError(payload, "Failed to fetch linked objects"),
+    isOptimistic: payload?.isOptimistic ?? false,
+    fetchMore: payload?.hasMore ? payload.fetchMore : undefined,
+    hasMore: payload?.hasMore ?? false,
+    objectSet: payload?.objectSet as ObjectSet<LinkedType<Q, L>> | undefined,
+    totalCount: payload?.totalCount,
+    refetch,
+  }), [payload, enabled, refetch]);
 }

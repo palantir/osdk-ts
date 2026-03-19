@@ -25,6 +25,7 @@ import type {
 } from "@osdk/api";
 import type { ObserveAggregationArgs } from "@osdk/client/unstable-do-not-use";
 import React from "react";
+import { extractPayloadError, isPayloadLoading } from "./hookUtils.js";
 import { makeExternalStoreAsync } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
 
@@ -87,10 +88,7 @@ export function useObjectSetAggregation<
 
   const { observableClient } = React.useContext(OsdkContext2);
 
-  const type = objectSet?.$objectSetInternals.def as Q | undefined;
-
-  const objectSetRef = React.useRef<ObjectSet<Q> | undefined>(objectSet);
-  objectSetRef.current = objectSet;
+  const typeApiName = objectSet?.$objectSetInternals.def.apiName;
 
   const canonOptions = observableClient.canonicalizeOptions({
     where: where ?? EMPTY_WHERE,
@@ -101,25 +99,23 @@ export function useObjectSetAggregation<
 
   const { subscribe, getSnapShot } = React.useMemo(
     () => {
-      if (!enabled || !type) {
+      if (!enabled || objectSet == null) {
         return makeExternalStoreAsync<ObserveAggregationArgs<Q, A>>(
           () => Promise.resolve({ unsubscribe: () => {} }),
           process.env.NODE_ENV !== "production"
-            ? `objectSetAggregation ${type?.apiName} [DISABLED]`
+            ? `objectSetAggregation ${typeApiName} [DISABLED]`
             : void 0,
         );
       }
 
+      const type = objectSet.$objectSetInternals.def;
+
       return makeExternalStoreAsync<ObserveAggregationArgs<Q, A>>(
-        (observer) => {
-          const currentObjectSet = objectSetRef.current;
-          if (!currentObjectSet) {
-            return Promise.resolve({ unsubscribe: () => {} });
-          }
-          return observableClient.observeAggregation(
+        (observer) =>
+          observableClient.observeAggregation(
             {
-              type: type,
-              objectSet: currentObjectSet,
+              type,
+              objectSet,
               where: canonOptions.where,
               withProperties: canonOptions.withProperties,
               intersectWith: canonOptions.intersectWith,
@@ -127,8 +123,7 @@ export function useObjectSetAggregation<
               dedupeInterval: dedupeIntervalMs ?? 2_000,
             },
             observer,
-          );
-        },
+          ),
         process.env.NODE_ENV !== "production"
           ? `objectSetAggregation ${type.apiName}`
           : void 0,
@@ -137,7 +132,7 @@ export function useObjectSetAggregation<
     [
       enabled,
       observableClient,
-      type?.apiName,
+      typeApiName,
       objectSet,
       canonOptions.where,
       canonOptions.withProperties,
@@ -150,27 +145,15 @@ export function useObjectSetAggregation<
   const payload = React.useSyncExternalStore(subscribe, getSnapShot);
 
   const refetch = React.useCallback(async () => {
-    if (type?.apiName) {
-      await observableClient.invalidateObjectType(type.apiName);
+    if (typeApiName) {
+      await observableClient.invalidateObjectType(typeApiName);
     }
-  }, [observableClient, type?.apiName]);
+  }, [observableClient, typeApiName]);
 
-  return React.useMemo(() => {
-    let error: Error | undefined;
-    if (payload && "error" in payload && payload.error) {
-      error = payload.error;
-    } else if (payload?.status === "error") {
-      error = new Error("Failed to execute aggregation");
-    }
-
-    return {
-      data: payload?.result as AggregationsResults<Q, A> | undefined,
-      isLoading: enabled
-        ? (payload?.status === "loading" || payload?.status === "init"
-          || !payload)
-        : false,
-      error,
-      refetch,
-    };
-  }, [payload, refetch, enabled]);
+  return React.useMemo(() => ({
+    data: payload?.result as AggregationsResults<Q, A> | undefined,
+    isLoading: isPayloadLoading(payload, enabled),
+    error: extractPayloadError(payload, "Failed to execute aggregation"),
+    refetch,
+  }), [payload, refetch, enabled]);
 }
