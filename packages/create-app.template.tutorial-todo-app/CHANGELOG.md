@@ -1,5 +1,11 @@
 # @osdk/create-app.template.tutorial-todo-app
 
+## 2.7.6
+
+### Patch Changes
+
+- eb0f8ef: Make template a11y compatible
+
 ## 2.7.5
 
 ### Patch Changes
