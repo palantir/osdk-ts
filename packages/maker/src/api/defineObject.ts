@@ -88,12 +88,6 @@ export function defineObject(
     `Primary key property ${objectDef.primaryKeyPropertyApiName} on object ${objectDef.apiName} cannot be edit-only`,
   );
 
-  invariant(
-    !(objectDef.includeEmptyBackingDatasource
-      && objectDef.datasources && objectDef.datasources.length > 0),
-    `Cannot specify both includeEmptyBackingDatasource and datasources on object ${objectDef.apiName}`,
-  );
-
   if (objectDef.includeEmptyBackingDatasource && objectDef.datasources) {
     const nonDatasetDatasources = objectDef.datasources.filter(
       ds => ds.type !== "dataset",
