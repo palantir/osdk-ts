@@ -31,7 +31,7 @@ function normalizeHex(color: string): string {
 
 function hexToParts(hex: string): RGB {
   const parsed = parseInt(normalizeHex(hex).replace("#", ""), 16);
-   
+
   return [(parsed >> 16) & 255, (parsed >> 8) & 255, parsed & 255];
 }
 
