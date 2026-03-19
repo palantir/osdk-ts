@@ -843,12 +843,6 @@ importers:
       '@osdk/oauth':
         specifier: workspace:*
         version: link:../../packages/oauth
-      '@osdk/react':
-        specifier: latest
-        version: 0.9.3(@osdk/api@2.8.0-beta.22)(@osdk/client@packages+client)(@types/react@18.3.24)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@osdk/react-components':
-        specifier: latest
-        version: 0.1.0(@osdk/api@2.8.0-beta.22)(@osdk/client@packages+client)(@osdk/react@0.9.3(@osdk/api@2.8.0-beta.22)(@osdk/client@packages+client)(@types/react@18.3.24)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@types/react@18.3.24)(classnames@2.5.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       classnames:
         specifier: ^2.0.0
         version: 2.5.1
@@ -952,12 +946,6 @@ importers:
       '@osdk/oauth':
         specifier: workspace:*
         version: link:../../packages/oauth
-      '@osdk/react':
-        specifier: latest
-        version: 0.9.3(@osdk/api@2.8.0-beta.22)(@osdk/client@packages+client)(@types/react@18.3.24)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@osdk/react-components':
-        specifier: latest
-        version: 0.1.0(@osdk/api@2.8.0-beta.22)(@osdk/client@packages+client)(@osdk/react@0.9.3(@osdk/api@2.8.0-beta.22)(@osdk/client@packages+client)(@types/react@18.3.24)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@types/react@18.3.24)(classnames@2.5.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       classnames:
         specifier: ^2.0.0
         version: 2.5.1
@@ -8266,9 +8254,6 @@ packages:
   '@osdk/api@2.7.5':
     resolution: {integrity: sha512-XQHMUcH8DD+SLrFCWtOmVzTKbFN4/h2kwVfU6XhGjAa+PI+/2rC+QnlCAIPmE87hBedeGgep6F1mnRbv+ydp/g==}
 
-  '@osdk/api@2.8.0-beta.22':
-    resolution: {integrity: sha512-PAn4G5Ma70Qopmia9C5gSUOazu+OUMAi7PBG5GW3/9PQryzAI/WeW+gN3IfZykWaNXa88yBDVz08+gCsHdMK6g==}
-
   '@osdk/client.unstable@2.7.5':
     resolution: {integrity: sha512-mQDuelep6XcU7o84xbGReYcmvs0tZTxEGYdm3U8rJBlZO0hblDkNopHl8DHR3h9ULYAOvce/d6dz2g8/wgZtvg==}
 
@@ -8481,26 +8466,6 @@ packages:
 
   '@osdk/legacy-client@2.5.6':
     resolution: {integrity: sha512-QPeCcuqCv+s6toIxWMRArKJx35bzvcpoKAqsQ6YYiFEiGn43vLoQQGbeMlnqcGYfdbljyzeOoDxZtgVIn6a8HA==}
-
-  '@osdk/react-components@0.1.0':
-    resolution: {integrity: sha512-3Mp72stLNxkG82p8byqdWCbWjACVaFhv2Fl/HRMfSbHQnOmCaNNawtGdWc1WX/aO+RVqW1vfz3/IW0+NBXV3bQ==}
-    peerDependencies:
-      '@osdk/api': '*'
-      '@osdk/client': '*'
-      '@osdk/react': '*'
-      '@types/react': ^18.3.24
-      classnames: ^2.0.0
-      react: ^17 || ^18 || ^19
-      react-dom: ^17 || ^18 || ^19
-
-  '@osdk/react@0.9.3':
-    resolution: {integrity: sha512-izYHCqGtn23uTjonay64DtPJxgNBF+9Qc9U6GDUlqLQ2XgX4C/eP0MU6m6rQ5a26ak/EBh5paUg3pDrJbSIWMg==}
-    peerDependencies:
-      '@osdk/api': '*'
-      '@osdk/client': '*'
-      '@types/react': ^18.3.24
-      react: ^17 || ^18 || ^19
-      react-dom: ^17 || ^18 || ^19
 
   '@osdk/shared.client.impl@0.1.1':
     resolution: {integrity: sha512-Ib5iYpz3EtYiFra5aGpTZRaxQyATFHhjN6uZ+wbf2v0hETt6f3NHBFIDJoniuazEk04HavRO8oGctZ+r4lfB5g==}
@@ -24479,13 +24444,6 @@ snapshots:
       tiny-invariant: 1.3.3
       type-fest: 4.41.0
 
-  '@osdk/api@2.8.0-beta.22':
-    dependencies:
-      '@types/geojson': 7946.0.16
-      fetch-retry: 6.0.0
-      tiny-invariant: 1.3.3
-      type-fest: 4.41.0
-
   '@osdk/client.unstable@2.7.5':
     dependencies:
       conjure-lite: 0.4.4
@@ -25065,28 +25023,6 @@ snapshots:
       luxon: 3.4.4
       ngeohash: 0.6.3
       tiny-invariant: 1.3.3
-
-  '@osdk/react-components@0.1.0(@osdk/api@2.8.0-beta.22)(@osdk/client@packages+client)(@osdk/react@0.9.3(@osdk/api@2.8.0-beta.22)(@osdk/client@packages+client)(@types/react@18.3.24)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@types/react@18.3.24)(classnames@2.5.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
-    dependencies:
-      '@base-ui/react': 1.0.0(@types/react@18.3.24)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@blueprintjs/icons': 6.6.0(@types/react@18.3.24)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@osdk/api': 2.8.0-beta.22
-      '@osdk/client': link:packages/client
-      '@osdk/react': 0.9.3(@osdk/api@2.8.0-beta.22)(@osdk/client@packages+client)(@types/react@18.3.24)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@tanstack/react-table': 8.21.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@tanstack/react-virtual': 3.13.17(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@types/react': 18.3.24
-      classnames: 2.5.1
-      react: 18.3.1
-      react-dom: 18.3.1(react@18.3.1)
-
-  '@osdk/react@0.9.3(@osdk/api@2.8.0-beta.22)(@osdk/client@packages+client)(@types/react@18.3.24)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
-    dependencies:
-      '@osdk/api': 2.8.0-beta.22
-      '@osdk/client': link:packages/client
-      '@types/react': 18.3.24
-      react: 18.3.1
-      react-dom: 18.3.1(react@18.3.1)
 
   '@osdk/shared.client.impl@0.1.1':
     dependencies:
