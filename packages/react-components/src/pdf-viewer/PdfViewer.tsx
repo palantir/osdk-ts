@@ -14,19 +14,17 @@
  * limitations under the License.
  */
 
-import { useVirtualizer } from "@tanstack/react-virtual";
 import classnames from "classnames";
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import "pdfjs-dist/web/pdf_viewer.css";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
+import { usePdfAnnotationPortals } from "./hooks/usePdfAnnotationPortals.js";
 import { usePdfDocument } from "./hooks/usePdfDocument.js";
-import { usePdfSearch } from "./hooks/usePdfSearch.js";
+import { usePdfViewer } from "./hooks/usePdfViewer.js";
+import { usePdfViewerSearch } from "./hooks/usePdfViewerSearch.js";
+import { usePdfViewerSync } from "./hooks/usePdfViewerSync.js";
 import styles from "./PdfViewer.module.css";
-import { PdfViewerPage } from "./PdfViewerPage.js";
+import { PdfViewerAnnotationLayer } from "./PdfViewerAnnotationLayer.js";
 import { PdfViewerSearchBar } from "./PdfViewerSearchBar.js";
 import { PdfViewerSidebar } from "./PdfViewerSidebar.js";
 import { PdfViewerToolbar } from "./PdfViewerToolbar.js";
@@ -34,8 +32,6 @@ import type { PdfAnnotation, PdfViewerProps } from "./types.js";
 
 const EMPTY_ANNOTATIONS: Record<number, PdfAnnotation[]> = {};
 const EMPTY_ANNOTATION_ARRAY: PdfAnnotation[] = [];
-const DEFAULT_PAGE_HEIGHT = 792; // US Letter height in PDF points
-const PAGE_GAP = 8;
 
 export function PdfViewer({
   src,
@@ -50,47 +46,48 @@ export function PdfViewer({
   const [scale, setScale] = useState(initialScale);
   const [sidebarOpen, setSidebarOpen] = useState(initialSidebarOpen);
   const [currentPage, setCurrentPage] = useState(initialPage);
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const viewerRef = useRef<HTMLDivElement>(null);
 
-  const search = usePdfSearch();
-
-  // Estimate page sizes — all pages assumed same height until rendered
-  const estimatedPageHeight = useMemo(
-    () => Math.floor(DEFAULT_PAGE_HEIGHT * scale) + PAGE_GAP,
-    [scale],
+  const { pdfViewerRef, eventBusRef, findControllerRef } = usePdfViewer(
+    containerRef,
+    viewerRef,
+    document,
   );
 
-  const virtualizer = useVirtualizer({
-    count: numPages,
-    getScrollElement: () => scrollContainerRef.current,
-    estimateSize: () => estimatedPageHeight,
-    overscan: 2,
+  const search = usePdfViewerSearch(eventBusRef, findControllerRef, document);
+
+  const handleScaleChange = useCallback((newScale: number) => {
+    setScale(newScale);
+  }, []);
+
+  const handlePageChange = useCallback((page: number) => {
+    setCurrentPage(page);
+  }, []);
+
+  const { scrollToPage } = usePdfViewerSync({
+    pdfViewerRef,
+    eventBusRef,
+    document,
+    scale,
+    onScaleChange: handleScaleChange,
+    onPageChange: handlePageChange,
   });
 
-  // Track current page from scroll position
-  useEffect(() => {
-    const container = scrollContainerRef.current;
-    if (container == null) {
-      return;
-    }
-    const handleScroll = () => {
-      const scrollTop = container.scrollTop;
-      const items = virtualizer.getVirtualItems();
-      // Find the first item whose bottom edge is past the scroll top
-      for (const item of items) {
-        if (item.start + item.size > scrollTop) {
-          setCurrentPage(item.index + 1);
-          return;
-        }
-      }
-    };
-    container.addEventListener("scroll", handleScroll, { passive: true });
-    return () => {
-      container.removeEventListener("scroll", handleScroll);
-    };
-  }, [virtualizer]);
+  const portalTargets = usePdfAnnotationPortals(
+    pdfViewerRef,
+    eventBusRef,
+    document,
+  );
 
-  // Ctrl+F handler — useEffect necessary for global DOM event listener
+  // Set initial page after viewer is ready
+  useEffect(() => {
+    if (pdfViewerRef.current != null && initialPage > 1) {
+      pdfViewerRef.current.currentPageNumber = initialPage;
+    }
+  }, [pdfViewerRef, initialPage]);
+
+  // Ctrl+F handler
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key === "f") {
@@ -108,19 +105,12 @@ export function PdfViewer({
     setSidebarOpen((prev) => !prev);
   }, []);
 
-  const handlePageChange = useCallback(
+  const handleToolbarPageChange = useCallback(
     (page: number) => {
       setCurrentPage(page);
-      virtualizer.scrollToIndex(page - 1, { align: "start" });
+      scrollToPage(page);
     },
-    [virtualizer],
-  );
-
-  const handleTextLayerRendered = useCallback(
-    (pageNumber: number, textDivs: HTMLElement[]) => {
-      search.registerTextLayer(pageNumber, textDivs);
-    },
-    [search.registerTextLayer],
+    [scrollToPage],
   );
 
   const rootClassName = classnames(styles.pdfViewer, className);
@@ -158,7 +148,7 @@ export function PdfViewer({
         numPages={numPages}
         scale={scale}
         sidebarOpen={sidebarOpen}
-        onPageChange={handlePageChange}
+        onPageChange={handleToolbarPageChange}
         onScaleChange={setScale}
         onSearchOpen={search.openSearch}
         onSidebarToggle={handleSidebarToggle}
@@ -180,37 +170,27 @@ export function PdfViewer({
             document={document}
             numPages={numPages}
             currentPage={currentPage}
-            onPageClick={handlePageChange}
+            onPageClick={handleToolbarPageChange}
           />
         )}
-        <div ref={scrollContainerRef} className={styles.scrollContainer}>
-          <div
-            className={styles.pagesContainer}
-            style={{ height: virtualizer.getTotalSize() }}
-          >
-            {virtualizer.getVirtualItems().map((virtualItem) => {
-              const pageNumber = virtualItem.index + 1;
-              const pageAnnotations = annotations[pageNumber]
+        <div className={styles.scrollContainerWrapper}>
+          <div ref={containerRef} className={styles.scrollContainer}>
+            <div ref={viewerRef} className="pdfViewer" />
+            {portalTargets.map((target) => {
+              const pageAnnotations = annotations[target.pageNumber]
                 ?? EMPTY_ANNOTATION_ARRAY;
-
-              return (
-                <div
-                  key={virtualItem.key}
-                  className={styles.pageWrapper}
-                  style={{
-                    top: virtualItem.start,
-                    height: virtualItem.size,
-                  }}
-                >
-                  <PdfViewerPage
-                    document={document}
-                    pageNumber={pageNumber}
-                    scale={scale}
-                    annotations={pageAnnotations}
-                    onAnnotationClick={onAnnotationClick}
-                    onTextLayerRendered={handleTextLayerRendered}
-                  />
-                </div>
+              if (pageAnnotations.length === 0) {
+                return null;
+              }
+              return createPortal(
+                <PdfViewerAnnotationLayer
+                  key={target.pageNumber}
+                  annotations={pageAnnotations}
+                  pageHeight={target.pageHeight}
+                  scale={target.scale}
+                  onAnnotationClick={onAnnotationClick}
+                />,
+                target.container,
               );
             })}
           </div>

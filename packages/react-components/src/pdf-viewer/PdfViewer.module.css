@@ -14,29 +14,22 @@
   display: flex;
   flex: 1;
   overflow: hidden;
+  position: relative;
+}
+
+.scrollContainerWrapper {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
 }
 
 .scrollContainer {
-  flex: 1;
   overflow: auto;
-  position: relative;
-}
-
-.pagesContainer {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--osdk-pdf-viewer-page-gap);
-  padding: var(--osdk-pdf-viewer-page-gap);
-  position: relative;
-}
-
-.pageWrapper {
   position: absolute;
+  top: 0;
   left: 0;
-  width: 100%;
-  display: flex;
-  justify-content: center;
+  right: 0;
+  bottom: 0;
 }
 
 .loadingContainer {
@@ -57,4 +50,25 @@
   font-family: var(--osdk-typography-family-default);
   font-size: var(--osdk-typography-size-body-medium);
   color: var(--osdk-typography-color-danger-rest);
+}
+
+/* PDFViewer page overrides */
+:global(.pdfViewer .page) {
+  box-shadow: var(--osdk-pdf-viewer-page-shadow);
+  background-color: var(--osdk-palette-white);
+  margin: 0 auto var(--osdk-pdf-viewer-page-gap);
+}
+
+/* Search highlight overrides — match pdf.js FindController CSS classes */
+:global(.textLayer) .highlight {
+  background-color: var(--osdk-pdf-viewer-search-highlight);
+  border-radius: 1px;
+}
+
+:global(.textLayer) .highlight.selected {
+  background-color: var(--osdk-pdf-viewer-search-active);
+}
+
+:global(.textLayer)::selection {
+  background: var(--osdk-intent-primary-rest);
 }

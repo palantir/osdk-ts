@@ -47,10 +47,3 @@ export interface PdfViewerProps {
   /** Additional CSS class name for the root element */
   className?: string;
 }
-
-export interface PageViewport {
-  width: number;
-  height: number;
-  scale: number;
-  convertToViewportPoint: (x: number, y: number) => [number, number];
-}
