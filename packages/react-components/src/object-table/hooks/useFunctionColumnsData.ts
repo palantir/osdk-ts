@@ -261,8 +261,6 @@ async function* executeQueriesGenerator<
   const queryPromises = functionColumnConfigs.map(config =>
     createQueryPromise(config, objectSet, client, signal)
   ) as Array<Promise<QueryResult<Q, RDPs, FunctionColumns>>>;
-
-  // Create a copy of promises array that we can mutate
   const pendingPromises = [...queryPromises];
 
   // Yield results as they complete using Promise.race
@@ -273,11 +271,10 @@ async function* executeQueriesGenerator<
       ),
     );
 
-    // Yield the completed result
     yield result.result;
 
     // Remove the completed promise from the pending list
-    pendingPromises.splice(result.index, 1);
+    void pendingPromises.splice(result.index, 1);
   }
 }
 
