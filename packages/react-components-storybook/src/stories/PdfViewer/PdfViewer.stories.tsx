@@ -94,6 +94,7 @@ export const Default: Story = {
 export const WithAnnotations: Story = {
   args: {
     src: SAMPLE_PDF_URL,
+    onAnnotationClick: fn(),
     annotations: {
       1: [
         {
@@ -148,11 +149,7 @@ export const WithAnnotations: Story = {
   },
   render: (args) => (
     <div style={{ height: "600px" }}>
-      <PdfViewer
-        src={SAMPLE_PDF_URL}
-        {...args}
-        onAnnotationClick={fn()}
-      />
+      <PdfViewer src={SAMPLE_PDF_URL} {...args} />
     </div>
   ),
 };
