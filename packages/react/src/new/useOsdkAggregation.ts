@@ -26,6 +26,7 @@ import type {
 import type { ObjectTypeDefinition } from "@osdk/client";
 import type { ObserveAggregationArgs } from "@osdk/client/unstable-do-not-use";
 import React from "react";
+import { extractPayloadError, isPayloadLoading } from "./hookUtils.js";
 import {
   makeExternalStore,
   makeExternalStoreAsync,
@@ -175,9 +176,6 @@ export function useOsdkAggregation<
 
   const { observableClient } = React.useContext(OsdkContext2);
 
-  const objectSetRef = React.useRef(objectSet);
-  objectSetRef.current = objectSet;
-
   const canonOptions = observableClient.canonicalizeOptions({
     where,
     withProperties,
@@ -187,14 +185,13 @@ export function useOsdkAggregation<
 
   const { subscribe, getSnapShot } = React.useMemo(
     () => {
-      if (objectSet && objectSetRef.current) {
-        const currentObjectSet = objectSetRef.current;
+      if (objectSet) {
         return makeExternalStoreAsync<ObserveAggregationArgs<Q, A>>(
           (observer) =>
             observableClient.observeAggregation(
               {
                 type: type,
-                objectSet: currentObjectSet,
+                objectSet,
                 where: canonOptions.where,
                 withProperties: canonOptions.withProperties,
                 intersectWith: canonOptions.intersectWith,
@@ -248,20 +245,10 @@ export function useOsdkAggregation<
     await observableClient.invalidateObjectType(type.apiName);
   }, [observableClient, type.apiName]);
 
-  return React.useMemo(() => {
-    let error: Error | undefined;
-    if (payload && "error" in payload && payload.error) {
-      error = payload.error;
-    } else if (payload?.status === "error") {
-      error = new Error("Failed to execute aggregation");
-    }
-
-    return {
-      data: payload?.result as AggregationsResults<Q, A> | undefined,
-      isLoading: payload?.status === "loading" || payload?.status === "init"
-        || !payload,
-      error,
-      refetch,
-    };
-  }, [payload, refetch]);
+  return React.useMemo(() => ({
+    data: payload?.result as AggregationsResults<Q, A> | undefined,
+    isLoading: isPayloadLoading(payload, true),
+    error: extractPayloadError(payload, "Failed to execute aggregation"),
+    refetch,
+  }), [payload, refetch]);
 }

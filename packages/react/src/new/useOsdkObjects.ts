@@ -27,6 +27,7 @@ import type {
 } from "@osdk/api";
 import type { ObserveObjectsCallbackArgs } from "@osdk/client/unstable-do-not-use";
 import React from "react";
+import { extractPayloadError, isPayloadLoading } from "./hookUtils.js";
 import { makeExternalStore } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
 
@@ -351,27 +352,15 @@ export function useOsdkObjects<
     await observableClient.invalidateObjectType(type.apiName);
   }, [observableClient, type.apiName]);
 
-  return React.useMemo(() => {
-    let error: Error | undefined;
-    if (listPayload && "error" in listPayload && listPayload.error) {
-      error = listPayload.error;
-    } else if (listPayload?.status === "error") {
-      error = new Error("Failed to load objects");
-    }
-
-    return {
-      fetchMore: listPayload?.hasMore ? listPayload.fetchMore : undefined,
-      error,
-      data: listPayload?.resolvedList,
-      isLoading: enabled
-        ? (listPayload?.status === "loading" || listPayload?.status === "init"
-          || !listPayload)
-        : false,
-      isOptimistic: listPayload?.isOptimistic ?? false,
-      totalCount: listPayload?.totalCount,
-      hasMore: listPayload?.hasMore ?? false,
-      objectSet: listPayload?.objectSet,
-      refetch,
-    };
-  }, [listPayload, enabled, refetch]);
+  return React.useMemo(() => ({
+    fetchMore: listPayload?.hasMore ? listPayload.fetchMore : undefined,
+    error: extractPayloadError(listPayload, "Failed to load objects"),
+    data: listPayload?.resolvedList,
+    isLoading: isPayloadLoading(listPayload, enabled),
+    isOptimistic: listPayload?.isOptimistic ?? false,
+    totalCount: listPayload?.totalCount,
+    hasMore: listPayload?.hasMore ?? false,
+    objectSet: listPayload?.objectSet,
+    refetch,
+  }), [listPayload, enabled, refetch]);
 }
