@@ -1,5 +1,67 @@
 # @osdk/react-components
 
+## 0.2.0-beta.19
+
+### Minor Changes
+
+- 9f76365: Follow-up cleanups from ActionForm PR
+- dbbfb6f: Add experimental ActionForm component with field renderers, form state hook, and tests
+- aa908e4: Redesign filter list collapse into separate render tree and simplify header layout
+
+### Patch Changes
+
+- Updated dependencies [dbbfb6f]
+- Updated dependencies [cbfa135]
+- Updated dependencies [f4604c2]
+  - @osdk/react@0.10.0-beta.10
+  - @osdk/client@2.8.0-beta.22
+  - @osdk/api@2.8.0-beta.22
+
+## 0.2.0-beta.18
+
+### Minor Changes
+
+- fcc4971: Refactor filter list where clause generation for consistent exclude wrapping and integer clamping
+- 29095f5: fix where clause generation for compound property filters and remove useEffect in useFilterListState
+- 7347abe: Update README
+- a198fc5: Fix header cell not aligned
+- 00677eb: Upgrade Storybook to v10 and add MCP addon.
+
+### Patch Changes
+
+- Updated dependencies [c40444b]
+- Updated dependencies [dda14be]
+  - @osdk/client@2.8.0-beta.21
+  - @osdk/react@0.10.0-beta.9
+  - @osdk/api@2.8.0-beta.21
+
+## 0.2.0-beta.17
+
+### Minor Changes
+
+- 7542c11: add remove button to filter list items and memoize dnd accessibility props
+- 05618c3: Add validation state to editable cell
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.20
+- @osdk/client@2.8.0-beta.20
+- @osdk/react@0.10.0-beta.8
+
+## 0.2.0-beta.16
+
+### Minor Changes
+
+- 06095fa: Restructure FilterList into base and osdk layers
+- f6649a5: add collapsible panel, select all, include/exclude toggle, per-item colors, histogram display modes, and session persistence support to filter list
+- 1135a27: Update Blueprint css import
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.19
+- @osdk/client@2.8.0-beta.19
+- @osdk/react@0.10.0-beta.8
+
 ## 0.2.0-beta.15
 
 ### Minor Changes

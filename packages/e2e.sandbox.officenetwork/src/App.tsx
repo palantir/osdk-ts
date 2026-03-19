@@ -1,4 +1,4 @@
-import type { DerivedProperty } from "@osdk/api";
+import type { DerivedProperty, WhereClause } from "@osdk/api";
 import { useOsdkObjects } from "@osdk/react/experimental";
 import React from "react";
 import { AggregationStatsPanel } from "./components/AggregationStatsPanel.js";
@@ -93,6 +93,9 @@ function App() {
     HierarchyLevel | null
   >(null);
   const [searchQuery, setSearchQuery] = React.useState("");
+  const [employeeWhereClause, setEmployeeWhereClause] = React.useState<
+    WhereClause<typeof Employee> | undefined
+  >();
 
   const { data: offices, isLoading: officesLoading, error: officesError } =
     useOsdkObjects(Office, {
@@ -108,6 +111,7 @@ function App() {
   } = useOsdkObjects(Employee, {
     pageSize: 200,
     orderBy: { fullName: "asc" },
+    where: employeeWhereClause,
     $select: [
       "fullName",
       "employeeNumber",
@@ -148,7 +152,7 @@ function App() {
         setFilteredLevel(filteredLevel ? null : level);
       } else {
         setSelectedEmployee(employee);
-        setFilteredLevel(level);
+        setFilteredLevel(null);
         const employeeOfficeId = employee.primaryOfficeId;
         if (employeeOfficeId && offices) {
           const office = offices.find((o) =>
@@ -201,6 +205,9 @@ function App() {
     window.location.reload();
   }, []);
 
+  const hasActiveFilters = employeeWhereClause !== undefined
+    && Object.keys(employeeWhereClause).length > 0;
+
   const showOfficePanel = selectedOffice && !selectedEmployee
     && lensMode === "offices";
   const showEmployeePanel = selectedEmployee;
@@ -220,8 +227,8 @@ function App() {
       {/* Main Content Area */}
       <div className="flex-1 flex overflow-hidden">
         {/* Left Sidebar - Filter List */}
-        <div className="w-64 shrink-0 border-r border-[var(--officenetwork-border-default)] overflow-y-auto bg-[var(--officenetwork-bg-surface)]">
-          <EmployeeFilters />
+        <div className="shrink-0">
+          <EmployeeFilters onFilterClauseChanged={setEmployeeWhereClause} />
         </div>
 
         {/* Map Area */}
@@ -239,6 +246,7 @@ function App() {
                 filteredLevel={filteredLevel}
                 onFilterLevelChange={handleFilterLevelChange}
                 freezeMap={lensMode === "reorg"}
+                hasActiveFilters={hasActiveFilters}
               />
             )
             : !officesLoading

@@ -17,6 +17,10 @@
 import type { ObjectSet } from "@osdk/api";
 import { act, renderHook } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
+vi.mock("@osdk/react", () => ({
+  useOsdkMetadata: vi.fn(() => ({ loading: false, metadata: undefined })),
+}));
 import {
   createPropertyFilterDef,
   createSelectState,
@@ -132,6 +136,69 @@ describe("useFilterListState", () => {
       );
     });
     expect(result.current.whereClause).toEqual({ name: "John" });
+  });
+
+  it("does not call onFilterClauseChanged on mount", () => {
+    const onFilterClauseChanged = vi.fn();
+    const nameDef = createPropertyFilterDef(
+      "name",
+      "CHECKBOX_LIST",
+      createSelectState([]),
+    );
+    const props = createProps({
+      filterDefinitions: [nameDef],
+      onFilterClauseChanged,
+    });
+    renderHook(() => useFilterListState(props));
+    expect(onFilterClauseChanged).not.toHaveBeenCalled();
+  });
+
+  it("calls onFilterClauseChanged synchronously on setFilterState", () => {
+    const onFilterClauseChanged = vi.fn();
+    const nameDef = createPropertyFilterDef(
+      "name",
+      "CHECKBOX_LIST",
+      createSelectState([]),
+    );
+    const props = createProps({
+      filterDefinitions: [nameDef],
+      onFilterClauseChanged,
+    });
+    const { result } = renderHook(() => useFilterListState(props));
+    act(() => {
+      result.current.setFilterState(
+        getFilterKey(nameDef),
+        createSelectState(["John"]),
+      );
+    });
+    expect(onFilterClauseChanged).toHaveBeenCalledTimes(1);
+    expect(onFilterClauseChanged).toHaveBeenCalledWith({ name: "John" });
+  });
+
+  it("calls onFilterClauseChanged on reset", () => {
+    const onFilterClauseChanged = vi.fn();
+    const nameDef = createPropertyFilterDef(
+      "name",
+      "CHECKBOX_LIST",
+      createSelectState([]),
+    );
+    const props = createProps({
+      filterDefinitions: [nameDef],
+      onFilterClauseChanged,
+    });
+    const { result } = renderHook(() => useFilterListState(props));
+    act(() => {
+      result.current.setFilterState(
+        getFilterKey(nameDef),
+        createSelectState(["John"]),
+      );
+    });
+    onFilterClauseChanged.mockClear();
+    act(() => {
+      result.current.reset();
+    });
+    expect(onFilterClauseChanged).toHaveBeenCalledTimes(1);
+    expect(onFilterClauseChanged).toHaveBeenCalledWith({});
   });
 
   it("handles multiple filter definitions", () => {

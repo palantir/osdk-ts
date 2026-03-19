@@ -1,5 +1,47 @@
 # @osdk/client
 
+## 2.8.0-beta.22
+
+### Minor Changes
+
+- cbfa135: Fix aggregation return type for empty object sets
+- f4604c2: fix aggregate endpoint errors crashing instead of surfacing server error
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.22
+- @osdk/client.unstable@2.8.0-beta.22
+- @osdk/generator-converters@2.8.0-beta.22
+
+## 2.8.0-beta.21
+
+### Minor Changes
+
+- c40444b: Add linkedObjectsBySourcePrimaryKey to link observation responses
+- dda14be: Fix pagination sort shuffling by using declarative update types
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.21
+- @osdk/client.unstable@2.8.0-beta.21
+- @osdk/generator-converters@2.8.0-beta.21
+
+## 2.8.0-beta.20
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.20
+- @osdk/client.unstable@2.8.0-beta.20
+- @osdk/generator-converters@2.8.0-beta.20
+
+## 2.8.0-beta.19
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.19
+- @osdk/client.unstable@2.8.0-beta.19
+- @osdk/generator-converters@2.8.0-beta.19
+
 ## 2.8.0-beta.18
 
 ### Minor Changes

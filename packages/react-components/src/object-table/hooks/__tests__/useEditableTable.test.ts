@@ -250,29 +250,29 @@ describe("useEditableTable", () => {
       useEditableTable({ editMode: "manual" })
     );
 
-    expect(result.current.editMode.type).toBe("manual");
-    if (result.current.editMode.type === "manual") {
-      expect(result.current.editMode.isActive).toBe(false);
-      expect(result.current.editMode.setActive).toBeDefined();
+    expect(result.current.editModeState.type).toBe("manual");
+    if (result.current.editModeState.type === "manual") {
+      expect(result.current.editModeState.isActive).toBe(false);
+      expect(result.current.editModeState.setActive).toBeDefined();
 
       act(() => {
-        result.current.editMode.type === "manual"
-          && result.current.editMode.setActive(true);
+        result.current.editModeState.type === "manual"
+          && result.current.editModeState.setActive(true);
       });
 
       expect(
-        result.current.editMode.type === "manual"
-          && result.current.editMode.isActive,
+        result.current.editModeState.type === "manual"
+          && result.current.editModeState.isActive,
       ).toBe(true);
 
       act(() => {
-        result.current.editMode.type === "manual"
-          && result.current.editMode.setActive(false);
+        result.current.editModeState.type === "manual"
+          && result.current.editModeState.setActive(false);
       });
 
       expect(
-        result.current.editMode.type === "manual"
-          && result.current.editMode.isActive,
+        result.current.editModeState.type === "manual"
+          && result.current.editModeState.isActive,
       ).toBe(false);
     }
   });
@@ -282,8 +282,8 @@ describe("useEditableTable", () => {
       useEditableTable({ editMode: "always" })
     );
 
-    expect(result.current.editMode.type).toBe("always");
-    expect(result.current.editMode.isActive).toBe(true);
+    expect(result.current.editModeState.type).toBe("always");
+    expect(result.current.editModeState.isActive).toBe(true);
   });
 
   it("when editMode is manual with default settings, it starts as inactive", () => {
@@ -291,9 +291,109 @@ describe("useEditableTable", () => {
       useEditableTable({ editMode: "manual" })
     );
 
-    expect(result.current.editMode.type).toBe("manual");
-    if (result.current.editMode.type === "manual") {
-      expect(result.current.editMode.isActive).toBe(false);
+    expect(result.current.editModeState.type).toBe("manual");
+    if (result.current.editModeState.type === "manual") {
+      expect(result.current.editModeState.isActive).toBe(false);
     }
+  });
+
+  it("adds validation error when onCellValidationError is called", () => {
+    const { result } = renderHook(() =>
+      useEditableTable({ editMode: "always" })
+    );
+    const cellId = getCellId({ rowId: "row-1", columnId: "col-1" });
+    const errorMessage = "Value must be positive";
+
+    act(() => {
+      result.current.onCellValidationError(cellId, errorMessage);
+    });
+
+    expect(result.current.validationErrors.get(cellId)).toBe(errorMessage);
+  });
+
+  it("maintains validation errors for multiple cells", () => {
+    const { result } = renderHook(() =>
+      useEditableTable({ editMode: "always" })
+    );
+    const cellId1 = getCellId({ rowId: "row-1", columnId: "col-1" });
+    const cellId2 = getCellId({ rowId: "row-2", columnId: "col-2" });
+    const cellId3 = getCellId({ rowId: "row-3", columnId: "col-3" });
+
+    act(() => {
+      result.current.onCellValidationError(cellId1, "Error 1");
+      result.current.onCellValidationError(cellId2, "Error 2");
+      result.current.onCellValidationError(cellId3, "Error 3");
+    });
+
+    expect(result.current.validationErrors.size).toBe(3);
+    expect(result.current.validationErrors.get(cellId1)).toBe("Error 1");
+    expect(result.current.validationErrors.get(cellId2)).toBe("Error 2");
+    expect(result.current.validationErrors.get(cellId3)).toBe("Error 3");
+  });
+
+  it("clears all validation errors when clearEdits is called", () => {
+    const { result } = renderHook(() =>
+      useEditableTable({ editMode: "always" })
+    );
+    const cellId1 = getCellId({ rowId: "row-1", columnId: "col-1" });
+    const cellId2 = getCellId({ rowId: "row-2", columnId: "col-2" });
+
+    act(() => {
+      result.current.onCellValidationError(cellId1, "Error 1");
+      result.current.onCellValidationError(cellId2, "Error 2");
+    });
+
+    expect(result.current.validationErrors.size).toBe(2);
+
+    act(() => {
+      result.current.clearEdits();
+    });
+
+    expect(result.current.validationErrors.size).toBe(0);
+  });
+
+  it("replaces previous validation error with new one for same cell", () => {
+    const { result } = renderHook(() =>
+      useEditableTable({ editMode: "always" })
+    );
+    const cellId = getCellId({ rowId: "row-1", columnId: "col-1" });
+
+    act(() => {
+      result.current.onCellValidationError(cellId, "First error");
+    });
+
+    expect(result.current.validationErrors.get(cellId)).toBe("First error");
+
+    act(() => {
+      result.current.onCellValidationError(cellId, "Second error");
+    });
+
+    expect(result.current.validationErrors.get(cellId)).toBe("Second error");
+    expect(result.current.validationErrors.size).toBe(1);
+  });
+
+  it("clears specific validation error when clearCellValidationError is called", () => {
+    const { result } = renderHook(() =>
+      useEditableTable({ editMode: "always" })
+    );
+    const cellId1 = getCellId({ rowId: "row-1", columnId: "col-1" });
+    const cellId2 = getCellId({ rowId: "row-2", columnId: "col-2" });
+
+    // Add validation errors
+    act(() => {
+      result.current.onCellValidationError(cellId1, "Error 1");
+      result.current.onCellValidationError(cellId2, "Error 2");
+    });
+
+    expect(result.current.validationErrors.size).toBe(2);
+
+    // Clear specific error
+    act(() => {
+      result.current.clearCellValidationError(cellId1);
+    });
+
+    expect(result.current.validationErrors.size).toBe(1);
+    expect(result.current.validationErrors.has(cellId1)).toBe(false);
+    expect(result.current.validationErrors.has(cellId2)).toBe(true);
   });
 });

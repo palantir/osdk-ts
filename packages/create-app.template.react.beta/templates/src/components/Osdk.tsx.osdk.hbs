@@ -1,24 +1,26 @@
-import book from "/book.svg";
-
+import { AnchorButton, Icon, Tag } from "@blueprintjs/core";
 import React from "react";
 import css from "./Osdk.module.css";
+
+const DOCUMENTATION_URL =
+  "{{foundryUrl}}/workspace/developer-console/app/{{application}}/docs/guide/loading-data?language=typescript";
 
 function Osdk(): React.ReactElement {
   return (
     <div className={css.osdk}>
       <div>
         <span>OSDK: </span>
-        <span className={css.tag}>{{osdkPackage}}</span>
+        <Tag minimal={true}>{{osdkPackage}}</Tag>
       </div>
-      <a
-        href="{{foundryUrl}}/workspace/developer-console/app/{{application}}/docs/guide/loading-data?language=typescript"
-        className={css.docs}
+      <AnchorButton
+        href={DOCUMENTATION_URL}
         target="_blank"
         rel="noreferrer"
+        variant="minimal"
+        icon={<Icon icon="book" aria-label="Book icon"></Icon>}
       >
-        <img src={book} width={16} height={16} alt="Book icon"></img>
-        <span>View documentation</span>
-      </a>
+        View documentation
+      </AnchorButton>
     </div>
   );
 }

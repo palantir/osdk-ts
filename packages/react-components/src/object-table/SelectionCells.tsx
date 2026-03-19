@@ -50,6 +50,7 @@ export function SelectionCell<TData extends RowData>({
 }: SelectionCellProps<TData>): React.ReactElement {
   const handleClick = useCallback(
     (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+      // TODO: Create ActionBoundary component
       event.stopPropagation();
       const isShiftClick = event.shiftKey;
       onToggleRow(row.id, row.index, isShiftClick);

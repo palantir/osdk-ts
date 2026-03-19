@@ -36,10 +36,6 @@
   z-index: var(--osdk-surface-z-index-2);
   display: flex;
   flex-direction: column;
-
-  &:focus {
-    outline: none;
-  }
 }
 
 .header {
@@ -82,10 +78,6 @@
 
   &:hover {
     background-color: var(--osdk-surface-background-color-default-hover);
-  }
-
-  &:focus {
-    outline: none;
   }
 
   &:focus-visible {

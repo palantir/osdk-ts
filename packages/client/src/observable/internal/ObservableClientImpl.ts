@@ -333,6 +333,7 @@ function observeSingleLink(
   if (objectsArray.length === 0) {
     observer.next({
       resolvedList: [],
+      linkedObjectsBySourcePrimaryKey: new Map(),
       isOptimistic: false,
       lastUpdated: 0,
       fetchMore: () => Promise.resolve(),
@@ -346,6 +347,7 @@ function observeSingleLink(
   const parentSub = new Subscription();
 
   for (const obj of objectsArray) {
+    const pk = obj.$primaryKey;
     const sourceType: "object" | "interface" = obj.$apiName === obj.$objectType
       ? "object"
       : "interface";
@@ -360,7 +362,7 @@ function observeSingleLink(
           },
           sourceUnderlyingObjectType: obj.$objectType,
           linkName,
-          pk: obj.$primaryKey,
+          pk,
         },
         observer,
       ),
@@ -379,7 +381,10 @@ function observeMultiLinks(
 ): Unsubscribable {
   const parentSub = new Subscription();
   const totalExpected = objectsArray.length;
-  const perObjectResults = new Map<string, SpecificLinkPayload>();
+  const perObjectData = new Map<
+    string,
+    { payload: SpecificLinkPayload; pk: string | number }
+  >();
   let errored = false;
 
   function mergeAndEmit() {
@@ -391,12 +396,18 @@ function observeMultiLinks(
       string,
       NonNullable<SpecificLinkPayload["resolvedList"]>[number]
     >();
+    const linkedObjectsBySourcePrimaryKey = new Map<
+      string | number,
+      ReadonlyArray<NonNullable<SpecificLinkPayload["resolvedList"]>[number]>
+    >();
     const fetchMores: Array<() => Promise<void>> = [];
     let latestUpdated = 0;
     let hasMore = false;
     let isOptimistic = false;
 
-    for (const payload of perObjectResults.values()) {
+    for (const { payload, pk } of perObjectData.values()) {
+      linkedObjectsBySourcePrimaryKey.set(pk, payload.resolvedList ?? []);
+
       for (const obj of payload.resolvedList ?? []) {
         seen.set(`${obj.$objectType}:${obj.$primaryKey}`, obj);
       }
@@ -412,12 +423,13 @@ function observeMultiLinks(
       }
     }
 
-    const payloads = [...perObjectResults.values()];
-    const loading = perObjectResults.size < totalExpected
+    const payloads = [...perObjectData.values()].map(d => d.payload);
+    const loading = perObjectData.size < totalExpected
       || payloads.some(p => p.status === "init" || p.status === "loading");
 
     observer.next({
       resolvedList: Array.from(seen.values()),
+      linkedObjectsBySourcePrimaryKey,
       isOptimistic,
       lastUpdated: latestUpdated,
       fetchMore: hasMore
@@ -435,6 +447,7 @@ function observeMultiLinks(
 
   for (const obj of objectsArray) {
     const objKey = `${obj.$objectType ?? obj.$apiName}:${obj.$primaryKey}`;
+    const pk = obj.$primaryKey;
 
     const sourceType: "object" | "interface" = obj.$apiName === obj.$objectType
       ? "object"
@@ -450,14 +463,14 @@ function observeMultiLinks(
           },
           sourceUnderlyingObjectType: obj.$objectType,
           linkName,
-          pk: obj.$primaryKey,
+          pk,
         },
         {
           next: (payload: SpecificLinkPayload) => {
             if (errored) {
               return;
             }
-            perObjectResults.set(objKey, payload);
+            perObjectData.set(objKey, { payload, pk });
             mergeAndEmit();
           },
           error: (err: unknown) => {

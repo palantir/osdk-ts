@@ -33,6 +33,7 @@ interface SortableFilterListItemProps<D> {
     filterKey: string,
     state: FilterState,
   ) => void;
+  onFilterRemoved?: (filterKey: string) => void;
   renderInput: RenderFilterInput<D>;
 }
 
@@ -43,6 +44,7 @@ export function SortableFilterListItem<D>({
   label,
   filterState,
   onFilterStateChanged,
+  onFilterRemoved,
   renderInput,
 }: SortableFilterListItemProps<D>): React.ReactElement {
   const {
@@ -71,6 +73,7 @@ export function SortableFilterListItem<D>({
         label={label}
         filterState={filterState}
         onFilterStateChanged={onFilterStateChanged}
+        onFilterRemoved={onFilterRemoved}
         renderInput={renderInput}
         dragHandleAttributes={attributes}
         dragHandleListeners={listeners}

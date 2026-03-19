@@ -1,5 +1,18 @@
 # @osdk/generator-converters.preview
 
+## 0.1.0-beta.5
+
+### Minor Changes
+
+- cde6b85: Write functions ir optionally
+
+### Patch Changes
+
+- Updated dependencies [cde6b85]
+  - @osdk/generator-converters.ontologyir@2.8.0-beta.19
+  - @osdk/client.unstable@2.8.0-beta.19
+  - @osdk/generator@2.8.0-beta.19
+
 ## 0.1.0-beta.4
 
 ### Minor Changes

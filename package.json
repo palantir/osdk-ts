@@ -75,6 +75,8 @@
   },
   "pnpm": {
     "onlyBuiltDependencies": [
+      "@parcel/watcher",
+      "less",
       "@swc/core",
       "@tailwindcss/oxide",
       "canvas",

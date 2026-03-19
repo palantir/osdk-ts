@@ -1,5 +1,33 @@
 # @osdk/generator-converters.ontologyir
 
+## 2.8.0-beta.22
+
+### Patch Changes
+
+- @osdk/client.unstable@2.8.0-beta.22
+
+## 2.8.0-beta.21
+
+### Patch Changes
+
+- @osdk/client.unstable@2.8.0-beta.21
+
+## 2.8.0-beta.20
+
+### Patch Changes
+
+- @osdk/client.unstable@2.8.0-beta.20
+
+## 2.8.0-beta.19
+
+### Minor Changes
+
+- cde6b85: Write functions ir optionally
+
+### Patch Changes
+
+- @osdk/client.unstable@2.8.0-beta.19
+
 ## 2.8.0-beta.18
 
 ### Minor Changes

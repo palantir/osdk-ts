@@ -15,12 +15,16 @@
  */
 
 import type { ObjectTypeDefinition, WhereClause } from "@osdk/api";
+import { useOsdkMetadata } from "@osdk/react";
 import { useCallback, useMemo, useState } from "react";
+import { assertUnreachable } from "../../shared/assertUnreachable.js";
 import type { FilterListProps } from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
 import type { LinkedPropertyFilterState } from "../types/LinkedFilterTypes.js";
-import { assertUnreachable } from "../utils/assertUnreachable.js";
-import { buildWhereClause } from "../utils/filterStateToWhereClause.js";
+import {
+  buildWhereClause,
+  type PropertyTypeInfo,
+} from "../utils/filterStateToWhereClause.js";
 import { filterHasActiveState } from "../utils/filterValues.js";
 import { getFilterKey } from "../utils/getFilterKey.js";
 
@@ -100,6 +104,22 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
   } = props;
 
   const objectType = objectSet.$objectSetInternals.def;
+  const { metadata } = useOsdkMetadata(objectType);
+
+  const propertyTypes = useMemo(() => {
+    const map = new Map<string, PropertyTypeInfo>();
+    if (metadata?.properties) {
+      for (const [key, prop] of Object.entries(metadata.properties)) {
+        if (typeof prop.type === "string") {
+          map.set(key, {
+            type: prop.type,
+            multiplicity: prop.multiplicity === true,
+          });
+        }
+      }
+    }
+    return map;
+  }, [metadata?.properties]);
 
   const [filterStates, setFilterStates] = useState<
     Map<string, FilterState>
@@ -125,7 +145,7 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
           filterDefinitions,
           next,
           filterOperator,
-          objectType,
+          propertyTypes,
         );
 
         return next;
@@ -144,7 +164,7 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
     [
       filterDefinitions,
       filterOperator,
-      objectType,
+      propertyTypes,
       onFilterClauseChanged,
       onFilterStateChanged,
     ],
@@ -156,9 +176,9 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
         filterDefinitions,
         filterStates,
         filterOperator,
-        objectType,
+        propertyTypes,
       ),
-    [filterDefinitions, filterStates, filterOperator, objectType],
+    [filterDefinitions, filterStates, filterOperator, propertyTypes],
   );
 
   const perFilterWhereClauses = useMemo(() => {
@@ -174,13 +194,13 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
           filterDefinitions,
           filterStates,
           filterOperator,
-          objectType,
+          propertyTypes,
           key,
         ),
       );
     }
     return map;
-  }, [filterDefinitions, filterStates, filterOperator, objectType]);
+  }, [filterDefinitions, filterStates, filterOperator, propertyTypes]);
 
   const activeFilterCount = useMemo(() => {
     let count = 0;
@@ -200,10 +220,10 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
       filterDefinitions,
       initialStates,
       filterOperator,
-      objectType,
+      propertyTypes,
     );
     onFilterClauseChanged?.(newWhereClause);
-  }, [filterDefinitions, filterOperator, objectType, onFilterClauseChanged]);
+  }, [filterDefinitions, filterOperator, propertyTypes, onFilterClauseChanged]);
 
   return useMemo(() => ({
     filterStates,

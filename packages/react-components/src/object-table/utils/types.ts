@@ -16,6 +16,12 @@
 
 import type { RowData } from "@tanstack/react-table";
 
+export interface AsyncCellData {
+  data?: unknown;
+  isLoading: boolean;
+  error?: Error;
+}
+
 export interface ColumnOption {
   id: string;
   name: string;
@@ -31,12 +37,12 @@ export interface CellEditInfo<
   TData extends RowData = unknown,
   CellValue = unknown,
 > extends CellIdentifier {
-  newValue: CellValue;
-  oldValue: CellValue;
+  newValue: CellValue | null;
+  oldValue: CellValue | null;
   originalRowData: TData;
 }
 
-export type EditMode =
+export type EditModeState =
   | { type: "always"; isActive: true }
   | { type: "manual"; isActive: boolean; setActive: (value: boolean) => void };
 
@@ -51,5 +57,11 @@ export interface EditableConfig<
   ) => void;
   onSubmitEdits?: () => Promise<boolean>;
   clearEdits: () => void;
-  editMode: EditMode;
+  editModeState: EditModeState;
+  onCellValidationError: (
+    cellId: string,
+    error: string,
+  ) => void;
+  validationErrors: Map<string, string>;
+  clearCellValidationError: (cellId: string) => void;
 }

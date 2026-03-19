@@ -123,7 +123,19 @@ function AddFilterButton({
   );
 }
 
-export function EmployeeFilters() {
+interface EmployeeFiltersProps {
+  onFilterClauseChanged?: (
+    clause: Parameters<
+      NonNullable<
+        React.ComponentProps<typeof FilterList>["onFilterClauseChanged"]
+      >
+    >[0],
+  ) => void;
+}
+
+export function EmployeeFilters({
+  onFilterClauseChanged,
+}: EmployeeFiltersProps) {
   const [collapsed, setCollapsed] = useState(false);
   const [filterDefinitions, setFilterDefinitions] = useState<
     FilterDefinitionUnion<Employee>[]
@@ -173,7 +185,9 @@ export function EmployeeFilters() {
     <FilterList
       objectSet={$(Employee)}
       filterDefinitions={filterDefinitions}
+      onFilterClauseChanged={onFilterClauseChanged}
       onFilterRemoved={handleRemoveFilter}
+      enableSorting={true}
       renderAddFilterButton={renderAddFilterButton}
       title="Employee Filters"
       showActiveFilterCount={true}

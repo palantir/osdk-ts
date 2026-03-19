@@ -2,7 +2,28 @@
 
 - NEVER use `any` without asking the user first. If you think you need `any`, you probably don't understand the problem
 - Projects are ESM/TypeScript - look for `.ts`/`.tsx` files, not `.js`
-- To check compilation: `cd packages/the-package && pnpm turbo typecheck`
+
+## Running Turbo Commands
+
+- NEVER use `pnpm --dir /path turbo` or `cd /path && pnpm turbo`. The `--dir` flag breaks turbo (pnpm misinterprets the path as the command to spawn).
+- Use turbo's `--filter` flag to target packages: `pnpm turbo typecheck --filter=@osdk/react`
+- To typecheck a specific package: `pnpm turbo typecheck --filter=@osdk/the-package`
+- To run tests in a package: `pnpm turbo test --filter=@osdk/the-package`
+- For vitest directly: `pnpm --dir packages/the-package vitest run`
+
+## Changesets
+
+- Every PR that changes published package code needs exactly ONE changeset per branch
+- Create manually: add `.changeset/<descriptive-name>.md` with YAML front matter listing `"@osdk/package-name": patch|minor|major` and a one-line summary
+- Check `.changeset/` before creating - do NOT create duplicate changesets on the same branch
+- Changeset summaries should be specific ("add drag-and-drop reordering to filter list" not "update filter list")
+- CI will fail if a changeset is missing for changed packages
+
+## Formatting
+
+- Run `npx dprint fmt` on changed files before committing
+- The pre-commit hook runs `dprint check` and will reject unformatted code
+- To check without fixing: `npx dprint check`
 
 ## React Best Practices
 

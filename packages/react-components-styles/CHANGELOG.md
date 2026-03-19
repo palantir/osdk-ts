@@ -1,5 +1,23 @@
 # @osdk/react-components-styles
 
+## 0.2.0-beta.11
+
+### Minor Changes
+
+- aa908e4: Redesign filter list collapse into separate render tree and simplify header layout
+
+## 0.2.0-beta.10
+
+### Minor Changes
+
+- 05618c3: Add validation state to editable cell
+
+## 0.2.0-beta.9
+
+### Minor Changes
+
+- 1135a27: Update Blueprint css import
+
 ## 0.2.0-beta.8
 
 ### Minor Changes
