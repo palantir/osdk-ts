@@ -55,7 +55,6 @@ const BANNER_ROW_STYLE = {
 const EMPTY_SELECTED: string[] = [];
 const EMPTY_IMPLIED: string[] = [];
 const EMPTY_DISALLOWED: string[] = [];
-const EMPTY_USER_ACCESSIBLE: string[] = [];
 
 function InteractivePicker(
   { initialSelection }: { initialSelection?: string[] },
@@ -70,7 +69,6 @@ function InteractivePicker(
         selectedIds,
         EMPTY_IMPLIED,
         EMPTY_DISALLOWED,
-        EMPTY_USER_ACCESSIBLE,
       ),
     [selectedIds],
   );
@@ -115,7 +113,6 @@ function ReadOnlyPicker() {
         selectedIds,
         EMPTY_IMPLIED,
         EMPTY_DISALLOWED,
-        EMPTY_USER_ACCESSIBLE,
       ),
     [selectedIds],
   );
@@ -149,7 +146,6 @@ function WithBannerPicker() {
         selectedIds,
         EMPTY_IMPLIED,
         EMPTY_DISALLOWED,
-        EMPTY_USER_ACCESSIBLE,
       ),
     [selectedIds],
   );
@@ -190,7 +186,6 @@ function WithImpliedAndDisallowedPicker() {
         selectedIds,
         impliedIds,
         disallowedIds,
-        EMPTY_USER_ACCESSIBLE,
       ),
     [selectedIds, impliedIds, disallowedIds],
   );
@@ -222,7 +217,6 @@ function InDialogPicker() {
         selectedIds,
         EMPTY_IMPLIED,
         EMPTY_DISALLOWED,
-        EMPTY_USER_ACCESSIBLE,
       ),
     [selectedIds],
   );
