@@ -33,6 +33,7 @@ describe("useOsdkObjects enabled option", () => {
     const observableClient = {
       observeList: mockObserveList,
       canonicalizeOptions: vitest.fn((opts) => opts),
+      invalidateObjectType: vitest.fn().mockResolvedValue(undefined),
     } as any;
 
     return ({ children }: React.PropsWithChildren) => (
