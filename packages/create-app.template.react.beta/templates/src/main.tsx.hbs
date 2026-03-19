@@ -1,13 +1,7 @@
-{{#if osdkPackage}}
-import { OsdkProvider2 } from "@osdk/react/experimental";
-{{/if}}
 import React, { Suspense } from "react";
 import ReactDOM from "react-dom/client";
 import { RouterProvider } from "react-router-dom";
 import "./index.css";
-{{#if osdkPackage}}
-import client from "@/client";
-{{/if}}
 import ErrorBoundary from "@/components/ErrorBoundary";
 import Loading from "@/components/Loading";
 import { router } from "@/router";
@@ -17,17 +11,6 @@ if (!rootElement) {
   throw new Error("Root element not found");
 }
 
-{{#if osdkPackage}}
-ReactDOM.createRoot(rootElement).render(
-  <ErrorBoundary>
-    <Suspense fallback={<Loading />}>
-      <OsdkProvider2 client={client}>
-        <RouterProvider router={router} />
-      </OsdkProvider2>
-    </Suspense>
-  </ErrorBoundary>,
-);
-{{else}}
 ReactDOM.createRoot(rootElement).render(
   <ErrorBoundary>
     <Suspense fallback={<Loading />}>
@@ -35,4 +18,3 @@ ReactDOM.createRoot(rootElement).render(
     </Suspense>
   </ErrorBoundary>,
 );
-{{/if}}

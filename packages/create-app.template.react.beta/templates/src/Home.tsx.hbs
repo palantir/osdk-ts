@@ -1,7 +1,4 @@
 import React from "react";
-{{#if osdkPackage}}
-// import { useOsdkClient } from "@osdk/react";
-{{/if}}
 import css from "./Home.module.css";
 import Header from "@/components/Header";
 import NextSteps from "@/components/NextSteps";
@@ -10,12 +7,6 @@ import Osdk from "@/components/Osdk";
 {{/if}}
 
 function Home(): React.ReactElement {
-  {{#if osdkPackage}}
-  // See Ontology and Platform SDK docs in Developer Console on how to
-  // use the client object to access Ontology resources and platform APIs
-  // const client = useOsdkClient();
-
-  {{/if}}
   return (
     <div className={css.home}>
       <Header />

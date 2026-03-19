@@ -47,8 +47,6 @@
     "@osdk/create-app.template-packager": "workspace:~",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
-    "@osdk/react": "workspace:*",
-    "@osdk/react-components": "workspace:*",
     "@types/eslint-plugin-jsx-a11y": "^6.10.0",
     "@types/node": "^24.10.13",
     "@types/react": "^18",

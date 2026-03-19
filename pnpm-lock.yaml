@@ -2397,12 +2397,6 @@ importers:
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
-      '@osdk/react':
-        specifier: workspace:*
-        version: link:../react
-      '@osdk/react-components':
-        specifier: workspace:*
-        version: link:../react-components
       '@types/eslint-plugin-jsx-a11y':
         specifier: ^6.10.0
         version: 6.10.0
