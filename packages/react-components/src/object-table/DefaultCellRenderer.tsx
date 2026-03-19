@@ -18,8 +18,8 @@ import type { CellContext, RowData } from "@tanstack/react-table";
 import React from "react";
 import { AsyncValueCell } from "./components/AsyncValueCell.js";
 import { EditableCell } from "./EditableCell.js";
+import { isAsyncCellData } from "./utils/AsyncCellData.js";
 import { getCellId } from "./utils/getCellId.js";
-import type { AsyncCellData } from "./utils/types.js";
 
 export function renderDefaultCell<TData extends RowData>(
   cellContext: CellContext<TData, unknown>,
@@ -33,6 +33,8 @@ export function renderDefaultCell<TData extends RowData>(
     ? cellValue
     : undefined;
 
+  // Function-backed columns are read-only: the value is server-computed
+  // and cannot be edited in the table. Return the async cell directly.
   if (columnMeta?.isAsyncColumn && asyncCellData) {
     const { data, isLoading, error } = asyncCellData;
     return (
@@ -74,11 +76,3 @@ export function renderDefaultCell<TData extends RowData>(
     />
   );
 }
-
-const isAsyncCellData = (value: unknown): value is AsyncCellData => {
-  return (
-    value != null
-    && typeof value === "object"
-    && "isLoading" in value
-  );
-};

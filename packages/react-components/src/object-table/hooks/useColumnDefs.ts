@@ -141,7 +141,8 @@ function getColumnsFromColumnDefinitions<
       ...(minWidth ? { minSize: minWidth } : {}),
       ...(maxWidth ? { maxSize: maxWidth } : {}),
       enableResizing: resizable,
-      enableSorting: orderable,
+      // Function-backed columns must be sorted on the frontend, so disable sorting for now
+      enableSorting: locator.type === "function" ? false : orderable,
       enableColumnFilter: filterable,
       cell: (cellContext) => {
         const object: Osdk.Instance<

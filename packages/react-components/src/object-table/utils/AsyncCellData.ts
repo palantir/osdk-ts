@@ -1,5 +1,5 @@
 /*
- * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,28 +14,18 @@
  * limitations under the License.
  */
 
-import React from "react";
-import { LoadingCellContent } from "../LoadingCell.js";
-
-interface AsyncValueCellProps {
+export interface AsyncCellData {
+  readonly __asyncCell: true; // discriminant
   data?: unknown;
   isLoading: boolean;
   error?: Error;
 }
 
-export function AsyncValueCell({
-  data,
-  isLoading,
-  error,
-}: AsyncValueCellProps): React.ReactNode {
-  if (error != null) {
-    return "Error";
-  }
-  if (data != null) {
-    return <>{data}</>;
-  }
-  if (isLoading) {
-    return <LoadingCellContent />;
-  }
-  return "No value";
-}
+export const isAsyncCellData = (value: unknown): value is AsyncCellData => {
+  return (
+    value != null
+    && typeof value === "object"
+    && "__asyncCell" in value
+    && value.__asyncCell === true
+  );
+};

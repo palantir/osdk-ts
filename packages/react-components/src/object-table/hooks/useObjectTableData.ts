@@ -28,6 +28,7 @@ import { useObjectSet, useOsdkObjects } from "@osdk/react/experimental";
 import type { SortingState } from "@tanstack/react-table";
 import { useMemo } from "react";
 import type { ColumnDefinition, ObjectSetOptions } from "../ObjectTableApi.js";
+import type { AsyncCellData } from "../utils/AsyncCellData.js";
 import { useFunctionColumnsData } from "./useFunctionColumnsData.js";
 
 const PAGE_SIZE = 50;
@@ -164,7 +165,7 @@ export function useObjectTableData<
 
     return baseResult.data.map(obj => {
       const objKey = String(obj.$primaryKey);
-      const functionData: Record<string, any> = {};
+      const functionData: Record<string, AsyncCellData> = {};
 
       // Collect all function column data for this object
       Object.entries(functionColumnData).forEach(([columnId, columnData]) => {

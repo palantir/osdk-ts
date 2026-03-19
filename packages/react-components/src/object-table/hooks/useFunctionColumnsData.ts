@@ -29,7 +29,7 @@ import type {
   ExtractQueryParameters,
   FunctionColumnLocator,
 } from "../ObjectTableApi.js";
-import type { AsyncCellData } from "../utils/types.js";
+import type { AsyncCellData } from "../utils/AsyncCellData.js";
 
 export interface FunctionColumnData {
   [columnId: string]: {
@@ -356,7 +356,7 @@ function initializeFunctionColumnData<
           const key = String(obj.$primaryKey);
           // Only set isLoading state if this object's data doesn't already exist
           if (!newData[columnId][key]) {
-            newData[columnId][key] = { isLoading: true };
+            newData[columnId][key] = { __asyncCell: true, isLoading: true };
           }
         });
       });
@@ -390,6 +390,7 @@ function processQueryResult<
           [columnId]: {
             ...prev[columnId],
             [key]: {
+              __asyncCell: true,
               error: error instanceof Error
                 ? error
                 : new Error(String(error)),
@@ -417,6 +418,7 @@ function processQueryResult<
             [columnId]: {
               ...prev[columnId],
               [key]: {
+                __asyncCell: true,
                 data: cellData,
                 isLoading: false,
               },
