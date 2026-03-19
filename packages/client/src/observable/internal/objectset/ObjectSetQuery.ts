@@ -161,41 +161,27 @@ export class ObjectSetQuery extends BaseListQuery<
     if (baseTypeName) {
       types.add(baseTypeName);
     }
-
-    if (opts.union) {
-      for (const os of opts.union) {
-        const typeName = ObjectSetQuery.#extractTypeFromWireObjectSet(
-          getWireObjectSet(os),
-        );
-        if (typeName) {
-          types.add(typeName);
-        }
-      }
-    }
-
-    if (opts.intersect) {
-      for (const os of opts.intersect) {
-        const typeName = ObjectSetQuery.#extractTypeFromWireObjectSet(
-          getWireObjectSet(os),
-        );
-        if (typeName) {
-          types.add(typeName);
-        }
-      }
-    }
-
-    if (opts.subtract) {
-      for (const os of opts.subtract) {
-        const typeName = ObjectSetQuery.#extractTypeFromWireObjectSet(
-          getWireObjectSet(os),
-        );
-        if (typeName) {
-          types.add(typeName);
-        }
-      }
-    }
-
+    ObjectSetQuery.#addTypesFromObjectSets(opts.union, types);
+    ObjectSetQuery.#addTypesFromObjectSets(opts.intersect, types);
+    ObjectSetQuery.#addTypesFromObjectSets(opts.subtract, types);
     return types;
+  }
+
+  static #addTypesFromObjectSets(
+    sets: ReadonlyArray<ObjectSet<any, any>> | undefined,
+    types: Set<string>,
+  ): void {
+    if (!sets) {
+      return;
+    }
+    for (const os of sets) {
+      const typeName = ObjectSetQuery.#extractTypeFromWireObjectSet(
+        getWireObjectSet(os),
+      );
+      if (typeName) {
+        types.add(typeName);
+      }
+    }
   }
 
   static #extractTypeFromWireObjectSet(
@@ -348,10 +334,8 @@ export class ObjectSetQuery extends BaseListQuery<
     const whereClause = this.#operations.where as
       | Canonical<SimpleWhereClause>
       | undefined;
-    const emptyWhere: Canonical<SimpleWhereClause> = {} as Canonical<
-      SimpleWhereClause
-    >;
-    const effectiveWhere = whereClause ?? emptyWhere;
+    const effectiveWhere = whereClause
+      ?? this.store.whereCanonicalizer.canonicalize({ $and: [] });
 
     const addedAll = changes.addedObjects.get(resultApiName) ?? [];
     const modifiedAll = changes.modifiedObjects.get(resultApiName) ?? [];
@@ -478,9 +462,9 @@ export class ObjectSetQuery extends BaseListQuery<
   }
 
   #getObjectCacheKey(
-    obj: { $objectType: string; $primaryKey: string | number | boolean },
+    obj: { $objectType: string; $primaryKey: string | number },
   ): ObjectCacheKey {
-    const pk = obj.$primaryKey as string | number;
+    const pk = obj.$primaryKey;
     return this.cacheKeys.get<ObjectCacheKey>(
       "object",
       obj.$objectType,

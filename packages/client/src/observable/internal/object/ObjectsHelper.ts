@@ -92,7 +92,7 @@ export class ObjectsHelper extends AbstractHelper<
     return values.map(v =>
       this.getQuery({
         apiName: v.$objectType ?? v.$apiName,
-        pk: v.$primaryKey as string | number,
+        pk: v.$primaryKey,
       }, rdpConfig).writeToStore(
         v as ObjectHolder,
         "loaded",

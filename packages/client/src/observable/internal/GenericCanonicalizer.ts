@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
+import { Trie } from "@wry/trie";
+import deepEqual from "fast-deep-equal";
 import type { Canonical } from "./Canonical.js";
 import { CachingCanonicalizer } from "./Canonicalizer.js";
 
-export class GenericCanonicalizer extends CachingCanonicalizer<
-  object,
-  object
-> {
-  private structuralCache = new Map<string, Canonical<object>>();
+export class GenericCanonicalizer extends CachingCanonicalizer<object, object> {
+  #trie = new Trie<object>();
+  #existingValues: Map<object, { values: WeakRef<Canonical<object>>[] }> =
+    new Map();
 
   canonicalize<T extends object>(input: T): Canonical<T>;
   canonicalize<T extends object>(
@@ -34,23 +35,35 @@ export class GenericCanonicalizer extends CachingCanonicalizer<
   }
 
   protected lookupOrCreate(input: object): Canonical<object> {
-    const structuralKey = JSON.stringify(input, (_key, value) => {
-      if (value && typeof value === "object" && !Array.isArray(value)) {
-        const sorted: Record<string, unknown> = {};
-        for (const key of Object.keys(value).sort()) {
-          sorted[key] = (value as Record<string, unknown>)[key];
-        }
-        return sorted;
-      }
-      return value;
-    });
+    const structuralKey = this.#collectSortedKeys(input);
+    const cacheKey = this.#trie.lookupArray(structuralKey);
+    const entry = this.#existingValues.get(cacheKey)
+      ?? { values: [] as WeakRef<Canonical<object>>[] };
+    this.#existingValues.set(cacheKey, entry);
 
-    let canonical = this.structuralCache.get(structuralKey);
-    if (!canonical) {
-      canonical = input as Canonical<object>;
-      this.structuralCache.set(structuralKey, canonical);
+    for (let i = entry.values.length - 1; i >= 0; i--) {
+      const existing = entry.values[i].deref();
+      if (!existing) {
+        entry.values.splice(i, 1);
+        continue;
+      }
+      if (deepEqual(existing, input)) {
+        return existing;
+      }
     }
 
+    const canonical = input as Canonical<object>;
+    entry.values.push(new WeakRef(canonical));
     return canonical;
+  }
+
+  #collectSortedKeys(obj: unknown, depth = 0): string[] {
+    if (depth > 5 || !obj || typeof obj !== "object") {
+      return [];
+    }
+    if (Array.isArray(obj)) {
+      return ["[]", String(obj.length)];
+    }
+    return Object.keys(obj).sort();
   }
 }
