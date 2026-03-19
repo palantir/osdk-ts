@@ -1,0 +1,14 @@
+.infoBanner {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--osdk-surface-spacing) * 1.5);
+  padding: var(--osdk-cbac-info-banner-padding);
+  background: var(--osdk-cbac-info-banner-bg);
+  color: var(--osdk-cbac-info-banner-color);
+  font-size: var(--osdk-cbac-info-banner-font-size);
+  border-radius: var(--osdk-cbac-info-banner-border-radius);
+}
+
+.icon {
+  flex-shrink: 0;
+}
