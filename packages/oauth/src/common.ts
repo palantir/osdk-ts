@@ -254,6 +254,7 @@ export function common<
 
   function restartRefreshTimer(evt: CustomEvent<Token>) {
     rmTimeout();
+    if (!refresh) return;
     const delay = evt.detail.expires_in * 1000 * REFRESH_LIFETIME_FRACTION;
     refreshTimeout = setTimeout(tryBackgroundRefresh, delay);
   }
@@ -310,7 +311,7 @@ export function common<
       rmTimeout();
       tryBackgroundRefresh();
     }
-    return token?.access_token;
+    return token.access_token;
   }, {
     signIn,
     refresh,
