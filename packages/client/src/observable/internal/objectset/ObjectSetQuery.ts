@@ -356,9 +356,20 @@ export class ObjectSetQuery extends BaseListQuery<
     const addedAll = changes.addedObjects.get(resultApiName) ?? [];
     const modifiedAll = changes.modifiedObjects.get(resultApiName) ?? [];
 
+    let hasRelevantDeletions = false;
+    for (const key of changes.deleted) {
+      if (
+        key.type === "object"
+        && key.otherKeys[OBJECT_API_NAME_IDX] === resultApiName
+      ) {
+        hasRelevantDeletions = true;
+        break;
+      }
+    }
+
     if (
       addedAll.length === 0 && modifiedAll.length === 0
-      && changes.deleted.size === 0
+      && !hasRelevantDeletions
     ) {
       return undefined;
     }

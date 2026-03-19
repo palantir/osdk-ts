@@ -34,10 +34,16 @@ export class GenericCanonicalizer extends CachingCanonicalizer<
   }
 
   protected lookupOrCreate(input: object): Canonical<object> {
-    const structuralKey = JSON.stringify(
-      input,
-      Array.isArray(input) ? undefined : Object.keys(input).sort(),
-    );
+    const structuralKey = JSON.stringify(input, (_key, value) => {
+      if (value && typeof value === "object" && !Array.isArray(value)) {
+        const sorted: Record<string, unknown> = {};
+        for (const key of Object.keys(value).sort()) {
+          sorted[key] = (value as Record<string, unknown>)[key];
+        }
+        return sorted;
+      }
+      return value;
+    });
 
     let canonical = this.structuralCache.get(structuralKey);
     if (!canonical) {
