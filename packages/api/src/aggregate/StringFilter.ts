@@ -15,41 +15,15 @@
  */
 
 import type { BaseFilterOptions, CatchThemAll } from "./BaseFilter.js";
+import type { IntervalRule } from "./IntervalRule.js";
 import type { Just } from "./Just.js";
-
-export type IntervalFilterRule =
-  | {
-    type: "match";
-    query: string;
-    maxGaps?: number;
-    ordered: boolean;
-  }
-  | {
-    type: "startsWith";
-    query: string;
-  }
-  | {
-    type: "and";
-    rules: ReadonlyArray<IntervalFilterRule>;
-    maxGaps?: number;
-    ordered: boolean;
-  }
-  | {
-    type: "or";
-    rules: ReadonlyArray<IntervalFilterRule>;
-  }
-  | {
-    type: "fuzzy";
-    term: string;
-    fuzziness?: number;
-  };
 
 interface StringFilterOptions extends BaseFilterOptions<string> {
   "$startsWith": string;
   "$containsAllTermsInOrder": string;
   "$containsAnyTerm": string | { term: string; fuzzySearch?: boolean };
   "$containsAllTerms": string | { term: string; fuzzySearch?: boolean };
-  "$interval": IntervalFilterRule;
+  "$interval": IntervalRule;
   /**
    * Matches any of the provided values. If an empty array is provided, the filter will match all objects.
    */

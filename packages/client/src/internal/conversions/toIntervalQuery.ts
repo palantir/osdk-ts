@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { IntervalFilterRule } from "@osdk/api";
+import type { IntervalRule } from "@osdk/api";
 import type {
   PropertyIdentifier,
   SearchJsonQueryV2,
@@ -26,7 +26,7 @@ type IntervalQueryRule = Extract<
 >["rule"];
 
 function toIntervalQueryRule(
-  rule: IntervalFilterRule,
+  rule: IntervalRule,
 ): IntervalQueryRule {
   switch (rule.type) {
     case "match":
@@ -55,8 +55,8 @@ function toIntervalQueryRule(
   }
 }
 
-export function makeIntervalFilter(
-  intervalRule: IntervalFilterRule,
+export function toIntervalQuery(
+  intervalRule: IntervalRule,
   propertyIdentifier?: PropertyIdentifier,
   field?: string,
 ): SearchJsonQueryV2 {
