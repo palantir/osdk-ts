@@ -81,7 +81,7 @@ export class MediaReferencePropertyImpl implements Media {
   }
 
   public async transformAndWait(
-    transformation: { type: string; [key: string]: unknown },
+    transformation: { type: string },
     options?: TransformOptions,
   ): Promise<Response> {
     const { mediaSetRid, mediaItemRid } =

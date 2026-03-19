@@ -32,14 +32,14 @@ export interface Media {
    * and returns the transformed content.
    *
    * @beta
-   * @param transformation - The transformation to apply (e.g. from `@osdk/foundry.mediasets`)
+   * @param transformation - The transformation to apply, from `@osdk/foundry.mediasets`
    * @param options - Polling options (interval and timeout)
    * @returns The transformed media content as a Response
    * @throws {@link MediaTransformationTimeoutError} if polling exceeds the timeout
    * @throws {@link MediaTransformationFailedError} if the transformation job fails
    */
   transformAndWait(
-    transformation: { type: string; [key: string]: unknown },
+    transformation: { type: string },
     options?: TransformOptions,
   ): Promise<Response>;
 }

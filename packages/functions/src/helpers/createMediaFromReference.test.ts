@@ -20,6 +20,7 @@ import {
   MediaTransformationTimeoutError,
 } from "@osdk/client";
 import { MediaSets } from "@osdk/foundry.mediasets";
+import type { Transformation } from "@osdk/foundry.mediasets";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createMediaFromReference } from "./createMediaFromReference.js";
 
@@ -40,14 +41,24 @@ const mockedGetResult = vi.mocked(MediaSets.getResult);
 
 const mockClient = {} as Client;
 
+const MEDIA_SET_RID = "ri.mio.main.media-set.test-set";
+const MEDIA_ITEM_RID = "ri.mio.main.media-item.test-item";
+const MEDIA_SET_VIEW_RID = "ri.mio.main.view.test-view";
+
+const IMAGE_TRANSFORMATION: Transformation = {
+  type: "image",
+  encoding: { type: "jpg" },
+  operations: [{ type: "rotate", angle: "DEGREE_180" }],
+};
+
 const mockMediaReference: MediaReference = {
   mimeType: "image/png",
   reference: {
     type: "mediaSetViewItem",
     mediaSetViewItem: {
-      mediaItemRid: "ri.mio.main.media-item.test-item",
-      mediaSetRid: "ri.mio.main.media-set.test-set",
-      mediaSetViewRid: "ri.mio.main.view.test-view",
+      mediaItemRid: MEDIA_ITEM_RID,
+      mediaSetRid: MEDIA_SET_RID,
+      mediaSetViewRid: MEDIA_SET_VIEW_RID,
     },
   },
 };
@@ -74,9 +85,7 @@ describe("createMediaFromReference", () => {
       const mockResponse = new Response("transformed-data");
       mockedGetResult.mockResolvedValue(mockResponse);
 
-      const result = await media.transformAndWait(
-        { type: "ImageTransformation" },
-      );
+      const result = await media.transformAndWait(IMAGE_TRANSFORMATION);
 
       expect(result).toBe(mockResponse);
       expect(mockedTransform).toHaveBeenCalledOnce();
@@ -104,7 +113,7 @@ describe("createMediaFromReference", () => {
       mockedGetResult.mockResolvedValue(mockResponse);
 
       const result = await media.transformAndWait(
-        { type: "ImageTransformation" },
+        IMAGE_TRANSFORMATION,
         { pollIntervalMs: 10, pollTimeoutMs: 5000 },
       );
 
@@ -112,7 +121,7 @@ describe("createMediaFromReference", () => {
       expect(mockedGetStatus).toHaveBeenCalledTimes(2);
     });
 
-    it("throws MediaTransformationFailedError when job fails", async () => {
+    it("throws MediaTransformationFailedError when job fails during polling", async () => {
       const media = createMediaFromReference(mockClient, mockMediaReference);
 
       mockedTransform.mockResolvedValue({
@@ -127,25 +136,10 @@ describe("createMediaFromReference", () => {
 
       await expect(
         media.transformAndWait(
-          { type: "ImageTransformation" },
+          IMAGE_TRANSFORMATION,
           { pollIntervalMs: 10, pollTimeoutMs: 5000 },
         ),
       ).rejects.toThrow(MediaTransformationFailedError);
-    });
-
-    it("throws MediaTransformationFailedError when transform returns FAILED immediately", async () => {
-      const media = createMediaFromReference(mockClient, mockMediaReference);
-
-      mockedTransform.mockResolvedValue({
-        jobId: "job-immediate-fail",
-        status: "FAILED",
-      });
-
-      await expect(
-        media.transformAndWait({ type: "ImageTransformation" }),
-      ).rejects.toThrow(MediaTransformationFailedError);
-
-      expect(mockedGetStatus).not.toHaveBeenCalled();
     });
 
     it("throws MediaTransformationTimeoutError when polling exceeds timeout", async () => {
@@ -163,7 +157,7 @@ describe("createMediaFromReference", () => {
 
       await expect(
         media.transformAndWait(
-          { type: "ImageTransformation" },
+          IMAGE_TRANSFORMATION,
           { pollIntervalMs: 10, pollTimeoutMs: 50 },
         ),
       ).rejects.toThrow(MediaTransformationTimeoutError);
@@ -188,21 +182,21 @@ describe("createMediaFromReference", () => {
       });
       mockedGetResult.mockResolvedValue(new Response("result"));
 
-      await media.transformAndWait({ type: "ImageTransformation" });
+      await media.transformAndWait(IMAGE_TRANSFORMATION);
 
       expect(mockedTransform).toHaveBeenCalledWith(
         mockClient,
-        "ri.mio.main.media-set.test-set",
-        "ri.mio.main.media-item.test-item",
-        { transformation: { type: "ImageTransformation" } },
+        MEDIA_SET_RID,
+        MEDIA_ITEM_RID,
+        { transformation: IMAGE_TRANSFORMATION },
         { preview: true },
         { Token: "test-token" },
       );
 
       expect(mockedGetResult).toHaveBeenCalledWith(
         mockClient,
-        "ri.mio.main.media-set.test-set",
-        "ri.mio.main.media-item.test-item",
+        MEDIA_SET_RID,
+        MEDIA_ITEM_RID,
         "job-5",
         { preview: true },
         { Token: "test-token" },

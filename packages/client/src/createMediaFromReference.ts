@@ -78,7 +78,7 @@ export function createMediaFromReference(
     },
 
     async transformAndWait(
-      transformation: { type: string; [key: string]: unknown },
+      transformation: { type: string },
       options?: TransformOptions,
     ): Promise<Response> {
       return transformAndWaitInternal(

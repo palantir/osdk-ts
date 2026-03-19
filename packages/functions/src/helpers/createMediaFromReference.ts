@@ -84,7 +84,7 @@ export function createMediaFromReference(
     },
 
     async transformAndWait(
-      transformation: { type: string; [key: string]: unknown },
+      transformation: { type: string },
       options?: TransformOptions,
     ): Promise<Response> {
       const pollIntervalMs = options?.pollIntervalMs ?? 3000;
@@ -104,12 +104,7 @@ export function createMediaFromReference(
       let status = job.status;
       const jobId = job.jobId;
 
-      if (status === "FAILED") {
-        throw new MediaTransformationFailedError(jobId);
-      }
-
       const deadline = Date.now() + pollTimeoutMs;
-
       while (status !== "SUCCESSFUL") {
         if (Date.now() >= deadline) {
           throw new MediaTransformationTimeoutError(jobId);

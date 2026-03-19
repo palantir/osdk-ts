@@ -31,7 +31,7 @@ export async function transformAndWaitInternal(
   client: MinimalClient,
   mediaSetRid: string,
   mediaItemRid: string,
-  transformation: { type: string; [key: string]: unknown },
+  transformation: { type: string },
   token: string | undefined,
   options?: TransformOptions,
 ): Promise<Response> {
@@ -52,12 +52,7 @@ export async function transformAndWaitInternal(
   let status = job.status;
   const jobId = job.jobId;
 
-  if (status === "FAILED") {
-    throw new MediaTransformationFailedError(jobId);
-  }
-
   const deadline = Date.now() + pollTimeoutMs;
-
   while (status !== "SUCCESSFUL") {
     if (Date.now() >= deadline) {
       throw new MediaTransformationTimeoutError(jobId);
@@ -71,6 +66,7 @@ export async function transformAndWaitInternal(
       headerParams,
     );
     status = statusResponse.status;
+
     if (status === "FAILED") {
       throw new MediaTransformationFailedError(jobId);
     }
