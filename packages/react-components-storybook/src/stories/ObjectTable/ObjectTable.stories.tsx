@@ -25,7 +25,7 @@ import type {
   ObjectTableProps,
 } from "@osdk/react-components/experimental";
 import { useOsdkClient } from "@osdk/react/experimental";
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useCallback, useMemo, useState } from "react";
 import { fauxFoundry } from "../../mocks/fauxFoundry.js";
 import { Employee } from "../../types/Employee.js";
@@ -194,7 +194,7 @@ const meta: Meta<EmployeeTableProps> = {
       description: "Additional CSS class name for the table",
       control: "text",
     },
-  },
+  } as Meta<EmployeeTableProps>["argTypes"],
 };
 
 export default meta;
@@ -267,7 +267,7 @@ export const Default: Story = {
   },
   render: (args) => (
     <div className="object-table-container" style={{ height: "600px" }}>
-      <ObjectTable objectType={Employee} {...args} />
+      <ObjectTable {...args} />
     </div>
   ),
 };
@@ -297,9 +297,9 @@ return <ObjectTable objectType={Employee} objectSet={employeeObjectSet} />`,
     return (
       <div className="object-table-container" style={{ height: "600px" }}>
         <ObjectTable
+          {...args}
           objectType={Employee}
           objectSet={employeeObjectSet}
-          {...args}
         />
       </div>
     );
@@ -309,7 +309,7 @@ return <ObjectTable objectType={Employee} objectSet={employeeObjectSet} />`,
 export const WithColumnDefinitions: Story = {
   args: {
     objectType: Employee,
-    columnDefinitions: columnDefinitions,
+    columnDefinitions: columnDefinitions as ColumnDefinition<Employee>[],
   },
   parameters: {
     docs: {
@@ -366,7 +366,7 @@ export const WithColumnDefinitions: Story = {
   },
   render: (args) => (
     <div className="object-table-container" style={{ height: "600px" }}>
-      <ObjectTable objectType={Employee} {...args} />
+      <ObjectTable {...args} />
     </div>
   ),
 };
@@ -385,7 +385,7 @@ export const SingleSelection: Story = {
   },
   render: (args) => (
     <div className="object-table-container" style={{ height: "600px" }}>
-      <ObjectTable objectType={Employee} {...args} />
+      <ObjectTable {...args} />
     </div>
   ),
 };
@@ -404,7 +404,7 @@ export const MultipleSelection: Story = {
   },
   render: (args) => (
     <div className="object-table-container" style={{ height: "600px" }}>
-      <ObjectTable objectType={Employee} {...args} />
+      <ObjectTable {...args} />
     </div>
   ),
 };
@@ -435,23 +435,21 @@ export const WithContextMenu: Story = {
       source: {
         code: `<ObjectTable
   objectType={Employee}
-  renderCellContextMenu={(_, cellValue) => {
-    return (
-      <div
-        style={{
-          background: "white",
-          padding: 8,
-          border: "1px solid #d1d5db",
-          boxShadow: "0 2px 8px 0 rgba(0, 0, 0, 0.1)",
-          fontSize: 13,
-          borderRadius: 4,
-        }}
-      >
-        <div style={{ fontWeight: "bold", marginBottom: 4 }}>Cell Value:</div>
-        <div>{cellValue ? String(cellValue) : "No Value"}</div>
-      </div>
-    );
-  }}
+  renderCellContextMenu={(_, cellValue) => (
+    <div
+      style={{
+        background: "white",
+        padding: 8,
+        border: "1px solid #d1d5db",
+        boxShadow: "0 2px 8px 0 rgba(0, 0, 0, 0.1)",
+        fontSize: 13,
+        borderRadius: 4,
+      }}
+    >
+      <div style={{ fontWeight: "bold", marginBottom: 4 }}>Cell Value:</div>
+      <div>{cellValue ? String(cellValue) : "No Value"}</div>
+    </div>
+  )}
 />`,
       },
     },
@@ -459,7 +457,22 @@ export const WithContextMenu: Story = {
   render: (args) => (
     <div className="object-table-container" style={{ height: "600px" }}>
       <div style={{ padding: "12px" }}>Right click on any cell</div>
-      <ObjectTable objectType={Employee} {...args} />
+      <ObjectTable {...args} />
+    </div>
+  ),
+};
+
+export const CustomColumnWidths: Story = {
+  args: {
+    objectType: Employee,
+    columnDefinitions: columnDefinitions.map((col, index) => ({
+      ...col,
+      width: index === 0 ? 250 : index === 1 ? 300 : 150,
+    })) as any,
+  },
+  render: (args) => (
+    <div className="object-table-container" style={{ height: "600px" }}>
+      <ObjectTable {...args} />
     </div>
   ),
 };
@@ -487,7 +500,7 @@ export const WithDefaultSorting: Story = {
   },
   render: (args) => (
     <div className="object-table-container" style={{ height: "600px" }}>
-      <ObjectTable objectType={Employee} {...args} />
+      <ObjectTable {...args} />
     </div>
   ),
 };
@@ -536,7 +549,7 @@ export const WithDefaultColumnPinning: Story = {
   },
   render: (args) => (
     <div className="object-table-container" style={{ height: "600px" }}>
-      <ObjectTable objectType={Employee} {...args} />
+      <ObjectTable {...args} />
     </div>
   ),
 };
@@ -582,7 +595,7 @@ export const WithCustomColumn: Story = {
   args: {
     objectType: Employee,
     columnDefinitions: [
-      ...columnDefinitions.slice(0, 3),
+      ...(columnDefinitions.slice(0, 3) as ColumnDefinition<Employee>[]),
       {
         locator: {
           type: "custom",
@@ -628,7 +641,7 @@ export const WithCustomColumn: Story = {
   },
   render: (args) => (
     <div className="object-table-container" style={{ height: "600px" }}>
-      <ObjectTable objectType={Employee} {...args} />
+      <ObjectTable {...args} />
     </div>
   ),
 };
@@ -654,7 +667,7 @@ export const WithRowClickHandler: Story = {
   },
   render: (args) => (
     <div className="object-table-container" style={{ height: "600px" }}>
-      <ObjectTable objectType={Employee} {...args} />
+      <ObjectTable {...args} />
     </div>
   ),
 };
@@ -799,7 +812,7 @@ export const DisableAllHeaderMenuFeatures: Story = {
   },
   render: (args) => (
     <div className="object-table-container" style={{ height: "600px" }}>
-      <ObjectTable objectType={Employee} {...args} />
+      <ObjectTable {...args} />
     </div>
   ),
 };
@@ -818,7 +831,7 @@ export const CustomRowHeight: Story = {
   },
   render: (args) => (
     <div className="object-table-container" style={{ height: "600px" }}>
-      <ObjectTable objectType={Employee} {...args} />
+      <ObjectTable {...args} />
     </div>
   ),
 };
@@ -927,7 +940,7 @@ export const WithCustomRenderers: Story = {
   },
   render: (args) => (
     <div className="object-table-container" style={{ height: "600px" }}>
-      <ObjectTable objectType={Employee} {...args} />
+      <ObjectTable {...args} />
     </div>
   ),
 };
@@ -1109,7 +1122,7 @@ export const EditableTable: Story = {
       },
     ],
     editMode: "manual",
-  },
+  } as any,
   parameters: {
     docs: {
       source: {
@@ -1155,7 +1168,7 @@ return (
         Try changing edit mode to "always" to enable inline editing without
         needing to toggle edit mode on.
       </div>
-      <ObjectTable objectType={Employee} {...args} />
+      <ObjectTable {...args} objectType={Employee} />
     </div>
   ),
 };
@@ -1183,7 +1196,7 @@ export const WithSubmitEditsButton: Story = {
       alert(`Successfully submitted ${edits.length} edits`);
       return true;
     },
-  },
+  } as any,
   parameters: {
     docs: {
       source: {
@@ -1223,7 +1236,7 @@ return (
   },
   render: (args) => (
     <div className="object-table-container" style={{ height: "600px" }}>
-      <ObjectTable objectType={Employee} {...args} />
+      <ObjectTable {...args} objectType={Employee} />
     </div>
   ),
 };
@@ -1235,8 +1248,9 @@ export const EditableWithValidation: Story = {
       {
         locator: { type: "property", id: "fullName" },
         editable: true,
-        validateEdit: async (value: string) => {
-          return value.trim().length >= 2
+        validateEdit: async (value: unknown) => {
+          const str = String(value ?? "");
+          return str.trim().length >= 2
             ? undefined
             : "Name must be at least 2 characters long";
         },
@@ -1244,9 +1258,9 @@ export const EditableWithValidation: Story = {
       {
         locator: { type: "property", id: "emailPrimaryWork" },
         editable: true,
-        validateEdit: async (value: string) => {
+        validateEdit: async (value: unknown) => {
           const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-          return emailRegex.test(value)
+          return emailRegex.test(String(value ?? ""))
             ? undefined
             : "Please enter a valid email address";
         },
@@ -1254,8 +1268,10 @@ export const EditableWithValidation: Story = {
       {
         locator: { type: "property", id: "employeeNumber" },
         editable: true,
-        validateEdit: async (value: number) => {
-          return value > 0 ? undefined : "Employee number must be positive";
+        validateEdit: async (value: unknown) => {
+          return Number(value) > 0
+            ? undefined
+            : "Employee number must be positive";
         },
       },
     ],
@@ -1322,7 +1338,7 @@ return (
           <li>Employee number must be positive</li>
         </ul>
       </div>
-      <ObjectTable objectType={Employee} {...args} />
+      <ObjectTable {...args} objectType={Employee} />
     </div>
   ),
 };

@@ -19,6 +19,7 @@
 import * as typescriptEslintParser from "@typescript-eslint/parser";
 import originalHeaderPlugin from "eslint-plugin-header";
 import * as importPlugin from "eslint-plugin-import";
+import reactHooks from "eslint-plugin-react-hooks";
 import unusedImports from "eslint-plugin-unused-imports";
 import * as tseslint from "typescript-eslint";
 
@@ -226,6 +227,19 @@ export default tseslint.config(
     ],
     rules: {
       "no-console": "off",
+    },
+  },
+  // React components rules
+  {
+    files: [
+      "packages/react-components/src/**/*",
+    ],
+    rules: {
+      "react-hooks/exhaustive-deps": "warn",
+    },
+
+    plugins: {
+      "react-hooks": reactHooks,
     },
   },
   //

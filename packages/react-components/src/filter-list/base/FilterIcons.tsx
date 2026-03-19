@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,16 @@
  * limitations under the License.
  */
 
+import {
+  ChevronDown,
+  Cross,
+  DoubleChevronLeft,
+  DoubleChevronRight,
+  More,
+  Search,
+  Tick,
+  Undo,
+} from "@blueprintjs/icons";
 import React from "react";
 
 export function IncludeIcon(): React.ReactElement {
@@ -50,17 +60,33 @@ export function ExcludeIcon(): React.ReactElement {
 }
 
 export function RemoveIcon(): React.ReactElement {
-  return (
-    <svg
-      width="14"
-      height="14"
-      viewBox="0 0 16 16"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      aria-hidden="true"
-    >
-      <path d="M4 4l8 8M12 4l-8 8" strokeLinecap="round" />
-    </svg>
-  );
+  return <Cross color="currentColor" size={14} />;
+}
+
+export function SearchIcon(): React.ReactElement {
+  return <Search color="currentColor" size={14} />;
+}
+
+export function OverflowMenuIcon(): React.ReactElement {
+  return <More color="currentColor" size={14} />;
+}
+
+export function ChevronDownIcon(): React.ReactElement {
+  return <ChevronDown color="currentColor" size={10} />;
+}
+
+export function CollapseIcon(): React.ReactElement {
+  return <DoubleChevronLeft color="currentColor" size={14} />;
+}
+
+export function ExpandIcon(): React.ReactElement {
+  return <DoubleChevronRight color="currentColor" size={14} />;
+}
+
+export function ResetIcon(): React.ReactElement {
+  return <Undo color="currentColor" size={14} />;
+}
+
+export function CheckIcon(): React.ReactElement {
+  return <Tick color="currentColor" size={12} />;
 }

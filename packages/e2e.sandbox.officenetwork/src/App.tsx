@@ -227,7 +227,7 @@ function App() {
       {/* Main Content Area */}
       <div className="flex-1 flex overflow-hidden">
         {/* Left Sidebar - Filter List */}
-        <div className="w-64 shrink-0 border-r border-[var(--officenetwork-border-default)] overflow-y-auto bg-[var(--officenetwork-bg-surface)]">
+        <div className="shrink-0">
           <EmployeeFilters onFilterClauseChanged={setEmployeeWhereClause} />
         </div>
 

@@ -22,6 +22,7 @@ import type {
   PrimaryKeyType,
   PropertyKeys,
   QueryDefinition,
+  QueryMetadata,
   SimplePropertyDef,
   WhereClause,
 } from "@osdk/api";
@@ -88,6 +89,74 @@ export type ColumnDefinition<
   renderHeader?: () => React.ReactNode;
 };
 
+export type ExtractQueryParameters<
+  TQueryDef extends QueryDefinition,
+> = TQueryDef["__DefinitionMetadata"] extends QueryMetadata
+  ? TQueryDef["__DefinitionMetadata"]["parameters"]
+  : never;
+
+export interface PropertyColumnLocator<Q extends ObjectOrInterfaceDefinition> {
+  type: "property";
+  id: PropertyKeys<Q>;
+}
+
+export interface FunctionColumnLocator<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+  FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
+    string,
+    never
+  >,
+> {
+  /**
+   * This is equivalent to workshop's function-backed columns.
+   * The function needs to meet the specifications stated in https://www.palantir.com/docs/foundry/workshop/widgets-object-table/#function-backed-columns
+   */
+  type: "function";
+  id: keyof FunctionColumns;
+  queryDefinition: FunctionColumns[keyof FunctionColumns];
+
+  /**
+   * The function will be called with the current object set to get the input parameters for the function query.
+   * @param objectSet - The current object set.
+   * @returns - The function's input parameters including the object set.
+   */
+  getFunctionParams: (
+    objectSet: ObjectSet<Q>,
+  ) => ExtractQueryParameters<FunctionColumns[keyof FunctionColumns]>;
+
+  /**
+   * Function to generate keys for looking up results in the FunctionsMap.
+   * @param object - The object instance
+   * @returns - The key to use for looking up this object's result in the FunctionsMap
+   */
+  getKey: (
+    object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
+  ) => string;
+
+  /**
+   * Function to extract the cell value from the raw cell data returned by the function.
+   * This is useful when functions return custom types with multiple properties.
+   * @param cellData - The raw data returned by the function for this object
+   * @returns - The value to display in the cell
+   */
+  getValue?: (cellData: unknown) => unknown;
+}
+
+export interface RdpColumnLocator<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+> {
+  type: "rdp";
+  id: keyof RDPs;
+  creator: DerivedProperty.Creator<Q, RDPs[keyof RDPs]>;
+}
+
+export interface CustomColumnLocator {
+  type: "custom";
+  id: string;
+}
+
 export type ColumnDefinitionLocator<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
@@ -96,23 +165,10 @@ export type ColumnDefinitionLocator<
     never
   >,
 > =
-  | {
-    type: "property";
-    id: PropertyKeys<Q>;
-  }
-  | {
-    type: "function";
-    id: keyof FunctionColumns;
-  }
-  | {
-    type: "rdp";
-    id: keyof RDPs;
-    creator: DerivedProperty.Creator<Q, RDPs[keyof RDPs]>;
-  }
-  | {
-    type: "custom";
-    id: string;
-  };
+  | PropertyColumnLocator<Q>
+  | FunctionColumnLocator<Q, RDPs, FunctionColumns>
+  | RdpColumnLocator<Q, RDPs>
+  | CustomColumnLocator;
 
 export interface ObjectTableProps<
   Q extends ObjectOrInterfaceDefinition,

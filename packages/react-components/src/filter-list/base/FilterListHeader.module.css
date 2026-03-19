@@ -49,6 +49,16 @@
   font-variant-numeric: tabular-nums;
 }
 
+.actions {
+  display: flex;
+  align-items: center;
+  gap: var(--osdk-surface-spacing);
+
+  &:empty {
+    display: none;
+  }
+}
+
 .collapseButton {
   display: flex;
   align-items: center;
@@ -59,6 +69,7 @@
   cursor: pointer;
   border-radius: var(--osdk-filter-header-button-border-radius);
   transition: background-color var(--osdk-filter-header-button-transition);
+  color: var(--osdk-filter-header-collapse-icon-color);
 
   &:hover {
     background: var(--osdk-filter-header-button-bg-hover);
@@ -78,49 +89,10 @@
   }
 }
 
-.collapseIcon {
-  display: block;
-  width: var(--osdk-filter-header-collapse-icon-size);
-  height: var(--osdk-filter-header-collapse-icon-size);
-  border-left: var(--osdk-filter-header-collapse-icon-border-width) solid var(--osdk-filter-header-collapse-icon-color);
-  border-bottom: var(--osdk-filter-header-collapse-icon-border-width) solid var(--osdk-filter-header-collapse-icon-color);
-  transform: rotate(-45deg);
-  transition: transform var(--osdk-filter-header-button-transition);
-
-  @media (prefers-reduced-motion: reduce) {
-    transition: none;
-  }
-}
-
-.collapsed {
-  transform: rotate(-135deg);
-}
-
-.headerContentWrapper {
-  display: grid;
-  grid-template-columns: 1fr;
-  overflow: hidden;
-  transition: grid-template-columns var(--osdk-filter-list-collapse-transition);
-
-  @media (prefers-reduced-motion: reduce) {
-    transition: none;
-  }
-}
-
-.headerContentWrapper[data-collapsed="true"] {
-  grid-template-columns: 0fr;
-}
-
-.headerContentInner {
+.resetButton {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  flex: 1;
-  overflow: hidden;
-  min-width: 0;
-}
-
-.resetButton {
+  gap: calc(var(--osdk-surface-spacing) * 0.5);
   font-family: var(--osdk-filter-header-font-family);
   font-size: var(--osdk-filter-header-reset-font-size);
   color: var(--osdk-filter-header-reset-color);

@@ -1,5 +1,25 @@
 # @osdk/vite-plugin-oac
 
+## 0.6.0-beta.23
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.22
+- @osdk/client.unstable@2.8.0-beta.22
+- @osdk/generator-converters.ontologyir@2.8.0-beta.22
+
+## 0.6.0-beta.22
+
+### Minor Changes
+
+- 00677eb: Upgrade Storybook to v10 and add MCP addon.
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.21
+- @osdk/client.unstable@2.8.0-beta.21
+- @osdk/generator-converters.ontologyir@2.8.0-beta.21
+
 ## 0.6.0-beta.21
 
 ### Patch Changes

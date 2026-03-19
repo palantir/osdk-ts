@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-/**
- * Exhaustive type checking helper.
- * Use in default cases of switch statements to ensure all cases are handled.
- * TypeScript will error if a case is missing.
- */
-export function assertUnreachable(value: never): never {
-  throw new Error(`Unhandled value: ${String(value)}`);
+export async function fetchLocalOntologyMetadata() {
+  const res = await fetch("/api/ontology");
+  if (!res.ok) {
+    const message = await res.text().catch(() => res.statusText);
+    throw new Error(`Failed to fetch ontology: ${message}`);
+  }
+  return res.text();
 }

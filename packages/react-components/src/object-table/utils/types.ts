@@ -16,6 +16,12 @@
 
 import type { RowData } from "@tanstack/react-table";
 
+export interface AsyncCellData {
+  data?: unknown;
+  isLoading: boolean;
+  error?: Error;
+}
+
 export interface ColumnOption {
   id: string;
   name: string;

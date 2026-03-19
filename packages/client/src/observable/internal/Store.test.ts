@@ -557,6 +557,16 @@ describe(Store, () => {
           ]),
         );
         expect(lastPayload.totalCount).toBe("2");
+        expect(lastPayload.linkedObjectsBySourcePrimaryKey.get(1)).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({ $primaryKey: "101" }),
+          ]),
+        );
+        expect(lastPayload.linkedObjectsBySourcePrimaryKey.get(2)).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({ $primaryKey: "102" }),
+          ]),
+        );
       });
 
       it("deduplicates when multiple sources link to the same target", async () => {
@@ -609,6 +619,16 @@ describe(Store, () => {
           expect(lastPayload.resolvedList).toHaveLength(1);
           expect(lastPayload.resolvedList?.[0].$primaryKey).toBe("101");
           expect(lastPayload.totalCount).toBe("1");
+          expect(lastPayload.linkedObjectsBySourcePrimaryKey.get(1)).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({ $primaryKey: "101" }),
+            ]),
+          );
+          expect(lastPayload.linkedObjectsBySourcePrimaryKey.get(3)).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({ $primaryKey: "101" }),
+            ]),
+          );
         } finally {
           dataStore.unregisterLink(
             { __apiName: "Employee", __primaryKey: 3 },

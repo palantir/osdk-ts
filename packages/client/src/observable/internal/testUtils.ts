@@ -606,7 +606,9 @@ export function linkPayloadContaining(
     ...("totalCount" in x
       ? { totalCount: x.totalCount }
       : {}),
-  } as SpecificLinkPayload;
+    linkedObjectsBySourcePrimaryKey: x.linkedObjectsBySourcePrimaryKey
+      ?? expect.anything(),
+  };
 }
 
 export function applyCustomMatchers(): void {
@@ -681,7 +683,9 @@ export function updateList<T extends ObjectOrInterfaceDefinition>(
       batch,
       rdpConfig,
     );
-    query._updateList(objectCacheKeys, "loaded", batch, false);
+    query._updateList(objectCacheKeys, "loaded", batch, {
+      type: "clientOrdered",
+    });
   });
 }
 
