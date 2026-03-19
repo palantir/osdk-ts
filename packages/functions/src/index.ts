@@ -29,14 +29,7 @@ export type {
   MediaUpload,
   Range,
   ThreeDimensionalAggregation,
-  TransformOptions,
   TwoDimensionalAggregation,
-} from "@osdk/client";
-
-export {
-  MediaTransformationError,
-  MediaTransformationFailedError,
-  MediaTransformationTimeoutError,
 } from "@osdk/client";
 
 export * as Aliases from "./aliases/index.js";
@@ -44,7 +37,6 @@ export { createEditBatch } from "./edits/createEditBatch.js";
 export type { EditBatch } from "./edits/EditBatch.js";
 export type { Edits } from "./edits/types.js";
 export { UserFacingError } from "./errors/UserFacingError.js";
-export { createMediaFromReference } from "./helpers/createMediaFromReference.js";
 export { uploadMedia } from "./helpers/uploadMedia.js";
 
 export type {

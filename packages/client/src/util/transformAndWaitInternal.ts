@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import type { TransformOptions } from "@osdk/api";
+import type { TransformOptions } from "@osdk/api/unstable";
 import {
   MediaTransformationFailedError,
   MediaTransformationTimeoutError,
-} from "@osdk/api";
+} from "@osdk/api/unstable";
 import { MediaSets } from "@osdk/foundry.mediasets";
 import type { TransformMediaItemRequest as FoundryTransformRequest } from "@osdk/foundry.mediasets";
 import type { MinimalClient } from "../MinimalClientContext.js";

@@ -19,6 +19,7 @@ import type {
   FetchPageArgs,
   InterfaceDefinition,
   Logger,
+  MediaReference,
   NullabilityAdherence,
   ObjectOrInterfaceDefinition,
   ObjectSet,
@@ -33,12 +34,14 @@ import type {
   Experiment,
   ExperimentFns,
   MinimalObjectSet,
+  TransformOptions,
 } from "@osdk/api/unstable";
 import {
   __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchOneByRid,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks,
+  __EXPERIMENTAL__NOT_SUPPORTED_YET__transformAndWait,
 } from "@osdk/api/unstable";
 import type { ObjectSet as WireObjectSet } from "@osdk/foundry.ontologies";
 import { symbolClientContext as oldSymbolClientContext } from "@osdk/shared.client";
@@ -283,6 +286,29 @@ export function createClientFromContext(clientCtx: MinimalClient) {
                 clientCtx,
                 rids,
                 options ?? {},
+              );
+            },
+          } as any;
+
+        case __EXPERIMENTAL__NOT_SUPPORTED_YET__transformAndWait.name:
+          return {
+            transformAndWait: async (args: {
+              mediaReference: MediaReference;
+              transformation: { type: string };
+              options?: TransformOptions;
+            }) => {
+              const { transformAndWaitInternal } = await import(
+                "./util/transformAndWaitInternal.js"
+              );
+              const { mediaSetRid, mediaItemRid, token } =
+                args.mediaReference.reference.mediaSetViewItem;
+              return transformAndWaitInternal(
+                clientCtx,
+                mediaSetRid,
+                mediaItemRid,
+                args.transformation,
+                token,
+                args.options,
               );
             },
           } as any;

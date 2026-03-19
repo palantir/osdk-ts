@@ -14,16 +14,10 @@
  * limitations under the License.
  */
 
-import type {
-  Media,
-  MediaMetadata,
-  MediaReference,
-  TransformOptions,
-} from "@osdk/api";
+import type { Media, MediaMetadata, MediaReference } from "@osdk/api";
 import type { MediaReference as CoreMediaReference } from "@osdk/foundry.core";
 import * as MediaReferenceProperties from "@osdk/foundry.ontologies/MediaReferenceProperty";
 import type { MinimalClient } from "./MinimalClientContext.js";
-import { transformAndWaitInternal } from "./util/transformAndWaitInternal.js";
 
 export class MediaReferencePropertyImpl implements Media {
   #mediaReference: MediaReference;
@@ -78,23 +72,5 @@ export class MediaReferencePropertyImpl implements Media {
 
   public getMediaReference(): MediaReference {
     return this.#mediaReference;
-  }
-
-  public async transformAndWait(
-    transformation: { type: string },
-    options?: TransformOptions,
-  ): Promise<Response> {
-    const { mediaSetRid, mediaItemRid } =
-      this.#mediaReference.reference.mediaSetViewItem;
-    const token = this.#mediaReference.reference.mediaSetViewItem.token;
-
-    return transformAndWaitInternal(
-      this.#client,
-      mediaSetRid,
-      mediaItemRid,
-      transformation,
-      token,
-      options,
-    );
   }
 }

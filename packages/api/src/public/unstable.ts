@@ -23,6 +23,15 @@ export {
   type FetchPageByRidPayload,
 } from "../experimental/fetchPageByRid.js";
 export { __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks } from "../experimental/getBulkLinks.js";
+export {
+  __EXPERIMENTAL__NOT_SUPPORTED_YET__transformAndWait,
+  type TransformOptions,
+} from "../experimental/transformAndWait.js";
+export {
+  MediaTransformationError,
+  MediaTransformationFailedError,
+  MediaTransformationTimeoutError,
+} from "../object/MediaTransformationErrors.js";
 
 export type { EXPERIMENTAL_BulkLinkResult } from "../objectSet/BulkLinkResult.js";
 export type { MinimalObjectSet } from "../objectSet/ObjectSet.js";

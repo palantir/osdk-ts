@@ -296,7 +296,6 @@ describe(toDataValue, () => {
       }),
       fetchContents: async () => new Response(),
       getMediaReference: () => expectedMediaReference,
-      transformAndWait: async () => new Response(),
     };
 
     const converted = await toDataValue(

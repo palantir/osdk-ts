@@ -19,14 +19,8 @@ import type {
   Media,
   MediaMetadata,
   MediaReference,
-  TransformOptions,
-} from "@osdk/client";
-import {
-  MediaTransformationFailedError,
-  MediaTransformationTimeoutError,
 } from "@osdk/client";
 import { MediaSets } from "@osdk/foundry.mediasets";
-import type { TransformMediaItemRequest as FoundryTransformRequest } from "@osdk/foundry.mediasets";
 
 /**
  * Creates a `Media` object from a `MediaReference`.
@@ -81,59 +75,6 @@ export function createMediaFromReference(
 
     getMediaReference(): MediaReference {
       return mediaReference;
-    },
-
-    async transformAndWait(
-      transformation: { type: string },
-      options?: TransformOptions,
-    ): Promise<Response> {
-      const pollIntervalMs = options?.pollIntervalMs ?? 3000;
-      const pollTimeoutMs = options?.pollTimeoutMs ?? 30000;
-
-      const headerParams = token ? { Token: token } : undefined;
-
-      const job = await MediaSets.transform(
-        client,
-        mediaSetRid,
-        mediaItemRid,
-        { transformation } as unknown as FoundryTransformRequest,
-        { preview: true },
-        headerParams,
-      );
-
-      let status = job.status;
-      const jobId = job.jobId;
-
-      const deadline = Date.now() + pollTimeoutMs;
-      while (status !== "SUCCESSFUL") {
-        if (Date.now() >= deadline) {
-          throw new MediaTransformationTimeoutError(jobId);
-        }
-        const statusResponse = await MediaSets.getStatus(
-          client,
-          mediaSetRid,
-          mediaItemRid,
-          jobId,
-          { preview: true },
-          headerParams,
-        );
-        status = statusResponse.status;
-        if (status === "FAILED") {
-          throw new MediaTransformationFailedError(jobId);
-        }
-        if (status !== "SUCCESSFUL") {
-          await new Promise(resolve => setTimeout(resolve, pollIntervalMs));
-        }
-      }
-
-      return MediaSets.getResult(
-        client,
-        mediaSetRid,
-        mediaItemRid,
-        jobId,
-        { preview: true },
-        headerParams,
-      );
     },
   };
 }

@@ -14,15 +14,9 @@
  * limitations under the License.
  */
 
-import type {
-  Media,
-  MediaMetadata,
-  MediaReference,
-  TransformOptions,
-} from "@osdk/api";
+import type { Media, MediaMetadata, MediaReference } from "@osdk/api";
 import { MediaSets } from "@osdk/foundry.mediasets";
 import type { MinimalClient } from "./MinimalClientContext.js";
-import { transformAndWaitInternal } from "./util/transformAndWaitInternal.js";
 
 /**
  * @internal
@@ -75,20 +69,6 @@ export function createMediaFromReference(
 
     getMediaReference(): MediaReference {
       return mediaReference;
-    },
-
-    async transformAndWait(
-      transformation: { type: string },
-      options?: TransformOptions,
-    ): Promise<Response> {
-      return transformAndWaitInternal(
-        client,
-        mediaSetRid,
-        mediaItemRid,
-        transformation,
-        token,
-        options,
-      );
     },
   };
 }

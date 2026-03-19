@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+export { createMediaFromReference } from "../helpers/createMediaFromReference.js";
 export { createWriteableClient } from "../transactions/createWriteableClient.js";
 export { flushEdits } from "../transactions/flushEdits.js";
 export type { WriteableClient } from "../transactions/WriteableClient.js";
