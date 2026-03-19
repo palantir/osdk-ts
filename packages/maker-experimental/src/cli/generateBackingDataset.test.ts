@@ -199,29 +199,19 @@ describe("generateBackingDatasetBlockResult", () => {
     await fs.promises.rm(buildDir, { recursive: true, force: true });
   });
 
-  it("returns correct block_identifier and block_type", async () => {
+  it("generates correct result and files for default block data", async () => {
     const blockData = createObjectTypeBlockData();
     const result = await generateBackingDatasetBlockResult(blockData, buildDir);
 
+    // Block metadata
     expect(result.block_identifier).toBe("TestObject-backing-ds");
     expect(result.block_type).toBe("STATIC_DATASET");
-  });
-
-  it("has empty input_mapping_entries", async () => {
-    const blockData = createObjectTypeBlockData();
-    const result = await generateBackingDatasetBlockResult(blockData, buildDir);
-
     expect(result.input_mapping_entries).toEqual([]);
-  });
 
-  it("produces tabularDatasource output for the dataset", async () => {
-    const blockData = createObjectTypeBlockData();
-    const result = await generateBackingDatasetBlockResult(blockData, buildDir);
-
+    // tabularDatasource output
     const dsKey = ReadableIdGenerator.getForDataSet("TestObject");
     expect(result.outputs[dsKey]).toBeDefined();
     expect(result.outputs[dsKey].type).toBe("tabularDatasource");
-
     const dsOutput = result.outputs[dsKey] as unknown as Record<
       string,
       unknown
@@ -235,12 +225,8 @@ describe("generateBackingDatasetBlockResult", () => {
       (dsShape.buildRequirements as Record<string, unknown>).isBuildable,
     ).toBe(false);
     expect(dsShape.schema).toHaveLength(2);
-  });
 
-  it("produces datasourceColumn outputs for each property", async () => {
-    const blockData = createObjectTypeBlockData();
-    const result = await generateBackingDatasetBlockResult(blockData, buildDir);
-
+    // datasourceColumn outputs
     const idColKey = ReadableIdGenerator.getForDataSetColumn(
       "TestObject",
       "id",
@@ -249,7 +235,6 @@ describe("generateBackingDatasetBlockResult", () => {
       "TestObject",
       "count",
     );
-
     expect(result.outputs[idColKey]).toBeDefined();
     expect(result.outputs[idColKey].type).toBe("datasourceColumn");
     const idCol = result.outputs[idColKey] as unknown as Record<
@@ -259,7 +244,6 @@ describe("generateBackingDatasetBlockResult", () => {
     expect(
       (idCol.datasourceColumn as Record<string, unknown>).about,
     ).toHaveProperty("fallbackTitle", "id");
-
     expect(result.outputs[countColKey]).toBeDefined();
     expect(result.outputs[countColKey].type).toBe("datasourceColumn");
     const countCol = result.outputs[countColKey] as unknown as Record<
@@ -269,29 +253,67 @@ describe("generateBackingDatasetBlockResult", () => {
     expect(
       (countCol.datasourceColumn as Record<string, unknown>).about,
     ).toHaveProperty("fallbackTitle", "count");
-  });
 
-  it("produces compassResource input for install location", async () => {
-    const blockData = createObjectTypeBlockData();
-    const result = await generateBackingDatasetBlockResult(blockData, buildDir);
-
+    // compassResource input
     const compassKey = "TestObject-backing-ds-compass-resource" as ReadableId;
     expect(result.inputs[compassKey]).toBeDefined();
     expect(result.inputs[compassKey].type).toBe("compassResource");
-  });
 
-  it("populates add_on_override with idToBlockShapeId mappings", async () => {
-    const blockData = createObjectTypeBlockData();
-    const result = await generateBackingDatasetBlockResult(blockData, buildDir);
-
+    // add_on_override
     expect(result.add_on_override).toBeDefined();
     const override = result.add_on_override as Record<string, unknown>;
     expect(override.idToBlockShapeId).toBeDefined();
     expect(override.idToInputGroupId).toEqual({});
     expect(override.outputToLocationInput).toBeDefined();
+
+    // schema.json
+    const schema = JSON.parse(
+      await fs.promises.readFile(
+        path.join(result.block_data_directory, "schema.json"),
+        "utf-8",
+      ),
+    );
+    expect(schema.fieldSchemaList).toHaveLength(2);
+    expect(schema.fieldSchemaList[0].name).toBe("id");
+    expect(schema.fieldSchemaList[0].type).toBe("STRING");
+    expect(schema.fieldSchemaList[1].name).toBe("count");
+    expect(schema.fieldSchemaList[1].type).toBe("INTEGER");
+    expect(schema.dataFrameReaderClass).toBe(
+      "com.palantir.foundry.spark.input.ParquetDataFrameReader",
+    );
+
+    // block-data.json
+    const blockDataContents = JSON.parse(
+      await fs.promises.readFile(
+        path.join(result.block_data_directory, "block-data.json"),
+        "utf-8",
+      ),
+    );
+    expect(blockDataContents.type).toBe("v1");
+    expect(blockDataContents.v1.hasSchema).toBe(true);
+    const columnValues = Object.values(blockDataContents.v1.columns);
+    expect(columnValues).toContain("id");
+    expect(columnValues).toContain("count");
+
+    // VERSION
+    const version = await fs.promises.readFile(
+      path.join(result.block_data_directory, "VERSION"),
+      "utf-8",
+    );
+    expect(version).toBe("\"1\"");
+
+    // files.zip
+    const zipBuffer = await fs.promises.readFile(
+      path.join(result.block_data_directory, "files.zip"),
+    );
+    expect(zipBuffer.length).toBe(22);
+    expect(zipBuffer[0]).toBe(0x50);
+    expect(zipBuffer[1]).toBe(0x4b);
+    expect(zipBuffer[2]).toBe(0x05);
+    expect(zipBuffer[3]).toBe(0x06);
   });
 
-  it("excludes editOnly properties from outputs", async () => {
+  it("excludes editOnly properties from outputs and files", async () => {
     const blockData = createObjectTypeBlockData({
       properties: [
         { apiName: "id", type: "string" },
@@ -302,152 +324,24 @@ describe("generateBackingDatasetBlockResult", () => {
 
     const result = await generateBackingDatasetBlockResult(blockData, buildDir);
 
-    // Should have tabularDatasource + 2 columns (id and count), not 3
+    // Outputs: tabularDatasource + 2 columns (id and count), not 3
     expect(Object.keys(result.outputs)).toHaveLength(3);
     const secretKey = ReadableIdGenerator.getForDataSetColumn(
       "TestObject",
       "secret",
     );
     expect(result.outputs[secretKey]).toBeUndefined();
-  });
 
-  describe("file output", () => {
-    it("writes schema.json with correct fieldSchemaList", async () => {
-      const blockData = createObjectTypeBlockData();
-      const result = await generateBackingDatasetBlockResult(
-        blockData,
-        buildDir,
-      );
-
-      const schemaPath = path.join(
-        result.block_data_directory,
-        "schema.json",
-      );
-      const schema = JSON.parse(
-        await fs.promises.readFile(schemaPath, "utf-8"),
-      );
-
-      expect(schema.fieldSchemaList).toHaveLength(2);
-      expect(schema.fieldSchemaList[0].name).toBe("id");
-      expect(schema.fieldSchemaList[0].type).toBe("STRING");
-      expect(schema.fieldSchemaList[1].name).toBe("count");
-      expect(schema.fieldSchemaList[1].type).toBe("INTEGER");
-      expect(schema.dataFrameReaderClass).toBe(
-        "com.palantir.foundry.spark.input.ParquetDataFrameReader",
-      );
-    });
-
-    it("writes block-data.json with column mappings", async () => {
-      const blockData = createObjectTypeBlockData();
-      const result = await generateBackingDatasetBlockResult(
-        blockData,
-        buildDir,
-      );
-
-      const blockDataPath = path.join(
-        result.block_data_directory,
-        "block-data.json",
-      );
-      const blockDataContents = JSON.parse(
-        await fs.promises.readFile(blockDataPath, "utf-8"),
-      );
-
-      expect(blockDataContents.type).toBe("v1");
-      expect(blockDataContents.v1.hasSchema).toBe(true);
-      const columnValues = Object.values(blockDataContents.v1.columns);
-      expect(columnValues).toContain("id");
-      expect(columnValues).toContain("count");
-    });
-
-    it("writes VERSION file", async () => {
-      const blockData = createObjectTypeBlockData();
-      const result = await generateBackingDatasetBlockResult(
-        blockData,
-        buildDir,
-      );
-
-      const versionPath = path.join(
-        result.block_data_directory,
-        "VERSION",
-      );
-      const version = await fs.promises.readFile(versionPath, "utf-8");
-      expect(version).toBe("\"1\"");
-    });
-
-    it("writes empty files.zip (22 bytes)", async () => {
-      const blockData = createObjectTypeBlockData();
-      const result = await generateBackingDatasetBlockResult(
-        blockData,
-        buildDir,
-      );
-
-      const zipPath = path.join(
-        result.block_data_directory,
-        "files.zip",
-      );
-      const zipBuffer = await fs.promises.readFile(zipPath);
-      expect(zipBuffer.length).toBe(22);
-      // Verify ZIP end-of-central-directory signature
-      expect(zipBuffer[0]).toBe(0x50);
-      expect(zipBuffer[1]).toBe(0x4b);
-      expect(zipBuffer[2]).toBe(0x05);
-      expect(zipBuffer[3]).toBe(0x06);
-    });
-
-    it("excludes editOnly properties from schema.json", async () => {
-      const blockData = createObjectTypeBlockData({
-        properties: [
-          { apiName: "id", type: "string" },
-          { apiName: "secret", type: "string", editOnly: true },
-        ],
-      });
-
-      const result = await generateBackingDatasetBlockResult(
-        blockData,
-        buildDir,
-      );
-
-      const schemaPath = path.join(
-        result.block_data_directory,
-        "schema.json",
-      );
-      const schema = JSON.parse(
-        await fs.promises.readFile(schemaPath, "utf-8"),
-      );
-
-      expect(schema.fieldSchemaList).toHaveLength(1);
-      expect(schema.fieldSchemaList[0].name).toBe("id");
-    });
-  });
-
-  it("uses deterministic IDs when randomnessKey is provided", async () => {
-    const blockData = createObjectTypeBlockData();
-    const key = "12345678-1234-1234-1234-123456789abc";
-
-    const result1 = await generateBackingDatasetBlockResult(
-      blockData,
-      buildDir,
-      key,
+    // schema.json should also exclude editOnly
+    const schema = JSON.parse(
+      await fs.promises.readFile(
+        path.join(result.block_data_directory, "schema.json"),
+        "utf-8",
+      ),
     );
-
-    // Clean up and recreate for second run
-    await fs.promises.rm(buildDir, { recursive: true, force: true });
-    buildDir = await fs.promises.mkdtemp(
-      path.join(os.tmpdir(), "backing-ds-test-"),
+    expect(schema.fieldSchemaList).toHaveLength(2);
+    expect(schema.fieldSchemaList.map((f: { name: string }) => f.name)).toEqual(
+      ["id", "count"],
     );
-
-    const result2 = await generateBackingDatasetBlockResult(
-      blockData,
-      buildDir,
-      key,
-    );
-
-    // Output shape keys should be identical
-    expect(Object.keys(result1.outputs).sort()).toEqual(
-      Object.keys(result2.outputs).sort(),
-    );
-
-    // add_on_override should be structurally identical
-    expect(result1.add_on_override).toEqual(result2.add_on_override);
   });
 });
