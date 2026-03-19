@@ -1,5 +1,12 @@
 # @osdk/create-app.template.vue.v2
 
+## 2.7.6
+
+### Patch Changes
+
+- eb0f8ef: Make template a11y compatible
+- eb0f8ef: React/Vue templates UI polish
+
 ## 2.7.5
 
 ### Patch Changes
