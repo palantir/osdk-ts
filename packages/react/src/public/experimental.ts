@@ -17,6 +17,20 @@
 export { OsdkProvider2 } from "../new/OsdkProvider2.js";
 export { useLinks } from "../new/useLinks.js";
 export { useObjectSet } from "../new/useObjectSet.js";
+export type {
+  UseObjectSetOptions,
+  UseObjectSetResult,
+} from "../new/useObjectSet.js";
+export { useObjectSetAggregation } from "../new/useObjectSetAggregation.js";
+export type {
+  UseObjectSetAggregationOptions,
+  UseObjectSetAggregationResult,
+} from "../new/useObjectSetAggregation.js";
+export { useObjectSetLinks } from "../new/useObjectSetLinks.js";
+export type {
+  UseObjectSetLinksOptions,
+  UseObjectSetLinksResult,
+} from "../new/useObjectSetLinks.js";
 export { useOsdkAction } from "../new/useOsdkAction.js";
 export type { UseOsdkAggregationResult } from "../new/useOsdkAggregation.js";
 export { useOsdkAggregation } from "../new/useOsdkAggregation.js";
