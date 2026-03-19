@@ -18,14 +18,20 @@ import type { PdfViewerProps } from "@osdk/react-components/experimental";
 import { PdfViewer } from "@osdk/react-components/experimental";
 import type { Meta, StoryObj } from "@storybook/react";
 import { fn } from "@storybook/test";
-import React from "react";
-
 const SAMPLE_PDF_URL =
   "https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf";
 
 const meta: Meta<PdfViewerProps> = {
   title: "Components/PdfViewer",
   component: PdfViewer,
+  args: {
+    src: SAMPLE_PDF_URL,
+  },
+  render: (args: PdfViewerProps) => (
+    <div style={{ height: "600px" }}>
+      <PdfViewer {...args} />
+    </div>
+  ),
   parameters: {
     controls: {
       expanded: true,
@@ -72,9 +78,6 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-  args: {
-    src: SAMPLE_PDF_URL,
-  },
   parameters: {
     docs: {
       source: {
@@ -84,16 +87,10 @@ export const Default: Story = {
       },
     },
   },
-  render: (args) => (
-    <div style={{ height: "600px" }}>
-      <PdfViewer src={SAMPLE_PDF_URL} {...args} />
-    </div>
-  ),
 };
 
 export const WithAnnotations: Story = {
   args: {
-    src: SAMPLE_PDF_URL,
     onAnnotationClick: fn(),
     annotations: {
       1: [
@@ -147,17 +144,9 @@ export const WithAnnotations: Story = {
       },
     },
   },
-  render: (args) => (
-    <div style={{ height: "600px" }}>
-      <PdfViewer src={SAMPLE_PDF_URL} {...args} />
-    </div>
-  ),
 };
 
 export const WithSearch: Story = {
-  args: {
-    src: SAMPLE_PDF_URL,
-  },
   parameters: {
     docs: {
       source: {
@@ -168,16 +157,10 @@ import { PdfViewer } from "@osdk/react-components/experimental";
       },
     },
   },
-  render: (args) => (
-    <div style={{ height: "600px" }}>
-      <PdfViewer src={SAMPLE_PDF_URL} {...args} />
-    </div>
-  ),
 };
 
 export const WithSidebar: Story = {
   args: {
-    src: SAMPLE_PDF_URL,
     initialSidebarOpen: true,
   },
   parameters: {
@@ -189,16 +172,10 @@ export const WithSidebar: Story = {
       },
     },
   },
-  render: (args) => (
-    <div style={{ height: "600px" }}>
-      <PdfViewer src={SAMPLE_PDF_URL} {...args} />
-    </div>
-  ),
 };
 
 export const CustomScale: Story = {
   args: {
-    src: SAMPLE_PDF_URL,
     initialScale: 1.5,
   },
   parameters: {
@@ -210,9 +187,4 @@ export const CustomScale: Story = {
       },
     },
   },
-  render: (args) => (
-    <div style={{ height: "600px" }}>
-      <PdfViewer src={SAMPLE_PDF_URL} {...args} />
-    </div>
-  ),
 };

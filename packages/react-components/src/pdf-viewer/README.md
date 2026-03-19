@@ -45,14 +45,14 @@ import { PdfViewer } from "@osdk/react-components";
 
 ## Props
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `src` | `string \| ArrayBuffer` | — | PDF source URL or binary data (required) |
-| `annotations` | `Record<number, PdfAnnotation[]>` | `{}` | Annotations keyed by page number |
-| `onAnnotationClick` | `(annotation: PdfAnnotation) => void` | — | Callback when an annotation is clicked |
-| `initialPage` | `number` | `1` | Page to display on first render |
-| `initialScale` | `number` | `1.0` | Initial zoom level |
-| `className` | `string` | — | CSS class applied to the root element |
+| Prop                | Type                                  | Default | Description                              |
+| ------------------- | ------------------------------------- | ------- | ---------------------------------------- |
+| `src`               | `string \| ArrayBuffer`               | —       | PDF source URL or binary data (required) |
+| `annotations`       | `Record<number, PdfAnnotation[]>`     | `{}`    | Annotations keyed by page number         |
+| `onAnnotationClick` | `(annotation: PdfAnnotation) => void` | —       | Callback when an annotation is clicked   |
+| `initialPage`       | `number`                              | `1`     | Page to display on first render          |
+| `initialScale`      | `number`                              | `1.0`   | Initial zoom level                       |
+| `className`         | `string`                              | —       | CSS class applied to the root element    |
 
 ## Features
 
@@ -64,12 +64,12 @@ The component renders an invisible text layer on top of each PDF page using the 
 
 Annotations are positioned using PDF coordinate space (origin at bottom-left of the page). The component transforms these to CSS positioning automatically. Four annotation types are supported:
 
-| Type | Visual |
-|------|--------|
+| Type        | Visual                             |
+| ----------- | ---------------------------------- |
 | `highlight` | Semi-transparent colored rectangle |
-| `underline` | Colored bottom border |
-| `comment` | Small circular marker |
-| `pin` | Rotated teardrop marker |
+| `underline` | Colored bottom border              |
+| `comment`   | Small circular marker              |
+| `pin`       | Rotated teardrop marker            |
 
 Each annotation accepts an optional `color` CSS value to override the default theme color, and a `label` string shown as a tooltip on hover. Annotations are keyboard-accessible (focusable and activatable with Enter/Space).
 
@@ -115,10 +115,10 @@ PdfViewer
 
 ### Hooks
 
-| Hook | Purpose |
-|------|---------|
+| Hook             | Purpose                                                                                                |
+| ---------------- | ------------------------------------------------------------------------------------------------------ |
 | `usePdfDocument` | Loads a `PDFDocumentProxy` from a URL or `ArrayBuffer` using pdf.js. Manages the web worker lifecycle. |
-| `usePdfSearch` | Manages search state, text layer registration, match highlighting, and navigation between matches. |
+| `usePdfSearch`   | Manages search state, text layer registration, match highlighting, and navigation between matches.     |
 
 ## Theming
 
