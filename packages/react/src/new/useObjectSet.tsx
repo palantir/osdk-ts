@@ -26,6 +26,7 @@ import type {
 } from "@osdk/api";
 
 import type { ObserveObjectSetArgs } from "@osdk/client/unstable-do-not-use";
+import { getWireObjectSet } from "@osdk/client/unstable-do-not-use";
 import React from "react";
 import { makeExternalStore, type Snapshot } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
@@ -228,6 +229,26 @@ export function useObjectSet<
     orderBy: otherOptions.orderBy,
   });
 
+  const stableSelect = React.useMemo(
+    () => otherOptions.$select,
+    [JSON.stringify(otherOptions.$select)],
+  );
+
+  const stableUnion = React.useMemo(
+    () => otherOptions.union,
+    [JSON.stringify(otherOptions.union?.map(os => getWireObjectSet(os)))],
+  );
+
+  const stableIntersect = React.useMemo(
+    () => otherOptions.intersect,
+    [JSON.stringify(otherOptions.intersect?.map(os => getWireObjectSet(os)))],
+  );
+
+  const stableSubtract = React.useMemo(
+    () => otherOptions.subtract,
+    [JSON.stringify(otherOptions.subtract?.map(os => getWireObjectSet(os)))],
+  );
+
   const { subscribe, getSnapShot } = React.useMemo(
     () => {
       if (!enabled) {
@@ -254,16 +275,16 @@ export function useObjectSet<
             {
               where: canonOptions.where,
               withProperties: canonOptions.withProperties,
-              union: otherOptions.union,
-              intersect: otherOptions.intersect,
-              subtract: otherOptions.subtract,
+              union: stableUnion,
+              intersect: stableIntersect,
+              subtract: stableSubtract,
               pivotTo: otherOptions.pivotTo,
               pageSize: otherOptions.pageSize,
               orderBy: canonOptions.orderBy,
               dedupeInterval: otherOptions.dedupeIntervalMs ?? 2_000,
               autoFetchMore: otherOptions.autoFetchMore,
               streamUpdates,
-              select: otherOptions.$select,
+              select: stableSelect,
             },
             observer,
           );
@@ -282,9 +303,10 @@ export function useObjectSet<
       canonOptions.where,
       canonOptions.withProperties,
       canonOptions.orderBy,
-      otherOptions.union,
-      otherOptions.intersect,
-      otherOptions.subtract,
+      stableUnion,
+      stableIntersect,
+      stableSubtract,
+      stableSelect,
       otherOptions.pivotTo,
       otherOptions.pageSize,
       otherOptions.autoFetchMore,
