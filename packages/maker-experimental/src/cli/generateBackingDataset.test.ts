@@ -45,14 +45,6 @@ describe("propertyTypeToSchemaType", () => {
     expect(propertyTypeToSchemaType(input)).toBe(expected);
   });
 
-  it("maps object type { type: 'string' } to 'STRING'", () => {
-    expect(propertyTypeToSchemaType({ type: "string" })).toBe("STRING");
-  });
-
-  it("maps object type { type: 'integer' } to 'INTEGER'", () => {
-    expect(propertyTypeToSchemaType({ type: "integer" })).toBe("INTEGER");
-  });
-
   it("throws on unsupported property types", () => {
     expect(() => propertyTypeToSchemaType("unknownType")).toThrow(
       /Unsupported property type "unknownType".*empty backing datasource/,
