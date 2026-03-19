@@ -25,6 +25,7 @@
     "@osdk/client": "workspace:*",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@osdk/react": "workspace:*",
+    "@osdk/cbac-components": "workspace:*",
     "@osdk/react-components": "workspace:*",
     "@osdk/react-components-styles": "workspace:*",
     "@storybook/addon-docs": "^10.2.10",
