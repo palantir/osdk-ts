@@ -17,49 +17,39 @@
 import type { BaseFilterOptions, CatchThemAll } from "./BaseFilter.js";
 import type { Just } from "./Just.js";
 
-interface IntervalMatchRule {
-  type: "match";
-  query: string;
-  maxGaps?: number;
-  ordered: boolean;
-}
-
-interface IntervalPrefixOnLastTokenRule {
-  type: "prefixOnLastToken";
-  query: string;
-}
-
-interface IntervalAllOfRule {
-  type: "allOf";
-  rules?: ReadonlyArray<IntervalQueryRule>;
-  maxGaps?: number;
-  ordered: boolean;
-}
-
-interface IntervalAnyOfRule {
-  type: "anyOf";
-  rules?: ReadonlyArray<IntervalQueryRule>;
-}
-
-interface IntervalFuzzyRule {
-  type: "fuzzy";
-  term: string;
-  fuzziness?: number;
-}
-
-export type IntervalQueryRule =
-  | IntervalMatchRule
-  | IntervalPrefixOnLastTokenRule
-  | IntervalAllOfRule
-  | IntervalAnyOfRule
-  | IntervalFuzzyRule;
+export type IntervalFilterRule =
+  | {
+    type: "match";
+    query: string;
+    maxGaps?: number;
+    ordered: boolean;
+  }
+  | {
+    type: "startsWith";
+    query: string;
+  }
+  | {
+    type: "and";
+    rules: ReadonlyArray<IntervalFilterRule>;
+    maxGaps?: number;
+    ordered: boolean;
+  }
+  | {
+    type: "or";
+    rules: ReadonlyArray<IntervalFilterRule>;
+  }
+  | {
+    type: "fuzzy";
+    term: string;
+    fuzziness?: number;
+  };
 
 interface StringFilterOptions extends BaseFilterOptions<string> {
   "$startsWith": string;
   "$containsAllTermsInOrder": string;
   "$containsAnyTerm": string | { term: string; fuzzySearch?: boolean };
   "$containsAllTerms": string | { term: string; fuzzySearch?: boolean };
-  "$interval": IntervalQueryRule;
+  "$interval": IntervalFilterRule;
   /**
    * Matches any of the provided values. If an empty array is provided, the filter will match all objects.
    */

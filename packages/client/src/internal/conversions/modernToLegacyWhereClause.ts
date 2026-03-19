@@ -32,6 +32,7 @@ import invariant from "tiny-invariant";
 import { fullyQualifyPropName } from "./fullyQualifyPropName.js";
 import { makeGeoFilterIntersects } from "./makeGeoFilterIntersects.js";
 import { makeGeoFilterWithin } from "./makeGeoFilterWithin.js";
+import { makeIntervalFilter } from "./makeIntervalFilter.js";
 
 type DropDollarSign<T extends `$${string}`> = T extends `$${infer U}` ? U
   : never;
@@ -276,12 +277,7 @@ function handleWherePair(
   }
 
   if (firstKey === "$interval") {
-    return {
-      type: "interval",
-      ...(propertyIdentifier != null && { propertyIdentifier }),
-      field,
-      rule: filter[firstKey],
-    };
+    return makeIntervalFilter(filter[firstKey], propertyIdentifier, field);
   }
 
   return {

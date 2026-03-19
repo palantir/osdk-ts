@@ -765,7 +765,7 @@ describe(modernToLegacyWhereClause, () => {
         }
       `);
       });
-      it("converts $interval by passing the rule through", () => {
+      it("converts $interval match by passing the rule through", () => {
         expect(modernToLegacyWhereClause<ObjAllProps>({
           string: {
             $interval: {
@@ -788,11 +788,11 @@ describe(modernToLegacyWhereClause, () => {
         }
       `);
       });
-      it("converts $interval prefixOnLastToken by passing the rule through", () => {
+      it("converts $interval startsWith by remapping the rule", () => {
         expect(modernToLegacyWhereClause<ObjAllProps>({
           string: {
             $interval: {
-              type: "prefixOnLastToken",
+              type: "startsWith",
               query: "test phr",
             },
           },
@@ -807,11 +807,11 @@ describe(modernToLegacyWhereClause, () => {
         }
       `);
       });
-      it("converts $interval allOf by passing the rule through", () => {
+      it("converts $interval and by remapping the rule", () => {
         expect(modernToLegacyWhereClause<ObjAllProps>({
           string: {
             $interval: {
-              type: "allOf",
+              type: "and",
               maxGaps: 0,
               ordered: true,
               rules: [{
@@ -849,11 +849,11 @@ describe(modernToLegacyWhereClause, () => {
         }
       `);
       });
-      it("converts $interval anyOf by passing the rule through", () => {
+      it("converts $interval or by remapping the rule", () => {
         expect(modernToLegacyWhereClause<ObjAllProps>({
           string: {
             $interval: {
-              type: "anyOf",
+              type: "or",
               rules: [{
                 type: "match",
                 query: "test",

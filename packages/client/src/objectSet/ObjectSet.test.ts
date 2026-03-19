@@ -515,7 +515,7 @@ describe("ObjectSet", () => {
     client(Employee).where({
       fullName: {
         $interval: {
-          type: "prefixOnLastToken",
+          type: "startsWith",
           query: "John Smi",
         },
       },
@@ -524,7 +524,7 @@ describe("ObjectSet", () => {
     client(Employee).where({
       fullName: {
         $interval: {
-          type: "allOf",
+          type: "and",
           maxGaps: 0,
           ordered: true,
           rules: [{
@@ -543,7 +543,7 @@ describe("ObjectSet", () => {
     client(Employee).where({
       fullName: {
         $interval: {
-          type: "anyOf",
+          type: "or",
           rules: [{
             type: "match",
             query: "John",
