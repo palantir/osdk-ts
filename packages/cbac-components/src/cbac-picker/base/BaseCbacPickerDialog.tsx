@@ -1,0 +1,121 @@
+/*
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { ActionButton , Dialog , Tooltip } from "@osdk/react-components/primitives";
+import React from "react";
+import { BaseCbacPicker } from "./BaseCbacPicker.js";
+import type { BaseCbacPickerProps } from "./BaseCbacPicker.js";
+
+export interface BaseCbacPickerDialogProps extends BaseCbacPickerProps {
+  isOpen: boolean;
+  onOpenChange: (open: boolean) => void;
+  onConfirm: () => void;
+  onCancel: () => void;
+  title?: string;
+  submitDisabledReason?: string;
+}
+
+export function BaseCbacPickerDialog({
+  isOpen,
+  onOpenChange,
+  onConfirm,
+  onCancel,
+  title = "Select classification",
+  submitDisabledReason,
+  categories,
+  markingStates,
+  banner,
+  onMarkingToggle,
+  onDismissBanner,
+  showInfoBanner,
+  requiredMarkingGroups,
+  isValid,
+  readOnly,
+  isLoading,
+  error,
+  className,
+}: BaseCbacPickerDialogProps): React.ReactElement {
+  const isSubmitDisabled = submitDisabledReason !== undefined;
+
+  const submitButton = React.useMemo(() => {
+    const button = (
+      <ActionButton
+        variant="primary"
+        onClick={onConfirm}
+        disabled={isSubmitDisabled}
+      >
+        Set classification
+      </ActionButton>
+    );
+
+    if (isSubmitDisabled) {
+      return (
+        <Tooltip.Root>
+          <Tooltip.Trigger render={<span style={{ display: "contents" }} />}>
+            {button}
+          </Tooltip.Trigger>
+          <Tooltip.Portal>
+            <Tooltip.Positioner side="top">
+              <Tooltip.Popup>
+                {submitDisabledReason}
+                <Tooltip.Arrow />
+              </Tooltip.Popup>
+            </Tooltip.Positioner>
+          </Tooltip.Portal>
+        </Tooltip.Root>
+      );
+    }
+
+    return button;
+  }, [onConfirm, isSubmitDisabled, submitDisabledReason]);
+
+  const footer = React.useMemo(
+    () => (
+      <>
+        <ActionButton variant="secondary" onClick={onCancel}>
+          Cancel
+        </ActionButton>
+        {submitButton}
+      </>
+    ),
+    [onCancel, submitButton],
+  );
+
+  return (
+    <Dialog
+      isOpen={isOpen}
+      onOpenChange={onOpenChange}
+      title={title}
+      footer={footer}
+      disablePointerDismissal
+    >
+      <BaseCbacPicker
+        categories={categories}
+        markingStates={markingStates}
+        banner={banner}
+        onMarkingToggle={onMarkingToggle}
+        onDismissBanner={onDismissBanner}
+        showInfoBanner={showInfoBanner ?? true}
+        requiredMarkingGroups={requiredMarkingGroups}
+        isValid={isValid}
+        readOnly={readOnly}
+        isLoading={isLoading}
+        error={error}
+        className={className}
+      />
+    </Dialog>
+  );
+}

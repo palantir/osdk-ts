@@ -1,0 +1,26 @@
+.picker {
+  display: flex;
+  flex-direction: column;
+  gap: var(--osdk-cbac-picker-category-gap);
+  padding: var(--osdk-cbac-picker-padding);
+}
+
+.categoriesContainer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--osdk-cbac-picker-category-gap);
+  overflow-y: auto;
+}
+
+.innerBanner {
+  border: 1px solid var(--osdk-cbac-banner-border-color);
+}
+
+.statusMessage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: calc(var(--osdk-surface-spacing) * 5);
+  color: var(--osdk-typography-color-muted);
+  font-style: italic;
+}
