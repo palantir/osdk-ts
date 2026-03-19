@@ -209,6 +209,7 @@ function capEntrySize(args: string[]): string[] {
 
 export class ConsoleLogStore extends SubscribableStore {
   private readonly entries: CircularBuffer<ConsoleLogEntry>;
+  private cachedEntries: readonly ConsoleLogEntry[] | null = null;
   private readonly originals = new Map<
     ConsoleLogLevel,
     (...args: unknown[]) => void
@@ -241,7 +242,7 @@ export class ConsoleLogStore extends SubscribableStore {
         this: Console,
         ...args: unknown[]
       ) {
-        original.apply(this ?? console, args);  
+        original.apply(this ?? console, args);
 
         if (store.suppressed || store.capturing) {
           return;
@@ -260,6 +261,7 @@ export class ConsoleLogStore extends SubscribableStore {
           };
 
           store.entries.push(entry);
+          store.cachedEntries = null;
           store.scheduleNotify();
         } catch {
         } finally {
@@ -301,7 +303,11 @@ export class ConsoleLogStore extends SubscribableStore {
   }
 
   getEntries(): readonly ConsoleLogEntry[] {
-    return this.entries.toArray();
+    if (this.cachedEntries != null) {
+      return this.cachedEntries;
+    }
+    this.cachedEntries = this.entries.toArray();
+    return this.cachedEntries;
   }
 
   getSize(): number {
@@ -310,12 +316,14 @@ export class ConsoleLogStore extends SubscribableStore {
 
   clear(): void {
     this.entries.clear();
+    this.cachedEntries = null;
     this.notifySubscribers();
   }
 
   dispose(): void {
     this.uninstall();
     this.entries.clear();
+    this.cachedEntries = null;
     this.clearSubscribers();
   }
 

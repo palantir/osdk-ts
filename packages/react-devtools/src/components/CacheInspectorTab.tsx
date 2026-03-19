@@ -25,7 +25,8 @@ import {
   Tooltip,
 } from "@blueprintjs/core";
 import type { CacheEntry } from "@osdk/client/unstable-do-not-use";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
+import { createPollingStore } from "../hooks/createPollingStore.js";
 import type { MonitorStore } from "../store/MonitorStore.js";
 import { formatBytes, formatRelativeTime } from "../utils/format.js";
 import styles from "./CacheInspectorTab.module.scss";
@@ -89,51 +90,59 @@ interface CacheSnapshot {
   };
 }
 
+const emptySnapshot: CacheSnapshot = {
+  entries: [],
+  stats: { totalEntries: 0, totalSize: 0, totalHits: 0 },
+};
+
 export const CacheInspectorTab: React.FC<CacheInspectorTabProps> = (
   { monitorStore },
 ) => {
-  const [snapshot, setSnapshot] = useState<CacheSnapshot>({
-    entries: [],
-    stats: { totalEntries: 0, totalSize: 0, totalHits: 0 },
-  });
   const [searchQuery, setSearchQuery] = useState("");
   const [expandedKeys, setExpandedKeys] = useState<Set<string>>(new Set());
   const [isLoading, setIsLoading] = useState(false);
   const [loadError, setLoadError] = useState<Error | null>(null);
+  const snapshotStore = React.useMemo(
+    () =>
+      createPollingStore(async () => {
+        const entries = await monitorStore.getCacheEntries();
+        const totalSize = entries.reduce(
+          (sum: number, e: CacheEntry) => sum + e.metadata.size,
+          0,
+        );
+        const totalHits = entries.reduce(
+          (sum: number, e: CacheEntry) => sum + e.metadata.hitCount,
+          0,
+        );
+        return {
+          entries,
+          stats: {
+            totalEntries: entries.length,
+            totalSize,
+            totalHits,
+          },
+        };
+      }, 2000),
+    [monitorStore],
+  );
+  const polledSnapshot = React.useSyncExternalStore(
+    snapshotStore.subscribe,
+    snapshotStore.getSnapshot,
+  );
+
+  const snapshot: CacheSnapshot = polledSnapshot ?? emptySnapshot;
 
   const loadSnapshot = useCallback(async () => {
     setIsLoading(true);
     setLoadError(null);
     try {
-      const entries = await monitorStore.getCacheEntries();
-      const totalSize = entries.reduce(
-        (sum: number, e: CacheEntry) => sum + e.metadata.size,
-        0,
-      );
-      const totalHits = entries.reduce(
-        (sum: number, e: CacheEntry) => sum + e.metadata.hitCount,
-        0,
-      );
-      setSnapshot({
-        entries,
-        stats: {
-          totalEntries: entries.length,
-          totalSize,
-          totalHits,
-        },
-      });
+      await monitorStore.getCacheEntries();
     } catch (error) {
       setLoadError(error instanceof Error ? error : new Error(String(error)));
     } finally {
       setIsLoading(false);
     }
   }, [monitorStore]);
-
-  useEffect(() => {
-    void loadSnapshot();
-    const interval = setInterval(() => void loadSnapshot(), 2000);
-    return () => clearInterval(interval);
-  }, [loadSnapshot]);
 
   const filteredEntries = useMemo(() =>
     snapshot.entries.filter(entry => {

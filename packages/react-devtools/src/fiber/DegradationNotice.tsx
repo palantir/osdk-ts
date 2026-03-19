@@ -15,7 +15,7 @@
  */
 
 import { Button, Callout, Intent, Tag } from "@blueprintjs/core";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import {
   type FiberCapabilities,
   type FiberFeature,
@@ -47,33 +47,38 @@ export interface DegradationNoticeProps {
   showWhenHealthy?: boolean;
 }
 
+function subscribeToCapabilities(onStoreChange: () => void): () => void {
+  const manager = getCapabilitiesManager();
+
+  validateFiberAccess();
+
+  const unsubscribe = manager.onCapabilitiesChange(() => {
+    onStoreChange();
+  });
+
+  const unsubscribeReactDetected = onReactDetected(() => {
+    validateFiberAccess();
+  });
+
+  return () => {
+    unsubscribe();
+    unsubscribeReactDetected();
+  };
+}
+
+function getCapabilitiesSnapshot(): FiberCapabilities {
+  return getCapabilitiesManager().getCapabilities();
+}
+
 export const DegradationNotice: React.FC<DegradationNoticeProps> = ({
   onRetry,
   showWhenHealthy = false,
 }) => {
-  const [capabilities, setCapabilities] = useState<FiberCapabilities>(
-    () => getCapabilitiesManager().getCapabilities(),
+  const capabilities = React.useSyncExternalStore(
+    subscribeToCapabilities,
+    getCapabilitiesSnapshot,
+    getCapabilitiesSnapshot,
   );
-
-  useEffect(() => {
-    const manager = getCapabilitiesManager();
-
-    validateFiberAccess();
-    setCapabilities(manager.getCapabilities());
-
-    const unsubscribe = manager.onCapabilitiesChange((newCaps) => {
-      setCapabilities(newCaps);
-    });
-
-    const unsubscribeReactDetected = onReactDetected(() => {
-      validateFiberAccess();
-    });
-
-    return () => {
-      unsubscribe();
-      unsubscribeReactDetected();
-    };
-  }, []);
 
   const disabledFeatures = Array.from(capabilities.disabledFeatures);
   const hasIssues = !capabilities.fiberAccessWorking
@@ -232,18 +237,17 @@ export const DegradationNotice: React.FC<DegradationNoticeProps> = ({
   );
 };
 
+function subscribeToCapabilitiesSimple(onStoreChange: () => void): () => void {
+  const manager = getCapabilitiesManager();
+  return manager.onCapabilitiesChange(() => {
+    onStoreChange();
+  });
+}
+
 export function useFiberCapabilities(): FiberCapabilities {
-  const [capabilities, setCapabilities] = useState<FiberCapabilities>(
-    () => getCapabilitiesManager().getCapabilities(),
+  return React.useSyncExternalStore(
+    subscribeToCapabilitiesSimple,
+    getCapabilitiesSnapshot,
+    getCapabilitiesSnapshot,
   );
-
-  useEffect(() => {
-    const manager = getCapabilitiesManager();
-    const unsubscribe = manager.onCapabilitiesChange((newCaps) => {
-      setCapabilities(newCaps);
-    });
-    return unsubscribe;
-  }, []);
-
-  return capabilities;
 }

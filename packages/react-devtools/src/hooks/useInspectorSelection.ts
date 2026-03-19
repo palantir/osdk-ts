@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useCallback, useEffect, useState } from "react";
+import React from "react";
 import type { MonitorStore } from "../store/MonitorStore.js";
 import type { DiscoveredPrimitives } from "../utils/ComponentPrimitiveDiscovery.js";
 
@@ -25,26 +25,39 @@ export interface InspectorSelectionState {
   clearDiscoveredPrimitives: () => void;
 }
 
-export function useInspectorSelection(
-  monitorStore: MonitorStore,
-): InspectorSelectionState {
-  const [isSelectionActive, setIsSelectionActive] = useState(false);
-  const [discoveredPrimitives, setDiscoveredPrimitives] = useState<
-    DiscoveredPrimitives | null
-  >(null);
+interface InspectorSelectionSnapshot {
+  isSelectionActive: boolean;
+  discoveredPrimitives: DiscoveredPrimitives | null;
+}
 
-  useEffect(() => {
+class InspectorSelectionStore {
+  private state: InspectorSelectionSnapshot = {
+    isSelectionActive: false,
+    discoveredPrimitives: null,
+  };
+  private listeners = new Set<() => void>();
+
+  subscribe(callback: () => void): () => void {
+    this.listeners.add(callback);
+
     const handlePrimitivesDiscovered = (event: Event) => {
       const customEvent = event as CustomEvent<{
         componentId: string;
         primitives: DiscoveredPrimitives;
       }>;
-      setDiscoveredPrimitives(customEvent.detail.primitives);
-      setIsSelectionActive(false);
+      this.state = {
+        isSelectionActive: false,
+        discoveredPrimitives: customEvent.detail.primitives,
+      };
+      this.notify();
     };
 
     const handleSelectionModeDeactivated = () => {
-      setIsSelectionActive(false);
+      this.state = {
+        ...this.state,
+        isSelectionActive: false,
+      };
+      this.notify();
     };
 
     window.addEventListener(
@@ -57,6 +70,7 @@ export function useInspectorSelection(
     );
 
     return () => {
+      this.listeners.delete(callback);
       window.removeEventListener(
         "primitives-discovered",
         handlePrimitivesDiscovered,
@@ -66,24 +80,75 @@ export function useInspectorSelection(
         handleSelectionModeDeactivated,
       );
     };
-  }, []);
+  }
 
-  const activateSelection = useCallback(() => {
+  getSnapshot(): InspectorSelectionSnapshot {
+    return this.state;
+  }
+
+  activateSelection(monitorStore: MonitorStore): void {
     const clickToInspect = monitorStore.getClickToInspectSystem();
     if (clickToInspect) {
       clickToInspect.activate();
-      setIsSelectionActive(true);
-      setDiscoveredPrimitives(null);
+      this.state = {
+        isSelectionActive: true,
+        discoveredPrimitives: null,
+      };
+      this.notify();
     }
-  }, [monitorStore]);
+  }
 
-  const clearDiscoveredPrimitives = useCallback(() => {
-    setDiscoveredPrimitives(null);
-  }, []);
+  clearDiscoveredPrimitives(): void {
+    this.state = {
+      ...this.state,
+      discoveredPrimitives: null,
+    };
+    this.notify();
+  }
+
+  private notify(): void {
+    for (const listener of this.listeners) {
+      listener();
+    }
+  }
+}
+
+export function useInspectorSelection(
+  monitorStore: MonitorStore,
+): InspectorSelectionState {
+  const storeRef = React.useRef<InspectorSelectionStore | null>(null);
+
+  if (storeRef.current == null) {
+    storeRef.current = new InspectorSelectionStore();
+  }
+
+  const store = storeRef.current;
+
+  const subscribe = React.useCallback(
+    (callback: () => void) => store.subscribe(callback),
+    [store],
+  );
+
+  const getSnapshot = React.useCallback(
+    () => store.getSnapshot(),
+    [store],
+  );
+
+  const snapshot = React.useSyncExternalStore(subscribe, getSnapshot);
+
+  const activateSelection = React.useCallback(
+    () => store.activateSelection(monitorStore),
+    [store, monitorStore],
+  );
+
+  const clearDiscoveredPrimitives = React.useCallback(
+    () => store.clearDiscoveredPrimitives(),
+    [store],
+  );
 
   return {
-    isSelectionActive,
-    discoveredPrimitives,
+    isSelectionActive: snapshot.isSelectionActive,
+    discoveredPrimitives: snapshot.discoveredPrimitives,
     activateSelection,
     clearDiscoveredPrimitives,
   };

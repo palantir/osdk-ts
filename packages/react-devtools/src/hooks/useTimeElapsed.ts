@@ -14,32 +14,36 @@
  * limitations under the License.
  */
 
-import { useEffect, useState } from "react";
+import React from "react";
 
 export function useTimeElapsed(
   startTime: Date | undefined,
 ): number | undefined {
   const startMs = startTime?.getTime();
-  const [currentTimestamp, setCurrentTimestamp] = useState(Date.now());
 
-  const timeElapsed = startMs != null
-    ? currentTimestamp - startMs
-    : undefined;
+  const subscribe = React.useCallback(
+    (callback: () => void) => {
+      if (startMs == null) {
+        return () => {};
+      }
 
-  useEffect(() => {
-    if (startMs == null) {
-      return;
-    }
+      const intervalId = setInterval(callback, 1000);
+      return () => {
+        clearInterval(intervalId);
+      };
+    },
+    [startMs],
+  );
 
-    setCurrentTimestamp(Date.now());
-    const intervalId = setInterval(() => {
-      setCurrentTimestamp(Date.now());
-    }, 1000);
+  const getSnapshot = React.useCallback(
+    (): number | undefined => {
+      if (startMs == null) {
+        return undefined;
+      }
+      return Date.now() - startMs;
+    },
+    [startMs],
+  );
 
-    return () => {
-      clearInterval(intervalId);
-    };
-  }, [startMs]);
-
-  return timeElapsed;
+  return React.useSyncExternalStore(subscribe, getSnapshot);
 }

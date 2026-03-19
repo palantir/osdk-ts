@@ -46,6 +46,7 @@ type CapabilitiesListener = (capabilities: FiberCapabilities) => void;
 
 export class FiberCapabilitiesManager {
   private capabilities: FiberCapabilities;
+  private cachedSnapshot: Readonly<FiberCapabilities> | null = null;
   private listeners: Set<CapabilitiesListener> = new Set();
   private featureErrorCounts: Map<FiberFeature, number> = new Map();
   private featureLastError: Map<FiberFeature, number> = new Map();
@@ -67,10 +68,14 @@ export class FiberCapabilitiesManager {
   }
 
   getCapabilities(): Readonly<FiberCapabilities> {
-    return {
+    if (this.cachedSnapshot != null) {
+      return this.cachedSnapshot;
+    }
+    this.cachedSnapshot = {
       ...this.capabilities,
       disabledFeatures: new Set(this.capabilities.disabledFeatures),
     };
+    return this.cachedSnapshot;
   }
 
   isFeatureAvailable(feature: FiberFeature): boolean {
@@ -93,6 +98,7 @@ export class FiberCapabilitiesManager {
       ...this.capabilities,
       [key]: value,
     };
+    this.cachedSnapshot = null;
     this.notifyListeners();
   }
 
@@ -106,6 +112,7 @@ export class FiberCapabilitiesManager {
       ...this.capabilities,
       errorCount: this.capabilities.errorCount + 1,
     };
+    this.cachedSnapshot = null;
 
     if (newCount >= this.config.errorThreshold) {
       this.disableFeature(feature);
@@ -134,6 +141,7 @@ export class FiberCapabilitiesManager {
         ...this.capabilities,
         disabledFeatures: newDisabled,
       };
+      this.cachedSnapshot = null;
       this.notifyListeners();
     }
   }
@@ -146,6 +154,7 @@ export class FiberCapabilitiesManager {
       errorCount: 0,
       disabledFeatures: new Set(),
     };
+    this.cachedSnapshot = null;
     this.notifyListeners();
   }
 
@@ -175,6 +184,7 @@ export class FiberCapabilitiesManager {
       ...this.capabilities,
       disabledFeatures: newDisabled,
     };
+    this.cachedSnapshot = null;
 
     if (process.env.NODE_ENV !== "production") {
       // eslint-disable-next-line no-console

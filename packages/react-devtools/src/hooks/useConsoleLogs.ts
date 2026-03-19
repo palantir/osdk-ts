@@ -14,9 +14,14 @@
  * limitations under the License.
  */
 
-import { useCallback, useEffect, useState } from "react";
+import React from "react";
 import type { ConsoleLogEntry } from "../store/ConsoleLogStore.js";
 import type { MonitorStore } from "../store/MonitorStore.js";
+
+interface ConsoleLogSnapshot {
+  entries: readonly ConsoleLogEntry[];
+  count: number;
+}
 
 export function useConsoleLogs(monitorStore: MonitorStore): {
   entries: readonly ConsoleLogEntry[];
@@ -24,19 +29,38 @@ export function useConsoleLogs(monitorStore: MonitorStore): {
   clear: () => void;
 } {
   const store = monitorStore.getConsoleLogStore();
-  const [, setVersion] = useState(0);
 
-  useEffect(() => {
-    return store.subscribe(() => {
-      setVersion((v) => v + 1);
-    });
-  }, [store]);
+  const subscribe = React.useCallback(
+    (callback: () => void) => store.subscribe(callback),
+    [store],
+  );
 
-  const clear = useCallback(() => store.clear(), [store]);
-
-  return {
+  const cachedRef = React.useRef<ConsoleLogSnapshot>({
     entries: store.getEntries(),
     count: store.getSize(),
+  });
+
+  const getSnapshot = React.useCallback(
+    (): ConsoleLogSnapshot => {
+      const entries = store.getEntries();
+      const count = store.getSize();
+      const prev = cachedRef.current;
+      if (prev.entries === entries && prev.count === count) {
+        return prev;
+      }
+      cachedRef.current = { entries, count };
+      return cachedRef.current;
+    },
+    [store],
+  );
+
+  const snapshot = React.useSyncExternalStore(subscribe, getSnapshot);
+
+  const clear = React.useCallback(() => store.clear(), [store]);
+
+  return {
+    entries: snapshot.entries,
+    count: snapshot.count,
     clear,
   };
 }

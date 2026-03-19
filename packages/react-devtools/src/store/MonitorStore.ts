@@ -159,14 +159,13 @@ export class MonitorStore {
       config.auth,
       {
         logger: config.logger,
-        branch: config.branch,
+        UNSTABLE_DO_NOT_USE_BRANCH: config.branch,
       },
       interceptedFetch,
     );
 
     const observableClient: ObservableClient = createObservableClient(
       client,
-      this.mockManager,
     );
 
     const fullyWrappedClient = this.wrapWithMonitoring(observableClient);

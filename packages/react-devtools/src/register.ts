@@ -19,11 +19,16 @@ import "@blueprintjs/icons/lib/css/blueprint-icons.css";
 import type { ObservableClient } from "@osdk/client/unstable-do-not-use";
 import { registerDevTools } from "@osdk/react/devtools-registry";
 import React from "react";
+import { SafeMonitoringPanel } from "./components/MonitoringPanel.js";
 import { DevToolsContext } from "./DevToolsContext.js";
 import { safelyInstallDevToolsHook } from "./fiber/DevtoolsHook.js";
 import { getMonitorStore, MonitorStore } from "./store/MonitorStore.js";
 
 safelyInstallDevToolsHook();
+
+function isObservableClient(v: unknown): v is ObservableClient {
+  return typeof v === "object" && v != null && "observeList" in v;
+}
 
 const isDev = typeof process !== "undefined"
   ? process.env?.NODE_ENV !== "production"
@@ -36,7 +41,10 @@ if (isDev) {
 
   registerDevTools({
     wrapClient: (client: unknown) => {
-      return globalMonitorStore.wrapExistingClient(client as ObservableClient);
+      if (!isObservableClient(client)) {
+        return client;
+      }
+      return globalMonitorStore.wrapExistingClient(client);
     },
 
     wrapChildren: (children: React.ReactNode, monitoredClient: unknown) => {
@@ -53,6 +61,7 @@ if (isDev) {
         DevToolsContext.Provider,
         { value: monitorStore },
         children,
+        React.createElement(SafeMonitoringPanel, { monitorStore }),
       );
     },
 

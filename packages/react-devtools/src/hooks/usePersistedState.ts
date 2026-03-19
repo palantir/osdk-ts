@@ -14,62 +14,113 @@
  * limitations under the License.
  */
 
-import { useCallback, useEffect, useState } from "react";
+import React from "react";
+
+function readFromStorage<T>(key: string, defaultValue: T): T {
+  if (typeof window === "undefined") {
+    return defaultValue;
+  }
+
+  try {
+    const stored = localStorage.getItem(key);
+    return stored ? JSON.parse(stored) : defaultValue;
+  } catch {
+    return defaultValue;
+  }
+}
 
 export function usePersistedState<T>(
   key: string,
   defaultValue: T,
 ): [T, (value: T | ((prev: T) => T)) => void] {
-  const [value, setValue] = useState<T>(() => {
-    if (typeof window === "undefined") {
-      return defaultValue;
-    }
+  const storeRef = React.useRef<
+    {
+      key: string;
+      value: T;
+      listeners: Set<() => void>;
+    } | null
+  >(null);
 
-    try {
-      const stored = localStorage.getItem(key);
-      return stored ? JSON.parse(stored) : defaultValue;
-    } catch {
-      return defaultValue;
-    }
-  });
+  if (storeRef.current == null || storeRef.current.key !== key) {
+    storeRef.current = {
+      key,
+      value: readFromStorage(key, defaultValue),
+      listeners: storeRef.current?.listeners ?? new Set(),
+    };
+  }
 
-  const setPersistedValue = useCallback(
-    (newValue: T | ((prev: T) => T)) => {
-      setValue((prevValue) => {
-        const resolvedValue = typeof newValue === "function"
-          ? (newValue as (prev: T) => T)(prevValue)
-          : newValue;
+  const subscribe = React.useCallback(
+    (callback: () => void) => {
+      const store = storeRef.current;
+      if (store == null) {
+        return () => {};
+      }
+      store.listeners.add(callback);
 
-        if (typeof window !== "undefined") {
+      const handleStorageChange = (e: StorageEvent) => {
+        if (e.key === key && e.newValue && store != null) {
           try {
-            localStorage.setItem(key, JSON.stringify(resolvedValue));
+            store.value = JSON.parse(e.newValue);
+            for (const listener of store.listeners) {
+              listener();
+            }
           } catch {
           }
         }
+      };
 
-        return resolvedValue;
-      });
+      if (typeof window !== "undefined") {
+        window.addEventListener("storage", handleStorageChange);
+      }
+
+      return () => {
+        store.listeners.delete(callback);
+        if (typeof window !== "undefined") {
+          window.removeEventListener("storage", handleStorageChange);
+        }
+      };
     },
     [key],
   );
 
-  useEffect(() => {
-    if (typeof window === "undefined") {
-      return;
-    }
+  const getSnapshot = React.useCallback(
+    (): T => {
+      if (storeRef.current == null) {
+        return defaultValue;
+      }
+      return storeRef.current.value;
+    },
+    [defaultValue],
+  );
 
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === key && e.newValue) {
+  const value = React.useSyncExternalStore(subscribe, getSnapshot);
+
+  const setPersistedValue = React.useCallback(
+    (newValue: T | ((prev: T) => T)) => {
+      const store = storeRef.current;
+      if (store == null) {
+        return;
+      }
+
+      const resolvedValue = typeof newValue === "function"
+        ? (newValue as (prev: T) => T)(store.value)
+        : newValue;
+
+      store.value = resolvedValue;
+
+      if (typeof window !== "undefined") {
         try {
-          setValue(JSON.parse(e.newValue));
+          localStorage.setItem(key, JSON.stringify(resolvedValue));
         } catch {
         }
       }
-    };
 
-    window.addEventListener("storage", handleStorageChange);
-    return () => window.removeEventListener("storage", handleStorageChange);
-  }, [key]);
+      for (const listener of store.listeners) {
+        listener();
+      }
+    },
+    [key],
+  );
 
   return [value, setPersistedValue];
 }

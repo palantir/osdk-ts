@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEffect, useState } from "react";
+import React from "react";
 import type { MonitorStore } from "../store/MonitorStore.js";
 import {
   UnusedFieldAnalyzer,
@@ -27,68 +27,113 @@ export interface UnusedFieldAnalysisState {
   error: Error | null;
 }
 
+class AnalysisStore {
+  private state: UnusedFieldAnalysisState = {
+    report: null,
+    isLoading: true,
+    error: null,
+  };
+  private listeners = new Set<() => void>();
+  private intervalId: ReturnType<typeof setInterval> | undefined;
+  private isAnalyzing = false;
+
+  constructor(
+    private readonly monitorStore: MonitorStore,
+    private readonly updateIntervalMs: number,
+  ) {}
+
+  subscribe(callback: () => void): () => void {
+    this.listeners.add(callback);
+
+    if (this.listeners.size === 1) {
+      setTimeout(() => void this.analyze(), 0);
+      this.intervalId = setInterval(() => {
+        void this.analyze();
+      }, this.updateIntervalMs);
+    }
+
+    return () => {
+      this.listeners.delete(callback);
+      if (this.listeners.size === 0 && this.intervalId !== undefined) {
+        clearInterval(this.intervalId);
+        this.intervalId = undefined;
+      }
+    };
+  }
+
+  getSnapshot(): UnusedFieldAnalysisState {
+    return this.state;
+  }
+
+  private async analyze(): Promise<void> {
+    if (this.isAnalyzing) {
+      return;
+    }
+    this.isAnalyzing = true;
+
+    try {
+      this.state = { ...this.state, isLoading: true };
+      this.notify();
+
+      const registry = this.monitorStore.getComponentRegistry();
+      const propertyTracker = this.monitorStore.getPropertyAccessTracker();
+      const cacheSnapshot = await this.monitorStore.getCacheSnapshot();
+
+      const analyzer = new UnusedFieldAnalyzer(
+        registry,
+        propertyTracker,
+      );
+
+      const report = analyzer.generateGlobalReport(cacheSnapshot);
+
+      this.state = {
+        report,
+        isLoading: false,
+        error: null,
+      };
+      this.notify();
+    } catch (error) {
+      this.state = {
+        report: null,
+        isLoading: false,
+        error: error instanceof Error ? error : new Error(String(error)),
+      };
+      this.notify();
+    } finally {
+      this.isAnalyzing = false;
+    }
+  }
+
+  private notify(): void {
+    for (const listener of this.listeners) {
+      listener();
+    }
+  }
+}
+
 export function useUnusedFieldAnalysis(
   monitorStore: MonitorStore,
   updateIntervalMs: number = 2000,
 ): UnusedFieldAnalysisState {
-  const [state, setState] = useState<UnusedFieldAnalysisState>({
-    report: null,
-    isLoading: true,
-    error: null,
-  });
+  const storeRef = React.useRef<AnalysisStore | null>(null);
 
-  useEffect(() => {
-    let mounted = true;
-    let isAnalyzing = false;
+  if (
+    storeRef.current == null
+  ) {
+    storeRef.current = new AnalysisStore(monitorStore, updateIntervalMs);
+  }
 
-    const analyze = async () => {
-      if (isAnalyzing) return;
-      isAnalyzing = true;
+  const store = storeRef.current;
 
-      try {
-        setState(prev => ({ ...prev, isLoading: true }));
+  const subscribe = React.useCallback(
+    (callback: () => void) => store.subscribe(callback),
+    [store],
+  );
 
-        const registry = monitorStore.getComponentRegistry();
-        const propertyTracker = monitorStore.getPropertyAccessTracker();
-        const cacheSnapshot = await monitorStore.getCacheSnapshot();
+  const getSnapshot = React.useCallback(
+    () => store.getSnapshot(),
+    [store],
+  );
 
-        const analyzer = new UnusedFieldAnalyzer(
-          registry,
-          propertyTracker,
-        );
-
-        const report = analyzer.generateGlobalReport(cacheSnapshot);
-
-        if (mounted) {
-          setState({
-            report,
-            isLoading: false,
-            error: null,
-          });
-        }
-      } catch (error) {
-        if (mounted) {
-          setState({
-            report: null,
-            isLoading: false,
-            error: error instanceof Error ? error : new Error(String(error)),
-          });
-        }
-      } finally {
-        isAnalyzing = false;
-      }
-    };
-
-    void analyze();
-    const interval = setInterval(() => {
-      void analyze();
-    }, updateIntervalMs);
-
-    return () => {
-      mounted = false;
-      clearInterval(interval);
-    };
-  }, [monitorStore, updateIntervalMs]);
-
-  return state;
+  return React.useSyncExternalStore(subscribe, getSnapshot);
 }

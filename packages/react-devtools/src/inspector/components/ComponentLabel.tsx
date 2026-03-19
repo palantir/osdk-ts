@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import type { SourceLocation } from "../../fiber/types.js";
 import type { ComponentLabelProps, LabelPosition } from "../types.js";
 import {
@@ -109,6 +109,48 @@ const copiedTextStyles: React.CSSProperties = {
 
 const COPY_FEEDBACK_DURATION_MS = 1500;
 
+interface SizeSnapshot {
+  width: number;
+  height: number;
+}
+
+const EMPTY_SIZE: SizeSnapshot = { width: 0, height: 0 };
+
+function useElementSize(
+  ref: React.RefObject<HTMLDivElement | null>,
+): SizeSnapshot {
+  const sizeRef = useRef<SizeSnapshot>(EMPTY_SIZE);
+
+  const subscribe = React.useCallback((onStoreChange: () => void) => {
+    const el = ref.current;
+    if (!el) {
+      return () => {};
+    }
+
+    const measure = () => {
+      const rect = el.getBoundingClientRect();
+      const next = { width: rect.width, height: rect.height };
+      if (
+        next.width !== sizeRef.current.width
+        || next.height !== sizeRef.current.height
+      ) {
+        sizeRef.current = next;
+        onStoreChange();
+      }
+    };
+
+    measure();
+
+    const observer = new ResizeObserver(measure);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [ref]);
+
+  const getSnapshot = React.useCallback(() => sizeRef.current, []);
+
+  return React.useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
+}
+
 export function ComponentLabel({
   component,
   bounds,
@@ -119,45 +161,24 @@ export function ComponentLabel({
   visible,
 }: ComponentLabelProps): React.ReactElement | null {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [measuredSize, setMeasuredSize] = useState({ width: 0, height: 0 });
-  const [position, setPosition] = useState<LabelPosition>(OFFSCREEN_POSITION);
+  const measuredSize = useElementSize(containerRef);
   const [isSourceHovered, setIsSourceHovered] = useState(false);
   const [isCopyHovered, setIsCopyHovered] = useState(false);
   const [showCopied, setShowCopied] = useState(false);
   const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  useEffect(() => {
-    if (!containerRef.current || !component) return;
-
-    const measureContainer = () => {
-      if (containerRef.current) {
-        const rect = containerRef.current.getBoundingClientRect();
-        setMeasuredSize({ width: rect.width, height: rect.height });
-      }
-    };
-
-    requestAnimationFrame(measureContainer);
-
-    const observer = new ResizeObserver(measureContainer);
-    observer.observe(containerRef.current);
-
-    return () => observer.disconnect();
-  }, [component]);
-
-  useEffect(() => {
+  const position: LabelPosition = React.useMemo(() => {
     if (!bounds || measuredSize.width === 0 || measuredSize.height === 0) {
-      setPosition(OFFSCREEN_POSITION);
-      return;
+      return OFFSCREEN_POSITION;
     }
 
-    const newPosition = computeLabelPosition(
+    return computeLabelPosition(
       bounds,
       measuredSize.width,
       measuredSize.height,
       mouseX,
     );
-    setPosition(newPosition);
-  }, [bounds, measuredSize.width, measuredSize.height, mouseX, mouseY]);
+  }, [bounds, measuredSize.width, measuredSize.height, mouseX]);
 
   const handleSourceClick = useCallback(() => {
     if (component?.sourceLocation && onOpenSource) {
@@ -166,7 +187,9 @@ export function ComponentLabel({
   }, [component?.sourceLocation, onOpenSource]);
 
   const handleCopySourceLocation = useCallback(() => {
-    if (!component?.sourceLocation) return;
+    if (!component?.sourceLocation) {
+      return;
+    }
 
     const loc = component.sourceLocation;
     const fullPath = loc.columnNumber
@@ -186,14 +209,6 @@ export function ComponentLabel({
     }).catch(() => {
     });
   }, [component?.sourceLocation]);
-
-  useEffect(() => {
-    return () => {
-      if (copyTimeoutRef.current) {
-        clearTimeout(copyTimeoutRef.current);
-      }
-    };
-  }, []);
 
   if (!component || !visible) {
     return null;

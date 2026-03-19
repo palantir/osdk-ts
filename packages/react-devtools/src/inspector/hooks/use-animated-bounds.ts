@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import React from "react";
 import type {
   AnimatedBounds,
   AnimationOptions,
@@ -26,6 +26,157 @@ import {
   INTERPOLATION_FACTORS,
 } from "../utils/interpolation.js";
 
+class AnimationBoundsStore {
+  private current: AnimatedBounds | null = null;
+  private animationFrameId: number | null = null;
+  private listeners: Set<() => void> = new Set();
+  private hasRenderedOnce = false;
+
+  constructor(
+    private targetBounds: OverlayBounds,
+    private interpolationFactor: number,
+    private convergenceThreshold: number,
+    private enabled: boolean,
+  ) {
+    this.current = {
+      x: targetBounds.x,
+      y: targetBounds.y,
+      width: targetBounds.width,
+      height: targetBounds.height,
+    };
+    this.hasRenderedOnce = true;
+
+    if (enabled) {
+      this.startAnimation();
+    }
+  }
+
+  subscribe = (onStoreChange: () => void): () => void => {
+    this.listeners.add(onStoreChange);
+    return () => {
+      this.listeners.delete(onStoreChange);
+    };
+  };
+
+  getSnapshot = (): AnimatedBounds | null => {
+    return this.current;
+  };
+
+  updateTarget(
+    targetBounds: OverlayBounds,
+    interpolationFactor: number,
+    convergenceThreshold: number,
+    enabled: boolean,
+  ): void {
+    this.targetBounds = targetBounds;
+    this.interpolationFactor = interpolationFactor;
+    this.convergenceThreshold = convergenceThreshold;
+    this.enabled = enabled;
+
+    if (!this.hasRenderedOnce || !enabled) {
+      this.cancelAnimation();
+      this.current = {
+        x: targetBounds.x,
+        y: targetBounds.y,
+        width: targetBounds.width,
+        height: targetBounds.height,
+      };
+      this.hasRenderedOnce = true;
+      this.notify();
+      return;
+    }
+
+    this.cancelAnimation();
+    this.startAnimation();
+  }
+
+  dispose(): void {
+    this.cancelAnimation();
+    this.listeners.clear();
+  }
+
+  private startAnimation(): void {
+    const animate = () => {
+      const targetX = this.targetBounds.x;
+      const targetY = this.targetBounds.y;
+      const targetWidth = this.targetBounds.width;
+      const targetHeight = this.targetBounds.height;
+
+      if (!this.current) {
+        this.current = {
+          x: targetX,
+          y: targetY,
+          width: targetWidth,
+          height: targetHeight,
+        };
+        this.animationFrameId = null;
+        this.notify();
+        return;
+      }
+
+      const nextX = interpolate(
+        this.current.x,
+        targetX,
+        this.interpolationFactor,
+      );
+      const nextY = interpolate(
+        this.current.y,
+        targetY,
+        this.interpolationFactor,
+      );
+      const nextWidth = interpolate(
+        this.current.width,
+        targetWidth,
+        this.interpolationFactor,
+      );
+      const nextHeight = interpolate(
+        this.current.height,
+        targetHeight,
+        this.interpolationFactor,
+      );
+
+      const hasConverged = Math.abs(nextX - targetX) < this.convergenceThreshold
+        && Math.abs(nextY - targetY) < this.convergenceThreshold
+        && Math.abs(nextWidth - targetWidth) < this.convergenceThreshold
+        && Math.abs(nextHeight - targetHeight) < this.convergenceThreshold;
+
+      if (hasConverged) {
+        this.current = {
+          x: targetX,
+          y: targetY,
+          width: targetWidth,
+          height: targetHeight,
+        };
+        this.animationFrameId = null;
+      } else {
+        this.current = {
+          x: nextX,
+          y: nextY,
+          width: nextWidth,
+          height: nextHeight,
+        };
+        this.animationFrameId = requestAnimationFrame(animate);
+      }
+      this.notify();
+    };
+
+    this.animationFrameId = requestAnimationFrame(animate);
+  }
+
+  private cancelAnimation(): void {
+    if (this.animationFrameId != null) {
+      cancelAnimationFrame(this.animationFrameId);
+      this.animationFrameId = null;
+    }
+  }
+
+  private notify(): void {
+    for (const listener of this.listeners) {
+      listener();
+    }
+  }
+}
+
 export function useAnimatedBounds(
   targetBounds: OverlayBounds | null,
   options: AnimationOptions = {},
@@ -36,110 +187,46 @@ export function useAnimatedBounds(
     enabled = true,
   } = options;
 
-  const [currentBounds, setCurrentBounds] = useState<AnimatedBounds | null>(
-    null,
-  );
-  const animationFrameRef = useRef<number | null>(null);
-  const hasRenderedOnceRef = useRef(false);
+  const storeRef = React.useRef<AnimationBoundsStore | null>(null);
 
-  const cancelAnimation = useCallback(() => {
-    if (animationFrameRef.current != null) {
-      cancelAnimationFrame(animationFrameRef.current);
-      animationFrameRef.current = null;
+  if (targetBounds) {
+    if (storeRef.current) {
+      storeRef.current.updateTarget(
+        targetBounds,
+        interpolationFactor,
+        convergenceThreshold,
+        enabled,
+      );
+    } else {
+      storeRef.current = new AnimationBoundsStore(
+        targetBounds,
+        interpolationFactor,
+        convergenceThreshold,
+        enabled,
+      );
     }
-  }, []);
-
-  useEffect(() => {
-    if (!targetBounds) {
-      cancelAnimation();
-      setCurrentBounds(null);
-      hasRenderedOnceRef.current = false;
-      return;
+  } else {
+    if (storeRef.current) {
+      storeRef.current.dispose();
+      storeRef.current = null;
     }
+  }
 
-    if (!hasRenderedOnceRef.current || !enabled) {
-      setCurrentBounds({
-        x: targetBounds.x,
-        y: targetBounds.y,
-        width: targetBounds.width,
-        height: targetBounds.height,
-      });
-      hasRenderedOnceRef.current = true;
-      return;
+  const subscribe = React.useCallback((onStoreChange: () => void) => {
+    const store = storeRef.current;
+    if (!store) {
+      return () => {};
     }
+    return store.subscribe(onStoreChange);
+  }, [targetBounds == null]);
 
-    const targetX = targetBounds.x;
-    const targetY = targetBounds.y;
-    const targetWidth = targetBounds.width;
-    const targetHeight = targetBounds.height;
+  const getSnapshot = React.useCallback((): AnimatedBounds | null => {
+    const store = storeRef.current;
+    if (!store) {
+      return null;
+    }
+    return store.getSnapshot();
+  }, [targetBounds == null]);
 
-    const animate = () => {
-      setCurrentBounds((current) => {
-        if (!current) {
-          return {
-            x: targetX,
-            y: targetY,
-            width: targetWidth,
-            height: targetHeight,
-          };
-        }
-
-        const nextX = interpolate(current.x, targetX, interpolationFactor);
-        const nextY = interpolate(current.y, targetY, interpolationFactor);
-        const nextWidth = interpolate(
-          current.width,
-          targetWidth,
-          interpolationFactor,
-        );
-        const nextHeight = interpolate(
-          current.height,
-          targetHeight,
-          interpolationFactor,
-        );
-
-        const hasConverged = Math.abs(nextX - targetX) < convergenceThreshold
-          && Math.abs(nextY - targetY) < convergenceThreshold
-          && Math.abs(nextWidth - targetWidth) < convergenceThreshold
-          && Math.abs(nextHeight - targetHeight) < convergenceThreshold;
-
-        if (hasConverged) {
-          animationFrameRef.current = null;
-          return {
-            x: targetX,
-            y: targetY,
-            width: targetWidth,
-            height: targetHeight,
-          };
-        }
-
-        animationFrameRef.current = requestAnimationFrame(animate);
-        return {
-          x: nextX,
-          y: nextY,
-          width: nextWidth,
-          height: nextHeight,
-        };
-      });
-    };
-
-    cancelAnimation();
-    animationFrameRef.current = requestAnimationFrame(animate);
-
-    return cancelAnimation;
-  }, [
-    targetBounds?.x,
-    targetBounds?.y,
-    targetBounds?.width,
-    targetBounds?.height,
-    interpolationFactor,
-    convergenceThreshold,
-    enabled,
-    cancelAnimation,
-  ]);
-
-  useEffect(() => {
-    return cancelAnimation;
-  }, [cancelAnimation]);
-
-  return currentBounds;
+  return React.useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
 }

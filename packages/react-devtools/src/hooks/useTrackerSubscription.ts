@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import React from "react";
 
 interface Subscribable {
   subscribe(cb: () => void): () => void;
@@ -38,39 +38,96 @@ export function useTrackerSubscription<TTracker extends Subscribable, TData>(
     limit = 10,
   } = options;
 
-  const [data, setData] = useState<TData>(emptyData);
-
-  const getDataRef = useRef(getData);
-  const emptyDataRef = useRef(emptyData);
+  const getDataRef = React.useRef(getData);
+  const emptyDataRef = React.useRef(emptyData);
   getDataRef.current = getData;
   emptyDataRef.current = emptyData;
 
-  const refresh = useCallback(() => {
-    if (!tracker) {
-      setData(emptyDataRef.current);
-      return;
-    }
-    setData(getDataRef.current(tracker, limit));
-  }, [tracker, limit]);
+  const storeRef = React.useRef<
+    {
+      data: TData;
+      listeners: Set<() => void>;
+    } | null
+  >(null);
 
-  useEffect(() => {
-    refresh();
-
-    if (!tracker || !autoRefresh) {
-      return;
-    }
-
-    const unsubscribe = tracker.subscribe(() => {
-      refresh();
-    });
-
-    const intervalId = setInterval(refresh, refreshInterval);
-
-    return () => {
-      unsubscribe();
-      clearInterval(intervalId);
+  if (storeRef.current == null) {
+    storeRef.current = {
+      data: tracker ? getData(tracker, limit) : emptyData,
+      listeners: new Set(),
     };
-  }, [tracker, autoRefresh, refreshInterval, limit, refresh]);
+  }
+
+  const subscribe = React.useCallback(
+    (callback: () => void) => {
+      const store = storeRef.current;
+      if (store == null) {
+        return () => {};
+      }
+      store.listeners.add(callback);
+
+      const doRefresh = () => {
+        if (store == null) {
+          return;
+        }
+        if (tracker) {
+          store.data = getDataRef.current(tracker, limit);
+        } else {
+          store.data = emptyDataRef.current;
+        }
+        for (const listener of store.listeners) {
+          listener();
+        }
+      };
+
+      doRefresh();
+
+      let unsubscribeTracker: (() => void) | undefined;
+      let intervalId: ReturnType<typeof setInterval> | undefined;
+
+      if (tracker && autoRefresh) {
+        unsubscribeTracker = tracker.subscribe(doRefresh);
+        intervalId = setInterval(doRefresh, refreshInterval);
+      }
+
+      return () => {
+        store.listeners.delete(callback);
+        if (unsubscribeTracker) {
+          unsubscribeTracker();
+        }
+        if (intervalId !== undefined) {
+          clearInterval(intervalId);
+        }
+      };
+    },
+    [tracker, autoRefresh, refreshInterval, limit],
+  );
+
+  const getSnapshot = React.useCallback(
+    (): TData => {
+      if (storeRef.current == null) {
+        return emptyData;
+      }
+      return storeRef.current.data;
+    },
+    [emptyData],
+  );
+
+  const data = React.useSyncExternalStore(subscribe, getSnapshot);
+
+  const refresh = React.useCallback(() => {
+    const store = storeRef.current;
+    if (store == null) {
+      return;
+    }
+    if (tracker) {
+      store.data = getDataRef.current(tracker, limit);
+    } else {
+      store.data = emptyDataRef.current;
+    }
+    for (const listener of store.listeners) {
+      listener();
+    }
+  }, [tracker, limit]);
 
   return { data, refresh };
 }

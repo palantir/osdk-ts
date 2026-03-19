@@ -26,14 +26,8 @@ import {
   RadioGroup,
   TextArea,
 } from "@blueprintjs/core";
-import React, {
-  Suspense,
-  useCallback,
-  useEffect,
-  useMemo,
-  useReducer,
-  useState,
-} from "react";
+import React, { Suspense, useCallback, useMemo, useReducer } from "react";
+import { createPollingStore } from "../hooks/createPollingStore.js";
 import { useInspectorSelection } from "../hooks/useInspectorSelection.js";
 import type { MockResponse } from "../mocking/MockManager.js";
 import type {
@@ -49,6 +43,27 @@ import { PrimitiveSelectionPanel } from "./PrimitiveSelectionPanel.js";
 
 const LazyCodeMirror = React.lazy(() => import("@uiw/react-codemirror"));
 const lazyJson = () => import("@codemirror/lang-json").then(m => m.json);
+
+let jsonExtensionValue: unknown | null = null;
+const jsonExtensionListeners = new Set<() => void>();
+const jsonExtensionPromise = lazyJson().then(jsonFn => {
+  jsonExtensionValue = jsonFn();
+  for (const listener of jsonExtensionListeners) {
+    listener();
+  }
+});
+void jsonExtensionPromise;
+
+function subscribeJsonExtension(callback: () => void): () => void {
+  jsonExtensionListeners.add(callback);
+  return () => {
+    jsonExtensionListeners.delete(callback);
+  };
+}
+
+function getJsonExtensionSnapshot(): unknown | null {
+  return jsonExtensionValue;
+}
 
 function CodeMirrorPlaceholder() {
   return <div className={styles.editorPlaceholder}>Loading editor...</div>;
@@ -369,120 +384,89 @@ export const InterceptTab: React.FC<InterceptTabProps> = ({
     error,
   } = state;
 
-  const [jsonExtension, setJsonExtension] = useState<
-    unknown | null
-  >(null);
+  const jsonExtension = React.useSyncExternalStore(
+    subscribeJsonExtension,
+    getJsonExtensionSnapshot,
+  );
   const jsonExtensions = useMemo(
     () => (jsonExtension ? [jsonExtension] : []),
     [jsonExtension],
   );
 
-  useEffect(() => {
-    void lazyJson().then(jsonFn => setJsonExtension(jsonFn()));
-  }, []);
-
   const overrideStore = monitorStore.getPrototypeOverrideStore();
 
-  useEffect(() => {
-    if (!selectedPrimitive) {
-      return;
-    }
-
-    if (editingMock?.config) {
-      dispatch({
-        type: "INIT_MOCK_FORM_FROM_CONFIG",
-        config: editingMock.config,
-      });
-    } else {
-      dispatch({
-        type: "INIT_MOCK_FORM_FROM_PRIMITIVE",
-        primitive: selectedPrimitive,
-      });
-    }
-  }, [selectedPrimitive, editingMock]);
-
-  useEffect(() => {
-    const unsubscribe = overrideStore.subscribe(() => {
-      dispatch({
-        type: "SET_ACTIVE_OVERRIDES",
-        overrides: overrideStore.getAll(),
-      });
-    });
-    dispatch({
-      type: "SET_ACTIVE_OVERRIDES",
-      overrides: overrideStore.getAll(),
-    });
-    return unsubscribe;
-  }, [overrideStore]);
-
-  useEffect(() => {
-    let mounted = true;
-    const mockManager = monitorStore.getMockManager();
-
-    const syncMocks = () => {
-      if (!mounted) {
-        return;
+  const overrideSnapshotRef = React.useRef<PrototypeOverride[]>([]);
+  const overrideSubscribe = useCallback(
+    (callback: () => void) => overrideStore.subscribe(callback),
+    [overrideStore],
+  );
+  const overrideGetSnapshot = useCallback(
+    (): PrototypeOverride[] => {
+      const current = overrideStore.getAll();
+      const prev = overrideSnapshotRef.current;
+      if (
+        prev.length === current.length
+        && prev.every((o, i) => o === current[i])
+      ) {
+        return prev;
       }
-      const currentMocks = mockManager.getMocks();
-      dispatch({
-        type: "UPDATE_MOCKS",
-        updater: (prevMocks) => {
-          const prevIds = new Set(prevMocks.map(m => m.id));
-          const currentIds = new Set(currentMocks.map(m => m.id));
+      overrideSnapshotRef.current = current;
+      return current;
+    },
+    [overrideStore],
+  );
+  const overrideStoreOverrides = React.useSyncExternalStore(
+    overrideSubscribe,
+    overrideGetSnapshot,
+  );
 
-          const idsMatch = prevIds.size === currentIds.size
-            && currentMocks.every(m => prevIds.has(m.id));
+  const mockPollingStore = React.useMemo(
+    () => {
+      const mockManager = monitorStore.getMockManager();
+      return createPollingStore(() => mockManager.getMocks(), 1000);
+    },
+    [monitorStore],
+  );
+  const polledMocks = React.useSyncExternalStore(
+    mockPollingStore.subscribe,
+    mockPollingStore.getSnapshot,
+  );
 
-          const valuesMatch = currentMocks.every(m => {
-            const prev = prevMocks.find(p => p.id === m.id);
-            return prev && prev.usedCount === m.usedCount
-              && prev.enabled === m.enabled;
-          });
-
-          if (idsMatch && valuesMatch) {
-            return prevMocks;
-          }
-
-          return currentMocks.map(m => {
-            const existingMock = prevMocks.find(item => item.id === m.id);
-            if (existingMock?.config) {
-              return { ...m, config: existingMock.config };
-            }
-            return {
-              ...m,
-              config: {
-                primitive: {
-                  type: "action" as const,
-                  data: {
-                    name: "unknown",
-                    signature: "",
-                    location: "",
-                    hookIndex: 0,
-                  },
-                },
-                mockType: "static" as const,
-                responseType: "success" as const,
-                enabled: m.enabled,
-              },
-            };
-          });
+  const effectiveMocks: Array<MockWithConfig> = useMemo(() => {
+    if (!polledMocks || polledMocks.length === 0) {
+      return mocks;
+    }
+    return polledMocks.map(m => {
+      const existingMock = mocks.find(item => item.id === m.id);
+      if (existingMock?.config) {
+        return { ...m, config: existingMock.config };
+      }
+      return {
+        ...m,
+        config: {
+          primitive: {
+            type: "action" as const,
+            data: {
+              name: "unknown",
+              signature: "",
+              location: "",
+              hookIndex: 0,
+            },
+          },
+          mockType: "static" as const,
+          responseType: "success" as const,
+          enabled: m.enabled,
         },
-      });
-    };
-
-    const interval = setInterval(syncMocks, 1000);
-
-    return () => {
-      mounted = false;
-      clearInterval(interval);
-    };
-  }, [monitorStore]);
+      };
+    });
+  }, [polledMocks, mocks]);
 
   const handleSelectPrimitive = useCallback((primitive: SelectedPrimitive) => {
     if (primitive.type === "objectSet" || primitive.type === "aggregation") {
       dispatch({ type: "SET_CHOOSING_PRIMITIVE", primitive });
     } else {
       dispatch({ type: "SELECT_PRIMITIVE_FOR_MOCK", primitive });
+      dispatch({ type: "INIT_MOCK_FORM_FROM_PRIMITIVE", primitive });
     }
   }, []);
 
@@ -492,6 +476,10 @@ export const InterceptTab: React.FC<InterceptTabProps> = ({
     }
     dispatch({
       type: "SELECT_PRIMITIVE_FOR_MOCK",
+      primitive: choosingPrimitive,
+    });
+    dispatch({
+      type: "INIT_MOCK_FORM_FROM_PRIMITIVE",
       primitive: choosingPrimitive,
     });
     dispatch({ type: "SET_CHOOSING_PRIMITIVE", primitive: null });
@@ -742,6 +730,10 @@ export const InterceptTab: React.FC<InterceptTabProps> = ({
       type: "SET_SELECTED_PRIMITIVE",
       primitive: mock.config.primitive,
     });
+    dispatch({
+      type: "INIT_MOCK_FORM_FROM_CONFIG",
+      config: mock.config,
+    });
   }, []);
 
   const handleApplyOverride = useCallback(() => {
@@ -887,7 +879,8 @@ export const InterceptTab: React.FC<InterceptTabProps> = ({
     clearDiscoveredPrimitives();
   }, [clearDiscoveredPrimitives]);
 
-  const hasActiveIntercepts = mocks.length > 0 || activeOverrides.length > 0;
+  const hasActiveIntercepts = effectiveMocks.length > 0
+    || overrideStoreOverrides.length > 0;
   const isShowingList = !discoveredPrimitives && !choosingPrimitive
     && !selectedQuery && !selectedPrimitive;
 
@@ -1305,7 +1298,7 @@ export const InterceptTab: React.FC<InterceptTabProps> = ({
                 )
                 : (
                   <div className={styles.interceptList}>
-                    {mocks.map((mock) => (
+                    {effectiveMocks.map((mock) => (
                       <MockItem
                         key={`mock-${mock.id}`}
                         mock={mock}
@@ -1314,7 +1307,7 @@ export const InterceptTab: React.FC<InterceptTabProps> = ({
                         onEdit={() => handleEditMock(mock)}
                       />
                     ))}
-                    {activeOverrides.map((override) => (
+                    {overrideStoreOverrides.map((override) => (
                       <OverrideItem
                         key={`override-${override.bindingId}`}
                         override={override}

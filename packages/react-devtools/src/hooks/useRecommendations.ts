@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useCallback, useEffect, useState } from "react";
+import React from "react";
 import type { MonitorStore } from "../store/MonitorStore.js";
 import type { Recommendation } from "../utils/PerformanceRecommendationEngine.js";
 
@@ -32,72 +32,129 @@ interface RecommendationsInternalState {
   error: Error | null;
 }
 
-export function useRecommendations(
-  monitorStore: MonitorStore,
-): RecommendationsState {
-  const [state, setState] = useState<RecommendationsInternalState>({
+class RecommendationsStore {
+  private state: RecommendationsInternalState = {
     recommendations: [],
     isLoading: true,
     error: null,
-  });
+  };
+  private listeners = new Set<() => void>();
+  private unsubscribeMetrics: (() => void) | undefined;
+  private debounceTimeout: ReturnType<typeof setTimeout> | undefined;
 
-  const refresh = useCallback(async () => {
-    setState(prev => ({ ...prev, isLoading: true, error: null }));
-    try {
-      const engine = monitorStore.getRecommendationEngine();
-      const snapshot = await monitorStore.getCacheSnapshot();
-      const freshRecommendations = engine.generateRecommendations(snapshot);
-      setState(prev => {
-        const merged = new Map<string, Recommendation>();
-        for (const rec of prev.recommendations) {
-          merged.set(rec.id, rec);
-        }
-        for (const rec of freshRecommendations) {
-          merged.set(rec.id, rec);
-        }
-        return {
-          recommendations: Array.from(merged.values()),
-          isLoading: false,
-          error: null,
-        };
+  constructor(private readonly monitorStore: MonitorStore) {}
+
+  subscribe(callback: () => void): () => void {
+    this.listeners.add(callback);
+
+    if (this.listeners.size === 1) {
+      setTimeout(() => void this.refresh(), 0);
+      const metricsStore = this.monitorStore.getMetricsStore();
+      this.unsubscribeMetrics = metricsStore.subscribe(() => {
+        clearTimeout(this.debounceTimeout);
+        this.debounceTimeout = setTimeout(() => {
+          void this.refresh();
+        }, 1000);
       });
-    } catch (e) {
-      setState(prev => ({
-        ...prev,
-        isLoading: false,
-        error: e instanceof Error ? e : new Error(String(e)),
-      }));
     }
-  }, [monitorStore]);
-
-  const dismiss = useCallback(
-    (id: string) => {
-      const engine = monitorStore.getRecommendationEngine();
-      engine.dismissRecommendation(id);
-      setState(prev => ({
-        ...prev,
-        recommendations: prev.recommendations.filter((r) => r.id !== id),
-      }));
-    },
-    [monitorStore],
-  );
-
-  useEffect(() => {
-    void refresh();
-
-    const metricsStore = monitorStore.getMetricsStore();
-    let timeoutId: ReturnType<typeof setTimeout>;
-
-    const unsubscribe = metricsStore.subscribe(() => {
-      clearTimeout(timeoutId);
-      timeoutId = setTimeout(refresh, 1000);
-    });
 
     return () => {
-      unsubscribe();
-      clearTimeout(timeoutId);
+      this.listeners.delete(callback);
+      if (this.listeners.size === 0) {
+        if (this.unsubscribeMetrics) {
+          this.unsubscribeMetrics();
+          this.unsubscribeMetrics = undefined;
+        }
+        clearTimeout(this.debounceTimeout);
+      }
     };
-  }, [monitorStore, refresh]);
+  }
+
+  getSnapshot(): RecommendationsInternalState {
+    return this.state;
+  }
+
+  async refresh(): Promise<void> {
+    this.state = { ...this.state, isLoading: true, error: null };
+    this.notify();
+    try {
+      const engine = this.monitorStore.getRecommendationEngine();
+      const snapshot = await this.monitorStore.getCacheSnapshot();
+      const freshRecommendations = engine.generateRecommendations(snapshot);
+      const merged = new Map<string, Recommendation>();
+      for (const rec of this.state.recommendations) {
+        merged.set(rec.id, rec);
+      }
+      for (const rec of freshRecommendations) {
+        merged.set(rec.id, rec);
+      }
+      this.state = {
+        recommendations: Array.from(merged.values()),
+        isLoading: false,
+        error: null,
+      };
+      this.notify();
+    } catch (e) {
+      this.state = {
+        ...this.state,
+        isLoading: false,
+        error: e instanceof Error ? e : new Error(String(e)),
+      };
+      this.notify();
+    }
+  }
+
+  dismiss(id: string): void {
+    const engine = this.monitorStore.getRecommendationEngine();
+    engine.dismissRecommendation(id);
+    this.state = {
+      ...this.state,
+      recommendations: this.state.recommendations.filter((r) => r.id !== id),
+    };
+    this.notify();
+  }
+
+  private notify(): void {
+    for (const listener of this.listeners) {
+      listener();
+    }
+  }
+}
+
+export function useRecommendations(
+  monitorStore: MonitorStore,
+): RecommendationsState {
+  const storeRef = React.useRef<RecommendationsStore | null>(null);
+
+  if (storeRef.current == null) {
+    storeRef.current = new RecommendationsStore(monitorStore);
+  }
+
+  const store = storeRef.current;
+
+  const subscribe = React.useCallback(
+    (callback: () => void) => store.subscribe(callback),
+    [store],
+  );
+
+  const getSnapshot = React.useCallback(
+    () => store.getSnapshot(),
+    [store],
+  );
+
+  const state = React.useSyncExternalStore(subscribe, getSnapshot);
+
+  const refresh = React.useCallback(
+    () => {
+      void store.refresh();
+    },
+    [store],
+  );
+
+  const dismiss = React.useCallback(
+    (id: string) => store.dismiss(id),
+    [store],
+  );
 
   return {
     recommendations: state.recommendations,

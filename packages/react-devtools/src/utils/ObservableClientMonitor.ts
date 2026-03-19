@@ -72,7 +72,13 @@ interface AggregationObserver {
   complete(): void;
 }
 
-type HookRegistrarFn = (...args: never[]) => void;
+type HookRegistrarFn = (...args: unknown[]) => void;
+
+function asHookRegistrar(
+  fn: ((...args: never[]) => void) | undefined,
+): HookRegistrarFn | undefined {
+  return fn as HookRegistrarFn | undefined;
+}
 
 interface ExtendedClientMethods {
   observeLinks?(
@@ -212,6 +218,7 @@ export class ObservableClientMonitor {
         }
         if (prop === "observeAggregation") {
           return this.wrapObserveAggregation(
+            // eslint-disable-next-line @typescript-eslint/no-deprecated
             target.observeAggregation.bind(target),
           );
         }
@@ -226,27 +233,27 @@ export class ObservableClientMonitor {
         }
         if (prop === "registerActionHook") {
           return this.wrapRegisterActionHook(
-            ext.registerActionHook?.bind(ext),
+            asHookRegistrar(ext.registerActionHook?.bind(ext)),
           );
         }
         if (prop === "registerObjectHook") {
           return this.wrapRegisterObjectHook(
-            ext.registerObjectHook?.bind(ext),
+            asHookRegistrar(ext.registerObjectHook?.bind(ext)),
           );
         }
         if (prop === "registerListHook") {
           return this.wrapRegisterListHook(
-            ext.registerListHook?.bind(ext),
+            asHookRegistrar(ext.registerListHook?.bind(ext)),
           );
         }
         if (prop === "registerLinkHook") {
           return this.wrapRegisterLinkHook(
-            ext.registerLinkHook?.bind(ext),
+            asHookRegistrar(ext.registerLinkHook?.bind(ext)),
           );
         }
         if (prop === "registerObjectSetHook") {
           return this.wrapRegisterObjectSetHook(
-            ext.registerObjectSetHook?.bind(ext),
+            asHookRegistrar(ext.registerObjectSetHook?.bind(ext)),
           );
         }
         if (prop === "getCacheSnapshot") {
@@ -720,7 +727,7 @@ export class ObservableClientMonitor {
     return ((
       options: Parameters<ObservableClient["observeAggregation"]>[0],
       observer: AggregationObserver,
-    ): Unsubscribable => {
+    ): Unsubscribable | Promise<Unsubscribable> => {
       const componentContext = this.captureComponentContext
         ? componentContextCapture.captureNow()
         : null;
@@ -838,12 +845,18 @@ export class ObservableClientMonitor {
         },
       };
 
-      const unsubscribable = original(
+      const result = original(
         options,
         wrappedObserver as Parameters<typeof original>[1],
       );
 
-      return this.createCleanupUnsubscribable(unsubscribable, subscriptionId);
+      if (result instanceof Promise) {
+        return result.then(unsub =>
+          this.createCleanupUnsubscribable(unsub, subscriptionId)
+        );
+      }
+
+      return this.createCleanupUnsubscribable(result, subscriptionId);
     }) as ObservableClient["observeAggregation"];
   }
 
@@ -1279,7 +1292,7 @@ export class ObservableClientMonitor {
       }
 
       if (original) {
-        (original as (...args: unknown[]) => void)(...args);
+        original(...args);
       }
     };
   }

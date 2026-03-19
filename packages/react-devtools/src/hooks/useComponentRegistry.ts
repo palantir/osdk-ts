@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEffect, useState } from "react";
+import React from "react";
 import type { MonitorStore } from "../store/MonitorStore.js";
 import type { ComponentQueryRegistry } from "../utils/ComponentQueryRegistry.js";
 
@@ -22,13 +22,18 @@ export function useComponentRegistry(
   monitorStore: MonitorStore,
 ): ComponentQueryRegistry {
   const registry = monitorStore.getComponentRegistry();
-  const [, setVersion] = useState(0);
 
-  useEffect(() => {
-    return registry.subscribe(() => {
-      setVersion((v) => v + 1);
-    });
-  }, [registry]);
+  const subscribe = React.useCallback(
+    (callback: () => void) => registry.subscribe(callback),
+    [registry],
+  );
+
+  const getSnapshot = React.useCallback(
+    () => registry,
+    [registry],
+  );
+
+  React.useSyncExternalStore(subscribe, getSnapshot);
 
   return registry;
 }

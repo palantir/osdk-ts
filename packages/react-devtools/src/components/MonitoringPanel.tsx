@@ -16,13 +16,7 @@
 
 import { Button, Classes, Tooltip } from "@blueprintjs/core";
 import classNames from "classnames";
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import {
   DegradationNotice,
@@ -38,6 +32,42 @@ import { InterceptTab } from "./InterceptTab.js";
 import { MonitorErrorBoundary } from "./MonitorErrorBoundary.js";
 import styles from "./MonitoringPanel.module.scss";
 import { PerformanceTab } from "./PerformanceTab.js";
+
+const darkModeMql = typeof window !== "undefined"
+  ? window.matchMedia("(prefers-color-scheme: dark)")
+  : undefined;
+
+function subscribeDarkMode(callback: () => void): () => void {
+  if (darkModeMql) {
+    darkModeMql.addEventListener("change", callback);
+    return () => darkModeMql.removeEventListener("change", callback);
+  }
+  return () => {};
+}
+
+function getDarkModeSnapshot(): boolean {
+  return darkModeMql ? darkModeMql.matches : true;
+}
+
+function subscribeWindowSize(callback: () => void): () => void {
+  window.addEventListener("resize", callback);
+  return () => window.removeEventListener("resize", callback);
+}
+
+let windowSizeSnapshot = typeof window !== "undefined"
+  ? { width: window.innerWidth, height: window.innerHeight }
+  : { width: 0, height: 0 };
+
+function getWindowSizeSnapshot(): { width: number; height: number } {
+  const current = { width: window.innerWidth, height: window.innerHeight };
+  if (
+    current.width !== windowSizeSnapshot.width
+    || current.height !== windowSizeSnapshot.height
+  ) {
+    windowSizeSnapshot = current;
+  }
+  return windowSizeSnapshot;
+}
 
 const UI_CONSTANTS = {
   DEFAULT_PANEL_WIDTH: 400,
@@ -88,22 +118,10 @@ export const MonitoringPanel: React.FC<MonitoringPanelProps> = ({
     "light" | "dark" | "auto"
   >("osdk-devtools-theme", "dark");
 
-  const [systemPrefersDark, setSystemPrefersDark] = useState(() => {
-    if (typeof window === "undefined") {
-      return true;
-    }
-    return window.matchMedia("(prefers-color-scheme: dark)").matches;
-  });
-
-  useEffect(() => {
-    if (typeof window === "undefined") {
-      return;
-    }
-    const mql = window.matchMedia("(prefers-color-scheme: dark)");
-    const handler = (e: MediaQueryListEvent) => setSystemPrefersDark(e.matches);
-    mql.addEventListener("change", handler);
-    return () => mql.removeEventListener("change", handler);
-  }, []);
+  const systemPrefersDark = React.useSyncExternalStore(
+    subscribeDarkMode,
+    getDarkModeSnapshot,
+  );
 
   const resolvedTheme = useMemo(
     () =>
@@ -112,24 +130,6 @@ export const MonitoringPanel: React.FC<MonitoringPanelProps> = ({
         : themePreference,
     [themePreference, systemPrefersDark],
   );
-
-  useEffect(() => {
-    setPosition((prev) => {
-      if (prev.dockMode !== "floating") {
-        return prev;
-      }
-      const maxX = window.innerWidth - prev.width;
-      const maxY = window.innerHeight - prev.height;
-      if (prev.x > maxX || prev.y > maxY || prev.x < 0 || prev.y < 0) {
-        return {
-          ...prev,
-          x: Math.max(0, Math.min(prev.x, maxX)),
-          y: Math.max(0, Math.min(prev.y, maxY)),
-        };
-      }
-      return prev;
-    });
-  }, []);
 
   const panelRef = useRef<HTMLDivElement>(null);
   const isDragging = useRef(false);
@@ -144,88 +144,15 @@ export const MonitoringPanel: React.FC<MonitoringPanelProps> = ({
     elemY: 0,
   });
 
-  const handleMouseDown = useCallback(
-    (e: React.MouseEvent) => {
-      if ((e.target as HTMLElement).closest(`.${styles.controls}`)) {
-        return;
-      }
-      if (position.dockMode !== "floating") {
-        return;
-      }
-      isDragging.current = true;
-      dragStart.current = {
-        x: e.clientX,
-        y: e.clientY,
-        elemX: position.x,
-        elemY: position.y,
-      };
-      e.preventDefault();
-    },
-    [position],
-  );
+  const setPositionRef = useRef(setPosition);
+  setPositionRef.current = setPosition;
 
-  const handleResizeMouseDown = useCallback(
-    (e: React.MouseEvent, handle: string) => {
-      isResizing.current = handle;
-      resizeStart.current = {
-        x: e.clientX,
-        y: e.clientY,
-        width: position.width,
-        height: position.height,
-        elemX: position.x,
-        elemY: position.y,
-      };
-      e.preventDefault();
-      e.stopPropagation();
-    },
-    [position],
-  );
-
-  const handleDockToggle = useCallback(() => {
-    setPosition((prev) => {
-      const nextMode = prev.dockMode === "floating"
-        ? "docked-bottom"
-        : prev.dockMode === "docked-bottom"
-        ? "docked-right"
-        : "floating";
-
-      if (nextMode === "docked-bottom") {
-        return {
-          x: 0,
-          y: window.innerHeight - UI_CONSTANTS.DOCKED_BOTTOM_HEIGHT,
-          width: window.innerWidth,
-          height: UI_CONSTANTS.DOCKED_BOTTOM_HEIGHT,
-          collapsed: false,
-          dockMode: nextMode,
-        };
-      } else if (nextMode === "docked-right") {
-        return {
-          x: window.innerWidth - UI_CONSTANTS.DOCKED_RIGHT_WIDTH,
-          y: 0,
-          width: UI_CONSTANTS.DOCKED_RIGHT_WIDTH,
-          height: window.innerHeight,
-          collapsed: false,
-          dockMode: nextMode,
-        };
-      } else {
-        return {
-          x: window.innerWidth - UI_CONSTANTS.DEFAULT_PANEL_RIGHT_OFFSET,
-          y: UI_CONSTANTS.DEFAULT_PANEL_TOP_OFFSET,
-          width: UI_CONSTANTS.DEFAULT_PANEL_WIDTH,
-          height: UI_CONSTANTS.DEFAULT_PANEL_HEIGHT,
-          collapsed: false,
-          dockMode: nextMode,
-        };
-      }
-    });
-  }, [setPosition]);
-
-  useEffect(() => {
+  const attachDragListeners = useCallback(() => {
     const handleMouseMove = (e: MouseEvent) => {
       if (isDragging.current) {
         const deltaX = e.clientX - dragStart.current.x;
         const deltaY = e.clientY - dragStart.current.y;
-        setPosition((prev) => ({
+        setPositionRef.current((prev) => ({
           ...prev,
           x: Math.max(
             0,
@@ -247,7 +174,7 @@ export const MonitoringPanel: React.FC<MonitoringPanelProps> = ({
         const deltaY = e.clientY - resizeStart.current.y;
         const handle = isResizing.current;
 
-        setPosition((prev) => {
+        setPositionRef.current((prev) => {
           if (prev.dockMode === "docked-bottom") {
             const newHeight = Math.max(
               UI_CONSTANTS.MIN_DOCKED_BOTTOM_HEIGHT,
@@ -332,40 +259,123 @@ export const MonitoringPanel: React.FC<MonitoringPanelProps> = ({
     const handleMouseUp = () => {
       isDragging.current = false;
       isResizing.current = null;
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
     };
 
     document.addEventListener("mousemove", handleMouseMove);
     document.addEventListener("mouseup", handleMouseUp);
+  }, []);
 
-    return () => {
-      document.removeEventListener("mousemove", handleMouseMove);
-      document.removeEventListener("mouseup", handleMouseUp);
-    };
+  const handleMouseDown = useCallback(
+    (e: React.MouseEvent) => {
+      if ((e.target as HTMLElement).closest(`.${styles.controls}`)) {
+        return;
+      }
+      if (position.dockMode !== "floating") {
+        return;
+      }
+      isDragging.current = true;
+      dragStart.current = {
+        x: e.clientX,
+        y: e.clientY,
+        elemX: position.x,
+        elemY: position.y,
+      };
+      e.preventDefault();
+      attachDragListeners();
+    },
+    [position, attachDragListeners],
+  );
+
+  const handleResizeMouseDown = useCallback(
+    (e: React.MouseEvent, handle: string) => {
+      isResizing.current = handle;
+      resizeStart.current = {
+        x: e.clientX,
+        y: e.clientY,
+        width: position.width,
+        height: position.height,
+        elemX: position.x,
+        elemY: position.y,
+      };
+      e.preventDefault();
+      e.stopPropagation();
+      attachDragListeners();
+    },
+    [position, attachDragListeners],
+  );
+
+  const handleDockToggle = useCallback(() => {
+    setPosition((prev) => {
+      const nextMode = prev.dockMode === "floating"
+        ? "docked-bottom"
+        : prev.dockMode === "docked-bottom"
+        ? "docked-right"
+        : "floating";
+
+      if (nextMode === "docked-bottom") {
+        return {
+          x: 0,
+          y: window.innerHeight - UI_CONSTANTS.DOCKED_BOTTOM_HEIGHT,
+          width: window.innerWidth,
+          height: UI_CONSTANTS.DOCKED_BOTTOM_HEIGHT,
+          collapsed: false,
+          dockMode: nextMode,
+        };
+      } else if (nextMode === "docked-right") {
+        return {
+          x: window.innerWidth - UI_CONSTANTS.DOCKED_RIGHT_WIDTH,
+          y: 0,
+          width: UI_CONSTANTS.DOCKED_RIGHT_WIDTH,
+          height: window.innerHeight,
+          collapsed: false,
+          dockMode: nextMode,
+        };
+      } else {
+        return {
+          x: window.innerWidth - UI_CONSTANTS.DEFAULT_PANEL_RIGHT_OFFSET,
+          y: UI_CONSTANTS.DEFAULT_PANEL_TOP_OFFSET,
+          width: UI_CONSTANTS.DEFAULT_PANEL_WIDTH,
+          height: UI_CONSTANTS.DEFAULT_PANEL_HEIGHT,
+          collapsed: false,
+          dockMode: nextMode,
+        };
+      }
+    });
   }, [setPosition]);
 
-  useEffect(() => {
-    const handleWindowResize = () => {
-      setPosition((prev) => {
-        if (prev.dockMode === "docked-bottom") {
-          return {
-            ...prev,
-            width: window.innerWidth,
-            y: window.innerHeight - prev.height,
-          };
-        } else if (prev.dockMode === "docked-right") {
-          return {
-            ...prev,
-            height: window.innerHeight,
-            x: window.innerWidth - prev.width,
-          };
-        }
-        return prev;
-      });
-    };
+  const windowSize = React.useSyncExternalStore(
+    subscribeWindowSize,
+    getWindowSizeSnapshot,
+  );
 
-    window.addEventListener("resize", handleWindowResize);
-    return () => window.removeEventListener("resize", handleWindowResize);
-  }, [setPosition]);
+  const effectivePosition = useMemo(() => {
+    if (position.dockMode === "floating") {
+      const maxX = windowSize.width - position.width;
+      const maxY = windowSize.height - position.height;
+      return {
+        ...position,
+        x: Math.max(0, Math.min(position.x, maxX)),
+        y: Math.max(0, Math.min(position.y, maxY)),
+      };
+    }
+    if (position.dockMode === "docked-bottom") {
+      return {
+        ...position,
+        width: windowSize.width,
+        y: windowSize.height - position.height,
+      };
+    }
+    if (position.dockMode === "docked-right") {
+      return {
+        ...position,
+        height: windowSize.height,
+        x: windowSize.width - position.width,
+      };
+    }
+    return position;
+  }, [position, windowSize]);
 
   if (position.collapsed) {
     return createPortal(
@@ -401,12 +411,16 @@ export const MonitoringPanel: React.FC<MonitoringPanelProps> = ({
       className={panelClassName}
       data-dt-theme={resolvedTheme}
       style={{
-        left: position.dockMode === "docked-bottom" ? 0 : position.x,
-        top: position.dockMode === "docked-right" ? 0 : position.y,
-        width: position.width,
-        height: position.height,
-        right: position.dockMode === "docked-right" ? 0 : undefined,
-        bottom: position.dockMode === "docked-bottom" ? 0 : undefined,
+        left: effectivePosition.dockMode === "docked-bottom"
+          ? 0
+          : effectivePosition.x,
+        top: effectivePosition.dockMode === "docked-right"
+          ? 0
+          : effectivePosition.y,
+        width: effectivePosition.width,
+        height: effectivePosition.height,
+        right: effectivePosition.dockMode === "docked-right" ? 0 : undefined,
+        bottom: effectivePosition.dockMode === "docked-bottom" ? 0 : undefined,
       }}
     >
       {(position.dockMode === "floating"

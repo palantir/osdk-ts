@@ -142,7 +142,7 @@ export interface UseOsdkObjectsOptions<
 export interface UseOsdkListResult<
   T extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
-  EXTRA_OPTIONS extends never | "$rid" = never,
+  EXTRA_OPTIONS extends "$rid" = never,
 > {
   /**
    * Function to fetch more pages (undefined if no more pages)
@@ -291,7 +291,9 @@ export function useOsdkObjects<
   );
 
   const __devtoolsMetadata = React.useRef<OsdkObjectsMetadata | null>(null);
-  if (process.env.NODE_ENV !== "production") {
+  if (
+    process.env.NODE_ENV !== "production" && __devtoolsMetadata.current == null
+  ) {
     __devtoolsMetadata.current = {
       [OSDK_HOOK_METADATA]: true,
       hookType: "useOsdkObjects",

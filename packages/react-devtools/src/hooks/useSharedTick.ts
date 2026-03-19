@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
-import { useEffect, useRef } from "react";
+import React from "react";
 
 const tickListeners = new Set<() => void>();
 let tickInterval: ReturnType<typeof setInterval> | null = null;
+let tickVersion = 0;
 
 function startTick() {
   if (!tickInterval) {
     tickInterval = setInterval(() => {
+      tickVersion++;
       tickListeners.forEach(fn => fn());
     }, 1000);
   }
@@ -34,18 +36,24 @@ function stopTick() {
   }
 }
 
+function subscribeTick(callback: () => void): () => void {
+  tickListeners.add(callback);
+  startTick();
+  return () => {
+    tickListeners.delete(callback);
+    stopTick();
+  };
+}
+
+function getTickSnapshot(): number {
+  return tickVersion;
+}
+
 export function useSharedTick(callback: () => void): void {
-  const callbackRef = useRef(callback);
+  const callbackRef = React.useRef(callback);
   callbackRef.current = callback;
 
-  useEffect(() => {
-    const stableCallback = () => callbackRef.current();
-    tickListeners.add(stableCallback);
-    stableCallback();
-    startTick();
-    return () => {
-      tickListeners.delete(stableCallback);
-      stopTick();
-    };
-  }, []);
+  React.useSyncExternalStore(subscribeTick, getTickSnapshot);
+
+  callbackRef.current();
 }

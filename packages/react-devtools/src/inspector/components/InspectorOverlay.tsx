@@ -14,13 +14,7 @@
  * limitations under the License.
  */
 
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { useCallback, useMemo, useRef } from "react";
 import type { SourceLocation } from "../../fiber/types.js";
 import type { InspectorOverlayProps, OverlayBounds } from "../types.js";
 import { ComponentLabel } from "./ComponentLabel.js";
@@ -36,35 +30,64 @@ interface GrabbedFlashProps {
 function GrabbedFlash(
   { bounds, trigger }: GrabbedFlashProps,
 ): React.ReactElement | null {
-  const [isVisible, setIsVisible] = useState(false);
-  const [opacity, setOpacity] = useState(0);
-  const previousTrigger = useRef(trigger);
+  const previousTriggerRef = useRef(trigger);
+  const flashStateRef = useRef<{
+    isVisible: boolean;
+    opacity: number;
+    fadeTimer: ReturnType<typeof setTimeout> | null;
+    hideTimer: ReturnType<typeof setTimeout> | null;
+  }>({ isVisible: false, opacity: 0, fadeTimer: null, hideTimer: null });
 
-  useEffect(() => {
-    if (trigger && !previousTrigger.current) {
-      setIsVisible(true);
-      setOpacity(1);
+  const subscribe = useCallback((onStoreChange: () => void) => {
+    const state = flashStateRef.current;
 
-      const fadeTimer = setTimeout(() => {
-        setOpacity(0);
+    if (trigger && !previousTriggerRef.current) {
+      if (state.fadeTimer) {
+        clearTimeout(state.fadeTimer);
+      }
+      if (state.hideTimer) {
+        clearTimeout(state.hideTimer);
+      }
+
+      state.isVisible = true;
+      state.opacity = 1;
+
+      state.fadeTimer = setTimeout(() => {
+        state.opacity = 0;
+        state.fadeTimer = null;
+        onStoreChange();
       }, 50);
 
-      const hideTimer = setTimeout(() => {
-        setIsVisible(false);
+      state.hideTimer = setTimeout(() => {
+        state.isVisible = false;
+        state.hideTimer = null;
+        onStoreChange();
       }, FLASH_DURATION_MS);
 
-      previousTrigger.current = trigger;
-
-      return () => {
-        clearTimeout(fadeTimer);
-        clearTimeout(hideTimer);
-      };
+      onStoreChange();
     }
 
-    previousTrigger.current = trigger;
+    previousTriggerRef.current = trigger;
+
+    return () => {
+      if (state.fadeTimer) {
+        clearTimeout(state.fadeTimer);
+        state.fadeTimer = null;
+      }
+      if (state.hideTimer) {
+        clearTimeout(state.hideTimer);
+        state.hideTimer = null;
+      }
+    };
   }, [trigger]);
 
-  if (!isVisible || !bounds) {
+  const getSnapshot = useCallback(() => {
+    return flashStateRef.current;
+  }, []);
+
+  const state = React.useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
+
+  if (!state.isVisible || !bounds) {
     return null;
   }
 
@@ -83,7 +106,7 @@ function GrabbedFlash(
         backgroundColor: "rgba(34, 197, 94, 0.2)",
         pointerEvents: "none",
         zIndex: 2147483645,
-        opacity,
+        opacity: state.opacity,
         transition: `opacity ${FLASH_DURATION_MS}ms ease-out`,
       }}
     />

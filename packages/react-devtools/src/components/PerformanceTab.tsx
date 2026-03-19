@@ -15,9 +15,9 @@
  */
 
 import { Button, ButtonGroup } from "@blueprintjs/core";
-import type { CacheEntry } from "@osdk/client/unstable-do-not-use";
 import classNames from "classnames";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
+import { createPollingStore } from "../hooks/createPollingStore.js";
 import { useMetrics } from "../hooks/useMetrics.js";
 import { useRecommendations } from "../hooks/useRecommendations.js";
 import { useUnusedFieldAnalysis } from "../hooks/useUnusedFieldAnalysis.js";
@@ -67,39 +67,31 @@ export const PerformanceTab: React.FC<PerformanceTabProps> = (
     useUnusedFieldAnalysis(monitorStore);
   const { recommendations } = useRecommendations(monitorStore);
   const [filter, setFilter] = useState<"all" | "cache" | "actions">("all");
-  const [cacheEntries, setCacheEntries] = useState<CacheEntry[]>([]);
-  const [recentActions, setRecentActions] = useState<ActionStartEvent[]>([]);
 
   const recommendationMap = useMemo(
     () => buildRecommendationMap(recommendations),
     [recommendations],
   );
 
-  useEffect(() => {
-    let cancelled = false;
-
-    const loadEnrichmentData = async () => {
-      const entries = await monitorStore.getCacheEntries();
-      if (cancelled) {
-        return;
-      }
-      setCacheEntries(entries);
-
-      const timeline = monitorStore.getEventTimeline();
-      const actions = timeline.getEventsByType("ACTION_START");
-      if (cancelled) {
-        return;
-      }
-      setRecentActions(actions.slice(-20));
-    };
-
-    void loadEnrichmentData();
-    const interval = setInterval(() => void loadEnrichmentData(), 2000);
-    return () => {
-      cancelled = true;
-      clearInterval(interval);
-    };
-  }, [monitorStore]);
+  const enrichmentStore = React.useMemo(
+    () =>
+      createPollingStore(async () => {
+        const entries = await monitorStore.getCacheEntries();
+        const timeline = monitorStore.getEventTimeline();
+        const actions = timeline.getEventsByType("ACTION_START");
+        return {
+          cacheEntries: entries,
+          recentActions: actions.slice(-20),
+        };
+      }, 2000),
+    [monitorStore],
+  );
+  const enrichmentData = React.useSyncExternalStore(
+    enrichmentStore.subscribe,
+    enrichmentStore.getSnapshot,
+  );
+  const cacheEntries = enrichmentData?.cacheEntries ?? [];
+  const recentActions = enrichmentData?.recentActions ?? [];
 
   const displayNameMap = useMemo(() => {
     const map = new Map<string, string>();

@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 
-import { useSyncExternalStore } from "react";
+import { useCallback, useSyncExternalStore } from "react";
 import type { MetricsStore } from "../store/MetricsStore.js";
 import type { MetricsSnapshot } from "../types/index.js";
 
 export function useMetrics(store: MetricsStore): MetricsSnapshot {
-  return useSyncExternalStore(
-    (callback) => store.subscribe(callback),
-    () => store.getSnapshot(),
-    () => store.getSnapshot(),
+  const subscribe = useCallback(
+    (callback: () => void) => store.subscribe(callback),
+    [store],
   );
+  const getSnapshot = useCallback(
+    () => store.getSnapshot(),
+    [store],
+  );
+  return useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
 }

@@ -19,29 +19,32 @@ import type { ComputeStore } from "../store/ComputeStore.js";
 import type { ComputeMetrics, ComputeRequest } from "../types/compute.js";
 
 export function useComputeMetrics(store: ComputeStore): ComputeMetrics {
-  const getSnapshot = useCallback(() => store.getSnapshot().metrics, [store]);
-  return useSyncExternalStore(
-    (callback) => store.subscribe(callback),
-    getSnapshot,
+  const subscribe = useCallback(
+    (callback: () => void) => store.subscribe(callback),
+    [store],
   );
+  const getSnapshot = useCallback(() => store.getSnapshot().metrics, [store]);
+  return useSyncExternalStore(subscribe, getSnapshot);
 }
 
 export function useComputeRequests(
   store: ComputeStore,
 ): ReadonlyArray<ComputeRequest> {
-  const getSnapshot = useCallback(() => store.getSnapshot().requests, [store]);
-  return useSyncExternalStore(
-    (callback) => store.subscribe(callback),
-    getSnapshot,
+  const subscribe = useCallback(
+    (callback: () => void) => store.subscribe(callback),
+    [store],
   );
+  const getSnapshot = useCallback(() => store.getSnapshot().requests, [store]);
+  return useSyncExternalStore(subscribe, getSnapshot);
 }
 
 export function useComputeRecording(store: ComputeStore): boolean {
+  const subscribe = useCallback(
+    (callback: () => void) => store.subscribe(callback),
+    [store],
+  );
   const getSnapshot = useCallback(() => store.getSnapshot().isRecording, [
     store,
   ]);
-  return useSyncExternalStore(
-    (callback) => store.subscribe(callback),
-    getSnapshot,
-  );
+  return useSyncExternalStore(subscribe, getSnapshot);
 }

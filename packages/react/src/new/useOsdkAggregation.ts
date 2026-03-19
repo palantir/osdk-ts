@@ -32,10 +32,7 @@ import {
   OSDK_HOOK_METADATA,
   type OsdkAggregationMetadata,
 } from "./devtools-metadata.js";
-import {
-  makeExternalStore,
-  makeExternalStoreAsync,
-} from "./makeExternalStore.js";
+import { makeExternalStoreAsync } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
 
 interface UseOsdkAggregationBaseOptions<
@@ -211,7 +208,9 @@ export function useOsdkAggregation<
   );
 
   const __devtoolsMetadata = React.useRef<OsdkAggregationMetadata | null>(null);
-  if (process.env.NODE_ENV !== "production") {
+  if (
+    process.env.NODE_ENV !== "production" && __devtoolsMetadata.current == null
+  ) {
     __devtoolsMetadata.current = {
       [OSDK_HOOK_METADATA]: true,
       hookType: "useOsdkAggregation",
@@ -285,20 +284,23 @@ export function useOsdkAggregation<
             : void 0,
         );
       }
-      return makeExternalStore<ObserveAggregationArgs<Q, A>>(
+      return makeExternalStoreAsync<ObserveAggregationArgs<Q, A>>(
         (observer) =>
-           
-          observableClient.observeAggregation(
-            {
-              type: type,
-              where: stableCanonWhere,
-              withProperties: stableWithProperties,
-              intersectWith: stableIntersectWith,
-              aggregate: effectiveAggregate,
-              dedupeInterval: dedupeIntervalMs ?? 2_000,
-              __devtoolsSignature: querySignature,
-            },
-            observer,
+          Promise.resolve(
+            // Intentional use of deprecated sync overload for backwards compat (no objectSet)
+            // eslint-disable-next-line @typescript-eslint/no-deprecated
+            observableClient.observeAggregation(
+              {
+                type: type,
+                where: stableCanonWhere,
+                withProperties: stableWithProperties,
+                intersectWith: stableIntersectWith,
+                aggregate: effectiveAggregate,
+                dedupeInterval: dedupeIntervalMs ?? 2_000,
+                __devtoolsSignature: querySignature,
+              },
+              observer,
+            ),
           ),
         process.env.NODE_ENV !== "production"
           ? `aggregation ${type.apiName} ${JSON.stringify(stableCanonWhere)}`

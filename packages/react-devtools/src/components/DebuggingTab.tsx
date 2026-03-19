@@ -15,13 +15,8 @@
  */
 
 import { Icon, InputGroup } from "@blueprintjs/core";
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { useCallback, useMemo, useRef, useState } from "react";
+import { createPollingStore } from "../hooks/createPollingStore.js";
 import { useActiveComponents } from "../hooks/useActiveComponents.js";
 import { useComponentRegistry } from "../hooks/useComponentRegistry.js";
 import { useConsoleLogs } from "../hooks/useConsoleLogs.js";
@@ -122,8 +117,6 @@ export const DebuggingTab: React.FC<DebuggingTabProps> = ({ monitorStore }) => {
   const [cacheExpanded, setCacheExpanded] = useState(false);
   const [consoleExpanded, setConsoleExpanded] = useState(true);
   const [improvementsExpanded, setImprovementsExpanded] = useState(true);
-  const [cacheCount, setCacheCount] = useState(0);
-  const [issues, setIssues] = useState<Issue[]>([]);
 
   const componentRefs = useRef<Map<string, HTMLDivElement>>(new Map());
 
@@ -132,33 +125,34 @@ export const DebuggingTab: React.FC<DebuggingTabProps> = ({ monitorStore }) => {
   const { entries: consoleEntries, count: consoleCount, clear: clearConsole } =
     useConsoleLogs(monitorStore);
 
-  useEffect(() => {
-    const update = () => {
-      setIssues(collectIssues(monitorStore, Date.now()));
-    };
-    update();
-    const interval = setInterval(update, 2000);
-    return () => clearInterval(interval);
-  }, [monitorStore]);
+  const issueStore = React.useMemo(
+    () =>
+      createPollingStore(
+        () => collectIssues(monitorStore, Date.now()),
+        2000,
+      ),
+    [monitorStore],
+  );
+  const issues = React.useSyncExternalStore(
+    issueStore.subscribe,
+    issueStore.getSnapshot,
+  ) ?? [];
 
-  useEffect(() => {
-    let cancelled = false;
-    const updateCount = async () => {
-      try {
-        const entries = await monitorStore.getCacheEntries();
-        if (!cancelled) {
-          setCacheCount(entries.length);
-        }
-      } catch {
-      }
-    };
-    void updateCount();
-    const interval = setInterval(updateCount, 5000);
-    return () => {
-      cancelled = true;
-      clearInterval(interval);
-    };
-  }, [monitorStore]);
+  const cacheCountStore = React.useMemo(
+    () =>
+      createPollingStore(
+        async () => {
+          const entries = await monitorStore.getCacheEntries();
+          return entries.length;
+        },
+        5000,
+      ),
+    [monitorStore],
+  );
+  const cacheCount = React.useSyncExternalStore(
+    cacheCountStore.subscribe,
+    cacheCountStore.getSnapshot,
+  ) ?? 0;
 
   const searchFilter = useCallback((issue: Issue) => {
     if (!searchQuery.trim()) {
