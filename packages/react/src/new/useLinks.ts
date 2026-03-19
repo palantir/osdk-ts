@@ -22,6 +22,7 @@ import type {
 import type { Osdk, PropertyKeys, WhereClause } from "@osdk/client";
 import type { ObserveLinks } from "@osdk/client/unstable-do-not-use";
 import React from "react";
+import { extractPayloadError, isPayloadLoading } from "./hookUtils.js";
 import { makeExternalStore } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
 
@@ -221,12 +222,9 @@ export function useLinks<
     links: payload?.resolvedList,
     linkedObjectsBySourcePrimaryKey: payload?.linkedObjectsBySourcePrimaryKey
       ?? emptyMap,
-    isLoading: enabled
-      ? (payload?.status === "loading" || payload?.status === "init"
-        || !payload)
-      : false,
+    isLoading: isPayloadLoading(payload, enabled),
     isOptimistic: payload?.isOptimistic ?? false,
-    error: payload?.error,
+    error: extractPayloadError(payload, "Failed to load links"),
     fetchMore: payload?.hasMore ? payload?.fetchMore : undefined,
     hasMore: payload?.hasMore ?? false,
   }), [payload, enabled]);

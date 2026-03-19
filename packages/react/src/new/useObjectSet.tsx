@@ -220,9 +220,6 @@ export function useObjectSet<
     previousCompletedPayloadRef.current = undefined;
   }
 
-  const baseObjectSetRef = React.useRef(baseObjectSet);
-  baseObjectSetRef.current = baseObjectSet;
-
   const canonOptions = observableClient.canonicalizeOptions({
     where: otherOptions.where,
     withProperties: otherOptions.withProperties,
@@ -266,12 +263,11 @@ export function useObjectSet<
 
       return makeExternalStore<ObserveObjectSetArgs<Q, RDPs>>(
         (observer) => {
-          const currentObjectSet = baseObjectSetRef.current;
-          if (!currentObjectSet) {
+          if (!baseObjectSet) {
             return { unsubscribe: () => {} };
           }
           const subscription = observableClient.observeObjectSet(
-            currentObjectSet as ObjectSet<Q>,
+            baseObjectSet as ObjectSet<Q>,
             {
               where: canonOptions.where,
               withProperties: canonOptions.withProperties,
