@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-import type { ObjectType } from "@osdk/maker";
-import { OntologyEntityTypeEnum } from "@osdk/maker";
+import type {
+  ObjectTypeBlockDataV2,
+  PropertyType,
+  PropertyTypeMappingInfo,
+} from "@osdk/client.unstable";
 import * as fs from "node:fs";
 import * as os from "node:os";
 import * as path from "node:path";
@@ -24,8 +27,106 @@ import type { ReadableId } from "../util/generateRid.js";
 import { ReadableIdGenerator } from "../util/generateRid.js";
 import {
   generateBackingDatasetBlockResult,
+  getNonEditOnlyProperties,
   propertyTypeToSchemaType,
 } from "./generateBackingDataset.js";
+
+function makePropertyType(
+  apiName: string,
+  typeStr: string,
+  rid: string,
+): PropertyType {
+  return {
+    apiName,
+    dataConstraints: undefined,
+    displayMetadata: {
+      description: undefined,
+      displayName: apiName,
+    },
+    id: apiName,
+    indexedForSearch: false,
+    rid,
+    sharedPropertyTypeRid: undefined,
+    status: { type: "active", active: {} },
+    type: { type: typeStr, [typeStr]: {} },
+    typeClasses: [],
+    valueType: undefined,
+  } as unknown as PropertyType;
+}
+
+function createObjectTypeBlockData(
+  overrides: {
+    apiName?: string;
+    properties?: Array<{ apiName: string; type: string; editOnly?: boolean }>;
+  } = {},
+): ObjectTypeBlockDataV2 {
+  const apiName = overrides.apiName ?? "TestObject";
+  const props = overrides.properties ?? [
+    { apiName: "id", type: "string" },
+    { apiName: "count", type: "integer" },
+  ];
+
+  const propertyTypes: Record<string, PropertyType> = {};
+  const propertyMapping: Record<string, PropertyTypeMappingInfo> = {};
+
+  for (const prop of props) {
+    const rid =
+      `ri.ontology-metadata.temp.property-type.${apiName}.${prop.apiName}`;
+    propertyTypes[rid] = makePropertyType(prop.apiName, prop.type, rid);
+    propertyMapping[rid] = prop.editOnly
+      ? { type: "editOnly", editOnly: {} } as PropertyTypeMappingInfo
+      : {
+        type: "column",
+        column: prop.apiName,
+      } as PropertyTypeMappingInfo;
+  }
+
+  return {
+    objectType: {
+      apiName,
+      displayMetadata: {
+        description: undefined,
+        displayName: apiName,
+        groupDisplayName: undefined,
+        icon: {
+          type: "blueprint",
+          blueprint: { locator: "cube", color: "#2D72D2" },
+        },
+        pluralDisplayName: `${apiName}s`,
+        visibility: "NORMAL",
+      },
+      primaryKeys: [],
+      propertyTypes,
+      titlePropertyTypeRid: "",
+      rid: `ri.ontology-metadata.temp.object-type.${apiName}`,
+      id: apiName.toLowerCase(),
+      status: { type: "active", active: {} },
+      redacted: false,
+      implementsInterfaces: [],
+      implementsInterfaces2: [],
+      allImplementsInterfaces: {},
+      traits: { workflowObjectTypeTraits: {} },
+      typeGroups: [],
+    },
+    datasources: [
+      {
+        rid: `ri.ontology.main.datasource.${apiName}`,
+        datasource: {
+          type: "datasetV2",
+          datasetV2: {
+            branchId: "main",
+            datasetRid: `ri.foundry.main.dataset.${apiName}`,
+            propertyMapping,
+          },
+        },
+      },
+    ],
+    entityMetadata: undefined,
+    propertySecurityGroupPackagingVersion: undefined,
+    schemaMigrations: undefined,
+    writebackDatasets: [],
+  } as unknown as ObjectTypeBlockDataV2;
+}
 
 describe("propertyTypeToSchemaType", () => {
   it.each(
@@ -45,6 +146,14 @@ describe("propertyTypeToSchemaType", () => {
     expect(propertyTypeToSchemaType(input)).toBe(expected);
   });
 
+  it("maps object type { type: 'string' } to 'STRING'", () => {
+    expect(propertyTypeToSchemaType({ type: "string" })).toBe("STRING");
+  });
+
+  it("maps object type { type: 'integer' } to 'INTEGER'", () => {
+    expect(propertyTypeToSchemaType({ type: "integer" })).toBe("INTEGER");
+  });
+
   it("throws on unsupported property types", () => {
     expect(() => propertyTypeToSchemaType("unknownType")).toThrow(
       /Unsupported property type "unknownType".*empty backing datasource/,
@@ -52,6 +161,28 @@ describe("propertyTypeToSchemaType", () => {
     expect(() => propertyTypeToSchemaType({ type: "geopoint" })).toThrow(
       /Unsupported property type "geopoint".*empty backing datasource/,
     );
+  });
+});
+
+describe("getNonEditOnlyProperties", () => {
+  it("returns all properties when none are edit-only", () => {
+    const blockData = createObjectTypeBlockData();
+    const props = getNonEditOnlyProperties(blockData);
+    expect(props).toHaveLength(2);
+    expect(props.map(p => p.apiName)).toEqual(["id", "count"]);
+  });
+
+  it("excludes edit-only properties", () => {
+    const blockData = createObjectTypeBlockData({
+      properties: [
+        { apiName: "id", type: "string" },
+        { apiName: "secret", type: "string", editOnly: true },
+        { apiName: "count", type: "integer" },
+      ],
+    });
+    const props = getNonEditOnlyProperties(blockData);
+    expect(props).toHaveLength(2);
+    expect(props.map(p => p.apiName)).toEqual(["id", "count"]);
   });
 });
 
@@ -68,75 +199,24 @@ describe("generateBackingDatasetBlockResult", () => {
     await fs.promises.rm(buildDir, { recursive: true, force: true });
   });
 
-  function createObjectType(
-    overrides: Partial<ObjectType> = {},
-  ): ObjectType {
-    return {
-      apiName: "TestObject",
-      displayName: "Test Object",
-      pluralDisplayName: "Test Objects",
-      primaryKeyPropertyApiName: "id",
-      titlePropertyApiName: "name",
-      __type: OntologyEntityTypeEnum.OBJECT_TYPE,
-      properties: [
-        { apiName: "id", type: "string", displayName: "ID" },
-        { apiName: "count", type: "integer", displayName: "Count" },
-      ],
-      ...overrides,
-    } as ObjectType;
-  }
-
-  it("throws if object type has a stream datasource", async () => {
-    const obj = createObjectType({
-      datasources: [{ type: "stream" }],
-    } as Partial<ObjectType>);
-
-    await expect(
-      generateBackingDatasetBlockResult(obj, buildDir),
-    ).rejects.toThrow(
-      /non-dataset datasources \(stream\).*cannot use includeEmptyBackingDatasource/,
-    );
-  });
-
-  it("throws if object type has a restrictedView datasource", async () => {
-    const obj = createObjectType({
-      datasources: [{ type: "restrictedView" }],
-    } as Partial<ObjectType>);
-
-    await expect(
-      generateBackingDatasetBlockResult(obj, buildDir),
-    ).rejects.toThrow(
-      /non-dataset datasources \(restrictedView\)/,
-    );
-  });
-
-  it("allows dataset datasources without throwing", async () => {
-    const obj = createObjectType({
-      datasources: [{ type: "dataset" }],
-    } as Partial<ObjectType>);
-
-    const result = await generateBackingDatasetBlockResult(obj, buildDir);
-    expect(result.block_identifier).toBe("TestObject-backing-ds");
-  });
-
   it("returns correct block_identifier and block_type", async () => {
-    const obj = createObjectType();
-    const result = await generateBackingDatasetBlockResult(obj, buildDir);
+    const blockData = createObjectTypeBlockData();
+    const result = await generateBackingDatasetBlockResult(blockData, buildDir);
 
     expect(result.block_identifier).toBe("TestObject-backing-ds");
     expect(result.block_type).toBe("STATIC_DATASET");
   });
 
   it("has empty input_mapping_entries", async () => {
-    const obj = createObjectType();
-    const result = await generateBackingDatasetBlockResult(obj, buildDir);
+    const blockData = createObjectTypeBlockData();
+    const result = await generateBackingDatasetBlockResult(blockData, buildDir);
 
     expect(result.input_mapping_entries).toEqual([]);
   });
 
   it("produces tabularDatasource output for the dataset", async () => {
-    const obj = createObjectType();
-    const result = await generateBackingDatasetBlockResult(obj, buildDir);
+    const blockData = createObjectTypeBlockData();
+    const result = await generateBackingDatasetBlockResult(blockData, buildDir);
 
     const dsKey = ReadableIdGenerator.getForDataSet("TestObject");
     expect(result.outputs[dsKey]).toBeDefined();
@@ -158,8 +238,8 @@ describe("generateBackingDatasetBlockResult", () => {
   });
 
   it("produces datasourceColumn outputs for each property", async () => {
-    const obj = createObjectType();
-    const result = await generateBackingDatasetBlockResult(obj, buildDir);
+    const blockData = createObjectTypeBlockData();
+    const result = await generateBackingDatasetBlockResult(blockData, buildDir);
 
     const idColKey = ReadableIdGenerator.getForDataSetColumn(
       "TestObject",
@@ -192,8 +272,8 @@ describe("generateBackingDatasetBlockResult", () => {
   });
 
   it("produces compassResource input for install location", async () => {
-    const obj = createObjectType();
-    const result = await generateBackingDatasetBlockResult(obj, buildDir);
+    const blockData = createObjectTypeBlockData();
+    const result = await generateBackingDatasetBlockResult(blockData, buildDir);
 
     const compassKey = "TestObject-backing-ds-compass-resource" as ReadableId;
     expect(result.inputs[compassKey]).toBeDefined();
@@ -201,8 +281,8 @@ describe("generateBackingDatasetBlockResult", () => {
   });
 
   it("populates add_on_override with idToBlockShapeId mappings", async () => {
-    const obj = createObjectType();
-    const result = await generateBackingDatasetBlockResult(obj, buildDir);
+    const blockData = createObjectTypeBlockData();
+    const result = await generateBackingDatasetBlockResult(blockData, buildDir);
 
     expect(result.add_on_override).toBeDefined();
     const override = result.add_on_override as Record<string, unknown>;
@@ -212,20 +292,15 @@ describe("generateBackingDatasetBlockResult", () => {
   });
 
   it("excludes editOnly properties from outputs", async () => {
-    const obj = createObjectType({
+    const blockData = createObjectTypeBlockData({
       properties: [
-        { apiName: "id", type: "string", displayName: "ID" },
-        {
-          apiName: "secret",
-          type: "string",
-          displayName: "Secret",
-          editOnly: true,
-        },
-        { apiName: "count", type: "integer", displayName: "Count" },
+        { apiName: "id", type: "string" },
+        { apiName: "secret", type: "string", editOnly: true },
+        { apiName: "count", type: "integer" },
       ],
-    } as Partial<ObjectType>);
+    });
 
-    const result = await generateBackingDatasetBlockResult(obj, buildDir);
+    const result = await generateBackingDatasetBlockResult(blockData, buildDir);
 
     // Should have tabularDatasource + 2 columns (id and count), not 3
     expect(Object.keys(result.outputs)).toHaveLength(3);
@@ -238,8 +313,11 @@ describe("generateBackingDatasetBlockResult", () => {
 
   describe("file output", () => {
     it("writes schema.json with correct fieldSchemaList", async () => {
-      const obj = createObjectType();
-      const result = await generateBackingDatasetBlockResult(obj, buildDir);
+      const blockData = createObjectTypeBlockData();
+      const result = await generateBackingDatasetBlockResult(
+        blockData,
+        buildDir,
+      );
 
       const schemaPath = path.join(
         result.block_data_directory,
@@ -260,27 +338,33 @@ describe("generateBackingDatasetBlockResult", () => {
     });
 
     it("writes block-data.json with column mappings", async () => {
-      const obj = createObjectType();
-      const result = await generateBackingDatasetBlockResult(obj, buildDir);
+      const blockData = createObjectTypeBlockData();
+      const result = await generateBackingDatasetBlockResult(
+        blockData,
+        buildDir,
+      );
 
       const blockDataPath = path.join(
         result.block_data_directory,
         "block-data.json",
       );
-      const blockData = JSON.parse(
+      const blockDataContents = JSON.parse(
         await fs.promises.readFile(blockDataPath, "utf-8"),
       );
 
-      expect(blockData.type).toBe("v1");
-      expect(blockData.v1.hasSchema).toBe(true);
-      const columnValues = Object.values(blockData.v1.columns);
+      expect(blockDataContents.type).toBe("v1");
+      expect(blockDataContents.v1.hasSchema).toBe(true);
+      const columnValues = Object.values(blockDataContents.v1.columns);
       expect(columnValues).toContain("id");
       expect(columnValues).toContain("count");
     });
 
     it("writes VERSION file", async () => {
-      const obj = createObjectType();
-      const result = await generateBackingDatasetBlockResult(obj, buildDir);
+      const blockData = createObjectTypeBlockData();
+      const result = await generateBackingDatasetBlockResult(
+        blockData,
+        buildDir,
+      );
 
       const versionPath = path.join(
         result.block_data_directory,
@@ -291,8 +375,11 @@ describe("generateBackingDatasetBlockResult", () => {
     });
 
     it("writes empty files.zip (22 bytes)", async () => {
-      const obj = createObjectType();
-      const result = await generateBackingDatasetBlockResult(obj, buildDir);
+      const blockData = createObjectTypeBlockData();
+      const result = await generateBackingDatasetBlockResult(
+        blockData,
+        buildDir,
+      );
 
       const zipPath = path.join(
         result.block_data_directory,
@@ -308,19 +395,17 @@ describe("generateBackingDatasetBlockResult", () => {
     });
 
     it("excludes editOnly properties from schema.json", async () => {
-      const obj = createObjectType({
+      const blockData = createObjectTypeBlockData({
         properties: [
-          { apiName: "id", type: "string", displayName: "ID" },
-          {
-            apiName: "secret",
-            type: "string",
-            displayName: "Secret",
-            editOnly: true,
-          },
+          { apiName: "id", type: "string" },
+          { apiName: "secret", type: "string", editOnly: true },
         ],
-      } as Partial<ObjectType>);
+      });
 
-      const result = await generateBackingDatasetBlockResult(obj, buildDir);
+      const result = await generateBackingDatasetBlockResult(
+        blockData,
+        buildDir,
+      );
 
       const schemaPath = path.join(
         result.block_data_directory,
@@ -336,10 +421,14 @@ describe("generateBackingDatasetBlockResult", () => {
   });
 
   it("uses deterministic IDs when randomnessKey is provided", async () => {
-    const obj = createObjectType();
+    const blockData = createObjectTypeBlockData();
     const key = "12345678-1234-1234-1234-123456789abc";
 
-    const result1 = await generateBackingDatasetBlockResult(obj, buildDir, key);
+    const result1 = await generateBackingDatasetBlockResult(
+      blockData,
+      buildDir,
+      key,
+    );
 
     // Clean up and recreate for second run
     await fs.promises.rm(buildDir, { recursive: true, force: true });
@@ -347,7 +436,11 @@ describe("generateBackingDatasetBlockResult", () => {
       path.join(os.tmpdir(), "backing-ds-test-"),
     );
 
-    const result2 = await generateBackingDatasetBlockResult(obj, buildDir, key);
+    const result2 = await generateBackingDatasetBlockResult(
+      blockData,
+      buildDir,
+      key,
+    );
 
     // Output shape keys should be identical
     expect(Object.keys(result1.outputs).sort()).toEqual(

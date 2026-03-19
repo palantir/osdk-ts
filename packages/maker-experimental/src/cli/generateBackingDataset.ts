@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 
+import type {
+  ObjectTypeBlockDataV2,
+  PropertyType,
+  PropertyTypeMappingInfo,
+} from "@osdk/client.unstable";
 import type { InputShape, OutputShape } from "@osdk/client.unstable/api";
-import type { ObjectType } from "@osdk/maker";
 import * as fs from "node:fs";
 import * as path from "node:path";
 import {
@@ -63,48 +67,71 @@ export function propertyTypeToSchemaType(
 }
 
 /**
+ * Extract the set of edit-only property RIDs from the wire format datasources.
+ */
+function getEditOnlyPropertyRids(
+  datasources: ObjectTypeBlockDataV2["datasources"],
+): Set<string> {
+  const editOnlyRids = new Set<string>();
+  for (const ds of datasources) {
+    const def = ds.datasource;
+    let propertyMapping: Record<string, PropertyTypeMappingInfo> | undefined;
+    if (def.type === "datasetV2") {
+      propertyMapping = def.datasetV2.propertyMapping;
+    } else if (def.type === "datasetV3") {
+      propertyMapping = def.datasetV3.propertyMapping;
+    }
+    if (propertyMapping) {
+      for (const [rid, mapping] of Object.entries(propertyMapping)) {
+        if (mapping.type === "editOnly") {
+          editOnlyRids.add(rid);
+        }
+      }
+    }
+  }
+  return editOnlyRids;
+}
+
+/**
+ * Extract non-edit-only properties from ObjectTypeBlockDataV2.
+ */
+export function getNonEditOnlyProperties(
+  objectTypeBlockData: ObjectTypeBlockDataV2,
+): PropertyType[] {
+  const editOnlyRids = getEditOnlyPropertyRids(
+    objectTypeBlockData.datasources,
+  );
+  return Object.entries(objectTypeBlockData.objectType.propertyTypes)
+    .filter(([rid]) => !editOnlyRids.has(rid))
+    .map(([_, prop]) => prop);
+}
+
+/**
  * Generate a backing datasource BlockGeneratorResult for an object type.
  */
 export async function generateBackingDatasetBlockResult(
-  objectType: ObjectType,
+  objectTypeBlockData: ObjectTypeBlockDataV2,
   buildDir: string,
   randomnessKey?: string,
 ): Promise<BlockGeneratorResult> {
-  const apiName = objectType.apiName;
+  const apiName = objectTypeBlockData.objectType.apiName!;
 
-  // Validate that the object type only has dataset datasources
-  const nonDatasetDatasources = (objectType.datasources ?? []).filter(
-    (ds) => ds.type !== "dataset",
-  );
-  if (nonDatasetDatasources.length > 0) {
-    const types = nonDatasetDatasources.map((ds) => ds.type).join(", ");
-    throw new Error(
-      `Object type "${apiName}" has non-dataset datasources (${types}) and cannot use includeEmptyBackingDatasource. `
-        + `Empty backing datasources are only supported for object types with dataset datasources.`,
-    );
-  }
+  const nonEditOnlyProps = getNonEditOnlyProperties(objectTypeBlockData);
 
   const dsName = `${apiName}-backing-ds`;
-
-  // Collect non-edit-only properties
-  const nonEditOnlyProps = (objectType.properties ?? []).filter(
-    (p) => !p.editOnly,
-  );
 
   // Build output shapes for the dataset block
   const outputs: Record<string, OutputShape> = {};
 
   // Readable IDs for dataset outputs (must match what the ontology block uses as inputs)
-  const datasourceReadableId = ReadableIdGenerator.getForDataSet(
-    apiName,
-  );
+  const datasourceReadableId = ReadableIdGenerator.getForDataSet(apiName);
 
   // tabularDatasource output shape
   const columnReadableIds: ReadableId[] = [];
   for (const prop of nonEditOnlyProps) {
     const colReadableId = ReadableIdGenerator.getForDataSetColumn(
       apiName,
-      prop.apiName,
+      prop.apiName!,
     );
     columnReadableIds.push(colReadableId);
   }
@@ -138,17 +165,14 @@ export async function generateBackingDatasetBlockResult(
       type: "datasourceColumn",
       datasourceColumn: {
         about: {
-          fallbackTitle: prop.apiName,
+          fallbackTitle: prop.apiName!,
           fallbackDescription: "",
           localizedTitle: {},
           localizedDescription: {},
         },
         type: {
           type: "concrete",
-          concrete: typeToConcreteDataType({
-            type: typeof prop.type === "string" ? prop.type : prop.type.type,
-            [typeof prop.type === "string" ? prop.type : prop.type.type]: {},
-          } as any),
+          concrete: typeToConcreteDataType(prop.type),
         },
         datasource: datasourceBlockInternalId,
         typeclasses: [],
@@ -161,7 +185,7 @@ export async function generateBackingDatasetBlockResult(
   // The add-on maps these internal IDs -> block shape IDs.
   const columnInternalIds = nonEditOnlyProps.map((prop) =>
     toBlockShapeId(
-      `column-internal-${apiName}-${prop.apiName}`,
+      `column-internal-${apiName}-${prop.apiName!}`,
       randomnessKey,
     )
   );
@@ -210,7 +234,7 @@ export async function generateBackingDatasetBlockResult(
   const schemaJson = {
     fieldSchemaList: nonEditOnlyProps.map((prop) => ({
       type: propertyTypeToSchemaType(prop.type),
-      name: prop.apiName,
+      name: prop.apiName!,
       nullable: null,
       userDefinedTypeClass: null,
       customMetadata: {},
@@ -241,7 +265,7 @@ export async function generateBackingDatasetBlockResult(
       columns: Object.fromEntries(
         nonEditOnlyProps.map((prop, i) => [
           columnInternalIds[i],
-          prop.apiName,
+          prop.apiName!,
         ]),
       ),
       hasSchema: true,
