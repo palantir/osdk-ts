@@ -237,16 +237,14 @@ export function common<
     if (refreshTimeout) clearTimeout(refreshTimeout);
   }
 
-  let pendingRefresh: Promise<Token | undefined> | undefined;
+  let pendingRefresh: Promise<Token | undefined | void> | undefined;
   function tryBackgroundRefresh() {
-    if (!refresh) return;
-    if (pendingRefresh) return;
+    if (!refresh || pendingRefresh) return;
     pendingRefresh = refresh().catch((e: unknown) => {
       if (process.env.NODE_ENV !== "production") {
         // eslint-disable-next-line no-console
         console.warn("Background token refresh failed", e);
       }
-      return undefined;
     }).finally(() => {
       pendingRefresh = undefined;
     });
