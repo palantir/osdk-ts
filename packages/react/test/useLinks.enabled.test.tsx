@@ -38,7 +38,7 @@ describe("useLinks enabled option", () => {
   const createWrapper = () => {
     const observableClient = {
       observeLinks: mockObserveLinks,
-      canonicalizeWhereClause: vitest.fn((w) => w),
+      canonicalizeOptions: vitest.fn((opts) => opts),
     } as any;
 
     return ({ children }: React.PropsWithChildren) => (

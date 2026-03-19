@@ -19,6 +19,7 @@ import type {
   LinkedType,
   LinkNames,
   ObjectOrInterfaceDefinition,
+  ObjectSet,
   Osdk,
   PropertyKeys,
   SimplePropertyDef,
@@ -186,6 +187,12 @@ export interface UseOsdkListResult<
    * The total count of objects matching the query (if available from the API)
    */
   totalCount?: string;
+
+  hasMore: boolean;
+
+  objectSet: ObjectSet<T, RDPs> | undefined;
+
+  refetch: () => void;
 }
 
 const EMPTY_WHERE = {};
@@ -258,34 +265,16 @@ export function useOsdkObjects<
     $loadPropertySecurityMetadata,
   } = options ?? {};
 
-  const canonWhere = observableClient.canonicalizeWhereClause<
-    Q,
-    RDPs
-  >(where ?? EMPTY_WHERE);
-
-  const stableCanonWhere = React.useMemo(
-    () => canonWhere,
-    [JSON.stringify(canonWhere)],
-  );
+  const canonOptions = observableClient.canonicalizeOptions({
+    where: where ?? EMPTY_WHERE,
+    withProperties,
+    orderBy,
+    intersectWith,
+  });
 
   const stableRids = React.useMemo(
     () => rids,
     [JSON.stringify(rids)],
-  );
-
-  const stableWithProperties = React.useMemo(
-    () => withProperties,
-    [JSON.stringify(withProperties)],
-  );
-
-  const stableIntersectWith = React.useMemo(
-    () => intersectWith,
-    [JSON.stringify(intersectWith)],
-  );
-
-  const stableOrderBy = React.useMemo(
-    () => orderBy,
-    [JSON.stringify(orderBy)],
   );
 
   const stableSelect = React.useMemo(
@@ -313,15 +302,15 @@ export function useOsdkObjects<
           observableClient.observeList({
             type,
             rids: stableRids,
-            where: stableCanonWhere,
+            where: canonOptions.where,
             dedupeInterval: dedupeIntervalMs ?? 2_000,
             pageSize,
-            orderBy: stableOrderBy,
+            orderBy: canonOptions.orderBy,
             streamUpdates,
-            withProperties: stableWithProperties,
+            withProperties: canonOptions.withProperties,
             autoFetchMore,
-            ...(stableIntersectWith
-              ? { intersectWith: stableIntersectWith }
+            ...(canonOptions.intersectWith
+              ? { intersectWith: canonOptions.intersectWith }
               : {}),
             ...(pivotTo ? { pivotTo } : {}),
             ...(stableSelect ? { select: stableSelect } : {}),
@@ -332,7 +321,7 @@ export function useOsdkObjects<
         process.env.NODE_ENV !== "production"
           ? `list ${type.apiName} ${
             stableRids ? `[${stableRids.length} rids]` : ""
-          } ${JSON.stringify(stableCanonWhere)}`
+          } ${JSON.stringify(canonOptions.where)}`
           : void 0,
       );
     },
@@ -342,14 +331,14 @@ export function useOsdkObjects<
       type.apiName,
       type.type,
       stableRids,
-      stableCanonWhere,
+      canonOptions.where,
       dedupeIntervalMs,
       pageSize,
-      stableOrderBy,
+      canonOptions.orderBy,
       streamUpdates,
-      stableWithProperties,
+      canonOptions.withProperties,
       autoFetchMore,
-      stableIntersectWith,
+      canonOptions.intersectWith,
       pivotTo,
       stableSelect,
       $loadPropertySecurityMetadata,
@@ -357,6 +346,10 @@ export function useOsdkObjects<
   );
 
   const listPayload = React.useSyncExternalStore(subscribe, getSnapShot);
+
+  const refetch = React.useCallback(async () => {
+    await observableClient.invalidateObjectType(type.apiName);
+  }, [observableClient, type.apiName]);
 
   return React.useMemo(() => {
     let error: Error | undefined;
@@ -376,6 +369,9 @@ export function useOsdkObjects<
         : false,
       isOptimistic: listPayload?.isOptimistic ?? false,
       totalCount: listPayload?.totalCount,
+      hasMore: listPayload?.hasMore ?? false,
+      objectSet: listPayload?.objectSet,
+      refetch,
     };
-  }, [listPayload, enabled]);
+  }, [listPayload, enabled, refetch]);
 }

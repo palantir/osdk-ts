@@ -25,7 +25,6 @@ import type {
 } from "@osdk/api";
 import type { ObjectTypeDefinition } from "@osdk/client";
 import type { ObserveAggregationArgs } from "@osdk/client/unstable-do-not-use";
-import { computeObjectSetCacheKey } from "@osdk/client/unstable-do-not-use";
 import React from "react";
 import {
   makeExternalStore,
@@ -176,55 +175,37 @@ export function useOsdkAggregation<
 
   const { observableClient } = React.useContext(OsdkContext2);
 
-  const canonWhere = observableClient.canonicalizeWhereClause<Q>(where);
-
-  const stableCanonWhere = React.useMemo(
-    () => canonWhere,
-    [JSON.stringify(canonWhere)],
-  );
-
   const objectSetRef = React.useRef(objectSet);
   objectSetRef.current = objectSet;
 
-  const objectSetKeyString = objectSet
-    ? computeObjectSetCacheKey(objectSet)
-    : undefined;
-
-  const stableWithProperties = React.useMemo(
-    () => withProperties,
-    [JSON.stringify(withProperties)],
-  );
-
-  const stableAggregate = React.useMemo(
-    () => aggregate,
-    [JSON.stringify(aggregate)],
-  );
-
-  const stableIntersectWith = React.useMemo(
-    () => intersectWith,
-    [JSON.stringify(intersectWith)],
-  );
+  const canonOptions = observableClient.canonicalizeOptions({
+    where,
+    withProperties,
+    aggregate,
+    intersectWith,
+  });
 
   const { subscribe, getSnapShot } = React.useMemo(
     () => {
-      if (objectSetKeyString && objectSetRef.current) {
+      if (objectSet && objectSetRef.current) {
+        const currentObjectSet = objectSetRef.current;
         return makeExternalStoreAsync<ObserveAggregationArgs<Q, A>>(
           (observer) =>
             observableClient.observeAggregation(
               {
                 type: type,
-                objectSet: objectSetRef.current!,
-                where: stableCanonWhere,
-                withProperties: stableWithProperties,
-                intersectWith: stableIntersectWith,
-                aggregate: stableAggregate,
+                objectSet: currentObjectSet,
+                where: canonOptions.where,
+                withProperties: canonOptions.withProperties,
+                intersectWith: canonOptions.intersectWith,
+                aggregate: canonOptions.aggregate,
                 dedupeInterval: dedupeIntervalMs ?? 2_000,
               },
               observer,
             ),
           process.env.NODE_ENV !== "production"
-            ? `aggregation ${type.apiName} ${objectSetKeyString} ${
-              JSON.stringify(stableCanonWhere)
+            ? `aggregation ${type.apiName} ${
+              JSON.stringify(canonOptions.where)
             }`
             : void 0,
         );
@@ -235,16 +216,16 @@ export function useOsdkAggregation<
           observableClient.observeAggregation(
             {
               type: type,
-              where: stableCanonWhere,
-              withProperties: stableWithProperties,
-              intersectWith: stableIntersectWith,
-              aggregate: stableAggregate,
+              where: canonOptions.where,
+              withProperties: canonOptions.withProperties,
+              intersectWith: canonOptions.intersectWith,
+              aggregate: canonOptions.aggregate,
               dedupeInterval: dedupeIntervalMs ?? 2_000,
             },
             observer,
           ),
         process.env.NODE_ENV !== "production"
-          ? `aggregation ${type.apiName} ${JSON.stringify(stableCanonWhere)}`
+          ? `aggregation ${type.apiName} ${JSON.stringify(canonOptions.where)}`
           : void 0,
       );
     },
@@ -252,11 +233,11 @@ export function useOsdkAggregation<
       observableClient,
       type.apiName,
       type.type,
-      objectSetKeyString,
-      stableCanonWhere,
-      stableWithProperties,
-      stableIntersectWith,
-      stableAggregate,
+      objectSet,
+      canonOptions.where,
+      canonOptions.withProperties,
+      canonOptions.intersectWith,
+      canonOptions.aggregate,
       dedupeIntervalMs,
     ],
   );
