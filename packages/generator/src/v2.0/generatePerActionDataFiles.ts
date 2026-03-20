@@ -67,8 +67,14 @@ export async function generatePerActionDataFiles(
 
       const uniqueApiNamesString = stringUnionFrom([...uniqueApiNames]);
 
+      const rawWithPlatformApiName = action.raw as ActionTypeV2 & {
+        platformApiName?: string;
+      };
       const fullActionDef = deleteUndefineds(
-        wireActionTypeV2ToSdkActionMetadata(action.raw),
+        wireActionTypeV2ToSdkActionMetadata(
+          action.raw,
+          rawWithPlatformApiName.platformApiName,
+        ),
       );
 
       function createParamsDef() {

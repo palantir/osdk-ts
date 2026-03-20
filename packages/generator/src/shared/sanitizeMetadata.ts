@@ -40,8 +40,10 @@ export function sanitizeMetadata<
     ...ontology,
     actionTypes: Object.fromEntries(
       Object.values(ontology.actionTypes).map(actionType => {
+        const originalApiName = actionType.apiName;
         return [camelize(actionType.apiName), {
           ...actionType,
+          platformApiName: originalApiName,
           apiName: camelize(actionType.apiName),
         }];
       }),

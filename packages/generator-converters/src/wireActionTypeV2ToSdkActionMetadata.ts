@@ -28,11 +28,13 @@ import {
 
 export function wireActionTypeV2ToSdkActionMetadata(
   input: ActionTypeV2,
+  platformApiName?: string,
 ): ActionMetadata {
   const modifiedEntityTypes = getModifiedEntityTypes(input);
   return {
     type: "action",
     apiName: input.apiName,
+    platformApiName: platformApiName ?? input.apiName,
     parameters: Object.fromEntries(
       Object.entries(input.parameters).map((
         [key, value],
