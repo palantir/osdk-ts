@@ -29,7 +29,10 @@ import type {
   ExtractQueryParameters,
   FunctionColumnLocator,
 } from "../ObjectTableApi.js";
-import type { AsyncCellData } from "../utils/types.js";
+import {
+  type AsyncCellData,
+  createAsyncCellData,
+} from "../utils/AsyncCellData.js";
 
 export interface FunctionColumnData {
   [columnId: string]: {
@@ -80,7 +83,7 @@ export function useFunctionColumnsData<
     never
   >,
 >(
-  objectSet: ObjectSet<Q> | undefined,
+  objectSet: ObjectSet<Q, RDPs> | undefined,
   objects:
     | Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>[]
     | undefined,
@@ -132,7 +135,7 @@ export function useFunctionColumnsData<
       for await (
         const queryResult of executeQueriesGenerator(
           functionColumnConfigs,
-          stableObjectSet,
+          stableObjectSet as ObjectSet<Q>,
           client,
           abortController.signal,
         )
@@ -300,7 +303,7 @@ function createQueryPromise<
       return;
     }
 
-    const params = config.getParams(objectSet);
+    const params = config.getParams(objectSet as ObjectSet<Q>);
 
     client(config.queryDefinition)
       .executeFunction(params)
@@ -356,7 +359,9 @@ function initializeFunctionColumnData<
           const key = String(obj.$primaryKey);
           // Only set isLoading state if this object's data doesn't already exist
           if (!newData[columnId][key]) {
-            newData[columnId][key] = { isLoading: true };
+            newData[columnId][key] = createAsyncCellData({
+              isLoading: true,
+            });
           }
         });
       });
@@ -389,12 +394,12 @@ function processQueryResult<
           ...prev,
           [columnId]: {
             ...prev[columnId],
-            [key]: {
+            [key]: createAsyncCellData({
               error: error instanceof Error
                 ? error
                 : new Error(String(error)),
               isLoading: false,
-            },
+            }),
           },
         }));
       });
@@ -416,10 +421,10 @@ function processQueryResult<
             ...prev,
             [columnId]: {
               ...prev[columnId],
-              [key]: {
+              [key]: createAsyncCellData({
                 data: cellData,
                 isLoading: false,
-              },
+              }),
             },
           }));
         },

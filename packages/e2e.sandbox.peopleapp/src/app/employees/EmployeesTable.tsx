@@ -1,18 +1,26 @@
 import type { DerivedProperty, Osdk } from "@osdk/api";
 import type { ColumnDefinition } from "@osdk/react-components/experimental";
 import { ObjectTable } from "@osdk/react-components/experimental";
-import { useCallback } from "react";
-import { Employee } from "../../generatedNoCheck2/index.js";
+import React, { useCallback } from "react";
+import { $ } from "../../foundryClient.js";
+import {
+  Employee,
+  getEmployeeDaysSinceStart,
+} from "../../generatedNoCheck2/index.js";
 
 type RDPs = {
   managerName: "string";
+};
+
+type FunctionColumns = {
+  daysSinceStart: typeof getEmployeeDaysSinceStart;
 };
 
 const columnDefinitions: Array<
   ColumnDefinition<
     Employee,
     RDPs,
-    {}
+    FunctionColumns
   >
 > = [
   {
@@ -21,7 +29,6 @@ const columnDefinitions: Array<
       id: "fullName",
     },
     columnName: "My Name",
-    editable: true,
     validateEdit: async (value: unknown) => {
       if (typeof value !== "string" || !value.trim()) {
         return "Name cannot be empty";
@@ -29,17 +36,28 @@ const columnDefinitions: Array<
       return undefined;
     },
   },
+  // Function-backed column
+  {
+    locator: {
+      type: "function" as const,
+      id: "daysSinceStart" as const,
+      queryDefinition: getEmployeeDaysSinceStart,
+      getFunctionParams: (objectSet: any) => ({ employees: objectSet }),
+      getKey: (obj: any) => `${obj.$objectType}:${obj.$primaryKey}`,
+      getValue: (data: any) => data.daysSinceStart,
+    } as any,
+    columnName: "Days Since Start",
+    width: 150,
+  },
   {
     locator: {
       type: "property",
       id: "employeeNumber",
     },
     columnName: "Employee Number",
-    editable: false,
   },
   {
     locator: { type: "property", id: "jobTitle" },
-    editable: true,
   },
   {
     locator: { type: "property", id: "firstFullTimeStartDate" },
@@ -92,6 +110,8 @@ export function EmployeesTable() {
     [],
   );
 
+  const os = $(Employee);
+
   return (
     <div
       style={{
@@ -99,7 +119,8 @@ export function EmployeesTable() {
         overflow: "hidden",
       }}
     >
-      <ObjectTable<Employee, RDPs>
+      <ObjectTable<Employee, RDPs, FunctionColumns>
+        objectSet={os}
         objectType={Employee}
         columnDefinitions={columnDefinitions}
         selectionMode={"multiple"}

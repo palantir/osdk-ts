@@ -14,6 +14,27 @@
  * limitations under the License.
  */
 
-export const SELECTION_COLUMN_ID = "__selection__";
+export interface AsyncCellData {
+  readonly __asyncCell: true; // discriminant
+  data?: unknown;
+  isLoading: boolean;
+  error?: unknown;
+}
 
-export const DEFAULT_COLUMN_WIDTH = 80;
+export const isAsyncCellData = (value: unknown): value is AsyncCellData => {
+  return (
+    value != null
+    && typeof value === "object"
+    && "__asyncCell" in value
+    && value.__asyncCell === true
+  );
+};
+
+export const createAsyncCellData = (
+  { data, isLoading, error }: Omit<AsyncCellData, "__asyncCell">,
+): AsyncCellData => ({
+  __asyncCell: true,
+  data,
+  isLoading,
+  error,
+});
