@@ -80,7 +80,7 @@ export function useFunctionColumnsData<
     never
   >,
 >(
-  objectSet: ObjectSet<Q> | undefined,
+  objectSet: ObjectSet<Q, RDPs> | undefined,
   objects:
     | Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>[]
     | undefined,

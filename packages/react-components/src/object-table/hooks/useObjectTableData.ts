@@ -121,7 +121,7 @@ export function useObjectTableData<
   // When shouldUseObjectSet is true, we know objectSet is defined
   // and objectOrInterfaceType is an ObjectTypeDefinition
   const objectSetResult = useObjectSet(
-    shouldUseObjectSet ? objectSet as ObjectSet<Q> : undefined as any,
+    shouldUseObjectSet ? objectSet as ObjectSet<Q, RDPs> : undefined as any,
     {
       ...(objectSetOptions as ObjectSetOptions<Q>),
       withProperties: withProperties as WithProperties<
@@ -154,7 +154,7 @@ export function useObjectTableData<
 
   // Call useFunctionColumnsData to get function column data
   const functionColumnData = useFunctionColumnsData<Q, RDPs, FunctionColumns>(
-    objectSet,
+    objectSetResult.objectSet,
     baseResult.data,
     columnDefinitions,
   );
