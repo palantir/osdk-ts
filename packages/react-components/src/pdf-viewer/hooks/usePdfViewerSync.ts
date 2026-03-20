@@ -18,11 +18,7 @@ import type { PDFDocumentProxy } from "pdfjs-dist";
 import type { EventBus, PDFViewer } from "pdfjs-dist/web/pdf_viewer.mjs";
 import type { RefObject } from "react";
 import { useCallback, useEffect, useRef } from "react";
-
-// cspell:disable-next-line -- pdfjs EventBus event name
-const PAGE_CHANGING_EVENT = "pagechanging";
-// cspell:disable-next-line -- pdfjs EventBus event name
-const SCALE_CHANGING_EVENT = "scalechanging";
+import { PAGE_CHANGING_EVENT, SCALE_CHANGING_EVENT } from "../constants.js";
 
 interface UsePdfViewerSyncOptions {
   pdfViewerRef: RefObject<PDFViewer | null>;

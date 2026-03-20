@@ -21,13 +21,12 @@ import type {
 } from "pdfjs-dist/web/pdf_viewer.mjs";
 import type { RefObject } from "react";
 import { useCallback, useEffect, useState } from "react";
-
-const EMPTY_STRING = "";
-const FIND_EVENT = "find";
-// cspell:disable-next-line -- pdfjs EventBus event names
-const UPDATE_FIND_CONTROL_STATE_EVENT = "updatefindcontrolstate";
-// cspell:disable-next-line -- pdfjs EventBus event name
-const UPDATE_FIND_MATCHES_COUNT_EVENT = "updatefindmatchescount";
+import {
+  EMPTY_STRING,
+  FIND_EVENT,
+  UPDATE_FIND_CONTROL_STATE_EVENT,
+  UPDATE_FIND_MATCHES_COUNT_EVENT,
+} from "../constants.js";
 
 export interface UsePdfViewerSearchResult {
   query: string;

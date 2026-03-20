@@ -17,11 +17,13 @@
 import { useVirtualizer } from "@tanstack/react-virtual";
 import type { PDFDocumentProxy } from "pdfjs-dist";
 import React, { useCallback, useEffect, useMemo, useRef } from "react";
+import {
+  DEFAULT_PAGE_HEIGHT,
+  THUMBNAIL_GAP,
+  THUMBNAIL_SCALE,
+} from "./constants.js";
 import styles from "./PdfViewerSidebar.module.css";
-import { PdfViewerThumbnail, THUMBNAIL_SCALE } from "./PdfViewerThumbnail.js";
-
-const DEFAULT_PAGE_HEIGHT = 792;
-const THUMBNAIL_GAP = 12;
+import { PdfViewerThumbnail } from "./PdfViewerThumbnail.js";
 
 interface PdfViewerSidebarProps {
   document: PDFDocumentProxy;

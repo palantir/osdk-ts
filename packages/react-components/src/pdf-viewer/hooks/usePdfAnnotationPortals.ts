@@ -18,9 +18,7 @@ import type { PDFDocumentProxy } from "pdfjs-dist";
 import type { EventBus, PDFViewer } from "pdfjs-dist/web/pdf_viewer.mjs";
 import type { RefObject } from "react";
 import { useEffect, useState } from "react";
-
-// cspell:disable-next-line -- pdfjs EventBus event name
-const PAGE_RENDERED_EVENT = "pagerendered";
+import { PAGE_RENDERED_EVENT } from "../constants.js";
 
 export interface AnnotationPortalTarget {
   pageNumber: number;

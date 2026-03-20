@@ -24,6 +24,7 @@ import {
   Search,
 } from "@blueprintjs/icons";
 import React, { useCallback, useEffect, useState } from "react";
+import { MAX_SCALE, MIN_SCALE, SCALE_STEP } from "./constants.js";
 import styles from "./PdfViewerToolbar.module.css";
 
 interface PdfViewerToolbarProps {
@@ -37,10 +38,6 @@ interface PdfViewerToolbarProps {
   onSidebarToggle: () => void;
   onDownload: () => void;
 }
-
-const SCALE_STEP = 0.25;
-const MIN_SCALE = 0.25;
-const MAX_SCALE = 5.0;
 
 export function PdfViewerToolbar({
   currentPage,

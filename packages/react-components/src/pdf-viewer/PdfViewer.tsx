@@ -18,6 +18,7 @@ import classnames from "classnames";
 import "pdfjs-dist/web/pdf_viewer.css";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { EMPTY_ANNOTATION_ARRAY, EMPTY_ANNOTATIONS } from "./constants.js";
 import { usePdfAnnotationPortals } from "./hooks/usePdfAnnotationPortals.js";
 import { usePdfDocument } from "./hooks/usePdfDocument.js";
 import { usePdfViewer } from "./hooks/usePdfViewer.js";
@@ -28,10 +29,7 @@ import { PdfViewerAnnotationLayer } from "./PdfViewerAnnotationLayer.js";
 import { PdfViewerSearchBar } from "./PdfViewerSearchBar.js";
 import { PdfViewerSidebar } from "./PdfViewerSidebar.js";
 import { PdfViewerToolbar } from "./PdfViewerToolbar.js";
-import type { PdfAnnotation, PdfViewerProps } from "./types.js";
-
-const EMPTY_ANNOTATIONS: Record<number, PdfAnnotation[]> = {};
-const EMPTY_ANNOTATION_ARRAY: PdfAnnotation[] = [];
+import type { PdfViewerProps } from "./types.js";
 
 export function PdfViewer({
   src,
