@@ -271,16 +271,12 @@ export function useOsdkObjects<
     withProperties,
     orderBy,
     intersectWith,
+    $select,
   });
 
   const stableRids = React.useMemo(
     () => rids,
     [JSON.stringify(rids)],
-  );
-
-  const stableSelect = React.useMemo(
-    () => $select,
-    [JSON.stringify($select)],
   );
 
   const { subscribe, getSnapShot } = React.useMemo(
@@ -314,7 +310,7 @@ export function useOsdkObjects<
               ? { intersectWith: canonOptions.intersectWith }
               : {}),
             ...(pivotTo ? { pivotTo } : {}),
-            ...(stableSelect ? { select: stableSelect } : {}),
+            ...(canonOptions.$select ? { select: canonOptions.$select } : {}),
             ...($loadPropertySecurityMetadata
               ? { $loadPropertySecurityMetadata }
               : {}),
@@ -341,7 +337,7 @@ export function useOsdkObjects<
       autoFetchMore,
       canonOptions.intersectWith,
       pivotTo,
-      stableSelect,
+      canonOptions.$select,
       $loadPropertySecurityMetadata,
     ],
   );

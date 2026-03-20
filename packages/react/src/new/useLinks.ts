@@ -149,12 +149,8 @@ export function useLinks<
   const canonOptions = observableClient.canonicalizeOptions({
     where: otherOptions.where,
     orderBy: otherOptions.orderBy,
+    $select: otherOptions.$select,
   });
-
-  const stableSelect = React.useMemo(
-    () => otherOptions.$select,
-    [JSON.stringify(otherOptions.$select)],
-  );
 
   const objectsKey = React.useMemo(() => {
     if (objects === undefined) return "";
@@ -191,7 +187,7 @@ export function useLinks<
               orderBy: canonOptions.orderBy,
               mode: otherOptions.mode,
               dedupeInterval: otherOptions.dedupeIntervalMs ?? 2_000,
-              ...(stableSelect ? { select: stableSelect } : {}),
+              ...(canonOptions.$select ? { select: canonOptions.$select } : {}),
             },
             observer,
           ),
@@ -209,7 +205,7 @@ export function useLinks<
       canonOptions.orderBy,
       otherOptions.mode,
       otherOptions.dedupeIntervalMs,
-      stableSelect,
+      canonOptions.$select,
     ],
   );
 

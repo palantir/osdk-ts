@@ -26,7 +26,6 @@ import type {
 } from "@osdk/api";
 
 import type { ObserveObjectSetArgs } from "@osdk/client/unstable-do-not-use";
-import { getWireObjectSet } from "@osdk/client/unstable-do-not-use";
 import React from "react";
 import { makeExternalStore, type Snapshot } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
@@ -224,27 +223,11 @@ export function useObjectSet<
     where: otherOptions.where,
     withProperties: otherOptions.withProperties,
     orderBy: otherOptions.orderBy,
+    union: otherOptions.union,
+    intersect: otherOptions.intersect,
+    subtract: otherOptions.subtract,
+    $select: otherOptions.$select,
   });
-
-  const stableSelect = React.useMemo(
-    () => otherOptions.$select,
-    [JSON.stringify(otherOptions.$select)],
-  );
-
-  const stableUnion = React.useMemo(
-    () => otherOptions.union,
-    [JSON.stringify(otherOptions.union?.map(os => getWireObjectSet(os)))],
-  );
-
-  const stableIntersect = React.useMemo(
-    () => otherOptions.intersect,
-    [JSON.stringify(otherOptions.intersect?.map(os => getWireObjectSet(os)))],
-  );
-
-  const stableSubtract = React.useMemo(
-    () => otherOptions.subtract,
-    [JSON.stringify(otherOptions.subtract?.map(os => getWireObjectSet(os)))],
-  );
 
   const { subscribe, getSnapShot } = React.useMemo(
     () => {
@@ -271,16 +254,16 @@ export function useObjectSet<
             {
               where: canonOptions.where,
               withProperties: canonOptions.withProperties,
-              union: stableUnion,
-              intersect: stableIntersect,
-              subtract: stableSubtract,
+              union: canonOptions.union,
+              intersect: canonOptions.intersect,
+              subtract: canonOptions.subtract,
               pivotTo: otherOptions.pivotTo,
               pageSize: otherOptions.pageSize,
               orderBy: canonOptions.orderBy,
               dedupeInterval: otherOptions.dedupeIntervalMs ?? 2_000,
               autoFetchMore: otherOptions.autoFetchMore,
               streamUpdates,
-              select: stableSelect,
+              select: canonOptions.$select,
             },
             observer,
           );
@@ -299,10 +282,10 @@ export function useObjectSet<
       canonOptions.where,
       canonOptions.withProperties,
       canonOptions.orderBy,
-      stableUnion,
-      stableIntersect,
-      stableSubtract,
-      stableSelect,
+      canonOptions.union,
+      canonOptions.intersect,
+      canonOptions.subtract,
+      canonOptions.$select,
       otherOptions.pivotTo,
       otherOptions.pageSize,
       otherOptions.autoFetchMore,
