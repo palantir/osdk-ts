@@ -21,6 +21,7 @@ import {
   type ComboboxClearProps,
   type ComboboxInputProps,
   type ComboboxItemProps,
+  type ComboboxListProps,
   type ComboboxPopupProps,
   type ComboboxPositionerProps,
 } from "@base-ui/react/combobox";
@@ -47,6 +48,22 @@ function ComboboxInput({
         {...rest}
       />
     </div>
+  );
+}
+
+interface ComboboxBareInputProps extends Omit<ComboboxInputProps, "className"> {
+  className?: string;
+}
+
+function ComboboxBareInput({
+  className,
+  ...rest
+}: ComboboxBareInputProps): React.ReactElement {
+  return (
+    <BaseUICombobox.Input
+      className={classnames(styles.osdkComboboxInput, className)}
+      {...rest}
+    />
   );
 }
 
@@ -123,7 +140,18 @@ function ComboboxChips({
 }): React.ReactElement {
   return (
     <BaseUICombobox.Chips
-      className={classnames(styles.osdkComboboxChips, className)}
+      render={(props) => (
+        <div
+          {...props}
+          className={classnames(styles.osdkComboboxInputWrapper, className)}
+        >
+          <Search
+            className={styles.osdkComboboxSearchIcon}
+            color="currentColor"
+          />
+          {props.children}
+        </div>
+      )}
     >
       {children}
     </BaseUICombobox.Chips>
@@ -209,28 +237,55 @@ function ComboboxEmpty({
   );
 }
 
+interface ComboboxListComponentProps
+  extends Omit<ComboboxListProps, "className">
+{
+  className?: string;
+}
+
+function ComboboxList({
+  className,
+  children,
+  ...rest
+}: ComboboxListComponentProps): React.ReactElement {
+  return (
+    <BaseUICombobox.List
+      className={classnames(styles.osdkComboboxList, className)}
+      {...rest}
+    >
+      {children}
+    </BaseUICombobox.List>
+  );
+}
+
 export const Combobox: {
   Root: typeof BaseUICombobox.Root;
   Input: typeof ComboboxInput;
+  BareInput: typeof ComboboxBareInput;
   Portal: typeof BaseUICombobox.Portal;
   Positioner: typeof ComboboxPositioner;
   Popup: typeof ComboboxPopup;
+  List: typeof ComboboxList;
   Item: typeof ComboboxItem;
   Chips: typeof ComboboxChips;
   Chip: typeof ComboboxChip;
   ChipRemove: typeof ComboboxChipRemove;
   Clear: typeof ComboboxClear;
   Empty: typeof ComboboxEmpty;
+  Value: typeof BaseUICombobox.Value;
 } = {
   Root: BaseUICombobox.Root,
   Input: ComboboxInput,
+  BareInput: ComboboxBareInput,
   Portal: BaseUICombobox.Portal,
   Positioner: ComboboxPositioner,
   Popup: ComboboxPopup,
+  List: ComboboxList,
   Item: ComboboxItem,
   Chips: ComboboxChips,
   Chip: ComboboxChip,
   ChipRemove: ComboboxChipRemove,
   Clear: ComboboxClear,
   Empty: ComboboxEmpty,
+  Value: BaseUICombobox.Value,
 };

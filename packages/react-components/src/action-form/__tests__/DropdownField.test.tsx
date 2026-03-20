@@ -25,20 +25,13 @@ describe("DropdownField", () => {
 
   describe("routing", () => {
     it("renders a select trigger when isSearchable is false (default)", () => {
-      render(
-        <DropdownField
-          value={null}
-          items={STRING_ITEMS}
-        />,
-      );
+      render(<DropdownField value={null} items={STRING_ITEMS} />);
 
       expect(screen.getByTestId("dropdown-select-field")).toBeDefined();
     });
 
     it("renders a combobox input when isSearchable is true", () => {
-      render(
-        <DropdownField value={null} items={STRING_ITEMS} isSearchable />,
-      );
+      render(<DropdownField value={null} items={STRING_ITEMS} isSearchable />);
 
       expect(screen.getByTestId("dropdown-combobox-field")).toBeDefined();
     });
@@ -48,7 +41,8 @@ describe("DropdownField", () => {
     it("renders items from the items prop", async () => {
       render(<DropdownField value={null} items={STRING_ITEMS} />);
 
-      const trigger = screen.getByTestId("dropdown-select-field")
+      const trigger = screen
+        .getByTestId("dropdown-select-field")
         .querySelector("button")!;
       fireEvent.click(trigger);
 
@@ -106,9 +100,7 @@ describe("DropdownField", () => {
 
   describe("searchable (Combobox variant)", () => {
     it("renders combobox with search input", async () => {
-      render(
-        <DropdownField value={null} items={STRING_ITEMS} isSearchable />,
-      );
+      render(<DropdownField value={null} items={STRING_ITEMS} isSearchable />);
 
       const input = screen.getByRole("combobox");
       expect(input).toBeDefined();
@@ -121,6 +113,19 @@ describe("DropdownField", () => {
           expect(screen.getByRole("option", { name: item })).toBeDefined();
         }
       });
+    });
+
+    it("shows selected items in multi-select mode", () => {
+      render(
+        <DropdownField<string, true>
+          value={["Alice"]}
+          items={STRING_ITEMS}
+          isSearchable
+          multiple
+        />,
+      );
+
+      expect(screen.getByText("Alice")).toBeDefined();
     });
 
     it("renders searchable multi-select", async () => {
@@ -151,10 +156,7 @@ describe("DropdownField", () => {
       fireEvent.click(screen.getByRole("option", { name: "Alice" }));
 
       await vi.waitFor(() => {
-        expect(onChange).toHaveBeenCalledWith(
-          ["Alice"],
-          expect.anything(),
-        );
+        expect(onChange).toHaveBeenCalledWith(["Alice"], expect.anything());
       });
     });
   });

@@ -99,28 +99,56 @@ function ComboboxDropdown<V, Multiple extends boolean>({
   isItemEqual,
   multiple,
 }: Omit<DropdownFieldProps<V, Multiple>, "isSearchable">): React.ReactElement {
+  const labelFn = itemToStringLabel ?? defaultItemToStringLabel;
+
   return (
     <div data-testid="dropdown-combobox-field">
       <Combobox.Root
         value={value}
         onValueChange={onChange}
         multiple={multiple}
-        itemToStringLabel={itemToStringLabel ?? defaultItemToStringLabel}
+        itemToStringLabel={labelFn}
         isItemEqualToValue={isItemEqual}
+        items={items}
       >
-        <Combobox.Input />
+        {multiple
+          ? (
+            <Combobox.Chips>
+              <Combobox.Value>
+                {(selectedValues: V[]) => (
+                  <React.Fragment>
+                    {selectedValues.map((item, index) => (
+                      <Combobox.Chip
+                        key={itemToKey?.(item) ?? String(index)}
+                        aria-label={labelFn(item)}
+                      >
+                        {labelFn(item)}
+                        <Combobox.ChipRemove />
+                      </Combobox.Chip>
+                    ))}
+                    <Combobox.BareInput
+                      placeholder={selectedValues.length > 0 ? "" : "Search…"}
+                    />
+                  </React.Fragment>
+                )}
+              </Combobox.Value>
+            </Combobox.Chips>
+          )
+          : <Combobox.Input />}
         <Combobox.Portal>
           <Combobox.Positioner>
             <Combobox.Popup>
-              {items.map((item, index) => (
-                <Combobox.Item
-                  key={itemToKey?.(item) ?? String(index)}
-                  value={item}
-                >
-                  {(itemToStringLabel ?? defaultItemToStringLabel)(item)}
-                </Combobox.Item>
-              ))}
               <Combobox.Empty>No results</Combobox.Empty>
+              <Combobox.List>
+                {(item: V, index: number) => (
+                  <Combobox.Item
+                    key={itemToKey?.(item) ?? String(index)}
+                    value={item}
+                  >
+                    {labelFn(item)}
+                  </Combobox.Item>
+                )}
+              </Combobox.List>
             </Combobox.Popup>
           </Combobox.Positioner>
         </Combobox.Portal>
