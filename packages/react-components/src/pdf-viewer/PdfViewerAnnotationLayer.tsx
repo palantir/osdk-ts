@@ -45,7 +45,7 @@ function AnnotationItem({
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
-      if (e.key === "Enter" || e.key === " ") {
+      if (e.key === "Enter") {
         e.preventDefault();
         onClick?.(annotation);
       }
