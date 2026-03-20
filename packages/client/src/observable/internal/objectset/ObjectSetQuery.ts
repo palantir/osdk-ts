@@ -56,7 +56,7 @@ export class ObjectSetQuery extends BaseListQuery<
   #operations: Canonical<ObjectSetOperations>;
   #composedObjectSet: ObjectSet<any, any>;
   #objectTypes: Set<string>;
-  #isComplex: boolean;
+  #requiresServerEvaluation: boolean;
   #resultTypeApiName: string;
 
   constructor(
@@ -90,7 +90,7 @@ export class ObjectSetQuery extends BaseListQuery<
     const baseWire: WireObjectSet = JSON.parse(baseObjectSetWire);
     this.#objectTypes = this.#extractObjectTypes(baseWire, opts);
 
-    this.#isComplex = !!(
+    this.#requiresServerEvaluation = !!(
       operations.pivotTo
       || (operations.union && operations.union.length > 0)
       || (operations.intersect && operations.intersect.length > 0)
@@ -293,7 +293,7 @@ export class ObjectSetQuery extends BaseListQuery<
     changes.modified.add(this.cacheKey);
 
     try {
-      if (this.#isComplex) {
+      if (this.#requiresServerEvaluation) {
         return this.#handleComplexObjectSet(changes);
       }
       return this.#handleSimpleObjectSet(changes, optimisticId);
