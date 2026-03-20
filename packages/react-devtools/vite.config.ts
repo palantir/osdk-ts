@@ -24,7 +24,6 @@ export default defineConfig({
     lib: {
       entry: {
         index: resolve(__dirname, "src/index.ts"),
-        production: resolve(__dirname, "src/production.ts"),
       },
       formats: ["es"],
     },
