@@ -65,7 +65,7 @@ export function FilterList<Q extends ObjectTypeDefinition>(
     onReset?.();
   }, [reset, onReset]);
 
-  const uncontrolledAddFilter = addFilterMode === "uncontrolled";
+  const uncontrolledAddFilterMode = addFilterMode === "uncontrolled";
 
   const getIsVisible = useCallback(
     (def: FilterDefinitionUnion<Q>) => def.isVisible !== false,
@@ -88,18 +88,18 @@ export function FilterList<Q extends ObjectTypeDefinition>(
     );
   }, [filterDefinitions]);
 
-  const effectiveVisibleDefinitions = uncontrolledAddFilter
+  const effectiveVisibleDefinitions = uncontrolledAddFilterMode
     ? managedVisibleDefinitions
     : simpleVisibleDefinitions;
 
   const handleFilterRemoved = useCallback(
     (filterKey: string) => {
-      if (uncontrolledAddFilter) {
+      if (uncontrolledAddFilterMode) {
         hideFilter(filterKey);
       }
       onFilterRemoved?.(filterKey);
     },
-    [uncontrolledAddFilter, hideFilter, onFilterRemoved],
+    [uncontrolledAddFilterMode, hideFilter, onFilterRemoved],
   );
 
   const handleFilterShown = useCallback(
@@ -120,7 +120,7 @@ export function FilterList<Q extends ObjectTypeDefinition>(
   );
 
   const effectiveRenderAddFilterButton = useMemo(() => {
-    if (uncontrolledAddFilter && managedHiddenDefinitions.length > 0) {
+    if (uncontrolledAddFilterMode && managedHiddenDefinitions.length > 0) {
       return () => (
         <AddFilterPopover
           hiddenDefinitions={hiddenFilterItems}
@@ -130,14 +130,14 @@ export function FilterList<Q extends ObjectTypeDefinition>(
     }
     return renderAddFilterButton;
   }, [
-    uncontrolledAddFilter,
+    uncontrolledAddFilterMode,
     managedHiddenDefinitions.length,
     hiddenFilterItems,
     handleFilterShown,
     renderAddFilterButton,
   ]);
 
-  const effectiveOnFilterRemoved = uncontrolledAddFilter
+  const effectiveOnFilterRemoved = uncontrolledAddFilterMode
     ? handleFilterRemoved
     : onFilterRemoved;
 
