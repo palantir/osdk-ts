@@ -330,16 +330,20 @@ async function main(): Promise<void> {
 
   const hostFs = {
     async writeFile(filePath: string, contents: string): Promise<void> {
-      const fullPath = path.isAbsolute(filePath)
-        ? filePath
-        : path.join(fullOutputDir, filePath);
+      // Normalize backslashes to forward slashes so path.join/isAbsolute
+      // work consistently on Windows where generators may emit mixed separators.
+      const normalized = filePath.replace(/\\/g, "/");
+      const fullPath = path.isAbsolute(normalized)
+        ? normalized
+        : path.join(fullOutputDir, normalized);
       await fs.mkdir(path.dirname(fullPath), { recursive: true });
       await fs.writeFile(fullPath, contents, "utf-8");
     },
     async mkdir(dirPath: string): Promise<void> {
-      const fullPath = path.isAbsolute(dirPath)
-        ? dirPath
-        : path.join(fullOutputDir, dirPath);
+      const normalized = dirPath.replace(/\\/g, "/");
+      const fullPath = path.isAbsolute(normalized)
+        ? normalized
+        : path.join(fullOutputDir, normalized);
       await fs.mkdir(fullPath, { recursive: true });
     },
     async readdir(dirPath: string): Promise<string[]> {

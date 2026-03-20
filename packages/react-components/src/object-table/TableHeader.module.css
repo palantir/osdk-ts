@@ -78,8 +78,9 @@
   border-left: var(--osdk-table-pinned-column-border);
 }
 
-.osdkTableHeaderCell:has([role="checkbox"]) {
+.osdkTableSelectionHeaderCell {
   justify-content: center;
+  padding: 0;
 }
 
 .osdkTableHeaderResizer {

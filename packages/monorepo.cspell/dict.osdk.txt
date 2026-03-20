@@ -9,12 +9,14 @@ mwalther
 Nativewind
 nihalb
 ontologyir
+ontologyobject
 osdk
 osdktest
 palantirfoundry
 Palo
 paperplane
 Pivotable
+primarykey
 Pressable
 psdk
 siteasset

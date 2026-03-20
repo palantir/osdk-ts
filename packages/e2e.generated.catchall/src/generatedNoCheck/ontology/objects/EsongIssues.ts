@@ -117,6 +117,8 @@ export interface EsongIssues extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'EsongIssues';
+  primaryKeyApiName: 'id';
+  primaryKeyType: 'integer';
   __DefinitionMetadata?: {
     objectSet: EsongIssues.ObjectSet;
     props: EsongIssues.Props;
@@ -238,6 +240,8 @@ export const EsongIssues = {
   type: 'object',
   apiName: 'EsongIssues',
   osdkMetadata: $osdkMetadata,
+  primaryKeyApiName: 'id',
+  primaryKeyType: 'integer',
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.object-type.9e50a0d3-5b89-41f5-a894-b0e9bb388950',
   },

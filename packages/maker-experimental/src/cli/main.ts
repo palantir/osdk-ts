@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { ObjectTypeBlockDataV2 } from "@osdk/client.unstable";
 import { consola } from "consola";
 import { createJiti } from "jiti";
 import * as fs from "node:fs";
@@ -22,11 +23,29 @@ import invariant from "tiny-invariant";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { defineOntologyV2 } from "../api/defineOntologyV2.js";
+import { ReadableIdGenerator } from "../util/generateRid.js";
+import {
+  generateBackingDatasetBlockResult,
+  getNonEditOnlyProperties,
+} from "./generateBackingDataset.js";
 import type { BlockGeneratorResult } from "./marketplaceSerialization/BlockGeneratorResult.js";
+import type { InputMappingEntry } from "./marketplaceSerialization/supportingTypes.js";
 
 const apiNamespaceRegex = /^[a-z0-9-]+(\.[a-z0-9-]+)*\.$/;
 const uuidRegex =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
+
+/**
+ * Find an ObjectTypeBlockDataV2 by apiName within the ontology block data.
+ */
+function findObjectTypeByApiName(
+  objectTypes: Record<string, ObjectTypeBlockDataV2>,
+  apiName: string,
+): ObjectTypeBlockDataV2 | undefined {
+  return Object.values(objectTypes).find(
+    (objectTypeBlockData) => objectTypeBlockData.objectType.apiName === apiName,
+  );
+}
 
 export default async function main(
   args: string[] = process.argv,
@@ -99,7 +118,7 @@ export default async function main(
     );
   }
 
-  const [ontologyBlockDataV2, shapes] = await loadOntology(
+  const { ontologyIr, shapes, backingDatasourceApiNames } = await loadOntology(
     commandLineOpts.input,
     apiNamespace,
     commandLineOpts.randomnessKey,
@@ -113,9 +132,51 @@ export default async function main(
 
   // Write ontology.json to the block data directory
   const ontologyJsonPath = path.join(blockDataDir, "ontology.json");
-  const ontologyJson = JSON.stringify(ontologyBlockDataV2.ontology, null, 2);
+  const ontologyJson = JSON.stringify(ontologyIr.ontology, null, 2);
   await fs.promises.writeFile(ontologyJsonPath, ontologyJson);
   consola.info(`Wrote ontology.json to ${ontologyJsonPath}`);
+
+  // Collect input_mapping_entries for the ontology block
+  // These map ontology inputs to datasource block outputs for objects with includeEmptyBackingDatasource
+  const ontologyInputMappingEntries: InputMappingEntry[] = [];
+
+  for (const apiName of backingDatasourceApiNames) {
+    const objectTypeBlockData = findObjectTypeByApiName(
+      ontologyIr.ontology.objectTypes,
+      apiName,
+    );
+    if (!objectTypeBlockData) continue;
+
+    const nonEditOnlyProps = getNonEditOnlyProperties(objectTypeBlockData);
+
+    // The ontology block has inputs with these readable IDs (from shape extraction)
+    // Map them to the datasource block's outputs (which use the same readable IDs)
+    const inputDatasetReadableId = ReadableIdGenerator.getForDataset(apiName);
+    const outputDatasetReadableId = ReadableIdGenerator.getForDatasetOutput(
+      apiName,
+    );
+    if (shapes.inputShapes.has(inputDatasetReadableId)) {
+      ontologyInputMappingEntries.push({
+        input: inputDatasetReadableId,
+        output: outputDatasetReadableId,
+      });
+    }
+
+    for (const prop of nonEditOnlyProps) {
+      const colInputReadableId = ReadableIdGenerator.getForDatasetColumn(
+        apiName,
+        prop.apiName!,
+      );
+      const getForDatasetColumnOutput = ReadableIdGenerator
+        .getForDatasetColumnOutput(apiName, prop.apiName!);
+      if (shapes.inputShapes.has(colInputReadableId)) {
+        ontologyInputMappingEntries.push({
+          input: colInputReadableId,
+          output: getForDatasetColumnOutput,
+        });
+      }
+    }
+  }
 
   // Create BlockGeneratorResult
   const blockGeneratorResult: BlockGeneratorResult = {
@@ -125,7 +186,7 @@ export default async function main(
     maven_block_data_metadata: undefined,
     inputs: Object.fromEntries(shapes.inputShapes),
     outputs: Object.fromEntries(shapes.outputShapes),
-    input_mapping_entries: [],
+    input_mapping_entries: ontologyInputMappingEntries,
     external_recommendations: [],
     add_on_override: undefined,
     input_shape_metadata: Object.fromEntries(shapes.inputShapeMetadata),
@@ -148,6 +209,37 @@ export default async function main(
   consola.info(
     `Block data directory: ${blockDataDir}`,
   );
+
+  // Generate backing datasource BlockGeneratorResults for objects with includeEmptyBackingDatasource
+  for (const apiName of backingDatasourceApiNames) {
+    const objectTypeBlockData = findObjectTypeByApiName(
+      ontologyIr.ontology.objectTypes,
+      apiName,
+    );
+    if (!objectTypeBlockData) continue;
+
+    consola.info(
+      `Generating backing datasource BlockGeneratorResult for ${apiName}...`,
+    );
+
+    const dsResult = await generateBackingDatasetBlockResult(
+      objectTypeBlockData,
+      commandLineOpts.buildDir,
+      commandLineOpts.randomnessKey,
+    );
+
+    const dsOutputPath = path.join(
+      commandLineOpts.buildDir,
+      `${apiName}_backing_ds_block_generator_result.json`,
+    );
+    await fs.promises.writeFile(
+      dsOutputPath,
+      JSON.stringify(dsResult, null, 2),
+    );
+    consola.success(
+      `Backing datasource BlockGeneratorResult written to ${dsOutputPath}`,
+    );
+  }
 }
 
 async function loadOntology(
@@ -155,7 +247,7 @@ async function loadOntology(
   apiNamespace: string,
   randomnessKey?: string,
 ) {
-  const ontologyIr = await defineOntologyV2(
+  const result = await defineOntologyV2(
     apiNamespace,
     async () => {
       const jiti = createJiti(import.meta.filename, {
@@ -167,5 +259,5 @@ async function loadOntology(
     },
     randomnessKey,
   );
-  return ontologyIr;
+  return result;
 }

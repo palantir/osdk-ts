@@ -15,7 +15,7 @@
  */
 
 import type { ObjectTypeDefinition, Osdk } from "@osdk/api";
-import { renderHook } from "@testing-library/react";
+import { act, renderHook } from "@testing-library/react";
 import * as React from "react";
 import { beforeEach, describe, expect, it, vitest } from "vitest";
 import { OsdkContext2 } from "../src/new/OsdkContext2.js";
@@ -127,5 +127,47 @@ describe("useLinks enabled option", () => {
     expect(mockObserveLinks).toHaveBeenCalledTimes(1);
     const options = mockObserveLinks.mock.calls[0][2];
     expect(options.dedupeInterval).toBe(5000);
+  });
+
+  it("should default linkedObjectsBySourcePrimaryKey to empty map before payload", () => {
+    const wrapper = createWrapper();
+
+    const { result } = renderHook(
+      () => useLinks(mockObject, "relatedObjects"),
+      { wrapper },
+    );
+
+    expect(result.current.linkedObjectsBySourcePrimaryKey).toBeDefined();
+    expect(result.current.linkedObjectsBySourcePrimaryKey.size).toBe(0);
+  });
+
+  it("should return linkedObjectsBySourcePrimaryKey from observer payload", () => {
+    const wrapper = createWrapper();
+
+    const { result } = renderHook(
+      () => useLinks(mockObject, "relatedObjects"),
+      { wrapper },
+    );
+
+    const observer = mockObserveLinks.mock.calls[0][3];
+
+    const linkedObj = {
+      $objectType: "LinkedObject",
+      $primaryKey: "linked-1",
+      $apiName: "LinkedObject",
+    };
+
+    act(() => {
+      observer.next({
+        resolvedList: [linkedObj],
+        linkedObjectsBySourcePrimaryKey: new Map([["obj-123", [linkedObj]]]),
+        status: "loaded",
+        isOptimistic: false,
+        hasMore: false,
+      });
+    });
+
+    expect(result.current.linkedObjectsBySourcePrimaryKey.get("obj-123"))
+      .toEqual([linkedObj]);
   });
 });

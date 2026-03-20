@@ -62,12 +62,12 @@ function valueToString(value: unknown): string {
   return String(value as string | number | boolean | symbol | bigint);
 }
 
-function parseValueByType<CellValue = unknown>(
+function parseValueByType(
   value: string,
   dataType?: string,
-): CellValue | null {
+): unknown {
   if (!dataType || !NUMBER_TYPES.includes(dataType)) {
-    return value as unknown as CellValue;
+    return value;
   }
 
   if (value === "") {
@@ -77,10 +77,10 @@ function parseValueByType<CellValue = unknown>(
   const parsedNumber = Number(value);
 
   if (isNaN(parsedNumber)) {
-    return value as unknown as CellValue;
+    return value;
   }
 
-  return parsedNumber as unknown as CellValue;
+  return parsedNumber;
 }
 
 const VALIDATION_ERROR_MESSAGE = "Validation error";
@@ -136,7 +136,7 @@ function EditableCellInner<TData extends RowData, CellValue = unknown>({
     // Cancel any in-flight validation
     abortController();
 
-    const parsedValue = parseValueByType<CellValue>(inputValue, dataType);
+    const parsedValue = parseValueByType(inputValue, dataType) as CellValue;
 
     onCellEdit(cellId, {
       rowId,
@@ -163,12 +163,13 @@ function EditableCellInner<TData extends RowData, CellValue = unknown>({
         }),
       ]).then(
         (errorMessage) => {
-          if (!abortController.signal.aborted) {
-            if (errorMessage) {
-              onCellValidationError?.(cellId, errorMessage);
-            } else {
-              clearCellValidationError?.(cellId);
-            }
+          if (abortController.signal.aborted) {
+            return;
+          }
+          if (errorMessage) {
+            onCellValidationError?.(cellId, errorMessage);
+          } else {
+            clearCellValidationError?.(cellId);
           }
         },
         (error) => {

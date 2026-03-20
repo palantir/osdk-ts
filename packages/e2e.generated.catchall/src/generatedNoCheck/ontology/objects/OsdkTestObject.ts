@@ -71,6 +71,8 @@ export interface OsdkTestObject extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'OsdkTestObject';
+  primaryKeyApiName: 'primaryKey_';
+  primaryKeyType: 'string';
   __DefinitionMetadata?: {
     objectSet: OsdkTestObject.ObjectSet;
     props: OsdkTestObject.Props;
@@ -145,6 +147,8 @@ export const OsdkTestObject = {
   type: 'object',
   apiName: 'OsdkTestObject',
   osdkMetadata: $osdkMetadata,
+  primaryKeyApiName: 'primaryKey_',
+  primaryKeyType: 'string',
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.object-type.ba4a949c-547a-45de-9c78-b772bb55acfb',
   },

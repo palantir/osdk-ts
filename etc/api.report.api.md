@@ -1243,6 +1243,10 @@ export interface ObjectTypeDefinition {
     	// (undocumented)
     osdkMetadata?: OsdkMetadata;
     	// (undocumented)
+    primaryKeyApiName?: string;
+    	// (undocumented)
+    primaryKeyType?: PrimaryKeyTypes;
+    	// (undocumented)
     type: "object";
 }
 

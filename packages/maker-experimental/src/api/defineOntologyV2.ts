@@ -15,17 +15,28 @@
  */
 
 import type { OntologyIrV2 } from "@osdk/client.unstable";
-import { getOntologyDefinition, initializeOntologyState } from "@osdk/maker";
+import type { ObjectType } from "@osdk/maker";
+import {
+  getOntologyDefinition,
+  initializeOntologyState,
+  OntologyEntityTypeEnum,
+} from "@osdk/maker";
 import { convertOntologyDefinition } from "../conversion/toMarketplace/convertOntologyDefinition.js";
 import { getShapes } from "../conversion/toMarketplace/shapeExtractors/IrShapeExtractor.js";
 import type { BlockShapes } from "../util/generateRid.js";
 import { OntologyRidGeneratorImpl } from "../util/generateRid.js";
 
+export interface OntologyV2Result {
+  ontologyIr: OntologyIrV2;
+  shapes: BlockShapes;
+  backingDatasourceApiNames: string[];
+}
+
 export async function defineOntologyV2(
   ns: string,
   body: () => void | Promise<void>,
   randomnessKey?: string,
-): Promise<[OntologyIrV2, BlockShapes]> {
+): Promise<OntologyV2Result> {
   initializeOntologyState(ns);
 
   try {
@@ -39,9 +50,11 @@ export async function defineOntologyV2(
     throw e;
   }
 
+  const ontologyDefinition = getOntologyDefinition();
+
   const ridGenerator = new OntologyRidGeneratorImpl();
   const ontDef = convertOntologyDefinition(
-    getOntologyDefinition(),
+    ontologyDefinition,
     ridGenerator,
     randomnessKey,
   );
@@ -52,5 +65,13 @@ export async function defineOntologyV2(
     randomnessKey,
   );
 
-  return [ontDef, shapes];
+  const backingDatasourceApiNames = Object.entries(
+    ontologyDefinition[OntologyEntityTypeEnum.OBJECT_TYPE],
+  )
+    .filter(([_, obj]) =>
+      (obj as ObjectType).includeEmptyBackingDatasource === true
+    )
+    .map(([apiName]) => apiName);
+
+  return { ontologyIr: ontDef, shapes, backingDatasourceApiNames };
 }

@@ -631,6 +631,80 @@ describe("aggregate", () => {
     });
   });
 
+  it("throws descriptive error when server returns error response", async () => {
+    const errorResponse = {
+      errorCode: "INVALID_ARGUMENT",
+      errorName: "AggregationMetricNotSupported",
+      errorInstanceId: "00000000-0000-0000-0000-000000000000",
+      parameters: {
+        aggregationMetricName: "max",
+        objectType: "MyObject",
+        property: "fromDate",
+        propertyBaseType: "Array<LocalDate>",
+      },
+    };
+
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      json: () => Promise.resolve(errorResponse),
+    });
+
+    await expect(
+      aggregate(
+        clientCtx,
+        objectTypeWithAllPropertyTypes,
+        {
+          type: "base",
+          objectType: "ToDo",
+        },
+        {
+          $select: {
+            "id:max": "unordered",
+          },
+        },
+      ),
+    ).rejects.toThrow("Aggregation request failed");
+  });
+
+  it("throws descriptive error when server returns error for grouped aggregation", async () => {
+    const errorResponse = {
+      errorCode: "INVALID_ARGUMENT",
+      errorName: "InvalidDurationGroupByPropertyType",
+      errorInstanceId: "00000000-0000-0000-0000-000000000000",
+      parameters: {
+        property: "fromDate",
+        objectType: "MyObject",
+        propertyBaseType: "Array<LocalDate>",
+      },
+    };
+
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      json: () => Promise.resolve(errorResponse),
+    });
+
+    await expect(
+      aggregate(
+        clientCtx,
+        objectTypeWithAllPropertyTypes,
+        {
+          type: "base",
+          objectType: "ToDo",
+        },
+        {
+          $select: {
+            "id:max": "unordered",
+          },
+          $groupBy: {
+            id: "exact",
+          },
+        },
+      ),
+    ).rejects.toThrow("Aggregation request failed");
+  });
+
   it("works with where: todo", async () => {
     const f: AggregateOpts<
       Employee

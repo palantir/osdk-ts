@@ -23,6 +23,7 @@ import type {
 import { useOsdkAggregation } from "@osdk/react/experimental";
 import classnames from "classnames";
 import React, { memo, useCallback, useMemo } from "react";
+import { assertUnreachable } from "../../shared/assertUnreachable.js";
 import { CheckboxListInput } from "../base/inputs/CheckboxListInput.js";
 import { ContainsTextInput } from "../base/inputs/ContainsTextInput.js";
 import { DateRangeInput } from "../base/inputs/DateRangeInput.js";
@@ -45,7 +46,6 @@ import {
   createNullCountAggregateOptions,
   createNullWhereClause,
 } from "../utils/aggregationHelpers.js";
-import { assertUnreachable } from "../utils/assertUnreachable.js";
 import {
   coerceToString,
   coerceToStringArray,
