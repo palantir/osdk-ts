@@ -108,8 +108,38 @@ describe("Load Ontologies Metadata", () => {
     expect(ontologyDefinitions.error).toMatchInlineSnapshot(`
       [
         "Unable to find the following Object Types: objectDoesNotExist",
+        "Link types were specified for Object Type employee (doesNotExist), but it was not included in --objectTypes. Please add --objectTypes employee",
         "Unable to find the following Query Types: queryDoesNotExist",
         "Unable to find the following Action Types: action-does-not-exit",
+      ]
+    `);
+  });
+
+  it("Fails when link types reference object types not in --objectTypes", async () => {
+    const ontologyMetadataResolver = new OntologyMetadataResolver(
+      "myAccessToken",
+      "https://stack.palantir.com",
+    );
+    const ontologyDefinitions = await ontologyMetadataResolver
+      .getWireOntologyDefinition(
+        "ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361",
+        {
+          objectTypesApiNamesToLoad: ["Employee"],
+          actionTypesApiNamesToLoad: [],
+          linkTypesApiNamesToLoad: [
+            "Employee.peeps",
+            "invalid.invalid",
+          ],
+        },
+      );
+
+    if (ontologyDefinitions.isOk()) {
+      throw new Error();
+    }
+
+    expect(ontologyDefinitions.error).toMatchInlineSnapshot(`
+      [
+        "Link types were specified for Object Type invalid (invalid), but it was not included in --objectTypes. Please add --objectTypes invalid",
       ]
     `);
   });
