@@ -29,6 +29,7 @@ import {
 import type { LinkType, UserLinkTypeStatus } from "../../api/links/LinkType.js";
 import type { ObjectType } from "../../api/object/ObjectType.js";
 import type { ObjectTypeDefinition } from "../../api/object/ObjectTypeDefinition.js";
+import { MAX_API_NAME_LENGTH } from "../../util/ApiNameValidator.js";
 import { convertCardinality } from "./convertCardinality.js";
 
 export function convertLink(
@@ -190,6 +191,21 @@ function validateLink(linkDefinition: LinkType) {
       `Top level link api names are expected to match the regex pattern ([a-z][a-z0-9\\-]*) ${linkDefinition.apiName} does not match`,
     );
 
+    const oneApiName = linkDefinition.one.metadata.apiName;
+    if (oneApiName) {
+      invariant(
+        oneApiName.length <= MAX_API_NAME_LENGTH,
+        `Link side API name "${oneApiName}" exceeds maximum length of ${MAX_API_NAME_LENGTH} characters.`,
+      );
+    }
+    const toManyApiName = linkDefinition.toMany.metadata.apiName;
+    if (toManyApiName) {
+      invariant(
+        toManyApiName.length <= MAX_API_NAME_LENGTH,
+        `Link side API name "${toManyApiName}" exceeds maximum length of ${MAX_API_NAME_LENGTH} characters.`,
+      );
+    }
+
     const typesMatch = foreignKey.type
       === oneObject.properties?.find(p =>
         p.apiName === oneObject.primaryKeyPropertyApiName
@@ -198,6 +214,22 @@ function validateLink(linkDefinition: LinkType) {
       typesMatch,
       `Link ${linkDefinition.apiName} has type mismatch between the one side's primary key and the foreign key on the many side`,
     );
+  }
+  if ("many" in linkDefinition) {
+    const manyApiName = linkDefinition.many.metadata.apiName;
+    if (manyApiName) {
+      invariant(
+        manyApiName.length <= MAX_API_NAME_LENGTH,
+        `Link side API name "${manyApiName}" exceeds maximum length of ${MAX_API_NAME_LENGTH} characters.`,
+      );
+    }
+    const manyToManyApiName = linkDefinition.toMany.metadata.apiName;
+    if (manyToManyApiName) {
+      invariant(
+        manyToManyApiName.length <= MAX_API_NAME_LENGTH,
+        `Link side API name "${manyToManyApiName}" exceeds maximum length of ${MAX_API_NAME_LENGTH} characters.`,
+      );
+    }
   }
   if ("intermediaryObjectType" in linkDefinition) {
     const {

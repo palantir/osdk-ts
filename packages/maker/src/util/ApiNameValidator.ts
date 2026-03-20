@@ -27,13 +27,16 @@ const RESERVED_KEYWORDS = new Set([
 ]);
 export const OBJECT_API_NAME_PATTERN: RegExp = /^([a-zA-Z][a-zA-Z0-9]*)$/;
 export const API_NAME_PATTERN: RegExp = /^([a-zA-Z][a-zA-Z0-9_]*)$/;
+export const MAX_API_NAME_LENGTH = 100;
 
 export function isValidApiName(apiName: string): boolean {
   return API_NAME_PATTERN.test(apiName)
+    && apiName.length <= MAX_API_NAME_LENGTH
     && !RESERVED_KEYWORDS.has(apiName.toLowerCase());
 }
 
 export function isValidObjectApiName(apiName: string): boolean {
   return OBJECT_API_NAME_PATTERN.test(apiName)
+    && apiName.length <= MAX_API_NAME_LENGTH
     && !RESERVED_KEYWORDS.has(apiName.toLowerCase());
 }
