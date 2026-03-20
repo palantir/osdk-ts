@@ -69,6 +69,7 @@ export interface createTestGeoAction extends ActionDefinition<createTestGeoActio
       };
     };
     parameters: createTestGeoAction.ParamsDefinition;
+    platformApiName: 'create-test-geo-action';
     rid: 'ri.actions.main.action-type.7558117e-5dd4-461c-9c81-760deb512d32';
     status: 'EXPERIMENTAL';
     type: 'action';
@@ -76,12 +77,14 @@ export interface createTestGeoAction extends ActionDefinition<createTestGeoActio
     signatures: createTestGeoAction.Signatures;
   };
   apiName: 'createTestGeoAction';
+  platformApiName: 'create-test-geo-action';
   type: 'action';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 export const createTestGeoAction: createTestGeoAction = {
   apiName: 'createTestGeoAction',
+  platformApiName: 'create-test-geo-action',
   type: 'action',
   osdkMetadata: $osdkMetadata,
 };

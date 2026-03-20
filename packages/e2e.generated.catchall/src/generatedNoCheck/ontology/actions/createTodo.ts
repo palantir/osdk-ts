@@ -48,6 +48,7 @@ export interface createTodo extends ActionDefinition<createTodo.Signatures> {
       };
     };
     parameters: createTodo.ParamsDefinition;
+    platformApiName: 'create-todo';
     rid: 'ri.a.b.c.d';
     status: 'ACTIVE';
     type: 'action';
@@ -55,12 +56,14 @@ export interface createTodo extends ActionDefinition<createTodo.Signatures> {
     signatures: createTodo.Signatures;
   };
   apiName: 'createTodo';
+  platformApiName: 'create-todo';
   type: 'action';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 export const createTodo: createTodo = {
   apiName: 'createTodo',
+  platformApiName: 'create-todo',
   type: 'action',
   osdkMetadata: $osdkMetadata,
 };

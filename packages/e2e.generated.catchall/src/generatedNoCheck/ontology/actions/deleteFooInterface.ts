@@ -47,6 +47,7 @@ export interface deleteFooInterface extends ActionDefinition<deleteFooInterface.
     displayName: 'Delete Foo Interface';
     modifiedEntities: {};
     parameters: deleteFooInterface.ParamsDefinition;
+    platformApiName: 'delete-foo-interface';
     rid: 'ri.actions.main.action-type.3828bab4-49c7-4fdf-a780-6ccbc359d817';
     status: 'ACTIVE';
     type: 'action';
@@ -54,12 +55,14 @@ export interface deleteFooInterface extends ActionDefinition<deleteFooInterface.
     signatures: deleteFooInterface.Signatures;
   };
   apiName: 'deleteFooInterface';
+  platformApiName: 'delete-foo-interface';
   type: 'action';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 export const deleteFooInterface: deleteFooInterface = {
   apiName: 'deleteFooInterface',
+  platformApiName: 'delete-foo-interface',
   type: 'action',
   osdkMetadata: $osdkMetadata,
 };

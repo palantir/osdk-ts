@@ -97,6 +97,7 @@ export interface moveOffice extends ActionDefinition<moveOffice.Signatures> {
       };
     };
     parameters: moveOffice.ParamsDefinition;
+    platformApiName: 'move-office';
     rid: 'ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f2';
     status: 'ACTIVE';
     type: 'action';
@@ -104,12 +105,14 @@ export interface moveOffice extends ActionDefinition<moveOffice.Signatures> {
     signatures: moveOffice.Signatures;
   };
   apiName: 'moveOffice';
+  platformApiName: 'move-office';
   type: 'action';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 export const moveOffice: moveOffice = {
   apiName: 'moveOffice',
+  platformApiName: 'move-office',
   type: 'action',
   osdkMetadata: $osdkMetadata,
 };

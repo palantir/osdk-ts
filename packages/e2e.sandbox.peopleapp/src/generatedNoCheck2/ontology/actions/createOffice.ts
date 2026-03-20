@@ -60,6 +60,7 @@ export interface createOffice extends ActionDefinition<createOffice.Signatures> 
       };
     };
     parameters: createOffice.ParamsDefinition;
+    platformApiName: 'create-office';
     rid: 'ri.actions.main.action-type.1149ae48-9a4a-45f1-92ba-90e046f7b3c7';
     status: 'EXPERIMENTAL';
     type: 'action';
@@ -67,12 +68,14 @@ export interface createOffice extends ActionDefinition<createOffice.Signatures> 
     signatures: createOffice.Signatures;
   };
   apiName: 'createOffice';
+  platformApiName: 'create-office';
   type: 'action';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 export const createOffice: createOffice = {
   apiName: 'createOffice',
+  platformApiName: 'create-office',
   type: 'action',
   osdkMetadata: $osdkMetadata,
 };

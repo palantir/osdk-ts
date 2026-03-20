@@ -60,6 +60,7 @@ export interface createMediaObject extends ActionDefinition<createMediaObject.Si
       };
     };
     parameters: createMediaObject.ParamsDefinition;
+    platformApiName: 'create-media-object';
     rid: 'ri.actions.main.action-type.55c19ac6-47a4-46f6-9bab-b97f9016ff92';
     status: 'EXPERIMENTAL';
     type: 'action';
@@ -67,12 +68,14 @@ export interface createMediaObject extends ActionDefinition<createMediaObject.Si
     signatures: createMediaObject.Signatures;
   };
   apiName: 'createMediaObject';
+  platformApiName: 'create-media-object';
   type: 'action';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 export const createMediaObject: createMediaObject = {
   apiName: 'createMediaObject',
+  platformApiName: 'create-media-object',
   type: 'action',
   osdkMetadata: $osdkMetadata,
 };

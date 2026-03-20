@@ -60,6 +60,7 @@ export interface createUnstructuredImageExample extends ActionDefinition<createU
       };
     };
     parameters: createUnstructuredImageExample.ParamsDefinition;
+    platformApiName: 'create-unstructured-image-example';
     rid: 'ri.actions.main.action-type.9d28a423-b11e-485f-8a4c-f8b4131c0b85';
     status: 'EXPERIMENTAL';
     type: 'action';
@@ -67,12 +68,14 @@ export interface createUnstructuredImageExample extends ActionDefinition<createU
     signatures: createUnstructuredImageExample.Signatures;
   };
   apiName: 'createUnstructuredImageExample';
+  platformApiName: 'create-unstructured-image-example';
   type: 'action';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 export const createUnstructuredImageExample: createUnstructuredImageExample = {
   apiName: 'createUnstructuredImageExample',
+  platformApiName: 'create-unstructured-image-example',
   type: 'action',
   osdkMetadata: $osdkMetadata,
 };

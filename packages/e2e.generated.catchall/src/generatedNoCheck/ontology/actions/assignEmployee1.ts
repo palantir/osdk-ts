@@ -69,6 +69,7 @@ export interface assignEmployee1 extends ActionDefinition<assignEmployee1.Signat
       };
     };
     parameters: assignEmployee1.ParamsDefinition;
+    platformApiName: 'assign-employee-1';
     rid: 'ri.a.b.c.d';
     status: 'ACTIVE';
     type: 'action';
@@ -76,12 +77,14 @@ export interface assignEmployee1 extends ActionDefinition<assignEmployee1.Signat
     signatures: assignEmployee1.Signatures;
   };
   apiName: 'assignEmployee1';
+  platformApiName: 'assign-employee-1';
   type: 'action';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 export const assignEmployee1: assignEmployee1 = {
   apiName: 'assignEmployee1',
+  platformApiName: 'assign-employee-1',
   type: 'action',
   osdkMetadata: $osdkMetadata,
 };

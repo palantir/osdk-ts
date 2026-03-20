@@ -112,6 +112,7 @@ export interface createOfficeAndEmployee extends ActionDefinition<createOfficeAn
       };
     };
     parameters: createOfficeAndEmployee.ParamsDefinition;
+    platformApiName: 'create-office-and-employee';
     rid: 'ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f2';
     status: 'ACTIVE';
     type: 'action';
@@ -119,12 +120,14 @@ export interface createOfficeAndEmployee extends ActionDefinition<createOfficeAn
     signatures: createOfficeAndEmployee.Signatures;
   };
   apiName: 'createOfficeAndEmployee';
+  platformApiName: 'create-office-and-employee';
   type: 'action';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 export const createOfficeAndEmployee: createOfficeAndEmployee = {
   apiName: 'createOfficeAndEmployee',
+  platformApiName: 'create-office-and-employee',
   type: 'action',
   osdkMetadata: $osdkMetadata,
 };

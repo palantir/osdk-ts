@@ -60,6 +60,7 @@ export interface setTaskBody extends ActionDefinition<setTaskBody.Signatures> {
       };
     };
     parameters: setTaskBody.ParamsDefinition;
+    platformApiName: 'setTaskBody';
     rid: 'ri.a.b.c.d';
     status: 'ACTIVE';
     type: 'action';
@@ -67,12 +68,14 @@ export interface setTaskBody extends ActionDefinition<setTaskBody.Signatures> {
     signatures: setTaskBody.Signatures;
   };
   apiName: 'setTaskBody';
+  platformApiName: 'setTaskBody';
   type: 'action';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 export const setTaskBody: setTaskBody = {
   apiName: 'setTaskBody',
+  platformApiName: 'setTaskBody',
   type: 'action',
   osdkMetadata: $osdkMetadata,
 };

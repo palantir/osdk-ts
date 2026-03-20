@@ -51,6 +51,7 @@ export interface createMediaViaFunction extends ActionDefinition<createMediaViaF
       };
     };
     parameters: createMediaViaFunction.ParamsDefinition;
+    platformApiName: 'create-media-via-function';
     rid: 'ri.actions.main.action-type.55c19ac6-47a4-46f6-9bab-b97f9016ff92';
     status: 'EXPERIMENTAL';
     type: 'action';
@@ -58,12 +59,14 @@ export interface createMediaViaFunction extends ActionDefinition<createMediaViaF
     signatures: createMediaViaFunction.Signatures;
   };
   apiName: 'createMediaViaFunction';
+  platformApiName: 'create-media-via-function';
   type: 'action';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 export const createMediaViaFunction: createMediaViaFunction = {
   apiName: 'createMediaViaFunction',
+  platformApiName: 'create-media-via-function',
   type: 'action',
   osdkMetadata: $osdkMetadata,
 };

@@ -116,6 +116,7 @@ export interface actionTakesAllParameterTypes extends ActionDefinition<actionTak
       };
     };
     parameters: actionTakesAllParameterTypes.ParamsDefinition;
+    platformApiName: 'actionTakesAllParameterTypes';
     rid: 'ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f2';
     status: 'ACTIVE';
     type: 'action';
@@ -123,12 +124,14 @@ export interface actionTakesAllParameterTypes extends ActionDefinition<actionTak
     signatures: actionTakesAllParameterTypes.Signatures;
   };
   apiName: 'actionTakesAllParameterTypes';
+  platformApiName: 'actionTakesAllParameterTypes';
   type: 'action';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 export const actionTakesAllParameterTypes: actionTakesAllParameterTypes = {
   apiName: 'actionTakesAllParameterTypes',
+  platformApiName: 'actionTakesAllParameterTypes',
   type: 'action',
   osdkMetadata: $osdkMetadata,
 };

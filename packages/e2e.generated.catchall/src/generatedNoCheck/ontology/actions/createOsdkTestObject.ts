@@ -69,6 +69,7 @@ export interface createOsdkTestObject extends ActionDefinition<createOsdkTestObj
       };
     };
     parameters: createOsdkTestObject.ParamsDefinition;
+    platformApiName: 'create-osdk-test-object';
     rid: 'ri.actions.main.action-type.75c72b90-815b-48df-a3b3-314af2e9e2eb';
     status: 'EXPERIMENTAL';
     type: 'action';
@@ -76,12 +77,14 @@ export interface createOsdkTestObject extends ActionDefinition<createOsdkTestObj
     signatures: createOsdkTestObject.Signatures;
   };
   apiName: 'createOsdkTestObject';
+  platformApiName: 'create-osdk-test-object';
   type: 'action';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 export const createOsdkTestObject: createOsdkTestObject = {
   apiName: 'createOsdkTestObject',
+  platformApiName: 'create-osdk-test-object',
   type: 'action',
   osdkMetadata: $osdkMetadata,
 };
