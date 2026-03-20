@@ -36,15 +36,19 @@ export function createWithPropertiesObjectSet<
 ): DerivedProperty.SelectPropertyBuilder<Q, false> {
   return {
     pivotTo: (link) => {
-      return createWithPropertiesObjectSet(
-        objectType,
-        {
-          type: "searchAround",
-          objectSet,
-          link,
-        },
-        definitionMap
-      );
+      return createWithPropertiesObjectSet(objectType, {
+        ...(objectType.type === "object"
+          ? {
+            type: "searchAround",
+            objectSet,
+            link,
+          }
+          : {
+            type: "interfaceLinkSearchAround",
+            objectSet,
+            interfaceLink: link,
+          }),
+      }, definitionMap);
     },
     where: (clause) => {
       const rdpNames = new Set(definitionMap.keys());
