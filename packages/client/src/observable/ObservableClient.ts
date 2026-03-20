@@ -536,24 +536,26 @@ export interface ObservableClient extends ObserveLinks {
     where: WhereClause<T, RDPs>,
   ) => Canonical<WhereClause<T, RDPs>>;
 
-  canonicalizeOptions: <T extends CanonicalizeOptionsInput>(
+  canonicalizeOptions: <OS, T extends CanonicalizeOptionsInput<OS>>(
     options: T,
   ) => CanonicalizedOptions<T>;
 }
 
-export interface CanonicalizeOptionsInput {
+export interface CanonicalizeOptionsInput<OS = ObjectSet<any, any>> {
   where?: object;
   withProperties?: object;
   orderBy?: Record<string, "asc" | "desc" | undefined>;
   aggregate?: object;
   intersectWith?: Array<{ where: object }>;
-  union?: Array<ObjectSet<any, any>>;
-  intersect?: Array<ObjectSet<any, any>>;
-  subtract?: Array<ObjectSet<any, any>>;
+  union?: ReadonlyArray<OS>;
+  intersect?: ReadonlyArray<OS>;
+  subtract?: ReadonlyArray<OS>;
   $select?: ReadonlyArray<string>;
 }
 
-export type CanonicalizedOptions<T extends CanonicalizeOptionsInput> = {
+export type CanonicalizedOptions<
+  T extends CanonicalizeOptionsInput<any>,
+> = {
   [K in keyof T]: T[K];
 };
 

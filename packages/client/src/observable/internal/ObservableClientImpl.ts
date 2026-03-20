@@ -78,9 +78,9 @@ import { UnsubscribableWrapper } from "./UnsubscribableWrapper.js";
 export class ObservableClientImpl implements ObservableClient {
   __experimentalStore: Store;
 
-  #unionCache = new WeakMap<Canonical<string[]>, ObjectSet<any, any>[]>();
-  #intersectCache = new WeakMap<Canonical<string[]>, ObjectSet<any, any>[]>();
-  #subtractCache = new WeakMap<Canonical<string[]>, ObjectSet<any, any>[]>();
+  #unionCache = new WeakMap<Canonical<string[]>, ReadonlyArray<any>>();
+  #intersectCache = new WeakMap<Canonical<string[]>, ReadonlyArray<any>>();
+  #subtractCache = new WeakMap<Canonical<string[]>, ReadonlyArray<any>>();
 
   constructor(store: Store) {
     this.__experimentalStore = store;
@@ -320,7 +320,7 @@ export class ObservableClientImpl implements ObservableClient {
       .canonicalize(where) as Canonical<WhereClause<T, RDPs>>;
   }
 
-  public canonicalizeOptions<T extends CanonicalizeOptionsInput>(
+  public canonicalizeOptions<OS, T extends CanonicalizeOptionsInput<OS>>(
     options: T,
   ): CanonicalizedOptions<T> {
     const store = this.__experimentalStore;
@@ -354,7 +354,7 @@ export class ObservableClientImpl implements ObservableClient {
 
     if (result.union && result.union.length > 0) {
       const wireStrings = result.union.map(os =>
-        JSON.stringify(getWireObjectSet(os))
+        JSON.stringify(getWireObjectSet(os as ObjectSet<any, any>))
       );
       const canonKey = store.objectSetArrayCanonicalizer.canonicalizeUnion(
         wireStrings,
@@ -369,7 +369,7 @@ export class ObservableClientImpl implements ObservableClient {
 
     if (result.intersect && result.intersect.length > 0) {
       const wireStrings = result.intersect.map(os =>
-        JSON.stringify(getWireObjectSet(os))
+        JSON.stringify(getWireObjectSet(os as ObjectSet<any, any>))
       );
       const canonKey = store.objectSetArrayCanonicalizer.canonicalizeIntersect(
         wireStrings,
@@ -384,7 +384,7 @@ export class ObservableClientImpl implements ObservableClient {
 
     if (result.subtract && result.subtract.length > 0) {
       const wireStrings = result.subtract.map(os =>
-        JSON.stringify(getWireObjectSet(os))
+        JSON.stringify(getWireObjectSet(os as ObjectSet<any, any>))
       );
       const canonKey = store.objectSetArrayCanonicalizer.canonicalizeSubtract(
         wireStrings,
