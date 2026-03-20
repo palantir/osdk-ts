@@ -1,5 +1,11 @@
 # @osdk/create-app.template.expo.v2
 
+## 2.7.7
+
+### Patch Changes
+
+- 281e3d8: Link to guide on how to add OSDK to templates
+
 ## 2.7.6
 
 ### Patch Changes
