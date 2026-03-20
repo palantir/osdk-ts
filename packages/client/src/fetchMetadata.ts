@@ -56,7 +56,7 @@ export const fetchMetadataInternal = async <
     ) as any;
   } else if (definition.type === "action") {
     return client.ontologyProvider.getActionDefinition(
-      definition.apiName,
+      definition.platformApiName ?? definition.apiName,
     ) as any;
   } else if (definition.type === "query") {
     return client.ontologyProvider.getQueryDefinition(
