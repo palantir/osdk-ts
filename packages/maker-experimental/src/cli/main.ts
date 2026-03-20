@@ -35,18 +35,6 @@ const apiNamespaceRegex = /^[a-z0-9-]+(\.[a-z0-9-]+)*\.$/;
 const uuidRegex =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 
-/**
- * Find an ObjectTypeBlockDataV2 by apiName within the ontology block data.
- */
-function findObjectTypeByApiName(
-  objectTypes: Record<string, ObjectTypeBlockDataV2>,
-  apiName: string,
-): ObjectTypeBlockDataV2 | undefined {
-  return Object.values(objectTypes).find(
-    (objectTypeBlockData) => objectTypeBlockData.objectType.apiName === apiName,
-  );
-}
-
 export default async function main(
   args: string[] = process.argv,
 ): Promise<void> {
@@ -178,6 +166,31 @@ export default async function main(
     }
   }
 
+  // Generate backing datasource BlockGeneratorResults for objects with includeEmptyBackingDatasource
+  const backingDsGeneratorResults = await Promise.all(
+    backingDatasourceApiNames.filter(apiName => {
+      const objectTypeBlockData = findObjectTypeByApiName(
+        ontologyIr.ontology.objectTypes,
+        apiName,
+      );
+      return objectTypeBlockData !== undefined;
+    }).map(async apiName => {
+      const objectTypeBlockData = findObjectTypeByApiName(
+        ontologyIr.ontology.objectTypes,
+        apiName,
+      );
+      consola.info(
+        `Generating backing datasource BlockGeneratorResult for ${apiName}...`,
+      );
+
+      return await generateBackingDatasetBlockResult(
+        objectTypeBlockData!,
+        commandLineOpts.buildDir,
+        commandLineOpts.randomnessKey,
+      );
+    }),
+  );
+
   // Create BlockGeneratorResult
   const blockGeneratorResult: BlockGeneratorResult = {
     block_identifier: "ontology",
@@ -195,7 +208,7 @@ export default async function main(
 
   // Write BlockGeneratorResult to output file
   const blockGeneratorResultJson = JSON.stringify(
-    blockGeneratorResult,
+    [blockGeneratorResult, ...backingDsGeneratorResults],
     null,
     2,
   );
@@ -209,37 +222,6 @@ export default async function main(
   consola.info(
     `Block data directory: ${blockDataDir}`,
   );
-
-  // Generate backing datasource BlockGeneratorResults for objects with includeEmptyBackingDatasource
-  for (const apiName of backingDatasourceApiNames) {
-    const objectTypeBlockData = findObjectTypeByApiName(
-      ontologyIr.ontology.objectTypes,
-      apiName,
-    );
-    if (!objectTypeBlockData) continue;
-
-    consola.info(
-      `Generating backing datasource BlockGeneratorResult for ${apiName}...`,
-    );
-
-    const dsResult = await generateBackingDatasetBlockResult(
-      objectTypeBlockData,
-      commandLineOpts.buildDir,
-      commandLineOpts.randomnessKey,
-    );
-
-    const dsOutputPath = path.join(
-      commandLineOpts.buildDir,
-      `${apiName}_backing_ds_block_generator_result.json`,
-    );
-    await fs.promises.writeFile(
-      dsOutputPath,
-      JSON.stringify(dsResult, null, 2),
-    );
-    consola.success(
-      `Backing datasource BlockGeneratorResult written to ${dsOutputPath}`,
-    );
-  }
 }
 
 async function loadOntology(
@@ -260,4 +242,16 @@ async function loadOntology(
     randomnessKey,
   );
   return result;
+}
+
+/**
+ * Find an ObjectTypeBlockDataV2 by apiName within the ontology block data.
+ */
+function findObjectTypeByApiName(
+  objectTypes: Record<string, ObjectTypeBlockDataV2>,
+  apiName: string,
+): ObjectTypeBlockDataV2 | undefined {
+  return Object.values(objectTypes).find(
+    (objectTypeBlockData) => objectTypeBlockData.objectType.apiName === apiName,
+  );
 }
