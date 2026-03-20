@@ -12,15 +12,7 @@
     ".": {
       "import": {
         "types": "./build/types/index.d.ts",
-        "development": "./build/esm/index.js",
-        "production": "./build/esm/production.js",
         "default": "./build/esm/index.js"
-      }
-    },
-    "./production": {
-      "import": {
-        "types": "./build/types/production.d.ts",
-        "default": "./build/esm/production.js"
       }
     }
   },
