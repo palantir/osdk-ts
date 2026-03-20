@@ -39,7 +39,6 @@ export interface UseCbacBannerOptions {
    * - Conditional queries based on component state
    *
    * @default true
-   * });
    */
   enabled?: boolean;
 }
@@ -89,8 +88,8 @@ export function useCbacBanner(
     return {
       classificationString: query.data.classificationString,
       textColor: query.data.textColor,
-      backgroundColors: query.data.backgroundColors.map(String),
-      markingIds: query.data.markings.map(String),
+      backgroundColors: query.data.backgroundColors,
+      markingIds: query.data.markings,
     };
   }, [query.data]);
 

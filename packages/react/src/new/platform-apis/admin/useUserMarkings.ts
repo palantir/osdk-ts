@@ -19,7 +19,12 @@ import React from "react";
 import { usePlatformQuery } from "../../../utils/usePlatformQuery.js";
 import { OsdkContext2 } from "../../OsdkContext2.js";
 
-export interface UseUserMarkingsOptions {
+export interface UseUserViewMarkingsOptions {
+  /**
+   * The user ID to fetch view markings for.
+   * When omitted, fetches markings for the current user.
+   */
+  userId?: string;
   /**
    * Enable or disable the query.
    *
@@ -31,12 +36,11 @@ export interface UseUserMarkingsOptions {
    * - Conditional queries based on component state
    *
    * @default true
-   * });
    */
   enabled?: boolean;
 }
 
-export interface UseUserMarkingsResult {
+export interface UseUserViewMarkingsResult {
   markingIds: string[] | undefined;
   isLoading: boolean;
 
@@ -46,23 +50,26 @@ export interface UseUserMarkingsResult {
 }
 
 /**
- * Get the current user's accessible markings.
+ * Get view-accessible markings for a user.
+ * When `userId` is provided, fetches markings for that user.
+ * When omitted, fetches markings for the current user.
  * @param options Options to control the query.
  */
-export function useUserMarkings(
-  { enabled = true }: UseUserMarkingsOptions = {},
-): UseUserMarkingsResult {
+export function useUserViewMarkings(
+  { userId, enabled = true }: UseUserViewMarkingsOptions = {},
+): UseUserViewMarkingsResult {
   const { client } = React.useContext(OsdkContext2);
 
   const handleQuery = React.useCallback(async () => {
-    const currentUser = await Users.getCurrent(client);
-    return Users.getMarkings(client, currentUser.id);
-  }, [client]);
+    const resolvedUserId = userId
+      ?? (await Users.getCurrent(client)).id;
+    return Users.getMarkings(client, resolvedUserId);
+  }, [client, userId]);
 
   const query = usePlatformQuery({
     query: handleQuery,
     enabled,
-    queryName: "user-markings",
+    queryName: "user-view-markings",
   });
 
   return {

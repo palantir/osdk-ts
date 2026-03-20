@@ -40,7 +40,6 @@ export interface UseCbacMarkingRestrictionsOptions {
    * - Conditional queries based on component state
    *
    * @default true
-   * });
    */
   enabled?: boolean;
 }

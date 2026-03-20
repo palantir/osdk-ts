@@ -25,8 +25,8 @@ catalogs:
       specifier: ~2.5.0
       version: 2.5.0
     '@osdk/foundry.geo':
-      specifier: 2.50.0
-      version: 2.50.0
+      specifier: 2.54.0
+      version: 2.54.0
     '@osdk/foundry.mediasets':
       specifier: 2.50.0
       version: 2.50.0
@@ -3642,7 +3642,7 @@ importers:
         version: 2.54.0
       '@osdk/foundry.geo':
         specifier: catalog:foundry-platform-typescript
-        version: 2.50.0
+        version: 2.54.0
       '@osdk/foundry.mediasets':
         specifier: catalog:foundry-platform-typescript
         version: 2.50.0
@@ -4851,7 +4851,7 @@ importers:
         version: 2.54.0
       '@osdk/foundry.geo':
         specifier: catalog:foundry-platform-typescript
-        version: 2.50.0
+        version: 2.54.0
       '@osdk/foundry.ontologies':
         specifier: catalog:foundry-platform-typescript
         version: 2.50.0

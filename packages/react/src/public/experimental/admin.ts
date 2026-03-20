@@ -31,4 +31,8 @@ export { useFoundryUser } from "../../new/platform-apis/admin/useFoundryUser.js"
 export { useFoundryUsersList } from "../../new/platform-apis/admin/useFoundryUsersList.js";
 export { useMarkingCategories } from "../../new/platform-apis/admin/useMarkingCategories.js";
 export { useMarkings } from "../../new/platform-apis/admin/useMarkings.js";
-export { useUserMarkings } from "../../new/platform-apis/admin/useUserMarkings.js";
+export { useUserViewMarkings } from "../../new/platform-apis/admin/useUserMarkings.js";
+export type {
+  UseUserViewMarkingsOptions,
+  UseUserViewMarkingsResult,
+} from "../../new/platform-apis/admin/useUserMarkings.js";
