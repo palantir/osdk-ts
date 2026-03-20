@@ -75,12 +75,17 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
   const rendererFieldDefinitions: ReadonlyArray<RendererFieldDefinition> =
     useMemo(
       () =>
-        resolvedFieldDefinitions.map((def) => ({
-          ...def,
-          fieldKey: String(def.fieldKey),
-          fieldType: parameters?.[String(def.fieldKey)]?.type,
-          defaultValue: def.defaultValue,
-        })),
+        // RendererFieldDefinition is a discriminated union keyed by fieldComponent.
+        // TypeScript can't verify that the spread preserves the fieldComponent ↔
+        // fieldComponentProps pairing, but FormFieldDefinition guarantees it.
+        resolvedFieldDefinitions.map((def) =>
+          ({
+            ...def,
+            fieldKey: String(def.fieldKey),
+            fieldType: parameters?.[String(def.fieldKey)]?.type,
+            defaultValue: def.defaultValue,
+          }) as RendererFieldDefinition
+        ),
       [resolvedFieldDefinitions, parameters],
     );
 

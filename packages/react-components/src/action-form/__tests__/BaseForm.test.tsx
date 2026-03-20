@@ -22,7 +22,9 @@ import type { RendererFieldDefinition } from "../FormFieldApi.js";
 
 function makeDef(
   fieldKey: string,
-  overrides?: Partial<RendererFieldDefinition>,
+  overrides?: Partial<
+    Extract<RendererFieldDefinition, { fieldComponent: "TEXT_INPUT" }>
+  >,
 ): RendererFieldDefinition {
   return { fieldKey, fieldComponent: "TEXT_INPUT", ...overrides };
 }

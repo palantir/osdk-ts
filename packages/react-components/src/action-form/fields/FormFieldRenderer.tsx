@@ -16,7 +16,10 @@
 
 import React, { memo } from "react";
 import type { RendererFieldDefinition } from "../FormFieldApi.js";
+import { DropdownField } from "./DropdownField.js";
 import { TextInputField } from "./TextInputField.js";
+
+const EMPTY_ITEMS: unknown[] = [];
 
 export interface FormFieldRendererProps {
   fieldDefinition: RendererFieldDefinition;
@@ -61,15 +64,25 @@ function renderFieldComponent(
     case "TEXT_AREA":
       return (
         <TextInputField
-          fieldComponent="TEXT_INPUT"
           // TODO: Use coerceFieldValue
           value={value != null ? String(value) : ""}
           onChange={onChange}
           placeholder={fieldDefinition.placeholder}
         />
       );
+    case "DROPDOWN": {
+      const { items = EMPTY_ITEMS, ...dropdownProps } =
+        fieldDefinition.fieldComponentProps ?? {};
+      return (
+        <DropdownField
+          value={value}
+          onChange={onChange}
+          items={items}
+          {...dropdownProps}
+        />
+      );
+    }
     case "NUMBER_INPUT":
-    case "DROPDOWN":
     case "RADIO_BUTTONS":
     case "DATETIME_PICKER":
     case "FILE_PICKER":
@@ -81,7 +94,7 @@ function renderFieldComponent(
         </div>
       );
     default:
-      return assertUnreachableFieldComponent(fieldDefinition.fieldComponent);
+      return assertUnreachableFieldComponent(fieldDefinition);
   }
 }
 

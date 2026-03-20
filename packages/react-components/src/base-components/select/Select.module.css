@@ -72,6 +72,10 @@
   &[data-placeholder] {
     color: var(--osdk-select-placeholder-color, var(--osdk-typography-color-muted));
   }
+
+  &[data-placeholder][data-placeholder-text]::before {
+    content: attr(data-placeholder-text);
+  }
 }
 
 .osdkSelectIcon {
