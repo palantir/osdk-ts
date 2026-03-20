@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Error as ErrorIcon, Spin } from "@blueprintjs/icons";
 import classnames from "classnames";
 import "pdfjs-dist/web/pdf_viewer.css";
 import React, { useCallback, useEffect, useRef, useState } from "react";
@@ -137,7 +138,10 @@ export function PdfViewer({
   if (loading) {
     return (
       <div className={rootClassName}>
-        <div className={styles.loadingContainer}>Loading PDF...</div>
+        <div className={styles.loadingContainer}>
+          <Spin className={styles.spinnerIcon} />
+          Loading…
+        </div>
       </div>
     );
   }
@@ -146,6 +150,7 @@ export function PdfViewer({
     return (
       <div className={rootClassName}>
         <div className={styles.errorContainer}>
+          <ErrorIcon className={styles.errorIcon} />
           Failed to load PDF: {error.message}
         </div>
       </div>

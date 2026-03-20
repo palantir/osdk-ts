@@ -17,6 +17,7 @@
 import type { PdfViewerProps } from "@osdk/react-components/experimental";
 import { PdfViewer } from "@osdk/react-components/experimental";
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { delay, http } from "msw";
 import { fn } from "storybook/test";
 const SAMPLE_PDF_URL =
   "https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf";
@@ -172,6 +173,36 @@ export const CustomScale: Story = {
 
 <PdfViewer src="..." initialScale={1.5} />`,
       },
+    },
+  },
+};
+
+export const Loading: Story = {
+  args: {
+    src: "/loading.pdf",
+  },
+  parameters: {
+    msw: {
+      handlers: [
+        http.get("/loading.pdf", async () => {
+          await delay("infinite");
+        }),
+      ],
+    },
+  },
+};
+
+export const Error: Story = {
+  args: {
+    src: "/error.pdf",
+  },
+  parameters: {
+    msw: {
+      handlers: [
+        http.get("/error.pdf", () => {
+          return new Response("Server Error", { status: 500 });
+        }),
+      ],
     },
   },
 };
