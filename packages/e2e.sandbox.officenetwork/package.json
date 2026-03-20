@@ -53,6 +53,7 @@
   "devDependencies": {
     "@osdk/api": "workspace:~",
     "@osdk/monorepo.api-extractor": "workspace:~",
+    "@osdk/react-devtools": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@tailwindcss/vite": "^4.1.13",
     "@types/geojson": "^7946.0.16",
