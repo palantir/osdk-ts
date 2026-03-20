@@ -101,6 +101,26 @@ export function PdfViewer({
     };
   }, [search.openSearch]);
 
+  const handleDownload = useCallback(() => {
+    if (document == null) {
+      return;
+    }
+    void document.getData().then((data) => {
+      const blob = new Blob([data.buffer as ArrayBuffer], {
+        type: "application/pdf",
+      });
+      const url = URL.createObjectURL(blob);
+      const filename = typeof src === "string"
+        ? src.split("/").pop()?.split("?")[0] || "document.pdf"
+        : "document.pdf";
+      const a = globalThis.document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+  }, [document, src]);
+
   const handleSidebarToggle = useCallback(() => {
     setSidebarOpen((prev) => !prev);
   }, []);
@@ -152,6 +172,7 @@ export function PdfViewer({
         onScaleChange={setScale}
         onSearchOpen={search.openSearch}
         onSidebarToggle={handleSidebarToggle}
+        onDownload={handleDownload}
       />
       {search.isSearchOpen && (
         <PdfViewerSearchBar

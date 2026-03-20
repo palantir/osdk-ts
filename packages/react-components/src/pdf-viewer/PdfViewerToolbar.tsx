@@ -17,6 +17,7 @@
 import {
   ChevronLeft,
   ChevronRight,
+  Download,
   Menu,
   Minus,
   Plus,
@@ -34,6 +35,7 @@ interface PdfViewerToolbarProps {
   onScaleChange: (scale: number) => void;
   onSearchOpen: () => void;
   onSidebarToggle: () => void;
+  onDownload: () => void;
 }
 
 const SCALE_STEP = 0.25;
@@ -49,6 +51,7 @@ export function PdfViewerToolbar({
   onScaleChange,
   onSearchOpen,
   onSidebarToggle,
+  onDownload,
 }: PdfViewerToolbarProps): React.ReactElement {
   const [pageInputValue, setPageInputValue] = useState(String(currentPage));
 
@@ -116,6 +119,7 @@ export function PdfViewerToolbar({
         className={styles.toolbarButton}
         onClick={onSidebarToggle}
         aria-label={sidebarOpen ? "Close sidebar" : "Open sidebar"}
+        title={sidebarOpen ? "Close sidebar" : "Open sidebar"}
         aria-pressed={sidebarOpen}
         type="button"
       >
@@ -130,6 +134,7 @@ export function PdfViewerToolbar({
           onClick={handlePrevPage}
           disabled={currentPage <= 1}
           aria-label="Previous page"
+          title="Previous page"
           type="button"
         >
           <ChevronLeft size={16} />
@@ -149,6 +154,7 @@ export function PdfViewerToolbar({
           onClick={handleNextPage}
           disabled={currentPage >= numPages}
           aria-label="Next page"
+          title="Next page"
           type="button"
         >
           <ChevronRight size={16} />
@@ -163,6 +169,7 @@ export function PdfViewerToolbar({
           onClick={handleZoomOut}
           disabled={scale <= MIN_SCALE}
           aria-label="Zoom out"
+          title="Zoom out"
           type="button"
         >
           <Minus size={16} />
@@ -173,6 +180,7 @@ export function PdfViewerToolbar({
           onClick={handleZoomIn}
           disabled={scale >= MAX_SCALE}
           aria-label="Zoom in"
+          title="Zoom in"
           type="button"
         >
           <Plus size={16} />
@@ -185,9 +193,22 @@ export function PdfViewerToolbar({
         className={styles.toolbarButton}
         onClick={onSearchOpen}
         aria-label="Search"
+        title="Search"
         type="button"
       >
         <Search size={16} />
+      </button>
+
+      <div className={styles.separator} />
+
+      <button
+        className={styles.toolbarButton}
+        onClick={onDownload}
+        aria-label="Download"
+        title="Download"
+        type="button"
+      >
+        <Download size={16} />
       </button>
     </div>
   );

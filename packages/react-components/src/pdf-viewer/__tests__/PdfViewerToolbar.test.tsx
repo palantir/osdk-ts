@@ -28,6 +28,7 @@ const defaultProps = {
   onScaleChange: vi.fn(),
   onSearchOpen: vi.fn(),
   onSidebarToggle: vi.fn(),
+  onDownload: vi.fn(),
 };
 
 afterEach(() => {
