@@ -48,7 +48,9 @@
   );
   --osdk-filter-header-reset-padding: calc(var(--osdk-surface-spacing) * 0.5)
     calc(var(--osdk-surface-spacing) * 1.5);
-  --osdk-filter-header-collapse-icon-size: 6px;
+  --osdk-filter-header-collapse-icon-size: calc(
+    var(--osdk-surface-spacing) * 1.5
+  );
   --osdk-filter-header-collapse-icon-border-width: var(
     --osdk-surface-border-width
   );
@@ -213,8 +215,8 @@
   --osdk-filter-listogram-label-color: var(
     --osdk-typography-color-default-rest
   );
-  --osdk-filter-listogram-bar-height: var(--osdk-surface-spacing);
-  --osdk-filter-listogram-bar-width: 50px;
+  --osdk-filter-listogram-bar-height: calc(var(--osdk-surface-spacing) * 2);
+  --osdk-filter-listogram-bar-width: calc(var(--osdk-surface-spacing) * 12.5);
   --osdk-filter-listogram-bar-bg: var(--osdk-palette-gray-100);
   --osdk-filter-listogram-bar-border-radius: var(
     --osdk-surface-border-radius
@@ -234,9 +236,9 @@
 
   /* Range Input Tokens */
   --osdk-filter-range-gap: calc(var(--osdk-surface-spacing) * 2);
-  --osdk-filter-range-histogram-height: 60px;
-  --osdk-filter-range-histogram-bar-gap: calc(var(--osdk-surface-spacing) * 0.25);
-  --osdk-filter-range-histogram-bar-min-width: calc(var(--osdk-surface-spacing) * 0.5);
+  --osdk-filter-range-histogram-height: calc(var(--osdk-surface-spacing) * 15);
+  --osdk-filter-range-histogram-bar-gap: calc(var(--osdk-surface-spacing) * 0.5);
+  --osdk-filter-range-histogram-bar-min-width: var(--osdk-surface-spacing);
   --osdk-filter-range-histogram-bar-color: var(--osdk-palette-gray-200);
   --osdk-filter-range-histogram-bar-active-color: var(
     --osdk-intent-primary-rest
@@ -361,7 +363,7 @@
   );
 
   /* Exclude Dropdown Popup */
-  --osdk-filter-item-exclude-dropdown-min-width: calc(var(--osdk-surface-spacing) * 15);
+  --osdk-filter-item-exclude-dropdown-min-width: calc(var(--osdk-surface-spacing) * 30);
 
   /* Overflow / Dropdown Menu */
   --osdk-filter-item-menu-bg: var(--osdk-background-primary);
@@ -385,10 +387,10 @@
     --osdk-surface-border-radius
   );
   --osdk-filter-item-menu-separator-color: var(--osdk-surface-border-color);
-  --osdk-filter-item-menu-check-size: calc(var(--osdk-surface-spacing) * 1.5);
+  --osdk-filter-item-menu-check-size: calc(var(--osdk-surface-spacing) * 3);
 
   /* Collapsed Filter List */
-  --osdk-filter-list-collapsed-width: calc(var(--osdk-surface-spacing) * 5);
+  --osdk-filter-list-collapsed-width: calc(var(--osdk-surface-spacing) * 10);
   --osdk-filter-list-collapsed-label-font-family: var(
     --osdk-typography-family-default
   );
@@ -400,7 +402,7 @@
   );
 
   /* Color Dot */
-  --osdk-filter-checkbox-color-dot-size: var(--osdk-surface-spacing);
+  --osdk-filter-checkbox-color-dot-size: calc(var(--osdk-surface-spacing) * 2);
 
   /* Multi Select Count */
   --osdk-filter-multiselect-count-font-family: var(

@@ -38,7 +38,8 @@ export function CheckboxListSkeleton(): React.ReactElement {
           />
           <SkeletonBar
             height="var(--osdk-filter-skeleton-text-height)"
-            style={{ flex: 1, maxWidth: row.textWidth }}
+            maxWidth={row.textWidth}
+            className={styles.flexBar}
           />
           <SkeletonBar
             width="var(--osdk-filter-skeleton-count-width)"

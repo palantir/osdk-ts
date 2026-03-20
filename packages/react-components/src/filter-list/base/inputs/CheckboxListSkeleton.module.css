@@ -26,3 +26,7 @@
   gap: var(--osdk-filter-checkbox-label-gap);
   padding: var(--osdk-filter-checkbox-row-padding);
 }
+
+.flexBar {
+  flex: 1;
+}

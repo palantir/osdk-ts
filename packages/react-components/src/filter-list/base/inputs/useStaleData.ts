@@ -16,10 +16,13 @@
 
 import { useRef } from "react";
 
+// TODO: revisit whether this hook is necessary. It may be possible to handle
+// loading states inline (render data if present, show skeleton if loading)
+// instead of preserving stale data in a ref.
 export function useStaleData<T>(data: T, isLoading: boolean): T {
   const ref = useRef(data);
   if (!isLoading) {
     ref.current = data;
   }
-  return isLoading ? ref.current : data;
+  return ref.current;
 }

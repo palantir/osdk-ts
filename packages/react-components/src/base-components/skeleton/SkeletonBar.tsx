@@ -21,21 +21,21 @@ import styles from "./SkeletonBar.module.css";
 interface SkeletonBarProps {
   width?: string | number;
   height?: string | number;
+  maxWidth?: string | number;
   className?: string;
-  style?: React.CSSProperties;
 }
 
 export function SkeletonBar({
   width,
   height,
+  maxWidth,
   className,
-  style,
 }: SkeletonBarProps): React.ReactElement {
   return (
     <div
       aria-hidden="true"
       className={classnames(styles.skeletonBar, className)}
-      style={{ width, height, ...style }}
+      style={{ width, height, maxWidth }}
     />
   );
 }

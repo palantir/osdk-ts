@@ -125,13 +125,24 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
   ) => void;
 
   /**
-   * Called when a filter is added.
+   * Controls how filter visibility (add/remove) is managed.
    *
-   * When any filter definition has `isVisible: false` and no custom
-   * `renderAddFilterButton` is provided, FilterList manages visibility
-   * internally. In that mode, an "Add filter" popover is rendered
-   * automatically and this callback serves as a notification that a
-   * hidden filter was shown.
+   * - `"controlled"` (default): The consumer manages which filters are
+   *   visible via `filterDefinitions`. Filters with `isVisible: false` are
+   *   excluded from the rendered list.
+   * - `"uncontrolled"`: FilterList manages visibility internally. An "Add
+   *   filter" popover is rendered for filters with `isVisible: false`, and
+   *   each visible filter shows a remove button.
+   *
+   * @default "controlled"
+   */
+  addFilterMode?: "controlled" | "uncontrolled";
+
+  /**
+   * Called when a filter is added (shown).
+   *
+   * In uncontrolled mode, this fires when a user selects a hidden filter
+   * from the "Add filter" popover.
    *
    * @param filterKey The key of the added filter
    * @param newDefinitions The current filter definitions array
@@ -142,13 +153,10 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
   ) => void;
 
   /**
-   * Called when a filter is removed.
+   * Called when a filter is removed (hidden).
    *
-   * When any filter definition has `isVisible: false` and no custom
-   * `renderAddFilterButton` is provided, FilterList manages visibility
-   * internally. In that mode, each visible filter shows a remove button
-   * and this callback serves as a notification that a filter was hidden
-   * (not permanently removed).
+   * In uncontrolled mode, this fires as a notification after the filter
+   * is hidden internally.
    *
    * @param filterKey The key of the removed filter
    */
@@ -201,7 +209,8 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
 
   /**
    * Custom render function for the "Add filter" button.
-   * When not provided, a default button is shown if onFilterAdded is set.
+   * Only used in controlled mode. In uncontrolled mode, the built-in
+   * AddFilterPopover is rendered automatically.
    */
   renderAddFilterButton?: () => React.ReactNode;
 }

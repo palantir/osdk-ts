@@ -39,11 +39,13 @@ export function FilterList<Q extends ObjectTypeDefinition>(
     collapsed,
     onCollapsedChange,
     filterDefinitions,
+    addFilterMode = "controlled",
     showResetButton = false,
     onReset,
     showActiveFilterCount = false,
     className,
     enableSorting,
+    onFilterAdded,
     onFilterRemoved,
     renderAddFilterButton,
   } = props;
@@ -63,12 +65,7 @@ export function FilterList<Q extends ObjectTypeDefinition>(
     onReset?.();
   }, [reset, onReset]);
 
-  const visibilityMode = useMemo(
-    () =>
-      filterDefinitions?.some((d) => d.isVisible === false) === true
-      && renderAddFilterButton == null,
-    [filterDefinitions, renderAddFilterButton],
-  );
+  const uncontrolledAddFilter = addFilterMode === "uncontrolled";
 
   const getIsVisible = useCallback(
     (def: FilterDefinitionUnion<Q>) => def.isVisible !== false,
@@ -91,25 +88,26 @@ export function FilterList<Q extends ObjectTypeDefinition>(
     );
   }, [filterDefinitions]);
 
-  const effectiveVisibleDefinitions = visibilityMode
+  const effectiveVisibleDefinitions = uncontrolledAddFilter
     ? managedVisibleDefinitions
     : simpleVisibleDefinitions;
 
   const handleFilterRemoved = useCallback(
     (filterKey: string) => {
-      if (visibilityMode) {
+      if (uncontrolledAddFilter) {
         hideFilter(filterKey);
       }
       onFilterRemoved?.(filterKey);
     },
-    [visibilityMode, hideFilter, onFilterRemoved],
+    [uncontrolledAddFilter, hideFilter, onFilterRemoved],
   );
 
   const handleFilterShown = useCallback(
     (filterKey: string) => {
       showFilter(filterKey);
+      onFilterAdded?.(filterKey, filterDefinitions ?? []);
     },
-    [showFilter],
+    [showFilter, onFilterAdded, filterDefinitions],
   );
 
   const hiddenFilterItems = useMemo(
@@ -122,7 +120,7 @@ export function FilterList<Q extends ObjectTypeDefinition>(
   );
 
   const effectiveRenderAddFilterButton = useMemo(() => {
-    if (visibilityMode && managedHiddenDefinitions.length > 0) {
+    if (uncontrolledAddFilter && managedHiddenDefinitions.length > 0) {
       return () => (
         <AddFilterPopover
           hiddenDefinitions={hiddenFilterItems}
@@ -132,14 +130,14 @@ export function FilterList<Q extends ObjectTypeDefinition>(
     }
     return renderAddFilterButton;
   }, [
-    visibilityMode,
+    uncontrolledAddFilter,
     managedHiddenDefinitions.length,
     hiddenFilterItems,
     handleFilterShown,
     renderAddFilterButton,
   ]);
 
-  const effectiveOnFilterRemoved = visibilityMode
+  const effectiveOnFilterRemoved = uncontrolledAddFilter
     ? handleFilterRemoved
     : onFilterRemoved;
 

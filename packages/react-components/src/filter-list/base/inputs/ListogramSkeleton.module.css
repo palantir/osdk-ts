@@ -26,3 +26,7 @@
   gap: var(--osdk-filter-listogram-row-gap);
   padding: var(--osdk-filter-listogram-row-padding);
 }
+
+.flexBar {
+  flex: 1;
+}
