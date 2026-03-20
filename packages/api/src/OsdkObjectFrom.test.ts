@@ -106,6 +106,8 @@ describe("ExtractOptions", () => {
   type quickAndDirty = {
     apiName: "Foo";
     type: "object";
+    primaryKeyApiName: "";
+    primaryKeyType: "string";
     __DefinitionMetadata: {
       props: {
         name: string;
@@ -144,6 +146,8 @@ describe("ExtractOptions", () => {
   type quickerAndDirtier = {
     apiName: "Bar";
     type: "object";
+    primaryKeyApiName: "";
+    primaryKeyType: "string";
     __DefinitionMetadata: {
       props: {
         name: string;
