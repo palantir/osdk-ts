@@ -24,10 +24,7 @@ export default defineConfig({
     lib: {
       entry: {
         index: resolve(__dirname, "src/index.ts"),
-        register: resolve(__dirname, "src/register.ts"),
         production: resolve(__dirname, "src/production.ts"),
-        "vite/index": resolve(__dirname, "src/vite/index.ts"),
-        styles: resolve(__dirname, "src/styles.ts"),
       },
       formats: ["es"],
     },
