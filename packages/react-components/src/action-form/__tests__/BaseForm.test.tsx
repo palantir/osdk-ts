@@ -132,6 +132,28 @@ describe("BaseForm", () => {
     });
   });
 
+  // TODO: expand this test to cover all field types
+  describe("dropdown field", () => {
+    it("renders dropdown from fieldDefinitions", () => {
+      render(
+        <BaseForm
+          fieldDefinitions={[
+            {
+              fieldKey: "color",
+              fieldComponent: "DROPDOWN" as const,
+              fieldComponentProps: {
+                items: ["Red", "Blue", "Green"],
+              },
+            },
+          ]}
+          onSubmit={vi.fn()}
+        />,
+      );
+
+      expect(screen.getByTestId("dropdown-select-field")).toBeDefined();
+    });
+  });
+
   describe("controlled mode", () => {
     it("calls onFieldValueChange when a field is edited", () => {
       const onFieldValueChange = vi.fn();

@@ -85,7 +85,7 @@ describe("DropdownField", () => {
   });
 
   describe("multi select (Select variant)", () => {
-    it("renders multi-select without search", () => {
+    it("renders multi-select and displays selected value", () => {
       render(
         <DropdownField<string, true>
           value={["Alice"]}
@@ -94,7 +94,9 @@ describe("DropdownField", () => {
         />,
       );
 
-      expect(screen.getByTestId("dropdown-select-field")).toBeDefined();
+      const field = screen.getByTestId("dropdown-select-field");
+      expect(field).toBeDefined();
+      expect(field.textContent).toContain("Alice");
     });
   });
 
@@ -158,30 +160,6 @@ describe("DropdownField", () => {
       await vi.waitFor(() => {
         expect(onChange).toHaveBeenCalledWith(["Alice"], expect.anything());
       });
-    });
-  });
-
-  describe("FormFieldRenderer integration", () => {
-    it("renders dropdown from BaseForm fieldDefinitions", async () => {
-      // Lazy import to avoid pulling in react-hook-form for other tests
-      const { BaseForm } = await import("../BaseForm.js");
-
-      render(
-        <BaseForm
-          fieldDefinitions={[
-            {
-              fieldKey: "color",
-              fieldComponent: "DROPDOWN" as const,
-              fieldComponentProps: {
-                items: ["Red", "Blue", "Green"],
-              },
-            },
-          ]}
-          onSubmit={vi.fn()}
-        />,
-      );
-
-      expect(screen.getByTestId("dropdown-select-field")).toBeDefined();
     });
   });
 });

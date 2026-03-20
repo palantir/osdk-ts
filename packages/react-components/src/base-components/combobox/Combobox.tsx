@@ -36,29 +36,22 @@ interface ComboboxInputComponentProps
   className?: string;
 }
 
-function ComboboxInput({
+function ComboboxSearchInput({
   className,
   ...rest
 }: ComboboxInputComponentProps): React.ReactElement {
   return (
     <div className={classnames(styles.osdkComboboxInputWrapper, className)}>
       <Search className={styles.osdkComboboxSearchIcon} color="currentColor" />
-      <BaseUICombobox.Input
-        className={styles.osdkComboboxInput}
-        {...rest}
-      />
+      <BaseUICombobox.Input className={styles.osdkComboboxInput} {...rest} />
     </div>
   );
 }
 
-interface ComboboxBareInputProps extends Omit<ComboboxInputProps, "className"> {
-  className?: string;
-}
-
-function ComboboxBareInput({
+function ComboboxInput({
   className,
   ...rest
-}: ComboboxBareInputProps): React.ReactElement {
+}: ComboboxInputComponentProps): React.ReactElement {
   return (
     <BaseUICombobox.Input
       className={classnames(styles.osdkComboboxInput, className)}
@@ -145,10 +138,6 @@ function ComboboxChips({
           {...props}
           className={classnames(styles.osdkComboboxInputWrapper, className)}
         >
-          <Search
-            className={styles.osdkComboboxSearchIcon}
-            color="currentColor"
-          />
           {props.children}
         </div>
       )}
@@ -260,8 +249,8 @@ function ComboboxList({
 
 export const Combobox: {
   Root: typeof BaseUICombobox.Root;
+  SearchInput: typeof ComboboxSearchInput;
   Input: typeof ComboboxInput;
-  BareInput: typeof ComboboxBareInput;
   Portal: typeof BaseUICombobox.Portal;
   Positioner: typeof ComboboxPositioner;
   Popup: typeof ComboboxPopup;
@@ -275,8 +264,8 @@ export const Combobox: {
   Value: typeof BaseUICombobox.Value;
 } = {
   Root: BaseUICombobox.Root,
+  SearchInput: ComboboxSearchInput,
   Input: ComboboxInput,
-  BareInput: ComboboxBareInput,
   Portal: BaseUICombobox.Portal,
   Positioner: ComboboxPositioner,
   Popup: ComboboxPopup,
