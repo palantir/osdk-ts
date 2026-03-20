@@ -18,7 +18,7 @@ export interface AsyncCellData {
   readonly __asyncCell: true; // discriminant
   data?: unknown;
   isLoading: boolean;
-  error?: Error;
+  error?: unknown;
 }
 
 export const isAsyncCellData = (value: unknown): value is AsyncCellData => {
@@ -29,3 +29,12 @@ export const isAsyncCellData = (value: unknown): value is AsyncCellData => {
     && value.__asyncCell === true
   );
 };
+
+export const createAsyncCellData = (
+  { data, isLoading, error }: Omit<AsyncCellData, "__asyncCell">,
+): AsyncCellData => ({
+  __asyncCell: true,
+  data,
+  isLoading,
+  error,
+});
