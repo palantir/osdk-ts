@@ -1,0 +1,757 @@
+@use 'tokens' as t;
+@use 'mixins' as m;
+@use 'theme' as theme;
+
+.panel {
+  @include theme.dt-dark-theme;
+
+  &[data-dt-theme="light"] {
+    @include theme.dt-light-theme;
+  }
+
+  position: fixed;
+  background: t.$bg-surface;
+  border: 1px solid t.$border-default;
+  border-radius: t.$radius-md;
+  box-shadow: t.$shadow-panel;
+  display: flex;
+  flex-direction: column;
+  z-index: t.$z-panel;
+  font-family: t.$font-sans;
+  font-size: t.$font-size-md;
+  color: t.$text-primary;
+  min-width: 320px;
+  min-height: 200px;
+  pointer-events: none;
+
+  &.collapsed {
+    min-width: auto;
+    min-height: auto;
+    width: auto !important;
+    height: auto !important;
+  }
+
+  &.floating {
+    /* Default behavior - draggable */
+  }
+
+  &.dockedBottom {
+    width: 100vw !important;
+    bottom: 0;
+    left: 0;
+    border-radius: t.$radius-md t.$radius-md 0 0;
+    border-bottom: none;
+  }
+
+  &.dockedRight {
+    height: 100vh !important;
+    right: 0;
+    top: 0;
+    border-radius: t.$radius-md 0 0 t.$radius-md;
+    border-right: none;
+  }
+}
+
+.resizeHandle {
+  position: absolute;
+  background: transparent;
+  pointer-events: auto;
+
+  &.horizontal {
+    left: 0;
+    right: 0;
+    height: 4px;
+    cursor: ns-resize;
+
+    &.top {
+      top: 0;
+    }
+
+    &.bottom {
+      bottom: 0;
+    }
+  }
+
+  &.vertical {
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    cursor: ew-resize;
+
+    &.left {
+      left: 0;
+    }
+
+    &.right {
+      right: 0;
+    }
+  }
+
+  &:hover {
+    background: var(--dt-blue-resize-hover);
+    transition: background t.$transition-fast;
+  }
+
+  &.corner {
+    width: 8px;
+    height: 8px;
+
+    &.topLeft {
+      top: 0;
+      left: 0;
+      cursor: nw-resize;
+    }
+
+    &.topRight {
+      top: 0;
+      right: 0;
+      cursor: ne-resize;
+    }
+
+    &.bottomLeft {
+      bottom: 0;
+      left: 0;
+      cursor: sw-resize;
+    }
+
+    &.bottomRight {
+      bottom: 0;
+      right: 0;
+      cursor: se-resize;
+    }
+  }
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 12px;
+  border-bottom: 1px solid t.$border-default;
+  background: t.$bg-raised;
+  cursor: move;
+  user-select: none;
+  pointer-events: auto;
+
+  .panel.dockedBottom &,
+  .panel.dockedRight & {
+    cursor: default;
+  }
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: t.$font-size-base;
+  font-weight: t.$font-weight-semi;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: t.$text-secondary;
+  margin: 0;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 6px;
+  background: t.$blue-bg;
+  color: t.$blue;
+  border: 1px solid var(--dt-blue-border);
+  border-radius: t.$radius-sm;
+  font-size: 9px;
+  font-weight: t.$font-weight-semi;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.iconButton {
+  background: transparent;
+  border: none;
+  color: t.$text-tertiary;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: t.$radius-sm;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color t.$transition-fast, color t.$transition-fast;
+
+  &:hover {
+    background: t.$bg-hover;
+    color: t.$text-secondary;
+  }
+
+  &:active {
+    background: t.$bg-active;
+  }
+}
+
+.content {
+  flex: 1;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  pointer-events: auto;
+}
+
+.tabs {
+  @include m.dt-tabs;
+  padding: 0 12px;
+  flex-shrink: 0;
+  pointer-events: auto;
+}
+
+.tabButton {
+  @include m.dt-tab-button;
+}
+
+.tabButtonActive {
+  @include m.dt-tab-active;
+}
+
+.metricsGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0;
+  background: t.$bg-base;
+}
+
+.computeMetricsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: t.$border-subtle;
+}
+
+.metricCell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 12px;
+  background: t.$bg-surface;
+}
+
+.metricGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 10px 12px;
+  background: t.$bg-surface;
+  border-left: 2px solid t.$border-subtle;
+}
+
+.metricGroupTitle {
+  @include m.dt-label;
+  margin: 0 0 8px 0;
+  padding-bottom: 6px;
+  border-bottom: 1px solid t.$border-subtle;
+}
+
+.metricGroupContent {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 12px;
+}
+
+.filterControls {
+  display: flex;
+  justify-content: center;
+  padding: 8px 12px;
+  border-bottom: 1px solid t.$border-default;
+  background: t.$bg-raised;
+}
+
+.metric {
+  @include m.dt-metric;
+}
+
+.metricLabel {
+  @include m.dt-metric-label;
+}
+
+.metricValue {
+  @include m.dt-metric-value;
+
+  &.success {
+    color: t.$green;
+  }
+
+  &.warning {
+    color: t.$orange;
+  }
+
+  &.danger {
+    color: t.$red;
+  }
+}
+
+.metricSubtext {
+  font-size: t.$font-size-sm;
+  color: t.$text-tertiary;
+  font-family: t.$font-mono;
+}
+
+.operationsList {
+  flex: 1;
+  overflow: auto;
+  @include m.dt-scrollbar;
+}
+
+.operationItem {
+  @include m.dt-list-item;
+  padding: 6px 12px;
+
+  &.selectedItem {
+    background: t.$bg-active;
+    border-left-color: t.$blue;
+  }
+}
+
+.operationType {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: t.$radius-sm;
+  font-size: t.$font-size-xs;
+  font-weight: t.$font-weight-bold;
+  color: t.$bg-base;
+  flex-shrink: 0;
+
+  &.cacheHit {
+    background: t.$green;
+  }
+
+  &.cacheMiss {
+    background: t.$red;
+  }
+
+  &.deduplication {
+    background: t.$orange;
+  }
+
+  &.optimistic {
+    background: t.$blue;
+  }
+
+  &.action {
+    background: t.$blue;
+  }
+
+  &.revalidation {
+    background: var(--dt-revalidation-bg);
+  }
+
+  &.validation {
+    background: t.$orange;
+  }
+}
+
+.operationDetails {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.operationSignature {
+  font-size: t.$font-size-base;
+  font-family: t.$font-mono;
+  color: t.$text-primary;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.actionCauseBadge {
+  margin-left: 6px;
+  font-size: t.$font-size-xs;
+  font-weight: t.$font-weight-medium;
+  color: t.$blue;
+  opacity: 0.8;
+  font-family: t.$font-sans;
+}
+
+.operationTime {
+  font-size: t.$font-size-xs;
+  color: t.$text-tertiary;
+  font-family: t.$font-mono;
+}
+
+.operationMetric {
+  font-size: t.$font-size-sm;
+  font-weight: t.$font-weight-semi;
+  font-family: t.$font-mono;
+  color: t.$text-secondary;
+  padding: 1px 4px;
+  background: t.$bg-hover;
+  border-radius: t.$radius-sm;
+
+  &.saved {
+    color: t.$green;
+    background: t.$green-bg;
+  }
+}
+
+.operationMetrics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.rollback {
+  color: t.$red;
+  font-weight: t.$font-weight-semi;
+}
+
+.emptyState {
+  @include m.dt-empty-state;
+  font-size: t.$font-size-base;
+}
+
+.minimized {
+  @include theme.dt-dark-theme;
+
+  &[data-dt-theme="light"] {
+    @include theme.dt-light-theme;
+  }
+
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+  background: t.$bg-elevated;
+  border: 1px solid t.$border-default;
+  border-radius: t.$radius-md;
+  padding: 6px 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  box-shadow: t.$shadow-panel;
+  z-index: t.$z-panel;
+  transition: opacity t.$transition-normal, border-color t.$transition-normal, box-shadow t.$transition-normal;
+  opacity: 0.7;
+  pointer-events: auto;
+
+  &:hover {
+    opacity: 1;
+    border-color: t.$blue;
+    box-shadow: var(--dt-minimized-glow);
+  }
+}
+
+.minimizedIcon {
+  font-size: t.$font-size-lg;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: t.$font-mono;
+  font-weight: t.$font-weight-semi;
+  color: t.$text-secondary;
+}
+
+.bubbleChartContainer {
+  height: 250px;
+  margin-bottom: 20px;
+}
+
+.computeControls {
+  display: flex;
+  gap: 8px;
+  padding: 8px 12px;
+  border-bottom: 1px solid t.$border-default;
+  background: t.$bg-raised;
+}
+
+.computeFulfilled {
+  background: t.$green;
+}
+
+.computeFailed {
+  background: t.$red;
+}
+
+.computePending {
+  background: t.$text-tertiary;
+}
+
+.timelineContainer {
+  width: 100%;
+  margin: 8px 0;
+  padding: 8px;
+  background: t.$bg-base;
+  border-radius: t.$radius-md;
+  border: 1px solid t.$border-subtle;
+}
+
+.inlineIndicator {
+  margin-left: 8px;
+  cursor: help;
+}
+
+.inlineTip {
+  font-size: t.$font-size-xs;
+  color: t.$text-tertiary;
+  font-style: italic;
+  margin-top: 2px;
+}
+
+.emptyIcon {
+  font-size: 32px;
+  margin-bottom: 12px;
+  color: t.$text-tertiary;
+  opacity: 0.5;
+}
+
+.emptySubtext {
+  font-size: t.$font-size-base;
+  margin-top: 4px;
+  color: t.$text-tertiary;
+}
+
+// BlueprintJS component overrides scoped to the devtools panel
+.panel {
+  :global {
+    // Buttons
+    .bp5-button {
+      background: t.$bg-elevated;
+      border: 1px solid t.$border-default;
+      color: t.$text-secondary;
+      font-size: t.$font-size-base;
+      box-shadow: none;
+
+      &:hover {
+        background: t.$bg-hover;
+        color: t.$text-primary;
+        box-shadow: none;
+      }
+
+      &:active {
+        background: t.$bg-active;
+        box-shadow: none;
+      }
+
+      &.bp5-minimal {
+        background: transparent;
+        border: none;
+
+        &:hover {
+          background: t.$bg-hover;
+        }
+
+        &:active {
+          background: t.$bg-active;
+        }
+
+        &.bp5-intent-success,
+        &.bp5-intent-warning,
+        &.bp5-intent-danger,
+        &.bp5-intent-primary {
+          background: transparent;
+          border: none;
+        }
+      }
+
+      &.bp5-intent-primary {
+        background: t.$blue;
+        border-color: t.$blue;
+        color: t.$bg-base;
+
+        &:hover {
+          background: t.$blue-hover;
+        }
+      }
+
+      &.bp5-intent-danger {
+        background: t.$red-bg;
+        border-color: var(--dt-red-border);
+        color: t.$red;
+
+        &:hover {
+          background: var(--dt-red-hover-bg);
+        }
+      }
+
+      &.bp5-intent-success {
+        background: t.$green-bg;
+        border-color: var(--dt-green-border);
+        color: t.$green;
+
+        &:hover {
+          background: var(--dt-green-hover-bg);
+        }
+      }
+
+      &.bp5-intent-warning {
+        background: t.$orange-bg;
+        border-color: var(--dt-orange-border);
+        color: t.$orange;
+
+        &:hover {
+          background: var(--dt-orange-hover-bg);
+        }
+      }
+    }
+
+    // Inputs
+    .bp5-input-group .bp5-input,
+    .bp5-input {
+      background: t.$bg-base;
+      border: 1px solid t.$border-default;
+      color: t.$text-primary;
+      font-size: t.$font-size-base;
+      box-shadow: none;
+
+      &::placeholder {
+        color: t.$text-tertiary;
+      }
+
+      &:focus {
+        border-color: t.$blue;
+        box-shadow: 0 0 0 1px t.$blue;
+      }
+    }
+
+    .bp5-input-group .bp5-icon {
+      color: t.$text-tertiary;
+    }
+
+    // Tags
+    .bp5-tag {
+      font-size: t.$font-size-xs;
+      font-weight: t.$font-weight-semi;
+      border-radius: t.$radius-sm;
+      background: t.$bg-hover;
+      color: t.$text-secondary;
+
+      &.bp5-minimal {
+        background: transparent;
+      }
+
+      &.bp5-intent-primary {
+        background: t.$blue-bg;
+        color: t.$blue;
+      }
+
+      &.bp5-intent-success {
+        background: t.$green-bg;
+        color: t.$green;
+      }
+
+      &.bp5-intent-warning {
+        background: t.$orange-bg;
+        color: t.$orange;
+      }
+
+      &.bp5-intent-danger {
+        background: t.$red-bg;
+        color: t.$red;
+      }
+    }
+
+    // Callouts
+    .bp5-callout {
+      background: t.$bg-elevated;
+      border: 1px solid t.$border-default;
+      font-size: t.$font-size-base;
+      color: t.$text-secondary;
+      border-radius: t.$radius-md;
+
+      &.bp5-intent-primary {
+        background: t.$blue-bg;
+        border-color: var(--dt-blue-border);
+        color: t.$text-primary;
+      }
+
+      &.bp5-intent-danger {
+        background: t.$red-bg;
+        border-color: var(--dt-red-border);
+        color: t.$text-primary;
+      }
+
+      &.bp5-intent-warning {
+        background: t.$orange-bg;
+        border-color: var(--dt-orange-border);
+        color: t.$text-primary;
+      }
+    }
+
+    // Form groups
+    .bp5-form-group .bp5-label {
+      font-size: t.$font-size-sm;
+      font-weight: t.$font-weight-medium;
+      color: t.$text-secondary;
+    }
+
+    .bp5-form-helper-text {
+      font-size: t.$font-size-xs;
+      color: t.$text-tertiary;
+    }
+
+    // Select
+    .bp5-html-select select {
+      background: t.$bg-base;
+      border: 1px solid t.$border-default;
+      color: t.$text-primary;
+      font-size: t.$font-size-base;
+      box-shadow: none;
+
+      &:focus {
+        border-color: t.$blue;
+      }
+    }
+
+    // Checkbox and Radio
+    .bp5-control {
+      color: t.$text-secondary;
+      font-size: t.$font-size-base;
+    }
+
+    // Non-ideal state
+    .bp5-non-ideal-state {
+      color: t.$text-tertiary;
+
+      .bp5-non-ideal-state-visual {
+        color: t.$text-tertiary;
+        opacity: 0.5;
+      }
+    }
+
+    // TextArea
+    .bp5-text-area-container textarea,
+    textarea.bp5-input {
+      background: t.$bg-base;
+      border: 1px solid t.$border-default;
+      color: t.$text-primary;
+      box-shadow: none;
+
+      &:focus {
+        border-color: t.$blue;
+        box-shadow: 0 0 0 1px t.$blue;
+      }
+    }
+
+    // Tooltip (rendered inline, not portal)
+    .bp5-tooltip .bp5-popover-content {
+      background: t.$bg-elevated;
+      color: t.$text-secondary;
+      font-size: t.$font-size-sm;
+    }
+
+    // Icon colors
+    .bp5-icon {
+      color: t.$text-tertiary;
+    }
+  }
+}

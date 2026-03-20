@@ -1,0 +1,147 @@
+@use 'tokens' as t;
+@use 'mixins' as m;
+
+.emptyState {
+  @include m.dt-empty-state;
+  font-size: t.$font-size-base;
+}
+
+.emptyIcon {
+  font-size: 32px;
+  margin-bottom: 12px;
+  color: t.$text-tertiary;
+  opacity: 0.5;
+}
+
+.emptySubtext {
+  font-size: t.$font-size-base;
+  margin-top: 4px;
+  color: t.$text-tertiary;
+}
+
+.improvementsTab {
+  padding: 8px;
+}
+
+.improvementsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  font-weight: t.$font-weight-medium;
+  font-size: t.$font-size-sm;
+  color: t.$text-secondary;
+}
+
+.improvementsList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.improvementCard {
+  @include m.dt-entrance;
+  background: t.$bg-surface;
+  border: 1px solid t.$border-subtle;
+  border-radius: t.$radius-lg;
+  padding: 10px;
+  transition: border-color t.$transition-fast;
+
+  &:hover {
+    border-color: t.$border-hover;
+  }
+}
+
+.improvementHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.improvementIcon {
+  flex-shrink: 0;
+}
+
+.improvementLevel {
+  font-size: t.$font-size-xs;
+  font-weight: t.$font-weight-semi;
+  padding: 1px 6px;
+  border-radius: t.$radius-sm;
+
+  &.level-critical {
+    @include m.dt-badge(t.$red-bg, t.$red);
+    border: 1px solid var(--dt-red-border-strong);
+  }
+
+  &.level-high {
+    @include m.dt-badge(t.$orange-bg, t.$orange);
+    border: 1px solid var(--dt-orange-border-strong);
+  }
+
+  &.level-medium {
+    @include m.dt-badge(t.$blue-bg, t.$blue);
+    border: 1px solid var(--dt-blue-border-strong);
+  }
+
+  &.level-low {
+    @include m.dt-badge(t.$bg-hover, t.$text-secondary);
+    border: 1px solid t.$border-default;
+  }
+}
+
+.improvementCategory {
+  @include m.dt-label;
+}
+
+.improvementTitle {
+  flex: 1;
+  font-weight: t.$font-weight-bold;
+  color: t.$text-primary;
+  text-wrap: balance;
+}
+
+.improvementSummary {
+  margin-top: 6px;
+  font-size: t.$font-size-base;
+  color: t.$text-secondary;
+}
+
+.improvementDetails {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid t.$border-subtle;
+}
+
+.detailRow {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 4px;
+  font-size: t.$font-size-sm;
+}
+
+.detailLabel {
+  color: t.$text-tertiary;
+  min-width: 50px;
+}
+
+.detailValue {
+  color: t.$text-primary;
+}
+
+.codeSection {
+  margin-top: 8px;
+}
+
+.codeBlock {
+  @include m.dt-code-block;
+  display: block;
+  margin-top: 4px;
+}
+
+.improvementActions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+  justify-content: flex-end;
+}
