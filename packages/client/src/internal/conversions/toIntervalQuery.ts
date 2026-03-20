@@ -15,17 +15,14 @@
  */
 
 import type { IntervalRule } from "@osdk/api";
-import type {
-  PropertyIdentifier,
-  SearchJsonQueryV2,
-} from "@osdk/foundry.ontologies";
+import type { SearchJsonQueryV2 } from "@osdk/foundry.ontologies";
 
 type IntervalQueryRule = Extract<
   SearchJsonQueryV2,
   { type: "interval" }
 >["rule"];
 
-function toIntervalQueryRule(
+export function toIntervalQueryRule(
   rule: IntervalRule,
 ): IntervalQueryRule {
   switch (rule.type) {
@@ -53,17 +50,4 @@ function toIntervalQueryRule(
     case "fuzzy":
       return rule;
   }
-}
-
-export function toIntervalQuery(
-  intervalRule: IntervalRule,
-  propertyIdentifier?: PropertyIdentifier,
-  field?: string,
-): SearchJsonQueryV2 {
-  return {
-    type: "interval",
-    ...(propertyIdentifier != null && { propertyIdentifier }),
-    field,
-    rule: toIntervalQueryRule(intervalRule),
-  };
 }

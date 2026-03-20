@@ -32,7 +32,7 @@ import invariant from "tiny-invariant";
 import { fullyQualifyPropName } from "./fullyQualifyPropName.js";
 import { makeGeoFilterIntersects } from "./makeGeoFilterIntersects.js";
 import { makeGeoFilterWithin } from "./makeGeoFilterWithin.js";
-import { toIntervalQuery } from "./toIntervalQuery.js";
+import { toIntervalQueryRule } from "./toIntervalQuery.js";
 
 type DropDollarSign<T extends `$${string}`> = T extends `$${infer U}` ? U
   : never;
@@ -277,7 +277,12 @@ function handleWherePair(
   }
 
   if (firstKey === "$interval") {
-    return toIntervalQuery(filter[firstKey], propertyIdentifier, field);
+    return {
+      type: "interval",
+      ...(propertyIdentifier != null && { propertyIdentifier }),
+      field,
+      rule: toIntervalQueryRule(filter[firstKey]),
+    };
   }
 
   return {
