@@ -16,7 +16,7 @@
 
 import { useVirtualizer } from "@tanstack/react-virtual";
 import type { PDFDocumentProxy } from "pdfjs-dist";
-import React, { useCallback, useEffect, useMemo, useRef } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import {
   DEFAULT_PAGE_HEIGHT,
   THUMBNAIL_GAP,
@@ -58,13 +58,6 @@ export function PdfViewerSidebar({
     virtualizer.scrollToIndex(currentPage - 1, { align: "auto" });
   }, [currentPage, virtualizer]);
 
-  const handlePageClick = useCallback(
-    (page: number) => {
-      onPageClick(page);
-    },
-    [onPageClick],
-  );
-
   return (
     <div className={styles.sidebar}>
       <div className={styles.sidebarHeader}>Pages</div>
@@ -89,7 +82,7 @@ export function PdfViewerSidebar({
                     document={document}
                     pageNumber={pageNumber}
                     isActive={pageNumber === currentPage}
-                    onClick={() => handlePageClick(pageNumber)}
+                    onClick={() => onPageClick(pageNumber)}
                   />
                   <div className={styles.pageNumber}>{pageNumber}</div>
                 </div>
