@@ -34,6 +34,7 @@ export function usePdfViewer(
   containerRef: RefObject<HTMLDivElement | null>,
   viewerRef: RefObject<HTMLDivElement | null>,
   document: PDFDocumentProxy | undefined,
+  initialScale?: number,
 ): UsePdfViewerResult {
   const pdfViewerRef = useRef<PDFViewer | null>(null);
   const eventBusRef = useRef<EventBus | null>(null);
@@ -67,6 +68,10 @@ export function usePdfViewer(
     linkService.setDocument(document);
     findController.setDocument(document);
     pdfViewer.setDocument(document);
+
+    if (initialScale != null) {
+      pdfViewer.currentScale = initialScale;
+    }
 
     eventBusRef.current = eventBus;
     findControllerRef.current = findController;

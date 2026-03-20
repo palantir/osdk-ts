@@ -53,6 +53,7 @@ export function PdfViewer({
     containerRef,
     viewerRef,
     document,
+    initialScale,
   );
 
   const search = usePdfViewerSearch(eventBusRef, findControllerRef, document);

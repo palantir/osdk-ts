@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
+/** The visual style of an annotation rendered on the PDF. */
 export type AnnotationType = "highlight" | "underline" | "comment" | "pin";
 
+/** A single annotation positioned on a specific page of the PDF. */
 export interface PdfAnnotation {
   /** Unique identifier for this annotation */
   id: string;
@@ -31,12 +33,18 @@ export interface PdfAnnotation {
   color?: string;
 }
 
+/** Props for the {@link PdfViewer} component. */
 export interface PdfViewerProps {
   /** PDF source — URL string or ArrayBuffer */
   src: string | ArrayBuffer;
   /** Annotations to overlay on the PDF, keyed by page number (1-indexed) */
   annotations?: Record<number, PdfAnnotation[]>;
-  /** Callback when an annotation is clicked */
+  /**
+   * Callback fired when an annotation is clicked.
+   *
+   * @param annotation - The annotation that was clicked
+   * @returns void
+   */
   onAnnotationClick?: (annotation: PdfAnnotation) => void;
   /** Initial page number (1-indexed, default 1) */
   initialPage?: number;

@@ -146,19 +146,6 @@ export const WithAnnotations: Story = {
   },
 };
 
-export const WithSearch: Story = {
-  parameters: {
-    docs: {
-      source: {
-        code: `// Press Ctrl+F (Cmd+F on macOS) to open the search bar
-import { PdfViewer } from "@osdk/react-components/experimental";
-
-<PdfViewer src="..." />`,
-      },
-    },
-  },
-};
-
 export const WithSidebar: Story = {
   args: {
     initialSidebarOpen: true,
