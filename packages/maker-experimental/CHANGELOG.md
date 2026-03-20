@@ -1,5 +1,19 @@
 # @osdk/maker-experimental
 
+## 0.6.0-beta.5
+
+### Minor Changes
+
+- fd3f6d3: Add support for empty backing datasources
+
+### Patch Changes
+
+- Updated dependencies [0e45a37]
+- Updated dependencies [fd3f6d3]
+  - @osdk/maker@0.16.0-beta.11
+  - @osdk/api@2.8.0-beta.23
+  - @osdk/client.unstable@2.8.0-beta.23
+
 ## 0.6.0-beta.4
 
 ### Minor Changes

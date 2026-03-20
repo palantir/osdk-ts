@@ -1,5 +1,18 @@
 # @osdk/react-components
 
+## 0.2.0-beta.20
+
+### Minor Changes
+
+- 9ff2eca: Add function-backed column query
+- 532d0d7: Fix lint errors
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.23
+- @osdk/client@2.8.0-beta.23
+- @osdk/react@0.10.0-beta.10
+
 ## 0.2.0-beta.19
 
 ### Minor Changes

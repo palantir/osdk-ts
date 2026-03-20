@@ -1,5 +1,20 @@
 # @osdk/maker
 
+## 0.16.0-beta.11
+
+### Minor Changes
+
+- 0e45a37: Add better api name validation for OAC
+- fd3f6d3: Add support for empty backing datasources
+
+### Patch Changes
+
+- Updated dependencies [c4d7052]
+- Updated dependencies [32c6a0c]
+  - @osdk/typescript-sdk-docs@0.7.0-beta.3
+  - @osdk/generator-converters.ontologyir@2.8.0-beta.23
+  - @osdk/api@2.8.0-beta.23
+
 ## 0.16.0-beta.10
 
 ### Minor Changes

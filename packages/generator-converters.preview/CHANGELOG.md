@@ -1,5 +1,18 @@
 # @osdk/generator-converters.preview
 
+## 0.1.0-beta.6
+
+### Minor Changes
+
+- 32c6a0c: Fix functions discovery on Windows
+
+### Patch Changes
+
+- Updated dependencies [32c6a0c]
+  - @osdk/generator-converters.ontologyir@2.8.0-beta.23
+  - @osdk/client.unstable@2.8.0-beta.23
+  - @osdk/generator@2.8.0-beta.23
+
 ## 0.1.0-beta.5
 
 ### Minor Changes
