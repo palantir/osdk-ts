@@ -25,6 +25,8 @@ import { InterfaceMetadata } from '@osdk/api';
 import type { InterfaceQueryDataType } from '@osdk/api';
 import { isOk } from '@osdk/api';
 import { Logger } from '@osdk/api';
+import { Media } from '@osdk/api';
+import { MediaMetadata as MediaMetadata_2 } from '@osdk/api';
 import { MediaReference } from '@osdk/api';
 import { MediaUpload } from '@osdk/api';
 import type { MinimalObjectSet } from '@osdk/api/unstable';
@@ -167,6 +169,10 @@ export function isObjectSet(o: object): o is ObjectSet<ObjectOrInterfaceDefiniti
 export { isOk }
 
 export { Logger }
+
+export { Media }
+
+export { MediaMetadata_2 as MediaMetadata }
 
 export { MediaReference }
 
