@@ -20,7 +20,6 @@ import {
   API_NAME_PATTERN,
   isValidApiName,
   isValidObjectApiName,
-  MAX_API_NAME_LENGTH,
   OBJECT_API_NAME_PATTERN,
 } from "../util/ApiNameValidator.js";
 import { cloneDefinition } from "./cloneDefinition.js";
@@ -85,10 +84,6 @@ export function defineObject(
       `Invalid API name ${apiName} for property on object ${objectDef.apiName}. API names must match the regex ${API_NAME_PATTERN}.`,
     );
   });
-  invariant(
-    objectDef.apiName.length <= MAX_API_NAME_LENGTH,
-    `Invalid API name "${objectDef.apiName}". API names must not exceed ${MAX_API_NAME_LENGTH} characters (got ${objectDef.apiName.length}).`,
-  );
   invariant(
     propertyApiNames.includes(objectDef.titlePropertyApiName),
     `Title property ${objectDef.titlePropertyApiName} is not defined on object ${objectDef.apiName}`,
