@@ -161,5 +161,50 @@ describe("DropdownField", () => {
         expect(onChange).toHaveBeenCalledWith(["Alice"], expect.anything());
       });
     });
+
+    it("shows 'No results' when search matches nothing", async () => {
+      render(
+        <DropdownField value={null} items={STRING_ITEMS} isSearchable />,
+      );
+
+      const input = screen.getByRole("combobox");
+      fireEvent.focus(input);
+      fireEvent.change(input, { target: { value: "zzz" } });
+
+      await vi.waitFor(() => {
+        expect(screen.getByText("No results")).toBeDefined();
+      });
+    });
+  });
+
+  describe("placeholder", () => {
+    it("falls back to 'Search…' in combobox multi-select when no placeholder is provided", () => {
+      render(
+        <DropdownField<string, true>
+          value={[]}
+          items={STRING_ITEMS}
+          isSearchable
+          multiple
+        />,
+      );
+
+      const input = screen.getByRole("combobox");
+      expect(input.getAttribute("placeholder")).toBe("Search…");
+    });
+
+    it("hides placeholder in combobox multi-select when items are selected", () => {
+      render(
+        <DropdownField<string, true>
+          value={["Alice"]}
+          items={STRING_ITEMS}
+          isSearchable
+          multiple
+          placeholder="Pick names"
+        />,
+      );
+
+      const input = screen.getByRole("combobox");
+      expect(input.getAttribute("placeholder")).toBe("");
+    });
   });
 });
