@@ -40,7 +40,7 @@ export const auth: PublicOauthClient = createPublicOauthClient(
  *
  * If you later add an Ontology SDK to your application, follow the steps in 
  * https://fake.palantirfoundry.com/docs/foundry/ontology-sdk/add-osdk-to-bootstrapped-repository/
- * to correctly set it up in this code repository.
+ * to correctly set it up in this project.
  */
 export const client: PlatformClient = createPlatformClient(foundryUrl, auth);
 
