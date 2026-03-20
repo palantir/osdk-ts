@@ -385,50 +385,52 @@ function processQueryResult<
   objects: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>[],
   setData: React.Dispatch<React.SetStateAction<FunctionColumnData>>,
 ): void {
-  if (error) {
-    // Set error for all objects in all columns that use this query
-    config.columnIds.forEach(({ columnId }) => {
+  // Batch all updates into a single setState call
+  setData(prev => {
+    const newData = { ...prev };
+
+    if (error) {
+      // Set error for all objects in all columns that use this query
+      config.columnIds.forEach(({ columnId }) => {
+        if (!newData[columnId]) {
+          newData[columnId] = {};
+        }
+
+        objects.forEach(obj => {
+          const key = String(obj.$primaryKey);
+          newData[columnId][key] = createAsyncCellData({
+            error: error instanceof Error
+              ? error
+              : new Error(String(error)),
+            isLoading: false,
+          });
+        });
+      });
+    } else if (result) {
+      // Process the FunctionsMap result
       objects.forEach(obj => {
         const key = String(obj.$primaryKey);
-        setData(prev => ({
-          ...prev,
-          [columnId]: {
-            ...prev[columnId],
-            [key]: createAsyncCellData({
-              error: error instanceof Error
-                ? error
-                : new Error(String(error)),
+
+        // Process each column that uses this query result
+        config.columnIds.forEach(
+          ({ columnId, getValue, getKey: columnGetKey }) => {
+            if (!newData[columnId]) {
+              newData[columnId] = {};
+            }
+
+            const customKey = columnGetKey(obj);
+            const rawData = result[customKey];
+            const cellData = getValue ? getValue(rawData) : rawData;
+
+            newData[columnId][key] = createAsyncCellData({
+              data: cellData,
               isLoading: false,
-            }),
+            });
           },
-        }));
+        );
       });
-    });
-  } else if (result) {
-    // Process the FunctionsMap result
-    objects.forEach(obj => {
-      const key = String(obj.$primaryKey);
+    }
 
-      // Process each column that uses this query result
-      config.columnIds.forEach(
-        ({ columnId, getValue, getKey: columnGetKey }) => {
-          const customKey = columnGetKey(obj);
-          const rawData = result[customKey];
-
-          const cellData = getValue ? getValue(rawData) : rawData;
-
-          setData(prev => ({
-            ...prev,
-            [columnId]: {
-              ...prev[columnId],
-              [key]: createAsyncCellData({
-                data: cellData,
-                isLoading: false,
-              }),
-            },
-          }));
-        },
-      );
-    });
-  }
+    return newData;
+  });
 }
