@@ -78,6 +78,7 @@ function renderFieldComponent(
           value={value}
           onChange={onChange}
           items={items}
+          placeholder={fieldDefinition.placeholder}
           {...dropdownProps}
         />
       );

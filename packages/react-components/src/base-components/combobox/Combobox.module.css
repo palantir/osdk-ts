@@ -64,8 +64,53 @@
 .osdkComboboxInput {
   flex: 1;
   min-width: 0;
-  border: none;
-  background: transparent;
+  width: 100%;
+  box-sizing: border-box;
+  padding: calc(var(--osdk-combobox-spacing, var(--osdk-surface-spacing)) * 1.5)
+    calc(var(--osdk-combobox-spacing, var(--osdk-surface-spacing)) * 2);
+  border-radius: var(
+    --osdk-combobox-border-radius,
+    var(--osdk-surface-border-radius)
+  );
+  border: var(--osdk-combobox-border-width, var(--osdk-surface-border-width))
+    solid
+    var(--osdk-combobox-border-color, var(--osdk-surface-border-color-default));
+  background-color: var(
+    --osdk-combobox-input-bg,
+    var(--osdk-surface-background-color-default-rest)
+  );
+  transition: border-color
+    var(
+      --osdk-combobox-transition-duration,
+      var(--osdk-emphasis-transition-duration)
+    )
+    var(--osdk-combobox-transition-ease, var(--osdk-emphasis-ease-default));
+
+  &:focus {
+    border-color: var(
+      --osdk-combobox-focus-border-color,
+      var(--osdk-intent-primary-rest)
+    );
+    outline: var(--osdk-combobox-focus-width, var(--osdk-emphasis-focus-width))
+      solid var(--osdk-combobox-focus-color, var(--osdk-emphasis-focus-color));
+    outline-offset: var(
+      --osdk-combobox-focus-offset,
+      var(--osdk-emphasis-focus-offset)
+    );
+  }
+
+  .osdkComboboxInputWrapper & {
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+
+    &:focus {
+      border-color: unset;
+      outline: none;
+      outline-offset: unset;
+    }
+  }
   font-family: var(
     --osdk-combobox-font-family,
     var(--osdk-typography-family-default)

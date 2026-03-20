@@ -200,6 +200,11 @@ export interface DropdownFieldProps<V, Multiple extends boolean = false>
   isSearchable?: boolean;
 
   /**
+   * Placeholder text shown when no value is selected.
+   */
+  placeholder?: string;
+
+  /**
    * Whether multiple values can be selected
    */
   multiple?: Multiple;

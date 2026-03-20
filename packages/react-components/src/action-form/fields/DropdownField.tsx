@@ -73,6 +73,7 @@ const SelectDropdown = typedReactMemo(function SelectDropdownFn<
   getKey,
   isItemEqual,
   multiple,
+  placeholder,
 }: InnerDropdownProps<V, Multiple>): React.ReactElement {
   return (
     <div data-testid="dropdown-select-field">
@@ -83,7 +84,7 @@ const SelectDropdown = typedReactMemo(function SelectDropdownFn<
         isItemEqualToValue={isItemEqual}
         itemToStringLabel={itemToStringLabel}
       >
-        <Select.Trigger />
+        <Select.Trigger placeholder={placeholder} />
         <Select.Portal>
           <Select.Positioner>
             <Select.Popup>
@@ -111,6 +112,7 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
   getKey,
   isItemEqual,
   multiple,
+  placeholder,
 }: InnerDropdownProps<V, Multiple>): React.ReactElement {
   const renderChips = useCallback(
     (selectedValues: V[]) => (
@@ -125,11 +127,13 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
           </Combobox.Chip>
         ))}
         <Combobox.Input
-          placeholder={selectedValues.length > 0 ? "" : "Search…"}
+          placeholder={selectedValues.length > 0
+            ? ""
+            : (placeholder ?? "Search…")}
         />
       </>
     ),
-    [getKey, itemToStringLabel],
+    [getKey, itemToStringLabel, placeholder],
   );
 
   const renderItem = useCallback(
@@ -157,7 +161,7 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
               <Combobox.Value>{renderChips}</Combobox.Value>
             </Combobox.Chips>
           )
-          : <Combobox.Input />}
+          : <Combobox.Input placeholder={placeholder} />}
         <Combobox.Portal>
           <Combobox.Positioner>
             <Combobox.Popup>
