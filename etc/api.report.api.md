@@ -790,6 +790,29 @@ export interface InterfaceQueryDataType<T_Target extends ObjectOrInterfaceDefini
     interface: string;
 }
 
+// @public (undocumented)
+export type IntervalRule = {
+    	type: "match"
+    	query: string
+    	maxGaps?: number
+    	ordered: boolean
+} | {
+    	type: "startsWith"
+    	query: string
+} | {
+    	type: "and"
+    	rules: ReadonlyArray<IntervalRule>
+    	maxGaps?: number
+    	ordered: boolean
+} | {
+    	type: "or"
+    	rules: ReadonlyArray<IntervalRule>
+} | {
+    	type: "fuzzy"
+    	term: string
+    	fuzziness?: number
+};
+
 // Warning: (ae-forgotten-export) The symbol "OkResult" needs to be exported by the entry point index.d.ts
 //
 // @public
