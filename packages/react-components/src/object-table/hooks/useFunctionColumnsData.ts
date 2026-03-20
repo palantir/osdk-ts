@@ -135,7 +135,7 @@ export function useFunctionColumnsData<
       for await (
         const queryResult of executeQueriesGenerator(
           functionColumnConfigs,
-          stableObjectSet,
+          stableObjectSet as ObjectSet<Q>,
           client,
           abortController.signal,
         )
@@ -303,7 +303,7 @@ function createQueryPromise<
       return;
     }
 
-    const params = config.getParams(objectSet);
+    const params = config.getParams(objectSet as ObjectSet<Q>);
 
     client(config.queryDefinition)
       .executeFunction(params)

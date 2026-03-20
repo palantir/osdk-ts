@@ -36,14 +36,7 @@ export function renderDefaultCell<TData extends RowData>(
   // Function-backed columns are read-only: the value is server-computed
   // and cannot be edited in the table. Return the async cell directly.
   if (columnMeta?.isAsyncColumn && asyncCellData) {
-    const { data, isLoading, error } = asyncCellData;
-    return (
-      <AsyncValueCell
-        data={data}
-        isLoading={isLoading}
-        error={error}
-      />
-    );
+    return <AsyncValueCell {...asyncCellData} />;
   }
 
   if (!columnMeta?.editable || !meta?.onCellEdit || !meta?.isInEditMode) {
