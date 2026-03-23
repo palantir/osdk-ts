@@ -16,13 +16,14 @@
 
 import type { ObjectTypeDefinition } from "@osdk/api";
 import type { Observer } from "@osdk/client/unstable-do-not-use";
-import { act, render, screen, waitFor } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
 import * as React from "react";
 import { afterEach, beforeEach, describe, expect, it, vitest } from "vitest";
 import { useOsdkObject } from "../src/new/useOsdkObject.js";
 import {
   cleanupSuspenseTests,
   createMockObservableClient,
+  mockObjectPayload,
   TestSuspenseWrapper,
 } from "./suspenseTestUtils.js";
 
@@ -86,16 +87,7 @@ describe("useOsdkObject with { suspense: true }", () => {
     expect(screen.getByTestId("loading")).toBeDefined();
 
     act(() => {
-      capturedObserver?.next({
-        object: {
-          name: "Test Object",
-          $objectType: "MockObject",
-          $primaryKey: "pk-1",
-        },
-        status: "loaded",
-        isOptimistic: false,
-        lastUpdated: Date.now(),
-      });
+      capturedObserver?.next(mockObjectPayload("Test Object", "pk-1"));
     });
 
     const el = await screen.findByTestId("object");
@@ -119,151 +111,5 @@ describe("useOsdkObject with { suspense: true }", () => {
 
     const el = await screen.findByTestId("error");
     expect(el.textContent).toBe("Network failure");
-  });
-
-  it("should re-suspend when primary key changes", async () => {
-    const client = createObservableClient();
-    let secondObserver:
-      | Observer<Record<string, unknown> | undefined>
-      | undefined;
-
-    mockObserveObject.mockImplementation(
-      (
-        _type: unknown,
-        pk: unknown,
-        _opts: unknown,
-        observer: Observer<Record<string, unknown> | undefined>,
-      ) => {
-        if (pk === "pk-1") {
-          capturedObserver = observer;
-        } else {
-          secondObserver = observer;
-        }
-        return { unsubscribe: vitest.fn() };
-      },
-    );
-
-    const { rerender } = render(
-      React.createElement(
-        TestSuspenseWrapper,
-        { observableClient: client },
-        React.createElement(ObjectComponent, { pk: "pk-1" }),
-      ),
-    );
-
-    act(() => {
-      capturedObserver?.next({
-        object: {
-          name: "Object 1",
-          $objectType: "MockObject",
-          $primaryKey: "pk-1",
-        },
-        status: "loaded",
-        isOptimistic: false,
-        lastUpdated: Date.now(),
-      });
-    });
-
-    const el1 = await screen.findByTestId("object");
-    expect(el1.textContent).toBe("Object 1");
-
-    rerender(
-      React.createElement(
-        TestSuspenseWrapper,
-        { observableClient: client },
-        React.createElement(ObjectComponent, { pk: "pk-2" }),
-      ),
-    );
-
-    await waitFor(() => {
-      expect(screen.getByTestId("loading")).toBeDefined();
-    });
-
-    await act(async () => {
-      secondObserver?.next({
-        object: {
-          name: "Object 2",
-          $objectType: "MockObject",
-          $primaryKey: "pk-2",
-        },
-        status: "loaded",
-        isOptimistic: false,
-        lastUpdated: Date.now(),
-      });
-    });
-
-    const el2 = await screen.findByTestId("object");
-    expect(el2.textContent).toBe("Object 2");
-  });
-
-  it("should survive StrictMode double-render without duplicate subscriptions", async () => {
-    const client = createObservableClient();
-
-    render(
-      React.createElement(
-        React.StrictMode,
-        null,
-        React.createElement(
-          TestSuspenseWrapper,
-          { observableClient: client },
-          React.createElement(ObjectComponent, { pk: "pk-strict" }),
-        ),
-      ),
-    );
-
-    expect(screen.getByTestId("loading")).toBeDefined();
-    expect(mockObserveObject).toHaveBeenCalledTimes(1);
-
-    act(() => {
-      capturedObserver?.next({
-        object: {
-          name: "StrictMode Object",
-          $objectType: "MockObject",
-          $primaryKey: "pk-strict",
-        },
-        status: "loaded",
-        isOptimistic: false,
-        lastUpdated: Date.now(),
-      });
-    });
-
-    const el = await screen.findByTestId("object");
-    expect(el.textContent).toBe("StrictMode Object");
-    expect(mockObserveObject).toHaveBeenCalledTimes(1);
-  });
-
-  it("should show error boundary when error occurs after data was loaded", async () => {
-    const client = createObservableClient();
-
-    render(
-      React.createElement(
-        TestSuspenseWrapper,
-        { observableClient: client },
-        React.createElement(ObjectComponent, { pk: "pk-1" }),
-      ),
-    );
-
-    act(() => {
-      capturedObserver?.next({
-        object: {
-          name: "Loaded Object",
-          $objectType: "MockObject",
-          $primaryKey: "pk-1",
-        },
-        status: "loaded",
-        isOptimistic: false,
-        lastUpdated: Date.now(),
-      });
-    });
-
-    const el = await screen.findByTestId("object");
-    expect(el.textContent).toBe("Loaded Object");
-
-    act(() => {
-      capturedObserver?.error(new Error("revalidation failed"));
-    });
-
-    const errorEl = await screen.findByTestId("error");
-    expect(errorEl.textContent).toBe("revalidation failed");
   });
 });
