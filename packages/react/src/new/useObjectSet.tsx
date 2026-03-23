@@ -25,8 +25,12 @@ import type {
   WhereClause,
 } from "@osdk/api";
 
-import type { ObserveObjectSetArgs } from "@osdk/client/unstable-do-not-use";
+import {
+  getWireObjectSet,
+  type ObserveObjectSetArgs,
+} from "@osdk/client/unstable-do-not-use";
 import React from "react";
+import { extractPayloadError } from "./hookUtils.js";
 import { makeExternalStore, type Snapshot } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
 
@@ -229,6 +233,13 @@ export function useObjectSet<
     $select: otherOptions.$select,
   });
 
+  const objectSetKey = baseObjectSet
+    ? JSON.stringify(getWireObjectSet(baseObjectSet as ObjectSet<Q>))
+    : undefined;
+
+  const baseObjectSetRef = React.useRef(baseObjectSet);
+  baseObjectSetRef.current = baseObjectSet;
+
   const { subscribe, getSnapShot } = React.useMemo(
     () => {
       if (!enabled) {
@@ -246,11 +257,11 @@ export function useObjectSet<
 
       return makeExternalStore<ObserveObjectSetArgs<Q, RDPs>>(
         (observer) => {
-          if (!baseObjectSet) {
+          if (!baseObjectSetRef.current) {
             return { unsubscribe: () => {} };
           }
           const subscription = observableClient.observeObjectSet(
-            baseObjectSet as ObjectSet<Q>,
+            baseObjectSetRef.current as ObjectSet<Q>,
             {
               where: canonOptions.where,
               withProperties: canonOptions.withProperties,
@@ -278,7 +289,7 @@ export function useObjectSet<
     [
       enabled,
       observableClient,
-      baseObjectSet,
+      objectSetKey,
       canonOptions.where,
       canonOptions.withProperties,
       canonOptions.orderBy,
@@ -322,7 +333,7 @@ export function useObjectSet<
       isLoading: enabled
         ? !isPayloadCompleted(payload)
         : false,
-      error: lastLoaded && "error" in lastLoaded ? lastLoaded.error : undefined,
+      error: extractPayloadError(lastLoaded, "Failed to load object set"),
       isOptimistic: payload?.isOptimistic ?? false,
       fetchMore: payload?.hasMore ? payload.fetchMore : undefined,
       hasMore: payload?.hasMore ?? false,
