@@ -39,7 +39,7 @@ export function FilterList<Q extends ObjectTypeDefinition>(
     collapsed,
     onCollapsedChange,
     filterDefinitions,
-    addFilterMode = "controlled",
+    addFilterMode = "uncontrolled",
     showResetButton = false,
     onReset,
     showActiveFilterCount = false,
@@ -125,8 +125,12 @@ export function FilterList<Q extends ObjectTypeDefinition>(
         <AddFilterPopover
           hiddenDefinitions={hiddenFilterItems}
           onShowFilter={handleFilterShown}
+          renderTrigger={renderAddFilterButton}
         />
       );
+    }
+    if (uncontrolledAddFilterMode) {
+      return undefined;
     }
     return renderAddFilterButton;
   }, [

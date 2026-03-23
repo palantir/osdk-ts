@@ -90,13 +90,13 @@ function EmployeeFilters() {
 
 ### Advanced
 
-| Prop                    | Type                               | Default        | Description                                        |
-| ----------------------- | ---------------------------------- | -------------- | -------------------------------------------------- |
-| `addFilterMode`         | `"controlled" \| "uncontrolled"`   | `"controlled"` | How filter add/remove is managed                   |
-| `onFilterAdded`         | `(filterKey, definitions) => void` | -              | Called when a filter is added                      |
-| `onFilterRemoved`       | `(filterKey) => void`              | -              | Called when a filter is removed                    |
-| `enableSorting`         | `boolean`                          | -              | Enable drag-and-drop reordering of filters         |
-| `renderAddFilterButton` | `() => React.ReactNode`            | -              | Custom render function for the "Add filter" button |
+| Prop                    | Type                               | Default          | Description                                                                                                                                         |
+| ----------------------- | ---------------------------------- | ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `addFilterMode`         | `"controlled" \| "uncontrolled"`   | `"uncontrolled"` | How filter add/remove is managed                                                                                                                    |
+| `onFilterAdded`         | `(filterKey, definitions) => void` | -                | Called when a filter is added                                                                                                                       |
+| `onFilterRemoved`       | `(filterKey) => void`              | -                | Called when a filter is removed                                                                                                                     |
+| `enableSorting`         | `boolean`                          | -                | Enable drag-and-drop reordering of filters                                                                                                          |
+| `renderAddFilterButton` | `() => React.ReactNode`            | -                | Custom trigger for the add-filter button. In uncontrolled mode, customizes the popover trigger; in controlled mode, replaces the entire button area |
 
 ## Filter Definitions
 

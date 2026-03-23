@@ -26,11 +26,13 @@ interface HiddenFilterItem {
 interface AddFilterPopoverProps {
   hiddenDefinitions: Array<HiddenFilterItem>;
   onShowFilter: (key: string) => void;
+  renderTrigger?: () => React.ReactNode;
 }
 
 function AddFilterPopoverInner({
   hiddenDefinitions,
   onShowFilter,
+  renderTrigger,
 }: AddFilterPopoverProps): React.ReactElement {
   const handleItemClick = useCallback(
     (event: React.MouseEvent<HTMLDivElement>) => {
@@ -44,8 +46,10 @@ function AddFilterPopoverInner({
 
   return (
     <Menu.Root>
-      <Menu.Trigger className={styles.trigger}>
-        + Add filter
+      <Menu.Trigger
+        className={renderTrigger == null ? styles.trigger : undefined}
+      >
+        {renderTrigger != null ? renderTrigger() : "+ Add filter"}
       </Menu.Trigger>
       <Menu.Portal>
         <Menu.Positioner className={styles.positioner} sideOffset={4}>

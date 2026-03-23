@@ -22,7 +22,7 @@ import { filterValuesBySearch } from "../../utils/filterValues.js";
 import styles from "./ListogramInput.module.css";
 import { ListogramSkeleton } from "./ListogramSkeleton.js";
 import sharedStyles from "./shared.module.css";
-import { useStaleData } from "./useStaleData.js";
+import { useStableData } from "./useStableData.js";
 
 export type ListogramDisplayMode = "full" | "count" | "minimal";
 
@@ -57,7 +57,7 @@ function ListogramInputInner({
 }: ListogramInputProps): React.ReactElement {
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const stableValues = useStaleData(values, isLoading);
+  const stableValues = useStableData(values, isLoading);
 
   const selectedSet = useMemo(() => new Set(selectedValues), [selectedValues]);
 
