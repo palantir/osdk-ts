@@ -800,11 +800,12 @@ export type IntervalRule = {
 } | {
     	$and: IntervalRule[]
     	$maxGaps?: number
+    	$ordered: boolean
 } | {
     	$or: IntervalRule[]
 } | {
     	$fuzzy: string
-    	fuzziness?: number
+    	$fuzziness?: number
 };
 
 // Warning: (ae-forgotten-export) The symbol "OkResult" needs to be exported by the entry point index.d.ts

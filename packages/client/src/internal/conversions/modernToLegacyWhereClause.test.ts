@@ -765,7 +765,7 @@ describe(modernToLegacyWhereClause, () => {
         }
       `);
       });
-      it("converts $interval match by passing the rule through", () => {
+      it("converts $interval $match", () => {
         expect(modernToLegacyWhereClause<ObjAllProps>({
           string: {
             $interval: {
@@ -787,7 +787,7 @@ describe(modernToLegacyWhereClause, () => {
         }
       `);
       });
-      it("converts $interval startsWith by remapping the rule", () => {
+      it("converts $interval $startsWith", () => {
         expect(modernToLegacyWhereClause<ObjAllProps>({
           string: {
             $interval: {
@@ -805,7 +805,7 @@ describe(modernToLegacyWhereClause, () => {
         }
       `);
       });
-      it("converts $interval and by remapping the rule", () => {
+      it("converts $interval $and", () => {
         expect(modernToLegacyWhereClause<ObjAllProps>({
           string: {
             $interval: {
@@ -846,7 +846,7 @@ describe(modernToLegacyWhereClause, () => {
           }
         `);
       });
-      it("converts $interval or by remapping the rule", () => {
+      it("converts $interval $or", () => {
         expect(modernToLegacyWhereClause<ObjAllProps>({
           string: {
             $interval: {
