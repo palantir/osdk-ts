@@ -72,21 +72,3 @@ export {
   PdfRenderer,
   type PdfRendererProps,
 } from "../pdf-viewer/PdfRenderer.js";
-
-// CBAC Picker - Selection logic utilities
-export {
-  computeMarkingStates,
-  groupMarkingsByCategory,
-  toggleMarking,
-} from "../cbac-picker/utils/selectionLogic.js";
-export { textColorForBackground } from "../cbac-picker/utils/textColorForBackground.js";
-
-// CBAC Picker - Types
-export type {
-  CategoryMarkingGroup,
-  CbacBannerData,
-  MarkingSelectionState,
-  PickerMarking,
-  PickerMarkingCategory,
-  RequiredMarkingGroup,
-} from "../cbac-picker/types.js";
