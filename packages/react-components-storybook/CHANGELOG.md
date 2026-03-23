@@ -1,5 +1,11 @@
 # @osdk/react-components-storybook
 
+## 0.2.0-beta.8
+
+### Minor Changes
+
+- 7a3c43d: feat(pdf): pdf-viewer component
+
 ## 0.2.0-beta.7
 
 ### Minor Changes

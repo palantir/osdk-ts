@@ -1,5 +1,12 @@
 # @osdk/create-app.template.vue.v2
 
+## 2.8.0-beta.23
+
+### Minor Changes
+
+- 001c64c: Link to guide on how to add OSDK to templates
+- 9c48891: Fix templates nit
+
 ## 2.8.0-beta.22
 
 ## 2.8.0-beta.21

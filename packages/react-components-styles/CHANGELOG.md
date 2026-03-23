@@ -1,5 +1,12 @@
 # @osdk/react-components-styles
 
+## 0.2.0-beta.12
+
+### Minor Changes
+
+- bc46400: Add skeleton loading states and polish checkbox list, histogram, and range filter inputs
+- 7a3c43d: feat(pdf): pdf-viewer component
+
 ## 0.2.0-beta.11
 
 ### Minor Changes
