@@ -769,10 +769,9 @@ describe(modernToLegacyWhereClause, () => {
         expect(modernToLegacyWhereClause<ObjAllProps>({
           string: {
             $interval: {
-              type: "match",
-              query: "test phrase",
-              maxGaps: 1,
-              ordered: true,
+              $match: "test phrase",
+              $maxGaps: 1,
+              $ordered: true,
             },
           },
         }, objectTypeWithAllPropertyTypes)).toMatchInlineSnapshot(`
@@ -792,8 +791,7 @@ describe(modernToLegacyWhereClause, () => {
         expect(modernToLegacyWhereClause<ObjAllProps>({
           string: {
             $interval: {
-              type: "startsWith",
-              query: "test phr",
+              $startsWith: "test phr",
             },
           },
         }, objectTypeWithAllPropertyTypes)).toMatchInlineSnapshot(`
@@ -811,102 +809,79 @@ describe(modernToLegacyWhereClause, () => {
         expect(modernToLegacyWhereClause<ObjAllProps>({
           string: {
             $interval: {
-              type: "and",
-              maxGaps: 0,
-              ordered: true,
-              rules: [{
-                type: "match",
-                query: "test",
-                ordered: true,
+              $and: [{
+                $match: "test",
+                $ordered: true,
               }, {
-                type: "match",
-                query: "phrase",
-                ordered: true,
+                $match: "phrase",
+                $ordered: true,
               }],
+              $maxGaps: 0,
+              $ordered: true,
             },
           },
         }, objectTypeWithAllPropertyTypes)).toMatchInlineSnapshot(`
-        {
-          "field": "string",
-          "rule": {
-            "maxGaps": 0,
-            "ordered": true,
-            "rules": [
-              {
-                "ordered": true,
-                "query": "test",
-                "type": "match",
-              },
-              {
-                "ordered": true,
-                "query": "phrase",
-                "type": "match",
-              },
-            ],
-            "type": "allOf",
-          },
-          "type": "interval",
-        }
-      `);
+          {
+            "field": "string",
+            "rule": {
+              "maxGaps": 0,
+              "ordered": true,
+              "rules": [
+                {
+                  "maxGaps": undefined,
+                  "ordered": true,
+                  "query": "test",
+                  "type": "match",
+                },
+                {
+                  "maxGaps": undefined,
+                  "ordered": true,
+                  "query": "phrase",
+                  "type": "match",
+                },
+              ],
+              "type": "allOf",
+            },
+            "type": "interval",
+          }
+        `);
       });
       it("converts $interval or by remapping the rule", () => {
         expect(modernToLegacyWhereClause<ObjAllProps>({
           string: {
             $interval: {
-              type: "or",
-              rules: [{
-                type: "match",
-                query: "test",
-                ordered: true,
+              $or: [{
+                $match: "test",
+                $ordered: true,
               }, {
-                type: "match",
-                query: "phrase",
-                ordered: true,
+                $match: "phrase",
+                $ordered: true,
               }],
             },
           },
         }, objectTypeWithAllPropertyTypes)).toMatchInlineSnapshot(`
-        {
-          "field": "string",
-          "rule": {
-            "rules": [
-              {
-                "ordered": true,
-                "query": "test",
-                "type": "match",
-              },
-              {
-                "ordered": true,
-                "query": "phrase",
-                "type": "match",
-              },
-            ],
-            "type": "anyOf",
-          },
-          "type": "interval",
-        }
-      `);
-      });
-      it("converts $interval fuzzy by passing the rule through", () => {
-        expect(modernToLegacyWhereClause<ObjAllProps>({
-          string: {
-            $interval: {
-              type: "fuzzy",
-              term: "test",
-              fuzziness: 3,
+          {
+            "field": "string",
+            "rule": {
+              "rules": [
+                {
+                  "maxGaps": undefined,
+                  "ordered": true,
+                  "query": "test",
+                  "type": "match",
+                },
+                {
+                  "maxGaps": undefined,
+                  "ordered": true,
+                  "query": "phrase",
+                  "type": "match",
+                },
+              ],
+              "type": "anyOf",
             },
-          },
-        }, objectTypeWithAllPropertyTypes)).toMatchInlineSnapshot(`
-        {
-          "field": "string",
-          "rule": {
-            "fuzziness": 3,
-            "term": "test",
-            "type": "fuzzy",
-          },
-          "type": "interval",
-        }
-      `);
+            "type": "interval",
+          }
+        `);
       });
       it("converts struct where clauses correctly", () => {
         expect(modernToLegacyWhereClause<structObj>({

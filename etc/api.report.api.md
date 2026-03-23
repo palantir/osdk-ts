@@ -792,24 +792,18 @@ export interface InterfaceQueryDataType<T_Target extends ObjectOrInterfaceDefini
 
 // @public (undocumented)
 export type IntervalRule = {
-    	type: "match"
-    	query: string
-    	maxGaps?: number
-    	ordered: boolean
+    	$match: string
+    	$maxGaps?: number
+    	$ordered: boolean
 } | {
-    	type: "startsWith"
-    	query: string
+    	$startsWith: string
 } | {
-    	type: "and"
-    	rules: ReadonlyArray<IntervalRule>
-    	maxGaps?: number
-    	ordered: boolean
+    	$and: IntervalRule[]
+    	$maxGaps?: number
 } | {
-    	type: "or"
-    	rules: ReadonlyArray<IntervalRule>
+    	$or: IntervalRule[]
 } | {
-    	type: "fuzzy"
-    	term: string
+    	$fuzzy: string
     	fuzziness?: number
 };
 

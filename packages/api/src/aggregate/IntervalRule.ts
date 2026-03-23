@@ -15,28 +15,8 @@
  */
 
 export type IntervalRule =
-  | {
-    type: "match";
-    query: string;
-    maxGaps?: number;
-    ordered: boolean;
-  }
-  | {
-    type: "startsWith";
-    query: string;
-  }
-  | {
-    type: "and";
-    rules: ReadonlyArray<IntervalRule>;
-    maxGaps?: number;
-    ordered: boolean;
-  }
-  | {
-    type: "or";
-    rules: ReadonlyArray<IntervalRule>;
-  }
-  | {
-    type: "fuzzy";
-    term: string;
-    fuzziness?: number;
-  };
+  | { $match: string; $maxGaps?: number; $ordered: boolean }
+  | { $startsWith: string }
+  | { $and: IntervalRule[]; $maxGaps?: number; $ordered: boolean }
+  | { $or: IntervalRule[] }
+  | { $fuzzy: string; $fuzziness?: number };

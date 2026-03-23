@@ -504,10 +504,9 @@ describe("ObjectSet", () => {
     client(Employee).where({
       fullName: {
         $interval: {
-          type: "match",
-          query: "John Smith",
-          maxGaps: 1,
-          ordered: true,
+          $match: "John Smith",
+          $maxGaps: 1,
+          $ordered: true,
         },
       },
     });
@@ -515,8 +514,7 @@ describe("ObjectSet", () => {
     client(Employee).where({
       fullName: {
         $interval: {
-          type: "startsWith",
-          query: "John Smi",
+          $startsWith: "John Smi",
         },
       },
     });
@@ -524,17 +522,28 @@ describe("ObjectSet", () => {
     client(Employee).where({
       fullName: {
         $interval: {
-          type: "and",
-          maxGaps: 0,
-          ordered: true,
-          rules: [{
-            type: "match",
-            query: "John",
-            ordered: true,
+          $and: [{
+            $match: "John",
+            $ordered: true,
           }, {
-            type: "match",
-            query: "Smith",
-            ordered: true,
+            $match: "Smith",
+            $ordered: true,
+          }],
+          $maxGaps: 0,
+          $ordered: true,
+        },
+      },
+    });
+
+    client(Employee).where({
+      fullName: {
+        $interval: {
+          $or: [{
+            $match: "John",
+            $ordered: true,
+          }, {
+            $match: "Jane",
+            $ordered: true,
           }],
         },
       },
@@ -543,26 +552,8 @@ describe("ObjectSet", () => {
     client(Employee).where({
       fullName: {
         $interval: {
-          type: "or",
-          rules: [{
-            type: "match",
-            query: "John",
-            ordered: true,
-          }, {
-            type: "match",
-            query: "Jane",
-            ordered: true,
-          }],
-        },
-      },
-    });
-
-    client(Employee).where({
-      fullName: {
-        $interval: {
-          type: "fuzzy",
-          term: "Smith",
-          fuzziness: 1,
+          $fuzzy: "Smith",
+          $fuzziness: 1,
         },
       },
     });
@@ -570,7 +561,7 @@ describe("ObjectSet", () => {
     client(Employee).where({
       fullName: {
         // @ts-expect-error
-        $interval: { type: "match", query: "John Smith" },
+        $interval: { $match: "John Smith" },
       },
     });
   });

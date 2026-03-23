@@ -16,6 +16,7 @@
 
 import type { IntervalRule } from "@osdk/api";
 import type { SearchJsonQueryV2 } from "@osdk/foundry.ontologies";
+import invariant from "tiny-invariant";
 
 type IntervalQueryRule = Extract<
   SearchJsonQueryV2,
@@ -25,29 +26,42 @@ type IntervalQueryRule = Extract<
 export function toIntervalQueryRule(
   rule: IntervalRule,
 ): IntervalQueryRule {
-  switch (rule.type) {
-    case "match":
-      return rule;
-    case "startsWith":
-      return {
-        ...rule,
-        type: "prefixOnLastToken",
-      };
-    case "and": {
-      return {
-        ...rule,
-        type: "allOf",
-        rules: rule.rules.map(toIntervalQueryRule),
-      };
-    }
-    case "or": {
-      return {
-        ...rule,
-        type: "anyOf",
-        rules: rule.rules.map(toIntervalQueryRule),
-      };
-    }
-    case "fuzzy":
-      return rule;
+  if ("$match" in rule) {
+    return {
+      type: "match",
+      query: rule.$match,
+      ordered: rule.$ordered,
+      maxGaps: rule.$maxGaps,
+    };
   }
+  if ("$startsWith" in rule) {
+    return {
+      type: "prefixOnLastToken",
+      query: rule.$startsWith,
+    };
+  }
+  if ("$and" in rule) {
+    return {
+      type: "allOf",
+      rules: rule.$and.map(toIntervalQueryRule),
+      ordered: rule.$ordered,
+      maxGaps: rule.$maxGaps,
+    };
+  }
+  if ("$or" in rule) {
+    return {
+      type: "anyOf",
+      rules: rule.$or.map(toIntervalQueryRule),
+    };
+  }
+  if ("$fuzzy" in rule) {
+    return {
+      type: "fuzzy",
+      term: rule.$fuzzy,
+      fuzziness: rule.$fuzziness,
+    };
+  }
+
+  const _: never = rule;
+  invariant(false, "Unknown interval rule type");
 }
