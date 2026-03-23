@@ -44,7 +44,8 @@ import { PrimitiveSelectionPanel } from "./PrimitiveSelectionPanel.js";
 const LazyCodeMirror = React.lazy(() => import("@uiw/react-codemirror"));
 const lazyJson = () => import("@codemirror/lang-json").then(m => m.json);
 
-let jsonExtensionValue: unknown | null = null;
+type JsonExtension = ReturnType<Awaited<ReturnType<typeof lazyJson>>>;
+let jsonExtensionValue: JsonExtension | null = null;
 const jsonExtensionListeners = new Set<() => void>();
 const jsonExtensionPromise = lazyJson().then(jsonFn => {
   jsonExtensionValue = jsonFn();
@@ -61,7 +62,7 @@ function subscribeJsonExtension(callback: () => void): () => void {
   };
 }
 
-function getJsonExtensionSnapshot(): unknown | null {
+function getJsonExtensionSnapshot(): JsonExtension | null {
   return jsonExtensionValue;
 }
 
