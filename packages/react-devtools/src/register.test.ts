@@ -34,6 +34,22 @@ vi.mock("./fiber/DevtoolsHook.js", () => ({
   onCommitFiberUnmount: vi.fn().mockReturnValue(vi.fn()),
 }));
 
+vi.mock("./components/MonitoringPanel.js", () => ({
+  SafeMonitoringPanel: () => null,
+  MonitoringPanel: () => null,
+}));
+
+vi.mock("./store/MonitorStore.js", () => {
+  const store = {
+    wrapExistingClient: vi.fn((c: unknown) => c),
+    dispose: vi.fn(),
+  };
+  return {
+    MonitorStore: vi.fn(() => store),
+    getMonitorStore: vi.fn(() => store),
+  };
+});
+
 describe("register", () => {
   const originalFetch = globalThis.fetch;
 
