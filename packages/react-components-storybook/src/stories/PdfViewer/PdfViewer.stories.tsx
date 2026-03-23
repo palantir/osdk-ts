@@ -15,7 +15,7 @@
  */
 
 import type { PdfViewerProps } from "@osdk/react-components/experimental";
-import { PdfViewer } from "@osdk/react-components/experimental";
+import { BasePdfViewer } from "@osdk/react-components/experimental";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { delay, http } from "msw";
 import { fn } from "storybook/test";
@@ -24,13 +24,13 @@ const SAMPLE_PDF_URL =
 
 const meta: Meta<PdfViewerProps> = {
   title: "Components/PdfViewer",
-  component: PdfViewer,
+  component: BasePdfViewer,
   args: {
     src: SAMPLE_PDF_URL,
   },
   render: (args: PdfViewerProps) => (
     <div style={{ height: "600px" }}>
-      <PdfViewer {...args} />
+      <BasePdfViewer {...args} />
     </div>
   ),
   parameters: {

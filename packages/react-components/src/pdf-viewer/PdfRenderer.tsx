@@ -18,7 +18,7 @@ import { Error as ErrorIcon, Spin } from "@blueprintjs/icons";
 import type { Media } from "@osdk/api";
 import classnames from "classnames";
 import React, { useEffect, useState } from "react";
-import { PdfViewer } from "./PdfViewer.js";
+import { BasePdfViewer } from "./PdfViewer.js";
 import styles from "./PdfViewer.module.css";
 import type { PdfViewerProps } from "./types.js";
 
@@ -99,5 +99,5 @@ export function PdfRenderer({
     );
   }
 
-  return <PdfViewer src={src} className={className} {...pdfViewerProps} />;
+  return <BasePdfViewer src={src} className={className} {...pdfViewerProps} />;
 }

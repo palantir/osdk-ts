@@ -32,7 +32,7 @@ import { PdfViewerSidebar } from "./PdfViewerSidebar.js";
 import { PdfViewerToolbar } from "./PdfViewerToolbar.js";
 import type { PdfViewerProps } from "./types.js";
 
-export function PdfViewer({
+export function BasePdfViewer({
   src,
   annotations = EMPTY_ANNOTATIONS,
   onAnnotationClick,
