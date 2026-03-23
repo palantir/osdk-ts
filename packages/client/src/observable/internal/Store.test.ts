@@ -2729,7 +2729,7 @@ describe(Store, () => {
         defer(
           store.objectSets.observe({
             baseObjectSet: client(Employee) as ObjectSet<Employee>,
-            pivotTo: "officeLink" as any,
+            pivotTo: "officeLink",
           }, sub),
         );
 
