@@ -17,7 +17,7 @@
 .searchInput {
   border: var(--osdk-surface-border);
   border-radius: var(--osdk-surface-border-radius);
-  padding: 4px 8px;
+  padding: var(--osdk-surface-spacing) calc(var(--osdk-surface-spacing) * 2);
   font-family: var(--osdk-typography-family-default);
   font-size: var(--osdk-typography-size-body-small);
   color: var(--osdk-typography-color-default-rest);

@@ -16,7 +16,7 @@
 
 import { useVirtualizer } from "@tanstack/react-virtual";
 import type { PDFDocumentProxy } from "pdfjs-dist";
-import React, { useEffect, useMemo, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import {
   DEFAULT_PAGE_HEIGHT,
   THUMBNAIL_GAP,
@@ -39,12 +39,8 @@ export function PdfViewerSidebar({
   onPageClick,
 }: PdfViewerSidebarProps): React.ReactElement {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-
-  const estimatedItemHeight = useMemo(
-    () =>
-      Math.floor(DEFAULT_PAGE_HEIGHT * THUMBNAIL_SCALE) + THUMBNAIL_GAP + 20,
-    [],
-  );
+  const estimatedItemHeight = Math.floor(DEFAULT_PAGE_HEIGHT * THUMBNAIL_SCALE)
+    + THUMBNAIL_GAP + 20;
 
   const virtualizer = useVirtualizer({
     count: numPages,

@@ -110,6 +110,7 @@ export function BasePdfViewer({
         type: "application/pdf",
       });
       const url = URL.createObjectURL(blob);
+      // Extract filename from URL by taking the last path segment and stripping query params
       const filename = typeof src === "string"
         ? src.split("/").pop()?.split("?")[0] || "document.pdf"
         : "document.pdf";

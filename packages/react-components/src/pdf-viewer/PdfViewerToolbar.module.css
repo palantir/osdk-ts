@@ -15,14 +15,14 @@
 .toolbarGroup {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--osdk-surface-spacing);
 }
 
 .separator {
   width: 1px;
   height: 20px;
   background-color: var(--osdk-surface-border-color-default);
-  margin: 0 4px;
+  margin: 0 var(--osdk-surface-spacing);
 }
 
 .toolbarButton {

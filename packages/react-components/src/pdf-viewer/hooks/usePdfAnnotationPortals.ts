@@ -58,7 +58,7 @@ export function usePdfAnnotationPortals(
         return [...filtered, {
           pageNumber: evt.pageNumber,
           container: pageView.div as HTMLDivElement,
-          pageHeight: viewport.viewBox[3],
+          pageHeight: viewport.viewBox[3], // viewBox is [xMin, yMin, width, height] and we need the original height before scaling
           scale: viewport.scale,
         }].sort((a, b) => a.pageNumber - b.pageNumber);
       });

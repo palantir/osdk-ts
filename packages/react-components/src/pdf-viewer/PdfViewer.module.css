@@ -37,7 +37,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: calc(var(--osdk-surface-spacing) * 2);
   height: 100%;
   font-family: var(--osdk-typography-family-default);
   font-size: var(--osdk-typography-size-body-medium);
