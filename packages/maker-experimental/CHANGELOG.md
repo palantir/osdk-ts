@@ -1,5 +1,23 @@
 # @osdk/maker-experimental
 
+## 0.6.0-beta.5
+
+### Minor Changes
+
+- fd3f6d3: Add support for empty backing datasources
+- 764fe55: Support multi block-generation-result outputs.
+
+### Patch Changes
+
+- Updated dependencies [cc7f505]
+- Updated dependencies [4bb9769]
+- Updated dependencies [0e45a37]
+- Updated dependencies [fcf81ba]
+- Updated dependencies [fd3f6d3]
+  - @osdk/maker@0.16.0-beta.11
+  - @osdk/api@2.8.0-beta.23
+  - @osdk/client.unstable@2.8.0-beta.23
+
 ## 0.6.0-beta.4
 
 ### Minor Changes

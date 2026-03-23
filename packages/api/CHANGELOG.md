@@ -1,5 +1,11 @@
 # @osdk/api
 
+## 2.8.0-beta.23
+
+### Minor Changes
+
+- 4bb9769: Add primaryKeyApiName and primaryKeyType to object type const for runtime access
+
 ## 2.8.0-beta.22
 
 ## 2.8.0-beta.21
