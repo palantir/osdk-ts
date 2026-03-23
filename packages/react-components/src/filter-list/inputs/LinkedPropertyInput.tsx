@@ -240,6 +240,7 @@ function LinkedPropertyInputInner<
         return (
           <LinkedCheckboxListInput
             objectType={linkedObjectType}
+            objectSet={linkedObjectSet}
             propertyKey={linkedPropertyKey}
             selectedValues={selectedValues}
             onChange={onSelectChange}
@@ -255,6 +256,7 @@ function LinkedPropertyInputInner<
         return (
           <LinkedMultiSelectInput
             objectType={linkedObjectType}
+            objectSet={linkedObjectSet}
             propertyKey={linkedPropertyKey}
             selectedValues={values}
             onChange={onSelectChange}
@@ -269,6 +271,7 @@ function LinkedPropertyInputInner<
         return (
           <LinkedSingleSelectInput
             objectType={linkedObjectType}
+            objectSet={linkedObjectSet}
             propertyKey={linkedPropertyKey}
             selectedValue={value}
             onChange={onSingleSelectChange}
@@ -306,6 +309,7 @@ function LinkedPropertyInputInner<
         return (
           <LinkedNumberRangeInput
             objectType={linkedObjectType}
+            objectSet={linkedObjectSet}
             propertyKey={linkedPropertyKey}
             minValue={nr?.minValue}
             maxValue={nr?.maxValue}
@@ -321,6 +325,7 @@ function LinkedPropertyInputInner<
         return (
           <LinkedDateRangeInput
             objectType={linkedObjectType}
+            objectSet={linkedObjectSet}
             propertyKey={linkedPropertyKey}
             minValue={dr?.minValue}
             maxValue={dr?.maxValue}
@@ -341,6 +346,7 @@ function LinkedPropertyInputInner<
         return (
           <LinkedListogramInput
             objectType={linkedObjectType}
+            objectSet={linkedObjectSet}
             propertyKey={linkedPropertyKey}
             selectedValues={selectedValues}
             onChange={onExactMatchChange}
@@ -357,6 +363,7 @@ function LinkedPropertyInputInner<
         return (
           <LinkedTextTagsInput
             objectType={linkedObjectType}
+            objectSet={linkedObjectSet}
             propertyKey={linkedPropertyKey}
             tags={tags}
             onChange={onExactMatchChange}
@@ -423,6 +430,7 @@ export const LinkedPropertyInput: typeof LinkedPropertyInputInner = memo(
 
 interface LinkedAggregationInputProps<Q extends ObjectTypeDefinition> {
   objectType: Q;
+  objectSet: ObjectSet<Q>;
   propertyKey: PropertyKeys<Q>;
 }
 
@@ -436,6 +444,7 @@ interface LinkedCheckboxListInputProps<Q extends ObjectTypeDefinition>
 
 function LinkedCheckboxListInput<Q extends ObjectTypeDefinition>({
   objectType,
+  objectSet,
   propertyKey,
   selectedValues,
   onChange,
@@ -444,6 +453,7 @@ function LinkedCheckboxListInput<Q extends ObjectTypeDefinition>({
   const { data, isLoading, error } = usePropertyAggregation(
     objectType,
     propertyKey,
+    objectSet,
   );
   return (
     <CheckboxListInput
@@ -466,6 +476,7 @@ interface LinkedMultiSelectInputProps<Q extends ObjectTypeDefinition>
 
 function LinkedMultiSelectInput<Q extends ObjectTypeDefinition>({
   objectType,
+  objectSet,
   propertyKey,
   selectedValues,
   onChange,
@@ -473,6 +484,7 @@ function LinkedMultiSelectInput<Q extends ObjectTypeDefinition>({
   const { data, isLoading, error } = usePropertyAggregation(
     objectType,
     propertyKey,
+    objectSet,
   );
   return (
     <MultiSelectInput
@@ -494,6 +506,7 @@ interface LinkedSingleSelectInputProps<Q extends ObjectTypeDefinition>
 
 function LinkedSingleSelectInput<Q extends ObjectTypeDefinition>({
   objectType,
+  objectSet,
   propertyKey,
   selectedValue,
   onChange,
@@ -501,6 +514,7 @@ function LinkedSingleSelectInput<Q extends ObjectTypeDefinition>({
   const { data, isLoading, error } = usePropertyAggregation(
     objectType,
     propertyKey,
+    objectSet,
   );
   return (
     <SingleSelectInput
@@ -524,6 +538,7 @@ interface LinkedListogramInputProps<Q extends ObjectTypeDefinition>
 
 function LinkedListogramInput<Q extends ObjectTypeDefinition>({
   objectType,
+  objectSet,
   propertyKey,
   selectedValues,
   onChange,
@@ -532,6 +547,7 @@ function LinkedListogramInput<Q extends ObjectTypeDefinition>({
   const { data, maxCount, isLoading, error } = usePropertyAggregation(
     objectType,
     propertyKey,
+    objectSet,
   );
   return (
     <ListogramInput
@@ -555,6 +571,7 @@ interface LinkedTextTagsInputProps<Q extends ObjectTypeDefinition>
 
 function LinkedTextTagsInput<Q extends ObjectTypeDefinition>({
   objectType,
+  objectSet,
   propertyKey,
   tags,
   onChange,
@@ -563,6 +580,7 @@ function LinkedTextTagsInput<Q extends ObjectTypeDefinition>({
   const { data, isLoading, error } = usePropertyAggregation(
     objectType,
     propertyKey,
+    objectSet,
     aggregationOptions,
   );
   return (
@@ -587,6 +605,7 @@ interface LinkedRangeInputProps<Q extends ObjectTypeDefinition>
 function useLinkedRangeData<Q extends ObjectTypeDefinition>(
   objectType: Q,
   propertyKey: PropertyKeys<Q>,
+  objectSet: ObjectSet<Q>,
 ) {
   const aggregateOptions = useMemo(
     () => createGroupByAggregateOptions<Q>(propertyKey as string),
@@ -594,8 +613,8 @@ function useLinkedRangeData<Q extends ObjectTypeDefinition>(
   );
 
   const histogramArgs = useMemo(
-    () => ({ aggregate: aggregateOptions }),
-    [aggregateOptions],
+    () => ({ aggregate: aggregateOptions, objectSet }),
+    [aggregateOptions, objectSet],
   );
   const { data: aggregateData, isLoading: histLoading } = useOsdkAggregation(
     objectType,
@@ -613,8 +632,12 @@ function useLinkedRangeData<Q extends ObjectTypeDefinition>(
   );
 
   const nullCountArgs = useMemo(
-    () => ({ where: nullWhereClause, aggregate: nullCountAggregateOptions }),
-    [nullWhereClause, nullCountAggregateOptions],
+    () => ({
+      where: nullWhereClause,
+      aggregate: nullCountAggregateOptions,
+      objectSet,
+    }),
+    [nullWhereClause, nullCountAggregateOptions, objectSet],
   );
   const { data: nullCountData, isLoading: nullLoading } = useOsdkAggregation(
     objectType,
@@ -643,6 +666,7 @@ interface LinkedNumberRangeInputProps<Q extends ObjectTypeDefinition>
 
 function LinkedNumberRangeInput<Q extends ObjectTypeDefinition>({
   objectType,
+  objectSet,
   propertyKey,
   minValue,
   maxValue,
@@ -651,7 +675,7 @@ function LinkedNumberRangeInput<Q extends ObjectTypeDefinition>({
   onNullChange,
 }: LinkedNumberRangeInputProps<Q>): React.ReactElement {
   const { aggregateData, histLoading, nullCount, nullLoading } =
-    useLinkedRangeData(objectType, propertyKey);
+    useLinkedRangeData(objectType, propertyKey, objectSet);
 
   const valueCountPairs = useMemo<Array<{ value: number; count: number }>>(
     () => {
@@ -703,6 +727,7 @@ interface LinkedDateRangeInputProps<Q extends ObjectTypeDefinition>
 
 function LinkedDateRangeInput<Q extends ObjectTypeDefinition>({
   objectType,
+  objectSet,
   propertyKey,
   minValue,
   maxValue,
@@ -711,7 +736,7 @@ function LinkedDateRangeInput<Q extends ObjectTypeDefinition>({
   onNullChange,
 }: LinkedDateRangeInputProps<Q>): React.ReactElement {
   const { aggregateData, histLoading, nullCount, nullLoading } =
-    useLinkedRangeData(objectType, propertyKey);
+    useLinkedRangeData(objectType, propertyKey, objectSet);
 
   const valueCountPairs = useMemo<Array<{ value: Date; count: number }>>(() => {
     if (!aggregateData) return [];

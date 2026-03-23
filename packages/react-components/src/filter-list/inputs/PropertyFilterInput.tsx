@@ -45,6 +45,7 @@ interface PropertyFilterInputProps<Q extends ObjectTypeDefinition> {
 
 function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
   objectType,
+  objectSet,
   definition,
   filterState,
   onFilterStateChanged,
@@ -57,6 +58,7 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
       return (
         <CheckboxListFilterInput
           objectType={objectType}
+          objectSet={objectSet}
           propertyKey={definition.key}
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}
@@ -94,6 +96,7 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
       return (
         <NumberRangeFilterInput
           objectType={objectType}
+          objectSet={objectSet}
           propertyKey={definition.key}
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}
@@ -104,6 +107,7 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
       return (
         <DateRangeFilterInput
           objectType={objectType}
+          objectSet={objectSet}
           propertyKey={definition.key}
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}
@@ -114,6 +118,7 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
       return (
         <SingleSelectFilterInput
           objectType={objectType}
+          objectSet={objectSet}
           propertyKey={definition.key}
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}
@@ -126,6 +131,7 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
       return (
         <MultiSelectFilterInput
           objectType={objectType}
+          objectSet={objectSet}
           propertyKey={definition.key}
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}
@@ -154,6 +160,7 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
       return (
         <ListogramFilterInput
           objectType={objectType}
+          objectSet={objectSet}
           propertyKey={definition.key}
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}
@@ -170,6 +177,7 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
       return (
         <TextTagsFilterInput
           objectType={objectType}
+          objectSet={objectSet}
           propertyKey={definition.key}
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}
