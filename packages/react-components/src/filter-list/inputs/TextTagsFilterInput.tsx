@@ -20,6 +20,7 @@ import type {
   WhereClause,
 } from "@osdk/api";
 import React, { memo, useCallback, useMemo } from "react";
+import { FilterInputExcludeRow } from "../base/FilterInputExcludeRow.js";
 import { TextTagsInput } from "../base/inputs/TextTagsInput.js";
 import type { FilterState } from "../FilterListItemApi.js";
 import { usePropertyAggregation } from "../hooks/usePropertyAggregation.js";
@@ -31,6 +32,7 @@ interface TextTagsFilterInputProps<Q extends ObjectTypeDefinition> {
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
   whereClause: WhereClause<Q>;
+  excludeRowOpen?: boolean;
 }
 
 function TextTagsFilterInputInner<Q extends ObjectTypeDefinition>({
@@ -39,6 +41,7 @@ function TextTagsFilterInputInner<Q extends ObjectTypeDefinition>({
   filterState,
   onFilterStateChanged,
   whereClause,
+  excludeRowOpen,
 }: TextTagsFilterInputProps<Q>): React.ReactElement {
   const tags = useMemo(
     () =>
@@ -72,13 +75,20 @@ function TextTagsFilterInputInner<Q extends ObjectTypeDefinition>({
   );
 
   return (
-    <TextTagsInput
-      suggestions={data}
-      isLoading={isLoading}
-      error={error}
-      tags={tags}
-      onChange={handleChange}
-    />
+    <FilterInputExcludeRow
+      excludeRowOpen={excludeRowOpen}
+      filterState={filterState}
+      onFilterStateChanged={onFilterStateChanged}
+      totalValueCount={data.length}
+    >
+      <TextTagsInput
+        suggestions={data}
+        isLoading={isLoading}
+        error={error}
+        tags={tags}
+        onChange={handleChange}
+      />
+    </FilterInputExcludeRow>
   );
 }
 

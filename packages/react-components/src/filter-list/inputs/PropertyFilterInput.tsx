@@ -118,6 +118,7 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}
           whereClause={whereClause}
+          excludeRowOpen={excludeRowOpen}
         />
       );
 
@@ -129,6 +130,7 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}
           whereClause={whereClause}
+          excludeRowOpen={excludeRowOpen}
         />
       );
 
@@ -172,6 +174,7 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}
           whereClause={whereClause}
+          excludeRowOpen={excludeRowOpen}
         />
       );
 
