@@ -1,0 +1,95 @@
+.pdfViewer {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  background-color: var(--osdk-pdf-viewer-bg);
+  border: var(--osdk-pdf-viewer-border);
+  border-radius: var(--osdk-surface-border-radius);
+  overflow: hidden;
+  position: relative;
+}
+
+.contentArea {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+.scrollContainerWrapper {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+.scrollContainer {
+  overflow: auto;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: calc(var(--osdk-surface-spacing) * 2);
+  height: 100%;
+  font-family: var(--osdk-typography-family-default);
+  font-size: var(--osdk-typography-size-body-medium);
+  color: var(--osdk-typography-color-muted);
+}
+
+.errorContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--osdk-surface-spacing);
+  height: 100%;
+  font-family: var(--osdk-typography-family-default);
+  font-size: var(--osdk-typography-size-body-medium);
+  color: var(--osdk-typography-color-danger-rest);
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spinnerIcon {
+  animation: spin 1s linear infinite;
+  color: var(--osdk-typography-color-muted);
+}
+
+.errorIcon {
+  flex-shrink: 0;
+}
+
+/* PDFViewer page overrides */
+:global(.pdfViewer .page) {
+  box-shadow: var(--osdk-pdf-viewer-page-shadow);
+  background-color: var(--osdk-palette-white);
+  margin: 0 auto var(--osdk-pdf-viewer-page-gap);
+}
+
+/* Search highlight overrides — match pdf.js FindController CSS classes */
+:global(.textLayer) .highlight {
+  background-color: var(--osdk-pdf-viewer-search-highlight);
+  border-radius: 1px;
+}
+
+:global(.textLayer) .highlight.selected {
+  background-color: var(--osdk-pdf-viewer-search-active);
+}
+
+:global(.textLayer)::selection {
+  background: var(--osdk-intent-primary-rest);
+}

@@ -59,6 +59,7 @@
     "@tanstack/react-table": "^8.21.3",
     "@tanstack/react-virtual": "^3.13.13",
     "lodash-es": "^4.17.21",
+    "pdfjs-dist": "^4.9.155",
     "react-hook-form": "^7.54.0"
   },
   "peerDependencies": {
