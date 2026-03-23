@@ -24,6 +24,7 @@ import invariant from "tiny-invariant";
 import { OntologyEntityTypeEnum } from "../../api/common/OntologyEntityTypeEnum.js";
 import {
   cleanAndValidateLinkTypeId,
+  importedTypes,
   ontologyDefinition,
 } from "../../api/defineOntology.js";
 import type { LinkType, UserLinkTypeStatus } from "../../api/links/LinkType.js";
@@ -252,7 +253,8 @@ export function getObject(
 ): { apiName: string; object: ObjectType } {
   const objectApiName = typeof object === "string" ? object : object.apiName;
   const fullObject =
-    ontologyDefinition[OntologyEntityTypeEnum.OBJECT_TYPE][objectApiName];
+    ontologyDefinition[OntologyEntityTypeEnum.OBJECT_TYPE][objectApiName]
+      ?? importedTypes[OntologyEntityTypeEnum.OBJECT_TYPE][objectApiName];
   invariant(
     fullObject !== undefined,
     `Object ${objectApiName} is not defined`,
