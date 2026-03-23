@@ -3785,13 +3785,13 @@ importers:
         specifier: workspace:^
         version: link:../client
       '@osdk/foundry.core':
-        specifier: catalog:foundry-platform-typescript
+        specifier: ^2.44.0
         version: 2.53.0
       '@osdk/foundry.mediasets':
-        specifier: catalog:foundry-platform-typescript
+        specifier: ^2.44.0
         version: 2.53.0
       '@osdk/foundry.ontologies':
-        specifier: catalog:foundry-platform-typescript
+        specifier: ^2.44.0
         version: 2.53.0
       '@types/geojson':
         specifier: ^7946.0.16
@@ -8366,9 +8366,6 @@ packages:
 
   '@osdk/shared.net.errors@1.1.1':
     resolution: {integrity: sha512-gQgSyJbn1USFRN7k9DA507eMR1ToFZKeUsMHhWOqRmyJiSCW+WidqIkhkZlFrEUS3cYUlWAGk+kIO/jn/EqKog==}
-
-  '@osdk/shared.net.errors@2.0.1':
-    resolution: {integrity: sha512-9M2Kfe9+VATKBXQ459Ju6Bo/TDWjZbS1C4XwPdVDslyJfbuveFZGqHP9Cs32eGbhikZ0A8O5pKMMteHST4pUZw==}
 
   '@osdk/shared.net.errors@2.5.0-beta.2':
     resolution: {integrity: sha512-AlsMiED7KvvBD/z5fITxC9ftbdyZ4xZgVYx0rc3RWbUexDQfFpaa7PBHa1itDesGvG1zWKDZkBhNVzgDowN+Og==}
@@ -24541,8 +24538,6 @@ snapshots:
 
   '@osdk/shared.net.errors@1.1.1': {}
 
-  '@osdk/shared.net.errors@2.0.1': {}
-
   '@osdk/shared.net.errors@2.5.0-beta.2': {}
 
   '@osdk/shared.net.errors@2.7.0': {}
@@ -24561,7 +24556,7 @@ snapshots:
     dependencies:
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.client2': 1.0.0
-      '@osdk/shared.net.errors': 2.0.1
+      '@osdk/shared.net.errors': 2.7.0
 
   '@osdk/shared.net.platformapi@1.5.0':
     dependencies:

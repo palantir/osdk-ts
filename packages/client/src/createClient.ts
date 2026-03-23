@@ -43,6 +43,7 @@ import {
   __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__transformAndWait,
 } from "@osdk/api/unstable";
+import type { Transformation } from "@osdk/foundry.mediasets";
 import type { ObjectSet as WireObjectSet } from "@osdk/foundry.ontologies";
 import { symbolClientContext as oldSymbolClientContext } from "@osdk/shared.client";
 import type { ActionSignatureFromDef } from "./actions/applyAction.js";
@@ -306,7 +307,7 @@ export function createClientFromContext(clientCtx: MinimalClient) {
                 clientCtx,
                 mediaSetRid,
                 mediaItemRid,
-                args.transformation,
+                args.transformation as Transformation,
                 token,
                 args.options,
               );

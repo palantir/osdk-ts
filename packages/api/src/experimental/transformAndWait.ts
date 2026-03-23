@@ -48,11 +48,11 @@ type transformAndWait = (args: {
 }) => Promise<Response>;
 
 export const __EXPERIMENTAL__NOT_SUPPORTED_YET__transformAndWait: Experiment<
-  "2.1.0",
+  "2.8.0",
   "__EXPERIMENTAL__NOT_SUPPORTED_YET__transformAndWait",
   { transformAndWait: transformAndWait }
 > = {
   name: "__EXPERIMENTAL__NOT_SUPPORTED_YET__transformAndWait",
   type: "experiment",
-  version: "2.1.0",
+  version: "2.8.0",
 };

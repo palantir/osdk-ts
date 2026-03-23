@@ -20,7 +20,7 @@ import {
   MediaTransformationTimeoutError,
 } from "@osdk/api/unstable";
 import { MediaSets } from "@osdk/foundry.mediasets";
-import type { TransformMediaItemRequest as FoundryTransformRequest } from "@osdk/foundry.mediasets";
+import type { Transformation } from "@osdk/foundry.mediasets";
 import type { MinimalClient } from "../MinimalClientContext.js";
 
 /**
@@ -31,7 +31,7 @@ export async function transformAndWaitInternal(
   client: MinimalClient,
   mediaSetRid: string,
   mediaItemRid: string,
-  transformation: { type: string },
+  transformation: Transformation,
   token: string | undefined,
   options?: TransformOptions,
 ): Promise<Response> {
@@ -44,7 +44,7 @@ export async function transformAndWaitInternal(
     client,
     mediaSetRid,
     mediaItemRid,
-    { transformation } as unknown as FoundryTransformRequest,
+    { transformation },
     { preview: true },
     headerParams,
   );
