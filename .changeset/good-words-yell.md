@@ -1,6 +1,6 @@
 ---
 "@osdk/react-components-storybook": minor
-"@osdk/create-app.template.react": minor
+"@osdk/react-components": minor
 "@osdk/react-components-styles": minor
 ---
 
