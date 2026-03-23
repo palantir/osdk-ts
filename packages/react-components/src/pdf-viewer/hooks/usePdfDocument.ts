@@ -20,13 +20,13 @@ import { getDocument, GlobalWorkerOptions } from "pdfjs-dist";
 import pdfWorkerUrl from "pdfjs-dist/build/pdf.worker.min.mjs?url";
 import { useEffect, useState } from "react";
 
-let workerInitialized = false;
-function ensureWorker(): void {
-  if (!workerInitialized) {
+const pdfWorker = {
+  workerInitialized: false,
+  ensureWorker() {
     GlobalWorkerOptions.workerSrc = pdfWorkerUrl as string;
-    workerInitialized = true;
-  }
-}
+    this.workerInitialized = true;
+  },
+};
 
 interface UsePdfDocumentResult {
   document: PDFDocumentProxy | undefined;
@@ -46,7 +46,7 @@ export function usePdfDocument(
   const [error, setError] = useState<Error | undefined>(undefined);
 
   useEffect(() => {
-    ensureWorker();
+    pdfWorker.ensureWorker();
     setLoading(true);
     setError(undefined);
 

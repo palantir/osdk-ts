@@ -48,7 +48,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: var(--osdk-surface-spacing);
   height: 100%;
   font-family: var(--osdk-typography-family-default);
   font-size: var(--osdk-typography-size-body-medium);

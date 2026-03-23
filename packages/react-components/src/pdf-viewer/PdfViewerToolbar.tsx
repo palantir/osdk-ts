@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Input } from "@base-ui/react/input";
 import {
   ChevronLeft,
   ChevronRight,
@@ -136,7 +137,7 @@ export function PdfViewerToolbar({
         >
           <ChevronLeft size={16} />
         </button>
-        <input
+        <Input
           className={styles.pageInput}
           type="text"
           value={pageInputValue}

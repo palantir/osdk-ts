@@ -62,7 +62,7 @@
   text-align: center;
   border: var(--osdk-surface-border);
   border-radius: var(--osdk-surface-border-radius);
-  padding: 2px 4px;
+  padding: calc(0.5 * var(--osdk-surface-spacing)) var(--osdk-surface-spacing);
   font-family: var(--osdk-typography-family-default);
   font-size: var(--osdk-typography-size-body-small);
   color: var(--osdk-typography-color-default-rest);
