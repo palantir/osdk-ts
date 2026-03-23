@@ -23,7 +23,10 @@ import type {
   SimplePropertyDef,
   WhereClause,
 } from "@osdk/api";
-import type { ObserveAggregationArgs } from "@osdk/client/unstable-do-not-use";
+import {
+  getWireObjectSet,
+  type ObserveAggregationArgs,
+} from "@osdk/client/unstable-do-not-use";
 import React from "react";
 import { extractPayloadError, isPayloadLoading } from "./hookUtils.js";
 import { makeExternalStoreAsync } from "./makeExternalStore.js";
@@ -97,9 +100,17 @@ export function useObjectSetAggregation<
     intersectWith,
   });
 
+  const objectSetKey = objectSet
+    ? JSON.stringify(getWireObjectSet(objectSet as ObjectSet<Q>))
+    : undefined;
+
+  const objectSetRef = React.useRef(objectSet);
+  objectSetRef.current = objectSet;
+
   const { subscribe, getSnapShot } = React.useMemo(
     () => {
-      if (!enabled || objectSet == null) {
+      const currentObjectSet = objectSetRef.current;
+      if (!enabled || currentObjectSet == null) {
         return makeExternalStoreAsync<ObserveAggregationArgs<Q, A>>(
           () => Promise.resolve({ unsubscribe: () => {} }),
           process.env.NODE_ENV !== "production"
@@ -108,14 +119,14 @@ export function useObjectSetAggregation<
         );
       }
 
-      const type = objectSet.$objectSetInternals.def;
+      const type = currentObjectSet.$objectSetInternals.def;
 
       return makeExternalStoreAsync<ObserveAggregationArgs<Q, A>>(
         (observer) =>
           observableClient.observeAggregation(
             {
               type,
-              objectSet,
+              objectSet: currentObjectSet,
               where: canonOptions.where,
               withProperties: canonOptions.withProperties,
               intersectWith: canonOptions.intersectWith,
@@ -133,7 +144,7 @@ export function useObjectSetAggregation<
       enabled,
       observableClient,
       typeApiName,
-      objectSet,
+      objectSetKey,
       canonOptions.where,
       canonOptions.withProperties,
       canonOptions.intersectWith,

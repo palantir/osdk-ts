@@ -24,7 +24,10 @@ import type {
   PropertyKeys,
   WhereClause,
 } from "@osdk/api";
-import type { ObserveObjectSetArgs } from "@osdk/client/unstable-do-not-use";
+import {
+  getWireObjectSet,
+  type ObserveObjectSetArgs,
+} from "@osdk/client/unstable-do-not-use";
 import React from "react";
 import { extractPayloadError, isPayloadLoading } from "./hookUtils.js";
 import { makeExternalStore } from "./makeExternalStore.js";
@@ -34,6 +37,8 @@ export interface UseObjectSetLinksOptions<
   T extends ObjectOrInterfaceDefinition,
 > {
   where?: WhereClause<T>;
+
+  $select?: readonly PropertyKeys<T>[];
 
   pageSize?: number;
 
@@ -86,7 +91,15 @@ export function useObjectSetLinks<
   const canonOptions = observableClient.canonicalizeOptions({
     where: otherOptions.where,
     orderBy: otherOptions.orderBy,
+    $select: otherOptions.$select,
   });
+
+  const objectSetKey = objectSet
+    ? JSON.stringify(getWireObjectSet(objectSet as ObjectSet<Q>))
+    : undefined;
+
+  const objectSetRef = React.useRef(objectSet);
+  objectSetRef.current = objectSet;
 
   const { subscribe, getSnapShot } = React.useMemo(
     () => {
@@ -101,16 +114,18 @@ export function useObjectSetLinks<
 
       return makeExternalStore<ObserveObjectSetArgs<Q>>(
         (observer) => {
-          if (!objectSet) {
+          const currentObjectSet = objectSetRef.current;
+          if (!currentObjectSet) {
             return { unsubscribe: () => {} };
           }
           return observableClient.observeObjectSet(
-            objectSet,
+            currentObjectSet,
             {
               pivotTo: linkName,
               where: canonOptions.where,
               pageSize: otherOptions.pageSize,
               orderBy: canonOptions.orderBy,
+              select: canonOptions.$select,
               dedupeInterval: otherOptions.dedupeIntervalMs ?? 2_000,
               autoFetchMore: otherOptions.autoFetchMore,
               streamUpdates,
@@ -126,10 +141,11 @@ export function useObjectSetLinks<
     [
       enabled,
       observableClient,
-      objectSet,
+      objectSetKey,
       linkName,
       canonOptions.where,
       canonOptions.orderBy,
+      canonOptions.$select,
       otherOptions.pageSize,
       streamUpdates,
       otherOptions.dedupeIntervalMs,
