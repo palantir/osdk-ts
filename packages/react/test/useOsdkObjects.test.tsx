@@ -15,11 +15,23 @@
  */
 
 import type { ObjectTypeDefinition } from "@osdk/api";
-import { act, renderHook } from "@testing-library/react";
+import type { Observer } from "@osdk/client/unstable-do-not-use";
+import {
+  act,
+  render,
+  renderHook,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import * as React from "react";
-import { beforeEach, describe, expect, it, vitest } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vitest } from "vitest";
 import { OsdkContext2 } from "../src/new/OsdkContext2.js";
 import { useOsdkObjects } from "../src/new/useOsdkObjects.js";
+import {
+  cleanupSuspenseTests,
+  createMockObservableClient,
+  TestSuspenseWrapper,
+} from "./suspenseTestUtils.js";
 
 const MockObjectType = {
   apiName: "MockObject",
@@ -222,5 +234,195 @@ describe("useOsdkObjects enabled option", () => {
     });
 
     expect(mockInvalidateObjectType).toHaveBeenCalledWith("MockObject");
+  });
+});
+
+const MockObjectTypeWithType = {
+  apiName: "MockObject",
+  primaryKeyType: "string",
+  type: "object",
+} as unknown as ObjectTypeDefinition;
+
+describe("useOsdkObjects with { suspense: true }", () => {
+  let mockObserveList: ReturnType<typeof vitest.fn>;
+  let capturedObserver:
+    | Observer<Record<string, unknown> | undefined>
+    | undefined;
+
+  beforeEach(() => {
+    capturedObserver = undefined;
+    mockObserveList = vitest.fn(
+      (
+        _opts: unknown,
+        observer: Observer<Record<string, unknown> | undefined>,
+      ) => {
+        capturedObserver = observer;
+        return { unsubscribe: vitest.fn() };
+      },
+    );
+  });
+
+  afterEach(cleanupSuspenseTests);
+
+  function createObservableClient() {
+    return createMockObservableClient({
+      observeList: mockObserveList,
+    });
+  }
+
+  function ListComponent({ where }: { where?: Record<string, string> }) {
+    const { data, fetchMore, totalCount } = useOsdkObjects(
+      MockObjectTypeWithType,
+      where
+        ? { where, suspense: true as const }
+        : { suspense: true as const },
+    );
+
+    return React.createElement(
+      "div",
+      null,
+      React.createElement(
+        "div",
+        { "data-testid": "count" },
+        String(data.length),
+      ),
+      totalCount != null
+        ? React.createElement(
+          "div",
+          { "data-testid": "total" },
+          totalCount,
+        )
+        : null,
+      data.map((item, i) =>
+        React.createElement(
+          "div",
+          { key: i, "data-testid": `item-${i}` },
+          (item as Record<string, unknown>).name as string,
+        )
+      ),
+      fetchMore
+        ? React.createElement(
+          "button",
+          { "data-testid": "fetch-more", onClick: fetchMore },
+          "Load More",
+        )
+        : null,
+    );
+  }
+
+  it("should suspend then render list data after loading", async () => {
+    const client = createObservableClient();
+
+    render(
+      React.createElement(
+        TestSuspenseWrapper,
+        { observableClient: client },
+        React.createElement(ListComponent, {}),
+      ),
+    );
+
+    expect(screen.getByTestId("loading")).toBeDefined();
+    expect(mockObserveList).toHaveBeenCalledTimes(1);
+
+    act(() => {
+      capturedObserver?.next({
+        resolvedList: [
+          { name: "Item A", $objectType: "MockObject", $primaryKey: "1" },
+          { name: "Item B", $objectType: "MockObject", $primaryKey: "2" },
+        ],
+        status: "loaded",
+        isOptimistic: false,
+        lastUpdated: Date.now(),
+        hasMore: false,
+        fetchMore: vitest.fn(),
+        totalCount: "2",
+      });
+    });
+
+    const count = await screen.findByTestId("count");
+    expect(count.textContent).toBe("2");
+    expect(screen.getByTestId("item-0").textContent).toBe("Item A");
+    expect(screen.getByTestId("item-1").textContent).toBe("Item B");
+    expect(screen.getByTestId("total").textContent).toBe("2");
+  });
+
+  it("should re-suspend when where clause changes", async () => {
+    const client = createObservableClient();
+    let secondObserver:
+      | Observer<Record<string, unknown> | undefined>
+      | undefined;
+
+    mockObserveList.mockImplementation(
+      (
+        opts: Record<string, unknown>,
+        observer: Observer<Record<string, unknown> | undefined>,
+      ) => {
+        const where = opts.where as Record<string, string> | undefined;
+        if (where?.status === "active") {
+          capturedObserver = observer;
+        } else {
+          secondObserver = observer;
+        }
+        return { unsubscribe: vitest.fn() };
+      },
+    );
+
+    const { rerender } = render(
+      React.createElement(
+        TestSuspenseWrapper,
+        { observableClient: client },
+        React.createElement(ListComponent, { where: { status: "active" } }),
+      ),
+    );
+
+    act(() => {
+      capturedObserver?.next({
+        resolvedList: [
+          { name: "Active Item", $objectType: "MockObject", $primaryKey: "1" },
+        ],
+        status: "loaded",
+        isOptimistic: false,
+        lastUpdated: Date.now(),
+        hasMore: false,
+        fetchMore: vitest.fn(),
+      });
+    });
+
+    const item0 = await screen.findByTestId("item-0");
+    expect(item0.textContent).toBe("Active Item");
+
+    rerender(
+      React.createElement(
+        TestSuspenseWrapper,
+        { observableClient: client },
+        React.createElement(ListComponent, {
+          where: { status: "inactive" },
+        }),
+      ),
+    );
+
+    await waitFor(() => {
+      expect(screen.getByTestId("loading")).toBeDefined();
+    });
+
+    await act(async () => {
+      secondObserver?.next({
+        resolvedList: [
+          {
+            name: "Inactive Item",
+            $objectType: "MockObject",
+            $primaryKey: "2",
+          },
+        ],
+        status: "loaded",
+        isOptimistic: false,
+        lastUpdated: Date.now(),
+        hasMore: false,
+        fetchMore: vitest.fn(),
+      });
+    });
+
+    const newItem = await screen.findByTestId("item-0");
+    expect(newItem.textContent).toBe("Inactive Item");
   });
 });
