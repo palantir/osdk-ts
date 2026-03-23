@@ -153,7 +153,6 @@
   /* Skeleton loading */
   --osdk-table-skeleton-color-from: rgba(34, 197, 94, 0.1);
   --osdk-table-skeleton-color-to: rgba(34, 197, 94, 0.2);
-  --osdk-table-skeleton-border-color: rgba(34, 197, 94, 0.3);
 
   /* ===== Surface Overrides ===== */
   --osdk-surface-border-color-default: var(--devcon-green-700);

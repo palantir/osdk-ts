@@ -48,6 +48,9 @@
   --osdk-table-header-menu-color-active: var(
     --osdk-typography-color-default-rest
   );
+  --osdk-table-header-menu-icon-color: var(
+    --osdk-table-header-menu-color
+  );
   --osdk-table-header-menu-bg-hover: var(--osdk-custom-color-gray-1);
   --osdk-table-header-menu-bg-active: var(--osdk-custom-color-gray-2);
 
@@ -58,7 +61,6 @@
   /* Table Skeleton loading */
   --osdk-table-skeleton-color-from: var(--osdk-background-skeleton-from);
   --osdk-table-skeleton-color-to: var(--osdk-background-skeleton-to);
-  --osdk-table-skeleton-border-color: var(--osdk-custom-color-light-gray-1);
 
   /* Column Config Dialog */
   --osdk-table-column-config-dialog-min-width: 800px;
