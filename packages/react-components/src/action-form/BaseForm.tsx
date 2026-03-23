@@ -56,10 +56,10 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
   );
 
   return (
-    <form onSubmit={rhfHandleSubmit(onFormSubmit)} data-testid="action-form">
-      {formTitle != null && <h2 data-testid="form-title">{formTitle}</h2>}
+    <form onSubmit={rhfHandleSubmit(onFormSubmit)}>
+      {formTitle != null && <h2>{formTitle}</h2>}
       {isLoading && fieldDefinitions.length === 0 && (
-        <div data-testid="form-loading">Loading form fields...</div>
+        <div role="status">Loading form fields...</div>
       )}
       {fieldDefinitions.map((fieldDef) => (
         <FieldBridge
@@ -72,7 +72,6 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
       <button
         type="submit"
         disabled={isSubmitDisabled || isPending}
-        data-testid="submit-button"
       >
         {isPending ? "Submitting..." : "Submit"}
       </button>
