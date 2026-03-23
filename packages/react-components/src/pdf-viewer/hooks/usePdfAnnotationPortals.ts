@@ -36,7 +36,7 @@ export function usePdfAnnotationPortals(
     [],
   );
 
-  useEffect(() => {
+  useEffect(function subscribePageRendered() {
     const eventBus = eventBusRef.current;
     const pdfViewer = pdfViewerRef.current;
     if (eventBus == null || pdfViewer == null) {

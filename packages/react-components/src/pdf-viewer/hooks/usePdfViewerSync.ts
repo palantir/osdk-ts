@@ -42,7 +42,7 @@ export function usePdfViewerSync({
   const lastScaleRef = useRef(scale);
 
   // Sync React scale → PDFViewer
-  useEffect(() => {
+  useEffect(function syncScaleToViewer() {
     const pdfViewer = pdfViewerRef.current;
     if (pdfViewer == null) {
       return;
@@ -54,7 +54,7 @@ export function usePdfViewerSync({
   }, [pdfViewerRef, scale]);
 
   // Listen to PDFViewer events → React state
-  useEffect(() => {
+  useEffect(function subscribeViewerEvents() {
     const eventBus = eventBusRef.current;
     if (eventBus == null) {
       return;

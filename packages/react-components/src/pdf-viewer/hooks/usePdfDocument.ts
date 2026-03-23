@@ -45,7 +45,7 @@ export function usePdfDocument(
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | undefined>(undefined);
 
-  useEffect(() => {
+  useEffect(function loadPdfDocument() {
     pdfWorker.ensureWorker();
     setLoading(true);
     setError(undefined);

@@ -118,7 +118,7 @@ export function usePdfViewerSearch(
     dispatchFind(EMPTY_STRING, false);
   }, [dispatchFind]);
 
-  useEffect(() => {
+  useEffect(function subscribeSearchEvents() {
     const eventBus = eventBusRef.current;
     if (eventBus == null) {
       return;

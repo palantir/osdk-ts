@@ -40,7 +40,7 @@ export function usePdfViewer(
   const eventBusRef = useRef<EventBus | null>(null);
   const findControllerRef = useRef<PDFFindController | null>(null);
 
-  useEffect(() => {
+  useEffect(function initializePdfViewer() {
     const container = containerRef.current;
     const viewer = viewerRef.current;
     if (container == null || viewer == null || document == null) {

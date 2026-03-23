@@ -42,7 +42,7 @@ export function PdfRenderer({
   const [error, setError] = useState<Error | undefined>(undefined);
 
   // This is required until we either support React 19+ or a data fetching hook
-  useEffect(() => {
+  useEffect(function fetchMediaSource() {
     let cancelled = false;
     setLoading(true);
     setError(undefined);

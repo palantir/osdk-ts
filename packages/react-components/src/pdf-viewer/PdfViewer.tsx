@@ -81,14 +81,14 @@ export function BasePdfViewer({
   );
 
   // Set initial page after viewer is ready
-  useEffect(() => {
+  useEffect(function setInitialPage() {
     if (pdfViewerRef.current != null && initialPage > 1) {
       pdfViewerRef.current.currentPageNumber = initialPage;
     }
   }, [pdfViewerRef, initialPage]);
 
   // Ctrl+F handler
-  useEffect(() => {
+  useEffect(function registerSearchShortcut() {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key === "f") {
         e.preventDefault();

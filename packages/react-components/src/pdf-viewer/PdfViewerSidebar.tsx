@@ -50,7 +50,7 @@ export function PdfViewerSidebar({
   });
 
   // Auto-scroll to keep the active thumbnail visible
-  useEffect(() => {
+  useEffect(function syncActiveThumbnail() {
     virtualizer.scrollToIndex(currentPage - 1, { align: "auto" });
   }, [currentPage, virtualizer]);
 

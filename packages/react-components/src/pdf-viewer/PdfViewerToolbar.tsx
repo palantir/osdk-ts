@@ -54,7 +54,7 @@ export function PdfViewerToolbar({
   const [pageInputValue, setPageInputValue] = useState(String(currentPage));
 
   // Sync input display when currentPage changes from scrolling
-  useEffect(() => {
+  useEffect(function syncPageInput() {
     setPageInputValue(String(currentPage));
   }, [currentPage]);
 
