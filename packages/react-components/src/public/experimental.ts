@@ -66,3 +66,9 @@ export type {
   PdfAnnotation,
   PdfViewerProps,
 } from "../pdf-viewer/types.js";
+
+// PdfRenderer
+export {
+  PdfRenderer,
+  type PdfRendererProps,
+} from "../pdf-viewer/PdfRenderer.js";
