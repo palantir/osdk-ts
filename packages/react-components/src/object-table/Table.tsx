@@ -35,6 +35,7 @@ import type { CellEditInfo, EditableConfig } from "./utils/types.js";
 declare module "@tanstack/react-table" {
   interface ColumnMeta<TData extends RowData = unknown, TValue = unknown> {
     columnName?: string;
+    isAsyncColumn?: boolean;
     isVisible?: boolean;
     editable?: boolean;
     dataType?: string;

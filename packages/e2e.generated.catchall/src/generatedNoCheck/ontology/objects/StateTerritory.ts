@@ -56,6 +56,8 @@ export interface StateTerritory extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'StateTerritory';
+  primaryKeyApiName: 'airportStateName';
+  primaryKeyType: 'string';
   __DefinitionMetadata?: {
     objectSet: StateTerritory.ObjectSet;
     props: StateTerritory.Props;
@@ -104,6 +106,8 @@ export const StateTerritory = {
   type: 'object',
   apiName: 'StateTerritory',
   osdkMetadata: $osdkMetadata,
+  primaryKeyApiName: 'airportStateName',
+  primaryKeyType: 'string',
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.object-type.98f324e1-b8f4-42ef-aee7-5c4a1494ce5e',
   },

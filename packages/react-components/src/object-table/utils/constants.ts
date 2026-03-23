@@ -15,3 +15,5 @@
  */
 
 export const SELECTION_COLUMN_ID = "__selection__";
+
+export const DEFAULT_COLUMN_WIDTH = 80;

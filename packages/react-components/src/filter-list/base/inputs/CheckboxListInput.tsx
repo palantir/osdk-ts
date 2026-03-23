@@ -18,8 +18,11 @@ import classnames from "classnames";
 import React, { memo, useCallback, useMemo } from "react";
 import { Checkbox } from "../../../base-components/checkbox/Checkbox.js";
 import type { PropertyAggregationValue } from "../../types/AggregationTypes.js";
+import { filterValuesBySearch } from "../../utils/filterValues.js";
 import styles from "./CheckboxListInput.module.css";
+import { CheckboxListSkeleton } from "./CheckboxListSkeleton.js";
 import sharedStyles from "./shared.module.css";
+import { useStaleData } from "./useStaleData.js";
 
 interface CheckboxListInputProps {
   values: PropertyAggregationValue[];
@@ -28,6 +31,7 @@ interface CheckboxListInputProps {
   selectedValues: string[];
   onChange: (selectedValues: string[]) => void;
   colorMap?: Record<string, string>;
+  searchQuery?: string;
   className?: string;
   style?: React.CSSProperties;
 }
@@ -39,12 +43,21 @@ function CheckboxListInputInner({
   selectedValues,
   onChange,
   colorMap,
+  searchQuery,
   className,
   style,
 }: CheckboxListInputProps): React.ReactElement {
+  const stableValues = useStaleData(values, isLoading);
+
   const displayValues = useMemo(
-    () => values.map((item) => item.value),
-    [values],
+    () => {
+      const allValues = stableValues.map((item) => item.value);
+      if (searchQuery) {
+        return filterValuesBySearch(allValues, searchQuery, (v) => v);
+      }
+      return allValues;
+    },
+    [stableValues, searchQuery],
   );
 
   const selectedSet = useMemo(
@@ -63,33 +76,11 @@ function CheckboxListInputInner({
     [selectedValues, selectedSet, onChange],
   );
 
-  const allSelected = useMemo(
-    () =>
-      displayValues.length > 0
-      && displayValues.every((v) => selectedSet.has(v)),
-    [displayValues, selectedSet],
-  );
-  const areSomeValuesSelected = useMemo(
-    () => !allSelected && selectedValues.some((v) => selectedSet.has(v)),
-    [allSelected, selectedValues, selectedSet],
-  );
-
-  const handleSelectAll = useCallback(
-    () => {
-      if (allSelected) {
-        onChange([]);
-      } else {
-        onChange([...displayValues]);
-      }
-    },
-    [allSelected, displayValues, onChange],
-  );
-
   return (
     <div
       className={classnames(styles.checkboxList, className)}
       style={style}
-      data-loading={isLoading}
+      data-loading={isLoading && displayValues.length > 0}
     >
       {error && (
         <div className={sharedStyles.errorMessage}>
@@ -97,62 +88,43 @@ function CheckboxListInputInner({
         </div>
       )}
 
-      {!error && displayValues.length === 0 && (
+      {!error && displayValues.length === 0 && isLoading && (
+        <CheckboxListSkeleton />
+      )}
+      {!error && displayValues.length === 0 && !isLoading && (
         <div className={sharedStyles.emptyMessage}>
-          {isLoading ? "Loading values..." : "No values available"}
+          No values available
         </div>
       )}
 
-      {(displayValues.length > 0 || isLoading) && (
-        <>
-          {isLoading && (
-            <div className={sharedStyles.loadingMessage}>
-              Updating...
-            </div>
-          )}
+      {displayValues.map((value) => {
+        const isSelected = selectedSet.has(value);
+        const color = colorMap?.[value];
+
+        return (
           <div
+            key={value}
             className={styles.checkboxRow}
-            data-select-all
+            data-selected={isSelected}
           >
             <label className={styles.checkboxLabel}>
               <Checkbox
-                checked={allSelected}
-                indeterminate={areSomeValuesSelected}
-                onCheckedChange={handleSelectAll}
+                checked={isSelected}
+                onCheckedChange={() => toggleValue(value)}
               />
-              <span className={styles.valueText}>Select all</span>
+              {color && (
+                <span
+                  className={styles.colorDot}
+                  style={{ backgroundColor: color }}
+                />
+              )}
+              <span className={styles.valueText}>
+                {value}
+              </span>
             </label>
           </div>
-          {displayValues.map((value) => {
-            const isSelected = selectedSet.has(value);
-            const color = colorMap?.[value];
-
-            return (
-              <div
-                key={value}
-                className={styles.checkboxRow}
-                data-selected={isSelected}
-              >
-                <label className={styles.checkboxLabel}>
-                  <Checkbox
-                    checked={isSelected}
-                    onCheckedChange={() => toggleValue(value)}
-                  />
-                  {color && (
-                    <span
-                      className={styles.colorDot}
-                      style={{ backgroundColor: color }}
-                    />
-                  )}
-                  <span className={styles.valueText}>
-                    {value}
-                  </span>
-                </label>
-              </div>
-            );
-          })}
-        </>
-      )}
+        );
+      })}
     </div>
   );
 }
