@@ -220,7 +220,7 @@ export function ColumnConfigDialog({
 
 const DialogTitle = (
   <div className={styles.title}>
-    <Cog />Configure Table Columns
+    <Cog color="currentColor" />Configure Table Columns
   </div>
 );
 
@@ -325,7 +325,7 @@ function AvailableColumnsList({
             <span className={styles.categoryCount}>
               {selectedCount}/{totalCount}
             </span>
-            <CaretDown className={styles.caretIcon} />
+            <CaretDown className={styles.caretIcon} color="currentColor" />
           </Collapsible.Trigger>
         </div>
         <Collapsible.Panel className={styles.propertyList}>
@@ -381,7 +381,9 @@ function PropertyItem({
       >
         {column.label}
       </Button>
-      {showInfoIcon && <SmallInfoSign className={styles.infoIcon} />}
+      {showInfoIcon && (
+        <SmallInfoSign className={styles.infoIcon} color="currentColor" />
+      )}
     </div>
   );
 }

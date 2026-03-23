@@ -8,8 +8,7 @@
   --osdk-table-header-divider: var(--osdk-table-border);
   --osdk-table-cell-divider: var(--osdk-table-border-width) solid transparent;
   --osdk-table-row-divider: var(--osdk-table-border);
-  --osdk-table-pinned-column-border: calc(var(--osdk-table-border-width) * 2)
-    solid var(--osdk-table-border-color);
+  --osdk-table-pinned-column-border: var(--osdk-table-border);
 
   /* Table Header */
   --osdk-table-header-height: 50px;

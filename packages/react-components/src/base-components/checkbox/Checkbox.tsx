@@ -56,10 +56,11 @@ export function Checkbox(
         {indeterminate
           ? (
             <Minus
+              size={16}
               color={"currentColor"}
             />
           )
-          : <Tick color={"currentColor"} />}
+          : <Tick size={16} color={"currentColor"} />}
       </BaseUICheckbox.Indicator>
     </BaseUICheckbox.Root>
   );

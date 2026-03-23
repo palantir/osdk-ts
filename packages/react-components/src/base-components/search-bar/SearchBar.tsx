@@ -39,7 +39,7 @@ export function SearchBar({
 }: SearchBarProps): React.ReactElement {
   return (
     <div className={classNames(styles.searchBar, className)}>
-      <Search className={styles.searchIcon} />
+      <Search className={styles.searchIcon} color="currentColor" />
       <Input
         type="text"
         placeholder={placeholder}

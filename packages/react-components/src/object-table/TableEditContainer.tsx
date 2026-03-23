@@ -94,7 +94,7 @@ export function TableEditContainer<
             )}
             {hasValidationError && (
               <div className={styles.validationError}>
-                <Error className={styles.errorIcon} />
+                <Error className={styles.errorIcon} color="currentColor" />
                 Validation error
               </div>
             )}

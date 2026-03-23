@@ -237,14 +237,16 @@ function EditableCellInner<TData extends RowData, CellValue = unknown>({
               onKeyDown={handleKeyDown}
               aria-invalid={hasValidationError}
             />
-            {hasValidationError && <Error className={styles.errorIcon} />}
+            {hasValidationError && (
+              <Error className={styles.errorIcon} color="currentColor" />
+            )}
           </div>
         </Tooltip.Trigger>
         <Tooltip.Portal>
           <Tooltip.Positioner sideOffset={4} side={"bottom"}>
             <Tooltip.Popup>
               <div className={styles.validationError}>
-                <Error className={styles.errorIcon} />
+                <Error className={styles.errorIcon} color="currentColor" />
                 {validationError}
               </div>
               <Tooltip.Arrow />

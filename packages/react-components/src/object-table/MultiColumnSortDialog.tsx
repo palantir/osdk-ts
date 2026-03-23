@@ -160,8 +160,18 @@ export function MultiColumnSortDialog({
             aria-label={`Toggle sort direction for ${item.name}`}
           >
             {item.direction === "asc"
-              ? <SortAlphabetical className={styles.sortIcon} />
-              : <SortAlphabeticalDesc className={styles.sortIcon} />}
+              ? (
+                <SortAlphabetical
+                  className={styles.sortIcon}
+                  color="currentColor"
+                />
+              )
+              : (
+                <SortAlphabeticalDesc
+                  className={styles.sortIcon}
+                  color="currentColor"
+                />
+              )}
           </Button>
         </div>
       ),
@@ -204,7 +214,7 @@ export function MultiColumnSortDialog({
             disabled={availableColumns.length === 0}
             aria-label="Add column to sort"
           >
-            <Add className={styles.addIcon} />
+            <Add className={styles.addIcon} color={"currentColor"} />
             <span className={styles.addColumnText}>
               Add Column to Sort
             </span>
@@ -244,7 +254,7 @@ export function MultiColumnSortDialog({
 
 const DialogTitle = (
   <div className={styles.title}>
-    <Cog />Sort on Multiple Columns
+    <Cog color="currentColor" />Sort on Multiple Columns
   </div>
 );
 function AvailableColumnMenuItem(
