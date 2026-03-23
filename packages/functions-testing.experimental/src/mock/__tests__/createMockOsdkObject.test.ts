@@ -58,6 +58,17 @@ describe("createMockOsdkObject", () => {
           "Primary key property \"employeeId\" must be provided in properties for Employee.",
         );
     });
+
+    it("throws when object type has no primaryKeyApiName", () => {
+      const badObjectType = {
+        type: "object" as const,
+        apiName: "BadObject",
+      };
+
+      expect(() => createMockOsdkObject(badObjectType as any, {})).toThrow(
+        "Object type \"BadObject\" does not have a primaryKeyApiName defined.",
+      );
+    });
   });
 
   describe("$primaryKey", () => {
@@ -75,7 +86,6 @@ describe("createMockOsdkObject", () => {
       const mockEmployee = createMockOsdkObject(
         Employee,
         { employeeId: 1, fullName: "Jane Smith" },
-        undefined,
         { titlePropertyApiName: "fullName" },
       );
 
@@ -96,7 +106,6 @@ describe("createMockOsdkObject", () => {
         createMockOsdkObject(
           Employee,
           { employeeId: 1 },
-          undefined,
           { titlePropertyApiName: "fullName" },
         )
       ).toThrow(
@@ -110,7 +119,6 @@ describe("createMockOsdkObject", () => {
       const mockEmployee = createMockOsdkObject(
         Employee,
         { employeeId: 1 },
-        undefined,
         { $rid: "ri.custom.object.123" },
       );
 
@@ -188,7 +196,7 @@ describe("createMockOsdkObject", () => {
         const mockEmployee = createMockOsdkObject(
           Employee,
           { employeeId: 1 },
-          { officeLink: mockOffice },
+          { links: { officeLink: mockOffice } },
         );
 
         const linkedOffice = await mockEmployee.$link.officeLink.fetchOne();
@@ -204,7 +212,7 @@ describe("createMockOsdkObject", () => {
         const mockEmployee = createMockOsdkObject(
           Employee,
           { employeeId: 2 },
-          { officeLink: mockOffice },
+          { links: { officeLink: mockOffice } },
         );
 
         const result = await mockEmployee.$link.officeLink.fetchOneWithErrors();
@@ -225,7 +233,7 @@ describe("createMockOsdkObject", () => {
         const mockEmployee = createMockOsdkObject(
           Employee,
           { employeeId: 1 },
-          { peeps: [mockPeep1, mockPeep2] },
+          { links: { peeps: [mockPeep1, mockPeep2] } },
         );
 
         expect(mockEmployee.$link).toBeDefined();
@@ -248,7 +256,7 @@ describe("createMockOsdkObject", () => {
         const mockEmployee = createMockOsdkObject(
           Employee,
           { employeeId: 1 },
-          { peeps: [mockPeep1, mockPeep2] },
+          { links: { peeps: [mockPeep1, mockPeep2] } },
         );
 
         const foundPeep = await mockEmployee.$link.peeps.fetchOne(11);
@@ -262,7 +270,7 @@ describe("createMockOsdkObject", () => {
         const mockEmployee = createMockOsdkObject(
           Employee,
           { employeeId: 1 },
-          { peeps: [mockPeep1] },
+          { links: { peeps: [mockPeep1] } },
         );
 
         expect(() => mockEmployee.$link.peeps.fetchOne(999)).toThrow(
@@ -282,7 +290,7 @@ describe("createMockOsdkObject", () => {
         const mockEmployee = createMockOsdkObject(
           Employee,
           { employeeId: 1 },
-          { peeps: [mockPeep1, mockPeep2] },
+          { links: { peeps: [mockPeep1, mockPeep2] } },
         );
 
         const results: Array<typeof mockPeep1> = [];
@@ -298,7 +306,7 @@ describe("createMockOsdkObject", () => {
         const mockEmployee = createMockOsdkObject(
           Employee,
           { employeeId: 1 },
-          { peeps: [] },
+          { links: { peeps: [] } },
         );
 
         expect(() => mockEmployee.$link.peeps.aggregate({} as any)).toThrow(
@@ -356,7 +364,6 @@ describe("createMockOsdkObject", () => {
           office: "Chicago",
           class: "Senior",
         },
-        undefined,
         {
           titlePropertyApiName: "fullName",
           $rid: "ri.custom.employee.100",

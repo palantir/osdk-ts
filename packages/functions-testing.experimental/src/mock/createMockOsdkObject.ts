@@ -26,7 +26,11 @@ import invariant from "tiny-invariant";
 /**
  * Options for customizing mock object creation.
  */
-export interface MockOsdkObjectOptions {
+export interface MockOsdkObjectOptions<
+  Q extends ObjectTypeDefinition = ObjectTypeDefinition,
+> {
+  /** Objects linked to this object by API name */
+  links?: LinkStubs<Q>;
   /** The API name of the title property (optional, required for $title) */
   titlePropertyApiName?: string;
   /** Override the generated $rid */
@@ -118,7 +122,6 @@ function createManyLinkStub<T extends ObjectTypeDefinition>(
  * const employee = createMockOsdkObject(
  *   Employee,
  *   { employeeId: 1, fullName: "John Doe" },
- *   undefined, // links
  *   { titlePropertyApiName: "fullName" },
  * );
  *
@@ -128,8 +131,7 @@ function createManyLinkStub<T extends ObjectTypeDefinition>(
  *
  * @param objectType - The object type definition (e.g., Employee)
  * @param properties - The properties for the mock object
- * @param links - Objects linked to this object by API name
- * @param options - Configuration including titlePropertyApiName and $rid
+ * @param options - Configuration including links, titlePropertyApiName, and $rid
  * @returns A frozen mock OSDK object
  */
 export function createMockOsdkObject<
@@ -137,10 +139,10 @@ export function createMockOsdkObject<
 >(
   objectType: Q,
   properties?: Partial<CompileTimeMetadata<Q>["props"]>,
-  links?: LinkStubs<Q>,
-  options: MockOsdkObjectOptions = {},
+  options: MockOsdkObjectOptions<Q> = {},
 ): Osdk.Instance<Q> {
   const {
+    links,
     titlePropertyApiName,
   } = options;
 
@@ -255,7 +257,6 @@ export function createMockOsdkObject<
         return createMockOsdkObject(
           objectType,
           { ...properties },
-          { ...links } as any,
           options,
         ) as any;
       }
@@ -271,7 +272,6 @@ export function createMockOsdkObject<
       return createMockOsdkObject(
         objectType,
         newProperties,
-        links,
         options,
       ) as any;
     },
