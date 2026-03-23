@@ -1,5 +1,17 @@
 # @osdk/react-components
 
+## 0.2.0-beta.21
+
+### Minor Changes
+
+- fffbb68: Add DropdownField component with searchable combobox and multi-select support
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.24
+- @osdk/client@2.8.0-beta.24
+- @osdk/react@0.10.0-beta.10
+
 ## 0.2.0-beta.20
 
 ### Minor Changes
