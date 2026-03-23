@@ -64,6 +64,7 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   text-align: left;
+  flex: 1;
 }
 
 .osdkCheckboxContainer {

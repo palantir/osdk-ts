@@ -25,8 +25,8 @@ const RESERVED_KEYWORDS = new Set([
   "typeid",
   "ontologyobject",
 ]);
-export const OBJECT_API_NAME_PATTERN: RegExp = /^([a-zA-Z][a-zA-Z0-9]*)$/;
-export const API_NAME_PATTERN: RegExp = /^([a-zA-Z][a-zA-Z0-9_]*)$/;
+export const OBJECT_API_NAME_PATTERN: RegExp = /^[a-zA-Z][a-zA-Z0-9]{0,99}$/;
+export const API_NAME_PATTERN: RegExp = /^[a-zA-Z][a-zA-Z0-9_]{0,99}$/;
 
 export function isValidApiName(apiName: string): boolean {
   return API_NAME_PATTERN.test(apiName)

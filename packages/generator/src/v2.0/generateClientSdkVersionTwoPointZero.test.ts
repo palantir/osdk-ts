@@ -875,6 +875,8 @@ describe("generator", () => {
           osdkMetadata: typeof $osdkMetadata;
           type: 'object';
           apiName: 'Person';
+          primaryKeyApiName: 'email';
+          primaryKeyType: 'string';
           __DefinitionMetadata?: {
             objectSet: Person.ObjectSet;
             props: Person.Props;
@@ -915,6 +917,8 @@ describe("generator", () => {
           type: 'object',
           apiName: 'Person',
           osdkMetadata: $osdkMetadata,
+          primaryKeyApiName: 'email',
+          primaryKeyType: 'string',
           internalDoNotUseMetadata: {
             rid: 'ridForPerson',
           },
@@ -984,6 +988,8 @@ describe("generator", () => {
           osdkMetadata: typeof $osdkMetadata;
           type: 'object';
           apiName: 'Todo';
+          primaryKeyApiName: 'id';
+          primaryKeyType: 'integer';
           __DefinitionMetadata?: {
             objectSet: Todo.ObjectSet;
             props: Todo.Props;
@@ -1046,6 +1052,8 @@ describe("generator", () => {
           type: 'object',
           apiName: 'Todo',
           osdkMetadata: $osdkMetadata,
+          primaryKeyApiName: 'id',
+          primaryKeyType: 'integer',
           internalDoNotUseMetadata: {
             rid: 'ridForTodo',
           },
@@ -1551,6 +1559,8 @@ describe("generator", () => {
           osdkMetadata: typeof $osdkMetadata;
           type: 'object';
           apiName: 'foo.bar.Person';
+          primaryKeyApiName: 'email';
+          primaryKeyType: 'string';
           __DefinitionMetadata?: {
             objectSet: Person.ObjectSet;
             props: Person.Props;
@@ -1591,6 +1601,8 @@ describe("generator", () => {
           type: 'object',
           apiName: 'foo.bar.Person',
           osdkMetadata: $osdkMetadata,
+          primaryKeyApiName: 'email',
+          primaryKeyType: 'string',
           internalDoNotUseMetadata: {
             rid: 'ridForPerson',
           },
@@ -1660,6 +1672,8 @@ describe("generator", () => {
           osdkMetadata: typeof $osdkMetadata;
           type: 'object';
           apiName: 'foo.bar.Todo';
+          primaryKeyApiName: 'id';
+          primaryKeyType: 'integer';
           __DefinitionMetadata?: {
             objectSet: Todo.ObjectSet;
             props: Todo.Props;
@@ -1722,6 +1736,8 @@ describe("generator", () => {
           type: 'object',
           apiName: 'foo.bar.Todo',
           osdkMetadata: $osdkMetadata,
+          primaryKeyApiName: 'id',
+          primaryKeyType: 'integer',
           internalDoNotUseMetadata: {
             rid: 'ridForTodo',
           },
@@ -2085,6 +2101,8 @@ describe("generator", () => {
             osdkMetadata: typeof $osdkMetadata;
             type: 'object';
             apiName: 'UsesForeignSpt';
+            primaryKeyApiName: 'id';
+            primaryKeyType: 'integer';
             __DefinitionMetadata?: {
               objectSet: UsesForeignSpt.ObjectSet;
               props: UsesForeignSpt.Props;
@@ -2127,6 +2145,8 @@ describe("generator", () => {
             type: 'object',
             apiName: 'UsesForeignSpt',
             osdkMetadata: $osdkMetadata,
+            primaryKeyApiName: 'id',
+            primaryKeyType: 'integer',
             internalDoNotUseMetadata: {
               rid: 'theRid',
             },
@@ -2345,6 +2365,8 @@ describe("generator", () => {
           osdkMetadata: typeof $osdkMetadata;
           type: 'object';
           apiName: 'Person';
+          primaryKeyApiName: 'email';
+          primaryKeyType: 'string';
           __DefinitionMetadata?: {
             objectSet: Person.ObjectSet;
             props: Person.Props;
@@ -2385,6 +2407,8 @@ describe("generator", () => {
           type: 'object',
           apiName: 'Person',
           osdkMetadata: $osdkMetadata,
+          primaryKeyApiName: 'email',
+          primaryKeyType: 'string',
           internalDoNotUseMetadata: {
             rid: 'ridForPerson',
           },
@@ -2454,6 +2478,8 @@ describe("generator", () => {
           osdkMetadata: typeof $osdkMetadata;
           type: 'object';
           apiName: 'Todo';
+          primaryKeyApiName: 'id';
+          primaryKeyType: 'integer';
           __DefinitionMetadata?: {
             objectSet: Todo.ObjectSet;
             props: Todo.Props;
@@ -2516,6 +2542,8 @@ describe("generator", () => {
           type: 'object',
           apiName: 'Todo',
           osdkMetadata: $osdkMetadata,
+          primaryKeyApiName: 'id',
+          primaryKeyType: 'integer',
           internalDoNotUseMetadata: {
             rid: 'ridForTodo',
           },
@@ -2820,6 +2848,8 @@ describe("generator", () => {
           osdkMetadata: typeof $osdkMetadata;
           type: 'object';
           apiName: 'com.example.dep.Task';
+          primaryKeyApiName: 'taskId';
+          primaryKeyType: 'string';
           __DefinitionMetadata?: {
             objectSet: Task.ObjectSet;
             props: Task.Props;
@@ -2862,6 +2892,8 @@ describe("generator", () => {
           type: 'object',
           apiName: 'com.example.dep.Task',
           osdkMetadata: $osdkMetadata,
+          primaryKeyApiName: 'taskId',
+          primaryKeyType: 'string',
           internalDoNotUseMetadata: {
             rid: 'ridForTask',
           },

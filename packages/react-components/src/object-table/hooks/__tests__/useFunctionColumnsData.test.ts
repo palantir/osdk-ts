@@ -144,8 +144,18 @@ describe("useFunctionColumnsData", () => {
     // Initially shows isLoading state
     expect(result.current).toEqual({
       testColumn: {
-        obj1: { isLoading: true },
-        obj2: { isLoading: true },
+        obj1: {
+          __asyncCell: true,
+          data: undefined,
+          error: undefined,
+          isLoading: true,
+        },
+        obj2: {
+          __asyncCell: true,
+          data: undefined,
+          error: undefined,
+          isLoading: true,
+        },
       },
     });
 
@@ -155,8 +165,18 @@ describe("useFunctionColumnsData", () => {
 
     expect(result.current).toEqual({
       testColumn: {
-        obj1: { data: { value: "result1" }, isLoading: false },
-        obj2: { data: { value: "result2" }, isLoading: false },
+        obj1: {
+          __asyncCell: true,
+          data: { value: "result1" },
+          error: undefined,
+          isLoading: false,
+        },
+        obj2: {
+          __asyncCell: true,
+          data: { value: "result2" },
+          error: undefined,
+          isLoading: false,
+        },
       },
     });
 
@@ -208,7 +228,12 @@ describe("useFunctionColumnsData", () => {
 
     expect(result.current).toEqual({
       testColumn: {
-        obj1: { data: "active", isLoading: false },
+        obj1: {
+          __asyncCell: true,
+          data: "active",
+          error: undefined,
+          isLoading: false,
+        },
       },
     });
   });
@@ -275,10 +300,20 @@ describe("useFunctionColumnsData", () => {
 
     expect(result.current).toEqual({
       statusColumn: {
-        obj1: { data: "active", isLoading: false },
+        obj1: {
+          __asyncCell: true,
+          data: "active",
+          error: undefined,
+          isLoading: false,
+        },
       },
       timestampColumn: {
-        obj1: { data: "2024-01-01", isLoading: false },
+        obj1: {
+          __asyncCell: true,
+          data: "2024-01-01",
+          error: undefined,
+          isLoading: false,
+        },
       },
     });
 
@@ -360,10 +395,20 @@ describe("useFunctionColumnsData", () => {
 
     expect(result.current).toEqual({
       statusColumn: {
-        obj1: { data: "active", isLoading: false },
+        obj1: {
+          __asyncCell: true,
+          data: "active",
+          error: undefined,
+          isLoading: false,
+        },
       },
       timestampColumn: {
-        obj1: { data: "2024-01-01", isLoading: false },
+        obj1: {
+          __asyncCell: true,
+          data: "2024-01-01",
+          error: undefined,
+          isLoading: false,
+        },
       },
     });
 
@@ -399,8 +444,18 @@ describe("useFunctionColumnsData", () => {
 
     expect(result.current).toEqual({
       testColumn: {
-        obj1: { isLoading: true },
-        obj2: { isLoading: true },
+        obj1: {
+          __asyncCell: true,
+          data: undefined,
+          error: undefined,
+          isLoading: true,
+        },
+        obj2: {
+          __asyncCell: true,
+          data: undefined,
+          error: undefined,
+          isLoading: true,
+        },
       },
     });
 
@@ -410,8 +465,18 @@ describe("useFunctionColumnsData", () => {
 
     expect(result.current).toEqual({
       testColumn: {
-        obj1: { data: { value: "result1" }, isLoading: false },
-        obj2: { data: undefined, isLoading: false },
+        obj1: {
+          __asyncCell: true,
+          data: { value: "result1" },
+          error: undefined,
+          isLoading: false,
+        },
+        obj2: {
+          __asyncCell: true,
+          data: undefined,
+          error: undefined,
+          isLoading: false,
+        },
       },
     });
 
@@ -435,8 +500,18 @@ describe("useFunctionColumnsData", () => {
 
     expect(result.current).toEqual({
       testColumn: {
-        obj1: { error: mockError, isLoading: false },
-        obj2: { error: mockError, isLoading: false },
+        obj1: {
+          __asyncCell: true,
+          data: undefined,
+          error: mockError,
+          isLoading: false,
+        },
+        obj2: {
+          __asyncCell: true,
+          data: undefined,
+          error: mockError,
+          isLoading: false,
+        },
       },
     });
   });

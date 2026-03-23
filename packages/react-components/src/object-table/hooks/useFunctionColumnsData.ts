@@ -29,7 +29,10 @@ import type {
   ExtractQueryParameters,
   FunctionColumnLocator,
 } from "../ObjectTableApi.js";
-import type { AsyncCellData } from "../utils/types.js";
+import {
+  type AsyncCellData,
+  createAsyncCellData,
+} from "../utils/AsyncCellData.js";
 
 export interface FunctionColumnData {
   [columnId: string]: {
@@ -80,7 +83,7 @@ export function useFunctionColumnsData<
     never
   >,
 >(
-  objectSet: ObjectSet<Q> | undefined,
+  objectSet: ObjectSet<Q, RDPs> | undefined,
   objects:
     | Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>[]
     | undefined,
@@ -132,7 +135,7 @@ export function useFunctionColumnsData<
       for await (
         const queryResult of executeQueriesGenerator(
           functionColumnConfigs,
-          stableObjectSet,
+          stableObjectSet as ObjectSet<Q>,
           client,
           abortController.signal,
         )
@@ -261,8 +264,6 @@ async function* executeQueriesGenerator<
   const queryPromises = functionColumnConfigs.map(config =>
     createQueryPromise(config, objectSet, client, signal)
   ) as Array<Promise<QueryResult<Q, RDPs, FunctionColumns>>>;
-
-  // Create a copy of promises array that we can mutate
   const pendingPromises = [...queryPromises];
 
   // Yield results as they complete using Promise.race
@@ -273,11 +274,10 @@ async function* executeQueriesGenerator<
       ),
     );
 
-    // Yield the completed result
     yield result.result;
 
     // Remove the completed promise from the pending list
-    pendingPromises.splice(result.index, 1);
+    void pendingPromises.splice(result.index, 1);
   }
 }
 
@@ -303,7 +303,7 @@ function createQueryPromise<
       return;
     }
 
-    const params = config.getParams(objectSet);
+    const params = config.getParams(objectSet as ObjectSet<Q>);
 
     client(config.queryDefinition)
       .executeFunction(params)
@@ -359,7 +359,9 @@ function initializeFunctionColumnData<
           const key = String(obj.$primaryKey);
           // Only set isLoading state if this object's data doesn't already exist
           if (!newData[columnId][key]) {
-            newData[columnId][key] = { isLoading: true };
+            newData[columnId][key] = createAsyncCellData({
+              isLoading: true,
+            });
           }
         });
       });
@@ -383,50 +385,52 @@ function processQueryResult<
   objects: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>[],
   setData: React.Dispatch<React.SetStateAction<FunctionColumnData>>,
 ): void {
-  if (error) {
-    // Set error for all objects in all columns that use this query
-    config.columnIds.forEach(({ columnId }) => {
+  // Batch all updates into a single setState call
+  setData(prev => {
+    const newData = { ...prev };
+
+    if (error) {
+      // Set error for all objects in all columns that use this query
+      config.columnIds.forEach(({ columnId }) => {
+        if (!newData[columnId]) {
+          newData[columnId] = {};
+        }
+
+        objects.forEach(obj => {
+          const key = String(obj.$primaryKey);
+          newData[columnId][key] = createAsyncCellData({
+            error: error instanceof Error
+              ? error
+              : new Error(String(error)),
+            isLoading: false,
+          });
+        });
+      });
+    } else if (result) {
+      // Process the FunctionsMap result
       objects.forEach(obj => {
         const key = String(obj.$primaryKey);
-        setData(prev => ({
-          ...prev,
-          [columnId]: {
-            ...prev[columnId],
-            [key]: {
-              error: error instanceof Error
-                ? error
-                : new Error(String(error)),
+
+        // Process each column that uses this query result
+        config.columnIds.forEach(
+          ({ columnId, getValue, getKey: columnGetKey }) => {
+            if (!newData[columnId]) {
+              newData[columnId] = {};
+            }
+
+            const customKey = columnGetKey(obj);
+            const rawData = result[customKey];
+            const cellData = getValue ? getValue(rawData) : rawData;
+
+            newData[columnId][key] = createAsyncCellData({
+              data: cellData,
               isLoading: false,
-            },
+            });
           },
-        }));
+        );
       });
-    });
-  } else if (result) {
-    // Process the FunctionsMap result
-    objects.forEach(obj => {
-      const key = String(obj.$primaryKey);
+    }
 
-      // Process each column that uses this query result
-      config.columnIds.forEach(
-        ({ columnId, getValue, getKey: columnGetKey }) => {
-          const customKey = columnGetKey(obj);
-          const rawData = result[customKey];
-
-          const cellData = getValue ? getValue(rawData) : rawData;
-
-          setData(prev => ({
-            ...prev,
-            [columnId]: {
-              ...prev[columnId],
-              [key]: {
-                data: cellData,
-                isLoading: false,
-              },
-            },
-          }));
-        },
-      );
-    });
-  }
+    return newData;
+  });
 }

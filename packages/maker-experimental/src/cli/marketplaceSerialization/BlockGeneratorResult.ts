@@ -35,9 +35,9 @@ import type {
  */
 export interface BlockGeneratorResult {
   /**
-   * Identifier for this block (e.g., "ontology")
+   * Identifier for this block (e.g., "ontology", "car-backing-ds")
    */
-  block_identifier: "ontology";
+  block_identifier: string;
 
   /**
    * Absolute path to the directory containing block data files.

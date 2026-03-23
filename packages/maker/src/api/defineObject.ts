@@ -98,6 +98,19 @@ export function defineObject(
     `Primary key property ${objectDef.primaryKeyPropertyApiName} on object ${objectDef.apiName} cannot be edit-only`,
   );
 
+  if (objectDef.includeEmptyBackingDatasource && objectDef.datasources) {
+    const nonDatasetDatasources = objectDef.datasources.filter(
+      ds => ds.type !== "dataset",
+    );
+    invariant(
+      nonDatasetDatasources.length === 0,
+      `Object type "${objectDef.apiName}" has non-dataset datasources (${
+        nonDatasetDatasources.map(ds => ds.type).join(", ")
+      }) and cannot use includeEmptyBackingDatasource. `
+        + `Empty backing datasources are only supported for object types with dataset datasources.`,
+    );
+  }
+
   const retentionPeriods =
     ((objectDef.datasources ?? []).filter(ds =>
       ds.type === "stream"

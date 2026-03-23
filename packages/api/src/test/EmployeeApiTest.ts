@@ -79,6 +79,8 @@ export namespace EmployeeApiTest {
 export interface EmployeeApiTest extends $ObjectTypeDefinition {
   type: "object";
   apiName: "Employee";
+  primaryKeyApiName: "employeeId";
+  primaryKeyType: "integer";
   __DefinitionMetadata?: {
     objectSet: EmployeeApiTest.ObjectSet;
     props: EmployeeApiTest.Props;
@@ -144,4 +146,6 @@ export interface EmployeeApiTest extends $ObjectTypeDefinition {
 export const EmployeeApiTest: EmployeeApiTest = {
   type: "object",
   apiName: "Employee",
+  primaryKeyApiName: "employeeId",
+  primaryKeyType: "integer",
 };
