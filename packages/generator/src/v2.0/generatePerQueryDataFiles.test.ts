@@ -331,6 +331,7 @@ describe("generatePerQueryDataFiles", () => {
                     },
                   ],
                 },
+                typeReferences: {},
               },
             },
             sharedPropertyTypes: {},
@@ -528,5 +529,668 @@ describe("generatePerQueryDataFiles", () => {
         };
         "
       `);
+  });
+
+  it("generates interfaces for recursive type references", async () => {
+    const helper = createMockMinimalFiles();
+    const BASE_PATH = "/foo";
+
+    await generatePerQueryDataFilesV2(
+      {
+        fs: helper.minimalFiles,
+        ontology: enhanceOntology({
+          sanitized: {
+            actionTypes: {},
+            interfaceTypes: {},
+            objectTypes: {},
+            ontology: {
+              apiName: "foo",
+              description: "foo",
+              displayName: "foo",
+              rid: "ri.foo",
+            },
+            queryTypes: {
+              queryWithRecursiveType: {
+                rid: "rid.query.recursive",
+                version: "1.0.0",
+                apiName: "queryWithRecursiveType",
+                parameters: {
+                  treeNode: {
+                    description: "A recursive tree node parameter",
+                    dataType: {
+                      type: "typeReference",
+                      typeId: "tree-node-type-id",
+                    },
+                  },
+                },
+                output: {
+                  type: "array",
+                  subType: {
+                    type: "typeReference",
+                    typeId: "tree-node-type-id",
+                  },
+                },
+                typeReferences: {
+                  "tree-node-type-id": {
+                    type: "struct",
+                    fields: [
+                      {
+                        name: "value",
+                        fieldType: { type: "string" },
+                      },
+                      {
+                        name: "children",
+                        fieldType: {
+                          type: "array",
+                          subType: {
+                            type: "typeReference",
+                            typeId: "tree-node-type-id",
+                          },
+                        },
+                      },
+                    ],
+                  },
+                },
+              },
+            },
+            sharedPropertyTypes: {},
+            valueTypes: {},
+          },
+          importExt: ".js",
+          externalObjects: new Map(),
+          externalInterfaces: new Map(),
+          externalSpts: new Map(),
+        }),
+        outDir: BASE_PATH,
+        importExt: ".js",
+        forInternalUse: true,
+        fixedVersionQueryTypes: [],
+      },
+      true,
+    );
+    expect(helper.getFiles()["/foo/ontology/queries/queryWithRecursiveType.ts"])
+      .toMatchInlineSnapshot(`
+        "import type { ObjectSpecifier, QueryDefinition, QueryParam, QueryResult, VersionBound } from '@osdk/api';
+        import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
+        import { $osdkMetadata } from '../../OntologyMetadata.js';
+
+        export namespace queryWithRecursiveType {
+          namespace $CustomTypes {
+            export interface TreeNode {
+              readonly children: ReadonlyArray<$CustomTypes.TreeNode>;
+
+              readonly value: QueryParam.PrimitiveType<'string'>;
+            }
+
+            export interface queryWithRecursiveTypeOutput {
+              children: Array<$CustomTypes.queryWithRecursiveTypeOutput>;
+
+              value: QueryResult.PrimitiveType<'string'>;
+            }
+          }
+
+          export interface Signature {
+            (query: queryWithRecursiveType.Parameters): Promise<queryWithRecursiveType.ReturnType>;
+          }
+
+          export interface Parameters {
+            /**
+             *   description: A recursive tree node parameter
+             */
+            readonly treeNode: $CustomTypes.TreeNode;
+          }
+
+          export type ReturnType = Array<$CustomTypes.queryWithRecursiveTypeOutput>;
+        }
+
+        export interface queryWithRecursiveType
+          extends QueryDefinition<queryWithRecursiveType.Signature>,
+            VersionBound<$ExpectedClientVersion> {
+          __DefinitionMetadata?: {
+            apiName: 'queryWithRecursiveType';
+            rid: 'rid.query.recursive';
+            type: 'query';
+            version: '1.0.0';
+            isFixedVersion: false;
+            parameters: {
+              /**
+               *   description: A recursive tree node parameter
+               */
+              treeNode: {
+                description: 'A recursive tree node parameter';
+                nullable: false;
+                type: 'typeReference';
+                typeId: 'tree-node-type-id';
+              };
+            };
+            output: {
+              array: {
+                type: 'typeReference';
+                typeId: 'tree-node-type-id';
+                nullable: false;
+              };
+              nullable: false;
+              type: 'array';
+            };
+            signature: queryWithRecursiveType.Signature;
+          };
+          apiName: 'queryWithRecursiveType';
+          type: 'query';
+          version: '1.0.0';
+          osdkMetadata: typeof $osdkMetadata;
+        }
+
+        export const queryWithRecursiveType: queryWithRecursiveType = {
+          apiName: 'queryWithRecursiveType',
+          type: 'query',
+          version: '1.0.0',
+          isFixedVersion: false,
+          osdkMetadata: $osdkMetadata,
+        };
+        "
+      `);
+  });
+
+  it("generates interfaces for multiple type references", async () => {
+    const helper = createMockMinimalFiles();
+    const BASE_PATH = "/foo";
+
+    await generatePerQueryDataFilesV2(
+      {
+        fs: helper.minimalFiles,
+        ontology: enhanceOntology({
+          sanitized: {
+            actionTypes: {},
+            interfaceTypes: {},
+            objectTypes: {},
+            ontology: {
+              apiName: "foo",
+              description: "foo",
+              displayName: "foo",
+              rid: "ri.foo",
+            },
+            queryTypes: {
+              queryWithMultipleTypeRefs: {
+                rid: "rid.query.multi",
+                version: "1.0.0",
+                apiName: "queryWithMultipleTypeRefs",
+                parameters: {
+                  binaryTree: {
+                    description: "A binary tree parameter",
+                    dataType: {
+                      type: "typeReference",
+                      typeId: "binary-tree-id",
+                    },
+                  },
+                  linkedList: {
+                    description: "A linked list parameter",
+                    dataType: {
+                      type: "typeReference",
+                      typeId: "linked-list-id",
+                    },
+                  },
+                },
+                output: {
+                  type: "struct",
+                  fields: [
+                    {
+                      name: "tree",
+                      fieldType: {
+                        type: "typeReference",
+                        typeId: "binary-tree-id",
+                      },
+                    },
+                    {
+                      name: "list",
+                      fieldType: {
+                        type: "typeReference",
+                        typeId: "linked-list-id",
+                      },
+                    },
+                  ],
+                },
+                typeReferences: {
+                  "binary-tree-id": {
+                    type: "struct",
+                    fields: [
+                      {
+                        name: "value",
+                        fieldType: { type: "integer" },
+                      },
+                      {
+                        name: "left",
+                        fieldType: {
+                          type: "union",
+                          unionTypes: [
+                            { type: "typeReference", typeId: "binary-tree-id" },
+                            { type: "null" },
+                          ],
+                        },
+                      },
+                      {
+                        name: "right",
+                        fieldType: {
+                          type: "union",
+                          unionTypes: [
+                            { type: "typeReference", typeId: "binary-tree-id" },
+                            { type: "null" },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                  "linked-list-id": {
+                    type: "struct",
+                    fields: [
+                      {
+                        name: "data",
+                        fieldType: { type: "string" },
+                      },
+                      {
+                        name: "next",
+                        fieldType: {
+                          type: "union",
+                          unionTypes: [
+                            { type: "typeReference", typeId: "linked-list-id" },
+                            { type: "null" },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                },
+              },
+            },
+            sharedPropertyTypes: {},
+            valueTypes: {},
+          },
+          importExt: ".js",
+          externalObjects: new Map(),
+          externalInterfaces: new Map(),
+          externalSpts: new Map(),
+        }),
+        outDir: BASE_PATH,
+        importExt: ".js",
+        forInternalUse: true,
+        fixedVersionQueryTypes: [],
+      },
+      true,
+    );
+    expect(
+      helper.getFiles()["/foo/ontology/queries/queryWithMultipleTypeRefs.ts"],
+    )
+      .toMatchInlineSnapshot(`
+        "import type { ObjectSpecifier, QueryDefinition, QueryParam, QueryResult, VersionBound } from '@osdk/api';
+        import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
+        import { $osdkMetadata } from '../../OntologyMetadata.js';
+
+        export namespace queryWithMultipleTypeRefs {
+          namespace $CustomTypes {
+            export interface BinaryTree {
+              readonly left?: $CustomTypes.BinaryTree;
+
+              readonly right?: $CustomTypes.BinaryTree;
+
+              readonly value: QueryParam.PrimitiveType<'integer'>;
+            }
+
+            export interface LinkedList {
+              readonly data: QueryParam.PrimitiveType<'string'>;
+
+              readonly next?: $CustomTypes.LinkedList;
+            }
+
+            export interface queryWithMultipleTypeRefsOutput {
+              left?: $CustomTypes.queryWithMultipleTypeRefsOutput;
+
+              right?: $CustomTypes.queryWithMultipleTypeRefsOutput;
+
+              value: QueryResult.PrimitiveType<'integer'>;
+            }
+
+            export interface queryWithMultipleTypeRefsOutput_1 {
+              data: QueryResult.PrimitiveType<'string'>;
+
+              next?: $CustomTypes.queryWithMultipleTypeRefsOutput_1;
+            }
+          }
+
+          export interface Signature {
+            (query: queryWithMultipleTypeRefs.Parameters): Promise<queryWithMultipleTypeRefs.ReturnType>;
+          }
+
+          export interface Parameters {
+            /**
+             *   description: A binary tree parameter
+             */
+            readonly binaryTree: $CustomTypes.BinaryTree;
+
+            /**
+             *   description: A linked list parameter
+             */
+            readonly linkedList: $CustomTypes.LinkedList;
+          }
+
+          export interface ReturnType {
+            list: $CustomTypes.queryWithMultipleTypeRefsOutput_1;
+
+            tree: $CustomTypes.queryWithMultipleTypeRefsOutput;
+          }
+        }
+
+        export interface queryWithMultipleTypeRefs
+          extends QueryDefinition<queryWithMultipleTypeRefs.Signature>,
+            VersionBound<$ExpectedClientVersion> {
+          __DefinitionMetadata?: {
+            apiName: 'queryWithMultipleTypeRefs';
+            rid: 'rid.query.multi';
+            type: 'query';
+            version: '1.0.0';
+            isFixedVersion: false;
+            parameters: {
+              /**
+               *   description: A binary tree parameter
+               */
+              binaryTree: {
+                description: 'A binary tree parameter';
+                nullable: false;
+                type: 'typeReference';
+                typeId: 'binary-tree-id';
+              };
+              /**
+               *   description: A linked list parameter
+               */
+              linkedList: {
+                description: 'A linked list parameter';
+                nullable: false;
+                type: 'typeReference';
+                typeId: 'linked-list-id';
+              };
+            };
+            output: {
+              nullable: false;
+              struct: {
+                tree: {
+                  type: 'typeReference';
+                  typeId: 'binary-tree-id';
+                  nullable: false;
+                };
+                list: {
+                  type: 'typeReference';
+                  typeId: 'linked-list-id';
+                  nullable: false;
+                };
+              };
+              type: 'struct';
+            };
+            signature: queryWithMultipleTypeRefs.Signature;
+          };
+          apiName: 'queryWithMultipleTypeRefs';
+          type: 'query';
+          version: '1.0.0';
+          osdkMetadata: typeof $osdkMetadata;
+        }
+
+        export const queryWithMultipleTypeRefs: queryWithMultipleTypeRefs = {
+          apiName: 'queryWithMultipleTypeRefs',
+          type: 'query',
+          version: '1.0.0',
+          isFixedVersion: false,
+          osdkMetadata: $osdkMetadata,
+        };
+        "
+      `);
+  });
+
+  it("generates Output-prefixed interfaces for output-only type references", async () => {
+    const helper = createMockMinimalFiles();
+    const BASE_PATH = "/foo";
+
+    await generatePerQueryDataFilesV2(
+      {
+        fs: helper.minimalFiles,
+        ontology: enhanceOntology({
+          sanitized: {
+            actionTypes: {},
+            interfaceTypes: {},
+            objectTypes: {},
+            ontology: {
+              apiName: "foo",
+              description: "foo",
+              displayName: "foo",
+              rid: "ri.foo",
+            },
+            queryTypes: {
+              queryWithOutputOnlyTypeRef: {
+                rid: "rid.query.output-only",
+                version: "1.0.0",
+                apiName: "queryWithOutputOnlyTypeRef",
+                parameters: {
+                  name: {
+                    dataType: { type: "string" },
+                  },
+                },
+                output: {
+                  type: "struct",
+                  fields: [
+                    {
+                      name: "metadata",
+                      fieldType: {
+                        type: "typeReference",
+                        typeId: "metadata-type-id",
+                      },
+                    },
+                    {
+                      name: "data",
+                      fieldType: {
+                        type: "typeReference",
+                        typeId: "data-type-id",
+                      },
+                    },
+                  ],
+                },
+                typeReferences: {
+                  "metadata-type-id": {
+                    type: "struct",
+                    fields: [
+                      {
+                        name: "createdAt",
+                        fieldType: { type: "timestamp" },
+                      },
+                      {
+                        name: "updatedAt",
+                        fieldType: { type: "timestamp" },
+                      },
+                    ],
+                  },
+                  "data-type-id": {
+                    type: "struct",
+                    fields: [
+                      {
+                        name: "value",
+                        fieldType: { type: "string" },
+                      },
+                      {
+                        name: "nested",
+                        fieldType: {
+                          type: "typeReference",
+                          typeId: "data-type-id",
+                        },
+                      },
+                    ],
+                  },
+                },
+              },
+            },
+            sharedPropertyTypes: {},
+            valueTypes: {},
+          },
+          importExt: ".js",
+          externalObjects: new Map(),
+          externalInterfaces: new Map(),
+          externalSpts: new Map(),
+        }),
+        outDir: BASE_PATH,
+        importExt: ".js",
+        forInternalUse: true,
+        fixedVersionQueryTypes: [],
+      },
+      true,
+    );
+    expect(
+      helper.getFiles()["/foo/ontology/queries/queryWithOutputOnlyTypeRef.ts"],
+    )
+      .toMatchInlineSnapshot(`
+        "import type { ObjectSpecifier, QueryDefinition, QueryParam, QueryResult, VersionBound } from '@osdk/api';
+        import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
+        import { $osdkMetadata } from '../../OntologyMetadata.js';
+
+        export namespace queryWithOutputOnlyTypeRef {
+          namespace $CustomTypes {
+            export interface queryWithOutputOnlyTypeRefOutput {
+              createdAt: QueryResult.PrimitiveType<'timestamp'>;
+
+              updatedAt: QueryResult.PrimitiveType<'timestamp'>;
+            }
+
+            export interface queryWithOutputOnlyTypeRefOutput_1 {
+              nested: $CustomTypes.queryWithOutputOnlyTypeRefOutput_1;
+
+              value: QueryResult.PrimitiveType<'string'>;
+            }
+          }
+
+          export interface Signature {
+            (query: queryWithOutputOnlyTypeRef.Parameters): Promise<queryWithOutputOnlyTypeRef.ReturnType>;
+          }
+
+          export interface Parameters {
+            /**
+             * (no ontology metadata)
+             */
+            readonly name: QueryParam.PrimitiveType<'string'>;
+          }
+
+          export interface ReturnType {
+            data: $CustomTypes.queryWithOutputOnlyTypeRefOutput_1;
+
+            metadata: $CustomTypes.queryWithOutputOnlyTypeRefOutput;
+          }
+        }
+
+        export interface queryWithOutputOnlyTypeRef
+          extends QueryDefinition<queryWithOutputOnlyTypeRef.Signature>,
+            VersionBound<$ExpectedClientVersion> {
+          __DefinitionMetadata?: {
+            apiName: 'queryWithOutputOnlyTypeRef';
+            rid: 'rid.query.output-only';
+            type: 'query';
+            version: '1.0.0';
+            isFixedVersion: false;
+            parameters: {
+              /**
+               * (no ontology metadata)
+               */
+              name: {
+                nullable: false;
+                type: 'string';
+              };
+            };
+            output: {
+              nullable: false;
+              struct: {
+                metadata: {
+                  type: 'typeReference';
+                  typeId: 'metadata-type-id';
+                  nullable: false;
+                };
+                data: {
+                  type: 'typeReference';
+                  typeId: 'data-type-id';
+                  nullable: false;
+                };
+              };
+              type: 'struct';
+            };
+            signature: queryWithOutputOnlyTypeRef.Signature;
+          };
+          apiName: 'queryWithOutputOnlyTypeRef';
+          type: 'query';
+          version: '1.0.0';
+          osdkMetadata: typeof $osdkMetadata;
+        }
+
+        export const queryWithOutputOnlyTypeRef: queryWithOutputOnlyTypeRef = {
+          apiName: 'queryWithOutputOnlyTypeRef',
+          type: 'query',
+          version: '1.0.0',
+          isFixedVersion: false,
+          osdkMetadata: $osdkMetadata,
+        };
+        "
+      `);
+  });
+
+  it("throws error when parameter is named 'output'", async () => {
+    const helper = createMockMinimalFiles();
+    const BASE_PATH = "/foo";
+
+    await expect(
+      generatePerQueryDataFilesV2(
+        {
+          fs: helper.minimalFiles,
+          ontology: enhanceOntology({
+            sanitized: {
+              actionTypes: {},
+              interfaceTypes: {},
+              objectTypes: {},
+              ontology: {
+                apiName: "foo",
+                description: "foo",
+                displayName: "foo",
+                rid: "ri.foo",
+              },
+              queryTypes: {
+                queryWithOutputParam: {
+                  rid: "rid.query.conflict",
+                  version: "1.0.0",
+                  apiName: "queryWithOutputParam",
+                  parameters: {
+                    output: {
+                      dataType: {
+                        type: "typeReference",
+                        typeId: "some-type-id",
+                      },
+                    },
+                  },
+                  output: { type: "string" },
+                  typeReferences: {
+                    "some-type-id": {
+                      type: "struct",
+                      fields: [
+                        { name: "value", fieldType: { type: "string" } },
+                      ],
+                    },
+                  },
+                },
+              },
+              sharedPropertyTypes: {},
+              valueTypes: {},
+            },
+            importExt: ".js",
+            externalObjects: new Map(),
+            externalInterfaces: new Map(),
+            externalSpts: new Map(),
+          }),
+          outDir: BASE_PATH,
+          importExt: ".js",
+          forInternalUse: true,
+          fixedVersionQueryTypes: [],
+        },
+        true,
+      ),
+    ).rejects.toThrow(
+      /parameter named "output" which conflicts with the output type naming convention/,
+    );
   });
 });

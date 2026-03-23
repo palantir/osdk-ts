@@ -160,6 +160,13 @@ export function wireQueryDataTypeToQueryDataTypeDefinition<
         valueType: wireQueryDataTypeToQueryDataTypeDefinition(input.valueType),
       };
 
+    case "typeReference":
+      return {
+        type: "typeReference",
+        typeId: input.typeId,
+        nullable: false,
+      };
+
     case "null":
     case "unsupported":
     case "mediaReference":

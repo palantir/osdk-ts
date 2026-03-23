@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-import type { QueryParameterDefinition } from "@osdk/api";
-import type { QueryDataType } from "@osdk/foundry.ontologies";
+import type {
+  QueryDataTypeDefinition,
+  QueryParameterDefinition,
+} from "@osdk/api";
+import type { QueryDataType, QueryTypeV2 } from "@osdk/foundry.ontologies";
 import {
   wireQueryDataTypeToQueryDataTypeDefinition,
   wireQueryParameterV2ToQueryParameterDefinition as paramToDef,
@@ -127,6 +130,14 @@ async function generateV2QueryFile(
     query.fullApiName,
   );
 
+  const typeRefContext = buildTypeRefContext(query.raw);
+  const typeReferences = query.raw.typeReferences ?? {};
+  const typeRefInterfaces = generateTypeReferenceInterfaces(
+    ontology,
+    typeReferences,
+    typeRefContext,
+  );
+
   await fs.writeFile(
     path.join(outDir, `${query.shortApiName}.ts`),
     await formatTs(`
@@ -138,6 +149,8 @@ async function generateV2QueryFile(
         ${importObjects}
 
         export namespace ${query.shortApiName} {
+          ${typeRefInterfaces}
+
           export interface Signature {
             ${getDescriptionIfPresent(query.description)}
             (${
@@ -155,12 +168,19 @@ async function generateV2QueryFile(
           stringify(query.parameters, {
             "*": (parameter, formatter, apiName) => {
               const q = paramToDef(parameter);
+              const paramContext = typeRefContext.paramContexts.get(apiName);
               return [
                 `
                 ${
                   queryParamJsDoc(paramToDef(parameter), { apiName })
                 }readonly "${apiName}"${q.nullable ? "?" : ""}`,
-                getQueryParamType(ontology, q, "Param"),
+                getQueryParamType(
+                  ontology,
+                  q,
+                  "Param",
+                  paramContext,
+                  false,
+                ),
               ];
             },
           })
@@ -172,21 +192,32 @@ async function generateV2QueryFile(
             ${
       query.output.type === "struct"
         ? `
-            export interface ReturnType 
+            export interface ReturnType
             ${
           getQueryParamType(
             ontology,
             paramToDef({ dataType: query.output }),
             "Result",
+            typeRefContext.outputContext,
+            false,
           )
         }
         `
+        : query.output.type === "typeReference"
+        ? `export type ReturnType = ${
+          typeRefContext.outputContext.typeIdToInterfaceName.get(
+            query.output.typeId,
+          )
+            ?? `unknown /* typeRef: ${query.output.typeId} */`
+        };`
         : `
         export type ReturnType = ${
           getQueryParamType(
             ontology,
             paramToDef({ dataType: query.output }),
             "Result",
+            typeRefContext.outputContext,
+            false,
           )
         }
           `
@@ -208,14 +239,14 @@ async function generateV2QueryFile(
             ${getLineFor__OsdkTargetType(ontology, query.output)}
             };
             signature: ${query.shortApiName}.Signature;
-        }, 
+        },
         ${
       stringify(baseProps, {
         "description": () => undefined,
         "displayName": () => undefined,
         "rid": () => undefined,
       })
-    }, 
+    },
           osdkMetadata: typeof $osdkMetadata;
               }
 
@@ -282,10 +313,11 @@ export function queryParamJsDoc(
   return ret;
 }
 
-export function getQueryParamType(
+function getQueryParamType(
   enhancedOntology: EnhancedOntologyDefinition,
-  input: QueryParameterDefinition,
+  input: QueryDataTypeDefinition,
   type: "Param" | "Result",
+  paramContext?: ParameterTypeRefContext,
   isMapKey = false,
 ): string {
   let paramType = `unknown /* ${input.type} */`;
@@ -293,7 +325,13 @@ export function getQueryParamType(
   switch (input.type) {
     case "array":
       paramType = `${type === "Param" ? "Readonly" : ""}Array<${
-        getQueryParamType(enhancedOntology, input.array, type)
+        getQueryParamType(
+          enhancedOntology,
+          input.array,
+          type,
+          paramContext,
+          false,
+        )
       }>`;
       break;
     case "date":
@@ -327,7 +365,7 @@ export function getQueryParamType(
                 ${type === "Param" ? "readonly " : ""}"${apiName}"${
                 p.nullable ? "?" : ""
               }`,
-              getQueryParamType(enhancedOntology, p, type),
+              getQueryParamType(enhancedOntology, p, type, paramContext, false),
             ];
           },
         })
@@ -351,7 +389,7 @@ export function getQueryParamType(
         input.threeDimensionalAggregation.valueType.keyType === "range"
           ? `Query${type}.RangeKey<"${input.threeDimensionalAggregation.valueType.keySubtype}">`
           : `"${input.threeDimensionalAggregation.valueType.keyType}"`
-      }, 
+      },
         "${input.threeDimensionalAggregation.valueType.valueType}">`;
       break;
     case "object":
@@ -390,21 +428,247 @@ export function getQueryParamType(
 
     case "set":
       paramType = `${type === "Param" ? "Readonly" : ""}Set<${
-        getQueryParamType(enhancedOntology, input.set, type)
+        getQueryParamType(
+          enhancedOntology,
+          input.set,
+          type,
+          paramContext,
+          false,
+        )
       }>`;
       break;
 
     case "union":
       paramType = input.union.map((u) =>
-        getQueryParamType(enhancedOntology, u, type)
+        getQueryParamType(enhancedOntology, u, type, paramContext, false)
       ).join(" | ");
       break;
 
     case "map":
       paramType = `Partial<Record<${
-        getQueryParamType(enhancedOntology, input.keyType, type, true)
-      }, ${getQueryParamType(enhancedOntology, input.valueType, type)}>>`;
+        getQueryParamType(
+          enhancedOntology,
+          input.keyType,
+          type,
+          paramContext,
+          true,
+        )
+      }, ${
+        getQueryParamType(
+          enhancedOntology,
+          input.valueType,
+          type,
+          paramContext,
+          false,
+        )
+      }>>`;
+      break;
+
+    case "typeReference": {
+      const interfaceName = paramContext?.typeIdToInterfaceName.get(
+        input.typeId,
+      );
+      paramType = interfaceName
+        ? interfaceName
+        : `unknown /* typeRef: ${input.typeId} */`;
+      break;
+    }
   }
 
   return paramType;
+}
+
+interface ParameterTypeRefContext {
+  rootInterfaceName: string;
+  typeIdToInterfaceName: Map<string, string>;
+  counter: number;
+}
+
+interface TypeRefContext {
+  paramContexts: Map<string, ParameterTypeRefContext>;
+  outputContext: ParameterTypeRefContext;
+  queryName: string;
+}
+
+function toPascalCase(str: string): string {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+function collectTypeRefsFromDataType(
+  dataType: QueryDataType,
+  paramContext: ParameterTypeRefContext,
+  typeReferences: Record<string, QueryDataType>,
+): void {
+  if (dataType.type === "typeReference") {
+    if (paramContext.typeIdToInterfaceName.has(dataType.typeId)) {
+      return;
+    }
+
+    let interfaceName: string;
+    if (paramContext.counter === 0) {
+      interfaceName = paramContext.rootInterfaceName;
+    } else {
+      interfaceName =
+        `${paramContext.rootInterfaceName}_${paramContext.counter}`;
+    }
+    paramContext.counter++;
+    paramContext.typeIdToInterfaceName.set(dataType.typeId, interfaceName);
+
+    const referencedType = typeReferences[dataType.typeId];
+    if (referencedType) {
+      collectTypeRefsFromDataType(
+        referencedType,
+        paramContext,
+        typeReferences,
+      );
+    }
+    return;
+  }
+
+  switch (dataType.type) {
+    case "array":
+    case "set":
+      collectTypeRefsFromDataType(
+        dataType.subType,
+        paramContext,
+        typeReferences,
+      );
+      break;
+    case "struct":
+      for (const field of dataType.fields) {
+        collectTypeRefsFromDataType(
+          field.fieldType,
+          paramContext,
+          typeReferences,
+        );
+      }
+      break;
+    case "union":
+      for (const unionType of dataType.unionTypes) {
+        collectTypeRefsFromDataType(
+          unionType,
+          paramContext,
+          typeReferences,
+        );
+      }
+      break;
+    case "entrySet":
+      collectTypeRefsFromDataType(
+        dataType.keyType,
+        paramContext,
+        typeReferences,
+      );
+      collectTypeRefsFromDataType(
+        dataType.valueType,
+        paramContext,
+        typeReferences,
+      );
+      break;
+  }
+}
+
+function buildTypeRefContext(query: QueryTypeV2): TypeRefContext {
+  const typeReferences = query.typeReferences ?? {};
+
+  const paramContexts = new Map<string, ParameterTypeRefContext>();
+
+  for (const [paramName, param] of Object.entries(query.parameters)) {
+    if (paramName.toLowerCase() === "output") {
+      throw new Error(
+        `Query "${query.apiName}" has a parameter named "${paramName}" which conflicts with the output type naming convention. Please rename the parameter.`,
+      );
+    }
+
+    const paramContext: ParameterTypeRefContext = {
+      rootInterfaceName: toPascalCase(paramName),
+      typeIdToInterfaceName: new Map(),
+      counter: 0,
+    };
+
+    collectTypeRefsFromDataType(
+      param.dataType,
+      paramContext,
+      typeReferences,
+    );
+
+    if (paramContext.typeIdToInterfaceName.size > 0) {
+      paramContexts.set(paramName, paramContext);
+    }
+  }
+
+  const outputContext: ParameterTypeRefContext = {
+    rootInterfaceName: query.apiName + "Output",
+    typeIdToInterfaceName: new Map(),
+    counter: 0,
+  };
+
+  collectTypeRefsFromDataType(
+    query.output,
+    outputContext,
+    typeReferences,
+  );
+
+  return {
+    paramContexts,
+    outputContext,
+    queryName: query.apiName,
+  };
+}
+
+function generateTypeReferenceInterfaces(
+  ontology: EnhancedOntologyDefinition,
+  typeReferences: Record<string, QueryDataType>,
+  context: TypeRefContext,
+): string {
+  const interfaces: string[] = [];
+
+  for (const [, paramContext] of context.paramContexts) {
+    for (const [typeId, interfaceName] of paramContext.typeIdToInterfaceName) {
+      const dataType = typeReferences[typeId];
+      if (!dataType) {
+        continue;
+      }
+
+      const converted = wireQueryDataTypeToQueryDataTypeDefinition(dataType);
+      const typeString = getQueryParamType(
+        ontology,
+        converted,
+        "Param",
+        paramContext,
+        false,
+      );
+
+      if (converted.type === "struct") {
+        interfaces.push(`interface ${interfaceName} ${typeString}`);
+      }
+    }
+  }
+
+  for (
+    const [typeId, interfaceName] of context.outputContext.typeIdToInterfaceName
+  ) {
+    const dataType = typeReferences[typeId];
+    if (!dataType) {
+      continue;
+    }
+
+    const converted = wireQueryDataTypeToQueryDataTypeDefinition(dataType);
+    const typeString = getQueryParamType(
+      ontology,
+      converted,
+      "Result",
+      context.outputContext,
+      false,
+    );
+
+    if (converted.type === "struct") {
+      interfaces.push(`interface ${interfaceName} ${typeString}`);
+    }
+  }
+
+  if (interfaces.length === 0) {
+    return "";
+  }
+
+  return interfaces.join("\n\n");
 }
