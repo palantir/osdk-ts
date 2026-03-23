@@ -4556,7 +4556,7 @@ importers:
         specifier: ~5.5.4
         version: 5.5.4
 
-  packages/react-components-gotham:
+  packages/react-components-defense:
     dependencies:
       '@base-ui/react':
         specifier: ^1.0.0

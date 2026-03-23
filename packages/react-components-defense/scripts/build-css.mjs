@@ -77,7 +77,8 @@ async function rewriteCssImports() {
 
 async function processCssModules() {
   const cssFiles = await findCssModules(buildDir);
-  let combinedCss = "/* @osdk/react-components-gotham - Combined styles */\n\n";
+  let combinedCss =
+    "/* @osdk/react-components-defense - Combined styles */\n\n";
 
   for (const cssFile of cssFiles) {
     const content = await fs.readFile(cssFile, "utf8");
