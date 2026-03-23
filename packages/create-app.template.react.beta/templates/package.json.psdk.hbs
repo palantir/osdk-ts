@@ -10,7 +10,7 @@
     "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
     "lint:fix": "eslint --report-unused-disable-directives --max-warnings 0 --fix",
     "test": "vitest run",
-    "check": "tsc --noEmit && eslint . --report-unused-disable-directives --max-warnings 0 && vitest run",
+    "check": "eslint . --report-unused-disable-directives --max-warnings 0 && tsc --noEmit && vitest run",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -18,7 +18,7 @@
     "@osdk/foundry": "latest",
     "@osdk/oauth": "^1.1.0",
     "@blueprintjs/core": "^6.8.1",
-    "classnames": "^2.0.0"
+    "@blueprintjs/icons": "^6.6.0"
   },
   "devDependencies": {
     "@trivago/prettier-plugin-sort-imports": "^5.0.0",

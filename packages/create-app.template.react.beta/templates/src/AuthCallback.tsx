@@ -24,7 +24,7 @@ function AuthCallback(): React.ReactElement {
         }
       });
   }, [navigate]);
-  return <div>{error !== undefined ? error : "Authenticating…"}</div>;
+  return <div>{error != null ? error : "Authenticating…"}</div>;
 }
 
 export default AuthCallback;

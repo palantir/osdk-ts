@@ -843,9 +843,6 @@ importers:
       '@osdk/oauth':
         specifier: workspace:*
         version: link:../../packages/oauth
-      classnames:
-        specifier: ^2.0.0
-        version: 2.5.1
       normalize.css:
         specifier: ^8.0.1
         version: 8.0.1
@@ -946,9 +943,6 @@ importers:
       '@osdk/oauth':
         specifier: workspace:*
         version: link:../../packages/oauth
-      classnames:
-        specifier: ^2.0.0
-        version: 2.5.1
       normalize.css:
         specifier: ^8.0.1
         version: 8.0.1

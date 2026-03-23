@@ -53,7 +53,7 @@ export default tseslint.config({
       allowConstantExport: true,
     }],
 
-    "eqeqeq": ["error", "always"],
+    "eqeqeq": ["error", "always", { "null": "ignore" }],
     "no-console": "warn",
     "curly": ["error", "all"],
     "@typescript-eslint/no-unused-vars": ["error", {

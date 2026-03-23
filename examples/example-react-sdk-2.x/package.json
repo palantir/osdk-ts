@@ -9,7 +9,7 @@
   },
   "scripts": {
     "build": "tsc && vite build",
-    "check": "tsc --noEmit && eslint . --report-unused-disable-directives --max-warnings 0 && vitest run",
+    "check": "eslint . --report-unused-disable-directives --max-warnings 0 && tsc --noEmit && vitest run",
     "dev": "vite",
     "format": "prettier --write src/",
     "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
@@ -24,7 +24,6 @@
     "@osdk/e2e.generated.catchall": "workspace:*",
     "@osdk/foundry": "latest",
     "@osdk/oauth": "workspace:*",
-    "classnames": "^2.0.0",
     "normalize.css": "^8.0.1",
     "react": "^18",
     "react-dom": "^18",
