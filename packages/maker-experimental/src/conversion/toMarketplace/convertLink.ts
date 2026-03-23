@@ -134,6 +134,12 @@ export function convertLink(
       toManyObjectApiName,
     );
 
+    const columnA = manyObject.primaryKeyPropertyApiName;
+    const columnB = toManyObject.primaryKeyPropertyApiName;
+    const hasCollision = columnA === columnB;
+    const resolvedColumnA = hasCollision ? `${columnA}_from` : columnA;
+    const resolvedColumnB = hasCollision ? `${columnB}_to` : columnB;
+
     definition = {
       type: "manyToMany",
       manyToMany: {
@@ -165,10 +171,10 @@ export function convertLink(
           writebackDatasetRid: undefined,
           // TODO: Convert property mappings to use property RIDs as keys
           objectTypeAPrimaryKeyMapping: {
-            [manyPkRidA]: manyObject.primaryKeyPropertyApiName,
+            [manyPkRidA]: resolvedColumnA,
           },
           objectTypeBPrimaryKeyMapping: {
-            [manyPkRidB]: toManyObject.primaryKeyPropertyApiName,
+            [manyPkRidB]: resolvedColumnB,
           },
         },
       },
