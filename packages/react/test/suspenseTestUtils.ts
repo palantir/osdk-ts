@@ -21,6 +21,34 @@ import { _clearSuspenseCache } from "../src/new/makeSuspenseExternalStore.js";
 import { OsdkContext2 } from "../src/new/OsdkContext2.js";
 import { OsdkErrorBoundary } from "../src/new/OsdkErrorBoundary.js";
 
+export function mockObjectPayload(name: string, pk: string) {
+  return {
+    object: { name, $objectType: "MockObject", $primaryKey: pk },
+    status: "loaded" as const,
+    isOptimistic: false,
+    lastUpdated: Date.now(),
+  };
+}
+
+export function mockListPayload(
+  items: Array<{ name: string; pk: string }>,
+  extra?: Record<string, unknown>,
+) {
+  return {
+    resolvedList: items.map(i => ({
+      name: i.name,
+      $objectType: "MockObject",
+      $primaryKey: i.pk,
+    })),
+    status: "loaded" as const,
+    isOptimistic: false,
+    lastUpdated: Date.now(),
+    hasMore: false,
+    fetchMore: vitest.fn(),
+    ...extra,
+  };
+}
+
 export function TestSuspenseWrapper(
   { children, observableClient }: {
     children: React.ReactNode;
