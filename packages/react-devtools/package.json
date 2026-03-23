@@ -14,6 +14,12 @@
         "types": "./build/types/index.d.ts",
         "default": "./build/esm/index.js"
       }
+    },
+    "./vite": {
+      "import": {
+        "types": "./build/types/vite/index.d.ts",
+        "default": "./build/esm/vite/index.js"
+      }
     }
   },
   "scripts": {
