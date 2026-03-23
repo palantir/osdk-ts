@@ -1624,6 +1624,49 @@ importers:
         specifier: ~5.5.4
         version: 5.5.4
 
+  packages/cbac-components:
+    dependencies:
+      '@base-ui/react':
+        specifier: ^1.0.0
+        version: 1.0.0(@types/react@18.3.24)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@blueprintjs/icons':
+        specifier: ^6.0.0
+        version: 6.6.0(@types/react@18.3.24)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      classnames:
+        specifier: ^2.0.0
+        version: 2.5.1
+    devDependencies:
+      '@osdk/monorepo.tsconfig':
+        specifier: workspace:~
+        version: link:../monorepo.tsconfig
+      '@osdk/react':
+        specifier: workspace:*
+        version: link:../react
+      '@osdk/react-components':
+        specifier: workspace:*
+        version: link:../react-components
+      '@types/react':
+        specifier: ^18.3.24
+        version: 18.3.24
+      '@types/react-dom':
+        specifier: ^18.3.7
+        version: 18.3.7(@types/react@18.3.24)
+      eslint-plugin-react-hooks:
+        specifier: ^5.2.0
+        version: 5.2.0(eslint@9.35.0(jiti@2.5.1))
+      postcss-modules:
+        specifier: ^6.0.1
+        version: 6.0.1(postcss@8.5.6)
+      react:
+        specifier: ^18.3.1
+        version: 18.3.1
+      react-dom:
+        specifier: ^18.3.1
+        version: 18.3.1(react@18.3.1)
+      typescript:
+        specifier: ~5.5.4
+        version: 5.5.4
+
   packages/cli:
     dependencies:
       '@arethetypeswrong/cli':
@@ -4543,49 +4586,6 @@ importers:
       p-defer:
         specifier: ^4.0.1
         version: 4.0.1
-      postcss-modules:
-        specifier: ^6.0.1
-        version: 6.0.1(postcss@8.5.6)
-      react:
-        specifier: ^18.3.1
-        version: 18.3.1
-      react-dom:
-        specifier: ^18.3.1
-        version: 18.3.1(react@18.3.1)
-      typescript:
-        specifier: ~5.5.4
-        version: 5.5.4
-
-  packages/react-components-defense:
-    dependencies:
-      '@base-ui/react':
-        specifier: ^1.0.0
-        version: 1.0.0(@types/react@18.3.24)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@blueprintjs/icons':
-        specifier: ^6.0.0
-        version: 6.6.0(@types/react@18.3.24)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      classnames:
-        specifier: ^2.0.0
-        version: 2.5.1
-    devDependencies:
-      '@osdk/monorepo.tsconfig':
-        specifier: workspace:~
-        version: link:../monorepo.tsconfig
-      '@osdk/react':
-        specifier: workspace:*
-        version: link:../react
-      '@osdk/react-components':
-        specifier: workspace:*
-        version: link:../react-components
-      '@types/react':
-        specifier: ^18.3.24
-        version: 18.3.24
-      '@types/react-dom':
-        specifier: ^18.3.7
-        version: 18.3.7(@types/react@18.3.24)
-      eslint-plugin-react-hooks:
-        specifier: ^5.2.0
-        version: 5.2.0(eslint@9.35.0(jiti@2.5.1))
       postcss-modules:
         specifier: ^6.0.1
         version: 6.0.1(postcss@8.5.6)
