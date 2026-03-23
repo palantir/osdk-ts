@@ -37,16 +37,16 @@ export const FormFieldRenderer: React.FC<FormFieldRendererProps> = memo(
       fieldDefinition;
 
     return (
-      <div data-testid={`form-field-${fieldDefinition.fieldKey}`}>
+      <div>
         {label != null && (
-          <label>
+          <label htmlFor={fieldDefinition.fieldKey}>
             {label}
             {isRequired === true && <span aria-label="required">*</span>}
           </label>
         )}
         {renderFieldComponent(fieldDefinition, value, onFieldValueChange)}
         {helperText != null && helperTextPlacement !== "tooltip" && (
-          <div data-testid="helper-text">{helperText}</div>
+          <div>{helperText}</div>
         )}
       </div>
     );
@@ -64,6 +64,7 @@ function renderFieldComponent(
     case "TEXT_AREA":
       return (
         <TextInputField
+          id={fieldDefinition.fieldKey}
           // TODO: Use coerceFieldValue
           value={value != null ? String(value) : ""}
           onChange={onChange}
@@ -90,7 +91,7 @@ function renderFieldComponent(
     case "OBJECT_SET":
     case "CUSTOM":
       return (
-        <div data-testid="unsupported-field">
+        <div>
           Unsupported field type: {fieldDefinition.fieldComponent}
         </div>
       );

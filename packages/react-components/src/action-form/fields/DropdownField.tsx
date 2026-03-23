@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback } from "react";
 import { Combobox } from "../../base-components/combobox/Combobox.js";
 import { Select } from "../../base-components/select/Select.js";
 import { typedReactMemo } from "../../shared/typedMemo.js";
@@ -33,10 +33,8 @@ export function DropdownField<V, Multiple extends boolean = false>({
   itemToKey,
   ...rest
 }: DropdownFieldProps<V, Multiple>): React.ReactElement {
-  const resolvedItemToStringLabel = useMemo(
-    () => itemToStringLabel ?? defaultItemToStringLabel,
-    [itemToStringLabel],
-  );
+  const resolvedItemToStringLabel = itemToStringLabel
+    ?? defaultItemToStringLabel;
 
   const getKey = useCallback(
     (item: V) => itemToKey?.(item) ?? resolvedItemToStringLabel(item),
@@ -76,7 +74,7 @@ const SelectDropdown = typedReactMemo(function SelectDropdownFn<
   placeholder,
 }: InnerDropdownProps<V, Multiple>): React.ReactElement {
   return (
-    <div data-testid="dropdown-select-field">
+    <div>
       <Select.Root
         value={value}
         onValueChange={onChange}
@@ -146,7 +144,7 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
   );
 
   return (
-    <div data-testid="dropdown-combobox-field">
+    <div>
       <Combobox.Root
         value={value}
         onValueChange={onChange}

@@ -19,21 +19,22 @@ import React from "react";
 import type { TextInputFieldProps } from "../FormFieldApi.js";
 
 export function TextInputField({
+  id,
   value,
   onChange,
   placeholder,
   minLength,
   maxLength,
-}: TextInputFieldProps): React.ReactElement {
+}: TextInputFieldProps & { id?: string }): React.ReactElement {
   return (
     <Input
+      id={id}
       type="text"
       value={value ?? ""}
       onValueChange={onChange}
       placeholder={placeholder}
       minLength={minLength}
       maxLength={maxLength}
-      data-testid="text-input-field"
     />
   );
 }

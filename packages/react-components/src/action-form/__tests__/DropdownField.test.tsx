@@ -27,13 +27,13 @@ describe("DropdownField", () => {
     it("renders a select trigger when isSearchable is false (default)", () => {
       render(<DropdownField value={null} items={STRING_ITEMS} />);
 
-      expect(screen.getByTestId("dropdown-select-field")).toBeDefined();
+      expect(screen.getByRole("combobox")).toBeDefined();
     });
 
     it("renders a combobox input when isSearchable is true", () => {
       render(<DropdownField value={null} items={STRING_ITEMS} isSearchable />);
 
-      expect(screen.getByTestId("dropdown-combobox-field")).toBeDefined();
+      expect(screen.getByRole("combobox")).toBeDefined();
     });
   });
 
@@ -41,9 +41,7 @@ describe("DropdownField", () => {
     it("renders items from the items prop", async () => {
       render(<DropdownField value={null} items={STRING_ITEMS} />);
 
-      const trigger = screen
-        .getByTestId("dropdown-select-field")
-        .querySelector("button")!;
+      const trigger = screen.getByRole("combobox");
       fireEvent.click(trigger);
 
       await vi.waitFor(() => {
@@ -56,8 +54,7 @@ describe("DropdownField", () => {
     it("displays the selected value in the trigger", () => {
       render(<DropdownField value="Alice" items={STRING_ITEMS} />);
 
-      const field = screen.getByTestId("dropdown-select-field");
-      expect(field.textContent).toContain("Alice");
+      expect(screen.getByRole("combobox").textContent).toContain("Alice");
     });
 
     it("uses itemToStringLabel for display", () => {
@@ -79,8 +76,7 @@ describe("DropdownField", () => {
         />,
       );
 
-      const field = screen.getByTestId("dropdown-select-field");
-      expect(field.textContent).toContain("Alice");
+      expect(screen.getByRole("combobox").textContent).toContain("Alice");
     });
   });
 
@@ -94,9 +90,8 @@ describe("DropdownField", () => {
         />,
       );
 
-      const field = screen.getByTestId("dropdown-select-field");
-      expect(field).toBeDefined();
-      expect(field.textContent).toContain("Alice");
+      expect(screen.getByRole("combobox")).toBeDefined();
+      expect(screen.getByRole("combobox").textContent).toContain("Alice");
     });
   });
 
