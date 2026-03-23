@@ -24,7 +24,10 @@ import type {
   WhereClause,
 } from "@osdk/api";
 import type { ObjectTypeDefinition } from "@osdk/client";
-import type { ObserveAggregationArgs } from "@osdk/client/unstable-do-not-use";
+import {
+  getWireObjectSet,
+  type ObserveAggregationArgs,
+} from "@osdk/client/unstable-do-not-use";
 import React from "react";
 import { extractPayloadError, isPayloadLoading } from "./hookUtils.js";
 import {
@@ -183,15 +186,23 @@ export function useOsdkAggregation<
     intersectWith,
   });
 
+  const objectSetKey = objectSet
+    ? JSON.stringify(getWireObjectSet(objectSet as ObjectSet<Q>))
+    : undefined;
+
+  const objectSetRef = React.useRef(objectSet);
+  objectSetRef.current = objectSet;
+
   const { subscribe, getSnapShot } = React.useMemo(
     () => {
-      if (objectSet) {
+      const currentObjectSet = objectSetRef.current;
+      if (currentObjectSet) {
         return makeExternalStoreAsync<ObserveAggregationArgs<Q, A>>(
           (observer) =>
             observableClient.observeAggregation(
               {
                 type: type,
-                objectSet,
+                objectSet: currentObjectSet,
                 where: canonOptions.where,
                 withProperties: canonOptions.withProperties,
                 intersectWith: canonOptions.intersectWith,
@@ -230,7 +241,7 @@ export function useOsdkAggregation<
       observableClient,
       type.apiName,
       type.type,
-      objectSet,
+      objectSetKey,
       canonOptions.where,
       canonOptions.withProperties,
       canonOptions.intersectWith,
