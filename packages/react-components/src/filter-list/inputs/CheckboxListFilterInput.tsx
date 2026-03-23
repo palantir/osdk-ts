@@ -19,7 +19,8 @@ import type {
   PropertyKeys,
   WhereClause,
 } from "@osdk/api";
-import React, { memo, useCallback, useMemo, useState } from "react";
+import React, { memo, useCallback, useMemo } from "react";
+import { FilterInputExcludeRow } from "../base/FilterInputExcludeRow.js";
 import { CheckboxListInput } from "../base/inputs/CheckboxListInput.js";
 import type { FilterState } from "../FilterListItemApi.js";
 import { usePropertyAggregation } from "../hooks/usePropertyAggregation.js";
@@ -33,7 +34,7 @@ interface CheckboxListFilterInputProps<Q extends ObjectTypeDefinition> {
   whereClause: WhereClause<Q>;
   colorMap?: Record<string, string>;
   searchQuery?: string;
-  onTotalValueCount?: (count: number) => void;
+  excludeRowOpen?: boolean;
 }
 
 function CheckboxListFilterInputInner<Q extends ObjectTypeDefinition>({
@@ -44,7 +45,7 @@ function CheckboxListFilterInputInner<Q extends ObjectTypeDefinition>({
   whereClause,
   colorMap,
   searchQuery,
-  onTotalValueCount,
+  excludeRowOpen,
 }: CheckboxListFilterInputProps<Q>): React.ReactElement {
   const selectedValues = useMemo(
     () =>
@@ -77,23 +78,23 @@ function CheckboxListFilterInputInner<Q extends ObjectTypeDefinition>({
     aggregationOptions,
   );
 
-  const totalCount = data.length;
-  const [prevTotalCount, setPrevTotalCount] = useState(0);
-  if (totalCount !== prevTotalCount) {
-    setPrevTotalCount(totalCount);
-    onTotalValueCount?.(totalCount);
-  }
-
   return (
-    <CheckboxListInput
-      values={data}
-      isLoading={isLoading}
-      error={error}
-      selectedValues={selectedValues}
-      onChange={handleChange}
-      colorMap={colorMap}
-      searchQuery={searchQuery}
-    />
+    <FilterInputExcludeRow
+      excludeRowOpen={excludeRowOpen}
+      filterState={filterState}
+      onFilterStateChanged={onFilterStateChanged}
+      totalValueCount={data.length}
+    >
+      <CheckboxListInput
+        values={data}
+        isLoading={isLoading}
+        error={error}
+        selectedValues={selectedValues}
+        onChange={handleChange}
+        colorMap={colorMap}
+        searchQuery={searchQuery}
+      />
+    </FilterInputExcludeRow>
   );
 }
 

@@ -149,7 +149,7 @@ export function FilterList<Q extends ObjectTypeDefinition>(
         filterState,
         onFilterStateChanged,
         searchQuery,
-        onTotalValueCount,
+        excludeRowOpen,
       },
     ) => (
       <FilterInput
@@ -161,7 +161,7 @@ export function FilterList<Q extends ObjectTypeDefinition>(
         whereClause={perFilterWhereClauses.get(filterKey)
           ?? ({} as WhereClause<Q>)}
         searchQuery={searchQuery}
-        onTotalValueCount={onTotalValueCount}
+        excludeRowOpen={excludeRowOpen}
       />
     ),
     [objectType, objectSet, perFilterWhereClauses],

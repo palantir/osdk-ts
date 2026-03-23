@@ -19,7 +19,8 @@ import type {
   PropertyKeys,
   WhereClause,
 } from "@osdk/api";
-import React, { memo, useCallback, useMemo, useState } from "react";
+import React, { memo, useCallback, useMemo } from "react";
+import { FilterInputExcludeRow } from "../base/FilterInputExcludeRow.js";
 import { ListogramInput } from "../base/inputs/ListogramInput.js";
 import type { FilterState } from "../FilterListItemApi.js";
 import { usePropertyAggregation } from "../hooks/usePropertyAggregation.js";
@@ -35,7 +36,7 @@ interface ListogramFilterInputProps<Q extends ObjectTypeDefinition> {
   displayMode?: "full" | "count" | "minimal";
   maxVisibleItems?: number;
   searchQuery?: string;
-  onTotalValueCount?: (count: number) => void;
+  excludeRowOpen?: boolean;
 }
 
 function ListogramFilterInputInner<Q extends ObjectTypeDefinition>({
@@ -48,7 +49,7 @@ function ListogramFilterInputInner<Q extends ObjectTypeDefinition>({
   displayMode,
   maxVisibleItems,
   searchQuery,
-  onTotalValueCount,
+  excludeRowOpen,
 }: ListogramFilterInputProps<Q>): React.ReactElement {
   const selectedValues = useMemo(
     () =>
@@ -81,26 +82,26 @@ function ListogramFilterInputInner<Q extends ObjectTypeDefinition>({
     aggregationOptions,
   );
 
-  const totalCount = data.length;
-  const [prevTotalCount, setPrevTotalCount] = useState(0);
-  if (totalCount !== prevTotalCount) {
-    setPrevTotalCount(totalCount);
-    onTotalValueCount?.(totalCount);
-  }
-
   return (
-    <ListogramInput
-      values={data}
-      maxCount={maxCount}
-      isLoading={isLoading}
-      error={error}
-      selectedValues={selectedValues}
-      onChange={handleChange}
-      colorMap={colorMap}
-      displayMode={displayMode}
-      maxVisibleItems={maxVisibleItems}
-      searchQuery={searchQuery}
-    />
+    <FilterInputExcludeRow
+      excludeRowOpen={excludeRowOpen}
+      filterState={filterState}
+      onFilterStateChanged={onFilterStateChanged}
+      totalValueCount={data.length}
+    >
+      <ListogramInput
+        values={data}
+        maxCount={maxCount}
+        isLoading={isLoading}
+        error={error}
+        selectedValues={selectedValues}
+        onChange={handleChange}
+        colorMap={colorMap}
+        displayMode={displayMode}
+        maxVisibleItems={maxVisibleItems}
+        searchQuery={searchQuery}
+      />
+    </FilterInputExcludeRow>
   );
 }
 

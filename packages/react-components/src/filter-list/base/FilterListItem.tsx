@@ -27,7 +27,6 @@ import type { FilterState } from "../FilterListItemApi.js";
 import { supportsExcluding, supportsSearch } from "../utils/filterValues.js";
 import type { RenderFilterInput } from "./BaseFilterListApi.js";
 import { DragHandleIcon } from "./DragHandleIcon.js";
-import { ExcludeDropdown } from "./ExcludeDropdown.js";
 import { OverflowMenuIcon, RemoveIcon, SearchIcon } from "./FilterIcons.js";
 import styles from "./FilterListItem.module.css";
 
@@ -65,25 +64,12 @@ function FilterListItemInner<D>({
     { type: "closed" } | { type: "open"; query: string }
   >({ type: "closed" });
   const [excludeRowOpen, setExcludeRowOpen] = useState(false);
-  const [totalValueCount, setTotalValueCount] = useState<number | undefined>();
 
   const handleFilterStateChanged = useCallback(
     (newState: FilterState) => {
       onFilterStateChanged(filterKey, newState);
     },
     [filterKey, onFilterStateChanged],
-  );
-
-  const handleToggleExclude = useCallback(
-    () => {
-      if (filterState) {
-        onFilterStateChanged(filterKey, {
-          ...filterState,
-          isExcluding: !filterState.isExcluding,
-        });
-      }
-    },
-    [filterKey, filterState, onFilterStateChanged],
   );
 
   const handleToggleSearch = useCallback(() => {
@@ -115,12 +101,9 @@ function FilterListItemInner<D>({
     element?.focus({ preventScroll: true });
   }, []);
 
-  const isExcluding = filterState?.isExcluding ?? false;
   const showExcludeDropdown = supportsExcluding(filterState);
   const showSearch = supportsSearch(filterState);
   const hasOverflowActions = showExcludeDropdown;
-  const isRangeFilter = filterState?.type === "NUMBER_RANGE"
-    || filterState?.type === "DATE_RANGE";
 
   const searchOpen = searchState.type === "open";
   const searchQuery = searchState.type === "open" ? searchState.query : "";
@@ -200,29 +183,6 @@ function FilterListItemInner<D>({
         </div>
       )}
 
-      {showExcludeDropdown && (
-        <div
-          className={classnames(styles.excludeRow, {
-            [styles.excludeRowVisible]: excludeRowOpen,
-          })}
-        >
-          <ExcludeDropdown
-            isExcluding={isExcluding}
-            onToggleExclude={handleToggleExclude}
-          />
-          {isRangeFilter
-            ? <span className={styles.excludeRangeLabel}>values between</span>
-            : totalValueCount != null && totalValueCount > 0 && (
-              <span
-                className={styles.excludeCountLabel}
-                title="Approximate count of unique values"
-              >
-                {totalValueCount.toLocaleString()} values
-              </span>
-            )}
-        </div>
-      )}
-
       <div className={styles.itemContent}>
         <ErrorBoundary errorMessage="Error loading filter">
           {renderInput({
@@ -231,7 +191,7 @@ function FilterListItemInner<D>({
             filterState,
             onFilterStateChanged: handleFilterStateChanged,
             searchQuery: searchQueryForInput,
-            onTotalValueCount: setTotalValueCount,
+            excludeRowOpen,
           })}
         </ErrorBoundary>
       </div>

@@ -183,14 +183,13 @@
   }
 }
 
-.filterItem:hover .excludeRow,
+.filterItem:hover [data-exclude-row],
 .excludeRowVisible {
   opacity: 1;
   height: auto;
   overflow: visible;
 }
 
-.excludeRangeLabel,
 .excludeCountLabel {
   font-family: var(--osdk-filter-item-exclude-dropdown-font-family);
   font-size: var(--osdk-filter-item-exclude-dropdown-font-size);
