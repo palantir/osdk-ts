@@ -16,6 +16,7 @@
 
 import type {
   AggregateOpts,
+  ObjectSet,
   ObjectTypeDefinition,
   PropertyKeys,
   WhereClause,
@@ -48,6 +49,7 @@ export function usePropertyAggregation<
 >(
   objectType: Q,
   propertyKey: K,
+  objectSet: ObjectSet<Q>,
   options?: UsePropertyAggregationOptions<Q>,
 ): UsePropertyAggregationResult {
   // AggregateOpts requires specific property keys from Q, but we're dynamically
@@ -68,6 +70,7 @@ export function usePropertyAggregation<
   const { data: countData, isLoading, error } = useOsdkAggregation(objectType, {
     aggregate: aggregateOptions,
     where: options?.where,
+    objectSet,
   });
 
   const result = useMemo(
