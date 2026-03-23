@@ -90,7 +90,7 @@ describe("DropdownField", () => {
         <DropdownField<string, true>
           value={["Alice"]}
           items={STRING_ITEMS}
-          multiple
+          isMultiple
         />,
       );
 
@@ -123,7 +123,7 @@ describe("DropdownField", () => {
           value={["Alice"]}
           items={STRING_ITEMS}
           isSearchable
-          multiple
+          isMultiple
         />,
       );
 
@@ -138,7 +138,7 @@ describe("DropdownField", () => {
           items={STRING_ITEMS}
           onChange={onChange}
           isSearchable
-          multiple
+          isMultiple
         />,
       );
 
@@ -184,7 +184,7 @@ describe("DropdownField", () => {
           value={[]}
           items={STRING_ITEMS}
           isSearchable
-          multiple
+          isMultiple
         />,
       );
 
@@ -198,7 +198,7 @@ describe("DropdownField", () => {
           value={["Alice"]}
           items={STRING_ITEMS}
           isSearchable
-          multiple
+          isMultiple
           placeholder="Pick names"
         />,
       );

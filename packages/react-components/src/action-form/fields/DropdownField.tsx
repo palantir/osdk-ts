@@ -24,7 +24,7 @@ interface InnerDropdownProps<V, Multiple extends boolean>
   extends Omit<DropdownFieldProps<V, Multiple>, "isSearchable">
 {
   itemToStringLabel: (item: V) => string;
-  getKey: (item: V, index: number) => string;
+  getKey: (item: V) => string;
 }
 
 export function DropdownField<V, Multiple extends boolean = false>({
@@ -39,8 +39,8 @@ export function DropdownField<V, Multiple extends boolean = false>({
   );
 
   const getKey = useCallback(
-    (item: V, index: number) => itemToKey?.(item) ?? String(index),
-    [itemToKey],
+    (item: V) => itemToKey?.(item) ?? resolvedItemToStringLabel(item),
+    [itemToKey, resolvedItemToStringLabel],
   );
 
   if (isSearchable) {
@@ -72,7 +72,7 @@ const SelectDropdown = typedReactMemo(function SelectDropdownFn<
   itemToStringLabel,
   getKey,
   isItemEqual,
-  multiple,
+  isMultiple,
   placeholder,
 }: InnerDropdownProps<V, Multiple>): React.ReactElement {
   return (
@@ -80,7 +80,7 @@ const SelectDropdown = typedReactMemo(function SelectDropdownFn<
       <Select.Root
         value={value}
         onValueChange={onChange}
-        multiple={multiple}
+        multiple={isMultiple}
         isItemEqualToValue={isItemEqual}
         itemToStringLabel={itemToStringLabel}
       >
@@ -88,8 +88,8 @@ const SelectDropdown = typedReactMemo(function SelectDropdownFn<
         <Select.Portal>
           <Select.Positioner>
             <Select.Popup>
-              {items.map((item, index) => (
-                <Select.Item key={getKey(item, index)} value={item}>
+              {items.map((item) => (
+                <Select.Item key={getKey(item)} value={item}>
                   {itemToStringLabel(item)}
                 </Select.Item>
               ))}
@@ -111,15 +111,15 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
   itemToStringLabel,
   getKey,
   isItemEqual,
-  multiple,
+  isMultiple,
   placeholder,
 }: InnerDropdownProps<V, Multiple>): React.ReactElement {
   const renderChips = useCallback(
     (selectedValues: V[]) => (
       <>
-        {selectedValues.map((item, index) => (
+        {selectedValues.map((item) => (
           <Combobox.Chip
-            key={getKey(item, index)}
+            key={getKey(item)}
             aria-label={itemToStringLabel(item)}
           >
             {itemToStringLabel(item)}
@@ -137,8 +137,8 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
   );
 
   const renderItem = useCallback(
-    (item: V, index: number) => (
-      <Combobox.Item key={getKey(item, index)} value={item}>
+    (item: V) => (
+      <Combobox.Item key={getKey(item)} value={item}>
         {itemToStringLabel(item)}
       </Combobox.Item>
     ),
@@ -150,12 +150,12 @@ const ComboboxDropdown = typedReactMemo(function ComboboxDropdownFn<
       <Combobox.Root
         value={value}
         onValueChange={onChange}
-        multiple={multiple}
+        multiple={isMultiple}
         itemToStringLabel={itemToStringLabel}
         isItemEqualToValue={isItemEqual}
         items={items}
       >
-        {multiple
+        {isMultiple
           ? (
             <Combobox.Chips>
               <Combobox.Value>{renderChips}</Combobox.Value>

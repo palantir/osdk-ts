@@ -207,8 +207,9 @@ export interface DropdownFieldProps<V, Multiple extends boolean = false>
   /**
    * Whether multiple values can be selected
    */
-  multiple?: Multiple;
+  isMultiple?: Multiple;
 }
+
 export interface FilePickerProps extends BaseFormFieldProps<File | File[]> {
   /**
    * Whether multiple files can be selected
