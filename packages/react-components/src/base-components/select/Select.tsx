@@ -61,12 +61,14 @@ function SelectTrigger({
     >
       {children ?? (
         <>
-          <BaseUISelect.Value className={styles.osdkSelectValue} />
-          {placeholder != null && (
-            <span className={styles.osdkSelectPlaceholder}>
-              {placeholder}
-            </span>
-          )}
+          <div className={styles.osdkSelectValueContainer}>
+            <BaseUISelect.Value className={styles.osdkSelectValue} />
+            {placeholder != null && (
+              <span className={styles.osdkSelectPlaceholder}>
+                {placeholder}
+              </span>
+            )}
+          </div>
           <BaseUISelect.Icon className={styles.osdkSelectIcon}>
             <CaretDown color="currentColor" />
           </BaseUISelect.Icon>
