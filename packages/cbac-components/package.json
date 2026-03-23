@@ -62,6 +62,7 @@
     "react-dom": "^17 || ^18 || ^19"
   },
   "devDependencies": {
+    "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@osdk/react": "workspace:*",
     "@osdk/react-components": "workspace:*",
@@ -77,12 +78,14 @@
     "access": "public"
   },
   "files": [
+    "AGENTS.md",
     "build/cjs",
     "build/esm",
     "build/browser",
     "build/types",
     "CHANGELOG.md",
     "package.json",
+    "templates",
     "*.d.ts"
   ],
   "main": "./build/cjs/index.cjs",

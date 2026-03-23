@@ -341,6 +341,7 @@ const archetypeRules = archetypes(
   .addArchetype(
     "reactLibraryWithCss",
     [
+      "@osdk/cbac-components",
       "@osdk/react-components",
     ],
     {

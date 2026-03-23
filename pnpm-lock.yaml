@@ -1636,6 +1636,9 @@ importers:
         specifier: ^2.0.0
         version: 2.5.1
     devDependencies:
+      '@osdk/monorepo.api-extractor':
+        specifier: workspace:~
+        version: link:../monorepo.api-extractor
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
