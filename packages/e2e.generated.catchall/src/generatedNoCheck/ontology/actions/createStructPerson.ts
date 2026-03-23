@@ -72,22 +72,22 @@ export interface createStructPerson extends ActionDefinition<createStructPerson.
       };
     };
     parameters: createStructPerson.ParamsDefinition;
-    platformApiName: 'create-struct-person';
     rid: 'ri.a.b.c.d';
     status: 'ACTIVE';
     type: 'action';
+    unsanitizedApiName: 'create-struct-person';
 
     signatures: createStructPerson.Signatures;
   };
   apiName: 'createStructPerson';
-  platformApiName: 'create-struct-person';
   type: 'action';
+  unsanitizedApiName: 'create-struct-person';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 export const createStructPerson: createStructPerson = {
   apiName: 'createStructPerson',
-  platformApiName: 'create-struct-person',
   type: 'action',
+  unsanitizedApiName: 'create-struct-person',
   osdkMetadata: $osdkMetadata,
 };

@@ -69,22 +69,22 @@ export interface completeTodo extends ActionDefinition<completeTodo.Signatures> 
       };
     };
     parameters: completeTodo.ParamsDefinition;
-    platformApiName: 'complete-todo';
     rid: 'ri.actions.main.action-type.b8ed5dbd-6d22-4b6d-8ab4-3b63c6007df9';
     status: 'ACTIVE';
     type: 'action';
+    unsanitizedApiName: 'complete-todo';
 
     signatures: completeTodo.Signatures;
   };
   apiName: 'completeTodo';
-  platformApiName: 'complete-todo';
   type: 'action';
+  unsanitizedApiName: 'complete-todo';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 export const completeTodo: completeTodo = {
   apiName: 'completeTodo',
-  platformApiName: 'complete-todo',
   type: 'action',
+  unsanitizedApiName: 'complete-todo',
   osdkMetadata: $osdkMetadata,
 };

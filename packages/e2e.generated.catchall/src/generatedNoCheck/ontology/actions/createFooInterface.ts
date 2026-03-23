@@ -46,22 +46,22 @@ export interface createFooInterface extends ActionDefinition<createFooInterface.
     displayName: 'Create Foo Interface';
     modifiedEntities: {};
     parameters: createFooInterface.ParamsDefinition;
-    platformApiName: 'create-foo-interface';
     rid: 'ri.actions.main.action-type.3828bab4-49c7-4fdf-a780-6ccbc359d817';
     status: 'EXPERIMENTAL';
     type: 'action';
+    unsanitizedApiName: 'create-foo-interface';
 
     signatures: createFooInterface.Signatures;
   };
   apiName: 'createFooInterface';
-  platformApiName: 'create-foo-interface';
   type: 'action';
+  unsanitizedApiName: 'create-foo-interface';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 export const createFooInterface: createFooInterface = {
   apiName: 'createFooInterface',
-  platformApiName: 'create-foo-interface',
   type: 'action',
+  unsanitizedApiName: 'create-foo-interface',
   osdkMetadata: $osdkMetadata,
 };

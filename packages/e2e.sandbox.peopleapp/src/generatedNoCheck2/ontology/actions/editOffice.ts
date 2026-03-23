@@ -70,22 +70,22 @@ export interface editOffice extends ActionDefinition<editOffice.Signatures> {
       };
     };
     parameters: editOffice.ParamsDefinition;
-    platformApiName: 'edit-office';
     rid: 'ri.actions.main.action-type.ae41d87b-933d-4983-ad91-fce7f4ff9f59';
     status: 'EXPERIMENTAL';
     type: 'action';
+    unsanitizedApiName: 'edit-office';
 
     signatures: editOffice.Signatures;
   };
   apiName: 'editOffice';
-  platformApiName: 'edit-office';
   type: 'action';
+  unsanitizedApiName: 'edit-office';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 export const editOffice: editOffice = {
   apiName: 'editOffice',
-  platformApiName: 'edit-office',
   type: 'action',
+  unsanitizedApiName: 'edit-office',
   osdkMetadata: $osdkMetadata,
 };

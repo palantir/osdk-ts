@@ -47,22 +47,22 @@ export interface deleteOffice extends ActionDefinition<deleteOffice.Signatures> 
     displayName: 'Delete Office';
     modifiedEntities: {};
     parameters: deleteOffice.ParamsDefinition;
-    platformApiName: 'delete-office';
     rid: 'ri.actions.main.action-type.72b40fca-42b6-4e09-99d1-a3d701808ce7';
     status: 'EXPERIMENTAL';
     type: 'action';
+    unsanitizedApiName: 'delete-office';
 
     signatures: deleteOffice.Signatures;
   };
   apiName: 'deleteOffice';
-  platformApiName: 'delete-office';
   type: 'action';
+  unsanitizedApiName: 'delete-office';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 export const deleteOffice: deleteOffice = {
   apiName: 'deleteOffice',
-  platformApiName: 'delete-office',
   type: 'action',
+  unsanitizedApiName: 'delete-office',
   osdkMetadata: $osdkMetadata,
 };

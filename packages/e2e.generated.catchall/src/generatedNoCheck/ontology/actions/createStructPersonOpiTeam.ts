@@ -81,22 +81,22 @@ export interface createStructPersonOpiTeam extends ActionDefinition<createStruct
       };
     };
     parameters: createStructPersonOpiTeam.ParamsDefinition;
-    platformApiName: 'create-struct-person-opi-team';
     rid: 'ri.a.b.c.d';
     status: 'ACTIVE';
     type: 'action';
+    unsanitizedApiName: 'create-struct-person-opi-team';
 
     signatures: createStructPersonOpiTeam.Signatures;
   };
   apiName: 'createStructPersonOpiTeam';
-  platformApiName: 'create-struct-person-opi-team';
   type: 'action';
+  unsanitizedApiName: 'create-struct-person-opi-team';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 export const createStructPersonOpiTeam: createStructPersonOpiTeam = {
   apiName: 'createStructPersonOpiTeam',
-  platformApiName: 'create-struct-person-opi-team',
   type: 'action',
+  unsanitizedApiName: 'create-struct-person-opi-team',
   osdkMetadata: $osdkMetadata,
 };

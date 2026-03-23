@@ -61,22 +61,22 @@ export interface modifyEmployee extends ActionDefinition<modifyEmployee.Signatur
       };
     };
     parameters: modifyEmployee.ParamsDefinition;
-    platformApiName: 'modify-employee';
     rid: 'ri.actions.main.action-type.1e59bc2b-4f3a-47d1-82d2-7d0516c7c4ee';
     status: 'EXPERIMENTAL';
     type: 'action';
+    unsanitizedApiName: 'modify-employee';
 
     signatures: modifyEmployee.Signatures;
   };
   apiName: 'modifyEmployee';
-  platformApiName: 'modify-employee';
   type: 'action';
+  unsanitizedApiName: 'modify-employee';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 export const modifyEmployee: modifyEmployee = {
   apiName: 'modifyEmployee',
-  platformApiName: 'modify-employee',
   type: 'action',
+  unsanitizedApiName: 'modify-employee',
   osdkMetadata: $osdkMetadata,
 };

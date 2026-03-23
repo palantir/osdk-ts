@@ -70,22 +70,22 @@ export interface completeTodo extends ActionDefinition<completeTodo.Signatures> 
       };
     };
     parameters: completeTodo.ParamsDefinition;
-    platformApiName: 'completeTodo';
     rid: '';
     status: 'ACTIVE';
     type: 'action';
+    unsanitizedApiName: 'completeTodo';
 
     signatures: completeTodo.Signatures;
   };
   apiName: 'completeTodo';
-  platformApiName: 'completeTodo';
   type: 'action';
+  unsanitizedApiName: 'completeTodo';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 export const completeTodo: completeTodo = {
   apiName: 'completeTodo',
-  platformApiName: 'completeTodo',
   type: 'action',
+  unsanitizedApiName: 'completeTodo',
   osdkMetadata: $osdkMetadata,
 };

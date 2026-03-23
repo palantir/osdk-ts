@@ -132,14 +132,14 @@ export async function applyAction<
     const response = await Actions.applyBatch(
       clientWithHeaders,
       await client.ontologyRid,
-      action.platformApiName ?? action.apiName,
+      action.unsanitizedApiName ?? action.apiName,
       {
         requests: parameters
           ? await remapBatchActionParams(
             parameters,
             client,
             await client.ontologyProvider.getActionDefinition(
-              action.platformApiName ?? action.apiName,
+              action.unsanitizedApiName ?? action.apiName,
             ),
           )
           : [],
@@ -158,7 +158,7 @@ export async function applyAction<
     const response = await Actions.apply(
       clientWithHeaders,
       await client.ontologyRid,
-      action.platformApiName ?? action.apiName,
+      action.unsanitizedApiName ?? action.apiName,
       {
         parameters: await remapActionParams(
           parameters as OsdkActionParameters<
@@ -166,7 +166,7 @@ export async function applyAction<
           >,
           client,
           await client.ontologyProvider.getActionDefinition(
-            action.platformApiName ?? action.apiName,
+            action.unsanitizedApiName ?? action.apiName,
           ),
         ),
         options: {

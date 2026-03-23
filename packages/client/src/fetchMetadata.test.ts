@@ -304,10 +304,10 @@ describe("FetchMetadata", () => {
             "type": "integer",
           },
         },
-        "platformApiName": "moveOffice",
         "rid": "ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f2",
         "status": "ACTIVE",
         "type": "action",
+        "unsanitizedApiName": "moveOffice",
       }
     `);
   });

@@ -640,23 +640,23 @@ describe("generator", () => {
             description: 'An action which takes in an array of objects';
             modifiedEntities: {};
             parameters: deleteTodos.ParamsDefinition;
-            platformApiName: 'deleteTodos';
             rid: 'ri.ontology.main.action-type.8f94017d-cf17-4fa8-84c3-8e01e5d594f2';
             status: 'ACTIVE';
             type: 'action';
+            unsanitizedApiName: 'deleteTodos';
 
             signatures: deleteTodos.Signatures;
           };
           apiName: 'deleteTodos';
-          platformApiName: 'deleteTodos';
           type: 'action';
+          unsanitizedApiName: 'deleteTodos';
           osdkMetadata: typeof $osdkMetadata;
         }
 
         export const deleteTodos: deleteTodos = {
           apiName: 'deleteTodos',
-          platformApiName: 'deleteTodos',
           type: 'action',
+          unsanitizedApiName: 'deleteTodos',
           osdkMetadata: $osdkMetadata,
         };
         ",
@@ -729,23 +729,23 @@ describe("generator", () => {
               };
             };
             parameters: markTodoCompleted.ParamsDefinition;
-            platformApiName: 'markTodoCompleted';
             rid: 'ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f2';
             status: 'ACTIVE';
             type: 'action';
+            unsanitizedApiName: 'markTodoCompleted';
 
             signatures: markTodoCompleted.Signatures;
           };
           apiName: 'markTodoCompleted';
-          platformApiName: 'markTodoCompleted';
           type: 'action';
+          unsanitizedApiName: 'markTodoCompleted';
           osdkMetadata: typeof $osdkMetadata;
         }
 
         export const markTodoCompleted: markTodoCompleted = {
           apiName: 'markTodoCompleted',
-          platformApiName: 'markTodoCompleted',
           type: 'action',
+          unsanitizedApiName: 'markTodoCompleted',
           osdkMetadata: $osdkMetadata,
         };
         ",
@@ -1322,23 +1322,23 @@ describe("generator", () => {
             description: 'An action which takes in an array of objects';
             modifiedEntities: {};
             parameters: deleteTodos.ParamsDefinition;
-            platformApiName: 'foo.bar.deleteTodos';
             rid: 'ri.ontology.main.action-type.8f94017d-cf17-4fa8-84c3-8e01e5d594f2';
             status: 'ACTIVE';
             type: 'action';
+            unsanitizedApiName: 'foo.bar.deleteTodos';
 
             signatures: deleteTodos.Signatures;
           };
           apiName: 'foo.bar.deleteTodos';
-          platformApiName: 'foo.bar.deleteTodos';
           type: 'action';
+          unsanitizedApiName: 'foo.bar.deleteTodos';
           osdkMetadata: typeof $osdkMetadata;
         }
 
         export const deleteTodos: deleteTodos = {
           apiName: 'foo.bar.deleteTodos',
-          platformApiName: 'foo.bar.deleteTodos',
           type: 'action',
+          unsanitizedApiName: 'foo.bar.deleteTodos',
           osdkMetadata: $osdkMetadata,
         };
         ",
@@ -1411,23 +1411,23 @@ describe("generator", () => {
               };
             };
             parameters: markTodoCompleted.ParamsDefinition;
-            platformApiName: 'foo.bar.markTodoCompleted';
             rid: 'ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f2';
             status: 'ACTIVE';
             type: 'action';
+            unsanitizedApiName: 'foo.bar.markTodoCompleted';
 
             signatures: markTodoCompleted.Signatures;
           };
           apiName: 'foo.bar.markTodoCompleted';
-          platformApiName: 'foo.bar.markTodoCompleted';
           type: 'action';
+          unsanitizedApiName: 'foo.bar.markTodoCompleted';
           osdkMetadata: typeof $osdkMetadata;
         }
 
         export const markTodoCompleted: markTodoCompleted = {
           apiName: 'foo.bar.markTodoCompleted',
-          platformApiName: 'foo.bar.markTodoCompleted',
           type: 'action',
+          unsanitizedApiName: 'foo.bar.markTodoCompleted',
           osdkMetadata: $osdkMetadata,
         };
         ",
@@ -2228,23 +2228,23 @@ describe("generator", () => {
                 };
               };
               parameters: setTaskBody.ParamsDefinition;
-              platformApiName: 'setTaskBody';
               rid: 'ri.a.b.c.d';
               status: 'ACTIVE';
               type: 'action';
+              unsanitizedApiName: 'setTaskBody';
 
               signatures: setTaskBody.Signatures;
             };
             apiName: 'setTaskBody';
-            platformApiName: 'setTaskBody';
             type: 'action';
+            unsanitizedApiName: 'setTaskBody';
             osdkMetadata: typeof $osdkMetadata;
           }
 
           export const setTaskBody: setTaskBody = {
             apiName: 'setTaskBody',
-            platformApiName: 'setTaskBody',
             type: 'action',
+            unsanitizedApiName: 'setTaskBody',
             osdkMetadata: $osdkMetadata,
           };
           "

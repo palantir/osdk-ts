@@ -76,22 +76,22 @@ export interface promoteEmployee extends ActionDefinition<promoteEmployee.Signat
       };
     };
     parameters: promoteEmployee.ParamsDefinition;
-    platformApiName: 'promote-employee';
     rid: 'ri.ontology.main.action-type.7ed72754-7491-428a-bb18-4d7296eb2167';
     status: 'ACTIVE';
     type: 'action';
+    unsanitizedApiName: 'promote-employee';
 
     signatures: promoteEmployee.Signatures;
   };
   apiName: 'promoteEmployee';
-  platformApiName: 'promote-employee';
   type: 'action';
+  unsanitizedApiName: 'promote-employee';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 export const promoteEmployee: promoteEmployee = {
   apiName: 'promoteEmployee',
-  platformApiName: 'promote-employee',
   type: 'action',
+  unsanitizedApiName: 'promote-employee',
   osdkMetadata: $osdkMetadata,
 };
