@@ -17,6 +17,17 @@
 .listogram {
   display: flex;
   flex-direction: column;
+  transition: opacity var(--osdk-filter-content-fade-duration);
+}
+
+.listogram[data-loading="true"] {
+  opacity: 0.5;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .listogram {
+    transition: none;
+  }
 }
 
 .container {
@@ -63,7 +74,8 @@
 }
 
 .bar {
-  flex: 2;
+  width: var(--osdk-filter-listogram-bar-width);
+  flex-shrink: 0;
   height: var(--osdk-filter-listogram-bar-height);
   background: var(--osdk-filter-listogram-bar-bg);
   border-radius: var(--osdk-filter-listogram-bar-border-radius);

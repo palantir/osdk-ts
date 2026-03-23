@@ -1,5 +1,58 @@
 # @osdk/react-components
 
+## 0.2.0-beta.20
+
+### Minor Changes
+
+- 9ff2eca: Add function-backed column query
+- 6516ff9: Fix multiple setData calls
+- bc46400: Add skeleton loading states and polish checkbox list, histogram, and range filter inputs
+- 7a3c43d: feat(pdf): pdf-viewer component
+- 532d0d7: Fix lint errors
+- 074a754: Display function-backed column
+
+### Patch Changes
+
+- Updated dependencies [4bb9769]
+  - @osdk/api@2.8.0-beta.23
+  - @osdk/client@2.8.0-beta.23
+  - @osdk/react@0.10.0-beta.10
+
+## 0.2.0-beta.19
+
+### Minor Changes
+
+- 9f76365: Follow-up cleanups from ActionForm PR
+- dbbfb6f: Add experimental ActionForm component with field renderers, form state hook, and tests
+- aa908e4: Redesign filter list collapse into separate render tree and simplify header layout
+
+### Patch Changes
+
+- Updated dependencies [dbbfb6f]
+- Updated dependencies [cbfa135]
+- Updated dependencies [f4604c2]
+  - @osdk/react@0.10.0-beta.10
+  - @osdk/client@2.8.0-beta.22
+  - @osdk/api@2.8.0-beta.22
+
+## 0.2.0-beta.18
+
+### Minor Changes
+
+- fcc4971: Refactor filter list where clause generation for consistent exclude wrapping and integer clamping
+- 29095f5: fix where clause generation for compound property filters and remove useEffect in useFilterListState
+- 7347abe: Update README
+- a198fc5: Fix header cell not aligned
+- 00677eb: Upgrade Storybook to v10 and add MCP addon.
+
+### Patch Changes
+
+- Updated dependencies [c40444b]
+- Updated dependencies [dda14be]
+  - @osdk/client@2.8.0-beta.21
+  - @osdk/react@0.10.0-beta.9
+  - @osdk/api@2.8.0-beta.21
+
 ## 0.2.0-beta.17
 
 ### Minor Changes

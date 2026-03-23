@@ -21,7 +21,7 @@ import type {
   FilterDefinitionUnion,
   FilterListProps,
 } from "@osdk/react-components/experimental";
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useCallback, useMemo, useState } from "react";
 import { fauxFoundry } from "../../mocks/fauxFoundry.js";
 import { Employee } from "../../types/Employee.js";

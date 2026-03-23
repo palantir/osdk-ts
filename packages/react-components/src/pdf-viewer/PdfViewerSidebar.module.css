@@ -1,0 +1,46 @@
+.sidebar {
+  width: var(--osdk-pdf-viewer-sidebar-width);
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--osdk-pdf-viewer-sidebar-bg);
+  border-right: 1px solid var(--osdk-pdf-viewer-sidebar-border);
+  overflow: hidden;
+}
+
+.sidebarHeader {
+  padding: var(--osdk-pdf-viewer-sidebar-thumbnail-gap);
+  font-family: var(--osdk-typography-family-default);
+  font-size: var(--osdk-typography-size-body-small);
+  font-weight: var(--osdk-typography-weight-semibold);
+  color: var(--osdk-typography-color-muted);
+  border-bottom: 1px solid var(--osdk-pdf-viewer-sidebar-border);
+  flex-shrink: 0;
+}
+
+.scrollContainer {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.thumbnailsContainer {
+  position: relative;
+}
+
+.thumbnailWrapper {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: var(--osdk-pdf-viewer-sidebar-thumbnail-gap)
+    var(--osdk-pdf-viewer-sidebar-thumbnail-gap) 0;
+}
+
+.pageNumber {
+  text-align: center;
+  font-family: var(--osdk-typography-family-default);
+  font-size: var(--osdk-typography-size-body-small);
+  color: var(--osdk-typography-color-muted);
+  margin-top: 4px;
+}

@@ -16,7 +16,10 @@
 
 import type {
   ActionDefinition,
+  ActionMetadata,
+  ActionParam,
   CompileTimeMetadata,
+  DataValueClientToWire,
   ObjectSet,
   ObjectTypeDefinition,
 } from "@osdk/api";
@@ -28,8 +31,6 @@ import type React from "react";
 export interface FormFieldDefinition<
   Q extends ActionDefinition<unknown>,
   K extends FieldKey<Q> = FieldKey<Q>,
-  V extends FieldValueType<Q, K> = FieldValueType<Q, K>,
-  C extends ValidFormFieldForPropertyType<V> = ValidFormFieldForPropertyType<V>,
 > {
   /**
    * The field's unique key
@@ -43,20 +44,14 @@ export interface FormFieldDefinition<
   label?: string;
 
   /**
-   * Current value of the field
-   * If provided, the field operates in controlled mode
-   */
-  value?: V;
-
-  /**
    * Default value of the field
    */
-  defaultValue?: V;
+  defaultValue?: FieldValueType<Q, K>;
 
   /**
    * The form field component type to render
    */
-  fieldComponent: C;
+  fieldComponent: ValidFormFieldForPropertyType<FieldDescriptorType<Q, K>>;
 
   /**
    * Whether the field is required
@@ -100,13 +95,20 @@ export interface FormFieldDefinition<
    * @param value the current field value
    * @returns a boolean promise indicating whether the value is valid
    */
-  validate?: (value: V) => Promise<boolean>;
+  validate?: (value: FieldValueType<Q, K>) => Promise<boolean>;
 
   /**
    * The component props for the form field
    * Excludes runtime props (key, onChange) which are managed by ActionForm
    */
-  fieldComponentProps?: Omit<FormFieldPropsByType[C], "key" | "onChange">;
+  fieldComponentProps?: Omit<
+    FormFieldPropsByType[
+      ValidFormFieldForPropertyType<
+        FieldDescriptorType<Q, K>
+      >
+    ],
+    "key" | "onChange"
+  >;
 }
 
 type ValidationError = { type: ValidationRule; error: string };
@@ -139,8 +141,6 @@ export interface FormFieldPropsByType {
  * Datetime picker field props
  */
 export interface DatetimePickerFieldProps extends BaseFormFieldProps<Date> {
-  fieldComponent: "DATETIME_PICKER";
-
   /**
    * The earliest date the user can select
    * If provided, this will be added to the field validation
@@ -165,32 +165,52 @@ export interface DatetimePickerFieldProps extends BaseFormFieldProps<Date> {
 }
 
 /**
- * Dropdown field props with selectable options
+ * Dropdown field props with selectable items
  */
-export interface DropdownFieldProps<V, IsMulti extends boolean = false>
-  extends BaseFormFieldProps<IsMulti extends true ? V[] : V>
+export interface DropdownFieldProps<V, Multiple extends boolean = false>
+  extends BaseFormFieldProps<Multiple extends true ? V[] : V>
 {
-  fieldComponent: "DROPDOWN";
-
   /**
-   * Available options for the dropdown
+   * Available items for the dropdown
    */
-  options: Option<V>[];
+  items: V[];
 
   /**
-   * Whether the dropdown allows searching/filtering
+   * Converts an item to a display string. Defaults to `String()`.
+   */
+  itemToStringLabel?: (item: V) => string;
+
+  /**
+   * Returns a unique string key for a list item. Used as the React `key`.
+   * Falls back to the item's index when not provided.
+   */
+  itemToKey?: (item: V) => string;
+
+  /**
+   * Custom equality check for item values. Defaults to `Object.is`.
+   * Required when items are objects to ensure correct selection matching.
+   */
+  isItemEqual?: (a: V, b: V) => boolean;
+
+  /**
+   * Whether the dropdown allows searching/filtering.
+   * When true, renders a Combobox with a search input.
+   * When false (default), renders a Select dropdown.
    */
   isSearchable?: boolean;
 
   /**
+   * Placeholder text shown when no value is selected.
+   */
+  placeholder?: string;
+
+  /**
    * Whether multiple values can be selected
    */
-  isMulti?: boolean;
+  isMultiple?: Multiple;
 }
 
 export interface FilePickerProps extends BaseFormFieldProps<File | File[]> {
-  fieldComponent: "FILE_PICKER";
-
   /**
    * Whether multiple files can be selected
    */
@@ -225,9 +245,7 @@ export interface TextAreaFieldProps extends
      */
     | "maxLength"
   >
-{
-  fieldComponent: "TEXT_AREA";
-}
+{}
 
 export interface TextInputFieldProps extends
   BaseFormFieldProps<string>,
@@ -243,7 +261,7 @@ export interface TextInputFieldProps extends
     | "maxLength"
   >
 {
-  fieldComponent: "TEXT_INPUT";
+  placeholder?: string;
 }
 
 /**
@@ -263,16 +281,12 @@ export interface NumberInputFieldProps extends
     | "max"
     | "step"
   >
-{
-  fieldComponent: "NUMBER_INPUT";
-}
+{}
 
 /**
  * Radio buttons field props
  */
 export interface RadioButtonsFieldProps<V> extends BaseFormFieldProps<V> {
-  fieldComponent: "RADIO_BUTTONS";
-
   /**
    * Available options for radio buttons
    */
@@ -280,7 +294,7 @@ export interface RadioButtonsFieldProps<V> extends BaseFormFieldProps<V> {
 }
 
 /**
- * Option interface for dropdown and radio options
+ * Option interface for radio button options
  */
 export interface Option<V> {
   label: string;
@@ -292,16 +306,12 @@ export interface Option<V> {
  */
 export interface ObjectSetFieldProps<T extends ObjectTypeDefinition>
   extends BaseFormFieldProps<ObjectSet<T>>
-{
-  fieldComponent: "OBJECT_SET";
-}
+{}
 
 /**
  * Custom field props for user-defined renderers
  */
 export interface CustomFieldProps<V> extends BaseFormFieldProps<V> {
-  fieldComponent: "CUSTOM";
-
   /**
    * Custom renderer function
    */
@@ -309,22 +319,24 @@ export interface CustomFieldProps<V> extends BaseFormFieldProps<V> {
 }
 
 export interface BaseFormFieldProps<V> {
-  fieldComponent: FieldComponent;
-
   /**
-   * Called when the field value changed.
+   * The value of the form field
+   */
+  value: V | null;
+  /**
+   * Called when the field value changes.
    *
-   * ActionForm internally wraps this to pass the key to onFieldValueChanged:
+   * ActionForm internally wraps this to pass the key to `onFieldValueChange`:
    * ```
    * <DropdownField
    *   {...fieldDef}
-   *   onChange={(value) => onFieldValueChanged(fieldDef.key, value)}
+   *   onChange={(value) => onFieldValueChange(fieldDef.key, value)}
    * />
    * ```
    *
    * @param value The new value of the form field
    */
-  onChange?: (value?: V) => void;
+  onChange?: (value: V | null) => void;
 }
 
 export type FieldKey<Q extends ActionDefinition<unknown>> =
@@ -338,8 +350,28 @@ export type ActionParameters<Q extends ActionDefinition<unknown>> =
 
 /**
  * Extracts the value type for a specific parameter
+ *
+ * TODO: Re-use `BaseType`
  */
 export type FieldValueType<
+  Q extends ActionDefinition<unknown>,
+  K extends keyof ActionParameters<Q> = keyof ActionParameters<Q>,
+> = ActionParameters<Q>[K]["type"] extends
+  ActionMetadata.DataType.Object<infer T> ? ActionParam.ObjectType<T>
+  : ActionParameters<Q>[K]["type"] extends ActionMetadata.DataType.ObjectSet<
+    infer T
+  > ? ActionParam.ObjectSetType<T>
+  : ActionParameters<Q>[K]["type"] extends ActionMetadata.DataType.Struct<
+    infer T
+  > ? ActionParam.StructType<T>
+  : ActionParameters<Q>[K]["type"] extends keyof DataValueClientToWire
+    ? DataValueClientToWire[ActionParameters<Q>[K]["type"]]
+  : never;
+
+/**
+ * Extracts the parameter type descriptor for a specific action parameter.
+ */
+export type FieldDescriptorType<
   Q extends ActionDefinition<unknown> = ActionDefinition<unknown>,
   K extends keyof ActionParameters<Q> = keyof ActionParameters<Q>,
 > = ActionParameters<Q>[K]["type"];
@@ -359,21 +391,67 @@ export type FieldComponent =
   | "CUSTOM";
 
 /**
+ * Describes the data type of a form field, independent of OSDK.
+ * Mirrors ActionMetadata.DataType to keep the rendering layer OSDK-agnostic.
+ */
+export type FieldType =
+  | "boolean"
+  | "string"
+  | "integer"
+  | "long"
+  | "double"
+  | "datetime"
+  | "timestamp"
+  | "attachment"
+  | "marking"
+  | "mediaReference"
+  | "objectType"
+  | "geoshape"
+  | "geohash"
+  | { type: "object"; object: string }
+  | { type: "objectSet"; objectSet: string }
+  | { type: "interface"; interface: string }
+  | { type: "struct"; struct: Record<string, string> };
+
+/**
+ * An OSDK-agnostic field definition used by BaseForm and FormFieldRenderer.
+ * Contains only the information needed to render a single field — no generics,
+ * no compile-time parameter constraints.
+ *
+ * Implemented as a distributed mapped type: switching on `fieldComponent`
+ * narrows `fieldComponentProps` to the correct props type automatically.
+ */
+export type RendererFieldDefinition = {
+  [K in FieldComponent]: {
+    fieldKey: string;
+    fieldComponent: K;
+    fieldType?: FieldType;
+    label?: string;
+    defaultValue?: unknown;
+    isRequired?: boolean;
+    placeholder?: string;
+    helperText?: string;
+    helperTextPlacement?: "bottom" | "tooltip";
+    fieldComponentProps?: Omit<FormFieldPropsByType[K], "value" | "onChange">;
+  };
+}[FieldComponent];
+
+/**
  * Gets valid form field types for a given property type
  */
-export type ValidFormFieldForPropertyType<P extends FieldValueType> = P extends
-  "objectSet" ? "OBJECT_SET"
-  : P extends "object" ? "DROPDOWN"
-  : P extends "mediaReference" | "attachment" ? "FILE_PICKER"
-  : P extends "boolean" ? "RADIO_BUTTONS" | "DROPDOWN"
-  : P extends "string" ? "TEXT_INPUT" | "TEXT_AREA"
-  : P extends "datetime" | "timestamp" ? "DATETIME_PICKER"
-  : P extends
-    | "double"
-    | "integer"
-    | "long"
-    | "float"
-    | "short"
-    | "byte"
-    | "decimal" ? "NUMBER_INPUT"
-  : never;
+export type ValidFormFieldForPropertyType<P extends FieldDescriptorType> =
+  P extends "objectSet" ? "OBJECT_SET"
+    : P extends "object" ? "DROPDOWN"
+    : P extends "mediaReference" | "attachment" ? "FILE_PICKER"
+    : P extends "boolean" ? "RADIO_BUTTONS" | "DROPDOWN"
+    : P extends "string" ? "TEXT_INPUT" | "TEXT_AREA"
+    : P extends "datetime" | "timestamp" ? "DATETIME_PICKER"
+    : P extends
+      | "double"
+      | "integer"
+      | "long"
+      | "float"
+      | "short"
+      | "byte"
+      | "decimal" ? "NUMBER_INPUT"
+    : never;

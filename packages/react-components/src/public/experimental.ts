@@ -41,7 +41,11 @@ export { ObjectTable } from "../object-table/ObjectTable.js";
 export type {
   ColumnDefinition,
   ColumnDefinitionLocator,
+  CustomColumnLocator,
+  FunctionColumnLocator,
   ObjectTableProps,
+  PropertyColumnLocator,
+  RdpColumnLocator,
 } from "../object-table/ObjectTableApi.js";
 export type { CellEditInfo } from "../object-table/utils/types.js";
 
@@ -54,3 +58,17 @@ export type {
   ColumnConfigDialogProps,
   ColumnConfigOptions,
 } from "../object-table/ColumnConfigDialog.js";
+
+// PdfViewer
+export { BasePdfViewer } from "../pdf-viewer/PdfViewer.js";
+export type {
+  AnnotationType,
+  PdfAnnotation,
+  PdfViewerProps,
+} from "../pdf-viewer/types.js";
+
+// PdfRenderer
+export {
+  PdfRenderer,
+  type PdfRendererProps,
+} from "../pdf-viewer/PdfRenderer.js";

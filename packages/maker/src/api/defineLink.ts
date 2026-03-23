@@ -15,6 +15,8 @@
  */
 
 import type { LinkTypeMetadata } from "@osdk/client.unstable";
+import invariant from "tiny-invariant";
+import { isValidApiName } from "../util/ApiNameValidator.js";
 import { cloneDefinition } from "./cloneDefinition.js";
 import { OntologyEntityTypeEnum } from "./common/OntologyEntityTypeEnum.js";
 import {
@@ -108,6 +110,10 @@ function convertUserIntermediaryLinkDefinition(
 function convertLinkTypeMetadata(
   metadata: LinkTypeMetadataUserDefinition,
 ): LinkTypeMetadata {
+  invariant(
+    isValidApiName(metadata.apiName),
+    `Invalid API name for link: ${metadata.apiName}`,
+  );
   return {
     apiName: metadata.apiName,
     displayMetadata: {

@@ -19,15 +19,24 @@ import React from "react";
 import styles from "./LoadingCell.module.css";
 import cellStyles from "./TableCell.module.css";
 
+export function LoadingCellContent(): React.ReactElement {
+  return (
+    <div
+      className={classNames(
+        styles.osdkLoadingCell,
+        styles.osdkCellSkeleton,
+      )}
+    />
+  );
+}
+
 export function LoadingCell({ width }: { width: number }): React.ReactElement {
   return (
     <td
       className={cellStyles.osdkTableCell}
       style={{ width }}
     >
-      <div
-        className={classNames(styles.osdkLoadingCell, styles.osdkCellSkeleton)}
-      />
+      <LoadingCellContent />
     </td>
   );
 }

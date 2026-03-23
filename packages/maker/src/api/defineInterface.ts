@@ -16,6 +16,7 @@
 
 import type { InterfaceTypeStatus } from "@osdk/client.unstable";
 import invariant from "tiny-invariant";
+import { API_NAME_PATTERN, isValidApiName } from "../util/ApiNameValidator.js";
 import { cloneDefinition } from "./cloneDefinition.js";
 import type { BlueprintIcon } from "./common/BlueprintIcons.js";
 import { OntologyEntityTypeEnum } from "./common/OntologyEntityTypeEnum.js";
@@ -75,6 +76,11 @@ export function defineInterface(
     `Interface ${apiName} already exists`,
   );
 
+  invariant(
+    isValidApiName(interfaceDef.apiName),
+    `Invalid API name ${interfaceDef.apiName}. API names must match the regex ${API_NAME_PATTERN}.`,
+  );
+
   // legacy support for propertiesV2 (only SPTs)
   const spts: Record<string, SptWithOptional> = Object.fromEntries(
     Object.entries(interfaceDef.properties ?? {}).filter(([_name, prop]) => {
@@ -114,6 +120,10 @@ export function defineInterface(
     Object.entries(interfaceDef.properties ?? {}).map<
       [string, InterfacePropertyType]
     >(([apiName, prop]) => {
+      invariant(
+        isValidApiName(apiName),
+        `Invalid API name ${apiName} for property on interface ${interfaceDef.apiName}. API names must match the regex ${API_NAME_PATTERN}.`,
+      );
       const required =
         (typeof prop === "object" && isInterfaceSharedPropertyType(prop))
           ? prop.required

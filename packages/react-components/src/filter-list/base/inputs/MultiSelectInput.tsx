@@ -125,7 +125,7 @@ function MultiSelectInputInner({
           )}
 
           <div className={styles.inputRow}>
-            <Combobox.Input
+            <Combobox.SearchInput
               placeholder={selectedValues.length > 0
                 ? `${selectedValues.length} selected`
                 : placeholder}

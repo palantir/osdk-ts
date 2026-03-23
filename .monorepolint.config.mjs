@@ -137,6 +137,7 @@ const archetypeRules = archetypes(
       "@osdk/shared.net.errors",
       "@osdk/shared.net.fetch",
       "@osdk/shared.net",
+      "@osdk/react-sdk-docs",
       "@osdk/typescript-sdk-docs",
       "@osdk/widget.api",
       "@osdk/widget.client",
@@ -165,6 +166,22 @@ const archetypeRules = archetypes(
         esm: "bundle",
       },
       fixedDepsOnly: true,
+    },
+  )
+  .addArchetype(
+    "consumerCliWithSite",
+    [
+      "@osdk/ontology-explorer-server",
+    ],
+    {
+      ...LIBRARY_RULES,
+      output: {
+        browser: undefined,
+        cjs: undefined,
+        esm: "bundle",
+      },
+      fixedDepsOnly: true,
+      extraPublishFiles: ["build/site"],
     },
   )
   .addArchetype(
@@ -257,6 +274,23 @@ const archetypeRules = archetypes(
       react: true,
       extraTsConfigCompilerOptions: {
         "isolatedDeclarations": false,
+      },
+    },
+  )
+  .addArchetype(
+    "viteReactAppsWithScss",
+    [
+      "@osdk/ontology-explorer-app",
+    ],
+    {
+      ...INTERNAL_LIBRARY_RULES,
+      skipTypes: true,
+      react: true,
+      extraTsConfigCompilerOptions: {
+        "isolatedDeclarations": false,
+        "plugins": [{ "name": "typescript-plugin-css-modules" }],
+        "rootDirs": ["./src", "./build/scss-types"],
+        "allowArbitraryExtensions": true,
       },
     },
   )

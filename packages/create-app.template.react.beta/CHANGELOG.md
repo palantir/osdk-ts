@@ -1,5 +1,18 @@
 # @osdk/create-app.template.react
 
+## 2.8.0-beta.23
+
+### Minor Changes
+
+- a41b817: Add Blueprint6 to create-app react.beta template
+- 001c64c: Link to guide on how to add OSDK to templates
+- 60dc05a: Make osdk react template responsive
+- 9c48891: Fix templates nit
+
+## 2.8.0-beta.22
+
+## 2.8.0-beta.21
+
 ## 2.8.0-beta.20
 
 ## 2.8.0-beta.19
