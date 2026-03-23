@@ -14,11 +14,15 @@
  * limitations under the License.
  */
 
-import "./components/MonitoringPanel.module.scss";
-import "./components/BubbleChart.module.scss";
-import "./components/ComponentCard.module.scss";
-import "./components/DebuggingTab.module.scss";
-import "./components/HookRow.module.scss";
-import "./components/InterceptTab.module.scss";
-import "./components/PrimitiveSelectionPanel.module.scss";
-import "./components/CacheInspectorTab.module.scss";
+// Side-effect style imports for vite CSS bundling.
+// Using void import() so TypeScript does not emit them in .d.ts (attw cannot resolve .scss/.css).
+void import("@blueprintjs/core/lib/css/blueprint.css");
+void import("@blueprintjs/icons/lib/css/blueprint-icons.css");
+void import("./components/MonitoringPanel.module.scss");
+void import("./components/BubbleChart.module.scss");
+void import("./components/ComponentCard.module.scss");
+void import("./components/DebuggingTab.module.scss");
+void import("./components/HookRow.module.scss");
+void import("./components/InterceptTab.module.scss");
+void import("./components/PrimitiveSelectionPanel.module.scss");
+void import("./components/CacheInspectorTab.module.scss");
