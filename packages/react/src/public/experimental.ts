@@ -34,8 +34,14 @@ export type {
 } from "../new/useOsdkFunctions.js";
 export { useOsdkObject } from "../new/useOsdkObject.js";
 export type {
+  UseOsdkObjectResult,
+  UseOsdkObjectShapeOptions,
+  UseOsdkObjectShapeResult,
+} from "../new/useOsdkObject.js";
+export type {
   UseOsdkListResult,
   UseOsdkObjectsOptions,
+  UseOsdkObjectsShapeResult,
 } from "../new/useOsdkObjects.js";
 export { useOsdkObjects } from "../new/useOsdkObjects.js";
 export { useRegisterUserAgent } from "../new/useRegisterUserAgent.js";
