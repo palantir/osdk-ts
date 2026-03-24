@@ -19,7 +19,6 @@ import {
   useCbacMarkingRestrictions,
   useMarkingCategories,
   useMarkings,
-  useUserMarkings,
 } from "@osdk/react/experimental/admin";
 import React from "react";
 import type {
@@ -60,11 +59,6 @@ export function useCbacPickerState(
     isLoading: markingsLoading,
     error: markingsError,
   } = useMarkings();
-  const {
-    markingIds: userMarkingIds,
-    isLoading: userMarkingsLoading,
-    error: userMarkingsError,
-  } = useUserMarkings();
   const { banner } = useCbacBanner({ markingIds: selectedIds });
   const {
     restrictions,
@@ -77,14 +71,13 @@ export function useCbacPickerState(
   const requiredMarkingGroups = restrictions?.requiredMarkings ?? EMPTY_GROUPS;
   const isValid = restrictions?.isValid ?? true;
 
-  const isLoading = categoriesLoading || markingsLoading || userMarkingsLoading
+  const isLoading = categoriesLoading || markingsLoading
     || restrictionsLoading;
 
   const error = React.useMemo(() => {
     const errors = [
       categoriesError,
       markingsError,
-      userMarkingsError,
       restrictionsError,
     ].filter((e): e is Error => e != null);
     if (errors.length > 1) {
@@ -94,7 +87,7 @@ export function useCbacPickerState(
       );
     }
     return errors[0];
-  }, [categoriesError, markingsError, userMarkingsError, restrictionsError]);
+  }, [categoriesError, markingsError, restrictionsError]);
 
   const pickerCategories = React.useMemo((): PickerMarkingCategory[] => {
     if (rawCategories === undefined) {
