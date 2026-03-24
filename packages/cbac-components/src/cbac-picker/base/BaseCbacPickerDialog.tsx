@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { ActionButton , Dialog , Tooltip } from "@osdk/react-components/primitives";
+import {
+  ActionButton,
+  Dialog,
+  Tooltip,
+} from "@osdk/react-components/primitives";
 import React from "react";
 import { BaseCbacPicker } from "./BaseCbacPicker.js";
 import type { BaseCbacPickerProps } from "./BaseCbacPicker.js";
