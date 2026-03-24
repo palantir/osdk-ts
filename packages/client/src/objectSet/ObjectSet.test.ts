@@ -568,9 +568,9 @@ describe("ObjectSet", () => {
 
     client(Employee).where({
       fullName: {
-        // @ts-expect-error - $ordered not allowed with $prefixOnLastTerm
         $interval: {
           $match: "John Smi",
+          // @ts-expect-error - $ordered not allowed with $prefixOnLastTerm
           $prefixOnLastTerm: true,
           $ordered: true,
         },
