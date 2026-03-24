@@ -15,8 +15,46 @@
  */
 
 export type IntervalRule =
-  | { $match: string; $maxGaps?: number; $ordered: boolean }
-  | { $startsWith: string }
-  | { $and: IntervalRule[]; $maxGaps?: number; $ordered: boolean }
-  | { $or: IntervalRule[] }
-  | { $fuzzy: string; $fuzziness?: number };
+  | {
+    /** Matches intervals containing the given terms. */
+    $match: string;
+    /**
+     * Max gaps between matched terms. E.g. "quick" and "fox" in
+     * "quick brown fox" have a gap of 1. If unset, gaps are not considered.
+     */
+    $maxGaps?: number;
+    /** If true, matched terms must occur in order. */
+    $ordered: boolean;
+  }
+  | {
+    /**
+     * Matches a sequence of terms where all terms but the last must match
+     * exactly, and the last is matched as a prefix.
+     */
+    $startsWith: string;
+  }
+  | {
+    /** Matches intervals satisfying all sub-rules. */
+    $and: IntervalRule[];
+    /**
+     * Max gaps between intervals produced by sub-rules.
+     * If unset, gaps are not considered.
+     */
+    $maxGaps?: number;
+    /** If true, matched intervals must occur in order. */
+    $ordered: boolean;
+  }
+  | {
+    /** Matches intervals satisfying any of the sub-rules. */
+    $or: IntervalRule[];
+  }
+  | {
+    /** Matches a term within an edit distance defined by `$fuzziness`. */
+    $fuzzy: string;
+    /**
+     * Max edit distance for matching (0, 1, or 2). An edit is a character
+     * insertion, deletion, substitution, or transposition of two adjacent
+     * characters. If unset, defaults to 2.
+     */
+    $fuzziness?: number;
+  };
