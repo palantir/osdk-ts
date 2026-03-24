@@ -169,9 +169,12 @@ export function useShapeSingleInternal<
     if (Object.keys(linksPayload.links).length === 0) {
       return transformResult.data;
     }
-    return { ...transformResult.data, ...linksPayload.links } as ShapeInstance<
-      S
-    >;
+    // ShapeInstance<S> is a conditional type which TS can't spread directly
+    return Object.assign(
+      {},
+      transformResult.data as Record<string, unknown>,
+      linksPayload.links,
+    ) as ShapeInstance<S>;
   }, [transformResult.data, linksPayload.links]);
 
   let error: Error | undefined;
@@ -360,7 +363,11 @@ export function useShapeListInternal<
       if (!pkLinks || Object.keys(pkLinks).length === 0) {
         return obj;
       }
-      return { ...obj, ...pkLinks } as ShapeInstance<S>;
+      return Object.assign(
+        {},
+        obj as Record<string, unknown>,
+        pkLinks,
+      ) as ShapeInstance<S>;
     });
   }, [
     transformResult.data,
