@@ -29,9 +29,12 @@ export type IntervalRule =
   | {
     /**
      * Matches a sequence of terms where all terms but the last must match
-     * exactly, and the last is matched as a prefix.
+     * exactly, and the last is matched as a prefix. Ordering of terms is preserved.
      */
-    $startsWith: string;
+    $match: string;
+    $prefixOnLastTerm: true;
+    $maxGaps?: never;
+    $ordered?: never;
   }
   | {
     /** Matches intervals satisfying all sub-rules. */

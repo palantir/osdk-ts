@@ -787,11 +787,12 @@ describe(modernToLegacyWhereClause, () => {
         }
       `);
       });
-      it("converts $interval $startsWith", () => {
+      it("converts $interval $prefixOnLastTerm", () => {
         expect(modernToLegacyWhereClause<ObjAllProps>({
           string: {
             $interval: {
-              $startsWith: "test phr",
+              $match: "test phr",
+              $prefixOnLastTerm: true,
             },
           },
         }, objectTypeWithAllPropertyTypes)).toMatchInlineSnapshot(`

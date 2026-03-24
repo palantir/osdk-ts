@@ -27,17 +27,17 @@ export function toIntervalQueryRule(
   rule: IntervalRule,
 ): IntervalQueryRule {
   if ("$match" in rule) {
+    if ("$prefixOnLastTerm" in rule) {
+      return {
+        type: "prefixOnLastToken",
+        query: rule.$match,
+      };
+    }
     return {
       type: "match",
       query: rule.$match,
       ordered: rule.$ordered,
       maxGaps: rule.$maxGaps,
-    };
-  }
-  if ("$startsWith" in rule) {
-    return {
-      type: "prefixOnLastToken",
-      query: rule.$startsWith,
     };
   }
   if ("$and" in rule) {

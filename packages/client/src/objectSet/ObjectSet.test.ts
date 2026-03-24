@@ -514,7 +514,8 @@ describe("ObjectSet", () => {
     client(Employee).where({
       fullName: {
         $interval: {
-          $startsWith: "John Smi",
+          $match: "John Smi",
+          $prefixOnLastTerm: true,
         },
       },
     });
@@ -562,6 +563,24 @@ describe("ObjectSet", () => {
       fullName: {
         // @ts-expect-error
         $interval: { $match: "John Smith" },
+      },
+    });
+
+    client(Employee).where({
+      fullName: {
+        // @ts-expect-error - $ordered not allowed with $prefixOnLastTerm
+        $interval: {
+          $match: "John Smi",
+          $prefixOnLastTerm: true,
+          $ordered: true,
+        },
+      },
+    });
+
+    client(Employee).where({
+      fullName: {
+        // @ts-expect-error - $maxGaps not allowed with $prefixOnLastTerm
+        $interval: { $match: "John Smi", $prefixOnLastTerm: true, $maxGaps: 1 },
       },
     });
   });

@@ -796,7 +796,10 @@ export type IntervalRule = {
     	$maxGaps?: number
     	$ordered: boolean
 } | {
-    	$startsWith: string
+    	$match: string
+    	$prefixOnLastTerm: true
+    	$maxGaps?: never
+    	$ordered?: never
 } | {
     	$and: IntervalRule[]
     	$maxGaps?: number
