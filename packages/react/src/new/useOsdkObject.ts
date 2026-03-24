@@ -164,7 +164,7 @@ export function useOsdkObject<
             primaryKey,
             {
               mode,
-              ...(stableSelect ? { select: stableSelect } : {}),
+              ...(stableSelect ? { select: [...stableSelect] } : {}),
               ...(loadPropertySecurityMetadata
                 ? {
                   $loadPropertySecurityMetadata: loadPropertySecurityMetadata,
