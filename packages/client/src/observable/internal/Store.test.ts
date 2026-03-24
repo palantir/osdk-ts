@@ -2863,6 +2863,99 @@ describe(Store, () => {
       }
     });
   });
+
+  describe("peekObjectData", () => {
+    let client: Client;
+    let cache: Store;
+    let fauxFoundry: FauxFoundry;
+
+    beforeAll(async () => {
+      const testSetup = startNodeApiServer(
+        new FauxFoundry("https://stack.palantir.com/"),
+        createClient,
+        { logger },
+      );
+      ({ client, fauxFoundry } = testSetup);
+
+      setupOntology(fauxFoundry);
+      setupSomeEmployees(fauxFoundry);
+
+      return () => {
+        testSetup.apiServer.close();
+      };
+    });
+
+    beforeEach(() => {
+      cache = new Store(client);
+      return () => {
+        cache = undefined!;
+      };
+    });
+
+    it("returns undefined for non-existent object", () => {
+      const observableClient = new ObservableClientImpl(cache);
+
+      const result = observableClient.peekObjectData(
+        Employee,
+        99999,
+      );
+
+      expect(result).toBeUndefined();
+    });
+
+    it("returns loaded object data", async () => {
+      const observableClient = new ObservableClientImpl(cache);
+
+      const { payload } = await expectStandardObserveObject({
+        cache,
+        type: Employee,
+        primaryKey: 1,
+      });
+
+      const result = observableClient.peekObjectData(
+        Employee,
+        1,
+      );
+
+      expect(result).toBeDefined();
+      expect(result).toEqual(
+        expect.objectContaining({
+          object: expect.objectContaining({
+            $apiName: "Employee",
+            $primaryKey: 1,
+          }),
+          status: "loaded",
+          isOptimistic: false,
+        }),
+      );
+      expect(result?.lastUpdated).toBeGreaterThan(0);
+    });
+
+    it("returns undefined for object in loading state", () => {
+      const observableClient = new ObservableClientImpl(cache);
+
+      const subFn = mockSingleSubCallback();
+      defer(
+        cache.objects.observe({
+          apiName: Employee,
+          pk: 1,
+        }, subFn),
+      );
+
+      expectSingleObjectCallAndClear(
+        subFn,
+        undefined,
+        "loading",
+      );
+
+      const result = observableClient.peekObjectData(
+        Employee,
+        1,
+      );
+
+      expect(result).toBeUndefined();
+    });
+  });
 });
 
 export function asBsoStub(
