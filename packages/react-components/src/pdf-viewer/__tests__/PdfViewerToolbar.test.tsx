@@ -17,7 +17,7 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import * as React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { PdfViewerToolbar } from "../PdfViewerToolbar.js";
+import { PdfViewerToolbar } from "../components/PdfViewerToolbar.js";
 
 const defaultProps = {
   currentPage: 1,

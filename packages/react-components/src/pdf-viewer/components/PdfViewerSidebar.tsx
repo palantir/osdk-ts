@@ -21,7 +21,7 @@ import {
   DEFAULT_PAGE_HEIGHT,
   THUMBNAIL_GAP,
   THUMBNAIL_SCALE,
-} from "./constants.js";
+} from "../constants.js";
 import styles from "./PdfViewerSidebar.module.css";
 import { PdfViewerThumbnail } from "./PdfViewerThumbnail.js";
 

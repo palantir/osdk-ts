@@ -29,9 +29,14 @@ export const fauxFoundry: FauxFoundry = new FauxFoundry(baseUrl, {
   rid: "ri.ontology.main.ontology.storybook-demo",
 });
 
+const SAMPLE_PDF_URL =
+  "https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf";
+
+export const MEDIA_EMPLOYEE_PK = 657495071;
+
 let isInitialized = false;
 
-export function setupFauxFoundry(): void {
+export async function setupFauxFoundry(): Promise<void> {
   if (isInitialized) {
     return;
   }
@@ -50,6 +55,26 @@ export function setupFauxFoundry(): void {
   const dataStore = fauxFoundry.getDefaultDataStore();
   employeeData.forEach((employee) => {
     dataStore.registerObject(employee);
+  });
+
+  // Register sample PDF media for an employee's employeeDocuments property
+  const response = await fetch(SAMPLE_PDF_URL);
+  const buffer = await response.arrayBuffer();
+  const mediaRef = dataStore.registerMedia(
+    "Employee",
+    "employeeDocuments",
+    buffer,
+    "application/pdf",
+    // cspell:disable-next-line
+    "compressed.tracemonkey-pldi-09.pdf",
+  );
+  const employee = dataStore.getObjectOrThrow(
+    "Employee",
+    MEDIA_EMPLOYEE_PK,
+  );
+  dataStore.replaceObjectOrThrow({
+    ...employee,
+    employeeDocuments: mediaRef,
   });
 
   // Log registered objects for debugging

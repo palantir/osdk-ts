@@ -16,8 +16,8 @@
 
 import classnames from "classnames";
 import React, { useCallback, useMemo } from "react";
+import type { PdfAnnotation } from "../types.js";
 import styles from "./PdfViewerAnnotationLayer.module.css";
-import type { PdfAnnotation } from "./types.js";
 
 export interface PdfViewerAnnotationLayerProps {
   annotations: PdfAnnotation[];

@@ -35,6 +35,7 @@ export function usePdfViewer(
   viewerRef: RefObject<HTMLDivElement | null>,
   document: PDFDocumentProxy | undefined,
   initialScale?: number,
+  initialPage?: number,
 ): UsePdfViewerResult {
   const pdfViewerRef = useRef<PDFViewer | null>(null);
   const eventBusRef = useRef<EventBus | null>(null);
@@ -71,6 +72,17 @@ export function usePdfViewer(
 
     if (initialScale != null) {
       pdfViewer.currentScale = initialScale;
+    }
+
+    if (initialPage != null && initialPage > 1) {
+      const onPagesLoaded = () => {
+        pdfViewer.currentPageNumber = initialPage;
+        pdfViewer.scrollPageIntoView({ pageNumber: initialPage });
+        // cspell:disable-next-line -- pdfjs EventBus event name
+        eventBus.off("pagesloaded", onPagesLoaded);
+      };
+      // cspell:disable-next-line -- pdfjs EventBus event name
+      eventBus.on("pagesloaded", onPagesLoaded);
     }
 
     eventBusRef.current = eventBus;

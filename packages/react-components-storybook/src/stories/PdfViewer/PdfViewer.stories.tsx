@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+/* cspell:disable */
+
 import type { Media } from "@osdk/api";
 import type {
   PdfRendererProps,
@@ -23,34 +25,50 @@ import {
   BasePdfRenderer,
   PdfRenderer,
 } from "@osdk/react-components/experimental";
+import { useOsdkObject } from "@osdk/react/experimental";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { delay, http } from "msw";
 import { fn } from "storybook/test";
+import { MEDIA_EMPLOYEE_PK } from "../../mocks/fauxFoundry.js";
+import { Employee } from "../../types/Employee.js";
 
 const SAMPLE_PDF_URL =
   "https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf";
 
-const mockMedia: Media = {
-  fetchContents: () => fetch(SAMPLE_PDF_URL),
-  fetchMetadata: () =>
-    Promise.resolve({
-      // cspell:disable-next-line
-      path: "compressed.tracemonkey-pldi-09.pdf",
-      sizeBytes: 1024000,
-      mediaType: "application/pdf",
-    }),
-  getMediaReference: () => ({
-    mimeType: "application/pdf",
-    reference: {
-      type: "mediaSetViewItem" as const,
-      mediaSetViewItem: {
-        mediaItemRid: "ri.mio.main.media-item.mock-pdf",
-        mediaSetRid: "ri.mio.main.media-set.mock-set",
-        mediaSetViewRid: "ri.mio.main.media-set-view.mock-view",
+const BOOKMARKED_PDF_URL =
+  "https://raw.githubusercontent.com/mozilla/pdf.js/master/test/pdfs/nested_outline.pdf";
+
+function createMockMedia(url: string, filename: string): Media {
+  return {
+    fetchContents: () => fetch(url),
+    fetchMetadata: () =>
+      Promise.resolve({
+        path: filename,
+        sizeBytes: 1024000,
+        mediaType: "application/pdf",
+      }),
+    getMediaReference: () => ({
+      mimeType: "application/pdf",
+      reference: {
+        type: "mediaSetViewItem" as const,
+        mediaSetViewItem: {
+          mediaItemRid: "ri.mio.main.media-item.mock-pdf",
+          mediaSetRid: "ri.mio.main.media-set.mock-set",
+          mediaSetViewRid: "ri.mio.main.media-set-view.mock-view",
+        },
       },
-    },
-  }),
-};
+    }),
+  };
+}
+
+const mockMedia = createMockMedia(
+  SAMPLE_PDF_URL,
+  "compressed.tracemonkey-pldi-09.pdf",
+);
+const mockBookmarkedMedia = createMockMedia(
+  BOOKMARKED_PDF_URL,
+  "pdf-example-bookmarks.pdf",
+);
 
 const meta: Meta<PdfRendererProps> = {
   title: "Components/PdfViewer",
@@ -124,14 +142,32 @@ const meta: Meta<PdfRendererProps> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const WithMedia: Story = {
+export const WithOsdkMedia: Story = {
+  render: () => {
+    const { object: employee, isLoading } = useOsdkObject(
+      Employee,
+      MEDIA_EMPLOYEE_PK,
+    );
+
+    if (isLoading || !employee?.employeeDocuments) {
+      return <div style={{ height: "600px" }}>Loading OSDK media…</div>;
+    }
+
+    return (
+      <div style={{ height: "600px" }}>
+        <PdfRenderer media={employee.employeeDocuments} />
+      </div>
+    );
+  },
   parameters: {
     docs: {
       source: {
         code:
           `import { PdfRenderer } from "@osdk/react-components/experimental";
 
-<PdfRenderer media={myMediaObject} />`,
+// Access media from an OSDK object's media reference property
+const employee = useOsdkObject(Employee, employeePk);
+<PdfRenderer media={employee.employeeDocuments} />`,
       },
     },
   },
@@ -318,5 +354,13 @@ export const Error: StoryObj<PdfViewerProps> = {
         }),
       ],
     },
+  },
+};
+
+export const WithEmbeddedOutline: Story = {
+  args: {
+    media: mockBookmarkedMedia,
+    initialSidebarOpen: true,
+    sidebarMode: "outline",
   },
 };

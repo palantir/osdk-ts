@@ -16,7 +16,7 @@
 
 import classnames from "classnames";
 import React, { useCallback, useMemo } from "react";
-import type { OutlineItem } from "./hooks/usePdfOutline.js";
+import type { OutlineItem } from "../hooks/usePdfOutline.js";
 import styles from "./PdfViewerOutlineSidebar.module.css";
 
 const INDENT_PER_DEPTH = 16;

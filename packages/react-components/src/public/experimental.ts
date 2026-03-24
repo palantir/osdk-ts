@@ -72,30 +72,59 @@ export type {
 export {
   PdfViewerAnnotationLayer,
   type PdfViewerAnnotationLayerProps,
-} from "../pdf-viewer/PdfViewerAnnotationLayer.js";
+} from "../pdf-viewer/components/PdfViewerAnnotationLayer.js";
+export {
+  PdfViewerContent,
+  type PdfViewerContentProps,
+} from "../pdf-viewer/components/PdfViewerContent.js";
 export {
   PdfViewerOutlineSidebar,
   type PdfViewerOutlineSidebarProps,
-} from "../pdf-viewer/PdfViewerOutlineSidebar.js";
+} from "../pdf-viewer/components/PdfViewerOutlineSidebar.js";
 export {
   PdfViewerSearchBar,
   type PdfViewerSearchBarProps,
-} from "../pdf-viewer/PdfViewerSearchBar.js";
+} from "../pdf-viewer/components/PdfViewerSearchBar.js";
 export {
   PdfViewerSidebar,
   type PdfViewerSidebarProps,
-} from "../pdf-viewer/PdfViewerSidebar.js";
+} from "../pdf-viewer/components/PdfViewerSidebar.js";
 export {
   PdfViewerToolbar,
   type PdfViewerToolbarProps,
-} from "../pdf-viewer/PdfViewerToolbar.js";
+} from "../pdf-viewer/components/PdfViewerToolbar.js";
 
-// PdfViewer hooks
+// PdfViewer hooks — primitive
+export {
+  type AnnotationPortalTarget,
+  usePdfAnnotationPortals,
+} from "../pdf-viewer/hooks/usePdfAnnotationPortals.js";
 export { usePdfDocument } from "../pdf-viewer/hooks/usePdfDocument.js";
 export {
   type OutlineItem,
   usePdfOutline,
 } from "../pdf-viewer/hooks/usePdfOutline.js";
+export {
+  usePdfViewer,
+  type UsePdfViewerResult,
+} from "../pdf-viewer/hooks/usePdfViewer.js";
+export {
+  usePdfViewerSearch,
+  type UsePdfViewerSearchResult,
+} from "../pdf-viewer/hooks/usePdfViewerSearch.js";
+export { usePdfViewerSync } from "../pdf-viewer/hooks/usePdfViewerSync.js";
+
+// PdfViewer hooks — composition
+export {
+  usePdfViewerCore,
+  type UsePdfViewerCoreOptions,
+  type UsePdfViewerCoreResult,
+} from "../pdf-viewer/hooks/usePdfViewerCore.js";
+export {
+  usePdfViewerState,
+  type UsePdfViewerStateOptions,
+  type UsePdfViewerStateResult,
+} from "../pdf-viewer/hooks/usePdfViewerState.js";
 
 // PdfRenderer
 export {
