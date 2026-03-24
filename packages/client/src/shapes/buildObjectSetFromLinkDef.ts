@@ -17,9 +17,10 @@
 import type {
   ObjectOrInterfaceDefinition,
   ObjectSet,
+  ObjectTypeDefinition,
   Osdk,
   WhereClause,
- ObjectTypeDefinition } from "@osdk/api";
+} from "@osdk/api";
 import { isSourcePkSymbol } from "@osdk/api/shapes";
 import type { ShapeLinkObjectSetDef, ShapeLinkOrderBy } from "@osdk/api/shapes";
 import { additionalContext, type Client } from "../Client.js";
