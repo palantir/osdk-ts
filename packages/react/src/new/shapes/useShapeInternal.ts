@@ -131,29 +131,26 @@ export function useShapeSingleInternal<
     Record<keyof ShapeDerivedLinks<S>, LinkLoadConfig>
   >;
 
-  const sourceObjectRef = React.useRef<
-    Osdk.Instance<ShapeBaseType<S>> | undefined
-  >(undefined);
-  if (basePayload?.object) {
-    sourceObjectRef.current = basePayload.object as Osdk.Instance<
-      ShapeBaseType<S>
-    >;
-  }
+  const sourceObject = basePayload?.object as
+    | Osdk.Instance<ShapeBaseType<S>>
+    | undefined;
 
   const linksStore = React.useMemo(() => {
-    if (!enabled || !basePayload?.object || shape.__derivedLinks.length === 0) {
+    if (
+      !enabled || !sourceObject || shape.__derivedLinks.length === 0
+    ) {
       return createEmptyDerivedLinksStore<S>();
     }
     return createDerivedLinksStore<S>(
       shape,
-      sourceObjectRef.current as Osdk.Instance<ShapeBaseType<S>>,
+      sourceObject,
       observableClient,
       client,
       stableLinkConfig,
     );
   }, [
     enabled,
-    basePayload?.object?.$primaryKey,
+    sourceObject?.$primaryKey,
     shape.__shapeId,
     observableClient,
     client,
@@ -334,14 +331,20 @@ export function useShapeListInternal<
     );
   }, [enabled, shape.__shapeId, observableClient, client, stableLinkConfig]);
 
-  React.useMemo(() => {
+  const prevSourceRef = React.useRef<
+    Osdk.Instance<ObjectOrInterfaceDefinition>[] | undefined
+  >(undefined);
+  if (payload?.resolvedList !== prevSourceRef.current) {
+    prevSourceRef.current = payload?.resolvedList as
+      | Osdk.Instance<ObjectOrInterfaceDefinition>[]
+      | undefined;
     if (payload?.resolvedList) {
       linksStore.updateSourceObjects(
         payload.resolvedList as Osdk.Instance<ObjectOrInterfaceDefinition>[],
         transformResult.data,
       );
     }
-  }, [linksStore, payload?.resolvedList, transformResult.data]);
+  }
 
   const linksPayload = React.useSyncExternalStore(
     linksStore.subscribe,
