@@ -268,10 +268,21 @@ export interface AsyncIterArgs<
 // @public (undocumented)
 export interface Attachment {
     	fetchContents(): Promise<Response>;
-    	// Warning: (ae-forgotten-export) The symbol "AttachmentMetadata" needs to be exported by the entry point index.d.ts
-    fetchMetadata(): Promise<AttachmentMetadata>;
+    	fetchMetadata(): Promise<AttachmentMetadata>;
     	// (undocumented)
     rid: string;
+}
+
+// @public (undocumented)
+export interface AttachmentMetadata {
+    	// (undocumented)
+    filename: string;
+    	// (undocumented)
+    mediaType: string;
+    	// (undocumented)
+    rid: string;
+    	// (undocumented)
+    sizeBytes: number;
 }
 
 // @public (undocumented)
