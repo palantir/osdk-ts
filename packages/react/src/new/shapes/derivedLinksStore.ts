@@ -181,6 +181,7 @@ export function createDerivedLinksStore<
     { entry: LinkEntry; sourceType: ObjectOrInterfaceDefinition }
   > = [];
   let nestedFlushTimer: ReturnType<typeof setTimeout> | undefined;
+  let isDestroyed = false;
 
   function scheduleNestedFlush(): void {
     if (nestedFlushTimer != null) {
@@ -188,6 +189,9 @@ export function createDerivedLinksStore<
     }
     nestedFlushTimer = setTimeout(() => {
       nestedFlushTimer = undefined;
+      if (isDestroyed) {
+        return;
+      }
       const batch = pendingNestedEntries.splice(0);
       if (batch.length > 0) {
         startLinksInBatch(batch);
@@ -436,6 +440,7 @@ export function createDerivedLinksStore<
   }
 
   function destroy(): void {
+    isDestroyed = true;
     if (nestedFlushTimer != null) {
       clearTimeout(nestedFlushTimer);
       nestedFlushTimer = undefined;

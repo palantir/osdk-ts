@@ -114,19 +114,24 @@ export function createStoreSubscribe(
   onInit: () => void,
   onCleanup: () => void,
 ): (notifyUpdate: () => void) => () => void {
+  let initScheduled = false;
+
   return (notifyUpdate: () => void): () => void => {
     subscribers.add(notifyUpdate);
 
-    let isSubscribed = true;
-    queueMicrotask(() => {
-      if (!isSubscribed) return;
-      onInit();
-    });
+    if (!initScheduled) {
+      initScheduled = true;
+      queueMicrotask(() => {
+        if (subscribers.size > 0) {
+          onInit();
+        }
+      });
+    }
 
     return () => {
-      isSubscribed = false;
       subscribers.delete(notifyUpdate);
       if (subscribers.size === 0) {
+        initScheduled = false;
         onCleanup();
       }
     };
