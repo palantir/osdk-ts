@@ -98,7 +98,7 @@ export function PdfViewerSearchBar({
         aria-label="Next match"
         type="button"
       >
-        <ChevronDown size={16} color="currentColor" />
+        <ChevronDown size={16} />
       </button>
       <button
         className={styles.closeButton}
@@ -106,7 +106,7 @@ export function PdfViewerSearchBar({
         aria-label="Close search"
         type="button"
       >
-        <Cross size={16} color="currentColor" />
+        <Cross size={16} />
       </button>
     </div>
   );

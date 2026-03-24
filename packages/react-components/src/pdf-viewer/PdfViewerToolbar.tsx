@@ -121,7 +121,7 @@ export function PdfViewerToolbar({
         aria-pressed={sidebarOpen}
         type="button"
       >
-        <Menu size={16} color="currentColor" />
+        <Menu size={16} />
       </button>
 
       <div className={styles.separator} />
@@ -135,7 +135,7 @@ export function PdfViewerToolbar({
           title="Previous page"
           type="button"
         >
-          <ChevronLeft size={16} color="currentColor" />
+          <ChevronLeft size={16} />
         </button>
         <Input
           className={styles.pageInput}
@@ -155,7 +155,7 @@ export function PdfViewerToolbar({
           title="Next page"
           type="button"
         >
-          <ChevronRight size={16} color="currentColor" />
+          <ChevronRight size={16} />
         </button>
       </div>
 
@@ -170,7 +170,7 @@ export function PdfViewerToolbar({
           title="Zoom out"
           type="button"
         >
-          <Minus size={16} color="currentColor" />
+          <Minus size={16} />
         </button>
         <span className={styles.scaleDisplay}>{scalePercent}</span>
         <button
@@ -181,7 +181,7 @@ export function PdfViewerToolbar({
           title="Zoom in"
           type="button"
         >
-          <Plus size={16} color="currentColor" />
+          <Plus size={16} />
         </button>
       </div>
 
@@ -194,7 +194,7 @@ export function PdfViewerToolbar({
         title="Search"
         type="button"
       >
-        <Search size={16} color="currentColor" />
+        <Search size={16} />
       </button>
 
       <div className={styles.separator} />
@@ -206,7 +206,7 @@ export function PdfViewerToolbar({
         title="Download"
         type="button"
       >
-        <Download size={16} color="currentColor" />
+        <Download size={16} />
       </button>
     </div>
   );

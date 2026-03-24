@@ -60,33 +60,33 @@ export function ExcludeIcon(): React.ReactElement {
 }
 
 export function RemoveIcon(): React.ReactElement {
-  return <Cross color="currentColor" size={14} />;
+  return <Cross size={14} />;
 }
 
 export function SearchIcon(): React.ReactElement {
-  return <Search color="currentColor" size={14} />;
+  return <Search size={14} />;
 }
 
 export function OverflowMenuIcon(): React.ReactElement {
-  return <More color="currentColor" size={14} />;
+  return <More size={14} />;
 }
 
 export function ChevronDownIcon(): React.ReactElement {
-  return <ChevronDown color="currentColor" size={10} />;
+  return <ChevronDown size={10} />;
 }
 
 export function CollapseIcon(): React.ReactElement {
-  return <DoubleChevronLeft color="currentColor" size={14} />;
+  return <DoubleChevronLeft size={14} />;
 }
 
 export function ExpandIcon(): React.ReactElement {
-  return <DoubleChevronRight color="currentColor" size={14} />;
+  return <DoubleChevronRight size={14} />;
 }
 
 export function ResetIcon(): React.ReactElement {
-  return <Undo color="currentColor" size={14} />;
+  return <Undo size={14} />;
 }
 
 export function CheckIcon(): React.ReactElement {
-  return <Tick color="currentColor" size={12} />;
+  return <Tick size={12} />;
 }

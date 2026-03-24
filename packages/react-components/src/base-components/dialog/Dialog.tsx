@@ -55,7 +55,7 @@ export function Dialog({
               className={styles.closeButton}
               aria-label="Close dialog"
             >
-              <Cross className={styles.closeIcon} color="currentColor" />
+              <Cross className={styles.closeIcon} />
             </BaseUIDialog.Close>
           </div>
           <div className={styles.body}>{children}</div>

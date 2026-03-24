@@ -73,7 +73,7 @@ export function PdfRenderer({
     return (
       <div className={rootClassName}>
         <div className={styles.loadingContainer}>
-          <Spin className={styles.spinnerIcon} color="currentColor" />
+          <Spin className={styles.spinnerIcon} />
           Loading…
         </div>
       </div>
