@@ -69,7 +69,7 @@ export interface BatchedDerivedLinksStore<
     sourceObjects: Osdk.Instance<ObjectOrInterfaceDefinition>[],
     transformedData: AnyShapeInstance[],
   ) => void;
-  loadDeferred: (sourcePk: string | number, linkName: string) => Promise<void>;
+  loadDeferred: (sourcePk: string | number, linkName: string) => void;
   retry: (sourcePk?: string | number, linkName?: string) => void;
   destroy: () => void;
 }
@@ -104,7 +104,7 @@ export function createEmptyBatchedDerivedLinksStore<
     subscribe: () => () => {},
     getSnapshot: () => emptyPayload,
     updateSourceObjects: () => {},
-    loadDeferred: async () => {},
+    loadDeferred: () => {},
     retry: () => {},
     destroy: () => {},
   };
