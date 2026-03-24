@@ -87,3 +87,26 @@
   color: var(--osdk-typography-color-muted);
 }
 
+<<<<<<< HEAD
+=======
+.switchToThumbnailsButton {
+  font-family: var(--osdk-typography-family-default);
+  font-size: var(--osdk-typography-size-body-small);
+  color: var(--osdk-intent-primary);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: var(--osdk-pdf-viewer-outline-item-radius, 4px);
+  text-decoration: underline;
+}
+
+.switchToThumbnailsButton:hover {
+  background-color: var(--osdk-pdf-viewer-outline-item-hover-bg, rgba(0, 0, 0, 0.06));
+}
+
+.switchToThumbnailsButton:focus-visible {
+  outline: var(--osdk-focus-outline);
+  outline-offset: var(--osdk-focus-visible-outline-offset);
+}
+>>>>>>> 4fe2e7f66 (rejig of pdf-viewer components and hooks etc)

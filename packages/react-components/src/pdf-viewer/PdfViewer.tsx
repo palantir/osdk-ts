@@ -51,6 +51,7 @@ export function BasePdfViewer({
     onDownload,
   });
 
+
   const rootClassName = classnames(styles.pdfViewer, className);
 
   if (viewer.loading) {
