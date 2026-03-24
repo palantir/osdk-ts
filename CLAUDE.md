@@ -47,6 +47,17 @@
 
 - Monorepo: run tests from individual packages, not root
 
+## API Extractor
+
+- When making changes to a package's public API (exports, types, function signatures), run API extractor: `pnpm turbo check-api --filter=@osdk/the-package`
+- This updates the API report in `etc/<package>.report.api.md` — commit the updated report
+- API extractor requires transpiled types, so `transpileTypes` runs automatically as a dependency
+
+## Pre-Push Verification
+
+- Before pushing to a PR, run `pnpm turbo transpile` globally to ensure all packages compile
+- This catches cross-package build issues that per-package checks may miss
+
 ## Code Maintenance Best Practices
 
 - Do not fix diagnostic warnings in old code
