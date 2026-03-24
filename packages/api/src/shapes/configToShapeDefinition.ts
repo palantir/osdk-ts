@@ -109,14 +109,6 @@ export function configToShapeDefinition<
         // resolved from inline configs alone since link metadata isn't
         // available here. Callers should provide `target` for correct
         // link target type resolution.
-        if (process.env.NODE_ENV !== "production") {
-          // eslint-disable-next-line no-console
-          console.warn(
-            `configToShapeDefinition: link "${name}" has no explicit target shape. `
-              + `Falling back to source type "${baseTypeApiName}" as placeholder. `
-              + `Provide a target shape for correct link resolution.`,
-          );
-        }
         targetShape = configToShapeDefinition(
           baseType,
           {} as InlineShapeConfig<BASE>,
