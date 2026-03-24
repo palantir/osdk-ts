@@ -127,7 +127,7 @@ function SingleSelectInputInner({
               onClick={handleClear}
               aria-label="Clear selection"
             >
-              <Cross color="currentColor" />
+              <Cross />
             </Button>
           )}
         </div>

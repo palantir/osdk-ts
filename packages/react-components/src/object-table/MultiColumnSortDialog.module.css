@@ -111,7 +111,6 @@
 .addIcon {
   width: var(--osdk-iconography-size-small);
   height: var(--osdk-iconography-size-small);
-  color: currentColor;
 }
 
 .addColumnText {

@@ -70,7 +70,7 @@ function SelectTrigger({
             )}
           </div>
           <BaseUISelect.Icon className={styles.osdkSelectIcon}>
-            <CaretDown color="currentColor" />
+            <CaretDown />
           </BaseUISelect.Icon>
         </>
       )}
