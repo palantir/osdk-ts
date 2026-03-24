@@ -570,8 +570,8 @@ describe("ObjectSet", () => {
       fullName: {
         $interval: {
           $match: "John Smi",
-          // @ts-expect-error - $ordered not allowed with $prefixOnLastTerm
           $prefixOnLastTerm: true,
+          // @ts-expect-error - $ordered not allowed with $prefixOnLastTerm
           $ordered: true,
         },
       },

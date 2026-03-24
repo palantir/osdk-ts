@@ -25,6 +25,11 @@ export type IntervalRule =
     $maxGaps?: number;
     /** If true, matched terms must occur in order. */
     $ordered: boolean;
+    $prefixOnLastTerm?: never;
+    $and?: never;
+    $or?: never;
+    $fuzzy?: never;
+    $fuzziness?: never;
   }
   | {
     /**
@@ -35,6 +40,10 @@ export type IntervalRule =
     $prefixOnLastTerm: true;
     $maxGaps?: never;
     $ordered?: never;
+    $and?: never;
+    $or?: never;
+    $fuzzy?: never;
+    $fuzziness?: never;
   }
   | {
     /** Matches intervals satisfying all sub-rules. */
@@ -46,10 +55,22 @@ export type IntervalRule =
     $maxGaps?: number;
     /** If true, matched intervals must occur in order. */
     $ordered: boolean;
+    $match?: never;
+    $prefixOnLastTerm?: never;
+    $or?: never;
+    $fuzzy?: never;
+    $fuzziness?: never;
   }
   | {
     /** Matches intervals satisfying any of the sub-rules. */
     $or: IntervalRule[];
+    $match?: never;
+    $prefixOnLastTerm?: never;
+    $and?: never;
+    $fuzzy?: never;
+    $fuzziness?: never;
+    $maxGaps?: never;
+    $ordered?: never;
   }
   | {
     /** Matches a term within an edit distance defined by `$fuzziness`. */
@@ -60,4 +81,10 @@ export type IntervalRule =
      * characters. If unset, defaults to 2.
      */
     $fuzziness?: number;
+    $match?: never;
+    $prefixOnLastTerm?: never;
+    $and?: never;
+    $or?: never;
+    $maxGaps?: never;
+    $ordered?: never;
   };

@@ -26,8 +26,8 @@ type IntervalQueryRule = Extract<
 export function toIntervalQueryRule(
   rule: IntervalRule,
 ): IntervalQueryRule {
-  if ("$match" in rule) {
-    if ("$prefixOnLastTerm" in rule) {
+  if (rule.$match != null) {
+    if (rule.$prefixOnLastTerm) {
       return {
         type: "prefixOnLastToken",
         query: rule.$match,
@@ -40,7 +40,7 @@ export function toIntervalQueryRule(
       maxGaps: rule.$maxGaps,
     };
   }
-  if ("$and" in rule) {
+  if (rule.$and != null) {
     return {
       type: "allOf",
       rules: rule.$and.map(toIntervalQueryRule),
@@ -48,13 +48,13 @@ export function toIntervalQueryRule(
       maxGaps: rule.$maxGaps,
     };
   }
-  if ("$or" in rule) {
+  if (rule.$or != null) {
     return {
       type: "anyOf",
       rules: rule.$or.map(toIntervalQueryRule),
     };
   }
-  if ("$fuzzy" in rule) {
+  if (rule.$fuzzy != null) {
     return {
       type: "fuzzy",
       term: rule.$fuzzy,
