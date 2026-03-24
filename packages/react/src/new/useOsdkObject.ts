@@ -239,8 +239,8 @@ export function useOsdkObject<
       links?: Partial<Record<string, LinkLoadConfig>>;
     };
 
+    const prevConfig = React.useRef(rawShape);
     if (process.env.NODE_ENV !== "production") {
-      const prevConfig = React.useRef(rawShape);
       if (prevConfig.current !== rawShape) {
         // eslint-disable-next-line no-console
         console.warn(
@@ -421,10 +421,6 @@ function useOsdkObjectBase<Q extends ObjectOrInterfaceDefinition>(
 
   const payload = React.useSyncExternalStore(subscribe, getSnapShot);
 
-  const forceUpdate = React.useCallback(() => {
-    throw new Error("not implemented");
-  }, []);
-
   return React.useMemo(() => {
     let error: Error | undefined;
     if (payload && "error" in payload && payload.error) {
@@ -441,7 +437,6 @@ function useOsdkObjectBase<Q extends ObjectOrInterfaceDefinition>(
         : false,
       isOptimistic: !!payload?.isOptimistic,
       error,
-      forceUpdate,
     };
-  }, [payload, enabled, forceUpdate]);
+  }, [payload, enabled]);
 }

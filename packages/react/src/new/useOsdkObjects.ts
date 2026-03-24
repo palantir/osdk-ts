@@ -483,8 +483,8 @@ function useOsdkObjectsWithShape<
 ): UseOsdkObjectsShapeResult<Q, C> {
   type S = InferShapeDefinition<Q, C>;
 
+  const prevConfig = React.useRef(options.shape);
   if (process.env.NODE_ENV !== "production") {
-    const prevConfig = React.useRef(options.shape);
     if (prevConfig.current !== options.shape) {
       // eslint-disable-next-line no-console
       console.warn(

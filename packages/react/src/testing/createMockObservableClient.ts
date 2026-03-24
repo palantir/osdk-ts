@@ -258,7 +258,15 @@ export function createMockObservableClient(
 
     observeLinks: ((_objects, _linkName, _options, subFn): Unsubscribable => {
       setTimeout(() => {
-        (subFn as Observer<unknown>).next(makeListPayload("loaded"));
+        (subFn as Observer<unknown>).next({
+          linkedObjectsBySourcePrimaryKey: new Map(),
+          resolvedList: [],
+          isOptimistic: false,
+          status: "loaded",
+          lastUpdated: Date.now(),
+          fetchMore: NOOP_ASYNC,
+          hasMore: false,
+        });
       }, delay);
       return { unsubscribe: () => {} };
     }) as ObservableClient["observeLinks"],
