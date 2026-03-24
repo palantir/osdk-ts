@@ -29,18 +29,24 @@ export type Call = [method: string, args: unknown];
 
 export type Resolver = (calls: Call[]) => unknown;
 
-export function createMockObjectSet<Q extends ObjectOrInterfaceDefinition>(
+export type Stub = { calls: Call[]; value: unknown };
+
+export function createMockObjectSetWithResolver<
+  Q extends ObjectOrInterfaceDefinition,
+>(
   objectType: Q,
   resolver: Resolver,
   calls: Call[] = [],
 ): ObjectSet<Q> {
   const chain = (method: string, args: unknown): ObjectSet<Q> =>
-    createMockObjectSet(objectType, resolver, [...calls, [method, args]]);
+    createMockObjectSetWithResolver(objectType, resolver, [...calls, [
+      method,
+      args,
+    ]]);
 
   const terminal = <T>(method: string, args: unknown): T =>
     resolver([...calls, [method, args]]) as T;
 
-  // All methods should execute synchronously even if marked as async
   return {
     where: (clause: WhereClause<Q>) => chain("where", clause),
     union: () =>
@@ -55,7 +61,6 @@ export function createMockObjectSet<Q extends ObjectOrInterfaceDefinition>(
     nearestNeighbors: (query: unknown, num: number, prop: string) =>
       chain("nearestNeighbors", { query, num, prop }),
     withProperties: () =>
-      // TODO: Add with properties support
       void invariant(false, "withProperties is not supported in mocks") as any,
     fetchPage: async (args?: unknown) =>
       terminal<PageResult<Osdk.Instance<Q>>>("fetchPage", args) as any,

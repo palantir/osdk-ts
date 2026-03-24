@@ -3,4 +3,4 @@
 "@osdk/api": patch
 ---
 
-Read primaryKeyApiName from object type const instead of options, move links into options, and add createMockAttachment helper
+Rework mock client stubbing API: rename whenObjectSet to when, add standalone createMockObjectSet with whenObjectSet for registering stubs on object sets directly, and support ObjectSet as many-link value in createMockOsdkObject

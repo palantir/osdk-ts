@@ -14,22 +14,21 @@
  * limitations under the License.
  */
 
-export { createMockAttachment } from "./mock/createMockAttachment.js";
+import type { ObjectSet } from "@osdk/api";
+import type { Employee } from "@osdk/client.test.ontology";
 
-export {
-  createMockOsdkObject,
-  type MockOsdkObjectOptions,
-} from "./mock/createMockOsdkObject.js";
+export async function getEmployeeNames(
+  employees: ObjectSet<Employee>,
+): Promise<string[]> {
+  const page = await employees.fetchPage();
+  return page.data.map((emp) => emp.fullName ?? "Unknown");
+}
 
-export {
-  type AggregateStubBuilder,
-  createMockClient,
-  type FetchOneStubBuilder,
-  type FetchPageStubBuilder,
-  type MockClient,
-  type QueryStubBuilder,
-  type StubBuilderFor,
-  type StubClient,
-} from "./mock/createMockClient.js";
-
-export { createMockObjectSet } from "./mock/createMockObjectSet.js";
+export async function countEmployees(
+  employees: ObjectSet<Employee>,
+): Promise<number> {
+  const result = await employees.aggregate({
+    $select: { $count: "unordered" },
+  });
+  return result.$count;
+}
