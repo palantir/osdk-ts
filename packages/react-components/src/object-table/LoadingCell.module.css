@@ -20,7 +20,7 @@
   flex: 1;
 }
 
-.osdkCellSkeleton {
+.osdkCellSkeleton.osdkCellSkeleton {
   --osdk-background-skeleton-from: var(--osdk-table-skeleton-color-from);
   --osdk-background-skeleton-to: var(--osdk-table-skeleton-color-to);
   background-clip: padding-box;
