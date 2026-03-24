@@ -21,7 +21,7 @@ import styles from "./PdfViewerOutlineSidebar.module.css";
 
 const INDENT_PER_DEPTH = 16;
 
-interface PdfViewerOutlineSidebarProps {
+export interface PdfViewerOutlineSidebarProps {
   outlineItems: OutlineItem[];
   currentPage: number;
   onItemClick: (pageNumber: number) => void;
