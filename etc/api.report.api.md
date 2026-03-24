@@ -22,9 +22,9 @@ export interface ActionDefinition<T_signatures = never> {
     // (undocumented)
     osdkMetadata?: OsdkMetadata;
     	// (undocumented)
-    platformApiName?: string;
-    	// (undocumented)
     type: "action";
+    	// (undocumented)
+    unsanitizedApiName?: string;
 }
 
 // Warning: (ae-forgotten-export) The symbol "ActionResults" needs to be exported by the entry point index.d.ts
@@ -48,8 +48,6 @@ export interface ActionMetadata {
     	// (undocumented)
     parameters: Record<any, ActionMetadata.Parameter<any>>;
     	// (undocumented)
-    platformApiName?: string;
-    	// (undocumented)
     rid: string;
     	// Warning: (ae-forgotten-export) The symbol "ReleaseStatus" needs to be exported by the entry point index.d.ts
     //
@@ -57,6 +55,8 @@ export interface ActionMetadata {
     status: ReleaseStatus | undefined;
     	// (undocumented)
     type: "action";
+    	// (undocumented)
+    unsanitizedApiName?: string;
 }
 
 // @public (undocumented)
