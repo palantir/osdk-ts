@@ -1,5 +1,4 @@
 ---
-"@osdk/client": patch
 "@osdk/react": patch
 ---
 
