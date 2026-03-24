@@ -25,7 +25,7 @@ import {
 import styles from "./PdfViewerSidebar.module.css";
 import { PdfViewerThumbnail } from "./PdfViewerThumbnail.js";
 
-interface PdfViewerSidebarProps {
+export interface PdfViewerSidebarProps {
   document: PDFDocumentProxy;
   numPages: number;
   currentPage: number;

@@ -30,7 +30,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { MAX_SCALE, MIN_SCALE, SCALE_STEP } from "./constants.js";
 import styles from "./PdfViewerToolbar.module.css";
 
-interface PdfViewerToolbarProps {
+export interface PdfViewerToolbarProps {
   currentPage: number;
   numPages: number;
   scale: number;

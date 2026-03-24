@@ -19,7 +19,7 @@ import React, { useCallback, useMemo } from "react";
 import styles from "./PdfViewerAnnotationLayer.module.css";
 import type { PdfAnnotation } from "./types.js";
 
-interface PdfViewerAnnotationLayerProps {
+export interface PdfViewerAnnotationLayerProps {
   annotations: PdfAnnotation[];
   pageHeight: number;
   scale: number;

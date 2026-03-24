@@ -18,7 +18,7 @@ import { ChevronDown, ChevronUp, Cross } from "@blueprintjs/icons";
 import React, { useCallback } from "react";
 import styles from "./PdfViewerSearchBar.module.css";
 
-interface PdfViewerSearchBarProps {
+export interface PdfViewerSearchBarProps {
   query: string;
   totalMatches: number;
   currentMatchIndex: number;

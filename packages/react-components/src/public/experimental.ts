@@ -68,6 +68,35 @@ export type {
   SidebarMode,
 } from "../pdf-viewer/types.js";
 
+// PdfViewer building blocks
+export {
+  PdfViewerAnnotationLayer,
+  type PdfViewerAnnotationLayerProps,
+} from "../pdf-viewer/PdfViewerAnnotationLayer.js";
+export {
+  PdfViewerOutlineSidebar,
+  type PdfViewerOutlineSidebarProps,
+} from "../pdf-viewer/PdfViewerOutlineSidebar.js";
+export {
+  PdfViewerSearchBar,
+  type PdfViewerSearchBarProps,
+} from "../pdf-viewer/PdfViewerSearchBar.js";
+export {
+  PdfViewerSidebar,
+  type PdfViewerSidebarProps,
+} from "../pdf-viewer/PdfViewerSidebar.js";
+export {
+  PdfViewerToolbar,
+  type PdfViewerToolbarProps,
+} from "../pdf-viewer/PdfViewerToolbar.js";
+
+// PdfViewer hooks
+export { usePdfDocument } from "../pdf-viewer/hooks/usePdfDocument.js";
+export {
+  type OutlineItem,
+  usePdfOutline,
+} from "../pdf-viewer/hooks/usePdfOutline.js";
+
 // PdfRenderer
 export {
   PdfRenderer,

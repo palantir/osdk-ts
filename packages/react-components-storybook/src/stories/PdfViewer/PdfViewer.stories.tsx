@@ -14,23 +14,53 @@
  * limitations under the License.
  */
 
-import type { PdfViewerProps } from "@osdk/react-components/experimental";
-import { BasePdfRenderer } from "@osdk/react-components/experimental";
+import type { Media } from "@osdk/api";
+import type {
+  PdfRendererProps,
+  PdfViewerProps,
+} from "@osdk/react-components/experimental";
+import {
+  BasePdfRenderer,
+  PdfRenderer,
+} from "@osdk/react-components/experimental";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { delay, http } from "msw";
 import { fn } from "storybook/test";
+
 const SAMPLE_PDF_URL =
   "https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf";
 
-const meta: Meta<PdfViewerProps> = {
+const mockMedia: Media = {
+  fetchContents: () => fetch(SAMPLE_PDF_URL),
+  fetchMetadata: () =>
+    Promise.resolve({
+      // cspell:disable-next-line
+      path: "compressed.tracemonkey-pldi-09.pdf",
+      sizeBytes: 1024000,
+      mediaType: "application/pdf",
+    }),
+  getMediaReference: () => ({
+    mimeType: "application/pdf",
+    reference: {
+      type: "mediaSetViewItem" as const,
+      mediaSetViewItem: {
+        mediaItemRid: "ri.mio.main.media-item.mock-pdf",
+        mediaSetRid: "ri.mio.main.media-set.mock-set",
+        mediaSetViewRid: "ri.mio.main.media-set-view.mock-view",
+      },
+    },
+  }),
+};
+
+const meta: Meta<PdfRendererProps> = {
   title: "Components/PdfViewer",
-  component: BasePdfRenderer,
+  component: PdfRenderer,
   args: {
-    src: SAMPLE_PDF_URL,
+    media: mockMedia,
   },
-  render: (args: PdfViewerProps) => (
+  render: (args: PdfRendererProps) => (
     <div style={{ height: "600px" }}>
-      <BasePdfRenderer {...args} />
+      <PdfRenderer {...args} />
     </div>
   ),
   parameters: {
@@ -39,9 +69,9 @@ const meta: Meta<PdfViewerProps> = {
     },
   },
   argTypes: {
-    src: {
-      description: "PDF source — URL string or ArrayBuffer",
-      control: "text",
+    media: {
+      description: "The Media object to fetch PDF contents from",
+      control: false,
     },
     annotations: {
       description:
@@ -94,13 +124,35 @@ const meta: Meta<PdfViewerProps> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {
+export const WithMedia: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { PdfViewer } from "@osdk/react-components/experimental";
+        code:
+          `import { PdfRenderer } from "@osdk/react-components/experimental";
 
-<PdfViewer src="https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf" />`,
+<PdfRenderer media={myMediaObject} />`,
+      },
+    },
+  },
+};
+
+export const WithPdfUrl: StoryObj<PdfViewerProps> = {
+  args: {
+    src: SAMPLE_PDF_URL,
+  },
+  render: (args: PdfViewerProps) => (
+    <div style={{ height: "600px" }}>
+      <BasePdfRenderer {...args} />
+    </div>
+  ),
+  parameters: {
+    docs: {
+      source: {
+        code:
+          `import { BasePdfRenderer } from "@osdk/react-components/experimental";
+
+<BasePdfRenderer src="https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf" />`,
       },
     },
   },
@@ -144,10 +196,11 @@ export const WithAnnotations: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { PdfViewer } from "@osdk/react-components/experimental";
+        code:
+          `import { PdfRenderer } from "@osdk/react-components/experimental";
 
-<PdfViewer
-  src="..."
+<PdfRenderer
+  media={myMediaObject}
   annotations={{
     1: [
       { id: "h1", type: "highlight", page: 1, rect: { x: 100, y: 700, width: 200, height: 20 }, label: "Important text" },
@@ -170,9 +223,10 @@ export const WithSidebar: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { PdfViewer } from "@osdk/react-components/experimental";
+        code:
+          `import { PdfRenderer } from "@osdk/react-components/experimental";
 
-<PdfViewer src="..." initialSidebarOpen />`,
+<PdfRenderer media={myMediaObject} initialSidebarOpen />`,
       },
     },
   },
@@ -185,9 +239,10 @@ export const CustomScale: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { PdfViewer } from "@osdk/react-components/experimental";
+        code:
+          `import { PdfRenderer } from "@osdk/react-components/experimental";
 
-<PdfViewer src="..." initialScale={1.5} />`,
+<PdfRenderer media={myMediaObject} initialScale={1.5} />`,
       },
     },
   },
@@ -200,9 +255,10 @@ export const WithDownload: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { PdfViewer } from "@osdk/react-components/experimental";
+        code:
+          `import { PdfRenderer } from "@osdk/react-components/experimental";
 
-<PdfViewer src="..." downloadEnabled />`,
+<PdfRenderer media={myMediaObject} downloadEnabled />`,
       },
     },
   },
@@ -216,18 +272,24 @@ export const WithOutlineSidebar: Story = {
   parameters: {
     docs: {
       source: {
-        code: `import { PdfViewer } from "@osdk/react-components/experimental";
+        code:
+          `import { PdfRenderer } from "@osdk/react-components/experimental";
 
-<PdfViewer src="..." initialSidebarOpen sidebarMode="outline" />`,
+<PdfRenderer media={myMediaObject} initialSidebarOpen sidebarMode="outline" />`,
       },
     },
   },
 };
 
-export const Loading: Story = {
+export const Loading: StoryObj<PdfViewerProps> = {
   args: {
     src: "/loading.pdf",
   },
+  render: (args: PdfViewerProps) => (
+    <div style={{ height: "600px" }}>
+      <BasePdfRenderer {...args} />
+    </div>
+  ),
   parameters: {
     msw: {
       handlers: [
@@ -239,10 +301,15 @@ export const Loading: Story = {
   },
 };
 
-export const Error: Story = {
+export const Error: StoryObj<PdfViewerProps> = {
   args: {
     src: "/error.pdf",
   },
+  render: (args: PdfViewerProps) => (
+    <div style={{ height: "600px" }}>
+      <BasePdfRenderer {...args} />
+    </div>
+  ),
   parameters: {
     msw: {
       handlers: [
