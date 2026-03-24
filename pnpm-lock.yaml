@@ -16,17 +16,17 @@ catalogs:
       specifier: 2.50.0
       version: 2.50.0
     '@osdk/foundry.admin':
-      specifier: 2.50.0
-      version: 2.50.0
+      specifier: 2.54.0
+      version: 2.54.0
     '@osdk/foundry.core':
-      specifier: 2.50.0
-      version: 2.50.0
+      specifier: 2.54.0
+      version: 2.54.0
     '@osdk/foundry.datasets':
       specifier: ~2.5.0
       version: 2.5.0
     '@osdk/foundry.geo':
-      specifier: 2.50.0
-      version: 2.50.0
+      specifier: 2.54.0
+      version: 2.54.0
     '@osdk/foundry.mediasets':
       specifier: 2.50.0
       version: 2.50.0
@@ -1793,7 +1793,7 @@ importers:
         version: link:../client.unstable
       '@osdk/foundry.core':
         specifier: catalog:foundry-platform-typescript
-        version: 2.50.0
+        version: 2.54.0
       '@osdk/foundry.mediasets':
         specifier: catalog:foundry-platform-typescript
         version: 2.50.0
@@ -3636,13 +3636,13 @@ importers:
         version: link:../api
       '@osdk/foundry.admin':
         specifier: catalog:foundry-platform-typescript
-        version: 2.50.0
+        version: 2.54.0
       '@osdk/foundry.core':
         specifier: catalog:foundry-platform-typescript
-        version: 2.50.0
+        version: 2.54.0
       '@osdk/foundry.geo':
         specifier: catalog:foundry-platform-typescript
-        version: 2.50.0
+        version: 2.54.0
       '@osdk/foundry.mediasets':
         specifier: catalog:foundry-platform-typescript
         version: 2.50.0
@@ -4427,10 +4427,10 @@ importers:
         version: link:../client.test.ontology
       '@osdk/foundry.admin':
         specifier: catalog:foundry-platform-typescript
-        version: 2.50.0
+        version: 2.54.0
       '@osdk/foundry.core':
         specifier: catalog:foundry-platform-typescript
-        version: 2.50.0
+        version: 2.54.0
       '@osdk/monorepo.api-extractor':
         specifier: workspace:~
         version: link:../monorepo.api-extractor
@@ -4848,10 +4848,10 @@ importers:
         version: link:../api
       '@osdk/foundry.core':
         specifier: catalog:foundry-platform-typescript
-        version: 2.50.0
+        version: 2.54.0
       '@osdk/foundry.geo':
         specifier: catalog:foundry-platform-typescript
-        version: 2.50.0
+        version: 2.54.0
       '@osdk/foundry.ontologies':
         specifier: catalog:foundry-platform-typescript
         version: 2.50.0
@@ -8640,6 +8640,9 @@ packages:
   '@osdk/foundry.admin@2.50.0':
     resolution: {integrity: sha512-JlB8wHwcUyIPu261Sx7wupAO0oTjxFGeCzrkvPoybPDnvR0rYaD4oZFbAYhc+OSCmP+28/5C8+lnVagdQ2skUg==}
 
+  '@osdk/foundry.admin@2.54.0':
+    resolution: {integrity: sha512-luVZnyT5LTPQRlAB8GZK3acYXKbW7ZrrHabQ9po1M19nRZoZQZPjk2BBrkpdMPQFS6xIpiib8CObByLdn8Fb5Q==}
+
   '@osdk/foundry.aipagents@2.46.0':
     resolution: {integrity: sha512-OFJX0qzKmZOfC3ZrTy6vQr0PMu37JLffDWjzgIQUx99tXunCgkbek4e9C8db909u4yDCQF19zRRhMyj3azEkgw==}
 
@@ -8672,6 +8675,9 @@ packages:
 
   '@osdk/foundry.core@2.50.0':
     resolution: {integrity: sha512-rJeG9/PtV833+HUQhyPQReM8GI0u4r7R8DoUV820yEu15Tmkfv+JXvktu3b6HmwVgODDJlg+x1lFUJgQU6f2QQ==}
+
+  '@osdk/foundry.core@2.54.0':
+    resolution: {integrity: sha512-sl6k+5nF0USJ0xBuf8j2PYzxatIBCdhsVXYFVWQhi39/1BIRSNFKZaB0sW7hDYQio6+Wu5voRqVllCcfEIciyw==}
 
   '@osdk/foundry.datahealth@2.46.0':
     resolution: {integrity: sha512-aOqM/AW59ke6FeVcmJhKmwYlZI3VzGSBuTaqkZQhZM82Nqf38y9CbmKRcRlHCIeDKOXsGgSzgbn4BJM4wDDLAQ==}
@@ -8714,6 +8720,9 @@ packages:
 
   '@osdk/foundry.geo@2.50.0':
     resolution: {integrity: sha512-0FKXQzI11hYkRB1jQGsw70V4MRmxzAvOapLDwhhpF1D5f58CMakLsPlCY/vc1/LYpo7+B6mSFuQXdo+538DmJA==}
+
+  '@osdk/foundry.geo@2.54.0':
+    resolution: {integrity: sha512-GybMCxMhUKRDw121Gz0OpWA5lV9FFbY9av5UPInsylobkEwMHQG3m1NLcUN2Z1gffwu7rzMel9rg9vI06tZE4w==}
 
   '@osdk/foundry.geojson@2.46.0':
     resolution: {integrity: sha512-R19dI6GP17h2bfzTYR2HXTG16f0mlMB+YP8i9sbUjNN7EAYbLbyNbdR0N3N33ao989av9V/EFZPh9ZU1kzO+jw==}
@@ -25352,6 +25361,13 @@ snapshots:
       '@osdk/shared.client2': 1.0.0
       '@osdk/shared.net.platformapi': 1.6.0
 
+  '@osdk/foundry.admin@2.54.0':
+    dependencies:
+      '@osdk/foundry.core': 2.54.0
+      '@osdk/shared.client': 1.0.1
+      '@osdk/shared.client2': 1.0.0
+      '@osdk/shared.net.platformapi': 1.6.0
+
   '@osdk/foundry.aipagents@2.46.0':
     dependencies:
       '@osdk/foundry.core': 2.46.0
@@ -25433,6 +25449,13 @@ snapshots:
   '@osdk/foundry.core@2.50.0':
     dependencies:
       '@osdk/foundry.geo': 2.50.0
+      '@osdk/shared.client': 1.0.1
+      '@osdk/shared.client2': 1.0.0
+      '@osdk/shared.net.platformapi': 1.6.0
+
+  '@osdk/foundry.core@2.54.0':
+    dependencies:
+      '@osdk/foundry.geo': 2.54.0
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.client2': 1.0.0
       '@osdk/shared.net.platformapi': 1.6.0
@@ -25535,6 +25558,12 @@ snapshots:
       '@osdk/shared.net.platformapi': 1.1.0
 
   '@osdk/foundry.geo@2.50.0':
+    dependencies:
+      '@osdk/shared.client': 1.0.1
+      '@osdk/shared.client2': 1.0.0
+      '@osdk/shared.net.platformapi': 1.6.0
+
+  '@osdk/foundry.geo@2.54.0':
     dependencies:
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.client2': 1.0.0
@@ -39812,7 +39841,7 @@ snapshots:
       fdir: 6.5.0(picomatch@4.0.3)
       picomatch: 4.0.3
       postcss: 8.5.6
-      rollup: 4.59.0
+      rollup: 4.40.1
       tinyglobby: 0.2.15
     optionalDependencies:
       '@types/node': 18.19.124
@@ -39833,7 +39862,7 @@ snapshots:
       fdir: 6.5.0(picomatch@4.0.3)
       picomatch: 4.0.3
       postcss: 8.5.6
-      rollup: 4.59.0
+      rollup: 4.40.1
       tinyglobby: 0.2.15
     optionalDependencies:
       '@types/node': 20.19.13
@@ -39854,7 +39883,7 @@ snapshots:
       fdir: 6.5.0(picomatch@4.0.3)
       picomatch: 4.0.3
       postcss: 8.5.6
-      rollup: 4.59.0
+      rollup: 4.40.1
       tinyglobby: 0.2.15
     optionalDependencies:
       '@types/node': 24.10.15
@@ -39875,7 +39904,7 @@ snapshots:
       fdir: 6.5.0(picomatch@4.0.3)
       picomatch: 4.0.3
       postcss: 8.5.6
-      rollup: 4.59.0
+      rollup: 4.40.1
       tinyglobby: 0.2.15
     optionalDependencies:
       '@types/node': 24.3.1
