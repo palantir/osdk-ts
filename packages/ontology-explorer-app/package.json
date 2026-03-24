@@ -44,7 +44,7 @@
     "@tanstack/react-router": "^1.114.0",
     "@types/react": "^18.3.24",
     "@types/react-dom": "^18.3.7",
-    "@vitejs/plugin-react": "^4.3.4",
+    "@vitejs/plugin-react": "^4.7.0",
     "normalize.css": "^8.0.1",
     "prettier": "^3.0.0",
     "react": "^18.3.1",
