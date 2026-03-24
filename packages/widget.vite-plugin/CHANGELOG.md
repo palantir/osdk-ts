@@ -1,5 +1,12 @@
 # @osdk/widget.vite-plugin
 
+## 3.5.0-beta.25
+
+### Patch Changes
+
+- Updated dependencies [e590bed]
+  - @osdk/widget.api@3.5.0-beta.25
+
 ## 3.5.0-beta.24
 
 ### Patch Changes
