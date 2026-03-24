@@ -73,6 +73,8 @@ export interface ShapeLinkSetOperation {
 export interface ShapeLinkObjectSetDef {
   readonly segments: readonly ShapeLinkSegment[];
   readonly where?: WhereClause<ObjectOrInterfaceDefinition>;
+  // Planned extension: dynamic where clause evaluated at query time.
+  // Not yet wired into ShapeLinkBuilder but included in shape ID computation.
   readonly whereCallback?: (
     vars: Record<string, unknown>,
   ) => WhereClause<ObjectOrInterfaceDefinition>;

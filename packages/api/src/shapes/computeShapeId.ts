@@ -99,6 +99,10 @@ function canonicalizeObjectSetDef(
     result.distinct = true;
   }
 
+  if (def.whereCallback) {
+    result.whereCallback = def.whereCallback.toString();
+  }
+
   if (def.setOperations && def.setOperations.length > 0) {
     result.setOperations = def.setOperations.map((op) => ({
       type: op.type,
