@@ -47,6 +47,7 @@ export function createMockObjectSetWithResolver<
   const terminal = <T>(method: string, args: unknown): T =>
     resolver([...calls, [method, args]]) as T;
 
+  // All methods should execute synchronously even if marked as async
   return {
     where: (clause: WhereClause<Q>) => chain("where", clause),
     union: () =>
@@ -61,6 +62,7 @@ export function createMockObjectSetWithResolver<
     nearestNeighbors: (query: unknown, num: number, prop: string) =>
       chain("nearestNeighbors", { query, num, prop }),
     withProperties: () =>
+      // TODO: Add with properties support
       void invariant(false, "withProperties is not supported in mocks") as any,
     fetchPage: async (args?: unknown) =>
       terminal<PageResult<Osdk.Instance<Q>>>("fetchPage", args) as any,
