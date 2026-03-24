@@ -22,11 +22,13 @@ import { createPortal } from "react-dom";
 import { EMPTY_ANNOTATION_ARRAY, EMPTY_ANNOTATIONS } from "./constants.js";
 import { usePdfAnnotationPortals } from "./hooks/usePdfAnnotationPortals.js";
 import { usePdfDocument } from "./hooks/usePdfDocument.js";
+import { usePdfOutline } from "./hooks/usePdfOutline.js";
 import { usePdfViewer } from "./hooks/usePdfViewer.js";
 import { usePdfViewerSearch } from "./hooks/usePdfViewerSearch.js";
 import { usePdfViewerSync } from "./hooks/usePdfViewerSync.js";
 import styles from "./PdfViewer.module.css";
 import { PdfViewerAnnotationLayer } from "./PdfViewerAnnotationLayer.js";
+import { PdfViewerOutlineSidebar } from "./PdfViewerOutlineSidebar.js";
 import { PdfViewerSearchBar } from "./PdfViewerSearchBar.js";
 import { PdfViewerSidebar } from "./PdfViewerSidebar.js";
 import { PdfViewerToolbar } from "./PdfViewerToolbar.js";
@@ -40,6 +42,8 @@ export function BasePdfRenderer({
   initialScale = 1.0,
   initialSidebarOpen = false,
   downloadEnabled = false,
+  sidebarMode: sidebarModeProp = "thumbnails",
+  outlineIcons,
   className,
 }: PdfViewerProps): React.ReactElement {
   const { document, numPages, loading, error } = usePdfDocument(src);
@@ -47,8 +51,20 @@ export function BasePdfRenderer({
   const [sidebarOpen, setSidebarOpen] = useState(initialSidebarOpen);
   const [currentPage, setCurrentPage] = useState(initialPage);
   const [rotation, setRotation] = useState(0);
+  const [sidebarMode, setSidebarMode] = useState(sidebarModeProp);
   const containerRef = useRef<HTMLDivElement>(null);
   const viewerRef = useRef<HTMLDivElement>(null);
+
+  const outlineItems = usePdfOutline(document);
+
+  // Sync sidebarMode state with prop changes
+  useEffect(function syncSidebarMode() {
+    setSidebarMode(sidebarModeProp);
+  }, [sidebarModeProp]);
+
+  const handleSwitchToThumbnails = useCallback(() => {
+    setSidebarMode("thumbnails");
+  }, []);
 
   const { pdfViewerRef, eventBusRef, findControllerRef } = usePdfViewer(
     containerRef,
@@ -212,12 +228,21 @@ export function BasePdfRenderer({
         />
       )}
       <div className={styles.contentArea}>
-        {sidebarOpen && (
+        {sidebarOpen && sidebarMode === "thumbnails" && (
           <PdfViewerSidebar
             document={document}
             numPages={numPages}
             currentPage={currentPage}
             onPageClick={handleToolbarPageChange}
+          />
+        )}
+        {sidebarOpen && sidebarMode === "outline" && (
+          <PdfViewerOutlineSidebar
+            outlineItems={outlineItems}
+            currentPage={currentPage}
+            onItemClick={handleToolbarPageChange}
+            onSwitchToThumbnails={handleSwitchToThumbnails}
+            outlineIcons={outlineIcons}
           />
         )}
         <div className={styles.scrollContainerWrapper}>

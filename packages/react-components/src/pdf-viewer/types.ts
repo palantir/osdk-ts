@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
+import type React from "react";
+
+/** Which sidebar panel to display when the sidebar is open. */
+export type SidebarMode = "thumbnails" | "outline";
+
 /** The visual style of an annotation rendered on the PDF. */
 export type AnnotationType = "highlight" | "underline" | "comment" | "pin";
 
@@ -54,6 +59,14 @@ export interface PdfViewerProps {
   initialSidebarOpen?: boolean;
   /** Whether the download button is shown in the toolbar (default false) */
   downloadEnabled?: boolean;
+  /** Which sidebar panel to show: thumbnails or document outline (default "thumbnails") */
+  sidebarMode?: SidebarMode;
+  /**
+   * Custom icon components for each outline depth level (0-indexed).
+   * Key 0 = top-level items, 1 = first nesting level, etc.
+   * If omitted, no icons are rendered.
+   */
+  outlineIcons?: Partial<Record<number, React.ComponentType>>;
   /** Additional CSS class name for the root element */
   className?: string;
 }

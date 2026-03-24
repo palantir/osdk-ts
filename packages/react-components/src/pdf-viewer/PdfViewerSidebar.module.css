@@ -8,15 +8,6 @@
   overflow: hidden;
 }
 
-.sidebarHeader {
-  padding: var(--osdk-pdf-viewer-sidebar-thumbnail-gap);
-  font-family: var(--osdk-typography-family-default);
-  font-size: var(--osdk-typography-size-body-small);
-  font-weight: var(--osdk-typography-weight-semibold);
-  color: var(--osdk-typography-color-muted);
-  border-bottom: 1px solid var(--osdk-pdf-viewer-sidebar-border);
-  flex-shrink: 0;
-}
 
 .scrollContainer {
   flex: 1;

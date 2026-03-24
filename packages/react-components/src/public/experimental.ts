@@ -65,6 +65,7 @@ export type {
   AnnotationType,
   PdfAnnotation,
   PdfViewerProps,
+  SidebarMode,
 } from "../pdf-viewer/types.js";
 
 // PdfRenderer

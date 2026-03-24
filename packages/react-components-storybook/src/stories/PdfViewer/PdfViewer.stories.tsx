@@ -73,6 +73,17 @@ const meta: Meta<PdfViewerProps> = {
       control: "boolean",
       table: { defaultValue: { summary: "false" } },
     },
+    sidebarMode: {
+      description: "Which sidebar panel to show when the sidebar is open",
+      control: "radio",
+      options: ["thumbnails", "outline"],
+      table: { defaultValue: { summary: "\"thumbnails\"" } },
+    },
+    outlineIcons: {
+      description:
+        "Custom icon components for each outline depth level (0-indexed)",
+      control: false,
+    },
     className: {
       description: "Additional CSS class name for the root element",
       control: "text",
@@ -192,6 +203,22 @@ export const WithDownload: Story = {
         code: `import { PdfViewer } from "@osdk/react-components/experimental";
 
 <PdfViewer src="..." downloadEnabled />`,
+      },
+    },
+  },
+};
+
+export const WithOutlineSidebar: Story = {
+  args: {
+    initialSidebarOpen: true,
+    sidebarMode: "outline",
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `import { PdfViewer } from "@osdk/react-components/experimental";
+
+<PdfViewer src="..." initialSidebarOpen sidebarMode="outline" />`,
       },
     },
   },

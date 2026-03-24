@@ -56,7 +56,6 @@ export function PdfViewerSidebar({
 
   return (
     <div className={styles.sidebar}>
-      <div className={styles.sidebarHeader}>Pages</div>
       <div ref={scrollContainerRef} className={styles.scrollContainer}>
         <div
           className={styles.thumbnailsContainer}
