@@ -15,9 +15,9 @@
  */
 
 import { Popover } from "@base-ui/react/popover";
+import { ActionButton } from "@osdk/react-components/primitives";
 import classnames from "classnames";
 import React from "react";
-import { ActionButton } from "@osdk/react-components/primitives";
 import { backgroundFromColors } from "../utils/cbacPickerUtils.js";
 import { BaseCbacBanner } from "./BaseCbacBanner.js";
 import styles from "./BaseCbacBannerPopover.module.css";
