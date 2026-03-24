@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Button } from "@base-ui/react/button";
 import { Input } from "@base-ui/react/input";
 import {
   ChevronLeft,
@@ -22,6 +23,7 @@ import {
   Menu,
   Minus,
   Plus,
+  RotatePage,
   Search,
 } from "@blueprintjs/icons";
 import React, { useCallback, useEffect, useState } from "react";
@@ -38,6 +40,9 @@ interface PdfViewerToolbarProps {
   onSearchOpen: () => void;
   onSidebarToggle: () => void;
   onDownload: () => void;
+  downloadEnabled: boolean;
+  onRotateLeft: () => void;
+  onRotateRight: () => void;
 }
 
 export function PdfViewerToolbar({
@@ -50,6 +55,9 @@ export function PdfViewerToolbar({
   onSearchOpen,
   onSidebarToggle,
   onDownload,
+  downloadEnabled,
+  onRotateLeft,
+  onRotateRight,
 }: PdfViewerToolbarProps): React.ReactElement {
   const [pageInputValue, setPageInputValue] = useState(String(currentPage));
 
@@ -113,7 +121,7 @@ export function PdfViewerToolbar({
 
   return (
     <div className={styles.toolbar}>
-      <button
+      <Button
         className={styles.toolbarButton}
         onClick={onSidebarToggle}
         aria-label={sidebarOpen ? "Close sidebar" : "Open sidebar"}
@@ -122,12 +130,12 @@ export function PdfViewerToolbar({
         type="button"
       >
         <Menu size={16} />
-      </button>
+      </Button>
 
       <div className={styles.separator} />
 
       <div className={styles.toolbarGroup}>
-        <button
+        <Button
           className={styles.toolbarButton}
           onClick={handlePrevPage}
           disabled={currentPage <= 1}
@@ -136,7 +144,7 @@ export function PdfViewerToolbar({
           type="button"
         >
           <ChevronLeft size={16} />
-        </button>
+        </Button>
         <Input
           className={styles.pageInput}
           type="text"
@@ -147,7 +155,7 @@ export function PdfViewerToolbar({
           aria-label="Page number"
         />
         <span className={styles.pageCount}>of {numPages}</span>
-        <button
+        <Button
           className={styles.toolbarButton}
           onClick={handleNextPage}
           disabled={currentPage >= numPages}
@@ -156,13 +164,13 @@ export function PdfViewerToolbar({
           type="button"
         >
           <ChevronRight size={16} />
-        </button>
+        </Button>
       </div>
 
       <div className={styles.separator} />
 
       <div className={styles.toolbarGroup}>
-        <button
+        <Button
           className={styles.toolbarButton}
           onClick={handleZoomOut}
           disabled={scale <= MIN_SCALE}
@@ -171,9 +179,9 @@ export function PdfViewerToolbar({
           type="button"
         >
           <Minus size={16} />
-        </button>
+        </Button>
         <span className={styles.scaleDisplay}>{scalePercent}</span>
-        <button
+        <Button
           className={styles.toolbarButton}
           onClick={handleZoomIn}
           disabled={scale >= MAX_SCALE}
@@ -182,12 +190,35 @@ export function PdfViewerToolbar({
           type="button"
         >
           <Plus size={16} />
-        </button>
+        </Button>
       </div>
 
       <div className={styles.separator} />
 
-      <button
+      <div className={styles.toolbarGroup}>
+        <Button
+          className={styles.toolbarButton}
+          onClick={onRotateLeft}
+          aria-label="Rotate left"
+          title="Rotate left"
+          type="button"
+        >
+          <RotatePage size={16} />
+        </Button>
+        <Button
+          className={styles.toolbarButton}
+          onClick={onRotateRight}
+          aria-label="Rotate right"
+          title="Rotate right"
+          type="button"
+        >
+          <RotatePage size={16} style={{ transform: "scaleX(-1)" }} />
+        </Button>
+      </div>
+
+      <div className={styles.separator} />
+
+      <Button
         className={styles.toolbarButton}
         onClick={onSearchOpen}
         aria-label="Search"
@@ -195,19 +226,23 @@ export function PdfViewerToolbar({
         type="button"
       >
         <Search size={16} />
-      </button>
+      </Button>
 
-      <div className={styles.separator} />
+      {downloadEnabled && (
+        <>
+          <div className={styles.separator} />
 
-      <button
-        className={styles.toolbarButton}
-        onClick={onDownload}
-        aria-label="Download"
-        title="Download"
-        type="button"
-      >
-        <Download size={16} />
-      </button>
+          <Button
+            className={styles.toolbarButton}
+            onClick={onDownload}
+            aria-label="Download"
+            title="Download"
+            type="button"
+          >
+            <Download size={16} />
+          </Button>
+        </>
+      )}
     </div>
   );
 }

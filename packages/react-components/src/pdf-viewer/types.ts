@@ -52,6 +52,8 @@ export interface PdfViewerProps {
   initialScale?: number;
   /** Whether the sidebar is initially open (default false) */
   initialSidebarOpen?: boolean;
+  /** Whether the download button is shown in the toolbar (default false) */
+  downloadEnabled?: boolean;
   /** Additional CSS class name for the root element */
   className?: string;
 }

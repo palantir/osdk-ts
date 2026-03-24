@@ -32,19 +32,21 @@ import { PdfViewerSidebar } from "./PdfViewerSidebar.js";
 import { PdfViewerToolbar } from "./PdfViewerToolbar.js";
 import type { PdfViewerProps } from "./types.js";
 
-export function BasePdfViewer({
+export function BasePdfRenderer({
   src,
   annotations = EMPTY_ANNOTATIONS,
   onAnnotationClick,
   initialPage = 1,
   initialScale = 1.0,
   initialSidebarOpen = false,
+  downloadEnabled = false,
   className,
 }: PdfViewerProps): React.ReactElement {
   const { document, numPages, loading, error } = usePdfDocument(src);
   const [scale, setScale] = useState(initialScale);
   const [sidebarOpen, setSidebarOpen] = useState(initialSidebarOpen);
   const [currentPage, setCurrentPage] = useState(initialPage);
+  const [rotation, setRotation] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
   const viewerRef = useRef<HTMLDivElement>(null);
 
@@ -86,6 +88,22 @@ export function BasePdfViewer({
       pdfViewerRef.current.currentPageNumber = initialPage;
     }
   }, [pdfViewerRef, initialPage]);
+
+  // Sync rotation → PDFViewer
+  useEffect(function syncRotationToViewer() {
+    const pdfViewer = pdfViewerRef.current;
+    if (pdfViewer != null) {
+      pdfViewer.pagesRotation = rotation;
+    }
+  }, [pdfViewerRef, rotation]);
+
+  const handleRotateLeft = useCallback(() => {
+    setRotation((prev) => (prev - 90 + 360) % 360);
+  }, []);
+
+  const handleRotateRight = useCallback(() => {
+    setRotation((prev) => (prev + 90) % 360);
+  }, []);
 
   // Ctrl+F handler
   useEffect(function registerSearchShortcut() {
@@ -178,6 +196,9 @@ export function BasePdfViewer({
         onSearchOpen={search.openSearch}
         onSidebarToggle={handleSidebarToggle}
         onDownload={handleDownload}
+        downloadEnabled={downloadEnabled}
+        onRotateLeft={handleRotateLeft}
+        onRotateRight={handleRotateRight}
       />
       {search.isSearchOpen && (
         <PdfViewerSearchBar

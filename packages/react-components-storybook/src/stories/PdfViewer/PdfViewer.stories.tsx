@@ -15,7 +15,7 @@
  */
 
 import type { PdfViewerProps } from "@osdk/react-components/experimental";
-import { BasePdfViewer } from "@osdk/react-components/experimental";
+import { BasePdfRenderer } from "@osdk/react-components/experimental";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { delay, http } from "msw";
 import { fn } from "storybook/test";
@@ -24,13 +24,13 @@ const SAMPLE_PDF_URL =
 
 const meta: Meta<PdfViewerProps> = {
   title: "Components/PdfViewer",
-  component: BasePdfViewer,
+  component: BasePdfRenderer,
   args: {
     src: SAMPLE_PDF_URL,
   },
   render: (args: PdfViewerProps) => (
     <div style={{ height: "600px" }}>
-      <BasePdfViewer {...args} />
+      <BasePdfRenderer {...args} />
     </div>
   ),
   parameters: {
@@ -65,6 +65,11 @@ const meta: Meta<PdfViewerProps> = {
     },
     initialSidebarOpen: {
       description: "Whether the thumbnail sidebar is initially open",
+      control: "boolean",
+      table: { defaultValue: { summary: "false" } },
+    },
+    downloadEnabled: {
+      description: "Whether the download button is shown in the toolbar",
       control: "boolean",
       table: { defaultValue: { summary: "false" } },
     },
@@ -172,6 +177,21 @@ export const CustomScale: Story = {
         code: `import { PdfViewer } from "@osdk/react-components/experimental";
 
 <PdfViewer src="..." initialScale={1.5} />`,
+      },
+    },
+  },
+};
+
+export const WithDownload: Story = {
+  args: {
+    downloadEnabled: true,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `import { PdfViewer } from "@osdk/react-components/experimental";
+
+<PdfViewer src="..." downloadEnabled />`,
       },
     },
   },

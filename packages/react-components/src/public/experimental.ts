@@ -60,7 +60,7 @@ export type {
 } from "../object-table/ColumnConfigDialog.js";
 
 // PdfViewer
-export { BasePdfViewer } from "../pdf-viewer/PdfViewer.js";
+export { BasePdfRenderer } from "../pdf-viewer/PdfViewer.js";
 export type {
   AnnotationType,
   PdfAnnotation,
