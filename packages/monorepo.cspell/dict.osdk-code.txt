@@ -1,6 +1,7 @@
 asdaaaaa
 asyncIter
 backcompat
+batchable
 bbox
 bryantp
 Bgao
@@ -33,6 +34,7 @@ geotimeseriesrequests
 groupby
 Gtfs
 highbury
+IDPS
 Kaguinaldo
 Kelce
 LISTOGRAM
@@ -55,6 +57,7 @@ overscan
 Pageable
 platformapi
 Rangeable
+rcompare
 readabe
 Rhemmings
 sdkv2
@@ -64,20 +67,14 @@ subselect
 timecode
 timeseries
 tkelce
+deferreds
 undefineds
+unsub
 valuetype
 websockets
 wmata
 workstateRid
 Zhang
-Opis
-Kaguinaldo
-Esong
-civpro
-esong
-asdaaaaa
-foos
-rcompare
 zipcode
 IDPS
 pagechanging
