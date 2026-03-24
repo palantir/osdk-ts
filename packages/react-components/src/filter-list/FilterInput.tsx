@@ -30,6 +30,8 @@ interface FilterInputProps<Q extends ObjectTypeDefinition> {
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
   whereClause: WhereClause<Q>;
+  searchQuery?: string;
+  excludeRowOpen?: boolean;
 }
 
 function FilterInputInner<Q extends ObjectTypeDefinition>({
@@ -39,6 +41,8 @@ function FilterInputInner<Q extends ObjectTypeDefinition>({
   filterState,
   onFilterStateChanged,
   whereClause,
+  searchQuery,
+  excludeRowOpen,
 }: FilterInputProps<Q>): React.ReactElement {
   return (
     <FilterInputContent
@@ -48,6 +52,8 @@ function FilterInputInner<Q extends ObjectTypeDefinition>({
       filterState={filterState}
       onFilterStateChanged={onFilterStateChanged}
       whereClause={whereClause}
+      searchQuery={searchQuery}
+      excludeRowOpen={excludeRowOpen}
     />
   );
 }
@@ -61,6 +67,8 @@ function FilterInputContent<Q extends ObjectTypeDefinition>({
   filterState,
   onFilterStateChanged,
   whereClause,
+  searchQuery,
+  excludeRowOpen,
 }: FilterInputProps<Q>): React.ReactElement {
   switch (definition.type) {
     case "HAS_LINK":
@@ -78,6 +86,7 @@ function FilterInputContent<Q extends ObjectTypeDefinition>({
           definition={definition}
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}
+          searchQuery={searchQuery}
         />
       );
 
@@ -119,6 +128,8 @@ function FilterInputContent<Q extends ObjectTypeDefinition>({
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}
           whereClause={whereClause}
+          searchQuery={searchQuery}
+          excludeRowOpen={excludeRowOpen}
         />
       );
 

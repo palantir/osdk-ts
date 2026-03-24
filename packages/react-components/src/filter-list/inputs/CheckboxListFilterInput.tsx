@@ -20,6 +20,7 @@ import type {
   WhereClause,
 } from "@osdk/api";
 import React, { memo, useCallback, useMemo } from "react";
+import { FilterInputExcludeRow } from "../base/FilterInputExcludeRow.js";
 import { CheckboxListInput } from "../base/inputs/CheckboxListInput.js";
 import type { FilterState } from "../FilterListItemApi.js";
 import { usePropertyAggregation } from "../hooks/usePropertyAggregation.js";
@@ -32,6 +33,8 @@ interface CheckboxListFilterInputProps<Q extends ObjectTypeDefinition> {
   onFilterStateChanged: (state: FilterState) => void;
   whereClause: WhereClause<Q>;
   colorMap?: Record<string, string>;
+  searchQuery?: string;
+  excludeRowOpen?: boolean;
 }
 
 function CheckboxListFilterInputInner<Q extends ObjectTypeDefinition>({
@@ -41,6 +44,8 @@ function CheckboxListFilterInputInner<Q extends ObjectTypeDefinition>({
   onFilterStateChanged,
   whereClause,
   colorMap,
+  searchQuery,
+  excludeRowOpen,
 }: CheckboxListFilterInputProps<Q>): React.ReactElement {
   const selectedValues = useMemo(
     () =>
@@ -74,14 +79,22 @@ function CheckboxListFilterInputInner<Q extends ObjectTypeDefinition>({
   );
 
   return (
-    <CheckboxListInput
-      values={data}
-      isLoading={isLoading}
-      error={error}
-      selectedValues={selectedValues}
-      onChange={handleChange}
-      colorMap={colorMap}
-    />
+    <FilterInputExcludeRow
+      excludeRowOpen={excludeRowOpen}
+      filterState={filterState}
+      onFilterStateChanged={onFilterStateChanged}
+      totalValueCount={data.length}
+    >
+      <CheckboxListInput
+        values={data}
+        isLoading={isLoading}
+        error={error}
+        selectedValues={selectedValues}
+        onChange={handleChange}
+        colorMap={colorMap}
+        searchQuery={searchQuery}
+      />
+    </FilterInputExcludeRow>
   );
 }
 

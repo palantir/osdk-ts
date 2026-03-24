@@ -19,12 +19,10 @@ import type { FilterDefinitionUnion } from "../FilterListApi.js";
 import type {
   ContainsTextFilterState,
   DateRangeFilterState,
-  ExactMatchFilterState,
   FilterComponentType,
   FilterState,
   NumberRangeFilterState,
   SelectFilterState,
-  TimelineFilterState,
   ToggleFilterState,
 } from "../FilterListItemApi.js";
 
@@ -202,36 +200,6 @@ export function createDateRangeState(
     minValue,
     maxValue,
     includeNull: options?.includeNull,
-    isExcluding: options?.isExcluding,
-  };
-}
-
-/**
- * Helper to create an ExactMatchFilterState
- */
-export function createExactMatchState(
-  values: Array<string | boolean>,
-  options?: { isExcluding?: boolean },
-): ExactMatchFilterState<string | boolean> {
-  return {
-    type: "EXACT_MATCH",
-    values,
-    isExcluding: options?.isExcluding,
-  };
-}
-
-/**
- * Helper to create a TimelineFilterState
- */
-export function createTimelineState(
-  startDate?: Date,
-  endDate?: Date,
-  options?: { isExcluding?: boolean },
-): TimelineFilterState {
-  return {
-    type: "TIMELINE",
-    startDate,
-    endDate,
     isExcluding: options?.isExcluding,
   };
 }

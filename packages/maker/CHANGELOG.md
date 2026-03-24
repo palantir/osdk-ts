@@ -1,5 +1,16 @@
 # @osdk/maker
 
+## 0.16.0-beta.12
+
+### Minor Changes
+
+- 77aa4a9: Detect imported objects for OAC links
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.24
+- @osdk/generator-converters.ontologyir@2.8.0-beta.24
+
 ## 0.16.0-beta.11
 
 ### Minor Changes

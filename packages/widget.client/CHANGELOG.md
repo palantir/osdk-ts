@@ -1,5 +1,18 @@
 # @osdk/widget.client
 
+## 3.5.0-beta.25
+
+### Patch Changes
+
+- Updated dependencies [e590bed]
+  - @osdk/widget.api@3.5.0-beta.25
+
+## 3.5.0-beta.24
+
+### Patch Changes
+
+- @osdk/widget.api@3.5.0-beta.24
+
 ## 3.5.0-beta.23
 
 ### Patch Changes

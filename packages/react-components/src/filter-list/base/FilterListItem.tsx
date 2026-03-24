@@ -15,18 +15,19 @@
  */
 
 import { Button } from "@base-ui/react/button";
+import { Input } from "@base-ui/react/input";
 import type {
   DraggableAttributes,
   DraggableSyntheticListeners,
 } from "@dnd-kit/core";
 import classnames from "classnames";
-import React, { memo, useCallback } from "react";
+import React, { memo, useCallback, useState } from "react";
 import { ErrorBoundary } from "../../shared/ErrorBoundary.js";
 import type { FilterState } from "../FilterListItemApi.js";
-import { supportsExcluding } from "../utils/filterValues.js";
+import { supportsExcluding, supportsSearch } from "../utils/filterValues.js";
 import type { RenderFilterInput } from "./BaseFilterListApi.js";
 import { DragHandleIcon } from "./DragHandleIcon.js";
-import { ExcludeIcon, IncludeIcon, RemoveIcon } from "./FilterIcons.js";
+import { OverflowMenuIcon, RemoveIcon, SearchIcon } from "./FilterIcons.js";
 import styles from "./FilterListItem.module.css";
 
 interface FilterListItemProps<D> {
@@ -59,6 +60,11 @@ function FilterListItemInner<D>({
   className,
   style,
 }: FilterListItemProps<D>): React.ReactElement {
+  const [searchState, setSearchState] = useState<
+    { type: "closed" } | { type: "open"; query: string }
+  >({ type: "closed" });
+  const [excludeRowOpen, setExcludeRowOpen] = useState(false);
+
   const handleFilterStateChanged = useCallback(
     (newState: FilterState) => {
       onFilterStateChanged(filterKey, newState);
@@ -66,33 +72,49 @@ function FilterListItemInner<D>({
     [filterKey, onFilterStateChanged],
   );
 
-  const handleToggleExclude = useCallback(
-    () => {
-      if (filterState) {
-        onFilterStateChanged(filterKey, {
-          ...filterState,
-          isExcluding: !filterState.isExcluding,
-        });
-      }
+  const handleToggleSearch = useCallback(() => {
+    setSearchState((prev) =>
+      prev.type === "closed" ? { type: "open", query: "" } : { type: "closed" }
+    );
+  }, []);
+
+  const handleSearchChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setSearchState({ type: "open", query: e.target.value });
     },
-    [filterKey, filterState, onFilterStateChanged],
+    [],
   );
 
-  const handleRemove = useCallback(
-    () => {
-      onFilterRemoved?.(filterKey);
-    },
-    [filterKey, onFilterRemoved],
-  );
+  const handleSearchClear = useCallback(() => {
+    setSearchState({ type: "open", query: "" });
+  }, []);
 
-  const isExcluding = filterState?.isExcluding ?? false;
-  const showExcludeToggle = supportsExcluding(filterState);
+  const handleRemove = useCallback(() => {
+    onFilterRemoved?.(filterKey);
+  }, [filterKey, onFilterRemoved]);
+
+  const handleToggleExcludeRow = useCallback(() => {
+    setExcludeRowOpen((prev) => !prev);
+  }, []);
+
+  const searchInputRef = useCallback((element: HTMLInputElement | null) => {
+    element?.focus({ preventScroll: true });
+  }, []);
+
+  const showExcludeDropdown = supportsExcluding(filterState);
+  const showSearch = supportsSearch(filterState);
+  const hasOverflowActions = showExcludeDropdown;
+
+  const searchOpen = searchState.type === "open";
+  const searchQuery = searchState.type === "open" ? searchState.query : "";
+  const searchQueryForInput = searchState.type === "open"
+    ? searchState.query
+    : undefined;
 
   return (
     <div
       className={classnames(styles.filterItem, className)}
       style={style}
-      data-excluding={isExcluding || undefined}
     >
       <div className={styles.itemHeader}>
         {dragHandleAttributes && (
@@ -106,28 +128,60 @@ function FilterListItemInner<D>({
           </Button>
         )}
         <span className={styles.itemLabel}>{label}</span>
-        {showExcludeToggle && (
+        {showSearch && (
           <Button
-            className={styles.excludeToggle}
-            onClick={handleToggleExclude}
-            aria-pressed={isExcluding}
-            aria-label={isExcluding
-              ? "Switch to include mode"
-              : "Switch to exclude mode"}
+            className={styles.headerActionButton}
+            onClick={handleToggleSearch}
+            aria-label="Search values"
+            aria-pressed={searchOpen}
           >
-            {isExcluding ? <ExcludeIcon /> : <IncludeIcon />}
+            <SearchIcon />
           </Button>
         )}
         {onFilterRemoved && (
           <Button
-            className={styles.removeButton}
+            className={styles.headerActionButton}
             onClick={handleRemove}
             aria-label={`Remove ${label} filter`}
           >
             <RemoveIcon />
           </Button>
         )}
+        {hasOverflowActions && (
+          <Button
+            className={styles.headerActionButton}
+            onClick={handleToggleExcludeRow}
+            aria-label="More actions"
+            aria-pressed={excludeRowOpen}
+          >
+            <OverflowMenuIcon />
+          </Button>
+        )}
       </div>
+
+      {searchOpen && (
+        <div className={styles.searchRow}>
+          <Input
+            type="text"
+            className={styles.searchInput}
+            value={searchQuery}
+            onChange={handleSearchChange}
+            placeholder="Search property values..."
+            aria-label="Search property values"
+            ref={searchInputRef}
+          />
+          {searchQuery && (
+            <Button
+              type="button"
+              className={styles.searchClearButton}
+              onClick={handleSearchClear}
+              aria-label="Clear search"
+            >
+              <RemoveIcon />
+            </Button>
+          )}
+        </div>
+      )}
 
       <div className={styles.itemContent}>
         <ErrorBoundary errorMessage="Error loading filter">
@@ -136,6 +190,8 @@ function FilterListItemInner<D>({
             filterKey,
             filterState,
             onFilterStateChanged: handleFilterStateChanged,
+            searchQuery: searchQueryForInput,
+            excludeRowOpen,
           })}
         </ErrorBoundary>
       </div>

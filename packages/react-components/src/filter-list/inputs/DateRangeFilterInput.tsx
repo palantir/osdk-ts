@@ -138,17 +138,19 @@ function DateRangeFilterInputInner<Q extends ObjectTypeDefinition>({
     return 0;
   }, [nullCountData]);
 
+  const isLoading = histLoading || nullLoading;
+
   return (
     <NullValueWrapper
       nullCount={nullCount}
-      isLoading={nullLoading}
+      isLoading={isLoading}
       error={nullError}
       includeNull={includeNull}
       onIncludeNullChange={handleNullChange}
     >
       <DateRangeInput
         valueCountPairs={valueCountPairs}
-        isLoading={histLoading}
+        isLoading={isLoading}
         minValue={dateRangeState?.minValue}
         maxValue={dateRangeState?.maxValue}
         onChange={handleRangeChange}
