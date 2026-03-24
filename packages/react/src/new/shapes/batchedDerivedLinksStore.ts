@@ -133,6 +133,22 @@ type ObserveLinksUntyped = (
   }>,
 ) => Unsubscribable;
 
+// Adapter to bridge the strongly-typed observeLinks signature to the
+// untyped ObserveLinksUntyped used internally. The any casts are
+// contained here instead of spread through call sites.
+function adaptObserveLinks(
+  observeLinks: ObservableClient["observeLinks"],
+): ObserveLinksUntyped {
+  return (objects, linkName, options, subFn) => {
+    return observeLinks(
+      objects as ReadonlyArray<Osdk.Instance<ObjectOrInterfaceDefinition>>,
+      linkName as Parameters<ObservableClient["observeLinks"]>[1],
+      options as Parameters<ObservableClient["observeLinks"]>[2],
+      subFn as Parameters<ObservableClient["observeLinks"]>[3],
+    );
+  };
+}
+
 export function createBatchedDerivedLinksStore<
   S extends ShapeDefinition<ObjectOrInterfaceDefinition>,
 >(
@@ -163,8 +179,7 @@ export function createBatchedDerivedLinksStore<
   let currentSourceObjects: Osdk.Instance<ObjectOrInterfaceDefinition>[] = [];
   let destroyed = false;
 
-  const observeLinksUntyped = observableClient
-    .observeLinks as unknown as ObserveLinksUntyped;
+  const observeLinksUntyped = adaptObserveLinks(observableClient.observeLinks);
 
   for (const linkDef of batchableLinks) {
     const config = linkConfig[linkDef.name];
