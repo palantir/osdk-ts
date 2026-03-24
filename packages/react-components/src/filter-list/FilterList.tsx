@@ -120,7 +120,10 @@ export function FilterList<Q extends ObjectTypeDefinition>(
   );
 
   const effectiveRenderAddFilterButton = useMemo(() => {
-    if (uncontrolledAddFilterMode && managedHiddenDefinitions.length > 0) {
+    if (uncontrolledAddFilterMode) {
+      if (managedHiddenDefinitions.length === 0) {
+        return undefined;
+      }
       return () => (
         <AddFilterPopover
           hiddenDefinitions={hiddenFilterItems}
@@ -128,9 +131,6 @@ export function FilterList<Q extends ObjectTypeDefinition>(
           renderTrigger={renderAddFilterButton}
         />
       );
-    }
-    if (uncontrolledAddFilterMode) {
-      return undefined;
     }
     return renderAddFilterButton;
   }, [
