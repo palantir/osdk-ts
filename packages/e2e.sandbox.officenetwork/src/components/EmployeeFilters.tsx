@@ -69,6 +69,8 @@ const INITIAL_FILTERS = ALL_FILTER_DEFINITIONS.filter((def) =>
   def.id != null && ["department", "locationCity"].includes(def.id)
 );
 
+const FILTER_SIDEBAR_WIDTH = 256;
+
 function AddFilterButton({
   availableFilters,
   onAdd,
@@ -181,19 +183,29 @@ export function EmployeeFilters({
     [availableFilters, handleAddFilter],
   );
 
+  const containerStyle = useMemo(
+    () => ({
+      width: collapsed ? undefined : FILTER_SIDEBAR_WIDTH,
+      height: "100%" as const,
+    }),
+    [collapsed],
+  );
+
   return (
-    <FilterList
-      objectSet={$(Employee)}
-      filterDefinitions={filterDefinitions}
-      onFilterClauseChanged={onFilterClauseChanged}
-      onFilterRemoved={handleRemoveFilter}
-      enableSorting={true}
-      renderAddFilterButton={renderAddFilterButton}
-      title="Employee Filters"
-      showActiveFilterCount={true}
-      showResetButton={true}
-      collapsed={collapsed}
-      onCollapsedChange={setCollapsed}
-    />
+    <div style={containerStyle}>
+      <FilterList
+        objectSet={$(Employee)}
+        filterDefinitions={filterDefinitions}
+        onFilterClauseChanged={onFilterClauseChanged}
+        onFilterRemoved={handleRemoveFilter}
+        enableSorting={true}
+        renderAddFilterButton={renderAddFilterButton}
+        title="Employee Filters"
+        showActiveFilterCount={true}
+        showResetButton={true}
+        collapsed={collapsed}
+        onCollapsedChange={setCollapsed}
+      />
+    </div>
   );
 }

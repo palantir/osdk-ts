@@ -64,6 +64,7 @@ interface LinkedPropertyInputProps<
   >;
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
+  searchQuery?: string;
   className?: string;
   style?: React.CSSProperties;
 }
@@ -76,6 +77,7 @@ function LinkedPropertyInputInner<
   definition,
   filterState,
   onFilterStateChanged,
+  searchQuery,
   className,
   style,
 }: LinkedPropertyInputProps<Q, L>): React.ReactElement {
@@ -241,6 +243,7 @@ function LinkedPropertyInputInner<
             propertyKey={linkedPropertyKey}
             selectedValues={selectedValues}
             onChange={onSelectChange}
+            searchQuery={searchQuery}
           />
         );
       }
@@ -341,6 +344,7 @@ function LinkedPropertyInputInner<
             propertyKey={linkedPropertyKey}
             selectedValues={selectedValues}
             onChange={onExactMatchChange}
+            searchQuery={searchQuery}
           />
         );
       }
@@ -427,6 +431,7 @@ interface LinkedCheckboxListInputProps<Q extends ObjectTypeDefinition>
 {
   selectedValues: string[];
   onChange: (values: string[]) => void;
+  searchQuery?: string;
 }
 
 function LinkedCheckboxListInput<Q extends ObjectTypeDefinition>({
@@ -434,6 +439,7 @@ function LinkedCheckboxListInput<Q extends ObjectTypeDefinition>({
   propertyKey,
   selectedValues,
   onChange,
+  searchQuery,
 }: LinkedCheckboxListInputProps<Q>): React.ReactElement {
   const { data, isLoading, error } = usePropertyAggregation(
     objectType,
@@ -446,6 +452,7 @@ function LinkedCheckboxListInput<Q extends ObjectTypeDefinition>({
       error={error}
       selectedValues={selectedValues}
       onChange={onChange}
+      searchQuery={searchQuery}
     />
   );
 }
@@ -512,6 +519,7 @@ interface LinkedListogramInputProps<Q extends ObjectTypeDefinition>
 {
   selectedValues: string[];
   onChange: (values: string[]) => void;
+  searchQuery?: string;
 }
 
 function LinkedListogramInput<Q extends ObjectTypeDefinition>({
@@ -519,6 +527,7 @@ function LinkedListogramInput<Q extends ObjectTypeDefinition>({
   propertyKey,
   selectedValues,
   onChange,
+  searchQuery,
 }: LinkedListogramInputProps<Q>): React.ReactElement {
   const { data, maxCount, isLoading, error } = usePropertyAggregation(
     objectType,
@@ -532,6 +541,7 @@ function LinkedListogramInput<Q extends ObjectTypeDefinition>({
       error={error}
       selectedValues={selectedValues}
       onChange={onChange}
+      searchQuery={searchQuery}
     />
   );
 }

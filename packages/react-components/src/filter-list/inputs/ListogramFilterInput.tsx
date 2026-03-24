@@ -20,6 +20,7 @@ import type {
   WhereClause,
 } from "@osdk/api";
 import React, { memo, useCallback, useMemo } from "react";
+import { FilterInputExcludeRow } from "../base/FilterInputExcludeRow.js";
 import { ListogramInput } from "../base/inputs/ListogramInput.js";
 import type { FilterState } from "../FilterListItemApi.js";
 import { usePropertyAggregation } from "../hooks/usePropertyAggregation.js";
@@ -34,6 +35,8 @@ interface ListogramFilterInputProps<Q extends ObjectTypeDefinition> {
   colorMap?: Record<string, string>;
   displayMode?: "full" | "count" | "minimal";
   maxVisibleItems?: number;
+  searchQuery?: string;
+  excludeRowOpen?: boolean;
 }
 
 function ListogramFilterInputInner<Q extends ObjectTypeDefinition>({
@@ -45,6 +48,8 @@ function ListogramFilterInputInner<Q extends ObjectTypeDefinition>({
   colorMap,
   displayMode,
   maxVisibleItems,
+  searchQuery,
+  excludeRowOpen,
 }: ListogramFilterInputProps<Q>): React.ReactElement {
   const selectedValues = useMemo(
     () =>
@@ -78,17 +83,25 @@ function ListogramFilterInputInner<Q extends ObjectTypeDefinition>({
   );
 
   return (
-    <ListogramInput
-      values={data}
-      maxCount={maxCount}
-      isLoading={isLoading}
-      error={error}
-      selectedValues={selectedValues}
-      onChange={handleChange}
-      colorMap={colorMap}
-      displayMode={displayMode}
-      maxVisibleItems={maxVisibleItems}
-    />
+    <FilterInputExcludeRow
+      excludeRowOpen={excludeRowOpen}
+      filterState={filterState}
+      onFilterStateChanged={onFilterStateChanged}
+      totalValueCount={data.length}
+    >
+      <ListogramInput
+        values={data}
+        maxCount={maxCount}
+        isLoading={isLoading}
+        error={error}
+        selectedValues={selectedValues}
+        onChange={handleChange}
+        colorMap={colorMap}
+        displayMode={displayMode}
+        maxVisibleItems={maxVisibleItems}
+        searchQuery={searchQuery}
+      />
+    </FilterInputExcludeRow>
   );
 }
 
