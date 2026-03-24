@@ -57,6 +57,7 @@ import {
   ORDER_BY_IDX,
   PIVOT_IDX,
   RDP_IDX,
+  RIDS_IDX,
   SELECT_IDX,
   WHERE_IDX,
 } from "./ListCacheKey.js";
@@ -353,7 +354,9 @@ export abstract class ListQuery extends BaseListQuery<
       );
     }
 
-    if (changes.modified.has(this.cacheKey)) return;
+    if (changes.modified.has(this.cacheKey)) {
+      return;
+    }
     // mark ourselves as updated so we don't infinite recurse.
     changes.modified.add(this.cacheKey);
 
@@ -419,7 +422,9 @@ export abstract class ListQuery extends BaseListQuery<
         }
 
         for (const key of existingList) {
-          if (toRemove.has(key)) continue;
+          if (toRemove.has(key)) {
+            continue;
+          }
           newList.push(key);
         }
         for (const obj of toAdd) {

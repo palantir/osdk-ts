@@ -284,6 +284,11 @@ export class ObjectSetListenerWebsocket {
     if (process.env.NODE_ENV !== "production") {
       this.#logger?.debug("#sendSubscribeMessage()");
     }
+
+    if (this.#ws?.readyState !== WebSocket.OPEN) {
+      return;
+    }
+
     // If two calls to `.subscribe()` happen at once (or if the connection is reset),
     // we may have multiple subscriptions that don't have a subscriptionId yet,
     // so we filter those out.
@@ -320,7 +325,7 @@ export class ObjectSetListenerWebsocket {
         "sending subscribe message",
       );
     }
-    this.#ws?.send(JSON.stringify(subscribe));
+    this.#ws.send(JSON.stringify(subscribe));
   }
 
   #unsubscribe<Q extends ObjectOrInterfaceDefinition>(

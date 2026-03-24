@@ -42,11 +42,15 @@ export class QuerySubscription<
   /** @internal */
   subscriptionId: string;
 
-  constructor(query: TQuery, subscription: Subscription) {
+  constructor(
+    query: TQuery,
+    subscription: Subscription,
+    subscriptionId?: string,
+  ) {
     super(subscription);
     this.query = query;
     this.subscription = subscription;
-    this.subscriptionId = `sub_${++subscriptionIdCounter}`;
+    this.subscriptionId = subscriptionId ?? `sub_${++subscriptionIdCounter}`;
 
     // hide these from introspection
     Object.defineProperties(this, {
