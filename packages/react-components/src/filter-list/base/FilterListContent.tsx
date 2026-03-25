@@ -37,7 +37,7 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import classnames from "classnames";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import type { FilterState } from "../FilterListItemApi.js";
 import type { RenderFilterInput } from "./BaseFilterListApi.js";
 import styles from "./FilterListContent.module.css";
@@ -80,25 +80,34 @@ export function FilterListContent<D>({
   className,
   style,
 }: FilterListContentProps<D>): React.ReactElement {
-  const [internalOrder, setInternalOrder] = useState<Array<D>>(
-    () => filterDefinitions ?? [],
-  );
+  const [dragOrder, setDragOrder] = useState<string[] | null>(null);
   const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
 
-  useEffect(() => {
-    if (filterDefinitions) {
-      setInternalOrder(filterDefinitions);
+  const renderDefinitions = useMemo(() => {
+    if (!enableSorting || !dragOrder || !filterDefinitions) {
+      return filterDefinitions;
     }
-  }, [filterDefinitions]);
-
-  const renderDefinitions = enableSorting ? internalOrder : filterDefinitions;
+    const defsByKey = new Map(filterDefinitions.map(d => [getFilterKey(d), d]));
+    const ordered: Array<D> = [];
+    for (const key of dragOrder) {
+      const def = defsByKey.get(key);
+      if (def) {
+        ordered.push(def);
+        defsByKey.delete(key);
+      }
+    }
+    for (const def of defsByKey.values()) {
+      ordered.push(def);
+    }
+    return ordered;
+  }, [enableSorting, dragOrder, filterDefinitions, getFilterKey]);
 
   const sortableIds = useMemo(
     () =>
-      enableSorting
-        ? internalOrder.map((def) => getFilterKey(def))
+      enableSorting && renderDefinitions
+        ? renderDefinitions.map((def) => getFilterKey(def))
         : [],
-    [enableSorting, internalOrder, getFilterKey],
+    [enableSorting, renderDefinitions, getFilterKey],
   );
 
   const pointerSensor = useSensor(PointerSensor, {
@@ -112,8 +121,8 @@ export function FilterListContent<D>({
   const activeIndex = activeId != null
     ? sortableIds.indexOf(String(activeId))
     : -1;
-  const activeDefinition = activeIndex >= 0
-    ? internalOrder[activeIndex]
+  const activeDefinition = activeIndex >= 0 && renderDefinitions
+    ? renderDefinitions[activeIndex]
     : undefined;
 
   const activeFilterKey = useMemo(
@@ -135,10 +144,10 @@ export function FilterListContent<D>({
       const oldIndex = sortableIds.indexOf(String(active.id));
       const newIndex = sortableIds.indexOf(String(over.id));
       if (oldIndex !== -1 && newIndex !== -1) {
-        setInternalOrder(arrayMove(internalOrder, oldIndex, newIndex));
+        setDragOrder(arrayMove(sortableIds, oldIndex, newIndex));
       }
     },
-    [internalOrder, sortableIds],
+    [sortableIds],
   );
 
   const handleDragCancel = useCallback(() => {
@@ -149,7 +158,9 @@ export function FilterListContent<D>({
     () => ({
       onDragStart({ active }) {
         const idx = sortableIds.indexOf(String(active.id));
-        const def = idx >= 0 ? internalOrder[idx] : undefined;
+        const def = idx >= 0 && renderDefinitions
+          ? renderDefinitions[idx]
+          : undefined;
         const label = def ? getFilterLabel(def) : "filter";
         return `Picked up ${label} filter`;
       },
@@ -162,7 +173,9 @@ export function FilterListContent<D>({
       },
       onDragEnd({ active, over }) {
         const idx = sortableIds.indexOf(String(active.id));
-        const def = idx >= 0 ? internalOrder[idx] : undefined;
+        const def = idx >= 0 && renderDefinitions
+          ? renderDefinitions[idx]
+          : undefined;
         const label = def ? getFilterLabel(def) : "filter";
         if (over && active.id !== over.id) {
           const overIdx = sortableIds.indexOf(String(over.id));
@@ -172,12 +185,14 @@ export function FilterListContent<D>({
       },
       onDragCancel({ active }) {
         const idx = sortableIds.indexOf(String(active.id));
-        const def = idx >= 0 ? internalOrder[idx] : undefined;
+        const def = idx >= 0 && renderDefinitions
+          ? renderDefinitions[idx]
+          : undefined;
         const label = def ? getFilterLabel(def) : "filter";
         return `Cancelled dragging ${label} filter`;
       },
     }),
-    [internalOrder, sortableIds, getFilterLabel],
+    [renderDefinitions, sortableIds, getFilterLabel],
   );
 
   const accessibility = useMemo(
@@ -214,7 +229,7 @@ export function FilterListContent<D>({
             items={sortableIds}
             strategy={verticalListSortingStrategy}
           >
-            {internalOrder.map((definition, index) => {
+            {renderDefinitions.map((definition, index) => {
               const id = sortableIds[index];
               const filterKey = getFilterKey(definition);
               const label = getFilterLabel(definition);
@@ -249,6 +264,7 @@ export function FilterListContent<D>({
                 onFilterStateChanged={onFilterStateChanged}
                 onFilterRemoved={onFilterRemoved}
                 renderInput={renderInput}
+                showDragHandle={true}
               />
             )}
           </DragOverlay>

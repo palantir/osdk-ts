@@ -168,6 +168,7 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
           colorMap={definition.colorMap}
           displayMode={definition.listogramConfig?.displayMode}
           maxVisibleItems={definition.listogramConfig?.maxVisibleItems}
+          showCheckbox={definition.listogramConfig?.showCheckbox}
           searchQuery={searchQuery}
           excludeRowOpen={excludeRowOpen}
         />

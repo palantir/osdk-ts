@@ -43,6 +43,7 @@ interface FilterListItemProps<D> {
   renderInput: RenderFilterInput<D>;
   dragHandleAttributes?: DraggableAttributes;
   dragHandleListeners?: DraggableSyntheticListeners;
+  showDragHandle?: boolean;
   className?: string;
   style?: React.CSSProperties;
 }
@@ -57,6 +58,7 @@ function FilterListItemInner<D>({
   renderInput,
   dragHandleAttributes,
   dragHandleListeners,
+  showDragHandle,
   className,
   style,
 }: FilterListItemProps<D>): React.ReactElement {
@@ -117,17 +119,28 @@ function FilterListItemInner<D>({
       style={style}
     >
       <div className={styles.itemHeader}>
-        {dragHandleAttributes && (
-          <Button
-            className={styles.dragHandle}
-            aria-label={`Reorder ${label}`}
-            {...dragHandleAttributes}
-            {...dragHandleListeners}
-          >
-            <DragHandleIcon />
-          </Button>
-        )}
-        <span className={styles.itemLabel}>{label}</span>
+        {dragHandleAttributes
+          ? (
+            <Button
+              className={styles.dragHandle}
+              aria-label={`Reorder ${label}`}
+              {...dragHandleAttributes}
+              {...dragHandleListeners}
+            >
+              <DragHandleIcon />
+            </Button>
+          )
+          : showDragHandle && (
+            <span className={styles.dragHandle} aria-hidden="true">
+              <DragHandleIcon />
+            </span>
+          )}
+        <span
+          className={styles.itemLabel}
+          data-excluding={filterState?.isExcluding || undefined}
+        >
+          {label}
+        </span>
         {showSearch && (
           <Button
             className={styles.headerActionButton}

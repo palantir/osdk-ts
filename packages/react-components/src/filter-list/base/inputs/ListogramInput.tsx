@@ -17,6 +17,7 @@
 import { Button } from "@base-ui/react/button";
 import classnames from "classnames";
 import React, { memo, useCallback, useMemo, useState } from "react";
+import { Checkbox } from "../../../base-components/checkbox/Checkbox.js";
 import type { PropertyAggregationValue } from "../../types/AggregationTypes.js";
 import { filterValuesBySearch } from "../../utils/filterValues.js";
 import styles from "./ListogramInput.module.css";
@@ -35,6 +36,7 @@ interface ListogramInputProps {
   onChange: (values: string[]) => void;
   colorMap?: Record<string, string>;
   displayMode?: ListogramDisplayMode;
+  showCheckbox?: boolean;
   className?: string;
   style?: React.CSSProperties;
   maxVisibleItems?: number;
@@ -50,6 +52,7 @@ function ListogramInputInner({
   onChange,
   colorMap,
   displayMode = "full",
+  showCheckbox,
   className,
   style,
   maxVisibleItems,
@@ -79,13 +82,19 @@ function ListogramInputInner({
     return stableValues;
   }, [stableValues, searchQuery]);
 
+  const sortedValues = useMemo(() => {
+    const selected = filteredValues.filter(v => selectedSet.has(v.value));
+    const unselected = filteredValues.filter(v => !selectedSet.has(v.value));
+    return [...selected, ...unselected];
+  }, [filteredValues, selectedSet]);
+
   const displayValues = useMemo(() => {
-    if (isExpanded || !maxVisibleItems) return filteredValues;
-    return filteredValues.slice(0, maxVisibleItems);
-  }, [filteredValues, maxVisibleItems, isExpanded]);
+    if (isExpanded || !maxVisibleItems) return sortedValues;
+    return sortedValues.slice(0, maxVisibleItems);
+  }, [sortedValues, maxVisibleItems, isExpanded]);
 
   const hasMore = maxVisibleItems != null
-    && filteredValues.length > maxVisibleItems;
+    && sortedValues.length > maxVisibleItems;
 
   return (
     <div
@@ -131,15 +140,22 @@ function ListogramInputInner({
                   } as React.CSSProperties
                   : undefined}
               >
-                <span className={styles.label}>{value}</span>
-                {displayMode === "full" && (
-                  <span className={styles.bar}>
-                    <span className={styles.barFill} />
-                  </span>
+                {showCheckbox && (
+                  <Checkbox
+                    checked={selectedSet.has(value)}
+                    tabIndex={-1}
+                    className={styles.checkbox}
+                  />
                 )}
+                <span className={styles.label}>{value}</span>
                 {displayMode !== "minimal" && (
                   <span className={styles.count}>
                     {count.toLocaleString()}
+                  </span>
+                )}
+                {displayMode === "full" && (
+                  <span className={styles.bar}>
+                    <span className={styles.barFill} />
                   </span>
                 )}
               </Button>
@@ -152,7 +168,7 @@ function ListogramInputInner({
               className={styles.row}
               onClick={() => setIsExpanded(true)}
             >
-              View all ({filteredValues.length})
+              View all ({sortedValues.length})
             </Button>
           )}
         </div>

@@ -43,6 +43,10 @@
   }
 }
 
+.trigger[data-excluding] {
+  color: var(--osdk-intent-danger-rest);
+}
+
 .triggerLabel {
   white-space: nowrap;
 }

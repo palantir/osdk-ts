@@ -35,6 +35,11 @@
   color: var(--osdk-filter-item-label-color);
 }
 
+.itemLabel[data-excluding] {
+  text-decoration: line-through;
+  color: var(--osdk-intent-danger-rest);
+}
+
 .itemContent {
   display: flex;
   flex-direction: column;

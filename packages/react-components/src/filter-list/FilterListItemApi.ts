@@ -270,6 +270,7 @@ export interface PropertyFilterDefinition<
   listogramConfig?: {
     displayMode?: "full" | "count" | "minimal";
     maxVisibleItems?: number;
+    showCheckbox?: boolean;
   };
 
   /**

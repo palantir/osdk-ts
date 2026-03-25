@@ -96,6 +96,10 @@
   background: var(--osdk-filter-listogram-row-bar-color, var(--osdk-filter-listogram-selected-color));
 }
 
+.checkbox {
+  pointer-events: none;
+}
+
 .count {
   font-family: var(--osdk-filter-listogram-count-font-family);
   font-size: var(--osdk-filter-listogram-count-font-size);

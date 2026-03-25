@@ -49,20 +49,22 @@ function CheckboxListInputInner({
 }: CheckboxListInputProps): React.ReactElement {
   const stableValues = useStableData(values, isLoading);
 
-  const displayValues = useMemo(
-    () => {
-      const allValues = stableValues.map((item) => item.value);
-      if (searchQuery) {
-        return filterValuesBySearch(allValues, searchQuery, (v) => v);
-      }
-      return allValues;
-    },
-    [stableValues, searchQuery],
-  );
-
   const selectedSet = useMemo(
     () => new Set(selectedValues),
     [selectedValues],
+  );
+
+  const displayValues = useMemo(
+    () => {
+      const allValues = stableValues.map((item) => item.value);
+      const filtered = searchQuery
+        ? filterValuesBySearch(allValues, searchQuery, (v) => v)
+        : allValues;
+      const selected = filtered.filter(v => selectedSet.has(v));
+      const unselected = filtered.filter(v => !selectedSet.has(v));
+      return [...selected, ...unselected];
+    },
+    [stableValues, searchQuery, selectedSet],
   );
 
   const toggleValue = useCallback(
