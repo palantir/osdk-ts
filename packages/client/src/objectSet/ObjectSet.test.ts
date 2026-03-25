@@ -561,13 +561,6 @@ describe("ObjectSet", () => {
 
     client(Employee).where({
       fullName: {
-        // @ts-expect-error
-        $interval: { $match: "John Smith" },
-      },
-    });
-
-    client(Employee).where({
-      fullName: {
         $interval: {
           $match: "John Smi",
           $prefixOnLastTerm: true,
@@ -581,6 +574,32 @@ describe("ObjectSet", () => {
       fullName: {
         // @ts-expect-error - $maxGaps not allowed with $prefixOnLastTerm
         $interval: { $match: "John Smi", $prefixOnLastTerm: true, $maxGaps: 1 },
+      },
+    });
+
+    client(Employee).where({
+      fullName: {
+        // @ts-expect-error - can't mix $match with $and
+        $interval: { $match: "", $ordered: true, $and: [{ $match: "" }] },
+      },
+    });
+
+    client(Employee).where({
+      fullName: {
+        // @ts-expect-error - can't mix $match with $fuzzy
+        $interval: {
+          $match: "",
+          $ordered: true,
+          $fuzzy: "true",
+          $fuzziness: 3,
+        },
+      },
+    });
+
+    client(Employee).where({
+      fullName: {
+        // @ts-expect-error - can't mix $and with $or
+        $interval: { $and: [{ $match: "" }], $or: [{ $match: "" }] },
       },
     });
   });
