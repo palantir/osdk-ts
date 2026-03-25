@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-import { Popover } from "@base-ui/react/popover";
-import classnames from "classnames";
 import React from "react";
 import type { MarkingSelectionState } from "../types.js";
 import styles from "./CategoryMarkingGroup.module.css";
 import { MarkingButton } from "./MarkingButton.js";
-import markingButtonStyles from "./MarkingButton.module.css";
+import { OverflowButton } from "./OverflowButton.js";
+import { isImplied } from "./selectionStateHelpers.js";
 
-const DEFAULT_GRID_COLUMNS = 4;
+const GRID_COLUMNS = 4;
 const VISIBLE_ROWS = 3;
 
 export interface CategoryMarkingGroupProps {
@@ -34,18 +33,16 @@ export interface CategoryMarkingGroupProps {
     disabled?: boolean;
   }>;
   onMarkingToggle: (markingId: string) => void;
-  gridColumns?: number;
 }
 
 export function CategoryMarkingGroup({
   categoryName,
   markings,
   onMarkingToggle,
-  gridColumns = DEFAULT_GRID_COLUMNS,
 }: CategoryMarkingGroupProps): React.ReactElement {
   const headingId = React.useId();
 
-  const maxVisible = gridColumns * VISIBLE_ROWS;
+  const maxVisible = GRID_COLUMNS * VISIBLE_ROWS;
   const hasOverflow = markings.length > maxVisible;
   const visibleMarkings = hasOverflow
     ? markings.slice(0, maxVisible - 1)
@@ -57,16 +54,11 @@ export function CategoryMarkingGroup({
   const gridItemCount = hasOverflow
     ? visibleMarkings.length + 1
     : visibleMarkings.length;
-  const emptyCellCount = (gridColumns - (gridItemCount % gridColumns))
-    % gridColumns;
+  const emptyCellCount = (GRID_COLUMNS - (gridItemCount % GRID_COLUMNS))
+    % GRID_COLUMNS;
 
-  const hasActiveOverflow = React.useMemo(
-    () =>
-      overflowMarkings.some(
-        (m) =>
-          m.selectionState === "SELECTED" || m.selectionState === "IMPLIED",
-      ),
-    [overflowMarkings],
+  const hasActiveOverflow = overflowMarkings.some(
+    (m) => m.selectionState === "SELECTED" || isImplied(m.selectionState),
   );
 
   return (
@@ -76,12 +68,7 @@ export function CategoryMarkingGroup({
       aria-labelledby={headingId}
     >
       <h3 id={headingId} className={styles.categoryName}>{categoryName}</h3>
-      <div
-        className={styles.markingGrid}
-        style={{
-          "--osdk-cbac-picker-marking-grid-columns": gridColumns,
-        } as React.CSSProperties}
-      >
+      <div className={styles.markingGrid}>
         {visibleMarkings.map((marking) => (
           <MarkingButtonItem
             key={marking.id}
@@ -102,110 +89,13 @@ export function CategoryMarkingGroup({
         {Array.from({ length: emptyCellCount }, (_, i) => (
           <div
             key={`empty-${i}`}
-            className={markingButtonStyles.emptyCell}
+            className={styles.emptyCell}
           />
         ))}
       </div>
     </div>
   );
 }
-
-interface OverflowButtonProps {
-  overflowMarkings: ReadonlyArray<{
-    id: string;
-    label: string;
-    selectionState: MarkingSelectionState;
-    disabled?: boolean;
-  }>;
-  hasActiveOverflow: boolean;
-  onMarkingToggle: (markingId: string) => void;
-}
-
-function OverflowButton({
-  overflowMarkings,
-  hasActiveOverflow,
-  onMarkingToggle,
-}: OverflowButtonProps): React.ReactElement {
-  const [open, setOpen] = React.useState(false);
-
-  return (
-    <Popover.Root open={open} onOpenChange={setOpen}>
-      <Popover.Trigger
-        render={
-          <button
-            type="button"
-            className={classnames(
-              styles.moreButton,
-              hasActiveOverflow && styles.moreButtonActive,
-            )}
-          >
-            +{overflowMarkings.length} more
-          </button>
-        }
-      />
-      <Popover.Portal>
-        <Popover.Positioner side="bottom" align="start">
-          <Popover.Popup className={styles.overflowList}>
-            {overflowMarkings.map((marking) => (
-              <OverflowItem
-                key={marking.id}
-                id={marking.id}
-                label={marking.label}
-                selectionState={marking.selectionState}
-                disabled={marking.disabled}
-                onToggle={onMarkingToggle}
-              />
-            ))}
-          </Popover.Popup>
-        </Popover.Positioner>
-      </Popover.Portal>
-    </Popover.Root>
-  );
-}
-
-interface OverflowItemProps {
-  id: string;
-  label: string;
-  selectionState: MarkingSelectionState;
-  disabled?: boolean;
-  onToggle: (markingId: string) => void;
-}
-
-const OverflowItem = React.memo(function OverflowItem({
-  id,
-  label,
-  selectionState,
-  disabled,
-  onToggle,
-}: OverflowItemProps): React.ReactElement {
-  const handleClick = React.useCallback(() => {
-    onToggle(id);
-  }, [onToggle, id]);
-
-  const isDisallowed = selectionState === "DISALLOWED"
-    || selectionState === "IMPLIED_DISALLOWED";
-  const isSelected = selectionState === "SELECTED";
-  const isImplied = selectionState === "IMPLIED"
-    || selectionState === "IMPLIED_DISALLOWED";
-
-  const displayLabel = isImplied ? `(${label})` : label;
-
-  return (
-    <button
-      type="button"
-      className={classnames(
-        styles.overflowItem,
-        (isSelected || isImplied) && styles.overflowItemSelected,
-        isDisallowed && styles.overflowItemDisabled,
-      )}
-      onClick={handleClick}
-      disabled={disabled ?? isDisallowed}
-      aria-pressed={isSelected}
-    >
-      {displayLabel}
-    </button>
-  );
-});
 
 interface MarkingButtonItemProps {
   id: string;

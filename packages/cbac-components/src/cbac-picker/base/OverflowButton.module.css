@@ -1,0 +1,29 @@
+.moreButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: var(--osdk-cbac-overflow-button-padding);
+  font-size: var(--osdk-cbac-overflow-button-font-size);
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  border-right: 1px solid var(--osdk-cbac-marking-button-border-color-default);
+  border-bottom: 1px solid var(--osdk-cbac-marking-button-border-color-default);
+  color: var(--osdk-cbac-marking-button-color-default);
+  background: var(--osdk-cbac-marking-button-bg-default);
+  font-weight: var(--osdk-typography-weight-bold);
+}
+
+.moreButton:hover {
+  background: var(--osdk-surface-background-color-default-hover);
+}
+
+.moreButton:focus-visible {
+  outline: var(--osdk-focus-outline);
+  outline-offset: var(--osdk-focus-visible-outline-offset);
+}
+
+.moreButtonActive {
+  color: var(--osdk-intent-primary-rest);
+}

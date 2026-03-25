@@ -17,45 +17,51 @@
 import classnames from "classnames";
 import React from "react";
 import type { MarkingSelectionState } from "../types.js";
-import styles from "./MarkingButton.module.css";
-import { getDisplayLabel, isDisallowed } from "./selectionStateHelpers.js";
+import styles from "./OverflowItem.module.css";
+import {
+  getDisplayLabel,
+  isDisallowed,
+  isImplied,
+} from "./selectionStateHelpers.js";
 
-export interface MarkingButtonProps {
+export interface OverflowItemProps {
+  id: string;
   label: string;
   selectionState: MarkingSelectionState;
-  onToggle: () => void;
   disabled?: boolean;
+  onToggle: (markingId: string) => void;
 }
 
-const selectionStateClassMap: Record<
-  MarkingSelectionState,
-  string | undefined
-> = {
-  SELECTED: styles.selected,
-  IMPLIED: styles.implied,
-  DISALLOWED: styles.disallowed,
-  IMPLIED_DISALLOWED: styles.impliedDisallowed,
-  NONE: undefined,
-};
-
-export function MarkingButton({
+export const OverflowItem = React.memo(function OverflowItem({
+  id,
   label,
   selectionState,
-  onToggle,
   disabled,
-}: MarkingButtonProps): React.ReactElement {
+  onToggle,
+}: OverflowItemProps): React.ReactElement {
+  const handleClick = React.useCallback(() => {
+    onToggle(id);
+  }, [onToggle, id]);
+
+  const disallowed = isDisallowed(selectionState);
+  const isSelected = selectionState === "SELECTED";
+  const implied = isImplied(selectionState);
+
   return (
     <button
       type="button"
       className={classnames(
-        styles.markingButton,
-        selectionStateClassMap[selectionState],
+        styles.overflowItem,
+        (isSelected || implied) && styles.overflowItemSelected,
+        disallowed && styles.overflowItemDisabled,
       )}
-      onClick={onToggle}
-      disabled={disabled ?? isDisallowed(selectionState)}
-      aria-pressed={selectionState === "SELECTED"}
+      onClick={handleClick}
+      disabled={disabled ?? disallowed}
+      aria-pressed={isSelected}
     >
       {getDisplayLabel(label, selectionState)}
     </button>
   );
-}
+});
+
+export { styles as overflowItemStyles };
