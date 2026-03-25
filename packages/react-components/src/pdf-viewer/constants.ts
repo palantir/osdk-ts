@@ -45,4 +45,8 @@ export const UPDATE_FIND_MATCHES_COUNT_EVENT = "updatefindmatchescount";
 export const PAGE_CHANGING_EVENT = "pagechanging";
 export const SCALE_CHANGING_EVENT = "scalechanging";
 export const PAGE_RENDERED_EVENT = "pagerendered";
+<<<<<<< HEAD
+=======
+// cspell:disable-next-line -- pdfjs EventBus event name
+>>>>>>> 920d86d89 (updated based on comments)
 export const PAGES_LOADED_EVENT = "pagesloaded";
