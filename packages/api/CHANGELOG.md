@@ -1,5 +1,12 @@
 # @osdk/api
 
+## 2.8.0-beta.26
+
+### Minor Changes
+
+- 60b5ffb: Add `platformApiName` field to actions to preserve the original API name used by the Foundry platform
+- 61e33ab: Add support for interval queries
+
 ## 2.8.0-beta.25
 
 ### Minor Changes

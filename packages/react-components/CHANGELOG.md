@@ -1,5 +1,24 @@
 # @osdk/react-components
 
+## 0.2.0-beta.22
+
+### Minor Changes
+
+- 7080b01: Add base form layout with header, footer, field components, and CSS token variables for theming
+- 08b979a: Thread objectSet through filter aggregation hooks and add FilterList documentation
+- dffac63: Fix styling nits
+- b373588: Styling fix with global border-box
+
+### Patch Changes
+
+- Updated dependencies [b1e8bba]
+- Updated dependencies [599426b]
+- Updated dependencies [60b5ffb]
+- Updated dependencies [61e33ab]
+  - @osdk/react@0.10.0-beta.11
+  - @osdk/client@2.8.0-beta.26
+  - @osdk/api@2.8.0-beta.26
+
 ## 0.2.0-beta.21
 
 ### Minor Changes
