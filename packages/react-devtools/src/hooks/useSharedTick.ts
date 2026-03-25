@@ -49,11 +49,6 @@ function getTickSnapshot(): number {
   return tickVersion;
 }
 
-export function useSharedTick(callback: () => void): void {
-  const callbackRef = React.useRef(callback);
-  callbackRef.current = callback;
-
-  React.useSyncExternalStore(subscribeTick, getTickSnapshot);
-
-  callbackRef.current();
+export function useSharedTick(): number {
+  return React.useSyncExternalStore(subscribeTick, getTickSnapshot);
 }

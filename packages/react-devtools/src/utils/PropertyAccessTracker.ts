@@ -15,6 +15,7 @@
  */
 
 import type { UnusedProperty, WastedRender } from "../types/index.js";
+import { CircularBuffer } from "./CircularBuffer.js";
 import type { EventTimeline } from "./EventTimeline.js";
 
 export interface PropertyAccessEvent {
@@ -26,19 +27,25 @@ export interface PropertyAccessEvent {
 }
 
 export class PropertyAccessTracker {
-  private accesses: PropertyAccessEvent[] = [];
+  private accesses: CircularBuffer<PropertyAccessEvent>;
   private componentRenderCycles = new Map<string, number>();
   private wrappedObjects = new WeakMap<object, string>();
   private maxAccesses = 10000;
+  private maxProxyDepth = 5;
   private eventTimeline: EventTimeline | null = null;
   private componentNames = new Map<string, string>();
   private componentRenders = new Map<string, number>();
   private componentAccessesPerRender = new Map<string, Set<number>>();
 
+  constructor() {
+    this.accesses = new CircularBuffer<PropertyAccessEvent>(this.maxAccesses);
+  }
+
   wrapObject<T extends object>(
     obj: T,
     objectKey: string,
     componentId: string,
+    depth: number = 0,
   ): T {
     if (this.wrappedObjects.has(obj)) {
       return obj;
@@ -73,11 +80,13 @@ export class PropertyAccessTracker {
           && !Array.isArray(value)
           && typeof prop === "string"
           && !prop.startsWith("$")
+          && depth < this.maxProxyDepth
         ) {
           return this.wrapObject(
             value,
             `${objectKey}.${prop}`,
             componentId,
+            depth + 1,
           );
         }
 
@@ -91,11 +100,6 @@ export class PropertyAccessTracker {
 
   recordAccess(event: PropertyAccessEvent): void {
     this.accesses.push(event);
-
-    if (this.accesses.length > this.maxAccesses) {
-      const overflow = this.accesses.length - this.maxAccesses;
-      this.accesses.splice(0, overflow);
-    }
 
     if (this.eventTimeline) {
       this.eventTimeline.record({
@@ -131,7 +135,7 @@ export class PropertyAccessTracker {
   ): Set<string> {
     const properties = new Set<string>();
 
-    for (const access of this.accesses) {
+    for (const access of this.accesses.toArray()) {
       if (
         access.componentId === componentId
         && access.objectKey === objectKey
@@ -166,7 +170,7 @@ export class PropertyAccessTracker {
       }
     >();
 
-    for (const access of this.accesses) {
+    for (const access of this.accesses.toArray()) {
       if (access.componentId === componentId && access.renderCycle != null) {
         const key = access.objectKey;
         if (!objectAccesses.has(key)) {
@@ -202,15 +206,15 @@ export class PropertyAccessTracker {
   }
 
   getRecentAccesses(limit: number = 100): PropertyAccessEvent[] {
-    return this.accesses.slice(-limit);
+    return this.accesses.getLast(limit).slice();
   }
 
   getAccessesByComponent(componentId: string): PropertyAccessEvent[] {
-    return this.accesses.filter((a) => a.componentId === componentId);
+    return this.accesses.toArray().filter((a) => a.componentId === componentId);
   }
 
   getAccessesByObject(objectKey: string): PropertyAccessEvent[] {
-    return this.accesses.filter((a) => a.objectKey === objectKey);
+    return this.accesses.toArray().filter((a) => a.objectKey === objectKey);
   }
 
   getAccessFrequency(
@@ -219,7 +223,7 @@ export class PropertyAccessTracker {
   ): Map<string, number> {
     const frequency = new Map<string, number>();
 
-    for (const access of this.accesses) {
+    for (const access of this.accesses.toArray()) {
       if (
         access.componentId === componentId
         && access.objectKey === objectKey
@@ -235,14 +239,18 @@ export class PropertyAccessTracker {
   }
 
   clear(): void {
-    this.accesses = [];
+    this.accesses.clear();
     this.componentRenderCycles.clear();
   }
 
   clearComponent(componentId: string): void {
-    this.accesses = this.accesses.filter(
+    const remaining = this.accesses.toArray().filter(
       (a) => a.componentId !== componentId,
     );
+    this.accesses.clear();
+    for (const item of remaining) {
+      this.accesses.push(item);
+    }
     this.componentRenderCycles.delete(componentId);
   }
 
@@ -258,7 +266,7 @@ export class PropertyAccessTracker {
     const objectCounts = new Map<string, number>();
     const propertyCounts = new Map<string, number>();
 
-    for (const access of this.accesses) {
+    for (const access of this.accesses.toArray()) {
       componentCounts.set(
         access.componentId,
         (componentCounts.get(access.componentId) || 0) + 1,
@@ -274,7 +282,7 @@ export class PropertyAccessTracker {
     }
 
     return {
-      totalAccesses: this.accesses.length,
+      totalAccesses: this.accesses.getSize(),
       uniqueComponents: componentCounts.size,
       uniqueObjects: objectCounts.size,
       uniqueProperties: propertyCounts.size,
@@ -290,7 +298,7 @@ export class PropertyAccessTracker {
 
     const componentRenderAccess = new Map<string, Set<number>>();
 
-    for (const access of this.accesses) {
+    for (const access of this.accesses.toArray()) {
       if (access.renderCycle != null) {
         if (!componentRenderAccess.has(access.componentId)) {
           componentRenderAccess.set(access.componentId, new Set());
@@ -325,7 +333,7 @@ export class PropertyAccessTracker {
 
     const componentPropertyAccess = new Map<string, Map<string, number>>();
 
-    for (const access of this.accesses) {
+    for (const access of this.accesses.toArray()) {
       const key = access.componentId;
       if (!componentPropertyAccess.has(key)) {
         componentPropertyAccess.set(key, new Map());

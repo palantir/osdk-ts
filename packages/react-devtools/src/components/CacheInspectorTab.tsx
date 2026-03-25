@@ -25,7 +25,7 @@ import {
   Tooltip,
 } from "@blueprintjs/core";
 import type { CacheEntry } from "@osdk/client/unstable-do-not-use";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { createPollingStore } from "../hooks/createPollingStore.js";
 import type { MonitorStore } from "../store/MonitorStore.js";
 import { formatBytes, formatRelativeTime } from "../utils/format.js";
@@ -100,8 +100,6 @@ export const CacheInspectorTab: React.FC<CacheInspectorTabProps> = (
 ) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [expandedKeys, setExpandedKeys] = useState<Set<string>>(new Set());
-  const [isLoading, setIsLoading] = useState(false);
-  const [loadError, setLoadError] = useState<Error | null>(null);
   const snapshotStore = React.useMemo(
     () =>
       createPollingStore(async () => {
@@ -132,18 +130,6 @@ export const CacheInspectorTab: React.FC<CacheInspectorTabProps> = (
 
   const snapshot: CacheSnapshot = polledSnapshot ?? emptySnapshot;
 
-  const loadSnapshot = useCallback(async () => {
-    setIsLoading(true);
-    setLoadError(null);
-    try {
-      await monitorStore.getCacheEntries();
-    } catch (error) {
-      setLoadError(error instanceof Error ? error : new Error(String(error)));
-    } finally {
-      setIsLoading(false);
-    }
-  }, [monitorStore]);
-
   const filteredEntries = useMemo(() =>
     snapshot.entries.filter(entry => {
       if (!searchQuery.trim()) {
@@ -173,7 +159,7 @@ export const CacheInspectorTab: React.FC<CacheInspectorTabProps> = (
     setInvalidateError(null);
     try {
       await monitorStore.invalidateCacheEntry(entry);
-      await loadSnapshot();
+      snapshotStore.forceRefresh();
     } catch (error) {
       setInvalidateError(
         error instanceof Error ? error : new Error(String(error)),
@@ -188,7 +174,7 @@ export const CacheInspectorTab: React.FC<CacheInspectorTabProps> = (
       setInvalidateError(null);
       try {
         await monitorStore.clearCache();
-        await loadSnapshot();
+        snapshotStore.forceRefresh();
       } catch (error) {
         setInvalidateError(
           error instanceof Error ? error : new Error(String(error)),
@@ -238,8 +224,7 @@ export const CacheInspectorTab: React.FC<CacheInspectorTabProps> = (
         <ButtonGroup>
           <Button
             icon="refresh"
-            onClick={() => void loadSnapshot()}
-            loading={isLoading}
+            onClick={() => snapshotStore.forceRefresh()}
             size="small"
           >
             Refresh
@@ -255,16 +240,15 @@ export const CacheInspectorTab: React.FC<CacheInspectorTabProps> = (
         </ButtonGroup>
       </div>
 
-      {(loadError || invalidateError) && (
+      {invalidateError && (
         <div className={styles.errorBanner}>
           <Icon icon="error" intent="danger" />
-          <span>{(loadError || invalidateError)?.message}</span>
+          <span>{invalidateError.message}</span>
           <Button
             icon="cross"
             variant="minimal"
             size="small"
             onClick={() => {
-              setLoadError(null);
               setInvalidateError(null);
             }}
           />
@@ -272,7 +256,7 @@ export const CacheInspectorTab: React.FC<CacheInspectorTabProps> = (
       )}
 
       <div className={styles.content}>
-        {isLoading && snapshot.entries.length === 0 && (
+        {polledSnapshot === undefined && (
           <div className={styles.skeletonList}>
             {Array.from({ length: 5 }).map((_, i) => (
               <div key={i} className={styles.skeletonEntry}>
@@ -284,7 +268,7 @@ export const CacheInspectorTab: React.FC<CacheInspectorTabProps> = (
           </div>
         )}
 
-        {filteredEntries.length === 0 && !isLoading && (
+        {filteredEntries.length === 0 && polledSnapshot !== undefined && (
           <div className={styles.emptyState}>
             <Icon icon="database" size={28} />
             <div className={styles.emptyTitle}>

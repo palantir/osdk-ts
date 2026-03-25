@@ -16,7 +16,7 @@
 
 import { Button, Icon, Tag, Tooltip } from "@blueprintjs/core";
 import classNames from "classnames";
-import React, { useCallback, useState } from "react";
+import React, { useMemo } from "react";
 import { useSharedTick } from "../hooks/useSharedTick.js";
 import type { MonitorStore } from "../store/MonitorStore.js";
 import type { ComponentHookBinding } from "../utils/ComponentQueryRegistry.js";
@@ -82,15 +82,11 @@ export const HookRow: React.FC<HookRowProps> = ({
   formatTime = (ms) => `${ms.toFixed(1)}ms`,
   monitorStore,
 }) => {
-  const [status, setStatus] = useState<HookStatus>({
-    state: "idle",
-    lastUpdate: null,
-    age: null,
-  });
+  const tick = useSharedTick();
 
-  const updateStatus = useCallback(() => {
+  const status = useMemo((): HookStatus => {
     if (!monitorStore) {
-      return;
+      return { state: "idle", lastUpdate: null, age: null };
     }
 
     const timeline = monitorStore.getEventTimeline();
@@ -100,21 +96,17 @@ export const HookRow: React.FC<HookRowProps> = ({
       const age = Date.now() - lastEmission.timestamp;
       const isStale = age > 30000;
 
-      setStatus({
+      return {
         state: isStale ? "stale" : "success",
         lastUpdate: lastEmission.timestamp,
         age,
-      });
+      };
     } else if (binding.renderCount > 0) {
-      setStatus({
-        state: "loading",
-        lastUpdate: null,
-        age: null,
-      });
+      return { state: "loading", lastUpdate: null, age: null };
     }
-  }, [monitorStore, binding.subscriptionId, binding.renderCount]);
 
-  useSharedTick(updateStatus);
+    return { state: "idle", lastUpdate: null, age: null };
+  }, [tick, monitorStore, binding.subscriptionId, binding.renderCount]);
 
   const handleClickLocation = () => {
     if (binding.filePath && binding.lineNumber) {

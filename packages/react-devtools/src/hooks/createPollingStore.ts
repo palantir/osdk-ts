@@ -20,9 +20,11 @@ export function createPollingStore<T>(
 ): {
   subscribe: (callback: () => void) => () => void;
   getSnapshot: () => T | undefined;
+  forceRefresh: () => void;
 } {
   let currentValue: T | undefined;
   const listeners = new Set<() => void>();
+  let intervalId: ReturnType<typeof setInterval> | null = null;
 
   function notify(): void {
     for (const listener of listeners) {
@@ -65,10 +67,15 @@ export function createPollingStore<T>(
 
   function subscribe(callback: () => void): () => void {
     listeners.add(callback);
-    const intervalId = setInterval(poll, intervalMs);
+    if (listeners.size === 1) {
+      intervalId = setInterval(poll, intervalMs);
+    }
     return () => {
       listeners.delete(callback);
-      clearInterval(intervalId);
+      if (listeners.size === 0 && intervalId != null) {
+        clearInterval(intervalId);
+        intervalId = null;
+      }
     };
   }
 
@@ -76,5 +83,9 @@ export function createPollingStore<T>(
     return currentValue;
   }
 
-  return { subscribe, getSnapshot };
+  function forceRefresh(): void {
+    poll();
+  }
+
+  return { subscribe, getSnapshot, forceRefresh };
 }

@@ -206,68 +206,68 @@ export class ObservableClientMonitor {
   wrapClient(client: ObservableClient): ObservableClient {
     this.observableClient = client;
     this.wrappedClient = client;
+    const methodCache = new Map<string | symbol, unknown>();
 
     return new Proxy(client, {
       get: (target, prop: string | symbol) => {
+        const cached = methodCache.get(prop);
+        if (cached !== undefined) {
+          return cached;
+        }
+
         const ext = target as ExtendedObservableClient;
+        let wrapped: unknown;
+
         if (prop === "observeObject") {
-          return this.wrapObserveObject(target.observeObject.bind(target));
-        }
-        if (prop === "observeList") {
-          return this.wrapObserveList(target.observeList.bind(target));
-        }
-        if (prop === "observeAggregation") {
-          return this.wrapObserveAggregation(
+          wrapped = this.wrapObserveObject(target.observeObject.bind(target));
+        } else if (prop === "observeList") {
+          wrapped = this.wrapObserveList(target.observeList.bind(target));
+        } else if (prop === "observeAggregation") {
+          wrapped = this.wrapObserveAggregation(
             // eslint-disable-next-line @typescript-eslint/no-deprecated
             target.observeAggregation.bind(target),
           );
-        }
-        if (prop === "observeLinks" && ext.observeLinks) {
-          return this.wrapObserveLinks(ext.observeLinks.bind(ext));
-        }
-        if (prop === "applyAction") {
-          return this.wrapApplyAction(target.applyAction.bind(target));
-        }
-        if (prop === "validateAction") {
-          return this.wrapValidateAction(target.validateAction.bind(target));
-        }
-        if (prop === "registerActionHook") {
-          return this.wrapRegisterActionHook(
+        } else if (prop === "observeLinks" && ext.observeLinks) {
+          wrapped = this.wrapObserveLinks(ext.observeLinks.bind(ext));
+        } else if (prop === "applyAction") {
+          wrapped = this.wrapApplyAction(target.applyAction.bind(target));
+        } else if (prop === "validateAction") {
+          wrapped = this.wrapValidateAction(target.validateAction.bind(target));
+        } else if (prop === "registerActionHook") {
+          wrapped = this.wrapRegisterActionHook(
             asHookRegistrar(ext.registerActionHook?.bind(ext)),
           );
-        }
-        if (prop === "registerObjectHook") {
-          return this.wrapRegisterObjectHook(
+        } else if (prop === "registerObjectHook") {
+          wrapped = this.wrapRegisterObjectHook(
             asHookRegistrar(ext.registerObjectHook?.bind(ext)),
           );
-        }
-        if (prop === "registerListHook") {
-          return this.wrapRegisterListHook(
+        } else if (prop === "registerListHook") {
+          wrapped = this.wrapRegisterListHook(
             asHookRegistrar(ext.registerListHook?.bind(ext)),
           );
-        }
-        if (prop === "registerLinkHook") {
-          return this.wrapRegisterLinkHook(
+        } else if (prop === "registerLinkHook") {
+          wrapped = this.wrapRegisterLinkHook(
             asHookRegistrar(ext.registerLinkHook?.bind(ext)),
           );
-        }
-        if (prop === "registerObjectSetHook") {
-          return this.wrapRegisterObjectSetHook(
+        } else if (prop === "registerObjectSetHook") {
+          wrapped = this.wrapRegisterObjectSetHook(
             asHookRegistrar(ext.registerObjectSetHook?.bind(ext)),
           );
+        } else if (prop === "getCacheSnapshot") {
+          wrapped = ext.getCacheSnapshot?.bind(ext);
+        } else if (prop === "invalidateAll") {
+          wrapped = ext.invalidateAll?.bind(ext);
+        } else if (prop === "invalidateObjects") {
+          wrapped = ext.invalidateObjects?.bind(ext);
+        } else if (prop === "invalidateObjectType") {
+          wrapped = ext.invalidateObjectType?.bind(ext);
         }
-        if (prop === "getCacheSnapshot") {
-          return ext.getCacheSnapshot?.bind(ext);
+
+        if (wrapped !== undefined) {
+          methodCache.set(prop, wrapped);
+          return wrapped;
         }
-        if (prop === "invalidateAll") {
-          return ext.invalidateAll?.bind(ext);
-        }
-        if (prop === "invalidateObjects") {
-          return ext.invalidateObjects?.bind(ext);
-        }
-        if (prop === "invalidateObjectType") {
-          return ext.invalidateObjectType?.bind(ext);
-        }
+
         return Reflect.get(target, prop);
       },
     }) as ObservableClient;
@@ -912,25 +912,25 @@ export class ObservableClientMonitor {
           this.recordEmissionEvent(signature);
 
           if (value.resolvedList && componentContext) {
-            this.linkTraversalTracker.recordLinkedObjects({
-              subscriptionId: signature,
-              linkName,
-              objects: value.resolvedList.map((obj) => {
-                const osdkObj = obj as OsdkObject;
-                return {
-                  objectType: osdkObj.$apiName,
-                  primaryKey: String(osdkObj.$primaryKey),
-                };
-              }),
-            });
-
+            const linkedObjects: Array<
+              { objectType: string; primaryKey: string }
+            > = [];
             const wrappedList = value.resolvedList.map((obj) => {
               const osdkObj = obj as OsdkObject;
+              linkedObjects.push({
+                objectType: osdkObj.$apiName,
+                primaryKey: String(osdkObj.$primaryKey),
+              });
               return this.propertyAccessTracker.wrapObject(
                 obj,
                 `${osdkObj.$apiName}:${osdkObj.$primaryKey}`,
                 componentContext.id,
               );
+            });
+            this.linkTraversalTracker.recordLinkedObjects({
+              subscriptionId: signature,
+              linkName,
+              objects: linkedObjects,
             });
             (value as { resolvedList: typeof wrappedList }).resolvedList =
               wrappedList;
@@ -1470,20 +1470,22 @@ export class ObservableClientMonitor {
   }
 
   dispose(): void {
-    if (this.cleanupIntervalId) {
-      clearInterval(this.cleanupIntervalId);
-      this.cleanupIntervalId = null;
+    try {
+      this.signatureLastRecorded.clear();
+
+      if (
+        "dispose" in this.metricsStore
+        && typeof this.metricsStore.dispose === "function"
+      ) {
+        this.metricsStore.dispose();
+      }
+
+      this.actionTracker.dispose();
+    } finally {
+      if (this.cleanupIntervalId) {
+        clearInterval(this.cleanupIntervalId);
+        this.cleanupIntervalId = null;
+      }
     }
-
-    this.signatureLastRecorded.clear();
-
-    if (
-      "dispose" in this.metricsStore
-      && typeof this.metricsStore.dispose === "function"
-    ) {
-      this.metricsStore.dispose();
-    }
-
-    this.actionTracker.dispose();
   }
 }
