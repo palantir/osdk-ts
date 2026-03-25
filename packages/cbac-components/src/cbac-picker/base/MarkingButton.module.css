@@ -50,11 +50,6 @@
   opacity: 0.6;
 }
 
-.emptyCell {
-  border-right: 1px solid var(--osdk-cbac-marking-button-border-color-default);
-  border-bottom: 1px solid var(--osdk-cbac-marking-button-border-color-default);
-}
-
 .markingButton:focus-visible {
   outline: var(--osdk-focus-outline);
   outline-offset: var(--osdk-focus-visible-outline-offset);
