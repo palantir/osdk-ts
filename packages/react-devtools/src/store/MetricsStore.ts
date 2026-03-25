@@ -359,6 +359,7 @@ export class MetricsStore extends SubscribableStore {
 
       case "revalidation":
         this.aggregates.revalidations++;
+        this.aggregates.totalObjectsFromCache += objectCount;
         this.networkTimeDirty = true;
         if (operation.responseTime != null) {
           this.aggregates.networkResponseTime += operation.responseTime;
@@ -413,7 +414,8 @@ export class MetricsStore extends SubscribableStore {
   }
 
   private calculateRates(): MetricRates {
-    const total = this.aggregates.cacheHits + this.aggregates.cacheMisses;
+    const total = this.aggregates.cacheHits + this.aggregates.cacheMisses
+      + this.aggregates.revalidations;
     const totalRequests = total + this.aggregates.deduplications;
     const actionCount = this.aggregates.actionCount;
     const optimisticActionCount = this.aggregates.optimisticActionCount;
@@ -425,7 +427,9 @@ export class MetricsStore extends SubscribableStore {
       : 0;
 
     return {
-      cacheHitRate: total > 0 ? this.aggregates.cacheHits / total : 0,
+      cacheHitRate: total > 0
+        ? (this.aggregates.cacheHits + this.aggregates.revalidations) / total
+        : 0,
       deduplicationRate: totalRequests > 0
         ? this.aggregates.deduplications / totalRequests
         : 0,
@@ -571,7 +575,10 @@ export class MetricsStore extends SubscribableStore {
   }
 
   getCacheHitRate(): number {
-    const total = this.aggregates.cacheHits + this.aggregates.cacheMisses;
-    return total > 0 ? this.aggregates.cacheHits / total : 0;
+    const total = this.aggregates.cacheHits + this.aggregates.cacheMisses
+      + this.aggregates.revalidations;
+    return total > 0
+      ? (this.aggregates.cacheHits + this.aggregates.revalidations) / total
+      : 0;
   }
 }

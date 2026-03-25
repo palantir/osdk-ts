@@ -65,12 +65,16 @@ export class CacheEfficiencyAnalyzer {
     const snapshot = this.metricsStore.getSnapshot();
     const metrics = snapshot.aggregates;
 
-    const totalRequests = metrics.cacheHits + metrics.cacheMisses;
-    const hitRate = totalRequests > 0 ? metrics.cacheHits / totalRequests : 0;
+    const totalRequests = metrics.cacheHits + metrics.cacheMisses
+      + metrics.revalidations;
+    const hitRate = totalRequests > 0
+      ? (metrics.cacheHits + metrics.revalidations) / totalRequests
+      : 0;
     const cacheMissRate = 1 - hitRate;
 
     const avgNetworkTime = this.estimateAverageNetworkTime(metrics);
-    const cacheSavings = metrics.cacheHits * avgNetworkTime;
+    const cacheSavings = (metrics.cacheHits + metrics.revalidations)
+      * avgNetworkTime;
 
     const entries = cacheSnapshot.entries || [];
     const sortedByAccess = [...entries].sort((a, b) =>
@@ -96,6 +100,7 @@ export class CacheEfficiencyAnalyzer {
         coldEntries: coldEntries.length,
         cacheHits: metrics.cacheHits,
         cacheMisses: metrics.cacheMisses,
+        revalidations: metrics.revalidations,
         deduplications: metrics.deduplications,
       },
       cacheSnapshot,
@@ -134,15 +139,15 @@ export class CacheEfficiencyAnalyzer {
 
   getHitRateTrend(windowSeconds: number = 60): number[] {
     const snapshot = this.metricsStore.getSnapshot();
-    const { cacheHits, cacheMisses } = snapshot.timeSeries;
+    const { cacheHits, cacheMisses, revalidations } = snapshot.timeSeries;
 
     const hitRates: number[] = [];
     const count = Math.min(windowSeconds, cacheHits.length);
 
     for (let i = cacheHits.length - count; i < cacheHits.length; i++) {
       if (i < 0) continue;
-      const total = cacheHits[i] + cacheMisses[i];
-      hitRates.push(total > 0 ? cacheHits[i] / total : 0);
+      const total = cacheHits[i] + cacheMisses[i] + revalidations[i];
+      hitRates.push(total > 0 ? (cacheHits[i] + revalidations[i]) / total : 0);
     }
 
     return hitRates;
@@ -157,13 +162,17 @@ export class CacheEfficiencyAnalyzer {
       coldEntries: number;
       cacheHits: number;
       cacheMisses: number;
+      revalidations: number;
       deduplications: number;
     },
     cacheSnapshot: CacheSnapshot,
   ): CacheRecommendation[] {
     const recommendations: CacheRecommendation[] = [];
 
-    if (metrics.hitRate < 0.3 && metrics.cacheHits + metrics.cacheMisses > 20) {
+    if (
+      metrics.hitRate < 0.3
+      && metrics.cacheHits + metrics.cacheMisses + metrics.revalidations > 20
+    ) {
       recommendations.push({
         level: "critical",
         title: "Very low cache hit rate",
@@ -174,7 +183,8 @@ export class CacheEfficiencyAnalyzer {
           "Consider increasing cache TTL, prefetching related data, or memoizing components",
       });
     } else if (
-      metrics.hitRate < 0.5 && metrics.cacheHits + metrics.cacheMisses > 20
+      metrics.hitRate < 0.5
+      && metrics.cacheHits + metrics.cacheMisses + metrics.revalidations > 20
     ) {
       recommendations.push({
         level: "warning",
@@ -254,7 +264,8 @@ export class CacheEfficiencyAnalyzer {
     }
 
     if (
-      metrics.cacheHits + metrics.cacheMisses === 0 && metrics.totalEntries > 0
+      metrics.cacheHits + metrics.cacheMisses + metrics.revalidations === 0
+      && metrics.totalEntries > 0
     ) {
       recommendations.push({
         level: "info",

@@ -353,6 +353,28 @@ describe("MetricsStore", () => {
     expect(errors[99].id).toBe("err-5");
   });
 
+  it("should count revalidation objects toward totalObjectsFromCache", () => {
+    store.recordRevalidation("sig-reval", 50, undefined, 4);
+    flushMicrotasksAndTimers();
+
+    const snapshot = store.getSnapshot();
+    expect(snapshot.aggregates.revalidations).toBe(1);
+    expect(snapshot.aggregates.totalObjectsFromCache).toBe(4);
+  });
+
+  it("should include revalidations in cache hit rate", () => {
+    store.recordCacheHit("sig-1", 5);
+    store.recordRevalidation("sig-2", 50);
+    store.recordCacheMiss("sig-3", 100);
+    flushMicrotasksAndTimers();
+
+    const hitRate = store.getCacheHitRate();
+    expect(hitRate).toBeCloseTo(2 / 3);
+
+    const snapshot = store.getSnapshot();
+    expect(snapshot.rates.cacheHitRate).toBeCloseTo(2 / 3);
+  });
+
   it("should process all operations via batch processing", () => {
     for (let i = 0; i < 120; i++) {
       store.recordCacheHit(`batch-sig-${i}`, 10);

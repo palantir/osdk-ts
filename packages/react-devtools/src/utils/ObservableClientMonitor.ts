@@ -820,7 +820,7 @@ export class ObservableClientMonitor {
             value.status,
             value.result !== undefined,
             false,
-            0,
+            value.result !== undefined ? 1 : 0,
             value,
           );
 
