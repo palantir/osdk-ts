@@ -310,7 +310,11 @@ describe("usePdfOutline", () => {
     const { result, rerender } = renderHook(
       ({ document }: { document: PDFDocumentProxy | undefined }) =>
         usePdfOutline(document),
-      { initialProps: { document: doc } },
+      {
+        initialProps: { document: doc } as {
+          document: PDFDocumentProxy | undefined;
+        },
+      },
     );
 
     await waitFor(() => {

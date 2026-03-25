@@ -15,11 +15,13 @@
  */
 
 import type {
+  ObjectSet,
   ObjectTypeDefinition,
   PropertyKeys,
   WhereClause,
 } from "@osdk/api";
 import React, { memo, useCallback, useMemo } from "react";
+import { FilterInputExcludeRow } from "../base/FilterInputExcludeRow.js";
 import { TextTagsInput } from "../base/inputs/TextTagsInput.js";
 import type { FilterState } from "../FilterListItemApi.js";
 import { usePropertyAggregation } from "../hooks/usePropertyAggregation.js";
@@ -27,18 +29,22 @@ import { coerceToStringArray } from "../utils/coerceFilterValue.js";
 
 interface TextTagsFilterInputProps<Q extends ObjectTypeDefinition> {
   objectType: Q;
+  objectSet: ObjectSet<Q>;
   propertyKey: string;
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
   whereClause: WhereClause<Q>;
+  excludeRowOpen?: boolean;
 }
 
 function TextTagsFilterInputInner<Q extends ObjectTypeDefinition>({
   objectType,
+  objectSet,
   propertyKey,
   filterState,
   onFilterStateChanged,
   whereClause,
+  excludeRowOpen,
 }: TextTagsFilterInputProps<Q>): React.ReactElement {
   const tags = useMemo(
     () =>
@@ -68,17 +74,25 @@ function TextTagsFilterInputInner<Q extends ObjectTypeDefinition>({
   const { data, isLoading, error } = usePropertyAggregation(
     objectType,
     propertyKey as PropertyKeys<Q>,
+    objectSet,
     aggregationOptions,
   );
 
   return (
-    <TextTagsInput
-      suggestions={data}
-      isLoading={isLoading}
-      error={error}
-      tags={tags}
-      onChange={handleChange}
-    />
+    <FilterInputExcludeRow
+      excludeRowOpen={excludeRowOpen}
+      filterState={filterState}
+      onFilterStateChanged={onFilterStateChanged}
+      totalValueCount={data.length}
+    >
+      <TextTagsInput
+        suggestions={data}
+        isLoading={isLoading}
+        error={error}
+        tags={tags}
+        onChange={handleChange}
+      />
+    </FilterInputExcludeRow>
   );
 }
 

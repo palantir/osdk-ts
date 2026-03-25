@@ -1,5 +1,35 @@
 # @osdk/react-components
 
+## 0.2.0-beta.21
+
+### Minor Changes
+
+- fffbb68: Add DropdownField component with searchable combobox and multi-select support
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.24
+- @osdk/client@2.8.0-beta.24
+- @osdk/react@0.10.0-beta.10
+
+## 0.2.0-beta.20
+
+### Minor Changes
+
+- 9ff2eca: Add function-backed column query
+- 6516ff9: Fix multiple setData calls
+- bc46400: Add skeleton loading states and polish checkbox list, histogram, and range filter inputs
+- 7a3c43d: feat(pdf): pdf-viewer component
+- 532d0d7: Fix lint errors
+- 074a754: Display function-backed column
+
+### Patch Changes
+
+- Updated dependencies [4bb9769]
+  - @osdk/api@2.8.0-beta.23
+  - @osdk/client@2.8.0-beta.23
+  - @osdk/react@0.10.0-beta.10
+
 ## 0.2.0-beta.19
 
 ### Minor Changes

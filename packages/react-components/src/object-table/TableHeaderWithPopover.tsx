@@ -57,7 +57,7 @@ function HeaderMenuItem({
       )}
       onClick={onClick}
     >
-      <Icon className={styles.osdkHeaderIcon} color="currentColor" />
+      <Icon className={styles.osdkHeaderIcon} />
       <span>{label}</span>
     </Menu.Item>
   );
@@ -216,7 +216,6 @@ export function TableHeaderWithPopover<
             {isColumnPinned && (
               <Pin
                 className={styles.osdkHeaderIcon}
-                color={"currentColor"}
               />
             )}
             <TableHeaderContent header={header} />
@@ -255,6 +254,7 @@ export function TableHeaderWithPopover<
               >
                 <ChevronDown
                   className={styles.osdkHeaderIcon}
+                  //
                 />
               </Menu.Trigger>
             )}

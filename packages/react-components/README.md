@@ -81,7 +81,7 @@ The components that this package will provide are:
 | ------------- | ---------------------------------------------------------------------------------- | ------------------------------ |
 | `ObjectTable` | Displays an Object Set as a sortable, paginated table with inline editing support  | [Guide](./docs/ObjectTable.md) |
 | `PdfRenderer` | Renders PDF documents with annotations, search, sidebar navigation, and zoom       | [Guide](./docs/PdfViewer.md)   |
-| `FilterList`  | Visualize a high-level summary of objects data to allow users to filter that data. | -                              |
+| `FilterList`  | Visualize a high-level summary of objects data to allow users to filter that data. | [Guide](./docs/FilterList.md)  |
 | `ActionForm`  | Auto-generated form for executing Ontology Actions                                 | -                              |
 
 ## Component Architecture

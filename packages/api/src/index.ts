@@ -65,7 +65,11 @@ export type {
 export type {
   PropertyValueWireToClient,
 } from "./mapping/PropertyValueMapping.js";
-export type { Attachment, AttachmentUpload } from "./object/Attachment.js";
+export type {
+  Attachment,
+  AttachmentMetadata,
+  AttachmentUpload,
+} from "./object/Attachment.js";
 export type {
   AsyncIterArgs,
   Augment,

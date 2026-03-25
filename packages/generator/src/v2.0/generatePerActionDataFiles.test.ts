@@ -28,7 +28,6 @@ describe(generatePerActionDataFiles, () => {
     const sanitizedOntology = { ...TodoWireOntology, actionTypes: {} };
     await generatePerActionDataFiles(
       {
-        sanitizedOntology,
         fs: helper.minimalFiles,
         outDir: BASE_PATH,
         ontology: enhanceOntology({
@@ -51,7 +50,6 @@ describe(generatePerActionDataFiles, () => {
     const sanitizedOntology = TodoWireOntology;
     await generatePerActionDataFiles(
       {
-        sanitizedOntology,
         fs: helper.minimalFiles,
         outDir: path.join(BASE_PATH, "..", ".."),
         ontology: enhanceOntology({

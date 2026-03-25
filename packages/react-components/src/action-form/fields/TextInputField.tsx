@@ -14,32 +14,27 @@
  * limitations under the License.
  */
 
-import React, { useCallback } from "react";
+import { Input } from "@base-ui/react/input";
+import React from "react";
 import type { TextInputFieldProps } from "../FormFieldApi.js";
 
 export function TextInputField({
+  id,
   value,
   onChange,
   placeholder,
   minLength,
   maxLength,
-}: TextInputFieldProps): React.ReactElement {
-  const handleChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      onChange?.(e.target.value);
-    },
-    [onChange],
-  );
-
+}: TextInputFieldProps & { id?: string }): React.ReactElement {
   return (
-    <input
+    <Input
+      id={id}
       type="text"
-      value={value}
-      onChange={handleChange}
+      value={value ?? ""}
+      onValueChange={onChange}
       placeholder={placeholder}
       minLength={minLength}
       maxLength={maxLength}
-      data-testid="text-input-field"
     />
   );
 }

@@ -30,6 +30,7 @@
   border: var(--osdk-draggable-item-border);
   border-radius: var(--osdk-draggable-item-border-radius);
   width: 100%;
+  box-sizing: border-box;
   touch-action: none;
   user-select: none;
 }

@@ -17,7 +17,7 @@
 import { Error as ErrorIcon, Spin } from "@blueprintjs/icons";
 import classnames from "classnames";
 import "pdfjs-dist/web/pdf_viewer.css";
-import React, { useCallback } from "react";
+import React from "react";
 import { createPortal } from "react-dom";
 import { PdfViewerAnnotationLayer } from "./components/PdfViewerAnnotationLayer.js";
 import { PdfViewerOutlineSidebar } from "./components/PdfViewerOutlineSidebar.js";
@@ -48,10 +48,6 @@ export function BasePdfRenderer({
     initialSidebarOpen,
     sidebarMode: sidebarModeProp,
   });
-
-  const handleSwitchToThumbnails = useCallback(() => {
-    viewer.setSidebarMode("thumbnails");
-  }, [viewer.setSidebarMode]);
 
   const rootClassName = classnames(styles.pdfViewer, className);
 
@@ -119,6 +115,8 @@ export function BasePdfRenderer({
             numPages={viewer.numPages}
             currentPage={viewer.currentPage}
             onPageClick={viewer.scrollToPage}
+            sidebarMode={viewer.sidebarMode}
+            onSidebarModeChange={viewer.setSidebarMode}
           />
         )}
         {viewer.sidebarOpen && viewer.sidebarMode === "outline" && (
@@ -126,7 +124,8 @@ export function BasePdfRenderer({
             outlineItems={viewer.outlineItems}
             currentPage={viewer.currentPage}
             onItemClick={viewer.scrollToPage}
-            onSwitchToThumbnails={handleSwitchToThumbnails}
+            sidebarMode={viewer.sidebarMode}
+            onSidebarModeChange={viewer.setSidebarMode}
             outlineIcons={outlineIcons}
           />
         )}

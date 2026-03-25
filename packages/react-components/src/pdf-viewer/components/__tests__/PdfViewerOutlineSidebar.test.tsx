@@ -40,7 +40,8 @@ function createOutlineItem(
 const defaultProps = {
   currentPage: 1,
   onItemClick: vi.fn(),
-  onSwitchToThumbnails: vi.fn(),
+  sidebarMode: "outline" as const,
+  onSidebarModeChange: vi.fn(),
 };
 
 describe("PdfViewerOutlineSidebar", () => {
@@ -55,22 +56,6 @@ describe("PdfViewerOutlineSidebar", () => {
     );
 
     expect(screen.getByText("No outline available")).toBeTruthy();
-  });
-
-  it("should show switch to thumbnails button in empty state", () => {
-    const onSwitchToThumbnails = vi.fn();
-    render(
-      <PdfViewerOutlineSidebar
-        {...defaultProps}
-        outlineItems={[]}
-        onSwitchToThumbnails={onSwitchToThumbnails}
-      />,
-    );
-
-    const button = screen.getByText("View page thumbnails");
-    fireEvent.click(button);
-
-    expect(onSwitchToThumbnails).toHaveBeenCalledTimes(1);
   });
 
   // --- Rendering items ---

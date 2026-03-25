@@ -70,7 +70,7 @@ export type StubClient = {
 export type StubPatternCallback<T> = (client: StubClient) => Promise<T>;
 
 export interface MockClient extends Client {
-  when<T>(callback: StubPatternCallback<T>): StubBuilderFor<T>;
+  whenObjectSet<T>(callback: StubPatternCallback<T>): StubBuilderFor<T>;
   whenQuery<Q extends QueryDefinition>(
     query: Q,
     params?: QueryParamsFromDef<Q>,
@@ -136,7 +136,7 @@ export function createMockClient(): MockClient {
     return createMockObjectSet(def, (calls) => resolve(def.apiName, calls));
   }) as MockClient;
 
-  mockClient.when = <T>(
+  mockClient.whenObjectSet = <T>(
     callback: StubPatternCallback<T>,
   ): StubBuilderFor<T> => {
     let captured: { objectType: string; calls: Call[] } | undefined;

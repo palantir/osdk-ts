@@ -17,7 +17,9 @@
 import classnames from "classnames";
 import React, { useCallback, useMemo } from "react";
 import type { OutlineItem } from "../hooks/usePdfOutline.js";
+import type { SidebarMode } from "../types.js";
 import styles from "./PdfViewerOutlineSidebar.module.css";
+import { PdfViewerSidebarHeader } from "./PdfViewerSidebarHeader.js";
 
 const INDENT_PER_DEPTH = 16;
 
@@ -25,7 +27,8 @@ export interface PdfViewerOutlineSidebarProps {
   outlineItems: OutlineItem[];
   currentPage: number;
   onItemClick: (pageNumber: number) => void;
-  onSwitchToThumbnails: () => void;
+  sidebarMode: SidebarMode;
+  onSidebarModeChange: (mode: SidebarMode) => void;
   outlineIcons?: Partial<Record<number, React.ComponentType>>;
 }
 
@@ -33,7 +36,8 @@ export function PdfViewerOutlineSidebar({
   outlineItems,
   currentPage,
   onItemClick,
-  onSwitchToThumbnails,
+  sidebarMode,
+  onSidebarModeChange,
   outlineIcons,
 }: PdfViewerOutlineSidebarProps): React.ReactElement {
   const activeIndex = useMemo(() => {
@@ -43,17 +47,14 @@ export function PdfViewerOutlineSidebar({
   if (outlineItems.length === 0) {
     return (
       <div className={styles.sidebar}>
+        <PdfViewerSidebarHeader
+          sidebarMode={sidebarMode}
+          onSidebarModeChange={onSidebarModeChange}
+        />
         <div className={styles.emptyState}>
           <div className={styles.emptyStateText}>
             No outline available
           </div>
-          <button
-            type="button"
-            className={styles.switchToThumbnailsButton}
-            onClick={onSwitchToThumbnails}
-          >
-            View page thumbnails
-          </button>
         </div>
       </div>
     );
@@ -61,6 +62,10 @@ export function PdfViewerOutlineSidebar({
 
   return (
     <div className={styles.sidebar}>
+      <PdfViewerSidebarHeader
+        sidebarMode={sidebarMode}
+        onSidebarModeChange={onSidebarModeChange}
+      />
       <div className={styles.scrollContainer}>
         {outlineItems.map((item, index) => (
           <PdfViewerOutlineItem
