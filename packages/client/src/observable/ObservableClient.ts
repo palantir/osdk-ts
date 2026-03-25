@@ -65,6 +65,7 @@ export interface ObserveObjectOptions<
   apiName: T["apiName"] | T;
   pk: PrimaryKeyType<T>;
   select?: PropertyKeys<T>[];
+  $loadPropertySecurityMetadata?: boolean;
 }
 
 export type OrderBy<Q extends ObjectOrInterfaceDefinition> = {
@@ -109,6 +110,13 @@ export interface ObserveListOptions<
    * reducing payload sizes for list views.
    */
   select?: readonly PropertyKeys<Q>[];
+
+  /**
+   * When true, loads per-property security metadata (marking requirements)
+   * alongside each object. The returned objects will have `$propertySecurities`
+   * populated with conjunctive/disjunctive marking requirements per property.
+   */
+  $loadPropertySecurityMetadata?: boolean;
 
   /**
    * Automatically fetch additional pages on initial load.

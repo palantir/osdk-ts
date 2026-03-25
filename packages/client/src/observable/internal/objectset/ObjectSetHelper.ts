@@ -145,6 +145,10 @@ export class ObjectSetHelper extends AbstractHelper<
       operations.pageSize = options.pageSize;
     }
 
+    if (options.$loadPropertySecurityMetadata) {
+      operations.loadPropertySecurity = true;
+    }
+
     return operations as Canonical<ObjectSetOperations>;
   }
 }

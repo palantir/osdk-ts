@@ -49,6 +49,7 @@ export class ObjectQuery extends Query<
   #pk: string | number | boolean;
   #defType: DefType;
   #select: readonly string[] | undefined;
+  #loadPropertySecurityMetadata: boolean;
   #implementingTypes: Set<string> | undefined;
 
   constructor(
@@ -60,6 +61,7 @@ export class ObjectQuery extends Query<
     opts: CommonObserveOptions,
     defType: DefType = "object",
     select?: readonly string[],
+    loadPropertySecurityMetadata?: boolean,
   ) {
     super(
       store,
@@ -80,6 +82,7 @@ export class ObjectQuery extends Query<
     this.#pk = pk;
     this.#defType = defType;
     this.#select = select;
+    this.#loadPropertySecurityMetadata = loadPropertySecurityMetadata ?? false;
   }
 
   protected _createConnectable(
@@ -140,13 +143,21 @@ export class ObjectQuery extends Query<
             ...(this.#select && this.#select.length > 0
               ? { $select: this.#select }
               : {}),
+            $loadPropertySecurityMetadata: this
+              .#loadPropertySecurityMetadata as boolean,
           },
         );
       obj = fetched as ObjectHolder;
     } else {
       // Use batched loader for non-RDP objects (efficient batching)
       obj = await getBulkObjectLoader(this.store.client)
-        .fetch(this.#apiName, this.#pk, this.#defType, this.#select);
+        .fetch(
+          this.#apiName,
+          this.#pk,
+          this.#defType,
+          this.#select,
+          this.#loadPropertySecurityMetadata,
+        );
     }
 
     this.store.batch({}, (batch) => {
