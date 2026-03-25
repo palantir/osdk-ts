@@ -15,6 +15,7 @@
  */
 
 import type { BaseFilterOptions, CatchThemAll } from "./BaseFilter.js";
+import type { IntervalRule } from "./IntervalRule.js";
 import type { Just } from "./Just.js";
 
 interface StringFilterOptions extends BaseFilterOptions<string> {
@@ -22,6 +23,7 @@ interface StringFilterOptions extends BaseFilterOptions<string> {
   "$containsAllTermsInOrder": string;
   "$containsAnyTerm": string | { term: string; fuzzySearch?: boolean };
   "$containsAllTerms": string | { term: string; fuzzySearch?: boolean };
+  "$interval": IntervalRule;
   /**
    * Matches any of the provided values. If an empty array is provided, the filter will match all objects.
    */
@@ -52,6 +54,7 @@ export namespace StringFilter {
     extends Just<"$containsAllTerms", StringFilterOptions>
   {
   }
+  export interface $interval extends Just<"$interval", StringFilterOptions> {}
   export interface $in extends Just<"$in", StringFilterOptions> {}
   export interface $gt extends Just<"$gt", StringFilterOptions> {}
   export interface $gte extends Just<"$gte", StringFilterOptions> {}
@@ -69,6 +72,7 @@ export type StringFilter =
   | StringFilter.$containsAllTermsInOrder
   | StringFilter.$containsAnyTerm
   | StringFilter.$containsAllTerms
+  | StringFilter.$interval
   | StringFilter.$gt
   | StringFilter.$gte
   | StringFilter.$lt
