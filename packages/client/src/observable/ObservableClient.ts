@@ -51,6 +51,8 @@ import type {
   Status,
 } from "./ObservableClient/common.js";
 import type {
+  MediaContentObserveOptions,
+  MediaContentPayload,
   MediaMetadataObserveOptions,
   MediaMetadataPayload,
 } from "./ObservableClient/MediaObservableTypes.js";
@@ -600,6 +602,16 @@ export interface ObservableClient extends ObserveLinks {
     options: MediaMetadataObserveOptions,
     observer: Observer<MediaMetadataPayload>,
   ): Unsubscribable;
+
+  observeMedia(
+    source: Media | Attachment | MediaPropertyLocation,
+    options: MediaContentObserveOptions,
+    observer: Observer<MediaContentPayload>,
+  ): Unsubscribable;
+
+  invalidateMedia(
+    source: Media | Attachment | MediaPropertyLocation,
+  ): void;
 }
 
 export interface CanonicalizeOptionsInput<OS = ObjectSet<any, any>> {
