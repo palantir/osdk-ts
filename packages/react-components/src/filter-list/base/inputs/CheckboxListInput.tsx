@@ -22,7 +22,7 @@ import { filterValuesBySearch } from "../../utils/filterValues.js";
 import styles from "./CheckboxListInput.module.css";
 import { CheckboxListSkeleton } from "./CheckboxListSkeleton.js";
 import sharedStyles from "./shared.module.css";
-import { useStaleData } from "./useStaleData.js";
+import { useStableData } from "./useStableData.js";
 
 interface CheckboxListInputProps {
   values: PropertyAggregationValue[];
@@ -47,7 +47,7 @@ function CheckboxListInputInner({
   className,
   style,
 }: CheckboxListInputProps): React.ReactElement {
-  const stableValues = useStaleData(values, isLoading);
+  const stableValues = useStableData(values, isLoading);
 
   const displayValues = useMemo(
     () => {

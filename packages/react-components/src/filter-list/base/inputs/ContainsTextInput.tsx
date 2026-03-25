@@ -99,7 +99,7 @@ function ContainsTextInputInner({
           ? renderSearchIcon()
           : (
             <span className={styles.searchIcon}>
-              <Search color="currentColor" />
+              <Search />
             </span>
           )}
         <Input
@@ -119,7 +119,7 @@ function ContainsTextInputInner({
           >
             {renderClearIcon
               ? renderClearIcon()
-              : <Cross color="currentColor" />}
+              : <Cross />}
           </Button>
         )}
       </div>

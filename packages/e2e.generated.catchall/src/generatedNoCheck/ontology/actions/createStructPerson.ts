@@ -75,16 +75,19 @@ export interface createStructPerson extends ActionDefinition<createStructPerson.
     rid: 'ri.a.b.c.d';
     status: 'ACTIVE';
     type: 'action';
+    unsanitizedApiName: 'create-struct-person';
 
     signatures: createStructPerson.Signatures;
   };
   apiName: 'createStructPerson';
   type: 'action';
+  unsanitizedApiName: 'create-struct-person';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 export const createStructPerson: createStructPerson = {
   apiName: 'createStructPerson',
   type: 'action',
+  unsanitizedApiName: 'create-struct-person',
   osdkMetadata: $osdkMetadata,
 };

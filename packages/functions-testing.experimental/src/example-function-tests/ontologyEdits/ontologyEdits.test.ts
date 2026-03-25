@@ -32,12 +32,10 @@ import { ontologyEdits } from "./ontologyEdits.js";
 describe("ontologyEdits", () => {
   it("should return all edits", () => {
     const mockClient = createMockClient();
-    const emp = createMockOsdkObject(
-      Employee,
-      { employeeId: 1, fullName: "John Doe" },
-      undefined,
-      { primaryKeyApiName: "employeeId" },
-    );
+    const emp = createMockOsdkObject(Employee, {
+      employeeId: 1,
+      fullName: "John Doe",
+    });
 
     const edits = ontologyEdits(mockClient, emp);
 

@@ -1,5 +1,27 @@
 # @osdk/generator-converters.ontologyir
 
+## 2.8.0-beta.25
+
+### Patch Changes
+
+- @osdk/client.unstable@2.8.0-beta.25
+
+## 2.8.0-beta.24
+
+### Patch Changes
+
+- @osdk/client.unstable@2.8.0-beta.24
+
+## 2.8.0-beta.23
+
+### Minor Changes
+
+- 32c6a0c: Fix functions discovery on Windows
+
+### Patch Changes
+
+- @osdk/client.unstable@2.8.0-beta.23
+
 ## 2.8.0-beta.22
 
 ### Patch Changes

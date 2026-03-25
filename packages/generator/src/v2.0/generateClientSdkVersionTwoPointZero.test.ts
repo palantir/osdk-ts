@@ -643,17 +643,20 @@ describe("generator", () => {
             rid: 'ri.ontology.main.action-type.8f94017d-cf17-4fa8-84c3-8e01e5d594f2';
             status: 'ACTIVE';
             type: 'action';
+            unsanitizedApiName: 'deleteTodos';
 
             signatures: deleteTodos.Signatures;
           };
           apiName: 'deleteTodos';
           type: 'action';
+          unsanitizedApiName: 'deleteTodos';
           osdkMetadata: typeof $osdkMetadata;
         }
 
         export const deleteTodos: deleteTodos = {
           apiName: 'deleteTodos',
           type: 'action',
+          unsanitizedApiName: 'deleteTodos',
           osdkMetadata: $osdkMetadata,
         };
         ",
@@ -729,17 +732,20 @@ describe("generator", () => {
             rid: 'ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f2';
             status: 'ACTIVE';
             type: 'action';
+            unsanitizedApiName: 'markTodoCompleted';
 
             signatures: markTodoCompleted.Signatures;
           };
           apiName: 'markTodoCompleted';
           type: 'action';
+          unsanitizedApiName: 'markTodoCompleted';
           osdkMetadata: typeof $osdkMetadata;
         }
 
         export const markTodoCompleted: markTodoCompleted = {
           apiName: 'markTodoCompleted',
           type: 'action',
+          unsanitizedApiName: 'markTodoCompleted',
           osdkMetadata: $osdkMetadata,
         };
         ",
@@ -875,6 +881,8 @@ describe("generator", () => {
           osdkMetadata: typeof $osdkMetadata;
           type: 'object';
           apiName: 'Person';
+          primaryKeyApiName: 'email';
+          primaryKeyType: 'string';
           __DefinitionMetadata?: {
             objectSet: Person.ObjectSet;
             props: Person.Props;
@@ -915,6 +923,8 @@ describe("generator", () => {
           type: 'object',
           apiName: 'Person',
           osdkMetadata: $osdkMetadata,
+          primaryKeyApiName: 'email',
+          primaryKeyType: 'string',
           internalDoNotUseMetadata: {
             rid: 'ridForPerson',
           },
@@ -984,6 +994,8 @@ describe("generator", () => {
           osdkMetadata: typeof $osdkMetadata;
           type: 'object';
           apiName: 'Todo';
+          primaryKeyApiName: 'id';
+          primaryKeyType: 'integer';
           __DefinitionMetadata?: {
             objectSet: Todo.ObjectSet;
             props: Todo.Props;
@@ -1046,6 +1058,8 @@ describe("generator", () => {
           type: 'object',
           apiName: 'Todo',
           osdkMetadata: $osdkMetadata,
+          primaryKeyApiName: 'id',
+          primaryKeyType: 'integer',
           internalDoNotUseMetadata: {
             rid: 'ridForTodo',
           },
@@ -1319,17 +1333,20 @@ describe("generator", () => {
             rid: 'ri.ontology.main.action-type.8f94017d-cf17-4fa8-84c3-8e01e5d594f2';
             status: 'ACTIVE';
             type: 'action';
+            unsanitizedApiName: 'foo.bar.deleteTodos';
 
             signatures: deleteTodos.Signatures;
           };
           apiName: 'foo.bar.deleteTodos';
           type: 'action';
+          unsanitizedApiName: 'foo.bar.deleteTodos';
           osdkMetadata: typeof $osdkMetadata;
         }
 
         export const deleteTodos: deleteTodos = {
           apiName: 'foo.bar.deleteTodos',
           type: 'action',
+          unsanitizedApiName: 'foo.bar.deleteTodos',
           osdkMetadata: $osdkMetadata,
         };
         ",
@@ -1405,17 +1422,20 @@ describe("generator", () => {
             rid: 'ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f2';
             status: 'ACTIVE';
             type: 'action';
+            unsanitizedApiName: 'foo.bar.markTodoCompleted';
 
             signatures: markTodoCompleted.Signatures;
           };
           apiName: 'foo.bar.markTodoCompleted';
           type: 'action';
+          unsanitizedApiName: 'foo.bar.markTodoCompleted';
           osdkMetadata: typeof $osdkMetadata;
         }
 
         export const markTodoCompleted: markTodoCompleted = {
           apiName: 'foo.bar.markTodoCompleted',
           type: 'action',
+          unsanitizedApiName: 'foo.bar.markTodoCompleted',
           osdkMetadata: $osdkMetadata,
         };
         ",
@@ -1551,6 +1571,8 @@ describe("generator", () => {
           osdkMetadata: typeof $osdkMetadata;
           type: 'object';
           apiName: 'foo.bar.Person';
+          primaryKeyApiName: 'email';
+          primaryKeyType: 'string';
           __DefinitionMetadata?: {
             objectSet: Person.ObjectSet;
             props: Person.Props;
@@ -1591,6 +1613,8 @@ describe("generator", () => {
           type: 'object',
           apiName: 'foo.bar.Person',
           osdkMetadata: $osdkMetadata,
+          primaryKeyApiName: 'email',
+          primaryKeyType: 'string',
           internalDoNotUseMetadata: {
             rid: 'ridForPerson',
           },
@@ -1660,6 +1684,8 @@ describe("generator", () => {
           osdkMetadata: typeof $osdkMetadata;
           type: 'object';
           apiName: 'foo.bar.Todo';
+          primaryKeyApiName: 'id';
+          primaryKeyType: 'integer';
           __DefinitionMetadata?: {
             objectSet: Todo.ObjectSet;
             props: Todo.Props;
@@ -1722,6 +1748,8 @@ describe("generator", () => {
           type: 'object',
           apiName: 'foo.bar.Todo',
           osdkMetadata: $osdkMetadata,
+          primaryKeyApiName: 'id',
+          primaryKeyType: 'integer',
           internalDoNotUseMetadata: {
             rid: 'ridForTodo',
           },
@@ -2085,6 +2113,8 @@ describe("generator", () => {
             osdkMetadata: typeof $osdkMetadata;
             type: 'object';
             apiName: 'UsesForeignSpt';
+            primaryKeyApiName: 'id';
+            primaryKeyType: 'integer';
             __DefinitionMetadata?: {
               objectSet: UsesForeignSpt.ObjectSet;
               props: UsesForeignSpt.Props;
@@ -2127,6 +2157,8 @@ describe("generator", () => {
             type: 'object',
             apiName: 'UsesForeignSpt',
             osdkMetadata: $osdkMetadata,
+            primaryKeyApiName: 'id',
+            primaryKeyType: 'integer',
             internalDoNotUseMetadata: {
               rid: 'theRid',
             },
@@ -2219,17 +2251,20 @@ describe("generator", () => {
               rid: 'ri.a.b.c.d';
               status: 'ACTIVE';
               type: 'action';
+              unsanitizedApiName: 'setTaskBody';
 
               signatures: setTaskBody.Signatures;
             };
             apiName: 'setTaskBody';
             type: 'action';
+            unsanitizedApiName: 'setTaskBody';
             osdkMetadata: typeof $osdkMetadata;
           }
 
           export const setTaskBody: setTaskBody = {
             apiName: 'setTaskBody',
             type: 'action',
+            unsanitizedApiName: 'setTaskBody',
             osdkMetadata: $osdkMetadata,
           };
           "
@@ -2345,6 +2380,8 @@ describe("generator", () => {
           osdkMetadata: typeof $osdkMetadata;
           type: 'object';
           apiName: 'Person';
+          primaryKeyApiName: 'email';
+          primaryKeyType: 'string';
           __DefinitionMetadata?: {
             objectSet: Person.ObjectSet;
             props: Person.Props;
@@ -2385,6 +2422,8 @@ describe("generator", () => {
           type: 'object',
           apiName: 'Person',
           osdkMetadata: $osdkMetadata,
+          primaryKeyApiName: 'email',
+          primaryKeyType: 'string',
           internalDoNotUseMetadata: {
             rid: 'ridForPerson',
           },
@@ -2454,6 +2493,8 @@ describe("generator", () => {
           osdkMetadata: typeof $osdkMetadata;
           type: 'object';
           apiName: 'Todo';
+          primaryKeyApiName: 'id';
+          primaryKeyType: 'integer';
           __DefinitionMetadata?: {
             objectSet: Todo.ObjectSet;
             props: Todo.Props;
@@ -2516,6 +2557,8 @@ describe("generator", () => {
           type: 'object',
           apiName: 'Todo',
           osdkMetadata: $osdkMetadata,
+          primaryKeyApiName: 'id',
+          primaryKeyType: 'integer',
           internalDoNotUseMetadata: {
             rid: 'ridForTodo',
           },
@@ -2820,6 +2863,8 @@ describe("generator", () => {
           osdkMetadata: typeof $osdkMetadata;
           type: 'object';
           apiName: 'com.example.dep.Task';
+          primaryKeyApiName: 'taskId';
+          primaryKeyType: 'string';
           __DefinitionMetadata?: {
             objectSet: Task.ObjectSet;
             props: Task.Props;
@@ -2862,6 +2907,8 @@ describe("generator", () => {
           type: 'object',
           apiName: 'com.example.dep.Task',
           osdkMetadata: $osdkMetadata,
+          primaryKeyApiName: 'taskId',
+          primaryKeyType: 'string',
           internalDoNotUseMetadata: {
             rid: 'ridForTask',
           },

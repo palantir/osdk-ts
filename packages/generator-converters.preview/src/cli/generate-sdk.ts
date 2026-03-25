@@ -105,7 +105,7 @@ function generatePythonSdk(
       "--ontology",
       ontologyApiName,
       "--object-types",
-      objectTypes.join(","),
+      ...objectTypes,
       "--cache-path",
       tmpMetadata,
       "--force",

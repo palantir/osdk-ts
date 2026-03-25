@@ -28,18 +28,16 @@ import classnames from "classnames";
 import React from "react";
 import styles from "./Select.module.css";
 
-export interface SelectProps<Value extends string | number>
-  extends Omit<SelectRootProps<Value, false>, "className" | "multiple">
+export interface SelectProps<Value, Multiple extends boolean = false>
+  extends Omit<SelectRootProps<Value, Multiple>, "className">
 {}
 
-function SelectRoot<Value extends string | number>({
+function SelectRoot<Value, Multiple extends boolean = false>({
   children,
   ...rest
-}: SelectProps<Value>): React.ReactElement {
+}: SelectProps<Value, Multiple>): React.ReactElement {
   return (
-    <BaseUISelect.Root<Value> {...rest}>
-      {children}
-    </BaseUISelect.Root>
+    <BaseUISelect.Root<Value, Multiple> {...rest}>{children}</BaseUISelect.Root>
   );
 }
 
@@ -63,11 +61,16 @@ function SelectTrigger({
     >
       {children ?? (
         <>
-          <BaseUISelect.Value>
-            {(value) => (value != null ? String(value) : placeholder)}
-          </BaseUISelect.Value>
+          <div className={styles.osdkSelectValueContainer}>
+            <BaseUISelect.Value className={styles.osdkSelectValue} />
+            {placeholder != null && (
+              <span className={styles.osdkSelectPlaceholder}>
+                {placeholder}
+              </span>
+            )}
+          </div>
           <BaseUISelect.Icon className={styles.osdkSelectIcon}>
-            <CaretDown color="currentColor" />
+            <CaretDown />
           </BaseUISelect.Icon>
         </>
       )}

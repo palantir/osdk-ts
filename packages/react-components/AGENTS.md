@@ -1,105 +1,22 @@
 # @osdk/react-components
 
-Pre-built UI components for OSDK data. Requires `@osdk/react` (see the `@osdk/react` package's `AGENTS.md` for hooks and provider setup).
+Pre-built, Ontology-aware React components. Pass in OSDK entities and they handle data loading, caching, and state management automatically. Requires `@osdk/react` (see the `@osdk/react` package's `AGENTS.md` for hooks and provider setup).
 
-## Setup
+## Components
 
-All components import from `@osdk/react-components/experimental`. Requires `OsdkProvider2` from `@osdk/react/experimental`.
+All components import from `@osdk/react-components/experimental`.
 
-### Provider (required)
+| Component              | Description                                                                                                                                 |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| **ObjectTable**        | Table for displaying OSDK object sets with sorting, filtering, inline editing, column pinning/resizing, row selection, and infinite scroll. |
+| **BaseTable**          | OSDK-agnostic base table — use when building custom data fetching on top of the table UI.                                                   |
+| **FilterList**         | Aggregation-based filter UI for object sets with draggable reordering.                                                                      |
+| **BaseFilterList**     | OSDK-agnostic base filter list — use for custom filter implementations.                                                                     |
+| **ColumnConfigDialog** | Dialog for managing column visibility and drag-and-drop reordering.                                                                         |
 
-```tsx
-import { OsdkProvider2 } from "@osdk/react/experimental";
-import { client } from "./client";
+## Documentation
 
-function App() {
-  return (
-    <OsdkProvider2 client={client}>
-      <MyApp />
-    </OsdkProvider2>
-  );
-}
-```
+Before using any component, read the relevant doc:
 
-### CSS (required)
-
-```css
-@layer osdk.tokens, osdk.components;
-@import "@osdk/react-components-styles" layer(osdk.tokens);
-@import "@osdk/react-components/styles.css" layer(osdk.components);
-
-.root {
-  isolation: isolate;
-}
-```
-
-## ObjectTable
-
-```tsx
-import { ObjectTable } from "@osdk/react-components/experimental";
-import { Employee } from "@your-osdk-package";
-
-function EmployeeDirectory() {
-  return <ObjectTable objectType={Employee} />;
-}
-```
-
-### Key Props
-
-| Prop                         | Type                                 | Description                                                         |
-| ---------------------------- | ------------------------------------ | ------------------------------------------------------------------- |
-| `objectType`                 | ObjectType                           | **Required.** The OSDK object type to display.                      |
-| `columnDefinitions`          | `ColumnDefinition[]`                 | Column config: visibility, order, custom renderers, pinning, width. |
-| `enableFiltering`            | boolean                              | Allow user filtering (default: true)                                |
-| `enableOrdering`             | boolean                              | Allow user sorting (default: true)                                  |
-| `enableColumnPinning`        | boolean                              | Allow column pinning (default: true)                                |
-| `enableColumnResizing`       | boolean                              | Allow column resizing (default: true)                               |
-| `enableColumnConfig`         | boolean                              | Show column config dialog (default: true)                           |
-| `selectionMode`              | `"single"` / `"multiple"` / `"none"` | Row selection mode (default: "none")                                |
-| `orderBy` / `defaultOrderBy` | `OrderBy<Q>[]`                       | Controlled/uncontrolled sorting                                     |
-| `filter`                     | WhereClause                          | Controlled filtering                                                |
-| `rowHeight`                  | number                               | Row height in pixels (default: 40)                                  |
-| `renderCellContextMenu`      | function                             | Custom right-click menu                                             |
-
-### Column Definition
-
-```ts
-type ColumnDefinition = {
-  locator:
-    | { type: "property"; id: PropertyKeys<Q> }
-    | {
-      type: "rdp";
-      id: keyof RDPs;
-      creator: DerivedProperty.Creator<Q, RDPs[keyof RDPs]>;
-    }
-    | { type: "function"; id: keyof FunctionColumns }
-    | { type: "custom"; id: string };
-  renderCell?: (
-    object: Osdk.Instance<Q>,
-    locator: ColumnDefinitionLocator<Q>,
-  ) => React.ReactNode;
-  renderHeader?: () => React.ReactNode;
-  width?: number;
-  pinned?: "left" | "right" | "none";
-  isVisible?: boolean;
-  orderable?: boolean;
-  columnName?: string;
-};
-```
-
-### ColumnConfigDialog
-
-Standalone dialog for column visibility/ordering:
-
-```tsx
-import { ColumnConfigDialog } from "@osdk/react-components/experimental";
-
-<ColumnConfigDialog
-  isOpen={isOpen}
-  onClose={() => setIsOpen(false)}
-  columnOptions={[{ id: "fullName", name: "Full Name" }]}
-  currentVisibility={{ fullName: true }}
-  currentColumnOrder={["fullName"]}
-  onApply={(columns) => {/* [{ columnId, isVisible }] */}}
-/>;
-```
+- **Setup & installation**: Read [README.md](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/README.md) for provider, CSS layers, and peer dependencies
+- **ObjectTable**: Read [docs/ObjectTable.md](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/ObjectTable.md) for props, column definitions, examples, theming, and troubleshooting

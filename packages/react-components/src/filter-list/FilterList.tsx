@@ -39,7 +39,7 @@ export function FilterList<Q extends ObjectTypeDefinition>(
     collapsed,
     onCollapsedChange,
     filterDefinitions,
-    addFilterMode = "controlled",
+    addFilterMode = "uncontrolled",
     showResetButton = false,
     onReset,
     showActiveFilterCount = false,
@@ -123,11 +123,15 @@ export function FilterList<Q extends ObjectTypeDefinition>(
   );
 
   const effectiveRenderAddFilterButton = useMemo(() => {
-    if (uncontrolledAddFilterMode && managedHiddenDefinitions.length > 0) {
+    if (uncontrolledAddFilterMode) {
+      if (managedHiddenDefinitions.length === 0) {
+        return undefined;
+      }
       return () => (
         <AddFilterPopover
           hiddenDefinitions={hiddenFilterItems}
           onShowFilter={handleFilterShown}
+          renderTrigger={renderAddFilterButton}
         />
       );
     }

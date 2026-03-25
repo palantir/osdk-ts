@@ -89,6 +89,8 @@ export interface MasonMovie extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'MasonMovie';
+  primaryKeyApiName: 'movie';
+  primaryKeyType: 'string';
   __DefinitionMetadata?: {
     objectSet: MasonMovie.ObjectSet;
     props: MasonMovie.Props;
@@ -171,6 +173,8 @@ export const MasonMovie = {
   type: 'object',
   apiName: 'MasonMovie',
   osdkMetadata: $osdkMetadata,
+  primaryKeyApiName: 'movie',
+  primaryKeyType: 'string',
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.object-type.65a5444c-452e-450e-ac28-04f0028a243d',
   },

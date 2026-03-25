@@ -66,6 +66,8 @@ export interface Todo extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'Todo';
+  primaryKeyApiName: 'id';
+  primaryKeyType: 'integer';
   __DefinitionMetadata?: {
     objectSet: Todo.ObjectSet;
     props: Todo.Props;
@@ -124,6 +126,8 @@ export const Todo = {
   type: 'object',
   apiName: 'Todo',
   osdkMetadata: $osdkMetadata,
+  primaryKeyApiName: 'id',
+  primaryKeyType: 'integer',
   internalDoNotUseMetadata: {
     rid: 'rid.a.b.c.d',
   },

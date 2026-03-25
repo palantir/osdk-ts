@@ -40,7 +40,13 @@ describe("ObjectSpecifier", () => {
     >();
 
     type NonEmployeeObjectSpecifier = ObjectSpecifier<
-      { apiName: "NotEmployee"; osdkMetadata: any; type: "object" }
+      {
+        apiName: "NotEmployee";
+        osdkMetadata: any;
+        type: "object";
+        primaryKeyApiName: "id";
+        primaryKeyType: "string";
+      }
     >;
 
     expectTypeOf<NonEmployeeObjectSpecifier>().toMatchTypeOf<
@@ -89,7 +95,13 @@ describe("ObjectSpecifier", () => {
       >();
 
       type NonEmployeeObjectSpecifier = ObjectSpecifier<
-        { apiName: "NotEmployee"; osdkMetadata: any; type: "object" }
+        {
+          apiName: "NotEmployee";
+          osdkMetadata: any;
+          type: "object";
+          primaryKeyApiName: "id";
+          primaryKeyType: "string";
+        }
       >;
 
       expectTypeOf<NonEmployeeObjectSpecifier>().toMatchTypeOf // @ts-expect-error

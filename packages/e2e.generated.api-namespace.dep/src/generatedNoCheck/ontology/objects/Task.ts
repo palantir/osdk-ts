@@ -49,6 +49,8 @@ export interface Task extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'com.example.dep.Task';
+  primaryKeyApiName: 'taskId';
+  primaryKeyType: 'string';
   __DefinitionMetadata?: {
     objectSet: Task.ObjectSet;
     props: Task.Props;
@@ -91,6 +93,8 @@ export const Task = {
   type: 'object',
   apiName: 'com.example.dep.Task',
   osdkMetadata: $osdkMetadata,
+  primaryKeyApiName: 'taskId',
+  primaryKeyType: 'string',
   internalDoNotUseMetadata: {
     rid: 'ridForTask',
   },

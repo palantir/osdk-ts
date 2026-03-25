@@ -1,5 +1,32 @@
 # @osdk/generator
 
+## 2.8.0-beta.25
+
+### Patch Changes
+
+- Updated dependencies [0df859a]
+  - @osdk/api@2.8.0-beta.25
+  - @osdk/generator-converters@2.8.0-beta.25
+
+## 2.8.0-beta.24
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.24
+- @osdk/generator-converters@2.8.0-beta.24
+
+## 2.8.0-beta.23
+
+### Minor Changes
+
+- 4bb9769: Add primaryKeyApiName and primaryKeyType to object type const for runtime access
+
+### Patch Changes
+
+- Updated dependencies [4bb9769]
+  - @osdk/api@2.8.0-beta.23
+  - @osdk/generator-converters@2.8.0-beta.23
+
 ## 2.8.0-beta.22
 
 ### Patch Changes

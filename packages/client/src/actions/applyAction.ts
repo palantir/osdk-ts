@@ -132,13 +132,15 @@ export async function applyAction<
     const response = await Actions.applyBatch(
       clientWithHeaders,
       await client.ontologyRid,
-      action.apiName,
+      action.unsanitizedApiName ?? action.apiName,
       {
         requests: parameters
           ? await remapBatchActionParams(
             parameters,
             client,
-            await client.ontologyProvider.getActionDefinition(action.apiName),
+            await client.ontologyProvider.getActionDefinition(
+              action.unsanitizedApiName ?? action.apiName,
+            ),
           )
           : [],
         options: {
@@ -156,14 +158,16 @@ export async function applyAction<
     const response = await Actions.apply(
       clientWithHeaders,
       await client.ontologyRid,
-      action.apiName,
+      action.unsanitizedApiName ?? action.apiName,
       {
         parameters: await remapActionParams(
           parameters as OsdkActionParameters<
             CompileTimeActionMetadata<AD>["parameters"]
           >,
           client,
-          await client.ontologyProvider.getActionDefinition(action.apiName),
+          await client.ontologyProvider.getActionDefinition(
+            action.unsanitizedApiName ?? action.apiName,
+          ),
         ),
         options: {
           mode: (options as ApplyActionOptions)?.$validateOnly

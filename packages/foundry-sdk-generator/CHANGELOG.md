@@ -1,5 +1,41 @@
 # @osdk/foundry-sdk-generator
 
+## 2.8.0-beta.25
+
+### Patch Changes
+
+- Updated dependencies [0df859a]
+  - @osdk/api@2.8.0-beta.25
+  - @osdk/client@2.8.0-beta.25
+  - @osdk/client.unstable@2.8.0-beta.25
+  - @osdk/generator-utils@2.8.0-beta.25
+  - @osdk/generator@2.8.0-beta.25
+
+## 2.8.0-beta.24
+
+### Minor Changes
+
+- 4df8696: Validate --linkTypes references missing object types in foundry-sdk-generator
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.24
+- @osdk/client.unstable@2.8.0-beta.24
+- @osdk/client@2.8.0-beta.24
+- @osdk/generator-utils@2.8.0-beta.24
+- @osdk/generator@2.8.0-beta.24
+
+## 2.8.0-beta.23
+
+### Patch Changes
+
+- Updated dependencies [4bb9769]
+  - @osdk/api@2.8.0-beta.23
+  - @osdk/generator@2.8.0-beta.23
+  - @osdk/client@2.8.0-beta.23
+  - @osdk/client.unstable@2.8.0-beta.23
+  - @osdk/generator-utils@2.8.0-beta.23
+
 ## 2.8.0-beta.22
 
 ### Patch Changes

@@ -28,6 +28,7 @@ import type {
 } from "@osdk/maker";
 import {
   cleanAndValidateLinkTypeId,
+  getImportedTypes,
   getOntologyDefinition,
   OntologyEntityTypeEnum,
 } from "@osdk/maker";
@@ -288,7 +289,8 @@ export function getObject(
 ): { apiName: string; object: ObjectType } {
   const objectApiName = typeof object === "string" ? object : object.apiName;
   const fullObject =
-    getOntologyDefinition()[OntologyEntityTypeEnum.OBJECT_TYPE][objectApiName];
+    getOntologyDefinition()[OntologyEntityTypeEnum.OBJECT_TYPE][objectApiName]
+      ?? getImportedTypes()[OntologyEntityTypeEnum.OBJECT_TYPE][objectApiName];
   invariant(
     fullObject !== undefined,
     `Object ${objectApiName} is not defined`,

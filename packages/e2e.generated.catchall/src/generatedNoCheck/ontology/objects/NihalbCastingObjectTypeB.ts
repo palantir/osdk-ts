@@ -60,6 +60,8 @@ export interface NihalbCastingObjectTypeB extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'NihalbCastingObjectTypeB';
+  primaryKeyApiName: 'primaryKey_';
+  primaryKeyType: 'string';
   __DefinitionMetadata?: {
     objectSet: NihalbCastingObjectTypeB.ObjectSet;
     props: NihalbCastingObjectTypeB.Props;
@@ -126,6 +128,8 @@ export const NihalbCastingObjectTypeB = {
   type: 'object',
   apiName: 'NihalbCastingObjectTypeB',
   osdkMetadata: $osdkMetadata,
+  primaryKeyApiName: 'primaryKey_',
+  primaryKeyType: 'string',
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.object-type.66898c81-9a3f-4f8b-937a-6934f6d9f660',
   },

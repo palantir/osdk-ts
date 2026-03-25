@@ -31,7 +31,7 @@
   }
 
   &:last-child {
-    border-right: var(--osdk-table-border);
+    border-right: none;
   }
 }
 

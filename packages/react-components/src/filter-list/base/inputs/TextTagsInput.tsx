@@ -184,7 +184,7 @@ function TextTagsInputInner({
           </div>
         )}
 
-        <Combobox.Input
+        <Combobox.SearchInput
           className={styles.input}
           placeholder={tags.length > 0 ? "" : placeholder}
           onKeyDown={handleKeyDown}
