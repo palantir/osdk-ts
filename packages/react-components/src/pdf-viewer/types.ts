@@ -29,7 +29,19 @@ export interface OutlineItem {
 }
 
 /** The visual style of an annotation rendered on the PDF. */
-export type AnnotationType = "highlight" | "underline" | "comment" | "pin";
+export type AnnotationType =
+  | "highlight"
+  | "underline"
+  | "comment"
+  | "pin"
+  | "custom";
+
+/** Props passed to a custom annotation renderer. */
+export interface PdfAnnotationRenderProps {
+  annotation: PdfAnnotation;
+  scale: number;
+  pageHeight: number;
+}
 
 /** A single annotation positioned on a specific page of the PDF. */
 export interface PdfAnnotation {
@@ -45,6 +57,8 @@ export interface PdfAnnotation {
   label?: string;
   /** Optional color override (CSS color string) */
   color?: string;
+  /** Custom renderer for "custom" type annotations */
+  render?: (props: PdfAnnotationRenderProps) => React.ReactNode;
 }
 
 /** Result passed to the {@link PdfViewerProps.onDownload} callback. */
@@ -56,8 +70,8 @@ export type PdfDownloadResult =
 export interface PdfViewerProps {
   /** PDF source — URL string or ArrayBuffer */
   src: string | ArrayBuffer;
-  /** Annotations to overlay on the PDF, keyed by page number (1-indexed) */
-  annotations?: Record<number, PdfAnnotation[]>;
+  /** Annotations to overlay on the PDF */
+  annotations?: PdfAnnotation[];
   /**
    * Callback fired when an annotation is clicked.
    *

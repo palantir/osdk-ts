@@ -89,8 +89,7 @@ const meta: Meta<PdfViewerMediaProps> = {
       control: false,
     },
     annotations: {
-      description:
-        "Annotations to overlay on the PDF, keyed by page number (1-indexed)",
+      description: "Annotations to overlay on the PDF",
       control: "object",
     },
     onAnnotationClick: {
@@ -193,37 +192,35 @@ export const WithPdfUrl: StoryObj<PdfViewerProps> = {
 export const WithAnnotations: Story = {
   args: {
     onAnnotationClick: fn(),
-    annotations: {
-      1: [
-        {
-          id: "h1",
-          type: "highlight",
-          page: 1,
-          rect: { x: 100, y: 700, width: 200, height: 20 },
-          label: "Important text",
-        },
-        {
-          id: "u1",
-          type: "underline",
-          page: 1,
-          rect: { x: 100, y: 650, width: 150, height: 2 },
-        },
-        {
-          id: "c1",
-          type: "comment",
-          page: 1,
-          rect: { x: 400, y: 600, width: 24, height: 24 },
-          label: "Review this section",
-        },
-        {
-          id: "p1",
-          type: "pin",
-          page: 1,
-          rect: { x: 300, y: 500, width: 16, height: 16 },
-          label: "Pin marker",
-        },
-      ],
-    },
+    annotations: [
+      {
+        id: "h1",
+        type: "highlight",
+        page: 1,
+        rect: { x: 100, y: 700, width: 200, height: 20 },
+        label: "Important text",
+      },
+      {
+        id: "u1",
+        type: "underline",
+        page: 1,
+        rect: { x: 100, y: 650, width: 150, height: 2 },
+      },
+      {
+        id: "c1",
+        type: "comment",
+        page: 1,
+        rect: { x: 400, y: 600, width: 24, height: 24 },
+        label: "Review this section",
+      },
+      {
+        id: "p1",
+        type: "pin",
+        page: 1,
+        rect: { x: 300, y: 500, width: 16, height: 16 },
+        label: "Pin marker",
+      },
+    ],
   },
   parameters: {
     docs: {
@@ -232,14 +229,12 @@ export const WithAnnotations: Story = {
 
 <PdfViewer
   media={myMediaObject}
-  annotations={{
-    1: [
-      { id: "h1", type: "highlight", page: 1, rect: { x: 100, y: 700, width: 200, height: 20 }, label: "Important text" },
-      { id: "u1", type: "underline", page: 1, rect: { x: 100, y: 650, width: 150, height: 2 } },
-      { id: "c1", type: "comment", page: 1, rect: { x: 400, y: 600, width: 24, height: 24 }, label: "Review this" },
-      { id: "p1", type: "pin", page: 1, rect: { x: 300, y: 500, width: 16, height: 16 }, label: "Pin" },
-    ],
-  }}
+  annotations={[
+    { id: "h1", type: "highlight", page: 1, rect: { x: 100, y: 700, width: 200, height: 20 }, label: "Important text" },
+    { id: "u1", type: "underline", page: 1, rect: { x: 100, y: 650, width: 150, height: 2 } },
+    { id: "c1", type: "comment", page: 1, rect: { x: 400, y: 600, width: 24, height: 24 }, label: "Review this" },
+    { id: "p1", type: "pin", page: 1, rect: { x: 300, y: 500, width: 16, height: 16 }, label: "Pin" },
+  ]}
   onAnnotationClick={(annotation) => handleAnnotationClick(annotation)}
 />`,
       },

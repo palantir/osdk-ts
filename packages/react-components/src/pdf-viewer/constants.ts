@@ -17,7 +17,6 @@
 import type { PdfAnnotation } from "./types.js";
 
 // Default empty values (stable references to avoid re-renders)
-export const EMPTY_ANNOTATIONS: Record<number, PdfAnnotation[]> = {};
 export const EMPTY_ANNOTATION_ARRAY: PdfAnnotation[] = [];
 export const EMPTY_STRING = "";
 

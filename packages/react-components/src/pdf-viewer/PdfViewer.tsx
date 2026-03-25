@@ -24,14 +24,15 @@ import { PdfViewerOutlineSidebar } from "./components/PdfViewerOutlineSidebar.js
 import { PdfViewerSearchBar } from "./components/PdfViewerSearchBar.js";
 import { PdfViewerSidebar } from "./components/PdfViewerSidebar.js";
 import { PdfViewerToolbar } from "./components/PdfViewerToolbar.js";
-import { EMPTY_ANNOTATION_ARRAY, EMPTY_ANNOTATIONS } from "./constants.js";
+import { EMPTY_ANNOTATION_ARRAY } from "./constants.js";
+import { usePdfAnnotationsByPage } from "./hooks/usePdfAnnotationsByPage.js";
 import { usePdfViewerState } from "./hooks/usePdfViewerState.js";
 import styles from "./PdfViewer.module.css";
 import type { PdfViewerProps } from "./types.js";
 
 export function BasePdfViewer({
   src,
-  annotations = EMPTY_ANNOTATIONS,
+  annotations = EMPTY_ANNOTATION_ARRAY,
   onAnnotationClick,
   onDownload,
   initialPage = 1,
@@ -51,6 +52,7 @@ export function BasePdfViewer({
     onDownload,
   });
 
+  const annotationsByPage = usePdfAnnotationsByPage(annotations);
 
   const rootClassName = classnames(styles.pdfViewer, className);
 
@@ -136,7 +138,7 @@ export function BasePdfViewer({
           <div ref={viewer.containerRef} className={styles.scrollContainer}>
             <div ref={viewer.viewerRef} className="pdfViewer" />
             {viewer.portalTargets.map((target) => {
-              const pageAnnotations = annotations[target.pageNumber]
+              const pageAnnotations = annotationsByPage[target.pageNumber]
                 ?? EMPTY_ANNOTATION_ARRAY;
               if (pageAnnotations.length === 0) {
                 return null;

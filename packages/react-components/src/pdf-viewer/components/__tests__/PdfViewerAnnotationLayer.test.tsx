@@ -271,4 +271,89 @@ describe("PdfViewerAnnotationLayer", () => {
     fireEvent.click(item);
     fireEvent.keyDown(item, { key: "Enter" });
   });
+
+  it("should render custom annotation with render function", () => {
+    const renderFn = vi.fn(
+      (
+        { scale }: {
+          annotation: PdfAnnotation;
+          scale: number;
+          pageHeight: number;
+        },
+      ) => <span data-testid="custom-content">Scaled: {scale}</span>,
+    );
+    const annotation = createAnnotation({
+      id: "custom-1",
+      type: "custom",
+      render: renderFn,
+    });
+
+    const { container } = render(
+      <PdfViewerAnnotationLayer
+        annotations={[annotation]}
+        pageHeight={792}
+        scale={1.5}
+      />,
+    );
+
+    expect(renderFn).toHaveBeenCalledWith({
+      annotation,
+      scale: 1.5,
+      pageHeight: 792,
+    });
+    const customContent = container.querySelector(
+      "[data-testid='custom-content']",
+    );
+    expect(customContent).not.toBeNull();
+    expect(customContent?.textContent).toBe("Scaled: 1.5");
+  });
+
+  it("should position custom annotation correctly", () => {
+    const annotation = createAnnotation({
+      id: "custom-pos",
+      type: "custom",
+      rect: { x: 100, y: 500, width: 200, height: 20 },
+      render: () => <span>Custom</span>,
+    });
+
+    const { container } = render(
+      <PdfViewerAnnotationLayer
+        annotations={[annotation]}
+        pageHeight={792}
+        scale={1.0}
+      />,
+    );
+
+    const item = container.querySelector(
+      "[data-annotation-id='custom-pos']",
+    ) as HTMLElement;
+    expect(item.style.top).toBe("272px");
+    expect(item.style.left).toBe("100px");
+  });
+
+  it("should call onAnnotationClick when custom annotation is clicked", () => {
+    const annotation = createAnnotation({
+      id: "custom-click",
+      type: "custom",
+      render: () => <span>Click me</span>,
+    });
+    const onClick = vi.fn();
+
+    const { container } = render(
+      <PdfViewerAnnotationLayer
+        annotations={[annotation]}
+        pageHeight={792}
+        scale={1.0}
+        onAnnotationClick={onClick}
+      />,
+    );
+
+    const item = container.querySelector(
+      "[data-annotation-id='custom-click']",
+    ) as HTMLElement;
+    fireEvent.click(item);
+
+    expect(onClick).toHaveBeenCalledTimes(1);
+    expect(onClick).toHaveBeenCalledWith(annotation);
+  });
 });

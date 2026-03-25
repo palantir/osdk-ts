@@ -64,6 +64,7 @@ export { BasePdfViewer } from "../pdf-viewer/PdfViewer.js";
 export type {
   AnnotationType,
   PdfAnnotation,
+  PdfAnnotationRenderProps,
   PdfDownloadResult,
   PdfViewerProps,
   SidebarMode,
@@ -100,6 +101,7 @@ export {
   type AnnotationPortalTarget,
   usePdfAnnotationPortals,
 } from "../pdf-viewer/hooks/usePdfAnnotationPortals.js";
+export { usePdfAnnotationsByPage } from "../pdf-viewer/hooks/usePdfAnnotationsByPage.js";
 export { usePdfDocument } from "../pdf-viewer/hooks/usePdfDocument.js";
 export { usePdfOutline } from "../pdf-viewer/hooks/usePdfOutline.js";
 export {

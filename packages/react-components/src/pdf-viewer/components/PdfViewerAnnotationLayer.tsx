@@ -33,6 +33,13 @@ interface AnnotationItemProps {
   onClick?: (annotation: PdfAnnotation) => void;
 }
 
+interface CustomAnnotationItemProps {
+  annotation: PdfAnnotation;
+  pageHeight: number;
+  scale: number;
+  onClick?: (annotation: PdfAnnotation) => void;
+}
+
 function AnnotationItem({
   annotation,
   pageHeight,
@@ -88,6 +95,52 @@ function AnnotationItem({
   );
 }
 
+function CustomAnnotationItem({
+  annotation,
+  pageHeight,
+  scale,
+  onClick,
+}: CustomAnnotationItemProps): React.ReactElement {
+  const handleClick = useCallback(() => {
+    onClick?.(annotation);
+  }, [onClick, annotation]);
+
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        onClick?.(annotation);
+      }
+    },
+    [onClick, annotation],
+  );
+
+  const style = useMemo(
+    () => ({
+      left: annotation.rect.x * scale,
+      top: (pageHeight - annotation.rect.y - annotation.rect.height) * scale,
+      width: annotation.rect.width * scale,
+      height: annotation.rect.height * scale,
+    }),
+    [annotation, pageHeight, scale],
+  );
+
+  return (
+    <div
+      className={styles.annotation}
+      style={style}
+      onClick={handleClick}
+      onKeyDown={handleKeyDown}
+      role="button"
+      tabIndex={0}
+      title={annotation.label}
+      data-annotation-id={annotation.id}
+    >
+      {annotation.render?.({ annotation, scale, pageHeight })}
+    </div>
+  );
+}
+
 export function PdfViewerAnnotationLayer({
   annotations,
   pageHeight,
@@ -96,15 +149,27 @@ export function PdfViewerAnnotationLayer({
 }: PdfViewerAnnotationLayerProps): React.ReactElement {
   return (
     <div className={styles.annotationLayer}>
-      {annotations.map((annotation) => (
-        <AnnotationItem
-          key={annotation.id}
-          annotation={annotation}
-          pageHeight={pageHeight}
-          scale={scale}
-          onClick={onAnnotationClick}
-        />
-      ))}
+      {annotations.map((annotation) =>
+        annotation.type === "custom"
+          ? (
+            <CustomAnnotationItem
+              key={annotation.id}
+              annotation={annotation}
+              pageHeight={pageHeight}
+              scale={scale}
+              onClick={onAnnotationClick}
+            />
+          )
+          : (
+            <AnnotationItem
+              key={annotation.id}
+              annotation={annotation}
+              pageHeight={pageHeight}
+              scale={scale}
+              onClick={onAnnotationClick}
+            />
+          )
+      )}
     </div>
   );
 }
