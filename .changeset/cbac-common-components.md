@@ -4,4 +4,4 @@
 "@osdk/cbac-components": minor
 ---
 
-add cbac types, selection logic, css tokens, and create cbac-components package
+add cbac css tokens and create cbac-components package
