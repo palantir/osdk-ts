@@ -88,6 +88,9 @@ export function useOsdkMedia(
 
   const effectiveEnabled = enabled && isVisible;
 
+  const sourceRef = React.useRef(source);
+  sourceRef.current = source;
+
   const cacheKey = React.useMemo(() => {
     if (!source) {
       return undefined;
@@ -104,7 +107,14 @@ export function useOsdkMedia(
   }), [dedupeIntervalMs, preview, placeholder, priority, staleTime]);
 
   const { subscribe, getSnapShot } = React.useMemo(() => {
-    if (!source || !effectiveEnabled) {
+    if (!cacheKey || !effectiveEnabled) {
+      return makeExternalStore<MediaContentPayload>(
+        () => ({ unsubscribe: () => {} }),
+        `media [DISABLED]`,
+      );
+    }
+    const currentSource = sourceRef.current;
+    if (!currentSource) {
       return makeExternalStore<MediaContentPayload>(
         () => ({ unsubscribe: () => {} }),
         `media [DISABLED]`,
@@ -112,24 +122,24 @@ export function useOsdkMedia(
     }
     return makeExternalStore<MediaContentPayload>(
       (observer) =>
-        observableClient.observeMedia(source, observeOpts, observer),
+        observableClient.observeMedia(currentSource, observeOpts, observer),
       `media ${cacheKey}`,
     );
-  }, [observableClient, source, cacheKey, effectiveEnabled, observeOpts]);
+  }, [observableClient, cacheKey, effectiveEnabled, observeOpts]);
 
   const payload = React.useSyncExternalStore(subscribe, getSnapShot);
 
   const refetch = React.useCallback(() => {
-    if (source) {
-      observableClient.invalidateMedia(source);
+    if (sourceRef.current) {
+      observableClient.invalidateMedia(sourceRef.current);
     }
-  }, [observableClient, source]);
+  }, [observableClient]);
 
   return React.useMemo((): UseOsdkMediaResult => ({
     url: payload?.url,
     metadata: payload?.metadata,
     content: payload?.content,
-    isLoading: effectiveEnabled && source != null
+    isLoading: effectiveEnabled && cacheKey != null
       ? (payload?.status === "loading" || payload?.status === "init"
         || !payload)
       : false,
@@ -139,5 +149,5 @@ export function useOsdkMedia(
     error: payload?.error,
     refetch,
     ref,
-  }), [payload, effectiveEnabled, refetch, ref]);
+  }), [payload, effectiveEnabled, cacheKey, refetch, ref]);
 }
