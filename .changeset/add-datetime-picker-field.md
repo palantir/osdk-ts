@@ -2,4 +2,4 @@
 "@osdk/react-components": patch
 ---
 
-Add DatetimePickerField component
+Replace native date input with react-day-picker calendar popover in DatetimePickerField

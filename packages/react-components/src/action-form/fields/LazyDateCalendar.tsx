@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 
-import React from "react";
-import type { DateInputProps } from "./DateInput.js";
-import { DateInput } from "./DateInput.js";
+import React, { Suspense } from "react";
+import type { DateCalendarProps } from "./DateCalendar.js";
+import styles from "./DatetimePickerField.module.css";
 
-// Thin wrapper preserving the component name used by FormFieldRenderer.
-// All behavior lives in DateInput; this exists to avoid change amplification.
-export function DatetimePickerField(
-  props: DateInputProps,
+const DateCalendarLazy = React.lazy(() => import("./DateCalendar.js"));
+
+export function LazyDateCalendar(
+  props: DateCalendarProps,
 ): React.ReactElement {
-  return <DateInput {...props} />;
+  return (
+    <Suspense fallback={<div className={styles.calendarFallback} />}>
+      <DateCalendarLazy {...props} />
+    </Suspense>
+  );
 }

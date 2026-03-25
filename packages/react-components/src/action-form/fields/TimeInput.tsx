@@ -14,14 +14,27 @@
  * limitations under the License.
  */
 
+import { Input } from "@base-ui/react/input";
 import React from "react";
-import type { DateInputProps } from "./DateInput.js";
-import { DateInput } from "./DateInput.js";
+import styles from "./DatetimePickerField.module.css";
 
-// Thin wrapper preserving the component name used by FormFieldRenderer.
-// All behavior lives in DateInput; this exists to avoid change amplification.
-export function DatetimePickerField(
-  props: DateInputProps,
-): React.ReactElement {
-  return <DateInput {...props} />;
+export interface TimeInputProps {
+  value: string;
+  onChange: (value: string) => void;
+}
+
+export function TimeInput({
+  value,
+  onChange,
+}: TimeInputProps): React.ReactElement {
+  return (
+    <div className={styles.timeFooter}>
+      <Input
+        type="time"
+        value={value}
+        onValueChange={onChange}
+        className={styles.timeInput}
+      />
+    </div>
+  );
 }

@@ -138,31 +138,64 @@ export interface FormFieldPropsByType {
 }
 
 /**
- * Datetime picker field props
+ * Datetime picker base props shared by all format variants.
  */
-export interface DatetimePickerFieldProps extends BaseFormFieldProps<Date> {
+interface DatetimePickerBaseProps extends BaseFormFieldProps<Date> {
   /**
-   * The earliest date the user can select
-   * If provided, this will be added to the field validation
+   * The earliest date the user can select.
+   * If provided, this will be added to the field validation.
    */
   min?: Date;
 
   /**
-   * The latest date the user can select
-   * If provided, this will be added to the field validation
+   * The latest date the user can select.
+   * If provided, this will be added to the field validation.
    */
   max?: Date;
 
   /**
-   * Whether to show time picker
+   * Whether to show time picker.
    */
   showTime?: boolean;
 
   /**
-   * Function to format the date string
+   * Message shown when the typed date is invalid.
+   * @default "Invalid date"
    */
-  formatDate?: (date: Date) => string;
+  invalidDateMessage?: string;
+
+  /**
+   * Message shown when the typed date is outside min/max.
+   * @default "Out of range"
+   */
+  outOfRangeMessage?: string;
 }
+
+/**
+ * Provide both formatDate and parseDate to use a custom date format.
+ */
+interface WithCustomFormat {
+  /** Formats a Date for display in the text input. */
+  formatDate: (date: Date) => string;
+  /** Parses user-typed text into a Date. Return `false` or `null` for invalid input. */
+  parseDate: (str: string) => Date | false | null;
+}
+
+/**
+ * When no custom format is provided, ISO format (YYYY-MM-DD / YYYY-MM-DDTHH:mm) is used.
+ */
+interface WithDefaultFormat {
+  formatDate?: undefined;
+  parseDate?: undefined;
+}
+
+/**
+ * Datetime picker field props.
+ * `formatDate` and `parseDate` must be provided together or not at all.
+ */
+export type DatetimePickerFieldProps =
+  & DatetimePickerBaseProps
+  & (WithCustomFormat | WithDefaultFormat);
 
 /**
  * Dropdown field props with selectable items
