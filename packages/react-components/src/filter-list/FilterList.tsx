@@ -60,11 +60,6 @@ export function FilterList<Q extends ObjectTypeDefinition>(
     reset,
   } = useFilterListState(props);
 
-  const handleReset = useCallback(() => {
-    reset();
-    onReset?.();
-  }, [reset, onReset]);
-
   const uncontrolledAddFilterMode = addFilterMode === "uncontrolled";
 
   const getIsVisible = useCallback(
@@ -77,7 +72,15 @@ export function FilterList<Q extends ObjectTypeDefinition>(
     hiddenDefinitions: managedHiddenDefinitions,
     showFilter,
     hideFilter,
+    hasVisibilityChanges,
+    resetVisibility,
   } = useFilterVisibility(filterDefinitions, getFilterKey, getIsVisible);
+
+  const handleReset = useCallback(() => {
+    reset();
+    resetVisibility();
+    onReset?.();
+  }, [reset, resetVisibility, onReset]);
 
   const simpleVisibleDefinitions = useMemo(() => {
     if (filterDefinitions == null) {
@@ -183,6 +186,7 @@ export function FilterList<Q extends ObjectTypeDefinition>(
       onReset={handleReset}
       showResetButton={showResetButton}
       showActiveFilterCount={showActiveFilterCount}
+      hasVisibilityChanges={hasVisibilityChanges}
       enableSorting={enableSorting}
       onFilterRemoved={effectiveOnFilterRemoved}
       className={className}

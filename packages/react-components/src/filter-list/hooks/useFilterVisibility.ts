@@ -21,6 +21,8 @@ interface FilterVisibilityResult<D> {
   hiddenDefinitions: Array<D>;
   showFilter: (key: string) => void;
   hideFilter: (key: string) => void;
+  hasVisibilityChanges: boolean;
+  resetVisibility: () => void;
 }
 
 export function useFilterVisibility<D>(
@@ -74,5 +76,18 @@ export function useFilterVisibility<D>(
     });
   }, []);
 
-  return { visibleDefinitions, hiddenDefinitions, showFilter, hideFilter };
+  const hasVisibilityChanges = visibilityOverrides.size > 0;
+
+  const resetVisibility = useCallback(() => {
+    setVisibilityOverrides(new Map());
+  }, []);
+
+  return {
+    visibleDefinitions,
+    hiddenDefinitions,
+    showFilter,
+    hideFilter,
+    hasVisibilityChanges,
+    resetVisibility,
+  };
 }

@@ -235,6 +235,14 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
+  args: {
+    showResetButton: false,
+    enableSorting: false,
+    showActiveFilterCount: false,
+    title: "Filters",
+    filterOperator: "and",
+    collapsed: false,
+  },
   parameters: {
     docs: {
       source: {
@@ -248,7 +256,7 @@ export const Default: Story = {
       },
     },
   },
-  render: () => {
+  render: (args) => {
     const objectSet = useEmployeeObjectSet();
     const filterDefinitions = useMemo(
       (): FilterDefinitionUnion<Employee>[] => [
@@ -262,10 +270,75 @@ export const Default: Story = {
         <FilterList
           objectSet={objectSet}
           filterDefinitions={filterDefinitions}
+          showResetButton={args.showResetButton}
+          enableSorting={args.enableSorting}
+          showActiveFilterCount={args.showActiveFilterCount}
+          title={args.title}
+          filterOperator={args.filterOperator}
+          collapsed={args.collapsed}
         />
       </div>
     );
   },
+};
+
+function AddFilterModeStory() {
+  const objectSet = useEmployeeObjectSet();
+  const filterDefinitions = useMemo(
+    (): FilterDefinitionUnion<Employee>[] => [
+      departmentFilter,
+      teamFilter,
+      { ...fullNameFilter, isVisible: false } as FilterDefinitionUnion<
+        Employee
+      >,
+      { ...startDateFilter, isVisible: false } as FilterDefinitionUnion<
+        Employee
+      >,
+      { ...employeeNumberFilter, isVisible: false } as FilterDefinitionUnion<
+        Employee
+      >,
+      { ...locationCityFilter, isVisible: false } as FilterDefinitionUnion<
+        Employee
+      >,
+    ],
+    [],
+  );
+
+  return (
+    <div style={SIDEBAR_STYLE}>
+      <FilterList
+        objectSet={objectSet}
+        filterDefinitions={filterDefinitions}
+        addFilterMode="uncontrolled"
+        showResetButton={true}
+      />
+    </div>
+  );
+}
+
+export const AddFilterMode: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `const filterDefinitions = [
+  { type: "PROPERTY", key: "department", label: "Department", filterComponent: "LISTOGRAM", filterState: { type: "EXACT_MATCH", values: [] } },
+  { type: "PROPERTY", key: "team", label: "Team", filterComponent: "CHECKBOX_LIST", filterState: { type: "SELECT", selectedValues: [] } },
+  { type: "PROPERTY", key: "fullName", label: "Full Name", filterComponent: "CONTAINS_TEXT", filterState: { type: "CONTAINS_TEXT" }, isVisible: false },
+  { type: "PROPERTY", key: "firstFullTimeStartDate", label: "Start Date", filterComponent: "DATE_RANGE", filterState: { type: "DATE_RANGE" }, isVisible: false },
+  { type: "PROPERTY", key: "employeeNumber", label: "Employee Number", filterComponent: "NUMBER_RANGE", filterState: { type: "NUMBER_RANGE" }, isVisible: false },
+  { type: "PROPERTY", key: "locationCity", label: "Location City", filterComponent: "CHECKBOX_LIST", filterState: { type: "SELECT", selectedValues: [] }, isVisible: false },
+];
+
+<FilterList
+  objectSet={client(Employee)}
+  filterDefinitions={filterDefinitions}
+  addFilterMode="uncontrolled"
+  showResetButton={true}
+/>`,
+      },
+    },
+  },
+  render: () => <AddFilterModeStory />,
 };
 
 function WithAllFilterTypesStory() {
@@ -846,133 +919,6 @@ const handleFilterRemoved = (filterKey) => {
     },
   },
   render: () => <WithRemovableFiltersStory />,
-};
-
-function WithPerFilterSearchStory() {
-  const objectSet = useEmployeeObjectSet();
-
-  const filterDefinitions = useMemo(
-    (): FilterDefinitionUnion<Employee>[] => [
-      departmentFilter,
-      teamFilter,
-      locationCityFilter,
-    ],
-    [],
-  );
-
-  return (
-    <div style={SIDEBAR_STYLE}>
-      <FilterList
-        objectSet={objectSet}
-        filterDefinitions={filterDefinitions}
-        title="Searchable Filters"
-      />
-    </div>
-  );
-}
-
-export const WithPerFilterSearch: Story = {
-  name: "Per-Filter Value Search",
-  parameters: {
-    docs: {
-      description: {
-        story:
-          "Hover over a LISTOGRAM or CHECKBOX_LIST filter to reveal the search icon. "
-          + "Click it to open an inline search input that filters the displayed values. "
-          + "Search is supported for SELECT and EXACT_MATCH filter state types.",
-      },
-      source: {
-        code: `// Hover a filter to reveal the search icon in the header.
-// Click the search icon to open inline value search.
-// Supported by LISTOGRAM and CHECKBOX_LIST filters.
-
-<FilterList
-  objectSet={client(Employee)}
-  filterDefinitions={[
-    { type: "PROPERTY", key: "department", filterComponent: "LISTOGRAM", filterState: { type: "EXACT_MATCH", values: [] } },
-    { type: "PROPERTY", key: "team", filterComponent: "CHECKBOX_LIST", filterState: { type: "SELECT", selectedValues: [] } },
-  ]}
-/>`,
-      },
-    },
-  },
-  render: () => <WithPerFilterSearchStory />,
-};
-
-function ExcludeWithWhereClauseStory() {
-  const objectSet = useEmployeeObjectSet();
-  const [filterClause, setFilterClause] = useState<
-    WhereClause<Employee> | undefined
-  >(undefined);
-
-  const filterDefinitions = useMemo(
-    (): FilterDefinitionUnion<Employee>[] => [
-      departmentFilter,
-      teamFilter,
-      fullNameFilter,
-      startDateFilter,
-      employeeNumberFilter,
-    ],
-    [],
-  );
-
-  return (
-    <div style={FLEX_ROW_STYLE}>
-      <div style={SIDEBAR_STYLE}>
-        <FilterList
-          objectSet={objectSet}
-          filterDefinitions={filterDefinitions}
-          filterClause={filterClause}
-          onFilterClauseChanged={setFilterClause}
-        />
-      </div>
-      <div style={FLEX_FILL_STYLE}>
-        <strong>Where Clause:</strong>
-        <p style={{ fontSize: 12, color: "#666" }}>
-          Select values, then toggle the exclude dropdown to see the where
-          clause update with negation. DATE_RANGE and NUMBER_RANGE filters do
-          not show the exclude toggle.
-        </p>
-        <pre style={PRE_STYLE}>
-          {filterClause
-            ? JSON.stringify(filterClause, null, 2)
-            : "(no active filters)"}
-        </pre>
-      </div>
-    </div>
-  );
-}
-
-export const ExcludeWithWhereClause: Story = {
-  name: "Exclude Mode with Where Clause",
-  parameters: {
-    docs: {
-      description: {
-        story:
-          "Shows how the exclude toggle affects the generated where clause. Select values in a filter, "
-          + "then use the overflow menu to switch to \"Excluding\" mode. The where clause wraps the "
-          + "filter condition in a `$not` operator. "
-          + "Note: NUMBER_RANGE and DATE_RANGE filters do not support exclude mode.",
-      },
-      source: {
-        code:
-          `// Select values, then toggle to "Excluding" via the overflow menu.
-// The where clause wraps the condition in $not.
-
-const [filterClause, setFilterClause] = useState(undefined);
-
-<FilterList
-  objectSet={client(Employee)}
-  filterDefinitions={filterDefinitions}
-  filterClause={filterClause}
-  onFilterClauseChanged={setFilterClause}
-/>
-
-<pre>{JSON.stringify(filterClause, null, 2)}</pre>`,
-      },
-    },
-  },
-  render: () => <ExcludeWithWhereClauseStory />,
 };
 
 function FullFeaturedStory() {

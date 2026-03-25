@@ -21,6 +21,7 @@ import type {
   WhereClause,
 } from "@osdk/api";
 import type React from "react";
+import type { ReactNode } from "react";
 import type {
   FilterState as FilterStateType,
   PropertyFilterDefinition,
@@ -78,7 +79,7 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
   /**
    * Optional title to display in the filter list header
    */
-  title?: string;
+  title?: ReactNode;
 
   /**
    * Optional icon to display next to the title
