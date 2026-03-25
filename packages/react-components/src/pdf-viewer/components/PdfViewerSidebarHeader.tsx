@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-import { Button } from "@base-ui/react/button";
-import { GridView, ListDetailView } from "@blueprintjs/icons";
-import classnames from "classnames";
+import { Toggle } from "@base-ui/react/toggle";
+import { ToggleGroup } from "@base-ui/react/toggle-group";
 import React, { useCallback } from "react";
-import { Tooltip } from "../../base-components/tooltip/Tooltip.js";
 import type { SidebarMode } from "../types.js";
 import styles from "./PdfViewerSidebarHeader.module.css";
 
@@ -27,71 +25,49 @@ export interface PdfViewerSidebarHeaderProps {
   onSidebarModeChange: (mode: SidebarMode) => void;
 }
 
+const SIDEBAR_MODE_VALUE = Object.freeze(["thumbnails"]) as readonly string[];
+const OUTLINE_MODE_VALUE = Object.freeze(["outline"]) as readonly string[];
+
 export function PdfViewerSidebarHeader({
   sidebarMode,
   onSidebarModeChange,
 }: PdfViewerSidebarHeaderProps): React.ReactElement {
-  const handleThumbnailsClick = useCallback(() => {
-    onSidebarModeChange("thumbnails");
-  }, [onSidebarModeChange]);
+  const value = sidebarMode === "thumbnails"
+    ? SIDEBAR_MODE_VALUE
+    : OUTLINE_MODE_VALUE;
 
-  const handleOutlineClick = useCallback(() => {
-    onSidebarModeChange("outline");
-  }, [onSidebarModeChange]);
+  const handleValueChange = useCallback(
+    (newValue: string[]) => {
+      if (newValue.length > 0) {
+        onSidebarModeChange(newValue[0] as SidebarMode);
+      }
+    },
+    [onSidebarModeChange],
+  );
 
   return (
     <div className={styles.sidebarHeader}>
-      <Tooltip.Root>
-        <Tooltip.Trigger
-          render={
-            <Button
-              className={classnames(
-                styles.modeButton,
-                sidebarMode === "thumbnails" && styles.modeButtonActive,
-              )}
-              onClick={handleThumbnailsClick}
-              aria-label="Page thumbnails"
-              aria-pressed={sidebarMode === "thumbnails"}
-              type="button"
-            />
-          }
+      <ToggleGroup
+        value={value}
+        onValueChange={handleValueChange}
+        className={styles.toggleGroup}
+      >
+        <Toggle
+          value="thumbnails"
+          className={styles.modeButton}
+          aria-label="Page thumbnails"
         >
-          <GridView size={16} />
-        </Tooltip.Trigger>
-        <Tooltip.Portal>
-          <Tooltip.Positioner>
-            <Tooltip.Popup>
-              Page thumbnails
-            </Tooltip.Popup>
-          </Tooltip.Positioner>
-        </Tooltip.Portal>
-      </Tooltip.Root>
+          Pages
+        </Toggle>
 
-      <Tooltip.Root>
-        <Tooltip.Trigger
-          render={
-            <Button
-              className={classnames(
-                styles.modeButton,
-                sidebarMode === "outline" && styles.modeButtonActive,
-              )}
-              onClick={handleOutlineClick}
-              aria-label="Document outline"
-              aria-pressed={sidebarMode === "outline"}
-              type="button"
-            />
-          }
+        <Toggle
+          value="outline"
+          className={styles.modeButton}
+          aria-label="Document outline"
         >
-          <ListDetailView size={16} />
-        </Tooltip.Trigger>
-        <Tooltip.Portal>
-          <Tooltip.Positioner>
-            <Tooltip.Popup>
-              Document outline
-            </Tooltip.Popup>
-          </Tooltip.Positioner>
-        </Tooltip.Portal>
-      </Tooltip.Root>
+          Outline
+        </Toggle>
+      </ToggleGroup>
     </div>
   );
 }

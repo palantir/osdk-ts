@@ -18,24 +18,34 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--osdk-surface-spacing);
   padding: var(--osdk-surface-spacing);
   border-bottom: 1px solid var(--osdk-pdf-viewer-sidebar-border);
   flex-shrink: 0;
+}
+
+.toggleGroup {
+  display: flex;
+  align-items: center;
+  gap: var(--osdk-spacing-2xs, 2px);
+  padding: var(--osdk-spacing-2xs, 2px);
+  border: 1px solid var(--osdk-surface-border-color, rgba(0, 0, 0, 0.15));
+  border-radius: var(--osdk-surface-border-radius);
+  background-color: var(--osdk-surface-background-color, transparent);
 }
 
 .modeButton {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
   border: none;
   background: none;
   color: var(--osdk-typography-color-muted);
   cursor: pointer;
   border-radius: var(--osdk-surface-border-radius);
-  padding: 0;
+  padding: var(--osdk-spacing-2xs, 2px) var(--osdk-spacing-xs, 6px);
+  font-size: var(--osdk-typography-font-size-small, 12px);
+  font-family: inherit;
+  line-height: 1.4;
 }
 
 .modeButton:hover {
@@ -51,11 +61,11 @@
   outline-offset: var(--osdk-focus-visible-outline-offset);
 }
 
-.modeButtonActive {
+.modeButton[data-pressed] {
   background-color: var(--osdk-pdf-viewer-outline-item-active-bg, rgba(45, 114, 210, 0.1));
   color: var(--osdk-pdf-viewer-outline-item-active-color, var(--osdk-intent-primary));
 }
 
-.modeButtonActive:hover {
+.modeButton[data-pressed]:hover {
   background-color: var(--osdk-pdf-viewer-outline-item-active-bg, rgba(45, 114, 210, 0.1));
 }
