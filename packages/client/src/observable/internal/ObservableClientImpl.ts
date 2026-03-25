@@ -60,6 +60,11 @@ import type {
   Unsubscribable,
 } from "../ObservableClient.js";
 import type { Observer } from "../ObservableClient/common.js";
+import type {
+  MediaMetadataObserveOptions,
+  MediaMetadataPayload,
+} from "../ObservableClient/MediaObservableTypes.js";
+import type { MediaPropertyLocation } from "../ObservableClient/MediaTypes.js";
 import type { ObserveLinks } from "../ObservableClient/ObserveLink.js";
 import type { AggregationPayloadBase } from "./aggregation/AggregationQuery.js";
 import type { Canonical } from "./Canonical.js";
@@ -87,6 +92,10 @@ export class ObservableClientImpl implements ObservableClient {
 
     this.applyAction = store.applyAction.bind(store);
     this.validateAction = store.validateAction.bind(store);
+  }
+
+  get media() {
+    return this.__experimentalStore.media;
   }
 
   public observeObject: <T extends ObjectOrInterfaceDefinition>(
@@ -382,6 +391,22 @@ export class ObservableClientImpl implements ObservableClient {
       cache.set(canonKey, cached);
     }
     return cached;
+  }
+
+  public observeMetadata(
+    coords: MediaPropertyLocation,
+    options: MediaMetadataObserveOptions,
+    observer: Observer<MediaMetadataPayload>,
+  ): Unsubscribable {
+    return this.__experimentalStore.media.observeMetadata(
+      coords,
+      options,
+      observer,
+    );
+  }
+
+  public dispose(): void {
+    this.__experimentalStore.dispose();
   }
 }
 

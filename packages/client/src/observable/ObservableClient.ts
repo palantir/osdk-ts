@@ -20,8 +20,11 @@ import type {
   ActionValidationResponse,
   AggregateOpts,
   AggregationsResults,
+  Attachment,
   CompileTimeMetadata,
   DerivedProperty,
+  Media,
+  MediaMetadata,
   ObjectOrInterfaceDefinition,
   ObjectSet,
   ObjectTypeDefinition,
@@ -50,6 +53,11 @@ import type {
   Observer,
   Status,
 } from "./ObservableClient/common.js";
+import type {
+  MediaMetadataObserveOptions,
+  MediaMetadataPayload,
+} from "./ObservableClient/MediaObservableTypes.js";
+import type { MediaPropertyLocation } from "./ObservableClient/MediaTypes.js";
 import type { ObserveLinks } from "./ObservableClient/ObserveLink.js";
 import type { OptimisticBuilder } from "./OptimisticBuilder.js";
 
@@ -539,6 +547,61 @@ export interface ObservableClient extends ObserveLinks {
   canonicalizeOptions: <OS, T extends CanonicalizeOptionsInput<OS>>(
     options: T,
   ) => CanonicalizedOptions<T>;
+
+  /**
+   * Observe media metadata with automatic updates.
+   */
+  observeMetadata(
+    coords: MediaPropertyLocation,
+    options: MediaMetadataObserveOptions,
+    observer: Observer<MediaMetadataPayload>,
+  ): Unsubscribable;
+
+  /**
+   * Media operations for managing metadata, content, and caching.
+   */
+  media: {
+    getCacheKey(
+      mediaOrCoords: Media | Attachment | MediaPropertyLocation,
+    ): string;
+
+    fetchMetadata(
+      coords: MediaPropertyLocation,
+    ): Promise<MediaMetadata>;
+
+    getCachedMetadata(
+      coords: MediaPropertyLocation,
+    ): MediaMetadata | undefined;
+
+    fetchContent(
+      mediaOrCoords: Media | Attachment | MediaPropertyLocation,
+      options?: { preview?: boolean },
+    ): Promise<Blob>;
+
+    getCachedContent(
+      mediaOrCoords: Media | Attachment | MediaPropertyLocation,
+      options?: { preview?: boolean },
+    ): Blob | undefined;
+
+    createBlobUrl(
+      mediaOrCoords: Media | Attachment | MediaPropertyLocation,
+      options?: { preview?: boolean },
+    ): string | undefined;
+
+    releaseBlobUrl(
+      mediaOrCoords: Media | Attachment | MediaPropertyLocation,
+      options?: { preview?: boolean },
+    ): void;
+
+    clearCache(
+      mediaOrCoords: Media | Attachment | MediaPropertyLocation,
+    ): void;
+  };
+
+  /**
+   * Clean up resources and stop background processes.
+   */
+  dispose(): void;
 }
 
 export interface CanonicalizeOptionsInput<OS = ObjectSet<any, any>> {
