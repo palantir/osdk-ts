@@ -19,11 +19,9 @@ import type {
   CbacBannerData,
   RequiredMarkingGroup,
 } from "../types.js";
-import {
-  UNMARKED_BACKGROUND_COLORS,
-  UNMARKED_CLASSIFICATION_STRING,
-  UNMARKED_TEXT_COLOR,
-} from "../unmarkedDefaults.js";
+const UNMARKED_BACKGROUND_COLORS: string[] = ["#8F99A8"];
+const UNMARKED_TEXT_COLOR = "#FFFFFF";
+const UNMARKED_CLASSIFICATION_STRING = "UNMARKED";
 
 export const EMPTY_ARRAY: string[] = [];
 

@@ -20,8 +20,6 @@ export {
   groupMarkingsByCategory,
   toggleMarking,
 } from "../cbac-picker/utils/selectionLogic.js";
-export { textColorForBackground } from "../cbac-picker/utils/textColorForBackground.js";
-
 // CBAC Picker - Types
 export type {
   CategoryMarkingGroup,
