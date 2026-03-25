@@ -14,12 +14,8 @@
  * limitations under the License.
  */
 
-import type {
-  Attachment,
-  Media,
-  MediaMetadata,
-  MediaPropertyLocation,
-} from "@osdk/api";
+import type { MediaMetadata, MediaReference } from "@osdk/api";
+import { MediaSets } from "@osdk/foundry.mediasets";
 import * as OntologiesV2 from "@osdk/foundry.ontologies";
 import { additionalContext } from "../../../Client.js";
 import type {
@@ -30,7 +26,7 @@ import type {
   MediaContentObserveOptions,
   MediaContentPayload,
 } from "../../ObservableClient/MediaObservableTypes.js";
-
+import type { MediaPropertyLocation } from "../../ObservableClient/MediaTypes.js";
 import { AbstractHelper } from "../AbstractHelper.js";
 import type { KnownCacheKey } from "../KnownCacheKey.js";
 import type { Query } from "../Query.js";
@@ -76,15 +72,9 @@ export class MediaHelper extends AbstractHelper<
   }
 
   private getContentCacheKey(source: MediaSource): MediaContentCacheKey {
-    let objectType = "";
-    if (isMediaPropertyLocation(source)) {
-      objectType = source.objectType;
-    } else if ("getMediaSourceLocation" in source) {
-      const coords = source.getMediaSourceLocation?.();
-      if (coords) {
-        objectType = coords.objectType;
-      }
-    }
+    const objectType = isMediaPropertyLocation(source)
+      ? source.objectType
+      : "";
     return this.cacheKeys.get(
       "mediaContent",
       objectType,
@@ -92,22 +82,11 @@ export class MediaHelper extends AbstractHelper<
     ) as MediaContentCacheKey;
   }
 
-  private resolveCoords(source: Media): MediaPropertyLocation {
-    const coords = source.getMediaSourceLocation?.();
-    if (!coords) {
-      throw new Error(
-        "Cannot observe media metadata: source has no location (transient or uploaded media)",
-      );
-    }
-    return coords;
-  }
-
   observeMediaMetadata(
-    source: Media,
+    coords: MediaPropertyLocation,
     options: MediaMetadataObserveOptions,
     observer: Observer<MediaMetadataPayload>,
   ): UnsubscribableWrapper {
-    const coords = this.resolveCoords(source);
     const cacheKey = this.getMetadataCacheKey(coords);
 
     const query = this.store.queries.get(cacheKey, () => {
@@ -127,7 +106,7 @@ export class MediaHelper extends AbstractHelper<
   }
 
   observeMedia(
-    source: Media | Attachment,
+    source: MediaSource,
     options: MediaContentObserveOptions,
     observer: Observer<MediaContentPayload>,
   ): { unsubscribe: () => void } {
@@ -153,7 +132,7 @@ export class MediaHelper extends AbstractHelper<
     return this._subscribe(query, options, observer);
   }
 
-  invalidateMedia(source: Media | Attachment): void {
+  invalidateMedia(source: MediaSource): void {
     const typedCacheKey = this.getContentCacheKey(source);
     const query = this.store.queries.peek(typedCacheKey) as
       | MediaContentQuery
@@ -262,6 +241,45 @@ export class MediaHelper extends AbstractHelper<
     const baseCacheKey = this.getCacheKey(mediaOrLocation);
     const cacheKey = preview ? `${baseCacheKey}:preview` : baseCacheKey;
     this.blobManager.releaseBlobUrl(cacheKey);
+  }
+
+  async uploadMedia(
+    file: Blob,
+    options: { fileName: string },
+  ): Promise<MediaReference> {
+    const gatewayMediaRef = await MediaSets.uploadMedia(
+      this.store.client[additionalContext],
+      file,
+      {
+        filename: options.fileName,
+        preview: true,
+      },
+    );
+
+    return {
+      mimeType: gatewayMediaRef.mimeType,
+      reference: {
+        type: "mediaSetViewItem",
+        mediaSetViewItem: {
+          mediaItemRid: gatewayMediaRef.reference.mediaSetViewItem.mediaItemRid,
+          mediaSetRid: gatewayMediaRef.reference.mediaSetViewItem.mediaSetRid,
+          mediaSetViewRid:
+            gatewayMediaRef.reference.mediaSetViewItem.mediaSetViewRid,
+          readToken: gatewayMediaRef.reference.mediaSetViewItem.token,
+        },
+      },
+    };
+  }
+
+  async prefetch(
+    source: MediaSource,
+    options?: { preview?: boolean },
+  ): Promise<void> {
+    const preview = options?.preview ?? true;
+    await Promise.all([
+      this.fetchContent(source, { preview }),
+      this.fetchMetadataForSource(source).catch(() => undefined),
+    ]);
   }
 
   private async fetchMetadataForSource(
