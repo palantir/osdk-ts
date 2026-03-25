@@ -19,9 +19,8 @@ import type {
   PdfAnnotationRenderProps,
   PdfViewerProps,
 } from "@osdk/react-components/experimental";
-import { BasePdfRenderer } from "@osdk/react-components/experimental";
+import { BasePdfViewer } from "@osdk/react-components/experimental";
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import React from "react";
 import { fn } from "storybook/test";
 
 const SAMPLE_PDF_URL =
@@ -107,8 +106,8 @@ const CUSTOM_ANNOTATIONS: PdfAnnotation[] = [
 ];
 
 const meta: Meta<PdfViewerProps> = {
-  title: "Components/PdfViewer/Examples/Custom Annotations",
-  component: BasePdfRenderer,
+  title: "Components/PdfViewer/Recipes/Custom Annotations",
+  component: BasePdfViewer,
   args: {
     src: SAMPLE_PDF_URL,
     annotations: CUSTOM_ANNOTATIONS,
@@ -116,7 +115,7 @@ const meta: Meta<PdfViewerProps> = {
   },
   render: (args: PdfViewerProps) => (
     <div style={{ height: "600px" }}>
-      <BasePdfRenderer {...args} />
+      <BasePdfViewer {...args} />
     </div>
   ),
   argTypes: {
@@ -135,7 +134,7 @@ export const CustomAnnotation: Story = {
       source: {
         code:
           `import type { PdfAnnotationRenderProps } from "@osdk/react-components/experimental";
-import { BasePdfRenderer } from "@osdk/react-components/experimental";
+import { BasePdfViewer } from "@osdk/react-components/experimental";
 
 function TooltipAnnotation({ annotation }: PdfAnnotationRenderProps) {
   return (
@@ -145,7 +144,7 @@ function TooltipAnnotation({ annotation }: PdfAnnotationRenderProps) {
   );
 }
 
-<BasePdfRenderer
+<BasePdfViewer
   src={pdfUrl}
   annotations={[
     {
