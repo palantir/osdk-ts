@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(gh pr:*)",
+      "Bash(gh api:*)",
+      "WebSearch",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:www.htmhell.dev)",
+      "WebFetch(domain:a11ysupport.io)",
+      "Bash(pnpm turbo:*)",
+      "Bash(npx dprint:*)",
+      "Bash(git commit:*)",
+      "Bash(pnpm:*)",
+      "Bash(git:*)",
+      "WebFetch(domain:www.figma.com)",
+      "Bash(convert:*)",
+      "Bash(pnpm tsc:*)",
+      "Bash(pnpm vitest:*)",
+      "Bash(pnpm dev:*)"
+    ]
+  }
+}

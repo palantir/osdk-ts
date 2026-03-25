@@ -192,7 +192,7 @@ describe("ActionForm", () => {
 
       const button = screen.getByRole("button", { name: /submitting/i });
       expect((button as HTMLButtonElement).disabled).toBe(true);
-      expect(button.textContent).toBe("Submitting...");
+      expect(button.textContent).toBe("Submitting\u2026");
     });
   });
 

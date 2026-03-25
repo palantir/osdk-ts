@@ -14,29 +14,25 @@
  * limitations under the License.
  */
 
-import { Input } from "@base-ui/react/input";
-import React from "react";
-import type { TextInputFieldProps } from "../FormFieldApi.js";
-import styles from "./TextInputField.module.css";
+.osdkForm {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
 
-export function TextInputField({
-  id,
-  value,
-  onChange,
-  placeholder,
-  minLength,
-  maxLength,
-}: TextInputFieldProps & { id?: string }): React.ReactElement {
-  return (
-    <Input
-      id={id}
-      className={styles.osdkTextInput}
-      type="text"
-      value={value ?? ""}
-      onValueChange={onChange}
-      placeholder={placeholder}
-      minLength={minLength}
-      maxLength={maxLength}
-    />
-  );
+.osdkFormFields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--osdk-form-field-gap);
+  padding: var(--osdk-form-content-padding);
+}
+
+.osdkFormFooter {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  border-top: var(--osdk-surface-border-width) solid
+    var(--osdk-form-footer-border-color);
+  padding-block: var(--osdk-form-content-padding);
+  padding-inline: var(--osdk-form-content-padding);
 }

@@ -1,0 +1,18 @@
+.formCard {
+  --osdk-form-label-font-size: var(--osdk-typography-size-body-small);
+
+  background: var(--osdk-background-primary);
+  border: var(--osdk-surface-border-width) solid
+    var(--osdk-surface-border-color-default);
+  border-radius: var(--osdk-surface-border-radius);
+  /* padding: calc(var(--osdk-surface-spacing) * 4); */
+}
+
+.submittedOutput {
+  margin-top: 24px;
+  padding: 16px;
+  border-radius: var(--osdk-surface-border-radius);
+  background: var(--osdk-background-secondary);
+  overflow: auto;
+  font-size: var(--osdk-typography-size-body-small);
+}

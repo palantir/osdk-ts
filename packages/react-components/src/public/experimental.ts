@@ -72,3 +72,32 @@ export {
   PdfRenderer,
   type PdfRendererProps,
 } from "../pdf-viewer/PdfRenderer.js";
+
+// ActionForm that applies an action from a form
+export { ActionForm } from "../action-form/ActionForm.js";
+export type {
+  ActionFormProps,
+  BaseFormProps,
+  FormError,
+  FormState,
+} from "../action-form/ActionFormApi.js";
+export { BaseForm } from "../action-form/BaseForm.js";
+export type {
+  ActionParameters,
+  BaseFormFieldProps,
+  CustomFieldProps,
+  DatetimePickerFieldProps,
+  DropdownFieldProps,
+  FieldComponent,
+  FieldValueType,
+  FilePickerProps,
+  FormFieldDefinition,
+  FormFieldPropsByType,
+  NumberInputFieldProps,
+  ObjectSetFieldProps,
+  Option,
+  RadioButtonsFieldProps,
+  RendererFieldDefinition,
+  TextAreaFieldProps,
+  TextInputFieldProps,
+} from "../action-form/FormFieldApi.js";
