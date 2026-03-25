@@ -19,7 +19,9 @@ import type {
   ActionEditResponse,
   ActionValidationResponse,
   AggregateOpts,
+  Attachment,
   CompileTimeMetadata,
+  Media,
   ObjectOrInterfaceDefinition,
   ObjectSet,
   ObjectTypeDefinition,
@@ -62,10 +64,12 @@ import type {
 } from "../ObservableClient.js";
 import type { Observer } from "../ObservableClient/common.js";
 import type {
+  MediaContentObserveOptions,
+  MediaContentPayload,
   MediaMetadataObserveOptions,
   MediaMetadataPayload,
 } from "../ObservableClient/MediaObservableTypes.js";
-import type { MediaPropertyLocation } from "../ObservableClient/MediaTypes.js";
+
 import type { ObserveLinks } from "../ObservableClient/ObserveLink.js";
 import type { AggregationPayloadBase } from "./aggregation/AggregationQuery.js";
 import type { Canonical } from "./Canonical.js";
@@ -392,15 +396,33 @@ export class ObservableClientImpl implements ObservableClient {
   }
 
   public observeMediaMetadata(
-    coords: MediaPropertyLocation,
+    source: Media,
     options: MediaMetadataObserveOptions,
     observer: Observer<MediaMetadataPayload>,
   ): Unsubscribable {
     return this.__experimentalStore.media.observeMediaMetadata(
-      coords,
+      source,
       options,
       observer,
     );
+  }
+
+  public observeMedia(
+    source: Media | Attachment,
+    options: MediaContentObserveOptions,
+    observer: Observer<MediaContentPayload>,
+  ): Unsubscribable {
+    return this.__experimentalStore.media.observeMedia(
+      source,
+      options,
+      observer,
+    );
+  }
+
+  public invalidateMedia(
+    source: Media | Attachment,
+  ): void {
+    this.__experimentalStore.media.invalidateMedia(source);
   }
 
   public async getCacheSnapshot(): Promise<CacheSnapshot> {
