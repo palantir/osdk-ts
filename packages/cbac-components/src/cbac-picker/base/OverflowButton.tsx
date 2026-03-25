@@ -19,7 +19,8 @@ import classnames from "classnames";
 import React from "react";
 import type { MarkingSelectionState } from "../types.js";
 import styles from "./OverflowButton.module.css";
-import { OverflowItem, overflowItemStyles } from "./OverflowItem.js";
+import { OverflowItem } from "./OverflowItem.js";
+import overflowItemStyles from "./OverflowItem.module.css";
 
 export interface OverflowButtonProps {
   overflowMarkings: ReadonlyArray<{

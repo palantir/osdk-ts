@@ -32,7 +32,9 @@ export interface OverflowItemProps {
   onToggle: (markingId: string) => void;
 }
 
-export const OverflowItem = React.memo(function OverflowItem({
+export const OverflowItem: React.MemoExoticComponent<
+  (props: OverflowItemProps) => React.ReactElement
+> = React.memo(function OverflowItem({
   id,
   label,
   selectionState,
@@ -63,5 +65,3 @@ export const OverflowItem = React.memo(function OverflowItem({
     </button>
   );
 });
-
-export { styles as overflowItemStyles };
