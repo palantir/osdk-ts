@@ -254,7 +254,6 @@ export function TableHeaderWithPopover<
               >
                 <ChevronDown
                   className={styles.osdkHeaderIcon}
-                  //
                 />
               </Menu.Trigger>
             )}

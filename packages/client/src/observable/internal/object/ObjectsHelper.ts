@@ -53,7 +53,7 @@ export class ObjectsHelper extends AbstractHelper<
     const apiName = typeof options.apiName === "string"
       ? options.apiName
       : options.apiName.apiName;
-    const { pk, select } = options;
+    const { pk, select, $loadPropertySecurityMetadata } = options;
 
     const defType = getDefType(options.apiName);
 
@@ -74,6 +74,7 @@ export class ObjectsHelper extends AbstractHelper<
         { dedupeInterval: 0 },
         defType,
         select,
+        $loadPropertySecurityMetadata,
       ));
   }
 

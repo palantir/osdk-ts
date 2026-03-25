@@ -14,26 +14,19 @@
  * limitations under the License.
  */
 
-import type {
-  ObjectOrInterfaceDefinition,
-  SimplePropertyDef,
-  WhereClause,
-} from "@osdk/api";
-import type { CommonObserveOptions } from "../../ObservableClient/common.js";
+import React, { memo } from "react";
+import styles from "./FormHeader.module.css";
 
-export interface ListQueryOptions<
-  Q extends ObjectOrInterfaceDefinition = ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<
-    string,
-    SimplePropertyDef
-  >,
-> extends CommonObserveOptions {
-  pageSize?: number;
-  select?: readonly string[];
-  autoFetchMore?: boolean | number;
-  intersectWith?: Array<{
-    where: WhereClause<Q, RDPs>;
-  }>;
-  pivotTo?: string;
-  $loadPropertySecurityMetadata?: boolean;
+interface FormHeaderProps {
+  title: string;
 }
+
+export const FormHeader: React.FC<FormHeaderProps> = memo(
+  function FormHeaderFn({ title }: FormHeaderProps): React.ReactElement {
+    return (
+      <h2 className={styles.osdkFormHeader}>
+        {title}
+      </h2>
+    );
+  },
+);

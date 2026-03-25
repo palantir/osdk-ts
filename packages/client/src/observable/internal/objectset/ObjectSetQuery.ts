@@ -200,6 +200,9 @@ export class ObjectSetQuery extends BaseListQuery<
           && Object.keys(this.#operations.orderBy).length > 0
         ? { $orderBy: this.#operations.orderBy }
         : {}),
+      ...(this.options.$loadPropertySecurityMetadata
+        ? { $loadPropertySecurityMetadata: true }
+        : {}),
     });
 
     if (signal?.aborted) {
