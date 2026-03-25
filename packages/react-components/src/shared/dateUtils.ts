@@ -55,16 +55,15 @@ export function formatDatetimeForInput(
 
 /**
  * Parses a datetime-local input string (e.g. "2024-01-15T14:30") into a Date.
- * Unlike `parseDateFromInput`, no "T00:00:00" suffix is needed because
- * datetime-local strings already include the time component and have no "Z"
- * suffix, so `new Date()` parses them as local time.
+ * Delegates to `parseDateFromISO` since the parsing logic is identical for
+ * string inputs — datetime-local strings already include the time component
+ * and have no "Z" suffix, so `new Date()` parses them as local time.
  */
 export function parseDatetimeFromInput(
   value: string | undefined | null,
 ): Date | undefined {
   if (!value) return undefined;
-  const date = new Date(value);
-  return isNaN(date.getTime()) ? undefined : date;
+  return parseDateFromISO(value);
 }
 
 export function formatDateForDisplay(

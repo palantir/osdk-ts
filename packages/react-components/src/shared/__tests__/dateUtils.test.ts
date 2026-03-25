@@ -18,8 +18,10 @@ import { describe, expect, it } from "vitest";
 import {
   formatDateForDisplay,
   formatDateForInput,
+  formatDatetimeForInput,
   parseDateFromInput,
   parseDateFromISO,
+  parseDatetimeFromInput,
 } from "../dateUtils.js";
 
 describe("formatDateForInput", () => {
@@ -60,5 +62,39 @@ describe("parseDateFromISO", () => {
     expect(parseDateFromISO(undefined)).toBeUndefined();
     expect(parseDateFromISO(null)).toBeUndefined();
     expect(parseDateFromISO("not-a-date")).toBeUndefined();
+  });
+});
+
+describe("formatDatetimeForInput", () => {
+  it("formats a date to YYYY-MM-DDTHH:mm", () => {
+    expect(formatDatetimeForInput(new Date(2024, 5, 15, 14, 30))).toBe(
+      "2024-06-15T14:30",
+    );
+    expect(formatDatetimeForInput(new Date(2024, 0, 3, 9, 5))).toBe(
+      "2024-01-03T09:05",
+    );
+  });
+
+  it("returns empty string for null or undefined", () => {
+    expect(formatDatetimeForInput(null)).toBe("");
+    expect(formatDatetimeForInput(undefined)).toBe("");
+  });
+});
+
+describe("parseDatetimeFromInput", () => {
+  it("parses datetime-local string to correct local time", () => {
+    const date = parseDatetimeFromInput("2024-06-15T14:30")!;
+    expect(date.getFullYear()).toBe(2024);
+    expect(date.getMonth()).toBe(5);
+    expect(date.getDate()).toBe(15);
+    expect(date.getHours()).toBe(14);
+    expect(date.getMinutes()).toBe(30);
+  });
+
+  it("returns undefined for empty or invalid input", () => {
+    expect(parseDatetimeFromInput("")).toBeUndefined();
+    expect(parseDatetimeFromInput(null)).toBeUndefined();
+    expect(parseDatetimeFromInput(undefined)).toBeUndefined();
+    expect(parseDatetimeFromInput("not-a-date")).toBeUndefined();
   });
 });
