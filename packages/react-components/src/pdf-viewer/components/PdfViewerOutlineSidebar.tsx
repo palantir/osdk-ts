@@ -16,8 +16,7 @@
 
 import classnames from "classnames";
 import React, { useCallback, useMemo } from "react";
-import type { OutlineItem } from "../hooks/usePdfOutline.js";
-import type { SidebarMode } from "../types.js";
+import type { OutlineItem , SidebarMode } from "../types.js";
 import styles from "./PdfViewerOutlineSidebar.module.css";
 import { PdfViewerSidebarHeader } from "./PdfViewerSidebarHeader.js";
 
@@ -142,13 +141,6 @@ function computeActiveIndex(
   items: OutlineItem[],
   currentPage: number,
 ): number {
-  let activeIdx = -1;
-  for (let i = 0; i < items.length; i++) {
-    if (items[i].pageNumber <= currentPage) {
-      activeIdx = i;
-    } else {
-      break;
-    }
-  }
-  return activeIdx;
+  const idx = items.findIndex(item => item.pageNumber > currentPage);
+  return idx === -1 ? items.length - 1 : idx - 1;
 }

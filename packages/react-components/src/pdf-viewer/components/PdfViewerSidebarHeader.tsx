@@ -16,6 +16,7 @@
 
 import { Toggle } from "@base-ui/react/toggle";
 import { ToggleGroup } from "@base-ui/react/toggle-group";
+import { GridView, Properties } from "@blueprintjs/icons";
 import React, { useCallback } from "react";
 import type { SidebarMode } from "../types.js";
 import styles from "./PdfViewerSidebarHeader.module.css";
@@ -57,7 +58,7 @@ export function PdfViewerSidebarHeader({
           className={styles.modeButton}
           aria-label="Page thumbnails"
         >
-          Pages
+          <GridView size={16} />
         </Toggle>
 
         <Toggle
@@ -65,7 +66,7 @@ export function PdfViewerSidebarHeader({
           className={styles.modeButton}
           aria-label="Document outline"
         >
-          Outline
+          <Properties size={16} />
         </Toggle>
       </ToggleGroup>
     </div>

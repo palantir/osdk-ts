@@ -100,10 +100,7 @@ export {
   usePdfAnnotationPortals,
 } from "../pdf-viewer/hooks/usePdfAnnotationPortals.js";
 export { usePdfDocument } from "../pdf-viewer/hooks/usePdfDocument.js";
-export {
-  type OutlineItem,
-  usePdfOutline,
-} from "../pdf-viewer/hooks/usePdfOutline.js";
+export { usePdfOutline } from "../pdf-viewer/hooks/usePdfOutline.js";
 export {
   usePdfViewer,
   type UsePdfViewerResult,
@@ -113,6 +110,7 @@ export {
   type UsePdfViewerSearchResult,
 } from "../pdf-viewer/hooks/usePdfViewerSearch.js";
 export { usePdfViewerSync } from "../pdf-viewer/hooks/usePdfViewerSync.js";
+export { type OutlineItem } from "../pdf-viewer/types.js";
 
 // PdfViewer hooks — composition
 export {

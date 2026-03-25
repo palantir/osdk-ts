@@ -19,6 +19,15 @@ import type React from "react";
 /** Which sidebar panel to display when the sidebar is open. */
 export type SidebarMode = "thumbnails" | "outline";
 
+/** A single item in the PDF document outline (table of contents). */
+export interface OutlineItem {
+  title: string;
+  depth: number;
+  pageNumber: number;
+  bold: boolean;
+  italic: boolean;
+}
+
 /** The visual style of an annotation rendered on the PDF. */
 export type AnnotationType = "highlight" | "underline" | "comment" | "pin";
 

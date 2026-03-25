@@ -20,14 +20,7 @@ import {
   OUTLINE_HEADING_SIZE_RATIO,
   OUTLINE_MAX_HEADING_LENGTH,
 } from "../constants.js";
-
-export interface OutlineItem {
-  title: string;
-  depth: number;
-  pageNumber: number;
-  bold: boolean;
-  italic: boolean;
-}
+import type { OutlineItem } from "../types.js";
 
 const EMPTY_OUTLINE: OutlineItem[] = [];
 
@@ -154,6 +147,10 @@ function isTextItem(
   return "str" in item && "transform" in item;
 }
 
+function roundFontSize(size: number): number {
+  return Math.round(size * 10) / 10;
+}
+
 /**
  * Extract the font size from a pdfjs TextItem.
  * Prefer `height` when available, otherwise derive from the transform matrix.
@@ -178,14 +175,18 @@ async function extractHeadingsFromText(
   document: PDFDocumentProxy,
 ): Promise<OutlineItem[]> {
   const numPages = document.numPages;
-  const allTextItems: Array<{ fontSize: number; str: string }> = [];
-  const candidateHeadings: RawHeading[] = [];
 
-  // First pass: collect all text items to determine body text size
-  for (let i = 1; i <= numPages; i++) {
-    const page = await document.getPage(i);
-    const textContent = await page.getTextContent();
+  // Fetch all pages' text content in parallel
+  const pageContents = await Promise.all(
+    Array.from(
+      { length: numPages },
+      (_, i) => document.getPage(i + 1).then(page => page.getTextContent()),
+    ),
+  );
 
+  // Collect font size frequencies across all pages
+  const sizeCounts = new Map<number, number>();
+  for (const textContent of pageContents) {
     for (const rawItem of textContent.items) {
       const item = rawItem as Record<string, unknown>;
       if (!isTextItem(item) || item.str.trim().length === 0) {
@@ -193,22 +194,13 @@ async function extractHeadingsFromText(
       }
       const fontSize = getFontSize(item);
       if (fontSize > 0) {
-        allTextItems.push({ fontSize, str: item.str });
+        const rounded = roundFontSize(fontSize);
+        sizeCounts.set(rounded, (sizeCounts.get(rounded) ?? 0) + 1);
       }
     }
   }
 
-  if (allTextItems.length === 0) {
-    return [];
-  }
-
   // Find the most common font size (body text)
-  const sizeCounts = new Map<number, number>();
-  for (const item of allTextItems) {
-    const rounded = Math.round(item.fontSize * 10) / 10;
-    sizeCounts.set(rounded, (sizeCounts.get(rounded) ?? 0) + 1);
-  }
-
   let bodySize = 0;
   let maxCount = 0;
   for (const [size, count] of sizeCounts) {
@@ -244,17 +236,19 @@ async function extractHeadingsFromText(
     sizeToDepth.set(sortedSizes[i], i);
   }
 
-  // Second pass: extract headings with page numbers.
+  // Extract headings with page numbers.
   // pdfjs splits visual lines into multiple TextItems (e.g. "1." and
   // "Introduction" are separate items). We accumulate all items on the
   // same visual line and treat the line as a heading if most of its
   // content is at a heading font size.
-  for (let i = 1; i <= numPages; i++) {
-    const page = await document.getPage(i);
-    const textContent = await page.getTextContent();
+  const candidateHeadings: RawHeading[] = [];
+
+  for (let pageIdx = 0; pageIdx < pageContents.length; pageIdx++) {
+    const textContent = pageContents[pageIdx];
+    const pageNumber = pageIdx + 1;
 
     let lineItems: Array<{ text: string; fontSize: number }> = [];
-    let linePageNumber = i;
+    let linePageNumber = pageNumber;
     let lineFontName = "";
     let lineHeadingFontSize = 0;
     let lastFlushWasHeading = false;
@@ -268,7 +262,7 @@ async function extractHeadingsFromText(
       for (const li of lineItems) {
         const len = li.text.trim().length;
         totalChars += len;
-        if (sizeToDepth.has(Math.round(li.fontSize * 10) / 10)) {
+        if (sizeToDepth.has(roundFontSize(li.fontSize))) {
           headingChars += len;
         }
       }
@@ -300,17 +294,16 @@ async function extractHeadingsFromText(
       }
 
       const fontSize = getFontSize(item);
-      const rounded = Math.round(fontSize * 10) / 10;
+      const rounded = roundFontSize(fontSize);
       const isHeadingSized = sizeToDepth.has(rounded);
 
       if (isHeadingSized && lineHeadingFontSize === 0) {
         lineHeadingFontSize = rounded;
-        linePageNumber = i;
+        linePageNumber = pageNumber;
         lineFontName = item.fontName;
       }
 
       if (lineHeadingFontSize > 0) {
-        // We're accumulating a potential heading line
         lineItems.push({ text: item.str, fontSize });
       }
 
