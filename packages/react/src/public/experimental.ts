@@ -64,6 +64,11 @@ export type {
 } from "../new/useOsdkFunctions.js";
 
 /** @deprecated Import from `@osdk/react` instead. */
+export { useOsdkMediaUpload } from "../new/useOsdkMediaUpload.js";
+/** @deprecated Import from `@osdk/react` instead. */
+export type { UseOsdkMediaUploadResult } from "../new/useOsdkMediaUpload.js";
+
+/** @deprecated Import from `@osdk/react` instead. */
 export { useOsdkObject } from "../new/useOsdkObject.js";
 
 /** @deprecated Import from `@osdk/react` instead. */
