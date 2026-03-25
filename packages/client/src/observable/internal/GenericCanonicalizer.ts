@@ -19,6 +19,11 @@ import deepEqual from "fast-deep-equal";
 import type { Canonical } from "./Canonical.js";
 import { CachingCanonicalizer } from "./Canonicalizer.js";
 
+// Limits how deep we recurse into nested objects when building the trie
+// fingerprint. Beyond this depth, objects land in the same trie bucket and
+// deepEqual handles disambiguation.
+const MAX_FINGERPRINT_DEPTH = 5;
+
 export class GenericCanonicalizer extends CachingCanonicalizer<object, object> {
   #trie = new Trie<object>();
   #existingValues: Map<object, { values: WeakRef<Canonical<object>>[] }> =
@@ -58,12 +63,22 @@ export class GenericCanonicalizer extends CachingCanonicalizer<object, object> {
   }
 
   #collectSortedKeys(obj: unknown, depth = 0): string[] {
-    if (depth > 5 || !obj || typeof obj !== "object") {
+    if (depth > MAX_FINGERPRINT_DEPTH || !obj || typeof obj !== "object") {
       return [];
     }
     if (Array.isArray(obj)) {
-      return ["[]", String(obj.length)];
+      const result = ["[]", String(obj.length)];
+      for (const item of obj) {
+        result.push(...this.#collectSortedKeys(item, depth + 1));
+      }
+      return result;
     }
-    return Object.keys(obj).sort();
+    const record = obj as Record<string, unknown>;
+    const result: string[] = [];
+    for (const key of Object.keys(record).sort()) {
+      result.push(key);
+      result.push(...this.#collectSortedKeys(record[key], depth + 1));
+    }
+    return result;
   }
 }
