@@ -579,18 +579,23 @@ describe("ObjectSet", () => {
 
     client(Employee).where({
       fullName: {
-        // @ts-expect-error - can't mix $match with $and
-        $interval: { $match: "", $ordered: true, $and: [{ $match: "" }] },
+        $interval: {
+          $match: "John",
+          $ordered: true,
+          // @ts-expect-error - can't mix $match with $or
+          $or: [{ $match: "Smith", $ordered: true }],
+        },
       },
     });
 
     client(Employee).where({
       fullName: {
-        // @ts-expect-error - can't mix $match with $fuzzy
         $interval: {
-          $match: "",
+          $match: "John",
           $ordered: true,
-          $fuzzy: "true",
+          // @ts-expect-error - can't mix $match with $fuzzy
+          $fuzzy: "Smith",
+          // @ts-expect-error - can't mix $match with $fuzziness
           $fuzziness: 3,
         },
       },
@@ -598,8 +603,12 @@ describe("ObjectSet", () => {
 
     client(Employee).where({
       fullName: {
-        // @ts-expect-error - can't mix $and with $or
-        $interval: { $and: [{ $match: "" }], $or: [{ $match: "" }] },
+        $interval: {
+          $and: [{ $match: "John", $ordered: true }],
+          $ordered: true,
+          // @ts-expect-error - can't mix $and with $or
+          $or: [{ $match: "Smith", $ordered: true }],
+        },
       },
     });
   });
