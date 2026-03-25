@@ -78,6 +78,10 @@ vi.mock("@osdk/react/experimental", () => ({
   }),
 }));
 
+vi.mock("../useFunctionColumnsData.js", () => ({
+  useFunctionColumnsData: vi.fn(() => ({})),
+}));
+
 const TestInterfaceType = {
   type: "interface",
   apiName: "TestInterface",

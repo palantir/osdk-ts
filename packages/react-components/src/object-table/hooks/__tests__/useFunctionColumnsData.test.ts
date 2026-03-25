@@ -21,15 +21,15 @@ import type {
   PropertyKeys,
   QueryDefinition,
 } from "@osdk/api";
-import type { Client } from "@osdk/client";
-import { useOsdkClient } from "@osdk/react";
-import { renderHook, waitFor } from "@testing-library/react";
+import type { BatchedFunctionQueryResult } from "@osdk/react/experimental";
+import { useBatchedFunctionQueries } from "@osdk/react/experimental";
+import { renderHook } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { ColumnDefinition } from "../../ObjectTableApi.js";
 import { useFunctionColumnsData } from "../useFunctionColumnsData.js";
 
-vi.mock("@osdk/react", () => ({
-  useOsdkClient: vi.fn(),
+vi.mock("@osdk/react/experimental", () => ({
+  useBatchedFunctionQueries: vi.fn(),
 }));
 
 const TestObjectType: ObjectTypeDefinition = {
@@ -100,32 +100,37 @@ const columnDefinitions: ColumnDefinition<
   },
 ];
 
-const mockExecuteFunction = vi.fn();
-
-const mockClient = vi.fn(() => ({
-  executeFunction: mockExecuteFunction,
-})) as unknown as Client;
-
 describe("useFunctionColumnsData", () => {
   beforeEach(() => {
-    vi.mocked(useOsdkClient).mockReturnValue(mockClient);
-    mockExecuteFunction.mockClear();
+    vi.mocked(useBatchedFunctionQueries).mockClear();
   });
 
   it("should return empty data when no object set is provided", () => {
+    vi.mocked(useBatchedFunctionQueries).mockReturnValue([]);
+
     const { result } = renderHook(
       () => useFunctionColumnsData(undefined, mockObjects, undefined),
     );
 
     expect(result.current).toEqual({});
+    expect(useBatchedFunctionQueries).toHaveBeenCalledWith({
+      queries: [],
+      enabled: false,
+    });
   });
 
   it("should return empty data when objects array is empty", () => {
+    vi.mocked(useBatchedFunctionQueries).mockReturnValue([]);
+
     const { result } = renderHook(
       () => useFunctionColumnsData(mockObjectSet, [], undefined),
     );
 
     expect(result.current).toEqual({});
+    expect(useBatchedFunctionQueries).toHaveBeenCalledWith({
+      queries: [],
+      enabled: false,
+    });
   });
 
   it("should fetch data for function columns", async () => {
@@ -134,9 +139,17 @@ describe("useFunctionColumnsData", () => {
       "TestObject:obj2": { value: "result2" },
     };
 
-    mockExecuteFunction.mockResolvedValue(mockResult);
+    // Mock initial loading state
+    vi.mocked(useBatchedFunctionQueries).mockReturnValue([
+      {
+        data: undefined,
+        error: undefined,
+        isLoading: true,
+        lastUpdated: undefined,
+      } as BatchedFunctionQueryResult,
+    ]);
 
-    const { result } = renderHook(
+    const { result, rerender } = renderHook(
       () =>
         useFunctionColumnsData(mockObjectSet, mockObjects, columnDefinitions),
     );
@@ -159,9 +172,17 @@ describe("useFunctionColumnsData", () => {
       },
     });
 
-    await waitFor(() => {
-      expect(result.current.testColumn.obj1.isLoading).toBe(false);
-    });
+    // Mock successful data response
+    vi.mocked(useBatchedFunctionQueries).mockReturnValue([
+      {
+        data: mockResult,
+        error: undefined,
+        isLoading: false,
+        lastUpdated: new Date().toISOString(),
+      } as BatchedFunctionQueryResult,
+    ]);
+
+    rerender();
 
     expect(result.current).toEqual({
       testColumn: {
@@ -180,8 +201,16 @@ describe("useFunctionColumnsData", () => {
       },
     });
 
-    expect(mockExecuteFunction).toHaveBeenCalledWith({
-      [OBJ_SET_KEY]: mockObjectSet,
+    expect(useBatchedFunctionQueries).toHaveBeenCalledWith({
+      queries: [
+        {
+          queryDefinition: mockQueryDefinition,
+          options: {
+            params: { [OBJ_SET_KEY]: mockObjectSet },
+          },
+        },
+      ],
+      enabled: true,
     });
   });
 
@@ -195,8 +224,6 @@ describe("useFunctionColumnsData", () => {
     const mockOneObject = [
       mockObject1,
     ] as Osdk.Instance<TestObject, "$allBaseProperties", TestObjectKeys, {}>[];
-
-    mockExecuteFunction.mockResolvedValue(mockResult);
 
     const columnDefinitions: ColumnDefinition<
       TestObject,
@@ -217,14 +244,19 @@ describe("useFunctionColumnsData", () => {
       },
     ];
 
+    vi.mocked(useBatchedFunctionQueries).mockReturnValue([
+      {
+        data: mockResult,
+        error: undefined,
+        isLoading: false,
+        lastUpdated: new Date().toISOString(),
+      } as BatchedFunctionQueryResult,
+    ]);
+
     const { result } = renderHook(
       () =>
         useFunctionColumnsData(mockObjectSet, mockOneObject, columnDefinitions),
     );
-
-    await waitFor(() => {
-      expect(result.current.testColumn.obj1.isLoading).toBe(false);
-    });
 
     expect(result.current).toEqual({
       testColumn: {
@@ -249,8 +281,6 @@ describe("useFunctionColumnsData", () => {
         timestamp: "2024-01-01",
       },
     };
-
-    mockExecuteFunction.mockResolvedValue(mockResult);
 
     type FunctionColumnDef = {
       statusColumn: MockQueryDef;
@@ -289,14 +319,19 @@ describe("useFunctionColumnsData", () => {
       },
     ];
 
+    vi.mocked(useBatchedFunctionQueries).mockReturnValue([
+      {
+        data: mockResult,
+        error: undefined,
+        isLoading: false,
+        lastUpdated: new Date().toISOString(),
+      } as BatchedFunctionQueryResult,
+    ]);
+
     const { result } = renderHook(
       () =>
         useFunctionColumnsData(mockObjectSet, mockOneObject, columnDefinitions),
     );
-
-    await waitFor(() => {
-      expect(result.current.statusColumn.obj1.isLoading).toBe(false);
-    });
 
     expect(result.current).toEqual({
       statusColumn: {
@@ -317,7 +352,18 @@ describe("useFunctionColumnsData", () => {
       },
     });
 
-    expect(mockExecuteFunction).toHaveBeenCalledTimes(1);
+    // Should only make one query since both columns use the same query definition
+    expect(useBatchedFunctionQueries).toHaveBeenCalledWith({
+      queries: [
+        {
+          queryDefinition: mockQueryDefinition,
+          options: {
+            params: { [OBJ_SET_KEY]: mockObjectSet },
+          },
+        },
+      ],
+      enabled: true,
+    });
   });
 
   it("should handle multiple queries", async () => {
@@ -341,11 +387,6 @@ describe("useFunctionColumnsData", () => {
         timestamp: "2024-01-01",
       },
     };
-
-    mockExecuteFunction.mockResolvedValueOnce(mockResult1)
-      .mockResolvedValueOnce(
-        mockResult2,
-      );
 
     type FunctionColumnDef = {
       statusColumn: MockQueryDef;
@@ -384,14 +425,26 @@ describe("useFunctionColumnsData", () => {
       },
     ];
 
+    // Two different queries should be batched
+    vi.mocked(useBatchedFunctionQueries).mockReturnValue([
+      {
+        data: mockResult1,
+        error: undefined,
+        isLoading: false,
+        lastUpdated: new Date().toISOString(),
+      } as BatchedFunctionQueryResult,
+      {
+        data: mockResult2,
+        error: undefined,
+        isLoading: false,
+        lastUpdated: new Date().toISOString(),
+      } as BatchedFunctionQueryResult,
+    ]);
+
     const { result } = renderHook(
       () =>
         useFunctionColumnsData(mockObjectSet, mockObjects, columnDefinitions),
     );
-
-    await waitFor(() => {
-      expect(result.current.statusColumn.obj1.isLoading).toBe(false);
-    });
 
     expect(result.current).toEqual({
       statusColumn: {
@@ -412,7 +465,24 @@ describe("useFunctionColumnsData", () => {
       },
     });
 
-    expect(mockExecuteFunction).toHaveBeenCalledTimes(2);
+    // Should make two queries since columns use different query definitions
+    expect(useBatchedFunctionQueries).toHaveBeenCalledWith({
+      queries: [
+        {
+          queryDefinition: mockQueryDefinition,
+          options: {
+            params: { [OBJ_SET_KEY]: mockObjectSet },
+          },
+        },
+        {
+          queryDefinition: mockQueryDefinition2,
+          options: {
+            params: { [OBJ_SET_KEY]: mockObjectSet },
+          },
+        },
+      ],
+      enabled: true,
+    });
   });
 
   it("should handle missing object in the result", async () => {
@@ -435,33 +505,20 @@ describe("useFunctionColumnsData", () => {
       "TestObject:obj1": { value: "result1" },
     };
 
-    mockExecuteFunction.mockResolvedValue(mockResult);
+    // Mock the response with data only for obj1
+    vi.mocked(useBatchedFunctionQueries).mockReturnValue([
+      {
+        data: mockResult,
+        error: undefined,
+        isLoading: false,
+        lastUpdated: new Date().toISOString(),
+      } as BatchedFunctionQueryResult,
+    ]);
 
     const { result } = renderHook(
       () =>
         useFunctionColumnsData(mockObjectSet, mockObjects, columnDefinitions),
     );
-
-    expect(result.current).toEqual({
-      testColumn: {
-        obj1: {
-          __asyncCell: true,
-          data: undefined,
-          error: undefined,
-          isLoading: true,
-        },
-        obj2: {
-          __asyncCell: true,
-          data: undefined,
-          error: undefined,
-          isLoading: true,
-        },
-      },
-    });
-
-    await waitFor(() => {
-      expect(result.current.testColumn.obj1.isLoading).toBe(false);
-    });
 
     expect(result.current).toEqual({
       testColumn: {
@@ -479,24 +536,24 @@ describe("useFunctionColumnsData", () => {
         },
       },
     });
-
-    expect(mockExecuteFunction).toHaveBeenCalledWith({
-      [OBJ_SET_KEY]: mockObjectSet,
-    });
   });
 
   it("should handle errors gracefully", async () => {
     const mockError = new Error("Query failed");
-    mockExecuteFunction.mockRejectedValue(mockError);
+
+    vi.mocked(useBatchedFunctionQueries).mockReturnValue([
+      {
+        data: undefined,
+        error: mockError,
+        isLoading: false,
+        lastUpdated: new Date().toISOString(),
+      } as BatchedFunctionQueryResult,
+    ]);
 
     const { result } = renderHook(
       () =>
         useFunctionColumnsData(mockObjectSet, mockObjects, columnDefinitions),
     );
-
-    await waitFor(() => {
-      expect(result.current.testColumn.obj1.isLoading).toBe(false);
-    });
 
     expect(result.current).toEqual({
       testColumn: {
@@ -516,136 +573,70 @@ describe("useFunctionColumnsData", () => {
     });
   });
 
-  it("should cleanup on unmount", () => {
-    const mockObjects = [
+  it("should not create queries when no function columns are defined", () => {
+    const nonFunctionColumns: ColumnDefinition<TestObject, {}, {}>[] = [
       {
-        $objectType: "TestObject",
-        $apiName: "TestObject",
-        $primaryKey: "obj1",
+        locator: { type: "property", id: "name" as TestObjectKeys },
       },
-    ] as Osdk.Instance<TestObject, "$allBaseProperties", TestObjectKeys, {}>[];
-
-    const mockObjectSet = {} as ObjectSet<TestObject>;
-
-    const abortSpy = vi.spyOn(AbortController.prototype, "abort");
-
-    const columnDefinitions: ColumnDefinition<
-      TestObject,
-      {},
-      FunctionColumnDef
-    >[] = [
       {
-        locator: {
-          type: "function",
-          id: "testColumn",
-          queryDefinition: mockQueryDefinition,
-          getFunctionParams: ((objectSet: ObjectSet<TestObject>) => ({
-            [OBJ_SET_KEY]: objectSet,
-          })) as any,
-          getKey: (obj) => `${obj.$objectType}:${obj.$primaryKey}`,
-        },
+        locator: { type: "property", id: "email" as TestObjectKeys },
       },
     ];
 
-    const { unmount } = renderHook(
+    vi.mocked(useBatchedFunctionQueries).mockReturnValue([]);
+
+    renderHook(
       () =>
-        useFunctionColumnsData(mockObjectSet, mockObjects, columnDefinitions),
+        useFunctionColumnsData(mockObjectSet, mockObjects, nonFunctionColumns),
     );
 
-    unmount();
-
-    expect(abortSpy).toHaveBeenCalled();
+    expect(useBatchedFunctionQueries).toHaveBeenCalledWith({
+      queries: [],
+      enabled: false,
+    });
   });
 
-  it("should execute queries in parallel and update results incrementally", async () => {
-    const mockObjects = [
+  it("should handle loading state transitions correctly", () => {
+    // Initial loading state
+    vi.mocked(useBatchedFunctionQueries).mockReturnValue([
       {
-        $objectType: "TestObject",
-        $apiName: "TestObject",
-        $primaryKey: "obj1",
-      },
-    ] as Osdk.Instance<TestObject, "$allBaseProperties", TestObjectKeys, {}>[];
+        data: undefined,
+        error: undefined,
+        isLoading: true,
+        lastUpdated: undefined,
+      } as BatchedFunctionQueryResult,
+    ]);
 
-    // Create promises that we can control the resolution of
-    let resolveQuery1: (value: any) => void;
-    let resolveQuery2: (value: any) => void;
-
-    const query1Promise = new Promise((resolve) => {
-      resolveQuery1 = resolve;
-    });
-
-    const query2Promise = new Promise((resolve) => {
-      resolveQuery2 = resolve;
-    });
-
-    // Mock the executeFunction to return controlled promises
-    mockExecuteFunction
-      .mockImplementationOnce(() => query1Promise)
-      .mockImplementationOnce(() => query2Promise);
-
-    const columnDefinitions: ColumnDefinition<
-      TestObject,
-      {},
-      {
-        column1: MockQueryDef;
-        column2: MockQueryDef;
-      }
-    >[] = [
-      {
-        locator: {
-          type: "function",
-          id: "column1",
-          queryDefinition: mockQueryDefinition,
-          getFunctionParams: ((objectSet: ObjectSet<TestObject>) => ({
-            [OBJ_SET_KEY]: objectSet,
-          })) as any,
-          getValue: (cellData) => (cellData as { status: string })?.status,
-          getKey: (obj) => `${obj.$objectType}:${obj.$primaryKey}`,
-        },
-      },
-      {
-        locator: {
-          type: "function",
-          id: "column2",
-          queryDefinition: mockQueryDefinition2, // Different query
-          getFunctionParams: ((objectSet: ObjectSet<TestObject>) => ({
-            [OBJ_SET_KEY]: objectSet,
-          })) as any,
-          getValue: (cellData) =>
-            (cellData as { timestamp: string })?.timestamp,
-          getKey: (obj) => `${obj.$objectType}:${obj.$primaryKey}`,
-        },
-      },
-    ];
-
-    const { result } = renderHook(
+    const { result, rerender } = renderHook(
       () =>
         useFunctionColumnsData(mockObjectSet, mockObjects, columnDefinitions),
     );
 
-    // Both should initialize with isLoading
-    expect(result.current.column1?.obj1?.isLoading).toBe(true);
-    expect(result.current.column2?.obj1?.isLoading).toBe(true);
+    // Check initial loading state
+    expect(result.current.testColumn.obj1.isLoading).toBe(true);
+    expect(result.current.testColumn.obj2.isLoading).toBe(true);
 
-    // Resolve the first query
-    resolveQuery1!({
-      "TestObject:obj1": { status: "active" },
-    });
+    // Simulate data arrival
+    const mockResult = {
+      "TestObject:obj1": { value: "result1" },
+      "TestObject:obj2": { value: "result2" },
+    };
 
-    await waitFor(() => {
-      // With generator, we would expect column1 to have updated while column2 is still isLoading.
-      expect(result.current.column1?.obj1?.isLoading).toBe(false);
-      expect(result.current.column2?.obj1?.isLoading).toBe(true);
-    });
+    vi.mocked(useBatchedFunctionQueries).mockReturnValue([
+      {
+        data: mockResult,
+        error: undefined,
+        isLoading: false,
+        lastUpdated: new Date().toISOString(),
+      } as BatchedFunctionQueryResult,
+    ]);
 
-    // Now resolve the second query
-    resolveQuery2!({
-      "TestObject:obj1": { timestamp: "2024-01-01" },
-    });
+    rerender();
 
-    await waitFor(() => {
-      expect(result.current.column1?.obj1?.isLoading).toBe(false);
-      expect(result.current.column2?.obj1?.isLoading).toBe(false);
-    });
+    // Check data is properly mapped
+    expect(result.current.testColumn.obj1.isLoading).toBe(false);
+    expect(result.current.testColumn.obj1.data).toEqual({ value: "result1" });
+    expect(result.current.testColumn.obj2.isLoading).toBe(false);
+    expect(result.current.testColumn.obj2.data).toEqual({ value: "result2" });
   });
 });

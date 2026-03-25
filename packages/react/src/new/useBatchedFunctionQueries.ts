@@ -15,23 +15,23 @@
  */
 
 import type { QueryDefinition } from "@osdk/api";
+import type { Client } from "@osdk/client";
 import React from "react";
 import { useOsdkClient } from "../useOsdkClient.js";
-import type {
-  UseOsdkFunctionOptions,
-  UseOsdkFunctionResult,
-} from "./useOsdkFunction.js";
 
-export interface BatchedFunctionQuery<Q extends QueryDefinition<unknown>> {
-  queryDefinition: Q;
-  options?: UseOsdkFunctionOptions<Q>;
+export interface BatchedFunctionQuery {
+  queryDefinition: QueryDefinition<unknown>;
+  options?: {
+    params?: unknown;
+    enabled?: boolean;
+  };
 }
 
 export interface UseBatchedFunctionQueriesOptions {
   /**
    * Array of query configurations to execute
    */
-  queries: Array<BatchedFunctionQuery<any>>;
+  queries: Array<BatchedFunctionQuery>;
 
   /**
    * Whether to enable all queries. When false, no queries will execute.
@@ -41,12 +41,12 @@ export interface UseBatchedFunctionQueriesOptions {
   enabled?: boolean;
 }
 
-export type BatchedFunctionQueryResults<
-  T extends Array<BatchedFunctionQuery<any>>,
-> = {
-  [K in keyof T]: T[K] extends BatchedFunctionQuery<infer Q>
-    ? UseOsdkFunctionResult<Q>
-    : never;
+export type BatchedFunctionQueryResult = {
+  data: unknown;
+  isLoading: boolean;
+  error: Error | undefined;
+  lastUpdated: number;
+  refetch: () => void;
 };
 
 /**
@@ -58,42 +58,15 @@ export type BatchedFunctionQueryResults<
  *
  * @param options - Configuration options containing the queries to execute
  * @returns Array of results in the same order as input queries, each with the same shape as useOsdkFunction
- *
- * @example Basic usage
- * ```tsx
- * const [statsResult, reportsResult] = useBatchedFunctionQueries({
- *   queries: [
- *     {
- *       queryDefinition: calculateEmployeeStats,
- *       options: {
- *         params: { departmentId: "engineering" },
- *       }
- *     },
- *     {
- *       queryDefinition: getEmployeeReports,
- *       options: {
- *         params: { startDate, endDate },
- *         dependsOn: [Employee],
- *       }
- *     }
- *   ],
- * });
- *
- * if (statsResult.isLoading || reportsResult.isLoading) {
- *   return <div>Loading...</div>;
- * }
- * ```
  */
-export function useBatchedFunctionQueries<
-  T extends Array<BatchedFunctionQuery<any>>,
->(
+export function useBatchedFunctionQueries(
   options: UseBatchedFunctionQueriesOptions,
-): BatchedFunctionQueryResults<T> {
+): Array<BatchedFunctionQueryResult> {
   const client = useOsdkClient();
   const { queries, enabled = true } = options;
 
   const [results, setResults] = React.useState<
-    Array<UseOsdkFunctionResult<any>>
+    Array<BatchedFunctionQueryResult>
   >(() =>
     queries.map(() => ({
       data: undefined,
@@ -121,17 +94,21 @@ export function useBatchedFunctionQueries<
 
     const executeQueries = async () => {
       // Initialize loading state for all queries
-      setResults(queries.map((_, index) => ({
-        data: undefined,
-        isLoading: queries[index].options?.enabled !== false,
-        error: undefined,
-        lastUpdated: 0,
-        refetch: () => {},
-      })));
+      setResults(prev =>
+        queries.map((_, index) => ({
+          data: prev[index]?.data, // Preserving existing data
+          isLoading: queries[index].options?.enabled !== false,
+          error: undefined,
+          lastUpdated: prev[index]?.lastUpdated || 0,
+          refetch: () => {},
+        }))
+      );
 
-      // Execute queries using generator pattern
       for await (
-        const queryResult of executeQueriesGenerator(queries, client)
+        const queryResult of executeQueriesGenerator(
+          queries,
+          client,
+        )
       ) {
         const { index, result, error } = queryResult;
 
@@ -147,14 +124,20 @@ export function useBatchedFunctionQueries<
             error: error instanceof Error
               ? error
               : error
-              ? new Error(String(error))
+              ? new Error(JSON.stringify(error))
               : undefined,
             lastUpdated: Date.now(),
             refetch: () => {
               // Trigger re-execution for this specific query
-              void (client(queries[index].queryDefinition) as any)(
-                queries[index].options?.params,
-              );
+              const queryClient = client(queries[index].queryDefinition);
+              if (
+                "executeFunction" in queryClient
+                && typeof queryClient.executeFunction === "function"
+              ) {
+                void queryClient.executeFunction(
+                  queries[index].options?.params,
+                );
+              }
             },
           };
           return newResults;
@@ -169,7 +152,6 @@ export function useBatchedFunctionQueries<
     };
   }, [
     enabled,
-    queries,
     client,
     JSON.stringify(queries.map(q => ({
       apiName: q.queryDefinition.apiName,
@@ -178,38 +160,61 @@ export function useBatchedFunctionQueries<
     }))),
   ]);
 
-  return results as BatchedFunctionQueryResults<T>;
+  return results;
 }
 
 /**
- * Generator function that executes queries and yields results
+ * Generator function that executes queries and yields results as they complete
  */
-async function* executeQueriesGenerator<
-  T extends Array<BatchedFunctionQuery<any>>,
->(
-  queries: T,
-  client: ReturnType<typeof useOsdkClient>,
-): AsyncGenerator<{ index: number; result?: any; error?: unknown }> {
-  // Execute all queries in parallel
-  const promises = queries.map(async (query, index) => {
-    // Skip disabled queries
-    if (query.options?.enabled === false) {
-      return { index, result: undefined, error: undefined };
-    }
+async function* executeQueriesGenerator(
+  queries: Array<BatchedFunctionQuery>,
+  client: Client,
+): AsyncGenerator<{ index: number; result?: unknown; error?: unknown }> {
+  const queryPromises = queries.map((query, index) =>
+    createQueryPromise(query, index, client)
+  );
 
-    try {
-      const result = await (client(query.queryDefinition) as any)(
-        query.options?.params,
-      );
-      return { index, result, error: null };
-    } catch (error) {
-      return { index, result: null, error };
-    }
-  });
+  const pendingPromises = [...queryPromises];
 
-  // Yield results as they complete
-  for (const promise of promises) {
-    const result = await promise;
-    yield result;
+  // Yield results as they complete using Promise.race
+  while (pendingPromises.length > 0) {
+    const raceResult = await Promise.race(
+      pendingPromises.map((promise, idx) =>
+        promise.then(result => ({ result, idx }))
+      ),
+    );
+
+    yield raceResult.result;
+
+    // Remove the completed promise from the pending list
+    void pendingPromises.splice(raceResult.idx, 1);
   }
+}
+
+function createQueryPromise(
+  query: BatchedFunctionQuery,
+  index: number,
+  client: Client,
+): Promise<{ index: number; result?: unknown; error?: unknown }> {
+  // Skip disabled queries
+  if (query.options?.enabled === false) {
+    return Promise.resolve({ index, result: undefined, error: undefined });
+  }
+
+  const queryClient = client(query.queryDefinition);
+
+  if (
+    "executeFunction" in queryClient
+    && typeof queryClient.executeFunction === "function"
+  ) {
+    return queryClient.executeFunction(query.options?.params)
+      .then((result: unknown) => ({ index, result, error: null }))
+      .catch((error: unknown) => ({ index, result: null, error }));
+  }
+
+  return Promise.resolve({
+    index,
+    result: undefined,
+    error: new Error("Invalid query definition"),
+  });
 }
