@@ -19,7 +19,6 @@
   width: 100%;
   min-height: var(--osdk-input-min-height);
   padding: var(--osdk-input-padding);
-  box-sizing: border-box;
   border-radius: var(--osdk-input-border-radius);
   border: var(--osdk-input-border-width) solid var(--osdk-input-border-color);
   background-color: var(--osdk-input-bg);

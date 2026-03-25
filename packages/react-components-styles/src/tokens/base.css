@@ -183,4 +183,10 @@
   .bp6-icon {
     fill: currentColor;
   }
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
 }

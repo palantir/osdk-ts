@@ -12,7 +12,6 @@
   position: absolute;
   pointer-events: auto;
   cursor: pointer;
-  box-sizing: border-box;
   transition: opacity var(--osdk-emphasis-transition-duration)
     var(--osdk-emphasis-ease-default);
 }

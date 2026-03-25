@@ -23,7 +23,6 @@
   min-height: var(--osdk-combobox-min-height, 30px);
   padding: calc(var(--osdk-combobox-spacing, var(--osdk-surface-spacing)) * 1.5)
     calc(var(--osdk-combobox-spacing, var(--osdk-surface-spacing)) * 2);
-  box-sizing: border-box;
   border-radius: var(
     --osdk-combobox-border-radius,
     var(--osdk-surface-border-radius)
@@ -65,7 +64,6 @@
   flex: 1;
   min-width: 0;
   width: 100%;
-  box-sizing: border-box;
   padding: calc(var(--osdk-combobox-spacing, var(--osdk-surface-spacing)) * 1.5)
     calc(var(--osdk-combobox-spacing, var(--osdk-surface-spacing)) * 2);
   border-radius: var(
@@ -150,7 +148,6 @@
   padding: calc(
     var(--osdk-combobox-spacing, var(--osdk-surface-spacing)) * 1.5
   );
-  box-sizing: border-box;
   border-radius: var(
     --osdk-combobox-border-radius,
     var(--osdk-surface-border-radius)
