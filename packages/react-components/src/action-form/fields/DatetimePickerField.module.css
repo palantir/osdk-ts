@@ -48,20 +48,12 @@
   border-collapse: collapse;
 }
 
-.calendarWeekdays {
-  /* Row of weekday headers */
-}
-
 .calendarWeekday {
   padding: var(--osdk-datetime-calendar-gap);
   font-size: var(--osdk-datetime-calendar-weekday-font-size);
   color: var(--osdk-datetime-calendar-weekday-color);
   text-align: center;
   width: var(--osdk-datetime-calendar-cell-size);
-}
-
-.calendarWeek {
-  /* Row of days */
 }
 
 .calendarDay {

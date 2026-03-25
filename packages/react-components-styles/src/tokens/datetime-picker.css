@@ -28,7 +28,7 @@
   /* Calendar */
   --osdk-datetime-calendar-font-family: var(--osdk-typography-family-default);
   --osdk-datetime-calendar-font-size: var(--osdk-typography-size-body-small);
-  --osdk-datetime-calendar-cell-size: 32px;
+  --osdk-datetime-calendar-cell-size: calc(var(--osdk-surface-spacing) * 8);
   --osdk-datetime-calendar-gap: 2px;
 
   /* Calendar header */
@@ -77,7 +77,7 @@
   --osdk-datetime-calendar-outside-color: var(--osdk-typography-color-muted);
 
   /* Calendar nav buttons */
-  --osdk-datetime-calendar-nav-button-size: 28px;
+  --osdk-datetime-calendar-nav-button-size: calc(var(--osdk-surface-spacing) * 7);
   --osdk-datetime-calendar-nav-button-border-radius: var(
     --osdk-surface-border-radius
   );
@@ -86,7 +86,7 @@
   );
 
   /* Calendar chevron */
-  --osdk-datetime-calendar-chevron-size: 16px;
+  --osdk-datetime-calendar-chevron-size: calc(var(--osdk-surface-spacing) * 4);
 
   /* Time input footer */
   --osdk-datetime-time-padding-top: calc(var(--osdk-surface-spacing) * 2);

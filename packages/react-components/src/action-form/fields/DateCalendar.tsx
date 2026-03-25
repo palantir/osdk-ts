@@ -28,9 +28,7 @@ const CLASS_NAMES: Partial<ClassNames> = {
   root: styles.calendar,
   months: styles.calendarMonths,
   month_grid: styles.calendarMonthGrid,
-  weekdays: styles.calendarWeekdays,
   weekday: styles.calendarWeekday,
-  week: styles.calendarWeek,
   day: styles.calendarDay,
   day_button: styles.calendarDayButton,
   selected: styles.calendarSelected,
@@ -47,7 +45,7 @@ const CLASS_NAMES: Partial<ClassNames> = {
 };
 
 export interface DateCalendarProps {
-  selected: Date | undefined;
+  dateSelected: Date | undefined;
   onSelect: (date: Date | undefined) => void;
   min?: Date;
   max?: Date;
@@ -55,7 +53,7 @@ export interface DateCalendarProps {
 }
 
 export default function DateCalendar({
-  selected,
+  dateSelected,
   onSelect,
   min,
   max,
@@ -77,10 +75,10 @@ export default function DateCalendar({
   return (
     <DayPicker
       mode="single"
-      selected={selected}
+      selected={dateSelected}
       onSelect={onSelect}
       disabled={disabled}
-      defaultMonth={selected}
+      defaultMonth={dateSelected}
       classNames={CLASS_NAMES}
       footer={footer}
     />

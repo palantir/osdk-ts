@@ -15,9 +15,19 @@
  */
 
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
-import React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { DatetimePickerField } from "../fields/DatetimePickerField.js";
+
+// Replace React.lazy wrapper with synchronous DateCalendar to avoid
+// Suspense resolution issues in happy-dom. This is a legitimate test
+// boundary — we test DatetimePickerField behavior, not the lazy loading mechanism.
+vi.mock("../fields/LazyDateCalendar.js", async () => {
+  const { default: DateCalendar } = await vi.importActual<
+    // eslint-disable-next-line @typescript-eslint/consistent-type-imports
+    typeof import("../fields/DateCalendar.js")
+  >("../fields/DateCalendar.js");
+  return { LazyDateCalendar: DateCalendar };
+});
 
 afterEach(cleanup);
 
@@ -36,9 +46,7 @@ describe("DatetimePickerField", () => {
     });
 
     it("renders empty input when value is null", () => {
-      render(
-        <DatetimePickerField value={null} onChange={vi.fn()} />,
-      );
+      render(<DatetimePickerField value={null} onChange={vi.fn()} />);
       const input = screen.getByRole("textbox");
       expect((input as HTMLInputElement).value).toBe("");
     });
@@ -59,18 +67,12 @@ describe("DatetimePickerField", () => {
   describe("typing", () => {
     it("calls onChange with parsed Date when user types a valid ISO date", () => {
       const onChange = vi.fn();
-      render(
-        <DatetimePickerField value={null} onChange={onChange} />,
-      );
+      render(<DatetimePickerField value={null} onChange={onChange} />);
       const input = screen.getByRole("textbox");
       fireEvent.focus(input);
       fireEvent.change(input, { target: { value: "2024-06-20" } });
 
-      expect(onChange).toHaveBeenCalledWith(
-        expect.objectContaining({
-          getFullYear: expect.any(Function),
-        }),
-      );
+      expect(onChange).toHaveBeenCalledTimes(1);
       const calledDate: Date = onChange.mock.calls[0][0];
       expect(calledDate.getFullYear()).toBe(2024);
       expect(calledDate.getMonth()).toBe(5); // June = 5
@@ -94,9 +96,7 @@ describe("DatetimePickerField", () => {
 
     it("does not call onChange when user types invalid text", () => {
       const onChange = vi.fn();
-      render(
-        <DatetimePickerField value={null} onChange={onChange} />,
-      );
+      render(<DatetimePickerField value={null} onChange={onChange} />);
       const input = screen.getByRole("textbox");
       fireEvent.focus(input);
       fireEvent.change(input, { target: { value: "not-a-date" } });
@@ -124,31 +124,13 @@ describe("DatetimePickerField", () => {
 
   describe("blur validation", () => {
     it("shows invalid date message on blur with invalid text", () => {
-      render(
-        <DatetimePickerField value={null} onChange={vi.fn()} />,
-      );
+      render(<DatetimePickerField value={null} onChange={vi.fn()} />);
       const input = screen.getByRole("textbox") as HTMLInputElement;
       fireEvent.focus(input);
       fireEvent.change(input, { target: { value: "garbage" } });
       fireEvent.blur(input);
 
       expect(input.value).toBe("Invalid date");
-    });
-
-    it("shows custom invalid date message on blur", () => {
-      render(
-        <DatetimePickerField
-          value={null}
-          onChange={vi.fn()}
-          invalidDateMessage="Bad date"
-        />,
-      );
-      const input = screen.getByRole("textbox") as HTMLInputElement;
-      fireEvent.focus(input);
-      fireEvent.change(input, { target: { value: "garbage" } });
-      fireEvent.blur(input);
-
-      expect(input.value).toBe("Bad date");
     });
 
     it("shows out of range message on blur when date exceeds max", () => {
@@ -167,23 +149,6 @@ describe("DatetimePickerField", () => {
       expect(input.value).toBe("Out of range");
     });
 
-    it("shows custom out of range message", () => {
-      render(
-        <DatetimePickerField
-          value={null}
-          onChange={vi.fn()}
-          max={new Date(2024, 0, 20)}
-          outOfRangeMessage="Too late"
-        />,
-      );
-      const input = screen.getByRole("textbox") as HTMLInputElement;
-      fireEvent.focus(input);
-      fireEvent.change(input, { target: { value: "2024-01-25" } });
-      fireEvent.blur(input);
-
-      expect(input.value).toBe("Too late");
-    });
-
     it("calls onChange(null) on blur with empty input", () => {
       const onChange = vi.fn();
       render(
@@ -197,18 +162,14 @@ describe("DatetimePickerField", () => {
       fireEvent.change(input, { target: { value: "" } });
       fireEvent.blur(input);
 
-      // onChange(null) called both on change and on blur
-      const nullCalls = onChange.mock.calls.filter(
-        (call) => call[0] == null,
-      );
-      expect(nullCalls.length).toBeGreaterThanOrEqual(1);
+      // onChange(null) called on both change and blur
+      expect(onChange).toHaveBeenCalledWith(null);
+      expect(onChange).toHaveBeenCalledTimes(2);
     });
 
     it("displays formatted value after blur with valid date", () => {
       const onChange = vi.fn();
-      render(
-        <DatetimePickerField value={null} onChange={onChange} />,
-      );
+      render(<DatetimePickerField value={null} onChange={onChange} />);
       const input = screen.getByRole("textbox") as HTMLInputElement;
       fireEvent.focus(input);
       fireEvent.change(input, { target: { value: "2024-06-20" } });
@@ -217,6 +178,154 @@ describe("DatetimePickerField", () => {
       // After blur, the input should not show an error
       expect(input.value).not.toBe("Invalid date");
       expect(input.value).not.toBe("Out of range");
+    });
+  });
+
+  describe("calendar interaction", () => {
+    it("calls onChange when a calendar day is clicked", () => {
+      const onChange = vi.fn();
+      render(
+        <DatetimePickerField
+          value={new Date(2024, 0, 15)}
+          onChange={onChange}
+        />,
+      );
+      const input = screen.getByRole("textbox");
+      fireEvent.focus(input);
+
+      const dayButton = screen.getByText("20");
+      fireEvent.click(dayButton);
+
+      expect(onChange).toHaveBeenCalledTimes(1);
+      const calledDate: Date = onChange.mock.calls[0][0];
+      expect(calledDate.getFullYear()).toBe(2024);
+      expect(calledDate.getMonth()).toBe(0);
+      expect(calledDate.getDate()).toBe(20);
+    });
+
+    it("updates input value after calendar selection", () => {
+      render(
+        <DatetimePickerField
+          value={new Date(2024, 0, 15)}
+          onChange={vi.fn()}
+        />,
+      );
+      const input = screen.getByRole("textbox") as HTMLInputElement;
+      fireEvent.focus(input);
+
+      const dayButton = screen.getByText("20");
+      fireEvent.click(dayButton);
+
+      expect(input.value).toBe("2024-01-20");
+    });
+
+    it("preserves time when selecting a calendar day with showTime", () => {
+      const onChange = vi.fn();
+      render(
+        <DatetimePickerField
+          value={new Date(2024, 0, 15, 14, 30)}
+          onChange={onChange}
+          showTime={true}
+        />,
+      );
+      const input = screen.getByRole("textbox");
+      fireEvent.focus(input);
+
+      const dayButton = screen.getByText("20");
+      fireEvent.click(dayButton);
+
+      expect(onChange).toHaveBeenCalledTimes(1);
+      const calledDate: Date = onChange.mock.calls[0][0];
+      expect(calledDate.getDate()).toBe(20);
+      expect(calledDate.getHours()).toBe(14);
+      expect(calledDate.getMinutes()).toBe(30);
+    });
+  });
+
+  describe("keyboard", () => {
+    it("submits valid date on Enter key", () => {
+      const onChange = vi.fn();
+      render(<DatetimePickerField value={null} onChange={onChange} />);
+      const input = screen.getByRole("textbox");
+      fireEvent.focus(input);
+      fireEvent.change(input, { target: { value: "2024-06-20" } });
+
+      // onChange called once from the change event
+      expect(onChange).toHaveBeenCalledTimes(1);
+      onChange.mockClear();
+
+      fireEvent.keyDown(input, { key: "Enter" });
+
+      // Enter re-submits the parsed date
+      expect(onChange).toHaveBeenCalledTimes(1);
+      const calledDate: Date = onChange.mock.calls[0][0];
+      expect(calledDate.getFullYear()).toBe(2024);
+      expect(calledDate.getMonth()).toBe(5);
+      expect(calledDate.getDate()).toBe(20);
+    });
+
+    it("does not submit invalid date on Enter key", () => {
+      const onChange = vi.fn();
+      render(<DatetimePickerField value={null} onChange={onChange} />);
+      const input = screen.getByRole("textbox");
+      fireEvent.focus(input);
+      fireEvent.change(input, { target: { value: "not-a-date" } });
+      fireEvent.keyDown(input, { key: "Enter" });
+
+      expect(onChange).not.toHaveBeenCalled();
+    });
+
+    it("blurs input on Escape key", () => {
+      render(<DatetimePickerField value={null} onChange={vi.fn()} />);
+      const input = screen.getByRole("textbox");
+      fireEvent.focus(input);
+      fireEvent.keyDown(input, { key: "Escape" });
+
+      expect(document.activeElement).not.toBe(input);
+    });
+  });
+
+  describe("time input", () => {
+    it("renders time input when showTime is true", () => {
+      render(
+        <DatetimePickerField
+          value={new Date(2024, 0, 15, 14, 30)}
+          onChange={vi.fn()}
+          showTime={true}
+        />,
+      );
+      const input = screen.getByRole("textbox");
+      fireEvent.focus(input);
+
+      const timeInput = document.querySelector(
+        "input[type=\"time\"]",
+      ) as HTMLInputElement;
+      expect(timeInput).not.toBeNull();
+      expect(timeInput.value).toBe("14:30");
+    });
+
+    it("calls onChange with updated time when time input changes", () => {
+      const onChange = vi.fn();
+      render(
+        <DatetimePickerField
+          value={new Date(2024, 0, 15, 14, 30)}
+          onChange={onChange}
+          showTime={true}
+        />,
+      );
+      const input = screen.getByRole("textbox");
+      fireEvent.focus(input);
+
+      const timeInput = document.querySelector(
+        "input[type=\"time\"]",
+      ) as HTMLInputElement;
+      fireEvent.change(timeInput, { target: { value: "16:45" } });
+
+      expect(onChange).toHaveBeenCalledTimes(1);
+      const calledDate: Date = onChange.mock.calls[0][0];
+      expect(calledDate.getHours()).toBe(16);
+      expect(calledDate.getMinutes()).toBe(45);
+      expect(calledDate.getDate()).toBe(15);
     });
   });
 
@@ -250,7 +359,11 @@ describe("DatetimePickerField", () => {
           parseDate={(s) => {
             const [m, d, y] = s.split("/").map(Number);
             if (
-              m == null || d == null || y == null || isNaN(m) || isNaN(d)
+              m == null
+              || d == null
+              || y == null
+              || isNaN(m)
+              || isNaN(d)
               || isNaN(y)
             ) {
               return null;

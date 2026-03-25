@@ -157,18 +157,6 @@ interface DatetimePickerBaseProps extends BaseFormFieldProps<Date> {
    * Whether to show time picker.
    */
   showTime?: boolean;
-
-  /**
-   * Message shown when the typed date is invalid.
-   * @default "Invalid date"
-   */
-  invalidDateMessage?: string;
-
-  /**
-   * Message shown when the typed date is outside min/max.
-   * @default "Out of range"
-   */
-  outOfRangeMessage?: string;
 }
 
 /**
