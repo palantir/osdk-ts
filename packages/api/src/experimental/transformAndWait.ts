@@ -16,6 +16,7 @@
 
 import type { MediaReference } from "../object/Media.js";
 import type { Experiment } from "./Experiment.js";
+import type { MediaTransformation } from "./MediaTransformation.js";
 
 /**
  * Options for polling a media transformation job.
@@ -43,7 +44,7 @@ export interface TransformOptions {
  */
 type transformAndWait = (args: {
   mediaReference: MediaReference;
-  transformation: { type: string };
+  transformation: MediaTransformation;
   options?: TransformOptions;
 }) => Promise<Response>;
 

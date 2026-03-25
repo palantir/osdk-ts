@@ -33,6 +33,7 @@ import type {
 import type {
   Experiment,
   ExperimentFns,
+  MediaTransformation,
   MinimalObjectSet,
   TransformOptions,
 } from "@osdk/api/unstable";
@@ -156,12 +157,13 @@ export function createClientFromContext(clientCtx: MinimalClient) {
       | ActionDefinition<any>
       | QueryDefinition<any>
       | Experiment<"2.0.8">
-      | Experiment<"2.1.0">,
+      | Experiment<"2.1.0">
+      | Experiment<"2.8.0">,
   >(o: T): T extends ObjectTypeDefinition ? ObjectSet<T>
     : T extends InterfaceDefinition ? MinimalObjectSet<T>
     : T extends ActionDefinition<any> ? ActionSignatureFromDef<T>
     : T extends QueryDefinition<any> ? QuerySignatureFromDef<T>
-    : T extends Experiment<"2.0.8"> | Experiment<"2.1.0">
+    : T extends Experiment<"2.0.8"> | Experiment<"2.1.0"> | Experiment<"2.8.0">
       ? { invoke: ExperimentFns<T> }
     : never
   {
@@ -295,7 +297,7 @@ export function createClientFromContext(clientCtx: MinimalClient) {
           return {
             transformAndWait: async (args: {
               mediaReference: MediaReference;
-              transformation: { type: string };
+              transformation: MediaTransformation;
               options?: TransformOptions;
             }) => {
               const { transformAndWaitInternal } = await import(

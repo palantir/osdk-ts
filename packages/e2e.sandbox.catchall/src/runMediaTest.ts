@@ -15,7 +15,11 @@
  */
 
 import type { Media, MediaReference, MediaUpload } from "@osdk/api";
-import { __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference } from "@osdk/api/unstable";
+import {
+  __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference,
+  __EXPERIMENTAL__NOT_SUPPORTED_YET__transformAndWait,
+  type MediaTransformation,
+} from "@osdk/api/unstable";
 import {
   $Actions,
   $Queries,
@@ -139,6 +143,80 @@ async function runMediaQueryTest(): Promise<void> {
   console.log((await output.fetchMetadata()).sizeBytes);
 }
 
+async function runTransformAndWaitTest(
+  mediaReference: MediaReference,
+): Promise<void> {
+  const transformation: MediaTransformation = {
+    type: "image",
+    encoding: { type: "png" },
+    operations: [{ type: "resize", width: 50, height: 50 }],
+  };
+
+  console.log("Input transformation:", JSON.stringify(transformation, null, 2));
+  const result = await client(
+    __EXPERIMENTAL__NOT_SUPPORTED_YET__transformAndWait,
+  ).transformAndWait({
+    mediaReference,
+    transformation,
+  });
+
+  if (!result.ok) {
+    const body = await result.text();
+    throw new Error(
+      `transformAndWait failed with status ${result.status}: ${body}`,
+    );
+  }
+
+  const blob = await result.blob();
+  console.log("Transformed blob size:", blob.size, "bytes");
+  console.log("Transformed blob type:", blob.type);
+}
+
+async function runMalformedTransformTests(
+  mediaReference: MediaReference,
+): Promise<void> {
+  // This test documents the boundary of type safety. The MediaTransformation
+  // type catches invalid `type` discriminants and missing required fields at
+  // compile time. But deeply nested params (typed as Record<string, unknown>)
+  // are only validated by the server at runtime.
+  //
+  // For example, ocr `parameters` accepts Record<string, unknown> — our types
+  // allow any object, but the server rejects invalid values with a 400.
+  //
+  // Some transformations are not available.
+  // See: TransformationTranslator.java in https://github.palantir.build/foundry/api-gateway/
+  const transformation: MediaTransformation = {
+    type: "imageToText",
+    operation: {
+      type: "ocr",
+      parameters: { totallyBogus: true },
+    },
+  };
+
+  console.log("\n[invalid nested param - bogus ocr parameters]");
+  console.log("transformation:", JSON.stringify(transformation));
+  try {
+    const result = await client(
+      __EXPERIMENTAL__NOT_SUPPORTED_YET__transformAndWait,
+    ).transformAndWait({
+      mediaReference,
+      transformation,
+      options: { pollTimeoutMs: 15000 },
+    });
+    if (!result.ok) {
+      const body = await result.text();
+      console.log(body);
+    }
+  } catch (e) {
+    console.log(
+      "caught error:",
+      (e as Error).constructor.name,
+      "-",
+      (e as Error).message,
+    );
+  }
+}
+
 export async function runMediaTest(): Promise<void> {
   const result = await client(MnayanOsdkMediaObject).fetchOne(
     "7c2aa4e0-9cd6-48c1-9d09-653249feb4e7",
@@ -181,6 +259,14 @@ export async function runMediaTest(): Promise<void> {
   console.log("Testing Media Query");
   await runMediaQueryTest();
   console.log("SUCCESS: Testing Media Query");
+
+  console.log("Testing transformAndWait");
+  await runTransformAndWaitTest(result.mediaReference.getMediaReference());
+  console.log("SUCCESS: Testing transformAndWait");
+
+  console.log("\nTesting transformAndWait with malformed transformations");
+  await runMalformedTransformTests(result.mediaReference.getMediaReference());
+  console.log("SUCCESS: Malformed transformation tests");
 }
 
 void runMediaTest();

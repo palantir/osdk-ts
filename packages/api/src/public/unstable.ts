@@ -23,6 +23,7 @@ export {
   type FetchPageByRidPayload,
 } from "../experimental/fetchPageByRid.js";
 export { __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks } from "../experimental/getBulkLinks.js";
+export type { MediaTransformation } from "../experimental/MediaTransformation.js";
 export {
   __EXPERIMENTAL__NOT_SUPPORTED_YET__transformAndWait,
   type TransformOptions,
