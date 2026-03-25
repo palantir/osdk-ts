@@ -585,9 +585,9 @@ export abstract class ListQuery extends BaseListQuery<
    * Get cache key for object.
    */
   private getObjectCacheKey(
-    obj: { $objectType: string; $primaryKey: string | number | boolean },
+    obj: { $objectType: string; $primaryKey: string | number },
   ): ObjectCacheKey {
-    const pk = obj.$primaryKey as string | number;
+    const pk = obj.$primaryKey;
     return this.cacheKeys.get<ObjectCacheKey>(
       "object",
       obj.$objectType,
