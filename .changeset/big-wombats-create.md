@@ -3,4 +3,4 @@
 "@osdk/react-components-styles": patch
 ---
 
-Add base form CSS styling including footer border-top for visual separation between form content and actions
+Add base form layout with header, footer, field components, and CSS token variables for theming

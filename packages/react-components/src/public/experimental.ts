@@ -73,7 +73,6 @@ export {
   type PdfRendererProps,
 } from "../pdf-viewer/PdfRenderer.js";
 
-// ActionForm that applies an action from a form
 export { ActionForm } from "../action-form/ActionForm.js";
 export type {
   ActionFormProps,

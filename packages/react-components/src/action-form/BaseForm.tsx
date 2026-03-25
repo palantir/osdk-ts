@@ -17,12 +17,12 @@
 import classNames from "classnames";
 import React, { memo, useCallback, useMemo } from "react";
 import { useForm } from "react-hook-form";
+import { ActionButton } from "../base-components/action-button/ActionButton.js";
 import type { BaseFormProps } from "./ActionFormApi.js";
 import styles from "./BaseForm.module.css";
 import { FieldBridge } from "./fields/FieldBridge.js";
 import type { RendererFieldDefinition } from "./FormFieldApi.js";
 import { FormHeader } from "./FormHeader.js";
-import { FormSubmitButton } from "./FormSubmitButton.js";
 
 export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
   formTitle,
@@ -80,10 +80,13 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
         ))}
       </div>
       <div className={styles.osdkFormFooter}>
-        <FormSubmitButton
-          isPending={isPending}
-          isDisabled={isSubmitDisabled}
-        />
+        <ActionButton
+          type="submit"
+          variant="primary"
+          disabled={isSubmitDisabled || isPending}
+        >
+          {isPending ? "Submitting…" : "Submit"}
+        </ActionButton>
       </div>
     </form>
   );

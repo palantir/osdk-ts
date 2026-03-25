@@ -5,12 +5,11 @@
   border: var(--osdk-surface-border-width) solid
     var(--osdk-surface-border-color-default);
   border-radius: var(--osdk-surface-border-radius);
-  /* padding: calc(var(--osdk-surface-spacing) * 4); */
 }
 
 .submittedOutput {
-  margin-top: 24px;
-  padding: 16px;
+  margin-top: calc(var(--osdk-surface-spacing) * 6);
+  padding: calc(var(--osdk-surface-spacing) * 4);
   border-radius: var(--osdk-surface-border-radius);
   background: var(--osdk-background-secondary);
   overflow: auto;
