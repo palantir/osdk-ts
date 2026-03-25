@@ -16,6 +16,7 @@
 
 import React, { memo } from "react";
 import type { RendererFieldDefinition } from "../FormFieldApi.js";
+import { DatetimePickerField } from "./DatetimePickerField.js";
 import { DropdownField } from "./DropdownField.js";
 import { TextInputField } from "./TextInputField.js";
 
@@ -84,17 +85,22 @@ function renderFieldComponent(
         />
       );
     }
+    case "DATETIME_PICKER":
+      return (
+        <DatetimePickerField
+          id={fieldDefinition.fieldKey}
+          value={value instanceof Date ? value : null}
+          onChange={onChange}
+          {...fieldDefinition.fieldComponentProps}
+        />
+      );
     case "NUMBER_INPUT":
     case "RADIO_BUTTONS":
-    case "DATETIME_PICKER":
     case "FILE_PICKER":
     case "OBJECT_SET":
     case "CUSTOM":
-      return (
-        <div>
-          Unsupported field type: {fieldDefinition.fieldComponent}
-        </div>
-      );
+      return <div>Unsupported field type: {fieldDefinition.fieldComponent}
+      </div>;
     default:
       return assertUnreachableFieldComponent(fieldDefinition);
   }

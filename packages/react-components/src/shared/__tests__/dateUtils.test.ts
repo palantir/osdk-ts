@@ -20,7 +20,7 @@ import {
   formatDateForInput,
   parseDateFromInput,
   parseDateFromISO,
-} from "../base/inputs/dateUtils.js";
+} from "../dateUtils.js";
 
 describe("formatDateForInput", () => {
   it("formats a date to YYYY-MM-DD", () => {

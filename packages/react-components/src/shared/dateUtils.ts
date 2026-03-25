@@ -28,25 +28,50 @@
  * UTC-to-local conversion before passing values to these functions.
  */
 
-export function formatDateForInput(date: Date | undefined): string {
-  if (!date) return "";
+export function formatDateForInput(date: Date | undefined | null): string {
+  if (date == null) return "";
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, "0");
   const day = String(date.getDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
 }
 
-export function parseDateFromInput(value: string): Date | undefined {
+export function parseDateFromInput(
+  value: string | undefined | null,
+): Date | undefined {
   if (!value) return undefined;
   const date = new Date(value + "T00:00:00");
   return isNaN(date.getTime()) ? undefined : date;
 }
 
+export function formatDatetimeForInput(
+  date: Date | undefined | null,
+): string {
+  if (date == null) return "";
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+  return `${formatDateForInput(date)}T${hours}:${minutes}`;
+}
+
+/**
+ * Parses a datetime-local input string (e.g. "2024-01-15T14:30") into a Date.
+ * Unlike `parseDateFromInput`, no "T00:00:00" suffix is needed because
+ * datetime-local strings already include the time component and have no "Z"
+ * suffix, so `new Date()` parses them as local time.
+ */
+export function parseDatetimeFromInput(
+  value: string | undefined | null,
+): Date | undefined {
+  if (!value) return undefined;
+  const date = new Date(value);
+  return isNaN(date.getTime()) ? undefined : date;
+}
+
 export function formatDateForDisplay(
-  date: Date | undefined,
+  date: Date | undefined | null,
   fallback: string = "",
 ): string {
-  if (!date) return fallback;
+  if (date == null) return fallback;
   return date.toLocaleDateString(undefined, {
     year: "numeric",
     month: "short",

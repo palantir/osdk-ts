@@ -16,7 +16,7 @@
 
 import type { ObjectTypeDefinition, WhereClause } from "@osdk/api";
 import { assertUnreachable } from "../../shared/assertUnreachable.js";
-import { formatDateForInput } from "../base/inputs/dateUtils.js";
+import { formatDateForInput } from "../../shared/dateUtils.js";
 import type { FilterDefinitionUnion } from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
 import { getFilterKey } from "./getFilterKey.js";
