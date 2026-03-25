@@ -37,15 +37,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 28px;
+  height: 28px;
   border: none;
   background: none;
   color: var(--osdk-typography-color-muted);
   cursor: pointer;
   border-radius: var(--osdk-surface-border-radius);
-  padding: var(--osdk-spacing-2xs, 2px) var(--osdk-spacing-xs, 6px);
-  font-size: var(--osdk-typography-font-size-small, 12px);
-  font-family: inherit;
-  line-height: 1.4;
+  padding: 0;
 }
 
 .modeButton:hover {
