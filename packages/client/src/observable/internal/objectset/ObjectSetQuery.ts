@@ -294,9 +294,9 @@ export class ObjectSetQuery extends BaseListQuery<
 
     try {
       if (this.#requiresServerEvaluation) {
-        return this.#handleComplexObjectSet(changes);
+        return this.#handleServerRevalidation(changes);
       }
-      return this.#handleSimpleObjectSet(changes, optimisticId);
+      return this.#handleLocalUpdate(changes, optimisticId);
     } finally {
       if (process.env.NODE_ENV !== "production") {
         this.logger?.child({ methodName: "maybeUpdateAndRevalidate" })
@@ -305,7 +305,7 @@ export class ObjectSetQuery extends BaseListQuery<
     }
   };
 
-  #handleComplexObjectSet(changes: Changes): Promise<void> | undefined {
+  #handleServerRevalidation(changes: Changes): Promise<void> | undefined {
     for (const objectType of this.#objectTypes) {
       const added = changes.addedObjects.get(objectType);
       const modified = changes.modifiedObjects.get(objectType);
@@ -326,19 +326,15 @@ export class ObjectSetQuery extends BaseListQuery<
     return undefined;
   }
 
-  #handleSimpleObjectSet(
+  #getRelevantChanges(
     changes: Changes,
-    optimisticId: OptimisticId | undefined,
-  ): Promise<void> | undefined {
+  ):
+    | { addedObjects: ObjectHolder[]; modifiedObjects: ObjectHolder[] }
+    | undefined
+  {
     const resultApiName = this.#resultTypeApiName;
-    const whereClause = this.#operations.where as
-      | Canonical<SimpleWhereClause>
-      | undefined;
-    const effectiveWhere = whereClause
-      ?? this.store.whereCanonicalizer.canonicalize({ $and: [] });
-
-    const addedAll = changes.addedObjects.get(resultApiName) ?? [];
-    const modifiedAll = changes.modifiedObjects.get(resultApiName) ?? [];
+    const addedObjects = changes.addedObjects.get(resultApiName) ?? [];
+    const modifiedObjects = changes.modifiedObjects.get(resultApiName) ?? [];
 
     let hasRelevantDeletions = false;
     for (const key of changes.deleted) {
@@ -352,95 +348,74 @@ export class ObjectSetQuery extends BaseListQuery<
     }
 
     if (
-      addedAll.length === 0 && modifiedAll.length === 0
+      addedObjects.length === 0 && modifiedObjects.length === 0
       && !hasRelevantDeletions
     ) {
       return undefined;
     }
 
-    const addedStrictMatches = new Set<ObjectHolder | InterfaceHolder>();
-    const addedSortaMatches = new Set<ObjectHolder | InterfaceHolder>();
-    const modifiedStrictMatches = new Set<ObjectHolder | InterfaceHolder>();
-    const modifiedSortaMatches = new Set<ObjectHolder | InterfaceHolder>();
+    return { addedObjects, modifiedObjects };
+  }
 
-    for (const obj of addedAll) {
-      const matchType = this.#matchType(obj, effectiveWhere);
-      if (matchType === "strict") {
-        addedStrictMatches.add(obj);
-      } else if (matchType === "sorta") {
-        addedSortaMatches.add(obj);
-      }
+  #handleLocalUpdate(
+    changes: Changes,
+    optimisticId: OptimisticId | undefined,
+  ): Promise<void> | undefined {
+    const whereClause = this.#operations.where as
+      | Canonical<SimpleWhereClause>
+      | undefined;
+    const effectiveWhere = whereClause
+      ?? this.store.whereCanonicalizer.canonicalize({ $and: [] });
+
+    const relevant = this.#getRelevantChanges(changes);
+    if (!relevant) {
+      return undefined;
     }
 
-    for (const obj of modifiedAll) {
-      const matchType = this.#matchType(obj, effectiveWhere);
-      if (matchType === "strict") {
-        modifiedStrictMatches.add(obj);
-      } else if (matchType === "sorta") {
-        modifiedSortaMatches.add(obj);
-      }
-    }
+    const addedMatches = this.#classifyByWhereMatch(
+      relevant.addedObjects,
+      effectiveWhere,
+    );
+    const modifiedMatches = this.#classifyByWhereMatch(
+      relevant.modifiedObjects,
+      effectiveWhere,
+    );
 
     const status = optimisticId
-        || addedSortaMatches.size > 0
-        || modifiedSortaMatches.size > 0
+        || addedMatches.uncertain.size > 0
+        || modifiedMatches.uncertain.size > 0
       ? "loading"
       : "loaded";
 
-    const newList: Array<ObjectCacheKey> = [];
+    const { retVal: needsRevalidation } = this.store.batch(
+      { optimisticId, changes },
+      (batch) => {
+        const existingKeys = new Set(
+          batch.read(this.cacheKey)?.value?.data,
+        );
 
-    let needsRevalidation = false;
-    this.store.batch({ optimisticId, changes }, (batch) => {
-      const existingList = new Set(
-        batch.read(this.cacheKey)?.value?.data,
-      );
+        const { newList, needsRevalidation } = reconcileListChanges(
+          existingKeys,
+          addedMatches.definite,
+          relevant.modifiedObjects,
+          modifiedMatches,
+          changes.deleted,
+          batch.optimisticWrite,
+          (obj) => this.#getObjectCacheKey(obj),
+        );
 
-      const toAdd = new Set<ObjectHolder | InterfaceHolder>(
-        addedStrictMatches,
-      );
+        const existingTotalCount = batch.read(this.cacheKey)?.value?.totalCount;
+        this._updateList(
+          newList,
+          status,
+          batch,
+          { type: "clientOrdered" },
+          existingTotalCount,
+        );
 
-      const toRemove = new Set<CacheKey>(changes.deleted);
-
-      for (const obj of modifiedAll) {
-        if (modifiedStrictMatches.has(obj)) {
-          const objectCacheKey = this.#getObjectCacheKey(obj);
-
-          if (!existingList.has(objectCacheKey)) {
-            toAdd.add(obj);
-          }
-          continue;
-        } else if (batch.optimisticWrite) {
-          continue;
-        } else {
-          const existingObjectCacheKey = this.#getObjectCacheKey(obj);
-
-          toRemove.add(existingObjectCacheKey);
-
-          if (modifiedSortaMatches.has(obj)) {
-            needsRevalidation = true;
-          }
-        }
-      }
-
-      for (const key of existingList) {
-        if (toRemove.has(key)) {
-          continue;
-        }
-        newList.push(key);
-      }
-      for (const obj of toAdd) {
-        newList.push(this.#getObjectCacheKey(obj));
-      }
-
-      const existingTotalCount = batch.read(this.cacheKey)?.value?.totalCount;
-      this._updateList(
-        newList,
-        status,
-        batch,
-        { type: "clientOrdered" },
-        existingTotalCount,
-      );
-    });
+        return needsRevalidation;
+      },
+    );
 
     if (needsRevalidation) {
       return this.revalidate(true);
@@ -448,17 +423,23 @@ export class ObjectSetQuery extends BaseListQuery<
     return undefined;
   }
 
-  #matchType(
-    obj: ObjectHolder | InterfaceHolder,
+  #classifyByWhereMatch(
+    objects: ReadonlyArray<ObjectHolder | InterfaceHolder>,
     whereClause: Canonical<SimpleWhereClause>,
-  ): false | "strict" | "sorta" {
-    if (objectMatchesWhereClause(obj, whereClause, true)) {
-      return "strict";
+  ): {
+    definite: ReadonlySet<ObjectHolder | InterfaceHolder>;
+    uncertain: ReadonlySet<ObjectHolder | InterfaceHolder>;
+  } {
+    const definite = new Set<ObjectHolder | InterfaceHolder>();
+    const uncertain = new Set<ObjectHolder | InterfaceHolder>();
+    for (const obj of objects) {
+      if (objectMatchesWhereClause(obj, whereClause, true)) {
+        definite.add(obj);
+      } else if (objectMatchesWhereClause(obj, whereClause, false)) {
+        uncertain.add(obj);
+      }
     }
-    if (objectMatchesWhereClause(obj, whereClause, false)) {
-      return "sorta";
-    }
-    return false;
+    return { definite, uncertain };
   }
 
   #getObjectCacheKey(
@@ -504,4 +485,50 @@ export class ObjectSetQuery extends BaseListQuery<
       totalCount: params.totalCount,
     };
   }
+}
+
+function reconcileListChanges(
+  existingKeys: ReadonlySet<ObjectCacheKey>,
+  addedDefiniteMatches: ReadonlySet<ObjectHolder | InterfaceHolder>,
+  modifiedObjects: ReadonlyArray<ObjectHolder>,
+  modifiedMatches: {
+    definite: ReadonlySet<ObjectHolder | InterfaceHolder>;
+    uncertain: ReadonlySet<ObjectHolder | InterfaceHolder>;
+  },
+  deleted: ReadonlySet<CacheKey>,
+  isOptimistic: boolean,
+  getObjectCacheKey: (
+    obj: ObjectHolder | InterfaceHolder,
+  ) => ObjectCacheKey,
+): { newList: ObjectCacheKey[]; needsRevalidation: boolean } {
+  const objectsToInsert = new Set<ObjectHolder | InterfaceHolder>(
+    addedDefiniteMatches,
+  );
+  const keysToRemove = new Set<CacheKey>(deleted);
+
+  let needsRevalidation = false;
+  for (const obj of modifiedObjects) {
+    if (modifiedMatches.definite.has(obj)) {
+      if (!existingKeys.has(getObjectCacheKey(obj))) {
+        objectsToInsert.add(obj);
+      }
+    } else if (!isOptimistic) {
+      keysToRemove.add(getObjectCacheKey(obj));
+      if (modifiedMatches.uncertain.has(obj)) {
+        needsRevalidation = true;
+      }
+    }
+  }
+
+  const newList: ObjectCacheKey[] = [];
+  for (const key of existingKeys) {
+    if (!keysToRemove.has(key)) {
+      newList.push(key);
+    }
+  }
+  for (const obj of objectsToInsert) {
+    newList.push(getObjectCacheKey(obj));
+  }
+
+  return { newList, needsRevalidation };
 }

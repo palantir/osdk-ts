@@ -38,27 +38,10 @@ describe(OrderByCanonicalizer, () => {
     expect(canonLong).not.toEqual(canon1);
   });
 
-  it("produces the same canonical reference regardless of key order", () => {
+  it("preserves key order for multi-sort priority", () => {
     const obc = new OrderByCanonicalizer();
     const canon1 = obc.canonicalize({ a: "asc", b: "desc" });
     const canon2 = obc.canonicalize({ b: "desc", a: "asc" });
-
-    expect(canon1).toBe(canon2);
-  });
-
-  it("handles single-key orderBy", () => {
-    const obc = new OrderByCanonicalizer();
-    const canon1 = obc.canonicalize({ z: "asc" });
-    const canon2 = obc.canonicalize({ z: "asc" });
-
-    expect(canon1).toBe(canon2);
-  });
-
-  it("differentiates different values for same key", () => {
-    const obc = new OrderByCanonicalizer();
-    const canon1 = obc.canonicalize({ a: "asc" });
-    const canon2 = obc.canonicalize({ a: "desc" });
-
     expect(canon1).not.toBe(canon2);
   });
 

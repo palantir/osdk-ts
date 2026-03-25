@@ -46,9 +46,7 @@ export class OrderByCanonicalizer {
   ) => Canonical<Record<string, "asc" | "desc" | undefined>> = (
     orderBy,
   ) => {
-    const strings = Object.entries(orderBy).sort(([a], [b]) =>
-      a.localeCompare(b)
-    ).flat();
+    const strings = Object.entries(orderBy).flat();
     return this.#trie.lookupArray(strings);
   };
 }
