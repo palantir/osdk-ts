@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-// cspell:words pagerendered
 import { act, renderHook } from "@testing-library/react";
 import type { PDFDocumentProxy } from "pdfjs-dist";
 import type { EventBus, PDFViewer } from "pdfjs-dist/web/pdf_viewer.mjs";

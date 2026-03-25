@@ -164,8 +164,8 @@ function getFontSize(item: TextItemLike): number {
   const transform = item.transform;
   if (Array.isArray(transform) && transform.length >= 4) {
     return Math.sqrt(
-      (transform[2] as number) * (transform[2] as number)
-        + (transform[3] as number) * (transform[3] as number),
+      (transform[2]) * (transform[2])
+        + (transform[3]) * (transform[3]),
     );
   }
   return 0;

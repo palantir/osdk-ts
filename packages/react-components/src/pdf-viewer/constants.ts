@@ -40,15 +40,9 @@ export const OUTLINE_MAX_HEADING_LENGTH = 200;
 
 // pdfjs EventBus event names
 export const FIND_EVENT = "find";
-// cspell:disable-next-line -- pdfjs EventBus event name
 export const UPDATE_FIND_CONTROL_STATE_EVENT = "updatefindcontrolstate";
-// cspell:disable-next-line -- pdfjs EventBus event name
 export const UPDATE_FIND_MATCHES_COUNT_EVENT = "updatefindmatchescount";
-// cspell:disable-next-line -- pdfjs EventBus event name
 export const PAGE_CHANGING_EVENT = "pagechanging";
-// cspell:disable-next-line -- pdfjs EventBus event name
 export const SCALE_CHANGING_EVENT = "scalechanging";
-// cspell:disable-next-line -- pdfjs EventBus event name
 export const PAGE_RENDERED_EVENT = "pagerendered";
-// cspell:disable-next-line -- pdfjs EventBus event name
 export const PAGES_LOADED_EVENT = "pagesloaded";
