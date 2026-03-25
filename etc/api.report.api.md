@@ -23,6 +23,8 @@ export interface ActionDefinition<T_signatures = never> {
     osdkMetadata?: OsdkMetadata;
     	// (undocumented)
     type: "action";
+    	// (undocumented)
+    unsanitizedApiName?: string;
 }
 
 // Warning: (ae-forgotten-export) The symbol "ActionResults" needs to be exported by the entry point index.d.ts
@@ -53,6 +55,8 @@ export interface ActionMetadata {
     status: ReleaseStatus | undefined;
     	// (undocumented)
     type: "action";
+    	// (undocumented)
+    unsanitizedApiName?: string;
 }
 
 // @public (undocumented)

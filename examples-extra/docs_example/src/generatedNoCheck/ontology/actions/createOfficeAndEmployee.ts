@@ -115,16 +115,19 @@ export interface createOfficeAndEmployee extends ActionDefinition<createOfficeAn
     rid: 'ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f2';
     status: 'ACTIVE';
     type: 'action';
+    unsanitizedApiName: 'create-office-and-employee';
 
     signatures: createOfficeAndEmployee.Signatures;
   };
   apiName: 'createOfficeAndEmployee';
   type: 'action';
+  unsanitizedApiName: 'create-office-and-employee';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 export const createOfficeAndEmployee: createOfficeAndEmployee = {
   apiName: 'createOfficeAndEmployee',
   type: 'action',
+  unsanitizedApiName: 'create-office-and-employee',
   osdkMetadata: $osdkMetadata,
 };

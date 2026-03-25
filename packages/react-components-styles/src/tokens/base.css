@@ -174,7 +174,13 @@
   --osdk-iconography-size-small: var(--osdk-typography-size-body-large);
   --osdk-iconography-color-muted: var(--osdk-intent-default-rest);
 
+  /* Global styling */
   font-family: var(--osdk-typography-family-default);
   color: var(--osdk-typography-color-default-rest);
   font-size: var(--osdk-typography-size-body-medium);
+
+  /* Blueprint icon color override to inherit surrounding text color */
+  .bp6-icon {
+    fill: currentColor;
+  }
 }

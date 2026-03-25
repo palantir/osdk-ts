@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,4 @@
  * limitations under the License.
  */
 
-import type { MinimalFs } from "../MinimalFs.js";
-import type { EnhancedOntologyDefinition } from "./EnhancedOntologyDefinition.js";
-
-export interface GenerateContext {
-  ontology: EnhancedOntologyDefinition;
-
-  importExt?: string;
-  fs: MinimalFs;
-
-  outDir: string;
-  fixedVersionQueryTypes: string[];
-  ontologyApiNamespace?: string | undefined;
-  apiNamespacePackageMap?: Map<string, string>;
-  forInternalUse?: boolean;
-}
+export {};

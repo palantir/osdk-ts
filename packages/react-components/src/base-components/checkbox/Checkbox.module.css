@@ -62,9 +62,6 @@
 }
 
 .osdkCheckboxIndicator {
-  display: flex;
-  justify-content: center;
-  align-items: center;
   color: var(--osdk-checkbox-checked-foreground);
   width: var(--osdk-checkbox-icon-size);
   height: var(--osdk-checkbox-icon-size);
