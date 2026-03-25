@@ -84,7 +84,8 @@ const meta: Meta<PdfViewerOutlineSidebarProps> = {
     outlineItems: SAMPLE_OUTLINE,
     currentPage: 1,
     onItemClick: fn(),
-    onSwitchToThumbnails: fn(),
+    sidebarMode: "outline",
+    onSidebarModeChange: fn(),
   },
   render: (args: PdfViewerOutlineSidebarProps) => (
     <div style={{ height: "400px", width: "240px" }}>

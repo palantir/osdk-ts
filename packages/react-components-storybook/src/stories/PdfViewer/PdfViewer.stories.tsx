@@ -18,13 +18,10 @@
 
 import type { Media } from "@osdk/api";
 import type {
-  PdfRendererProps,
+  PdfViewerMediaProps,
   PdfViewerProps,
 } from "@osdk/react-components/experimental";
-import {
-  BasePdfRenderer,
-  PdfRenderer,
-} from "@osdk/react-components/experimental";
+import { BasePdfViewer, PdfViewer } from "@osdk/react-components/experimental";
 import { useOsdkObject } from "@osdk/react/experimental";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { delay, http } from "msw";
@@ -70,15 +67,15 @@ const mockBookmarkedMedia = createMockMedia(
   "pdf-example-bookmarks.pdf",
 );
 
-const meta: Meta<PdfRendererProps> = {
+const meta: Meta<PdfViewerMediaProps> = {
   title: "Components/PdfViewer",
-  component: PdfRenderer,
+  component: PdfViewer,
   args: {
     media: mockMedia,
   },
-  render: (args: PdfRendererProps) => (
+  render: (args: PdfViewerMediaProps) => (
     <div style={{ height: "600px" }}>
-      <PdfRenderer {...args} />
+      <PdfViewer {...args} />
     </div>
   ),
   parameters: {
@@ -116,7 +113,7 @@ const meta: Meta<PdfRendererProps> = {
       control: "boolean",
       table: { defaultValue: { summary: "false" } },
     },
-    downloadEnabled: {
+    enableDownload: {
       description: "Whether the download button is shown in the toolbar",
       control: "boolean",
       table: { defaultValue: { summary: "false" } },
@@ -155,19 +152,18 @@ export const WithOsdkMedia: Story = {
 
     return (
       <div style={{ height: "600px" }}>
-        <PdfRenderer media={employee.employeeDocuments} />
+        <PdfViewer media={employee.employeeDocuments} />
       </div>
     );
   },
   parameters: {
     docs: {
       source: {
-        code:
-          `import { PdfRenderer } from "@osdk/react-components/experimental";
+        code: `import { PdfViewer } from "@osdk/react-components/experimental";
 
 // Access media from an OSDK object's media reference property
 const employee = useOsdkObject(Employee, employeePk);
-<PdfRenderer media={employee.employeeDocuments} />`,
+<PdfViewer media={employee.employeeDocuments} />`,
       },
     },
   },
@@ -179,16 +175,16 @@ export const WithPdfUrl: StoryObj<PdfViewerProps> = {
   },
   render: (args: PdfViewerProps) => (
     <div style={{ height: "600px" }}>
-      <BasePdfRenderer {...args} />
+      <BasePdfViewer {...args} />
     </div>
   ),
   parameters: {
     docs: {
       source: {
         code:
-          `import { BasePdfRenderer } from "@osdk/react-components/experimental";
+          `import { BasePdfViewer } from "@osdk/react-components/experimental";
 
-<BasePdfRenderer src="https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf" />`,
+<BasePdfViewer src="https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf" />`,
       },
     },
   },
@@ -232,10 +228,9 @@ export const WithAnnotations: Story = {
   parameters: {
     docs: {
       source: {
-        code:
-          `import { PdfRenderer } from "@osdk/react-components/experimental";
+        code: `import { PdfViewer } from "@osdk/react-components/experimental";
 
-<PdfRenderer
+<PdfViewer
   media={myMediaObject}
   annotations={{
     1: [
@@ -259,10 +254,9 @@ export const WithSidebar: Story = {
   parameters: {
     docs: {
       source: {
-        code:
-          `import { PdfRenderer } from "@osdk/react-components/experimental";
+        code: `import { PdfViewer } from "@osdk/react-components/experimental";
 
-<PdfRenderer media={myMediaObject} initialSidebarOpen />`,
+<PdfViewer media={myMediaObject} initialSidebarOpen />`,
       },
     },
   },
@@ -275,10 +269,9 @@ export const CustomScale: Story = {
   parameters: {
     docs: {
       source: {
-        code:
-          `import { PdfRenderer } from "@osdk/react-components/experimental";
+        code: `import { PdfViewer } from "@osdk/react-components/experimental";
 
-<PdfRenderer media={myMediaObject} initialScale={1.5} />`,
+<PdfViewer media={myMediaObject} initialScale={1.5} />`,
       },
     },
   },
@@ -286,15 +279,14 @@ export const CustomScale: Story = {
 
 export const WithDownload: Story = {
   args: {
-    downloadEnabled: true,
+    enableDownload: true,
   },
   parameters: {
     docs: {
       source: {
-        code:
-          `import { PdfRenderer } from "@osdk/react-components/experimental";
+        code: `import { PdfViewer } from "@osdk/react-components/experimental";
 
-<PdfRenderer media={myMediaObject} downloadEnabled />`,
+<PdfViewer media={myMediaObject} enableDownload />`,
       },
     },
   },
@@ -308,10 +300,9 @@ export const WithOutlineSidebar: Story = {
   parameters: {
     docs: {
       source: {
-        code:
-          `import { PdfRenderer } from "@osdk/react-components/experimental";
+        code: `import { PdfViewer } from "@osdk/react-components/experimental";
 
-<PdfRenderer media={myMediaObject} initialSidebarOpen sidebarMode="outline" />`,
+<PdfViewer media={myMediaObject} initialSidebarOpen sidebarMode="outline" />`,
       },
     },
   },
@@ -323,7 +314,7 @@ export const Loading: StoryObj<PdfViewerProps> = {
   },
   render: (args: PdfViewerProps) => (
     <div style={{ height: "600px" }}>
-      <BasePdfRenderer {...args} />
+      <BasePdfViewer {...args} />
     </div>
   ),
   parameters: {
@@ -343,7 +334,7 @@ export const Error: StoryObj<PdfViewerProps> = {
   },
   render: (args: PdfViewerProps) => (
     <div style={{ height: "600px" }}>
-      <BasePdfRenderer {...args} />
+      <BasePdfViewer {...args} />
     </div>
   ),
   parameters: {

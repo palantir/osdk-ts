@@ -40,7 +40,7 @@ export interface PdfViewerToolbarProps {
   onSearchOpen: () => void;
   onSidebarToggle: () => void;
   onDownload: () => void;
-  downloadEnabled: boolean;
+  enableDownload: boolean;
   onRotateLeft: () => void;
   onRotateRight: () => void;
 }
@@ -55,7 +55,7 @@ export function PdfViewerToolbar({
   onSearchOpen,
   onSidebarToggle,
   onDownload,
-  downloadEnabled,
+  enableDownload,
   onRotateLeft,
   onRotateRight,
 }: PdfViewerToolbarProps): React.ReactElement {
@@ -228,7 +228,7 @@ export function PdfViewerToolbar({
         <Search size={16} />
       </Button>
 
-      {downloadEnabled && (
+      {enableDownload && (
         <>
           <div className={styles.separator} />
 

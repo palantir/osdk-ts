@@ -18,7 +18,7 @@ import { Error as ErrorIcon, Spin } from "@blueprintjs/icons";
 import type { Media } from "@osdk/api";
 import classnames from "classnames";
 import React, { useEffect, useState } from "react";
-import { BasePdfRenderer } from "./PdfViewer.js";
+import { BasePdfViewer } from "./PdfViewer.js";
 import styles from "./PdfViewer.module.css";
 import type { PdfViewerProps } from "./types.js";
 
@@ -27,16 +27,16 @@ async function fetchMediaContents(media: Media): Promise<ArrayBuffer> {
   return result.arrayBuffer();
 }
 
-export interface PdfRendererProps extends Omit<PdfViewerProps, "src"> {
+export interface PdfViewerMediaProps extends Omit<PdfViewerProps, "src"> {
   /** The Media object to fetch PDF contents from */
   media: Media;
 }
 
-export function PdfRenderer({
+export function PdfViewer({
   media,
   className,
   ...pdfViewerProps
-}: PdfRendererProps): React.ReactElement {
+}: PdfViewerMediaProps): React.ReactElement {
   const [src, setSrc] = useState<ArrayBuffer | undefined>(undefined);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | undefined>(undefined);
@@ -100,7 +100,7 @@ export function PdfRenderer({
   }
 
   return (
-    <BasePdfRenderer
+    <BasePdfViewer
       src={src}
       className={className}
       {...pdfViewerProps}

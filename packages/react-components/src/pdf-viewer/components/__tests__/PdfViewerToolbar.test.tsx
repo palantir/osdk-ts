@@ -28,7 +28,7 @@ const defaultProps = {
   onSearchOpen: vi.fn(),
   onSidebarToggle: vi.fn(),
   onDownload: vi.fn(),
-  downloadEnabled: false,
+  enableDownload: false,
   onRotateLeft: vi.fn(),
   onRotateRight: vi.fn(),
 };

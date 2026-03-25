@@ -32,7 +32,7 @@
   height: 28px;
   border: none;
   background: none;
-  color: var(--osdk-typography-color-default-rest);
+  color: var(--osdk-typography-color-muted);
   cursor: pointer;
   border-radius: var(--osdk-surface-border-radius);
   padding: 0;

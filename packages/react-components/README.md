@@ -80,7 +80,7 @@ The components that this package will provide are:
 | Component     | Description                                                                        | Documentation                  |
 | ------------- | ---------------------------------------------------------------------------------- | ------------------------------ |
 | `ObjectTable` | Displays an Object Set as a sortable, paginated table with inline editing support  | [Guide](./docs/ObjectTable.md) |
-| `PdfRenderer` | Renders PDF documents with annotations, search, sidebar navigation, and zoom       | [Guide](./docs/PdfViewer.md)   |
+| `PdfViewer`   | Renders PDF documents with annotations, search, sidebar navigation, and zoom       | [Guide](./docs/PdfViewer.md)   |
 | `FilterList`  | Visualize a high-level summary of objects data to allow users to filter that data. | [Guide](./docs/FilterList.md)  |
 | `ActionForm`  | Auto-generated form for executing Ontology Actions                                 | -                              |
 
@@ -90,13 +90,13 @@ This package follows a layered architecture pattern to maximize flexibility and 
 
 ### Core layers (all components)
 
-1. **OSDK Component Layer** (e.g., `ObjectTable`, `PdfRenderer`)
+1. **OSDK Component Layer** (e.g., `ObjectTable`, `PdfViewer`)
    - Handles data fetching and processing using @osdk/react hooks
    - Converts OSDK types to primitive data structures
    - Manages OSDK-specific operations like filtering and actions
    - No styling or component interactions
 
-2. **Base Component Layer** (e.g., `BaseTable`, `BasePdfRenderer`)
+2. **Base Component Layer** (e.g., `BaseTable`, `BasePdfViewer`)
    - Pure component layer with no OSDK imports
    - Contains all component interactions and styling
    - Accepts primitive props like `string[]`, arrays, and objects
@@ -110,7 +110,7 @@ For example, the PDF viewer offers three levels of customization:
 
 | Tier            | What you use                                                     | What you get                                                     |
 | --------------- | ---------------------------------------------------------------- | ---------------------------------------------------------------- |
-| Drop-in         | `PdfRenderer` / `BasePdfRenderer`                                | Full viewer with toolbar, sidebar, search — zero assembly        |
+| Drop-in         | `PdfViewer` / `BasePdfViewer`                                    | Full viewer with toolbar, sidebar, search — zero assembly        |
 | Building blocks | `PdfViewerToolbar`, `PdfViewerSidebar`, `PdfViewerContent`, etc. | Custom layout using standard parts                               |
 | Hooks           | `usePdfViewerState` / `usePdfViewerCore` / primitive hooks       | Build entirely custom components; hooks do all the heavy lifting |
 

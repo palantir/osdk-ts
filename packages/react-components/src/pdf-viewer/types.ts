@@ -57,9 +57,15 @@ export interface PdfViewerProps {
   initialScale?: number;
   /** Whether the sidebar is initially open (default false) */
   initialSidebarOpen?: boolean;
-  /** Whether the download button is shown in the toolbar (default false) */
-  downloadEnabled?: boolean;
-  /** Which sidebar panel to show: thumbnails or document outline (default "thumbnails") */
+  /**
+   * Whether the download button is shown in the toolbar.
+   * @default false
+   */
+  enableDownload?: boolean;
+  /**
+   * Which sidebar panel to show: thumbnails or document outline.
+   * @default "thumbnails"
+   */
   sidebarMode?: SidebarMode;
   /**
    * Custom icon components for each outline depth level (0-indexed).

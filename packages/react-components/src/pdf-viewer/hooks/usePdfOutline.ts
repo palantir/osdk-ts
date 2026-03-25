@@ -16,6 +16,10 @@
 
 import type { PDFDocumentProxy } from "pdfjs-dist";
 import { useEffect, useState } from "react";
+import {
+  OUTLINE_HEADING_SIZE_RATIO,
+  OUTLINE_MAX_HEADING_LENGTH,
+} from "../constants.js";
 
 export interface OutlineItem {
   title: string;
@@ -26,12 +30,6 @@ export interface OutlineItem {
 }
 
 const EMPTY_OUTLINE: OutlineItem[] = [];
-
-/**
- * Minimum ratio of font size to body text to be considered a heading.
- * 1.15 means the text must be at least 15% larger than the most common size.
- */
-const HEADING_SIZE_RATIO = 1.15;
 
 export function usePdfOutline(
   document: PDFDocumentProxy | undefined,
@@ -225,7 +223,7 @@ async function extractHeadingsFromText(
   }
 
   // Heading threshold: text significantly larger than body text
-  const headingThreshold = bodySize * HEADING_SIZE_RATIO;
+  const headingThreshold = bodySize * OUTLINE_HEADING_SIZE_RATIO;
 
   // Collect all unique heading sizes above threshold
   const headingSizes = new Set<number>();
@@ -341,11 +339,10 @@ async function extractHeadingsFromText(
     }
   }
 
-  // Filter out overly long entries (author blocks, abstracts, etc.)
-  const MAX_HEADING_LENGTH = 200;
-
   return mergedHeadings
-    .filter((heading) => heading.text.trim().length <= MAX_HEADING_LENGTH)
+    .filter((heading) =>
+      heading.text.trim().length <= OUTLINE_MAX_HEADING_LENGTH
+    )
     .map((heading) => ({
       title: heading.text.trim(),
       depth: sizeToDepth.get(heading.fontSize) ?? 0,

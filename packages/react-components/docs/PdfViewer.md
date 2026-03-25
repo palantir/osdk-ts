@@ -5,47 +5,44 @@ A React component for rendering PDF documents with text selection, custom annota
 ## Import
 
 ```tsx
-import {
-  BasePdfRenderer,
-  PdfRenderer,
-} from "@osdk/react-components/experimental";
+import { BasePdfViewer, PdfViewer } from "@osdk/react-components/experimental";
 ```
 
-- **`PdfRenderer`** — Primary component for OSDK usage. Accepts an OSDK `Media` object, handles fetching the PDF contents, and renders the viewer.
-- **`BasePdfRenderer`** — Lower-level component that accepts a URL string or `ArrayBuffer` directly. Use this when you already have the PDF source.
+- **`PdfViewer`** — Primary component for OSDK usage. Accepts an OSDK `Media` object, handles fetching the PDF contents, and renders the viewer.
+- **`BasePdfViewer`** — Lower-level component that accepts a URL string or `ArrayBuffer` directly. Use this when you already have the PDF source.
 
 ## Usage
 
 ### With OSDK Media
 
 ```tsx
-import { PdfRenderer } from "@osdk/react-components/experimental";
+import { PdfViewer } from "@osdk/react-components/experimental";
 
-<PdfRenderer media={employee.employeeDocuments} />;
+<PdfViewer media={employee.employeeDocuments} />;
 ```
 
 ### With a URL or ArrayBuffer
 
 ```tsx
-import { BasePdfRenderer } from "@osdk/react-components/experimental";
+import { BasePdfViewer } from "@osdk/react-components/experimental";
 
 // From a URL
-<BasePdfRenderer src="https://example.com/document.pdf" />
+<BasePdfViewer src="https://example.com/document.pdf" />
 
 // From an ArrayBuffer (e.g. file input or fetch)
-<BasePdfRenderer src={arrayBuffer} />
+<BasePdfViewer src={arrayBuffer} />
 ```
 
 ### With annotations and sidebar
 
 ```tsx
-<PdfRenderer
+<PdfViewer
   media={myMedia}
   initialPage={3}
   initialScale={1.5}
   initialSidebarOpen
   sidebarMode="outline"
-  downloadEnabled
+  enableDownload
   annotations={{
     1: [
       {
@@ -64,7 +61,7 @@ import { BasePdfRenderer } from "@osdk/react-components/experimental";
 
 ## Props
 
-### PdfRendererProps
+### PdfViewerMediaProps
 
 | Prop    | Type    | Required | Description                                  |
 | ------- | ------- | -------- | -------------------------------------------- |
@@ -72,7 +69,7 @@ import { BasePdfRenderer } from "@osdk/react-components/experimental";
 
 Plus all props from `PdfViewerProps` except `src`.
 
-### PdfViewerProps (BasePdfRenderer)
+### PdfViewerProps (BasePdfViewer)
 
 | Prop                 | Type                                           | Default        | Description                                                     |
 | -------------------- | ---------------------------------------------- | -------------- | --------------------------------------------------------------- |
@@ -84,7 +81,7 @@ Plus all props from `PdfViewerProps` except `src`.
 | `initialSidebarOpen` | `boolean`                                      | `false`        | Whether the sidebar is initially open                           |
 | `sidebarMode`        | `SidebarMode`                                  | `"thumbnails"` | Which sidebar panel to show: `"thumbnails"` or `"outline"`      |
 | `outlineIcons`       | `Partial<Record<number, React.ComponentType>>` | —              | Custom icon components for each outline depth level (0-indexed) |
-| `downloadEnabled`    | `boolean`                                      | `false`        | Whether the download button is shown in the toolbar             |
+| `enableDownload`     | `boolean`                                      | `false`        | Whether the download button is shown in the toolbar             |
 | `className`          | `string`                                       | —              | CSS class applied to the root element                           |
 
 ## Features
@@ -132,7 +129,7 @@ The built-in toolbar provides:
 - **Rotate controls** — rotate all pages left (counter-clockwise) or right (clockwise) in 90° increments
 - **Sidebar toggle** — open/close the sidebar panel
 - **Search button** — opens the search bar
-- **Download button** — downloads the PDF (hidden by default, enable with `downloadEnabled`)
+- **Download button** — downloads the PDF (hidden by default, enable with `enableDownload`)
 
 ### Lazy page rendering
 
@@ -146,12 +143,12 @@ The canvas renderer accounts for `window.devicePixelRatio` to produce sharp text
 
 The PDF viewer is designed as a three-tier API so you can choose the right level of abstraction:
 
-1. **Components** (`PdfRenderer` / `BasePdfRenderer`) — Drop-in viewers with full UI out of the box.
+1. **Components** (`PdfViewer` / `BasePdfViewer`) — Drop-in viewers with full UI out of the box.
 2. **Building block components** — Assemble a custom layout using `PdfViewerContent`, `PdfViewerToolbar`, etc.
 3. **Hooks** — Build entirely custom components. The hooks do all the heavy lifting.
 
 ```
-Tier 1: PdfRenderer / BasePdfRenderer          ← full viewer, zero assembly
+Tier 1: PdfViewer / BasePdfViewer          ← full viewer, zero assembly
 Tier 2: Building block components               ← custom layout, standard parts
 Tier 3: usePdfViewerState / usePdfViewerCore    ← custom everything
          └── Primitive hooks                    ← maximum control
@@ -283,22 +280,22 @@ function MinimalViewer({ src }: { src: string }) {
 
 ## Types
 
-| Type                       | Description                                                                     |
-| -------------------------- | ------------------------------------------------------------------------------- |
-| `PdfViewerProps`           | Props for `BasePdfRenderer`                                                     |
-| `PdfRendererProps`         | Props for `PdfRenderer` (extends `PdfViewerProps`, replaces `src` with `media`) |
-| `PdfViewerContentProps`    | Props for `PdfViewerContent`                                                    |
-| `UsePdfViewerStateOptions` | Options for `usePdfViewerState`                                                 |
-| `UsePdfViewerStateResult`  | Return type of `usePdfViewerState`                                              |
-| `UsePdfViewerCoreOptions`  | Options for `usePdfViewerCore`                                                  |
-| `UsePdfViewerCoreResult`   | Return type of `usePdfViewerCore`                                               |
-| `UsePdfViewerResult`       | Return type of `usePdfViewer`                                                   |
-| `UsePdfViewerSearchResult` | Return type of `usePdfViewerSearch`                                             |
-| `AnnotationPortalTarget`   | Portal target info returned by `usePdfAnnotationPortals`                        |
-| `PdfAnnotation`            | Annotation with `id`, `type`, `page`, `rect`, optional `label` and `color`      |
-| `AnnotationType`           | `"highlight" \| "underline" \| "comment" \| "pin"`                              |
-| `SidebarMode`              | `"thumbnails" \| "outline"`                                                     |
-| `OutlineItem`              | Outline entry with `title`, `depth`, `pageNumber`, `bold`, `italic`             |
+| Type                       | Description                                                                   |
+| -------------------------- | ----------------------------------------------------------------------------- |
+| `PdfViewerProps`           | Props for `BasePdfViewer`                                                     |
+| `PdfViewerMediaProps`      | Props for `PdfViewer` (extends `PdfViewerProps`, replaces `src` with `media`) |
+| `PdfViewerContentProps`    | Props for `PdfViewerContent`                                                  |
+| `UsePdfViewerStateOptions` | Options for `usePdfViewerState`                                               |
+| `UsePdfViewerStateResult`  | Return type of `usePdfViewerState`                                            |
+| `UsePdfViewerCoreOptions`  | Options for `usePdfViewerCore`                                                |
+| `UsePdfViewerCoreResult`   | Return type of `usePdfViewerCore`                                             |
+| `UsePdfViewerResult`       | Return type of `usePdfViewer`                                                 |
+| `UsePdfViewerSearchResult` | Return type of `usePdfViewerSearch`                                           |
+| `AnnotationPortalTarget`   | Portal target info returned by `usePdfAnnotationPortals`                      |
+| `PdfAnnotation`            | Annotation with `id`, `type`, `page`, `rect`, optional `label` and `color`    |
+| `AnnotationType`           | `"highlight" \| "underline" \| "comment" \| "pin"`                            |
+| `SidebarMode`              | `"thumbnails" \| "outline"`                                                   |
+| `OutlineItem`              | Outline entry with `title`, `depth`, `pageNumber`, `bold`, `italic`           |
 
 ## Theming
 

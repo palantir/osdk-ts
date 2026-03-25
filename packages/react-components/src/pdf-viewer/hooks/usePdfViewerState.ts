@@ -142,15 +142,14 @@ export function usePdfViewerState({
         type: "application/pdf",
       });
       const url = URL.createObjectURL(blob);
-      const resolvedFilename = filename
-        ?? (typeof src === "string"
-          ? src.split("/").pop()?.split("?")[0] || "document.pdf"
-          : "document.pdf");
+      const resolvedFilename = resolveDownloadFilename(src, filename);
       const a = globalThis.document.createElement("a");
       a.href = url;
       a.download = resolvedFilename;
       a.click();
       URL.revokeObjectURL(url);
+    }).catch(() => {
+      // Silently ignore download failures (e.g. corrupted data)
     });
   }, [core.document, src]);
 
@@ -169,4 +168,18 @@ export function usePdfViewerState({
     outlineItems,
     download,
   };
+}
+
+/** Derive a download filename from an explicit name, the src URL, or a fallback. */
+function resolveDownloadFilename(
+  src: string | ArrayBuffer,
+  filename: string | undefined,
+): string {
+  if (filename != null) {
+    return filename;
+  }
+  if (typeof src === "string") {
+    return src.split("/").pop()?.split("?")[0] || "document.pdf";
+  }
+  return "document.pdf";
 }

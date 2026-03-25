@@ -3,4 +3,4 @@
 "@osdk/react-components": minor
 ---
 
-refactor(pdf): general improvements + rotate & expose internal hooks
+refactor(pdf): rename BasePdfRenderer/PdfRenderer to BasePdfViewer/PdfViewer, rename downloadEnabled to enableDownload, expose internal hooks

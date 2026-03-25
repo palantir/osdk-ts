@@ -54,6 +54,8 @@ function ThumbnailSidebarWrapper({
         numPages={numPages}
         currentPage={currentPage}
         onPageClick={onPageClick}
+        sidebarMode="thumbnails"
+        onSidebarModeChange={() => {}}
       />
     </div>
   );

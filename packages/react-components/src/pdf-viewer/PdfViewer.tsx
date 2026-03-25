@@ -29,14 +29,14 @@ import { usePdfViewerState } from "./hooks/usePdfViewerState.js";
 import styles from "./PdfViewer.module.css";
 import type { PdfViewerProps } from "./types.js";
 
-export function BasePdfRenderer({
+export function BasePdfViewer({
   src,
   annotations = EMPTY_ANNOTATIONS,
   onAnnotationClick,
   initialPage = 1,
   initialScale = 1.0,
   initialSidebarOpen = false,
-  downloadEnabled = false,
+  enableDownload = false,
   sidebarMode: sidebarModeProp = "thumbnails",
   outlineIcons,
   className,
@@ -93,7 +93,7 @@ export function BasePdfRenderer({
         onSearchOpen={viewer.search.openSearch}
         onSidebarToggle={viewer.toggleSidebar}
         onDownload={viewer.download}
-        downloadEnabled={downloadEnabled}
+        enableDownload={enableDownload}
         onRotateLeft={viewer.rotateLeft}
         onRotateRight={viewer.rotateRight}
       />

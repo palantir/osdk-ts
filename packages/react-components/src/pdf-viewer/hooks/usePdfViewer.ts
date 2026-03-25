@@ -23,6 +23,7 @@ import {
 } from "pdfjs-dist/web/pdf_viewer.mjs";
 import type { RefObject } from "react";
 import { useEffect, useRef } from "react";
+import { PAGES_LOADED_EVENT } from "../constants.js";
 
 export interface UsePdfViewerResult {
   pdfViewerRef: RefObject<PDFViewer | null>;
@@ -78,11 +79,9 @@ export function usePdfViewer(
       const onPagesLoaded = () => {
         pdfViewer.currentPageNumber = initialPage;
         pdfViewer.scrollPageIntoView({ pageNumber: initialPage });
-        // cspell:disable-next-line -- pdfjs EventBus event name
-        eventBus.off("pagesloaded", onPagesLoaded);
+        eventBus.off(PAGES_LOADED_EVENT, onPagesLoaded);
       };
-      // cspell:disable-next-line -- pdfjs EventBus event name
-      eventBus.on("pagesloaded", onPagesLoaded);
+      eventBus.on(PAGES_LOADED_EVENT, onPagesLoaded);
     }
 
     eventBusRef.current = eventBus;

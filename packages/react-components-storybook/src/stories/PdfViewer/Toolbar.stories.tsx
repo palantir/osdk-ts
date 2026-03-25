@@ -27,7 +27,7 @@ const meta: Meta<PdfViewerToolbarProps> = {
     numPages: 14,
     scale: 1.0,
     sidebarOpen: false,
-    downloadEnabled: false,
+    enableDownload: false,
     onPageChange: fn(),
     onScaleChange: fn(),
     onSearchOpen: fn(),
@@ -53,7 +53,7 @@ const meta: Meta<PdfViewerToolbarProps> = {
       description: "Whether the sidebar toggle is in the open state",
       control: "boolean",
     },
-    downloadEnabled: {
+    enableDownload: {
       description: "Whether the download button is visible",
       control: "boolean",
     },
@@ -67,7 +67,7 @@ export const Default: Story = {};
 
 export const WithDownload: Story = {
   args: {
-    downloadEnabled: true,
+    enableDownload: true,
   },
 };
 

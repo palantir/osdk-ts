@@ -60,7 +60,7 @@ export type {
 } from "../object-table/ColumnConfigDialog.js";
 
 // PdfViewer
-export { BasePdfRenderer } from "../pdf-viewer/PdfViewer.js";
+export { BasePdfViewer } from "../pdf-viewer/PdfViewer.js";
 export type {
   AnnotationType,
   PdfAnnotation,
@@ -126,8 +126,8 @@ export {
   type UsePdfViewerStateResult,
 } from "../pdf-viewer/hooks/usePdfViewerState.js";
 
-// PdfRenderer
+// PdfViewer (Media wrapper)
 export {
-  PdfRenderer,
-  type PdfRendererProps,
+  PdfViewer,
+  type PdfViewerMediaProps,
 } from "../pdf-viewer/PdfRenderer.js";
