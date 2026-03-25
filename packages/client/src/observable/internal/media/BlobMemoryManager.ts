@@ -34,6 +34,8 @@ export interface BlobMemoryManager {
 
 export function createBlobMemoryManager(): BlobMemoryManager {
   const cache = new Map<string, CacheEntry>();
+  // Matches the 60s keepAlive used by CacheKeys for RefCounts — blobs stay
+  // cached 60s after last access so quick navigation between views reuses them
   const EVICTION_THRESHOLD_MS = 60_000;
 
   const urlRefCounts = new RefCounts<string>(
@@ -56,7 +58,9 @@ export function createBlobMemoryManager(): BlobMemoryManager {
 
         const now = Date.now();
         for (const [key, entry] of cache.entries()) {
-          if (urlRefCounts.has(key)) continue;
+          if (urlRefCounts.has(key)) {
+            continue;
+          }
 
           if (now - entry.lastAccessed > EVICTION_THRESHOLD_MS) {
             cache.delete(key);
@@ -67,7 +71,7 @@ export function createBlobMemoryManager(): BlobMemoryManager {
           clearInterval(gcIntervalId);
           gcIntervalId = undefined;
         }
-      }, 10_000);
+      }, 10_000); // GC poll interval for evicting stale entries
     }
   }
 
@@ -98,7 +102,9 @@ export function createBlobMemoryManager(): BlobMemoryManager {
 
   function createBlobUrl(key: string): string | undefined {
     const entry = cache.get(key);
-    if (!entry) return undefined;
+    if (!entry) {
+      return undefined;
+    }
 
     if (!entry.blobUrl) {
       entry.blobUrl = URL.createObjectURL(entry.blob);

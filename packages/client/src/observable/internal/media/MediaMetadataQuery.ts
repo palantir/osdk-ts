@@ -121,9 +121,8 @@ export class MediaMetadataQuery extends Query<
     });
 
     try {
-      const ontologyRid = await Promise.resolve(
-        this.store.client[additionalContext].ontologyRid,
-      );
+      const ontologyRid = await this.store.client[additionalContext]
+        .ontologyRid;
       const response = await OntologiesV2.MediaReferenceProperties
         .getMediaMetadata(
           this.store.client[additionalContext],
@@ -198,12 +197,18 @@ export class MediaMetadataQuery extends Query<
     const modifiedObjectsOfType = changes.modifiedObjects.get(this.#objectType);
     const addedObjectsOfType = changes.addedObjects.get(this.#objectType);
 
-    const allObjectsOfType = [
-      ...(modifiedObjectsOfType || []),
-      ...(addedObjectsOfType || []),
-    ];
+    for (const obj of modifiedObjectsOfType ?? []) {
+      if (obj.$primaryKey === this.#primaryKey) {
+        if (process.env.NODE_ENV !== "production") {
+          this.logger?.child({ methodName: "maybeUpdateAndRevalidate" }).debug(
+            "Parent object changed, revalidating metadata",
+          );
+        }
+        return this.revalidate(true);
+      }
+    }
 
-    for (const obj of allObjectsOfType) {
+    for (const obj of addedObjectsOfType ?? []) {
       if (obj.$primaryKey === this.#primaryKey) {
         if (process.env.NODE_ENV !== "production") {
           this.logger?.child({ methodName: "maybeUpdateAndRevalidate" }).debug(
@@ -244,6 +249,6 @@ export class MediaMetadataQuery extends Query<
       this.logger?.child({ methodName: "dispose" }).debug("Disposing query");
     }
 
-    super.dispose?.();
+    super.dispose();
   }
 }
