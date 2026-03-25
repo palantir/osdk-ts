@@ -143,6 +143,18 @@ const cspell = {
       filename: ["**/*.{mts,cts,ts,tsx}"],
       dictionaries: ["osdk-code"],
       words: [
+        // react-devtools words
+        "DEDUP",
+        "Keymap",
+        "reactroot",
+        "reentrancy",
+        "refetches",
+        "revalidations",
+        "unregisters",
+        "unsub",
+        "unsuppress",
+        "visx",
+
         // used in a regex
         "0123456789bcdefghjkmnpqrstuvwxyz",
 

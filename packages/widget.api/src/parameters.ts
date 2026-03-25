@@ -39,6 +39,8 @@ type PrimitiveParameterTypes = {
   /** Formatted as an ISO date string, e.g. YYYY-MM-DD */
   date: string;
   number: number;
+  /** Formatted as a Scenario RID */
+  scenario: string;
   string: string;
   /** Formatted as an ISO datetime string */
   timestamp: string;
@@ -74,6 +76,7 @@ export namespace ParameterValue {
   export type Boolean = AbstractParameterValue<"boolean">;
   export type Date = AbstractParameterValue<"date">;
   export type Timestamp = AbstractParameterValue<"timestamp">;
+  export type Scenario = AbstractParameterValue<"scenario">;
   export type ObjectSet<
     T extends AllowedObjectSetParameterType = AllowedObjectSetParameterType,
   > = ObjectSetParameterValue<T>;
@@ -83,12 +86,14 @@ export namespace ParameterValue {
   export type BooleanArray = GenericArrayParameterValue<"boolean">;
   export type DateArray = GenericArrayParameterValue<"date">;
   export type TimestampArray = GenericArrayParameterValue<"timestamp">;
+  export type ScenarioArray = GenericArrayParameterValue<"scenario">;
   export type Array =
     | StringArray
     | NumberArray
     | BooleanArray
     | DateArray
-    | TimestampArray;
+    | TimestampArray
+    | ScenarioArray;
 
   export type Type = ParameterValue["type"];
   export type PrimitiveType = PrimitiveParameterType;
@@ -99,5 +104,6 @@ export type ParameterValue =
   | ParameterValue.Boolean
   | ParameterValue.Date
   | ParameterValue.Timestamp
+  | ParameterValue.Scenario
   | ParameterValue.ObjectSet
   | ParameterValue.Array;

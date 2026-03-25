@@ -39,7 +39,7 @@ export function FilterList<Q extends ObjectTypeDefinition>(
     collapsed,
     onCollapsedChange,
     filterDefinitions,
-    addFilterMode = "controlled",
+    addFilterMode = "uncontrolled",
     showResetButton = false,
     onReset,
     showActiveFilterCount = false,
@@ -120,11 +120,15 @@ export function FilterList<Q extends ObjectTypeDefinition>(
   );
 
   const effectiveRenderAddFilterButton = useMemo(() => {
-    if (uncontrolledAddFilterMode && managedHiddenDefinitions.length > 0) {
+    if (uncontrolledAddFilterMode) {
+      if (managedHiddenDefinitions.length === 0) {
+        return undefined;
+      }
       return () => (
         <AddFilterPopover
           hiddenDefinitions={hiddenFilterItems}
           onShowFilter={handleFilterShown}
+          renderTrigger={renderAddFilterButton}
         />
       );
     }
@@ -142,7 +146,16 @@ export function FilterList<Q extends ObjectTypeDefinition>(
     : onFilterRemoved;
 
   const renderInput = useCallback<RenderFilterInput<FilterDefinitionUnion<Q>>>(
-    ({ definition, filterKey, filterState, onFilterStateChanged }) => (
+    (
+      {
+        definition,
+        filterKey,
+        filterState,
+        onFilterStateChanged,
+        searchQuery,
+        excludeRowOpen,
+      },
+    ) => (
       <FilterInput
         objectType={objectType}
         objectSet={objectSet}
@@ -151,6 +164,8 @@ export function FilterList<Q extends ObjectTypeDefinition>(
         onFilterStateChanged={onFilterStateChanged}
         whereClause={perFilterWhereClauses.get(filterKey)
           ?? ({} as WhereClause<Q>)}
+        searchQuery={searchQuery}
+        excludeRowOpen={excludeRowOpen}
       />
     ),
     [objectType, objectSet, perFilterWhereClauses],

@@ -23,8 +23,6 @@
 .osdkCellSkeleton.osdkCellSkeleton {
   --osdk-background-skeleton-from: var(--osdk-table-skeleton-color-from);
   --osdk-background-skeleton-to: var(--osdk-table-skeleton-color-to);
-  background-clip: padding-box;
-  border: 1px solid var(--osdk-table-skeleton-border-color);
   border-radius: calc(var(--osdk-surface-border-radius) * 0.5);
   box-shadow: none;
   color: transparent;

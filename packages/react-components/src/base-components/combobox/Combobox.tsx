@@ -42,7 +42,7 @@ function ComboboxSearchInput({
 }: ComboboxInputComponentProps): React.ReactElement {
   return (
     <div className={classnames(styles.osdkComboboxInputWrapper, className)}>
-      <Search className={styles.osdkComboboxSearchIcon} color="currentColor" />
+      <Search className={styles.osdkComboboxSearchIcon} />
       <BaseUICombobox.Input className={styles.osdkComboboxInput} {...rest} />
     </div>
   );
@@ -184,7 +184,7 @@ function ComboboxChipRemove({
       aria-label="Remove"
       {...rest}
     >
-      <Cross color="currentColor" />
+      <Cross />
     </BaseUICombobox.ChipRemove>
   );
 }
@@ -205,7 +205,7 @@ function ComboboxClear({
       aria-label="Clear all"
       {...rest}
     >
-      <Cross color="currentColor" />
+      <Cross />
     </BaseUICombobox.Clear>
   );
 }

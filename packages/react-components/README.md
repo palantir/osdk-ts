@@ -80,7 +80,7 @@ The components that this package will provide are:
 | Component     | Description                                                                        | Documentation                  |
 | ------------- | ---------------------------------------------------------------------------------- | ------------------------------ |
 | `ObjectTable` | Displays an Object Set as a sortable, paginated table with inline editing support  | [Guide](./docs/ObjectTable.md) |
-| `FilterList`  | Visualize a high-level summary of objects data to allow users to filter that data. | -                              |
+| `FilterList`  | Visualize a high-level summary of objects data to allow users to filter that data. | [Guide](./docs/FilterList.md)  |
 | `ActionForm`  | Auto-generated form for executing Ontology Actions                                 | -                              |
 
 ## Component Architecture

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+export { createMockAttachment } from "../mock/createMockAttachment.js";
 export { createMockClient } from "../mock/createMockClient.js";
 export type {
   AggregateStubBuilder,

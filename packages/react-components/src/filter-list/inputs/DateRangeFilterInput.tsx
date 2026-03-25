@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition } from "@osdk/api";
+import type { ObjectSet, ObjectTypeDefinition } from "@osdk/api";
 import { useOsdkAggregation } from "@osdk/react/experimental";
 import React, { memo, useCallback, useMemo } from "react";
 import { DateRangeInput } from "../base/inputs/DateRangeInput.js";
@@ -28,6 +28,7 @@ import {
 
 interface DateRangeFilterInputProps<Q extends ObjectTypeDefinition> {
   objectType: Q;
+  objectSet: ObjectSet<Q>;
   propertyKey: string;
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
@@ -35,6 +36,7 @@ interface DateRangeFilterInputProps<Q extends ObjectTypeDefinition> {
 
 function DateRangeFilterInputInner<Q extends ObjectTypeDefinition>({
   objectType,
+  objectSet,
   propertyKey,
   filterState,
   onFilterStateChanged,
@@ -74,8 +76,8 @@ function DateRangeFilterInputInner<Q extends ObjectTypeDefinition>({
   );
 
   const histogramArgs = useMemo(
-    () => ({ aggregate: aggregateOptions }),
-    [aggregateOptions],
+    () => ({ aggregate: aggregateOptions, objectSet }),
+    [aggregateOptions, objectSet],
   );
 
   const { data: aggregateData, isLoading: histLoading } = useOsdkAggregation(
@@ -116,8 +118,12 @@ function DateRangeFilterInputInner<Q extends ObjectTypeDefinition>({
   );
 
   const nullCountArgs = useMemo(
-    () => ({ where: nullWhereClause, aggregate: nullCountAggregateOptions }),
-    [nullWhereClause, nullCountAggregateOptions],
+    () => ({
+      where: nullWhereClause,
+      aggregate: nullCountAggregateOptions,
+      objectSet,
+    }),
+    [nullWhereClause, nullCountAggregateOptions, objectSet],
   );
 
   const {
@@ -138,17 +144,19 @@ function DateRangeFilterInputInner<Q extends ObjectTypeDefinition>({
     return 0;
   }, [nullCountData]);
 
+  const isLoading = histLoading || nullLoading;
+
   return (
     <NullValueWrapper
       nullCount={nullCount}
-      isLoading={nullLoading}
+      isLoading={isLoading}
       error={nullError}
       includeNull={includeNull}
       onIncludeNullChange={handleNullChange}
     >
       <DateRangeInput
         valueCountPairs={valueCountPairs}
-        isLoading={histLoading}
+        isLoading={isLoading}
         minValue={dateRangeState?.minValue}
         maxValue={dateRangeState?.maxValue}
         onChange={handleRangeChange}

@@ -84,16 +84,19 @@ export interface createStructPersonOpiTeam extends ActionDefinition<createStruct
     rid: 'ri.a.b.c.d';
     status: 'ACTIVE';
     type: 'action';
+    unsanitizedApiName: 'create-struct-person-opi-team';
 
     signatures: createStructPersonOpiTeam.Signatures;
   };
   apiName: 'createStructPersonOpiTeam';
   type: 'action';
+  unsanitizedApiName: 'create-struct-person-opi-team';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 export const createStructPersonOpiTeam: createStructPersonOpiTeam = {
   apiName: 'createStructPersonOpiTeam',
   type: 'action',
+  unsanitizedApiName: 'create-struct-person-opi-team',
   osdkMetadata: $osdkMetadata,
 };

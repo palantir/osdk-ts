@@ -1,5 +1,5 @@
 /*
- * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +14,4 @@
  * limitations under the License.
  */
 
-import { useRef } from "react";
-
-// TODO: revisit whether this hook is necessary. It may be possible to handle
-// loading states inline (render data if present, show skeleton if loading)
-// instead of preserving stale data in a ref.
-export function useStaleData<T>(data: T, isLoading: boolean): T {
-  const ref = useRef(data);
-  if (!isLoading) {
-    ref.current = data;
-  }
-  return ref.current;
-}
+export {};
