@@ -96,6 +96,13 @@ export function convertLink(
     const { apiName: toManyObjectApiName, object: toManyObject } = getObject(
       linkType.toMany.object,
     );
+
+    const columnA = manyObject.primaryKeyPropertyApiName;
+    const columnB = toManyObject.primaryKeyPropertyApiName;
+    const hasCollision = columnA === columnB;
+    const resolvedColumnA = hasCollision ? `${columnA}_from` : columnA;
+    const resolvedColumnB = hasCollision ? `${columnB}_to` : columnB;
+
     definition = {
       type: "manyToMany",
       manyToMany: {
@@ -139,14 +146,14 @@ export function convertLink(
               apiName: manyObject.primaryKeyPropertyApiName,
               object: manyObjectApiName,
             },
-            column: manyObject.primaryKeyPropertyApiName,
+            column: resolvedColumnA,
           }],
           objectTypeBPrimaryKeyMapping: [{
             property: {
               apiName: toManyObject.primaryKeyPropertyApiName,
               object: toManyObjectApiName,
             },
-            column: toManyObject.primaryKeyPropertyApiName,
+            column: resolvedColumnB,
           }],
         },
       },
