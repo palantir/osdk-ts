@@ -257,7 +257,7 @@ export const Default: Story = {
       },
     },
   },
-  render: (args) => {
+  render: ({ objectSet: _os, ...args }) => {
     const objectSet = useEmployeeObjectSet();
     const filterDefinitions = useMemo(
       (): FilterDefinitionUnion<Employee>[] => [
@@ -269,9 +269,9 @@ export const Default: Story = {
     return (
       <div style={SIDEBAR_STYLE}>
         <FilterList
-          {...args}
           objectSet={objectSet}
           filterDefinitions={filterDefinitions}
+          {...args}
         />
       </div>
     );
@@ -303,10 +303,10 @@ function AddFilterModeStory(args: Partial<EmployeeFilterListProps>) {
   return (
     <div style={SIDEBAR_STYLE}>
       <FilterList
-        {...args}
         objectSet={objectSet}
         filterDefinitions={filterDefinitions}
         addFilterMode="uncontrolled"
+        {...args}
       />
     </div>
   );
@@ -350,11 +350,11 @@ function WithAllFilterTypesStory(args: Partial<EmployeeFilterListProps>) {
     <div style={FLEX_ROW_STYLE}>
       <div style={SIDEBAR_STYLE}>
         <FilterList
-          {...args}
           objectSet={objectSet}
           filterDefinitions={sharedFilterDefinitions}
           filterClause={filterClause}
           onFilterClauseChanged={setFilterClause}
+          {...args}
         />
       </div>
       <div style={FLEX_FILL_STYLE}>
@@ -405,15 +405,15 @@ export const WithTitleAndIcon: Story = {
       },
     },
   },
-  render: (args) => {
+  render: ({ objectSet: _os, ...args }) => {
     const objectSet = useEmployeeObjectSet();
     return (
       <div style={SIDEBAR_STYLE}>
         <FilterList
-          {...args}
           objectSet={objectSet}
           filterDefinitions={sharedFilterDefinitions}
           titleIcon={FILTER_ICON}
+          {...args}
         />
       </div>
     );
@@ -430,10 +430,10 @@ function WithResetButtonStory(args: Partial<EmployeeFilterListProps>) {
   return (
     <div style={SIDEBAR_STYLE}>
       <FilterList
-        {...args}
         objectSet={objectSet}
         filterDefinitions={sharedFilterDefinitions}
         onReset={handleReset}
+        {...args}
       />
     </div>
   );
@@ -473,14 +473,14 @@ export const WithActiveFilterCount: Story = {
       },
     },
   },
-  render: (args) => {
+  render: ({ objectSet: _os, ...args }) => {
     const objectSet = useEmployeeObjectSet();
     return (
       <div style={SIDEBAR_STYLE}>
         <FilterList
-          {...args}
           objectSet={objectSet}
           filterDefinitions={sharedFilterDefinitions}
+          {...args}
         />
       </div>
     );
@@ -502,14 +502,14 @@ export const WithSorting: Story = {
       },
     },
   },
-  render: (args) => {
+  render: ({ objectSet: _os, ...args }) => {
     const objectSet = useEmployeeObjectSet();
     return (
       <div style={SIDEBAR_STYLE}>
         <FilterList
-          {...args}
           objectSet={objectSet}
           filterDefinitions={sharedFilterDefinitions}
+          {...args}
         />
       </div>
     );
@@ -526,9 +526,9 @@ function CollapsiblePanelStory(
   return (
     <div style={SIDEBAR_STYLE}>
       <FilterList
-        {...args}
         objectSet={objectSet}
         filterDefinitions={sharedFilterDefinitions}
+        {...args}
       />
     </div>
   );
@@ -588,7 +588,7 @@ export const KeywordSearch: Story = {
       },
     },
   },
-  render: (args) => {
+  render: ({ objectSet: _os, ...args }) => {
     const objectSet = useEmployeeObjectSet();
     const filterDefinitions = useMemo(
       (): FilterDefinitionUnion<Employee>[] => [
@@ -606,9 +606,9 @@ export const KeywordSearch: Story = {
     return (
       <div style={SIDEBAR_STYLE}>
         <FilterList
-          {...args}
           objectSet={objectSet}
           filterDefinitions={filterDefinitions}
+          {...args}
         />
       </div>
     );
@@ -654,16 +654,16 @@ function WithColorMapStory(args: Partial<EmployeeFilterListProps>) {
     <div style={FLEX_ROW_STYLE}>
       <div style={SIDEBAR_STYLE}>
         <FilterList
-          {...args}
           objectSet={objectSet}
           filterDefinitions={withoutColorMap}
+          {...args}
         />
       </div>
       <div style={SIDEBAR_STYLE}>
         <FilterList
-          {...args}
           objectSet={objectSet}
           filterDefinitions={withColorMap}
+          {...args}
         />
       </div>
     </div>
@@ -751,23 +751,23 @@ function WithListogramDisplayModesStory(
     <div style={FLEX_ROW_STYLE}>
       <div style={SIDEBAR_STYLE}>
         <FilterList
-          {...args}
           objectSet={objectSet}
           filterDefinitions={fullDefs}
+          {...args}
         />
       </div>
       <div style={SIDEBAR_STYLE}>
         <FilterList
-          {...args}
           objectSet={objectSet}
           filterDefinitions={countDefs}
+          {...args}
         />
       </div>
       <div style={SIDEBAR_STYLE}>
         <FilterList
-          {...args}
           objectSet={objectSet}
           filterDefinitions={minimalDefs}
+          {...args}
         />
       </div>
     </div>
@@ -812,11 +812,11 @@ function FilterOperatorOrStory(args: Partial<EmployeeFilterListProps>) {
     <div style={FLEX_ROW_STYLE}>
       <div style={SIDEBAR_STYLE}>
         <FilterList
-          {...args}
           objectSet={objectSet}
           filterDefinitions={filterDefinitions}
           filterClause={filterClause}
           onFilterClauseChanged={setFilterClause}
+          {...args}
         />
       </div>
       <div style={FLEX_FILL_STYLE}>
@@ -870,12 +870,12 @@ function CombinedWithObjectTableStory(
     <div style={COMBINED_LAYOUT_STYLE}>
       <div style={SIDEBAR_FIXED_STYLE}>
         <FilterList
-          {...args}
           objectSet={objectSet}
           filterDefinitions={sharedFilterDefinitions}
           onFilterRemoved={handleFilterRemoved}
           filterClause={filterClause}
           onFilterClauseChanged={setFilterClause}
+          {...args}
         />
       </div>
       <div style={FLEX_FILL_STYLE}>
@@ -941,10 +941,10 @@ function WithRemovableFiltersStory(args: Partial<EmployeeFilterListProps>) {
   return (
     <div style={SIDEBAR_STYLE}>
       <FilterList
-        {...args}
         objectSet={objectSet}
         filterDefinitions={definitions}
         onFilterRemoved={handleFilterRemoved}
+        {...args}
       />
     </div>
   );
@@ -1015,7 +1015,6 @@ function FullFeaturedStory(
     <div style={COMBINED_LAYOUT_STYLE}>
       <div style={SIDEBAR_FIXED_STYLE}>
         <FilterList
-          {...args}
           objectSet={objectSet}
           filterDefinitions={definitions}
           titleIcon={FILTER_ICON}
@@ -1023,6 +1022,7 @@ function FullFeaturedStory(
           onFilterRemoved={handleFilterRemoved}
           filterClause={filterClause}
           onFilterClauseChanged={setFilterClause}
+          {...args}
         />
       </div>
       <div style={FLEX_FILL_STYLE}>
