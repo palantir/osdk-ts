@@ -191,8 +191,7 @@ export class BulkObjectLoader {
         ...(select && select.length > 0
           ? { $select: select }
           : {}),
-        $loadPropertySecurityMetadata:
-          (loadPropertySecurityMetadata ?? false) as boolean,
+        $loadPropertySecurityMetadata: loadPropertySecurityMetadata ?? false,
       });
 
     for (const { primaryKey, deferred } of arr) {

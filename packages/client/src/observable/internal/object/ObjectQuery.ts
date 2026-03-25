@@ -144,7 +144,7 @@ export class ObjectQuery extends Query<
               ? { $select: this.#select }
               : {}),
             $loadPropertySecurityMetadata: this
-              .#loadPropertySecurityMetadata as boolean,
+              .#loadPropertySecurityMetadata,
           },
         );
       obj = fetched as ObjectHolder;
