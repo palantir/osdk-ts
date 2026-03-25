@@ -15,6 +15,7 @@
  */
 
 import type {
+  ObjectSet,
   ObjectTypeDefinition,
   PropertyKeys,
   WhereClause,
@@ -28,6 +29,7 @@ import { coerceToStringArray } from "../utils/coerceFilterValue.js";
 
 interface TextTagsFilterInputProps<Q extends ObjectTypeDefinition> {
   objectType: Q;
+  objectSet: ObjectSet<Q>;
   propertyKey: string;
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
@@ -37,6 +39,7 @@ interface TextTagsFilterInputProps<Q extends ObjectTypeDefinition> {
 
 function TextTagsFilterInputInner<Q extends ObjectTypeDefinition>({
   objectType,
+  objectSet,
   propertyKey,
   filterState,
   onFilterStateChanged,
@@ -71,6 +74,7 @@ function TextTagsFilterInputInner<Q extends ObjectTypeDefinition>({
   const { data, isLoading, error } = usePropertyAggregation(
     objectType,
     propertyKey as PropertyKeys<Q>,
+    objectSet,
     aggregationOptions,
   );
 

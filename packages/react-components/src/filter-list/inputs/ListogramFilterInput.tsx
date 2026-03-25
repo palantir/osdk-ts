@@ -15,6 +15,7 @@
  */
 
 import type {
+  ObjectSet,
   ObjectTypeDefinition,
   PropertyKeys,
   WhereClause,
@@ -28,6 +29,7 @@ import { coerceToStringArray } from "../utils/coerceFilterValue.js";
 
 interface ListogramFilterInputProps<Q extends ObjectTypeDefinition> {
   objectType: Q;
+  objectSet: ObjectSet<Q>;
   propertyKey: string;
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
@@ -41,6 +43,7 @@ interface ListogramFilterInputProps<Q extends ObjectTypeDefinition> {
 
 function ListogramFilterInputInner<Q extends ObjectTypeDefinition>({
   objectType,
+  objectSet,
   propertyKey,
   filterState,
   onFilterStateChanged,
@@ -79,6 +82,7 @@ function ListogramFilterInputInner<Q extends ObjectTypeDefinition>({
   const { data, maxCount, isLoading, error } = usePropertyAggregation(
     objectType,
     propertyKey as PropertyKeys<Q>,
+    objectSet,
     aggregationOptions,
   );
 

@@ -15,6 +15,7 @@
  */
 
 import type {
+  ObjectSet,
   ObjectTypeDefinition,
   PropertyKeys,
   WhereClause,
@@ -28,6 +29,7 @@ import { coerceToStringArray } from "../utils/coerceFilterValue.js";
 
 interface CheckboxListFilterInputProps<Q extends ObjectTypeDefinition> {
   objectType: Q;
+  objectSet: ObjectSet<Q>;
   propertyKey: string;
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
@@ -39,6 +41,7 @@ interface CheckboxListFilterInputProps<Q extends ObjectTypeDefinition> {
 
 function CheckboxListFilterInputInner<Q extends ObjectTypeDefinition>({
   objectType,
+  objectSet,
   propertyKey,
   filterState,
   onFilterStateChanged,
@@ -75,6 +78,7 @@ function CheckboxListFilterInputInner<Q extends ObjectTypeDefinition>({
   const { data, isLoading, error } = usePropertyAggregation(
     objectType,
     propertyKey as PropertyKeys<Q>,
+    objectSet,
     aggregationOptions,
   );
 
