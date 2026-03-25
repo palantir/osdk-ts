@@ -5,6 +5,9 @@ import { H2 } from "../../components/headers.js";
 import { LoadingMessage } from "../../components/LoadingMessage.js";
 import { OfficeSelector } from "../../components/OfficeSelector.js";
 import type { Employee } from "../../generatedNoCheck2/index.js";
+import { EmployeeDocumentLink } from "./EmployeeDocumentLink.js";
+import { EmployeePhoto } from "./EmployeePhoto.js";
+import { MediaUploadDemo } from "./MediaUploadDemo.js";
 
 interface EmployeeDetailsProps {
   employee: Employee.OsdkInstance | undefined;
@@ -30,6 +33,7 @@ export function EmployeeDetails({ employee }: EmployeeDetailsProps) {
   return (
     <div>
       <H2>Employee Details</H2>
+      <EmployeePhoto employee={employee} />
       <div className="mb-4">
         <div className="font-medium text-lg">
           {employee.fullName || "No name available"}
@@ -56,6 +60,11 @@ export function EmployeeDetails({ employee }: EmployeeDetailsProps) {
 
           <div className="text-gray-600">Team:</div>
           <div>{employee.team || "N/A"}</div>
+
+          <div className="text-gray-600">Documents:</div>
+          <div>
+            <EmployeeDocumentLink employee={employee} />
+          </div>
         </div>
       </div>
 
@@ -99,6 +108,8 @@ export function EmployeeDetails({ employee }: EmployeeDetailsProps) {
           </div>
         )
         : <div className="text-sm italic">No office information available</div>}
+
+      <MediaUploadDemo />
     </div>
   );
 }
