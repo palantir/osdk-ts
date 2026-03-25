@@ -20,7 +20,7 @@ import type {
   ObjectTypeDefinition,
   WhereClause,
 } from "@osdk/api";
-import type React from "react";
+import type { ReactNode } from "react";
 import type {
   FilterState as FilterStateType,
   PropertyFilterDefinition,
@@ -78,12 +78,12 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
   /**
    * Optional title to display in the filter list header
    */
-  title?: string;
+  title?: ReactNode;
 
   /**
    * Optional icon to display next to the title
    */
-  titleIcon?: React.ReactNode;
+  titleIcon?: ReactNode;
 
   /**
    * The definition for all supported filter items in the list
@@ -215,5 +215,5 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
    * - In controlled mode: replaces the entire add-filter button area.
    *   The consumer is responsible for all add-filter behavior.
    */
-  renderAddFilterButton?: () => React.ReactNode;
+  renderAddFilterButton?: () => ReactNode;
 }

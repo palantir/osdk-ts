@@ -43,6 +43,7 @@ export function BaseFilterList<D>(
     onFilterRemoved,
     showResetButton = false,
     showActiveFilterCount = false,
+    hasVisibilityChanges,
     enableSorting,
     className,
     renderAddFilterButton,
@@ -93,6 +94,7 @@ export function BaseFilterList<D>(
             onReset={onReset}
             showActiveFilterCount={showActiveFilterCount}
             activeFilterCount={activeFilterCount}
+            hasVisibilityChanges={hasVisibilityChanges}
           />
         )}
 

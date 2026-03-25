@@ -235,6 +235,14 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
+  args: {
+    showResetButton: false,
+    enableSorting: false,
+    showActiveFilterCount: false,
+    title: "Filters",
+    filterOperator: "and",
+    collapsed: false,
+  },
   parameters: {
     docs: {
       source: {
@@ -248,7 +256,7 @@ export const Default: Story = {
       },
     },
   },
-  render: () => {
+  render: (args) => {
     const objectSet = useEmployeeObjectSet();
     const filterDefinitions = useMemo(
       (): FilterDefinitionUnion<Employee>[] => [
@@ -262,10 +270,75 @@ export const Default: Story = {
         <FilterList
           objectSet={objectSet}
           filterDefinitions={filterDefinitions}
+          showResetButton={args.showResetButton}
+          enableSorting={args.enableSorting}
+          showActiveFilterCount={args.showActiveFilterCount}
+          title={args.title}
+          filterOperator={args.filterOperator}
+          collapsed={args.collapsed}
         />
       </div>
     );
   },
+};
+
+function AddFilterModeStory() {
+  const objectSet = useEmployeeObjectSet();
+  const filterDefinitions = useMemo(
+    (): FilterDefinitionUnion<Employee>[] => [
+      departmentFilter,
+      teamFilter,
+      { ...fullNameFilter, isVisible: false } as FilterDefinitionUnion<
+        Employee
+      >,
+      { ...startDateFilter, isVisible: false } as FilterDefinitionUnion<
+        Employee
+      >,
+      { ...employeeNumberFilter, isVisible: false } as FilterDefinitionUnion<
+        Employee
+      >,
+      { ...locationCityFilter, isVisible: false } as FilterDefinitionUnion<
+        Employee
+      >,
+    ],
+    [],
+  );
+
+  return (
+    <div style={SIDEBAR_STYLE}>
+      <FilterList
+        objectSet={objectSet}
+        filterDefinitions={filterDefinitions}
+        addFilterMode="uncontrolled"
+        showResetButton={true}
+      />
+    </div>
+  );
+}
+
+export const AddFilterMode: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `const filterDefinitions = [
+  { type: "PROPERTY", key: "department", label: "Department", filterComponent: "LISTOGRAM", filterState: { type: "EXACT_MATCH", values: [] } },
+  { type: "PROPERTY", key: "team", label: "Team", filterComponent: "CHECKBOX_LIST", filterState: { type: "SELECT", selectedValues: [] } },
+  { type: "PROPERTY", key: "fullName", label: "Full Name", filterComponent: "CONTAINS_TEXT", filterState: { type: "CONTAINS_TEXT" }, isVisible: false },
+  { type: "PROPERTY", key: "firstFullTimeStartDate", label: "Start Date", filterComponent: "DATE_RANGE", filterState: { type: "DATE_RANGE" }, isVisible: false },
+  { type: "PROPERTY", key: "employeeNumber", label: "Employee Number", filterComponent: "NUMBER_RANGE", filterState: { type: "NUMBER_RANGE" }, isVisible: false },
+  { type: "PROPERTY", key: "locationCity", label: "Location City", filterComponent: "CHECKBOX_LIST", filterState: { type: "SELECT", selectedValues: [] }, isVisible: false },
+];
+
+<FilterList
+  objectSet={client(Employee)}
+  filterDefinitions={filterDefinitions}
+  addFilterMode="uncontrolled"
+  showResetButton={true}
+/>`,
+      },
+    },
+  },
+  render: () => <AddFilterModeStory />,
 };
 
 export const WithAllFilterTypes: Story = {
