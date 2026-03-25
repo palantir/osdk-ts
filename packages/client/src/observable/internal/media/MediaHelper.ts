@@ -107,9 +107,7 @@ export class MediaHelper {
     coords: MediaPropertyLocation,
     options?: { preview?: boolean },
   ): Promise<MediaMetadata> {
-    const ontologyRid = await Promise.resolve(
-      this.store.client[additionalContext].ontologyRid,
-    );
+    const ontologyRid = await this.store.client[additionalContext].ontologyRid;
     const response = await OntologiesV2.MediaReferenceProperties
       .getMediaMetadata(
         this.store.client[additionalContext],
@@ -147,9 +145,8 @@ export class MediaHelper {
 
     const coords = this.resolveToCoords(mediaOrLocation);
     if (coords) {
-      const ontologyRid = await Promise.resolve(
-        this.store.client[additionalContext].ontologyRid,
-      );
+      const ontologyRid = await this.store.client[additionalContext]
+        .ontologyRid;
       response = await OntologiesV2.MediaReferenceProperties.getMediaContent(
         this.store.client[additionalContext],
         ontologyRid,
