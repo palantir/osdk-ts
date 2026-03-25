@@ -32,6 +32,7 @@ export const INTERSECT_IDX = 5;
 export const PIVOT_IDX = 6;
 export const RIDS_IDX = 7;
 export const SELECT_IDX = 8;
+export const LOAD_PROPERTY_SECURITY_IDX = 9;
 
 export interface ListStorageData extends CollectionStorageData {}
 
@@ -52,6 +53,7 @@ export interface ListCacheKey extends
       pivotInfo?: Canonical<PivotInfo> | undefined,
       rids?: Canonical<string[]> | undefined,
       select?: Canonical<readonly string[]> | undefined,
+      loadPropertySecurity?: true | undefined,
     ]
   >
 {

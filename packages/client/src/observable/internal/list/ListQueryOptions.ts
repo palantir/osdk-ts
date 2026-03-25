@@ -35,4 +35,5 @@ export interface ListQueryOptions<
     where: WhereClause<Q, RDPs>;
   }>;
   pivotTo?: string;
+  $loadPropertySecurityMetadata?: boolean;
 }

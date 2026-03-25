@@ -263,6 +263,9 @@ export abstract class ListQuery extends BaseListQuery<
       ...(Object.keys(this.#orderBy).length > 0
         ? { $orderBy: this.#orderBy }
         : {}),
+      ...(this.options.$loadPropertySecurityMetadata
+        ? { $loadPropertySecurityMetadata: true }
+        : {}),
     });
 
     if (signal?.aborted) {
