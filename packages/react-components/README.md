@@ -167,7 +167,9 @@ src/
 │   ├── utils/              # Helper utilities and types
 │   └── components/         # Supporting React components
 └── public/
-    └── experimental.ts     # Public API exports
+    ├── experimental.ts              # Public API exports
+    └── experimental/
+        └── pdf-viewer.ts            # PDF viewer building blocks and hooks
 ```
 
 ### Export Strategy
