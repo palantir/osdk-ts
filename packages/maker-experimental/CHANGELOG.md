@@ -1,5 +1,20 @@
 # @osdk/maker-experimental
 
+## 0.6.0-beta.6
+
+### Minor Changes
+
+- 9ee82f4: Dedupe many-to-many PK property names in datasource
+
+### Patch Changes
+
+- Updated dependencies [9ee82f4]
+- Updated dependencies [60b5ffb]
+- Updated dependencies [61e33ab]
+  - @osdk/maker@0.16.0-beta.13
+  - @osdk/api@2.8.0-beta.26
+  - @osdk/client.unstable@2.8.0-beta.26
+
 ## 0.6.0-beta.5
 
 ### Minor Changes

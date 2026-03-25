@@ -1,5 +1,7 @@
 # @osdk/create-widget
 
+## 3.5.0-beta.26
+
 ## 3.5.0-beta.25
 
 ## 3.5.0-beta.24

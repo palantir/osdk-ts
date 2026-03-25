@@ -1,5 +1,21 @@
 # @osdk/client
 
+## 2.8.0-beta.26
+
+### Minor Changes
+
+- 599426b: expose $loadPropertySecurityMetadata option in observable client and react hooks
+- 60b5ffb: Add `platformApiName` field to actions to preserve the original API name used by the Foundry platform
+- 61e33ab: Add support for interval queries
+
+### Patch Changes
+
+- Updated dependencies [60b5ffb]
+- Updated dependencies [61e33ab]
+  - @osdk/api@2.8.0-beta.26
+  - @osdk/generator-converters@2.8.0-beta.26
+  - @osdk/client.unstable@2.8.0-beta.26
+
 ## 2.8.0-beta.25
 
 ### Patch Changes
