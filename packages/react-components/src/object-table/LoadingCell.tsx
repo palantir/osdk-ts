@@ -16,12 +16,13 @@
 
 import classNames from "classnames";
 import React from "react";
+import { SkeletonBar } from "../base-components/skeleton/SkeletonBar.js";
 import styles from "./LoadingCell.module.css";
 import cellStyles from "./TableCell.module.css";
 
 export function LoadingCellContent(): React.ReactElement {
   return (
-    <div
+    <SkeletonBar
       className={classNames(
         styles.osdkLoadingCell,
         styles.osdkCellSkeleton,
