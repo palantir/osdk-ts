@@ -35,11 +35,16 @@
   border-radius: var(--osdk-datetime-popover-border-radius);
 }
 
-/* Time input footer */
+/* Time input footer — negative horizontal margin counters the popover padding
+   so the border-top spans the full width of the popover. */
 .timeFooter {
   padding-top: var(--osdk-datetime-time-padding-top);
+  padding-left: var(--osdk-datetime-popover-padding);
+  padding-right: var(--osdk-datetime-popover-padding);
   border-top: var(--osdk-datetime-time-border-top);
   margin-top: var(--osdk-datetime-time-padding-top);
+  margin-left: calc(var(--osdk-datetime-popover-padding) * -1);
+  margin-right: calc(var(--osdk-datetime-popover-padding) * -1);
 }
 
 .timeInput {

@@ -27,9 +27,10 @@ import type { DatetimePickerFieldProps } from "../FormFieldApi.js";
 import styles from "./DatetimePickerField.module.css";
 import { LazyDateCalendar } from "./LazyDateCalendar.js";
 
+const DATE_ZERO = new Date(new Date().setHours(0, 0, 0, 0));
+
 function extractTime(date: Date | null): string {
-  if (date == null) return "00:00";
-  return formatTime(date);
+  return formatTime(date ?? DATE_ZERO);
 }
 
 export function DatetimePickerField({
