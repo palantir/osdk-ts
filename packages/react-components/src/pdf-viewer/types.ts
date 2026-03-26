@@ -36,6 +36,14 @@ export type AnnotationType =
   | "pin"
   | "custom";
 
+/** A rectangle in PDF coordinate space (origin: bottom-left of page). */
+export interface PdfRect {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
 /** Props passed to a custom annotation renderer. */
 export interface PdfAnnotationRenderProps {
   annotation: PdfAnnotation;
@@ -52,7 +60,9 @@ export interface PdfAnnotation {
   /** Page number (1-indexed) */
   page: number;
   /** Coordinates in PDF points (origin: bottom-left of page) */
-  rect: { x: number; y: number; width: number; height: number };
+  rect: PdfRect;
+  /** Additional rects for multi-line text highlights. When present, all rects are rendered. */
+  rects?: PdfRect[];
   /** Optional label or tooltip text */
   label?: string;
   /** Optional color override (CSS color string) */
@@ -65,6 +75,18 @@ export interface PdfAnnotation {
 export type PdfDownloadResult =
   | { success: true; filename: string }
   | { success: false; error: Error };
+
+/** Data emitted when the user creates a text highlight via the highlight editor. */
+export interface PdfTextHighlightEvent {
+  /** Page number (1-indexed) */
+  page: number;
+  /** Bounding rects in PDF coordinate space (bottom-left origin) */
+  rects: PdfRect[];
+  /** The selected text content */
+  selectedText: string;
+  /** Highlight color as CSS color string */
+  color: string;
+}
 
 /** Props for the {@link PdfViewer} component. */
 export interface PdfViewerProps {
@@ -86,6 +108,26 @@ export interface PdfViewerProps {
    * @returns void
    */
   onDownload?: (result: PdfDownloadResult) => void;
+  /**
+   * Whether the highlight toggle button is shown in the toolbar.
+   * @default false
+   */
+  highlightEnabled?: boolean;
+  /**
+   * Callback fired when the user creates a text highlight.
+   * Only fires when highlight mode is active.
+   *
+   * @param event - The highlight event with page, rects, text, and color
+   * @returns void
+   */
+  onTextHighlight?: (event: PdfTextHighlightEvent) => void;
+  /**
+   * Callback fired when the user deletes a highlight via the PDF.js editor UI.
+   *
+   * @param event - The highlight event that was deleted
+   * @returns void
+   */
+  onHighlightDelete?: (event: PdfTextHighlightEvent) => void;
   /** Initial page number (1-indexed, default 1) */
   initialPage?: number;
   /** Initial zoom scale (default 1.0) */

@@ -20,12 +20,14 @@ import {
   ChevronLeft,
   ChevronRight,
   Download,
+  Highlight,
   Menu,
   Minus,
   Plus,
   RotatePage,
   Search,
 } from "@blueprintjs/icons";
+import classnames from "classnames";
 import React, { useCallback, useEffect, useState } from "react";
 import { MAX_SCALE, MIN_SCALE, SCALE_STEP } from "../constants.js";
 import styles from "./PdfViewerToolbar.module.css";
@@ -43,6 +45,9 @@ export interface PdfViewerToolbarProps {
   enableDownload: boolean;
   onRotateLeft: () => void;
   onRotateRight: () => void;
+  highlightEnabled: boolean;
+  highlightModeActive: boolean;
+  onHighlightToggle: () => void;
 }
 
 export function PdfViewerToolbar({
@@ -58,6 +63,9 @@ export function PdfViewerToolbar({
   enableDownload,
   onRotateLeft,
   onRotateRight,
+  highlightEnabled,
+  highlightModeActive,
+  onHighlightToggle,
 }: PdfViewerToolbarProps): React.ReactElement {
   const [pageInputValue, setPageInputValue] = useState(String(currentPage));
 
@@ -215,6 +223,30 @@ export function PdfViewerToolbar({
           <RotatePage size={16} style={{ transform: "scaleX(-1)" }} />
         </Button>
       </div>
+
+      {highlightEnabled && (
+        <>
+          <div className={styles.separator} />
+
+          <Button
+            className={classnames(
+              styles.toolbarButton,
+              highlightModeActive && styles.toolbarButtonActive,
+            )}
+            onClick={onHighlightToggle}
+            aria-label={highlightModeActive
+              ? "Disable highlight mode"
+              : "Enable highlight mode"}
+            title={highlightModeActive
+              ? "Disable highlight mode"
+              : "Enable highlight mode"}
+            aria-pressed={highlightModeActive}
+            type="button"
+          >
+            <Highlight size={16} />
+          </Button>
+        </>
+      )}
 
       <div className={styles.separator} />
 

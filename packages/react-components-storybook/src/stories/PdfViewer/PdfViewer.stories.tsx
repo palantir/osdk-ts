@@ -18,6 +18,7 @@
 
 import type { Media } from "@osdk/api";
 import type {
+  PdfTextHighlightEvent,
   PdfViewerMediaProps,
   PdfViewerProps,
 } from "@osdk/react-components/experimental";
@@ -339,6 +340,81 @@ export const Error: StoryObj<PdfViewerProps> = {
           return new Response("Server Error", { status: 500 });
         }),
       ],
+    },
+  },
+};
+
+function HighlightModeDemo({
+  src,
+  onTextHighlight: onTextHighlightAction,
+  onHighlightDelete: onHighlightDeleteAction,
+}: {
+  src: string;
+  onTextHighlight?: (event: PdfTextHighlightEvent) => void;
+  onHighlightDelete?: (event: PdfTextHighlightEvent) => void;
+}) {
+  return (
+    <div style={{ height: "600px" }}>
+      <BasePdfViewer
+        src={src}
+        highlightEnabled
+        onTextHighlight={onTextHighlightAction}
+        onHighlightDelete={onHighlightDeleteAction}
+      />
+    </div>
+  );
+}
+
+export const WithHighlightMode: StoryObj<PdfViewerProps> = {
+  args: {
+    onTextHighlight: fn(),
+    onHighlightDelete: fn(),
+  },
+  render: (args) => (
+    <HighlightModeDemo
+      src={SAMPLE_PDF_URL}
+      onTextHighlight={args.onTextHighlight}
+      onHighlightDelete={args.onHighlightDelete}
+    />
+  ),
+  parameters: {
+    docs: {
+      source: {
+        code:
+          `import { BasePdfViewer } from "@osdk/react-components/experimental";
+import type { PdfAnnotation, PdfTextHighlightEvent } from "@osdk/react-components/experimental";
+
+function MyPdfViewer({ src }: { src: string }) {
+  const [annotations, setAnnotations] = useState<PdfAnnotation[]>([]);
+
+  const handleTextHighlight = useCallback((event: PdfTextHighlightEvent) => {
+    setAnnotations((prev) => [...prev, {
+      id: crypto.randomUUID(),
+      type: "highlight",
+      page: event.page,
+      rect: event.rects[0],
+      rects: event.rects,
+      color: event.color,
+      label: event.selectedText,
+    }]);
+  }, []);
+
+  // Click a highlight to remove it
+  const handleAnnotationClick = useCallback((annotation: PdfAnnotation) => {
+    setAnnotations((prev) => prev.filter((a) => a.id !== annotation.id));
+  }, []);
+
+  return (
+    <BasePdfViewer
+      src={src}
+      highlightEnabled
+      onTextHighlight={handleTextHighlight}
+      annotations={annotations}
+      onAnnotationClick={handleAnnotationClick}
+    />
+  );
+}`,
+      },
     },
   },
 };

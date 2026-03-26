@@ -31,6 +31,9 @@ const defaultProps = {
   enableDownload: false,
   onRotateLeft: vi.fn(),
   onRotateRight: vi.fn(),
+  highlightEnabled: false,
+  highlightModeActive: false,
+  onHighlightToggle: vi.fn(),
 };
 
 afterEach(() => {

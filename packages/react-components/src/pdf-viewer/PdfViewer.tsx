@@ -26,6 +26,7 @@ import { PdfViewerSidebar } from "./components/PdfViewerSidebar.js";
 import { PdfViewerToolbar } from "./components/PdfViewerToolbar.js";
 import { EMPTY_ANNOTATION_ARRAY } from "./constants.js";
 import { usePdfAnnotationsByPage } from "./hooks/usePdfAnnotationsByPage.js";
+import { usePdfHighlightMode } from "./hooks/usePdfHighlightMode.js";
 import { usePdfViewerState } from "./hooks/usePdfViewerState.js";
 import styles from "./PdfViewer.module.css";
 import type { PdfViewerProps } from "./types.js";
@@ -35,6 +36,9 @@ export function BasePdfViewer({
   annotations = EMPTY_ANNOTATION_ARRAY,
   onAnnotationClick,
   onDownload,
+  highlightEnabled = false,
+  onTextHighlight,
+  onHighlightDelete,
   initialPage = 1,
   initialScale = 1.0,
   initialSidebarOpen = false,
@@ -50,6 +54,15 @@ export function BasePdfViewer({
     initialSidebarOpen,
     sidebarMode: sidebarModeProp,
     onDownload,
+  });
+
+  const { highlightModeActive, toggleHighlightMode } = usePdfHighlightMode({
+    pdfViewerRef: viewer.pdfViewerRef,
+    eventBusRef: viewer.eventBusRef,
+    document: viewer.document,
+    enabled: highlightEnabled,
+    onTextHighlight,
+    onHighlightDelete,
   });
 
   const annotationsByPage = usePdfAnnotationsByPage(annotations);
@@ -101,6 +114,9 @@ export function BasePdfViewer({
         enableDownload={enableDownload}
         onRotateLeft={viewer.rotateLeft}
         onRotateRight={viewer.rotateRight}
+        highlightEnabled={highlightEnabled}
+        highlightModeActive={highlightModeActive}
+        onHighlightToggle={toggleHighlightMode}
       />
       {viewer.search.isSearchOpen && (
         <PdfViewerSearchBar

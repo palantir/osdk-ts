@@ -16,7 +16,7 @@
 
 import classnames from "classnames";
 import React, { useCallback, useMemo } from "react";
-import type { PdfAnnotation } from "../types.js";
+import type { PdfAnnotation, PdfRect } from "../types.js";
 import styles from "./PdfViewerAnnotationLayer.module.css";
 
 export interface PdfViewerAnnotationLayerProps {
@@ -40,6 +40,24 @@ interface CustomAnnotationItemProps {
   onClick?: (annotation: PdfAnnotation) => void;
 }
 
+/** Convert a single PDF rect (bottom-left origin) to CSS positioning (top-left origin). */
+function computeRectStyle(
+  rect: PdfRect,
+  pageHeight: number,
+  scale: number,
+  color: string | undefined,
+): React.CSSProperties {
+  return {
+    left: rect.x * scale,
+    top: (pageHeight - rect.y - rect.height) * scale,
+    width: rect.width * scale,
+    height: rect.height * scale,
+    ...(color != null
+      ? { "--osdk-pdf-annotation-color": color } as React.CSSProperties
+      : {}),
+  };
+}
+
 function AnnotationItem({
   annotation,
   pageHeight,
@@ -60,25 +78,56 @@ function AnnotationItem({
     [onClick, annotation],
   );
 
-  // Convert PDF coordinates (bottom-left origin) to CSS (top-left origin)
-  const style = useMemo(
-    () => ({
-      left: annotation.rect.x * scale,
-      top: (pageHeight - annotation.rect.y - annotation.rect.height) * scale,
-      width: annotation.rect.width * scale,
-      height: annotation.rect.height * scale,
-      ...(annotation.color != null
-        ? {
-          "--osdk-pdf-annotation-color": annotation.color,
-        } as React.CSSProperties
-        : {}),
-    }),
-    [annotation, pageHeight, scale],
-  );
-
   const className = classnames(
     styles.annotation,
     styles[annotation.type],
+  );
+
+  const hasMultipleRects = annotation.rects != null
+    && annotation.rects.length > 1;
+
+  const rectsToRender = useMemo(
+    () =>
+      hasMultipleRects
+        ? annotation.rects!
+        : [annotation.rect],
+    [annotation, hasMultipleRects],
+  );
+
+  // Multi-rect: render a group wrapper with one div per rect
+  if (hasMultipleRects) {
+    return (
+      <div
+        className={styles.annotationGroup}
+        onClick={handleClick}
+        onKeyDown={handleKeyDown}
+        role="button"
+        tabIndex={0}
+        title={annotation.label}
+        data-annotation-id={annotation.id}
+      >
+        {rectsToRender.map((rect, i) => (
+          <div
+            key={i}
+            className={className}
+            style={computeRectStyle(
+              rect,
+              pageHeight,
+              scale,
+              annotation.color,
+            )}
+          />
+        ))}
+      </div>
+    );
+  }
+
+  // Single rect: existing behavior
+  const style = computeRectStyle(
+    rectsToRender[0],
+    pageHeight,
+    scale,
+    annotation.color,
   );
 
   return (
