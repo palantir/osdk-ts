@@ -27,7 +27,8 @@ import type { DatetimePickerFieldProps } from "../FormFieldApi.js";
 import styles from "./DatetimePickerField.module.css";
 import { LazyDateCalendar } from "./LazyDateCalendar.js";
 
-const DATE_ZERO = new Date(new Date().setHours(0, 0, 0, 0));
+/** Midnight fallback so `extractTime` can reuse `formatTime` when no date is selected. */
+const DATE_ZERO = new Date(2000, 0, 1, 0, 0, 0, 0);
 
 function extractTime(date: Date | null): string {
   return formatTime(date ?? DATE_ZERO);
@@ -119,6 +120,7 @@ export function DatetimePickerField({
           styles.triggerButton,
           !hasValue && styles.triggerButtonPlaceholder,
         )}
+        aria-label={hasValue ? undefined : "Select date"}
       >
         {displayText}
       </Popover.Trigger>
