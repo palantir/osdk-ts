@@ -127,7 +127,6 @@ export class ListsHelper extends AbstractHelper<
       pivotTo,
       rids,
       select,
-      $loadPropertySecurityMetadata,
     } = options;
     const { apiName, type } = typeDefinition;
     // The flag is interface-only on the server. Drop it for object queries so
@@ -190,6 +189,8 @@ export class ListsHelper extends AbstractHelper<
       $loadPropertySecurityMetadata,
       $includeAllBaseObjectProperties,
     } = this.canonicalizeListParams(options);
+
+    const { $loadPropertySecurityMetadata } = options;
 
     const listCacheKey = this.cacheKeys.get<ListCacheKey>(
       "list",
