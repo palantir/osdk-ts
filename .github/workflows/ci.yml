@@ -224,6 +224,11 @@ jobs:
       - name: Measure bundle size (PR)
         run: npx size-limit --json > /tmp/current.json || true
 
+      - name: Analyze bundle breakdown (PR)
+        run: |
+          node scripts/analyze-bundle.mjs /tmp/current-breakdown.json || true
+          cp scripts/analyze-bundle.mjs /tmp/analyze-bundle.mjs
+
       - name: Checkout base branch
         run: |
           git fetch origin ${{ github.event.pull_request.base.sha }} --depth=1
@@ -234,6 +239,9 @@ jobs:
 
       - name: Measure bundle size (base)
         run: npx size-limit --json > /tmp/base.json || true
+
+      - name: Analyze bundle breakdown (base)
+        run: node /tmp/analyze-bundle.mjs /tmp/base-breakdown.json || true
 
       - name: Compare and comment
         env:
@@ -259,23 +267,80 @@ jobs:
               return sign + pct.toFixed(2) + "%" + emoji;
             }
 
+            function formatDiff(cur, bas) {
+              if (bas === 0 && cur > 0) return "+" + formatBytes(cur) + " 🆕";
+              if (cur === 0 && bas > 0) return "-" + formatBytes(bas) + " 🗑️";
+              const diff = cur - bas;
+              if (Math.abs(diff) < 10) return "—";
+              const sign = diff > 0 ? "+" : "";
+              return sign + formatBytes(Math.abs(diff)) + (diff > 0 ? " 🔺" : " 🔽");
+            }
+
             let current = [], base = [];
             try { current = JSON.parse(fs.readFileSync("/tmp/current.json", "utf8")); } catch {}
             try { base = JSON.parse(fs.readFileSync("/tmp/base.json", "utf8")); } catch {}
+
+            let curBreakdown = [], baseBreakdown = [];
+            try { curBreakdown = JSON.parse(fs.readFileSync("/tmp/current-breakdown.json", "utf8")); } catch {}
+            try { baseBreakdown = JSON.parse(fs.readFileSync("/tmp/base-breakdown.json", "utf8")); } catch {}
 
             const baseMap = Object.fromEntries(base.map(e => [e.name, e.size]));
             const currentMap = Object.fromEntries(current.map(e => [e.name, e.size]));
             const allNames = [...new Set([...base.map(e => e.name), ...current.map(e => e.name)])];
 
+            const curBdMap = Object.fromEntries(curBreakdown.map(e => [e.name, e.breakdown]));
+            const baseBdMap = Object.fromEntries(baseBreakdown.map(e => [e.name, e.breakdown]));
+
             let md = "## size-limit report 📦\n\n";
             md += "| Path | Size | Change |\n";
             md += "|------|------|--------|\n";
 
+            const changedEntries = [];
             for (const name of allNames) {
               const cur = currentMap[name] ?? 0;
               const bas = baseMap[name] ?? 0;
               const change = formatChange(cur, bas);
               md += "| \`" + name + "\` | " + formatBytes(cur) + " | " + change + " |\n";
+              const absDiff = Math.abs(cur - bas);
+              const pctDiff = bas > 0 ? Math.abs((cur - bas) / bas) * 100 : (cur > 0 ? 100 : 0);
+              if (absDiff > 100 || pctDiff > 1) {
+                changedEntries.push({ name, change });
+              }
+            }
+
+            // Add bundle breakdown details for changed entries
+            for (const { name, change } of changedEntries) {
+              const curBd = curBdMap[name] || [];
+              const baseBd = baseBdMap[name] || [];
+              if (curBd.length === 0 && baseBd.length === 0) continue;
+
+              const curPkgMap = Object.fromEntries(curBd.map(e => [e.package, e.bytes]));
+              const basePkgMap = Object.fromEntries(baseBd.map(e => [e.package, e.bytes]));
+              const allPkgs = [...new Set([...curBd.map(e => e.package), ...baseBd.map(e => e.package)])];
+
+              // Sort by current bytes descending
+              allPkgs.sort((a, b) => (curPkgMap[b] || 0) - (curPkgMap[a] || 0));
+
+              md += "\n<details>\n";
+              md += "<summary><code>" + name + "</code> — bundle breakdown (" + change + ")</summary>\n\n";
+              md += "| Package | PR Size | Base Size | Diff |\n";
+              md += "|---------|---------|-----------|------|\n";
+
+              const topN = allPkgs.slice(0, 10);
+              for (const pkg of topN) {
+                const cur = curPkgMap[pkg] || 0;
+                const bas = basePkgMap[pkg] || 0;
+                md += "| \`" + pkg + "\` | " + formatBytes(cur) + " | " + formatBytes(bas) + " | " + formatDiff(cur, bas) + " |\n";
+              }
+
+              if (allPkgs.length > 10) {
+                const rest = allPkgs.slice(10);
+                const restCur = rest.reduce((s, p) => s + (curPkgMap[p] || 0), 0);
+                const restBas = rest.reduce((s, p) => s + (basePkgMap[p] || 0), 0);
+                md += "| *(" + rest.length + " more)* | " + formatBytes(restCur) + " | " + formatBytes(restBas) + " | " + formatDiff(restCur, restBas) + " |\n";
+              }
+
+              md += "\n</details>\n";
             }
 
             fs.writeFileSync("/tmp/comment.md", md);

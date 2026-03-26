@@ -45,6 +45,7 @@
     "babel-plugin-transform-inline-environment-variables": "^0.4.4",
     "cspell": "^8.19.4",
     "dprint": "^0.47.6",
+    "esbuild": "^0.21.5",
     "esbuild-plugin-babel": "^0.2.3",
     "eslint": "^9.35.0",
     "eslint-formatter-autolinkable-stylish": "^1.4.0",
