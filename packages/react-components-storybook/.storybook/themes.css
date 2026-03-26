@@ -1,5 +1,8 @@
 /* Light theme (default) - No overrides needed, uses default Blueprint/OSDK tokens */
 [data-theme="light"] {
+  --bp-intent-primary-rest: #2d72d2;
+  --bp-intent-danger-rest: #cd4246;
+
   --bp-palette-black: oklch(0.2827 0.019 238.86);
   --bp-palette-white: oklch(1 0 89.88);
 
@@ -16,8 +19,6 @@
   --bp-palette-light-gray-3: oklch(0.9587 0.0051 228.82);
   --bp-palette-light-gray-4: oklch(0.9809 0.0025 228.78);
   --bp-palette-light-gray-5: oklch(0.9809 0.0025 228.78);
-
-  --osdk-filter-listogram-bar-color: oklch(0.65 0.02 240);
 }
 
 /* Modern theme - based on e2e.sandbox.peopleapp theme-overrides.css */
