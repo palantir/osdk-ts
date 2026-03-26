@@ -23,14 +23,10 @@ import type {
   SimplePropertyDef,
 } from "@osdk/api";
 import { useBatchedFunctionQueries } from "@osdk/react/experimental";
-import type {
-  FunctionQueryParams,
-  UseOsdkFunctionResult,
-} from "@osdk/react/experimental";
+import type { UseOsdkFunctionResult } from "@osdk/react/experimental";
 import { useEffect, useMemo, useState } from "react";
 import type {
   ColumnDefinition,
-  ExtractQueryParameters,
   FunctionColumnLocator,
 } from "../ObjectTableApi.js";
 import {
@@ -47,15 +43,11 @@ export interface FunctionColumnData {
 type FunctionColumnConfig<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
-  FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
-    string,
-    never
-  >,
 > = {
-  queryDefinition: QueryDefinition<any>;
+  queryDefinition: QueryDefinition<unknown>;
   getParams: (
     objectSet: ObjectSet<Q, RDPs>,
-  ) => ExtractQueryParameters<FunctionColumns[keyof FunctionColumns]>;
+  ) => any; // We lose specific type information when grouping by API name
   columnIds: Array<{
     columnId: string;
     getValue?: (cellData: unknown) => unknown;
@@ -108,7 +100,7 @@ export function useFunctionColumnsData<
   }, [disabled, functionColumnConfigs, stableObjectSet, stableObjects]);
 
   // Prepare queries for useBatchedFunctionQueries
-  const queries: Array<FunctionQueryParams<QueryDefinition<unknown>>> = useMemo(
+  const queries = useMemo(
     () => {
       if (disabled) {
         return [];
@@ -169,13 +161,13 @@ function getFunctionColumnConfigs<
   >,
 >(
   columnDefinitions?: Array<ColumnDefinition<Q, RDPs, FunctionColumns>>,
-): Array<FunctionColumnConfig<Q, RDPs, FunctionColumns>> {
+): Array<FunctionColumnConfig<Q, RDPs>> {
   if (!columnDefinitions) return [];
 
   // Group columns by their query definition apiName
   const configsByApiName = new Map<
     string,
-    FunctionColumnConfig<Q, RDPs, FunctionColumns>
+    FunctionColumnConfig<Q, RDPs>
   >();
 
   columnDefinitions.forEach((colDef) => {
@@ -248,12 +240,8 @@ const useStableObjects = <
 function initializeFunctionColumnData<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
-  FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
-    string,
-    never
-  >,
 >(
-  functionColumnConfigs: Array<FunctionColumnConfig<Q, RDPs, FunctionColumns>>,
+  functionColumnConfigs: Array<FunctionColumnConfig<Q, RDPs>>,
   objects: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>[],
   setData: React.Dispatch<React.SetStateAction<FunctionColumnData>>,
 ): void {
@@ -286,14 +274,10 @@ function initializeFunctionColumnData<
 function processQueryResult<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
-  FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
-    string,
-    never
-  >,
 >(
   columnData: FunctionColumnData,
   result: UseOsdkFunctionResult<QueryDefinition<unknown>>,
-  config: FunctionColumnConfig<Q, RDPs, FunctionColumns>,
+  config: FunctionColumnConfig<Q, RDPs>,
   objects: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>[],
 ): void {
   if (result.isLoading) {
