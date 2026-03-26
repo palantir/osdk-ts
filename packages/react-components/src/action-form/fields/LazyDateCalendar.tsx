@@ -16,7 +16,7 @@
 
 import React, { Suspense } from "react";
 import type { DateCalendarProps } from "./DateCalendar.js";
-import styles from "./DatetimePickerField.module.css";
+import styles from "./DateCalendar.module.css";
 
 const DateCalendarLazy = React.lazy(() => import("./DateCalendar.js"));
 

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Input } from "@base-ui/react/input";
 import { Popover } from "@base-ui/react/popover";
 import classnames from "classnames";
 import React, { useCallback, useMemo, useState } from "react";
@@ -25,7 +26,6 @@ import {
 import type { DatetimePickerFieldProps } from "../FormFieldApi.js";
 import styles from "./DatetimePickerField.module.css";
 import { LazyDateCalendar } from "./LazyDateCalendar.js";
-import { TimeInput } from "./TimeInput.js";
 
 function extractTime(date: Date | null): string {
   if (date == null) return "00:00";
@@ -86,15 +86,28 @@ export function DatetimePickerField({
     [value, onChange],
   );
 
-  const displayText = formattedValue || placeholder || "";
+  const displayText = formattedValue !== ""
+    ? formattedValue
+    : (placeholder ?? "");
   const hasValue = formattedValue !== "";
 
+  const timeValue = extractTime(value);
   const footer = useMemo(
     () =>
       showTime
-        ? <TimeInput value={extractTime(value)} onChange={handleTimeChange} />
+        ? (
+          <div className={styles.timeFooter}>
+            <Input
+              type="time"
+              value={timeValue}
+              onValueChange={handleTimeChange}
+              className={styles.timeInput}
+              aria-label="Time"
+            />
+          </div>
+        )
         : undefined,
-    [showTime, value, handleTimeChange],
+    [showTime, timeValue, handleTimeChange],
   );
 
   return (

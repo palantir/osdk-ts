@@ -22,7 +22,7 @@ import type {
   Matcher,
 } from "react-day-picker";
 import { DayPicker } from "react-day-picker";
-import styles from "./DatetimePickerField.module.css";
+import styles from "./DateCalendar.module.css";
 
 const CLASS_NAMES: Partial<ClassNames> = {
   root: styles.calendar,
