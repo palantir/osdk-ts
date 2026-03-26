@@ -23,6 +23,7 @@ import {
 } from "pdfjs-dist/web/pdf_viewer.mjs";
 import type { RefObject } from "react";
 import { useEffect, useRef } from "react";
+import { PAGES_LOADED_EVENT } from "../constants.js";
 
 export interface UsePdfViewerResult {
   pdfViewerRef: RefObject<PDFViewer | null>;
@@ -35,6 +36,7 @@ export function usePdfViewer(
   viewerRef: RefObject<HTMLDivElement | null>,
   document: PDFDocumentProxy | undefined,
   initialScale?: number,
+  initialPage?: number,
 ): UsePdfViewerResult {
   const pdfViewerRef = useRef<PDFViewer | null>(null);
   const eventBusRef = useRef<EventBus | null>(null);
@@ -71,6 +73,15 @@ export function usePdfViewer(
 
     if (initialScale != null) {
       pdfViewer.currentScale = initialScale;
+    }
+
+    if (initialPage != null && initialPage > 1) {
+      const onPagesLoaded = () => {
+        pdfViewer.currentPageNumber = initialPage;
+        pdfViewer.scrollPageIntoView({ pageNumber: initialPage });
+        eventBus.off(PAGES_LOADED_EVENT, onPagesLoaded);
+      };
+      eventBus.on(PAGES_LOADED_EVENT, onPagesLoaded);
     }
 
     eventBusRef.current = eventBus;

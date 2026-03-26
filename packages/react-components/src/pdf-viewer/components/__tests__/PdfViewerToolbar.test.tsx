@@ -15,7 +15,6 @@
  */
 
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
-import * as React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { PdfViewerToolbar } from "../PdfViewerToolbar.js";
 
@@ -29,6 +28,9 @@ const defaultProps = {
   onSearchOpen: vi.fn(),
   onSidebarToggle: vi.fn(),
   onDownload: vi.fn(),
+  enableDownload: false,
+  onRotateLeft: vi.fn(),
+  onRotateRight: vi.fn(),
 };
 
 afterEach(() => {

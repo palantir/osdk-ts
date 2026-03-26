@@ -33,7 +33,7 @@
   height: 28px;
   border: none;
   background: none;
-  color: var(--osdk-typography-color-default-rest);
+  color: var(--osdk-typography-color-muted);
   cursor: pointer;
   border-radius: var(--osdk-surface-border-radius);
   padding: 0;
@@ -79,7 +79,7 @@
 }
 
 .scaleDisplay {
-  font-size: var(--osdk-typography-size-body-x-small);
+  font-size: var(--osdk-typography-size-body-small);
   color: var(--osdk-typography-color-muted);
   min-width: 40px;
   text-align: center;

@@ -21,15 +21,19 @@ import {
   DEFAULT_PAGE_HEIGHT,
   THUMBNAIL_GAP,
   THUMBNAIL_SCALE,
-} from "./constants.js";
+} from "../constants.js";
+import type { SidebarMode } from "../types.js";
 import styles from "./PdfViewerSidebar.module.css";
+import { PdfViewerSidebarHeader } from "./PdfViewerSidebarHeader.js";
 import { PdfViewerThumbnail } from "./PdfViewerThumbnail.js";
 
-interface PdfViewerSidebarProps {
+export interface PdfViewerSidebarProps {
   document: PDFDocumentProxy;
   numPages: number;
   currentPage: number;
   onPageClick: (page: number) => void;
+  sidebarMode: SidebarMode;
+  onSidebarModeChange: (mode: SidebarMode) => void;
 }
 
 export function PdfViewerSidebar({
@@ -37,6 +41,8 @@ export function PdfViewerSidebar({
   numPages,
   currentPage,
   onPageClick,
+  sidebarMode,
+  onSidebarModeChange,
 }: PdfViewerSidebarProps): React.ReactElement {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const estimatedItemHeight = Math.floor(DEFAULT_PAGE_HEIGHT * THUMBNAIL_SCALE)
@@ -56,7 +62,10 @@ export function PdfViewerSidebar({
 
   return (
     <div className={styles.sidebar}>
-      <div className={styles.sidebarHeader}>Pages</div>
+      <PdfViewerSidebarHeader
+        sidebarMode={sidebarMode}
+        onSidebarModeChange={onSidebarModeChange}
+      />
       <div ref={scrollContainerRef} className={styles.scrollContainer}>
         <div
           className={styles.thumbnailsContainer}
