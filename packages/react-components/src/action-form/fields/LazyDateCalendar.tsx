@@ -20,9 +20,7 @@ import styles from "./DatetimePickerField.module.css";
 
 const DateCalendarLazy = React.lazy(() => import("./DateCalendar.js"));
 
-export function LazyDateCalendar(
-  props: DateCalendarProps,
-): React.ReactElement {
+export function LazyDateCalendar(props: DateCalendarProps): React.ReactElement {
   return (
     <Suspense fallback={<div className={styles.calendarFallback} />}>
       <DateCalendarLazy {...props} />

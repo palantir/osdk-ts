@@ -1,8 +1,9 @@
-/* DatetimePickerField — text input + popover calendar */
+/* DatetimePickerField — button trigger + popover calendar */
 
-/* Input */
-.input {
+/* Trigger button — styled to look like an input */
+.triggerButton {
   width: 100%;
+  text-align: left;
   font-family: var(--osdk-datetime-input-font-family);
   font-size: var(--osdk-datetime-input-font-size);
   padding: var(--osdk-datetime-input-padding);
@@ -10,32 +11,34 @@
   border-radius: var(--osdk-datetime-input-border-radius);
   background: var(--osdk-datetime-input-bg);
   color: var(--osdk-datetime-input-color);
+  cursor: pointer;
   box-sizing: border-box;
 
-  &:focus {
+  &:focus-visible {
     border-color: var(--osdk-datetime-input-focus-border-color);
     outline: var(--osdk-datetime-input-focus-outline);
     outline-offset: var(--osdk-datetime-input-focus-outline-offset);
   }
 }
 
-.inputError {
-  border-color: var(--osdk-datetime-input-error-border-color);
-  color: var(--osdk-datetime-input-error-color);
+.triggerButtonPlaceholder {
+  color: var(--osdk-datetime-input-placeholder-color, currentColor);
+  opacity: 0.6;
 }
 
 /* Popover */
 .popover {
   background: var(--osdk-datetime-popover-bg);
-  border: var(--osdk-datetime-popover-border);
-  border-radius: var(--osdk-datetime-popover-border-radius);
-  box-shadow: var(--osdk-datetime-popover-shadow);
   padding: var(--osdk-datetime-popover-padding);
   z-index: var(--osdk-datetime-popover-z-index);
+  border: var(--osdk-datetime-popover-border);
+  border-radius: var(--osdk-datetime-popover-border-radius);
 }
 
 /* Calendar — DayPicker classNames */
 .calendar {
+  position: relative;
+  width: 100%;
   font-family: var(--osdk-datetime-calendar-font-family);
   font-size: var(--osdk-datetime-calendar-font-size);
 }
@@ -45,6 +48,7 @@
 }
 
 .calendarMonthGrid {
+  width: 100%;
   border-collapse: collapse;
 }
 
@@ -115,9 +119,14 @@
 
 /* Calendar navigation */
 .calendarNav {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  pointer-events: none;
 }
 
 .calendarNavButton {
@@ -131,6 +140,7 @@
   cursor: pointer;
   border-radius: var(--osdk-datetime-calendar-nav-button-border-radius);
   padding: 0;
+  pointer-events: auto;
 
   &:hover {
     background: var(--osdk-datetime-calendar-nav-button-hover-bg);
@@ -141,6 +151,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  min-height: var(--osdk-datetime-calendar-nav-button-size);
 }
 
 .calendarCaptionLabel {

@@ -78,6 +78,26 @@ export function formatDateForDisplay(
   });
 }
 
+/** Formats a Date as "2024-06-15 14:30" — space-separated, more readable than T. */
+export function formatDatetimeForDisplay(
+  date: Date | undefined | null,
+): string {
+  if (date == null) return "";
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+  return `${formatDateForInput(date)} ${hours}:${minutes}`;
+}
+
+/** Parses space-separated ("2024-06-15 14:30") or T-separated datetime strings. */
+export function parseDatetimeFromDisplay(
+  value: string | undefined | null,
+): Date | undefined {
+  if (!value) return undefined;
+  const normalized = value.includes("T") ? value : value.replace(" ", "T");
+  const date = new Date(normalized);
+  return isNaN(date.getTime()) ? undefined : date;
+}
+
 export function parseDateFromISO(
   value: string | Date | undefined | null,
 ): Date | undefined {

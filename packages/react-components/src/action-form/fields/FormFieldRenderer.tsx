@@ -86,6 +86,7 @@ function renderFieldComponent(
       return (
         <DatetimePickerField
           id={fieldDefinition.fieldKey}
+          placeholder={fieldDefinition.placeholder}
           value={value instanceof Date ? value : null}
           onChange={onChange}
           {...fieldDefinition.fieldComponentProps}

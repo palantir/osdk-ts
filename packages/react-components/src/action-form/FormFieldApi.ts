@@ -138,9 +138,12 @@ export interface FormFieldPropsByType {
 }
 
 /**
- * Datetime picker base props shared by all format variants.
+ * Datetime picker field props.
+ *
+ * To use a custom date format, provide both `formatDate` and `parseDate`.
+ * When omitted, ISO-like format is used (YYYY-MM-DD / YYYY-MM-DD HH:mm).
  */
-interface DatetimePickerBaseProps extends BaseFormFieldProps<Date> {
+export interface DatetimePickerFieldProps extends BaseFormFieldProps<Date> {
   /**
    * The earliest date the user can select.
    * If provided, this will be added to the field validation.
@@ -157,33 +160,24 @@ interface DatetimePickerBaseProps extends BaseFormFieldProps<Date> {
    * Whether to show time picker.
    */
   showTime?: boolean;
-}
 
-/**
- * Provide both formatDate and parseDate to use a custom date format.
- */
-interface WithCustomFormat {
-  /** Formats a Date for display in the text input. */
-  formatDate: (date: Date) => string;
-  /** Parses user-typed text into a Date. Return `false` or `null` for invalid input. */
-  parseDate: (str: string) => Date | false | null;
-}
+  /**
+   * Whether to close the popover after selecting a date.
+   * @default true
+   */
+  closeOnSelection?: boolean;
 
-/**
- * When no custom format is provided, ISO format (YYYY-MM-DD / YYYY-MM-DDTHH:mm) is used.
- */
-interface WithDefaultFormat {
-  formatDate?: undefined;
-  parseDate?: undefined;
-}
+  /**
+   * Placeholder text shown when no value is selected.
+   */
+  placeholder?: string;
 
-/**
- * Datetime picker field props.
- * `formatDate` and `parseDate` must be provided together or not at all.
- */
-export type DatetimePickerFieldProps =
-  & DatetimePickerBaseProps
-  & (WithCustomFormat | WithDefaultFormat);
+  /** Formats a Date for display in the text input. Must be paired with `parseDate`. */
+  formatDate?: (date: Date) => string;
+
+  /** Parses user-typed text into a Date. Return `false` or `null` for invalid input. Must be paired with `formatDate`. */
+  parseDate?: (str: string) => Date | false | null;
+}
 
 /**
  * Dropdown field props with selectable items
@@ -340,6 +334,12 @@ export interface CustomFieldProps<V> extends BaseFormFieldProps<V> {
 }
 
 export interface BaseFormFieldProps<V> {
+  /**
+   * The HTML `id` attribute for the field input element.
+   * Used for `<label htmlFor>` association.
+   */
+  id?: string;
+
   /**
    * The value of the form field
    */
