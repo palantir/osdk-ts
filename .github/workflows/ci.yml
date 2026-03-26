@@ -195,6 +195,7 @@ jobs:
     timeout-minutes: 15
     runs-on: ubuntu-latest
     permissions:
+      contents: read
       pull-requests: write
 
     steps:
@@ -208,6 +209,14 @@ jobs:
         with:
           node-version: 22
           cache: "pnpm"
+
+      - name: Cache Turbo
+        uses: actions/cache@v4
+        with:
+          path: .turbo/cache
+          key: turbo-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            turbo-${{ runner.os }}-
 
       - uses: andresz1/size-limit-action@v1
         with:
