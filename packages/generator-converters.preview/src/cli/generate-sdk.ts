@@ -15,7 +15,10 @@
  * limitations under the License.
  */
 
-import { generateClientSdkVersionTwoPointZero } from "@osdk/generator";
+import {
+  generateClientSdkVersionTwoPointZero,
+  getTsCompilerOptions,
+} from "@osdk/generator";
 import { OntologyIrToFullMetadataConverter } from "@osdk/generator-converters.ontologyir";
 import { consola } from "consola";
 import { spawnSync } from "node:child_process";
@@ -365,6 +368,67 @@ async function main(): Promise<void> {
     false,
     [],
   );
+
+  // Write package.json for module resolution. Points to compiled output in
+  // dist/ so that TypeScript function discovery can resolve types from
+  // @ontology/sdk during the bootstrap → function discovery → regeneration cycle.
+  // No npm install is needed — @osdk/client and typescript are resolved from
+  // the parent ontology project's node_modules.
+  const previewPackageJson = {
+    name: packageName,
+    version: packageVersion,
+    type: "module",
+    main: "./dist/index.js",
+    types: "./dist/index.d.ts",
+    exports: {
+      ".": {
+        types: "./dist/index.d.ts",
+        import: "./dist/index.js",
+      },
+    },
+    scripts: {
+      build: "tsc",
+    },
+    dependencies: {
+      "@osdk/client": "^2.0.0",
+    },
+    devDependencies: {
+      "typescript": "^5.0.0",
+    },
+  };
+
+  await fs.writeFile(
+    path.join(fullOutputDir, "package.json"),
+    JSON.stringify(previewPackageJson, null, 2) + "\n",
+    "utf-8",
+  );
+  consola.info(`Wrote ${path.join(fullOutputDir, "package.json")}`);
+
+  // Write tsconfig.json for the tsc build step. Uses shared compiler options
+  // from @osdk/generator with preview-specific additions.
+  const previewTsconfig = {
+    compilerOptions: {
+      ...getTsCompilerOptions("module"),
+      importHelpers: false,
+      outDir: "./dist",
+      rootDir: "./",
+      declarationMap: true,
+      sourceMap: true,
+      moduleResolution: "node",
+      module: "ES2020",
+      resolveJsonModule: true,
+      allowSyntheticDefaultImports: true,
+    },
+    include: ["**/*.ts", "**/*.tsx"],
+    exclude: ["node_modules", "dist"],
+  };
+
+  await fs.writeFile(
+    path.join(fullOutputDir, "tsconfig.json"),
+    JSON.stringify(previewTsconfig, null, 2) + "\n",
+    "utf-8",
+  );
+  consola.info(`Wrote ${path.join(fullOutputDir, "tsconfig.json")}`);
 
   const metadataPath = path.join(fullOutputDir, "ontology-metadata.json");
   await fs.writeFile(

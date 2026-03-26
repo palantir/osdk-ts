@@ -14,11 +14,15 @@
  * limitations under the License.
  */
 
-export {
-  generateClientSdkPackage as __UNSTABLE_generateClientSdkPackage,
-  getExpectedDependencies,
-  getTsCompilerOptions,
-} from "./generateClientSdkPackage.js";
-export type { MinimalFs } from "./MinimalFs.js";
-export { generateClientSdkVersionTwoPointZero } from "./v2.0/generateClientSdkVersionTwoPointZero.js";
-export type { WireOntologyDefinition } from "./WireOntologyDefinition.js";
+import { configDefaults, defineConfig } from "vitest/config";
+
+export default defineConfig({
+  test: {
+    pool: "forks",
+    exclude: [...configDefaults.exclude, "**/build/**/*"],
+    environment: "happy-dom",
+    fakeTimers: {
+      toFake: ["setTimeout", "clearTimeout", "Date"],
+    },
+  },
+});
