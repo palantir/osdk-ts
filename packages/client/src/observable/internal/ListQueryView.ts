@@ -15,7 +15,7 @@
  */
 
 import type { Subscription } from "rxjs";
-import type { Observer } from "../ObservableClient/common.js";
+import type { Observer, Status } from "../ObservableClient/common.js";
 import type { BaseListPayloadShape } from "./base-list/BaseListQuery.js";
 
 /**
@@ -43,6 +43,7 @@ export interface ListQueryViewTarget<PAYLOAD extends BaseListPayloadShape> {
  * - Slices the shared data to the subscriber's viewLimit
  * - Provides a fetchMore that increments viewLimit and fetches if needed
  * - Reports hasMore based on both local viewLimit and server pagination
+ * - Drives autoFetchMore page-by-page when enabled (per-subscriber concern)
  */
 let viewIdCounter = 0;
 
@@ -51,11 +52,19 @@ export class ListQueryView<PAYLOAD extends BaseListPayloadShape> {
   #viewLimit: number;
   #pageSize: number;
   #viewId: string;
-  #hasAutoFetch: boolean;
+  #autoFetchMinimum: number;
   #fetchMore: () => Promise<void>;
   #pendingFetchMore: Promise<void> | undefined;
   #lastPayload: PAYLOAD | undefined;
   #observer: Observer<PAYLOAD> | undefined;
+
+  // Dedup tracking to suppress duplicate emissions during auto-fetch.
+  // When fetchMore() sets "loading" on unchanged data, the transformed
+  // payload is identical to what was already emitted (since the view
+  // already masked "loaded" → "loading"). These sentinels ensure the
+  // first emission always passes (NaN !== anything, "" !== any Status).
+  #lastEmitCount: number = NaN;
+  #lastEmitStatus: Status | "" = "";
 
   constructor(
     query: ListQueryViewTarget<PAYLOAD>,
@@ -66,11 +75,14 @@ export class ListQueryView<PAYLOAD extends BaseListPayloadShape> {
     this.#pageSize = pageSize;
     this.#viewId = `view_${++viewIdCounter}`;
 
-    // With autoFetchMore, subscriber sees all loaded data (no view limit)
-    // Otherwise, limit to their pageSize
-    this.#hasAutoFetch = autoFetchMore === true
-      || (typeof autoFetchMore === "number" && autoFetchMore > 0);
-    this.#viewLimit = this.#hasAutoFetch ? Number.MAX_SAFE_INTEGER : pageSize;
+    this.#autoFetchMinimum = autoFetchMore === true
+      ? Number.MAX_SAFE_INTEGER
+      : (typeof autoFetchMore === "number" && autoFetchMore > 0)
+      ? autoFetchMore
+      : 0;
+    this.#viewLimit = this.#autoFetchMinimum > 0
+      ? Number.MAX_SAFE_INTEGER
+      : pageSize;
 
     // Memoize fetchMore to maintain stable function identity
     this.#fetchMore = this.#createFetchMore();
@@ -84,13 +96,17 @@ export class ListQueryView<PAYLOAD extends BaseListPayloadShape> {
     const sub = this.#query.subscribe({
       next: (payload) => {
         this.#lastPayload = payload;
-        observer.next?.(this.#transformPayload(payload));
+        this.#emitToObserver(this.#transformPayload(payload));
+
+        const loadedCount = payload.resolvedList?.length ?? 0;
+        const fetchThreshold = this.#autoFetchMinimum > 0
+          ? this.#autoFetchMinimum
+          : this.#viewLimit;
 
         if (
-          !this.#hasAutoFetch
-          && payload.status === "loaded"
-          && (payload.resolvedList?.length ?? 0) < this.#viewLimit
+          payload.status === "loaded"
           && this.#query.hasMorePages()
+          && loadedCount < fetchThreshold
         ) {
           void this.#query.fetchMore();
         }
@@ -109,9 +125,29 @@ export class ListQueryView<PAYLOAD extends BaseListPayloadShape> {
     return sub;
   }
 
+  #emitToObserver(transformed: PAYLOAD): void {
+    // Only deduplicate during auto-fetch: fetchMore() sets "loading" on
+    // unchanged data, which the view already masked to "loading". Without
+    // this guard, the observer would see identical (count, status) pairs.
+    // Non-autoFetch views must never be deduped since the data content
+    // can change even when count and status don't (e.g. re-sorting).
+    if (this.#autoFetchMinimum > 0) {
+      const newCount = transformed.resolvedList?.length ?? -1;
+      if (
+        newCount === this.#lastEmitCount
+        && transformed.status === this.#lastEmitStatus
+      ) {
+        return;
+      }
+      this.#lastEmitCount = newCount;
+      this.#lastEmitStatus = transformed.status;
+    }
+    this.#observer?.next?.(transformed);
+  }
+
   #reEmitWithNewViewLimit(): void {
     if (this.#lastPayload && this.#observer) {
-      this.#observer.next?.(this.#transformPayload(this.#lastPayload));
+      this.#emitToObserver(this.#transformPayload(this.#lastPayload));
     }
   }
 
@@ -119,14 +155,30 @@ export class ListQueryView<PAYLOAD extends BaseListPayloadShape> {
     const resolvedList = payload.resolvedList;
     const loadedCount = resolvedList?.length ?? 0;
 
+    let status: Status = payload.status;
+
+    // When auto-fetching and below threshold with more pages available,
+    // report "loading" to prevent status oscillation
+    if (
+      this.#autoFetchMinimum > 0
+      && status === "loaded"
+      && this.#query.hasMorePages()
+      && loadedCount < this.#autoFetchMinimum
+    ) {
+      status = "loading";
+    }
+
+    // When query says "loading" but we have enough for our view, report "loaded"
+    if (loadedCount >= this.#viewLimit && status === "loading") {
+      status = "loaded";
+    }
+
     return {
       ...payload,
       resolvedList: resolvedList?.slice(0, this.#viewLimit),
       hasMore: this.#viewLimit < loadedCount || payload.hasMore,
       fetchMore: this.#fetchMore,
-      status: loadedCount >= this.#viewLimit && payload.status === "loading"
-        ? "loaded"
-        : payload.status,
+      status,
     };
   }
 
