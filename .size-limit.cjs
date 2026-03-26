@@ -23,6 +23,7 @@ const { join } = require("path");
  * Expand this array to include more packages as needed.
  */
 const TRACKED_PACKAGES = [
+  "api",
   "client",
   "oauth",
   "react",
