@@ -22,9 +22,10 @@ import type {
   QueryDefinition,
   SimplePropertyDef,
 } from "@osdk/api";
-import {
-  type BatchedFunctionQueryResult,
-  useBatchedFunctionQueries,
+import { useBatchedFunctionQueries } from "@osdk/react/experimental";
+import type {
+  FunctionQueryParams,
+  UseOsdkFunctionResult,
 } from "@osdk/react/experimental";
 import { useEffect, useMemo, useState } from "react";
 import type {
@@ -53,7 +54,7 @@ type FunctionColumnConfig<
 > = {
   queryDefinition: QueryDefinition<any>;
   getParams: (
-    objectSet: ObjectSet<Q>,
+    objectSet: ObjectSet<Q, RDPs>,
   ) => ExtractQueryParameters<FunctionColumns[keyof FunctionColumns]>;
   columnIds: Array<{
     columnId: string;
@@ -107,23 +108,28 @@ export function useFunctionColumnsData<
   }, [disabled, functionColumnConfigs, stableObjectSet, stableObjects]);
 
   // Prepare queries for useBatchedFunctionQueries
-  const queries = useMemo(() => {
-    if (disabled) {
-      return [];
-    }
+  const queries: Array<FunctionQueryParams<QueryDefinition<unknown>>> = useMemo(
+    () => {
+      if (disabled) {
+        return [];
+      }
 
-    return functionColumnConfigs.map(config => ({
-      queryDefinition: config.queryDefinition,
-      options: {
-        params: config.getParams(stableObjectSet as ObjectSet<Q>),
-      },
-    }));
-  }, [disabled, functionColumnConfigs, stableObjectSet]);
+      return functionColumnConfigs.map(config => ({
+        queryDefinition: config.queryDefinition,
+        options: {
+          params: config.getParams(stableObjectSet),
+        },
+      }));
+    },
+    [disabled, functionColumnConfigs, stableObjectSet],
+  );
 
-  const results = useBatchedFunctionQueries({
-    queries,
-    enabled: !disabled,
-  });
+  const results = useBatchedFunctionQueries(
+    {
+      queries,
+      enabled: !disabled,
+    },
+  );
 
   // Process results incrementally as they change
   useEffect(() => {
@@ -286,7 +292,7 @@ function processQueryResult<
   >,
 >(
   columnData: FunctionColumnData,
-  result: BatchedFunctionQueryResult,
+  result: UseOsdkFunctionResult<QueryDefinition<unknown>>,
   config: FunctionColumnConfig<Q, RDPs, FunctionColumns>,
   objects: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>[],
 ): void {

@@ -23,17 +23,17 @@ import { useBatchedFunctionQueries } from "../useBatchedFunctionQueries.js";
 
 vi.mock("../../useOsdkClient.js");
 
-const mockQueryDefinition1: QueryDefinition<{}> = {
+const mockQueryDefinition1 = {
   apiName: "calculateStats",
-  type: "query",
+  type: "query" as const,
   version: "1.0.0",
-} as QueryDefinition<{}>;
+} as QueryDefinition<any>;
 
-const mockQueryDefinition2: QueryDefinition<{}> = {
+const mockQueryDefinition2 = {
   apiName: "getReports",
-  type: "query",
+  type: "query" as const,
   version: "1.0.0",
-} as QueryDefinition<{}>;
+} as QueryDefinition<any>;
 
 describe("useBatchedFunctionQueries", () => {
   const mockExecuteFunction = vitest.fn();
@@ -81,16 +81,18 @@ describe("useBatchedFunctionQueries", () => {
 
     const { result } = renderHook(
       () =>
-        useBatchedFunctionQueries({
-          queries: [
-            {
-              queryDefinition: mockQueryDefinition1,
-              options: {
-                params: { departmentId: "engineering" },
+        useBatchedFunctionQueries(
+          {
+            queries: [
+              {
+                queryDefinition: mockQueryDefinition1,
+                options: {
+                  params: { departmentId: "engineering" } as any,
+                },
               },
-            },
-          ],
-        }),
+            ],
+          },
+        ),
     );
 
     // Initially shows isLoading state
@@ -133,11 +135,15 @@ describe("useBatchedFunctionQueries", () => {
           queries: [
             {
               queryDefinition: mockQueryDefinition1,
-              options: { params: { departmentId: "engineering" } },
+              options: {
+                params: { departmentId: "engineering" } as any,
+              },
             },
             {
               queryDefinition: mockQueryDefinition2,
-              options: { params: { startDate: "2024-01-01" } },
+              options: {
+                params: { startDate: "2024-01-01" } as any,
+              },
             },
           ],
         }),
@@ -346,7 +352,7 @@ describe("useBatchedFunctionQueries", () => {
           queries: [
             {
               queryDefinition: mockQueryDefinition1,
-              options: { params: { id: 1 } },
+              options: { params: { id: 1 } as any },
             },
           ],
         }),
@@ -385,7 +391,7 @@ describe("useBatchedFunctionQueries", () => {
             },
           ],
         }),
-      { initialProps: { params: { id: 1 } } },
+      { initialProps: { params: { id: 1 } as any } },
     );
 
     await waitFor(() => {
@@ -395,7 +401,7 @@ describe("useBatchedFunctionQueries", () => {
     expect(result.current[0].data).toEqual(mockResult1);
 
     // Change parameters
-    rerender({ params: { id: 2 } });
+    rerender({ params: { id: 2 } as any });
 
     // Should trigger a new query
     await waitFor(() => {

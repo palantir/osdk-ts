@@ -16,9 +16,9 @@
 
 export { OsdkProvider2 } from "../new/OsdkProvider2.js";
 export type {
-  BatchedFunctionQuery,
-  BatchedFunctionQueryResult,
-  UseBatchedFunctionQueriesOptions,
+  FunctionQueryParams,
+  UseBatchedFunctionQueriesProps,
+  UseBatchedFunctionQueryResult,
 } from "../new/useBatchedFunctionQueries.js";
 export { useBatchedFunctionQueries } from "../new/useBatchedFunctionQueries.js";
 export { useLinks } from "../new/useLinks.js";

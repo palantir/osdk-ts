@@ -15,6 +15,7 @@
  */
 
 import type {
+  CompileTimeMetadata,
   DerivedProperty,
   ObjectOrInterfaceDefinition,
   ObjectSet,
@@ -22,10 +23,10 @@ import type {
   PrimaryKeyType,
   PropertyKeys,
   QueryDefinition,
-  QueryMetadata,
   SimplePropertyDef,
   WhereClause,
 } from "@osdk/api";
+import type { QueryParameterType } from "@osdk/client/unstable-do-not-use";
 import type * as React from "react";
 import type { CellEditInfo } from "./utils/types.js";
 
@@ -90,10 +91,10 @@ export type ColumnDefinition<
 };
 
 export type ExtractQueryParameters<
-  TQueryDef extends QueryDefinition,
-> = TQueryDef["__DefinitionMetadata"] extends QueryMetadata
-  ? TQueryDef["__DefinitionMetadata"]["parameters"]
-  : never;
+  Q extends QueryDefinition,
+> = CompileTimeMetadata<Q>["parameters"] extends Record<string, never>
+  ? undefined
+  : QueryParameterType<CompileTimeMetadata<Q>["parameters"]>;
 
 export interface PropertyColumnLocator<Q extends ObjectOrInterfaceDefinition> {
   type: "property";
@@ -122,7 +123,7 @@ export interface FunctionColumnLocator<
    * @returns - The function's input parameters including the object set.
    */
   getFunctionParams: (
-    objectSet: ObjectSet<Q>,
+    objectSet: ObjectSet<Q, RDPs>,
   ) => ExtractQueryParameters<FunctionColumns[keyof FunctionColumns]>;
 
   /**
