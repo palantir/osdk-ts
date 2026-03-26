@@ -1,5 +1,7 @@
 # @osdk/api
 
+## 2.8.0-beta.27
+
 ## 2.8.0-beta.26
 
 ### Minor Changes

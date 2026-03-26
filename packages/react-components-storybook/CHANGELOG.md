@@ -1,5 +1,11 @@
 # @osdk/react-components-storybook
 
+## 0.2.0-beta.9
+
+### Minor Changes
+
+- 336a013: refactor(pdf): rename BasePdfRenderer/PdfRenderer to BasePdfViewer/PdfViewer, rename downloadEnabled to enableDownload, expose internal hooks, add onDownload result callback for download success/failure
+
 ## 0.2.0-beta.8
 
 ### Minor Changes
