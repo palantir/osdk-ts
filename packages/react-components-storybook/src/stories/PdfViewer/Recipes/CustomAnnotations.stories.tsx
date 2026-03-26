@@ -23,8 +23,8 @@ import { BasePdfViewer } from "@osdk/react-components/experimental";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { fn } from "storybook/test";
 
-const SAMPLE_PDF_URL =
-  "https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf";
+// cspell:ignore tracemonkey pldi
+const SAMPLE_PDF_URL = "/compressed.tracemonkey-pldi-09.pdf";
 
 function TooltipAnnotation({ annotation }: PdfAnnotationRenderProps) {
   return (

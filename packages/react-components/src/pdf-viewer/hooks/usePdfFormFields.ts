@@ -98,7 +98,6 @@ export function toFormFieldValue(
 export function toStorageValue(
   formValue: PdfFormFieldValue,
   fieldType: "text" | "checkbox" | "radiobutton" | "combobox" | "listbox",
-  exportValues: string | undefined,
 ): unknown {
   if (fieldType === "checkbox") {
     if (typeof formValue === "boolean") {
@@ -220,7 +219,6 @@ export function usePdfFormFields({
           const storageVal = toStorageValue(
             value,
             entry.fieldType,
-            entry.exportValues,
           );
           storage.setValue(id, { value: storageVal });
 
@@ -252,7 +250,7 @@ export function usePdfFormFields({
     return () => {
       eventBus.off(ANNOTATION_LAYER_RENDERED_EVENT, onAnnotationLayerRendered);
     };
-  }, [eventBusRef, document]);
+  }, [eventBusRef, document, hasFormFields]);
 
   // Effect 3: Listen for field changes via MutationObserver + event listeners
   useEffect(function listenForFieldChanges() {

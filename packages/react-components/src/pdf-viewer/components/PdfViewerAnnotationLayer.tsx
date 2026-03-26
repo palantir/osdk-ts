@@ -33,13 +33,6 @@ interface AnnotationItemProps {
   onClick?: (annotation: PdfAnnotation) => void;
 }
 
-interface CustomAnnotationItemProps {
-  annotation: PdfAnnotation;
-  pageHeight: number;
-  scale: number;
-  onClick?: (annotation: PdfAnnotation) => void;
-}
-
 /** Convert a single PDF rect (bottom-left origin) to CSS positioning (top-left origin). */
 function computeRectStyle(
   rect: PdfRect,
@@ -149,7 +142,7 @@ function CustomAnnotationItem({
   pageHeight,
   scale,
   onClick,
-}: CustomAnnotationItemProps): React.ReactElement {
+}: AnnotationItemProps): React.ReactElement {
   const handleClick = useCallback(() => {
     onClick?.(annotation);
   }, [onClick, annotation]);
@@ -165,12 +158,7 @@ function CustomAnnotationItem({
   );
 
   const style = useMemo(
-    () => ({
-      left: annotation.rect.x * scale,
-      top: (pageHeight - annotation.rect.y - annotation.rect.height) * scale,
-      width: annotation.rect.width * scale,
-      height: annotation.rect.height * scale,
-    }),
+    () => computeRectStyle(annotation.rect, pageHeight, scale, undefined),
     [annotation, pageHeight, scale],
   );
 

@@ -36,7 +36,7 @@ export interface UsePdfHighlightModeResult {
 }
 
 /**
- * Converts an RGB array (0-255 per channel) to a CSS hex color string.
+ * Converts an RGB array (0.0–1.0 per channel) to a CSS hex color string.
  */
 export function rgbArrayToHex(color: number[]): string {
   const r = Math.round(color[0] * 255);
@@ -59,13 +59,13 @@ export function quadPointsToRects(
   for (let i = 0; i < quadPoints.length; i += 8) {
     const x1 = quadPoints[i];
     const y1 = quadPoints[i + 1];
-    const x3 = quadPoints[i + 2];
-    const y4 = quadPoints[i + 5];
+    const x2 = quadPoints[i + 2];
+    const y3 = quadPoints[i + 5];
 
-    const x = Math.min(x1, x3);
-    const y = Math.min(y1, y4);
-    const width = Math.abs(x3 - x1);
-    const height = Math.abs(y1 - y4);
+    const x = Math.min(x1, x2);
+    const y = Math.min(y1, y3);
+    const width = Math.abs(x2 - x1);
+    const height = Math.abs(y1 - y3);
 
     rects.push({ x, y, width, height });
   }
@@ -131,6 +131,9 @@ export function usePdfHighlightMode({
     if (document == null || !highlightModeActive || !enabled) {
       return;
     }
+
+    knownEditorIdsRef.current.clear();
+    editorEventsRef.current.clear();
 
     const storage = document.annotationStorage;
     const previousOnAnnotationEditor = storage.onAnnotationEditor;

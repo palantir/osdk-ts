@@ -95,26 +95,26 @@ describe("toFormFieldValue", () => {
 
 describe("toStorageValue", () => {
   it("should convert boolean true to true for checkbox", () => {
-    expect(toStorageValue(true, "checkbox", "Yes")).toBe(true);
+    expect(toStorageValue(true, "checkbox")).toBe(true);
   });
 
   it("should convert boolean false to false for checkbox", () => {
-    expect(toStorageValue(false, "checkbox", "Yes")).toBe(false);
+    expect(toStorageValue(false, "checkbox")).toBe(false);
   });
 
   it("should convert string 'Off' to false for checkbox", () => {
-    expect(toStorageValue("Off", "checkbox", "Yes")).toBe(false);
+    expect(toStorageValue("Off", "checkbox")).toBe(false);
   });
 
   it("should convert non-Off string to true for checkbox", () => {
-    expect(toStorageValue("Yes", "checkbox", "Yes")).toBe(true);
+    expect(toStorageValue("Yes", "checkbox")).toBe(true);
   });
 
   it("should pass through string values for text fields", () => {
-    expect(toStorageValue("hello", "text", undefined)).toBe("hello");
+    expect(toStorageValue("hello", "text")).toBe("hello");
   });
 
   it("should pass through string values for combobox fields", () => {
-    expect(toStorageValue("choice1", "combobox", undefined)).toBe("choice1");
+    expect(toStorageValue("choice1", "combobox")).toBe("choice1");
   });
 });
