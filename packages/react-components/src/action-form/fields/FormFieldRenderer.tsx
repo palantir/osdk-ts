@@ -87,6 +87,7 @@ function renderFieldComponent(
         <DatetimePickerField
           id={fieldDefinition.fieldKey}
           placeholder={fieldDefinition.placeholder}
+          // TODO: Use coerceFieldValue
           value={value instanceof Date ? value : null}
           onChange={onChange}
           {...fieldDefinition.fieldComponentProps}

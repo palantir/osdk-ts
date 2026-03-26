@@ -140,8 +140,7 @@ export interface FormFieldPropsByType {
 /**
  * Datetime picker field props.
  *
- * To use a custom date format, provide both `formatDate` and `parseDate`.
- * When omitted, ISO-like format is used (YYYY-MM-DD / YYYY-MM-DD HH:mm).
+ * When `formatDate` is omitted, ISO-like format is used (YYYY-MM-DD / YYYY-MM-DD HH:mm).
  */
 export interface DatetimePickerFieldProps extends BaseFormFieldProps<Date> {
   /**
@@ -163,7 +162,7 @@ export interface DatetimePickerFieldProps extends BaseFormFieldProps<Date> {
 
   /**
    * Whether to close the popover after selecting a date.
-   * @default true
+   * @default true when `showTime` is false, false when `showTime` is true
    */
   closeOnSelection?: boolean;
 
@@ -172,11 +171,8 @@ export interface DatetimePickerFieldProps extends BaseFormFieldProps<Date> {
    */
   placeholder?: string;
 
-  /** Formats a Date for display in the text input. Must be paired with `parseDate`. */
+  /** Formats a Date for display in the trigger button. */
   formatDate?: (date: Date) => string;
-
-  /** Parses user-typed text into a Date. Return `false` or `null` for invalid input. Must be paired with `formatDate`. */
-  parseDate?: (str: string) => Date | false | null;
 }
 
 /**

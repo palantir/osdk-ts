@@ -42,8 +42,9 @@ export function DatetimePickerField({
   placeholder,
   formatDate,
   showTime = false,
-  closeOnSelection = false,
+  closeOnSelection,
 }: DatetimePickerFieldProps): React.ReactElement {
+  const shouldCloseOnSelection = closeOnSelection ?? !showTime;
   const [isOpen, setIsOpen] = useState(false);
 
   const formatFn = formatDate
@@ -68,11 +69,11 @@ export function DatetimePickerField({
 
       onChange?.(date);
 
-      if (closeOnSelection) {
+      if (shouldCloseOnSelection) {
         setIsOpen(false);
       }
     },
-    [onChange, showTime, value, closeOnSelection],
+    [onChange, showTime, value, shouldCloseOnSelection],
   );
 
   const handleTimeChange = useCallback(
