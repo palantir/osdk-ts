@@ -786,6 +786,153 @@ describe("Link Types", () => {
       `);
     });
 
+    it("Self-referential Many To Many Links deduplicate column names", () => {
+      const person = defineObject({
+        titlePropertyApiName: "name",
+        displayName: "Person",
+        pluralDisplayName: "People",
+        apiName: "person",
+        primaryKeyPropertyApiName: "id",
+        properties: { "id": { type: "string" }, "name": { type: "string" } },
+      });
+
+      defineLink({
+        apiName: "personToFriend",
+        many: {
+          object: person,
+          metadata: {
+            displayName: "Friends",
+            pluralDisplayName: "Friends",
+            apiName: "friends",
+          },
+        },
+        toMany: {
+          object: person,
+          metadata: {
+            displayName: "Friend Of",
+            pluralDisplayName: "Friends Of",
+            apiName: "friendOf",
+          },
+        },
+      });
+
+      const metadata = dumpOntologyFullMetadata();
+      const linkDatasource =
+        metadata.ontology.linkTypes["person-to-friend"].datasources[0];
+      expect(
+        linkDatasource.datasource.dataset.objectTypeAPrimaryKeyMapping[0]
+          .column,
+      ).toBe("id_from");
+      expect(
+        linkDatasource.datasource.dataset.objectTypeBPrimaryKeyMapping[0]
+          .column,
+      ).toBe("id_to");
+    });
+
+    it("Many To Many Links with same PK name deduplicate column names", () => {
+      const object = defineObject({
+        titlePropertyApiName: "id",
+        displayName: "Foo",
+        pluralDisplayName: "Foos",
+        apiName: "foo",
+        primaryKeyPropertyApiName: "id",
+        properties: { "id": { type: "string" } },
+      });
+
+      const otherObject = defineObject({
+        titlePropertyApiName: "id",
+        displayName: "Bar",
+        pluralDisplayName: "Bars",
+        apiName: "bar",
+        primaryKeyPropertyApiName: "id",
+        properties: { "id": { type: "string" } },
+      });
+
+      defineLink({
+        apiName: "fooToBar",
+        many: {
+          object: object,
+          metadata: {
+            displayName: "Bars",
+            pluralDisplayName: "Bars",
+            apiName: "bars",
+          },
+        },
+        toMany: {
+          object: otherObject,
+          metadata: {
+            displayName: "Foos",
+            pluralDisplayName: "Foos",
+            apiName: "foos",
+          },
+        },
+      });
+
+      const metadata = dumpOntologyFullMetadata();
+      const linkDatasource =
+        metadata.ontology.linkTypes["foo-to-bar"].datasources[0];
+      expect(
+        linkDatasource.datasource.dataset.objectTypeAPrimaryKeyMapping[0]
+          .column,
+      ).toBe("id_from");
+      expect(
+        linkDatasource.datasource.dataset.objectTypeBPrimaryKeyMapping[0]
+          .column,
+      ).toBe("id_to");
+    });
+
+    it("Many To Many Links with different PK names do not suffix columns", () => {
+      const object = defineObject({
+        titlePropertyApiName: "fooId",
+        displayName: "Foo",
+        pluralDisplayName: "Foos",
+        apiName: "foo",
+        primaryKeyPropertyApiName: "fooId",
+        properties: { "fooId": { type: "string" } },
+      });
+
+      const otherObject = defineObject({
+        titlePropertyApiName: "barId",
+        displayName: "Bar",
+        pluralDisplayName: "Bars",
+        apiName: "bar",
+        primaryKeyPropertyApiName: "barId",
+        properties: { "barId": { type: "string" } },
+      });
+
+      defineLink({
+        apiName: "fooToBar",
+        many: {
+          object: object,
+          metadata: {
+            displayName: "Bars",
+            pluralDisplayName: "Bars",
+            apiName: "bars",
+          },
+        },
+        toMany: {
+          object: otherObject,
+          metadata: {
+            displayName: "Foos",
+            pluralDisplayName: "Foos",
+            apiName: "foos",
+          },
+        },
+      });
+
+      const metadata = dumpOntologyFullMetadata();
+      const linkDatasource =
+        metadata.ontology.linkTypes["foo-to-bar"].datasources[0];
+      expect(
+        linkDatasource.datasource.dataset.objectTypeAPrimaryKeyMapping[0]
+          .column,
+      ).toBe("fooId");
+      expect(
+        linkDatasource.datasource.dataset.objectTypeBPrimaryKeyMapping[0]
+          .column,
+      ).toBe("barId");
+    });
+
     it("Intermediary link types are properly defined", () => {
       const bar = defineObject({
         titlePropertyApiName: "bar",

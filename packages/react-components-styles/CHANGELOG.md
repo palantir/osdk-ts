@@ -1,5 +1,13 @@
 # @osdk/react-components-styles
 
+## 0.2.0-beta.13
+
+### Minor Changes
+
+- 7080b01: Add base form layout with header, footer, field components, and CSS token variables for theming
+- dffac63: Fix styling nits
+- b373588: Styling fix with global border-box
+
 ## 0.2.0-beta.12
 
 ### Minor Changes

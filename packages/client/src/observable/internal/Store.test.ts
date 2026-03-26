@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Osdk } from "@osdk/api";
+import type { ObjectSet, Osdk } from "@osdk/api";
 import {
   editTodo,
   Employee,
@@ -2390,6 +2390,400 @@ describe(Store, () => {
       );
 
       expect(sub.error).not.toHaveBeenCalled();
+    });
+
+    describe("ObjectSetQuery maybeUpdateAndRevalidate", () => {
+      it("should update list in-memory when strict-matching object is added", async () => {
+        fauxFoundry.getDefaultDataStore().clear();
+
+        fauxFoundry.getDefaultDataStore().registerObject(
+          Employee,
+          {
+            $apiName: "Employee",
+            employeeId: 100,
+            fullName: "Existing Employee",
+          },
+        );
+
+        const sub = mockObserver<ObjectSetPayload | undefined>();
+        defer(
+          store.objectSets.observe({
+            baseObjectSet: client(Employee) as ObjectSet<Employee>,
+          }, sub),
+        );
+
+        await vi.waitFor(
+          () => {
+            expect(sub.next).toHaveBeenLastCalledWith(
+              expect.objectContaining({
+                status: "loaded",
+              }),
+            );
+          },
+          { timeout: 5000 },
+        );
+
+        expect(sub.next).toHaveBeenLastCalledWith(
+          expect.objectContaining({
+            status: "loaded",
+            resolvedList: [
+              expect.objectContaining({ employeeId: 100 }),
+            ],
+          }),
+        );
+
+        fauxFoundry.getDefaultDataStore().registerObject(Employee, {
+          $apiName: "Employee",
+          employeeId: 200,
+          fullName: "New Employee",
+        });
+
+        await client(Employee).fetchOne(200, {
+          $includeRid: true,
+        });
+
+        sub.next.mockClear();
+
+        await store.invalidateObjectType(Employee, undefined);
+
+        await vi.waitFor(
+          () => {
+            expect(sub.next).toHaveBeenCalled();
+          },
+          { timeout: 5000 },
+        );
+
+        expect(sub.next).toHaveBeenLastCalledWith(
+          expect.objectContaining({
+            resolvedList: expect.arrayContaining([
+              expect.objectContaining({ employeeId: 100 }),
+              expect.objectContaining({ employeeId: 200 }),
+            ]),
+          }),
+        );
+      });
+
+      it("should trigger revalidation for complex ObjectSet with pivotTo", async () => {
+        fauxFoundry.getDefaultDataStore().clear();
+
+        const office = fauxFoundry.getDefaultDataStore().registerObject(
+          Office,
+          {
+            $apiName: "Office",
+            officeId: "office-pivot",
+            name: "Pivot Office",
+          },
+        );
+
+        const emp = fauxFoundry.getDefaultDataStore().registerObject(
+          Employee,
+          {
+            $apiName: "Employee",
+            employeeId: 300,
+            fullName: "Pivot Employee",
+          },
+        );
+
+        fauxFoundry.getDefaultDataStore().registerLink(
+          emp,
+          "officeLink",
+          office,
+          "occupants",
+        );
+
+        const sub = mockObserver<ObjectSetPayload | undefined>();
+        defer(
+          store.objectSets.observe({
+            baseObjectSet: client(Employee).pivotTo("officeLink"),
+          }, sub),
+        );
+
+        await vi.waitFor(
+          () => {
+            expect(sub.next).toHaveBeenLastCalledWith(
+              expect.objectContaining({
+                status: "loaded",
+              }),
+            );
+          },
+          { timeout: 5000 },
+        );
+
+        expect(sub.next).toHaveBeenLastCalledWith(
+          expect.objectContaining({
+            status: "loaded",
+            resolvedList: [
+              expect.objectContaining({ name: "Pivot Office" }),
+            ],
+          }),
+        );
+      });
+
+      it("should not modify list when no relevant object types changed", async () => {
+        fauxFoundry.getDefaultDataStore().clear();
+
+        fauxFoundry.getDefaultDataStore().registerObject(Employee, {
+          $apiName: "Employee",
+          employeeId: 400,
+          fullName: "Sole Employee",
+        });
+
+        const sub = mockObserver<ObjectSetPayload | undefined>();
+        defer(
+          store.objectSets.observe({
+            baseObjectSet: client(Employee) as ObjectSet<Employee>,
+          }, sub),
+        );
+
+        await vi.waitFor(
+          () => {
+            expect(sub.next).toHaveBeenLastCalledWith(
+              expect.objectContaining({
+                status: "loaded",
+              }),
+            );
+          },
+          { timeout: 5000 },
+        );
+
+        const callCountBefore = sub.next.mock.calls.length;
+
+        await store.invalidateObjectType(Office, undefined);
+
+        expect(sub.next.mock.calls.length).toBe(callCountBefore);
+      });
+
+      it("should remove modified object from list when it no longer matches where clause", async () => {
+        fauxFoundry.getDefaultDataStore().clear();
+
+        fauxFoundry.getDefaultDataStore().registerObject(Employee, {
+          $apiName: "Employee",
+          employeeId: 500,
+          fullName: "Matching Employee",
+        });
+
+        fauxFoundry.getDefaultDataStore().registerObject(Employee, {
+          $apiName: "Employee",
+          employeeId: 501,
+          fullName: "Other Employee",
+        });
+
+        const sub = mockObserver<ObjectSetPayload | undefined>();
+        defer(
+          store.objectSets.observe({
+            baseObjectSet: client(Employee) as ObjectSet<Employee>,
+            where: { fullName: { $eq: "Matching Employee" } },
+          }, sub),
+        );
+
+        await vi.waitFor(
+          () => {
+            expect(sub.next).toHaveBeenLastCalledWith(
+              expect.objectContaining({
+                status: "loaded",
+              }),
+            );
+          },
+          { timeout: 5000 },
+        );
+
+        expect(sub.next).toHaveBeenLastCalledWith(
+          expect.objectContaining({
+            status: "loaded",
+            resolvedList: [
+              expect.objectContaining({ employeeId: 500 }),
+            ],
+          }),
+        );
+
+        fauxFoundry.getDefaultDataStore().unregisterObjectOrThrow(
+          "Employee",
+          500,
+        );
+        fauxFoundry.getDefaultDataStore().registerObject(Employee, {
+          $apiName: "Employee",
+          employeeId: 500,
+          fullName: "No Longer Matching",
+        });
+
+        await client(Employee).fetchOne(500, {
+          $includeRid: true,
+        });
+
+        sub.next.mockClear();
+
+        await store.invalidateObjectType(Employee, undefined);
+
+        await vi.waitFor(
+          () => {
+            expect(sub.next).toHaveBeenCalled();
+          },
+          { timeout: 5000 },
+        );
+
+        expect(sub.next).toHaveBeenLastCalledWith(
+          expect.objectContaining({
+            resolvedList: [],
+          }),
+        );
+      });
+
+      it("should add modified object to list when it newly matches where clause", async () => {
+        fauxFoundry.getDefaultDataStore().clear();
+
+        fauxFoundry.getDefaultDataStore().registerObject(Employee, {
+          $apiName: "Employee",
+          employeeId: 600,
+          fullName: "Not Matching Yet",
+        });
+
+        const sub = mockObserver<ObjectSetPayload | undefined>();
+        defer(
+          store.objectSets.observe({
+            baseObjectSet: client(Employee) as ObjectSet<Employee>,
+            where: { fullName: { $eq: "Now Matching" } },
+          }, sub),
+        );
+
+        await vi.waitFor(
+          () => {
+            expect(sub.next).toHaveBeenLastCalledWith(
+              expect.objectContaining({
+                status: "loaded",
+              }),
+            );
+          },
+          { timeout: 5000 },
+        );
+
+        expect(sub.next).toHaveBeenLastCalledWith(
+          expect.objectContaining({
+            status: "loaded",
+            resolvedList: [],
+          }),
+        );
+
+        fauxFoundry.getDefaultDataStore().unregisterObjectOrThrow(
+          "Employee",
+          600,
+        );
+        fauxFoundry.getDefaultDataStore().registerObject(Employee, {
+          $apiName: "Employee",
+          employeeId: 600,
+          fullName: "Now Matching",
+        });
+
+        await client(Employee).fetchOne(600, {
+          $includeRid: true,
+        });
+
+        sub.next.mockClear();
+
+        await store.invalidateObjectType(Employee, undefined);
+
+        await vi.waitFor(
+          () => {
+            expect(sub.next).toHaveBeenCalled();
+          },
+          { timeout: 5000 },
+        );
+
+        expect(sub.next).toHaveBeenLastCalledWith(
+          expect.objectContaining({
+            resolvedList: [
+              expect.objectContaining({ employeeId: 600 }),
+            ],
+          }),
+        );
+      });
+
+      it("should trigger revalidation when object is deleted from complex ObjectSet", async () => {
+        fauxFoundry.getDefaultDataStore().clear();
+
+        const office = fauxFoundry.getDefaultDataStore().registerObject(
+          Office,
+          {
+            $apiName: "Office",
+            officeId: "office-del",
+            name: "Delete Test Office",
+          },
+        );
+
+        const emp = fauxFoundry.getDefaultDataStore().registerObject(
+          Employee,
+          {
+            $apiName: "Employee",
+            employeeId: 700,
+            fullName: "Delete Test Employee",
+          },
+        );
+
+        fauxFoundry.getDefaultDataStore().registerLink(
+          emp,
+          "officeLink",
+          office,
+          "occupants",
+        );
+
+        const sub = mockObserver<ObjectSetPayload | undefined>();
+        defer(
+          store.objectSets.observe({
+            baseObjectSet: client(Employee) as ObjectSet<Employee>,
+            pivotTo: "officeLink",
+          }, sub),
+        );
+
+        await vi.waitFor(
+          () => {
+            expect(sub.next).toHaveBeenLastCalledWith(
+              expect.objectContaining({
+                status: "loaded",
+              }),
+            );
+          },
+          { timeout: 5000 },
+        );
+
+        expect(sub.next).toHaveBeenLastCalledWith(
+          expect.objectContaining({
+            status: "loaded",
+            resolvedList: [
+              expect.objectContaining({ name: "Delete Test Office" }),
+            ],
+          }),
+        );
+
+        sub.next.mockClear();
+
+        fauxFoundry.getDefaultDataStore().unregisterObjectOrThrow(
+          "Employee",
+          700,
+        );
+
+        const objectCacheKey = store.cacheKeys.get<ObjectCacheKey>(
+          "object",
+          "Employee",
+          700,
+        );
+
+        store.batch({}, (batch) => {
+          batch.changes.deleteObject(objectCacheKey);
+          batch.delete(objectCacheKey, "loaded");
+        });
+
+        await vi.waitFor(
+          () => {
+            expect(sub.next).toHaveBeenCalled();
+          },
+          { timeout: 5000 },
+        );
+
+        expect(sub.next).toHaveBeenLastCalledWith(
+          expect.objectContaining({
+            resolvedList: [],
+          }),
+        );
+      });
     });
   });
 

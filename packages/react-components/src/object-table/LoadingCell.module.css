@@ -20,28 +20,11 @@
   flex: 1;
 }
 
-/* Blueprint skeleton animation keyframes */
-@keyframes skeleton-glow {
-  from {
-    background: var(--osdk-table-skeleton-color-from);
-    border-color: var(--osdk-table-skeleton-color-from);
-  }
-
-  to {
-    background: var(--osdk-table-skeleton-color-to);
-    border-color: var(--osdk-table-skeleton-color-to);
-  }
-}
-
-.osdkCellSkeleton {
-  animation: 1000ms linear infinite alternate skeleton-glow;
-  background: var(--osdk-table-skeleton-color-from);
-  background-clip: padding-box;
-  border-color: var(--osdk-table-skeleton-color-from);
+.osdkCellSkeleton.osdkCellSkeleton {
+  --osdk-background-skeleton-from: var(--osdk-table-skeleton-color-from);
+  --osdk-background-skeleton-to: var(--osdk-table-skeleton-color-to);
   border-radius: calc(var(--osdk-surface-border-radius) * 0.5);
   box-shadow: none;
   color: transparent;
   cursor: default;
-  pointer-events: none;
-  user-select: none;
 }

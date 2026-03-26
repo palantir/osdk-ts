@@ -127,7 +127,7 @@ type ValidationRule =
  */
 export interface FormFieldPropsByType {
   DATETIME_PICKER: DatetimePickerFieldProps;
-  DROPDOWN: DropdownFieldProps<unknown>;
+  DROPDOWN: DropdownFieldProps<unknown, boolean>;
   FILE_PICKER: FilePickerProps;
   NUMBER_INPUT: NumberInputFieldProps;
   OBJECT_SET: ObjectSetFieldProps<ObjectTypeDefinition>;

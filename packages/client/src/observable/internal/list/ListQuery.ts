@@ -263,6 +263,9 @@ export abstract class ListQuery extends BaseListQuery<
       ...(Object.keys(this.#orderBy).length > 0
         ? { $orderBy: this.#orderBy }
         : {}),
+      ...(this.options.$loadPropertySecurityMetadata
+        ? { $loadPropertySecurityMetadata: true }
+        : {}),
     });
 
     if (signal?.aborted) {
@@ -582,9 +585,9 @@ export abstract class ListQuery extends BaseListQuery<
    * Get cache key for object.
    */
   private getObjectCacheKey(
-    obj: { $objectType: string; $primaryKey: string | number | boolean },
+    obj: { $objectType: string; $primaryKey: string | number },
   ): ObjectCacheKey {
-    const pk = obj.$primaryKey as string | number;
+    const pk = obj.$primaryKey;
     return this.cacheKeys.get<ObjectCacheKey>(
       "object",
       obj.$objectType,

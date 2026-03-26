@@ -45,6 +45,7 @@ import {
   DEBUG_ONLY__changesToString,
 } from "./Changes.js";
 import { FunctionsHelper } from "./function/FunctionsHelper.js";
+import { GenericCanonicalizer } from "./GenericCanonicalizer.js";
 import { IntersectCanonicalizer } from "./IntersectCanonicalizer.js";
 import type { KnownCacheKey } from "./KnownCacheKey.js";
 import type { Entry } from "./Layer.js";
@@ -62,6 +63,7 @@ import {
 import { ObjectCacheKeyRegistry } from "./object/ObjectCacheKeyRegistry.js";
 import { ObjectsHelper } from "./object/ObjectsHelper.js";
 import { ObjectSetHelper } from "./objectset/ObjectSetHelper.js";
+import { ObjectSetArrayCanonicalizer } from "./ObjectSetArrayCanonicalizer.js";
 import { type OptimisticId } from "./OptimisticId.js";
 import { OrderByCanonicalizer } from "./OrderByCanonicalizer.js";
 import { PivotCanonicalizer } from "./PivotCanonicalizer.js";
@@ -102,6 +104,10 @@ export class Store {
   readonly ridListCanonicalizer: RidListCanonicalizer =
     new RidListCanonicalizer();
   readonly selectCanonicalizer: SelectCanonicalizer = new SelectCanonicalizer();
+  readonly objectSetArrayCanonicalizer: ObjectSetArrayCanonicalizer =
+    new ObjectSetArrayCanonicalizer();
+  readonly genericCanonicalizer: GenericCanonicalizer =
+    new GenericCanonicalizer();
 
   readonly client: Client;
 
@@ -184,6 +190,7 @@ export class Store {
       this.orderByCanonicalizer,
       this.rdpCanonicalizer,
       this.selectCanonicalizer,
+      this.objectSetArrayCanonicalizer,
     );
   }
 
@@ -399,6 +406,18 @@ export class Store {
     cacheKey: KnownCacheKey,
     changes: Changes,
   ): boolean {
+    if (cacheKey.type === "objectSet") {
+      const query = this.queries.peek(cacheKey);
+      if (query) {
+        for (const objectType of query.objectTypes) {
+          if (this.#changesAffectObjectType(changes, objectType)) {
+            return true;
+          }
+        }
+      }
+      return false;
+    }
+
     const queryObjectType = this.#getQueryObjectType(cacheKey);
     if (!queryObjectType) {
       return false;
@@ -486,6 +505,15 @@ export class Store {
     const modifiedForType = changes.modifiedObjects.get(objectType);
     if (modifiedForType && modifiedForType.length > 0) {
       return true;
+    }
+
+    for (const deletedKey of changes.deleted) {
+      if (
+        deletedKey.type === "object"
+        && deletedKey.otherKeys[OBJECT_API_NAME_IDX] === objectType
+      ) {
+        return true;
+      }
     }
 
     return false;

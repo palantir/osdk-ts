@@ -38,6 +38,13 @@ describe(OrderByCanonicalizer, () => {
     expect(canonLong).not.toEqual(canon1);
   });
 
+  it("preserves key order for multi-sort priority", () => {
+    const obc = new OrderByCanonicalizer();
+    const canon1 = obc.canonicalize({ a: "asc", b: "desc" });
+    const canon2 = obc.canonicalize({ b: "desc", a: "asc" });
+    expect(canon1).not.toBe(canon2);
+  });
+
   it("cleans up", async () => {
     const callback = vi.fn((...args: any[]) => {
       console.log("args", args);
