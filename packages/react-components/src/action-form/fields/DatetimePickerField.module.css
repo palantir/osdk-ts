@@ -1,0 +1,186 @@
+/* DatetimePickerField — text input + popover calendar */
+
+/* Input */
+.input {
+  width: 100%;
+  font-family: var(--osdk-datetime-input-font-family);
+  font-size: var(--osdk-datetime-input-font-size);
+  padding: var(--osdk-datetime-input-padding);
+  border: var(--osdk-datetime-input-border);
+  border-radius: var(--osdk-datetime-input-border-radius);
+  background: var(--osdk-datetime-input-bg);
+  color: var(--osdk-datetime-input-color);
+  box-sizing: border-box;
+
+  &:focus {
+    border-color: var(--osdk-datetime-input-focus-border-color);
+    outline: var(--osdk-datetime-input-focus-outline);
+    outline-offset: var(--osdk-datetime-input-focus-outline-offset);
+  }
+}
+
+.inputError {
+  border-color: var(--osdk-datetime-input-error-border-color);
+  color: var(--osdk-datetime-input-error-color);
+}
+
+/* Popover */
+.popover {
+  background: var(--osdk-datetime-popover-bg);
+  border: var(--osdk-datetime-popover-border);
+  border-radius: var(--osdk-datetime-popover-border-radius);
+  box-shadow: var(--osdk-datetime-popover-shadow);
+  padding: var(--osdk-datetime-popover-padding);
+  z-index: var(--osdk-datetime-popover-z-index);
+}
+
+/* Calendar — DayPicker classNames */
+.calendar {
+  font-family: var(--osdk-datetime-calendar-font-family);
+  font-size: var(--osdk-datetime-calendar-font-size);
+}
+
+.calendarMonths {
+  display: flex;
+}
+
+.calendarMonthGrid {
+  border-collapse: collapse;
+}
+
+.calendarWeekday {
+  padding: var(--osdk-datetime-calendar-gap);
+  font-size: var(--osdk-datetime-calendar-weekday-font-size);
+  color: var(--osdk-datetime-calendar-weekday-color);
+  text-align: center;
+  width: var(--osdk-datetime-calendar-cell-size);
+}
+
+.calendarDay {
+  padding: var(--osdk-datetime-calendar-gap);
+  text-align: center;
+}
+
+.calendarDayButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--osdk-datetime-calendar-cell-size);
+  height: var(--osdk-datetime-calendar-cell-size);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-radius: var(--osdk-datetime-calendar-day-border-radius);
+  font: inherit;
+  color: inherit;
+
+  &:hover {
+    background: var(--osdk-datetime-calendar-day-hover-bg);
+  }
+
+  &:active {
+    background: var(--osdk-datetime-calendar-day-active-bg);
+  }
+}
+
+.calendarSelected .calendarDayButton {
+  background: var(--osdk-datetime-calendar-selected-bg);
+  color: var(--osdk-datetime-calendar-selected-color);
+
+  &:hover {
+    background: var(--osdk-datetime-calendar-selected-hover-bg);
+  }
+}
+
+.calendarToday .calendarDayButton {
+  font-weight: var(--osdk-datetime-calendar-today-font-weight);
+}
+
+.calendarOutside .calendarDayButton {
+  color: var(--osdk-datetime-calendar-outside-color);
+}
+
+.calendarDisabled .calendarDayButton {
+  color: var(--osdk-datetime-calendar-disabled-color);
+  cursor: default;
+
+  &:hover {
+    background: transparent;
+  }
+}
+
+.calendarHidden {
+  visibility: hidden;
+}
+
+/* Calendar navigation */
+.calendarNav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.calendarNavButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--osdk-datetime-calendar-nav-button-size);
+  height: var(--osdk-datetime-calendar-nav-button-size);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-radius: var(--osdk-datetime-calendar-nav-button-border-radius);
+  padding: 0;
+
+  &:hover {
+    background: var(--osdk-datetime-calendar-nav-button-hover-bg);
+  }
+}
+
+.calendarMonthCaption {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.calendarCaptionLabel {
+  font-size: var(--osdk-datetime-calendar-caption-font-size);
+  font-weight: var(--osdk-datetime-calendar-caption-font-weight);
+}
+
+.calendarChevron {
+  width: var(--osdk-datetime-calendar-chevron-size);
+  height: var(--osdk-datetime-calendar-chevron-size);
+  fill: currentColor;
+}
+
+/* Time input footer */
+.timeFooter {
+  padding-top: var(--osdk-datetime-time-padding-top);
+  border-top: var(--osdk-datetime-time-border-top);
+  margin-top: var(--osdk-datetime-time-padding-top);
+}
+
+.timeInput {
+  width: 100%;
+  font-family: var(--osdk-datetime-input-font-family);
+  font-size: var(--osdk-datetime-input-font-size);
+  padding: var(--osdk-datetime-input-padding);
+  border: var(--osdk-datetime-input-border);
+  border-radius: var(--osdk-datetime-input-border-radius);
+  background: var(--osdk-datetime-input-bg);
+  color: var(--osdk-datetime-input-color);
+  box-sizing: border-box;
+
+  &:focus {
+    border-color: var(--osdk-datetime-input-focus-border-color);
+    outline: var(--osdk-datetime-input-focus-outline);
+    outline-offset: var(--osdk-datetime-input-focus-outline-offset);
+  }
+}
+
+/* Calendar fallback / loading */
+.calendarFallback {
+  width: var(--osdk-datetime-calendar-fallback-width);
+  height: var(--osdk-datetime-calendar-fallback-height);
+}
