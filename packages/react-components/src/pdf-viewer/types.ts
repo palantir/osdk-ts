@@ -47,6 +47,11 @@ export interface PdfAnnotation {
   color?: string;
 }
 
+/** Result passed to the {@link PdfViewerProps.onDownload} callback. */
+export type PdfDownloadResult =
+  | { success: true; filename: string }
+  | { success: false; error: Error };
+
 /** Props for the {@link PdfViewer} component. */
 export interface PdfViewerProps {
   /** PDF source — URL string or ArrayBuffer */
@@ -60,6 +65,13 @@ export interface PdfViewerProps {
    * @returns void
    */
   onAnnotationClick?: (annotation: PdfAnnotation) => void;
+  /**
+   * Callback fired when a download completes or fails.
+   *
+   * @param result - The download result indicating success with the filename, or failure with an error
+   * @returns void
+   */
+  onDownload?: (result: PdfDownloadResult) => void;
   /** Initial page number (1-indexed, default 1) */
   initialPage?: number;
   /** Initial zoom scale (default 1.0) */

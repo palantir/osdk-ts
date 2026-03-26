@@ -64,6 +64,7 @@ export { BasePdfViewer } from "../pdf-viewer/PdfViewer.js";
 export type {
   AnnotationType,
   PdfAnnotation,
+  PdfDownloadResult,
   PdfViewerProps,
   SidebarMode,
 } from "../pdf-viewer/types.js";

@@ -314,4 +314,112 @@ describe("usePdfViewerState", () => {
       result.current.download();
     });
   });
+
+  it("should call onDownload with success result after download", async () => {
+    const onDownload = vi.fn();
+    const mockData = new Uint8Array([1, 2, 3]);
+    const coreResult = createMockCoreResult();
+    coreResult.document = {
+      getData: () => Promise.resolve(mockData),
+    } as unknown as PDFDocumentProxy;
+
+    mockedUsePdfViewerCore.mockReturnValue(coreResult);
+    mockedUsePdfViewerSearch.mockReturnValue(createMockSearchResult());
+    mockedUsePdfOutline.mockReturnValue([]);
+
+    const { result } = renderHook(() =>
+      usePdfViewerState({ src: "test.pdf", onDownload })
+    );
+
+    await act(async () => {
+      result.current.download("report.pdf");
+    });
+
+    expect(onDownload).toHaveBeenCalledWith({
+      success: true,
+      filename: "report.pdf",
+    });
+  });
+
+  it("should call onDownload with failure result when getData rejects", async () => {
+    const onDownload = vi.fn();
+    const downloadError = new Error("Corrupted data");
+    const coreResult = createMockCoreResult();
+    coreResult.document = {
+      getData: () => Promise.reject(downloadError),
+    } as unknown as PDFDocumentProxy;
+
+    mockedUsePdfViewerCore.mockReturnValue(coreResult);
+    mockedUsePdfViewerSearch.mockReturnValue(createMockSearchResult());
+    mockedUsePdfOutline.mockReturnValue([]);
+
+    const { result } = renderHook(() =>
+      usePdfViewerState({ src: "test.pdf", onDownload })
+    );
+
+    await act(async () => {
+      result.current.download();
+    });
+
+    expect(onDownload).toHaveBeenCalledWith({
+      success: false,
+      error: downloadError,
+    });
+  });
+
+  it("should wrap non-Error rejection in an Error object", async () => {
+    const onDownload = vi.fn();
+    const coreResult = createMockCoreResult();
+    coreResult.document = {
+      getData: () => Promise.reject("string error"),
+    } as unknown as PDFDocumentProxy;
+
+    mockedUsePdfViewerCore.mockReturnValue(coreResult);
+    mockedUsePdfViewerSearch.mockReturnValue(createMockSearchResult());
+    mockedUsePdfOutline.mockReturnValue([]);
+
+    const { result } = renderHook(() =>
+      usePdfViewerState({ src: "test.pdf", onDownload })
+    );
+
+    await act(async () => {
+      result.current.download();
+    });
+
+    expect(onDownload).toHaveBeenCalledWith({
+      success: false,
+      error: expect.objectContaining({
+        message: "Failed to download PDF",
+      }),
+    });
+  });
+
+  it("should derive filename from src URL when not provided", async () => {
+    const onDownload = vi.fn();
+    const mockData = new Uint8Array([1, 2, 3]);
+    const coreResult = createMockCoreResult();
+    coreResult.document = {
+      getData: () => Promise.resolve(mockData),
+    } as unknown as PDFDocumentProxy;
+
+    mockedUsePdfViewerCore.mockReturnValue(coreResult);
+    mockedUsePdfViewerSearch.mockReturnValue(createMockSearchResult());
+    mockedUsePdfOutline.mockReturnValue([]);
+
+    const { result } = renderHook(() =>
+      usePdfViewerState({
+        src: "https://example.com/files/report.pdf",
+        onDownload,
+      })
+    );
+
+    await act(async () => {
+      result.current.download();
+    });
+
+    expect(onDownload).toHaveBeenCalledWith({
+      success: true,
+      filename: "report.pdf",
+    });
+  });
 });

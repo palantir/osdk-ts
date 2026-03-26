@@ -16,7 +16,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { MAX_SCALE, MIN_SCALE, SCALE_STEP } from "../constants.js";
-import type { SidebarMode } from "../types.js";
+import type { PdfDownloadResult, SidebarMode } from "../types.js";
 import { usePdfOutline } from "./usePdfOutline.js";
 import type {
   UsePdfViewerCoreOptions,
@@ -31,6 +31,8 @@ export interface UsePdfViewerStateOptions extends UsePdfViewerCoreOptions {
   initialSidebarOpen?: boolean;
   /** Which sidebar panel to show (default "thumbnails") */
   sidebarMode?: SidebarMode;
+  /** Callback fired when a download completes or fails */
+  onDownload?: (result: PdfDownloadResult) => void;
 }
 
 export interface UsePdfViewerStateResult extends UsePdfViewerCoreResult {
@@ -71,6 +73,7 @@ export function usePdfViewerState({
   initialScale,
   initialSidebarOpen = false,
   sidebarMode: sidebarModeProp = "thumbnails",
+  onDownload,
 }: UsePdfViewerStateOptions): UsePdfViewerStateResult {
   const core = usePdfViewerCore({ src, initialPage, initialScale });
 
@@ -148,10 +151,16 @@ export function usePdfViewerState({
       a.download = resolvedFilename;
       a.click();
       URL.revokeObjectURL(url);
-    }).catch(() => {
-      // Silently ignore download failures (e.g. corrupted data)
+      onDownload?.({ success: true, filename: resolvedFilename });
+    }).catch((err: unknown) => {
+      onDownload?.({
+        success: false,
+        error: err instanceof Error
+          ? err
+          : new Error("Failed to download PDF"),
+      });
     });
-  }, [core.document, src]);
+  }, [core.document, src, onDownload]);
 
   return {
     ...core,

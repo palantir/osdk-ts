@@ -33,6 +33,7 @@ export function BasePdfViewer({
   src,
   annotations = EMPTY_ANNOTATIONS,
   onAnnotationClick,
+  onDownload,
   initialPage = 1,
   initialScale = 1.0,
   initialSidebarOpen = false,
@@ -47,6 +48,7 @@ export function BasePdfViewer({
     initialScale,
     initialSidebarOpen,
     sidebarMode: sidebarModeProp,
+    onDownload,
   });
 
   const rootClassName = classnames(styles.pdfViewer, className);
