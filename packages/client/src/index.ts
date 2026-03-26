@@ -80,3 +80,6 @@ export {
   createObjectSpecifierFromPrimaryKey,
   extractPrimaryKeyFromObjectSpecifier,
 } from "./util/objectSpecifierUtils.js";
+
+// TEST: Adding moment.js to verify bundle size check catches regressions
+export { default as moment } from "moment";
