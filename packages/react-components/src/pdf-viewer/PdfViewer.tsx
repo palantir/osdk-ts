@@ -26,6 +26,7 @@ import { PdfViewerSidebar } from "./components/PdfViewerSidebar.js";
 import { PdfViewerToolbar } from "./components/PdfViewerToolbar.js";
 import { EMPTY_ANNOTATION_ARRAY } from "./constants.js";
 import { usePdfAnnotationsByPage } from "./hooks/usePdfAnnotationsByPage.js";
+import { usePdfFormFields } from "./hooks/usePdfFormFields.js";
 import { usePdfHighlightMode } from "./hooks/usePdfHighlightMode.js";
 import { usePdfViewerState } from "./hooks/usePdfViewerState.js";
 import styles from "./PdfViewer.module.css";
@@ -39,6 +40,9 @@ export function BasePdfViewer({
   highlightEnabled = false,
   onTextHighlight,
   onHighlightDelete,
+  formData,
+  onFormSubmit,
+  onFormChange,
   initialPage = 1,
   initialScale = 1.0,
   initialSidebarOpen = false,
@@ -63,6 +67,15 @@ export function BasePdfViewer({
     enabled: highlightEnabled,
     onTextHighlight,
     onHighlightDelete,
+  });
+
+  const { hasFormFields, submitFormData } = usePdfFormFields({
+    pdfViewerRef: viewer.pdfViewerRef,
+    eventBusRef: viewer.eventBusRef,
+    document: viewer.document,
+    formData,
+    onFormSubmit,
+    onFormChange,
   });
 
   const annotationsByPage = usePdfAnnotationsByPage(annotations);
@@ -117,6 +130,8 @@ export function BasePdfViewer({
         highlightEnabled={highlightEnabled}
         highlightModeActive={highlightModeActive}
         onHighlightToggle={toggleHighlightMode}
+        enableFormSave={onFormSubmit != null && hasFormFields}
+        onFormSave={submitFormData}
       />
       {viewer.search.isSearchOpen && (
         <PdfViewerSearchBar

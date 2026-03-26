@@ -21,9 +21,10 @@ import React, { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { EMPTY_ANNOTATION_ARRAY } from "../constants.js";
 import { usePdfAnnotationsByPage } from "../hooks/usePdfAnnotationsByPage.js";
+import { usePdfFormFields } from "../hooks/usePdfFormFields.js";
 import { usePdfViewerCore } from "../hooks/usePdfViewerCore.js";
 import styles from "../PdfViewer.module.css";
-import type { PdfAnnotation } from "../types.js";
+import type { PdfAnnotation, PdfFormFieldValue } from "../types.js";
 import { PdfViewerAnnotationLayer } from "./PdfViewerAnnotationLayer.js";
 
 export interface PdfViewerContentProps {
@@ -41,6 +42,10 @@ export interface PdfViewerContentProps {
   onPageChange?: (page: number) => void;
   /** Callback fired when the zoom scale changes */
   onScaleChange?: (scale: number) => void;
+  /** Initial form field values keyed by field name. Applied when the document loads. */
+  formData?: Record<string, PdfFormFieldValue>;
+  /** Callback fired when any form field value changes. */
+  onFormChange?: (fieldName: string, value: PdfFormFieldValue) => void;
   /** Additional CSS class name for the root element */
   className?: string;
 }
@@ -53,10 +58,20 @@ export function PdfViewerContent({
   initialScale = 1.0,
   onPageChange: onPageChangeProp,
   onScaleChange: onScaleChangeProp,
+  formData,
+  onFormChange,
   className,
 }: PdfViewerContentProps): React.ReactElement {
   const viewer = usePdfViewerCore({ src, initialPage, initialScale });
   const annotationsByPage = usePdfAnnotationsByPage(annotations);
+
+  usePdfFormFields({
+    pdfViewerRef: viewer.pdfViewerRef,
+    eventBusRef: viewer.eventBusRef,
+    document: viewer.document,
+    formData,
+    onFormChange,
+  });
 
   // Use refs for callbacks to avoid firing on initial mount
   const onPageChangeRef = useRef(onPageChangeProp);

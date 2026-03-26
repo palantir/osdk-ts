@@ -45,3 +45,5 @@ export const PAGE_CHANGING_EVENT = "pagechanging";
 export const SCALE_CHANGING_EVENT = "scalechanging";
 export const PAGE_RENDERED_EVENT = "pagerendered";
 export const PAGES_LOADED_EVENT = "pagesloaded";
+// cspell:disable-next-line -- pdfjs EventBus event name
+export const ANNOTATION_LAYER_RENDERED_EVENT = "annotationlayerrendered";

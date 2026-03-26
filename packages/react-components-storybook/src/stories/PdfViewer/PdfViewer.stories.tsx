@@ -30,11 +30,9 @@ import { fn } from "storybook/test";
 import { MEDIA_EMPLOYEE_PK } from "../../mocks/fauxFoundry.js";
 import { Employee } from "../../types/Employee.js";
 
-const SAMPLE_PDF_URL =
-  "https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf";
+const SAMPLE_PDF_URL = "/compressed.tracemonkey-pldi-09.pdf";
 
-const BOOKMARKED_PDF_URL =
-  "https://raw.githubusercontent.com/mozilla/pdf.js/master/test/pdfs/nested_outline.pdf";
+const BOOKMARKED_PDF_URL = "/nested_outline.pdf";
 
 function createMockMedia(url: string, filename: string): Media {
   return {
@@ -184,7 +182,7 @@ export const WithPdfUrl: StoryObj<PdfViewerProps> = {
         code:
           `import { BasePdfViewer } from "@osdk/react-components/experimental";
 
-<BasePdfViewer src="https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf" />`,
+<BasePdfViewer src="/compressed.tracemonkey-pldi-09.pdf" />`,
       },
     },
   },
@@ -198,27 +196,27 @@ export const WithAnnotations: Story = {
         id: "h1",
         type: "highlight",
         page: 1,
-        rect: { x: 100, y: 700, width: 200, height: 20 },
-        label: "Important text",
+        rect: { x: 55, y: 696, width: 480, height: 24 },
+        label: "Title highlight",
       },
       {
         id: "u1",
         type: "underline",
         page: 1,
-        rect: { x: 100, y: 650, width: 150, height: 2 },
+        rect: { x: 88, y: 614, width: 440, height: 2 },
       },
       {
         id: "c1",
         type: "comment",
         page: 1,
-        rect: { x: 400, y: 600, width: 24, height: 24 },
+        rect: { x: 538, y: 400, width: 24, height: 24 },
         label: "Review this section",
       },
       {
         id: "p1",
         type: "pin",
         page: 1,
-        rect: { x: 300, y: 500, width: 16, height: 16 },
+        rect: { x: 44, y: 446, width: 16, height: 16 },
         label: "Pin marker",
       },
     ],
@@ -231,10 +229,10 @@ export const WithAnnotations: Story = {
 <PdfViewer
   media={myMediaObject}
   annotations={[
-    { id: "h1", type: "highlight", page: 1, rect: { x: 100, y: 700, width: 200, height: 20 }, label: "Important text" },
-    { id: "u1", type: "underline", page: 1, rect: { x: 100, y: 650, width: 150, height: 2 } },
-    { id: "c1", type: "comment", page: 1, rect: { x: 400, y: 600, width: 24, height: 24 }, label: "Review this" },
-    { id: "p1", type: "pin", page: 1, rect: { x: 300, y: 500, width: 16, height: 16 }, label: "Pin" },
+    { id: "h1", type: "highlight", page: 1, rect: { x: 55, y: 696, width: 480, height: 24 }, label: "Title highlight" },
+    { id: "u1", type: "underline", page: 1, rect: { x: 88, y: 614, width: 440, height: 2 } },
+    { id: "c1", type: "comment", page: 1, rect: { x: 538, y: 400, width: 24, height: 24 }, label: "Review this" },
+    { id: "p1", type: "pin", page: 1, rect: { x: 44, y: 446, width: 16, height: 16 }, label: "Pin" },
   ]}
   onAnnotationClick={(annotation) => handleAnnotationClick(annotation)}
 />`,
@@ -424,5 +422,32 @@ export const WithEmbeddedOutline: Story = {
     media: mockBookmarkedMedia,
     initialSidebarOpen: true,
     sidebarMode: "outline",
+  },
+};
+
+export const InteractiveForm: StoryObj<PdfViewerProps> = {
+  args: {
+    src: "/interactive-form-pdf.pdf",
+    onFormSubmit: fn(),
+    onFormChange: fn(),
+  },
+  render: (args: PdfViewerProps) => (
+    <div style={{ height: "600px" }}>
+      <BasePdfViewer {...args} />
+    </div>
+  ),
+  parameters: {
+    docs: {
+      source: {
+        code:
+          `import { BasePdfViewer } from "@osdk/react-components/experimental";
+
+<BasePdfViewer
+  src="https://example.com/interactive-form.pdf"
+  onFormChange={(fieldName, value) => console.log(fieldName, value)}
+  onFormSubmit={(data) => console.log("Form submitted:", data)}
+/>`,
+      },
+    },
   },
 };

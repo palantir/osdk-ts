@@ -20,6 +20,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Download,
+  FloppyDisk,
   Highlight,
   Menu,
   Minus,
@@ -48,6 +49,8 @@ export interface PdfViewerToolbarProps {
   highlightEnabled: boolean;
   highlightModeActive: boolean;
   onHighlightToggle: () => void;
+  enableFormSave?: boolean;
+  onFormSave?: () => void;
 }
 
 export function PdfViewerToolbar({
@@ -66,6 +69,8 @@ export function PdfViewerToolbar({
   highlightEnabled,
   highlightModeActive,
   onHighlightToggle,
+  enableFormSave = false,
+  onFormSave,
 }: PdfViewerToolbarProps): React.ReactElement {
   const [pageInputValue, setPageInputValue] = useState(String(currentPage));
 
@@ -272,6 +277,22 @@ export function PdfViewerToolbar({
             type="button"
           >
             <Download size={16} />
+          </Button>
+        </>
+      )}
+
+      {enableFormSave && (
+        <>
+          <div className={styles.separator} />
+
+          <Button
+            className={styles.toolbarButton}
+            onClick={onFormSave}
+            aria-label="Save form"
+            title="Save form"
+            type="button"
+          >
+            <FloppyDisk size={16} />
           </Button>
         </>
       )}

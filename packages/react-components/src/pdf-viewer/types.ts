@@ -76,6 +76,9 @@ export type PdfDownloadResult =
   | { success: true; filename: string }
   | { success: false; error: Error };
 
+/** Possible values for a PDF form field. */
+export type PdfFormFieldValue = string | boolean | string[];
+
 /** Data emitted when the user creates a text highlight via the highlight editor. */
 export interface PdfTextHighlightEvent {
   /** Page number (1-indexed) */
@@ -150,6 +153,27 @@ export interface PdfViewerProps {
    * If omitted, no icons are rendered.
    */
   outlineIcons?: Partial<Record<number, React.ComponentType>>;
+  /**
+   * Initial form field values keyed by field name. Applied when the document loads.
+   * Use this to pre-populate form fields when resuming a previously edited PDF.
+   */
+  formData?: Record<string, PdfFormFieldValue>;
+  /**
+   * Callback fired when the user clicks the save button in the toolbar.
+   * Receives all current form field values keyed by field name.
+   *
+   * @param data - All form field values keyed by field name
+   * @returns void
+   */
+  onFormSubmit?: (data: Record<string, PdfFormFieldValue>) => void;
+  /**
+   * Callback fired when any form field value changes.
+   *
+   * @param fieldName - The name of the field that changed
+   * @param value - The new value
+   * @returns void
+   */
+  onFormChange?: (fieldName: string, value: PdfFormFieldValue) => void;
   /** Additional CSS class name for the root element */
   className?: string;
 }

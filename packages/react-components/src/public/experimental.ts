@@ -66,6 +66,7 @@ export type {
   PdfAnnotation,
   PdfAnnotationRenderProps,
   PdfDownloadResult,
+  PdfFormFieldValue,
   PdfRect,
   PdfTextHighlightEvent,
   PdfViewerProps,
@@ -105,6 +106,11 @@ export {
 } from "../pdf-viewer/hooks/usePdfAnnotationPortals.js";
 export { usePdfAnnotationsByPage } from "../pdf-viewer/hooks/usePdfAnnotationsByPage.js";
 export { usePdfDocument } from "../pdf-viewer/hooks/usePdfDocument.js";
+export {
+  usePdfFormFields,
+  type UsePdfFormFieldsOptions,
+  type UsePdfFormFieldsResult,
+} from "../pdf-viewer/hooks/usePdfFormFields.js";
 export {
   usePdfHighlightMode,
   type UsePdfHighlightModeOptions,

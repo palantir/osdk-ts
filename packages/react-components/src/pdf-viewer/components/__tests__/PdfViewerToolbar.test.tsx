@@ -187,4 +187,36 @@ describe("PdfViewerToolbar", () => {
     rerender(<PdfViewerToolbar {...defaultProps} currentPage={5} />);
     expect(input.value).toBe("5");
   });
+
+  it("should render save button when enableFormSave is true", () => {
+    render(
+      <PdfViewerToolbar
+        {...defaultProps}
+        enableFormSave={true}
+        onFormSave={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByLabelText("Save form")).toBeTruthy();
+  });
+
+  it("should not render save button when enableFormSave is false", () => {
+    render(<PdfViewerToolbar {...defaultProps} />);
+
+    expect(screen.queryByLabelText("Save form")).toBeNull();
+  });
+
+  it("should call onFormSave when save button is clicked", () => {
+    const onFormSave = vi.fn();
+    render(
+      <PdfViewerToolbar
+        {...defaultProps}
+        enableFormSave={true}
+        onFormSave={onFormSave}
+      />,
+    );
+
+    fireEvent.click(screen.getByLabelText("Save form"));
+    expect(onFormSave).toHaveBeenCalled();
+  });
 });

@@ -86,3 +86,4 @@ pagesloaded
 scalechanging
 updatefindcontrolstate
 updatefindmatchescount
+radiobutton
