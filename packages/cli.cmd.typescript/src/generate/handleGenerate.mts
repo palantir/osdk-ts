@@ -16,7 +16,10 @@
 
 import { ExitProcessError, YargsCheckError } from "@osdk/cli.common";
 import invokeLoginFlow from "@osdk/cli.common/loginFlow";
-import type { OntologyIdentifier } from "@osdk/foundry.ontologies";
+import type {
+  OntologyIdentifier,
+  QueryDataType,
+} from "@osdk/foundry.ontologies";
 import { OntologiesV2 } from "@osdk/foundry.ontologies";
 import type { MinimalFs, WireOntologyDefinition } from "@osdk/generator";
 import {
@@ -152,12 +155,19 @@ async function generateFromStack(args: TypescriptGenerateArgs) {
       };
     });
 
-    ontology.queryTypes = sortKeys(ontology.queryTypes, (x) => {
-      return {
-        ...x,
-        parameters: sortKeys(x.parameters),
-      };
-    });
+    ontology.queryTypes = sortKeys(
+      Object.fromEntries(
+        Object.entries(ontology.queryTypes).filter(([_, query]) => {
+          return !isOntologyEditQuery(query.output);
+        }),
+      ),
+      (x) => {
+        return {
+          ...x,
+          parameters: sortKeys(x.parameters),
+        };
+      },
+    );
 
     ontology.sharedPropertyTypes = sortKeys(ontology.sharedPropertyTypes);
 
@@ -357,4 +367,54 @@ function createNormalFs(): MinimalFs {
     },
     readdir: async (path: string) => fs.promises.readdir(path),
   };
+}
+
+/**
+ * Recursively checks if a QueryDataType contains an unsupported OntologyEdit type.
+ * This is used to filter out queries that return OntologyEdit, which cannot be generated.
+ * We have internal usage where we can't easily filter these out, so putting this in for now
+ */
+function isOntologyEditQuery(dataType: QueryDataType): boolean {
+  switch (dataType.type) {
+    case "unsupported":
+      return dataType.unsupportedType === "OntologyEdit";
+
+    case "array":
+    case "set":
+      return isOntologyEditQuery(dataType.subType);
+
+    case "union":
+      return dataType.unionTypes.some(t => isOntologyEditQuery(t));
+
+    case "struct":
+      return dataType.fields.some(f => isOntologyEditQuery(f.fieldType));
+
+    case "entrySet":
+      return isOntologyEditQuery(dataType.keyType)
+        || isOntologyEditQuery(dataType.valueType);
+
+    case "attachment":
+    case "boolean":
+    case "date":
+    case "double":
+    case "float":
+    case "integer":
+    case "long":
+    case "mediaReference":
+    case "null":
+    case "string":
+    case "timestamp":
+    case "object":
+    case "objectSet":
+    case "interfaceObject":
+    case "interfaceObjectSet":
+    case "twoDimensionalAggregation":
+    case "threeDimensionalAggregation":
+    case "void":
+      return false;
+
+    default:
+      const _: never = dataType;
+      return false;
+  }
 }
