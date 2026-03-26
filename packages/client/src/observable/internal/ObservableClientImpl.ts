@@ -326,82 +326,62 @@ export class ObservableClientImpl implements ObservableClient {
     const store = this.__experimentalStore;
     const result = { ...options };
 
-    if (result.where) {
-      result.where = store.whereCanonicalizer.canonicalize(result.where);
-    }
+    result.where = store.whereCanonicalizer.canonicalize(result.where);
+    result.withProperties = store.genericCanonicalizer.canonicalize(
+      result.withProperties,
+    );
+    result.orderBy = store.orderByCanonicalizer.canonicalize(result.orderBy);
+    result.aggregate = store.genericCanonicalizer.canonicalize(
+      result.aggregate,
+    );
+    result.intersectWith = store.genericCanonicalizer.canonicalize(
+      result.intersectWith,
+    );
+    result.$select = store.selectCanonicalizer.canonicalize(result.$select);
 
-    if (result.withProperties) {
-      result.withProperties = store.genericCanonicalizer.canonicalize(
-        result.withProperties,
-      );
-    }
-
-    if (result.orderBy) {
-      result.orderBy = store.orderByCanonicalizer.canonicalize(result.orderBy);
-    }
-
-    if (result.aggregate) {
-      result.aggregate = store.genericCanonicalizer.canonicalize(
-        result.aggregate,
-      );
-    }
-
-    if (result.intersectWith) {
-      result.intersectWith = store.genericCanonicalizer.canonicalize(
-        result.intersectWith,
-      );
-    }
-
-    if (result.union && result.union.length > 0) {
-      const wireStrings = result.union.map(os =>
-        JSON.stringify(getWireObjectSet(os as ObjectSet<any, any>))
-      );
-      const canonKey = store.objectSetArrayCanonicalizer.canonicalizeUnion(
-        wireStrings,
-      );
-      let cached = this.#unionCache.get(canonKey);
-      if (!cached) {
-        cached = result.union;
-        this.#unionCache.set(canonKey, cached);
-      }
-      result.union = cached;
-    }
-
-    if (result.intersect && result.intersect.length > 0) {
-      const wireStrings = result.intersect.map(os =>
-        JSON.stringify(getWireObjectSet(os as ObjectSet<any, any>))
-      );
-      const canonKey = store.objectSetArrayCanonicalizer.canonicalizeIntersect(
-        wireStrings,
-      );
-      let cached = this.#intersectCache.get(canonKey);
-      if (!cached) {
-        cached = result.intersect;
-        this.#intersectCache.set(canonKey, cached);
-      }
-      result.intersect = cached;
-    }
-
-    if (result.subtract && result.subtract.length > 0) {
-      const wireStrings = result.subtract.map(os =>
-        JSON.stringify(getWireObjectSet(os as ObjectSet<any, any>))
-      );
-      const canonKey = store.objectSetArrayCanonicalizer.canonicalizeSubtract(
-        wireStrings,
-      );
-      let cached = this.#subtractCache.get(canonKey);
-      if (!cached) {
-        cached = result.subtract;
-        this.#subtractCache.set(canonKey, cached);
-      }
-      result.subtract = cached;
-    }
-
-    if (result.$select && result.$select.length > 0) {
-      result.$select = store.selectCanonicalizer.canonicalize(result.$select);
-    }
+    result.union = this.#canonObjectSetArray(
+      result.union,
+      store.objectSetArrayCanonicalizer.canonicalizeUnion.bind(
+        store.objectSetArrayCanonicalizer,
+      ),
+      this.#unionCache,
+    );
+    result.intersect = this.#canonObjectSetArray(
+      result.intersect,
+      store.objectSetArrayCanonicalizer.canonicalizeIntersect.bind(
+        store.objectSetArrayCanonicalizer,
+      ),
+      this.#intersectCache,
+    );
+    result.subtract = this.#canonObjectSetArray(
+      result.subtract,
+      store.objectSetArrayCanonicalizer.canonicalizeSubtract.bind(
+        store.objectSetArrayCanonicalizer,
+      ),
+      this.#subtractCache,
+    );
 
     return result as CanonicalizedOptions<T>;
+  }
+
+  #canonObjectSetArray<T>(
+    arr: ReadonlyArray<T> | undefined,
+    canonicalize: (wireStrings: string[]) => Canonical<string[]>,
+    cache: WeakMap<Canonical<string[]>, ReadonlyArray<T>>,
+  ): ReadonlyArray<T> | undefined {
+    if (!arr || arr.length === 0) {
+      return arr;
+    }
+    const wireStrings = arr.map(os =>
+      JSON.stringify(getWireObjectSet(os as ObjectSet<any, any>))
+    );
+    const canonKey = canonicalize(wireStrings);
+    let cached = cache.get(canonKey);
+    if (!cached) {
+      cached = arr;
+      cache.set(canonKey, cached);
+    }
+    return cached;
   }
 }
 
