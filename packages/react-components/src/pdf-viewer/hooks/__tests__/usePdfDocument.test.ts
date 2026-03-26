@@ -24,10 +24,6 @@ vi.mock("pdfjs-dist", () => ({
   GlobalWorkerOptions: { workerSrc: "" },
 }));
 
-vi.mock("pdfjs-dist/build/pdf.worker.min.mjs?url", () => ({
-  default: "/mock-worker.js",
-}));
-
 const { getDocument } = await import("pdfjs-dist");
 const mockedGetDocument = vi.mocked(getDocument);
 
