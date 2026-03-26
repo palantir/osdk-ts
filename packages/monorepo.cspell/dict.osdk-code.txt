@@ -80,3 +80,9 @@ foos
 rcompare
 zipcode
 IDPS
+pagechanging
+pagerendered
+pagesloaded
+scalechanging
+updatefindcontrolstate
+updatefindmatchescount

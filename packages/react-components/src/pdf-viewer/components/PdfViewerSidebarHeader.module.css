@@ -1,0 +1,70 @@
+/*
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.sidebarHeader {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: var(--osdk-surface-spacing);
+  border-bottom: var(--osdk-pdf-viewer-sidebar-border);
+  flex-shrink: 0;
+}
+
+.toggleGroup {
+  display: flex;
+  align-items: center;
+  gap: var(--osdk-spacing-2xs, 2px);
+  padding: var(--osdk-spacing-2xs, 2px);
+  border: 1px solid var(--osdk-surface-border-color, rgba(0, 0, 0, 0.15));
+  border-radius: var(--osdk-surface-border-radius);
+  background-color: var(--osdk-surface-background-color, transparent);
+}
+
+.modeButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: none;
+  color: var(--osdk-typography-color-muted);
+  cursor: pointer;
+  border-radius: var(--osdk-surface-border-radius);
+  padding: 0;
+}
+
+.modeButton:hover {
+  background-color: var(--osdk-surface-background-color-default-hover);
+}
+
+.modeButton:active {
+  background-color: var(--osdk-surface-background-color-default-active);
+}
+
+.modeButton:focus-visible {
+  outline: var(--osdk-focus-outline);
+  outline-offset: var(--osdk-focus-visible-outline-offset);
+}
+
+.modeButton[data-pressed] {
+  background-color: var(--osdk-pdf-viewer-outline-item-active-bg, rgba(45, 114, 210, 0.1));
+  color: var(--osdk-pdf-viewer-outline-item-active-color, var(--osdk-intent-primary));
+}
+
+.modeButton[data-pressed]:hover {
+  background-color: var(--osdk-pdf-viewer-outline-item-active-bg, rgba(45, 114, 210, 0.1));
+}

@@ -17,7 +17,7 @@
 import classnames from "classnames";
 import type { PDFDocumentProxy, PDFPageProxy } from "pdfjs-dist";
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { DEVICE_PIXEL_RATIO, THUMBNAIL_SCALE } from "./constants.js";
+import { DEVICE_PIXEL_RATIO, THUMBNAIL_SCALE } from "../constants.js";
 import styles from "./PdfViewerThumbnail.module.css";
 
 interface PdfViewerThumbnailProps {

@@ -38,8 +38,8 @@ initialize({
   // Wait for the service worker to be ready before rendering
   waitUntilReady: true,
 });
-setupFauxFoundry();
-// Create client after MSW is initialized
+const fauxFoundryReady = setupFauxFoundry();
+// Create client — only needs baseUrl/ontologyRid, not registered data
 const mockClient = createClient(
   fauxFoundry.baseUrl,
   fauxFoundry.defaultOntologyRid,
@@ -65,7 +65,9 @@ const preview: Preview = {
       handlers: fauxFoundry.handlers,
     },
   },
-  loaders: [mswLoader],
+  loaders: [async () => {
+    await fauxFoundryReady;
+  }, mswLoader],
   decorators: [
     (Story) => (
       <div className="root">

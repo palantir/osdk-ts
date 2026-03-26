@@ -14,23 +14,68 @@
  * limitations under the License.
  */
 
-import type { PdfViewerProps } from "@osdk/react-components/experimental";
-import { BasePdfViewer } from "@osdk/react-components/experimental";
+/* cspell:disable */
+
+import type { Media } from "@osdk/api";
+import type {
+  PdfViewerMediaProps,
+  PdfViewerProps,
+} from "@osdk/react-components/experimental";
+import { BasePdfViewer, PdfViewer } from "@osdk/react-components/experimental";
+import { useOsdkObject } from "@osdk/react/experimental";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { delay, http } from "msw";
 import { fn } from "storybook/test";
+import { MEDIA_EMPLOYEE_PK } from "../../mocks/fauxFoundry.js";
+import { Employee } from "../../types/Employee.js";
+
 const SAMPLE_PDF_URL =
   "https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf";
 
-const meta: Meta<PdfViewerProps> = {
+const BOOKMARKED_PDF_URL =
+  "https://raw.githubusercontent.com/mozilla/pdf.js/master/test/pdfs/nested_outline.pdf";
+
+function createMockMedia(url: string, filename: string): Media {
+  return {
+    fetchContents: () => fetch(url),
+    fetchMetadata: () =>
+      Promise.resolve({
+        path: filename,
+        sizeBytes: 1024000,
+        mediaType: "application/pdf",
+      }),
+    getMediaReference: () => ({
+      mimeType: "application/pdf",
+      reference: {
+        type: "mediaSetViewItem" as const,
+        mediaSetViewItem: {
+          mediaItemRid: "ri.mio.main.media-item.mock-pdf",
+          mediaSetRid: "ri.mio.main.media-set.mock-set",
+          mediaSetViewRid: "ri.mio.main.media-set-view.mock-view",
+        },
+      },
+    }),
+  };
+}
+
+const mockMedia = createMockMedia(
+  SAMPLE_PDF_URL,
+  "compressed.tracemonkey-pldi-09.pdf",
+);
+const mockBookmarkedMedia = createMockMedia(
+  BOOKMARKED_PDF_URL,
+  "pdf-example-bookmarks.pdf",
+);
+
+const meta: Meta<PdfViewerMediaProps> = {
   title: "Components/PdfViewer",
-  component: BasePdfViewer,
+  component: PdfViewer,
   args: {
-    src: SAMPLE_PDF_URL,
+    media: mockMedia,
   },
-  render: (args: PdfViewerProps) => (
+  render: (args: PdfViewerMediaProps) => (
     <div style={{ height: "600px" }}>
-      <BasePdfViewer {...args} />
+      <PdfViewer {...args} />
     </div>
   ),
   parameters: {
@@ -39,9 +84,9 @@ const meta: Meta<PdfViewerProps> = {
     },
   },
   argTypes: {
-    src: {
-      description: "PDF source — URL string or ArrayBuffer",
-      control: "text",
+    media: {
+      description: "The Media object to fetch PDF contents from",
+      control: false,
     },
     annotations: {
       description:
@@ -68,6 +113,22 @@ const meta: Meta<PdfViewerProps> = {
       control: "boolean",
       table: { defaultValue: { summary: "false" } },
     },
+    enableDownload: {
+      description: "Whether the download button is shown in the toolbar",
+      control: "boolean",
+      table: { defaultValue: { summary: "false" } },
+    },
+    sidebarMode: {
+      description: "Which sidebar panel to show when the sidebar is open",
+      control: "radio",
+      options: ["thumbnails", "outline"],
+      table: { defaultValue: { summary: "\"thumbnails\"" } },
+    },
+    outlineIcons: {
+      description:
+        "Custom icon components for each outline depth level (0-indexed)",
+      control: false,
+    },
     className: {
       description: "Additional CSS class name for the root element",
       control: "text",
@@ -78,13 +139,52 @@ const meta: Meta<PdfViewerProps> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {
+export const WithOsdkMedia: Story = {
+  render: () => {
+    const { object: employee, isLoading } = useOsdkObject(
+      Employee,
+      MEDIA_EMPLOYEE_PK,
+    );
+
+    if (isLoading || !employee?.employeeDocuments) {
+      return <div style={{ height: "600px" }}>Loading OSDK media…</div>;
+    }
+
+    return (
+      <div style={{ height: "600px" }}>
+        <PdfViewer media={employee.employeeDocuments} />
+      </div>
+    );
+  },
   parameters: {
     docs: {
       source: {
         code: `import { PdfViewer } from "@osdk/react-components/experimental";
 
-<PdfViewer src="https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf" />`,
+// Access media from an OSDK object's media reference property
+const employee = useOsdkObject(Employee, employeePk);
+<PdfViewer media={employee.employeeDocuments} />`,
+      },
+    },
+  },
+};
+
+export const WithPdfUrl: StoryObj<PdfViewerProps> = {
+  args: {
+    src: SAMPLE_PDF_URL,
+  },
+  render: (args: PdfViewerProps) => (
+    <div style={{ height: "600px" }}>
+      <BasePdfViewer {...args} />
+    </div>
+  ),
+  parameters: {
+    docs: {
+      source: {
+        code:
+          `import { BasePdfViewer } from "@osdk/react-components/experimental";
+
+<BasePdfViewer src="https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf" />`,
       },
     },
   },
@@ -131,7 +231,7 @@ export const WithAnnotations: Story = {
         code: `import { PdfViewer } from "@osdk/react-components/experimental";
 
 <PdfViewer
-  src="..."
+  media={myMediaObject}
   annotations={{
     1: [
       { id: "h1", type: "highlight", page: 1, rect: { x: 100, y: 700, width: 200, height: 20 }, label: "Important text" },
@@ -156,7 +256,7 @@ export const WithSidebar: Story = {
       source: {
         code: `import { PdfViewer } from "@osdk/react-components/experimental";
 
-<PdfViewer src="..." initialSidebarOpen />`,
+<PdfViewer media={myMediaObject} initialSidebarOpen />`,
       },
     },
   },
@@ -171,16 +271,52 @@ export const CustomScale: Story = {
       source: {
         code: `import { PdfViewer } from "@osdk/react-components/experimental";
 
-<PdfViewer src="..." initialScale={1.5} />`,
+<PdfViewer media={myMediaObject} initialScale={1.5} />`,
       },
     },
   },
 };
 
-export const Loading: Story = {
+export const WithDownload: Story = {
+  args: {
+    enableDownload: true,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `import { PdfViewer } from "@osdk/react-components/experimental";
+
+<PdfViewer media={myMediaObject} enableDownload />`,
+      },
+    },
+  },
+};
+
+export const WithOutlineSidebar: Story = {
+  args: {
+    initialSidebarOpen: true,
+    sidebarMode: "outline",
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `import { PdfViewer } from "@osdk/react-components/experimental";
+
+<PdfViewer media={myMediaObject} initialSidebarOpen sidebarMode="outline" />`,
+      },
+    },
+  },
+};
+
+export const Loading: StoryObj<PdfViewerProps> = {
   args: {
     src: "/loading.pdf",
   },
+  render: (args: PdfViewerProps) => (
+    <div style={{ height: "600px" }}>
+      <BasePdfViewer {...args} />
+    </div>
+  ),
   parameters: {
     msw: {
       handlers: [
@@ -192,10 +328,15 @@ export const Loading: Story = {
   },
 };
 
-export const Error: Story = {
+export const Error: StoryObj<PdfViewerProps> = {
   args: {
     src: "/error.pdf",
   },
+  render: (args: PdfViewerProps) => (
+    <div style={{ height: "600px" }}>
+      <BasePdfViewer {...args} />
+    </div>
+  ),
   parameters: {
     msw: {
       handlers: [
@@ -204,5 +345,13 @@ export const Error: Story = {
         }),
       ],
     },
+  },
+};
+
+export const WithEmbeddedOutline: Story = {
+  args: {
+    media: mockBookmarkedMedia,
+    initialSidebarOpen: true,
+    sidebarMode: "outline",
   },
 };
