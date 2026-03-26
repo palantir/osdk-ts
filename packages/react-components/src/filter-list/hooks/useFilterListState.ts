@@ -186,6 +186,9 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
     if (!filterDefinitions) {
       return map;
     }
+    if (filterOperator === "or") {
+      return map;
+    }
     for (const definition of filterDefinitions) {
       const key = getFilterKey(definition);
       map.set(
