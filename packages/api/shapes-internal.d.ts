@@ -14,26 +14,4 @@
  * limitations under the License.
  */
 
-export {
-  isSourcePkSymbol,
-  ShapeNullabilityError,
-  SourcePrimaryKeySymbol,
-} from "../shapes/index.js";
-
-export type {
-  InferShapeDefinition,
-  InlineLinkConfig,
-  InlineShapeConfig,
-  LinkLoadConfig,
-  LinkStatus,
-  NullabilityViolation,
-  PropertyType,
-  RequiredProperty,
-  ShapeBaseType,
-  ShapeBuilder,
-  ShapeDefinition,
-  ShapeDerivedLinks,
-  ShapeInstance,
-  ShapeLinkBuilder,
-  ShapeLinkResult,
-} from "../shapes/index.js";
+export * from "./build/cjs/public/shapes-internal.cjs";

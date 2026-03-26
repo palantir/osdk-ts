@@ -73,11 +73,6 @@ export interface ShapeLinkSetOperation {
 export interface ShapeLinkObjectSetDef {
   readonly segments: readonly ShapeLinkSegment[];
   readonly where?: WhereClause<ObjectOrInterfaceDefinition>;
-  // Planned extension: dynamic where clause evaluated at query time.
-  // Not yet wired into ShapeLinkBuilder but included in shape ID computation.
-  readonly whereCallback?: (
-    vars: Record<string, unknown>,
-  ) => WhereClause<ObjectOrInterfaceDefinition>;
   readonly orderBy?: readonly ShapeLinkOrderBy[];
   readonly limit?: number;
   readonly distinct?: boolean;
@@ -125,8 +120,8 @@ export interface ShapeDefinition<
   readonly __debugName: string | undefined;
   readonly __baseType: BASE;
   readonly __baseTypeApiName: string;
-  readonly __props: Readonly<Record<string, ShapePropertyConfig>>;
-  readonly __derivedLinks: readonly ShapeDerivedLinkDef[];
+  readonly __props: Readonly<Record<string, unknown>>;
+  readonly __derivedLinks: readonly unknown[];
   readonly __selectedPropsType: SELECTED_PROPS;
   readonly __derivedLinksType: DERIVED_LINKS;
 }

@@ -16,32 +16,22 @@
 
 // Core types
 export type {
-  DerivedLinkConfig,
   LinkLoadConfig,
   LinkStatus,
-  NullabilityOp,
   NullabilityViolation,
   PropertyType,
   RequiredProperty,
   ShapeBaseType,
   ShapeBuilder,
   ShapeDefinition,
-  ShapeDerivedLinkDef,
   ShapeDerivedLinks,
   ShapeInstance,
   ShapeLinkBuilder,
-  ShapeLinkObjectSetDef,
-  ShapeLinkOrderBy,
   ShapeLinkResult,
-  ShapeLinkSegment,
-  ShapePropertyConfig,
-  ShapeSelectedProps,
 } from "./ShapeDefinition.js";
 
 // Inline shape config types
 export type {
-  InferInlineLinks,
-  InferInlineProps,
   InferShapeDefinition,
   InlineLinkConfig,
   InlineShapeConfig,

@@ -3,4 +3,4 @@
 "@osdk/faux": patch
 ---
 
-add shape type definitions and computeShapeId utility
+add shape type definitions with opaque internal fields and shapes-internal export path
