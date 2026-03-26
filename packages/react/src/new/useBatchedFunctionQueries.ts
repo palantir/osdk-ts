@@ -14,24 +14,29 @@
  * limitations under the License.
  */
 
-import type { QueryDefinition } from "@osdk/api";
+import type { CompileTimeMetadata, QueryDefinition } from "@osdk/api";
 import type { Client } from "@osdk/client";
 import React from "react";
 import { useOsdkClient } from "../useOsdkClient.js";
+import type {
+  UseOsdkFunctionOptions,
+  UseOsdkFunctionResult,
+} from "./useOsdkFunction.js";
 
-export interface BatchedFunctionQuery {
-  queryDefinition: QueryDefinition<unknown>;
-  options?: {
-    params?: unknown;
-    enabled?: boolean;
-  };
+export interface FunctionQueryParams<Q extends QueryDefinition<unknown>> {
+  queryDefinition: Q;
+  /**
+   * Only allow params and enabled options at the query level,
+   * other options are not yet supported in this batch context
+   */
+  options?: Pick<UseOsdkFunctionOptions<Q>, "params" | "enabled">;
 }
 
-export interface UseBatchedFunctionQueriesOptions {
+export interface UseBatchedFunctionQueriesProps {
   /**
    * Array of query configurations to execute
    */
-  queries: Array<BatchedFunctionQuery>;
+  queries: Array<FunctionQueryParams<QueryDefinition<unknown>>>;
 
   /**
    * Whether to enable all queries. When false, no queries will execute.
@@ -41,13 +46,9 @@ export interface UseBatchedFunctionQueriesOptions {
   enabled?: boolean;
 }
 
-export type BatchedFunctionQueryResult = {
-  data: unknown;
-  isLoading: boolean;
-  error: Error | undefined;
-  lastUpdated: number;
-  refetch: () => void;
-};
+export type UseBatchedFunctionQueryResult = Array<
+  UseOsdkFunctionResult<QueryDefinition<unknown>>
+>;
 
 /**
  * React hook for executing multiple OSDK function queries in batch.
@@ -60,13 +61,13 @@ export type BatchedFunctionQueryResult = {
  * @returns Array of results in the same order as input queries, each with the same shape as useOsdkFunction
  */
 export function useBatchedFunctionQueries(
-  options: UseBatchedFunctionQueriesOptions,
-): Array<BatchedFunctionQueryResult> {
+  options: UseBatchedFunctionQueriesProps,
+): UseBatchedFunctionQueryResult {
   const client = useOsdkClient();
   const { queries, enabled = true } = options;
 
   const [results, setResults] = React.useState<
-    Array<BatchedFunctionQueryResult>
+    UseBatchedFunctionQueryResult
   >(() =>
     queries.map(() => ({
       data: undefined,
@@ -163,15 +164,24 @@ export function useBatchedFunctionQueries(
   return results;
 }
 
+interface QueryResult<Q extends QueryDefinition<unknown>> {
+  index: number;
+  result?:
+    | (CompileTimeMetadata<Q>["signature"] extends (...args: never[]) => infer R
+      ? Awaited<R>
+      : never)
+    | undefined;
+  error?: unknown;
+}
 /**
  * Generator function that executes queries and yields results as they complete
  */
 async function* executeQueriesGenerator(
-  queries: Array<BatchedFunctionQuery>,
+  queries: Array<FunctionQueryParams<QueryDefinition<unknown>>>,
   client: Client,
-): AsyncGenerator<{ index: number; result?: unknown; error?: unknown }> {
+): AsyncGenerator<QueryResult<QueryDefinition<unknown>>> {
   const queryPromises = queries.map((query, index) =>
-    createQueryPromise(query, index, client)
+    createQueryPromise<typeof query.queryDefinition>(query, index, client)
   );
 
   const pendingPromises = [...queryPromises];
@@ -191,11 +201,11 @@ async function* executeQueriesGenerator(
   }
 }
 
-function createQueryPromise(
-  query: BatchedFunctionQuery,
+function createQueryPromise<Q extends QueryDefinition<unknown>>(
+  query: FunctionQueryParams<Q>,
   index: number,
   client: Client,
-): Promise<{ index: number; result?: unknown; error?: unknown }> {
+): Promise<QueryResult<Q>> {
   // Skip disabled queries
   if (query.options?.enabled === false) {
     return Promise.resolve({ index, result: undefined, error: undefined });

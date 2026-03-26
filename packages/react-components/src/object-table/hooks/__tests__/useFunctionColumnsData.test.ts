@@ -21,7 +21,7 @@ import type {
   PropertyKeys,
   QueryDefinition,
 } from "@osdk/api";
-import type { BatchedFunctionQueryResult } from "@osdk/react/experimental";
+import type { UseBatchedFunctionQueryResult } from "@osdk/react/experimental";
 import { useBatchedFunctionQueries } from "@osdk/react/experimental";
 import { renderHook } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -145,9 +145,10 @@ describe("useFunctionColumnsData", () => {
         data: undefined,
         error: undefined,
         isLoading: true,
-        lastUpdated: undefined,
-      } as BatchedFunctionQueryResult,
-    ]);
+        lastUpdated: 0,
+        refetch: vi.fn(),
+      },
+    ] as unknown as UseBatchedFunctionQueryResult);
 
     const { result, rerender } = renderHook(
       () =>
@@ -178,9 +179,10 @@ describe("useFunctionColumnsData", () => {
         data: mockResult,
         error: undefined,
         isLoading: false,
-        lastUpdated: new Date().toISOString(),
-      } as BatchedFunctionQueryResult,
-    ]);
+        lastUpdated: Date.now(),
+        refetch: vi.fn(),
+      },
+    ] as unknown as UseBatchedFunctionQueryResult);
 
     rerender();
 
@@ -249,9 +251,10 @@ describe("useFunctionColumnsData", () => {
         data: mockResult,
         error: undefined,
         isLoading: false,
-        lastUpdated: new Date().toISOString(),
-      } as BatchedFunctionQueryResult,
-    ]);
+        lastUpdated: Date.now(),
+        refetch: vi.fn(),
+      },
+    ] as unknown as UseBatchedFunctionQueryResult);
 
     const { result } = renderHook(
       () =>
@@ -324,9 +327,10 @@ describe("useFunctionColumnsData", () => {
         data: mockResult,
         error: undefined,
         isLoading: false,
-        lastUpdated: new Date().toISOString(),
-      } as BatchedFunctionQueryResult,
-    ]);
+        lastUpdated: Date.now(),
+        refetch: vi.fn(),
+      },
+    ] as unknown as UseBatchedFunctionQueryResult);
 
     const { result } = renderHook(
       () =>
@@ -431,15 +435,17 @@ describe("useFunctionColumnsData", () => {
         data: mockResult1,
         error: undefined,
         isLoading: false,
-        lastUpdated: new Date().toISOString(),
-      } as BatchedFunctionQueryResult,
+        lastUpdated: Date.now(),
+        refetch: vi.fn(),
+      },
       {
         data: mockResult2,
         error: undefined,
         isLoading: false,
-        lastUpdated: new Date().toISOString(),
-      } as BatchedFunctionQueryResult,
-    ]);
+        lastUpdated: Date.now(),
+        refetch: vi.fn(),
+      },
+    ] as unknown as UseBatchedFunctionQueryResult);
 
     const { result } = renderHook(
       () =>
@@ -511,9 +517,10 @@ describe("useFunctionColumnsData", () => {
         data: mockResult,
         error: undefined,
         isLoading: false,
-        lastUpdated: new Date().toISOString(),
-      } as BatchedFunctionQueryResult,
-    ]);
+        lastUpdated: Date.now(),
+        refetch: vi.fn(),
+      },
+    ] as unknown as UseBatchedFunctionQueryResult);
 
     const { result } = renderHook(
       () =>
@@ -546,9 +553,10 @@ describe("useFunctionColumnsData", () => {
         data: undefined,
         error: mockError,
         isLoading: false,
-        lastUpdated: new Date().toISOString(),
-      } as BatchedFunctionQueryResult,
-    ]);
+        lastUpdated: Date.now(),
+        refetch: vi.fn(),
+      },
+    ] as unknown as UseBatchedFunctionQueryResult);
 
     const { result } = renderHook(
       () =>
@@ -603,9 +611,10 @@ describe("useFunctionColumnsData", () => {
         data: undefined,
         error: undefined,
         isLoading: true,
-        lastUpdated: undefined,
-      } as BatchedFunctionQueryResult,
-    ]);
+        lastUpdated: 0,
+        refetch: vi.fn(),
+      },
+    ] as unknown as UseBatchedFunctionQueryResult);
 
     const { result, rerender } = renderHook(
       () =>
@@ -627,9 +636,10 @@ describe("useFunctionColumnsData", () => {
         data: mockResult,
         error: undefined,
         isLoading: false,
-        lastUpdated: new Date().toISOString(),
-      } as BatchedFunctionQueryResult,
-    ]);
+        lastUpdated: Date.now(),
+        refetch: vi.fn(),
+      },
+    ] as unknown as UseBatchedFunctionQueryResult);
 
     rerender();
 
