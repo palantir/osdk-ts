@@ -28,30 +28,77 @@
  * UTC-to-local conversion before passing values to these functions.
  */
 
-export function formatDateForInput(date: Date | undefined): string {
-  if (!date) return "";
+export function formatDateForInput(date: Date | undefined | null): string {
+  if (date == null) return "";
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, "0");
   const day = String(date.getDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
 }
 
-export function parseDateFromInput(value: string): Date | undefined {
+/** Formats the time portion of a Date as "HH:mm". */
+export function formatTime(date: Date): string {
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+  return `${hours}:${minutes}`;
+}
+
+export function parseDateFromInput(
+  value: string | undefined | null,
+): Date | undefined {
   if (!value) return undefined;
   const date = new Date(value + "T00:00:00");
   return isNaN(date.getTime()) ? undefined : date;
 }
 
+export function formatDatetimeForInput(
+  date: Date | undefined | null,
+): string {
+  if (date == null) return "";
+  return `${formatDateForInput(date)}T${formatTime(date)}`;
+}
+
+/**
+ * Parses a datetime-local input string (e.g. "2024-01-15T14:30") into a Date.
+ * Delegates to `parseDateFromISO` since the parsing logic is identical for
+ * string inputs — datetime-local strings already include the time component
+ * and have no "Z" suffix, so `new Date()` parses them as local time.
+ */
+export function parseDatetimeFromInput(
+  value: string | undefined | null,
+): Date | undefined {
+  if (!value) return undefined;
+  return parseDateFromISO(value);
+}
+
 export function formatDateForDisplay(
-  date: Date | undefined,
+  date: Date | undefined | null,
   fallback: string = "",
 ): string {
-  if (!date) return fallback;
+  if (date == null) return fallback;
   return date.toLocaleDateString(undefined, {
     year: "numeric",
     month: "short",
     day: "numeric",
   });
+}
+
+/** Formats a Date as "2024-06-15 14:30" — space-separated, more readable than T. */
+export function formatDatetimeForDisplay(
+  date: Date | undefined | null,
+): string {
+  if (date == null) return "";
+  return `${formatDateForInput(date)} ${formatTime(date)}`;
+}
+
+/** Parses space-separated ("2024-06-15 14:30") or T-separated datetime strings. */
+export function parseDatetimeFromDisplay(
+  value: string | undefined | null,
+): Date | undefined {
+  if (!value) return undefined;
+  const normalized = value.includes("T") ? value : value.replace(" ", "T");
+  const date = new Date(normalized);
+  return isNaN(date.getTime()) ? undefined : date;
 }
 
 export function parseDateFromISO(

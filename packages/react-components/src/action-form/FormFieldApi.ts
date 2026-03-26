@@ -138,29 +138,40 @@ export interface FormFieldPropsByType {
 }
 
 /**
- * Datetime picker field props
+ * Datetime picker field props.
+ *
+ * When `formatDate` is omitted, ISO-like format is used (YYYY-MM-DD / YYYY-MM-DD HH:mm).
  */
 export interface DatetimePickerFieldProps extends BaseFormFieldProps<Date> {
   /**
-   * The earliest date the user can select
-   * If provided, this will be added to the field validation
+   * The earliest date the user can select.
+   * If provided, this will be added to the field validation.
    */
   min?: Date;
 
   /**
-   * The latest date the user can select
-   * If provided, this will be added to the field validation
+   * The latest date the user can select.
+   * If provided, this will be added to the field validation.
    */
   max?: Date;
 
   /**
-   * Whether to show time picker
+   * Whether to show time picker.
    */
   showTime?: boolean;
 
   /**
-   * Function to format the date string
+   * Whether to close the popover after selecting a date.
+   * @default true when `showTime` is false, false when `showTime` is true
    */
+  closeOnSelection?: boolean;
+
+  /**
+   * Placeholder text shown when no value is selected.
+   */
+  placeholder?: string;
+
+  /** Formats a Date for display in the trigger button. */
   formatDate?: (date: Date) => string;
 }
 
@@ -319,6 +330,12 @@ export interface CustomFieldProps<V> extends BaseFormFieldProps<V> {
 }
 
 export interface BaseFormFieldProps<V> {
+  /**
+   * The HTML `id` attribute for the field input element.
+   * Used for `<label htmlFor>` association.
+   */
+  id?: string;
+
   /**
    * The value of the form field
    */

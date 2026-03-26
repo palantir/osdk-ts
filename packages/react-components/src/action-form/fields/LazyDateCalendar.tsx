@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-export {
-  formatDateForDisplay,
-  formatDateForInput,
-  parseDateFromInput,
-} from "../../../shared/dateUtils.js";
-export { CheckboxListInput } from "./CheckboxListInput.js";
-export { ContainsTextInput } from "./ContainsTextInput.js";
-export { DateRangeInput } from "./DateRangeInput.js";
-export { NullValueWrapper } from "./NullValueWrapper.js";
-export { NumberRangeInput } from "./NumberRangeInput.js";
-export { RangeInput } from "./RangeInput.js";
-export { ToggleInput } from "./ToggleInput.js";
+import React, { Suspense } from "react";
+import type { DateCalendarProps } from "./DateCalendar.js";
+import styles from "./DateCalendar.module.css";
+
+const DateCalendarLazy = React.lazy(() => import("./DateCalendar.js"));
+
+export function LazyDateCalendar(props: DateCalendarProps): React.ReactElement {
+  return (
+    <Suspense fallback={<div className={styles.calendarFallback} />}>
+      <DateCalendarLazy {...props} />
+    </Suspense>
+  );
+}
