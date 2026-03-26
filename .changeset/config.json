@@ -28,7 +28,6 @@
       "@osdk/create-widget.template.*"
     ],
     [
-      "@osdk/react",
       "@osdk/react-components",
       "@osdk/react-components-styles"
     ]
