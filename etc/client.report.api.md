@@ -28,6 +28,7 @@ import { Logger } from '@osdk/api';
 import { MediaReference } from '@osdk/api';
 import { MediaUpload } from '@osdk/api';
 import type { MinimalObjectSet } from '@osdk/api/unstable';
+import { default as moment_2 } from 'moment';
 import { ObjectMetadata } from '@osdk/api';
 import type { ObjectOrInterfaceDefinition } from '@osdk/api';
 import type { ObjectQueryDataType } from '@osdk/api';
@@ -171,6 +172,8 @@ export { Logger }
 export { MediaReference }
 
 export { MediaUpload }
+
+export { moment_2 as moment }
 
 export { ObjectMetadata }
 
