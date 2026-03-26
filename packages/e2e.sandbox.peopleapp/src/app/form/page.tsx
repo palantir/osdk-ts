@@ -14,8 +14,8 @@ const fieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
   {
     fieldKey: "employmentStart",
     fieldComponent: "DATETIME_PICKER",
-    label: "Deployment Start Date",
-    placeholder: "Enter deployment start date",
+    label: "Employment Start Date",
+    placeholder: "Enter employment start date",
     isRequired: true,
     fieldComponentProps: {
       showTime: true,
@@ -24,8 +24,8 @@ const fieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
   {
     fieldKey: "employmentEnd",
     fieldComponent: "DATETIME_PICKER",
-    label: "Deployment End Date",
-    placeholder: "Enter deployment end date",
+    label: "Employment End Date",
+    placeholder: "Enter employment end date",
   },
   {
     fieldKey: "department",

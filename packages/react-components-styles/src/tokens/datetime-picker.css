@@ -89,6 +89,9 @@
   --osdk-datetime-time-padding-top: calc(var(--osdk-surface-spacing) * 2);
   --osdk-datetime-time-border-top: var(--osdk-surface-border);
 
+  /* Placeholder */
+  --osdk-datetime-input-placeholder-opacity: 0.6;
+
   /* Calendar fallback / loading */
   --osdk-datetime-calendar-fallback-width: 280px;
   --osdk-datetime-calendar-fallback-height: 300px;

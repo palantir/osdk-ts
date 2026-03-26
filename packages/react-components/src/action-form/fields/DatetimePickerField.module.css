@@ -23,7 +23,7 @@
 
 .triggerButtonPlaceholder {
   color: var(--osdk-datetime-input-placeholder-color, currentColor);
-  opacity: 0.6;
+  opacity: var(--osdk-datetime-input-placeholder-opacity);
 }
 
 /* Popover */

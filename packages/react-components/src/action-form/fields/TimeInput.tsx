@@ -34,6 +34,7 @@ export function TimeInput({
         value={value}
         onValueChange={onChange}
         className={styles.timeInput}
+        aria-label="Time"
       />
     </div>
   );

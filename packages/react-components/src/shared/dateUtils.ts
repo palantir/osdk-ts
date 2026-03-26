@@ -36,6 +36,13 @@ export function formatDateForInput(date: Date | undefined | null): string {
   return `${year}-${month}-${day}`;
 }
 
+/** Formats the time portion of a Date as "HH:mm". */
+export function formatTime(date: Date): string {
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+  return `${hours}:${minutes}`;
+}
+
 export function parseDateFromInput(
   value: string | undefined | null,
 ): Date | undefined {
@@ -48,9 +55,7 @@ export function formatDatetimeForInput(
   date: Date | undefined | null,
 ): string {
   if (date == null) return "";
-  const hours = String(date.getHours()).padStart(2, "0");
-  const minutes = String(date.getMinutes()).padStart(2, "0");
-  return `${formatDateForInput(date)}T${hours}:${minutes}`;
+  return `${formatDateForInput(date)}T${formatTime(date)}`;
 }
 
 /**
@@ -83,9 +88,7 @@ export function formatDatetimeForDisplay(
   date: Date | undefined | null,
 ): string {
   if (date == null) return "";
-  const hours = String(date.getHours()).padStart(2, "0");
-  const minutes = String(date.getMinutes()).padStart(2, "0");
-  return `${formatDateForInput(date)} ${hours}:${minutes}`;
+  return `${formatDateForInput(date)} ${formatTime(date)}`;
 }
 
 /** Parses space-separated ("2024-06-15 14:30") or T-separated datetime strings. */

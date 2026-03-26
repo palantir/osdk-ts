@@ -20,6 +20,7 @@ import React, { useCallback, useMemo, useState } from "react";
 import {
   formatDateForInput,
   formatDatetimeForDisplay,
+  formatTime,
 } from "../../shared/dateUtils.js";
 import type { DatetimePickerFieldProps } from "../FormFieldApi.js";
 import styles from "./DatetimePickerField.module.css";
@@ -28,9 +29,7 @@ import { TimeInput } from "./TimeInput.js";
 
 function extractTime(date: Date | null): string {
   if (date == null) return "00:00";
-  const hours = String(date.getHours()).padStart(2, "0");
-  const minutes = String(date.getMinutes()).padStart(2, "0");
-  return `${hours}:${minutes}`;
+  return formatTime(date);
 }
 
 export function DatetimePickerField({
@@ -50,10 +49,7 @@ export function DatetimePickerField({
   const formatFn = formatDate
     ?? (showTime ? formatDatetimeForDisplay : formatDateForInput);
 
-  const formattedValue = useMemo(
-    () => (value != null ? formatFn(value) : ""),
-    [value, formatFn],
-  );
+  const formattedValue = value != null ? formatFn(value) : "";
 
   const handleCalendarSelect = useCallback(
     (selected: Date | undefined) => {

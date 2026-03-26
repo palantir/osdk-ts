@@ -20,6 +20,7 @@ import {
   formatDateForInput,
   formatDatetimeForDisplay,
   formatDatetimeForInput,
+  formatTime,
   parseDateFromInput,
   parseDateFromISO,
   parseDatetimeFromDisplay,
@@ -64,6 +65,14 @@ describe("parseDateFromISO", () => {
     expect(parseDateFromISO(undefined)).toBeUndefined();
     expect(parseDateFromISO(null)).toBeUndefined();
     expect(parseDateFromISO("not-a-date")).toBeUndefined();
+  });
+});
+
+describe("formatTime", () => {
+  it("formats hours and minutes with zero-padding", () => {
+    expect(formatTime(new Date(2024, 0, 1, 9, 5))).toBe("09:05");
+    expect(formatTime(new Date(2024, 0, 1, 14, 30))).toBe("14:30");
+    expect(formatTime(new Date(2024, 0, 1, 0, 0))).toBe("00:00");
   });
 });
 
