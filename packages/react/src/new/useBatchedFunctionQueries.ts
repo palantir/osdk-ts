@@ -118,6 +118,9 @@ export function useBatchedFunctionQueries(
         }
 
         setResults(prev => {
+          if (abortController.signal.aborted) {
+            return prev;
+          }
           const newResults = [...prev];
           newResults[index] = {
             data: error ? undefined : result,
@@ -129,14 +132,14 @@ export function useBatchedFunctionQueries(
               : undefined,
             lastUpdated: Date.now(),
             refetch: () => {
-              // Trigger re-execution for this specific query
-              const queryClient = client(queries[index].queryDefinition);
+              const queryToRefetch = queries[index];
+              const queryClient = client(queryToRefetch.queryDefinition);
               if (
                 "executeFunction" in queryClient
                 && typeof queryClient.executeFunction === "function"
               ) {
                 void queryClient.executeFunction(
-                  queries[index].options?.params,
+                  queryToRefetch.options?.params,
                 );
               }
             },
