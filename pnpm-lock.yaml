@@ -1839,6 +1839,9 @@ importers:
       isomorphic-ws:
         specifier: ^5.0.0
         version: 5.0.0(ws@8.18.3)
+      lodash-es:
+        specifier: ^4.17.23
+        version: 4.17.23
       p-defer:
         specifier: ^4.0.1
         version: 4.0.1
@@ -1873,6 +1876,9 @@ importers:
       '@osdk/shared.test':
         specifier: workspace:~
         version: link:../shared.test
+      '@types/lodash-es':
+        specifier: ^4.17.12
+        version: 4.17.12
       '@types/ws':
         specifier: ^8.18.1
         version: 8.18.1

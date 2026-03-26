@@ -17,6 +17,7 @@
 /* eslint-disable @typescript-eslint/no-deprecated */
 
 export { isOk } from "@osdk/api";
+// TEST: importing lodash-es to verify bundle size reporting
 export type {
   ActionDefinition,
   ActionEditResponse,
@@ -58,6 +59,7 @@ export type {
   WhereClause,
 } from "@osdk/api";
 export { PalantirApiError } from "@osdk/shared.net.errors";
+export { cloneDeep, groupBy, keyBy, merge, sortBy } from "lodash-es";
 
 export { ActionValidationError } from "./actions/ActionValidationError.js";
 export type { Client } from "./Client.js";
