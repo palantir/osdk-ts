@@ -38,20 +38,29 @@ function sortedStringify(obj: unknown): string {
   );
 }
 
+/**
+ * Computes a stable, deterministic identifier for a shape definition.
+ * The ID uniquely represents the combination of base type, property
+ * selections/nullability configs, and derived link definitions so
+ * that identical shapes produce the same ID across calls.
+ */
 export function computeShapeId(input: ShapeIdInput): string {
   const canonical = canonicalizeShapeInput(input);
-  return simpleHash(JSON.stringify(canonical));
+  return simpleHash(sortedStringify(canonical));
 }
 
 function canonicalizeShapeInput(
   input: ShapeIdInput,
 ): Record<string, unknown> {
-  const sortedPropKeys = Object.keys(input.props).sort();
-  const canonicalProps: Record<string, string> = {};
+  const sortedPropKeys = [...Object.keys(input.props)].sort();
+  const canonicalProps: Record<string, unknown> = {};
 
   for (const key of sortedPropKeys) {
     const config = input.props[key];
-    canonicalProps[key] = config.nullabilityOp.type;
+    const op = config.nullabilityOp;
+    canonicalProps[key] = op.type === "withDefault"
+      ? { type: op.type, defaultValue: op.defaultValue }
+      : op.type;
   }
 
   const canonicalLinks = input.derivedLinks.map((link) => ({
@@ -59,7 +68,6 @@ function canonicalizeShapeInput(
     objectSetDef: canonicalizeObjectSetDef(link.objectSetDef),
     targetShapeId: link.targetShape.__shapeId,
   }));
-
   canonicalLinks.sort((a, b) => a.name.localeCompare(b.name));
 
   return {
@@ -109,6 +117,10 @@ function canonicalizeObjectSetDef(
   return result;
 }
 
+// djb2 xor variant. Shape IDs are used for cache keying and equality
+// checks, not security. 32-bit collision probability is ~1 in 4 billion
+// per pair, which is sufficient for the expected number of distinct shapes
+// in a single application.
 function simpleHash(str: string): string {
   let hash = 5381;
   for (let i = 0; i < str.length; i++) {

@@ -40,10 +40,12 @@ declare const ShapeDefinitionBrand: unique symbol;
 
 declare const ShapeLinkResultBrand: unique symbol;
 
+/** Configuration for how a derived link is loaded at runtime. */
 export interface DerivedLinkConfig {
   defer?: boolean;
 }
 
+/** The result of calling `ShapeLinkBuilder.as()`, binding a link traversal to a target shape. */
 export interface ShapeLinkResult<
   TARGET_SHAPE extends ShapeDefinition<ObjectOrInterfaceDefinition>,
 > {
@@ -53,6 +55,7 @@ export interface ShapeLinkResult<
   readonly config: DerivedLinkConfig;
 }
 
+/** A single link traversal step in a derived link's object set definition. */
 export interface ShapeLinkSegment {
   readonly type: "pivotTo";
   readonly linkName: string;
@@ -60,16 +63,19 @@ export interface ShapeLinkSegment {
   readonly targetType?: string;
 }
 
+/** Sort clause for a derived link's result set. */
 export interface ShapeLinkOrderBy {
   readonly property: string;
   readonly direction: "asc" | "desc";
 }
 
+/** A set operation (union/intersect/subtract) applied to a derived link's object set. */
 export interface ShapeLinkSetOperation {
   readonly type: "union" | "intersect" | "subtract";
   readonly other: ShapeLinkObjectSetDef;
 }
 
+/** Serializable definition of a derived link's object set: link traversals, filters, ordering, and set operations. */
 export interface ShapeLinkObjectSetDef {
   readonly segments: readonly ShapeLinkSegment[];
   readonly where?: WhereClause<ObjectOrInterfaceDefinition>;
@@ -79,6 +85,7 @@ export interface ShapeLinkObjectSetDef {
   readonly setOperations?: readonly ShapeLinkSetOperation[];
 }
 
+/** How a shape handles null values for a selected property. */
 export type NullabilityOp =
   | { type: "require" }
   | { type: "dropIfNull" }
@@ -86,10 +93,12 @@ export type NullabilityOp =
   | { type: "withTransform"; transform: (value: unknown) => unknown }
   | { type: "select" };
 
+/** Per-property configuration stored in a shape's `__props` map. */
 export interface ShapePropertyConfig {
   readonly nullabilityOp: NullabilityOp;
 }
 
+/** A derived link definition stored in a shape's `__derivedLinks` array. */
 export interface ShapeDerivedLinkDef<
   TARGET_SHAPE extends ShapeDefinition<ObjectOrInterfaceDefinition> =
     ShapeDefinition<ObjectOrInterfaceDefinition>,
@@ -295,8 +304,11 @@ export class ShapeNullabilityError extends Error {
     public readonly violations: readonly NullabilityViolation[],
   ) {
     const props = violations.map((v) => v.property).join(", ");
+    // shape IDs are 8-char hex strings, so this is the full ID
     const shapeName = shape.__debugName ?? shape.__shapeId.slice(0, 8);
-    super(`Shape "${shapeName}" requires non-null: ${props}`);
+    super(
+      `Shape "${shapeName}" requires these properties to be non-null: ${props}`,
+    );
     this.name = "ShapeNullabilityError";
   }
 }
