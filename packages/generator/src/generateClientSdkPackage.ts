@@ -92,7 +92,17 @@ export async function generateClientSdkPackage(
   );
 }
 
-function getTsCompilerOptions(packageType: "commonjs" | "module") {
+export function getTsCompilerOptions(packageType: "commonjs" | "module"): {
+  importHelpers: boolean;
+  declaration: boolean;
+  isolatedModules: boolean;
+  esModuleInterop: boolean;
+  forceConsistentCasingInFileNames: boolean;
+  strict: boolean;
+  skipLibCheck: boolean;
+  module: string;
+  target: string;
+} {
   const commonTsconfig = {
     importHelpers: true,
 
