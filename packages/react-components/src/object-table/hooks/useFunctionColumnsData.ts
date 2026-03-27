@@ -22,8 +22,8 @@ import type {
   QueryDefinition,
   SimplePropertyDef,
 } from "@osdk/api";
-import { useBatchedFunctionQueries } from "@osdk/react/experimental";
 import type { UseOsdkFunctionResult } from "@osdk/react/experimental";
+import { useBatchedFunctionQueries } from "@osdk/react/unstable-do-not-use";
 import { useEffect, useMemo, useState } from "react";
 import type {
   ColumnDefinition,
