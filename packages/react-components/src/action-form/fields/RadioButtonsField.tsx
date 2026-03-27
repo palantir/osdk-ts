@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,12 +21,16 @@ import { typedReactMemo } from "../../shared/typedMemo.js";
 import type { Option, RadioButtonsFieldProps } from "../FormFieldApi.js";
 import styles from "./RadioButtonsField.module.css";
 
-export function RadioButtonsField<V>({
+export const RadioButtonsField: <V>(
+  props: RadioButtonsFieldProps<V>,
+) => React.ReactElement = typedReactMemo(function RadioButtonsFieldFn<
+  V,
+>({
   id,
   value,
   onChange,
   options,
-}: RadioButtonsFieldProps<V> & { id?: string }): React.ReactElement {
+}: RadioButtonsFieldProps<V>): React.ReactElement {
   const selectedLabel = useMemo(
     () =>
       value != null
@@ -51,14 +55,11 @@ export function RadioButtonsField<V>({
       onValueChange={handleValueChange}
     >
       {options.map((option) => (
-        <RadioItem
-          key={option.label}
-          option={option}
-        />
+        <RadioItem key={option.label} option={option} />
       ))}
     </RadioGroup>
   );
-}
+});
 
 const RadioItem = typedReactMemo(function RadioItemFn<V,>({
   option,
