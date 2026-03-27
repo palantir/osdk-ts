@@ -21,16 +21,13 @@ import { typedReactMemo } from "../../shared/typedMemo.js";
 import type { Option, RadioButtonsFieldProps } from "../FormFieldApi.js";
 import styles from "./RadioButtonsField.module.css";
 
-// It's fine to use `any` here since the table is empty
-const EMPTY_OPTIONS: Option<any>[] = [];
-
 export const RadioButtonsField: <V>(
   props: RadioButtonsFieldProps<V>,
 ) => ReactElement = typedReactMemo(function RadioButtonsFieldFn<V,>({
   id,
   value,
   onChange,
-  options = EMPTY_OPTIONS,
+  options,
 }: RadioButtonsFieldProps<V>): ReactElement {
   const selectedLabel = useMemo(
     () =>
@@ -62,10 +59,10 @@ export const RadioButtonsField: <V>(
   );
 });
 
-const RadioItem = typedReactMemo(function RadioItemFn<V,>({
+const RadioItem = memo(function RadioItemFn({
   option,
 }: {
-  option: Option<V>;
+  option: Option<unknown>;
 }): ReactElement {
   return (
     <label className={styles.osdkRadioItem}>
