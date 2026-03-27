@@ -14,14 +14,11 @@
  * limitations under the License.
  */
 
-import {
-  ActionButton,
-  Dialog,
-  Tooltip,
-} from "@osdk/react-components/primitives";
+import { Dialog } from "@osdk/react-components/primitives";
 import React from "react";
 import { BaseCbacPicker } from "./BaseCbacPicker.js";
 import type { BaseCbacPickerProps } from "./BaseCbacPicker.js";
+import { CbacPickerDialogFooter } from "./CbacPickerDialogFooter.js";
 
 export interface BaseCbacPickerDialogProps extends BaseCbacPickerProps {
   isOpen: boolean;
@@ -52,58 +49,18 @@ export function BaseCbacPickerDialog({
   error,
   className,
 }: BaseCbacPickerDialogProps): React.ReactElement {
-  const isSubmitDisabled = submitDisabledReason !== undefined;
-
-  const submitButton = React.useMemo(() => {
-    const button = (
-      <ActionButton
-        variant="primary"
-        onClick={onConfirm}
-        disabled={isSubmitDisabled}
-      >
-        Set classification
-      </ActionButton>
-    );
-
-    if (isSubmitDisabled) {
-      return (
-        <Tooltip.Root>
-          <Tooltip.Trigger render={<span style={{ display: "contents" }} />}>
-            {button}
-          </Tooltip.Trigger>
-          <Tooltip.Portal>
-            <Tooltip.Positioner side="top">
-              <Tooltip.Popup>
-                {submitDisabledReason}
-                <Tooltip.Arrow />
-              </Tooltip.Popup>
-            </Tooltip.Positioner>
-          </Tooltip.Portal>
-        </Tooltip.Root>
-      );
-    }
-
-    return button;
-  }, [onConfirm, isSubmitDisabled, submitDisabledReason]);
-
-  const footer = React.useMemo(
-    () => (
-      <>
-        <ActionButton variant="secondary" onClick={onCancel}>
-          Cancel
-        </ActionButton>
-        {submitButton}
-      </>
-    ),
-    [onCancel, submitButton],
-  );
-
   return (
     <Dialog
       isOpen={isOpen}
       onOpenChange={onOpenChange}
       title={title}
-      footer={footer}
+      footer={
+        <CbacPickerDialogFooter
+          onCancel={onCancel}
+          onConfirm={onConfirm}
+          submitDisabledReason={submitDisabledReason}
+        />
+      }
       disablePointerDismissal
     >
       <BaseCbacPicker

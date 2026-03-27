@@ -27,7 +27,6 @@ export interface BaseCbacBannerProps {
   onClick?: () => void;
   onDismiss?: () => void;
   interactive?: boolean;
-  ariaLabel?: string;
   className?: string;
   style?: React.CSSProperties;
 }
@@ -39,7 +38,6 @@ export function BaseCbacBanner({
   onClick,
   onDismiss,
   interactive,
-  ariaLabel = "Edit classification",
   className,
   style,
 }: BaseCbacBannerProps): React.ReactElement {
@@ -82,7 +80,7 @@ export function BaseCbacBanner({
           type="button"
           className={classnames(styles.banner, styles.clickable)}
           onClick={onClick}
-          aria-label={ariaLabel}
+          aria-label="Edit classification"
         >
           {classificationString}
         </button>
