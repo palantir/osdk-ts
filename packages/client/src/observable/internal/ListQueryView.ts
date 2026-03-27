@@ -58,14 +58,6 @@ export class ListQueryView<PAYLOAD extends BaseListPayloadShape> {
   #lastPayload: PAYLOAD | undefined;
   #observer: Observer<PAYLOAD> | undefined;
 
-  // Dedup tracking to suppress duplicate emissions during auto-fetch.
-  // When fetchMore() sets "loading" on unchanged data, the transformed
-  // payload is identical to what was already emitted (since the view
-  // already masked "loaded" → "loading"). These sentinels ensure the
-  // first emission always passes (NaN !== anything, "" !== any Status).
-  #lastEmitCount: number = NaN;
-  #lastEmitStatus: Status | "" = "";
-
   constructor(
     query: ListQueryViewTarget<PAYLOAD>,
     pageSize: number,
@@ -96,7 +88,7 @@ export class ListQueryView<PAYLOAD extends BaseListPayloadShape> {
     const sub = this.#query.subscribe({
       next: (payload) => {
         this.#lastPayload = payload;
-        this.#emitToObserver(this.#transformPayload(payload));
+        this.#observer?.next?.(this.#transformPayload(payload));
 
         const loadedCount = payload.resolvedList?.length ?? 0;
         const fetchThreshold = this.#autoFetchMinimum > 0
@@ -125,29 +117,9 @@ export class ListQueryView<PAYLOAD extends BaseListPayloadShape> {
     return sub;
   }
 
-  #emitToObserver(transformed: PAYLOAD): void {
-    // Only deduplicate during auto-fetch: fetchMore() sets "loading" on
-    // unchanged data, which the view already masked to "loading". Without
-    // this guard, the observer would see identical (count, status) pairs.
-    // Non-autoFetch views must never be deduped since the data content
-    // can change even when count and status don't (e.g. re-sorting).
-    if (this.#autoFetchMinimum > 0) {
-      const newCount = transformed.resolvedList?.length ?? -1;
-      if (
-        newCount === this.#lastEmitCount
-        && transformed.status === this.#lastEmitStatus
-      ) {
-        return;
-      }
-      this.#lastEmitCount = newCount;
-      this.#lastEmitStatus = transformed.status;
-    }
-    this.#observer?.next?.(transformed);
-  }
-
   #reEmitWithNewViewLimit(): void {
     if (this.#lastPayload && this.#observer) {
-      this.#emitToObserver(this.#transformPayload(this.#lastPayload));
+      this.#observer.next?.(this.#transformPayload(this.#lastPayload));
     }
   }
 
