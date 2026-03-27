@@ -203,7 +203,7 @@ export default tseslint.config(
       // "import/consistent-type-specifier-style": ["error", "prefer-top-level"],
       // Ban duplicate imports from the same module — merge them into one statement
       "import/no-duplicates": ["error"],
-      // Enforce consistent import group ordering and alphabetical sorting
+      // Enforce consistent import group ordering (dprint handles alphabetical sorting)
       "import/order": [
         "warn",
         {
@@ -211,7 +211,6 @@ export default tseslint.config(
             ["builtin", "external"],
             ["internal", "parent", "sibling", "index"],
           ],
-          alphabetize: { order: "asc", caseInsensitive: true },
         },
       ],
       "import/no-unresolved": "off",

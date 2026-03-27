@@ -15,11 +15,11 @@
  */
 
 import React, { memo } from "react";
-import { RangeInput, type RangeInputConfig } from "./RangeInput.js";
 import {
   formatDateForInput,
   parseDateFromInput,
 } from "../../../shared/dateUtils.js";
+import { RangeInput, type RangeInputConfig } from "./RangeInput.js";
 
 const dateConfig: RangeInputConfig<Date> = {
   inputType: "date",
