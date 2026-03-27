@@ -57,6 +57,11 @@
   white-space: nowrap;
 }
 
+.valueText[data-excluding] {
+  text-decoration: line-through;
+  color: var(--osdk-intent-danger-rest);
+}
+
 .colorDot {
   width: var(--osdk-filter-checkbox-color-dot-size);
   height: var(--osdk-filter-checkbox-color-dot-size);

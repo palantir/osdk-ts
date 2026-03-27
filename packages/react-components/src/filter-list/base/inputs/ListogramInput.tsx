@@ -37,6 +37,7 @@ interface ListogramInputProps {
   colorMap?: Record<string, string>;
   displayMode?: ListogramDisplayMode;
   showCheckbox?: boolean;
+  isExcluding?: boolean;
   className?: string;
   style?: React.CSSProperties;
   maxVisibleItems?: number;
@@ -53,6 +54,7 @@ function ListogramInputInner({
   colorMap,
   displayMode = "full",
   showCheckbox,
+  isExcluding,
   className,
   style,
   maxVisibleItems,
@@ -147,7 +149,12 @@ function ListogramInputInner({
                     className={styles.checkbox}
                   />
                 )}
-                <span className={styles.label}>{value}</span>
+                <span
+                  className={styles.label}
+                  data-excluding={isExcluding || undefined}
+                >
+                  {value}
+                </span>
                 {displayMode !== "minimal" && (
                   <span className={styles.count}>
                     {count.toLocaleString()}

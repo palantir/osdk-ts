@@ -22,6 +22,14 @@
   padding: var(--osdk-filter-item-padding);
 }
 
+.filterItem[data-has-selection] {
+  border: 1px solid var(--osdk-intent-primary-rest);
+}
+
+.filterItem[data-has-selection] .searchRow {
+  border-color: transparent;
+}
+
 .itemHeader {
   display: flex;
   align-items: center;
@@ -33,11 +41,6 @@
   font-size: var(--osdk-filter-item-label-font-size);
   font-weight: var(--osdk-filter-item-label-font-weight);
   color: var(--osdk-filter-item-label-color);
-}
-
-.itemLabel[data-excluding] {
-  text-decoration: line-through;
-  color: var(--osdk-intent-danger-rest);
 }
 
 .itemContent {
@@ -123,11 +126,6 @@
   border-radius: var(--osdk-filter-input-border-radius);
   padding: var(--osdk-filter-input-padding);
   gap: var(--osdk-filter-input-gap);
-
-  &:focus-within {
-    outline: var(--osdk-filter-input-focus-outline-width) solid var(--osdk-filter-input-focus-outline-color);
-    outline-offset: var(--osdk-filter-input-focus-outline-offset);
-  }
 }
 
 .searchInput {

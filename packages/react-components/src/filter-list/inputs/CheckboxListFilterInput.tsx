@@ -96,6 +96,7 @@ function CheckboxListFilterInputInner<Q extends ObjectTypeDefinition>({
         selectedValues={selectedValues}
         onChange={handleChange}
         colorMap={colorMap}
+        isExcluding={isExcluding}
         searchQuery={searchQuery}
       />
     </FilterInputExcludeRow>

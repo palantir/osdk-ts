@@ -32,6 +32,7 @@ interface CheckboxListInputProps {
   onChange: (selectedValues: string[]) => void;
   colorMap?: Record<string, string>;
   searchQuery?: string;
+  isExcluding?: boolean;
   className?: string;
   style?: React.CSSProperties;
 }
@@ -44,6 +45,7 @@ function CheckboxListInputInner({
   onChange,
   colorMap,
   searchQuery,
+  isExcluding,
   className,
   style,
 }: CheckboxListInputProps): React.ReactElement {
@@ -120,7 +122,10 @@ function CheckboxListInputInner({
                   style={{ backgroundColor: color }}
                 />
               )}
-              <span className={styles.valueText}>
+              <span
+                className={styles.valueText}
+                data-excluding={isExcluding || undefined}
+              >
                 {value}
               </span>
             </label>

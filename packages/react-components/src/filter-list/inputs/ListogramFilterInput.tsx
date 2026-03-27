@@ -105,6 +105,7 @@ function ListogramFilterInputInner<Q extends ObjectTypeDefinition>({
         colorMap={colorMap}
         displayMode={displayMode}
         showCheckbox={showCheckbox}
+        isExcluding={isExcluding}
         maxVisibleItems={maxVisibleItems}
         searchQuery={searchQuery}
       />

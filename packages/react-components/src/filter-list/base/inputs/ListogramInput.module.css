@@ -73,6 +73,11 @@
   white-space: nowrap;
 }
 
+.label[data-excluding] {
+  text-decoration: line-through;
+  color: var(--osdk-intent-danger-rest);
+}
+
 .bar {
   width: var(--osdk-filter-listogram-bar-width);
   flex-shrink: 0;

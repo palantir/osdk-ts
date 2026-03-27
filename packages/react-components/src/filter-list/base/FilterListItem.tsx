@@ -30,6 +30,38 @@ import { DragHandleIcon } from "./DragHandleIcon.js";
 import { OverflowMenuIcon, RemoveIcon, SearchIcon } from "./FilterIcons.js";
 import styles from "./FilterListItem.module.css";
 
+function hasActiveSelection(filterState: FilterState | undefined): boolean {
+  if (filterState == null) {
+    return false;
+  }
+  switch (filterState.type) {
+    case "EXACT_MATCH":
+      return filterState.values.length > 0;
+    case "SELECT":
+      return filterState.selectedValues.length > 0;
+    case "CONTAINS_TEXT":
+      return filterState.value != null && filterState.value.length > 0;
+    case "NUMBER_RANGE":
+      return filterState.minValue != null || filterState.maxValue != null;
+    case "DATE_RANGE":
+      return filterState.minValue != null || filterState.maxValue != null;
+    case "TIMELINE":
+      return filterState.startDate != null || filterState.endDate != null;
+    case "TOGGLE":
+      return filterState.enabled;
+    case "keywordSearch":
+      return filterState.searchTerm.length > 0;
+    case "hasLink":
+      return filterState.hasLink;
+    case "linkedProperty":
+      return hasActiveSelection(filterState.linkedFilterState);
+    case "custom":
+      return true;
+    default:
+      return false;
+  }
+}
+
 interface FilterListItemProps<D> {
   definition: D;
   filterKey: string;
@@ -117,6 +149,7 @@ function FilterListItemInner<D>({
     <div
       className={classnames(styles.filterItem, className)}
       style={style}
+      data-has-selection={hasActiveSelection(filterState) || undefined}
     >
       <div className={styles.itemHeader}>
         {dragHandleAttributes
@@ -137,7 +170,6 @@ function FilterListItemInner<D>({
           )}
         <span
           className={styles.itemLabel}
-          data-excluding={filterState?.isExcluding || undefined}
         >
           {label}
         </span>
