@@ -224,8 +224,6 @@ export default async function main(
   );
 }
 
-console.log("testing aagain");
-
 async function loadOntology(
   input: string,
   apiNamespace: string,
