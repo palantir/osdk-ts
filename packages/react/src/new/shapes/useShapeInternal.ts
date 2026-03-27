@@ -28,8 +28,8 @@ import type {
   ShapeDefinition,
   ShapeDerivedLinks,
   ShapeInstance,
-} from "@osdk/api/shapes";
-import { ShapeNullabilityError } from "@osdk/api/shapes";
+} from "@osdk/api/unstable";
+import { ShapeNullabilityError } from "@osdk/api/unstable";
 import {
   applyShapeTransformations,
   applyShapeTransformationsToArray,
