@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 import { Input } from "@base-ui/react/input";
 import React, { useCallback, useRef, useState } from "react";
 import type { NumberInputFieldProps } from "../FormFieldApi.js";
-import styles from "./NumberInputField.module.css";
+import styles from "./BaseInput.module.css";
 
 /**
  * Structural regex for valid numeric input. Allows intermediate typing states
@@ -26,13 +26,16 @@ import styles from "./NumberInputField.module.css";
  */
 const VALID_NUMERIC_REGEX = /^[+-]?(\d+\.?\d*|\d*\.?\d+)([eE][+-]?\d*)?$/;
 
+// TODO: Add min/max validation so the field can surface
+// out-of-range errors through the form validation system.
 export function NumberInputField({
   id,
   value,
   onChange,
   placeholder,
-  min,
-  max,
+  min: _min,
+  max: _max,
+  step: _step,
 }: NumberInputFieldProps): React.ReactElement {
   const [displayValue, setDisplayValue] = useState<string>(() =>
     formatNumberForDisplay(value)
@@ -62,34 +65,25 @@ export function NumberInputField({
     [onChange],
   );
 
-  const handleBlur = useCallback(() => {
-    const parsed = parseNumericValue(displayValue);
-    if (parsed == null) {
-      return;
-    }
-
-    const clamped = clampValue(parsed, min, max);
-    if (clamped !== parsed) {
-      setDisplayValue(String(clamped));
-      onChange?.(clamped);
-    }
-  }, [displayValue, min, max, onChange]);
-
   return (
     <Input
       id={id}
-      className={styles.osdkNumberInput}
+      className={styles.osdkBaseInput}
       type="text"
       inputMode="decimal"
       value={displayValue}
       onValueChange={handleValueChange}
-      onBlur={handleBlur}
       placeholder={placeholder}
     />
   );
 }
 
 function isValidInput(text: string): boolean {
+  // Allow intermediate typing states that will become valid numbers:
+  // ""  — user cleared the field
+  // "-" — user started typing a negative number
+  // "." — user started typing a decimal like ".5"
+  // "+" — user started typing an explicitly positive number
   return (
     text === ""
     || text === "-"
@@ -105,21 +99,6 @@ function parseNumericValue(text: string): number | null {
   }
   const parsed = Number(text);
   return Number.isNaN(parsed) ? null : parsed;
-}
-
-function clampValue(
-  value: number,
-  min: number | undefined,
-  max: number | undefined,
-): number {
-  let clamped = value;
-  if (min != null) {
-    clamped = Math.max(clamped, min);
-  }
-  if (max != null) {
-    clamped = Math.min(clamped, max);
-  }
-  return clamped;
 }
 
 function formatNumberForDisplay(value: number | null): string {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -280,12 +280,12 @@ export interface TextInputFieldProps extends
  */
 export interface NumberInputFieldProps extends BaseFormFieldProps<number> {
   /**
-   * Minimum allowed value. The value is clamped to this bound on blur.
+   * Minimum allowed value.
    */
   min?: number;
 
   /**
-   * Maximum allowed value. The value is clamped to this bound on blur.
+   * Maximum allowed value.
    */
   max?: number;
 

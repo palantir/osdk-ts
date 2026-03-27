@@ -42,6 +42,7 @@ const fieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
     fieldComponent: "NUMBER_INPUT",
     label: "Years of Experience",
     placeholder: "Enter years",
+    isRequired: true,
     fieldComponentProps: {
       min: 0,
       max: 50,

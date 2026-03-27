@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -229,67 +229,6 @@ describe("NumberInputField", () => {
       render(<NumberInputField value={null} onChange={vi.fn()} />);
       const input = screen.getByRole("textbox") as HTMLInputElement;
       expect(input.inputMode).toBe("decimal");
-    });
-  });
-
-  describe("clamp on blur", () => {
-    it("clamps value to min on blur", () => {
-      const onChange = vi.fn();
-      render(<NumberInputField value={null} onChange={onChange} min={0} />);
-      const input = screen.getByRole("textbox") as HTMLInputElement;
-
-      fireEvent.change(input, { target: { value: "-5" } });
-      onChange.mockClear();
-
-      fireEvent.blur(input);
-      expect(input.value).toBe("0");
-      expect(onChange).toHaveBeenCalledWith(0);
-    });
-
-    it("clamps value to max on blur", () => {
-      const onChange = vi.fn();
-      render(<NumberInputField value={null} onChange={onChange} max={100} />);
-      const input = screen.getByRole("textbox") as HTMLInputElement;
-
-      fireEvent.change(input, { target: { value: "200" } });
-      onChange.mockClear();
-
-      fireEvent.blur(input);
-      expect(input.value).toBe("100");
-      expect(onChange).toHaveBeenCalledWith(100);
-    });
-
-    it("does not clamp when value is within bounds", () => {
-      const onChange = vi.fn();
-      render(
-        <NumberInputField
-          value={null}
-          onChange={onChange}
-          min={0}
-          max={100}
-        />,
-      );
-      const input = screen.getByRole("textbox") as HTMLInputElement;
-
-      fireEvent.change(input, { target: { value: "50" } });
-      onChange.mockClear();
-
-      fireEvent.blur(input);
-      expect(input.value).toBe("50");
-      expect(onChange).not.toHaveBeenCalled();
-    });
-
-    it("does not clamp intermediate states on blur", () => {
-      const onChange = vi.fn();
-      render(<NumberInputField value={null} onChange={onChange} min={0} />);
-      const input = screen.getByRole("textbox") as HTMLInputElement;
-
-      fireEvent.change(input, { target: { value: "-" } });
-      onChange.mockClear();
-
-      fireEvent.blur(input);
-      expect(input.value).toBe("-");
-      expect(onChange).not.toHaveBeenCalled();
     });
   });
 });
