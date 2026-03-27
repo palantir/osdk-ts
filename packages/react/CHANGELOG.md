@@ -1,5 +1,11 @@
 # @osdkkit/react
 
+## 0.10.0-beta.12
+
+### Minor Changes
+
+- 46dfbec: fix useOsdkAction applyAction to re-throw errors instead of silently swallowing them
+
 ## 0.10.0-beta.11
 
 ### Minor Changes
