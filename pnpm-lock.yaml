@@ -852,9 +852,6 @@ importers:
       '@osdk/oauth':
         specifier: workspace:*
         version: link:../../packages/oauth
-      '@osdk/react':
-        specifier: workspace:*
-        version: link:../../packages/react
       normalize.css:
         specifier: ^8.0.1
         version: 8.0.1
@@ -874,6 +871,9 @@ importers:
       '@eslint/js':
         specifier: ^9.35.0
         version: 9.35.0
+      '@trivago/prettier-plugin-sort-imports':
+        specifier: ^5.0.0
+        version: 5.2.2(@vue/compiler-sfc@3.5.21)(prettier@3.6.2)
       '@types/eslint-plugin-jsx-a11y':
         specifier: ^6.10.0
         version: 6.10.0
@@ -919,6 +919,9 @@ importers:
       globals:
         specifier: ^15.15.0
         version: 15.15.0
+      prettier:
+        specifier: ^3.0.0
+        version: 3.6.2
       typescript:
         specifier: ~5.5.4
         version: 5.5.4
@@ -949,9 +952,6 @@ importers:
       '@osdk/oauth':
         specifier: workspace:*
         version: link:../../packages/oauth
-      '@osdk/react':
-        specifier: workspace:*
-        version: link:../../packages/react
       normalize.css:
         specifier: ^8.0.1
         version: 8.0.1
@@ -971,6 +971,9 @@ importers:
       '@eslint/js':
         specifier: ^9.35.0
         version: 9.35.0
+      '@trivago/prettier-plugin-sort-imports':
+        specifier: ^5.0.0
+        version: 5.2.2(@vue/compiler-sfc@3.5.21)(prettier@3.6.2)
       '@types/eslint-plugin-jsx-a11y':
         specifier: ^6.10.0
         version: 6.10.0
@@ -1016,6 +1019,9 @@ importers:
       globals:
         specifier: ^15.15.0
         version: 15.15.0
+      prettier:
+        specifier: ^3.0.0
+        version: 3.6.2
       typescript:
         specifier: ~5.5.4
         version: 5.5.4
@@ -10927,6 +10933,22 @@ packages:
   '@tootallnate/once@2.0.0':
     resolution: {integrity: sha512-XCuKFP5PS55gnMVu3dty8KPatLqUoy/ZYzDzAGCQ8JNFCkLXzmI7vNHCR+XpbZaMWQK/vQubr7PkYq8g470J/A==}
     engines: {node: '>= 10'}
+
+  '@trivago/prettier-plugin-sort-imports@5.2.2':
+    resolution: {integrity: sha512-fYDQA9e6yTNmA13TLVSA+WMQRc5Bn/c0EUBditUHNfMMxN7M82c38b1kEggVE3pLpZ0FwkwJkUEKMiOi52JXFA==}
+    engines: {node: '>18.12'}
+    peerDependencies:
+      '@vue/compiler-sfc': 3.x
+      prettier: 2.x - 3.x
+      prettier-plugin-svelte: 3.x
+      svelte: 4.x || 5.x
+    peerDependenciesMeta:
+      '@vue/compiler-sfc':
+        optional: true
+      prettier-plugin-svelte:
+        optional: true
+      svelte:
+        optional: true
 
   '@trysound/sax@0.2.0':
     resolution: {integrity: sha512-L7z9BgrNEcYyUYtF+HaEfiS5ebkh9jXqbszz7pC0hRBPaatV0XjSD3+eHrpqFemQfgwiFF0QPIarnIihIDn7OA==}
@@ -28183,6 +28205,20 @@ snapshots:
       tmcp: 1.19.3(typescript@5.5.4)
 
   '@tootallnate/once@2.0.0': {}
+
+  '@trivago/prettier-plugin-sort-imports@5.2.2(@vue/compiler-sfc@3.5.21)(prettier@3.6.2)':
+    dependencies:
+      '@babel/generator': 7.28.3
+      '@babel/parser': 7.28.4
+      '@babel/traverse': 7.28.4
+      '@babel/types': 7.28.4
+      javascript-natural-sort: 0.7.1
+      lodash: 4.17.21
+      prettier: 3.6.2
+    optionalDependencies:
+      '@vue/compiler-sfc': 3.5.21
+    transitivePeerDependencies:
+      - supports-color
 
   '@trysound/sax@0.2.0': {}
 
