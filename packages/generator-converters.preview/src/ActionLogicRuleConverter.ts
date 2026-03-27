@@ -18,6 +18,9 @@ import type {
   OntologyIrActionTypeBlockDataV2,
   OntologyIrLogicRule,
   OntologyIrOntologyBlockDataV2,
+  LogicRule,
+  ActionTypeBlockDataV2,
+  OntologyBlockDataV2,
 } from "@osdk/client.unstable";
 import type * as Ontologies from "@osdk/foundry.ontologies";
 
@@ -42,6 +45,22 @@ function buildObjectTypeLookup(
   return { byId, byHyphenated };
 }
 
+function buildBlockDataObjectTypeLookup(
+  blockdata: OntologyBlockDataV2 | undefined,
+): ApiNameLookup | undefined {
+  if (!blockdata?.objectTypes) {
+    return undefined;
+  }
+  const byId = new Map<string, string>();
+  const byHyphenated = new Map<string, string>();
+  for (const [key, value] of Object.entries(blockdata.objectTypes)) {
+    const apiName = value.objectType.apiName!;
+    byId.set(key, apiName);
+    byHyphenated.set(apiName.replace(/\./g, "-"), apiName);
+  }
+  return { byId, byHyphenated };
+}
+
 function buildInterfaceTypeLookup(
   ir: OntologyIrOntologyBlockDataV2 | undefined,
 ): ApiNameLookup | undefined {
@@ -58,7 +77,25 @@ function buildInterfaceTypeLookup(
   return { byId, byHyphenated };
 }
 
+
+function buildBlockDataInterfaceTypeLookup(
+  blockdata: OntologyBlockDataV2 | undefined,
+): ApiNameLookup | undefined {
+  if (!blockdata?.interfaceTypes) {
+    return undefined;
+  }
+  const byId = new Map<string, string>();
+  const byHyphenated = new Map<string, string>();
+  for (const [key, value] of Object.entries(blockdata.interfaceTypes)) {
+    const apiName = value.interfaceType.apiName!;
+    byId.set(key, apiName);
+    byHyphenated.set(apiName.replace(/\./g, "-"), apiName);
+  }
+  return { byId, byHyphenated };
+}
+
 function resolveApiName(id: string, lookup: ApiNameLookup | undefined): string {
+  console.log(`Resolving API name for id '${id}' using lookup:`, lookup);
   if (!lookup) {
     return id;
   }
@@ -67,6 +104,19 @@ function resolveApiName(id: string, lookup: ApiNameLookup | undefined): string {
 
 function getObjectReferenceType(
   action: OntologyIrActionTypeBlockDataV2,
+  paramKey: string,
+): { objectTypeId: string } {
+  const param = action.actionType.metadata.parameters[paramKey];
+  if (!param || param.type.type !== "objectReference") {
+    throw new Error(
+      `Parameter '${paramKey}' must be an objectReference type`,
+    );
+  }
+  return param.type.objectReference;
+}
+
+function getObjectReferenceType2(
+  action: ActionTypeBlockDataV2,
   paramKey: string,
 ): { objectTypeId: string } {
   const param = action.actionType.metadata.parameters[paramKey];
@@ -92,6 +142,19 @@ export function convertIrLogicRulesToActionLogicRules(
 
   return rules.map(irRule =>
     convertSingleRule(irRule, action, objectLookup, interfaceLookup)
+  );
+}
+
+export function convertBlockDataLogicRulesToActionLogicRules(
+  rules: LogicRule[],
+  action: ActionTypeBlockDataV2,
+  blockdata?: OntologyBlockDataV2,
+): Ontologies.ActionLogicRule[] {
+  const objectLookup = buildBlockDataObjectTypeLookup(blockdata);
+  const interfaceLookup = buildBlockDataInterfaceTypeLookup(blockdata);
+
+  return rules.map(rule =>
+    convertBlockDataSingleRule(rule, action, objectLookup, interfaceLookup)
   );
 }
 
@@ -226,6 +289,128 @@ function convertSingleRule(
     default:
       throw new Error(
         `Unsupported logic rule type: ${(irRule as { type: string }).type}`,
+      );
+  }
+}
+
+function convertBlockDataSingleRule(
+  rule: LogicRule,
+  action: ActionTypeBlockDataV2,
+  objectLookup: ApiNameLookup | undefined,
+  interfaceLookup: ApiNameLookup | undefined,
+): Ontologies.ActionLogicRule {
+  switch (rule.type) {
+    case "addObjectRule": {
+      const r = rule.addObjectRule;
+      const propertyArguments: Record<
+        Ontologies.PropertyApiName,
+        Ontologies.LogicRuleArgument
+      > = {};
+      for (const [k, v] of Object.entries(r.propertyValues)) {
+        propertyArguments[k] = v as Ontologies.LogicRuleArgument;
+      }
+      const result: Ontologies.CreateObjectLogicRule & {
+        type: "createObject";
+      } = {
+        type: "createObject",
+        objectTypeApiName: resolveApiName(r.objectTypeId, objectLookup),
+        propertyArguments,
+        structPropertyArguments: {},
+      };
+      return result;
+    }
+
+    case "addOrModifyObjectRuleV2": {
+      const r = rule.addOrModifyObjectRuleV2;
+      const objRef = getObjectReferenceType2(action, r.objectToModify);
+      // propertyArguments left empty: the downstream generator resolves
+      // property mappings from the action parameter configuration rather
+      // than from the logic rule itself for createOrModify rules.
+      const result: Ontologies.CreateOrModifyObjectLogicRule & {
+        type: "createOrModifyObject";
+      } = {
+        type: "createOrModifyObject",
+        objectTypeApiName: resolveApiName(objRef.objectTypeId, objectLookup),
+        propertyArguments: {},
+        structPropertyArguments: {},
+      };
+      return result;
+    }
+
+    case "modifyObjectRule": {
+      const r = rule.modifyObjectRule;
+      // Validate that the parameter is an objectReference (throws if not)
+      getObjectReferenceType2(action, r.objectToModify);
+      const modifyPropertyArguments: Record<
+        Ontologies.PropertyApiName,
+        Ontologies.LogicRuleArgument
+      > = {};
+      for (const [k, v] of Object.entries(r.propertyValues)) {
+        modifyPropertyArguments[k] = v as Ontologies.LogicRuleArgument;
+      }
+      const result: Ontologies.ModifyObjectLogicRule & {
+        type: "modifyObject";
+      } = {
+        type: "modifyObject",
+        objectToModify: r.objectToModify,
+        propertyArguments: modifyPropertyArguments,
+        structPropertyArguments: {},
+      };
+      return result;
+    }
+
+    case "deleteObjectRule": {
+      const r = rule.deleteObjectRule;
+      const result: Ontologies.DeleteObjectLogicRule & {
+        type: "deleteObject";
+      } = {
+        type: "deleteObject",
+        objectToDelete: r.objectToDelete,
+      };
+      return result;
+    }
+
+    case "addInterfaceRule": {
+      const r = rule.addInterfaceRule;
+      const interfaceApiName = resolveApiName(
+        "test",
+        // r.interfaceApiName,
+        interfaceLookup,
+      );
+      const result: Ontologies.CreateInterfaceLogicRule & {
+        type: "createInterface";
+      } = {
+        type: "createInterface",
+        interfaceTypeApiName: interfaceApiName,
+        objectType: interfaceApiName,
+        sharedPropertyArguments: {},
+        structPropertyArguments: {},
+      };
+      return result;
+    }
+
+    case "modifyInterfaceRule": {
+      const r = rule.modifyInterfaceRule;
+      const result: Ontologies.ModifyInterfaceLogicRule & {
+        type: "modifyInterface";
+      } = {
+        type: "modifyInterface",
+        interfaceObjectToModify: r.interfaceObjectToModify,
+        sharedPropertyArguments: {},
+        structPropertyArguments: {},
+      };
+      return result;
+    }
+
+    case "addLinkRule":
+      throw new Error("addLinkRule is not supported for ActionLogicRule");
+
+    case "deleteLinkRule":
+      throw new Error("deleteLinkRule is not supported for ActionLogicRule");
+
+    default:
+      throw new Error(
+        `Unsupported logic rule type: ${(rule as { type: string }).type}`,
       );
   }
 }

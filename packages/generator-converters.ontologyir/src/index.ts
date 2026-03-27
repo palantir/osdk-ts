@@ -16,3 +16,4 @@
 
 export type { OntologyIrOntologyBlockDataV2 } from "@osdk/client.unstable";
 export { OntologyIrToFullMetadataConverter } from "./OntologyIrToFullMetadataConverter.js";
+export { OntologyBlockDataToFullMetadataConverter } from "./OntologyBlockDataToFullMetadataConverter.js";

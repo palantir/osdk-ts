@@ -17,10 +17,13 @@
 import type {
   OntologyIrActionTypeBlockDataV2,
   OntologyIrOntologyBlockDataV2,
+  OntologyBlockDataV2,
+  ActionTypeBlockDataV2,
 } from "@osdk/client.unstable";
 import type * as Ontologies from "@osdk/foundry.ontologies";
 import { OntologyIrToFullMetadataConverter } from "@osdk/generator-converters.ontologyir";
-import { convertIrLogicRulesToActionLogicRules } from "./ActionLogicRuleConverter.js";
+import { convertBlockDataLogicRulesToActionLogicRules } from "./ActionLogicRuleConverter.js";
+import { OntologyBlockDataToFullMetadataConverter } from "@osdk/generator-converters.ontologyir";
 import { toUuid } from "./ridUtils.js";
 
 /**
@@ -41,17 +44,16 @@ export class PreviewOntologyIrConverter {
    * Main entry point - converts IR to full metadata with enhanced action types.
    * Returns ActionTypeFullMetadata which includes fullLogicRules.
    */
-  static getPreviewFullMetadataFromIr(
-    ir: OntologyIrOntologyBlockDataV2,
+  static getPreviewFullMetadataFromBlockData(
+    blockdata: OntologyBlockDataV2,
   ): PreviewOntologyFullMetadata {
-    const baseMetadata = OntologyIrToFullMetadataConverter
-      .getFullMetadataFromIr(ir);
+    const baseMetadata = OntologyBlockDataToFullMetadataConverter
+      .getFullMetadataFromBlockData(blockdata);
 
-    const actionTypes = this.convertActionTypesWithFullLogicRules(
-      Object.values(ir.actionTypes),
-      ir,
+    const actionTypes = this.convertActionTypesWithFullLogicRulesFromBlockData(
+      blockdata.actionTypes,
+      blockdata,
     );
-
     // Post-process object types to use UUID-based RIDs
     const objectTypes = this.convertObjectTypesWithUuidRids(
       baseMetadata.objectTypes,
@@ -115,30 +117,28 @@ export class PreviewOntologyIrConverter {
    * Reuses base converter for action type conversion, then process
    * RIDs to use UUID-based format and adds fullLogicRules.
    */
-  private static convertActionTypesWithFullLogicRules(
-    actions: OntologyIrActionTypeBlockDataV2[],
-    ir: OntologyIrOntologyBlockDataV2,
+  private static convertActionTypesWithFullLogicRulesFromBlockData(
+    actions: Record<string, ActionTypeBlockDataV2>,
+    blockdata: OntologyBlockDataV2,
   ): Record<string, Ontologies.ActionTypeFullMetadata> {
     const baseActionTypes = OntologyIrToFullMetadataConverter
-      .getOsdkActionTypes(actions);
+      .getOsdkActionTypesFromBlockData(actions, blockdata.interfaceTypes);
 
     // Build a lookup from apiName to the original IR action for logic rules
     const actionsByApiName = new Map(
-      actions.map(a => [a.actionType.metadata.apiName, a]),
+      Object.values(actions).map(a => [a.actionType.metadata.apiName, a]),
     );
-
     const result: Record<string, Ontologies.ActionTypeFullMetadata> = {};
     for (const [apiName, baseActionType] of Object.entries(baseActionTypes)) {
       const action = actionsByApiName.get(apiName)!;
       result[apiName] = {
         actionType: {
           ...baseActionType,
-          rid: `ri.ontology.main.action-type.${toUuid(apiName)}`,
         },
-        fullLogicRules: convertIrLogicRulesToActionLogicRules(
+        fullLogicRules: convertBlockDataLogicRulesToActionLogicRules(
           action.actionType.actionTypeLogic.logic.rules,
           action,
-          ir,
+          blockdata,
         ),
       };
     }
