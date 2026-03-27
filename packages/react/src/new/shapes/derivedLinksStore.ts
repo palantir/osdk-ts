@@ -20,16 +20,16 @@ import type {
   ObjectTypeDefinition,
   Osdk,
 } from "@osdk/api";
+import type { ShapeDerivedLinkDef } from "@osdk/api/shapes-internal";
 import type {
   LinkLoadConfig,
   LinkStatus,
   ShapeBaseType,
   ShapeDefinition,
-  ShapeDerivedLinkDef,
   ShapeDerivedLinks,
   ShapeInstance,
-} from "@osdk/api/shapes";
-import { ShapeNullabilityError } from "@osdk/api/shapes";
+} from "@osdk/api/unstable";
+import { ShapeNullabilityError } from "@osdk/api/unstable";
 import type { Client } from "@osdk/client";
 import {
   applyShapeTransformationsToArray,

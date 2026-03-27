@@ -27,7 +27,7 @@ import type {
   ShapeDefinition,
   ShapeDerivedLinks,
   ShapeInstance,
-} from "@osdk/api/shapes";
+} from "@osdk/api/unstable";
 
 /**
  * Result type for loading a single object with a shape.
