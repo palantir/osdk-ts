@@ -56,12 +56,14 @@ import type {
 } from "./objectset/__components.js";
 import type { SharedPropertyTypeGothamMapping as _api_typemapping_SharedPropertyTypeGothamMapping } from "./typemapping/__components.js";
 import type {
+  BaseParameterConstraintType as _api_types_BaseParameterConstraintType,
   BaseParameterType as _api_types_BaseParameterType,
   BaseParameterTypeModification as _api_types_BaseParameterTypeModification,
   ConditionValueId as _api_types_ConditionValueId,
   DataValue as _api_types_DataValue,
   Intent as _api_types_Intent,
   LinkTypeSide as _api_types_LinkTypeSide,
+  MediaMetadataType as _api_types_MediaMetadataType,
   NowValue as _api_types_NowValue,
   ObjectLocator as _api_types_ObjectLocator,
   OntologyIrBaseParameterType as _api_types_OntologyIrBaseParameterType,
@@ -769,6 +771,10 @@ export interface ActionTypeCreate {
   actionLogConfiguration?: ActionLogConfiguration | null | undefined;
   apiName: ActionTypeApiName;
   branchSettings?: ActionTypeBranchSettingsModification | null | undefined;
+  dataSecurityRequirement?:
+    | DataSecurityRequirementModification
+    | null
+    | undefined;
   displayMetadata: ActionTypeDisplayMetadataModification;
   effects?: ActionEffectsModification | null | undefined;
   formContentOrdering: Array<FormContent>;
@@ -989,6 +995,7 @@ export type ActionTypeIdInRequest = string;
  */
 export type ActionTypeInputManagerRid = string;
 export interface ActionTypeLevelValidation {
+  dataSecurityRequirement?: DataSecurityRequirement | null | undefined;
   ordering: Array<ValidationRuleRid>;
   rules: Record<ValidationRuleRid, ValidationRule>;
 }
@@ -1288,6 +1295,10 @@ export interface ActionTypeUpdate {
   actionLogConfiguration?: ActionLogConfiguration | null | undefined;
   apiName: ActionTypeApiName;
   branchSettings?: ActionTypeBranchSettingsModification | null | undefined;
+  dataSecurityRequirement?:
+    | DataSecurityRequirementModification
+    | null
+    | undefined;
   displayMetadata: ActionTypeDisplayMetadataModification;
   effects?: ActionEffectsModification | null | undefined;
   formContentOrdering?: Array<FormContent> | null | undefined;
@@ -1651,6 +1662,11 @@ export interface AllowedParameterValues_geotimeSeriesReference {
   geotimeSeriesReference: ParameterGeotimeSeriesReferenceOrEmpty;
 }
 
+export interface AllowedParameterValues_sidcIcon {
+  type: "sidcIcon";
+  sidcIcon: ParameterSidcIconOrEmpty;
+}
+
 export interface AllowedParameterValues_redacted {
   type: "redacted";
   redacted: Redacted;
@@ -1693,6 +1709,7 @@ export type AllowedParameterValues =
   | AllowedParameterValues_geohash
   | AllowedParameterValues_geoshape
   | AllowedParameterValues_geotimeSeriesReference
+  | AllowedParameterValues_sidcIcon
   | AllowedParameterValues_redacted
   | AllowedParameterValues_struct
   | AllowedParameterValues_valueType
@@ -1808,6 +1825,11 @@ export interface AllowedParameterValuesModification_geotimeSeriesReference {
   geotimeSeriesReference: ParameterGeotimeSeriesReferenceOrEmpty;
 }
 
+export interface AllowedParameterValuesModification_sidcIcon {
+  type: "sidcIcon";
+  sidcIcon: ParameterSidcIconOrEmpty;
+}
+
 export interface AllowedParameterValuesModification_redacted {
   type: "redacted";
   redacted: Redacted;
@@ -1850,6 +1872,7 @@ export type AllowedParameterValuesModification =
   | AllowedParameterValuesModification_geohash
   | AllowedParameterValuesModification_geoshape
   | AllowedParameterValuesModification_geotimeSeriesReference
+  | AllowedParameterValuesModification_sidcIcon
   | AllowedParameterValuesModification_redacted
   | AllowedParameterValuesModification_struct
   | AllowedParameterValuesModification_valueType
@@ -1965,6 +1988,11 @@ export interface AllowedParameterValuesRequest_geotimeSeriesReference {
   geotimeSeriesReference: ParameterGeotimeSeriesReferenceOrEmpty;
 }
 
+export interface AllowedParameterValuesRequest_sidcIcon {
+  type: "sidcIcon";
+  sidcIcon: ParameterSidcIconOrEmpty;
+}
+
 export interface AllowedParameterValuesRequest_redacted {
   type: "redacted";
   redacted: Redacted;
@@ -2011,6 +2039,7 @@ export type AllowedParameterValuesRequest =
   | AllowedParameterValuesRequest_geohash
   | AllowedParameterValuesRequest_geoshape
   | AllowedParameterValuesRequest_geotimeSeriesReference
+  | AllowedParameterValuesRequest_sidcIcon
   | AllowedParameterValuesRequest_redacted
   | AllowedParameterValuesRequest_struct
   | AllowedParameterValuesRequest_valueType
@@ -2454,6 +2483,15 @@ export interface BranchClosedEvent {
   ontologyRid: OntologyRid;
 }
 /**
+ * Event indicating that the global branch and ontology branch are deactivated. Only non-default branches can be deactivated.
+ * Deactivated branches can be reactivated later by users and should not be considered a terminal state.
+ */
+export interface BranchDeactivatedEvent {
+  globalBranchRid: GlobalBranchRid;
+  ontologyBranch: OntologyBranch;
+  ontologyRid: OntologyRid;
+}
+/**
  * Event indicating that a branch was deleted. This event is only sent for deleted non-default branches and
  * can occur when an Ontology is hard-deleted or when a (closed/merged) branch is deleted because of retention.
  * If a default branch is deleted (because of an Ontology hard-deletion), OMS will instead send deletion events
@@ -2892,6 +2930,17 @@ export interface DataNullabilityV2 {
 export interface DataSecurity {
   classificationConstraint?: ClassificationConstraint | null | undefined;
   markingConstraint?: MandatoryMarkingConstraint | null | undefined;
+}
+/**
+ * Security requirements of the data being written or modified.
+ */
+export interface DataSecurityRequirement {
+  mandatoryMarkingRequirement: MandatoryMarkingRequirement;
+  minClassificationRequirement: MinClassificationRequirement;
+}
+export interface DataSecurityRequirementModification {
+  mandatoryMarkingRequirement: MandatoryMarkingRequirementModification;
+  minClassificationRequirement: MinClassificationRequirementModification;
 }
 /**
  * An rid identifying a Foundry dataset. This rid is a randomly generated identifier and is safe to log.
@@ -4114,6 +4163,7 @@ export interface GetActionTypesForObjectTypeResponse {
   actionTypes: Array<ActionType>;
   nextPageToken?: GetActionTypesForObjectTypePageToken | null | undefined;
   resolvedBranch: ResolvedBranch;
+  totalActionTypeCount: number;
 }
 export interface GetEntityDelegateDatasetRequest {
   ontologyEntityRid: ObjectOrLinkTypeRid;
@@ -4289,6 +4339,10 @@ export interface IconReference {
   source: string;
 }
 export interface ImageModality {
+}
+export interface ImplementingActionType {
+  actionTypeRid: ActionTypeRid;
+  parameters: Record<InterfaceParameterConstraintRid, ParameterRid>;
 }
 export interface ImplementingLinkType {
   linkTypeRid: LinkTypeRid;
@@ -4478,7 +4532,7 @@ export interface InterfaceObjectParameterStructListFieldValueModification {
 export interface InterfaceParameterConstraint {
   displayMetadata: InterfaceParameterConstraintDisplayMetadata;
   requireImplementation: boolean;
-  type: _api_types_BaseParameterType;
+  type: _api_types_BaseParameterConstraintType;
 }
 export interface InterfaceParameterConstraintDisplayMetadata {
   displayName: string;
@@ -4768,6 +4822,7 @@ export interface InterfaceStructPropertyType {
  */
 export interface InterfaceType {
   actionTypeConstraints: Array<InterfaceActionTypeConstraint>;
+  allActionTypeConstraints: Array<InterfaceActionTypeConstraint>;
   allExtendsInterfaces: Array<InterfaceTypeRid>;
   allLinks: Array<InterfaceLinkType>;
   allProperties: Array<SharedPropertyType>;
@@ -5526,6 +5581,25 @@ export interface LoadAllTypeGroupsPageResponse {
  * about the content of the token and it should not be parsed/modified. This is safe to log.
  */
 export type LoadAllTypeGroupsPageToken = string;
+
+/**
+ * Request to load the merged rebase base state for a branch. Returns entity definitions as they
+ * would appear after merging parent sub-concepts into branch entities at the specified rebase
+ * target version. This is the base state that OMS uses when processing a rebase modification
+ * request.
+ */
+export interface LoadMergedRebaseStateRequest {
+  actionTypes: Array<ActionTypeRid>;
+  branchRid: OntologyBranchRid;
+  expectedBranchVersion: OntologyVersion;
+  interfaceTypes: Array<InterfaceTypeRid>;
+  linkTypes: Array<LinkTypeRid>;
+  objectTypes: Array<ObjectTypeRid>;
+  ontologyRid: OntologyRid;
+  rebaseTargetOntologyVersion: OntologyVersion;
+  sharedPropertyTypes: Array<SharedPropertyTypeRid>;
+  typeGroups: Array<TypeGroupRid>;
+}
 export interface LogicRule_addObjectRule {
   type: "addObjectRule";
   addObjectRule: AddObjectRule;
@@ -5754,6 +5828,11 @@ export interface LogicRuleValue_interfaceParameterPropertyValueV2 {
   interfaceParameterPropertyValueV2: InterfaceParameterPropertyValueV2;
 }
 
+export interface LogicRuleValue_mediaReferenceParameterPropertyValue {
+  type: "mediaReferenceParameterPropertyValue";
+  mediaReferenceParameterPropertyValue: MediaReferenceParameterPropertyValue;
+}
+
 export interface LogicRuleValue_currentUser {
   type: "currentUser";
   currentUser: CurrentUser;
@@ -5788,6 +5867,7 @@ export type LogicRuleValue =
   | LogicRuleValue_objectParameterPropertyValue
   | LogicRuleValue_interfaceParameterPropertyValue
   | LogicRuleValue_interfaceParameterPropertyValueV2
+  | LogicRuleValue_mediaReferenceParameterPropertyValue
   | LogicRuleValue_currentUser
   | LogicRuleValue_currentTime
   | LogicRuleValue_uniqueIdentifier
@@ -5818,6 +5898,11 @@ export interface LogicRuleValueModification_interfaceParameterPropertyValueV2 {
   type: "interfaceParameterPropertyValueV2";
   interfaceParameterPropertyValueV2:
     InterfaceParameterPropertyValueModificationV2;
+}
+
+export interface LogicRuleValueModification_mediaReferenceParameterPropertyValue {
+  type: "mediaReferenceParameterPropertyValue";
+  mediaReferenceParameterPropertyValue: MediaReferenceParameterPropertyValue;
 }
 
 export interface LogicRuleValueModification_currentUser {
@@ -5854,6 +5939,7 @@ export type LogicRuleValueModification =
   | LogicRuleValueModification_objectParameterPropertyValue
   | LogicRuleValueModification_interfaceParameterPropertyValue
   | LogicRuleValueModification_interfaceParameterPropertyValueV2
+  | LogicRuleValueModification_mediaReferenceParameterPropertyValue
   | LogicRuleValueModification_currentUser
   | LogicRuleValueModification_currentTime
   | LogicRuleValueModification_uniqueIdentifier
@@ -5887,6 +5973,41 @@ export interface MandatoryMarkingConstraint {
   allowEmptyMarkings?: boolean | null | undefined;
   markingIds: Array<MarkingId>;
 }
+export interface MandatoryMarkingRequirement_none {
+  type: "none";
+  none: None;
+}
+
+export interface MandatoryMarkingRequirement_markingIds {
+  type: "markingIds";
+  markingIds: Array<MarkingId>;
+}
+
+export interface MandatoryMarkingRequirement_redacted {
+  type: "redacted";
+  redacted: Redacted;
+}
+/**
+ * Contains required mandatory markings for data edited or created by the action type.
+ */
+export type MandatoryMarkingRequirement =
+  | MandatoryMarkingRequirement_none
+  | MandatoryMarkingRequirement_markingIds
+  | MandatoryMarkingRequirement_redacted;
+
+export interface MandatoryMarkingRequirementModification_none {
+  type: "none";
+  none: None;
+}
+
+export interface MandatoryMarkingRequirementModification_markingIds {
+  type: "markingIds";
+  markingIds: Array<MarkingId>;
+}
+export type MandatoryMarkingRequirementModification =
+  | MandatoryMarkingRequirementModification_none
+  | MandatoryMarkingRequirementModification_markingIds;
+
 export interface ManyToManyJoinDefinition {
   editsConfiguration?: EditsConfiguration | null | undefined;
   joinTableDatasetRid: string;
@@ -6025,7 +6146,10 @@ export interface MarkingTypesFilter {
  * safe to log.
  */
 export type MediaItemRid = string;
-
+export interface MediaReferenceParameterPropertyValue {
+  mediaMetadataType: _api_types_MediaMetadataType;
+  parameterId: ParameterId;
+}
 /**
  * This follows com.palantir.media.MediaReference
  */
@@ -6068,6 +6192,41 @@ export interface MediaSourceRid_datasetRid {
 export type MediaSourceRid =
   | MediaSourceRid_mediaSetRid
   | MediaSourceRid_datasetRid;
+
+export interface MinClassificationRequirement_none {
+  type: "none";
+  none: None;
+}
+
+export interface MinClassificationRequirement_classification {
+  type: "classification";
+  classification: Array<MarkingId>;
+}
+
+export interface MinClassificationRequirement_redacted {
+  type: "redacted";
+  redacted: Redacted;
+}
+/**
+ * Contains the minimum classification requirements for data edited or created by the action type.
+ */
+export type MinClassificationRequirement =
+  | MinClassificationRequirement_none
+  | MinClassificationRequirement_classification
+  | MinClassificationRequirement_redacted;
+
+export interface MinClassificationRequirementModification_none {
+  type: "none";
+  none: None;
+}
+
+export interface MinClassificationRequirementModification_classification {
+  type: "classification";
+  classification: Array<MarkingId>;
+}
+export type MinClassificationRequirementModification =
+  | MinClassificationRequirementModification_none
+  | MinClassificationRequirementModification_classification;
 
 export type MioEmbeddingModel = "GOOGLE_SIGLIP_2";
 export interface MissingAffectedObjectTypesForFunctionRule {
@@ -6223,6 +6382,11 @@ export interface NewObjectUrlTargetModification {
  * When set, no restriction is applied and the action can be executed both on the main ontology and within Scenarios.
  */
 export interface NoExecutionRestriction {
+}
+/**
+ * This part of the action type is not configured
+ */
+export interface None {
 }
 export interface NoneEntityProvenance {
 }
@@ -7789,6 +7953,10 @@ export interface OntologyIrActionTypeEntities {
   typeGroups: Array<TypeGroupRid>;
 }
 export interface OntologyIrActionTypeLevelValidation {
+  dataSecurityRequirement?:
+    | OntologyIrDataSecurityRequirement
+    | null
+    | undefined;
   rules: Record<_api_blockdata_ValidationRuleIndex, OntologyIrValidationRule>;
 }
 export interface OntologyIrActionTypeLogic {
@@ -8044,6 +8212,11 @@ export interface OntologyIrAllowedParameterValues_geotimeSeriesReference {
   geotimeSeriesReference: ParameterGeotimeSeriesReferenceOrEmpty;
 }
 
+export interface OntologyIrAllowedParameterValues_sidcIcon {
+  type: "sidcIcon";
+  sidcIcon: ParameterSidcIconOrEmpty;
+}
+
 export interface OntologyIrAllowedParameterValues_redacted {
   type: "redacted";
   redacted: Redacted;
@@ -8081,6 +8254,7 @@ export type OntologyIrAllowedParameterValues =
   | OntologyIrAllowedParameterValues_geohash
   | OntologyIrAllowedParameterValues_geoshape
   | OntologyIrAllowedParameterValues_geotimeSeriesReference
+  | OntologyIrAllowedParameterValues_sidcIcon
   | OntologyIrAllowedParameterValues_redacted
   | OntologyIrAllowedParameterValues_valueType
   | OntologyIrAllowedParameterValues_scenarioReference;
@@ -8366,6 +8540,13 @@ export interface OntologyIrDataSecurity {
     | undefined;
   markingConstraint?: OntologyIrMandatoryMarkingConstraint | null | undefined;
 }
+/**
+ * Security requirements of the data being written or modified.
+ */
+export interface OntologyIrDataSecurityRequirement {
+  mandatoryMarkingRequirement: OntologyIrMandatoryMarkingRequirement;
+  minClassificationRequirement: OntologyIrMinClassificationRequirement;
+}
 export interface OntologyIrDateBetweenOperation {
   leftDate: OntologyIrParameterTransformPrefillValue;
   rightDate: OntologyIrParameterTransformPrefillValue;
@@ -8577,6 +8758,10 @@ export interface OntologyIrFunctionRule {
   functionInputValues: Record<FunctionInputName, OntologyIrLogicRuleValue>;
   functionRid: FunctionRid;
   functionVersion: SemanticFunctionVersion;
+}
+export interface OntologyIrImplementingActionType {
+  actionTypeRid: ActionTypeApiName;
+  parameters: Record<InterfaceParameterConstraintRid, ParameterRid>;
 }
 export interface OntologyIrImplementingLinkType {
   linkTypeRid: LinkTypeId;
@@ -8956,6 +9141,11 @@ export interface OntologyIrLogicRule_addInterfaceLinkRuleV2 {
   addInterfaceLinkRuleV2: OntologyIrAddInterfaceLinkRuleV2;
 }
 
+export interface OntologyIrLogicRule_functionRule {
+  type: "functionRule";
+  functionRule: OntologyIrFunctionRule;
+}
+
 export interface OntologyIrLogicRule_scenarioRule {
   type: "scenarioRule";
   scenarioRule: OntologyIrScenarioRule;
@@ -8970,6 +9160,7 @@ export type OntologyIrLogicRule =
   | OntologyIrLogicRule_addLinkRule
   | OntologyIrLogicRule_deleteLinkRule
   | OntologyIrLogicRule_addInterfaceLinkRuleV2
+  | OntologyIrLogicRule_functionRule
   | OntologyIrLogicRule_scenarioRule;
 
 export interface OntologyIrLogicRuleValue_parameterId {
@@ -8990,6 +9181,11 @@ export interface OntologyIrLogicRuleValue_objectParameterPropertyValue {
 export interface OntologyIrLogicRuleValue_interfaceParameterPropertyValue {
   type: "interfaceParameterPropertyValue";
   interfaceParameterPropertyValue: OntologyIrInterfaceParameterPropertyValue;
+}
+
+export interface OntologyIrLogicRuleValue_mediaReferenceParameterPropertyValue {
+  type: "mediaReferenceParameterPropertyValue";
+  mediaReferenceParameterPropertyValue: MediaReferenceParameterPropertyValue;
 }
 
 export interface OntologyIrLogicRuleValue_currentUser {
@@ -9025,6 +9221,7 @@ export type OntologyIrLogicRuleValue =
   | OntologyIrLogicRuleValue_staticValue
   | OntologyIrLogicRuleValue_objectParameterPropertyValue
   | OntologyIrLogicRuleValue_interfaceParameterPropertyValue
+  | OntologyIrLogicRuleValue_mediaReferenceParameterPropertyValue
   | OntologyIrLogicRuleValue_currentUser
   | OntologyIrLogicRuleValue_currentTime
   | OntologyIrLogicRuleValue_uniqueIdentifier
@@ -9038,6 +9235,28 @@ export interface OntologyIrMandatoryMarkingConstraint {
   allowEmptyMarkings?: boolean | null | undefined;
   markingGroupName: _api_blockdata_MarkingGroupName;
 }
+export interface OntologyIrMandatoryMarkingRequirement_none {
+  type: "none";
+  none: None;
+}
+
+export interface OntologyIrMandatoryMarkingRequirement_markingIds {
+  type: "markingIds";
+  markingIds: Array<MarkingId>;
+}
+
+export interface OntologyIrMandatoryMarkingRequirement_redacted {
+  type: "redacted";
+  redacted: Redacted;
+}
+/**
+ * Contains required mandatory markings for data edited or created by the action type.
+ */
+export type OntologyIrMandatoryMarkingRequirement =
+  | OntologyIrMandatoryMarkingRequirement_none
+  | OntologyIrMandatoryMarkingRequirement_markingIds
+  | OntologyIrMandatoryMarkingRequirement_redacted;
+
 export interface OntologyIrManyToManyLinkDefinition {
   objectTypeAPrimaryKeyPropertyMapping: Array<
     _api_blockdata_OntologyIrPropertyToPropertyMapping
@@ -9114,6 +9333,28 @@ export interface OntologyIrMediaSourceRid_datasetRid {
 export type OntologyIrMediaSourceRid =
   | OntologyIrMediaSourceRid_mediaSetRid
   | OntologyIrMediaSourceRid_datasetRid;
+
+export interface OntologyIrMinClassificationRequirement_none {
+  type: "none";
+  none: None;
+}
+
+export interface OntologyIrMinClassificationRequirement_classification {
+  type: "classification";
+  classification: Array<MarkingId>;
+}
+
+export interface OntologyIrMinClassificationRequirement_redacted {
+  type: "redacted";
+  redacted: Redacted;
+}
+/**
+ * Contains the minimum classification requirements for data edited or created by the action type.
+ */
+export type OntologyIrMinClassificationRequirement =
+  | OntologyIrMinClassificationRequirement_none
+  | OntologyIrMinClassificationRequirement_classification
+  | OntologyIrMinClassificationRequirement_redacted;
 
 export interface OntologyIrModifyInterfaceRule {
   interfaceApiName: InterfaceTypeApiName;
@@ -10315,6 +10556,16 @@ export interface OntologyIrRuleSetBinding {
   ruleSetRid: RuleSetRid;
 }
 /**
+ * This effect calls FunctionExecutorService.executeFunctionAsync endpoint which kicks off an asynchronous
+ * function. This effect does not wait for the actual function to complete or polls it, simply kicks it off.
+ * This is an experimental endpoint, please do not use in production unless you know what you are doing.
+ */
+export interface OntologyIrRunAsyncFunctionEffect {
+  functionRid: FunctionRid;
+  functionVersion: SemanticFunctionVersion;
+  parameterValues: Record<FunctionInputName, OntologyIrLogicRuleValue>;
+}
+/**
  * This effect calls SchedulerDeploymentsService.upsertAndRunDeployment endpoint which upserts a schedule
  * deployment and runs it. See the Scheduler API docs for more details.
  * The synchronous effect doesn't wait for the actual schedule run to complete, it only waits for a successful
@@ -10741,11 +10992,17 @@ export interface OntologyIrSynchronousPreWritebackEffect_runScheduleDeployment {
   type: "runScheduleDeployment";
   runScheduleDeployment: OntologyIrRunScheduleDeploymentEffect;
 }
+
+export interface OntologyIrSynchronousPreWritebackEffect_runAsyncFunction {
+  type: "runAsyncFunction";
+  runAsyncFunction: OntologyIrRunAsyncFunctionEffect;
+}
 /**
  * Union wrapping the various options available for configuring a platform effect which will be executed synchronously.
  */
 export type OntologyIrSynchronousPreWritebackEffect =
-  OntologyIrSynchronousPreWritebackEffect_runScheduleDeployment;
+  | OntologyIrSynchronousPreWritebackEffect_runScheduleDeployment
+  | OntologyIrSynchronousPreWritebackEffect_runAsyncFunction;
 
 export interface OntologyIrSynchronousPreWritebackWebhook_staticDirectInput {
   type: "staticDirectInput";
@@ -11256,6 +11513,11 @@ export interface OntologyModificationEvent_branchClosed {
   branchClosed: BranchClosedEvent;
 }
 
+export interface OntologyModificationEvent_branchDeactivated {
+  type: "branchDeactivated";
+  branchDeactivated: BranchDeactivatedEvent;
+}
+
 export interface OntologyModificationEvent_branchMerged {
   type: "branchMerged";
   branchMerged: BranchMergedEvent;
@@ -11282,6 +11544,7 @@ export type OntologyModificationEvent =
   | OntologyModificationEvent_interfaceTypeUpdated
   | OntologyModificationEvent_interfaceTypeDeleted
   | OntologyModificationEvent_branchClosed
+  | OntologyModificationEvent_branchDeactivated
   | OntologyModificationEvent_branchMerged
   | OntologyModificationEvent_branchDeleted;
 
@@ -12214,6 +12477,21 @@ export interface ParametersDoNotMatchParameterOrderingError {
   actionTypeIdentifier: ActionTypeIdentifier;
   mismatchedParameterIds: Array<ParameterId>;
 }
+export interface ParameterSidcIcon {
+}
+export interface ParameterSidcIconOrEmpty_empty {
+  type: "empty";
+  empty: MustBeEmpty;
+}
+
+export interface ParameterSidcIconOrEmpty_sidcIcon {
+  type: "sidcIcon";
+  sidcIcon: ParameterSidcIcon;
+}
+export type ParameterSidcIconOrEmpty =
+  | ParameterSidcIconOrEmpty_empty
+  | ParameterSidcIconOrEmpty_sidcIcon;
+
 export interface ParameterStructOrEmpty_empty {
   type: "empty";
   empty: MustBeEmpty;
@@ -13461,6 +13739,24 @@ export interface RuleSetsAlreadyExistError {
  */
 export interface RuleSetsNotFoundError {
   ruleSetRids: Array<RuleSetRid>;
+}
+/**
+ * This effect calls FunctionExecutorService.executeFunctionAsync endpoint which kicks off an asynchronous
+ * function. This effect does not wait for the actual function to complete or polls it, simply kicks it off.
+ * This is an experimental endpoint, please do not use in production unless you know what you are doing.
+ */
+export interface RunAsyncFunctionEffect {
+  functionRid: FunctionRid;
+  functionVersion: SemanticFunctionVersion;
+  parameterValues: Record<FunctionInputName, LogicRuleValue>;
+}
+/**
+ * See RunAsyncFunctionEffect docs.
+ */
+export interface RunAsyncFunctionEffectModification {
+  functionRid: FunctionRid;
+  functionVersion: SemanticFunctionVersion;
+  parameterValues: Record<FunctionInputName, LogicRuleValue>;
 }
 /**
  * This effect calls SchedulerDeploymentsService.upsertAndRunDeployment endpoint which upserts a schedule
@@ -14879,21 +15175,33 @@ export interface SynchronousPreWritebackEffect_runScheduleDeployment {
   type: "runScheduleDeployment";
   runScheduleDeployment: RunScheduleDeploymentEffect;
 }
+
+export interface SynchronousPreWritebackEffect_runAsyncFunction {
+  type: "runAsyncFunction";
+  runAsyncFunction: RunAsyncFunctionEffect;
+}
 /**
  * Union wrapping the various options available for configuring a platform effect which will be executed synchronously.
  */
 export type SynchronousPreWritebackEffect =
-  SynchronousPreWritebackEffect_runScheduleDeployment;
+  | SynchronousPreWritebackEffect_runScheduleDeployment
+  | SynchronousPreWritebackEffect_runAsyncFunction;
 
 export interface SynchronousPreWritebackEffectModification_runScheduleDeployment {
   type: "runScheduleDeployment";
   runScheduleDeployment: RunScheduleDeploymentEffectModification;
 }
+
+export interface SynchronousPreWritebackEffectModification_runAsyncFunction {
+  type: "runAsyncFunction";
+  runAsyncFunction: RunAsyncFunctionEffectModification;
+}
 /**
  * See SynchronousPreWritebackEffect docs.
  */
 export type SynchronousPreWritebackEffectModification =
-  SynchronousPreWritebackEffectModification_runScheduleDeployment;
+  | SynchronousPreWritebackEffectModification_runScheduleDeployment
+  | SynchronousPreWritebackEffectModification_runAsyncFunction;
 
 export interface SynchronousPreWritebackWebhook_staticDirectInput {
   type: "staticDirectInput";
