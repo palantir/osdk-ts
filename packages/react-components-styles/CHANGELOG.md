@@ -1,5 +1,7 @@
 # @osdk/react-components-styles
 
+## 0.2.0-beta.24
+
 ## 0.2.0-beta.14
 
 ### Minor Changes
