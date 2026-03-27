@@ -378,8 +378,8 @@ export const WithHighlightMode: StoryObj<PdfViewerProps> = {
   parameters: {
     docs: {
       source: {
-        code:
-          `import { BasePdfViewer } from "@osdk/react-components/experimental";
+        code: `import { useState, useCallback } from "react";
+import { BasePdfViewer } from "@osdk/react-components/experimental";
 import type { PdfAnnotation, PdfTextHighlightEvent } from "@osdk/react-components/experimental";
 
 function MyPdfViewer({ src }: { src: string }) {

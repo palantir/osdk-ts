@@ -195,6 +195,55 @@ export function usePdfFormFields({
     };
   }, [document]);
 
+  // Populates form fields from formData into both annotation storage and DOM elements.
+  // Scoped to the viewer container to avoid conflicts with multiple viewer instances.
+  const populateFields = useCallback(() => {
+    const data = formDataRef.current;
+    const doc = document;
+    const pdfViewer = pdfViewerRef.current;
+    if (data == null || doc == null || pdfViewer == null) return;
+    if (fieldMapRef.current.size === 0) return;
+
+    const storage = doc.annotationStorage;
+    const container = (pdfViewer as { container?: HTMLElement }).container;
+
+    for (const [fieldName, value] of Object.entries(data)) {
+      const ids = nameToIdsRef.current.get(fieldName);
+      if (ids == null) continue;
+
+      for (const id of ids) {
+        const entry = fieldMapRef.current.get(id);
+        if (entry == null) continue;
+
+        const storageVal = toStorageValue(
+          value,
+          entry.fieldType,
+        );
+        storage.setValue(id, { value: storageVal });
+
+        // Also update the DOM element directly (scoped to viewer container)
+        const el = container?.querySelector(
+          `[data-element-id="${id}"]`,
+        );
+        if (el == null) continue;
+
+        if (
+          entry.fieldType === "checkbox" && el instanceof HTMLInputElement
+        ) {
+          el.checked = typeof storageVal === "boolean"
+            ? storageVal
+            : storageVal !== "Off";
+        } else if (el instanceof HTMLSelectElement) {
+          el.value = String(value);
+        } else if (
+          el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement
+        ) {
+          el.value = String(value);
+        }
+      }
+    }
+  }, [document, pdfViewerRef]);
+
   // Effect 2: Populate initial form data when annotation layers render
   useEffect(function populateFormData() {
     const eventBus = eventBusRef.current;
@@ -202,47 +251,12 @@ export function usePdfFormFields({
       return;
     }
 
-    const storage = document.annotationStorage;
+    // Attempt population immediately in case the field map was built
+    // after the annotation layer already rendered (race condition fix).
+    populateFields();
 
     const onAnnotationLayerRendered = () => {
-      const data = formDataRef.current;
-      if (data == null) return;
-
-      for (const [fieldName, value] of Object.entries(data)) {
-        const ids = nameToIdsRef.current.get(fieldName);
-        if (ids == null) continue;
-
-        for (const id of ids) {
-          const entry = fieldMapRef.current.get(id);
-          if (entry == null) continue;
-
-          const storageVal = toStorageValue(
-            value,
-            entry.fieldType,
-          );
-          storage.setValue(id, { value: storageVal });
-
-          // Also update the DOM element directly
-          const el = window.document.querySelector(
-            `[data-element-id="${id}"]`,
-          );
-          if (el == null) continue;
-
-          if (
-            entry.fieldType === "checkbox" && el instanceof HTMLInputElement
-          ) {
-            el.checked = typeof storageVal === "boolean"
-              ? storageVal
-              : storageVal !== "Off";
-          } else if (el instanceof HTMLSelectElement) {
-            el.value = String(value);
-          } else if (
-            el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement
-          ) {
-            el.value = String(value);
-          }
-        }
-      }
+      populateFields();
     };
 
     eventBus.on(ANNOTATION_LAYER_RENDERED_EVENT, onAnnotationLayerRendered);
@@ -250,7 +264,7 @@ export function usePdfFormFields({
     return () => {
       eventBus.off(ANNOTATION_LAYER_RENDERED_EVENT, onAnnotationLayerRendered);
     };
-  }, [eventBusRef, document, hasFormFields]);
+  }, [eventBusRef, document, hasFormFields, populateFields]);
 
   // Effect 3: Listen for field changes via MutationObserver + event listeners
   useEffect(function listenForFieldChanges() {

@@ -51,6 +51,10 @@ export function rgbArrayToHex(color: number[]): string {
  * Converts quadPoints (PDF spec format) back to PdfRect[].
  * QuadPoints are 8 values per quad: [x1,y1, x2,y2, x3,y3, x4,y4]
  * representing the four corners of each highlight rect.
+ *
+ * PDF.js highlight editor produces axis-aligned quads with ordering:
+ *   (x1,y1)=top-left, (x2,y2)=top-right, (x3,y3)=bottom-left, (x4,y4)=bottom-right
+ * We derive the bounding rect from x1, y1 (top), x2 (right edge), y3 (bottom).
  */
 export function quadPointsToRects(
   quadPoints: Float32Array,
@@ -126,19 +130,28 @@ export function usePdfHighlightMode({
     }
   }, [enabled]);
 
+  // Clear tracked editors when the document changes (but not on highlight toggle)
+  const prevDocumentRef = useRef<PDFDocumentProxy | undefined>(undefined);
+  useEffect(function clearOnDocumentChange() {
+    if (document !== prevDocumentRef.current) {
+      knownEditorIdsRef.current.clear();
+      editorEventsRef.current.clear();
+      prevDocumentRef.current = document;
+    }
+  }, [document]);
+
   // Listen for new highlights being added to annotation storage
   useEffect(function listenForHighlights() {
     if (document == null || !highlightModeActive || !enabled) {
       return;
     }
 
-    knownEditorIdsRef.current.clear();
-    editorEventsRef.current.clear();
-
     const storage = document.annotationStorage;
     const previousOnAnnotationEditor = storage.onAnnotationEditor;
 
-    // Intercept storage.remove to detect highlight deletions
+    // Monkey-patch storage.remove to detect highlight deletions.
+    // This is fragile but necessary because PDF.js does not emit events
+    // when editors are removed. Restore the original on cleanup.
     const originalRemove = storage.remove.bind(storage);
     storage.remove = (key: string) => {
       const savedEvent = editorEventsRef.current.get(key);

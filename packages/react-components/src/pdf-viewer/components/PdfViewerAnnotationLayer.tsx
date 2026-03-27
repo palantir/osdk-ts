@@ -84,7 +84,13 @@ function AnnotationItem({
       hasMultipleRects
         ? annotation.rects!
         : [annotation.rect],
-    [annotation, hasMultipleRects],
+    [annotation],
+  );
+
+  const style = useMemo(
+    () =>
+      computeRectStyle(rectsToRender[0], pageHeight, scale, annotation.color),
+    [rectsToRender, pageHeight, scale, annotation.color],
   );
 
   // Multi-rect: render a group wrapper with one div per rect
@@ -116,12 +122,6 @@ function AnnotationItem({
   }
 
   // Single rect: existing behavior
-  const style = computeRectStyle(
-    rectsToRender[0],
-    pageHeight,
-    scale,
-    annotation.color,
-  );
 
   return (
     <div
