@@ -300,8 +300,9 @@ export interface NumberInputFieldProps extends
 export interface RadioButtonsFieldProps<V> extends BaseFormFieldProps<V> {
   /**
    * Available options for radio buttons
+   * @default []
    */
-  options: Option<V>[];
+  options?: Option<V>[];
 }
 
 /**
