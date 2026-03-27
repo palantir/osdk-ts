@@ -15,14 +15,20 @@
  */
 
 import type {
+  ActionTypeBlockDataV2,
+  LogicRule,
+  OntologyBlockDataV2,
   OntologyIrActionTypeBlockDataV2,
   OntologyIrLogicRule,
   OntologyIrOntologyBlockDataV2,
-  LogicRule,
-  ActionTypeBlockDataV2,
-  OntologyBlockDataV2,
 } from "@osdk/client.unstable";
 import type * as Ontologies from "@osdk/foundry.ontologies";
+import {
+  type BlockDataApiNameLookup,
+  buildBlockDataInterfaceTypeLookup,
+  buildBlockDataObjectTypeLookup,
+  resolveBlockDataApiName,
+} from "@osdk/generator-converters.ontologyir";
 
 interface ApiNameLookup {
   byId: Map<string, string>;
@@ -45,22 +51,6 @@ function buildObjectTypeLookup(
   return { byId, byHyphenated };
 }
 
-function buildBlockDataObjectTypeLookup(
-  blockdata: OntologyBlockDataV2 | undefined,
-): ApiNameLookup | undefined {
-  if (!blockdata?.objectTypes) {
-    return undefined;
-  }
-  const byId = new Map<string, string>();
-  const byHyphenated = new Map<string, string>();
-  for (const [key, value] of Object.entries(blockdata.objectTypes)) {
-    const apiName = value.objectType.apiName!;
-    byId.set(key, apiName);
-    byHyphenated.set(apiName.replace(/\./g, "-"), apiName);
-  }
-  return { byId, byHyphenated };
-}
-
 function buildInterfaceTypeLookup(
   ir: OntologyIrOntologyBlockDataV2 | undefined,
 ): ApiNameLookup | undefined {
@@ -71,23 +61,6 @@ function buildInterfaceTypeLookup(
   const byHyphenated = new Map<string, string>();
   for (const [key, value] of Object.entries(ir.interfaceTypes)) {
     const apiName = value.interfaceType.apiName;
-    byId.set(key, apiName);
-    byHyphenated.set(apiName.replace(/\./g, "-"), apiName);
-  }
-  return { byId, byHyphenated };
-}
-
-
-function buildBlockDataInterfaceTypeLookup(
-  blockdata: OntologyBlockDataV2 | undefined,
-): ApiNameLookup | undefined {
-  if (!blockdata?.interfaceTypes) {
-    return undefined;
-  }
-  const byId = new Map<string, string>();
-  const byHyphenated = new Map<string, string>();
-  for (const [key, value] of Object.entries(blockdata.interfaceTypes)) {
-    const apiName = value.interfaceType.apiName!;
     byId.set(key, apiName);
     byHyphenated.set(apiName.replace(/\./g, "-"), apiName);
   }
@@ -295,8 +268,8 @@ function convertSingleRule(
 function convertBlockDataSingleRule(
   rule: LogicRule,
   action: ActionTypeBlockDataV2,
-  objectLookup: ApiNameLookup | undefined,
-  interfaceLookup: ApiNameLookup | undefined,
+  objectLookup: BlockDataApiNameLookup | undefined,
+  interfaceLookup: BlockDataApiNameLookup | undefined,
 ): Ontologies.ActionLogicRule {
   switch (rule.type) {
     case "addObjectRule": {
@@ -312,7 +285,10 @@ function convertBlockDataSingleRule(
         type: "createObject";
       } = {
         type: "createObject",
-        objectTypeApiName: resolveApiName(r.objectTypeId, objectLookup),
+        objectTypeApiName: resolveBlockDataApiName(
+          r.objectTypeId,
+          objectLookup,
+        ),
         propertyArguments,
         structPropertyArguments: {},
       };
@@ -329,7 +305,10 @@ function convertBlockDataSingleRule(
         type: "createOrModifyObject";
       } = {
         type: "createOrModifyObject",
-        objectTypeApiName: resolveApiName(objRef.objectTypeId, objectLookup),
+        objectTypeApiName: resolveBlockDataApiName(
+          objRef.objectTypeId,
+          objectLookup,
+        ),
         propertyArguments: {},
         structPropertyArguments: {},
       };
@@ -371,9 +350,8 @@ function convertBlockDataSingleRule(
 
     case "addInterfaceRule": {
       const r = rule.addInterfaceRule;
-      const interfaceApiName = resolveApiName(
-        "test",
-        // r.interfaceApiName,
+      const interfaceApiName = resolveBlockDataApiName(
+        r.interfaceTypeRid,
         interfaceLookup,
       );
       const result: Ontologies.CreateInterfaceLogicRule & {

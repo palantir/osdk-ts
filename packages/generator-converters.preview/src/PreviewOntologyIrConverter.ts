@@ -19,7 +19,11 @@ import type {
   OntologyBlockDataV2,
 } from "@osdk/client.unstable";
 import type * as Ontologies from "@osdk/foundry.ontologies";
-import { OntologyBlockDataToFullMetadataConverter } from "@osdk/generator-converters.ontologyir";
+import {
+  buildBlockDataInterfaceTypeLookup,
+  buildBlockDataObjectTypeLookup,
+  OntologyBlockDataToFullMetadataConverter,
+} from "@osdk/generator-converters.ontologyir";
 import { convertBlockDataLogicRulesToActionLogicRules } from "./ActionLogicRuleConverter.js";
 import { toUuid } from "./ridUtils.js";
 
@@ -118,10 +122,14 @@ export class PreviewOntologyIrConverter {
     actions: Record<string, ActionTypeBlockDataV2>,
     blockdata: OntologyBlockDataV2,
   ): Record<string, Ontologies.ActionTypeFullMetadata> {
-    const objectTypeLookup = OntologyBlockDataToFullMetadataConverter.buildBlockDataObjectTypeLookup(blockdata);
-    const interfaceTypeLookup = OntologyBlockDataToFullMetadataConverter.buildBlockDataInterfaceTypeLookup(blockdata);
+    const objectTypeLookup = buildBlockDataObjectTypeLookup(blockdata);
+    const interfaceTypeLookup = buildBlockDataInterfaceTypeLookup(blockdata);
     const baseActionTypes = OntologyBlockDataToFullMetadataConverter
-      .getOsdkActionTypesFromBlockData(blockdata, objectTypeLookup, interfaceTypeLookup);
+      .getOsdkActionTypesFromBlockData(
+        blockdata,
+        objectTypeLookup,
+        interfaceTypeLookup,
+      );
 
     // Build a lookup from apiName to the original IR action for logic rules
     const actionsByApiName = new Map(

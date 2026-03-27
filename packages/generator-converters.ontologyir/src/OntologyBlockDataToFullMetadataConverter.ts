@@ -15,84 +15,67 @@
  */
 
 import type {
-  OntologyIrActionTypeBlockDataV2,
-  OntologyIrActionTypeStatus,
-  OntologyIrInterfaceTypeBlockDataV2,
-  OntologyIrLinkTypeBlockDataV2,
-  OntologyIrLinkTypeStatus,
-  OntologyIrMarketplaceInterfaceLinkType,
-  MarketplaceInterfaceLinkType,
-  OntologyIrObjectTypeBlockDataV2,
-  ObjectTypeStatus,
-  ActionTypeStatus,
-  LinkTypeStatus,
-  OntologyIrObjectTypeStatus,
-  OntologyIrOntologyBlockDataV2,
-  OntologyIrSharedPropertyTypeBlockDataV2,
-  OntologyIrType,
-  OntologyBlockDataV2,
-  InterfaceTypeBlockDataV2,
-  ObjectTypeBlockDataV2,
-  LinkTypeBlockDataV2,
   ActionTypeBlockDataV2,
+  ActionTypeStatus,
+  InterfaceTypeBlockDataV2,
+  LinkTypeBlockDataV2,
+  LinkTypeStatus,
+  MarketplaceInterfaceLinkType,
+  ObjectTypeBlockDataV2,
+  ObjectTypeStatus,
+  OntologyBlockDataV2,
   SharedPropertyTypeBlockDataV2,
-  Type
+  Type,
 } from "@osdk/client.unstable";
 import type * as Ontologies from "@osdk/foundry.ontologies";
 
-import { consola } from "consola";
-import * as fs from "fs";
-import { spawnSync } from "node:child_process";
 import { hash } from "node:crypto";
-import { accessSync, constants } from "node:fs";
-import { createRequire } from "node:module";
-import * as path from "node:path";
-import { pathToFileURL } from "node:url";
 import invariant from "tiny-invariant";
-import * as ts from "typescript";
 import type { ApiName } from "./ApiName.js";
-import { convertDataType } from "./convertDataType.js";
 
 export class OntologyBlockDataToFullMetadataConverter {
+  static getFullMetadataFromBlockData(
+    blockData: OntologyBlockDataV2,
+  ): Ontologies.OntologyFullMetadata {
+    const objectTypeLookup = buildBlockDataObjectTypeLookup(blockData);
+    const interfaceTypeLookup = buildBlockDataInterfaceTypeLookup(blockData);
+    const interfaceTypes = this.getOsdkInterfaceTypesFromBlockData(
+      blockData.interfaceTypes,
+    );
+    const sharedPropertyTypes = this.getOsdkSharedPropertyTypesFromBlockData(
+      blockData.sharedPropertyTypes,
+    );
+    const objectTypes = this.getOsdkObjectTypesFromBlockData(
+      blockData.objectTypes,
+      blockData.linkTypes,
+      objectTypeLookup,
+    );
+    const actionTypes = this.getOsdkActionTypesFromBlockData(
+      blockData,
+      objectTypeLookup,
+      interfaceTypeLookup,
+    );
 
-   static getFullMetadataFromBlockData(
-      blockData: OntologyBlockDataV2,
-    ): Ontologies.OntologyFullMetadata {
-      const objectTypeLookup = this.buildBlockDataObjectTypeLookup(blockData);
-      const interfaceTypeLookup = this.buildBlockDataInterfaceTypeLookup(blockData);
-      const interfaceTypes = this.getOsdkInterfaceTypesFromBlockData(
-        blockData.interfaceTypes,
-      );
-      const sharedPropertyTypes = this.getOsdkSharedPropertyTypesFromBlockData(
-        blockData.sharedPropertyTypes,
-      );
-      const objectTypes = this.getOsdkObjectTypesFromBlockData(
-        blockData.objectTypes,
-        blockData.linkTypes,
-        objectTypeLookup,
-      );
-      const actionTypes = this.getOsdkActionTypesFromBlockData(blockData, objectTypeLookup, interfaceTypeLookup);
-  
-      return {
-        interfaceTypes,
-        sharedPropertyTypes,
-        objectTypes,
-        queryTypes: {},
-        actionTypes,
-        ontology: {
-          apiName: "ontology",
-          rid: `ri.00000`,
-          displayName: "ontology",
-          description: "",
-        },
-        valueTypes: {},
-      };
-    }
+    return {
+      interfaceTypes,
+      sharedPropertyTypes,
+      objectTypes,
+      queryTypes: {},
+      actionTypes,
+      ontology: {
+        apiName: "ontology",
+        rid: `ri.00000`,
+        displayName: "ontology",
+        description: "",
+      },
+      valueTypes: {},
+    };
+  }
 
   static getOsdkObjectTypesFromBlockData(
     objects: Record<string, ObjectTypeBlockDataV2>,
     links: Record<string, LinkTypeBlockDataV2>,
-    objectTypeLookup: ApiNameLookup | undefined,
+    objectTypeLookup: BlockDataApiNameLookup | undefined,
   ): Record<ApiName, Ontologies.ObjectTypeFullMetadata> {
     const result: Record<ApiName, Ontologies.ObjectTypeFullMetadata> = {};
     const propRidToApiName: Record<string, string> = {};
@@ -181,7 +164,7 @@ export class OntologyBlockDataToFullMetadataConverter {
         },
         status: this.convertObjectTypeStatusFromBlockData(object.status),
         properties,
-        rid
+        rid,
       };
 
       const sharedPropertyTypeMappings: Record<ApiName, ApiName> = {};
@@ -209,8 +192,11 @@ export class OntologyBlockDataToFullMetadataConverter {
         };
       }
 
-      const linkMappings = this.getLinkMappingsFromBlockData(Object.values(links), propRidToApiName, objectTypeLookup);
-      console.log(JSON.stringify(linkMappings, null, 2));
+      const linkMappings = this.getLinkMappingsFromBlockData(
+        Object.values(links),
+        propRidToApiName,
+        objectTypeLookup,
+      );
 
       const objectApiName = object.apiName!;
       result[objectApiName] = {
@@ -228,13 +214,15 @@ export class OntologyBlockDataToFullMetadataConverter {
   static getLinkMappingsFromBlockData(
     links: LinkTypeBlockDataV2[],
     propRidToApiName: Record<string, string>,
-    objectTypeLookup: ApiNameLookup | undefined,
+    objectTypeLookup: BlockDataApiNameLookup | undefined,
   ): Record<string, Ontologies.LinkTypeSideV2[]> {
     const result: Record<string, Ontologies.LinkTypeSideV2[]> = {};
 
     for (const link of links) {
       const linkType = link.linkType;
-      const linkStatus = this.convertLinkTypeStatusFromBlockData(linkType.status);
+      const linkStatus = this.convertLinkTypeStatusFromBlockData(
+        linkType.status,
+      );
 
       let mappings: Record<string, Ontologies.LinkTypeSideV2>;
       switch (linkType.definition.type) {
@@ -245,7 +233,10 @@ export class OntologyBlockDataToFullMetadataConverter {
             displayName: linkDef.objectTypeAToBLinkMetadata
               .displayMetadata.displayName,
             cardinality: "MANY",
-            objectTypeApiName: resolveApiName(linkDef.objectTypeRidB, objectTypeLookup),
+            objectTypeApiName: resolveBlockDataApiName(
+              linkDef.objectTypeRidB,
+              objectTypeLookup,
+            ),
             linkTypeRid:
               `ri.${linkDef.objectTypeRidA}.${linkType.id}.${linkDef.objectTypeRidB}`,
             status: linkStatus,
@@ -255,7 +246,10 @@ export class OntologyBlockDataToFullMetadataConverter {
             ...sideA,
             apiName: linkDef.objectTypeBToALinkMetadata.apiName
               ?? "",
-            objectTypeApiName: resolveApiName(linkDef.objectTypeRidA, objectTypeLookup),
+            objectTypeApiName: resolveBlockDataApiName(
+              linkDef.objectTypeRidA,
+              objectTypeLookup,
+            ),
           };
 
           mappings = {
@@ -268,7 +262,8 @@ export class OntologyBlockDataToFullMetadataConverter {
           const linkDef = linkType.definition.oneToMany;
 
           invariant(
-            Object.keys(linkDef.oneSidePrimaryKeyToManySidePropertyMapping).length === 1,
+            Object.keys(linkDef.oneSidePrimaryKeyToManySidePropertyMapping)
+              .length === 1,
           );
 
           const common = {
@@ -282,13 +277,18 @@ export class OntologyBlockDataToFullMetadataConverter {
             apiName: linkDef.oneToManyLinkMetadata.apiName ?? "",
             displayName:
               linkDef.oneToManyLinkMetadata.displayMetadata.displayName,
-            objectTypeApiName: resolveApiName(linkDef.objectTypeRidOneSide, objectTypeLookup),
+            objectTypeApiName: resolveBlockDataApiName(
+              linkDef.objectTypeRidOneSide,
+              objectTypeLookup,
+            ),
             cardinality: "ONE",
             // This should only exist on the one side and it should be the property on this object
             // that points to the PK on the other object
-            foreignKeyPropertyApiName:
-            propRidToApiName[Object.values(
-              linkDef.oneSidePrimaryKeyToManySidePropertyMapping)[0]],
+            foreignKeyPropertyApiName: propRidToApiName[
+              Object.values(
+                linkDef.oneSidePrimaryKeyToManySidePropertyMapping,
+              )[0]
+            ],
           };
 
           const oneSide: Ontologies.LinkTypeSideV2 = {
@@ -297,7 +297,10 @@ export class OntologyBlockDataToFullMetadataConverter {
             apiName: linkDef.manyToOneLinkMetadata.apiName ?? "",
             displayName:
               linkDef.manyToOneLinkMetadata.displayMetadata.displayName,
-            objectTypeApiName: resolveApiName(linkDef.objectTypeRidManySide, objectTypeLookup),
+            objectTypeApiName: resolveBlockDataApiName(
+              linkDef.objectTypeRidManySide,
+              objectTypeLookup,
+            ),
           };
 
           mappings = {
@@ -322,48 +325,11 @@ export class OntologyBlockDataToFullMetadataConverter {
     return result;
   }
 
-  static buildBlockDataObjectTypeLookup(
-    blockdata: OntologyBlockDataV2 | undefined,
-  ): ApiNameLookup | undefined {
-    if (!blockdata?.objectTypes) {
-      return undefined;
-    }
-    const byRid = new Map<string, string>();
-    const byHyphenated = new Map<string, string>();
-    for (const [key, value] of Object.entries(blockdata.objectTypes)) {
-      const apiName = value.objectType.apiName!;
-      byRid.set(key, apiName);
-      byHyphenated.set(apiName.replace(/\./g, "-").toLowerCase(), apiName);
-    }
-    return { byRid, byHyphenated };
-  }
-
-  static buildBlockDataInterfaceTypeLookup(
-    blockdata: OntologyBlockDataV2 | undefined,
-  ): ApiNameLookup | undefined {
-    if (!blockdata?.interfaceTypes) {
-      return undefined;
-    }
-    const byRid = new Map<string, string>();
-    const byHyphenated = new Map<string, string>();
-    for (const [key, value] of Object.entries(blockdata.interfaceTypes)) {
-      const apiName = value.interfaceType.apiName!;
-      byRid.set(key, apiName);
-      byHyphenated.set(apiName.replace(/\./g, "-"), apiName);
-    }
-    return { byRid, byHyphenated };
-  }
-
   static getOsdkActionTypesFromBlockData(
     blockData: OntologyBlockDataV2,
-    objectTypeLookup: ApiNameLookup | undefined,
-    interfaceTypeLookup: ApiNameLookup | undefined,
+    objectTypeLookup: BlockDataApiNameLookup | undefined,
+    interfaceTypeLookup: BlockDataApiNameLookup | undefined,
   ): Record<ApiName, Ontologies.ActionTypeV2> {
-    // we need rid -> apiName mapping for interfaces
-
-    // in maker-experimental, apiName -> objectTypeId is not reversible since we make it lowercase
-    // objectTypeId -> block id -> rid -> apiName for objects
-
     const result: Record<ApiName, Ontologies.ActionTypeV2> = {};
 
     for (const [rid, action] of Object.entries(blockData.actionTypes)) {
@@ -373,8 +339,15 @@ export class OntologyBlockDataToFullMetadataConverter {
         apiName: metadata.apiName,
         displayName: metadata.displayMetadata.displayName,
         description: metadata.displayMetadata.description,
-        parameters: this.getOsdkActionParametersFromBlockData(action, objectTypeLookup),
-        operations: this.getOsdkActionOperationsFromBlockData(action, objectTypeLookup, interfaceTypeLookup),
+        parameters: this.getOsdkActionParametersFromBlockData(
+          action,
+          objectTypeLookup,
+        ),
+        operations: this.getOsdkActionOperationsFromBlockData(
+          action,
+          objectTypeLookup,
+          interfaceTypeLookup,
+        ),
         status: this.convertActionTypeStatusFromBlockData(metadata.status),
       };
 
@@ -386,8 +359,8 @@ export class OntologyBlockDataToFullMetadataConverter {
 
   static getOsdkActionOperationsFromBlockData(
     action: ActionTypeBlockDataV2,
-    objectTypeLookup: ApiNameLookup | undefined,
-    interfaceTypeLookup: ApiNameLookup | undefined,
+    objectTypeLookup: BlockDataApiNameLookup | undefined,
+    interfaceTypeLookup: BlockDataApiNameLookup | undefined,
   ): Ontologies.LogicRule[] {
     return action.actionType.actionTypeLogic.logic.rules.map(irLogic => {
       switch (irLogic.type) {
@@ -395,7 +368,10 @@ export class OntologyBlockDataToFullMetadataConverter {
           const r = irLogic.addInterfaceRule;
           return {
             type: "createInterfaceObject",
-            interfaceTypeApiName: resolveApiName(r.interfaceTypeRid, interfaceTypeLookup),
+            interfaceTypeApiName: resolveBlockDataApiName(
+              r.interfaceTypeRid,
+              interfaceTypeLookup,
+            ),
             // interfaceTypeApiName: interfaces[r.interfaceTypeRid].interfaceType.apiName,
           } satisfies Ontologies.LogicRule;
         }
@@ -405,7 +381,10 @@ export class OntologyBlockDataToFullMetadataConverter {
           const r = irLogic.addObjectRule;
           return {
             type: "createObject",
-            objectTypeApiName: resolveApiName(r.objectTypeId, objectTypeLookup),
+            objectTypeApiName: resolveBlockDataApiName(
+              r.objectTypeId,
+              objectTypeLookup,
+            ),
           } satisfies Ontologies.LogicRule;
         }
         case "addOrModifyObjectRuleV2": {
@@ -416,7 +395,10 @@ export class OntologyBlockDataToFullMetadataConverter {
           if (modifyParamType.type === "objectReference") {
             return {
               type: "modifyObject",
-              objectTypeApiName: resolveApiName(modifyParamType.objectReference.objectTypeId, objectTypeLookup),
+              objectTypeApiName: resolveBlockDataApiName(
+                modifyParamType.objectReference.objectTypeId,
+                objectTypeLookup,
+              ),
             } satisfies Ontologies.LogicRule;
           } else {
             throw new Error(
@@ -436,7 +418,10 @@ export class OntologyBlockDataToFullMetadataConverter {
 
           return {
             type: "deleteObject",
-            objectTypeApiName: resolveApiName(ontologyIrParameter.type.objectReference.objectTypeId, objectTypeLookup),
+            objectTypeApiName: resolveBlockDataApiName(
+              ontologyIrParameter.type.objectReference.objectTypeId,
+              objectTypeLookup,
+            ),
           } satisfies Ontologies.LogicRule;
         }
         case "modifyInterfaceRule": {
@@ -478,7 +463,10 @@ export class OntologyBlockDataToFullMetadataConverter {
           if (modifyParamType.type === "objectReference") {
             return {
               type: "modifyObject",
-              objectTypeApiName: resolveApiName(modifyParamType.objectReference.objectTypeId, objectTypeLookup),
+              objectTypeApiName: resolveBlockDataApiName(
+                modifyParamType.objectReference.objectTypeId,
+                objectTypeLookup,
+              ),
             } satisfies Ontologies.LogicRule;
           } else {
             throw new Error(
@@ -494,7 +482,7 @@ export class OntologyBlockDataToFullMetadataConverter {
 
   static getOsdkActionParametersFromBlockData(
     action: ActionTypeBlockDataV2,
-    objectTypeLookup: ApiNameLookup | undefined,
+    objectTypeLookup: BlockDataApiNameLookup | undefined,
   ): Record<string, Ontologies.ActionParameterV2> {
     const result: Record<string, Ontologies.ActionParameterV2> = {};
 
@@ -611,8 +599,14 @@ export class OntologyBlockDataToFullMetadataConverter {
           const t = irParameter.type.objectReference;
           dataType = {
             type: "object",
-            objectTypeApiName: resolveApiName(t.objectTypeId, objectTypeLookup),
-            objectApiName: resolveApiName(t.objectTypeId, objectTypeLookup),
+            objectTypeApiName: resolveBlockDataApiName(
+              t.objectTypeId,
+              objectTypeLookup,
+            ),
+            objectApiName: resolveBlockDataApiName(
+              t.objectTypeId,
+              objectTypeLookup,
+            ),
           };
           break;
         }
@@ -622,8 +616,14 @@ export class OntologyBlockDataToFullMetadataConverter {
             type: "array",
             subType: {
               type: "object",
-              objectTypeApiName: resolveApiName(t.objectTypeId, objectTypeLookup),
-              objectApiName: resolveApiName(t.objectTypeId, objectTypeLookup),
+              objectTypeApiName: resolveBlockDataApiName(
+                t.objectTypeId,
+                objectTypeLookup,
+              ),
+              objectApiName: resolveBlockDataApiName(
+                t.objectTypeId,
+                objectTypeLookup,
+              ),
             },
           };
           break;
@@ -718,7 +718,9 @@ export class OntologyBlockDataToFullMetadataConverter {
         displayName: interfaceType.displayMetadata.displayName,
         description: interfaceType.displayMetadata.description ?? undefined,
         links: this.getOsdkInterfaceLinkTypesFromBlockData(interfaceType.links),
-        allLinks: this.getOsdkInterfaceLinkTypesFromBlockData(interfaceType.links), // Same as links for now
+        allLinks: this.getOsdkInterfaceLinkTypesFromBlockData(
+          interfaceType.links,
+        ), // Same as links for now
       };
 
       result[result_interfaceType.apiName] = result_interfaceType;
@@ -728,60 +730,60 @@ export class OntologyBlockDataToFullMetadataConverter {
   }
 
   static getOsdkInterfaceLinkTypesFromBlockData(
-      ilts: MarketplaceInterfaceLinkType[],
-    ): Record<ApiName, Ontologies.InterfaceLinkType> {
-      const result: Record<ApiName, Ontologies.InterfaceLinkType> = {};
-  
-      for (const ilt of ilts) {
-        let linkedEntityApiName: {
-          type: "interfaceTypeApiName";
-          apiName: string;
-        };
-        switch (ilt.linkedEntityTypeId.type) {
-          case "interfaceType": {
-            const interfaceType = ilt.linkedEntityTypeId.interfaceType;
-            linkedEntityApiName = {
-              type: "interfaceTypeApiName" as const,
-              apiName: interfaceType,
-            };
-            break;
-          }
-          case "objectType":
-            throw new Error(
-              "Interface links to object types should not be possible in ontology as code yet",
-            );
-          default:
-            throw new Error("Unknown linked entity type");
+    ilts: MarketplaceInterfaceLinkType[],
+  ): Record<ApiName, Ontologies.InterfaceLinkType> {
+    const result: Record<ApiName, Ontologies.InterfaceLinkType> = {};
+
+    for (const ilt of ilts) {
+      let linkedEntityApiName: {
+        type: "interfaceTypeApiName";
+        apiName: string;
+      };
+      switch (ilt.linkedEntityTypeId.type) {
+        case "interfaceType": {
+          const interfaceType = ilt.linkedEntityTypeId.interfaceType;
+          linkedEntityApiName = {
+            type: "interfaceTypeApiName" as const,
+            apiName: interfaceType,
+          };
+          break;
         }
-  
-        let cardinality: Ontologies.InterfaceLinkTypeCardinality;
-        switch (ilt.cardinality) {
-          case "SINGLE":
-            cardinality = "ONE";
-            break;
-          case "MANY":
-            cardinality = "MANY";
-            break;
-          default:
-            throw new Error("Unknown cardinality type");
-        }
-  
-        const interfaceLinkType: Ontologies.InterfaceLinkType = {
-          rid:
-            `ri.interfacelink.${linkedEntityApiName.apiName}.${ilt.metadata.apiName}`,
-          apiName: ilt.metadata.apiName,
-          displayName: ilt.metadata.displayName,
-          description: ilt.metadata.description,
-          linkedEntityApiName,
-          cardinality,
-          required: ilt.required,
-        };
-  
-        result[interfaceLinkType.apiName] = interfaceLinkType;
+        case "objectType":
+          throw new Error(
+            "Interface links to object types should not be possible in ontology as code yet",
+          );
+        default:
+          throw new Error("Unknown linked entity type");
       }
-  
-      return result;
+
+      let cardinality: Ontologies.InterfaceLinkTypeCardinality;
+      switch (ilt.cardinality) {
+        case "SINGLE":
+          cardinality = "ONE";
+          break;
+        case "MANY":
+          cardinality = "MANY";
+          break;
+        default:
+          throw new Error("Unknown cardinality type");
+      }
+
+      const interfaceLinkType: Ontologies.InterfaceLinkType = {
+        rid:
+          `ri.interfacelink.${linkedEntityApiName.apiName}.${ilt.metadata.apiName}`,
+        apiName: ilt.metadata.apiName,
+        displayName: ilt.metadata.displayName,
+        description: ilt.metadata.description,
+        linkedEntityApiName,
+        cardinality,
+        required: ilt.required,
+      };
+
+      result[interfaceLinkType.apiName] = interfaceLinkType;
     }
+
+    return result;
+  }
 
   static getOsdkSharedPropertyTypesFromBlockData(
     spts: Record<string, SharedPropertyTypeBlockDataV2>,
@@ -789,7 +791,9 @@ export class OntologyBlockDataToFullMetadataConverter {
     const result: Record<ApiName, Ontologies.SharedPropertyType> = {};
 
     for (const [rid, spt] of Object.entries(spts)) {
-      const dataType = this.getOsdkPropertyTypeFromBlockData(spt.sharedPropertyType.type);
+      const dataType = this.getOsdkPropertyTypeFromBlockData(
+        spt.sharedPropertyType.type,
+      );
       if (dataType) {
         const sharedPropertyType: Ontologies.SharedPropertyType = {
           rid: `ri.spt.${spt.sharedPropertyType.apiName}`,
@@ -871,7 +875,9 @@ export class OntologyBlockDataToFullMetadataConverter {
         return {
           type: "struct",
           structFieldTypes: value.structFields.map(field => {
-            const fieldDataType = this.getOsdkPropertyTypeFromBlockData(field.fieldType);
+            const fieldDataType = this.getOsdkPropertyTypeFromBlockData(
+              field.fieldType,
+            );
             if (!fieldDataType) {
               throw new Error(
                 `Unsupported field type in struct: ${field.apiName}`,
@@ -944,7 +950,6 @@ export class OntologyBlockDataToFullMetadataConverter {
     }
   }
 }
-
 function isBlockDataParameterRequired(
   action: ActionTypeBlockDataV2,
   paramKey: string,
@@ -953,14 +958,48 @@ function isBlockDataParameterRequired(
     .parameterValidations[paramKey].defaultValidation.validation.required.type
     === "required";
 }
- 
-interface ApiNameLookup {
+
+export interface BlockDataApiNameLookup {
   byRid: Map<string, string>;
   byHyphenated: Map<string, string>;
 }
 
-function resolveApiName(id: string, lookup: ApiNameLookup | undefined): string {
-  // console.log(`Resolving API name for id '${id}' using lookup:`, lookup);
+export function buildBlockDataObjectTypeLookup(
+  blockdata: OntologyBlockDataV2 | undefined,
+): BlockDataApiNameLookup | undefined {
+  if (!blockdata?.objectTypes) {
+    return undefined;
+  }
+  const byRid = new Map<string, string>();
+  const byHyphenated = new Map<string, string>();
+  for (const [key, value] of Object.entries(blockdata.objectTypes)) {
+    const apiName = value.objectType.apiName!;
+    byRid.set(key, apiName);
+    byHyphenated.set(apiName.replace(/\./g, "-").toLowerCase(), apiName);
+  }
+  return { byRid, byHyphenated };
+}
+
+export function buildBlockDataInterfaceTypeLookup(
+  blockdata: OntologyBlockDataV2 | undefined,
+): BlockDataApiNameLookup | undefined {
+  if (!blockdata?.interfaceTypes) {
+    return undefined;
+  }
+  const byRid = new Map<string, string>();
+  const byHyphenated = new Map<string, string>();
+  for (const [key, value] of Object.entries(blockdata.interfaceTypes)) {
+    const apiName = value.interfaceType.apiName!;
+    byRid.set(key, apiName);
+    byHyphenated.set(apiName.replace(/\./g, "-"), apiName);
+  }
+  return { byRid, byHyphenated };
+}
+
+export function resolveBlockDataApiName(
+  id: string,
+  lookup: BlockDataApiNameLookup | undefined,
+): string {
   if (!lookup) {
     return id;
   }
