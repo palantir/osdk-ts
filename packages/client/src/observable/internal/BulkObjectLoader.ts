@@ -40,6 +40,7 @@ interface Accumulator {
   timer?: ReturnType<typeof setTimeout>;
   defType?: DefType;
   select?: readonly string[];
+  loadPropertySecurityMetadata?: boolean;
 }
 
 const weakCache = new DefaultWeakMap<Client, BulkObjectLoader>(c =>
@@ -73,12 +74,14 @@ export class BulkObjectLoader {
     primaryKey: string | number | boolean,
     defType: DefType = "object",
     select?: readonly string[],
+    loadPropertySecurityMetadata?: boolean,
   ): Promise<ObjectHolder> {
     const deferred = pDefer<ObjectHolder>();
 
+    const securitySuffix = loadPropertySecurityMetadata ? "\0sec" : "";
     const selectKey = select && select.length > 0
-      ? `${apiName}\0${[...select].sort().join(",")}`
-      : apiName;
+      ? `${apiName}\0${[...select].sort().join(",")}${securitySuffix}`
+      : `${apiName}${securitySuffix}`;
     const entry = this.#m.get(selectKey);
     entry.data.push({
       primaryKey: primaryKey as string,
@@ -88,6 +91,7 @@ export class BulkObjectLoader {
     if (entry.defType === undefined) {
       entry.defType = defType;
       entry.select = select;
+      entry.loadPropertySecurityMetadata = loadPropertySecurityMetadata;
     } else if (entry.defType !== defType) {
       deferred.reject(
         new PalantirApiError(
@@ -104,6 +108,7 @@ export class BulkObjectLoader {
           entry.data,
           entry.defType ?? "object",
           entry.select,
+          entry.loadPropertySecurityMetadata,
         );
       }, this.#maxWait);
     }
@@ -115,6 +120,7 @@ export class BulkObjectLoader {
         entry.data,
         entry.defType ?? "object",
         entry.select,
+        entry.loadPropertySecurityMetadata,
       );
     }
 
@@ -126,15 +132,27 @@ export class BulkObjectLoader {
     arr: InternalValue[],
     defType: DefType,
     select?: readonly string[],
+    loadPropertySecurityMetadata?: boolean,
   ) {
+    const securitySuffix = loadPropertySecurityMetadata ? "\0sec" : "";
     const selectKey = select && select.length > 0
-      ? `${apiName}\0${[...select].sort().join(",")}`
-      : apiName;
+      ? `${apiName}\0${[...select].sort().join(",")}${securitySuffix}`
+      : `${apiName}${securitySuffix}`;
     this.#m.delete(selectKey);
 
     const loadFn = defType === "interface"
-      ? this.#loadInterfaceObjects(apiName, arr, select)
-      : this.#loadObjectTypeObjects(apiName, arr, select);
+      ? this.#loadInterfaceObjects(
+        apiName,
+        arr,
+        select,
+        loadPropertySecurityMetadata,
+      )
+      : this.#loadObjectTypeObjects(
+        apiName,
+        arr,
+        select,
+        loadPropertySecurityMetadata,
+      );
 
     loadFn.catch((e: unknown) => {
       this.#logger?.error("Unhandled exception", e);
@@ -153,6 +171,7 @@ export class BulkObjectLoader {
     apiName: string,
     arr: InternalValue[],
     select?: readonly string[],
+    loadPropertySecurityMetadata?: boolean,
   ) {
     const objectDef = { type: "object", apiName } as ObjectTypeDefinition;
     const objMetadata = await this.#client.fetchMetadata(objectDef);
@@ -172,6 +191,7 @@ export class BulkObjectLoader {
         ...(select && select.length > 0
           ? { $select: select }
           : {}),
+        $loadPropertySecurityMetadata: loadPropertySecurityMetadata ?? false,
       });
 
     for (const { primaryKey, deferred } of arr) {
@@ -192,6 +212,7 @@ export class BulkObjectLoader {
     apiName: string,
     arr: InternalValue[],
     select?: readonly string[],
+    loadPropertySecurityMetadata?: boolean,
   ) {
     const pks = arr.map(x => x.primaryKey);
 
@@ -227,6 +248,8 @@ export class BulkObjectLoader {
           ...(select && select.length > 0
             ? { $select: select }
             : {}),
+          $loadPropertySecurityMetadata:
+            (loadPropertySecurityMetadata ?? false) as boolean,
         });
 
       for (const obj of data) {

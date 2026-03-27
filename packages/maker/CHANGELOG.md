@@ -1,5 +1,18 @@
 # @osdk/maker
 
+## 0.16.0-beta.13
+
+### Minor Changes
+
+- 9ee82f4: Dedupe many-to-many PK property names in datasource
+
+### Patch Changes
+
+- Updated dependencies [60b5ffb]
+- Updated dependencies [61e33ab]
+  - @osdk/api@2.8.0-beta.26
+  - @osdk/generator-converters.ontologyir@2.8.0-beta.26
+
 ## 0.16.0-beta.12
 
 ### Minor Changes

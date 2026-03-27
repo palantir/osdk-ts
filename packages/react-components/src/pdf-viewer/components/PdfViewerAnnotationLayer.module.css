@@ -1,0 +1,64 @@
+.annotationLayer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.annotation {
+  position: absolute;
+  pointer-events: auto;
+  cursor: pointer;
+  transition: opacity var(--osdk-emphasis-transition-duration)
+    var(--osdk-emphasis-ease-default);
+}
+
+.annotation:hover {
+  opacity: 0.8;
+}
+
+.annotation:focus-visible {
+  outline: var(--osdk-focus-outline);
+  outline-offset: var(--osdk-focus-visible-outline-offset);
+}
+
+.highlight {
+  background-color: var(
+    --osdk-pdf-annotation-color,
+    var(--osdk-pdf-viewer-annotation-highlight)
+  );
+  border-radius: 2px;
+}
+
+.underline {
+  background-color: transparent;
+  border-bottom: 2px solid
+    var(
+      --osdk-pdf-annotation-color,
+      var(--osdk-pdf-viewer-annotation-underline)
+    );
+}
+
+.comment {
+  background-color: var(
+    --osdk-pdf-annotation-color,
+    var(--osdk-pdf-viewer-annotation-comment)
+  );
+  border-radius: 50%;
+  width: 16px !important;
+  height: 16px !important;
+}
+
+.pin {
+  background-color: var(
+    --osdk-pdf-annotation-color,
+    var(--osdk-pdf-viewer-annotation-pin)
+  );
+  border-radius: 50% 50% 50% 0;
+  width: 16px !important;
+  height: 16px !important;
+  transform: rotate(-45deg);
+}

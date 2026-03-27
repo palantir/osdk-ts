@@ -15,7 +15,9 @@
  */
 
 import React, { memo } from "react";
+import { FormField } from "../FormField.js";
 import type { RendererFieldDefinition } from "../FormFieldApi.js";
+import { DatetimePickerField } from "./DatetimePickerField.js";
 import { DropdownField } from "./DropdownField.js";
 import { TextInputField } from "./TextInputField.js";
 
@@ -37,18 +39,14 @@ export const FormFieldRenderer: React.FC<FormFieldRendererProps> = memo(
       fieldDefinition;
 
     return (
-      <div>
-        {label != null && (
-          <label htmlFor={fieldDefinition.fieldKey}>
-            {label}
-            {isRequired === true && <span aria-label="required">*</span>}
-          </label>
-        )}
+      <FormField
+        label={label}
+        isRequired={isRequired}
+        fieldKey={fieldDefinition.fieldKey}
+        helperText={helperTextPlacement !== "tooltip" ? helperText : undefined}
+      >
         {renderFieldComponent(fieldDefinition, value, onFieldValueChange)}
-        {helperText != null && helperTextPlacement !== "tooltip" && (
-          <div>{helperText}</div>
-        )}
-      </div>
+      </FormField>
     );
   },
 );
@@ -84,17 +82,24 @@ function renderFieldComponent(
         />
       );
     }
+    case "DATETIME_PICKER":
+      return (
+        <DatetimePickerField
+          id={fieldDefinition.fieldKey}
+          placeholder={fieldDefinition.placeholder}
+          // TODO: Use coerceFieldValue
+          value={value instanceof Date ? value : null}
+          onChange={onChange}
+          {...fieldDefinition.fieldComponentProps}
+        />
+      );
     case "NUMBER_INPUT":
     case "RADIO_BUTTONS":
-    case "DATETIME_PICKER":
     case "FILE_PICKER":
     case "OBJECT_SET":
     case "CUSTOM":
-      return (
-        <div>
-          Unsupported field type: {fieldDefinition.fieldComponent}
-        </div>
-      );
+      return <div>Unsupported field type: {fieldDefinition.fieldComponent}
+      </div>;
     default:
       return assertUnreachableFieldComponent(fieldDefinition);
   }

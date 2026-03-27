@@ -1,0 +1,86 @@
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--osdk-pdf-viewer-toolbar-gap);
+  padding: var(--osdk-surface-spacing);
+  background-color: var(--osdk-pdf-viewer-toolbar-bg);
+  border-bottom: var(--osdk-pdf-viewer-toolbar-border);
+  color: var(--osdk-pdf-viewer-toolbar-color);
+  font-family: var(--osdk-typography-family-default);
+  font-size: var(--osdk-typography-size-body-small);
+  flex-shrink: 0;
+}
+
+.toolbarGroup {
+  display: flex;
+  align-items: center;
+  gap: var(--osdk-surface-spacing);
+}
+
+.separator {
+  width: 1px;
+  height: 20px;
+  background-color: var(--osdk-surface-border-color-default);
+  margin: 0 var(--osdk-surface-spacing);
+}
+
+.toolbarButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: none;
+  color: var(--osdk-typography-color-muted);
+  cursor: pointer;
+  border-radius: var(--osdk-surface-border-radius);
+  padding: 0;
+}
+
+.toolbarButton:hover {
+  background-color: var(--osdk-surface-background-color-default-hover);
+}
+
+.toolbarButton:active {
+  background-color: var(--osdk-surface-background-color-default-active);
+}
+
+.toolbarButton:focus-visible {
+  outline: var(--osdk-focus-outline);
+  outline-offset: var(--osdk-focus-visible-outline-offset);
+}
+
+.toolbarButton:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.pageInput {
+  width: 48px;
+  text-align: center;
+  border: var(--osdk-surface-border);
+  border-radius: var(--osdk-surface-border-radius);
+  padding: calc(0.5 * var(--osdk-surface-spacing)) var(--osdk-surface-spacing);
+  font-family: var(--osdk-typography-family-default);
+  font-size: var(--osdk-typography-size-body-small);
+  color: var(--osdk-typography-color-default-rest);
+  background-color: var(--osdk-background-primary);
+}
+
+.pageInput:focus {
+  outline: var(--osdk-focus-outline);
+  outline-offset: var(--osdk-focus-visible-outline-offset);
+}
+
+.pageCount {
+  color: var(--osdk-typography-color-muted);
+}
+
+.scaleDisplay {
+  font-size: var(--osdk-typography-size-body-small);
+  color: var(--osdk-typography-color-muted);
+  min-width: 40px;
+  text-align: center;
+}

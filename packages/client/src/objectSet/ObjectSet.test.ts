@@ -500,6 +500,119 @@ describe("ObjectSet", () => {
     });
   });
 
+  it("type checking interval", () => {
+    client(Employee).where({
+      fullName: {
+        $interval: {
+          $match: "John Smith",
+          $maxGaps: 1,
+          $ordered: true,
+        },
+      },
+    });
+
+    client(Employee).where({
+      fullName: {
+        $interval: {
+          $match: "John Smi",
+          $prefixOnLastTerm: true,
+        },
+      },
+    });
+
+    client(Employee).where({
+      fullName: {
+        $interval: {
+          $and: [{
+            $match: "John",
+            $ordered: true,
+          }, {
+            $match: "Smith",
+            $ordered: true,
+          }],
+          $maxGaps: 0,
+          $ordered: true,
+        },
+      },
+    });
+
+    client(Employee).where({
+      fullName: {
+        $interval: {
+          $or: [{
+            $match: "John",
+            $ordered: true,
+          }, {
+            $match: "Jane",
+            $ordered: true,
+          }],
+        },
+      },
+    });
+
+    client(Employee).where({
+      fullName: {
+        $interval: {
+          $fuzzy: "Smith",
+          $fuzziness: 1,
+        },
+      },
+    });
+
+    client(Employee).where({
+      fullName: {
+        $interval: {
+          $match: "John Smi",
+          $prefixOnLastTerm: true,
+          // @ts-expect-error - $ordered not allowed with $prefixOnLastTerm
+          $ordered: true,
+        },
+      },
+    });
+
+    client(Employee).where({
+      fullName: {
+        // @ts-expect-error - $maxGaps not allowed with $prefixOnLastTerm
+        $interval: { $match: "John Smi", $prefixOnLastTerm: true, $maxGaps: 1 },
+      },
+    });
+
+    client(Employee).where({
+      fullName: {
+        $interval: {
+          $match: "John",
+          $ordered: true,
+          // @ts-expect-error - can't mix $match with $or
+          $or: [{ $match: "Smith", $ordered: true }],
+        },
+      },
+    });
+
+    client(Employee).where({
+      fullName: {
+        $interval: {
+          $match: "John",
+          $ordered: true,
+          // @ts-expect-error - can't mix $match with $fuzzy
+          $fuzzy: "Smith",
+          // @ts-expect-error - can't mix $match with $fuzziness
+          $fuzziness: 3,
+        },
+      },
+    });
+
+    client(Employee).where({
+      fullName: {
+        $interval: {
+          $and: [{ $match: "John", $ordered: true }],
+          $ordered: true,
+          // @ts-expect-error - can't mix $and with $or
+          $or: [{ $match: "Smith", $ordered: true }],
+        },
+      },
+    });
+  });
+
   it("type checking struct where clauses", () => {
     expectTypeOf(client(BgaoNflPlayer).where).toBeCallableWith({
       $and: [{ address: { city: { $eq: "NYC" } } }, {

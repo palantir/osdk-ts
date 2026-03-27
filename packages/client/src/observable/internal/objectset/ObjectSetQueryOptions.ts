@@ -65,6 +65,13 @@ export interface ObserveObjectSetOptions<
    * @default false
    */
   streamUpdates?: boolean;
+
+  /**
+   * When true, loads per-property security metadata (marking requirements)
+   * alongside each object. The returned objects will have `$propertySecurities`
+   * populated with conjunctive/disjunctive marking requirements per property.
+   */
+  $loadPropertySecurityMetadata?: boolean;
 }
 
 export interface ObjectSetQueryOptions

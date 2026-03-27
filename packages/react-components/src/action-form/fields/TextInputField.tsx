@@ -17,6 +17,7 @@
 import { Input } from "@base-ui/react/input";
 import React from "react";
 import type { TextInputFieldProps } from "../FormFieldApi.js";
+import styles from "./TextInputField.module.css";
 
 export function TextInputField({
   id,
@@ -29,6 +30,7 @@ export function TextInputField({
   return (
     <Input
       id={id}
+      className={styles.osdkTextInput}
       type="text"
       value={value ?? ""}
       onValueChange={onChange}

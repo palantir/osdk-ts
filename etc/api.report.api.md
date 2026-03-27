@@ -805,6 +805,54 @@ export interface InterfaceQueryDataType<T_Target extends ObjectOrInterfaceDefini
     interface: string;
 }
 
+// @public (undocumented)
+export type IntervalRule = {
+    	$match: string
+    	$maxGaps?: number
+    	$ordered: boolean
+    	$prefixOnLastTerm?: never
+    	$and?: never
+    	$or?: never
+    	$fuzzy?: never
+    	$fuzziness?: never
+} | {
+    	$match: string
+    	$prefixOnLastTerm: true
+    	$maxGaps?: never
+    	$ordered?: never
+    	$and?: never
+    	$or?: never
+    	$fuzzy?: never
+    	$fuzziness?: never
+} | {
+    	$and: IntervalRule[]
+    	$maxGaps?: number
+    	$ordered: boolean
+    	$match?: never
+    	$prefixOnLastTerm?: never
+    	$or?: never
+    	$fuzzy?: never
+    	$fuzziness?: never
+} | {
+    	$or: IntervalRule[]
+    	$match?: never
+    	$prefixOnLastTerm?: never
+    	$and?: never
+    	$fuzzy?: never
+    	$fuzziness?: never
+    	$maxGaps?: never
+    	$ordered?: never
+} | {
+    	$fuzzy: string
+    	$fuzziness?: number
+    	$match?: never
+    	$prefixOnLastTerm?: never
+    	$and?: never
+    	$or?: never
+    	$maxGaps?: never
+    	$ordered?: never
+};
+
 // Warning: (ae-forgotten-export) The symbol "OkResult" needs to be exported by the entry point index.d.ts
 //
 // @public
@@ -1390,7 +1438,7 @@ export interface PageResult<T> {
 }
 
 // @public (undocumented)
-export type PossibleWhereClauseFilters = "$gt" | "$eq" | "$ne" | "$isNull" | "$contains" | "$gte" | "$lt" | "$lte" | "$within" | "$in" | "$intersects" | "$startsWith" | "$containsAllTermsInOrder" | "$containsAnyTerm" | "$containsAllTerms";
+export type PossibleWhereClauseFilters = "$gt" | "$eq" | "$ne" | "$isNull" | "$contains" | "$gte" | "$lt" | "$lte" | "$within" | "$in" | "$intersects" | "$startsWith" | "$containsAllTermsInOrder" | "$containsAnyTerm" | "$containsAllTerms" | "$interval";
 
 // @public (undocumented)
 export type PrimaryKeyType<Q extends ObjectOrInterfaceDefinition> = (Q extends ObjectTypeDefinition ? OsdkObjectPrimaryKeyType<Q> : unknown) & PropertyValueWireToClient[PrimaryKeyTypes];
