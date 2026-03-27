@@ -199,6 +199,7 @@ export function EmployeeFilters({
         onFilterClauseChanged={onFilterClauseChanged}
         onFilterRemoved={handleRemoveFilter}
         enableSorting={true}
+        addFilterMode="controlled"
         renderAddFilterButton={renderAddFilterButton}
         title="Employee Filters"
         showActiveFilterCount={true}

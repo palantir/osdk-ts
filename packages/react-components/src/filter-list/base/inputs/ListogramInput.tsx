@@ -147,6 +147,7 @@ function ListogramInputInner({
                     checked={selectedSet.has(value)}
                     tabIndex={-1}
                     className={styles.checkbox}
+                    isExcluding={isExcluding}
                   />
                 )}
                 <span

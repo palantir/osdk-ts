@@ -115,6 +115,7 @@ function CheckboxListInputInner({
               <Checkbox
                 checked={isSelected}
                 onCheckedChange={() => toggleValue(value)}
+                isExcluding={isExcluding}
               />
               {color && (
                 <span

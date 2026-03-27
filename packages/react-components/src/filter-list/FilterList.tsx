@@ -15,7 +15,7 @@
  */
 
 import type { ObjectTypeDefinition, WhereClause } from "@osdk/api";
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useRef } from "react";
 import { AddFilterPopover } from "./base/AddFilterPopover.js";
 import { BaseFilterList } from "./base/BaseFilterList.js";
 import type { RenderFilterInput } from "./base/BaseFilterListApi.js";
@@ -144,9 +144,13 @@ export function FilterList<Q extends ObjectTypeDefinition>(
     renderAddFilterButton,
   ]);
 
-  const effectiveOnFilterRemoved = uncontrolledAddFilterMode
-    ? handleFilterRemoved
-    : onFilterRemoved;
+  const effectiveOnFilterRemoved = useMemo(
+    () => uncontrolledAddFilterMode ? handleFilterRemoved : onFilterRemoved,
+    [uncontrolledAddFilterMode, handleFilterRemoved, onFilterRemoved],
+  );
+
+  const perFilterWhereClausesRef = useRef(perFilterWhereClauses);
+  perFilterWhereClausesRef.current = perFilterWhereClauses;
 
   const renderInput = useCallback<RenderFilterInput<FilterDefinitionUnion<Q>>>(
     (
@@ -165,13 +169,13 @@ export function FilterList<Q extends ObjectTypeDefinition>(
         definition={definition}
         filterState={filterState}
         onFilterStateChanged={onFilterStateChanged}
-        whereClause={perFilterWhereClauses.get(filterKey)
+        whereClause={perFilterWhereClausesRef.current.get(filterKey)
           ?? ({} as WhereClause<Q>)}
         searchQuery={searchQuery}
         excludeRowOpen={excludeRowOpen}
       />
     ),
-    [objectType, objectSet, perFilterWhereClauses],
+    [objectType, objectSet],
   );
 
   return (
