@@ -278,21 +278,27 @@ export interface TextInputFieldProps extends
 /**
  * Number input field props
  */
-export interface NumberInputFieldProps extends
-  BaseFormFieldProps<number>,
-  Pick<
-    React.InputHTMLAttributes<HTMLInputElement>,
-    /**
-     * If provided, this will be added to the field validation
-     */
-    | "min"
-    /**
-     * If provided, this will be added to the field validation
-     */
-    | "max"
-    | "step"
-  >
-{}
+export interface NumberInputFieldProps extends BaseFormFieldProps<number> {
+  /**
+   * Minimum allowed value. The value is clamped to this bound on blur.
+   */
+  min?: number;
+
+  /**
+   * Maximum allowed value. The value is clamped to this bound on blur.
+   */
+  max?: number;
+
+  /**
+   * Step increment for the input.
+   */
+  step?: number;
+
+  /**
+   * Placeholder text shown when the input is empty.
+   */
+  placeholder?: string;
+}
 
 /**
  * Radio buttons field props

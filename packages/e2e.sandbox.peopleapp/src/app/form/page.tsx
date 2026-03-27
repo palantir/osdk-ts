@@ -38,6 +38,26 @@ const fieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
     },
   },
   {
+    fieldKey: "yearsOfExperience",
+    fieldComponent: "NUMBER_INPUT",
+    label: "Years of Experience",
+    placeholder: "Enter years",
+    fieldComponentProps: {
+      min: 0,
+      max: 50,
+    },
+  },
+  {
+    fieldKey: "salary",
+    fieldComponent: "NUMBER_INPUT",
+    label: "Salary",
+    placeholder: "Enter annual salary",
+    fieldComponentProps: {
+      min: 0,
+      step: 1000,
+    },
+  },
+  {
     fieldKey: "officeLocation",
     fieldComponent: "DROPDOWN",
     label: "Office Location",

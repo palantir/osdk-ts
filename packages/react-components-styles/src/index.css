@@ -10,6 +10,7 @@
 @import "./tokens/filter-list.css";
 @import "./tokens/form.css";
 @import "./tokens/input.css";
+@import "./tokens/number-input.css";
 @import "./tokens/table.css";
 @import "./tokens/tooltip.css";
 @import "./tokens/datetime-picker.css";

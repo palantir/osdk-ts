@@ -19,6 +19,7 @@ import { FormField } from "../FormField.js";
 import type { RendererFieldDefinition } from "../FormFieldApi.js";
 import { DatetimePickerField } from "./DatetimePickerField.js";
 import { DropdownField } from "./DropdownField.js";
+import { NumberInputField } from "./NumberInputField.js";
 import { TextInputField } from "./TextInputField.js";
 
 const EMPTY_ITEMS: unknown[] = [];
@@ -94,6 +95,16 @@ function renderFieldComponent(
         />
       );
     case "NUMBER_INPUT":
+      // TODO: Use coerceFieldValue
+      return (
+        <NumberInputField
+          id={fieldDefinition.fieldKey}
+          value={typeof value === "number" ? value : null}
+          onChange={onChange}
+          placeholder={fieldDefinition.placeholder}
+          {...fieldDefinition.fieldComponentProps}
+        />
+      );
     case "RADIO_BUTTONS":
     case "FILE_PICKER":
     case "OBJECT_SET":

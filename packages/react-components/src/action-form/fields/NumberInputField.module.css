@@ -1,0 +1,58 @@
+/*
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.osdkNumberInput {
+  display: block;
+  width: 100%;
+  min-height: var(--osdk-number-input-min-height);
+  padding: var(--osdk-number-input-padding);
+  border-radius: var(--osdk-number-input-border-radius);
+  border: var(--osdk-number-input-border-width) solid
+    var(--osdk-number-input-border-color);
+  background-color: var(--osdk-number-input-bg);
+  color: var(--osdk-number-input-color);
+  font-family: var(--osdk-number-input-font-family);
+  font-size: var(--osdk-number-input-font-size);
+  line-height: var(
+    --osdk-input-line-height,
+    var(--osdk-typography-line-height-default)
+  );
+  transition:
+    background-color var(--osdk-number-input-transition-duration)
+      var(--osdk-number-input-transition-ease),
+    border-color var(--osdk-number-input-transition-duration)
+      var(--osdk-number-input-transition-ease);
+
+  &::placeholder {
+    color: var(--osdk-number-input-placeholder-color);
+  }
+
+  &:hover {
+    background-color: var(--osdk-number-input-bg-hover);
+  }
+
+  &:focus-visible {
+    outline: var(--osdk-number-input-focus-width) solid
+      var(--osdk-number-input-focus-color);
+    outline-offset: var(--osdk-number-input-focus-offset);
+    border-color: var(--osdk-number-input-border-color-focus);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: var(--osdk-number-input-disabled-opacity);
+  }
+}
