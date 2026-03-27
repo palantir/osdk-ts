@@ -92,7 +92,6 @@ export abstract class ListQuery extends BaseListQuery<
   protected apiName: string;
   #whereClause: Canonical<SimpleWhereClause>;
 
-  // Using base class minResultsToLoad instead of a private property
   #orderBy: Canonical<Record<string, "asc" | "desc" | undefined>>;
   #select: Canonical<readonly string[]> | undefined;
   #intersectWith: Canonical<Array<Canonical<SimpleWhereClause>>> | undefined;
@@ -147,14 +146,6 @@ export abstract class ListQuery extends BaseListQuery<
         this.apiName,
         this.#orderBy,
       );
-    }
-
-    if (opts.autoFetchMore === true) {
-      this.minResultsToLoad = Number.MAX_SAFE_INTEGER;
-    } else if (typeof opts.autoFetchMore === "number") {
-      this.minResultsToLoad = Math.max(0, opts.autoFetchMore);
-    } else {
-      this.minResultsToLoad = 0;
     }
   }
 
