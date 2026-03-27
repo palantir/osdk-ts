@@ -1,4 +1,5 @@
 import React from "react";
+import css from "./ErrorBoundary.module.css";
 
 interface ErrorBoundaryProps {
   children: React.ReactNode;
@@ -23,19 +24,12 @@ class ErrorBoundary
   render(): React.ReactNode {
     if (this.state.error) {
       return (
-        <div style={{ padding: "2rem", textAlign: "center" }}>
+        <div className={css.container}>
           <h2>Something went wrong</h2>
-          <p style={{ color: "#5f6b7c" }}>{this.state.error.message}</p>
+          <p className={css.message}>{this.state.error.message}</p>
           <button
+            className={css.retryButton}
             onClick={() => this.setState({ error: null })}
-            style={{
-              marginTop: "1rem",
-              padding: "8px 16px",
-              border: "1px solid #e1e4e8",
-              borderRadius: "4px",
-              background: "#fff",
-              cursor: "pointer",
-            }}
           >
             Try again
           </button>
