@@ -1,5 +1,12 @@
 # @osdk/react-components
 
+## 0.2.0-beta.24
+
+### Minor Changes
+
+- 813f4cb: Add DatetimePickerField component
+- e4840fa: Add exclude dropdown, in-filter search, hover-reveal actions, remove button to filter list items, thread objectSet through aggregation hooks so prefiltered sets are respected, and add FilterList storybook stories and documentation
+
 ## 0.2.0-beta.23
 
 ### Minor Changes
