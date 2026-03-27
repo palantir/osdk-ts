@@ -15,14 +15,14 @@
  */
 
 import type { ObjectOrInterfaceDefinition, Osdk } from "@osdk/api";
+import type { ShapeDerivedLinkDef } from "@osdk/api/shapes-internal";
 import type {
   LinkLoadConfig,
   LinkStatus,
   ShapeBaseType,
   ShapeDefinition,
-  ShapeDerivedLinkDef,
   ShapeDerivedLinks,
-} from "@osdk/api/shapes";
+} from "@osdk/api/unstable";
 import type { Client } from "@osdk/client";
 import { applyShapeTransformationsToArray } from "@osdk/client/shapes";
 import type {
