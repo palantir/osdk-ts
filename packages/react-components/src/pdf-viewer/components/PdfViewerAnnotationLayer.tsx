@@ -79,18 +79,10 @@ function AnnotationItem({
   const hasMultipleRects = annotation.rects != null
     && annotation.rects.length > 1;
 
-  const rectsToRender = useMemo(
-    () =>
-      hasMultipleRects
-        ? annotation.rects!
-        : [annotation.rect],
-    [annotation],
-  );
-
   const style = useMemo(
     () =>
-      computeRectStyle(rectsToRender[0], pageHeight, scale, annotation.color),
-    [rectsToRender, pageHeight, scale, annotation.color],
+      computeRectStyle(annotation.rect, pageHeight, scale, annotation.color),
+    [annotation, pageHeight, scale],
   );
 
   // Multi-rect: render a group wrapper with one div per rect
@@ -105,7 +97,7 @@ function AnnotationItem({
         title={annotation.label}
         data-annotation-id={annotation.id}
       >
-        {rectsToRender.map((rect, i) => (
+        {annotation.rects!.map((rect, i) => (
           <div
             key={i}
             className={className}

@@ -70,7 +70,6 @@ export function normalizeFieldType(
 export function toFormFieldValue(
   storageValue: unknown,
   fieldType: "text" | "checkbox" | "radiobutton" | "combobox" | "listbox",
-  exportValues: string | undefined,
 ): PdfFormFieldValue {
   if (fieldType === "checkbox") {
     if (typeof storageValue === "boolean") {
@@ -223,7 +222,7 @@ export function usePdfFormFields({
 
         // Also update the DOM element directly (scoped to viewer container)
         const el = container?.querySelector(
-          `[data-element-id="${id}"]`,
+          `[data-element-id="${CSS.escape(id)}"]`,
         );
         if (el == null) continue;
 
@@ -362,7 +361,7 @@ export function usePdfFormFields({
     const resolvedRadios = new Set<string>();
 
     for (const [id, entry] of fieldMapRef.current) {
-      const { fieldName, fieldType, exportValues } = entry;
+      const { fieldName, fieldType } = entry;
 
       // For radio buttons, only process each group once
       if (fieldType === "radiobutton") {
@@ -397,7 +396,7 @@ export function usePdfFormFields({
       // Skip if we already have a value for this field name (e.g. duplicate IDs)
       if (fieldName in result) continue;
 
-      result[fieldName] = toFormFieldValue(rawValue, fieldType, exportValues);
+      result[fieldName] = toFormFieldValue(rawValue, fieldType);
     }
 
     onFormSubmitRef.current?.(result);

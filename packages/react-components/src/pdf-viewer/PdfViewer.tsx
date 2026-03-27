@@ -62,7 +62,6 @@ export function BasePdfViewer({
 
   const { highlightModeActive, toggleHighlightMode } = usePdfHighlightMode({
     pdfViewerRef: viewer.pdfViewerRef,
-    eventBusRef: viewer.eventBusRef,
     document: viewer.document,
     enabled: highlightEnabled,
     onTextHighlight,

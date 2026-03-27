@@ -16,14 +16,13 @@
 
 import { AnnotationEditorType } from "pdfjs-dist";
 import type { PDFDocumentProxy } from "pdfjs-dist";
-import type { EventBus, PDFViewer } from "pdfjs-dist/web/pdf_viewer.mjs";
+import type { PDFViewer } from "pdfjs-dist/web/pdf_viewer.mjs";
 import type { RefObject } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { PdfRect, PdfTextHighlightEvent } from "../types.js";
 
 export interface UsePdfHighlightModeOptions {
   pdfViewerRef: RefObject<PDFViewer | null>;
-  eventBusRef: RefObject<EventBus | null>;
   document: PDFDocumentProxy | undefined;
   enabled: boolean;
   onTextHighlight?: (event: PdfTextHighlightEvent) => void;
@@ -83,7 +82,6 @@ export function quadPointsToRects(
  */
 export function usePdfHighlightMode({
   pdfViewerRef,
-  eventBusRef,
   document,
   enabled,
   onTextHighlight,
@@ -179,7 +177,6 @@ export function usePdfHighlightMode({
         if (knownEditorIdsRef.current.has(id)) {
           continue;
         }
-        knownEditorIdsRef.current.add(id);
 
         // Check if this is a highlight editor with serializable data
         if (
@@ -187,6 +184,7 @@ export function usePdfHighlightMode({
           && "serialize" in entry
           && typeof entry.serialize === "function"
         ) {
+          knownEditorIdsRef.current.add(id);
           const serialized = entry.serialize(false);
           if (
             serialized == null

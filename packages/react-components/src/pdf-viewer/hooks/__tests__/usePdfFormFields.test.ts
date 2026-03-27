@@ -51,42 +51,42 @@ describe("normalizeFieldType", () => {
 
 describe("toFormFieldValue", () => {
   it("should convert checkbox 'Off' to false", () => {
-    expect(toFormFieldValue("Off", "checkbox", "Yes")).toBe(false);
+    expect(toFormFieldValue("Off", "checkbox")).toBe(false);
   });
 
   it("should convert checkbox export value to true", () => {
-    expect(toFormFieldValue("Yes", "checkbox", "Yes")).toBe(true);
+    expect(toFormFieldValue("Yes", "checkbox")).toBe(true);
   });
 
   it("should convert checkbox boolean true to true", () => {
-    expect(toFormFieldValue(true, "checkbox", "Yes")).toBe(true);
+    expect(toFormFieldValue(true, "checkbox")).toBe(true);
   });
 
   it("should convert checkbox boolean false to false", () => {
-    expect(toFormFieldValue(false, "checkbox", "Yes")).toBe(false);
+    expect(toFormFieldValue(false, "checkbox")).toBe(false);
   });
 
   it("should return string for text fields", () => {
-    expect(toFormFieldValue("hello", "text", undefined)).toBe("hello");
+    expect(toFormFieldValue("hello", "text")).toBe("hello");
   });
 
   it("should return empty string for null/undefined text values", () => {
-    expect(toFormFieldValue(undefined, "text", undefined)).toBe("");
-    expect(toFormFieldValue(null, "text", undefined)).toBe("");
+    expect(toFormFieldValue(undefined, "text")).toBe("");
+    expect(toFormFieldValue(null, "text")).toBe("");
   });
 
   it("should return string for radiobutton fields", () => {
-    expect(toFormFieldValue("option1", "radiobutton", "option1")).toBe(
+    expect(toFormFieldValue("option1", "radiobutton")).toBe(
       "option1",
     );
   });
 
   it("should return string for combobox fields", () => {
-    expect(toFormFieldValue("choice1", "combobox", undefined)).toBe("choice1");
+    expect(toFormFieldValue("choice1", "combobox")).toBe("choice1");
   });
 
   it("should return array for array values", () => {
-    expect(toFormFieldValue(["a", "b"], "listbox", undefined)).toEqual([
+    expect(toFormFieldValue(["a", "b"], "listbox")).toEqual([
       "a",
       "b",
     ]);
