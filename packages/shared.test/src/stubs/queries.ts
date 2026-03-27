@@ -26,7 +26,6 @@ import {
   addOneQueryTypeOlderVersion,
   queryTypeAcceptsInterfaceObjectSet,
   queryTypeAcceptsInterfaces,
-  queryTypeAcceptsMediaReference,
   queryTypeAcceptsObjects,
   queryTypeAcceptsObjectSets,
   queryTypeAcceptsThreeDimensionalAggregation,
@@ -37,7 +36,6 @@ import {
   queryTypeReturnsComplexStruct,
   queryTypeReturnsDate,
   queryTypeReturnsMap,
-  queryTypeReturnsMediaReference,
   queryTypeReturnsObject,
   queryTypeReturnsStruct,
   queryTypeReturnsTimestamp,
@@ -502,17 +500,6 @@ const queryRequestHandlers: {
         queryTypeOutputsInterfaceObjectSetResponse,
     },
   },
-  [queryTypeReturnsMediaReference.apiName]: {
-    [queryTypeReturnsMediaReference.version]: {
-      [emptyBody]: queryTypeReturnsMediaReferenceResponse,
-    },
-  },
-  [queryTypeAcceptsMediaReference.apiName]: {
-    [queryTypeAcceptsMediaReference.version]: {
-      [JSON.stringify(queryTypeAcceptsMediaReferenceRequest)]:
-        queryTypeAcceptsMediaReferenceResponse,
-    },
-  },
 };
 
 export function registerLazyQueries(fauxOntology: FauxOntology): void {
@@ -536,8 +523,6 @@ export function registerLazyQueries(fauxOntology: FauxOntology): void {
     queryTypeAcceptsInterfaceObjectSet,
     queryTypeOutputsInterfaceObjectSet,
     queryTypeReturnsArrayOfObjects,
-    queryTypeReturnsMediaReference,
-    queryTypeAcceptsMediaReference,
   ];
 
   for (const queryType of Object.values(queryTypes)) {

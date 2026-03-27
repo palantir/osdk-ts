@@ -5204,22 +5204,6 @@
     }
   },
   "queryTypes": {
-    "kbnTsv2MediaReferenceParamOutput": {
-      "apiName": "kbnTsv2MediaReferenceParamOutput",
-      "displayName": "kbnTsv2MediaReferenceParamOutput",
-      "parameters": {
-        "mediaReference": {
-          "dataType": {
-            "type": "mediaReference"
-          }
-        }
-      },
-      "output": {
-        "type": "mediaReference"
-      },
-      "rid": "ri.function-registry.main.function.59264e13-95ca-4e6f-abb7-bcd706b21d46",
-      "version": "1.0.0"
-    },
     "queryTakesAllParameterTypes": {
       "apiName": "queryTakesAllParameterTypes",
       "version": "version",

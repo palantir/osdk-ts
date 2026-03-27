@@ -553,33 +553,3 @@ export const queryTypeReturnsMap: QueryTypeV2 = {
     "ri.function-registry.main.function.c3e58d52-8430-44ee-9f0b-3785d9a9bdd2",
   "version": "0.1.1",
 };
-
-export const queryTypeReturnsMediaReference: QueryTypeV2 = {
-  apiName: "queryReturnsMediaReference",
-  displayName: "queryReturnsMediaReference",
-  parameters: {},
-  output: {
-    type: "mediaReference",
-  },
-  rid:
-    "ri.function-registry.main.function.c3e58d52-8430-44ee-9f0b-3785d9a9bdd3",
-  version: "0.1.0",
-};
-
-export const queryTypeAcceptsMediaReference: QueryTypeV2 = {
-  apiName: "queryAcceptsMediaReference",
-  displayName: "queryAcceptsMediaReference",
-  parameters: {
-    media: {
-      dataType: {
-        type: "mediaReference",
-      },
-    },
-  },
-  output: {
-    type: "mediaReference",
-  },
-  rid:
-    "ri.function-registry.main.function.c3e58d52-8430-44ee-9f0b-3785d9a9bdd4",
-  version: "0.1.0",
-};
