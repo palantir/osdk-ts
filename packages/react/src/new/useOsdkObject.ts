@@ -30,8 +30,8 @@ import type {
   ShapeDefinition,
   ShapeDerivedLinks,
   ShapeInstance,
-} from "@osdk/api/shapes";
-import { configToShapeDefinition } from "@osdk/api/shapes";
+} from "@osdk/api/unstable";
+import { configToShapeDefinition } from "@osdk/api/unstable";
 import type { ObserveObjectCallbackArgs } from "@osdk/client/unstable-do-not-use";
 import React from "react";
 import { devToolsMetadata, makeExternalStore } from "./makeExternalStore.js";

@@ -15,7 +15,8 @@
  */
 
 import type { ObjectTypeDefinition } from "@osdk/api";
-import type { ShapeDefinition, ShapePropertyConfig } from "@osdk/api/shapes";
+import type { ShapePropertyConfig } from "@osdk/api/shapes-internal";
+import type { ShapeDefinition } from "@osdk/api/unstable";
 import { renderHook } from "@testing-library/react";
 import * as React from "react";
 import { beforeEach, describe, expect, it, vitest } from "vitest";

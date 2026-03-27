@@ -33,8 +33,8 @@ import type {
   ShapeDefinition,
   ShapeDerivedLinks,
   ShapeInstance,
-} from "@osdk/api/shapes";
-import { configToShapeDefinition } from "@osdk/api/shapes";
+} from "@osdk/api/unstable";
+import { configToShapeDefinition } from "@osdk/api/unstable";
 import type { ObserveObjectsCallbackArgs } from "@osdk/client/unstable-do-not-use";
 import React from "react";
 import { extractPayloadError, isPayloadLoading } from "./hookUtils.js";
