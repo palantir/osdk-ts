@@ -16,6 +16,15 @@
       "require": "./build/cjs/index.cjs",
       "default": "./build/browser/index.js"
     },
+    "./unstable-do-not-use": {
+      "browser": "./build/browser/public/unstable-do-not-use.js",
+      "import": {
+        "types": "./build/types/public/unstable-do-not-use.d.ts",
+        "default": "./build/esm/public/unstable-do-not-use.js"
+      },
+      "require": "./build/cjs/public/unstable-do-not-use.cjs",
+      "default": "./build/browser/public/unstable-do-not-use.js"
+    },
     "./experimental": {
       "browser": "./build/browser/public/experimental.js",
       "import": {

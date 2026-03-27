@@ -22,13 +22,13 @@ import type {
   QueryDefinition,
 } from "@osdk/api";
 import type { UseBatchedFunctionQueryResult } from "@osdk/react/experimental";
-import { useBatchedFunctionQueries } from "@osdk/react/experimental";
+import { useBatchedFunctionQueries } from "@osdk/react/unstable-do-not-use";
 import { renderHook } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { ColumnDefinition } from "../../ObjectTableApi.js";
 import { useFunctionColumnsData } from "../useFunctionColumnsData.js";
 
-vi.mock("@osdk/react/experimental", () => ({
+vi.mock("@osdk/react/unstable-do-not-use", () => ({
   useBatchedFunctionQueries: vi.fn(),
 }));
 
