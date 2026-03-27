@@ -18,13 +18,13 @@ import { Button } from "@base-ui/react/button";
 import { Input } from "@base-ui/react/input";
 import classnames from "classnames";
 import React, { memo, useCallback } from "react";
+import styles from "./MultiDateInput.module.css";
+import sharedStyles from "./shared.module.css";
 import {
   formatDateForDisplay,
   formatDateForInput,
   parseDateFromInput,
-} from "./dateUtils.js";
-import styles from "./MultiDateInput.module.css";
-import sharedStyles from "./shared.module.css";
+} from "../../../shared/dateUtils.js";
 
 interface MultiDateInputProps {
   selectedDates: Date[];

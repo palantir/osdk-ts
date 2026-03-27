@@ -18,12 +18,12 @@ import { Button } from "@base-ui/react/button";
 import { Input } from "@base-ui/react/input";
 import classnames from "classnames";
 import React, { memo, useCallback, useMemo } from "react";
+import styles from "./TimelineInput.module.css";
 import {
   formatDateForDisplay,
   formatDateForInput,
   parseDateFromInput,
-} from "./dateUtils.js";
-import styles from "./TimelineInput.module.css";
+} from "../../../shared/dateUtils.js";
 
 interface TimelineInputProps {
   startDate: Date | undefined;

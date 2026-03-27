@@ -18,8 +18,11 @@ import { Button } from "@base-ui/react/button";
 import { Input } from "@base-ui/react/input";
 import classnames from "classnames";
 import React, { memo, useCallback } from "react";
-import { formatDateForInput, parseDateFromInput } from "./dateUtils.js";
 import styles from "./SingleDateInput.module.css";
+import {
+  formatDateForInput,
+  parseDateFromInput,
+} from "../../../shared/dateUtils.js";
 
 interface SingleDateInputProps {
   selectedDate: Date | undefined;

@@ -12,5 +12,6 @@
 @import "./tokens/input.css";
 @import "./tokens/table.css";
 @import "./tokens/tooltip.css";
+@import "./tokens/datetime-picker.css";
 @import "./tokens/pdf-viewer.css";
 

@@ -1,5 +1,21 @@
 # @osdk/react-components
 
+## 0.2.0-beta.23
+
+### Minor Changes
+
+- c35231f: add cbac css tokens and create cbac-components package
+- 5f52808: fix(pdf): fix issue with pdf viewer worker import
+- 336a013: refactor(pdf): rename BasePdfRenderer/PdfRenderer to BasePdfViewer/PdfViewer, rename downloadEnabled to enableDownload, expose internal hooks, add onDownload result callback for download success/failure
+- 07a6fdb: use SkeletonBar component in table loading cells instead of inline skeleton divs
+
+### Patch Changes
+
+- Updated dependencies [fceb4ce]
+  - @osdk/client@2.8.0-beta.27
+  - @osdk/api@2.8.0-beta.27
+  - @osdk/react@0.10.0-beta.11
+
 ## 0.2.0-beta.22
 
 ### Minor Changes

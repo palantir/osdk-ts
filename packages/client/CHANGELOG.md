@@ -1,5 +1,17 @@
 # @osdk/client
 
+## 2.8.0-beta.27
+
+### Minor Changes
+
+- fceb4ce: Fix canonicalization for order-independent where clauses and orderBy keys, add ObjectSetArrayCanonicalizer for set operations, improve ObjectSetQuery with in-memory updates and deletion handling
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.27
+- @osdk/client.unstable@2.8.0-beta.27
+- @osdk/generator-converters@2.8.0-beta.27
+
 ## 2.8.0-beta.26
 
 ### Minor Changes
