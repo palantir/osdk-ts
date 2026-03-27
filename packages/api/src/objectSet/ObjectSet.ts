@@ -103,7 +103,6 @@ type SubSelectRDPs<
 > = [RDPs] extends [never] ? never
   : NOOP<{ [K in SubSelectRDPsHelper<X, string & keyof RDPs>]: RDPs[K] }>;
 
-/** @deprecated Use `ObjectSet` instead. Interfaces now support full object set operations. */
 export interface MinimalObjectSet<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
@@ -656,7 +655,6 @@ interface ObjectSetCleanedTypes<
   MERGED extends ObjectOrInterfaceDefinition & Q,
   ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<PropertyKeys<Q>> = {},
 > extends
-  // eslint-disable-next-line @typescript-eslint/no-deprecated
   MinimalObjectSet<Q, D, ORDER_BY_OPTIONS>,
   WithProperties<Q, D>,
   Aggregate<MERGED>,
