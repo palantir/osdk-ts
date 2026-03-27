@@ -21,8 +21,11 @@ import type {
   Osdk,
   WhereClause,
 } from "@osdk/api";
-import { isSourcePkSymbol } from "@osdk/api/shapes";
-import type { ShapeLinkObjectSetDef, ShapeLinkOrderBy } from "@osdk/api/shapes";
+import type {
+  ShapeLinkObjectSetDef,
+  ShapeLinkOrderBy,
+} from "@osdk/api/shapes-internal";
+import { isSourcePkSymbol } from "@osdk/api/unstable";
 import { additionalContext, type Client } from "../Client.js";
 
 /**

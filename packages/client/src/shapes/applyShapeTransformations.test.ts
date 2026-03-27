@@ -15,7 +15,8 @@
  */
 
 import type { ObjectOrInterfaceDefinition, Osdk } from "@osdk/api";
-import type { ShapeDefinition, ShapePropertyConfig } from "@osdk/api/shapes";
+import type { ShapePropertyConfig } from "@osdk/api/shapes-internal";
+import type { ShapeDefinition } from "@osdk/api/unstable";
 import { describe, expect, it } from "vitest";
 import {
   applyShapeTransformations,

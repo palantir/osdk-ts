@@ -15,13 +15,13 @@
  */
 
 import type { ObjectOrInterfaceDefinition, Osdk } from "@osdk/api";
+import type { ShapePropertyConfig } from "@osdk/api/shapes-internal";
 import type {
   NullabilityViolation,
   ShapeBaseType,
   ShapeDefinition,
   ShapeInstance,
-  ShapePropertyConfig,
-} from "@osdk/api/shapes";
+} from "@osdk/api/unstable";
 
 export interface ShapeTransformResult<
   S extends ShapeDefinition<ObjectOrInterfaceDefinition>,
