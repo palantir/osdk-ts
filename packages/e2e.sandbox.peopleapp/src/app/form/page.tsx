@@ -57,6 +57,20 @@ const fieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
     },
   },
   {
+    fieldKey: "employmentType",
+    fieldComponent: "RADIO_BUTTONS",
+    label: "Employment Type",
+    isRequired: true,
+    fieldComponentProps: {
+      options: [
+        { label: "Full-time", value: "full-time" },
+        { label: "Part-time", value: "part-time" },
+        { label: "Contract", value: "contract" },
+        { label: "Internship", value: "internship" },
+      ],
+    },
+  },
+  {
     fieldKey: "skills",
     fieldComponent: "DROPDOWN",
     label: "Skills",

@@ -16,12 +16,14 @@
 
 import React, { memo } from "react";
 import { FormField } from "../FormField.js";
-import type { RendererFieldDefinition } from "../FormFieldApi.js";
+import type { Option, RendererFieldDefinition } from "../FormFieldApi.js";
 import { DatetimePickerField } from "./DatetimePickerField.js";
 import { DropdownField } from "./DropdownField.js";
+import { RadioButtonsField } from "./RadioButtonsField.js";
 import { TextInputField } from "./TextInputField.js";
 
 const EMPTY_ITEMS: unknown[] = [];
+const EMPTY_OPTIONS: Option<unknown>[] = [];
 
 export interface FormFieldRendererProps {
   fieldDefinition: RendererFieldDefinition;
@@ -93,8 +95,20 @@ function renderFieldComponent(
           {...fieldDefinition.fieldComponentProps}
         />
       );
+    case "RADIO_BUTTONS": {
+      const { options = EMPTY_OPTIONS, ...radioProps } =
+        fieldDefinition.fieldComponentProps ?? {};
+      return (
+        <RadioButtonsField
+          id={fieldDefinition.fieldKey}
+          value={value}
+          onChange={onChange}
+          options={options}
+          {...radioProps}
+        />
+      );
+    }
     case "NUMBER_INPUT":
-    case "RADIO_BUTTONS":
     case "FILE_PICKER":
     case "OBJECT_SET":
     case "CUSTOM":
