@@ -16,7 +16,7 @@
 
 import { Radio } from "@base-ui/react/radio";
 import { RadioGroup } from "@base-ui/react/radio-group";
-import React, { useCallback, useMemo } from "react";
+import { type ReactElement, useCallback, useMemo } from "react";
 import { typedReactMemo } from "../../shared/typedMemo.js";
 import type { Option, RadioButtonsFieldProps } from "../FormFieldApi.js";
 import styles from "./RadioButtonsField.module.css";
@@ -26,12 +26,12 @@ const EMPTY_OPTIONS: Option<any>[] = [];
 
 export const RadioButtonsField: <V>(
   props: RadioButtonsFieldProps<V>,
-) => React.ReactElement = typedReactMemo(function RadioButtonsFieldFn<V,>({
+) => ReactElement = typedReactMemo(function RadioButtonsFieldFn<V,>({
   id,
   value,
   onChange,
   options = EMPTY_OPTIONS,
-}: RadioButtonsFieldProps<V>): React.ReactElement {
+}: RadioButtonsFieldProps<V>): ReactElement {
   const selectedLabel = useMemo(
     () =>
       value != null
@@ -66,7 +66,7 @@ const RadioItem = typedReactMemo(function RadioItemFn<V,>({
   option,
 }: {
   option: Option<V>;
-}): React.ReactElement {
+}): ReactElement {
   return (
     <label className={styles.osdkRadioItem}>
       <Radio.Root value={option.label} className={styles.osdkRadioRoot}>
