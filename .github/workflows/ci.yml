@@ -229,6 +229,14 @@ jobs:
           git fetch origin ${{ github.event.pull_request.base.sha }} --depth=1
           git checkout ${{ github.event.pull_request.base.sha }}
 
+      - name: Cache Turbo (base)
+        uses: actions/cache@v4
+        with:
+          path: .turbo/cache
+          key: turbo-${{ runner.os }}-${{ github.event.pull_request.base.sha }}
+          restore-keys: |
+            turbo-${{ runner.os }}-
+
       - name: Install and build (base)
         run: pnpm install && pnpm exec turbo transpile
 
