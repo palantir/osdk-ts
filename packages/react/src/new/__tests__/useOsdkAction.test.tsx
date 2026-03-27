@@ -21,6 +21,7 @@ import { act, renderHook, waitFor } from "@testing-library/react";
 import React from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { OsdkContext2 } from "../OsdkContext2.js";
+import type { UseOsdkActionCallbacks } from "../useOsdkAction.js";
 import { useOsdkAction } from "../useOsdkAction.js";
 
 const MOCK_ACTION_DEF: ActionDefinition<never> = {
@@ -193,6 +194,100 @@ describe("useOsdkAction", () => {
     });
     expect(result.current.error).toBeUndefined();
     expect(result.current.data).toEqual(MOCK_EDIT_RESPONSE);
+  });
+
+  describe("callbacks", () => {
+    it("calls onSuccess on successful action", async () => {
+      const onSuccess = vi.fn();
+      const onError = vi.fn();
+      const callbacks: UseOsdkActionCallbacks = { onSuccess, onError };
+
+      const { result } = renderHook(
+        () => useOsdkAction(MOCK_ACTION_DEF, callbacks),
+        { wrapper: createWrapper(mockObservableClient) },
+      );
+
+      await act(async () => {
+        await result.current.applyAction({});
+      });
+
+      expect(onSuccess).toHaveBeenCalledOnce();
+      expect(onSuccess).toHaveBeenCalledWith(MOCK_EDIT_RESPONSE);
+      expect(onError).not.toHaveBeenCalled();
+    });
+
+    it("calls onError on failed action", async () => {
+      const error = new Error("action failed");
+      mockObservableClient = createMockObservableClient({
+        applyAction: vi.fn().mockRejectedValue(error),
+      });
+
+      const onSuccess = vi.fn();
+      const onError = vi.fn();
+      const callbacks: UseOsdkActionCallbacks = { onSuccess, onError };
+
+      const { result } = renderHook(
+        () => useOsdkAction(MOCK_ACTION_DEF, callbacks),
+        { wrapper: createWrapper(mockObservableClient) },
+      );
+
+      await act(async () => {
+        await expect(result.current.applyAction({})).rejects.toThrow(error);
+      });
+
+      expect(onError).toHaveBeenCalledOnce();
+      expect(onError).toHaveBeenCalledWith(error);
+      expect(onSuccess).not.toHaveBeenCalled();
+    });
+
+    it("calls onError with ActionValidationError", async () => {
+      const validationError = new ActionValidationError({
+        result: "INVALID",
+        submissionCriteria: [],
+        parameters: {},
+      });
+      mockObservableClient = createMockObservableClient({
+        applyAction: vi.fn().mockRejectedValue(validationError),
+      });
+
+      const onError = vi.fn();
+
+      const { result } = renderHook(
+        () => useOsdkAction(MOCK_ACTION_DEF, { onError }),
+        { wrapper: createWrapper(mockObservableClient) },
+      );
+
+      await act(async () => {
+        await expect(result.current.applyAction({})).rejects.toThrow(
+          validationError,
+        );
+      });
+
+      expect(onError).toHaveBeenCalledWith(validationError);
+    });
+
+    it("uses latest callback via ref (no stale closure)", async () => {
+      const firstOnSuccess = vi.fn();
+      const secondOnSuccess = vi.fn();
+
+      const { result, rerender } = renderHook(
+        ({ onSuccess }: { onSuccess: (data: ActionEditResponse) => void }) =>
+          useOsdkAction(MOCK_ACTION_DEF, { onSuccess }),
+        {
+          wrapper: createWrapper(mockObservableClient),
+          initialProps: { onSuccess: firstOnSuccess },
+        },
+      );
+
+      rerender({ onSuccess: secondOnSuccess });
+
+      await act(async () => {
+        await result.current.applyAction({});
+      });
+
+      expect(firstOnSuccess).not.toHaveBeenCalled();
+      expect(secondOnSuccess).toHaveBeenCalledOnce();
+    });
   });
 
   describe("batch actions", () => {
