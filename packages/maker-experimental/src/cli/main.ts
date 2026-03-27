@@ -224,6 +224,8 @@ export default async function main(
   );
 }
 
+console.log("testing aagain");
+
 async function loadOntology(
   input: string,
   apiNamespace: string,
@@ -237,7 +239,7 @@ async function loadOntology(
         debug: false,
         importMeta: import.meta,
       });
-      const module = await jiti.import(input);
+      await jiti.import(input);
     },
     randomnessKey,
   );

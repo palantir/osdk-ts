@@ -118,8 +118,10 @@ export class PreviewOntologyIrConverter {
     actions: Record<string, ActionTypeBlockDataV2>,
     blockdata: OntologyBlockDataV2,
   ): Record<string, Ontologies.ActionTypeFullMetadata> {
+    const objectTypeLookup = OntologyBlockDataToFullMetadataConverter.buildBlockDataObjectTypeLookup(blockdata);
+    const interfaceTypeLookup = OntologyBlockDataToFullMetadataConverter.buildBlockDataInterfaceTypeLookup(blockdata);
     const baseActionTypes = OntologyBlockDataToFullMetadataConverter
-      .getOsdkActionTypesFromBlockData(actions, blockdata.interfaceTypes);
+      .getOsdkActionTypesFromBlockData(blockdata, objectTypeLookup, interfaceTypeLookup);
 
     // Build a lookup from apiName to the original IR action for logic rules
     const actionsByApiName = new Map(

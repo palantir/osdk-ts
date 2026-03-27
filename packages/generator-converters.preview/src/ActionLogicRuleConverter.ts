@@ -95,7 +95,6 @@ function buildBlockDataInterfaceTypeLookup(
 }
 
 function resolveApiName(id: string, lookup: ApiNameLookup | undefined): string {
-  console.log(`Resolving API name for id '${id}' using lookup:`, lookup);
   if (!lookup) {
     return id;
   }

@@ -21,6 +21,7 @@ import invariant from "tiny-invariant";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { defineOntology } from "../api/defineOntology.js";
+import { createJiti } from "jiti";
 
 const apiNamespaceRegex = /^[a-z0-9-]+(\.[a-z0-9-]+)*\.$/;
 const uuidRegex =
@@ -192,7 +193,14 @@ async function loadOntology(
 ) {
   const q = await defineOntology(
     apiNamespace,
-    async () => await import(input),
+    async () => {
+      const jiti = createJiti(import.meta.filename, {
+        moduleCache: true,
+        debug: false,
+        importMeta: import.meta,
+      });
+      await jiti.import(input);
+    },
     outputDir,
     dependencyFile,
     generateCodeSnippets,
