@@ -87,7 +87,7 @@ function getObjectReferenceType(
   return param.type.objectReference;
 }
 
-function getObjectReferenceType2(
+function getObjectReferenceTypeFromBlockData(
   action: ActionTypeBlockDataV2,
   paramKey: string,
 ): { objectTypeId: string } {
@@ -297,7 +297,10 @@ function convertBlockDataSingleRule(
 
     case "addOrModifyObjectRuleV2": {
       const r = rule.addOrModifyObjectRuleV2;
-      const objRef = getObjectReferenceType2(action, r.objectToModify);
+      const objRef = getObjectReferenceTypeFromBlockData(
+        action,
+        r.objectToModify,
+      );
       // propertyArguments left empty: the downstream generator resolves
       // property mappings from the action parameter configuration rather
       // than from the logic rule itself for createOrModify rules.
@@ -318,7 +321,7 @@ function convertBlockDataSingleRule(
     case "modifyObjectRule": {
       const r = rule.modifyObjectRule;
       // Validate that the parameter is an objectReference (throws if not)
-      getObjectReferenceType2(action, r.objectToModify);
+      getObjectReferenceTypeFromBlockData(action, r.objectToModify);
       const modifyPropertyArguments: Record<
         Ontologies.PropertyApiName,
         Ontologies.LogicRuleArgument

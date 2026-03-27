@@ -237,7 +237,7 @@ async function loadOntology(
         debug: false,
         importMeta: import.meta,
       });
-      await jiti.import(input);
+      const module = await jiti.import(input);
     },
     randomnessKey,
   );
