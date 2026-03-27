@@ -17,7 +17,6 @@
 import type {
   ActionDefinition,
   FetchPageArgs,
-  InterfaceDefinition,
   Logger,
   NullabilityAdherence,
   ObjectOrInterfaceDefinition,
@@ -29,11 +28,7 @@ import type {
   QueryDefinition,
   SelectArg,
 } from "@osdk/api";
-import type {
-  Experiment,
-  ExperimentFns,
-  MinimalObjectSet,
-} from "@osdk/api/unstable";
+import type { Experiment, ExperimentFns } from "@osdk/api/unstable";
 import {
   __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchOneByRid,
@@ -153,8 +148,7 @@ export function createClientFromContext(clientCtx: MinimalClient) {
       | QueryDefinition<any>
       | Experiment<"2.0.8">
       | Experiment<"2.1.0">,
-  >(o: T): T extends ObjectTypeDefinition ? ObjectSet<T>
-    : T extends InterfaceDefinition ? MinimalObjectSet<T>
+  >(o: T): T extends ObjectOrInterfaceDefinition ? ObjectSet<T>
     : T extends ActionDefinition<any> ? ActionSignatureFromDef<T>
     : T extends QueryDefinition<any> ? QuerySignatureFromDef<T>
     : T extends Experiment<"2.0.8"> | Experiment<"2.1.0">

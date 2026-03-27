@@ -21,17 +21,14 @@ import type {
   InterfaceDefinition,
   InterfaceMetadata,
   ObjectMetadata,
+  ObjectOrInterfaceDefinition,
   ObjectSet,
   ObjectTypeDefinition,
   QueryDefinition,
   QueryMetadata,
   VersionBound,
 } from "@osdk/api";
-import type {
-  Experiment,
-  ExperimentFns,
-  MinimalObjectSet,
-} from "@osdk/api/unstable";
+import type { Experiment, ExperimentFns } from "@osdk/api/unstable";
 import type { SharedClient } from "@osdk/shared.client2";
 import type { ActionSignatureFromDef } from "./actions/applyAction.js";
 import type { MinimalClient } from "./MinimalClientContext.js";
@@ -56,9 +53,14 @@ export interface Client extends SharedClient, OldSharedClient {
   ): unknown extends CompileTimeMetadata<Q>["objectSet"] ? ObjectSet<Q>
     : CompileTimeMetadata<Q>["objectSet"];
 
-  <Q extends (InterfaceDefinition)>(
+  <Q extends InterfaceDefinition>(
     o: Q,
-  ): unknown extends CompileTimeMetadata<Q>["objectSet"] ? MinimalObjectSet<Q>
+  ): unknown extends CompileTimeMetadata<Q>["objectSet"] ? ObjectSet<Q>
+    : CompileTimeMetadata<Q>["objectSet"];
+
+  <Q extends ObjectOrInterfaceDefinition>(
+    o: Q,
+  ): unknown extends CompileTimeMetadata<Q>["objectSet"] ? ObjectSet<Q>
     : CompileTimeMetadata<Q>["objectSet"];
 
   <Q extends ActionDefinition<any>>(
