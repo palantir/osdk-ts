@@ -119,7 +119,7 @@ describe("computeMarkingStates", () => {
     expect(states.get("m1")).toBe("IMPLIED_DISALLOWED");
   });
 
-  it("unknown marking returns NONE from map lookup", () => {
+  it("unknown marking returns undefined from map lookup", () => {
     const states = computeMarkingStates([], [], []);
     expect(states.get("unknown")).toBeUndefined();
   });
@@ -136,6 +136,11 @@ describe("computeMarkingStates", () => {
 
   it("marking that is both SELECTED and IMPLIED returns SELECTED", () => {
     const states = computeMarkingStates(["m1"], ["m1"], []);
+    expect(states.get("m1")).toBe("SELECTED");
+  });
+
+  it("marking that is SELECTED, IMPLIED, and DISALLOWED returns SELECTED", () => {
+    const states = computeMarkingStates(["m1"], ["m1"], ["m1"]);
     expect(states.get("m1")).toBe("SELECTED");
   });
 });

@@ -52,12 +52,11 @@ export function resolveRequiredGroups(
   categoryGroups: CategoryMarkingGroup[],
   requiredMarkingGroups: string[][],
 ): RequiredMarkingGroup[] {
-  const markingIdToName = new Map<string, string>();
-  for (const group of categoryGroups) {
-    for (const marking of group.markings) {
-      markingIdToName.set(marking.id, marking.name);
-    }
-  }
+  const markingIdToName = new Map(
+    categoryGroups.flatMap((g) => g.markings).map((m) =>
+      [m.id, m.name] as const
+    ),
+  );
   return requiredMarkingGroups.map((ids) => ({
     markingNames: ids.map((id) => markingIdToName.get(id) ?? id),
   }));

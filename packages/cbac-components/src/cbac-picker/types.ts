@@ -18,8 +18,7 @@ export type MarkingSelectionState =
   | "SELECTED"
   | "IMPLIED"
   | "DISALLOWED"
-  | "IMPLIED_DISALLOWED"
-  | "NONE";
+  | "IMPLIED_DISALLOWED";
 
 export interface CbacBannerData {
   classificationString: string;

@@ -28,20 +28,20 @@ export function toggleMarking(
 ): string[] {
   const isSelected = currentSelection.includes(markingId);
 
-  let ownerCategory: PickerMarkingCategory | undefined;
+  let ownerGroup: CategoryMarkingGroup | undefined;
   for (const group of categories) {
     for (const marking of group.markings) {
       if (marking.id === markingId) {
-        ownerCategory = group.category;
+        ownerGroup = group;
         break;
       }
     }
-    if (ownerCategory !== undefined) {
+    if (ownerGroup !== undefined) {
       break;
     }
   }
 
-  if (ownerCategory === undefined) {
+  if (ownerGroup === undefined) {
     return currentSelection;
   }
 
@@ -51,12 +51,9 @@ export function toggleMarking(
 
   // Disjunctive categories allow only one marking selected at a time (radio-style).
   // Conjunctive categories allow multiple markings (checkbox-style).
-  if (ownerCategory.categoryType === "DISJUNCTIVE") {
-    const sameCategoryGroup = categories.find(
-      (g) => g.category.id === ownerCategory.id,
-    );
+  if (ownerGroup.category.categoryType === "DISJUNCTIVE") {
     const sameCategoryMarkingIds = new Set(
-      sameCategoryGroup?.markings.map((m) => m.id) ?? [],
+      ownerGroup.markings.map((m) => m.id),
     );
     const withoutSameCategory = currentSelection.filter(
       (id) => !sameCategoryMarkingIds.has(id),
@@ -85,16 +82,14 @@ export function computeMarkingStates(
     const isDisallowed = disallowedSet.has(id);
     const isSelected = selectedSet.has(id);
 
-    if (isImplied && isDisallowed) {
-      states.set(id, "IMPLIED_DISALLOWED");
-    } else if (isSelected) {
+    if (isSelected) {
       states.set(id, "SELECTED");
+    } else if (isImplied && isDisallowed) {
+      states.set(id, "IMPLIED_DISALLOWED");
     } else if (isImplied) {
       states.set(id, "IMPLIED");
     } else if (isDisallowed) {
       states.set(id, "DISALLOWED");
-    } else {
-      states.set(id, "NONE");
     }
   }
 
