@@ -304,8 +304,7 @@ export class ShapeNullabilityError extends Error {
     public readonly violations: readonly NullabilityViolation[],
   ) {
     const props = violations.map((v) => v.property).join(", ");
-    // shape IDs are 8-char hex strings, so this is the full ID
-    const shapeName = shape.__debugName ?? shape.__shapeId.slice(0, 8);
+    const shapeName = shape.__debugName ?? shape.__shapeId;
     super(
       `Shape "${shapeName}" requires these properties to be non-null: ${props}`,
     );

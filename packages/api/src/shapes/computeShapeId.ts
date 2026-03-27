@@ -117,10 +117,8 @@ function canonicalizeObjectSetDef(
   return result;
 }
 
-// djb2 xor variant. Shape IDs are used for cache keying and equality
-// checks, not security. 32-bit collision probability is ~1 in 4 billion
-// per pair, which is sufficient for the expected number of distinct shapes
-// in a single application.
+// Shape IDs are used for cache keying and equality, not security,
+// so 32-bit is sufficient.
 function simpleHash(str: string): string {
   let hash = 5381;
   for (let i = 0; i < str.length; i++) {

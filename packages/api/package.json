@@ -18,15 +18,6 @@
       "require": "./build/cjs/index.cjs",
       "default": "./build/browser/index.js"
     },
-    "./shapes": {
-      "browser": "./build/browser/public/shapes.js",
-      "import": {
-        "types": "./build/types/public/shapes.d.ts",
-        "default": "./build/esm/public/shapes.js"
-      },
-      "require": "./build/cjs/public/shapes.cjs",
-      "default": "./build/browser/public/shapes.js"
-    },
     "./shapes-internal": {
       "browser": "./build/browser/public/shapes-internal.js",
       "import": {
