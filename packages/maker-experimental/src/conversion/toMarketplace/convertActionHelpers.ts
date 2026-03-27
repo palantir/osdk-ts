@@ -82,6 +82,9 @@ export function convertAction(
   action: ActionType,
   ridGenerator: OntologyRidGenerator,
 ): ActionTypeBlockDataV2 {
+  if (action.rules.map(rule => rule.type === "functionRule").some(v => v)) {
+    return convertFunctionBackedAction(action, ridGenerator);
+  }
   const actionValidation = convertActionValidation(action, ridGenerator);
   const actionParameters: Record<ParameterId, Parameter> =
     convertActionParameters(action, ridGenerator);
@@ -217,6 +220,12 @@ export function convertAction(
     },
     parameterIds,
   };
+}
+
+function convertFunctionBackedAction(
+  action: ActionType,
+  ridGenerator: OntologyRidGenerator,
+): ActionTypeBlockDataV2 {
 }
 
 /**
