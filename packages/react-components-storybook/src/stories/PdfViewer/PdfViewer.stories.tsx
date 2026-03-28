@@ -355,7 +355,7 @@ function HighlightModeDemo({
     <div style={{ height: "600px" }}>
       <BasePdfViewer
         src={src}
-        highlightEnabled
+        enableHighlight
         onTextHighlight={onTextHighlightAction}
         onHighlightDelete={onHighlightDeleteAction}
       />
@@ -405,7 +405,7 @@ function MyPdfViewer({ src }: { src: string }) {
   return (
     <BasePdfViewer
       src={src}
-      highlightEnabled
+      enableHighlight
       onTextHighlight={handleTextHighlight}
       annotations={annotations}
       onAnnotationClick={handleAnnotationClick}

@@ -46,7 +46,7 @@ export interface PdfViewerToolbarProps {
   enableDownload: boolean;
   onRotateLeft: () => void;
   onRotateRight: () => void;
-  highlightEnabled: boolean;
+  enableHighlight: boolean;
   highlightModeActive: boolean;
   onHighlightToggle: () => void;
   enableFormSave?: boolean;
@@ -66,7 +66,7 @@ export function PdfViewerToolbar({
   enableDownload,
   onRotateLeft,
   onRotateRight,
-  highlightEnabled,
+  enableHighlight,
   highlightModeActive,
   onHighlightToggle,
   enableFormSave = false,
@@ -229,7 +229,7 @@ export function PdfViewerToolbar({
         </Button>
       </div>
 
-      {highlightEnabled && (
+      {enableHighlight && (
         <>
           <div className={styles.separator} />
 

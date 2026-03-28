@@ -16,7 +16,7 @@
 
 import classnames from "classnames";
 import React, { useCallback, useMemo } from "react";
-import type { PdfAnnotation, PdfRect } from "../types.js";
+import type { PdfAnnotation, PdfCustomAnnotation, PdfRect } from "../types.js";
 import styles from "./PdfViewerAnnotationLayer.module.css";
 
 export interface PdfViewerAnnotationLayerProps {
@@ -51,12 +51,10 @@ function computeRectStyle(
   };
 }
 
-function AnnotationItem({
-  annotation,
-  pageHeight,
-  scale,
-  onClick,
-}: AnnotationItemProps): React.ReactElement {
+function useAnnotationHandlers(
+  annotation: PdfAnnotation,
+  onClick?: (annotation: PdfAnnotation) => void,
+) {
   const handleClick = useCallback(() => {
     onClick?.(annotation);
   }, [onClick, annotation]);
@@ -69,6 +67,20 @@ function AnnotationItem({
       }
     },
     [onClick, annotation],
+  );
+
+  return { handleClick, handleKeyDown };
+}
+
+function AnnotationItem({
+  annotation,
+  pageHeight,
+  scale,
+  onClick,
+}: AnnotationItemProps): React.ReactElement {
+  const { handleClick, handleKeyDown } = useAnnotationHandlers(
+    annotation,
+    onClick,
   );
 
   const className = classnames(
@@ -134,19 +146,12 @@ function CustomAnnotationItem({
   pageHeight,
   scale,
   onClick,
-}: AnnotationItemProps): React.ReactElement {
-  const handleClick = useCallback(() => {
-    onClick?.(annotation);
-  }, [onClick, annotation]);
-
-  const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent) => {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        onClick?.(annotation);
-      }
-    },
-    [onClick, annotation],
+}: AnnotationItemProps & {
+  annotation: PdfCustomAnnotation;
+}): React.ReactElement {
+  const { handleClick, handleKeyDown } = useAnnotationHandlers(
+    annotation,
+    onClick,
   );
 
   const style = useMemo(
@@ -165,7 +170,7 @@ function CustomAnnotationItem({
       title={annotation.label}
       data-annotation-id={annotation.id}
     >
-      {annotation.render?.({ annotation, scale, pageHeight })}
+      {annotation.render({ annotation, scale, pageHeight })}
     </div>
   );
 }

@@ -65,6 +65,7 @@ export type {
   AnnotationType,
   PdfAnnotation,
   PdfAnnotationRenderProps,
+  PdfCustomAnnotation,
   PdfDownloadResult,
   PdfFormFieldValue,
   PdfRect,

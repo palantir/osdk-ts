@@ -21,6 +21,11 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { ANNOTATION_LAYER_RENDERED_EVENT } from "../constants.js";
 import type { PdfFormFieldValue } from "../types.js";
 
+/** Get the viewer's container element (typed loosely by pdf.js). */
+function getViewerContainer(viewer: PDFViewer): HTMLElement | undefined {
+  return (viewer as { container?: HTMLElement }).container;
+}
+
 /** Internal metadata for a single form field annotation. */
 interface FieldEntry {
   fieldName: string;
@@ -204,7 +209,7 @@ export function usePdfFormFields({
     if (fieldMapRef.current.size === 0) return;
 
     const storage = doc.annotationStorage;
-    const container = (pdfViewer as { container?: HTMLElement }).container;
+    const container = getViewerContainer(pdfViewer);
 
     for (const [fieldName, value] of Object.entries(data)) {
       const ids = nameToIdsRef.current.get(fieldName);
@@ -273,7 +278,7 @@ export function usePdfFormFields({
     }
 
     // Get the viewer's container element
-    const container = (pdfViewer as { container?: HTMLElement }).container;
+    const container = getViewerContainer(pdfViewer);
     if (container == null) return;
 
     const listeners = new Map<Element, () => void>();

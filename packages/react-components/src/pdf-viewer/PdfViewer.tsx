@@ -37,7 +37,7 @@ export function BasePdfViewer({
   annotations = EMPTY_ANNOTATION_ARRAY,
   onAnnotationClick,
   onDownload,
-  highlightEnabled = false,
+  enableHighlight = false,
   onTextHighlight,
   onHighlightDelete,
   formData,
@@ -63,7 +63,7 @@ export function BasePdfViewer({
   const { highlightModeActive, toggleHighlightMode } = usePdfHighlightMode({
     pdfViewerRef: viewer.pdfViewerRef,
     document: viewer.document,
-    enabled: highlightEnabled,
+    enabled: enableHighlight,
     onTextHighlight,
     onHighlightDelete,
   });
@@ -126,7 +126,7 @@ export function BasePdfViewer({
         enableDownload={enableDownload}
         onRotateLeft={viewer.rotateLeft}
         onRotateRight={viewer.rotateRight}
-        highlightEnabled={highlightEnabled}
+        enableHighlight={enableHighlight}
         highlightModeActive={highlightModeActive}
         onHighlightToggle={toggleHighlightMode}
         enableFormSave={onFormSubmit != null && hasFormFields}

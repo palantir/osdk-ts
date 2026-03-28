@@ -51,12 +51,10 @@ export interface PdfAnnotationRenderProps {
   pageHeight: number;
 }
 
-/** A single annotation positioned on a specific page of the PDF. */
-export interface PdfAnnotation {
+/** Common fields shared by all annotation types. */
+interface PdfAnnotationBase {
   /** Unique identifier for this annotation */
   id: string;
-  /** The type of annotation to render */
-  type: AnnotationType;
   /** Page number (1-indexed) */
   page: number;
   /** Coordinates in PDF points (origin: bottom-left of page) */
@@ -67,9 +65,24 @@ export interface PdfAnnotation {
   label?: string;
   /** Optional color override (CSS color string) */
   color?: string;
-  /** Custom renderer for "custom" type annotations */
-  render?: (props: PdfAnnotationRenderProps) => React.ReactNode;
 }
+
+/** A built-in annotation type (highlight, underline, comment, pin). */
+interface PdfStandardAnnotation extends PdfAnnotationBase {
+  /** The type of annotation to render */
+  type: "highlight" | "underline" | "comment" | "pin";
+}
+
+/** A custom annotation with a user-provided renderer. */
+export interface PdfCustomAnnotation extends PdfAnnotationBase {
+  /** Must be "custom" for custom-rendered annotations */
+  type: "custom";
+  /** Render function for the custom annotation content (required for custom type) */
+  render: (props: PdfAnnotationRenderProps) => React.ReactNode;
+}
+
+/** A single annotation positioned on a specific page of the PDF. */
+export type PdfAnnotation = PdfStandardAnnotation | PdfCustomAnnotation;
 
 /** Result passed to the {@link PdfViewerProps.onDownload} callback. */
 export type PdfDownloadResult =
@@ -115,7 +128,7 @@ export interface PdfViewerProps {
    * Whether the highlight toggle button is shown in the toolbar.
    * @default false
    */
-  highlightEnabled?: boolean;
+  enableHighlight?: boolean;
   /**
    * Callback fired when the user creates a text highlight.
    * Only fires when highlight mode is active.

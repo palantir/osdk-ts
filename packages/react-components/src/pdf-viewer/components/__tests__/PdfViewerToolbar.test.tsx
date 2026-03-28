@@ -31,7 +31,7 @@ const defaultProps = {
   enableDownload: false,
   onRotateLeft: vi.fn(),
   onRotateRight: vi.fn(),
-  highlightEnabled: false,
+  enableHighlight: false,
   highlightModeActive: false,
   onHighlightToggle: vi.fn(),
 };

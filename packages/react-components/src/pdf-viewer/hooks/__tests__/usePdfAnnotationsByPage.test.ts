@@ -20,7 +20,7 @@ import type { PdfAnnotation } from "../../types.js";
 import { usePdfAnnotationsByPage } from "../usePdfAnnotationsByPage.js";
 
 function createAnnotation(
-  overrides: Partial<PdfAnnotation> = {},
+  overrides: Record<string, unknown> = {},
 ): PdfAnnotation {
   return {
     id: "ann-1",
@@ -28,7 +28,7 @@ function createAnnotation(
     page: 1,
     rect: { x: 100, y: 500, width: 200, height: 20 },
     ...overrides,
-  };
+  } as PdfAnnotation;
 }
 
 describe("usePdfAnnotationsByPage", () => {
