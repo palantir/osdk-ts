@@ -153,14 +153,14 @@ export function convertLink(
     };
 
     datasource = {
-      rid: ridGenerator.generateRid(`datasource.link.${linkType.apiName}`),
+      rid: ridGenerator.generateDatasourceRid(linkType.apiName),
       datasource: {
         type: "dataset",
         dataset: {
           // TODO: Add proper branchId from link configuration
           branchId: "main",
-          datasetRid: ridGenerator.generateRid(
-            `link.dataset.${linkType.apiName}`,
+          datasetRid: ridGenerator.generateDatasourceRid(
+            linkType.apiName,
           ),
           writebackDatasetRid: undefined,
           // TODO: Convert property mappings to use property RIDs as keys
