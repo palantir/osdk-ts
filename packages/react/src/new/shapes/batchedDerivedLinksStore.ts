@@ -84,7 +84,7 @@ interface BatchableLinkState {
   status: "init" | "loading" | "loaded" | "error" | "deferred";
   error?: Error;
   subscription?: Unsubscribable;
-  transformedBySourcePk: Map<unknown, TransformedSourceData>;
+  transformedBySourcePk: Map<string | number, TransformedSourceData>;
   hasMore: boolean;
   fetchMore: () => Promise<void>;
 }
@@ -170,7 +170,11 @@ export function createBatchedDerivedLinksStore<
 
   const subscribers = new Set<() => void>();
   const cache = createVersionedCache<BatchedDerivedLinksPayload<S>>();
-  const notifySubscribers = createCachingNotifier(subscribers, cache);
+  const rawNotify = createCachingNotifier(subscribers, cache);
+  function notifySubscribers(): void {
+    fetchMoreCache.clear();
+    rawNotify();
+  }
 
   const linkStates = new Map<string, BatchableLinkState>();
   const perItemStores = new Map<string | number, DerivedLinksStore<S>>();
@@ -178,6 +182,7 @@ export function createBatchedDerivedLinksStore<
 
   let currentSourceObjects: Osdk.Instance<ObjectOrInterfaceDefinition>[] = [];
   let destroyed = false;
+  const fetchMoreCache = new Map<string, () => Promise<void>>();
 
   const observeLinksUntyped = adaptObserveLinks(observableClient.observeLinks);
 
@@ -221,6 +226,7 @@ export function createBatchedDerivedLinksStore<
   function cleanupAll(): void {
     teardownBatchedSubscriptions();
     cleanupPerItemStores();
+    fetchMoreCache.clear();
   }
 
   function startObserveLinks(
@@ -449,23 +455,30 @@ export function createBatchedDerivedLinksStore<
           }
         }
 
-        aggregatedLinkStatus[linkName] = {
-          isLoading: linkAnyLoading,
-          error: linkError,
-          hasMore: linkHasMore,
-          fetchMore: async () => {
+        let cachedFetchMore = fetchMoreCache.get(linkName);
+        if (!cachedFetchMore) {
+          const capturedLinkName = linkName;
+          cachedFetchMore = async () => {
             const promises: Promise<void>[] = [];
             for (const [, store] of perItemStores) {
               const snapshot = store.getSnapShot();
               const status = snapshot.linkStatus[
-                linkName as keyof ShapeDerivedLinks<S>
+                capturedLinkName as keyof ShapeDerivedLinks<S>
               ];
               if (status?.hasMore && status.fetchMore) {
                 promises.push(status.fetchMore());
               }
             }
             await Promise.all(promises);
-          },
+          };
+          fetchMoreCache.set(linkName, cachedFetchMore);
+        }
+
+        aggregatedLinkStatus[linkName] = {
+          isLoading: linkAnyLoading,
+          error: linkError,
+          hasMore: linkHasMore,
+          fetchMore: cachedFetchMore,
         };
       }
 
