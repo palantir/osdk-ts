@@ -16,6 +16,7 @@
 
 import type { OntologyIrV2 } from "@osdk/client.unstable";
 import type { ObjectType } from "@osdk/maker";
+import type { IDiscoveredFunction } from "@osdk/generator-converters.ontologyir";
 import {
   getOntologyDefinition,
   initializeOntologyState,
@@ -25,11 +26,16 @@ import { convertOntologyDefinition } from "../conversion/toMarketplace/convertOn
 import { getShapes } from "../conversion/toMarketplace/shapeExtractors/IrShapeExtractor.js";
 import type { BlockShapes } from "../util/generateRid.js";
 import { OntologyRidGeneratorImpl } from "../util/generateRid.js";
+import * as fs from "fs";
 
 export interface OntologyV2Result {
   ontologyIr: OntologyIrV2;
   shapes: BlockShapes;
   backingDatasourceApiNames: string[];
+}
+
+export interface FunctionsIr {
+  discoveredFunctions: Array<IDiscoveredFunction>;
 }
 
 export async function defineOntologyV2(
@@ -53,17 +59,26 @@ export async function defineOntologyV2(
 
   const ontologyDefinition = getOntologyDefinition();
 
+  let functionsIr: FunctionsIr | undefined;
+  if (functionsIrFile) {
+    functionsIr = JSON.parse(
+      fs.readFileSync(functionsIrFile, "utf-8"),
+    );
+  }
+  
+
   const ridGenerator = new OntologyRidGeneratorImpl();
   const ontDef = convertOntologyDefinition(
     ontologyDefinition,
     ridGenerator,
-    functionsIrFile,
+    functionsIr,
     randomnessKey,
   );
 
   const shapes = await getShapes(
     ontDef.ontology,
     ridGenerator,
+    functionsIr,
     randomnessKey,
   );
 

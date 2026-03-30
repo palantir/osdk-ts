@@ -46,10 +46,14 @@ import { convertDataType } from "./convertDataType.js";
 // These are declared inline to avoid compile-time dependency on optional packages
 export interface IDataType {
   type: string;
+  object?: { objectTypeId: string };
+  objectSet?: { objectTypeId: string };
+  list?: { elementsType: IDataType };
+  set?: { elementsType: IDataType };
   [key: string]: unknown;
 }
 
-interface IDiscoveredFunction {
+export interface IDiscoveredFunction {
   locator: { type: string; typescriptOsdk?: { functionName: string } };
   inputs: Array<{ name: string; dataType: IDataType }>;
   output: { single: { dataType: IDataType } };

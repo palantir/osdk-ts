@@ -36,11 +36,12 @@ import { convertLink } from "./convertLink.js";
 import { convertObject } from "./convertObject.js";
 import { convertSpt } from "./convertSpt.js";
 import { MIGRATION_SHAPE_READABLE_ID } from "./shapeExtractors/IrShapeExtractor.js";
+import { FunctionsIr } from "../../api/defineOntologyV2.js";
 
 export function convertOntologyDefinitionToWireBlockData(
   ontology: OntologyDefinition,
   ridGenerator: OntologyRidGenerator,
-  functionsIrFile?: string,
+  functionsIr?: FunctionsIr,
 ): OntologyBlockDataV2 {
   // Convert all entity types first to populate ridGenerator's BiMaps
   const objectTypes = Object.fromEntries(
@@ -92,7 +93,7 @@ export function convertOntologyDefinitionToWireBlockData(
   const actionTypes = Object.fromEntries(
     Object.entries(ontology[OntologyEntityTypeEnum.ACTION_TYPE])
       .map(([apiName, action]) => {
-        const converted = convertAction(action, ridGenerator, functionsIrFile);
+        const converted = convertAction(action, ridGenerator, functionsIr);
         if (converted === undefined) return undefined;
         return [
           ridGenerator.generateRidForActionType(apiName),

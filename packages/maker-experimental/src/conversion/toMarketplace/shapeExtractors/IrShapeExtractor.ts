@@ -49,6 +49,7 @@ import {
 } from "../typeVisitors.js";
 import { LinkTypeShapeExtractor } from "./LinkTypeShapeExtractor.js";
 import { ObjectTypeShapeExtractor } from "./ObjectTypeShapeExtractor.js";
+import { FunctionsIr } from "../../../api/defineOntologyV2.js";
 
 export const MIGRATION_SHAPE_READABLE_ID: ReadableId =
   "migration-input" as ReadableId;
@@ -74,12 +75,14 @@ function createLocalizedAbout(
 export async function getShapes(
   ontologyBlockDataV2: OntologyBlockDataV2,
   ridGenerator: OntologyRidGenerator,
+  functionsIr?: FunctionsIr,
   randomnessKey?: string,
 ): Promise<BlockShapes> {
   const allBlockShapes: BlockShapes = {
     inputShapes: new Map(),
     outputShapes: new Map(),
     inputShapeMetadata: new Map(),
+    inputMappings: [],
   };
 
   const outputSharedPropertyTypeRids = new Set(
@@ -164,6 +167,7 @@ export async function getShapes(
       actionType,
       ridGenerator,
       ontologyBlockDataV2.knownIdentifiers,
+      functionsIr,
     );
     consumeBlockShapes(allBlockShapes, actionShapes);
   }
@@ -450,6 +454,7 @@ function extractMultipassGroup(
     }]]),
     outputShapes: new Map(),
     inputShapeMetadata: new Map(),
+    inputMappings: [],
   };
 }
 
@@ -474,6 +479,7 @@ function getMigrationShape(): BlockShapes {
       isOptional: true,
       isAccessedInReconcile: false,
     }]]),
+    inputMappings: [],
   };
 }
 
@@ -753,6 +759,7 @@ function getMarkingShapes(
     inputShapes,
     outputShapes: new Map(),
     inputShapeMetadata: new Map(),
+    inputMappings: [],
   };
 }
 
@@ -768,6 +775,9 @@ function consumeBlockShapes(target: BlockShapes, source: BlockShapes): void {
   }
   for (const [key, value] of source.inputShapeMetadata.entries()) {
     target.inputShapeMetadata.set(key, value);
+  }
+  for (const mapping of source.inputMappings) {
+    target.inputMappings.push(mapping);
   }
 }
 

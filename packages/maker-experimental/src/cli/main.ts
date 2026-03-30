@@ -179,7 +179,7 @@ export default async function main(
 
   // Collect input_mapping_entries for the ontology block
   // These map ontology inputs to datasource block outputs for objects with includeEmptyBackingDatasource
-  const ontologyInputMappingEntries: InputMappingEntry[] = [];
+  const ontologyInputMappingEntries: InputMappingEntry[] = shapes.inputMappings;
 
   for (const apiName of backingDatasourceApiNames) {
     const objectTypeBlockData = findObjectTypeByApiName(

@@ -35,7 +35,7 @@ import type {
   InterfaceType,
 } from "@osdk/maker";
 import { getOntologyDefinition, uppercaseFirstLetter } from "@osdk/maker";
-import * as fs from "node:fs";
+import { FunctionsIr } from "../../api/defineOntologyV2.js";
 import type { OntologyRidGenerator } from "../../util/generateRid.js";
 import { ReadableIdGenerator } from "../../util/generateRid.js";
 import { convertActionParameters } from "./convertActionParameters.js";
@@ -43,6 +43,7 @@ import { convertActionSections } from "./convertActionSections.js";
 import { convertActionValidation } from "./convertActionValidation.js";
 import { flattenInterface } from "./convertObject.js";
 import { getFormContentOrdering } from "./getFormContentOrdering.js";
+import {IDataType} from "@osdk/generator-converters.ontologyir";
 import invariant from "tiny-invariant";
 import consola from "consola";
 
@@ -84,14 +85,14 @@ export function buildDatasource(
 export function convertAction(
   action: ActionType,
   ridGenerator: OntologyRidGenerator,
-  functionsIrFile?: string, 
+  functionsIr?: FunctionsIr,
 ): ActionTypeBlockDataV2 | undefined {
   if (action.rules.map(rule => rule.type === "functionRule").some(v => v)) {
-    if (!functionsIrFile) {
+    if (!functionsIr) {
       consola.info("No functions IR file found, skipping some function-backed actions");
       return undefined;
     }
-    return convertFunctionBackedAction(action, ridGenerator, functionsIrFile);
+    return convertFunctionBackedAction(action, ridGenerator, functionsIr);
   }
   const actionValidation = convertActionValidation(action, ridGenerator);
   const actionParameters: Record<ParameterId, Parameter> =
@@ -230,35 +231,11 @@ export function convertAction(
   };
 }
 
-interface FunctionDataType {
-  type: string;
-  object?: { objectTypeId: string };
-  objectSet?: { objectTypeId: string };
-  list?: { elementsType: FunctionDataType };
-  set?: { elementsType: FunctionDataType };
-  [key: string]: unknown;
-}
-
-interface DiscoveredFunction {
-  locator: { type: string; typescriptOsdk?: { functionName: string } };
-  inputs: Array<{ name: string; dataType: FunctionDataType }>;
-  output: { single: { dataType: FunctionDataType } };
-  customTypes: Record<string, unknown>;
-}
-
-interface FunctionsIr {
-  discoveredFunctions: Array<DiscoveredFunction>;
-}
-
 function convertFunctionBackedAction(
   action: ActionType,
   ridGenerator: OntologyRidGenerator,
-  functionsIrFile: string,
+  functionsIr: FunctionsIr,
 ): ActionTypeBlockDataV2 {
-  const functionsIr: FunctionsIr = JSON.parse(
-    fs.readFileSync(functionsIrFile, "utf-8"),
-  );
-
   // The placeholder functionRid holds the function's API name
   const rule = action.rules[0];
   invariant(
@@ -272,7 +249,7 @@ function convertFunctionBackedAction(
   );
   invariant(
     discoveredFunction != null,
-    `Function "${functionApiName}" not found in functions IR file`,
+    `Function "${functionApiName}" not found in functions IR`,
   );
 
   // Build parameters and function input mappings from discovered function inputs
@@ -446,7 +423,7 @@ function convertFunctionBackedAction(
 }
 
 function convertFunctionInputDataType(
-  dataType: FunctionDataType,
+  dataType: IDataType,
   ridGenerator: OntologyRidGenerator,
   affectedObjectTypeIds: string[],
 ): Parameter["type"] {
@@ -519,7 +496,7 @@ const PRIMITIVE_LIST_TYPES: Record<string, string> = {
 };
 
 function convertFunctionInputListDataType(
-  elementType: FunctionDataType,
+  elementType: IDataType,
   ridGenerator: OntologyRidGenerator,
   affectedObjectTypeIds: string[],
 ): Parameter["type"] {

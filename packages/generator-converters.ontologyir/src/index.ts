@@ -22,4 +22,4 @@ export {
   OntologyBlockDataToFullMetadataConverter,
   resolveBlockDataApiName,
 } from "./OntologyBlockDataToFullMetadataConverter.js";
-export { OntologyIrToFullMetadataConverter } from "./OntologyIrToFullMetadataConverter.js";
+export { type IDiscoveredFunction, type IDataType, OntologyIrToFullMetadataConverter } from "./OntologyIrToFullMetadataConverter.js";

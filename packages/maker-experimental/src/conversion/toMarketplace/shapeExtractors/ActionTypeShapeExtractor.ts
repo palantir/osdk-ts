@@ -23,15 +23,21 @@ import type {
   ActionTypeParameterShape,
   ActionTypeShape,
   BaseParameterType,
+  FunctionInputType,
+  FunctionShape,
+  InputShape,
   LocalizedTitleAndDescription,
   OutputShape,
 } from "@osdk/client.unstable/api";
+import type { IDiscoveredFunction } from "@osdk/generator-converters.ontologyir";
 import {
   type BlockShapes,
   type OntologyRidGenerator,
   type ReadableId,
   ReadableIdGenerator,
 } from "../../../util/generateRid.js";
+import type { FunctionsIr } from "../../../api/defineOntologyV2.js";
+import { InputMappingEntry } from "../../../cli/marketplaceSerialization/index.js";
 
 /**
  * Helper to create LocalizedTitleAndDescription with empty localizations
@@ -328,6 +334,138 @@ class BaseParameterTypeConverter {
   }
 }
 
+function convertShapeDataType(
+  dataType: { type: string; [key: string]: unknown },
+  objectTypeIds: Record<string, string>,
+): { type: string; [key: string]: unknown } {
+  switch (dataType.type) {
+    case "object": {
+      const obj = dataType.object as { objectTypeId: string } | undefined;
+      const blockId = obj ? objectTypeIds[obj.objectTypeId] : undefined;
+      return {
+        type: "object",
+        object: { objectTypeId: blockId ?? obj?.objectTypeId ?? "" },
+      };
+    }
+    case "objectSet": {
+      const obj = dataType.objectSet as { objectTypeId: string } | undefined;
+      const blockId = obj ? objectTypeIds[obj.objectTypeId] : undefined;
+      return {
+        type: "objectSet",
+        objectSet: { objectTypeId: blockId ?? obj?.objectTypeId ?? "" },
+      };
+    }
+    case "list": {
+      const list = dataType.list as
+        | { elementsType: { type: string; [key: string]: unknown } }
+        | undefined;
+      if (list) {
+        return {
+          type: "list",
+          list: {
+            elementsType: convertShapeDataType(
+              list.elementsType,
+              objectTypeIds,
+            ),
+          },
+        };
+      }
+      return dataType;
+    }
+    case "set": {
+      const set = dataType.set as
+        | { elementsType: { type: string; [key: string]: unknown } }
+        | undefined;
+      if (set) {
+        return {
+          type: "set",
+          set: {
+            elementsType: convertShapeDataType(
+              set.elementsType,
+              objectTypeIds,
+            ),
+          },
+        };
+      }
+      return dataType;
+    }
+    case "optionalType": {
+      const opt = dataType.optionalType as
+        | { wrappedType: { type: string; [key: string]: unknown } }
+        | undefined;
+      if (opt) {
+        return {
+          type: "optionalType",
+          optionalType: {
+            wrappedType: convertShapeDataType(
+              opt.wrappedType,
+              objectTypeIds,
+            ),
+          },
+        };
+      }
+      return dataType;
+    }
+    default:
+      return dataType;
+  }
+}
+
+function buildFunctionShape(
+  functionApiName: string,
+  discoveredFunction: IDiscoveredFunction,
+  knownIdentifiers: KnownMarketplaceIdentifiers,
+): FunctionShape {
+  const objectTypeIds = knownIdentifiers.objectTypeIds ?? {};
+
+  const inputs: FunctionInputType[] = discoveredFunction.inputs.map(input => {
+    let dataType = input.dataType as { type: string; [key: string]: unknown };
+    let required = true;
+
+    if (dataType.type === "optionalType") {
+      const opt = dataType.optionalType as
+        | { wrappedType: { type: string; [key: string]: unknown } }
+        | undefined;
+      if (opt) {
+        dataType = opt.wrappedType;
+        required = false;
+      }
+    }
+
+    return {
+      about: createLocalizedAbout(
+        functionApiName,
+        "",
+      ),
+      inputName: input.name,
+      dataType: convertShapeDataType(dataType, objectTypeIds),
+      required,
+    };
+  });
+
+  const outputDataType = discoveredFunction.output.single.dataType as {
+    type: string;
+    [key: string]: unknown;
+  };
+
+  return {
+    about: createLocalizedAbout(functionApiName),
+    inputs,
+    output: {
+      type: "singleOutputType",
+      singleOutputType: {
+        about: createLocalizedAbout(
+          "Function Output",
+          ""
+        ),
+        dataType: convertShapeDataType(outputDataType, objectTypeIds),
+      },
+    },
+    customTypes: discoveredFunction.customTypes as FunctionShape["customTypes"],
+    contracts: [],
+  };
+}
+
 /**
  * Extracts action type shapes from an ActionTypeBlockDataV2
  */
@@ -339,6 +477,7 @@ export class ActionTypeShapeExtractor {
     actionType: ActionTypeBlockDataV2,
     ridGenerator: OntologyRidGenerator,
     knownIdentifiers: KnownMarketplaceIdentifiers,
+    functionsIr?: FunctionsIr,
   ): BlockShapes {
     const actionApiName =
       (actionType.actionType as ActionType).metadata.apiName;
@@ -355,6 +494,7 @@ export class ActionTypeShapeExtractor {
         inputShapes: new Map(),
         outputShapes: new Map(),
         inputShapeMetadata: new Map(),
+        inputMappings: [],
       };
     }
 
@@ -418,10 +558,41 @@ export class ActionTypeShapeExtractor {
       action: actionOutputShape,
     });
 
+    const allInputShapes = new Map<ReadableId, InputShape>();
+    const allInputMappings: InputMappingEntry[] = [];
+    const functionRule = actionType.actionType.actionTypeLogic.logic.rules
+      .find(r => r.type === "functionRule");
+    if (functionRule && functionsIr) {
+      const functionApiName = functionRule.functionRule.functionRid
+        .split(".").pop() ?? functionRule.functionRule.functionRid;
+
+      const discoveredFunction = functionsIr.discoveredFunctions.find(
+        f => f.locator.typescriptOsdk?.functionName === functionApiName,
+      );
+
+      if (discoveredFunction) {
+        const functionShape = buildFunctionShape(
+          functionApiName,
+          discoveredFunction,
+          knownIdentifiers,
+        );
+
+        allInputShapes.set(
+          ReadableIdGenerator.getForConsumedFunction(functionApiName),
+          { type: "function", function: functionShape },
+        );
+        allInputMappings.push({
+          input: ReadableIdGenerator.getForConsumedFunction(functionApiName),
+          output: ReadableIdGenerator.getForFunction(functionApiName),
+        });
+      }
+    }
+
     return {
-      inputShapes: new Map(),
+      inputShapes: allInputShapes,
       outputShapes: allOutputShapes,
       inputShapeMetadata: new Map(),
+      inputMappings: allInputMappings,
     };
   }
 
