@@ -15,6 +15,7 @@
  */
 
 export type MarkingSelectionState =
+  | "NONE"
   | "SELECTED"
   | "IMPLIED"
   | "DISALLOWED"
