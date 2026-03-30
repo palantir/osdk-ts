@@ -35,7 +35,9 @@ export interface CategoryMarkingGroupProps {
   onMarkingToggle: (markingId: string) => void;
 }
 
-export function CategoryMarkingGroup({
+export const CategoryMarkingGroup: React.MemoExoticComponent<
+  (props: CategoryMarkingGroupProps) => React.ReactElement
+> = React.memo(function CategoryMarkingGroup({
   categoryName,
   markings,
   onMarkingToggle,
@@ -95,7 +97,7 @@ export function CategoryMarkingGroup({
       </div>
     </div>
   );
-}
+});
 
 interface MarkingButtonItemProps {
   id: string;

@@ -43,3 +43,15 @@
 .moreButtonActive {
   color: var(--osdk-intent-primary-rest);
 }
+
+.overflowList {
+  display: flex;
+  flex-direction: column;
+  max-height: var(--osdk-cbac-overflow-list-max-height);
+  overflow-y: auto;
+  padding: calc(var(--osdk-surface-spacing) * 0.5);
+  background: var(--osdk-surface-background-color-default);
+  border: 1px solid var(--osdk-surface-border-color-default);
+  border-radius: var(--osdk-surface-border-radius);
+  box-shadow: var(--osdk-surface-elevation-2);
+}

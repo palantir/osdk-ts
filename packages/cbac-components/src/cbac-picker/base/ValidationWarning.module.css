@@ -62,7 +62,7 @@
 .chip {
   display: inline-flex;
   align-items: center;
-  padding: 0 calc(var(--osdk-surface-spacing) * 1);
+  padding: 0 var(--osdk-surface-spacing);
   border: 1px solid var(--osdk-cbac-validation-warning-chip-border-color);
   border-radius: var(--osdk-surface-border-radius);
   background: var(--osdk-cbac-validation-warning-chip-bg);

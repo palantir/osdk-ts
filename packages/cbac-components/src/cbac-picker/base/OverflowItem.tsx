@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Button } from "@base-ui/react/button";
 import classnames from "classnames";
 import React from "react";
 import type { MarkingSelectionState } from "../types.js";
@@ -50,8 +51,7 @@ export const OverflowItem: React.MemoExoticComponent<
   const implied = isImplied(selectionState);
 
   return (
-    <button
-      type="button"
+    <Button
       className={classnames(
         styles.overflowItem,
         (isSelected || implied) && styles.overflowItemSelected,
@@ -62,6 +62,6 @@ export const OverflowItem: React.MemoExoticComponent<
       aria-pressed={isSelected}
     >
       {getDisplayLabel(label, selectionState)}
-    </button>
+    </Button>
   );
 });

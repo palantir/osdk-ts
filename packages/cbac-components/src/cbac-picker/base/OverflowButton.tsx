@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
+import { Button } from "@base-ui/react/button";
 import { Popover } from "@base-ui/react/popover";
 import classnames from "classnames";
 import React from "react";
 import type { MarkingSelectionState } from "../types.js";
 import styles from "./OverflowButton.module.css";
 import { OverflowItem } from "./OverflowItem.js";
-import overflowItemStyles from "./OverflowItem.module.css";
 
 export interface OverflowButtonProps {
   overflowMarkings: ReadonlyArray<{
@@ -44,20 +44,19 @@ export function OverflowButton({
     <Popover.Root open={open} onOpenChange={setOpen}>
       <Popover.Trigger
         render={
-          <button
-            type="button"
+          <Button
             className={classnames(
               styles.moreButton,
               hasActiveOverflow && styles.moreButtonActive,
             )}
           >
             +{overflowMarkings.length} more
-          </button>
+          </Button>
         }
       />
       <Popover.Portal>
         <Popover.Positioner side="bottom" align="start">
-          <Popover.Popup className={overflowItemStyles.overflowList}>
+          <Popover.Popup className={styles.overflowList}>
             {overflowMarkings.map((marking) => (
               <OverflowItem
                 key={marking.id}

@@ -14,18 +14,6 @@
  * limitations under the License.
  */
 
-.overflowList {
-  display: flex;
-  flex-direction: column;
-  max-height: var(--osdk-cbac-overflow-list-max-height);
-  overflow-y: auto;
-  padding: calc(var(--osdk-surface-spacing) * 0.5);
-  background: var(--osdk-surface-background-color-default);
-  border: 1px solid var(--osdk-surface-border-color-default);
-  border-radius: var(--osdk-surface-border-radius);
-  box-shadow: var(--osdk-surface-elevation-2);
-}
-
 .overflowItem {
   display: flex;
   align-items: center;
@@ -59,5 +47,5 @@
 .overflowItemDisabled {
   color: var(--osdk-cbac-marking-button-color-disallowed);
   cursor: not-allowed;
-  opacity: 0.6;
+  opacity: var(--osdk-cbac-disabled-opacity);
 }

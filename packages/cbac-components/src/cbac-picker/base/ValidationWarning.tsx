@@ -40,7 +40,7 @@ export function ValidationWarning({
       </div>
       <ol className={styles.groupList}>
         {requiredMarkingGroups.map((group, index) => (
-          <li key={index} className={styles.groupItem}>
+          <li key={group.markingNames.join(",")} className={styles.groupItem}>
             <span className={styles.groupNumber}>{index + 1}.</span>
             {group.markingNames.map((name) => (
               <span key={name} className={styles.chip}>{name}</span>

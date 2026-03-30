@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Button } from "@base-ui/react/button";
 import classnames from "classnames";
 import React from "react";
 import type { MarkingSelectionState } from "../types.js";
@@ -45,8 +46,7 @@ export function MarkingButton({
   disabled,
 }: MarkingButtonProps): React.ReactElement {
   return (
-    <button
-      type="button"
+    <Button
       className={classnames(
         styles.markingButton,
         selectionStateClassMap[selectionState],
@@ -56,6 +56,6 @@ export function MarkingButton({
       aria-pressed={selectionState === "SELECTED"}
     >
       {getDisplayLabel(label, selectionState)}
-    </button>
+    </Button>
   );
 }
