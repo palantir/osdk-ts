@@ -64,7 +64,12 @@ export { BasePdfViewer } from "../pdf-viewer/PdfViewer.js";
 export type {
   AnnotationType,
   PdfAnnotation,
+  PdfAnnotationRenderProps,
+  PdfCustomAnnotation,
   PdfDownloadResult,
+  PdfFormFieldValue,
+  PdfRect,
+  PdfTextHighlightEvent,
   PdfViewerProps,
   SidebarMode,
 } from "../pdf-viewer/types.js";
@@ -100,7 +105,18 @@ export {
   type AnnotationPortalTarget,
   usePdfAnnotationPortals,
 } from "../pdf-viewer/hooks/usePdfAnnotationPortals.js";
+export { usePdfAnnotationsByPage } from "../pdf-viewer/hooks/usePdfAnnotationsByPage.js";
 export { usePdfDocument } from "../pdf-viewer/hooks/usePdfDocument.js";
+export {
+  usePdfFormFields,
+  type UsePdfFormFieldsOptions,
+  type UsePdfFormFieldsResult,
+} from "../pdf-viewer/hooks/usePdfFormFields.js";
+export {
+  usePdfHighlightMode,
+  type UsePdfHighlightModeOptions,
+  type UsePdfHighlightModeResult,
+} from "../pdf-viewer/hooks/usePdfHighlightMode.js";
 export { usePdfOutline } from "../pdf-viewer/hooks/usePdfOutline.js";
 export {
   usePdfViewer,

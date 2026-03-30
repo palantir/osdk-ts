@@ -24,16 +24,25 @@ import { PdfViewerOutlineSidebar } from "./components/PdfViewerOutlineSidebar.js
 import { PdfViewerSearchBar } from "./components/PdfViewerSearchBar.js";
 import { PdfViewerSidebar } from "./components/PdfViewerSidebar.js";
 import { PdfViewerToolbar } from "./components/PdfViewerToolbar.js";
-import { EMPTY_ANNOTATION_ARRAY, EMPTY_ANNOTATIONS } from "./constants.js";
+import { EMPTY_ANNOTATION_ARRAY } from "./constants.js";
+import { usePdfAnnotationsByPage } from "./hooks/usePdfAnnotationsByPage.js";
+import { usePdfFormFields } from "./hooks/usePdfFormFields.js";
+import { usePdfHighlightMode } from "./hooks/usePdfHighlightMode.js";
 import { usePdfViewerState } from "./hooks/usePdfViewerState.js";
 import styles from "./PdfViewer.module.css";
 import type { PdfViewerProps } from "./types.js";
 
 export function BasePdfViewer({
   src,
-  annotations = EMPTY_ANNOTATIONS,
+  annotations = EMPTY_ANNOTATION_ARRAY,
   onAnnotationClick,
   onDownload,
+  enableHighlight = false,
+  onTextHighlight,
+  onHighlightDelete,
+  formData,
+  onFormSubmit,
+  onFormChange,
   initialPage = 1,
   initialScale = 1.0,
   initialSidebarOpen = false,
@@ -50,6 +59,25 @@ export function BasePdfViewer({
     sidebarMode: sidebarModeProp,
     onDownload,
   });
+
+  const { highlightModeActive, toggleHighlightMode } = usePdfHighlightMode({
+    pdfViewerRef: viewer.pdfViewerRef,
+    document: viewer.document,
+    enabled: enableHighlight,
+    onTextHighlight,
+    onHighlightDelete,
+  });
+
+  const { hasFormFields, submitFormData } = usePdfFormFields({
+    pdfViewerRef: viewer.pdfViewerRef,
+    eventBusRef: viewer.eventBusRef,
+    document: viewer.document,
+    formData,
+    onFormSubmit,
+    onFormChange,
+  });
+
+  const annotationsByPage = usePdfAnnotationsByPage(annotations);
 
   const rootClassName = classnames(styles.pdfViewer, className);
 
@@ -98,6 +126,11 @@ export function BasePdfViewer({
         enableDownload={enableDownload}
         onRotateLeft={viewer.rotateLeft}
         onRotateRight={viewer.rotateRight}
+        enableHighlight={enableHighlight}
+        highlightModeActive={highlightModeActive}
+        onHighlightToggle={toggleHighlightMode}
+        enableFormSave={onFormSubmit != null && hasFormFields}
+        onFormSave={submitFormData}
       />
       {viewer.search.isSearchOpen && (
         <PdfViewerSearchBar
@@ -135,7 +168,7 @@ export function BasePdfViewer({
           <div ref={viewer.containerRef} className={styles.scrollContainer}>
             <div ref={viewer.viewerRef} className="pdfViewer" />
             {viewer.portalTargets.map((target) => {
-              const pageAnnotations = annotations[target.pageNumber]
+              const pageAnnotations = annotationsByPage[target.pageNumber]
                 ?? EMPTY_ANNOTATION_ARRAY;
               if (pageAnnotations.length === 0) {
                 return null;

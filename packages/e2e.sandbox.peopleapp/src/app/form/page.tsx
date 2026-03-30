@@ -38,6 +38,16 @@ const fieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
     },
   },
   {
+    fieldKey: "bio",
+    fieldComponent: "TEXT_AREA",
+    label: "Bio",
+    placeholder: "Tell us about yourself…",
+    fieldComponentProps: {
+      rows: 4,
+      maxLength: 500,
+    },
+  },
+  {
     fieldKey: "officeLocation",
     fieldComponent: "DROPDOWN",
     label: "Office Location",
