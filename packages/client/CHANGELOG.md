@@ -1,5 +1,22 @@
 # @osdk/client
 
+## 2.8.0-beta.28
+
+### Minor Changes
+
+- f294f5a: Remove literal support before GA.
+- 2855223: fix autoFetchMore not working when another subscriber creates the shared query first
+- d284bf2: add media types, caching, and metadata query
+
+### Patch Changes
+
+- Updated dependencies [f294f5a]
+- Updated dependencies [d284bf2]
+- Updated dependencies [b68cebd]
+  - @osdk/api@2.8.0-beta.28
+  - @osdk/client.unstable@2.8.0-beta.28
+  - @osdk/generator-converters@2.8.0-beta.28
+
 ## 2.8.0-beta.27
 
 ### Minor Changes

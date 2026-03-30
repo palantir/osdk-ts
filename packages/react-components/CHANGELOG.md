@@ -1,5 +1,34 @@
 # @osdk/react-components
 
+## 0.2.0-beta.25
+
+### Minor Changes
+
+- d4ac875: Add text highlight annotation mode to PdfViewer with toolbar toggle button, `onTextHighlight` callback, and multi-rect annotation support via `rects` field on `PdfAnnotation`
+- e19ff03: Add TextAreaField component using @base-ui Input with render prop for native textarea rendering
+
+### Patch Changes
+
+- Updated dependencies [f294f5a]
+- Updated dependencies [2855223]
+- Updated dependencies [d284bf2]
+- Updated dependencies [b68cebd]
+  - @osdk/client@2.8.0-beta.28
+  - @osdk/react@0.10.0-beta.13
+  - @osdk/api@2.8.0-beta.28
+
+## 0.2.0-beta.24
+
+### Minor Changes
+
+- 813f4cb: Add DatetimePickerField component
+- e4840fa: Add exclude dropdown, in-filter search, hover-reveal actions, remove button to filter list items, thread objectSet through aggregation hooks so prefiltered sets are respected, and add FilterList storybook stories and documentation
+
+### Patch Changes
+
+- Updated dependencies [46dfbec]
+  - @osdk/react@0.10.0-beta.12
+
 ## 0.2.0-beta.23
 
 ### Minor Changes

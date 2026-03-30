@@ -1,5 +1,18 @@
 # @osdk/generator-converters.preview
 
+## 0.1.0-beta.8
+
+### Minor Changes
+
+- 12fe33f: use block data instead of IR for preview generator
+
+### Patch Changes
+
+- Updated dependencies [12fe33f]
+  - @osdk/generator-converters.ontologyir@2.8.0-beta.28
+  - @osdk/client.unstable@2.8.0-beta.28
+  - @osdk/generator@2.8.0-beta.28
+
 ## 0.1.0-beta.7
 
 ### Minor Changes
