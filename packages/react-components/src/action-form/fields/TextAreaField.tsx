@@ -15,28 +15,39 @@
  */
 
 import { Input } from "@base-ui/react/input";
-import React from "react";
-import type { TextInputFieldProps } from "../FormFieldApi.js";
+import React, { useCallback } from "react";
+import type { TextAreaFieldProps } from "../FormFieldApi.js";
 import styles from "./BaseInput.module.css";
 
-export function TextInputField({
+const TEXTAREA_STYLE: React.CSSProperties = { resize: "vertical" };
+
+export function TextAreaField({
   id,
   value,
   onChange,
   placeholder,
+  rows,
+  wrap,
   minLength,
   maxLength,
-}: TextInputFieldProps & { id?: string }): React.ReactElement {
+}: TextAreaFieldProps): React.ReactElement {
+  const renderTextarea = useCallback(
+    (props: React.ComponentPropsWithRef<"textarea">) => (
+      <textarea {...props} rows={rows} wrap={wrap} style={TEXTAREA_STYLE} />
+    ),
+    [rows, wrap],
+  );
+
   return (
     <Input
       id={id}
       className={styles.osdkBaseInput}
-      type="text"
       value={value ?? ""}
       onValueChange={onChange}
       placeholder={placeholder}
       minLength={minLength}
       maxLength={maxLength}
+      render={renderTextarea}
     />
   );
 }

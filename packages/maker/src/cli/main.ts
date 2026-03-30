@@ -17,6 +17,7 @@
 import { consola } from "consola";
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
+import { pathToFileURL } from "node:url";
 import invariant from "tiny-invariant";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
@@ -192,7 +193,7 @@ async function loadOntology(
 ) {
   const q = await defineOntology(
     apiNamespace,
-    async () => await import(input),
+    async () => await import(pathToFileURL(input).href),
     outputDir,
     dependencyFile,
     generateCodeSnippets,

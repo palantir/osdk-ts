@@ -88,6 +88,7 @@ export type {
 export type {
   Media,
   MediaMetadata,
+  MediaPropertyLocation,
   MediaReference,
   MediaUpload,
 } from "./object/Media.js";

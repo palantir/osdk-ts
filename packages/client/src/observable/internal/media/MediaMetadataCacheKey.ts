@@ -1,5 +1,5 @@
 /*
- * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,23 @@
  * limitations under the License.
  */
 
-// CBAC Picker - Selection logic utilities
-export {
-  computeMarkingStates,
-  groupMarkingsByCategory,
-  toggleMarking,
-} from "../cbac-picker/utils/selectionLogic.js";
-// CBAC Picker - Types
-export type {
-  CategoryMarkingGroup,
-  CbacBannerData,
-  MarkingSelectionState,
-  PickerMarking,
-  PickerMarkingCategory,
-  RequiredMarkingGroup,
-} from "../cbac-picker/types.js";
+import type {
+  MediaMetadata,
+  ObjectTypeDefinition,
+  PrimaryKeyType,
+} from "@osdk/api";
+import type { CacheKey } from "../CacheKey.js";
+import type { MediaMetadataQuery } from "./MediaMetadataQuery.js";
+
+export interface MediaMetadataCacheKey extends
+  CacheKey<
+    "mediaMetadata",
+    MediaMetadata,
+    MediaMetadataQuery,
+    [
+      objectType: string,
+      primaryKey: PrimaryKeyType<ObjectTypeDefinition>,
+      propertyName: string,
+    ]
+  >
+{}
