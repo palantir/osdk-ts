@@ -22,7 +22,7 @@ import {
   formatDateForDisplay,
   formatDateForInput,
   parseDateFromInput,
-} from "./dateUtils.js";
+} from "../../../shared/dateUtils.js";
 import styles from "./TimelineInput.module.css";
 
 interface TimelineInputProps {

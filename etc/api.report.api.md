@@ -23,6 +23,8 @@ export interface ActionDefinition<T_signatures = never> {
     osdkMetadata?: OsdkMetadata;
     	// (undocumented)
     type: "action";
+    	// (undocumented)
+    unsanitizedApiName?: string;
 }
 
 // Warning: (ae-forgotten-export) The symbol "ActionResults" needs to be exported by the entry point index.d.ts
@@ -53,6 +55,8 @@ export interface ActionMetadata {
     status: ReleaseStatus | undefined;
     	// (undocumented)
     type: "action";
+    	// (undocumented)
+    unsanitizedApiName?: string;
 }
 
 // @public (undocumented)
@@ -268,10 +272,21 @@ export interface AsyncIterArgs<
 // @public (undocumented)
 export interface Attachment {
     	fetchContents(): Promise<Response>;
-    	// Warning: (ae-forgotten-export) The symbol "AttachmentMetadata" needs to be exported by the entry point index.d.ts
-    fetchMetadata(): Promise<AttachmentMetadata>;
+    	fetchMetadata(): Promise<AttachmentMetadata>;
     	// (undocumented)
     rid: string;
+}
+
+// @public (undocumented)
+export interface AttachmentMetadata {
+    	// (undocumented)
+    filename: string;
+    	// (undocumented)
+    mediaType: string;
+    	// (undocumented)
+    rid: string;
+    	// (undocumented)
+    sizeBytes: number;
 }
 
 // @public (undocumented)
@@ -498,13 +513,12 @@ export namespace DerivedProperty {
     		CONSTRAINED extends boolean
     	> extends Filterable<Q, CONSTRAINED>, Pivotable<Q, CONSTRAINED> {}
     	// Warning: (ae-forgotten-export) The symbol "Selectable" needs to be exported by the entry point index.d.ts
-    // Warning: (ae-forgotten-export) The symbol "Constant" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
     export interface Builder<
     		Q extends ObjectOrInterfaceDefinition,
     		CONSTRAINED extends boolean
-    	> extends BaseBuilder<Q, CONSTRAINED>, Selectable<Q>, Constant<Q> {}
+    	> extends BaseBuilder<Q, CONSTRAINED>, Selectable<Q> {}
     	// (undocumented)
     export type Clause<Q extends ObjectOrInterfaceDefinition> = {
         		[key: string]: Creator<Q, SimplePropertyDef>
@@ -789,6 +803,54 @@ export interface InterfaceQueryDataType<T_Target extends ObjectOrInterfaceDefini
     	// (undocumented)
     interface: string;
 }
+
+// @public (undocumented)
+export type IntervalRule = {
+    	$match: string
+    	$maxGaps?: number
+    	$ordered: boolean
+    	$prefixOnLastTerm?: never
+    	$and?: never
+    	$or?: never
+    	$fuzzy?: never
+    	$fuzziness?: never
+} | {
+    	$match: string
+    	$prefixOnLastTerm: true
+    	$maxGaps?: never
+    	$ordered?: never
+    	$and?: never
+    	$or?: never
+    	$fuzzy?: never
+    	$fuzziness?: never
+} | {
+    	$and: IntervalRule[]
+    	$maxGaps?: number
+    	$ordered: boolean
+    	$match?: never
+    	$prefixOnLastTerm?: never
+    	$or?: never
+    	$fuzzy?: never
+    	$fuzziness?: never
+} | {
+    	$or: IntervalRule[]
+    	$match?: never
+    	$prefixOnLastTerm?: never
+    	$and?: never
+    	$fuzzy?: never
+    	$fuzziness?: never
+    	$maxGaps?: never
+    	$ordered?: never
+} | {
+    	$fuzzy: string
+    	$fuzziness?: number
+    	$match?: never
+    	$prefixOnLastTerm?: never
+    	$and?: never
+    	$or?: never
+    	$maxGaps?: never
+    	$ordered?: never
+};
 
 // Warning: (ae-forgotten-export) The symbol "OkResult" needs to be exported by the entry point index.d.ts
 //
@@ -1375,7 +1437,7 @@ export interface PageResult<T> {
 }
 
 // @public (undocumented)
-export type PossibleWhereClauseFilters = "$gt" | "$eq" | "$ne" | "$isNull" | "$contains" | "$gte" | "$lt" | "$lte" | "$within" | "$in" | "$intersects" | "$startsWith" | "$containsAllTermsInOrder" | "$containsAnyTerm" | "$containsAllTerms";
+export type PossibleWhereClauseFilters = "$gt" | "$eq" | "$ne" | "$isNull" | "$contains" | "$gte" | "$lt" | "$lte" | "$within" | "$in" | "$intersects" | "$startsWith" | "$containsAllTermsInOrder" | "$containsAnyTerm" | "$containsAllTerms" | "$interval";
 
 // @public (undocumented)
 export type PrimaryKeyType<Q extends ObjectOrInterfaceDefinition> = (Q extends ObjectTypeDefinition ? OsdkObjectPrimaryKeyType<Q> : unknown) & PropertyValueWireToClient[PrimaryKeyTypes];

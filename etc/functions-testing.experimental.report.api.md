@@ -4,6 +4,8 @@
 
 ```ts
 
+import type { Attachment } from '@osdk/api';
+import type { AttachmentMetadata } from '@osdk/api';
 import type { Client } from '@osdk/client';
 import type { CompileTimeMetadata } from '@osdk/api';
 import type { InterfaceDefinition } from '@osdk/api';
@@ -22,12 +24,13 @@ export interface AggregateStubBuilder<T> {
 }
 
 // @public (undocumented)
+export function createMockAttachment(rid: string, blob?: Blob, metadata?: AttachmentMetadata): Attachment;
+
+// @public (undocumented)
 export function createMockClient(): MockClient;
 
-// Warning: (ae-forgotten-export) The symbol "LinkStubs" needs to be exported by the entry point index.d.ts
-//
 // @public
-export function createMockOsdkObject<Q extends ObjectTypeDefinition>(objectType: Q, properties?: Partial<CompileTimeMetadata<Q>["props"]>, links?: LinkStubs<Q>, options?: MockOsdkObjectOptions): Osdk.Instance<Q>;
+export function createMockOsdkObject<Q extends ObjectTypeDefinition>(objectType: Q, properties?: Partial<CompileTimeMetadata<Q>["props"]>, options?: MockOsdkObjectOptions<Q>): Osdk.Instance<Q>;
 
 // @public (undocumented)
 export interface FetchOneStubBuilder<T> {
@@ -48,7 +51,7 @@ export interface MockClient extends Client {
     	// Warning: (ae-forgotten-export) The symbol "StubPatternCallback" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    when<T>(callback: StubPatternCallback<T>): StubBuilderFor<T>;
+    whenObjectSet<T>(callback: StubPatternCallback<T>): StubBuilderFor<T>;
     	// Warning: (ae-forgotten-export) The symbol "QueryParamsFromDef" needs to be exported by the entry point index.d.ts
     // Warning: (ae-forgotten-export) The symbol "QueryReturnTypeFromDef" needs to be exported by the entry point index.d.ts
     //
@@ -57,9 +60,10 @@ export interface MockClient extends Client {
 }
 
 // @public
-export interface MockOsdkObjectOptions {
+export interface MockOsdkObjectOptions<Q extends ObjectTypeDefinition = ObjectTypeDefinition> {
     	$rid?: string;
-    	primaryKeyApiName?: string;
+    	// Warning: (ae-forgotten-export) The symbol "LinkStubs" needs to be exported by the entry point index.d.ts
+    links?: LinkStubs<Q>;
     	titlePropertyApiName?: string;
 }
 

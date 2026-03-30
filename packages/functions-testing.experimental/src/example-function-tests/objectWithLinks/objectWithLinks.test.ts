@@ -27,17 +27,14 @@ import {
 describe("objectWithLinks", () => {
   describe("getEmployeeOfficeName (single link)", () => {
     it("returns the office name from a single link", async () => {
-      const mockOffice = createMockOsdkObject(
-        Office,
-        { officeId: "nyc", name: "New York Office" },
-        undefined,
-        { primaryKeyApiName: "officeId" },
-      );
+      const mockOffice = createMockOsdkObject(Office, {
+        officeId: "nyc",
+        name: "New York Office",
+      });
       const mockEmployee = createMockOsdkObject(
         Employee,
         { employeeId: 1, fullName: "John Doe" },
-        { officeLink: mockOffice },
-        { primaryKeyApiName: "employeeId" },
+        { links: { officeLink: mockOffice } },
       );
 
       const officeName = await getEmployeeOfficeName(mockEmployee);
@@ -48,23 +45,18 @@ describe("objectWithLinks", () => {
 
   describe("getEmployeePeepNames (many link with fetchPage)", () => {
     it("returns all peep names from a many link", async () => {
-      const mockPeep1 = createMockOsdkObject(
-        Employee,
-        { employeeId: 10, fullName: "Alice" },
-        undefined,
-        { primaryKeyApiName: "employeeId" },
-      );
-      const mockPeep2 = createMockOsdkObject(
-        Employee,
-        { employeeId: 11, fullName: "Bob" },
-        undefined,
-        { primaryKeyApiName: "employeeId" },
-      );
+      const mockPeep1 = createMockOsdkObject(Employee, {
+        employeeId: 10,
+        fullName: "Alice",
+      });
+      const mockPeep2 = createMockOsdkObject(Employee, {
+        employeeId: 11,
+        fullName: "Bob",
+      });
       const mockEmployee = createMockOsdkObject(
         Employee,
         { employeeId: 1, fullName: "John Doe" },
-        { peeps: [mockPeep1, mockPeep2] },
-        { primaryKeyApiName: "employeeId" },
+        { links: { peeps: [mockPeep1, mockPeep2] } },
       );
 
       const peepNames = await getEmployeePeepNames(mockEmployee);
@@ -76,8 +68,7 @@ describe("objectWithLinks", () => {
       const mockEmployee = createMockOsdkObject(
         Employee,
         { employeeId: 1, fullName: "John Doe" },
-        { peeps: [] },
-        { primaryKeyApiName: "employeeId" },
+        { links: { peeps: [] } },
       );
 
       const peepNames = await getEmployeePeepNames(mockEmployee);
@@ -88,29 +79,22 @@ describe("objectWithLinks", () => {
 
   describe("countEmployeePeeps (many link with asyncIter)", () => {
     it("counts peeps using asyncIter", async () => {
-      const mockPeep1 = createMockOsdkObject(
-        Employee,
-        { employeeId: 10, fullName: "Alice" },
-        undefined,
-        { primaryKeyApiName: "employeeId" },
-      );
-      const mockPeep2 = createMockOsdkObject(
-        Employee,
-        { employeeId: 11, fullName: "Bob" },
-        undefined,
-        { primaryKeyApiName: "employeeId" },
-      );
-      const mockPeep3 = createMockOsdkObject(
-        Employee,
-        { employeeId: 12, fullName: "Charlie" },
-        undefined,
-        { primaryKeyApiName: "employeeId" },
-      );
+      const mockPeep1 = createMockOsdkObject(Employee, {
+        employeeId: 10,
+        fullName: "Alice",
+      });
+      const mockPeep2 = createMockOsdkObject(Employee, {
+        employeeId: 11,
+        fullName: "Bob",
+      });
+      const mockPeep3 = createMockOsdkObject(Employee, {
+        employeeId: 12,
+        fullName: "Charlie",
+      });
       const mockEmployee = createMockOsdkObject(
         Employee,
         { employeeId: 1, fullName: "John Doe" },
-        { peeps: [mockPeep1, mockPeep2, mockPeep3] },
-        { primaryKeyApiName: "employeeId" },
+        { links: { peeps: [mockPeep1, mockPeep2, mockPeep3] } },
       );
 
       const count = await countEmployeePeeps(mockEmployee);
@@ -121,23 +105,18 @@ describe("objectWithLinks", () => {
 
   describe("getSpecificPeep (many link with fetchOne)", () => {
     it("fetches a specific peep by primary key", async () => {
-      const mockPeep1 = createMockOsdkObject(
-        Employee,
-        { employeeId: 10, fullName: "Alice" },
-        undefined,
-        { primaryKeyApiName: "employeeId" },
-      );
-      const mockPeep2 = createMockOsdkObject(
-        Employee,
-        { employeeId: 11, fullName: "Bob" },
-        undefined,
-        { primaryKeyApiName: "employeeId" },
-      );
+      const mockPeep1 = createMockOsdkObject(Employee, {
+        employeeId: 10,
+        fullName: "Alice",
+      });
+      const mockPeep2 = createMockOsdkObject(Employee, {
+        employeeId: 11,
+        fullName: "Bob",
+      });
       const mockEmployee = createMockOsdkObject(
         Employee,
         { employeeId: 1, fullName: "John Doe" },
-        { peeps: [mockPeep1, mockPeep2] },
-        { primaryKeyApiName: "employeeId" },
+        { links: { peeps: [mockPeep1, mockPeep2] } },
       );
 
       const peep = await getSpecificPeep(mockEmployee, 11);
@@ -146,20 +125,16 @@ describe("objectWithLinks", () => {
     });
 
     it("throws when peep is not found", () => {
-      const mockPeep1 = createMockOsdkObject(
-        Employee,
-        { employeeId: 10, fullName: "Alice" },
-        undefined,
-        { primaryKeyApiName: "employeeId" },
-      );
+      const mockPeep1 = createMockOsdkObject(Employee, {
+        employeeId: 10,
+        fullName: "Alice",
+      });
       const mockEmployee = createMockOsdkObject(
         Employee,
         { employeeId: 1, fullName: "John Doe" },
-        { peeps: [mockPeep1] },
-        { primaryKeyApiName: "employeeId" },
+        { links: { peeps: [mockPeep1] } },
       );
 
-      // fetchOne throws synchronously when the PK is not found
       expect(() => mockEmployee.$link.peeps.fetchOne(999)).toThrow(
         "fetchOne could not find object with primary key 999",
       );

@@ -494,6 +494,17 @@ export class OntologyMetadataResolver {
         }`,
       );
     }
+
+    for (const [objectApiName, linkNames] of expectedEntities.linkTypes) {
+      if (!expectedEntities.objectTypes.has(objectApiName)) {
+        errors.push(
+          `Link types were specified for Object Type ${objectApiName} (${
+            [...linkNames].join(", ")
+          }), but it was not included in --objectTypes. Please add --objectTypes ${objectApiName}`,
+        );
+      }
+    }
+
     const missingInterfaceTypes: string[] = [];
     for (const expectedInterface of expectedEntities.interfaceTypes) {
       if (!loadedInterfaceTypes[expectedInterface]) {

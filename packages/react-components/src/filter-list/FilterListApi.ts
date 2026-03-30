@@ -21,6 +21,7 @@ import type {
   WhereClause,
 } from "@osdk/api";
 import type React from "react";
+import type { ReactNode } from "react";
 import type {
   FilterState as FilterStateType,
   PropertyFilterDefinition,
@@ -78,7 +79,7 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
   /**
    * Optional title to display in the filter list header
    */
-  title?: string;
+  title?: ReactNode;
 
   /**
    * Optional icon to display next to the title
@@ -127,14 +128,14 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
   /**
    * Controls how filter visibility (add/remove) is managed.
    *
-   * - `"controlled"` (default): The consumer manages which filters are
-   *   visible via `filterDefinitions`. Filters with `isVisible: false` are
-   *   excluded from the rendered list.
-   * - `"uncontrolled"`: FilterList manages visibility internally. An "Add
-   *   filter" popover is rendered for filters with `isVisible: false`, and
-   *   each visible filter shows a remove button.
+   * - `"uncontrolled"` (default): FilterList manages visibility internally.
+   *   An "Add filter" popover is rendered for filters with `isVisible: false`,
+   *   and each visible filter shows a remove button.
+   * - `"controlled"`: The consumer manages which filters are visible via
+   *   `filterDefinitions`. Filters with `isVisible: false` are excluded from
+   *   the rendered list.
    *
-   * @default "controlled"
+   * @default "uncontrolled"
    */
   addFilterMode?: "controlled" | "uncontrolled";
 
@@ -209,8 +210,11 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
 
   /**
    * Custom render function for the "Add filter" button.
-   * Only used in controlled mode. In uncontrolled mode, the built-in
-   * AddFilterPopover is rendered automatically.
+   *
+   * - In uncontrolled mode: customizes the trigger element for the built-in
+   *   add-filter popover. The popover behavior is handled automatically.
+   * - In controlled mode: replaces the entire add-filter button area.
+   *   The consumer is responsible for all add-filter behavior.
    */
   renderAddFilterButton?: () => React.ReactNode;
 }

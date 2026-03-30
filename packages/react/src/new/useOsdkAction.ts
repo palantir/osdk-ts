@@ -128,6 +128,7 @@ export function useOsdkAction<Q extends ActionDefinition<any>>(
       } else {
         setError({ unknown: e });
       }
+      throw e;
     } finally {
       setPending(false);
     }

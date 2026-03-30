@@ -27,9 +27,10 @@ describe("basicFetchPage", () => {
       employeeId: 1,
       fullName: "John",
     });
-    mockClient.when((stub) => stub(Employee).fetchPage()).thenReturnObjects(
-      [mockObject],
-    );
+    mockClient.whenObjectSet((stub) => stub(Employee).fetchPage())
+      .thenReturnObjects(
+        [mockObject],
+      );
     const actual = await basicFetchPage(mockClient);
     expect(actual).toEqual(mockObject);
   });

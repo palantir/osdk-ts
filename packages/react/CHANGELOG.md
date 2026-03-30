@@ -1,5 +1,26 @@
 # @osdkkit/react
 
+## 0.10.0-beta.12
+
+### Minor Changes
+
+- 46dfbec: fix useOsdkAction applyAction to re-throw errors instead of silently swallowing them
+
+## 0.10.0-beta.11
+
+### Minor Changes
+
+- b1e8bba: add cbac admin hooks for markings, categories, and restrictions
+- 599426b: expose $loadPropertySecurityMetadata option in observable client and react hooks
+
+### Patch Changes
+
+- Updated dependencies [599426b]
+- Updated dependencies [60b5ffb]
+- Updated dependencies [61e33ab]
+  - @osdk/client@2.8.0-beta.26
+  - @osdk/api@2.8.0-beta.26
+
 ## 0.10.0-beta.10
 
 ### Minor Changes

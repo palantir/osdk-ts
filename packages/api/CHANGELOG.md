@@ -1,5 +1,28 @@
 # @osdk/api
 
+## 2.8.0-beta.27
+
+## 2.8.0-beta.26
+
+### Minor Changes
+
+- 60b5ffb: Add `platformApiName` field to actions to preserve the original API name used by the Foundry platform
+- 61e33ab: Add support for interval queries
+
+## 2.8.0-beta.25
+
+### Minor Changes
+
+- 0df859a: Read primaryKeyApiName from object type const instead of options, move links into options, and add createMockAttachment helper
+
+## 2.8.0-beta.24
+
+## 2.8.0-beta.23
+
+### Minor Changes
+
+- 4bb9769: Add primaryKeyApiName and primaryKeyType to object type const for runtime access
+
 ## 2.8.0-beta.22
 
 ## 2.8.0-beta.21

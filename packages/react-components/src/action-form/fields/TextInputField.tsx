@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,32 +14,29 @@
  * limitations under the License.
  */
 
-import React, { useCallback } from "react";
+import { Input } from "@base-ui/react/input";
+import React from "react";
 import type { TextInputFieldProps } from "../FormFieldApi.js";
+import styles from "./BaseInput.module.css";
 
 export function TextInputField({
+  id,
   value,
   onChange,
   placeholder,
   minLength,
   maxLength,
-}: TextInputFieldProps): React.ReactElement {
-  const handleChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      onChange?.(e.target.value);
-    },
-    [onChange],
-  );
-
+}: TextInputFieldProps & { id?: string }): React.ReactElement {
   return (
-    <input
+    <Input
+      id={id}
+      className={styles.osdkBaseInput}
       type="text"
-      value={value}
-      onChange={handleChange}
+      value={value ?? ""}
+      onValueChange={onChange}
       placeholder={placeholder}
       minLength={minLength}
       maxLength={maxLength}
-      data-testid="text-input-field"
     />
   );
 }

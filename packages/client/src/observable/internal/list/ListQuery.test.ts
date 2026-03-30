@@ -40,6 +40,7 @@ import {
   mockListSubCallback,
   updateList,
   waitForCall,
+  waitForPayload,
 } from "../testUtils.js";
 
 const logger = new TestLogger({}, { level: "debug" });
@@ -125,37 +126,18 @@ describe("ListQuery autoFetchMore tests", () => {
       ),
     );
 
-    testStage("Initial loading state");
-    await waitForCall(listSub.next, 1);
-    expectSingleListCallAndClear(listSub, undefined, { status: "loading" });
-
-    testStage("Auto-fetch page 1 (20 items)");
-    await waitForCall(listSub.next, 1);
-    let payload = expectSingleListCallAndClear(listSub, expect.anything(), {
-      status: "loading",
-    });
-    expect(payload?.resolvedList?.length).toBe(20);
-
-    testStage("Auto-fetch page 2 (40 items)");
-    await waitForCall(listSub.next, 1);
-    payload = expectSingleListCallAndClear(listSub, expect.anything(), {
-      status: "loading",
-    });
-    expect(payload?.resolvedList?.length).toBe(40);
-
-    testStage("Auto-fetch page 3 (60 items) - threshold met");
-    await waitForCall(listSub.next, 1);
-    payload = expectSingleListCallAndClear(listSub, expect.anything(), {
-      status: "loaded",
-    });
+    testStage("Wait for threshold to be met");
+    const payload = await waitForPayload(
+      listSub,
+      (p) =>
+        p?.status === "loaded"
+        && (p?.resolvedList?.length ?? 0) >= 50,
+    );
 
     testStage("Verify final state meets threshold");
     expect(payload?.resolvedList?.length).toBeGreaterThanOrEqual(50);
     expect(payload?.resolvedList?.length).toBeLessThanOrEqual(80);
     expect(payload?.fetchMore).toBeDefined();
-
-    testStage("Verify no additional auto-fetches occur");
-    expectNoMoreCalls(listSub);
   });
 
   it("autoFetchMore: true fetches all available pages", async () => {
@@ -176,50 +158,15 @@ describe("ListQuery autoFetchMore tests", () => {
       ),
     );
 
-    testStage("Initial loading state");
-    await waitForCall(listSub.next, 1);
-    expectSingleListCallAndClear(listSub, undefined, { status: "loading" });
+    testStage("Wait for all items to load");
+    const payload = await waitForPayload(
+      listSub,
+      (p) => p?.status === "loaded" && !(p?.hasMore),
+    );
 
-    testStage("Auto-fetch page 1 (20 items)");
-    await waitForCall(listSub.next, 1);
-    let payload = expectSingleListCallAndClear(listSub, expect.anything(), {
-      status: "loading",
-    });
-    expect(payload?.resolvedList?.length).toBe(20);
-
-    testStage("Auto-fetch page 2 (40 items)");
-    await waitForCall(listSub.next, 1);
-    payload = expectSingleListCallAndClear(listSub, expect.anything(), {
-      status: "loading",
-    });
-    expect(payload?.resolvedList?.length).toBe(40);
-
-    testStage("Auto-fetch page 3 (60 items)");
-    await waitForCall(listSub.next, 1);
-    payload = expectSingleListCallAndClear(listSub, expect.anything(), {
-      status: "loading",
-    });
-    expect(payload?.resolvedList?.length).toBe(60);
-
-    testStage("Auto-fetch page 4 (80 items)");
-    await waitForCall(listSub.next, 1);
-    payload = expectSingleListCallAndClear(listSub, expect.anything(), {
-      status: "loading",
-    });
-    expect(payload?.resolvedList?.length).toBe(80);
-
-    testStage("Auto-fetch page 5 (100 items) - all data fetched");
-    await waitForCall(listSub.next, 1);
-    payload = expectSingleListCallAndClear(listSub, expect.anything(), {
-      status: "loaded",
-    });
-
-    testStage("Verify all items fetched and no more pages");
+    testStage("Verify all items fetched");
     expect(payload?.resolvedList?.length).toBeGreaterThanOrEqual(80);
     expect(payload?.hasMore).toBe(false);
-
-    testStage("Verify no additional auto-fetches occur");
-    expectNoMoreCalls(listSub);
   });
 
   it("autoFetchMore: undefined fetches only first page", async () => {
@@ -278,52 +225,15 @@ describe("ListQuery autoFetchMore tests", () => {
       ),
     );
 
-    testStage("Initial loading state");
-    await waitForCall(listSub.next, 1);
-    expectSingleListCallAndClear(listSub, undefined, { status: "loading" });
-
-    testStage("Auto-fetch page 1 (20 items)");
-    await waitForCall(listSub.next, 1);
-    let payload = expectSingleListCallAndClear(listSub, expect.anything(), {
-      status: "loading",
-    });
-    expect(payload?.resolvedList?.length).toBe(20);
-
-    testStage("Auto-fetch page 2 (40 items)");
-    await waitForCall(listSub.next, 1);
-    payload = expectSingleListCallAndClear(listSub, expect.anything(), {
-      status: "loading",
-    });
-    expect(payload?.resolvedList?.length).toBe(40);
-
-    testStage("Auto-fetch page 3 (60 items)");
-    await waitForCall(listSub.next, 1);
-    payload = expectSingleListCallAndClear(listSub, expect.anything(), {
-      status: "loading",
-    });
-    expect(payload?.resolvedList?.length).toBe(60);
-
-    testStage("Auto-fetch page 4 (80 items)");
-    await waitForCall(listSub.next, 1);
-    payload = expectSingleListCallAndClear(listSub, expect.anything(), {
-      status: "loading",
-    });
-    expect(payload?.resolvedList?.length).toBe(80);
-
-    testStage(
-      "Auto-fetch page 5 (100 items) - all data fetched, stops despite high threshold",
+    testStage("Wait for all data despite high threshold");
+    const payload = await waitForPayload(
+      listSub,
+      (p) => p?.status === "loaded" && !(p?.hasMore),
     );
-    await waitForCall(listSub.next, 1);
-    payload = expectSingleListCallAndClear(listSub, expect.anything(), {
-      status: "loaded",
-    });
 
     testStage("Verify all available items fetched");
     expect(payload?.resolvedList?.length).toBeGreaterThanOrEqual(80);
     expect(payload?.hasMore).toBe(false);
-
-    testStage("Verify no additional auto-fetches occur");
-    expectNoMoreCalls(listSub);
   });
 
   it("orderBy fetches data correctly with sorting", async () => {
@@ -1152,5 +1062,192 @@ describe("ListQuery pivotTo tests", () => {
     ).toEqual(["office-a", "office-b"]);
 
     expectNoMoreCalls(listSub);
+  });
+});
+
+describe("ListQuery shared query autoFetchMore tests", () => {
+  let client: Client;
+  let apiServer: SetupServer;
+  let fauxFoundry: FauxFoundry;
+  let store: Store;
+
+  beforeAll(() => {
+    const testSetup = startNodeApiServer(
+      new FauxFoundry("https://stack.palantir.com/", undefined, { logger }),
+      createClient,
+      { logger },
+    );
+    ({ client, apiServer, fauxFoundry } = testSetup);
+
+    setupOntology(testSetup.fauxFoundry);
+
+    return () => {
+      testSetup.apiServer.close();
+    };
+  });
+
+  beforeEach(() => {
+    apiServer.resetHandlers();
+    store = new Store(client);
+  });
+
+  it("shared query: plain subscriber first, autoFetchMore second", async () => {
+    setupTodos(fauxFoundry, 100);
+
+    testStage("Subscribe A with no autoFetchMore");
+    const subA = mockListSubCallback();
+    defer(
+      store.lists.observe(
+        {
+          type: Todo,
+          where: {},
+          orderBy: {},
+          pageSize: 20,
+        },
+        subA,
+      ),
+    );
+
+    testStage("A gets initial loading");
+    await waitForCall(subA.next, 1);
+    expectSingleListCallAndClear(subA, undefined, { status: "loading" });
+
+    testStage("A gets 20 items, loaded");
+    await waitForCall(subA.next, 1);
+    const payloadA = expectSingleListCallAndClear(subA, expect.anything(), {
+      status: "loaded",
+    });
+    expect(payloadA?.resolvedList?.length).toBe(20);
+    expect(payloadA?.hasMore).toBe(true);
+
+    testStage("Subscribe B with autoFetchMore: true (same query)");
+    const subB = mockListSubCallback();
+    defer(
+      store.lists.observe(
+        {
+          type: Todo,
+          where: {},
+          orderBy: {},
+          pageSize: 20,
+          autoFetchMore: true,
+        },
+        subB,
+      ),
+    );
+
+    testStage("B should eventually get all 100 items");
+    const lastBPayload = await waitForPayload(
+      subB,
+      (p) => p?.status === "loaded" && p?.resolvedList?.length === 100,
+    );
+
+    testStage("Verify B got all items");
+    expect(lastBPayload?.resolvedList?.length).toBe(100);
+    expect(lastBPayload?.hasMore).toBe(false);
+
+    testStage("Verify A still shows 20 items (unaffected)");
+    const aCalls = subA.next.mock.calls;
+    if (aCalls.length > 0) {
+      const lastAPayload = aCalls[aCalls.length - 1][0];
+      expect(lastAPayload?.resolvedList?.length).toBe(20);
+    }
+  });
+
+  it("shared query: numeric autoFetchMore second subscriber", async () => {
+    setupTodos(fauxFoundry, 100);
+
+    testStage("Subscribe A with no autoFetchMore");
+    const subA = mockListSubCallback();
+    defer(
+      store.lists.observe(
+        {
+          type: Todo,
+          where: {},
+          orderBy: {},
+          pageSize: 20,
+        },
+        subA,
+      ),
+    );
+
+    testStage("Wait for A to finish loading");
+    await waitForCall(subA.next, 1);
+    expectSingleListCallAndClear(subA, undefined, { status: "loading" });
+    await waitForCall(subA.next, 1);
+    expectSingleListCallAndClear(subA, expect.anything(), {
+      status: "loaded",
+    });
+
+    testStage("Subscribe B with autoFetchMore: 60");
+    const subB = mockListSubCallback();
+    defer(
+      store.lists.observe(
+        {
+          type: Todo,
+          where: {},
+          orderBy: {},
+          pageSize: 20,
+          autoFetchMore: 60,
+        },
+        subB,
+      ),
+    );
+
+    testStage("B should get at least 60 items");
+    const lastBPayload = await waitForPayload(
+      subB,
+      (p) => p?.status === "loaded" && (p?.resolvedList?.length ?? 0) >= 60,
+    );
+
+    testStage("Verify B met threshold");
+    expect(lastBPayload?.resolvedList?.length).toBeGreaterThanOrEqual(60);
+  });
+
+  it("status stability during view-driven auto-fetch", async () => {
+    setupTodos(fauxFoundry, 60);
+
+    testStage("Subscribe with autoFetchMore: true");
+    const sub = mockListSubCallback();
+    defer(
+      store.lists.observe(
+        {
+          type: Todo,
+          where: {},
+          orderBy: {},
+          pageSize: 20,
+          autoFetchMore: true,
+        },
+        sub,
+      ),
+    );
+
+    testStage("Wait for all data to load");
+    const lastPayload = await waitForPayload(
+      sub,
+      (p) => p?.status === "loaded" && p?.resolvedList?.length === 60,
+    );
+
+    testStage("Verify no status oscillation");
+    const allEmissions = sub.next.mock.calls.map(
+      (call) => ({
+        count: call[0]?.resolvedList?.length ?? 0,
+        status: call[0]?.status,
+      }),
+    );
+
+    let sawLoadedWithData = false;
+    for (const emission of allEmissions) {
+      if (emission.status === "loaded" && emission.count > 0) {
+        sawLoadedWithData = true;
+      }
+      if (sawLoadedWithData && emission.status === "loading") {
+        expect(emission.count).toBeGreaterThan(0);
+      }
+    }
+
+    testStage("Verify final state");
+    expect(lastPayload?.resolvedList?.length).toBe(60);
+    expect(lastPayload?.hasMore).toBe(false);
+    expect(lastPayload?.status).toBe("loaded");
   });
 });

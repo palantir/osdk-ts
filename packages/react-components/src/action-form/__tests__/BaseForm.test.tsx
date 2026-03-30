@@ -22,9 +22,16 @@ import type { RendererFieldDefinition } from "../FormFieldApi.js";
 
 function makeDef(
   fieldKey: string,
-  overrides?: Partial<RendererFieldDefinition>,
+  overrides?: Partial<
+    Extract<RendererFieldDefinition, { fieldComponent: "TEXT_INPUT" }>
+  >,
 ): RendererFieldDefinition {
-  return { fieldKey, fieldComponent: "TEXT_INPUT", ...overrides };
+  return {
+    fieldKey,
+    fieldComponent: "TEXT_INPUT",
+    label: fieldKey,
+    ...overrides,
+  };
 }
 
 describe("BaseForm", () => {
@@ -41,12 +48,10 @@ describe("BaseForm", () => {
         />,
       );
 
-      const nameInput = screen
-        .getByTestId("form-field-name")
-        .querySelector("input")!;
+      const nameInput = screen.getByRole("textbox", { name: "name" });
       fireEvent.change(nameInput, { target: { value: "Alice" } });
 
-      fireEvent.submit(screen.getByTestId("action-form"));
+      fireEvent.click(screen.getByRole("button", { name: /submit/i }));
 
       await vi.waitFor(() => {
         expect(onSubmit).toHaveBeenCalledWith(
@@ -65,7 +70,7 @@ describe("BaseForm", () => {
         />,
       );
 
-      fireEvent.submit(screen.getByTestId("action-form"));
+      fireEvent.click(screen.getByRole("button", { name: /submit/i }));
 
       await vi.waitFor(() => {
         expect(onSubmit).toHaveBeenCalledWith(
@@ -87,12 +92,10 @@ describe("BaseForm", () => {
         />,
       );
 
-      const nameInput = screen
-        .getByTestId("form-field-name")
-        .querySelector("input")!;
+      const nameInput = screen.getByRole("textbox", { name: "name" });
       fireEvent.change(nameInput, { target: { value: "Typed" } });
 
-      fireEvent.submit(screen.getByTestId("action-form"));
+      fireEvent.click(screen.getByRole("button", { name: /submit/i }));
 
       await vi.waitFor(() => {
         expect(onSubmit).toHaveBeenCalledWith(
@@ -117,7 +120,7 @@ describe("BaseForm", () => {
         />,
       );
 
-      fireEvent.submit(screen.getByTestId("action-form"));
+      fireEvent.click(screen.getByRole("button", { name: /submit/i }));
 
       await vi.waitFor(() => {
         expect(onSubmit).toHaveBeenCalledWith(
@@ -127,6 +130,28 @@ describe("BaseForm", () => {
           }),
         );
       });
+    });
+  });
+
+  // TODO: expand this test to cover all field types
+  describe("dropdown field", () => {
+    it("renders dropdown from fieldDefinitions", () => {
+      render(
+        <BaseForm
+          fieldDefinitions={[
+            {
+              fieldKey: "color",
+              fieldComponent: "DROPDOWN" as const,
+              fieldComponentProps: {
+                items: ["Red", "Blue", "Green"],
+              },
+            },
+          ]}
+          onSubmit={vi.fn()}
+        />,
+      );
+
+      expect(screen.getByRole("combobox")).toBeDefined();
     });
   });
 
@@ -143,9 +168,7 @@ describe("BaseForm", () => {
         />,
       );
 
-      const nameInput = screen
-        .getByTestId("form-field-name")
-        .querySelector("input")!;
+      const nameInput = screen.getByRole("textbox", { name: "name" });
       fireEvent.change(nameInput, { target: { value: "Updated" } });
 
       expect(onFieldValueChange).toHaveBeenCalledWith("name", "Updated");
@@ -163,7 +186,7 @@ describe("BaseForm", () => {
         />,
       );
 
-      fireEvent.submit(screen.getByTestId("action-form"));
+      fireEvent.click(screen.getByRole("button", { name: /submit/i }));
 
       await vi.waitFor(() => {
         expect(onSubmit).toHaveBeenCalledWith(
@@ -200,12 +223,10 @@ describe("BaseForm", () => {
 
       render(<ControlledWrapper />);
 
-      const nameInput = screen
-        .getByTestId("form-field-name")
-        .querySelector("input")!;
+      const nameInput = screen.getByRole("textbox", { name: "name" });
       fireEvent.change(nameInput, { target: { value: "Updated" } });
 
-      fireEvent.submit(screen.getByTestId("action-form"));
+      fireEvent.click(screen.getByRole("button", { name: /submit/i }));
 
       await vi.waitFor(() => {
         expect(onSubmit).toHaveBeenCalledWith(
@@ -229,12 +250,10 @@ describe("BaseForm", () => {
         />,
       );
 
-      const nameInput = screen
-        .getByTestId("form-field-name")
-        .querySelector("input")!;
+      const nameInput = screen.getByRole("textbox", { name: "name" });
       fireEvent.change(nameInput, { target: { value: "User Typed This" } });
 
-      fireEvent.submit(screen.getByTestId("action-form"));
+      fireEvent.click(screen.getByRole("button", { name: /submit/i }));
 
       await vi.waitFor(() => {
         expect(onSubmit).toHaveBeenCalledWith(

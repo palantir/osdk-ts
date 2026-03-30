@@ -112,7 +112,7 @@ describe("ActionForm", () => {
     it("renders form title from metadata displayName", () => {
       render(<ActionForm actionDefinition={TestAction} />);
 
-      expect(screen.getByTestId("form-title").textContent).toBe("Test Action");
+      expect(screen.getByRole("heading").textContent).toBe("Test Action");
     });
 
     it("renders custom form title when provided", () => {
@@ -120,7 +120,7 @@ describe("ActionForm", () => {
         <ActionForm actionDefinition={TestAction} formTitle="Custom Title" />,
       );
 
-      expect(screen.getByTestId("form-title").textContent).toBe("Custom Title");
+      expect(screen.getByRole("heading").textContent).toBe("Custom Title");
     });
 
     it("falls back to apiName when metadata has no displayName", () => {
@@ -134,7 +134,7 @@ describe("ActionForm", () => {
 
       render(<ActionForm actionDefinition={TestAction} />);
 
-      expect(screen.getByTestId("form-title").textContent).toBe("TestAction");
+      expect(screen.getByRole("heading").textContent).toBe("TestAction");
     });
   });
 
@@ -142,24 +142,15 @@ describe("ActionForm", () => {
     it("generates default fields from fetched metadata", () => {
       render(<ActionForm actionDefinition={TestAction} />);
 
-      const nameField = screen.getByTestId("form-field-name");
-      const emailField = screen.getByTestId("form-field-email");
-      expect(
-        nameField.querySelector("[data-testid='text-input-field']"),
-      ).not.toBeNull();
-      expect(
-        emailField.querySelector("[data-testid='text-input-field']"),
-      ).not.toBeNull();
+      expect(screen.getByRole("textbox", { name: /^name/ })).toBeDefined();
+      expect(screen.getByRole("textbox", { name: /^email/ })).toBeDefined();
     });
 
     it("renders default field labels from parameter keys", () => {
       render(<ActionForm actionDefinition={TestAction} />);
 
-      const nameField = screen.getByTestId("form-field-name");
-      const emailField = screen.getByTestId("form-field-email");
-
-      expect(nameField.querySelector("label")?.textContent).toContain("name");
-      expect(emailField.querySelector("label")?.textContent).toContain("email");
+      expect(screen.getByText("name")).toBeDefined();
+      expect(screen.getByText("email")).toBeDefined();
     });
 
     it("renders custom field definitions instead of defaults", () => {
@@ -178,10 +169,7 @@ describe("ActionForm", () => {
         />,
       );
 
-      const nameField = screen.getByTestId("form-field-name");
-      expect(nameField?.querySelector("label")?.textContent).toContain(
-        "Full Name",
-      );
+      expect(screen.getByText("Full Name")).toBeDefined();
     });
   });
 
@@ -189,7 +177,9 @@ describe("ActionForm", () => {
     it("renders submit button", () => {
       render(<ActionForm actionDefinition={TestAction} />);
 
-      expect(screen.getByTestId("submit-button").textContent).toBe("Submit");
+      expect(screen.getByRole("button", { name: /submit/i }).textContent).toBe(
+        "Submit",
+      );
     });
 
     it("disables submit button when action is pending", () => {
@@ -200,12 +190,9 @@ describe("ActionForm", () => {
 
       render(<ActionForm actionDefinition={TestAction} />);
 
-      expect(
-        (screen.getByTestId("submit-button") as HTMLButtonElement).disabled,
-      ).toBe(true);
-      expect(screen.getByTestId("submit-button").textContent).toBe(
-        "Submitting...",
-      );
+      const button = screen.getByRole("button", { name: /submitting/i });
+      expect((button as HTMLButtonElement).disabled).toBe(true);
+      expect(button.textContent).toBe("Submitting\u2026");
     });
   });
 
@@ -219,7 +206,7 @@ describe("ActionForm", () => {
         <ActionForm actionDefinition={TestAction} onSuccess={onSuccess} />,
       );
 
-      fireEvent.submit(screen.getByTestId("action-form"));
+      fireEvent.click(screen.getByRole("button", { name: /submit/i }));
 
       await vi.waitFor(() => {
         expect(onSuccess).toHaveBeenCalledWith(result);
@@ -233,7 +220,7 @@ describe("ActionForm", () => {
 
       render(<ActionForm actionDefinition={TestAction} onError={onError} />);
 
-      fireEvent.submit(screen.getByTestId("action-form"));
+      fireEvent.click(screen.getByRole("button", { name: /submit/i }));
 
       await vi.waitFor(() => {
         expect(onError).toHaveBeenCalledWith({
@@ -265,12 +252,10 @@ describe("ActionForm", () => {
 
       render(<ControlledWrapper />);
 
-      const textInput = screen
-        .getByTestId("form-field-name")
-        .querySelector("input")!;
+      const textInput = screen.getByRole("textbox", { name: /^name/ });
       fireEvent.change(textInput, { target: { value: "Updated" } });
 
-      fireEvent.submit(screen.getByTestId("action-form"));
+      fireEvent.click(screen.getByRole("button", { name: /submit/i }));
 
       await vi.waitFor(() => {
         expect(mockApplyAction).toHaveBeenCalledWith(

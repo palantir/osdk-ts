@@ -1,5 +1,59 @@
 # @osdk/client
 
+## 2.8.0-beta.27
+
+### Minor Changes
+
+- fceb4ce: Fix canonicalization for order-independent where clauses and orderBy keys, add ObjectSetArrayCanonicalizer for set operations, improve ObjectSetQuery with in-memory updates and deletion handling
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.27
+- @osdk/client.unstable@2.8.0-beta.27
+- @osdk/generator-converters@2.8.0-beta.27
+
+## 2.8.0-beta.26
+
+### Minor Changes
+
+- 599426b: expose $loadPropertySecurityMetadata option in observable client and react hooks
+- 60b5ffb: Add `platformApiName` field to actions to preserve the original API name used by the Foundry platform
+- 61e33ab: Add support for interval queries
+
+### Patch Changes
+
+- Updated dependencies [60b5ffb]
+- Updated dependencies [61e33ab]
+  - @osdk/api@2.8.0-beta.26
+  - @osdk/generator-converters@2.8.0-beta.26
+  - @osdk/client.unstable@2.8.0-beta.26
+
+## 2.8.0-beta.25
+
+### Patch Changes
+
+- Updated dependencies [0df859a]
+  - @osdk/api@2.8.0-beta.25
+  - @osdk/client.unstable@2.8.0-beta.25
+  - @osdk/generator-converters@2.8.0-beta.25
+
+## 2.8.0-beta.24
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.24
+- @osdk/client.unstable@2.8.0-beta.24
+- @osdk/generator-converters@2.8.0-beta.24
+
+## 2.8.0-beta.23
+
+### Patch Changes
+
+- Updated dependencies [4bb9769]
+  - @osdk/api@2.8.0-beta.23
+  - @osdk/client.unstable@2.8.0-beta.23
+  - @osdk/generator-converters@2.8.0-beta.23
+
 ## 2.8.0-beta.22
 
 ### Minor Changes

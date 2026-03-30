@@ -32,7 +32,7 @@ import {
   type HistogramBucket,
 } from "./createHistogramBuckets.js";
 import styles from "./RangeInput.module.css";
-import { useStaleData } from "./useStaleData.js";
+import { useStableData } from "./useStableData.js";
 
 const DEBOUNCE_MS = 300;
 
@@ -123,7 +123,7 @@ function RangeInputInner<T>({
     };
   }, [debouncedMinChange, debouncedMaxChange]);
 
-  const displayPairs = useStaleData(valueCountPairs, isLoading);
+  const displayPairs = useStableData(valueCountPairs, isLoading);
 
   const computedRange = useMemo(() => {
     if (displayPairs.length === 0) return { min: undefined, max: undefined };

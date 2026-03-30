@@ -14,11 +14,15 @@
  * limitations under the License.
  */
 
+import classNames from "classnames";
 import React, { memo, useCallback, useMemo } from "react";
 import { useForm } from "react-hook-form";
+import { ActionButton } from "../base-components/action-button/ActionButton.js";
 import type { BaseFormProps } from "./ActionFormApi.js";
+import styles from "./BaseForm.module.css";
 import { FieldBridge } from "./fields/FieldBridge.js";
 import type { RendererFieldDefinition } from "./FormFieldApi.js";
+import { FormHeader } from "./FormHeader.js";
 
 export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
   formTitle,
@@ -29,6 +33,7 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
   isSubmitDisabled = false,
   isPending = false,
   isLoading = false,
+  className,
 }: BaseFormProps): React.ReactElement {
   const isControlled = controlledFormState != null;
 
@@ -56,26 +61,33 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
   );
 
   return (
-    <form onSubmit={rhfHandleSubmit(onFormSubmit)} data-testid="action-form">
-      {formTitle != null && <h2 data-testid="form-title">{formTitle}</h2>}
+    <form
+      className={classNames(styles.osdkForm, className)}
+      onSubmit={rhfHandleSubmit(onFormSubmit)}
+    >
+      {formTitle != null && <FormHeader title={formTitle} />}
       {isLoading && fieldDefinitions.length === 0 && (
-        <div data-testid="form-loading">Loading form fields...</div>
+        <div role="status">Loading form fields...</div>
       )}
-      {fieldDefinitions.map((fieldDef) => (
-        <FieldBridge
-          key={fieldDef.fieldKey}
-          fieldDef={fieldDef}
-          control={control}
-          onExternalChange={onFieldValueChange}
-        />
-      ))}
-      <button
-        type="submit"
-        disabled={isSubmitDisabled || isPending}
-        data-testid="submit-button"
-      >
-        {isPending ? "Submitting..." : "Submit"}
-      </button>
+      <div className={styles.osdkFormFields}>
+        {fieldDefinitions.map((fieldDef) => (
+          <FieldBridge
+            key={fieldDef.fieldKey}
+            fieldDef={fieldDef}
+            control={control}
+            onExternalChange={onFieldValueChange}
+          />
+        ))}
+      </div>
+      <div className={styles.osdkFormFooter}>
+        <ActionButton
+          type="submit"
+          variant="primary"
+          disabled={isSubmitDisabled || isPending}
+        >
+          {isPending ? "Submitting…" : "Submit"}
+        </ActionButton>
+      </div>
     </form>
   );
 });

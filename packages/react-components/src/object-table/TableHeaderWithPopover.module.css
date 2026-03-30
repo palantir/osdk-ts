@@ -80,6 +80,7 @@
 .osdkHeaderIcon {
   width: var(--osdk-iconography-size-small);
   height: var(--osdk-iconography-size-small);
+  color: var(--osdk-table-header-menu-icon-color);
 }
 
 .osdkHeaderPopup {
