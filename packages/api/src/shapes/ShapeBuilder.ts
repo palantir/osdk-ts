@@ -58,16 +58,23 @@ class ShapeBuilderImpl<
     this.#state = state;
   }
 
+  #addProps(
+    props: string[],
+    type: NullabilityOp["type"],
+  ): Record<string, ShapePropertyConfig> {
+    const newProps = { ...this.#state.props };
+    for (const prop of props) {
+      newProps[prop] = { nullabilityOp: { type } };
+    }
+    return newProps;
+  }
+
   select<K extends Exclude<PropertyKeys<BASE>, keyof PROPS>>(
     ...props: K[]
   ): ShapeBuilder<BASE, PROPS & { [P in K]: PropertyType<BASE, P> }, LINKS> {
-    const newProps = { ...this.#state.props };
-    for (const prop of props) {
-      newProps[prop as string] = { nullabilityOp: { type: "select" } };
-    }
     return new ShapeBuilderImpl({
       ...this.#state,
-      props: newProps,
+      props: this.#addProps(props as string[], "select"),
     });
   }
 
@@ -78,13 +85,9 @@ class ShapeBuilderImpl<
     PROPS & { [P in K]: RequiredProperty<PropertyType<BASE, P>> },
     LINKS
   > {
-    const newProps = { ...this.#state.props };
-    for (const prop of props) {
-      newProps[prop as string] = { nullabilityOp: { type: "require" } };
-    }
     return new ShapeBuilderImpl({
       ...this.#state,
-      props: newProps,
+      props: this.#addProps(props as string[], "require"),
     });
   }
 
@@ -95,13 +98,9 @@ class ShapeBuilderImpl<
     PROPS & { [P in K]: RequiredProperty<PropertyType<BASE, P>> },
     LINKS
   > {
-    const newProps = { ...this.#state.props };
-    for (const prop of props) {
-      newProps[prop as string] = { nullabilityOp: { type: "dropIfNull" } };
-    }
     return new ShapeBuilderImpl({
       ...this.#state,
-      props: newProps,
+      props: this.#addProps(props as string[], "dropIfNull"),
     });
   }
 
@@ -233,6 +232,7 @@ class ShapeLinkBuilderImpl<
     });
   }
 
+  /** Sets the where filter for this link. Calling multiple times replaces the previous clause (last-write-wins). */
   where(clause: WhereClause<CURRENT>): ShapeLinkBuilder<SOURCE, CURRENT> {
     return new ShapeLinkBuilderImpl({
       ...this.#state,

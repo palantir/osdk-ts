@@ -48,7 +48,7 @@ export interface InlineLinkConfig<
   readonly via: (
     builder: ShapeLinkBuilder<SOURCE, SOURCE>,
   ) => ShapeLinkBuilder<SOURCE, ObjectOrInterfaceDefinition>;
-  readonly target?: ShapeDefinition<ObjectOrInterfaceDefinition>;
+  readonly target: ShapeDefinition<ObjectOrInterfaceDefinition>;
   readonly defer?: boolean;
 }
 

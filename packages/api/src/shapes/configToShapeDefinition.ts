@@ -80,14 +80,17 @@ export function configToShapeDefinition<
 
   if (config.transforms) {
     for (const [prop, transform] of Object.entries(config.transforms)) {
-      if (typeof transform === "function") {
-        addProp(prop, {
-          nullabilityOp: {
-            type: "withTransform",
-            transform,
-          } as NullabilityOp,
-        });
+      if (typeof transform !== "function") {
+        throw new Error(
+          `transforms["${prop}"] must be a function, got: ${typeof transform}`,
+        );
       }
+      addProp(prop, {
+        nullabilityOp: {
+          type: "withTransform",
+          transform,
+        } as NullabilityOp,
+      });
     }
   }
 
@@ -100,20 +103,14 @@ export function configToShapeDefinition<
       const objectSetDef: ShapeLinkObjectSetDef =
         (traversed as ShapeLinkBuilderInternal).toObjectSetDef();
 
-      let targetShape: ShapeDefinition<ObjectOrInterfaceDefinition>;
-      if (linkConfig.target) {
-        targetShape = linkConfig.target;
-      } else {
-        // Known limitation: without an explicit target, we fall back to the
-        // source type as a placeholder. The actual target type can't be
-        // resolved from inline configs alone since link metadata isn't
-        // available here. Callers should provide `target` for correct
-        // link target type resolution.
-        targetShape = configToShapeDefinition(
-          baseType,
-          {} as InlineShapeConfig<BASE>,
+      if (!linkConfig.target) {
+        throw new Error(
+          `links["${name}"] requires an explicit target shape. `
+            + `Inline shape configs cannot resolve link target types automatically.`,
         );
       }
+      const targetShape: ShapeDefinition<ObjectOrInterfaceDefinition> =
+        linkConfig.target;
 
       derivedLinks.push({
         name,
