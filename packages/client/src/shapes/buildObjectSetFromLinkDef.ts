@@ -32,20 +32,18 @@ import { additionalContext, type Client } from "../Client.js";
  * Extracts query options from a link definition for use with observeObjectSet.
  * Uses common infrastructure for symbol resolution and orderBy conversion.
  */
+interface LinkQueryOptions {
+  where?: WhereClause<ObjectOrInterfaceDefinition>;
+  orderBy?: Record<string, "asc" | "desc">;
+  pageSize?: number;
+}
+
 export function getLinkQueryOptions(
   linkDef: ShapeLinkObjectSetDef,
   sourceObject: Osdk.Instance<ObjectOrInterfaceDefinition>,
   pageSize?: number,
-): {
-  where?: WhereClause<ObjectOrInterfaceDefinition>;
-  orderBy?: Record<string, "asc" | "desc">;
-  pageSize?: number;
-} {
-  const options: {
-    where?: WhereClause<ObjectOrInterfaceDefinition>;
-    orderBy?: Record<string, "asc" | "desc">;
-    pageSize?: number;
-  } = {};
+): LinkQueryOptions {
+  const options: LinkQueryOptions = {};
 
   if (linkDef.where) {
     options.where = resolveSymbolBindings(
@@ -118,6 +116,9 @@ export async function buildObjectSetFromLinkDefByType(
         case "subtract":
           objectSet = objectSet.subtract(otherObjectSet);
           break;
+        default: {
+          const _exhaustive: never = setOp.type;
+        }
       }
     }
   }

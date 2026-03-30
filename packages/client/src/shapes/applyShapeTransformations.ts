@@ -109,6 +109,9 @@ export function applyShapeTransformations<
       case "select":
         // No transformation needed
         break;
+      default: {
+        const _exhaustive: never = op;
+      }
     }
   }
 
