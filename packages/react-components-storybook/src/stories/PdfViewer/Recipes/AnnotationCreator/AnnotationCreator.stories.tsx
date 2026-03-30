@@ -81,7 +81,8 @@ function AnnotationSidebarItem(
     onClick(annotation.page);
   }, [onClick, annotation.page]);
 
-  const handleDelete = useCallback(() => {
+  const handleDelete = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
     onDelete(annotation.id);
   }, [onDelete, annotation.id]);
 

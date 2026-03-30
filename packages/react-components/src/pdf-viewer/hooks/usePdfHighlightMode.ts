@@ -241,6 +241,17 @@ export function usePdfHighlightMode({
     if (document == null) return;
     const storage = document.annotationStorage;
 
+    // Fire the delete callback directly. The monkey-patch on storage.remove
+    // only exists while highlight mode is active, so we handle it here to
+    // ensure the callback fires regardless of highlight mode state.
+    // Clean up refs first so the monkey-patch (if active) won't double-fire.
+    const savedEvent = editorEventsRef.current.get(editorId);
+    if (savedEvent != null) {
+      editorEventsRef.current.delete(editorId);
+      knownEditorIdsRef.current.delete(editorId);
+      onHighlightDeleteRef.current?.(savedEvent);
+    }
+
     // Remove the editor's DOM element if it exists
     const allEntries = storage.getAll() as Record<string, unknown> | null;
     const entry = allEntries?.[editorId];
@@ -251,7 +262,6 @@ export function usePdfHighlightMode({
       (entry as { div: HTMLElement }).div.remove();
     }
 
-    // This triggers the monkey-patched remove which fires onHighlightDelete
     storage.remove(editorId);
   }, [document]);
 
