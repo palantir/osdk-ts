@@ -256,7 +256,9 @@ export interface TextAreaFieldProps extends
      */
     | "maxLength"
   >
-{}
+{
+  placeholder?: string;
+}
 
 export interface TextInputFieldProps extends
   BaseFormFieldProps<string>,

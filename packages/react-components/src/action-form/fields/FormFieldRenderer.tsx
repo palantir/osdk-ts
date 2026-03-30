@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ import { FormField } from "../FormField.js";
 import type { RendererFieldDefinition } from "../FormFieldApi.js";
 import { DatetimePickerField } from "./DatetimePickerField.js";
 import { DropdownField } from "./DropdownField.js";
+import { TextAreaField } from "./TextAreaField.js";
 import { TextInputField } from "./TextInputField.js";
 
 const EMPTY_ITEMS: unknown[] = [];
@@ -58,15 +59,23 @@ function renderFieldComponent(
 ): React.ReactElement {
   switch (fieldDefinition.fieldComponent) {
     case "TEXT_INPUT":
-    // TODO: Render a <textarea> for TEXT_AREA instead of falling through
-    case "TEXT_AREA":
       return (
         <TextInputField
           id={fieldDefinition.fieldKey}
-          // TODO: Use coerceFieldValue
           value={value != null ? String(value) : ""}
           onChange={onChange}
           placeholder={fieldDefinition.placeholder}
+          {...fieldDefinition.fieldComponentProps}
+        />
+      );
+    case "TEXT_AREA":
+      return (
+        <TextAreaField
+          id={fieldDefinition.fieldKey}
+          value={value != null ? String(value) : ""}
+          onChange={onChange}
+          placeholder={fieldDefinition.placeholder}
+          {...fieldDefinition.fieldComponentProps}
         />
       );
     case "DROPDOWN": {
