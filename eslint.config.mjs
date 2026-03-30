@@ -249,6 +249,10 @@ export default tseslint.config(
     files: [
       "packages/*/src/**/*",
     ],
+    ignores: [
+      // Uses ESLint 8 + @typescript-eslint v6, incompatible with v8 type-checked rules
+      "packages/typescript-sdk-docs-examples/**",
+    ],
     extends: [
       tseslint.configs.strictTypeCheckedOnly,
     ],
