@@ -465,6 +465,7 @@ export class OntologyIrToFullMetadataConverter {
           func.output.single.dataType,
           func.customTypes,
         ),
+        typeReferences: {},
       } satisfies Ontologies.QueryTypeV2;
     });
   }
@@ -533,6 +534,7 @@ export class OntologyIrToFullMetadataConverter {
           func.output.single.dataType,
           customTypes,
         ),
+        typeReferences: {},
       };
       queries.push(queryType);
     }

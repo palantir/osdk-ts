@@ -65,6 +65,7 @@ export function getInterfaceTypesFromQueryDataType(
     case "object":
     case "objectSet":
     case "mediaReference":
+    case "typeReference":
     case "void":
       /* complete no-op */
       return;
