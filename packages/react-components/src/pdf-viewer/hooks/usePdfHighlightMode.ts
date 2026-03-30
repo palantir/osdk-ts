@@ -32,6 +32,7 @@ export interface UsePdfHighlightModeOptions {
 export interface UsePdfHighlightModeResult {
   highlightModeActive: boolean;
   toggleHighlightMode: () => void;
+  deleteHighlight: (editorId: string) => void;
 }
 
 /**
@@ -211,6 +212,7 @@ export function usePdfHighlightMode({
             : "";
 
           const event: PdfTextHighlightEvent = {
+            editorId: id,
             page: serialized.pageIndex + 1,
             rects,
             selectedText,
@@ -235,8 +237,27 @@ export function usePdfHighlightMode({
     setHighlightModeActive((prev) => !prev);
   }, []);
 
+  const deleteHighlight = useCallback((editorId: string) => {
+    if (document == null) return;
+    const storage = document.annotationStorage;
+
+    // Remove the editor's DOM element if it exists
+    const allEntries = storage.getAll() as Record<string, unknown> | null;
+    const entry = allEntries?.[editorId];
+    if (
+      typeof entry === "object" && entry != null && "div" in entry
+      && (entry as { div?: unknown }).div instanceof HTMLElement
+    ) {
+      (entry as { div: HTMLElement }).div.remove();
+    }
+
+    // This triggers the monkey-patched remove which fires onHighlightDelete
+    storage.remove(editorId);
+  }, [document]);
+
   return {
     highlightModeActive,
     toggleHighlightMode,
+    deleteHighlight,
   };
 }
