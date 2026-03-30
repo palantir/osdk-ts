@@ -16,6 +16,7 @@
 
 import React from "react";
 
+/** Structural equality for plain JSON values (objects, arrays, primitives). Not suited for Date, RegExp, Map, or Set. */
 export function deepEqual(a: unknown, b: unknown): boolean {
   if (a === b) {
     return true;
