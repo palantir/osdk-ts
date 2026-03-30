@@ -150,6 +150,7 @@ export function useShapeSingleInternal<
     );
   }, [
     enabled,
+    // Use $primaryKey instead of sourceObject to avoid store recreation on same-PK re-renders
     sourceObject?.$primaryKey,
     shape.__shapeId,
     observableClient,
@@ -430,6 +431,29 @@ export function useShapeListInternal<
     [observableClient, shape.__shapeId, objectType.apiName],
   );
 
+  const loadDeferred = React.useCallback(
+    async (
+      pk: string | number,
+      linkName: keyof ShapeDerivedLinks<S>,
+    ) => {
+      await linksStore.loadDeferred(pk, String(linkName));
+    },
+    [linksStore],
+  );
+
+  const retry = React.useCallback(
+    (
+      pk?: string | number,
+      linkName?: keyof ShapeDerivedLinks<S>,
+    ) => {
+      linksStore.retry(
+        pk,
+        linkName !== undefined ? String(linkName) : undefined,
+      );
+    },
+    [linksStore],
+  );
+
   const baseLoading = enabled
     ? (payload?.status === "loading" || payload?.status === "init" || !payload)
     : false;
@@ -444,21 +468,8 @@ export function useShapeListInternal<
     nullabilityViolations: transformResult.violations,
     itemLinkStatus,
     linkStatus,
-    loadDeferred: async (
-      pk: string | number,
-      linkName: keyof ShapeDerivedLinks<S>,
-    ) => {
-      await linksStore.loadDeferred(pk, String(linkName));
-    },
-    retry: (
-      pk?: string | number,
-      linkName?: keyof ShapeDerivedLinks<S>,
-    ) => {
-      linksStore.retry(
-        pk,
-        linkName !== undefined ? String(linkName) : undefined,
-      );
-    },
+    loadDeferred,
+    retry,
     invalidate,
   };
 }
