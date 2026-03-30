@@ -301,7 +301,11 @@ export interface NumberInputFieldProps extends
  */
 export interface RadioButtonsFieldProps<V> extends BaseFormFieldProps<V> {
   /**
-   * Available options for radio buttons
+   * Available options for radio buttons.
+   *
+   * Values are compared by reference equality (`===`). When options contain
+   * non-primitive values, pass the same object references for `value` and
+   * the corresponding option entry.
    */
   options: Option<V>[];
 }
