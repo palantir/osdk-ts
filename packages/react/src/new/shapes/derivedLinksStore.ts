@@ -62,6 +62,7 @@ export type ListObserverPayload = {
 
 export const NOOP_FETCH_MORE = async (): Promise<void> => {};
 
+/** Converts nullability violations into a ShapeNullabilityError if any `require` constraints failed. */
 export function violationsToError(
   shape: ShapeDefinition<ObjectOrInterfaceDefinition>,
   violations: readonly { property: string; constraint: string }[],
@@ -111,6 +112,7 @@ export interface DerivedLinksStore<
   destroy: () => void;
 }
 
+/** Returns a no-op store used when no source object is available yet. */
 export function createEmptyDerivedLinksStore<
   S extends ShapeDefinition<ObjectOrInterfaceDefinition>,
 >(): DerivedLinksStore<S> {
@@ -130,6 +132,7 @@ export function createEmptyDerivedLinksStore<
   };
 }
 
+/** Returns true if a link can be observed via the batched observeLinks path (single pivotTo, no filters/ordering). */
 export function isBatchableLink(linkDef: ShapeDerivedLinkDef): boolean {
   const def = linkDef.objectSetDef;
   return (
@@ -144,6 +147,7 @@ export function isBatchableLink(linkDef: ShapeDerivedLinkDef): boolean {
   );
 }
 
+/** Creates a store that observes all derived links for a single source object and exposes them via useSyncExternalStore. */
 export function createDerivedLinksStore<
   S extends ShapeDefinition<ObjectOrInterfaceDefinition>,
 >(
@@ -196,6 +200,7 @@ export function createDerivedLinksStore<
       if (batch.length > 0) {
         startLinksInBatch(batch);
       }
+      // 25ms window to batch nested link subscriptions, avoids N individual startups while staying responsive
     }, 25);
   }
 
