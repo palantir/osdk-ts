@@ -381,6 +381,14 @@ function renderType(
       return `client(${type.objectTypeApiName}).where({ /* filter conditions */ })`;
     case "anonymousCustomType":
     case "customType":
+      if (type.fields != null && type.fields.length > 0) {
+        const rendered = type.fields
+          .map(f =>
+            `"${f.name}": ${renderType(f.value, majorVersion, context)}`
+          )
+          .join(`,${indentedNewLine(8)}`);
+        return `{${indentedNewLine(8)}${rendered}${indentedNewLine(4)}}`;
+      }
       return "{}";
     case "attachment":
       return type.hasAttachments ? "attachment" : "{}";

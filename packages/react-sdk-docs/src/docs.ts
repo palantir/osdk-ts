@@ -146,6 +146,13 @@ function renderType(
       return `client(${type.objectTypeApiName}).where({ /* filter conditions */ })`;
     case "anonymousCustomType":
     case "customType":
+      if (type.fields != null && type.fields.length > 0) {
+        const rendered = type.fields
+          .map(f => `"${f.name}": ${renderType(f.value)}`)
+          .join(", ");
+        return `{ ${rendered} }`;
+      }
+      return "{}";
     case "interface":
     case "marking":
       return "{}";
