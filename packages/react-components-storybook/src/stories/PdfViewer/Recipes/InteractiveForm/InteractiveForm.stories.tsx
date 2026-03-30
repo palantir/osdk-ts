@@ -31,7 +31,7 @@ import {
 } from "pdf-lib";
 import React, { useCallback, useState } from "react";
 
-const PDF_SRC = "/interactive-form-pdf.pdf";
+const PDF_SRC = `${import.meta.env.BASE_URL}interactive-form-pdf.pdf`;
 
 const FIELD_DISPLAY_ORDER = [
   { key: "FullName", label: "Full name" },

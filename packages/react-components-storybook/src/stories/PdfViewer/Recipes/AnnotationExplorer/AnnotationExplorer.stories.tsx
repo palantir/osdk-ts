@@ -36,7 +36,8 @@ import React, { useCallback, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 
 // cspell:ignore tracemonkey pldi
-const SAMPLE_PDF_URL = "/compressed.tracemonkey-pldi-09.pdf";
+const SAMPLE_PDF_URL =
+  `${import.meta.env.BASE_URL}compressed.tracemonkey-pldi-09.pdf`;
 
 // Stable empty array to avoid re-render loops
 const EMPTY_ANNOTATIONS: PdfAnnotation[] = [];

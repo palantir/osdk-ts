@@ -25,7 +25,8 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 
 // cspell:ignore tracemonkey pldi
-const SAMPLE_PDF_URL = "/compressed.tracemonkey-pldi-09.pdf";
+const SAMPLE_PDF_URL =
+  `${import.meta.env.BASE_URL}compressed.tracemonkey-pldi-09.pdf`;
 
 type AnnotationWithText = PdfAnnotation & { selectedText: string };
 
