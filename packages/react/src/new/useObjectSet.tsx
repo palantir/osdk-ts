@@ -160,7 +160,7 @@ export interface UseObjectSetResult<
   /**
    * The final ObjectSet after all transformations
    */
-  objectSet: ObjectSet<Q, RDPs>;
+  objectSet: ObjectSet<Q, RDPs> | undefined;
 
   /**
    * The total count of objects matching the query (if available from the API)
@@ -191,15 +191,17 @@ export function useObjectSet<
   BaseRDPs extends Record<string, SimplePropertyDef> = never,
   RDPs extends Record<string, SimplePropertyDef> = {},
 >(
-  baseObjectSet: ObjectSet<Q, BaseRDPs>,
+  baseObjectSet: ObjectSet<Q, BaseRDPs> | undefined,
   options: UseObjectSetOptions<Q, RDPs> = {},
 ): UseObjectSetResult<Q, RDPs> {
   const { observableClient } = React.useContext(OsdkContext2);
 
-  const { enabled = true, streamUpdates, ...otherOptions } = options;
+  const { enabled: enabledOption = true, streamUpdates, ...otherOptions } =
+    options;
+  const enabled = enabledOption && baseObjectSet != null;
 
   // Track object type to detect when we switch to a different object type
-  const objectTypeKey = enabled
+  const objectTypeKey = enabled && baseObjectSet
     ? baseObjectSet.$objectSetInternals.def.apiName
     : OBJECT_TYPE_PLACEHOLDER;
 
@@ -216,17 +218,19 @@ export function useObjectSet<
 
   // Compute a stable cache key for the ObjectSet and options
   // dedupeIntervalMs and enabled are excluded as they don't affect the data
-  const stableKey = computeObjectSetCacheKey(baseObjectSet, {
-    where: otherOptions.where,
-    withProperties: otherOptions.withProperties,
-    union: otherOptions.union,
-    intersect: otherOptions.intersect,
-    subtract: otherOptions.subtract,
-    pivotTo: otherOptions.pivotTo,
-    pageSize: otherOptions.pageSize,
-    orderBy: otherOptions.orderBy,
-    select: otherOptions.$select,
-  });
+  const stableKey = baseObjectSet != null
+    ? computeObjectSetCacheKey(baseObjectSet, {
+      where: otherOptions.where,
+      withProperties: otherOptions.withProperties,
+      union: otherOptions.union,
+      intersect: otherOptions.intersect,
+      subtract: otherOptions.subtract,
+      pivotTo: otherOptions.pivotTo,
+      pageSize: otherOptions.pageSize,
+      orderBy: otherOptions.orderBy,
+      select: otherOptions.$select,
+    })
+    : OBJECT_TYPE_PLACEHOLDER;
 
   const { subscribe, getSnapShot } = React.useMemo(
     () => {
