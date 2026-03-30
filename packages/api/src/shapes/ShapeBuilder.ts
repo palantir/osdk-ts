@@ -60,7 +60,7 @@ class ShapeBuilderImpl<
 
   #addProps(
     props: string[],
-    type: NullabilityOp["type"],
+    type: "select" | "require" | "dropIfNull",
   ): Record<string, ShapePropertyConfig> {
     const newProps = { ...this.#state.props };
     for (const prop of props) {
