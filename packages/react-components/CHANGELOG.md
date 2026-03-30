@@ -1,5 +1,22 @@
 # @osdk/react-components
 
+## 0.2.0-beta.25
+
+### Minor Changes
+
+- d4ac875: Add text highlight annotation mode to PdfViewer with toolbar toggle button, `onTextHighlight` callback, and multi-rect annotation support via `rects` field on `PdfAnnotation`
+- e19ff03: Add TextAreaField component using @base-ui Input with render prop for native textarea rendering
+
+### Patch Changes
+
+- Updated dependencies [f294f5a]
+- Updated dependencies [2855223]
+- Updated dependencies [d284bf2]
+- Updated dependencies [b68cebd]
+  - @osdk/client@2.8.0-beta.28
+  - @osdk/react@0.10.0-beta.13
+  - @osdk/api@2.8.0-beta.28
+
 ## 0.2.0-beta.24
 
 ### Minor Changes
