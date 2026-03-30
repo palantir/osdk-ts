@@ -380,9 +380,13 @@ function renderType(
     case "objectSet":
       return `client(${type.objectTypeApiName}).where({ /* filter conditions */ })`;
     case "anonymousCustomType":
-    case "customType":
-      if (type.fields != null && type.fields.length > 0) {
-        const rendered = type.fields
+    case "customType": {
+      // TODO: Remove cast once @osdk/docs-spec-sdk is published with `fields` on custom type IR
+      const ct = type as typeof type & {
+        fields?: Array<{ name: string; value: FunctionSampleValueTypeIR }>;
+      };
+      if (ct.fields != null && ct.fields.length > 0) {
+        const rendered = ct.fields
           .map(f =>
             `"${f.name}": ${renderType(f.value, majorVersion, context)}`
           )
@@ -390,6 +394,7 @@ function renderType(
         return `{${indentedNewLine(8)}${rendered}${indentedNewLine(4)}}`;
       }
       return "{}";
+    }
     case "attachment":
       return type.hasAttachments ? "attachment" : "{}";
     case "interface":
