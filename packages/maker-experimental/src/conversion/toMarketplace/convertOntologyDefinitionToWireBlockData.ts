@@ -40,6 +40,7 @@ import { MIGRATION_SHAPE_READABLE_ID } from "./shapeExtractors/IrShapeExtractor.
 export function convertOntologyDefinitionToWireBlockData(
   ontology: OntologyDefinition,
   ridGenerator: OntologyRidGenerator,
+  functionsIrFile?: string,
 ): OntologyBlockDataV2 {
   // Convert all entity types first to populate ridGenerator's BiMaps
   const objectTypes = Object.fromEntries(
@@ -89,14 +90,18 @@ export function convertOntologyDefinitionToWireBlockData(
   );
 
   const actionTypes = Object.fromEntries(
-    Object.entries(ontology[OntologyEntityTypeEnum.ACTION_TYPE]).map<
-      [string, ActionTypeBlockDataV2]
-    >(([apiName, action]) => {
-      return [
-        ridGenerator.generateRidForActionType(apiName),
-        convertAction(action, ridGenerator),
-      ];
-    }),
+    Object.entries(ontology[OntologyEntityTypeEnum.ACTION_TYPE])
+      .map(([apiName, action]) => {
+        const converted = convertAction(action, ridGenerator, functionsIrFile);
+        if (converted === undefined) return undefined;
+        return [
+          ridGenerator.generateRidForActionType(apiName),
+          converted,
+        ] as [string, ActionTypeBlockDataV2];
+      })
+      .filter((entry): entry is [string, ActionTypeBlockDataV2] =>
+        entry !== undefined
+      ),
   );
 
   // Build knownIdentifiers from ridGenerator's BiMaps

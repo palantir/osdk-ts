@@ -34,7 +34,8 @@ import type {
   ActionType,
   InterfaceType,
 } from "@osdk/maker";
-import { getOntologyDefinition } from "@osdk/maker";
+import { getOntologyDefinition, uppercaseFirstLetter } from "@osdk/maker";
+import * as fs from "node:fs";
 import type { OntologyRidGenerator } from "../../util/generateRid.js";
 import { ReadableIdGenerator } from "../../util/generateRid.js";
 import { convertActionParameters } from "./convertActionParameters.js";
@@ -42,6 +43,8 @@ import { convertActionSections } from "./convertActionSections.js";
 import { convertActionValidation } from "./convertActionValidation.js";
 import { flattenInterface } from "./convertObject.js";
 import { getFormContentOrdering } from "./getFormContentOrdering.js";
+import invariant from "tiny-invariant";
+import consola from "consola";
 
 export function buildDatasource(
   apiName: string,
@@ -81,9 +84,14 @@ export function buildDatasource(
 export function convertAction(
   action: ActionType,
   ridGenerator: OntologyRidGenerator,
-): ActionTypeBlockDataV2 {
+  functionsIrFile?: string, 
+): ActionTypeBlockDataV2 | undefined {
   if (action.rules.map(rule => rule.type === "functionRule").some(v => v)) {
-    return convertFunctionBackedAction(action, ridGenerator);
+    if (!functionsIrFile) {
+      consola.info("No functions IR file found, skipping some function-backed actions");
+      return undefined;
+    }
+    return convertFunctionBackedAction(action, ridGenerator, functionsIrFile);
   }
   const actionValidation = convertActionValidation(action, ridGenerator);
   const actionParameters: Record<ParameterId, Parameter> =
@@ -222,10 +230,374 @@ export function convertAction(
   };
 }
 
+interface FunctionDataType {
+  type: string;
+  object?: { objectTypeId: string };
+  objectSet?: { objectTypeId: string };
+  list?: { elementsType: FunctionDataType };
+  set?: { elementsType: FunctionDataType };
+  [key: string]: unknown;
+}
+
+interface DiscoveredFunction {
+  locator: { type: string; typescriptOsdk?: { functionName: string } };
+  inputs: Array<{ name: string; dataType: FunctionDataType }>;
+  output: { single: { dataType: FunctionDataType } };
+  customTypes: Record<string, unknown>;
+}
+
+interface FunctionsIr {
+  discoveredFunctions: Array<DiscoveredFunction>;
+}
+
 function convertFunctionBackedAction(
   action: ActionType,
   ridGenerator: OntologyRidGenerator,
+  functionsIrFile: string,
 ): ActionTypeBlockDataV2 {
+  const functionsIr: FunctionsIr = JSON.parse(
+    fs.readFileSync(functionsIrFile, "utf-8"),
+  );
+
+  // The placeholder functionRid holds the function's API name
+  const rule = action.rules[0];
+  invariant(
+    rule.type === "functionRule",
+    "Function-backed action must have a functionRule",
+  );
+  const functionApiName = rule.functionRule.functionRid;
+
+  const discoveredFunction = functionsIr.discoveredFunctions.find(
+    f => f.locator.typescriptOsdk?.functionName === functionApiName,
+  );
+  invariant(
+    discoveredFunction != null,
+    `Function "${functionApiName}" not found in functions IR file`,
+  );
+
+  // Build parameters and function input mappings from discovered function inputs
+  const parameters: Record<ParameterId, Parameter> = {};
+  const functionInputValues: Record<
+    string,
+    { type: "parameterId"; parameterId: string }
+  > = {};
+  const parameterOrdering: string[] = [];
+  const affectedObjectTypeIds: string[] = [];
+
+  for (const input of discoveredFunction.inputs) {
+    if (input.dataType.type === "ontologyEdit") continue;
+
+    const paramId = input.name;
+    parameterOrdering.push(paramId);
+    functionInputValues[paramId] = {
+      type: "parameterId",
+      parameterId: paramId,
+    };
+
+    const paramType = convertFunctionInputDataType(
+      input.dataType,
+      ridGenerator,
+      affectedObjectTypeIds,
+    );
+
+    parameters[paramId] = {
+      id: paramId,
+      rid: ridGenerator.generateRidForParameter(action.apiName, paramId),
+      type: paramType,
+      displayMetadata: {
+        displayName: uppercaseFirstLetter(paramId),
+        description: "",
+        typeClasses: [],
+        structFields: {},
+        structFieldsV2: [],
+      },
+    };
+  }
+
+  const functionRid =
+    `ri.function-registry.main.function.${functionApiName}`;
+
+  // Build per-parameter validations with sensible defaults
+  const parameterValidations = Object.fromEntries(
+    Object.entries(parameters).map(([paramId, param]) => [
+      paramId,
+      {
+        conditionalOverrides: [],
+        defaultValidation: {
+          display: {
+            visibility: { type: "editable" as const, editable: {} },
+            renderHint: getDefaultRenderHintForBaseType(param.type),
+            prefill: null,
+          },
+          validation: {
+            required: { type: "required" as const, required: {} },
+            allowedValues: getDefaultAllowedValuesForBaseType(param.type),
+          },
+        },
+        structFieldValidations: {},
+      },
+    ]),
+  );
+
+  const formContentOrdering = parameterOrdering.map(p => ({
+    type: "parameterId" as const,
+    parameterId: p,
+  }));
+
+  const metadata = {
+    rid: ridGenerator.generateRidForActionType(action.apiName),
+    version: "1.0",
+    apiName: action.apiName,
+    notificationSettings: {
+      renderingSettings: {
+        type: "allNotificationRenderingMustSucceed" as const,
+        allNotificationRenderingMustSucceed: {},
+      },
+      redactionOverride: null,
+    },
+    displayMetadata: {
+      configuration: {
+        defaultLayout: action.defaultFormat ?? "FORM",
+        displayAndFormat: action.displayAndFormat ?? {
+          table: {
+            columnWidthByParameterRid: {},
+            enableFileImport: true,
+            fitHorizontally: false,
+            frozenColumnCount: 0,
+            rowHeightInLines: 1,
+          },
+        },
+        enableLayoutUserSwitch: action.enableLayoutSwitch ?? false,
+      },
+      description: action.description ?? "",
+      displayName: action.displayName,
+      icon: {
+        type: "blueprint" as const,
+        blueprint: action.icon ?? { locator: "take-action", color: "#738091" },
+      },
+      applyingMessage: [] as Array<{ type: string; message: string }>,
+      successMessage: action.submissionMetadata?.successMessage
+        ? [{
+          type: "message" as const,
+          message: action.submissionMetadata.successMessage,
+        }]
+        : [],
+      typeClasses: [],
+    },
+    parameterOrdering,
+    formContentOrdering,
+    parameters,
+    sections: {},
+    status: typeof action.status === "string"
+      ? {
+        type: action.status,
+        [action.status]: {},
+      } as unknown as ActionTypeStatus
+      : action.status,
+    entities: {
+      affectedObjectTypes: affectedObjectTypeIds,
+      affectedLinkTypes: [] as string[],
+      affectedInterfaceTypes: [] as string[],
+      typeGroups: [] as string[],
+    },
+  };
+
+  return {
+    actionType: {
+      actionTypeLogic: {
+        logic: {
+          rules: [{
+            type: "functionRule" as const,
+            functionRule: {
+              functionRid,
+              functionVersion: "0.1.0",
+              functionInputValues,
+              customExecutionMode: null,
+              experimentalDeclarativeEditInformation: null,
+            },
+          }],
+          actionLogRule: null,
+        },
+        validation: {
+          actionTypeLevelValidation: {
+            rules: {},
+            ordering: [],
+            dataSecurityRequirement: null,
+          },
+          parameterValidations,
+          sectionValidations: {},
+        },
+        revert: {
+          enabledFor: [{
+            type: "actionApplier",
+            actionApplier: {
+              withinDuration: { value: 24, unit: "HOUR" },
+            },
+          }],
+        },
+        webhooks: null,
+        notifications: [],
+        effects: null,
+      },
+      metadata: metadata as MarketplaceActionTypeMetadata,
+    },
+    parameterIds: {},
+  };
+}
+
+function convertFunctionInputDataType(
+  dataType: FunctionDataType,
+  ridGenerator: OntologyRidGenerator,
+  affectedObjectTypeIds: string[],
+): Parameter["type"] {
+  switch (dataType.type) {
+    case "object": {
+      invariant(dataType.object, "object data type missing object field");
+      const objectTypeId = ridGenerator.generateObjectTypeId(
+        dataType.object.objectTypeId,
+      );
+      affectedObjectTypeIds.push(objectTypeId);
+      return {
+        type: "objectReference" as const,
+        objectReference: { objectTypeId, maybeCreateObjectOption: null },
+      } as Parameter["type"];
+    }
+    case "objectSet": {
+      invariant(
+        dataType.objectSet,
+        "objectSet data type missing objectSet field",
+      );
+      const objectTypeId = ridGenerator.generateObjectTypeId(
+        dataType.objectSet.objectTypeId,
+      );
+      affectedObjectTypeIds.push(objectTypeId);
+      return {
+        type: "objectSetRid" as const,
+        objectSetRid: {},
+      } as unknown as Parameter["type"];
+    }
+    case "string":
+    case "boolean":
+    case "integer":
+    case "long":
+    case "double":
+    case "date":
+    case "timestamp":
+    case "attachment":
+      return {
+        type: dataType.type,
+        [dataType.type]: {},
+      } as unknown as Parameter["type"];
+    case "list":
+    case "set": {
+      const innerType = dataType.type === "list"
+        ? dataType.list?.elementsType
+        : dataType.set?.elementsType;
+      invariant(innerType, `${dataType.type} data type missing elementsType`);
+      return convertFunctionInputListDataType(
+        innerType,
+        ridGenerator,
+        affectedObjectTypeIds,
+      );
+    }
+    default:
+      throw new Error(
+        `Unsupported function input data type for action parameter: ${dataType.type}`,
+      );
+  }
+}
+
+const PRIMITIVE_LIST_TYPES: Record<string, string> = {
+  string: "stringList",
+  boolean: "booleanList",
+  integer: "integerList",
+  long: "longList",
+  double: "doubleList",
+  date: "dateList",
+  timestamp: "timestampList",
+  attachment: "attachmentList",
+};
+
+function convertFunctionInputListDataType(
+  elementType: FunctionDataType,
+  ridGenerator: OntologyRidGenerator,
+  affectedObjectTypeIds: string[],
+): Parameter["type"] {
+  switch (elementType.type) {
+    case "object": {
+      invariant(elementType.object, "object data type missing object field");
+      const objectTypeId = ridGenerator.generateObjectTypeId(
+        elementType.object.objectTypeId,
+      );
+      affectedObjectTypeIds.push(objectTypeId);
+      return {
+        type: "objectReferenceList" as const,
+        objectReferenceList: { objectTypeId, maybeCreateObjectOption: null },
+      } as Parameter["type"];
+    }
+    default: {
+      const listType = PRIMITIVE_LIST_TYPES[elementType.type];
+      if (listType) {
+        return {
+          type: listType,
+          [listType]: {},
+        } as unknown as Parameter["type"];
+      }
+      throw new Error(
+        `Unsupported list element data type for action parameter: ${elementType.type}`,
+      );
+    }
+  }
+}
+
+function getDefaultRenderHintForBaseType(
+  paramType: Parameter["type"],
+): ParameterRenderHint {
+  switch (paramType.type) {
+    case "objectReference":
+    case "objectReferenceList":
+    case "interfaceReference":
+    case "interfaceReferenceList":
+      return {
+        type: "dropdown",
+        dropdown: { shouldRemoveListQueryAfterSelection: null },
+      };
+    case "boolean":
+      return { type: "checkbox", checkbox: {} };
+    case "integer":
+    case "long":
+    case "double":
+    case "decimal":
+      return { type: "numericInput", numericInput: {} };
+    case "date":
+    case "timestamp":
+      return { type: "dateTimePicker", dateTimePicker: {} };
+    case "attachment":
+      return { type: "filePicker", filePicker: {} };
+    default:
+      return { type: "textInput", textInput: {} };
+  }
+}
+
+function getDefaultAllowedValuesForBaseType(
+  paramType: Parameter["type"],
+): OntologyIrAllowedParameterValues {
+  switch (paramType.type) {
+    case "objectReference":
+    case "objectReferenceList":
+      return {
+        type: "objectQuery",
+        objectQuery: {
+          type: "objectQuery",
+          objectQuery: { objectSet: null },
+        },
+      } as unknown as OntologyIrAllowedParameterValues;
+    default:
+      return {
+        type: "noop",
+        noop: {},
+      } as unknown as OntologyIrAllowedParameterValues;
+  }
 }
 
 /**

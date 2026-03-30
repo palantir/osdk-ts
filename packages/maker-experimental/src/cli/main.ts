@@ -30,6 +30,8 @@ import {
 } from "./generateBackingDataset.js";
 import type { BlockGeneratorResult } from "./marketplaceSerialization/BlockGeneratorResult.js";
 import type { InputMappingEntry } from "./marketplaceSerialization/supportingTypes.js";
+import { PreviewOntologyIrConverter } from "@osdk/generator-converters.preview";
+import { OntologyIrToFullMetadataConverter } from "@osdk/generator-converters.ontologyir";
 
 const apiNamespaceRegex = /^[a-z0-9-]+(\.[a-z0-9-]+)*\.$/;
 const uuidRegex =
@@ -45,6 +47,10 @@ export default async function main(
     output: string;
     apiNamespace: string;
     buildDir: string;
+    temporaryBlockDataFile?: string;
+    functionsDir?: string;
+    nodeModulesDir?: string;
+    functionsIrOutputFile?: string;
     randomnessKey?: string;
   } = await yargs(hideBin(args))
     .version(process.env.PACKAGE_VERSION ?? "")
@@ -78,6 +84,24 @@ export default async function main(
         default: "build/",
         coerce: path.resolve,
       },
+      temporaryBlockDataFile: {
+        alias: "f",
+        describe: "Path to a previously generated block data file. Supplying this field indicates that function backed actions should be generated",
+        type: "string",
+        coerce: path.resolve,
+      },
+      functionsDir: {
+        type: "string",
+        coerce: path.resolve,
+      },
+      nodeModulesDir: {
+        type: "string",
+        coerce: path.resolve,
+      },
+      functionsIrOutputFile: {
+        type: "string",
+        coerce: path.resolve,
+      },
       randomnessKey: {
         describe: "Value used to assure uniqueness of entities",
         type: "string",
@@ -106,9 +130,38 @@ export default async function main(
     );
   }
 
+  let functionsIrFile = undefined;
+  if (commandLineOpts.temporaryBlockDataFile) {
+    consola.info(`Loading temporary block data from ${commandLineOpts.temporaryBlockDataFile}`);
+    const fileContent = await fs.promises.readFile(commandLineOpts.temporaryBlockDataFile, "utf-8");
+    let blockDataJson: unknown;
+    try {
+      blockDataJson = JSON.parse(fileContent);
+    } catch {
+      consola.error(`Failed to parse JSON from ${commandLineOpts.temporaryBlockDataFile}`);
+      process.exit(1);
+    }
+    const previewMetadata = PreviewOntologyIrConverter
+      .getPreviewFullMetadataFromBlockData(
+        blockDataJson as Parameters<
+          typeof PreviewOntologyIrConverter.getPreviewFullMetadataFromBlockData
+        >[0],
+      );
+    invariant(commandLineOpts.functionsDir && commandLineOpts.nodeModulesDir, "functionsDir and nodeModulesDir must be supplied when using temporaryBlockDataFile");
+    OntologyIrToFullMetadataConverter.discoverTypeScriptFunctions(
+      commandLineOpts.functionsDir,
+      commandLineOpts.nodeModulesDir,
+      commandLineOpts.functionsIrOutputFile,
+      previewMetadata,
+    );
+    functionsIrFile = commandLineOpts.functionsIrOutputFile;
+    consola.info(`Discovered functions during block data generation at ${commandLineOpts.functionsIrOutputFile}`);
+  }
+
   const { ontologyIr, shapes, backingDatasourceApiNames } = await loadOntology(
     commandLineOpts.input,
     apiNamespace,
+    functionsIrFile,
     commandLineOpts.randomnessKey,
   );
 
@@ -227,6 +280,7 @@ export default async function main(
 async function loadOntology(
   input: string,
   apiNamespace: string,
+  functionsIrFile?: string,
   randomnessKey?: string,
 ) {
   const result = await defineOntologyV2(
@@ -239,6 +293,7 @@ async function loadOntology(
       });
       const module = await jiti.import(input);
     },
+    functionsIrFile,
     randomnessKey,
   );
   return result;

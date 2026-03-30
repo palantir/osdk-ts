@@ -55,7 +55,7 @@ export function defineFunctionBackedAction(
   const actionApiName = def.apiName
     ?? `function-action-${kebab(def.functionApiName)}`;
   return defineAction({
-    apiName: def.apiName ?? def.functionApiName,
+    apiName: def.apiName ?? def.functionApiName.toLowerCase(),
     displayName: def.displayName ?? `Function action ${def.functionApiName}`,
     rules: [{
       type: "functionRule",

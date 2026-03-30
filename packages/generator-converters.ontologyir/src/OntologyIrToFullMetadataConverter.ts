@@ -328,7 +328,7 @@ export class OntologyIrToFullMetadataConverter {
     );
   }
 
-  private static async discoverTypeScriptFunctions(
+  static async discoverTypeScriptFunctions(
     functionsDir: string,
     nodeModulesPath?: string,
     irOutputFile?: string,

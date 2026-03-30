@@ -35,6 +35,7 @@ export interface OntologyV2Result {
 export async function defineOntologyV2(
   ns: string,
   body: () => void | Promise<void>,
+  functionsIrFile?: string,
   randomnessKey?: string,
 ): Promise<OntologyV2Result> {
   initializeOntologyState(ns);
@@ -56,6 +57,7 @@ export async function defineOntologyV2(
   const ontDef = convertOntologyDefinition(
     ontologyDefinition,
     ridGenerator,
+    functionsIrFile,
     randomnessKey,
   );
 

@@ -24,10 +24,11 @@ import { convertOntologyToValueTypeIr } from "./convertOntologyToValueTypeIr.js"
 export function convertOntologyDefinition(
   ontology: OntologyDefinition,
   ridGenerator: OntologyRidGeneratorImpl,
+  functionsIrFile?: string,
   randomnessKey?: string,
 ): OntologyIrV2 {
   return {
-    ontology: convertOntologyDefinitionToWireBlockData(ontology, ridGenerator),
+    ontology: convertOntologyDefinitionToWireBlockData(ontology, ridGenerator, functionsIrFile),
     importedOntology: convertOntologyDefinitionToWireBlockData(
       getImportedTypes(),
       ridGenerator,

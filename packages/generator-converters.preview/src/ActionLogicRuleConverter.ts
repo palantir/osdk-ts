@@ -252,6 +252,20 @@ function convertSingleRule(
       return result;
     }
 
+    case "functionRule": {
+      const r = irRule.functionRule;
+      const result: Ontologies.FunctionLogicRule & {
+        type: "function";
+      } = {
+        type: "function",
+        functionRid: r.functionRid,
+        functionInputValues:
+          r.functionInputValues as Ontologies.FunctionLogicRule["functionInputValues"],
+        functionVersion: r.functionVersion,
+      };
+      return result;
+    }
+
     case "addLinkRule":
       throw new Error("addLinkRule is not supported for ActionLogicRule");
 
@@ -378,6 +392,20 @@ function convertBlockDataSingleRule(
         interfaceObjectToModify: r.interfaceObjectToModify,
         sharedPropertyArguments: {},
         structPropertyArguments: {},
+      };
+      return result;
+    }
+
+    case "functionRule": {
+      const r = rule.functionRule;
+      const result: Ontologies.FunctionLogicRule & {
+        type: "function";
+      } = {
+        type: "function",
+        functionRid: r.functionRid,
+        functionInputValues:
+          r.functionInputValues as Ontologies.FunctionLogicRule["functionInputValues"],
+        functionVersion: r.functionVersion,
       };
       return result;
     }
