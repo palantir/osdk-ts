@@ -919,6 +919,7 @@ export interface Media {
     	fetchContents(): Promise<Response>;
     	fetchMetadata(): Promise<MediaMetadata_2>;
     	getMediaReference(): MediaReference;
+    	getMediaSourceLocation?(): MediaPropertyLocation;
 }
 
 // @public
@@ -931,6 +932,16 @@ interface MediaMetadata_2 {
     sizeBytes: number;
 }
 export { MediaMetadata_2 as MediaMetadata }
+
+// @public
+export interface MediaPropertyLocation {
+    	// (undocumented)
+    objectType: string;
+    	// (undocumented)
+    primaryKey: string | number;
+    	// (undocumented)
+    propertyName: string;
+}
 
 // @public
 export interface MediaReference {
