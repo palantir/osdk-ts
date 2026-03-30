@@ -88,8 +88,8 @@ function AnnotationItem({
     styles[annotation.type],
   );
 
-  const hasMultipleRects = annotation.rects != null
-    && annotation.rects.length > 1;
+  const multiRects = annotation.rects;
+  const hasMultipleRects = multiRects != null && multiRects.length > 1;
 
   const style = useMemo(
     () =>
@@ -109,7 +109,7 @@ function AnnotationItem({
         title={annotation.label}
         data-annotation-id={annotation.id}
       >
-        {annotation.rects!.map((rect, i) => (
+        {multiRects.map((rect, i) => (
           <div
             key={i}
             className={className}
@@ -159,6 +159,11 @@ function CustomAnnotationItem({
     [annotation, pageHeight, scale],
   );
 
+  const renderProps = useMemo(
+    () => ({ annotation, scale, pageHeight }),
+    [annotation, scale, pageHeight],
+  );
+
   return (
     <div
       className={styles.annotation}
@@ -170,7 +175,7 @@ function CustomAnnotationItem({
       title={annotation.label}
       data-annotation-id={annotation.id}
     >
-      {annotation.render({ annotation, scale, pageHeight })}
+      {annotation.render(renderProps)}
     </div>
   );
 }
