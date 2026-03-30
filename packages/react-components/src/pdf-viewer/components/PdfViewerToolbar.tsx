@@ -20,12 +20,15 @@ import {
   ChevronLeft,
   ChevronRight,
   Download,
+  FloppyDisk,
+  Highlight,
   Menu,
   Minus,
   Plus,
   RotatePage,
   Search,
 } from "@blueprintjs/icons";
+import classnames from "classnames";
 import React, { useCallback, useEffect, useState } from "react";
 import { MAX_SCALE, MIN_SCALE, SCALE_STEP } from "../constants.js";
 import styles from "./PdfViewerToolbar.module.css";
@@ -43,6 +46,11 @@ export interface PdfViewerToolbarProps {
   enableDownload: boolean;
   onRotateLeft: () => void;
   onRotateRight: () => void;
+  enableHighlight: boolean;
+  highlightModeActive: boolean;
+  onHighlightToggle: () => void;
+  enableFormSave?: boolean;
+  onFormSave?: () => void;
 }
 
 export function PdfViewerToolbar({
@@ -58,6 +66,11 @@ export function PdfViewerToolbar({
   enableDownload,
   onRotateLeft,
   onRotateRight,
+  enableHighlight,
+  highlightModeActive,
+  onHighlightToggle,
+  enableFormSave = false,
+  onFormSave,
 }: PdfViewerToolbarProps): React.ReactElement {
   const [pageInputValue, setPageInputValue] = useState(String(currentPage));
 
@@ -216,6 +229,30 @@ export function PdfViewerToolbar({
         </Button>
       </div>
 
+      {enableHighlight && (
+        <>
+          <div className={styles.separator} />
+
+          <Button
+            className={classnames(
+              styles.toolbarButton,
+              highlightModeActive && styles.toolbarButtonActive,
+            )}
+            onClick={onHighlightToggle}
+            aria-label={highlightModeActive
+              ? "Disable highlight mode"
+              : "Enable highlight mode"}
+            title={highlightModeActive
+              ? "Disable highlight mode"
+              : "Enable highlight mode"}
+            aria-pressed={highlightModeActive}
+            type="button"
+          >
+            <Highlight size={16} />
+          </Button>
+        </>
+      )}
+
       <div className={styles.separator} />
 
       <Button
@@ -240,6 +277,22 @@ export function PdfViewerToolbar({
             type="button"
           >
             <Download size={16} />
+          </Button>
+        </>
+      )}
+
+      {enableFormSave && (
+        <>
+          <div className={styles.separator} />
+
+          <Button
+            className={styles.toolbarButton}
+            onClick={onFormSave}
+            aria-label="Save form"
+            title="Save form"
+            type="button"
+          >
+            <FloppyDisk size={16} />
           </Button>
         </>
       )}
