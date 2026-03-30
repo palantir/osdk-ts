@@ -1,5 +1,20 @@
 # @osdkkit/react
 
+## 0.10.0-beta.13
+
+### Minor Changes
+
+- f294f5a: Remove literal support before GA.
+
+### Patch Changes
+
+- Updated dependencies [f294f5a]
+- Updated dependencies [2855223]
+- Updated dependencies [d284bf2]
+- Updated dependencies [b68cebd]
+  - @osdk/client@2.8.0-beta.28
+  - @osdk/api@2.8.0-beta.28
+
 ## 0.10.0-beta.12
 
 ### Minor Changes

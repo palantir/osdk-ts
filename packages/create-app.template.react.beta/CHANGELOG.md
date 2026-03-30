@@ -1,5 +1,12 @@
 # @osdk/create-app.template.react
 
+## 2.8.0-beta.28
+
+### Minor Changes
+
+- 5f9fb46: Bump @types/node
+- e68e9b1: add dx improvements to react.beta template: path aliases, error boundary, stricter eslint, prettier import sorting, editorconfig, vscode settings
+
 ## 2.8.0-beta.27
 
 ## 2.8.0-beta.26
