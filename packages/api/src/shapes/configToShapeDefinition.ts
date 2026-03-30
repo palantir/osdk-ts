@@ -103,12 +103,6 @@ export function configToShapeDefinition<
       const objectSetDef: ShapeLinkObjectSetDef =
         (traversed as ShapeLinkBuilderInternal).toObjectSetDef();
 
-      if (!linkConfig.target) {
-        throw new Error(
-          `links["${name}"] requires an explicit target shape. `
-            + `Inline shape configs cannot resolve link target types automatically.`,
-        );
-      }
       const targetShape: ShapeDefinition<ObjectOrInterfaceDefinition> =
         linkConfig.target;
 

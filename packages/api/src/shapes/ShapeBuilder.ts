@@ -289,9 +289,9 @@ class ShapeLinkBuilderImpl<
   }
 
   limit(n: number): ShapeLinkBuilder<SOURCE, CURRENT> {
-    if (!Number.isFinite(n) || n <= 0) {
+    if (!Number.isInteger(n) || n <= 0) {
       throw new Error(
-        `ShapeLinkBuilder.limit() requires a positive finite number, got: ${n}`,
+        `ShapeLinkBuilder.limit() requires a positive integer, got: ${n}`,
       );
     }
     return new ShapeLinkBuilderImpl({
