@@ -519,6 +519,10 @@ const { object } = useOsdkObject(Todo, todoId, false);
 For type-safe nullability handling and automatic related data loading, see [Shapes](./shapes.md).
 :::
 
+:::tip Shapes
+For type-safe nullability handling and automatic related data loading, see [Shapes](./shapes.md).
+:::
+
 ---
 
 ## useLinks
