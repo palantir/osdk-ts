@@ -29,6 +29,8 @@ export type { MinimalObjectSet } from "../objectSet/ObjectSet.js";
 
 // Shapes (unstable — will graduate to @osdk/api/shapes when stable)
 export {
+  configToShapeDefinition,
+  createShapeBuilder,
   isSourcePkSymbol,
   ShapeNullabilityError,
   SourcePrimaryKeySymbol,
