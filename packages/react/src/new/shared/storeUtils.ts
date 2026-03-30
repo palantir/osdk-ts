@@ -74,7 +74,7 @@ export function createVersionedCache<T>() {
       cachedSnapshot = null;
     },
     get(builder: () => T): T {
-      if (cachedSnapshot && snapshotVersion === version) {
+      if (cachedSnapshot != null && snapshotVersion === version) {
         return cachedSnapshot;
       }
       cachedSnapshot = builder();
