@@ -16,7 +16,7 @@
 
 import { Radio } from "@base-ui/react/radio";
 import { RadioGroup } from "@base-ui/react/radio-group";
-import { memo, type ReactElement, useCallback, useMemo } from "react";
+import React, { memo, type ReactElement, useCallback, useMemo } from "react";
 import { typedReactMemo } from "../../shared/typedMemo.js";
 import type { Option, RadioButtonsFieldProps } from "../FormFieldApi.js";
 import styles from "./RadioButtonsField.module.css";

@@ -81,6 +81,23 @@ const fieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
     },
   },
   {
+    fieldKey: "resume",
+    fieldComponent: "FILE_PICKER",
+    label: "Resume",
+    fieldComponentProps: {
+      accept: [".pdf", ".doc", ".docx"],
+    },
+  },
+  {
+    fieldKey: "portfolioFiles",
+    fieldComponent: "FILE_PICKER",
+    label: "Portfolio Files",
+    fieldComponentProps: {
+      isMulti: true,
+      accept: "image/*",
+    },
+  },
+  {
     fieldKey: "skills",
     fieldComponent: "DROPDOWN",
     label: "Skills",
