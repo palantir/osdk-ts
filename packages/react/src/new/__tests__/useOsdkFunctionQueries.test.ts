@@ -19,7 +19,7 @@ import type { Client } from "@osdk/client";
 import { renderHook, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi, vitest } from "vitest";
 import { useOsdkClient } from "../../useOsdkClient.js";
-import { useBatchedFunctionQueries } from "../useBatchedFunctionQueries.js";
+import { useOsdkFunctionQueries } from "../useOsdkFunctionQueriesResult.js";
 
 vi.mock("../../useOsdkClient.js");
 
@@ -35,7 +35,7 @@ const mockQueryDefinition2 = {
   version: "1.0.0",
 } as QueryDefinition<any>;
 
-describe("useBatchedFunctionQueries", () => {
+describe("useOsdkFunctionQueries", () => {
   const mockExecuteFunction = vitest.fn();
   const mockClient = vitest.fn(() => ({
     executeFunction: mockExecuteFunction,
@@ -48,7 +48,7 @@ describe("useBatchedFunctionQueries", () => {
 
   it("should return initial state when no queries are provided", () => {
     const { result } = renderHook(
-      () => useBatchedFunctionQueries({ queries: [] }),
+      () => useOsdkFunctionQueries({ queries: [] }),
     );
 
     expect(result.current).toEqual([]);
@@ -57,7 +57,7 @@ describe("useBatchedFunctionQueries", () => {
   it("should not execute queries when enabled is false", () => {
     const { result } = renderHook(
       () =>
-        useBatchedFunctionQueries({
+        useOsdkFunctionQueries({
           queries: [
             { queryDefinition: mockQueryDefinition1 },
           ],
@@ -70,7 +70,6 @@ describe("useBatchedFunctionQueries", () => {
       isLoading: false,
       error: undefined,
       lastUpdated: 0,
-      refetch: expect.any(Function),
     });
     expect(mockClient).not.toHaveBeenCalled();
   });
@@ -81,7 +80,7 @@ describe("useBatchedFunctionQueries", () => {
 
     const { result } = renderHook(
       () =>
-        useBatchedFunctionQueries(
+        useOsdkFunctionQueries(
           {
             queries: [
               {
@@ -101,7 +100,6 @@ describe("useBatchedFunctionQueries", () => {
       isLoading: true,
       error: undefined,
       lastUpdated: 0,
-      refetch: expect.any(Function),
     });
 
     await waitFor(() => {
@@ -131,7 +129,7 @@ describe("useBatchedFunctionQueries", () => {
 
     const { result } = renderHook(
       () =>
-        useBatchedFunctionQueries({
+        useOsdkFunctionQueries({
           queries: [
             {
               queryDefinition: mockQueryDefinition1,
@@ -178,7 +176,7 @@ describe("useBatchedFunctionQueries", () => {
 
     const { result } = renderHook(
       () =>
-        useBatchedFunctionQueries({
+        useOsdkFunctionQueries({
           queries: [
             {
               queryDefinition: mockQueryDefinition1,
@@ -216,7 +214,7 @@ describe("useBatchedFunctionQueries", () => {
 
     const { result } = renderHook(
       () =>
-        useBatchedFunctionQueries({
+        useOsdkFunctionQueries({
           queries: [
             { queryDefinition: mockQueryDefinition1 },
           ],
@@ -245,7 +243,7 @@ describe("useBatchedFunctionQueries", () => {
 
     const { result } = renderHook(
       () =>
-        useBatchedFunctionQueries({
+        useOsdkFunctionQueries({
           queries: [
             { queryDefinition: mockQueryDefinition1 },
             { queryDefinition: mockQueryDefinition2 },
@@ -270,7 +268,7 @@ describe("useBatchedFunctionQueries", () => {
 
     const { unmount } = renderHook(
       () =>
-        useBatchedFunctionQueries({
+        useOsdkFunctionQueries({
           queries: [
             { queryDefinition: mockQueryDefinition1 },
           ],
@@ -302,7 +300,7 @@ describe("useBatchedFunctionQueries", () => {
 
     const { result } = renderHook(
       () =>
-        useBatchedFunctionQueries({
+        useOsdkFunctionQueries({
           queries: [
             { queryDefinition: mockQueryDefinition1 },
             { queryDefinition: mockQueryDefinition2 },
@@ -338,41 +336,6 @@ describe("useBatchedFunctionQueries", () => {
     expect(result.current[1].data).toEqual(result2);
   });
 
-  it("should provide working refetch function", async () => {
-    const mockResult1 = { total: 100 };
-    const mockResult2 = { total: 200 };
-
-    mockExecuteFunction
-      .mockResolvedValueOnce(mockResult1)
-      .mockResolvedValueOnce(mockResult2);
-
-    const { result } = renderHook(
-      () =>
-        useBatchedFunctionQueries({
-          queries: [
-            {
-              queryDefinition: mockQueryDefinition1,
-              options: { params: { id: 1 } as any },
-            },
-          ],
-        }),
-    );
-
-    await waitFor(() => {
-      expect(result.current[0].isLoading).toBe(false);
-    });
-
-    expect(result.current[0].data).toEqual(mockResult1);
-
-    // Call refetch
-    result.current[0].refetch();
-
-    // Verify the client was called again
-    await waitFor(() => {
-      expect(mockExecuteFunction).toHaveBeenCalledTimes(2);
-    });
-  });
-
   it("should rerun queries when parameters change", async () => {
     const mockResult1 = { total: 100 };
     const mockResult2 = { total: 200 };
@@ -383,7 +346,7 @@ describe("useBatchedFunctionQueries", () => {
 
     const { result, rerender } = renderHook(
       ({ params }) =>
-        useBatchedFunctionQueries({
+        useOsdkFunctionQueries({
           queries: [
             {
               queryDefinition: mockQueryDefinition1,

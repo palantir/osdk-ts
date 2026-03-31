@@ -3,4 +3,4 @@
 "@osdk/react-components": minor
 ---
 
-Added useBatchedFunctionQueries to @osdk/react to execute multiple functions in parallel. This is used by ObjectTable to fetch function-backed columns
+Added useOsdkFunctionQueries to @osdk/react to execute multiple functions in parallel. This is used by ObjectTable to fetch function-backed columns

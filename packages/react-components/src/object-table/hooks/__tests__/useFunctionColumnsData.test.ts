@@ -21,15 +21,15 @@ import type {
   PropertyKeys,
   QueryDefinition,
 } from "@osdk/api";
-import type { UseBatchedFunctionQueryResult } from "@osdk/react/experimental";
-import { useBatchedFunctionQueries } from "@osdk/react/unstable-do-not-use";
+import type { UseOsdkFunctionQueriesResult } from "@osdk/react/experimental";
+import { useOsdkFunctionQueries } from "@osdk/react/unstable-do-not-use";
 import { renderHook } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { ColumnDefinition } from "../../ObjectTableApi.js";
 import { useFunctionColumnsData } from "../useFunctionColumnsData.js";
 
 vi.mock("@osdk/react/unstable-do-not-use", () => ({
-  useBatchedFunctionQueries: vi.fn(),
+  useOsdkFunctionQueries: vi.fn(),
 }));
 
 const TestObjectType: ObjectTypeDefinition = {
@@ -102,32 +102,32 @@ const columnDefinitions: ColumnDefinition<
 
 describe("useFunctionColumnsData", () => {
   beforeEach(() => {
-    vi.mocked(useBatchedFunctionQueries).mockClear();
+    vi.mocked(useOsdkFunctionQueries).mockClear();
   });
 
   it("should return empty data when no object set is provided", () => {
-    vi.mocked(useBatchedFunctionQueries).mockReturnValue([]);
+    vi.mocked(useOsdkFunctionQueries).mockReturnValue([]);
 
     const { result } = renderHook(
       () => useFunctionColumnsData(undefined, mockObjects, undefined),
     );
 
     expect(result.current).toEqual({});
-    expect(useBatchedFunctionQueries).toHaveBeenCalledWith({
+    expect(useOsdkFunctionQueries).toHaveBeenCalledWith({
       queries: [],
       enabled: false,
     });
   });
 
   it("should return empty data when objects array is empty", () => {
-    vi.mocked(useBatchedFunctionQueries).mockReturnValue([]);
+    vi.mocked(useOsdkFunctionQueries).mockReturnValue([]);
 
     const { result } = renderHook(
       () => useFunctionColumnsData(mockObjectSet, [], undefined),
     );
 
     expect(result.current).toEqual({});
-    expect(useBatchedFunctionQueries).toHaveBeenCalledWith({
+    expect(useOsdkFunctionQueries).toHaveBeenCalledWith({
       queries: [],
       enabled: false,
     });
@@ -140,7 +140,7 @@ describe("useFunctionColumnsData", () => {
     };
 
     // Mock initial loading state
-    vi.mocked(useBatchedFunctionQueries).mockReturnValue([
+    vi.mocked(useOsdkFunctionQueries).mockReturnValue([
       {
         data: undefined,
         error: undefined,
@@ -148,7 +148,7 @@ describe("useFunctionColumnsData", () => {
         lastUpdated: 0,
         refetch: vi.fn(),
       },
-    ] as unknown as UseBatchedFunctionQueryResult);
+    ] as unknown as UseOsdkFunctionQueriesResult);
 
     const { result, rerender } = renderHook(
       () =>
@@ -174,7 +174,7 @@ describe("useFunctionColumnsData", () => {
     });
 
     // Mock successful data response
-    vi.mocked(useBatchedFunctionQueries).mockReturnValue([
+    vi.mocked(useOsdkFunctionQueries).mockReturnValue([
       {
         data: mockResult,
         error: undefined,
@@ -182,7 +182,7 @@ describe("useFunctionColumnsData", () => {
         lastUpdated: Date.now(),
         refetch: vi.fn(),
       },
-    ] as unknown as UseBatchedFunctionQueryResult);
+    ] as unknown as UseOsdkFunctionQueriesResult);
 
     rerender();
 
@@ -203,7 +203,7 @@ describe("useFunctionColumnsData", () => {
       },
     });
 
-    expect(useBatchedFunctionQueries).toHaveBeenCalledWith({
+    expect(useOsdkFunctionQueries).toHaveBeenCalledWith({
       queries: [
         {
           queryDefinition: mockQueryDefinition,
@@ -246,7 +246,7 @@ describe("useFunctionColumnsData", () => {
       },
     ];
 
-    vi.mocked(useBatchedFunctionQueries).mockReturnValue([
+    vi.mocked(useOsdkFunctionQueries).mockReturnValue([
       {
         data: mockResult,
         error: undefined,
@@ -254,7 +254,7 @@ describe("useFunctionColumnsData", () => {
         lastUpdated: Date.now(),
         refetch: vi.fn(),
       },
-    ] as unknown as UseBatchedFunctionQueryResult);
+    ] as unknown as UseOsdkFunctionQueriesResult);
 
     const { result } = renderHook(
       () =>
@@ -322,7 +322,7 @@ describe("useFunctionColumnsData", () => {
       },
     ];
 
-    vi.mocked(useBatchedFunctionQueries).mockReturnValue([
+    vi.mocked(useOsdkFunctionQueries).mockReturnValue([
       {
         data: mockResult,
         error: undefined,
@@ -330,7 +330,7 @@ describe("useFunctionColumnsData", () => {
         lastUpdated: Date.now(),
         refetch: vi.fn(),
       },
-    ] as unknown as UseBatchedFunctionQueryResult);
+    ] as unknown as UseOsdkFunctionQueriesResult);
 
     const { result } = renderHook(
       () =>
@@ -357,7 +357,7 @@ describe("useFunctionColumnsData", () => {
     });
 
     // Should only make one query since both columns use the same query definition
-    expect(useBatchedFunctionQueries).toHaveBeenCalledWith({
+    expect(useOsdkFunctionQueries).toHaveBeenCalledWith({
       queries: [
         {
           queryDefinition: mockQueryDefinition,
@@ -429,8 +429,7 @@ describe("useFunctionColumnsData", () => {
       },
     ];
 
-    // Two different queries should be batched
-    vi.mocked(useBatchedFunctionQueries).mockReturnValue([
+    vi.mocked(useOsdkFunctionQueries).mockReturnValue([
       {
         data: mockResult1,
         error: undefined,
@@ -445,7 +444,7 @@ describe("useFunctionColumnsData", () => {
         lastUpdated: Date.now(),
         refetch: vi.fn(),
       },
-    ] as unknown as UseBatchedFunctionQueryResult);
+    ] as unknown as UseOsdkFunctionQueriesResult);
 
     const { result } = renderHook(
       () =>
@@ -472,7 +471,7 @@ describe("useFunctionColumnsData", () => {
     });
 
     // Should make two queries since columns use different query definitions
-    expect(useBatchedFunctionQueries).toHaveBeenCalledWith({
+    expect(useOsdkFunctionQueries).toHaveBeenCalledWith({
       queries: [
         {
           queryDefinition: mockQueryDefinition,
@@ -512,7 +511,7 @@ describe("useFunctionColumnsData", () => {
     };
 
     // Mock the response with data only for obj1
-    vi.mocked(useBatchedFunctionQueries).mockReturnValue([
+    vi.mocked(useOsdkFunctionQueries).mockReturnValue([
       {
         data: mockResult,
         error: undefined,
@@ -520,7 +519,7 @@ describe("useFunctionColumnsData", () => {
         lastUpdated: Date.now(),
         refetch: vi.fn(),
       },
-    ] as unknown as UseBatchedFunctionQueryResult);
+    ] as unknown as UseOsdkFunctionQueriesResult);
 
     const { result } = renderHook(
       () =>
@@ -548,7 +547,7 @@ describe("useFunctionColumnsData", () => {
   it("should handle errors gracefully", async () => {
     const mockError = new Error("Query failed");
 
-    vi.mocked(useBatchedFunctionQueries).mockReturnValue([
+    vi.mocked(useOsdkFunctionQueries).mockReturnValue([
       {
         data: undefined,
         error: mockError,
@@ -556,7 +555,7 @@ describe("useFunctionColumnsData", () => {
         lastUpdated: Date.now(),
         refetch: vi.fn(),
       },
-    ] as unknown as UseBatchedFunctionQueryResult);
+    ] as unknown as UseOsdkFunctionQueriesResult);
 
     const { result } = renderHook(
       () =>
@@ -591,14 +590,14 @@ describe("useFunctionColumnsData", () => {
       },
     ];
 
-    vi.mocked(useBatchedFunctionQueries).mockReturnValue([]);
+    vi.mocked(useOsdkFunctionQueries).mockReturnValue([]);
 
     renderHook(
       () =>
         useFunctionColumnsData(mockObjectSet, mockObjects, nonFunctionColumns),
     );
 
-    expect(useBatchedFunctionQueries).toHaveBeenCalledWith({
+    expect(useOsdkFunctionQueries).toHaveBeenCalledWith({
       queries: [],
       enabled: false,
     });
@@ -606,7 +605,7 @@ describe("useFunctionColumnsData", () => {
 
   it("should handle loading state transitions correctly", () => {
     // Initial loading state
-    vi.mocked(useBatchedFunctionQueries).mockReturnValue([
+    vi.mocked(useOsdkFunctionQueries).mockReturnValue([
       {
         data: undefined,
         error: undefined,
@@ -614,7 +613,7 @@ describe("useFunctionColumnsData", () => {
         lastUpdated: 0,
         refetch: vi.fn(),
       },
-    ] as unknown as UseBatchedFunctionQueryResult);
+    ] as unknown as UseOsdkFunctionQueriesResult);
 
     const { result, rerender } = renderHook(
       () =>
@@ -631,7 +630,7 @@ describe("useFunctionColumnsData", () => {
       "TestObject:obj2": { value: "result2" },
     };
 
-    vi.mocked(useBatchedFunctionQueries).mockReturnValue([
+    vi.mocked(useOsdkFunctionQueries).mockReturnValue([
       {
         data: mockResult,
         error: undefined,
@@ -639,7 +638,7 @@ describe("useFunctionColumnsData", () => {
         lastUpdated: Date.now(),
         refetch: vi.fn(),
       },
-    ] as unknown as UseBatchedFunctionQueryResult);
+    ] as unknown as UseOsdkFunctionQueriesResult);
 
     rerender();
 

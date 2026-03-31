@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-export { useBatchedFunctionQueries } from "../new/useBatchedFunctionQueries.js";
+export { useOsdkFunctionQueries } from "../new/useOsdkFunctionQueries.js";
 export type {
   FunctionQueryParams,
-  UseBatchedFunctionQueriesProps,
-  UseBatchedFunctionQueryResult,
-} from "../new/useBatchedFunctionQueries.js";
+  useOsdkFunctionQueriesProps,
+  UseOsdkFunctionQueriesResult,
+} from "../new/useOsdkFunctionQueries.js";
