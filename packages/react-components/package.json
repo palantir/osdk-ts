@@ -73,9 +73,9 @@
     "react-hook-form": "^7.54.0"
   },
   "peerDependencies": {
-    "@osdk/api": "*",
-    "@osdk/client": "*",
-    "@osdk/react": "*",
+    "@osdk/api": ">=2.1.0-0 <3.0.0",
+    "@osdk/client": ">=2.0.0-0 <3.0.0",
+    "@osdk/react": ">=0.7.0-0 <1.0.0",
     "@types/react": "^17 || ^18 || ^19",
     "classnames": "^2.0.0",
     "react": "^17 || ^18 || ^19",
