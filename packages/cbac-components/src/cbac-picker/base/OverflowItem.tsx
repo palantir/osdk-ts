@@ -59,7 +59,7 @@ export const OverflowItem: React.MemoExoticComponent<
       )}
       onClick={handleClick}
       disabled={disabled ?? disallowed}
-      aria-pressed={isSelected}
+      aria-pressed={isSelected || implied}
     >
       {getDisplayLabel(label, selectionState)}
     </Button>

@@ -53,7 +53,8 @@ export function MarkingButton({
       )}
       onClick={onToggle}
       disabled={disabled ?? isDisallowed(selectionState)}
-      aria-pressed={selectionState === "SELECTED"}
+      aria-pressed={selectionState === "SELECTED"
+        || selectionState === "IMPLIED"}
     >
       {getDisplayLabel(label, selectionState)}
     </Button>
