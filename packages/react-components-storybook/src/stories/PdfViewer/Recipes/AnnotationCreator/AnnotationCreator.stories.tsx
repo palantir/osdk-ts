@@ -36,18 +36,8 @@ const HIGHLIGHT_COLOR = "#fff066";
  * Walk up from a DOM node to find the enclosing pdfjs `.page` element.
  */
 function findPageElement(node: Node): HTMLElement | undefined {
-  let current: Node | null = node;
-  while (current != null) {
-    if (
-      current instanceof HTMLElement
-      && current.classList.contains("page")
-      && current.getAttribute("data-page-number") != null
-    ) {
-      return current;
-    }
-    current = current.parentNode;
-  }
-  return undefined;
+  const el = node instanceof Element ? node : node.parentElement;
+  return el?.closest<HTMLElement>(".page[data-page-number]") ?? undefined;
 }
 
 /**
@@ -69,6 +59,81 @@ function domRectToPdfRect(
   return { x, y, width, height };
 }
 
+const sidebarItemStyles: React.CSSProperties = {
+  padding: 8,
+  marginBottom: 8,
+  backgroundColor: "#fff",
+  border: "1px solid #e0e0e0",
+  borderRadius: 4,
+  cursor: "pointer",
+};
+
+const sidebarItemPageStyles: React.CSSProperties = {
+  fontSize: 12,
+  color: "#666",
+  marginBottom: 4,
+};
+
+const sidebarItemTextStyles: React.CSSProperties = {
+  fontSize: 13,
+  marginBottom: 8,
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  display: "-webkit-box",
+  WebkitLineClamp: 3,
+  WebkitBoxOrient: "vertical",
+};
+
+const deleteButtonStyles: React.CSSProperties = {
+  fontSize: 12,
+  color: "#c00",
+  background: "none",
+  border: "none",
+  cursor: "pointer",
+  padding: 0,
+};
+
+const sidebarStyles: React.CSSProperties = {
+  width: 260,
+  borderLeft: "1px solid #e0e0e0",
+  padding: 12,
+  overflowY: "auto",
+  backgroundColor: "#fafafa",
+  flexShrink: 0,
+};
+
+const sidebarHeaderStyles: React.CSSProperties = {
+  margin: "0 0 12px",
+  fontSize: 14,
+};
+
+const toggleButtonBaseStyles: React.CSSProperties = {
+  width: "100%",
+  padding: "8px 12px",
+  marginBottom: 12,
+  border: "none",
+  borderRadius: 4,
+  cursor: "pointer",
+  fontSize: 13,
+  fontWeight: 600,
+  color: "white",
+};
+
+const emptyMessageStyles: React.CSSProperties = {
+  color: "#888",
+  fontSize: 13,
+};
+
+const demoContainerStyles: React.CSSProperties = {
+  display: "flex",
+  height: "600px",
+};
+
+const viewerContainerStyles: React.CSSProperties = {
+  flex: 1,
+  minWidth: 0,
+};
+
 interface AnnotationSidebarItemProps {
   annotation: AnnotationWithText;
   onClick: (page: number) => void;
@@ -87,47 +152,27 @@ function AnnotationSidebarItem(
     onDelete(annotation.id);
   }, [onDelete, annotation.id]);
 
+  const itemStyles: React.CSSProperties = {
+    ...sidebarItemStyles,
+    borderLeft: `3px solid ${annotation.color ?? HIGHLIGHT_COLOR}`,
+  };
+
   return (
     <div
       onClick={handleClick}
       role="button"
       tabIndex={0}
-      style={{
-        padding: 8,
-        marginBottom: 8,
-        backgroundColor: "#fff",
-        border: "1px solid #e0e0e0",
-        borderRadius: 4,
-        borderLeft: `3px solid ${annotation.color ?? HIGHLIGHT_COLOR}`,
-        cursor: "pointer",
-      }}
+      style={itemStyles}
     >
-      <div style={{ fontSize: 12, color: "#666", marginBottom: 4 }}>
+      <div style={sidebarItemPageStyles}>
         Page {annotation.page}
       </div>
-      <div
-        style={{
-          fontSize: 13,
-          marginBottom: 8,
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          display: "-webkit-box",
-          WebkitLineClamp: 3,
-          WebkitBoxOrient: "vertical",
-        }}
-      >
+      <div style={sidebarItemTextStyles}>
         &ldquo;{annotation.selectedText}&rdquo;
       </div>
       <button
         onClick={handleDelete}
-        style={{
-          fontSize: 12,
-          color: "#c00",
-          background: "none",
-          border: "none",
-          cursor: "pointer",
-          padding: 0,
-        }}
+        style={deleteButtonStyles}
       >
         Delete
       </button>
@@ -152,40 +197,25 @@ function AnnotationSidebar(
     onDelete,
   }: AnnotationSidebarProps,
 ): React.ReactElement {
+  const toggleButtonStyles: React.CSSProperties = {
+    ...toggleButtonBaseStyles,
+    background: annotationModeActive ? "#c00" : "#2965cc",
+  };
+
   return (
-    <div
-      style={{
-        width: 260,
-        borderLeft: "1px solid #e0e0e0",
-        padding: 12,
-        overflowY: "auto",
-        backgroundColor: "#fafafa",
-        flexShrink: 0,
-      }}
-    >
-      <h3 style={{ margin: "0 0 12px", fontSize: 14 }}>
+    <div style={sidebarStyles}>
+      <h3 style={sidebarHeaderStyles}>
         Annotations ({annotations.length})
       </h3>
       <button
         onClick={onToggleMode}
         type="button"
-        style={{
-          width: "100%",
-          padding: "8px 12px",
-          marginBottom: 12,
-          border: "none",
-          borderRadius: 4,
-          cursor: "pointer",
-          fontSize: 13,
-          fontWeight: 600,
-          background: annotationModeActive ? "#c00" : "#2965cc",
-          color: "white",
-        }}
+        style={toggleButtonStyles}
       >
         {annotationModeActive ? "Stop Annotating" : "Start Annotating"}
       </button>
       {annotations.length === 0 && (
-        <p style={{ color: "#888", fontSize: 13 }}>
+        <p style={emptyMessageStyles}>
           {annotationModeActive
             ? "Select text on the PDF to create an annotation."
             : "Click \"Start Annotating\" then select text on the PDF."}
@@ -283,8 +313,8 @@ function AnnotationCreatorDemo(
   }, [annotationModeActive]);
 
   return (
-    <div style={{ display: "flex", height: "600px" }}>
-      <div ref={containerRef} style={{ flex: 1, minWidth: 0 }}>
+    <div style={demoContainerStyles}>
+      <div ref={containerRef} style={viewerContainerStyles}>
         <BasePdfViewer
           ref={viewerRef}
           src={src}

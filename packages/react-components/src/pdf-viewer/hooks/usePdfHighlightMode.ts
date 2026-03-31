@@ -255,11 +255,8 @@ export function usePdfHighlightMode({
     // Remove the editor's DOM element if it exists
     const allEntries = storage.getAll() as Record<string, unknown> | null;
     const entry = allEntries?.[editorId];
-    if (
-      typeof entry === "object" && entry != null && "div" in entry
-      && (entry as { div?: unknown }).div instanceof HTMLElement
-    ) {
-      (entry as { div: HTMLElement }).div.remove();
+    if (hasDiv(entry) && entry.div instanceof HTMLElement) {
+      entry.div.remove();
     }
 
     storage.remove(editorId);
@@ -270,4 +267,8 @@ export function usePdfHighlightMode({
     toggleHighlightMode,
     deleteHighlight,
   };
+}
+
+function hasDiv(obj: unknown): obj is { div: unknown } {
+  return obj != null && typeof obj === "object" && "div" in obj;
 }
