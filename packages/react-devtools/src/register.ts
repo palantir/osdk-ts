@@ -24,10 +24,6 @@ import { getMonitorStore, MonitorStore } from "./store/MonitorStore.js";
 
 safelyInstallDevToolsHook();
 
-function isObservableClient(v: unknown): v is ObservableClient {
-  return typeof v === "object" && v != null && "observeList" in v;
-}
-
 const isDev = typeof process !== "undefined"
   ? process.env?.NODE_ENV !== "production"
   : true;
@@ -38,17 +34,14 @@ if (isDev) {
     globalMonitorStore;
 
   registerDevTools({
-    wrapClient: (client: unknown) => {
-      if (!isObservableClient(client)) {
-        return client;
-      }
+    wrapClient: (client: ObservableClient) => {
       return globalMonitorStore.wrapExistingClient(client);
     },
 
-    wrapChildren: (children: React.ReactNode, monitoredClient: unknown) => {
-      if (typeof monitoredClient !== "object" || monitoredClient == null) {
-        return children;
-      }
+    wrapChildren: (
+      children: React.ReactNode,
+      monitoredClient: ObservableClient,
+    ) => {
       const monitorStore = getMonitorStore(monitoredClient);
 
       if (!monitorStore) {

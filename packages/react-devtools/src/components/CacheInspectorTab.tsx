@@ -109,7 +109,7 @@ export const CacheInspectorTab: React.FC<CacheInspectorTabProps> = (
           0,
         );
         const totalHits = entries.reduce(
-          (sum: number, e: CacheEntry) => sum + e.metadata.hitCount,
+          (sum: number, e: CacheEntry) => sum + (e.metadata.hitCount ?? 0),
           0,
         );
         return {
@@ -374,7 +374,7 @@ export const CacheInspectorTab: React.FC<CacheInspectorTabProps> = (
                     </div>
                   )}
 
-                  {entry.data && (
+                  {entry.data !== undefined && (
                     <div className={styles.section}>
                       <h4>Cached Data</h4>
                       <CopyableCodeBlock className={styles.codeBlock}>

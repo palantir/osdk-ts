@@ -81,8 +81,8 @@ describe("CacheEfficiencyAnalyzer", () => {
 
     const result = analyzer.analyze({ entries } as never);
     expect(result.hotEntries).toHaveLength(10);
-    expect(result.hotEntries[0].metadata.hitCount).toBeGreaterThanOrEqual(
-      result.hotEntries[1].metadata.hitCount,
+    expect(result.hotEntries[0].metadata.hitCount ?? 0).toBeGreaterThanOrEqual(
+      result.hotEntries[1].metadata.hitCount ?? 0,
     );
   });
 

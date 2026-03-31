@@ -36,9 +36,7 @@ import type {
 import { ActionLifecycleTracker } from "./ActionLifecycleTracker.js";
 import { componentContextCapture } from "./ComponentContextCapture.js";
 import type {
-  ComponentHookBinding,
   ComponentQueryRegistry,
-  QueryParams,
 } from "./ComponentQueryRegistry.js";
 import type { EventTimeline } from "./EventTimeline.js";
 import type { LinkTraversalTracker } from "./LinkTraversalTracker.js";
@@ -70,14 +68,6 @@ interface AggregationObserver {
   }): void;
   error(err: unknown): void;
   complete(): void;
-}
-
-type HookRegistrarFn = (...args: unknown[]) => void;
-
-function asHookRegistrar(
-  fn: ((...args: never[]) => void) | undefined,
-): HookRegistrarFn | undefined {
-  return fn as HookRegistrarFn | undefined;
 }
 
 interface ExtendedClientMethods {
@@ -233,26 +223,6 @@ export class ObservableClientMonitor {
           wrapped = this.wrapApplyAction(target.applyAction.bind(target));
         } else if (prop === "validateAction") {
           wrapped = this.wrapValidateAction(target.validateAction.bind(target));
-        } else if (prop === "registerActionHook") {
-          wrapped = this.wrapRegisterActionHook(
-            asHookRegistrar(ext.registerActionHook?.bind(ext)),
-          );
-        } else if (prop === "registerObjectHook") {
-          wrapped = this.wrapRegisterObjectHook(
-            asHookRegistrar(ext.registerObjectHook?.bind(ext)),
-          );
-        } else if (prop === "registerListHook") {
-          wrapped = this.wrapRegisterListHook(
-            asHookRegistrar(ext.registerListHook?.bind(ext)),
-          );
-        } else if (prop === "registerLinkHook") {
-          wrapped = this.wrapRegisterLinkHook(
-            asHookRegistrar(ext.registerLinkHook?.bind(ext)),
-          );
-        } else if (prop === "registerObjectSetHook") {
-          wrapped = this.wrapRegisterObjectSetHook(
-            asHookRegistrar(ext.registerObjectSetHook?.bind(ext)),
-          );
         } else if (prop === "getCacheSnapshot") {
           wrapped = ext.getCacheSnapshot?.bind(ext);
         } else if (prop === "invalidateAll") {
@@ -1253,159 +1223,6 @@ export class ObservableClientMonitor {
     }
 
     return objects;
-  }
-
-  private createHookRegistrar(
-    hookType: ComponentHookBinding["hookType"],
-    buildConfig: (...args: unknown[]) => {
-      signature: string;
-      queryParams: QueryParams;
-    },
-    original?: HookRegistrarFn,
-  ): (...args: unknown[]) => void {
-    return (...args: unknown[]) => {
-      const componentContext = this.captureComponentContext
-        ? componentContextCapture.captureNow()
-        : null;
-
-      const { signature, queryParams } = buildConfig(...args);
-
-      if (componentContext && this.captureQueryParams) {
-        const existingBindings = this.componentRegistry.getComponentBindings(
-          componentContext.id,
-        );
-        const alreadyRegistered = existingBindings.some(b =>
-          b.hookType === hookType && b.querySignature === signature
-        );
-
-        if (!alreadyRegistered) {
-          this.componentRegistry.registerBinding({
-            componentId: componentContext.id,
-            componentName: componentContext.name,
-            componentDisplayName: componentContext.displayName,
-            hookType,
-            hookIndex: 0,
-            querySignature: signature,
-            queryParams,
-          });
-        }
-      }
-
-      if (original) {
-        original(...args);
-      }
-    };
-  }
-
-  private wrapRegisterActionHook(
-    original?: HookRegistrarFn,
-  ): (...args: unknown[]) => void {
-    return this.createHookRegistrar("useOsdkAction", (actionDef) => {
-      const def = actionDef as string | { apiName: string };
-      const actionName = typeof def === "string" ? def : def.apiName;
-      return {
-        signature: `action:${actionName}`,
-        queryParams: { type: "action", actionName },
-      };
-    }, original);
-  }
-
-  private wrapRegisterObjectHook(
-    original?: HookRegistrarFn,
-  ): (...args: unknown[]) => void {
-    return this.createHookRegistrar(
-      "useOsdkObject",
-      (...args: unknown[]) => {
-        const objectType = args[0] as string | { apiName: string };
-        const primaryKey = args[1] as string | number | undefined;
-        const objectTypeStr = typeof objectType === "string"
-          ? objectType
-          : objectType.apiName;
-        const signature = primaryKey
-          ? `object:${objectTypeStr}:${String(primaryKey)}`
-          : `object:${objectTypeStr}`;
-        return {
-          signature,
-          queryParams: {
-            type: "object",
-            objectType: objectTypeStr,
-            primaryKey: primaryKey ? String(primaryKey) : "",
-          },
-        };
-      },
-      original,
-    );
-  }
-
-  private wrapRegisterListHook(
-    original?: HookRegistrarFn,
-  ): (...args: unknown[]) => void {
-    return this.createHookRegistrar(
-      "useOsdkObjects",
-      (...args: unknown[]) => {
-        const objectType = args[0] as string | { apiName: string };
-        const options = args[1] as {
-          where?: unknown;
-          orderBy?: unknown;
-          pageSize?: number;
-        } | undefined;
-        const objectTypeStr = typeof objectType === "string"
-          ? objectType
-          : objectType.apiName;
-        const whereClause = JSON.stringify(options?.where ?? {});
-        const orderBy = JSON.stringify(options?.orderBy);
-        return {
-          signature:
-            `useOsdkObjects:${objectTypeStr}:${whereClause}:${orderBy}`,
-          queryParams: {
-            type: "list",
-            objectType: objectTypeStr,
-            where: options?.where,
-            orderBy: options?.orderBy,
-            pageSize: options?.pageSize,
-          },
-        };
-      },
-      original,
-    );
-  }
-
-  private wrapRegisterLinkHook(
-    original?: HookRegistrarFn,
-  ): (...args: unknown[]) => void {
-    return this.createHookRegistrar(
-      "useLinks",
-      (...args: unknown[]) => {
-        const sourceObject = args[0] as OsdkObject | OsdkObject[];
-        const linkName = args[1] as string;
-        const sourceKeys = Array.isArray(sourceObject)
-          ? sourceObject.map((obj) => `${obj.$apiName}:${obj.$primaryKey}`)
-            .join(",")
-          : `${sourceObject.$apiName}:${sourceObject.$primaryKey}`;
-        return {
-          signature: `links:${sourceKeys}:${linkName}`,
-          queryParams: {
-            type: "links",
-            sourceObject: sourceKeys,
-            linkName,
-          },
-        };
-      },
-      original,
-    );
-  }
-
-  private wrapRegisterObjectSetHook(
-    original?: HookRegistrarFn,
-  ): (...args: unknown[]) => void {
-    return this.createHookRegistrar("useObjectSet", (objectSet) => ({
-      signature: `objectset:${JSON.stringify(objectSet)}`,
-      queryParams: {
-        type: "objectSet" as const,
-        baseObjectSet: JSON.stringify(objectSet),
-        operations: [],
-      },
-    }), original);
   }
 
   getCacheSnapshot(): Promise<CacheSnapshot> {
