@@ -20,6 +20,8 @@
   border-radius: var(--osdk-cbac-banner-border-radius);
   width: 100%;
   box-sizing: border-box;
+  background: var(--osdk-cbac-banner-bg);
+  color: var(--osdk-cbac-banner-color);
 }
 
 .banner {

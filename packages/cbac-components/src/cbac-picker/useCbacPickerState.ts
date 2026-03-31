@@ -27,8 +27,9 @@ import type {
   MarkingSelectionState,
   PickerMarking,
   PickerMarkingCategory,
+  RequiredMarkingGroup,
 } from "./types.js";
-import { EMPTY_ARRAY } from "./utils/cbacPickerUtils.js";
+import { EMPTY_ARRAY, resolveRequiredGroups } from "./utils/cbacPickerUtils.js";
 import {
   computeMarkingStates,
   groupMarkingsByCategory,
@@ -40,7 +41,7 @@ export interface UseCbacPickerStateResult {
   categoryGroups: CategoryMarkingGroup[];
   markingStates: Map<string, MarkingSelectionState>;
   banner: CbacBannerData | undefined;
-  requiredMarkingGroups: string[][];
+  requiredMarkingGroups: RequiredMarkingGroup[];
   isValid: boolean;
   isLoading: boolean;
   error: Error | undefined;
@@ -59,7 +60,11 @@ export function useCbacPickerState(
     isLoading: markingsLoading,
     error: markingsError,
   } = useMarkings();
-  const { banner } = useCbacBanner({ markingIds: selectedIds });
+  const {
+    banner,
+    isLoading: bannerLoading,
+    error: bannerError,
+  } = useCbacBanner({ markingIds: selectedIds });
   const {
     restrictions,
     isLoading: restrictionsLoading,
@@ -72,13 +77,14 @@ export function useCbacPickerState(
   const isValid = restrictions?.isValid ?? true;
 
   const isLoading = categoriesLoading || markingsLoading
-    || restrictionsLoading;
+    || restrictionsLoading || bannerLoading;
 
   const error = React.useMemo(() => {
     const errors = [
       categoriesError,
       markingsError,
       restrictionsError,
+      bannerError,
     ].filter((e): e is Error => e != null);
     if (errors.length > 1) {
       return new AggregateError(
@@ -87,7 +93,7 @@ export function useCbacPickerState(
       );
     }
     return errors[0];
-  }, [categoriesError, markingsError, restrictionsError]);
+  }, [categoriesError, markingsError, restrictionsError, bannerError]);
 
   const pickerCategories = React.useMemo((): PickerMarkingCategory[] => {
     if (rawCategories === undefined) {
@@ -130,11 +136,16 @@ export function useCbacPickerState(
     [selectedIds, impliedMarkingIds, disallowedMarkingIds],
   );
 
+  const resolvedRequiredGroups = React.useMemo(
+    () => resolveRequiredGroups(categoryGroups, requiredMarkingGroups),
+    [categoryGroups, requiredMarkingGroups],
+  );
+
   return {
     categoryGroups,
     markingStates,
     banner,
-    requiredMarkingGroups,
+    requiredMarkingGroups: resolvedRequiredGroups,
     isValid,
     isLoading,
     error,

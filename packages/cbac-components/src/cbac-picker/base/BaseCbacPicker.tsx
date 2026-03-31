@@ -95,13 +95,21 @@ export function BaseCbacPicker({
       )}
       {error != null
         ? (
-          <div className={styles.statusMessage}>
+          <div
+            className={styles.statusMessage}
+            role="status"
+            aria-live="polite"
+          >
             {error.message}
           </div>
         )
         : showInitialLoading
         ? (
-          <div className={styles.statusMessage}>
+          <div
+            className={styles.statusMessage}
+            role="status"
+            aria-live="polite"
+          >
             Loading...
           </div>
         )

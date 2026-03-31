@@ -26,9 +26,7 @@ export interface BaseCbacBannerProps {
   backgroundColors: string[];
   onClick?: () => void;
   onDismiss?: () => void;
-  interactive?: boolean;
   className?: string;
-  style?: React.CSSProperties;
 }
 
 export function BaseCbacBanner({
@@ -37,15 +35,12 @@ export function BaseCbacBanner({
   backgroundColors,
   onClick,
   onDismiss,
-  interactive,
   className,
-  style,
 }: BaseCbacBannerProps): React.ReactElement {
-  const backgroundStyle = React.useMemo((): React.CSSProperties => ({
-    color: textColor,
-    background: backgroundFromColors(backgroundColors),
-    ...style,
-  }), [textColor, backgroundColors, style]);
+  const bannerStyle = React.useMemo((): React.CSSProperties => ({
+    "--osdk-cbac-banner-bg": backgroundFromColors(backgroundColors),
+    "--osdk-cbac-banner-color": textColor,
+  } as React.CSSProperties), [textColor, backgroundColors]);
 
   const handleDismiss = React.useCallback(
     (e: React.MouseEvent) => {
@@ -68,13 +63,11 @@ export function BaseCbacBanner({
     )
     : null;
 
-  const isInteractive = interactive === true || onClick != null;
-
   if (onClick != null) {
     return (
       <div
         className={classnames(styles.bannerRow, className)}
-        style={backgroundStyle}
+        style={bannerStyle}
       >
         <button
           type="button"
@@ -92,14 +85,9 @@ export function BaseCbacBanner({
   return (
     <div
       className={classnames(styles.bannerRow, className)}
-      style={backgroundStyle}
+      style={bannerStyle}
     >
-      <span
-        className={classnames(
-          styles.banner,
-          isInteractive && styles.clickable,
-        )}
-      >
+      <span className={styles.banner}>
         {classificationString}
       </span>
       {dismissButton}
