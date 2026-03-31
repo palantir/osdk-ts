@@ -41,12 +41,19 @@ export class OrderByCanonicalizer {
     },
   );
 
-  canonicalize: (
+  canonicalize(
     orderBy: Record<string, "asc" | "desc" | undefined>,
-  ) => Canonical<Record<string, "asc" | "desc" | undefined>> = (
-    orderBy,
-  ) => {
+  ): Canonical<Record<string, "asc" | "desc" | undefined>>;
+  canonicalize(
+    orderBy: Record<string, "asc" | "desc" | undefined> | undefined,
+  ): Canonical<Record<string, "asc" | "desc" | undefined>> | undefined;
+  canonicalize(
+    orderBy: Record<string, "asc" | "desc" | undefined> | undefined,
+  ): Canonical<Record<string, "asc" | "desc" | undefined>> | undefined {
+    if (orderBy == null) {
+      return undefined;
+    }
     const strings = Object.entries(orderBy).flat();
     return this.#trie.lookupArray(strings);
-  };
+  }
 }

@@ -53,5 +53,5 @@ vitest.workspace.ts
 *.ipr
 *.iws
 
-# Files with local extensions
+# Files with local extensions (e.g. settings.local.json, foo.local.ts)
 *.local.*
