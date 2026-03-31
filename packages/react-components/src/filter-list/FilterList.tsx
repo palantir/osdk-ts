@@ -15,7 +15,7 @@
  */
 
 import type { ObjectTypeDefinition, WhereClause } from "@osdk/api";
-import React, { useCallback, useMemo, useRef } from "react";
+import React, { useCallback, useMemo } from "react";
 import { AddFilterPopover } from "./base/AddFilterPopover.js";
 import { BaseFilterList } from "./base/BaseFilterList.js";
 import type { RenderFilterInput } from "./base/BaseFilterListApi.js";
@@ -149,9 +149,6 @@ export function FilterList<Q extends ObjectTypeDefinition>(
     [uncontrolledAddFilterMode, handleFilterRemoved, onFilterRemoved],
   );
 
-  const perFilterWhereClausesRef = useRef(perFilterWhereClauses);
-  perFilterWhereClausesRef.current = perFilterWhereClauses;
-
   const renderInput = useCallback<RenderFilterInput<FilterDefinitionUnion<Q>>>(
     (
       {
@@ -169,13 +166,13 @@ export function FilterList<Q extends ObjectTypeDefinition>(
         definition={definition}
         filterState={filterState}
         onFilterStateChanged={onFilterStateChanged}
-        whereClause={perFilterWhereClausesRef.current.get(filterKey)
+        whereClause={perFilterWhereClauses.get(filterKey)
           ?? ({} as WhereClause<Q>)}
         searchQuery={searchQuery}
         excludeRowOpen={excludeRowOpen}
       />
     ),
-    [objectType, objectSet],
+    [objectType, objectSet, perFilterWhereClauses],
   );
 
   return (
