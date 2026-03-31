@@ -15,13 +15,12 @@
  */
 
 import type { QueryDefinition } from "@osdk/api";
-import type { Client } from "@osdk/client";
-import { renderHook, waitFor } from "@testing-library/react";
-import { beforeEach, describe, expect, it, vi, vitest } from "vitest";
-import { useOsdkClient } from "../../useOsdkClient.js";
-import { useOsdkFunctionQueries } from "../useOsdkFunctionQueries.js";
-
-vi.mock("../../useOsdkClient.js");
+import type { Observer } from "@osdk/client/unstable-do-not-use";
+import { act, renderHook } from "@testing-library/react";
+import React from "react";
+import { beforeEach, describe, expect, it, vitest } from "vitest";
+import { OsdkContext2 } from "../OsdkContext2.js";
+import { useBatchedFunctionQueries } from "../useBatchedFunctionQueries.js";
 
 const mockQueryDefinition1 = {
   apiName: "calculateStats",
@@ -35,20 +34,55 @@ const mockQueryDefinition2 = {
   version: "1.0.0",
 } as QueryDefinition<any>;
 
-describe("useOsdkFunctionQueries", () => {
-  const mockExecuteFunction = vitest.fn();
-  const mockClient = vitest.fn(() => ({
-    executeFunction: mockExecuteFunction,
-  }));
+describe("useBatchedFunctionQueries", () => {
+  let capturedObservers: Array<Observer<any>>;
+  let unsubscribeFns: Array<ReturnType<typeof vitest.fn>>;
+  const mockInvalidateFunction = vitest.fn().mockResolvedValue(undefined);
+  const mockObserveFunction = vitest.fn();
+
+  const mockObservableClient = {
+    observeFunction: mockObserveFunction,
+    invalidateFunction: mockInvalidateFunction,
+  };
+
+  function createWrapper() {
+    return ({ children }: { children: React.ReactNode }) =>
+      React.createElement(
+        OsdkContext2.Provider,
+        {
+          value: {
+            client: {} as any,
+            observableClient: mockObservableClient as any,
+          },
+        },
+        children,
+      );
+  }
 
   beforeEach(() => {
     vitest.clearAllMocks();
-    vi.mocked(useOsdkClient).mockReturnValue(mockClient as unknown as Client);
+    capturedObservers = [];
+    unsubscribeFns = [];
+
+    mockObserveFunction.mockImplementation(
+      (
+        _queryDef: any,
+        _params: any,
+        _options: any,
+        observer: Observer<any>,
+      ) => {
+        capturedObservers.push(observer);
+        const unsubscribe = vitest.fn();
+        unsubscribeFns.push(unsubscribe);
+        return { unsubscribe: unsubscribe };
+      },
+    );
   });
 
   it("should return initial state when no queries are provided", () => {
     const { result } = renderHook(
-      () => useOsdkFunctionQueries({ queries: [] }),
+      () => useBatchedFunctionQueries({ queries: [] }),
+      { wrapper: createWrapper() },
     );
 
     expect(result.current).toEqual([]);
@@ -63,6 +97,7 @@ describe("useOsdkFunctionQueries", () => {
           ],
           enabled: false,
         }),
+      { wrapper: createWrapper() },
     );
 
     expect(result.current[0]).toEqual({
@@ -71,61 +106,57 @@ describe("useOsdkFunctionQueries", () => {
       error: undefined,
       lastUpdated: 0,
     });
-    expect(mockClient).not.toHaveBeenCalled();
+    expect(mockObserveFunction).not.toHaveBeenCalled();
   });
 
   it("should execute a single query and return result", async () => {
     const mockResult = { total: 100, average: 25 };
-    mockExecuteFunction.mockResolvedValue(mockResult);
 
     const { result } = renderHook(
       () =>
-        useOsdkFunctionQueries(
-          {
-            queries: [
-              {
-                queryDefinition: mockQueryDefinition1,
-                options: {
-                  params: { departmentId: "engineering" } as any,
-                },
+        useBatchedFunctionQueries({
+          queries: [
+            {
+              queryDefinition: mockQueryDefinition1,
+              options: {
+                params: { departmentId: "engineering" } as any,
               },
-            ],
-          },
-        ),
+            },
+          ],
+        }),
+      { wrapper: createWrapper() },
     );
 
     // Initially shows isLoading state
-    expect(result.current[0]).toEqual({
-      data: undefined,
-      isLoading: true,
-      error: undefined,
-      lastUpdated: 0,
-    });
+    expect(result.current[0].isLoading).toBe(true);
 
-    await waitFor(() => {
-      expect(result.current[0].isLoading).toBe(false);
+    // Simulate the observable delivering a result
+    act(() => {
+      capturedObservers[0].next!({
+        result: mockResult,
+        status: "loaded",
+        lastUpdated: 1000,
+      });
     });
 
     expect(result.current[0]).toMatchObject({
       data: mockResult,
       isLoading: false,
       error: undefined,
-      lastUpdated: expect.any(Number),
+      lastUpdated: 1000,
     });
 
-    expect(mockClient).toHaveBeenCalledWith(mockQueryDefinition1);
-    expect(mockExecuteFunction).toHaveBeenCalledWith({
-      departmentId: "engineering",
-    });
+    expect(mockObserveFunction).toHaveBeenCalledWith(
+      mockQueryDefinition1,
+      { departmentId: "engineering" },
+      { dedupeInterval: 2_000 },
+      expect.any(Object),
+    );
   });
 
   it("should execute multiple queries in parallel", async () => {
     const mockResult1 = { total: 100 };
     const mockResult2 = { reports: ["report1", "report2"] };
-
-    mockExecuteFunction
-      .mockResolvedValueOnce(mockResult1)
-      .mockResolvedValueOnce(mockResult2);
 
     const { result } = renderHook(
       () =>
@@ -145,34 +176,47 @@ describe("useOsdkFunctionQueries", () => {
             },
           ],
         }),
+      { wrapper: createWrapper() },
     );
 
     // Both should start with isLoading
     expect(result.current[0].isLoading).toBe(true);
     expect(result.current[1].isLoading).toBe(true);
 
-    await waitFor(() => {
-      expect(result.current[0].isLoading).toBe(false);
-      expect(result.current[1].isLoading).toBe(false);
+    // Deliver both results
+    act(() => {
+      capturedObservers[0].next!({
+        result: mockResult1,
+        status: "loaded",
+        lastUpdated: 1000,
+      });
+      capturedObservers[1].next!({
+        result: mockResult2,
+        status: "loaded",
+        lastUpdated: 1001,
+      });
     });
 
     expect(result.current[0].data).toEqual(mockResult1);
     expect(result.current[1].data).toEqual(mockResult2);
 
-    expect(mockClient).toHaveBeenCalledTimes(2);
-    expect(mockClient).toHaveBeenCalledWith(mockQueryDefinition1);
-    expect(mockExecuteFunction).toHaveBeenCalledWith({
-      departmentId: "engineering",
-    });
-    expect(mockClient).toHaveBeenCalledWith(mockQueryDefinition2);
-    expect(mockExecuteFunction).toHaveBeenNthCalledWith(2, {
-      startDate: "2024-01-01",
-    });
+    expect(mockObserveFunction).toHaveBeenCalledTimes(2);
+    expect(mockObserveFunction).toHaveBeenCalledWith(
+      mockQueryDefinition1,
+      { departmentId: "engineering" },
+      { dedupeInterval: 2_000 },
+      expect.any(Object),
+    );
+    expect(mockObserveFunction).toHaveBeenCalledWith(
+      mockQueryDefinition2,
+      { startDate: "2024-01-01" },
+      { dedupeInterval: 2_000 },
+      expect.any(Object),
+    );
   });
 
   it("should respect individual query enabled option", async () => {
     const mockResult = { total: 100 };
-    mockExecuteFunction.mockResolvedValue(mockResult);
 
     const { result } = renderHook(
       () =>
@@ -188,6 +232,7 @@ describe("useOsdkFunctionQueries", () => {
             },
           ],
         }),
+      { wrapper: createWrapper() },
     );
 
     // First query should not be loading (disabled)
@@ -195,22 +240,30 @@ describe("useOsdkFunctionQueries", () => {
     // Second query should be loading
     expect(result.current[1].isLoading).toBe(true);
 
-    await waitFor(() => {
-      expect(result.current[1].isLoading).toBe(false);
+    // Only one subscription created (for the enabled query)
+    expect(mockObserveFunction).toHaveBeenCalledTimes(1);
+    expect(mockObserveFunction).toHaveBeenCalledWith(
+      mockQueryDefinition2,
+      undefined,
+      { dedupeInterval: 2_000 },
+      expect.any(Object),
+    );
+
+    // Deliver result for the enabled query
+    act(() => {
+      capturedObservers[0].next!({
+        result: mockResult,
+        status: "loaded",
+        lastUpdated: 1000,
+      });
     });
 
     expect(result.current[0].data).toBeUndefined();
     expect(result.current[1].data).toEqual(mockResult);
-
-    // Only the second query should have been called
-    expect(mockClient).toHaveBeenCalledTimes(1);
-    expect(mockClient).toHaveBeenCalledWith(mockQueryDefinition2);
-    expect(mockExecuteFunction).toHaveBeenCalledWith(undefined);
   });
 
   it("should handle errors gracefully", async () => {
     const mockError = new Error("Query failed");
-    mockExecuteFunction.mockRejectedValue(mockError);
 
     const { result } = renderHook(
       () =>
@@ -219,27 +272,30 @@ describe("useOsdkFunctionQueries", () => {
             { queryDefinition: mockQueryDefinition1 },
           ],
         }),
+      { wrapper: createWrapper() },
     );
 
-    await waitFor(() => {
-      expect(result.current[0].isLoading).toBe(false);
+    // Deliver an error via the observer
+    act(() => {
+      capturedObservers[0].next!({
+        result: undefined,
+        status: "error",
+        lastUpdated: 1000,
+        error: mockError,
+      });
     });
 
     expect(result.current[0]).toMatchObject({
       data: undefined,
       isLoading: false,
       error: mockError,
-      lastUpdated: expect.any(Number),
+      lastUpdated: 1000,
     });
   });
 
   it("should handle mixed success and error results", async () => {
     const mockResult = { total: 100 };
     const mockError = new Error("Second query failed");
-
-    mockExecuteFunction
-      .mockResolvedValueOnce(mockResult)
-      .mockRejectedValueOnce(mockError);
 
     const { result } = renderHook(
       () =>
@@ -249,11 +305,21 @@ describe("useOsdkFunctionQueries", () => {
             { queryDefinition: mockQueryDefinition2 },
           ],
         }),
+      { wrapper: createWrapper() },
     );
 
-    await waitFor(() => {
-      expect(result.current[0].isLoading).toBe(false);
-      expect(result.current[1].isLoading).toBe(false);
+    act(() => {
+      capturedObservers[0].next!({
+        result: mockResult,
+        status: "loaded",
+        lastUpdated: 1000,
+      });
+      capturedObservers[1].next!({
+        result: undefined,
+        status: "error",
+        lastUpdated: 1001,
+        error: mockError,
+      });
     });
 
     expect(result.current[0].data).toEqual(mockResult);
@@ -264,8 +330,6 @@ describe("useOsdkFunctionQueries", () => {
   });
 
   it("should cleanup on unmount", () => {
-    const abortSpy = vi.spyOn(AbortController.prototype, "abort");
-
     const { unmount } = renderHook(
       () =>
         useOsdkFunctionQueries({
@@ -273,31 +337,15 @@ describe("useOsdkFunctionQueries", () => {
             { queryDefinition: mockQueryDefinition1 },
           ],
         }),
+      { wrapper: createWrapper() },
     );
 
     unmount();
 
-    expect(abortSpy).toHaveBeenCalled();
+    expect(unsubscribeFns[0]).toHaveBeenCalled();
   });
 
   it("should update results incrementally as queries complete", async () => {
-    // Create promises that we can control the resolution of
-    let resolveQuery1: ((value: any) => void) | undefined;
-    let resolveQuery2: ((value: any) => void) | undefined;
-
-    const query1Promise = new Promise((resolve) => {
-      resolveQuery1 = resolve;
-    });
-
-    const query2Promise = new Promise((resolve) => {
-      resolveQuery2 = resolve;
-    });
-
-    // Mock the client to return controlled promises
-    mockExecuteFunction
-      .mockReturnValueOnce(query1Promise)
-      .mockReturnValueOnce(query2Promise);
-
     const { result } = renderHook(
       () =>
         useOsdkFunctionQueries({
@@ -306,44 +354,78 @@ describe("useOsdkFunctionQueries", () => {
             { queryDefinition: mockQueryDefinition2 },
           ],
         }),
+      { wrapper: createWrapper() },
     );
 
     // Both should start loading
     expect(result.current[0].isLoading).toBe(true);
     expect(result.current[1].isLoading).toBe(true);
 
-    // Resolve the second query first to verify parallel execution
+    // Deliver second query first to verify independent updates
     const result2 = { reports: ["report1"] };
-    resolveQuery2?.(result2);
-
-    await waitFor(() => {
-      expect(result.current[1].isLoading).toBe(false);
+    act(() => {
+      capturedObservers[1].next!({
+        result: result2,
+        status: "loaded",
+        lastUpdated: 1000,
+      });
     });
 
     // Second query should be done while first is still loading
     expect(result.current[0].isLoading).toBe(true);
     expect(result.current[1].data).toEqual(result2);
+    expect(result.current[1].isLoading).toBe(false);
 
-    // Now resolve the first query
+    // Now deliver the first query
     const result1 = { total: 100 };
-    resolveQuery1?.(result1);
-
-    await waitFor(() => {
-      expect(result.current[0].isLoading).toBe(false);
+    act(() => {
+      capturedObservers[0].next!({
+        result: result1,
+        status: "loaded",
+        lastUpdated: 1001,
+      });
     });
 
     expect(result.current[0].data).toEqual(result1);
+    expect(result.current[0].isLoading).toBe(false);
     expect(result.current[1].data).toEqual(result2);
   });
 
+  it("should provide working refetch function", async () => {
+    const { result } = renderHook(
+      () =>
+        useBatchedFunctionQueries({
+          queries: [
+            {
+              queryDefinition: mockQueryDefinition1,
+              options: { params: { id: 1 } as any },
+            },
+          ],
+        }),
+      { wrapper: createWrapper() },
+    );
+
+    // Deliver initial result
+    act(() => {
+      capturedObservers[0].next!({
+        result: { total: 100 },
+        status: "loaded",
+        lastUpdated: 1000,
+      });
+    });
+
+    // Call refetch
+    act(() => {
+      result.current[0].refetch();
+    });
+
+    expect(mockInvalidateFunction).toHaveBeenCalledWith(
+      mockQueryDefinition1,
+      { id: 1 },
+    );
+  });
+
   it("should rerun queries when parameters change", async () => {
-    const mockResult1 = { total: 100 };
-    const mockResult2 = { total: 200 };
-
-    mockExecuteFunction
-      .mockResolvedValueOnce(mockResult1)
-      .mockResolvedValueOnce(mockResult2);
-
     const { result, rerender } = renderHook(
       ({ params }) =>
         useOsdkFunctionQueries({
@@ -354,25 +436,87 @@ describe("useOsdkFunctionQueries", () => {
             },
           ],
         }),
-      { initialProps: { params: { id: 1 } as any } },
+      {
+        initialProps: { params: { id: 1 } as any },
+        wrapper: createWrapper(),
+      },
     );
 
-    await waitFor(() => {
-      expect(result.current[0].isLoading).toBe(false);
+    // Deliver initial result
+    act(() => {
+      capturedObservers[0].next!({
+        result: { total: 100 },
+        status: "loaded",
+        lastUpdated: 1000,
+      });
     });
 
-    expect(result.current[0].data).toEqual(mockResult1);
+    expect(result.current[0].data).toEqual({ total: 100 });
 
-    // Change parameters
+    // Change parameters — should unsubscribe old and create new subscription
     rerender({ params: { id: 2 } as any });
 
-    // Should trigger a new query
-    await waitFor(() => {
-      expect(mockExecuteFunction).toHaveBeenCalledTimes(2);
+    // Old subscription should be cleaned up
+    expect(unsubscribeFns[0]).toHaveBeenCalled();
+
+    // New subscription should be created
+    expect(mockObserveFunction).toHaveBeenCalledTimes(2);
+
+    // Deliver new result
+    act(() => {
+      capturedObservers[1].next!({
+        result: { total: 200 },
+        status: "loaded",
+        lastUpdated: 2000,
+      });
     });
 
-    await waitFor(() => {
-      expect(result.current[0].data).toEqual(mockResult2);
+    expect(result.current[0].data).toEqual({ total: 200 });
+  });
+
+  it("should handle observer error callback", async () => {
+    const { result } = renderHook(
+      () =>
+        useBatchedFunctionQueries({
+          queries: [
+            { queryDefinition: mockQueryDefinition1 },
+          ],
+        }),
+      { wrapper: createWrapper() },
+    );
+
+    // Trigger the error callback (different from error status in next)
+    act(() => {
+      capturedObservers[0].error!(new Error("Network failure"));
     });
+
+    expect(result.current[0]).toMatchObject({
+      data: undefined,
+      isLoading: false,
+      error: new Error("Network failure"),
+    });
+  });
+
+  it("should deduplicate identical queries through the observable layer", () => {
+    renderHook(
+      () =>
+        useBatchedFunctionQueries({
+          queries: [
+            {
+              queryDefinition: mockQueryDefinition1,
+              options: { params: { id: 1 } as any },
+            },
+            {
+              queryDefinition: mockQueryDefinition1,
+              options: { params: { id: 1 } as any },
+            },
+          ],
+        }),
+      { wrapper: createWrapper() },
+    );
+
+    // Both queries should be subscribed via observeFunction;
+    // the ObservableClient's Store layer handles actual deduplication
+    expect(mockObserveFunction).toHaveBeenCalledTimes(2);
   });
 });
