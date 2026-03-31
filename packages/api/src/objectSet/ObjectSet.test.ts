@@ -43,8 +43,8 @@ export function createMockObjectSet<
   Q extends ObjectOrInterfaceDefinition,
 >(): $ObjectSet<Q, never> {
   let fauxObject: Osdk.Instance<Q>;
-    let fauxResults: any;
-    let fauxObjectSet: $ObjectSet<Q>;
+  let fauxResults: any;
+  let fauxObjectSet: $ObjectSet<Q>;
 
   // eslint-disable-next-line prefer-const
   fauxObject = {
