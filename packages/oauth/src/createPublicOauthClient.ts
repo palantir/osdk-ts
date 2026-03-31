@@ -44,13 +44,6 @@ import { throwIfError } from "./throwIfError.js";
 import type { Token } from "./Token.js";
 import { processOptionsAndAssignDefaults } from "./utils.js";
 
-declare const process: {
-  env: {
-    NODE_ENV: "production" | "development";
-    TARGET: "browser" | "node";
-  };
-};
-
 export interface PublicOauthClientOptions {
   /**
    * If true, uses `history.replaceState()`, otherwise uses `window.location.assign()` (defaults to true)
@@ -272,12 +265,10 @@ export function createPublicOauthClient(
       }
       return result;
     } catch (e) {
-      if (process.env.NODE_ENV !== "production") {
-        logger?.warn(
-          "Failed to get OAuth2 refresh token. Removing refresh token",
-          e,
-        );
-      }
+      logger?.warn(
+        "Failed to get OAuth2 refresh token. Removing refresh token",
+        e,
+      );
       removeLocal(client, storage);
       if (expectRefreshToken) {
         throw new Error("Could not refresh token");
@@ -318,12 +309,10 @@ export function createPublicOauthClient(
       void go(oldUrl);
       return ret;
     } catch (e) {
-      if (process.env.NODE_ENV !== "production") {
-        logger?.warn(
-          "Failed to get OAuth2 token using PKCE, removing PKCE and starting a new auth flow",
-          e,
-        );
-      }
+      logger?.warn(
+        "Failed to get OAuth2 token using PKCE, removing PKCE and starting a new auth flow",
+        e,
+      );
       removeLocal(client, storage);
       removeSession(client);
       throw e;

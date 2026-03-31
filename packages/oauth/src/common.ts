@@ -243,9 +243,7 @@ export function common<
   function tryBackgroundRefresh() {
     if (!refresh || pendingRefresh) return;
     pendingRefresh = refresh().catch((e: unknown) => {
-      if (process.env.NODE_ENV !== "production") {
-        logger?.warn("Background token refresh failed", e);
-      }
+      logger?.warn("Background token refresh failed", e);
     }).finally(() => {
       pendingRefresh = undefined;
     });
