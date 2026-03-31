@@ -38,6 +38,7 @@ import {
 } from "./common.js";
 import type { TokenStorageType } from "./common.js";
 import { delay } from "./delay.js";
+import type { OauthLogger } from "./Logger.js";
 import type { PublicOauthClient } from "./PublicOauthClient.js";
 import { throwIfError } from "./throwIfError.js";
 import type { Token } from "./Token.js";
@@ -101,6 +102,12 @@ export interface PublicOauthClientOptions {
    * @default 'localStorage'
    */
   tokenStorage?: TokenStorageType;
+
+  /**
+   * Optional logger for warning messages. If not provided, warnings are silently dropped.
+   * Structurally compatible with `@osdk/api`'s `Logger`.
+   */
+  logger?: OauthLogger;
 }
 
 /**
@@ -158,6 +165,7 @@ export function createPublicOauthClient(
   let refreshTokenMarker: string | undefined;
   let joinedScopes: string;
   let tokenStorage: TokenStorageType;
+  let logger: OauthLogger | undefined;
   ({
     useHistory,
     loginPage,
@@ -167,6 +175,7 @@ export function createPublicOauthClient(
     ctxPath,
     refreshTokenMarker,
     tokenStorage,
+    logger,
   } = processOptionsAndAssignDefaults(
     url,
     redirect_uri,
@@ -263,8 +272,7 @@ export function createPublicOauthClient(
       return result;
     } catch (e) {
       if (process.env.NODE_ENV !== "production") {
-        // eslint-disable-next-line no-console
-        console.warn(
+        logger?.warn(
           "Failed to get OAuth2 refresh token. Removing refresh token",
           e,
         );
@@ -310,8 +318,7 @@ export function createPublicOauthClient(
       return ret;
     } catch (e) {
       if (process.env.NODE_ENV !== "production") {
-        // eslint-disable-next-line no-console
-        console.warn(
+        logger?.warn(
           "Failed to get OAuth2 token using PKCE, removing PKCE and starting a new auth flow",
           e,
         );
