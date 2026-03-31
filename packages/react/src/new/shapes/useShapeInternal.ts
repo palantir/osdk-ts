@@ -20,6 +20,7 @@ import type {
   PrimaryKeyType,
   PropertyKeys,
 } from "@osdk/api";
+import type { ShapeDerivedLinkDef } from "@osdk/api/shapes-internal";
 import type {
   LinkLoadConfig,
   LinkStatus,
@@ -171,11 +172,11 @@ export function useShapeSingleInternal<
       return transformResult.data;
     }
     // ShapeInstance<S> is a conditional type which TS can't spread directly
-    return Object.assign(
-      {},
-      transformResult.data as Record<string, unknown>,
-      linksPayload.links,
-    ) as ShapeInstance<S>;
+    return ({
+      
+      ...transformResult.data as Record<string, unknown>,
+      ...linksPayload.links,
+    }) as ShapeInstance<S>;
   }, [transformResult.data, linksPayload.links]);
 
   let error: Error | undefined;
@@ -200,7 +201,9 @@ export function useShapeSingleInternal<
   const invalidate = React.useCallback(
     (linkName?: keyof ShapeDerivedLinks<S>): void => {
       if (linkName) {
-        const linkDef = shape.__derivedLinks.find(l => l.name === linkName);
+        const derivedLinks = shape
+          .__derivedLinks as readonly ShapeDerivedLinkDef[];
+        const linkDef = derivedLinks.find(l => l.name === linkName);
         if (linkDef) {
           void observableClient.invalidateObjectType(
             linkDef.targetShape.__baseTypeApiName,
@@ -328,7 +331,7 @@ export function useShapeListInternal<
     }
     return createBatchedDerivedLinksStore<S>(
       shape,
-      shape.__derivedLinks,
+      shape.__derivedLinks as readonly ShapeDerivedLinkDef[],
       observableClient,
       client,
       stableLinkConfig,
@@ -364,11 +367,11 @@ export function useShapeListInternal<
       if (!pkLinks || Object.keys(pkLinks).length === 0) {
         return obj;
       }
-      return Object.assign(
-        {},
-        obj as Record<string, unknown>,
-        pkLinks,
-      ) as ShapeInstance<S>;
+      return ({
+        
+        ...obj as Record<string, unknown>,
+        ...pkLinks,
+      }) as ShapeInstance<S>;
     });
   }, [
     transformResult.data,
@@ -418,7 +421,9 @@ export function useShapeListInternal<
   const invalidate = React.useCallback(
     (linkName?: keyof ShapeDerivedLinks<S>): void => {
       if (linkName) {
-        const linkDef = shape.__derivedLinks.find(l => l.name === linkName);
+        const derivedLinks = shape
+          .__derivedLinks as readonly ShapeDerivedLinkDef[];
+        const linkDef = derivedLinks.find(l => l.name === linkName);
         if (linkDef) {
           void observableClient.invalidateObjectType(
             linkDef.targetShape.__baseTypeApiName,
