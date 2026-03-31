@@ -205,6 +205,7 @@ export function createPublicOauthClient(
     refreshTokenMarker,
     joinedScopes,
     storage,
+    logger,
   );
 
   // as an arrow function, `useHistory` is known to be a boolean

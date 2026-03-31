@@ -22,6 +22,7 @@ import {
 } from "oauth4webapi";
 import { common, createAuthorizationServer } from "./common.js";
 import type { ConfidentialOauthClient } from "./ConfidentialOauthClient.js";
+import type { OauthLogger } from "./Logger.js";
 import { throwIfError } from "./throwIfError.js";
 import type { Token } from "./Token.js";
 
@@ -46,6 +47,7 @@ export function createConfidentialOauthClient(
   ],
   fetchFn: typeof globalThis.fetch = globalThis.fetch,
   ctxPath: string = "multipass",
+  logger?: OauthLogger,
 ): ConfidentialOauthClient {
   const client: Client = { client_id, client_secret };
   const authServer = createAuthorizationServer(ctxPath, url);
@@ -61,6 +63,7 @@ export function createConfidentialOauthClient(
     undefined,
     joinedScopes,
     undefined,
+    logger,
   );
 
   async function fetchAndSaveToken(type: "signIn" | "refresh"): Promise<Token> {

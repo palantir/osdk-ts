@@ -24,6 +24,7 @@ import { processRevocationResponse, revocationRequest } from "oauth4webapi";
 import invariant from "tiny-invariant";
 import { TypedEventTarget } from "typescript-event-target";
 import type { BaseOauthClient, Events } from "./BaseOauthClient.js";
+import type { OauthLogger } from "./Logger.js";
 import { throwIfError } from "./throwIfError.js";
 import type { Token } from "./Token.js";
 
@@ -194,6 +195,7 @@ export function common<
   refreshTokenMarker: string | undefined,
   scopes: string,
   storage: Storage | undefined,
+  logger?: OauthLogger,
 ): {
   getToken: BaseOauthClient<keyof Events & string> & { refresh: R };
   makeTokenAndSaveRefresh: (
@@ -242,8 +244,7 @@ export function common<
     if (!refresh || pendingRefresh) return;
     pendingRefresh = refresh().catch((e: unknown) => {
       if (process.env.NODE_ENV !== "production") {
-        // eslint-disable-next-line no-console
-        console.warn("Background token refresh failed", e);
+        logger?.warn("Background token refresh failed", e);
       }
     }).finally(() => {
       pendingRefresh = undefined;
