@@ -19,7 +19,7 @@
   align-items: center;
   width: 100%;
   text-align: left;
-  padding: calc(var(--osdk-surface-spacing) * 1)
+  padding: var(--osdk-surface-spacing)
     calc(var(--osdk-surface-spacing) * 1.5);
   font-size: var(--osdk-cbac-overflow-button-font-size);
   font-family: inherit;
