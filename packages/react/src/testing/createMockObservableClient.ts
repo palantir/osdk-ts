@@ -76,7 +76,7 @@ interface Subscription {
 const NOOP_ASYNC = async () => {};
 
 function makeListPayload(
-  status: string,
+  status: "init" | "loading" | "loaded" | "error",
   data: object[] = [],
   extra?: object,
 ): object {
@@ -91,7 +91,10 @@ function makeListPayload(
   };
 }
 
-function makeObjectPayload(status: string, object?: object): object {
+function makeObjectPayload(
+  status: "init" | "loading" | "loaded" | "error",
+  object?: object,
+): object {
   return { object, isOptimistic: false, status, lastUpdated: Date.now() };
 }
 

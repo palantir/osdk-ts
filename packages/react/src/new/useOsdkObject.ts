@@ -231,78 +231,15 @@ export function useOsdkObject<
   }
 
   if (hasShapeOptions) {
-    const type = args[0] as Q;
-    const primaryKey = args[1] as PrimaryKeyType<Q>;
-    const rawShape = (args[2] as { shape: unknown }).shape;
-    const opts = args[2] as {
-      enabled?: boolean;
-      links?: Partial<Record<string, LinkLoadConfig>>;
-    };
-
-    const prevConfig = React.useRef(rawShape);
-    if (process.env.NODE_ENV !== "production") {
-      if (prevConfig.current !== rawShape) {
-        // eslint-disable-next-line no-console
-        console.warn(
-          "useOsdkObject: shape config changed between renders. Shape configs should be static.",
-        );
-        prevConfig.current = rawShape;
-      }
-    }
-
-    const isPreBuilt = typeof rawShape === "object" && rawShape != null
-      && "__shapeId" in rawShape;
-
-    const configRef = React.useRef(rawShape);
-
-    const shapeDef = React.useMemo(() => {
-      const c = configRef.current;
-      if (typeof c === "object" && c != null && "__shapeId" in c) {
-        return c as ShapeDefinition<Q>;
-      }
-      return configToShapeDefinition(type, c as InlineShapeConfig<Q>);
-    }, [type]);
-
-    const result = useShapeSingleInternal(
-      shapeDef,
-      primaryKey,
-      { enabled: opts.enabled, links: opts.links },
+    return useOsdkObjectWithShape(
+      args[0] as Q,
+      args[1] as PrimaryKeyType<Q>,
+      args[2] as {
+        shape: C | ShapeDefinition<Q>;
+        enabled?: boolean;
+        links?: Partial<Record<string, LinkLoadConfig>>;
+      },
     );
-
-    if (isPreBuilt) {
-      return result;
-    }
-
-    type ResolvedC = C & InlineShapeConfig<Q & ObjectTypeDefinition>;
-    type ResolvedQ = Q & ObjectTypeDefinition;
-
-    return {
-      data: result.data as
-        | ShapeInstance<InferShapeDefinition<ResolvedQ, ResolvedC>>
-        | undefined,
-      shape: shapeDef as InferShapeDefinition<ResolvedQ, ResolvedC>,
-      isLoading: result.isLoading,
-      error: result.error,
-      isOptimistic: result.isOptimistic,
-      droppedDueToNullability: result.droppedDueToNullability,
-      nullabilityViolations: result.nullabilityViolations,
-      linkStatus: result.linkStatus as UseOsdkObjectShapeResult<
-        ResolvedQ,
-        ResolvedC
-      >["linkStatus"],
-      loadDeferred: result.loadDeferred as UseOsdkObjectShapeResult<
-        ResolvedQ,
-        ResolvedC
-      >["loadDeferred"],
-      retry: result.retry as UseOsdkObjectShapeResult<
-        ResolvedQ,
-        ResolvedC
-      >["retry"],
-      invalidate: result.invalidate as UseOsdkObjectShapeResult<
-        ResolvedQ,
-        ResolvedC
-      >["invalidate"],
-    };
   }
 
   // Original overloads (instance or type+pk)
@@ -317,6 +254,92 @@ export function useOsdkObject<
         options?: { $select?: readonly PropertyKeys<Q>[]; enabled?: boolean },
       ],
   );
+}
+
+function useOsdkObjectWithShape<
+  Q extends ObjectOrInterfaceDefinition,
+  C extends InlineShapeConfig<Q> = InlineShapeConfig<Q>,
+>(
+  type: Q,
+  primaryKey: PrimaryKeyType<Q>,
+  options: {
+    shape: C | ShapeDefinition<Q>;
+    enabled?: boolean;
+    links?: Partial<Record<string, LinkLoadConfig>>;
+  },
+):
+  | UseOsdkObjectShapeResult<
+    Q & ObjectTypeDefinition,
+    C & InlineShapeConfig<Q & ObjectTypeDefinition>
+  >
+  | UseShapeResult<ShapeDefinition<Q>>
+{
+  const rawShape = options.shape;
+
+  const prevConfig = React.useRef(rawShape);
+  if (process.env.NODE_ENV !== "production") {
+    if (prevConfig.current !== rawShape) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        "useOsdkObject: shape config changed between renders. Shape configs should be static.",
+      );
+      prevConfig.current = rawShape;
+    }
+  }
+
+  const isPreBuilt = typeof rawShape === "object" && rawShape != null
+    && "__shapeId" in rawShape;
+
+  const configRef = React.useRef(rawShape);
+
+  const shapeDef = React.useMemo(() => {
+    const c = configRef.current;
+    if (typeof c === "object" && c != null && "__shapeId" in c) {
+      return c as ShapeDefinition<Q>;
+    }
+    return configToShapeDefinition(type, c as InlineShapeConfig<Q>);
+  }, [type]);
+
+  const result = useShapeSingleInternal(
+    shapeDef,
+    primaryKey,
+    { enabled: options.enabled, links: options.links },
+  );
+
+  if (isPreBuilt) {
+    return result;
+  }
+
+  type ResolvedC = C & InlineShapeConfig<Q & ObjectTypeDefinition>;
+  type ResolvedQ = Q & ObjectTypeDefinition;
+
+  return {
+    data: result.data as
+      | ShapeInstance<InferShapeDefinition<ResolvedQ, ResolvedC>>
+      | undefined,
+    shape: shapeDef as InferShapeDefinition<ResolvedQ, ResolvedC>,
+    isLoading: result.isLoading,
+    error: result.error,
+    isOptimistic: result.isOptimistic,
+    droppedDueToNullability: result.droppedDueToNullability,
+    nullabilityViolations: result.nullabilityViolations,
+    linkStatus: result.linkStatus as UseOsdkObjectShapeResult<
+      ResolvedQ,
+      ResolvedC
+    >["linkStatus"],
+    loadDeferred: result.loadDeferred as UseOsdkObjectShapeResult<
+      ResolvedQ,
+      ResolvedC
+    >["loadDeferred"],
+    retry: result.retry as UseOsdkObjectShapeResult<
+      ResolvedQ,
+      ResolvedC
+    >["retry"],
+    invalidate: result.invalidate as UseOsdkObjectShapeResult<
+      ResolvedQ,
+      ResolvedC
+    >["invalidate"],
+  };
 }
 
 function useOsdkObjectBase<Q extends ObjectOrInterfaceDefinition>(
