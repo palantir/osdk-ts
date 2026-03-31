@@ -4,7 +4,7 @@ sidebar_position: 3
 
 # Shapes
 
-Shapes are reusable type projections that handle nullability, select properties, and load related data through derived links. They integrate as an option on existing `useOsdkObject` and `useOsdkObjects` hooks.
+This guide covers shapes -- reusable type projections that handle nullability, select properties, and load related data through derived links. Shapes integrate as an option on existing `useOsdkObject` and `useOsdkObjects` hooks.
 
 :::info Unstable API
 Shapes are currently exported from `@osdk/api/unstable`. The API may change between releases. Once stabilized, shapes will graduate to `@osdk/api/shapes`.
@@ -113,7 +113,7 @@ const { data } = useOsdkObject(Player, playerId, {
 });
 ```
 
-Operations apply in this order: `dropIfNull` -> `withDefault` -> `withTransform` -> `require`. This means a property can have a default applied first, then be validated as non-null.
+Each property can only have one operation applied. If a property appears in multiple config arrays, an error is thrown. Across the object, operations execute in this order: `dropIfNull` -> `withDefault` -> `withTransform` -> `require`.
 
 ## Derived Links
 
@@ -203,7 +203,7 @@ const SlimPlayer = createShapeBuilder(Player, "SlimPlayer")
   .build();
 
 function PlayerList() {
-  const { data, isLoading, fetchMore, linkStatus, itemLinkStatus } = useOsdkObjects(Player, {
+  const { data, isLoading, fetchMore } = useOsdkObjects(Player, {
     shape: SlimPlayer,
     where: { age: { $gt: 21 } },
     orderBy: { name: "asc" },
@@ -374,7 +374,6 @@ invalidate("teammates");    // refetch just the teammates link
 | Field | Type | Description |
 |-------|------|-------------|
 | `data` | `ShapeInstance<S> \| undefined` | Transformed object instance |
-| `shape` | `ShapeDefinition<S>` | The resolved shape definition |
 | `isLoading` | `boolean` | True while fetching from server |
 | `error` | `Error \| undefined` | Error object (includes `ShapeNullabilityError`) |
 | `isOptimistic` | `boolean` | True if object has optimistic updates |
@@ -385,12 +384,13 @@ invalidate("teammates");    // refetch just the teammates link
 | `retry` | `(linkName?) => void` | Retry failed fetches |
 | `invalidate` | `(linkName?) => void` | Force refetch |
 
+When using inline shape configs, the result also includes a `shape` field with the resolved `ShapeDefinition`.
+
 ### List mode (`useOsdkObjects` with shape)
 
 | Field | Type | Description |
 |-------|------|-------------|
 | `data` | `ShapeInstance<S>[] \| undefined` | Array of transformed objects |
-| `shape` | `ShapeDefinition<S>` | The resolved shape definition |
 | `isLoading` | `boolean` | True while fetching from server |
 | `error` | `Error \| undefined` | Error object |
 | `isOptimistic` | `boolean` | True if list is affected by optimistic updates |
@@ -402,3 +402,5 @@ invalidate("teammates");    // refetch just the teammates link
 | `loadDeferred` | `(pk, linkName) => Promise<void>` | Trigger deferred link for a specific object |
 | `retry` | `(pk?, linkName?) => void` | Retry failed fetches |
 | `invalidate` | `(linkName?) => void` | Force refetch |
+
+When using inline shape configs, the result also includes a `shape` field with the resolved `ShapeDefinition`.
