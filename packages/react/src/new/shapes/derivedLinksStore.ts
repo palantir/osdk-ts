@@ -140,7 +140,6 @@ export function isBatchableLink(linkDef: ShapeDerivedLinkDef): boolean {
     && def.segments[0].type === "pivotTo"
     && (!def.setOperations || def.setOperations.length === 0)
     && !def.where
-    && !def.whereCallback
     && !def.orderBy
     && def.limit == null
     && !def.distinct
@@ -159,7 +158,8 @@ export function createDerivedLinksStore<
 ): DerivedLinksStore<S> {
   const castSource = sourceObject as Osdk.Instance<ObjectOrInterfaceDefinition>;
   const linkEntries = new Map<string, LinkEntry>();
-  for (const linkDef of shape.__derivedLinks) {
+  const derivedLinks = shape.__derivedLinks as readonly ShapeDerivedLinkDef[];
+  for (const linkDef of derivedLinks) {
     const config = (linkConfig as Partial<Record<string, LinkLoadConfig>>)[
       linkDef.name
     ];
@@ -237,7 +237,9 @@ export function createDerivedLinksStore<
         parentEntry.nestedByPk.set(pk, nestedMap);
       }
 
-      for (const nestedLinkDef of targetShape.__derivedLinks) {
+      const nestedDerivedLinks = targetShape
+        .__derivedLinks as readonly ShapeDerivedLinkDef[];
+      for (const nestedLinkDef of nestedDerivedLinks) {
         if (!nestedMap.has(nestedLinkDef.name)) {
           const nestedEntry: LinkEntry = {
             linkDef: nestedLinkDef,
