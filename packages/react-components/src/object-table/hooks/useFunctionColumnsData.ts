@@ -23,7 +23,7 @@ import type {
   SimplePropertyDef,
 } from "@osdk/api";
 import type { UseOsdkFunctionResult } from "@osdk/react/experimental";
-import { useBatchedFunctionQueries } from "@osdk/react/unstable-do-not-use";
+import { useOsdkFunctionQueries } from "@osdk/react/unstable-do-not-use";
 import { useEffect, useMemo, useState } from "react";
 import type {
   ColumnDefinition,
@@ -47,7 +47,7 @@ type FunctionColumnConfig<
   queryDefinition: QueryDefinition<unknown>;
   getParams: (
     objectSet: ObjectSet<Q, RDPs>,
-  ) => any; // We lose specific type information when grouping by API name
+  ) => unknown;
   columnIds: Array<{
     columnId: string;
     getValue?: (cellData: unknown) => unknown;
@@ -99,7 +99,7 @@ export function useFunctionColumnsData<
     );
   }, [disabled, functionColumnConfigs, stableObjectSet, stableObjects]);
 
-  // Prepare queries for useBatchedFunctionQueries
+  // Prepare queries for useOsdkFunctionQueries
   const queries = useMemo(
     () => {
       if (disabled) {
@@ -116,7 +116,7 @@ export function useFunctionColumnsData<
     [disabled, functionColumnConfigs, stableObjectSet],
   );
 
-  const results = useBatchedFunctionQueries(
+  const results = useOsdkFunctionQueries(
     {
       queries,
       enabled: !disabled,

@@ -32,7 +32,7 @@ export interface FunctionQueryParams<Q extends QueryDefinition<unknown>> {
   options?: Pick<UseOsdkFunctionOptions<Q>, "params" | "enabled">;
 }
 
-export interface UseBatchedFunctionQueriesProps {
+export interface useOsdkFunctionQueriesProps {
   /**
    * Array of query configurations to execute
    */
@@ -46,35 +46,30 @@ export interface UseBatchedFunctionQueriesProps {
   enabled?: boolean;
 }
 
-export type UseBatchedFunctionQueryResult = Array<
-  UseOsdkFunctionResult<QueryDefinition<unknown>>
+export type UseOsdkFunctionQueriesResult = Array<
+  Omit<UseOsdkFunctionResult<QueryDefinition<unknown>>, "refetch">
 >;
 
 /**
- * React hook for executing multiple OSDK function queries in batch.
- *
- * This hook executes multiple function queries with individual configurations,
- * with automatic batching and caching. Results are returned in the same
- * order as the input queries.
+ * React hook for executing multiple OSDK function queries in parallel.
+ * Results are returned in the same order as the input queries.
  *
  * @param options - Configuration options containing the queries to execute
  * @returns Array of results in the same order as input queries, each with the same shape as useOsdkFunction
  */
-export function useBatchedFunctionQueries(
-  options: UseBatchedFunctionQueriesProps,
-): UseBatchedFunctionQueryResult {
+export function useOsdkFunctionQueries(
+  { queries, enabled = true }: useOsdkFunctionQueriesProps,
+): UseOsdkFunctionQueriesResult {
   const client = useOsdkClient();
-  const { queries, enabled = true } = options;
 
   const [results, setResults] = React.useState<
-    UseBatchedFunctionQueryResult
+    UseOsdkFunctionQueriesResult
   >(() =>
     queries.map(() => ({
       data: undefined,
       isLoading: false,
       error: undefined,
       lastUpdated: 0,
-      refetch: () => {},
     }))
   );
 
@@ -86,9 +81,7 @@ export function useBatchedFunctionQueries(
     }
 
     // Cancel previous requests
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-    }
+    abortControllerRef.current?.abort();
 
     const abortController = new AbortController();
     abortControllerRef.current = abortController;
@@ -101,7 +94,6 @@ export function useBatchedFunctionQueries(
           isLoading: queries[index].options?.enabled !== false,
           error: undefined,
           lastUpdated: prev[index]?.lastUpdated || 0,
-          refetch: () => {},
         }))
       );
 
@@ -131,18 +123,6 @@ export function useBatchedFunctionQueries(
               ? new Error(JSON.stringify(error))
               : undefined,
             lastUpdated: Date.now(),
-            refetch: () => {
-              const queryToRefetch = queries[index];
-              const queryClient = client(queryToRefetch.queryDefinition);
-              if (
-                "executeFunction" in queryClient
-                && typeof queryClient.executeFunction === "function"
-              ) {
-                void queryClient.executeFunction(
-                  queryToRefetch.options?.params,
-                );
-              }
-            },
           };
           return newResults;
         });
@@ -157,11 +137,7 @@ export function useBatchedFunctionQueries(
   }, [
     enabled,
     client,
-    JSON.stringify(queries.map(q => ({
-      apiName: q.queryDefinition.apiName,
-      params: q.options?.params,
-      enabled: q.options?.enabled,
-    }))),
+    queries,
   ]);
 
   return results;
