@@ -26,3 +26,30 @@ export { __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks } from "../experimental
 
 export type { EXPERIMENTAL_BulkLinkResult } from "../objectSet/BulkLinkResult.js";
 export type { MinimalObjectSet } from "../objectSet/ObjectSet.js";
+
+// Shapes (unstable — will graduate to @osdk/api/shapes when stable)
+export {
+  configToShapeDefinition,
+  createShapeBuilder,
+  isSourcePkSymbol,
+  ShapeNullabilityError,
+  SourcePrimaryKeySymbol,
+} from "../shapes/index.js";
+
+export type {
+  InferShapeDefinition,
+  InlineLinkConfig,
+  InlineShapeConfig,
+  LinkLoadConfig,
+  LinkStatus,
+  NullabilityViolation,
+  PropertyType,
+  RequiredProperty,
+  ShapeBaseType,
+  ShapeBuilder,
+  ShapeDefinition,
+  ShapeDerivedLinks,
+  ShapeInstance,
+  ShapeLinkBuilder,
+  ShapeLinkResult,
+} from "../shapes/index.js";

@@ -24,6 +24,7 @@ import invariant from "tiny-invariant";
 import { OntologyEntityTypeEnum } from "../../api/common/OntologyEntityTypeEnum.js";
 import {
   cleanAndValidateLinkTypeId,
+  importedTypes,
   ontologyDefinition,
 } from "../../api/defineOntology.js";
 import type { LinkType, UserLinkTypeStatus } from "../../api/links/LinkType.js";
@@ -95,6 +96,13 @@ export function convertLink(
     const { apiName: toManyObjectApiName, object: toManyObject } = getObject(
       linkType.toMany.object,
     );
+
+    const columnA = manyObject.primaryKeyPropertyApiName;
+    const columnB = toManyObject.primaryKeyPropertyApiName;
+    const hasCollision = columnA === columnB;
+    const resolvedColumnA = hasCollision ? `${columnA}_from` : columnA;
+    const resolvedColumnB = hasCollision ? `${columnB}_to` : columnB;
+
     definition = {
       type: "manyToMany",
       manyToMany: {
@@ -138,14 +146,14 @@ export function convertLink(
               apiName: manyObject.primaryKeyPropertyApiName,
               object: manyObjectApiName,
             },
-            column: manyObject.primaryKeyPropertyApiName,
+            column: resolvedColumnA,
           }],
           objectTypeBPrimaryKeyMapping: [{
             property: {
               apiName: toManyObject.primaryKeyPropertyApiName,
               object: toManyObjectApiName,
             },
-            column: toManyObject.primaryKeyPropertyApiName,
+            column: resolvedColumnB,
           }],
         },
       },
@@ -252,7 +260,8 @@ export function getObject(
 ): { apiName: string; object: ObjectType } {
   const objectApiName = typeof object === "string" ? object : object.apiName;
   const fullObject =
-    ontologyDefinition[OntologyEntityTypeEnum.OBJECT_TYPE][objectApiName];
+    ontologyDefinition[OntologyEntityTypeEnum.OBJECT_TYPE][objectApiName]
+      ?? importedTypes[OntologyEntityTypeEnum.OBJECT_TYPE][objectApiName];
   invariant(
     fullObject !== undefined,
     `Object ${objectApiName} is not defined`,

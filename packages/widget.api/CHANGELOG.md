@@ -1,5 +1,64 @@
 # @osdk/widget.api
 
+## 3.5.0-beta.28
+
+### Patch Changes
+
+- Updated dependencies [f294f5a]
+- Updated dependencies [d284bf2]
+- Updated dependencies [b68cebd]
+  - @osdk/api@2.8.0-beta.28
+
+## 3.5.0-beta.27
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.27
+
+## 3.5.0-beta.26
+
+### Patch Changes
+
+- Updated dependencies [60b5ffb]
+- Updated dependencies [61e33ab]
+  - @osdk/api@2.8.0-beta.26
+
+## 3.5.0-beta.25
+
+### Minor Changes
+
+- e590bed: Add scenario parameter type for Scenarios support in custom widgets
+
+### Patch Changes
+
+- Updated dependencies [0df859a]
+  - @osdk/api@2.8.0-beta.25
+
+## 3.5.0-beta.24
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.24
+
+## 3.5.0-beta.23
+
+### Patch Changes
+
+- Updated dependencies [4bb9769]
+  - @osdk/api@2.8.0-beta.23
+
+## 3.5.0-beta.22
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.22
+
+## 3.5.0-beta.21
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.21
+
 ## 3.5.0-beta.20
 
 ### Patch Changes

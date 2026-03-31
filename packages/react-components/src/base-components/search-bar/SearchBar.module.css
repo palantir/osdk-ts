@@ -17,8 +17,8 @@
 .searchBar {
   display: flex;
   align-items: center;
-  gap: var(--osdk-surface-spacing);
-  padding: var(--osdk-surface-spacing) calc(var(--osdk-surface-spacing) * 1.5);
+  gap: calc(var(--osdk-surface-spacing) * 3);
+  padding: var(--osdk-surface-spacing) calc(var(--osdk-surface-spacing) * 3);
   border: var(--osdk-surface-border);
   border-radius: var(--osdk-surface-border-radius);
 

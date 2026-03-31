@@ -22,7 +22,7 @@ import { basicAggregate } from "./basicAggregate.js";
 describe("basicAggregate", () => {
   it("should return aggregation correctly", async () => {
     const mockClient = createMockClient();
-    mockClient.when((stub) =>
+    mockClient.whenObjectSet((stub) =>
       stub(Employee).where({ employeeId: { "$eq": 5 } }).aggregate({
         $select: { "employeeLocation:exactDistinct": "asc" },
       })
@@ -30,7 +30,7 @@ describe("basicAggregate", () => {
       { employeeLocation: { exactDistinct: 3 } },
     );
 
-    mockClient.when((stub) =>
+    mockClient.whenObjectSet((stub) =>
       stub(Employee).where({ employeeId: { "$eq": 5 } }).aggregate({
         $select: {
           "employeeId:max": "unordered",

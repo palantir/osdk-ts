@@ -49,6 +49,8 @@ export interface Person extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'Person';
+  primaryKeyApiName: 'email';
+  primaryKeyType: 'string';
   __DefinitionMetadata?: {
     objectSet: Person.ObjectSet;
     props: Person.Props;
@@ -90,6 +92,8 @@ export const Person = {
   type: 'object',
   apiName: 'Person',
   osdkMetadata: $osdkMetadata,
+  primaryKeyApiName: 'email',
+  primaryKeyType: 'string',
   internalDoNotUseMetadata: {
     rid: 'rid.a.b.c.d',
   },

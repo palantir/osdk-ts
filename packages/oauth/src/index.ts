@@ -21,4 +21,5 @@ export {
   createPublicOauthClient,
   type PublicOauthClientOptions,
 } from "./createPublicOauthClient.js";
+export type { OauthLogger } from "./Logger.js";
 export type { PublicOauthClient } from "./PublicOauthClient.js";

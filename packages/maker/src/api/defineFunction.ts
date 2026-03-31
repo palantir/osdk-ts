@@ -16,7 +16,6 @@
 
 import { OntologyIrToFullMetadataConverter } from "@osdk/generator-converters.ontologyir";
 import { consola } from "consola";
-import * as path from "node:path";
 import type * as ts from "typescript";
 
 export interface FunctionIrBlockData {
@@ -110,15 +109,18 @@ export async function generateFunctionsIr(
     );
   }
 
-  const tsConfigPath = configPath ?? path.join(rootDir, "tsconfig.json");
+  // Normalize to forward slashes to match TypeScript's internal path format
+  const normalizedRootDir = rootDir.replace(/\\/g, "/");
+  const tsConfigPath = configPath?.replace(/\\/g, "/")
+    ?? (normalizedRootDir + "/tsconfig.json");
   const program = OntologyIrToFullMetadataConverter.createProgram(
     tsConfigPath,
-    rootDir,
+    normalizedRootDir,
   );
-  const functionsDir = path.join(rootDir, "functions");
+  const functionsDir = normalizedRootDir + "/functions";
   const fd = new functionsDiscoverer(
     program,
-    rootDir,
+    normalizedRootDir,
     functionsDir,
     entityMappings,
   );

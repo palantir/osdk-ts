@@ -348,6 +348,7 @@ Styling for the column header dropdown menu.
 | `--osdk-table-header-menu-border`       | `var(--osdk-surface-border-width) solid var(--osdk-custom-color-gray-4)` | Menu button border            |
 | `--osdk-table-header-menu-color`        | `var(--osdk-typography-color-muted)`                                     | Menu icon color               |
 | `--osdk-table-header-menu-color-active` | `var(--osdk-typography-color-default-rest)`                              | Menu icon active color        |
+| `--osdk-table-header-menu-icon-color`   | `var(--osdk-table-header-menu-color)`                                    | Menu icon color (chevron)     |
 | `--osdk-table-header-menu-bg-hover`     | `var(--osdk-custom-color-gray-1)`                                        | Menu button hover background  |
 | `--osdk-table-header-menu-bg-active`    | `var(--osdk-custom-color-gray-2)`                                        | Menu button active background |
 
@@ -366,7 +367,6 @@ Styling for column resize handles.
 | ------------------------------------ | --------------------------------------- | ---------------------------------------------------------- |
 | `--osdk-table-skeleton-color-from`   | `var(--osdk-custom-color-light-gray-1)` | Skeleton animation start color (light gray at 40% opacity) |
 | `--osdk-table-skeleton-color-to`     | `var(--osdk-custom-color-gray-4)`       | Skeleton animation end color (medium gray at 40% opacity)  |
-| `--osdk-table-skeleton-border-color` | `var(--osdk-custom-color-light-gray-2)` | Skeleton cell border color (light gray at 60% opacity)     |
 
 #### Column Config Dialog
 

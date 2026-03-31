@@ -17,10 +17,10 @@
 import type { ObjectTypeDefinition, WhereClause } from "@osdk/api";
 import { useOsdkMetadata } from "@osdk/react";
 import { useCallback, useMemo, useState } from "react";
+import { assertUnreachable } from "../../shared/assertUnreachable.js";
 import type { FilterListProps } from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
 import type { LinkedPropertyFilterState } from "../types/LinkedFilterTypes.js";
-import { assertUnreachable } from "../utils/assertUnreachable.js";
 import {
   buildWhereClause,
   type PropertyTypeInfo,
@@ -184,6 +184,9 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
   const perFilterWhereClauses = useMemo(() => {
     const map = new Map<string, WhereClause<Q>>();
     if (!filterDefinitions) {
+      return map;
+    }
+    if (filterOperator === "or") {
       return map;
     }
     for (const definition of filterDefinitions) {

@@ -15,11 +15,13 @@
  */
 
 import type {
+  ObjectSet,
   ObjectTypeDefinition,
   PropertyKeys,
   WhereClause,
 } from "@osdk/api";
 import React, { memo, useCallback, useMemo } from "react";
+import { FilterInputExcludeRow } from "../base/FilterInputExcludeRow.js";
 import { MultiSelectInput } from "../base/inputs/MultiSelectInput.js";
 import type { FilterState } from "../FilterListItemApi.js";
 import { usePropertyAggregation } from "../hooks/usePropertyAggregation.js";
@@ -27,18 +29,22 @@ import { coerceToStringArray } from "../utils/coerceFilterValue.js";
 
 interface MultiSelectFilterInputProps<Q extends ObjectTypeDefinition> {
   objectType: Q;
+  objectSet: ObjectSet<Q>;
   propertyKey: string;
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
   whereClause: WhereClause<Q>;
+  excludeRowOpen?: boolean;
 }
 
 function MultiSelectFilterInputInner<Q extends ObjectTypeDefinition>({
   objectType,
+  objectSet,
   propertyKey,
   filterState,
   onFilterStateChanged,
   whereClause,
+  excludeRowOpen,
 }: MultiSelectFilterInputProps<Q>): React.ReactElement {
   const selectedValues = useMemo(
     () =>
@@ -68,18 +74,26 @@ function MultiSelectFilterInputInner<Q extends ObjectTypeDefinition>({
   const { data, isLoading, error } = usePropertyAggregation(
     objectType,
     propertyKey as PropertyKeys<Q>,
+    objectSet,
     aggregationOptions,
   );
 
   return (
-    <MultiSelectInput
-      values={data}
-      isLoading={isLoading}
-      error={error}
-      selectedValues={selectedValues}
-      onChange={handleChange}
-      ariaLabel={`Search ${propertyKey} values`}
-    />
+    <FilterInputExcludeRow
+      excludeRowOpen={excludeRowOpen}
+      filterState={filterState}
+      onFilterStateChanged={onFilterStateChanged}
+      totalValueCount={data.length}
+    >
+      <MultiSelectInput
+        values={data}
+        isLoading={isLoading}
+        error={error}
+        selectedValues={selectedValues}
+        onChange={handleChange}
+        ariaLabel={`Search ${propertyKey} values`}
+      />
+    </FilterInputExcludeRow>
   );
 }
 

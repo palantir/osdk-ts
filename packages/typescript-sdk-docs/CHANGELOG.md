@@ -1,5 +1,12 @@
 # @osdk/typescript-sdk-docs
 
+## 0.7.0-beta.3
+
+### Minor Changes
+
+- beba0cd: Simplify actionParameter docs generation code
+- c4d7052: Fix OSDK docs showing invalid { \_\_primaryKey } format for object action parameters
+
 ## 0.7.0-beta.2
 
 ### Minor Changes

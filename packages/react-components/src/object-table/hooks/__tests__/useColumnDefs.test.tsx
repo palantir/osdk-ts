@@ -457,7 +457,13 @@ describe(useColumnDefs, () => {
         ColumnDefinition<TestObject, {}, { myFunction: any }>
       > = [
         {
-          locator: { type: "function", id: "myFunction" },
+          locator: {
+            type: "function",
+            id: "myFunction",
+            queryDefinition: {} as any,
+            getFunctionParams: () => ({}),
+            getKey: (object) => String(object.$primaryKey),
+          },
           width: 150,
         },
       ];

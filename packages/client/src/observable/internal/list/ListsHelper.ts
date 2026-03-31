@@ -93,6 +93,7 @@ export class ListsHelper extends AbstractHelper<
       pivotTo,
       rids,
       select,
+      $loadPropertySecurityMetadata,
     } = options;
     const { apiName, type } = typeDefinition;
 
@@ -129,6 +130,7 @@ export class ListsHelper extends AbstractHelper<
       canonPivot,
       canonRids,
       canonSelect,
+      $loadPropertySecurityMetadata ? true : undefined,
     );
 
     return this.store.queries.get(listCacheKey, () => {

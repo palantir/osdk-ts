@@ -1,5 +1,95 @@
 # @osdk/vite-plugin-oac
 
+## 0.6.0-beta.29
+
+### Patch Changes
+
+- Updated dependencies [f294f5a]
+- Updated dependencies [d284bf2]
+- Updated dependencies [684b6c6]
+- Updated dependencies [b68cebd]
+- Updated dependencies [12fe33f]
+  - @osdk/api@2.8.0-beta.28
+  - @osdk/maker@0.16.0-beta.14
+  - @osdk/faux@0.6.0-beta.6
+  - @osdk/generator-converters.ontologyir@2.8.0-beta.28
+  - @osdk/client.unstable@2.8.0-beta.28
+
+## 0.6.0-beta.28
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.27
+- @osdk/client.unstable@2.8.0-beta.27
+- @osdk/generator-converters.ontologyir@2.8.0-beta.27
+- @osdk/cli@0.32.0-beta.4
+
+## 0.6.0-beta.27
+
+### Patch Changes
+
+- Updated dependencies [9ee82f4]
+- Updated dependencies [60b5ffb]
+- Updated dependencies [61e33ab]
+  - @osdk/maker@0.16.0-beta.13
+  - @osdk/api@2.8.0-beta.26
+  - @osdk/client.unstable@2.8.0-beta.26
+  - @osdk/generator-converters.ontologyir@2.8.0-beta.26
+
+## 0.6.0-beta.26
+
+### Patch Changes
+
+- Updated dependencies [0df859a]
+  - @osdk/api@2.8.0-beta.25
+  - @osdk/client.unstable@2.8.0-beta.25
+  - @osdk/generator-converters.ontologyir@2.8.0-beta.25
+
+## 0.6.0-beta.25
+
+### Patch Changes
+
+- Updated dependencies [77aa4a9]
+  - @osdk/maker@0.16.0-beta.12
+  - @osdk/api@2.8.0-beta.24
+  - @osdk/client.unstable@2.8.0-beta.24
+  - @osdk/generator-converters.ontologyir@2.8.0-beta.24
+
+## 0.6.0-beta.24
+
+### Patch Changes
+
+- Updated dependencies [cc7f505]
+- Updated dependencies [4bb9769]
+- Updated dependencies [0e45a37]
+- Updated dependencies [fcf81ba]
+- Updated dependencies [fd3f6d3]
+- Updated dependencies [32c6a0c]
+  - @osdk/maker@0.16.0-beta.11
+  - @osdk/api@2.8.0-beta.23
+  - @osdk/generator-converters.ontologyir@2.8.0-beta.23
+  - @osdk/client.unstable@2.8.0-beta.23
+
+## 0.6.0-beta.23
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.22
+- @osdk/client.unstable@2.8.0-beta.22
+- @osdk/generator-converters.ontologyir@2.8.0-beta.22
+
+## 0.6.0-beta.22
+
+### Minor Changes
+
+- 00677eb: Upgrade Storybook to v10 and add MCP addon.
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.21
+- @osdk/client.unstable@2.8.0-beta.21
+- @osdk/generator-converters.ontologyir@2.8.0-beta.21
+
 ## 0.6.0-beta.21
 
 ### Patch Changes

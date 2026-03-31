@@ -50,16 +50,19 @@ export interface deleteFooInterface extends ActionDefinition<deleteFooInterface.
     rid: 'ri.actions.main.action-type.3828bab4-49c7-4fdf-a780-6ccbc359d817';
     status: 'ACTIVE';
     type: 'action';
+    unsanitizedApiName: 'delete-foo-interface';
 
     signatures: deleteFooInterface.Signatures;
   };
   apiName: 'deleteFooInterface';
   type: 'action';
+  unsanitizedApiName: 'delete-foo-interface';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 export const deleteFooInterface: deleteFooInterface = {
   apiName: 'deleteFooInterface',
   type: 'action',
+  unsanitizedApiName: 'delete-foo-interface',
   osdkMetadata: $osdkMetadata,
 };

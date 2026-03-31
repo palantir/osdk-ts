@@ -32,6 +32,7 @@ export interface ObjectSetOperations {
   orderBy?: Canonical<Record<string, "asc" | "desc" | undefined>>;
   select?: Canonical<readonly string[]>;
   pageSize?: number;
+  loadPropertySecurity?: true;
 }
 
 export interface ObjectSetCacheKey extends

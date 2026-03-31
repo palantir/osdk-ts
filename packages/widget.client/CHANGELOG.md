@@ -1,5 +1,54 @@
 # @osdk/widget.client
 
+## 3.5.0-beta.28
+
+### Patch Changes
+
+- @osdk/widget.api@3.5.0-beta.28
+
+## 3.5.0-beta.27
+
+### Patch Changes
+
+- @osdk/widget.api@3.5.0-beta.27
+
+## 3.5.0-beta.26
+
+### Patch Changes
+
+- @osdk/widget.api@3.5.0-beta.26
+
+## 3.5.0-beta.25
+
+### Patch Changes
+
+- Updated dependencies [e590bed]
+  - @osdk/widget.api@3.5.0-beta.25
+
+## 3.5.0-beta.24
+
+### Patch Changes
+
+- @osdk/widget.api@3.5.0-beta.24
+
+## 3.5.0-beta.23
+
+### Patch Changes
+
+- @osdk/widget.api@3.5.0-beta.23
+
+## 3.5.0-beta.22
+
+### Patch Changes
+
+- @osdk/widget.api@3.5.0-beta.22
+
+## 3.5.0-beta.21
+
+### Patch Changes
+
+- @osdk/widget.api@3.5.0-beta.21
+
 ## 3.5.0-beta.20
 
 ### Patch Changes

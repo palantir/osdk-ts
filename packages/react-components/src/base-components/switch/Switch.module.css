@@ -25,7 +25,6 @@
   width: var(--osdk-switch-track-width);
   height: var(--osdk-switch-track-height);
   padding: 0;
-  box-sizing: border-box;
   cursor: pointer;
   border-radius: var(--osdk-switch-border-radius, var(--osdk-surface-border-radius));
   position: relative;

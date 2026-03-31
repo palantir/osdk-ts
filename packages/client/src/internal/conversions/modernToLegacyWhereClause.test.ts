@@ -765,6 +765,125 @@ describe(modernToLegacyWhereClause, () => {
         }
       `);
       });
+      it("converts $interval $match", () => {
+        expect(modernToLegacyWhereClause<ObjAllProps>({
+          string: {
+            $interval: {
+              $match: "test phrase",
+              $maxGaps: 1,
+              $ordered: true,
+            },
+          },
+        }, objectTypeWithAllPropertyTypes)).toMatchInlineSnapshot(`
+        {
+          "field": "string",
+          "rule": {
+            "maxGaps": 1,
+            "ordered": true,
+            "query": "test phrase",
+            "type": "match",
+          },
+          "type": "interval",
+        }
+      `);
+      });
+      it("converts $interval $prefixOnLastTerm", () => {
+        expect(modernToLegacyWhereClause<ObjAllProps>({
+          string: {
+            $interval: {
+              $match: "test phr",
+              $prefixOnLastTerm: true,
+            },
+          },
+        }, objectTypeWithAllPropertyTypes)).toMatchInlineSnapshot(`
+        {
+          "field": "string",
+          "rule": {
+            "query": "test phr",
+            "type": "prefixOnLastToken",
+          },
+          "type": "interval",
+        }
+      `);
+      });
+      it("converts $interval $and", () => {
+        expect(modernToLegacyWhereClause<ObjAllProps>({
+          string: {
+            $interval: {
+              $and: [{
+                $match: "test",
+                $ordered: true,
+              }, {
+                $match: "phrase",
+                $ordered: true,
+              }],
+              $maxGaps: 0,
+              $ordered: true,
+            },
+          },
+        }, objectTypeWithAllPropertyTypes)).toMatchInlineSnapshot(`
+          {
+            "field": "string",
+            "rule": {
+              "maxGaps": 0,
+              "ordered": true,
+              "rules": [
+                {
+                  "maxGaps": undefined,
+                  "ordered": true,
+                  "query": "test",
+                  "type": "match",
+                },
+                {
+                  "maxGaps": undefined,
+                  "ordered": true,
+                  "query": "phrase",
+                  "type": "match",
+                },
+              ],
+              "type": "allOf",
+            },
+            "type": "interval",
+          }
+        `);
+      });
+      it("converts $interval $or", () => {
+        expect(modernToLegacyWhereClause<ObjAllProps>({
+          string: {
+            $interval: {
+              $or: [{
+                $match: "test",
+                $ordered: true,
+              }, {
+                $match: "phrase",
+                $ordered: true,
+              }],
+            },
+          },
+        }, objectTypeWithAllPropertyTypes)).toMatchInlineSnapshot(`
+          {
+            "field": "string",
+            "rule": {
+              "rules": [
+                {
+                  "maxGaps": undefined,
+                  "ordered": true,
+                  "query": "test",
+                  "type": "match",
+                },
+                {
+                  "maxGaps": undefined,
+                  "ordered": true,
+                  "query": "phrase",
+                  "type": "match",
+                },
+              ],
+              "type": "anyOf",
+            },
+            "type": "interval",
+          }
+        `);
+      });
       it("converts struct where clauses correctly", () => {
         expect(modernToLegacyWhereClause<structObj>({
           address: { state: { $eq: "NJ" } },

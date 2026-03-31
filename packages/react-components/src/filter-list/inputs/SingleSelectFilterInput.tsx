@@ -15,11 +15,13 @@
  */
 
 import type {
+  ObjectSet,
   ObjectTypeDefinition,
   PropertyKeys,
   WhereClause,
 } from "@osdk/api";
 import React, { memo, useCallback, useMemo } from "react";
+import { FilterInputExcludeRow } from "../base/FilterInputExcludeRow.js";
 import { SingleSelectInput } from "../base/inputs/SingleSelectInput.js";
 import type { FilterState } from "../FilterListItemApi.js";
 import { usePropertyAggregation } from "../hooks/usePropertyAggregation.js";
@@ -27,18 +29,22 @@ import { coerceToString } from "../utils/coerceFilterValue.js";
 
 interface SingleSelectFilterInputProps<Q extends ObjectTypeDefinition> {
   objectType: Q;
+  objectSet: ObjectSet<Q>;
   propertyKey: string;
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
   whereClause: WhereClause<Q>;
+  excludeRowOpen?: boolean;
 }
 
 function SingleSelectFilterInputInner<Q extends ObjectTypeDefinition>({
   objectType,
+  objectSet,
   propertyKey,
   filterState,
   onFilterStateChanged,
   whereClause,
+  excludeRowOpen,
 }: SingleSelectFilterInputProps<Q>): React.ReactElement {
   const selectedValue = useMemo(
     () =>
@@ -68,18 +74,26 @@ function SingleSelectFilterInputInner<Q extends ObjectTypeDefinition>({
   const { data, isLoading, error } = usePropertyAggregation(
     objectType,
     propertyKey as PropertyKeys<Q>,
+    objectSet,
     aggregationOptions,
   );
 
   return (
-    <SingleSelectInput
-      values={data}
-      isLoading={isLoading}
-      error={error}
-      selectedValue={selectedValue}
-      onChange={handleChange}
-      ariaLabel={`Select ${propertyKey}`}
-    />
+    <FilterInputExcludeRow
+      excludeRowOpen={excludeRowOpen}
+      filterState={filterState}
+      onFilterStateChanged={onFilterStateChanged}
+      totalValueCount={data.length}
+    >
+      <SingleSelectInput
+        values={data}
+        isLoading={isLoading}
+        error={error}
+        selectedValue={selectedValue}
+        onChange={handleChange}
+        ariaLabel={`Select ${propertyKey}`}
+      />
+    </FilterInputExcludeRow>
   );
 }
 

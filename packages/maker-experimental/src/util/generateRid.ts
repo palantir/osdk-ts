@@ -216,15 +216,26 @@ export class ReadableIdGenerator {
     return `time-series-sync-${timeSeriesSyncName}` as ReadableId;
   }
 
-  static getForDataSet(dataSetName: string): ReadableId {
+  static getForDataset(dataSetName: string): ReadableId {
     return `dataset-datasource-${dataSetName}` as ReadableId;
   }
 
-  static getForDataSetColumn(
+  static getForDatasetOutput(dataSetName: string): ReadableId {
+    return `dataset-datasource-output-${dataSetName}` as ReadableId;
+  }
+
+  static getForDatasetColumn(
     dataSetName: string,
     columnName: string,
   ): ReadableId {
     return `dataset-datasource-column-${dataSetName}-${columnName}` as ReadableId;
+  }
+
+  static getForDatasetColumnOutput(
+    dataSetName: string,
+    columnName: string,
+  ): ReadableId {
+    return `dataset-datasource-column-output-${dataSetName}-${columnName}` as ReadableId;
   }
 
   static getForMediaSetView(mediaSetViewName: string): ReadableId {
@@ -420,7 +431,7 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
 
   // Generic RID generation for types without specific generators
   generateRid(key: string): string {
-    return `ri.ontology-metadata.temp.${this.hashString(key)}`;
+    return `ri.ontology-metadata.temp.unknown.${this.hashString(key)}`;
   }
 
   // Datasource RID matching Java's RidUtils.getDatasourceRidFromName format
@@ -731,7 +742,7 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
     // Register column shapes
     columnNames.forEach(name => {
       this.columnShapes.put(
-        ReadableIdGenerator.getForDataSetColumn(dataSetName, name),
+        ReadableIdGenerator.getForDatasetColumn(dataSetName, name),
         {
           datasource: {
             type: "dataset",
@@ -744,7 +755,7 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
 
     // Register datasource locator
     this.datasourceLocators.put(
-      ReadableIdGenerator.getForDataSet(dataSetName),
+      ReadableIdGenerator.getForDataset(dataSetName),
       {
         type: "dataset",
         dataset: { rid: datasetRid, branch: branchId },

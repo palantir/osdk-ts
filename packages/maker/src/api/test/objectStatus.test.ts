@@ -32,7 +32,7 @@ describe("Object Status", () => {
             titlePropertyApiName: "bar",
             displayName: "ValidationTestObject",
             pluralDisplayName: "ValidationTestObjects",
-            apiName: "validation-test",
+            apiName: "validationTest",
             primaryKeyPropertyApiName: "bar",
             status: "experimental" as ObjectTypeStatus,
             properties: {
@@ -40,7 +40,7 @@ describe("Object Status", () => {
             },
           })
         ).toThrowError(
-          /Object "validation-test" has "experimental" status, but the following properties have a different status: bar/,
+          /Object "validationTest" has "experimental" status, but the following properties have a different status: bar/,
         );
       }, "/tmp/");
     });
@@ -52,7 +52,7 @@ describe("Object Status", () => {
             titlePropertyApiName: "bar",
             displayName: "ActiveExpPropObject",
             pluralDisplayName: "ActiveExpPropObjects",
-            apiName: "active-exp-prop",
+            apiName: "activeExpProp",
             primaryKeyPropertyApiName: "bar",
             status: "active" as ObjectTypeStatus,
             properties: {
@@ -73,7 +73,7 @@ describe("Object Status", () => {
             titlePropertyApiName: "bar",
             displayName: "ExampleActivePropObject",
             pluralDisplayName: "ExampleActivePropObjects",
-            apiName: "example-active-prop",
+            apiName: "exampleActiveProp",
             primaryKeyPropertyApiName: "bar",
             status: "example" as ObjectTypeStatus,
             properties: {
@@ -84,7 +84,7 @@ describe("Object Status", () => {
             },
           })
         ).toThrowError(
-          /Object "example-active-prop" has "example" status, but the following properties have a different status: bar/,
+          /Object "exampleActiveProp" has "example" status, but the following properties have a different status: bar/,
         );
       }, "/tmp/");
     });
@@ -96,7 +96,7 @@ describe("Object Status", () => {
             titlePropertyApiName: "bar",
             displayName: "DeprecatedActivePropObject",
             pluralDisplayName: "DeprecatedActivePropObjects",
-            apiName: "deprecated-active-prop",
+            apiName: "deprecatedActiveProp",
             primaryKeyPropertyApiName: "bar",
             status: {
               type: "deprecated",
@@ -111,7 +111,7 @@ describe("Object Status", () => {
             },
           })
         ).toThrowError(
-          /Object "deprecated-active-prop" has "deprecated" status, but the following properties have a different status: bar/,
+          /Object "deprecatedActiveProp" has "deprecated" status, but the following properties have a different status: bar/,
         );
       }, "/tmp/");
     });
@@ -123,7 +123,7 @@ describe("Object Status", () => {
             titlePropertyApiName: "bar",
             displayName: "ValidationTestObject2",
             pluralDisplayName: "ValidationTestObjects2",
-            apiName: "validation-test-2",
+            apiName: "validationTest2",
             primaryKeyPropertyApiName: "bar",
             status: "experimental" as ObjectTypeStatus,
             properties: {
@@ -144,7 +144,7 @@ describe("Object Status", () => {
             titlePropertyApiName: "bar",
             displayName: "ActiveNoStatusPropObject",
             pluralDisplayName: "ActiveNoStatusPropObjects",
-            apiName: "active-no-status-prop",
+            apiName: "activeNoStatusProp",
             primaryKeyPropertyApiName: "bar",
             status: "active" as ObjectTypeStatus,
             properties: {
@@ -162,7 +162,7 @@ describe("Object Status", () => {
             titlePropertyApiName: "bar",
             displayName: "ExpNoStatusPropObject",
             pluralDisplayName: "ExpNoStatusPropObjects",
-            apiName: "exp-no-status-prop",
+            apiName: "expNoStatusProp",
             primaryKeyPropertyApiName: "bar",
             status: "experimental" as ObjectTypeStatus,
             properties: {
@@ -181,14 +181,14 @@ describe("Object Status", () => {
           titlePropertyApiName: "bar",
           displayName: "DefaultStatusObject",
           pluralDisplayName: "DefaultStatusObjects",
-          apiName: "default-status",
+          apiName: "defaultStatus",
           primaryKeyPropertyApiName: "bar",
           properties: { "bar": { type: "string" } },
         });
 
         const metadata = dumpOntologyFullMetadata();
         expect(
-          metadata.ontology.objectTypes["com.palantir.default-status"]
+          metadata.ontology.objectTypes["com.palantir.defaultStatus"]
             .objectType.status,
         ).toEqual({
           type: "active",
@@ -203,7 +203,7 @@ describe("Object Status", () => {
           titlePropertyApiName: "bar",
           displayName: "ActiveStatusObject",
           pluralDisplayName: "ActiveStatusObjects",
-          apiName: "active-status",
+          apiName: "activeStatus",
           primaryKeyPropertyApiName: "bar",
           properties: { "bar": { type: "string" } },
           status: "active" as ObjectTypeStatus,
@@ -211,7 +211,7 @@ describe("Object Status", () => {
 
         const metadata = dumpOntologyFullMetadata();
         expect(
-          metadata.ontology.objectTypes["com.palantir.active-status"]
+          metadata.ontology.objectTypes["com.palantir.activeStatus"]
             .objectType.status,
         ).toEqual({
           type: "active",
@@ -226,7 +226,7 @@ describe("Object Status", () => {
           titlePropertyApiName: "bar",
           displayName: "ExperimentalStatusObject",
           pluralDisplayName: "ExperimentalStatusObjects",
-          apiName: "experimental-status",
+          apiName: "experimentalStatus",
           primaryKeyPropertyApiName: "bar",
           properties: { "bar": { type: "string" } },
           status: "experimental" as ObjectTypeStatus,
@@ -234,7 +234,7 @@ describe("Object Status", () => {
 
         const metadata = dumpOntologyFullMetadata();
         expect(
-          metadata.ontology.objectTypes["com.palantir.experimental-status"]
+          metadata.ontology.objectTypes["com.palantir.experimentalStatus"]
             .objectType.status,
         ).toEqual({
           type: "experimental",
@@ -249,7 +249,7 @@ describe("Object Status", () => {
           titlePropertyApiName: "bar",
           displayName: "DeprecatedStatusObject",
           pluralDisplayName: "DeprecatedStatusObjects",
-          apiName: "deprecated-status",
+          apiName: "deprecatedStatus",
           primaryKeyPropertyApiName: "bar",
           properties: { "bar": { type: "string" } },
           status: {
@@ -261,7 +261,7 @@ describe("Object Status", () => {
 
         const metadata = dumpOntologyFullMetadata();
         expect(
-          metadata.ontology.objectTypes["com.palantir.deprecated-status"]
+          metadata.ontology.objectTypes["com.palantir.deprecatedStatus"]
             .objectType.status,
         ).toEqual({
           type: "deprecated",

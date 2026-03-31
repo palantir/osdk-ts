@@ -1,5 +1,36 @@
 # @osdk/react-components-styles
 
+## 0.2.0-beta.25
+
+## 0.2.0-beta.24
+
+## 0.2.0-beta.14
+
+### Minor Changes
+
+- c35231f: add cbac css tokens and create cbac-components package
+
+## 0.2.0-beta.13
+
+### Minor Changes
+
+- 7080b01: Add base form layout with header, footer, field components, and CSS token variables for theming
+- dffac63: Fix styling nits
+- b373588: Styling fix with global border-box
+
+## 0.2.0-beta.12
+
+### Minor Changes
+
+- bc46400: Add skeleton loading states and polish checkbox list, histogram, and range filter inputs
+- 7a3c43d: feat(pdf): pdf-viewer component
+
+## 0.2.0-beta.11
+
+### Minor Changes
+
+- aa908e4: Redesign filter list collapse into separate render tree and simplify header layout
+
 ## 0.2.0-beta.10
 
 ### Minor Changes

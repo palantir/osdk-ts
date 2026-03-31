@@ -1,0 +1,66 @@
+/* DatetimePickerField — button trigger + popover + time input */
+
+/* Trigger button — styled to look like an input */
+.triggerButton {
+  width: 100%;
+  text-align: left;
+  font-family: var(--osdk-datetime-input-font-family);
+  font-size: var(--osdk-datetime-input-font-size);
+  padding: var(--osdk-datetime-input-padding);
+  border: var(--osdk-datetime-input-border);
+  border-radius: var(--osdk-datetime-input-border-radius);
+  background: var(--osdk-datetime-input-bg);
+  color: var(--osdk-datetime-input-color);
+  cursor: pointer;
+  box-sizing: border-box;
+
+  &:focus-visible {
+    border-color: var(--osdk-datetime-input-focus-border-color);
+    outline: var(--osdk-datetime-input-focus-outline);
+    outline-offset: var(--osdk-datetime-input-focus-outline-offset);
+  }
+}
+
+.triggerButtonPlaceholder {
+  color: var(--osdk-datetime-input-placeholder-color, currentColor);
+  opacity: var(--osdk-datetime-input-placeholder-opacity);
+}
+
+/* Popover */
+.popover {
+  background: var(--osdk-datetime-popover-bg);
+  padding: var(--osdk-datetime-popover-padding);
+  z-index: var(--osdk-datetime-popover-z-index);
+  border: var(--osdk-datetime-popover-border);
+  border-radius: var(--osdk-datetime-popover-border-radius);
+}
+
+/* Time input footer — negative horizontal margin counters the popover padding
+   so the border-top spans the full width of the popover. */
+.timeFooter {
+  padding-top: var(--osdk-datetime-time-padding-top);
+  padding-left: var(--osdk-datetime-popover-padding);
+  padding-right: var(--osdk-datetime-popover-padding);
+  border-top: var(--osdk-datetime-time-border-top);
+  margin-top: var(--osdk-datetime-time-padding-top);
+  margin-left: calc(var(--osdk-datetime-popover-padding) * -1);
+  margin-right: calc(var(--osdk-datetime-popover-padding) * -1);
+}
+
+.timeInput {
+  width: 100%;
+  font-family: var(--osdk-datetime-input-font-family);
+  font-size: var(--osdk-datetime-input-font-size);
+  padding: var(--osdk-datetime-input-padding);
+  border: var(--osdk-datetime-input-border);
+  border-radius: var(--osdk-datetime-input-border-radius);
+  background: var(--osdk-datetime-input-bg);
+  color: var(--osdk-datetime-input-color);
+  box-sizing: border-box;
+
+  &:focus {
+    border-color: var(--osdk-datetime-input-focus-border-color);
+    outline: var(--osdk-datetime-input-focus-outline);
+    outline-offset: var(--osdk-datetime-input-focus-outline-offset);
+  }
+}

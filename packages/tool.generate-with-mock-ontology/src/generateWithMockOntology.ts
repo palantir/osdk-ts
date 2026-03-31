@@ -78,7 +78,7 @@ export async function generateWithMockOntology(): Promise<void> {
         "FooInterface",
         "BarInterface",
       ],
-      linkTypes: ["employee.peeps", "employee.lead", "employee.officeLink"],
+      linkTypes: ["Employee.peeps", "Employee.lead", "Employee.officeLink"],
       palantirOnlyTest: true,
       _: [],
       $0: "",

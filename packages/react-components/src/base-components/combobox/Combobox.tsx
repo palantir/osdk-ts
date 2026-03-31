@@ -21,6 +21,7 @@ import {
   type ComboboxClearProps,
   type ComboboxInputProps,
   type ComboboxItemProps,
+  type ComboboxListProps,
   type ComboboxPopupProps,
   type ComboboxPositionerProps,
 } from "@base-ui/react/combobox";
@@ -35,18 +36,27 @@ interface ComboboxInputComponentProps
   className?: string;
 }
 
-function ComboboxInput({
+function ComboboxSearchInput({
   className,
   ...rest
 }: ComboboxInputComponentProps): React.ReactElement {
   return (
     <div className={classnames(styles.osdkComboboxInputWrapper, className)}>
-      <Search className={styles.osdkComboboxSearchIcon} color="currentColor" />
-      <BaseUICombobox.Input
-        className={styles.osdkComboboxInput}
-        {...rest}
-      />
+      <Search className={styles.osdkComboboxSearchIcon} />
+      <BaseUICombobox.Input className={styles.osdkComboboxInput} {...rest} />
     </div>
+  );
+}
+
+function ComboboxInput({
+  className,
+  ...rest
+}: ComboboxInputComponentProps): React.ReactElement {
+  return (
+    <BaseUICombobox.Input
+      className={classnames(styles.osdkComboboxInput, className)}
+      {...rest}
+    />
   );
 }
 
@@ -123,7 +133,14 @@ function ComboboxChips({
 }): React.ReactElement {
   return (
     <BaseUICombobox.Chips
-      className={classnames(styles.osdkComboboxChips, className)}
+      render={(props) => (
+        <div
+          {...props}
+          className={classnames(styles.osdkComboboxInputWrapper, className)}
+        >
+          {props.children}
+        </div>
+      )}
     >
       {children}
     </BaseUICombobox.Chips>
@@ -167,7 +184,7 @@ function ComboboxChipRemove({
       aria-label="Remove"
       {...rest}
     >
-      <Cross color="currentColor" />
+      <Cross />
     </BaseUICombobox.ChipRemove>
   );
 }
@@ -188,7 +205,7 @@ function ComboboxClear({
       aria-label="Clear all"
       {...rest}
     >
-      <Cross color="currentColor" />
+      <Cross />
     </BaseUICombobox.Clear>
   );
 }
@@ -209,28 +226,55 @@ function ComboboxEmpty({
   );
 }
 
+interface ComboboxListComponentProps
+  extends Omit<ComboboxListProps, "className">
+{
+  className?: string;
+}
+
+function ComboboxList({
+  className,
+  children,
+  ...rest
+}: ComboboxListComponentProps): React.ReactElement {
+  return (
+    <BaseUICombobox.List
+      className={classnames(styles.osdkComboboxList, className)}
+      {...rest}
+    >
+      {children}
+    </BaseUICombobox.List>
+  );
+}
+
 export const Combobox: {
   Root: typeof BaseUICombobox.Root;
+  SearchInput: typeof ComboboxSearchInput;
   Input: typeof ComboboxInput;
   Portal: typeof BaseUICombobox.Portal;
   Positioner: typeof ComboboxPositioner;
   Popup: typeof ComboboxPopup;
+  List: typeof ComboboxList;
   Item: typeof ComboboxItem;
   Chips: typeof ComboboxChips;
   Chip: typeof ComboboxChip;
   ChipRemove: typeof ComboboxChipRemove;
   Clear: typeof ComboboxClear;
   Empty: typeof ComboboxEmpty;
+  Value: typeof BaseUICombobox.Value;
 } = {
   Root: BaseUICombobox.Root,
+  SearchInput: ComboboxSearchInput,
   Input: ComboboxInput,
   Portal: BaseUICombobox.Portal,
   Positioner: ComboboxPositioner,
   Popup: ComboboxPopup,
+  List: ComboboxList,
   Item: ComboboxItem,
   Chips: ComboboxChips,
   Chip: ComboboxChip,
   ChipRemove: ComboboxChipRemove,
   Clear: ComboboxClear,
   Empty: ComboboxEmpty,
+  Value: BaseUICombobox.Value,
 };

@@ -113,6 +113,7 @@ const archetypeRules = archetypes(
       "@psdk/examples.*",
       "@osdk/monorepo.*",
       "@osdk/react-components-storybook",
+      "@osdk/react-devtools",
     ],
     {
       ...LIBRARY_RULES,
@@ -137,6 +138,7 @@ const archetypeRules = archetypes(
       "@osdk/shared.net.errors",
       "@osdk/shared.net.fetch",
       "@osdk/shared.net",
+      "@osdk/react-sdk-docs",
       "@osdk/typescript-sdk-docs",
       "@osdk/widget.api",
       "@osdk/widget.client",
@@ -339,6 +341,7 @@ const archetypeRules = archetypes(
   .addArchetype(
     "reactLibraryWithCss",
     [
+      "@osdk/cbac-components",
       "@osdk/react-components",
     ],
     {

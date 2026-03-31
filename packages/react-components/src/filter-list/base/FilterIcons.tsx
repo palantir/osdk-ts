@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,53 +14,46 @@
  * limitations under the License.
  */
 
+import {
+  ChevronDown,
+  Cross,
+  DoubleChevronLeft,
+  DoubleChevronRight,
+  More,
+  Search,
+  Tick,
+  Undo,
+} from "@blueprintjs/icons";
 import React from "react";
 
-export function IncludeIcon(): React.ReactElement {
-  return (
-    <svg
-      width="14"
-      height="14"
-      viewBox="0 0 16 16"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      aria-hidden="true"
-    >
-      <path d="M2 3h12M5 8h6M7 13h2" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-export function ExcludeIcon(): React.ReactElement {
-  return (
-    <svg
-      width="14"
-      height="14"
-      viewBox="0 0 16 16"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      aria-hidden="true"
-    >
-      <path d="M2 3h12M5 8h6M7 13h2" strokeLinecap="round" />
-      <path d="M3 14L13 2" strokeLinecap="round" />
-    </svg>
-  );
-}
-
 export function RemoveIcon(): React.ReactElement {
-  return (
-    <svg
-      width="14"
-      height="14"
-      viewBox="0 0 16 16"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      aria-hidden="true"
-    >
-      <path d="M4 4l8 8M12 4l-8 8" strokeLinecap="round" />
-    </svg>
-  );
+  return <Cross size={14} />;
+}
+
+export function SearchIcon(): React.ReactElement {
+  return <Search size={14} />;
+}
+
+export function OverflowMenuIcon(): React.ReactElement {
+  return <More size={14} />;
+}
+
+export function ChevronDownIcon(): React.ReactElement {
+  return <ChevronDown size={10} />;
+}
+
+export function CollapseIcon(): React.ReactElement {
+  return <DoubleChevronLeft size={14} />;
+}
+
+export function ExpandIcon(): React.ReactElement {
+  return <DoubleChevronRight size={14} />;
+}
+
+export function ResetIcon(): React.ReactElement {
+  return <Undo size={14} />;
+}
+
+export function CheckIcon(): React.ReactElement {
+  return <Tick size={12} />;
 }

@@ -1,6 +1,6 @@
 {
   "name": "@osdk/react-components",
-  "version": "0.2.0-beta.17",
+  "version": "0.2.0-beta.25",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -24,6 +24,15 @@
       },
       "require": "./build/cjs/public/experimental.cjs",
       "default": "./build/browser/public/experimental.js"
+    },
+    "./primitives": {
+      "browser": "./build/browser/public/primitives.js",
+      "import": {
+        "types": "./build/types/public/primitives.d.ts",
+        "default": "./build/esm/public/primitives.js"
+      },
+      "require": "./build/cjs/public/primitives.cjs",
+      "default": "./build/browser/public/primitives.js"
     },
     "./styles.css": "./build/browser/styles.css",
     "./*": {
@@ -58,7 +67,10 @@
     "@dnd-kit/utilities": "^3.2.2",
     "@tanstack/react-table": "^8.21.3",
     "@tanstack/react-virtual": "^3.13.13",
-    "lodash-es": "^4.17.21"
+    "lodash-es": "^4.17.21",
+    "pdfjs-dist": "^4.9.155",
+    "react-day-picker": "^9.0.0",
+    "react-hook-form": "^7.54.0"
   },
   "peerDependencies": {
     "@osdk/api": "*",

@@ -1,5 +1,134 @@
 # @osdk/react-components
 
+## 0.2.0-beta.25
+
+### Minor Changes
+
+- d4ac875: Add text highlight annotation mode to PdfViewer with toolbar toggle button, `onTextHighlight` callback, and multi-rect annotation support via `rects` field on `PdfAnnotation`
+- e19ff03: Add TextAreaField component using @base-ui Input with render prop for native textarea rendering
+
+### Patch Changes
+
+- Updated dependencies [f294f5a]
+- Updated dependencies [2855223]
+- Updated dependencies [d284bf2]
+- Updated dependencies [b68cebd]
+  - @osdk/client@2.8.0-beta.28
+  - @osdk/react@0.10.0-beta.13
+  - @osdk/api@2.8.0-beta.28
+
+## 0.2.0-beta.24
+
+### Minor Changes
+
+- 813f4cb: Add DatetimePickerField component
+- e4840fa: Add exclude dropdown, in-filter search, hover-reveal actions, remove button to filter list items, thread objectSet through aggregation hooks so prefiltered sets are respected, and add FilterList storybook stories and documentation
+
+### Patch Changes
+
+- Updated dependencies [46dfbec]
+  - @osdk/react@0.10.0-beta.12
+
+## 0.2.0-beta.23
+
+### Minor Changes
+
+- c35231f: add cbac css tokens and create cbac-components package
+- 5f52808: fix(pdf): fix issue with pdf viewer worker import
+- 336a013: refactor(pdf): rename BasePdfRenderer/PdfRenderer to BasePdfViewer/PdfViewer, rename downloadEnabled to enableDownload, expose internal hooks, add onDownload result callback for download success/failure
+- 07a6fdb: use SkeletonBar component in table loading cells instead of inline skeleton divs
+
+### Patch Changes
+
+- Updated dependencies [fceb4ce]
+  - @osdk/client@2.8.0-beta.27
+  - @osdk/api@2.8.0-beta.27
+  - @osdk/react@0.10.0-beta.11
+
+## 0.2.0-beta.22
+
+### Minor Changes
+
+- 7080b01: Add base form layout with header, footer, field components, and CSS token variables for theming
+- 08b979a: Thread objectSet through filter aggregation hooks and add FilterList documentation
+- dffac63: Fix styling nits
+- b373588: Styling fix with global border-box
+
+### Patch Changes
+
+- Updated dependencies [b1e8bba]
+- Updated dependencies [599426b]
+- Updated dependencies [60b5ffb]
+- Updated dependencies [61e33ab]
+  - @osdk/react@0.10.0-beta.11
+  - @osdk/client@2.8.0-beta.26
+  - @osdk/api@2.8.0-beta.26
+
+## 0.2.0-beta.21
+
+### Minor Changes
+
+- fffbb68: Add DropdownField component with searchable combobox and multi-select support
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.24
+- @osdk/client@2.8.0-beta.24
+- @osdk/react@0.10.0-beta.10
+
+## 0.2.0-beta.20
+
+### Minor Changes
+
+- 9ff2eca: Add function-backed column query
+- 6516ff9: Fix multiple setData calls
+- bc46400: Add skeleton loading states and polish checkbox list, histogram, and range filter inputs
+- 7a3c43d: feat(pdf): pdf-viewer component
+- 532d0d7: Fix lint errors
+- 074a754: Display function-backed column
+
+### Patch Changes
+
+- Updated dependencies [4bb9769]
+  - @osdk/api@2.8.0-beta.23
+  - @osdk/client@2.8.0-beta.23
+  - @osdk/react@0.10.0-beta.10
+
+## 0.2.0-beta.19
+
+### Minor Changes
+
+- 9f76365: Follow-up cleanups from ActionForm PR
+- dbbfb6f: Add experimental ActionForm component with field renderers, form state hook, and tests
+- aa908e4: Redesign filter list collapse into separate render tree and simplify header layout
+
+### Patch Changes
+
+- Updated dependencies [dbbfb6f]
+- Updated dependencies [cbfa135]
+- Updated dependencies [f4604c2]
+  - @osdk/react@0.10.0-beta.10
+  - @osdk/client@2.8.0-beta.22
+  - @osdk/api@2.8.0-beta.22
+
+## 0.2.0-beta.18
+
+### Minor Changes
+
+- fcc4971: Refactor filter list where clause generation for consistent exclude wrapping and integer clamping
+- 29095f5: fix where clause generation for compound property filters and remove useEffect in useFilterListState
+- 7347abe: Update README
+- a198fc5: Fix header cell not aligned
+- 00677eb: Upgrade Storybook to v10 and add MCP addon.
+
+### Patch Changes
+
+- Updated dependencies [c40444b]
+- Updated dependencies [dda14be]
+  - @osdk/client@2.8.0-beta.21
+  - @osdk/react@0.10.0-beta.9
+  - @osdk/api@2.8.0-beta.21
+
 ## 0.2.0-beta.17
 
 ### Minor Changes

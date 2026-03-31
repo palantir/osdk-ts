@@ -74,6 +74,12 @@ export async function aggregate<
     { branch: clientCtx.branch, transactionId: clientCtx.transactionId },
   );
 
+  if (!result.data || !Array.isArray(result.data)) {
+    throw new Error(
+      `Aggregation request failed: ${JSON.stringify(result)}`,
+    );
+  }
+
   if (!req.$groupBy) {
     invariant(
       result.data.length === 1,
@@ -84,6 +90,7 @@ export async function aggregate<
       ...aggregationToCountResult(result.data[0]),
       ...legacyToModernSingleAggregationResult(
         result.data[0],
+        req.$select,
       ),
     } as any;
   }
@@ -93,7 +100,7 @@ export async function aggregate<
       return {
         $group: entry.group as any,
         ...aggregationToCountResult(entry),
-        ...legacyToModernSingleAggregationResult(entry),
+        ...legacyToModernSingleAggregationResult(entry, req.$select),
       };
     }) as any; // fixme
 

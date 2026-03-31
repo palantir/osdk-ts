@@ -762,6 +762,8 @@ export interface GraphqlFormatting extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'GraphqlFormatting';
+  primaryKeyApiName: 'stringPlain';
+  primaryKeyType: 'string';
   __DefinitionMetadata?: {
     objectSet: GraphqlFormatting.ObjectSet;
     props: GraphqlFormatting.Props;
@@ -1440,6 +1442,8 @@ export const GraphqlFormatting = {
   type: 'object',
   apiName: 'GraphqlFormatting',
   osdkMetadata: $osdkMetadata,
+  primaryKeyApiName: 'stringPlain',
+  primaryKeyType: 'string',
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.object-type.353eb83c-df7e-4c97-a362-1e94689869bc',
   },

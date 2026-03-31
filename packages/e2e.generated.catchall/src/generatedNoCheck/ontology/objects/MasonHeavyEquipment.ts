@@ -475,6 +475,8 @@ export interface MasonHeavyEquipment extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'MasonHeavyEquipment';
+  primaryKeyApiName: 'id';
+  primaryKeyType: 'string';
   __DefinitionMetadata?: {
     objectSet: MasonHeavyEquipment.ObjectSet;
     props: MasonHeavyEquipment.Props;
@@ -943,6 +945,8 @@ export const MasonHeavyEquipment = {
   type: 'object',
   apiName: 'MasonHeavyEquipment',
   osdkMetadata: $osdkMetadata,
+  primaryKeyApiName: 'id',
+  primaryKeyType: 'string',
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.object-type.73756c21-5a63-47ae-af39-2f22bedd8ec2',
   },

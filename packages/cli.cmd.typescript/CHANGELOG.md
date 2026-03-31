@@ -1,5 +1,17 @@
 # @osdk/cli.cmd.typescript
 
+## 0.32.0-beta.4
+
+### Minor Changes
+
+- 9eb20ee: Filter out queries that are ontology edit functions before generating.
+
+### Patch Changes
+
+- Updated dependencies [7775359]
+  - @osdk/generator@2.8.0-beta.27
+  - @osdk/cli.common@0.32.0-beta.4
+
 ## 0.32.0-beta.3
 
 ### Minor Changes

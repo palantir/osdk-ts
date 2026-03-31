@@ -1,5 +1,63 @@
 # @osdk/maker
 
+## 0.16.0-beta.14
+
+### Minor Changes
+
+- 684b6c6: Always use valid import path
+
+### Patch Changes
+
+- Updated dependencies [f294f5a]
+- Updated dependencies [d284bf2]
+- Updated dependencies [b68cebd]
+- Updated dependencies [12fe33f]
+  - @osdk/api@2.8.0-beta.28
+  - @osdk/generator-converters.ontologyir@2.8.0-beta.28
+
+## 0.16.0-beta.13
+
+### Minor Changes
+
+- 9ee82f4: Dedupe many-to-many PK property names in datasource
+
+### Patch Changes
+
+- Updated dependencies [60b5ffb]
+- Updated dependencies [61e33ab]
+  - @osdk/api@2.8.0-beta.26
+  - @osdk/generator-converters.ontologyir@2.8.0-beta.26
+
+## 0.16.0-beta.12
+
+### Minor Changes
+
+- 77aa4a9: Detect imported objects for OAC links
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.24
+- @osdk/generator-converters.ontologyir@2.8.0-beta.24
+
+## 0.16.0-beta.11
+
+### Minor Changes
+
+- cc7f505: Add maximum length validation (100 characters) for API names to match server-side constraints
+- 0e45a37: Add better api name validation for OAC
+- fcf81ba: Validate link api names
+- fd3f6d3: Add support for empty backing datasources
+
+### Patch Changes
+
+- Updated dependencies [4bb9769]
+- Updated dependencies [beba0cd]
+- Updated dependencies [c4d7052]
+- Updated dependencies [32c6a0c]
+  - @osdk/api@2.8.0-beta.23
+  - @osdk/typescript-sdk-docs@0.7.0-beta.3
+  - @osdk/generator-converters.ontologyir@2.8.0-beta.23
+
 ## 0.16.0-beta.10
 
 ### Minor Changes
