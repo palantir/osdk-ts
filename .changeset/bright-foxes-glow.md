@@ -1,5 +1,6 @@
 ---
 "@osdk/react-components": patch
+"@osdk/react-components-styles": patch
 ---
 
-Add TextAreaField component using @base-ui Input with render prop for native textarea rendering
+Add FilePickerField component for attachment and media reference form fields
