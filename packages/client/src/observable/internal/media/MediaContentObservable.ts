@@ -150,11 +150,17 @@ export function createMediaContentObservable(
 
     const previewDimensions = await extractImageDimensions(previewBlob);
     if (gen !== fetchGeneration || disposed) {
+      if (previewUrl) {
+        deps.blobManager.releaseBlobUrl(previewBlobKey);
+      }
       return;
     }
 
     const previewMeta = await deps.fetchMetadata(source).catch(() => undefined);
     if (gen !== fetchGeneration || disposed) {
+      if (previewUrl) {
+        deps.blobManager.releaseBlobUrl(previewBlobKey);
+      }
       return;
     }
 
@@ -179,6 +185,9 @@ export function createMediaContentObservable(
     const fullUrl = deps.blobManager.createBlobUrl(cacheKey);
     const fullDimensions = await extractImageDimensions(fullBlob);
     if (gen !== fetchGeneration || disposed) {
+      if (fullUrl) {
+        deps.blobManager.releaseBlobUrl(cacheKey);
+      }
       return;
     }
 
