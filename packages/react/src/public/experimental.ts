@@ -33,7 +33,10 @@ export type {
   UseOsdkFunctionsResult,
 } from "../new/useOsdkFunctions.js";
 export { useOsdkMedia } from "../new/useOsdkMedia.js";
-export type { UseOsdkMediaResult } from "../new/useOsdkMedia.js";
+export type {
+  UseOsdkMediaOptions,
+  UseOsdkMediaResult,
+} from "../new/useOsdkMedia.js";
 export { useOsdkMediaUpload } from "../new/useOsdkMediaUpload.js";
 export type { UseOsdkMediaUploadResult } from "../new/useOsdkMediaUpload.js";
 export { useOsdkObject } from "../new/useOsdkObject.js";
