@@ -3,4 +3,4 @@
 "@osdk/client": patch
 ---
 
-add build:dev turbo task and package-level turbo overrides to reduce dev build graph from 100 to 35 tasks
+add package-level turbo overrides for transpile task to trim test-only packages from the build dependency graph

@@ -47,6 +47,27 @@
         "codegen"
       ]
     },
+    "transpile": {
+      "dependsOn": [
+        "@osdk/monorepo.tsconfig#typecheck",
+        "@osdk/api#typecheck",
+        "@osdk/client.unstable#typecheck",
+        "@osdk/generator-converters#typecheck",
+        "@osdk/shared.client.impl#typecheck",
+        "@osdk/shared.net.errors#typecheck",
+        "@osdk/shared.net.fetch#typecheck",
+        "@osdk/api#transpile",
+        "@osdk/client.unstable#transpile",
+        "@osdk/generator-converters#transpile",
+        "@osdk/shared.client.impl#transpile",
+        "@osdk/shared.net.errors#transpile",
+        "@osdk/shared.net.fetch#transpile",
+        "codegen",
+        "transpileCjs",
+        "transpileEsm",
+        "transpileBrowser"
+      ]
+    },
     "typecheck": {
       "dependsOn": [
         "@osdk/api#transpileTypes",

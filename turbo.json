@@ -162,12 +162,6 @@
       ]
     },
 
-    "build:dev": {
-      "dependsOn": ["transpileEsm", "transpileTypes", "typecheck"],
-      "inputs": ["src/**/*"],
-      "outputs": ["build/esm/**", "build/types/**"]
-    },
-
     "bundle": {
       "dependsOn": ["bundle:esbuild"]
     },

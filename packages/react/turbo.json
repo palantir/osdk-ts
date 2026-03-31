@@ -31,6 +31,19 @@
         "codegen"
       ]
     },
+    "transpile": {
+      "dependsOn": [
+        "@osdk/monorepo.tsconfig#typecheck",
+        "@osdk/api#typecheck",
+        "@osdk/client#typecheck",
+        "@osdk/api#transpile",
+        "@osdk/client#transpile",
+        "codegen",
+        "transpileCjs",
+        "transpileEsm",
+        "transpileBrowser"
+      ]
+    },
     "typecheck": {
       "dependsOn": [
         "@osdk/api#transpileTypes",
