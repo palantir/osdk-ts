@@ -99,15 +99,15 @@ export interface FormFieldDefinition<
 
   /**
    * The component props for the form field
-   * Excludes runtime props (key, onChange) which are managed by ActionForm
+   * Excludes runtime props (value, onChange) which are managed by ActionForm
    */
-  fieldComponentProps?: Omit<
+  fieldComponentProps: Omit<
     FormFieldPropsByType[
       ValidFormFieldForPropertyType<
         FieldDescriptorType<Q, K>
       >
     ],
-    "key" | "onChange"
+    "value" | "onChange"
   >;
 }
 
@@ -451,7 +451,7 @@ export type RendererFieldDefinition = {
     placeholder?: string;
     helperText?: string;
     helperTextPlacement?: "bottom" | "tooltip";
-    fieldComponentProps?: Omit<FormFieldPropsByType[K], "value" | "onChange">;
+    fieldComponentProps: Omit<FormFieldPropsByType[K], "value" | "onChange">;
   };
 }[FieldComponent];
 

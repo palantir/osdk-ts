@@ -14,33 +14,117 @@
  * limitations under the License.
  */
 
-import type { ActionDefinition, ActionMetadata } from "@osdk/api";
-import type {
-  ActionParameters,
-  FieldDescriptorType,
-  FieldKey,
-  FormFieldDefinition,
-  ValidFormFieldForPropertyType,
-} from "../FormFieldApi.js";
-import { getDefaultFieldComponent } from "./getDefaultFieldComponent.js";
+import type { ActionMetadata } from "@osdk/api";
+import { assertUnreachable } from "../../shared/assertUnreachable.js";
+import type { RendererFieldDefinition } from "../FormFieldApi.js";
 
 /**
- * Derives default field definitions from fetched ActionMetadata.
+ * Derives default field definitions from ActionMetadata.
+ *
+ * Each parameter type maps to a concrete RendererFieldDefinition with the
+ * correct fieldComponent and default fieldComponentProps.
  */
-export function getDefaultFieldDefinitions<
-  Q extends ActionDefinition<unknown>,
->(metadata: ActionMetadata): ReadonlyArray<FormFieldDefinition<Q>> {
-  return Object.entries(metadata.parameters).map(([key, param]) => ({
-    // Object.entries erases key types; assertion bridges runtime string to FieldKey<Q>
-    fieldKey: key as FieldKey<Q>,
+export function getDefaultFieldDefinitions(
+  metadata: ActionMetadata,
+): ReadonlyArray<RendererFieldDefinition> {
+  return Object.entries(metadata.parameters).map(
+    ([key, param]) => buildFieldDefinition(key, param),
+  );
+}
+
+const EMPTY_ITEMS: unknown[] = [];
+
+/**
+ * Maps a single action parameter to its default RendererFieldDefinition.
+ *
+ * Switches on the parameter's data type to select both the field component
+ * and its required default props (e.g. empty `items` for DROPDOWN, boolean
+ * options for RADIO_BUTTONS). This keeps the paramType → component → props
+ * mapping in one place rather than spreading it across separate utilities.
+ */
+function buildFieldDefinition(
+  key: string,
+  param: ActionMetadata.Parameter,
+): RendererFieldDefinition {
+  const base = {
+    fieldKey: key,
     label: key,
-    // getDefaultFieldComponent returns FieldComponent (full union); TS can't verify
-    // it matches ValidFormFieldForPropertyType for a deferred generic Q
-    fieldComponent: getDefaultFieldComponent(
-      param.type,
-    ) as ValidFormFieldForPropertyType<
-      FieldDescriptorType<Q, keyof ActionParameters<Q>>
-    >,
     isRequired: !param.nullable,
-  }));
+    fieldType: param.type,
+  };
+
+  const paramType = param.type;
+
+  if (typeof paramType === "object") {
+    switch (paramType.type) {
+      case "objectSet":
+        return {
+          ...base,
+          fieldComponent: "OBJECT_SET",
+          fieldComponentProps: {},
+        };
+      case "object":
+      case "interface":
+        // TODO: provide correct items
+        return {
+          ...base,
+          fieldComponent: "DROPDOWN",
+          fieldComponentProps: { items: EMPTY_ITEMS },
+        };
+      case "struct":
+        return {
+          ...base,
+          fieldComponent: "TEXT_INPUT",
+          fieldComponentProps: {},
+        };
+    }
+  }
+
+  switch (paramType) {
+    case "string":
+    case "marking":
+    case "geohash":
+    case "geoshape":
+    case "objectType":
+      return {
+        ...base,
+        fieldComponent: "TEXT_INPUT",
+        fieldComponentProps: {},
+      };
+    case "boolean":
+      return {
+        ...base,
+        fieldComponent: "RADIO_BUTTONS",
+        fieldComponentProps: {
+          options: [{ label: "True", value: true }, {
+            label: "False",
+            value: false,
+          }],
+        },
+      };
+    case "integer":
+    case "double":
+    case "long":
+      return {
+        ...base,
+        fieldComponent: "NUMBER_INPUT",
+        fieldComponentProps: {},
+      };
+    case "datetime":
+    case "timestamp":
+      return {
+        ...base,
+        fieldComponent: "DATETIME_PICKER",
+        fieldComponentProps: {},
+      };
+    case "attachment":
+    case "mediaReference":
+      return {
+        ...base,
+        fieldComponent: "FILE_PICKER",
+        fieldComponentProps: {},
+      };
+    default:
+      return assertUnreachable(paramType);
+  }
 }

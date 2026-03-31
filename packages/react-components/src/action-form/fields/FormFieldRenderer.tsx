@@ -17,12 +17,11 @@
 import React, { memo } from "react";
 import { FormField } from "../FormField.js";
 import type { RendererFieldDefinition } from "../FormFieldApi.js";
+import { CustomField } from "./CustomField.js";
 import { DatetimePickerField } from "./DatetimePickerField.js";
 import { DropdownField } from "./DropdownField.js";
 import { TextAreaField } from "./TextAreaField.js";
 import { TextInputField } from "./TextInputField.js";
-
-const EMPTY_ITEMS: unknown[] = [];
 
 export interface FormFieldRendererProps {
   fieldDefinition: RendererFieldDefinition;
@@ -79,15 +78,12 @@ function renderFieldComponent(
         />
       );
     case "DROPDOWN": {
-      const { items = EMPTY_ITEMS, ...dropdownProps } =
-        fieldDefinition.fieldComponentProps ?? {};
       return (
         <DropdownField
           value={value}
           onChange={onChange}
-          items={items}
           placeholder={fieldDefinition.placeholder}
-          {...dropdownProps}
+          {...fieldDefinition.fieldComponentProps}
         />
       );
     }
@@ -102,11 +98,20 @@ function renderFieldComponent(
           {...fieldDefinition.fieldComponentProps}
         />
       );
+    case "CUSTOM": {
+      return (
+        <CustomField
+          id={fieldDefinition.fieldKey}
+          value={value}
+          onChange={onChange}
+          {...fieldDefinition.fieldComponentProps}
+        />
+      );
+    }
     case "NUMBER_INPUT":
     case "RADIO_BUTTONS":
     case "FILE_PICKER":
     case "OBJECT_SET":
-    case "CUSTOM":
       return <div>Unsupported field type: {fieldDefinition.fieldComponent}
       </div>;
     default:
