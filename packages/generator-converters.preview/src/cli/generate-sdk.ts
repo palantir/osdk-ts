@@ -38,7 +38,7 @@ const PYTHON_SDK_PACKAGE_NAME = "ontology_sdk";
  */
 function generatePythonSdk(
   previewMetadata: ReturnType<
-    typeof PreviewOntologyIrConverter.getPreviewFullMetadataFromIr
+    typeof PreviewOntologyIrConverter.getPreviewFullMetadataFromBlockData
   >,
   pythonBinary: string,
 ): void {
@@ -227,34 +227,34 @@ async function main(): Promise<void> {
   consola.info(`Converting ${inputFile}...`);
 
   const fileContent = await fs.readFile(inputFile, "utf-8");
-  let irJson: unknown;
+  let blockDataJson: unknown;
   try {
     const parsed = JSON.parse(fileContent);
     // Handle both wrapped (ontology.objectTypes) and unwrapped (objectTypes) formats
-    irJson = parsed.ontology ?? parsed;
+    blockDataJson = parsed.ontology ?? parsed;
   } catch {
     consola.error(`Failed to parse JSON from ${inputFile}`);
     process.exit(1);
   }
 
   // Basic structural validation before passing to converter
-  const ir = irJson as Record<string, unknown>;
+  const blockData = blockDataJson as Record<string, unknown>;
   if (
-    !ir
-    || typeof ir !== "object"
-    || !("objectTypes" in ir)
-    || !("actionTypes" in ir)
+    !blockData
+    || typeof blockData !== "object"
+    || !("objectTypes" in blockData)
+    || !("actionTypes" in blockData)
   ) {
     consola.error(
-      `Invalid OntologyIR structure in ${inputFile}. Expected objectTypes and actionTypes fields.`,
+      `Invalid Ontology structure in ${inputFile}. Expected objectTypes and actionTypes fields.`,
     );
     process.exit(1);
   }
 
   const previewMetadata = PreviewOntologyIrConverter
-    .getPreviewFullMetadataFromIr(
-      irJson as Parameters<
-        typeof PreviewOntologyIrConverter.getPreviewFullMetadataFromIr
+    .getPreviewFullMetadataFromBlockData(
+      blockDataJson as Parameters<
+        typeof PreviewOntologyIrConverter.getPreviewFullMetadataFromBlockData
       >[0],
     );
 

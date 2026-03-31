@@ -59,6 +59,16 @@ const fieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
     },
   },
   {
+    fieldKey: "bio",
+    fieldComponent: "TEXT_AREA",
+    label: "Bio",
+    placeholder: "Tell us about yourself…",
+    fieldComponentProps: {
+      rows: 4,
+      maxLength: 500,
+    },
+  },
+  {
     fieldKey: "officeLocation",
     fieldComponent: "DROPDOWN",
     label: "Office Location",
@@ -75,6 +85,20 @@ const fieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
         "Paris",
       ],
       isSearchable: true,
+    },
+  },
+  {
+    fieldKey: "employmentType",
+    fieldComponent: "RADIO_BUTTONS",
+    label: "Employment Type",
+    isRequired: true,
+    fieldComponentProps: {
+      options: [
+        { label: "Full-time", value: "full-time" },
+        { label: "Part-time", value: "part-time" },
+        { label: "Contract", value: "contract" },
+        { label: "Internship", value: "internship" },
+      ],
     },
   },
   {
