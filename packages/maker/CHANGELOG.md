@@ -1,5 +1,20 @@
 # @osdk/maker
 
+## 0.16.0-beta.14
+
+### Minor Changes
+
+- 684b6c6: Always use valid import path
+
+### Patch Changes
+
+- Updated dependencies [f294f5a]
+- Updated dependencies [d284bf2]
+- Updated dependencies [b68cebd]
+- Updated dependencies [12fe33f]
+  - @osdk/api@2.8.0-beta.28
+  - @osdk/generator-converters.ontologyir@2.8.0-beta.28
+
 ## 0.16.0-beta.13
 
 ### Minor Changes

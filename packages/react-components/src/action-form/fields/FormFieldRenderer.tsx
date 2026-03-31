@@ -20,6 +20,7 @@ import type { RendererFieldDefinition } from "../FormFieldApi.js";
 import { CustomField } from "./CustomField.js";
 import { DatetimePickerField } from "./DatetimePickerField.js";
 import { DropdownField } from "./DropdownField.js";
+import { RadioButtonsField } from "./RadioButtonsField.js";
 import { TextAreaField } from "./TextAreaField.js";
 import { TextInputField } from "./TextInputField.js";
 
@@ -98,7 +99,16 @@ function renderFieldComponent(
           {...fieldDefinition.fieldComponentProps}
         />
       );
-    case "CUSTOM": {
+    case "RADIO_BUTTONS":
+      return (
+        <RadioButtonsField
+          id={fieldDefinition.fieldKey}
+          value={value}
+          onChange={onChange}
+          {...fieldDefinition.fieldComponentProps}
+        />
+      );
+    case "CUSTOM":
       return (
         <CustomField
           id={fieldDefinition.fieldKey}
@@ -107,9 +117,7 @@ function renderFieldComponent(
           {...fieldDefinition.fieldComponentProps}
         />
       );
-    }
     case "NUMBER_INPUT":
-    case "RADIO_BUTTONS":
     case "FILE_PICKER":
     case "OBJECT_SET":
       return <div>Unsupported field type: {fieldDefinition.fieldComponent}

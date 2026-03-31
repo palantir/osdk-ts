@@ -1,5 +1,13 @@
 # @osdk/api
 
+## 2.8.0-beta.28
+
+### Minor Changes
+
+- f294f5a: Remove literal support before GA.
+- d284bf2: add media types, caching, and metadata query
+- b68cebd: add shape type definitions with opaque internal fields and shapes-internal export path
+
 ## 2.8.0-beta.27
 
 ## 2.8.0-beta.26

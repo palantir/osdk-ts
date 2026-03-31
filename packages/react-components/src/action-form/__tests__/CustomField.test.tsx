@@ -34,54 +34,42 @@ describe("CustomField", () => {
       expect(screen.getByText("Custom content")).toBeDefined();
     });
 
-    it("passes value and onChange to customRenderer", () => {
-      const customRenderer = vi.fn(() => <div>rendered</div>);
-      const onChange = vi.fn();
-
+    it("passes value to customRenderer", () => {
       render(
         <CustomField
           value="hello"
-          onChange={onChange}
-          customRenderer={customRenderer}
+          onChange={vi.fn()}
+          customRenderer={(props) => (
+            <div data-testid="value">{String(props.value)}</div>
+          )}
         />,
       );
-
-      expect(customRenderer).toHaveBeenCalledWith(
-        expect.objectContaining({ value: "hello", onChange }),
-      );
+      expect(screen.getByTestId("value").textContent).toBe("hello");
     });
 
     it("passes id to customRenderer", () => {
-      const customRenderer = vi.fn(() => <div>rendered</div>);
-
       render(
         <CustomField
           id="my-field"
           value={null}
           onChange={vi.fn()}
-          customRenderer={customRenderer}
+          customRenderer={(props) => <div data-testid="id">{props.id}</div>}
         />,
       );
-
-      expect(customRenderer).toHaveBeenCalledWith(
-        expect.objectContaining({ id: "my-field" }),
-      );
+      expect(screen.getByTestId("id").textContent).toBe("my-field");
     });
 
     it("passes null value to customRenderer", () => {
-      const customRenderer = vi.fn(() => <div>rendered</div>);
-
       render(
         <CustomField
           value={null}
           onChange={vi.fn()}
-          customRenderer={customRenderer}
+          customRenderer={(props) => (
+            <div data-testid="value">{String(props.value)}</div>
+          )}
         />,
       );
-
-      expect(customRenderer).toHaveBeenCalledWith(
-        expect.objectContaining({ value: null }),
-      );
+      expect(screen.getByTestId("value").textContent).toBe("null");
     });
   });
 

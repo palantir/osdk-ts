@@ -14,4 +14,18 @@
  * limitations under the License.
  */
 
-export {};
+// CBAC Picker - Selection logic utilities
+export {
+  computeMarkingStates,
+  groupMarkingsByCategory,
+  toggleMarking,
+} from "../cbac-picker/utils/selectionLogic.js";
+// CBAC Picker - Types
+export type {
+  CategoryMarkingGroup,
+  CbacBannerData,
+  MarkingSelectionState,
+  PickerMarking,
+  PickerMarkingCategory,
+  RequiredMarkingGroup,
+} from "../cbac-picker/types.js";

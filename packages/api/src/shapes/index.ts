@@ -43,3 +43,11 @@ export {
   ShapeNullabilityError,
   SourcePrimaryKeySymbol,
 } from "./ShapeDefinition.js";
+
+// Builder functions
+export { createShapeBuilder } from "./ShapeBuilder.js";
+
+// Inline config converter
+export { configToShapeDefinition } from "./configToShapeDefinition.js";
+
+// Inline config converter uses computeShapeId internally but it is not part of the public API.
