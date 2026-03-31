@@ -63,7 +63,19 @@ export class WhereClauseCanonicalizer {
     RDPs extends Record<string, SimplePropertyDef> = {},
   >(
     where: WhereClause<T, RDPs> | SimpleWhereClause,
-  ): Canonical<SimpleWhereClause> {
+  ): Canonical<SimpleWhereClause>;
+  public canonicalize(
+    where: object | undefined,
+  ): Canonical<SimpleWhereClause> | undefined;
+  public canonicalize<
+    T extends ObjectOrInterfaceDefinition,
+    RDPs extends Record<string, SimplePropertyDef> = {},
+  >(
+    where: WhereClause<T, RDPs> | SimpleWhereClause | undefined,
+  ): Canonical<SimpleWhereClause> | undefined {
+    if (where == null) {
+      return undefined;
+    }
     // fastest shortcut
     if (this.#cache.has(where)) {
       return this.#cache.get(where)!;
