@@ -1,0 +1,64 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "extends": ["//"],
+  "tasks": {
+    "transpileEsm": {
+      "dependsOn": [
+        "//#babel-config",
+        "@osdk/monorepo.tsconfig#typecheck",
+        "@osdk/api#transpileEsm",
+        "@osdk/client.unstable#transpileEsm",
+        "@osdk/generator-converters#transpileEsm",
+        "@osdk/shared.client.impl#transpileEsm",
+        "@osdk/shared.net.errors#transpileEsm",
+        "@osdk/shared.net.fetch#transpileEsm",
+        "codegen"
+      ]
+    },
+    "transpileCjs": {
+      "dependsOn": [
+        "//#babel-config",
+        "@osdk/monorepo.tsconfig#typecheck",
+        "@osdk/api#transpileCjs",
+        "@osdk/client.unstable#transpileCjs",
+        "@osdk/generator-converters#transpileCjs",
+        "@osdk/shared.client.impl#transpileCjs",
+        "@osdk/shared.net.errors#transpileCjs",
+        "@osdk/shared.net.fetch#transpileCjs",
+        "@osdk/api#transpileTypes",
+        "@osdk/client.unstable#transpileTypes",
+        "@osdk/generator-converters#transpileTypes",
+        "@osdk/shared.client.impl#transpileTypes",
+        "@osdk/shared.net.errors#transpileTypes",
+        "@osdk/shared.net.fetch#transpileTypes",
+        "codegen"
+      ]
+    },
+    "transpileBrowser": {
+      "dependsOn": [
+        "//#babel-config",
+        "@osdk/monorepo.tsconfig#typecheck",
+        "@osdk/api#transpileBrowser",
+        "@osdk/client.unstable#transpileBrowser",
+        "@osdk/generator-converters#transpileBrowser",
+        "@osdk/shared.client.impl#transpileBrowser",
+        "@osdk/shared.net.errors#transpileBrowser",
+        "@osdk/shared.net.fetch#transpileBrowser",
+        "codegen"
+      ]
+    },
+    "typecheck": {
+      "dependsOn": [
+        "@osdk/api#transpileTypes",
+        "@osdk/client.unstable#transpileTypes",
+        "@osdk/generator-converters#transpileTypes",
+        "@osdk/shared.client.impl#transpileTypes",
+        "@osdk/shared.net.errors#transpileTypes",
+        "@osdk/shared.net.fetch#transpileTypes",
+        "@osdk/client.test.ontology#transpileTypes",
+        "@osdk/shared.test#transpileTypes",
+        "codegen"
+      ]
+    }
+  }
+}
