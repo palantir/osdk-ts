@@ -54,4 +54,4 @@ vitest.workspace.ts
 *.iws
 
 # Files with local extensions
-*.local*
+*.local.*
