@@ -1,5 +1,5 @@
 ---
-"@osdk/react-components": patch
+"@osdk/react": patch
 ---
 
-Add TextAreaField component using @base-ui Input with render prop for native textarea rendering
+Show helpful error message when hooks are used without OsdkProvider2
