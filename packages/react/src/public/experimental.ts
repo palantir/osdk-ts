@@ -66,7 +66,10 @@ export type {
 /** @deprecated Import from `@osdk/react` instead. */
 export { useOsdkMedia } from "../new/useOsdkMedia.js";
 /** @deprecated Import from `@osdk/react` instead. */
-export type { UseOsdkMediaResult } from "../new/useOsdkMedia.js";
+export type {
+  UseOsdkMediaOptions,
+  UseOsdkMediaResult,
+} from "../new/useOsdkMedia.js";
 /** @deprecated Import from `@osdk/react` instead. */
 export { useOsdkMediaUpload } from "../new/useOsdkMediaUpload.js";
 /** @deprecated Import from `@osdk/react` instead. */

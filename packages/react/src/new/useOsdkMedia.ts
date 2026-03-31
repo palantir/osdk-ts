@@ -77,6 +77,7 @@ export function useOsdkMedia(
         ([entry]) => {
           if (entry.isIntersecting) {
             setIsVisible(true);
+            observerRef.current?.disconnect();
           }
         },
         { rootMargin: "200px" },
