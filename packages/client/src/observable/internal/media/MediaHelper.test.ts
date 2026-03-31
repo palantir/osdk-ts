@@ -15,6 +15,7 @@
  */
 
 import type { Attachment, Media } from "@osdk/api";
+import * as OntologiesV2 from "@osdk/foundry.ontologies";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { additionalContext } from "../../../Client.js";
 import type { MediaPropertyLocation } from "../../ObservableClient/MediaTypes.js";
@@ -161,5 +162,45 @@ describe("MediaHelper", () => {
     expect(mediaHelper.getCachedMetadata(coords)).toBeUndefined();
     expect(mediaHelper.getCachedContent(coords)).toBeUndefined();
     expect(() => mediaHelper.dispose()).not.toThrow();
+  });
+
+  describe("getCachedContent preview cache key", () => {
+    const coords: MediaPropertyLocation = {
+      objectType: "Employee",
+      primaryKey: "123",
+      propertyName: "avatar",
+    };
+
+    function mockFetchResponse(): void {
+      const mockGetMediaContent = vi.mocked(
+        OntologiesV2.MediaReferenceProperties.getMediaContent,
+      );
+      mockGetMediaContent.mockResolvedValue(
+        new Response("fake-image-data", {
+          headers: { "content-type": "image/png" },
+        }),
+      );
+    }
+
+    it("getCachedContent returns blob after fetchContent with preview", async () => {
+      mockFetchResponse();
+      await mediaHelper.fetchContent(coords, { preview: true });
+      const cached = mediaHelper.getCachedContent(coords, { preview: true });
+      expect(cached).toBeInstanceOf(Blob);
+    });
+
+    it("getCachedContent defaults to preview=true", async () => {
+      mockFetchResponse();
+      await mediaHelper.fetchContent(coords);
+      const cached = mediaHelper.getCachedContent(coords);
+      expect(cached).toBeInstanceOf(Blob);
+    });
+
+    it("getCachedContent with preview=false returns undefined for preview-cached content", async () => {
+      mockFetchResponse();
+      await mediaHelper.fetchContent(coords, { preview: true });
+      const cached = mediaHelper.getCachedContent(coords, { preview: false });
+      expect(cached).toBeUndefined();
+    });
   });
 });

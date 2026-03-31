@@ -193,8 +193,11 @@ export class MediaHelper {
    */
   getCachedContent(
     mediaOrLocation: Media | Attachment | MediaPropertyLocation,
+    options?: { preview?: boolean },
   ): Blob | undefined {
-    const cacheKey = this.getCacheKey(mediaOrLocation);
+    const preview = options?.preview ?? true;
+    const baseCacheKey = this.getCacheKey(mediaOrLocation);
+    const cacheKey = preview ? `${baseCacheKey}:preview` : baseCacheKey;
     return this.blobManager.get(cacheKey);
   }
 
