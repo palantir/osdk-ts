@@ -53,5 +53,6 @@ vitest.workspace.ts
 *.ipr
 *.iws
 
-# Files with local extensions (e.g. settings.local.json, foo.local.ts)
-*.local.*
+# Files with local extensions (dot-prefix only, to avoid matching package dirs like e2e.generated.api-namespace.local)
+.*.local
+.*.local.*
