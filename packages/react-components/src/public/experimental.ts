@@ -129,6 +129,18 @@ export {
 export { usePdfViewerSync } from "../pdf-viewer/hooks/usePdfViewerSync.js";
 export { type OutlineItem } from "../pdf-viewer/types.js";
 
+// PdfViewer context
+export {
+  type PdfViewerContextValue,
+  PdfViewerProvider,
+  usePdfViewerContext,
+  usePdfViewerInstance,
+} from "../pdf-viewer/PdfViewerContext.js";
+export type {
+  PdfViewerHandle,
+  PdfViewerInstanceOptions,
+} from "../pdf-viewer/types.js";
+
 // PdfViewer hooks — composition
 export {
   usePdfViewerCore,

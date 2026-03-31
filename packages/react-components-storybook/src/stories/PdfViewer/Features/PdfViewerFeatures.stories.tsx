@@ -27,9 +27,10 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { delay, http } from "msw";
 import { fn } from "storybook/test";
 
-const SAMPLE_PDF_URL = "/compressed.tracemonkey-pldi-09.pdf";
+const SAMPLE_PDF_URL =
+  `${import.meta.env.BASE_URL}compressed.tracemonkey-pldi-09.pdf`;
 
-const BOOKMARKED_PDF_URL = "/nested_outline.pdf";
+const BOOKMARKED_PDF_URL = `${import.meta.env.BASE_URL}nested_outline.pdf`;
 
 function createMockMedia(url: string, filename: string): Media {
   return {
@@ -394,7 +395,7 @@ export const WithEmbeddedOutline: Story = {
 
 export const InteractiveForm: StoryObj<PdfViewerProps> = {
   args: {
-    src: "/interactive-form-pdf.pdf",
+    src: `${import.meta.env.BASE_URL}interactive-form-pdf.pdf`,
     onFormSubmit: fn(),
     onFormChange: fn(),
   },

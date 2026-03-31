@@ -32,6 +32,7 @@ export interface UsePdfHighlightModeOptions {
 export interface UsePdfHighlightModeResult {
   highlightModeActive: boolean;
   toggleHighlightMode: () => void;
+  deleteHighlight: (editorId: string) => void;
 }
 
 /**
@@ -211,6 +212,7 @@ export function usePdfHighlightMode({
             : "";
 
           const event: PdfTextHighlightEvent = {
+            editorId: id,
             page: serialized.pageIndex + 1,
             rects,
             selectedText,
@@ -235,8 +237,38 @@ export function usePdfHighlightMode({
     setHighlightModeActive((prev) => !prev);
   }, []);
 
+  const deleteHighlight = useCallback((editorId: string) => {
+    if (document == null) return;
+    const storage = document.annotationStorage;
+
+    // Fire the delete callback directly. The monkey-patch on storage.remove
+    // only exists while highlight mode is active, so we handle it here to
+    // ensure the callback fires regardless of highlight mode state.
+    // Clean up refs first so the monkey-patch (if active) won't double-fire.
+    const savedEvent = editorEventsRef.current.get(editorId);
+    if (savedEvent != null) {
+      editorEventsRef.current.delete(editorId);
+      knownEditorIdsRef.current.delete(editorId);
+      onHighlightDeleteRef.current?.(savedEvent);
+    }
+
+    // Remove the editor's DOM element if it exists
+    const allEntries = storage.getAll() as Record<string, unknown> | null;
+    const entry = allEntries?.[editorId];
+    if (hasDiv(entry) && entry.div instanceof HTMLElement) {
+      entry.div.remove();
+    }
+
+    storage.remove(editorId);
+  }, [document]);
+
   return {
     highlightModeActive,
     toggleHighlightMode,
+    deleteHighlight,
   };
+}
+
+function hasDiv(obj: unknown): obj is { div: unknown } {
+  return obj != null && typeof obj === "object" && "div" in obj;
 }
