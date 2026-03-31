@@ -29,8 +29,8 @@ export const fauxFoundry: FauxFoundry = new FauxFoundry(baseUrl, {
   rid: "ri.ontology.main.ontology.storybook-demo",
 });
 
-const SAMPLE_PDF_URL =
-  "https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf";
+const SAMPLE_PDF_PATH =
+  `${import.meta.env.BASE_URL}compressed.tracemonkey-pldi-09.pdf`;
 
 export const MEDIA_EMPLOYEE_PK = 657495071;
 
@@ -58,7 +58,7 @@ export async function setupFauxFoundry(): Promise<void> {
   });
 
   // Register sample PDF media for an employee's employeeDocuments property
-  const response = await fetch(SAMPLE_PDF_URL);
+  const response = await fetch(SAMPLE_PDF_PATH);
   const buffer = await response.arrayBuffer();
   const mediaRef = dataStore.registerMedia(
     "Employee",

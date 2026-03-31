@@ -17,143 +17,186 @@
 import { Error as ErrorIcon, Spin } from "@blueprintjs/icons";
 import classnames from "classnames";
 import "pdfjs-dist/web/pdf_viewer.css";
-import React from "react";
+import React, { forwardRef, useImperativeHandle } from "react";
 import { createPortal } from "react-dom";
 import { PdfViewerAnnotationLayer } from "./components/PdfViewerAnnotationLayer.js";
 import { PdfViewerOutlineSidebar } from "./components/PdfViewerOutlineSidebar.js";
 import { PdfViewerSearchBar } from "./components/PdfViewerSearchBar.js";
 import { PdfViewerSidebar } from "./components/PdfViewerSidebar.js";
 import { PdfViewerToolbar } from "./components/PdfViewerToolbar.js";
-import { EMPTY_ANNOTATION_ARRAY, EMPTY_ANNOTATIONS } from "./constants.js";
+import { EMPTY_ANNOTATION_ARRAY } from "./constants.js";
+import { usePdfAnnotationsByPage } from "./hooks/usePdfAnnotationsByPage.js";
+import { usePdfFormFields } from "./hooks/usePdfFormFields.js";
+import { usePdfHighlightMode } from "./hooks/usePdfHighlightMode.js";
 import { usePdfViewerState } from "./hooks/usePdfViewerState.js";
 import styles from "./PdfViewer.module.css";
-import type { PdfViewerProps } from "./types.js";
+import type { PdfViewerHandle, PdfViewerProps } from "./types.js";
 
-export function BasePdfViewer({
-  src,
-  annotations = EMPTY_ANNOTATIONS,
-  onAnnotationClick,
-  onDownload,
-  initialPage = 1,
-  initialScale = 1.0,
-  initialSidebarOpen = false,
-  enableDownload = false,
-  sidebarMode: sidebarModeProp = "thumbnails",
-  outlineIcons,
-  className,
-}: PdfViewerProps): React.ReactElement {
-  const viewer = usePdfViewerState({
+export const BasePdfViewer: React.ForwardRefExoticComponent<
+  PdfViewerProps & React.RefAttributes<PdfViewerHandle>
+> = forwardRef<PdfViewerHandle, PdfViewerProps>(
+  function BasePdfViewer({
     src,
-    initialPage,
-    initialScale,
-    initialSidebarOpen,
-    sidebarMode: sidebarModeProp,
+    annotations = EMPTY_ANNOTATION_ARRAY,
+    onAnnotationClick,
     onDownload,
-  });
+    enableHighlight = false,
+    onTextHighlight,
+    onHighlightDelete,
+    formData,
+    onFormSubmit,
+    onFormChange,
+    initialPage = 1,
+    initialScale = 1.0,
+    initialSidebarOpen = false,
+    enableDownload = false,
+    sidebarMode: sidebarModeProp = "thumbnails",
+    outlineIcons,
+    className,
+  }, ref) {
+    const viewer = usePdfViewerState({
+      src,
+      initialPage,
+      initialScale,
+      initialSidebarOpen,
+      sidebarMode: sidebarModeProp,
+      onDownload,
+    });
 
-  const rootClassName = classnames(styles.pdfViewer, className);
+    const { highlightModeActive, toggleHighlightMode, deleteHighlight } =
+      usePdfHighlightMode({
+        pdfViewerRef: viewer.pdfViewerRef,
+        document: viewer.document,
+        enabled: enableHighlight,
+        onTextHighlight,
+        onHighlightDelete,
+      });
 
-  if (viewer.loading) {
-    return (
-      <div className={rootClassName}>
-        <div className={styles.loadingContainer}>
-          <Spin className={styles.spinnerIcon} />
-          Loading…
+    useImperativeHandle(ref, () => ({
+      scrollToPage: viewer.scrollToPage,
+      deleteHighlight,
+    }), [viewer.scrollToPage, deleteHighlight]);
+
+    const { hasFormFields, submitFormData } = usePdfFormFields({
+      pdfViewerRef: viewer.pdfViewerRef,
+      eventBusRef: viewer.eventBusRef,
+      document: viewer.document,
+      formData,
+      onFormSubmit,
+      onFormChange,
+    });
+
+    const annotationsByPage = usePdfAnnotationsByPage(annotations);
+
+    const rootClassName = classnames(styles.pdfViewer, className);
+
+    if (viewer.loading) {
+      return (
+        <div className={rootClassName}>
+          <div className={styles.loadingContainer}>
+            <Spin className={styles.spinnerIcon} />
+            Loading…
+          </div>
         </div>
-      </div>
-    );
-  }
+      );
+    }
 
-  if (viewer.error != null) {
-    return (
-      <div className={rootClassName}>
-        <div className={styles.errorContainer}>
-          <ErrorIcon className={styles.errorIcon} />
-          Failed to load PDF: {viewer.error.message}
+    if (viewer.error != null) {
+      return (
+        <div className={rootClassName}>
+          <div className={styles.errorContainer}>
+            <ErrorIcon className={styles.errorIcon} />
+            Failed to load PDF: {viewer.error.message}
+          </div>
         </div>
-      </div>
-    );
-  }
+      );
+    }
 
-  if (viewer.document == null) {
+    if (viewer.document == null) {
+      return (
+        <div className={rootClassName}>
+          <div className={styles.loadingContainer}>No document</div>
+        </div>
+      );
+    }
+
     return (
       <div className={rootClassName}>
-        <div className={styles.loadingContainer}>No document</div>
-      </div>
-    );
-  }
-
-  return (
-    <div className={rootClassName}>
-      <PdfViewerToolbar
-        currentPage={viewer.currentPage}
-        numPages={viewer.numPages}
-        scale={viewer.scale}
-        sidebarOpen={viewer.sidebarOpen}
-        onPageChange={viewer.scrollToPage}
-        onScaleChange={viewer.setScale}
-        onSearchOpen={viewer.search.openSearch}
-        onSidebarToggle={viewer.toggleSidebar}
-        onDownload={viewer.download}
-        enableDownload={enableDownload}
-        onRotateLeft={viewer.rotateLeft}
-        onRotateRight={viewer.rotateRight}
-      />
-      {viewer.search.isSearchOpen && (
-        <PdfViewerSearchBar
-          query={viewer.search.query}
-          totalMatches={viewer.search.totalMatches}
-          currentMatchIndex={viewer.search.currentMatchIndex}
-          onQueryChange={viewer.search.setQuery}
-          onNext={viewer.search.nextMatch}
-          onPrev={viewer.search.prevMatch}
-          onClose={viewer.search.closeSearch}
+        <PdfViewerToolbar
+          currentPage={viewer.currentPage}
+          numPages={viewer.numPages}
+          scale={viewer.scale}
+          sidebarOpen={viewer.sidebarOpen}
+          onPageChange={viewer.scrollToPage}
+          onScaleChange={viewer.setScale}
+          onSearchOpen={viewer.search.openSearch}
+          onSidebarToggle={viewer.toggleSidebar}
+          onDownload={viewer.download}
+          enableDownload={enableDownload}
+          onRotateLeft={viewer.rotateLeft}
+          onRotateRight={viewer.rotateRight}
+          enableHighlight={enableHighlight}
+          highlightModeActive={highlightModeActive}
+          onHighlightToggle={toggleHighlightMode}
+          enableFormSave={onFormSubmit != null && hasFormFields}
+          onFormSave={submitFormData}
         />
-      )}
-      <div className={styles.contentArea}>
-        {viewer.sidebarOpen && viewer.sidebarMode === "thumbnails" && (
-          <PdfViewerSidebar
-            document={viewer.document}
-            numPages={viewer.numPages}
-            currentPage={viewer.currentPage}
-            onPageClick={viewer.scrollToPage}
-            sidebarMode={viewer.sidebarMode}
-            onSidebarModeChange={viewer.setSidebarMode}
+        {viewer.search.isSearchOpen && (
+          <PdfViewerSearchBar
+            query={viewer.search.query}
+            totalMatches={viewer.search.totalMatches}
+            currentMatchIndex={viewer.search.currentMatchIndex}
+            onQueryChange={viewer.search.setQuery}
+            onNext={viewer.search.nextMatch}
+            onPrev={viewer.search.prevMatch}
+            onClose={viewer.search.closeSearch}
           />
         )}
-        {viewer.sidebarOpen && viewer.sidebarMode === "outline" && (
-          <PdfViewerOutlineSidebar
-            outlineItems={viewer.outlineItems}
-            currentPage={viewer.currentPage}
-            onItemClick={viewer.scrollToPage}
-            sidebarMode={viewer.sidebarMode}
-            onSidebarModeChange={viewer.setSidebarMode}
-            outlineIcons={outlineIcons}
-          />
-        )}
-        <div className={styles.scrollContainerWrapper}>
-          <div ref={viewer.containerRef} className={styles.scrollContainer}>
-            <div ref={viewer.viewerRef} className="pdfViewer" />
-            {viewer.portalTargets.map((target) => {
-              const pageAnnotations = annotations[target.pageNumber]
-                ?? EMPTY_ANNOTATION_ARRAY;
-              if (pageAnnotations.length === 0) {
-                return null;
-              }
-              return createPortal(
-                <PdfViewerAnnotationLayer
-                  key={target.pageNumber}
-                  annotations={pageAnnotations}
-                  pageHeight={target.pageHeight}
-                  scale={target.scale}
-                  onAnnotationClick={onAnnotationClick}
-                />,
-                target.container,
-              );
-            })}
+        <div className={styles.contentArea}>
+          {viewer.sidebarOpen && viewer.sidebarMode === "thumbnails" && (
+            <PdfViewerSidebar
+              document={viewer.document}
+              numPages={viewer.numPages}
+              currentPage={viewer.currentPage}
+              onPageClick={viewer.scrollToPage}
+              sidebarMode={viewer.sidebarMode}
+              onSidebarModeChange={viewer.setSidebarMode}
+            />
+          )}
+          {viewer.sidebarOpen && viewer.sidebarMode === "outline" && (
+            <PdfViewerOutlineSidebar
+              outlineItems={viewer.outlineItems}
+              currentPage={viewer.currentPage}
+              onItemClick={viewer.scrollToPage}
+              sidebarMode={viewer.sidebarMode}
+              onSidebarModeChange={viewer.setSidebarMode}
+              outlineIcons={outlineIcons}
+            />
+          )}
+          <div className={styles.scrollContainerWrapper}>
+            <div ref={viewer.containerRef} className={styles.scrollContainer}>
+              <div ref={viewer.viewerRef} className="pdfViewer" />
+              {viewer.portalTargets.map((target) => {
+                const pageAnnotations = annotationsByPage[target.pageNumber]
+                  ?? EMPTY_ANNOTATION_ARRAY;
+                if (pageAnnotations.length === 0) {
+                  return null;
+                }
+                return createPortal(
+                  <PdfViewerAnnotationLayer
+                    key={target.pageNumber}
+                    annotations={pageAnnotations}
+                    pageHeight={target.pageHeight}
+                    scale={target.scale}
+                    onAnnotationClick={onAnnotationClick}
+                  />,
+                  target.container,
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  );
-}
+    );
+  },
+);

@@ -3,10 +3,10 @@ import React from "react";
 // import { useOsdkClient } from "@osdk/react";
 {{/if}}
 import css from "./Home.module.css";
-import Header from "./components/Header";
-import NextSteps from "./components/NextSteps";
+import Header from "@/components/Header";
+import NextSteps from "@/components/NextSteps";
 {{#if osdkPackage}}
-import Osdk from "./components/Osdk";
+import Osdk from "@/components/Osdk";
 {{/if}}
 
 function Home(): React.ReactElement {

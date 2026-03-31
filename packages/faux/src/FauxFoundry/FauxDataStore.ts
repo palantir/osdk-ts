@@ -55,7 +55,8 @@ export interface MediaMetadataAndContent {
 }
 
 type ObjectTypeCreatableWithoutApiName<T extends ObjectTypeDefinition> =
-  OrUndefinedToOptional<JustProps<T>>;
+  & OrUndefinedToOptional<JustProps<T>>
+  & { $rid?: string };
 
 /**
  * Represents the properties needed to create an object, specifically,
@@ -65,7 +66,6 @@ type ObjectTypeCreatable<T extends ObjectTypeDefinition> =
   & ObjectTypeCreatableWithoutApiName<T>
   & {
     $apiName: CompileTimeMetadata<T>["apiName"];
-    $rid?: string;
   };
 
 /**

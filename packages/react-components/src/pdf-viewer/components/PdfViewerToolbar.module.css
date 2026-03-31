@@ -57,6 +57,11 @@
   cursor: default;
 }
 
+.toolbarButtonActive {
+  background-color: var(--osdk-surface-background-color-default-active);
+  color: var(--osdk-typography-color-default-rest);
+}
+
 .pageInput {
   width: 48px;
   text-align: center;

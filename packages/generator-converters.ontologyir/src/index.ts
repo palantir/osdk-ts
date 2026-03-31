@@ -15,4 +15,11 @@
  */
 
 export type { OntologyIrOntologyBlockDataV2 } from "@osdk/client.unstable";
+export {
+  type BlockDataApiNameLookup,
+  buildBlockDataInterfaceTypeLookup,
+  buildBlockDataObjectTypeLookup,
+  OntologyBlockDataToFullMetadataConverter,
+  resolveBlockDataApiName,
+} from "./OntologyBlockDataToFullMetadataConverter.js";
 export { OntologyIrToFullMetadataConverter } from "./OntologyIrToFullMetadataConverter.js";

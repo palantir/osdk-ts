@@ -431,7 +431,7 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
 
   // Generic RID generation for types without specific generators
   generateRid(key: string): string {
-    return `ri.ontology-metadata.temp.${this.hashString(key)}`;
+    return `ri.ontology-metadata.temp.unknown.${this.hashString(key)}`;
   }
 
   // Datasource RID matching Java's RidUtils.getDatasourceRidFromName format
@@ -748,7 +748,7 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
             type: "dataset",
             dataset: { rid: datasetRid, branch: branchId },
           } as DatasourceLocator,
-          name: name,
+          name,
         } as ResolvedDatasourceColumnShape,
       );
     });
@@ -793,7 +793,7 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
         ReadableIdGenerator.getForStreamColumn(streamName, name),
         {
           datasource: marketplaceLocator,
-          name: name,
+          name,
         } as ResolvedDatasourceColumnShape,
       );
     });
@@ -827,7 +827,7 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
             type: "restrictedView",
             restrictedView: { rid: restrictedViewRid },
           } as DatasourceLocator,
-          name: name,
+          name,
         } as ResolvedDatasourceColumnShape,
       );
     });

@@ -28,7 +28,7 @@
   align-items: center;
   gap: var(--osdk-spacing-2xs, 2px);
   padding: var(--osdk-spacing-2xs, 2px);
-  border: 1px solid var(--osdk-surface-border-color, rgba(0, 0, 0, 0.15));
+  border: none;
   border-radius: var(--osdk-surface-border-radius);
   background-color: var(--osdk-surface-background-color, transparent);
 }

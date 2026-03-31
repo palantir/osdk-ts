@@ -321,10 +321,14 @@ async function discoverFunctions(): Promise<Map<string, FunctionInfo>> {
     for (const func of pySpecs.functions) {
       const functionName = func.locator?.python?.functionName;
       if (functionName) {
+        const prov = func.ontologyProvenance;
+        const isEditFunction = hasEntries(prov?.editedObjects)
+          || hasEntries(prov?.editedLinks)
+          || hasEntries(prov?.editedInterfaces);
         map.set(functionName, {
           runtime: PY_RUNTIME,
           specs: pySpecs,
-          isEditFunction: false,
+          isEditFunction,
         });
       }
     }
