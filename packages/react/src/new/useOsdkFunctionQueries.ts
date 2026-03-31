@@ -115,7 +115,7 @@ export function useOsdkFunctionQueries(
           }
           const newResults = [...prev];
           newResults[index] = {
-            data: error ? undefined : result,
+            data: result,
             isLoading: false,
             error: error instanceof Error
               ? error

@@ -25,9 +25,9 @@ import type {
 import {
   type FunctionQueryParams,
   useOsdkFunctionQueries,
-  type UseOsdkFunctionQueriesResult,
 } from "@osdk/react/unstable-do-not-use";
-import { useEffect, useMemo, useState } from "react";
+
+import { useMemo } from "react";
 import type {
   ColumnDefinition,
   FunctionColumnLocator,
@@ -74,7 +74,6 @@ export function useFunctionColumnsData<
     | undefined,
   columnDefinitions?: Array<ColumnDefinition<Q, RDPs, FunctionColumns>>,
 ): FunctionColumnData {
-  const [data, setData] = useState<FunctionColumnData>({});
   // Function column configurations grouped by unique query definition
   const functionColumnConfigs = useMemo(
     () => getFunctionColumnConfigs(columnDefinitions),
@@ -89,18 +88,6 @@ export function useFunctionColumnsData<
 
   const disabled = !stableObjectSet || !stableObjects?.length
     || functionColumnConfigs.length === 0;
-
-  useEffect(() => {
-    if (disabled) {
-      return;
-    }
-
-    initializeFunctionColumnData(
-      functionColumnConfigs,
-      stableObjects,
-      setData,
-    );
-  }, [disabled, functionColumnConfigs, stableObjectSet, stableObjects]);
 
   // Prepare queries for useOsdkFunctionQueries
   const queries = useMemo(
@@ -127,30 +114,51 @@ export function useFunctionColumnsData<
       enabled: !disabled,
     },
   );
-  // Process results incrementally as they change
-  useEffect(() => {
-    if (disabled) {
-      return;
-    }
+
+  const data = useMemo(() => {
+    const columnData: FunctionColumnData = {};
+
+    if (disabled || !stableObjects) return columnData;
 
     results.forEach((result, index) => {
       const config = functionColumnConfigs[index];
-
       if (!config) return;
 
-      setData(prev => {
-        const newData = { ...prev };
+      const functionsMap = result.data as Record<string, unknown> | undefined;
 
-        processQueryResult(
-          newData,
-          result,
-          config,
-          stableObjects,
-        );
+      config.columnIds.forEach(
+        ({ columnId, getValue, getKey: columnGetKey }) => {
+          if (!columnData[columnId]) {
+            columnData[columnId] = {};
+          }
 
-        return newData;
-      });
+          stableObjects.forEach(obj => {
+            const key = String(obj.$primaryKey);
+
+            if (result.isLoading) {
+              columnData[columnId][key] = createAsyncCellData({
+                isLoading: true,
+              });
+            } else if (result.error) {
+              columnData[columnId][key] = createAsyncCellData({
+                error: result.error,
+                isLoading: false,
+              });
+            } else if (functionsMap) {
+              const customKey = columnGetKey(obj);
+              const rawData = functionsMap[customKey];
+              const cellData = getValue ? getValue(rawData) : rawData;
+              columnData[columnId][key] = createAsyncCellData({
+                data: cellData,
+                isLoading: false,
+              });
+            }
+          });
+        },
+      );
     });
+
+    return columnData;
   }, [results, functionColumnConfigs, stableObjects, disabled]);
 
   return data;
@@ -237,105 +245,3 @@ const useStableObjects = <
     ),
   ]);
 };
-
-/**
- * Initialize function column data with isLoading state for all columns and objects
- */
-function initializeFunctionColumnData<
-  Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
->(
-  functionColumnConfigs: Array<FunctionColumnConfig<Q, RDPs>>,
-  objects: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>[],
-  setData: React.Dispatch<React.SetStateAction<FunctionColumnData>>,
-): void {
-  setData(prev => {
-    const newData = { ...prev };
-
-    functionColumnConfigs.forEach(config => {
-      config.columnIds.forEach(({ columnId }) => {
-        // Initialize column if it doesn't exist
-        if (!newData[columnId]) {
-          newData[columnId] = {};
-        }
-
-        objects.forEach(obj => {
-          const key = String(obj.$primaryKey);
-          // Only set isLoading state if this object's data doesn't already exist
-          if (!newData[columnId][key]) {
-            newData[columnId][key] = createAsyncCellData({
-              isLoading: true,
-            });
-          }
-        });
-      });
-    });
-
-    return newData;
-  });
-}
-
-function processQueryResult<
-  Q extends ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
->(
-  columnData: FunctionColumnData,
-  result: UseOsdkFunctionQueriesResult[number],
-  config: FunctionColumnConfig<Q, RDPs>,
-  objects: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>[],
-): void {
-  if (result.isLoading) {
-    // Set loading state for all objects in all columns that use this query
-    config.columnIds.forEach(({ columnId }) => {
-      if (!columnData[columnId]) {
-        columnData[columnId] = {};
-      }
-      objects.forEach(obj => {
-        const key = String(obj.$primaryKey);
-        // Preserve existing data while updating loading state
-        const existingData = columnData[columnId][key];
-        columnData[columnId][key] = createAsyncCellData({
-          data: existingData?.data,
-          isLoading: true,
-        });
-      });
-    });
-  } else if (result.error) {
-    // Set error state for all objects in all columns that use this query
-    config.columnIds.forEach(({ columnId }) => {
-      if (!columnData[columnId]) {
-        columnData[columnId] = {};
-      }
-      objects.forEach(obj => {
-        const key = String(obj.$primaryKey);
-        columnData[columnId][key] = createAsyncCellData({
-          error: result.error,
-          isLoading: false,
-        });
-      });
-    });
-  } else if (result.data) {
-    // Process the FunctionsMap result
-    const functionsMap = result.data as Record<string, unknown>;
-    objects.forEach(obj => {
-      const key = String(obj.$primaryKey);
-
-      // Process each column that uses this query result
-      config.columnIds.forEach(
-        ({ columnId, getValue, getKey: columnGetKey }) => {
-          if (!columnData[columnId]) {
-            columnData[columnId] = {};
-          }
-          const customKey = columnGetKey(obj);
-          const rawData = functionsMap[customKey];
-          const cellData = getValue ? getValue(rawData) : rawData;
-
-          columnData[columnId][key] = createAsyncCellData({
-            data: cellData,
-            isLoading: false,
-          });
-        },
-      );
-    });
-  }
-}
