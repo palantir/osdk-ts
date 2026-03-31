@@ -21,7 +21,9 @@ import type {
   PropertyKeys,
   QueryDefinition,
   SimplePropertyDef,
+  WhereClause,
 } from "@osdk/api";
+import { useObjectSet } from "@osdk/react/experimental";
 import {
   type FunctionQueryParams,
   useOsdkFunctionQueries,
@@ -81,31 +83,64 @@ export function useFunctionColumnsData<
   );
 
   const stableObjects = useStableObjects(objects);
-
-  // TODO: replace with useDeepEqual when it's added
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const stableObjectSet = useMemo(() => objectSet, [JSON.stringify(objectSet)]);
 
-  const disabled = !stableObjectSet || !stableObjects?.length
-    || functionColumnConfigs.length === 0;
+  const primaryKeyApiName = objectSet?.$objectSetInternals.def.type === "object"
+    ? objectSet.$objectSetInternals.def.primaryKeyApiName
+    : undefined;
+
+  const primaryKeyWhereClause = useMemo(() => {
+    if (!primaryKeyApiName || !stableObjects?.length) return undefined;
+    return {
+      [primaryKeyApiName]: {
+        $in: [stableObjects.map(obj => obj.$primaryKey)[0]],
+      },
+    } as WhereClause<Q, RDPs>;
+  }, [primaryKeyApiName, stableObjects]);
+
+  const hasObjectSet = !!stableObjectSet;
+  const shouldNarrow = hasObjectSet && primaryKeyWhereClause != null;
+
+  // TODO: Doesn't work when RDP is present
+  const {
+    objectSet: narrowedObjectSet,
+    isLoading: isObjectSetLoading,
+  } = useObjectSet<Q, RDPs, RDPs>(
+    objectSet!, // safe to assert due to shouldNarrow condition
+    {
+      // where: {},
+      enabled: shouldNarrow,
+    },
+  );
+
+  console.log("zzz", narrowedObjectSet, isObjectSetLoading);
+
+  const effectiveObjectSet = shouldNarrow ? narrowedObjectSet : stableObjectSet;
+
+  const disabled = !effectiveObjectSet || !stableObjects?.length
+    || functionColumnConfigs.length === 0
+    || (shouldNarrow && isObjectSetLoading);
 
   // Prepare queries for useOsdkFunctionQueries
   const queries = useMemo(
     () => {
       if (disabled) {
+        console.log("zzz disabled ", effectiveObjectSet);
         return [];
       }
+      console.log("zzz enabled ", effectiveObjectSet);
 
       return functionColumnConfigs.map(
         (config): FunctionQueryParams<QueryDefinition<unknown>> => ({
           queryDefinition: config.queryDefinition,
           options: {
-            params: config.getParams(stableObjectSet),
+            params: config.getParams(effectiveObjectSet),
           } as FunctionQueryParams<QueryDefinition<unknown>>["options"],
         }),
       );
     },
-    [disabled, functionColumnConfigs, stableObjectSet],
+    [disabled, functionColumnConfigs, effectiveObjectSet],
   );
 
   const results = useOsdkFunctionQueries(

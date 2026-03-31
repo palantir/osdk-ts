@@ -44,7 +44,7 @@ const columnDefinitions: Array<
       queryDefinition: getEmployeeDaysSinceStart,
       getFunctionParams: (objectSet: any) => ({ employees: objectSet }),
       getKey: (obj: any) => `${obj.$objectType}:${obj.$primaryKey}`,
-      getValue: (data: any) => data.daysSinceStart,
+      getValue: (data: any) => data?.daysSinceStart,
     } as any,
     columnName: "Days Since Start",
     width: 150,

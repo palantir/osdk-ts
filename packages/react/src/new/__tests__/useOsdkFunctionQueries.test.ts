@@ -20,7 +20,7 @@ import { act, renderHook } from "@testing-library/react";
 import React from "react";
 import { beforeEach, describe, expect, it, vitest } from "vitest";
 import { OsdkContext2 } from "../OsdkContext2.js";
-import { useBatchedFunctionQueries } from "../useBatchedFunctionQueries.js";
+import { useOsdkFunctionQueries } from "../useOsdkFunctionQueries.js";
 
 const mockQueryDefinition1 = {
   apiName: "calculateStats",
@@ -34,7 +34,7 @@ const mockQueryDefinition2 = {
   version: "1.0.0",
 } as QueryDefinition<any>;
 
-describe("useBatchedFunctionQueries", () => {
+describe("useOsdkFunctionQueries", () => {
   let capturedObservers: Array<Observer<any>>;
   let unsubscribeFns: Array<ReturnType<typeof vitest.fn>>;
   const mockInvalidateFunction = vitest.fn().mockResolvedValue(undefined);
@@ -81,7 +81,7 @@ describe("useBatchedFunctionQueries", () => {
 
   it("should return initial state when no queries are provided", () => {
     const { result } = renderHook(
-      () => useBatchedFunctionQueries({ queries: [] }),
+      () => useOsdkFunctionQueries({ queries: [] }),
       { wrapper: createWrapper() },
     );
 
@@ -114,7 +114,7 @@ describe("useBatchedFunctionQueries", () => {
 
     const { result } = renderHook(
       () =>
-        useBatchedFunctionQueries({
+        useOsdkFunctionQueries({
           queries: [
             {
               queryDefinition: mockQueryDefinition1,
@@ -391,40 +391,6 @@ describe("useBatchedFunctionQueries", () => {
     expect(result.current[1].data).toEqual(result2);
   });
 
-  it("should provide working refetch function", async () => {
-    const { result } = renderHook(
-      () =>
-        useBatchedFunctionQueries({
-          queries: [
-            {
-              queryDefinition: mockQueryDefinition1,
-              options: { params: { id: 1 } as any },
-            },
-          ],
-        }),
-      { wrapper: createWrapper() },
-    );
-
-    // Deliver initial result
-    act(() => {
-      capturedObservers[0].next!({
-        result: { total: 100 },
-        status: "loaded",
-        lastUpdated: 1000,
-      });
-    });
-
-    // Call refetch
-    act(() => {
-      result.current[0].refetch();
-    });
-
-    expect(mockInvalidateFunction).toHaveBeenCalledWith(
-      mockQueryDefinition1,
-      { id: 1 },
-    );
-  });
-
   it("should rerun queries when parameters change", async () => {
     const { result, rerender } = renderHook(
       ({ params }) =>
@@ -477,7 +443,7 @@ describe("useBatchedFunctionQueries", () => {
   it("should handle observer error callback", async () => {
     const { result } = renderHook(
       () =>
-        useBatchedFunctionQueries({
+        useOsdkFunctionQueries({
           queries: [
             { queryDefinition: mockQueryDefinition1 },
           ],
@@ -500,7 +466,7 @@ describe("useBatchedFunctionQueries", () => {
   it("should deduplicate identical queries through the observable layer", () => {
     renderHook(
       () =>
-        useBatchedFunctionQueries({
+        useOsdkFunctionQueries({
           queries: [
             {
               queryDefinition: mockQueryDefinition1,

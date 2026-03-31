@@ -123,13 +123,13 @@ export function useObjectTableData<
   const objectSetResult = useObjectSet(
     shouldUseObjectSet ? objectSet as ObjectSet<Q, RDPs> : undefined as any,
     {
-      ...(objectSetOptions as ObjectSetOptions<Q>),
+      ...(objectSetOptions as ObjectSetOptions<Q>), // needed
       withProperties: withProperties as WithProperties<
         Q,
         RDPs
-      >,
-      where: filter,
-      orderBy,
+      >, // not needed
+      where: filter, // needed
+      orderBy, // not needed
       pageSize: PAGE_SIZE,
       enabled: shouldUseObjectSet,
     },

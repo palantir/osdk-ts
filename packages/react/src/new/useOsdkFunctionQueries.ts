@@ -99,12 +99,6 @@ export function useOsdkFunctionQueries(
         isLoading: query.options?.enabled !== false,
         error: undefined,
         lastUpdated: prev[index]?.lastUpdated ?? 0,
-        refetch: () => {
-          void observableClient.invalidateFunction(
-            query.queryDefinition,
-            query.options?.params as Record<string, unknown> | undefined,
-          );
-        },
       }))
     );
 
@@ -141,12 +135,6 @@ export function useOsdkFunctionQueries(
                 isLoading: payload?.status === "loading",
                 error,
                 lastUpdated: payload?.lastUpdated ?? 0,
-                refetch: () => {
-                  void observableClient.invalidateFunction(
-                    query.queryDefinition,
-                    params,
-                  );
-                },
               };
               return newResults;
             });
@@ -160,7 +148,6 @@ export function useOsdkFunctionQueries(
                 isLoading: false,
                 error: err instanceof Error ? err : new Error(String(err)),
                 lastUpdated: Date.now(),
-                refetch: prev[index].refetch,
               };
               return newResults;
             });
