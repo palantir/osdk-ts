@@ -1,0 +1,118 @@
+import type {
+  ActionDefinition,
+  ActionMetadata,
+  ActionParam,
+  ActionReturnTypeForOptions,
+  ApplyActionOptions,
+  ApplyBatchActionOptions,
+} from '@osdk/client';
+import { $osdkMetadata } from '../../OntologyMetadata.js';
+
+export namespace moveOffice {
+  // Represents the definition of the parameters for the action
+  export type ParamsDefinition = {
+    newAddress: {
+      description: "The office's new physical address (not necessarily shipping address)";
+      multiplicity: false;
+      nullable: true;
+      type: 'string';
+    };
+    newCapacity: {
+      description: 'The maximum seated-at-desk capacity of the new office (maximum fire-safe capacity may be higher)';
+      multiplicity: false;
+      nullable: true;
+      type: 'integer';
+    };
+    officeId: {
+      description: undefined;
+      multiplicity: false;
+      nullable: false;
+      type: 'string';
+    };
+    officeNames: {
+      description: 'A list of all office names';
+      multiplicity: true;
+      nullable: true;
+      type: 'integer';
+    };
+  };
+
+  /**
+   * Update an office's physical location
+   */
+  export interface Params {
+    /**
+     * The office's new physical address (not necessarily shipping address)
+     */
+    readonly newAddress?: ActionParam.PrimitiveType<'string'> | null;
+    /**
+     * The maximum seated-at-desk capacity of the new office (maximum fire-safe capacity may be higher)
+     */
+    readonly newCapacity?: ActionParam.PrimitiveType<'integer'> | null;
+
+    readonly officeId: ActionParam.PrimitiveType<'string'>;
+    /**
+     * A list of all office names
+     */
+    readonly officeNames?: ReadonlyArray<ActionParam.PrimitiveType<'integer'>> | null;
+  }
+
+  // Represents a fqn of the action
+  export interface Signatures {
+    /**
+     * Update an office's physical location
+     */
+    applyAction<OP extends ApplyActionOptions>(
+      args: moveOffice.Params,
+      options?: OP,
+    ): Promise<ActionReturnTypeForOptions<OP>>;
+
+    batchApplyAction<OP extends ApplyBatchActionOptions>(
+      args: ReadonlyArray<moveOffice.Params>,
+      options?: OP,
+    ): Promise<ActionReturnTypeForOptions<OP>>;
+  }
+}
+
+/**
+ * Update an office's physical location
+ *
+ * **Note on null values:** _For optional parameters, explicitly providing a null value instead of undefined
+ * can change the behavior of the applied action. If prefills are configured, null prevents them
+ * from being applied. If a parameter modifies an object's property, null will clear the data from
+ * the object, whereas undefined would not modify that property._
+ * @param {ActionParam.PrimitiveType<"string">} [newAddress] The office's new physical address (not necessarily shipping address)
+ * @param {ActionParam.PrimitiveType<"integer">} [newCapacity] The maximum seated-at-desk capacity of the new office (maximum fire-safe capacity may be higher)
+ * @param {ActionParam.PrimitiveType<"string">} officeId
+ * @param {ActionParam.PrimitiveType<"integer">} [officeNames] A list of all office names
+ */
+export interface moveOffice extends ActionDefinition<moveOffice.Signatures> {
+  __DefinitionMetadata?: {
+    apiName: 'moveOffice';
+    description: "Update an office's physical location";
+    modifiedEntities: {
+      Office: {
+        created: false;
+        modified: true;
+      };
+    };
+    parameters: moveOffice.ParamsDefinition;
+    rid: 'ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f2';
+    status: 'ACTIVE';
+    type: 'action';
+    unsanitizedApiName: 'move-office';
+
+    signatures: moveOffice.Signatures;
+  };
+  apiName: 'moveOffice';
+  type: 'action';
+  unsanitizedApiName: 'move-office';
+  osdkMetadata: typeof $osdkMetadata;
+}
+
+export const moveOffice: moveOffice = {
+  apiName: 'moveOffice',
+  type: 'action',
+  unsanitizedApiName: 'move-office',
+  osdkMetadata: $osdkMetadata,
+};
