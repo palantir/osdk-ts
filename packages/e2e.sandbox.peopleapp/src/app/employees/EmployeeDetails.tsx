@@ -33,7 +33,7 @@ export function EmployeeDetails({ employee }: EmployeeDetailsProps) {
   return (
     <div>
       <H2>Employee Details</H2>
-      <EmployeePhoto employee={employee} />
+      <EmployeePhoto key={employee.$primaryKey} employee={employee} />
       <div className="mb-4">
         <div className="font-medium text-lg">
           {employee.fullName || "No name available"}
