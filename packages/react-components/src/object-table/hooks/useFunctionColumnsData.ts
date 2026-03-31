@@ -22,8 +22,11 @@ import type {
   QueryDefinition,
   SimplePropertyDef,
 } from "@osdk/api";
-import type { UseOsdkFunctionResult } from "@osdk/react/experimental";
-import { useOsdkFunctionQueries } from "@osdk/react/unstable-do-not-use";
+import {
+  type FunctionQueryParams,
+  useOsdkFunctionQueries,
+  type UseOsdkFunctionQueriesResult,
+} from "@osdk/react/unstable-do-not-use";
 import { useEffect, useMemo, useState } from "react";
 import type {
   ColumnDefinition,
@@ -106,12 +109,14 @@ export function useFunctionColumnsData<
         return [];
       }
 
-      return functionColumnConfigs.map(config => ({
-        queryDefinition: config.queryDefinition,
-        options: {
-          params: config.getParams(stableObjectSet),
-        },
-      }));
+      return functionColumnConfigs.map(
+        (config): FunctionQueryParams<QueryDefinition<unknown>> => ({
+          queryDefinition: config.queryDefinition,
+          options: {
+            params: config.getParams(stableObjectSet),
+          } as FunctionQueryParams<QueryDefinition<unknown>>["options"],
+        }),
+      );
     },
     [disabled, functionColumnConfigs, stableObjectSet],
   );
@@ -122,7 +127,6 @@ export function useFunctionColumnsData<
       enabled: !disabled,
     },
   );
-
   // Process results incrementally as they change
   useEffect(() => {
     if (disabled) {
@@ -276,7 +280,7 @@ function processQueryResult<
   RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
 >(
   columnData: FunctionColumnData,
-  result: UseOsdkFunctionResult<QueryDefinition<unknown>>,
+  result: UseOsdkFunctionQueriesResult[number],
   config: FunctionColumnConfig<Q, RDPs>,
   objects: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>[],
 ): void {

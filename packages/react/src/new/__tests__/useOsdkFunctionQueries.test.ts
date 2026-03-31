@@ -19,7 +19,7 @@ import type { Client } from "@osdk/client";
 import { renderHook, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi, vitest } from "vitest";
 import { useOsdkClient } from "../../useOsdkClient.js";
-import { useOsdkFunctionQueries } from "../useOsdkFunctionQueriesResult.js";
+import { useOsdkFunctionQueries } from "../useOsdkFunctionQueries.js";
 
 vi.mock("../../useOsdkClient.js");
 

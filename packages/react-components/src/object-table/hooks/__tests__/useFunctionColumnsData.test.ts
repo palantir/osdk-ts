@@ -21,8 +21,10 @@ import type {
   PropertyKeys,
   QueryDefinition,
 } from "@osdk/api";
-import type { UseOsdkFunctionQueriesResult } from "@osdk/react/experimental";
-import { useOsdkFunctionQueries } from "@osdk/react/unstable-do-not-use";
+import {
+  useOsdkFunctionQueries,
+  type UseOsdkFunctionQueriesResult,
+} from "@osdk/react/unstable-do-not-use";
 import { renderHook } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { ColumnDefinition } from "../../ObjectTableApi.js";
@@ -146,7 +148,6 @@ describe("useFunctionColumnsData", () => {
         error: undefined,
         isLoading: true,
         lastUpdated: 0,
-        refetch: vi.fn(),
       },
     ] as unknown as UseOsdkFunctionQueriesResult);
 
@@ -180,7 +181,6 @@ describe("useFunctionColumnsData", () => {
         error: undefined,
         isLoading: false,
         lastUpdated: Date.now(),
-        refetch: vi.fn(),
       },
     ] as unknown as UseOsdkFunctionQueriesResult);
 
@@ -252,7 +252,6 @@ describe("useFunctionColumnsData", () => {
         error: undefined,
         isLoading: false,
         lastUpdated: Date.now(),
-        refetch: vi.fn(),
       },
     ] as unknown as UseOsdkFunctionQueriesResult);
 
@@ -328,7 +327,6 @@ describe("useFunctionColumnsData", () => {
         error: undefined,
         isLoading: false,
         lastUpdated: Date.now(),
-        refetch: vi.fn(),
       },
     ] as unknown as UseOsdkFunctionQueriesResult);
 
@@ -435,14 +433,12 @@ describe("useFunctionColumnsData", () => {
         error: undefined,
         isLoading: false,
         lastUpdated: Date.now(),
-        refetch: vi.fn(),
       },
       {
         data: mockResult2,
         error: undefined,
         isLoading: false,
         lastUpdated: Date.now(),
-        refetch: vi.fn(),
       },
     ] as unknown as UseOsdkFunctionQueriesResult);
 
@@ -517,7 +513,6 @@ describe("useFunctionColumnsData", () => {
         error: undefined,
         isLoading: false,
         lastUpdated: Date.now(),
-        refetch: vi.fn(),
       },
     ] as unknown as UseOsdkFunctionQueriesResult);
 
@@ -553,7 +548,6 @@ describe("useFunctionColumnsData", () => {
         error: mockError,
         isLoading: false,
         lastUpdated: Date.now(),
-        refetch: vi.fn(),
       },
     ] as unknown as UseOsdkFunctionQueriesResult);
 
@@ -611,7 +605,6 @@ describe("useFunctionColumnsData", () => {
         error: undefined,
         isLoading: true,
         lastUpdated: 0,
-        refetch: vi.fn(),
       },
     ] as unknown as UseOsdkFunctionQueriesResult);
 
@@ -636,7 +629,6 @@ describe("useFunctionColumnsData", () => {
         error: undefined,
         isLoading: false,
         lastUpdated: Date.now(),
-        refetch: vi.fn(),
       },
     ] as unknown as UseOsdkFunctionQueriesResult);
 
