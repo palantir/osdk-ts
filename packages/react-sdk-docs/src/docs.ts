@@ -146,11 +146,7 @@ function renderType(
       return `client(${type.objectTypeApiName}).where({ /* filter conditions */ })`;
     case "anonymousCustomType":
     case "customType": {
-      // TODO: Remove cast once @osdk/docs-spec-sdk is published with `parameters` on custom type IR
-      const ct = type as typeof type & {
-        parameters?: Record<string, FunctionSampleValueTypeIR>;
-      };
-      const entries = Object.entries(ct.parameters ?? {});
+      const entries = Object.entries(type.parameters ?? {});
       if (entries.length > 0) {
         const rendered = entries
           .map(([name, value]) => `"${name}": ${renderType(value)}`)
