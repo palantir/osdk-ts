@@ -27,6 +27,7 @@ import type {
   Section,
   SectionId,
 } from "@osdk/client.unstable";
+import type { IDataType } from "@osdk/generator-converters.ontologyir";
 import type {
   ActionParameter,
   ActionParameterAllowedValues,
@@ -35,7 +36,9 @@ import type {
   InterfaceType,
 } from "@osdk/maker";
 import { getOntologyDefinition, uppercaseFirstLetter } from "@osdk/maker";
-import { FunctionsIr } from "../../api/defineOntologyV2.js";
+import consola from "consola";
+import invariant from "tiny-invariant";
+import type { FunctionsIr } from "../../api/defineOntologyV2.js";
 import type { OntologyRidGenerator } from "../../util/generateRid.js";
 import { ReadableIdGenerator } from "../../util/generateRid.js";
 import { convertActionParameters } from "./convertActionParameters.js";
@@ -43,9 +46,6 @@ import { convertActionSections } from "./convertActionSections.js";
 import { convertActionValidation } from "./convertActionValidation.js";
 import { flattenInterface } from "./convertObject.js";
 import { getFormContentOrdering } from "./getFormContentOrdering.js";
-import {IDataType} from "@osdk/generator-converters.ontologyir";
-import invariant from "tiny-invariant";
-import consola from "consola";
 
 export function buildDatasource(
   apiName: string,
@@ -89,7 +89,9 @@ export function convertAction(
 ): ActionTypeBlockDataV2 | undefined {
   if (action.rules.map(rule => rule.type === "functionRule").some(v => v)) {
     if (!functionsIr) {
-      consola.info("No functions IR file found, skipping some function-backed actions");
+      consola.info(
+        "No functions IR file found, skipping some function-backed actions",
+      );
       return undefined;
     }
     return convertFunctionBackedAction(action, ridGenerator, functionsIr);
@@ -232,10 +234,12 @@ export function convertAction(
 }
 
 function convertFunctionBackedAction(
-  action: ActionType,
+  actionInput: ActionType,
   ridGenerator: OntologyRidGenerator,
   functionsIr: FunctionsIr,
 ): ActionTypeBlockDataV2 {
+  let action: ActionType = actionInput;
+
   // The placeholder functionRid holds the function's API name
   const rule = action.rules[0];
   invariant(
@@ -291,30 +295,29 @@ function convertFunctionBackedAction(
     };
   }
 
-  const functionRid =
-    `ri.function-registry.main.function.${functionApiName}`;
-
-  // Build per-parameter validations with sensible defaults
-  const parameterValidations = Object.fromEntries(
-    Object.entries(parameters).map(([paramId, param]) => [
-      paramId,
-      {
-        conditionalOverrides: [],
-        defaultValidation: {
-          display: {
-            visibility: { type: "editable" as const, editable: {} },
-            renderHint: getDefaultRenderHintForBaseType(param.type),
-            prefill: null,
-          },
-          validation: {
-            required: { type: "required" as const, required: {} },
-            allowedValues: getDefaultAllowedValuesForBaseType(param.type),
-          },
-        },
-        structFieldValidations: {},
+  const syntheticParameters: ActionParameter[] = Object.entries(parameters)
+    .map(([paramId, param]) => ({
+      id: paramId,
+      displayName: param.displayMetadata.displayName,
+      type: param.type.type as ActionParameter["type"],
+      validation: {
+        required: true as const,
+        defaultVisibility: "editable" as const,
+        allowedValues: param.type.type === "objectReference"
+            || param.type.type === "objectReferenceList"
+          ? {
+            type: "objectQuery" as const,
+            objectQuery: {
+              type: "objectQuery",
+              objectQuery: { objectSet: null },
+            },
+          }
+          : undefined,
       },
-    ]),
-  );
+    }));
+  action = { ...action, parameters: syntheticParameters };
+
+  const functionRid = `ri.function-registry.main.function.${functionApiName}`;
 
   const formContentOrdering = parameterOrdering.map(p => ({
     type: "parameterId" as const,
@@ -395,15 +398,7 @@ function convertFunctionBackedAction(
           }],
           actionLogRule: null,
         },
-        validation: {
-          actionTypeLevelValidation: {
-            rules: {},
-            ordering: [],
-            dataSecurityRequirement: null,
-          },
-          parameterValidations,
-          sectionValidations: {},
-        },
+        validation: convertActionValidation(action, ridGenerator),
         revert: {
           enabledFor: [{
             type: "actionApplier",
@@ -418,6 +413,7 @@ function convertFunctionBackedAction(
       },
       metadata: metadata as MarketplaceActionTypeMetadata,
     },
+
     parameterIds: {},
   };
 }

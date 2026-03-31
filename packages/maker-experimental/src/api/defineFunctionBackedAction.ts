@@ -67,5 +67,17 @@ export function defineFunctionBackedAction(
       },
     }],
     status: def.status ?? "active",
+    ...({
+      validation: [{
+        condition: {
+          type: "true",
+          true: {},
+        },
+        displayMetadata: {
+          failureMessage: "Validation failed",
+          typeClasses: [],
+        },
+      }],
+    }),
   });
 }

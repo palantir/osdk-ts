@@ -115,7 +115,18 @@ export function defineCreateObjectAction(
           parameters,
         ),
       }
-      : {}),
+      : {
+        validation: [{
+          condition: {
+            type: "true",
+            true: {},
+          },
+          displayMetadata: {
+            failureMessage: "Validation failed",
+            typeClasses: [],
+          },
+        }],
+      }),
     ...(def.defaultFormat && { defaultFormat: def.defaultFormat }),
     ...(def.enableLayoutSwitch
       && { enableLayoutSwitch: def.enableLayoutSwitch }),
