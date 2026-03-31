@@ -3,4 +3,4 @@
 "@osdk/react-components-styles": patch
 ---
 
-Address design review and PR review feedback for filter list: exclude strikethrough on individual values, selection border indicator, histogram bar color and count positioning, drag overlay handle, checkbox stability, selected-to-top sorting, listogram checkbox option, and null value count display
+Address design review and PR review feedback for filter list: exclude strikethrough only on selected items, remove hover-to-show exclude row, fix 3-dots toggle close behavior, remove OR filter operator mode, and various UI polish

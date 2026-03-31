@@ -144,10 +144,9 @@ export function FilterList<Q extends ObjectTypeDefinition>(
     renderAddFilterButton,
   ]);
 
-  const effectiveOnFilterRemoved = useMemo(
-    () => uncontrolledAddFilterMode ? handleFilterRemoved : onFilterRemoved,
-    [uncontrolledAddFilterMode, handleFilterRemoved, onFilterRemoved],
-  );
+  const effectiveOnFilterRemoved = uncontrolledAddFilterMode
+    ? handleFilterRemoved
+    : onFilterRemoved;
 
   const renderInput = useCallback<RenderFilterInput<FilterDefinitionUnion<Q>>>(
     (

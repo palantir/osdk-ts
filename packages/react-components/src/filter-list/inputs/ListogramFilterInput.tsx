@@ -37,7 +37,6 @@ interface ListogramFilterInputProps<Q extends ObjectTypeDefinition> {
   colorMap?: Record<string, string>;
   displayMode?: "full" | "count" | "minimal";
   maxVisibleItems?: number;
-  showCheckbox?: boolean;
   searchQuery?: string;
   excludeRowOpen?: boolean;
 }
@@ -52,7 +51,6 @@ function ListogramFilterInputInner<Q extends ObjectTypeDefinition>({
   colorMap,
   displayMode,
   maxVisibleItems,
-  showCheckbox,
   searchQuery,
   excludeRowOpen,
 }: ListogramFilterInputProps<Q>): React.ReactElement {
@@ -76,9 +74,12 @@ function ListogramFilterInputInner<Q extends ObjectTypeDefinition>({
     [onFilterStateChanged, isExcluding],
   );
 
+  const sortBy = displayMode === "minimal"
+    ? "value" as const
+    : "count" as const;
   const aggregationOptions = useMemo(
-    () => ({ where: whereClause }),
-    [whereClause],
+    () => ({ where: whereClause, sortBy }),
+    [whereClause, sortBy],
   );
 
   const { data, maxCount, isLoading, error } = usePropertyAggregation(
@@ -104,7 +105,6 @@ function ListogramFilterInputInner<Q extends ObjectTypeDefinition>({
         onChange={handleChange}
         colorMap={colorMap}
         displayMode={displayMode}
-        showCheckbox={showCheckbox}
         isExcluding={isExcluding}
         maxVisibleItems={maxVisibleItems}
         searchQuery={searchQuery}

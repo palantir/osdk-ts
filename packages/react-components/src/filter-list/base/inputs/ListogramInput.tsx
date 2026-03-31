@@ -36,7 +36,6 @@ interface ListogramInputProps {
   onChange: (values: string[]) => void;
   colorMap?: Record<string, string>;
   displayMode?: ListogramDisplayMode;
-  showCheckbox?: boolean;
   isExcluding?: boolean;
   className?: string;
   style?: React.CSSProperties;
@@ -53,7 +52,6 @@ function ListogramInputInner({
   onChange,
   colorMap,
   displayMode = "full",
-  showCheckbox,
   isExcluding,
   className,
   style,
@@ -142,17 +140,20 @@ function ListogramInputInner({
                   } as React.CSSProperties
                   : undefined}
               >
-                {showCheckbox && (
+                <span
+                  className={styles.checkbox}
+                  onClick={(e) => e.stopPropagation()}
+                >
                   <Checkbox
                     checked={selectedSet.has(value)}
-                    tabIndex={-1}
-                    className={styles.checkbox}
+                    onCheckedChange={() => toggleValue(value)}
                     isExcluding={isExcluding}
                   />
-                )}
+                </span>
                 <span
                   className={styles.label}
-                  data-excluding={isExcluding || undefined}
+                  data-excluding={(isExcluding && selectedSet.has(value))
+                    || undefined}
                 >
                   {value}
                 </span>

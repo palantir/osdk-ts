@@ -41,6 +41,7 @@ export interface UsePropertyAggregationOptions<
 > {
   limit?: number;
   where?: WhereClause<Q>;
+  sortBy?: "count" | "value";
 }
 
 export function usePropertyAggregation<
@@ -99,7 +100,14 @@ export function usePropertyAggregation<
         maxCount = Math.max(maxCount, count);
       }
 
-      values.sort((a, b) => a.value.localeCompare(b.value));
+      const sortBy = options?.sortBy ?? "count";
+      if (sortBy === "count") {
+        values.sort((a, b) =>
+          b.count - a.count || a.value.localeCompare(b.value)
+        );
+      } else {
+        values.sort((a, b) => a.value.localeCompare(b.value));
+      }
 
       if (options?.limit && values.length > options.limit) {
         return { data: values.slice(0, options.limit), maxCount };
@@ -107,7 +115,7 @@ export function usePropertyAggregation<
 
       return { data: values, maxCount };
     },
-    [countData, propertyKey, options?.limit],
+    [countData, propertyKey, options?.limit, options?.sortBy],
   );
 
   return {

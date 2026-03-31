@@ -17,6 +17,7 @@
 import type {
   Announcements,
   DragEndEvent,
+  DraggableAttributes,
   DragStartEvent,
   Modifier,
   UniqueIdentifier,
@@ -51,6 +52,15 @@ const restrictToVerticalAxis: Modifier = ({ transform }) => ({
 
 const POINTER_ACTIVATION_CONSTRAINT = { distance: 8 } as const;
 const MODIFIERS: Modifier[] = [restrictToVerticalAxis];
+
+const DRAG_OVERLAY_HANDLE_ATTRIBUTES: DraggableAttributes = {
+  role: "button",
+  tabIndex: -1,
+  "aria-disabled": true,
+  "aria-pressed": undefined,
+  "aria-roledescription": "sortable",
+  "aria-describedby": "",
+};
 
 interface FilterListContentProps<D> {
   filterDefinitions?: Array<D>;
@@ -264,7 +274,7 @@ export function FilterListContent<D>({
                 onFilterStateChanged={onFilterStateChanged}
                 onFilterRemoved={onFilterRemoved}
                 renderInput={renderInput}
-                showDragHandle={true}
+                dragHandleAttributes={DRAG_OVERLAY_HANDLE_ATTRIBUTES}
               />
             )}
           </DragOverlay>

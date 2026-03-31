@@ -32,12 +32,6 @@
   height: var(--osdk-filter-range-histogram-height);
   gap: var(--osdk-filter-range-histogram-bar-gap);
   overflow: hidden;
-  opacity: 0;
-  transition: opacity var(--osdk-filter-content-fade-duration);
-}
-
-.histogramContainer:not([data-empty="true"]) {
-  opacity: 1;
 }
 
 .histogramBar {
