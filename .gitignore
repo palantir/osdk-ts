@@ -44,5 +44,15 @@ vitest.workspace.ts
 
 .memory/
 
-# Claude
-.claude/settings.local.json
+# IDE
+.idea/
+.project
+.settings
+.classpath
+*.iml
+*.ipr
+*.iws
+
+# Files with local extensions (dot-prefix only, to avoid matching package dirs like e2e.generated.api-namespace.local)
+.*.local
+.*.local.*
