@@ -41,10 +41,7 @@ import type { SimpleWhereClause } from "../SimpleWhereClause.js";
 import { OrderBySortingStrategy } from "../sorting/SortingStrategy.js";
 import type { Store } from "../Store.js";
 import type { SubjectPayload } from "../SubjectPayload.js";
-import type {
-  ObjectSetCacheKey,
-  ObjectSetOperations,
-} from "./ObjectSetCacheKey.js";
+import type { ObjectSetCacheKey } from "./ObjectSetCacheKey.js";
 import type { ObjectSetQueryOptions } from "./ObjectSetQueryOptions.js";
 
 export class ObjectSetQuery extends BaseListQuery<
@@ -53,7 +50,17 @@ export class ObjectSetQuery extends BaseListQuery<
   ObjectSetQueryOptions
 > {
   #baseObjectSetWire: string;
-  #operations: Canonical<ObjectSetOperations>;
+  #where: Canonical<SimpleWhereClause> | undefined;
+  #withProperties: Canonical<Rdp> | undefined;
+  #union: Canonical<string[]> | undefined;
+  #intersect: Canonical<string[]> | undefined;
+  #subtract: Canonical<string[]> | undefined;
+  #pivotTo: string | undefined;
+  #orderBy:
+    | Canonical<Record<string, "asc" | "desc" | undefined>>
+    | undefined;
+  #select: Canonical<readonly string[]> | undefined;
+  #loadPropertySecurity: true | undefined;
   #composedObjectSet: ObjectSet<any, any>;
   #objectTypes: Set<string>;
   #requiresServerEvaluation: boolean;
@@ -63,9 +70,19 @@ export class ObjectSetQuery extends BaseListQuery<
     store: Store,
     subject: Observable<SubjectPayload<ObjectSetCacheKey>>,
     baseObjectSetWire: string,
-    operations: Canonical<ObjectSetOperations>,
     cacheKey: ObjectSetCacheKey,
     opts: ObjectSetQueryOptions,
+    where: Canonical<SimpleWhereClause> | undefined,
+    withProperties: Canonical<Rdp> | undefined,
+    union: Canonical<string[]> | undefined,
+    intersect: Canonical<string[]> | undefined,
+    subtract: Canonical<string[]> | undefined,
+    pivotTo: string | undefined,
+    orderBy:
+      | Canonical<Record<string, "asc" | "desc" | undefined>>
+      | undefined,
+    select: Canonical<readonly string[]> | undefined,
+    loadPropertySecurity: true | undefined,
   ) {
     super(
       store,
@@ -84,17 +101,25 @@ export class ObjectSetQuery extends BaseListQuery<
     );
 
     this.#baseObjectSetWire = baseObjectSetWire;
-    this.#operations = operations;
+    this.#where = where;
+    this.#withProperties = withProperties;
+    this.#union = union;
+    this.#intersect = intersect;
+    this.#subtract = subtract;
+    this.#pivotTo = pivotTo;
+    this.#orderBy = orderBy;
+    this.#select = select;
+    this.#loadPropertySecurity = loadPropertySecurity;
     this.#composedObjectSet = this.#composeObjectSet(opts);
 
     const baseWire: WireObjectSet = JSON.parse(baseObjectSetWire);
     this.#objectTypes = this.#extractObjectTypes(baseWire, opts);
 
     this.#requiresServerEvaluation = !!(
-      operations.pivotTo
-      || (operations.union && operations.union.length > 0)
-      || (operations.intersect && operations.intersect.length > 0)
-      || (operations.subtract && operations.subtract.length > 0)
+      pivotTo
+      || (union && union.length > 0)
+      || (intersect && intersect.length > 0)
+      || (subtract && subtract.length > 0)
     );
 
     this.#resultTypeApiName =
@@ -114,15 +139,15 @@ export class ObjectSetQuery extends BaseListQuery<
   }
 
   public override get rdpConfig(): Canonical<Rdp> | null {
-    return this.#operations.withProperties ?? null;
+    return this.#withProperties ?? null;
   }
 
   public get selectFields(): Canonical<readonly string[]> | undefined {
-    return this.#operations.select;
+    return this.#select;
   }
 
   protected get rawSelect(): Canonical<readonly string[]> | undefined {
-    return this.#operations.select;
+    return this.#select;
   }
 
   #composeObjectSet(opts: ObjectSetQueryOptions): ObjectSet<any, any> {
@@ -211,8 +236,8 @@ export class ObjectSetQuery extends BaseListQuery<
     signal: AbortSignal | undefined,
   ): Promise<PageResult<Osdk.Instance<any>>> {
     if (
-      this.#operations.orderBy
-      && Object.keys(this.#operations.orderBy).length > 0
+      this.#orderBy
+      && Object.keys(this.#orderBy).length > 0
       && !(this.sortingStrategy instanceof OrderBySortingStrategy)
     ) {
       const wireObjectSet = getWireObjectSet(this.#composedObjectSet);
@@ -222,7 +247,7 @@ export class ObjectSetQuery extends BaseListQuery<
       );
       this.sortingStrategy = new OrderBySortingStrategy(
         resultType.apiName,
-        this.#operations.orderBy,
+        this.#orderBy,
       );
     }
 
@@ -231,13 +256,13 @@ export class ObjectSetQuery extends BaseListQuery<
       $nextPageToken: this.nextPageToken,
       $pageSize: this.getEffectiveFetchPageSize(),
       $includeRid: true,
-      ...(this.#operations.select && this.#operations.select.length > 0
-        ? { $select: this.#operations.select }
+      ...(this.#select && this.#select.length > 0
+        ? { $select: this.#select }
         : {}),
       // OrderBy is already applied in the composed ObjectSet
-      ...(this.#operations.orderBy
-          && Object.keys(this.#operations.orderBy).length > 0
-        ? { $orderBy: this.#operations.orderBy }
+      ...(this.#orderBy
+          && Object.keys(this.#orderBy).length > 0
+        ? { $orderBy: this.#orderBy }
         : {}),
       ...(this.options.$loadPropertySecurityMetadata
         ? { $loadPropertySecurityMetadata: true }
@@ -364,9 +389,7 @@ export class ObjectSetQuery extends BaseListQuery<
     changes: Changes,
     optimisticId: OptimisticId | undefined,
   ): Promise<void> | undefined {
-    const whereClause = this.#operations.where as
-      | Canonical<SimpleWhereClause>
-      | undefined;
+    const whereClause = this.#where;
     const effectiveWhere = whereClause
       ?? this.store.whereCanonicalizer.canonicalize({ $and: [] });
 
