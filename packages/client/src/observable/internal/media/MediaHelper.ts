@@ -265,6 +265,7 @@ export class MediaHelper extends AbstractHelper<
           mediaSetRid: gatewayMediaRef.reference.mediaSetViewItem.mediaSetRid,
           mediaSetViewRid:
             gatewayMediaRef.reference.mediaSetViewItem.mediaSetViewRid,
+          token: gatewayMediaRef.reference.mediaSetViewItem.token,
           readToken: gatewayMediaRef.reference.mediaSetViewItem.token,
         },
       },
