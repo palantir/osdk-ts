@@ -101,17 +101,21 @@
       "@types/react-dom": "^18.3.7",
       "@cspell/dict-css": "^4.0.18",
       "@cspell/dict-html": "^4.0.12",
-      "@cspell/dict-html-symbol-entities": "^4.0.4"
+      "@cspell/dict-html-symbol-entities": "^4.0.4",
+      "postcss@^8.4.0": "^8.5.6",
+      "browserslist@^4.0.0": "^4.28.1",
+      "debug@^3.0.0": "^4.4.3",
+      "debug@^3.1.0": "^4.4.3",
+      "debug@^3.2.6": "^4.4.3",
+      "debug@^3.2.7": "^4.4.3",
+      "semver@^6.0.0": "^7.7.2",
+      "semver@^6.3.0": "^7.7.2",
+      "semver@^6.3.1": "^7.7.2"
     }
   },
   "engines": {
     "node": ">=18.19.0",
     "pnpm": "=10.27.0"
   },
-  "packageManager": "pnpm@10.27.0+sha512.72d699da16b1179c14ba9e64dc71c9a40988cbdc65c264cb0e489db7de917f20dcf4d64d8723625f2969ba52d4b7e2a1170682d9ac2a5dcaeaab732b7e16f04a",
-  "dependencies": {
-    "@react-navigation/native": "^7.1.17",
-    "@vitejs/plugin-react": "^4.7.0",
-    "@vitejs/plugin-vue": "^5.2.4"
-  }
+  "packageManager": "pnpm@10.27.0+sha512.72d699da16b1179c14ba9e64dc71c9a40988cbdc65c264cb0e489db7de917f20dcf4d64d8723625f2969ba52d4b7e2a1170682d9ac2a5dcaeaab732b7e16f04a"
 }

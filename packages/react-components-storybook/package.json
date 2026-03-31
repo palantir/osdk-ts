@@ -36,7 +36,7 @@
     "@types/node": "^20.19.13",
     "@types/react": "^18.3.24",
     "@types/react-dom": "^18.3.7",
-    "@vitejs/plugin-react": "^4.3.4",
+    "@vitejs/plugin-react": "^4.7.0",
     "classnames": "^2.5.1",
     "eslint-plugin-storybook": "^10.2.10",
     "pdf-lib": "^1.17.1",
@@ -44,7 +44,7 @@
     "react-dom": "^18.3.1",
     "storybook": "^10.2.10",
     "typescript": "~5.5.4",
-    "vite": "^6.0.6"
+    "vite": "^7.3.1"
   },
   "msw": {
     "workerDirectory": [
