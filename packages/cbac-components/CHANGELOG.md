@@ -1,5 +1,21 @@
 # @osdk/cbac-components
 
+## 0.1.0-beta.2
+
+### Minor Changes
+
+- c3da451: add marking button, category group, and validation components for CBAC picker
+
+### Patch Changes
+
+- Updated dependencies [8eea31b]
+- Updated dependencies [c3da451]
+- Updated dependencies [073a5b1]
+- Updated dependencies [66b7125]
+- Updated dependencies [b0930e4]
+  - @osdk/react-components@0.2.0-beta.26
+  - @osdk/react@0.10.0-beta.14
+
 ## 0.1.0-beta.1
 
 ### Minor Changes

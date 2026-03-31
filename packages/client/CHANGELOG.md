@@ -1,5 +1,18 @@
 # @osdk/client
 
+## 2.8.0-beta.29
+
+### Minor Changes
+
+- 520398c: Add canonicalizeOptions API to ObservableClient for stable memo keys in React hooks, add objectSet to list payload
+
+### Patch Changes
+
+- Updated dependencies [4a856cb]
+  - @osdk/api@2.8.0-beta.29
+  - @osdk/client.unstable@2.8.0-beta.29
+  - @osdk/generator-converters@2.8.0-beta.29
+
 ## 2.8.0-beta.28
 
 ### Minor Changes

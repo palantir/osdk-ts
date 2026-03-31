@@ -1,5 +1,11 @@
 # @osdk/react-components-storybook
 
+## 0.2.0-beta.11
+
+### Minor Changes
+
+- 8eea31b: feat(pdf): pdf viewer recipes + fixed for form fields
+
 ## 0.2.0-beta.10
 
 ### Patch Changes
