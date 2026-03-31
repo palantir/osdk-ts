@@ -28,6 +28,8 @@ import { useObjectSet, useOsdkObjects } from "@osdk/react/experimental";
 import type { SortingState } from "@tanstack/react-table";
 import { useMemo } from "react";
 import type { ColumnDefinition, ObjectSetOptions } from "../ObjectTableApi.js";
+import type { AsyncCellData } from "../utils/AsyncCellData.js";
+import { useFunctionColumnsData } from "./useFunctionColumnsData.js";
 
 const PAGE_SIZE = 50;
 
@@ -40,6 +42,13 @@ type WithProperties<
 > = {
   [K in keyof RDPs]: DerivedProperty.Creator<Q, RDPs[K]>;
 };
+
+interface UseObjectTableDataResult<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
+> extends Omit<UseOsdkListResult<Q, RDPs>, "isOptimistic"> {
+  objectSet?: ObjectSet<Q>;
+}
 /**
  * This hook is a wrapper that conditionally uses either useObjectSet or useOsdkObjects
  * based on whether an objectSet prop is provided.
@@ -63,7 +72,7 @@ export function useObjectTableData<
   sorting?: SortingState,
   objectSet?: ObjectSet<Q>,
   objectSetOptions?: ObjectSetOptions<Q>,
-): UseOsdkListResult<Q, RDPs> {
+): UseObjectTableDataResult<Q, RDPs> {
   const orderBy = useMemo(() => {
     if (!sorting || sorting.length === 0) {
       return undefined;
@@ -112,7 +121,7 @@ export function useObjectTableData<
   // When shouldUseObjectSet is true, we know objectSet is defined
   // and objectOrInterfaceType is an ObjectTypeDefinition
   const objectSetResult = useObjectSet(
-    shouldUseObjectSet ? objectSet as ObjectSet<Q> : undefined as any,
+    shouldUseObjectSet ? objectSet as ObjectSet<Q, RDPs> : undefined as any,
     {
       ...(objectSetOptions as ObjectSetOptions<Q>),
       withProperties: withProperties as WithProperties<
@@ -140,18 +149,42 @@ export function useObjectTableData<
     },
   );
 
-  // Return the appropriate result based on which hook is enabled
-  if (shouldUseObjectSet) {
-    // Convert UseObjectSetResult to UseOsdkListResult format
-    return {
-      data: objectSetResult.data,
-      fetchMore: objectSetResult.fetchMore,
-      isLoading: objectSetResult.isLoading,
-      error: objectSetResult.error,
-      totalCount: objectSetResult.totalCount,
-      isOptimistic: false, // ObjectSet doesn't support optimistic updates
-    } as UseOsdkListResult<Q, RDPs>;
-  }
+  // Get the result from the appropriate hook
+  const baseResult = shouldUseObjectSet ? objectSetResult : osdkObjectsResult;
 
-  return osdkObjectsResult;
+  // Call useFunctionColumnsData to get function column data
+  const functionColumnData = useFunctionColumnsData<Q, RDPs, FunctionColumns>(
+    objectSetResult.objectSet,
+    baseResult.data,
+    columnDefinitions,
+  );
+
+  // Merge function column data into each object
+  const mergedData = useMemo(() => {
+    if (!baseResult.data) return baseResult.data;
+
+    return baseResult.data.map(obj => {
+      const objKey = String(obj.$primaryKey);
+      const functionData: Record<string, AsyncCellData> = {};
+
+      // Collect all function column data for this object
+      Object.entries(functionColumnData).forEach(([columnId, columnData]) => {
+        if (columnData[objKey]) {
+          functionData[columnId] = columnData[objKey];
+        }
+      });
+
+      // Return object with function data merged in
+      return {
+        ...obj,
+        ...functionData,
+      };
+    });
+  }, [baseResult.data, functionColumnData]);
+
+  // Return the result with merged data
+  return {
+    ...baseResult,
+    data: mergedData,
+  } as UseObjectTableDataResult<Q, RDPs>;
 }

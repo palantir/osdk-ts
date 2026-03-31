@@ -31,9 +31,17 @@ jobs:
           node-version: ${{ matrix.node }}
           cache: "pnpm"
 
+      - name: Cache Turbo
+        uses: actions/cache@v4
+        with:
+          path: .turbo/cache
+          key: turbo-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            turbo-${{ runner.os }}-
+
       - name: Install dependencies
         run: pnpm install
-      
+
       - name: Check spelling
         run: pnpm exec turbo run ci:cspell
   
@@ -91,23 +99,31 @@ jobs:
           node-version: ${{ matrix.node }}
           cache: "pnpm"
 
+      - name: Cache Turbo
+        uses: actions/cache@v4
+        with:
+          path: .turbo/cache
+          key: turbo-${{ runner.os }}-node${{ matrix.node }}-${{ github.sha }}
+          restore-keys: |
+            turbo-${{ runner.os }}-node${{ matrix.node }}-
+
       - name: Install dependencies
         run: pnpm install
 
-      # These packages use Vite 7+ which requires Node 20+, so exclude them on Node 18
-      - name: Transpile, typecheck, Lint and test (excluding Vite 7 packages on Node 18)
+      # These packages use Vite 7+ or Storybook which require Node 20+, so exclude them on Node 18
+      - name: Transpile, typecheck, Lint and test (excluding Vite 7/Storybook packages on Node 18)
         if: matrix.node == 18
-        run: pnpm exec turbo check --filter="!@osdk/create-app.template.*" --filter="!@osdk/create-widget.template.*" --filter="!@osdk/widget.vite-plugin" --filter="!@osdk/examples.*" --filter="!@psdk/examples.*" --filter="!@osdk/e2e.sandbox.todowidget"
+        run: pnpm exec turbo check --filter="!@osdk/create-app.template.*" --filter="!@osdk/create-widget.template.*" --filter="!@osdk/widget.vite-plugin" --filter="!@osdk/examples.*" --filter="!@psdk/examples.*" --filter="!@osdk/e2e.sandbox.todowidget" --filter="!@osdk/ontology-explorer-app" --filter="!@osdk/react-components-storybook"
 
       - name: Transpile, typecheck, Lint and test
         if: matrix.node != 18
         run: pnpm check
 
       # catches some of the examples that don't have transpile/typecheck tasks
-      # These packages use Vite 7+ which requires Node 20+, so exclude them on Node 18
-      - name: Build (excluding Vite 7 packages on Node 18)
+      # These packages use Vite 7+ or Storybook which require Node 20+, so exclude them on Node 18
+      - name: Build (excluding Vite 7/Storybook packages on Node 18)
         if: matrix.node == 18
-        run: pnpm exec turbo build --filter="!@osdk/create-app.template.*" --filter="!@osdk/create-widget.template.*" --filter="!@osdk/widget.vite-plugin" --filter="!@osdk/examples.*" --filter="!@psdk/examples.*" --filter="!@osdk/e2e.sandbox.todowidget"
+        run: pnpm exec turbo build --filter="!@osdk/create-app.template.*" --filter="!@osdk/create-widget.template.*" --filter="!@osdk/widget.vite-plugin" --filter="!@osdk/examples.*" --filter="!@psdk/examples.*" --filter="!@osdk/e2e.sandbox.todowidget" --filter="!@osdk/ontology-explorer-app" --filter="!@osdk/react-components-storybook"
 
       - name: Build
         if: matrix.node != 18
@@ -148,6 +164,14 @@ jobs:
           node-version: 22
           cache: "pnpm"
 
+      - name: Cache Turbo
+        uses: actions/cache@v4
+        with:
+          path: .turbo/cache
+          key: turbo-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            turbo-${{ runner.os }}-
+
       - name: Install dependencies
         run: pnpm install
 
@@ -164,3 +188,102 @@ jobs:
 
       - name: Faux Publish
         run: pnpm publish -r --no-git-checks
+
+  bundle-size:
+    name: Bundle Size
+    if: github.event_name == 'pull_request'
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v6
+
+      - uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: "pnpm"
+
+      - name: Cache Turbo
+        uses: actions/cache@v4
+        with:
+          path: .turbo/cache
+          key: turbo-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            turbo-${{ runner.os }}-
+
+      - name: Install and build (PR)
+        run: pnpm install && pnpm exec turbo transpile
+
+      - name: Measure bundle size (PR)
+        run: npx size-limit --json > /tmp/current.json || true
+
+      - name: Checkout base branch
+        run: |
+          git fetch origin ${{ github.event.pull_request.base.sha }} --depth=1
+          git checkout ${{ github.event.pull_request.base.sha }}
+
+      - name: Install and build (base)
+        run: pnpm install && pnpm exec turbo transpile
+
+      - name: Measure bundle size (base)
+        run: npx size-limit --json > /tmp/base.json || true
+
+      - name: Compare and comment
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          node -e '
+            const fs = require("fs");
+
+            function formatBytes(bytes) {
+              if (bytes === 0) return "0 B";
+              const units = ["B", "kB", "MB"];
+              const i = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), units.length - 1);
+              const value = bytes / Math.pow(1024, i);
+              return value.toFixed(i === 0 ? 0 : 2) + " " + units[i];
+            }
+
+            function formatChange(current, base) {
+              if (base === 0) return current === 0 ? "0%" : "new";
+              const pct = ((current - base) / base) * 100;
+              if (Math.abs(pct) < 0.01) return "0%";
+              const sign = pct > 0 ? "+" : "";
+              const emoji = pct > 0 ? " 🔺" : " 🔽";
+              return sign + pct.toFixed(2) + "%" + emoji;
+            }
+
+            let current = [], base = [];
+            try { current = JSON.parse(fs.readFileSync("/tmp/current.json", "utf8")); } catch {}
+            try { base = JSON.parse(fs.readFileSync("/tmp/base.json", "utf8")); } catch {}
+
+            const baseMap = Object.fromEntries(base.map(e => [e.name, e.size]));
+            const currentMap = Object.fromEntries(current.map(e => [e.name, e.size]));
+            const allNames = [...new Set([...base.map(e => e.name), ...current.map(e => e.name)])];
+
+            let md = "## size-limit report 📦\n\n";
+            md += "| Path | Size | Change |\n";
+            md += "|------|------|--------|\n";
+
+            for (const name of allNames) {
+              const cur = currentMap[name] ?? 0;
+              const bas = baseMap[name] ?? 0;
+              const change = formatChange(cur, bas);
+              md += "| \`" + name + "\` | " + formatBytes(cur) + " | " + change + " |\n";
+            }
+
+            fs.writeFileSync("/tmp/comment.md", md);
+          '
+
+          COMMENT_ID=$(gh api "repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments" --jq '.[] | select(.body | startswith("## size-limit report")) | .id' | head -1)
+          if [ -n "$COMMENT_ID" ]; then
+            gh api "repos/${{ github.repository }}/issues/comments/$COMMENT_ID" -X PATCH -f body="$(cat /tmp/comment.md)"
+          else
+            gh pr comment "${{ github.event.pull_request.number }}" -F /tmp/comment.md
+          fi

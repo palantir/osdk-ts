@@ -32,6 +32,18 @@ import {
   createToggleState,
 } from "./testUtils.js";
 
+import type { PropertyTypeInfo } from "../utils/filterStateToWhereClause.js";
+
+const mockPropertyTypes = new Map<string, PropertyTypeInfo>([
+  ["id", { type: "string", multiplicity: false }],
+  ["name", { type: "string", multiplicity: false }],
+  ["age", { type: "integer", multiplicity: false }],
+  ["active", { type: "boolean", multiplicity: false }],
+  ["createdAt", { type: "timestamp", multiplicity: false }],
+  ["birthDate", { type: "datetime", multiplicity: false }],
+  ["score", { type: "double", multiplicity: false }],
+]);
+
 type TestFilterDef = FilterDefinitionUnion<typeof MockObjectType>;
 
 function stateMap(
@@ -73,7 +85,7 @@ describe("buildWhereClause", () => {
       [def, createSelectState(["a"], { isExcluding: true })],
     );
     const result = buildWhereClause([def], filterStates, "and");
-    expect(result).toEqual({ name: { $not: "a" } });
+    expect(result).toEqual({ $not: { name: "a" } });
   });
 
   it("builds $containsAnyTerm for CONTAINS_TEXT", () => {
@@ -125,7 +137,9 @@ describe("buildWhereClause", () => {
       [def, createNumberRangeState(18, 65)],
     );
     const result = buildWhereClause([def], filterStates, "and");
-    expect(result).toEqual({ age: { $and: [{ $gte: 18 }, { $lte: 65 }] } });
+    expect(result).toEqual({
+      $and: [{ age: { $gte: 18 } }, { age: { $lte: 65 } }],
+    });
   });
 
   it("includes $isNull with $or when includeNull", () => {
@@ -138,7 +152,9 @@ describe("buildWhereClause", () => {
       [def, createNumberRangeState(18, undefined, { includeNull: true })],
     );
     const result = buildWhereClause([def], filterStates, "and");
-    expect(result).toEqual({ age: { $or: [{ $gte: 18 }, { $isNull: true }] } });
+    expect(result).toEqual({
+      $or: [{ age: { $gte: 18 } }, { age: { $isNull: true } }],
+    });
   });
 
   it("builds date comparison for DATE_RANGE", () => {
@@ -154,12 +170,10 @@ describe("buildWhereClause", () => {
     );
     const result = buildWhereClause([def], filterStates, "and");
     expect(result).toEqual({
-      createdAt: {
-        $and: [
-          { $gte: minDate.toISOString() },
-          { $lte: maxDate.toISOString() },
-        ],
-      },
+      $and: [
+        { createdAt: { $gte: minDate.toISOString() } },
+        { createdAt: { $lte: maxDate.toISOString() } },
+      ],
     });
   });
 
@@ -287,7 +301,7 @@ describe("buildWhereClause", () => {
       ],
     );
     const result = buildWhereClause([def], filterStates, "and");
-    expect(result).toEqual({ name: { $not: { $containsAllTerms: "test" } } });
+    expect(result).toEqual({ $not: { name: { $containsAllTerms: "test" } } });
   });
 
   it("calls toWhereClause for custom filter", () => {
@@ -301,6 +315,82 @@ describe("buildWhereClause", () => {
     );
     const result = buildWhereClause([def], filterStates, "and");
     expect(result).toEqual({ customProp: { $eq: "test" } });
+  });
+
+  it("formats dates as YYYY-MM-DD for datetime (LocalDate) properties", () => {
+    const minDate = new Date("2024-01-15T04:00:00.000Z");
+    const maxDate = new Date("2024-06-30T04:00:00.000Z");
+    const def = createPropertyFilterDef(
+      "birthDate",
+      "DATE_RANGE",
+      createDateRangeState(minDate, maxDate),
+    );
+    const filterStates = stateMap(
+      [def, createDateRangeState(minDate, maxDate)],
+    );
+    const result = buildWhereClause(
+      [def],
+      filterStates,
+      "and",
+      mockPropertyTypes,
+    );
+    const clause = result as Record<string, unknown[]>;
+    const andConditions = clause.$and as Array<
+      Record<string, Record<string, string>>
+    >;
+    expect(andConditions[0].birthDate.$gte).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    expect(andConditions[1].birthDate.$lte).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+  });
+
+  it("builds $or wrapping $and for NUMBER_RANGE min+max+includeNull", () => {
+    const def = createPropertyFilterDef(
+      "age",
+      "NUMBER_RANGE",
+      createNumberRangeState(18, 65, { includeNull: true }),
+    );
+    const filterStates = stateMap(
+      [def, createNumberRangeState(18, 65, { includeNull: true })],
+    );
+    const result = buildWhereClause([def], filterStates, "and");
+    expect(result).toEqual({
+      $or: [
+        { $and: [{ age: { $gte: 18 } }, { age: { $lte: 65 } }] },
+        { age: { $isNull: true } },
+      ],
+    });
+  });
+
+  it("clamps integer NUMBER_RANGE values exceeding MAX_VALUE", () => {
+    const def = createPropertyFilterDef(
+      "age",
+      "NUMBER_RANGE",
+      createNumberRangeState(5_000_000_000, undefined),
+    );
+    const filterStates = stateMap(
+      [def, createNumberRangeState(5_000_000_000, undefined)],
+    );
+    const result = buildWhereClause(
+      [def],
+      filterStates,
+      "and",
+      mockPropertyTypes,
+    );
+    expect(result).toEqual({ age: { $gte: 2_147_483_647 } });
+  });
+
+  it("wraps with $not for NUMBER_RANGE min+max with isExcluding", () => {
+    const def = createPropertyFilterDef(
+      "age",
+      "NUMBER_RANGE",
+      createNumberRangeState(18, 65, { isExcluding: true }),
+    );
+    const filterStates = stateMap(
+      [def, createNumberRangeState(18, 65, { isExcluding: true })],
+    );
+    const result = buildWhereClause([def], filterStates, "and");
+    expect(result).toEqual({
+      $not: { $and: [{ age: { $gte: 18 } }, { age: { $lte: 65 } }] },
+    });
   });
 
   it("preserves state when filters are reordered", () => {

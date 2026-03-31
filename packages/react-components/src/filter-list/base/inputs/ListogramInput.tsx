@@ -15,53 +15,49 @@
  */
 
 import { Button } from "@base-ui/react/button";
-import type {
-  ObjectSet,
-  ObjectTypeDefinition,
-  PropertyKeys,
-  WhereClause,
-} from "@osdk/api";
 import classnames from "classnames";
 import React, { memo, useCallback, useMemo, useState } from "react";
-import { usePropertyAggregation } from "../../hooks/usePropertyAggregation.js";
+import type { PropertyAggregationValue } from "../../types/AggregationTypes.js";
+import { filterValuesBySearch } from "../../utils/filterValues.js";
 import styles from "./ListogramInput.module.css";
+import { ListogramSkeleton } from "./ListogramSkeleton.js";
 import sharedStyles from "./shared.module.css";
+import { useStableData } from "./useStableData.js";
 
-interface ListogramInputProps<
-  Q extends ObjectTypeDefinition,
-  K extends PropertyKeys<Q>,
-> {
-  objectType: Q;
-  propertyKey: K;
+export type ListogramDisplayMode = "full" | "count" | "minimal";
+
+interface ListogramInputProps {
+  values: PropertyAggregationValue[];
+  maxCount: number;
+  isLoading: boolean;
+  error: Error | null;
   selectedValues: string[];
   onChange: (values: string[]) => void;
-  objectSet?: ObjectSet<Q>;
-  whereClause?: WhereClause<Q>;
+  colorMap?: Record<string, string>;
+  displayMode?: ListogramDisplayMode;
   className?: string;
   style?: React.CSSProperties;
   maxVisibleItems?: number;
+  searchQuery?: string;
 }
 
-function ListogramInputInner<
-  Q extends ObjectTypeDefinition,
-  K extends PropertyKeys<Q>,
->({
-  objectType,
-  propertyKey,
+function ListogramInputInner({
+  values,
+  maxCount,
+  isLoading,
+  error,
   selectedValues,
   onChange,
-  whereClause,
+  colorMap,
+  displayMode = "full",
   className,
   style,
   maxVisibleItems,
-}: ListogramInputProps<Q, K>): React.ReactElement {
+  searchQuery,
+}: ListogramInputProps): React.ReactElement {
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const { data: values, maxCount, isLoading, error } = usePropertyAggregation(
-    objectType,
-    propertyKey,
-    { where: whereClause },
-  );
+  const stableValues = useStableData(values, isLoading);
 
   const selectedSet = useMemo(() => new Set(selectedValues), [selectedValues]);
 
@@ -76,61 +72,76 @@ function ListogramInputInner<
     [selectedValues, selectedSet, onChange],
   );
 
-  const displayValues = useMemo(() => {
-    if (isExpanded || !maxVisibleItems) return values;
-    return values.slice(0, maxVisibleItems);
-  }, [values, maxVisibleItems, isExpanded]);
+  const filteredValues = useMemo(() => {
+    if (searchQuery) {
+      return filterValuesBySearch(stableValues, searchQuery, (v) => v.value);
+    }
+    return stableValues;
+  }, [stableValues, searchQuery]);
 
-  const hasMore = maxVisibleItems != null && values.length > maxVisibleItems;
+  const displayValues = useMemo(() => {
+    if (isExpanded || !maxVisibleItems) return filteredValues;
+    return filteredValues.slice(0, maxVisibleItems);
+  }, [filteredValues, maxVisibleItems, isExpanded]);
+
+  const hasMore = maxVisibleItems != null
+    && filteredValues.length > maxVisibleItems;
 
   return (
     <div
       className={classnames(styles.listogram, className)}
       style={style}
-      data-loading={isLoading}
+      data-loading={isLoading && filteredValues.length > 0}
     >
-      {isLoading && (
-        <div className={sharedStyles.loadingMessage}>
-          Loading values...
-        </div>
-      )}
-
       {error && (
         <div className={sharedStyles.errorMessage}>
           Error loading values: {error.message}
         </div>
       )}
 
-      {!isLoading && !error && values.length === 0 && (
+      {!error && filteredValues.length === 0 && isLoading && (
+        <ListogramSkeleton />
+      )}
+      {!error && filteredValues.length === 0 && !isLoading && (
         <div className={sharedStyles.emptyMessage}>
           No values available
         </div>
       )}
 
-      {(values.length > 0 || isLoading) && (
+      {filteredValues.length > 0 && (
         <div className={styles.container}>
           {displayValues.map(({ value, count }) => {
-            const isSelected = selectedSet.has(value);
             const percentage = maxCount > 0 ? (count / maxCount) * 100 : 0;
+            const perRowColor = colorMap?.[value];
 
             return (
               <Button
                 key={value}
-                type="button"
                 className={styles.row}
                 onClick={() => toggleValue(value)}
-                aria-pressed={isSelected}
+                aria-pressed={selectedSet.has(value)}
+                style={perRowColor || percentage > 0
+                  ? {
+                    "--osdk-filter-listogram-bar-fill-scale": percentage / 100,
+                    ...(perRowColor
+                      ? {
+                        "--osdk-filter-listogram-row-bar-color": perRowColor,
+                      }
+                      : undefined),
+                  } as React.CSSProperties
+                  : undefined}
               >
                 <span className={styles.label}>{value}</span>
-                <span className={styles.bar}>
-                  <span
-                    className={styles.barFill}
-                    style={{ width: `${percentage}%` }}
-                  />
-                </span>
-                <span className={styles.count}>
-                  {count.toLocaleString()}
-                </span>
+                {displayMode === "full" && (
+                  <span className={styles.bar}>
+                    <span className={styles.barFill} />
+                  </span>
+                )}
+                {displayMode !== "minimal" && (
+                  <span className={styles.count}>
+                    {count.toLocaleString()}
+                  </span>
+                )}
               </Button>
             );
           })}
@@ -141,7 +152,7 @@ function ListogramInputInner<
               className={styles.row}
               onClick={() => setIsExpanded(true)}
             >
-              View all ({values.length})
+              View all ({filteredValues.length})
             </Button>
           )}
         </div>

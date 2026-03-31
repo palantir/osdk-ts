@@ -1,5 +1,93 @@
 # @osdk/generator-converters.ontologyir
 
+## 2.8.0-beta.28
+
+### Minor Changes
+
+- 12fe33f: use block data instead of IR for preview generator
+
+### Patch Changes
+
+- @osdk/client.unstable@2.8.0-beta.28
+
+## 2.8.0-beta.27
+
+### Patch Changes
+
+- @osdk/client.unstable@2.8.0-beta.27
+
+## 2.8.0-beta.26
+
+### Patch Changes
+
+- @osdk/client.unstable@2.8.0-beta.26
+
+## 2.8.0-beta.25
+
+### Patch Changes
+
+- @osdk/client.unstable@2.8.0-beta.25
+
+## 2.8.0-beta.24
+
+### Patch Changes
+
+- @osdk/client.unstable@2.8.0-beta.24
+
+## 2.8.0-beta.23
+
+### Minor Changes
+
+- 32c6a0c: Fix functions discovery on Windows
+
+### Patch Changes
+
+- @osdk/client.unstable@2.8.0-beta.23
+
+## 2.8.0-beta.22
+
+### Patch Changes
+
+- @osdk/client.unstable@2.8.0-beta.22
+
+## 2.8.0-beta.21
+
+### Patch Changes
+
+- @osdk/client.unstable@2.8.0-beta.21
+
+## 2.8.0-beta.20
+
+### Patch Changes
+
+- @osdk/client.unstable@2.8.0-beta.20
+
+## 2.8.0-beta.19
+
+### Minor Changes
+
+- cde6b85: Write functions ir optionally
+
+### Patch Changes
+
+- @osdk/client.unstable@2.8.0-beta.19
+
+## 2.8.0-beta.18
+
+### Minor Changes
+
+- 4762f4b: Rewrite link rids for preview compatibility
+
+### Patch Changes
+
+- @osdk/client.unstable@2.8.0-beta.18
+
+## 2.8.0-beta.17
+
+### Patch Changes
+
+- @osdk/client.unstable@2.8.0-beta.17
+
 ## 2.8.0-beta.16
 
 ### Patch Changes

@@ -30,6 +30,7 @@ import type {
 import type * as Ontologies from "@osdk/foundry.ontologies";
 
 import { consola } from "consola";
+import * as fs from "fs";
 import { spawnSync } from "node:child_process";
 import { hash } from "node:crypto";
 import { accessSync, constants } from "node:fs";
@@ -97,7 +98,10 @@ function discoverPythonFunctions(
 ): IPythonDiscoveryResult | null {
   const pythonPath = pythonBinary;
   try {
-    accessSync(pythonPath, constants.X_OK);
+    accessSync(
+      pythonPath,
+      process.platform === "win32" ? constants.R_OK : constants.X_OK,
+    );
   } catch {
     throw new Error(
       `Python binary not found or not executable at ${pythonPath}`,
@@ -142,8 +146,9 @@ function discoverPythonFunctions(
     // The Python command may output log lines before the JSON on stdout.
     // Try parsing JSON from each line boundary starting from the end,
     // which is more robust than matching a specific marker string.
+    // Use a regex split to handle both \n (Unix) and \r\n (Windows) line endings.
     const stdout = result.stdout;
-    const lines = stdout.split("\n");
+    const lines = stdout.split(/\r?\n/);
     for (let i = lines.length - 1; i >= 0; i--) {
       const line = lines[i].trimStart();
       if (line.startsWith("{")) {
@@ -185,7 +190,7 @@ const discoveryModulesCache = new Map<
 
 async function loadFunctionDiscoverer(
   nodeModulesPath?: string,
-): Promise<FunctionDiscoveryModules | null> {
+): Promise<FunctionDiscoveryModules> {
   const cached = discoveryModulesCache.get(nodeModulesPath);
   if (cached) {
     return cached;
@@ -219,11 +224,14 @@ async function loadFunctionDiscoverer(
     discoveryModulesCache.set(nodeModulesPath, modules);
     return modules;
   } catch (e: unknown) {
-    consola.warn(
-      "Failed to load function discovery modules:",
-      e instanceof Error ? e.message : e,
+    const message = e instanceof Error ? e.message : String(e);
+    consola.error(
+      `Failed to load TypeScript function discovery modules: ${message}\n`
+        + `Ensure @foundry/functions-typescript-osdk-discovery is installed in ${
+          nodeModulesPath ?? "node_modules"
+        }`,
     );
-    return null;
+    throw e;
   }
 }
 
@@ -272,6 +280,7 @@ export class OntologyIrToFullMetadataConverter {
     nodeModulesPath?: string,
     pythonFunctionsDir?: string,
     pythonRootProjectDir?: string,
+    irOutputFile?: string,
     previewMetadata?: Pick<
       Ontologies.OntologyFullMetadata,
       "ontology" | "objectTypes" | "interfaceTypes"
@@ -285,6 +294,7 @@ export class OntologyIrToFullMetadataConverter {
       const tsQueries = await this.discoverTypeScriptFunctions(
         functionsDir,
         nodeModulesPath,
+        irOutputFile,
         previewMetadata,
       );
       queries.push(...tsQueries);
@@ -321,15 +331,14 @@ export class OntologyIrToFullMetadataConverter {
   private static async discoverTypeScriptFunctions(
     functionsDir: string,
     nodeModulesPath?: string,
+    irOutputFile?: string,
     previewMetadata?: Pick<
       Ontologies.OntologyFullMetadata,
       "ontology" | "objectTypes" | "interfaceTypes"
     >,
   ): Promise<Ontologies.QueryTypeV2[]> {
+    consola.info(`Discovering TypeScript functions in ${functionsDir}...`);
     const discoveryModules = await loadFunctionDiscoverer(nodeModulesPath);
-    if (!discoveryModules) {
-      return [];
-    }
 
     const { FunctionDiscoverer, typescript: discoveryTs } = discoveryModules;
     const { tsConfigPath, projectDir } = discoverComponentRoot(
@@ -351,10 +360,31 @@ export class OntologyIrToFullMetadataConverter {
         throw new Error("previewMetadata.ontology.rid is required");
       }
       const ontologyRid = previewMetadata.ontology.rid;
-      const objectTypesMap: Record<string, { objectTypeId: string }> = {};
+      const objectTypesMap: Record<
+        string,
+        {
+          objectTypeId: string;
+          linkTypes: Record<string, { linkTypeId: string }>;
+        }
+      > = {};
       if (previewMetadata.objectTypes) {
-        for (const apiName of Object.keys(previewMetadata.objectTypes)) {
-          objectTypesMap[apiName] = { objectTypeId: apiName };
+        for (
+          const [apiName, objData] of Object.entries(
+            previewMetadata.objectTypes,
+          )
+        ) {
+          const linkTypesMap: Record<string, { linkTypeId: string }> = {};
+          if (objData.linkTypes) {
+            for (const lt of objData.linkTypes) {
+              linkTypesMap[lt.apiName] = {
+                linkTypeId: lt.linkTypeRid || lt.apiName,
+              };
+            }
+          }
+          objectTypesMap[apiName] = {
+            objectTypeId: apiName,
+            linkTypes: linkTypesMap,
+          };
         }
       }
       const interfaceTypesMap: Record<
@@ -376,21 +406,50 @@ export class OntologyIrToFullMetadataConverter {
       };
     }
 
+    // Normalize to forward slashes to match TypeScript's internal path format
+    const normalizedFunctionsDir = functionsDir.replace(/\\/g, "/");
     const fd = new FunctionDiscoverer(
       program,
       projectDir,
-      functionsDir,
+      normalizedFunctionsDir,
       entityMetadataMapping,
     );
     const functions = fd.discover();
 
-    const queries: Ontologies.QueryTypeV2[] = [];
-    functions.discoveredFunctions.forEach((func: IDiscoveredFunction) => {
-      if (func.locator.type !== "typescriptOsdk") {
-        return;
-      }
+    if (irOutputFile) {
+      fs.writeFileSync(irOutputFile, JSON.stringify(functions));
+    }
+
+    const tsFunctions = functions.discoveredFunctions.filter(
+      (func: IDiscoveredFunction) => func.locator.type === "typescriptOsdk",
+    );
+
+    if (tsFunctions.length === 0) {
+      consola.warn(
+        `No TypeScript OSDK functions discovered in ${functionsDir}. `
+          + `Found ${functions.discoveredFunctions.length} total function(s) `
+          + `but none with locator type "typescriptOsdk".`,
+      );
+    } else {
+      consola.info(
+        `Discovered ${tsFunctions.length} TypeScript function(s): ${
+          tsFunctions
+            .map(
+              (f: IDiscoveredFunction) =>
+                f.locator.typescriptOsdk!.functionName,
+            )
+            .join(", ")
+        }`,
+      );
+    }
+
+    if (irOutputFile) {
+      fs.writeFileSync(irOutputFile, JSON.stringify(functions));
+    }
+
+    return tsFunctions.map((func: IDiscoveredFunction) => {
       const functionName = func.locator.typescriptOsdk!.functionName;
-      const queryType: Ontologies.QueryTypeV2 = {
+      return {
         apiName: functionName,
         rid: `ri.function-registry.main.function.${functionName}`,
         version: "0.0.0",
@@ -406,10 +465,8 @@ export class OntologyIrToFullMetadataConverter {
           func.output.single.dataType,
           func.customTypes,
         ),
-      };
-      queries.push(queryType);
+      } satisfies Ontologies.QueryTypeV2;
     });
-    return queries;
   }
 
   private static discoverPythonQueryTypes(
@@ -507,6 +564,20 @@ export class OntologyIrToFullMetadataConverter {
         typescript.sys,
         projectDir,
       );
+    if (errors.length > 0) {
+      const messages = errors
+        .map((d) =>
+          typescript.flattenDiagnosticMessageText(d.messageText, "\n")
+        )
+        .join("\n");
+      consola.warn(`tsconfig diagnostics in ${projectDir}:\n${messages}`);
+    }
+    if (fileNames.length === 0) {
+      consola.warn(
+        `tsconfig at ${tsConfigFilePath} resolved 0 files `
+          + `(projectDir: ${projectDir}). TypeScript function discovery will find nothing.`,
+      );
+    }
     return typescript.createProgram({
       options,
       rootNames: fileNames,
@@ -1366,7 +1437,12 @@ function discoverComponentRoot(
     tsConfigPath = path.join(path.dirname(functionsDir), "tsconfig.json");
     projectDir = path.dirname(functionsDir);
   }
-  return { tsConfigPath, projectDir };
+  // Normalize to forward slashes for cross-platform consistency with
+  // TypeScript's internal path representation (which always uses '/').
+  return {
+    tsConfigPath: tsConfigPath.replace(/\\/g, "/"),
+    projectDir: projectDir.replace(/\\/g, "/"),
+  };
 }
 
 function isParameterRequired(

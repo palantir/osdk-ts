@@ -1,5 +1,109 @@
 # @osdk/generator
 
+## 2.8.0-beta.28
+
+### Patch Changes
+
+- Updated dependencies [f294f5a]
+- Updated dependencies [d284bf2]
+- Updated dependencies [b68cebd]
+  - @osdk/api@2.8.0-beta.28
+  - @osdk/generator-converters@2.8.0-beta.28
+
+## 2.8.0-beta.27
+
+### Minor Changes
+
+- 7775359: Generate a valid OSDK package for TS
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.27
+- @osdk/generator-converters@2.8.0-beta.27
+
+## 2.8.0-beta.26
+
+### Minor Changes
+
+- 60b5ffb: Add `platformApiName` field to actions to preserve the original API name used by the Foundry platform
+
+### Patch Changes
+
+- Updated dependencies [60b5ffb]
+- Updated dependencies [61e33ab]
+  - @osdk/api@2.8.0-beta.26
+  - @osdk/generator-converters@2.8.0-beta.26
+
+## 2.8.0-beta.25
+
+### Patch Changes
+
+- Updated dependencies [0df859a]
+  - @osdk/api@2.8.0-beta.25
+  - @osdk/generator-converters@2.8.0-beta.25
+
+## 2.8.0-beta.24
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.24
+- @osdk/generator-converters@2.8.0-beta.24
+
+## 2.8.0-beta.23
+
+### Minor Changes
+
+- 4bb9769: Add primaryKeyApiName and primaryKeyType to object type const for runtime access
+
+### Patch Changes
+
+- Updated dependencies [4bb9769]
+  - @osdk/api@2.8.0-beta.23
+  - @osdk/generator-converters@2.8.0-beta.23
+
+## 2.8.0-beta.22
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.22
+- @osdk/generator-converters@2.8.0-beta.22
+
+## 2.8.0-beta.21
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.21
+- @osdk/generator-converters@2.8.0-beta.21
+
+## 2.8.0-beta.20
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.20
+- @osdk/generator-converters@2.8.0-beta.20
+
+## 2.8.0-beta.19
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.19
+- @osdk/generator-converters@2.8.0-beta.19
+
+## 2.8.0-beta.18
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.18
+- @osdk/generator-converters@2.8.0-beta.18
+
+## 2.8.0-beta.17
+
+### Patch Changes
+
+- Updated dependencies [8c30908]
+  - @osdk/api@2.8.0-beta.17
+  - @osdk/generator-converters@2.8.0-beta.17
+
 ## 2.8.0-beta.16
 
 ### Patch Changes

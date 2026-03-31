@@ -160,8 +160,16 @@ export function MultiColumnSortDialog({
             aria-label={`Toggle sort direction for ${item.name}`}
           >
             {item.direction === "asc"
-              ? <SortAlphabetical className={styles.sortIcon} />
-              : <SortAlphabeticalDesc className={styles.sortIcon} />}
+              ? (
+                <SortAlphabetical
+                  className={styles.sortIcon}
+                />
+              )
+              : (
+                <SortAlphabeticalDesc
+                  className={styles.sortIcon}
+                />
+              )}
           </Button>
         </div>
       ),
@@ -176,6 +184,13 @@ export function MultiColumnSortDialog({
       </ActionButton>
     </>
   ), [handleApply, onClose]);
+
+  const handleKeyDown = useCallback(
+    (event: React.KeyboardEvent<HTMLInputElement>) => {
+      event.stopPropagation();
+    },
+    [],
+  );
 
   return (
     <Dialog
@@ -201,7 +216,7 @@ export function MultiColumnSortDialog({
             <span className={styles.addColumnText}>
               Add Column to Sort
             </span>
-            <CaretDown color={"currentColor"} />
+            <CaretDown />
           </Menu.Trigger>
           <Menu.Portal>
             <Menu.Positioner className={styles.menuPositioner} sideOffset={4}>
@@ -212,7 +227,7 @@ export function MultiColumnSortDialog({
                   placeholder="Search columns"
                   aria-label="Search columns to sort"
                   className={styles.menuSearchContainer}
-                  onKeyDown={(e) => e.stopPropagation()}
+                  onKeyDown={handleKeyDown}
                 />
                 {filteredAvailableColumns.map((column) => (
                   <AvailableColumnMenuItem

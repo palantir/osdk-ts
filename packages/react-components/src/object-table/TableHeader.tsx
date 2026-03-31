@@ -22,6 +22,7 @@ import type {
   Table,
   VisibilityState,
 } from "@tanstack/react-table";
+import classNames from "classnames";
 import React, { useCallback, useMemo, useState } from "react";
 import { type ColumnConfig, ColumnConfigDialog } from "./ColumnConfigDialog.js";
 import { MultiColumnSortDialog } from "./MultiColumnSortDialog.js";
@@ -158,7 +159,9 @@ export function TableHeader<
                 <th
                   key={header.id}
                   data-pinned={header.column.getIsPinned()}
-                  className={styles.osdkTableHeaderCell}
+                  className={classNames(styles.osdkTableHeaderCell, {
+                    [styles.osdkTableSelectionHeaderCell]: isSelectColumn,
+                  })}
                   style={columnStyles}
                 >
                   {header.isPlaceholder

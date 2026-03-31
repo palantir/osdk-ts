@@ -14,24 +14,16 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition, PropertyKeys } from "@osdk/api";
-import { useOsdkAggregation } from "@osdk/react/experimental";
 import classnames from "classnames";
-import React, { memo, useCallback, useMemo } from "react";
+import React, { memo, useCallback } from "react";
 import { Checkbox } from "../../../base-components/checkbox/Checkbox.js";
-import {
-  createNullCountAggregateOptions,
-  createNullWhereClause,
-} from "../../utils/aggregationHelpers.js";
 import styles from "./NullValueWrapper.module.css";
 import sharedStyles from "./shared.module.css";
 
-interface NullValueWrapperProps<
-  Q extends ObjectTypeDefinition,
-  K extends PropertyKeys<Q>,
-> {
-  objectType: Q;
-  propertyKey: K;
+interface NullValueWrapperProps {
+  nullCount: number;
+  isLoading: boolean;
+  error?: Error | null;
   includeNull?: boolean;
   onIncludeNullChange: (include: boolean) => void;
   showNullCount?: boolean;
@@ -40,46 +32,17 @@ interface NullValueWrapperProps<
   style?: React.CSSProperties;
 }
 
-function NullValueWrapperInner<
-  Q extends ObjectTypeDefinition,
-  K extends PropertyKeys<Q>,
->({
-  objectType,
-  propertyKey,
+function NullValueWrapperInner({
+  nullCount,
+  isLoading,
+  error,
   includeNull = false,
   onIncludeNullChange,
   showNullCount = true,
   children,
   className,
   style,
-}: NullValueWrapperProps<Q, K>): React.ReactElement {
-  const nullCountAggregateOptions = useMemo(
-    () => createNullCountAggregateOptions<Q>(),
-    [],
-  );
-
-  const nullWhereClause = useMemo(
-    () => createNullWhereClause<Q>(propertyKey as string),
-    [propertyKey],
-  );
-
-  const { data: nullCountData, isLoading, error } = useOsdkAggregation(
-    objectType,
-    {
-      where: nullWhereClause,
-      aggregate: nullCountAggregateOptions,
-    },
-  );
-
-  const nullCount = useMemo(() => {
-    if (!nullCountData) return 0;
-    const result = nullCountData as { $count?: number } | Iterable<unknown>;
-    if ("$count" in result && typeof result.$count === "number") {
-      return result.$count;
-    }
-    return 0;
-  }, [nullCountData]);
-
+}: NullValueWrapperProps): React.ReactElement {
   const handleToggle = useCallback(() => {
     onIncludeNullChange(!includeNull);
   }, [includeNull, onIncludeNullChange]);

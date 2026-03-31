@@ -27,13 +27,12 @@ import type { GenerateContext } from "../GenerateContext/GenerateContext.js";
 import { getObjectImports } from "../shared/getObjectImports.js";
 import { deleteUndefineds } from "../util/deleteUndefineds.js";
 import { stringify } from "../util/stringify.js";
-import { stringUnionFrom } from "../util/stringUnionFrom.js";
 import { formatTs } from "../util/test/formatTs.js";
 import { getDescriptionIfPresent } from "./getDescriptionIfPresent.js";
 
 export async function generatePerActionDataFiles(
   {
-    sanitizedOntology: ontology,
+    ontology,
     fs,
     outDir: rootOutDir,
     importExt = "",
@@ -41,7 +40,6 @@ export async function generatePerActionDataFiles(
     forInternalUse = false,
   }: Pick<
     GenerateContext,
-    | "sanitizedOntology"
     | "fs"
     | "outDir"
     | "importExt"
@@ -60,15 +58,11 @@ export async function generatePerActionDataFiles(
         `${action.shortApiName}.ts`,
       );
 
-      const uniqueApiNamesArray = extractReferencedObjectsFromAction(
-        action.raw,
-      );
-      const uniqueApiNames = new Set(uniqueApiNamesArray);
-
-      const uniqueApiNamesString = stringUnionFrom([...uniqueApiNames]);
-
       const fullActionDef = deleteUndefineds(
-        wireActionTypeV2ToSdkActionMetadata(action.raw),
+        wireActionTypeV2ToSdkActionMetadata(
+          action.raw,
+          action.unsanitizedApiName,
+        ),
       );
 
       function createParamsDef() {

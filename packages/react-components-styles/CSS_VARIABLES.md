@@ -313,9 +313,27 @@ These variables define the purpose of each border type, making it easier to cust
 
 #### Cell Styling
 
-| Variable                     | Default Value                               | Description     |
-| ---------------------------- | ------------------------------------------- | --------------- |
-| `--osdk-table-cell-padding`  | `0 calc(var(--osdk-surface-spacing) * 2)`   | Cell padding    |
+| Variable                     | Default Value                            | Description |
+| ---------------------------- | ---------------------------------------- | ----------- |
+| `--osdk-table-cell-padding`  | `0 calc(var(--osdk-surface-spacing) * 2)` | Cell padding |
+| `--osdk-table-cell-fontSize` | `var(--osdk-typography-size-body-medium)` | Cell text size |
+| `--osdk-table-cell-color`    | `var(--osdk-typography-color-default-rest)` | Cell text color |
+
+#### Editable Cell Styling
+
+| Variable                               | Default Value                              | Description                                         |
+| -------------------------------------- | ------------------------------------------ | --------------------------------------------------- |
+| `--osdk-table-cell-editable-border`   | `var(--osdk-surface-border-width) solid var(--osdk-surface-border-color-strong)` | Border for editable cells in edit mode |
+| `--osdk-table-cell-edited-border`     | `var(--osdk-surface-border-width) solid var(--osdk-intent-primary-rest)` | Border for edited cells with pending changes |
+| `--osdk-table-cell-edited-border-error` | `var(--osdk-surface-border-width) solid var(--osdk-intent-danger-rest)` | Border for cells with validation errors |
+| `--osdk-table-cell-editable-bg`       | `var(--osdk-background-primary)`           | Background for editable cells |
+
+#### Edit Container
+
+| Variable                             | Default Value                                      | Description                                |
+| ------------------------------------ | -------------------------------------------------- | ------------------------------------------ |
+| `--osdk-table-edit-container-padding` | `calc(var(--osdk-surface-spacing) * 2) calc(var(--osdk-surface-spacing) * 4)` | Padding for the edit controls container |
+| `--osdk-table-edit-container-min-height` | `calc(var(--osdk-surface-spacing) * 12)`      | Minimum height for edit controls container |
 | `--osdk-table-cell-fontSize` | `var(--osdk-typography-size-body-medium)`   | Cell text size  |
 | `--osdk-table-cell-color`    | `var(--osdk-typography-color-default-rest)` | Cell text color |
 
@@ -330,6 +348,7 @@ Styling for the column header dropdown menu.
 | `--osdk-table-header-menu-border`       | `var(--osdk-surface-border-width) solid var(--osdk-custom-color-gray-4)` | Menu button border            |
 | `--osdk-table-header-menu-color`        | `var(--osdk-typography-color-muted)`                                     | Menu icon color               |
 | `--osdk-table-header-menu-color-active` | `var(--osdk-typography-color-default-rest)`                              | Menu icon active color        |
+| `--osdk-table-header-menu-icon-color`   | `var(--osdk-table-header-menu-color)`                                    | Menu icon color (chevron)     |
 | `--osdk-table-header-menu-bg-hover`     | `var(--osdk-custom-color-gray-1)`                                        | Menu button hover background  |
 | `--osdk-table-header-menu-bg-active`    | `var(--osdk-custom-color-gray-2)`                                        | Menu button active background |
 
@@ -348,7 +367,6 @@ Styling for column resize handles.
 | ------------------------------------ | --------------------------------------- | ---------------------------------------------------------- |
 | `--osdk-table-skeleton-color-from`   | `var(--osdk-custom-color-light-gray-1)` | Skeleton animation start color (light gray at 40% opacity) |
 | `--osdk-table-skeleton-color-to`     | `var(--osdk-custom-color-gray-4)`       | Skeleton animation end color (medium gray at 40% opacity)  |
-| `--osdk-table-skeleton-border-color` | `var(--osdk-custom-color-light-gray-2)` | Skeleton cell border color (light gray at 60% opacity)     |
 
 #### Column Config Dialog
 
@@ -378,6 +396,12 @@ To create a custom theme, override the tokens at the appropriate level. You can 
     --osdk-table-header-bg: #f0f0f0;
     --osdk-table-row-bg-default: white;
     --osdk-table-border-color: #e0e0e0;
+    
+    /* Customize editable table styling */
+    --osdk-table-cell-editable-border: 1px solid #3b82f6;
+    --osdk-table-cell-edited-border: 2px solid #10b981;
+    --osdk-table-cell-edited-border-error: 2px solid #ef4444;
+    --osdk-table-cell-editable-bg: #f0f9ff;
 
     /* Customize primary intent colors */
     --osdk-intent-primary-rest: #2563eb;

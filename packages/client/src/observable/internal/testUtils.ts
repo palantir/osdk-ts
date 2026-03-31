@@ -448,6 +448,19 @@ export async function waitForCall(
   expect(subFn).toHaveBeenCalledTimes(times);
 }
 
+export async function waitForPayload<T>(
+  observer: MockedObject<Observer<T>>,
+  predicate: (payload: T) => boolean,
+): Promise<T> {
+  await vi.waitFor(() => {
+    const calls = observer.next.mock.calls;
+    expect(calls.length).toBeGreaterThan(0);
+    const last = calls[calls.length - 1][0];
+    expect(predicate(last)).toBe(true);
+  }, { interval: 0 });
+  return observer.next.mock.calls[observer.next.mock.calls.length - 1][0];
+}
+
 export function expectNoMoreCalls(
   observer: MockedObject<
     Observer<any>
@@ -606,7 +619,9 @@ export function linkPayloadContaining(
     ...("totalCount" in x
       ? { totalCount: x.totalCount }
       : {}),
-  } as SpecificLinkPayload;
+    linkedObjectsBySourcePrimaryKey: x.linkedObjectsBySourcePrimaryKey
+      ?? expect.anything(),
+  };
 }
 
 export function applyCustomMatchers(): void {
@@ -681,7 +696,9 @@ export function updateList<T extends ObjectOrInterfaceDefinition>(
       batch,
       rdpConfig,
     );
-    query._updateList(objectCacheKeys, "loaded", batch, false);
+    query._updateList(objectCacheKeys, "loaded", batch, {
+      type: "clientOrdered",
+    });
   });
 }
 

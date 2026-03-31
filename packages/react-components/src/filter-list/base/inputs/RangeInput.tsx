@@ -15,8 +15,6 @@
  */
 
 import { Input } from "@base-ui/react/input";
-import type { ObjectSet, ObjectTypeDefinition, PropertyKeys } from "@osdk/api";
-import { useOsdkAggregation } from "@osdk/react/experimental";
 import classnames from "classnames";
 import { debounce } from "lodash-es";
 import React, {
@@ -29,16 +27,12 @@ import React, {
   useState,
 } from "react";
 import {
-  type AggregationGroupResult,
-  createGroupByAggregateOptions,
-} from "../../utils/aggregationHelpers.js";
-import {
   createHistogramBuckets,
   getMaxBucketCount,
   type HistogramBucket,
 } from "./createHistogramBuckets.js";
 import styles from "./RangeInput.module.css";
-import sharedStyles from "./shared.module.css";
+import { useStableData } from "./useStableData.js";
 
 const DEBOUNCE_MS = 300;
 
@@ -55,39 +49,29 @@ export interface RangeInputConfig<T> {
   inputProps?: React.InputHTMLAttributes<HTMLInputElement>;
 }
 
-export interface RangeInputProps<
-  Q extends ObjectTypeDefinition,
-  K extends PropertyKeys<Q>,
-  T,
-> {
-  objectType: Q;
-  propertyKey: K;
+export interface RangeInputProps<T> {
+  valueCountPairs: Array<{ value: T; count: number }>;
+  isLoading: boolean;
   minValue: T | undefined;
   maxValue: T | undefined;
   onChange: (min: T | undefined, max: T | undefined) => void;
-  objectSet?: ObjectSet<Q>;
   showHistogram?: boolean;
   className?: string;
   style?: React.CSSProperties;
   config: RangeInputConfig<T>;
 }
 
-function RangeInputInner<
-  Q extends ObjectTypeDefinition,
-  K extends PropertyKeys<Q>,
-  T,
->({
-  objectType,
-  propertyKey,
+function RangeInputInner<T>({
+  valueCountPairs,
+  isLoading,
   minValue,
   maxValue,
   onChange,
-  objectSet,
   showHistogram = true,
   className,
   style,
   config,
-}: RangeInputProps<Q, K, T>): React.ReactElement {
+}: RangeInputProps<T>): React.ReactElement {
   const minInputId = useId();
   const maxInputId = useId();
 
@@ -139,42 +123,15 @@ function RangeInputInner<
     };
   }, [debouncedMinChange, debouncedMaxChange]);
 
-  const aggregateOptions = useMemo(
-    () => createGroupByAggregateOptions<Q>(propertyKey as string),
-    [propertyKey],
-  );
-
-  const { data: aggregateData, isLoading } = useOsdkAggregation(objectType, {
-    aggregate: aggregateOptions,
-  });
-
-  const valueCountPairs = useMemo<Array<{ value: T; count: number }>>(() => {
-    if (!aggregateData) return [];
-
-    // Same dynamic $groupBy + $count pattern as usePropertyAggregation
-    const dataArray = aggregateData as AggregationGroupResult;
-
-    const pairs: Array<{ value: T; count: number }> = [];
-    for (const item of dataArray) {
-      const rawValue = item.$group[propertyKey as string];
-      if (rawValue != null) {
-        const parsed = config.parseValue(String(rawValue));
-        if (parsed !== undefined) {
-          pairs.push({ value: parsed, count: item.$count ?? 0 });
-        }
-      }
-    }
-
-    return pairs;
-  }, [aggregateData, propertyKey, config]);
+  const displayPairs = useStableData(valueCountPairs, isLoading);
 
   const computedRange = useMemo(() => {
-    if (valueCountPairs.length === 0) return { min: undefined, max: undefined };
-    const min = valueCountPairs.reduce(
+    if (displayPairs.length === 0) return { min: undefined, max: undefined };
+    const min = displayPairs.reduce(
       (acc, p) => Math.min(acc, config.toNumber(p.value)),
       Infinity,
     );
-    const max = valueCountPairs.reduce(
+    const max = displayPairs.reduce(
       (acc, p) => Math.max(acc, config.toNumber(p.value)),
       -Infinity,
     );
@@ -182,7 +139,7 @@ function RangeInputInner<
       min: config.fromNumber(min),
       max: config.fromNumber(max),
     };
-  }, [valueCountPairs, config]);
+  }, [displayPairs, config]);
 
   const dataRange = useMemo(() => ({
     dataMin: computedRange.min,
@@ -192,7 +149,7 @@ function RangeInputInner<
   const buckets = useMemo<Array<HistogramBucket<T>>>(() => {
     if (
       !showHistogram
-      || valueCountPairs.length === 0
+      || displayPairs.length === 0
       || computedRange.min === undefined
       || computedRange.max === undefined
     ) {
@@ -200,12 +157,12 @@ function RangeInputInner<
     }
 
     return createHistogramBuckets(
-      valueCountPairs,
+      displayPairs,
       { min: computedRange.min, max: computedRange.max },
       config.toNumber,
       config.fromNumber,
     );
-  }, [showHistogram, valueCountPairs, computedRange, config]);
+  }, [showHistogram, displayPairs, computedRange, config]);
 
   const maxBucketCount = useMemo(() => getMaxBucketCount(buckets), [buckets]);
 
@@ -233,8 +190,11 @@ function RangeInputInner<
       style={style}
       data-loading={isLoading}
     >
-      {showHistogram && buckets.length > 0 && (
-        <div className={styles.histogramContainer}>
+      {showHistogram && (
+        <div
+          className={styles.histogramContainer}
+          data-empty={buckets.length === 0}
+        >
           {buckets.map((bucket, index) => {
             const height = (bucket.count / maxBucketCount) * 100;
             const isInRange = (minValue === undefined
@@ -300,12 +260,6 @@ function RangeInputInner<
           />
         </div>
       </div>
-
-      {isLoading && (
-        <div className={sharedStyles.loadingMessage}>
-          Loading...
-        </div>
-      )}
     </div>
   );
 }

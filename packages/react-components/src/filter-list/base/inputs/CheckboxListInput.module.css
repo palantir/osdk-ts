@@ -18,10 +18,26 @@
   display: flex;
   flex-direction: column;
   gap: var(--osdk-filter-checkbox-list-gap);
+  transition: opacity var(--osdk-filter-content-fade-duration);
+}
+
+.checkboxList[data-loading="true"] {
+  opacity: 0.5;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .checkboxList {
+    transition: none;
+  }
 }
 
 .checkboxRow {
   padding: var(--osdk-filter-checkbox-row-padding);
+  border-radius: var(--osdk-filter-checkbox-row-border-radius);
+
+  &:hover {
+    background: var(--osdk-filter-checkbox-row-bg-hover);
+  }
 }
 
 .checkboxLabel {
@@ -39,4 +55,11 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.colorDot {
+  width: var(--osdk-filter-checkbox-color-dot-size);
+  height: var(--osdk-filter-checkbox-color-dot-size);
+  border-radius: 50%;
+  flex-shrink: 0;
 }

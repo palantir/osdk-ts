@@ -1,0 +1,9 @@
+{
+  "extends": ["//"],
+  "tasks": {
+    "build": {
+      "dependsOn": ["transpile", "transpileTypes", "typecheck", "@osdk/ontology-explorer-app#build"],
+      "outputs": ["build/site/**"]
+    }
+  }
+}

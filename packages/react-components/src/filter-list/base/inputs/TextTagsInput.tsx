@@ -15,16 +15,10 @@
  */
 
 import { Button } from "@base-ui/react/button";
-import type {
-  ObjectSet,
-  ObjectTypeDefinition,
-  PropertyKeys,
-  WhereClause,
-} from "@osdk/api";
 import classnames from "classnames";
 import React, { memo, useCallback, useMemo, useState } from "react";
 import { Combobox } from "../../../base-components/combobox/Combobox.js";
-import { usePropertyAggregation } from "../../hooks/usePropertyAggregation.js";
+import type { PropertyAggregationValue } from "../../types/AggregationTypes.js";
 import sharedStyles from "./shared.module.css";
 import styles from "./TextTagsInput.module.css";
 
@@ -55,45 +49,34 @@ const TagItem = memo(function TagItem({ tag, onRemove }: TagItemProps) {
   );
 });
 
-interface TextTagsInputProps<
-  Q extends ObjectTypeDefinition,
-  K extends PropertyKeys<Q>,
-> {
-  objectType: Q;
-  propertyKey: K;
+interface TextTagsInputProps {
+  suggestions: PropertyAggregationValue[];
+  isLoading: boolean;
+  error: Error | null;
   tags: string[];
   onChange: (tags: string[]) => void;
-  objectSet?: ObjectSet<Q>;
-  whereClause?: WhereClause<Q>;
   className?: string;
   style?: React.CSSProperties;
   placeholder?: string;
   allowCustomTags?: boolean;
   suggestionLimit?: number;
+  ariaLabel?: string;
 }
 
-function TextTagsInputInner<
-  Q extends ObjectTypeDefinition,
-  K extends PropertyKeys<Q>,
->({
-  objectType,
-  propertyKey,
+function TextTagsInputInner({
+  suggestions,
+  isLoading,
+  error,
   tags,
   onChange,
-  whereClause,
   className,
   style,
   placeholder = "Add a tag...",
   allowCustomTags = true,
   suggestionLimit = 10,
-}: TextTagsInputProps<Q, K>): React.ReactElement {
+  ariaLabel = "Add tag",
+}: TextTagsInputProps): React.ReactElement {
   const [inputValue, setInputValue] = useState("");
-
-  const { data: suggestions, isLoading, error } = usePropertyAggregation(
-    objectType,
-    propertyKey,
-    { limit: suggestionLimit ?? 0, where: whereClause },
-  );
 
   const filteredSuggestions = useMemo(() => {
     if (!suggestionLimit) return [];
@@ -201,12 +184,12 @@ function TextTagsInputInner<
           </div>
         )}
 
-        <Combobox.Input
+        <Combobox.SearchInput
           className={styles.input}
           placeholder={tags.length > 0 ? "" : placeholder}
           onKeyDown={handleKeyDown}
           onPaste={handlePaste}
-          aria-label={`Add ${propertyKey} tag`}
+          aria-label={ariaLabel}
         />
 
         <Combobox.Portal>

@@ -1,29 +1,53 @@
 import type { DerivedProperty, Osdk } from "@osdk/api";
 import type { ColumnDefinition } from "@osdk/react-components/experimental";
 import { ObjectTable } from "@osdk/react-components/experimental";
-import { useCallback } from "react";
+import React, { useCallback } from "react";
 import { $ } from "../../foundryClient.js";
-import { Employee } from "../../generatedNoCheck2/index.js";
+import {
+  Employee,
+  getEmployeeDaysSinceStart,
+} from "../../generatedNoCheck2/index.js";
 
 type RDPs = {
   managerName: "string";
+};
+
+type FunctionColumns = {
+  daysSinceStart: typeof getEmployeeDaysSinceStart;
 };
 
 const columnDefinitions: Array<
   ColumnDefinition<
     Employee,
     RDPs,
-    {}
+    FunctionColumns
   >
 > = [
-  // With renderHeader prop
   {
     locator: {
       type: "property",
       id: "fullName",
     },
     columnName: "My Name",
-    editable: true,
+    validateEdit: async (value: unknown) => {
+      if (typeof value !== "string" || !value.trim()) {
+        return "Name cannot be empty";
+      }
+      return undefined;
+    },
+  },
+  // Function-backed column
+  {
+    locator: {
+      type: "function" as const,
+      id: "daysSinceStart" as const,
+      queryDefinition: getEmployeeDaysSinceStart,
+      getFunctionParams: (objectSet: any) => ({ employees: objectSet }),
+      getKey: (obj: any) => `${obj.$objectType}:${obj.$primaryKey}`,
+      getValue: (data: any) => data.daysSinceStart,
+    } as any,
+    columnName: "Days Since Start",
+    width: 150,
   },
   {
     locator: {
@@ -31,13 +55,10 @@ const columnDefinitions: Array<
       id: "employeeNumber",
     },
     columnName: "Employee Number",
-    editable: false,
   },
   {
     locator: { type: "property", id: "jobTitle" },
-    editable: true,
   },
-  // With renderHeader, renderCell, width prop
   {
     locator: { type: "property", id: "firstFullTimeStartDate" },
     width: 300,
@@ -89,9 +110,7 @@ export function EmployeesTable() {
     [],
   );
 
-  const employeeOS = $(Employee).where({
-    fullName: { $eq: "Jane Doe" },
-  });
+  const os = $(Employee);
 
   return (
     <div
@@ -100,8 +119,8 @@ export function EmployeesTable() {
         overflow: "hidden",
       }}
     >
-      <ObjectTable<Employee, RDPs>
-        objectSet={employeeOS}
+      <ObjectTable<Employee, RDPs, FunctionColumns>
+        objectSet={os}
         objectType={Employee}
         columnDefinitions={columnDefinitions}
         selectionMode={"multiple"}
@@ -110,6 +129,7 @@ export function EmployeesTable() {
           direction: "desc",
         }]}
         onSubmitEdits={handleSubmitEdits}
+        editMode="manual"
       />
     </div>
   );

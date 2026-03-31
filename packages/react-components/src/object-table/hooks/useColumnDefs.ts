@@ -131,15 +131,18 @@ function getColumnsFromColumnDefinitions<
       header: renderHeader ?? (columnName || propertyMetadata?.displayName),
       meta: {
         columnName: columnName || propertyMetadata?.displayName,
+        isAsyncColumn: locator.type === "function",
         isVisible: col.isVisible !== false,
         editable,
         dataType,
+        validateEdit: col.validateEdit,
       },
       size: width,
       ...(minWidth ? { minSize: minWidth } : {}),
       ...(maxWidth ? { maxSize: maxWidth } : {}),
       enableResizing: resizable,
-      enableSorting: orderable,
+      // Function-backed columns must be sorted on the frontend, so disable sorting for now
+      enableSorting: locator.type === "function" ? false : orderable,
       enableColumnFilter: filterable,
       cell: (cellContext) => {
         const object: Osdk.Instance<

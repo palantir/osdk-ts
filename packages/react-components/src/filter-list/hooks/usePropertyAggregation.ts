@@ -16,6 +16,7 @@
 
 import type {
   AggregateOpts,
+  ObjectSet,
   ObjectTypeDefinition,
   PropertyKeys,
   WhereClause,
@@ -24,11 +25,9 @@ import { useOsdkAggregation } from "@osdk/react/experimental";
 import { useMemo } from "react";
 import type { AggregationGroupResult } from "../utils/aggregationHelpers.js";
 
-export interface PropertyAggregationValue {
-  value: string;
-  count: number;
-  isNull?: boolean;
-}
+export type { PropertyAggregationValue } from "../types/AggregationTypes.js";
+
+import type { PropertyAggregationValue } from "../types/AggregationTypes.js";
 
 export interface UsePropertyAggregationResult {
   data: PropertyAggregationValue[];
@@ -50,6 +49,7 @@ export function usePropertyAggregation<
 >(
   objectType: Q,
   propertyKey: K,
+  objectSet: ObjectSet<Q>,
   options?: UsePropertyAggregationOptions<Q>,
 ): UsePropertyAggregationResult {
   // AggregateOpts requires specific property keys from Q, but we're dynamically
@@ -70,6 +70,7 @@ export function usePropertyAggregation<
   const { data: countData, isLoading, error } = useOsdkAggregation(objectType, {
     aggregate: aggregateOptions,
     where: options?.where,
+    objectSet,
   });
 
   const result = useMemo(

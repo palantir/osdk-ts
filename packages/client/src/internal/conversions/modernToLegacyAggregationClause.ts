@@ -21,6 +21,15 @@ const directionFieldMap = (dir?: "asc" | "desc" | "unordered") =>
   dir === "asc" ? "ASC" : dir === "desc" ? "DESC" : undefined;
 
 /** @internal */
+export function splitAggregationKey(key: string): {
+  property: string;
+  metric: string;
+} {
+  const colonPos = key.lastIndexOf(":");
+  return { property: key.slice(0, colonPos), metric: key.slice(colonPos + 1) };
+}
+
+/** @internal */
 export function modernToLegacyAggregationClause<
   AC extends AggregationClause<any>,
 >(select: AC) {
@@ -34,9 +43,7 @@ export function modernToLegacyAggregationClause<
         };
       }
 
-      const colonPos = propAndMetric.lastIndexOf(":");
-      const property = propAndMetric.slice(0, colonPos);
-      const metric = propAndMetric.slice(colonPos + 1);
+      const { property, metric } = splitAggregationKey(propAndMetric);
 
       return [
         {

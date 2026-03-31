@@ -17,6 +17,7 @@
 import type { HeaderGroup, RowData, Table } from "@tanstack/react-table";
 import classNames from "classnames";
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { SkeletonBar } from "../base-components/skeleton/SkeletonBar.js";
 import loadingStyles from "./LoadingCell.module.css";
 import { LoadingRow } from "./LoadingRow.js";
 import bodyStyles from "./TableBody.module.css";
@@ -103,7 +104,7 @@ export function LoadingStateTable<TData extends RowData>({
                     className={headerStyles.osdkTableHeaderCell}
                     style={{ width }}
                   >
-                    <div
+                    <SkeletonBar
                       className={classNames(
                         headerStyles.osdkLoadingHeaderCell,
                         loadingStyles.osdkCellSkeleton,

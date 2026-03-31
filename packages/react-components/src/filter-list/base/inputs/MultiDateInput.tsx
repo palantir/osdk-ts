@@ -22,7 +22,7 @@ import {
   formatDateForDisplay,
   formatDateForInput,
   parseDateFromInput,
-} from "./dateUtils.js";
+} from "../../../shared/dateUtils.js";
 import styles from "./MultiDateInput.module.css";
 import sharedStyles from "./shared.module.css";
 

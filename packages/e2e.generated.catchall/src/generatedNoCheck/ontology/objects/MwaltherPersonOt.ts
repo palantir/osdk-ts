@@ -65,6 +65,8 @@ export interface MwaltherPersonOt extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'MwaltherPersonOt';
+  primaryKeyApiName: 'id';
+  primaryKeyType: 'string';
   __DefinitionMetadata?: {
     objectSet: MwaltherPersonOt.ObjectSet;
     props: MwaltherPersonOt.Props;
@@ -160,6 +162,8 @@ export const MwaltherPersonOt = {
   type: 'object',
   apiName: 'MwaltherPersonOt',
   osdkMetadata: $osdkMetadata,
+  primaryKeyApiName: 'id',
+  primaryKeyType: 'string',
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.object-type.4ee4fa8d-e080-4317-be09-5e900223f4d5',
   },

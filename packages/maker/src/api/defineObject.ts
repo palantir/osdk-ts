@@ -16,6 +16,12 @@
 
 import invariant from "tiny-invariant";
 import { getObject } from "../conversion/toMarketplace/convertLink.js";
+import {
+  API_NAME_PATTERN,
+  isValidApiName,
+  isValidObjectApiName,
+  OBJECT_API_NAME_PATTERN,
+} from "../util/ApiNameValidator.js";
 import { cloneDefinition } from "./cloneDefinition.js";
 import { OntologyEntityTypeEnum } from "./common/OntologyEntityTypeEnum.js";
 import {
@@ -52,8 +58,6 @@ const ISO_8601_DURATION =
 const ISO_8601_DATETIME =
   /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|[+-]\d{2}:\d{2})?)?$/;
 
-const API_NAME_PATTERN = /^([a-zA-Z][a-zA-Z0-9\\-]*)$/;
-
 export function defineObject(
   objectDefInput: ObjectTypeDefinition,
 ): ObjectTypeDefinition {
@@ -71,9 +75,15 @@ export function defineObject(
     );
   }
   invariant(
-    API_NAME_PATTERN.test(objectDef.apiName),
-    `Invalid API name ${objectDef.apiName}. API names must match the regex ${API_NAME_PATTERN}.`,
+    isValidObjectApiName(objectDef.apiName),
+    `Invalid API name ${objectDef.apiName}. API names must match the regex ${OBJECT_API_NAME_PATTERN}.`,
   );
+  propertyApiNames.forEach(apiName => {
+    invariant(
+      isValidApiName(apiName),
+      `Invalid API name ${apiName} for property on object ${objectDef.apiName}. API names must match the regex ${API_NAME_PATTERN}.`,
+    );
+  });
   invariant(
     propertyApiNames.includes(objectDef.titlePropertyApiName),
     `Title property ${objectDef.titlePropertyApiName} is not defined on object ${objectDef.apiName}`,
@@ -87,6 +97,19 @@ export function defineObject(
     !(objectDef.properties?.[objectDef.primaryKeyPropertyApiName]?.editOnly),
     `Primary key property ${objectDef.primaryKeyPropertyApiName} on object ${objectDef.apiName} cannot be edit-only`,
   );
+
+  if (objectDef.includeEmptyBackingDatasource && objectDef.datasources) {
+    const nonDatasetDatasources = objectDef.datasources.filter(
+      ds => ds.type !== "dataset",
+    );
+    invariant(
+      nonDatasetDatasources.length === 0,
+      `Object type "${objectDef.apiName}" has non-dataset datasources (${
+        nonDatasetDatasources.map(ds => ds.type).join(", ")
+      }) and cannot use includeEmptyBackingDatasource. `
+        + `Empty backing datasources are only supported for object types with dataset datasources.`,
+    );
+  }
 
   const retentionPeriods =
     ((objectDef.datasources ?? []).filter(ds =>

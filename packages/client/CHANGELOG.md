@@ -1,5 +1,143 @@
 # @osdk/client
 
+## 2.8.0-beta.28
+
+### Minor Changes
+
+- f294f5a: Remove literal support before GA.
+- 2855223: fix autoFetchMore not working when another subscriber creates the shared query first
+- d284bf2: add media types, caching, and metadata query
+
+### Patch Changes
+
+- Updated dependencies [f294f5a]
+- Updated dependencies [d284bf2]
+- Updated dependencies [b68cebd]
+  - @osdk/api@2.8.0-beta.28
+  - @osdk/client.unstable@2.8.0-beta.28
+  - @osdk/generator-converters@2.8.0-beta.28
+
+## 2.8.0-beta.27
+
+### Minor Changes
+
+- fceb4ce: Fix canonicalization for order-independent where clauses and orderBy keys, add ObjectSetArrayCanonicalizer for set operations, improve ObjectSetQuery with in-memory updates and deletion handling
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.27
+- @osdk/client.unstable@2.8.0-beta.27
+- @osdk/generator-converters@2.8.0-beta.27
+
+## 2.8.0-beta.26
+
+### Minor Changes
+
+- 599426b: expose $loadPropertySecurityMetadata option in observable client and react hooks
+- 60b5ffb: Add `platformApiName` field to actions to preserve the original API name used by the Foundry platform
+- 61e33ab: Add support for interval queries
+
+### Patch Changes
+
+- Updated dependencies [60b5ffb]
+- Updated dependencies [61e33ab]
+  - @osdk/api@2.8.0-beta.26
+  - @osdk/generator-converters@2.8.0-beta.26
+  - @osdk/client.unstable@2.8.0-beta.26
+
+## 2.8.0-beta.25
+
+### Patch Changes
+
+- Updated dependencies [0df859a]
+  - @osdk/api@2.8.0-beta.25
+  - @osdk/client.unstable@2.8.0-beta.25
+  - @osdk/generator-converters@2.8.0-beta.25
+
+## 2.8.0-beta.24
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.24
+- @osdk/client.unstable@2.8.0-beta.24
+- @osdk/generator-converters@2.8.0-beta.24
+
+## 2.8.0-beta.23
+
+### Patch Changes
+
+- Updated dependencies [4bb9769]
+  - @osdk/api@2.8.0-beta.23
+  - @osdk/client.unstable@2.8.0-beta.23
+  - @osdk/generator-converters@2.8.0-beta.23
+
+## 2.8.0-beta.22
+
+### Minor Changes
+
+- cbfa135: Fix aggregation return type for empty object sets
+- f4604c2: fix aggregate endpoint errors crashing instead of surfacing server error
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.22
+- @osdk/client.unstable@2.8.0-beta.22
+- @osdk/generator-converters@2.8.0-beta.22
+
+## 2.8.0-beta.21
+
+### Minor Changes
+
+- c40444b: Add linkedObjectsBySourcePrimaryKey to link observation responses
+- dda14be: Fix pagination sort shuffling by using declarative update types
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.21
+- @osdk/client.unstable@2.8.0-beta.21
+- @osdk/generator-converters@2.8.0-beta.21
+
+## 2.8.0-beta.20
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.20
+- @osdk/client.unstable@2.8.0-beta.20
+- @osdk/generator-converters@2.8.0-beta.20
+
+## 2.8.0-beta.19
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.19
+- @osdk/client.unstable@2.8.0-beta.19
+- @osdk/generator-converters@2.8.0-beta.19
+
+## 2.8.0-beta.18
+
+### Minor Changes
+
+- c8384de: Add experimental branch param.
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.18
+- @osdk/client.unstable@2.8.0-beta.18
+- @osdk/generator-converters@2.8.0-beta.18
+
+## 2.8.0-beta.17
+
+### Minor Changes
+
+- 8c30908: Add support for lt and gt strings.
+
+### Patch Changes
+
+- Updated dependencies [8c30908]
+  - @osdk/api@2.8.0-beta.17
+  - @osdk/client.unstable@2.8.0-beta.17
+  - @osdk/generator-converters@2.8.0-beta.17
+
 ## 2.8.0-beta.16
 
 ### Minor Changes

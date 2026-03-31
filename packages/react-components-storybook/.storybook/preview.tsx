@@ -17,7 +17,7 @@
 import { createClient } from "@osdk/client";
 import { OsdkProvider2 } from "@osdk/react/experimental";
 import { withThemeByDataAttribute } from "@storybook/addon-themes";
-import type { Preview } from "@storybook/react";
+import type { Preview } from "@storybook/react-vite";
 import { initialize, mswLoader } from "msw-storybook-addon";
 import { fauxFoundry, setupFauxFoundry } from "../src/mocks/fauxFoundry.js";
 import "./styles.css";
@@ -38,8 +38,8 @@ initialize({
   // Wait for the service worker to be ready before rendering
   waitUntilReady: true,
 });
-setupFauxFoundry();
-// Create client after MSW is initialized
+const fauxFoundryReady = setupFauxFoundry();
+// Create client — only needs baseUrl/ontologyRid, not registered data
 const mockClient = createClient(
   fauxFoundry.baseUrl,
   fauxFoundry.defaultOntologyRid,
@@ -65,7 +65,9 @@ const preview: Preview = {
       handlers: fauxFoundry.handlers,
     },
   },
-  loaders: [mswLoader],
+  loaders: [async () => {
+    await fauxFoundryReady;
+  }, mswLoader],
   decorators: [
     (Story) => (
       <div className="root">

@@ -14,54 +14,50 @@
  * limitations under the License.
  */
 
-import type {
-  ObjectSet,
-  ObjectTypeDefinition,
-  PropertyKeys,
-  WhereClause,
-} from "@osdk/api";
 import classnames from "classnames";
 import React, { memo, useCallback, useMemo } from "react";
 import { Checkbox } from "../../../base-components/checkbox/Checkbox.js";
-import { usePropertyAggregation } from "../../hooks/usePropertyAggregation.js";
+import type { PropertyAggregationValue } from "../../types/AggregationTypes.js";
+import { filterValuesBySearch } from "../../utils/filterValues.js";
 import styles from "./CheckboxListInput.module.css";
+import { CheckboxListSkeleton } from "./CheckboxListSkeleton.js";
 import sharedStyles from "./shared.module.css";
+import { useStableData } from "./useStableData.js";
 
-interface CheckboxListInputProps<
-  Q extends ObjectTypeDefinition,
-  K extends PropertyKeys<Q>,
-> {
-  objectType: Q;
-  propertyKey: K;
+interface CheckboxListInputProps {
+  values: PropertyAggregationValue[];
+  isLoading: boolean;
+  error: Error | null;
   selectedValues: string[];
   onChange: (selectedValues: string[]) => void;
-  objectSet?: ObjectSet<Q>;
-  whereClause?: WhereClause<Q>;
+  colorMap?: Record<string, string>;
+  searchQuery?: string;
   className?: string;
   style?: React.CSSProperties;
 }
 
-function CheckboxListInputInner<
-  Q extends ObjectTypeDefinition,
-  K extends PropertyKeys<Q>,
->({
-  objectType,
-  propertyKey,
+function CheckboxListInputInner({
+  values,
+  isLoading,
+  error,
   selectedValues,
   onChange,
-  whereClause,
+  colorMap,
+  searchQuery,
   className,
   style,
-}: CheckboxListInputProps<Q, K>): React.ReactElement {
-  const { data, isLoading, error } = usePropertyAggregation(
-    objectType,
-    propertyKey,
-    { where: whereClause },
-  );
+}: CheckboxListInputProps): React.ReactElement {
+  const stableValues = useStableData(values, isLoading);
 
-  const values = useMemo(
-    () => data.map((item) => item.value),
-    [data],
+  const displayValues = useMemo(
+    () => {
+      const allValues = stableValues.map((item) => item.value);
+      if (searchQuery) {
+        return filterValuesBySearch(allValues, searchQuery, (v) => v);
+      }
+      return allValues;
+    },
+    [stableValues, searchQuery],
   );
 
   const selectedSet = useMemo(
@@ -84,7 +80,7 @@ function CheckboxListInputInner<
     <div
       className={classnames(styles.checkboxList, className)}
       style={style}
-      data-loading={isLoading}
+      data-loading={isLoading && displayValues.length > 0}
     >
       {error && (
         <div className={sharedStyles.errorMessage}>
@@ -92,42 +88,43 @@ function CheckboxListInputInner<
         </div>
       )}
 
-      {!error && values.length === 0 && (
+      {!error && displayValues.length === 0 && isLoading && (
+        <CheckboxListSkeleton />
+      )}
+      {!error && displayValues.length === 0 && !isLoading && (
         <div className={sharedStyles.emptyMessage}>
-          {isLoading ? "Loading values..." : "No values available"}
+          No values available
         </div>
       )}
 
-      {(values.length > 0 || isLoading) && (
-        <>
-          {isLoading && (
-            <div className={sharedStyles.loadingMessage}>
-              Updating...
-            </div>
-          )}
-          {values.map((value) => {
-            const isSelected = selectedSet.has(value);
+      {displayValues.map((value) => {
+        const isSelected = selectedSet.has(value);
+        const color = colorMap?.[value];
 
-            return (
-              <div
-                key={value}
-                className={styles.checkboxRow}
-                data-selected={isSelected}
-              >
-                <label className={styles.checkboxLabel}>
-                  <Checkbox
-                    checked={isSelected}
-                    onCheckedChange={() => toggleValue(value)}
-                  />
-                  <span className={styles.valueText}>
-                    {value}
-                  </span>
-                </label>
-              </div>
-            );
-          })}
-        </>
-      )}
+        return (
+          <div
+            key={value}
+            className={styles.checkboxRow}
+            data-selected={isSelected}
+          >
+            <label className={styles.checkboxLabel}>
+              <Checkbox
+                checked={isSelected}
+                onCheckedChange={() => toggleValue(value)}
+              />
+              {color && (
+                <span
+                  className={styles.colorDot}
+                  style={{ backgroundColor: color }}
+                />
+              )}
+              <span className={styles.valueText}>
+                {value}
+              </span>
+            </label>
+          </div>
+        );
+      })}
     </div>
   );
 }

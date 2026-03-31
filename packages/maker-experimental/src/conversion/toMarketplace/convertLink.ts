@@ -28,6 +28,7 @@ import type {
 } from "@osdk/maker";
 import {
   cleanAndValidateLinkTypeId,
+  getImportedTypes,
   getOntologyDefinition,
   OntologyEntityTypeEnum,
 } from "@osdk/maker";
@@ -134,6 +135,12 @@ export function convertLink(
       toManyObjectApiName,
     );
 
+    const columnA = manyObject.primaryKeyPropertyApiName;
+    const columnB = toManyObject.primaryKeyPropertyApiName;
+    const hasCollision = columnA === columnB;
+    const resolvedColumnA = hasCollision ? `${columnA}_from` : columnA;
+    const resolvedColumnB = hasCollision ? `${columnB}_to` : columnB;
+
     definition = {
       type: "manyToMany",
       manyToMany: {
@@ -153,22 +160,22 @@ export function convertLink(
     };
 
     datasource = {
-      rid: ridGenerator.generateRid(`datasource.link.${linkType.apiName}`),
+      rid: ridGenerator.generateDatasourceRid(linkType.apiName),
       datasource: {
         type: "dataset",
         dataset: {
           // TODO: Add proper branchId from link configuration
           branchId: "main",
-          datasetRid: ridGenerator.generateRid(
-            `link.dataset.${linkType.apiName}`,
+          datasetRid: ridGenerator.generateDatasourceRid(
+            linkType.apiName,
           ),
           writebackDatasetRid: undefined,
           // TODO: Convert property mappings to use property RIDs as keys
           objectTypeAPrimaryKeyMapping: {
-            [manyPkRidA]: manyObject.primaryKeyPropertyApiName,
+            [manyPkRidA]: resolvedColumnA,
           },
           objectTypeBPrimaryKeyMapping: {
-            [manyPkRidB]: toManyObject.primaryKeyPropertyApiName,
+            [manyPkRidB]: resolvedColumnB,
           },
         },
       },
@@ -288,7 +295,8 @@ export function getObject(
 ): { apiName: string; object: ObjectType } {
   const objectApiName = typeof object === "string" ? object : object.apiName;
   const fullObject =
-    getOntologyDefinition()[OntologyEntityTypeEnum.OBJECT_TYPE][objectApiName];
+    getOntologyDefinition()[OntologyEntityTypeEnum.OBJECT_TYPE][objectApiName]
+      ?? getImportedTypes()[OntologyEntityTypeEnum.OBJECT_TYPE][objectApiName];
   invariant(
     fullObject !== undefined,
     `Object ${objectApiName} is not defined`,

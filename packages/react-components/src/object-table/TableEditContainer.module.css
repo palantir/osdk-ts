@@ -30,6 +30,15 @@
   padding: calc(var(--osdk-surface-spacing) * 2) 0;
 }
 
+.editsInfoContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: row;
+  gap: calc(var(--osdk-surface-spacing) * 3);
+  font-size: var(--osdk-typography-size-body-small);
+}
+
 .modificationCount {
   color: var(--osdk-intent-primary-rest);
   font-size: var(--osdk-typography-size-body-small);
@@ -41,4 +50,22 @@
   justify-content: flex-end;
   gap: 8px;
   flex: 1;
+}
+
+.validationError {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--osdk-surface-spacing) * 2);
+  color: var(--osdk-intent-danger-rest);
+}
+
+.errorIcon {
+  color: var(--osdk-intent-danger-rest);
+}
+
+.divider {
+  width: 1px;
+  height: 8px;
+  background-color: var(--osdk-surface-border-color-default);
+  align-self: center;
 }

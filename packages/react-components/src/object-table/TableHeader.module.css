@@ -34,6 +34,7 @@
   display: flex;
   width: max-content;
   min-width: 100%;
+  border-top: var(--osdk-table-border);
   border-bottom: var(--osdk-table-border);
 }
 
@@ -46,7 +47,6 @@
   font-weight: var(--osdk-table-header-fontWeight);
   font-size: var(--osdk-table-header-fontSize);
   color: var(--osdk-table-header-color);
-  border-top: var(--osdk-table-border);
   border-right: var(--osdk-table-header-divider);
   background-color: inherit;
 
@@ -55,7 +55,7 @@
   }
 
   &:last-child {
-    border-right: var(--osdk-table-border);
+    border-right: none;
   }
 }
 
@@ -78,8 +78,9 @@
   border-left: var(--osdk-table-pinned-column-border);
 }
 
-.osdkTableHeaderCell:has([role="checkbox"]) {
+.osdkTableSelectionHeaderCell {
   justify-content: center;
+  padding: 0;
 }
 
 .osdkTableHeaderResizer {

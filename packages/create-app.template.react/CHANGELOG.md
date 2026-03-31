@@ -1,5 +1,29 @@
 # @osdk/create-app.template.react
 
+## 2.8.0-beta.28
+
+## 2.8.0-beta.27
+
+## 2.8.0-beta.26
+
+## 2.8.0-beta.25
+
+## 2.8.0-beta.24
+
+## 2.8.0-beta.23
+
+## 2.8.0-beta.22
+
+## 2.8.0-beta.21
+
+## 2.8.0-beta.20
+
+## 2.8.0-beta.19
+
+## 2.8.0-beta.18
+
+## 2.8.0-beta.17
+
 ## 2.8.0-beta.16
 
 ### Minor Changes

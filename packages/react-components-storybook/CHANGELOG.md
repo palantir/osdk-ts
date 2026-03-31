@@ -1,5 +1,43 @@
 # @osdk/react-components-storybook
 
+## 0.2.0-beta.10
+
+### Patch Changes
+
+- Updated dependencies [b68cebd]
+  - @osdk/faux@0.6.0-beta.6
+
+## 0.2.0-beta.9
+
+### Minor Changes
+
+- 336a013: refactor(pdf): rename BasePdfRenderer/PdfRenderer to BasePdfViewer/PdfViewer, rename downloadEnabled to enableDownload, expose internal hooks, add onDownload result callback for download success/failure
+
+## 0.2.0-beta.8
+
+### Minor Changes
+
+- 7a3c43d: feat(pdf): pdf-viewer component
+
+## 0.2.0-beta.7
+
+### Minor Changes
+
+- 05618c3: Add validation state to editable cell
+
+## 0.2.0-beta.6
+
+### Patch Changes
+
+- Updated dependencies [4da867d]
+  - @osdk/faux@0.6.0-beta.5
+
+## 0.2.0-beta.5
+
+### Minor Changes
+
+- 02a095b: Support select all in controlled mode
+
 ## 0.2.0-beta.4
 
 ### Minor Changes

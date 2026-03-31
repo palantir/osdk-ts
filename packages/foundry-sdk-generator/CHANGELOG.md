@@ -1,5 +1,153 @@
 # @osdk/foundry-sdk-generator
 
+## 2.8.0-beta.28
+
+### Patch Changes
+
+- Updated dependencies [f294f5a]
+- Updated dependencies [2855223]
+- Updated dependencies [d284bf2]
+- Updated dependencies [b68cebd]
+  - @osdk/client@2.8.0-beta.28
+  - @osdk/api@2.8.0-beta.28
+  - @osdk/client.unstable@2.8.0-beta.28
+  - @osdk/generator-utils@2.8.0-beta.28
+  - @osdk/generator@2.8.0-beta.28
+
+## 2.8.0-beta.27
+
+### Patch Changes
+
+- Updated dependencies [fceb4ce]
+- Updated dependencies [7775359]
+  - @osdk/client@2.8.0-beta.27
+  - @osdk/generator@2.8.0-beta.27
+  - @osdk/api@2.8.0-beta.27
+  - @osdk/client.unstable@2.8.0-beta.27
+  - @osdk/generator-utils@2.8.0-beta.27
+
+## 2.8.0-beta.26
+
+### Patch Changes
+
+- Updated dependencies [599426b]
+- Updated dependencies [60b5ffb]
+- Updated dependencies [61e33ab]
+  - @osdk/client@2.8.0-beta.26
+  - @osdk/api@2.8.0-beta.26
+  - @osdk/generator@2.8.0-beta.26
+  - @osdk/client.unstable@2.8.0-beta.26
+  - @osdk/generator-utils@2.8.0-beta.26
+
+## 2.8.0-beta.25
+
+### Patch Changes
+
+- Updated dependencies [0df859a]
+  - @osdk/api@2.8.0-beta.25
+  - @osdk/client@2.8.0-beta.25
+  - @osdk/client.unstable@2.8.0-beta.25
+  - @osdk/generator-utils@2.8.0-beta.25
+  - @osdk/generator@2.8.0-beta.25
+
+## 2.8.0-beta.24
+
+### Minor Changes
+
+- 4df8696: Validate --linkTypes references missing object types in foundry-sdk-generator
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.24
+- @osdk/client.unstable@2.8.0-beta.24
+- @osdk/client@2.8.0-beta.24
+- @osdk/generator-utils@2.8.0-beta.24
+- @osdk/generator@2.8.0-beta.24
+
+## 2.8.0-beta.23
+
+### Patch Changes
+
+- Updated dependencies [4bb9769]
+  - @osdk/api@2.8.0-beta.23
+  - @osdk/generator@2.8.0-beta.23
+  - @osdk/client@2.8.0-beta.23
+  - @osdk/client.unstable@2.8.0-beta.23
+  - @osdk/generator-utils@2.8.0-beta.23
+
+## 2.8.0-beta.22
+
+### Patch Changes
+
+- Updated dependencies [cbfa135]
+- Updated dependencies [f4604c2]
+  - @osdk/client@2.8.0-beta.22
+  - @osdk/api@2.8.0-beta.22
+  - @osdk/client.unstable@2.8.0-beta.22
+  - @osdk/generator-utils@2.8.0-beta.22
+  - @osdk/generator@2.8.0-beta.22
+
+## 2.8.0-beta.21
+
+### Patch Changes
+
+- Updated dependencies [c40444b]
+- Updated dependencies [dda14be]
+  - @osdk/client@2.8.0-beta.21
+  - @osdk/api@2.8.0-beta.21
+  - @osdk/client.unstable@2.8.0-beta.21
+  - @osdk/generator-utils@2.8.0-beta.21
+  - @osdk/generator@2.8.0-beta.21
+
+## 2.8.0-beta.20
+
+### Minor Changes
+
+- 16e5112: Update package lock
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.20
+- @osdk/client.unstable@2.8.0-beta.20
+- @osdk/client@2.8.0-beta.20
+- @osdk/generator-utils@2.8.0-beta.20
+- @osdk/generator@2.8.0-beta.20
+
+## 2.8.0-beta.19
+
+### Minor Changes
+
+- ad0bf7d: Fix generator
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.19
+- @osdk/client.unstable@2.8.0-beta.19
+- @osdk/client@2.8.0-beta.19
+- @osdk/generator@2.8.0-beta.19
+
+## 2.8.0-beta.18
+
+### Minor Changes
+
+- c8384de: Add experimental branch param.
+
+### Patch Changes
+
+- Updated dependencies [c8384de]
+  - @osdk/client@2.8.0-beta.18
+  - @osdk/api@2.8.0-beta.18
+  - @osdk/generator@2.8.0-beta.18
+
+## 2.8.0-beta.17
+
+### Patch Changes
+
+- Updated dependencies [8c30908]
+  - @osdk/client@2.8.0-beta.17
+  - @osdk/api@2.8.0-beta.17
+  - @osdk/generator@2.8.0-beta.17
+
 ## 2.8.0-beta.16
 
 ### Patch Changes

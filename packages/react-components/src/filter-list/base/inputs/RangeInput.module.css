@@ -17,52 +17,70 @@
 .rangeInput {
   display: flex;
   flex-direction: column;
-  gap: var(--osdk-filter-range-gap, calc(var(--osdk-surface-spacing) * 2));
+  gap: var(--osdk-filter-range-gap);
+  min-width: 0;
+  transition: opacity var(--osdk-filter-content-fade-duration);
+}
+
+.rangeInput[data-loading="true"] {
+  opacity: 0.5;
 }
 
 .histogramContainer {
   display: flex;
   align-items: flex-end;
-  height: var(--osdk-filter-range-histogram-height, 60px);
-  gap: var(--osdk-filter-range-histogram-bar-gap, 2px);
+  height: var(--osdk-filter-range-histogram-height);
+  gap: var(--osdk-filter-range-histogram-bar-gap);
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity var(--osdk-filter-content-fade-duration);
+}
+
+.histogramContainer:not([data-empty="true"]) {
+  opacity: 1;
 }
 
 .histogramBar {
   flex: 1;
-  background: var(--osdk-filter-range-histogram-bar-color, var(--osdk-custom-color-gray-3));
-  min-width: var(--osdk-filter-range-histogram-bar-min-width, 4px);
-  transition: background-color var(--osdk-emphasis-transition-duration) var(--osdk-emphasis-ease-default);
+  background: var(--osdk-filter-range-histogram-bar-color);
+  min-width: var(--osdk-filter-range-histogram-bar-min-width);
+  transition: background-color var(--osdk-filter-range-histogram-bar-transition);
 }
 
 .histogramBar[data-in-range="true"] {
-  background: var(--osdk-filter-range-histogram-bar-active-color, var(--osdk-intent-primary-rest));
+  background: var(--osdk-filter-range-histogram-bar-active-color);
 }
 
 .rangeInputs {
   display: flex;
   align-items: flex-end;
-  gap: var(--osdk-filter-range-inputs-gap, calc(var(--osdk-surface-spacing) * 2));
+  gap: var(--osdk-filter-range-inputs-gap);
+  min-width: 0;
 }
 
 .inputWrapper {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: var(--osdk-filter-range-input-wrapper-gap, calc(var(--osdk-surface-spacing) * 1));
+  gap: var(--osdk-filter-range-input-wrapper-gap);
+  min-width: 0;
 }
 
 .inputLabel {
-  font-size: var(--osdk-typography-size-body-small);
-  color: var(--osdk-typography-color-muted);
+  font-family: var(--osdk-filter-range-label-font-family);
+  font-size: var(--osdk-filter-range-label-font-size);
+  color: var(--osdk-filter-range-label-color);
 }
 
 .input {
-  font-size: var(--osdk-typography-size-body-small);
+  font-family: var(--osdk-filter-input-font-family);
+  font-size: var(--osdk-filter-input-font-size);
   padding: var(--osdk-filter-input-padding);
   border: var(--osdk-filter-input-border);
   border-radius: var(--osdk-filter-input-border-radius);
   background: var(--osdk-filter-input-bg);
   color: var(--osdk-filter-input-color);
+  min-width: 0;
 
   &:focus {
     border-color: var(--osdk-filter-input-focus-border);
@@ -76,6 +94,13 @@
 }
 
 .separator {
-  padding-bottom: calc(var(--osdk-surface-spacing) * 1.5);
-  color: var(--osdk-typography-color-muted);
+  padding-bottom: calc(var(--osdk-filter-range-inputs-gap) * 0.75);
+  color: var(--osdk-filter-range-separator-color);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .histogramContainer,
+  .rangeInput {
+    transition: none;
+  }
 }

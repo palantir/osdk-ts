@@ -1,5 +1,7 @@
 # @osdk/react-components
 
+> **⚠️ Beta Release**: This package is currently in beta. Please use the latest beta version for the most up-to-date features and fixes.
+
 React components for building Foundry applications. These components are Ontology-aware — pass in OSDK entities, and they handle data loading, caching, and state management automatically.
 
 Built on top of [@osdk/react](../react), these components use OSDK hooks internally to provide ready-to-use UI elements. While @osdk/react gives you low-level hooks for data fetching, @osdk/react-components provides UI widgets for common patterns like tables and forms.
@@ -12,7 +14,7 @@ Run the command to install:
 - @osdk/react-components-styles - The default styles for the components
 
 ```sh
-npm install @osdk/react-components @osdk/react-components-styles
+npm install @osdk/react-components@beta @osdk/react-components-styles@beta
 ```
 
 **Peer Dependencies:**
@@ -77,9 +79,111 @@ The components that this package will provide are:
 
 | Component     | Description                                                                        | Documentation                  |
 | ------------- | ---------------------------------------------------------------------------------- | ------------------------------ |
-| `ObjectTable` | Displays an Object Set as a sortable, paginated table                              | [Guide](./docs/ObjectTable.md) |
-| `FilterList`  | Visualize a high-level summary of objects data to allow users to filter that data. | -                              |
+| `ObjectTable` | Displays an Object Set as a sortable, paginated table with inline editing support  | [Guide](./docs/ObjectTable.md) |
+| `PdfViewer`   | Renders PDF documents with annotations, search, sidebar navigation, and zoom       | [Guide](./docs/PdfViewer.md)   |
+| `FilterList`  | Visualize a high-level summary of objects data to allow users to filter that data. | [Guide](./docs/FilterList.md)  |
 | `ActionForm`  | Auto-generated form for executing Ontology Actions                                 | -                              |
+
+## Component Architecture
+
+This package follows a layered architecture pattern to maximize flexibility and reusability.
+
+### Core layers (all components)
+
+1. **OSDK Component Layer** (e.g., `ObjectTable`, `PdfViewer`)
+   - Handles data fetching and processing using @osdk/react hooks
+   - Converts OSDK types to primitive data structures
+   - Manages OSDK-specific operations like filtering and actions
+   - No styling or component interactions
+
+2. **Base Component Layer** (e.g., `BaseTable`, `BasePdfViewer`)
+   - Pure component layer with no OSDK imports
+   - Contains all component interactions and styling
+   - Accepts primitive props like `string[]`, arrays, and objects
+   - Can be reused with custom data fetching layers
+
+### Building blocks (select components)
+
+Some components also provide a **building blocks** tier — individual sub-components and hooks that can be composed into fully custom layouts. Not every component needs this; it's offered where the UI is complex enough that users may want to rearrange or replace parts of it.
+
+For example, the PDF viewer offers three levels of customization:
+
+| Tier            | What you use                                                     | What you get                                                     |
+| --------------- | ---------------------------------------------------------------- | ---------------------------------------------------------------- |
+| Drop-in         | `PdfViewer` / `BasePdfViewer`                                    | Full viewer with toolbar, sidebar, search — zero assembly        |
+| Building blocks | `PdfViewerToolbar`, `PdfViewerSidebar`, `PdfViewerContent`, etc. | Custom layout using standard parts                               |
+| Hooks           | `usePdfViewerState` / `usePdfViewerCore` / primitive hooks       | Build entirely custom components; hooks do all the heavy lifting |
+
+See the [PdfViewer guide](./docs/PdfViewer.md) for the full API reference.
+
+### Example: ObjectTable and BaseTable
+
+```tsx
+// ObjectTable - Data layer
+- Fetches OSDK object data using useOsdkObjects
+- Handles OSDK-specific operations (filtering, sorting, actions)
+- Converts OSDK objects to table row data
+- Manages object property metadata
+- Passes primitive data to BaseTable
+
+// BaseTable - Component layer
+- Pure table component with no OSDK imports
+- Handles all UI interactions (sorting, selection, editing)
+- Manages component state
+```
+
+### Benefits
+
+- **Flexibility**: Users can build custom components using the Base layer with their own data sources
+- **Separation of Concerns**: Data fetching logic is cleanly separated from UI logic
+- **Reusability**: Base components can be exported and used independently
+- **Testing**: Base components can be tested without OSDK dependencies
+
+### Implementation Guidelines
+
+When building new components:
+
+1. Start with the Base component focusing on interactions and styling
+2. Create the OSDK wrapper that handles data fetching and type conversion
+3. Keep the Base component API simple using primitive types
+4. For complex components, consider a building blocks tier with sub-components and hooks
+5. Document all layers for users who want to customize
+
+## Folder Structure
+
+The codebase is organized to support the 2-layer architecture:
+
+```
+src/
+├── base-components/         # Reusable UI primitives (internal use only)
+│   ├── select/
+│   ├── checkbox/
+│   ├── dialog/
+│   └── ...
+├── object-table/           # OSDK component folder
+│   ├── ObjectTable.tsx     # OSDK data layer component
+│   ├── Table.tsx           # Base component (exported as BaseTable)
+│   ├── hooks/              # React hooks for table functionality
+│   ├── utils/              # Helper utilities and types
+│   └── components/         # Supporting React components
+└── public/
+    └── experimental.ts     # Public API exports
+```
+
+### Export Strategy
+
+- **OSDK Components**: Exported through `experimental.ts` (e.g., `ObjectTable`, `FilterList`)
+- **Base Components**: Select base components are exported for advanced use cases (e.g., `BaseTable`, `BaseFilterList`)
+- **UI Primitives**: The `base-components/` folder contains internal UI primitives that are **NOT exported**
+
+### Why Not Export UI Primitives?
+
+This package focuses on complex, Ontology-aware components with built-in data fetching. For simple UI components (buttons, inputs, dialogs), users should use established component libraries like Blueprint.js or their preferred design system. This approach:
+
+- Keeps the package focused on its core value proposition
+- Avoids duplicating well-solved UI problems
+- Reduces maintenance burden
+- Encourages consistent use of existing design systems
 
 ## Custom Styling
 
@@ -91,7 +195,7 @@ See `@osdk/react-components-styles` README on how to apply custom themes and sty
 
 ```ts
 import { ObjectTable } from "@osdk/react-components/experimental";
-import { $, Employee } from "@your-osdk-package";
+import { Employee } from "@your-osdk-package";
 
 function EmployeeDirectory() {
   return (

@@ -1,5 +1,30 @@
 # @osdk/shared.test
 
+## 0.6.0-beta.6
+
+### Minor Changes
+
+- b68cebd: add shape type definitions with opaque internal fields and shapes-internal export path
+
+### Patch Changes
+
+- Updated dependencies [f294f5a]
+- Updated dependencies [d284bf2]
+- Updated dependencies [b68cebd]
+  - @osdk/api@2.8.0-beta.28
+  - @osdk/generator-converters@2.8.0-beta.28
+
+## 0.6.0-beta.5
+
+### Minor Changes
+
+- 4da867d: Add filter list storybook stories and fix histogram bar rendering
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.19
+- @osdk/generator-converters@2.8.0-beta.19
+
 ## 0.6.0-beta.4
 
 ### Minor Changes

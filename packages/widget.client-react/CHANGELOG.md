@@ -1,5 +1,102 @@
 # @osdk/widget.client-react
 
+## 3.5.0-beta.28
+
+### Patch Changes
+
+- Updated dependencies [f294f5a]
+- Updated dependencies [2855223]
+- Updated dependencies [d284bf2]
+  - @osdk/client@2.8.0-beta.28
+  - @osdk/widget.client@3.5.0-beta.28
+
+## 3.5.0-beta.27
+
+### Patch Changes
+
+- Updated dependencies [fceb4ce]
+  - @osdk/client@2.8.0-beta.27
+  - @osdk/widget.client@3.5.0-beta.27
+
+## 3.5.0-beta.26
+
+### Patch Changes
+
+- Updated dependencies [599426b]
+- Updated dependencies [60b5ffb]
+- Updated dependencies [61e33ab]
+  - @osdk/client@2.8.0-beta.26
+  - @osdk/widget.client@3.5.0-beta.26
+
+## 3.5.0-beta.25
+
+### Patch Changes
+
+- @osdk/client@2.8.0-beta.25
+- @osdk/widget.client@3.5.0-beta.25
+
+## 3.5.0-beta.24
+
+### Patch Changes
+
+- @osdk/client@2.8.0-beta.24
+- @osdk/widget.client@3.5.0-beta.24
+
+## 3.5.0-beta.23
+
+### Patch Changes
+
+- @osdk/client@2.8.0-beta.23
+- @osdk/widget.client@3.5.0-beta.23
+
+## 3.5.0-beta.22
+
+### Patch Changes
+
+- Updated dependencies [cbfa135]
+- Updated dependencies [f4604c2]
+  - @osdk/client@2.8.0-beta.22
+  - @osdk/widget.client@3.5.0-beta.22
+
+## 3.5.0-beta.21
+
+### Patch Changes
+
+- Updated dependencies [c40444b]
+- Updated dependencies [dda14be]
+  - @osdk/client@2.8.0-beta.21
+  - @osdk/widget.client@3.5.0-beta.21
+
+## 3.5.0-beta.20
+
+### Patch Changes
+
+- @osdk/client@2.8.0-beta.20
+- @osdk/widget.client@3.5.0-beta.20
+
+## 3.5.0-beta.19
+
+### Patch Changes
+
+- @osdk/client@2.8.0-beta.19
+- @osdk/widget.client@3.5.0-beta.19
+
+## 3.5.0-beta.18
+
+### Patch Changes
+
+- Updated dependencies [c8384de]
+  - @osdk/client@2.8.0-beta.18
+  - @osdk/widget.client@3.5.0-beta.18
+
+## 3.5.0-beta.17
+
+### Patch Changes
+
+- Updated dependencies [8c30908]
+  - @osdk/client@2.8.0-beta.17
+  - @osdk/widget.client@3.5.0-beta.17
+
 ## 3.5.0-beta.16
 
 ### Patch Changes

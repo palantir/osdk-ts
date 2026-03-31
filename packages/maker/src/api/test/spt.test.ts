@@ -581,7 +581,7 @@ describe("SPTs", () => {
   });
   it("Object decimal property with precision/scale works in actions", () => {
     const obj = defineObject({
-      apiName: "decimal-test",
+      apiName: "decimalTest",
       displayName: "Decimal Test",
       pluralDisplayName: "Decimal Tests",
       primaryKeyPropertyApiName: "id",

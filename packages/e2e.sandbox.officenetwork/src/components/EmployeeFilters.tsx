@@ -69,6 +69,8 @@ const INITIAL_FILTERS = ALL_FILTER_DEFINITIONS.filter((def) =>
   def.id != null && ["department", "locationCity"].includes(def.id)
 );
 
+const FILTER_SIDEBAR_WIDTH = 256;
+
 function AddFilterButton({
   availableFilters,
   onAdd,
@@ -123,7 +125,20 @@ function AddFilterButton({
   );
 }
 
-export function EmployeeFilters() {
+interface EmployeeFiltersProps {
+  onFilterClauseChanged?: (
+    clause: Parameters<
+      NonNullable<
+        React.ComponentProps<typeof FilterList>["onFilterClauseChanged"]
+      >
+    >[0],
+  ) => void;
+}
+
+export function EmployeeFilters({
+  onFilterClauseChanged,
+}: EmployeeFiltersProps) {
+  const [collapsed, setCollapsed] = useState(false);
   const [filterDefinitions, setFilterDefinitions] = useState<
     FilterDefinitionUnion<Employee>[]
   >(INITIAL_FILTERS);
@@ -153,9 +168,7 @@ export function EmployeeFilters() {
 
   const handleRemoveFilter = useCallback(
     (filterKey: string) => {
-      setFilterDefinitions((prev) =>
-        prev.filter((def) => def.id !== filterKey)
-      );
+      setFilterDefinitions((prev) => prev.filter((d) => d.id !== filterKey));
     },
     [],
   );
@@ -170,14 +183,29 @@ export function EmployeeFilters() {
     [availableFilters, handleAddFilter],
   );
 
+  const containerStyle = useMemo(
+    () => ({
+      width: collapsed ? undefined : FILTER_SIDEBAR_WIDTH,
+      height: "100%" as const,
+    }),
+    [collapsed],
+  );
+
   return (
-    <FilterList
-      objectSet={$(Employee)}
-      filterDefinitions={filterDefinitions}
-      onFilterRemoved={handleRemoveFilter}
-      renderAddFilterButton={renderAddFilterButton}
-      title="Employee Filters"
-      showActiveFilterCount={true}
-    />
+    <div style={containerStyle}>
+      <FilterList
+        objectSet={$(Employee)}
+        filterDefinitions={filterDefinitions}
+        onFilterClauseChanged={onFilterClauseChanged}
+        onFilterRemoved={handleRemoveFilter}
+        enableSorting={true}
+        renderAddFilterButton={renderAddFilterButton}
+        title="Employee Filters"
+        showActiveFilterCount={true}
+        showResetButton={true}
+        collapsed={collapsed}
+        onCollapsedChange={setCollapsed}
+      />
+    </div>
   );
 }

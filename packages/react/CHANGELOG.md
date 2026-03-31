@@ -1,5 +1,67 @@
 # @osdkkit/react
 
+## 0.10.0-beta.13
+
+### Minor Changes
+
+- f294f5a: Remove literal support before GA.
+
+### Patch Changes
+
+- Updated dependencies [f294f5a]
+- Updated dependencies [2855223]
+- Updated dependencies [d284bf2]
+- Updated dependencies [b68cebd]
+  - @osdk/client@2.8.0-beta.28
+  - @osdk/api@2.8.0-beta.28
+
+## 0.10.0-beta.12
+
+### Minor Changes
+
+- 46dfbec: fix useOsdkAction applyAction to re-throw errors instead of silently swallowing them
+
+## 0.10.0-beta.11
+
+### Minor Changes
+
+- b1e8bba: add cbac admin hooks for markings, categories, and restrictions
+- 599426b: expose $loadPropertySecurityMetadata option in observable client and react hooks
+
+### Patch Changes
+
+- Updated dependencies [599426b]
+- Updated dependencies [60b5ffb]
+- Updated dependencies [61e33ab]
+  - @osdk/client@2.8.0-beta.26
+  - @osdk/api@2.8.0-beta.26
+
+## 0.10.0-beta.10
+
+### Minor Changes
+
+- dbbfb6f: Add experimental ActionForm component with field renderers, form state hook, and tests
+
+### Patch Changes
+
+- Updated dependencies [cbfa135]
+- Updated dependencies [f4604c2]
+  - @osdk/client@2.8.0-beta.22
+  - @osdk/api@2.8.0-beta.22
+
+## 0.10.0-beta.9
+
+### Minor Changes
+
+- c40444b: Add linkedObjectsBySourcePrimaryKey to link observation responses
+
+### Patch Changes
+
+- Updated dependencies [c40444b]
+- Updated dependencies [dda14be]
+  - @osdk/client@2.8.0-beta.21
+  - @osdk/api@2.8.0-beta.21
+
 ## 0.10.0-beta.8
 
 ### Minor Changes

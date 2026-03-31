@@ -132,6 +132,13 @@ export interface UseOsdkObjectsOptions<
    * useOsdkObjects(Employee, { $select: ["name", "status"] })
    */
   $select?: readonly PropertyKeys<T>[];
+
+  /**
+   * When true, loads per-property security metadata (marking requirements)
+   * alongside each object. The returned objects will have `$propertySecurities`
+   * populated with conjunctive/disjunctive marking requirements per property.
+   */
+  $loadPropertySecurityMetadata?: boolean;
 }
 
 export interface UseOsdkListResult<
@@ -248,6 +255,7 @@ export function useOsdkObjects<
     intersectWith,
     pivotTo,
     $select,
+    $loadPropertySecurityMetadata,
   } = options ?? {};
 
   const canonWhere = observableClient.canonicalizeWhereClause<
@@ -317,6 +325,9 @@ export function useOsdkObjects<
               : {}),
             ...(pivotTo ? { pivotTo } : {}),
             ...(stableSelect ? { select: stableSelect } : {}),
+            ...($loadPropertySecurityMetadata
+              ? { $loadPropertySecurityMetadata }
+              : {}),
           }, observer),
         process.env.NODE_ENV !== "production"
           ? `list ${type.apiName} ${
@@ -341,6 +352,7 @@ export function useOsdkObjects<
       stableIntersectWith,
       pivotTo,
       stableSelect,
+      $loadPropertySecurityMetadata,
     ],
   );
 

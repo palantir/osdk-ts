@@ -17,68 +17,61 @@
 import type {
   ActionDefinition,
   ActionEditResponse,
-  ActionReturnTypeForOptions,
   ActionValidationResponse,
 } from "@osdk/api";
-import type { ActionValidationError, ApplyActionOptions } from "@osdk/client";
+import type { ActionValidationError } from "@osdk/client";
 import type {
   ActionParameters,
   FieldKey,
   FieldValueType,
   FormFieldDefinition,
+  RendererFieldDefinition,
 } from "./FormFieldApi.js";
 
 /**
- * Props for the ActionForm component
+ * Props for the ActionForm component.
+ *
+ * A discriminated union ensures that controlled mode (formState provided)
+ * always requires onFormStateChange, and uncontrolled mode makes `onFormStateChange` optional
  */
-export interface ActionFormProps<Q extends ActionDefinition<unknown>> {
+export type ActionFormProps<Q extends ActionDefinition<unknown>> =
+  | (ActionFormConfigProps<Q> & {
+    formState: FormState<Q>;
+    onFormStateChange: (
+      updater: (prevState: FormState<Q>) => FormState<Q>,
+    ) => void;
+  })
+  | (ActionFormConfigProps<Q> & {
+    formState?: undefined;
+    onFormStateChange?: (
+      updater: (prevState: FormState<Q>) => FormState<Q>,
+    ) => void;
+  });
+
+interface ActionFormConfigProps<Q extends ActionDefinition<unknown>>
+  extends Pick<BaseFormProps, "formTitle" | "isSubmitDisabled">
+{
   actionDefinition: Q;
 
   /**
-   * If not supplied, defaults to actionDef.displayName
+   * If not supplied, field definitions are constructed from `ActionParameters`.
    */
-  formTitle?: string;
-
-  /**
-   * If not supplied, this will be constructed from ActionParameters
-   */
-  formFieldDefinition?: Array<FormFieldDefinition<Q>>;
-
-  /**
-   * Called when a field value changed.
-   * Required when a field is in controlled mode, i.e. value is provided via formFieldDefinition.
-   *
-   * @param fieldKey The key of the changed field
-   * @param value the updated value of the field
-   */
-  onFieldValueChanged?: <K extends FieldKey<Q>>(
-    fieldKey: K,
-    value: FieldValueType<Q, K>,
-  ) => void;
-
-  /**
-   * Override to disable submit button
-   * If not provided, button is disabled when form is submitting or has validation errors
-   *
-   * @default false
-   */
-  isSubmitDisabled?: boolean;
+  formFieldDefinitions?: ReadonlyArray<FormFieldDefinition<Q>>;
 
   /**
    * If supplied, this will override the default submit action
-   * By default, the action's applyAction will be called with $validateOnly: false
+   * By default, the action's applyAction will be called
    *
    * @param formState all field values when onSubmit is called
-   * @param applyAction the function to execute the action. Call it with $validateOnly: true options to run validation mode onSubmit.
+   * @param applyAction the function to execute the action
    * @returns a promise of the submission response
    */
-  onSubmit?: <OP extends ApplyActionOptions>(
+  onSubmit?: (
     formState: FormState<Q>,
     applyAction: (
       args: ActionParameters<Q>,
-      options?: OP,
-    ) => Promise<ActionReturnTypeForOptions<OP>>,
-  ) => Promise<ActionReturnTypeForOptions<OP>> | void;
+    ) => Promise<ActionEditResponse | undefined>,
+  ) => Promise<unknown> | void;
 
   /**
    * Called when the validation response is returned from a validateOnly submission
@@ -92,7 +85,7 @@ export interface ActionFormProps<Q extends ActionDefinition<unknown>> {
    *
    * @param results the submission response
    */
-  onSuccess?: (results: ActionEditResponse) => void;
+  onSuccess?: (results: ActionEditResponse | undefined) => void;
 
   /**
    * Called when there is an error in form submission
@@ -106,7 +99,7 @@ export interface ActionFormProps<Q extends ActionDefinition<unknown>> {
  * Form values mapping parameter names to their values
  */
 export type FormState<Q extends ActionDefinition<unknown>> = {
-  [K in FieldKey<Q>]: FieldValueType<Q, K>;
+  [K in FieldKey<Q>]?: FieldValueType<Q, K>;
 };
 
 /**
@@ -114,5 +107,37 @@ export type FormState<Q extends ActionDefinition<unknown>> = {
  */
 export type FormError =
   | { type: "validation"; error: ActionValidationError }
-  | { type: "submission"; error: Error }
+  | { type: "submission"; error: unknown }
   | { type: "unknown"; error: unknown };
+
+/**
+ * Props for the `BaseForm` component, which renders a form without
+ * OSDK data fetching.
+ *
+ * Uses a discriminated union so that controlled mode (`formState` provided)
+ * always requires `onFieldValueChange`, and uncontrolled mode omits both.
+ * `onSubmit` receives the current form state so callers can access values
+ * even in uncontrolled mode.
+ */
+export type BaseFormProps =
+  & BaseFormCommonProps
+  & (
+    | {
+      formState: Record<string, unknown>;
+      onFieldValueChange: (fieldKey: string, value: unknown) => void;
+    }
+    | {
+      formState?: undefined;
+      onFieldValueChange?: (fieldKey: string, value: unknown) => void;
+    }
+  );
+
+interface BaseFormCommonProps {
+  formTitle?: string;
+  fieldDefinitions: ReadonlyArray<RendererFieldDefinition>;
+  onSubmit: (formState: Record<string, unknown>) => void;
+  isSubmitDisabled?: boolean;
+  isPending?: boolean;
+  isLoading?: boolean;
+  className?: string;
+}

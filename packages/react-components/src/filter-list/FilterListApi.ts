@@ -21,6 +21,7 @@ import type {
   WhereClause,
 } from "@osdk/api";
 import type React from "react";
+import type { ReactNode } from "react";
 import type {
   FilterState as FilterStateType,
   PropertyFilterDefinition,
@@ -78,7 +79,7 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
   /**
    * Optional title to display in the filter list header
    */
-  title?: string;
+  title?: ReactNode;
 
   /**
    * Optional icon to display next to the title
@@ -125,11 +126,27 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
   ) => void;
 
   /**
-   * Called when a filter is added
-   * If provided, user will be allowed to add filters
+   * Controls how filter visibility (add/remove) is managed.
+   *
+   * - `"uncontrolled"` (default): FilterList manages visibility internally.
+   *   An "Add filter" popover is rendered for filters with `isVisible: false`,
+   *   and each visible filter shows a remove button.
+   * - `"controlled"`: The consumer manages which filters are visible via
+   *   `filterDefinitions`. Filters with `isVisible: false` are excluded from
+   *   the rendered list.
+   *
+   * @default "uncontrolled"
+   */
+  addFilterMode?: "controlled" | "uncontrolled";
+
+  /**
+   * Called when a filter is added (shown).
+   *
+   * In uncontrolled mode, this fires when a user selects a hidden filter
+   * from the "Add filter" popover.
    *
    * @param filterKey The key of the added filter
-   * @param newDefinitions The filter list with the new filter added
+   * @param newDefinitions The current filter definitions array
    */
   onFilterAdded?: (
     filterKey: FilterKey<Q>,
@@ -137,8 +154,10 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
   ) => void;
 
   /**
-   * Called when a filter is removed
-   * If provided, user will be allowed to remove filters
+   * Called when a filter is removed (hidden).
+   *
+   * In uncontrolled mode, this fires as a notification after the filter
+   * is hidden internally.
    *
    * @param filterKey The key of the removed filter
    */
@@ -151,6 +170,23 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
    * should use controlled filterDefinitions.
    */
   enableSorting?: boolean;
+
+  /**
+   * Whether the filter list panel is collapsed
+   */
+  collapsed?: boolean;
+
+  /**
+   * Called when the collapsed state changes
+   */
+  onCollapsedChange?: (collapsed: boolean) => void;
+
+  /**
+   * Initial filter states for hydrating from external storage.
+   * These states are merged over definition defaults on mount.
+   * Use onFilterStateChanged to persist state changes externally.
+   */
+  initialFilterStates?: Map<string, FilterStateType>;
 
   /**
    * Show reset filters button in header
@@ -174,7 +210,11 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
 
   /**
    * Custom render function for the "Add filter" button.
-   * When not provided, a default button is shown if onFilterAdded is set.
+   *
+   * - In uncontrolled mode: customizes the trigger element for the built-in
+   *   add-filter popover. The popover behavior is handled automatically.
+   * - In controlled mode: replaces the entire add-filter button area.
+   *   The consumer is responsible for all add-filter behavior.
    */
   renderAddFilterButton?: () => React.ReactNode;
 }

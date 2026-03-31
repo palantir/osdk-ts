@@ -16,10 +16,11 @@
 
 import { Button } from "@base-ui/react/button";
 import React, { memo, type ReactNode, useCallback } from "react";
+import { CollapseIcon, ResetIcon } from "./FilterIcons.js";
 import styles from "./FilterListHeader.module.css";
 
 interface FilterListHeaderProps {
-  title?: string;
+  title?: ReactNode;
   titleIcon?: ReactNode;
   collapsed?: boolean;
   onCollapsedChange?: (collapsed: boolean) => void;
@@ -27,6 +28,7 @@ interface FilterListHeaderProps {
   onReset?: () => void;
   showActiveFilterCount?: boolean;
   activeFilterCount?: number;
+  hasVisibilityChanges?: boolean;
 }
 
 function FilterListHeaderInner({
@@ -38,6 +40,7 @@ function FilterListHeaderInner({
   onReset,
   showActiveFilterCount,
   activeFilterCount = 0,
+  hasVisibilityChanges = false,
 }: FilterListHeaderProps): React.ReactElement {
   const showCollapseButton = onCollapsedChange != null;
 
@@ -47,51 +50,46 @@ function FilterListHeaderInner({
 
   return (
     <div className={styles.header}>
-      {showCollapseButton && (
-        <Button
-          className={styles.collapseButton}
-          onClick={handleCollapseClick}
-          aria-expanded={!collapsed}
-          aria-label={collapsed ? "Expand filters" : "Collapse filters"}
-        >
-          <span
-            className={styles.collapseIcon}
-            data-collapsed={collapsed}
-          />
-        </Button>
-      )}
+      <div className={styles.titleContainer}>
+        {titleIcon && (
+          <span className={styles.titleIcon}>
+            {titleIcon}
+          </span>
+        )}
+        {title && (
+          <span className={styles.title}>
+            {title}
+          </span>
+        )}
+        {showActiveFilterCount && activeFilterCount > 0 && (
+          <span className={styles.activeCount}>
+            ({activeFilterCount})
+          </span>
+        )}
+      </div>
 
-      {!collapsed && (
-        <>
-          <div className={styles.titleContainer}>
-            {titleIcon && (
-              <span className={styles.titleIcon}>
-                {titleIcon}
-              </span>
-            )}
-            {title && (
-              <span className={styles.title}>
-                {title}
-              </span>
-            )}
-            {showActiveFilterCount && activeFilterCount > 0 && (
-              <span className={styles.activeCount}>
-                ({activeFilterCount})
-              </span>
-            )}
-          </div>
+      <div className={styles.actions}>
+        {showResetButton && (
+          <Button
+            className={styles.resetButton}
+            onClick={onReset}
+            disabled={activeFilterCount === 0 && !hasVisibilityChanges}
+          >
+            <ResetIcon /> Reset
+          </Button>
+        )}
 
-          {showResetButton && (
-            <Button
-              className={styles.resetButton}
-              onClick={onReset}
-              disabled={activeFilterCount === 0}
-            >
-              Reset
-            </Button>
-          )}
-        </>
-      )}
+        {showCollapseButton && (
+          <Button
+            className={styles.collapseButton}
+            onClick={handleCollapseClick}
+            aria-expanded={!collapsed}
+            aria-label={collapsed ? "Expand filters" : "Collapse filters"}
+          >
+            <CollapseIcon />
+          </Button>
+        )}
+      </div>
     </div>
   );
 }

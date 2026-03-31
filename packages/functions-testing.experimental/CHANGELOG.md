@@ -1,5 +1,17 @@
 # @osdk/functions-testing.experimental
 
+## 0.2.0-beta.4
+
+### Minor Changes
+
+- 0df859a: Read primaryKeyApiName from object type const instead of options, move links into options, and add createMockAttachment helper
+
+### Patch Changes
+
+- Updated dependencies [0df859a]
+  - @osdk/api@2.8.0-beta.25
+  - @osdk/client@2.8.0-beta.25
+
 ## 0.2.0-beta.3
 
 ### Minor Changes

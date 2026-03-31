@@ -115,6 +115,8 @@ export namespace ObjectMetadata {
 export interface ObjectTypeDefinition {
   type: "object";
   apiName: string;
+  primaryKeyApiName?: string;
+  primaryKeyType?: PrimaryKeyTypes;
   osdkMetadata?: OsdkMetadata;
   __DefinitionMetadata?:
     & ObjectMetadata

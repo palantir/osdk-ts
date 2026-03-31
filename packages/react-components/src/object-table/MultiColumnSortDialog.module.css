@@ -102,10 +102,6 @@
     cursor: not-allowed;
   }
 
-  &:focus {
-    outline: none;
-  }
-
   &:focus-visible {
     outline: var(--osdk-focus-outline);
     outline-offset: calc(-1 * var(--osdk-focus-visible-outline-offset));
@@ -115,7 +111,6 @@
 .addIcon {
   width: var(--osdk-iconography-size-small);
   height: var(--osdk-iconography-size-small);
-  color: currentColor;
 }
 
 .addColumnText {

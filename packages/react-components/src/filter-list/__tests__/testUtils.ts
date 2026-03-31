@@ -19,7 +19,6 @@ import type { FilterDefinitionUnion } from "../FilterListApi.js";
 import type {
   ContainsTextFilterState,
   DateRangeFilterState,
-  ExactMatchFilterState,
   FilterComponentType,
   FilterState,
   NumberRangeFilterState,
@@ -39,6 +38,7 @@ export const MockObjectType = {
       age: { type: "integer", multiplicity: false },
       active: { type: "boolean", multiplicity: false },
       createdAt: { type: "timestamp", multiplicity: false },
+      birthDate: { type: "datetime", multiplicity: false },
       score: { type: "double", multiplicity: false },
     },
   },
@@ -176,13 +176,14 @@ export function createToggleState(enabled: boolean): ToggleFilterState {
 export function createNumberRangeState(
   minValue?: number,
   maxValue?: number,
-  options?: { includeNull?: boolean },
+  options?: { includeNull?: boolean; isExcluding?: boolean },
 ): NumberRangeFilterState {
   return {
     type: "NUMBER_RANGE",
     minValue,
     maxValue,
     includeNull: options?.includeNull,
+    isExcluding: options?.isExcluding,
   };
 }
 
@@ -192,26 +193,13 @@ export function createNumberRangeState(
 export function createDateRangeState(
   minValue?: Date,
   maxValue?: Date,
-  options?: { includeNull?: boolean },
+  options?: { includeNull?: boolean; isExcluding?: boolean },
 ): DateRangeFilterState {
   return {
     type: "DATE_RANGE",
     minValue,
     maxValue,
     includeNull: options?.includeNull,
-  };
-}
-
-/**
- * Helper to create an ExactMatchFilterState
- */
-export function createExactMatchState(
-  values: Array<string | boolean>,
-  options?: { isExcluding?: boolean },
-): ExactMatchFilterState<string | boolean> {
-  return {
-    type: "EXACT_MATCH",
-    values,
     isExcluding: options?.isExcluding,
   };
 }

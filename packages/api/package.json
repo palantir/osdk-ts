@@ -1,6 +1,6 @@
 {
   "name": "@osdk/api",
-  "version": "2.8.0-beta.16",
+  "version": "2.8.0-beta.28",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
@@ -17,6 +17,15 @@
       },
       "require": "./build/cjs/index.cjs",
       "default": "./build/browser/index.js"
+    },
+    "./shapes-internal": {
+      "browser": "./build/browser/public/shapes-internal.js",
+      "import": {
+        "types": "./build/types/public/shapes-internal.d.ts",
+        "default": "./build/esm/public/shapes-internal.js"
+      },
+      "require": "./build/cjs/public/shapes-internal.cjs",
+      "default": "./build/browser/public/shapes-internal.js"
     },
     "./unstable": {
       "browser": "./build/browser/public/unstable.js",

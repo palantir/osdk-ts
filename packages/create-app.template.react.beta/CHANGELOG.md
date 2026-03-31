@@ -1,5 +1,45 @@
 # @osdk/create-app.template.react
 
+## 2.8.0-beta.28
+
+### Minor Changes
+
+- 5f9fb46: Bump @types/node
+- e68e9b1: add dx improvements to react.beta template: path aliases, error boundary, stricter eslint, prettier import sorting, editorconfig, vscode settings
+
+## 2.8.0-beta.27
+
+## 2.8.0-beta.26
+
+## 2.8.0-beta.25
+
+## 2.8.0-beta.24
+
+## 2.8.0-beta.23
+
+### Minor Changes
+
+- a41b817: Add Blueprint6 to create-app react.beta template
+- 001c64c: Link to guide on how to add OSDK to templates
+- 60dc05a: Make osdk react template responsive
+- 9c48891: Fix templates nit
+
+## 2.8.0-beta.22
+
+## 2.8.0-beta.21
+
+## 2.8.0-beta.20
+
+## 2.8.0-beta.19
+
+## 2.8.0-beta.18
+
+## 2.8.0-beta.17
+
+### Minor Changes
+
+- 5562739: React/Vue templates UI polish
+
 ## 2.8.0-beta.16
 
 ### Minor Changes
