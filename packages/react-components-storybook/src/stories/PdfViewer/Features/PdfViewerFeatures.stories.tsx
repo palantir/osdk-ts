@@ -323,7 +323,7 @@ function HighlightModeDemo({
     <div style={{ height: "600px" }}>
       <BasePdfViewer
         src={src}
-        enableHighlight
+        enableHighlight={true}
         onTextHighlight={onTextHighlightAction}
         onHighlightDelete={onHighlightDeleteAction}
       />

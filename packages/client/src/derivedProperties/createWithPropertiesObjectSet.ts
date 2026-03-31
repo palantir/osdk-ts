@@ -45,7 +45,7 @@ export function createWithPropertiesObjectSet<
       const rdpNames = new Set(definitionMap.keys());
       return createWithPropertiesObjectSet(objectType, {
         type: "filter",
-        objectSet: objectSet,
+        objectSet,
         where: modernToLegacyWhereClause(clause, objectType, rdpNames),
       }, definitionMap);
     },
@@ -99,7 +99,7 @@ export function createWithPropertiesObjectSet<
       }
       const wrappedObjectSet: DerivedPropertyDefinition = {
         type: "selection",
-        objectSet: objectSet,
+        objectSet,
         operation: aggregationOperationDefinition,
       };
       const selectorResult: DerivedProperty.Definition<any, any> =
@@ -120,7 +120,7 @@ export function createWithPropertiesObjectSet<
       }
       const wrappedObjectSet: DerivedPropertyDefinition = {
         type: "selection",
-        objectSet: objectSet,
+        objectSet,
         operation: {
           type: "get",
           selectedPropertyApiName: name,

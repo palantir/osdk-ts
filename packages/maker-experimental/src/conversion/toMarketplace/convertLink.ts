@@ -42,7 +42,7 @@ export function convertLink(
 ): LinkTypeBlockDataV2 {
   validateLink(linkType);
   let definition: LinkDefinition;
-  let datasource: ManyToManyLinkTypeDatasource | undefined = undefined;
+  let datasource: ManyToManyLinkTypeDatasource | undefined;
   if ("one" in linkType) {
     const { apiName: oneObjectApiName, object: oneObject } = getObject(
       linkType.one.object,
@@ -190,7 +190,7 @@ export function convertLink(
 
   return {
     linkType: {
-      definition: definition,
+      definition,
       rid: ridGenerator.generateRidForLinkType(linkTypeId),
       id: cleanAndValidateLinkTypeId(linkType.apiName),
       status: convertLinkStatus(linkType.status, ridGenerator),
