@@ -24,7 +24,7 @@ import type { CustomFieldProps } from "../FormFieldApi.js";
  * form state management.
  */
 export const CustomField: React.FC<CustomFieldProps<unknown>> = memo(
-  function CustomFieldFn({ customRenderer, ...baseProps }) {
-    return <>{customRenderer(baseProps)}</>;
+  function CustomFieldFn({ customRenderer: CustomRenderer, ...baseProps }) {
+    return <CustomRenderer {...baseProps} />;
   },
 );
