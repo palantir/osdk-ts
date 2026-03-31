@@ -10,8 +10,8 @@ catalogs:
       specifier: 0.6.0
       version: 0.6.0
     '@osdk/docs-spec-sdk':
-      specifier: 0.16.0
-      version: 0.16.0
+      specifier: 0.17.0
+      version: 0.17.0
     '@osdk/foundry':
       specifier: 2.50.0
       version: 2.50.0
@@ -4812,7 +4812,7 @@ importers:
         version: 0.6.0
       '@osdk/docs-spec-sdk':
         specifier: catalog:foundry-platform-typescript
-        version: 0.16.0
+        version: 0.17.0
     devDependencies:
       '@osdk/monorepo.api-extractor':
         specifier: workspace:~
@@ -5171,7 +5171,7 @@ importers:
         version: 0.6.0
       '@osdk/docs-spec-sdk':
         specifier: catalog:foundry-platform-typescript
-        version: 0.16.0
+        version: 0.17.0
       outdent:
         specifier: ^0.8.0
         version: 0.8.0
@@ -8689,8 +8689,8 @@ packages:
   '@osdk/docs-spec-sdk@0.1.0':
     resolution: {integrity: sha512-xGW/bBjlQvyg4YdRaEC+GdaKoh6qoWmyp7uLEfH2h4XCWDKpDGaQD5dLgkGjNqao1jk2mTZb6YrTjkz0CB+9JA==}
 
-  '@osdk/docs-spec-sdk@0.16.0':
-    resolution: {integrity: sha512-2hCEQK0xpDkM6jYHT/U/YQ1fzBBm0X3buyIEeF+ZZGr4OUjVyeDBfmml5615egq4jZguKrw8w5mTpRW9RT7Xag==}
+  '@osdk/docs-spec-sdk@0.17.0':
+    resolution: {integrity: sha512-uiC2wfUf3i2tQ9wQlcgwLOxHObdjxfwwvy4X04N0tZnpnXEIn7zIIa7WJqpcNUMH3g07tJLEu/wZNdUgxCnS2Q==}
 
   '@osdk/foundry.admin@2.50.0':
     resolution: {integrity: sha512-JlB8wHwcUyIPu261Sx7wupAO0oTjxFGeCzrkvPoybPDnvR0rYaD4oZFbAYhc+OSCmP+28/5C8+lnVagdQ2skUg==}
@@ -25474,7 +25474,7 @@ snapshots:
     dependencies:
       '@osdk/docs-spec-core': 0.5.0
 
-  '@osdk/docs-spec-sdk@0.16.0':
+  '@osdk/docs-spec-sdk@0.17.0':
     dependencies:
       '@osdk/docs-spec-core': 0.6.0
 
