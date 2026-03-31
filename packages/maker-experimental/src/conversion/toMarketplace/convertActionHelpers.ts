@@ -27,7 +27,13 @@ import type {
   Section,
   SectionId,
 } from "@osdk/client.unstable";
-import type { IDataType } from "@osdk/generator-converters.ontologyir";
+import type {
+  IDataType,
+  IListDataType,
+  IObjectDataType,
+  IObjectSetDataType,
+  ISetDataType,
+} from "@osdk/generator-converters.ontologyir";
 import type {
   ActionParameter,
   ActionParameterAllowedValues,
@@ -256,7 +262,6 @@ function convertFunctionBackedAction(
     `Function "${functionApiName}" not found in functions IR`,
   );
 
-  // Build parameters and function input mappings from discovered function inputs
   const parameters: Record<ParameterId, Parameter> = {};
   const functionInputValues: Record<
     string,
@@ -426,8 +431,9 @@ function convertFunctionInputDataType(
   switch (dataType.type) {
     case "object": {
       invariant(dataType.object, "object data type missing object field");
+      const objectData = dataType as IObjectDataType;
       const objectTypeId = ridGenerator.generateObjectTypeId(
-        dataType.object.objectTypeId,
+        objectData.object.objectTypeId,
       );
       affectedObjectTypeIds.push(objectTypeId);
       return {
@@ -440,13 +446,16 @@ function convertFunctionInputDataType(
         dataType.objectSet,
         "objectSet data type missing objectSet field",
       );
+      const objectSetData = dataType as IObjectSetDataType;
       const objectTypeId = ridGenerator.generateObjectTypeId(
-        dataType.objectSet.objectTypeId,
+        objectSetData.objectSet.objectTypeId,
       );
       affectedObjectTypeIds.push(objectTypeId);
       return {
         type: "objectSetRid" as const,
-        objectSetRid: {},
+        objectSetRid: {
+          objectTypeId: objectTypeId,
+        },
       } as unknown as Parameter["type"];
     }
     case "string":
@@ -461,12 +470,18 @@ function convertFunctionInputDataType(
         type: dataType.type,
         [dataType.type]: {},
       } as unknown as Parameter["type"];
-    case "list":
+    case "list": {
+      const listData = dataType as IListDataType;
+      const innerType = listData.list.elementsType;
+      return convertFunctionInputListDataType(
+        innerType,
+        ridGenerator,
+        affectedObjectTypeIds,
+      );
+    }
     case "set": {
-      const innerType = dataType.type === "list"
-        ? dataType.list?.elementsType
-        : dataType.set?.elementsType;
-      invariant(innerType, `${dataType.type} data type missing elementsType`);
+      const setData = dataType as ISetDataType;
+      const innerType = setData.set.elementsType;
       return convertFunctionInputListDataType(
         innerType,
         ridGenerator,
@@ -498,9 +513,9 @@ function convertFunctionInputListDataType(
 ): Parameter["type"] {
   switch (elementType.type) {
     case "object": {
-      invariant(elementType.object, "object data type missing object field");
+      const objectData = elementType as IObjectDataType;
       const objectTypeId = ridGenerator.generateObjectTypeId(
-        elementType.object.objectTypeId,
+        objectData.object.objectTypeId,
       );
       affectedObjectTypeIds.push(objectTypeId);
       return {
