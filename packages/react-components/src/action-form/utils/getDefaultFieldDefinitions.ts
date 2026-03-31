@@ -38,9 +38,7 @@ const EMPTY_ITEMS: unknown[] = [];
  * Maps a single action parameter to its default RendererFieldDefinition.
  *
  * Switches on the parameter's data type to select both the field component
- * and its required default props (e.g. empty `items` for DROPDOWN, boolean
- * options for RADIO_BUTTONS). This keeps the paramType → component → props
- * mapping in one place rather than spreading it across separate utilities.
+ * and its required default props.
  */
 function buildFieldDefinition(
   key: string,

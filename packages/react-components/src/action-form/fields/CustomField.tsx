@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from "react";
+import React, { memo } from "react";
 import type { CustomFieldProps } from "../FormFieldApi.js";
 
 /**
@@ -23,9 +23,8 @@ import type { CustomFieldProps } from "../FormFieldApi.js";
  * (value, onChange, id) so the custom implementation can participate in
  * form state management.
  */
-export function CustomField({
-  customRenderer,
-  ...baseProps
-}: CustomFieldProps<unknown>): React.ReactElement {
-  return <>{customRenderer(baseProps)}</>;
-}
+export const CustomField: React.FC<CustomFieldProps<unknown>> = memo(
+  function CustomFieldFn({ customRenderer, ...baseProps }) {
+    return <>{customRenderer(baseProps)}</>;
+  },
+);
