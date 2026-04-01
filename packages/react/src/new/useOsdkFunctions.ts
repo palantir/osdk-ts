@@ -120,7 +120,9 @@ export function useOsdkFunctions(
             error: error instanceof Error
               ? error
               : error
-              ? new Error(JSON.stringify(error))
+              ? new Error(
+                typeof error === "string" ? error : JSON.stringify(error),
+              )
               : undefined,
             lastUpdated: Date.now(),
           };
@@ -180,14 +182,14 @@ async function* executeQueriesGenerator(
   }
 }
 
-function createQueryPromise<Q extends QueryDefinition<unknown>>(
+const createQueryPromise = async <Q extends QueryDefinition<unknown>>(
   query: FunctionQueryParams<Q>,
   index: number,
   client: Client,
-): Promise<QueryResult<Q>> {
+): Promise<QueryResult<Q>> => {
   // Skip disabled queries
   if (query.options?.enabled === false) {
-    return Promise.resolve({ index, result: undefined, error: undefined });
+    return { index, result: undefined, error: undefined };
   }
 
   const queryClient = client(query.queryDefinition);
@@ -196,14 +198,17 @@ function createQueryPromise<Q extends QueryDefinition<unknown>>(
     "executeFunction" in queryClient
     && typeof queryClient.executeFunction === "function"
   ) {
-    return queryClient.executeFunction(query.options?.params)
-      .then((result: unknown) => ({ index, result, error: null }))
-      .catch((error: unknown) => ({ index, result: null, error }));
+    try {
+      const result = await queryClient.executeFunction(query.options?.params);
+      return { index, result, error: null };
+    } catch (error) {
+      return { index, result: undefined, error };
+    }
   }
 
-  return Promise.resolve({
+  return {
     index,
     result: undefined,
-    error: new Error("Invalid query definition"),
-  });
-}
+    error: new Error("Invalid query client: executeFunction method not found"),
+  };
+};
