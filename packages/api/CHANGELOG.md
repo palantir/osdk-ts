@@ -1,5 +1,11 @@
 # @osdk/api
 
+## 2.8.0-beta.29
+
+### Minor Changes
+
+- 4a856cb: add shape builder and inline config converter
+
 ## 2.8.0-beta.28
 
 ### Minor Changes

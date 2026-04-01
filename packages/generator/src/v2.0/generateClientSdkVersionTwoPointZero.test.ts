@@ -761,6 +761,7 @@ describe("generator", () => {
           ObjectSet as $ObjectSet,
           Osdk as $Osdk,
           PropertyValueWireToClient as $PropType,
+          SingleLinkAccessor as $SingleLinkAccessor,
         } from '@osdk/client';
 
         export type OsdkObjectLinks$SomeInterface = {};
@@ -1451,6 +1452,7 @@ describe("generator", () => {
           ObjectSet as $ObjectSet,
           Osdk as $Osdk,
           PropertyValueWireToClient as $PropType,
+          SingleLinkAccessor as $SingleLinkAccessor,
         } from '@osdk/api';
 
         export type OsdkObjectLinks$SomeInterface = {};
@@ -2739,6 +2741,7 @@ describe("generator", () => {
           ObjectSet as $ObjectSet,
           Osdk as $Osdk,
           PropertyValueWireToClient as $PropType,
+          SingleLinkAccessor as $SingleLinkAccessor,
         } from '@osdk/client';
 
         export type OsdkObjectLinks$SomeInterface = {};

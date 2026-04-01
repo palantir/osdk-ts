@@ -21,7 +21,7 @@ import type {
   PDFViewer,
 } from "pdfjs-dist/web/pdf_viewer.mjs";
 import type { RefObject } from "react";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import type { AnnotationPortalTarget } from "./usePdfAnnotationPortals.js";
 import { usePdfAnnotationPortals } from "./usePdfAnnotationPortals.js";
 import { usePdfDocument } from "./usePdfDocument.js";
@@ -123,7 +123,7 @@ export function usePdfViewerCore({
     document,
   );
 
-  return {
+  return useMemo((): UsePdfViewerCoreResult => ({
     document,
     numPages,
     loading,
@@ -138,5 +138,15 @@ export function usePdfViewerCore({
     pdfViewerRef,
     eventBusRef,
     findControllerRef,
-  };
+  }), [
+    document,
+    numPages,
+    loading,
+    error,
+    currentPage,
+    scrollToPage,
+    scale,
+    setScale,
+    portalTargets,
+  ]);
 }

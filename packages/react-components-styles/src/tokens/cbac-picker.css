@@ -125,6 +125,9 @@
     --osdk-typography-size-body-small
   );
 
+  /* Disabled State */
+  --osdk-cbac-disabled-opacity: 0.6;
+
   /* Category Overflow */
   --osdk-cbac-overflow-button-padding: var(--osdk-cbac-marking-button-padding);
   --osdk-cbac-overflow-button-font-size: var(

@@ -7,10 +7,11 @@ import type {
   ObjectSet as $ObjectSet,
   Osdk as $Osdk,
   PropertyValueWireToClient as $PropType,
+  SingleLinkAccessor as $SingleLinkAccessor,
 } from '@osdk/client';
 
 export interface OsdkObjectLinks$NihalbCastingLinkedInterfaceTypeA {
-  nihalbCastingInterfaceB: NihalbCastingInterfaceB.ObjectSet;
+  nihalbCastingInterfaceB: $SingleLinkAccessor<NihalbCastingInterfaceB>;
 }
 
 export namespace NihalbCastingLinkedInterfaceTypeA {

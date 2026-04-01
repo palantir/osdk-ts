@@ -1,6 +1,6 @@
 {
   "name": "@osdk/react-components-styles",
-  "version": "0.2.0-beta.25",
+  "version": "0.2.0-beta.26",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -13,7 +13,7 @@
     "check-spelling": "cspell --quiet ."
   },
   "peerDependencies": {
-    "@blueprintjs/core": "^5.19.1 || ^6.7.0"
+    "@blueprintjs/core": "^6.8.1"
   },
   "devDependencies": {
     "@blueprintjs/core": "^6.8.1"

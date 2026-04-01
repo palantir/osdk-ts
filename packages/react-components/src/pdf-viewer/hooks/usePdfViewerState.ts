@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { MAX_SCALE, MIN_SCALE, SCALE_STEP } from "../constants.js";
 import type { PdfDownloadResult, SidebarMode } from "../types.js";
 import { usePdfOutline } from "./usePdfOutline.js";
@@ -162,7 +162,7 @@ export function usePdfViewerState({
     });
   }, [core.document, src, onDownload]);
 
-  return {
+  return useMemo((): UsePdfViewerStateResult => ({
     ...core,
     zoomIn,
     zoomOut,
@@ -176,7 +176,21 @@ export function usePdfViewerState({
     search,
     outlineItems,
     download,
-  };
+  }), [
+    core,
+    zoomIn,
+    zoomOut,
+    rotation,
+    rotateLeft,
+    rotateRight,
+    sidebarOpen,
+    sidebarMode,
+    setSidebarMode,
+    toggleSidebar,
+    search,
+    outlineItems,
+    download,
+  ]);
 }
 
 /** Derive a download filename from an explicit name, the src URL, or a fallback. */

@@ -1,5 +1,19 @@
 # @osdkkit/react
 
+## 0.10.0-beta.14
+
+### Minor Changes
+
+- b0930e4: Show helpful error message when hooks are used without OsdkProvider2
+
+### Patch Changes
+
+- Updated dependencies [520398c]
+- Updated dependencies [ffc6efe]
+- Updated dependencies [4a856cb]
+  - @osdk/client@2.8.0-beta.29
+  - @osdk/api@2.8.0-beta.29
+
 ## 0.10.0-beta.13
 
 ### Minor Changes

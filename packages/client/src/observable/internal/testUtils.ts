@@ -601,6 +601,7 @@ export function listPayloadContaining(
     isOptimistic: expect.any(Boolean),
     status: x.status ?? expect.anything(),
     lastUpdated: x.lastUpdated ?? expect.anything(),
+    objectSet: x.objectSet ?? expect.anything(),
   } as ListPayload;
 }
 
