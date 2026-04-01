@@ -424,7 +424,7 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
 
   hashString(input: string): string {
     const stringToHash = this.randomnessUuid
-      ? `${input}${this.randomnessUuid}`
+      ? `${input}-${this.randomnessUuid}`
       : input;
     return createHash("sha256").update(stringToHash, "utf8").digest("hex");
   }
