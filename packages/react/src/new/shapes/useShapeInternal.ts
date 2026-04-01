@@ -213,7 +213,7 @@ export function useShapeSingleInternal<
         void observableClient.invalidateObjectType(objectType);
       }
     },
-    [observableClient, shape.__shapeId, objectType],
+    [observableClient, shape, objectType],
   );
 
   const baseLoading = enabled
@@ -338,13 +338,20 @@ export function useShapeListInternal<
     );
   }, [enabled, shape.__shapeId, observableClient, client, stableLinkConfig]);
 
-  const prevSourceRef = React.useRef<
-    Osdk.Instance<ObjectOrInterfaceDefinition>[] | undefined
-  >(undefined);
-  if (payload?.resolvedList !== prevSourceRef.current) {
-    prevSourceRef.current = payload?.resolvedList as
-      | Osdk.Instance<ObjectOrInterfaceDefinition>[]
-      | undefined;
+  const prevSourceRef = React.useRef<{
+    list: Osdk.Instance<ObjectOrInterfaceDefinition>[] | undefined;
+    store: typeof linksStore;
+  }>({ list: undefined, store: linksStore });
+  if (
+    payload?.resolvedList !== prevSourceRef.current.list
+    || linksStore !== prevSourceRef.current.store
+  ) {
+    prevSourceRef.current = {
+      list: payload?.resolvedList as
+        | Osdk.Instance<ObjectOrInterfaceDefinition>[]
+        | undefined,
+      store: linksStore,
+    };
     if (payload?.resolvedList) {
       linksStore.updateSourceObjects(
         payload.resolvedList as Osdk.Instance<ObjectOrInterfaceDefinition>[],
@@ -432,7 +439,7 @@ export function useShapeListInternal<
         void observableClient.invalidateObjectType(objectType.apiName);
       }
     },
-    [observableClient, shape.__shapeId, objectType.apiName],
+    [observableClient, shape, objectType.apiName],
   );
 
   const loadDeferred = React.useCallback(
