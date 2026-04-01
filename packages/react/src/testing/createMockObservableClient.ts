@@ -290,6 +290,8 @@ export function createMockObservableClient(
     invalidateFunction: NOOP_ASYNC as ObservableClient["invalidateFunction"],
     invalidateFunctionsByObject:
       NOOP_ASYNC as ObservableClient["invalidateFunctionsByObject"],
+    canonicalizeOptions:
+      ((options) => options) as ObservableClient["canonicalizeOptions"],
   };
 
   return mockClient;
