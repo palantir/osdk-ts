@@ -1,5 +1,11 @@
 # @osdk/typescript-sdk-docs
 
+## 0.7.0-beta.4
+
+### Minor Changes
+
+- 8561a8b: Render custom type fields in function doc snippets instead of empty `{}`
+
 ## 0.7.0-beta.3
 
 ### Minor Changes
