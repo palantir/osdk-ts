@@ -1810,7 +1810,7 @@ export namespace SimplePropertyDef {
 }
 
 // @public (undocumented)
-export interface SingleLinkAccessor<T extends ObjectTypeDefinition> {
+export interface SingleLinkAccessor<T extends ObjectOrInterfaceDefinition> {
     	fetchOne: <const A extends SelectArg<T, PropertyKeys<T>, boolean>>(options?: A) => Promise<A extends FetchPageArgs<T, infer L, infer R, any, infer S> ? Osdk.Instance<T, ExtractOptions<R, S>, L & PropertyKeys<T>> : Osdk.Instance<T>>;
     	fetchOneWithErrors: <const A extends SelectArg<T, PropertyKeys<T>, boolean>>(options?: A) => Promise<Result<A extends FetchPageArgs<T, infer L, infer R, any, infer S> ? Osdk.Instance<T, ExtractOptions<R, S>, L> : Osdk.Instance<T>>>;
 }

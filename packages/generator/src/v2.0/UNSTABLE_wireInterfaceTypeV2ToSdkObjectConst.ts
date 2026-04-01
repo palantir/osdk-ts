@@ -145,9 +145,10 @@ Cannot have both an unqualified property and a namespaced property with matching
     return `import type {
       InterfaceDefinition as $InterfaceDefinition,
       InterfaceMetadata as $InterfaceMetadata,
-      ObjectSet as $ObjectSet, 
+      ObjectSet as $ObjectSet,
       Osdk as $Osdk,
       PropertyValueWireToClient as $PropType,
+      SingleLinkAccessor as $SingleLinkAccessor,
     } from "${forInternalUse ? "@osdk/api" : "@osdk/client"}";
     
         ${
@@ -171,7 +172,7 @@ ${
                 return `${
                   definition.multiplicity
                     ? `${linkTarget}.ObjectSet`
-                    : `${linkTarget}.ObjectSet`
+                    : `$SingleLinkAccessor<${linkTarget}>`
                 }
           `;
               },
