@@ -43,3 +43,10 @@ export type { OsdkConfig } from "../public-utils/osdkConfig.js";
 
 export { createClientWithTransaction } from "../createClient.js";
 export type { QueryParameterType, QueryReturnType } from "../queries/types.js";
+
+export {
+  applyShapeTransformations,
+  applyShapeTransformationsToArray,
+  buildObjectSetFromLinkDefByType,
+  getLinkQueryOptions,
+} from "../shapes/index.js";

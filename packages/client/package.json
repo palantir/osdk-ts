@@ -36,15 +36,6 @@
       "require": "./build/cjs/public/internal.cjs",
       "default": "./build/browser/public/internal.js"
     },
-    "./shapes": {
-      "browser": "./build/browser/public/shapes.js",
-      "import": {
-        "types": "./build/types/public/shapes.d.ts",
-        "default": "./build/esm/public/shapes.js"
-      },
-      "require": "./build/cjs/public/shapes.cjs",
-      "default": "./build/browser/public/shapes.js"
-    },
     "./unstable-do-not-use": {
       "browser": "./build/browser/public/unstable-do-not-use.js",
       "import": {
