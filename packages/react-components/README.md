@@ -53,7 +53,23 @@ function App() {
 
 ### CSS Setup
 
-Add this to your application's entry css file (e.g., `index.css` or `index.scss`):
+Add the OSDK style imports to your application's entry CSS file (e.g., `index.css`).
+
+**With Tailwind CSS (recommended for most projects):**
+
+> **Important:** The OSDK imports **must** come _after_ your Tailwind import. Tailwind resets can override OSDK styles if loaded later. The `@layer` declaration at the end ensures the correct cascade order.
+
+```css
+/* index.css */
+@import "tailwindcss" source("..");
+@import "tw-animate-css";
+
+@import "@osdk/react-components-styles" layer(osdk.tokens);
+@import "@osdk/react-components/styles.css" layer(osdk.components);
+@layer osdk.tokens, osdk.components;
+```
+
+**Without Tailwind CSS:**
 
 ```css
 /* index.css */
@@ -61,7 +77,11 @@ Add this to your application's entry css file (e.g., `index.css` or `index.scss`
 
 @import "@osdk/react-components-styles" layer(osdk.tokens);
 @import "@osdk/react-components/styles.css" layer(osdk.components);
+```
 
+**Portal isolation (required):**
+
+```css
 .root {
   isolation: isolate;
 }
@@ -69,7 +89,7 @@ Add this to your application's entry css file (e.g., `index.css` or `index.scss`
 
 The `.root` isolation is required for Base UI portals. See https://base-ui.com/react/overview/quick-start#portals
 
-Using `@layer` ensures proper CSS cascade ordering - component styles are loaded before token styles, allowing tokens to override component defaults when needed.
+Using `@layer` ensures proper CSS cascade ordering — component styles are loaded before token styles, allowing tokens to override component defaults when needed.
 
 ## Components
 
