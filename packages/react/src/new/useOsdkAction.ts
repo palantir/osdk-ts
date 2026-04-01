@@ -144,9 +144,7 @@ export function useOsdkAction<Q extends ActionDefinition<any>>(
       }
 
       // Abort any existing validation
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort();
-      }
+      abortControllerRef.current?.abort();
 
       // Create new AbortController
       const abortController = new AbortController();
@@ -186,9 +184,7 @@ export function useOsdkAction<Q extends ActionDefinition<any>>(
   // Cleanup on unmount
   React.useEffect(() => {
     return () => {
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort();
-      }
+      abortControllerRef.current?.abort();
     };
   }, []);
 
