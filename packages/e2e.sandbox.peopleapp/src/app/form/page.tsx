@@ -1,7 +1,28 @@
 import { BaseForm } from "@osdk/react-components/experimental";
-import type { RendererFieldDefinition } from "@osdk/react-components/experimental";
+import type {
+  BaseFormFieldProps,
+  RendererFieldDefinition,
+} from "@osdk/react-components/experimental";
 import { useCallback, useState } from "react";
 import "./form-page.css";
+
+function RatingSlider({ id, value, onChange }: BaseFormFieldProps<unknown>) {
+  const numericValue = typeof value === "number" ? value : 5;
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+      <input
+        id={id}
+        type="range"
+        min={1}
+        max={10}
+        value={numericValue}
+        onChange={(e) => onChange?.(Number(e.target.value))}
+        style={{ flex: 1 }}
+      />
+      <span>{numericValue} / 10</span>
+    </div>
+  );
+}
 
 const fieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
   {
@@ -10,6 +31,7 @@ const fieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
     label: "Employee Name",
     placeholder: "Enter employee name",
     isRequired: true,
+    fieldComponentProps: {},
   },
   {
     fieldKey: "employmentStart",
@@ -26,6 +48,7 @@ const fieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
     fieldComponent: "DATETIME_PICKER",
     label: "Employment End Date",
     placeholder: "Enter employment end date",
+    fieldComponentProps: {},
   },
   {
     fieldKey: "department",
@@ -99,6 +122,15 @@ const fieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
       ],
       isSearchable: true,
       isMultiple: true,
+    },
+  },
+  {
+    fieldKey: "rating",
+    fieldComponent: "CUSTOM",
+    label: "Rating",
+    defaultValue: 5,
+    fieldComponentProps: {
+      customRenderer: RatingSlider,
     },
   },
 ];
