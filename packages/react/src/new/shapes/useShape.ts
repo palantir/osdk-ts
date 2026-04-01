@@ -42,7 +42,7 @@ export interface UseShapeResult<
   droppedDueToNullability: boolean;
   nullabilityViolations: readonly NullabilityViolation[];
   linkStatus: Partial<{ [K in keyof ShapeDerivedLinks<S>]: LinkStatus }>;
-  loadDeferred: (linkName: keyof ShapeDerivedLinks<S>) => Promise<void>;
+  loadDeferred: (linkName: keyof ShapeDerivedLinks<S>) => void;
   retry: (linkName?: keyof ShapeDerivedLinks<S>) => void;
   invalidate: (linkName?: keyof ShapeDerivedLinks<S>) => void;
 }
@@ -91,7 +91,7 @@ export interface UseShapeListResult<
   loadDeferred: (
     primaryKey: string | number,
     linkName: keyof ShapeDerivedLinks<S>,
-  ) => Promise<void>;
+  ) => void;
   retry: (
     primaryKey?: string | number,
     linkName?: keyof ShapeDerivedLinks<S>,
