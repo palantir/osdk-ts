@@ -14,12 +14,9 @@
  * limitations under the License.
  */
 
-import { createPublicOauthClient } from "@osdk/oauth";
-import * as oauthModule from "@osdk/oauth";
 import { describe, expect, it, vi } from "vitest";
+import { createPublicOauthClient } from "../createPublicOauthClient.js";
 import * as utilsModule from "../utils.js";
-
-const originalCreatePublicOauthClient = oauthModule.createPublicOauthClient;
 
 const FOUNDRY_CLIENT_ID = "example-foundry-client-id";
 const FOUNDRY_URL = "http://example-foundry-url.com";
@@ -31,42 +28,18 @@ vi.stubGlobal("window", {
   },
 });
 
-type CreatePublicOauthClientParams = Parameters<typeof createPublicOauthClient>;
-
-type ProcessedPublicOauthClientOptionsParams = Parameters<
-  typeof utilsModule.processOptionsAndAssignDefaults
->;
-
-type ProcessedPublicOauthClientOptionsReturn = ReturnType<
-  typeof utilsModule.processOptionsAndAssignDefaults
->;
-
 describe("createPublicOauthClient", () => {
   it("should return the same processed options for both client creation methods", async () => {
-    const mockProcessOptionsAndAssignDefaults = vi.fn<
-      (
-        ...args: ProcessedPublicOauthClientOptionsParams
-      ) => ProcessedPublicOauthClientOptionsReturn
-    >();
+    const originalProcessOptions = utilsModule.processOptionsAndAssignDefaults;
+    const calls: ReturnType<
+      typeof utilsModule.processOptionsAndAssignDefaults
+    >[] = [];
 
-    // Mock processOptionsAndAssignDefaults to call the mock function
     vi.spyOn(utilsModule, "processOptionsAndAssignDefaults").mockImplementation(
-      (
-        ...args: ProcessedPublicOauthClientOptionsParams
-      ) => {
-        mockProcessOptionsAndAssignDefaults(...args);
-        return utilsModule.processOptionsAndAssignDefaults(...args);
-      },
-    );
-
-    // Mock createPublicOauthClient to call both the mock and the original function
-    vi.spyOn(oauthModule, "createPublicOauthClient").mockImplementation(
-      (
-        ...args: CreatePublicOauthClientParams
-      ) => {
-        const [_client_id, ...rest] = args;
-        mockProcessOptionsAndAssignDefaults(...rest);
-        return originalCreatePublicOauthClient(...args);
+      (...args) => {
+        const result = originalProcessOptions(...args);
+        calls.push(result);
+        return result;
       },
     );
 
@@ -83,7 +56,7 @@ describe("createPublicOauthClient", () => {
     );
 
     expect(authClient).toBeDefined();
-    expect(mockProcessOptionsAndAssignDefaults).toHaveBeenCalledTimes(1);
+    expect(calls).toHaveLength(1);
 
     const authClientWithOptions = createPublicOauthClient(
       FOUNDRY_CLIENT_ID,
@@ -96,9 +69,8 @@ describe("createPublicOauthClient", () => {
     );
 
     expect(authClientWithOptions).toBeDefined();
-    expect(mockProcessOptionsAndAssignDefaults).toHaveBeenCalledTimes(2);
+    expect(calls).toHaveLength(2);
 
-    const [result1, result2] = mockProcessOptionsAndAssignDefaults.mock.results;
-    expect(result1.value).toEqual(result2.value);
+    expect(calls[0]).toEqual(calls[1]);
   });
 });
