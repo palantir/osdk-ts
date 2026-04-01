@@ -103,7 +103,7 @@ export async function runInterfacesTest2(): Promise<void> {
   const interfaceA = await dsClient(EsongInterfaceA).fetchPage();
   console.log("interfaceA instances: ", interfaceA);
 
-  const huh3 = await interfaceA.data[0].$link.esongPds.fetchPage();
+  const huh3 = await interfaceA.data[0].$link.esongPds.fetchOne();
 
   const implementObjectTypeAAndB = await client(
     NihalbCastingInterfaceTypeA,
