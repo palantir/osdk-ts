@@ -1,5 +1,11 @@
 # @osdk/oauth
 
+## 1.8.0-beta.5
+
+### Minor Changes
+
+- 05cae47: Add optional `logger` parameter to `createPublicOauthClient` for consumer-controlled warning output
+
 ## 1.8.0-beta.4
 
 ### Minor Changes
