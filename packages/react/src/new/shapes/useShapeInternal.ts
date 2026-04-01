@@ -34,7 +34,7 @@ import { ShapeNullabilityError } from "@osdk/api/unstable";
 import {
   applyShapeTransformations,
   applyShapeTransformationsToArray,
-} from "@osdk/client/shapes";
+} from "@osdk/client/unstable-do-not-use";
 import type {
   ObserveObjectCallbackArgs,
   ObserveObjectsCallbackArgs,
@@ -436,11 +436,11 @@ export function useShapeListInternal<
   );
 
   const loadDeferred = React.useCallback(
-    async (
+    (
       pk: string | number,
       linkName: keyof ShapeDerivedLinks<S>,
     ) => {
-      await linksStore.loadDeferred(pk, String(linkName));
+      linksStore.loadDeferred(pk, String(linkName));
     },
     [linksStore],
   );

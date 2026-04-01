@@ -24,7 +24,7 @@ import type {
   ShapeDerivedLinks,
 } from "@osdk/api/unstable";
 import type { Client } from "@osdk/client";
-import { applyShapeTransformationsToArray } from "@osdk/client/shapes";
+import { applyShapeTransformationsToArray } from "@osdk/client/unstable-do-not-use";
 import type {
   ObservableClient,
   Observer,
