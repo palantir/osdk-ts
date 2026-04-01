@@ -1,5 +1,11 @@
 # @osdk/api
 
+## 2.8.0-beta.30
+
+### Minor Changes
+
+- 4ef6adc: Fix interface links off of objects
+
 ## 2.8.0-beta.29
 
 ### Minor Changes
