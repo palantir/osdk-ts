@@ -52,7 +52,7 @@ export async function defineOntologyV2(
 
   const ontologyDefinition = getOntologyDefinition();
 
-  const ridGenerator = new OntologyRidGeneratorImpl();
+  const ridGenerator = new OntologyRidGeneratorImpl(randomnessKey);
   const ontDef = convertOntologyDefinition(
     ontologyDefinition,
     ridGenerator,
