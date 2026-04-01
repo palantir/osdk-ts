@@ -24,13 +24,16 @@ import type {
 import {
   useOsdkFunctions,
   type UseOsdkFunctionsResult,
-} from "@osdk/react/unstable-do-not-use";
+} from "@osdk/react/experimental";
 import { renderHook } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { ColumnDefinition } from "../../ObjectTableApi.js";
-import { useFunctionColumnsData } from "../useFunctionColumnsData.js";
+import {
+  DEDUPE_INTERVAL_MS,
+  useFunctionColumnsData,
+} from "../useFunctionColumnsData.js";
 
-vi.mock("@osdk/react/unstable-do-not-use", () => ({
+vi.mock("@osdk/react/experimental", () => ({
   useOsdkFunctions: vi.fn(),
 }));
 
@@ -208,6 +211,7 @@ describe("useFunctionColumnsData", () => {
         {
           queryDefinition: mockQueryDefinition,
           options: {
+            dedupeIntervalMs: DEDUPE_INTERVAL_MS,
             params: { [OBJ_SET_KEY]: mockObjectSet },
           },
         },
@@ -360,6 +364,7 @@ describe("useFunctionColumnsData", () => {
         {
           queryDefinition: mockQueryDefinition,
           options: {
+            dedupeIntervalMs: DEDUPE_INTERVAL_MS,
             params: { [OBJ_SET_KEY]: mockObjectSet },
           },
         },
@@ -473,12 +478,14 @@ describe("useFunctionColumnsData", () => {
           queryDefinition: mockQueryDefinition,
           options: {
             params: { [OBJ_SET_KEY]: mockObjectSet },
+            dedupeIntervalMs: DEDUPE_INTERVAL_MS,
           },
         },
         {
           queryDefinition: mockQueryDefinition2,
           options: {
             params: { [OBJ_SET_KEY]: mockObjectSet },
+            dedupeIntervalMs: DEDUPE_INTERVAL_MS,
           },
         },
       ],

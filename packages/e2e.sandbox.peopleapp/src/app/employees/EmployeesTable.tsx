@@ -1,8 +1,8 @@
 import type { DerivedProperty, Osdk } from "@osdk/api";
 import type { ColumnDefinition } from "@osdk/react-components/experimental";
 import { ObjectTable } from "@osdk/react-components/experimental";
+import { useOsdkClient } from "@osdk/react/experimental";
 import React, { useCallback } from "react";
-import { $ } from "../../foundryClient.js";
 import {
   Employee,
   getEmployeeDaysSinceStart,
@@ -45,6 +45,7 @@ const columnDefinitions: Array<
       getFunctionParams: (objectSet: any) => ({ employees: objectSet }),
       getKey: (obj: any) => `${obj.$objectType}:${obj.$primaryKey}`,
       getValue: (data: any) => data.daysSinceStart,
+      dedupeIntervalMs: 10_000, // 1 minute dedupe interval for this function column
     } as any,
     columnName: "Days Since Start",
     width: 150,
@@ -110,7 +111,9 @@ export function EmployeesTable() {
     [],
   );
 
-  const os = $(Employee);
+  const client = useOsdkClient();
+
+  const os = client(Employee);
 
   return (
     <div

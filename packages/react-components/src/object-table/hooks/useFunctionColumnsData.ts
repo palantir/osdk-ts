@@ -25,7 +25,7 @@ import type {
 import {
   type FunctionQueryParams,
   useOsdkFunctions,
-} from "@osdk/react/unstable-do-not-use";
+} from "@osdk/react/experimental";
 
 import { useMemo } from "react";
 import type {
@@ -58,7 +58,12 @@ type FunctionColumnConfig<
       object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
     ) => string;
   }>;
+  dedupeIntervalMs?: number;
 };
+
+// Function column data is readOnly and can be cached aggressively,
+// so we set a longer dedupe interval to maximize cache hits
+export const DEDUPE_INTERVAL_MS = 300_000; // 5 minutes
 
 export function useFunctionColumnsData<
   Q extends ObjectOrInterfaceDefinition,
@@ -101,6 +106,8 @@ export function useFunctionColumnsData<
           queryDefinition: config.queryDefinition,
           options: {
             params: config.getParams(stableObjectSet),
+            dedupeIntervalMs: config.dedupeIntervalMs
+              ?? DEDUPE_INTERVAL_MS,
           } as FunctionQueryParams<QueryDefinition<unknown>>["options"],
         }),
       );
@@ -210,6 +217,7 @@ function getFunctionColumnConfigs<
             getValue: locator.getValue,
             getKey: locator.getKey,
           }],
+          dedupeIntervalMs: locator.dedupeIntervalMs,
         });
       }
     }
