@@ -99,13 +99,19 @@ export async function buildObjectSetFromLinkDefByType(
   }
 
   if (linkDef.setOperations && linkDef.setOperations.length > 0) {
-    for (const setOp of linkDef.setOperations) {
-      const otherObjectSet = await buildObjectSetFromLinkDefByType(
-        client,
-        sourceType,
-        sourcePrimaryKey,
-        setOp.other,
-      );
+    const otherObjectSets = await Promise.all(
+      linkDef.setOperations.map(setOp =>
+        buildObjectSetFromLinkDefByType(
+          client,
+          sourceType,
+          sourcePrimaryKey,
+          setOp.other,
+        )
+      ),
+    );
+    for (let i = 0; i < linkDef.setOperations.length; i++) {
+      const setOp = linkDef.setOperations[i];
+      const otherObjectSet = otherObjectSets[i];
       switch (setOp.type) {
         case "union":
           objectSet = objectSet.union(otherObjectSet);

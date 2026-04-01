@@ -23,4 +23,3 @@ Before using any component, read the relevant doc:
 - **Setup & installation**: Read [README.md](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/README.md) for provider, CSS layers, and peer dependencies
 - **ObjectTable**: Read [docs/ObjectTable.md](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/ObjectTable.md) for props, column definitions, examples, theming, and troubleshooting
 - **PdfViewer**: Read [docs/PdfViewer.md](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/PdfViewer.md) for props, annotations, building blocks, hooks, examples, and theming
-- **FilterList**: Read [docs/FilterList.md](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/FilterList.md) for props, examples, and usage

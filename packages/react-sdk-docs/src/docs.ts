@@ -145,16 +145,7 @@ function renderType(
     case "objectSet":
       return `client(${type.objectTypeApiName}).where({ /* filter conditions */ })`;
     case "anonymousCustomType":
-    case "customType": {
-      const entries = Object.entries(type.parameters ?? {});
-      if (entries.length > 0) {
-        const rendered = entries
-          .map(([name, value]) => `"${name}": ${renderType(value)}`)
-          .join(", ");
-        return `{ ${rendered} }`;
-      }
-      return "{}";
-    }
+    case "customType":
     case "interface":
     case "marking":
       return "{}";

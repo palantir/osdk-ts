@@ -262,10 +262,7 @@ async function remapQueryResponse<
       invariant(Array.isArray(responseValue), "Expected array entry");
       for (const entry of responseValue) {
         invariant(entry.key != null, "Expected key");
-        invariant(
-          responseDataType.valueType.nullable || entry.value != null,
-          "Expected value",
-        );
+        invariant(entry.value != null, "Expected value");
         const key = responseDataType.keyType.type === "object"
           ? getObjectSpecifier(
             entry.key,
