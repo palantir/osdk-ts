@@ -18,6 +18,7 @@ import type {
   ObjectOrInterfaceDefinition,
   Osdk,
   PrimaryKeyType,
+  PropertyKeys,
 } from "@osdk/api";
 import type { ShapeDerivedLinkDef } from "@osdk/api/shapes-internal";
 import type {
@@ -70,6 +71,11 @@ export function useShapeSingleInternal<
   const { observableClient, client } = React.useContext(OsdkContext2);
   const objectType = shape.__baseTypeApiName;
 
+  const selectProps = React.useMemo(
+    () => Object.keys(shape.__props) as PropertyKeys<ShapeBaseType<S>>[],
+    [shape.__props],
+  );
+
   const baseStore = React.useMemo(
     () => {
       if (!enabled) {
@@ -85,7 +91,10 @@ export function useShapeSingleInternal<
 
       return makeExternalStore<ObserveObjectCallbackArgs<ShapeBaseType<S>>>(
         (observer) =>
-          observableClient.observeObject(objectType, primaryKey, {}, observer),
+          observableClient.observeObject(objectType, primaryKey, {
+            mode: undefined,
+            ...(selectProps.length > 0 ? { select: selectProps } : {}),
+          }, observer),
         process.env.NODE_ENV !== "production"
           ? `shape[${shape.__shapeId.slice(0, 8)}] ${objectType} ${primaryKey}`
           : void 0,
@@ -97,6 +106,7 @@ export function useShapeSingleInternal<
       objectType,
       primaryKey,
       shape.__shapeId,
+      selectProps,
     ],
   );
 
