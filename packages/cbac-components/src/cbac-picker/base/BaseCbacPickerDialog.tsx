@@ -36,18 +36,7 @@ export function BaseCbacPickerDialog({
   onCancel,
   title = "Select classification",
   submitDisabledReason,
-  categories,
-  markingStates,
-  banner,
-  onMarkingToggle,
-  onDismissBanner,
-  showInfoBanner,
-  requiredMarkingGroups,
-  isValid,
-  readOnly,
-  isLoading,
-  error,
-  className,
+  ...pickerProps
 }: BaseCbacPickerDialogProps): React.ReactElement {
   return (
     <Dialog
@@ -61,21 +50,11 @@ export function BaseCbacPickerDialog({
           submitDisabledReason={submitDisabledReason}
         />
       }
-      disablePointerDismissal
+      disablePointerDismissal={true}
     >
       <BaseCbacPicker
-        categories={categories}
-        markingStates={markingStates}
-        banner={banner}
-        onMarkingToggle={onMarkingToggle}
-        onDismissBanner={onDismissBanner}
-        showInfoBanner={showInfoBanner ?? true}
-        requiredMarkingGroups={requiredMarkingGroups}
-        isValid={isValid}
-        readOnly={readOnly}
-        isLoading={isLoading}
-        error={error}
-        className={className}
+        {...pickerProps}
+        showInfoBanner={pickerProps.showInfoBanner ?? true}
       />
     </Dialog>
   );

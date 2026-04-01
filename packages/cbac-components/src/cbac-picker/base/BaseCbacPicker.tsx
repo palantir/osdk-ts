@@ -43,8 +43,6 @@ export interface BaseCbacPickerProps {
   className?: string;
 }
 
-const DEFAULT_MARKING_STATE: MarkingSelectionState = "NONE";
-
 export function BaseCbacPicker({
   categories,
   markingStates,
@@ -59,21 +57,6 @@ export function BaseCbacPicker({
   error,
   className,
 }: BaseCbacPickerProps): React.ReactElement {
-  const categoriesWithStates = React.useMemo(
-    () =>
-      categories.map((group) => ({
-        category: group.category,
-        markings: group.markings.map((marking) => ({
-          id: marking.id,
-          label: marking.name,
-          selectionState: markingStates.get(marking.id)
-            ?? DEFAULT_MARKING_STATE,
-          disabled: readOnly,
-        })),
-      })),
-    [categories, markingStates, readOnly],
-  );
-
   const showInitialLoading = isLoading === true && categories.length === 0;
   const showValidationWarning = isValid === false
     && requiredMarkingGroups != null
@@ -115,11 +98,13 @@ export function BaseCbacPicker({
         )
         : (
           <div className={styles.categoriesContainer}>
-            {categoriesWithStates.map((group) => (
+            {categories.map((group) => (
               <CategoryMarkingGroup
                 key={group.category.id}
                 categoryName={group.category.name}
                 markings={group.markings}
+                markingStates={markingStates}
+                readOnly={readOnly}
                 onMarkingToggle={onMarkingToggle}
               />
             ))}

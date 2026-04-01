@@ -25,8 +25,6 @@ import type {
   CategoryMarkingGroup,
   CbacBannerData,
   MarkingSelectionState,
-  PickerMarking,
-  PickerMarkingCategory,
   RequiredMarkingGroup,
 } from "./types.js";
 import { EMPTY_ARRAY, resolveRequiredGroups } from "./utils/cbacPickerUtils.js";
@@ -95,35 +93,14 @@ export function useCbacPickerState(
     return errors[0];
   }, [categoriesError, markingsError, restrictionsError, bannerError]);
 
-  const pickerCategories = React.useMemo((): PickerMarkingCategory[] => {
-    if (rawCategories === undefined) {
-      return [];
-    }
-    return rawCategories.map((c): PickerMarkingCategory => ({
-      id: c.id,
-      name: c.name,
-      description: c.description,
-      categoryType: c.categoryType,
-      markingType: c.markingType,
-    }));
-  }, [rawCategories]);
-
-  const pickerMarkings = React.useMemo((): PickerMarking[] => {
-    if (rawMarkings === undefined) {
-      return [];
-    }
-    return rawMarkings.map((m): PickerMarking => ({
-      id: m.id,
-      categoryId: m.categoryId,
-      name: m.name,
-      description: m.description,
-    }));
-  }, [rawMarkings]);
-
   const categoryGroups = React.useMemo(
-    (): CategoryMarkingGroup[] =>
-      groupMarkingsByCategory(pickerMarkings, pickerCategories),
-    [pickerMarkings, pickerCategories],
+    (): CategoryMarkingGroup[] => {
+      if (rawCategories === undefined || rawMarkings === undefined) {
+        return [];
+      }
+      return groupMarkingsByCategory(rawMarkings, rawCategories);
+    },
+    [rawMarkings, rawCategories],
   );
 
   const markingStates = React.useMemo(
