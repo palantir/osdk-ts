@@ -274,10 +274,15 @@ export function useOsdkObject<
 
   let { subscribe, getSnapShot } = baseStore;
   if (isSuspense) {
-    const selectKey = stableSelect ? JSON.stringify(stableSelect) : "";
-    const cacheKey = `${
-      getClientId(observableClient)
-    }:obj:${apiNameString}:${primaryKey}:${mode ?? ""}:${selectKey}`;
+    const cacheKey = JSON.stringify([
+      getClientId(observableClient),
+      "obj",
+      apiNameString,
+      primaryKey,
+      mode ?? null,
+      stableSelect ?? null,
+      loadPropertySecurityMetadata ?? null,
+    ]);
     ({ subscribe, getSnapShot } = setupSuspenseStore<
       ObserveObjectCallbackArgs<Q>
     >(

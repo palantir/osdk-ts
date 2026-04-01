@@ -502,17 +502,23 @@ export function useOsdkObjects<
 
   let { subscribe, getSnapShot } = baseStore;
   if (isSuspense) {
-    const cacheKey =
-      `${getClientId(observableClient)}:list:${type.apiName}:${
-        JSON.stringify(canonOptions.where)
-      }`
-      + `:${JSON.stringify(stableRids ?? null)}`
-      + `:${pageSize ?? ""}:${dedupeIntervalMs ?? ""}`
-      + `:${JSON.stringify(canonOptions.orderBy ?? null)}`
-      + `:${streamUpdates ?? ""}:${JSON.stringify(autoFetchMore ?? null)}`
-      + `:${JSON.stringify(canonOptions.withProperties ?? null)}`
-      + `:${JSON.stringify(canonOptions.intersectWith ?? null)}`
-      + `:${pivotTo ?? ""}:${JSON.stringify(canonOptions.$select ?? null)}`;
+    const cacheKey = JSON.stringify([
+      getClientId(observableClient),
+      "list",
+      type.apiName,
+      canonOptions.where ?? null,
+      stableRids ?? null,
+      pageSize ?? null,
+      dedupeIntervalMs ?? null,
+      canonOptions.orderBy ?? null,
+      streamUpdates ?? null,
+      autoFetchMore ?? null,
+      canonOptions.withProperties ?? null,
+      canonOptions.intersectWith ?? null,
+      pivotTo ?? null,
+      canonOptions.$select ?? null,
+      $loadPropertySecurityMetadata ?? null,
+    ]);
 
     ({ subscribe, getSnapShot } = setupSuspenseStore<
       ObserveObjectsCallbackArgs<Q, RDPs>
