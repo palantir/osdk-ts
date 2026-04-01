@@ -131,7 +131,7 @@ export interface OntologyRidGenerator {
     apiName: string,
   ): StructFieldRid;
   // Datasource locator methods
-  generateLocator(
+  generateDatasetLocator(
     dataSetName: string,
     columnNames: Set<string>,
   ): DatasetDatasourceLocator;
@@ -730,7 +730,7 @@ export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
   }
 
   // Datasource locator methods
-  generateLocator(
+  generateDatasetLocator(
     dataSetName: string,
     columnNames: Set<string>,
   ): DatasetDatasourceLocator {

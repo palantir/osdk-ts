@@ -158,17 +158,18 @@ export function convertLink(
         },
       },
     };
-
+    const datasetLocator = ridGenerator.generateDatasetLocator(
+      `link.${linkType.apiName}`,
+      new Set([resolvedColumnA, resolvedColumnB]),
+    );
     datasource = {
       rid: ridGenerator.generateDatasourceRid(linkType.apiName),
       datasource: {
         type: "dataset",
         dataset: {
           // TODO: Add proper branchId from link configuration
-          branchId: "main",
-          datasetRid: ridGenerator.generateDatasourceRid(
-            linkType.apiName,
-          ),
+          branchId: datasetLocator.branchId,
+          datasetRid: datasetLocator.rid,
           writebackDatasetRid: undefined,
           // TODO: Convert property mappings to use property RIDs as keys
           objectTypeAPrimaryKeyMapping: {
