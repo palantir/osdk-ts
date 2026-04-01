@@ -228,9 +228,9 @@ export class ObjectSetQuery extends BaseListQuery<
 
     // Fetch the data with pagination
     const resp = await this.#composedObjectSet.fetchPage({
-      $includeRid: true,
       $nextPageToken: this.nextPageToken,
       $pageSize: this.getEffectiveFetchPageSize(),
+      $includeRid: true,
       ...(this.#operations.select && this.#operations.select.length > 0
         ? { $select: this.#operations.select }
         : {}),

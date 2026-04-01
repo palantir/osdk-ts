@@ -317,7 +317,7 @@ export interface ObservableClient extends ObserveLinks {
   observeObject<T extends ObjectOrInterfaceDefinition>(
     apiName: T["apiName"] | T,
     pk: PrimaryKeyType<T>,
-    options: Omit<ObserveObjectOptions<T>, "apiName" | "pk">,
+    options: ObserveOptions,
     subFn: Observer<ObserveObjectCallbackArgs<T>>,
   ): Unsubscribable;
 

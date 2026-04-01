@@ -284,11 +284,6 @@ export class ObjectSetListenerWebsocket {
     if (process.env.NODE_ENV !== "production") {
       this.#logger?.debug("#sendSubscribeMessage()");
     }
-
-    if (this.#ws?.readyState !== WebSocket.OPEN) {
-      return;
-    }
-
     // If two calls to `.subscribe()` happen at once (or if the connection is reset),
     // we may have multiple subscriptions that don't have a subscriptionId yet,
     // so we filter those out.
@@ -311,7 +306,7 @@ export class ObjectSetListenerWebsocket {
         },
       ) => {
         return {
-          objectSet: objectSet,
+          objectSet,
           propertySet: requestedProperties,
           referenceSet: requestedReferenceProperties,
           objectLoadingResponseOptions: { shouldLoadObjectRids: true },
@@ -325,7 +320,7 @@ export class ObjectSetListenerWebsocket {
         "sending subscribe message",
       );
     }
-    this.#ws.send(JSON.stringify(subscribe));
+    this.#ws?.send(JSON.stringify(subscribe));
   }
 
   #unsubscribe<Q extends ObjectOrInterfaceDefinition>(
@@ -564,7 +559,7 @@ export class ObjectSetListenerWebsocket {
       ) as Array<Osdk.Instance<any>>;
       const singleOsdkObject = osdkObjectArray[0] ?? undefined;
 
-      const rid = singleOsdkObject["$rid"] as string | undefined;
+      const rid = singleOsdkObject.$rid as string | undefined;
 
       return singleOsdkObject != null
         ? rid === undefined
@@ -575,7 +570,7 @@ export class ObjectSetListenerWebsocket {
           : {
             object: singleOsdkObject,
             state: o.state,
-            rid: rid,
+            rid,
           }
         : undefined;
     }));
@@ -736,7 +731,7 @@ export class ObjectSetListenerWebsocket {
     error: any,
   ) => {
     try {
-      sub.listener.onError({ subscriptionClosed: subscriptionClosed, error });
+      sub.listener.onError({ subscriptionClosed, error });
     } catch (onErrorError) {
       // eslint-disable-next-line no-console
       console.error(
