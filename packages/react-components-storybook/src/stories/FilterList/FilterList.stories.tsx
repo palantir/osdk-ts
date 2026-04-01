@@ -786,6 +786,63 @@ const filterDefinitions = [
   render: (args) => <WithListogramDisplayModesStory {...args} />,
 };
 
+function WithCheckboxStory(args: Partial<EmployeeFilterListProps>) {
+  const objectSet = useEmployeeObjectSet();
+  const filterDefinitions = useMemo(
+    (): FilterDefinitionUnion<Employee>[] => [
+      {
+        type: "PROPERTY",
+        id: "department-checkbox",
+        key: "department",
+        label: "Department",
+        filterComponent: "LISTOGRAM",
+        filterState: { type: "EXACT_MATCH", values: [] },
+      } as FilterDefinitionUnion<Employee>,
+      {
+        type: "PROPERTY",
+        id: "team-checkbox",
+        key: "team",
+        label: "Team",
+        filterComponent: "LISTOGRAM",
+        filterState: { type: "EXACT_MATCH", values: [] },
+      } as FilterDefinitionUnion<Employee>,
+    ],
+    [],
+  );
+
+  return (
+    <div style={SIDEBAR_STYLE}>
+      <FilterList
+        objectSet={objectSet}
+        filterDefinitions={filterDefinitions}
+        {...args}
+      />
+    </div>
+  );
+}
+
+export const WithCheckbox: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story: "Listogram rows always include a checkbox for multi-select. "
+          + "Selecting values checks the checkbox and highlights the row. "
+          + "Use the exclude toggle (three-dot menu) to invert selections.",
+      },
+      source: {
+        code: `<FilterList
+  objectSet={client(Employee)}
+  filterDefinitions={[
+    { type: "PROPERTY", key: "department", label: "Department", filterComponent: "LISTOGRAM", filterState: { type: "EXACT_MATCH", values: [] } },
+    { type: "PROPERTY", key: "team", label: "Team", filterComponent: "LISTOGRAM", filterState: { type: "EXACT_MATCH", values: [] } },
+  ]}
+/>`,
+      },
+    },
+  },
+  render: (args) => <WithCheckboxStory {...args} />,
+};
+
 function CombinedWithObjectTableStory(
   args: Partial<EmployeeFilterListProps>,
 ) {
