@@ -32,7 +32,7 @@ export interface FunctionQueryParams<Q extends QueryDefinition<unknown>> {
   options?: Pick<UseOsdkFunctionOptions<Q>, "params" | "enabled">;
 }
 
-export interface useOsdkFunctionQueriesProps {
+export interface UseOsdkFunctionsProps {
   /**
    * Array of query configurations to execute
    */
@@ -46,7 +46,7 @@ export interface useOsdkFunctionQueriesProps {
   enabled?: boolean;
 }
 
-export type UseOsdkFunctionQueriesResult = Array<
+export type UseOsdkFunctionsResult = Array<
   Omit<UseOsdkFunctionResult<QueryDefinition<unknown>>, "refetch">
 >;
 
@@ -57,13 +57,13 @@ export type UseOsdkFunctionQueriesResult = Array<
  * @param options - Configuration options containing the queries to execute
  * @returns Array of results in the same order as input queries, each with the same shape as useOsdkFunction
  */
-export function useOsdkFunctionQueries(
-  { queries, enabled = true }: useOsdkFunctionQueriesProps,
-): UseOsdkFunctionQueriesResult {
+export function useOsdkFunctions(
+  { queries, enabled = true }: UseOsdkFunctionsProps,
+): UseOsdkFunctionsResult {
   const client = useOsdkClient();
 
   const [results, setResults] = React.useState<
-    UseOsdkFunctionQueriesResult
+    UseOsdkFunctionsResult
   >(() =>
     queries.map(() => ({
       data: undefined,

@@ -19,7 +19,7 @@ import type { Client } from "@osdk/client";
 import { renderHook, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi, vitest } from "vitest";
 import { useOsdkClient } from "../../useOsdkClient.js";
-import { useOsdkFunctionQueries } from "../useOsdkFunctionQueries.js";
+import { useOsdkFunctions } from "../useOsdkFunctions.js";
 
 vi.mock("../../useOsdkClient.js");
 
@@ -35,7 +35,7 @@ const mockQueryDefinition2 = {
   version: "1.0.0",
 } as QueryDefinition<any>;
 
-describe("useOsdkFunctionQueries", () => {
+describe("useOsdkFunctions", () => {
   const mockExecuteFunction = vitest.fn();
   const mockClient = vitest.fn(() => ({
     executeFunction: mockExecuteFunction,
@@ -48,7 +48,7 @@ describe("useOsdkFunctionQueries", () => {
 
   it("should return initial state when no queries are provided", () => {
     const { result } = renderHook(
-      () => useOsdkFunctionQueries({ queries: [] }),
+      () => useOsdkFunctions({ queries: [] }),
     );
 
     expect(result.current).toEqual([]);
@@ -57,7 +57,7 @@ describe("useOsdkFunctionQueries", () => {
   it("should not execute queries when enabled is false", () => {
     const { result } = renderHook(
       () =>
-        useOsdkFunctionQueries({
+        useOsdkFunctions({
           queries: [
             { queryDefinition: mockQueryDefinition1 },
           ],
@@ -80,7 +80,7 @@ describe("useOsdkFunctionQueries", () => {
 
     const { result } = renderHook(
       () =>
-        useOsdkFunctionQueries(
+        useOsdkFunctions(
           {
             queries: [
               {
@@ -129,7 +129,7 @@ describe("useOsdkFunctionQueries", () => {
 
     const { result } = renderHook(
       () =>
-        useOsdkFunctionQueries({
+        useOsdkFunctions({
           queries: [
             {
               queryDefinition: mockQueryDefinition1,
@@ -176,7 +176,7 @@ describe("useOsdkFunctionQueries", () => {
 
     const { result } = renderHook(
       () =>
-        useOsdkFunctionQueries({
+        useOsdkFunctions({
           queries: [
             {
               queryDefinition: mockQueryDefinition1,
@@ -214,7 +214,7 @@ describe("useOsdkFunctionQueries", () => {
 
     const { result } = renderHook(
       () =>
-        useOsdkFunctionQueries({
+        useOsdkFunctions({
           queries: [
             { queryDefinition: mockQueryDefinition1 },
           ],
@@ -243,7 +243,7 @@ describe("useOsdkFunctionQueries", () => {
 
     const { result } = renderHook(
       () =>
-        useOsdkFunctionQueries({
+        useOsdkFunctions({
           queries: [
             { queryDefinition: mockQueryDefinition1 },
             { queryDefinition: mockQueryDefinition2 },
@@ -268,7 +268,7 @@ describe("useOsdkFunctionQueries", () => {
 
     const { unmount } = renderHook(
       () =>
-        useOsdkFunctionQueries({
+        useOsdkFunctions({
           queries: [
             { queryDefinition: mockQueryDefinition1 },
           ],
@@ -300,7 +300,7 @@ describe("useOsdkFunctionQueries", () => {
 
     const { result } = renderHook(
       () =>
-        useOsdkFunctionQueries({
+        useOsdkFunctions({
           queries: [
             { queryDefinition: mockQueryDefinition1 },
             { queryDefinition: mockQueryDefinition2 },
@@ -346,7 +346,7 @@ describe("useOsdkFunctionQueries", () => {
 
     const { result, rerender } = renderHook(
       ({ params }) =>
-        useOsdkFunctionQueries({
+        useOsdkFunctions({
           queries: [
             {
               queryDefinition: mockQueryDefinition1,

@@ -24,7 +24,7 @@ import type {
 } from "@osdk/api";
 import {
   type FunctionQueryParams,
-  useOsdkFunctionQueries,
+  useOsdkFunctions,
 } from "@osdk/react/unstable-do-not-use";
 
 import { useMemo } from "react";
@@ -89,7 +89,7 @@ export function useFunctionColumnsData<
   const disabled = !stableObjectSet || !stableObjects?.length
     || functionColumnConfigs.length === 0;
 
-  // Prepare queries for useOsdkFunctionQueries
+  // Prepare queries for useOsdkFunctions
   const queries = useMemo(
     () => {
       if (disabled) {
@@ -108,7 +108,7 @@ export function useFunctionColumnsData<
     [disabled, functionColumnConfigs, stableObjectSet],
   );
 
-  const results = useOsdkFunctionQueries(
+  const results = useOsdkFunctions(
     {
       queries,
       enabled: !disabled,

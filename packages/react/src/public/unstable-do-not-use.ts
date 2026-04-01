@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-export { useOsdkFunctionQueries } from "../new/useOsdkFunctionQueries.js";
+export { useOsdkFunctions } from "../new/useOsdkFunctions.js";
 export type {
   FunctionQueryParams,
-  useOsdkFunctionQueriesProps,
-  UseOsdkFunctionQueriesResult,
-} from "../new/useOsdkFunctionQueries.js";
+  UseOsdkFunctionsProps,
+  UseOsdkFunctionsResult,
+} from "../new/useOsdkFunctions.js";
