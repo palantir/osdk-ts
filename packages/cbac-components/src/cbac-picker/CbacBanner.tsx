@@ -24,7 +24,6 @@ export interface CbacBannerProps {
   onClick?: () => void;
   onDismiss?: () => void;
   className?: string;
-  style?: React.CSSProperties;
 }
 
 export function CbacBanner({
@@ -32,7 +31,6 @@ export function CbacBanner({
   onClick,
   onDismiss,
   className,
-  style,
 }: CbacBannerProps): React.ReactElement {
   const { banner } = useCbacBanner({ markingIds });
   const resolved = resolveBannerDisplay(banner);
@@ -45,7 +43,6 @@ export function CbacBanner({
       onClick={onClick}
       onDismiss={onDismiss}
       className={className}
-      style={style}
     />
   );
 }

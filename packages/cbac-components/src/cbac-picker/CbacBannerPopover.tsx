@@ -31,14 +31,12 @@ export interface CbacBannerPopoverProps {
   markingIds: string[];
   onChange: (markingIds: string[]) => void;
   className?: string;
-  style?: React.CSSProperties;
 }
 
 export function CbacBannerPopover({
   markingIds,
   onChange,
   className,
-  style,
 }: CbacBannerPopoverProps): React.ReactElement {
   const {
     banner,
@@ -141,7 +139,6 @@ export function CbacBannerPopover({
         error={error}
         onRetry={handleRetry}
         className={className}
-        style={style}
       />
       {isDialogOpen && (
         <CbacPickerDialog

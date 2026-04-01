@@ -40,7 +40,6 @@ export interface BaseCbacBannerPopoverProps {
   onDismiss?: () => void;
   warnings?: string[];
   className?: string;
-  style?: React.CSSProperties;
 }
 
 export function BaseCbacBannerPopover({
@@ -56,7 +55,6 @@ export function BaseCbacBannerPopover({
   onDismiss,
   warnings,
   className,
-  style,
 }: BaseCbacBannerPopoverProps): React.ReactElement {
   const [open, setOpen] = React.useState(false);
 
@@ -88,10 +86,8 @@ export function BaseCbacBannerPopover({
               classificationString={classificationString}
               textColor={textColor}
               backgroundColors={backgroundColors}
-              interactive
               onDismiss={onDismiss}
               className={className}
-              style={style}
             />
             <span
               className={classnames(
