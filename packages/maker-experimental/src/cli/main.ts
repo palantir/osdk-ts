@@ -81,7 +81,6 @@ export default async function main(
       randomnessKey: {
         describe: "Value used to assure uniqueness of entities",
         type: "string",
-        coerce: path.resolve,
       },
     })
     .parseAsync();
