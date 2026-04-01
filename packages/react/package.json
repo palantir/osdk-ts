@@ -69,8 +69,8 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "peerDependencies": {
-    "@osdk/api": "*",
-    "@osdk/client": "*",
+    "@osdk/api": ">=2.8.0-beta.0",
+    "@osdk/client": ">=2.8.0-beta.0",
     "@osdk/foundry.admin": "*",
     "@osdk/foundry.core": "*",
     "@types/react": "^17 || ^18 || ^19",
