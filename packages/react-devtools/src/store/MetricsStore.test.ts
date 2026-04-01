@@ -323,6 +323,7 @@ describe("MetricsStore", () => {
       ],
     });
     const localStore = new MetricsStore(100, 10);
+    const unsub = localStore.subscribe(() => {});
 
     localStore.recordCacheHit("ts-sig", 5);
     vi.advanceTimersByTime(10);
@@ -333,6 +334,7 @@ describe("MetricsStore", () => {
     expect(snapshot.timeSeries.timestamps.length).toBeGreaterThan(0);
     expect(snapshot.timeSeries.cacheHits.some((n: number) => n > 0)).toBe(true);
 
+    unsub();
     localStore.dispose();
   });
 

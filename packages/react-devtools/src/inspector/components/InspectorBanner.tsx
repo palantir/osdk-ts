@@ -61,7 +61,9 @@ const hintStyles: React.CSSProperties = {
 export const InspectorBanner: React.FC<InspectorBannerProps> = (
   { visible },
 ) => {
-  if (!visible) return null;
+  if (!visible) {
+    return null;
+  }
 
   return (
     <div style={bannerStyles}>

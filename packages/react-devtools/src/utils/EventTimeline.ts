@@ -264,11 +264,27 @@ export class EventTimeline {
     }
   }
 
-  getLastEmission(subscriptionId: string): EmissionEvent | null {
-    const emissions = this.getEventsByType("EMISSION")
-      .filter(e => e.subscriptionId === subscriptionId)
-      .sort((a, b) => b.timestamp - a.timestamp);
+  findLast<T extends MonitorEvent["type"]>(
+    type: T,
+    predicate: (event: Extract<MonitorEvent, { type: T }>) => boolean,
+  ): Extract<MonitorEvent, { type: T }> | null {
+    const arr = this.events.getLast(this.events.getSize());
+    for (let i = arr.length - 1; i >= 0; i--) {
+      const event = arr[i];
+      if (
+        event.type === type
+        && predicate(event as Extract<MonitorEvent, { type: T }>)
+      ) {
+        return event as Extract<MonitorEvent, { type: T }>;
+      }
+    }
+    return null;
+  }
 
-    return emissions[0] || null;
+  getLastEmission(subscriptionId: string): EmissionEvent | null {
+    return this.findLast(
+      "EMISSION",
+      (e) => e.subscriptionId === subscriptionId,
+    );
   }
 }

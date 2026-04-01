@@ -134,7 +134,7 @@ export class MonitorStore {
     if (typeof window !== "undefined") {
       window.__OSDK_MONITOR__ = {
         componentRegistry: this.componentRegistry,
-        componentContextCapture: componentContextCapture,
+        componentContextCapture,
         prototypeOverrideStore: this.prototypeOverrideStore,
       };
     }
@@ -274,6 +274,9 @@ export class MonitorStore {
     this.unsubscribeFiberCommit?.();
     this.unsubscribeFiberCommit = null;
     this.uninstallGlobalFetchInterceptor();
+    if (typeof window !== "undefined") {
+      delete (window as unknown as Record<string, unknown>).__OSDK_MONITOR__;
+    }
     this.metricsStore.dispose();
     this.computeStore.dispose();
     this.componentRegistry.clear();

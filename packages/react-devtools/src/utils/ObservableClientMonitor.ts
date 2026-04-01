@@ -35,9 +35,7 @@ import type {
 } from "../types/index.js";
 import { ActionLifecycleTracker } from "./ActionLifecycleTracker.js";
 import { componentContextCapture } from "./ComponentContextCapture.js";
-import type {
-  ComponentQueryRegistry,
-} from "./ComponentQueryRegistry.js";
+import type { ComponentQueryRegistry } from "./ComponentQueryRegistry.js";
 import type { EventTimeline } from "./EventTimeline.js";
 import type { LinkTraversalTracker } from "./LinkTraversalTracker.js";
 import type { PropertyAccessTracker } from "./PropertyAccessTracker.js";
@@ -155,8 +153,6 @@ export class ObservableClientMonitor {
   private readonly actionTracker: ActionLifecycleTracker;
   private readonly cleanupIntervalMs: number;
   private cleanupIntervalId: ReturnType<typeof setInterval> | null = null;
-  private observableClient: ObservableClient | null = null;
-
   private componentRegistry: ComponentQueryRegistry;
   private linkTraversalTracker: LinkTraversalTracker;
   private propertyAccessTracker: PropertyAccessTracker;
@@ -194,7 +190,6 @@ export class ObservableClientMonitor {
   }
 
   wrapClient(client: ObservableClient): ObservableClient {
-    this.observableClient = client;
     this.wrappedClient = client;
     const methodCache = new Map<string | symbol, unknown>();
 
@@ -542,8 +537,8 @@ export class ObservableClientMonitor {
         ? options.type
         : options.type.apiName;
 
-      const canonicalWhere = this.observableClient
-        ? this.observableClient.canonicalizeWhereClause(options.where ?? {})
+      const canonicalWhere = this.wrappedClient
+        ? this.wrappedClient.canonicalizeWhereClause(options.where ?? {})
         : options.where ?? {};
       const whereClause = JSON.stringify(canonicalWhere);
 

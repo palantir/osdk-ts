@@ -64,6 +64,7 @@ export class MetricsStore extends SubscribableStore {
   private isProcessing = false;
   private lastSnapshot: MetricsSnapshot | null = null;
   private intervalId: ReturnType<typeof setInterval> | null = null;
+  private subscriberCount = 0;
   private actionErrors: ActionError[] = [];
   private cachedAvgNetworkTime: number = 100;
   private cachedAvgBytesPerObject: number = 1024;
@@ -106,8 +107,6 @@ export class MetricsStore extends SubscribableStore {
       revalidations: [],
       deduplications: [],
     };
-
-    this.intervalId = setInterval(() => this.updateTimeSeries(), 1000);
   }
 
   recordCacheHit(
@@ -280,6 +279,22 @@ export class MetricsStore extends SubscribableStore {
     this.notifySubscribers();
   }
 
+  override subscribe(callback: () => void): () => void {
+    const unsub = super.subscribe(callback);
+    this.subscriberCount++;
+    if (this.subscriberCount === 1 && this.intervalId == null) {
+      this.intervalId = setInterval(() => this.updateTimeSeries(), 1000);
+    }
+    return () => {
+      unsub();
+      this.subscriberCount--;
+      if (this.subscriberCount === 0 && this.intervalId != null) {
+        clearInterval(this.intervalId);
+        this.intervalId = null;
+      }
+    };
+  }
+
   dispose(): void {
     if (this.intervalId) {
       clearInterval(this.intervalId);
@@ -288,6 +303,7 @@ export class MetricsStore extends SubscribableStore {
 
     this.reset();
     this.clearSubscribers();
+    this.subscriberCount = 0;
     this.pendingUpdates = [];
     this.isProcessing = false;
   }

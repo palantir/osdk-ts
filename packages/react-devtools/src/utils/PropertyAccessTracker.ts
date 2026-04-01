@@ -348,9 +348,8 @@ export class PropertyAccessTracker {
       const totalRenders = this.componentRenders.get(componentId) || 0;
 
       if (totalRenders > 5) {
-        // Only check components with multiple renders
         for (const [property, accessCount] of propMap) {
-          if (accessCount === 0) {
+          if (accessCount < totalRenders * 0.1) {
             unused.push({
               componentId,
               componentName: this.componentNames.get(componentId)

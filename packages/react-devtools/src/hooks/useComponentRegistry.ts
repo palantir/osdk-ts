@@ -29,7 +29,7 @@ export function useComponentRegistry(
   );
 
   const getSnapshot = React.useCallback(
-    () => registry,
+    () => registry.getVersion(),
     [registry],
   );
 

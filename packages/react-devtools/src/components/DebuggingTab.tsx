@@ -18,7 +18,6 @@ import { Icon, InputGroup } from "@blueprintjs/core";
 import React, { useCallback, useMemo, useRef, useState } from "react";
 import { createPollingStore } from "../hooks/createPollingStore.js";
 import { useActiveComponents } from "../hooks/useActiveComponents.js";
-import { useComponentRegistry } from "../hooks/useComponentRegistry.js";
 import { useConsoleLogs } from "../hooks/useConsoleLogs.js";
 import type { MonitorStore } from "../store/MonitorStore.js";
 import type { ComponentHookBinding } from "../utils/ComponentQueryRegistry.js";
@@ -120,7 +119,6 @@ export const DebuggingTab: React.FC<DebuggingTabProps> = ({ monitorStore }) => {
 
   const componentRefs = useRef<Map<string, HTMLDivElement>>(new Map());
 
-  useComponentRegistry(monitorStore);
   const activeComponents = useActiveComponents(monitorStore);
   const { entries: consoleEntries, count: consoleCount, clear: clearConsole } =
     useConsoleLogs(monitorStore);
@@ -240,7 +238,7 @@ export const DebuggingTab: React.FC<DebuggingTabProps> = ({ monitorStore }) => {
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className={styles.searchInput}
-          fill
+          fill={true}
         />
       </div>
 
