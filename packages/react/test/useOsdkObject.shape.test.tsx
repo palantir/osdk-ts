@@ -67,7 +67,7 @@ describe("useOsdkObject with pre-built ShapeDefinition", () => {
     mockObserveObject.mockReturnValue({ unsubscribe: vitest.fn() });
   });
 
-  it("should call observeObject for shape properties", () => {
+  it("should call observeObject with select for shape properties", () => {
     const shape = makeMockShapeDefinition({
       name: { nullabilityOp: { type: "require" } },
       age: { nullabilityOp: { type: "select" } },
@@ -82,7 +82,7 @@ describe("useOsdkObject with pre-built ShapeDefinition", () => {
     expect(mockObserveObject).toHaveBeenCalledWith(
       "MockObject",
       "pk-1",
-      {},
+      { mode: undefined, select: expect.arrayContaining(["name", "age"]) },
       expect.any(Object),
     );
   });
