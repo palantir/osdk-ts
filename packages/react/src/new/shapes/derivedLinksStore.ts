@@ -85,7 +85,6 @@ interface LinkEntry {
   sourceObject: Osdk.Instance<ObjectOrInterfaceDefinition>;
   status: "init" | "loading" | "loaded" | "error" | "deferred";
   data: AnyShapeInstance[];
-  rawObjects: Osdk.Instance<ObjectOrInterfaceDefinition>[];
   error?: Error;
   hasMore: boolean;
   fetchMore: () => Promise<void>;
@@ -169,7 +168,6 @@ export function createDerivedLinksStore<
       sourceObject: castSource,
       status: isDeferred ? "deferred" : "init",
       data: [],
-      rawObjects: [],
       error: undefined,
       hasMore: false,
       fetchMore: NOOP_FETCH_MORE,
@@ -249,7 +247,6 @@ export function createDerivedLinksStore<
             sourceObject: rawObj,
             status: nestedLinkDef.config.defer ? "deferred" : "init",
             data: [],
-            rawObjects: [],
             error: undefined,
             hasMore: false,
             fetchMore: NOOP_FETCH_MORE,
@@ -362,6 +359,10 @@ export function createDerivedLinksStore<
       entry.linkDef.objectSetDef,
     );
 
+    if (isDestroyed) {
+      return;
+    }
+
     const config = linkEntries.has(entry.linkDef.name)
       ? linkConfig[entry.linkDef.name as keyof ShapeDerivedLinks<S>]
       : undefined;
@@ -374,6 +375,9 @@ export function createDerivedLinksStore<
 
     const observer: Observer<ListObserverPayload> = {
       next: (payload) => {
+        if (isDestroyed) {
+          return;
+        }
         const resolved = payload.resolvedList ?? [];
         const transformResult = applyShapeTransformationsToArray(
           entry.linkDef.targetShape,
@@ -381,7 +385,6 @@ export function createDerivedLinksStore<
         );
 
         entry.status = payload.status === "loading" ? "loading" : "loaded";
-        entry.rawObjects = resolved;
         entry.hasMore = payload.hasMore;
         entry.fetchMore = payload.fetchMore;
         entry.error = violationsToError(
@@ -395,6 +398,9 @@ export function createDerivedLinksStore<
         notifySubscribers();
       },
       error: (err) => {
+        if (isDestroyed) {
+          return;
+        }
         entry.status = "error";
         entry.error = wrapError(err);
         notifySubscribers();
@@ -468,6 +474,7 @@ export function createDerivedLinksStore<
         cleanupNestedMap(nestedMap);
       }
     }
+    linkEntries.clear();
   }
 
   const subscribe = createStoreSubscribe(
