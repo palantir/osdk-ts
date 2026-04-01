@@ -17,7 +17,7 @@
 import React from "react";
 import { BaseCbacPickerDialog } from "./base/BaseCbacPickerDialog.js";
 import { useCbacPickerState } from "./useCbacPickerState.js";
-import { EMPTY_ARRAY, resolveRequiredGroups } from "./utils/cbacPickerUtils.js";
+import { EMPTY_ARRAY } from "./utils/cbacPickerUtils.js";
 import { toggleMarking } from "./utils/selectionLogic.js";
 
 export interface CbacPickerDialogProps {
@@ -79,11 +79,6 @@ export function CbacPickerDialog({
     setSelectedIds(EMPTY_ARRAY);
   }, []);
 
-  const resolvedRequiredGroups = React.useMemo(
-    () => resolveRequiredGroups(categoryGroups, requiredMarkingGroups),
-    [categoryGroups, requiredMarkingGroups],
-  );
-
   const hasInitialMarkings = initialMarkingIds !== undefined
     && initialMarkingIds.length > 0;
 
@@ -91,11 +86,11 @@ export function CbacPickerDialog({
     if (isValid) {
       return undefined;
     }
-    if (resolvedRequiredGroups.length > 0) {
+    if (requiredMarkingGroups.length > 0) {
       return "Selected markings do not include all required markings.";
     }
     return "Invalid marking selection.";
-  }, [isValid, resolvedRequiredGroups.length]);
+  }, [isValid, requiredMarkingGroups.length]);
 
   return (
     <BaseCbacPickerDialog
@@ -109,7 +104,7 @@ export function CbacPickerDialog({
       banner={banner}
       onMarkingToggle={handleMarkingToggle}
       onDismissBanner={handleDismiss}
-      requiredMarkingGroups={resolvedRequiredGroups}
+      requiredMarkingGroups={requiredMarkingGroups}
       isValid={isValid}
       submitDisabledReason={submitDisabledReason}
       isLoading={isLoading}

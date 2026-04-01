@@ -17,7 +17,7 @@
 import React from "react";
 import { BaseCbacPicker } from "./base/BaseCbacPicker.js";
 import { useCbacPickerState } from "./useCbacPickerState.js";
-import { EMPTY_ARRAY, resolveRequiredGroups } from "./utils/cbacPickerUtils.js";
+import { EMPTY_ARRAY } from "./utils/cbacPickerUtils.js";
 import { toggleMarking } from "./utils/selectionLogic.js";
 
 export interface CbacPickerProps {
@@ -75,11 +75,6 @@ export function CbacPicker({
     onChange(EMPTY_ARRAY);
   }, [onChange]);
 
-  const resolvedRequiredGroups = React.useMemo(
-    () => resolveRequiredGroups(categoryGroups, requiredMarkingGroups),
-    [categoryGroups, requiredMarkingGroups],
-  );
-
   return (
     <BaseCbacPicker
       categories={categoryGroups}
@@ -87,7 +82,7 @@ export function CbacPicker({
       banner={banner}
       onMarkingToggle={handleMarkingToggle}
       onDismissBanner={handleDismiss}
-      requiredMarkingGroups={resolvedRequiredGroups}
+      requiredMarkingGroups={requiredMarkingGroups}
       isValid={isValid}
       readOnly={readOnly}
       isLoading={isLoading}
