@@ -30,6 +30,7 @@ function makeDef(
     fieldKey,
     fieldComponent: "TEXT_INPUT",
     label: fieldKey,
+    fieldComponentProps: {},
     ...overrides,
   };
 }

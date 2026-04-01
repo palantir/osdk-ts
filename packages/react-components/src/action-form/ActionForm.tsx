@@ -63,31 +63,33 @@ export const ActionForm: <Q extends ActionDefinition<unknown>>(
 
   const parameters = metadata?.parameters;
 
-  const resolvedFieldDefinitions = useMemo(
-    () =>
-      formFieldDefinitions
-        ?? (metadata != null
-          ? getDefaultFieldDefinitions<Q>(metadata)
-          : EMPTY_FIELD_DEFINITIONS),
-    [formFieldDefinitions, metadata],
-  );
-
-  const rendererFieldDefinitions: ReadonlyArray<RendererFieldDefinition> =
-    useMemo(
-      () =>
-        // RendererFieldDefinition is a discriminated union keyed by fieldComponent.
-        // TypeScript can't verify that the spread preserves the fieldComponent ↔
-        // fieldComponentProps pairing, but FormFieldDefinition guarantees it.
-        resolvedFieldDefinitions.map((def) =>
+  const customFieldDefinitions: ReadonlyArray<RendererFieldDefinition> | null =
+    useMemo(() => {
+      if (formFieldDefinitions == null) {
+        return null;
+      }
+      // RendererFieldDefinition is a discriminated union keyed by fieldComponent.
+      // TypeScript can't verify that the spread preserves the fieldComponent ↔
+      // fieldComponentProps pairing, but FormFieldDefinition guarantees it.
+      return formFieldDefinitions.map(
+        (def) =>
           ({
             ...def,
             fieldKey: String(def.fieldKey),
             fieldType: parameters?.[String(def.fieldKey)]?.type,
             defaultValue: def.defaultValue,
-          }) as RendererFieldDefinition
-        ),
-      [resolvedFieldDefinitions, parameters],
-    );
+          }) as RendererFieldDefinition,
+      );
+    }, [formFieldDefinitions, parameters]);
+
+  const rendererFieldDefinitions = useMemo(
+    () =>
+      customFieldDefinitions
+        ?? (metadata != null
+          ? getDefaultFieldDefinitions(metadata)
+          : EMPTY_FIELD_DEFINITIONS),
+    [customFieldDefinitions, metadata],
+  );
 
   const coerceFormState = useCallback(
     (rawState: Record<string, unknown>): Record<string, unknown> => {
