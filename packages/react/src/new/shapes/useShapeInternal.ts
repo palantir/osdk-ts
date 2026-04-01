@@ -92,7 +92,7 @@ export function useShapeSingleInternal<
       return makeExternalStore<ObserveObjectCallbackArgs<ShapeBaseType<S>>>(
         (observer) =>
           observableClient.observeObject(objectType, primaryKey, {
-            select: selectProps,
+            ...(selectProps.length > 0 ? { select: selectProps } : {}),
           }, observer),
         process.env.NODE_ENV !== "production"
           ? `shape[${shape.__shapeId.slice(0, 8)}] ${objectType} ${primaryKey}`
@@ -173,7 +173,6 @@ export function useShapeSingleInternal<
     }
     // ShapeInstance<S> is a conditional type which TS can't spread directly
     return ({
-      
       ...transformResult.data as Record<string, unknown>,
       ...linksPayload.links,
     }) as ShapeInstance<S>;
@@ -368,7 +367,6 @@ export function useShapeListInternal<
         return obj;
       }
       return ({
-        
         ...obj as Record<string, unknown>,
         ...pkLinks,
       }) as ShapeInstance<S>;
