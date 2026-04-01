@@ -71,7 +71,7 @@ export type Snapshot<X> =
 
 export function extractPayloadError(
   payload: { error?: Error; status?: string } | undefined,
-  fallbackMessage = "Failed to load data",
+  fallbackMessage: string,
 ): Error | undefined {
   if (payload == null) {
     return undefined;
