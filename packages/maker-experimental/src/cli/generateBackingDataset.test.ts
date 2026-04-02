@@ -19,6 +19,7 @@ import type {
   ObjectTypeBlockDataV2,
   PropertyType,
   PropertyTypeMappingInfo,
+  Type,
 } from "@osdk/client.unstable";
 import * as fs from "node:fs";
 import * as os from "node:os";
@@ -35,7 +36,7 @@ import {
 
 function makePropertyType(
   apiName: string,
-  typeStr: string,
+  type: Type,
   rid: string,
 ): PropertyType {
   return {
@@ -44,28 +45,39 @@ function makePropertyType(
     displayMetadata: {
       description: undefined,
       displayName: apiName,
+      visibility: "NORMAL",
     },
     id: apiName,
     indexedForSearch: false,
     rid,
     sharedPropertyTypeRid: undefined,
     status: { type: "active", active: {} },
-    type: { type: typeStr, [typeStr]: {} },
+    type,
     typeClasses: [],
     valueType: undefined,
-  } as unknown as PropertyType;
+  };
 }
+
+const STRING_PROPERTY_TYPE: Type = {
+  type: "string",
+  string: { isLongText: true, supportsExactMatching: true },
+};
+
+const INTEGER_PROPERTY_TYPE: Type = { type: "integer", integer: {} };
 
 function createObjectTypeBlockData(
   overrides: {
     apiName?: string;
-    properties?: Array<{ apiName: string; type: string; editOnly?: boolean }>;
+    properties?: Array<{ apiName: string; type: Type; editOnly?: boolean }>;
   } = {},
 ): ObjectTypeBlockDataV2 {
   const apiName = overrides.apiName ?? "TestObject";
   const props = overrides.properties ?? [
-    { apiName: "id", type: "string" },
-    { apiName: "count", type: "integer" },
+    {
+      apiName: "id",
+      type: STRING_PROPERTY_TYPE,
+    },
+    { apiName: "count", type: INTEGER_PROPERTY_TYPE },
   ];
 
   const propertyTypes: Record<string, PropertyType> = {};
@@ -76,11 +88,11 @@ function createObjectTypeBlockData(
       `ri.ontology-metadata.temp.property-type.${apiName}.${prop.apiName}`;
     propertyTypes[rid] = makePropertyType(prop.apiName, prop.type, rid);
     propertyMapping[rid] = prop.editOnly
-      ? { type: "editOnly", editOnly: {} } as PropertyTypeMappingInfo
+      ? { type: "editOnly", editOnly: {} }
       : {
         type: "column",
         column: prop.apiName,
-      } as PropertyTypeMappingInfo;
+      };
   }
 
   return {
@@ -127,7 +139,7 @@ function createObjectTypeBlockData(
     propertySecurityGroupPackagingVersion: undefined,
     schemaMigrations: undefined,
     writebackDatasets: [],
-  } as unknown as ObjectTypeBlockDataV2;
+  };
 }
 
 describe("propertyTypeToSchemaType", () => {
@@ -177,9 +189,9 @@ describe("getNonEditOnlyProperties", () => {
   it("excludes edit-only properties", () => {
     const blockData = createObjectTypeBlockData({
       properties: [
-        { apiName: "id", type: "string" },
-        { apiName: "secret", type: "string", editOnly: true },
-        { apiName: "count", type: "integer" },
+        { apiName: "id", type: STRING_PROPERTY_TYPE },
+        { apiName: "secret", type: STRING_PROPERTY_TYPE, editOnly: true },
+        { apiName: "count", type: INTEGER_PROPERTY_TYPE },
       ],
     });
     const props = getNonEditOnlyProperties(blockData);
@@ -318,9 +330,9 @@ describe("generateBackingDatasetBlockResult", () => {
   it("excludes editOnly properties from outputs and files", async () => {
     const blockData = createObjectTypeBlockData({
       properties: [
-        { apiName: "id", type: "string" },
-        { apiName: "secret", type: "string", editOnly: true },
-        { apiName: "count", type: "integer" },
+        { apiName: "id", type: STRING_PROPERTY_TYPE },
+        { apiName: "secret", type: STRING_PROPERTY_TYPE, editOnly: true },
+        { apiName: "count", type: INTEGER_PROPERTY_TYPE },
       ],
     });
 
@@ -420,8 +432,8 @@ function createObjectTypesForLink(
     objectTypeRidB?: string;
     pkRidA?: string;
     pkRidB?: string;
-    pkTypeA?: string;
-    pkTypeB?: string;
+    pkTypeA?: Type;
+    pkTypeB?: Type;
   } = {},
 ): Record<string, ObjectTypeBlockDataV2> {
   const objectTypeRidA = overrides.objectTypeRidA
@@ -432,8 +444,8 @@ function createObjectTypesForLink(
     ?? "ri.ontology-metadata.temp.property-type.ObjA.fooId";
   const pkRidB = overrides.pkRidB
     ?? "ri.ontology-metadata.temp.property-type.ObjB.barId";
-  const pkTypeA = overrides.pkTypeA ?? "string";
-  const pkTypeB = overrides.pkTypeB ?? "string";
+  const pkTypeA = overrides.pkTypeA ?? STRING_PROPERTY_TYPE;
+  const pkTypeB = overrides.pkTypeB ?? STRING_PROPERTY_TYPE;
 
   return {
     [objectTypeRidA]: {
@@ -598,8 +610,8 @@ describe("generateBackingDatasetBlockResultForLink", () => {
   it("resolves column types from referenced object types", async () => {
     const linkBlockData = createLinkTypeBlockData();
     const objectTypes = createObjectTypesForLink({
-      pkTypeA: "string",
-      pkTypeB: "integer",
+      pkTypeA: STRING_PROPERTY_TYPE,
+      pkTypeB: INTEGER_PROPERTY_TYPE,
     });
     const linkApiName = "typedLink";
 
