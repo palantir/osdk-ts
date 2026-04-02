@@ -204,16 +204,31 @@ Displays a computed property:
 }
 ```
 
-#### 3. Function Column (Not supported yet)
+#### 3. Function Column
 
-Displays custom computed values:
+Displays values computed by an OSDK function (query). This is equivalent to Workshop's [function-backed columns](https://www.palantir.com/docs/foundry/workshop/widgets-object-table/#function-backed-columns). The function must accept an ObjectSet parameter and return a map of results keyed per object.
 
 ```typescript
 {
   type: "function",
-  id: "functionName"
+  id: "columnKey",                // Key in your FunctionColumns type map
+  queryDefinition: myQuery,       // The OSDK query definition to execute
+  getFunctionParams: (objectSet) => ({ objectSetKey: objectSet }),
+  getKey: (object) => `${object.$objectType}:${object.$primaryKey}`, // The key to index the value of an object
+  getValue: (rawData) => rawData?.status,  // Getter to extract the value from the raw data
+  dedupeIntervalMs: 300_000,      // The stale time of your data, if multiple requests happen within this interval, no new network call will be made
 }
 ```
+
+| Property            | Type                    | Required | Description                                                                                                           |
+| ------------------- | ----------------------- | -------- | --------------------------------------------------------------------------------------------------------------------- |
+| `type`              | `"function"`            | Yes      | Identifies this as a function column                                                                                  |
+| `id`                | `keyof FunctionColumns` | Yes      | Key in the FunctionColumns type map                                                                                   |
+| `queryDefinition`   | `QueryDefinition`       | Yes      | The OSDK query definition to execute                                                                                  |
+| `getFunctionParams` | `(objectSet) => params` | Yes      | Computes function parameters from the current ObjectSet                                                               |
+| `getKey`            | `(object) => string`    | Yes      | Generates a lookup key for each object in the result map                                                              |
+| `getValue`          | `(cellData) => unknown` | No       | Extracts a display value from the raw function result per object                                                      |
+| `dedupeIntervalMs`  | `number`                | No       | Minimum time (ms) between re-fetches of the same function with the same parameters. Defaults to `300_000` (5 minutes) |
 
 #### 4. Custom Column
 
@@ -854,6 +869,101 @@ This example demonstrates:
 - Providing a custom button to open the dialog
 - Disabling the built-in column configuration to avoid conflicts
 - Managing hidden columns that can be toggled visible by users
+
+### Example 15: Function-Backed Columns
+
+Display values computed by OSDK functions (queries) alongside regular property columns. Function columns automatically handle loading states, caching, and deduplication.
+
+```typescript
+import {
+  type ColumnDefinition,
+  ObjectTable,
+} from "@osdk/react-components/experimental";
+import { Employee, getEmployeeMetrics } from "@YourApp/sdk";
+
+// Define a type map for your function columns
+type EmployeeFunctionColumns = {
+  metrics: typeof getEmployeeMetrics;
+};
+
+const columnDefinitions: Array<
+  ColumnDefinition<
+    typeof Employee,
+    Record<string, never>,
+    EmployeeFunctionColumns
+  >
+> = [
+  {
+    locator: { type: "property", id: "fullName" },
+    pinned: "left",
+    width: 200,
+  },
+  {
+    locator: { type: "property", id: "department" },
+  },
+  {
+    locator: {
+      type: "function",
+      id: "metrics",
+      queryDefinition: getEmployeeMetrics,
+      // Pass the current object set as a parameter to the function
+      getFunctionParams: (objectSet) => ({ employees: objectSet }),
+      // Generate a unique key for each object to look up its result
+      getKey: (employee) => `${employee.$objectType}:${employee.$primaryKey}`,
+      // Extract the specific value to display from the function result
+      getValue: (rawData) =>
+        (rawData as { score: number } | undefined)?.score,
+      // Cache results for 1 minute instead of the default 5
+      dedupeIntervalMs: 60_000,
+    },
+    columnName: "Performance Score",
+  },
+];
+
+function EmployeesWithMetricsTable() {
+  return (
+    <ObjectTable
+      objectType={Employee}
+      columnDefinitions={columnDefinitions}
+    />
+  );
+}
+```
+
+Multiple function columns sharing the same `queryDefinition` are automatically deduplicated into a single API call. Use different `getValue` functions to extract different fields from the same result:
+
+```typescript
+const columnDefinitions: Array<
+  ColumnDefinition<
+    typeof Employee,
+    Record<string, never>,
+    EmployeeFunctionColumns
+  >
+> = [
+  {
+    locator: {
+      type: "function",
+      id: "metrics",
+      queryDefinition: getEmployeeMetrics,
+      getFunctionParams: (objectSet) => ({ employees: objectSet }),
+      getKey: (emp) => `${emp.$objectType}:${emp.$primaryKey}`,
+      getValue: (cellData) => (cellData as { score: number })?.score,
+    },
+    columnName: "Score",
+  },
+  {
+    locator: {
+      type: "function",
+      id: "metrics",
+      queryDefinition: getEmployeeMetrics,
+      getFunctionParams: (objectSet) => ({ employees: objectSet }),
+      getKey: (emp) => `${emp.$objectType}:${emp.$primaryKey}`,
+      getValue: (cellData) => (cellData as { rank: string })?.rank,
+    },
+    columnName: "Rank",
+  },
+];
+```
 
 ### Column Pinning
 
