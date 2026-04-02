@@ -21,9 +21,9 @@ import {
   DoubleChevronLeft,
   DoubleChevronRight,
   More,
+  Reset,
   Search,
   Tick,
-  Undo,
 } from "@blueprintjs/icons";
 import React from "react";
 
@@ -52,7 +52,7 @@ export function ExpandIcon(): React.ReactElement {
 }
 
 export function ResetIcon(): React.ReactElement {
-  return <Undo size={14} />;
+  return <Reset size={12} />;
 }
 
 export function CheckIcon(): React.ReactElement {

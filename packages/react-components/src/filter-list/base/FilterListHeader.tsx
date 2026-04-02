@@ -75,7 +75,7 @@ function FilterListHeaderInner({
             onClick={onReset}
             disabled={activeFilterCount === 0 && !hasVisibilityChanges}
           >
-            <ResetIcon /> Reset
+            <ResetIcon /> Reset filters
           </Button>
         )}
 

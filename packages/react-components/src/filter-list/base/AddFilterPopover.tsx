@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { Menu } from "@base-ui/react/menu";
-import React, { memo, useCallback } from "react";
+import React, { memo } from "react";
+import { SearchableMenu } from "../../base-components/searchable-menu/SearchableMenu.js";
 import styles from "./AddFilterPopover.module.css";
 
 interface HiddenFilterItem {
@@ -34,40 +34,15 @@ function AddFilterPopoverInner({
   onShowFilter,
   renderTrigger,
 }: AddFilterPopoverProps): React.ReactElement {
-  const handleItemClick = useCallback(
-    (event: React.MouseEvent<HTMLDivElement>) => {
-      const key = event.currentTarget.dataset.key;
-      if (key != null) {
-        onShowFilter(key);
-      }
-    },
-    [onShowFilter],
-  );
-
   return (
-    <Menu.Root>
-      <Menu.Trigger
-        className={renderTrigger == null ? styles.trigger : undefined}
-      >
-        {renderTrigger != null ? renderTrigger() : "+ Add filter"}
-      </Menu.Trigger>
-      <Menu.Portal>
-        <Menu.Positioner className={styles.positioner} sideOffset={4}>
-          <Menu.Popup className={styles.popup}>
-            {hiddenDefinitions.map((item) => (
-              <Menu.Item
-                key={item.key}
-                className={styles.menuItem}
-                data-key={item.key}
-                onClick={handleItemClick}
-              >
-                {item.label}
-              </Menu.Item>
-            ))}
-          </Menu.Popup>
-        </Menu.Positioner>
-      </Menu.Portal>
-    </Menu.Root>
+    <SearchableMenu
+      items={hiddenDefinitions}
+      onItemSelected={onShowFilter}
+      trigger={renderTrigger != null ? renderTrigger() : "+ Add filter"}
+      triggerClassName={renderTrigger == null ? styles.trigger : undefined}
+      searchPlaceholder="Search filters"
+      emptyMessage="No matching filters"
+    />
   );
 }
 

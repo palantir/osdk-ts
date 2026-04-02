@@ -55,6 +55,7 @@ export function FilterList<Q extends ObjectTypeDefinition>(
   const {
     filterStates,
     setFilterState,
+    clearFilterState,
     perFilterWhereClauses,
     activeFilterCount,
     reset,
@@ -97,12 +98,13 @@ export function FilterList<Q extends ObjectTypeDefinition>(
 
   const handleFilterRemoved = useCallback(
     (filterKey: string) => {
+      clearFilterState(filterKey);
       if (uncontrolledAddFilterMode) {
         hideFilter(filterKey);
       }
       onFilterRemoved?.(filterKey);
     },
-    [uncontrolledAddFilterMode, hideFilter, onFilterRemoved],
+    [clearFilterState, uncontrolledAddFilterMode, hideFilter, onFilterRemoved],
   );
 
   const handleFilterShown = useCallback(

@@ -207,6 +207,152 @@ describe("useFilterListState", () => {
     expect(onFilterClauseChanged).toHaveBeenCalledWith({});
   });
 
+  describe("clearFilterState", () => {
+    it("removes filter state entirely regardless of initial default", () => {
+      const nameDef = createPropertyFilterDef(
+        "name",
+        "LISTOGRAM",
+        createExactMatchState(["default"]),
+      );
+      const props = createProps({
+        filterDefinitions: [nameDef],
+      });
+      const { result } = renderHook(() => useFilterListState(props));
+      const filterKey = getFilterKey(nameDef);
+
+      act(() => {
+        result.current.setFilterState(
+          filterKey,
+          createExactMatchState(["John"]),
+        );
+      });
+      expect(result.current.filterStates.has(filterKey)).toBe(true);
+
+      act(() => {
+        result.current.clearFilterState(filterKey);
+      });
+      expect(result.current.filterStates.has(filterKey)).toBe(false);
+    });
+
+    it("calls onFilterClauseChanged with updated clause", () => {
+      const onFilterClauseChanged = vi.fn();
+      const nameDef = createPropertyFilterDef(
+        "name",
+        "LISTOGRAM",
+        createExactMatchState([]),
+      );
+      const props = createProps({
+        filterDefinitions: [nameDef],
+        onFilterClauseChanged,
+      });
+      const { result } = renderHook(() => useFilterListState(props));
+      const filterKey = getFilterKey(nameDef);
+
+      act(() => {
+        result.current.setFilterState(
+          filterKey,
+          createExactMatchState(["John"]),
+        );
+      });
+      onFilterClauseChanged.mockClear();
+
+      act(() => {
+        result.current.clearFilterState(filterKey);
+      });
+      expect(onFilterClauseChanged).toHaveBeenCalledTimes(1);
+      expect(onFilterClauseChanged).toHaveBeenCalledWith({});
+    });
+
+    it("updates whereClause after clearing", () => {
+      const nameDef = createPropertyFilterDef(
+        "name",
+        "LISTOGRAM",
+        createExactMatchState([]),
+      );
+      const props = createProps({
+        filterDefinitions: [nameDef],
+      });
+      const { result } = renderHook(() => useFilterListState(props));
+      const filterKey = getFilterKey(nameDef);
+
+      act(() => {
+        result.current.setFilterState(
+          filterKey,
+          createExactMatchState(["John"]),
+        );
+      });
+      expect(result.current.whereClause).toEqual({ name: "John" });
+
+      act(() => {
+        result.current.clearFilterState(filterKey);
+      });
+      expect(result.current.whereClause).toEqual({});
+    });
+
+    it("decrements activeFilterCount after clearing", () => {
+      const nameDef = createPropertyFilterDef(
+        "name",
+        "LISTOGRAM",
+        createExactMatchState([]),
+      );
+      const props = createProps({
+        filterDefinitions: [nameDef],
+      });
+      const { result } = renderHook(() => useFilterListState(props));
+      const filterKey = getFilterKey(nameDef);
+
+      act(() => {
+        result.current.setFilterState(
+          filterKey,
+          createExactMatchState(["John"]),
+        );
+      });
+      expect(result.current.activeFilterCount).toBe(1);
+
+      act(() => {
+        result.current.clearFilterState(filterKey);
+      });
+      expect(result.current.activeFilterCount).toBe(0);
+    });
+
+    it("only clears the targeted filter, leaving others intact", () => {
+      const nameDef = createPropertyFilterDef(
+        "name",
+        "LISTOGRAM",
+        createExactMatchState([]),
+      );
+      const activeDef = createPropertyFilterDef(
+        "active",
+        "TOGGLE",
+        createToggleState(false),
+      );
+      const props = createProps({
+        filterDefinitions: [nameDef, activeDef],
+      });
+      const { result } = renderHook(() => useFilterListState(props));
+      const nameKey = getFilterKey(nameDef);
+      const activeKey = getFilterKey(activeDef);
+
+      act(() => {
+        result.current.setFilterState(
+          nameKey,
+          createExactMatchState(["John"]),
+        );
+        result.current.setFilterState(activeKey, createToggleState(true));
+      });
+      expect(result.current.activeFilterCount).toBe(2);
+
+      act(() => {
+        result.current.clearFilterState(nameKey);
+      });
+      expect(result.current.filterStates.has(nameKey)).toBe(false);
+      expect(result.current.filterStates.get(activeKey)).toEqual(
+        createToggleState(true),
+      );
+      expect(result.current.activeFilterCount).toBe(1);
+    });
+  });
+
   it("handles multiple filter definitions", () => {
     const nameDef = createPropertyFilterDef(
       "name",

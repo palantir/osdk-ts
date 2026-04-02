@@ -20,14 +20,12 @@
   gap: var(--osdk-filter-multiselect-gap);
 }
 
-.inputRow {
-  display: flex;
-  align-items: center;
-  gap: var(--osdk-filter-multiselect-inputRow-gap);
-}
-
-.clearButton {
-  flex-shrink: 0;
+.itemLabel {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .itemCount {
@@ -35,4 +33,5 @@
   font-size: var(--osdk-filter-multiselect-count-font-size);
   font-variant-numeric: tabular-nums;
   color: var(--osdk-filter-multiselect-count-color);
+  flex-shrink: 0;
 }
