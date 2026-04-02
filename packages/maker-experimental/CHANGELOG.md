@@ -1,5 +1,17 @@
 # @osdk/maker-experimental
 
+## 0.6.0-beta.8
+
+### Minor Changes
+
+- a73bafd: Fix link type block data gen
+- e8ca289: Fix key resolution
+
+### Patch Changes
+
+- Updated dependencies [e8ca289]
+  - @osdk/maker@0.16.0-beta.15
+
 ## 0.6.0-beta.7
 
 ### Minor Changes

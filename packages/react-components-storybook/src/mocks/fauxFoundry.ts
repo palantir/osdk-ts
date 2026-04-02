@@ -29,7 +29,8 @@ export const fauxFoundry: FauxFoundry = new FauxFoundry(baseUrl, {
   rid: "ri.ontology.main.ontology.storybook-demo",
 });
 
-const SAMPLE_PDF_PATH = "/compressed.tracemonkey-pldi-09.pdf";
+const SAMPLE_PDF_PATH =
+  `${import.meta.env.BASE_URL}compressed.tracemonkey-pldi-09.pdf`;
 
 export const MEDIA_EMPLOYEE_PK = 657495071;
 

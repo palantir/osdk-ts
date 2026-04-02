@@ -94,6 +94,8 @@ export type PdfFormFieldValue = string | boolean | string[];
 
 /** Data emitted when the user creates a text highlight via the highlight editor. */
 export interface PdfTextHighlightEvent {
+  /** Internal PDF.js editor ID. Use with `deleteHighlight` to programmatically remove. */
+  editorId: string;
   /** Page number (1-indexed) */
   page: number;
   /** Bounding rects in PDF coordinate space (bottom-left origin) */
@@ -102,6 +104,53 @@ export interface PdfTextHighlightEvent {
   selectedText: string;
   /** Highlight color as CSS color string */
   color: string;
+}
+
+/** Imperative handle for programmatic control of a {@link PdfViewer} or {@link BasePdfViewer}. */
+export interface PdfViewerHandle {
+  /** Scroll the viewer to the given page number (1-indexed). */
+  scrollToPage: (page: number) => void;
+  /** Programmatically delete a highlight by its `editorId` (from {@link PdfTextHighlightEvent}). */
+  deleteHighlight: (editorId: string) => void;
+}
+
+/**
+ * Options for {@link usePdfViewerInstance}.
+ * Equivalent to {@link PdfViewerProps} minus the `className` rendering concern.
+ */
+export interface PdfViewerInstanceOptions {
+  /** PDF source — URL string or ArrayBuffer */
+  src: string | ArrayBuffer;
+  /** Annotations to overlay on the PDF */
+  annotations?: PdfAnnotation[];
+  /** Callback fired when an annotation is clicked */
+  onAnnotationClick?: (annotation: PdfAnnotation) => void;
+  /** Callback fired when a download completes or fails */
+  onDownload?: (result: PdfDownloadResult) => void;
+  /** Whether the highlight toggle button is shown in the toolbar */
+  highlightEnabled?: boolean;
+  /** Callback fired when the user creates a text highlight */
+  onTextHighlight?: (event: PdfTextHighlightEvent) => void;
+  /** Callback fired when the user deletes a highlight */
+  onHighlightDelete?: (event: PdfTextHighlightEvent) => void;
+  /** Initial form field values keyed by field name */
+  formData?: Record<string, PdfFormFieldValue>;
+  /** Callback fired when the user clicks the save button */
+  onFormSubmit?: (data: Record<string, PdfFormFieldValue>) => void;
+  /** Callback fired when any form field value changes */
+  onFormChange?: (fieldName: string, value: PdfFormFieldValue) => void;
+  /** Initial page number (1-indexed, default 1) */
+  initialPage?: number;
+  /** Initial zoom scale (default 1.0) */
+  initialScale?: number;
+  /** Whether the sidebar is initially open (default false) */
+  initialSidebarOpen?: boolean;
+  /** Whether the download button is shown in the toolbar */
+  enableDownload?: boolean;
+  /** Which sidebar panel to show: thumbnails or document outline */
+  sidebarMode?: SidebarMode;
+  /** Custom icon components for each outline depth level (0-indexed) */
+  outlineIcons?: Partial<Record<number, React.ComponentType>>;
 }
 
 /** Props for the {@link PdfViewer} component. */

@@ -1,5 +1,26 @@
 # @osdkkit/react
 
+## 0.10.0-beta.15
+
+### Minor Changes
+
+- 32c27d7: Added useOsdkFunctions to @osdk/react to execute multiple functions in parallel. This is used by ObjectTable to fetch function-backed columns
+- 6019278: auto-compute peer dependency ranges from changelog history for react and react-components
+
+## 0.10.0-beta.14
+
+### Minor Changes
+
+- b0930e4: Show helpful error message when hooks are used without OsdkProvider2
+
+### Patch Changes
+
+- Updated dependencies [520398c]
+- Updated dependencies [ffc6efe]
+- Updated dependencies [4a856cb]
+  - @osdk/client@2.8.0-beta.29
+  - @osdk/api@2.8.0-beta.29
+
 ## 0.10.0-beta.13
 
 ### Minor Changes

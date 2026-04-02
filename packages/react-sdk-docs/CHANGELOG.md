@@ -1,5 +1,11 @@
 # @osdk/react-sdk-docs
 
+## 0.2.0-beta.1
+
+### Minor Changes
+
+- 8561a8b: Render custom type fields in function doc snippets instead of empty `{}`
+
 ## 0.2.0-beta.0
 
 ### Minor Changes

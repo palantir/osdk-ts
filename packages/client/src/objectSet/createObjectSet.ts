@@ -57,6 +57,23 @@ import { resolveBaseObjectSetType } from "../util/objectSetUtils.js";
 import { isWireObjectSet } from "../util/WireObjectSet.js";
 import { fetchLinksPage } from "./fetchLinksPage.js";
 
+const a: WireObjectSet = {
+  "type": "interfaceLinkSearchAround",
+  "interfaceLink": "lead",
+  "objectSet": {
+    "type": "asType",
+    "entityType": "Person",
+    "objectSet": {
+      "type": "filter",
+      "objectSet": { "type": "base", "objectType": "Employee" },
+      "where": {
+        "type": "eq",
+        "field": "employeeNumber",
+        "value": "657495107",
+      },
+    },
+  },
+};
 function isObjectTypeDefinition(
   def: ObjectOrInterfaceDefinition,
 ): def is ObjectTypeDefinition {
@@ -116,12 +133,12 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
     where: (clause) => {
       return clientCtx.objectSetFactory(objectType, clientCtx, {
         type: "filter",
-        objectSet: objectSet,
+        objectSet,
         where: modernToLegacyWhereClause(clause, objectType),
       });
     },
 
-    pivotTo: function<L extends LinkNames<Q>>(
+    pivotTo<L extends LinkNames<Q>>(
       type: L,
     ): ObjectSet<LinkedType<Q, L>> {
       return createSearchAround(type)();
@@ -177,7 +194,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       ) as ObjectSet<Q>;
     },
 
-    asyncIter: async function*<
+    async *asyncIter<
       L extends PropertyKeys<Q>,
       R extends boolean,
       const A extends Augments,
@@ -189,7 +206,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
     ): AsyncIterableIterator<
       SingleOsdkResult<Q, L, R, S, {}, T, ORDER_BY_OPTIONS>
     > {
-      let $nextPageToken: string | undefined = undefined;
+      let $nextPageToken: string | undefined;
       do {
         const result: FetchPageResult<
           Q,
@@ -302,8 +319,8 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
         clientCtx,
         {
           type: "withProperties",
-          derivedProperties: derivedProperties,
-          objectSet: objectSet,
+          derivedProperties,
+          objectSet,
         },
       );
     },
@@ -325,20 +342,20 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
         clientCtx,
         {
           type: "asType",
-          objectSet: objectSet,
+          objectSet,
           entityType: objectTypeDef.apiName,
         },
       );
     },
 
-    experimental_asyncIterLinks: async function*<
+    async *experimental_asyncIterLinks<
       LINK_TYPE_API_NAME extends LinkTypeApiNamesFor<Q>,
     >(
       links: LINK_TYPE_API_NAME[],
     ): AsyncIterableIterator<
       MinimalDirectedObjectLinkInstance<Q, LINK_TYPE_API_NAME>
     > {
-      let $nextPageToken: string | undefined = undefined;
+      let $nextPageToken: string | undefined;
       do {
         const result = await fetchLinksPage(
           augmentRequestContext(
@@ -401,7 +418,7 @@ async function createWithPk(
 
   const withPk: WireObjectSet = {
     type: "filter",
-    objectSet: objectSet,
+    objectSet,
     where: {
       type: "eq",
       field: objDef.primaryKeyApiName,

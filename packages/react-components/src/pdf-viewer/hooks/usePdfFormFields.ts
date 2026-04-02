@@ -219,30 +219,44 @@ export function usePdfFormFields({
         const entry = fieldMapRef.current.get(id);
         if (entry == null) continue;
 
-        const storageVal = toStorageValue(
-          value,
-          entry.fieldType,
-        );
-        storage.setValue(id, { value: storageVal });
-
         // Also update the DOM element directly (scoped to viewer container)
         const el = container?.querySelector(
           `[data-element-id="${CSS.escape(id)}"]`,
         );
-        if (el == null) continue;
 
-        if (
-          entry.fieldType === "checkbox" && el instanceof HTMLInputElement
-        ) {
-          el.checked = typeof storageVal === "boolean"
-            ? storageVal
-            : storageVal !== "Off";
-        } else if (el instanceof HTMLSelectElement) {
-          el.value = String(value);
-        } else if (
-          el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement
-        ) {
-          el.value = String(value);
+        if (entry.fieldType === "radiobutton") {
+          // Radio buttons: each ID is a separate option. Check the one
+          // whose export value matches, uncheck the others.
+          // Use exportValues if defined, otherwise fall back to the DOM
+          // element's value attribute (mirrors handleFieldChange logic).
+          const optionValue = entry.exportValues
+            ?? (el instanceof HTMLInputElement ? el.value : undefined);
+          const isSelected = optionValue === String(value);
+          storage.setValue(id, {
+            value: isSelected ? (entry.exportValues ?? String(value)) : "Off",
+          });
+          if (el instanceof HTMLInputElement) {
+            el.checked = isSelected;
+          }
+        } else {
+          const storageVal = toStorageValue(value, entry.fieldType);
+          storage.setValue(id, { value: storageVal });
+
+          if (el == null) continue;
+
+          if (
+            entry.fieldType === "checkbox" && el instanceof HTMLInputElement
+          ) {
+            el.checked = typeof storageVal === "boolean"
+              ? storageVal
+              : storageVal !== "Off";
+          } else if (el instanceof HTMLSelectElement) {
+            el.value = String(value);
+          } else if (
+            el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement
+          ) {
+            el.value = String(value);
+          }
         }
       }
     }

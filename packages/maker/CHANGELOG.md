@@ -1,5 +1,11 @@
 # @osdk/maker
 
+## 0.16.0-beta.15
+
+### Minor Changes
+
+- e8ca289: Fix key resolution
+
 ## 0.16.0-beta.14
 
 ### Minor Changes

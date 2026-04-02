@@ -36,9 +36,9 @@ describe("configToShapeDefinition", () => {
     });
 
     const props = shape.__props as Record<string, ShapePropertyConfig>;
-    expect(props["name"].nullabilityOp.type).toBe("require");
-    expect(props["age"].nullabilityOp.type).toBe("select");
-    expect(props["role"].nullabilityOp.type).toBe("dropIfNull");
+    expect(props.name.nullabilityOp.type).toBe("require");
+    expect(props.age.nullabilityOp.type).toBe("select");
+    expect(props.role.nullabilityOp.type).toBe("dropIfNull");
   });
 
   it("maps defaults to withDefault ops", () => {
@@ -47,7 +47,7 @@ describe("configToShapeDefinition", () => {
     });
 
     const props = shape.__props as Record<string, ShapePropertyConfig>;
-    expect(props["role"].nullabilityOp).toEqual({
+    expect(props.role.nullabilityOp).toEqual({
       type: "withDefault",
       defaultValue: "Unknown",
     });
@@ -60,7 +60,7 @@ describe("configToShapeDefinition", () => {
     });
 
     const props = shape.__props as Record<string, ShapePropertyConfig>;
-    expect(props["name"].nullabilityOp.type).toBe("withTransform");
+    expect(props.name.nullabilityOp.type).toBe("withTransform");
   });
 
   it("throws on duplicate property across config arrays", () => {
