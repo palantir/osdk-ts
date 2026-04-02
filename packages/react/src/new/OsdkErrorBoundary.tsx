@@ -61,30 +61,32 @@ export class OsdkErrorBoundary
       if (this.props.fallback !== undefined) {
         return this.props.fallback;
       }
-      return React.createElement(
-        "div",
-        {
-          style: {
+      return (
+        <div
+          style={{
             padding: "16px",
             border: "1px solid #e53e3e",
             borderRadius: "4px",
             backgroundColor: "#fff5f5",
-          },
-        },
-        React.createElement("p", {
-          style: { color: "#c53030", margin: "0 0 8px 0" },
-        }, this.state.error.message),
-        React.createElement("button", {
-          onClick: this.retry,
-          style: {
-            padding: "4px 12px",
-            border: "1px solid #c53030",
-            borderRadius: "4px",
-            backgroundColor: "white",
-            color: "#c53030",
-            cursor: "pointer",
-          },
-        }, "Retry"),
+          }}
+        >
+          <p style={{ color: "#c53030", margin: "0 0 8px 0" }}>
+            {this.state.error.message}
+          </p>
+          <button
+            onClick={this.retry}
+            style={{
+              padding: "4px 12px",
+              border: "1px solid #c53030",
+              borderRadius: "4px",
+              backgroundColor: "white",
+              color: "#c53030",
+              cursor: "pointer",
+            }}
+          >
+            Retry
+          </button>
+        </div>
       );
     }
 
