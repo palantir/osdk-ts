@@ -148,7 +148,13 @@ describe("useOsdkFunctions", () => {
       { wrapper: createWrapper(mockObservableClient) },
     );
 
-    // Initially shows isLoading state
+    act(() => {
+      observers[0].next({
+        status: "loading",
+        result: undefined,
+        lastUpdated: 0,
+      });
+    });
     expect(result.current[0].isLoading).toBe(true);
 
     const mockResult = { total: 100, average: 25 };
@@ -207,7 +213,18 @@ describe("useOsdkFunctions", () => {
       { wrapper: createWrapper(mockObservableClient) },
     );
 
-    // Both should start with isLoading
+    act(() => {
+      observers[0].next({
+        status: "loading",
+        result: undefined,
+        lastUpdated: 0,
+      });
+      observers[1].next({
+        status: "loading",
+        result: undefined,
+        lastUpdated: 0,
+      });
+    });
     expect(result.current[0].isLoading).toBe(true);
     expect(result.current[1].isLoading).toBe(true);
 
@@ -269,7 +286,16 @@ describe("useOsdkFunctions", () => {
 
     // First query should not be loading (disabled)
     expect(result.current[0].isLoading).toBe(false);
-    // Second query should be loading
+
+    // Fire loading state for the enabled query
+    act(() => {
+      observers[0].next({
+        status: "loading",
+        result: undefined,
+        lastUpdated: 0,
+      });
+    });
+    // Second query should now be loading
     expect(result.current[1].isLoading).toBe(true);
 
     const mockResult = { total: 100 };
@@ -395,7 +421,18 @@ describe("useOsdkFunctions", () => {
       { wrapper: createWrapper(mockObservableClient) },
     );
 
-    // Both should start loading
+    act(() => {
+      observers[0].next({
+        status: "loading",
+        result: undefined,
+        lastUpdated: 0,
+      });
+      observers[1].next({
+        status: "loading",
+        result: undefined,
+        lastUpdated: 0,
+      });
+    });
     expect(result.current[0].isLoading).toBe(true);
     expect(result.current[1].isLoading).toBe(true);
 

@@ -17,6 +17,7 @@
 import type { QueryDefinition } from "@osdk/api";
 import type { ObserveFunctionCallbackArgs } from "@osdk/client/unstable-do-not-use";
 import React from "react";
+import type { Snapshot } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
 import type {
   UseOsdkFunctionOptions,
@@ -53,6 +54,8 @@ export type UseOsdkFunctionsResult = Array<
   UseOsdkFunctionResult<QueryDefinition<unknown>>
 >;
 
+type FunctionPayload = ObserveFunctionCallbackArgs<QueryDefinition<unknown>>;
+
 /**
  * React hook for executing multiple OSDK function queries in parallel.
  *
@@ -71,120 +74,131 @@ export function useOsdkFunctions(
 ): UseOsdkFunctionsResult {
   const { observableClient } = React.useContext(OsdkContext2);
 
-  const [results, setResults] = React.useState<
-    UseOsdkFunctionsResult
-  >(() =>
-    queries.map((query) => ({
-      data: undefined,
-      isLoading: false,
-      error: undefined,
-      lastUpdated: 0,
-      refetch: () => {
-        void observableClient.invalidateFunction(
-          query.queryDefinition,
-          query.options?.params as Record<string, unknown> | undefined,
-        );
-      },
-    }))
-  );
-
   const stableQueriesKey = JSON.stringify(queries.map(q => ({
     apiName: q.queryDefinition.apiName,
     params: q.options?.params,
     enabled: q.options?.enabled,
+    dedupeIntervalMs: q.options?.dedupeIntervalMs,
   })));
 
-  React.useEffect(() => {
-    if (!enabled || queries.length === 0) {
-      return;
-    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const stableQueries = React.useMemo(() => queries, [stableQueriesKey]);
 
-    const subscriptions: Array<{ unsubscribe: () => void }> = [];
+  // Create a composite external store that manages N subscriptions
+  // We can't reuse makeExternalStore directly because it wraps a
+  // single Observer, but we need N observers funneled into one useSyncExternalStore.
+  const { subscribe, getSnapshot } = React.useMemo(
+    () => {
+      const count = stableQueries.length;
 
-    // Initialize loading state, preserving existing data
-    setResults(prev =>
-      queries.map((query, index) => ({
-        data: prev[index]?.data,
-        isLoading: query.options?.enabled !== false,
-        error: undefined,
-        lastUpdated: prev[index]?.lastUpdated ?? 0,
-        refetch: () => {
-          void observableClient.invalidateFunction(
-            query.queryDefinition,
-            query.options?.params as Record<string, unknown> | undefined,
-          );
-        },
-      }))
-    );
-
-    queries.forEach((query, index) => {
-      if (query.options?.enabled === false) {
-        return;
+      if (!enabled || count === 0) {
+        const empty: Array<Snapshot<FunctionPayload>> = [];
+        return {
+          subscribe: () => () => {},
+          getSnapshot: () => empty,
+        };
       }
 
-      const params = query.options?.params as
-        | Record<string, unknown>
-        | undefined;
-
-      const sub = observableClient.observeFunction(
-        query.queryDefinition,
-        params,
-        { dedupeInterval: query.options?.dedupeIntervalMs ?? 2_000 },
-        {
-          next: (
-            payload:
-              | ObserveFunctionCallbackArgs<QueryDefinition<unknown>>
-              | undefined,
-          ) => {
-            setResults(prev => {
-              const newResults = [...prev];
-              const error = payload?.error
-                ?? (payload?.status === "error"
-                  ? new Error("Failed to execute function")
-                  : undefined);
-
-              newResults[index] = {
-                data: payload?.result as UseOsdkFunctionResult<
-                  QueryDefinition<unknown>
-                >["data"],
-                isLoading: payload?.status === "loading",
-                error,
-                lastUpdated: payload?.lastUpdated ?? 0,
-                refetch: () => {
-                  void observableClient.invalidateFunction(
-                    query.queryDefinition,
-                    params,
-                  );
-                },
-              };
-              return newResults;
-            });
-          },
-          error: (err: unknown) => {
-            setResults(prev => {
-              const newResults = [...prev];
-              newResults[index] = {
-                ...prev[index],
-                data: undefined,
-                isLoading: false,
-                error: err instanceof Error ? err : new Error(String(err)),
-                lastUpdated: Date.now(),
-                refetch: prev[index].refetch,
-              };
-              return newResults;
-            });
-          },
-          complete: () => {},
-        },
+      // Mutable snapshot array — replaced (never mutated in place) on each
+      // observer callback so that useSyncExternalStore sees a new reference.
+      let current: Array<Snapshot<FunctionPayload>> = stableQueries.map(
+        () => undefined,
       );
 
-      subscriptions.push(sub);
-    });
+      const updateSlot = (
+        index: number,
+        value: Snapshot<FunctionPayload>,
+      ) => {
+        const next = [...current];
+        next[index] = value;
+        current = next;
+      };
 
-    return () => {
-      subscriptions.forEach(sub => sub.unsubscribe());
-    };
-  }, [enabled, observableClient, queries, stableQueriesKey]);
+      return {
+        getSnapshot: () => current,
+        subscribe: (notifyUpdate: () => void) => {
+          const subscriptions: Array<{ unsubscribe: () => void }> = [];
 
-  return results;
+          stableQueries.forEach((query, index) => {
+            if (query.options?.enabled === false) {
+              return;
+            }
+
+            const params = query.options?.params as
+              | Record<string, unknown>
+              | undefined;
+
+            const sub = observableClient.observeFunction(
+              query.queryDefinition,
+              params,
+              { dedupeInterval: query.options?.dedupeIntervalMs ?? 2_000 },
+              {
+                next: (payload: FunctionPayload | undefined) => {
+                  updateSlot(
+                    index,
+                    payload as Snapshot<FunctionPayload>,
+                  );
+                  notifyUpdate();
+                },
+                error: (error: unknown) => {
+                  updateSlot(index, {
+                    ...(current[index] ?? {}),
+                    error: error instanceof Error
+                      ? error
+                      : new Error(String(error)),
+                  } as Snapshot<FunctionPayload>);
+                  notifyUpdate();
+                },
+                complete: () => {},
+              },
+            );
+
+            subscriptions.push(sub);
+          });
+
+          return () => {
+            subscriptions.forEach(sub => sub.unsubscribe());
+          };
+        },
+      };
+    },
+    [enabled, observableClient, stableQueries],
+  );
+
+  const payloads = React.useSyncExternalStore(subscribe, getSnapshot);
+
+  const refetches = React.useMemo(
+    () =>
+      stableQueries.map((query) => async () => {
+        await observableClient.invalidateFunction(
+          query.queryDefinition,
+          query.options?.params as Record<string, unknown> | undefined,
+        );
+      }),
+    [stableQueries, observableClient],
+  );
+
+  return React.useMemo(
+    () =>
+      stableQueries.map((_, index): UseOsdkFunctionResult<
+        QueryDefinition<unknown>
+      > => {
+        const payload = payloads[index];
+        const error = payload?.error
+          ?? (payload?.status === "error"
+            ? new Error("Failed to execute function")
+            : undefined);
+
+        return {
+          data: payload?.result as UseOsdkFunctionResult<
+            QueryDefinition<unknown>
+          >["data"],
+          isLoading: payload?.status === "loading",
+          error,
+          lastUpdated: payload?.lastUpdated ?? 0,
+          refetch: refetches[index],
+        };
+      }),
+    [stableQueries, payloads, refetches],
+  );
 }
