@@ -5,8 +5,8 @@
   --osdk-filter-list-border-radius: var(--osdk-surface-border-radius);
   --osdk-filter-list-padding: 0;
   --osdk-filter-list-gap: 0;
-  --osdk-filter-list-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.1),
-    0px 1px 2px -1px rgba(0, 0, 0, 0.1);
+  --osdk-filter-list-shadow:
+    0px 1px 3px 0px rgba(0, 0, 0, 0.1), 0px 1px 2px -1px rgba(0, 0, 0, 0.1);
   --osdk-filter-list-addButton-padding-top: 0;
   --osdk-filter-list-addButton-container-bg: var(--osdk-background-primary);
   --osdk-filter-list-addButton-container-padding: calc(
@@ -40,22 +40,16 @@
   --osdk-filter-header-activeCount-color: var(--osdk-typography-color-muted);
   --osdk-filter-header-button-padding: calc(var(--osdk-surface-spacing) * 1);
   --osdk-filter-header-button-bg: transparent;
-  --osdk-filter-header-button-border-radius: var(
-    --osdk-surface-border-radius
-  );
+  --osdk-filter-header-button-border-radius: var(--osdk-surface-border-radius);
   --osdk-filter-header-button-transition: var(
-    --osdk-emphasis-transition-duration
-  )
+      --osdk-emphasis-transition-duration
+    )
     var(--osdk-emphasis-ease-default);
   --osdk-filter-header-button-bg-hover: var(--osdk-custom-color-gray-1);
   --osdk-filter-header-button-bg-active: var(--osdk-custom-color-gray-2);
-  --osdk-filter-header-reset-font-size: var(
-    --osdk-typography-size-body-small
-  );
+  --osdk-filter-header-reset-font-size: var(--osdk-typography-size-body-small);
   --osdk-filter-header-reset-color: var(--osdk-intent-primary-rest);
-  --osdk-filter-header-reset-color-disabled: var(
-    --osdk-typography-color-muted
-  );
+  --osdk-filter-header-reset-color-disabled: var(--osdk-typography-color-muted);
   --osdk-filter-header-reset-padding: calc(var(--osdk-surface-spacing) * 1)
     calc(var(--osdk-surface-spacing) * 1.5);
   --osdk-filter-header-reset-border: var(--osdk-surface-border-width) solid
@@ -83,7 +77,9 @@
     --osdk-surface-border-radius
   );
   --osdk-filter-item-drag-handle-color: var(--osdk-drag-handle-color);
-  --osdk-filter-item-drag-handle-color-hover: var(--osdk-drag-handle-color-hover);
+  --osdk-filter-item-drag-handle-color-hover: var(
+    --osdk-drag-handle-color-hover
+  );
   --osdk-filter-item-drag-handle-bg-hover: var(--osdk-custom-color-gray-1);
   --osdk-filter-item-drag-handle-focus-outline-color: var(
     --osdk-emphasis-focus-color
@@ -138,12 +134,8 @@
   --osdk-filter-tag-line-height: 1.4;
   --osdk-filter-tag-color: var(--osdk-typography-color-default-rest);
   --osdk-filter-tag-remove-color: var(--osdk-typography-color-muted);
-  --osdk-filter-tag-remove-font-size: var(
-    --osdk-typography-size-body-medium
-  );
-  --osdk-filter-tag-remove-transition: var(
-    --osdk-emphasis-transition-duration
-  )
+  --osdk-filter-tag-remove-font-size: var(--osdk-typography-size-body-medium);
+  --osdk-filter-tag-remove-transition: var(--osdk-emphasis-transition-duration)
     var(--osdk-emphasis-ease-default);
   --osdk-filter-tag-remove-color-hover: var(
     --osdk-typography-color-default-rest
@@ -153,17 +145,13 @@
   --osdk-error-boundary-gap: calc(var(--osdk-surface-spacing) * 2);
   --osdk-error-boundary-padding: calc(var(--osdk-surface-spacing) * 2);
   --osdk-error-boundary-border-radius: var(--osdk-surface-border-radius);
-  --osdk-error-boundary-bg: var(
-    --osdk-surface-background-color-danger-rest
-  );
+  --osdk-error-boundary-bg: var(--osdk-surface-background-color-danger-rest);
   --osdk-error-boundary-font-size: var(--osdk-typography-size-body-small);
   --osdk-error-boundary-text-color: var(--osdk-typography-color-danger-rest);
   --osdk-error-boundary-button-padding: calc(var(--osdk-surface-spacing) * 1)
     calc(var(--osdk-surface-spacing) * 2);
   --osdk-error-boundary-button-border-color: currentColor;
-  --osdk-error-boundary-button-border-radius: var(
-    --osdk-surface-border-radius
-  );
+  --osdk-error-boundary-button-border-radius: var(--osdk-surface-border-radius);
   --osdk-error-boundary-button-font-size: var(
     --osdk-typography-size-body-x-small
   );
@@ -172,8 +160,7 @@
 
   /* Checkbox List Tokens */
   --osdk-filter-checkbox-list-gap: calc(var(--osdk-surface-spacing) * 0.5);
-  --osdk-filter-checkbox-row-padding: calc(var(--osdk-surface-spacing) * 0.5)
-    0;
+  --osdk-filter-checkbox-row-padding: calc(var(--osdk-surface-spacing) * 0.5) 0;
   --osdk-filter-checkbox-label-gap: var(--osdk-surface-spacing);
   --osdk-filter-checkbox-value-font-family: var(
     --osdk-typography-family-default
@@ -182,18 +169,12 @@
     --osdk-typography-size-body-medium
   );
   --osdk-filter-checkbox-value-line-height: 1.4;
-  --osdk-filter-checkbox-value-color: var(
-    --osdk-typography-color-default-rest
-  );
+  --osdk-filter-checkbox-value-color: var(--osdk-typography-color-default-rest);
 
   /* Toggle Tokens */
   --osdk-filter-toggle-label-gap: var(--osdk-surface-spacing);
-  --osdk-filter-toggle-label-font-family: var(
-    --osdk-typography-family-default
-  );
-  --osdk-filter-toggle-label-font-size: var(
-    --osdk-typography-size-body-medium
-  );
+  --osdk-filter-toggle-label-font-family: var(--osdk-typography-family-default);
+  --osdk-filter-toggle-label-font-size: var(--osdk-typography-size-body-medium);
   --osdk-filter-toggle-label-line-height: 1.4;
   --osdk-filter-toggle-label-color: var(--osdk-typography-color-default-rest);
 
@@ -201,12 +182,10 @@
   --osdk-filter-listogram-gap: var(--osdk-surface-spacing);
   --osdk-filter-listogram-row-gap: calc(var(--osdk-surface-spacing) * 2);
   --osdk-filter-listogram-row-padding: var(--osdk-surface-spacing);
-  --osdk-filter-listogram-row-border-radius: var(
-    --osdk-surface-border-radius
-  );
+  --osdk-filter-listogram-row-border-radius: var(--osdk-surface-border-radius);
   --osdk-filter-listogram-row-transition: var(
-    --osdk-emphasis-transition-duration
-  )
+      --osdk-emphasis-transition-duration
+    )
     var(--osdk-emphasis-ease-default);
   --osdk-filter-listogram-row-bg-hover: var(
     --osdk-surface-background-color-default-hover
@@ -214,9 +193,7 @@
   --osdk-filter-listogram-row-bg-active: var(
     --osdk-surface-background-color-default-active
   );
-  --osdk-filter-listogram-row-focus-outline: var(
-    --osdk-emphasis-focus-width
-  )
+  --osdk-filter-listogram-row-focus-outline: var(--osdk-emphasis-focus-width)
     solid var(--osdk-emphasis-focus-color);
   --osdk-filter-listogram-row-focus-offset: var(--osdk-emphasis-focus-offset);
   --osdk-filter-listogram-label-font-family: var(
@@ -231,13 +208,11 @@
   --osdk-filter-listogram-bar-height: calc(var(--osdk-surface-spacing) * 2);
   --osdk-filter-listogram-bar-width: calc(var(--osdk-surface-spacing) * 12.5);
   --osdk-filter-listogram-bar-bg: var(--osdk-palette-gray-100);
-  --osdk-filter-listogram-bar-border-radius: var(
-    --osdk-surface-border-radius
-  );
+  --osdk-filter-listogram-bar-border-radius: var(--osdk-surface-border-radius);
   --osdk-filter-listogram-bar-color: var(--osdk-intent-primary-rest);
   --osdk-filter-listogram-bar-fill-transition: var(
-    --osdk-emphasis-transition-duration
-  )
+      --osdk-emphasis-transition-duration
+    )
     var(--osdk-emphasis-ease-default);
   --osdk-filter-listogram-count-font-family: var(
     --osdk-typography-family-default
@@ -253,21 +228,21 @@
     var(--osdk-surface-spacing) * 1
   );
   --osdk-filter-range-histogram-height: calc(var(--osdk-surface-spacing) * 15);
-  --osdk-filter-range-histogram-bar-gap: calc(var(--osdk-surface-spacing) * 0.5);
+  --osdk-filter-range-histogram-bar-gap: calc(
+    var(--osdk-surface-spacing) * 0.5
+  );
   --osdk-filter-range-histogram-bar-min-width: var(--osdk-surface-spacing);
   --osdk-filter-range-histogram-bar-color: var(--osdk-palette-gray-200);
   --osdk-filter-range-histogram-bar-active-color: var(
     --osdk-intent-primary-rest
   );
   --osdk-filter-range-histogram-bar-transition: var(
-    --osdk-emphasis-transition-duration
-  )
+      --osdk-emphasis-transition-duration
+    )
     var(--osdk-emphasis-ease-default);
   --osdk-filter-range-inputs-gap: calc(var(--osdk-surface-spacing) * 0.5);
   --osdk-filter-range-input-wrapper-gap: var(--osdk-surface-spacing);
-  --osdk-filter-range-label-font-family: var(
-    --osdk-typography-family-default
-  );
+  --osdk-filter-range-label-font-family: var(--osdk-typography-family-default);
   --osdk-filter-range-label-font-size: var(--osdk-typography-size-body-small);
   --osdk-filter-range-label-color: var(--osdk-typography-color-muted);
   --osdk-filter-range-separator-color: var(--osdk-typography-color-muted);
@@ -326,12 +301,10 @@
   /* Single Select Tokens */
   --osdk-filter-select-clear-padding: calc(var(--osdk-surface-spacing) * 0.5);
   --osdk-filter-select-clear-color: var(--osdk-typography-color-muted);
-  --osdk-filter-select-clear-border-radius: var(
-    --osdk-surface-border-radius
-  );
+  --osdk-filter-select-clear-border-radius: var(--osdk-surface-border-radius);
   --osdk-filter-select-clear-transition: var(
-    --osdk-emphasis-transition-duration
-  )
+      --osdk-emphasis-transition-duration
+    )
     var(--osdk-emphasis-ease-default);
   --osdk-filter-select-clear-color-hover: var(
     --osdk-typography-color-default-rest
@@ -342,7 +315,9 @@
   --osdk-filter-texttags-gap: var(--osdk-surface-spacing);
 
   /* Listogram View All */
-  --osdk-filter-listogram-view-all-font-size: 13px;
+  --osdk-filter-listogram-view-all-font-size: var(
+    --osdk-typography-size-body-small
+  );
   --osdk-filter-listogram-view-all-color: var(--osdk-typography-color-muted);
 
   /* Listogram Selected Color */
@@ -351,8 +326,7 @@
   /* Filter Item */
   --osdk-filter-item-border-radius: var(--osdk-surface-border-radius);
   --osdk-filter-item-padding: calc(var(--osdk-surface-spacing) * 3)
-    calc(var(--osdk-surface-spacing) * 2)
-    0
+    calc(var(--osdk-surface-spacing) * 2) 0
     calc(var(--osdk-surface-spacing) * 2);
 
   /* Checkbox Row Hover */
@@ -392,7 +366,9 @@
   );
 
   /* Exclude Dropdown Popup */
-  --osdk-filter-item-exclude-dropdown-min-width: calc(var(--osdk-surface-spacing) * 30);
+  --osdk-filter-item-exclude-dropdown-min-width: calc(
+    var(--osdk-surface-spacing) * 30
+  );
 
   /* Overflow / Dropdown Menu */
   --osdk-filter-item-menu-bg: var(--osdk-background-primary);
@@ -408,13 +384,9 @@
   --osdk-filter-item-menu-item-font-size: var(
     --osdk-typography-size-body-small
   );
-  --osdk-filter-item-menu-item-color: var(
-    --osdk-typography-color-default-rest
-  );
+  --osdk-filter-item-menu-item-color: var(--osdk-typography-color-default-rest);
   --osdk-filter-item-menu-item-bg-hover: var(--osdk-custom-color-gray-1);
-  --osdk-filter-item-menu-item-border-radius: var(
-    --osdk-surface-border-radius
-  );
+  --osdk-filter-item-menu-item-border-radius: var(--osdk-surface-border-radius);
   --osdk-filter-item-menu-separator-color: var(--osdk-surface-border-color);
   --osdk-filter-item-menu-check-size: calc(var(--osdk-surface-spacing) * 3);
 
