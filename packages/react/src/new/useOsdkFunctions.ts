@@ -50,7 +50,7 @@ export interface UseOsdkFunctionsProps {
 }
 
 export type UseOsdkFunctionsResult = Array<
-  Omit<UseOsdkFunctionResult<QueryDefinition<unknown>>, "refetch">
+  UseOsdkFunctionResult<QueryDefinition<unknown>>
 >;
 
 /**
@@ -74,11 +74,17 @@ export function useOsdkFunctions(
   const [results, setResults] = React.useState<
     UseOsdkFunctionsResult
   >(() =>
-    queries.map(() => ({
+    queries.map((query) => ({
       data: undefined,
       isLoading: false,
       error: undefined,
       lastUpdated: 0,
+      refetch: () => {
+        void observableClient.invalidateFunction(
+          query.queryDefinition,
+          query.options?.params as Record<string, unknown> | undefined,
+        );
+      },
     }))
   );
 

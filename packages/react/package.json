@@ -25,7 +25,7 @@
       "require": "./build/cjs/public/experimental.cjs",
       "default": "./build/browser/public/experimental.js"
     },
-"./experimental/admin": {
+    "./experimental/admin": {
       "browser": "./build/browser/public/experimental/admin.js",
       "import": {
         "types": "./build/types/public/experimental/admin.d.ts",

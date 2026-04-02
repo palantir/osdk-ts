@@ -15,11 +15,13 @@
  */
 
 import type { QueryDefinition } from "@osdk/api";
+import type { Client } from "@osdk/client";
 import type { ObservableClient } from "@osdk/client/unstable-do-not-use";
 import { act, renderHook } from "@testing-library/react";
 import React from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { OsdkContext2 } from "../OsdkContext2.js";
+import type { UseOsdkFunctionOptions } from "../useOsdkFunction.js";
 import type { UseOsdkFunctionsProps } from "../useOsdkFunctions.js";
 import { useOsdkFunctions } from "../useOsdkFunctions.js";
 
@@ -27,14 +29,12 @@ const MOCK_QUERY_DEF_1: QueryDefinition<unknown> = {
   type: "query",
   apiName: "calculateStats",
   version: "1.0.0",
-  osdkMetadata: {} as never,
 };
 
 const MOCK_QUERY_DEF_2: QueryDefinition<unknown> = {
   type: "query",
   apiName: "getReports",
   version: "1.0.0",
-  osdkMetadata: {} as never,
 };
 
 type Observer = {
@@ -57,7 +57,7 @@ function createWrapper(observableClient: ObservableClient) {
   return function Wrapper({ children }: { children: React.ReactNode }) {
     return (
       <OsdkContext2.Provider
-        value={{ client: {} as never, observableClient }}
+        value={{ client: {} as Client, observableClient }}
       >
         {children}
       </OsdkContext2.Provider>
@@ -69,18 +69,19 @@ function captureObservers(
   mockObservableClient: ObservableClient,
 ): Observer[] {
   const observers: Observer[] = [];
-  (mockObservableClient as Record<string, unknown>).observeFunction = vi.fn()
-    .mockImplementation(
-      (
-        _def: unknown,
-        _params: unknown,
-        _opts: unknown,
-        observer: Observer,
-      ) => {
-        observers.push(observer);
-        return { unsubscribe: vi.fn() };
-      },
-    );
+  (mockObservableClient as unknown as Record<string, unknown>).observeFunction =
+    vi.fn()
+      .mockImplementation(
+        (
+          _def: unknown,
+          _params: unknown,
+          _opts: unknown,
+          observer: Observer,
+        ) => {
+          observers.push(observer);
+          return { unsubscribe: vi.fn() };
+        },
+      );
   return observers;
 }
 
@@ -120,6 +121,7 @@ describe("useOsdkFunctions", () => {
       isLoading: false,
       error: undefined,
       lastUpdated: 0,
+      refetch: expect.any(Function),
     });
     expect(mockObservableClient.observeFunction).not.toHaveBeenCalled();
   });
@@ -131,7 +133,11 @@ describe("useOsdkFunctions", () => {
         {
           queryDefinition: MOCK_QUERY_DEF_1,
           options: {
-            params: { departmentId: "engineering" },
+            params: {
+              departmentId: "engineering",
+            } as unknown as UseOsdkFunctionOptions<
+              typeof MOCK_QUERY_DEF_1
+            >["params"],
           },
         },
       ],
@@ -175,11 +181,23 @@ describe("useOsdkFunctions", () => {
       queries: [
         {
           queryDefinition: MOCK_QUERY_DEF_1,
-          options: { params: { departmentId: "engineering" } },
+          options: {
+            params: {
+              departmentId: "engineering",
+            } as unknown as UseOsdkFunctionOptions<
+              typeof MOCK_QUERY_DEF_1
+            >["params"],
+          },
         },
         {
           queryDefinition: MOCK_QUERY_DEF_2,
-          options: { params: { startDate: "2024-01-01" } },
+          options: {
+            params: {
+              startDate: "2024-01-01",
+            } as unknown as UseOsdkFunctionOptions<
+              typeof MOCK_QUERY_DEF_2
+            >["params"],
+          },
         },
       ],
     };
