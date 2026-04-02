@@ -1,5 +1,16 @@
 # @osdk/maker-experimental
 
+## 0.6.0-beta.9
+
+### Minor Changes
+
+- 4ec5877: Fix link dataset shapes
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.32
+- @osdk/client.unstable@2.8.0-beta.32
+
 ## 0.6.0-beta.8
 
 ### Minor Changes

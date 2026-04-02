@@ -1,5 +1,13 @@
 # @osdk/react-components
 
+## 0.2.0-beta.29
+
+### Minor Changes
+
+- 4ad9b36: Add NumberInputField component
+- d6c2c8b: Fix FilterList styling
+- d6c2c8b: Fix FilterList dropdown
+
 ## 0.2.0-beta.28
 
 ### Minor Changes

@@ -1,5 +1,7 @@
 # @osdk/create-app.template-packager
 
+## 2.8.0-beta.32
+
 ## 2.8.0-beta.31
 
 ## 2.8.0-beta.30

@@ -1,5 +1,18 @@
 # @osdk/generator
 
+## 2.8.0-beta.32
+
+### Minor Changes
+
+- d607557: Allow generating when value type has 0 constraints
+- 46f0a47: Update platform SDK to 2.57.0 and handle new typeReference query data type
+
+### Patch Changes
+
+- Updated dependencies [46f0a47]
+  - @osdk/generator-converters@2.8.0-beta.32
+  - @osdk/api@2.8.0-beta.32
+
 ## 2.8.0-beta.31
 
 ### Patch Changes
