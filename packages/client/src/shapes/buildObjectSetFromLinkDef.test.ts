@@ -38,28 +38,128 @@ describe("buildObjectSetFromLinkDefByType", () => {
     };
   });
 
+  const sourceType = {
+    type: "object" as const,
+    apiName: "Employee",
+    __DefinitionMetadata: {
+      type: "object" as const,
+      primaryKeyApiName: "employeeId",
+    },
+  } as ObjectOrInterfaceDefinition;
+
   it("builds ObjectSet with single pivot using type def", async () => {
     const linkDef = {
       segments: [{ type: "pivotTo" as const, linkName: "lead" }],
     };
 
-    const sourceTypeWithMetadata = {
-      type: "object" as const,
-      apiName: "Employee",
-      __DefinitionMetadata: {
-        type: "object" as const,
-        primaryKeyApiName: "employeeId",
-      },
-    } as ObjectOrInterfaceDefinition;
-
     const objectSet = await buildObjectSetFromLinkDefByType(
       client,
-      sourceTypeWithMetadata,
+      sourceType,
       50030,
       linkDef,
     );
 
     const wireOs = getWireObjectSet(objectSet);
     expect(wireOs.type).toBe("searchAround");
+  });
+
+  it("builds ObjectSet with union set operation", async () => {
+    const linkDef = {
+      segments: [{ type: "pivotTo" as const, linkName: "lead" }],
+      setOperations: [{
+        type: "union" as const,
+        other: {
+          segments: [{ type: "pivotTo" as const, linkName: "peeps" }],
+        },
+      }],
+    };
+
+    const objectSet = await buildObjectSetFromLinkDefByType(
+      client,
+      sourceType,
+      50030,
+      linkDef,
+    );
+
+    const wireOs = getWireObjectSet(objectSet);
+    expect(wireOs.type).toBe("union");
+    expect("objectSets" in wireOs && wireOs.objectSets).toHaveLength(2);
+  });
+
+  it("builds ObjectSet with intersect set operation", async () => {
+    const linkDef = {
+      segments: [{ type: "pivotTo" as const, linkName: "lead" }],
+      setOperations: [{
+        type: "intersect" as const,
+        other: {
+          segments: [{ type: "pivotTo" as const, linkName: "peeps" }],
+        },
+      }],
+    };
+
+    const objectSet = await buildObjectSetFromLinkDefByType(
+      client,
+      sourceType,
+      50030,
+      linkDef,
+    );
+
+    const wireOs = getWireObjectSet(objectSet);
+    expect(wireOs.type).toBe("intersect");
+    expect("objectSets" in wireOs && wireOs.objectSets).toHaveLength(2);
+  });
+
+  it("builds ObjectSet with subtract set operation", async () => {
+    const linkDef = {
+      segments: [{ type: "pivotTo" as const, linkName: "lead" }],
+      setOperations: [{
+        type: "subtract" as const,
+        other: {
+          segments: [{ type: "pivotTo" as const, linkName: "peeps" }],
+        },
+      }],
+    };
+
+    const objectSet = await buildObjectSetFromLinkDefByType(
+      client,
+      sourceType,
+      50030,
+      linkDef,
+    );
+
+    const wireOs = getWireObjectSet(objectSet);
+    expect(wireOs.type).toBe("subtract");
+    expect("objectSets" in wireOs && wireOs.objectSets).toHaveLength(2);
+  });
+
+  it("builds ObjectSet with multiple set operations", async () => {
+    const linkDef = {
+      segments: [{ type: "pivotTo" as const, linkName: "lead" }],
+      setOperations: [
+        {
+          type: "union" as const,
+          other: {
+            segments: [{ type: "pivotTo" as const, linkName: "peeps" }],
+          },
+        },
+        {
+          type: "intersect" as const,
+          other: {
+            segments: [{ type: "pivotTo" as const, linkName: "lead" }],
+          },
+        },
+      ],
+    };
+
+    const objectSet = await buildObjectSetFromLinkDefByType(
+      client,
+      sourceType,
+      50030,
+      linkDef,
+    );
+
+    const wireOs = getWireObjectSet(objectSet);
+    // The second operation wraps the first: intersect(union(base, peeps), lead)
+    expect(wireOs.type).toBe("intersect");
   });
 });
