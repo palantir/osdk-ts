@@ -174,6 +174,94 @@ describe("MediaContentObservable", () => {
     observable.dispose();
   });
 
+  it("loadWithPreview fetches both preview and full content", async () => {
+    const previewBlob = new Blob(["preview"], { type: "image/jpeg" });
+    const fullBlob = new Blob(["full resolution"], { type: "image/jpeg" });
+    const deps = createMockDeps(blobManager);
+    deps.fetchContent.mockImplementation(
+      (_source: unknown, opts?: { preview?: boolean }) => {
+        if (opts?.preview === false) {
+          return Promise.resolve(fullBlob);
+        }
+        return Promise.resolve(previewBlob);
+      },
+    );
+
+    const observable = createMediaContentObservable(deps, coords, {
+      placeholder: "preview",
+    });
+    const observer = createMockObserver();
+
+    observable.subscribe(observer);
+
+    // Wait for preview phase
+    await vi.waitFor(() => {
+      const p = observer.payloads.find(
+        p => p.status === "loaded" && p.isPreview,
+      );
+      expect(p).toBeDefined();
+    });
+
+    // Wait for full phase
+    await vi.waitFor(() => {
+      const p = observer.payloads.find(
+        p => p.status === "loaded" && !p.isPreview,
+      );
+      expect(p).toBeDefined();
+    });
+
+    const fullPayload = observer.payloads.findLast(
+      p => p.status === "loaded" && !p.isPreview,
+    );
+    expect(fullPayload?.content).toBe(fullBlob);
+    expect(deps.fetchContent).toHaveBeenCalledTimes(2);
+
+    observable.dispose();
+  });
+
+  it("dispose releases correct blob URL in preview state", async () => {
+    const previewBlob = new Blob(["preview"], { type: "image/jpeg" });
+    const deps = createMockDeps(blobManager);
+
+    // Make full fetch hang so we can dispose during preview state
+    let resolveFullFetch: (blob: Blob) => void;
+    deps.fetchContent.mockImplementation(
+      (_source: unknown, opts?: { preview?: boolean }) => {
+        if (opts?.preview === false) {
+          return new Promise<Blob>((resolve) => {
+            resolveFullFetch = resolve;
+          });
+        }
+        return Promise.resolve(previewBlob);
+      },
+    );
+
+    const releaseSpy = vi.spyOn(blobManager, "releaseBlobUrl");
+
+    const observable = createMediaContentObservable(deps, coords, {
+      placeholder: "preview",
+    });
+    const observer = createMockObserver();
+
+    observable.subscribe(observer);
+
+    // Wait for preview state
+    await vi.waitFor(() => {
+      const p = observer.payloads.find(
+        p => p.status === "loaded" && p.isPreview,
+      );
+      expect(p).toBeDefined();
+    });
+
+    // Dispose while in preview state (full fetch still pending)
+    observable.dispose();
+
+    // Should release the preview key, not the base key
+    expect(releaseSpy).toHaveBeenCalledWith("test-cache-key:preview");
+
+    releaseSpy.mockRestore();
+  });
+
   it("uses cached content from blobManager", async () => {
     const cachedBlob = new Blob(["cached"], { type: "text/plain" });
     blobManager.add("test-cache-key", cachedBlob);
