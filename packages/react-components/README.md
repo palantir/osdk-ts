@@ -55,21 +55,47 @@ function App() {
 
 Add the OSDK style imports to your application's entry CSS file (e.g., `index.css`).
 
-**With Tailwind CSS:**
+#### Understanding CSS Layers
 
-> **Important:** The OSDK imports **must** come _after_ your Tailwind import. Tailwind resets can override OSDK styles if loaded later. The `@layer` declaration at the end ensures the correct cascade order.
+OSDK uses CSS [`@layer`](https://developer.mozilla.org/en-US/docs/Web/CSS/@layer) to make theming predictable. If you're not familiar with `@layer`, here's what you need to know:
+
+**What is `@layer`?** CSS `@layer` lets you group styles into named layers and control the order in which they apply. When two styles target the same element, the style in the _later_ layer always wins — regardless of selector specificity. This is what makes the theming system maintainable.
+
+**OSDK's layers:**
+
+| Layer             | Purpose                                                    |
+| ----------------- | ---------------------------------------------------------- |
+| `osdk.tokens`     | Design tokens (colors, spacing, typography) — the defaults |
+| `osdk.components` | Component structural styles (layout, borders, sizing)      |
+
+Because `osdk.components` is declared after `osdk.tokens`, component styles take priority over token defaults when they overlap.
+
+**Adding your own layer:** You can add a custom layer (e.g., `user.brand`) after the OSDK layers to override any token or component style. Later layers always win.
+
+**When styles conflict, CSS resolves them in this order:**
+
+1. **Layer order** — Later layers always win (`user.brand` > `osdk.components` > `osdk.tokens`)
+2. **Selector specificity** — More specific selectors win _within the same layer_
+3. **Source order** — Later declarations win when specificity is equal
+
+#### With Tailwind CSS v4
+
+> **Important:** The `@layer` declaration defines the cascade order. Wrapping the Tailwind import in `layer(tailwind)` nests all of Tailwind's styles into a single named layer. By listing `tailwind` before the OSDK layers, OSDK styles take priority over Tailwind's resets and utilities.
 
 ```css
 /* index.css */
-@import "tailwindcss" source("..");
-@import "tw-animate-css";
+@layer tailwind, osdk.tokens, osdk.components, user.brand;
+
+@import "tailwindcss" layer(tailwind);
 
 @import "@osdk/react-components-styles" layer(osdk.tokens);
 @import "@osdk/react-components/styles.css" layer(osdk.components);
-@layer osdk.tokens, osdk.components;
+
+/* To add your own brand overrides on top, append a custom layer: */
+@import "./user-brand.css" layer(user.brand);
 ```
 
-**Without Tailwind CSS:**
+#### Without Tailwind CSS
 
 ```css
 /* index.css */
@@ -79,7 +105,18 @@ Add the OSDK style imports to your application's entry CSS file (e.g., `index.cs
 @import "@osdk/react-components/styles.css" layer(osdk.components);
 ```
 
-**Portal isolation (required):**
+To add your own brand overrides on top:
+
+```css
+/* index.css */
+@layer osdk.tokens, osdk.components, user.brand;
+
+@import "@osdk/react-components-styles" layer(osdk.tokens);
+@import "@osdk/react-components/styles.css" layer(osdk.components);
+@import "./user-brand.css" layer(user.brand);
+```
+
+#### Portal isolation (required)
 
 ```css
 .root {
@@ -88,8 +125,6 @@ Add the OSDK style imports to your application's entry CSS file (e.g., `index.cs
 ```
 
 The `.root` isolation is required for Base UI portals. See https://base-ui.com/react/overview/quick-start#portals
-
-Using `@layer` ensures proper CSS cascade ordering — component styles are loaded before token styles, allowing tokens to override component defaults when needed.
 
 ## Components
 

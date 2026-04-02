@@ -1,4 +1,6 @@
 ---
+"@osdk/react-components": patch
+"@osdk/react-components-styles": patch
 ---
 
-Add Tailwind CSS setup instructions to react-components README
+Add CSS layers documentation and Tailwind CSS v4 setup instructions to READMEs
