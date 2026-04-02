@@ -33,6 +33,8 @@ import styles from "./BaseInput.module.css";
  */
 const VALID_NUMERIC_REGEX = /^[+-.]?(\d+\.?\d*|\d*\.?\d+)?([eE][+-]?\d*)?$/;
 
+const DEFAULT_STEP = 1;
+
 // TODO: Add min/max validation so the field can surface
 // out-of-range errors through the form validation system.
 export function NumberInputField({
@@ -42,7 +44,7 @@ export function NumberInputField({
   placeholder,
   min: _min,
   max: _max,
-  step: _step,
+  step,
 }: NumberInputFieldProps): React.ReactElement {
   const [displayValue, setDisplayValue] = useState<string>(() =>
     formatNumberForDisplay(value)
@@ -72,6 +74,25 @@ export function NumberInputField({
     [onChange],
   );
 
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key !== "ArrowUp" && e.key !== "ArrowDown") {
+        return;
+      }
+      e.preventDefault();
+
+      const current = parseNumericValue(displayValue) ?? 0;
+      const delta = e.key === "ArrowUp"
+        ? (step ?? DEFAULT_STEP)
+        : -(step ?? DEFAULT_STEP);
+      const next = current + delta;
+      const formatted = formatNumberForDisplay(next);
+      setDisplayValue(formatted);
+      onChange?.(next);
+    },
+    [displayValue, onChange, step],
+  );
+
   return (
     <Input
       id={id}
@@ -80,6 +101,7 @@ export function NumberInputField({
       inputMode="decimal"
       value={displayValue}
       onValueChange={handleValueChange}
+      onKeyDown={handleKeyDown}
       placeholder={placeholder}
     />
   );

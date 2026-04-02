@@ -216,6 +216,38 @@ describe("NumberInputField", () => {
     });
   });
 
+  describe("step (ArrowUp/ArrowDown)", () => {
+    it("increments and decrements by step on arrow keys", () => {
+      const onChange = vi.fn();
+      render(<NumberInputField value={10} onChange={onChange} step={5} />);
+      const input = screen.getByRole("textbox") as HTMLInputElement;
+
+      fireEvent.keyDown(input, { key: "ArrowUp" });
+      expect(onChange).toHaveBeenCalledWith(15);
+      expect(input.value).toBe("15");
+
+      onChange.mockClear();
+      fireEvent.keyDown(input, { key: "ArrowDown" });
+      expect(onChange).toHaveBeenCalledWith(10);
+    });
+
+    it("defaults to step of 1 and treats null as 0", () => {
+      const onChange = vi.fn();
+      render(<NumberInputField value={null} onChange={onChange} />);
+      const input = screen.getByRole("textbox") as HTMLInputElement;
+      fireEvent.keyDown(input, { key: "ArrowUp" });
+      expect(onChange).toHaveBeenCalledWith(1);
+      expect(input.value).toBe("1");
+    });
+
+    it("ignores non-arrow keys", () => {
+      const onChange = vi.fn();
+      render(<NumberInputField value={5} onChange={onChange} />);
+      fireEvent.keyDown(screen.getByRole("textbox"), { key: "Enter" });
+      expect(onChange).not.toHaveBeenCalled();
+    });
+  });
+
   describe("props", () => {
     it("passes id to the input element", () => {
       render(
