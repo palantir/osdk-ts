@@ -216,7 +216,7 @@ Displays values computed by an OSDK function (query). This is equivalent to Work
   getFunctionParams: (objectSet) => ({ objectSetKey: objectSet }),
   getKey: (object) => `${object.$objectType}:${object.$primaryKey}`, // The key to index the value of an object
   getValue: (cellData) => cellData?.status,  // Getter to extract the value from the raw data
-  dedupeIntervalMs: 300_000,      // The stale time of your data, if multiple requests happen within this interval, no new network call will be made
+  dedupeIntervalMs: 5 * 60 * 1_000, // The stale time of your data, if multiple requests happen within this interval, no new network call will be made
 }
 ```
 

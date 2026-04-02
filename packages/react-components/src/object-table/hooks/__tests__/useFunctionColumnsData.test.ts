@@ -29,7 +29,7 @@ import { renderHook } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { ColumnDefinition } from "../../ObjectTableApi.js";
 import {
-  DEDUPE_INTERVAL_MS,
+  DEFAULT_DEDUPE_INTERVAL_MS,
   useFunctionColumnsData,
 } from "../useFunctionColumnsData.js";
 
@@ -211,7 +211,7 @@ describe("useFunctionColumnsData", () => {
         {
           queryDefinition: mockQueryDefinition,
           options: {
-            dedupeIntervalMs: DEDUPE_INTERVAL_MS,
+            dedupeIntervalMs: DEFAULT_DEDUPE_INTERVAL_MS,
             params: { [OBJ_SET_KEY]: mockObjectSet },
           },
         },
@@ -364,7 +364,7 @@ describe("useFunctionColumnsData", () => {
         {
           queryDefinition: mockQueryDefinition,
           options: {
-            dedupeIntervalMs: DEDUPE_INTERVAL_MS,
+            dedupeIntervalMs: DEFAULT_DEDUPE_INTERVAL_MS,
             params: { [OBJ_SET_KEY]: mockObjectSet },
           },
         },
@@ -478,14 +478,14 @@ describe("useFunctionColumnsData", () => {
           queryDefinition: mockQueryDefinition,
           options: {
             params: { [OBJ_SET_KEY]: mockObjectSet },
-            dedupeIntervalMs: DEDUPE_INTERVAL_MS,
+            dedupeIntervalMs: DEFAULT_DEDUPE_INTERVAL_MS,
           },
         },
         {
           queryDefinition: mockQueryDefinition2,
           options: {
             params: { [OBJ_SET_KEY]: mockObjectSet },
-            dedupeIntervalMs: DEDUPE_INTERVAL_MS,
+            dedupeIntervalMs: DEFAULT_DEDUPE_INTERVAL_MS,
           },
         },
       ],

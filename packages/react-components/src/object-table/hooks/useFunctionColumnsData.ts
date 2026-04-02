@@ -63,7 +63,7 @@ type FunctionColumnConfig<
 
 // Function column data is readOnly and can be cached aggressively,
 // so we set a longer dedupe interval to maximize cache hits
-export const DEDUPE_INTERVAL_MS = 300_000; // 5 minutes
+export const DEFAULT_DEDUPE_INTERVAL_MS = 300_000; // 5 minutes
 
 export function useFunctionColumnsData<
   Q extends ObjectOrInterfaceDefinition,
@@ -107,7 +107,7 @@ export function useFunctionColumnsData<
           options: {
             params: config.getParams(stableObjectSet),
             dedupeIntervalMs: config.dedupeIntervalMs
-              ?? DEDUPE_INTERVAL_MS,
+              ?? DEFAULT_DEDUPE_INTERVAL_MS,
           } as FunctionQueryParams<QueryDefinition<unknown>>["options"],
         }),
       );
@@ -207,6 +207,16 @@ function getFunctionColumnConfigs<
           getValue: locator.getValue,
           getKey: locator.getKey,
         });
+        // When multiple columns share a query, use the shortest dedupe interval
+        if (locator.dedupeIntervalMs != null) {
+          existingConfig.dedupeIntervalMs = existingConfig.dedupeIntervalMs
+              != null
+            ? Math.min(
+              existingConfig.dedupeIntervalMs,
+              locator.dedupeIntervalMs,
+            )
+            : locator.dedupeIntervalMs;
+        }
       } else {
         // Create new config
         configsByApiName.set(apiName, {

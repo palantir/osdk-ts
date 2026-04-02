@@ -45,7 +45,7 @@ const columnDefinitions: Array<
       getFunctionParams: (objectSet: any) => ({ employees: objectSet }),
       getKey: (obj: any) => `${obj.$objectType}:${obj.$primaryKey}`,
       getValue: (data: { daysSinceStart: any }) => data?.daysSinceStart,
-      dedupeIntervalMs: 10_000, // 1 minute dedupe interval for this function column
+      dedupeIntervalMs: 10_000, // Short dedupe for sandbox testing
     } as any,
     columnName: "Days Since Start",
     width: 150,
