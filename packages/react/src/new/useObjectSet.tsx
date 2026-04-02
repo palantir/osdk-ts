@@ -172,7 +172,7 @@ export interface UseObjectSetResult<
    */
   totalCount?: string;
 
-  refetch: () => void;
+  refetch: () => Promise<void>;
 }
 
 declare const process: {
@@ -341,9 +341,7 @@ export function useObjectSet<
       isOptimistic: payload?.isOptimistic ?? false,
       fetchMore: payload?.hasMore ? payload.fetchMore : undefined,
       hasMore: payload?.hasMore ?? false,
-      objectSet: isPayloadCompleted(payload)
-        ? payload?.objectSet as ObjectSet<Q, RDPs>
-        : undefined,
+      objectSet: lastLoaded?.objectSet as ObjectSet<Q, RDPs> | undefined,
       totalCount: lastLoaded?.totalCount,
       refetch,
     };

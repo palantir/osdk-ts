@@ -92,8 +92,6 @@ export interface UseOsdkAggregationOptionsWithObjectSet<
   objectSet: ObjectSet<T>;
 }
 
-const EMPTY_WHERE = {};
-
 export interface UseOsdkAggregationResult<
   T extends ObjectOrInterfaceDefinition,
   A extends AggregateOpts<T>,
@@ -101,7 +99,7 @@ export interface UseOsdkAggregationResult<
   data: AggregationsResults<T, A> | undefined;
   isLoading: boolean;
   error: Error | undefined;
-  refetch: () => void;
+  refetch: () => Promise<void>;
 }
 
 declare const process: {
@@ -169,7 +167,7 @@ export function useOsdkAggregation<
     | UseOsdkAggregationOptionsWithObjectSet<Q, A, RDPs>,
 ): UseOsdkAggregationResult<Q, A> {
   const {
-    where = EMPTY_WHERE,
+    where,
     withProperties,
     intersectWith,
     aggregate,
@@ -201,7 +199,7 @@ export function useOsdkAggregation<
           (observer) =>
             observableClient.observeAggregation(
               {
-                type: type,
+                type,
                 objectSet: currentObjectSet,
                 where: canonOptions.where,
                 withProperties: canonOptions.withProperties,
@@ -223,7 +221,7 @@ export function useOsdkAggregation<
           // eslint-disable-next-line @typescript-eslint/no-deprecated
           observableClient.observeAggregation(
             {
-              type: type,
+              type,
               where: canonOptions.where,
               withProperties: canonOptions.withProperties,
               intersectWith: canonOptions.intersectWith,

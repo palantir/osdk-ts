@@ -193,10 +193,8 @@ export interface UseOsdkListResult<
 
   objectSet: ObjectSet<T, RDPs> | undefined;
 
-  refetch: () => void;
+  refetch: () => Promise<void>;
 }
-
-const EMPTY_WHERE = {};
 
 declare const process: {
   env: {
@@ -267,7 +265,7 @@ export function useOsdkObjects<
   } = options ?? {};
 
   const canonOptions = observableClient.canonicalizeOptions({
-    where: where ?? EMPTY_WHERE,
+    where,
     withProperties,
     orderBy,
     intersectWith,
