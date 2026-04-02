@@ -320,7 +320,9 @@
   --osdk-filter-texttags-gap: var(--osdk-surface-spacing);
 
   /* Listogram View All */
-  --osdk-filter-listogram-view-all-font-size: 13px;
+  --osdk-filter-listogram-view-all-font-size: var(
+    --osdk-typography-size-body-small
+  );
   --osdk-filter-listogram-view-all-color: var(--osdk-typography-color-muted);
 
   /* Listogram Selected Color */
