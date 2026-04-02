@@ -744,6 +744,7 @@ export class OntologyMetadataResolver {
       case "void":
         return Result.ok({});
       case "mediaReference":
+      case "typeReference":
       case "unsupported":
         return Result.err([
           `Unable to load query ${queryApiName} because it takes an unsupported parameter type: ${

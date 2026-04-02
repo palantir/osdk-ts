@@ -382,6 +382,7 @@ describe("Load Ontologies Metadata", () => {
               },
             },
             "rid": "ri.function-registry.main.function.abd64ff3-276e-48c5-afee-5a6ef0b2ea47",
+            "typeReferences": {},
             "version": "0.0.9",
           },
         }
@@ -425,6 +426,7 @@ describe("Load Ontologies Metadata", () => {
               },
             },
             "rid": "ri.function-registry.main.function.abd64ff3-276e-48c5-afee-5a6ef0b2ea47",
+            "typeReferences": {},
             "version": "0.0.9",
           },
         }

@@ -23,7 +23,7 @@ export class OrderByCanonicalizer {
   #trie = new WeakRefTrie(
     (array: Array<string>) => {
       const pairs = array.reduce<Array<[string, "asc" | "desc"]>>(
-        function(result, _, index, array) {
+        (result, _, index, array) => {
           if (index % 2 === 0 && array[index] != null) {
             result.push(
               array.slice(index, index + 2) as [string, "asc" | "desc"],

@@ -144,7 +144,7 @@ export class WhereClauseCanonicalizer {
           if (
             k !== "$not" && typeof v === "object" && v != null && "$eq" in v
           ) {
-            return [k, v["$eq"]];
+            return [k, v.$eq];
           }
           return [k, v];
         }),
