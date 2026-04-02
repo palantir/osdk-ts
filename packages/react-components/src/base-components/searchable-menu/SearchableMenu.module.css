@@ -23,7 +23,7 @@
   border: var(--osdk-surface-border);
   border-radius: var(--osdk-surface-border-radius);
   box-shadow: var(--osdk-surface-shadow-2);
-  max-height: 300px;
+  max-height: calc(var(--osdk-dialog-max-height) * 0.5);
   overflow-y: auto;
   width: var(--anchor-width);
 
