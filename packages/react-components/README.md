@@ -55,7 +55,7 @@ function App() {
 
 Add the OSDK style imports to your application's entry CSS file (e.g., `index.css`).
 
-**With Tailwind CSS (recommended for most projects):**
+**With Tailwind CSS:**
 
 > **Important:** The OSDK imports **must** come _after_ your Tailwind import. Tailwind resets can override OSDK styles if loaded later. The `@layer` declaration at the end ensures the correct cascade order.
 
