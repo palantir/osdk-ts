@@ -179,25 +179,6 @@ export function useShapeSingleInternal<
     }) as ShapeInstance<S>;
   }, [transformResult.data, linksPayload.links]);
 
-  let error: Error | undefined;
-  if (basePayload && "error" in basePayload && basePayload.error) {
-    error = basePayload.error;
-  } else if (basePayload?.status === "error") {
-    error = new Error("Failed to load object");
-  } else if (
-    transformResult.violations.some((v) => v.constraint === "require")
-  ) {
-    error = new ShapeNullabilityError(shape, transformResult.violations);
-  } else if (linksPayload.anyError) {
-    for (const [, status] of Object.entries(linksPayload.linkStatus)) {
-      const ls = status as LinkStatus | undefined;
-      if (ls?.error) {
-        error = ls.error;
-        break;
-      }
-    }
-  }
-
   const invalidate = React.useCallback(
     (linkName?: keyof ShapeDerivedLinks<S>): void => {
       if (linkName) {
@@ -221,18 +202,48 @@ export function useShapeSingleInternal<
       || !basePayload)
     : false;
 
-  return {
-    data: dataWithLinks,
-    isLoading: baseLoading || linksPayload.anyLoading,
-    isOptimistic: !!basePayload?.isOptimistic,
-    error,
-    droppedDueToNullability: transformResult.dropped,
-    nullabilityViolations: transformResult.violations,
-    linkStatus: linksPayload.linkStatus,
-    loadDeferred: linksStore.loadDeferred,
-    retry: linksStore.retry,
+  return React.useMemo(() => {
+    let error: Error | undefined;
+    if (basePayload && "error" in basePayload && basePayload.error) {
+      error = basePayload.error;
+    } else if (basePayload?.status === "error") {
+      error = new Error("Failed to load object");
+    } else if (
+      transformResult.violations.some((v) => v.constraint === "require")
+    ) {
+      error = new ShapeNullabilityError(shape, transformResult.violations);
+    } else if (linksPayload.anyError) {
+      for (const [, status] of Object.entries(linksPayload.linkStatus)) {
+        const ls = status as LinkStatus | undefined;
+        if (ls?.error) {
+          error = ls.error;
+          break;
+        }
+      }
+    }
+
+    return {
+      data: dataWithLinks,
+      isLoading: baseLoading || linksPayload.anyLoading,
+      isOptimistic: !!basePayload?.isOptimistic,
+      error,
+      droppedDueToNullability: transformResult.dropped,
+      nullabilityViolations: transformResult.violations,
+      linkStatus: linksPayload.linkStatus,
+      loadDeferred: linksStore.loadDeferred,
+      retry: linksStore.retry,
+      invalidate,
+    };
+  }, [
+    dataWithLinks,
+    basePayload,
+    baseLoading,
+    transformResult,
+    linksPayload,
+    linksStore,
     invalidate,
-  };
+    shape,
+  ]);
 }
 
 export function useShapeListInternal<
@@ -400,30 +411,6 @@ export function useShapeListInternal<
     return linksPayload.aggregatedLinkStatus as LinkStatusMap;
   }, [linksPayload.aggregatedLinkStatus]);
 
-  let error: Error | undefined;
-  if (payload && "error" in payload && payload.error) {
-    error = payload.error;
-  } else if (payload?.status === "error") {
-    error = new Error("Failed to load objects");
-  } else if (
-    transformResult.violations.some((v) => v.constraint === "require")
-  ) {
-    error = new ShapeNullabilityError(shape, transformResult.violations);
-  } else if (linksPayload.anyError) {
-    for (const [, statuses] of linksPayload.linkStatusBySourcePk) {
-      for (const [, status] of Object.entries(statuses)) {
-        const ls = status as LinkStatus | undefined;
-        if (ls?.error) {
-          error = ls.error;
-          break;
-        }
-      }
-      if (error) {
-        break;
-      }
-    }
-  }
-
   const invalidate = React.useCallback(
     (linkName?: keyof ShapeDerivedLinks<S>): void => {
       if (linkName) {
@@ -469,18 +456,56 @@ export function useShapeListInternal<
     ? (payload?.status === "loading" || payload?.status === "init" || !payload)
     : false;
 
-  return {
-    data: payload?.resolvedList ? dataWithLinks : undefined,
-    isLoading: baseLoading || linksPayload.anyLoading,
-    isOptimistic: payload?.isOptimistic ?? false,
-    error,
-    fetchMore: payload?.hasMore ? payload.fetchMore : undefined,
-    droppedCount: transformResult.droppedCount,
-    nullabilityViolations: transformResult.violations,
+  return React.useMemo(() => {
+    let error: Error | undefined;
+    if (payload && "error" in payload && payload.error) {
+      error = payload.error;
+    } else if (payload?.status === "error") {
+      error = new Error("Failed to load objects");
+    } else if (
+      transformResult.violations.some((v) => v.constraint === "require")
+    ) {
+      error = new ShapeNullabilityError(shape, transformResult.violations);
+    } else if (linksPayload.anyError) {
+      for (const [, statuses] of linksPayload.linkStatusBySourcePk) {
+        for (const [, status] of Object.entries(statuses)) {
+          const ls = status as LinkStatus | undefined;
+          if (ls?.error) {
+            error = ls.error;
+            break;
+          }
+        }
+        if (error) {
+          break;
+        }
+      }
+    }
+
+    return {
+      data: payload?.resolvedList ? dataWithLinks : undefined,
+      isLoading: baseLoading || linksPayload.anyLoading,
+      isOptimistic: payload?.isOptimistic ?? false,
+      error,
+      fetchMore: payload?.hasMore ? payload.fetchMore : undefined,
+      droppedCount: transformResult.droppedCount,
+      nullabilityViolations: transformResult.violations,
+      itemLinkStatus,
+      linkStatus,
+      loadDeferred,
+      retry,
+      invalidate,
+    };
+  }, [
+    dataWithLinks,
+    payload,
+    baseLoading,
+    transformResult,
+    linksPayload,
     itemLinkStatus,
     linkStatus,
     loadDeferred,
     retry,
     invalidate,
-  };
+    shape,
+  ]);
 }
