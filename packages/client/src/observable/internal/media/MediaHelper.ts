@@ -40,6 +40,13 @@ import type {
 } from "./MediaMetadataQuery.js";
 import { MediaMetadataQuery } from "./MediaMetadataQuery.js";
 
+function isMediaPropertyLocation(
+  source: Media | Attachment | MediaPropertyLocation,
+): source is MediaPropertyLocation {
+  return "objectType" in source && "primaryKey" in source
+    && "propertyName" in source;
+}
+
 /**
  * Facade for media operations: metadata, content, and caching.
  * Delegates to specialized helpers for focused responsibilities.
@@ -285,6 +292,8 @@ export class MediaHelper {
   ): { unsubscribe: () => void } {
     const cacheKey = this.getCacheKey(source);
 
+    // Reuse existing observable for same media source — subsequent subscribers
+    // share the first subscriber's options (placeholder, staleTime, etc.)
     let observable = this.contentObservables.get(cacheKey);
     if (!observable) {
       observable = createMediaContentObservable(
@@ -329,10 +338,7 @@ export class MediaHelper {
   private async fetchMetadataForSource(
     source: Media | Attachment | MediaPropertyLocation,
   ): Promise<MediaMetadata> {
-    if (
-      "objectType" in source && "primaryKey" in source
-      && "propertyName" in source
-    ) {
+    if (isMediaPropertyLocation(source)) {
       return this.fetchMetadata(source);
     }
     if ("rid" in source) {
@@ -356,7 +362,7 @@ export class MediaHelper {
 
     this.blobManager.remove(cacheKey);
 
-    if ("objectType" in mediaOrLocation) {
+    if (isMediaPropertyLocation(mediaOrLocation)) {
       const typedCacheKey = this.getTypedCacheKey(mediaOrLocation);
       this.store.queries.delete(typedCacheKey);
     }

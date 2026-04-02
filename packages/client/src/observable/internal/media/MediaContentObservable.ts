@@ -32,7 +32,6 @@ export interface MediaContentObservableDeps {
   ) => Promise<Blob>;
   fetchMetadata: (
     source: MediaSource,
-    options?: { preview?: boolean },
   ) => Promise<MediaMetadata>;
   blobManager: BlobMemoryManager;
   getCacheKey: (source: MediaSource) => string;
@@ -226,6 +225,9 @@ export function createMediaContentObservable(
     const url = deps.blobManager.createBlobUrl(cacheKey);
     const dimensions = await extractImageDimensions(blob);
     if (gen !== fetchGeneration || disposed) {
+      if (url) {
+        deps.blobManager.releaseBlobUrl(cacheKey);
+      }
       return;
     }
 
