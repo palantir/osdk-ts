@@ -86,7 +86,7 @@ export interface UseOsdkObjectShapeResult<
   >;
   loadDeferred: (
     linkName: keyof ShapeDerivedLinks<InferShapeDefinition<Q, C>>,
-  ) => Promise<void>;
+  ) => void;
   retry: (
     linkName?: keyof ShapeDerivedLinks<InferShapeDefinition<Q, C>>,
   ) => void;

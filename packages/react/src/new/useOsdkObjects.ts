@@ -238,7 +238,7 @@ export interface UseOsdkObjectsShapeResult<
   loadDeferred: (
     primaryKey: string | number,
     linkName: keyof ShapeDerivedLinks<InferShapeDefinition<Q, C>>,
-  ) => Promise<void>;
+  ) => void;
   retry: (
     primaryKey?: string | number,
     linkName?: keyof ShapeDerivedLinks<InferShapeDefinition<Q, C>>,
