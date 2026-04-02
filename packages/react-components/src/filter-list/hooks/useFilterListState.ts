@@ -170,33 +170,19 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
 
   const clearFilterState = useCallback(
     (filterKey: string) => {
-      const initialStates = buildInitialStates(filterDefinitions);
-      const initialState = initialStates.get(filterKey);
+      const clearedStates = new Map(filterStates);
+      clearedStates.delete(filterKey);
 
-      setFilterStates((prev) => {
-        const next = new Map(prev);
-        if (initialState) {
-          next.set(filterKey, initialState);
-        } else {
-          next.delete(filterKey);
-        }
-        return next;
-      });
+      setFilterStates(clearedStates);
 
-      const updatedStates = new Map(filterStates);
-      if (initialState) {
-        updatedStates.set(filterKey, initialState);
-      } else {
-        updatedStates.delete(filterKey);
-      }
       const newWhereClause = buildWhereClause(
         filterDefinitions,
-        updatedStates,
+        clearedStates,
         propertyTypes,
       );
       onFilterClauseChanged?.(newWhereClause);
     },
-    [filterDefinitions, filterStates, propertyTypes, onFilterClauseChanged],
+    [filterStates, filterDefinitions, propertyTypes, onFilterClauseChanged],
   );
 
   const whereClause = useMemo(
