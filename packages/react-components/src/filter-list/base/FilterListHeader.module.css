@@ -18,14 +18,18 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-bottom: var(--osdk-filter-header-padding-bottom);
+  padding: var(--osdk-filter-header-padding);
+  gap: var(--osdk-filter-header-gap);
   border-bottom: var(--osdk-filter-header-border-bottom);
+  flex-shrink: 0;
 }
 
 .titleContainer {
   display: flex;
   align-items: center;
   gap: var(--osdk-filter-header-titleContainer-gap);
+  flex: 1;
+  min-width: 0;
 }
 
 .title {
@@ -97,10 +101,10 @@
   font-size: var(--osdk-filter-header-reset-font-size);
   color: var(--osdk-filter-header-reset-color);
   background: var(--osdk-filter-header-button-bg);
-  border: none;
+  border: var(--osdk-filter-header-reset-border);
   cursor: pointer;
   padding: var(--osdk-filter-header-reset-padding);
-  border-radius: var(--osdk-filter-header-button-border-radius);
+  border-radius: var(--osdk-filter-header-reset-border-radius);
   transition: background-color var(--osdk-filter-header-button-transition);
 
   &:hover:not(:disabled) {

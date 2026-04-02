@@ -215,6 +215,16 @@ const meta: Meta<EmployeeFilterListProps> = {
       control: false,
       table: { category: "Events" },
     },
+    addFilterMode: {
+      description:
+        "Controls how filter add/remove is managed. \"uncontrolled\" manages visibility internally; \"controlled\" leaves it to the consumer.",
+      control: "select",
+      options: ["controlled", "uncontrolled"],
+      table: {
+        category: "Advanced",
+        defaultValue: { summary: "\"uncontrolled\"" },
+      },
+    },
     renderAddFilterButton: {
       description: "Custom render function for the add filter button.",
       control: false,

@@ -56,7 +56,15 @@
   }
 
   &[data-excluding][data-checked] {
-    background-color: var(--osdk-checkbox-bg-hover);
+    background-color: var(--osdk-checkbox-bg-checked);
+
+    &:hover {
+      background-color: var(--osdk-checkbox-bg-checked-hover);
+    }
+
+    &:active {
+      background-color: var(--osdk-checkbox-bg-checked-active);
+    }
   }
 
   &:focus-visible {

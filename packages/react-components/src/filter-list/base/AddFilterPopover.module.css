@@ -15,13 +15,17 @@
  */
 
 .trigger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-family: var(--osdk-filter-header-font-family);
   font-size: var(--osdk-filter-header-reset-font-size);
-  color: var(--osdk-filter-header-reset-color);
+  color: var(--osdk-typography-color-default-rest);
   background: var(--osdk-filter-header-button-bg);
-  border: none;
+  border: var(--osdk-filter-list-addButton-border);
   cursor: pointer;
   padding: var(--osdk-filter-header-reset-padding);
+  min-height: var(--osdk-filter-list-addButton-height);
   border-radius: var(--osdk-filter-header-button-border-radius);
   transition: background-color var(--osdk-filter-header-button-transition);
   width: 100%;

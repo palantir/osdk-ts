@@ -265,6 +265,10 @@ export interface PropertyFilterDefinition<
    */
   listogramConfig?: {
     displayMode?: "full" | "count" | "minimal";
+    /**
+     * Number of items shown before "View all" link appears
+     * @default 5
+     */
     maxVisibleItems?: number;
   };
 

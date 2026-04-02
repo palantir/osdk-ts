@@ -98,16 +98,18 @@ export function BaseFilterList<D>(
           />
         )}
 
-        <FilterListContent
-          filterDefinitions={filterDefinitions}
-          filterStates={filterStates}
-          onFilterStateChanged={onFilterStateChanged}
-          onFilterRemoved={onFilterRemoved}
-          renderInput={renderInput}
-          getFilterKey={getFilterKey}
-          getFilterLabel={getFilterLabel}
-          enableSorting={enableSorting}
-        />
+        <div className={styles.scrollableContent}>
+          <FilterListContent
+            filterDefinitions={filterDefinitions}
+            filterStates={filterStates}
+            onFilterStateChanged={onFilterStateChanged}
+            onFilterRemoved={onFilterRemoved}
+            renderInput={renderInput}
+            getFilterKey={getFilterKey}
+            getFilterLabel={getFilterLabel}
+            enableSorting={enableSorting}
+          />
+        </div>
 
         {showAddButton && (
           <div className={styles.addButtonContainer}>

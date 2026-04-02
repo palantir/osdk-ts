@@ -20,15 +20,6 @@
   gap: var(--osdk-filter-item-gap);
   border-radius: var(--osdk-filter-item-border-radius);
   padding: var(--osdk-filter-item-padding);
-  border: 1px solid transparent;
-}
-
-.filterItem[data-has-selection] {
-  border-color: var(--osdk-intent-primary-rest);
-}
-
-.filterItem[data-has-selection] .searchRow {
-  border-color: transparent;
 }
 
 .itemHeader {
