@@ -147,9 +147,10 @@ async function runTransformAndWaitTest(
   mediaReference: MediaReference,
 ): Promise<void> {
   const transformation: MediaTransformation = {
-    type: "image",
-    encoding: { type: "png" },
-    operations: [{ type: "resize", width: 50, height: 50 }],
+    $image: {
+      $encoding: "png",
+      $operations: [{ $resize: { $width: 50, $height: 50 } }],
+    },
   };
 
   console.log("Input transformation:", JSON.stringify(transformation, null, 2));
@@ -186,10 +187,10 @@ async function runMalformedTransformTests(
   // Some transformations are not available.
   // See: TransformationTranslator.java in https://github.palantir.build/foundry/api-gateway/
   const transformation: MediaTransformation = {
-    type: "imageToText",
-    operation: {
-      type: "ocr",
-      parameters: { totallyBogus: true },
+    $imageToText: {
+      $operation: {
+        $ocr: { $parameters: { totallyBogus: true } },
+      },
     },
   };
 
