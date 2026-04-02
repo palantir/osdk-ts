@@ -551,7 +551,7 @@ export interface ObservableClient extends ObserveLinks {
   /**
    * Observe media metadata with automatic updates.
    */
-  observeMetadata(
+  observeMediaMetadata(
     coords: MediaPropertyLocation,
     options: MediaMetadataObserveOptions,
     observer: Observer<MediaMetadataPayload>,
@@ -567,6 +567,7 @@ export interface ObservableClient extends ObserveLinks {
 
     fetchMetadata(
       coords: MediaPropertyLocation,
+      options?: { preview?: boolean },
     ): Promise<MediaMetadata>;
 
     getCachedMetadata(

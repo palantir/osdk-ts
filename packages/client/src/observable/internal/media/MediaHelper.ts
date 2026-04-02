@@ -21,8 +21,9 @@ import type { Observer } from "../../ObservableClient/common.js";
 import type { MediaPropertyLocation } from "../../ObservableClient/MediaTypes.js";
 import type { CacheKeys } from "../CacheKeys.js";
 import type { KnownCacheKey } from "../KnownCacheKey.js";
+import { QuerySubscription } from "../QuerySubscription.js";
 import type { Store } from "../Store.js";
-import { UnsubscribableWrapper } from "../UnsubscribableWrapper.js";
+import type { UnsubscribableWrapper } from "../UnsubscribableWrapper.js";
 import type { BlobMemoryManager } from "./BlobMemoryManager.js";
 import { createBlobMemoryManager } from "./BlobMemoryManager.js";
 import { getMediaCacheKey } from "./getMediaCacheKey.js";
@@ -74,7 +75,7 @@ export class MediaHelper {
   /**
    * Observe media metadata with automatic updates.
    */
-  observeMetadata(
+  observeMediaMetadata(
     coords: MediaPropertyLocation,
     options: MediaMetadataObserveOptions,
     observer: Observer<MediaMetadataPayload>,
@@ -94,10 +95,54 @@ export class MediaHelper {
       );
     });
 
-    const subscription = query.subscribe(observer);
+    // Reference counting: cancel pending cleanup or retain
+    const pendingCleanupCount = this.store.pendingCleanup.get(cacheKey) ?? 0;
+    if (pendingCleanupCount > 0) {
+      if (pendingCleanupCount === 1) {
+        this.store.pendingCleanup.delete(cacheKey);
+      } else {
+        this.store.pendingCleanup.set(cacheKey, pendingCleanupCount - 1);
+      }
+    } else {
+      this.store.cacheKeys.retain(cacheKey);
+    }
 
-    // Wrap subscription to also clean up query cache on unsubscribe
-    return new UnsubscribableWrapper(subscription);
+    if (options.mode !== "offline") {
+      query.revalidate(options.mode === "force").catch((e: unknown) => {
+        observer.error(e);
+      });
+    }
+
+    const subscription = query.subscribe(observer);
+    const querySub = new QuerySubscription(query, subscription);
+
+    query.registerSubscriptionDedupeInterval(
+      querySub.subscriptionId,
+      options.dedupeInterval,
+    );
+
+    // Deferred release on unsubscribe (handles React unmount-remount cycles)
+    subscription.add(() => {
+      query.unregisterSubscriptionDedupeInterval(querySub.subscriptionId);
+
+      this.store.pendingCleanup.set(
+        cacheKey,
+        (this.store.pendingCleanup.get(cacheKey) ?? 0) + 1,
+      );
+      queueMicrotask(() => {
+        const currentPending = this.store.pendingCleanup.get(cacheKey) ?? 0;
+        if (currentPending > 0) {
+          if (currentPending === 1) {
+            this.store.pendingCleanup.delete(cacheKey);
+          } else {
+            this.store.pendingCleanup.set(cacheKey, currentPending - 1);
+          }
+          this.store.cacheKeys.release(cacheKey);
+        }
+      });
+    });
+
+    return querySub;
   }
 
   /**

@@ -393,12 +393,12 @@ export class ObservableClientImpl implements ObservableClient {
     return cached;
   }
 
-  public observeMetadata(
+  public observeMediaMetadata(
     coords: MediaPropertyLocation,
     options: MediaMetadataObserveOptions,
     observer: Observer<MediaMetadataPayload>,
   ): Unsubscribable {
-    return this.__experimentalStore.media.observeMetadata(
+    return this.__experimentalStore.media.observeMediaMetadata(
       coords,
       options,
       observer,
