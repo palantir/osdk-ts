@@ -15,11 +15,16 @@
  */
 
 import { beforeEach, describe, expect, it } from "vitest";
+import { OntologyEntityTypeEnum } from "../common/OntologyEntityTypeEnum.js";
 import { defineInterface } from "../defineInterface.js";
 import { defineInterfaceLinkConstraint } from "../defineInterfaceLinkConstraint.js";
 import { defineLink } from "../defineLink.js";
 import { defineObject } from "../defineObject.js";
-import { defineOntology, dumpOntologyFullMetadata } from "../defineOntology.js";
+import {
+  defineOntology,
+  dumpOntologyFullMetadata,
+  getOntologyDefinition,
+} from "../defineOntology.js";
 import { type InterfaceType } from "../interface/InterfaceType.js";
 
 describe("Link Types", () => {
@@ -49,7 +54,7 @@ describe("Link Types", () => {
       defineLink({
         apiName: "fizzToFoo",
         one: {
-          object: object,
+          object,
           metadata: {
             apiName: "fizzes",
             displayName: "Foo",
@@ -407,7 +412,7 @@ describe("Link Types", () => {
       defineLink({
         apiName: "fizzToFoo",
         many: {
-          object: object,
+          object,
           metadata: {
             displayName: "Foo",
             pluralDisplayName: "Foos",
@@ -851,7 +856,7 @@ describe("Link Types", () => {
       defineLink({
         apiName: "fooToBar",
         many: {
-          object: object,
+          object,
           metadata: {
             displayName: "Bars",
             pluralDisplayName: "Bars",
@@ -903,7 +908,7 @@ describe("Link Types", () => {
       defineLink({
         apiName: "fooToBar",
         many: {
-          object: object,
+          object,
           metadata: {
             displayName: "Bars",
             pluralDisplayName: "Bars",
@@ -931,6 +936,51 @@ describe("Link Types", () => {
         linkDatasource.datasource.dataset.objectTypeBPrimaryKeyMapping[0]
           .column,
       ).toBe("barId");
+    });
+
+    it("Many To Many Links with includeEmptyBackingDatasource passes through", () => {
+      const object = defineObject({
+        titlePropertyApiName: "bar",
+        displayName: "Foo",
+        pluralDisplayName: "Foos",
+        apiName: "foo",
+        primaryKeyPropertyApiName: "bar",
+        properties: { "bar": { type: "string" } },
+      });
+
+      const otherObject = defineObject({
+        titlePropertyApiName: "fizz",
+        displayName: "Fizz",
+        pluralDisplayName: "Fizzes",
+        apiName: "fizz",
+        primaryKeyPropertyApiName: "fizz",
+        properties: { "fizz": { type: "string" } },
+      });
+
+      defineLink({
+        apiName: "fizzToFoo",
+        many: {
+          object,
+          metadata: {
+            displayName: "Foo",
+            pluralDisplayName: "Foos",
+            apiName: "fizzes",
+          },
+        },
+        toMany: {
+          object: otherObject,
+          metadata: {
+            displayName: "Fizz",
+            pluralDisplayName: "Fizzes",
+            apiName: "foos",
+          },
+        },
+        includeEmptyBackingDatasource: true,
+      });
+
+      const ontology = getOntologyDefinition();
+      const link = ontology[OntologyEntityTypeEnum.LINK_TYPE].fizzToFoo;
+      expect("many" in link && link.includeEmptyBackingDatasource).toBe(true);
     });
 
     it("Intermediary link types are properly defined", () => {
@@ -1612,7 +1662,7 @@ describe("Link Types", () => {
       defineLink({
         apiName: "fizzToFoo",
         one: {
-          object: object,
+          object,
           metadata: {
             apiName: "fizzes",
           },
