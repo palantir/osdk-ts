@@ -1,5 +1,17 @@
 # @osdk/client
 
+## 2.8.0-beta.31
+
+### Minor Changes
+
+- 2b01323: fix ObjectCacheKeyRegistry leak where unregister was never called during GC cleanup
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.31
+- @osdk/client.unstable@2.8.0-beta.31
+- @osdk/generator-converters@2.8.0-beta.31
+
 ## 2.8.0-beta.30
 
 ### Minor Changes
