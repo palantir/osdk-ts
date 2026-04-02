@@ -1855,6 +1855,37 @@ describe("generator", () => {
     );
   });
 
+  it("handles value type with 0 constraints", async () => {
+    const ontologyWithZeroConstraints = immer.produce(
+      TodoWireOntology,
+      (draft) => {
+        draft.objectTypes.Person.objectType.properties.email
+          .valueTypeApiName = "zeroConstraintValueType" as any;
+        (draft as any).valueTypes["zeroConstraintValueType"] = {
+          apiName: "zeroConstraintValueType",
+          description: "A value type with no constraints",
+          displayName: "Zero Constraint Value Type",
+          rid: "ridForZeroConstraintValueType",
+          version: "1.0.0",
+          fieldType: { type: "string" },
+          constraints: [],
+        };
+      },
+    );
+
+    await generateClientSdkVersionTwoPointZero(
+      ontologyWithZeroConstraints,
+      "typescript-sdk/0.0.0 osdk-cli/0.0.0",
+      helper.minimalFiles,
+      BASE_PATH,
+    );
+
+    const personFile =
+      helper.getFiles()[`${BASE_PATH}/ontology/objects/Person.ts`];
+    expect(personFile).toBeDefined();
+    expect(personFile).toContain("readonly email: $PropType['string']");
+  });
+
   test.skip("runs generator locally", async () => {
     try {
       await rmdir(`${__dirname}/generated`, { recursive: true });
