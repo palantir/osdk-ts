@@ -220,6 +220,10 @@ export class Store {
 
     this.subjects.delete(key);
     this.queries.delete(key);
+
+    if (key.type === "object") {
+      this.objectCacheKeyRegistry.unregister(key);
+    }
   };
 
   applyAction: <Q extends ActionDefinition<any>>(
