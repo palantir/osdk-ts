@@ -156,7 +156,14 @@ export class MediaHelper {
         { preview },
       );
     } else if ("fetchContents" in mediaOrLocation) {
+      // fetchContents() doesn't support preview, cache under base key
       response = await mediaOrLocation.fetchContents();
+      const arrayBuffer = await response.arrayBuffer();
+      const contentType = response.headers.get("content-type")
+        || "application/octet-stream";
+      const blob = new Blob([arrayBuffer], { type: contentType });
+      this.blobManager.add(baseCacheKey, blob);
+      return blob;
     } else {
       throw new Error(
         "Cannot fetch media content: no coordinates or fetchContents",
@@ -219,8 +226,11 @@ export class MediaHelper {
    */
   createBlobUrl(
     mediaOrLocation: Media | Attachment | MediaPropertyLocation,
+    options?: { preview?: boolean },
   ): string | undefined {
-    const cacheKey = this.getCacheKey(mediaOrLocation);
+    const preview = options?.preview ?? true;
+    const baseCacheKey = this.getCacheKey(mediaOrLocation);
+    const cacheKey = preview ? `${baseCacheKey}:preview` : baseCacheKey;
     return this.blobManager.createBlobUrl(cacheKey);
   }
 
@@ -229,8 +239,11 @@ export class MediaHelper {
    */
   releaseBlobUrl(
     mediaOrLocation: Media | Attachment | MediaPropertyLocation,
+    options?: { preview?: boolean },
   ): void {
-    const cacheKey = this.getCacheKey(mediaOrLocation);
+    const preview = options?.preview ?? true;
+    const baseCacheKey = this.getCacheKey(mediaOrLocation);
+    const cacheKey = preview ? `${baseCacheKey}:preview` : baseCacheKey;
     this.blobManager.releaseBlobUrl(cacheKey);
   }
 
