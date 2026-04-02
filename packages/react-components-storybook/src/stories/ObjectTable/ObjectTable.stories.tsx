@@ -54,7 +54,7 @@ const meta: Meta<EmployeeTableProps> = {
     filter: {
       description:
         "The current where clause to filter the objects in the table. If provided, the filter is controlled.",
-      control: "object",
+      control: false,
     },
     enableOrdering: {
       description: "Whether the table is sortable by the user.",
@@ -102,12 +102,12 @@ const meta: Meta<EmployeeTableProps> = {
     defaultOrderBy: {
       description:
         "The default order by clause to sort the objects in the table. If provided without orderBy prop, the sorting is uncontrolled. If both orderBy and defaultOrderBy are provided, orderBy takes precedence.",
-      control: "object",
+      control: false,
     },
     orderBy: {
       description:
         "The current order by clause to sort the objects in the table. If provided, the sorting is controlled. If both orderBy and defaultOrderBy are provided, orderBy takes precedence.",
-      control: "object",
+      control: false,
     },
     onOrderByChanged: {
       description:
@@ -161,7 +161,7 @@ const meta: Meta<EmployeeTableProps> = {
     selectedRows: {
       description:
         "The currently selected rows in the table. If provided, the row selection is controlled.",
-      control: "object",
+      control: false,
     },
     onRowSelection: {
       description:
