@@ -15,6 +15,7 @@
  */
 
 import React from "react";
+import { _clearErroredSuspenseEntries } from "./makeSuspenseExternalStore.js";
 
 export interface OsdkErrorBoundaryProps {
   children: React.ReactNode;
@@ -50,6 +51,7 @@ export class OsdkErrorBoundary
   }
 
   private retry = (): void => {
+    _clearErroredSuspenseEntries();
     this.setState({ error: undefined });
   };
 

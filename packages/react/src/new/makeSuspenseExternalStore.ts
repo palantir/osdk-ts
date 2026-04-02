@@ -24,7 +24,6 @@ interface SuspenseCacheEntry<X> {
   lastResult: Snapshot<X>;
   hasLoadedOnce: boolean;
   hasErrored: boolean;
-  errorThrown: boolean;
   pendingPromise: Promise<void> | undefined;
   resolvePending: (() => void) | undefined;
   observation: Unsubscribable | undefined;
@@ -82,18 +81,7 @@ function getOrCreateEntry<X>(
 ): SuspenseCacheEntry<X> {
   const existing = suspenseCache.get(cacheKey);
   if (existing) {
-    // Errored entries whose error was already thrown to an error boundary
-    // (errorThrown) and have no active subscribers are stale. Delete and
-    // recreate so that error boundary retry starts a fresh observation.
-    if (
-      existing.hasErrored && existing.errorThrown
-      && existing.subscriberCount <= 0
-    ) {
-      existing.observation?.unsubscribe();
-      suspenseCache.delete(cacheKey);
-    } else {
-      return existing as SuspenseCacheEntry<X>;
-    }
+    return existing as SuspenseCacheEntry<X>;
   }
 
   const hasPeekData = peekResult !== undefined;
@@ -102,7 +90,6 @@ function getOrCreateEntry<X>(
     lastResult: peekResult,
     hasLoadedOnce: hasPeekData,
     hasErrored: false,
-    errorThrown: false,
     pendingPromise: undefined,
     resolvePending: undefined,
     observation: undefined,
@@ -220,7 +207,6 @@ export function getSuspenseExternalStore<X>(
     getError() {
       const result = entry.lastResult;
       if (result != null && "error" in result && result.error) {
-        entry.errorThrown = true;
         return result.error;
       }
       return undefined;
@@ -282,6 +268,16 @@ export function setupSuspenseStore<X>(
     hasDataCheck,
   );
   return suspenseStore;
+}
+
+/** @internal - called by OsdkErrorBoundary retry to clear errored entries */
+export function _clearErroredSuspenseEntries(): void {
+  for (const [key, entry] of suspenseCache) {
+    if (entry.hasErrored) {
+      entry.observation?.unsubscribe();
+      suspenseCache.delete(key);
+    }
+  }
 }
 
 /** @internal - exported for testing */
