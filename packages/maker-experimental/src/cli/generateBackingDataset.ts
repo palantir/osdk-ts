@@ -19,6 +19,7 @@ import type {
   ObjectTypeBlockDataV2,
   PropertyType,
   PropertyTypeMappingInfo,
+  Type,
 } from "@osdk/client.unstable";
 import type { InputShape, OutputShape } from "@osdk/client.unstable/api";
 import * as fs from "node:fs";
@@ -107,46 +108,47 @@ export function getNonEditOnlyProperties(
     .map(([_, prop]) => prop);
 }
 
+interface BackingDatasetColumn {
+  name: string;
+  type: Type;
+}
+
 /**
- * Generate a backing datasource BlockGeneratorResult for an object type.
+ * Shared logic to generate a STATIC_DATASET BlockGeneratorResult from a list of columns.
+ * Used by both object type and link type backing dataset generators.
  */
-export async function generateBackingDatasetBlockResult(
-  objectTypeBlockData: ObjectTypeBlockDataV2,
+async function generateBackingDatasetBlock(
+  datasetName: string,
+  blockIdentifier: string,
+  dirSuffix: string,
+  columns: BackingDatasetColumn[],
   buildDir: string,
   randomnessKey?: string,
 ): Promise<BlockGeneratorResult> {
-  const apiName = objectTypeBlockData.objectType.apiName!;
+  // Build output shapes
+  const outputs: Record<ReadableId, OutputShape> = {} as Record<
+    ReadableId,
+    OutputShape
+  >;
 
-  const nonEditOnlyProps = getNonEditOnlyProperties(objectTypeBlockData);
-
-  const dsName = `${apiName}-backing-ds`;
-
-  // Build output shapes for the dataset block
-  const outputs: Record<string, OutputShape> = {};
-
-  // Readable IDs for dataset outputs (must match what the ontology block uses as inputs)
-  const datasourceReadableId = ReadableIdGenerator.getForDatasetOutput(apiName);
-
-  // tabularDatasource output shape
-  const columnReadableIds: ReadableId[] = [];
-  for (const prop of nonEditOnlyProps) {
-    const colReadableId = ReadableIdGenerator.getForDatasetColumnOutput(
-      apiName,
-      prop.apiName!,
-    );
-    columnReadableIds.push(colReadableId);
-  }
+  const datasourceReadableId = ReadableIdGenerator.getForDatasetOutput(
+    datasetName,
+  );
+  const columnReadableIds: ReadableId[] = columns.map(col =>
+    ReadableIdGenerator.getForDatasetColumnOutput(datasetName, col.name)
+  );
 
   const datasourceBlockInternalId = toBlockShapeId(
     datasourceReadableId,
     randomnessKey,
   );
 
+  // tabularDatasource output shape
   outputs[datasourceReadableId] = {
     type: "tabularDatasource",
     tabularDatasource: {
       about: {
-        fallbackTitle: dsName,
+        fallbackTitle: blockIdentifier,
         fallbackDescription: "",
         localizedTitle: {},
         localizedDescription: {},
@@ -157,23 +159,23 @@ export async function generateBackingDatasetBlockResult(
     },
   } as OutputShape;
 
-  // datasourceColumn output shapes for each non-edit-only property
-  for (let i = 0; i < nonEditOnlyProps.length; i++) {
-    const prop = nonEditOnlyProps[i];
+  // datasourceColumn output shapes
+  for (let i = 0; i < columns.length; i++) {
+    const col = columns[i];
     const colReadableId = columnReadableIds[i];
 
     outputs[colReadableId] = {
       type: "datasourceColumn",
       datasourceColumn: {
         about: {
-          fallbackTitle: prop.apiName!,
+          fallbackTitle: col.name,
           fallbackDescription: "",
           localizedTitle: {},
           localizedDescription: {},
         },
         type: {
           type: "concrete",
-          concrete: typeToConcreteDataType(prop.type),
+          concrete: typeToConcreteDataType(col.type),
         },
         datasource: datasourceBlockInternalId,
         typeclasses: [],
@@ -184,25 +186,25 @@ export async function generateBackingDatasetBlockResult(
   // Generate internal IDs for block-data.json columns.
   // These are distinct from the block shape IDs that appear in the manifest outputs.
   // The add-on maps these internal IDs -> block shape IDs.
-  const columnInternalIds = nonEditOnlyProps.map((prop) =>
+  const columnInternalIds = columns.map((col) =>
     toBlockShapeId(
-      `column-internal-${apiName}-${prop.apiName!}`,
+      `column-internal-${datasetName}-${col.name}`,
       randomnessKey,
     )
   );
 
-  const compassReadableId = `${dsName}-compass-resource` as ReadableId;
+  const compassReadableId = `${blockIdentifier}-compass-resource` as ReadableId;
   const compassBlockShapeId = toBlockShapeId(
     compassReadableId,
     randomnessKey,
   );
 
   const datasourceInternalId = toBlockShapeId(
-    `datasource-internal-${apiName}`,
+    `datasource-internal-${datasetName}`,
     randomnessKey,
   );
   const locationInternalId = toBlockShapeId(
-    `location-internal-${apiName}`,
+    `location-internal-${datasetName}`,
     randomnessKey,
   );
 
@@ -225,17 +227,14 @@ export async function generateBackingDatasetBlockResult(
   };
 
   // Create block data directory
-  const dsBlockDataDir = path.join(
-    buildDir,
-    `temp_block_data_${apiName}_backing_ds`,
-  );
+  const dsBlockDataDir = path.join(buildDir, `temp_block_data_${dirSuffix}`);
   await fs.promises.mkdir(dsBlockDataDir, { recursive: true });
 
   // Write schema.json
   const schemaJson = {
-    fieldSchemaList: nonEditOnlyProps.map((prop) => ({
-      type: propertyTypeToSchemaType(prop.type),
-      name: prop.apiName!,
+    fieldSchemaList: columns.map((col) => ({
+      type: propertyTypeToSchemaType(col.type),
+      name: col.name,
       nullable: null,
       userDefinedTypeClass: null,
       customMetadata: {},
@@ -264,10 +263,7 @@ export async function generateBackingDatasetBlockResult(
     type: "v1",
     v1: {
       columns: Object.fromEntries(
-        nonEditOnlyProps.map((prop, i) => [
-          columnInternalIds[i],
-          prop.apiName!,
-        ]),
+        columns.map((col, i) => [columnInternalIds[i], col.name]),
       ),
       hasSchema: true,
     },
@@ -315,12 +311,15 @@ export async function generateBackingDatasetBlockResult(
   );
 
   // Build inputs (compassResource for install location)
-  const inputs: Record<string, InputShape> = {};
+  const inputs: Record<ReadableId, InputShape> = {} as Record<
+    ReadableId,
+    InputShape
+  >;
   inputs[compassReadableId] = {
     type: "compassResource",
     compassResource: {
       about: {
-        fallbackTitle: dsName,
+        fallbackTitle: blockIdentifier,
         fallbackDescription: "",
         localizedTitle: {},
         localizedDescription: {},
@@ -338,18 +337,44 @@ export async function generateBackingDatasetBlockResult(
   } as InputShape;
 
   return {
-    block_identifier: dsName,
+    block_identifier: blockIdentifier,
     block_data_directory: dsBlockDataDir,
     oci_block_data_metadata: undefined,
     maven_block_data_metadata: undefined,
-    inputs: inputs as any,
-    outputs: outputs as any,
+    inputs,
+    outputs,
     input_mapping_entries: [],
     external_recommendations: [],
     add_on_override: addOnOverride,
     input_shape_metadata: {},
     block_type: "STATIC_DATASET",
   };
+}
+
+/**
+ * Generate a backing datasource BlockGeneratorResult for an object type.
+ */
+export async function generateBackingDatasetBlockResult(
+  objectTypeBlockData: ObjectTypeBlockDataV2,
+  buildDir: string,
+  randomnessKey?: string,
+): Promise<BlockGeneratorResult> {
+  const apiName = objectTypeBlockData.objectType.apiName!;
+  const nonEditOnlyProps = getNonEditOnlyProperties(objectTypeBlockData);
+
+  const columns: BackingDatasetColumn[] = nonEditOnlyProps.map(prop => ({
+    name: prop.apiName!,
+    type: prop.type,
+  }));
+
+  return generateBackingDatasetBlock(
+    apiName,
+    `${apiName}-backing-ds`,
+    `${apiName}_backing_ds`,
+    columns,
+    buildDir,
+    randomnessKey,
+  );
 }
 
 /**
@@ -400,231 +425,16 @@ export async function generateBackingDatasetBlockResultForLink(
     );
   }
 
-  const columns = [
-    { name: columnA, type: propTypeA },
-    { name: columnB, type: propTypeB },
-  ];
-
   // Dataset name must match what convertLink.ts registered with generateDatasetLocator
-  const datasetName = `link.${linkApiName}`;
-  const dsName = `${linkApiName}-link-backing-ds`;
-
-  // Build output shapes
-  const outputs: Record<string, OutputShape> = {};
-
-  const datasourceReadableId = ReadableIdGenerator.getForDatasetOutput(
-    datasetName,
-  );
-  const columnReadableIds: ReadableId[] = columns.map(col =>
-    ReadableIdGenerator.getForDatasetColumnOutput(datasetName, col.name)
-  );
-
-  const datasourceBlockInternalId = toBlockShapeId(
-    datasourceReadableId,
-    randomnessKey,
-  );
-
-  // tabularDatasource output shape
-  outputs[datasourceReadableId] = {
-    type: "tabularDatasource",
-    tabularDatasource: {
-      about: {
-        fallbackTitle: dsName,
-        fallbackDescription: "",
-        localizedTitle: {},
-        localizedDescription: {},
-      },
-      schema: columnReadableIds.map((id) => toBlockShapeId(id, randomnessKey)),
-      type: "DATASET",
-      buildRequirements: { isBuildable: false },
-    },
-  } as OutputShape;
-
-  // datasourceColumn output shapes
-  for (let i = 0; i < columns.length; i++) {
-    const col = columns[i];
-    const colReadableId = columnReadableIds[i];
-
-    outputs[colReadableId] = {
-      type: "datasourceColumn",
-      datasourceColumn: {
-        about: {
-          fallbackTitle: col.name,
-          fallbackDescription: "",
-          localizedTitle: {},
-          localizedDescription: {},
-        },
-        type: {
-          type: "concrete",
-          concrete: typeToConcreteDataType(col.type),
-        },
-        datasource: datasourceBlockInternalId,
-        typeclasses: [],
-      },
-    } as OutputShape;
-  }
-
-  // Generate internal IDs for block-data.json columns
-  const columnInternalIds = columns.map((col) =>
-    toBlockShapeId(
-      `column-internal-${datasetName}-${col.name}`,
-      randomnessKey,
-    )
-  );
-
-  const compassReadableId = `${dsName}-compass-resource` as ReadableId;
-  const compassBlockShapeId = toBlockShapeId(
-    compassReadableId,
-    randomnessKey,
-  );
-
-  const datasourceInternalId = toBlockShapeId(
-    `datasource-internal-${datasetName}`,
-    randomnessKey,
-  );
-  const locationInternalId = toBlockShapeId(
-    `location-internal-${datasetName}`,
-    randomnessKey,
-  );
-
-  const addOnOverride: Record<string, unknown> = {
-    idToBlockShapeId: {
-      "dataset-internal-shape-id": datasourceBlockInternalId,
-      [datasourceInternalId]: datasourceBlockInternalId,
-      [locationInternalId]: compassBlockShapeId,
-      ...Object.fromEntries(
-        columnInternalIds.map((internalId, i) => [
-          internalId,
-          toBlockShapeId(columnReadableIds[i], randomnessKey),
-        ]),
-      ),
-    },
-    idToInputGroupId: {},
-    outputToLocationInput: {
-      [datasourceBlockInternalId]: compassBlockShapeId,
-    },
-  };
-
-  // Create block data directory
-  const dsBlockDataDir = path.join(
+  return generateBackingDatasetBlock(
+    `link.${linkApiName}`,
+    `${linkApiName}-link-backing-ds`,
+    `${linkApiName}_link_backing_ds`,
+    [
+      { name: columnA, type: propTypeA },
+      { name: columnB, type: propTypeB },
+    ],
     buildDir,
-    `temp_block_data_${linkApiName}_link_backing_ds`,
+    randomnessKey,
   );
-  await fs.promises.mkdir(dsBlockDataDir, { recursive: true });
-
-  // Write schema.json
-  const schemaJson = {
-    fieldSchemaList: columns.map((col) => ({
-      type: propertyTypeToSchemaType(col.type),
-      name: col.name,
-      nullable: null,
-      userDefinedTypeClass: null,
-      customMetadata: {},
-      arraySubtype: null,
-      precision: null,
-      scale: null,
-      mapKeyType: null,
-      mapValueType: null,
-      subSchemas: null,
-    })),
-    primaryKey: null,
-    dataFrameReaderClass:
-      "com.palantir.foundry.spark.input.ParquetDataFrameReader",
-    customMetadata: {
-      format: "parquet",
-      options: {},
-    },
-  };
-  await fs.promises.writeFile(
-    path.join(dsBlockDataDir, "schema.json"),
-    JSON.stringify(schemaJson, null, 2),
-  );
-
-  // Write block-data.json
-  const blockDataJson = {
-    type: "v1",
-    v1: {
-      columns: Object.fromEntries(
-        columns.map((col, i) => [columnInternalIds[i], col.name]),
-      ),
-      hasSchema: true,
-    },
-  };
-  await fs.promises.writeFile(
-    path.join(dsBlockDataDir, "block-data.json"),
-    JSON.stringify(blockDataJson, null, 2),
-  );
-
-  // Write VERSION
-  await fs.promises.writeFile(
-    path.join(dsBlockDataDir, "VERSION"),
-    "\"1\"",
-  );
-
-  // Write empty files.zip
-  const emptyZip = Buffer.from([
-    0x50,
-    0x4b,
-    0x05,
-    0x06,
-    0x00,
-    0x00,
-    0x00,
-    0x00,
-    0x00,
-    0x00,
-    0x00,
-    0x00,
-    0x00,
-    0x00,
-    0x00,
-    0x00,
-    0x00,
-    0x00,
-    0x00,
-    0x00,
-    0x00,
-    0x00,
-  ]);
-  await fs.promises.writeFile(
-    path.join(dsBlockDataDir, "files.zip"),
-    emptyZip,
-  );
-
-  // Build inputs (compassResource for install location)
-  const inputs: Record<string, InputShape> = {};
-  inputs[compassReadableId] = {
-    type: "compassResource",
-    compassResource: {
-      about: {
-        fallbackTitle: dsName,
-        fallbackDescription: "",
-        localizedTitle: {},
-        localizedDescription: {},
-      },
-      allowedTypes: [],
-      typeConstraints: [
-        {
-          type: "compassFolderTypeConstraints",
-          compassFolderTypeConstraints: {
-            constraints: ["INSTALL_LOCATION"],
-          },
-        },
-      ],
-    },
-  } as InputShape;
-
-  return {
-    block_identifier: dsName,
-    block_data_directory: dsBlockDataDir,
-    oci_block_data_metadata: undefined,
-    maven_block_data_metadata: undefined,
-    inputs: inputs as any,
-    outputs: outputs as any,
-    input_mapping_entries: [],
-    external_recommendations: [],
-    add_on_override: addOnOverride,
-    input_shape_metadata: {},
-    block_type: "STATIC_DATASET",
-  };
 }
