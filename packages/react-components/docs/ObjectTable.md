@@ -215,20 +215,20 @@ Displays values computed by an OSDK function (query). This is equivalent to Work
   queryDefinition: myQuery,       // The OSDK query definition to execute
   getFunctionParams: (objectSet) => ({ objectSetKey: objectSet }),
   getKey: (object) => `${object.$objectType}:${object.$primaryKey}`, // The key to index the value of an object
-  getValue: (rawData) => rawData?.status,  // Getter to extract the value from the raw data
+  getValue: (cellData) => cellData?.status,  // Getter to extract the value from the raw data
   dedupeIntervalMs: 300_000,      // The stale time of your data, if multiple requests happen within this interval, no new network call will be made
 }
 ```
 
-| Property            | Type                    | Required | Description                                                                                                           |
-| ------------------- | ----------------------- | -------- | --------------------------------------------------------------------------------------------------------------------- |
-| `type`              | `"function"`            | Yes      | Identifies this as a function column                                                                                  |
-| `id`                | `keyof FunctionColumns` | Yes      | Key in the FunctionColumns type map                                                                                   |
-| `queryDefinition`   | `QueryDefinition`       | Yes      | The OSDK query definition to execute                                                                                  |
-| `getFunctionParams` | `(objectSet) => params` | Yes      | Computes function parameters from the current ObjectSet                                                               |
-| `getKey`            | `(object) => string`    | Yes      | Generates a lookup key for each object in the result map                                                              |
-| `getValue`          | `(cellData) => unknown` | No       | Extracts a display value from the raw function result per object                                                      |
-| `dedupeIntervalMs`  | `number`                | No       | Minimum time (ms) between re-fetches of the same function with the same parameters. Defaults to `300_000` (5 minutes) |
+| Property            | Type                     | Required | Description                                                                                                                                                                   |
+| ------------------- | ------------------------ | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `type`              | `"function"`             | Yes      | Identifies this as a function column                                                                                                                                          |
+| `id`                | `keyof FunctionColumns`  | Yes      | Key in the FunctionColumns type map                                                                                                                                           |
+| `queryDefinition`   | `QueryDefinition`        | Yes      | The OSDK query definition to execute                                                                                                                                          |
+| `getFunctionParams` | `(objectSet) => params`  | Yes      | Computes function parameters from the current ObjectSet                                                                                                                       |
+| `getKey`            | `(object) => string`     | Yes      | Generates a lookup key for each object in the result map                                                                                                                      |
+| `getValue`          | `(cellData?) => unknown` | No       | Extracts a display value from the raw function result per object. `cellData` is `undefined` when the object has no result (e.g., loading or missing from the function output) |
+| `dedupeIntervalMs`  | `number`                 | No       | Minimum time (ms) between re-fetches of the same function with the same parameters. Defaults to `300_000` (5 minutes)                                                         |
 
 #### 4. Custom Column
 
@@ -911,8 +911,8 @@ const columnDefinitions: Array<
       // Generate a unique key for each object to look up its result
       getKey: (employee) => `${employee.$objectType}:${employee.$primaryKey}`,
       // Extract the specific value to display from the function result
-      getValue: (rawData) =>
-        (rawData as { score: number } | undefined)?.score,
+      getValue: (cellData) =>
+        (cellData as { score: number } | undefined)?.score,
       // Cache results for 1 minute instead of the default 5
       dedupeIntervalMs: 60_000,
     },

@@ -44,7 +44,7 @@ const columnDefinitions: Array<
       queryDefinition: getEmployeeDaysSinceStart,
       getFunctionParams: (objectSet: any) => ({ employees: objectSet }),
       getKey: (obj: any) => `${obj.$objectType}:${obj.$primaryKey}`,
-      getValue: (data: any) => data.daysSinceStart,
+      getValue: (data: { daysSinceStart: any }) => data?.daysSinceStart,
       dedupeIntervalMs: 10_000, // 1 minute dedupe interval for this function column
     } as any,
     columnName: "Days Since Start",
@@ -67,8 +67,8 @@ const columnDefinitions: Array<
     renderCell: (object: Osdk.Instance<Employee>) => {
       return (
         <div>
-          {object["firstFullTimeStartDate"]
-            ? new Date(object["firstFullTimeStartDate"]).toISOString()
+          {object.firstFullTimeStartDate
+            ? new Date(object.firstFullTimeStartDate).toISOString()
             : "No value"}
         </div>
       );
@@ -93,7 +93,7 @@ const columnDefinitions: Array<
     renderHeader: () => "Custom",
     renderCell: (object: Osdk.Instance<Employee>) => {
       return (
-        <button onClick={() => alert(`Clicked ${object["$title"]}`)}>
+        <button onClick={() => alert(`Clicked ${object.$title}`)}>
           Click me
         </button>
       );
