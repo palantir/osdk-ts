@@ -221,7 +221,7 @@
   --osdk-filter-listogram-bar-border-radius: var(
     --osdk-surface-border-radius
   );
-  --osdk-filter-listogram-bar-color: var(--osdk-custom-color-gray-3);
+  --osdk-filter-listogram-bar-color: var(--osdk-intent-primary-rest);
   --osdk-filter-listogram-bar-fill-transition: var(
     --osdk-emphasis-transition-duration
   )

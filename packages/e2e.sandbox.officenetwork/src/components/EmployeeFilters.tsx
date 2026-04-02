@@ -28,24 +28,24 @@ const ALL_FILTER_DEFINITIONS: FilterDefinitionUnion<Employee>[] = [
     id: "department",
     key: "department",
     label: "Department",
-    filterComponent: "CHECKBOX_LIST",
-    filterState: { type: "SELECT", selectedValues: [] },
+    filterComponent: "LISTOGRAM",
+    filterState: { type: "EXACT_MATCH", values: [] },
   } as FilterDefinitionUnion<Employee>,
   {
     type: "PROPERTY",
     id: "locationCity",
     key: "locationCity",
     label: "Location City",
-    filterComponent: "CHECKBOX_LIST",
-    filterState: { type: "SELECT", selectedValues: [] },
+    filterComponent: "LISTOGRAM",
+    filterState: { type: "EXACT_MATCH", values: [] },
   } as FilterDefinitionUnion<Employee>,
   {
     type: "PROPERTY",
     id: "businessTitle",
     key: "businessTitle",
     label: "Business Title",
-    filterComponent: "CHECKBOX_LIST",
-    filterState: { type: "SELECT", selectedValues: [] },
+    filterComponent: "LISTOGRAM",
+    filterState: { type: "EXACT_MATCH", values: [] },
   } as FilterDefinitionUnion<Employee>,
   {
     type: "PROPERTY",
@@ -199,6 +199,7 @@ export function EmployeeFilters({
         onFilterClauseChanged={onFilterClauseChanged}
         onFilterRemoved={handleRemoveFilter}
         enableSorting={true}
+        addFilterMode="controlled"
         renderAddFilterButton={renderAddFilterButton}
         title="Employee Filters"
         showActiveFilterCount={true}

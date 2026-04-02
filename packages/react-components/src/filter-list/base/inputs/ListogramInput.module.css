@@ -73,6 +73,10 @@
   white-space: nowrap;
 }
 
+.label[data-excluding] {
+  text-decoration: line-through;
+}
+
 .bar {
   width: var(--osdk-filter-listogram-bar-width);
   flex-shrink: 0;
@@ -94,6 +98,10 @@
 
 .row[aria-pressed="true"] .barFill {
   background: var(--osdk-filter-listogram-row-bar-color, var(--osdk-filter-listogram-selected-color));
+}
+
+.checkbox {
+  display: flex;
 }
 
 .count {

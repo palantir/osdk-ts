@@ -17,6 +17,7 @@
 import {
   ChevronDown,
   Cross,
+  Disable,
   DoubleChevronLeft,
   DoubleChevronRight,
   More,
@@ -56,4 +57,8 @@ export function ResetIcon(): React.ReactElement {
 
 export function CheckIcon(): React.ReactElement {
   return <Tick size={12} />;
+}
+
+export function ExcludeIcon(): React.ReactElement {
+  return <Disable color="currentColor" size={12} />;
 }

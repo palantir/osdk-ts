@@ -48,7 +48,7 @@ function EmployeeFilters() {
         {
           type: "PROPERTY",
           key: "jobTitle",
-          filterComponent: "CHECKBOX_LIST",
+          filterComponent: "LISTOGRAM",
         },
       ]}
     />
@@ -71,7 +71,6 @@ function EmployeeFilters() {
 | ----------------------- | -------------------------------- | ------- | -------------------------------------------------------------- |
 | `filterClause`          | `WhereClause<Q>`                 | -       | Current where clause (controlled mode)                         |
 | `onFilterClauseChanged` | `(newClause) => void`            | -       | Called when filter clause changes. Required in controlled mode |
-| `filterOperator`        | `"and" \| "or"`                  | `"and"` | Logical operator to join multiple filters                      |
 | `onFilterStateChanged`  | `(definition, newState) => void` | -       | Called when any filter's state changes                         |
 | `initialFilterStates`   | `Map<string, FilterState>`       | -       | Initial states for hydrating from external storage             |
 
@@ -117,7 +116,6 @@ When using `type: "PROPERTY"` or `type: "LINKED_PROPERTY"`, specify a `filterCom
 | Component       | Best For                          | State Type      |
 | --------------- | --------------------------------- | --------------- |
 | `LISTOGRAM`     | Categorical data with bar chart   | `EXACT_MATCH`   |
-| `CHECKBOX_LIST` | Multi-select with checkboxes      | `SELECT`        |
 | `SINGLE_SELECT` | Single value dropdown             | `SELECT`        |
 | `MULTI_SELECT`  | Multi-select dropdown with search | `SELECT`        |
 | `TEXT_TAGS`     | Tag-based input with suggestions  | `EXACT_MATCH`   |
@@ -159,7 +157,7 @@ function EmployeeDashboard() {
           {
             type: "PROPERTY",
             key: "jobTitle",
-            filterComponent: "CHECKBOX_LIST",
+            filterComponent: "LISTOGRAM",
           },
         ]}
       />
@@ -193,7 +191,7 @@ function EngineeringFilters() {
       objectSet={engineeringSet}
       filterDefinitions={[
         { type: "PROPERTY", key: "jobTitle", filterComponent: "LISTOGRAM" },
-        { type: "PROPERTY", key: "location", filterComponent: "CHECKBOX_LIST" },
+        { type: "PROPERTY", key: "location", filterComponent: "LISTOGRAM" },
       ]}
     />
   );
@@ -271,21 +269,6 @@ function CollapsibleFilters() {
     />
   );
 }
-```
-
-### Filter Operator OR vs AND
-
-By default, multiple filters are combined with AND. Use `filterOperator` to switch to OR:
-
-```typescript
-<FilterList
-  objectSet={$(Employee)}
-  filterOperator="or"
-  filterDefinitions={[
-    { type: "PROPERTY", key: "department", filterComponent: "CHECKBOX_LIST" },
-    { type: "PROPERTY", key: "location", filterComponent: "CHECKBOX_LIST" },
-  ]}
-/>;
 ```
 
 ## Styling

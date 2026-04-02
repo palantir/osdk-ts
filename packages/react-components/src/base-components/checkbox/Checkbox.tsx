@@ -19,13 +19,14 @@ import {
   type CheckboxIndicatorProps,
   type CheckboxRootProps,
 } from "@base-ui/react/checkbox";
-import { Minus, Tick } from "@blueprintjs/icons";
+import { Cross, Minus, Tick } from "@blueprintjs/icons";
 import classnames from "classnames";
 import React from "react";
 import styles from "./Checkbox.module.css";
 
 interface CheckboxProps extends Omit<CheckboxRootProps, "className"> {
   className?: string;
+  isExcluding?: boolean;
   indicatorProps?: Omit<CheckboxIndicatorProps, "className"> & {
     className?: string;
   };
@@ -35,6 +36,7 @@ export function Checkbox(
   {
     indeterminate,
     className,
+    isExcluding,
     indicatorProps,
     ...rest
   }: CheckboxProps,
@@ -43,6 +45,7 @@ export function Checkbox(
     <BaseUICheckbox.Root
       className={classnames(styles.osdkCheckboxRoot, className)}
       indeterminate={indeterminate}
+      data-excluding={isExcluding || undefined}
       {...rest}
     >
       <BaseUICheckbox.Indicator
@@ -54,11 +57,9 @@ export function Checkbox(
       >
         {/* Color is used as the "fill" attribute on the svg  */}
         {indeterminate
-          ? (
-            <Minus
-              size={16}
-            />
-          )
+          ? <Minus size={16} />
+          : isExcluding
+          ? <Cross size={16} />
           : <Tick size={16} />}
       </BaseUICheckbox.Indicator>
     </BaseUICheckbox.Root>
