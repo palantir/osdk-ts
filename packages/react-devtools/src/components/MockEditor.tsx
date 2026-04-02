@@ -256,7 +256,18 @@ export const MockEditor: React.FC<MockEditorProps> = ({
   );
 };
 
-export function getMockPrimitiveInfo(primitive: SelectedPrimitive) {
+export function getMockPrimitiveInfo(primitive: SelectedPrimitive): {
+  title: string;
+  subtitle: string;
+  icon:
+    | "flash"
+    | "th-list"
+    | "cube"
+    | "link"
+    | "database"
+    | "grouped-bar-chart";
+  signature: string | undefined;
+} {
   switch (primitive.type) {
     case "action":
       return {
@@ -305,7 +316,13 @@ export function getMockPrimitiveInfo(primitive: SelectedPrimitive) {
   }
 }
 
-export function createMatcherFromPrimitive(primitive: SelectedPrimitive) {
+export function createMatcherFromPrimitive(primitive: SelectedPrimitive): {
+  actionName?: string;
+  objectType?: string;
+  whereClause?: Record<string, unknown>;
+  primaryKey?: string;
+  linkName?: string;
+} {
   switch (primitive.type) {
     case "action":
       return { actionName: primitive.data.name };
@@ -337,7 +354,17 @@ export function createMatcherFromPrimitive(primitive: SelectedPrimitive) {
 export function createResponseFromConfig(
   primitive: SelectedPrimitive,
   mockData: unknown,
-) {
+): {
+  type: "action";
+  result: unknown;
+} | {
+  type: "list";
+  list: unknown[];
+  hasMore: boolean;
+} | {
+  type: "object";
+  object: unknown;
+} {
   if (primitive.type === "action") {
     return { type: "action" as const, result: mockData };
   } else if (
