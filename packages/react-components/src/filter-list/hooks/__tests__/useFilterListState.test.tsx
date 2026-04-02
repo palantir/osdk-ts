@@ -23,10 +23,16 @@ vi.mock("@osdk/react", () => ({
 }));
 import {
   createPropertyFilterDef,
-  createSelectState,
   createToggleState,
   MockObjectType,
 } from "../../__tests__/testUtils.js";
+import type { ExactMatchFilterState } from "../../FilterListItemApi.js";
+
+function createExactMatchState(
+  values: string[],
+): ExactMatchFilterState<string> {
+  return { type: "EXACT_MATCH", values };
+}
 import type { FilterListProps } from "../../FilterListApi.js";
 import { getFilterKey } from "../../utils/getFilterKey.js";
 import { useFilterListState } from "../useFilterListState.js";
@@ -64,10 +70,10 @@ describe("useFilterListState", () => {
   });
 
   it("initializes filter states from filterState for property filters", () => {
-    const initialState = createSelectState([]);
+    const initialState = createExactMatchState([]);
     const nameDef = createPropertyFilterDef(
       "name",
-      "CHECKBOX_LIST",
+      "LISTOGRAM",
       initialState,
     );
     const props = createProps({
@@ -82,8 +88,8 @@ describe("useFilterListState", () => {
   it("updates filter state via setFilterState", () => {
     const nameDef = createPropertyFilterDef(
       "name",
-      "CHECKBOX_LIST",
-      createSelectState([]),
+      "LISTOGRAM",
+      createExactMatchState([]),
     );
     const props = createProps({
       filterDefinitions: [nameDef],
@@ -92,11 +98,11 @@ describe("useFilterListState", () => {
     act(() => {
       result.current.setFilterState(
         getFilterKey(nameDef),
-        createSelectState(["selected"]),
+        createExactMatchState(["selected"]),
       );
     });
     expect(result.current.filterStates.get(getFilterKey(nameDef))).toEqual(
-      createSelectState(["selected"]),
+      createExactMatchState(["selected"]),
     );
   });
 
@@ -104,15 +110,15 @@ describe("useFilterListState", () => {
     const onFilterStateChanged = vi.fn();
     const nameDef = createPropertyFilterDef(
       "name",
-      "CHECKBOX_LIST",
-      createSelectState([]),
+      "LISTOGRAM",
+      createExactMatchState([]),
     );
     const props = createProps({
       filterDefinitions: [nameDef],
       onFilterStateChanged,
     });
     const { result } = renderHook(() => useFilterListState(props));
-    const newState = createSelectState(["selected"]);
+    const newState = createExactMatchState(["selected"]);
     act(() => {
       result.current.setFilterState(getFilterKey(nameDef), newState);
     });
@@ -122,8 +128,8 @@ describe("useFilterListState", () => {
   it("builds whereClause from filter states", () => {
     const nameDef = createPropertyFilterDef(
       "name",
-      "CHECKBOX_LIST",
-      createSelectState([]),
+      "LISTOGRAM",
+      createExactMatchState([]),
     );
     const props = createProps({
       filterDefinitions: [nameDef],
@@ -132,7 +138,7 @@ describe("useFilterListState", () => {
     act(() => {
       result.current.setFilterState(
         getFilterKey(nameDef),
-        createSelectState(["John"]),
+        createExactMatchState(["John"]),
       );
     });
     expect(result.current.whereClause).toEqual({ name: "John" });
@@ -142,8 +148,8 @@ describe("useFilterListState", () => {
     const onFilterClauseChanged = vi.fn();
     const nameDef = createPropertyFilterDef(
       "name",
-      "CHECKBOX_LIST",
-      createSelectState([]),
+      "LISTOGRAM",
+      createExactMatchState([]),
     );
     const props = createProps({
       filterDefinitions: [nameDef],
@@ -157,8 +163,8 @@ describe("useFilterListState", () => {
     const onFilterClauseChanged = vi.fn();
     const nameDef = createPropertyFilterDef(
       "name",
-      "CHECKBOX_LIST",
-      createSelectState([]),
+      "LISTOGRAM",
+      createExactMatchState([]),
     );
     const props = createProps({
       filterDefinitions: [nameDef],
@@ -168,7 +174,7 @@ describe("useFilterListState", () => {
     act(() => {
       result.current.setFilterState(
         getFilterKey(nameDef),
-        createSelectState(["John"]),
+        createExactMatchState(["John"]),
       );
     });
     expect(onFilterClauseChanged).toHaveBeenCalledTimes(1);
@@ -179,8 +185,8 @@ describe("useFilterListState", () => {
     const onFilterClauseChanged = vi.fn();
     const nameDef = createPropertyFilterDef(
       "name",
-      "CHECKBOX_LIST",
-      createSelectState([]),
+      "LISTOGRAM",
+      createExactMatchState([]),
     );
     const props = createProps({
       filterDefinitions: [nameDef],
@@ -190,7 +196,7 @@ describe("useFilterListState", () => {
     act(() => {
       result.current.setFilterState(
         getFilterKey(nameDef),
-        createSelectState(["John"]),
+        createExactMatchState(["John"]),
       );
     });
     onFilterClauseChanged.mockClear();
@@ -204,8 +210,8 @@ describe("useFilterListState", () => {
   it("handles multiple filter definitions", () => {
     const nameDef = createPropertyFilterDef(
       "name",
-      "CHECKBOX_LIST",
-      createSelectState([]),
+      "LISTOGRAM",
+      createExactMatchState([]),
     );
     const activeDef = createPropertyFilterDef(
       "active",
@@ -219,7 +225,7 @@ describe("useFilterListState", () => {
     act(() => {
       result.current.setFilterState(
         getFilterKey(nameDef),
-        createSelectState(["John"]),
+        createExactMatchState(["John"]),
       );
       result.current.setFilterState(
         getFilterKey(activeDef),

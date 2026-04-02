@@ -20,6 +20,15 @@
   gap: var(--osdk-filter-item-gap);
   border-radius: var(--osdk-filter-item-border-radius);
   padding: var(--osdk-filter-item-padding);
+  border: 1px solid transparent;
+}
+
+.filterItem[data-has-selection] {
+  border-color: var(--osdk-intent-primary-rest);
+}
+
+.filterItem[data-has-selection] .searchRow {
+  border-color: transparent;
 }
 
 .itemHeader {
@@ -118,11 +127,6 @@
   border-radius: var(--osdk-filter-input-border-radius);
   padding: var(--osdk-filter-input-padding);
   gap: var(--osdk-filter-input-gap);
-
-  &:focus-within {
-    outline: var(--osdk-filter-input-focus-outline-width) solid var(--osdk-filter-input-focus-outline-color);
-    outline-offset: var(--osdk-filter-input-focus-outline-offset);
-  }
 }
 
 .searchInput {
@@ -183,7 +187,6 @@
   }
 }
 
-.filterItem:hover [data-exclude-row],
 .excludeRowVisible {
   opacity: 1;
   height: auto;

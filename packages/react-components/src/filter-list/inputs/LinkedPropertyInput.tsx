@@ -24,7 +24,6 @@ import { useOsdkAggregation } from "@osdk/react/experimental";
 import classnames from "classnames";
 import React, { memo, useCallback, useMemo } from "react";
 import { assertUnreachable } from "../../shared/assertUnreachable.js";
-import { CheckboxListInput } from "../base/inputs/CheckboxListInput.js";
 import { ContainsTextInput } from "../base/inputs/ContainsTextInput.js";
 import { DateRangeInput } from "../base/inputs/DateRangeInput.js";
 import styles from "../base/inputs/LinkedPropertyInput.module.css";
@@ -233,22 +232,6 @@ function LinkedPropertyInputInner<
 
   const content = (() => {
     switch (definition.linkedFilterComponent) {
-      case "CHECKBOX_LIST": {
-        const selectedValues = innerState?.type === "SELECT"
-          ? coerceToStringArray(innerState.selectedValues)
-          : [];
-        return (
-          <LinkedCheckboxListInput
-            objectType={linkedObjectType}
-            objectSet={linkedObjectSet}
-            propertyKey={linkedPropertyKey}
-            selectedValues={selectedValues}
-            onChange={onSelectChange}
-            searchQuery={searchQuery}
-          />
-        );
-      }
-
       case "MULTI_SELECT": {
         const values = innerState?.type === "SELECT"
           ? coerceToStringArray(innerState.selectedValues)
@@ -432,39 +415,6 @@ interface LinkedAggregationInputProps<Q extends ObjectTypeDefinition> {
   objectType: Q;
   objectSet: ObjectSet<Q>;
   propertyKey: PropertyKeys<Q>;
-}
-
-interface LinkedCheckboxListInputProps<Q extends ObjectTypeDefinition>
-  extends LinkedAggregationInputProps<Q>
-{
-  selectedValues: string[];
-  onChange: (values: string[]) => void;
-  searchQuery?: string;
-}
-
-function LinkedCheckboxListInput<Q extends ObjectTypeDefinition>({
-  objectType,
-  objectSet,
-  propertyKey,
-  selectedValues,
-  onChange,
-  searchQuery,
-}: LinkedCheckboxListInputProps<Q>): React.ReactElement {
-  const { data, isLoading, error } = usePropertyAggregation(
-    objectType,
-    propertyKey,
-    objectSet,
-  );
-  return (
-    <CheckboxListInput
-      values={data}
-      isLoading={isLoading}
-      error={error}
-      selectedValues={selectedValues}
-      onChange={onChange}
-      searchQuery={searchQuery}
-    />
-  );
 }
 
 interface LinkedMultiSelectInputProps<Q extends ObjectTypeDefinition>

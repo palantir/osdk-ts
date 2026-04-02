@@ -24,15 +24,14 @@ import {
   createKeywordSearchFilterDef,
   createLinkedPropertyFilterDef,
   createPropertyFilterDef,
-  createSelectState,
 } from "./testUtils.js";
 
 describe("getFilterKey", () => {
   it("returns key for property filter", () => {
     const definition = createPropertyFilterDef(
       "name",
-      "CHECKBOX_LIST",
-      createSelectState([]),
+      "LISTOGRAM",
+      { type: "EXACT_MATCH", values: [] },
     );
     expect(getFilterKey(definition)).toBe("name");
   });
@@ -41,8 +40,8 @@ describe("getFilterKey", () => {
     const definition = {
       ...createPropertyFilterDef(
         "name",
-        "CHECKBOX_LIST",
-        createSelectState([]),
+        "LISTOGRAM",
+        { type: "EXACT_MATCH", values: [] },
       ),
       id: "name-filter-1",
     } as FilterDefinitionUnion<typeof MockObjectType>;
