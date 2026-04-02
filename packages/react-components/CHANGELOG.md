@@ -1,5 +1,12 @@
 # @osdk/react-components
 
+## 0.2.0-beta.28
+
+### Minor Changes
+
+- 3eaf3f5: Add CSS layers documentation and Tailwind CSS v4 setup instructions to READMEs
+- 3f4fb81: Address design review and PR review feedback for filter list: exclude strikethrough only on selected items, remove hover-to-show exclude row, fix 3-dots toggle close behavior, remove OR filter operator mode, and various UI polish
+
 ## 0.2.0-beta.27
 
 ### Minor Changes
