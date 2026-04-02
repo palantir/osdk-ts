@@ -80,8 +80,7 @@ export function BaseCbacPicker({
         ? (
           <div
             className={styles.statusMessage}
-            role="status"
-            aria-live="polite"
+            role="alert"
           >
             {error.message}
           </div>

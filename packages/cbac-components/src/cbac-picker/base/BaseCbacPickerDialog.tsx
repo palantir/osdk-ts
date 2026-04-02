@@ -38,10 +38,20 @@ export function BaseCbacPickerDialog({
   submitDisabledReason,
   ...pickerProps
 }: BaseCbacPickerDialogProps): React.ReactElement {
+  const handleOpenChange = React.useCallback(
+    (open: boolean) => {
+      if (!open) {
+        onCancel();
+      }
+      onOpenChange(open);
+    },
+    [onCancel, onOpenChange],
+  );
+
   return (
     <Dialog
       isOpen={isOpen}
-      onOpenChange={onOpenChange}
+      onOpenChange={handleOpenChange}
       title={title}
       footer={
         <CbacPickerDialogFooter

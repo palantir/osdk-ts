@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Button } from "@base-ui/react/button";
 import { Cross } from "@blueprintjs/icons";
 import classnames from "classnames";
 import React from "react";
@@ -52,14 +53,13 @@ export function BaseCbacBanner({
 
   const dismissButton = onDismiss != null
     ? (
-      <button
-        type="button"
+      <Button
         className={styles.dismissButton}
         onClick={handleDismiss}
         aria-label="Clear classification"
       >
         <Cross size={12} color="currentColor" />
-      </button>
+      </Button>
     )
     : null;
 
@@ -69,14 +69,13 @@ export function BaseCbacBanner({
         className={classnames(styles.bannerRow, className)}
         style={bannerStyle}
       >
-        <button
-          type="button"
+        <Button
           className={classnames(styles.banner, styles.clickable)}
           onClick={onClick}
           aria-label="Edit classification"
         >
           {classificationString}
-        </button>
+        </Button>
         {dismissButton}
       </div>
     );

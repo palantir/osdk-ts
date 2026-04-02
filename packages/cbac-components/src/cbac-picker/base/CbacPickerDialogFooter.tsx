@@ -29,7 +29,7 @@ export function CbacPickerDialogFooter({
   onConfirm,
   submitDisabledReason,
 }: CbacPickerDialogFooterProps): React.ReactElement {
-  const isSubmitDisabled = submitDisabledReason !== undefined;
+  const isSubmitDisabled = submitDisabledReason != null;
 
   const submitButton = (
     <ActionButton

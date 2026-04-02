@@ -45,9 +45,21 @@ export interface UseCbacPickerStateResult {
   error: Error | undefined;
 }
 
+function useStableArray(arr: string[]): string[] {
+  const ref = React.useRef(arr);
+  if (
+    arr.length !== ref.current.length
+    || arr.some((id, i) => id !== ref.current[i])
+  ) {
+    ref.current = arr;
+  }
+  return ref.current;
+}
+
 export function useCbacPickerState(
   selectedIds: string[],
 ): UseCbacPickerStateResult {
+  const stableSelectedIds = useStableArray(selectedIds);
   const {
     categories: rawCategories,
     isLoading: categoriesLoading,
@@ -62,12 +74,12 @@ export function useCbacPickerState(
     banner,
     isLoading: bannerLoading,
     error: bannerError,
-  } = useCbacBanner({ markingIds: selectedIds });
+  } = useCbacBanner({ markingIds: stableSelectedIds });
   const {
     restrictions,
     isLoading: restrictionsLoading,
     error: restrictionsError,
-  } = useCbacMarkingRestrictions({ markingIds: selectedIds });
+  } = useCbacMarkingRestrictions({ markingIds: stableSelectedIds });
 
   const impliedMarkingIds = restrictions?.impliedMarkings ?? EMPTY_ARRAY;
   const disallowedMarkingIds = restrictions?.disallowedMarkings ?? EMPTY_ARRAY;
@@ -106,11 +118,11 @@ export function useCbacPickerState(
   const markingStates = React.useMemo(
     () =>
       computeMarkingStates(
-        selectedIds,
+        stableSelectedIds,
         impliedMarkingIds,
         disallowedMarkingIds,
       ),
-    [selectedIds, impliedMarkingIds, disallowedMarkingIds],
+    [stableSelectedIds, impliedMarkingIds, disallowedMarkingIds],
   );
 
   const resolvedRequiredGroups = React.useMemo(
@@ -118,13 +130,24 @@ export function useCbacPickerState(
     [categoryGroups, requiredMarkingGroups],
   );
 
-  return {
-    categoryGroups,
-    markingStates,
-    banner,
-    requiredMarkingGroups: resolvedRequiredGroups,
-    isValid,
-    isLoading,
-    error,
-  };
+  return React.useMemo(
+    () => ({
+      categoryGroups,
+      markingStates,
+      banner,
+      requiredMarkingGroups: resolvedRequiredGroups,
+      isValid,
+      isLoading,
+      error,
+    }),
+    [
+      categoryGroups,
+      markingStates,
+      banner,
+      resolvedRequiredGroups,
+      isValid,
+      isLoading,
+      error,
+    ],
+  );
 }

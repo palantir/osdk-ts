@@ -44,12 +44,16 @@ export const CategoryMarkingGroup: React.MemoExoticComponent<
 }: CategoryMarkingGroupProps): React.ReactElement {
   const headingId = React.useId();
 
-  const resolvedMarkings = markings.map((marking) => ({
-    id: marking.id,
-    label: marking.name,
-    selectionState: markingStates.get(marking.id) ?? DEFAULT_MARKING_STATE,
-    disabled: readOnly,
-  }));
+  const resolvedMarkings = React.useMemo(
+    () =>
+      markings.map((marking) => ({
+        id: marking.id,
+        label: marking.name,
+        selectionState: markingStates.get(marking.id) ?? DEFAULT_MARKING_STATE,
+        disabled: readOnly,
+      })),
+    [markings, markingStates, readOnly],
+  );
 
   const maxVisible = GRID_COLUMNS * VISIBLE_ROWS;
   const hasOverflow = resolvedMarkings.length > maxVisible;
