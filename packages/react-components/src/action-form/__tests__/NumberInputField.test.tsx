@@ -248,6 +248,42 @@ describe("NumberInputField", () => {
     });
   });
 
+  describe("stepper buttons", () => {
+    it("renders increment and decrement buttons", () => {
+      render(<NumberInputField value={10} onChange={vi.fn()} />);
+      expect(screen.getByLabelText("Increment")).toBeDefined();
+      expect(screen.getByLabelText("Decrement")).toBeDefined();
+    });
+
+    it("increments value when clicking the up button", () => {
+      const onChange = vi.fn();
+      render(<NumberInputField value={10} onChange={onChange} step={5} />);
+      fireEvent.click(screen.getByLabelText("Increment"));
+      expect(onChange).toHaveBeenCalledWith(15);
+    });
+
+    it("decrements value when clicking the down button", () => {
+      const onChange = vi.fn();
+      render(<NumberInputField value={10} onChange={onChange} step={5} />);
+      fireEvent.click(screen.getByLabelText("Decrement"));
+      expect(onChange).toHaveBeenCalledWith(5);
+    });
+
+    it("uses default step of 1", () => {
+      const onChange = vi.fn();
+      render(<NumberInputField value={10} onChange={onChange} />);
+      fireEvent.click(screen.getByLabelText("Increment"));
+      expect(onChange).toHaveBeenCalledWith(11);
+    });
+
+    it("treats null value as 0 when stepping", () => {
+      const onChange = vi.fn();
+      render(<NumberInputField value={null} onChange={onChange} />);
+      fireEvent.click(screen.getByLabelText("Decrement"));
+      expect(onChange).toHaveBeenCalledWith(-1);
+    });
+  });
+
   describe("props", () => {
     it("passes id to the input element", () => {
       render(

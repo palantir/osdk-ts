@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
+import { Button } from "@base-ui/react/button";
 import { Input } from "@base-ui/react/input";
+import { ChevronDown, ChevronUp } from "@blueprintjs/icons";
 import React, { useCallback, useRef, useState } from "react";
 import type { NumberInputFieldProps } from "../FormFieldApi.js";
-import styles from "./BaseInput.module.css";
+import styles from "./NumberInputField.module.css";
 
 /**
  * Structural regex for valid numeric input.
@@ -34,6 +36,7 @@ import styles from "./BaseInput.module.css";
 const VALID_NUMERIC_REGEX = /^[+-.]?(\d+\.?\d*|\d*\.?\d+)?([eE][+-]?\d*)?$/;
 
 const DEFAULT_STEP = 1;
+const CHEVRON_SIZE = 12;
 
 // TODO: Add min/max validation so the field can surface
 // out-of-range errors through the form validation system.
@@ -74,17 +77,10 @@ export function NumberInputField({
     [onChange],
   );
 
-  const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent<HTMLInputElement>) => {
-      if (e.key !== "ArrowUp" && e.key !== "ArrowDown") {
-        return;
-      }
-      e.preventDefault();
-
+  const applyStep = useCallback(
+    (direction: 1 | -1) => {
       const current = parseNumericValue(displayValue) ?? 0;
-      const delta = e.key === "ArrowUp"
-        ? (step ?? DEFAULT_STEP)
-        : -(step ?? DEFAULT_STEP);
+      const delta = direction * (step ?? DEFAULT_STEP);
       const next = current + delta;
       const formatted = formatNumberForDisplay(next);
       setDisplayValue(formatted);
@@ -93,17 +89,56 @@ export function NumberInputField({
     [displayValue, onChange, step],
   );
 
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key !== "ArrowUp" && e.key !== "ArrowDown") {
+        return;
+      }
+      e.preventDefault();
+      applyStep(e.key === "ArrowUp" ? 1 : -1);
+    },
+    [applyStep],
+  );
+
+  const handleStepUp = useCallback(() => {
+    applyStep(1);
+  }, [applyStep]);
+
+  const handleStepDown = useCallback(() => {
+    applyStep(-1);
+  }, [applyStep]);
+
   return (
-    <Input
-      id={id}
-      className={styles.osdkBaseInput}
-      type="text"
-      inputMode="decimal"
-      value={displayValue}
-      onValueChange={handleValueChange}
-      onKeyDown={handleKeyDown}
-      placeholder={placeholder}
-    />
+    <div className={styles.osdkNumberInputWrapper}>
+      <Input
+        id={id}
+        className={styles.osdkNumberInputField}
+        type="text"
+        inputMode="decimal"
+        value={displayValue}
+        onValueChange={handleValueChange}
+        onKeyDown={handleKeyDown}
+        placeholder={placeholder}
+      />
+      <div className={styles.osdkNumberInputStepper}>
+        <Button
+          className={styles.osdkNumberInputStepButton}
+          aria-label="Increment"
+          tabIndex={-1}
+          onClick={handleStepUp}
+        >
+          <ChevronUp size={CHEVRON_SIZE} />
+        </Button>
+        <Button
+          className={styles.osdkNumberInputStepButton}
+          aria-label="Decrement"
+          tabIndex={-1}
+          onClick={handleStepDown}
+        >
+          <ChevronDown size={CHEVRON_SIZE} />
+        </Button>
+      </div>
+    </div>
   );
 }
 
