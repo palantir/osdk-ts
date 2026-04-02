@@ -20,6 +20,7 @@ import type { RendererFieldDefinition } from "../FormFieldApi.js";
 import { CustomField } from "./CustomField.js";
 import { DatetimePickerField } from "./DatetimePickerField.js";
 import { DropdownField } from "./DropdownField.js";
+import { NumberInputField } from "./NumberInputField.js";
 import { RadioButtonsField } from "./RadioButtonsField.js";
 import { TextAreaField } from "./TextAreaField.js";
 import { TextInputField } from "./TextInputField.js";
@@ -118,6 +119,16 @@ function renderFieldComponent(
         />
       );
     case "NUMBER_INPUT":
+      // TODO: Use coerceFieldValue
+      return (
+        <NumberInputField
+          id={fieldDefinition.fieldKey}
+          value={typeof value === "number" ? value : null}
+          onChange={onChange}
+          placeholder={fieldDefinition.placeholder}
+          {...fieldDefinition.fieldComponentProps}
+        />
+      );
     case "FILE_PICKER":
     case "OBJECT_SET":
       return <div>Unsupported field type: {fieldDefinition.fieldComponent}

@@ -1,0 +1,96 @@
+/*
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.osdkNumberInputWrapper {
+  display: flex;
+  border-radius: var(--osdk-input-border-radius);
+  border: var(--osdk-input-border-width) solid var(--osdk-input-border-color);
+  background-color: var(--osdk-input-bg);
+  transition:
+    background-color var(--osdk-input-transition-duration)
+      var(--osdk-input-transition-ease),
+    border-color var(--osdk-input-transition-duration)
+      var(--osdk-input-transition-ease);
+
+  &:hover {
+    background-color: var(--osdk-input-bg-hover);
+  }
+
+  &:focus-within {
+    outline: var(--osdk-input-focus-width) solid var(--osdk-input-focus-color);
+    outline-offset: var(--osdk-input-focus-offset);
+    border-color: var(--osdk-input-border-color-focus);
+  }
+}
+
+.osdkNumberInputField {
+  flex: 1;
+  min-width: 0;
+  min-height: var(--osdk-input-min-height);
+  padding: var(--osdk-input-padding);
+  border: none;
+  border-radius: var(--osdk-input-border-radius) 0 0
+    var(--osdk-input-border-radius);
+  background: transparent;
+  color: var(--osdk-input-color);
+  font-family: var(--osdk-input-font-family);
+  font-size: var(--osdk-input-font-size);
+  line-height: var(
+    --osdk-input-line-height,
+    var(--osdk-typography-line-height-default)
+  );
+
+  &::placeholder {
+    color: var(--osdk-input-placeholder-color);
+  }
+
+  &:focus-visible {
+    outline: none;
+  }
+}
+
+.osdkNumberInputStepper {
+  display: flex;
+  flex-direction: column;
+  border-left: var(--osdk-input-border-width) solid
+    var(--osdk-input-border-color);
+}
+
+.osdkNumberInputStepButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  padding: 0 calc(var(--osdk-surface-spacing) * 1.5);
+  border: none;
+  background: transparent;
+  color: var(--osdk-input-color);
+  cursor: pointer;
+  line-height: 0;
+
+  &:hover {
+    background-color: var(--osdk-input-bg-hover);
+  }
+
+  &:active {
+    background-color: var(--osdk-input-border-color);
+  }
+
+  & + & {
+    border-top: var(--osdk-input-border-width) solid
+      var(--osdk-input-border-color);
+  }
+}

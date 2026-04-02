@@ -61,6 +61,27 @@ const fieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
     },
   },
   {
+    fieldKey: "yearsOfExperience",
+    fieldComponent: "NUMBER_INPUT",
+    label: "Years of Experience",
+    placeholder: "Enter years",
+    isRequired: true,
+    fieldComponentProps: {
+      min: 0,
+      max: 50,
+    },
+  },
+  {
+    fieldKey: "salary",
+    fieldComponent: "NUMBER_INPUT",
+    label: "Salary",
+    placeholder: "Enter annual salary",
+    fieldComponentProps: {
+      min: 0,
+      step: 1000,
+    },
+  },
+  {
     fieldKey: "bio",
     fieldComponent: "TEXT_AREA",
     label: "Bio",
