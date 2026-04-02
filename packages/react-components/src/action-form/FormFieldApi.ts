@@ -291,7 +291,7 @@ export interface NumberInputFieldProps extends BaseFormFieldProps<number> {
   max?: number;
 
   /**
-   * Step increment for the input. Used for ArrowUp/ArrowDown keyboard stepping.
+   * Step increment for the input. Used by the stepper buttons and ArrowUp/ArrowDown keyboard stepping.
    *
    * @default 1
    */
