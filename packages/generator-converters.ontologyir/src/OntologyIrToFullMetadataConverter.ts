@@ -417,6 +417,7 @@ export class OntologyIrToFullMetadataConverter {
     const functions = fd.discover();
 
     if (irOutputFile) {
+      fs.mkdirSync(path.dirname(irOutputFile), { recursive: true });
       fs.writeFileSync(irOutputFile, JSON.stringify(functions));
     }
 
