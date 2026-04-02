@@ -147,7 +147,14 @@ export const MonitoringPanel: React.FC<MonitoringPanelProps> = ({
   const setPositionRef = useRef(setPosition);
   setPositionRef.current = setPosition;
 
+  const dragAbortRef = useRef<AbortController | null>(null);
+
   const attachDragListeners = useCallback(() => {
+    dragAbortRef.current?.abort();
+    const controller = new AbortController();
+    dragAbortRef.current = controller;
+    const { signal } = controller;
+
     const handleMouseMove = (e: MouseEvent) => {
       if (isDragging.current) {
         const deltaX = e.clientX - dragStart.current.x;
@@ -259,12 +266,12 @@ export const MonitoringPanel: React.FC<MonitoringPanelProps> = ({
     const handleMouseUp = () => {
       isDragging.current = false;
       isResizing.current = null;
-      document.removeEventListener("mousemove", handleMouseMove);
-      document.removeEventListener("mouseup", handleMouseUp);
+      controller.abort();
+      dragAbortRef.current = null;
     };
 
-    document.addEventListener("mousemove", handleMouseMove);
-    document.addEventListener("mouseup", handleMouseUp);
+    document.addEventListener("mousemove", handleMouseMove, { signal });
+    document.addEventListener("mouseup", handleMouseUp, { signal });
   }, []);
 
   const handleMouseDown = useCallback(

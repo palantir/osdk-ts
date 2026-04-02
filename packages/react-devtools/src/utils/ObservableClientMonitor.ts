@@ -34,8 +34,13 @@ import type {
   OperationMetadata,
 } from "../types/index.js";
 import { ActionLifecycleTracker } from "./ActionLifecycleTracker.js";
+import type { ComponentContext } from "./ComponentContextCapture.js";
 import { componentContextCapture } from "./ComponentContextCapture.js";
-import type { ComponentQueryRegistry } from "./ComponentQueryRegistry.js";
+import type {
+  ComponentHookBinding,
+  ComponentQueryRegistry,
+  QueryParams,
+} from "./ComponentQueryRegistry.js";
 import type { EventTimeline } from "./EventTimeline.js";
 import type { LinkTraversalTracker } from "./LinkTraversalTracker.js";
 import type { PropertyAccessTracker } from "./PropertyAccessTracker.js";
@@ -388,14 +393,74 @@ export class ObservableClientMonitor {
     };
   }
 
+  private setupObservation(params: {
+    signature: string;
+    metadata: OperationMetadata;
+    hookType: ComponentHookBinding["hookType"];
+    queryParams: QueryParams;
+  }): {
+    componentContext: ComponentContext | null;
+    subscriptionId: string;
+  } {
+    const componentContext = this.captureComponentContext
+      ? componentContextCapture.captureNow()
+      : null;
+
+    if (componentContext && this.captureQueryParams) {
+      this.componentRegistry.registerBinding({
+        componentId: componentContext.id,
+        componentName: componentContext.name,
+        componentDisplayName: componentContext.displayName,
+        hookType: params.hookType,
+        hookIndex: 0,
+        querySignature: params.signature,
+        queryParams: params.queryParams,
+      });
+    }
+
+    const isDeduplicated = this.subscriptionTracker
+      .isDeduplicatedSubscription(params.signature);
+    if (isDeduplicated) {
+      this.metricsStore.recordDeduplication(params.signature, params.metadata);
+    }
+
+    const subscriptionId = this.subscriptionTracker.startSubscription(
+      params.signature,
+    );
+
+    return { componentContext, subscriptionId };
+  }
+
+  private createCleanupObserverCallbacks(
+    subscriptionId: string,
+    componentContext: { id: string } | null,
+    observer: { error(err: unknown): void; complete(): void },
+  ): { error(err: unknown): void; complete(): void } {
+    return {
+      error: (err: unknown) => {
+        try {
+          this.cleanupSubscription(subscriptionId);
+        } catch (_cleanupError) {
+        }
+        if (componentContext) {
+          this.componentRegistry.unregisterComponent(componentContext.id);
+        }
+        observer.error(err);
+      },
+      complete: () => {
+        this.cleanupSubscription(subscriptionId);
+        if (componentContext) {
+          this.componentRegistry.unregisterComponent(componentContext.id);
+        }
+        observer.complete();
+      },
+    };
+  }
+
   private wrapObserveObject<T extends ObjectTypeDefinition>(
     original: ObservableClient["observeObject"],
   ): ObservableClient["observeObject"] {
     return (apiName, primaryKey, options, observer): Unsubscribable => {
-      const componentContext = this.captureComponentContext
-        ? componentContextCapture.captureNow()
-        : null;
-
       const apiNameStr = typeof apiName === "string"
         ? apiName
         : apiName.apiName;
@@ -406,35 +471,25 @@ export class ObservableClientMonitor {
         primaryKey: String(primaryKey),
       };
 
-      if (componentContext && this.captureQueryParams) {
-        this.componentRegistry.registerBinding({
-          componentId: componentContext.id,
-          componentName: componentContext.name,
-          componentDisplayName: componentContext.displayName,
-          hookType: "useOsdkObject",
-          hookIndex: 0,
-          querySignature: signature,
-          queryParams: {
-            type: "object",
-            objectType: apiNameStr,
-            primaryKey: String(primaryKey),
-          },
-        });
-      }
-
-      const isDeduplicated = this.subscriptionTracker
-        .isDeduplicatedSubscription(signature);
-      if (isDeduplicated) {
-        this.metricsStore.recordDeduplication(signature, metadata);
-      }
-
-      const subscriptionId = this.subscriptionTracker.startSubscription(
+      const { componentContext, subscriptionId } = this.setupObservation({
         signature,
-      );
+        metadata,
+        hookType: "useOsdkObject",
+        queryParams: {
+          type: "object",
+          objectType: apiNameStr,
+          primaryKey: String(primaryKey),
+        },
+      });
 
       const objectKey = `${apiNameStr}:${primaryKey}`;
 
       const mockManager = this.mockManager;
+      const cleanupCallbacks = this.createCleanupObserverCallbacks(
+        subscriptionId,
+        componentContext,
+        observer,
+      );
 
       const wrappedObserver = {
         next: (value: ObserveObjectCallbackArgs<T>) => {
@@ -492,23 +547,7 @@ export class ObservableClientMonitor {
 
           (observer.next as (v: ObserveObjectCallbackArgs<T>) => void)(value);
         },
-        error: (err: unknown) => {
-          try {
-            this.cleanupSubscription(subscriptionId);
-          } catch (_cleanupError) {
-          }
-          if (componentContext) {
-            this.componentRegistry.unregisterComponent(componentContext.id);
-          }
-          observer.error(err);
-        },
-        complete: () => {
-          this.cleanupSubscription(subscriptionId);
-          if (componentContext) {
-            this.componentRegistry.unregisterComponent(componentContext.id);
-          }
-          observer.complete();
-        },
+        ...cleanupCallbacks,
       };
 
       const unsubscribable = original(
@@ -529,10 +568,6 @@ export class ObservableClientMonitor {
       options: Parameters<ObservableClient["observeList"]>[0],
       observer: Parameters<ObservableClient["observeList"]>[1],
     ): Unsubscribable => {
-      const componentContext = this.captureComponentContext
-        ? componentContextCapture.captureNow()
-        : null;
-
       const apiNameStr = typeof options.type === "string"
         ? options.type
         : options.type.apiName;
@@ -554,35 +589,25 @@ export class ObservableClientMonitor {
         pageSize: options.pageSize,
       };
 
-      if (componentContext && this.captureQueryParams) {
-        this.componentRegistry.registerBinding({
-          componentId: componentContext.id,
-          componentName: componentContext.name,
-          componentDisplayName: componentContext.displayName,
-          hookType: "useOsdkObjects",
-          hookIndex: 0,
-          querySignature: signature,
-          queryParams: {
-            type: "list",
-            objectType: apiNameStr,
-            where: options.where,
-            orderBy: options.orderBy,
-            pageSize: options.pageSize,
-          },
-        });
-      }
-
-      const isDeduplicated = this.subscriptionTracker
-        .isDeduplicatedSubscription(signature);
-      if (isDeduplicated) {
-        this.metricsStore.recordDeduplication(signature, metadata);
-      }
-
-      const subscriptionId = this.subscriptionTracker.startSubscription(
+      const { componentContext, subscriptionId } = this.setupObservation({
         signature,
-      );
+        metadata,
+        hookType: "useOsdkObjects",
+        queryParams: {
+          type: "list",
+          objectType: apiNameStr,
+          where: options.where,
+          orderBy: options.orderBy,
+          pageSize: options.pageSize,
+        },
+      });
 
       const mockManager = this.mockManager;
+      const cleanupCallbacks = this.createCleanupObserverCallbacks(
+        subscriptionId,
+        componentContext,
+        observer,
+      );
 
       const wrappedObserver = {
         next: (
@@ -658,23 +683,7 @@ export class ObservableClientMonitor {
 
           (observer.next as (v: typeof value) => void)(value);
         },
-        error: (err: unknown) => {
-          try {
-            this.cleanupSubscription(subscriptionId);
-          } catch (_cleanupError) {
-          }
-          if (componentContext) {
-            this.componentRegistry.unregisterComponent(componentContext.id);
-          }
-          observer.error(err);
-        },
-        complete: () => {
-          this.cleanupSubscription(subscriptionId);
-          if (componentContext) {
-            this.componentRegistry.unregisterComponent(componentContext.id);
-          }
-          observer.complete();
-        },
+        ...cleanupCallbacks,
       };
 
       const unsubscribable = original(
@@ -693,10 +702,6 @@ export class ObservableClientMonitor {
       options: Parameters<ObservableClient["observeAggregation"]>[0],
       observer: AggregationObserver,
     ): Unsubscribable | Promise<Unsubscribable> => {
-      const componentContext = this.captureComponentContext
-        ? componentContextCapture.captureNow()
-        : null;
-
       const apiNameStr = typeof options.type === "string"
         ? options.type
         : options.type.apiName;
@@ -710,34 +715,24 @@ export class ObservableClientMonitor {
         whereClause: JSON.stringify(options.where ?? {}),
       };
 
-      if (componentContext && this.captureQueryParams) {
-        this.componentRegistry.registerBinding({
-          componentId: componentContext.id,
-          componentName: componentContext.name,
-          componentDisplayName: componentContext.displayName,
-          hookType: "useOsdkAggregation",
-          hookIndex: 0,
-          querySignature: signature,
-          queryParams: {
-            type: "aggregation",
-            objectType: apiNameStr,
-            where: options.where,
-            aggregate: options.aggregate,
-          },
-        });
-      }
-
-      const isDeduplicated = this.subscriptionTracker
-        .isDeduplicatedSubscription(signature);
-      if (isDeduplicated) {
-        this.metricsStore.recordDeduplication(signature, metadata);
-      }
-
-      const subscriptionId = this.subscriptionTracker.startSubscription(
+      const { componentContext, subscriptionId } = this.setupObservation({
         signature,
-      );
+        metadata,
+        hookType: "useOsdkAggregation",
+        queryParams: {
+          type: "aggregation",
+          objectType: apiNameStr,
+          where: options.where,
+          aggregate: options.aggregate,
+        },
+      });
 
       const mockManager = this.mockManager;
+      const cleanupCallbacks = this.createCleanupObserverCallbacks(
+        subscriptionId,
+        componentContext,
+        observer,
+      );
 
       const wrappedObserver: AggregationObserver = {
         next: (value) => {
@@ -791,23 +786,7 @@ export class ObservableClientMonitor {
 
           observer.next(value);
         },
-        error: (err) => {
-          try {
-            this.cleanupSubscription(subscriptionId);
-          } catch {
-          }
-          if (componentContext) {
-            this.componentRegistry.unregisterComponent(componentContext.id);
-          }
-          observer.error(err);
-        },
-        complete: () => {
-          this.cleanupSubscription(subscriptionId);
-          if (componentContext) {
-            this.componentRegistry.unregisterComponent(componentContext.id);
-          }
-          observer.complete();
-        },
+        ...cleanupCallbacks,
       };
 
       const result = original(

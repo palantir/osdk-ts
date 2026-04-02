@@ -212,6 +212,9 @@ export function useAnimatedBounds(
     }
   }
 
+  // Deps use `targetBounds == null` (boolean) so callbacks only change when
+  // transitioning between null/non-null, not on every bounds update.
+  // The store handles internal updates via its own subscription mechanism.
   const subscribe = React.useCallback((onStoreChange: () => void) => {
     const store = storeRef.current;
     if (!store) {

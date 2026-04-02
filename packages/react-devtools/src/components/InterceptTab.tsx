@@ -14,19 +14,8 @@
  * limitations under the License.
  */
 
-import {
-  Button,
-  Callout,
-  Checkbox,
-  FormGroup,
-  HTMLSelect,
-  Icon,
-  NumericInput,
-  Radio,
-  RadioGroup,
-  TextArea,
-} from "@blueprintjs/core";
-import React, { Suspense, useCallback, useMemo, useReducer } from "react";
+import { Button, Icon } from "@blueprintjs/core";
+import React, { useCallback, useMemo, useReducer } from "react";
 import { createPollingStore } from "../hooks/createPollingStore.js";
 import { useInspectorSelection } from "../hooks/useInspectorSelection.js";
 import type { MockResponse } from "../mocking/MockManager.js";
@@ -38,10 +27,17 @@ import type { MonitorStore } from "../store/MonitorStore.js";
 import { MockDataGenerator } from "../utils/MockDataGenerator.js";
 import { InspectorSelectionHeader } from "./InspectorSelectionHeader.js";
 import styles from "./InterceptTab.module.scss";
+import {
+  createMatcherFromPrimitive,
+  createResponseFromConfig,
+  getMockPrimitiveInfo,
+  MockEditor,
+  MockItem,
+} from "./MockEditor.js";
+import { OverrideEditor, OverrideItem } from "./OverrideEditor.js";
 import type { SelectedPrimitive } from "./PrimitiveSelectionPanel.js";
 import { PrimitiveSelectionPanel } from "./PrimitiveSelectionPanel.js";
 
-const LazyCodeMirror = React.lazy(() => import("@uiw/react-codemirror"));
 const lazyJson = () => import("@codemirror/lang-json").then(m => m.json);
 
 type JsonExtension = ReturnType<Awaited<ReturnType<typeof lazyJson>>>;
@@ -64,10 +60,6 @@ function subscribeJsonExtension(callback: () => void): () => void {
 
 function getJsonExtensionSnapshot(): JsonExtension | null {
   return jsonExtensionValue;
-}
-
-function CodeMirrorPlaceholder() {
-  return <div className={styles.editorPlaceholder}>Loading editor...</div>;
 }
 
 function parseJsonField<T>(
@@ -98,7 +90,7 @@ export interface MockConfiguration {
   enabled: boolean;
 }
 
-interface SelectedQuery {
+export interface SelectedQuery {
   componentId: string;
   componentName: string;
   objectType: string;
@@ -168,7 +160,7 @@ const initialState: InterceptState = {
   error: null,
 };
 
-type InterceptAction =
+export type InterceptAction =
   | { type: "SET_SELECTED_PRIMITIVE"; primitive: SelectedPrimitive | null }
   | { type: "SET_MOCKS"; mocks: Array<MockWithConfig> }
   | {
@@ -907,7 +899,7 @@ export const InterceptTab: React.FC<InterceptTabProps> = ({
         }
         activeWarningText="Selection mode is active. Click on any component to discover its OSDK usage."
         buttonLabel="Select Component"
-        showHelpTooltip
+        showHelpTooltip={true}
       />
 
       <div className={styles.content}>
@@ -961,313 +953,38 @@ export const InterceptTab: React.FC<InterceptTabProps> = ({
         )}
 
         {selectedPrimitive && (
-          <div className={styles.editorPanel}>
-            <div className={styles.panelHeader}>
-              <Icon icon={mockPrimitiveInfo?.icon ?? "cube"} />
-              <div>
-                <div className={styles.panelTitle}>
-                  {editingMock ? "Edit Mock" : "Create Mock"}
-                </div>
-                <div className={styles.panelSubtitle}>
-                  {mockPrimitiveInfo?.title} · {mockPrimitiveInfo?.subtitle}
-                </div>
-              </div>
-              <Button
-                variant="minimal"
-                size="small"
-                icon="cross"
-                aria-label="Close editor"
-                onClick={handleCancelMockEditor}
-              />
-            </div>
-
-            <div className={styles.editorContent}>
-              {mockPrimitiveInfo?.signature && (
-                <div className={styles.primitiveSignature}>
-                  <code>{mockPrimitiveInfo.signature}</code>
-                </div>
-              )}
-
-              <FormGroup label="Response Type" labelInfo="(required)">
-                <RadioGroup
-                  inline
-                  onChange={(e) =>
-                    dispatch({
-                      type: "SET_RESPONSE_TYPE",
-                      responseType: e.currentTarget
-                        .value as MockConfiguration["responseType"],
-                    })}
-                  selectedValue={responseType}
-                >
-                  <Radio label="Success" value="success" />
-                  <Radio label="Error/Failure" value="error" />
-                </RadioGroup>
-              </FormGroup>
-
-              <FormGroup label="Mock Type" labelInfo="(required)">
-                <HTMLSelect
-                  value={mockType}
-                  onChange={(e) =>
-                    dispatch({
-                      type: "SET_MOCK_TYPE",
-                      mockType: e.target.value as MockConfiguration["mockType"],
-                    })}
-                  fill
-                  options={[
-                    { label: "Static Data", value: "static" },
-                    { label: "Function (Dynamic)", value: "function" },
-                    {
-                      label: "Pass-through (Original + Log)",
-                      value: "passthrough",
-                    },
-                  ]}
-                />
-              </FormGroup>
-
-              {selectedPrimitive.type === "action" && (
-                <>
-                  <Checkbox
-                    checked={usePayload}
-                    onChange={(e) =>
-                      dispatch({
-                        type: "SET_USE_PAYLOAD",
-                        usePayload: e.currentTarget.checked,
-                      })}
-                    label="Use Payload"
-                  />
-                  {usePayload && (
-                    <FormGroup
-                      label="Action Payload (JSON)"
-                      helperText="The parameters to pass to the action"
-                    >
-                      <TextArea
-                        value={mockPayload}
-                        onChange={(e) =>
-                          dispatch({
-                            type: "SET_MOCK_PAYLOAD",
-                            mockPayload: e.target.value,
-                          })}
-                        fill
-                        rows={4}
-                        className={styles.codeEditor}
-                      />
-                    </FormGroup>
-                  )}
-                </>
-              )}
-
-              <Checkbox
-                checked={useResponse}
-                onChange={(e) =>
-                  dispatch({
-                    type: "SET_USE_RESPONSE",
-                    useResponse: e.currentTarget.checked,
-                  })}
-                label="Use Response"
-              />
-
-              {useResponse && (
-                <>
-                  {responseType === "error" && (
-                    <FormGroup
-                      label="Error Message"
-                      helperText="The error message to return"
-                    >
-                      <TextArea
-                        value={errorMessage}
-                        onChange={(e) =>
-                          dispatch({
-                            type: "SET_ERROR_MESSAGE",
-                            errorMessage: e.target.value,
-                          })}
-                        fill
-                        rows={2}
-                      />
-                    </FormGroup>
-                  )}
-
-                  {mockType === "static" && responseType === "success" && (
-                    <FormGroup
-                      label="Mock Data (JSON)"
-                      helperText="Enter the JSON response that this mock should return"
-                    >
-                      <TextArea
-                        value={staticData}
-                        onChange={(e) =>
-                          dispatch({
-                            type: "SET_STATIC_DATA",
-                            staticData: e.target.value,
-                          })}
-                        fill
-                        rows={8}
-                        className={styles.codeEditor}
-                      />
-                    </FormGroup>
-                  )}
-
-                  {mockType === "function" && (
-                    <FormGroup
-                      label="Mock Function"
-                      helperText="Write a function that generates mock data dynamically"
-                    >
-                      <TextArea
-                        value={functionCode}
-                        onChange={(e) =>
-                          dispatch({
-                            type: "SET_FUNCTION_CODE",
-                            functionCode: e.target.value,
-                          })}
-                        fill
-                        rows={10}
-                        className={styles.codeEditor}
-                      />
-                    </FormGroup>
-                  )}
-                </>
-              )}
-
-              {mockType === "passthrough" && (
-                <Callout intent="primary" icon="info-sign">
-                  Pass-through mode will execute the real query but log all
-                  parameters and responses for debugging.
-                </Callout>
-              )}
-
-              <div className={styles.editorActions}>
-                <Button
-                  intent="primary"
-                  icon="floppy-disk"
-                  onClick={handleSaveMock}
-                >
-                  {editingMock ? "Update Mock" : "Create Mock"}
-                </Button>
-                <Button variant="minimal" onClick={handleCancelMockEditor}>
-                  Cancel
-                </Button>
-              </div>
-            </div>
-          </div>
+          <MockEditor
+            selectedPrimitive={selectedPrimitive}
+            editingMock={editingMock}
+            mockType={mockType}
+            responseType={responseType}
+            usePayload={usePayload}
+            mockPayload={mockPayload}
+            useResponse={useResponse}
+            staticData={staticData}
+            functionCode={functionCode}
+            errorMessage={errorMessage}
+            dispatch={dispatch}
+            mockPrimitiveInfo={mockPrimitiveInfo}
+            onSaveMock={handleSaveMock}
+            onCancel={handleCancelMockEditor}
+          />
         )}
 
         {selectedQuery && (
-          <div className={styles.editorPanel}>
-            <div className={styles.panelHeader}>
-              <Icon icon="edit" />
-              <div>
-                <div className={styles.panelTitle}>
-                  {selectedQuery.objectType}
-                </div>
-                <div className={styles.panelSubtitle}>
-                  {selectedQuery.componentName}
-                </div>
-              </div>
-              <Button
-                variant="minimal"
-                size="small"
-                icon="cross"
-                aria-label="Close editor"
-                onClick={handleClearSelection}
-              />
-            </div>
-
-            <Suspense fallback={<CodeMirrorPlaceholder />}>
-              <div className={styles.editorContent}>
-                <FormGroup
-                  label="Where Clause (JSON)"
-                  labelFor="where-clause"
-                >
-                  <LazyCodeMirror
-                    value={whereClauseText}
-                    onChange={(val) =>
-                      dispatch({ type: "SET_WHERE_CLAUSE_TEXT", text: val })}
-                    extensions={jsonExtensions}
-                    theme={theme ?? "dark"}
-                    height="120px"
-                    placeholder='{ "status": "active" }'
-                    basicSetup={{
-                      lineNumbers: false,
-                      foldGutter: false,
-                    }}
-                  />
-                </FormGroup>
-
-                {selectedQuery.isAggregation
-                  ? (
-                    <>
-                      <FormGroup label="Group By (JSON)" labelFor="group-by">
-                        <LazyCodeMirror
-                          value={groupByText}
-                          onChange={(val) =>
-                            dispatch({ type: "SET_GROUP_BY_TEXT", text: val })}
-                          extensions={jsonExtensions}
-                          theme={theme ?? "dark"}
-                          height="80px"
-                          placeholder='{ "status": "exact", "department": "exact" }'
-                          basicSetup={{ lineNumbers: false, foldGutter: false }}
-                        />
-                      </FormGroup>
-
-                      <FormGroup label="Select (JSON)" labelFor="select">
-                        <LazyCodeMirror
-                          value={selectText}
-                          onChange={(val) =>
-                            dispatch({ type: "SET_SELECT_TEXT", text: val })}
-                          extensions={jsonExtensions}
-                          theme={theme ?? "dark"}
-                          height="80px"
-                          placeholder='{ "count": { "$count": {} } }'
-                          basicSetup={{ lineNumbers: false, foldGutter: false }}
-                        />
-                      </FormGroup>
-                    </>
-                  )
-                  : (
-                    <>
-                      <FormGroup label="Order By (JSON)" labelFor="order-by">
-                        <LazyCodeMirror
-                          value={orderByText}
-                          onChange={(val) =>
-                            dispatch({ type: "SET_ORDER_BY_TEXT", text: val })}
-                          extensions={jsonExtensions}
-                          theme={theme ?? "dark"}
-                          height="80px"
-                          placeholder='{ "createdAt": "desc" }'
-                          basicSetup={{ lineNumbers: false, foldGutter: false }}
-                        />
-                      </FormGroup>
-
-                      <FormGroup label="Page Size" labelFor="page-size">
-                        <NumericInput
-                          id="page-size"
-                          value={pageSize ?? ""}
-                          onValueChange={(value) =>
-                            dispatch({
-                              type: "SET_PAGE_SIZE",
-                              pageSize: value > 0 ? value : undefined,
-                            })}
-                          placeholder="Default"
-                          min={1}
-                          fill
-                        />
-                      </FormGroup>
-                    </>
-                  )}
-
-                <div className={styles.editorActions}>
-                  <Button
-                    intent="primary"
-                    icon="tick"
-                    onClick={handleApplyOverride}
-                  >
-                    Apply Override
-                  </Button>
-                  <Button variant="minimal" onClick={handleClearSelection}>
-                    Cancel
-                  </Button>
-                </div>
-              </div>
-            </Suspense>
-          </div>
+          <OverrideEditor
+            selectedQuery={selectedQuery}
+            whereClauseText={whereClauseText}
+            orderByText={orderByText}
+            pageSize={pageSize}
+            groupByText={groupByText}
+            selectText={selectText}
+            jsonExtensions={jsonExtensions}
+            theme={theme ?? "dark"}
+            dispatch={dispatch}
+            onApplyOverride={handleApplyOverride}
+            onClearSelection={handleClearSelection}
+          />
         )}
 
         {isShowingList && (
@@ -1328,247 +1045,3 @@ export const InterceptTab: React.FC<InterceptTabProps> = ({
     </div>
   );
 };
-
-function getMockPrimitiveInfo(primitive: SelectedPrimitive) {
-  switch (primitive.type) {
-    case "action":
-      return {
-        title: primitive.data.name,
-        subtitle: "Action",
-        icon: "flash" as const,
-        signature: primitive.data.signature,
-      };
-    case "objectSet":
-      return {
-        title: primitive.data.type,
-        subtitle: "Object Set Query",
-        icon: "th-list" as const,
-        signature: `useOsdkObjects(${primitive.data.type})`,
-      };
-    case "object":
-      return {
-        title: primitive.data.type,
-        subtitle: "Object Query",
-        icon: "cube" as const,
-        signature: `useOsdkObject(${primitive.data.type}, ${
-          primitive.data.primaryKey || "'...'"
-        })`,
-      };
-    case "link":
-      return {
-        title: primitive.data.linkName,
-        subtitle: "Link Traversal",
-        icon: "link" as const,
-        signature: `useLinks(..., "${primitive.data.linkName}")`,
-      };
-    case "query":
-      return {
-        title: primitive.data.hookType,
-        subtitle: "Advanced Query",
-        icon: "database" as const,
-        signature: primitive.data.signature,
-      };
-    case "aggregation":
-      return {
-        title: primitive.data.type,
-        subtitle: "Aggregation",
-        icon: "grouped-bar-chart" as const,
-        signature: `useOsdkAggregation(${primitive.data.type})`,
-      };
-  }
-}
-
-function createMatcherFromPrimitive(primitive: SelectedPrimitive) {
-  switch (primitive.type) {
-    case "action":
-      return { actionName: primitive.data.name };
-    case "objectSet":
-      return {
-        objectType: primitive.data.type,
-        whereClause: primitive.data.whereClause,
-      };
-    case "aggregation":
-      return {
-        objectType: primitive.data.type,
-        whereClause: primitive.data.whereClause,
-      };
-    case "object":
-      return {
-        objectType: primitive.data.type,
-        primaryKey: primitive.data.primaryKey,
-      };
-    case "link":
-      return {
-        objectType: primitive.data.sourceType,
-        linkName: primitive.data.linkName,
-      };
-    case "query":
-      return {};
-  }
-}
-
-function createResponseFromConfig(
-  primitive: SelectedPrimitive,
-  mockData: unknown,
-) {
-  if (primitive.type === "action") {
-    return { type: "action" as const, result: mockData };
-  } else if (
-    primitive.type === "objectSet" || primitive.type === "link"
-    || primitive.type === "aggregation"
-  ) {
-    return {
-      type: "list" as const,
-      list: Array.isArray(mockData) ? mockData : [mockData],
-      hasMore: false,
-    };
-  } else {
-    return { type: "object" as const, object: mockData };
-  }
-}
-
-interface MockItemProps {
-  mock: MockResponse & { config: MockConfiguration };
-  onToggle: () => void;
-  onDelete: () => void;
-  onEdit: () => void;
-}
-
-const MockItem: React.FC<MockItemProps> = React.memo(
-  ({ mock, onToggle, onDelete, onEdit }) => {
-    const info = mock.config
-      ? getMockPrimitiveInfo(mock.config.primitive)
-      : null;
-    const label = {
-      icon: info?.icon ?? ("help" as const),
-      text: info?.title ?? "Unknown",
-    };
-
-    return (
-      <div className={styles.interceptItem}>
-        <div
-          className={styles.interceptItemContent}
-          onClick={onEdit}
-          title="Click to view/edit configuration"
-        >
-          <div className={styles.interceptItemHeader}>
-            <Icon icon={label.icon} />
-            <span className={styles.interceptItemTitle}>{label.text}</span>
-            <span
-              className={`${styles.interceptBadge} ${styles.interceptBadgeMock}`}
-            >
-              mock
-            </span>
-            <span className={styles.interceptItemMeta}>
-              {mock.config?.mockType || "static"}
-            </span>
-            <span className={styles.interceptItemMeta}>
-              Used: {mock.usedCount}x
-            </span>
-          </div>
-          <div className={styles.interceptItemDetails}>
-            {mock.config?.responseType === "error" && (
-              <span className={styles.detail}>Error Response</span>
-            )}
-          </div>
-        </div>
-
-        <div className={styles.interceptItemActions}>
-          <Button
-            variant="minimal"
-            size="small"
-            intent={mock.enabled ? "success" : "warning"}
-            icon={mock.enabled ? "pause" : "play"}
-            onClick={onToggle}
-            title={mock.enabled ? "Pause mock" : "Resume mock"}
-            aria-label={mock.enabled ? "Pause mock" : "Resume mock"}
-          />
-          <Button
-            variant="minimal"
-            size="small"
-            intent="danger"
-            icon="trash"
-            onClick={onDelete}
-            title="Delete mock"
-            aria-label="Delete mock"
-          />
-        </div>
-      </div>
-    );
-  },
-);
-
-MockItem.displayName = "MockItem";
-
-interface OverrideItemProps {
-  override: PrototypeOverride;
-  onToggle: () => void;
-  onRemove: () => void;
-  onEdit: () => void;
-}
-
-const OverrideItem: React.FC<OverrideItemProps> = React.memo(
-  ({ override, onToggle, onRemove, onEdit }) => {
-    return (
-      <div className={styles.interceptItem}>
-        <div
-          className={`${styles.interceptItemContent} ${styles.clickable}`}
-          onClick={onEdit}
-        >
-          <div className={styles.interceptItemHeader}>
-            <Icon
-              icon={override.hookType === "useOsdkAggregation"
-                ? "grouped-bar-chart"
-                : "th-list"}
-            />
-            <span className={styles.interceptItemTitle}>
-              {override.objectType}
-            </span>
-            <span
-              className={`${styles.interceptBadge} ${styles.interceptBadgeOverride}`}
-            >
-              override
-            </span>
-            <span
-              className={`${styles.overrideItemStatus} ${
-                override.enabled
-                  ? styles.statusEnabled
-                  : styles.statusDisabled
-              }`}
-            >
-              {override.enabled ? "active" : "paused"}
-            </span>
-          </div>
-          <div className={styles.interceptItemDetails}>
-            <span className={styles.detail}>
-              {override.componentName}
-            </span>
-          </div>
-        </div>
-
-        <div className={styles.interceptItemActions}>
-          <Button
-            variant="minimal"
-            size="small"
-            intent={override.enabled ? "success" : "warning"}
-            icon={override.enabled ? "pause" : "play"}
-            onClick={onToggle}
-            title={override.enabled ? "Pause override" : "Resume override"}
-            aria-label={override.enabled ? "Pause override" : "Resume override"}
-          />
-          <Button
-            variant="minimal"
-            size="small"
-            intent="danger"
-            icon="trash"
-            onClick={onRemove}
-            title="Remove override"
-            aria-label="Remove override"
-          />
-        </div>
-      </div>
-    );
-  },
-);
-
-OverrideItem.displayName = "OverrideItem";
