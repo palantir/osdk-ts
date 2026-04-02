@@ -138,4 +138,63 @@ describe("osdkDevTools vite plugin", () => {
     const result = applyFn({ mode: "development" }, { command: "serve" });
     expect(result).toBe(false);
   });
+
+  it("transformIndexHtml falls back to </body> when </head> is missing", () => {
+    const plugin = osdkDevTools();
+    const transformConfig = plugin.transformIndexHtml as {
+      order: string;
+      handler: (html: string) => string;
+    };
+
+    const html = "<html><body></body></html>";
+    const result = transformConfig.handler(html);
+
+    expect(result).not.toBe(html);
+    expect(result).toContain("@osdk/react-devtools");
+    expect(result).toContain("</body>");
+  });
+
+  it("transformIndexHtml returns original HTML when no head or body tags", () => {
+    const plugin = osdkDevTools();
+    const transformConfig = plugin.transformIndexHtml as {
+      order: string;
+      handler: (html: string) => string;
+    };
+
+    const html = "<html><div>content</div></html>";
+    const result = transformConfig.handler(html);
+
+    expect(result).toBe(html);
+  });
+
+  it("logs injection message when verbose is true", () => {
+    const spy = vi.spyOn(console, "log").mockImplementation(() => {});
+    const plugin = osdkDevTools({ verbose: true });
+    const transformConfig = plugin.transformIndexHtml as {
+      order: string;
+      handler: (html: string) => string;
+    };
+
+    const html = "<html><head></head><body></body></html>";
+    transformConfig.handler(html);
+
+    expect(spy).toHaveBeenCalledWith(
+      "[osdk-devtools] Injected devtools into HTML",
+    );
+    spy.mockRestore();
+  });
+
+  it("injected content contains proper script tags", () => {
+    const plugin = osdkDevTools();
+    const transformConfig = plugin.transformIndexHtml as {
+      order: string;
+      handler: (html: string) => string;
+    };
+
+    const html = "<html><head></head><body></body></html>";
+    const result = transformConfig.handler(html);
+
+    expect(result).toContain("<script");
+    expect(result).toContain("</script>");
+  });
 });

@@ -88,11 +88,22 @@ export function osdkDevTools(options: OsdkDevToolsOptions = {}): Plugin {
         }
 
         const injection = `${hookScript}${registerScript}${cssTag}\n`;
-        const transformed = html.replace("</head>", `${injection}</head>`);
+        let transformed = html.replace("</head>", `${injection}</head>`);
 
-        if (verbose) {
+        if (transformed === html) {
+          transformed = html.replace("</body>", `${injection}</body>`);
+        }
+
+        if (transformed !== html) {
+          if (verbose) {
+            // eslint-disable-next-line no-console
+            console.log(`[${PLUGIN_NAME}] Injected devtools into HTML`);
+          }
+        } else if (verbose) {
           // eslint-disable-next-line no-console
-          console.log(`[${PLUGIN_NAME}] Injected devtools into HTML`);
+          console.log(
+            `[${PLUGIN_NAME}] Warning: Could not find </head> or </body> tag for injection`,
+          );
         }
 
         return transformed;
