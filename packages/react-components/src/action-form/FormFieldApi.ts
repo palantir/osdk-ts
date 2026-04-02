@@ -39,9 +39,8 @@ export interface FormFieldDefinition<
 
   /**
    * Display label for the field
-   * If not provided, the form field will not show any label.
    */
-  label?: string;
+  label: string;
 
   /**
    * Default value of the field
@@ -455,7 +454,7 @@ export type RendererFieldDefinition = {
     fieldKey: string;
     fieldComponent: K;
     fieldType?: FieldType;
-    label?: string;
+    label: string;
     defaultValue?: unknown;
     isRequired?: boolean;
     placeholder?: string;

@@ -20,11 +20,18 @@ import type { NumberInputFieldProps } from "../FormFieldApi.js";
 import styles from "./BaseInput.module.css";
 
 /**
- * Structural regex for valid numeric input. Allows intermediate typing states
- * like "-", "1.", "1e", "1e+" while rejecting obviously invalid strings
- * like "1.2.3" or "+-5".
+ * Structural regex for valid numeric input.
+ *
+ * Allows intermediate typing states that will become valid numbers:
+ * ""  — user cleared the field (all groups are optional)
+ * "-" — user started typing a negative number
+ * "." — user started typing a decimal like ".5"
+ * "+" — user started typing an explicitly positive number
+ * "1.", "1e", "1e+" — partial but structurally valid
+ *
+ * Rejects obviously invalid strings like "1.2.3" or "+-5".
  */
-const VALID_NUMERIC_REGEX = /^[+-]?(\d+\.?\d*|\d*\.?\d+)([eE][+-]?\d*)?$/;
+const VALID_NUMERIC_REGEX = /^[+-.]?(\d+\.?\d*|\d*\.?\d+)?([eE][+-]?\d*)?$/;
 
 // TODO: Add min/max validation so the field can surface
 // out-of-range errors through the form validation system.
@@ -79,18 +86,7 @@ export function NumberInputField({
 }
 
 function isValidInput(text: string): boolean {
-  // Allow intermediate typing states that will become valid numbers:
-  // ""  — user cleared the field
-  // "-" — user started typing a negative number
-  // "." — user started typing a decimal like ".5"
-  // "+" — user started typing an explicitly positive number
-  return (
-    text === ""
-    || text === "-"
-    || text === "+"
-    || text === "."
-    || VALID_NUMERIC_REGEX.test(text)
-  );
+  return VALID_NUMERIC_REGEX.test(text);
 }
 
 function parseNumericValue(text: string): number | null {

@@ -142,6 +142,7 @@ describe("BaseForm", () => {
           fieldDefinitions={[
             {
               fieldKey: "color",
+              label: "Color",
               fieldComponent: "DROPDOWN" as const,
               fieldComponentProps: {
                 items: ["Red", "Blue", "Green"],
