@@ -17,14 +17,12 @@
 import { getComponentName } from "../fiber/FiberInspection.js";
 import {
   extractOsdkMetadataFromFiber,
-  findOsdkConsumersInAncestors,
-  findOsdkConsumersInDescendants,
-  findOsdkConsumersInSiblings,
-  hasOsdkConsumerInTree,
-  type OsdkConsumerFiber,
   type OsdkHookMetadata,
 } from "../fiber/HookStateInspector.js";
 import type { Fiber } from "../fiber/types.js";
+import type { ComponentQueryRegistry } from "./ComponentQueryRegistry.js";
+
+const MAX_ANCESTOR_WALK_DEPTH = 15;
 
 export interface DiscoveredAction {
   name: string;
@@ -85,41 +83,35 @@ export interface DiscoveredPrimitives {
 }
 
 export class ComponentPrimitiveDiscovery {
+  constructor(private registry: ComponentQueryRegistry) {}
+
   discoverPrimitives(fiber: Fiber): DiscoveredPrimitives {
-    const ancestorConsumers = findOsdkConsumersInAncestors(fiber);
+    const componentName = getComponentName(fiber);
 
-    if (ancestorConsumers.length > 0) {
-      return this.buildPrimitivesFromConsumers(
-        ancestorConsumers,
-        getComponentName(fiber),
-      );
+    // Walk up from clicked fiber to find nearest component with OSDK hooks
+    let current: Fiber | null = fiber;
+    let depth = 0;
+    while (current && depth < MAX_ANCESTOR_WALK_DEPTH) {
+      if (typeof current.type === "function") {
+        const metadata = extractOsdkMetadataFromFiber(current);
+        if (metadata.length > 0) {
+          return this.buildPrimitivesFromMetadata(metadata, componentName);
+        }
+      }
+      current = current.return;
+      depth++;
     }
 
-    const siblingConsumers = findOsdkConsumersInSiblings(fiber);
-    const descendantConsumers = findOsdkConsumersInDescendants(fiber);
-    const allConsumers = this.deduplicateConsumers([
-      ...siblingConsumers,
-      ...descendantConsumers,
-    ]);
-
-    if (allConsumers.length === 0) {
-      return this.emptyPrimitivesWithName(getComponentName(fiber));
-    }
-
-    return this.buildPrimitivesFromConsumers(
-      allConsumers,
-      getComponentName(fiber),
-    );
+    return this.emptyPrimitivesWithName(componentName);
   }
 
-  private buildPrimitivesFromConsumers(
-    consumers: OsdkConsumerFiber[],
-    clickedComponentName: string,
+  private buildPrimitivesFromMetadata(
+    metadata: OsdkHookMetadata[],
+    componentName: string,
   ): DiscoveredPrimitives {
-    const firstConsumer = consumers[0];
     const primitives: DiscoveredPrimitives = {
-      componentId: firstConsumer.sourceBasedId || "unknown",
-      componentName: clickedComponentName,
+      componentId: componentName,
+      componentName,
       actions: [],
       objectSets: [],
       objects: [],
@@ -128,124 +120,93 @@ export class ComponentPrimitiveDiscovery {
       aggregations: [],
     };
 
-    const seenSignatures = new Set<string>();
     const hookIndexCounters = new Map<string, number>();
-    for (const consumer of consumers) {
-      const metadata = extractOsdkMetadataFromFiber(consumer.fiber);
-      for (const meta of metadata) {
-        const sig = this.metadataSignature(meta);
-        if (!seenSignatures.has(sig)) {
-          seenSignatures.add(sig);
-          const idx = hookIndexCounters.get(meta.hookType) ?? 0;
-          hookIndexCounters.set(meta.hookType, idx + 1);
-          this.addMetadataToPrimitives(
-            primitives,
-            meta,
-            consumer.componentName,
-            idx,
-          );
+
+    for (const meta of metadata) {
+      const idx = hookIndexCounters.get(meta.hookType) ?? 0;
+      hookIndexCounters.set(meta.hookType, idx + 1);
+      const location = componentName;
+
+      switch (meta.hookType) {
+        case "useOsdkAction": {
+          primitives.actions.push({
+            name: meta.actionName ?? "Unknown Action",
+            signature: `action:${meta.actionName ?? "unknown"}`,
+            location,
+            hookIndex: idx,
+          });
+          break;
+        }
+        case "useOsdkObjects": {
+          primitives.objectSets.push({
+            type: meta.objectType ?? "Unknown",
+            whereClause: meta.where as Record<string, unknown> | undefined,
+            orderBy: meta.orderBy as
+              | Record<string, "asc" | "desc">
+              | undefined,
+            pageSize: meta.pageSize,
+            location,
+            hookIndex: idx,
+            querySignature: `list:${meta.objectType ?? "unknown"}`,
+          });
+          break;
+        }
+        case "useOsdkObject": {
+          primitives.objects.push({
+            type: meta.objectType ?? "Unknown",
+            primaryKey: meta.primaryKey,
+            location,
+            hookIndex: idx,
+          });
+          break;
+        }
+        case "useLinks": {
+          primitives.links.push({
+            sourceType: meta.sourceObjectType ?? "Unknown",
+            linkName: meta.linkName ?? "Unknown",
+            location,
+            hookIndex: idx,
+          });
+          break;
+        }
+        case "useOsdkAggregation": {
+          primitives.aggregations.push({
+            type: meta.objectType ?? "Unknown",
+            whereClause: meta.where as Record<string, unknown> | undefined,
+            aggregate: meta.aggregate as Record<string, unknown> | undefined,
+            location,
+            hookIndex: idx,
+            querySignature: `aggregation:${meta.objectType ?? "unknown"}`,
+          });
+          break;
+        }
+        case "useOsdkFunction": {
+          primitives.queries.push({
+            signature: `function:${meta.objectType ?? "unknown"}`,
+            hookType: meta.hookType,
+            location,
+            hookIndex: idx,
+          });
+          break;
+        }
+        case "useObjectSet": {
+          primitives.objectSets.push({
+            type: meta.objectType ?? "Unknown",
+            whereClause: meta.where as Record<string, unknown> | undefined,
+            orderBy: meta.orderBy as
+              | Record<string, "asc" | "desc">
+              | undefined,
+            pageSize: meta.pageSize,
+            location,
+            hookIndex: idx,
+            querySignature: `objectSet:${meta.objectType ?? "unknown"}`,
+          });
+          break;
         }
       }
     }
 
     return primitives;
-  }
-
-  private deduplicateConsumers(
-    consumers: OsdkConsumerFiber[],
-  ): OsdkConsumerFiber[] {
-    const seen = new Set<string>();
-    return consumers.filter(consumer => {
-      const key = consumer.sourceBasedId
-        || `${consumer.componentName}-${consumer.fiber.type?.toString() || ""}`;
-      if (seen.has(key)) return false;
-      seen.add(key);
-      return true;
-    });
-  }
-
-  private metadataSignature(meta: OsdkHookMetadata): string {
-    switch (meta.hookType) {
-      case "useOsdkAction":
-        return `useOsdkAction:${meta.actionName || "unknown"}`;
-      case "useOsdkObjects":
-        return `useOsdkObjects:${meta.objectType || "unknown"}:${
-          JSON.stringify(meta.where ?? {})
-        }:${JSON.stringify(meta.orderBy ?? {})}`;
-      case "useOsdkObject":
-        return `useOsdkObject:${meta.objectType || "unknown"}:${
-          meta.primaryKey ?? ""
-        }`;
-      case "useLinks":
-        return `useLinks:${meta.sourceObjectType || "unknown"}:${
-          meta.linkName || "unknown"
-        }`;
-      case "useOsdkAggregation":
-        return `useOsdkAggregation:${meta.objectType || "unknown"}:${
-          JSON.stringify(meta.where ?? {})
-        }:${JSON.stringify(meta.aggregate ?? {})}`;
-      default:
-        return `unknown:${JSON.stringify(meta)}`;
-    }
-  }
-
-  private addMetadataToPrimitives(
-    primitives: DiscoveredPrimitives,
-    meta: OsdkHookMetadata,
-    location: string,
-    hookIndex: number,
-  ): void {
-    switch (meta.hookType) {
-      case "useOsdkAction":
-        primitives.actions.push({
-          name: meta.actionName || "Unknown Action",
-          signature: `action:${meta.actionName || "unknown"}`,
-          location,
-          hookIndex,
-        });
-        break;
-      case "useOsdkObjects":
-        primitives.objectSets.push({
-          type: meta.objectType || "Unknown",
-          whereClause: meta.where as Record<string, unknown> | undefined,
-          orderBy: meta.orderBy as Record<string, "asc" | "desc"> | undefined,
-          pageSize: meta.pageSize,
-          location,
-          hookIndex,
-          querySignature: `useOsdkObjects:${meta.objectType || "unknown"}:${
-            JSON.stringify(meta.where ?? {})
-          }:${JSON.stringify(meta.orderBy ?? {})}`,
-        });
-        break;
-      case "useOsdkObject":
-        primitives.objects.push({
-          type: meta.objectType || "Unknown",
-          primaryKey: meta.primaryKey,
-          location,
-          hookIndex,
-        });
-        break;
-      case "useLinks":
-        primitives.links.push({
-          sourceType: meta.sourceObjectType || "Unknown",
-          linkName: meta.linkName || "Unknown",
-          location,
-          hookIndex,
-        });
-        break;
-      case "useOsdkAggregation":
-        primitives.aggregations.push({
-          type: meta.objectType || "Unknown",
-          whereClause: meta.where as Record<string, unknown> | undefined,
-          aggregate: meta.aggregate as Record<string, unknown> | undefined,
-          location,
-          hookIndex,
-          querySignature: `useOsdkAggregation:${meta.objectType || "unknown"}:${
-            JSON.stringify(meta.where ?? {})
-          }:${JSON.stringify(meta.aggregate ?? {})}`,
-        });
-        break;
-    }
   }
 
   private emptyPrimitivesWithName(componentName: string): DiscoveredPrimitives {
@@ -262,7 +223,19 @@ export class ComponentPrimitiveDiscovery {
   }
 
   hasOsdkHooks(fiber: Fiber): boolean {
-    return hasOsdkConsumerInTree(fiber);
+    let current: Fiber | null = fiber;
+    let depth = 0;
+    while (current && depth < MAX_ANCESTOR_WALK_DEPTH) {
+      if (typeof current.type === "function") {
+        const metadata = extractOsdkMetadataFromFiber(current);
+        if (metadata.length > 0) {
+          return true;
+        }
+      }
+      current = current.return;
+      depth++;
+    }
+    return false;
   }
 
   getPrimitiveCount(fiber: Fiber): number {
@@ -272,6 +245,7 @@ export class ComponentPrimitiveDiscovery {
       + primitives.objectSets.length
       + primitives.objects.length
       + primitives.links.length
+      + primitives.queries.length
       + primitives.aggregations.length
     );
   }

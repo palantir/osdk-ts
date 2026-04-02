@@ -33,7 +33,9 @@ export interface OsdkHookMetadata {
     | "useOsdkObjects"
     | "useOsdkObject"
     | "useLinks"
-    | "useOsdkAggregation";
+    | "useOsdkAggregation"
+    | "useOsdkFunction"
+    | "useObjectSet";
   readonly actionName?: string;
   readonly objectType?: string;
   readonly primaryKey?: string;
@@ -306,6 +308,20 @@ function isRefStorage(value: unknown): value is { current: unknown } {
   );
 }
 
+const VALID_HOOK_TYPES = new Set<OsdkHookMetadata["hookType"]>([
+  "useOsdkAction",
+  "useOsdkObjects",
+  "useOsdkObject",
+  "useLinks",
+  "useOsdkAggregation",
+  "useOsdkFunction",
+  "useObjectSet",
+]);
+
+function isValidHookType(value: string): value is OsdkHookMetadata["hookType"] {
+  return VALID_HOOK_TYPES.has(value as OsdkHookMetadata["hookType"]);
+}
+
 export function extractOsdkMetadataFromFiber(fiber: Fiber): OsdkHookMetadata[] {
   return safeFiberOperation(
     () => {
@@ -315,8 +331,64 @@ export function extractOsdkMetadataFromFiber(fiber: Fiber): OsdkHookMetadata[] {
       while (current) {
         const state = current.memoizedState;
 
+        // useRef check: state is { current: OsdkHookMetadata }
         if (isRefStorage(state) && isOsdkHookMetadata(state.current)) {
           results.push(state.current);
+        }
+
+        // useMemo check: state is [memoizedValue, deps]
+        // The memoizedValue is the makeExternalStore return object
+        // which has OSDK_HOOK_METADATA as a non-enumerable symbol property
+        if (
+          Array.isArray(state)
+          && state[0] != null
+          && typeof state[0] === "object"
+        ) {
+          const memoValue = state[0];
+          if (OSDK_HOOK_METADATA in memoValue) {
+            // `in` validates the key exists; TS can't narrow symbol keys
+            const meta =
+              (memoValue as Record<symbol, unknown>)[OSDK_HOOK_METADATA];
+            if (
+              meta != null
+              && typeof meta === "object"
+              && "hookType" in meta
+              && typeof (meta as { hookType: unknown }).hookType === "string"
+              && isValidHookType(
+                (meta as { hookType: string }).hookType,
+              )
+            ) {
+              const validated = meta as {
+                hookType: OsdkHookMetadata["hookType"];
+                [key: string]: unknown;
+              };
+              results.push({
+                [OSDK_HOOK_METADATA]: true,
+                hookType: validated.hookType,
+                actionName: typeof validated.actionName === "string"
+                  ? validated.actionName
+                  : undefined,
+                objectType: typeof validated.objectType === "string"
+                  ? validated.objectType
+                  : undefined,
+                primaryKey: typeof validated.primaryKey === "string"
+                  ? validated.primaryKey
+                  : undefined,
+                sourceObjectType: typeof validated.sourceObjectType === "string"
+                  ? validated.sourceObjectType
+                  : undefined,
+                linkName: typeof validated.linkName === "string"
+                  ? validated.linkName
+                  : undefined,
+                where: validated.where,
+                orderBy: validated.orderBy,
+                pageSize: typeof validated.pageSize === "number"
+                  ? validated.pageSize
+                  : undefined,
+                aggregate: validated.aggregate,
+              });
+            }
+          }
         }
 
         current = current.next;

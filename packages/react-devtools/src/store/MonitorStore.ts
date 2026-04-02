@@ -96,7 +96,9 @@ export class MonitorStore {
     this.linkTraversalTracker = new LinkTraversalTracker();
     this.propertyAccessTracker = new PropertyAccessTracker();
     this.eventTimeline = new EventTimeline(10000);
-    this.primitiveDiscovery = new ComponentPrimitiveDiscovery();
+    this.primitiveDiscovery = new ComponentPrimitiveDiscovery(
+      this.componentRegistry,
+    );
     this.clickToInspect = createClickToInspect({
       onSelect: (component) => {
         const fiber = component.fiber.deref();
