@@ -223,6 +223,10 @@ export function useObjectSet<
     previousCompletedPayloadRef.current = undefined;
   }
 
+  // canonicalizeOptions stabilizes complex query identity options.
+  // pageSize is a view level concern (handled per subscriber, not part of
+  // query identity), and pivotTo is a plain string that does not need
+  // stabilization.
   const canonOptions = observableClient.canonicalizeOptions({
     where: otherOptions.where,
     withProperties: otherOptions.withProperties,
@@ -337,11 +341,13 @@ export function useObjectSet<
       isOptimistic: payload?.isOptimistic ?? false,
       fetchMore: payload?.hasMore ? payload.fetchMore : undefined,
       hasMore: payload?.hasMore ?? false,
-      objectSet: payload?.objectSet as ObjectSet<Q, RDPs> ?? baseObjectSet,
+      objectSet: isPayloadCompleted(payload)
+        ? payload?.objectSet as ObjectSet<Q, RDPs>
+        : undefined,
       totalCount: lastLoaded?.totalCount,
       refetch,
     };
-  }, [payload, baseObjectSet, refetch, enabled]);
+  }, [payload, refetch, enabled]);
 }
 
 function isPayloadCompleted<
