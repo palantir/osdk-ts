@@ -266,6 +266,10 @@ export function useShapeListInternal<
   const { observableClient, client } = React.useContext(OsdkContext2);
   const objectType = shape.__baseType;
   const canonWhere = observableClient.canonicalizeWhereClause(where ?? {});
+  const stableCanonWhere = React.useMemo(
+    () => canonWhere,
+    [JSON.stringify(canonWhere)],
+  );
 
   const stableOrderBy = useStableValue(orderBy);
   const stableLinkConfig = useStableValue(linkConfig) as Partial<
@@ -290,7 +294,7 @@ export function useShapeListInternal<
           observableClient.observeList(
             {
               type: objectType,
-              where: canonWhere,
+              where: stableCanonWhere,
               pageSize,
               orderBy: stableOrderBy,
               dedupeInterval: dedupeIntervalMs ?? 2_000,
@@ -310,7 +314,7 @@ export function useShapeListInternal<
       enabled,
       observableClient,
       objectType,
-      canonWhere,
+      stableCanonWhere,
       pageSize,
       stableOrderBy,
       dedupeIntervalMs,
