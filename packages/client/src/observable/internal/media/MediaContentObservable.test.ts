@@ -210,7 +210,7 @@ describe("MediaContentObservable", () => {
       expect(p).toBeDefined();
     });
 
-    const fullPayload = observer.payloads.findLast(
+    const fullPayload = [...observer.payloads].reverse().find(
       p => p.status === "loaded" && !p.isPreview,
     );
     expect(fullPayload?.content).toBe(fullBlob);
