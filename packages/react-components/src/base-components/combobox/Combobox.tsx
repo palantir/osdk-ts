@@ -20,12 +20,13 @@ import {
   type ComboboxChipRemoveProps,
   type ComboboxClearProps,
   type ComboboxInputProps,
+  type ComboboxItemIndicatorProps,
   type ComboboxItemProps,
   type ComboboxListProps,
   type ComboboxPopupProps,
   type ComboboxPositionerProps,
 } from "@base-ui/react/combobox";
-import { Cross, Search } from "@blueprintjs/icons";
+import { Cross, Search, Tick } from "@blueprintjs/icons";
 import classnames from "classnames";
 import React from "react";
 import styles from "./Combobox.module.css";
@@ -247,6 +248,28 @@ function ComboboxList({
   );
 }
 
+interface ComboboxItemIndicatorComponentProps
+  extends Omit<ComboboxItemIndicatorProps, "className">
+{
+  className?: string;
+}
+
+function ComboboxItemIndicator({
+  className,
+  children,
+  ...rest
+}: ComboboxItemIndicatorComponentProps): React.ReactElement {
+  return (
+    <BaseUICombobox.ItemIndicator
+      className={classnames(styles.osdkComboboxItemIndicator, className)}
+      keepMounted={true}
+      {...rest}
+    >
+      {children ?? <Tick size={16} />}
+    </BaseUICombobox.ItemIndicator>
+  );
+}
+
 export const Combobox: {
   Root: typeof BaseUICombobox.Root;
   SearchInput: typeof ComboboxSearchInput;
@@ -256,6 +279,7 @@ export const Combobox: {
   Popup: typeof ComboboxPopup;
   List: typeof ComboboxList;
   Item: typeof ComboboxItem;
+  ItemIndicator: typeof ComboboxItemIndicator;
   Chips: typeof ComboboxChips;
   Chip: typeof ComboboxChip;
   ChipRemove: typeof ComboboxChipRemove;
@@ -271,6 +295,7 @@ export const Combobox: {
   Popup: ComboboxPopup,
   List: ComboboxList,
   Item: ComboboxItem,
+  ItemIndicator: ComboboxItemIndicator,
   Chips: ComboboxChips,
   Chip: ComboboxChip,
   ChipRemove: ComboboxChipRemove,

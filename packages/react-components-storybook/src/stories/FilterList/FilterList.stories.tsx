@@ -88,11 +88,21 @@ const locationCityFilter: FilterDefinitionUnion<Employee> = {
   filterState: { type: "EXACT_MATCH", values: [] },
 } as FilterDefinitionUnion<Employee>;
 
+const jobTitleMultiSelectFilter: FilterDefinitionUnion<Employee> = {
+  type: "PROPERTY",
+  id: "jobTitle-multi",
+  key: "jobTitle",
+  label: "Job Title",
+  filterComponent: "MULTI_SELECT",
+  filterState: { type: "SELECT", selectedValues: [] },
+} as FilterDefinitionUnion<Employee>;
+
 const sharedFilterDefinitions: FilterDefinitionUnion<Employee>[] = [
   departmentFilter,
   teamFilter,
   fullNameFilter,
   startDateFilter,
+  jobTitleMultiSelectFilter,
   employeeNumberFilter,
   locationCityFilter,
 ];

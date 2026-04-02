@@ -54,6 +54,8 @@
     calc(var(--osdk-surface-spacing) * 1.5);
   --osdk-filter-header-reset-border: var(--osdk-surface-border-width) solid
     var(--osdk-intent-primary-rest);
+  --osdk-filter-header-reset-border-disabled: var(--osdk-surface-border-width)
+    solid var(--osdk-typography-color-muted);
   --osdk-filter-header-reset-border-radius: var(--osdk-surface-border-radius);
   --osdk-filter-header-collapse-icon-size: calc(
     var(--osdk-surface-spacing) * 1.5
@@ -227,6 +229,9 @@
   --osdk-filter-range-histogram-padding-bottom: calc(
     var(--osdk-surface-spacing) * 1
   );
+  --osdk-filter-range-histogram-padding-inline: calc(
+    var(--osdk-surface-spacing) * 2
+  );
   --osdk-filter-range-histogram-height: calc(var(--osdk-surface-spacing) * 15);
   --osdk-filter-range-histogram-bar-gap: calc(
     var(--osdk-surface-spacing) * 0.5
@@ -277,7 +282,7 @@
   /* Null Value Wrapper Tokens */
   --osdk-filter-null-wrapper-gap: var(--osdk-surface-spacing);
   --osdk-filter-null-row-padding: calc(var(--osdk-surface-spacing) * 1) 0;
-  --osdk-filter-null-row-border-top: var(--osdk-surface-border);
+  --osdk-filter-null-row-border-top: none;
   --osdk-filter-null-label-gap: var(--osdk-surface-spacing);
   --osdk-filter-null-label-font-family: var(--osdk-typography-family-default);
   --osdk-filter-null-label-font-size: var(--osdk-typography-size-body-medium);
@@ -326,8 +331,7 @@
   /* Filter Item */
   --osdk-filter-item-border-radius: var(--osdk-surface-border-radius);
   --osdk-filter-item-padding: calc(var(--osdk-surface-spacing) * 3)
-    calc(var(--osdk-surface-spacing) * 2) 0
-    calc(var(--osdk-surface-spacing) * 2);
+    calc(var(--osdk-surface-spacing) * 3);
 
   /* Checkbox Row Hover */
   --osdk-filter-checkbox-row-bg-hover: var(
