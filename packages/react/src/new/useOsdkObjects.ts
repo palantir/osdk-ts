@@ -328,12 +328,10 @@ export function useOsdkObjects<
     && options.shape !== undefined;
 
   const modeRef = React.useRef(hasShape);
-  if (process.env.NODE_ENV !== "production") {
-    if (modeRef.current !== hasShape) {
-      throw new Error(
-        "useOsdkObjects: cannot switch between shape/non-shape mode",
-      );
-    }
+  if (modeRef.current !== hasShape) {
+    throw new Error(
+      "useOsdkObjects: cannot switch between shape/non-shape mode",
+    );
   }
 
   if (hasShape) {
