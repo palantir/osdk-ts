@@ -90,6 +90,7 @@ export function createMediaContentObservable(
 
   let fetchGeneration = 0;
   let disposed = false;
+  let urlCacheKey: string | undefined;
 
   function emit(): void {
     const snapshot = { ...state };
@@ -164,6 +165,7 @@ export function createMediaContentObservable(
       return;
     }
 
+    urlCacheKey = previewBlobKey;
     updateState({
       content: previewBlob,
       url: previewUrl,
@@ -175,6 +177,10 @@ export function createMediaContentObservable(
       lastUpdated: Date.now(),
       error: undefined,
     });
+
+    // Remove base cache entry so the full-res fetch hits the network
+    // (fetchContent caches under the base key regardless of preview option)
+    deps.blobManager.remove(cacheKey);
 
     const fullBlob = await deps.fetchContent(source, { preview: false });
     if (gen !== fetchGeneration || disposed) {
@@ -194,6 +200,7 @@ export function createMediaContentObservable(
     // Release preview blob URL
     deps.blobManager.releaseBlobUrl(previewBlobKey);
 
+    urlCacheKey = cacheKey;
     updateState({
       content: fullBlob,
       url: fullUrl,
@@ -222,6 +229,7 @@ export function createMediaContentObservable(
       return;
     }
 
+    urlCacheKey = cacheKey;
     updateState({
       content: blob,
       url,
@@ -243,6 +251,7 @@ export function createMediaContentObservable(
     const cachedBlob = deps.blobManager.get(cacheKey);
     if (cachedBlob) {
       const url = deps.blobManager.createBlobUrl(cacheKey);
+      urlCacheKey = cacheKey;
 
       if (
         staleTime > 0 && state.lastUpdated > 0
@@ -318,8 +327,8 @@ export function createMediaContentObservable(
     fetchGeneration++;
     observers.clear();
 
-    if (state.url) {
-      deps.blobManager.releaseBlobUrl(cacheKey);
+    if (state.url && urlCacheKey) {
+      deps.blobManager.releaseBlobUrl(urlCacheKey);
     }
     if (state.previewUrl && state.previewUrl !== state.url) {
       deps.blobManager.releaseBlobUrl(`${cacheKey}:preview`);
