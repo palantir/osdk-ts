@@ -37,7 +37,7 @@
     background: var(--osdk-file-picker-trigger-bg-hover);
   }
 
-  &:has(:focus-visible) {
+  &:focus-visible {
     border-color: var(--osdk-file-picker-trigger-border-color-focus);
     outline: var(--osdk-file-picker-trigger-focus-width) solid
       var(--osdk-file-picker-trigger-focus-color);
@@ -105,32 +105,27 @@
   }
 }
 
-/* Browse button (right section) */
+/* Browse label (right section) */
 .osdkFilePickerBrowse {
   flex-shrink: 0;
   align-self: stretch;
+  display: flex;
+  align-items: center;
   padding: var(--osdk-file-picker-browse-padding);
-  border: none;
   border-left: var(--osdk-file-picker-browse-border-left);
   background: var(--osdk-file-picker-browse-bg);
   color: var(--osdk-file-picker-browse-color);
   font-family: var(--osdk-file-picker-trigger-font-family);
   font-size: var(--osdk-file-picker-trigger-font-size);
-  cursor: pointer;
+  pointer-events: none;
   transition: background-color var(--osdk-input-transition-duration)
     var(--osdk-input-transition-ease);
+}
 
-  &:hover {
-    background-color: var(--osdk-file-picker-browse-bg-hover);
-  }
+.osdkFilePickerTrigger:hover .osdkFilePickerBrowse {
+  background-color: var(--osdk-file-picker-browse-bg-hover);
+}
 
-  &:active {
-    background-color: var(--osdk-file-picker-browse-bg-active);
-  }
-
-  &:focus-visible {
-    outline: var(--osdk-file-picker-trigger-focus-width) solid
-      var(--osdk-file-picker-trigger-focus-color);
-    outline-offset: var(--osdk-file-picker-trigger-focus-offset);
-  }
+.osdkFilePickerTrigger:active .osdkFilePickerBrowse {
+  background-color: var(--osdk-file-picker-browse-bg-active);
 }

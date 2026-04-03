@@ -49,11 +49,10 @@ describe("FilePickerField", () => {
       expect(screen.getByText("photo.png, doc.pdf")).toBeDefined();
     });
 
-    it("renders a Browse button", () => {
+    it("renders Browse text", () => {
       render(<FilePickerField value={null} />);
 
-      expect(screen.getByRole("button", { name: "Browse files" }))
-        .toBeDefined();
+      expect(screen.getByText("Browse")).toBeDefined();
     });
   });
 

@@ -49,6 +49,8 @@ export const FilePickerField: React.FC<FilePickerProps> = memo(
     accept,
     // TODO: implement maxSize validation in a follow-up
     maxSize: _maxSize,
+    text = "No file chosen",
+    buttonText = "Browse",
   }: FilePickerProps): React.ReactElement {
     const inputRef = useRef<HTMLInputElement>(null);
 
@@ -76,6 +78,7 @@ export const FilePickerField: React.FC<FilePickerProps> = memo(
     const handleClear = useCallback(
       (event: React.MouseEvent) => {
         event.stopPropagation();
+        event.preventDefault();
         onChange?.(null);
         if (inputRef.current != null) {
           inputRef.current.value = "";
@@ -84,12 +87,36 @@ export const FilePickerField: React.FC<FilePickerProps> = memo(
       [onChange],
     );
 
+    const handleKeyDown = useCallback(
+      (event: React.KeyboardEvent) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          openFileDialog();
+        }
+      },
+      [openFileDialog],
+    );
+
     const displayText = getDisplayText(value);
     const hasValue = displayText != null;
     const acceptString = normalizeAccept(accept);
+    const textId = id != null ? `${id}-text` : undefined;
 
     return (
-      <div className={styles.osdkFilePickerTrigger}>
+      // The entire component is a single tab stop (tabIndex={0}).
+      // Text and Browse are <span>s (not buttons) so they don't create
+      // extra tab stops — clicks on them bubble up to the container's onClick.
+      // The clear button is the only inner interactive element and gets its
+      // own tab stop so keyboard users can clear the selection.
+      <div
+        id={id}
+        className={styles.osdkFilePickerTrigger}
+        tabIndex={0}
+        role="button"
+        aria-labelledby={textId}
+        onClick={openFileDialog}
+        onKeyDown={handleKeyDown}
+      >
         <input
           ref={inputRef}
           type="file"
@@ -100,18 +127,18 @@ export const FilePickerField: React.FC<FilePickerProps> = memo(
           aria-hidden="true"
           tabIndex={-1}
         />
-        <Button
-          id={id}
+        <span
+          id={textId}
           className={classnames(
             styles.osdkFilePickerText,
             !hasValue && styles.osdkFilePickerPlaceholder,
           )}
-          onClick={openFileDialog}
-          aria-label="Select file"
         >
-          {displayText ?? "No file chosen"}
-        </Button>
+          {displayText ?? text}
+        </span>
         {hasValue && (
+          // stopPropagation + preventDefault prevent the click from
+          // bubbling to the container's onClick which opens the file dialog.
           <Button
             className={styles.osdkFilePickerClear}
             onClick={handleClear}
@@ -120,13 +147,7 @@ export const FilePickerField: React.FC<FilePickerProps> = memo(
             <Cross />
           </Button>
         )}
-        <Button
-          className={styles.osdkFilePickerBrowse}
-          onClick={openFileDialog}
-          aria-label="Browse files"
-        >
-          Browse
-        </Button>
+        <span className={styles.osdkFilePickerBrowse}>{buttonText}</span>
       </div>
     );
   },

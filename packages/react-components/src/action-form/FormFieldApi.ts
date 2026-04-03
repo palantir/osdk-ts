@@ -236,6 +236,20 @@ export interface FilePickerProps extends BaseFormFieldProps<File | File[]> {
    * Maximum file size in bytes
    */
   maxSize?: number;
+
+  /**
+   * The text displayed when no file is selected.
+   *
+   * @default "No file chosen"
+   */
+  text?: string;
+
+  /**
+   * The text displayed on the browse button.
+   *
+   * @default "Browse"
+   */
+  buttonText?: string;
 }
 
 /**
