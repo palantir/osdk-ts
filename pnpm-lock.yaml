@@ -4638,6 +4638,9 @@ importers:
       '@osdk/api':
         specifier: workspace:*
         version: link:../api
+      '@osdk/cbac-components':
+        specifier: workspace:*
+        version: link:../cbac-components
       '@osdk/client':
         specifier: workspace:*
         version: link:../client

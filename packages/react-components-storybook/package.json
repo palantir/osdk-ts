@@ -22,6 +22,7 @@
   },
   "devDependencies": {
     "@osdk/api": "workspace:*",
+    "@osdk/cbac-components": "workspace:*",
     "@osdk/client": "workspace:*",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@osdk/react": "workspace:*",
