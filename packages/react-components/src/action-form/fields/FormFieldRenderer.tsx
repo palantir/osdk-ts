@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { ObjectSet, ObjectTypeDefinition } from "@osdk/api";
 import React, { memo } from "react";
 import { FormField } from "../FormField.js";
 import type { RendererFieldDefinition } from "../FormFieldApi.js";
@@ -21,6 +22,7 @@ import { CustomField } from "./CustomField.js";
 import { DatetimePickerField } from "./DatetimePickerField.js";
 import { DropdownField } from "./DropdownField.js";
 import { NumberInputField } from "./NumberInputField.js";
+import { ObjectSetField } from "./ObjectSetField.js";
 import { RadioButtonsField } from "./RadioButtonsField.js";
 import { TextAreaField } from "./TextAreaField.js";
 import { TextInputField } from "./TextInputField.js";
@@ -129,8 +131,17 @@ function renderFieldComponent(
           {...fieldDefinition.fieldComponentProps}
         />
       );
-    case "FILE_PICKER":
     case "OBJECT_SET":
+      return (
+        <ObjectSetField
+          id={fieldDefinition.fieldKey}
+          value={value != null
+            ? value as ObjectSet<ObjectTypeDefinition>
+            : null}
+          {...fieldDefinition.fieldComponentProps}
+        />
+      );
+    case "FILE_PICKER":
       return <div>Unsupported field type: {fieldDefinition.fieldComponent}
       </div>;
     default:
