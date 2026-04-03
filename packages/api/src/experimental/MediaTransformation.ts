@@ -211,8 +211,8 @@ export type OcrOutputFormat =
  * @experimental
  */
 export interface OcrLanguageOrScriptOptions {
-  "$language": { $language: string };
-  "$script": { $script: string };
+  "$language": string;
+  "$script": string;
 }
 
 export namespace OcrLanguageOrScript {
@@ -296,7 +296,7 @@ export interface VlmPreprocessingConfigOptions {
     $transformationConfig: DocumentTextExtractionConfig;
     $cropConfig?: { $tablePrompt: string };
   };
-  "$extractText": { $extractText: DocumentTextExtractionConfig };
+  "$extractText": DocumentTextExtractionConfig;
 }
 
 export namespace VlmPreprocessingConfig {

@@ -66,7 +66,7 @@ async function runCreateMediaReferenceTest(
     __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference,
   )
     .createMediaReference({
-      data: data,
+      data,
       fileName: "test15.png",
       objectType: MnayanOsdkMediaObject,
       // @ts-expect-error
@@ -143,15 +143,76 @@ async function runMediaQueryTest(): Promise<void> {
   console.log((await output.fetchMetadata()).sizeBytes);
 }
 
+// ─── Example transformations ──────────────────────────────────────────────────
+// One canonical example per structural category, exercising the new sub-types.
+
+const imageResize: MediaTransformation = {
+  $image: {
+    $encoding: "png",
+    $operations: [{ $resize: { $width: 50, $height: 50 } }],
+  },
+};
+
+const videoTranscode: MediaTransformation = {
+  $video: { $encoding: "mp4", $operation: { $transcode: {} } },
+};
+
+const ocrTransformation: MediaTransformation = {
+  $imageToText: {
+    $operation: {
+      $ocr: {
+        $parameters: {
+          $outputFormat: { $text: {} },
+          $languages: [{ $language: "EN" }],
+        },
+      },
+    },
+  },
+};
+
+const transcribeAudio: MediaTransformation = {
+  $audioToText: {
+    $operation: {
+      $transcribe: {
+        $language: "EN",
+        $outputFormat: { $plainTextNoSegmentData: { $addTimestamps: true } },
+        $performanceMode: "MORE_ECONOMICAL",
+      },
+    },
+  },
+};
+
+const extractDocText: MediaTransformation = {
+  $documentToText: {
+    $operation: {
+      $extractLayoutAwareTextV2: {
+        $pageRange: { $startPageInclusive: 0, $endPageExclusive: 5 },
+        $config: {
+          $format: "MARKDOWN",
+          $mode: "AUTO",
+          $languages: [{ $language: "EN" }],
+        },
+      },
+    },
+  },
+};
+
+const slicePdf: MediaTransformation = {
+  $documentToDocument: {
+    $encoding: "pdf",
+    $operation: {
+      $slicePdfRange: {
+        $startPageInclusive: 0,
+        $endPageExclusive: 10,
+      },
+    },
+  },
+};
+
 async function runTransformAndWaitTest(
   mediaReference: MediaReference,
 ): Promise<void> {
-  const transformation: MediaTransformation = {
-    $image: {
-      $encoding: "png",
-      $operations: [{ $resize: { $width: 50, $height: 50 } }],
-    },
-  };
+  const transformation = imageResize;
 
   console.log("Input transformation:", JSON.stringify(transformation, null, 2));
   const result = await client(

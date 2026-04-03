@@ -253,10 +253,10 @@ function convertOcrOutputFormat(fmt: OcrOutputFormat) {
 
 function convertOcrLanguageOrScript(item: OcrLanguageOrScript) {
   if ("$language" in item && item.$language != null) {
-    return { type: "language" as const, language: item.$language.$language };
+    return { type: "language" as const, language: item.$language };
   } else {
-    const script = (item as OcrLanguageOrScript & { $script: {} }).$script;
-    return { type: "script" as const, script: script.$script };
+    const script = (item as OcrLanguageOrScript & { $script: string }).$script;
+    return { type: "script" as const, script };
   }
 }
 
@@ -327,11 +327,12 @@ function convertVlmPreprocessingConfig(config: VlmPreprocessingConfig) {
       },
     };
   } else {
-    const ext =
-      (config as VlmPreprocessingConfig & { $extractText: {} }).$extractText;
+    const ext = (config as VlmPreprocessingConfig & {
+      $extractText: DocumentTextExtractionConfig;
+    }).$extractText;
     return {
       type: "extractText" as const,
-      extractText: convertDocumentTextExtractionConfig(ext.$extractText),
+      extractText: convertDocumentTextExtractionConfig(ext),
     };
   }
 }
