@@ -24,7 +24,7 @@ import {
 
 // eslint-disable-next-line @typescript-eslint/consistent-type-imports
 type OldSharedClientContext = import("@osdk/shared.client").SharedClientContext;
-const USER_AGENT_HEADER = "Fetch-User-Agent";
+export const USER_AGENT_HEADER = "Fetch-User-Agent";
 
 export function createSharedClientContext(
   baseUrl: string,
@@ -51,7 +51,8 @@ export function createSharedClientContext(
 
       const customUserAgent = customHeaders
         ? Object.entries(customHeaders)
-          .find(([k]) => k.toLowerCase() === USER_AGENT_HEADER.toLowerCase())?.[1]
+          .find(([k]) => k.toLowerCase() === USER_AGENT_HEADER.toLowerCase())
+          ?.[1]
         : undefined;
 
       headers.set(
