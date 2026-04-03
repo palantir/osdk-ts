@@ -479,7 +479,10 @@ export class Store {
         if (query) {
           return query.rdpConfig;
         }
-      } else if (cacheKey.type === "mediaMetadata") {
+      } else if (
+        cacheKey.type === "mediaMetadata"
+        || cacheKey.type === "mediaContent"
+      ) {
         return undefined;
       }
       // Links and other types would also be at LIST_RDP_IDX
@@ -501,7 +504,10 @@ export class Store {
         return cacheKey.otherKeys[LIST_API_NAME_IDX];
       } else if (cacheKey.type === "aggregation") {
         return cacheKey.otherKeys[AGGREGATION_API_NAME_IDX];
-      } else if (cacheKey.type === "mediaMetadata") {
+      } else if (
+        cacheKey.type === "mediaMetadata"
+        || cacheKey.type === "mediaContent"
+      ) {
         return cacheKey.otherKeys[0];
       }
       // Links would have apiName at a different position
@@ -570,6 +576,7 @@ export class Store {
     for (const cacheKey of this.layers.truth.keys()) {
       if (
         cacheKey.type !== "mediaMetadata"
+        && cacheKey.type !== "mediaContent"
         && changes
         && changes.modified.has(cacheKey)
       ) {
