@@ -28,6 +28,7 @@
 
   /* Clear button */
   --osdk-file-picker-clear-size: calc(var(--osdk-surface-spacing) * 4);
+  --osdk-file-picker-clear-margin: 0 calc(var(--osdk-surface-spacing) * 1);
   --osdk-file-picker-clear-color: var(--osdk-typography-color-muted);
   --osdk-file-picker-clear-color-hover: var(
     --osdk-typography-color-default-rest

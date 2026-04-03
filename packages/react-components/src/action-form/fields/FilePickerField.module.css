@@ -86,6 +86,7 @@
   flex-shrink: 0;
   width: var(--osdk-file-picker-clear-size);
   height: var(--osdk-file-picker-clear-size);
+  margin: var(--osdk-file-picker-clear-margin);
   padding: 0;
   border: none;
   background: none;
