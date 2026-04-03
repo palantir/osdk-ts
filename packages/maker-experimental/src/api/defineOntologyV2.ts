@@ -15,7 +15,7 @@
  */
 
 import type { OntologyIrV2 } from "@osdk/client.unstable";
-import type { ObjectType } from "@osdk/maker";
+import type { LinkType, ObjectType } from "@osdk/maker";
 import {
   getOntologyDefinition,
   initializeOntologyState,
@@ -30,6 +30,7 @@ export interface OntologyV2Result {
   ontologyIr: OntologyIrV2;
   shapes: BlockShapes;
   backingDatasourceApiNames: string[];
+  backingDatasourceLinkApiNames: string[];
 }
 
 export async function defineOntologyV2(
@@ -73,5 +74,22 @@ export async function defineOntologyV2(
     )
     .map(([apiName]) => apiName);
 
-  return { ontologyIr: ontDef, shapes, backingDatasourceApiNames };
+  const backingDatasourceLinkApiNames = Object.entries(
+    ontologyDefinition[OntologyEntityTypeEnum.LINK_TYPE],
+  )
+    .filter(([_, link]) => {
+      const lt = link as LinkType;
+      return "many" in lt
+        && !("intermediaryObjectType" in lt)
+        && (lt as LinkType & { includeEmptyBackingDatasource?: boolean })
+            .includeEmptyBackingDatasource === true;
+    })
+    .map(([apiName]) => apiName);
+
+  return {
+    ontologyIr: ontDef,
+    shapes,
+    backingDatasourceApiNames,
+    backingDatasourceLinkApiNames,
+  };
 }
