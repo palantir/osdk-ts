@@ -1,9 +1,12 @@
+import type { ObjectSet, ObjectTypeDefinition } from "@osdk/api";
 import { BaseForm } from "@osdk/react-components/experimental";
 import type {
   BaseFormFieldProps,
   RendererFieldDefinition,
 } from "@osdk/react-components/experimental";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
+import { $ } from "../../foundryClient.js";
+import { Employee } from "../../generatedNoCheck2/index.js";
 import "./form-page.css";
 
 function RatingSlider({ id, value, onChange }: BaseFormFieldProps<unknown>) {
@@ -149,8 +152,8 @@ const fieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
     fieldKey: "rating",
     fieldComponent: "CUSTOM",
     label: "Rating",
-    defaultValue: 5,
     fieldComponentProps: {
+      defaultValue: 5,
       customRenderer: RatingSlider,
     },
   },
@@ -165,12 +168,32 @@ export function FormPage() {
     setSubmittedState(formState);
   }, []);
 
+  const employeeObjectSet = useMemo(
+    () => $(Employee) as ObjectSet<ObjectTypeDefinition>,
+    [],
+  );
+
+  const allFieldDefinitions = useMemo(
+    (): ReadonlyArray<RendererFieldDefinition> => [
+      ...fieldDefinitions,
+      {
+        fieldKey: "team",
+        fieldComponent: "OBJECT_SET",
+        label: "Team Members",
+        fieldComponentProps: {
+          value: employeeObjectSet,
+        },
+      },
+    ],
+    [employeeObjectSet],
+  );
+
   return (
     <div style={{ maxWidth: 480, width: "100%", textAlign: "left" }}>
       <div className="formCard">
         <BaseForm
           formTitle="Demo Base Form"
-          fieldDefinitions={fieldDefinitions}
+          fieldDefinitions={allFieldDefinitions}
           onSubmit={handleSubmit}
         />
       </div>

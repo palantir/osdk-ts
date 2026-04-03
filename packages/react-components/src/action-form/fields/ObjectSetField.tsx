@@ -14,31 +14,27 @@
  * limitations under the License.
  */
 
-import {
-  getIconPaths,
-  type IconName,
-  IconSize,
-  SVGIconContainer,
-} from "@blueprintjs/icons";
-import type {
-  ObjectMetadata,
-  ObjectSet,
-  ObjectTypeDefinition,
-} from "@osdk/api";
+import type { ObjectSet, ObjectTypeDefinition } from "@osdk/api";
 import { useOsdkMetadata } from "@osdk/react";
 import { useObjectSet } from "@osdk/react/experimental";
 import classnames from "classnames";
-import React, { useMemo } from "react";
+import React from "react";
+import {
+  BlueprintIcon,
+  type Icon,
+} from "../../base-components/icon/BlueprintIcon.js";
+import { SkeletonBar } from "../../base-components/skeleton/SkeletonBar.js";
+import { Tooltip } from "../../base-components/tooltip/Tooltip.js";
 import type { ObjectSetFieldProps } from "../FormFieldApi.js";
 import styles from "./ObjectSetField.module.css";
 
-const ICON_SIZE = 16;
 const PAGE_SIZE = 1;
+const CUBE_ICON: Icon = { name: "cube" };
 
-export function ObjectSetField({
+export function ObjectSetField<T extends ObjectTypeDefinition>({
   id,
   value,
-}: ObjectSetFieldProps<ObjectTypeDefinition>): React.ReactElement {
+}: ObjectSetFieldProps<T>): React.ReactElement {
   if (value == null) {
     return (
       <div
@@ -61,51 +57,126 @@ function ObjectSetFieldContent({
   objectSet,
 }: {
   id?: string;
-  objectSet: ObjectSet<ObjectTypeDefinition>;
+  objectSet: ObjectSet;
 }): React.ReactElement {
   const objectTypeDef = objectSet.$objectSetInternals.def;
-  const { metadata } = useOsdkMetadata(objectTypeDef);
-  const { totalCount, isLoading } = useObjectSet(objectSet, {
+  const {
+    metadata,
+    loading: metadataLoading,
+    error: metadataError,
+  } = useOsdkMetadata(objectTypeDef);
+  const {
+    totalCount,
+    isLoading: objectSetLoading,
+    error: objectSetError,
+  } = useObjectSet(objectSet, {
     pageSize: PAGE_SIZE,
   });
 
-  const icon = metadata?.type === "object"
-    ? (metadata as ObjectMetadata).icon
-    : undefined;
+  if (metadataError != null) {
+    return (
+      <ObjectSetFieldWrapper id={id}>
+        <ObjectSetIconError error={metadataError} />
+        <ObjectSetLabel
+          displayName={undefined}
+          totalCount={totalCount}
+          error={objectSetError}
+          isLoading={objectSetLoading}
+        />
+      </ObjectSetFieldWrapper>
+    );
+  }
 
-  const label = metadata?.type === "object"
-    ? (metadata as ObjectMetadata).pluralDisplayName
-    : metadata?.displayName;
-
-  const displayText = isLoading
-    ? "Loading\u2026"
-    : `${totalCount ?? "\u2013"} ${label ?? "objects"}`;
+  if (metadataLoading) {
+    return (
+      <ObjectSetFieldWrapper id={id}>
+        <SkeletonBar className={styles.osdkObjectSetIconSkeleton} />
+        <ObjectSetLabelSkeleton />
+      </ObjectSetFieldWrapper>
+    );
+  }
 
   return (
+    <ObjectSetFieldWrapper id={id}>
+      <BlueprintIcon
+        icon={metadata != null && "icon" in metadata
+          ? ((metadata.icon as Icon) ?? CUBE_ICON)
+          : CUBE_ICON}
+      />
+      <ObjectSetLabel
+        displayName={metadata != null && "pluralDisplayName" in metadata
+          ? metadata.pluralDisplayName
+          : metadata?.displayName}
+        totalCount={totalCount}
+        error={objectSetError}
+        isLoading={objectSetLoading}
+      />
+    </ObjectSetFieldWrapper>
+  );
+}
+
+function ObjectSetFieldWrapper({
+  id,
+  children,
+}: {
+  id?: string;
+  children: React.ReactNode;
+}) {
+  return (
     <div id={id} className={styles.osdkObjectSetField}>
-      {icon != null ? <BlueprintIcon icon={icon} /> : null}
-      <span>{displayText}</span>
+      {children}
     </div>
   );
 }
 
-function BlueprintIcon({
-  icon,
+function ObjectSetLabel({
+  displayName,
+  totalCount,
+  isLoading,
+  error,
 }: {
-  icon: NonNullable<ObjectMetadata["icon"]>;
+  displayName: string | undefined;
+  totalCount: string | undefined;
+  isLoading: boolean;
+  error: Error | undefined;
 }): React.ReactElement {
-  const paths = useMemo(
-    () => getIconPaths(icon.name as IconName, IconSize.STANDARD),
-    [icon.name],
-  );
+  if (isLoading) {
+    return <ObjectSetLabelSkeleton />;
+  }
 
+  if (error != null) {
+    return (
+      <span className={styles.osdkObjectSetFieldError} role="status">
+        Failed to load object set
+      </span>
+    );
+  }
+
+  const label = displayName ?? "objects";
+
+  return <span>{`${totalCount ?? "\u2013"} ${label}`}</span>;
+}
+
+function ObjectSetLabelSkeleton(): React.ReactElement {
+  return <SkeletonBar className={styles.osdkObjectSetLabelSkeleton} />;
+}
+
+function ObjectSetIconError({ error }: { error: string }) {
   return (
-    <SVGIconContainer
-      iconName={icon.name as IconName}
-      size={ICON_SIZE}
-      color={icon.color}
-    >
-      {paths.map((d, i) => <path key={i} d={d} fillRule="evenodd" />)}
-    </SVGIconContainer>
+    <Tooltip.Provider>
+      <Tooltip.Root>
+        <Tooltip.Trigger render={<span />}>
+          <BlueprintIcon icon={CUBE_ICON} />
+        </Tooltip.Trigger>
+        <Tooltip.Portal>
+          <Tooltip.Positioner sideOffset={4}>
+            <Tooltip.Popup>
+              {error}
+              <Tooltip.Arrow />
+            </Tooltip.Popup>
+          </Tooltip.Positioner>
+        </Tooltip.Portal>
+      </Tooltip.Root>
+    </Tooltip.Provider>
   );
 }

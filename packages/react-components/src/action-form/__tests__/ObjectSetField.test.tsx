@@ -74,8 +74,11 @@ describe("ObjectSetField", () => {
         objectSet: createMockObjectSet(),
       });
 
-      render(<ObjectSetField value={createMockObjectSet()} />);
-      expect(screen.getByText("Loading\u2026")).toBeDefined();
+      const { container } = render(
+        <ObjectSetField value={createMockObjectSet()} />,
+      );
+      const skeletons = container.querySelectorAll("[aria-hidden='true']");
+      expect(skeletons.length).toBeGreaterThan(0);
     });
 
     it("renders count and plural display name from metadata", () => {

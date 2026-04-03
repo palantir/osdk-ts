@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import type { ObjectSet, ObjectTypeDefinition } from "@osdk/api";
 import React, { memo } from "react";
 import { FormField } from "../FormField.js";
 import type { RendererFieldDefinition } from "../FormFieldApi.js";
@@ -135,9 +134,6 @@ function renderFieldComponent(
       return (
         <ObjectSetField
           id={fieldDefinition.fieldKey}
-          value={value != null
-            ? value as ObjectSet<ObjectTypeDefinition>
-            : null}
           {...fieldDefinition.fieldComponentProps}
         />
       );
