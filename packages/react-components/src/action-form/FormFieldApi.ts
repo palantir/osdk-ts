@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,9 +39,8 @@ export interface FormFieldDefinition<
 
   /**
    * Display label for the field
-   * If not provided, the form field will not show any label.
    */
-  label?: string;
+  label: string;
 
   /**
    * Default value of the field
@@ -99,15 +98,15 @@ export interface FormFieldDefinition<
 
   /**
    * The component props for the form field
-   * Excludes runtime props (key, onChange) which are managed by ActionForm
+   * Excludes runtime props (value, onChange) which are managed by ActionForm
    */
-  fieldComponentProps?: Omit<
+  fieldComponentProps: Omit<
     FormFieldPropsByType[
       ValidFormFieldForPropertyType<
         FieldDescriptorType<Q, K>
       >
     ],
-    "key" | "onChange"
+    "value" | "onChange"
   >;
 }
 
@@ -294,21 +293,29 @@ export interface TextInputFieldProps extends
 /**
  * Number input field props
  */
-export interface NumberInputFieldProps extends
-  BaseFormFieldProps<number>,
-  Pick<
-    React.InputHTMLAttributes<HTMLInputElement>,
-    /**
-     * If provided, this will be added to the field validation
-     */
-    | "min"
-    /**
-     * If provided, this will be added to the field validation
-     */
-    | "max"
-    | "step"
-  >
-{}
+export interface NumberInputFieldProps extends BaseFormFieldProps<number> {
+  /**
+   * Minimum allowed value.
+   */
+  min?: number;
+
+  /**
+   * Maximum allowed value.
+   */
+  max?: number;
+
+  /**
+   * Step increment for the input. Used by the stepper buttons and ArrowUp/ArrowDown keyboard stepping.
+   *
+   * @default 1
+   */
+  step?: number;
+
+  /**
+   * Placeholder text shown when the input is empty.
+   */
+  placeholder?: string;
+}
 
 /**
  * Radio buttons field props
@@ -463,13 +470,13 @@ export type RendererFieldDefinition = {
     fieldKey: string;
     fieldComponent: K;
     fieldType?: FieldType;
-    label?: string;
+    label: string;
     defaultValue?: unknown;
     isRequired?: boolean;
     placeholder?: string;
     helperText?: string;
     helperTextPlacement?: "bottom" | "tooltip";
-    fieldComponentProps?: Omit<FormFieldPropsByType[K], "value" | "onChange">;
+    fieldComponentProps: Omit<FormFieldPropsByType[K], "value" | "onChange">;
   };
 }[FieldComponent];
 

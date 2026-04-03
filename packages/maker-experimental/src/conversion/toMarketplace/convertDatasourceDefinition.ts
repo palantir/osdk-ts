@@ -112,7 +112,7 @@ export function convertDatasourceDefinition(
 
     case "derived":
       // Use generateLocator for dataset datasources
-      const derivedDatasetLocator = ridGenerator.generateLocator(
+      const derivedDatasetLocator = ridGenerator.generateDatasetLocator(
         objectType.apiName,
         getColumnNames(properties),
       );
@@ -133,7 +133,7 @@ export function convertDatasourceDefinition(
     case "dataset":
     default:
       // Use generateLocator for dataset datasources
-      const datasetLocator = ridGenerator.generateLocator(
+      const datasetLocator = ridGenerator.generateDatasetLocator(
         objectType.apiName,
         getColumnNames(properties),
       );

@@ -159,6 +159,7 @@ describe("ActionForm", () => {
           fieldKey: "name",
           label: "Full Name",
           fieldComponent: "TEXT_INPUT",
+          fieldComponentProps: {},
         },
       ];
 

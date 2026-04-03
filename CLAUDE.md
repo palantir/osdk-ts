@@ -50,3 +50,11 @@
 ## Code Maintenance Best Practices
 
 - Do not fix diagnostic warnings in old code
+
+## Updating Platform SDKs
+
+- `@osdk/foundry.*` and `@osdk/internal.foundry.*` versions are pinned in the `foundry-platform-typescript` catalog in `pnpm-workspace.yaml`
+- To bump: update the catalog versions, run `pnpm install`, then fix type errors iteratively with `pnpm turbo typecheck` until all packages pass
+- Common breakages: new variants in `QueryDataType` discriminated unions (find exhaustive switches via `const _: never`), new required fields on types like `QueryTypeV2` in test stubs, and fields becoming optional
+- After fixing types, update snapshots with `pnpm vitest run --update` in affected packages
+- Validate with `pnpm check` before finalizing the PR

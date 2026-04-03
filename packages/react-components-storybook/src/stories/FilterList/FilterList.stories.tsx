@@ -48,8 +48,8 @@ const teamFilter: FilterDefinitionUnion<Employee> = {
   id: "team",
   key: "team",
   label: "Team",
-  filterComponent: "CHECKBOX_LIST",
-  filterState: { type: "SELECT", selectedValues: [] },
+  filterComponent: "LISTOGRAM",
+  filterState: { type: "EXACT_MATCH", values: [] },
 } as FilterDefinitionUnion<Employee>;
 
 const fullNameFilter: FilterDefinitionUnion<Employee> = {
@@ -84,7 +84,16 @@ const locationCityFilter: FilterDefinitionUnion<Employee> = {
   id: "locationCity",
   key: "locationCity",
   label: "Location City",
-  filterComponent: "CHECKBOX_LIST",
+  filterComponent: "LISTOGRAM",
+  filterState: { type: "EXACT_MATCH", values: [] },
+} as FilterDefinitionUnion<Employee>;
+
+const jobTitleMultiSelectFilter: FilterDefinitionUnion<Employee> = {
+  type: "PROPERTY",
+  id: "jobTitle-multi",
+  key: "jobTitle",
+  label: "Job Title",
+  filterComponent: "MULTI_SELECT",
   filterState: { type: "SELECT", selectedValues: [] },
 } as FilterDefinitionUnion<Employee>;
 
@@ -93,6 +102,7 @@ const sharedFilterDefinitions: FilterDefinitionUnion<Employee>[] = [
   teamFilter,
   fullNameFilter,
   startDateFilter,
+  jobTitleMultiSelectFilter,
   employeeNumberFilter,
   locationCityFilter,
 ];
@@ -127,7 +137,6 @@ const meta: Meta<EmployeeFilterListProps> = {
   component: FilterList,
   args: {
     title: "Filters",
-    filterOperator: "and",
     enableSorting: false,
     showResetButton: false,
     showActiveFilterCount: false,
@@ -169,12 +178,6 @@ const meta: Meta<EmployeeFilterListProps> = {
         "Called when the filter clause changes. Required in controlled mode.",
       control: false,
       table: { category: "Events" },
-    },
-    filterOperator: {
-      description: "Logical operator to join multiple filters",
-      control: "select",
-      options: ["and", "or"],
-      table: { defaultValue: { summary: "and" } },
     },
     onFilterStateChanged: {
       description: "Called when an individual filter's state changes",
@@ -222,6 +225,16 @@ const meta: Meta<EmployeeFilterListProps> = {
       control: false,
       table: { category: "Events" },
     },
+    addFilterMode: {
+      description:
+        "Controls how filter add/remove is managed. \"uncontrolled\" manages visibility internally; \"controlled\" leaves it to the consumer.",
+      control: "select",
+      options: ["controlled", "uncontrolled"],
+      table: {
+        category: "Advanced",
+        defaultValue: { summary: "\"uncontrolled\"" },
+      },
+    },
     renderAddFilterButton: {
       description: "Custom render function for the add filter button.",
       control: false,
@@ -251,7 +264,7 @@ export const Default: Story = {
   objectSet={client(Employee)}
   filterDefinitions={[
     { type: "PROPERTY", key: "department", label: "Department", filterComponent: "LISTOGRAM", filterState: { type: "EXACT_MATCH", values: [] } },
-    { type: "PROPERTY", key: "locationCity", label: "Location City", filterComponent: "CHECKBOX_LIST", filterState: { type: "SELECT", selectedValues: [] } },
+    { type: "PROPERTY", key: "locationCity", label: "Location City", filterComponent: "LISTOGRAM", filterState: { type: "EXACT_MATCH", values: [] } },
   ]}
 />`,
       },
@@ -321,11 +334,11 @@ export const AddFilterMode: Story = {
       source: {
         code: `const filterDefinitions = [
   { type: "PROPERTY", key: "department", label: "Department", filterComponent: "LISTOGRAM", filterState: { type: "EXACT_MATCH", values: [] } },
-  { type: "PROPERTY", key: "team", label: "Team", filterComponent: "CHECKBOX_LIST", filterState: { type: "SELECT", selectedValues: [] } },
+  { type: "PROPERTY", key: "team", label: "Team", filterComponent: "LISTOGRAM", filterState: { type: "EXACT_MATCH", values: [] } },
   { type: "PROPERTY", key: "fullName", label: "Full Name", filterComponent: "CONTAINS_TEXT", filterState: { type: "CONTAINS_TEXT" }, isVisible: false },
   { type: "PROPERTY", key: "firstFullTimeStartDate", label: "Start Date", filterComponent: "DATE_RANGE", filterState: { type: "DATE_RANGE" }, isVisible: false },
   { type: "PROPERTY", key: "employeeNumber", label: "Employee Number", filterComponent: "NUMBER_RANGE", filterState: { type: "NUMBER_RANGE" }, isVisible: false },
-  { type: "PROPERTY", key: "locationCity", label: "Location City", filterComponent: "CHECKBOX_LIST", filterState: { type: "SELECT", selectedValues: [] }, isVisible: false },
+  { type: "PROPERTY", key: "locationCity", label: "Location City", filterComponent: "LISTOGRAM", filterState: { type: "EXACT_MATCH", values: [] }, isVisible: false },
 ];
 
 <FilterList
@@ -581,7 +594,7 @@ export const KeywordSearch: Story = {
         code: `const filterDefinitions = [
   { type: "KEYWORD_SEARCH", properties: ["fullName", "department", "jobTitle", "locationCity"], label: "Search" },
   { type: "PROPERTY", key: "department", label: "Department", filterComponent: "LISTOGRAM", filterState: { type: "EXACT_MATCH", values: [] } },
-  { type: "PROPERTY", key: "locationCity", label: "Location City", filterComponent: "CHECKBOX_LIST", filterState: { type: "SELECT", selectedValues: [] } },
+  { type: "PROPERTY", key: "locationCity", label: "Location City", filterComponent: "LISTOGRAM", filterState: { type: "EXACT_MATCH", values: [] } },
 ];
 
 <FilterList objectSet={client(Employee)} filterDefinitions={filterDefinitions} />`,
@@ -793,64 +806,61 @@ const filterDefinitions = [
   render: (args) => <WithListogramDisplayModesStory {...args} />,
 };
 
-function FilterOperatorOrStory(args: Partial<EmployeeFilterListProps>) {
+function WithCheckboxStory(args: Partial<EmployeeFilterListProps>) {
   const objectSet = useEmployeeObjectSet();
-  const [filterClause, setFilterClause] = useState<
-    WhereClause<Employee> | undefined
-  >(undefined);
-
   const filterDefinitions = useMemo(
     (): FilterDefinitionUnion<Employee>[] => [
-      departmentFilter,
-      teamFilter,
-      locationCityFilter,
+      {
+        type: "PROPERTY",
+        id: "department-checkbox",
+        key: "department",
+        label: "Department",
+        filterComponent: "LISTOGRAM",
+        filterState: { type: "EXACT_MATCH", values: [] },
+      } as FilterDefinitionUnion<Employee>,
+      {
+        type: "PROPERTY",
+        id: "team-checkbox",
+        key: "team",
+        label: "Team",
+        filterComponent: "LISTOGRAM",
+        filterState: { type: "EXACT_MATCH", values: [] },
+      } as FilterDefinitionUnion<Employee>,
     ],
     [],
   );
 
   return (
-    <div style={FLEX_ROW_STYLE}>
-      <div style={SIDEBAR_STYLE}>
-        <FilterList
-          objectSet={objectSet}
-          filterDefinitions={filterDefinitions}
-          filterClause={filterClause}
-          onFilterClauseChanged={setFilterClause}
-          {...args}
-        />
-      </div>
-      <div style={FLEX_FILL_STYLE}>
-        <strong>Filter Clause (OR mode):</strong>
-        <pre style={PRE_STYLE}>
-          {filterClause
-            ? JSON.stringify(filterClause, null, 2)
-            : "(no active filters)"}
-        </pre>
-      </div>
+    <div style={SIDEBAR_STYLE}>
+      <FilterList
+        objectSet={objectSet}
+        filterDefinitions={filterDefinitions}
+        {...args}
+      />
     </div>
   );
 }
 
-export const FilterOperatorOr: Story = {
-  args: {
-    filterOperator: "or",
-  },
+export const WithCheckbox: Story = {
   parameters: {
     docs: {
+      description: {
+        story: "Listogram rows always include a checkbox for multi-select. "
+          + "Selecting values checks the checkbox and highlights the row. "
+          + "Use the exclude toggle (three-dot menu) to invert selections.",
+      },
       source: {
-        code: `const [filterClause, setFilterClause] = useState(undefined);
-
-<FilterList
+        code: `<FilterList
   objectSet={client(Employee)}
-  filterDefinitions={filterDefinitions}
-  filterOperator="or"
-  filterClause={filterClause}
-  onFilterClauseChanged={setFilterClause}
+  filterDefinitions={[
+    { type: "PROPERTY", key: "department", label: "Department", filterComponent: "LISTOGRAM", filterState: { type: "EXACT_MATCH", values: [] } },
+    { type: "PROPERTY", key: "team", label: "Team", filterComponent: "LISTOGRAM", filterState: { type: "EXACT_MATCH", values: [] } },
+  ]}
 />`,
       },
     },
   },
-  render: (args) => <FilterOperatorOrStory {...args} />,
+  render: (args) => <WithCheckboxStory {...args} />,
 };
 
 function CombinedWithObjectTableStory(

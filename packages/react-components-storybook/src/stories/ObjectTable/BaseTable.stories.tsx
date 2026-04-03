@@ -78,7 +78,7 @@ const mockData: Person[] = [
 ];
 
 const meta: Meta<BaseTableProps<Person>> = {
-  title: "Components/BaseTable",
+  title: "Components/ObjectTable/Building Blocks/BaseTable",
   component: BaseTable,
   parameters: {
     msw: {

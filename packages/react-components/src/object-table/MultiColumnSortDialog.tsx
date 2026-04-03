@@ -15,7 +15,6 @@
  */
 
 import { Button } from "@base-ui/react/button";
-import { Menu } from "@base-ui/react/menu";
 import {
   Add,
   CaretDown,
@@ -29,7 +28,7 @@ import classNames from "classnames";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { ActionButton } from "../base-components/action-button/ActionButton.js";
 import { Dialog } from "../base-components/dialog/Dialog.js";
-import { SearchBar } from "../base-components/search-bar/SearchBar.js";
+import { SearchableMenu } from "../base-components/searchable-menu/SearchableMenu.js";
 import styles from "./MultiColumnSortDialog.module.css";
 import { type SortableItem, SortableItemsList } from "./SortableItemsList.js";
 import type { ColumnOption } from "./utils/types.js";
@@ -56,8 +55,6 @@ export function MultiColumnSortDialog({
   const [selectedSortColumns, setSelectedSortColumns] = useState<
     SortColumnItem[]
   >([]);
-  const [menuSearchQuery, setMenuSearchQuery] = useState("");
-
   // Initialize selected sort columns from current sorting
   useEffect(() => {
     if (isOpen) {
@@ -122,28 +119,20 @@ export function MultiColumnSortDialog({
     [columnOptions, selectedSortColumns],
   );
 
-  const filteredAvailableColumns = useMemo(() => {
-    const query = menuSearchQuery.toLowerCase().trim();
-    if (!query) {
-      return availableColumns;
-    }
-    return availableColumns.filter((col) =>
-      col.name.toLowerCase().includes(query)
-    );
-  }, [availableColumns, menuSearchQuery]);
-
-  const handleMenuSearchChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      setMenuSearchQuery(event.target.value);
-    },
-    [],
+  const searchableMenuItems = useMemo(
+    () => availableColumns.map((col) => ({ key: col.id, label: col.name })),
+    [availableColumns],
   );
 
-  const handleMenuOpenChange = useCallback((open: boolean) => {
-    if (open) {
-      setMenuSearchQuery("");
-    }
-  }, []);
+  const handleMenuItemSelected = useCallback(
+    (key: string) => {
+      const column = availableColumns.find((col) => col.id === key);
+      if (column) {
+        handleAddColumn(column);
+      }
+    },
+    [availableColumns, handleAddColumn],
+  );
 
   const sortableItems: SortableItem[] = useMemo(() => {
     return selectedSortColumns.map((item) => ({
@@ -185,13 +174,6 @@ export function MultiColumnSortDialog({
     </>
   ), [handleApply, onClose]);
 
-  const handleKeyDown = useCallback(
-    (event: React.KeyboardEvent<HTMLInputElement>) => {
-      event.stopPropagation();
-    },
-    [],
-  );
-
   return (
     <Dialog
       isOpen={isOpen}
@@ -206,45 +188,23 @@ export function MultiColumnSortDialog({
           onRemove={handleRemoveSortColumn}
           className={styles.sortableList}
         />
-        <Menu.Root onOpenChange={handleMenuOpenChange}>
-          <Menu.Trigger
-            className={styles.addColumnButton}
-            disabled={availableColumns.length === 0}
-            aria-label="Add column to sort"
-          >
-            <Add className={styles.addIcon} />
-            <span className={styles.addColumnText}>
-              Add Column to Sort
-            </span>
-            <CaretDown />
-          </Menu.Trigger>
-          <Menu.Portal>
-            <Menu.Positioner className={styles.menuPositioner} sideOffset={4}>
-              <Menu.Popup className={styles.dropdownMenu}>
-                <SearchBar
-                  value={menuSearchQuery}
-                  onChange={handleMenuSearchChange}
-                  placeholder="Search columns"
-                  aria-label="Search columns to sort"
-                  className={styles.menuSearchContainer}
-                  onKeyDown={handleKeyDown}
-                />
-                {filteredAvailableColumns.map((column) => (
-                  <AvailableColumnMenuItem
-                    key={column.id}
-                    column={column}
-                    onAddColumn={handleAddColumn}
-                  />
-                ))}
-                {filteredAvailableColumns.length === 0 && (
-                  <div className={styles.menuEmptyState}>
-                    No matching columns
-                  </div>
-                )}
-              </Menu.Popup>
-            </Menu.Positioner>
-          </Menu.Portal>
-        </Menu.Root>
+        <SearchableMenu
+          items={searchableMenuItems}
+          onItemSelected={handleMenuItemSelected}
+          trigger={
+            <>
+              <Add className={styles.addIcon} />
+              <span className={styles.addColumnText}>
+                Add Column to Sort
+              </span>
+              <CaretDown />
+            </>
+          }
+          triggerClassName={styles.addColumnButton}
+          disabled={availableColumns.length === 0}
+          searchPlaceholder="Search columns"
+          emptyMessage="No matching columns"
+        />
       </div>
     </Dialog>
   );
@@ -255,20 +215,3 @@ const DialogTitle = (
     <Cog />Sort on Multiple Columns
   </div>
 );
-function AvailableColumnMenuItem(
-  { column, onAddColumn }: {
-    column: ColumnOption;
-    onAddColumn: (column: ColumnOption) => void;
-  },
-) {
-  const onClick = useCallback(() => onAddColumn(column), [onAddColumn, column]);
-
-  return (
-    <Menu.Item
-      className={classNames(styles.dropdownItem, styles.truncate)}
-      onClick={onClick}
-    >
-      {column.name}
-    </Menu.Item>
-  );
-}

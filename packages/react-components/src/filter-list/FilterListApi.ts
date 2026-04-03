@@ -100,19 +100,11 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
 
   /**
    * Called when the filter clause changes.
-   * The filters are joined by the selected filterOperator.
    * Required in controlled mode.
    *
    * @param newClause The updated filter clause
    */
   onFilterClauseChanged?: (newClause: WhereClause<Q>) => void;
-
-  /**
-   * The logical operator to join multiple filters
-   *
-   * @default "and"
-   */
-  filterOperator?: "and" | "or";
 
   /**
    * Called when filter state changes

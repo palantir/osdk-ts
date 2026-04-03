@@ -20,7 +20,7 @@ import type {
   PDFFindController,
 } from "pdfjs-dist/web/pdf_viewer.mjs";
 import type { RefObject } from "react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   EMPTY_STRING,
   FIND_EVENT,
@@ -152,7 +152,7 @@ export function usePdfViewerSearch(
     };
   }, [eventBusRef, findControllerRef, document]);
 
-  return {
+  return useMemo((): UsePdfViewerSearchResult => ({
     query,
     totalMatches,
     currentMatchIndex,
@@ -162,5 +162,15 @@ export function usePdfViewerSearch(
     prevMatch,
     openSearch,
     closeSearch,
-  };
+  }), [
+    query,
+    totalMatches,
+    currentMatchIndex,
+    isSearchOpen,
+    setQuery,
+    nextMatch,
+    prevMatch,
+    openSearch,
+    closeSearch,
+  ]);
 }

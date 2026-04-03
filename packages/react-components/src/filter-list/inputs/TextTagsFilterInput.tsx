@@ -55,6 +55,14 @@ function TextTagsFilterInputInner<Q extends ObjectTypeDefinition>({
   );
   const isExcluding = filterState?.isExcluding ?? false;
 
+  const handleClearAll = useCallback(() => {
+    onFilterStateChanged({
+      type: "EXACT_MATCH",
+      values: [],
+      isExcluding,
+    });
+  }, [onFilterStateChanged, isExcluding]);
+
   const handleChange = useCallback(
     (values: string[]) => {
       onFilterStateChanged({
@@ -84,6 +92,7 @@ function TextTagsFilterInputInner<Q extends ObjectTypeDefinition>({
       filterState={filterState}
       onFilterStateChanged={onFilterStateChanged}
       totalValueCount={data.length}
+      onClearAll={handleClearAll}
     >
       <TextTagsInput
         suggestions={data}

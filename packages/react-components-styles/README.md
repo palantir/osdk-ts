@@ -45,6 +45,36 @@ Import the CSS files in your application's entry point:
 }
 ```
 
+## How CSS Layers Work
+
+OSDK uses CSS [`@layer`](https://developer.mozilla.org/en-US/docs/Web/CSS/@layer) to make theming predictable. If you're new to `@layer`, here's what you need to know:
+
+**What is `@layer`?** CSS `@layer` lets you group styles into named layers and control the order in which they apply. When two styles target the same element, the style in the _later_ layer always wins — regardless of how specific the selector is. This is what makes the theming system maintainable.
+
+**OSDK's layer hierarchy:**
+
+| Layer | Purpose |
+| --- | --- |
+| `osdk.tokens` | Design tokens (colors, spacing, typography) — the defaults |
+| `osdk.components` | Component structural styles (layout, borders, sizing) |
+| `user.theme` | Your custom overrides (you define this) |
+
+The `@layer` declaration at the top of your CSS file sets this order:
+
+```css
+@layer osdk.tokens, osdk.components, user.theme;
+```
+
+Because `user.theme` is declared last, your overrides always win over OSDK defaults — no need to fight specificity.
+
+**When styles conflict, CSS resolves them in this order:**
+
+1. **Layer order** — Later layers always win (`user.theme` > `osdk.components` > `osdk.tokens`)
+2. **Selector specificity** — More specific selectors win _within the same layer_
+3. **Source order** — Later declarations win when specificity is equal
+
+This means you can override any OSDK token with a simple `:root` selector in your `user.theme` layer — it will always take priority, even if the OSDK layer uses a more specific selector internally.
+
 ## Understanding Token Scopes
 
 **OSDK Tokens (`--osdk-*`):**

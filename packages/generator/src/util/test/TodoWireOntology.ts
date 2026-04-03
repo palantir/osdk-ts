@@ -195,6 +195,7 @@ export const TodoWireOntology: WireOntologyDefinition = {
       },
       rid: "rid.query.1",
       version: "1.1.0",
+      typeReferences: {},
     },
     "returnsTodo": {
       apiName: "returnsTodo",
@@ -215,6 +216,7 @@ export const TodoWireOntology: WireOntologyDefinition = {
       },
       rid: "rid.query.2",
       version: "3.2.0",
+      typeReferences: {},
     },
   },
   interfaceTypes: {

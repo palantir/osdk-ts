@@ -1,5 +1,21 @@
 # @osdk/api
 
+## 2.8.0-beta.32
+
+## 2.8.0-beta.31
+
+## 2.8.0-beta.30
+
+### Minor Changes
+
+- 4ef6adc: Fix interface links off of objects
+
+## 2.8.0-beta.29
+
+### Minor Changes
+
+- 4a856cb: add shape builder and inline config converter
+
 ## 2.8.0-beta.28
 
 ### Minor Changes

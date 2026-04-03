@@ -73,6 +73,10 @@
   white-space: nowrap;
 }
 
+.label[data-excluding] {
+  text-decoration: line-through;
+}
+
 .bar {
   width: var(--osdk-filter-listogram-bar-width);
   flex-shrink: 0;
@@ -87,6 +91,7 @@
   height: 100%;
   width: 100%;
   background: var(--osdk-filter-listogram-row-bar-color, var(--osdk-filter-listogram-bar-color));
+  border-radius: var(--osdk-filter-listogram-bar-border-radius);
   transform-origin: left;
   transform: scaleX(var(--osdk-filter-listogram-bar-fill-scale, 0));
   transition: transform var(--osdk-filter-listogram-bar-fill-transition);
@@ -94,6 +99,32 @@
 
 .row[aria-pressed="true"] .barFill {
   background: var(--osdk-filter-listogram-row-bar-color, var(--osdk-filter-listogram-selected-color));
+}
+
+.viewAllButton {
+  display: flex;
+  align-items: center;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-family: var(--osdk-filter-listogram-label-font-family);
+  font-size: var(--osdk-filter-listogram-view-all-font-size);
+  color: var(--osdk-filter-listogram-view-all-color);
+  padding: var(--osdk-filter-listogram-row-padding);
+  text-align: left;
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  &:focus-visible {
+    outline: var(--osdk-filter-listogram-row-focus-outline);
+    outline-offset: var(--osdk-filter-listogram-row-focus-offset);
+  }
+}
+
+.checkbox {
+  display: flex;
 }
 
 .count {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,24 @@
  * limitations under the License.
  */
 
-.container {
-  display: flex;
-  flex-direction: column;
-  gap: var(--osdk-filter-checkbox-list-gap);
+import { InfoSign } from "@blueprintjs/icons";
+import classnames from "classnames";
+import React from "react";
+import styles from "./InfoBanner.module.css";
+
+export interface InfoBannerProps {
+  message: string;
+  className?: string;
 }
 
-.row {
-  display: flex;
-  align-items: center;
-  gap: var(--osdk-filter-checkbox-label-gap);
-  padding: var(--osdk-filter-checkbox-row-padding);
-}
-
-.flexBar {
-  flex: 1;
+export function InfoBanner({
+  message,
+  className,
+}: InfoBannerProps): React.ReactElement {
+  return (
+    <div className={classnames(styles.infoBanner, className)}>
+      <InfoSign className={styles.icon} size={14} />
+      <span>{message}</span>
+    </div>
+  );
 }

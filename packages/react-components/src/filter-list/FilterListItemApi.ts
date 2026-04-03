@@ -50,22 +50,19 @@ export type FilterComponentType =
   | "SINGLE_DATE"
   | "MULTI_DATE"
   | "TIMELINE"
-  | "CHECKBOX_LIST"
   | "TOGGLE";
 
 /**
  * Gets valid component types for a given property type
  */
 export type ValidComponentsForPropertyType<P extends WirePropertyTypes> =
-  P extends "boolean"
-    ? "LISTOGRAM" | "CHECKBOX_LIST" | "SINGLE_SELECT" | "TOGGLE"
+  P extends "boolean" ? "LISTOGRAM" | "SINGLE_SELECT" | "TOGGLE"
     : P extends "string" ?
         | "LISTOGRAM"
         | "TEXT_TAGS"
         | "CONTAINS_TEXT"
         | "SINGLE_SELECT"
         | "MULTI_SELECT"
-        | "CHECKBOX_LIST"
     : P extends "datetime" | "timestamp"
       ? "DATE_RANGE" | "SINGLE_DATE" | "MULTI_DATE" | "TIMELINE"
     : P extends
@@ -109,7 +106,6 @@ export interface FilterStateByComponentType {
   SINGLE_DATE: SelectFilterState<Date>;
   MULTI_DATE: SelectFilterState<Date>;
   TIMELINE: TimelineFilterState;
-  CHECKBOX_LIST: SelectFilterState<string>;
   TOGGLE: ToggleFilterState;
 }
 
@@ -190,7 +186,7 @@ export interface NumberRangeFilterState extends BaseFilterState {
 
 /**
  * Consolidated state type for select-based filters.
- * Used by SINGLE_SELECT, MULTI_SELECT, SINGLE_DATE, MULTI_DATE, and CHECKBOX_LIST.
+ * Used by SINGLE_SELECT, MULTI_SELECT, SINGLE_DATE, and MULTI_DATE.
  */
 export interface SelectFilterState<T = string | boolean | number | Date>
   extends BaseFilterState
@@ -215,8 +211,8 @@ export interface ToggleFilterState extends BaseFilterState {
  * A property filter definition specifies configuration for filtering on a single property
  *
  * The component type C must be compatible with the property type derived from the key.
- * For example, boolean properties can only use LISTOGRAM, CHECKBOX_LIST, or SINGLE_SELECT,
- * while string properties can use LISTOGRAM, TEXT_TAGS, CONTAINS_TEXT, SINGLE_SELECT, MULTI_SELECT, or CHECKBOX_LIST.
+ * For example, boolean properties can only use LISTOGRAM or SINGLE_SELECT,
+ * while string properties can use LISTOGRAM, TEXT_TAGS, CONTAINS_TEXT, SINGLE_SELECT, or MULTI_SELECT.
  */
 export interface PropertyFilterDefinition<
   Q extends ObjectTypeDefinition,
@@ -259,7 +255,7 @@ export interface PropertyFilterDefinition<
 
   /**
    * Maps filter values to colors for visual differentiation.
-   * Used by CHECKBOX_LIST (color dots) and LISTOGRAM (per-row bar colors).
+   * Used by LISTOGRAM (per-row bar colors).
    */
   colorMap?: Record<string, string>;
 
@@ -269,6 +265,10 @@ export interface PropertyFilterDefinition<
    */
   listogramConfig?: {
     displayMode?: "full" | "count" | "minimal";
+    /**
+     * Number of items shown before "View all" link appears
+     * @default 5
+     */
     maxVisibleItems?: number;
   };
 

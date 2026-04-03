@@ -17,7 +17,7 @@
 import { Menu } from "@base-ui/react/menu";
 import React, { memo, useCallback } from "react";
 import styles from "./ExcludeDropdown.module.css";
-import { CheckIcon, ChevronDownIcon } from "./FilterIcons.js";
+import { CheckIcon, ChevronDownIcon, ExcludeIcon } from "./FilterIcons.js";
 
 interface ExcludeDropdownProps {
   isExcluding: boolean;
@@ -48,7 +48,9 @@ function ExcludeDropdownInner({
         <Menu.Trigger
           className={styles.trigger}
           aria-label={label}
+          data-excluding={isExcluding || undefined}
         >
+          {isExcluding && <ExcludeIcon />}
           <span className={styles.triggerLabel}>
             {label}
           </span>

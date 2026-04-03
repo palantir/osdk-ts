@@ -249,6 +249,7 @@ describe("generatePerQueryDataFiles", () => {
                 rid: "rid.query.1",
                 version: "0",
                 apiName: "doThing",
+                typeReferences: {},
                 parameters: {
                   foo: {
                     dataType: { type: "string" },
