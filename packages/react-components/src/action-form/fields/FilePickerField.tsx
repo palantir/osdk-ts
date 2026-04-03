@@ -15,6 +15,7 @@
  */
 
 import { Button } from "@base-ui/react/button";
+import { Cross } from "@blueprintjs/icons";
 import classnames from "classnames";
 import React, { memo, useCallback, useRef } from "react";
 import type { FilePickerProps } from "../FormFieldApi.js";
@@ -92,7 +93,7 @@ export const FilePickerField: React.FC<FilePickerProps> = memo(
         <input
           ref={inputRef}
           type="file"
-          className={styles.hiddenInput}
+          className={styles.osdkFilePickerHiddenInput}
           multiple={isMulti}
           accept={acceptString}
           onChange={handleInputChange}
@@ -102,8 +103,8 @@ export const FilePickerField: React.FC<FilePickerProps> = memo(
         <Button
           id={id}
           className={classnames(
-            styles.fileText,
-            !hasValue && styles.placeholder,
+            styles.osdkFilePickerText,
+            !hasValue && styles.osdkFilePickerPlaceholder,
           )}
           onClick={openFileDialog}
           aria-label="Select file"
@@ -112,15 +113,15 @@ export const FilePickerField: React.FC<FilePickerProps> = memo(
         </Button>
         {hasValue && (
           <Button
-            className={styles.clearButton}
+            className={styles.osdkFilePickerClear}
             onClick={handleClear}
             aria-label="Clear selection"
           >
-            &#x2715;
+            <Cross />
           </Button>
         )}
         <Button
-          className={styles.browseButton}
+          className={styles.osdkFilePickerBrowse}
           onClick={openFileDialog}
           aria-label="Browse files"
         >
