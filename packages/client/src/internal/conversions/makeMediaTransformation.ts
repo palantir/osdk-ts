@@ -19,22 +19,32 @@ import type {
   AudioOperation,
   AudioToTextOperation,
   DicomToImageOperation,
+  DocumentTextExtractionConfig,
   DocumentToDocumentOperation,
   DocumentToImageOperation,
   DocumentToTextOperation,
   EmailToAttachmentOperation,
   EmailToTextOperation,
   ImageOperation,
+  ImageSpec,
   ImageToDocumentOperation,
   ImageToEmbeddingOperation,
   ImageToTextOperation,
+  LayoutAwareExtractionParameters,
+  LlmSpec,
   MediaTransformation,
+  OcrLanguageOrScript,
+  OcrOutputFormat,
+  OcrParameters,
+  PageRange,
   SpreadsheetToTextOperation,
+  TranscribeOutputFormat,
   VideoOperation,
   VideoToArchiveOperation,
   VideoToAudioOperation,
   VideoToImageOperation,
   VideoToTextOperation,
+  VlmPreprocessingConfig,
 } from "@osdk/api/unstable";
 import type { Transformation } from "@osdk/foundry.mediasets";
 
@@ -47,19 +57,19 @@ export function makeMediaTransformation(
       type: "image",
       encoding: { type: t.$encoding },
       operations: t.$operations.map(convertImageOperation),
-    } as Transformation;
+    };
   } else if ("$video" in transformation && transformation.$video != null) {
     const t = transformation.$video;
     return {
       type: "video",
       encoding: { type: t.$encoding },
       operation: convertVideoOperation(t.$operation),
-    } as Transformation;
+    };
   } else if ("$audio" in transformation && transformation.$audio != null) {
     return {
       type: "audio",
       operation: convertAudioOperation(transformation.$audio.$operation),
-    } as Transformation;
+    };
   } else if (
     "$emailToText" in transformation && transformation.$emailToText != null
   ) {
@@ -68,7 +78,7 @@ export function makeMediaTransformation(
       operation: convertEmailToTextOperation(
         transformation.$emailToText.$operation,
       ),
-    } as Transformation;
+    };
   } else if (
     "$spreadsheetToText" in transformation
     && transformation.$spreadsheetToText != null
@@ -78,7 +88,7 @@ export function makeMediaTransformation(
       operation: convertSpreadsheetToTextOperation(
         transformation.$spreadsheetToText.$operation,
       ),
-    } as Transformation;
+    };
   } else if (
     "$videoToAudio" in transformation && transformation.$videoToAudio != null
   ) {
@@ -87,7 +97,7 @@ export function makeMediaTransformation(
       type: "videoToAudio",
       encoding: convertAudioEncoding(t.$encoding),
       operation: convertVideoToAudioOperation(t.$operation),
-    } as Transformation;
+    };
   } else if (
     "$audioToText" in transformation && transformation.$audioToText != null
   ) {
@@ -96,7 +106,7 @@ export function makeMediaTransformation(
       operation: convertAudioToTextOperation(
         transformation.$audioToText.$operation,
       ),
-    } as Transformation;
+    };
   } else if (
     "$emailToAttachment" in transformation
     && transformation.$emailToAttachment != null
@@ -106,7 +116,7 @@ export function makeMediaTransformation(
       operation: convertEmailToAttachmentOperation(
         transformation.$emailToAttachment.$operation,
       ),
-    } as Transformation;
+    };
   } else if (
     "$videoToArchive" in transformation
     && transformation.$videoToArchive != null
@@ -116,7 +126,7 @@ export function makeMediaTransformation(
       type: "videoToArchive",
       encoding: { type: t.$encoding },
       operation: convertVideoToArchiveOperation(t.$operation),
-    } as Transformation;
+    };
   } else if (
     "$videoToText" in transformation && transformation.$videoToText != null
   ) {
@@ -125,7 +135,7 @@ export function makeMediaTransformation(
       operation: convertVideoToTextOperation(
         transformation.$videoToText.$operation,
       ),
-    } as Transformation;
+    };
   } else if (
     "$imageToText" in transformation && transformation.$imageToText != null
   ) {
@@ -134,7 +144,7 @@ export function makeMediaTransformation(
       operation: convertImageToTextOperation(
         transformation.$imageToText.$operation,
       ),
-    } as Transformation;
+    };
   } else if (
     "$videoToImage" in transformation && transformation.$videoToImage != null
   ) {
@@ -143,7 +153,7 @@ export function makeMediaTransformation(
       type: "videoToImage",
       encoding: { type: t.$encoding },
       operation: convertVideoToImageOperation(t.$operation),
-    } as Transformation;
+    };
   } else if (
     "$imageToDocument" in transformation
     && transformation.$imageToDocument != null
@@ -153,7 +163,7 @@ export function makeMediaTransformation(
       operation: convertImageToDocumentOperation(
         transformation.$imageToDocument.$operation,
       ),
-    } as Transformation;
+    };
   } else if (
     "$dicomToImage" in transformation && transformation.$dicomToImage != null
   ) {
@@ -162,7 +172,7 @@ export function makeMediaTransformation(
       type: "dicomToImage",
       encoding: { type: t.$encoding },
       operation: convertDicomToImageOperation(t.$operation),
-    } as Transformation;
+    };
   } else if (
     "$documentToDocument" in transformation
     && transformation.$documentToDocument != null
@@ -172,7 +182,7 @@ export function makeMediaTransformation(
       type: "documentToDocument",
       encoding: { type: t.$encoding },
       operation: convertDocumentToDocumentOperation(t.$operation),
-    } as Transformation;
+    };
   } else if (
     "$documentToImage" in transformation
     && transformation.$documentToImage != null
@@ -182,7 +192,7 @@ export function makeMediaTransformation(
       type: "documentToImage",
       encoding: { type: t.$encoding },
       operation: convertDocumentToImageOperation(t.$operation),
-    } as Transformation;
+    };
   } else if (
     "$imageToEmbedding" in transformation
     && transformation.$imageToEmbedding != null
@@ -192,37 +202,131 @@ export function makeMediaTransformation(
       operation: convertImageToEmbeddingOperation(
         transformation.$imageToEmbedding.$operation,
       ),
-    } as Transformation;
-  } else if (
-    "$documentToText" in transformation
-    && transformation.$documentToText != null
-  ) {
+    };
+  } else {
     return {
       type: "documentToText",
       operation: convertDocumentToTextOperation(
-        transformation.$documentToText.$operation,
+        (transformation as MediaTransformation & { $documentToText: {} })
+          .$documentToText.$operation,
       ),
-    } as Transformation;
+    };
   }
-
-  throw new Error("Unknown media transformation type");
 }
 
-// ─── Encoding converters ────────────────────────────────────────────────────
+// ─── Shared converters ──────────────────────────────────────────────────────
 
 function convertAudioEncoding(encoding: AudioEncoding) {
   if (typeof encoding === "string") {
     return { type: encoding };
   }
   return {
-    type: "wav" as const,
+    type: "wav",
     sampleRate: encoding.$wav.$sampleRate,
     audioChannelLayout: encoding.$wav.$audioChannelLayout != null
       ? {
-        type: "numberOfChannels" as const,
+        type: "numberOfChannels",
         numberOfChannels: encoding.$wav.$audioChannelLayout.$numberOfChannels,
       }
       : undefined,
+  };
+}
+
+function convertPageRange(range: PageRange) {
+  return {
+    startPageInclusive: range.$startPageInclusive,
+    endPageExclusive: range.$endPageExclusive,
+  };
+}
+
+function convertOcrOutputFormat(fmt: OcrOutputFormat) {
+  if ("$hocr" in fmt) {
+    return { type: "hocr" };
+  } else {
+    return { type: "text" };
+  }
+}
+
+function convertOcrLanguageOrScript(item: OcrLanguageOrScript) {
+  if ("$language" in item && item.$language != null) {
+    return { type: "language", language: item.$language.$language };
+  } else {
+    const script = (item as OcrLanguageOrScript & { $script: {} }).$script;
+    return { type: "script", script: script.$script };
+  }
+}
+
+function convertOcrParameters(params: OcrParameters) {
+  return {
+    outputFormat: convertOcrOutputFormat(params.$outputFormat),
+    languages: params.$languages.map(convertOcrLanguageOrScript),
+  };
+}
+
+function convertLayoutAwareExtractionParameters(
+  params: LayoutAwareExtractionParameters,
+) {
+  return {
+    languages: params.$languages,
+  };
+}
+
+function convertDocumentTextExtractionConfig(
+  config: DocumentTextExtractionConfig,
+) {
+  return {
+    format: config.$format,
+    mode: config.$mode,
+    languages: config.$languages.map(convertOcrLanguageOrScript),
+  };
+}
+
+function convertTranscribeOutputFormat(fmt: TranscribeOutputFormat) {
+  if ("$plainTextNoSegmentData" in fmt) {
+    return { type: "plainTextNoSegmentData" };
+  } else if ("$json" in fmt) {
+    return { type: "json" };
+  } else {
+    return { type: "pttml" };
+  }
+}
+
+function convertLlmSpec(spec: LlmSpec) {
+  return {
+    type: "chat",
+    chat: {
+      modelLocator: { type: "apiName", apiName: spec.$chat.$modelLocator },
+      systemPrompt: spec.$chat.$systemPrompt,
+      userPrompt: spec.$chat.$userPrompt,
+      maxTokens: spec.$chat.$maxTokens,
+    },
+  };
+}
+
+function convertVlmPreprocessingConfig(config: VlmPreprocessingConfig) {
+  if ("$layoutAware" in config && config.$layoutAware != null) {
+    return {
+      type: "layoutAware",
+      transformationConfig: convertDocumentTextExtractionConfig(
+        config.$layoutAware.$transformationConfig,
+      ),
+    };
+  } else {
+    const ext =
+      (config as VlmPreprocessingConfig & { $extractText: {} }).$extractText;
+    return {
+      type: "extractText",
+      extractText: convertDocumentTextExtractionConfig(ext.$extractText),
+    };
+  }
+}
+
+function convertImageSpec(spec: ImageSpec) {
+  return {
+    resizingMode: spec.$resizingMode,
+    height: spec.$height,
+    width: spec.$width,
+    mimeType: spec.$mimeType,
   };
 }
 
@@ -231,7 +335,7 @@ function convertAudioEncoding(encoding: AudioEncoding) {
 function convertImageOperation(op: ImageOperation) {
   if ("$resize" in op && op.$resize != null) {
     return {
-      type: "resize" as const,
+      type: "resize",
       width: op.$resize.$width,
       height: op.$resize.$height,
       autoOrient: op.$resize.$autoOrient,
@@ -240,150 +344,131 @@ function convertImageOperation(op: ImageOperation) {
     "$resizeToFitBoundingBox" in op && op.$resizeToFitBoundingBox != null
   ) {
     return {
-      type: "resizeToFitBoundingBox" as const,
+      type: "resizeToFitBoundingBox",
       width: op.$resizeToFitBoundingBox.$width,
       height: op.$resizeToFitBoundingBox.$height,
     };
   } else if ("$rotate" in op && op.$rotate != null) {
     return {
-      type: "rotate" as const,
+      type: "rotate",
       angle: op.$rotate.$angle,
     };
   } else if ("$crop" in op && op.$crop != null) {
     return {
-      type: "crop" as const,
+      type: "crop",
       xOffset: op.$crop.$xOffset,
       yOffset: op.$crop.$yOffset,
       width: op.$crop.$width,
       height: op.$crop.$height,
     };
   } else if ("$grayscale" in op) {
-    return { type: "grayscale" as const };
-  } else if ("$tile" in op && op.$tile != null) {
+    return { type: "grayscale" };
+  } else {
+    const tile = (op as ImageOperation & { $tile: {} }).$tile;
     return {
-      type: "tile" as const,
-      zoom: op.$tile.$zoom,
-      x: op.$tile.$x,
-      y: op.$tile.$y,
+      type: "tile",
+      zoom: tile.$zoom,
+      x: tile.$x,
+      y: tile.$y,
     };
   }
-  throw new Error("Unknown image operation");
 }
 
 function convertVideoOperation(op: VideoOperation) {
   if ("$transcode" in op) {
-    return { type: "transcode" as const };
-  } else if ("$chunk" in op && op.$chunk != null) {
+    return { type: "transcode" };
+  } else {
+    const chunk = (op as VideoOperation & { $chunk: {} }).$chunk;
     return {
-      type: "chunk" as const,
-      chunkDurationMilliseconds: op.$chunk.$chunkDurationMilliseconds,
-      chunkIndex: op.$chunk.$chunkIndex,
+      type: "chunk",
+      chunkDurationMilliseconds: chunk.$chunkDurationMilliseconds,
+      chunkIndex: chunk.$chunkIndex,
     };
   }
-  throw new Error("Unknown video operation");
 }
 
 function convertAudioOperation(op: AudioOperation) {
   if ("$channel" in op && op.$channel != null) {
     return {
-      type: "channel" as const,
+      type: "channel",
       encodeFormat: convertAudioEncoding(op.$channel.$encodeFormat),
       channel: op.$channel.$channel,
     };
   } else if ("$chunk" in op && op.$chunk != null) {
     return {
-      type: "chunk" as const,
+      type: "chunk",
       encodeFormat: convertAudioEncoding(op.$chunk.$encodeFormat),
       chunkDurationMilliseconds: op.$chunk.$chunkDurationMilliseconds,
       chunkIndex: op.$chunk.$chunkIndex,
     };
-  } else if ("$convert" in op && op.$convert != null) {
+  } else {
+    const convert = (op as AudioOperation & { $convert: {} }).$convert;
     return {
-      type: "convert" as const,
-      encodeFormat: convertAudioEncoding(op.$convert.$encodeFormat),
+      type: "convert",
+      encodeFormat: convertAudioEncoding(convert.$encodeFormat),
     };
   }
-  throw new Error("Unknown audio operation");
 }
 
-function convertVideoToAudioOperation(op: VideoToAudioOperation) {
-  if ("$extractAudio" in op) {
-    return { type: "extractAudio" as const };
-  }
-  throw new Error("Unknown videoToAudio operation");
+function convertVideoToAudioOperation(_op: VideoToAudioOperation) {
+  return { type: "extractAudio" };
 }
 
 function convertAudioToTextOperation(op: AudioToTextOperation) {
   if ("$transcribe" in op && op.$transcribe != null) {
     return {
-      type: "transcribe" as const,
+      type: "transcribe",
       language: op.$transcribe.$language,
       diarize: op.$transcribe.$diarize,
-      outputFormat: op.$transcribe.$outputFormat,
+      outputFormat: op.$transcribe.$outputFormat != null
+        ? convertTranscribeOutputFormat(op.$transcribe.$outputFormat)
+        : undefined,
       performanceMode: op.$transcribe.$performanceMode,
     };
-  } else if ("$waveform" in op && op.$waveform != null) {
+  } else {
+    const waveform = (op as AudioToTextOperation & { $waveform: {} }).$waveform;
     return {
-      type: "waveform" as const,
-      peaksPerSecond: op.$waveform.$peaksPerSecond,
+      type: "waveform",
+      peaksPerSecond: waveform.$peaksPerSecond,
     };
   }
-  throw new Error("Unknown audioToText operation");
 }
 
 function convertEmailToTextOperation(op: EmailToTextOperation) {
-  if ("$getEmailBody" in op && op.$getEmailBody != null) {
-    return {
-      type: "getEmailBody" as const,
-      outputFormat: op.$getEmailBody.$outputFormat,
-    };
-  }
-  throw new Error("Unknown emailToText operation");
+  return {
+    type: "getEmailBody",
+    outputFormat: op.$getEmailBody.$outputFormat,
+  };
 }
 
 function convertEmailToAttachmentOperation(op: EmailToAttachmentOperation) {
-  if ("$getEmailAttachment" in op && op.$getEmailAttachment != null) {
-    return {
-      type: "getEmailAttachment" as const,
-      mimeType: op.$getEmailAttachment.$mimeType,
-      attachmentIndex: op.$getEmailAttachment.$attachmentIndex,
-    };
-  }
-  throw new Error("Unknown emailToAttachment operation");
+  return {
+    type: "getEmailAttachment",
+    mimeType: op.$getEmailAttachment.$mimeType,
+    attachmentIndex: op.$getEmailAttachment.$attachmentIndex,
+  };
 }
 
 function convertSpreadsheetToTextOperation(op: SpreadsheetToTextOperation) {
-  if ("$convertSheetToJson" in op && op.$convertSheetToJson != null) {
-    return {
-      type: "convertSheetToJson" as const,
-      sheetName: op.$convertSheetToJson.$sheetName,
-    };
-  }
-  throw new Error("Unknown spreadsheetToText operation");
+  return {
+    type: "convertSheetToJson",
+    sheetName: op.$convertSheetToJson.$sheetName,
+  };
 }
 
 function convertVideoToArchiveOperation(op: VideoToArchiveOperation) {
-  if ("$extractSceneFrames" in op && op.$extractSceneFrames != null) {
-    return {
-      type: "extractSceneFrames" as const,
-      encoding: { type: op.$extractSceneFrames.$encoding },
-      sceneScore: op.$extractSceneFrames.$sceneScore,
-    };
-  }
-  throw new Error("Unknown videoToArchive operation");
+  return {
+    type: "extractSceneFrames",
+    encoding: { type: op.$extractSceneFrames.$encoding },
+    sceneScore: op.$extractSceneFrames.$sceneScore,
+  };
 }
 
 function convertVideoToTextOperation(op: VideoToTextOperation) {
-  if (
-    "$getTimestampsForSceneFrames" in op
-    && op.$getTimestampsForSceneFrames != null
-  ) {
-    return {
-      type: "getTimestampsForSceneFrames" as const,
-      sceneScore: op.$getTimestampsForSceneFrames.$sceneScore,
-    };
-  }
-  throw new Error("Unknown videoToText operation");
+  return {
+    type: "getTimestampsForSceneFrames",
+    sceneScore: op.$getTimestampsForSceneFrames.$sceneScore,
+  };
 }
 
 function convertImageToTextOperation(op: ImageToTextOperation) {
@@ -392,119 +477,109 @@ function convertImageToTextOperation(op: ImageToTextOperation) {
     && op.$extractLayoutAwareContent != null
   ) {
     return {
-      type: "extractLayoutAwareContent" as const,
-      parameters: op.$extractLayoutAwareContent.$parameters,
+      type: "extractLayoutAwareContent",
+      parameters: convertLayoutAwareExtractionParameters(
+        op.$extractLayoutAwareContent.$parameters,
+      ),
     };
-  } else if ("$ocr" in op && op.$ocr != null) {
+  } else {
+    const ocr = (op as ImageToTextOperation & { $ocr: {} }).$ocr;
     return {
-      type: "ocr" as const,
-      parameters: op.$ocr.$parameters,
+      type: "ocr",
+      parameters: convertOcrParameters(ocr.$parameters),
     };
   }
-  throw new Error("Unknown imageToText operation");
 }
 
 function convertVideoToImageOperation(op: VideoToImageOperation) {
   if ("$extractFirstFrame" in op && op.$extractFirstFrame != null) {
     return {
-      type: "extractFirstFrame" as const,
+      type: "extractFirstFrame",
       height: op.$extractFirstFrame.$height,
       width: op.$extractFirstFrame.$width,
     };
-  } else if (
-    "$extractFramesAtTimestamps" in op
-    && op.$extractFramesAtTimestamps != null
-  ) {
+  } else {
+    const ext =
+      (op as VideoToImageOperation & { $extractFramesAtTimestamps: {} })
+        .$extractFramesAtTimestamps;
     return {
-      type: "extractFramesAtTimestamps" as const,
-      height: op.$extractFramesAtTimestamps.$height,
-      width: op.$extractFramesAtTimestamps.$width,
-      timestamp: op.$extractFramesAtTimestamps.$timestamp,
+      type: "extractFramesAtTimestamps",
+      height: ext.$height,
+      width: ext.$width,
+      timestamp: ext.$timestamp,
     };
   }
-  throw new Error("Unknown videoToImage operation");
 }
 
-function convertImageToDocumentOperation(op: ImageToDocumentOperation) {
-  if ("$createPdf" in op) {
-    return { type: "createPdf" as const };
-  }
-  throw new Error("Unknown imageToDocument operation");
+function convertImageToDocumentOperation(_op: ImageToDocumentOperation) {
+  return { type: "createPdf" };
 }
 
 function convertDicomToImageOperation(op: DicomToImageOperation) {
-  if ("$renderImageLayer" in op && op.$renderImageLayer != null) {
-    return {
-      type: "renderImageLayer" as const,
-      layerNumber: op.$renderImageLayer.$layerNumber,
-      height: op.$renderImageLayer.$height,
-      width: op.$renderImageLayer.$width,
-    };
-  }
-  throw new Error("Unknown dicomToImage operation");
+  return {
+    type: "renderImageLayer",
+    layerNumber: op.$renderImageLayer.$layerNumber,
+    height: op.$renderImageLayer.$height,
+    width: op.$renderImageLayer.$width,
+  };
 }
 
 function convertDocumentToDocumentOperation(op: DocumentToDocumentOperation) {
   if ("$slicePdfRange" in op && op.$slicePdfRange != null) {
     return {
-      type: "slicePdfRange" as const,
+      type: "slicePdfRange",
       startPageInclusive: op.$slicePdfRange.$startPageInclusive,
       endPageExclusive: op.$slicePdfRange.$endPageExclusive,
       strictlyEnforceEndPage: op.$slicePdfRange.$strictlyEnforceEndPage,
     };
-  } else if ("$convertDocument" in op) {
-    return { type: "convertDocument" as const };
+  } else {
+    return { type: "convertDocument" };
   }
-  throw new Error("Unknown documentToDocument operation");
 }
 
 function convertDocumentToImageOperation(op: DocumentToImageOperation) {
   if ("$renderPage" in op && op.$renderPage != null) {
     return {
-      type: "renderPage" as const,
+      type: "renderPage",
       pageNumber: op.$renderPage.$pageNumber,
       height: op.$renderPage.$height,
       width: op.$renderPage.$width,
     };
-  } else if (
-    "$renderPageToFitBoundingBox" in op
-    && op.$renderPageToFitBoundingBox != null
-  ) {
+  } else {
+    const bb =
+      (op as DocumentToImageOperation & { $renderPageToFitBoundingBox: {} })
+        .$renderPageToFitBoundingBox;
     return {
-      type: "renderPageToFitBoundingBox" as const,
-      pageNumber: op.$renderPageToFitBoundingBox.$pageNumber,
-      width: op.$renderPageToFitBoundingBox.$width,
-      height: op.$renderPageToFitBoundingBox.$height,
+      type: "renderPageToFitBoundingBox",
+      pageNumber: bb.$pageNumber,
+      width: bb.$width,
+      height: bb.$height,
     };
   }
-  throw new Error("Unknown documentToImage operation");
 }
 
 function convertImageToEmbeddingOperation(op: ImageToEmbeddingOperation) {
-  if ("$generateEmbedding" in op && op.$generateEmbedding != null) {
-    return {
-      type: "generateEmbedding" as const,
-      modelId: op.$generateEmbedding.$modelId,
-    };
-  }
-  throw new Error("Unknown imageToEmbedding operation");
+  return {
+    type: "generateEmbedding",
+    modelId: op.$generateEmbedding.$modelId,
+  };
 }
 
 function convertDocumentToTextOperation(op: DocumentToTextOperation) {
   if ("$extractAllText" in op) {
-    return { type: "extractAllText" as const };
+    return { type: "extractAllText" };
   } else if ("$extractTableOfContents" in op) {
-    return { type: "extractTableOfContents" as const };
+    return { type: "extractTableOfContents" };
   } else if ("$getPdfPageDimensions" in op) {
-    return { type: "getPdfPageDimensions" as const };
+    return { type: "getPdfPageDimensions" };
   } else if ("$extractFormFields" in op) {
-    return { type: "extractFormFields" as const };
+    return { type: "extractFormFields" };
   } else if (
     "$extractUnstructuredTextFromPage" in op
     && op.$extractUnstructuredTextFromPage != null
   ) {
     return {
-      type: "extractUnstructuredTextFromPage" as const,
+      type: "extractUnstructuredTextFromPage",
       pageNumber: op.$extractUnstructuredTextFromPage.$pageNumber,
     };
   } else if (
@@ -512,55 +587,69 @@ function convertDocumentToTextOperation(op: DocumentToTextOperation) {
     && op.$extractTextFromPagesToArray != null
   ) {
     return {
-      type: "extractTextFromPagesToArray" as const,
+      type: "extractTextFromPagesToArray",
       startPage: op.$extractTextFromPagesToArray.$startPage,
       endPage: op.$extractTextFromPagesToArray.$endPage,
     };
   } else if ("$ocrOnPage" in op && op.$ocrOnPage != null) {
     return {
-      type: "ocrOnPage" as const,
+      type: "ocrOnPage",
       pageNumber: op.$ocrOnPage.$pageNumber,
-      parameters: op.$ocrOnPage.$parameters,
+      parameters: convertOcrParameters(op.$ocrOnPage.$parameters),
     };
   } else if ("$ocrOnPages" in op && op.$ocrOnPages != null) {
     return {
-      type: "ocrOnPages" as const,
+      type: "ocrOnPages",
       pageNumber: op.$ocrOnPages.$pageNumber,
-      parameters: op.$ocrOnPages.$parameters,
+      parameters: convertOcrParameters(op.$ocrOnPages.$parameters),
     };
   } else if (
     "$extractLayoutAwareContent" in op
     && op.$extractLayoutAwareContent != null
   ) {
     return {
-      type: "extractLayoutAwareContent" as const,
-      parameters: op.$extractLayoutAwareContent.$parameters,
+      type: "extractLayoutAwareContent",
+      parameters: convertLayoutAwareExtractionParameters(
+        op.$extractLayoutAwareContent.$parameters,
+      ),
     };
   } else if (
     "$extractLayoutAwareTextV2" in op
     && op.$extractLayoutAwareTextV2 != null
   ) {
     return {
-      type: "extractLayoutAwareTextV2" as const,
-      pageRange: op.$extractLayoutAwareTextV2.$pageRange,
-      config: op.$extractLayoutAwareTextV2.$config,
+      type: "extractLayoutAwareTextV2",
+      pageRange: op.$extractLayoutAwareTextV2.$pageRange != null
+        ? convertPageRange(op.$extractLayoutAwareTextV2.$pageRange)
+        : undefined,
+      config: convertDocumentTextExtractionConfig(
+        op.$extractLayoutAwareTextV2.$config,
+      ),
     };
   } else if ("$extractTextV2" in op && op.$extractTextV2 != null) {
     return {
-      type: "extractTextV2" as const,
-      pageRange: op.$extractTextV2.$pageRange,
-      config: op.$extractTextV2.$config,
+      type: "extractTextV2",
+      pageRange: op.$extractTextV2.$pageRange != null
+        ? convertPageRange(op.$extractTextV2.$pageRange)
+        : undefined,
+      config: convertDocumentTextExtractionConfig(op.$extractTextV2.$config),
     };
-  } else if ("$extractVlmText" in op && op.$extractVlmText != null) {
+  } else {
+    const vlm = (op as DocumentToTextOperation & { $extractVlmText: {} })
+      .$extractVlmText;
     return {
-      type: "extractVlmText" as const,
-      llmSpec: op.$extractVlmText.$llmSpec,
-      preprocessingConfiguration:
-        op.$extractVlmText.$preprocessingConfiguration,
-      imageSpec: op.$extractVlmText.$imageSpec,
-      outputFormat: op.$extractVlmText.$outputFormat,
-      pageRange: op.$extractVlmText.$pageRange,
+      type: "extractVlmText",
+      llmSpec: convertLlmSpec(vlm.$llmSpec),
+      preprocessingConfiguration: vlm.$preprocessingConfiguration != null
+        ? convertVlmPreprocessingConfig(vlm.$preprocessingConfiguration)
+        : undefined,
+      imageSpec: vlm.$imageSpec != null
+        ? convertImageSpec(vlm.$imageSpec)
+        : undefined,
+      outputFormat: vlm.$outputFormat,
+      pageRange: vlm.$pageRange != null
+        ? convertPageRange(vlm.$pageRange)
+        : undefined,
     };
   }
-  throw new Error("Unknown documentToText operation");
 }

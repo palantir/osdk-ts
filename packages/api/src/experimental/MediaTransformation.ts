@@ -180,6 +180,145 @@ export type ArchiveEncoding = "tar";
  */
 export type DocumentEncoding = "pdf";
 
+// ─── Shared sub-types ─────────────────────────────────────────────────────────
+
+/**
+ * @experimental
+ */
+export interface PageRange {
+  $startPageInclusive?: number;
+  $endPageExclusive?: number;
+}
+
+/**
+ * @experimental
+ */
+export interface OcrOutputFormatOptions {
+  "$hocr": {};
+  "$text": {};
+}
+
+export namespace OcrOutputFormat {
+  export interface $hocr extends Just<"$hocr", OcrOutputFormatOptions> {}
+  export interface $text extends Just<"$text", OcrOutputFormatOptions> {}
+}
+
+export type OcrOutputFormat =
+  | OcrOutputFormat.$hocr
+  | OcrOutputFormat.$text;
+
+/**
+ * @experimental
+ */
+export interface OcrLanguageOrScriptOptions {
+  "$language": { $language: string };
+  "$script": { $script: string };
+}
+
+export namespace OcrLanguageOrScript {
+  export interface $language
+    extends Just<"$language", OcrLanguageOrScriptOptions>
+  {}
+  export interface $script
+    extends Just<"$script", OcrLanguageOrScriptOptions>
+  {}
+}
+
+export type OcrLanguageOrScript =
+  | OcrLanguageOrScript.$language
+  | OcrLanguageOrScript.$script;
+
+/**
+ * @experimental
+ */
+export interface OcrParameters {
+  $outputFormat: OcrOutputFormat;
+  $languages: Array<OcrLanguageOrScript>;
+}
+
+/**
+ * @experimental
+ */
+export interface LayoutAwareExtractionParameters {
+  $languages: Array<string>;
+}
+
+/**
+ * @experimental
+ */
+export interface DocumentTextExtractionConfig {
+  $format?: "TEXT" | "MARKDOWN" | "HTML";
+  $mode?: "AUTO" | "ELECTRONIC" | "SCAN";
+  $languages: Array<OcrLanguageOrScript>;
+}
+
+/**
+ * @experimental
+ */
+export interface TranscribeOutputFormatOptions {
+  "$plainTextNoSegmentData": {};
+  "$json": {};
+  "$pttml": {};
+}
+
+export namespace TranscribeOutputFormat {
+  export interface $plainTextNoSegmentData
+    extends Just<"$plainTextNoSegmentData", TranscribeOutputFormatOptions>
+  {}
+  export interface $json extends Just<"$json", TranscribeOutputFormatOptions> {}
+  export interface $pttml
+    extends Just<"$pttml", TranscribeOutputFormatOptions>
+  {}
+}
+
+export type TranscribeOutputFormat =
+  | TranscribeOutputFormat.$plainTextNoSegmentData
+  | TranscribeOutputFormat.$json
+  | TranscribeOutputFormat.$pttml;
+
+/**
+ * @experimental
+ */
+export interface LlmSpec {
+  $chat: {
+    $modelLocator: string;
+    $systemPrompt: string;
+    $userPrompt: string;
+    $maxTokens?: number;
+  };
+}
+
+/**
+ * @experimental
+ */
+export interface VlmPreprocessingConfigOptions {
+  "$layoutAware": { $transformationConfig: DocumentTextExtractionConfig };
+  "$extractText": { $extractText: DocumentTextExtractionConfig };
+}
+
+export namespace VlmPreprocessingConfig {
+  export interface $layoutAware
+    extends Just<"$layoutAware", VlmPreprocessingConfigOptions>
+  {}
+  export interface $extractText
+    extends Just<"$extractText", VlmPreprocessingConfigOptions>
+  {}
+}
+
+export type VlmPreprocessingConfig =
+  | VlmPreprocessingConfig.$layoutAware
+  | VlmPreprocessingConfig.$extractText;
+
+/**
+ * @experimental
+ */
+export interface ImageSpec {
+  $resizingMode: "RESIZING" | "FIT_INTO_BOUNDING_BOX";
+  $height?: number;
+  $width?: number;
+  $mimeType: "BMP" | "TIFF" | "NITF" | "JP2K" | "JPG" | "PNG" | "WEBP";
+}
+
 // ─── Image operations ─────────────────────────────────────────────────────────
 
 /**
@@ -188,7 +327,7 @@ export type DocumentEncoding = "pdf";
 export interface ImageOperationOptions {
   "$resize": { $width?: number; $height?: number; $autoOrient?: boolean };
   "$resizeToFitBoundingBox": { $width: number; $height: number };
-  "$rotate": { $angle: number };
+  "$rotate": { $angle: "DEGREE_90" | "DEGREE_180" | "DEGREE_270" };
   "$crop": {
     $xOffset: number;
     $yOffset: number;
@@ -309,8 +448,8 @@ export interface AudioToTextOperationOptions {
   "$transcribe": {
     $language?: string;
     $diarize?: boolean;
-    $outputFormat?: Record<string, unknown>;
-    $performanceMode?: Record<string, unknown>;
+    $outputFormat?: TranscribeOutputFormat;
+    $performanceMode?: "MORE_ECONOMICAL" | "MORE_PERFORMANT";
   };
   "$waveform": { $peaksPerSecond: number };
 }
@@ -332,7 +471,7 @@ export type AudioToTextOperation =
  * @experimental
  */
 export interface EmailToTextOperationOptions {
-  "$getEmailBody": { $outputFormat: string };
+  "$getEmailBody": { $outputFormat: "TEXT" | "HTML" };
 }
 
 export namespace EmailToTextOperation {
@@ -381,7 +520,7 @@ export type SpreadsheetToTextOperation =
 export interface VideoToArchiveOperationOptions {
   "$extractSceneFrames": {
     $encoding: ImageryEncoding;
-    $sceneScore?: Record<string, unknown>;
+    $sceneScore?: "MORE_SENSITIVE" | "STANDARD" | "LESS_SENSITIVE";
   };
 }
 
@@ -399,7 +538,7 @@ export type VideoToArchiveOperation =
  */
 export interface VideoToTextOperationOptions {
   "$getTimestampsForSceneFrames": {
-    $sceneScore?: Record<string, unknown>;
+    $sceneScore?: "MORE_SENSITIVE" | "STANDARD" | "LESS_SENSITIVE";
   };
 }
 
@@ -416,8 +555,10 @@ export type VideoToTextOperation =
  * @experimental
  */
 export interface ImageToTextOperationOptions {
-  "$extractLayoutAwareContent": { $parameters: Record<string, unknown> };
-  "$ocr": { $parameters: Record<string, unknown> };
+  "$extractLayoutAwareContent": {
+    $parameters: LayoutAwareExtractionParameters;
+  };
+  "$ocr": { $parameters: OcrParameters };
 }
 
 export namespace ImageToTextOperation {
@@ -571,27 +712,29 @@ export interface DocumentToTextOperationOptions {
   };
   "$ocrOnPage": {
     $pageNumber: number;
-    $parameters: Record<string, unknown>;
+    $parameters: OcrParameters;
   };
   "$ocrOnPages": {
     $pageNumber: number;
-    $parameters: Record<string, unknown>;
+    $parameters: OcrParameters;
   };
-  "$extractLayoutAwareContent": { $parameters: Record<string, unknown> };
+  "$extractLayoutAwareContent": {
+    $parameters: LayoutAwareExtractionParameters;
+  };
   "$extractLayoutAwareTextV2": {
-    $pageRange?: Record<string, unknown>;
-    $config: Record<string, unknown>;
+    $pageRange?: PageRange;
+    $config: DocumentTextExtractionConfig;
   };
   "$extractTextV2": {
-    $pageRange?: Record<string, unknown>;
-    $config: Record<string, unknown>;
+    $pageRange?: PageRange;
+    $config: DocumentTextExtractionConfig;
   };
   "$extractVlmText": {
-    $llmSpec: Record<string, unknown>;
-    $preprocessingConfiguration?: Record<string, unknown>;
-    $imageSpec?: Record<string, unknown>;
-    $outputFormat: Record<string, unknown>;
-    $pageRange?: Record<string, unknown>;
+    $llmSpec: LlmSpec;
+    $preprocessingConfiguration?: VlmPreprocessingConfig;
+    $imageSpec?: ImageSpec;
+    $outputFormat: "TEXT" | "MARKDOWN" | "HTML";
+    $pageRange?: PageRange;
   };
 }
 

@@ -24,3 +24,6 @@ typeclasses
 structfield
 blockset
 manifest
+hocr
+pttml
+NITF
