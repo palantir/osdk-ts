@@ -34,7 +34,10 @@ export const addUserAgentAndRequestContextHeaders = (
       if (withMetadata.osdkMetadata) {
         headers.set(
           "Fetch-User-Agent",
-          withMetadata.osdkMetadata.extraUserAgent,
+          [
+            headers.get("Fetch-User-Agent"),
+            withMetadata.osdkMetadata.extraUserAgent,
+          ].filter(x => x && x?.length > 0).join(" "),
         );
       }
       return headers;

@@ -24,12 +24,14 @@ import {
 
 // eslint-disable-next-line @typescript-eslint/consistent-type-imports
 type OldSharedClientContext = import("@osdk/shared.client").SharedClientContext;
+const USER_AGENT_HEADER = "Fetch-User-Agent";
 
 export function createSharedClientContext(
   baseUrl: string,
   tokenProvider: () => Promise<string>,
   userAgent: string,
   fetchFn: typeof globalThis.fetch = fetch,
+  customHeaders?: Record<string, string>,
 ): SharedClientContext & OldSharedClientContext {
   if (baseUrl.length === 0) {
     throw new Error("baseUrl cannot be empty");
@@ -38,14 +40,26 @@ export function createSharedClientContext(
   const retryingFetchWithAuthOrThrow = createFetchHeaderMutator(
     createRetryingFetch(createFetchOrThrow(fetchFn)),
     async (headers) => {
+      if (customHeaders != null) {
+        for (const [key, value] of Object.entries(customHeaders)) {
+          headers.set(key, value);
+        }
+      }
+
       const token = await tokenProvider();
       headers.set("Authorization", `Bearer ${token}`);
 
+      const customUserAgent = customHeaders
+        ? Object.entries(customHeaders)
+          .find(([k]) => k.toLowerCase() === USER_AGENT_HEADER.toLowerCase())?.[1]
+        : undefined;
+
       headers.set(
-        "Fetch-User-Agent",
+        USER_AGENT_HEADER,
         [
-          headers.get("Fetch-User-Agent"),
+          headers.get(USER_AGENT_HEADER),
           userAgent,
+          customUserAgent,
         ].filter(x => x && x?.length > 0).join(" "),
       );
       return headers;
