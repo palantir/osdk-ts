@@ -194,9 +194,19 @@ export function FormPage() {
 
       {submittedState != null && (
         <pre className="submittedOutput">
-          {JSON.stringify(submittedState, null, 2)}
+          {JSON.stringify(submittedState, fileReplacer, 2)}
         </pre>
       )}
     </div>
   );
+}
+
+function fileReplacer(_key: string, value: unknown): unknown {
+  if (value instanceof File) {
+    return value.name;
+  }
+  if (Array.isArray(value) && value.every((v) => v instanceof File)) {
+    return value.map((f) => f.name);
+  }
+  return value;
 }

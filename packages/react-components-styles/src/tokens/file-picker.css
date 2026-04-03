@@ -17,6 +17,10 @@
     --osdk-input-placeholder-color
   );
 
+  /* Transitions */
+  --osdk-file-picker-transition-duration: var(--osdk-input-transition-duration);
+  --osdk-file-picker-transition-ease: var(--osdk-input-transition-ease);
+
   /* Focus ring */
   --osdk-file-picker-trigger-focus-width: var(--osdk-input-focus-width);
   --osdk-file-picker-trigger-focus-color: var(--osdk-input-focus-color);

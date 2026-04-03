@@ -28,10 +28,10 @@
   box-sizing: border-box;
   overflow: hidden;
   transition:
-    background-color var(--osdk-input-transition-duration)
-      var(--osdk-input-transition-ease),
-    border-color var(--osdk-input-transition-duration)
-      var(--osdk-input-transition-ease);
+    background-color var(--osdk-file-picker-transition-duration)
+      var(--osdk-file-picker-transition-ease),
+    border-color var(--osdk-file-picker-transition-duration)
+      var(--osdk-file-picker-transition-ease);
 
   &:hover {
     background: var(--osdk-file-picker-trigger-bg-hover);
@@ -91,8 +91,8 @@
   background: none;
   color: var(--osdk-file-picker-clear-color);
   cursor: pointer;
-  transition: color var(--osdk-input-transition-duration)
-    var(--osdk-input-transition-ease);
+  transition: color var(--osdk-file-picker-transition-duration)
+    var(--osdk-file-picker-transition-ease);
 
   &:hover {
     color: var(--osdk-file-picker-clear-color-hover);
@@ -118,8 +118,8 @@
   font-family: var(--osdk-file-picker-trigger-font-family);
   font-size: var(--osdk-file-picker-trigger-font-size);
   pointer-events: none;
-  transition: background-color var(--osdk-input-transition-duration)
-    var(--osdk-input-transition-ease);
+  transition: background-color var(--osdk-file-picker-transition-duration)
+    var(--osdk-file-picker-transition-ease);
 }
 
 .osdkFilePickerTrigger:hover .osdkFilePickerBrowse {

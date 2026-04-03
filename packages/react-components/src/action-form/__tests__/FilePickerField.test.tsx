@@ -109,13 +109,14 @@ describe("FilePickerField", () => {
       const onChange = vi.fn();
       render(<FilePickerField value={null} onChange={onChange} />);
 
-      const file = new File(["content"], "report.pdf", {
-        type: "application/pdf",
-      });
+      const files = [
+        new File(["a"], "photo.png", { type: "image/png" }),
+        new File(["b"], "doc.pdf", { type: "application/pdf" }),
+      ];
 
-      fireEvent.change(getFileInput(), { target: { files: [file] } });
+      fireEvent.change(getFileInput(), { target: { files } });
 
-      expect(onChange).toHaveBeenCalledWith(file);
+      expect(onChange).toHaveBeenCalledWith(files[0]);
     });
 
     it("calls onChange with File[] when isMulti is true", () => {

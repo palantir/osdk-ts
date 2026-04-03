@@ -147,6 +147,7 @@ function renderFieldComponent(
   }
 }
 
+// TODO: Move and share with `coerceFieldValue`
 function isFileArray(value: unknown[]): value is File[] {
   return value.every((v) => v instanceof File);
 }
