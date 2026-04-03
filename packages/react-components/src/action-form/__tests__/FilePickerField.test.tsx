@@ -44,7 +44,7 @@ describe("FilePickerField", () => {
         new File(["b"], "doc.pdf", { type: "application/pdf" }),
       ];
 
-      render(<FilePickerField value={files} isMulti />);
+      render(<FilePickerField value={files} isMulti={true} />);
 
       expect(screen.getByText("photo.png, doc.pdf")).toBeDefined();
     });
@@ -61,15 +61,17 @@ describe("FilePickerField", () => {
       const file = new File(["content"], "report.pdf");
       render(<FilePickerField value={file} />);
 
-      expect(screen.getByRole("button", { name: "Clear selection" }))
-        .toBeDefined();
+      expect(
+        screen.getByRole("button", { name: "Clear selection" }),
+      ).toBeDefined();
     });
 
     it("does not show clear button when value is null", () => {
       render(<FilePickerField value={null} />);
 
-      expect(screen.queryByRole("button", { name: "Clear selection" }))
-        .toBeNull();
+      expect(
+        screen.queryByRole("button", { name: "Clear selection" }),
+      ).toBeNull();
     });
 
     it("calls onChange with null when clear is clicked", () => {
@@ -78,9 +80,7 @@ describe("FilePickerField", () => {
 
       render(<FilePickerField value={file} onChange={onChange} />);
 
-      fireEvent.click(
-        screen.getByRole("button", { name: "Clear selection" }),
-      );
+      fireEvent.click(screen.getByRole("button", { name: "Clear selection" }));
 
       expect(onChange).toHaveBeenCalledWith(null);
     });
@@ -90,59 +90,46 @@ describe("FilePickerField", () => {
     it("passes accept attribute to the hidden input", () => {
       render(<FilePickerField value={null} accept={[".pdf", "image/*"]} />);
 
-      const input = document.querySelector(
-        "input[type='file']",
-      ) as HTMLInputElement;
-      expect(input.getAttribute("accept")).toBe(".pdf,image/*");
+      expect(getFileInput().getAttribute("accept")).toBe(".pdf,image/*");
     });
 
     it("passes accept string directly", () => {
       render(<FilePickerField value={null} accept="image/png" />);
 
-      const input = document.querySelector(
-        "input[type='file']",
-      ) as HTMLInputElement;
-      expect(input.getAttribute("accept")).toBe("image/png");
+      expect(getFileInput().getAttribute("accept")).toBe("image/png");
     });
 
     it("sets multiple attribute when isMulti is true", () => {
-      render(<FilePickerField value={null} isMulti />);
+      render(<FilePickerField value={null} isMulti={true} />);
 
-      const input = document.querySelector(
-        "input[type='file']",
-      ) as HTMLInputElement;
-      expect(input.multiple).toBe(true);
+      expect(getFileInput().multiple).toBe(true);
     });
 
     it("calls onChange with a single File when isMulti is false", () => {
       const onChange = vi.fn();
       render(<FilePickerField value={null} onChange={onChange} />);
 
-      const input = document.querySelector(
-        "input[type='file']",
-      ) as HTMLInputElement;
       const file = new File(["content"], "report.pdf", {
         type: "application/pdf",
       });
 
-      fireEvent.change(input, { target: { files: [file] } });
+      fireEvent.change(getFileInput(), { target: { files: [file] } });
 
       expect(onChange).toHaveBeenCalledWith(file);
     });
 
     it("calls onChange with File[] when isMulti is true", () => {
       const onChange = vi.fn();
-      render(<FilePickerField value={null} onChange={onChange} isMulti />);
+      render(
+        <FilePickerField value={null} onChange={onChange} isMulti={true} />,
+      );
 
-      const input = document.querySelector(
-        "input[type='file']",
-      ) as HTMLInputElement;
       const files = [
         new File(["a"], "photo.png", { type: "image/png" }),
         new File(["b"], "doc.pdf", { type: "application/pdf" }),
       ];
 
-      fireEvent.change(input, { target: { files } });
+      fireEvent.change(getFileInput(), { target: { files } });
 
       expect(onChange).toHaveBeenCalledWith(files);
     });
@@ -151,13 +138,17 @@ describe("FilePickerField", () => {
       const onChange = vi.fn();
       render(<FilePickerField value={null} onChange={onChange} />);
 
-      const input = document.querySelector(
-        "input[type='file']",
-      ) as HTMLInputElement;
-
-      fireEvent.change(input, { target: { files: [] } });
+      fireEvent.change(getFileInput(), { target: { files: [] } });
 
       expect(onChange).toHaveBeenCalledWith(null);
     });
   });
 });
+
+function getFileInput(): HTMLInputElement {
+  const input = document.querySelector("input[type='file']");
+  if (input == null) {
+    throw new Error("File input not found");
+  }
+  return input as HTMLInputElement;
+}

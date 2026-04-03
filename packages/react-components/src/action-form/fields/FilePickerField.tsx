@@ -51,7 +51,7 @@ export const FilePickerField: React.FC<FilePickerProps> = memo(
     maxSize: _maxSize,
     text = "No file chosen",
     buttonText = "Browse",
-  }: FilePickerProps): React.ReactElement {
+  }): React.ReactElement {
     const inputRef = useRef<HTMLInputElement>(null);
 
     const openFileDialog = useCallback(() => {
