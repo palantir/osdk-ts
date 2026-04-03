@@ -31,8 +31,10 @@ import type { UnsubscribableWrapper } from "../UnsubscribableWrapper.js";
 import type { BlobMemoryManager } from "./BlobMemoryManager.js";
 import { createBlobMemoryManager } from "./BlobMemoryManager.js";
 import { getMediaCacheKey } from "./getMediaCacheKey.js";
+import type { MediaContentCacheKey } from "./MediaContentCacheKey.js";
 import type { MediaContentObservable } from "./MediaContentObservable.js";
 import { createMediaContentObservable } from "./MediaContentObservable.js";
+import { MediaContentQuery } from "./MediaContentQuery.js";
 import type { MediaMetadataCacheKey } from "./MediaMetadataCacheKey.js";
 import type {
   MediaMetadataObserveOptions,
@@ -281,19 +283,109 @@ export class MediaHelper {
     this.blobManager.releaseBlobUrl(cacheKey);
   }
 
+  private getContentCacheKey(
+    coords: MediaPropertyLocation,
+  ): MediaContentCacheKey {
+    return this.cacheKeys.get(
+      "mediaContent",
+      coords.objectType,
+      coords.primaryKey,
+      coords.propertyName,
+    ) as MediaContentCacheKey;
+  }
+
   /**
    * Observe media content with unified lifecycle management.
-   * Deduplicates observables by cache key.
+   * Property-based sources use the Query/Store pattern for automatic
+   * invalidation when the parent object changes. Attachment and raw Media
+   * sources use standalone observables.
    */
   observeMedia(
     source: Media | Attachment | MediaPropertyLocation,
     options: MediaContentObserveOptions,
     observer: Observer<MediaContentPayload>,
   ): { unsubscribe: () => void } {
+    if (isMediaPropertyLocation(source)) {
+      return this.#observeMediaViaQuery(source, options, observer);
+    }
+    return this.#observeMediaStandalone(source, options, observer);
+  }
+
+  #observeMediaViaQuery(
+    source: MediaPropertyLocation,
+    options: MediaContentObserveOptions,
+    observer: Observer<MediaContentPayload>,
+  ): { unsubscribe: () => void } {
+    const cacheKey = this.getContentCacheKey(source);
+
+    const query = this.store.queries.get(cacheKey, () => {
+      const subject = this.store.subjects.get(cacheKey);
+      return new MediaContentQuery(
+        this.store,
+        subject,
+        source,
+        cacheKey,
+        options,
+        {
+          fetchContent: (s, opts) => this.fetchContent(s, opts),
+          fetchMetadata: (s) => this.fetchMetadataForSource(s),
+          blobManager: this.blobManager,
+          getCacheKey: (s) => this.getCacheKey(s),
+        },
+      );
+    });
+
+    // Reference counting: cancel pending cleanup or retain
+    const pendingCleanupCount = this.store.pendingCleanup.get(cacheKey) ?? 0;
+    if (pendingCleanupCount > 0) {
+      if (pendingCleanupCount === 1) {
+        this.store.pendingCleanup.delete(cacheKey);
+      } else {
+        this.store.pendingCleanup.set(cacheKey, pendingCleanupCount - 1);
+      }
+    } else {
+      this.store.cacheKeys.retain(cacheKey);
+    }
+
+    const subscription = query.subscribe(observer);
+    const querySub = new QuerySubscription(query, subscription);
+
+    query.registerSubscriptionDedupeInterval(
+      querySub.subscriptionId,
+      options.dedupeInterval,
+    );
+
+    // Deferred release on unsubscribe (handles React unmount-remount cycles)
+    subscription.add(() => {
+      query.unregisterSubscriptionDedupeInterval(querySub.subscriptionId);
+
+      this.store.pendingCleanup.set(
+        cacheKey,
+        (this.store.pendingCleanup.get(cacheKey) ?? 0) + 1,
+      );
+      queueMicrotask(() => {
+        const currentPending = this.store.pendingCleanup.get(cacheKey) ?? 0;
+        if (currentPending > 0) {
+          if (currentPending === 1) {
+            this.store.pendingCleanup.delete(cacheKey);
+          } else {
+            this.store.pendingCleanup.set(cacheKey, currentPending - 1);
+          }
+          this.store.cacheKeys.release(cacheKey);
+        }
+      });
+    });
+
+    return querySub;
+  }
+
+  #observeMediaStandalone(
+    source: Media | Attachment,
+    options: MediaContentObserveOptions,
+    observer: Observer<MediaContentPayload>,
+  ): { unsubscribe: () => void } {
     const cacheKey = this.getCacheKey(source);
 
-    // Reuse existing observable for same media source — subsequent subscribers
-    // share the first subscriber's options (placeholder, staleTime, etc.)
     let observable = this.contentObservables.get(cacheKey);
     if (!observable) {
       observable = createMediaContentObservable(
@@ -328,6 +420,17 @@ export class MediaHelper {
   invalidateMedia(
     source: Media | Attachment | MediaPropertyLocation,
   ): void {
+    if (isMediaPropertyLocation(source)) {
+      const cacheKey = this.getContentCacheKey(source);
+      const query = this.store.queries.peek(cacheKey) as
+        | MediaContentQuery
+        | undefined;
+      if (query) {
+        query.revalidate(true).catch(() => {});
+        return;
+      }
+    }
+
     const cacheKey = this.getCacheKey(source);
     const observable = this.contentObservables.get(cacheKey);
     if (observable) {
@@ -363,8 +466,11 @@ export class MediaHelper {
     this.blobManager.remove(cacheKey);
 
     if (isMediaPropertyLocation(mediaOrLocation)) {
-      const typedCacheKey = this.getTypedCacheKey(mediaOrLocation);
-      this.store.queries.delete(typedCacheKey);
+      const metadataCacheKey = this.getTypedCacheKey(mediaOrLocation);
+      this.store.queries.delete(metadataCacheKey);
+
+      const contentCacheKey = this.getContentCacheKey(mediaOrLocation);
+      this.store.queries.delete(contentCacheKey);
     }
   }
 
@@ -375,7 +481,9 @@ export class MediaHelper {
     this.blobManager.clear();
 
     for (const cacheKey of this.store.queries.keys()) {
-      if (cacheKey.type === "mediaMetadata") {
+      if (
+        cacheKey.type === "mediaMetadata" || cacheKey.type === "mediaContent"
+      ) {
         this.store.queries.delete(cacheKey);
       }
     }
@@ -393,7 +501,9 @@ export class MediaHelper {
     this.blobManager.dispose();
 
     for (const cacheKey of this.store.queries.keys()) {
-      if (cacheKey.type === "mediaMetadata") {
+      if (
+        cacheKey.type === "mediaMetadata" || cacheKey.type === "mediaContent"
+      ) {
         const query = this.store.queries.peek(cacheKey);
         if (query) {
           query.dispose?.();
