@@ -64,9 +64,9 @@ export namespace ObservableClient {
   }
 }
 
-export interface ObserveObjectOptions<
-  T extends ObjectOrInterfaceDefinition,
-> extends ObserveOptions {
+export interface ObserveObjectOptions<T extends ObjectOrInterfaceDefinition>
+  extends ObserveOptions
+{
   apiName: T["apiName"] | T;
   pk: PrimaryKeyType<T>;
   select?: PropertyKeys<T>[];
@@ -143,6 +143,21 @@ export interface ObserveListOptions<
     where: WhereClause<Q, RDPs>;
   }>;
   pivotTo?: string;
+
+  /**
+   * When loading objects via an interface type, return the full concrete
+   * object type instances instead of interface views.
+   *
+   * By default, interface queries return objects narrowed to interface
+   * properties only. With `resolveToObjectType: true`, returned objects
+   * include all properties from the implementing object type (e.g. `$title`,
+   * custom properties not on the interface).
+   *
+   * Only has an effect when `type` is an interface.
+   *
+   * @default false
+   */
+  resolveToObjectType?: boolean;
 }
 
 export interface ObserveObjectCallbackArgs<
@@ -162,9 +177,7 @@ export interface ObserveObjectsCallbackArgs<
   > = {},
 > {
   resolvedList:
-    | Array<
-      Osdk.Instance<T, "$allBaseProperties", PropertyKeys<T>, RDPs>
-    >
+    | Array<Osdk.Instance<T, "$allBaseProperties", PropertyKeys<T>, RDPs>>
     | undefined;
   isOptimistic: boolean;
   lastUpdated: number;
@@ -183,9 +196,7 @@ export interface ObserveObjectSetArgs<
   > = {},
 > {
   resolvedList:
-    | Array<
-      Osdk.Instance<T, "$allBaseProperties", PropertyKeys<T>, RDPs>
-    >
+    | Array<Osdk.Instance<T, "$allBaseProperties", PropertyKeys<T>, RDPs>>
     | undefined;
   isOptimistic: boolean;
   lastUpdated: number;
@@ -564,9 +575,7 @@ export interface CanonicalizeOptionsInput<OS = ObjectSet<any, any>> {
   $select?: ReadonlyArray<string>;
 }
 
-export type CanonicalizedOptions<
-  T extends CanonicalizeOptionsInput<any>,
-> = {
+export type CanonicalizedOptions<T extends CanonicalizeOptionsInput<any>> = {
   [K in keyof T]: T[K];
 };
 
@@ -581,10 +590,9 @@ export function createObservableClient(client: Client): ObservableClient {
       (headers) => {
         headers.set(
           "Fetch-User-Agent",
-          [
-            headers.get("Fetch-User-Agent"),
-            OBSERVABLE_USER_AGENT,
-          ].filter(x => x && x?.length > 0).join(" "),
+          [headers.get("Fetch-User-Agent"), OBSERVABLE_USER_AGENT].filter((x) =>
+            x && x?.length > 0
+          ).join(" "),
         );
         return headers;
       },

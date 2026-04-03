@@ -20,6 +20,7 @@ import type {
   LinkNames,
   ObjectOrInterfaceDefinition,
   ObjectSet,
+  ObjectTypeDefinition,
   Osdk,
   PropertyKeys,
   SimplePropertyDef,
@@ -141,6 +142,31 @@ export interface UseOsdkObjectsOptions<
    * populated with conjunctive/disjunctive marking requirements per property.
    */
   $loadPropertySecurityMetadata?: boolean;
+
+  /**
+   * When loading objects via an interface type, return the full concrete
+   * object type instances instead of interface views.
+   *
+   * By default, interface queries return objects narrowed to interface
+   * properties only. With `resolveToObjectType: true`, returned objects
+   * include all properties from the implementing object type (e.g. `$title`,
+   * custom properties not on the interface).
+   *
+   * Only has an effect when the type parameter is an interface.
+   *
+   * Pass an ObjectTypeDefinition to narrow the return type:
+   * `resolveToObjectType: Laptop` types results as `Osdk.Instance<Laptop>`.
+   * This is an unchecked assertion — the runtime does not filter by type.
+   *
+   * @default false
+   *
+   * @example
+   * useOsdkObjects(MyInterface, {
+   *   pivotTo: "linkedItems",
+   *   resolveToObjectType: true,
+   * })
+   */
+  resolveToObjectType?: boolean | ObjectTypeDefinition;
 }
 
 export interface UseOsdkListResult<
@@ -205,6 +231,44 @@ declare const process: {
 export function useOsdkObjects<
   Q extends ObjectOrInterfaceDefinition,
   L extends LinkNames<Q>,
+  R extends ObjectTypeDefinition,
+>(
+  type: Q,
+  options:
+    & UseOsdkObjectsOptions<Q>
+    & { pivotTo: L; resolveToObjectType: R; rids: readonly string[] },
+): UseOsdkListResult<R, {}, "$rid">;
+
+export function useOsdkObjects<
+  Q extends ObjectOrInterfaceDefinition,
+  R extends ObjectTypeDefinition,
+>(
+  type: Q,
+  options:
+    & UseOsdkObjectsOptions<Q>
+    & { resolveToObjectType: R; rids: readonly string[] },
+): UseOsdkListResult<R, {}, "$rid">;
+
+export function useOsdkObjects<
+  Q extends ObjectOrInterfaceDefinition,
+  L extends LinkNames<Q>,
+  R extends ObjectTypeDefinition,
+>(
+  type: Q,
+  options: UseOsdkObjectsOptions<Q> & { pivotTo: L; resolveToObjectType: R },
+): UseOsdkListResult<R>;
+
+export function useOsdkObjects<
+  Q extends ObjectOrInterfaceDefinition,
+  R extends ObjectTypeDefinition,
+>(
+  type: Q,
+  options: UseOsdkObjectsOptions<Q> & { resolveToObjectType: R },
+): UseOsdkListResult<R>;
+
+export function useOsdkObjects<
+  Q extends ObjectOrInterfaceDefinition,
+  L extends LinkNames<Q>,
 >(
   type: Q,
   options: UseOsdkObjectsOptions<Q> & { pivotTo: L; rids: readonly string[] },
@@ -245,6 +309,8 @@ export function useOsdkObjects<
   | UseOsdkListResult<Q, RDPs, "$rid">
   | UseOsdkListResult<LinkedType<Q, LinkNames<Q>>>
   | UseOsdkListResult<LinkedType<Q, LinkNames<Q>>, {}, "$rid">
+  | UseOsdkListResult<ObjectTypeDefinition>
+  | UseOsdkListResult<ObjectTypeDefinition, {}, "$rid">
 {
   const { observableClient } = React.useContext(OsdkContext2);
 
@@ -262,6 +328,7 @@ export function useOsdkObjects<
     pivotTo,
     $select,
     $loadPropertySecurityMetadata,
+    resolveToObjectType,
   } = options ?? {};
 
   const canonOptions = observableClient.canonicalizeOptions({
@@ -312,6 +379,7 @@ export function useOsdkObjects<
             ...($loadPropertySecurityMetadata
               ? { $loadPropertySecurityMetadata }
               : {}),
+            ...(resolveToObjectType ? { resolveToObjectType: true } : {}),
           }, observer),
         process.env.NODE_ENV !== "production"
           ? `list ${type.apiName} ${
@@ -337,6 +405,7 @@ export function useOsdkObjects<
       pivotTo,
       canonOptions.$select,
       $loadPropertySecurityMetadata,
+      !!resolveToObjectType,
     ],
   );
 
