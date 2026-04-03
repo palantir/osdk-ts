@@ -256,7 +256,7 @@ export interface DocumentTextExtractionConfig {
  * @experimental
  */
 export interface TranscribeOutputFormatOptions {
-  "$plainTextNoSegmentData": {};
+  "$plainTextNoSegmentData": { $addTimestamps: boolean };
   "$json": {};
   "$pttml": {};
 }
@@ -292,7 +292,10 @@ export interface LlmSpec {
  * @experimental
  */
 export interface VlmPreprocessingConfigOptions {
-  "$layoutAware": { $transformationConfig: DocumentTextExtractionConfig };
+  "$layoutAware": {
+    $transformationConfig: DocumentTextExtractionConfig;
+    $cropConfig?: { $tablePrompt: string };
+  };
   "$extractText": { $extractText: DocumentTextExtractionConfig };
 }
 
