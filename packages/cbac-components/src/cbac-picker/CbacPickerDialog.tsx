@@ -34,7 +34,7 @@ export function CbacPickerDialog({
   initialMarkingIds,
 }: CbacPickerDialogProps): React.ReactElement {
   const [selectedIds, setSelectedIds] = React.useState<string[]>(
-    () => initialMarkingIds ?? EMPTY_ARRAY,
+    initialMarkingIds ?? EMPTY_ARRAY,
   );
 
   // Reset local state when initialMarkingIds changes (e.g. external update)
@@ -56,16 +56,12 @@ export function CbacPickerDialog({
 
   const handleMarkingToggle = React.useCallback(
     (markingId: string) => {
-      const newSelection = toggleMarking(
-        markingId,
-        selectedIds,
-        categoryGroups,
-      );
-      setSelectedIds(newSelection);
+      setSelectedIds((prev) => toggleMarking(markingId, prev, categoryGroups));
     },
-    [selectedIds, categoryGroups],
+    [categoryGroups],
   );
 
+  // Parent controls dialog close on confirm (e.g. to show a loading state)
   const handleConfirm = React.useCallback(() => {
     onConfirm(selectedIds);
   }, [onConfirm, selectedIds]);
@@ -98,7 +94,7 @@ export function CbacPickerDialog({
       onOpenChange={onOpenChange}
       onConfirm={handleConfirm}
       onCancel={handleCancel}
-      title={hasInitialMarkings ? "Edit classification" : undefined}
+      title={hasInitialMarkings ? "Edit classification" : "Add classification"}
       categories={categoryGroups}
       markingStates={markingStates}
       banner={banner}

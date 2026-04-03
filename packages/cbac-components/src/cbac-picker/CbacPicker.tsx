@@ -34,7 +34,7 @@ export function CbacPicker({
   className,
 }: CbacPickerProps): React.ReactElement {
   const [selectedIds, setSelectedIds] = React.useState<string[]>(
-    () => initialMarkingIds ?? EMPTY_ARRAY,
+    initialMarkingIds ?? EMPTY_ARRAY,
   );
 
   // Reset local state when initialMarkingIds changes (e.g. external update)
