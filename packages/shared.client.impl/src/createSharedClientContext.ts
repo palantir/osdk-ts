@@ -42,7 +42,9 @@ export function createSharedClientContext(
     async (headers) => {
       if (customHeaders != null) {
         for (const [key, value] of Object.entries(customHeaders)) {
-          headers.set(key, value);
+          if (key.toLowerCase() !== USER_AGENT_HEADER.toLowerCase()) {
+            headers.set(key, value);
+          }
         }
       }
 
