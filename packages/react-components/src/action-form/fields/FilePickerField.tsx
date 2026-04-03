@@ -21,25 +21,6 @@ import React, { memo, useCallback, useRef } from "react";
 import type { FilePickerProps } from "../FormFieldApi.js";
 import styles from "./FilePickerField.module.css";
 
-function normalizeAccept(
-  accept: string | string[] | undefined,
-): string | undefined {
-  if (accept == null) {
-    return undefined;
-  }
-  return Array.isArray(accept) ? accept.join(",") : accept;
-}
-
-function getDisplayText(value: File | File[] | null): string | undefined {
-  if (value == null) {
-    return undefined;
-  }
-  if (Array.isArray(value)) {
-    return value.map((f) => f.name).join(", ");
-  }
-  return value.name;
-}
-
 export const FilePickerField: React.FC<FilePickerProps> = memo(
   function FilePickerFieldFn({
     id,
@@ -100,8 +81,6 @@ export const FilePickerField: React.FC<FilePickerProps> = memo(
     const displayText = getDisplayText(value);
     const hasValue = displayText != null;
     const acceptString = normalizeAccept(accept);
-    const textId = id != null ? `${id}-text` : undefined;
-
     return (
       // The entire component is a single tab stop (tabIndex={0}).
       // Text and Browse are <span>s (not buttons) so they don't create
@@ -113,7 +92,6 @@ export const FilePickerField: React.FC<FilePickerProps> = memo(
         className={styles.osdkFilePickerTrigger}
         tabIndex={0}
         role="button"
-        aria-labelledby={textId}
         onClick={openFileDialog}
         onKeyDown={handleKeyDown}
       >
@@ -128,7 +106,6 @@ export const FilePickerField: React.FC<FilePickerProps> = memo(
           tabIndex={-1}
         />
         <span
-          id={textId}
           className={classnames(
             styles.osdkFilePickerText,
             !hasValue && styles.osdkFilePickerPlaceholder,
@@ -152,3 +129,22 @@ export const FilePickerField: React.FC<FilePickerProps> = memo(
     );
   },
 );
+
+function normalizeAccept(
+  accept: string | string[] | undefined,
+): string | undefined {
+  if (accept == null) {
+    return undefined;
+  }
+  return Array.isArray(accept) ? accept.join(",") : accept;
+}
+
+function getDisplayText(value: File | File[] | null): string | undefined {
+  if (value == null) {
+    return undefined;
+  }
+  if (Array.isArray(value)) {
+    return value.map((f) => f.name).join(", ");
+  }
+  return value.name;
+}
