@@ -72,16 +72,20 @@ export const createObjectSetHandlers = (
         );
       }
 
-      const { field, includeNullValues } = exactGroupBys[0];
-      if (field == null) {
+      const { field, propertyIdentifier, includeNullValues } = exactGroupBys[0];
+      const groupField = field
+        ?? (propertyIdentifier?.type === "property"
+          ? propertyIdentifier.apiName
+          : undefined);
+      if (groupField == null) {
         throw new Error(
-          "FauxFoundry aggregate: groupBy field cannot be null",
+          "FauxFoundry aggregate: exact groupBy requires a field",
         );
       }
       const groups = new Map<string | null, number>();
 
       for (const obj of objects) {
-        const rawValue = obj[field];
+        const rawValue = obj[groupField];
         const key = rawValue == null ? null : String(rawValue);
 
         if (key == null && !includeNullValues) {
@@ -93,7 +97,7 @@ export const createObjectSetHandlers = (
 
       const data = Array.from(groups.entries()).map(
         ([key, count]: [string | null, number]) => ({
-          group: { [field]: key },
+          group: { [groupField]: key },
           metrics: [{ name: "count", value: count }],
         }),
       );

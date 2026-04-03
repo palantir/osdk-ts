@@ -1,6 +1,6 @@
 kind: sdk
 versions:
-  "1.0.0":
+  "2.0.0":
     snippets:
       reactProviderSetup:
         - template: |-

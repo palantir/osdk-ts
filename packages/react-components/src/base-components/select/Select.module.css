@@ -23,7 +23,6 @@
   min-height: var(--osdk-select-min-height, 30px);
   padding: calc(var(--osdk-select-spacing, var(--osdk-surface-spacing)) * 1.5)
     calc(var(--osdk-select-spacing, var(--osdk-surface-spacing)) * 2.5);
-  box-sizing: border-box;
   cursor: pointer;
   border-radius: var(
     --osdk-select-border-radius,
@@ -161,7 +160,6 @@
   max-height: var(--available-height);
   overflow-y: auto;
   padding: calc(var(--osdk-select-spacing, var(--osdk-surface-spacing)) * 1.5);
-  box-sizing: border-box;
   border-radius: var(
     --osdk-select-border-radius,
     var(--osdk-surface-border-radius)

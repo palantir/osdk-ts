@@ -15,6 +15,7 @@
  */
 
 import type {
+  ObjectSet,
   ObjectTypeDefinition,
   PropertyKeys,
   WhereClause,
@@ -28,6 +29,7 @@ import { coerceToStringArray } from "../utils/coerceFilterValue.js";
 
 interface ListogramFilterInputProps<Q extends ObjectTypeDefinition> {
   objectType: Q;
+  objectSet: ObjectSet<Q>;
   propertyKey: string;
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
@@ -41,6 +43,7 @@ interface ListogramFilterInputProps<Q extends ObjectTypeDefinition> {
 
 function ListogramFilterInputInner<Q extends ObjectTypeDefinition>({
   objectType,
+  objectSet,
   propertyKey,
   filterState,
   onFilterStateChanged,
@@ -60,6 +63,14 @@ function ListogramFilterInputInner<Q extends ObjectTypeDefinition>({
   );
   const isExcluding = filterState?.isExcluding ?? false;
 
+  const handleClearAll = useCallback(() => {
+    onFilterStateChanged({
+      type: "EXACT_MATCH",
+      values: [],
+      isExcluding,
+    });
+  }, [onFilterStateChanged, isExcluding]);
+
   const handleChange = useCallback(
     (values: string[]) => {
       onFilterStateChanged({
@@ -71,14 +82,18 @@ function ListogramFilterInputInner<Q extends ObjectTypeDefinition>({
     [onFilterStateChanged, isExcluding],
   );
 
+  const sortBy = displayMode === "minimal"
+    ? "value" as const
+    : "count" as const;
   const aggregationOptions = useMemo(
-    () => ({ where: whereClause }),
-    [whereClause],
+    () => ({ where: whereClause, sortBy }),
+    [whereClause, sortBy],
   );
 
   const { data, maxCount, isLoading, error } = usePropertyAggregation(
     objectType,
     propertyKey as PropertyKeys<Q>,
+    objectSet,
     aggregationOptions,
   );
 
@@ -88,6 +103,7 @@ function ListogramFilterInputInner<Q extends ObjectTypeDefinition>({
       filterState={filterState}
       onFilterStateChanged={onFilterStateChanged}
       totalValueCount={data.length}
+      onClearAll={handleClearAll}
     >
       <ListogramInput
         values={data}
@@ -98,6 +114,7 @@ function ListogramFilterInputInner<Q extends ObjectTypeDefinition>({
         onChange={handleChange}
         colorMap={colorMap}
         displayMode={displayMode}
+        isExcluding={isExcluding}
         maxVisibleItems={maxVisibleItems}
         searchQuery={searchQuery}
       />

@@ -35,6 +35,7 @@ import type {
 import { getWireObjectSet } from "../../../objectSet/createObjectSet.js";
 import type { ListPayload } from "../../ListPayload.js";
 import type { Status } from "../../ObservableClient/common.js";
+import type { CollectionConnectableParams } from "../base-list/BaseCollectionQuery.js";
 import { BaseListQuery } from "../base-list/BaseListQuery.js";
 import type { BatchContext } from "../BatchContext.js";
 import { type CacheKey } from "../CacheKey.js";
@@ -92,7 +93,6 @@ export abstract class ListQuery extends BaseListQuery<
   protected apiName: string;
   #whereClause: Canonical<SimpleWhereClause>;
 
-  // Using base class minResultsToLoad instead of a private property
   #orderBy: Canonical<Record<string, "asc" | "desc" | undefined>>;
   #select: Canonical<readonly string[]> | undefined;
   #intersectWith: Canonical<Array<Canonical<SimpleWhereClause>>> | undefined;
@@ -148,14 +148,6 @@ export abstract class ListQuery extends BaseListQuery<
         this.#orderBy,
       );
     }
-
-    if (opts.autoFetchMore === true) {
-      this.minResultsToLoad = Number.MAX_SAFE_INTEGER;
-    } else if (typeof opts.autoFetchMore === "number") {
-      this.minResultsToLoad = Math.max(0, opts.autoFetchMore);
-    } else {
-      this.minResultsToLoad = 0;
-    }
   }
 
   get canonicalWhere(): Canonical<SimpleWhereClause> {
@@ -179,6 +171,15 @@ export abstract class ListQuery extends BaseListQuery<
 
   get canonicalPivotInfo(): Canonical<PivotInfo> | undefined {
     return this.#pivotInfo;
+  }
+
+  protected createPayload(
+    params: CollectionConnectableParams,
+  ): ListPayload {
+    return {
+      ...super.createPayload(params),
+      objectSet: this.#objectSet,
+    } as ListPayload;
   }
 
   protected abstract createObjectSet(
@@ -262,6 +263,9 @@ export abstract class ListQuery extends BaseListQuery<
       // but shouldn't be needed ideally
       ...(Object.keys(this.#orderBy).length > 0
         ? { $orderBy: this.#orderBy }
+        : {}),
+      ...(this.options.$loadPropertySecurityMetadata
+        ? { $loadPropertySecurityMetadata: true }
         : {}),
     });
 
@@ -582,9 +586,9 @@ export abstract class ListQuery extends BaseListQuery<
    * Get cache key for object.
    */
   private getObjectCacheKey(
-    obj: { $objectType: string; $primaryKey: string | number | boolean },
+    obj: { $objectType: string; $primaryKey: string | number },
   ): ObjectCacheKey {
-    const pk = obj.$primaryKey as string | number;
+    const pk = obj.$primaryKey;
     return this.cacheKeys.get<ObjectCacheKey>(
       "object",
       obj.$objectType,

@@ -42,7 +42,7 @@ export function convertLink(
 ): LinkTypeBlockDataV2 {
   validateLink(linkType);
   let definition: LinkDefinition;
-  let datasource: ManyToManyLinkTypeDatasource | undefined = undefined;
+  let datasource: ManyToManyLinkTypeDatasource | undefined;
   if ("one" in linkType) {
     const { apiName: oneObjectApiName, object: oneObject } = getObject(
       linkType.one.object,
@@ -135,6 +135,12 @@ export function convertLink(
       toManyObjectApiName,
     );
 
+    const columnA = manyObject.primaryKeyPropertyApiName;
+    const columnB = toManyObject.primaryKeyPropertyApiName;
+    const hasCollision = columnA === columnB;
+    const resolvedColumnA = hasCollision ? `${columnA}_from` : columnA;
+    const resolvedColumnB = hasCollision ? `${columnB}_to` : columnB;
+
     definition = {
       type: "manyToMany",
       manyToMany: {
@@ -152,24 +158,25 @@ export function convertLink(
         },
       },
     };
-
+    const datasetLocator = ridGenerator.generateDatasetLocator(
+      `link.${linkType.apiName}`,
+      new Set([resolvedColumnA, resolvedColumnB]),
+    );
     datasource = {
-      rid: ridGenerator.generateRid(`datasource.link.${linkType.apiName}`),
+      rid: ridGenerator.generateDatasourceRid(linkType.apiName),
       datasource: {
         type: "dataset",
         dataset: {
           // TODO: Add proper branchId from link configuration
-          branchId: "main",
-          datasetRid: ridGenerator.generateRid(
-            `link.dataset.${linkType.apiName}`,
-          ),
+          branchId: datasetLocator.branchId,
+          datasetRid: datasetLocator.rid,
           writebackDatasetRid: undefined,
           // TODO: Convert property mappings to use property RIDs as keys
           objectTypeAPrimaryKeyMapping: {
-            [manyPkRidA]: manyObject.primaryKeyPropertyApiName,
+            [manyPkRidA]: resolvedColumnA,
           },
           objectTypeBPrimaryKeyMapping: {
-            [manyPkRidB]: toManyObject.primaryKeyPropertyApiName,
+            [manyPkRidB]: resolvedColumnB,
           },
         },
       },
@@ -184,7 +191,7 @@ export function convertLink(
 
   return {
     linkType: {
-      definition: definition,
+      definition,
       rid: ridGenerator.generateRidForLinkType(linkTypeId),
       id: cleanAndValidateLinkTypeId(linkType.apiName),
       status: convertLinkStatus(linkType.status, ridGenerator),

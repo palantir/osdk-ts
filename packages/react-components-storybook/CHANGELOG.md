@@ -1,5 +1,35 @@
 # @osdk/react-components-storybook
 
+## 0.2.0-beta.12
+
+### Minor Changes
+
+- d6c2c8b: Fix FilterList dropdown
+
+### Patch Changes
+
+- Updated dependencies [46f0a47]
+  - @osdk/faux@0.6.0-beta.7
+
+## 0.2.0-beta.11
+
+### Minor Changes
+
+- 8eea31b: feat(pdf): pdf viewer recipes + fixed for form fields
+
+## 0.2.0-beta.10
+
+### Patch Changes
+
+- Updated dependencies [b68cebd]
+  - @osdk/faux@0.6.0-beta.6
+
+## 0.2.0-beta.9
+
+### Minor Changes
+
+- 336a013: refactor(pdf): rename BasePdfRenderer/PdfRenderer to BasePdfViewer/PdfViewer, rename downloadEnabled to enableDownload, expose internal hooks, add onDownload result callback for download success/failure
+
 ## 0.2.0-beta.8
 
 ### Minor Changes

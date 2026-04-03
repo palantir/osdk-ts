@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,9 +39,8 @@ export interface FormFieldDefinition<
 
   /**
    * Display label for the field
-   * If not provided, the form field will not show any label.
    */
-  label?: string;
+  label: string;
 
   /**
    * Default value of the field
@@ -99,15 +98,15 @@ export interface FormFieldDefinition<
 
   /**
    * The component props for the form field
-   * Excludes runtime props (key, onChange) which are managed by ActionForm
+   * Excludes runtime props (value, onChange) which are managed by ActionForm
    */
-  fieldComponentProps?: Omit<
+  fieldComponentProps: Omit<
     FormFieldPropsByType[
       ValidFormFieldForPropertyType<
         FieldDescriptorType<Q, K>
       >
     ],
-    "key" | "onChange"
+    "value" | "onChange"
   >;
 }
 
@@ -127,7 +126,7 @@ type ValidationRule =
  */
 export interface FormFieldPropsByType {
   DATETIME_PICKER: DatetimePickerFieldProps;
-  DROPDOWN: DropdownFieldProps<unknown>;
+  DROPDOWN: DropdownFieldProps<unknown, boolean>;
   FILE_PICKER: FilePickerProps;
   NUMBER_INPUT: NumberInputFieldProps;
   OBJECT_SET: ObjectSetFieldProps<ObjectTypeDefinition>;
@@ -138,29 +137,40 @@ export interface FormFieldPropsByType {
 }
 
 /**
- * Datetime picker field props
+ * Datetime picker field props.
+ *
+ * When `formatDate` is omitted, ISO-like format is used (YYYY-MM-DD / YYYY-MM-DD HH:mm).
  */
 export interface DatetimePickerFieldProps extends BaseFormFieldProps<Date> {
   /**
-   * The earliest date the user can select
-   * If provided, this will be added to the field validation
+   * The earliest date the user can select.
+   * If provided, this will be added to the field validation.
    */
   min?: Date;
 
   /**
-   * The latest date the user can select
-   * If provided, this will be added to the field validation
+   * The latest date the user can select.
+   * If provided, this will be added to the field validation.
    */
   max?: Date;
 
   /**
-   * Whether to show time picker
+   * Whether to show time picker.
    */
   showTime?: boolean;
 
   /**
-   * Function to format the date string
+   * Whether to close the popover after selecting a date.
+   * @default true when `showTime` is false, false when `showTime` is true
    */
+  closeOnSelection?: boolean;
+
+  /**
+   * Placeholder text shown when no value is selected.
+   */
+  placeholder?: string;
+
+  /** Formats a Date for display in the trigger button. */
   formatDate?: (date: Date) => string;
 }
 
@@ -245,7 +255,9 @@ export interface TextAreaFieldProps extends
      */
     | "maxLength"
   >
-{}
+{
+  placeholder?: string;
+}
 
 export interface TextInputFieldProps extends
   BaseFormFieldProps<string>,
@@ -267,28 +279,40 @@ export interface TextInputFieldProps extends
 /**
  * Number input field props
  */
-export interface NumberInputFieldProps extends
-  BaseFormFieldProps<number>,
-  Pick<
-    React.InputHTMLAttributes<HTMLInputElement>,
-    /**
-     * If provided, this will be added to the field validation
-     */
-    | "min"
-    /**
-     * If provided, this will be added to the field validation
-     */
-    | "max"
-    | "step"
-  >
-{}
+export interface NumberInputFieldProps extends BaseFormFieldProps<number> {
+  /**
+   * Minimum allowed value.
+   */
+  min?: number;
+
+  /**
+   * Maximum allowed value.
+   */
+  max?: number;
+
+  /**
+   * Step increment for the input. Used by the stepper buttons and ArrowUp/ArrowDown keyboard stepping.
+   *
+   * @default 1
+   */
+  step?: number;
+
+  /**
+   * Placeholder text shown when the input is empty.
+   */
+  placeholder?: string;
+}
 
 /**
  * Radio buttons field props
  */
 export interface RadioButtonsFieldProps<V> extends BaseFormFieldProps<V> {
   /**
-   * Available options for radio buttons
+   * Available options for radio buttons.
+   *
+   * Values are compared by reference equality (`===`). When options contain
+   * non-primitive values, pass the same object references for `value` and
+   * the corresponding option entry.
    */
   options: Option<V>[];
 }
@@ -319,6 +343,12 @@ export interface CustomFieldProps<V> extends BaseFormFieldProps<V> {
 }
 
 export interface BaseFormFieldProps<V> {
+  /**
+   * The HTML `id` attribute for the field input element.
+   * Used for `<label htmlFor>` association.
+   */
+  id?: string;
+
   /**
    * The value of the form field
    */
@@ -426,13 +456,13 @@ export type RendererFieldDefinition = {
     fieldKey: string;
     fieldComponent: K;
     fieldType?: FieldType;
-    label?: string;
+    label: string;
     defaultValue?: unknown;
     isRequired?: boolean;
     placeholder?: string;
     helperText?: string;
     helperTextPlacement?: "bottom" | "tooltip";
-    fieldComponentProps?: Omit<FormFieldPropsByType[K], "value" | "onChange">;
+    fieldComponentProps: Omit<FormFieldPropsByType[K], "value" | "onChange">;
   };
 }[FieldComponent];
 

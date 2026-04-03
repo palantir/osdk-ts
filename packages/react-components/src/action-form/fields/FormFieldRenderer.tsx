@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,15 @@
  */
 
 import React, { memo } from "react";
+import { FormField } from "../FormField.js";
 import type { RendererFieldDefinition } from "../FormFieldApi.js";
+import { CustomField } from "./CustomField.js";
+import { DatetimePickerField } from "./DatetimePickerField.js";
 import { DropdownField } from "./DropdownField.js";
+import { NumberInputField } from "./NumberInputField.js";
+import { RadioButtonsField } from "./RadioButtonsField.js";
+import { TextAreaField } from "./TextAreaField.js";
 import { TextInputField } from "./TextInputField.js";
-
-const EMPTY_ITEMS: unknown[] = [];
 
 export interface FormFieldRendererProps {
   fieldDefinition: RendererFieldDefinition;
@@ -37,18 +41,14 @@ export const FormFieldRenderer: React.FC<FormFieldRendererProps> = memo(
       fieldDefinition;
 
     return (
-      <div>
-        {label != null && (
-          <label htmlFor={fieldDefinition.fieldKey}>
-            {label}
-            {isRequired === true && <span aria-label="required">*</span>}
-          </label>
-        )}
+      <FormField
+        label={label}
+        isRequired={isRequired}
+        fieldKey={fieldDefinition.fieldKey}
+        helperText={helperTextPlacement !== "tooltip" ? helperText : undefined}
+      >
         {renderFieldComponent(fieldDefinition, value, onFieldValueChange)}
-        {helperText != null && helperTextPlacement !== "tooltip" && (
-          <div>{helperText}</div>
-        )}
-      </div>
+      </FormField>
     );
   },
 );
@@ -60,41 +60,79 @@ function renderFieldComponent(
 ): React.ReactElement {
   switch (fieldDefinition.fieldComponent) {
     case "TEXT_INPUT":
-    // TODO: Render a <textarea> for TEXT_AREA instead of falling through
-    case "TEXT_AREA":
       return (
         <TextInputField
           id={fieldDefinition.fieldKey}
-          // TODO: Use coerceFieldValue
           value={value != null ? String(value) : ""}
           onChange={onChange}
           placeholder={fieldDefinition.placeholder}
+          {...fieldDefinition.fieldComponentProps}
+        />
+      );
+    case "TEXT_AREA":
+      return (
+        <TextAreaField
+          id={fieldDefinition.fieldKey}
+          value={value != null ? String(value) : ""}
+          onChange={onChange}
+          placeholder={fieldDefinition.placeholder}
+          {...fieldDefinition.fieldComponentProps}
         />
       );
     case "DROPDOWN": {
-      const { items = EMPTY_ITEMS, ...dropdownProps } =
-        fieldDefinition.fieldComponentProps ?? {};
       return (
         <DropdownField
           value={value}
           onChange={onChange}
-          items={items}
           placeholder={fieldDefinition.placeholder}
-          {...dropdownProps}
+          {...fieldDefinition.fieldComponentProps}
         />
       );
     }
-    case "NUMBER_INPUT":
-    case "RADIO_BUTTONS":
     case "DATETIME_PICKER":
-    case "FILE_PICKER":
-    case "OBJECT_SET":
+      return (
+        <DatetimePickerField
+          id={fieldDefinition.fieldKey}
+          placeholder={fieldDefinition.placeholder}
+          // TODO: Use coerceFieldValue
+          value={value instanceof Date ? value : null}
+          onChange={onChange}
+          {...fieldDefinition.fieldComponentProps}
+        />
+      );
+    case "RADIO_BUTTONS":
+      return (
+        <RadioButtonsField
+          id={fieldDefinition.fieldKey}
+          value={value}
+          onChange={onChange}
+          {...fieldDefinition.fieldComponentProps}
+        />
+      );
     case "CUSTOM":
       return (
-        <div>
-          Unsupported field type: {fieldDefinition.fieldComponent}
-        </div>
+        <CustomField
+          id={fieldDefinition.fieldKey}
+          value={value}
+          onChange={onChange}
+          {...fieldDefinition.fieldComponentProps}
+        />
       );
+    case "NUMBER_INPUT":
+      // TODO: Use coerceFieldValue
+      return (
+        <NumberInputField
+          id={fieldDefinition.fieldKey}
+          value={typeof value === "number" ? value : null}
+          onChange={onChange}
+          placeholder={fieldDefinition.placeholder}
+          {...fieldDefinition.fieldComponentProps}
+        />
+      );
+    case "FILE_PICKER":
+    case "OBJECT_SET":
+      return <div>Unsupported field type: {fieldDefinition.fieldComponent}
+      </div>;
     default:
       return assertUnreachableFieldComponent(fieldDefinition);
   }

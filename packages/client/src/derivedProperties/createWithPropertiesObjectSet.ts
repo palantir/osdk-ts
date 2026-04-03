@@ -24,12 +24,6 @@ import invariant from "tiny-invariant";
 import { modernToLegacyWhereClause } from "../internal/conversions/modernToLegacyWhereClause.js";
 import { derivedPropertyDefinitionFactory } from "./derivedPropertyDefinitionFactory.js";
 
-type WithConstSelect<Q extends ObjectOrInterfaceDefinition> =
-  & DerivedProperty.SelectPropertyBuilder<Q, false>
-  & {
-    constant: DerivedProperty.Builder<Q, true>["constant"];
-  };
-
 /** @internal */
 export function createWithPropertiesObjectSet<
   Q extends ObjectOrInterfaceDefinition,
@@ -38,7 +32,7 @@ export function createWithPropertiesObjectSet<
   objectSet: WireObjectSet,
   definitionMap: Map<any, DerivedPropertyDefinition>,
   fromBaseObjectSet: boolean = false,
-): WithConstSelect<Q> {
+): DerivedProperty.SelectPropertyBuilder<Q, false> {
   return {
     pivotTo: (link) => {
       return createWithPropertiesObjectSet(objectType, {
@@ -51,7 +45,7 @@ export function createWithPropertiesObjectSet<
       const rdpNames = new Set(definitionMap.keys());
       return createWithPropertiesObjectSet(objectType, {
         type: "filter",
-        objectSet: objectSet,
+        objectSet,
         where: modernToLegacyWhereClause(clause, objectType, rdpNames),
       }, definitionMap);
     },
@@ -105,7 +99,7 @@ export function createWithPropertiesObjectSet<
       }
       const wrappedObjectSet: DerivedPropertyDefinition = {
         type: "selection",
-        objectSet: objectSet,
+        objectSet,
         operation: aggregationOperationDefinition,
       };
       const selectorResult: DerivedProperty.Definition<any, any> =
@@ -126,7 +120,7 @@ export function createWithPropertiesObjectSet<
       }
       const wrappedObjectSet: DerivedPropertyDefinition = {
         type: "selection",
-        objectSet: objectSet,
+        objectSet,
         operation: {
           type: "get",
           selectedPropertyApiName: name,
@@ -136,23 +130,6 @@ export function createWithPropertiesObjectSet<
         derivedPropertyDefinitionFactory(wrappedObjectSet, definitionMap);
       definitionMap.set(selectorResult, wrappedObjectSet);
       return selectorResult as any;
-    },
-    constant: {
-      double: (value) => {
-        invariant(false, "Not supported");
-      },
-      integer: (value) => {
-        invariant(false, "Not supported");
-      },
-      long: (value) => {
-        invariant(false, "Not supported");
-      },
-      datetime: (value) => {
-        invariant(false, "Not supported");
-      },
-      timestamp: (value) => {
-        invariant(false, "Not supported");
-      },
     },
   };
 }

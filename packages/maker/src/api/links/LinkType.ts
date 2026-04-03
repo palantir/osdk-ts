@@ -97,6 +97,7 @@ export interface ManyToManyLinkTypeDefinition {
   editsEnabled?: boolean;
   status?: UserLinkTypeStatus;
   redacted?: boolean;
+  includeEmptyBackingDatasource?: boolean;
 }
 
 export interface ManyToManyObjectLinkReference {
@@ -110,6 +111,7 @@ export interface ManyToManyLinkTypeUserDefinition {
   toMany: ManyToManyObjectLinkReferenceUserDefinition;
   editsEnabled?: boolean;
   status?: UserLinkTypeStatus;
+  includeEmptyBackingDatasource?: boolean;
 }
 
 export interface ManyToManyObjectLinkReferenceUserDefinition {

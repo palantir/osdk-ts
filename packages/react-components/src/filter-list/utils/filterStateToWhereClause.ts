@@ -16,7 +16,7 @@
 
 import type { ObjectTypeDefinition, WhereClause } from "@osdk/api";
 import { assertUnreachable } from "../../shared/assertUnreachable.js";
-import { formatDateForInput } from "../base/inputs/dateUtils.js";
+import { formatDateForInput } from "../../shared/dateUtils.js";
 import type { FilterDefinitionUnion } from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
 import { getFilterKey } from "./getFilterKey.js";
@@ -228,7 +228,6 @@ export interface PropertyTypeInfo {
 export function buildWhereClause<Q extends ObjectTypeDefinition>(
   definitions: Array<FilterDefinitionUnion<Q>> | undefined,
   filterStates: Map<string, FilterState>,
-  operator: "and" | "or",
   propertyTypes?: Map<string, PropertyTypeInfo>,
   excludeFilterKey?: string,
 ): WhereClause<Q> {
@@ -401,9 +400,5 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
     return clauses[0] as WhereClause<Q>;
   }
 
-  if (operator === "and") {
-    return { $and: clauses } as WhereClause<Q>;
-  }
-
-  return { $or: clauses } as WhereClause<Q>;
+  return { $and: clauses } as WhereClause<Q>;
 }

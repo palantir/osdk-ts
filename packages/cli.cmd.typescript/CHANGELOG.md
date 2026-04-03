@@ -1,5 +1,30 @@
 # @osdk/cli.cmd.typescript
 
+## 0.32.0-beta.5
+
+### Minor Changes
+
+- 46f0a47: Update platform SDK to 2.57.0 and handle new typeReference query data type
+
+### Patch Changes
+
+- Updated dependencies [d607557]
+- Updated dependencies [46f0a47]
+  - @osdk/generator@2.8.0-beta.32
+  - @osdk/cli.common@0.32.0-beta.5
+
+## 0.32.0-beta.4
+
+### Minor Changes
+
+- 9eb20ee: Filter out queries that are ontology edit functions before generating.
+
+### Patch Changes
+
+- Updated dependencies [7775359]
+  - @osdk/generator@2.8.0-beta.27
+  - @osdk/cli.common@0.32.0-beta.4
+
 ## 0.32.0-beta.3
 
 ### Minor Changes

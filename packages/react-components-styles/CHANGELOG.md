@@ -1,5 +1,46 @@
 # @osdk/react-components-styles
 
+## 0.2.0-beta.29
+
+### Minor Changes
+
+- d6c2c8b: Fix FilterList styling
+- d6c2c8b: Fix FilterList dropdown
+
+## 0.2.0-beta.28
+
+### Minor Changes
+
+- 3eaf3f5: Add CSS layers documentation and Tailwind CSS v4 setup instructions to READMEs
+- 3f4fb81: Address design review and PR review feedback for filter list: exclude strikethrough only on selected items, remove hover-to-show exclude row, fix 3-dots toggle close behavior, remove OR filter operator mode, and various UI polish
+
+## 0.2.0-beta.27
+
+## 0.2.0-beta.26
+
+### Minor Changes
+
+- c3da451: add marking button, category group, and validation components for CBAC picker
+- 66b7125: Add RadioButtonsField component for action form radio button inputs
+
+## 0.2.0-beta.25
+
+## 0.2.0-beta.24
+
+## 0.2.0-beta.14
+
+### Minor Changes
+
+- c35231f: add cbac css tokens and create cbac-components package
+
+## 0.2.0-beta.13
+
+### Minor Changes
+
+- 7080b01: Add base form layout with header, footer, field components, and CSS token variables for theming
+- dffac63: Fix styling nits
+- b373588: Styling fix with global border-box
+
 ## 0.2.0-beta.12
 
 ### Minor Changes

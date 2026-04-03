@@ -1,5 +1,38 @@
 # @osdk/api
 
+## 2.8.0-beta.32
+
+## 2.8.0-beta.31
+
+## 2.8.0-beta.30
+
+### Minor Changes
+
+- 4ef6adc: Fix interface links off of objects
+
+## 2.8.0-beta.29
+
+### Minor Changes
+
+- 4a856cb: add shape builder and inline config converter
+
+## 2.8.0-beta.28
+
+### Minor Changes
+
+- f294f5a: Remove literal support before GA.
+- d284bf2: add media types, caching, and metadata query
+- b68cebd: add shape type definitions with opaque internal fields and shapes-internal export path
+
+## 2.8.0-beta.27
+
+## 2.8.0-beta.26
+
+### Minor Changes
+
+- 60b5ffb: Add `platformApiName` field to actions to preserve the original API name used by the Foundry platform
+- 61e33ab: Add support for interval queries
+
 ## 2.8.0-beta.25
 
 ### Minor Changes

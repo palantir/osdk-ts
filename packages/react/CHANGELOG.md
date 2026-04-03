@@ -1,5 +1,62 @@
 # @osdkkit/react
 
+## 0.10.0-beta.15
+
+### Minor Changes
+
+- 32c27d7: Added useOsdkFunctions to @osdk/react to execute multiple functions in parallel. This is used by ObjectTable to fetch function-backed columns
+- 6019278: auto-compute peer dependency ranges from changelog history for react and react-components
+
+## 0.10.0-beta.14
+
+### Minor Changes
+
+- b0930e4: Show helpful error message when hooks are used without OsdkProvider2
+
+### Patch Changes
+
+- Updated dependencies [520398c]
+- Updated dependencies [ffc6efe]
+- Updated dependencies [4a856cb]
+  - @osdk/client@2.8.0-beta.29
+  - @osdk/api@2.8.0-beta.29
+
+## 0.10.0-beta.13
+
+### Minor Changes
+
+- f294f5a: Remove literal support before GA.
+
+### Patch Changes
+
+- Updated dependencies [f294f5a]
+- Updated dependencies [2855223]
+- Updated dependencies [d284bf2]
+- Updated dependencies [b68cebd]
+  - @osdk/client@2.8.0-beta.28
+  - @osdk/api@2.8.0-beta.28
+
+## 0.10.0-beta.12
+
+### Minor Changes
+
+- 46dfbec: fix useOsdkAction applyAction to re-throw errors instead of silently swallowing them
+
+## 0.10.0-beta.11
+
+### Minor Changes
+
+- b1e8bba: add cbac admin hooks for markings, categories, and restrictions
+- 599426b: expose $loadPropertySecurityMetadata option in observable client and react hooks
+
+### Patch Changes
+
+- Updated dependencies [599426b]
+- Updated dependencies [60b5ffb]
+- Updated dependencies [61e33ab]
+  - @osdk/client@2.8.0-beta.26
+  - @osdk/api@2.8.0-beta.26
+
 ## 0.10.0-beta.10
 
 ### Minor Changes

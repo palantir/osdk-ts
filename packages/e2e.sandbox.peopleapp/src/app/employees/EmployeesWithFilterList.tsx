@@ -68,8 +68,8 @@ const INITIAL_FILTER_DEFINITIONS: FilterDefinitionUnion<Employee>[] = [
     id: "department",
     key: "department",
     label: "Department",
-    filterComponent: "CHECKBOX_LIST",
-    filterState: { type: "SELECT", selectedValues: [] },
+    filterComponent: "LISTOGRAM",
+    filterState: { type: "EXACT_MATCH", values: [] },
   } as FilterDefinitionUnion<Employee>,
 ];
 

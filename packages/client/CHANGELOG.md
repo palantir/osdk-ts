@@ -1,5 +1,102 @@
 # @osdk/client
 
+## 2.8.0-beta.32
+
+### Minor Changes
+
+- 46f0a47: Update platform SDK to 2.57.0 and handle new typeReference query data type
+
+### Patch Changes
+
+- Updated dependencies [46f0a47]
+  - @osdk/generator-converters@2.8.0-beta.32
+  - @osdk/api@2.8.0-beta.32
+  - @osdk/client.unstable@2.8.0-beta.32
+
+## 2.8.0-beta.31
+
+### Minor Changes
+
+- 2b01323: fix ObjectCacheKeyRegistry leak where unregister was never called during GC cleanup
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.31
+- @osdk/client.unstable@2.8.0-beta.31
+- @osdk/generator-converters@2.8.0-beta.31
+
+## 2.8.0-beta.30
+
+### Minor Changes
+
+- 4ef6adc: Fix interface links off of objects
+
+### Patch Changes
+
+- Updated dependencies [4ef6adc]
+  - @osdk/api@2.8.0-beta.30
+  - @osdk/client.unstable@2.8.0-beta.30
+  - @osdk/generator-converters@2.8.0-beta.30
+
+## 2.8.0-beta.29
+
+### Minor Changes
+
+- 520398c: Add canonicalizeOptions API to ObservableClient for stable memo keys in React hooks, add objectSet to list payload
+- ffc6efe: Fix query map parsing to allow nullable values in map entries
+
+### Patch Changes
+
+- Updated dependencies [4a856cb]
+  - @osdk/api@2.8.0-beta.29
+  - @osdk/client.unstable@2.8.0-beta.29
+  - @osdk/generator-converters@2.8.0-beta.29
+
+## 2.8.0-beta.28
+
+### Minor Changes
+
+- f294f5a: Remove literal support before GA.
+- 2855223: fix autoFetchMore not working when another subscriber creates the shared query first
+- d284bf2: add media types, caching, and metadata query
+
+### Patch Changes
+
+- Updated dependencies [f294f5a]
+- Updated dependencies [d284bf2]
+- Updated dependencies [b68cebd]
+  - @osdk/api@2.8.0-beta.28
+  - @osdk/client.unstable@2.8.0-beta.28
+  - @osdk/generator-converters@2.8.0-beta.28
+
+## 2.8.0-beta.27
+
+### Minor Changes
+
+- fceb4ce: Fix canonicalization for order-independent where clauses and orderBy keys, add ObjectSetArrayCanonicalizer for set operations, improve ObjectSetQuery with in-memory updates and deletion handling
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.27
+- @osdk/client.unstable@2.8.0-beta.27
+- @osdk/generator-converters@2.8.0-beta.27
+
+## 2.8.0-beta.26
+
+### Minor Changes
+
+- 599426b: expose $loadPropertySecurityMetadata option in observable client and react hooks
+- 60b5ffb: Add `platformApiName` field to actions to preserve the original API name used by the Foundry platform
+- 61e33ab: Add support for interval queries
+
+### Patch Changes
+
+- Updated dependencies [60b5ffb]
+- Updated dependencies [61e33ab]
+  - @osdk/api@2.8.0-beta.26
+  - @osdk/generator-converters@2.8.0-beta.26
+  - @osdk/client.unstable@2.8.0-beta.26
+
 ## 2.8.0-beta.25
 
 ### Patch Changes

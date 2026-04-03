@@ -32,7 +32,8 @@ import {
   type HistogramBucket,
 } from "./createHistogramBuckets.js";
 import styles from "./RangeInput.module.css";
-import { useStaleData } from "./useStaleData.js";
+import sharedStyles from "./shared.module.css";
+import { useStableData } from "./useStableData.js";
 
 const DEBOUNCE_MS = 300;
 
@@ -123,7 +124,7 @@ function RangeInputInner<T>({
     };
   }, [debouncedMinChange, debouncedMaxChange]);
 
-  const displayPairs = useStaleData(valueCountPairs, isLoading);
+  const displayPairs = useStableData(valueCountPairs, isLoading);
 
   const computedRange = useMemo(() => {
     if (displayPairs.length === 0) return { min: undefined, max: undefined };
@@ -190,11 +191,14 @@ function RangeInputInner<T>({
       style={style}
       data-loading={isLoading}
     >
-      {showHistogram && (
-        <div
-          className={styles.histogramContainer}
-          data-empty={buckets.length === 0}
-        >
+      {showHistogram && buckets.length === 0 && !isLoading && (
+        <div className={sharedStyles.emptyMessage}>
+          No values available
+        </div>
+      )}
+
+      {showHistogram && buckets.length > 0 && (
+        <div className={styles.histogramContainer}>
           {buckets.map((bucket, index) => {
             const height = (bucket.count / maxBucketCount) * 100;
             const isInRange = (minValue === undefined

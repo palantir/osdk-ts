@@ -30,6 +30,7 @@ function makeDef(
     fieldKey,
     fieldComponent: "TEXT_INPUT",
     label: fieldKey,
+    fieldComponentProps: {},
     ...overrides,
   };
 }
@@ -141,6 +142,7 @@ describe("BaseForm", () => {
           fieldDefinitions={[
             {
               fieldKey: "color",
+              label: "Color",
               fieldComponent: "DROPDOWN" as const,
               fieldComponentProps: {
                 items: ["Red", "Blue", "Green"],

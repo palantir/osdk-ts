@@ -1,5 +1,59 @@
 # @osdk/maker-experimental
 
+## 0.6.0-beta.9
+
+### Minor Changes
+
+- 4ec5877: Fix link dataset shapes
+
+### Patch Changes
+
+- @osdk/api@2.8.0-beta.32
+- @osdk/client.unstable@2.8.0-beta.32
+
+## 0.6.0-beta.8
+
+### Minor Changes
+
+- a73bafd: Fix link type block data gen
+- e8ca289: Fix key resolution
+
+### Patch Changes
+
+- Updated dependencies [e8ca289]
+  - @osdk/maker@0.16.0-beta.15
+
+## 0.6.0-beta.7
+
+### Minor Changes
+
+- 771e3e6: Update datasource generation
+
+### Patch Changes
+
+- Updated dependencies [f294f5a]
+- Updated dependencies [d284bf2]
+- Updated dependencies [684b6c6]
+- Updated dependencies [b68cebd]
+  - @osdk/api@2.8.0-beta.28
+  - @osdk/maker@0.16.0-beta.14
+  - @osdk/client.unstable@2.8.0-beta.28
+
+## 0.6.0-beta.6
+
+### Minor Changes
+
+- 9ee82f4: Dedupe many-to-many PK property names in datasource
+
+### Patch Changes
+
+- Updated dependencies [9ee82f4]
+- Updated dependencies [60b5ffb]
+- Updated dependencies [61e33ab]
+  - @osdk/maker@0.16.0-beta.13
+  - @osdk/api@2.8.0-beta.26
+  - @osdk/client.unstable@2.8.0-beta.26
+
 ## 0.6.0-beta.5
 
 ### Minor Changes

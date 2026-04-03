@@ -48,7 +48,7 @@ function HeaderMenuItem({
 }: HeaderMenuItemProps): React.ReactElement {
   return (
     <Menu.Item
-      closeOnClick
+      closeOnClick={true}
       className={classNames(
         styles.osdkCenterContainer,
         styles.osdkContentGap,
@@ -254,7 +254,6 @@ export function TableHeaderWithPopover<
               >
                 <ChevronDown
                   className={styles.osdkHeaderIcon}
-                  //
                 />
               </Menu.Trigger>
             )}

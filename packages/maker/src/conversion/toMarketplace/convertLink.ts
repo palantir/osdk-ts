@@ -37,8 +37,7 @@ export function convertLink(
 ): OntologyIrLinkTypeBlockDataV2 {
   validateLink(linkType);
   let definition: OntologyIrLinkDefinition;
-  let datasource: OntologyIrManyToManyLinkTypeDatasource | undefined =
-    undefined;
+  let datasource: OntologyIrManyToManyLinkTypeDatasource | undefined;
   if ("one" in linkType) {
     const { apiName: oneObjectApiName, object: oneObject } = getObject(
       linkType.one.object,
@@ -96,6 +95,13 @@ export function convertLink(
     const { apiName: toManyObjectApiName, object: toManyObject } = getObject(
       linkType.toMany.object,
     );
+
+    const columnA = manyObject.primaryKeyPropertyApiName;
+    const columnB = toManyObject.primaryKeyPropertyApiName;
+    const hasCollision = columnA === columnB;
+    const resolvedColumnA = hasCollision ? `${columnA}_from` : columnA;
+    const resolvedColumnB = hasCollision ? `${columnB}_to` : columnB;
+
     definition = {
       type: "manyToMany",
       manyToMany: {
@@ -139,14 +145,14 @@ export function convertLink(
               apiName: manyObject.primaryKeyPropertyApiName,
               object: manyObjectApiName,
             },
-            column: manyObject.primaryKeyPropertyApiName,
+            column: resolvedColumnA,
           }],
           objectTypeBPrimaryKeyMapping: [{
             property: {
               apiName: toManyObject.primaryKeyPropertyApiName,
               object: toManyObjectApiName,
             },
-            column: toManyObject.primaryKeyPropertyApiName,
+            column: resolvedColumnB,
           }],
         },
       },
@@ -159,7 +165,7 @@ export function convertLink(
 
   return {
     linkType: {
-      definition: definition,
+      definition,
       id: cleanAndValidateLinkTypeId(linkType.apiName),
       status: convertLinkStatus(linkType.status),
       redacted: linkType.redacted ?? false,

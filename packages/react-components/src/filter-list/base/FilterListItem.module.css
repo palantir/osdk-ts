@@ -118,11 +118,6 @@
   border-radius: var(--osdk-filter-input-border-radius);
   padding: var(--osdk-filter-input-padding);
   gap: var(--osdk-filter-input-gap);
-
-  &:focus-within {
-    outline: var(--osdk-filter-input-focus-outline-width) solid var(--osdk-filter-input-focus-outline-color);
-    outline-offset: var(--osdk-filter-input-focus-outline-offset);
-  }
 }
 
 .searchInput {
@@ -183,7 +178,6 @@
   }
 }
 
-.filterItem:hover [data-exclude-row],
 .excludeRowVisible {
   opacity: 1;
   height: auto;
@@ -195,6 +189,21 @@
   font-size: var(--osdk-filter-item-exclude-dropdown-font-size);
   color: var(--osdk-filter-item-exclude-dropdown-color);
   margin-left: calc(var(--osdk-surface-spacing) * 0.5);
+}
+
+.clearAllButton {
+  margin-left: auto;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--osdk-filter-item-exclude-dropdown-font-family);
+  font-size: var(--osdk-filter-item-exclude-dropdown-font-size);
+  color: var(--osdk-filter-item-exclude-dropdown-color);
+  padding: 0;
+
+  &:hover {
+    text-decoration: underline;
+  }
 }
 
 .dragging {

@@ -17,12 +17,13 @@
 import { Button } from "@base-ui/react/button";
 import classnames from "classnames";
 import React, { memo, useCallback, useMemo, useState } from "react";
+import { Checkbox } from "../../../base-components/checkbox/Checkbox.js";
 import type { PropertyAggregationValue } from "../../types/AggregationTypes.js";
 import { filterValuesBySearch } from "../../utils/filterValues.js";
 import styles from "./ListogramInput.module.css";
 import { ListogramSkeleton } from "./ListogramSkeleton.js";
 import sharedStyles from "./shared.module.css";
-import { useStaleData } from "./useStaleData.js";
+import { useStableData } from "./useStableData.js";
 
 export type ListogramDisplayMode = "full" | "count" | "minimal";
 
@@ -35,6 +36,7 @@ interface ListogramInputProps {
   onChange: (values: string[]) => void;
   colorMap?: Record<string, string>;
   displayMode?: ListogramDisplayMode;
+  isExcluding?: boolean;
   className?: string;
   style?: React.CSSProperties;
   maxVisibleItems?: number;
@@ -50,6 +52,7 @@ function ListogramInputInner({
   onChange,
   colorMap,
   displayMode = "full",
+  isExcluding,
   className,
   style,
   maxVisibleItems,
@@ -57,7 +60,7 @@ function ListogramInputInner({
 }: ListogramInputProps): React.ReactElement {
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const stableValues = useStaleData(values, isLoading);
+  const stableValues = useStableData(values, isLoading);
 
   const selectedSet = useMemo(() => new Set(selectedValues), [selectedValues]);
 
@@ -79,13 +82,19 @@ function ListogramInputInner({
     return stableValues;
   }, [stableValues, searchQuery]);
 
+  const sortedValues = useMemo(() => {
+    const selected = filteredValues.filter(v => selectedSet.has(v.value));
+    const unselected = filteredValues.filter(v => !selectedSet.has(v.value));
+    return [...selected, ...unselected];
+  }, [filteredValues, selectedSet]);
+
   const displayValues = useMemo(() => {
-    if (isExpanded || !maxVisibleItems) return filteredValues;
-    return filteredValues.slice(0, maxVisibleItems);
-  }, [filteredValues, maxVisibleItems, isExpanded]);
+    if (isExpanded || !maxVisibleItems) return sortedValues;
+    return sortedValues.slice(0, maxVisibleItems);
+  }, [sortedValues, maxVisibleItems, isExpanded]);
 
   const hasMore = maxVisibleItems != null
-    && filteredValues.length > maxVisibleItems;
+    && sortedValues.length > maxVisibleItems;
 
   return (
     <div
@@ -131,15 +140,31 @@ function ListogramInputInner({
                   } as React.CSSProperties
                   : undefined}
               >
-                <span className={styles.label}>{value}</span>
-                {displayMode === "full" && (
-                  <span className={styles.bar}>
-                    <span className={styles.barFill} />
-                  </span>
-                )}
+                <span
+                  className={styles.checkbox}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <Checkbox
+                    checked={selectedSet.has(value)}
+                    onCheckedChange={() => toggleValue(value)}
+                    isExcluding={isExcluding}
+                  />
+                </span>
+                <span
+                  className={styles.label}
+                  data-excluding={(isExcluding && selectedSet.has(value))
+                    || undefined}
+                >
+                  {value}
+                </span>
                 {displayMode !== "minimal" && (
                   <span className={styles.count}>
                     {count.toLocaleString()}
+                  </span>
+                )}
+                {displayMode === "full" && (
+                  <span className={styles.bar}>
+                    <span className={styles.barFill} />
                   </span>
                 )}
               </Button>
@@ -149,10 +174,10 @@ function ListogramInputInner({
           {hasMore && !isExpanded && (
             <Button
               type="button"
-              className={styles.row}
+              className={styles.viewAllButton}
               onClick={() => setIsExpanded(true)}
             >
-              View all ({filteredValues.length})
+              View all ({sortedValues.length})
             </Button>
           )}
         </div>

@@ -1,5 +1,95 @@
 # @osdk/foundry-sdk-generator
 
+## 2.8.0-beta.32
+
+### Minor Changes
+
+- 46f0a47: Update platform SDK to 2.57.0 and handle new typeReference query data type
+
+### Patch Changes
+
+- Updated dependencies [d607557]
+- Updated dependencies [46f0a47]
+  - @osdk/generator@2.8.0-beta.32
+  - @osdk/client@2.8.0-beta.32
+  - @osdk/api@2.8.0-beta.32
+  - @osdk/client.unstable@2.8.0-beta.32
+  - @osdk/generator-utils@2.8.0-beta.32
+
+## 2.8.0-beta.31
+
+### Patch Changes
+
+- Updated dependencies [2b01323]
+  - @osdk/client@2.8.0-beta.31
+  - @osdk/api@2.8.0-beta.31
+  - @osdk/client.unstable@2.8.0-beta.31
+  - @osdk/generator-utils@2.8.0-beta.31
+  - @osdk/generator@2.8.0-beta.31
+
+## 2.8.0-beta.30
+
+### Patch Changes
+
+- Updated dependencies [4ef6adc]
+  - @osdk/generator@2.8.0-beta.30
+  - @osdk/client@2.8.0-beta.30
+  - @osdk/api@2.8.0-beta.30
+  - @osdk/client.unstable@2.8.0-beta.30
+  - @osdk/generator-utils@2.8.0-beta.30
+
+## 2.8.0-beta.29
+
+### Patch Changes
+
+- Updated dependencies [520398c]
+- Updated dependencies [ffc6efe]
+- Updated dependencies [4a856cb]
+  - @osdk/client@2.8.0-beta.29
+  - @osdk/api@2.8.0-beta.29
+  - @osdk/client.unstable@2.8.0-beta.29
+  - @osdk/generator-utils@2.8.0-beta.29
+  - @osdk/generator@2.8.0-beta.29
+
+## 2.8.0-beta.28
+
+### Patch Changes
+
+- Updated dependencies [f294f5a]
+- Updated dependencies [2855223]
+- Updated dependencies [d284bf2]
+- Updated dependencies [b68cebd]
+  - @osdk/client@2.8.0-beta.28
+  - @osdk/api@2.8.0-beta.28
+  - @osdk/client.unstable@2.8.0-beta.28
+  - @osdk/generator-utils@2.8.0-beta.28
+  - @osdk/generator@2.8.0-beta.28
+
+## 2.8.0-beta.27
+
+### Patch Changes
+
+- Updated dependencies [fceb4ce]
+- Updated dependencies [7775359]
+  - @osdk/client@2.8.0-beta.27
+  - @osdk/generator@2.8.0-beta.27
+  - @osdk/api@2.8.0-beta.27
+  - @osdk/client.unstable@2.8.0-beta.27
+  - @osdk/generator-utils@2.8.0-beta.27
+
+## 2.8.0-beta.26
+
+### Patch Changes
+
+- Updated dependencies [599426b]
+- Updated dependencies [60b5ffb]
+- Updated dependencies [61e33ab]
+  - @osdk/client@2.8.0-beta.26
+  - @osdk/api@2.8.0-beta.26
+  - @osdk/generator@2.8.0-beta.26
+  - @osdk/client.unstable@2.8.0-beta.26
+  - @osdk/generator-utils@2.8.0-beta.26
+
 ## 2.8.0-beta.25
 
 ### Patch Changes

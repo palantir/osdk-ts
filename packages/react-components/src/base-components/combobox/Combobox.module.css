@@ -23,7 +23,6 @@
   min-height: var(--osdk-combobox-min-height, 30px);
   padding: calc(var(--osdk-combobox-spacing, var(--osdk-surface-spacing)) * 1.5)
     calc(var(--osdk-combobox-spacing, var(--osdk-surface-spacing)) * 2);
-  box-sizing: border-box;
   border-radius: var(
     --osdk-combobox-border-radius,
     var(--osdk-surface-border-radius)
@@ -65,7 +64,6 @@
   flex: 1;
   min-width: 0;
   width: 100%;
-  box-sizing: border-box;
   padding: calc(var(--osdk-combobox-spacing, var(--osdk-surface-spacing)) * 1.5)
     calc(var(--osdk-combobox-spacing, var(--osdk-surface-spacing)) * 2);
   border-radius: var(
@@ -91,12 +89,7 @@
       --osdk-combobox-focus-border-color,
       var(--osdk-intent-primary-rest)
     );
-    outline: var(--osdk-combobox-focus-width, var(--osdk-emphasis-focus-width))
-      solid var(--osdk-combobox-focus-color, var(--osdk-emphasis-focus-color));
-    outline-offset: var(
-      --osdk-combobox-focus-offset,
-      var(--osdk-emphasis-focus-offset)
-    );
+    outline: none;
   }
 
   .osdkComboboxInputWrapper & {
@@ -150,7 +143,6 @@
   padding: calc(
     var(--osdk-combobox-spacing, var(--osdk-surface-spacing)) * 1.5
   );
-  box-sizing: border-box;
   border-radius: var(
     --osdk-combobox-border-radius,
     var(--osdk-surface-border-radius)
@@ -168,6 +160,7 @@
 .osdkComboboxItem {
   display: flex;
   align-items: center;
+  gap: calc(var(--osdk-combobox-spacing, var(--osdk-surface-spacing)) * 1.5);
   padding: calc(var(--osdk-combobox-spacing, var(--osdk-surface-spacing)) * 1.5)
     calc(var(--osdk-combobox-spacing, var(--osdk-surface-spacing)) * 2);
   border-radius: var(
@@ -220,6 +213,20 @@
   &[data-disabled] {
     cursor: not-allowed;
     opacity: var(--osdk-disabled-opacity, 0.5);
+  }
+}
+
+.osdkComboboxItemIndicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: calc(var(--osdk-combobox-spacing, var(--osdk-surface-spacing)) * 4);
+  flex-shrink: 0;
+  color: var(--osdk-combobox-item-color-selected, var(--osdk-intent-primary-rest));
+  visibility: hidden;
+
+  &[data-selected] {
+    visibility: visible;
   }
 }
 

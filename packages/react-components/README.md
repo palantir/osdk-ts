@@ -53,7 +53,49 @@ function App() {
 
 ### CSS Setup
 
-Add this to your application's entry css file (e.g., `index.css` or `index.scss`):
+Add the OSDK style imports to your application's entry CSS file (e.g., `index.css`).
+
+#### Understanding CSS Layers
+
+OSDK uses CSS [`@layer`](https://developer.mozilla.org/en-US/docs/Web/CSS/@layer) to make theming predictable. If you're not familiar with `@layer`, here's what you need to know:
+
+**What is `@layer`?** CSS `@layer` lets you group styles into named layers and control the order in which they apply. When two styles target the same element, the style in the _later_ layer always wins — regardless of selector specificity. This is what makes the theming system maintainable.
+
+**OSDK's layers:**
+
+| Layer             | Purpose                                                    |
+| ----------------- | ---------------------------------------------------------- |
+| `osdk.tokens`     | Design tokens (colors, spacing, typography) — the defaults |
+| `osdk.components` | Component structural styles (layout, borders, sizing)      |
+
+Because `osdk.components` is declared after `osdk.tokens`, component styles take priority over token defaults when they overlap.
+
+**Adding your own layer:** You can add a custom layer (e.g., `user.brand`) after the OSDK layers to override any token or component style. Later layers always win.
+
+**When styles conflict, CSS resolves them in this order:**
+
+1. **Layer order** — Later layers always win (`user.brand` > `osdk.components` > `osdk.tokens`)
+2. **Selector specificity** — More specific selectors win _within the same layer_
+3. **Source order** — Later declarations win when specificity is equal
+
+#### With Tailwind CSS v4
+
+> **Important:** The `@layer` declaration defines the cascade order. Wrapping the Tailwind import in `layer(tailwind)` nests all of Tailwind's styles into a single named layer. By listing `tailwind` before the OSDK layers, OSDK styles take priority over Tailwind's resets and utilities.
+
+```css
+/* index.css */
+@layer tailwind, osdk.tokens, osdk.components, user.brand;
+
+@import "tailwindcss" layer(tailwind);
+
+@import "@osdk/react-components-styles" layer(osdk.tokens);
+@import "@osdk/react-components/styles.css" layer(osdk.components);
+
+/* To add your own brand overrides on top, append a custom layer: */
+@import "./user-brand.css" layer(user.brand);
+```
+
+#### Without Tailwind CSS
 
 ```css
 /* index.css */
@@ -61,15 +103,28 @@ Add this to your application's entry css file (e.g., `index.css` or `index.scss`
 
 @import "@osdk/react-components-styles" layer(osdk.tokens);
 @import "@osdk/react-components/styles.css" layer(osdk.components);
+```
 
+To add your own brand overrides on top:
+
+```css
+/* index.css */
+@layer osdk.tokens, osdk.components, user.brand;
+
+@import "@osdk/react-components-styles" layer(osdk.tokens);
+@import "@osdk/react-components/styles.css" layer(osdk.components);
+@import "./user-brand.css" layer(user.brand);
+```
+
+#### Portal isolation (required)
+
+```css
 .root {
   isolation: isolate;
 }
 ```
 
 The `.root` isolation is required for Base UI portals. See https://base-ui.com/react/overview/quick-start#portals
-
-Using `@layer` ensures proper CSS cascade ordering - component styles are loaded before token styles, allowing tokens to override component defaults when needed.
 
 ## Components
 
@@ -80,26 +135,41 @@ The components that this package will provide are:
 | Component     | Description                                                                        | Documentation                  |
 | ------------- | ---------------------------------------------------------------------------------- | ------------------------------ |
 | `ObjectTable` | Displays an Object Set as a sortable, paginated table with inline editing support  | [Guide](./docs/ObjectTable.md) |
-| `FilterList`  | Visualize a high-level summary of objects data to allow users to filter that data. | -                              |
+| `PdfViewer`   | Renders PDF documents with annotations, search, sidebar navigation, and zoom       | [Guide](./docs/PdfViewer.md)   |
+| `FilterList`  | Visualize a high-level summary of objects data to allow users to filter that data. | [Guide](./docs/FilterList.md)  |
 | `ActionForm`  | Auto-generated form for executing Ontology Actions                                 | -                              |
 
 ## Component Architecture
 
-This package follows a 2-layer architecture pattern to maximize flexibility and reusability:
+This package follows a layered architecture pattern to maximize flexibility and reusability.
 
-### Architecture Overview
+### Core layers (all components)
 
-1. **OSDK Component Layer** (e.g., `ObjectTable`)
+1. **OSDK Component Layer** (e.g., `ObjectTable`, `PdfViewer`)
    - Handles data fetching and processing using @osdk/react hooks
    - Converts OSDK types to primitive data structures
    - Manages OSDK-specific operations like filtering and actions
    - No styling or component interactions
 
-2. **Base Component Layer** (e.g., `BaseTable`)
+2. **Base Component Layer** (e.g., `BaseTable`, `BasePdfViewer`)
    - Pure component layer with no OSDK imports
    - Contains all component interactions and styling
    - Accepts primitive props like `string[]`, arrays, and objects
    - Can be reused with custom data fetching layers
+
+### Building blocks (select components)
+
+Some components also provide a **building blocks** tier — individual sub-components and hooks that can be composed into fully custom layouts. Not every component needs this; it's offered where the UI is complex enough that users may want to rearrange or replace parts of it.
+
+For example, the PDF viewer offers three levels of customization:
+
+| Tier            | What you use                                                     | What you get                                                     |
+| --------------- | ---------------------------------------------------------------- | ---------------------------------------------------------------- |
+| Drop-in         | `PdfViewer` / `BasePdfViewer`                                    | Full viewer with toolbar, sidebar, search — zero assembly        |
+| Building blocks | `PdfViewerToolbar`, `PdfViewerSidebar`, `PdfViewerContent`, etc. | Custom layout using standard parts                               |
+| Hooks           | `usePdfViewerState` / `usePdfViewerCore` / primitive hooks       | Build entirely custom components; hooks do all the heavy lifting |
+
+See the [PdfViewer guide](./docs/PdfViewer.md) for the full API reference.
 
 ### Example: ObjectTable and BaseTable
 
@@ -111,7 +181,7 @@ This package follows a 2-layer architecture pattern to maximize flexibility and 
 - Manages object property metadata
 - Passes primitive data to BaseTable
 
-// BaseTable - Component layer  
+// BaseTable - Component layer
 - Pure table component with no OSDK imports
 - Handles all UI interactions (sorting, selection, editing)
 - Manages component state
@@ -131,7 +201,8 @@ When building new components:
 1. Start with the Base component focusing on interactions and styling
 2. Create the OSDK wrapper that handles data fetching and type conversion
 3. Keep the Base component API simple using primitive types
-4. Document both layers for users who want to customize
+4. For complex components, consider a building blocks tier with sub-components and hooks
+5. Document all layers for users who want to customize
 
 ## Folder Structure
 

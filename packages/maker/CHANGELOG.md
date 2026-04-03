@@ -1,5 +1,39 @@
 # @osdk/maker
 
+## 0.16.0-beta.15
+
+### Minor Changes
+
+- e8ca289: Fix key resolution
+
+## 0.16.0-beta.14
+
+### Minor Changes
+
+- 684b6c6: Always use valid import path
+
+### Patch Changes
+
+- Updated dependencies [f294f5a]
+- Updated dependencies [d284bf2]
+- Updated dependencies [b68cebd]
+- Updated dependencies [12fe33f]
+  - @osdk/api@2.8.0-beta.28
+  - @osdk/generator-converters.ontologyir@2.8.0-beta.28
+
+## 0.16.0-beta.13
+
+### Minor Changes
+
+- 9ee82f4: Dedupe many-to-many PK property names in datasource
+
+### Patch Changes
+
+- Updated dependencies [60b5ffb]
+- Updated dependencies [61e33ab]
+  - @osdk/api@2.8.0-beta.26
+  - @osdk/generator-converters.ontologyir@2.8.0-beta.26
+
 ## 0.16.0-beta.12
 
 ### Minor Changes

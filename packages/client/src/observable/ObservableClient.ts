@@ -65,6 +65,7 @@ export interface ObserveObjectOptions<
   apiName: T["apiName"] | T;
   pk: PrimaryKeyType<T>;
   select?: PropertyKeys<T>[];
+  $loadPropertySecurityMetadata?: boolean;
 }
 
 export type OrderBy<Q extends ObjectOrInterfaceDefinition> = {
@@ -109,6 +110,13 @@ export interface ObserveListOptions<
    * reducing payload sizes for list views.
    */
   select?: readonly PropertyKeys<Q>[];
+
+  /**
+   * When true, loads per-property security metadata (marking requirements)
+   * alongside each object. The returned objects will have `$propertySecurities`
+   * populated with conjunctive/disjunctive marking requirements per property.
+   */
+  $loadPropertySecurityMetadata?: boolean;
 
   /**
    * Automatically fetch additional pages on initial load.
@@ -159,6 +167,7 @@ export interface ObserveObjectsCallbackArgs<
   hasMore: boolean;
   status: Status;
   totalCount?: string;
+  objectSet: ObjectSet<T>;
 }
 
 export interface ObserveObjectSetArgs<
@@ -526,7 +535,29 @@ export interface ObservableClient extends ObserveLinks {
   >(
     where: WhereClause<T, RDPs>,
   ) => Canonical<WhereClause<T, RDPs>>;
+
+  canonicalizeOptions: <OS, T extends CanonicalizeOptionsInput<OS>>(
+    options: T,
+  ) => CanonicalizedOptions<T>;
 }
+
+export interface CanonicalizeOptionsInput<OS = ObjectSet<any, any>> {
+  where?: object;
+  withProperties?: object;
+  orderBy?: Record<string, "asc" | "desc" | undefined>;
+  aggregate?: object;
+  intersectWith?: Array<{ where: object }>;
+  union?: ReadonlyArray<OS>;
+  intersect?: ReadonlyArray<OS>;
+  subtract?: ReadonlyArray<OS>;
+  $select?: ReadonlyArray<string>;
+}
+
+export type CanonicalizedOptions<
+  T extends CanonicalizeOptionsInput<any>,
+> = {
+  [K in keyof T]: T[K];
+};
 
 export function createObservableClient(client: Client): ObservableClient {
   // First we need a modified client that adds an extra header so we know its

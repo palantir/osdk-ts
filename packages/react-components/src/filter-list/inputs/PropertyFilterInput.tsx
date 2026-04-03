@@ -19,7 +19,6 @@ import React, { memo } from "react";
 import { FilterInputExcludeRow } from "../base/FilterInputExcludeRow.js";
 import type { FilterDefinitionUnion } from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
-import { CheckboxListFilterInput } from "./CheckboxListFilterInput.js";
 import { ContainsTextFilterInput } from "./ContainsTextFilterInput.js";
 import { DateRangeFilterInput } from "./DateRangeFilterInput.js";
 import { ListogramFilterInput } from "./ListogramFilterInput.js";
@@ -45,6 +44,7 @@ interface PropertyFilterInputProps<Q extends ObjectTypeDefinition> {
 
 function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
   objectType,
+  objectSet,
   definition,
   filterState,
   onFilterStateChanged,
@@ -53,20 +53,6 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
   excludeRowOpen,
 }: PropertyFilterInputProps<Q>): React.ReactElement {
   switch (definition.filterComponent) {
-    case "CHECKBOX_LIST":
-      return (
-        <CheckboxListFilterInput
-          objectType={objectType}
-          propertyKey={definition.key}
-          filterState={filterState}
-          onFilterStateChanged={onFilterStateChanged}
-          whereClause={whereClause}
-          colorMap={definition.colorMap}
-          searchQuery={searchQuery}
-          excludeRowOpen={excludeRowOpen}
-        />
-      );
-
     case "CONTAINS_TEXT":
       return (
         <FilterInputExcludeRow
@@ -94,6 +80,7 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
       return (
         <NumberRangeFilterInput
           objectType={objectType}
+          objectSet={objectSet}
           propertyKey={definition.key}
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}
@@ -104,6 +91,7 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
       return (
         <DateRangeFilterInput
           objectType={objectType}
+          objectSet={objectSet}
           propertyKey={definition.key}
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}
@@ -114,6 +102,7 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
       return (
         <SingleSelectFilterInput
           objectType={objectType}
+          objectSet={objectSet}
           propertyKey={definition.key}
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}
@@ -126,6 +115,7 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
       return (
         <MultiSelectFilterInput
           objectType={objectType}
+          objectSet={objectSet}
           propertyKey={definition.key}
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}
@@ -154,13 +144,14 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
       return (
         <ListogramFilterInput
           objectType={objectType}
+          objectSet={objectSet}
           propertyKey={definition.key}
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}
           whereClause={whereClause}
           colorMap={definition.colorMap}
           displayMode={definition.listogramConfig?.displayMode}
-          maxVisibleItems={definition.listogramConfig?.maxVisibleItems}
+          maxVisibleItems={definition.listogramConfig?.maxVisibleItems ?? 5}
           searchQuery={searchQuery}
           excludeRowOpen={excludeRowOpen}
         />
@@ -170,6 +161,7 @@ function PropertyFilterInputInner<Q extends ObjectTypeDefinition>({
       return (
         <TextTagsFilterInput
           objectType={objectType}
+          objectSet={objectSet}
           propertyKey={definition.key}
           filterState={filterState}
           onFilterStateChanged={onFilterStateChanged}

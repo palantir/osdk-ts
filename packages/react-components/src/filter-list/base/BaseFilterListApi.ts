@@ -40,10 +40,11 @@ export interface BaseFilterListProps<D> {
 
   collapsed?: boolean;
   onCollapsedChange?: (collapsed: boolean) => void;
-  title?: string;
+  title?: React.ReactNode;
   titleIcon?: React.ReactNode;
   showResetButton?: boolean;
   showActiveFilterCount?: boolean;
+  hasVisibilityChanges?: boolean;
   enableSorting?: boolean;
   className?: string;
   renderAddFilterButton?: () => React.ReactNode;

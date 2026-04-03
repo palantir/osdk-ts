@@ -20,7 +20,7 @@ import { CollapseIcon, ResetIcon } from "./FilterIcons.js";
 import styles from "./FilterListHeader.module.css";
 
 interface FilterListHeaderProps {
-  title?: string;
+  title?: ReactNode;
   titleIcon?: ReactNode;
   collapsed?: boolean;
   onCollapsedChange?: (collapsed: boolean) => void;
@@ -28,6 +28,7 @@ interface FilterListHeaderProps {
   onReset?: () => void;
   showActiveFilterCount?: boolean;
   activeFilterCount?: number;
+  hasVisibilityChanges?: boolean;
 }
 
 function FilterListHeaderInner({
@@ -39,6 +40,7 @@ function FilterListHeaderInner({
   onReset,
   showActiveFilterCount,
   activeFilterCount = 0,
+  hasVisibilityChanges = false,
 }: FilterListHeaderProps): React.ReactElement {
   const showCollapseButton = onCollapsedChange != null;
 
@@ -71,9 +73,9 @@ function FilterListHeaderInner({
           <Button
             className={styles.resetButton}
             onClick={onReset}
-            disabled={activeFilterCount === 0}
+            disabled={activeFilterCount === 0 && !hasVisibilityChanges}
           >
-            <ResetIcon /> Reset
+            <ResetIcon /> Reset filters
           </Button>
         )}
 

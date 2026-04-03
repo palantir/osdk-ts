@@ -1,5 +1,23 @@
 # @osdk/create-app.template.expo.v2
 
+## 2.8.0-beta.32
+
+## 2.8.0-beta.31
+
+## 2.8.0-beta.30
+
+## 2.8.0-beta.29
+
+## 2.8.0-beta.28
+
+### Minor Changes
+
+- 5f9fb46: Bump @types/node
+
+## 2.8.0-beta.27
+
+## 2.8.0-beta.26
+
 ## 2.8.0-beta.25
 
 ## 2.8.0-beta.24

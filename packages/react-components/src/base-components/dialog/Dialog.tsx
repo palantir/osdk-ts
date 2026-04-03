@@ -22,11 +22,12 @@ import styles from "./Dialog.module.css";
 
 export interface DialogProps {
   isOpen: boolean;
-  onOpenChange: () => void;
+  onOpenChange: (open: boolean) => void;
   title: React.ReactNode;
   children: React.ReactNode;
   footer?: React.ReactNode;
   className?: string;
+  disablePointerDismissal?: boolean;
 }
 
 export function Dialog({
@@ -36,9 +37,14 @@ export function Dialog({
   children,
   footer,
   className,
+  disablePointerDismissal,
 }: DialogProps): React.ReactElement {
   return (
-    <BaseUIDialog.Root open={isOpen} onOpenChange={onOpenChange}>
+    <BaseUIDialog.Root
+      open={isOpen}
+      onOpenChange={onOpenChange}
+      disablePointerDismissal={disablePointerDismissal}
+    >
       <BaseUIDialog.Portal>
         <BaseUIDialog.Backdrop className={styles.backdrop} />
         <BaseUIDialog.Popup

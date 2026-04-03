@@ -17,6 +17,7 @@
 import { consola } from "consola";
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
+import { pathToFileURL } from "node:url";
 import invariant from "tiny-invariant";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
@@ -110,7 +111,6 @@ export default async function main(
       randomnessKey: {
         describe: "Value used to assure uniqueness of entities",
         type: "string",
-        coerce: path.resolve,
       },
     })
     .parseAsync();
@@ -192,7 +192,7 @@ async function loadOntology(
 ) {
   const q = await defineOntology(
     apiNamespace,
-    async () => await import(input),
+    async () => await import(pathToFileURL(input).href),
     outputDir,
     dependencyFile,
     generateCodeSnippets,

@@ -13,6 +13,8 @@ All components import from `@osdk/react-components/experimental`.
 | **FilterList**         | Aggregation-based filter UI for object sets with draggable reordering.                                                                      |
 | **BaseFilterList**     | OSDK-agnostic base filter list — use for custom filter implementations.                                                                     |
 | **ColumnConfigDialog** | Dialog for managing column visibility and drag-and-drop reordering.                                                                         |
+| **PdfViewer**          | PDF viewer for OSDK Media objects with toolbar, search, annotations, sidebar (thumbnails/outline), highlight mode, and form fields.         |
+| **BasePdfViewer**      | OSDK-agnostic base PDF viewer — accepts a URL or ArrayBuffer directly. Use when building custom data fetching on top of the viewer UI.      |
 
 ## Documentation
 
@@ -20,3 +22,5 @@ Before using any component, read the relevant doc:
 
 - **Setup & installation**: Read [README.md](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/README.md) for provider, CSS layers, and peer dependencies
 - **ObjectTable**: Read [docs/ObjectTable.md](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/ObjectTable.md) for props, column definitions, examples, theming, and troubleshooting
+- **PdfViewer**: Read [docs/PdfViewer.md](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/PdfViewer.md) for props, annotations, building blocks, hooks, examples, and theming
+- **FilterList**: Read [docs/FilterList.md](https://github.com/palantir/osdk-ts/blob/main/packages/react-components/docs/FilterList.md) for props, examples, and usage

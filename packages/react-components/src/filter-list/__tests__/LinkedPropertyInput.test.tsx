@@ -56,7 +56,7 @@ function createMockObjectSet() {
 
 function createDefinition(
   linkedFilterComponent:
-    | "CHECKBOX_LIST"
+    | "LISTOGRAM"
     | "MULTI_SELECT"
     | "SINGLE_SELECT"
     | "CONTAINS_TEXT"
@@ -64,7 +64,6 @@ function createDefinition(
     | "NUMBER_RANGE"
     | "DATE_RANGE"
     | "TIMELINE"
-    | "LISTOGRAM"
     | "TEXT_TAGS"
     | "SINGLE_DATE"
     | "MULTI_DATE",
@@ -243,7 +242,7 @@ describe("LinkedPropertyInput", () => {
     it("renders SingleDateInput for SINGLE_DATE component", () => {
       const mockObjectSet = createMockObjectSet();
       const definition = {
-        ...createDefinition("CHECKBOX_LIST"),
+        ...createDefinition("LISTOGRAM"),
         linkedFilterComponent: "SINGLE_DATE" as const,
       } as LinkedPropertyFilterDefinition<
         ObjectTypeDefinition,

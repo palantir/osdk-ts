@@ -448,6 +448,19 @@ export async function waitForCall(
   expect(subFn).toHaveBeenCalledTimes(times);
 }
 
+export async function waitForPayload<T>(
+  observer: MockedObject<Observer<T>>,
+  predicate: (payload: T) => boolean,
+): Promise<T> {
+  await vi.waitFor(() => {
+    const calls = observer.next.mock.calls;
+    expect(calls.length).toBeGreaterThan(0);
+    const last = calls[calls.length - 1][0];
+    expect(predicate(last)).toBe(true);
+  }, { interval: 0 });
+  return observer.next.mock.calls[observer.next.mock.calls.length - 1][0];
+}
+
 export function expectNoMoreCalls(
   observer: MockedObject<
     Observer<any>
@@ -588,6 +601,7 @@ export function listPayloadContaining(
     isOptimistic: expect.any(Boolean),
     status: x.status ?? expect.anything(),
     lastUpdated: x.lastUpdated ?? expect.anything(),
+    objectSet: x.objectSet ?? expect.anything(),
   } as ListPayload;
 }
 

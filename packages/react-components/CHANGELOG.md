@@ -1,5 +1,112 @@
 # @osdk/react-components
 
+## 0.2.0-beta.29
+
+### Minor Changes
+
+- 4ad9b36: Add NumberInputField component
+- d6c2c8b: Fix FilterList styling
+- d6c2c8b: Fix FilterList dropdown
+
+## 0.2.0-beta.28
+
+### Minor Changes
+
+- 3eaf3f5: Add CSS layers documentation and Tailwind CSS v4 setup instructions to READMEs
+- 3f4fb81: Address design review and PR review feedback for filter list: exclude strikethrough only on selected items, remove hover-to-show exclude row, fix 3-dots toggle close behavior, remove OR filter operator mode, and various UI polish
+
+## 0.2.0-beta.27
+
+### Minor Changes
+
+- 32c27d7: Added useOsdkFunctions to @osdk/react to execute multiple functions in parallel. This is used by ObjectTable to fetch function-backed columns
+- 6019278: auto-compute peer dependency ranges from changelog history for react and react-components
+
+## 0.2.0-beta.26
+
+### Minor Changes
+
+- 8eea31b: feat(pdf): pdf viewer recipes + fixed for form fields
+- c3da451: add marking button, category group, and validation components for CBAC picker
+- 073a5b1: Add ESLint rules for code quality, React best practices, and JSX accessibility
+- 82573b8: Pin react-day-picker to 9.1.0
+- 66b7125: Add RadioButtonsField component for action form radio button inputs
+- 6ec2110: Add CustomField component for user-defined field renderers in ActionForm
+
+### Patch Changes
+
+- Updated dependencies [520398c]
+- Updated dependencies [ffc6efe]
+- Updated dependencies [4a856cb]
+- Updated dependencies [b0930e4]
+  - @osdk/client@2.8.0-beta.29
+  - @osdk/api@2.8.0-beta.29
+  - @osdk/react@0.10.0-beta.14
+
+## 0.2.0-beta.25
+
+### Minor Changes
+
+- d4ac875: Add text highlight annotation mode to PdfViewer with toolbar toggle button, `onTextHighlight` callback, and multi-rect annotation support via `rects` field on `PdfAnnotation`
+- e19ff03: Add TextAreaField component using @base-ui Input with render prop for native textarea rendering
+
+### Patch Changes
+
+- Updated dependencies [f294f5a]
+- Updated dependencies [2855223]
+- Updated dependencies [d284bf2]
+- Updated dependencies [b68cebd]
+  - @osdk/client@2.8.0-beta.28
+  - @osdk/react@0.10.0-beta.13
+  - @osdk/api@2.8.0-beta.28
+
+## 0.2.0-beta.24
+
+### Minor Changes
+
+- 813f4cb: Add DatetimePickerField component
+- e4840fa: Add exclude dropdown, in-filter search, hover-reveal actions, remove button to filter list items, thread objectSet through aggregation hooks so prefiltered sets are respected, and add FilterList storybook stories and documentation
+
+### Patch Changes
+
+- Updated dependencies [46dfbec]
+  - @osdk/react@0.10.0-beta.12
+
+## 0.2.0-beta.23
+
+### Minor Changes
+
+- c35231f: add cbac css tokens and create cbac-components package
+- 5f52808: fix(pdf): fix issue with pdf viewer worker import
+- 336a013: refactor(pdf): rename BasePdfRenderer/PdfRenderer to BasePdfViewer/PdfViewer, rename downloadEnabled to enableDownload, expose internal hooks, add onDownload result callback for download success/failure
+- 07a6fdb: use SkeletonBar component in table loading cells instead of inline skeleton divs
+
+### Patch Changes
+
+- Updated dependencies [fceb4ce]
+  - @osdk/client@2.8.0-beta.27
+  - @osdk/api@2.8.0-beta.27
+  - @osdk/react@0.10.0-beta.11
+
+## 0.2.0-beta.22
+
+### Minor Changes
+
+- 7080b01: Add base form layout with header, footer, field components, and CSS token variables for theming
+- 08b979a: Thread objectSet through filter aggregation hooks and add FilterList documentation
+- dffac63: Fix styling nits
+- b373588: Styling fix with global border-box
+
+### Patch Changes
+
+- Updated dependencies [b1e8bba]
+- Updated dependencies [599426b]
+- Updated dependencies [60b5ffb]
+- Updated dependencies [61e33ab]
+  - @osdk/react@0.10.0-beta.11
+  - @osdk/client@2.8.0-beta.26
+  - @osdk/api@2.8.0-beta.26
+
 ## 0.2.0-beta.21
 
 ### Minor Changes

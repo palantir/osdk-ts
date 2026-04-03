@@ -139,4 +139,5 @@ interface BaseFormCommonProps {
   isSubmitDisabled?: boolean;
   isPending?: boolean;
   isLoading?: boolean;
+  className?: string;
 }

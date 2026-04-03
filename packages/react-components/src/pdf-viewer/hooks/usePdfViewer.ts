@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { AnnotationEditorType } from "pdfjs-dist";
 import type { PDFDocumentProxy } from "pdfjs-dist";
 import {
   EventBus,
@@ -23,6 +24,7 @@ import {
 } from "pdfjs-dist/web/pdf_viewer.mjs";
 import type { RefObject } from "react";
 import { useEffect, useRef } from "react";
+import { PAGES_LOADED_EVENT } from "../constants.js";
 
 export interface UsePdfViewerResult {
   pdfViewerRef: RefObject<PDFViewer | null>;
@@ -35,6 +37,7 @@ export function usePdfViewer(
   viewerRef: RefObject<HTMLDivElement | null>,
   document: PDFDocumentProxy | undefined,
   initialScale?: number,
+  initialPage?: number,
 ): UsePdfViewerResult {
   const pdfViewerRef = useRef<PDFViewer | null>(null);
   const eventBusRef = useRef<EventBus | null>(null);
@@ -62,6 +65,9 @@ export function usePdfViewer(
       linkService,
       findController,
       removePageBorders: true,
+      annotationEditorMode: AnnotationEditorType.NONE,
+      annotationEditorHighlightColors:
+        "yellow=#FFFF98,green=#53FFBC,blue=#80EBFF,pink=#FFCBE6,red=#FF4F5F",
     });
 
     linkService.setViewer(pdfViewer);
@@ -69,9 +75,19 @@ export function usePdfViewer(
     findController.setDocument(document);
     pdfViewer.setDocument(document);
 
-    if (initialScale != null) {
-      pdfViewer.currentScale = initialScale;
-    }
+    // Apply initial scale and page after pages are loaded to avoid
+    // "scrollPageIntoView: not a valid pageNumber" console errors.
+    const onPagesLoaded = () => {
+      if (initialScale != null) {
+        pdfViewer.currentScale = initialScale;
+      }
+      if (initialPage != null && initialPage > 1) {
+        pdfViewer.currentPageNumber = initialPage;
+        pdfViewer.scrollPageIntoView({ pageNumber: initialPage });
+      }
+      eventBus.off(PAGES_LOADED_EVENT, onPagesLoaded);
+    };
+    eventBus.on(PAGES_LOADED_EVENT, onPagesLoaded);
 
     eventBusRef.current = eventBus;
     findControllerRef.current = findController;

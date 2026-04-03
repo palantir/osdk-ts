@@ -43,3 +43,16 @@ vitest.config.mts.timestamp-*
 vitest.workspace.ts
 
 .memory/
+
+# IDE
+.idea/
+.project
+.settings
+.classpath
+*.iml
+*.ipr
+*.iws
+
+# Files with local extensions (dot-prefix only, to avoid matching package dirs like e2e.generated.api-namespace.local)
+.*.local
+.*.local.*

@@ -30,6 +30,7 @@ export type { AggregationResultsWithoutGroups } from "./aggregate/AggregationRes
 export type { AggregationClause } from "./aggregate/AggregationsClause.js";
 export type { AggregationsResults } from "./aggregate/AggregationsResults.js";
 export type { GeoFilterOptions } from "./aggregate/GeoFilter.js";
+export type { IntervalRule } from "./aggregate/IntervalRule.js";
 export { DistanceUnitMapping } from "./aggregate/WhereClause.js";
 export type {
   AndWhereClause,
@@ -87,6 +88,7 @@ export type {
 export type {
   Media,
   MediaMetadata,
+  MediaPropertyLocation,
   MediaReference,
   MediaUpload,
 } from "./object/Media.js";

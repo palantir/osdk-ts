@@ -8,7 +8,7 @@ import type { OSDK_SNIPPETS_SPEC } from "@osdk/docs-spec-sdk";
 export const snippets: SdkSnippets<typeof OSDK_SNIPPETS_SPEC> = {
   "kind": "sdk",
   "versions": {
-    "1.0.0": {
+    "2.0.0": {
       "snippets": {
         "reactProviderSetup": [
           {

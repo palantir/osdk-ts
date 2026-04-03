@@ -7,10 +7,11 @@ import type {
   ObjectSet as $ObjectSet,
   Osdk as $Osdk,
   PropertyValueWireToClient as $PropType,
+  SingleLinkAccessor as $SingleLinkAccessor,
 } from '@osdk/client';
 
 export interface OsdkObjectLinks$EsongInterfaceA {
-  esongPds: EsongPds.ObjectSet;
+  esongPds: $SingleLinkAccessor<EsongPds>;
 }
 
 export namespace EsongInterfaceA {

@@ -69,14 +69,18 @@ export function useOsdkObject<
  *
  * @param type The object type or interface definition
  * @param primaryKey The primary key of the object
- * @param options Options including $select and enabled
+ * @param options Options including $select, enabled, and $loadPropertySecurityMetadata
  */
 export function useOsdkObject<
   Q extends ObjectOrInterfaceDefinition,
 >(
   type: Q,
   primaryKey: PrimaryKeyType<Q>,
-  options?: { $select?: readonly PropertyKeys<Q>[]; enabled?: boolean },
+  options?: {
+    $select?: readonly PropertyKeys<Q>[];
+    enabled?: boolean;
+    $loadPropertySecurityMetadata?: boolean;
+  },
 ): UseOsdkObjectResult<Q>;
 /*
     Implementation of useOsdkObject
@@ -90,7 +94,11 @@ export function useOsdkObject<
     | [
       type: Q,
       primaryKey: PrimaryKeyType<Q>,
-      options?: { $select?: readonly PropertyKeys<Q>[]; enabled?: boolean },
+      options?: {
+        $select?: readonly PropertyKeys<Q>[];
+        enabled?: boolean;
+        $loadPropertySecurityMetadata?: boolean;
+      },
     ]
 ): UseOsdkObjectResult<Q> {
   const { observableClient } = React.useContext(OsdkContext2);
@@ -104,7 +112,11 @@ export function useOsdkObject<
   const optionsArg = !isInstanceSignature
       && args[2] != null
       && typeof args[2] === "object"
-    ? args[2] as { $select?: readonly string[]; enabled?: boolean }
+    ? args[2] as {
+      $select?: readonly string[];
+      enabled?: boolean;
+      $loadPropertySecurityMetadata?: boolean;
+    }
     : undefined;
 
   // Extract enabled flag - 2nd param for instance signature, 3rd for type signature
@@ -115,6 +127,8 @@ export function useOsdkObject<
     : (typeof args[2] === "boolean" ? args[2] : true);
 
   const selectArg = optionsArg?.$select;
+  const loadPropertySecurityMetadata = optionsArg
+    ?.$loadPropertySecurityMetadata;
 
   const mode = isInstanceSignature ? "offline" : undefined;
 
@@ -151,6 +165,11 @@ export function useOsdkObject<
             {
               mode,
               ...(stableSelect ? { select: stableSelect } : {}),
+              ...(loadPropertySecurityMetadata
+                ? {
+                  $loadPropertySecurityMetadata: loadPropertySecurityMetadata,
+                }
+                : {}),
             },
             observer,
           ),
@@ -165,6 +184,7 @@ export function useOsdkObject<
       primaryKey,
       mode,
       stableSelect,
+      loadPropertySecurityMetadata,
     ],
   );
 

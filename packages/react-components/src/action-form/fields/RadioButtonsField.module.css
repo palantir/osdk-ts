@@ -1,0 +1,83 @@
+/*
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.osdkRadioGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--osdk-radio-gap);
+}
+
+.osdkRadioItem {
+  display: flex;
+  align-items: center;
+  gap: var(--osdk-radio-item-gap);
+}
+
+.osdkRadioRoot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--osdk-radio-size);
+  height: var(--osdk-radio-size);
+  border-radius: 50%;
+  border: var(--osdk-radio-border);
+  cursor: pointer;
+  flex-shrink: 0;
+
+  &[data-unchecked] {
+    background-color: var(--osdk-radio-bg);
+
+    &:hover {
+      background-color: var(--osdk-radio-bg-hover);
+    }
+  }
+
+  &[data-checked] {
+    background-color: var(--osdk-radio-bg-checked);
+
+    &:hover {
+      background-color: var(--osdk-radio-bg-checked-hover);
+    }
+
+    &:active {
+      background-color: var(--osdk-radio-bg-checked-active);
+    }
+  }
+
+  &:focus-visible {
+    outline: var(--osdk-focus-outline);
+    outline-offset: calc(-1 * var(--osdk-focus-visible-outline-offset));
+  }
+}
+
+.osdkRadioIndicator {
+  width: var(--osdk-radio-indicator-size);
+  height: var(--osdk-radio-indicator-size);
+  border-radius: 50%;
+  background-color: var(--osdk-radio-indicator-color);
+
+  &[data-unchecked] {
+    display: none;
+  }
+}
+
+.osdkRadioLabel {
+  font-family: var(--osdk-typography-font-family);
+  font-size: var(--osdk-typography-font-size-default);
+  line-height: var(--osdk-typography-line-height-default);
+  color: var(--osdk-typography-color-default);
+  cursor: pointer;
+}

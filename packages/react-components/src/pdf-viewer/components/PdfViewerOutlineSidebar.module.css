@@ -1,0 +1,89 @@
+.sidebar {
+  width: var(--osdk-pdf-viewer-sidebar-width);
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--osdk-pdf-viewer-sidebar-bg);
+  border-right: var(--osdk-pdf-viewer-sidebar-border);
+  overflow: hidden;
+}
+
+
+.scrollContainer {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--osdk-pdf-viewer-sidebar-thumbnail-gap) 0;
+}
+
+.outlineItem {
+  display: flex;
+  align-items: center;
+  gap: var(--osdk-pdf-viewer-outline-item-gap, 6px);
+  padding: var(--osdk-pdf-viewer-outline-item-padding-y, 4px)
+    var(--osdk-pdf-viewer-outline-item-padding-x, 12px);
+  cursor: pointer;
+  font-family: var(--osdk-typography-family-default);
+  font-size: var(--osdk-typography-size-body-small);
+  color: var(--osdk-typography-color-default);
+  text-decoration: none;
+  border: none;
+  background: none;
+  text-align: left;
+  width: 100%;
+  line-height: 1.4;
+  border-radius: var(--osdk-pdf-viewer-outline-item-radius, 4px);
+  transition: background-color 0.15s ease;
+}
+
+.outlineItem:hover {
+  background-color: var(--osdk-pdf-viewer-outline-item-hover-bg, rgba(0, 0, 0, 0.06));
+}
+
+.outlineItem:focus-visible {
+  outline: var(--osdk-focus-outline);
+  outline-offset: var(--osdk-focus-visible-outline-offset);
+}
+
+.outlineItemActive {
+  background-color: var(--osdk-pdf-viewer-outline-item-active-bg, rgba(45, 114, 210, 0.1));
+  color: var(--osdk-pdf-viewer-outline-item-active-color, var(--osdk-intent-primary));
+  font-weight: var(--osdk-typography-weight-semibold);
+}
+
+.outlineItemBold {
+  font-weight: var(--osdk-typography-weight-bold);
+}
+
+.outlineItemItalic {
+  font-style: italic;
+}
+
+.outlineItemIcon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
+.outlineItemTitle {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--osdk-pdf-viewer-outline-empty-gap, 12px);
+  padding: var(--osdk-pdf-viewer-outline-empty-padding, 24px);
+  flex: 1;
+  text-align: center;
+}
+
+.emptyStateText {
+  font-family: var(--osdk-typography-family-default);
+  font-size: var(--osdk-typography-size-body-small);
+  color: var(--osdk-typography-color-muted);
+}
+

@@ -19,7 +19,17 @@ import type { Canonical } from "./Canonical.js";
 export class SelectCanonicalizer {
   private cache = new Map<string, Canonical<readonly string[]>>();
 
-  canonicalize(select: readonly string[]): Canonical<readonly string[]> {
+  canonicalize(select: undefined): undefined;
+  canonicalize(select: readonly string[]): Canonical<readonly string[]>;
+  canonicalize(
+    select: readonly string[] | undefined,
+  ): Canonical<readonly string[]> | undefined;
+  canonicalize(
+    select: readonly string[] | undefined,
+  ): Canonical<readonly string[]> | undefined {
+    if (select == null) {
+      return undefined;
+    }
     const sorted = [...new Set(select)].sort();
     const key = sorted.join("\0");
 

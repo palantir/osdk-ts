@@ -43,6 +43,7 @@ export function BaseFilterList<D>(
     onFilterRemoved,
     showResetButton = false,
     showActiveFilterCount = false,
+    hasVisibilityChanges,
     enableSorting,
     className,
     renderAddFilterButton,
@@ -93,19 +94,22 @@ export function BaseFilterList<D>(
             onReset={onReset}
             showActiveFilterCount={showActiveFilterCount}
             activeFilterCount={activeFilterCount}
+            hasVisibilityChanges={hasVisibilityChanges}
           />
         )}
 
-        <FilterListContent
-          filterDefinitions={filterDefinitions}
-          filterStates={filterStates}
-          onFilterStateChanged={onFilterStateChanged}
-          onFilterRemoved={onFilterRemoved}
-          renderInput={renderInput}
-          getFilterKey={getFilterKey}
-          getFilterLabel={getFilterLabel}
-          enableSorting={enableSorting}
-        />
+        <div className={styles.scrollableContent}>
+          <FilterListContent
+            filterDefinitions={filterDefinitions}
+            filterStates={filterStates}
+            onFilterStateChanged={onFilterStateChanged}
+            onFilterRemoved={onFilterRemoved}
+            renderInput={renderInput}
+            getFilterKey={getFilterKey}
+            getFilterLabel={getFilterLabel}
+            enableSorting={enableSorting}
+          />
+        </div>
 
         {showAddButton && (
           <div className={styles.addButtonContainer}>

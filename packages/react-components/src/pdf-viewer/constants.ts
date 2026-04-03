@@ -17,7 +17,6 @@
 import type { PdfAnnotation } from "./types.js";
 
 // Default empty values (stable references to avoid re-renders)
-export const EMPTY_ANNOTATIONS: Record<number, PdfAnnotation[]> = {};
 export const EMPTY_ANNOTATION_ARRAY: PdfAnnotation[] = [];
 export const EMPTY_STRING = "";
 
@@ -32,15 +31,19 @@ export const DEVICE_PIXEL_RATIO: number = typeof window !== "undefined"
   ? window.devicePixelRatio || 1
   : 1;
 
+// Outline heading extraction
+/** Text must be at least 15% larger than the most common font size to be considered a heading. */
+export const OUTLINE_HEADING_SIZE_RATIO = 1.15;
+/** Headings longer than this are likely paragraphs and are filtered out. */
+export const OUTLINE_MAX_HEADING_LENGTH = 200;
+
 // pdfjs EventBus event names
 export const FIND_EVENT = "find";
-// cspell:disable-next-line -- pdfjs EventBus event name
 export const UPDATE_FIND_CONTROL_STATE_EVENT = "updatefindcontrolstate";
-// cspell:disable-next-line -- pdfjs EventBus event name
 export const UPDATE_FIND_MATCHES_COUNT_EVENT = "updatefindmatchescount";
-// cspell:disable-next-line -- pdfjs EventBus event name
 export const PAGE_CHANGING_EVENT = "pagechanging";
-// cspell:disable-next-line -- pdfjs EventBus event name
 export const SCALE_CHANGING_EVENT = "scalechanging";
-// cspell:disable-next-line -- pdfjs EventBus event name
 export const PAGE_RENDERED_EVENT = "pagerendered";
+export const PAGES_LOADED_EVENT = "pagesloaded";
+// cspell:disable-next-line -- pdfjs EventBus event name
+export const ANNOTATION_LAYER_RENDERED_EVENT = "annotationlayerrendered";

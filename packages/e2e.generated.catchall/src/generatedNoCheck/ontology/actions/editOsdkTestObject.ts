@@ -64,16 +64,19 @@ export interface editOsdkTestObject extends ActionDefinition<editOsdkTestObject.
     rid: 'ri.actions.main.action-type.4a70a939-b2ee-46dd-8099-a290cafa28e1';
     status: 'EXPERIMENTAL';
     type: 'action';
+    unsanitizedApiName: 'edit-osdk-test-object';
 
     signatures: editOsdkTestObject.Signatures;
   };
   apiName: 'editOsdkTestObject';
   type: 'action';
+  unsanitizedApiName: 'edit-osdk-test-object';
   osdkMetadata: typeof $osdkMetadata;
 }
 
 export const editOsdkTestObject: editOsdkTestObject = {
   apiName: 'editOsdkTestObject',
   type: 'action',
+  unsanitizedApiName: 'edit-osdk-test-object',
   osdkMetadata: $osdkMetadata,
 };
