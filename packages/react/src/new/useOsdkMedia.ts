@@ -92,12 +92,20 @@ export function useOsdkMedia(
   const sourceRef = React.useRef(source);
   sourceRef.current = source;
 
-  const cacheKey = React.useMemo(() => {
+  const sourceKey = React.useMemo(() => {
     if (!source) {
       return undefined;
     }
-    return observableClient.media.getCacheKey(source);
-  }, [observableClient, source]);
+    if ("objectType" in source) {
+      return `media ${source.objectType} ${source.primaryKey} ${source.propertyName}`;
+    }
+    if ("rid" in source) {
+      return `attachment ${source.rid}`;
+    }
+    const ref2 = source.getMediaReference();
+    const vi = ref2.reference.mediaSetViewItem;
+    return `media ${vi.mediaSetRid} ${vi.mediaSetViewRid} ${vi.mediaItemRid}`;
+  }, [source]);
 
   const observeOpts = React.useMemo((): MediaContentObserveOptions => ({
     dedupeInterval: dedupeIntervalMs,
@@ -108,7 +116,7 @@ export function useOsdkMedia(
   }), [dedupeIntervalMs, preview, placeholder, priority, staleTime]);
 
   const { subscribe, getSnapShot } = React.useMemo(() => {
-    if (!cacheKey || !effectiveEnabled) {
+    if (!sourceKey || !effectiveEnabled) {
       return makeExternalStore<MediaContentPayload>(
         () => ({ unsubscribe: () => {} }),
         `media [DISABLED]`,
@@ -124,9 +132,9 @@ export function useOsdkMedia(
     return makeExternalStore<MediaContentPayload>(
       (observer) =>
         observableClient.observeMedia(currentSource, observeOpts, observer),
-      `media ${cacheKey}`,
+      `media ${sourceKey}`,
     );
-  }, [observableClient, cacheKey, effectiveEnabled, observeOpts]);
+  }, [observableClient, sourceKey, effectiveEnabled, observeOpts]);
 
   const payload = React.useSyncExternalStore(subscribe, getSnapShot);
 
@@ -140,7 +148,7 @@ export function useOsdkMedia(
     url: payload?.url,
     metadata: payload?.metadata,
     content: payload?.content,
-    isLoading: effectiveEnabled && cacheKey != null
+    isLoading: effectiveEnabled && sourceKey != null
       ? (payload?.status === "loading" || payload?.status === "init"
         || !payload)
       : false,
@@ -150,5 +158,5 @@ export function useOsdkMedia(
     error: payload?.error,
     refetch,
     ref,
-  }), [payload, effectiveEnabled, cacheKey, refetch, ref]);
+  }), [payload, effectiveEnabled, sourceKey, refetch, ref]);
 }
