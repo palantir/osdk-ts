@@ -14,18 +14,30 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition, PrimaryKeyType } from "@osdk/api";
+import type {
+  MediaMetadata,
+  ObjectTypeDefinition,
+  PrimaryKeyType,
+} from "@osdk/api";
 import type { CacheKey } from "../CacheKey.js";
 import type { MediaContentQuery } from "./MediaContentQuery.js";
 
-export interface MediaContentStoreMarker {
+export interface MediaContentStoreValue {
+  url: string | undefined;
+  previewUrl: string | undefined;
+  metadata: MediaMetadata | undefined;
+  content: Blob | undefined;
+  dimensions: { width: number; height: number } | undefined;
+  isStale: boolean;
+  isPreview: boolean;
   lastUpdated: number;
+  error: Error | undefined;
 }
 
 export interface MediaContentCacheKey extends
   CacheKey<
     "mediaContent",
-    MediaContentStoreMarker,
+    MediaContentStoreValue,
     MediaContentQuery,
     [
       objectType: string,
