@@ -35,7 +35,6 @@ export interface MediaContentObservableDeps {
   ) => Promise<MediaMetadata>;
   blobManager: BlobMemoryManager;
   getCacheKey: (source: MediaSource) => string;
-  onStateChange?: (payload: MediaContentPayload) => void;
 }
 
 export interface MediaContentObservable {
@@ -47,7 +46,7 @@ export interface MediaContentObservable {
   subscriberCount(): number;
 }
 
-async function extractImageDimensions(
+export async function extractImageDimensions(
   blob: Blob,
 ): Promise<{ width: number; height: number } | undefined> {
   if (!blob.type.startsWith("image/")) {
@@ -97,7 +96,6 @@ export function createMediaContentObservable(
     for (const obs of observers) {
       obs.next(snapshot);
     }
-    deps.onStateChange?.(snapshot);
   }
 
   function updateState(patch: Partial<MediaContentPayload>): void {
