@@ -133,6 +133,7 @@ const archetypeRules = archetypes(
       "@osdk/generator",
       "@osdk/maker",
       "@osdk/maker-experimental",
+      "@osdk/maker-import",
       "@osdk/oauth",
       "@osdk/shared.client.impl",
       "@osdk/shared.net.errors",
