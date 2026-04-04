@@ -347,6 +347,10 @@ export class MediaHelper {
       this.store.cacheKeys.retain(cacheKey);
     }
 
+    query.revalidate().catch((e: unknown) => {
+      observer.error(e);
+    });
+
     const subscription = query.subscribe(observer);
     const querySub = new QuerySubscription(query, subscription);
 
@@ -421,11 +425,26 @@ export class MediaHelper {
     source: Media | Attachment | MediaPropertyLocation,
   ): void {
     if (isMediaPropertyLocation(source)) {
-      const cacheKey = this.getContentCacheKey(source);
-      const query = this.store.queries.peek(cacheKey) as
-        | MediaContentQuery
-        | undefined;
+      const typedCacheKey = this.getContentCacheKey(source);
+      const query = this.store.queries.peek(typedCacheKey);
       if (query) {
+        // SWR: mark stale in Store so subscribers see isStale=true immediately
+        this.store.batch({}, (batch) => {
+          const entry = batch.read(typedCacheKey);
+          if (entry?.value) {
+            batch.write(
+              typedCacheKey,
+              { ...entry.value, isStale: true },
+              entry.status,
+            );
+          }
+        });
+
+        // Clear cached blobs so refetch hits network
+        const blobKey = this.getCacheKey(source);
+        this.blobManager.remove(blobKey);
+        this.blobManager.remove(`${blobKey}:preview`);
+
         query.revalidate(true).catch(() => {});
         return;
       }
