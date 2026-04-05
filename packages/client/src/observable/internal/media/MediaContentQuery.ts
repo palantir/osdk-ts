@@ -44,11 +44,14 @@ import { Query } from "../Query.js";
 import type { Store } from "../Store.js";
 import type { SubjectPayload } from "../SubjectPayload.js";
 import type { BlobMemoryManager } from "./BlobMemoryManager.js";
+import {
+  extractImageDimensions,
+  fetchMediaContent,
+} from "./fetchMediaContent.js";
 import type {
   MediaContentCacheKey,
   MediaContentStoreValue,
 } from "./MediaContentCacheKey.js";
-import { extractImageDimensions } from "./MediaContentObservable.js";
 
 const INIT_PAYLOAD: MediaContentPayload = {
   metadata: undefined,
@@ -84,7 +87,6 @@ export class MediaContentQuery extends Query<
 > {
   #objectType: string;
   #primaryKey: PrimaryKeyType<ObjectTypeDefinition>;
-  #propertyName: string;
   #source: MediaPropertyLocation;
   #blobManager: BlobMemoryManager;
   #blobCacheKey: string;
@@ -94,7 +96,6 @@ export class MediaContentQuery extends Query<
   #placeholder: "preview" | "none";
   #staleTime: number;
 
-  // Track active blob URL keys for cleanup in _dispose
   #activeUrlKey: string | undefined;
   #activePreviewUrlKey: string | undefined;
 
@@ -122,7 +123,6 @@ export class MediaContentQuery extends Query<
 
     this.#objectType = source.objectType;
     this.#primaryKey = source.primaryKey;
-    this.#propertyName = source.propertyName;
     this.#source = source;
     this.#blobManager = deps.blobManager;
     this.#blobCacheKey = deps.getCacheKey(source);
@@ -175,12 +175,12 @@ export class MediaContentQuery extends Query<
         return;
       }
 
-      // If within staleTime, use cache and skip network
       const currentEntry = this.store.batch(
         {},
         (batch) => batch.read(this.cacheKey),
       );
       const lastUpdated = currentEntry.retVal?.value?.lastUpdated ?? 0;
+
       if (
         this.#staleTime > 0 && lastUpdated > 0
         && (Date.now() - lastUpdated) < this.#staleTime
@@ -205,7 +205,6 @@ export class MediaContentQuery extends Query<
         return;
       }
 
-      // Cache hit but stale — show cached data, continue to network fetch
       this.store.batch({}, (batch) => {
         this.writeToStore(
           {
@@ -228,11 +227,41 @@ export class MediaContentQuery extends Query<
 
     // No cache — fetch from network
     try {
-      if (this.#placeholder === "preview") {
-        await this.#loadWithPreview(signal);
-      } else {
-        await this.#loadDirect(signal);
-      }
+      await fetchMediaContent({
+        source: this.#source,
+        fetchContent: this.#fetchContent,
+        fetchMetadata: this.#fetchMetadata,
+        blobManager: this.#blobManager,
+        blobCacheKey: this.#blobCacheKey,
+        usePreview: this.#preview,
+        placeholder: this.#placeholder,
+        isCancelled: () => signal?.aborted ?? false,
+        onResult: (result) => {
+          if (result.isPreview) {
+            this.#activePreviewUrlKey = result.blobKey;
+          } else {
+            this.#activeUrlKey = result.blobKey;
+            this.#activePreviewUrlKey = undefined;
+          }
+          this.store.batch({}, (batch) => {
+            this.writeToStore(
+              {
+                url: result.url,
+                previewUrl: result.previewUrl,
+                metadata: result.metadata,
+                content: result.blob,
+                dimensions: result.dimensions,
+                isStale: false,
+                isPreview: result.isPreview,
+                lastUpdated: Date.now(),
+                error: undefined,
+              },
+              "loaded",
+              batch,
+            );
+          });
+        },
+      });
     } catch (err) {
       if (signal?.aborted) {
         return;
@@ -256,150 +285,6 @@ export class MediaContentQuery extends Query<
         );
       });
     }
-  }
-
-  async #loadWithPreview(signal: AbortSignal | undefined): Promise<void> {
-    // Phase 1: preview
-    const previewBlob = await this.#fetchContent(
-      this.#source,
-      { preview: true },
-    );
-    if (signal?.aborted) {
-      return;
-    }
-
-    const previewBlobKey = `${this.#blobCacheKey}:preview`;
-    this.#blobManager.add(previewBlobKey, previewBlob);
-    const previewUrl = this.#blobManager.createBlobUrl(previewBlobKey);
-    this.#activePreviewUrlKey = previewBlobKey;
-
-    const previewDims = await extractImageDimensions(previewBlob);
-    if (signal?.aborted) {
-      if (previewUrl) {
-        this.#blobManager.releaseBlobUrl(previewBlobKey);
-        this.#activePreviewUrlKey = undefined;
-      }
-      return;
-    }
-
-    const previewMeta = await this.#fetchMetadata(this.#source).catch(
-      () => undefined,
-    );
-    if (signal?.aborted) {
-      if (previewUrl) {
-        this.#blobManager.releaseBlobUrl(previewBlobKey);
-        this.#activePreviewUrlKey = undefined;
-      }
-      return;
-    }
-
-    // Write preview state
-    this.store.batch({}, (batch) => {
-      this.writeToStore(
-        {
-          url: previewUrl,
-          previewUrl,
-          metadata: previewMeta,
-          content: previewBlob,
-          dimensions: previewDims,
-          isStale: false,
-          isPreview: true,
-          lastUpdated: Date.now(),
-          error: undefined,
-        },
-        "loaded",
-        batch,
-      );
-    });
-
-    // Remove base cache entry so full-res fetch hits network
-    this.#blobManager.remove(this.#blobCacheKey);
-
-    // Phase 2: full resolution
-    const fullBlob = await this.#fetchContent(
-      this.#source,
-      { preview: false },
-    );
-    if (signal?.aborted) {
-      return;
-    }
-
-    this.#blobManager.add(this.#blobCacheKey, fullBlob);
-    const fullUrl = this.#blobManager.createBlobUrl(this.#blobCacheKey);
-    this.#activeUrlKey = this.#blobCacheKey;
-
-    const fullDims = await extractImageDimensions(fullBlob);
-    if (signal?.aborted) {
-      if (fullUrl) {
-        this.#blobManager.releaseBlobUrl(this.#blobCacheKey);
-        this.#activeUrlKey = undefined;
-      }
-      return;
-    }
-
-    // Release preview blob URL
-    this.#blobManager.releaseBlobUrl(previewBlobKey);
-    this.#activePreviewUrlKey = undefined;
-
-    // Write full-res state
-    this.store.batch({}, (batch) => {
-      this.writeToStore(
-        {
-          url: fullUrl,
-          previewUrl: undefined,
-          metadata: previewMeta,
-          content: fullBlob,
-          dimensions: fullDims ?? previewDims,
-          isStale: false,
-          isPreview: false,
-          lastUpdated: Date.now(),
-          error: undefined,
-        },
-        "loaded",
-        batch,
-      );
-    });
-  }
-
-  async #loadDirect(signal: AbortSignal | undefined): Promise<void> {
-    const [blob, metadata] = await Promise.all([
-      this.#fetchContent(this.#source, { preview: this.#preview }),
-      this.#fetchMetadata(this.#source).catch(() => undefined),
-    ]);
-    if (signal?.aborted) {
-      return;
-    }
-
-    this.#blobManager.add(this.#blobCacheKey, blob);
-    const url = this.#blobManager.createBlobUrl(this.#blobCacheKey);
-    this.#activeUrlKey = this.#blobCacheKey;
-
-    const dims = await extractImageDimensions(blob);
-    if (signal?.aborted) {
-      if (url) {
-        this.#blobManager.releaseBlobUrl(this.#blobCacheKey);
-        this.#activeUrlKey = undefined;
-      }
-      return;
-    }
-
-    this.store.batch({}, (batch) => {
-      this.writeToStore(
-        {
-          url,
-          previewUrl: undefined,
-          metadata,
-          content: blob,
-          dimensions: dims,
-          isStale: false,
-          isPreview: false,
-          lastUpdated: Date.now(),
-          error: undefined,
-        },
-        "loaded",
-        batch,
-      );
-    });
   }
 
   writeToStore(
