@@ -538,11 +538,10 @@ export class Store {
         return cacheKey.otherKeys[LIST_API_NAME_IDX];
       } else if (cacheKey.type === "aggregation") {
         return cacheKey.otherKeys[AGGREGATION_API_NAME_IDX];
-      } else if (
-        cacheKey.type === "mediaMetadata"
-        || cacheKey.type === "mediaContent"
-      ) {
+      } else if (cacheKey.type === "mediaMetadata") {
         return cacheKey.otherKeys[0];
+      } else if (cacheKey.type === "mediaContent") {
+        return cacheKey.otherKeys[0] || undefined;
       }
       // Links would have apiName at a different position
     }

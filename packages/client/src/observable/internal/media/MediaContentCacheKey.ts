@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  MediaMetadata,
-  ObjectTypeDefinition,
-  PrimaryKeyType,
-} from "@osdk/api";
+import type { MediaMetadata } from "@osdk/api";
 import type { CacheKey } from "../CacheKey.js";
 import type { MediaContentQuery } from "./MediaContentQuery.js";
 
@@ -41,8 +37,7 @@ export interface MediaContentCacheKey extends
     MediaContentQuery,
     [
       objectType: string,
-      primaryKey: PrimaryKeyType<ObjectTypeDefinition>,
-      propertyName: string,
+      sourceIdentifier: string,
     ]
   >
 {}
