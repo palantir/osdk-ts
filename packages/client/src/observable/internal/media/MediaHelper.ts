@@ -32,8 +32,6 @@ import type { BlobMemoryManager } from "./BlobMemoryManager.js";
 import { createBlobMemoryManager } from "./BlobMemoryManager.js";
 import { getMediaCacheKey } from "./getMediaCacheKey.js";
 import type { MediaContentCacheKey } from "./MediaContentCacheKey.js";
-import type { MediaContentObservable } from "./MediaContentObservable.js";
-import { createMediaContentObservable } from "./MediaContentObservable.js";
 import { MediaContentQuery } from "./MediaContentQuery.js";
 import type { MediaMetadataCacheKey } from "./MediaMetadataCacheKey.js";
 import type {
@@ -49,15 +47,10 @@ function isMediaPropertyLocation(
     && "propertyName" in source;
 }
 
-/**
- * Facade for media operations: metadata, content, and caching.
- * Delegates to specialized helpers for focused responsibilities.
- */
 export class MediaHelper {
   private store: Store;
   private cacheKeys: CacheKeys<KnownCacheKey>;
   private blobManager: BlobMemoryManager;
-  private contentObservables = new Map<string, MediaContentObservable>();
 
   constructor(
     store: Store,
@@ -68,16 +61,13 @@ export class MediaHelper {
     this.blobManager = createBlobMemoryManager();
   }
 
-  /**
-   * Get a cache key for media, useful for identity and deduplication.
-   */
   getCacheKey(
     mediaOrLocation: Media | Attachment | MediaPropertyLocation,
   ): string {
     return getMediaCacheKey(mediaOrLocation);
   }
 
-  private getTypedCacheKey(
+  private getMetadataCacheKey(
     coords: MediaPropertyLocation,
   ): MediaMetadataCacheKey {
     return this.cacheKeys.get(
@@ -88,9 +78,19 @@ export class MediaHelper {
     );
   }
 
-  /**
-   * Observe media metadata with automatic updates.
-   */
+  private getContentCacheKey(
+    source: Media | Attachment | MediaPropertyLocation,
+  ): MediaContentCacheKey {
+    const objectType = isMediaPropertyLocation(source)
+      ? source.objectType
+      : "";
+    return this.cacheKeys.get(
+      "mediaContent",
+      objectType,
+      this.getCacheKey(source),
+    ) as MediaContentCacheKey;
+  }
+
   observeMediaMetadata(
     coords: MediaPropertyLocation,
     options: MediaMetadataObserveOptions,
@@ -116,7 +116,6 @@ export class MediaHelper {
       );
     });
 
-    // Reference counting: cancel pending cleanup or retain
     const pendingCleanupCount = this.store.pendingCleanup.get(cacheKey) ?? 0;
     if (pendingCleanupCount > 0) {
       if (pendingCleanupCount === 1) {
@@ -142,7 +141,6 @@ export class MediaHelper {
       options.dedupeInterval,
     );
 
-    // Deferred release on unsubscribe (handles React unmount-remount cycles)
     subscription.add(() => {
       query.unregisterSubscriptionDedupeInterval(querySub.subscriptionId);
 
@@ -166,9 +164,6 @@ export class MediaHelper {
     return querySub;
   }
 
-  /**
-   * Fetch media metadata from the server.
-   */
   async fetchMetadata(coords: MediaPropertyLocation): Promise<MediaMetadata> {
     const ontologyRid = await this.store.client[additionalContext].ontologyRid;
     const response = await OntologiesV2.MediaReferenceProperties
@@ -188,9 +183,6 @@ export class MediaHelper {
     };
   }
 
-  /**
-   * Fetch media content from the server.
-   */
   async fetchContent(
     mediaOrLocation: Media | Attachment | MediaPropertyLocation,
     options?: { preview?: boolean },
@@ -234,9 +226,6 @@ export class MediaHelper {
     return blob;
   }
 
-  /**
-   * Get cached media content without network request.
-   */
   getCachedContent(
     mediaOrLocation: Media | Attachment | MediaPropertyLocation,
   ): Blob | undefined {
@@ -244,11 +233,8 @@ export class MediaHelper {
     return this.blobManager.get(cacheKey);
   }
 
-  /**
-   * Get cached media metadata without network request.
-   */
   getCachedMetadata(coords: MediaPropertyLocation): MediaMetadata | undefined {
-    const typedCacheKey = this.getTypedCacheKey(coords);
+    const typedCacheKey = this.getMetadataCacheKey(coords);
     const query = this.store.queries.peek(typedCacheKey);
     if (query) {
       const result = this.store.batch({}, (batch) => batch.read(typedCacheKey));
@@ -257,9 +243,6 @@ export class MediaHelper {
     return undefined;
   }
 
-  /**
-   * Create a blob URL for media content.
-   */
   createBlobUrl(
     mediaOrLocation: Media | Attachment | MediaPropertyLocation,
     options?: { preview?: boolean },
@@ -270,9 +253,6 @@ export class MediaHelper {
     return this.blobManager.createBlobUrl(cacheKey);
   }
 
-  /**
-   * Release a blob URL to free memory.
-   */
   releaseBlobUrl(
     mediaOrLocation: Media | Attachment | MediaPropertyLocation,
     options?: { preview?: boolean },
@@ -283,36 +263,8 @@ export class MediaHelper {
     this.blobManager.releaseBlobUrl(cacheKey);
   }
 
-  private getContentCacheKey(
-    coords: MediaPropertyLocation,
-  ): MediaContentCacheKey {
-    return this.cacheKeys.get(
-      "mediaContent",
-      coords.objectType,
-      coords.primaryKey,
-      coords.propertyName,
-    ) as MediaContentCacheKey;
-  }
-
-  /**
-   * Observe media content with unified lifecycle management.
-   * Property-based sources use the Query/Store pattern for automatic
-   * invalidation when the parent object changes. Attachment and raw Media
-   * sources use standalone observables.
-   */
   observeMedia(
     source: Media | Attachment | MediaPropertyLocation,
-    options: MediaContentObserveOptions,
-    observer: Observer<MediaContentPayload>,
-  ): { unsubscribe: () => void } {
-    if (isMediaPropertyLocation(source)) {
-      return this.#observeMediaViaQuery(source, options, observer);
-    }
-    return this.#observeMediaStandalone(source, options, observer);
-  }
-
-  #observeMediaViaQuery(
-    source: MediaPropertyLocation,
     options: MediaContentObserveOptions,
     observer: Observer<MediaContentPayload>,
   ): { unsubscribe: () => void } {
@@ -335,7 +287,6 @@ export class MediaHelper {
       );
     });
 
-    // Reference counting: cancel pending cleanup or retain
     const pendingCleanupCount = this.store.pendingCleanup.get(cacheKey) ?? 0;
     if (pendingCleanupCount > 0) {
       if (pendingCleanupCount === 1) {
@@ -359,7 +310,6 @@ export class MediaHelper {
       options.dedupeInterval,
     );
 
-    // Deferred release on unsubscribe (handles React unmount-remount cycles)
     subscription.add(() => {
       query.unregisterSubscriptionDedupeInterval(querySub.subscriptionId);
 
@@ -383,77 +333,28 @@ export class MediaHelper {
     return querySub;
   }
 
-  #observeMediaStandalone(
-    source: Media | Attachment,
-    options: MediaContentObserveOptions,
-    observer: Observer<MediaContentPayload>,
-  ): { unsubscribe: () => void } {
-    const cacheKey = this.getCacheKey(source);
-
-    let observable = this.contentObservables.get(cacheKey);
-    if (!observable) {
-      observable = createMediaContentObservable(
-        {
-          fetchContent: (s, opts) => this.fetchContent(s, opts),
-          fetchMetadata: (s) => this.fetchMetadataForSource(s),
-          blobManager: this.blobManager,
-          getCacheKey: (s) => this.getCacheKey(s),
-        },
-        source,
-        options,
-      );
-      this.contentObservables.set(cacheKey, observable);
-    }
-
-    const sub = observable.subscribe(observer);
-
-    return {
-      unsubscribe: () => {
-        sub.unsubscribe();
-        if (observable.subscriberCount() === 0) {
-          observable.dispose();
-          this.contentObservables.delete(cacheKey);
-        }
-      },
-    };
-  }
-
-  /**
-   * Invalidate media content, triggering SWR refetch.
-   */
   invalidateMedia(
     source: Media | Attachment | MediaPropertyLocation,
   ): void {
-    if (isMediaPropertyLocation(source)) {
-      const typedCacheKey = this.getContentCacheKey(source);
-      const query = this.store.queries.peek(typedCacheKey);
-      if (query) {
-        // SWR: mark stale in Store so subscribers see isStale=true immediately
-        this.store.batch({}, (batch) => {
-          const entry = batch.read(typedCacheKey);
-          if (entry?.value) {
-            batch.write(
-              typedCacheKey,
-              { ...entry.value, isStale: true },
-              entry.status,
-            );
-          }
-        });
+    const typedCacheKey = this.getContentCacheKey(source);
+    const query = this.store.queries.peek(typedCacheKey);
+    if (query) {
+      this.store.batch({}, (batch) => {
+        const entry = batch.read(typedCacheKey);
+        if (entry?.value) {
+          batch.write(
+            typedCacheKey,
+            { ...entry.value, isStale: true },
+            entry.status,
+          );
+        }
+      });
 
-        // Clear cached blobs so refetch hits network
-        const blobKey = this.getCacheKey(source);
-        this.blobManager.remove(blobKey);
-        this.blobManager.remove(`${blobKey}:preview`);
+      const blobKey = this.getCacheKey(source);
+      this.blobManager.remove(blobKey);
+      this.blobManager.remove(`${blobKey}:preview`);
 
-        query.revalidate(true).catch(() => {});
-        return;
-      }
-    }
-
-    const cacheKey = this.getCacheKey(source);
-    const observable = this.contentObservables.get(cacheKey);
-    if (observable) {
-      observable.invalidate();
+      query.revalidate(true).catch(() => {});
     }
   }
 
@@ -474,28 +375,21 @@ export class MediaHelper {
     return source.fetchMetadata();
   }
 
-  /**
-   * Clear cached media (both metadata and content).
-   */
   clearCache(
     mediaOrLocation: Media | Attachment | MediaPropertyLocation,
   ): void {
     const cacheKey = this.getCacheKey(mediaOrLocation);
-
     this.blobManager.remove(cacheKey);
 
     if (isMediaPropertyLocation(mediaOrLocation)) {
-      const metadataCacheKey = this.getTypedCacheKey(mediaOrLocation);
+      const metadataCacheKey = this.getMetadataCacheKey(mediaOrLocation);
       this.store.queries.delete(metadataCacheKey);
-
-      const contentCacheKey = this.getContentCacheKey(mediaOrLocation);
-      this.store.queries.delete(contentCacheKey);
     }
+
+    const contentCacheKey = this.getContentCacheKey(mediaOrLocation);
+    this.store.queries.delete(contentCacheKey);
   }
 
-  /**
-   * Clear all media from cache.
-   */
   clearAll(): void {
     this.blobManager.clear();
 
@@ -508,15 +402,7 @@ export class MediaHelper {
     }
   }
 
-  /**
-   * Clean up all resources.
-   */
   dispose(): void {
-    for (const observable of this.contentObservables.values()) {
-      observable.dispose();
-    }
-    this.contentObservables.clear();
-
     this.blobManager.dispose();
 
     for (const cacheKey of this.store.queries.keys()) {
