@@ -188,18 +188,20 @@ export class MonitorStore {
   }
 
   private wrapWithMonitoring(client: ObservableClient): ObservableClient {
-    this.monitor = new ObservableClientMonitor({
-      metricsStore: this.metricsStore,
-      componentRegistry: this.componentRegistry,
-      linkTraversalTracker: this.linkTraversalTracker,
-      propertyAccessTracker: this.propertyAccessTracker,
-      eventTimeline: this.eventTimeline,
-      captureComponentContext: true,
-      captureQueryParams: true,
-      cleanupIntervalMs: this.config.cleanupIntervalMs,
-      cacheThresholdMs: this.config.cacheDetectionThresholdMs,
-      mockManager: this.mockManager,
-    });
+    if (!this.monitor) {
+      this.monitor = new ObservableClientMonitor({
+        metricsStore: this.metricsStore,
+        componentRegistry: this.componentRegistry,
+        linkTraversalTracker: this.linkTraversalTracker,
+        propertyAccessTracker: this.propertyAccessTracker,
+        eventTimeline: this.eventTimeline,
+        captureComponentContext: true,
+        captureQueryParams: true,
+        cleanupIntervalMs: this.config.cleanupIntervalMs,
+        cacheThresholdMs: this.config.cacheDetectionThresholdMs,
+        mockManager: this.mockManager,
+      });
+    }
     return this.monitor.wrapClient(client);
   }
 

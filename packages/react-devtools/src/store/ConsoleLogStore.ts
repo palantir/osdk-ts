@@ -47,6 +47,18 @@ const MAX_TOTAL_SIZE = 10240; // 10KB
 
 const INTERNAL_FRAME_PATTERN =
   /ConsoleLogStore|serializeArg|serializeValue|getCallerLocation|capEntrySize|osdkConsoleWrapper/;
+
+// BrowserLogger formats calls with %c CSS styling and a "border: 1px solid"
+// pattern from its createStyle(). We filter these from the devtools console
+// because devtools monitors the same operations through its own instrumentation.
+const BROWSER_LOGGER_CSS = "border: 1px solid";
+function isBrowserLoggerCall(args: unknown[]): boolean {
+  return typeof args[0] === "string"
+    && args[0].startsWith("%c")
+    && typeof args[1] === "string"
+    && args[1].includes(BROWSER_LOGGER_CSS);
+}
+
 const CHROME_FRAME_REGEX_PAREN = /at\s+.*?\((.*?):(\d+):\d+\)/;
 const CHROME_FRAME_REGEX_BARE = /at\s+(.*?):(\d+):\d+/;
 const FIREFOX_FRAME_REGEX = /@(.*?):(\d+):\d+/;
@@ -244,7 +256,7 @@ export class ConsoleLogStore extends SubscribableStore {
       ) {
         original.apply(this ?? console, args);
 
-        if (store.suppressed || store.capturing) {
+        if (store.suppressed || store.capturing || isBrowserLoggerCall(args)) {
           return;
         }
 

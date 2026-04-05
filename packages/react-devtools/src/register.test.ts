@@ -65,7 +65,7 @@ describe("register", () => {
     globalThis.fetch = originalFetch;
   });
 
-  it("calls registerDevTools with wrapClient, wrapChildren, and dispose", async () => {
+  it("calls registerDevTools with wrapClient and wrapChildren", async () => {
     await import("./register.js");
 
     if (capturedRegistry == null) {
@@ -73,7 +73,6 @@ describe("register", () => {
     }
     expect(typeof capturedRegistry.wrapClient).toBe("function");
     expect(typeof capturedRegistry.wrapChildren).toBe("function");
-    expect(typeof capturedRegistry.dispose).toBe("function");
   });
 
   it("does not include renderPanel in the registry", async () => {

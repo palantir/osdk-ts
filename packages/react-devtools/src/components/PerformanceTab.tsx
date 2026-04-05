@@ -25,7 +25,7 @@ import type { MetricsStore } from "../store/MetricsStore.js";
 import type { MonitorStore } from "../store/MonitorStore.js";
 import type { Operation } from "../types/index.js";
 import type { ActionStartEvent } from "../utils/EventTimeline.js";
-import { formatBytes, formatNumber, formatTime } from "../utils/format.js";
+import { formatNumber, formatTime } from "../utils/format.js";
 import type { Recommendation } from "../utils/PerformanceRecommendationEngine.js";
 import {
   buildRecommendationMap,
@@ -221,8 +221,11 @@ export const PerformanceTab: React.FC<PerformanceTabProps> = (
         <div className={styles.metric}>
           <span className={styles.metricLabel}>Cache Savings</span>
           <span className={classNames(styles.metricValue, styles.success)}>
-            {formatNumber(metrics.aggregates.requestsSaved)} requests ·{" "}
-            {formatBytes(metrics.aggregates.bytesServedFromCache)}
+            {formatNumber(
+              metrics.aggregates.cacheHits
+                + metrics.aggregates.revalidations
+                + metrics.aggregates.deduplications,
+            )} requests saved
           </span>
           <span className={styles.metricSubtext}>
             {formatNumber(metrics.aggregates.deduplications)} deduped

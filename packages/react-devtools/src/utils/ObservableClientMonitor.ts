@@ -196,6 +196,15 @@ export class ObservableClientMonitor {
 
   wrapClient(client: ObservableClient): ObservableClient {
     this.wrappedClient = client;
+
+    // Suppress the client's internal BrowserLogger. It writes to console.*
+    // which our ConsoleLogStore intercepts, flooding the devtools console tab
+    // with hundreds of internal debug logs. The devtools monitoring proxy
+    // already captures all the same operations through its own instrumentation.
+    if (hasExperimentalStore(client)) {
+      (client.__experimentalStore as { logger: unknown }).logger = undefined;
+    }
+
     const methodCache = new Map<string | symbol, unknown>();
 
     return new Proxy(client, {
@@ -340,15 +349,18 @@ export class ObservableClientMonitor {
           subscriptionId,
         );
         const responseTime = analysis?.loadTime ?? 0;
+        const effectiveClassification = analysis?.wasCached
+          ? "hit"
+          : classification;
 
-        if (classification === "hit") {
+        if (effectiveClassification === "hit") {
           this.metricsStore.recordCacheHit(
             signature,
             responseTime,
             metadata,
             objectCount,
           );
-        } else if (classification === "revalidation") {
+        } else if (effectiveClassification === "revalidation") {
           this.metricsStore.recordRevalidation(
             signature,
             responseTime,

@@ -20,7 +20,7 @@ import React from "react";
 import { SafeMonitoringPanel } from "./components/MonitoringPanel.js";
 import { DevToolsContext } from "./DevToolsContext.js";
 import { safelyInstallDevToolsHook } from "./fiber/DevtoolsHook.js";
-import { getMonitorStore, MonitorStore } from "./store/MonitorStore.js";
+import { MonitorStore } from "./store/MonitorStore.js";
 
 safelyInstallDevToolsHook();
 
@@ -40,31 +40,16 @@ if (isDev) {
 
     wrapChildren: (
       children: React.ReactNode,
-      monitoredClient: ObservableClient,
+      _monitoredClient: ObservableClient,
     ) => {
-      const monitorStore = getMonitorStore(monitoredClient);
-
-      if (!monitorStore) {
-        return children;
-      }
-
       return React.createElement(
         DevToolsContext.Provider,
-        { value: monitorStore },
+        { value: globalMonitorStore },
         children,
-        React.createElement(SafeMonitoringPanel, { monitorStore }),
+        React.createElement(SafeMonitoringPanel, {
+          monitorStore: globalMonitorStore,
+        }),
       );
-    },
-
-    dispose: (monitoredClient: unknown) => {
-      if (typeof monitoredClient !== "object" || monitoredClient == null) {
-        return;
-      }
-      const monitorStore = getMonitorStore(monitoredClient);
-
-      if (monitorStore) {
-        monitorStore.dispose();
-      }
     },
   });
 }
