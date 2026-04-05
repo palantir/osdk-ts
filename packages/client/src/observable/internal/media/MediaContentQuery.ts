@@ -85,9 +85,9 @@ export class MediaContentQuery extends Query<
   MediaContentPayload,
   MediaContentObserveOptions
 > {
-  #objectType: string;
-  #primaryKey: PrimaryKeyType<ObjectTypeDefinition>;
-  #source: MediaPropertyLocation;
+  #objectType: string | undefined;
+  #primaryKey: PrimaryKeyType<ObjectTypeDefinition> | undefined;
+  #source: MediaSource;
   #blobManager: BlobMemoryManager;
   #blobCacheKey: string;
   #fetchContent: MediaContentQueryDeps["fetchContent"];
@@ -102,7 +102,7 @@ export class MediaContentQuery extends Query<
   constructor(
     store: Store,
     subject: Subject<SubjectPayload<MediaContentCacheKey>>,
-    source: MediaPropertyLocation,
+    source: MediaSource,
     cacheKey: MediaContentCacheKey,
     opts: MediaContentObserveOptions,
     deps: MediaContentQueryDeps,
@@ -114,15 +114,15 @@ export class MediaContentQuery extends Query<
       cacheKey,
       process.env.NODE_ENV !== "production"
         ? store.client[additionalContext].logger?.child({}, {
-          msgPrefix: `MediaContentQuery<${source.objectType}, ${
-            JSON.stringify(source.primaryKey)
-          }, ${source.propertyName}>`,
+          msgPrefix: `MediaContentQuery<${deps.getCacheKey(source)}>`,
         })
         : undefined,
     );
 
-    this.#objectType = source.objectType;
-    this.#primaryKey = source.primaryKey;
+    if ("objectType" in source) {
+      this.#objectType = source.objectType;
+      this.#primaryKey = source.primaryKey;
+    }
     this.#source = source;
     this.#blobManager = deps.blobManager;
     this.#blobCacheKey = deps.getCacheKey(source);
@@ -303,6 +303,10 @@ export class MediaContentQuery extends Query<
     changes: Changes,
     _optimisticId: OptimisticId | undefined,
   ): Promise<void> | undefined => {
+    if (!this.#objectType || this.#primaryKey == null) {
+      return undefined;
+    }
+
     const modifiedObjectsOfType = changes.modifiedObjects.get(this.#objectType);
     const addedObjectsOfType = changes.addedObjects.get(this.#objectType);
 
@@ -338,7 +342,7 @@ export class MediaContentQuery extends Query<
     objectType: string,
     _changes: Changes | undefined,
   ): Promise<void> => {
-    if (objectType === this.#objectType) {
+    if (this.#objectType && objectType === this.#objectType) {
       return this.#invalidateAndRevalidate();
     }
     return Promise.resolve();
