@@ -63,23 +63,17 @@ export function BaseCbacBannerPopover({
     onEditClick();
   }, [onEditClick]);
 
-  const hasMarkings = appliedMarkings.length > 0;
-
-  const pillStyle = React.useMemo((): React.CSSProperties => {
-    const background = backgroundFromColors(backgroundColors);
-
-    return {
-      color: textColor,
-      background,
-    };
-  }, [textColor, backgroundColors]);
+  const pillStyle: React.CSSProperties = {
+    color: textColor,
+    background: backgroundFromColors(backgroundColors),
+  };
 
   const showSkeleton = isLoading === true && appliedMarkings.length === 0;
-  const hasWarnings = warnings !== undefined && warnings.length > 0;
 
   return (
     <Popover.Root open={open} onOpenChange={setOpen}>
       <Popover.Trigger
+        nativeButton={false}
         render={
           <div className={styles.bannerTriggerWrapper}>
             <BaseCbacBanner
@@ -110,9 +104,7 @@ export function BaseCbacBannerPopover({
               pillStyle={pillStyle}
               classificationString={classificationString}
               description={description}
-              hasMarkings={hasMarkings}
               appliedMarkings={appliedMarkings}
-              hasWarnings={hasWarnings}
               warnings={warnings}
               handleEditClick={handleEditClick}
             />
@@ -130,9 +122,7 @@ interface PopoverContentProps {
   pillStyle: React.CSSProperties;
   classificationString: string;
   description: string | undefined;
-  hasMarkings: boolean;
   appliedMarkings: AppliedMarkingGroup[];
-  hasWarnings: boolean;
   warnings: string[] | undefined;
   handleEditClick: () => void;
 }
@@ -144,12 +134,12 @@ const PopoverContent = React.memo(function PopoverContent({
   pillStyle,
   classificationString,
   description,
-  hasMarkings,
   appliedMarkings,
-  hasWarnings,
   warnings,
   handleEditClick,
 }: PopoverContentProps): React.ReactElement {
+  const hasMarkings = appliedMarkings.length > 0;
+  const hasWarnings = warnings !== undefined && warnings.length > 0;
   if (showSkeleton) {
     return (
       <div className={styles.skeletonContainer}>

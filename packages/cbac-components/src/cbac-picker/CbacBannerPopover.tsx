@@ -113,18 +113,18 @@ export function CbacBannerPopover({
     return `This data is classified as: ${resolved.classificationString}`;
   }, [markingIds.length, resolved.classificationString]);
 
-  const handleEditClick = React.useCallback(() => {
+  const handleEditClick = () => {
     setIsDialogOpen(true);
-  }, []);
+  };
 
-  const handleDialogOpenChange = React.useCallback((open: boolean) => {
+  const handleDialogOpenChange = (open: boolean) => {
     setIsDialogOpen(open);
-  }, []);
+  };
 
-  const handleConfirm = React.useCallback((newMarkingIds: string[]) => {
+  const handleConfirm = (newMarkingIds: string[]) => {
     onChange(newMarkingIds);
     setIsDialogOpen(false);
-  }, [onChange]);
+  };
 
   return (
     <>

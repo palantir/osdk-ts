@@ -58,13 +58,13 @@ export function CbacPicker({
       setSelectedIds(newSelection);
       onChange(newSelection);
     },
-    [readOnly, categoryGroups, onChange, setSelectedIds],
+    [readOnly, categoryGroups, onChange],
   );
 
   const handleDismiss = React.useCallback(() => {
     setSelectedIds(EMPTY_ARRAY);
     onChange(EMPTY_ARRAY);
-  }, [onChange, setSelectedIds]);
+  }, [onChange]);
 
   return (
     <BaseCbacPicker
