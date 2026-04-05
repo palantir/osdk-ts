@@ -18,7 +18,7 @@ import type { Attachment, Media, MediaMetadata } from "@osdk/api";
 import type { MediaPropertyLocation } from "../../ObservableClient/MediaTypes.js";
 import type { BlobMemoryManager } from "./BlobMemoryManager.js";
 
-type MediaSource = Media | Attachment | MediaPropertyLocation;
+export type MediaSource = Media | Attachment | MediaPropertyLocation;
 
 export async function extractImageDimensions(
   blob: Blob,
@@ -93,15 +93,10 @@ async function loadWithPreview(opts: FetchMediaContentOpts): Promise<void> {
   blobManager.add(previewBlobKey, previewBlob);
   const previewUrl = blobManager.createBlobUrl(previewBlobKey);
 
-  const previewDims = await extractImageDimensions(previewBlob);
-  if (isCancelled()) {
-    if (previewUrl) {
-      blobManager.releaseBlobUrl(previewBlobKey);
-    }
-    return;
-  }
-
-  const previewMeta = await fetchMetadata(source).catch(() => undefined);
+  const [previewDims, previewMeta] = await Promise.all([
+    extractImageDimensions(previewBlob),
+    fetchMetadata(source).catch(() => undefined),
+  ]);
   if (isCancelled()) {
     if (previewUrl) {
       blobManager.releaseBlobUrl(previewBlobKey);
