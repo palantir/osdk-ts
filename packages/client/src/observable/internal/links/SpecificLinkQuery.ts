@@ -43,7 +43,9 @@ import { OrderBySortingStrategy } from "../sorting/SortingStrategy.js";
 import type { Store } from "../Store.js";
 import type { SubjectPayload } from "../SubjectPayload.js";
 import { tombstone } from "../tombstone.js";
+import { reloadDataAsFullObjects } from "../utils/reloadDataAsFullObjects.js";
 import {
+  RESOLVE_TO_OBJECT_TYPE_IDX as LINK_RESOLVE_TO_OBJECT_TYPE_IDX,
   SELECT_IDX as LINK_SELECT_IDX,
   type SpecificLinkCacheKey,
 } from "./SpecificLinkCacheKey.js";
@@ -68,6 +70,7 @@ export class SpecificLinkQuery extends BaseListQuery<
   #whereClause: Canonical<SimpleWhereClause>;
   #orderBy: Canonical<Record<string, "asc" | "desc" | undefined>>;
   #select: Canonical<readonly string[]> | undefined;
+  #resolveToObjectType: boolean;
 
   protected override createPayload(
     params: CollectionConnectableParams,
@@ -121,6 +124,8 @@ export class SpecificLinkQuery extends BaseListQuery<
       this.#orderBy,
     ] = cacheKey.otherKeys;
     this.#select = cacheKey.otherKeys[LINK_SELECT_IDX];
+    this.#resolveToObjectType = !!cacheKey
+      .otherKeys[LINK_RESOLVE_TO_OBJECT_TYPE_IDX];
   }
 
   protected get rawSelect(): Canonical<readonly string[]> | undefined {
@@ -242,6 +247,14 @@ export class SpecificLinkQuery extends BaseListQuery<
 
     // Store the next page token for pagination
     this.nextPageToken = response.nextPageToken;
+
+    if (this.#resolveToObjectType && response.data.length > 0) {
+      const reloadedData = await reloadDataAsFullObjects(
+        this.store.client,
+        response.data,
+      );
+      return { ...response, data: reloadedData };
+    }
 
     return response;
   }

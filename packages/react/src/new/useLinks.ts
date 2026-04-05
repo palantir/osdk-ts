@@ -87,6 +87,18 @@ export interface UseLinksOptions<
    * });
    */
   enabled?: boolean;
+
+  /**
+   * When the link target is an interface type, return full concrete
+   * object type instances instead of interface-narrowed views.
+   *
+   * By default, link queries return objects as provided by the API.
+   * With `resolveToObjectType: true`, objects are re-fetched by their
+   * concrete object type to include all properties.
+   *
+   * @default false
+   */
+  resolveToObjectType?: boolean;
 }
 
 export interface UseLinksResult<
@@ -144,7 +156,7 @@ export function useLinks<
 ): UseLinksResult<LinkedType<T, L>> {
   const { observableClient } = React.useContext(OsdkContext2);
 
-  const { enabled = true, ...otherOptions } = options;
+  const { enabled = true, resolveToObjectType, ...otherOptions } = options;
 
   const canonOptions = observableClient.canonicalizeOptions({
     where: otherOptions.where,
@@ -188,6 +200,7 @@ export function useLinks<
               mode: otherOptions.mode,
               dedupeInterval: otherOptions.dedupeIntervalMs ?? 2_000,
               ...(canonOptions.$select ? { select: canonOptions.$select } : {}),
+              ...(resolveToObjectType ? { resolveToObjectType } : {}),
             },
             observer,
           ),
@@ -206,6 +219,7 @@ export function useLinks<
       otherOptions.mode,
       otherOptions.dedupeIntervalMs,
       canonOptions.$select,
+      resolveToObjectType,
     ],
   );
 
