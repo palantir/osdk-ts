@@ -22,6 +22,10 @@ import type {
 } from "../../ObservableClient/MediaObservableTypes.js";
 import type { MediaPropertyLocation } from "../../ObservableClient/MediaTypes.js";
 import type { BlobMemoryManager } from "./BlobMemoryManager.js";
+import {
+  extractImageDimensions,
+  fetchMediaContent,
+} from "./fetchMediaContent.js";
 
 type MediaSource = Media | Attachment | MediaPropertyLocation;
 
@@ -44,23 +48,6 @@ export interface MediaContentObservable {
   invalidate(): void;
   dispose(): void;
   subscriberCount(): number;
-}
-
-export async function extractImageDimensions(
-  blob: Blob,
-): Promise<{ width: number; height: number } | undefined> {
-  if (!blob.type.startsWith("image/")) {
-    return undefined;
-  }
-
-  try {
-    const bitmap = await createImageBitmap(blob);
-    const dims = { width: bitmap.width, height: bitmap.height };
-    bitmap.close();
-    return dims;
-  } catch {
-    return undefined;
-  }
 }
 
 export function createMediaContentObservable(
@@ -119,11 +106,30 @@ export function createMediaContentObservable(
     }
 
     try {
-      if (placeholder === "preview" && !isRevalidation) {
-        await loadWithPreview(gen);
-      } else {
-        await loadDirect(gen, preview);
-      }
+      await fetchMediaContent({
+        source,
+        fetchContent: deps.fetchContent,
+        fetchMetadata: deps.fetchMetadata,
+        blobManager: deps.blobManager,
+        blobCacheKey: cacheKey,
+        usePreview: preview,
+        placeholder: isRevalidation ? "none" : placeholder,
+        isCancelled: () => gen !== fetchGeneration || disposed,
+        onResult: (result) => {
+          urlCacheKey = result.blobKey;
+          updateState({
+            content: result.blob,
+            url: result.url,
+            previewUrl: result.previewUrl,
+            metadata: result.metadata ?? state.metadata,
+            dimensions: result.dimensions ?? state.dimensions,
+            status: "loaded",
+            isPreview: result.isPreview,
+            lastUpdated: Date.now(),
+            error: undefined,
+          });
+        },
+      });
     } catch (err) {
       if (gen !== fetchGeneration || disposed) {
         return;
@@ -136,113 +142,6 @@ export function createMediaContentObservable(
         isStale: false,
       });
     }
-  }
-
-  async function loadWithPreview(gen: number): Promise<void> {
-    const previewBlob = await deps.fetchContent(source, { preview: true });
-    if (gen !== fetchGeneration || disposed) {
-      return;
-    }
-
-    const previewBlobKey = `${cacheKey}:preview`;
-    deps.blobManager.add(previewBlobKey, previewBlob);
-    const previewUrl = deps.blobManager.createBlobUrl(previewBlobKey);
-
-    const previewDimensions = await extractImageDimensions(previewBlob);
-    if (gen !== fetchGeneration || disposed) {
-      if (previewUrl) {
-        deps.blobManager.releaseBlobUrl(previewBlobKey);
-      }
-      return;
-    }
-
-    const previewMeta = await deps.fetchMetadata(source).catch(() => undefined);
-    if (gen !== fetchGeneration || disposed) {
-      if (previewUrl) {
-        deps.blobManager.releaseBlobUrl(previewBlobKey);
-      }
-      return;
-    }
-
-    urlCacheKey = previewBlobKey;
-    updateState({
-      content: previewBlob,
-      url: previewUrl,
-      previewUrl,
-      metadata: previewMeta ?? state.metadata,
-      dimensions: previewDimensions ?? state.dimensions,
-      status: "loaded",
-      isPreview: true,
-      lastUpdated: Date.now(),
-      error: undefined,
-    });
-
-    // Remove base cache entry so the full-res fetch hits the network
-    // (fetchContent caches under the base key regardless of preview option)
-    deps.blobManager.remove(cacheKey);
-
-    const fullBlob = await deps.fetchContent(source, { preview: false });
-    if (gen !== fetchGeneration || disposed) {
-      return;
-    }
-
-    deps.blobManager.add(cacheKey, fullBlob);
-    const fullUrl = deps.blobManager.createBlobUrl(cacheKey);
-    const fullDimensions = await extractImageDimensions(fullBlob);
-    if (gen !== fetchGeneration || disposed) {
-      if (fullUrl) {
-        deps.blobManager.releaseBlobUrl(cacheKey);
-      }
-      return;
-    }
-
-    // Release preview blob URL
-    deps.blobManager.releaseBlobUrl(previewBlobKey);
-
-    urlCacheKey = cacheKey;
-    updateState({
-      content: fullBlob,
-      url: fullUrl,
-      previewUrl: undefined,
-      dimensions: fullDimensions ?? state.dimensions,
-      status: "loaded",
-      isPreview: false,
-      lastUpdated: Date.now(),
-      error: undefined,
-    });
-  }
-
-  async function loadDirect(gen: number, usePreview: boolean): Promise<void> {
-    const [blob, metadata] = await Promise.all([
-      deps.fetchContent(source, { preview: usePreview }),
-      deps.fetchMetadata(source).catch(() => undefined),
-    ]);
-    if (gen !== fetchGeneration || disposed) {
-      return;
-    }
-
-    deps.blobManager.add(cacheKey, blob);
-    const url = deps.blobManager.createBlobUrl(cacheKey);
-    const dimensions = await extractImageDimensions(blob);
-    if (gen !== fetchGeneration || disposed) {
-      if (url) {
-        deps.blobManager.releaseBlobUrl(cacheKey);
-      }
-      return;
-    }
-
-    urlCacheKey = cacheKey;
-    updateState({
-      content: blob,
-      url,
-      metadata: metadata ?? state.metadata,
-      dimensions: dimensions ?? state.dimensions,
-      status: "loaded",
-      isStale: false,
-      isPreview: false,
-      lastUpdated: Date.now(),
-      error: undefined,
-    });
   }
 
   function startFetching(): void {
