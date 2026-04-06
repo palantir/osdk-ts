@@ -27,6 +27,11 @@ import type {
 import deepEqual from "fast-deep-equal";
 import { type Subject } from "rxjs";
 import { additionalContext } from "../../../Client.js";
+import { getWireObjectSet } from "../../../objectSet/createObjectSet.js";
+import {
+  type FetchedObjectTypeDefinition,
+  InterfaceDefinitions,
+} from "../../../ontology/OntologyProvider.js";
 import type { SpecificLinkPayload } from "../../LinkPayload.js";
 import type { Status } from "../../ObservableClient/common.js";
 import type { ObserveLinks } from "../../ObservableClient/ObserveLink.js";
@@ -176,13 +181,21 @@ export class SpecificLinkQuery extends BaseListQuery<
           this.#sourceApiName,
         );
         const linkDef = objectMetadata.links?.[this.#linkName];
-        if (!linkDef?.targetType) {
-          throw new Error(
-            `Missing link definition or targetType for link '${this.#linkName}' on object type '${this.#sourceApiName}'`,
+        if (linkDef?.targetType) {
+          // Object link defs always target an object type.
+          target = { apiName: linkDef.targetType, kind: "object" };
+        } else {
+          // ILT — search implemented interfaces for the link definition
+          const iltDef = resolveIltLinkDef(
+            objectMetadata,
+            this.#linkName,
+            this.#sourceApiName,
           );
+          target = {
+            apiName: iltDef.targetTypeApiName,
+            kind: iltDef.targetType,
+          };
         }
-        // Object link defs always target an object type.
-        target = { apiName: linkDef.targetType, kind: "object" };
       }
     }
 
@@ -229,7 +242,25 @@ export class SpecificLinkQuery extends BaseListQuery<
         [objectMetadata.primaryKeyApiName]: this.#sourcePk,
       } as WhereClause<any>);
 
-      linkQuery = sourceQuery.pivotTo(this.#linkName);
+      if (this.#linkName in objectMetadata.links) {
+        linkQuery = sourceQuery.pivotTo(this.#linkName);
+      } else {
+        // ILT — use interfaceLinkSearchAround
+        const mc = client[additionalContext];
+        const sourceWire = getWireObjectSet(sourceQuery);
+        linkQuery = mc.objectSetFactory(
+          {
+            type: "object",
+            apiName: this.#sourceApiName,
+          } as ObjectTypeDefinition,
+          mc,
+          {
+            type: "interfaceLinkSearchAround",
+            objectSet: sourceWire,
+            interfaceLink: this.#linkName,
+          },
+        ) as ObjectSet<ObjectOrInterfaceDefinition>;
+      }
     }
 
     if (signal?.aborted) {
@@ -358,19 +389,35 @@ export class SpecificLinkQuery extends BaseListQuery<
         }
 
         let targetTypeApiName: string | undefined;
+        let targetTypeKind: "object" | "interface" | undefined;
 
         if (this.#sourceTypeKind === "interface") {
           const interfaceMetadata = await ontologyProvider
             .getInterfaceDefinition(this.#sourceApiName);
-          targetTypeApiName = interfaceMetadata.links?.[this.#linkName]
-            ?.targetTypeApiName;
+          const linkDef = interfaceMetadata.links?.[this.#linkName];
+          targetTypeApiName = linkDef?.targetTypeApiName;
+          targetTypeKind = linkDef?.targetType;
         } else {
           const objectMetadata = await ontologyProvider
             .getObjectDefinition(this.#sourceApiName);
-          // Object link def's `targetType` is the target API name; it can be
-          // either an object type or an interface name.
-          targetTypeApiName = objectMetadata.links?.[this.#linkName]
-            ?.targetType;
+          const linkDef = objectMetadata.links?.[this.#linkName];
+          if (linkDef) {
+            targetTypeApiName = linkDef.targetType;
+            targetTypeKind = "object";
+          } else {
+            // ILT — search implemented interfaces for target type
+            try {
+              const iltDef = resolveIltLinkDef(
+                objectMetadata,
+                this.#linkName,
+                this.#sourceApiName,
+              );
+              targetTypeApiName = iltDef.targetTypeApiName;
+              targetTypeKind = iltDef.targetType;
+            } catch {
+              // Link not found at all — fall through to return
+            }
+          }
         }
 
         if (!targetTypeApiName) return;
@@ -380,15 +427,14 @@ export class SpecificLinkQuery extends BaseListQuery<
           return void await this.revalidate(true);
         }
 
-        // If the target is an interface, revalidate when objectType implements
-        // it. For object-typed targets, interfaceMap[objectTypeName] is always
-        // false, so this is a safe no-op.
-        const objectMetadata = await ontologyProvider.getObjectDefinition(
-          objectType,
-        );
-        if (targetTypeApiName in objectMetadata.interfaceMap) {
-          changes?.modified.add(this.cacheKey);
-          return void await this.revalidate(true);
+        if (targetTypeKind === "interface") {
+          const objectMetadata = await ontologyProvider.getObjectDefinition(
+            objectType,
+          );
+          if (targetTypeApiName in objectMetadata.interfaceMap) {
+            changes?.modified.add(this.cacheKey);
+            return void await this.revalidate(true);
+          }
         }
       } catch (e) {
         if (process.env.NODE_ENV !== "production") {
@@ -411,4 +457,25 @@ export function isSpecificLinkCacheKey(
   key: CacheKey,
 ): key is SpecificLinkCacheKey {
   return key.type === "specificLink";
+}
+
+function resolveIltLinkDef(
+  objectMetadata: FetchedObjectTypeDefinition,
+  linkName: string,
+  sourceApiName: string,
+): { targetTypeApiName: string; targetType: "object" | "interface" } {
+  for (
+    const iface of Object.values(objectMetadata[InterfaceDefinitions])
+  ) {
+    const iltDef = iface.def.links[linkName];
+    if (iltDef) {
+      return {
+        targetTypeApiName: iltDef.targetTypeApiName,
+        targetType: iltDef.targetType,
+      };
+    }
+  }
+  throw new Error(
+    `Missing link definition for link '${linkName}' on object type '${sourceApiName}'`,
+  );
 }
