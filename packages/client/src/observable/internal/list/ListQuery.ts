@@ -193,71 +193,88 @@ export abstract class ListQuery extends BaseListQuery<
    * Implements fetchPageData from BaseCollectionQuery template method
    * Fetches a page of data
    */
+  /**
+   * On first fetch, checks whether pivotTo targets an interface link rather
+   * than a concrete link. If so, replaces the initial searchAround object set
+   * with interfaceLinkSearchAround, which the server resolves to the correct
+   * concrete links.
+   *
+   * Runs once per query lifetime — the result is stable.
+   */
+  async #resolveIltPivot(): Promise<void> {
+    if (
+      !this.#pivotInfo
+      || this.#pivotInfo.sourceTypeKind !== "object"
+      || this.#iltResolved
+    ) {
+      return;
+    }
+
+    const pivotInfo = this.#pivotInfo;
+    const mc = this.store.client[additionalContext];
+    const sourceDef = await mc.ontologyProvider.getObjectDefinition(
+      pivotInfo.sourceType,
+    );
+
+    const isInterfaceLink = !(pivotInfo.linkName in sourceDef.links);
+    if (!isInterfaceLink) {
+      this.#iltResolved = true;
+      return;
+    }
+
+    const rids = this.cacheKey.otherKeys[RIDS_IDX];
+    const sourceObjectSet = rids != null
+      ? mc.objectSetFactory(
+        {
+          type: "object",
+          apiName: pivotInfo.sourceType,
+        } as ObjectTypeDefinition,
+        mc,
+        { type: "static", objects: [...rids] },
+      )
+      : this.store.client(
+        {
+          type: "object",
+          apiName: pivotInfo.sourceType,
+        } as ObjectTypeDefinition,
+      );
+
+    const filteredSourceWire = getWireObjectSet(
+      sourceObjectSet.where(this.#whereClause as WhereClause<any>),
+    );
+
+    this.#objectSet = mc.objectSetFactory(
+      { type: "object", apiName: this.apiName } as ObjectTypeDefinition,
+      mc,
+      {
+        type: "interfaceLinkSearchAround",
+        objectSet: filteredSourceWire,
+        interfaceLink: pivotInfo.linkName,
+      },
+    ) as ObjectSet<ObjectTypeDefinition>;
+
+    const rdpConfig = this.cacheKey.otherKeys[RDP_IDX];
+    if (rdpConfig != null) {
+      this.#objectSet = this.#objectSet.withProperties(
+        rdpConfig as DerivedProperty.Clause<ObjectTypeDefinition>,
+      );
+    }
+
+    if (this.#streamSub) {
+      this.createWebsocketSubscription(
+        this.#objectSet,
+        this.#streamSub,
+        "observeList",
+      );
+    }
+
+    this.#iltResolved = true;
+  }
+
   protected async fetchPageData(
     signal: AbortSignal | undefined,
   ): Promise<PageResult<Osdk.Instance<any>>> {
-    if (
-      this.#pivotInfo
-      && this.#pivotInfo.sourceTypeKind === "object"
-      && !this.#iltResolved
-    ) {
-      const mc = this.store.client[additionalContext];
-      const def = await mc.ontologyProvider.getObjectDefinition(
-        this.#pivotInfo.sourceType,
-      );
-
-      if (!(this.#pivotInfo.linkName in def.links)) {
-        const rids = this.cacheKey.otherKeys[RIDS_IDX];
-        const sourceSet = rids != null
-          ? mc.objectSetFactory(
-            {
-              type: "object",
-              apiName: this.#pivotInfo.sourceType,
-            } as ObjectTypeDefinition,
-            mc,
-            { type: "static", objects: [...rids] },
-          )
-          : this.store.client(
-            {
-              type: "object",
-              apiName: this.#pivotInfo.sourceType,
-            } as ObjectTypeDefinition,
-          );
-
-        const sourceWire = getWireObjectSet(
-          sourceSet.where(this.#whereClause as WhereClause<any>),
-        );
-
-        this.#objectSet = mc.objectSetFactory(
-          {
-            type: "object",
-            apiName: this.apiName,
-          } as ObjectTypeDefinition,
-          mc,
-          {
-            type: "interfaceLinkSearchAround",
-            objectSet: sourceWire,
-            interfaceLink: this.#pivotInfo.linkName,
-          },
-        ) as ObjectSet<ObjectTypeDefinition>;
-
-        const rdpConfig = this.cacheKey.otherKeys[RDP_IDX];
-        if (rdpConfig != null) {
-          this.#objectSet = this.#objectSet.withProperties(
-            rdpConfig as DerivedProperty.Clause<ObjectTypeDefinition>,
-          );
-        }
-
-        if (this.#streamSub) {
-          this.createWebsocketSubscription(
-            this.#objectSet,
-            this.#streamSub,
-            "observeList",
-          );
-        }
-      }
-      this.#iltResolved = true;
-    }
+    await this.#resolveIltPivot();
 
     const needsResultType = (Object.keys(this.#orderBy).length > 0
       && !(this.sortingStrategy instanceof OrderBySortingStrategy))
