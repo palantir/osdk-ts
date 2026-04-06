@@ -18,7 +18,7 @@ import type { ObjectOrInterfaceDefinition } from "@osdk/api";
 import type { ObjectSet } from "@osdk/foundry.ontologies";
 import invariant from "tiny-invariant";
 import type { MinimalClient } from "../MinimalClientContext.js";
-import { findIltLinkDef } from "../ontology/resolveIltLinkDef.js";
+import { findIltLinkDef } from "../ontology/findIltLinkDef.js";
 
 /* @internal
 * Returns the resultant interface or object type of the object set

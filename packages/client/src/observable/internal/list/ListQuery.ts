@@ -33,6 +33,7 @@ import type {
   ObjectHolder,
 } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import { getWireObjectSet } from "../../../objectSet/createObjectSet.js";
+import { findIltLinkDef } from "../../../ontology/findIltLinkDef.js";
 import type { ListPayload } from "../../ListPayload.js";
 import type { Status } from "../../ObservableClient/common.js";
 import type { CollectionConnectableParams } from "../base-list/BaseCollectionQuery.js";
@@ -216,11 +217,24 @@ export abstract class ListQuery extends BaseListQuery<
       pivotInfo.sourceType,
     );
 
-    const isInterfaceLink = !(pivotInfo.linkName in sourceDef.links);
-    if (!isInterfaceLink) {
+    const isConcreteLink = pivotInfo.linkName in sourceDef.links;
+    if (isConcreteLink) {
+      if (this.#streamSub) {
+        this.createWebsocketSubscription(
+          this.#objectSet,
+          this.#streamSub,
+          "observeList",
+        );
+      }
       this.#iltResolved = true;
       return;
     }
+
+    const iltDef = findIltLinkDef(sourceDef, pivotInfo.linkName);
+    invariant(
+      iltDef,
+      `Link '${pivotInfo.linkName}' is not a concrete link or ILT on '${pivotInfo.sourceType}'`,
+    );
 
     const rids = this.cacheKey.otherKeys[RIDS_IDX];
     const sourceObjectSet = rids != null
@@ -570,7 +584,12 @@ export abstract class ListQuery extends BaseListQuery<
 
   registerStreamUpdates(sub: Subscription): void {
     this.#streamSub = sub;
-    this.createWebsocketSubscription(this.#objectSet, sub, "observeList");
+    const iltPending = this.#pivotInfo
+      && this.#pivotInfo.sourceTypeKind === "object"
+      && !this.#iltResolved;
+    if (!iltPending) {
+      this.createWebsocketSubscription(this.#objectSet, sub, "observeList");
+    }
   }
 
   protected onOswChange(

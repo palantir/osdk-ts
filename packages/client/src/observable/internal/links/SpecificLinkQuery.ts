@@ -28,7 +28,7 @@ import deepEqual from "fast-deep-equal";
 import { type Subject } from "rxjs";
 import { additionalContext } from "../../../Client.js";
 import { getWireObjectSet } from "../../../objectSet/createObjectSet.js";
-import { findIltLinkDef } from "../../../ontology/resolveIltLinkDef.js";
+import { findIltLinkDef } from "../../../ontology/findIltLinkDef.js";
 import type { SpecificLinkPayload } from "../../LinkPayload.js";
 import type { Status } from "../../ObservableClient/common.js";
 import type { ObserveLinks } from "../../ObservableClient/ObserveLink.js";
@@ -216,6 +216,12 @@ export class SpecificLinkQuery extends BaseListQuery<
       if (this.#linkName in objectMetadata.links) {
         linkQuery = sourceQuery.pivotTo(this.#linkName);
       } else {
+        const iltDef = findIltLinkDef(objectMetadata, this.#linkName);
+        if (!iltDef) {
+          throw new Error(
+            `Link '${this.#linkName}' is not a concrete link or ILT on '${this.#sourceApiName}'`,
+          );
+        }
         const mc = client[additionalContext];
         const sourceWire = getWireObjectSet(sourceQuery);
         linkQuery = mc.objectSetFactory(

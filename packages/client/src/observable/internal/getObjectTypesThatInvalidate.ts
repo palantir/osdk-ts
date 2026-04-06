@@ -21,11 +21,11 @@ import type {
 } from "@osdk/foundry.ontologies";
 import invariant from "tiny-invariant";
 import type { MinimalClient } from "../../MinimalClientContext.js";
+import { findIltLinkDef } from "../../ontology/findIltLinkDef.js";
 import type {
   FetchedObjectTypeDefinition,
   OntologyProvider,
 } from "../../ontology/OntologyProvider.js";
-import { findIltLinkDef } from "../../ontology/resolveIltLinkDef.js";
 
 // Suppose we did an object set that is basically
 // A.where()
