@@ -16,7 +16,7 @@
 
 import type { ObjectSet, ObjectTypeDefinition, Osdk } from "@osdk/api";
 import invariant from "tiny-invariant";
-import { type Client } from "../../../Client.js";
+import type { Client } from "../../../Client.js";
 import type { SimpleWhereClause } from "../SimpleWhereClause.js";
 
 function groupBy<T>(arr: T[], fn: (item: T) => string): Record<string, T[]> {

@@ -97,6 +97,10 @@ export interface UseLinksOptions<
    * With `resolveToObjectType: true`, objects are re-fetched by their
    * concrete object type to include all properties.
    *
+   * Pass an ObjectTypeDefinition to narrow the return type:
+   * `resolveToObjectType: Laptop` types results as `Osdk.Instance<Laptop>`.
+   * This is an unchecked assertion — the runtime does not filter by type.
+   *
    * @default false
    */
   resolveToObjectType?: boolean | ObjectTypeDefinition;
@@ -239,7 +243,7 @@ export function useLinks<
       otherOptions.mode,
       otherOptions.dedupeIntervalMs,
       canonOptions.$select,
-      resolveToObjectType,
+      !!resolveToObjectType,
     ],
   );
 
