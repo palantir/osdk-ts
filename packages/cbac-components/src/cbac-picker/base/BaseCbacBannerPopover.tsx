@@ -19,6 +19,7 @@ import { ActionButton } from "@osdk/react-components/primitives";
 import classnames from "classnames";
 import React from "react";
 import { backgroundFromColors } from "../utils/cbacPickerUtils.js";
+import { formatCbacError } from "../utils/errorMessages.js";
 import { BaseCbacBanner } from "./BaseCbacBanner.js";
 import styles from "./BaseCbacBannerPopover.module.css";
 
@@ -160,10 +161,14 @@ const PopoverContent = React.memo(function PopoverContent({
   }
 
   if (error !== undefined) {
+    const errorMessage = formatCbacError(error);
     return (
       <div className={styles.errorContainer}>
         <p className={styles.errorMessage}>
-          Failed to load classification data
+          {errorMessage.title}
+        </p>
+        <p className={styles.errorRemediation}>
+          {errorMessage.remediation}
         </p>
         {onRetry !== undefined && (
           <ActionButton variant="secondary" onClick={onRetry}>

@@ -120,6 +120,14 @@
 
 .errorMessage {
   font-size: var(--osdk-typography-size-body-small);
+  color: var(--osdk-typography-color-default-rest);
+  font-weight: var(--osdk-typography-weight-bold);
+  margin: 0;
+  text-align: center;
+}
+
+.errorRemediation {
+  font-size: var(--osdk-typography-size-body-small);
   color: var(--osdk-typography-color-default-muted);
   margin: 0;
   text-align: center;
