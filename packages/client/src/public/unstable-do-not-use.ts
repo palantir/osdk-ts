@@ -21,6 +21,8 @@ export { getWireObjectSet, isObjectSet } from "../objectSet/createObjectSet.js";
 export type { ActionSignatureFromDef } from "../actions/applyAction.js";
 export { createObservableClient } from "../observable/ObservableClient.js";
 export type {
+  CacheEntry,
+  CacheSnapshot,
   CanonicalizedOptions,
   CanonicalizeOptionsInput,
   ObservableClient,

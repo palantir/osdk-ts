@@ -64,6 +64,39 @@ export namespace ObservableClient {
   }
 }
 
+export interface CacheSnapshot {
+  entries: CacheEntry[];
+  stats: {
+    totalEntries: number;
+    totalSize: number;
+    totalHits?: number;
+  };
+}
+
+interface CacheEntryMetadata {
+  timestamp: number;
+  status: "init" | "loading" | "loaded" | "error";
+  hitCount?: number;
+  size: number;
+  isOptimistic?: boolean;
+}
+
+interface CacheEntryBase {
+  key: string;
+  objectType: string;
+  metadata: CacheEntryMetadata;
+  data?: unknown;
+}
+
+export type CacheEntry =
+  | CacheEntryBase & { type: "object"; queryParams?: undefined }
+  | CacheEntryBase & {
+    type: "list";
+    queryParams?: { where?: unknown; orderBy?: unknown; pageSize?: number };
+  }
+  | CacheEntryBase & { type: "link"; queryParams?: { linkName?: string } }
+  | CacheEntryBase & { type: "objectSet"; queryParams?: undefined };
+
 export interface ObserveObjectOptions<
   T extends ObjectOrInterfaceDefinition,
 > extends ObserveOptions {
@@ -533,6 +566,8 @@ export interface ObservableClient extends ObserveLinks {
     apiName: string,
     primaryKey: string | number,
   ): Promise<void>;
+
+  getCacheSnapshot(): Promise<CacheSnapshot>;
 
   canonicalizeWhereClause: <
     T extends ObjectOrInterfaceDefinition,

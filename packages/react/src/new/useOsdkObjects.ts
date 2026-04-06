@@ -28,7 +28,7 @@ import type {
 import type { ObserveObjectsCallbackArgs } from "@osdk/client/unstable-do-not-use";
 import React from "react";
 import { extractPayloadError, isPayloadLoading } from "./hookUtils.js";
-import { makeExternalStore } from "./makeExternalStore.js";
+import { devToolsMetadata, makeExternalStore } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
 
 export interface UseOsdkObjectsOptions<
@@ -196,12 +196,6 @@ export interface UseOsdkListResult<
   refetch: () => Promise<void>;
 }
 
-declare const process: {
-  env: {
-    NODE_ENV: "development" | "production";
-  };
-};
-
 export function useOsdkObjects<
   Q extends ObjectOrInterfaceDefinition,
   L extends LinkNames<Q>,
@@ -284,9 +278,10 @@ export function useOsdkObjects<
           ObserveObjectsCallbackArgs<Q, RDPs>
         >(
           () => ({ unsubscribe: () => {} }),
-          process.env.NODE_ENV !== "production"
-            ? `list ${type.apiName} [DISABLED]`
-            : void 0,
+          devToolsMetadata({
+            hookType: "useOsdkObjects",
+            objectType: type.apiName,
+          }),
         );
       }
 
@@ -313,11 +308,13 @@ export function useOsdkObjects<
               ? { $loadPropertySecurityMetadata }
               : {}),
           }, observer),
-        process.env.NODE_ENV !== "production"
-          ? `list ${type.apiName} ${
-            stableRids ? `[${stableRids.length} rids]` : ""
-          } ${JSON.stringify(canonOptions.where)}`
-          : void 0,
+        devToolsMetadata({
+          hookType: "useOsdkObjects",
+          objectType: type.apiName,
+          where: canonOptions.where,
+          orderBy: canonOptions.orderBy,
+          pageSize,
+        }),
       );
     },
     [
