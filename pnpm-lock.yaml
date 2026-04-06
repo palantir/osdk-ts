@@ -1693,6 +1693,18 @@ importers:
       '@arethetypeswrong/cli':
         specifier: 0.17.3
         version: 0.17.3
+      '@osdk/foundry-config-json':
+        specifier: workspace:*
+        version: link:../foundry-config-json
+      '@osdk/shared.net.errors':
+        specifier: workspace:*
+        version: link:../shared.net.errors
+      '@osdk/shared.net.fetch':
+        specifier: workspace:*
+        version: link:../shared.net.fetch
+      '@osdk/widget.api':
+        specifier: workspace:*
+        version: link:../widget.api
       ajv:
         specifier: 8.13.0
         version: 8.13.0
@@ -1724,24 +1736,12 @@ importers:
       '@osdk/cli.common':
         specifier: workspace:~
         version: link:../cli.common
-      '@osdk/foundry-config-json':
-        specifier: workspace:~
-        version: link:../foundry-config-json
       '@osdk/monorepo.api-extractor':
         specifier: workspace:~
         version: link:../monorepo.api-extractor
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
-      '@osdk/shared.net.errors':
-        specifier: workspace:~
-        version: link:../shared.net.errors
-      '@osdk/shared.net.fetch':
-        specifier: workspace:~
-        version: link:../shared.net.fetch
-      '@osdk/widget.api':
-        specifier: workspace:~
-        version: link:../widget.api
       '@types/archiver':
         specifier: ^6.0.3
         version: 6.0.3

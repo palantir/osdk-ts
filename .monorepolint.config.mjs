@@ -212,9 +212,19 @@ const archetypeRules = archetypes(
     },
   )
   .addArchetype(
+    "public cli libraries",
+    [
+      "@osdk/cli.cmd.typescript",
+      "@osdk/cli.common",
+    ],
+    {
+      ...LIBRARY_RULES,
+      output: OUTPUT_ESM_ONLY,
+    },
+  )
+  .addArchetype(
     "internal libraries / templates",
     [
-      "@osdk/cli.*",
       "@osdk/client.test.ontology",
       "@osdk/create-app.template.*",
       "@osdk/create-widget.template.*",

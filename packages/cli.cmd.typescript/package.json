@@ -1,6 +1,5 @@
 {
   "name": "@osdk/cli.cmd.typescript",
-  "private": true,
   "version": "0.32.0",
   "license": "Apache-2.0",
   "repository": {
@@ -24,6 +23,7 @@
     }
   },
   "scripts": {
+    "check-attw": "attw --profile esm-only --pack .",
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
@@ -58,7 +58,14 @@
   "bin": {
     "osdk-unstable-typescript": "./bin/osdk-unstable-typescript.mjs"
   },
-  "files": [],
+  "files": [
+    "build/esm",
+    "build/types",
+    "CHANGELOG.md",
+    "package.json",
+    "templates",
+    "*.d.ts"
+  ],
   "module": "./build/esm/index.js",
   "types": "./build/esm/index.d.ts",
   "type": "module"
