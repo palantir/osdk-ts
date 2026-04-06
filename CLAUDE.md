@@ -1,6 +1,6 @@
 ## Project Overview
 
-OSDK TypeScript monorepo (~82 packages). Provides a type-safe SDK for Palantir Foundry ontologies: code generation, client runtime, React hooks, CLI tooling, and widget framework.
+OSDK TypeScript monorepo. Provides a type-safe SDK for Palantir Foundry ontologies: code generation, client runtime, React hooks, CLI tooling, and widget framework.
 
 - **Package manager**: pnpm 10.27.0 (enforced via `engines` and `packageManager` in root `package.json`)
 - **Node.js**: >=18.19.0. CI tests on Node 18, 20, 22, and 24
@@ -11,6 +11,23 @@ OSDK TypeScript monorepo (~82 packages). Provides a type-safe SDK for Palantir F
 - Turbo orchestrates all tasks. `pnpm check` runs everything CI runs (lint, transpile, typecheck, test, check-attw, check-api, check-spelling)
 - Each published package produces 3 output formats: ESM (`build/esm`), CJS (`build/cjs`), Browser (`build/browser`), plus type declarations (`build/types`)
 - Transpilation uses `@osdk/monorepo.tool.transpile` (tsup + babel with dead-code elimination for `process.env.NODE_ENV` guards)
+
+### Building specific packages
+
+Always use `--filter` to avoid rebuilding the whole monorepo:
+- **Typecheck only**: `pnpm turbo typecheck --filter=@osdk/client`
+- **Transpile types** (generates `.d.ts` into `build/types/`): `pnpm turbo transpileTypes --filter=@osdk/client`
+- **Transpile ESM** (generates JS into `build/esm/`): `pnpm turbo transpileEsm --filter=@osdk/client`
+- **Transpile all formats** (ESM + CJS + Browser): `pnpm turbo transpile --filter=@osdk/client`
+- **Full build** (transpile + types + typecheck): `pnpm turbo build --filter=@osdk/client`
+
+Turbo handles dependency ordering automatically -- if `@osdk/react` depends on `@osdk/client`, filtering to react will build client first.
+
+**When to use which**:
+- Iterating on types: `transpileTypes` (fastest, just generates `.d.ts`)
+- Need to run tests or check runtime: `transpileEsm` (generates runnable JS)
+- Before pushing: `pnpm turbo transpile` globally to catch cross-package issues
+- Checking API report changes: `pnpm turbo check-api --filter=@osdk/the-package` (depends on `transpileTypes`)
 
 ## License Headers
 
@@ -104,4 +121,3 @@ OSDK TypeScript monorepo (~82 packages). Provides a type-safe SDK for Palantir F
 ## Release Process
 
 - Changesets with fixed version groups defined in `.changeset/config.json`
-- Snapshot releases publish on merges to the `next` branch

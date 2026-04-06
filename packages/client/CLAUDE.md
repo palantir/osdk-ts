@@ -52,7 +52,5 @@ To add one: create a helper file in `src/intellisense.test.helpers/{testName}.ts
 
 ## Key Architectural Decisions
 
-- The `Client` is stateless -- it holds configuration but no cache. State lives in `ObservableClient`'s `Store`
-- `sideEffects: false` in package.json -- all code must be tree-shakeable
+- The `Client` caches ontology metadata but does not cache object data. Object/list caching lives in `ObservableClient`'s `Store` (see `src/observable/`)
 - Uses `conjure-lite` for Foundry API communication, not raw fetch
-- `@wry/trie` powers efficient canonicalization of query parameters in the observable layer

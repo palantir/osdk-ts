@@ -48,6 +48,11 @@ we want it to stay in that form.
 - Use object cloning with `$clone()` to create immutable optimistic objects
 - On success, server data replaces optimistic update; on failure, automatically rolled back
 
+## Key Implementation Details
+
+- `sideEffects: false` in package.json -- all code must be tree-shakeable
+- `@wry/trie` powers efficient canonicalization of query parameters for cache key deduplication
+
 ## Best Practices
 
 - Reuse query parameters when possible to leverage cache
