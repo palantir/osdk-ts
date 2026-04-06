@@ -226,6 +226,27 @@ export function useOsdkObjects<
   R extends ObjectTypeDefinition,
 >(
   type: Q,
+  options:
+    & UseOsdkObjectsOptions<Q>
+    & { pivotTo: L; resolveToObjectType: R; rids: readonly string[] },
+): UseOsdkListResult<R, {}, "$rid">;
+
+export function useOsdkObjects<
+  Q extends ObjectOrInterfaceDefinition,
+  R extends ObjectTypeDefinition,
+>(
+  type: Q,
+  options:
+    & UseOsdkObjectsOptions<Q>
+    & { resolveToObjectType: R; rids: readonly string[] },
+): UseOsdkListResult<R, {}, "$rid">;
+
+export function useOsdkObjects<
+  Q extends ObjectOrInterfaceDefinition,
+  L extends LinkNames<Q>,
+  R extends ObjectTypeDefinition,
+>(
+  type: Q,
   options: UseOsdkObjectsOptions<Q> & { pivotTo: L; resolveToObjectType: R },
 ): UseOsdkListResult<R>;
 
@@ -281,6 +302,7 @@ export function useOsdkObjects<
   | UseOsdkListResult<LinkedType<Q, LinkNames<Q>>>
   | UseOsdkListResult<LinkedType<Q, LinkNames<Q>>, {}, "$rid">
   | UseOsdkListResult<ObjectTypeDefinition>
+  | UseOsdkListResult<ObjectTypeDefinition, {}, "$rid">
 {
   const { observableClient } = React.useContext(OsdkContext2);
 
