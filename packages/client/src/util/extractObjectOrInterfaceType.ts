@@ -18,7 +18,7 @@ import type { ObjectOrInterfaceDefinition } from "@osdk/api";
 import type { ObjectSet } from "@osdk/foundry.ontologies";
 import invariant from "tiny-invariant";
 import type { MinimalClient } from "../MinimalClientContext.js";
-import { InterfaceDefinitions } from "../ontology/OntologyProvider.js";
+import { findIltLinkDef } from "../ontology/resolveIltLinkDef.js";
 
 /* @internal
 * Returns the resultant interface or object type of the object set
@@ -142,7 +142,6 @@ export async function extractObjectOrInterfaceType(
       }
 
       if (def.type === "interface") {
-        // Existing path — ILT is directly in interface links
         const intDef = await clientCtx.ontologyProvider
           .getInterfaceDefinition(def.apiName);
         const linkDef = intDef.links[objectSet.interfaceLink];
@@ -156,7 +155,6 @@ export async function extractObjectOrInterfaceType(
         };
       }
 
-      // OT source — check concrete links first, then search interfaces
       const objDef = await clientCtx.ontologyProvider
         .getObjectDefinition(def.apiName);
 
@@ -167,20 +165,15 @@ export async function extractObjectOrInterfaceType(
         };
       }
 
-      for (const iface of Object.values(objDef[InterfaceDefinitions])) {
-        const linkDef = iface.def.links[objectSet.interfaceLink];
-        if (linkDef) {
-          return {
-            apiName: linkDef.targetTypeApiName,
-            type: linkDef.targetType,
-          };
-        }
-      }
-
+      const iltDef = findIltLinkDef(objDef, objectSet.interfaceLink);
       invariant(
-        false,
+        iltDef,
         `Missing ILT '${objectSet.interfaceLink}' on '${def.apiName}'`,
       );
+      return {
+        apiName: iltDef.targetTypeApiName,
+        type: iltDef.targetType,
+      };
     }
     // We don't have to worry about new object sets being added and doing a runtime break and breaking people since the OSDK is always constructing these.
     default:

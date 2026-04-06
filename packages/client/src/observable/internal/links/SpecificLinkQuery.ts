@@ -28,10 +28,7 @@ import deepEqual from "fast-deep-equal";
 import { type Subject } from "rxjs";
 import { additionalContext } from "../../../Client.js";
 import { getWireObjectSet } from "../../../objectSet/createObjectSet.js";
-import {
-  type FetchedObjectTypeDefinition,
-  InterfaceDefinitions,
-} from "../../../ontology/OntologyProvider.js";
+import { findIltLinkDef } from "../../../ontology/resolveIltLinkDef.js";
 import type { SpecificLinkPayload } from "../../LinkPayload.js";
 import type { Status } from "../../ObservableClient/common.js";
 import type { ObserveLinks } from "../../ObservableClient/ObserveLink.js";
@@ -186,11 +183,12 @@ export class SpecificLinkQuery extends BaseListQuery<
           target = { apiName: linkDef.targetType, kind: "object" };
         } else {
           // ILT — search implemented interfaces for the link definition
-          const iltDef = resolveIltLinkDef(
-            objectMetadata,
-            this.#linkName,
-            this.#sourceApiName,
-          );
+          const iltDef = findIltLinkDef(objectMetadata, this.#linkName);
+          if (!iltDef) {
+            throw new Error(
+              `Missing link definition for link '${this.#linkName}' on object type '${this.#sourceApiName}'`,
+            );
+          }
           target = {
             apiName: iltDef.targetTypeApiName,
             kind: iltDef.targetType,
@@ -245,7 +243,6 @@ export class SpecificLinkQuery extends BaseListQuery<
       if (this.#linkName in objectMetadata.links) {
         linkQuery = sourceQuery.pivotTo(this.#linkName);
       } else {
-        // ILT — use interfaceLinkSearchAround
         const mc = client[additionalContext];
         const sourceWire = getWireObjectSet(sourceQuery);
         linkQuery = mc.objectSetFactory(
@@ -405,17 +402,10 @@ export class SpecificLinkQuery extends BaseListQuery<
             targetTypeApiName = linkDef.targetType;
             targetTypeKind = "object";
           } else {
-            // ILT — search implemented interfaces for target type
-            try {
-              const iltDef = resolveIltLinkDef(
-                objectMetadata,
-                this.#linkName,
-                this.#sourceApiName,
-              );
+            const iltDef = findIltLinkDef(objectMetadata, this.#linkName);
+            if (iltDef) {
               targetTypeApiName = iltDef.targetTypeApiName;
               targetTypeKind = iltDef.targetType;
-            } catch {
-              // Link not found at all — fall through to return
             }
           }
         }
@@ -457,25 +447,4 @@ export function isSpecificLinkCacheKey(
   key: CacheKey,
 ): key is SpecificLinkCacheKey {
   return key.type === "specificLink";
-}
-
-function resolveIltLinkDef(
-  objectMetadata: FetchedObjectTypeDefinition,
-  linkName: string,
-  sourceApiName: string,
-): { targetTypeApiName: string; targetType: "object" | "interface" } {
-  for (
-    const iface of Object.values(objectMetadata[InterfaceDefinitions])
-  ) {
-    const iltDef = iface.def.links[linkName];
-    if (iltDef) {
-      return {
-        targetTypeApiName: iltDef.targetTypeApiName,
-        targetType: iltDef.targetType,
-      };
-    }
-  }
-  throw new Error(
-    `Missing link definition for link '${linkName}' on object type '${sourceApiName}'`,
-  );
 }
