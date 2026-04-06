@@ -1,3 +1,22 @@
+## Project Overview
+
+OSDK TypeScript monorepo (~82 packages). Provides a type-safe SDK for Palantir Foundry ontologies: code generation, client runtime, React hooks, CLI tooling, and widget framework.
+
+- **Package manager**: pnpm 10.27.0 (enforced via `engines` and `packageManager` in root `package.json`)
+- **Node.js**: >=18.19.0. CI tests on Node 18, 20, 22, and 24
+- **Workspace layout**: `packages/*`, `examples/*`, `examples-extra/*`, `tests/*`, `benchmarks/*/*`, `docs/`
+
+## Build System
+
+- Turbo orchestrates all tasks. `pnpm check` runs everything CI runs (lint, transpile, typecheck, test, check-attw, check-api, check-spelling)
+- Each published package produces 3 output formats: ESM (`build/esm`), CJS (`build/cjs`), Browser (`build/browser`), plus type declarations (`build/types`)
+- Transpilation uses `@osdk/monorepo.tool.transpile` (tsup + babel with dead-code elimination for `process.env.NODE_ENV` guards)
+
+## License Headers
+
+- Every `.ts`/`.tsx` source file must have the Apache 2.0 license header block comment
+- ESLint enforces this via `eslint-plugin-header` -- run `eslint . --fix` in a package to add missing headers
+
 ## TypeScript Best Practices
 
 - NEVER use `any` without asking the user first. If you think you need `any`, you probably don't understand the problem
@@ -69,3 +88,21 @@
 - Common breakages: new variants in `QueryDataType` discriminated unions (find exhaustive switches via `const _: never`), new required fields on types like `QueryTypeV2` in test stubs, and fields becoming optional
 - After fixing types, update snapshots with `pnpm vitest run --update` in affected packages
 - Validate with `pnpm check` before finalizing the PR
+
+## Additional Linting
+
+- **cspell**: Spell checking. Run per-package: `pnpm turbo check-spelling --filter=@osdk/the-package`
+- **monorepolint**: Enforces consistent package.json structure, tsconfig, and export maps. Config in `.monorepolint.config.mjs`
+- **ESLint flat config**: Root `eslint.config.mjs`. Key rules: `no-console` is an error (use a logger), `import/no-default-export` warns, `@typescript-eslint/consistent-type-imports` enforces `import type`
+- **attw** (`@arethetypeswrong/cli`): Validates package exports resolve correctly for ESM, CJS, and bundler consumers
+
+## Export Conventions
+
+- Published packages use conditional exports in `package.json`: `browser` -> `import` (with `types` subpath) -> `require` -> `default`
+- Internal sub-paths follow patterns: `./internal`, `./unstable-do-not-use`, `./experimental`, `./*` (wildcard)
+- Public API surface files live in `src/public/` and map to the `package.json` `exports` entries
+
+## Release Process
+
+- Changesets with fixed version groups defined in `.changeset/config.json`
+- Snapshot releases publish on merges to the `next` branch

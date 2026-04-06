@@ -18,6 +18,13 @@ if (process.env.NODE_ENV !== "production") {
 
 we want it to stay in that form.
 
+## Related Documentation
+
+- [`ObservableClient/CLAUDE.md`](./ObservableClient/CLAUDE.md) -- type definitions reference (Status, Observer, CommonObserveOptions, ObserveLink types)
+- [`internal/CLAUDE.md`](./internal/CLAUDE.md) -- Store architecture, Layer system, Query hierarchy, and cache key patterns
+- [`internal/links/CLAUDE.md`](./internal/links/CLAUDE.md) -- link observation implementation details, pivot queries, and link storage patterns
+- [`internal/testUtils/CLAUDE.md`](./internal/testUtils/CLAUDE.md) -- test utilities reference (mock helpers, matchers, standard test flows)
+
 ## Core Concepts
 
 ### ObservableClient Methods
@@ -46,3 +53,51 @@ we want it to stay in that form.
 - Understand that data is shared across components with the same query
 - When invalidating object types, only queries and links related to that specific object type will be invalidated
 - Use fine-grained subscriptions to minimize data transfer and processing
+
+## Status Lifecycle
+
+Payloads emit with a `status` field: `init` -> `loading` -> `loaded`. On failure: `error`.
+- `init`: Before any fetch (subscriber just attached)
+- `loading`: Network request in flight
+- `loaded`: Data available
+- `error`: Fetch failed (payload may still contain stale data from a previous load)
+
+## Observer Interface
+
+All observe methods accept `Observer<T>` with `next`, `error`, `complete` callbacks. This follows the RxJS convention but the observable system does NOT use RxJS internally.
+
+## Observation Options
+
+- `mode: "offline"` -- only use cached data, never fetch
+- `mode: "force"` -- always fetch from server, ignore cache
+- `mode: undefined` (default) -- use cache if available, fetch if stale/missing
+- `dedupeInterval` -- milliseconds to deduplicate emissions (React hooks default to 2000ms)
+- `invalidationMode`: `"in-place"` | `"wait"` | `"reset"` -- controls UI behavior during cache invalidation
+
+## Canonicalization System
+
+Query parameters (where, orderBy, select, etc.) are canonicalized via specialized canonicalizers in `internal/` (`WhereClauseCanonicalizer`, `OrderByCanonicalizer`, `SelectCanonicalizer`, etc.). Two queries with different object identity but equivalent values share the same cache entry. Always compare canonicalized forms, never raw inputs.
+
+## Debug Flags
+
+In `DebugFlags.ts`, two flags default to `false`:
+- `DEBUG_REFCOUNTS` -- logs reference count changes for cache entries
+- `DEBUG_CACHE_KEYS` -- logs cache key creation and lookups
+
+Enable by changing `&& false` to `&& true`. Stripped in production builds.
+
+## BatchContext
+
+Cache mutations must occur within a `BatchContext` (see `internal/BatchContext.ts`). This ensures atomic changes, on-demand optimistic layer creation, and proper change tracking for notifications.
+
+## File Organization
+
+- `ObservableClient.ts` -- public interface and `createObservableClient` factory
+- `ObservableClient/` subdirectory -- type definitions (common.ts, ObserveLink.ts)
+- `internal/ObservableClientImpl.ts` -- actual implementation
+- `internal/Store.ts` -- central cache store
+- `internal/Layer.ts` / `Layers.ts` -- truth + optimistic layer stack
+- `internal/*Canonicalizer.ts` -- query parameter normalization
+- `internal/base-list/` -- shared logic for list-like queries
+- `internal/links/`, `internal/object/`, `internal/objectset/`, `internal/function/`, `internal/aggregation/` -- domain-specific observation implementations
+- `internal/testUtils/` -- test helpers (see its own CLAUDE.md)
