@@ -15,6 +15,7 @@
  */
 
 import { Popover } from "@base-ui/react/popover";
+import { CaretDown, CaretUp, WarningSign } from "@blueprintjs/icons";
 import { ActionButton } from "@osdk/react-components/primitives";
 import classnames from "classnames";
 import React from "react";
@@ -90,7 +91,7 @@ export function BaseCbacBannerPopover({
                 open && styles.caretIconVisible,
               )}
             >
-              {open ? <CaretUpIcon /> : <CaretDownIcon />}
+              {open ? <CaretUp size={12} /> : <CaretDown size={12} />}
             </span>
           </div>
         }
@@ -144,17 +145,10 @@ const PopoverContent = React.memo(function PopoverContent({
   if (showSkeleton) {
     return (
       <div className={styles.skeletonContainer}>
+        <div className={classnames(styles.skeleton, styles.skeletonPill)} />
+        <div className={classnames(styles.skeleton, styles.skeletonLineFull)} />
         <div
-          className={styles.skeleton}
-          style={{ width: 120, height: 24 }}
-        />
-        <div
-          className={styles.skeleton}
-          style={{ width: "100%", height: 16 }}
-        />
-        <div
-          className={styles.skeleton}
-          style={{ width: "80%", height: 16 }}
+          className={classnames(styles.skeleton, styles.skeletonLineNarrow)}
         />
       </div>
     );
@@ -219,7 +213,7 @@ const PopoverContent = React.memo(function PopoverContent({
             <p className={styles.warningsHeader}>Warnings and Notices</p>
             {warnings.map((warning, i) => (
               <div key={`warning-${i}`} className={styles.warningCallout}>
-                <WarningIcon />
+                <WarningSign className={styles.warningIcon} size={14} />
                 <p className={styles.warningText}>{warning}</p>
               </div>
             ))}
@@ -239,46 +233,3 @@ const PopoverContent = React.memo(function PopoverContent({
     </>
   );
 });
-
-function CaretDownIcon(): React.ReactElement {
-  return (
-    <svg
-      width="12"
-      height="12"
-      viewBox="0 0 12 12"
-      fill="none"
-      aria-hidden="true"
-    >
-      <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" strokeWidth="1.5" />
-    </svg>
-  );
-}
-
-function CaretUpIcon(): React.ReactElement {
-  return (
-    <svg
-      width="12"
-      height="12"
-      viewBox="0 0 12 12"
-      fill="none"
-      aria-hidden="true"
-    >
-      <path d="M3 7.5L6 4.5L9 7.5" stroke="currentColor" strokeWidth="1.5" />
-    </svg>
-  );
-}
-
-function WarningIcon(): React.ReactElement {
-  return (
-    <svg
-      className={styles.warningIcon}
-      width="14"
-      height="14"
-      viewBox="0 0 14 14"
-      fill="currentColor"
-      aria-hidden="true"
-    >
-      <path d="M7 1L13 13H1L7 1ZM7 3.5L2.5 12H11.5L7 3.5ZM6.5 7V9H7.5V7H6.5ZM6.5 10V11H7.5V10H6.5Z" />
-    </svg>
-  );
-}
