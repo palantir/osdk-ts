@@ -120,6 +120,9 @@ async function loadWithPreview(opts: FetchMediaContentOpts): Promise<void> {
   // Phase 2: full resolution
   const fullBlob = await fetchContent(source, { preview: false });
   if (isCancelled()) {
+    if (previewUrl) {
+      blobManager.releaseBlobUrl(previewBlobKey);
+    }
     return;
   }
 
