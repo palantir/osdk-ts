@@ -1,5 +1,11 @@
 # @osdk/osdk-docs-context-generator
 
+## 0.4.1-beta.0
+
+### Patch Changes
+
+- @osdk/typescript-sdk-docs-examples@0.5.1-beta.0
+
 ## 0.4.0
 
 ### Minor Changes

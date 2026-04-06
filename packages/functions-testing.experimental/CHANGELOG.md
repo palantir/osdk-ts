@@ -1,5 +1,15 @@
 # @osdk/functions-testing.experimental
 
+## 0.2.1-beta.0
+
+### Patch Changes
+
+- c08d97b: Rework mock client stubbing API: rename whenObjectSet to when, add standalone createMockObjectSet with whenObjectSet for registering stubs on object sets directly, and support ObjectSet as many-link value in createMockOsdkObject
+- Updated dependencies [51ccca8]
+  - @osdk/client@2.8.1-beta.2
+  - @osdk/functions@1.6.1-beta.0
+  - @osdk/api@2.8.1-beta.2
+
 ## 0.2.0
 
 ### Minor Changes

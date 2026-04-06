@@ -1,5 +1,12 @@
 # @osdk/language-models
 
+## 0.2.1-beta.0
+
+### Patch Changes
+
+- Updated dependencies [51ccca8]
+  - @osdk/client@2.8.1-beta.2
+
 ## 0.2.0
 
 ### Minor Changes

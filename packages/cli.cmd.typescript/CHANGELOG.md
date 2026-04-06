@@ -1,5 +1,14 @@
 # @osdk/cli.cmd.typescript
 
+## 0.32.1-beta.0
+
+### Patch Changes
+
+- 40fe279: Fix cli by making referenced packages bundled
+- Updated dependencies [40fe279]
+  - @osdk/cli.common@0.32.1-beta.0
+  - @osdk/generator@2.8.1-beta.2
+
 ## 0.32.0
 
 ### Minor Changes

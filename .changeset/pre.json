@@ -105,5 +105,25 @@
     "@osdk/tests.verify-esm-node16": "0.0.3",
     "@osdk/tests.verify-fallback-package-v2": "0.0.3"
   },
-  "changesets": []
+  "changesets": [
+    "@osdk-e2e.generated.1.1.x-simulatedRelease",
+    "@osdk-e2e.generated.api-namespace.dep-simulatedRelease",
+    "@osdk-e2e.generated.api-namespace.local-simulatedRelease",
+    "@osdk-e2e.generated.catchall-simulatedRelease",
+    "@osdk-e2e.sandbox.catchall-simulatedRelease",
+    "@osdk-e2e.sandbox.oauth-simulatedRelease",
+    "@osdk-e2e.sandbox.oauth.public.react-router-simulatedRelease",
+    "@osdk-e2e.sandbox.peopleapp-simulatedRelease",
+    "@osdk-e2e.sandbox.todoapp-simulatedRelease",
+    "@osdk-e2e.sandbox.todowidget-simulatedRelease",
+    "@osdk-e2e.test.foundry-sdk-generator-simulatedRelease",
+    "@osdk-monorepo.api-extractor-simulatedRelease",
+    "@osdk-monorepo.cspell-simulatedRelease",
+    "@osdk-monorepo.tool.transpile-simulatedRelease",
+    "@osdk-monorepo.tsconfig-simulatedRelease",
+    "@osdk-version-updater-simulatedRelease",
+    "hook-canonicalize-refactor",
+    "lazy-oranges-cheat",
+    "mock-object-set-rework"
+  ]
 }

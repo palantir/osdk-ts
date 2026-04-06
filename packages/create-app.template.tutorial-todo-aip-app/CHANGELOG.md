@@ -1,5 +1,7 @@
 # @osdk/create-app.template.tutorial-todo-aip-app
 
+## 2.8.1-beta.2
+
 ## 2.8.0
 
 ### Minor Changes

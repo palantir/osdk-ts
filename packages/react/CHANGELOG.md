@@ -1,5 +1,14 @@
 # @osdkkit/react
 
+## 0.10.1-beta.0
+
+### Patch Changes
+
+- 51ccca8: Refactor hooks to use canonicalizeOptions for stable memo keys, add objectSet/hasMore/refetch to useOsdkObjects return, support undefined objectSet in useObjectSet
+- Updated dependencies [51ccca8]
+  - @osdk/client@2.8.1-beta.2
+  - @osdk/api@2.8.1-beta.2
+
 ## 0.10.0
 
 ### Minor Changes

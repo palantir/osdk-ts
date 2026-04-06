@@ -1,5 +1,13 @@
 # @osdk/maker-experimental
 
+## 0.6.1-beta.0
+
+### Patch Changes
+
+- @osdk/api@2.8.1-beta.2
+- @osdk/client.unstable@2.8.1-beta.2
+- @osdk/maker@0.16.1-beta.0
+
 ## 0.6.0
 
 ### Minor Changes

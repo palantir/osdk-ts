@@ -1,5 +1,14 @@
 # @osdk/client
 
+## 2.8.1-beta.2
+
+### Patch Changes
+
+- 51ccca8: Refactor hooks to use canonicalizeOptions for stable memo keys, add objectSet/hasMore/refetch to useOsdkObjects return, support undefined objectSet in useObjectSet
+  - @osdk/api@2.8.1-beta.2
+  - @osdk/client.unstable@2.8.1-beta.2
+  - @osdk/generator-converters@2.8.1-beta.2
+
 ## 2.8.0
 
 ### Minor Changes

@@ -1,5 +1,13 @@
 # @osdk/generator-converters.preview
 
+## 0.1.1-beta.0
+
+### Patch Changes
+
+- @osdk/client.unstable@2.8.1-beta.2
+- @osdk/generator-converters.ontologyir@2.8.1-beta.2
+- @osdk/generator@2.8.1-beta.2
+
 ## 0.1.0
 
 ### Minor Changes
