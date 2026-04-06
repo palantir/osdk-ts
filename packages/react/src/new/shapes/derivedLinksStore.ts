@@ -27,9 +27,7 @@ import type {
   ShapeBaseType,
   ShapeDefinition,
   ShapeDerivedLinks,
-  ShapeInstance,
 } from "@osdk/api/unstable";
-import { ShapeNullabilityError } from "@osdk/api/unstable";
 import type { Client } from "@osdk/client";
 import {
   applyShapeTransformationsToArray,
@@ -39,7 +37,6 @@ import {
 import type {
   ObservableClient,
   Observer,
-  Unsubscribable,
 } from "@osdk/client/unstable-do-not-use";
 import {
   createCachingNotifier,
@@ -47,105 +44,27 @@ import {
   createVersionedCache,
   wrapError,
 } from "../shared/storeUtils.js";
+import type {
+  AnyShapeInstance,
+  DerivedLinksPayload,
+  DerivedLinksStore,
+  LinkEntry,
+  ListObserverPayload,
+} from "./derivedLinksTypes.js";
+import { createLinkEntry, violationsToError } from "./derivedLinksTypes.js";
 
-export type AnyShapeInstance = ShapeInstance<
-  ShapeDefinition<ObjectOrInterfaceDefinition>
->;
+export type {
+  AnyShapeInstance,
+  DerivedLinksPayload,
+  DerivedLinksStore,
+} from "./derivedLinksTypes.js";
+export {
+  createEmptyDerivedLinksStore,
+  isBatchableLink,
+  NOOP_FETCH_MORE,
+  violationsToError,
+} from "./derivedLinksTypes.js";
 
-export type ListObserverPayload = {
-  resolvedList: Osdk.Instance<ObjectOrInterfaceDefinition>[] | undefined;
-  hasMore: boolean;
-  fetchMore: () => Promise<void>;
-  status: string;
-  isOptimistic: boolean;
-};
-
-export const NOOP_FETCH_MORE = async (): Promise<void> => {};
-
-/** Converts nullability violations into a ShapeNullabilityError if any `require` constraints failed. */
-export function violationsToError(
-  shape: ShapeDefinition<ObjectOrInterfaceDefinition>,
-  violations: readonly { property: string; constraint: string }[],
-): Error | undefined {
-  if (violations.some(v => v.constraint === "require")) {
-    return new ShapeNullabilityError(
-      shape,
-      violations as readonly {
-        property: string;
-        primaryKey: unknown;
-        constraint: "require" | "dropIfNull" | "transformError";
-      }[],
-    );
-  }
-  return undefined;
-}
-
-interface LinkEntry {
-  linkDef: ShapeDerivedLinkDef;
-  sourceObject: Osdk.Instance<ObjectOrInterfaceDefinition>;
-  status: "init" | "loading" | "loaded" | "error" | "deferred";
-  data: AnyShapeInstance[];
-  error?: Error;
-  hasMore: boolean;
-  fetchMore: () => Promise<void>;
-  subscription?: Unsubscribable;
-  nestedByPk: Map<unknown, Map<string, LinkEntry>>;
-}
-
-export interface DerivedLinksPayload<
-  S extends ShapeDefinition<ObjectOrInterfaceDefinition>,
-> {
-  links: Record<string, AnyShapeInstance[]>;
-  linkStatus: Partial<{ [K in keyof ShapeDerivedLinks<S>]: LinkStatus }>;
-  anyLoading: boolean;
-  anyError: boolean;
-}
-
-export interface DerivedLinksStore<
-  S extends ShapeDefinition<ObjectOrInterfaceDefinition>,
-> {
-  subscribe: (notifyUpdate: () => void) => () => void;
-  getSnapShot: () => DerivedLinksPayload<S>;
-  loadDeferred: (linkName: keyof ShapeDerivedLinks<S>) => void;
-  retry: (linkName?: keyof ShapeDerivedLinks<S>) => void;
-  destroy: () => void;
-}
-
-/** Returns a no-op store used when no source object is available yet. */
-export function createEmptyDerivedLinksStore<
-  S extends ShapeDefinition<ObjectOrInterfaceDefinition>,
->(): DerivedLinksStore<S> {
-  const emptyPayload: DerivedLinksPayload<S> = {
-    links: {},
-    linkStatus: {},
-    anyLoading: false,
-    anyError: false,
-  };
-
-  return {
-    subscribe: () => () => {},
-    getSnapShot: () => emptyPayload,
-    loadDeferred: () => {},
-    retry: () => {},
-    destroy: () => {},
-  };
-}
-
-/** Returns true if a link can be observed via the batched observeLinks path (single pivotTo, no filters/ordering). */
-export function isBatchableLink(linkDef: ShapeDerivedLinkDef): boolean {
-  const def = linkDef.objectSetDef;
-  return (
-    def.segments.length === 1
-    && def.segments[0].type === "pivotTo"
-    && (!def.setOperations || def.setOperations.length === 0)
-    && !def.where
-    && !def.orderBy
-    && def.limit == null
-    && !def.distinct
-  );
-}
-
-/** Creates a store that observes all derived links for a single source object and exposes them via useSyncExternalStore. */
 export function createDerivedLinksStore<
   S extends ShapeDefinition<ObjectOrInterfaceDefinition>,
 >(
@@ -162,18 +81,10 @@ export function createDerivedLinksStore<
     const config = (linkConfig as Partial<Record<string, LinkLoadConfig>>)[
       linkDef.name
     ];
-    const isDeferred = linkDef.config.defer ?? config?.defer ?? false;
-    linkEntries.set(linkDef.name, {
-      linkDef,
-      sourceObject: castSource,
-      status: isDeferred ? "deferred" : "init",
-      data: [],
-      error: undefined,
-      hasMore: false,
-      fetchMore: NOOP_FETCH_MORE,
-      subscription: undefined,
-      nestedByPk: new Map(),
-    });
+    linkEntries.set(
+      linkDef.name,
+      createLinkEntry(linkDef, castSource, config?.defer),
+    );
   }
   const subscribers = new Set<() => void>();
   const cache = createVersionedCache<DerivedLinksPayload<S>>();
@@ -185,7 +96,6 @@ export function createDerivedLinksStore<
   let nestedFlushTimer: ReturnType<typeof setTimeout> | undefined;
   let isDestroyed = false;
 
-  /** Debounces nested link starts into a single batch within a 25ms window. */
   function scheduleNestedFlush(): void {
     if (nestedFlushTimer != null) {
       return;
@@ -195,17 +105,19 @@ export function createDerivedLinksStore<
       if (isDestroyed) {
         return;
       }
-      const batch = pendingNestedEntries.splice(0);
+      // Filter out entries that were cleaned up while pending
+      const batch = pendingNestedEntries.splice(0).filter(({ entry }) =>
+        !entry.cleaned
+      );
       if (batch.length > 0) {
         startLinksInBatch(batch);
       }
-      // 25ms window to batch nested link subscriptions, avoids N individual startups while staying responsive
     }, 25);
   }
 
-  /** Recursively unsubscribes all entries in a nested link map. */
   function cleanupNestedMap(map: Map<string, LinkEntry>): void {
     for (const entry of map.values()) {
+      entry.cleaned = true;
       entry.subscription?.unsubscribe();
       for (const nestedMap of entry.nestedByPk.values()) {
         cleanupNestedMap(nestedMap);
@@ -213,7 +125,6 @@ export function createDerivedLinksStore<
     }
   }
 
-  /** Creates or cleans up nested link entries when a parent link's objects change. */
   function handleNestedLinks(
     parentEntry: LinkEntry,
     rawObjects: Osdk.Instance<ObjectOrInterfaceDefinition>[],
@@ -242,17 +153,7 @@ export function createDerivedLinksStore<
         .__derivedLinks as readonly ShapeDerivedLinkDef[];
       for (const nestedLinkDef of nestedDerivedLinks) {
         if (!nestedMap.has(nestedLinkDef.name)) {
-          const nestedEntry: LinkEntry = {
-            linkDef: nestedLinkDef,
-            sourceObject: rawObj,
-            status: nestedLinkDef.config.defer ? "deferred" : "init",
-            data: [],
-            error: undefined,
-            hasMore: false,
-            fetchMore: NOOP_FETCH_MORE,
-            subscription: undefined,
-            nestedByPk: new Map(),
-          };
+          const nestedEntry = createLinkEntry(nestedLinkDef, rawObj);
           nestedMap.set(nestedLinkDef.name, nestedEntry);
 
           if (nestedEntry.status === "init") {
@@ -278,7 +179,6 @@ export function createDerivedLinksStore<
     }
   }
 
-  /** Sets entries to loading and kicks off their observations in parallel. */
   function startLinksInBatch(
     entries: Array<
       { entry: LinkEntry; sourceType: ObjectOrInterfaceDefinition }
@@ -298,7 +198,6 @@ export function createDerivedLinksStore<
     }
   }
 
-  /** Recursively merges nested link data into transformed shape instances. */
   function buildDataWithNestedLinks(
     entry: LinkEntry,
     transformedData: AnyShapeInstance[],
@@ -327,7 +226,7 @@ export function createDerivedLinksStore<
     });
   }
 
-  /** Guards against duplicate starts and delegates to the async internal implementation. */
+  /** Skips links already loading/loaded, otherwise marks as loading and starts observation. */
   function startLinkObservation(
     entry: LinkEntry,
     sourceType: ObjectOrInterfaceDefinition,
@@ -335,45 +234,13 @@ export function createDerivedLinksStore<
     if (entry.status === "loading" || entry.status === "loaded") {
       return;
     }
-
-    entry.status = "loading";
-    entry.error = undefined;
-    notifySubscribers();
-
-    startLinkObservationInternal(entry, sourceType).catch((err) => {
-      entry.status = "error";
-      entry.error = wrapError(err);
-      notifySubscribers();
-    });
+    startLinksInBatch([{ entry, sourceType }]);
   }
 
-  /** Builds the object set, subscribes to it, and feeds results through shape transformations. */
-  async function startLinkObservationInternal(
+  function createLinkObserver(
     entry: LinkEntry,
-    sourceType: ObjectOrInterfaceDefinition,
-  ): Promise<void> {
-    const objectSet = await buildObjectSetFromLinkDefByType(
-      client,
-      sourceType,
-      entry.sourceObject.$primaryKey,
-      entry.linkDef.objectSetDef,
-    );
-
-    if (isDestroyed) {
-      return;
-    }
-
-    const config = linkEntries.has(entry.linkDef.name)
-      ? linkConfig[entry.linkDef.name as keyof ShapeDerivedLinks<S>]
-      : undefined;
-
-    const queryOptions = getLinkQueryOptions(
-      entry.linkDef.objectSetDef,
-      entry.sourceObject,
-      config?.pageSize,
-    );
-
-    const observer: Observer<ListObserverPayload> = {
+  ): Observer<ListObserverPayload> {
+    return {
       next: (payload) => {
         if (isDestroyed) {
           return;
@@ -407,6 +274,32 @@ export function createDerivedLinksStore<
       },
       complete: () => {},
     };
+  }
+
+  async function startLinkObservationInternal(
+    entry: LinkEntry,
+    sourceType: ObjectOrInterfaceDefinition,
+  ): Promise<void> {
+    const objectSet = await buildObjectSetFromLinkDefByType(
+      client,
+      sourceType,
+      entry.sourceObject.$primaryKey,
+      entry.linkDef.objectSetDef,
+    );
+
+    if (isDestroyed) {
+      return;
+    }
+
+    const config = linkEntries.has(entry.linkDef.name)
+      ? linkConfig[entry.linkDef.name as keyof ShapeDerivedLinks<S>]
+      : undefined;
+
+    const queryOptions = getLinkQueryOptions(
+      entry.linkDef.objectSetDef,
+      entry.sourceObject,
+      config?.pageSize,
+    );
 
     const subscription = observableClient.observeObjectSet(
       objectSet as ObjectSet<ObjectTypeDefinition>,
@@ -417,13 +310,16 @@ export function createDerivedLinksStore<
         autoFetchMore: config?.autoFetchMore,
         streamUpdates: config?.streamUpdates,
       },
-      observer,
+      createLinkObserver(entry),
     );
 
+    if (isDestroyed) {
+      subscription.unsubscribe();
+      return;
+    }
     entry.subscription = subscription;
   }
 
-  /** Produces a snapshot of all link data and statuses, cached until the next invalidation. */
   function buildSnapshot(): DerivedLinksPayload<S> {
     return cache.get(() => {
       const links: Record<string, AnyShapeInstance[]> = {};
@@ -460,7 +356,6 @@ export function createDerivedLinksStore<
     });
   }
 
-  /** Tears down all subscriptions, timers, and nested link maps. */
   function destroy(): void {
     isDestroyed = true;
     if (nestedFlushTimer != null) {
@@ -495,7 +390,6 @@ export function createDerivedLinksStore<
     destroy,
   );
 
-  /** Starts observation for a deferred link that was not loaded eagerly. */
   function loadDeferred(
     linkName: keyof ShapeDerivedLinks<S>,
   ): void {
@@ -506,7 +400,6 @@ export function createDerivedLinksStore<
     startLinkObservation(entry, shape.__baseType);
   }
 
-  /** Resets errored entries and restarts their observations. Targets a single link or all. */
   function retry(linkName?: keyof ShapeDerivedLinks<S>): void {
     const retryEntry = (entry: LinkEntry) => {
       if (entry.status !== "error") {
