@@ -114,6 +114,28 @@ export function createMockObjectSetWithResolver<
   } satisfies ObjectSet<Q>;
 }
 
+export function resolveStub(
+  stubs: Stub[],
+  calls: Call[],
+  errorMsg: string,
+): unknown {
+  for (const stub of stubs) {
+    if (stub.calls.length !== calls.length) continue;
+    if (
+      stub.calls.every(([m, a], i) =>
+        calls[i][0] === m && deepEqual(a, calls[i][1])
+      )
+    ) {
+      const terminal = calls[calls.length - 1][0];
+      if (terminal === "fetchPage") {
+        return { data: stub.value, nextPageToken: undefined };
+      }
+      return stub.value;
+    }
+  }
+  throw new Error(errorMsg);
+}
+
 export function deepEqual(a: unknown, b: unknown): boolean {
   if (a === b) return true;
   if (a == null || b == null) return a === b;

@@ -18,7 +18,7 @@ import type { ObjectOrInterfaceDefinition, ObjectSet } from "@osdk/api";
 import {
   type Call,
   createMockObjectSetWithResolver,
-  deepEqual,
+  resolveStub,
   type Stub,
 } from "./createMockObjectSetWithResolver.js";
 
@@ -36,31 +36,19 @@ export function createMockObjectSet<Q extends ObjectOrInterfaceDefinition>(
 ): ObjectSet<Q> {
   const stubs: Stub[] = [];
 
-  const resolve = (calls: Call[]): unknown => {
-    for (const stub of stubs) {
-      if (stub.calls.length !== calls.length) continue;
-      if (
-        stub.calls.every(([m, a], i) =>
-          calls[i][0] === m && deepEqual(a, calls[i][1])
-        )
-      ) {
-        const terminal = calls[calls.length - 1][0];
-        if (terminal === "fetchPage") {
-          return { data: stub.value, nextPageToken: undefined };
-        }
-        return stub.value;
-      }
-    }
-    const msg = `No stub registered on standalone MockObjectSet\n`;
-    throw new Error(msg);
-  };
+  const resolve = (calls: Call[]): unknown =>
+    resolveStub(
+      stubs,
+      calls,
+      `No stub registered on standalone MockObjectSet\n`,
+    );
 
   const objectSet = createMockObjectSetWithResolver(
     objectType,
     resolve,
   ) as MockObjectSetBranded<Q>;
 
-  (objectSet as any)[MOCK_OBJECT_SET_BRAND] = true;
+  objectSet[MOCK_OBJECT_SET_BRAND] = true;
   (objectSet as any).__registerStub = (calls: Call[], value: unknown) => {
     stubs.push({ calls, value });
   };

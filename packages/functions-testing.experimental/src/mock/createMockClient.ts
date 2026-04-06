@@ -30,6 +30,7 @@ import {
   type Call,
   createMockObjectSetWithResolver,
   deepEqual,
+  resolveStub,
   type Stub,
 } from "./createMockObjectSetWithResolver.js";
 
@@ -96,26 +97,12 @@ export function createMockClient(): MockClient {
   const stubs: ClientStub[] = [];
   const queryStubs: QueryStub[] = [];
 
-  const resolve = (objectType: string, calls: Call[]): unknown => {
-    for (const stub of stubs) {
-      if (stub.objectType !== objectType) continue;
-      if (stub.calls.length !== calls.length) continue;
-      if (
-        stub.calls.every(([m, a], i) =>
-          calls[i][0] === m && deepEqual(a, calls[i][1])
-        )
-      ) {
-        const terminal = calls[calls.length - 1][0];
-        if (terminal === "fetchPage") {
-          return { data: stub.value, nextPageToken: undefined };
-        }
-        return stub.value;
-      }
-    }
-
-    const msg = `No stub for request\n`;
-    throw new Error(msg);
-  };
+  const resolve = (objectType: string, calls: Call[]): unknown =>
+    resolveStub(
+      stubs.filter(s => s.objectType === objectType),
+      calls,
+      `No stub for request\n`,
+    );
 
   const resolveQuery = (queryApiName: string, params: unknown): unknown => {
     for (const stub of queryStubs) {
@@ -188,7 +175,7 @@ export function createMockClient(): MockClient {
     let capturedCalls: Call[] | undefined;
 
     const capturingProxy = createMockObjectSetWithResolver(
-      objectSet.$objectSetInternals.def as Q,
+      objectSet.$objectSetInternals.def,
       (calls) => {
         capturedCalls = calls;
         return { data: [], nextPageToken: undefined };
