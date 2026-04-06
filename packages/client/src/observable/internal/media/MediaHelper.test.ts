@@ -131,12 +131,14 @@ describe("MediaHelper", () => {
 
     mockStore.queries.keys = vi.fn().mockReturnValue([
       { type: "mediaMetadata" },
+      { type: "mediaContent" },
       { type: "otherType" },
       { type: "mediaMetadata" },
     ]);
 
     mediaHelper.clearAll();
-    expect(mockStore.queries.delete).toHaveBeenCalledTimes(3);
+    // clearCache: 1 metadata + 1 content, clearAll: 2 metadata + 1 content
+    expect(mockStore.queries.delete).toHaveBeenCalledTimes(5);
   });
 
   it("creates and releases blob URLs for cached content", () => {

@@ -20,8 +20,10 @@ import type {
   ActionValidationResponse,
   AggregateOpts,
   AggregationsResults,
+  Attachment,
   CompileTimeMetadata,
   DerivedProperty,
+  Media,
   ObjectOrInterfaceDefinition,
   ObjectSet,
   ObjectTypeDefinition,
@@ -622,18 +624,28 @@ export interface ObservableClient extends ObserveLinks {
     options: T,
   ) => CanonicalizedOptions<T>;
 
+  /**
+   * Observe media metadata with automatic updates.
+   */
   observeMediaMetadata(
     coords: MediaPropertyLocation,
     options: MediaMetadataObserveOptions,
     observer: Observer<MediaMetadataPayload>,
   ): Unsubscribable;
 
+  /**
+   * Observe media content with unified lifecycle: metadata, content, blob URLs,
+   * SWR on invalidation, progressive loading, and image dimension extraction.
+   */
   observeMedia(
     source: Media | Attachment | MediaPropertyLocation,
     options: MediaContentObserveOptions,
     observer: Observer<MediaContentPayload>,
   ): Unsubscribable;
 
+  /**
+   * Invalidate media content, triggering stale-while-revalidate refetch.
+   */
   invalidateMedia(
     source: Media | Attachment | MediaPropertyLocation,
   ): void;
