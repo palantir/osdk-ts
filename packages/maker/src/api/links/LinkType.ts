@@ -124,14 +124,14 @@ export interface IntermediaryLinkTypeDefinition {
   apiName: string;
   many: IntermediaryObjectLinkReference;
   toMany: IntermediaryObjectLinkReference;
-  intermediaryObjectType: ObjectTypeDefinition;
+  intermediaryObjectType: ObjectTypeDefinition | ObjectType;
   editsEnabled?: boolean;
   status?: UserLinkTypeStatus;
   redacted?: boolean;
 }
 
 export interface IntermediaryObjectLinkReference {
-  object: ObjectTypeDefinition | string;
+  object: ObjectTypeDefinition | ObjectType | string;
   metadata: LinkTypeMetadata;
   linkToIntermediary: LinkType;
 }
@@ -140,13 +140,13 @@ export interface IntermediaryLinkTypeUserDefinition {
   apiName: string;
   many: IntermediaryObjectLinkReferenceUserDefinition;
   toMany: IntermediaryObjectLinkReferenceUserDefinition;
-  intermediaryObjectType: ObjectTypeDefinition | string;
+  intermediaryObjectType: ObjectTypeDefinition | ObjectType | string;
   editsEnabled?: boolean;
   status?: UserLinkTypeStatus;
 }
 
 export interface IntermediaryObjectLinkReferenceUserDefinition {
-  object: ObjectTypeDefinition | string;
+  object: ObjectTypeDefinition | ObjectType | string;
   metadata: LinkTypeMetadataUserDefinition;
   linkToIntermediary: LinkType;
 }

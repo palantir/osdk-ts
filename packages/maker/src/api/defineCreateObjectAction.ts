@@ -28,35 +28,33 @@ import {
   validateActionParameters,
   validateParameterOrdering,
 } from "./defineAction.js";
-import type { ObjectPropertyType } from "./object/ObjectPropertyType.js";
-import type { ObjectPropertyTypeUserDefinition } from "./object/ObjectPropertyTypeUserDefinition.js";
-import type { ObjectType } from "./object/ObjectType.js";
-import type { ObjectTypeDefinition } from "./object/ObjectTypeDefinition.js";
+import {
+  getProperty,
+  getPropertyKeys,
+  toPropertyMap,
+} from "./object/objectPropertyHelpers.js";
 import { isStruct } from "./properties/PropertyTypeType.js";
 
 export function defineCreateObjectAction(
   defInput: ActionTypeUserDefinition,
 ): ActionType {
   const def = cloneDefinition(defInput);
-
-  const toFind = "";
-  const obj = def.objectType;
-  getProperty(obj, toFind);
+  const propertyKeys = getPropertyKeys(def.objectType);
 
   validateActionParameters(
     def,
-    Object.keys(def.objectType.properties ?? {}),
+    propertyKeys,
     def.objectType.apiName,
   );
   const propertiesWithDerivedDatasources = (def.objectType.datasources ?? [])
     .filter(ds => ds.type === "derived").flatMap(ds =>
       Object.keys(ds.propertyMapping)
     );
-  const propertyParameters = Object.keys(def.objectType.properties ?? {})
+  const propertyParameters = propertyKeys
     .filter(
       id =>
         isPropertyParameter(def, id, getProperty(def.objectType, id)?.type!)
-        && !isStruct(getProperty(obj, id)?.type!)
+        && !isStruct(getProperty(def.objectType, id)?.type!)
         && !propertiesWithDerivedDatasources.includes(id),
     );
   const parameterNames = new Set(propertyParameters);
@@ -76,7 +74,7 @@ export function defineCreateObjectAction(
   }
   const parameters = createParameters(
     def,
-    def.objectType.properties ?? {},
+    toPropertyMap(def.objectType),
     parameterNames,
   );
   const mappings = Object.fromEntries(
@@ -114,7 +112,7 @@ export function defineCreateObjectAction(
     parameterOrdering: def.parameterOrdering
       ?? createDefaultParameterOrdering(
         def,
-        Object.keys(def.objectType.properties ?? {}),
+        propertyKeys,
         parameters,
       ),
     ...(def.actionLevelValidation
@@ -143,18 +141,4 @@ export function defineCreateObjectAction(
       && { submissionMetadata: def.submissionMetadata }),
     ...(def.icon && { icon: def.icon }),
   });
-}
-function getProperty(
-  obj: ObjectTypeDefinition | ObjectType,
-  toFind: string,
-): ObjectPropertyType | ObjectPropertyTypeUserDefinition | undefined {
-  const props = obj.properties!;
-  if (Array.isArray(props)) {
-    return props.find(prop => prop.apiName === toFind);
-  } else {
-    if (!(toFind in props)) {
-      return undefined;
-    }
-    return props[toFind];
-  }
 }

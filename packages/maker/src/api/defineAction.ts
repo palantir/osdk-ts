@@ -59,6 +59,7 @@ import {
   isInterfaceSharedPropertyType,
 } from "./interface/InterfacePropertyType.js";
 import type { InterfaceType } from "./interface/InterfaceType.js";
+import { getPropertyKeys } from "./object/objectPropertyHelpers.js";
 import type { ObjectPropertyType } from "./object/ObjectPropertyType.js";
 import type { ObjectPropertyTypeUserDefinition } from "./object/ObjectPropertyTypeUserDefinition.js";
 import type { ObjectType } from "./object/ObjectType.js";
@@ -269,7 +270,7 @@ export function isPropertyParameter(
       && !def.excludedProperties?.includes(name));
   }
   return (
-    Object.keys(def.objectType.properties ?? {}).includes(name)
+    getPropertyKeys(def.objectType).includes(name)
     && !Object.keys(def.nonParameterMappings ?? {}).includes(name)
     && !isStruct(type)
     && !def.excludedProperties?.includes(name)
@@ -280,6 +281,8 @@ export function createParameters(
   def: ActionTypeUserDefinition | InterfaceActionTypeUserDefinition,
   propertyMap:
     | Record<string, ObjectPropertyTypeUserDefinition>
+    | Record<string, ObjectPropertyType>
+    | Record<string, ObjectPropertyType | ObjectPropertyTypeUserDefinition>
     | Record<string, InterfacePropertyType>,
   parameterSet: Set<string>,
   requiredMap?: Record<string, boolean>,
