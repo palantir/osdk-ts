@@ -4,15 +4,13 @@ Runtime client for Foundry ontology access. Creates typed clients that execute O
 
 ## Related Documentation
 
-- [`architecture_observable_client.md`](./architecture_observable_client.md) -- deep dive into Store internals, Layer system, CacheKeys via `@wry/trie`, batch updates, and optimistic mutation flow
 - [`src/CLAUDE.md`](./src/CLAUDE.md) -- code style (prefer functions over classes)
-- [`src/observable/CLAUDE.md`](./src/observable/CLAUDE.md) -- observable client architecture with links to sub-directory docs
+- [`src/observable/CLAUDE.md`](./src/observable/CLAUDE.md) -- observable client architecture and related docs
 
 ## Entry Points
 
 - `createClient(url, ontologyRid, tokenProvider)` -- standard client for ontology CRUD
 - `createPlatformClient(url, tokenProvider)` -- client for non-ontology Foundry platform APIs
-- `createObservableClient(client)` -- reactive wrapper (see `src/observable/`)
 
 ## Export Paths
 
@@ -21,7 +19,7 @@ Runtime client for Foundry ontology access. Creates typed clients that execute O
 | `@osdk/client` | Public stable API: `createClient`, `createPlatformClient` |
 | `@osdk/client/internal` | Semi-public internals (used by other `@osdk/*` packages) |
 | `@osdk/client/internal-node` | Node-specific internals |
-| `@osdk/client/unstable-do-not-use` | ObservableClient and types consumed by `@osdk/react` |
+| `@osdk/client/unstable-do-not-use` | Experimental APIs consumed by `@osdk/react` |
 | `@osdk/client/*` (wildcard) | Maps to `src/public/*.ts` |
 
 When adding new public API, add a barrel export in the appropriate `src/public/*.ts` file and update `package.json` exports if adding a new sub-path.
@@ -52,5 +50,5 @@ To add one: create a helper file in `src/intellisense.test.helpers/{testName}.ts
 
 ## Key Architectural Decisions
 
-- The `Client` caches ontology metadata but does not cache object data. Object/list caching lives in `ObservableClient`'s `Store` (see `src/observable/`)
+- The `Client` caches ontology metadata but does not cache object data
 - Uses `conjure-lite` for Foundry API communication, not raw fetch

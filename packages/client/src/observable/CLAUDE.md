@@ -70,7 +70,7 @@ Payloads emit with a `status` field: `init` -> `loading` -> `loaded`. On failure
 
 ## Observer Interface
 
-All observe methods accept `Observer<T>` with `next`, `error`, `complete` callbacks. This follows the RxJS convention but the observable system does NOT use RxJS internally.
+All observe methods accept `Observer<T>` with `next`, `error`, `complete` callbacks following the RxJS observer pattern. RxJS is used internally (e.g. `BehaviorSubject` for streams).
 
 ## Observation Options
 
