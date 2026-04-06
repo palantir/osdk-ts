@@ -203,7 +203,7 @@ describe("intellisense", () => {
 
       expect(resolvedResp.body?.displayString).toBeDefined();
       expect(resolvedResp.body?.displayString).toContain(
-        "Osdk.Instance<Employee",
+        "Osdk.Instance<Office",
       );
 
       const { resp: unresolvedResp } = await tsServer.sendQuickInfoRequest({
@@ -214,7 +214,7 @@ describe("intellisense", () => {
 
       expect(unresolvedResp.body?.displayString).toBeDefined();
       expect(unresolvedResp.body?.displayString).toContain(
-        "Osdk.Instance<FooInterface",
+        "Osdk.Instance<Employee",
       );
     },
   );

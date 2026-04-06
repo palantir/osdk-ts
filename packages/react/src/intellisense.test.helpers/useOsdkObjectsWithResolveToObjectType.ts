@@ -19,16 +19,16 @@
 // This file is used for tests that check intellisense. Editing this file by hand will likely
 // break tests that have hard coded line numbers and line offsets.
 
-import { Employee, FooInterface } from "@osdk/client.test.ontology";
+import { Employee, Office } from "@osdk/client.test.ontology";
 import { useOsdkObjects } from "@osdk/react/experimental";
 
 function TestComponent() {
-  const { data: resolved } = useOsdkObjects(FooInterface, {
-    resolveToObjectType: Employee,
+  const { data: resolved } = useOsdkObjects(Employee, {
+    resolveToObjectType: Office,
   });
   const resolvedItem = resolved?.[0];
 
-  const { data: unresolved } = useOsdkObjects(FooInterface);
+  const { data: unresolved } = useOsdkObjects(Employee);
   const unresolvedItem = unresolved?.[0];
 
   return null;
