@@ -140,6 +140,23 @@ export function useLinks<
 >(
   objects: Osdk.Instance<T> | Array<Osdk.Instance<T>> | undefined,
   linkName: L,
+  options?: UseLinksOptions<LinkedType<T, L>>,
+): UseLinksResult<LinkedType<T, L>>;
+
+export function useLinks<
+  T extends ObjectOrInterfaceDefinition,
+>(
+  objects: Osdk.Instance<T> | Array<Osdk.Instance<T>> | undefined,
+  linkName: string,
+  options?: UseLinksOptions<ObjectOrInterfaceDefinition>,
+): UseLinksResult<ObjectOrInterfaceDefinition>;
+
+export function useLinks<
+  T extends ObjectOrInterfaceDefinition,
+  L extends LinkNames<T>,
+>(
+  objects: Osdk.Instance<T> | Array<Osdk.Instance<T>> | undefined,
+  linkName: L | (string & {}),
   options: UseLinksOptions<LinkedType<T, L>> = {},
 ): UseLinksResult<LinkedType<T, L>> {
   const { observableClient } = React.useContext(OsdkContext2);

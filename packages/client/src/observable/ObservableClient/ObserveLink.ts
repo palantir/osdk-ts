@@ -49,6 +49,21 @@ export namespace ObserveLinks {
     expectedLength?: number;
   }
 
+  export interface StringOptions<
+    Q extends ObjectTypeDefinition | InterfaceDefinition,
+  > extends CommonObserveOptions, ObserveOptions {
+    srcType: Pick<Q, "type" | "apiName">;
+    sourceUnderlyingObjectType: string;
+    pk: PrimaryKeyType<Q>;
+    linkName: string;
+    where?: WhereClause<ObjectTypeDefinition | InterfaceDefinition>;
+    select?: readonly string[];
+    pageSize?: number;
+    orderBy?: Record<string, "asc" | "desc" | undefined>;
+    invalidationMode?: InvalidationMode;
+    expectedLength?: number;
+  }
+
   export interface CallbackArgs<
     T extends ObjectTypeDefinition | InterfaceDefinition,
   > {
@@ -80,6 +95,20 @@ export interface ObserveLinks {
       ObserveLinks.CallbackArgs<
         CompileTimeMetadata<T>["links"][L]["targetType"]
       >
+    >,
+  ): Unsubscribable;
+
+  observeLinks<
+    T extends ObjectTypeDefinition | InterfaceDefinition,
+  >(
+    objects: Osdk.Instance<T> | ReadonlyArray<Osdk.Instance<T>>,
+    linkName: string,
+    options: Omit<
+      ObserveLinks.StringOptions<T>,
+      "srcType" | "pk" | "sourceUnderlyingObjectType"
+    >,
+    subFn: Observer<
+      ObserveLinks.CallbackArgs<ObjectTypeDefinition | InterfaceDefinition>
     >,
   ): Unsubscribable;
 }

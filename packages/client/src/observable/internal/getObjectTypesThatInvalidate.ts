@@ -21,9 +21,10 @@ import type {
 } from "@osdk/foundry.ontologies";
 import invariant from "tiny-invariant";
 import type { MinimalClient } from "../../MinimalClientContext.js";
-import type {
-  FetchedObjectTypeDefinition,
-  OntologyProvider,
+import {
+  type FetchedObjectTypeDefinition,
+  InterfaceDefinitions,
+  type OntologyProvider,
 } from "../../ontology/OntologyProvider.js";
 
 // Suppose we did an object set that is basically
@@ -105,14 +106,27 @@ async function calcObjectSet(
 
     case "interfaceLinkSearchAround": {
       const srcDef = await calcObjectSet(os.objectSet, ctx);
-      invariant(srcDef.type === "interface");
 
-      for (const [k, v] of Object.entries(srcDef.links)) {
-        if (k === os.interfaceLink) {
-          if (v.targetType === "object") {
-            return await bumpObject(v.targetTypeApiName);
+      if (srcDef.type === "interface") {
+        for (const [k, v] of Object.entries(srcDef.links)) {
+          if (k === os.interfaceLink) {
+            if (v.targetType === "object") {
+              return await bumpObject(v.targetTypeApiName);
+            }
+            return await bumpInterface(v.targetTypeApiName);
           }
-          return await bumpInterface(v.targetTypeApiName);
+        }
+      } else {
+        // OT source with ILT name — search implemented interfaces
+        const objDef = srcDef as FetchedObjectTypeDefinition;
+        for (const iface of Object.values(objDef[InterfaceDefinitions])) {
+          const linkDef = iface.def.links[os.interfaceLink];
+          if (linkDef) {
+            if (linkDef.targetType === "object") {
+              return await bumpObject(linkDef.targetTypeApiName);
+            }
+            return await bumpInterface(linkDef.targetTypeApiName);
+          }
         }
       }
 

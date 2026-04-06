@@ -109,7 +109,7 @@ export interface UseOsdkObjectsOptions<
    * Pivot to related objects through a link.
    * This changes the return type from T to the linked object type.
    */
-  pivotTo?: LinkNames<T>;
+  pivotTo?: LinkNames<T> | (string & {});
 
   /**
    * Causes the list to automatically fetch more as soon as the previous page

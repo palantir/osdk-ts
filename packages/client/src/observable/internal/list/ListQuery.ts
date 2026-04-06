@@ -57,6 +57,7 @@ import {
   ORDER_BY_IDX,
   PIVOT_IDX,
   RDP_IDX,
+  RIDS_IDX,
   SELECT_IDX,
   WHERE_IDX,
 } from "./ListCacheKey.js";
@@ -99,6 +100,7 @@ export abstract class ListQuery extends BaseListQuery<
   #pivotInfo: Canonical<PivotInfo> | undefined;
   #objectSet: ObjectSet<ObjectTypeDefinition>;
   #pivotIntersectApplied = false;
+  #iltResolved = false;
 
   /**
    * Register changes to the cache specific to ListQuery
@@ -193,6 +195,64 @@ export abstract class ListQuery extends BaseListQuery<
   protected async fetchPageData(
     signal: AbortSignal | undefined,
   ): Promise<PageResult<Osdk.Instance<any>>> {
+    // Deferred ILT resolution: when pivotTo is used on an OT source,
+    // check if the link name is a concrete link or an ILT. If it's an ILT,
+    // rebuild the object set to use interfaceLinkSearchAround.
+    if (
+      this.#pivotInfo
+      && this.#pivotInfo.sourceTypeKind === "object"
+      && !this.#iltResolved
+    ) {
+      const mc = this.store.client[additionalContext];
+      const def = await mc.ontologyProvider.getObjectDefinition(
+        this.#pivotInfo.sourceType,
+      );
+
+      if (!(this.#pivotInfo.linkName in def.links)) {
+        const rids = this.cacheKey.otherKeys[RIDS_IDX];
+        const sourceSet = rids != null
+          ? mc.objectSetFactory(
+            {
+              type: "object",
+              apiName: this.#pivotInfo.sourceType,
+            } as ObjectTypeDefinition,
+            mc,
+            { type: "static", objects: [...rids] },
+          )
+          : this.store.client(
+            {
+              type: "object",
+              apiName: this.#pivotInfo.sourceType,
+            } as ObjectTypeDefinition,
+          );
+
+        const sourceWire = getWireObjectSet(
+          sourceSet.where(this.#whereClause as WhereClause<any>),
+        );
+
+        this.#objectSet = mc.objectSetFactory(
+          {
+            type: "object",
+            apiName: this.apiName,
+          } as ObjectTypeDefinition,
+          mc,
+          {
+            type: "interfaceLinkSearchAround",
+            objectSet: sourceWire,
+            interfaceLink: this.#pivotInfo.linkName,
+          },
+        ) as ObjectSet<ObjectTypeDefinition>;
+
+        const rdpConfig = this.cacheKey.otherKeys[RDP_IDX];
+        if (rdpConfig != null) {
+          this.#objectSet = this.#objectSet.withProperties(
+            rdpConfig as DerivedProperty.Clause<ObjectTypeDefinition>,
+          );
+        }
+      }
+      this.#iltResolved = true;
+    }
+
     const needsResultType = (Object.keys(this.#orderBy).length > 0
       && !(this.sortingStrategy instanceof OrderBySortingStrategy))
       || (this.#pivotInfo != null && this.#intersectWith != null

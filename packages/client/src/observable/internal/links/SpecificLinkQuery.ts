@@ -27,6 +27,11 @@ import type {
 import deepEqual from "fast-deep-equal";
 import { type Subject } from "rxjs";
 import { additionalContext } from "../../../Client.js";
+import { getWireObjectSet } from "../../../objectSet/createObjectSet.js";
+import {
+  type FetchedObjectTypeDefinition,
+  InterfaceDefinitions,
+} from "../../../ontology/OntologyProvider.js";
 import type { SpecificLinkPayload } from "../../LinkPayload.js";
 import type { Status } from "../../ObservableClient/common.js";
 import type { ObserveLinks } from "../../ObservableClient/ObserveLink.js";
@@ -156,12 +161,16 @@ export class SpecificLinkQuery extends BaseListQuery<
           this.#sourceApiName,
         );
         const linkDef = objectMetadata.links?.[this.#linkName];
-        if (!linkDef?.targetType) {
-          throw new Error(
-            `Missing link definition or targetType for link '${this.#linkName}' on object type '${this.#sourceApiName}'`,
-          );
+        if (linkDef?.targetType) {
+          targetTypeApiName = linkDef.targetType;
+        } else {
+          // ILT — search implemented interfaces for the link definition
+          targetTypeApiName = resolveIltLinkDef(
+            objectMetadata,
+            this.#linkName,
+            this.#sourceApiName,
+          ).targetTypeApiName;
         }
-        targetTypeApiName = linkDef.targetType;
       }
 
       this.sortingStrategy = new OrderBySortingStrategy(
@@ -206,7 +215,25 @@ export class SpecificLinkQuery extends BaseListQuery<
         [objectMetadata.primaryKeyApiName]: this.#sourcePk,
       } as WhereClause<any>);
 
-      linkQuery = sourceQuery.pivotTo(this.#linkName);
+      if (this.#linkName in objectMetadata.links) {
+        linkQuery = sourceQuery.pivotTo(this.#linkName);
+      } else {
+        // ILT — use interfaceLinkSearchAround
+        const mc = client[additionalContext];
+        const sourceWire = getWireObjectSet(sourceQuery);
+        linkQuery = mc.objectSetFactory(
+          {
+            type: "object",
+            apiName: this.#sourceApiName,
+          } as ObjectTypeDefinition,
+          mc,
+          {
+            type: "interfaceLinkSearchAround",
+            objectSet: sourceWire,
+            interfaceLink: this.#linkName,
+          },
+        ) as ObjectSet<ObjectOrInterfaceDefinition>;
+      }
     }
 
     if (signal?.aborted) {
@@ -340,9 +367,23 @@ export class SpecificLinkQuery extends BaseListQuery<
           const objectMetadata = await ontologyProvider
             .getObjectDefinition(this.#sourceApiName);
           const linkDef = objectMetadata.links?.[this.#linkName];
-          // On object link defs, targetType is the target API name (not the kind)
-          targetTypeApiName = linkDef?.targetType;
-          targetTypeKind = "object";
+          if (linkDef) {
+            targetTypeApiName = linkDef.targetType;
+            targetTypeKind = "object";
+          } else {
+            // ILT — search implemented interfaces for target type
+            try {
+              const iltDef = resolveIltLinkDef(
+                objectMetadata,
+                this.#linkName,
+                this.#sourceApiName,
+              );
+              targetTypeApiName = iltDef.targetTypeApiName;
+              targetTypeKind = iltDef.targetType;
+            } catch {
+              // Link not found at all — fall through to return
+            }
+          }
         }
 
         if (!targetTypeApiName) return;
@@ -382,4 +423,25 @@ export function isSpecificLinkCacheKey(
   key: CacheKey,
 ): key is SpecificLinkCacheKey {
   return key.type === "specificLink";
+}
+
+function resolveIltLinkDef(
+  objectMetadata: FetchedObjectTypeDefinition,
+  linkName: string,
+  sourceApiName: string,
+): { targetTypeApiName: string; targetType: "object" | "interface" } {
+  for (
+    const iface of Object.values(objectMetadata[InterfaceDefinitions])
+  ) {
+    const iltDef = iface.def.links[linkName];
+    if (iltDef) {
+      return {
+        targetTypeApiName: iltDef.targetTypeApiName,
+        targetType: iltDef.targetType,
+      };
+    }
+  }
+  throw new Error(
+    `Missing link definition for link '${linkName}' on object type '${sourceApiName}'`,
+  );
 }

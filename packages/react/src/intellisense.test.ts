@@ -143,6 +143,42 @@ describe("intellisense", () => {
     expect(typeResp.body?.displayString).toContain("Employee");
   });
 
+  it("useOsdkObjectsWithIltPivot", { timeout: 40_000 }, async () => {
+    expect(ts.sys.fileExists(intellisenseFilePath)).toBeTruthy();
+    invariant(tsServer);
+
+    // ILT string pivot: completions at the pivotTo field should still show concrete links
+    const { resp: completionsResp } = await tsServer.sendCompletionsRequest({
+      file: intellisenseFilePath,
+      line: 42,
+      offset: 15,
+      triggerKind: ts.CompletionTriggerKind.Invoked,
+    });
+
+    const completions = completionsResp.body?.entries.map(e => e.name) ?? [];
+    expect(completions).toContain("lead");
+
+    // ILT pivot: TypeScript accepts the string — verify data resolves to an Osdk instance type
+    const { resp: iltTypeResp } = await tsServer.sendQuickInfoRequest({
+      file: intellisenseFilePath,
+      line: 34,
+      offset: 10,
+    });
+
+    expect(iltTypeResp.body?.displayString).toBeDefined();
+    expect(iltTypeResp.body?.displayString).toContain("Osdk.Instance");
+
+    // Concrete pivot: data type should still be Employee (specific linked type)
+    const { resp: concreteTypeResp } = await tsServer.sendQuickInfoRequest({
+      file: intellisenseFilePath,
+      line: 45,
+      offset: 10,
+    });
+
+    expect(concreteTypeResp.body?.displayString).toBeDefined();
+    expect(concreteTypeResp.body?.displayString).toContain("Employee");
+  });
+
   it("useOsdkObjectsWithRids", { timeout: 40_000 }, async () => {
     expect(ts.sys.fileExists(intellisenseFilePath)).toBeTruthy();
     invariant(tsServer);
