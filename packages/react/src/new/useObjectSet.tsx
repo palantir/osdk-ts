@@ -26,10 +26,11 @@ import type {
 } from "@osdk/api";
 
 import {
-  computeObjectSetCacheKey,
+  getWireObjectSet,
   type ObserveObjectSetArgs,
 } from "@osdk/client/unstable-do-not-use";
 import React from "react";
+import { extractPayloadError } from "./hookUtils.js";
 import { makeExternalStore, type Snapshot } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
 
@@ -152,20 +153,26 @@ export interface UseObjectSetResult<
    */
   error: Error | undefined;
 
+  isOptimistic: boolean;
+
   /**
    * Function to fetch more pages (undefined if no more pages)
    */
   fetchMore: (() => Promise<void>) | undefined;
 
+  hasMore: boolean;
+
   /**
    * The final ObjectSet after all transformations
    */
-  objectSet: ObjectSet<Q, RDPs>;
+  objectSet: ObjectSet<Q, RDPs> | undefined;
 
   /**
    * The total count of objects matching the query (if available from the API)
    */
   totalCount?: string;
+
+  refetch: () => Promise<void>;
 }
 
 declare const process: {
@@ -191,15 +198,17 @@ export function useObjectSet<
   BaseRDPs extends Record<string, SimplePropertyDef> = never,
   RDPs extends Record<string, SimplePropertyDef> = {},
 >(
-  baseObjectSet: ObjectSet<Q, BaseRDPs>,
+  baseObjectSet: ObjectSet<Q, BaseRDPs> | undefined,
   options: UseObjectSetOptions<Q, RDPs> = {},
 ): UseObjectSetResult<Q, RDPs> {
   const { observableClient } = React.useContext(OsdkContext2);
 
-  const { enabled = true, streamUpdates, ...otherOptions } = options;
+  const { enabled: enabledOption = true, streamUpdates, ...otherOptions } =
+    options;
+  const enabled = enabledOption && baseObjectSet != null;
 
   // Track object type to detect when we switch to a different object type
-  const objectTypeKey = enabled
+  const objectTypeKey = enabled && baseObjectSet
     ? baseObjectSet.$objectSetInternals.def.apiName
     : OBJECT_TYPE_PLACEHOLDER;
 
@@ -214,19 +223,26 @@ export function useObjectSet<
     previousCompletedPayloadRef.current = undefined;
   }
 
-  // Compute a stable cache key for the ObjectSet and options
-  // dedupeIntervalMs and enabled are excluded as they don't affect the data
-  const stableKey = computeObjectSetCacheKey(baseObjectSet, {
+  // canonicalizeOptions stabilizes complex query identity options.
+  // pageSize is a view level concern (handled per subscriber, not part of
+  // query identity), and pivotTo is a plain string that does not need
+  // stabilization.
+  const canonOptions = observableClient.canonicalizeOptions({
     where: otherOptions.where,
     withProperties: otherOptions.withProperties,
+    orderBy: otherOptions.orderBy,
     union: otherOptions.union,
     intersect: otherOptions.intersect,
     subtract: otherOptions.subtract,
-    pivotTo: otherOptions.pivotTo,
-    pageSize: otherOptions.pageSize,
-    orderBy: otherOptions.orderBy,
-    select: otherOptions.$select,
+    $select: otherOptions.$select,
   });
+
+  const objectSetKey = baseObjectSet
+    ? JSON.stringify(getWireObjectSet(baseObjectSet as ObjectSet<Q>))
+    : undefined;
+
+  const baseObjectSetRef = React.useRef(baseObjectSet);
+  baseObjectSetRef.current = baseObjectSet;
 
   const { subscribe, getSnapShot } = React.useMemo(
     () => {
@@ -234,7 +250,7 @@ export function useObjectSet<
         return makeExternalStore<ObserveObjectSetArgs<Q, RDPs>>(
           () => ({ unsubscribe: () => {} }),
           process.env.NODE_ENV !== "production"
-            ? `objectSet ${stableKey} [DISABLED]`
+            ? `objectSet [DISABLED]`
             : void 0,
         );
       }
@@ -245,39 +261,67 @@ export function useObjectSet<
 
       return makeExternalStore<ObserveObjectSetArgs<Q, RDPs>>(
         (observer) => {
+          if (!baseObjectSetRef.current) {
+            return { unsubscribe: () => {} };
+          }
           const subscription = observableClient.observeObjectSet(
-            baseObjectSet as ObjectSet<Q>,
+            baseObjectSetRef.current as ObjectSet<Q>,
             {
-              where: otherOptions.where,
-              withProperties: otherOptions.withProperties,
-              union: otherOptions.union,
-              intersect: otherOptions.intersect,
-              subtract: otherOptions.subtract,
+              where: canonOptions.where,
+              withProperties: canonOptions.withProperties,
+              union: canonOptions.union,
+              intersect: canonOptions.intersect,
+              subtract: canonOptions.subtract,
               pivotTo: otherOptions.pivotTo,
               pageSize: otherOptions.pageSize,
-              orderBy: otherOptions.orderBy,
+              orderBy: canonOptions.orderBy,
               dedupeInterval: otherOptions.dedupeIntervalMs ?? 2_000,
               autoFetchMore: otherOptions.autoFetchMore,
               streamUpdates,
-              select: otherOptions.$select,
+              select: canonOptions.$select,
             },
             observer,
           );
           return subscription;
         },
         process.env.NODE_ENV !== "production"
-          ? `objectSet ${stableKey}`
+          ? `objectSet ${objectTypeKey}`
           : void 0,
         initialValue,
       );
     },
-    [enabled, observableClient, stableKey, streamUpdates, objectTypeChanged],
+    [
+      enabled,
+      observableClient,
+      objectSetKey,
+      canonOptions.where,
+      canonOptions.withProperties,
+      canonOptions.orderBy,
+      canonOptions.union,
+      canonOptions.intersect,
+      canonOptions.subtract,
+      canonOptions.$select,
+      otherOptions.pivotTo,
+      otherOptions.pageSize,
+      otherOptions.autoFetchMore,
+      otherOptions.dedupeIntervalMs,
+      streamUpdates,
+      objectTypeKey,
+    ],
   );
 
   const payload = React.useSyncExternalStore(subscribe, getSnapShot);
   if (payload && isPayloadCompleted(payload)) {
     previousCompletedPayloadRef.current = payload;
   }
+
+  const typeApiName = baseObjectSet?.$objectSetInternals.def.apiName;
+
+  const refetch = React.useCallback(async () => {
+    if (typeApiName) {
+      await observableClient.invalidateObjectType(typeApiName);
+    }
+  }, [observableClient, typeApiName]);
 
   return React.useMemo(() => {
     const lastLoaded = isPayloadCompleted(payload)
@@ -290,13 +334,18 @@ export function useObjectSet<
         PropertyKeys<Q>,
         RDPs
       >[],
-      isLoading: !isPayloadCompleted(payload),
-      error: lastLoaded && "error" in lastLoaded ? lastLoaded.error : undefined,
+      isLoading: enabled
+        ? !isPayloadCompleted(payload)
+        : false,
+      error: extractPayloadError(lastLoaded, "Failed to load object set"),
+      isOptimistic: payload?.isOptimistic ?? false,
       fetchMore: payload?.hasMore ? payload.fetchMore : undefined,
-      objectSet: payload?.objectSet as ObjectSet<Q, RDPs> || baseObjectSet,
+      hasMore: payload?.hasMore ?? false,
+      objectSet: lastLoaded?.objectSet as ObjectSet<Q, RDPs> | undefined,
       totalCount: lastLoaded?.totalCount,
+      refetch,
     };
-  }, [payload, baseObjectSet]);
+  }, [payload, refetch, enabled]);
 }
 
 function isPayloadCompleted<

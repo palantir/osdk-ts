@@ -61,6 +61,9 @@ vi.mock("@osdk/react/experimental", () => ({
       error: undefined,
       fetchMore: undefined,
       isOptimistic: false,
+      hasMore: false,
+      objectSet: undefined,
+      refetch: vi.fn(),
       // Return the options to verify they were passed correctly
       _testOptions: options,
     };
@@ -72,9 +75,12 @@ vi.mock("@osdk/react/experimental", () => ({
       error: undefined,
       fetchMore: vi.fn(),
       totalCount: undefined,
+      isOptimistic: false,
+      hasMore: false,
+      objectSet: undefined,
+      refetch: vi.fn(),
       // Return the options to verify they were passed correctly
       _testOptions: options,
-      isOptimistic: false,
     };
   }),
 }));

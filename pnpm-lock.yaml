@@ -1850,7 +1850,7 @@ importers:
   packages/client:
     dependencies:
       '@osdk/api':
-        specifier: workspace:*
+        specifier: workspace:~
         version: link:../api
       '@osdk/client.unstable':
         specifier: workspace:*
@@ -4638,6 +4638,9 @@ importers:
       '@osdk/api':
         specifier: workspace:*
         version: link:../api
+      '@osdk/cbac-components':
+        specifier: workspace:*
+        version: link:../cbac-components
       '@osdk/client':
         specifier: workspace:*
         version: link:../client

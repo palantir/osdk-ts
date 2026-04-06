@@ -1,5 +1,22 @@
 # @osdk/api
 
+## 2.8.0
+
+### Minor Changes
+
+- 322c5bc: Simulated release
+- 4bb9769: Add primaryKeyApiName and primaryKeyType to object type const for runtime access
+- f294f5a: Remove literal support before GA.
+- 0df859a: Read primaryKeyApiName from object type const instead of options, move links into options, and add createMockAttachment helper
+- d284bf2: add media types, caching, and metadata query
+- 4ef6adc: Fix interface links off of objects
+- 60b5ffb: Add `platformApiName` field to actions to preserve the original API name used by the Foundry platform
+- 8c30908: Add support for lt and gt strings.
+- 4a856cb: add shape builder and inline config converter
+- b68cebd: add shape type definitions with opaque internal fields and shapes-internal export path
+- 35f2f1a: Add Media inputs/outputs for Queries
+- 61e33ab: Add support for interval queries
+
 ## 2.8.0-beta.32
 
 ## 2.8.0-beta.31

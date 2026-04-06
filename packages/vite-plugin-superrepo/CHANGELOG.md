@@ -1,5 +1,12 @@
 # @osdk/vite-plugin-superrepo
 
+## 0.2.0
+
+### Minor Changes
+
+- 3bc5ff7: Implement superrepo plugin
+- 0ba4c0c: Support discovering Python edit functions
+
 ## 0.2.0-beta.1
 
 ### Minor Changes
