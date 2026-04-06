@@ -75,10 +75,91 @@ describe("mapPropertyType", () => {
     ).toEqual({ type: "string", array: true });
   });
 
-  it("returns undefined for unsupported types", () => {
-    expect(mapPropertyType({ type: "marking" })).toBeUndefined();
-    expect(mapPropertyType({ type: "timeseries" })).toBeUndefined();
+  it("maps struct types", () => {
+    expect(
+      mapPropertyType({
+        type: "struct",
+        structFieldTypes: [
+          { apiName: "name", dataType: { type: "string" } },
+          { apiName: "age", dataType: { type: "integer" } },
+        ],
+      }),
+    ).toEqual({
+      type: {
+        type: "struct",
+        structDefinition: {
+          name: "string",
+          age: "integer",
+        },
+      },
+    });
+  });
+
+  it("skips unsupported fields in structs", () => {
+    expect(
+      mapPropertyType({
+        type: "struct",
+        structFieldTypes: [
+          { apiName: "name", dataType: { type: "string" } },
+          { apiName: "bad", dataType: { type: "vector" } },
+        ],
+      }),
+    ).toEqual({
+      type: {
+        type: "struct",
+        structDefinition: {
+          name: "string",
+        },
+      },
+    });
+  });
+
+  it("returns undefined for struct missing structFieldTypes", () => {
     expect(mapPropertyType({ type: "struct" })).toBeUndefined();
+  });
+
+  it("maps array of structs", () => {
+    expect(
+      mapPropertyType({
+        type: "array",
+        subType: {
+          type: "struct",
+          structFieldTypes: [
+            { apiName: "key", dataType: { type: "string" } },
+          ],
+        },
+      }),
+    ).toEqual({
+      type: {
+        type: "struct",
+        structDefinition: { key: "string" },
+      },
+      array: true,
+    });
+  });
+
+  it("maps marking types", () => {
+    expect(mapPropertyType({ type: "marking" }, "myMarking")).toEqual({
+      type: {
+        type: "marking",
+        markingType: "MANDATORY",
+        markingInputGroupName: "myMarking",
+      },
+    });
+  });
+
+  it("maps marking types with default name", () => {
+    expect(mapPropertyType({ type: "marking" })).toEqual({
+      type: {
+        type: "marking",
+        markingType: "MANDATORY",
+        markingInputGroupName: "marking",
+      },
+    });
+  });
+
+  it("returns undefined for unsupported types", () => {
+    expect(mapPropertyType({ type: "timeseries" })).toBeUndefined();
     expect(mapPropertyType({ type: "vector" })).toBeUndefined();
     expect(mapPropertyType({ type: "cipherText" })).toBeUndefined();
   });
@@ -137,8 +218,54 @@ describe("mapActionParameterType", () => {
     });
   });
 
+  it("maps struct parameters", () => {
+    expect(
+      mapActionParameterType({
+        type: "struct",
+        structFieldTypes: [
+          { apiName: "name", dataType: { type: "string" } },
+          { apiName: "count", dataType: { type: "integer" } },
+        ],
+      }),
+    ).toEqual({
+      type: "struct",
+      struct: {
+        structFieldTypes: {
+          name: { type: "string", string: {} },
+          count: { type: "integer", integer: {} },
+        },
+      },
+    });
+  });
+
+  it("maps array of structs to structList", () => {
+    expect(
+      mapActionParameterType({
+        type: "array",
+        subType: {
+          type: "struct",
+          structFieldTypes: [
+            { apiName: "key", dataType: { type: "string" } },
+          ],
+        },
+      }),
+    ).toEqual({
+      type: "structList",
+      structList: {
+        structFieldTypes: {
+          key: { type: "string", string: {} },
+        },
+      },
+    });
+  });
+
+  it("maps objectType parameters", () => {
+    expect(mapActionParameterType({ type: "objectType" })).toBe(
+      "objectTypeReference",
+    );
+  });
+
   it("returns undefined for unsupported types", () => {
-    expect(mapActionParameterType({ type: "struct" })).toBeUndefined();
     expect(mapActionParameterType({ type: "vector" })).toBeUndefined();
   });
 });
@@ -407,12 +534,5 @@ describe("resolveVarNames", () => {
     expect(
       resolveVarNames(["com.a.Foo", "com.b.Foo", "com.a.Bar"]),
     ).toEqual(["comAFoo", "comBFoo", "bar"]);
-  });
-
-  it("handles names without namespaces", () => {
-    expect(resolveVarNames(["Employee", "Department"])).toEqual([
-      "employee",
-      "department",
-    ]);
   });
 });

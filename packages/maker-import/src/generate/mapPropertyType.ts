@@ -34,6 +34,7 @@ export interface MappedPropertyType {
  */
 export function mapPropertyType(
   dataType: { type: string; [key: string]: unknown },
+  propertyApiName?: string,
 ): MappedPropertyType | undefined {
   switch (dataType.type) {
     case "string":
@@ -81,16 +82,51 @@ export function mapPropertyType(
       return { type: inner.type, array: true };
     }
     case "marking":
-      consola.warn(
-        "Skipping marking property: requires markingType and markingInputGroupName not available in OntologyFullMetadata",
-      );
-      return undefined;
+      return {
+        type: {
+          type: "marking",
+          markingType: "MANDATORY",
+          markingInputGroupName: propertyApiName ?? "marking",
+        } as unknown as PropertyTypeType,
+      };
     case "timeseries":
       consola.warn("Skipping timeseries property: no maker equivalent");
       return undefined;
-    case "struct":
-      consola.warn("Skipping struct property: complex mapping not supported");
-      return undefined;
+    case "struct": {
+      const fields = (dataType as {
+        structFieldTypes?: Array<{
+          apiName: string;
+          dataType: { type: string; [key: string]: unknown };
+        }>;
+      }).structFieldTypes;
+      if (!fields) {
+        consola.warn("Struct type missing structFieldTypes, skipping");
+        return undefined;
+      }
+      const structDefinition: Record<string, PropertyTypeType> = {};
+      for (const field of fields) {
+        const mapped = mapPropertyType(field.dataType);
+        if (!mapped) {
+          consola.warn(
+            `Skipping struct field "${field.apiName}": unsupported type "${field.dataType.type}"`,
+          );
+          continue;
+        }
+        if (mapped.array) {
+          consola.warn(
+            `Skipping struct field "${field.apiName}": array fields not supported in structs`,
+          );
+          continue;
+        }
+        structDefinition[field.apiName] = mapped.type;
+      }
+      return {
+        type: {
+          type: "struct",
+          structDefinition,
+        } as unknown as PropertyTypeType,
+      };
+    }
     case "vector":
       consola.warn("Skipping vector property: no maker equivalent");
       return undefined;

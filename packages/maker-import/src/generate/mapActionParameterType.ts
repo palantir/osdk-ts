@@ -52,6 +52,62 @@ const LIST_VARIANT_MAP: Record<string, ActionParameterType> = {
   decimal: "decimalList",
 };
 
+// Maps gateway struct field types to OntologyIrStructFieldBaseParameterType format
+const STRUCT_FIELD_IR_TYPES: Record<string, string> = {
+  boolean: "boolean",
+  integer: "integer",
+  long: "long",
+  double: "double",
+  string: "string",
+  geohash: "geohash",
+  geoshape: "geoshape",
+  timestamp: "timestamp",
+  date: "date",
+};
+
+/**
+ * Converts gateway struct field types to the IR structFieldTypes record.
+ * Returns undefined if structFieldTypes is missing.
+ */
+function mapGatewayStructFieldsToIr(
+  dataType: { type: string; [key: string]: unknown },
+): Record<string, { type: string; [key: string]: unknown }> | undefined {
+  const fields = (dataType as {
+    structFieldTypes?: Array<{
+      apiName: string;
+      dataType: { type: string; [key: string]: unknown };
+    }>;
+  }).structFieldTypes;
+  if (!fields) {
+    consola.warn("Struct parameter type missing structFieldTypes, skipping");
+    return undefined;
+  }
+  const structFieldTypes: Record<
+    string,
+    { type: string; [key: string]: unknown }
+  > = {};
+  for (const field of fields) {
+    const fieldType = field.dataType.type;
+    const irType = STRUCT_FIELD_IR_TYPES[fieldType];
+    if (irType) {
+      structFieldTypes[field.apiName] = { type: irType, [irType]: {} };
+    } else if (fieldType === "object") {
+      const objectTypeApiName =
+        (field.dataType as { objectTypeApiName?: string }).objectTypeApiName
+          ?? "";
+      structFieldTypes[field.apiName] = {
+        type: "objectReference",
+        objectReference: { objectTypeId: objectTypeApiName },
+      };
+    } else {
+      consola.warn(
+        `Skipping struct param field "${field.apiName}": unsupported type "${fieldType}"`,
+      );
+    }
+  }
+  return structFieldTypes;
+}
+
 /**
  * Maps a gateway ActionParameterType (discriminated union from OntologyFullMetadata)
  * to a maker ActionParameterType (string primitives or complex objects).
@@ -124,22 +180,35 @@ export function mapActionParameterType(
         };
       }
 
+      if (subType.type === "struct") {
+        const structFields = mapGatewayStructFieldsToIr(
+          subType as { type: string; [key: string]: unknown },
+        );
+        if (!structFields) return undefined;
+        return {
+          type: "structList",
+          structList: { structFieldTypes: structFields },
+        };
+      }
+
       consola.warn(
         `Skipping array parameter with unsupported subType: ${subType.type}`,
       );
       return undefined;
     }
-    case "struct":
-      consola.warn(
-        "Skipping struct parameter type: complex mapping not supported",
-      );
-      return undefined;
+    case "struct": {
+      const structFields = mapGatewayStructFieldsToIr(dataType);
+      if (!structFields) return undefined;
+      return {
+        type: "struct",
+        struct: { structFieldTypes: structFields },
+      };
+    }
     case "vector":
       consola.warn("Skipping vector parameter type: no maker equivalent");
       return undefined;
     case "objectType":
-      consola.warn("Skipping objectType parameter type");
-      return undefined;
+      return "objectTypeReference";
     default:
       consola.warn(`Skipping unknown parameter type: ${dataType.type}`);
       return undefined;
