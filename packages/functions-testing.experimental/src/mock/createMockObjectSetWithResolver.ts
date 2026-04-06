@@ -29,13 +29,20 @@ export type Call = [method: string, args: unknown];
 
 export type Resolver = (calls: Call[]) => unknown;
 
-export function createMockObjectSet<Q extends ObjectOrInterfaceDefinition>(
+export type Stub = { calls: Call[]; value: unknown };
+
+export function createMockObjectSetWithResolver<
+  Q extends ObjectOrInterfaceDefinition,
+>(
   objectType: Q,
   resolver: Resolver,
   calls: Call[] = [],
 ): ObjectSet<Q> {
   const chain = (method: string, args: unknown): ObjectSet<Q> =>
-    createMockObjectSet(objectType, resolver, [...calls, [method, args]]);
+    createMockObjectSetWithResolver(objectType, resolver, [...calls, [
+      method,
+      args,
+    ]]);
 
   const terminal = <T>(method: string, args: unknown): T =>
     resolver([...calls, [method, args]]) as T;
@@ -105,6 +112,28 @@ export function createMockObjectSet<Q extends ObjectOrInterfaceDefinition>(
       def: {} as Q,
     },
   } satisfies ObjectSet<Q>;
+}
+
+export function resolveStub(
+  stubs: Stub[],
+  calls: Call[],
+  errorMsg: string,
+): unknown {
+  for (const stub of stubs) {
+    if (stub.calls.length !== calls.length) continue;
+    if (
+      stub.calls.every(([m, a], i) =>
+        calls[i][0] === m && deepEqual(a, calls[i][1])
+      )
+    ) {
+      const terminal = calls[calls.length - 1][0];
+      if (terminal === "fetchPage") {
+        return { data: stub.value, nextPageToken: undefined };
+      }
+      return stub.value;
+    }
+  }
+  throw new Error(errorMsg);
 }
 
 export function deepEqual(a: unknown, b: unknown): boolean {
