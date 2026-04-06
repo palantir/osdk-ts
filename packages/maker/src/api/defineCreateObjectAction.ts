@@ -28,12 +28,21 @@ import {
   validateActionParameters,
   validateParameterOrdering,
 } from "./defineAction.js";
+import type { ObjectPropertyType } from "./object/ObjectPropertyType.js";
+import type { ObjectPropertyTypeUserDefinition } from "./object/ObjectPropertyTypeUserDefinition.js";
+import type { ObjectType } from "./object/ObjectType.js";
+import type { ObjectTypeDefinition } from "./object/ObjectTypeDefinition.js";
 import { isStruct } from "./properties/PropertyTypeType.js";
 
 export function defineCreateObjectAction(
   defInput: ActionTypeUserDefinition,
 ): ActionType {
   const def = cloneDefinition(defInput);
+
+  const toFind = "";
+  const obj = def.objectType;
+  getProperty(obj, toFind);
+
   validateActionParameters(
     def,
     Object.keys(def.objectType.properties ?? {}),
@@ -46,8 +55,8 @@ export function defineCreateObjectAction(
   const propertyParameters = Object.keys(def.objectType.properties ?? {})
     .filter(
       id =>
-        isPropertyParameter(def, id, def.objectType.properties?.[id].type!)
-        && !isStruct(def.objectType.properties?.[id].type!)
+        isPropertyParameter(def, id, getProperty(def.objectType, id)?.type!)
+        && !isStruct(getProperty(obj, id)?.type!)
         && !propertiesWithDerivedDatasources.includes(id),
     );
   const parameterNames = new Set(propertyParameters);
@@ -79,7 +88,7 @@ export function defineCreateObjectAction(
   return defineAction({
     apiName: actionApiName,
     displayName: def.displayName ?? `Create ${def.objectType.displayName}`,
-    parameters: parameters,
+    parameters,
     status: def.status ?? "active",
     entities: {
       affectedInterfaceTypes: [],
@@ -134,4 +143,18 @@ export function defineCreateObjectAction(
       && { submissionMetadata: def.submissionMetadata }),
     ...(def.icon && { icon: def.icon }),
   });
+}
+function getProperty(
+  obj: ObjectTypeDefinition | ObjectType,
+  toFind: string,
+): ObjectPropertyType | ObjectPropertyTypeUserDefinition | undefined {
+  const props = obj.properties!;
+  if (Array.isArray(props)) {
+    return props.find(prop => prop.apiName === toFind);
+  } else {
+    if (!(toFind in props)) {
+      return undefined;
+    }
+    return props[toFind];
+  }
 }

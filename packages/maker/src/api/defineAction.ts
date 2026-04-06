@@ -61,6 +61,7 @@ import {
 import type { InterfaceType } from "./interface/InterfaceType.js";
 import type { ObjectPropertyType } from "./object/ObjectPropertyType.js";
 import type { ObjectPropertyTypeUserDefinition } from "./object/ObjectPropertyTypeUserDefinition.js";
+import type { ObjectType } from "./object/ObjectType.js";
 import type { ObjectTypeDefinition } from "./object/ObjectTypeDefinition.js";
 import {
   isStruct,
@@ -82,7 +83,7 @@ export const MODIFY_INTERFACE_OBJECT_PARAMETER: string =
 export type ActionTypeDefinition = Omit<ActionType, "__type">;
 
 export type ActionTypeUserDefinition = {
-  objectType: ObjectTypeDefinition;
+  objectType: ObjectTypeDefinition | ObjectType;
   apiName?: string;
   displayName?: string;
   status?: ActionStatus;
@@ -103,7 +104,7 @@ export type ActionTypeUserDefinition = {
 
 export type InterfaceActionTypeUserDefinition = {
   interfaceType: InterfaceType;
-  objectType?: ObjectTypeDefinition;
+  objectType?: ObjectTypeDefinition | ObjectType;
   apiName?: string;
   displayName?: string;
   status?: ActionStatus;
@@ -241,7 +242,7 @@ export function defineAction(actionDefInput: ActionTypeDefinition): ActionType {
 
   const fullAction = {
     ...actionDef,
-    apiName: apiName,
+    apiName,
     entities: actionDef.entities ?? {
       affectedInterfaceTypes: [],
       affectedObjectTypes: [],
@@ -288,7 +289,7 @@ export function createParameters(
     ...targetParams,
     ...Array.from(parameterSet).map(
       id => {
-        let propertyMetadata = undefined;
+        let propertyMetadata;
         if (id in propertyMap) {
           propertyMetadata = "sharedPropertyType" in propertyMap[id]
             ? propertyMap[id].sharedPropertyType
@@ -1119,14 +1120,14 @@ export function createInterfacePropertyLogicRuleValue(
               ? {
                 type: "structListParameterFieldValue",
                 structListParameterFieldValue: {
-                  parameterId: parameterId,
+                  parameterId,
                   structFieldApiName: apiName,
                 },
               }
               : {
                 type: "structParameterFieldValue",
                 structParameterFieldValue: {
-                  parameterId: parameterId,
+                  parameterId,
                   structFieldApiName: apiName,
                 },
               },
@@ -1139,7 +1140,7 @@ export function createInterfacePropertyLogicRuleValue(
     type: "logicRuleValue",
     logicRuleValue: {
       type: "parameterId",
-      parameterId: parameterId,
+      parameterId,
     },
   };
 }
