@@ -17,19 +17,19 @@
 import type { MediaMetadata } from "@osdk/api";
 import * as OntologiesV2 from "@osdk/foundry.ontologies";
 import { additionalContext } from "../../../Client.js";
-import type { Observer } from "../../ObservableClient/common.js";
+import type {
+  CommonObserveOptions,
+  Observer,
+} from "../../ObservableClient/common.js";
 import type {
   MediaContentObserveOptions,
   MediaContentPayload,
 } from "../../ObservableClient/MediaObservableTypes.js";
 import type { MediaPropertyLocation } from "../../ObservableClient/MediaTypes.js";
-import type { CacheKeys } from "../CacheKeys.js";
+import { AbstractHelper } from "../AbstractHelper.js";
 import type { KnownCacheKey } from "../KnownCacheKey.js";
 import type { Query } from "../Query.js";
-import { QuerySubscription } from "../QuerySubscription.js";
-import type { Store } from "../Store.js";
 import type { UnsubscribableWrapper } from "../UnsubscribableWrapper.js";
-import type { BlobMemoryManager } from "./BlobMemoryManager.js";
 import { createBlobMemoryManager } from "./BlobMemoryManager.js";
 import type { MediaSource } from "./fetchMediaContent.js";
 import { getMediaCacheKey } from "./getMediaCacheKey.js";
@@ -49,18 +49,14 @@ function isMediaPropertyLocation(
     && "propertyName" in source;
 }
 
-export class MediaHelper {
-  private store: Store;
-  private cacheKeys: CacheKeys<KnownCacheKey>;
-  private blobManager: BlobMemoryManager;
+export class MediaHelper extends AbstractHelper<
+  Query<KnownCacheKey, unknown, CommonObserveOptions>,
+  CommonObserveOptions
+> {
+  private blobManager = createBlobMemoryManager();
 
-  constructor(
-    store: Store,
-    cacheKeys: CacheKeys<KnownCacheKey>,
-  ) {
-    this.store = store;
-    this.cacheKeys = cacheKeys;
-    this.blobManager = createBlobMemoryManager();
+  getQuery(): never {
+    throw new Error("Use observeMedia or observeMediaMetadata");
   }
 
   getCacheKey(mediaOrLocation: MediaSource): string {
@@ -89,64 +85,6 @@ export class MediaHelper {
     ) as MediaContentCacheKey;
   }
 
-  #subscribeToQuery<T>(
-    query: Query<
-      KnownCacheKey,
-      T,
-      { dedupeInterval?: number; mode?: "offline" | "force" }
-    >,
-    observer: Observer<T>,
-    options: { dedupeInterval?: number; mode?: "offline" | "force" },
-  ): QuerySubscription<typeof query> {
-    const { cacheKey } = query;
-    const pendingCleanupCount = this.store.pendingCleanup.get(cacheKey) ?? 0;
-    if (pendingCleanupCount > 0) {
-      if (pendingCleanupCount === 1) {
-        this.store.pendingCleanup.delete(cacheKey);
-      } else {
-        this.store.pendingCleanup.set(cacheKey, pendingCleanupCount - 1);
-      }
-    } else {
-      this.store.cacheKeys.retain(cacheKey);
-    }
-
-    if (options.mode !== "offline") {
-      query.revalidate(options.mode === "force").catch((e: unknown) => {
-        observer.error(e);
-      });
-    }
-
-    const subscription = query.subscribe(observer);
-    const querySub = new QuerySubscription(query, subscription);
-
-    query.registerSubscriptionDedupeInterval(
-      querySub.subscriptionId,
-      options.dedupeInterval,
-    );
-
-    subscription.add(() => {
-      query.unregisterSubscriptionDedupeInterval(querySub.subscriptionId);
-
-      this.store.pendingCleanup.set(
-        cacheKey,
-        (this.store.pendingCleanup.get(cacheKey) ?? 0) + 1,
-      );
-      queueMicrotask(() => {
-        const currentPending = this.store.pendingCleanup.get(cacheKey) ?? 0;
-        if (currentPending > 0) {
-          if (currentPending === 1) {
-            this.store.pendingCleanup.delete(cacheKey);
-          } else {
-            this.store.pendingCleanup.set(cacheKey, currentPending - 1);
-          }
-          this.store.cacheKeys.release(cacheKey);
-        }
-      });
-    });
-
-    return querySub;
-  }
-
   observeMediaMetadata(
     coords: MediaPropertyLocation,
     options: MediaMetadataObserveOptions,
@@ -172,7 +110,7 @@ export class MediaHelper {
       );
     });
 
-    return this.#subscribeToQuery(query, observer, options);
+    return this._subscribe(query, options, observer);
   }
 
   observeMedia(
@@ -199,7 +137,7 @@ export class MediaHelper {
       );
     });
 
-    return this.#subscribeToQuery(query, observer, options);
+    return this._subscribe(query, options, observer);
   }
 
   invalidateMedia(source: MediaSource): void {
