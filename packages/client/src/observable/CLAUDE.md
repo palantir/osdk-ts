@@ -68,10 +68,6 @@ Payloads emit with a `status` field: `init` -> `loading` -> `loaded`. On failure
 - `loaded`: Data available
 - `error`: Fetch failed (payload may still contain stale data from a previous load)
 
-## Observer Interface
-
-All observe methods accept `Observer<T>` with `next`, `error`, `complete` callbacks following the RxJS observer pattern. RxJS is used internally (e.g. `BehaviorSubject` for streams).
-
 ## Observation Options
 
 - `mode: "offline"` -- only use cached data, never fetch
