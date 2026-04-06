@@ -75,90 +75,9 @@ describe("mapPropertyType", () => {
     ).toEqual({ type: "string", array: true });
   });
 
-  it("maps struct types", () => {
-    expect(
-      mapPropertyType({
-        type: "struct",
-        structFieldTypes: [
-          { apiName: "name", dataType: { type: "string" } },
-          { apiName: "age", dataType: { type: "integer" } },
-        ],
-      }),
-    ).toEqual({
-      type: {
-        type: "struct",
-        structDefinition: {
-          name: "string",
-          age: "integer",
-        },
-      },
-    });
-  });
-
-  it("skips unsupported fields in structs", () => {
-    expect(
-      mapPropertyType({
-        type: "struct",
-        structFieldTypes: [
-          { apiName: "name", dataType: { type: "string" } },
-          { apiName: "bad", dataType: { type: "vector" } },
-        ],
-      }),
-    ).toEqual({
-      type: {
-        type: "struct",
-        structDefinition: {
-          name: "string",
-        },
-      },
-    });
-  });
-
-  it("returns undefined for struct missing structFieldTypes", () => {
-    expect(mapPropertyType({ type: "struct" })).toBeUndefined();
-  });
-
-  it("maps array of structs", () => {
-    expect(
-      mapPropertyType({
-        type: "array",
-        subType: {
-          type: "struct",
-          structFieldTypes: [
-            { apiName: "key", dataType: { type: "string" } },
-          ],
-        },
-      }),
-    ).toEqual({
-      type: {
-        type: "struct",
-        structDefinition: { key: "string" },
-      },
-      array: true,
-    });
-  });
-
-  it("maps marking types", () => {
-    expect(mapPropertyType({ type: "marking" }, "myMarking")).toEqual({
-      type: {
-        type: "marking",
-        markingType: "MANDATORY",
-        markingInputGroupName: "myMarking",
-      },
-    });
-  });
-
-  it("maps marking types with default name", () => {
-    expect(mapPropertyType({ type: "marking" })).toEqual({
-      type: {
-        type: "marking",
-        markingType: "MANDATORY",
-        markingInputGroupName: "marking",
-      },
-    });
-  });
-
   it("returns undefined for unsupported types", () => {
+    expect(mapPropertyType({ type: "marking" })).toBeUndefined();
+    expect(mapPropertyType({ type: "struct" })).toBeUndefined();
     expect(mapPropertyType({ type: "timeseries" })).toBeUndefined();
     expect(mapPropertyType({ type: "vector" })).toBeUndefined();
     expect(mapPropertyType({ type: "cipherText" })).toBeUndefined();

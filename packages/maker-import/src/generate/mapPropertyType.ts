@@ -34,7 +34,6 @@ export interface MappedPropertyType {
  */
 export function mapPropertyType(
   dataType: { type: string; [key: string]: unknown },
-  propertyApiName?: string,
 ): MappedPropertyType | undefined {
   switch (dataType.type) {
     case "string":

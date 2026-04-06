@@ -48,7 +48,7 @@ export function convertObjectType(
   const properties: Array<ObjectPropertyType> = [];
 
   for (const [propApiName, propV2] of Object.entries(obj.properties)) {
-    const mapped = mapPropertyType(propV2.dataType, propApiName);
+    const mapped = mapPropertyType(propV2.dataType);
     if (!mapped) {
       consola.warn(
         `Skipping property "${propApiName}" on object "${obj.apiName}": unsupported type "${propV2.dataType.type}"`,
