@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  InterfaceDefinition,
-  ObjectTypeDefinition,
-  Osdk,
-} from "@osdk/api";
+import type { InterfaceDefinition, Osdk } from "@osdk/api";
 import { act, renderHook } from "@testing-library/react";
 import * as React from "react";
 import { beforeEach, describe, expect, it, vitest } from "vitest";
@@ -30,12 +26,6 @@ const MockInterface = {
   apiName: "TestInterface",
   type: "interface",
 } as unknown as InterfaceDefinition;
-
-const MockObjectType = {
-  apiName: "ConcreteType",
-  type: "object",
-  primaryKeyType: "string",
-} as unknown as ObjectTypeDefinition;
 
 describe("useOsdkObjects with interface pivotTo", () => {
   const mockObserveList = vitest.fn();

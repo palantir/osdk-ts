@@ -152,6 +152,10 @@ export interface UseOsdkObjectsOptions<
    *
    * Only has an effect when the type parameter is an interface.
    *
+   * Pass an ObjectTypeDefinition to narrow the return type:
+   * `resolveToObjectType: Laptop` types results as `Osdk.Instance<Laptop>`.
+   * This is an unchecked assertion — the runtime does not filter by type.
+   *
    * @default false
    *
    * @example
@@ -377,7 +381,7 @@ export function useOsdkObjects<
     pivotTo,
     stableSelect,
     $loadPropertySecurityMetadata,
-    resolveToObjectType,
+    !!resolveToObjectType,
   ]);
 
   const listPayload = React.useSyncExternalStore(subscribe, getSnapShot);
