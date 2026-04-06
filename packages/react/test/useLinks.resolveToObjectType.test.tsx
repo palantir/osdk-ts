@@ -23,6 +23,13 @@ import { useLinks } from "../src/new/useLinks.js";
 
 const MockObjectType = {
   apiName: "MockObject",
+  type: "object",
+  primaryKeyType: "string",
+} as unknown as ObjectTypeDefinition;
+
+const ConcreteTargetType = {
+  apiName: "ConcreteTarget",
+  type: "object",
   primaryKeyType: "string",
 } as unknown as ObjectTypeDefinition;
 
@@ -60,6 +67,22 @@ describe("useLinks with resolveToObjectType", () => {
       () =>
         useLinks(mockObject, "relatedObjects", {
           resolveToObjectType: true,
+        }),
+      { wrapper },
+    );
+
+    expect(mockObserveLinks).toHaveBeenCalledTimes(1);
+    const options = mockObserveLinks.mock.calls[0][2];
+    expect(options.resolveToObjectType).toBe(true);
+  });
+
+  it("should normalize ObjectTypeDefinition to true in observeLinks", () => {
+    const wrapper = createWrapper();
+
+    renderHook(
+      () =>
+        useLinks(mockObject, "relatedObjects", {
+          resolveToObjectType: ConcreteTargetType,
         }),
       { wrapper },
     );

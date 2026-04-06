@@ -18,6 +18,7 @@ import type {
   LinkedType,
   LinkNames,
   ObjectOrInterfaceDefinition,
+  ObjectTypeDefinition,
 } from "@osdk/api";
 import type { Osdk, PropertyKeys, WhereClause } from "@osdk/client";
 import type { ObserveLinks } from "@osdk/client/unstable-do-not-use";
@@ -98,7 +99,7 @@ export interface UseLinksOptions<
    *
    * @default false
    */
-  resolveToObjectType?: boolean;
+  resolveToObjectType?: boolean | ObjectTypeDefinition;
 }
 
 export interface UseLinksResult<
@@ -149,11 +150,30 @@ const emptyMap: ReadonlyMap<string | number, ReadonlyArray<never>> = new Map();
 export function useLinks<
   T extends ObjectOrInterfaceDefinition,
   L extends LinkNames<T>,
+  R extends ObjectTypeDefinition,
+>(
+  objects: Osdk.Instance<T> | Array<Osdk.Instance<T>> | undefined,
+  linkName: L,
+  options: UseLinksOptions<LinkedType<T, L>> & { resolveToObjectType: R },
+): UseLinksResult<R>;
+
+export function useLinks<
+  T extends ObjectOrInterfaceDefinition,
+  L extends LinkNames<T>,
+>(
+  objects: Osdk.Instance<T> | Array<Osdk.Instance<T>> | undefined,
+  linkName: L,
+  options?: UseLinksOptions<LinkedType<T, L>>,
+): UseLinksResult<LinkedType<T, L>>;
+
+export function useLinks<
+  T extends ObjectOrInterfaceDefinition,
+  L extends LinkNames<T>,
 >(
   objects: Osdk.Instance<T> | Array<Osdk.Instance<T>> | undefined,
   linkName: L,
   options: UseLinksOptions<LinkedType<T, L>> = {},
-): UseLinksResult<LinkedType<T, L>> {
+): UseLinksResult<LinkedType<T, L>> | UseLinksResult<ObjectTypeDefinition> {
   const { observableClient } = React.useContext(OsdkContext2);
 
   const { enabled = true, resolveToObjectType, ...otherOptions } = options;
@@ -200,7 +220,7 @@ export function useLinks<
               mode: otherOptions.mode,
               dedupeInterval: otherOptions.dedupeIntervalMs ?? 2_000,
               ...(canonOptions.$select ? { select: canonOptions.$select } : {}),
-              ...(resolveToObjectType ? { resolveToObjectType } : {}),
+              ...(resolveToObjectType ? { resolveToObjectType: true } : {}),
             },
             observer,
           ),
