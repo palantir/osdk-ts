@@ -127,6 +127,44 @@ export function createEmptyDerivedLinksStore<
   };
 }
 
+export function cleanupNestedMap(map: Map<string, LinkEntry>): void {
+  for (const entry of map.values()) {
+    entry.cleaned = true;
+    entry.subscription?.unsubscribe();
+    for (const nestedMap of entry.nestedByPk.values()) {
+      cleanupNestedMap(nestedMap);
+    }
+  }
+}
+
+export function buildDataWithNestedLinks(
+  entry: LinkEntry,
+  transformedData: AnyShapeInstance[],
+): AnyShapeInstance[] {
+  const targetShape = entry.linkDef.targetShape;
+  if (targetShape.__derivedLinks.length === 0) {
+    return transformedData;
+  }
+
+  return transformedData.map((obj) => {
+    const pk = obj.$primaryKey;
+    const nestedMap = entry.nestedByPk.get(pk);
+    if (!nestedMap || nestedMap.size === 0) {
+      return obj;
+    }
+
+    const nestedLinks: Record<string, AnyShapeInstance[]> = {};
+    for (const [linkName, nestedEntry] of nestedMap) {
+      nestedLinks[linkName] = buildDataWithNestedLinks(
+        nestedEntry,
+        nestedEntry.data,
+      );
+    }
+
+    return { ...obj, ...nestedLinks } as AnyShapeInstance;
+  });
+}
+
 /**
  * A link is batchable when it can use observeLinks (one API call for all source
  * objects) instead of per-object observeObjectSet calls. This requires a simple

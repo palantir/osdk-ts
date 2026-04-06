@@ -51,7 +51,12 @@ import type {
   LinkEntry,
   ListObserverPayload,
 } from "./derivedLinksTypes.js";
-import { createLinkEntry, violationsToError } from "./derivedLinksTypes.js";
+import {
+  buildDataWithNestedLinks,
+  cleanupNestedMap,
+  createLinkEntry,
+  violationsToError,
+} from "./derivedLinksTypes.js";
 
 export type {
   AnyShapeInstance,
@@ -59,6 +64,8 @@ export type {
   DerivedLinksStore,
 } from "./derivedLinksTypes.js";
 export {
+  buildDataWithNestedLinks,
+  cleanupNestedMap,
   createEmptyDerivedLinksStore,
   isBatchableLink,
   NOOP_FETCH_MORE,
@@ -115,29 +122,18 @@ export function createDerivedLinksStore<
     }, 25);
   }
 
-  function cleanupNestedMap(map: Map<string, LinkEntry>): void {
-    for (const entry of map.values()) {
-      entry.cleaned = true;
-      entry.subscription?.unsubscribe();
-      for (const nestedMap of entry.nestedByPk.values()) {
-        cleanupNestedMap(nestedMap);
-      }
-    }
-  }
-
   function handleNestedLinks(
     parentEntry: LinkEntry,
     rawObjects: Osdk.Instance<ObjectOrInterfaceDefinition>[],
   ): void {
-    const targetShape = parentEntry.linkDef.targetShape;
-    if (targetShape.__derivedLinks.length === 0) {
+    const nestedDerivedLinks = parentEntry.linkDef.targetShape
+      .__derivedLinks as readonly ShapeDerivedLinkDef[];
+    if (nestedDerivedLinks.length === 0) {
       return;
     }
 
+    const pendingBefore = pendingNestedEntries.length;
     const currentPks = new Set<unknown>();
-    const newEntriesToStart: Array<
-      { entry: LinkEntry; sourceType: ObjectOrInterfaceDefinition }
-    > = [];
 
     for (const rawObj of rawObjects) {
       const pk = rawObj.$primaryKey;
@@ -149,17 +145,14 @@ export function createDerivedLinksStore<
         parentEntry.nestedByPk.set(pk, nestedMap);
       }
 
-      const nestedDerivedLinks = targetShape
-        .__derivedLinks as readonly ShapeDerivedLinkDef[];
       for (const nestedLinkDef of nestedDerivedLinks) {
         if (!nestedMap.has(nestedLinkDef.name)) {
           const nestedEntry = createLinkEntry(nestedLinkDef, rawObj);
           nestedMap.set(nestedLinkDef.name, nestedEntry);
-
           if (nestedEntry.status === "init") {
-            newEntriesToStart.push({
+            pendingNestedEntries.push({
               entry: nestedEntry,
-              sourceType: targetShape.__baseType,
+              sourceType: parentEntry.linkDef.targetShape.__baseType,
             });
           }
         }
@@ -173,8 +166,7 @@ export function createDerivedLinksStore<
       }
     }
 
-    if (newEntriesToStart.length > 0) {
-      pendingNestedEntries.push(...newEntriesToStart);
+    if (pendingNestedEntries.length > pendingBefore) {
       scheduleNestedFlush();
     }
   }
@@ -196,34 +188,6 @@ export function createDerivedLinksStore<
         notifySubscribers();
       });
     }
-  }
-
-  function buildDataWithNestedLinks(
-    entry: LinkEntry,
-    transformedData: AnyShapeInstance[],
-  ): AnyShapeInstance[] {
-    const targetShape = entry.linkDef.targetShape;
-    if (targetShape.__derivedLinks.length === 0) {
-      return transformedData;
-    }
-
-    return transformedData.map((obj) => {
-      const pk = obj.$primaryKey;
-      const nestedMap = entry.nestedByPk.get(pk);
-      if (!nestedMap || nestedMap.size === 0) {
-        return obj;
-      }
-
-      const nestedLinks: Record<string, AnyShapeInstance[]> = {};
-      for (const [linkName, nestedEntry] of nestedMap) {
-        nestedLinks[linkName] = buildDataWithNestedLinks(
-          nestedEntry,
-          nestedEntry.data,
-        );
-      }
-
-      return { ...obj, ...nestedLinks } as AnyShapeInstance;
-    });
   }
 
   /** Skips links already loading/loaded, otherwise marks as loading and starts observation. */
