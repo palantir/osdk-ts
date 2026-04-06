@@ -1,5 +1,11 @@
 # @osdk/cli
 
+## 0.31.2
+
+### Patch Changes
+
+- d9b1994: Empty changeset
+
 ## 0.31.1
 
 ### Patch Changes
