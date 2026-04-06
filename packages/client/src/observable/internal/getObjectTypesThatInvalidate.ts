@@ -21,11 +21,11 @@ import type {
 } from "@osdk/foundry.ontologies";
 import invariant from "tiny-invariant";
 import type { MinimalClient } from "../../MinimalClientContext.js";
-import {
-  type FetchedObjectTypeDefinition,
-  InterfaceDefinitions,
-  type OntologyProvider,
+import type {
+  FetchedObjectTypeDefinition,
+  OntologyProvider,
 } from "../../ontology/OntologyProvider.js";
+import { findIltLinkDef } from "../../ontology/resolveIltLinkDef.js";
 
 // Suppose we did an object set that is basically
 // A.where()
@@ -117,16 +117,15 @@ async function calcObjectSet(
           }
         }
       } else {
-        // OT source with ILT name — search implemented interfaces
-        const objDef = srcDef as FetchedObjectTypeDefinition;
-        for (const iface of Object.values(objDef[InterfaceDefinitions])) {
-          const linkDef = iface.def.links[os.interfaceLink];
-          if (linkDef) {
-            if (linkDef.targetType === "object") {
-              return await bumpObject(linkDef.targetTypeApiName);
-            }
-            return await bumpInterface(linkDef.targetTypeApiName);
+        const iltDef = findIltLinkDef(
+          srcDef as FetchedObjectTypeDefinition,
+          os.interfaceLink,
+        );
+        if (iltDef) {
+          if (iltDef.targetType === "object") {
+            return await bumpObject(iltDef.targetTypeApiName);
           }
+          return await bumpInterface(iltDef.targetTypeApiName);
         }
       }
 

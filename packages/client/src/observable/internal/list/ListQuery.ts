@@ -101,6 +101,7 @@ export abstract class ListQuery extends BaseListQuery<
   #objectSet: ObjectSet<ObjectTypeDefinition>;
   #pivotIntersectApplied = false;
   #iltResolved = false;
+  #streamSub: Subscription | undefined;
 
   /**
    * Register changes to the cache specific to ListQuery
@@ -195,9 +196,6 @@ export abstract class ListQuery extends BaseListQuery<
   protected async fetchPageData(
     signal: AbortSignal | undefined,
   ): Promise<PageResult<Osdk.Instance<any>>> {
-    // Deferred ILT resolution: when pivotTo is used on an OT source,
-    // check if the link name is a concrete link or an ILT. If it's an ILT,
-    // rebuild the object set to use interfaceLinkSearchAround.
     if (
       this.#pivotInfo
       && this.#pivotInfo.sourceTypeKind === "object"
@@ -247,6 +245,14 @@ export abstract class ListQuery extends BaseListQuery<
         if (rdpConfig != null) {
           this.#objectSet = this.#objectSet.withProperties(
             rdpConfig as DerivedProperty.Clause<ObjectTypeDefinition>,
+          );
+        }
+
+        if (this.#streamSub) {
+          this.createWebsocketSubscription(
+            this.#objectSet,
+            this.#streamSub,
+            "observeList",
           );
         }
       }
@@ -546,6 +552,7 @@ export abstract class ListQuery extends BaseListQuery<
   ): ExtractRelevantObjectsResult;
 
   registerStreamUpdates(sub: Subscription): void {
+    this.#streamSub = sub;
     this.createWebsocketSubscription(this.#objectSet, sub, "observeList");
   }
 
