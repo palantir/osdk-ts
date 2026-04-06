@@ -91,7 +91,6 @@ OSDK TypeScript monorepo (~82 packages). Provides a type-safe SDK for Palantir F
 
 ## Additional Linting
 
-- **cspell**: Spell checking. Run per-package: `pnpm turbo check-spelling --filter=@osdk/the-package`
 - **monorepolint**: Enforces consistent package.json structure, tsconfig, and export maps. Config in `.monorepolint.config.mjs`
 - **ESLint flat config**: Root `eslint.config.mjs`. Key rules: `no-console` is an error (use a logger), `import/no-default-export` warns, `@typescript-eslint/consistent-type-imports` enforces `import type`
 - **attw** (`@arethetypeswrong/cli`): Validates package exports resolve correctly for ESM, CJS, and bundler consumers

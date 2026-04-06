@@ -20,6 +20,7 @@ we want it to stay in that form.
 
 ## Related Documentation
 
+- [`architecture_observable_client.md`](../../architecture_observable_client.md) -- deep dive into Store internals, Layer system, CacheKeys, batch updates, and optimistic mutation flow
 - [`ObservableClient/CLAUDE.md`](./ObservableClient/CLAUDE.md) -- type definitions reference (Status, Observer, CommonObserveOptions, ObserveLink types)
 - [`internal/CLAUDE.md`](./internal/CLAUDE.md) -- Store architecture, Layer system, Query hierarchy, and cache key patterns
 - [`internal/links/CLAUDE.md`](./internal/links/CLAUDE.md) -- link observation implementation details, pivot queries, and link storage patterns
@@ -77,14 +78,6 @@ All observe methods accept `Observer<T>` with `next`, `error`, `complete` callba
 ## Canonicalization System
 
 Query parameters (where, orderBy, select, etc.) are canonicalized via specialized canonicalizers in `internal/` (`WhereClauseCanonicalizer`, `OrderByCanonicalizer`, `SelectCanonicalizer`, etc.). Two queries with different object identity but equivalent values share the same cache entry. Always compare canonicalized forms, never raw inputs.
-
-## Debug Flags
-
-In `DebugFlags.ts`, two flags default to `false`:
-- `DEBUG_REFCOUNTS` -- logs reference count changes for cache entries
-- `DEBUG_CACHE_KEYS` -- logs cache key creation and lookups
-
-Enable by changing `&& false` to `&& true`. Stripped in production builds.
 
 ## BatchContext
 
