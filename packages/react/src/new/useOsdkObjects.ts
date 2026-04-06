@@ -41,7 +41,7 @@ import { extractPayloadError, isPayloadLoading } from "./hookUtils.js";
 import { devToolsMetadata, makeExternalStore } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
 import type { PerItemLinkStatus } from "./shapes/useShape.js";
-import { useShapeListInternal } from "./shapes/useShapeInternal.js";
+import { useShapeList } from "./shapes/useShape.js";
 
 export interface UseOsdkObjectsOptions<
   T extends ObjectOrInterfaceDefinition,
@@ -498,7 +498,7 @@ function useOsdkObjectsWithShape<
     [type],
   ) as S;
 
-  const result = useShapeListInternal(
+  const result = useShapeList(
     shapeDef as ShapeDefinition<Q>,
     {
       where: options.where,

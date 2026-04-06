@@ -37,7 +37,7 @@ import React from "react";
 import { devToolsMetadata, makeExternalStore } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
 import type { UseShapeResult } from "./shapes/useShape.js";
-import { useShapeSingleInternal } from "./shapes/useShapeInternal.js";
+import { useShapeSingle } from "./shapes/useShape.js";
 
 export interface UseOsdkObjectResult<
   Q extends ObjectOrInterfaceDefinition,
@@ -298,7 +298,7 @@ function useOsdkObjectWithShape<
     return configToShapeDefinition(type, c as InlineShapeConfig<Q>);
   }, [type]);
 
-  const result = useShapeSingleInternal(
+  const result = useShapeSingle(
     shapeDef,
     primaryKey,
     { enabled: options.enabled, links: options.links },
