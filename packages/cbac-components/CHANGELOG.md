@@ -1,5 +1,15 @@
 # @osdk/cbac-components
 
+## 0.1.0
+
+### Minor Changes
+
+- c3da451: add marking button, category group, and validation components for CBAC picker
+- c35231f: add cbac css tokens and create cbac-components package
+- e68c1c1: add osdk-aware cbac picker components with marking resolution
+- c933198: add base cbac picker and dialog components
+- 0c76a82: add cbac types, selection logic, and picker utils
+
 ## 0.1.0-beta.3
 
 ### Minor Changes

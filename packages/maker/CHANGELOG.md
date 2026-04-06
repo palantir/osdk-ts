@@ -1,5 +1,66 @@
 # @osdk/maker
 
+## 0.16.0
+
+### Minor Changes
+
+- 322c5bc: Simulated release
+- cc7f505: Add maximum length validation (100 characters) for API names to match server-side constraints
+- 8f92197: update code snippet to have interface dependent properties
+- 963626f: Add function discovery support (TypeScript and Python) and generate intermediate OSDK from CLI for use by function definitions
+- f487a6a: Maker experimental
+- e462938: Support PSGs in OAC
+- 6499ff9: Support reducers and struct main values in oac
+- 0e45a37: Add better api name validation for OAC
+- fcf81ba: Validate link api names
+- ab50d31: Remove propertiesV2 from code-snippets
+- 034081a: oac direct datasources
+- 77aa4a9: Detect imported objects for OAC links
+- fd3f6d3: Add support for empty backing datasources
+- 9ee82f4: Dedupe many-to-many PK property names in datasource
+- 5b938ef: Enforce OT and prop statuses match
+- 7fa6de3: Revert breaking change
+- 2b15836: Disallow ILCs on imported interfaces
+- 684b6c6: Always use valid import path
+- acb4ed6: Support custom decimal types
+- e8ca289: Fix key resolution
+- 35f2f1a: Add Media inputs/outputs for Queries
+- e0ba9eb: Shallow clone arrays in definition when passed in to defineFoo methods
+- 972bda6: Support assumed markings for oac PSGs
+- 6941b4f: extendsInterfaceMetadata on the IR to fix interface impl
+- e9f9f58: Allow primitive struct main values to be title props
+- eac64f4: Link backing dataset generation
+
+### Patch Changes
+
+- Updated dependencies [322c5bc]
+- Updated dependencies [150da1a]
+- Updated dependencies [776ae8a]
+- Updated dependencies [4bb9769]
+- Updated dependencies [abb0e0f]
+- Updated dependencies [4762f4b]
+- Updated dependencies [beba0cd]
+- Updated dependencies [8561a8b]
+- Updated dependencies [f294f5a]
+- Updated dependencies [908b519]
+- Updated dependencies [c4d7052]
+- Updated dependencies [0df859a]
+- Updated dependencies [d284bf2]
+- Updated dependencies [4ef6adc]
+- Updated dependencies [60b5ffb]
+- Updated dependencies [8c30908]
+- Updated dependencies [4a856cb]
+- Updated dependencies [b68cebd]
+- Updated dependencies [35f2f1a]
+- Updated dependencies [cde6b85]
+- Updated dependencies [32c6a0c]
+- Updated dependencies [12fe33f]
+- Updated dependencies [46f0a47]
+- Updated dependencies [61e33ab]
+  - @osdk/api@2.8.0
+  - @osdk/generator-converters.ontologyir@2.8.0
+  - @osdk/typescript-sdk-docs@0.7.0
+
 ## 0.16.0-beta.15
 
 ### Minor Changes
