@@ -82,6 +82,34 @@ describe(createClient, () => {
         USER_AGENT,
       ]);
     });
+
+    it("includes custom Fetch-User-Agent from headers option", async () => {
+      const customFetch = vi.fn<typeof globalThis.fetch>();
+      mockFetchResponse(customFetch, { data: [] });
+
+      const clientWithHeaders = createClient(
+        "https://mock.com",
+        ontologyRid,
+        async () => "Token",
+        { headers: { "Fetch-User-Agent": "my-app/1.0" } },
+        customFetch,
+      );
+
+      await clientWithHeaders(BarInterface).fetchPage();
+      expect(customFetch).toHaveBeenCalledTimes(1);
+
+      const userAgent = (customFetch.mock.calls[0][1]?.headers as Headers).get(
+        "Fetch-User-Agent",
+      );
+      const parts = userAgent?.split(" ") ?? [];
+      expect(parts).toEqual([
+        ...BarInterface.osdkMetadata!
+          .extraUserAgent
+          .split(" "),
+        USER_AGENT,
+        "my-app/1.0",
+      ]);
+    });
   });
 
   describe("check url formatting", () => {
