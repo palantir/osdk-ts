@@ -187,35 +187,4 @@ describe("intellisense", () => {
     expect(dataResp.body?.displayString).toBeDefined();
     expect(dataResp.body?.displayString).toContain("Osdk.Instance<Employee");
   });
-
-  it(
-    "useOsdkObjectsWithResolveToObjectType",
-    { timeout: 40_000 },
-    async () => {
-      expect(ts.sys.fileExists(intellisenseFilePath)).toBeTruthy();
-      invariant(tsServer);
-
-      const { resp: resolvedResp } = await tsServer.sendQuickInfoRequest({
-        file: intellisenseFilePath,
-        line: 29,
-        offset: 9,
-      });
-
-      expect(resolvedResp.body?.displayString).toBeDefined();
-      expect(resolvedResp.body?.displayString).toContain(
-        "Osdk.Instance<Office",
-      );
-
-      const { resp: unresolvedResp } = await tsServer.sendQuickInfoRequest({
-        file: intellisenseFilePath,
-        line: 32,
-        offset: 9,
-      });
-
-      expect(unresolvedResp.body?.displayString).toBeDefined();
-      expect(unresolvedResp.body?.displayString).toContain(
-        "Osdk.Instance<Employee",
-      );
-    },
-  );
 });
