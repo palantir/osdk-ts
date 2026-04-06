@@ -410,7 +410,8 @@ ${
 export function createPropertyKeys(
   type: EnhancedObjectType | EnhancedInterfaceType,
 ) {
-  const properties = Object.keys(type.getCleanedUpDefinition(true).properties);
+  const properties = Object.keys(type.getCleanedUpDefinition(true).properties)
+    .sort((a, b) => a.localeCompare(b));
   return `export type PropertyKeys = ${
     properties.length === 0
       ? "never"
@@ -422,9 +423,9 @@ export function createPropertyKeys(
 
 function remapStructType(structType: Record<string, any>): string {
   let output = `{`;
-  Object.entries(structType).map(([key, value]) =>
-    output += `${key}:$PropType[${JSON.stringify(value)}]|undefined;`
-  );
+  Object.entries(structType).sort(([a], [b]) => a.localeCompare(b)).map((
+    [key, value],
+  ) => output += `${key}:$PropType[${JSON.stringify(value)}]|undefined;`);
   output += "}";
   return output;
 }
