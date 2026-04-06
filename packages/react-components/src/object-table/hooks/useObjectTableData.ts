@@ -46,9 +46,7 @@ type WithProperties<
 interface UseObjectTableDataResult<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = Record<string, never>,
-> extends Omit<UseOsdkListResult<Q, RDPs>, "isOptimistic"> {
-  objectSet?: ObjectSet<Q>;
-}
+> extends Omit<UseOsdkListResult<Q, RDPs>, "isOptimistic"> {}
 /**
  * This hook is a wrapper that conditionally uses either useObjectSet or useOsdkObjects
  * based on whether an objectSet prop is provided.
