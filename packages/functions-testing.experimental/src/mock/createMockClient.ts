@@ -25,9 +25,16 @@ import type {
 } from "@osdk/api";
 import type { Client } from "@osdk/client";
 import invariant from "tiny-invariant";
-import { type Call, createMockObjectSet, deepEqual } from "./MockObjectSet.js";
+import { type MockObjectSetBranded } from "./createMockObjectSet.js";
+import {
+  type Call,
+  createMockObjectSetWithResolver,
+  deepEqual,
+  resolveStub,
+  type Stub,
+} from "./createMockObjectSetWithResolver.js";
 
-type Stub = { objectType: string; calls: Call[]; value: unknown };
+type ClientStub = Stub & { objectType: string };
 
 type QueryStub = { queryApiName: string; params: unknown; value: unknown };
 
@@ -69,8 +76,16 @@ export type StubClient = {
 
 export type StubPatternCallback<T> = (client: StubClient) => Promise<T>;
 
+export type ObjectSetStubCallback<Q extends ObjectOrInterfaceDefinition, T> = (
+  os: ObjectSet<Q>,
+) => Promise<T>;
+
 export interface MockClient extends Client {
-  whenObjectSet<T>(callback: StubPatternCallback<T>): StubBuilderFor<T>;
+  when<T>(callback: StubPatternCallback<T>): StubBuilderFor<T>;
+  whenObjectSet<Q extends ObjectOrInterfaceDefinition, T>(
+    objectSet: ObjectSet<Q>,
+    callback: ObjectSetStubCallback<Q, T>,
+  ): StubBuilderFor<T>;
   whenQuery<Q extends QueryDefinition>(
     query: Q,
     params?: QueryParamsFromDef<Q>,
@@ -79,30 +94,15 @@ export interface MockClient extends Client {
 }
 
 export function createMockClient(): MockClient {
-  const stubs: Stub[] = [];
+  const stubs: ClientStub[] = [];
   const queryStubs: QueryStub[] = [];
 
-  const resolve = (objectType: string, calls: Call[]): unknown => {
-    for (const stub of stubs) {
-      if (stub.objectType !== objectType) continue;
-      if (stub.calls.length !== calls.length) continue;
-      if (
-        stub.calls.every(([m, a], i) =>
-          calls[i][0] === m && deepEqual(a, calls[i][1])
-        )
-      ) {
-        const terminal = calls[calls.length - 1][0];
-        if (terminal === "fetchPage") {
-          return { data: stub.value, nextPageToken: undefined };
-        }
-        return stub.value;
-      }
-    }
-
-    // TODO: Include more info about the stub and existing stubs in this error message
-    const msg = `No stub for request\n`;
-    throw new Error(msg);
-  };
+  const resolve = (objectType: string, calls: Call[]): unknown =>
+    resolveStub(
+      stubs.filter(s => s.objectType === objectType),
+      calls,
+      `No stub for request\n`,
+    );
 
   const resolveQuery = (queryApiName: string, params: unknown): unknown => {
     for (const stub of queryStubs) {
@@ -133,16 +133,19 @@ export function createMockClient(): MockClient {
       };
     }
 
-    return createMockObjectSet(def, (calls) => resolve(def.apiName, calls));
+    return createMockObjectSetWithResolver(
+      def,
+      (calls) => resolve(def.apiName, calls),
+    );
   }) as MockClient;
 
-  mockClient.whenObjectSet = <T>(
+  mockClient.when = <T>(
     callback: StubPatternCallback<T>,
   ): StubBuilderFor<T> => {
     let captured: { objectType: string; calls: Call[] } | undefined;
 
     const stubClient: StubClient = (def: ObjectOrInterfaceDefinition) => {
-      return createMockObjectSet(def, (calls) => {
+      return createMockObjectSetWithResolver(def, (calls) => {
         captured = { objectType: def.apiName, calls };
         return { data: [], nextPageToken: undefined };
       });
@@ -153,6 +156,40 @@ export function createMockClient(): MockClient {
 
     const register = (value: unknown) => {
       if (captured) stubs.push({ ...captured, value });
+    };
+
+    return {
+      thenReturnObjects: register,
+      thenReturnObject: register,
+      thenReturnAggregation: register,
+    } as unknown as StubBuilderFor<T>;
+  };
+
+  mockClient.whenObjectSet = <
+    Q extends ObjectOrInterfaceDefinition,
+    T,
+  >(
+    objectSet: ObjectSet<Q>,
+    callback: ObjectSetStubCallback<Q, T>,
+  ): StubBuilderFor<T> => {
+    let capturedCalls: Call[] | undefined;
+
+    const capturingProxy = createMockObjectSetWithResolver(
+      objectSet.$objectSetInternals.def,
+      (calls) => {
+        capturedCalls = calls;
+        return { data: [], nextPageToken: undefined };
+      },
+    );
+
+    void callback(capturingProxy);
+
+    const branded = objectSet as unknown as MockObjectSetBranded<Q>;
+
+    const register = (value: unknown) => {
+      if (capturedCalls) {
+        branded.__registerStub(capturedCalls, value);
+      }
     };
 
     return {

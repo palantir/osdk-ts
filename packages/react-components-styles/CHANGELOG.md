@@ -1,5 +1,33 @@
 # @osdk/react-components-styles
 
+## 0.2.0
+
+### Minor Changes
+
+- ce949bd: Simulated release
+- 7080b01: Add base form layout with header, footer, field components, and CSS token variables for theming
+- c3da451: add marking button, category group, and validation components for CBAC picker
+- c35231f: add cbac css tokens and create cbac-components package
+- 3eaf3f5: Add CSS layers documentation and Tailwind CSS v4 setup instructions to READMEs
+- aa908e4: Redesign filter list collapse into separate render tree and simplify header layout
+- 3f4fb81: Address design review and PR review feedback for filter list: exclude strikethrough only on selected items, remove hover-to-show exclude row, fix 3-dots toggle close behavior, remove OR filter operator mode, and various UI polish
+- bc46400: Add skeleton loading states and polish checkbox list, histogram, and range filter inputs
+- d6c2c8b: Fix FilterList styling
+- 9893b41: Add storybook
+- dffac63: Fix styling nits
+- d6c2c8b: Fix FilterList dropdown
+- 66b7125: Add RadioButtonsField component for action form radio button inputs
+- 1135a27: Update Blueprint css import
+- 7a3c43d: feat(pdf): pdf-viewer component
+- 447e29d: Update editable table UX and API to pass the entire row data on edit
+- 4c7884f: Add custom column, multi column sort and column config
+- dba18e0: Fix css build
+- b373588: Styling fix with global border-box
+- 35f2f1a: Add Media inputs/outputs for Queries
+- 05618c3: Add validation state to editable cell
+- 5ad3ba1: Fix conflicting dependencies and add docs
+- 9c54ee5: Support editable cell
+
 ## 0.2.0-beta.29
 
 ### Minor Changes

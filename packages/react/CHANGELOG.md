@@ -1,5 +1,34 @@
 # @osdkkit/react
 
+## 0.10.0
+
+### Minor Changes
+
+- 322c5bc: Simulated release
+- 9720083: Add AGENTS.md files for AI IDE context
+- c40444b: Add linkedObjectsBySourcePrimaryKey to link observation responses
+- 09e5659: add $select support to observable client and react hooks
+- 993c023: ObjectTable supports objectSet input
+- 32c27d7: Added useOsdkFunctions to @osdk/react to execute multiple functions in parallel. This is used by ObjectTable to fetch function-backed columns
+- dbbfb6f: Add experimental ActionForm component with field renderers, form state hook, and tests
+- b1e8bba: add cbac admin hooks for markings, categories, and restrictions
+- 73e617e: expose dedupeInterval on useLinks and fix forced revalidation bypassing dedupeInterval
+- f294f5a: Remove literal support before GA.
+- 9156827: Preserve object set data between loads
+- 599426b: expose $loadPropertySecurityMetadata option in observable client and react hooks
+- 46dfbec: fix useOsdkAction applyAction to re-throw errors instead of silently swallowing them
+- a027f3c: stabilize subscription deps in useOsdkObjects and useOsdkAggregation
+- 0d174a2: useOsdkFunction typing updates
+- 727fd0e: fix dual @types/react version mismatch
+- 8a82492: Move admin hooks to @osdk/react/experimental/admin subpath to avoid bundler crash when @osdk/foundry.admin is not installed
+- 2ebe62c: package and bundle size optimizations
+- 6019278: auto-compute peer dependency ranges from changelog history for react and react-components
+- 35f2f1a: Add Media inputs/outputs for Queries
+- b0930e4: Show helpful error message when hooks are used without OsdkProvider2
+- d80c234: add interface support to useOsdkObject
+- 996d8e4: memoize hook responses
+- 71e28ef: Allow interface object sets in useObjectSet
+
 ## 0.10.0-beta.15
 
 ### Minor Changes

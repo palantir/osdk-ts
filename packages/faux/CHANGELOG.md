@@ -1,5 +1,38 @@
 # @osdk/shared.test
 
+## 0.6.0
+
+### Minor Changes
+
+- 150da1a: Simulated release
+- abb0e0f: Bump Platform SDK dependencies
+- 4da867d: Add filter list storybook stories and fix histogram bar rendering
+- b68cebd: add shape type definitions with opaque internal fields and shapes-internal export path
+- 35f2f1a: Add Media inputs/outputs for Queries
+- 46f0a47: Update platform SDK to 2.57.0 and handle new typeReference query data type
+- 4470c0d: Add support to execute queries on branches.
+
+### Patch Changes
+
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [4bb9769]
+- Updated dependencies [abb0e0f]
+- Updated dependencies [f294f5a]
+- Updated dependencies [0df859a]
+- Updated dependencies [d284bf2]
+- Updated dependencies [4ef6adc]
+- Updated dependencies [60b5ffb]
+- Updated dependencies [8c30908]
+- Updated dependencies [4a856cb]
+- Updated dependencies [b68cebd]
+- Updated dependencies [35f2f1a]
+- Updated dependencies [46f0a47]
+- Updated dependencies [4470c0d]
+- Updated dependencies [61e33ab]
+  - @osdk/api@2.8.0
+  - @osdk/generator-converters@2.8.0
+
 ## 0.6.0-beta.7
 
 ### Minor Changes
