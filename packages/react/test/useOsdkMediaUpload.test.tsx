@@ -36,21 +36,10 @@ const mockMediaReference: MediaReference = {
 };
 
 function createMockObservableClient(
-  uploadImpl?: ObservableClient["media"]["uploadMedia"],
+  uploadImpl?: ObservableClient["uploadMedia"],
 ): ObservableClient {
   const mockClient: Partial<ObservableClient> = {
-    media: {
-      getCacheKey: vi.fn(),
-      fetchMetadata: vi.fn(),
-      getCachedMetadata: vi.fn(),
-      fetchContent: vi.fn(),
-      getCachedContent: vi.fn(),
-      createBlobUrl: vi.fn(),
-      releaseBlobUrl: vi.fn(),
-      clearCache: vi.fn(),
-      uploadMedia: uploadImpl ?? vi.fn().mockResolvedValue(mockMediaReference),
-      prefetch: vi.fn().mockResolvedValue(undefined),
-    },
+    uploadMedia: uploadImpl ?? vi.fn().mockResolvedValue(mockMediaReference),
     observeMetadata: vi.fn().mockReturnValue({ unsubscribe: vi.fn() }),
     observeMedia: vi.fn().mockReturnValue({ unsubscribe: vi.fn() }),
     invalidateMedia: vi.fn(),
@@ -98,7 +87,7 @@ describe("useOsdkMediaUpload", () => {
       await result.current.upload(file, { fileName: "photo.jpg" });
     });
 
-    expect(mockObservableClient.media.uploadMedia).toHaveBeenCalledWith(
+    expect(mockObservableClient.uploadMedia).toHaveBeenCalledWith(
       file,
       { fileName: "photo.jpg" },
     );
