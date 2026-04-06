@@ -29,9 +29,6 @@ import type {
   ShapeInstance,
 } from "@osdk/api/unstable";
 
-/**
- * Result type for loading a single object with a shape.
- */
 export interface UseShapeResult<
   S extends ShapeDefinition<ObjectOrInterfaceDefinition>,
 > {
@@ -47,9 +44,6 @@ export interface UseShapeResult<
   invalidate: (linkName?: keyof ShapeDerivedLinks<S>) => void;
 }
 
-/**
- * Options for list mode.
- */
 export interface UseShapeListOptions<
   S extends ShapeDefinition<ObjectOrInterfaceDefinition>,
 > {
@@ -63,9 +57,6 @@ export interface UseShapeListOptions<
   links?: Partial<{ [K in keyof ShapeDerivedLinks<S>]: LinkLoadConfig }>;
 }
 
-/**
- * Per-item link status for list results.
- */
 export type PerItemLinkStatus<
   S extends ShapeDefinition<ObjectOrInterfaceDefinition>,
 > = Map<
@@ -73,9 +64,6 @@ export type PerItemLinkStatus<
   Partial<{ [K in keyof ShapeDerivedLinks<S>]: LinkStatus }>
 >;
 
-/**
- * Result type for loading a list of objects with a shape.
- */
 export interface UseShapeListResult<
   S extends ShapeDefinition<ObjectOrInterfaceDefinition>,
 > {
