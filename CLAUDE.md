@@ -14,9 +14,9 @@ OSDK TypeScript monorepo. Provides a type-safe SDK for Palantir Foundry ontologi
 
 ### Building specific packages
 
-This monorepo has many packages. Use `--filter` during development for fast iteration, then validate the full repo before pushing.
+This monorepo has many packages. Use `--filter` during development for fast iteration.
 
-**During development** -- use `--filter` to target only packages you're working on:
+Use `--filter` to target only packages you're working on:
 - **Typecheck only**: `pnpm turbo typecheck --filter=@osdk/client`
 - **Transpile types** (generates `.d.ts` into `build/types/`): `pnpm turbo transpileTypes --filter=@osdk/client`
 - **Transpile ESM** (generates JS into `build/esm/`): `pnpm turbo transpileEsm --filter=@osdk/client`
@@ -25,8 +25,6 @@ This monorepo has many packages. Use `--filter` during development for fast iter
 - **API report changes**: `pnpm turbo check-api --filter=@osdk/the-package` (depends on `transpileTypes`)
 
 Turbo handles dependency ordering automatically -- filtering to `@osdk/react` will build `@osdk/client` first if needed.
-
-**Before pushing** -- run `pnpm check` on the whole repo. This runs lint, transpile, typecheck, test, check-attw, check-api, and check-spelling across all packages. Do not skip this step.
 
 ## License Headers
 
