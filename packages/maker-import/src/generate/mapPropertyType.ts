@@ -81,60 +81,8 @@ export function mapPropertyType(
       }
       return { type: inner.type, array: true };
     }
-    case "marking":
-      return {
-        type: {
-          type: "marking",
-          markingType: "MANDATORY",
-          markingInputGroupName: propertyApiName ?? "marking",
-        } as unknown as PropertyTypeType,
-      };
-    case "timeseries":
-      consola.warn("Skipping timeseries property: no maker equivalent");
-      return undefined;
-    case "struct": {
-      const fields = (dataType as {
-        structFieldTypes?: Array<{
-          apiName: string;
-          dataType: { type: string; [key: string]: unknown };
-        }>;
-      }).structFieldTypes;
-      if (!fields) {
-        consola.warn("Struct type missing structFieldTypes, skipping");
-        return undefined;
-      }
-      const structDefinition: Record<string, PropertyTypeType> = {};
-      for (const field of fields) {
-        const mapped = mapPropertyType(field.dataType);
-        if (!mapped) {
-          consola.warn(
-            `Skipping struct field "${field.apiName}": unsupported type "${field.dataType.type}"`,
-          );
-          continue;
-        }
-        if (mapped.array) {
-          consola.warn(
-            `Skipping struct field "${field.apiName}": array fields not supported in structs`,
-          );
-          continue;
-        }
-        structDefinition[field.apiName] = mapped.type;
-      }
-      return {
-        type: {
-          type: "struct",
-          structDefinition,
-        } as unknown as PropertyTypeType,
-      };
-    }
-    case "vector":
-      consola.warn("Skipping vector property: no maker equivalent");
-      return undefined;
-    case "cipherText":
-      consola.warn("Skipping cipherText property: no maker equivalent");
-      return undefined;
+    // We don't support structs or markings here. It should have no influence on importing functionality
     default:
-      consola.warn(`Skipping unknown property type: ${dataType.type}`);
       return undefined;
   }
 }
