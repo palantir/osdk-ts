@@ -22,7 +22,3 @@ export type {
 } from "./useShape.js";
 
 export { useShapeList, useShapeSingle } from "./useShape.js";
-export {
-  useShapeListInternal,
-  useShapeSingleInternal,
-} from "./useShapeInternal.js";
