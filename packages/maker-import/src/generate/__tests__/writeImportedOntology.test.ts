@@ -19,7 +19,10 @@ import * as path from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 import { mapActionParameterType } from "../mapActionParameterType.js";
 import { mapPropertyType } from "../mapPropertyType.js";
-import { writeImportedOntology } from "../writeImportedOntology.js";
+import {
+  resolveVarNames,
+  writeImportedOntology,
+} from "../writeImportedOntology.js";
 
 const TEST_OUTPUT_DIR = path.resolve(
   __dirname,
@@ -265,5 +268,151 @@ describe("writeImportedOntology", () => {
     expect(
       fs.existsSync(path.join(TEST_OUTPUT_DIR, "index.ts")),
     ).toBe(false);
+  });
+
+  it("disambiguates cross-namespace name conflicts within same type", () => {
+    const metadata = {
+      ontology: {
+        apiName: "test",
+        displayName: "Test",
+        description: "",
+        rid: "ri.test",
+      },
+      objectTypes: {
+        "com.a.Foo": {
+          objectType: {
+            apiName: "com.a.Foo",
+            displayName: "Foo A",
+            primaryKey: "id",
+            titleProperty: "id",
+            status: "ACTIVE",
+            properties: {
+              id: { displayName: "ID", dataType: { type: "string" } },
+            },
+          },
+        },
+        "com.b.Foo": {
+          objectType: {
+            apiName: "com.b.Foo",
+            displayName: "Foo B",
+            primaryKey: "id",
+            titleProperty: "id",
+            status: "ACTIVE",
+            properties: {
+              id: { displayName: "ID", dataType: { type: "string" } },
+            },
+          },
+        },
+      },
+      actionTypes: {},
+      interfaceTypes: {},
+      sharedPropertyTypes: {},
+      queryTypes: {},
+    };
+
+    writeImportedOntology(metadata, TEST_OUTPUT_DIR);
+
+    // Both should get unique files using full namespace
+    expect(
+      fs.existsSync(
+        path.join(TEST_OUTPUT_DIR, "codegen/object-types/comAFoo.ts"),
+      ),
+    ).toBe(true);
+    expect(
+      fs.existsSync(
+        path.join(TEST_OUTPUT_DIR, "codegen/object-types/comBFoo.ts"),
+      ),
+    ).toBe(true);
+
+    const indexFile = fs.readFileSync(
+      path.join(TEST_OUTPUT_DIR, "index.ts"),
+      "utf-8",
+    );
+    expect(indexFile).toContain("export { comAFoo }");
+    expect(indexFile).toContain("export { comBFoo }");
+    // Should not have a bare "foo" export
+    expect(indexFile).not.toContain("export { foo }");
+  });
+
+  it("disambiguates cross-type name conflicts", () => {
+    const metadata = {
+      ontology: {
+        apiName: "test",
+        displayName: "Test",
+        description: "",
+        rid: "ri.test",
+      },
+      objectTypes: {
+        Foo: {
+          objectType: {
+            apiName: "Foo",
+            displayName: "Foo",
+            primaryKey: "id",
+            titleProperty: "id",
+            status: "ACTIVE",
+            properties: {
+              id: { displayName: "ID", dataType: { type: "string" } },
+            },
+          },
+        },
+      },
+      actionTypes: {},
+      interfaceTypes: {},
+      sharedPropertyTypes: {
+        Foo: {
+          apiName: "Foo",
+          displayName: "Foo",
+          dataType: { type: "string" },
+        },
+      },
+      queryTypes: {},
+    };
+
+    writeImportedOntology(metadata, TEST_OUTPUT_DIR);
+
+    const indexFile = fs.readFileSync(
+      path.join(TEST_OUTPUT_DIR, "index.ts"),
+      "utf-8",
+    );
+    const exports = indexFile.split("\n").filter(l => l.includes("export"));
+    // Should have exactly 2 exports, both named differently
+    expect(exports).toHaveLength(2);
+    // Since both are "Foo" (no namespace), fullCamel still gives "foo",
+    // so numeric suffix kicks in: "foo" and "foo1"
+    expect(indexFile).toContain("export { foo }");
+    expect(indexFile).toContain("export { foo1 }");
+  });
+});
+
+describe("resolveVarNames", () => {
+  it("returns short names when no conflicts", () => {
+    expect(resolveVarNames(["com.a.Foo", "com.a.Bar"])).toEqual([
+      "foo",
+      "bar",
+    ]);
+  });
+
+  it("escalates to full camelCase for same-short-name conflicts", () => {
+    expect(resolveVarNames(["com.a.Foo", "com.b.Foo"])).toEqual([
+      "comAFoo",
+      "comBFoo",
+    ]);
+  });
+
+  it("adds numeric suffix when full names still conflict", () => {
+    expect(resolveVarNames(["Foo", "Foo"])).toEqual(["foo", "foo1"]);
+  });
+
+  it("handles mix of conflicting and unique names", () => {
+    expect(
+      resolveVarNames(["com.a.Foo", "com.b.Foo", "com.a.Bar"]),
+    ).toEqual(["comAFoo", "comBFoo", "bar"]);
+  });
+
+  it("handles names without namespaces", () => {
+    expect(resolveVarNames(["Employee", "Department"])).toEqual([
+      "employee",
+      "department",
+    ]);
   });
 });

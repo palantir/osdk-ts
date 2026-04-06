@@ -28,6 +28,15 @@ export function withoutNamespace(apiName: string): string {
 }
 
 /**
+ * Converts a dot-separated apiName to camelCase, including namespace segments.
+ * "com.example.Employee" -> "comExampleEmployee"
+ * "Employee" -> "employee"
+ */
+export function fullCamel(apiName: string): string {
+  return camel(apiName.replace(/\./g, "-"));
+}
+
+/**
  * Converts an apiName to camelCase variable name.
  * "Employee" -> "employee"
  * "create-employee" -> "createEmployee"

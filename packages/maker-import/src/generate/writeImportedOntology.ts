@@ -21,7 +21,7 @@ import { convertActionType } from "./convertActionType.js";
 import { convertInterfaceType } from "./convertInterfaceType.js";
 import { convertObjectType } from "./convertObjectType.js";
 import { convertSharedPropertyType } from "./convertSharedPropertyType.js";
-import { camel, withoutNamespace } from "./utils.js";
+import { camel, fullCamel, withoutNamespace } from "./utils.js";
 
 interface OntologyFullMetadata {
   objectTypes: Record<string, {
@@ -99,6 +99,49 @@ const DIR_NAME_MAP: Record<string, string> = {
   [OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE]: "shared-property-types",
 };
 
+interface EntityEntry {
+  apiName: string;
+  entityType: OntologyEntityTypeEnum;
+  entity: unknown;
+}
+
+/**
+ * Resolves unique variable/file names for a list of apiNames.
+ *
+ * First tries the short name (namespace stripped, camelCase).
+ * If that collides, all colliding entries are escalated to the full
+ * camelCase name (namespace included). Any remaining duplicates get
+ * a numeric suffix.
+ */
+export function resolveVarNames(apiNames: string[]): string[] {
+  const shortNames = apiNames.map(n => camel(withoutNamespace(n)));
+
+  // Find which short names appear more than once
+  const counts = new Map<string, number>();
+  for (const name of shortNames) {
+    counts.set(name, (counts.get(name) ?? 0) + 1);
+  }
+
+  // Escalate conflicting names to fullCamel
+  const resolved = apiNames.map((apiName, i) => {
+    if (counts.get(shortNames[i])! > 1) {
+      return fullCamel(apiName);
+    }
+    return shortNames[i];
+  });
+
+  // Handle any remaining duplicates with numeric suffixes
+  const finalNames: string[] = [];
+  const used = new Map<string, number>();
+  for (const name of resolved) {
+    const count = used.get(name) ?? 0;
+    finalNames.push(count === 0 ? name : `${name}${count}`);
+    used.set(name, count + 1);
+  }
+
+  return finalNames;
+}
+
 /**
  * Generates TypeScript files from OntologyFullMetadata, replicating
  * the pattern from maker's writeStaticObjects().
@@ -121,54 +164,58 @@ export function writeImportedOntology(
     fs.mkdirSync(dirPath, { recursive: true });
   }
 
-  const topLevelExports: string[] = [];
+  // Pass 1: Convert all entities
+  const entries: EntityEntry[] = [];
 
-  // Convert and write shared property types
   for (const [_apiName, spt] of Object.entries(metadata.sharedPropertyTypes)) {
     const converted = convertSharedPropertyType(spt);
     if (converted) {
-      writeEntityFile(
-        codegenDir,
-        OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE,
-        converted.apiName,
-        converted,
-        topLevelExports,
-      );
+      entries.push({
+        apiName: converted.apiName,
+        entityType: OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE,
+        entity: converted,
+      });
     }
   }
 
-  // Convert and write interface types
   for (const [_apiName, iface] of Object.entries(metadata.interfaceTypes)) {
     const converted = convertInterfaceType(iface, metadata.interfaceTypes);
-    writeEntityFile(
-      codegenDir,
-      OntologyEntityTypeEnum.INTERFACE_TYPE,
-      converted.apiName,
-      converted,
-      topLevelExports,
-    );
+    entries.push({
+      apiName: converted.apiName,
+      entityType: OntologyEntityTypeEnum.INTERFACE_TYPE,
+      entity: converted,
+    });
   }
 
-  // Convert and write object types
   for (const [_apiName, objFull] of Object.entries(metadata.objectTypes)) {
     const converted = convertObjectType(objFull);
-    writeEntityFile(
-      codegenDir,
-      OntologyEntityTypeEnum.OBJECT_TYPE,
-      converted.apiName,
-      converted,
-      topLevelExports,
-    );
+    entries.push({
+      apiName: converted.apiName,
+      entityType: OntologyEntityTypeEnum.OBJECT_TYPE,
+      entity: converted,
+    });
   }
 
-  // Convert and write action types
   for (const [_apiName, action] of Object.entries(metadata.actionTypes)) {
     const converted = convertActionType(action);
+    entries.push({
+      apiName: converted.apiName,
+      entityType: OntologyEntityTypeEnum.ACTION_TYPE,
+      entity: converted,
+    });
+  }
+
+  // Pass 2: Resolve unique variable names across all entities
+  const varNames = resolveVarNames(entries.map(e => e.apiName));
+
+  // Pass 3: Write files with resolved names
+  const topLevelExports: string[] = [];
+  for (let i = 0; i < entries.length; i++) {
     writeEntityFile(
       codegenDir,
-      OntologyEntityTypeEnum.ACTION_TYPE,
-      converted.apiName,
-      converted,
+      entries[i].entityType,
+      entries[i].entity,
+      varNames[i],
       topLevelExports,
     );
   }
@@ -184,13 +231,12 @@ export function writeImportedOntology(
 function writeEntityFile(
   codegenDir: string,
   entityType: OntologyEntityTypeEnum,
-  apiName: string,
   entity: unknown,
+  varName: string,
   topLevelExports: string[],
 ): void {
   const typeName = TYPE_NAME_MAP[entityType];
   const dirName = DIR_NAME_MAP[entityType];
-  const varName = camel(withoutNamespace(apiName));
 
   const entityJSON = JSON.stringify(entity, null, 2).replace(
     /("__type"\s*:\s*)"([^"]*)"/g,
