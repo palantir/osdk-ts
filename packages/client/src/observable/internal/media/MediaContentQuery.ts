@@ -163,7 +163,9 @@ export class MediaContentQuery extends Query<
     const cachedBlob = this.#blobManager.get(this.#blobCacheKey);
     if (cachedBlob) {
       const url = this.#blobManager.createBlobUrl(this.#blobCacheKey);
-      this.#activeUrlKey = this.#blobCacheKey;
+      if (url) {
+        this.#activeUrlKey = this.#blobCacheKey;
+      }
 
       const dims = await extractImageDimensions(cachedBlob);
       if (signal?.aborted) {
@@ -293,6 +295,8 @@ export class MediaContentQuery extends Query<
         && cacheKey.otherKeys[0] === this.#objectType
         && cacheKey.otherKeys[1] === this.#primaryKey
       ) {
+        this.#blobManager.remove(this.#blobCacheKey);
+        this.#blobManager.remove(`${this.#blobCacheKey}:preview`);
         this.store.batch({}, (batch) => {
           this.writeToStore(undefined, "error", batch);
         });
