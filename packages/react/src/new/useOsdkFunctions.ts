@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import type { CompileTimeMetadata, QueryDefinition } from "@osdk/api";
-import type { Client } from "@osdk/client";
+import type { QueryDefinition } from "@osdk/api";
+import type { ObserveFunctionCallbackArgs } from "@osdk/client/unstable-do-not-use";
 import React from "react";
-import { useOsdkClient } from "../useOsdkClient.js";
+import type { Snapshot } from "./makeExternalStore.js";
+import { OsdkContext2 } from "./OsdkContext2.js";
 import type {
   UseOsdkFunctionOptions,
   UseOsdkFunctionResult,
@@ -29,7 +30,10 @@ export interface FunctionQueryParams<Q extends QueryDefinition<unknown>> {
    * Only allow params and enabled options at the query level,
    * other options are not yet supported in this batch context
    */
-  options?: Pick<UseOsdkFunctionOptions<Q>, "params" | "enabled">;
+  options?: Pick<
+    UseOsdkFunctionOptions<Q>,
+    "params" | "enabled" | "dedupeIntervalMs"
+  >;
 }
 
 export interface UseOsdkFunctionsProps {
@@ -47,12 +51,20 @@ export interface UseOsdkFunctionsProps {
 }
 
 export type UseOsdkFunctionsResult = Array<
-  Omit<UseOsdkFunctionResult<QueryDefinition<unknown>>, "refetch">
+  UseOsdkFunctionResult<QueryDefinition<unknown>>
 >;
+
+type FunctionPayload = ObserveFunctionCallbackArgs<QueryDefinition<unknown>>;
 
 /**
  * React hook for executing multiple OSDK function queries in parallel.
+ *
+ * This hook executes multiple function queries with individual configurations,
+ * with automatic caching and deduplication via the ObservableClient.
  * Results are returned in the same order as the input queries.
+ *
+ * Queries with identical function+params share cached results through the
+ * Store layer, avoiding duplicate network requests across components.
  *
  * @param options - Configuration options containing the queries to execute
  * @returns Array of results in the same order as input queries, each with the same shape as useOsdkFunction
@@ -60,155 +72,133 @@ export type UseOsdkFunctionsResult = Array<
 export function useOsdkFunctions(
   { queries, enabled = true }: UseOsdkFunctionsProps,
 ): UseOsdkFunctionsResult {
-  const client = useOsdkClient();
+  const { observableClient } = React.useContext(OsdkContext2);
 
-  const [results, setResults] = React.useState<
-    UseOsdkFunctionsResult
-  >(() =>
-    queries.map(() => ({
-      data: undefined,
-      isLoading: false,
-      error: undefined,
-      lastUpdated: 0,
-    }))
-  );
+  const stableQueriesKey = JSON.stringify(queries.map(q => ({
+    apiName: q.queryDefinition.apiName,
+    params: q.options?.params,
+    enabled: q.options?.enabled,
+    dedupeIntervalMs: q.options?.dedupeIntervalMs,
+  })));
 
-  const abortControllerRef = React.useRef<AbortController | null>(null);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const stableQueries = React.useMemo(() => queries, [stableQueriesKey]);
 
-  React.useEffect(() => {
-    if (!enabled || queries.length === 0) {
-      return;
-    }
+  // Create a composite external store that manages N subscriptions
+  // We can't reuse makeExternalStore directly because it wraps a
+  // single Observer, but we need N observers funneled into one useSyncExternalStore.
+  const { subscribe, getSnapshot } = React.useMemo(
+    () => {
+      const count = stableQueries.length;
 
-    // Cancel previous requests
-    abortControllerRef.current?.abort();
+      if (!enabled || count === 0) {
+        const empty: Array<Snapshot<FunctionPayload>> = [];
+        return {
+          subscribe: () => () => {},
+          getSnapshot: () => empty,
+        };
+      }
 
-    const abortController = new AbortController();
-    abortControllerRef.current = abortController;
-
-    const executeQueries = async () => {
-      // Initialize loading state for all queries
-      setResults(prev =>
-        queries.map((_, index) => ({
-          data: prev[index]?.data, // Preserving existing data
-          isLoading: queries[index].options?.enabled !== false,
-          error: undefined,
-          lastUpdated: prev[index]?.lastUpdated || 0,
-        }))
+      // Mutable snapshot array — replaced (never mutated in place) on each
+      // observer callback so that useSyncExternalStore sees a new reference.
+      let current: Array<Snapshot<FunctionPayload>> = stableQueries.map(
+        () => undefined,
       );
 
-      for await (
-        const queryResult of executeQueriesGenerator(
-          queries,
-          client,
-        )
-      ) {
-        const { index, result, error } = queryResult;
+      const updateSlot = (
+        index: number,
+        value: Snapshot<FunctionPayload>,
+      ) => {
+        const next = [...current];
+        next[index] = value;
+        current = next;
+      };
 
-        if (abortController.signal.aborted) {
-          break;
-        }
+      return {
+        getSnapshot: () => current,
+        subscribe: (notifyUpdate: () => void) => {
+          const subscriptions: Array<{ unsubscribe: () => void }> = [];
 
-        setResults(prev => {
-          if (abortController.signal.aborted) {
-            return prev;
-          }
-          const newResults = [...prev];
-          newResults[index] = {
-            data: result,
-            isLoading: false,
-            error: error instanceof Error
-              ? error
-              : error
-              ? new Error(
-                typeof error === "string" ? error : JSON.stringify(error),
-              )
-              : undefined,
-            lastUpdated: Date.now(),
+          stableQueries.forEach((query, index) => {
+            if (query.options?.enabled === false) {
+              return;
+            }
+
+            const params = query.options?.params as
+              | Record<string, unknown>
+              | undefined;
+
+            const sub = observableClient.observeFunction(
+              query.queryDefinition,
+              params,
+              { dedupeInterval: query.options?.dedupeIntervalMs ?? 2_000 },
+              {
+                next: (payload: FunctionPayload | undefined) => {
+                  updateSlot(
+                    index,
+                    payload as Snapshot<FunctionPayload>,
+                  );
+                  notifyUpdate();
+                },
+                error: (error: unknown) => {
+                  updateSlot(index, {
+                    ...(current[index] ?? {}),
+                    error: error instanceof Error
+                      ? error
+                      : new Error(String(error)),
+                  } as Snapshot<FunctionPayload>);
+                  notifyUpdate();
+                },
+                complete: () => {},
+              },
+            );
+
+            subscriptions.push(sub);
+          });
+
+          return () => {
+            subscriptions.forEach(sub => sub.unsubscribe());
           };
-          return newResults;
-        });
-      }
-    };
-
-    void executeQueries();
-
-    return () => {
-      abortController.abort();
-    };
-  }, [
-    enabled,
-    client,
-    queries,
-  ]);
-
-  return results;
-}
-
-interface QueryResult<Q extends QueryDefinition<unknown>> {
-  index: number;
-  result?:
-    | (CompileTimeMetadata<Q>["signature"] extends (...args: never[]) => infer R
-      ? Awaited<R>
-      : never)
-    | undefined;
-  error?: unknown;
-}
-/**
- * Generator function that executes queries and yields results as they complete
- */
-async function* executeQueriesGenerator(
-  queries: Array<FunctionQueryParams<QueryDefinition<unknown>>>,
-  client: Client,
-): AsyncGenerator<QueryResult<QueryDefinition<unknown>>> {
-  const queryPromises = queries.map((query, index) =>
-    createQueryPromise<typeof query.queryDefinition>(query, index, client)
+        },
+      };
+    },
+    [enabled, observableClient, stableQueries],
   );
 
-  const pendingPromises = [...queryPromises];
+  const payloads = React.useSyncExternalStore(subscribe, getSnapshot);
 
-  // Yield results as they complete using Promise.race
-  while (pendingPromises.length > 0) {
-    const raceResult = await Promise.race(
-      pendingPromises.map((promise, idx) =>
-        promise.then(result => ({ result, idx }))
-      ),
-    );
+  const refetches = React.useMemo(
+    () =>
+      stableQueries.map((query) => async () => {
+        await observableClient.invalidateFunction(
+          query.queryDefinition,
+          query.options?.params as Record<string, unknown> | undefined,
+        );
+      }),
+    [stableQueries, observableClient],
+  );
 
-    yield raceResult.result;
+  return React.useMemo(
+    () =>
+      stableQueries.map((_, index): UseOsdkFunctionResult<
+        QueryDefinition<unknown>
+      > => {
+        const payload = payloads[index];
+        const error = payload?.error
+          ?? (payload?.status === "error"
+            ? new Error("Failed to execute function")
+            : undefined);
 
-    // Remove the completed promise from the pending list
-    void pendingPromises.splice(raceResult.idx, 1);
-  }
+        return {
+          data: payload?.result as UseOsdkFunctionResult<
+            QueryDefinition<unknown>
+          >["data"],
+          isLoading: payload?.status === "loading",
+          error,
+          lastUpdated: payload?.lastUpdated ?? 0,
+          refetch: refetches[index],
+        };
+      }),
+    [stableQueries, payloads, refetches],
+  );
 }
-
-const createQueryPromise = async <Q extends QueryDefinition<unknown>>(
-  query: FunctionQueryParams<Q>,
-  index: number,
-  client: Client,
-): Promise<QueryResult<Q>> => {
-  // Skip disabled queries
-  if (query.options?.enabled === false) {
-    return { index, result: undefined, error: undefined };
-  }
-
-  const queryClient = client(query.queryDefinition);
-
-  if (
-    "executeFunction" in queryClient
-    && typeof queryClient.executeFunction === "function"
-  ) {
-    try {
-      const result = await queryClient.executeFunction(query.options?.params);
-      return { index, result, error: null };
-    } catch (error) {
-      return { index, result: undefined, error };
-    }
-  }
-
-  return {
-    index,
-    result: undefined,
-    error: new Error("Invalid query client: executeFunction method not found"),
-  };
-};

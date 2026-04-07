@@ -148,7 +148,7 @@ export class FunctionParamsCanonicalizer {
     }
 
     if (isObjectSet(value)) {
-      const wire = getWireObjectSet(value);
+      const wire = JSON.stringify(getWireObjectSet(value));
       path.push("$:objectset", wire);
       return wire;
     }

@@ -141,7 +141,14 @@ export interface FunctionColumnLocator<
    * @param cellData - The raw data returned by the function for this object
    * @returns - The value to display in the cell
    */
-  getValue?: (cellData: unknown) => unknown;
+  getValue?: (cellData?: unknown) => unknown;
+
+  /**
+   * Minimum time between re-fetches of the same function with the same parameters, in milliseconds.
+   * Defaults to 5 minutes to maximize cache hits
+   * @default 300_000 (5 minutes)
+   */
+  dedupeIntervalMs?: number;
 }
 
 export interface RdpColumnLocator<

@@ -25,15 +25,6 @@
       "require": "./build/cjs/public/experimental.cjs",
       "default": "./build/browser/public/experimental.js"
     },
-    "./unstable-do-not-use": {
-      "browser": "./build/browser/public/unstable-do-not-use.js",
-      "import": {
-        "types": "./build/types/public/unstable-do-not-use.d.ts",
-        "default": "./build/esm/public/unstable-do-not-use.js"
-      },
-      "require": "./build/cjs/public/unstable-do-not-use.cjs",
-      "default": "./build/browser/public/unstable-do-not-use.js"
-    },
     "./experimental/admin": {
       "browser": "./build/browser/public/experimental/admin.js",
       "import": {
