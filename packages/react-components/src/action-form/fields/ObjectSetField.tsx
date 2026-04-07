@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { IconName } from "@blueprintjs/icons";
+import { type IconName, IconSize } from "@blueprintjs/icons";
 import type { ObjectSet, ObjectTypeDefinition } from "@osdk/api";
 import { useOsdkMetadata } from "@osdk/react";
 import { useObjectSet } from "@osdk/react/experimental";
@@ -30,6 +30,7 @@ import type { ObjectSetFieldProps } from "../FormFieldApi.js";
 import styles from "./ObjectSetField.module.css";
 
 const DEFAULT_OBJECT_ICON: Icon = { name: "cube", color: "#4C90F0" };
+const ICON_SIZE = IconSize.STANDARD;
 const DEFAULT_EMPTY_MESSAGE = "Object set is not defined";
 
 export const ObjectSetField: <T extends ObjectTypeDefinition>(
@@ -97,13 +98,13 @@ const ObjectSetFieldContent = React.memo(function ObjectSetFieldContentFn({
       {showLoadingState
         ? (
           <>
-            <ObjectSetIconSkeleton />
-            <ObjectSetLabelSkeleton />
+            {OBJECT_SET_ICON_SKELETON}
+            {OBJECT_SET_LABEL_SKELETON}
           </>
         )
         : (
           <>
-            <BlueprintIcon icon={icon} />
+            <BlueprintIcon icon={icon} size={ICON_SIZE} />
             <ObjectSetLabel
               displayName={displayName}
               totalCount={totalCount}
@@ -134,7 +135,7 @@ const ObjectSetLabel = React.memo(function ObjectSetLabelFn({
 
   return (
     <>
-      {showSkeleton && <ObjectSetLabelSkeleton />}
+      {showSkeleton && OBJECT_SET_LABEL_SKELETON}
       {showError && (
         <span className={styles.osdkObjectSetFieldError} role="alert">
           {`Failed to load: ${error.message}`}
@@ -147,16 +148,12 @@ const ObjectSetLabel = React.memo(function ObjectSetLabelFn({
   );
 });
 
-const ObjectSetIconSkeleton = React.memo(
-  function ObjectSetIconSkeleton(): React.ReactElement {
-    return <SkeletonBar className={styles.osdkObjectSetIconSkeleton} />;
-  },
+const OBJECT_SET_ICON_SKELETON = (
+  <SkeletonBar className={styles.osdkObjectSetIconSkeleton} />
 );
 
-const ObjectSetLabelSkeleton = React.memo(
-  function ObjectSetLabelSkeleton(): React.ReactElement {
-    return <SkeletonBar className={styles.osdkObjectSetLabelSkeleton} />;
-  },
+const OBJECT_SET_LABEL_SKELETON = (
+  <SkeletonBar className={styles.osdkObjectSetLabelSkeleton} />
 );
 
 function formatCount(count: string | undefined): string {

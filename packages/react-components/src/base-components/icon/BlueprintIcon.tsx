@@ -17,7 +17,7 @@
 import {
   getIconPaths,
   type IconName,
-  IconSize,
+  type IconSize,
   SVGIconContainer,
 } from "@blueprintjs/icons";
 import React, { useMemo } from "react";
@@ -27,18 +27,24 @@ export interface Icon {
   color?: string;
 }
 
-export function BlueprintIcon({
-  icon,
-  size = IconSize.STANDARD,
-}: {
+interface BlueprintIconProps {
   icon: Icon;
-  size?: IconSize;
-}): React.ReactElement {
-  const paths = useMemo(() => getIconPaths(icon.name, size), [icon.name, size]);
-
-  return (
-    <SVGIconContainer iconName={icon.name} color={icon.color}>
-      {paths.map((d, i) => <path key={i} d={d} fillRule="evenodd" />)}
-    </SVGIconContainer>
-  );
+  size: IconSize;
 }
+
+export const BlueprintIcon: React.NamedExoticComponent<BlueprintIconProps> =
+  React.memo(function BlueprintIconFn({
+    icon,
+    size,
+  }: BlueprintIconProps): React.ReactElement {
+    const paths = useMemo(() => getIconPaths(icon.name, size), [
+      icon.name,
+      size,
+    ]);
+
+    return (
+      <SVGIconContainer iconName={icon.name} color={icon.color}>
+        {paths.map((d, i) => <path key={i} d={d} fillRule="evenodd" />)}
+      </SVGIconContainer>
+    );
+  });
