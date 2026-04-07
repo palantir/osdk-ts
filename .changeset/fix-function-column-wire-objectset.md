@@ -1,5 +1,5 @@
 ---
-"@osdk/react-components": patch
+"@osdk/client": patch
 ---
 
-fix function-backed columns by passing wire objectSet instead of composed ObjectSet with withProperties
+exclude withProperties from objectSet emitted in observable payload to fix function-backed column queries
