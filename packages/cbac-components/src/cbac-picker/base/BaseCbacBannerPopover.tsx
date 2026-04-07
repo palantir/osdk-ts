@@ -16,7 +16,7 @@
 
 import { Popover } from "@base-ui/react/popover";
 import { CaretDown, CaretUp, WarningSign } from "@blueprintjs/icons";
-import { ActionButton } from "@osdk/react-components/primitives";
+import { ActionButton, SkeletonBar } from "@osdk/react-components/primitives";
 import classnames from "classnames";
 import React from "react";
 import { backgroundFromColors } from "../utils/cbacPickerUtils.js";
@@ -145,11 +145,9 @@ const PopoverContent = React.memo(function PopoverContent({
   if (showSkeleton) {
     return (
       <div className={styles.skeletonContainer}>
-        <div className={classnames(styles.skeleton, styles.skeletonPill)} />
-        <div className={classnames(styles.skeleton, styles.skeletonLineFull)} />
-        <div
-          className={classnames(styles.skeleton, styles.skeletonLineNarrow)}
-        />
+        <SkeletonBar width={120} height={24} />
+        <SkeletonBar width="100%" height={16} />
+        <SkeletonBar width="80%" height={16} />
       </div>
     );
   }

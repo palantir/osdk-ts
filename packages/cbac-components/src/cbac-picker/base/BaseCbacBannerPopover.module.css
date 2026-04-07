@@ -93,37 +93,6 @@
   gap: calc(var(--osdk-surface-spacing) * 1.5);
 }
 
-.skeleton {
-  background: var(--osdk-cbac-skeleton-bg);
-  border-radius: var(--osdk-cbac-skeleton-border-radius);
-  animation: shimmer 1.5s ease-in-out infinite;
-}
-
-.skeletonPill {
-  width: 120px;
-  height: 24px;
-}
-
-.skeletonLineFull {
-  width: 100%;
-  height: 16px;
-}
-
-.skeletonLineNarrow {
-  width: 80%;
-  height: 16px;
-}
-
-@keyframes shimmer {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.4;
-  }
-}
-
 /* Error state */
 .errorContainer {
   display: flex;
@@ -177,12 +146,6 @@
 .warningIcon {
   flex-shrink: 0;
   margin-top: calc(var(--osdk-surface-spacing) * 0.125);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .skeleton {
-    animation: none;
-  }
 }
 
 .warningText {
