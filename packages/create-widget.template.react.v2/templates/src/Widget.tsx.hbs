@@ -5,7 +5,9 @@ import {
   H4,
   HTMLTable,
   InputGroup,
+  Text,
 } from "@blueprintjs/core";
+import { Flex } from "@blueprintjs/labs";
 import { $Actions, $Objects, $Queries } from "{{osdkPackage}}";
 import React, { useCallback, useState } from "react";
 import { useWidgetContext } from "./context.js";
@@ -44,15 +46,8 @@ export const Widget: React.FC = () => {
     <div className={isDarkTheme ? Classes.DARK : undefined}>
       <div style={{"{{"}} padding: 8 {{"}}"}}>
         <div style={{"{{"}} maxWidth: 600, margin: "0 auto" {{"}}"}}>
-          <div style={{"{{"}} display: "flex", flexDirection: "column", gap: 16 {{"}}"}}>
-            <div
-              style={{"{{"}}
-                padding: 20,
-                display: "flex",
-                flexDirection: "column",
-                gap: 8,
-              {{"}}"}}
-            >
+          <Flex flexDirection="column" gap={16}>
+            <Flex flexDirection="column" gap={8} style={{"{{"}} padding: 20 {{"}}"}}>
               <H4>
                 {parameters.state === "loading" ||
                 parameters.state === "not-started" ? (
@@ -113,51 +108,51 @@ export const Widget: React.FC = () => {
                     )}
                   <tr>
                     <td colSpan={2}>
-                      <div style={{"{{"}} display: "flex", gap: 8 {{"}}"}}>
+                      <Flex gap={8}>
                         <InputGroup
                           value={newTodoItem}
                           onChange={handleNewTodoItemChange}
                           placeholder="Add item…"
                         />
                         <Button onClick={handleAddTodoItem}>Add item</Button>
-                      </div>
+                      </Flex>
                     </td>
                   </tr>
                 </tbody>
               </HTMLTable>
-            </div>
+            </Flex>
             <div>
-              <div style={{"{{"}} display: "flex", flexDirection: "column", gap: 8 {{"}}"}}>
-                <span>
+              <Flex flexDirection="column" gap={8}>
+                <Text>
                   Try any of the following methods from your Ontology SDK
-                </span>
-                <div style={{"{{"}} display: "flex", flexDirection: "column", gap: 4 {{"}}"}}>
+                </Text>
+                <Flex flexDirection="column" gap={4}>
                   <H4>Objects ({objectApiNames.length})</H4>
                   <pre>
                     {objectApiNames.map((objectApiName) => (
                       <div key={objectApiName}>client({objectApiName})</div>
                     ))}
                   </pre>
-                </div>
-                <div style={{"{{"}} display: "flex", flexDirection: "column", gap: 4 {{"}}"}}>
+                </Flex>
+                <Flex flexDirection="column" gap={4}>
                   <H4>Actions ({actionApiNames.length})</H4>
                   <pre>
                     {actionApiNames.map((actionApiName) => (
                       <div key={actionApiName}>client({actionApiName})</div>
                     ))}
                   </pre>
-                </div>
-                <div style={{"{{"}} display: "flex", flexDirection: "column", gap: 4 {{"}}"}}>
+                </Flex>
+                <Flex flexDirection="column" gap={4}>
                   <H4>Queries ({queryApiNames.length})</H4>
                   <pre>
                     {queryApiNames.map((queryApiName) => (
                       <div key={queryApiName}>client({queryApiName})</div>
                     ))}
                   </pre>
-                </div>
-              </div>
+                </Flex>
+              </Flex>
             </div>
-          </div>
+          </Flex>
         </div>
       </div>
     </div>

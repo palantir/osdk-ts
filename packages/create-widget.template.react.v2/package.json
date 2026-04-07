@@ -36,6 +36,7 @@
   "dependencies": {
     "@blueprintjs/core": "^6.10.0",
     "@blueprintjs/icons": "^6.7.0",
+    "@blueprintjs/labs": "^6.2.3",
     "react": "^18",
     "react-dom": "^18"
   },
