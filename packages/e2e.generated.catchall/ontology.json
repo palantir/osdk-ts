@@ -6492,7 +6492,7 @@
       "constraints": [
         {
           "type": "enum",
-          "options": ["brown", "found.com"]
+          "options": ["brown", "found.com", "it's \"cool\""]
         }
       ]
     },

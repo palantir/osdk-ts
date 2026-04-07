@@ -301,7 +301,7 @@ export const TodoWireOntology: WireOntologyDefinition = {
       },
       constraints: [{
         type: "array",
-        valueConstraint: { type: "enum", options: ["a", "b", "c"] },
+        valueConstraint: { type: "enum", options: ["a", "b\"c", "d'e"] },
         uniqueValues: false,
       }],
     },
