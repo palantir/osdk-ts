@@ -50,14 +50,7 @@ describe("ObjectSetField", () => {
   describe("null value", () => {
     it("renders empty state when value is null", () => {
       render(<ObjectSetField value={null} />);
-      expect(screen.getByText("No objects selected")).toBeDefined();
-    });
-
-    it("passes id to the empty state element", () => {
-      render(<ObjectSetField id="my-field" value={null} />);
-      const el = document.getElementById("my-field");
-      expect(el).not.toBeNull();
-      expect(el?.textContent).toBe("No objects selected");
+      expect(screen.getByText("Object set is not defined")).toBeDefined();
     });
   });
 
@@ -69,8 +62,11 @@ describe("ObjectSetField", () => {
       mockUseObjectSet.mockReturnValue({
         data: undefined,
         isLoading: true,
+        isOptimistic: false,
+        hasMore: false,
         error: undefined,
         fetchMore: undefined,
+        refetch: vi.fn(),
         objectSet: createMockObjectSet(),
       });
 
@@ -106,8 +102,11 @@ describe("ObjectSetField", () => {
       mockUseObjectSet.mockReturnValue({
         data: [],
         isLoading: false,
+        isOptimistic: false,
+        hasMore: false,
         error: undefined,
         fetchMore: undefined,
+        refetch: vi.fn(),
         objectSet: createMockObjectSet(),
         totalCount: "42",
       });
@@ -141,8 +140,11 @@ describe("ObjectSetField", () => {
       mockUseObjectSet.mockReturnValue({
         data: [],
         isLoading: false,
+        isOptimistic: false,
+        hasMore: false,
         error: undefined,
         fetchMore: undefined,
+        refetch: vi.fn(),
         objectSet: createMockObjectSet(),
       });
 
@@ -150,18 +152,104 @@ describe("ObjectSetField", () => {
       expect(screen.getByText("\u2013 Employees")).toBeDefined();
     });
 
-    it("passes id to the content element", () => {
-      mockUseOsdkMetadata.mockReturnValue({ loading: true });
+    it("renders singular display name when totalCount is 1", () => {
+      mockUseOsdkMetadata.mockReturnValue({
+        loading: false,
+        metadata: {
+          type: "object",
+          apiName: "Employee",
+          displayName: "Employee",
+          pluralDisplayName: "Employees",
+          description: "An employee",
+          properties: {},
+          rid: "rid.a.b.c",
+          primaryKeyApiName: "id",
+          titleProperty: "name",
+          links: {},
+          primaryKeyType: "string",
+          icon: { type: "blueprint", name: "person", color: "#000" },
+          visibility: undefined,
+          status: "ACTIVE",
+          interfaceMap: {},
+          inverseInterfaceMap: {},
+        },
+      });
       mockUseObjectSet.mockReturnValue({
-        data: undefined,
-        isLoading: true,
+        data: [],
+        isLoading: false,
+        isOptimistic: false,
+        hasMore: false,
         error: undefined,
         fetchMore: undefined,
+        refetch: vi.fn(),
         objectSet: createMockObjectSet(),
+        totalCount: "1",
       });
 
-      render(<ObjectSetField id="obj-set" value={createMockObjectSet()} />);
-      expect(document.getElementById("obj-set")).not.toBeNull();
+      render(<ObjectSetField value={createMockObjectSet()} />);
+      expect(screen.getByText("1 Employee")).toBeDefined();
+    });
+
+    it("shows loading skeletons when metadata is loading even if count is available", () => {
+      mockUseOsdkMetadata.mockReturnValue({
+        loading: true,
+      });
+      mockUseObjectSet.mockReturnValue({
+        data: [],
+        isLoading: false,
+        isOptimistic: false,
+        hasMore: false,
+        error: undefined,
+        fetchMore: undefined,
+        refetch: vi.fn(),
+        objectSet: createMockObjectSet(),
+        totalCount: "5",
+      });
+
+      const { container } = render(
+        <ObjectSetField value={createMockObjectSet()} />,
+      );
+      const skeletons = container.querySelectorAll("[aria-hidden='true']");
+      expect(skeletons.length).toBeGreaterThan(0);
+      expect(screen.queryByText("5")).toBeNull();
+    });
+
+    it("formats large counts with locale separators", () => {
+      mockUseOsdkMetadata.mockReturnValue({
+        loading: false,
+        metadata: {
+          type: "object",
+          apiName: "Employee",
+          displayName: "Employee",
+          pluralDisplayName: "Employees",
+          description: undefined,
+          properties: {},
+          rid: "rid.a.b.c",
+          primaryKeyApiName: "id",
+          titleProperty: "name",
+          links: {},
+          primaryKeyType: "string",
+          icon: undefined,
+          visibility: undefined,
+          status: undefined,
+          interfaceMap: {},
+          inverseInterfaceMap: {},
+        },
+      });
+      mockUseObjectSet.mockReturnValue({
+        data: [],
+        isLoading: false,
+        isOptimistic: false,
+        hasMore: false,
+        error: undefined,
+        fetchMore: undefined,
+        refetch: vi.fn(),
+        objectSet: createMockObjectSet(),
+        totalCount: "1000",
+      });
+
+      render(<ObjectSetField value={createMockObjectSet()} />);
+      expect(screen.getByText("1,000 Employees")).toBeDefined();
     });
 
     it("falls back to 'objects' when metadata has no pluralDisplayName", () => {
@@ -172,8 +260,11 @@ describe("ObjectSetField", () => {
       mockUseObjectSet.mockReturnValue({
         data: [],
         isLoading: false,
+        isOptimistic: false,
+        hasMore: false,
         error: undefined,
         fetchMore: undefined,
+        refetch: vi.fn(),
         objectSet: createMockObjectSet(),
         totalCount: "10",
       });

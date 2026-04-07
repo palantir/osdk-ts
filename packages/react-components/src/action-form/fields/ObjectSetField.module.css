@@ -35,11 +35,11 @@
 }
 
 .osdkObjectSetIconSkeleton {
-  width: var(--osdk-object-set-icon-skeleton-size);
-  height: var(--osdk-object-set-icon-skeleton-size);
+  width: var(--osdk-object-set-icon-skeleton-width);
+  align-self: stretch;
 }
 
 .osdkObjectSetLabelSkeleton {
   width: var(--osdk-object-set-label-skeleton-width);
-  height: var(--osdk-object-set-label-skeleton-height);
+  align-self: stretch;
 }

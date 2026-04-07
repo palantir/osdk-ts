@@ -27,11 +27,14 @@ export interface Icon {
   color?: string;
 }
 
-export function BlueprintIcon({ icon }: { icon: Icon }): React.ReactElement {
-  const paths = useMemo(
-    () => getIconPaths(icon.name, IconSize.STANDARD),
-    [icon.name],
-  );
+export function BlueprintIcon({
+  icon,
+  size = IconSize.STANDARD,
+}: {
+  icon: Icon;
+  size?: IconSize;
+}): React.ReactElement {
+  const paths = useMemo(() => getIconPaths(icon.name, size), [icon.name, size]);
 
   return (
     <SVGIconContainer iconName={icon.name} color={icon.color}>

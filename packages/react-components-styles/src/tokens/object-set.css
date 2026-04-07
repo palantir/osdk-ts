@@ -12,9 +12,10 @@
   --osdk-object-set-error-color: var(--osdk-intent-danger-rest);
 
   /* Icon skeleton */
-  --osdk-object-set-icon-skeleton-size: calc(var(--osdk-surface-spacing) * 4);
+  --osdk-object-set-icon-skeleton-width: calc(var(--osdk-surface-spacing) * 4);
 
   /* Label skeleton */
-  --osdk-object-set-label-skeleton-width: calc(var(--osdk-surface-spacing) * 20);
-  --osdk-object-set-label-skeleton-height: calc(var(--osdk-surface-spacing) * 3);
+  --osdk-object-set-label-skeleton-width: calc(
+    var(--osdk-surface-spacing) * 30
+  );
 }

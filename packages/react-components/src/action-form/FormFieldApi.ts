@@ -346,7 +346,14 @@ export interface Option<V> {
  */
 export interface ObjectSetFieldProps<T extends ObjectTypeDefinition>
   extends Pick<BaseFormFieldProps<ObjectSet<T>>, "id" | "value">
-{}
+{
+  /**
+   * Message displayed when no object set is provided.
+   *
+   * @default "Object set is not defined"
+   */
+  emptyMessage?: string;
+}
 
 /**
  * Custom field props for user-defined renderers
