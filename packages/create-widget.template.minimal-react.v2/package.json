@@ -34,7 +34,7 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
-    "@blueprintjs/core": "^5.19.1",
+    "@blueprintjs/core": "^6.10.0",
     "clsx": "^2.1.1",
     "react": "^18",
     "react-dom": "^18"

@@ -13,10 +13,10 @@
     "check-spelling": "cspell --quiet ."
   },
   "peerDependencies": {
-    "@blueprintjs/core": "^6.8.1"
+    "@blueprintjs/core": "^6.10.0"
   },
   "devDependencies": {
-    "@blueprintjs/core": "^6.8.1"
+    "@blueprintjs/core": "^6.10.0"
   },
   "publishConfig": {
     "access": "public"
