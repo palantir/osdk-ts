@@ -189,7 +189,7 @@ export namespace Employee {
      *   display name: 'Latest Venture '
      */
     readonly latestVenture:
-      | { venture: $PropType['string'] | undefined; days: $PropType['integer'] | undefined }
+      | { days: $PropType['integer'] | undefined; venture: $PropType['string'] | undefined }
       | undefined;
     /**
      * @experimental

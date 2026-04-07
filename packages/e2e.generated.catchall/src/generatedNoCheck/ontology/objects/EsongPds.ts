@@ -16,7 +16,7 @@ import type {
 } from '@osdk/client';
 
 export namespace EsongPds {
-  export type PropertyKeys = 'assignee' | 'id' | 'priority' | 'status' | 'title' | 'createdAt';
+  export type PropertyKeys = 'assignee' | 'createdAt' | 'id' | 'priority' | 'status' | 'title';
 
   export interface Links {
     readonly esongIssues: $SingleLinkAccessor<EsongIssues>;
