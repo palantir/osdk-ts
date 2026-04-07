@@ -65,10 +65,10 @@ export function BaseCbacBannerPopover({
     onEditClick();
   }, [onEditClick]);
 
-  const pillStyle: React.CSSProperties = {
+  const pillStyle = React.useMemo((): React.CSSProperties => ({
     color: textColor,
     background: backgroundFromColors(backgroundColors),
-  };
+  }), [textColor, backgroundColors]);
 
   const showSkeleton = isLoading === true && appliedMarkings.length === 0;
 

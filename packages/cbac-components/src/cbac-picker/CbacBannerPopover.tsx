@@ -106,25 +106,18 @@ export function CbacBannerPopover({
 
   const resolved = resolveBannerDisplay(banner);
 
-  const description = React.useMemo((): string => {
-    if (markingIds.length === 0) {
-      return "This data has no classification restrictions.";
-    }
-    return `This data is classified as: ${resolved.classificationString}`;
-  }, [markingIds.length, resolved.classificationString]);
+  const description = markingIds.length === 0
+    ? "This data has no classification restrictions."
+    : `This data is classified as: ${resolved.classificationString}`;
 
-  const handleEditClick = () => {
+  const handleEditClick = React.useCallback(() => {
     setIsDialogOpen(true);
-  };
+  }, []);
 
-  const handleDialogOpenChange = (open: boolean) => {
-    setIsDialogOpen(open);
-  };
-
-  const handleConfirm = (newMarkingIds: string[]) => {
+  const handleConfirm = React.useCallback((newMarkingIds: string[]) => {
     onChange(newMarkingIds);
     setIsDialogOpen(false);
-  };
+  }, [onChange]);
 
   return (
     <>
@@ -143,7 +136,7 @@ export function CbacBannerPopover({
       {isDialogOpen && (
         <CbacPickerDialog
           isOpen={isDialogOpen}
-          onOpenChange={handleDialogOpenChange}
+          onOpenChange={setIsDialogOpen}
           onConfirm={handleConfirm}
           initialMarkingIds={markingIds}
         />
