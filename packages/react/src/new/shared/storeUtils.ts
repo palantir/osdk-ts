@@ -93,20 +93,11 @@ export function createCachingNotifier<T>(
   subscribers: Set<() => void>,
   cache: ReturnType<typeof createVersionedCache<T>>,
 ): () => void {
-  let notificationPending = false;
-
   return function notify(): void {
     cache.invalidate();
-    if (notificationPending) {
-      return;
+    for (const cb of subscribers) {
+      cb();
     }
-    notificationPending = true;
-    queueMicrotask(() => {
-      notificationPending = false;
-      for (const cb of subscribers) {
-        cb();
-      }
-    });
   };
 }
 
@@ -115,24 +106,17 @@ export function createStoreSubscribe(
   onInit: () => void,
   onCleanup: () => void,
 ): (notifyUpdate: () => void) => () => void {
-  let initScheduled = false;
-
   return (notifyUpdate: () => void): () => void => {
+    const shouldInit = subscribers.size === 0;
     subscribers.add(notifyUpdate);
 
-    if (!initScheduled) {
-      initScheduled = true;
-      queueMicrotask(() => {
-        if (subscribers.size > 0) {
-          onInit();
-        }
-      });
+    if (shouldInit) {
+      onInit();
     }
 
     return () => {
       subscribers.delete(notifyUpdate);
       if (subscribers.size === 0) {
-        initScheduled = false;
         onCleanup();
       }
     };
