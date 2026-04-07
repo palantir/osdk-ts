@@ -20,12 +20,12 @@ import {
   useMarkings,
 } from "@osdk/react/experimental/admin";
 import React from "react";
-import type { AppliedMarkingGroup } from "./base/BaseCbacBannerPopover.js";
 import { BaseCbacBannerPopover } from "./base/BaseCbacBannerPopover.js";
 import { CbacPickerDialog } from "./CbacPickerDialog.js";
-import { resolveBannerDisplay } from "./utils/cbacPickerUtils.js";
-
-const EMPTY_APPLIED_MARKINGS: AppliedMarkingGroup[] = [];
+import {
+  groupMarkingsByCategory,
+  resolveBannerDisplay,
+} from "./utils/cbacPickerUtils.js";
 
 export interface CbacBannerPopoverProps {
   markingIds: string[];
@@ -69,40 +69,10 @@ export function CbacBannerPopover({
     refetchMarkings();
   }, [refetchBanner, refetchCategories, refetchMarkings]);
 
-  const appliedMarkings = React.useMemo((): AppliedMarkingGroup[] => {
-    if (
-      markingIds.length === 0 || categories === undefined
-      || markings === undefined
-    ) {
-      return EMPTY_APPLIED_MARKINGS;
-    }
-
-    const markingIdSet = new Set(markingIds);
-    const categoryMap = new Map<string, string>();
-    for (const cat of categories) {
-      categoryMap.set(cat.id, cat.name);
-    }
-
-    const grouped = new Map<string, string[]>();
-    for (const marking of markings) {
-      if (markingIdSet.has(marking.id)) {
-        const categoryName = categoryMap.get(marking.categoryId)
-          ?? marking.categoryId;
-        const existing = grouped.get(categoryName);
-        if (existing !== undefined) {
-          existing.push(marking.name);
-        } else {
-          grouped.set(categoryName, [marking.name]);
-        }
-      }
-    }
-
-    const result: AppliedMarkingGroup[] = [];
-    for (const [categoryName, markingNames] of grouped) {
-      result.push({ categoryName, markingNames });
-    }
-    return result;
-  }, [markingIds, categories, markings]);
+  const appliedMarkings = React.useMemo(
+    () => groupMarkingsByCategory(markingIds, categories, markings),
+    [markingIds, categories, markings],
+  );
 
   const resolved = resolveBannerDisplay(banner);
 

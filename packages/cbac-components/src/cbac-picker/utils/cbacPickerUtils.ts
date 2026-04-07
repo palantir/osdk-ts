@@ -48,6 +48,48 @@ export function resolveBannerDisplay(
   };
 }
 
+export interface AppliedMarkingGroup {
+  categoryName: string;
+  markingNames: string[];
+}
+
+export function groupMarkingsByCategory(
+  markingIds: string[],
+  categories: ReadonlyArray<{ id: string; name: string }> | undefined,
+  markings:
+    | ReadonlyArray<{ id: string; name: string; categoryId: string }>
+    | undefined,
+): AppliedMarkingGroup[] {
+  if (
+    markingIds.length === 0 || categories === undefined
+    || markings === undefined
+  ) {
+    return [];
+  }
+
+  const selected = new Set(markingIds);
+  const categoryNames = new Map(categories.map((c) => [c.id, c.name]));
+  const grouped = new Map<string, string[]>();
+
+  for (const marking of markings) {
+    if (selected.has(marking.id)) {
+      const name = categoryNames.get(marking.categoryId)
+        ?? marking.categoryId;
+      const list = grouped.get(name);
+      if (list !== undefined) {
+        list.push(marking.name);
+      } else {
+        grouped.set(name, [marking.name]);
+      }
+    }
+  }
+
+  return Array.from(grouped, ([categoryName, markingNames]) => ({
+    categoryName,
+    markingNames,
+  }));
+}
+
 export function resolveRequiredGroups(
   categoryGroups: CategoryMarkingGroup[],
   requiredMarkingGroups: string[][],

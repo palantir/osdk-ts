@@ -71,11 +71,8 @@ function formatByStatusCode(error: Error & ApiErrorLike): CbacErrorMessage {
 }
 
 export function formatCbacError(error: Error): CbacErrorMessage {
-  if (error instanceof AggregateError) {
-    const inner = findMostSevereError(error.errors as Error[]);
-    if (inner !== undefined) {
-      return formatCbacError(inner);
-    }
+  if (error instanceof AggregateError && error.errors.length > 0) {
+    return formatCbacError(error.errors[0] as Error);
   }
 
   if (isApiErrorLike(error)) {
@@ -96,36 +93,4 @@ export function formatCbacError(error: Error): CbacErrorMessage {
     title: "Something went wrong",
     remediation: "Try again later.",
   };
-}
-
-function findMostSevereError(errors: Error[]): Error | undefined {
-  let best: Error | undefined;
-  let bestPriority = Infinity;
-
-  for (const err of errors) {
-    if (isApiErrorLike(err) && err.statusCode !== undefined) {
-      const priority = statusPriority(err.statusCode);
-      if (priority < bestPriority) {
-        best = err;
-        bestPriority = priority;
-      }
-    } else if (best === undefined) {
-      best = err;
-    }
-  }
-
-  return best;
-}
-
-function statusPriority(statusCode: number): number {
-  if (statusCode === 401) {
-    return 0;
-  }
-  if (statusCode === 403) {
-    return 1;
-  }
-  if (statusCode >= 500) {
-    return 2;
-  }
-  return 3;
 }

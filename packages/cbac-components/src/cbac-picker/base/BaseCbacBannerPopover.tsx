@@ -19,15 +19,12 @@ import { CaretDown, CaretUp, WarningSign } from "@blueprintjs/icons";
 import { ActionButton, SkeletonBar } from "@osdk/react-components/primitives";
 import classnames from "classnames";
 import React from "react";
+import type { AppliedMarkingGroup } from "../utils/cbacPickerUtils.js";
 import { backgroundFromColors } from "../utils/cbacPickerUtils.js";
+export type { AppliedMarkingGroup } from "../utils/cbacPickerUtils.js";
 import { formatCbacError } from "../utils/errorMessages.js";
 import { BaseCbacBanner } from "./BaseCbacBanner.js";
 import styles from "./BaseCbacBannerPopover.module.css";
-
-export interface AppliedMarkingGroup {
-  categoryName: string;
-  markingNames: string[];
-}
 
 export interface BaseCbacBannerPopoverProps {
   classificationString: string;
