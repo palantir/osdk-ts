@@ -108,6 +108,7 @@
     "build/browser",
     "build/types",
     "CHANGELOG.md",
+    "docs",
     "package.json",
     "templates",
     "*.d.ts"
