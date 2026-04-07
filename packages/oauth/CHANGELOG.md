@@ -1,5 +1,15 @@
 # @osdk/oauth
 
+## 1.8.0
+
+### Minor Changes
+
+- 322c5bc: Simulated release
+- 05cae47: Add optional `logger` parameter to `createPublicOauthClient` for consumer-controlled warning output
+- 4cd7389: Remove delay dependency
+- 35f2f1a: Add Media inputs/outputs for Queries
+- c9d954d: Add `tokenStorage` option to `createPublicOauthClient` to control refresh token storage. Supports `'localStorage'` (default), `'sessionStorage'` (recommended for shared devices), or `'none'` (most secure, re-authenticates on every page load).
+
 ## 1.8.0-beta.5
 
 ### Minor Changes

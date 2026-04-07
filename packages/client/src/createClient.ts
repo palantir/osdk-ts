@@ -106,7 +106,11 @@ export function createClientInternal(
   ontologyRid: string | Promise<string>,
   tokenProvider: () => Promise<string>,
   options:
-    | { logger?: Logger; UNSTABLE_DO_NOT_USE_BRANCH?: string }
+    | {
+      logger?: Logger;
+      UNSTABLE_DO_NOT_USE_BRANCH?: string;
+      headers?: Record<string, string>;
+    }
     | undefined = undefined,
   fetchFn: typeof globalThis.fetch = fetch,
 ): Client {
@@ -181,7 +185,7 @@ export function createClientFromContext(clientCtx: MinimalClient) {
       switch (o.name) {
         case __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks.name:
           return {
-            getBulkLinks: async function*(
+            async *getBulkLinks(
               objs: Array<OsdkBase<any>>,
               linkTypes: string[],
             ) {
@@ -330,6 +334,7 @@ export const createClient: (
     logger?: Logger;
     /** @beta This is an experimental feature subject to change */
     UNSTABLE_DO_NOT_USE_BRANCH?: string;
+    headers?: Record<string, string>;
   } | undefined,
   fetchFn?: typeof fetch | undefined,
 ) => Client = createClientInternal.bind(

@@ -16,9 +16,12 @@
 
 import { Employee, Office } from "@osdk/client.test.ontology";
 import { describe, expect, it } from "vitest";
+import { createMockClient } from "../../mock/createMockClient.js";
+import { createMockObjectSet } from "../../mock/createMockObjectSet.js";
 import { createMockOsdkObject } from "../../mock/createMockOsdkObject.js";
 import {
   countEmployeePeeps,
+  countPeepsViaAggregate,
   getEmployeeOfficeName,
   getEmployeePeepNames,
   getSpecificPeep,
@@ -138,6 +141,30 @@ describe("objectWithLinks", () => {
       expect(() => mockEmployee.$link.peeps.fetchOne(999)).toThrow(
         "fetchOne could not find object with primary key 999",
       );
+    });
+  });
+
+  describe("countPeepsViaAggregate (many link with aggregate via ObjectSet)", () => {
+    it("counts peeps using aggregate on a mock object set link", async () => {
+      const mockClient = createMockClient();
+      const peepsSet = createMockObjectSet(Employee);
+
+      mockClient
+        .whenObjectSet(
+          peepsSet,
+          (os) => os.aggregate({ $select: { $count: "unordered" } }),
+        )
+        .thenReturnAggregation({ $count: 7 });
+
+      const mockEmployee = createMockOsdkObject(
+        Employee,
+        { employeeId: 1, fullName: "John Doe" },
+        { links: { peeps: peepsSet } },
+      );
+
+      const count = await countPeepsViaAggregate(mockEmployee);
+
+      expect(count).toBe(7);
     });
   });
 });

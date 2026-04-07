@@ -1,5 +1,105 @@
 # @osdk/client
 
+## 2.8.0
+
+### Minor Changes
+
+- 322c5bc: Simulated release
+- c40444b: Add linkedObjectsBySourcePrimaryKey to link observation responses
+- 09e5659: add $select support to observable client and react hooks
+- abb0e0f: Bump Platform SDK dependencies
+- fceb4ce: Fix canonicalization for order-independent where clauses and orderBy keys, add ObjectSetArrayCanonicalizer for set operations, improve ObjectSetQuery with in-memory updates and deletion handling
+- 520398c: Add canonicalizeOptions API to ObservableClient for stable memo keys in React hooks, add objectSet to list payload
+- 73e617e: expose dedupeInterval on useLinks and fix forced revalidation bypassing dedupeInterval
+- cbfa135: Fix aggregation return type for empty object sets
+- c8384de: Add experimental branch param.
+- f294f5a: Remove literal support before GA.
+- dfc8019: Preserve derived property values when subscription updates write to RDP cache keys
+- 599426b: expose $loadPropertySecurityMetadata option in observable client and react hooks
+- e64bf0b: Expose getWireObjectSet, isObjectSet, and WireObjectSet type for reading wire object set definitions
+- 27a5902: Filter derived property keys from websocket object set subscriptions
+- f4604c2: fix aggregate endpoint errors crashing instead of surfacing server error
+- 642be5f: fix divide() sending wrong wire type and clean up list query view
+- baba327: return data=undefined during initial loading instead of data=[] to distinguish no data loaded yet from empty results
+- 8825f8c: fix InterfaceListQuery ignoring rids option when creating object sets
+- 2b01323: fix ObjectCacheKeyRegistry leak where unregister was never called during GC cleanup
+- 8c60682: Fix shared ListQuery pageSize not respected for late-joining views
+- dda14be: Fix pagination sort shuffling by using declarative update types
+- ffc6efe: Fix query map parsing to allow nullable values in map entries
+- 2855223: fix autoFetchMore not working when another subscriber creates the shared query first
+- 15e1686: support rids with pivotTo in observable list queries
+- 26cec61: Improves invalid where clause undefined key error message
+- d1ad4d1: Fix remapping query responses with structs that have null fields.
+- 0d174a2: useOsdkFunction typing updates
+- d284bf2: add media types, caching, and metadata query
+- 4ef6adc: Fix interface links off of objects
+- 2ebe62c: package and bundle size optimizations
+- 60b5ffb: Add `platformApiName` field to actions to preserve the original API name used by the Foundry platform
+- abb0e0f: Add transactionId to Actions.apply call
+- 8c30908: Add support for lt and gt strings.
+- 4cd7389: Remove delay dependency
+- 92e7297: add shape transformations, link resolution, and observable support
+- 35f2f1a: Add Media inputs/outputs for Queries
+- c9d954d: Add `tokenStorage` option to `createPublicOauthClient` to control refresh token storage. Supports `'localStorage'` (default), `'sessionStorage'` (recommended for shared devices), or `'none'` (most secure, re-authenticates on every page load).
+- 044eb80: unify RDP canonicalization between useOsdkObjects and useObjectSet
+- 9d234b9: support multi object usage in useLinks
+- f5f95e2: support interface link constraints
+- 46f0a47: Update platform SDK to 2.57.0 and handle new typeReference query data type
+- 4470c0d: Add support to execute queries on branches.
+- d80c234: add interface support to useOsdkObject
+- 61e33ab: Add support for interval queries
+- 71e28ef: Allow interface object sets in useObjectSet
+- 5848e3c: add a new View abstraction layer to fix a pageSize caching bug where multiple subscribers with different pageSize values would share cached data incorrectly
+
+### Patch Changes
+
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [4bb9769]
+- Updated dependencies [abb0e0f]
+- Updated dependencies [f294f5a]
+- Updated dependencies [4a79eb1]
+- Updated dependencies [f487a6a]
+- Updated dependencies [e462938]
+- Updated dependencies [6499ff9]
+- Updated dependencies [034081a]
+- Updated dependencies [0df859a]
+- Updated dependencies [d284bf2]
+- Updated dependencies [4ef6adc]
+- Updated dependencies [60b5ffb]
+- Updated dependencies [8c30908]
+- Updated dependencies [4a856cb]
+- Updated dependencies [b68cebd]
+- Updated dependencies [35f2f1a]
+- Updated dependencies [972bda6]
+- Updated dependencies [6941b4f]
+- Updated dependencies [46f0a47]
+- Updated dependencies [4470c0d]
+- Updated dependencies [61e33ab]
+  - @osdk/api@2.8.0
+  - @osdk/client.unstable@2.8.0
+  - @osdk/generator-converters@2.8.0
+  - @osdk/shared.client.impl@1.8.0
+  - @osdk/shared.net.errors@2.8.0
+  - @osdk/shared.net.fetch@1.8.0
+
+## 2.8.0-beta.32
+
+### Minor Changes
+
+- 46f0a47: Update platform SDK to 2.57.0 and handle new typeReference query data type
+
+### Patch Changes
+
+- Updated dependencies [46f0a47]
+  - @osdk/generator-converters@2.8.0-beta.32
+  - @osdk/api@2.8.0-beta.32
+  - @osdk/client.unstable@2.8.0-beta.32
+
 ## 2.8.0-beta.31
 
 ### Minor Changes

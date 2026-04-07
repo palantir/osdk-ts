@@ -1,5 +1,21 @@
 # @osdk/create-app.template.expo.v2
 
+## 2.8.0
+
+### Minor Changes
+
+- 322c5bc: Simulated release
+- 12dcb6a: Bump node and vite versions
+- c22dcac: Bump @types/node to 24.10.13
+- 0ff602a: Bump vite to ^7.3.1
+- e22f91c: Make template a11y compatible
+- 5f9fb46: Bump @types/node
+- 35f2f1a: Add Media inputs/outputs for Queries
+- 001c64c: Link to guide on how to add OSDK to templates
+- 6260835: Revert node bump
+
+## 2.8.0-beta.32
+
 ## 2.8.0-beta.31
 
 ## 2.8.0-beta.30

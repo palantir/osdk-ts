@@ -174,7 +174,7 @@ function ListogramInputInner({
           {hasMore && !isExpanded && (
             <Button
               type="button"
-              className={styles.row}
+              className={styles.viewAllButton}
               onClick={() => setIsExpanded(true)}
             >
               View all ({sortedValues.length})

@@ -22,6 +22,7 @@ import type {
 import type { Osdk, PropertyKeys, WhereClause } from "@osdk/client";
 import type { ObserveLinks } from "@osdk/client/unstable-do-not-use";
 import React from "react";
+import { extractPayloadError, isPayloadLoading } from "./hookUtils.js";
 import { makeExternalStore } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
 
@@ -145,20 +146,11 @@ export function useLinks<
 
   const { enabled = true, ...otherOptions } = options;
 
-  const stableWhere = React.useMemo(
-    () => otherOptions.where,
-    [JSON.stringify(otherOptions.where)],
-  );
-
-  const stableOrderBy = React.useMemo(
-    () => otherOptions.orderBy,
-    [JSON.stringify(otherOptions.orderBy)],
-  );
-
-  const stableSelect = React.useMemo(
-    () => otherOptions.$select,
-    [JSON.stringify(otherOptions.$select)],
-  );
+  const canonOptions = observableClient.canonicalizeOptions({
+    where: otherOptions.where,
+    orderBy: otherOptions.orderBy,
+    $select: otherOptions.$select,
+  });
 
   const objectsKey = React.useMemo(() => {
     if (objects === undefined) return "";
@@ -190,12 +182,12 @@ export function useLinks<
             linkName,
             {
               linkName,
-              where: stableWhere,
+              where: canonOptions.where,
               pageSize: otherOptions.pageSize,
-              orderBy: stableOrderBy,
+              orderBy: canonOptions.orderBy,
               mode: otherOptions.mode,
               dedupeInterval: otherOptions.dedupeIntervalMs ?? 2_000,
-              ...(stableSelect ? { select: stableSelect } : {}),
+              ...(canonOptions.$select ? { select: canonOptions.$select } : {}),
             },
             observer,
           ),
@@ -208,12 +200,12 @@ export function useLinks<
       objectsArray,
       objectsKey,
       linkName,
-      stableWhere,
+      canonOptions.where,
       otherOptions.pageSize,
-      stableOrderBy,
+      canonOptions.orderBy,
       otherOptions.mode,
       otherOptions.dedupeIntervalMs,
-      stableSelect,
+      canonOptions.$select,
     ],
   );
 
@@ -226,12 +218,9 @@ export function useLinks<
     links: payload?.resolvedList,
     linkedObjectsBySourcePrimaryKey: payload?.linkedObjectsBySourcePrimaryKey
       ?? emptyMap,
-    isLoading: enabled
-      ? (payload?.status === "loading" || payload?.status === "init"
-        || !payload)
-      : false,
+    isLoading: isPayloadLoading(payload, enabled),
     isOptimistic: payload?.isOptimistic ?? false,
-    error: payload?.error,
+    error: extractPayloadError(payload, "Failed to load links"),
     fetchMore: payload?.hasMore ? payload?.fetchMore : undefined,
     hasMore: payload?.hasMore ?? false,
   }), [payload, enabled]);

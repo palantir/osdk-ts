@@ -1,7 +1,7 @@
 {
   "name": "@osdk/react-components-storybook",
   "private": true,
-  "version": "0.2.0-beta.11",
+  "version": "0.2.0",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -22,6 +22,7 @@
   },
   "devDependencies": {
     "@osdk/api": "workspace:*",
+    "@osdk/cbac-components": "workspace:*",
     "@osdk/client": "workspace:*",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@osdk/react": "workspace:*",

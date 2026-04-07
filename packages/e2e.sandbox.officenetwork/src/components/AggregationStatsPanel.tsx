@@ -55,9 +55,9 @@ export function AggregationStatsPanel() {
   const hasError = totalError || deptError || officeError;
 
   const handleRefresh = () => {
-    refetchTotal();
-    refetchDept();
-    refetchOffice();
+    void refetchTotal();
+    void refetchDept();
+    void refetchOffice();
   };
 
   const departmentData = React.useMemo(() => {

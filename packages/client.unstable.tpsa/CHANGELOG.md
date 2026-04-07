@@ -1,5 +1,12 @@
 # @osdk/client.unstable.tpsa
 
+## 0.10.0
+
+### Minor Changes
+
+- 322c5bc: Simulated release
+- 35f2f1a: Add Media inputs/outputs for Queries
+
 ## 0.10.0-beta.2
 
 ### Minor Changes

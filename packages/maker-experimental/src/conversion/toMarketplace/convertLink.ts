@@ -292,7 +292,7 @@ function validateLink(linkDefinition: LinkType) {
 }
 
 export function getObject(
-  object: string | ObjectTypeDefinition,
+  object: string | ObjectTypeDefinition | ObjectType,
 ): { apiName: string; object: ObjectType } {
   const objectApiName = typeof object === "string" ? object : object.apiName;
   const fullObject =

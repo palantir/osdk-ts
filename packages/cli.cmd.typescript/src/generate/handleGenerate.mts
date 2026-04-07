@@ -410,6 +410,7 @@ function isOntologyEditQuery(dataType: QueryDataType): boolean {
     case "interfaceObjectSet":
     case "twoDimensionalAggregation":
     case "threeDimensionalAggregation":
+    case "typeReference":
     case "void":
       return false;
 

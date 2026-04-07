@@ -47,3 +47,12 @@ export async function getSpecificPeep(
 ): Promise<Osdk.Instance<Employee>> {
   return employee.$link.peeps.fetchOne(peepId);
 }
+
+export async function countPeepsViaAggregate(
+  employee: Osdk.Instance<Employee>,
+): Promise<number> {
+  const result = await employee.$link.peeps.aggregate({
+    $select: { $count: "unordered" },
+  });
+  return result.$count;
+}

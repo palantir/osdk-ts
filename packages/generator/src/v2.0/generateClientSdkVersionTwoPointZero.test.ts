@@ -487,6 +487,7 @@ const referencingOntology: WireOntologyDefinition = {
       },
       rid: "ri.a.b.c",
       version: "0",
+      typeReferences: {},
     },
   },
   sharedPropertyTypes: {},

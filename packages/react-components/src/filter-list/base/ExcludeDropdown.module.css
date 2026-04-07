@@ -28,17 +28,18 @@
   cursor: pointer;
   font-family: var(--osdk-filter-item-exclude-dropdown-font-family);
   font-size: var(--osdk-filter-item-exclude-dropdown-font-size);
-  color: var(--osdk-filter-item-exclude-dropdown-color);
-  padding: calc(var(--osdk-surface-spacing) * 0.5)
+  color: var(--osdk-filter-item-exclude-dropdown-trigger-color);
+  padding: calc(var(--osdk-surface-spacing) * 1)
     calc(var(--osdk-surface-spacing) * 1);
-  border-radius: var(--osdk-filter-item-header-action-border-radius);
+  border-radius: var(--osdk-filter-item-exclude-dropdown-trigger-border-radius);
 
   &:hover {
     background: var(--osdk-filter-item-header-action-bg-hover);
   }
 
   &:focus-visible {
-    outline: var(--osdk-filter-input-focus-outline-width) solid var(--osdk-filter-input-focus-outline-color);
+    outline: var(--osdk-filter-input-focus-outline-width) solid
+      var(--osdk-filter-input-focus-outline-color);
     outline-offset: var(--osdk-filter-input-focus-outline-offset);
   }
 }
@@ -81,7 +82,8 @@
   }
 
   &:focus-visible {
-    outline: var(--osdk-filter-input-focus-outline-width) solid var(--osdk-filter-input-focus-outline-color);
+    outline: var(--osdk-filter-input-focus-outline-width) solid
+      var(--osdk-filter-input-focus-outline-color);
     outline-offset: var(--osdk-filter-input-focus-outline-offset);
   }
 }

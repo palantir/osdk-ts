@@ -128,6 +128,23 @@ const fieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
     },
   },
   {
+    fieldKey: "resume",
+    fieldComponent: "FILE_PICKER",
+    label: "Resume",
+    fieldComponentProps: {
+      accept: [".pdf", ".doc", ".docx"],
+    },
+  },
+  {
+    fieldKey: "portfolioFiles",
+    fieldComponent: "FILE_PICKER",
+    label: "Portfolio Files",
+    fieldComponentProps: {
+      isMulti: true,
+      accept: "image/*",
+    },
+  },
+  {
     fieldKey: "skills",
     fieldComponent: "DROPDOWN",
     label: "Skills",
@@ -200,9 +217,19 @@ export function FormPage() {
 
       {submittedState != null && (
         <pre className="submittedOutput">
-          {JSON.stringify(submittedState, null, 2)}
+          {JSON.stringify(submittedState, fileReplacer, 2)}
         </pre>
       )}
     </div>
   );
+}
+
+function fileReplacer(_key: string, value: unknown): unknown {
+  if (value instanceof File) {
+    return value.name;
+  }
+  if (Array.isArray(value) && value.every((v) => v instanceof File)) {
+    return value.map((f) => f.name);
+  }
+  return value;
 }
