@@ -14,13 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  type IconName,
-  type IconPaths,
-  Icons,
-  type IconSize,
-  SVGIconContainer,
-} from "@blueprintjs/icons";
+import type { IconName } from "@blueprintjs/icons";
 import React from "react";
 
 export interface Icon {
@@ -30,7 +24,8 @@ export interface Icon {
 
 interface BlueprintIconProps {
   icon: Icon;
-  size: IconSize;
+  /** Icon size in pixels. */
+  size: number;
 }
 
 export const BlueprintIcon: React.NamedExoticComponent<BlueprintIconProps> =
@@ -38,45 +33,73 @@ export const BlueprintIcon: React.NamedExoticComponent<BlueprintIconProps> =
     icon,
     size,
   }: BlueprintIconProps): React.ReactElement {
-    const paths = useIcon(icon.name, size);
+    const paths = useIconPaths(icon.name, size);
 
     return (
-      <SVGIconContainer iconName={icon.name} color={icon.color}>
-        {paths != null
-          ? paths.map((d, i) => <path key={i} d={d} fillRule="evenodd" />)
-          : []}
-      </SVGIconContainer>
+      <span aria-hidden={true} data-icon={icon.name}>
+        <svg
+          fill={icon.color}
+          data-icon={icon.name}
+          width={size}
+          height={size}
+          viewBox={`0 0 ${size} ${size}`}
+          role="img"
+        >
+          {paths != null
+            && paths.map((d, i) => <path key={i} d={d} fillRule="evenodd" />)}
+        </svg>
+      </span>
     );
   });
 
+type IconPaths = string[];
+
 /**
- * Loads icon paths on demand via the public `Icons.load()` API
- * instead of the static `getIconPaths()` which bundles every icon definition.
+ * Loads Blueprint icon SVG paths on demand using dynamic imports.
+ * Avoids importing `Icons` or `getIconPaths` which statically pull in
+ * the full icon name registry (~66 KB) and all SVG path data.
  */
-function useIcon(icon: IconName, size: IconSize): IconPaths | undefined {
-  const [iconPaths, setIconPaths] = React.useState<IconPaths | undefined>(() =>
-    Icons.getPaths(icon, size)
-  );
+function useIconPaths(icon: IconName, size: number): IconPaths | undefined {
+  const [iconPaths, setIconPaths] = React.useState<IconPaths | undefined>();
 
   React.useEffect(
     function loadIconPaths() {
       let isMounted = true;
-      function loadIconIfNotLoaded() {
-        if (iconPaths == null) {
-          void Icons.load(icon, size).then(() => {
-            if (isMounted) {
-              setIconPaths(Icons.getPaths(icon, size));
-            }
-          });
+      void loadIcon(icon, size).then((paths) => {
+        if (isMounted) {
+          setIconPaths(paths);
         }
-      }
-      loadIconIfNotLoaded();
+      });
       return () => {
         isMounted = false;
       };
     },
-    [icon, size, iconPaths],
+    [icon, size],
   );
 
   return iconPaths;
+}
+
+/**
+ * Dynamically imports only the icon paths chunk needed for the given size.
+ * Uses the same internal paths as Blueprint's `splitPathsBySizeLoader`.
+ */
+async function loadIcon(
+  name: IconName,
+  size: number,
+): Promise<IconPaths | undefined> {
+  const key = toPascalCase(name);
+  const pathsModule = size >= 20
+    ? await import("@blueprintjs/icons/lib/esm/generated/20px/paths")
+    : await import("@blueprintjs/icons/lib/esm/generated/16px/paths");
+  return pathsModule[key as keyof typeof pathsModule] as
+    | IconPaths
+    | undefined;
+}
+
+function toPascalCase(name: string): string {
+  return name
+    .split("-")
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join("");
 }
