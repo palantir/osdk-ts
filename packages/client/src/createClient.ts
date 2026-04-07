@@ -185,7 +185,7 @@ export function createClientFromContext(clientCtx: MinimalClient) {
       switch (o.name) {
         case __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks.name:
           return {
-            async *getBulkLinks(
+            getBulkLinks: async function*(
               objs: Array<OsdkBase<any>>,
               linkTypes: string[],
             ) {
