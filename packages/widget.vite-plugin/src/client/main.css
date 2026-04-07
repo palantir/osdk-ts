@@ -39,6 +39,6 @@ iframe {
     color: #856404;
 }
 
-.bp5-non-ideal-state > * {
+.bp6-non-ideal-state > * {
     max-width: min(100%, 800px);
 }

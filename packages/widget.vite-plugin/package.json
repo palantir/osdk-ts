@@ -51,8 +51,8 @@
     "vite": "^6.3.6 || ^7.3.1"
   },
   "devDependencies": {
-    "@blueprintjs/core": "^5.19.1",
-    "@blueprintjs/icons": "^5.23.0",
+    "@blueprintjs/core": "^6.10.0",
+    "@blueprintjs/icons": "^6.7.0",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@types/fs-extra": "^11.0.4",
