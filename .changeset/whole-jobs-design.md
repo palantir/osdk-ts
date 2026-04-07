@@ -3,4 +3,4 @@
 "@osdk/react": minor
 ---
 
-Return wireObjectSet in useOsdkObjects and useObjectSet
+Fix function columns by composing wire object set

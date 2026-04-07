@@ -123,13 +123,12 @@ export interface FunctionColumnLocator<
   queryDefinition: FunctionColumns[keyof FunctionColumns];
 
   /**
-   * The function will be called with the wire representation of the current object set
-   * to get the input parameters for the function query.
-   * @param wireObjectSet - The wire representation of the current object set.
+   * The function will be called with the current object set to get the input parameters for the function query.
+   * @param objectSet - The current object set.
    * @returns - The function's input parameters including the object set.
    */
   getFunctionParams: (
-    wireObjectSet: WireObjectSet,
+    objectSet: ObjectSet<Q, RDPs>,
   ) => ExtractQueryParameters<FunctionColumns[keyof FunctionColumns]>;
 
   /**

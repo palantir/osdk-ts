@@ -24,11 +24,7 @@ import type {
   WhereClause,
 } from "@osdk/api";
 import type { UseOsdkListResult } from "@osdk/react/experimental";
-import {
-  composeWireObjectSet,
-  useObjectSet,
-  useOsdkObjects,
-} from "@osdk/react/experimental";
+import { useObjectSet, useOsdkObjects } from "@osdk/react/experimental";
 import type { SortingState } from "@tanstack/react-table";
 import { useMemo } from "react";
 import type { ColumnDefinition, ObjectSetOptions } from "../ObjectTableApi.js";
@@ -154,14 +150,10 @@ export function useObjectTableData<
   // Get the result from the appropriate hook
   const baseResult = shouldUseObjectSet ? objectSetResult : osdkObjectsResult;
 
-  // Omitting withProperties as it causes an error when present in the function param
-  const wireObjectSet = useMemo(() => {
-    return composeWireObjectSet(objectSet, objectSetOptions ?? {});
-  }, [objectSet, objectSetOptions]);
-
   // Call useFunctionColumnsData to get function column data
   const functionColumnData = useFunctionColumnsData<Q, RDPs, FunctionColumns>(
-    wireObjectSet,
+    objectSet,
+    objectSetOptions,
     baseResult.data,
     columnDefinitions,
   );

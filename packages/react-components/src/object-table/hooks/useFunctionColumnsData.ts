@@ -16,6 +16,7 @@
 
 import type {
   ObjectOrInterfaceDefinition,
+  ObjectSet,
   Osdk,
   PropertyKeys,
   QueryDefinition,
@@ -23,6 +24,7 @@ import type {
 } from "@osdk/api";
 import type { getWireObjectSet } from "@osdk/client/unstable-do-not-use";
 import {
+  composeWireObjectSet,
   type FunctionQueryParams,
   useOsdkFunctions,
 } from "@osdk/react/experimental";
@@ -33,6 +35,7 @@ import { useMemo } from "react";
 import type {
   ColumnDefinition,
   FunctionColumnLocator,
+  ObjectSetOptions,
 } from "../ObjectTableApi.js";
 import {
   type AsyncCellData,
@@ -75,7 +78,8 @@ export function useFunctionColumnsData<
     never
   >,
 >(
-  wireObjectSet: WireObjectSet | undefined,
+  objectSet: ObjectSet<Q> | undefined,
+  objectSetOptions: ObjectSetOptions<Q> | undefined,
   objects:
     | Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>[]
     | undefined,
@@ -91,10 +95,12 @@ export function useFunctionColumnsData<
 
   // TODO: replace with useDeepEqual when it's added
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const stableObjectSet = useMemo(() => wireObjectSet, [
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    JSON.stringify(wireObjectSet),
-  ]);
+  const stableObjectSet = useMemo(() => objectSet, [JSON.stringify(objectSet)]);
+
+  // Omitting withProperties as it causes an error when present in the function param
+  const wireObjectSet = useMemo(() => {
+    return composeWireObjectSet(stableObjectSet, objectSetOptions ?? {});
+  }, [stableObjectSet, objectSetOptions]);
 
   const disabled = !stableObjectSet || !stableObjects?.length
     || functionColumnConfigs.length === 0;
@@ -110,14 +116,14 @@ export function useFunctionColumnsData<
         (config): FunctionQueryParams<QueryDefinition<unknown>> => ({
           queryDefinition: config.queryDefinition,
           options: {
-            params: config.getParams(stableObjectSet),
+            params: config.getParams(wireObjectSet),
             dedupeIntervalMs: config.dedupeIntervalMs
               ?? DEFAULT_DEDUPE_INTERVAL_MS,
           } as FunctionQueryParams<QueryDefinition<unknown>>["options"],
         }),
       );
     },
-    [disabled, functionColumnConfigs, stableObjectSet],
+    [disabled, functionColumnConfigs, wireObjectSet],
   );
 
   const results = useOsdkFunctions(

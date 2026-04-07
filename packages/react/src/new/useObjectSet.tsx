@@ -30,7 +30,7 @@ import {
   type ObserveObjectSetArgs,
 } from "@osdk/client/unstable-do-not-use";
 import React from "react";
-import { composeWireObjectSet, extractPayloadError } from "./hookUtils.js";
+import { extractPayloadError } from "./hookUtils.js";
 import { makeExternalStore, type Snapshot } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
 
@@ -166,12 +166,6 @@ export interface UseObjectSetResult<
    * The final ObjectSet after all transformations
    */
   objectSet: ObjectSet<Q, RDPs> | undefined;
-
-  /**
-   * The wire representation of the final ObjectSet after all transformations.
-   * Available immediately without waiting for loading to complete.
-   */
-  wireObjectSet: ReturnType<typeof getWireObjectSet> | undefined;
 
   /**
    * The total count of objects matching the query (if available from the API)
@@ -323,27 +317,6 @@ export function useObjectSet<
 
   const typeApiName = baseObjectSet?.$objectSetInternals.def.apiName;
 
-  const wireObjectSet = React.useMemo(
-    () =>
-      composeWireObjectSet(baseObjectSet as ObjectSet<any> | undefined, {
-        withProperties: canonOptions.withProperties,
-        where: canonOptions.where,
-        union: canonOptions.union,
-        intersect: canonOptions.intersect,
-        subtract: canonOptions.subtract,
-        pivotTo: otherOptions.pivotTo as string | undefined,
-      }),
-    [
-      baseObjectSet,
-      canonOptions.withProperties,
-      canonOptions.where,
-      canonOptions.union,
-      canonOptions.intersect,
-      canonOptions.subtract,
-      otherOptions.pivotTo,
-    ],
-  );
-
   const refetch = React.useCallback(async () => {
     if (typeApiName) {
       await observableClient.invalidateObjectType(typeApiName);
@@ -369,11 +342,10 @@ export function useObjectSet<
       fetchMore: payload?.hasMore ? payload.fetchMore : undefined,
       hasMore: payload?.hasMore ?? false,
       objectSet: lastLoaded?.objectSet as ObjectSet<Q, RDPs> | undefined,
-      wireObjectSet,
       totalCount: lastLoaded?.totalCount,
       refetch,
     };
-  }, [payload, refetch, enabled, wireObjectSet]);
+  }, [payload, refetch, enabled]);
 }
 
 function isPayloadCompleted<
