@@ -94,10 +94,6 @@ export class ObservableClientImpl implements ObservableClient {
     this.validateAction = store.validateAction.bind(store);
   }
 
-  get media() {
-    return this.__experimentalStore.media;
-  }
-
   public observeObject: <T extends ObjectOrInterfaceDefinition>(
     apiName: T["apiName"] | T,
     pk: PrimaryKeyType<T>,

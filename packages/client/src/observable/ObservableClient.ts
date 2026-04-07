@@ -20,11 +20,8 @@ import type {
   ActionValidationResponse,
   AggregateOpts,
   AggregationsResults,
-  Attachment,
   CompileTimeMetadata,
   DerivedProperty,
-  Media,
-  MediaMetadata,
   ObjectOrInterfaceDefinition,
   ObjectSet,
   ObjectTypeDefinition,
@@ -548,56 +545,11 @@ export interface ObservableClient extends ObserveLinks {
     options: T,
   ) => CanonicalizedOptions<T>;
 
-  /**
-   * Observe media metadata with automatic updates.
-   */
   observeMediaMetadata(
     coords: MediaPropertyLocation,
     options: MediaMetadataObserveOptions,
     observer: Observer<MediaMetadataPayload>,
   ): Unsubscribable;
-
-  /**
-   * Media operations for managing metadata, content, and caching.
-   */
-  media: {
-    getCacheKey(
-      mediaOrCoords: Media | Attachment | MediaPropertyLocation,
-    ): string;
-
-    fetchMetadata(
-      coords: MediaPropertyLocation,
-      options?: { preview?: boolean },
-    ): Promise<MediaMetadata>;
-
-    getCachedMetadata(
-      coords: MediaPropertyLocation,
-    ): MediaMetadata | undefined;
-
-    fetchContent(
-      mediaOrCoords: Media | Attachment | MediaPropertyLocation,
-      options?: { preview?: boolean },
-    ): Promise<Blob>;
-
-    getCachedContent(
-      mediaOrCoords: Media | Attachment | MediaPropertyLocation,
-      options?: { preview?: boolean },
-    ): Blob | undefined;
-
-    createBlobUrl(
-      mediaOrCoords: Media | Attachment | MediaPropertyLocation,
-      options?: { preview?: boolean },
-    ): string | undefined;
-
-    releaseBlobUrl(
-      mediaOrCoords: Media | Attachment | MediaPropertyLocation,
-      options?: { preview?: boolean },
-    ): void;
-
-    clearCache(
-      mediaOrCoords: Media | Attachment | MediaPropertyLocation,
-    ): void;
-  };
 
   /**
    * Clean up resources and stop background processes.
