@@ -14,34 +14,35 @@
  * limitations under the License.
  */
 
-import React, { useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import type {
   ClassNames,
   DateAfter,
   DateBefore,
   Matcher,
+  SelectSingleEventHandler,
 } from "react-day-picker";
 import { DayPicker } from "react-day-picker";
 import styles from "./DateCalendar.module.css";
 
-const CLASS_NAMES: Partial<ClassNames> = {
+const CLASS_NAMES: ClassNames = {
   root: styles.calendar,
   months: styles.calendarMonths,
-  month_grid: styles.calendarMonthGrid,
-  weekday: styles.calendarWeekday,
-  day: styles.calendarDay,
-  day_button: styles.calendarDayButton,
-  selected: styles.calendarSelected,
-  today: styles.calendarToday,
-  outside: styles.calendarOutside,
-  disabled: styles.calendarDisabled,
-  hidden: styles.calendarHidden,
+  table: styles.calendarMonthGrid,
+  head_cell: styles.calendarWeekday,
+  cell: styles.calendarDay,
+  day: styles.calendarDayButton,
+  day_selected: styles.calendarSelected,
+  day_today: styles.calendarToday,
+  day_outside: styles.calendarOutside,
+  day_disabled: styles.calendarDisabled,
+  day_hidden: styles.calendarHidden,
   nav: styles.calendarNav,
-  button_previous: styles.calendarNavButton,
-  button_next: styles.calendarNavButton,
-  month_caption: styles.calendarMonthCaption,
+  nav_button_previous: styles.calendarNavButton,
+  nav_button_next: styles.calendarNavButton,
+  caption: styles.calendarMonthCaption,
   caption_label: styles.calendarCaptionLabel,
-  chevron: styles.calendarChevron,
+  nav_icon: styles.calendarChevron,
 };
 
 export interface DateCalendarProps {
@@ -72,11 +73,18 @@ export default function DateCalendar({
     return matchers;
   }, [min, max]);
 
+  const handleSelect = useCallback<SelectSingleEventHandler>(
+    (day) => {
+      onSelect(day);
+    },
+    [onSelect],
+  );
+
   return (
     <DayPicker
       mode="single"
       selected={dateSelected}
-      onSelect={onSelect}
+      onSelect={handleSelect}
       disabled={disabled}
       defaultMonth={dateSelected}
       classNames={CLASS_NAMES}
