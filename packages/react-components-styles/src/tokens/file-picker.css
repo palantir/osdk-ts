@@ -1,0 +1,46 @@
+:root {
+  /* Trigger — styled to look like an input */
+  --osdk-file-picker-trigger-min-height: var(--osdk-input-min-height);
+  --osdk-file-picker-trigger-padding: var(--osdk-input-padding);
+  --osdk-file-picker-trigger-border-radius: var(--osdk-input-border-radius);
+  --osdk-file-picker-trigger-border: var(--osdk-input-border-width) solid
+    var(--osdk-input-border-color);
+  --osdk-file-picker-trigger-border-color-focus: var(
+    --osdk-input-border-color-focus
+  );
+  --osdk-file-picker-trigger-bg: var(--osdk-input-bg);
+  --osdk-file-picker-trigger-bg-hover: var(--osdk-input-bg-hover);
+  --osdk-file-picker-trigger-color: var(--osdk-input-color);
+  --osdk-file-picker-trigger-font-size: var(--osdk-input-font-size);
+  --osdk-file-picker-trigger-font-family: var(--osdk-input-font-family);
+  --osdk-file-picker-trigger-placeholder-color: var(
+    --osdk-input-placeholder-color
+  );
+
+  /* Transitions */
+  --osdk-file-picker-transition-duration: var(--osdk-input-transition-duration);
+  --osdk-file-picker-transition-ease: var(--osdk-input-transition-ease);
+
+  /* Focus ring */
+  --osdk-file-picker-trigger-focus-width: var(--osdk-input-focus-width);
+  --osdk-file-picker-trigger-focus-color: var(--osdk-input-focus-color);
+  --osdk-file-picker-trigger-focus-offset: var(--osdk-input-focus-offset);
+
+  /* Clear button */
+  --osdk-file-picker-clear-size: calc(var(--osdk-surface-spacing) * 4);
+  --osdk-file-picker-clear-margin: 0 calc(var(--osdk-surface-spacing) * 1);
+  --osdk-file-picker-clear-color: var(--osdk-typography-color-muted);
+  --osdk-file-picker-clear-color-hover: var(
+    --osdk-typography-color-default-rest
+  );
+
+  /* Browse button */
+  --osdk-file-picker-browse-bg: var(--osdk-button-secondary-bg);
+  --osdk-file-picker-browse-bg-hover: var(--osdk-button-secondary-bg-hover);
+  --osdk-file-picker-browse-bg-active: var(--osdk-button-secondary-bg-active);
+  --osdk-file-picker-browse-color: var(--osdk-button-secondary-color);
+  --osdk-file-picker-browse-padding: calc(var(--osdk-surface-spacing) * 1.5)
+    calc(var(--osdk-surface-spacing) * 3);
+  --osdk-file-picker-browse-border-left: var(--osdk-input-border-width) solid
+    var(--osdk-input-border-color);
+}

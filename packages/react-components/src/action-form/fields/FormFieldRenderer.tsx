@@ -20,6 +20,7 @@ import type { RendererFieldDefinition } from "../FormFieldApi.js";
 import { CustomField } from "./CustomField.js";
 import { DatetimePickerField } from "./DatetimePickerField.js";
 import { DropdownField } from "./DropdownField.js";
+import { FilePickerField } from "./FilePickerField.js";
 import { NumberInputField } from "./NumberInputField.js";
 import { RadioButtonsField } from "./RadioButtonsField.js";
 import { TextAreaField } from "./TextAreaField.js";
@@ -130,12 +131,35 @@ function renderFieldComponent(
         />
       );
     case "FILE_PICKER":
+      return (
+        <FilePickerField
+          id={fieldDefinition.fieldKey}
+          value={coerceToFileValue(value)}
+          onChange={onChange}
+          {...fieldDefinition.fieldComponentProps}
+        />
+      );
     case "OBJECT_SET":
       return <div>Unsupported field type: {fieldDefinition.fieldComponent}
       </div>;
     default:
       return assertUnreachableFieldComponent(fieldDefinition);
   }
+}
+
+// TODO: Move and share with `coerceFieldValue`
+function isFileArray(value: unknown[]): value is File[] {
+  return value.every((v) => v instanceof File);
+}
+
+function coerceToFileValue(value: unknown): File | File[] | null {
+  if (value instanceof File) {
+    return value;
+  }
+  if (Array.isArray(value) && isFileArray(value)) {
+    return value;
+  }
+  return null;
 }
 
 function assertUnreachableFieldComponent(value: never): never {

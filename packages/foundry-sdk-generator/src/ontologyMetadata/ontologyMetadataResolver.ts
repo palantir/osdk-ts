@@ -225,7 +225,7 @@ export class OntologyMetadataResolver {
       const ontologyFullMetadata = await OntologiesV2.getFullMetadata(
         this.getClientContext(),
         ontology.rid as OntologyIdentifier,
-        { branch: branch },
+        { branch },
       );
 
       if ((ontologyFullMetadata as any).errorName != null) {
@@ -384,7 +384,7 @@ export class OntologyMetadataResolver {
         },
         {
           preview: true,
-          branch: branch,
+          branch,
         },
       );
 
