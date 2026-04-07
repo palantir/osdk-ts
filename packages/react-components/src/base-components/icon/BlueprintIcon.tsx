@@ -15,12 +15,13 @@
  */
 
 import {
-  getIconPaths,
   type IconName,
+  type IconPaths,
+  Icons,
   type IconSize,
   SVGIconContainer,
 } from "@blueprintjs/icons";
-import React, { useMemo } from "react";
+import React from "react";
 
 export interface Icon {
   name: IconName;
@@ -37,14 +38,42 @@ export const BlueprintIcon: React.NamedExoticComponent<BlueprintIconProps> =
     icon,
     size,
   }: BlueprintIconProps): React.ReactElement {
-    const paths = useMemo(() => getIconPaths(icon.name, size), [
-      icon.name,
-      size,
-    ]);
+    const paths = useIcon(icon.name, size);
 
     return (
       <SVGIconContainer iconName={icon.name} color={icon.color}>
-        {paths.map((d, i) => <path key={i} d={d} fillRule="evenodd" />)}
+        {paths != null
+          ? paths.map((d, i) => <path key={i} d={d} fillRule="evenodd" />)
+          : []}
       </SVGIconContainer>
     );
   });
+
+/**
+ * Loads icon paths on demand via `Icons.load()` instead of the static
+ * `getIconPaths()` which bundles every icon definition.
+ */
+function useIcon(icon: IconName, size: IconSize): IconPaths | undefined {
+  const [iconPaths, setIconPaths] = React.useState<IconPaths | undefined>(() =>
+    Icons.getPaths(icon, size)
+  );
+
+  React.useEffect(
+    function loadIconPaths() {
+      let isMounted = true;
+      if (iconPaths == null) {
+        void Icons.load(icon, size).then(() => {
+          if (isMounted) {
+            setIconPaths(Icons.getPaths(icon, size));
+          }
+        });
+      }
+      return () => {
+        isMounted = false;
+      };
+    },
+    [icon, size, iconPaths],
+  );
+
+  return iconPaths;
+}
