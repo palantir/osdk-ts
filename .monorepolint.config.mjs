@@ -348,7 +348,7 @@ const archetypeRules = archetypes(
       ...LIBRARY_RULES,
       react: true,
       cssExport: true,
-      extraPublishFiles: ["AGENTS.md"],
+      extraPublishFiles: ["AGENTS.md", "docs"],
     },
   )
   .addArchetype(
