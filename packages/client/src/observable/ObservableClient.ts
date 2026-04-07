@@ -608,19 +608,12 @@ export interface ObservableClient extends ObserveLinks {
     observer: Observer<MediaMetadataPayload>,
   ): Unsubscribable;
 
-  /**
-   * Observe media content with unified lifecycle: metadata, content, blob URLs,
-   * SWR on invalidation, progressive loading, and image dimension extraction.
-   */
   observeMedia(
     source: Media | Attachment | MediaPropertyLocation,
     options: MediaContentObserveOptions,
     observer: Observer<MediaContentPayload>,
   ): Unsubscribable;
 
-  /**
-   * Invalidate media content, triggering stale-while-revalidate refetch.
-   */
   invalidateMedia(
     source: Media | Attachment | MediaPropertyLocation,
   ): void;

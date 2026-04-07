@@ -20,6 +20,13 @@ import type { BlobMemoryManager } from "./BlobMemoryManager.js";
 
 export type MediaSource = Media | Attachment | MediaPropertyLocation;
 
+export function isMediaPropertyLocation(
+  source: MediaSource,
+): source is MediaPropertyLocation {
+  return "objectType" in source && "primaryKey" in source
+    && "propertyName" in source;
+}
+
 export async function extractImageDimensions(
   blob: Blob,
 ): Promise<{ width: number; height: number } | undefined> {
@@ -83,7 +90,6 @@ async function loadWithPreview(opts: FetchMediaContentOpts): Promise<void> {
     onResult,
   } = opts;
 
-  // Phase 1: preview
   const previewBlob = await fetchContent(source, { preview: true });
   if (isCancelled()) {
     return;
@@ -114,10 +120,8 @@ async function loadWithPreview(opts: FetchMediaContentOpts): Promise<void> {
     isPreview: true,
   });
 
-  // Remove base cache so full-res fetch hits network
   blobManager.remove(blobCacheKey);
 
-  // Phase 2: full resolution
   const fullBlob = await fetchContent(source, { preview: false });
   if (isCancelled()) {
     if (previewUrl) {
@@ -137,7 +141,6 @@ async function loadWithPreview(opts: FetchMediaContentOpts): Promise<void> {
     return;
   }
 
-  // Release preview blob URL
   blobManager.releaseBlobUrl(previewBlobKey);
 
   onResult({

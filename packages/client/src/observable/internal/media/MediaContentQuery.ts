@@ -44,6 +44,7 @@ import type { BlobMemoryManager } from "./BlobMemoryManager.js";
 import {
   extractImageDimensions,
   fetchMediaContent,
+  isMediaPropertyLocation,
   type MediaSource,
 } from "./fetchMediaContent.js";
 import type {
@@ -115,7 +116,7 @@ export class MediaContentQuery extends Query<
         : undefined,
     );
 
-    if ("objectType" in source) {
+    if (isMediaPropertyLocation(source)) {
       this.#objectType = source.objectType;
       this.#primaryKey = source.primaryKey;
     }
@@ -167,12 +168,12 @@ export class MediaContentQuery extends Query<
         this.#activeUrlKey = this.#blobCacheKey;
       }
 
-      const dims = await extractImageDimensions(cachedBlob);
+      const currentEntry = this.store.getValue(this.cacheKey);
+      const existingDims = currentEntry?.value?.dimensions;
+      const dims = existingDims ?? await extractImageDimensions(cachedBlob);
       if (signal?.aborted) {
         return;
       }
-
-      const currentEntry = this.store.getValue(this.cacheKey);
       const prevLastUpdated = currentEntry?.value?.lastUpdated ?? 0;
       const withinStaleTime = this.#staleTime > 0 && prevLastUpdated > 0
         && (Date.now() - prevLastUpdated) < this.#staleTime;
@@ -184,7 +185,7 @@ export class MediaContentQuery extends Query<
             previewUrl: undefined,
             metadata: currentEntry?.value?.metadata,
             content: cachedBlob,
-            dimensions: dims ?? currentEntry?.value?.dimensions,
+            dimensions: dims,
             isStale: false,
             isPreview: false,
             lastUpdated: withinStaleTime ? prevLastUpdated : Date.now(),
@@ -263,6 +264,16 @@ export class MediaContentQuery extends Query<
     status: Status,
     batch: BatchContext,
   ): Entry<MediaContentCacheKey> {
+    const entry = batch.read(this.cacheKey);
+    if (
+      entry && entry.status === status && entry.value?.url === data?.url
+      && entry.value?.isStale === data?.isStale
+      && entry.value?.isPreview === data?.isPreview
+      && entry.value?.metadata === data?.metadata
+      && entry.value?.dimensions === data?.dimensions
+    ) {
+      return entry;
+    }
     return batch.write(this.cacheKey, data, status);
   }
 
@@ -274,18 +285,16 @@ export class MediaContentQuery extends Query<
       return undefined;
     }
 
-    const modifiedObjectsOfType = changes.modifiedObjects.get(this.#objectType);
-    const addedObjectsOfType = changes.addedObjects.get(this.#objectType);
-
-    for (const obj of modifiedObjectsOfType ?? []) {
-      if (obj.$primaryKey === this.#primaryKey) {
-        return this.invalidate();
-      }
-    }
-
-    for (const obj of addedObjectsOfType ?? []) {
-      if (obj.$primaryKey === this.#primaryKey) {
-        return this.invalidate();
+    for (
+      const objects of [
+        changes.modifiedObjects.get(this.#objectType),
+        changes.addedObjects.get(this.#objectType),
+      ]
+    ) {
+      for (const obj of objects ?? []) {
+        if (obj.$primaryKey === this.#primaryKey) {
+          return this.invalidate();
+        }
       }
     }
 
@@ -317,7 +326,6 @@ export class MediaContentQuery extends Query<
     return Promise.resolve();
   };
 
-  /** SWR invalidation: mark stale, clear blob cache, revalidate */
   invalidate(): Promise<void> {
     this.store.batch({}, (batch) => {
       const entry = batch.read(this.cacheKey);
