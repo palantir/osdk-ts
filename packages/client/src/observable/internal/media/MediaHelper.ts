@@ -31,7 +31,10 @@ import type { KnownCacheKey } from "../KnownCacheKey.js";
 import type { Query } from "../Query.js";
 import type { UnsubscribableWrapper } from "../UnsubscribableWrapper.js";
 import { createBlobMemoryManager } from "./BlobMemoryManager.js";
-import type { MediaSource } from "./fetchMediaContent.js";
+import {
+  isMediaPropertyLocation,
+  type MediaSource,
+} from "./fetchMediaContent.js";
 import { getMediaCacheKey } from "./getMediaCacheKey.js";
 import type { MediaContentCacheKey } from "./MediaContentCacheKey.js";
 import { MediaContentQuery } from "./MediaContentQuery.js";
@@ -41,13 +44,6 @@ import type {
   MediaMetadataPayload,
 } from "./MediaMetadataQuery.js";
 import { MediaMetadataQuery } from "./MediaMetadataQuery.js";
-
-function isMediaPropertyLocation(
-  source: MediaSource,
-): source is MediaPropertyLocation {
-  return "objectType" in source && "primaryKey" in source
-    && "propertyName" in source;
-}
 
 export class MediaHelper extends AbstractHelper<
   Query<KnownCacheKey, unknown, CommonObserveOptions>,
@@ -90,12 +86,7 @@ export class MediaHelper extends AbstractHelper<
     options: MediaMetadataObserveOptions,
     observer: Observer<MediaMetadataPayload>,
   ): UnsubscribableWrapper {
-    const cacheKey = this.cacheKeys.get(
-      "mediaMetadata",
-      coords.objectType,
-      coords.primaryKey,
-      coords.propertyName,
-    ) as MediaMetadataCacheKey;
+    const cacheKey = this.getMetadataCacheKey(coords);
 
     const query = this.store.queries.get(cacheKey, () => {
       const subject = this.store.subjects.get(cacheKey);
@@ -146,7 +137,11 @@ export class MediaHelper extends AbstractHelper<
       | MediaContentQuery
       | undefined;
     if (query) {
-      query.invalidate().catch(() => {});
+      query.invalidate().catch((e: unknown) => {
+        if (process.env.NODE_ENV !== "production") {
+          this.store.logger?.error("Error invalidating media", e);
+        }
+      });
     }
   }
 
