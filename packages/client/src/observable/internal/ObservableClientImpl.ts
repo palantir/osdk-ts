@@ -400,10 +400,6 @@ export class ObservableClientImpl implements ObservableClient {
       observer,
     );
   }
-
-  public dispose(): void {
-    this.__experimentalStore.dispose();
-  }
 }
 
 function observeSingleLink(

@@ -550,11 +550,6 @@ export interface ObservableClient extends ObserveLinks {
     options: MediaMetadataObserveOptions,
     observer: Observer<MediaMetadataPayload>,
   ): Unsubscribable;
-
-  /**
-   * Clean up resources and stop background processes.
-   */
-  dispose(): void;
 }
 
 export interface CanonicalizeOptionsInput<OS = ObjectSet<any, any>> {

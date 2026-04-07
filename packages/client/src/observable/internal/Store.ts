@@ -197,10 +197,6 @@ export class Store {
     );
   }
 
-  public dispose(): void {
-    this.media.dispose();
-  }
-
   /**
    * Called after a key is no longer retained and the timeout has elapsed
    * @param key
