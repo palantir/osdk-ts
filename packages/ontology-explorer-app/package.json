@@ -36,8 +36,8 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "devDependencies": {
-    "@blueprintjs/core": "^6.7.0",
-    "@blueprintjs/icons": "^6.0.0",
+    "@blueprintjs/core": "^6.10.0",
+    "@blueprintjs/icons": "^6.7.0",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@tanstack/react-query": "^5.66.0",

@@ -15,7 +15,7 @@
     "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
-    "@blueprintjs/core": "^5.19.1",
+    "@blueprintjs/core": "^6.10.0",
     "@osdk/widget.client": "workspace:*",
     "@osdk/widget.client-react": "workspace:*",
     "clsx": "^2.1.1",
