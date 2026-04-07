@@ -15,16 +15,18 @@
  */
 
 import type {
-  ObjectSet,
   ObjectTypeDefinition,
   Osdk,
   PropertyKeys,
   QueryDefinition,
 } from "@osdk/api";
+import type { getWireObjectSet } from "@osdk/client/unstable-do-not-use";
 import {
   useOsdkFunctions,
   type UseOsdkFunctionsResult,
 } from "@osdk/react/experimental";
+
+type WireObjectSet = ReturnType<typeof getWireObjectSet>;
 import { renderHook } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { ColumnDefinition } from "../../ObjectTableApi.js";
@@ -68,7 +70,7 @@ type FunctionColumnDef = {
   timestampColumn?: MockQueryDef;
 };
 
-const mockObjectSet = {} as ObjectSet<TestObject>;
+const mockObjectSet = {} as WireObjectSet;
 
 const mockObject1 = {
   $objectType: "TestObject",
@@ -97,8 +99,8 @@ const columnDefinitions: ColumnDefinition<
       type: "function",
       id: "testColumn",
       queryDefinition: mockQueryDefinition,
-      getFunctionParams: ((objectSet: ObjectSet<TestObject>) => ({
-        [OBJ_SET_KEY]: objectSet,
+      getFunctionParams: ((wireObjectSet: WireObjectSet) => ({
+        [OBJ_SET_KEY]: wireObjectSet,
       })) as any,
       getKey: (obj) => `${obj.$objectType}:${obj.$primaryKey}`,
     },
@@ -241,8 +243,8 @@ describe("useFunctionColumnsData", () => {
           type: "function",
           id: "testColumn",
           queryDefinition: mockQueryDefinition,
-          getFunctionParams: ((objectSet: ObjectSet<TestObject>) => ({
-            [OBJ_SET_KEY]: objectSet,
+          getFunctionParams: ((wireObjectSet: WireObjectSet) => ({
+            [OBJ_SET_KEY]: wireObjectSet,
           })) as any,
           getValue: (cellData) => (cellData as { status: string })?.status,
           getKey: (obj) => `${obj.$objectType}:${obj.$primaryKey}`,
@@ -303,8 +305,8 @@ describe("useFunctionColumnsData", () => {
           type: "function",
           id: "statusColumn",
           queryDefinition: mockQueryDefinition,
-          getFunctionParams: ((objectSet: ObjectSet<TestObject>) => ({
-            [OBJ_SET_KEY]: objectSet,
+          getFunctionParams: ((wireObjectSet: WireObjectSet) => ({
+            [OBJ_SET_KEY]: wireObjectSet,
           })) as any,
           getValue: (cellData) => (cellData as { status: string })?.status,
           getKey: (obj) => `${obj.$objectType}:${obj.$primaryKey}`,
@@ -315,8 +317,8 @@ describe("useFunctionColumnsData", () => {
           type: "function",
           id: "timestampColumn",
           queryDefinition: mockQueryDefinition,
-          getFunctionParams: ((objectSet: ObjectSet<TestObject>) => ({
-            [OBJ_SET_KEY]: objectSet,
+          getFunctionParams: ((wireObjectSet: WireObjectSet) => ({
+            [OBJ_SET_KEY]: wireObjectSet,
           })) as any,
           getValue: (cellData) =>
             (cellData as { timestamp: string })?.timestamp,
@@ -382,7 +384,7 @@ describe("useFunctionColumnsData", () => {
       },
     ] as Osdk.Instance<TestObject, "$allBaseProperties", TestObjectKeys, {}>[];
 
-    const mockObjectSet = {} as ObjectSet<TestObject>;
+    const mockObjectSet = {} as WireObjectSet;
 
     const mockResult1 = {
       "TestObject:obj1": {
@@ -410,8 +412,8 @@ describe("useFunctionColumnsData", () => {
           type: "function",
           id: "statusColumn",
           queryDefinition: mockQueryDefinition,
-          getFunctionParams: ((objectSet: ObjectSet<TestObject>) => ({
-            [OBJ_SET_KEY]: objectSet,
+          getFunctionParams: ((wireObjectSet: WireObjectSet) => ({
+            [OBJ_SET_KEY]: wireObjectSet,
           })) as any,
           getValue: (cellData) => (cellData as { status: string })?.status,
           getKey: (obj) => `${obj.$objectType}:${obj.$primaryKey}`,
@@ -422,8 +424,8 @@ describe("useFunctionColumnsData", () => {
           type: "function",
           id: "timestampColumn",
           queryDefinition: mockQueryDefinition2,
-          getFunctionParams: ((objectSet: ObjectSet<TestObject>) => ({
-            [OBJ_SET_KEY]: objectSet,
+          getFunctionParams: ((wireObjectSet: WireObjectSet) => ({
+            [OBJ_SET_KEY]: wireObjectSet,
           })) as any,
           getValue: (cellData) =>
             (cellData as { timestamp: string })?.timestamp,

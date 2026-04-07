@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+import type { ObjectSet } from "@osdk/api";
+import { getWireObjectSet } from "@osdk/client/unstable-do-not-use";
+
 export function extractPayloadError(
   payload: { error?: Error; status?: string } | undefined | null,
   fallbackMessage: string,
@@ -36,4 +39,47 @@ export function isPayloadLoading(
   }
   return payload?.status === "loading" || payload?.status === "init"
     || !payload;
+}
+
+/**
+ * Composes a base ObjectSet with hook options and returns the wire
+ * representation. Available immediately — does not depend on loading state.
+ */
+export function composeWireObjectSet(
+  baseObjectSet: ObjectSet<any> | undefined,
+  options: {
+    withProperties?: unknown;
+    where?: unknown;
+    union?: ReadonlyArray<ObjectSet<any>>;
+    intersect?: ReadonlyArray<ObjectSet<any>>;
+    subtract?: ReadonlyArray<ObjectSet<any>>;
+    pivotTo?: string;
+  },
+): ReturnType<typeof getWireObjectSet> | undefined {
+  if (baseObjectSet == null) {
+    return undefined;
+  }
+
+  let result: ObjectSet<any> = baseObjectSet;
+
+  if (options.withProperties) {
+    result = result.withProperties(options.withProperties as any);
+  }
+  if (options.where) {
+    result = result.where(options.where as any);
+  }
+  if (options.union && options.union.length > 0) {
+    result = result.union(...options.union);
+  }
+  if (options.intersect && options.intersect.length > 0) {
+    result = result.intersect(...options.intersect);
+  }
+  if (options.subtract && options.subtract.length > 0) {
+    result = result.subtract(...options.subtract);
+  }
+  if (options.pivotTo) {
+    result = result.pivotTo(options.pivotTo as any);
+  }
+
+  return getWireObjectSet(result);
 }

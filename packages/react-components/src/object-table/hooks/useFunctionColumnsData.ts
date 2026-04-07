@@ -16,16 +16,18 @@
 
 import type {
   ObjectOrInterfaceDefinition,
-  ObjectSet,
   Osdk,
   PropertyKeys,
   QueryDefinition,
   SimplePropertyDef,
 } from "@osdk/api";
+import type { getWireObjectSet } from "@osdk/client/unstable-do-not-use";
 import {
   type FunctionQueryParams,
   useOsdkFunctions,
 } from "@osdk/react/experimental";
+
+type WireObjectSet = ReturnType<typeof getWireObjectSet>;
 
 import { useMemo } from "react";
 import type {
@@ -49,7 +51,7 @@ type FunctionColumnConfig<
 > = {
   queryDefinition: QueryDefinition<unknown>;
   getParams: (
-    objectSet: ObjectSet<Q, RDPs>,
+    wireObjectSet: WireObjectSet,
   ) => unknown;
   columnIds: Array<{
     columnId: string;
@@ -73,7 +75,7 @@ export function useFunctionColumnsData<
     never
   >,
 >(
-  objectSet: ObjectSet<Q, RDPs> | undefined,
+  wireObjectSet: WireObjectSet | undefined,
   objects:
     | Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>[]
     | undefined,
@@ -89,7 +91,10 @@ export function useFunctionColumnsData<
 
   // TODO: replace with useDeepEqual when it's added
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const stableObjectSet = useMemo(() => objectSet, [JSON.stringify(objectSet)]);
+  const stableObjectSet = useMemo(() => wireObjectSet, [
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    JSON.stringify(wireObjectSet),
+  ]);
 
   const disabled = !stableObjectSet || !stableObjects?.length
     || functionColumnConfigs.length === 0;

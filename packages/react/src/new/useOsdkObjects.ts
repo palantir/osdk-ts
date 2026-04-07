@@ -25,9 +25,16 @@ import type {
   SimplePropertyDef,
   WhereClause,
 } from "@osdk/api";
-import type { ObserveObjectsCallbackArgs } from "@osdk/client/unstable-do-not-use";
+import type {
+  getWireObjectSet,
+  ObserveObjectsCallbackArgs,
+} from "@osdk/client/unstable-do-not-use";
 import React from "react";
-import { extractPayloadError, isPayloadLoading } from "./hookUtils.js";
+import {
+  composeWireObjectSet,
+  extractPayloadError,
+  isPayloadLoading,
+} from "./hookUtils.js";
 import { makeExternalStore } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
 
@@ -193,6 +200,12 @@ export interface UseOsdkListResult<
 
   objectSet: ObjectSet<T, RDPs> | undefined;
 
+  /**
+   * The wire representation of the final ObjectSet after all transformations.
+   * Available immediately without waiting for loading to complete.
+   */
+  wireObjectSet: ReturnType<typeof getWireObjectSet> | undefined;
+
   refetch: () => Promise<void>;
 }
 
@@ -246,7 +259,7 @@ export function useOsdkObjects<
   | UseOsdkListResult<LinkedType<Q, LinkNames<Q>>>
   | UseOsdkListResult<LinkedType<Q, LinkNames<Q>>, {}, "$rid">
 {
-  const { observableClient } = React.useContext(OsdkContext2);
+  const { client, observableClient } = React.useContext(OsdkContext2);
 
   const {
     pageSize,
@@ -342,6 +355,26 @@ export function useOsdkObjects<
 
   const listPayload = React.useSyncExternalStore(subscribe, getSnapShot);
 
+  const wireObjectSet = React.useMemo(
+    () => {
+      const baseObjectSet = client?.(type as any) as
+        | ObjectSet<any>
+        | undefined;
+      return composeWireObjectSet(baseObjectSet, {
+        withProperties: canonOptions.withProperties,
+        where: canonOptions.where,
+        pivotTo,
+      });
+    },
+    [
+      client,
+      type,
+      canonOptions.withProperties,
+      canonOptions.where,
+      pivotTo,
+    ],
+  );
+
   const refetch = React.useCallback(async () => {
     await observableClient.invalidateObjectType(type.apiName);
   }, [observableClient, type.apiName]);
@@ -355,6 +388,7 @@ export function useOsdkObjects<
     totalCount: listPayload?.totalCount,
     hasMore: listPayload?.hasMore ?? false,
     objectSet: listPayload?.objectSet,
+    wireObjectSet,
     refetch,
-  }), [listPayload, enabled, refetch]);
+  }), [listPayload, enabled, refetch, wireObjectSet]);
 }
