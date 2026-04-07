@@ -1,7 +1,6 @@
 ---
-"@osdk/react-components": patch
 "@osdk/react-components-styles": patch
-"@osdk/client": patch
+"@osdk/react-components": patch
 ---
 
 Add ObjectSetField component for action forms
