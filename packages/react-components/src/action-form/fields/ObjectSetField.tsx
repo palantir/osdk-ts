@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { type IconName, IconSize } from "@blueprintjs/icons";
+import type { IconName } from "@blueprintjs/icons";
 import type { ObjectSet, ObjectTypeDefinition } from "@osdk/api";
 import { useOsdkMetadata } from "@osdk/react";
 import { useObjectSet } from "@osdk/react/experimental";
@@ -30,7 +30,7 @@ import type { ObjectSetFieldProps } from "../FormFieldApi.js";
 import styles from "./ObjectSetField.module.css";
 
 const DEFAULT_OBJECT_ICON: Icon = { name: "cube", color: "#4C90F0" };
-const ICON_SIZE = IconSize.STANDARD;
+const ICON_SIZE = 16;
 const DEFAULT_EMPTY_MESSAGE = "Object set is not defined";
 
 export const ObjectSetField: <T extends ObjectTypeDefinition>(
