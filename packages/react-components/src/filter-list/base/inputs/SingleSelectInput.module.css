@@ -27,29 +27,19 @@
 }
 
 .clearButton {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--osdk-filter-select-clear-padding);
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  color: var(--osdk-filter-select-clear-color);
-  border-radius: var(--osdk-filter-select-clear-border-radius);
-  transition: color var(--osdk-filter-select-clear-transition),
-              background-color var(--osdk-filter-select-clear-transition);
+  flex-shrink: 0;
+}
 
-  &:hover {
-    color: var(--osdk-filter-select-clear-color-hover);
-    background-color: var(--osdk-filter-select-clear-bg-hover);
-  }
+.itemLabel {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 
-  &:focus-visible {
-    outline: var(--osdk-filter-input-focus-outline-width) solid var(--osdk-filter-input-focus-outline-color);
-    outline-offset: var(--osdk-filter-input-focus-outline-offset);
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    transition: none;
-  }
+.itemCount {
+  font-variant-numeric: tabular-nums;
+  color: var(--osdk-typography-color-muted);
+  flex-shrink: 0;
 }

@@ -15,9 +15,11 @@
  */
 
 import type {
+  LinkTypeBlockDataV2,
   ObjectTypeBlockDataV2,
   PropertyType,
   PropertyTypeMappingInfo,
+  Type,
 } from "@osdk/client.unstable";
 import * as fs from "node:fs";
 import * as os from "node:os";
@@ -27,13 +29,14 @@ import type { ReadableId } from "../util/generateRid.js";
 import { ReadableIdGenerator } from "../util/generateRid.js";
 import {
   generateBackingDatasetBlockResult,
+  generateBackingDatasetBlockResultForLink,
   getNonEditOnlyProperties,
   propertyTypeToSchemaType,
 } from "./generateBackingDataset.js";
 
 function makePropertyType(
   apiName: string,
-  typeStr: string,
+  type: Type,
   rid: string,
 ): PropertyType {
   return {
@@ -42,28 +45,39 @@ function makePropertyType(
     displayMetadata: {
       description: undefined,
       displayName: apiName,
+      visibility: "NORMAL",
     },
     id: apiName,
     indexedForSearch: false,
     rid,
     sharedPropertyTypeRid: undefined,
     status: { type: "active", active: {} },
-    type: { type: typeStr, [typeStr]: {} },
+    type,
     typeClasses: [],
     valueType: undefined,
-  } as unknown as PropertyType;
+  };
 }
+
+const STRING_PROPERTY_TYPE: Type = {
+  type: "string",
+  string: { isLongText: true, supportsExactMatching: true },
+};
+
+const INTEGER_PROPERTY_TYPE: Type = { type: "integer", integer: {} };
 
 function createObjectTypeBlockData(
   overrides: {
     apiName?: string;
-    properties?: Array<{ apiName: string; type: string; editOnly?: boolean }>;
+    properties?: Array<{ apiName: string; type: Type; editOnly?: boolean }>;
   } = {},
 ): ObjectTypeBlockDataV2 {
   const apiName = overrides.apiName ?? "TestObject";
   const props = overrides.properties ?? [
-    { apiName: "id", type: "string" },
-    { apiName: "count", type: "integer" },
+    {
+      apiName: "id",
+      type: STRING_PROPERTY_TYPE,
+    },
+    { apiName: "count", type: INTEGER_PROPERTY_TYPE },
   ];
 
   const propertyTypes: Record<string, PropertyType> = {};
@@ -74,11 +88,11 @@ function createObjectTypeBlockData(
       `ri.ontology-metadata.temp.property-type.${apiName}.${prop.apiName}`;
     propertyTypes[rid] = makePropertyType(prop.apiName, prop.type, rid);
     propertyMapping[rid] = prop.editOnly
-      ? { type: "editOnly", editOnly: {} } as PropertyTypeMappingInfo
+      ? { type: "editOnly", editOnly: {} }
       : {
         type: "column",
         column: prop.apiName,
-      } as PropertyTypeMappingInfo;
+      };
   }
 
   return {
@@ -125,7 +139,7 @@ function createObjectTypeBlockData(
     propertySecurityGroupPackagingVersion: undefined,
     schemaMigrations: undefined,
     writebackDatasets: [],
-  } as unknown as ObjectTypeBlockDataV2;
+  };
 }
 
 describe("propertyTypeToSchemaType", () => {
@@ -175,9 +189,9 @@ describe("getNonEditOnlyProperties", () => {
   it("excludes edit-only properties", () => {
     const blockData = createObjectTypeBlockData({
       properties: [
-        { apiName: "id", type: "string" },
-        { apiName: "secret", type: "string", editOnly: true },
-        { apiName: "count", type: "integer" },
+        { apiName: "id", type: STRING_PROPERTY_TYPE },
+        { apiName: "secret", type: STRING_PROPERTY_TYPE, editOnly: true },
+        { apiName: "count", type: INTEGER_PROPERTY_TYPE },
       ],
     });
     const props = getNonEditOnlyProperties(blockData);
@@ -316,9 +330,9 @@ describe("generateBackingDatasetBlockResult", () => {
   it("excludes editOnly properties from outputs and files", async () => {
     const blockData = createObjectTypeBlockData({
       properties: [
-        { apiName: "id", type: "string" },
-        { apiName: "secret", type: "string", editOnly: true },
-        { apiName: "count", type: "integer" },
+        { apiName: "id", type: STRING_PROPERTY_TYPE },
+        { apiName: "secret", type: STRING_PROPERTY_TYPE, editOnly: true },
+        { apiName: "count", type: INTEGER_PROPERTY_TYPE },
       ],
     });
 
@@ -343,5 +357,278 @@ describe("generateBackingDatasetBlockResult", () => {
     expect(schema.fieldSchemaList.map((f: { name: string }) => f.name)).toEqual(
       ["id", "count"],
     );
+  });
+});
+
+function createLinkTypeBlockData(
+  overrides: {
+    linkApiName?: string;
+    objectTypeRidA?: string;
+    objectTypeRidB?: string;
+    pkRidA?: string;
+    pkRidB?: string;
+    columnA?: string;
+    columnB?: string;
+  } = {},
+): LinkTypeBlockDataV2 {
+  const objectTypeRidA = overrides.objectTypeRidA
+    ?? "ri.ontology-metadata.temp.object-type.ObjA";
+  const objectTypeRidB = overrides.objectTypeRidB
+    ?? "ri.ontology-metadata.temp.object-type.ObjB";
+  const pkRidA = overrides.pkRidA
+    ?? "ri.ontology-metadata.temp.property-type.ObjA.fooId";
+  const pkRidB = overrides.pkRidB
+    ?? "ri.ontology-metadata.temp.property-type.ObjB.barId";
+  const columnA = overrides.columnA ?? "fooId";
+  const columnB = overrides.columnB ?? "barId";
+
+  return {
+    linkType: {
+      definition: {
+        type: "manyToMany",
+        manyToMany: {
+          objectTypeRidA,
+          objectTypeRidB,
+          objectTypeAToBLinkMetadata: {
+            displayMetadata: { displayName: "A to B" },
+            typeClasses: [],
+          },
+          objectTypeBToALinkMetadata: {
+            displayMetadata: { displayName: "B to A" },
+            typeClasses: [],
+          },
+          peeringMetadata: undefined,
+          objectTypeAPrimaryKeyPropertyMapping: { [pkRidA]: pkRidA },
+          objectTypeBPrimaryKeyPropertyMapping: { [pkRidB]: pkRidB },
+        },
+      },
+      rid: "ri.ontology-metadata.temp.link-type.test",
+      id: overrides.linkApiName ?? "foo-to-bar",
+      status: { type: "active", active: {} },
+      redacted: false,
+    },
+    datasources: [{
+      rid: "ri.ontology.main.datasource.test",
+      datasource: {
+        type: "dataset",
+        dataset: {
+          datasetRid: "ri.foundry.main.dataset.link-test",
+          branchId: "main",
+          writebackDatasetRid: undefined,
+          objectTypeAPrimaryKeyMapping: { [pkRidA]: columnA },
+          objectTypeBPrimaryKeyMapping: { [pkRidB]: columnB },
+        },
+      },
+      editsConfiguration: { onlyAllowPrivilegedEdits: false },
+      redacted: false,
+    }],
+    entityMetadata: undefined,
+  } as unknown as LinkTypeBlockDataV2;
+}
+
+function createObjectTypesForLink(
+  overrides: {
+    objectTypeRidA?: string;
+    objectTypeRidB?: string;
+    pkRidA?: string;
+    pkRidB?: string;
+    pkTypeA?: Type;
+    pkTypeB?: Type;
+  } = {},
+): Record<string, ObjectTypeBlockDataV2> {
+  const objectTypeRidA = overrides.objectTypeRidA
+    ?? "ri.ontology-metadata.temp.object-type.ObjA";
+  const objectTypeRidB = overrides.objectTypeRidB
+    ?? "ri.ontology-metadata.temp.object-type.ObjB";
+  const pkRidA = overrides.pkRidA
+    ?? "ri.ontology-metadata.temp.property-type.ObjA.fooId";
+  const pkRidB = overrides.pkRidB
+    ?? "ri.ontology-metadata.temp.property-type.ObjB.barId";
+  const pkTypeA = overrides.pkTypeA ?? STRING_PROPERTY_TYPE;
+  const pkTypeB = overrides.pkTypeB ?? STRING_PROPERTY_TYPE;
+
+  return {
+    [objectTypeRidA]: {
+      objectType: {
+        apiName: "ObjA",
+        propertyTypes: {
+          [pkRidA]: makePropertyType("fooId", pkTypeA, pkRidA),
+        },
+        primaryKeys: [pkRidA],
+      },
+    } as unknown as ObjectTypeBlockDataV2,
+    [objectTypeRidB]: {
+      objectType: {
+        apiName: "ObjB",
+        propertyTypes: {
+          [pkRidB]: makePropertyType("barId", pkTypeB, pkRidB),
+        },
+        primaryKeys: [pkRidB],
+      },
+    } as unknown as ObjectTypeBlockDataV2,
+  };
+}
+
+describe("generateBackingDatasetBlockResultForLink", () => {
+  let buildDir: string;
+
+  beforeEach(async () => {
+    buildDir = await fs.promises.mkdtemp(
+      path.join(os.tmpdir(), "link-backing-ds-test-"),
+    );
+  });
+
+  afterEach(async () => {
+    await fs.promises.rm(buildDir, { recursive: true, force: true });
+  });
+
+  it("generates correct result and files for a m2m link", async () => {
+    const linkBlockData = createLinkTypeBlockData();
+    const objectTypes = createObjectTypesForLink();
+    const linkApiName = "fooToBar";
+
+    const result = await generateBackingDatasetBlockResultForLink(
+      linkBlockData,
+      linkApiName,
+      objectTypes,
+      buildDir,
+    );
+
+    // Block metadata
+    expect(result.block_identifier).toBe("fooToBar-link-backing-ds");
+    expect(result.block_type).toBe("STATIC_DATASET");
+    expect(result.input_mapping_entries).toEqual([]);
+
+    const datasetName = `link.${linkApiName}`;
+
+    // tabularDatasource output
+    const dsKey = ReadableIdGenerator.getForDatasetOutput(datasetName);
+    expect(result.outputs[dsKey]).toBeDefined();
+    expect(result.outputs[dsKey].type).toBe("tabularDatasource");
+
+    // datasourceColumn outputs (2 columns)
+    const colAKey = ReadableIdGenerator.getForDatasetColumnOutput(
+      datasetName,
+      "fooId",
+    );
+    const colBKey = ReadableIdGenerator.getForDatasetColumnOutput(
+      datasetName,
+      "barId",
+    );
+    expect(result.outputs[colAKey]).toBeDefined();
+    expect(result.outputs[colAKey].type).toBe("datasourceColumn");
+    expect(result.outputs[colBKey]).toBeDefined();
+    expect(result.outputs[colBKey].type).toBe("datasourceColumn");
+
+    // Total outputs: 1 tabularDatasource + 2 datasourceColumn
+    expect(Object.keys(result.outputs)).toHaveLength(3);
+
+    // compassResource input
+    const compassKey =
+      `${linkApiName}-link-backing-ds-compass-resource` as ReadableId;
+    expect(result.inputs[compassKey]).toBeDefined();
+    expect(result.inputs[compassKey].type).toBe("compassResource");
+
+    // schema.json
+    const schema = JSON.parse(
+      await fs.promises.readFile(
+        path.join(result.block_data_directory, "schema.json"),
+        "utf-8",
+      ),
+    );
+    expect(schema.fieldSchemaList).toHaveLength(2);
+    expect(schema.fieldSchemaList[0].name).toBe("fooId");
+    expect(schema.fieldSchemaList[0].type).toBe("STRING");
+    expect(schema.fieldSchemaList[1].name).toBe("barId");
+    expect(schema.fieldSchemaList[1].type).toBe("STRING");
+
+    // block-data.json
+    const blockDataContents = JSON.parse(
+      await fs.promises.readFile(
+        path.join(result.block_data_directory, "block-data.json"),
+        "utf-8",
+      ),
+    );
+    expect(blockDataContents.type).toBe("v1");
+    expect(blockDataContents.v1.hasSchema).toBe(true);
+    const columnValues = Object.values(blockDataContents.v1.columns);
+    expect(columnValues).toContain("fooId");
+    expect(columnValues).toContain("barId");
+
+    // VERSION
+    const version = await fs.promises.readFile(
+      path.join(result.block_data_directory, "VERSION"),
+      "utf-8",
+    );
+    expect(version).toBe("\"1\"");
+
+    // files.zip
+    const zipBuffer = await fs.promises.readFile(
+      path.join(result.block_data_directory, "files.zip"),
+    );
+    expect(zipBuffer.length).toBe(22);
+  });
+
+  it("handles collision columns with _from/_to suffixes", async () => {
+    const linkBlockData = createLinkTypeBlockData({
+      columnA: "id_from",
+      columnB: "id_to",
+    });
+    const objectTypes = createObjectTypesForLink();
+    const linkApiName = "selfLink";
+
+    const result = await generateBackingDatasetBlockResultForLink(
+      linkBlockData,
+      linkApiName,
+      objectTypes,
+      buildDir,
+    );
+
+    const datasetName = `link.${linkApiName}`;
+
+    const colAKey = ReadableIdGenerator.getForDatasetColumnOutput(
+      datasetName,
+      "id_from",
+    );
+    const colBKey = ReadableIdGenerator.getForDatasetColumnOutput(
+      datasetName,
+      "id_to",
+    );
+    expect(result.outputs[colAKey]).toBeDefined();
+    expect(result.outputs[colBKey]).toBeDefined();
+
+    const schema = JSON.parse(
+      await fs.promises.readFile(
+        path.join(result.block_data_directory, "schema.json"),
+        "utf-8",
+      ),
+    );
+    expect(schema.fieldSchemaList[0].name).toBe("id_from");
+    expect(schema.fieldSchemaList[1].name).toBe("id_to");
+  });
+
+  it("resolves column types from referenced object types", async () => {
+    const linkBlockData = createLinkTypeBlockData();
+    const objectTypes = createObjectTypesForLink({
+      pkTypeA: STRING_PROPERTY_TYPE,
+      pkTypeB: INTEGER_PROPERTY_TYPE,
+    });
+    const linkApiName = "typedLink";
+
+    const result = await generateBackingDatasetBlockResultForLink(
+      linkBlockData,
+      linkApiName,
+      objectTypes,
+      buildDir,
+    );
+
+    const schema = JSON.parse(
+      await fs.promises.readFile(
+        path.join(result.block_data_directory, "schema.json"),
+        "utf-8",
+      ),
+    );
+    expect(schema.fieldSchemaList[0].type).toBe("STRING");
+    expect(schema.fieldSchemaList[1].type).toBe("INTEGER");
   });
 });

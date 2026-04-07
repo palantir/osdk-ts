@@ -34,6 +34,7 @@ export interface UseFilterListStateResult<Q extends ObjectTypeDefinition> {
     filterKey: string,
     state: FilterState,
   ) => void;
+  clearFilterState: (filterKey: string) => void;
   whereClause: WhereClause<Q>;
   perFilterWhereClauses: Map<string, WhereClause<Q>>;
   activeFilterCount: number;
@@ -167,6 +168,23 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
     ],
   );
 
+  const clearFilterState = useCallback(
+    (filterKey: string) => {
+      const clearedStates = new Map(filterStates);
+      clearedStates.delete(filterKey);
+
+      setFilterStates(clearedStates);
+
+      const newWhereClause = buildWhereClause(
+        filterDefinitions,
+        clearedStates,
+        propertyTypes,
+      );
+      onFilterClauseChanged?.(newWhereClause);
+    },
+    [filterStates, filterDefinitions, propertyTypes, onFilterClauseChanged],
+  );
+
   const whereClause = useMemo(
     () =>
       buildWhereClause(
@@ -222,6 +240,7 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
   return useMemo(() => ({
     filterStates,
     setFilterState,
+    clearFilterState,
     whereClause,
     perFilterWhereClauses,
     activeFilterCount,
@@ -229,6 +248,7 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
   }), [
     filterStates,
     setFilterState,
+    clearFilterState,
     whereClause,
     perFilterWhereClauses,
     activeFilterCount,

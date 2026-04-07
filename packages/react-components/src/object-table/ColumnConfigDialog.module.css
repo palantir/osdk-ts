@@ -166,8 +166,7 @@
 }
 
 .checkbox {
-  width: var(--osdk-checkbox-icon-size);
-  height: var(--osdk-checkbox-icon-size);
+  flex-shrink: 0;
 }
 
 .propertyList {

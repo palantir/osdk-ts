@@ -88,11 +88,21 @@ const locationCityFilter: FilterDefinitionUnion<Employee> = {
   filterState: { type: "EXACT_MATCH", values: [] },
 } as FilterDefinitionUnion<Employee>;
 
+const jobTitleMultiSelectFilter: FilterDefinitionUnion<Employee> = {
+  type: "PROPERTY",
+  id: "jobTitle-multi",
+  key: "jobTitle",
+  label: "Job Title",
+  filterComponent: "MULTI_SELECT",
+  filterState: { type: "SELECT", selectedValues: [] },
+} as FilterDefinitionUnion<Employee>;
+
 const sharedFilterDefinitions: FilterDefinitionUnion<Employee>[] = [
   departmentFilter,
   teamFilter,
   fullNameFilter,
   startDateFilter,
+  jobTitleMultiSelectFilter,
   employeeNumberFilter,
   locationCityFilter,
 ];
@@ -214,6 +224,16 @@ const meta: Meta<EmployeeFilterListProps> = {
         "Called when a filter is removed. If provided, users can remove filters.",
       control: false,
       table: { category: "Events" },
+    },
+    addFilterMode: {
+      description:
+        "Controls how filter add/remove is managed. \"uncontrolled\" manages visibility internally; \"controlled\" leaves it to the consumer.",
+      control: "select",
+      options: ["controlled", "uncontrolled"],
+      table: {
+        category: "Advanced",
+        defaultValue: { summary: "\"uncontrolled\"" },
+      },
     },
     renderAddFilterButton: {
       description: "Custom render function for the add filter button.",

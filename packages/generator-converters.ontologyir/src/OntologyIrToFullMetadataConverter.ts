@@ -418,6 +418,7 @@ export class OntologyIrToFullMetadataConverter {
     const functions = fd.discover();
 
     if (irOutputFile) {
+      fs.mkdirSync(path.dirname(irOutputFile), { recursive: true });
       fs.writeFileSync(irOutputFile, JSON.stringify(functions));
     }
 
@@ -466,6 +467,7 @@ export class OntologyIrToFullMetadataConverter {
           func.output.single.dataType,
           func.customTypes,
         ),
+        typeReferences: {},
       } satisfies Ontologies.QueryTypeV2;
     });
   }
@@ -584,6 +586,7 @@ export class OntologyIrToFullMetadataConverter {
           resolvedOutput,
           customTypes,
         ),
+        typeReferences: {},
       };
       queries.push(queryType);
     }

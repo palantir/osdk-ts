@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-import { Button } from "@base-ui/react/button";
-import { Cross } from "@blueprintjs/icons";
 import classnames from "classnames";
 import React, { memo, useCallback, useMemo } from "react";
-import { Select } from "../../../base-components/select/Select.js";
+import { Combobox } from "../../../base-components/combobox/Combobox.js";
 import type { PropertyAggregationValue } from "../../types/AggregationTypes.js";
 import sharedStyles from "./shared.module.css";
 import styles from "./SingleSelectInput.module.css";
@@ -57,19 +55,30 @@ function SingleSelectInputInner({
     [onChange],
   );
 
-  const handleClear = useCallback(() => {
-    onChange(undefined);
-  }, [onChange]);
+  const items = useMemo(
+    () => values.map(({ value }) => value),
+    [values],
+  );
 
-  const items = useMemo(() => {
-    const result: Record<string, string> = {};
-    for (const { value, count } of values) {
-      result[value] = showCounts
-        ? `${value} (${count.toLocaleString()})`
-        : value;
-    }
-    return result;
-  }, [values, showCounts]);
+  const countByValue = useMemo(
+    () => new Map(values.map(({ value, count }) => [value, count])),
+    [values],
+  );
+
+  const renderItem = useCallback(
+    (value: string) => (
+      <Combobox.Item key={value} value={value}>
+        <Combobox.ItemIndicator />
+        <span className={styles.itemLabel}>{value}</span>
+        {showCounts && (
+          <span className={styles.itemCount}>
+            ({(countByValue.get(value) ?? 0).toLocaleString()})
+          </span>
+        )}
+      </Combobox.Item>
+    ),
+    [countByValue, showCounts],
+  );
 
   return (
     <div
@@ -97,39 +106,27 @@ function SingleSelectInputInner({
 
       {(values.length > 0 || isLoading) && (
         <div className={styles.selectContainer}>
-          <Select.Root<string>
+          <Combobox.Root<string>
             value={selectedValue ?? null}
             onValueChange={handleValueChange}
             items={items}
           >
-            <Select.Trigger
+            <Combobox.SearchInput
               placeholder={placeholder}
               aria-label={ariaLabel}
             />
-            <Select.Portal>
-              <Select.Positioner>
-                <Select.Popup>
-                  {values.map(({ value, count }) => (
-                    <Select.Item key={value} value={value}>
-                      {showCounts
-                        ? `${value} (${count.toLocaleString()})`
-                        : value}
-                    </Select.Item>
-                  ))}
-                </Select.Popup>
-              </Select.Positioner>
-            </Select.Portal>
-          </Select.Root>
-          {showClearButton && selectedValue !== undefined && (
-            <Button
-              type="button"
-              className={styles.clearButton}
-              onClick={handleClear}
-              aria-label="Clear selection"
-            >
-              <Cross />
-            </Button>
-          )}
+            {showClearButton && selectedValue !== undefined && (
+              <Combobox.Clear className={styles.clearButton} />
+            )}
+            <Combobox.Portal>
+              <Combobox.Positioner>
+                <Combobox.Popup>
+                  <Combobox.Empty>No matching options</Combobox.Empty>
+                  <Combobox.List>{renderItem}</Combobox.List>
+                </Combobox.Popup>
+              </Combobox.Positioner>
+            </Combobox.Portal>
+          </Combobox.Root>
         </div>
       )}
     </div>

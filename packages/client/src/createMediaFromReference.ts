@@ -16,6 +16,7 @@
 
 import type { Media, MediaMetadata, MediaReference } from "@osdk/api";
 import { MediaSets } from "@osdk/foundry.mediasets";
+import invariant from "tiny-invariant";
 import type { MinimalClient } from "./MinimalClientContext.js";
 
 /**
@@ -44,14 +45,6 @@ export function createMediaFromReference(
     },
 
     async fetchMetadata(): Promise<MediaMetadata> {
-      const metadata = await MediaSets.metadata(
-        client,
-        mediaSetRid,
-        mediaItemRid,
-        { preview: true },
-        token ? { ReadToken: token } : undefined,
-      );
-
       const info = await MediaSets.info(
         client,
         mediaSetRid,
@@ -60,10 +53,13 @@ export function createMediaFromReference(
         token ? { ReadToken: token } : undefined,
       );
 
+      invariant(info.sizeBytes != null, "Expected sizeBytes in media info");
+      invariant(info.mimeType != null, "Expected mimeType in media info");
+
       return {
         path: info.path,
-        sizeBytes: metadata.sizeBytes,
-        mediaType: undefined as any, // Media type is not currently returned by the API, so we return undefined here. This can be updated when the API returns media type.
+        sizeBytes: info.sizeBytes,
+        mediaType: info.mimeType,
       };
     },
 

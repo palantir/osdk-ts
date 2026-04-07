@@ -27,7 +27,7 @@ describe("basicFetchPage", () => {
       employeeId: 1,
       fullName: "John",
     });
-    mockClient.whenObjectSet((stub) => stub(Employee).fetchPage())
+    mockClient.when((stub) => stub(Employee).fetchPage())
       .thenReturnObjects(
         [mockObject],
       );

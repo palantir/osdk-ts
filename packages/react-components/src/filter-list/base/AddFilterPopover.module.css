@@ -15,13 +15,17 @@
  */
 
 .trigger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-family: var(--osdk-filter-header-font-family);
   font-size: var(--osdk-filter-header-reset-font-size);
-  color: var(--osdk-filter-header-reset-color);
+  color: var(--osdk-typography-color-default-rest);
   background: var(--osdk-filter-header-button-bg);
-  border: none;
+  border: var(--osdk-filter-list-addButton-border);
   cursor: pointer;
   padding: var(--osdk-filter-header-reset-padding);
+  min-height: var(--osdk-filter-list-addButton-height);
   border-radius: var(--osdk-filter-header-button-border-radius);
   transition: background-color var(--osdk-filter-header-button-transition);
   width: 100%;
@@ -41,43 +45,5 @@
 
   @media (prefers-reduced-motion: reduce) {
     transition: none;
-  }
-}
-
-.positioner {
-  z-index: var(--osdk-surface-z-index-3);
-}
-
-.popup {
-  background: var(--osdk-filter-item-menu-bg);
-  border: var(--osdk-filter-item-menu-border);
-  border-radius: var(--osdk-filter-item-menu-border-radius);
-  box-shadow: var(--osdk-filter-item-menu-shadow);
-  padding: var(--osdk-filter-item-menu-padding);
-}
-
-.menuItem {
-  display: flex;
-  align-items: center;
-  gap: var(--osdk-surface-spacing);
-  padding: var(--osdk-filter-item-menu-item-padding);
-  font-family: var(--osdk-filter-item-menu-item-font-family);
-  font-size: var(--osdk-filter-item-menu-item-font-size);
-  color: var(--osdk-filter-item-menu-item-color);
-  border-radius: var(--osdk-filter-item-menu-item-border-radius);
-  cursor: pointer;
-  border: none;
-  background: transparent;
-  width: 100%;
-  text-align: left;
-
-  &:hover,
-  &[data-highlighted] {
-    background: var(--osdk-filter-item-menu-item-bg-hover);
-  }
-
-  &:focus-visible {
-    outline: var(--osdk-filter-input-focus-outline-width) solid var(--osdk-filter-input-focus-outline-color);
-    outline-offset: var(--osdk-filter-input-focus-outline-offset);
   }
 }

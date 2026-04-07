@@ -61,6 +61,27 @@ const fieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
     },
   },
   {
+    fieldKey: "yearsOfExperience",
+    fieldComponent: "NUMBER_INPUT",
+    label: "Years of Experience",
+    placeholder: "Enter years",
+    isRequired: true,
+    fieldComponentProps: {
+      min: 0,
+      max: 50,
+    },
+  },
+  {
+    fieldKey: "salary",
+    fieldComponent: "NUMBER_INPUT",
+    label: "Salary",
+    placeholder: "Enter annual salary",
+    fieldComponentProps: {
+      min: 0,
+      step: 1000,
+    },
+  },
+  {
     fieldKey: "bio",
     fieldComponent: "TEXT_AREA",
     label: "Bio",
@@ -101,6 +122,23 @@ const fieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
         { label: "Contract", value: "contract" },
         { label: "Internship", value: "internship" },
       ],
+    },
+  },
+  {
+    fieldKey: "resume",
+    fieldComponent: "FILE_PICKER",
+    label: "Resume",
+    fieldComponentProps: {
+      accept: [".pdf", ".doc", ".docx"],
+    },
+  },
+  {
+    fieldKey: "portfolioFiles",
+    fieldComponent: "FILE_PICKER",
+    label: "Portfolio Files",
+    fieldComponentProps: {
+      isMulti: true,
+      accept: "image/*",
     },
   },
   {
@@ -156,9 +194,19 @@ export function FormPage() {
 
       {submittedState != null && (
         <pre className="submittedOutput">
-          {JSON.stringify(submittedState, null, 2)}
+          {JSON.stringify(submittedState, fileReplacer, 2)}
         </pre>
       )}
     </div>
   );
+}
+
+function fileReplacer(_key: string, value: unknown): unknown {
+  if (value instanceof File) {
+    return value.name;
+  }
+  if (Array.isArray(value) && value.every((v) => v instanceof File)) {
+    return value.map((f) => f.name);
+  }
+  return value;
 }

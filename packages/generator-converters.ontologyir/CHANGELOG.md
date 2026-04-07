@@ -1,5 +1,47 @@
 # @osdk/generator-converters.ontologyir
 
+## 2.8.0
+
+### Minor Changes
+
+- 150da1a: Simulated release
+- abb0e0f: Bump Platform SDK dependencies
+- 4762f4b: Rewrite link rids for preview compatibility
+- 908b519: Create folder for functions ir output
+- 35f2f1a: Add Media inputs/outputs for Queries
+- cde6b85: Write functions ir optionally
+- 32c6a0c: Fix functions discovery on Windows
+- 12fe33f: use block data instead of IR for preview generator
+- 46f0a47: Update platform SDK to 2.57.0 and handle new typeReference query data type
+
+### Patch Changes
+
+- Updated dependencies [322c5bc]
+- Updated dependencies [f487a6a]
+- Updated dependencies [e462938]
+- Updated dependencies [6499ff9]
+- Updated dependencies [034081a]
+- Updated dependencies [35f2f1a]
+- Updated dependencies [972bda6]
+- Updated dependencies [6941b4f]
+  - @osdk/client.unstable@2.8.0
+
+## 2.8.0-beta.32
+
+### Minor Changes
+
+- 46f0a47: Update platform SDK to 2.57.0 and handle new typeReference query data type
+
+### Patch Changes
+
+- @osdk/client.unstable@2.8.0-beta.32
+
+## 2.8.0-beta.31
+
+### Patch Changes
+
+- @osdk/client.unstable@2.8.0-beta.31
+
 ## 2.8.0-beta.30
 
 ### Patch Changes

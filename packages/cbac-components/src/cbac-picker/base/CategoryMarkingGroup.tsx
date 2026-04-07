@@ -23,15 +23,13 @@ import { isImplied } from "./selectionStateHelpers.js";
 
 const GRID_COLUMNS = 4;
 const VISIBLE_ROWS = 3;
+const DEFAULT_MARKING_STATE: MarkingSelectionState = "NONE";
 
 export interface CategoryMarkingGroupProps {
   categoryName: string;
-  markings: ReadonlyArray<{
-    id: string;
-    label: string;
-    selectionState: MarkingSelectionState;
-    disabled?: boolean;
-  }>;
+  markings: ReadonlyArray<{ id: string; name: string }>;
+  markingStates: Map<string, MarkingSelectionState>;
+  readOnly?: boolean;
   onMarkingToggle: (markingId: string) => void;
 }
 
@@ -40,17 +38,30 @@ export const CategoryMarkingGroup: React.MemoExoticComponent<
 > = React.memo(function CategoryMarkingGroup({
   categoryName,
   markings,
+  markingStates,
+  readOnly,
   onMarkingToggle,
 }: CategoryMarkingGroupProps): React.ReactElement {
   const headingId = React.useId();
 
+  const resolvedMarkings = React.useMemo(
+    () =>
+      markings.map((marking) => ({
+        id: marking.id,
+        label: marking.name,
+        selectionState: markingStates.get(marking.id) ?? DEFAULT_MARKING_STATE,
+        disabled: readOnly,
+      })),
+    [markings, markingStates, readOnly],
+  );
+
   const maxVisible = GRID_COLUMNS * VISIBLE_ROWS;
-  const hasOverflow = markings.length > maxVisible;
+  const hasOverflow = resolvedMarkings.length > maxVisible;
   const visibleMarkings = hasOverflow
-    ? markings.slice(0, maxVisible - 1)
-    : markings;
+    ? resolvedMarkings.slice(0, maxVisible - 1)
+    : resolvedMarkings;
   const overflowMarkings = hasOverflow
-    ? markings.slice(maxVisible - 1)
+    ? resolvedMarkings.slice(maxVisible - 1)
     : [];
 
   const gridItemCount = hasOverflow

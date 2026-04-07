@@ -1,5 +1,22 @@
 # @osdk/client.unstable
 
+## 2.8.0
+
+### Minor Changes
+
+- 322c5bc: Simulated release
+- f487a6a: Maker experimental
+- e462938: Support PSGs in OAC
+- 6499ff9: Support reducers and struct main values in oac
+- 034081a: oac direct datasources
+- 35f2f1a: Add Media inputs/outputs for Queries
+- 972bda6: Support assumed markings for oac PSGs
+- 6941b4f: extendsInterfaceMetadata on the IR to fix interface impl
+
+## 2.8.0-beta.32
+
+## 2.8.0-beta.31
+
 ## 2.8.0-beta.30
 
 ## 2.8.0-beta.29

@@ -1,0 +1,132 @@
+/*
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/* Outer wrapper — looks like an input field */
+.osdkFilePickerTrigger {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: var(--osdk-file-picker-trigger-min-height);
+  border: var(--osdk-file-picker-trigger-border);
+  border-radius: var(--osdk-file-picker-trigger-border-radius);
+  background: var(--osdk-file-picker-trigger-bg);
+  font-family: var(--osdk-file-picker-trigger-font-family);
+  font-size: var(--osdk-file-picker-trigger-font-size);
+  box-sizing: border-box;
+  overflow: hidden;
+  transition:
+    background-color var(--osdk-file-picker-transition-duration)
+      var(--osdk-file-picker-transition-ease),
+    border-color var(--osdk-file-picker-transition-duration)
+      var(--osdk-file-picker-transition-ease);
+
+  &:hover {
+    background: var(--osdk-file-picker-trigger-bg-hover);
+  }
+
+  &:focus-visible {
+    border-color: var(--osdk-file-picker-trigger-border-color-focus);
+    outline: var(--osdk-file-picker-trigger-focus-width) solid
+      var(--osdk-file-picker-trigger-focus-color);
+    outline-offset: var(--osdk-file-picker-trigger-focus-offset);
+  }
+}
+
+/* Visually hidden file input */
+.osdkFilePickerHiddenInput {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* File name text (left section) */
+.osdkFilePickerText {
+  flex: 1;
+  padding: var(--osdk-file-picker-trigger-padding);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: left;
+  color: var(--osdk-file-picker-trigger-color);
+  cursor: pointer;
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-size: inherit;
+}
+
+.osdkFilePickerPlaceholder {
+  color: var(--osdk-file-picker-trigger-placeholder-color);
+}
+
+/* Clear ✕ button */
+.osdkFilePickerClear {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: var(--osdk-file-picker-clear-size);
+  height: var(--osdk-file-picker-clear-size);
+  margin: var(--osdk-file-picker-clear-margin);
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--osdk-file-picker-clear-color);
+  cursor: pointer;
+  transition: color var(--osdk-file-picker-transition-duration)
+    var(--osdk-file-picker-transition-ease);
+
+  &:hover {
+    color: var(--osdk-file-picker-clear-color-hover);
+  }
+
+  &:focus-visible {
+    outline: var(--osdk-file-picker-trigger-focus-width) solid
+      var(--osdk-file-picker-trigger-focus-color);
+    border-radius: var(--osdk-surface-border-radius);
+  }
+}
+
+/* Browse label (right section) */
+.osdkFilePickerBrowse {
+  flex-shrink: 0;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  padding: var(--osdk-file-picker-browse-padding);
+  border-left: var(--osdk-file-picker-browse-border-left);
+  background: var(--osdk-file-picker-browse-bg);
+  color: var(--osdk-file-picker-browse-color);
+  font-family: var(--osdk-file-picker-trigger-font-family);
+  font-size: var(--osdk-file-picker-trigger-font-size);
+  pointer-events: none;
+  transition: background-color var(--osdk-file-picker-transition-duration)
+    var(--osdk-file-picker-transition-ease);
+}
+
+.osdkFilePickerTrigger:hover .osdkFilePickerBrowse {
+  background-color: var(--osdk-file-picker-browse-bg-hover);
+}
+
+.osdkFilePickerTrigger:active .osdkFilePickerBrowse {
+  background-color: var(--osdk-file-picker-browse-bg-active);
+}

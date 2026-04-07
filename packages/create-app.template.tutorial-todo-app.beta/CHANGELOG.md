@@ -1,5 +1,20 @@
 # @osdk/create-app.template.tutorial-todo-app.beta
 
+## 2.8.0
+
+### Minor Changes
+
+- 322c5bc: Simulated release
+- 12dcb6a: Bump node and vite versions
+- 0ff602a: Bump vite to ^7.3.1
+- e22f91c: Make template a11y compatible
+- 35f2f1a: Add Media inputs/outputs for Queries
+- 6260835: Revert node bump
+
+## 2.8.0-beta.32
+
+## 2.8.0-beta.31
+
 ## 2.8.0-beta.30
 
 ## 2.8.0-beta.29

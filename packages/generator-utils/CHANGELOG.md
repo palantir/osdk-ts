@@ -1,5 +1,16 @@
 # @osdk/generator-utils
 
+## 2.8.0
+
+### Minor Changes
+
+- 322c5bc: Simulated release
+- 35f2f1a: Add Media inputs/outputs for Queries
+
+## 2.8.0-beta.32
+
+## 2.8.0-beta.31
+
 ## 2.8.0-beta.30
 
 ## 2.8.0-beta.29

@@ -11,6 +11,7 @@ import type { CompileTimeMetadata } from '@osdk/api';
 import type { InterfaceDefinition } from '@osdk/api';
 import type { LinkedType } from '@osdk/api';
 import type { LinkNames } from '@osdk/api';
+import type { ObjectOrInterfaceDefinition } from '@osdk/api';
 import type { ObjectSet } from '@osdk/api';
 import type { ObjectTypeDefinition } from '@osdk/api';
 import type { Osdk } from '@osdk/api';
@@ -28,6 +29,9 @@ export function createMockAttachment(rid: string, blob?: Blob, metadata?: Attach
 
 // @public (undocumented)
 export function createMockClient(): MockClient;
+
+// @public (undocumented)
+export function createMockObjectSet<Q extends ObjectOrInterfaceDefinition>(objectType: Q): ObjectSet<Q>;
 
 // @public
 export function createMockOsdkObject<Q extends ObjectTypeDefinition>(objectType: Q, properties?: Partial<CompileTimeMetadata<Q>["props"]>, options?: MockOsdkObjectOptions<Q>): Osdk.Instance<Q>;
@@ -51,7 +55,14 @@ export interface MockClient extends Client {
     	// Warning: (ae-forgotten-export) The symbol "StubPatternCallback" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    whenObjectSet<T>(callback: StubPatternCallback<T>): StubBuilderFor<T>;
+    when<T>(callback: StubPatternCallback<T>): StubBuilderFor<T>;
+    	// Warning: (ae-forgotten-export) The symbol "ObjectSetStubCallback" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    whenObjectSet<
+    		Q extends ObjectOrInterfaceDefinition,
+    		T
+    	>(objectSet: ObjectSet<Q>, callback: ObjectSetStubCallback<Q, T>): StubBuilderFor<T>;
     	// Warning: (ae-forgotten-export) The symbol "QueryParamsFromDef" needs to be exported by the entry point index.d.ts
     // Warning: (ae-forgotten-export) The symbol "QueryReturnTypeFromDef" needs to be exported by the entry point index.d.ts
     //

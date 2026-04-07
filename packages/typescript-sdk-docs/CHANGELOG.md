@@ -1,5 +1,15 @@
 # @osdk/typescript-sdk-docs
 
+## 0.7.0
+
+### Minor Changes
+
+- 776ae8a: Simulated release
+- beba0cd: Simplify actionParameter docs generation code
+- 8561a8b: Render custom type fields in function doc snippets instead of empty `{}`
+- c4d7052: Fix OSDK docs showing invalid { \_\_primaryKey } format for object action parameters
+- 35f2f1a: Add Media inputs/outputs for Queries
+
 ## 0.7.0-beta.4
 
 ### Minor Changes

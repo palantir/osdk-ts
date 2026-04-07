@@ -31,3 +31,5 @@ export {
   type StubBuilderFor,
   type StubClient,
 } from "./mock/createMockClient.js";
+
+export { createMockObjectSet } from "./mock/createMockObjectSet.js";
