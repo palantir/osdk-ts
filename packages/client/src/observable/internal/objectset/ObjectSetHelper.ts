@@ -19,6 +19,7 @@ import type { ObjectSetPayload } from "../../ObjectSetPayload.js";
 import type { Observer } from "../../ObservableClient/common.js";
 import { AbstractHelper } from "../AbstractHelper.js";
 import type { CacheKeys } from "../CacheKeys.js";
+import type { Canonical } from "../Canonical.js";
 import type { KnownCacheKey } from "../KnownCacheKey.js";
 import type { ObjectSetArrayCanonicalizer } from "../ObjectSetArrayCanonicalizer.js";
 import type { OrderByCanonicalizer } from "../OrderByCanonicalizer.js";
@@ -27,7 +28,10 @@ import type { RdpCanonicalizer } from "../RdpCanonicalizer.js";
 import type { SelectCanonicalizer } from "../SelectCanonicalizer.js";
 import type { Store } from "../Store.js";
 import type { WhereClauseCanonicalizer } from "../WhereClauseCanonicalizer.js";
-import type { ObjectSetCacheKey } from "./ObjectSetCacheKey.js";
+import type {
+  ObjectSetCacheKey,
+  ObjectSetOperations,
+} from "./ObjectSetCacheKey.js";
 import { ObjectSetQuery } from "./ObjectSetQuery.js";
 import type { ObjectSetQueryOptions } from "./ObjectSetQueryOptions.js";
 
@@ -74,53 +78,12 @@ export class ObjectSetHelper extends AbstractHelper<
   getQuery(options: ObjectSetQueryOptions): ObjectSetQuery {
     const { baseObjectSet } = options;
     const baseObjectSetWire = JSON.stringify(getWireObjectSet(baseObjectSet));
-
-    const canonWhere = options.where
-      ? this.whereCanonicalizer.canonicalize(options.where)
-      : undefined;
-    const canonWithProperties = options.withProperties
-      ? this.rdpCanonicalizer.canonicalize(options.withProperties)
-      : undefined;
-    const canonUnion = options.union && options.union.length > 0
-      ? this.objectSetArrayCanonicalizer.canonicalizeUnion(
-        options.union.map(os => JSON.stringify(getWireObjectSet(os))),
-      )
-      : undefined;
-    const canonIntersect = options.intersect && options.intersect.length > 0
-      ? this.objectSetArrayCanonicalizer.canonicalizeIntersect(
-        options.intersect.map(os => JSON.stringify(getWireObjectSet(os))),
-      )
-      : undefined;
-    const canonSubtract = options.subtract && options.subtract.length > 0
-      ? this.objectSetArrayCanonicalizer.canonicalizeSubtract(
-        options.subtract.map(os => JSON.stringify(getWireObjectSet(os))),
-      )
-      : undefined;
-    const canonPivotTo = options.pivotTo as string | undefined;
-    const canonOrderBy = options.orderBy
-      ? this.orderByCanonicalizer.canonicalize(options.orderBy)
-      : undefined;
-    const canonSelect = options.select && options.select.length > 0
-      ? this.selectCanonicalizer.canonicalize(options.select)
-      : undefined;
-    const canonPageSize = options.pageSize || undefined;
-    const canonLoadPropertySecurity = options.$loadPropertySecurityMetadata
-      ? true as const
-      : undefined;
+    const operations = this.buildCanonicalizedOperations(options);
 
     const objectSetCacheKey = this.cacheKeys.get<ObjectSetCacheKey>(
       "objectSet",
       baseObjectSetWire,
-      canonWhere,
-      canonWithProperties,
-      canonUnion,
-      canonIntersect,
-      canonSubtract,
-      canonPivotTo,
-      canonOrderBy,
-      canonSelect,
-      canonPageSize,
-      canonLoadPropertySecurity,
+      operations,
     );
 
     return this.store.queries.get(objectSetCacheKey, () => {
@@ -128,18 +91,70 @@ export class ObjectSetHelper extends AbstractHelper<
         this.store,
         this.store.subjects.get(objectSetCacheKey),
         baseObjectSetWire,
+        operations,
         objectSetCacheKey,
         options,
-        canonWhere,
-        canonWithProperties,
-        canonUnion,
-        canonIntersect,
-        canonSubtract,
-        canonPivotTo,
-        canonOrderBy,
-        canonSelect,
-        canonLoadPropertySecurity,
       );
     });
+  }
+
+  private buildCanonicalizedOperations(
+    options: ObjectSetQueryOptions,
+  ): Canonical<ObjectSetOperations> {
+    const operations: ObjectSetOperations = {};
+
+    if (options.where) {
+      operations.where = this.whereCanonicalizer.canonicalize(options.where);
+    }
+
+    if (options.withProperties) {
+      operations.withProperties = this.rdpCanonicalizer.canonicalize(
+        options.withProperties,
+      );
+    }
+
+    if (options.union && options.union.length > 0) {
+      operations.union = this.objectSetArrayCanonicalizer.canonicalizeUnion(
+        options.union.map(os => JSON.stringify(getWireObjectSet(os))),
+      );
+    }
+
+    if (options.intersect && options.intersect.length > 0) {
+      operations.intersect = this.objectSetArrayCanonicalizer
+        .canonicalizeIntersect(
+          options.intersect.map(os => JSON.stringify(getWireObjectSet(os))),
+        );
+    }
+
+    if (options.subtract && options.subtract.length > 0) {
+      operations.subtract = this.objectSetArrayCanonicalizer
+        .canonicalizeSubtract(
+          options.subtract.map(os => JSON.stringify(getWireObjectSet(os))),
+        );
+    }
+
+    if (options.pivotTo) {
+      operations.pivotTo = options.pivotTo as string;
+    }
+
+    if (options.orderBy) {
+      operations.orderBy = this.orderByCanonicalizer.canonicalize(
+        options.orderBy,
+      );
+    }
+
+    if (options.select && options.select.length > 0) {
+      operations.select = this.selectCanonicalizer.canonicalize(options.select);
+    }
+
+    if (options.pageSize) {
+      operations.pageSize = options.pageSize;
+    }
+
+    if (options.$loadPropertySecurityMetadata) {
+      operations.loadPropertySecurity = true;
+    }
+
+    return operations as Canonical<ObjectSetOperations>;
   }
 }
