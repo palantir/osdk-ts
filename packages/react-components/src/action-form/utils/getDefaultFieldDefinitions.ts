@@ -59,7 +59,7 @@ function buildFieldDefinition(
         return {
           ...base,
           fieldComponent: "OBJECT_SET",
-          fieldComponentProps: {},
+          fieldComponentProps: { value: null },
         };
       case "object":
       case "interface":
