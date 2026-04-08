@@ -86,8 +86,12 @@ describe("BaseForm", () => {
       render(
         <BaseForm
           fieldDefinitions={[
-            makeDef("name", { defaultValue: "Default Name" }),
-            makeDef("email", { defaultValue: "default@test.com" }),
+            makeDef("name", {
+              fieldComponentProps: { defaultValue: "Default Name" },
+            }),
+            makeDef("email", {
+              fieldComponentProps: { defaultValue: "default@test.com" },
+            }),
           ]}
           onSubmit={onSubmit}
         />,
@@ -114,8 +118,12 @@ describe("BaseForm", () => {
       render(
         <BaseForm
           fieldDefinitions={[
-            makeDef("name", { defaultValue: "Bob" }),
-            makeDef("email", { defaultValue: "bob@test.com" }),
+            makeDef("name", {
+              fieldComponentProps: { defaultValue: "Bob" },
+            }),
+            makeDef("email", {
+              fieldComponentProps: { defaultValue: "bob@test.com" },
+            }),
           ]}
           onSubmit={onSubmit}
         />,

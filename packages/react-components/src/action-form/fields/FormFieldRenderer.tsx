@@ -22,6 +22,7 @@ import { DatetimePickerField } from "./DatetimePickerField.js";
 import { DropdownField } from "./DropdownField.js";
 import { FilePickerField } from "./FilePickerField.js";
 import { NumberInputField } from "./NumberInputField.js";
+import { ObjectSetField } from "./ObjectSetField.js";
 import { RadioButtonsField } from "./RadioButtonsField.js";
 import { TextAreaField } from "./TextAreaField.js";
 import { TextInputField } from "./TextInputField.js";
@@ -140,8 +141,12 @@ function renderFieldComponent(
         />
       );
     case "OBJECT_SET":
-      return <div>Unsupported field type: {fieldDefinition.fieldComponent}
-      </div>;
+      return (
+        <ObjectSetField
+          id={fieldDefinition.fieldKey}
+          {...fieldDefinition.fieldComponentProps}
+        />
+      );
     default:
       return assertUnreachableFieldComponent(fieldDefinition);
   }
