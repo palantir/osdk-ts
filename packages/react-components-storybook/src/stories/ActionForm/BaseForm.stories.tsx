@@ -440,3 +440,246 @@ export const Pending: Story = {
   },
   render: (args) => <BaseForm {...args} />,
 };
+
+const validationFieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
+  {
+    fieldKey: "name",
+    fieldComponent: "TEXT_INPUT",
+    label: "Name",
+    isRequired: true,
+    fieldComponentProps: {
+      placeholder: "Required field",
+    },
+  },
+  {
+    fieldKey: "username",
+    fieldComponent: "TEXT_INPUT",
+    label: "Username",
+    fieldComponentProps: {
+      minLength: 3,
+      maxLength: 20,
+      placeholder: "3-20 characters",
+    },
+  },
+  {
+    fieldKey: "quantity",
+    fieldComponent: "NUMBER_INPUT",
+    label: "Quantity",
+    fieldComponentProps: {
+      min: 0,
+      max: 100,
+      step: 1,
+      placeholder: "0-100",
+    },
+  },
+  {
+    fieldKey: "startDate",
+    fieldComponent: "DATETIME_PICKER",
+    label: "Start Date",
+    fieldComponentProps: {
+      min: new Date(2024, 0, 1),
+      max: new Date(2026, 11, 31),
+      placeholder: "2024-2026 only",
+    },
+  },
+  {
+    fieldKey: "document",
+    fieldComponent: "FILE_PICKER",
+    label: "Document",
+    fieldComponentProps: {
+      maxSize: 1048576,
+    },
+  },
+];
+
+export const WithValidation: Story = {
+  args: {
+    fieldDefinitions: validationFieldDefinitions,
+    onSubmit: handleSubmit,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `const fieldDefinitions = [
+  {
+    fieldKey: "name",
+    fieldComponent: "TEXT_INPUT",
+    label: "Name",
+    isRequired: true,
+    fieldComponentProps: { placeholder: "Required field" },
+  },
+  {
+    fieldKey: "username",
+    fieldComponent: "TEXT_INPUT",
+    label: "Username",
+    fieldComponentProps: { minLength: 3, maxLength: 20 },
+  },
+  {
+    fieldKey: "quantity",
+    fieldComponent: "NUMBER_INPUT",
+    label: "Quantity",
+    fieldComponentProps: { min: 0, max: 100 },
+  },
+  {
+    fieldKey: "startDate",
+    fieldComponent: "DATETIME_PICKER",
+    label: "Start Date",
+    fieldComponentProps: {
+      min: new Date(2024, 0, 1),
+      max: new Date(2026, 11, 31),
+    },
+  },
+  {
+    fieldKey: "document",
+    fieldComponent: "FILE_PICKER",
+    label: "Document",
+    fieldComponentProps: { maxSize: 1048576 },
+  },
+];
+
+// Validation fires on blur, revalidates on change.
+// Submit button shows error summary tooltip when invalid.
+<BaseForm
+  fieldDefinitions={fieldDefinitions}
+  onSubmit={(formState) => console.log("Submitted:", formState)}
+/>`,
+      },
+    },
+  },
+  render: (args) => <BaseForm {...args} />,
+};
+
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+const customValidateFieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
+  {
+    fieldKey: "email",
+    fieldComponent: "TEXT_INPUT",
+    label: "Email",
+    isRequired: true,
+    validate: async (value: unknown) => {
+      if (typeof value !== "string" || value.length === 0) {
+        return undefined;
+      }
+      return EMAIL_REGEX.test(value)
+        ? undefined
+        : "Enter a valid email address";
+    },
+    fieldComponentProps: {
+      placeholder: "user@example.com",
+    },
+  },
+];
+
+export const WithCustomValidation: Story = {
+  args: {
+    fieldDefinitions: customValidateFieldDefinitions,
+    onSubmit: handleSubmit,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `const fieldDefinitions = [
+  {
+    fieldKey: "email",
+    fieldComponent: "TEXT_INPUT",
+    label: "Email",
+    isRequired: true,
+    validate: async (value) => {
+      if (typeof value !== "string" || value.length === 0) return undefined;
+      const emailRegex = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;
+      return emailRegex.test(value) ? undefined : "Enter a valid email address";
+    },
+    fieldComponentProps: { placeholder: "user@example.com" },
+  },
+];
+
+<BaseForm
+  fieldDefinitions={fieldDefinitions}
+  onSubmit={(formState) => console.log("Submitted:", formState)}
+/>`,
+      },
+    },
+  },
+  render: (args) => <BaseForm {...args} />,
+};
+
+const customErrorFieldDefinitions: ReadonlyArray<RendererFieldDefinition> = [
+  {
+    fieldKey: "name",
+    fieldComponent: "TEXT_INPUT",
+    label: "Name",
+    isRequired: true,
+    onValidationError: (error) => {
+      if (error.type === "required") {
+        return "Please provide your name";
+      }
+      return undefined;
+    },
+    fieldComponentProps: {
+      placeholder: "Your name",
+    },
+  },
+  {
+    fieldKey: "age",
+    fieldComponent: "NUMBER_INPUT",
+    label: "Age",
+    onValidationError: (error) => {
+      if (error.type === "min") {
+        return `You must be at least ${String(error.min)} years old`;
+      }
+      if (error.type === "max") {
+        return `Age cannot exceed ${String(error.max)}`;
+      }
+      return undefined;
+    },
+    fieldComponentProps: {
+      min: 18,
+      max: 120,
+      placeholder: "18-120",
+    },
+  },
+];
+
+export const WithCustomErrorMessages: Story = {
+  args: {
+    fieldDefinitions: customErrorFieldDefinitions,
+    onSubmit: handleSubmit,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `const fieldDefinitions = [
+  {
+    fieldKey: "name",
+    fieldComponent: "TEXT_INPUT",
+    label: "Name",
+    isRequired: true,
+    onValidationError: (error) => {
+      if (error.type === "required") return "Please provide your name";
+      return undefined; // fall back to default
+    },
+    fieldComponentProps: { placeholder: "Your name" },
+  },
+  {
+    fieldKey: "age",
+    fieldComponent: "NUMBER_INPUT",
+    label: "Age",
+    onValidationError: (error) => {
+      if (error.type === "min") return \`You must be at least \${error.min} years old\`;
+      if (error.type === "max") return \`Age cannot exceed \${error.max}\`;
+      return undefined;
+    },
+    fieldComponentProps: { min: 18, max: 120 },
+  },
+];
+
+<BaseForm
+  fieldDefinitions={fieldDefinitions}
+  onSubmit={(formState) => console.log("Submitted:", formState)}
+/>`,
+      },
+    },
+  },
+  render: (args) => <BaseForm {...args} />,
+};
