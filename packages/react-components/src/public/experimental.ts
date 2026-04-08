@@ -43,6 +43,7 @@ export type {
   ColumnDefinitionLocator,
   CustomColumnLocator,
   FunctionColumnLocator,
+  NetworkConfig,
   ObjectTableProps,
   PropertyColumnLocator,
   RdpColumnLocator,

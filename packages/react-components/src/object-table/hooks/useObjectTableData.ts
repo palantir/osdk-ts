@@ -27,7 +27,11 @@ import type { UseOsdkListResult } from "@osdk/react/experimental";
 import { useObjectSet, useOsdkObjects } from "@osdk/react/experimental";
 import type { SortingState } from "@tanstack/react-table";
 import { useMemo } from "react";
-import type { ColumnDefinition, ObjectSetOptions } from "../ObjectTableApi.js";
+import type {
+  ColumnDefinition,
+  NetworkConfig,
+  ObjectSetOptions,
+} from "../ObjectTableApi.js";
 import type { AsyncCellData } from "../utils/AsyncCellData.js";
 import { useFunctionColumnsData } from "./useFunctionColumnsData.js";
 
@@ -70,6 +74,7 @@ export function useObjectTableData<
   sorting?: SortingState,
   objectSet?: ObjectSet<Q>,
   objectSetOptions?: ObjectSetOptions<Q>,
+  networkConfig?: NetworkConfig,
 ): UseObjectTableDataResult<Q, RDPs> {
   const orderBy = useMemo(() => {
     if (!sorting || sorting.length === 0) {
@@ -130,6 +135,7 @@ export function useObjectTableData<
       orderBy,
       pageSize: PAGE_SIZE,
       enabled: shouldUseObjectSet,
+      dedupeIntervalMs: networkConfig?.dedupeIntervalMs ?? 60000,
     },
   );
 
@@ -144,6 +150,7 @@ export function useObjectTableData<
       where: filter,
       orderBy,
       enabled: !shouldUseObjectSet,
+      dedupeIntervalMs: networkConfig?.dedupeIntervalMs ?? 60000,
     },
   );
 
