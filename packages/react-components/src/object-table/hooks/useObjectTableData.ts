@@ -36,6 +36,7 @@ import type { AsyncCellData } from "../utils/AsyncCellData.js";
 import { useFunctionColumnsData } from "./useFunctionColumnsData.js";
 
 const PAGE_SIZE = 50;
+const DEFAULT_DEDUPE_INTERVAL_MS = 60_000;
 
 type WithProperties<
   Q extends ObjectOrInterfaceDefinition,
@@ -76,6 +77,8 @@ export function useObjectTableData<
   objectSetOptions?: ObjectSetOptions<Q>,
   networkConfig?: NetworkConfig,
 ): UseObjectTableDataResult<Q, RDPs> {
+  const { dedupeIntervalMs = DEFAULT_DEDUPE_INTERVAL_MS } = networkConfig || {};
+
   const orderBy = useMemo(() => {
     if (!sorting || sorting.length === 0) {
       return undefined;
@@ -135,7 +138,7 @@ export function useObjectTableData<
       orderBy,
       pageSize: PAGE_SIZE,
       enabled: shouldUseObjectSet,
-      dedupeIntervalMs: networkConfig?.dedupeIntervalMs ?? 60000,
+      dedupeIntervalMs,
     },
   );
 
@@ -150,7 +153,7 @@ export function useObjectTableData<
       where: filter,
       orderBy,
       enabled: !shouldUseObjectSet,
-      dedupeIntervalMs: networkConfig?.dedupeIntervalMs ?? 60000,
+      dedupeIntervalMs,
     },
   );
 

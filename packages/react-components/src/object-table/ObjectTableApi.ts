@@ -453,7 +453,7 @@ export interface NetworkConfig {
    * Increasing this value reduces redundant network calls when the same data
    * is requested multiple times in quick succession.
    *
-   * @default 60_000
+   * @default 60_000 1 minute
    */
   dedupeIntervalMs?: number;
 }
