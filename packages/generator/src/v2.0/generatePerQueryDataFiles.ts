@@ -130,22 +130,8 @@ async function generateV2QueryFile(
     query.fullApiName,
   );
 
-  const typeRefs = query.raw.typeReferences ?? {};
-  const paramIds = new Set<string>();
-  const outputIds = new Set<string>();
-  for (const p of Object.values(query.raw.parameters)) {
-    collectTypeIds(p.dataType, paramIds, typeRefs);
-  }
-  collectTypeIds(query.raw.output, outputIds, typeRefs);
-
-  const customTypesNs = generateCustomTypesNamespace(
-    ontology,
-    query.raw,
-    paramIds,
-    outputIds,
-  );
-  const paramTypeRefNames = buildTypeRefNames(paramIds, true);
-  const outputTypeRefNames = buildTypeRefNames(outputIds, true);
+  const customTypesNs = generateCustomTypesNamespace(ontology, query.raw);
+  const typeRefNames = buildTypeRefNames(query.raw, true);
 
   await fs.writeFile(
     path.join(outDir, `${query.shortApiName}.ts`),
@@ -182,13 +168,7 @@ async function generateV2QueryFile(
                 ${
                   queryParamJsDoc(paramToDef(parameter), { apiName })
                 }readonly "${apiName}"${q.nullable ? "?" : ""}`,
-                getQueryParamType(
-                  ontology,
-                  q,
-                  "Param",
-                  false,
-                  paramTypeRefNames,
-                ),
+                getQueryParamType(ontology, q, "Param", false, typeRefNames),
               ];
             },
           })
@@ -205,7 +185,7 @@ async function generateV2QueryFile(
           outputDef,
           "Result",
           false,
-          outputTypeRefNames,
+          typeRefNames,
         );
         return query.output.type === "struct"
           ? `export interface ReturnType ${outputType}`
@@ -437,31 +417,33 @@ export function getQueryParamType(
   return paramType;
 }
 
-function collectTypeIds(
-  dt: QueryDataType,
-  ids: Set<string>,
-  typeRefs: Record<string, QueryDataType>,
-): void {
-  if (dt.type === "typeReference" && !ids.has(dt.typeId)) {
-    ids.add(dt.typeId);
-    const ref = typeRefs[dt.typeId];
-    if (ref) collectTypeIds(ref, ids, typeRefs);
-  } else if (dt.type === "struct") {
-    for (const f of dt.fields) collectTypeIds(f.fieldType, ids, typeRefs);
-  } else if (dt.type === "array" || dt.type === "set") {
-    collectTypeIds(dt.subType, ids, typeRefs);
-  } else if (dt.type === "union") {
-    for (const u of dt.unionTypes) collectTypeIds(u, ids, typeRefs);
-  } else if (dt.type === "entrySet") {
-    collectTypeIds(dt.keyType, ids, typeRefs);
-    collectTypeIds(dt.valueType, ids, typeRefs);
-  }
-}
-
 function buildTypeRefNames(
-  ids: Set<string>,
+  query: QueryTypeV2,
   expand: boolean,
 ): Map<string, string> {
+  const typeRefs = query.typeReferences ?? {};
+  const ids = new Set<string>();
+
+  function collect(dt: QueryDataType): void {
+    if (dt.type === "typeReference" && !ids.has(dt.typeId)) {
+      ids.add(dt.typeId);
+      const ref = typeRefs[dt.typeId];
+      if (ref) collect(ref);
+    } else if (dt.type === "struct") {
+      for (const f of dt.fields) collect(f.fieldType);
+    } else if (dt.type === "array" || dt.type === "set") {
+      collect(dt.subType);
+    } else if (dt.type === "union") {
+      for (const u of dt.unionTypes) collect(u);
+    } else if (dt.type === "entrySet") {
+      collect(dt.keyType);
+      collect(dt.valueType);
+    }
+  }
+
+  for (const p of Object.values(query.parameters)) collect(p.dataType);
+  collect(query.output);
+
   const names = new Map<string, string>();
   for (const id of ids) {
     const sanitized = `$${id.replace(/-/g, "_")}`;
@@ -474,34 +456,21 @@ function buildTypeRefNames(
 function generateCustomTypesNamespace(
   ontology: EnhancedOntologyDefinition,
   query: QueryTypeV2,
-  paramIds: Set<string>,
-  outputIds: Set<string>,
 ): string {
   const typeRefs = query.typeReferences ?? {};
-  if (Object.keys(typeRefs).length === 0) return "";
+  const names = buildTypeRefNames(query, false);
+  if (names.size === 0) return "";
 
-  const paramNames = buildTypeRefNames(paramIds, false);
-  const outputNames = buildTypeRefNames(outputIds, false);
   const interfaces: string[] = [];
-
   for (const [id, dt] of Object.entries(typeRefs)) {
-    if (dt.type !== "struct") continue;
+    if (dt.type !== "struct" || !names.has(id)) continue;
     const sanitized = `$${id.replace(/-/g, "_")}`;
     const converted = wireQueryDataTypeToQueryDataTypeDefinition(dt);
-
-    if (paramIds.has(id)) {
-      interfaces.push(
-        `export interface ${sanitized} ${
-          getQueryParamType(ontology, converted, "Param", false, paramNames)
-        }`,
-      );
-    } else if (outputIds.has(id)) {
-      interfaces.push(
-        `export interface ${sanitized} ${
-          getQueryParamType(ontology, converted, "Result", false, outputNames)
-        }`,
-      );
-    }
+    interfaces.push(
+      `export interface ${sanitized} ${
+        getQueryParamType(ontology, converted, "Param", false, names)
+      }`,
+    );
   }
 
   if (interfaces.length === 0) return "";

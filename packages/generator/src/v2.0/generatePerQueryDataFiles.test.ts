@@ -1030,15 +1030,15 @@ describe("generatePerQueryDataFiles", () => {
           namespace CustomTypes {
             export type Expand<T> = T extends infer O ? { [K in keyof O]: O[K] } : never;
             export interface $metadata_type_id {
-              createdAt: QueryResult.PrimitiveType<'timestamp'>;
+              readonly createdAt: QueryParam.PrimitiveType<'timestamp'>;
 
-              updatedAt: QueryResult.PrimitiveType<'timestamp'>;
+              readonly updatedAt: QueryParam.PrimitiveType<'timestamp'>;
             }
 
             export interface $data_type_id {
-              nested: CustomTypes.$data_type_id;
+              readonly nested: CustomTypes.$data_type_id;
 
-              value: QueryResult.PrimitiveType<'string'>;
+              readonly value: QueryParam.PrimitiveType<'string'>;
             }
           }
 
