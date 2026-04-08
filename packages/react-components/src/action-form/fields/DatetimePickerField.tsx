@@ -124,7 +124,7 @@ export function DatetimePickerField({
         aria-label={hasValue ? undefined : "Select date"}
         data-invalid={error != null || undefined}
       >
-        {displayText}
+        {displayText !== "" ? displayText : "\u00A0"}
       </Popover.Trigger>
       <Popover.Portal>
         <Popover.Positioner sideOffset={4}>

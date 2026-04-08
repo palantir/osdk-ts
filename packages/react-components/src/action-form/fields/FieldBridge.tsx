@@ -39,7 +39,6 @@ export const FieldBridge: React.FC<FieldBridgeProps> = memo(
     } = useController({
       name: fieldDef.fieldKey,
       control,
-      defaultValue: fieldDef.defaultValue,
       rules,
     });
 

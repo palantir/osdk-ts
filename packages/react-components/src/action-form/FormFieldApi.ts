@@ -507,7 +507,6 @@ export type RendererFieldDefinition = {
     isRequired?: boolean;
     placeholder?: string;
     helperText?: string;
-    defaultValue?: unknown;
     helperTextPlacement?: "bottom" | "tooltip";
     validate?: (value: unknown) => Promise<string | undefined>;
     onValidationError?: (error: ValidationError) => string | undefined;

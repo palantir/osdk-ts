@@ -48,7 +48,8 @@ describe("DatetimePickerField", () => {
     it("renders empty button when value is null", () => {
       render(<DatetimePickerField value={null} onChange={vi.fn()} />);
       const button = screen.getByRole("button");
-      expect(button.textContent).toBe("");
+      // Non-breaking space keeps the button from collapsing to zero height
+      expect(button.textContent).toBe("\u00A0");
     });
 
     it("renders with datetime format when showTime is true", () => {

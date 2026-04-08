@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 
+import type { ObjectSet, ObjectTypeDefinition } from "@osdk/api";
 import type { RendererFieldDefinition } from "@osdk/react-components/experimental";
 import { BaseForm } from "@osdk/react-components/experimental";
+import { useOsdkClient } from "@osdk/react/experimental";
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { fauxFoundry } from "../../mocks/fauxFoundry.js";
+import { Employee } from "../../types/Employee.js";
 
 /**
  * Flattened (non-union) props type for Storybook Meta.
@@ -137,9 +140,21 @@ function handleSubmit(formState: Record<string, unknown>): void {
   console.log("Form submitted:", formState);
 }
 
+const FORM_MAX_WIDTH = 480;
+
 const meta: Meta<BaseFormStoryProps> = {
   title: "Components/ActionForm/Building Blocks/BaseForm",
   component: BaseForm,
+  decorators: [
+    (Story) => (
+      <div
+        className="osdkFormCard"
+        style={{ maxWidth: FORM_MAX_WIDTH, width: "100%" }}
+      >
+        <Story />
+      </div>
+    ),
+  ],
   parameters: {
     msw: {
       handlers: [...fauxFoundry.handlers],
@@ -332,16 +347,7 @@ return (
       <div>
         <div style={{ marginBottom: "16px" }}>
           <strong>Current Form State:</strong>
-          <pre
-            style={{
-              background: "#f5f5f5",
-              padding: "12px",
-              borderRadius: "4px",
-              fontSize: "13px",
-              maxHeight: "200px",
-              overflow: "auto",
-            }}
-          >
+          <pre className="osdkCodeOutput">
             {JSON.stringify(
               formState,
               (_key, value) =>
@@ -682,4 +688,79 @@ export const WithCustomErrorMessages: Story = {
     },
   },
   render: (args) => <BaseForm {...args} />,
+};
+
+export const WithObjectSetField: Story = {
+  parameters: {
+    docs: {
+      source: {
+        code: `const client = useOsdkClient();
+const employeeObjectSet = client(Employee);
+
+const fieldDefinitions = [
+  {
+    fieldKey: "name",
+    fieldComponent: "TEXT_INPUT",
+    label: "Name",
+    isRequired: true,
+    fieldComponentProps: { placeholder: "Enter a name" },
+  },
+  {
+    fieldKey: "employees",
+    fieldComponent: "OBJECT_SET",
+    label: "Employees",
+    fieldComponentProps: { value: employeeObjectSet },
+  },
+];
+
+<BaseForm
+  fieldDefinitions={fieldDefinitions}
+  onSubmit={(formState) => console.log("Submitted:", formState)}
+/>`,
+      },
+    },
+  },
+  render: () => {
+    const client = useOsdkClient();
+
+    // Widen Employee.ObjectSet → ObjectSet<ObjectTypeDefinition> for
+    // RendererFieldDefinition which uses the base ObjectTypeDefinition.
+    // ObjectSet has contravariant method parameters (primaryKey) that
+    // prevent structural assignability, so an assertion is needed here.
+    const employeeObjectSet = useMemo(
+      () => client(Employee) as ObjectSet<ObjectTypeDefinition>,
+      [client],
+    );
+
+    const objectSetFieldDefinitions: ReadonlyArray<RendererFieldDefinition> =
+      useMemo(
+        () => [
+          {
+            fieldKey: "name",
+            fieldComponent: "TEXT_INPUT" as const,
+            label: "Name",
+            isRequired: true,
+            fieldComponentProps: {
+              placeholder: "Enter a name",
+            },
+          },
+          {
+            fieldKey: "employees",
+            fieldComponent: "OBJECT_SET" as const,
+            label: "Employees",
+            fieldComponentProps: {
+              value: employeeObjectSet,
+            },
+          },
+        ],
+        [employeeObjectSet],
+      );
+
+    return (
+      <BaseForm
+        fieldDefinitions={objectSetFieldDefinitions}
+        onSubmit={handleSubmit}
+      />
+    );
+  },
 };
