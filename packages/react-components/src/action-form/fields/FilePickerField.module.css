@@ -44,7 +44,7 @@
     outline-offset: var(--osdk-file-picker-trigger-focus-offset);
   }
 
-  &[data-invalid] {
+  &[aria-invalid] {
     border-color: var(--osdk-file-picker-trigger-border-color-error);
   }
 }

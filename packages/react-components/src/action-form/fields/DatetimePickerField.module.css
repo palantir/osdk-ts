@@ -20,7 +20,7 @@
     outline-offset: var(--osdk-datetime-input-focus-outline-offset);
   }
 
-  &[data-invalid] {
+  &[aria-invalid] {
     border-color: var(--osdk-datetime-input-error-border-color);
   }
 }

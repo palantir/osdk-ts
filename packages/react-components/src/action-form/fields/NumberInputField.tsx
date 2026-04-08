@@ -110,7 +110,7 @@ export function NumberInputField({
   return (
     <div
       className={styles.osdkNumberInputWrapper}
-      data-invalid={error != null || undefined}
+      aria-invalid={error != null || undefined}
     >
       <Input
         id={id}

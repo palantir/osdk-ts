@@ -14,28 +14,32 @@
  * limitations under the License.
  */
 
-import React, { memo, useCallback } from "react";
-import type { Control, RegisterOptions } from "react-hook-form";
+import React, { memo, useCallback, useMemo } from "react";
+import type { Control } from "react-hook-form";
 import { useController } from "react-hook-form";
 import type { RendererFieldDefinition } from "../FormFieldApi.js";
+import { extractValidationRules } from "../utils/extractValidationRules.js";
 import { FormFieldRenderer } from "./FormFieldRenderer.js";
 
 export interface FieldBridgeProps {
   fieldDef: RendererFieldDefinition;
   control: Control<Record<string, unknown>>;
-  rules?: RegisterOptions<Record<string, unknown>, string>;
   onExternalChange?: (fieldKey: string, value: unknown) => void;
 }
 export const FieldBridge: React.FC<FieldBridgeProps> = memo(
   function FieldBridgeFn({
     fieldDef,
     control,
-    rules,
     onExternalChange,
   }: FieldBridgeProps): React.ReactElement {
+    const rules = useMemo(
+      () => extractValidationRules(fieldDef),
+      [fieldDef],
+    );
+
     const {
       field: { onChange, onBlur, value },
-      fieldState: { error },
+      fieldState: { error: fieldError },
     } = useController({
       name: fieldDef.fieldKey,
       control,
@@ -57,7 +61,7 @@ export const FieldBridge: React.FC<FieldBridgeProps> = memo(
         fieldDefinition={fieldDef}
         onFieldValueChange={handleChange}
         onBlur={onBlur}
-        error={error?.message}
+        error={fieldError?.message}
       />
     );
   },

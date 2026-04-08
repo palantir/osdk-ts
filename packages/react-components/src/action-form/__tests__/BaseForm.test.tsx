@@ -338,7 +338,7 @@ describe("BaseForm", () => {
       });
     });
 
-    it("prevents submit when required field is empty", async () => {
+    it("still submits when required field is empty, but shows errors", async () => {
       const onSubmit = vi.fn();
       render(
         <BaseForm
@@ -353,7 +353,25 @@ describe("BaseForm", () => {
         expect(screen.getByRole("alert")).toBeDefined();
       });
 
-      expect(onSubmit).not.toHaveBeenCalled();
+      expect(onSubmit).toHaveBeenCalled();
+    });
+
+    it("submits without errors when fields are not required", async () => {
+      const onSubmit = vi.fn();
+      render(
+        <BaseForm
+          fieldDefinitions={[makeDef("name"), makeDef("email")]}
+          onSubmit={onSubmit}
+        />,
+      );
+
+      fireEvent.click(screen.getByRole("button", { name: /submit/i }));
+
+      await waitFor(() => {
+        expect(onSubmit).toHaveBeenCalled();
+      });
+
+      expect(screen.queryByRole("alert")).toBeNull();
     });
   });
 });

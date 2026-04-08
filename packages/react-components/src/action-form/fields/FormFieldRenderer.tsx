@@ -30,8 +30,8 @@ export interface FormFieldRendererProps {
   fieldDefinition: RendererFieldDefinition;
   value: unknown;
   onFieldValueChange: (value: unknown) => void;
-  onBlur?: () => void;
-  error?: string;
+  onBlur: () => void;
+  error: string | undefined;
 }
 
 export const FormFieldRenderer: React.FC<FormFieldRendererProps> = memo(
@@ -65,12 +65,23 @@ export const FormFieldRenderer: React.FC<FormFieldRendererProps> = memo(
   },
 );
 
+/**
+ * Common props shared by all field components. Spread this before
+ * fieldComponentProps so every field automatically receives `error`
+ * without needing to remember it per-case.
+ */
+interface FieldCommonProps {
+  error: string | undefined;
+}
+
 function renderFieldComponent(
   fieldDefinition: RendererFieldDefinition,
   value: unknown,
   onChange: (value: unknown) => void,
   error: string | undefined,
 ): React.ReactElement {
+  const common: FieldCommonProps = { error };
+
   switch (fieldDefinition.fieldComponent) {
     case "TEXT_INPUT":
       return (
@@ -79,7 +90,7 @@ function renderFieldComponent(
           value={value != null ? String(value) : ""}
           onChange={onChange}
           placeholder={fieldDefinition.placeholder}
-          error={error}
+          {...common}
           {...fieldDefinition.fieldComponentProps}
         />
       );
@@ -90,7 +101,7 @@ function renderFieldComponent(
           value={value != null ? String(value) : ""}
           onChange={onChange}
           placeholder={fieldDefinition.placeholder}
-          error={error}
+          {...common}
           {...fieldDefinition.fieldComponentProps}
         />
       );
@@ -100,7 +111,7 @@ function renderFieldComponent(
           value={value}
           onChange={onChange}
           placeholder={fieldDefinition.placeholder}
-          error={error}
+          {...common}
           {...fieldDefinition.fieldComponentProps}
         />
       );
@@ -113,7 +124,7 @@ function renderFieldComponent(
           // TODO: Use coerceFieldValue
           value={value instanceof Date ? value : null}
           onChange={onChange}
-          error={error}
+          {...common}
           {...fieldDefinition.fieldComponentProps}
         />
       );
@@ -123,7 +134,7 @@ function renderFieldComponent(
           id={fieldDefinition.fieldKey}
           value={value}
           onChange={onChange}
-          error={error}
+          {...common}
           {...fieldDefinition.fieldComponentProps}
         />
       );
@@ -133,7 +144,7 @@ function renderFieldComponent(
           id={fieldDefinition.fieldKey}
           value={value}
           onChange={onChange}
-          error={error}
+          {...common}
           {...fieldDefinition.fieldComponentProps}
         />
       );
@@ -145,7 +156,7 @@ function renderFieldComponent(
           value={typeof value === "number" ? value : null}
           onChange={onChange}
           placeholder={fieldDefinition.placeholder}
-          error={error}
+          {...common}
           {...fieldDefinition.fieldComponentProps}
         />
       );
@@ -155,7 +166,7 @@ function renderFieldComponent(
           id={fieldDefinition.fieldKey}
           value={coerceToFileValue(value)}
           onChange={onChange}
-          error={error}
+          {...common}
           {...fieldDefinition.fieldComponentProps}
         />
       );

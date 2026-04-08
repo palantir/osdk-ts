@@ -35,7 +35,7 @@
     border-color: var(--osdk-input-border-color-focus);
   }
 
-  &[data-invalid] {
+  &[aria-invalid] {
     border-color: var(--osdk-input-border-color-error);
   }
 }

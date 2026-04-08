@@ -122,7 +122,7 @@ export function DatetimePickerField({
           !hasValue && styles.triggerButtonPlaceholder,
         )}
         aria-label={hasValue ? undefined : "Select date"}
-        data-invalid={error != null || undefined}
+        aria-invalid={error != null || undefined}
       >
         {displayText}
       </Popover.Trigger>

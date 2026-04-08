@@ -29,8 +29,7 @@ export const FilePickerField: React.FC<FilePickerProps> = memo(
     error,
     isMulti,
     accept,
-    // maxSize is enforced by form-level validation (extractValidationRules)
-    maxSize: _maxSize,
+    maxSize,
     text = "No file chosen",
     buttonText = "Browse",
   }): React.ReactElement {
@@ -48,13 +47,23 @@ export const FilePickerField: React.FC<FilePickerProps> = memo(
           return;
         }
 
+        const selected = Array.from(files);
+        const filtered = maxSize != null
+          ? selected.filter((f) => f.size <= maxSize)
+          : selected;
+
+        if (filtered.length === 0) {
+          onChange?.(null);
+          return;
+        }
+
         if (isMulti) {
-          onChange?.(Array.from(files));
+          onChange?.(filtered);
         } else {
-          onChange?.(files[0] ?? null);
+          onChange?.(filtered[0] ?? null);
         }
       },
-      [onChange, isMulti],
+      [onChange, isMulti, maxSize],
     );
 
     const handleClear = useCallback(
@@ -95,7 +104,7 @@ export const FilePickerField: React.FC<FilePickerProps> = memo(
         role="button"
         onClick={openFileDialog}
         onKeyDown={handleKeyDown}
-        data-invalid={error != null || undefined}
+        aria-invalid={error != null || undefined}
       >
         <input
           ref={inputRef}

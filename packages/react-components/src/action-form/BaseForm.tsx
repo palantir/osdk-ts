@@ -16,7 +16,6 @@
 
 import classNames from "classnames";
 import React, { memo, useCallback, useMemo } from "react";
-import type { RegisterOptions } from "react-hook-form";
 import { useForm } from "react-hook-form";
 import { ActionButton } from "../base-components/action-button/ActionButton.js";
 import { Tooltip } from "../base-components/tooltip/Tooltip.js";
@@ -25,7 +24,6 @@ import styles from "./BaseForm.module.css";
 import { FieldBridge } from "./fields/FieldBridge.js";
 import type { RendererFieldDefinition } from "./FormFieldApi.js";
 import { FormHeader } from "./FormHeader.js";
-import { extractValidationRules } from "./utils/extractValidationRules.js";
 
 export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
   formTitle,
@@ -45,21 +43,15 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
     [fieldDefinitions],
   );
 
-  const validationRules = useMemo(
-    () => buildValidationRules(fieldDefinitions),
-    [fieldDefinitions],
-  );
-
-  const { control, handleSubmit: rhfHandleSubmit, formState: { errors } } =
-    useForm<
-      Record<string, unknown>
-    >({
-      // Validate on blur first, then revalidate on change after the first
-      // error. This gives the user a chance to finish typing before seeing
-      // errors, while staying responsive once an error is surfaced.
-      mode: "onTouched",
-      ...(isControlled ? { values: controlledFormState } : { defaultValues }),
-    });
+  const { control, trigger, getValues, formState: { errors } } = useForm<
+    Record<string, unknown>
+  >({
+    // Validate on blur first, then revalidate on change after the first
+    // error. This gives the user a chance to finish typing before seeing
+    // errors, while staying responsive once an error is surfaced.
+    mode: "onTouched",
+    ...(isControlled ? { values: controlledFormState } : { defaultValues }),
+  });
 
   const errorKeys = Object.keys(errors);
   const hasValidationErrors = errorKeys.length > 0;
@@ -74,22 +66,26 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
     return errorKeys.map((key) => labelMap.get(key) ?? key).join(", ");
   }, [hasValidationErrors, errorKeys, fieldDefinitions]);
 
-  const onFormSubmit = useCallback(
-    (rhfValues: Record<string, unknown>) => {
+  const handleFormSubmit = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
+      // Run validation for display purposes (surfaces errors on all fields)
+      // but always submit regardless of validation state.
+      await trigger();
       // In controlled mode, always submit the controlled state, not RHF's
       // internal state. Between a user keystroke and the parent re-rendering,
       // RHF's store may hold the user-typed value rather than the parent's
       // value. Using controlledFormState directly preserves the existing
       // guarantee that controlled mode submits the parent's state.
-      onSubmit(controlledFormState ?? rhfValues);
+      onSubmit(controlledFormState ?? getValues());
     },
-    [onSubmit, controlledFormState],
+    [trigger, onSubmit, controlledFormState, getValues],
   );
 
   return (
     <form
       className={classNames(styles.osdkForm, className)}
-      onSubmit={rhfHandleSubmit(onFormSubmit)}
+      onSubmit={handleFormSubmit}
     >
       {formTitle != null && <FormHeader title={formTitle} />}
       {isLoading && fieldDefinitions.length === 0 && (
@@ -101,7 +97,6 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
             key={fieldDef.fieldKey}
             fieldDef={fieldDef}
             control={control}
-            rules={validationRules[fieldDef.fieldKey]}
             onExternalChange={onFieldValueChange}
           />
         ))}
@@ -117,8 +112,6 @@ export const BaseForm: React.FC<BaseFormProps> = memo(function BaseFormFn({
   );
 });
 
-type RhfRules = RegisterOptions<Record<string, unknown>, string>;
-
 function buildDefaultValues(
   fieldDefinitions: ReadonlyArray<RendererFieldDefinition>,
 ): Record<string, unknown> {
@@ -127,16 +120,6 @@ function buildDefaultValues(
     values[def.fieldKey] = def.defaultValue;
   }
   return values;
-}
-
-function buildValidationRules(
-  fieldDefinitions: ReadonlyArray<RendererFieldDefinition>,
-): Record<string, RhfRules> {
-  const rules: Record<string, RhfRules> = {};
-  for (const def of fieldDefinitions) {
-    rules[def.fieldKey] = extractValidationRules(def);
-  }
-  return rules;
 }
 
 interface SubmitButtonProps {
@@ -152,34 +135,7 @@ const SubmitButton: React.FC<SubmitButtonProps> = memo(
     errorSummary,
   }: SubmitButtonProps): React.ReactElement {
     const buttonLabel = isPending ? "Submitting\u2026" : "Submit";
-
-    if (errorSummary != null) {
-      return (
-        <Tooltip.Root>
-          <Tooltip.Trigger
-            render={
-              <ActionButton
-                type="submit"
-                variant="primary"
-                disabled={isPending}
-              >
-                {buttonLabel}
-              </ActionButton>
-            }
-          />
-          <Tooltip.Portal>
-            <Tooltip.Positioner>
-              <Tooltip.Popup>
-                <Tooltip.Arrow />
-                {`Fix errors in: ${errorSummary}`}
-              </Tooltip.Popup>
-            </Tooltip.Positioner>
-          </Tooltip.Portal>
-        </Tooltip.Root>
-      );
-    }
-
-    return (
+    const button = (
       <ActionButton
         type="submit"
         variant="primary"
@@ -187,6 +143,24 @@ const SubmitButton: React.FC<SubmitButtonProps> = memo(
       >
         {buttonLabel}
       </ActionButton>
+    );
+
+    if (errorSummary == null) {
+      return button;
+    }
+
+    return (
+      <Tooltip.Root>
+        <Tooltip.Trigger render={button} />
+        <Tooltip.Portal>
+          <Tooltip.Positioner>
+            <Tooltip.Popup>
+              <Tooltip.Arrow />
+              {`Fix errors in: ${errorSummary}`}
+            </Tooltip.Popup>
+          </Tooltip.Positioner>
+        </Tooltip.Portal>
+      </Tooltip.Root>
     );
   },
 );

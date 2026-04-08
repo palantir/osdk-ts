@@ -49,7 +49,7 @@ export function TextAreaField({
       minLength={minLength}
       maxLength={maxLength}
       render={renderTextarea}
-      data-invalid={error != null || undefined}
+      aria-invalid={error != null || undefined}
     />
   );
 }

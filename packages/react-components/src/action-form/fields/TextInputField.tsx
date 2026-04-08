@@ -38,7 +38,7 @@ export function TextInputField({
       placeholder={placeholder}
       minLength={minLength}
       maxLength={maxLength}
-      data-invalid={error != null || undefined}
+      aria-invalid={error != null || undefined}
     />
   );
 }

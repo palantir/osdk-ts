@@ -207,12 +207,6 @@ describe("ActionForm", () => {
         <ActionForm actionDefinition={TestAction} onSuccess={onSuccess} />,
       );
 
-      // Fill required field before submitting
-      const nameInput = document.getElementById("name");
-      if (nameInput != null) {
-        fireEvent.change(nameInput, { target: { value: "Alice" } });
-      }
-
       fireEvent.click(screen.getByRole("button", { name: /submit/i }));
 
       await vi.waitFor(() => {
@@ -227,12 +221,6 @@ describe("ActionForm", () => {
 
       render(<ActionForm actionDefinition={TestAction} onError={onError} />);
 
-      // Fill required field before submitting
-      const nameInput = document.getElementById("name");
-      if (nameInput != null) {
-        fireEvent.change(nameInput, { target: { value: "Alice" } });
-      }
-
       fireEvent.click(screen.getByRole("button", { name: /submit/i }));
 
       await vi.waitFor(() => {
@@ -240,6 +228,51 @@ describe("ActionForm", () => {
           type: "submission",
           error,
         });
+      });
+    });
+
+    it("submits even when required fields are empty", async () => {
+      const onSuccess = vi.fn();
+      const result = { editedObjectTypes: [] };
+      mockApplyAction.mockResolvedValue(result);
+
+      render(
+        <ActionForm actionDefinition={TestAction} onSuccess={onSuccess} />,
+      );
+
+      // Submit without filling the required "name" field
+      fireEvent.click(screen.getByRole("button", { name: /submit/i }));
+
+      await vi.waitFor(() => {
+        expect(onSuccess).toHaveBeenCalledWith(result);
+      });
+    });
+
+    it("submits without errors when fields are not required", async () => {
+      // Override metadata so both fields are nullable (not required)
+      vi.mocked(useOsdkMetadata).mockReturnValue({
+        ...defaultMockMetadataResult(),
+        metadata: {
+          ...mockMetadata,
+          parameters: {
+            name: { type: "string", nullable: true },
+            email: { type: "string", nullable: true },
+          },
+        },
+      });
+
+      const onSuccess = vi.fn();
+      const result = { editedObjectTypes: [] };
+      mockApplyAction.mockResolvedValue(result);
+
+      render(
+        <ActionForm actionDefinition={TestAction} onSuccess={onSuccess} />,
+      );
+
+      fireEvent.click(screen.getByRole("button", { name: /submit/i }));
+
+      await vi.waitFor(() => {
+        expect(onSuccess).toHaveBeenCalledWith(result);
       });
     });
   });
