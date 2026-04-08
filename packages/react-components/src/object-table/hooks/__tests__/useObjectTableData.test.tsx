@@ -63,7 +63,6 @@ vi.mock("@osdk/react/experimental", () => ({
       isOptimistic: false,
       hasMore: false,
       objectSet: undefined,
-      wireObjectSet: undefined,
       refetch: vi.fn(),
       // Return the options to verify they were passed correctly
       _testOptions: options,
@@ -79,7 +78,6 @@ vi.mock("@osdk/react/experimental", () => ({
       isOptimistic: false,
       hasMore: false,
       objectSet: undefined,
-      wireObjectSet: undefined,
       refetch: vi.fn(),
       // Return the options to verify they were passed correctly
       _testOptions: options,
@@ -496,6 +494,7 @@ describe(useObjectTableData, () => {
 
     expect(useFunctionColumnsData).toHaveBeenCalledWith(
       undefined,
+      undefined,
       mockBaseData,
       columnDefinitions,
     );
@@ -538,7 +537,6 @@ describe(useObjectTableData, () => {
       },
     };
 
-    const mockWireObjectSet = { type: "base", objectType: "TestObject" };
     vi.mocked(useObjectSet).mockReturnValue({
       data: mockBaseData,
       isLoading: false,
@@ -546,7 +544,6 @@ describe(useObjectTableData, () => {
       fetchMore: vi.fn(),
       isOptimistic: false,
       objectSet: mockObjectSet,
-      wireObjectSet: mockWireObjectSet,
       _testOptions: { pageSize: 50, enabled: true },
     } as any);
 
@@ -591,7 +588,8 @@ describe(useObjectTableData, () => {
     );
 
     expect(useFunctionColumnsData).toHaveBeenCalledWith(
-      mockWireObjectSet,
+      mockObjectSet,
+      undefined,
       mockBaseData,
       columnDefinitions,
     );

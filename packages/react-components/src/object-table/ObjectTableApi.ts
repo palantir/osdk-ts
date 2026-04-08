@@ -128,7 +128,7 @@ export interface FunctionColumnLocator<
    * @returns - The function's input parameters including the object set.
    */
   getFunctionParams: (
-    objectSet: ObjectSet<Q, RDPs>,
+    objectSet: WireObjectSet,
   ) => ExtractQueryParameters<FunctionColumns[keyof FunctionColumns]>;
 
   /**

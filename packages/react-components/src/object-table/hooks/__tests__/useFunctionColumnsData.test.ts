@@ -15,6 +15,7 @@
  */
 
 import type {
+  ObjectSet,
   ObjectTypeDefinition,
   Osdk,
   PropertyKeys,
@@ -37,6 +38,9 @@ import {
 
 vi.mock("@osdk/react/experimental", () => ({
   useOsdkFunctions: vi.fn(),
+  composeWireObjectSet: vi.fn(
+    (objectSet: unknown, _options: unknown) => objectSet,
+  ),
 }));
 
 const TestObjectType: ObjectTypeDefinition = {
@@ -70,7 +74,7 @@ type FunctionColumnDef = {
   timestampColumn?: MockQueryDef;
 };
 
-const mockObjectSet = {} as WireObjectSet;
+const mockObjectSet = {} as ObjectSet<TestObject>;
 
 const mockObject1 = {
   $objectType: "TestObject",
@@ -99,8 +103,8 @@ const columnDefinitions: ColumnDefinition<
       type: "function",
       id: "testColumn",
       queryDefinition: mockQueryDefinition,
-      getFunctionParams: ((wireObjectSet: WireObjectSet) => ({
-        [OBJ_SET_KEY]: wireObjectSet,
+      getFunctionParams: ((objectSet: WireObjectSet) => ({
+        [OBJ_SET_KEY]: objectSet,
       })) as any,
       getKey: (obj) => `${obj.$objectType}:${obj.$primaryKey}`,
     },
@@ -116,7 +120,8 @@ describe("useFunctionColumnsData", () => {
     vi.mocked(useOsdkFunctions).mockReturnValue([]);
 
     const { result } = renderHook(
-      () => useFunctionColumnsData(undefined, mockObjects, undefined),
+      () =>
+        useFunctionColumnsData(undefined, undefined, mockObjects, undefined),
     );
 
     expect(result.current).toEqual({});
@@ -130,7 +135,7 @@ describe("useFunctionColumnsData", () => {
     vi.mocked(useOsdkFunctions).mockReturnValue([]);
 
     const { result } = renderHook(
-      () => useFunctionColumnsData(mockObjectSet, [], undefined),
+      () => useFunctionColumnsData(mockObjectSet, undefined, [], undefined),
     );
 
     expect(result.current).toEqual({});
@@ -158,7 +163,12 @@ describe("useFunctionColumnsData", () => {
 
     const { result, rerender } = renderHook(
       () =>
-        useFunctionColumnsData(mockObjectSet, mockObjects, columnDefinitions),
+        useFunctionColumnsData(
+          mockObjectSet,
+          undefined,
+          mockObjects,
+          columnDefinitions,
+        ),
     );
 
     // Initially shows isLoading state
@@ -243,8 +253,8 @@ describe("useFunctionColumnsData", () => {
           type: "function",
           id: "testColumn",
           queryDefinition: mockQueryDefinition,
-          getFunctionParams: ((wireObjectSet: WireObjectSet) => ({
-            [OBJ_SET_KEY]: wireObjectSet,
+          getFunctionParams: ((objectSet: WireObjectSet) => ({
+            [OBJ_SET_KEY]: objectSet,
           })) as any,
           getValue: (cellData) => (cellData as { status: string })?.status,
           getKey: (obj) => `${obj.$objectType}:${obj.$primaryKey}`,
@@ -263,7 +273,12 @@ describe("useFunctionColumnsData", () => {
 
     const { result } = renderHook(
       () =>
-        useFunctionColumnsData(mockObjectSet, mockOneObject, columnDefinitions),
+        useFunctionColumnsData(
+          mockObjectSet,
+          undefined,
+          mockOneObject,
+          columnDefinitions,
+        ),
     );
 
     expect(result.current).toEqual({
@@ -305,8 +320,8 @@ describe("useFunctionColumnsData", () => {
           type: "function",
           id: "statusColumn",
           queryDefinition: mockQueryDefinition,
-          getFunctionParams: ((wireObjectSet: WireObjectSet) => ({
-            [OBJ_SET_KEY]: wireObjectSet,
+          getFunctionParams: ((objectSet: WireObjectSet) => ({
+            [OBJ_SET_KEY]: objectSet,
           })) as any,
           getValue: (cellData) => (cellData as { status: string })?.status,
           getKey: (obj) => `${obj.$objectType}:${obj.$primaryKey}`,
@@ -317,8 +332,8 @@ describe("useFunctionColumnsData", () => {
           type: "function",
           id: "timestampColumn",
           queryDefinition: mockQueryDefinition,
-          getFunctionParams: ((wireObjectSet: WireObjectSet) => ({
-            [OBJ_SET_KEY]: wireObjectSet,
+          getFunctionParams: ((objectSet: WireObjectSet) => ({
+            [OBJ_SET_KEY]: objectSet,
           })) as any,
           getValue: (cellData) =>
             (cellData as { timestamp: string })?.timestamp,
@@ -338,7 +353,12 @@ describe("useFunctionColumnsData", () => {
 
     const { result } = renderHook(
       () =>
-        useFunctionColumnsData(mockObjectSet, mockOneObject, columnDefinitions),
+        useFunctionColumnsData(
+          mockObjectSet,
+          undefined,
+          mockOneObject,
+          columnDefinitions,
+        ),
     );
 
     expect(result.current).toEqual({
@@ -384,7 +404,7 @@ describe("useFunctionColumnsData", () => {
       },
     ] as Osdk.Instance<TestObject, "$allBaseProperties", TestObjectKeys, {}>[];
 
-    const mockObjectSet = {} as WireObjectSet;
+    const mockObjectSet = {} as ObjectSet<TestObject>;
 
     const mockResult1 = {
       "TestObject:obj1": {
@@ -412,8 +432,8 @@ describe("useFunctionColumnsData", () => {
           type: "function",
           id: "statusColumn",
           queryDefinition: mockQueryDefinition,
-          getFunctionParams: ((wireObjectSet: WireObjectSet) => ({
-            [OBJ_SET_KEY]: wireObjectSet,
+          getFunctionParams: ((objectSet: WireObjectSet) => ({
+            [OBJ_SET_KEY]: objectSet,
           })) as any,
           getValue: (cellData) => (cellData as { status: string })?.status,
           getKey: (obj) => `${obj.$objectType}:${obj.$primaryKey}`,
@@ -424,8 +444,8 @@ describe("useFunctionColumnsData", () => {
           type: "function",
           id: "timestampColumn",
           queryDefinition: mockQueryDefinition2,
-          getFunctionParams: ((wireObjectSet: WireObjectSet) => ({
-            [OBJ_SET_KEY]: wireObjectSet,
+          getFunctionParams: ((objectSet: WireObjectSet) => ({
+            [OBJ_SET_KEY]: objectSet,
           })) as any,
           getValue: (cellData) =>
             (cellData as { timestamp: string })?.timestamp,
@@ -451,7 +471,12 @@ describe("useFunctionColumnsData", () => {
 
     const { result } = renderHook(
       () =>
-        useFunctionColumnsData(mockObjectSet, mockObjects, columnDefinitions),
+        useFunctionColumnsData(
+          mockObjectSet,
+          undefined,
+          mockObjects,
+          columnDefinitions,
+        ),
     );
 
     expect(result.current).toEqual({
@@ -527,7 +552,12 @@ describe("useFunctionColumnsData", () => {
 
     const { result } = renderHook(
       () =>
-        useFunctionColumnsData(mockObjectSet, mockObjects, columnDefinitions),
+        useFunctionColumnsData(
+          mockObjectSet,
+          undefined,
+          mockObjects,
+          columnDefinitions,
+        ),
     );
 
     expect(result.current).toEqual({
@@ -562,7 +592,12 @@ describe("useFunctionColumnsData", () => {
 
     const { result } = renderHook(
       () =>
-        useFunctionColumnsData(mockObjectSet, mockObjects, columnDefinitions),
+        useFunctionColumnsData(
+          mockObjectSet,
+          undefined,
+          mockObjects,
+          columnDefinitions,
+        ),
     );
 
     expect(result.current).toEqual({
@@ -597,7 +632,12 @@ describe("useFunctionColumnsData", () => {
 
     renderHook(
       () =>
-        useFunctionColumnsData(mockObjectSet, mockObjects, nonFunctionColumns),
+        useFunctionColumnsData(
+          mockObjectSet,
+          undefined,
+          mockObjects,
+          nonFunctionColumns,
+        ),
     );
 
     expect(useOsdkFunctions).toHaveBeenCalledWith({
@@ -619,7 +659,12 @@ describe("useFunctionColumnsData", () => {
 
     const { result, rerender } = renderHook(
       () =>
-        useFunctionColumnsData(mockObjectSet, mockObjects, columnDefinitions),
+        useFunctionColumnsData(
+          mockObjectSet,
+          undefined,
+          mockObjects,
+          columnDefinitions,
+        ),
     );
 
     // Check initial loading state

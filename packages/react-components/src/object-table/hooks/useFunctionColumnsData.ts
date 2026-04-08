@@ -54,7 +54,7 @@ type FunctionColumnConfig<
 > = {
   queryDefinition: QueryDefinition<unknown>;
   getParams: (
-    wireObjectSet: WireObjectSet,
+    objectSet: WireObjectSet,
   ) => unknown;
   columnIds: Array<{
     columnId: string;
@@ -98,7 +98,7 @@ export function useFunctionColumnsData<
   const stableObjectSet = useMemo(() => objectSet, [JSON.stringify(objectSet)]);
 
   // Omitting withProperties as it causes an error when present in the function param
-  const wireObjectSet = useMemo(() => {
+  const composedObjectSet = useMemo(() => {
     return composeWireObjectSet(stableObjectSet, objectSetOptions ?? {});
   }, [stableObjectSet, objectSetOptions]);
 
@@ -116,14 +116,14 @@ export function useFunctionColumnsData<
         (config): FunctionQueryParams<QueryDefinition<unknown>> => ({
           queryDefinition: config.queryDefinition,
           options: {
-            params: config.getParams(wireObjectSet),
+            params: config.getParams(composedObjectSet!),
             dedupeIntervalMs: config.dedupeIntervalMs
               ?? DEFAULT_DEDUPE_INTERVAL_MS,
           } as FunctionQueryParams<QueryDefinition<unknown>>["options"],
         }),
       );
     },
-    [disabled, functionColumnConfigs, wireObjectSet],
+    [disabled, functionColumnConfigs, composedObjectSet],
   );
 
   const results = useOsdkFunctions(
