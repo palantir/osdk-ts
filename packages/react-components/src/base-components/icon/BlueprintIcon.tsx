@@ -54,14 +54,17 @@ export const BlueprintIcon: React.NamedExoticComponent<BlueprintIconProps> =
  * instead of the static `getIconPaths()` which bundles every icon definition.
  */
 function useIcon(icon: IconName, size: IconSize): IconPaths | undefined {
-  const [iconPaths, setIconPaths] = React.useState<IconPaths | undefined>(
-    () => Icons.getPaths(icon, size),
+  const [iconPaths, setIconPaths] = React.useState<IconPaths | undefined>(() =>
+    Icons.getPaths(icon, size)
   );
 
   React.useEffect(
     function loadIconPaths() {
       let isMounted = true;
-      if (iconPaths == null) {
+      const loadedIconPaths = Icons.getPaths(icon, size);
+      if (loadedIconPaths != null) {
+        setIconPaths(loadedIconPaths);
+      } else {
         void Icons.load(icon, size).then(() => {
           if (isMounted) {
             setIconPaths(Icons.getPaths(icon, size));
@@ -72,7 +75,7 @@ function useIcon(icon: IconName, size: IconSize): IconPaths | undefined {
         isMounted = false;
       };
     },
-    [icon, size, iconPaths],
+    [icon, size],
   );
 
   return iconPaths;
