@@ -351,3 +351,22 @@ return (
     );
   },
 };
+
+export const WithValidation: Story = {
+  args: {
+    actionDefinition: StoryAction,
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `// ActionForm auto-generates validation from metadata:
+// - Required fields show "This field is required" on blur
+// - Submit button shows error summary tooltip when invalid
+// In this example, "name" and "quantity" are required parameters.
+
+<ActionForm actionDefinition={SubmitOrder} />`,
+      },
+    },
+  },
+  render: (args) => <ActionForm {...args} />,
+};
