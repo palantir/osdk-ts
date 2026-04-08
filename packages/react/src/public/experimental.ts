@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-export { composeWireObjectSet } from "../new/hookUtils.js";
+export { composeObjectSet } from "../new/composeObjectSet.js";
 export { OsdkProvider2 } from "../new/OsdkProvider2.js";
 export { useLinks } from "../new/useLinks.js";
 export { useObjectSet } from "../new/useObjectSet.js";

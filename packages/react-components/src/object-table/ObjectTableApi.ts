@@ -26,12 +26,7 @@ import type {
   SimplePropertyDef,
   WhereClause,
 } from "@osdk/api";
-import type {
-  getWireObjectSet,
-  QueryParameterType,
-} from "@osdk/client/unstable-do-not-use";
-
-type WireObjectSet = ReturnType<typeof getWireObjectSet>;
+import type { QueryParameterType } from "@osdk/client/unstable-do-not-use";
 import type * as React from "react";
 import type { CellEditInfo } from "./utils/types.js";
 
@@ -128,7 +123,7 @@ export interface FunctionColumnLocator<
    * @returns - The function's input parameters including the object set.
    */
   getFunctionParams: (
-    objectSet: WireObjectSet,
+    objectSet: ObjectSet<Q>,
   ) => ExtractQueryParameters<FunctionColumns[keyof FunctionColumns]>;
 
   /**

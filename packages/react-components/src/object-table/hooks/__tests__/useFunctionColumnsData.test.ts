@@ -21,13 +21,10 @@ import type {
   PropertyKeys,
   QueryDefinition,
 } from "@osdk/api";
-import type { getWireObjectSet } from "@osdk/client/unstable-do-not-use";
 import {
   useOsdkFunctions,
   type UseOsdkFunctionsResult,
 } from "@osdk/react/experimental";
-
-type WireObjectSet = ReturnType<typeof getWireObjectSet>;
 import { renderHook } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { ColumnDefinition } from "../../ObjectTableApi.js";
@@ -38,7 +35,7 @@ import {
 
 vi.mock("@osdk/react/experimental", () => ({
   useOsdkFunctions: vi.fn(),
-  composeWireObjectSet: vi.fn(
+  composeObjectSet: vi.fn(
     (objectSet: unknown, _options: unknown) => objectSet,
   ),
 }));
@@ -103,7 +100,7 @@ const columnDefinitions: ColumnDefinition<
       type: "function",
       id: "testColumn",
       queryDefinition: mockQueryDefinition,
-      getFunctionParams: ((objectSet: WireObjectSet) => ({
+      getFunctionParams: ((objectSet: ObjectSet<TestObject>) => ({
         [OBJ_SET_KEY]: objectSet,
       })) as any,
       getKey: (obj) => `${obj.$objectType}:${obj.$primaryKey}`,
@@ -253,7 +250,7 @@ describe("useFunctionColumnsData", () => {
           type: "function",
           id: "testColumn",
           queryDefinition: mockQueryDefinition,
-          getFunctionParams: ((objectSet: WireObjectSet) => ({
+          getFunctionParams: ((objectSet: ObjectSet<TestObject>) => ({
             [OBJ_SET_KEY]: objectSet,
           })) as any,
           getValue: (cellData) => (cellData as { status: string })?.status,
@@ -320,7 +317,7 @@ describe("useFunctionColumnsData", () => {
           type: "function",
           id: "statusColumn",
           queryDefinition: mockQueryDefinition,
-          getFunctionParams: ((objectSet: WireObjectSet) => ({
+          getFunctionParams: ((objectSet: ObjectSet<TestObject>) => ({
             [OBJ_SET_KEY]: objectSet,
           })) as any,
           getValue: (cellData) => (cellData as { status: string })?.status,
@@ -332,7 +329,7 @@ describe("useFunctionColumnsData", () => {
           type: "function",
           id: "timestampColumn",
           queryDefinition: mockQueryDefinition,
-          getFunctionParams: ((objectSet: WireObjectSet) => ({
+          getFunctionParams: ((objectSet: ObjectSet<TestObject>) => ({
             [OBJ_SET_KEY]: objectSet,
           })) as any,
           getValue: (cellData) =>
@@ -432,7 +429,7 @@ describe("useFunctionColumnsData", () => {
           type: "function",
           id: "statusColumn",
           queryDefinition: mockQueryDefinition,
-          getFunctionParams: ((objectSet: WireObjectSet) => ({
+          getFunctionParams: ((objectSet: ObjectSet<TestObject>) => ({
             [OBJ_SET_KEY]: objectSet,
           })) as any,
           getValue: (cellData) => (cellData as { status: string })?.status,
@@ -444,7 +441,7 @@ describe("useFunctionColumnsData", () => {
           type: "function",
           id: "timestampColumn",
           queryDefinition: mockQueryDefinition2,
-          getFunctionParams: ((objectSet: WireObjectSet) => ({
+          getFunctionParams: ((objectSet: ObjectSet<TestObject>) => ({
             [OBJ_SET_KEY]: objectSet,
           })) as any,
           getValue: (cellData) =>

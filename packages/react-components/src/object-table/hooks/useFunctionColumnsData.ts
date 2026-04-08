@@ -22,14 +22,11 @@ import type {
   QueryDefinition,
   SimplePropertyDef,
 } from "@osdk/api";
-import type { getWireObjectSet } from "@osdk/client/unstable-do-not-use";
 import {
-  composeWireObjectSet,
+  composeObjectSet,
   type FunctionQueryParams,
   useOsdkFunctions,
 } from "@osdk/react/experimental";
-
-type WireObjectSet = ReturnType<typeof getWireObjectSet>;
 
 import { useMemo } from "react";
 import type {
@@ -54,7 +51,7 @@ type FunctionColumnConfig<
 > = {
   queryDefinition: QueryDefinition<unknown>;
   getParams: (
-    objectSet: WireObjectSet,
+    objectSet: ObjectSet<Q>,
   ) => unknown;
   columnIds: Array<{
     columnId: string;
@@ -97,9 +94,9 @@ export function useFunctionColumnsData<
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const stableObjectSet = useMemo(() => objectSet, [JSON.stringify(objectSet)]);
 
-  // Omitting withProperties as it causes an error when present in the function param
+  // Intentionally omitting withProperties as it causes an error when present in the function param
   const composedObjectSet = useMemo(() => {
-    return composeWireObjectSet(stableObjectSet, objectSetOptions ?? {});
+    return composeObjectSet(stableObjectSet, objectSetOptions ?? {});
   }, [stableObjectSet, objectSetOptions]);
 
   const disabled = !stableObjectSet || !stableObjects?.length
