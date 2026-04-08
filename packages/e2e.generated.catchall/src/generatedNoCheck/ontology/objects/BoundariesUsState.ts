@@ -15,7 +15,7 @@ import type {
 } from '@osdk/client';
 
 export namespace BoundariesUsState {
-  export type PropertyKeys = 'usState' | 'latitude' | 'longitude' | 'geometry10M';
+  export type PropertyKeys = 'usState' | 'name' | 'wikipedia' | 'latitude' | 'longitude' | 'geometry10M';
 
   export type Links = {};
 
@@ -37,7 +37,15 @@ export namespace BoundariesUsState {
     /**
      * (no ontology metadata)
      */
+    readonly name: $PropType['string'] | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly usState: $PropType['string'];
+    /**
+     * (no ontology metadata)
+     */
+    readonly wikipedia: $PropType['string'] | undefined;
   }
   export type StrictProps = Props;
 
@@ -99,7 +107,15 @@ export interface BoundariesUsState extends $ObjectTypeDefinition {
       /**
        * (no ontology metadata)
        */
+      name: $PropertyDef<'string', 'nullable', 'single'>;
+      /**
+       * (no ontology metadata)
+       */
       usState: $PropertyDef<'string', 'non-nullable', 'single'>;
+      /**
+       * (no ontology metadata)
+       */
+      wikipedia: $PropertyDef<'string', 'nullable', 'single'>;
     };
     rid: 'ri.a.b.c.d';
     status: 'ACTIVE';
