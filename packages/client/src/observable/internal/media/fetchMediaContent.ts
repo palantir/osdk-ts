@@ -107,6 +107,7 @@ async function loadWithPreview(opts: FetchMediaContentOpts): Promise<void> {
     if (previewUrl) {
       blobManager.releaseBlobUrl(previewBlobKey);
     }
+    blobManager.remove(previewBlobKey);
     return;
   }
 
@@ -138,6 +139,7 @@ async function loadWithPreview(opts: FetchMediaContentOpts): Promise<void> {
     if (fullUrl) {
       blobManager.releaseBlobUrl(blobCacheKey);
     }
+    blobManager.remove(blobCacheKey);
     return;
   }
 
@@ -182,6 +184,7 @@ async function loadDirect(opts: FetchMediaContentOpts): Promise<void> {
     if (url) {
       blobManager.releaseBlobUrl(blobCacheKey);
     }
+    blobManager.remove(blobCacheKey);
     return;
   }
 
