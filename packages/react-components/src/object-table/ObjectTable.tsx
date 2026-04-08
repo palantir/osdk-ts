@@ -66,7 +66,7 @@ export function ObjectTable<
   columnDefinitions,
   filter,
   objectSetOptions,
-  networkConfig,
+  dedupeIntervalMs,
   orderBy,
   defaultOrderBy,
   onOrderByChanged,
@@ -114,7 +114,7 @@ export function ObjectTable<
     sorting,
     objectSet,
     objectSetOptions,
-    networkConfig,
+    dedupeIntervalMs,
   );
 
   const { columns, loading: isColumnsLoading } = useColumnDefs<

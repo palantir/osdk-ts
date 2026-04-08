@@ -2,4 +2,4 @@
 "@osdk/react-components": minor
 ---
 
-Add network config to enable users to configure the dedupe interval to cache network requests
+Add dedupeIntervalMs prop to ObjectTable to configure the dedupe interval for caching network requests

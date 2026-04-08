@@ -201,10 +201,13 @@ export interface ObjectTableProps<
   objectSetOptions?: ObjectSetOptions<Q>;
 
   /**
-   * Configuration for network request behavior.
-   * Use this to control deduplication intervals and other network-related settings.
+   * Minimum time between fetch requests in milliseconds.
+   * Increasing this value reduces redundant network calls when the same data
+   * is requested multiple times in quick succession.
+   *
+   * @default 60_000 1 minute
    */
-  networkConfig?: NetworkConfig;
+  dedupeIntervalMs?: number;
 
   /**
    * Ordered list of column definitions to show in the table
@@ -445,15 +448,4 @@ export interface ObjectSetOptions<
    * Object sets to subtract from
    */
   subtract?: ObjectSet<Q>[];
-}
-
-export interface NetworkConfig {
-  /**
-   * Minimum time between fetch requests in milliseconds.
-   * Increasing this value reduces redundant network calls when the same data
-   * is requested multiple times in quick succession.
-   *
-   * @default 60_000 1 minute
-   */
-  dedupeIntervalMs?: number;
 }
