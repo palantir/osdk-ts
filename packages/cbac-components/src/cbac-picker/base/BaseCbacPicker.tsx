@@ -85,7 +85,7 @@ export function BaseCbacPicker({
             role="alert"
           >
             <p>{errorMessage.title}</p>
-            <p>{errorMessage.remediation}</p>
+            {errorMessage.remediation && <p>{errorMessage.remediation}</p>}
           </div>
         )
         : showInitialLoading

@@ -152,9 +152,11 @@ const PopoverContent = React.memo(function PopoverContent({
         <p className={styles.errorMessage}>
           {errorMessage.title}
         </p>
-        <p className={styles.errorRemediation}>
-          {errorMessage.remediation}
-        </p>
+        {errorMessage.remediation && (
+          <p className={styles.errorRemediation}>
+            {errorMessage.remediation}
+          </p>
+        )}
         {onRetry !== undefined && (
           <ActionButton variant="secondary" onClick={onRetry}>
             Retry
