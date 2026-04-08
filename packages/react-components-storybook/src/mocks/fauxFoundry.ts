@@ -16,6 +16,7 @@
 
 import { FauxFoundry } from "@osdk/faux";
 import type { Employee } from "../types/Employee.js";
+import { SubmitOrder } from "./actionMetadata.js";
 import { employeeData } from "./employeeData.js";
 import { employeeMetadata } from "./employeeMetadata.js";
 import { interfaceMetadata } from "./interfaceMetadata.js";
@@ -50,6 +51,9 @@ export async function setupFauxFoundry(): Promise<void> {
   fauxFoundry.getDefaultOntology().registerObjectType<Employee>(
     employeeMetadata,
   );
+
+  // Register action types
+  fauxFoundry.getDefaultOntology().registerActionType(SubmitOrder);
 
   // Add mock data from JSON file
   const dataStore = fauxFoundry.getDefaultDataStore();
