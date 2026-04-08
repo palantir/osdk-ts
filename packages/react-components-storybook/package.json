@@ -24,6 +24,7 @@
     "@osdk/api": "workspace:*",
     "@osdk/cbac-components": "workspace:*",
     "@osdk/client": "workspace:*",
+    "@osdk/foundry.ontologies": "catalog:foundry-platform-typescript",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@osdk/react": "workspace:*",
     "@osdk/react-components": "workspace:*",
