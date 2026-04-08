@@ -18,7 +18,7 @@ import type {
   QueryDataTypeDefinition,
   QueryParameterDefinition,
 } from "@osdk/api";
-import type { QueryDataType, QueryTypeV2 } from "@osdk/foundry.ontologies";
+import type { QueryDataType } from "@osdk/foundry.ontologies";
 import {
   wireQueryDataTypeToQueryDataTypeDefinition,
   wireQueryParameterV2ToQueryParameterDefinition as paramToDef,
@@ -130,8 +130,9 @@ async function generateV2QueryFile(
     query.fullApiName,
   );
 
-  const customTypesNs = generateCustomTypesNamespace(ontology, query.raw);
-  const typeRefNames = buildTypeRefNames(query.raw, true);
+  const typeRefs = query.raw.typeReferences ?? {};
+  const customTypesNs = generateCustomTypesNamespace(ontology, typeRefs);
+  const typeRefNames = buildTypeRefNames(typeRefs, true);
 
   await fs.writeFile(
     path.join(outDir, `${query.shortApiName}.ts`),
@@ -409,8 +410,10 @@ export function getQueryParamType(
       break;
 
     case "typeReference":
-      paramType = typeRefNames?.get(input.typeId)
-        ?? `unknown /* typeRef: ${input.typeId} */`;
+      if (!typeRefNames?.has(input.typeId)) {
+        throw new Error(`Unknown typeReference: ${input.typeId}`);
+      }
+      paramType = typeRefNames.get(input.typeId)!;
       break;
   }
 
@@ -418,34 +421,11 @@ export function getQueryParamType(
 }
 
 function buildTypeRefNames(
-  query: QueryTypeV2,
+  typeRefs: Record<string, QueryDataType>,
   expand: boolean,
 ): Map<string, string> {
-  const typeRefs = query.typeReferences ?? {};
-  const ids = new Set<string>();
-
-  function collect(dt: QueryDataType): void {
-    if (dt.type === "typeReference" && !ids.has(dt.typeId)) {
-      ids.add(dt.typeId);
-      const ref = typeRefs[dt.typeId];
-      if (ref) collect(ref);
-    } else if (dt.type === "struct") {
-      for (const f of dt.fields) collect(f.fieldType);
-    } else if (dt.type === "array" || dt.type === "set") {
-      collect(dt.subType);
-    } else if (dt.type === "union") {
-      for (const u of dt.unionTypes) collect(u);
-    } else if (dt.type === "entrySet") {
-      collect(dt.keyType);
-      collect(dt.valueType);
-    }
-  }
-
-  for (const p of Object.values(query.parameters)) collect(p.dataType);
-  collect(query.output);
-
   const names = new Map<string, string>();
-  for (const id of ids) {
+  for (const id of Object.keys(typeRefs)) {
     const sanitized = `$${id.replace(/-/g, "_")}`;
     const qualName = `CustomTypes.${sanitized}`;
     names.set(id, expand ? `CustomTypes.Expand<${qualName}>` : qualName);
@@ -455,15 +435,14 @@ function buildTypeRefNames(
 
 function generateCustomTypesNamespace(
   ontology: EnhancedOntologyDefinition,
-  query: QueryTypeV2,
+  typeRefs: Record<string, QueryDataType>,
 ): string {
-  const typeRefs = query.typeReferences ?? {};
-  const names = buildTypeRefNames(query, false);
+  const names = buildTypeRefNames(typeRefs, false);
   if (names.size === 0) return "";
 
   const interfaces: string[] = [];
   for (const [id, dt] of Object.entries(typeRefs)) {
-    if (dt.type !== "struct" || !names.has(id)) continue;
+    if (dt.type !== "struct") continue;
     const sanitized = `$${id.replace(/-/g, "_")}`;
     const converted = wireQueryDataTypeToQueryDataTypeDefinition(dt);
     interfaces.push(
