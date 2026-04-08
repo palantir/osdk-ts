@@ -33,6 +33,7 @@ import {
 
 const meta: Meta<typeof BaseCbacPicker> = {
   title: "Components/CbacPicker",
+  tags: ["experimental"],
   component: BaseCbacPicker,
   parameters: {
     controls: {

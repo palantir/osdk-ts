@@ -134,6 +134,7 @@ const FILTER_ICON = (
 
 const meta: Meta<EmployeeFilterListProps> = {
   title: "Components/FilterList",
+  tags: ["experimental"],
   component: FilterList,
   args: {
     title: "Filters",
