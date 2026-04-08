@@ -93,6 +93,21 @@
   gap: calc(var(--osdk-surface-spacing) * 1.5);
 }
 
+.skeletonPill {
+  width: var(--osdk-cbac-skeleton-pill-width);
+  height: var(--osdk-cbac-skeleton-pill-height);
+}
+
+.skeletonLine {
+  width: 100%;
+  height: var(--osdk-cbac-skeleton-line-height);
+}
+
+.skeletonLineNarrow {
+  width: var(--osdk-cbac-skeleton-line-narrow-width);
+  height: var(--osdk-cbac-skeleton-line-height);
+}
+
 /* Error state */
 .errorContainer {
   display: flex;

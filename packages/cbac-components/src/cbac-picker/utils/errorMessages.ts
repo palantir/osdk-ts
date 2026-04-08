@@ -61,18 +61,21 @@ function formatByStatusCode(error: Error & ApiErrorLike): CbacErrorMessage {
   ) {
     return {
       title: error.errorDescription,
-      remediation: "Try again later.",
+      remediation: "",
     };
   }
   return {
-    title: "Something went wrong",
-    remediation: "Try again later.",
+    title: error.message || "Something went wrong",
+    remediation: "",
   };
 }
 
 export function formatCbacError(error: Error): CbacErrorMessage {
   if (error instanceof AggregateError && error.errors.length > 0) {
-    return formatCbacError(error.errors[0] as Error);
+    const first = error.errors[0];
+    if (first instanceof Error) {
+      return formatCbacError(first);
+    }
   }
 
   if (isApiErrorLike(error)) {
@@ -90,7 +93,7 @@ export function formatCbacError(error: Error): CbacErrorMessage {
   }
 
   return {
-    title: "Something went wrong",
-    remediation: "Try again later.",
+    title: error.message || "Something went wrong",
+    remediation: "",
   };
 }

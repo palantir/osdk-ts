@@ -19,8 +19,10 @@ import { CaretDown, CaretUp, WarningSign } from "@blueprintjs/icons";
 import { ActionButton, SkeletonBar } from "@osdk/react-components/primitives";
 import classnames from "classnames";
 import React from "react";
-import type { AppliedMarkingGroup } from "../utils/cbacPickerUtils.js";
-import { backgroundFromColors } from "../utils/cbacPickerUtils.js";
+import {
+  type AppliedMarkingGroup,
+  backgroundFromColors,
+} from "../utils/cbacPickerUtils.js";
 export type { AppliedMarkingGroup } from "../utils/cbacPickerUtils.js";
 import { formatCbacError } from "../utils/errorMessages.js";
 import { BaseCbacBanner } from "./BaseCbacBanner.js";
@@ -140,13 +142,7 @@ const PopoverContent = React.memo(function PopoverContent({
   const hasMarkings = appliedMarkings.length > 0;
   const hasWarnings = warnings !== undefined && warnings.length > 0;
   if (showSkeleton) {
-    return (
-      <div className={styles.skeletonContainer}>
-        <SkeletonBar width={120} height={24} />
-        <SkeletonBar width="100%" height={16} />
-        <SkeletonBar width="80%" height={16} />
-      </div>
-    );
+    return <PopoverSkeleton />;
   }
 
   if (error !== undefined) {
@@ -228,3 +224,13 @@ const PopoverContent = React.memo(function PopoverContent({
     </>
   );
 });
+
+function PopoverSkeleton(): React.ReactElement {
+  return (
+    <div className={styles.skeletonContainer}>
+      <SkeletonBar className={styles.skeletonPill} />
+      <SkeletonBar className={styles.skeletonLine} />
+      <SkeletonBar className={styles.skeletonLineNarrow} />
+    </div>
+  );
+}
