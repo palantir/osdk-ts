@@ -38,6 +38,8 @@ interface ActionFormStoryProps {
   isSubmitDisabled?: boolean;
 }
 
+const FORM_MAX_WIDTH = 480;
+
 const meta: Meta<ActionFormStoryProps> = {
   title: "Components/ActionForm",
   component: ActionForm,
@@ -73,6 +75,26 @@ const meta: Meta<ActionFormStoryProps> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
+const ACTION_DEFINITION_SUMMARY = {
+  apiName: "submitOrder",
+  displayName: "Submit Order",
+  parameters: {
+    name: { type: "string", required: true },
+    quantity: { type: "integer", required: true },
+    price: { type: "double", required: false },
+    isActive: { type: "boolean", required: false },
+    startDate: { type: "timestamp", required: false },
+    document: { type: "attachment", required: false },
+  },
+};
+
+type SubmitResult =
+  | { type: "idle" }
+  | { type: "success"; data: Record<string, unknown> }
+  | { type: "error"; data: Record<string, unknown>; message: string };
+
+const IDLE_RESULT: SubmitResult = { type: "idle" };
+
 export const Default: Story = {
   args: {
     actionDefinition: StoryAction,
@@ -83,11 +105,75 @@ export const Default: Story = {
         code: `import { ActionForm } from "@osdk/react-components/experimental";
 import { SubmitOrder } from "./ontology";
 
-<ActionForm actionDefinition={SubmitOrder} />`,
+<ActionForm
+  actionDefinition={SubmitOrder}
+  onSubmit={async (formState, applyAction) => {
+    await applyAction(formState);
+    console.log("Submitted:", formState);
+  }}
+/>`,
       },
     },
   },
-  render: (args) => <ActionForm {...args} />,
+  render: (args) => {
+    const [result, setResult] = useState<SubmitResult>(IDLE_RESULT);
+
+    return (
+      <div className="osdkFormStoryLayout">
+        <div
+          className="osdkFormCard"
+          style={{ maxWidth: FORM_MAX_WIDTH, width: "100%" }}
+        >
+          <ActionForm
+            {...args}
+            onSubmit={async (formState, applyAction) => {
+              const data = formState as Record<string, unknown>;
+              // applyAction accepts FormState values at runtime; the
+              // ActionParameters<Q> type resolves to metadata shape which
+              // is a known mismatch in the API types.
+              const apply: Function = applyAction;
+              try {
+                await apply(formState);
+                setResult({ type: "success", data });
+              } catch (e) {
+                const message = e instanceof Error
+                  ? e.message
+                  : "Action failed";
+                setResult({ type: "error", data, message });
+              }
+            }}
+          />
+        </div>
+        <div className="osdkFormStoryResultPanel">
+          {result.type === "idle" && (
+            <div className="osdkFormStoryResultEmpty">
+              Submit the form to see the result here.
+            </div>
+          )}
+          {result.type !== "idle" && (
+            <>
+              <div
+                className={result.type === "error"
+                  ? "osdkSubmitBanner osdkSubmitBannerError"
+                  : "osdkSubmitBanner osdkSubmitBannerSuccess"}
+              >
+                {result.type === "success" && "Action applied successfully"}
+                {result.type === "error" && result.message}
+              </div>
+              <h4 className="osdkSubmitResultHeading">Action Definition</h4>
+              <pre className="osdkCodeOutput">
+                {JSON.stringify(ACTION_DEFINITION_SUMMARY, null, 2)}
+              </pre>
+              <h4 className="osdkSubmitResultHeading">Submitted Data</h4>
+              <pre className="osdkCodeOutput">
+                {JSON.stringify(result.data, fileReplacer, 2)}
+              </pre>
+            </>
+          )}
+        </div>
+      </div>
+    );
+  },
 };
 
 export const WithCustomTitle: Story = {
@@ -105,7 +191,14 @@ export const WithCustomTitle: Story = {
       },
     },
   },
-  render: (args) => <ActionForm {...args} />,
+  render: (args) => (
+    <div
+      className="osdkFormCard"
+      style={{ maxWidth: FORM_MAX_WIDTH, width: "100%" }}
+    >
+      <ActionForm {...args} />
+    </div>
+  ),
 };
 
 // fieldComponentProps uses {} to satisfy the widened union type — the
@@ -201,7 +294,12 @@ export const WithCustomFieldDefinitions: Story = {
     },
   },
   render: (args) => (
-    <ActionForm {...args} formFieldDefinitions={customFieldDefinitions} />
+    <div
+      className="osdkFormCard"
+      style={{ maxWidth: FORM_MAX_WIDTH, width: "100%" }}
+    >
+      <ActionForm {...args} formFieldDefinitions={customFieldDefinitions} />
+    </div>
   ),
 };
 
@@ -239,27 +337,20 @@ return (
     });
 
     return (
-      <div>
+      <div style={{ maxWidth: FORM_MAX_WIDTH, width: "100%" }}>
         <div style={{ marginBottom: "16px" }}>
           <strong>Current Form State:</strong>
-          <pre
-            style={{
-              background: "#f5f5f5",
-              padding: "12px",
-              borderRadius: "4px",
-              fontSize: "13px",
-              maxHeight: "200px",
-              overflow: "auto",
-            }}
-          >
+          <pre className="osdkCodeOutput">
             {JSON.stringify(formState, null, 2)}
           </pre>
         </div>
-        <ActionForm
-          actionDefinition={StoryAction}
-          formState={formState}
-          onFormStateChange={setFormState}
-        />
+        <div className="osdkFormCard">
+          <ActionForm
+            actionDefinition={StoryAction}
+            formState={formState}
+            onFormStateChange={setFormState}
+          />
+        </div>
       </div>
     );
   },
@@ -317,36 +408,26 @@ return (
       [],
     );
 
+    const bannerClass = status.type === "error"
+      ? "osdkSubmitBanner osdkSubmitBannerError"
+      : "osdkSubmitBanner osdkSubmitBannerSuccess";
+
     return (
-      <div>
+      <div style={{ maxWidth: FORM_MAX_WIDTH, width: "100%" }}>
         {status.type !== "idle" && (
-          <div
-            style={{
-              marginBottom: "16px",
-              padding: "12px",
-              borderRadius: "4px",
-              background: status.type === "success"
-                ? "#d4edda"
-                : status.type === "error"
-                ? "#f8d7da"
-                : "#fff3cd",
-              color: status.type === "success"
-                ? "#155724"
-                : status.type === "error"
-                ? "#721c24"
-                : "#856404",
-            }}
-          >
+          <div className={bannerClass} style={{ marginBottom: "16px" }}>
             {status.type === "submitting" && "Submitting order..."}
             {status.type === "success" && "Order submitted successfully!"}
             {status.type === "error" && `Error: ${status.message}`}
           </div>
         )}
-        <ActionForm
-          actionDefinition={StoryAction}
-          onSuccess={handleSuccess}
-          onError={handleError}
-        />
+        <div className="osdkFormCard">
+          <ActionForm
+            actionDefinition={StoryAction}
+            onSuccess={handleSuccess}
+            onError={handleError}
+          />
+        </div>
       </div>
     );
   },
@@ -368,5 +449,22 @@ export const WithValidation: Story = {
       },
     },
   },
-  render: (args) => <ActionForm {...args} />,
+  render: (args) => (
+    <div
+      className="osdkFormCard"
+      style={{ maxWidth: FORM_MAX_WIDTH, width: "100%" }}
+    >
+      <ActionForm {...args} />
+    </div>
+  ),
 };
+
+function fileReplacer(_key: string, value: unknown): unknown {
+  if (value instanceof File) {
+    return value.name;
+  }
+  if (Array.isArray(value) && value.every((v) => v instanceof File)) {
+    return value.map((f) => f.name);
+  }
+  return value;
+}

@@ -52,8 +52,8 @@ export async function setupFauxFoundry(): Promise<void> {
     employeeMetadata,
   );
 
-  // Register action types
-  fauxFoundry.getDefaultOntology().registerActionType(SubmitOrder);
+  // Register action types with a no-op implementation
+  fauxFoundry.getDefaultOntology().registerActionType(SubmitOrder, () => {});
 
   // Add mock data from JSON file
   const dataStore = fauxFoundry.getDefaultDataStore();
