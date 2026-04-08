@@ -18,11 +18,12 @@ import { loadFoundryConfig } from "@osdk/foundry-config-json";
 import type { ServerResponse } from "node:http";
 import { inspect } from "node:util";
 import type { ViteDevServer } from "vite";
+import type { DevModeManifest } from "./buildDevModeManifest.js";
 import {
   getCodeWorkspacesFoundryUrl,
   isCodeWorkspacesMode,
 } from "./codeWorkspacesMode.js";
-import { enableDevMode, setWidgetSetSettings } from "./network.js";
+import { enableDevMode, setWidgetSetManifest } from "./network.js";
 
 class ResponseError extends Error {
   // To avoid inspect() from logging the error response since it's already logged
@@ -58,16 +59,21 @@ function getHintForError(
   ) {
     return "You first need to publish changes to your widget configuration files before you can develop against them.\n\nSee: https://www.palantir.com/docs/foundry/custom-widgets/publish/";
   }
+  if (
+    parsed.errorName === "Api:InvalidManifest"
+    || parsed.errorName === "InvalidManifest"
+  ) {
+    return "The dev mode manifest was rejected by the server. This may indicate a mismatch between your plugin version and the Foundry platform version.";
+  }
   return undefined;
 }
 
 /**
- * Finish the setup process by setting the widget overrides in Foundry and enabling dev mode.
+ * Finish the setup process by setting the widget dev mode manifest in Foundry and enabling dev mode.
  */
 export async function publishDevModeSettings(
   server: ViteDevServer,
-  widgetIdToOverrides: Record<string, string[]>,
-  baseHref: string,
+  manifest: DevModeManifest,
   res: ServerResponse,
 ): Promise<void> {
   try {
@@ -82,21 +88,20 @@ export async function publishDevModeSettings(
       : foundryConfig.foundryConfig.foundryUrl;
 
     const widgetSetRid = foundryConfig.foundryConfig.widgetSet.rid;
-    const settingsResponse = await setWidgetSetSettings(
+    const settingsResponse = await setWidgetSetManifest(
       foundryUrl,
       widgetSetRid,
-      widgetIdToOverrides,
-      baseHref,
+      manifest,
       server.config.mode,
     );
     if (settingsResponse.status !== 200) {
       server.config.logger.warn(
-        `Unable to set widget settings in Foundry: ${settingsResponse.statusText}`,
+        `Unable to set widget manifest in Foundry: ${settingsResponse.statusText}`,
       );
       const responseContent = await settingsResponse.text();
       server.config.logger.warn(responseContent);
       throw new ResponseError(
-        `Unable to set widget settings in Foundry: ${settingsResponse.statusText}`,
+        `Unable to set widget manifest in Foundry: ${settingsResponse.statusText}`,
         responseContent,
       );
     }

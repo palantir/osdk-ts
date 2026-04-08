@@ -73,7 +73,7 @@ function buildWidgetManifest(
   };
 }
 
-function convertParameters(
+export function convertParameters(
   parameters: Record<string, ParameterDefinition>,
 ): Record<string, ManifestParameterDefinition> {
   return Object.fromEntries(

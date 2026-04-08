@@ -14,46 +14,21 @@
  * limitations under the License.
  */
 
+import type { DevModeManifest } from "./buildDevModeManifest.js";
 import { getFoundryToken } from "./getFoundryToken.js";
 
-type WidgetSettings = Record<string, {
-  scriptEntrypoints: Array<{
-    filePath: string;
-    scriptType: "DEFAULT" | "MODULE";
-  }>;
-  stylesheetEntrypoints: Array<{ filePath: string }>;
-}>;
-
-export function setWidgetSetSettings(
+export function setWidgetSetManifest(
   foundryUrl: string,
   widgetSetRid: string,
-  widgetIdToOverrides: Record<string, string[]>,
-  baseHref: string,
+  manifest: DevModeManifest,
   viteMode: string | undefined,
 ): Promise<Response> {
-  const widgetSettings: WidgetSettings = Object.fromEntries(
-    Object.entries(widgetIdToOverrides).map(
-      ([widgetId, overrides]) => ([
-        widgetId,
-        {
-          scriptEntrypoints: overrides.map((filePath) => ({
-            filePath,
-            scriptType: "MODULE",
-          })),
-          stylesheetEntrypoints: [],
-        },
-      ] as const),
-    ),
-  );
   return fetch(
-    `${foundryUrl}/api/v2/widgets/devModeSettings/setWidgetSetById?preview=true`,
+    `${foundryUrl}/api/v2/widgets/devModeSettingsV2/setWidgetSetManifest?preview=true`,
     {
       body: JSON.stringify({
         widgetSetRid,
-        settings: {
-          baseHref,
-          widgetSettings,
-        },
+        manifest,
       }),
       method: "POST",
       headers: {
@@ -70,7 +45,7 @@ export function enableDevMode(
   viteMode: string | undefined,
 ): Promise<Response> {
   return fetch(
-    `${foundryUrl}/api/v2/widgets/devModeSettings/enable?preview=true`,
+    `${foundryUrl}/api/v2/widgets/devModeSettingsV2/enable?preview=true`,
     {
       method: "POST",
       headers: {
