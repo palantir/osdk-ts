@@ -15,7 +15,7 @@
  */
 
 import React, { memo, useCallback } from "react";
-import type { Control } from "react-hook-form";
+import type { Control, RegisterOptions } from "react-hook-form";
 import { useController } from "react-hook-form";
 import type { RendererFieldDefinition } from "../FormFieldApi.js";
 import { FormFieldRenderer } from "./FormFieldRenderer.js";
@@ -23,20 +23,24 @@ import { FormFieldRenderer } from "./FormFieldRenderer.js";
 export interface FieldBridgeProps {
   fieldDef: RendererFieldDefinition;
   control: Control<Record<string, unknown>>;
+  rules?: RegisterOptions<Record<string, unknown>, string>;
   onExternalChange?: (fieldKey: string, value: unknown) => void;
 }
 export const FieldBridge: React.FC<FieldBridgeProps> = memo(
   function FieldBridgeFn({
     fieldDef,
     control,
+    rules,
     onExternalChange,
   }: FieldBridgeProps): React.ReactElement {
     const {
-      field: { onChange, value },
+      field: { onChange, onBlur, value },
+      fieldState: { error },
     } = useController({
       name: fieldDef.fieldKey,
       control,
       defaultValue: fieldDef.defaultValue,
+      rules,
     });
 
     const handleChange = useCallback(
@@ -52,6 +56,8 @@ export const FieldBridge: React.FC<FieldBridgeProps> = memo(
         value={value}
         fieldDefinition={fieldDef}
         onFieldValueChange={handleChange}
+        onBlur={onBlur}
+        error={error?.message}
       />
     );
   },

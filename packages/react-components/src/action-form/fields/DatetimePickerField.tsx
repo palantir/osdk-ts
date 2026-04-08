@@ -38,6 +38,7 @@ export function DatetimePickerField({
   id,
   value,
   onChange,
+  error,
   min,
   max,
   placeholder,
@@ -121,6 +122,7 @@ export function DatetimePickerField({
           !hasValue && styles.triggerButtonPlaceholder,
         )}
         aria-label={hasValue ? undefined : "Select date"}
+        data-invalid={error != null || undefined}
       >
         {displayText}
       </Popover.Trigger>

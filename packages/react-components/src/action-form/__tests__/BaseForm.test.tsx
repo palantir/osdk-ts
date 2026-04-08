@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import React, { useState } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { BaseForm } from "../BaseForm.js";
@@ -262,6 +268,92 @@ describe("BaseForm", () => {
           expect.objectContaining({ name: "Parent" }),
         );
       });
+    });
+  });
+
+  describe("validation", () => {
+    it("shows error for required field after blur with empty value", async () => {
+      render(
+        <BaseForm
+          fieldDefinitions={[makeDef("name", { isRequired: true })]}
+          onSubmit={vi.fn()}
+        />,
+      );
+
+      const input = document.getElementById("name")!;
+      fireEvent.focus(input);
+      fireEvent.blur(input);
+
+      await waitFor(() => {
+        expect(screen.getByRole("alert")).toBeDefined();
+        expect(screen.getByRole("alert").textContent).toBe(
+          "This field is required",
+        );
+      });
+    });
+
+    it("shows minLength error after blur", async () => {
+      render(
+        <BaseForm
+          fieldDefinitions={[
+            makeDef("name", {
+              fieldComponentProps: { minLength: 3 },
+            }),
+          ]}
+          onSubmit={vi.fn()}
+        />,
+      );
+
+      const input = document.getElementById("name")!;
+      fireEvent.change(input, { target: { value: "ab" } });
+      fireEvent.blur(input);
+
+      await waitFor(() => {
+        expect(screen.getByRole("alert").textContent).toBe(
+          "Must be at least 3 characters",
+        );
+      });
+    });
+
+    it("clears error after value becomes valid", async () => {
+      render(
+        <BaseForm
+          fieldDefinitions={[makeDef("name", { isRequired: true })]}
+          onSubmit={vi.fn()}
+        />,
+      );
+
+      const input = document.getElementById("name")!;
+      fireEvent.focus(input);
+      fireEvent.blur(input);
+
+      await waitFor(() => {
+        expect(screen.getByRole("alert")).toBeDefined();
+      });
+
+      fireEvent.change(input, { target: { value: "Alice" } });
+
+      await waitFor(() => {
+        expect(screen.queryByRole("alert")).toBeNull();
+      });
+    });
+
+    it("prevents submit when required field is empty", async () => {
+      const onSubmit = vi.fn();
+      render(
+        <BaseForm
+          fieldDefinitions={[makeDef("name", { isRequired: true })]}
+          onSubmit={onSubmit}
+        />,
+      );
+
+      fireEvent.click(screen.getByRole("button", { name: /submit/i }));
+
+      await waitFor(() => {
+        expect(screen.getByRole("alert")).toBeDefined();
+      });
+
+      expect(onSubmit).not.toHaveBeenCalled();
     });
   });
 });

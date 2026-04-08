@@ -19,6 +19,10 @@
     outline: var(--osdk-datetime-input-focus-outline);
     outline-offset: var(--osdk-datetime-input-focus-outline-offset);
   }
+
+  &[data-invalid] {
+    border-color: var(--osdk-datetime-input-error-border-color);
+  }
 }
 
 .triggerButtonPlaceholder {
